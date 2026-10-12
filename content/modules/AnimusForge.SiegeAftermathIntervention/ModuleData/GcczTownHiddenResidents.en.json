@@ -1,0 +1,14 @@
+{
+  "Version": 1,
+  "SpawnedMessageTemplate": "Hesitant footsteps echo from an alleyway; {count} hidden residents appear in the distance, waiting anxiously for judgment.",
+  "ResidentsAlreadyVisibleMessage": "Enough residents have already shown themselves on the streets; the runner did not bring out more in hiding.",
+  "SceneSpawnLimitReachedMessage": "No one in hiding responds to the summons; no more residents will emerge during this visit.",
+  "SceneAgentLimitReachedMessage": "The streets are already too crowded; the runner cannot safely escort another group of residents.",
+  "OperationSnapshotLockedMessage": "The current operation has locked its targets; the runner did not expose new residents to the ongoing action.",
+  "DestructiveCombatActiveMessage": "Slaughter has not stopped; no hidden residents are willing to step into the streets.",
+  "RuntimeUnavailableMessage": "Orders were called down the alley, but hidden residents cannot be brought out right now.",
+  "NoSafeCornerMessage": "The runner found no safe alley from which residents could emerge and returned empty-handed.",
+  "SpawnFailedMessage": "The runner found hiding places, but ultimately no residents stepped into the streets.",
+  "MemoryTitle": "Hidden Residents",
+  "MemoryTemplate": "The player ordered hidden residents brought forth; {count} civilians entered the current scene from a safe alley; this experience belongs solely to the current scene."
+}

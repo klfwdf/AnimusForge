@@ -643,37 +643,37 @@ public sealed partial class ProactiveNpcRequestBehavior
 
 	private static string GetNeedDisplayName(string needType)
 	{
-		if (string.Equals(needType, NeedFoodShortage, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_01", "Food shortage");
-		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_02", "Money shortage");
-		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_03", "Troop shortage");
-		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_04", "Excess prisoners or ransom");
-		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_05", "Captured clan member");
-		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_06", "Low party morale");
-		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_07", "Mount shortage");
-		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_08", "Overburdened party");
-		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_09", "Clan financial strain");
-		if (string.Equals(needType, NeedClanService, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_10", "Clan seeking service");
-		if (string.Equals(needType, NeedRomanticInteraction, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_11", "Intimate interaction");
-		if (string.Equals(needType, NeedGreeting, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_12", "A greeting");
-		if (string.Equals(needType, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_13", "Discussion of recent policy");
-		if (string.Equals(needType, NeedFriendship, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_14", "Making a new friend");
-		if (string.Equals(needType, NeedCourtship, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_15", "Courtship");
-		if (string.Equals(needType, NeedArmyJoinRequest, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_16", "Request to join an army");
-		if (string.Equals(needType, NeedBanditSuppression, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_17", "Bandit suppression");
-		if (string.Equals(needType, NeedPoliticalRivalSuppression, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_18", "Opposing a political rival");
-		if (string.Equals(needType, NeedSettlementPurchase, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_19", "Buying a fief");
-		if (string.Equals(needType, NeedSettlementSale, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_20", "Selling a border fief");
-		if (string.Equals(needType, NeedTerritorialInterrogation, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_21", "Questioning a stranger in the realm");
-		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_22", "Marriage-alliance pressure");
-		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_23", "Revenge or rescue pressure");
-		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_24", "Fief governance pressure");
-		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_25", "Lack of allied support");
-		if (string.Equals(needType, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_26", "Kingdom seeking mercenaries");
-		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_27", "Kingdom seeking vassals");
-		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_28", "Kingdom political agenda");
-		if (string.Equals(needType, NeedPolicySupport, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_29", "Support for a policy");
-		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_30", "Discussion of diplomacy");
-		return string.IsNullOrWhiteSpace(needType) ? SocialUiLocalization.Text("AF_SOCIAL_UI_ProactiveNeed_31", "A specific request") : needType;
+		if (string.Equals(needType, NeedFoodShortage, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_01");
+		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_02");
+		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_03");
+		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_04");
+		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_05");
+		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_06");
+		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_07");
+		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_08");
+		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_09");
+		if (string.Equals(needType, NeedClanService, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_10");
+		if (string.Equals(needType, NeedRomanticInteraction, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_11");
+		if (string.Equals(needType, NeedGreeting, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_12");
+		if (string.Equals(needType, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_13");
+		if (string.Equals(needType, NeedFriendship, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_14");
+		if (string.Equals(needType, NeedCourtship, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_15");
+		if (string.Equals(needType, NeedArmyJoinRequest, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_16");
+		if (string.Equals(needType, NeedBanditSuppression, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_17");
+		if (string.Equals(needType, NeedPoliticalRivalSuppression, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_18");
+		if (string.Equals(needType, NeedSettlementPurchase, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_19");
+		if (string.Equals(needType, NeedSettlementSale, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_20");
+		if (string.Equals(needType, NeedTerritorialInterrogation, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_21");
+		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_22");
+		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_23");
+		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_24");
+		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_25");
+		if (string.Equals(needType, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_26");
+		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_27");
+		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_28");
+		if (string.Equals(needType, NeedPolicySupport, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_29");
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_30");
+		return string.IsNullOrWhiteSpace(needType) ? SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_31") : needType;
 	}
 
 	private bool TryBuildBaseCandidate(MobileParty party, MobileParty mainParty, DuelSettings settings, out ProactiveCandidate candidate, out string skipReason)

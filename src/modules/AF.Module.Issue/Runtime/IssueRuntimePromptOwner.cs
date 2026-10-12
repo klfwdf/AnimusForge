@@ -177,7 +177,7 @@ internal static partial class VanillaIssueOfferBridge
 			stringBuilder.AppendLine(IssuePromptTexts.Format("AF_ISSUE_PROMPT_InProgressCurrentState", "Current state: {STATE}", ("STATE", currentState)));
 			if (issue.IsSolvingWithAlternative)
 			{
-				stringBuilder.AppendLine(IssuePromptTexts.Format("AF_ISSUE_PROMPT_InProgressCompanion", "Current companion leading the mission: {HERO}", ("HERO", IssueDisplayTexts.CompanionNameForDisplay(GetHeroName(issue.AlternativeSolutionHero)))));
+				stringBuilder.AppendLine(IssuePromptTexts.Format("AF_ISSUE_PROMPT_InProgressCompanion", "Current companion leading the mission: {HERO}", ("HERO", IssueDisplayTexts.CompanionNameForPrompt(GetHeroName(issue.AlternativeSolutionHero)))));
 				stringBuilder.AppendLine(IssuePromptTexts.Format("AF_ISSUE_PROMPT_InProgressDuration", "Vanilla estimated total duration: {DAYS} days.", ("DAYS", Math.Max(1, issue.GetTotalAlternativeSolutionDurationInDays()))));
 			}
 			try

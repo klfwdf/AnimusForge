@@ -119,6 +119,21 @@ def main():
     fingerprints.update({path: hashlib.sha256(source(path, args.source_ref).encode()).hexdigest() for path in assembly_paths})
     fingerprints.update(source_ref=args.source_ref or "working-tree", request_source_ref=args.request_source_ref or args.source_ref or "working-tree", boundary_scope="production relay controller/callsite snippets + full real role/history/assembly owners; detached network/agent and identity/config leaves; real GCCZ budget")
     (output / "source-fingerprints.json").write_text(json.dumps(fingerprints, indent=2), encoding="utf-8")
+    sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Prompt/Composition'))
+    from fixture_resources import add_history_resources
+    add_history_resources(ROOT,output,output/'Relay.csproj')
+    ui_path='src/AF.GameAdapter.Bannerlord/UI/Conversation/ConversationUiLocalization.cs'
+    retry_path='src/AF.GameAdapter.Bannerlord/UI/Errors/LlmRetryPrompt.cs'
+    sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Llm/RetryProjectionTests'))
+    from fixture_support import retry_members,add_retry_resources
+    retry=retry_members(source(retry_path,args.source_ref),declaration,['internal static string ProjectKnownErrorForUi('])
+    (output/'ActualRetryProjection.cs').write_text('using System;using System.Text;using System.Runtime.CompilerServices;using TaleWorlds.Localization;namespace AnimusForge;internal static class LlmRetryPrompt {'+retry+'}',encoding='utf-8')
+    (output/'ui-source-receipt.json').write_text(json.dumps({'uiWholeSource':ui_path,'uiSha256':hashlib.sha256(source(ui_path,args.source_ref).encode()).hexdigest(),'retryMethod':'ProjectKnownErrorForUi','retrySha256':hashlib.sha256(retry.encode()).hexdigest(),'runtime':'real TaleWorlds.Localization/Library; default English UI fallback; CN packaged Prompt resource'},indent=2),encoding='utf-8')
+    linked_ui=''.join('<Compile Include="'+str(ROOT/path)+'" />' for path in [ui_path,'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'])
+    linked_ui+=''.join('<Reference Include="'+name+'"><HintPath>'+str(ROOT/'_deps_auto'/(name+'.dll'))+'</HintPath></Reference>' for name in ['TaleWorlds.Localization','TaleWorlds.Library'])
+    linked_ui+='<EmbeddedResource Include="'+str(ROOT/'content/foundation/AF.Foundation.Localization/ModuleData/RuntimeStaleRequestCompatibility.txt')+'" LogicalName="AnimusForge.Foundation.StaleRequestError.txt" />'
+    project=output/'Relay.csproj';project.write_text(project.read_text('utf-8').replace('</Project>','<ItemGroup>'+linked_ui+'</ItemGroup></Project>'),encoding='utf-8')
+    add_retry_resources(ROOT,project)
     dotnet = resolve_dotnet(ROOT, args.dotnet)
     result = subprocess.run([str(dotnet), "run", "--project", str(output / "Relay.csproj"), "-c", "Release"], cwd=output, env=minimal_test_environment(dotnet, output), capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
     log = result.stdout + result.stderr

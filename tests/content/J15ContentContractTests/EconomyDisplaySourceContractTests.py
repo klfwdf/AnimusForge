@@ -38,6 +38,8 @@ for name in ('PlayerRpForgeDisplayTexts', 'EconomyRecruitmentDetailTexts'):
     source = (ROOT / path).read_text(encoding='utf-8-sig')
     restored = re.sub(r'EconomyDisplaySourceTexts.Get\("([\w.]+)"\)', restore, source)
     restored = restored.replace('private static readonly string CarriedFief', 'private const string CarriedFief')
+    for local in ('repairFailedPrefix', 'dissolveFailedPrefix'):
+        restored = restored.replace('string ' + local + ' =', 'const string ' + local + ' =')
     baseline = subprocess.check_output(['git', 'show', 'ebe438790:' + path], cwd=ROOT).decode('utf-8-sig').replace('\r\n', '\n')
     assert normalize(restored) == normalize(baseline), name + ': exact inverse, including unknown passthrough and all regexes'
     assert not any(HAN.search(decode(m[0])) for m in LEX.finditer(source) if m.lastgroup == 'string'), name

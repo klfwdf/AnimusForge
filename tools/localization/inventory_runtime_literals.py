@@ -15,7 +15,7 @@ import re
 import subprocess
 
 from extract_localization_inventory import ROOTS, included
-from inventory_untranslated import LEX, HAN, decode, module
+from inventory_untranslated import LEX, HAN, decode, module, source_line_index
 
 
 def run(root: Path) -> dict:
@@ -32,7 +32,7 @@ def run(root: Path) -> dict:
             except UnicodeDecodeError:
                 problems.append({"file": relative, "reason": "not_utf8"})
                 continue
-            lines = source.splitlines()
+            lines, line_starts = source_line_index(source)
             newlines = [m.start() for m in re.finditer("\n", source)]
             for match in LEX.finditer(source):
                 if match.lastgroup not in {"string", "char"}:
@@ -41,9 +41,10 @@ def run(root: Path) -> dict:
                 value = decode(raw)
                 if not HAN.search(value):
                     continue
-                line = bisect.bisect_left(newlines, match.start()) + 1
+                line = bisect.bisect_right(line_starts, match.start())
                 records.append({"file": relative, "line": line,
-                                "column": match.start() - source.rfind("\n", 0, match.start()),
+                                "lfLine": bisect.bisect_left(newlines, match.start()) + 1,
+                                "column": match.start() - line_starts[line - 1] + 1,
                                 "module": module(path, root), "kind": match.lastgroup,
                                 "text": value, "sourceLine": lines[line - 1].strip()})
     changed = [name for name, digest in hashes.items()
@@ -51,6 +52,7 @@ def run(root: Path) -> dict:
     return {"schemaVersion": 1,
             "sourceRevision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(),
             "basis": "working tree including untracked source; no prompt/protocol/log/UI role exclusion",
+            "lineConvention": "line/column/sourceLine use physical CR/LF boundaries; lfLine preserves historical LF-only anchors",
             "scannedFiles": len(hashes), "literalOccurrences": len(records),
             "filesWithChineseLiterals": len({r["file"] for r in records}),
             "uniqueLiteralValues": len({r["text"] for r in records}),
@@ -72,7 +74,7 @@ def main() -> int:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", errors="backslashreplace")
     with args.output.with_suffix(".csv").open("w", encoding="utf-8-sig", errors="backslashreplace", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=["file", "line", "column", "module", "kind", "text", "sourceLine"])
+        writer = csv.DictWriter(stream, fieldnames=["file", "line", "lfLine", "column", "module", "kind", "text", "sourceLine"])
         writer.writeheader()
         writer.writerows(report["records"])
     print(json.dumps({key: report[key] for key in ("sourceRevision", "scannedFiles", "literalOccurrences", "filesWithChineseLiterals", "uniqueLiteralValues", "problems", "changedDuringScan")}, ensure_ascii=False))

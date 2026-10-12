@@ -16,15 +16,11 @@ public sealed partial class KingdomFactionPanelVM
 	private static string L(string id, string fallback) => new TextObject("{=" + id + "}" + fallback).ToString();
 	private static string L(string id, string fallback, string variable, object value)
 	{
-		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		text.SetTextVariable(variable, value?.ToString() ?? string.Empty);
-		return text.ToString();
+		return DeveloperUiText.Format(id, fallback, (variable, value));
 	}
 	private static string L(string id, string fallback, params (string Name, object Value)[] variables)
 	{
-		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		foreach ((string name, object value) in variables) text.SetTextVariable(name, value?.ToString() ?? string.Empty);
-		return text.ToString();
+		return DeveloperUiText.Format(id, fallback, variables);
 	}
 
 	private enum Act { Suppress, Negotiate, Concede, Dissolve, JoinCrown, JoinFaction, Leave, Found, Detonate, Accept, Refuse, DissolveOwn, ChangeDemand }

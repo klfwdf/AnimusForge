@@ -53,22 +53,22 @@ namespace AnimusForge.Illustrator.Context
         public string BuildDirectorOnlyFacts()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("【人物背景归属】" + HeroName);
-            if (!string.IsNullOrWhiteSpace(CultureLore)) sb.AppendLine("【文化背景原文】" + CultureLore);
-            if (!string.IsNullOrWhiteSpace(FactionLore)) sb.AppendLine("【势力背景原文】" + FactionLore);
-            if (!string.IsNullOrWhiteSpace(BackgroundLore)) sb.AppendLine("【人物生平原文】" + BackgroundLore);
-            if (!string.IsNullOrWhiteSpace(TraitsSummary)) sb.AppendLine("【性格参考】" + TraitsSummary);
-            if (!string.IsNullOrWhiteSpace(TopSkillsSummary)) sb.AppendLine("【专长参考】" + TopSkillsSummary);
+            sb.AppendLine(IllustratorText.Get("Hero_286") + HeroName);
+            if (!string.IsNullOrWhiteSpace(CultureLore)) sb.AppendLine(IllustratorText.Get("Hero_287") + CultureLore);
+            if (!string.IsNullOrWhiteSpace(FactionLore)) sb.AppendLine(IllustratorText.Get("Hero_288") + FactionLore);
+            if (!string.IsNullOrWhiteSpace(BackgroundLore)) sb.AppendLine(IllustratorText.Get("Hero_289") + BackgroundLore);
+            if (!string.IsNullOrWhiteSpace(TraitsSummary)) sb.AppendLine(IllustratorText.Get("Hero_290") + TraitsSummary);
+            if (!string.IsNullOrWhiteSpace(TopSkillsSummary)) sb.AppendLine(IllustratorText.Get("Hero_291") + TopSkillsSummary);
             return sb.ToString().TrimEnd();
         }
 
         public string BuildConversationDirectorContext()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("【人物背景】" + HeroName);
-            AppendBoundedNarrative(sb, "【人物生平参考】", BackgroundLore, 360);
-            AppendBoundedNarrative(sb, "【性格参考】", TraitsSummary, 180);
-            AppendBoundedNarrative(sb, "【专长参考】", TopSkillsSummary, 180);
+            sb.AppendLine(IllustratorText.Get("Hero_292") + HeroName);
+            AppendBoundedNarrative(sb, IllustratorText.Get("Hero_293"), BackgroundLore, 360);
+            AppendBoundedNarrative(sb, IllustratorText.Get("Hero_294"), TraitsSummary, 180);
+            AppendBoundedNarrative(sb, IllustratorText.Get("Hero_295"), TopSkillsSummary, 180);
             return sb.ToString().TrimEnd();
         }
 
@@ -89,46 +89,46 @@ namespace AnimusForge.Illustrator.Context
         public string BuildVisualSummary(bool includeMount = true)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"【人物身份】{HeroName}" + (!string.IsNullOrWhiteSpace(Title) ? $" · {Title}" : "") +
-                $" ({Culture}文化, {Gender}, " + (Age > 0 ? $"约{Age}岁" : "年龄未确认") + (!string.IsNullOrWhiteSpace(SocialStatus) ? $", 身份: {SocialStatus}" : "") + ")");
-            if (!string.IsNullOrWhiteSpace(SpeciesDescription)) sb.AppendLine("【真实种族/物种】" + SpeciesDescription);
-            if (!string.IsNullOrWhiteSpace(AgeSource)) sb.AppendLine("【年龄来源与外观】" + AgeSource);
+            sb.AppendLine(IllustratorText.Format("Hero_296", HeroName) + (!string.IsNullOrWhiteSpace(Title) ? $" · {Title}" : "") +
+                IllustratorText.Format("Hero_297", Culture, Gender) + (Age > 0 ? IllustratorText.Format("Hero_298", Age) : IllustratorText.Get("Hero_299")) + (!string.IsNullOrWhiteSpace(SocialStatus) ? IllustratorText.Format("Hero_300", SocialStatus) : "") + ")");
+            if (!string.IsNullOrWhiteSpace(SpeciesDescription)) sb.AppendLine(IllustratorText.Get("Hero_301") + SpeciesDescription);
+            if (!string.IsNullOrWhiteSpace(AgeSource)) sb.AppendLine(IllustratorText.Get("Hero_302") + AgeSource);
             if (!string.IsNullOrWhiteSpace(ClanName) || !string.IsNullOrWhiteSpace(BannerDescription))
             {
-                string factionPart = !string.IsNullOrWhiteSpace(KingdomName) ? $", 所属王国: {KingdomName}" : "";
-                sb.AppendLine($"【家族与纹章】" + (!string.IsNullOrWhiteSpace(ClanName) ? $"所属家族: {ClanName}{factionPart}" : "") +
-                    (!string.IsNullOrWhiteSpace(BannerDescription) ? $" | {BannerDescription}" : $" (识别色: {PrimaryBannerColorHex}/{SecondaryBannerColorHex})"));
+                string factionPart = !string.IsNullOrWhiteSpace(KingdomName) ? IllustratorText.Format("Hero_303", KingdomName) : "";
+                sb.AppendLine(IllustratorText.Get("Hero_304") + (!string.IsNullOrWhiteSpace(ClanName) ? IllustratorText.Format("Hero_305", ClanName, factionPart) : "") +
+                    (!string.IsNullOrWhiteSpace(BannerDescription) ? $" | {BannerDescription}" : IllustratorText.Format("Hero_306", PrimaryBannerColorHex, SecondaryBannerColorHex)));
             }
             if (!string.IsNullOrWhiteSpace(LiveryColorsSummary))
             {
-                sb.AppendLine("【服饰与阵营布料配色】" + LiveryColorsSummary);
+                sb.AppendLine(IllustratorText.Get("Hero_307") + LiveryColorsSummary);
             }
             if (!string.IsNullOrWhiteSpace(CurrentStateDetail))
             {
-                sb.AppendLine($"【当前处境状态】{CurrentStateDetail}");
+                sb.AppendLine(IllustratorText.Format("Hero_308", CurrentStateDetail));
             }
             if (!string.IsNullOrWhiteSpace(PhysicalFeatures))
             {
-                sb.AppendLine($"【面貌骨相与发型】{PhysicalFeatures}");
+                sb.AppendLine(IllustratorText.Format("Hero_309", PhysicalFeatures));
             }
-            if (!string.IsNullOrWhiteSpace(EquipmentSource)) sb.AppendLine("【装备快照来源】" + EquipmentSource);
-            if (!string.IsNullOrWhiteSpace(HeadgearDetail)) sb.AppendLine("【当前头戴装备】" + HeadgearDetail);
+            if (!string.IsNullOrWhiteSpace(EquipmentSource)) sb.AppendLine(IllustratorText.Get("Hero_310") + EquipmentSource);
+            if (!string.IsNullOrWhiteSpace(HeadgearDetail)) sb.AppendLine(IllustratorText.Get("Hero_311") + HeadgearDetail);
             if (EquipmentDetails.Count > 0)
             {
-                sb.AppendLine($"【真实穿戴装备与材质】" + string.Join("，", EquipmentDetails));
+                sb.AppendLine(IllustratorText.Get("Hero_312") + string.Join("，", EquipmentDetails));
             }
             if (WeaponDetails.Count > 0)
             {
-                sb.AppendLine($"【当前装备中的武器与盾牌（不得替换成旗帜）】" + string.Join("，", WeaponDetails));
+                sb.AppendLine(IllustratorText.Get("Hero_313") + string.Join("，", WeaponDetails));
             }
             if (BannerEquipmentDetails.Count > 0)
             {
-                sb.AppendLine("【旗帜装备栏记录（非普通手持武器、非现场可见性证据）】" + string.Join("，", BannerEquipmentDetails) +
-                    "；完整读取该槽不代表本人正在举旗。百科肖像不展示旗帜；现场或事件插画须另有可见/使用证据，不能因该栏有物品就安排举旗或布置背景旗。");
+                sb.AppendLine(IllustratorText.Get("Hero_314") + string.Join("，", BannerEquipmentDetails) +
+                    IllustratorText.Get("Hero_315"));
             }
             if (includeMount && !string.IsNullOrWhiteSpace(MountDetail))
             {
-                sb.AppendLine($"【可用坐骑装备（仅在场景支持骑乘时入画）】{MountDetail}");
+                sb.AppendLine(IllustratorText.Format("Hero_316", MountDetail));
             }
             return sb.ToString().TrimEnd();
         }
@@ -140,10 +140,10 @@ namespace AnimusForge.Illustrator.Context
         {
             if (hero == null)
             {
-                return new HeroVisualProfile { HeroName = "未知角色" };
+                return new HeroVisualProfile { HeroName = IllustratorText.Get("Hero_317") };
             }
 
-            string cultureName = hero.Culture?.Name != null ? hero.Culture.Name.ToString() : "未知文化";
+            string cultureName = hero.Culture?.Name != null ? hero.Culture.Name.ToString() : IllustratorText.Get("Hero_318");
             string cultureId = hero.Culture?.StringId?.ToLowerInvariant() ?? "";
 
             string socialStatus;
@@ -151,12 +151,12 @@ namespace AnimusForge.Illustrator.Context
 
             var profile = new HeroVisualProfile
             {
-                HeroName = hero.Name != null ? hero.Name.ToString() : "英雄",
+                HeroName = hero.Name != null ? hero.Name.ToString() : IllustratorText.Get("Hero_319"),
                 Title = title,
                 Culture = cultureName,
                 CultureId = cultureId,
                 SocialStatus = socialStatus,
-                Gender = hero.IsFemale ? "女性" : "男性",
+                Gender = hero.IsFemale ? IllustratorText.Get("Hero_320") : IllustratorText.Get("Hero_321"),
                 Age = (int)hero.Age,
                 SpeciesDescription = ResolveSpeciesDescription(hero),
                 ClanName = hero.Clan?.Name != null ? hero.Clan.Name.ToString() : string.Empty,
@@ -210,9 +210,9 @@ namespace AnimusForge.Illustrator.Context
                 string c2Part = "";
                 if (liveryColor2 != 0 && liveryColor2 != liveryColor1)
                 {
-                    c2Part = $"，副色为 {ResolveColorName(liveryColor2)} (#{(liveryColor2 & 0x00FFFFFF):X6})";
+                    c2Part = IllustratorText.Format("Hero_322", ResolveColorName(liveryColor2), (liveryColor2 & 0x00FFFFFF));
                 }
-                profile.LiveryColorsSummary = $"引擎服饰染色通道辅助值为【{c1Name}】({c1Hex}){c2Part}；仅影响支持染色的材质区域，不代表披风、长袍或内衬的实际主色。衣着颜色、纹样及深浅分区以本人参考图为准，不按阵营色整件重染。";
+                profile.LiveryColorsSummary = IllustratorText.Format("Hero_323", c1Name, c1Hex, c2Part);
             }
             if (hero.Clan != null)
             {
@@ -226,12 +226,12 @@ namespace AnimusForge.Illustrator.Context
 
             // 7. 提取装备槽位 (真实反射装备，绝无粗麻学者硬编码)
             Equipment equipment = equipmentSnapshot ?? (useCivilian ? hero.CivilianEquipment : hero.BattleEquipment);
-            ApplyEquipmentSnapshot(profile, equipment, equipmentSource ?? (useCivilian ? "人物便服装备栏" : "人物战斗装备栏"));
+            ApplyEquipmentSnapshot(profile, equipment, equipmentSource ?? (useCivilian ? IllustratorText.Get("Hero_324") : IllustratorText.Get("Hero_325")));
 
             // 8. 提取生理与面部特征 (根据头部全遮蔽状态智能调整)
             profile.PhysicalFeatures = ExtractPhysicalFeatures(hero, equipment);
 
-            TaleWorlds.Library.Debug.Print($"[IllustratorFidelity] hero={hero.StringId}, equipmentSource={profile.EquipmentSource}, head={equipment?[EquipmentIndex.Head].Item?.StringId ?? "empty"}, shield={profile.WeaponDetails.Exists(x => x.StartsWith("盾牌: ") && !x.Contains("无盾牌"))}");
+            TaleWorlds.Library.Debug.Print($"[IllustratorFidelity] hero={hero.StringId}, equipmentSource={profile.EquipmentSource}, head={equipment?[EquipmentIndex.Head].Item?.StringId ?? "empty"}, shield={profile.WeaponDetails.Exists(x => x.StartsWith(IllustratorText.Get("Hero_ShieldPrefix")) && x != IllustratorText.Get("Hero_449"))}");
             return profile;
         }
 
@@ -247,11 +247,11 @@ namespace AnimusForge.Illustrator.Context
             // Native serialization retains all 12 slots, including empty slots and modifiers.
             equipment = CharacterAppearanceSnapshot.VisibleEquipment(equipment);
             profile.EquipmentCode = equipment.CalculateEquipmentCode();
-            ExtractArmorSlot(profile, equipment, EquipmentIndex.Head, "头部", null);
-            ExtractArmorSlot(profile, equipment, EquipmentIndex.Body, "身甲", null);
-            ExtractArmorSlot(profile, equipment, EquipmentIndex.Cape, "披风", null);
-            ExtractArmorSlot(profile, equipment, EquipmentIndex.Gloves, "手部", null);
-            ExtractArmorSlot(profile, equipment, EquipmentIndex.Leg, "腿部", null);
+            ExtractArmorSlot(profile, equipment, EquipmentIndex.Head, IllustratorText.Get("Hero_326"), null);
+            ExtractArmorSlot(profile, equipment, EquipmentIndex.Body, IllustratorText.Get("Hero_327"), null);
+            ExtractArmorSlot(profile, equipment, EquipmentIndex.Cape, IllustratorText.Get("Hero_328"), null);
+            ExtractArmorSlot(profile, equipment, EquipmentIndex.Gloves, IllustratorText.Get("Hero_329"), null);
+            ExtractArmorSlot(profile, equipment, EquipmentIndex.Leg, IllustratorText.Get("Hero_330"), null);
             ExtractWeapons(profile, equipment, null);
             ExtractMount(profile, equipment);
         }
@@ -266,23 +266,26 @@ namespace AnimusForge.Illustrator.Context
         private static readonly string[][] KnownSpeciesTokens =
         {
             // More specific labels must precede their substrings (野兽人 contains 兽人).
-            new[] { "野兽人", "beastman", "beastmen", "minotaur" },
-            new[] { "兽人", "orc", "orcs", "greenskin", "warhammer_orc" },
-            new[] { "地精", "goblin", "goblins", "snotling" },
-            new[] { "精灵", "elf", "elves", "elven", "asrai", "druchii" },
-            new[] { "矮人", "dwarf", "dwarves", "dawi" },
-            new[] { "鼠人", "skaven" },
-            new[] { "混沌", "chaos", "daemon", "demon" },
-            new[] { "巨魔", "troll", "ogre" }
+            new[] { IllustratorText.Raw("Hero_331"), "beastman", "beastmen", "minotaur" },
+            new[] { IllustratorText.Raw("Hero_332"), "orc", "orcs", "greenskin", "warhammer_orc" },
+            new[] { IllustratorText.Raw("Hero_333"), "goblin", "goblins", "snotling" },
+            new[] { IllustratorText.Raw("Hero_334"), "elf", "elves", "elven", "asrai", "druchii" },
+            new[] { IllustratorText.Raw("Hero_335"), "dwarf", "dwarves", "dawi" },
+            new[] { IllustratorText.Raw("Hero_336"), "skaven" },
+            new[] { IllustratorText.Raw("Hero_337"), "chaos", "daemon", "demon" },
+            new[] { IllustratorText.Raw("Hero_338"), "troll", "ogre" }
         };
+
+        private static readonly string[] KnownSpeciesTextKeys = { "Hero_331", "Hero_332", "Hero_333", "Hero_334", "Hero_335", "Hero_336", "Hero_337", "Hero_338" };
 
         internal static string DescribeSpecies(string identity, int race)
         {
             identity = (identity ?? string.Empty).ToLowerInvariant();
-            foreach (var group in KnownSpeciesTokens)
-                foreach (string token in group)
-                    if (token[0] > 127 ? identity.Contains(token) : ContainsIdentityToken(identity, token)) return group[0];
-            return "种族/物种未确认（游戏 Race=" + race + "，以真实立绘和已确认文化设定为准）";
+            for (int speciesIndex = 0; speciesIndex < KnownSpeciesTokens.Length; speciesIndex++)
+                foreach (string token in KnownSpeciesTokens[speciesIndex])
+                    if (token[0] > 127 ? identity.Contains(token) : ContainsIdentityToken(identity, token))
+                        return IllustratorText.Get(KnownSpeciesTextKeys[speciesIndex]);
+            return IllustratorText.Get("Hero_339") + race + IllustratorText.Get("Hero_340");
         }
 
         private static bool ContainsIdentityToken(string identity, string token)
@@ -303,7 +306,7 @@ namespace AnimusForge.Illustrator.Context
             if (hero.Culture == null) return string.Empty;
             var sb = new StringBuilder();
             string cultureName = hero.Culture.Name != null ? hero.Culture.Name.ToString() : hero.Culture.StringId;
-            sb.Append($"{cultureName}文化。");
+            sb.Append(IllustratorText.Format("Hero_341", cultureName));
 
             // 全量读取 MOD 或游戏底层为该文化编写的官方百科传记
             try
@@ -315,7 +318,7 @@ namespace AnimusForge.Illustrator.Context
                     {
                         lore = System.Text.RegularExpressions.Regex.Replace(lore, "<.*?>", string.Empty).Trim();
                         if (lore.Length > 280) lore = lore.Substring(0, 280) + "...";
-                        sb.Append($" 文化风貌与传统：{lore}");
+                        sb.Append(IllustratorText.Format("Hero_342", lore));
                     }
                 }
             }
@@ -331,8 +334,8 @@ namespace AnimusForge.Illustrator.Context
             // 王国背景
             if (hero.Clan?.Kingdom != null)
             {
-                string kingdomName = hero.Clan.Kingdom.Name != null ? hero.Clan.Kingdom.Name.ToString() : "王国";
-                sb.Append($"所属王国: {kingdomName}。");
+                string kingdomName = hero.Clan.Kingdom.Name != null ? hero.Clan.Kingdom.Name.ToString() : IllustratorText.Get("Hero_343");
+                sb.Append(IllustratorText.Format("Hero_344", kingdomName));
 
                 try
                 {
@@ -343,7 +346,7 @@ namespace AnimusForge.Illustrator.Context
                         {
                             kLore = System.Text.RegularExpressions.Regex.Replace(kLore, "<.*?>", string.Empty).Trim();
                             if (kLore.Length > 200) kLore = kLore.Substring(0, 200) + "...";
-                            sb.Append($" 王国历史与势力格局: {kLore}。");
+                            sb.Append(IllustratorText.Format("Hero_345", kLore));
                         }
                     }
                 }
@@ -353,8 +356,8 @@ namespace AnimusForge.Illustrator.Context
             // 家族背景与声誉
             if (hero.Clan != null)
             {
-                string clanName = hero.Clan.Name != null ? hero.Clan.Name.ToString() : "家族";
-                sb.Append($" 所属家族: {clanName} (声望第{hero.Clan.Tier}阶)。");
+                string clanName = hero.Clan.Name != null ? hero.Clan.Name.ToString() : IllustratorText.Get("Hero_346");
+                sb.Append(IllustratorText.Format("Hero_347", clanName, hero.Clan.Tier));
 
                 try
                 {
@@ -365,7 +368,7 @@ namespace AnimusForge.Illustrator.Context
                         {
                             cLore = System.Text.RegularExpressions.Regex.Replace(cLore, "<.*?>", string.Empty).Trim();
                             if (cLore.Length > 180) cLore = cLore.Substring(0, 180) + "...";
-                            sb.Append($" 宗族历史: {cLore}。");
+                            sb.Append(IllustratorText.Format("Hero_348", cLore));
                         }
                     }
                 }
@@ -378,76 +381,76 @@ namespace AnimusForge.Illustrator.Context
         private static string ExtractTitleAndStatus(Hero hero, out string socialStatus)
         {
             bool isFemale = hero.IsFemale;
-            string kingdomName = hero.Clan?.Kingdom?.Name != null ? hero.Clan.Kingdom.Name.ToString() : (hero.Culture?.Name != null ? hero.Culture.Name.ToString() : "阵营");
-            string clanName = hero.Clan?.Name != null ? hero.Clan.Name.ToString() : "家族";
+            string kingdomName = hero.Clan?.Kingdom?.Name != null ? hero.Clan.Kingdom.Name.ToString() : (hero.Culture?.Name != null ? hero.Culture.Name.ToString() : IllustratorText.Get("Hero_349"));
+            string clanName = hero.Clan?.Name != null ? hero.Clan.Name.ToString() : IllustratorText.Get("Hero_350");
 
             bool isFactionLeader = hero.IsFactionLeader || (hero.MapFaction != null && hero.MapFaction.Leader == hero);
             bool isClanLeader = hero.Clan != null && hero.Clan.Leader == hero;
 
             if (isFactionLeader)
             {
-                socialStatus = "最高统治者/阵营至尊君主 (Faction Sovereign & Supreme Monarch)";
+                socialStatus = IllustratorText.Get("Hero_351");
                 return isFemale
-                    ? $"{kingdomName} 最高女统治者/至尊君主 (Supreme Sovereign Queen/Empress of {kingdomName})"
-                    : $"{kingdomName} 最高统治者/至尊君王 (Supreme Sovereign King/Monarch of {kingdomName})";
+                    ? IllustratorText.Format("Hero_352", kingdomName, kingdomName)
+                    : IllustratorText.Format("Hero_353", kingdomName, kingdomName);
             }
 
             if (hero.IsLord)
             {
                 if (isClanLeader)
                 {
-                    socialStatus = "宗族首领/世袭大领主 (Clan Patriarch/Matriarch & High Feudal Lord)";
+                    socialStatus = IllustratorText.Get("Hero_354");
                     return isFemale
-                        ? $"{clanName} 家族领袖/贵胄贵妇 (High Noble Lady & Patriarch of {clanName})"
-                        : $"{clanName} 家族宗主/显贵大领主 (High Feudal Lord & Patriarch of {clanName})";
+                        ? IllustratorText.Format("Hero_355", clanName, clanName)
+                        : IllustratorText.Format("Hero_356", clanName, clanName);
                 }
                 else
                 {
-                    socialStatus = "封建贵族领主 (Feudal Noble Lord/Lady)";
+                    socialStatus = IllustratorText.Get("Hero_357");
                     return isFemale
-                        ? $"{clanName} 贵族千金/贵妇 (Noble Lady of {clanName})"
-                        : $"{clanName} 贵族领主/武将骑士 (Noble Lord of {clanName})";
+                        ? IllustratorText.Format("Hero_358", clanName, clanName)
+                        : IllustratorText.Format("Hero_359", clanName, clanName);
                 }
             }
 
             if (hero.IsNotable)
             {
-                socialStatus = "城镇/乡村有影响力的要人名流 (Influential Town/Village Notable)";
+                socialStatus = IllustratorText.Get("Hero_360");
                 switch (hero.Occupation)
                 {
                     case Occupation.Merchant:
-                        return "商会行首/富商巨贾 (Wealthy Merchant Magnate & Guildmaster)";
+                        return IllustratorText.Get("Hero_361");
                     case Occupation.Artisan:
-                        return "工匠行会宗匠/名匠大师 (Master Craftsman & Guild Artisan)";
+                        return IllustratorText.Get("Hero_362");
                     case Occupation.GangLeader:
-                        return "地下黑街首领/教父 (Underworld Boss & Shadow Kingpin)";
+                        return IllustratorText.Get("Hero_363");
                     case Occupation.Preacher:
-                        return "圣所大祭司/宗教先知 (High Preacher & Holy Cleric)";
+                        return IllustratorText.Get("Hero_364");
                     case Occupation.Headman:
-                        return "村落耆老/庄园保正 (Respected Village Elder & Headman)";
+                        return IllustratorText.Get("Hero_365");
                     default:
-                        return "地方名门要人 (Prominent Notable)";
+                        return IllustratorText.Get("Hero_366");
                 }
             }
 
             if (hero.IsWanderer)
             {
-                socialStatus = "在野游侠同伴 (Wandering Hero & Companion)";
+                socialStatus = IllustratorText.Get("Hero_367");
                 // 动态依据其实际最高特长识别职业
                 int med = hero.GetSkillValue(DefaultSkills.Medicine);
                 int eng = hero.GetSkillValue(DefaultSkills.Engineering);
                 int rog = hero.GetSkillValue(DefaultSkills.Roguery);
                 int combat = Math.Max(hero.GetSkillValue(DefaultSkills.OneHanded), Math.Max(hero.GetSkillValue(DefaultSkills.TwoHanded), hero.GetSkillValue(DefaultSkills.Polearm)));
 
-                if (med >= 80 && med >= combat) return "随军医师/在野学者智囊 (Traveling Physician & Intellectual Scholar)";
-                if (eng >= 80 && eng >= combat) return "攻城技工大师/随军工兵 (Siege Engineer & Artificer)";
-                if (rog >= 80 && rog >= combat) return "边境独行游侠/荒原浪子 (Trail Ranger & Outlaw Companion)";
-                if (combat >= 100) return "百战剑客/独行雇佣勇士 (Hardened Mercenary Warrior)";
-                return "卡拉迪亚在野游历同伴 (Wandering Companion)";
+                if (med >= 80 && med >= combat) return IllustratorText.Get("Hero_368");
+                if (eng >= 80 && eng >= combat) return IllustratorText.Get("Hero_369");
+                if (rog >= 80 && rog >= combat) return IllustratorText.Get("Hero_370");
+                if (combat >= 100) return IllustratorText.Get("Hero_371");
+                return IllustratorText.Get("Hero_372");
             }
 
-            socialStatus = "知名人物 (Notable Character)";
-            return "英雄角色 (Notable Hero)";
+            socialStatus = IllustratorText.Get("Hero_373");
+            return IllustratorText.Get("Hero_374");
         }
 
         /// <summary>
@@ -462,13 +465,13 @@ namespace AnimusForge.Illustrator.Context
 
                 if (hero.IsDead)
                 {
-                    states.Add("已故（画面可作为肃穆的纪念性肖像或生平回顾氛围呈现）");
+                    states.Add(IllustratorText.Get("Hero_375"));
                     return string.Join("；", states);
                 }
 
                 if (hero.IsPrisoner)
                 {
-                    var sb = new StringBuilder("阶下囚/战俘状态");
+                    var sb = new StringBuilder(IllustratorText.Get("Hero_376"));
                     PartyBase holder = null;
                     try { holder = hero.PartyBelongedToAsPrisoner; } catch { }
                     if (holder != null)
@@ -479,38 +482,38 @@ namespace AnimusForge.Illustrator.Context
                             {
                                 Settlement s = holder.Settlement;
                                 string sName = s.Name != null ? s.Name.ToString() : s.StringId;
-                                string sType = s.IsCastle ? "城堡" : (s.IsTown ? "城镇" : "定居点");
-                                sb.Append("：被关押在 ").Append(sName).Append("（").Append(sType).Append("）的地牢囚室中");
+                                string sType = s.IsCastle ? IllustratorText.Get("Hero_377") : (s.IsTown ? IllustratorText.Get("Hero_378") : IllustratorText.Get("Hero_379"));
+                                sb.Append(IllustratorText.Get("Hero_380")).Append(sName).Append("（").Append(sType).Append(IllustratorText.Get("Hero_381"));
                             }
                             else if (holder.IsMobile && holder.MobileParty != null)
                             {
-                                string pName = holder.MobileParty.Name != null ? holder.MobileParty.Name.ToString() : "一支队伍";
-                                sb.Append("：正被 ").Append(pName).Append(" 的队伍看押（具体设施与锁具未确认）");
+                                string pName = holder.MobileParty.Name != null ? holder.MobileParty.Name.ToString() : IllustratorText.Get("Hero_382");
+                                sb.Append(IllustratorText.Get("Hero_383")).Append(pName).Append(IllustratorText.Get("Hero_384"));
                             }
                         }
                         catch
                         {
                         }
                     }
-                    sb.Append("；仅确认俘虏身份，不据此推导换装、缴械或镣铐；当前穿戴以本次装备与人物参考图为准");
+                    sb.Append(IllustratorText.Get("Hero_385"));
                     states.Add(sb.ToString());
                 }
                 else
                 {
                     if (hero.IsWounded)
                     {
-                        states.Add("当前负伤；绷带、伤口与动作须有实际视觉证据");
+                        states.Add(IllustratorText.Get("Hero_386"));
                     }
                     try
                     {
                         if (hero.StayingInSettlement != null)
                         {
                             Settlement s = hero.StayingInSettlement;
-                            states.Add("正留驻/下榻于 " + (s.Name != null ? s.Name.ToString() : s.StringId));
+                            states.Add(IllustratorText.Get("Hero_387") + (s.Name != null ? s.Name.ToString() : s.StringId));
                         }
                         else if (hero.PartyBelongedTo != null)
                         {
-                            states.Add("正随 " + (hero.PartyBelongedTo.Name != null ? hero.PartyBelongedTo.Name.ToString() : "其队伍") + " 行军扎营");
+                            states.Add(IllustratorText.Get("Hero_388") + (hero.PartyBelongedTo.Name != null ? hero.PartyBelongedTo.Name.ToString() : IllustratorText.Get("Hero_389")) + IllustratorText.Get("Hero_390"));
                         }
                     }
                     catch
@@ -532,20 +535,20 @@ namespace AnimusForge.Illustrator.Context
             {
                 var skillList = new List<KeyValuePair<string, int>>
                 {
-                    new KeyValuePair<string, int>("单手武器", hero.GetSkillValue(DefaultSkills.OneHanded)),
-                    new KeyValuePair<string, int>("双手武器", hero.GetSkillValue(DefaultSkills.TwoHanded)),
-                    new KeyValuePair<string, int>("长柄武器", hero.GetSkillValue(DefaultSkills.Polearm)),
-                    new KeyValuePair<string, int>("弓箭", hero.GetSkillValue(DefaultSkills.Bow)),
-                    new KeyValuePair<string, int>("十字弩", hero.GetSkillValue(DefaultSkills.Crossbow)),
-                    new KeyValuePair<string, int>("战术", hero.GetSkillValue(DefaultSkills.Tactics)),
-                    new KeyValuePair<string, int>("统御", hero.GetSkillValue(DefaultSkills.Leadership)),
-                    new KeyValuePair<string, int>("魅力", hero.GetSkillValue(DefaultSkills.Charm)),
-                    new KeyValuePair<string, int>("管理", hero.GetSkillValue(DefaultSkills.Steward)),
-                    new KeyValuePair<string, int>("医术", hero.GetSkillValue(DefaultSkills.Medicine)),
-                    new KeyValuePair<string, int>("工程", hero.GetSkillValue(DefaultSkills.Engineering)),
-                    new KeyValuePair<string, int>("狡诈/流氓习气", hero.GetSkillValue(DefaultSkills.Roguery)),
-                    new KeyValuePair<string, int>("交易", hero.GetSkillValue(DefaultSkills.Trade)),
-                    new KeyValuePair<string, int>("骑术", hero.GetSkillValue(DefaultSkills.Riding))
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_391"), hero.GetSkillValue(DefaultSkills.OneHanded)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_392"), hero.GetSkillValue(DefaultSkills.TwoHanded)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_393"), hero.GetSkillValue(DefaultSkills.Polearm)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_394"), hero.GetSkillValue(DefaultSkills.Bow)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_395"), hero.GetSkillValue(DefaultSkills.Crossbow)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_396"), hero.GetSkillValue(DefaultSkills.Tactics)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_397"), hero.GetSkillValue(DefaultSkills.Leadership)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_398"), hero.GetSkillValue(DefaultSkills.Charm)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_399"), hero.GetSkillValue(DefaultSkills.Steward)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_400"), hero.GetSkillValue(DefaultSkills.Medicine)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_401"), hero.GetSkillValue(DefaultSkills.Engineering)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_402"), hero.GetSkillValue(DefaultSkills.Roguery)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_403"), hero.GetSkillValue(DefaultSkills.Trade)),
+                    new KeyValuePair<string, int>(IllustratorText.Get("Hero_404"), hero.GetSkillValue(DefaultSkills.Riding))
                 };
 
                 skillList.Sort((a, b) => b.Value.CompareTo(a.Value));
@@ -555,7 +558,7 @@ namespace AnimusForge.Illustrator.Context
                 {
                     if (skillList[i].Value >= 50)
                     {
-                        top.Add($"{skillList[i].Key} (造诣: {skillList[i].Value})");
+                        top.Add(IllustratorText.Format("Hero_405", skillList[i].Key, skillList[i].Value));
                     }
                 }
 
@@ -578,39 +581,39 @@ namespace AnimusForge.Illustrator.Context
             int generosity = hero.GetTraitLevel(DefaultTraits.Generosity);
 
             if (calculating > 0)
-                traits.Add("【深谋远虑/算度深沉】眼神如深潭般沉静锐利，神情喜怒不形于色，带着洞察世事的城府与谋略 (Deeply calculating, analytical gaze, calm unreadable composure)");
+                traits.Add(IllustratorText.Get("Hero_406"));
             else if (calculating < 0)
-                traits.Add("【豪迈直率/烈火心性】目光热烈张扬，神态果决桀骜，透出直来直去的狂放脾气 (Bold, impulsive, fiery and direct expression)");
+                traits.Add(IllustratorText.Get("Hero_407"));
 
             if (honor > 0)
-                traits.Add("【高洁信守/正直坦荡】眉宇轩昂坦荡，下颌从容昂起，自带令人敬畏的道德威严与光明磊落的气度 (Honorable, dignified, righteous posture with commanding moral presence)");
+                traits.Add(IllustratorText.Get("Hero_408"));
             else if (honor < 0)
-                traits.Add("【权谋现实/从容冷酷】唇角微抿带着一丝难以捉摸的淡漠笑意，眼神透出看透利益规则的现实与狡黠 (Pragmatic, cynical, subtle knowing smirk, ruthless political cunning)");
+                traits.Add(IllustratorText.Get("Hero_409"));
 
             if (mercy > 0)
-                traits.Add("【仁慈温和/悲悯天下】目光中蕴含着成熟君主的温和与慈爱，神色亲和从容，散发着宽厚仁善的人格光芒 (Merciful, benevolent, gentle warmth in eyes, compassionate grace)");
+                traits.Add(IllustratorText.Get("Hero_410"));
             else if (mercy < 0)
-                traits.Add("【铁血雷霆/杀伐决断】目光森冷凛冽如出鞘利刃，面部轮廓紧绷刚硬，散发着令人不寒而栗的铁血威慑 (Merciless, cold-blooded, stern unforgiving gaze, chilling iron authority)");
+                traits.Add(IllustratorText.Get("Hero_411"));
 
             if (valor > 0)
-                traits.Add("【英勇无畏/百战雄风】身姿昂然挺拔如险峰，眉宇间流露出睥睨沙场的万丈豪情与战将霸气 (Valiant, heroic, fearless warrior aura, commanding martial vigor)");
+                traits.Add(IllustratorText.Get("Hero_412"));
 
             if (generosity > 0)
-                traits.Add("【大度豪迈/皇者气魄】举手投足从容舒展，气象恢弘，流露出天下为怀的宽广气度 (Generous, magnanimous, open-handed sovereign nobility)");
+                traits.Add(IllustratorText.Get("Hero_413"));
             else if (generosity < 0)
-                traits.Add("【严苛节制/一丝不苟】神态紧凑内敛，目光细致挑剔，流露出深思熟虑的严密节制 (Frugal, austere, meticulous and tightly guarded)");
+                traits.Add(IllustratorText.Get("Hero_414"));
 
             try
             {
                 TraitObject persona = hero.CharacterObject?.GetPersona();
                 if (persona != null)
                 {
-                    traits.Add($"个性基调: {persona.Name}");
+                    traits.Add(IllustratorText.Format("Hero_415", persona.Name));
                 }
             }
             catch { }
 
-            return traits.Count > 0 ? string.Join("；", traits) : "神态沉稳内敛，举止符合所属文化社会规范";
+            return traits.Count > 0 ? string.Join("；", traits) : IllustratorText.Get("Hero_416");
         }
 
         private static void ExtractArmorSlot(HeroVisualProfile profile, Equipment equipment, EquipmentIndex slot, string slotName, Hero hero)
@@ -621,23 +624,23 @@ namespace AnimusForge.Illustrator.Context
             {
                 if (slot == EquipmentIndex.Head)
                 {
-                    profile.HeadgearDetail = "当前所选装备快照的头部槽为空；不得凭身份添加头盔、冠冕或头饰。若现场截图显示不同装备，应报告来源不一致，不把其他装备栏当作当前穿戴。";
-                    profile.EquipmentDetails.Add("头部: 当前装备快照未佩戴头部装备");
+                    profile.HeadgearDetail = IllustratorText.Get("Hero_417");
+                    profile.EquipmentDetails.Add(IllustratorText.Get("Hero_418"));
                 }
                 else if (slot == EquipmentIndex.Cape)
                 {
-                    profile.EquipmentDetails.Add("颈部与肩部: 领口自然裸露，未佩戴斗篷或围巾 (Bare neck/shoulders, NO cowl, NO cape)");
+                    profile.EquipmentDetails.Add(IllustratorText.Get("Hero_419"));
                 }
                 else if (slot == EquipmentIndex.Gloves)
                 {
-                    profile.EquipmentDetails.Add("手部: 未戴铁手套，双手自然裸露 (Bare hands, no armored gauntlets)");
+                    profile.EquipmentDetails.Add(IllustratorText.Get("Hero_420"));
                 }
                 return;
             }
 
             ItemObject item = element.Item;
             string itemName = item.Name != null ? item.Name.ToString() : item.StringId;
-            string modifierStr = element.ItemModifier?.Name != null ? element.ItemModifier.Name.ToString() + "的" : "";
+            string modifierStr = element.ItemModifier?.Name != null ? element.ItemModifier.Name.ToString() + IllustratorText.Get("Hero_421") : "";
             int tier = (int)item.Tier;
 
             string materialStr = ResolveItemMaterial(item);
@@ -651,9 +654,9 @@ namespace AnimusForge.Illustrator.Context
             {
                 string hId = (item.StringId ?? "").ToLowerInvariant();
                 string hName = (itemName ?? "").ToLowerInvariant();
-                if (hId.Contains("daimao") || hName.Contains("呆喵"))
+                if (hId.Contains("daimao") || hName.Contains(IllustratorText.Raw("Hero_422")))
                 {
-                    profile.HeadgearDetail = $"已佩戴头部装备：呆喵（物品ID: {item.StringId}，全包覆立体蓝白猫咪头饰）。标志性的蓝白双色立体猫咪头饰（前脸为纯白底色的呆萌猫猫面具表情，后脑与猫耳为天蓝色），完全笼罩整个头部与脸庞，完整呈现参考图中的猫咪头套原貌。";
+                    profile.HeadgearDetail = IllustratorText.Format("Hero_423", item.StringId);
                 }
                 else
                 {
@@ -664,14 +667,14 @@ namespace AnimusForge.Illustrator.Context
             }
 
             string heraldicNote = IsHeraldicArmorSlot(slot, isHeraldic)
-                ? "，此处实际穿戴物使用家族纹章图案；图案位置与面积以人物参考图为准" : "";
+                ? IllustratorText.Get("Hero_424") : "";
             if (slot == EquipmentIndex.Cape)
             {
-                profile.EquipmentDetails.Add($"披风/肩部装备: {modifierStr}{itemName} ({materialStr}, 等阶Tier {tier}{heraldicNote})；按人物参考图保留肩颈覆盖范围、轮廓宽窄、扣合位置、固有主色与叠穿关系；名称不代表具体形状，不将披肩改写成内衬或金属肩甲");
+                profile.EquipmentDetails.Add(IllustratorText.Format("Hero_425", modifierStr, itemName, materialStr, tier, heraldicNote));
                 return;
             }
 
-            string desc = $"{slotName}: {modifierStr}{itemName} ({materialStr}, 等阶Tier {tier}{heraldicNote})；具体颜色与纹样以人物参考图为准";
+            string desc = IllustratorText.Format("Hero_426", slotName, modifierStr, itemName, materialStr, tier, heraldicNote);
             profile.EquipmentDetails.Add(desc);
         }
 
@@ -679,11 +682,11 @@ namespace AnimusForge.Illustrator.Context
         {
             // HairCover/BeardCover control hidden hair meshes, not face visibility.
             // The native reference renderer still applies those flags through the unchanged equipment.
-            return $"已佩戴头部装备：{name}（物品ID: {id}，{material}）。名称仅供识别，不能据名称另造款式；" +
-                "头部入镜时按人物参考图转写实际盔壳、面部覆盖范围与可见护具，保留其轮廓和装饰位置。" +
-                "遮发/遮须标记不等于面部全遮覆；全包覆头盔按参考图保持完整遮覆，开放式头盔保留实际露出的面部范围。" +
-                (hidesHair ? "装备标记隐藏全部头发，不补画被隐藏的头发。" : "") +
-                (hidesBeard ? "装备标记隐藏全部胡须，不补画被隐藏的胡须。" : "");
+            return IllustratorText.Format("Hero_427", name, id, material) +
+                IllustratorText.Get("Hero_428") +
+                IllustratorText.Get("Hero_429") +
+                (hidesHair ? IllustratorText.Get("Hero_430") : "") +
+                (hidesBeard ? IllustratorText.Get("Hero_431") : "");
         }
 
         public static string ExtractCharacterPhysicalFeatures(CharacterObject character, Equipment equipment, int? resolvedAge = null)
@@ -711,27 +714,27 @@ namespace AnimusForge.Illustrator.Context
 
         private static string ResolveItemMaterial(ItemObject item)
         {
-            if (item == null) return "材质未标明";
+            if (item == null) return IllustratorText.Get("Hero_432");
             string name = (item.Name != null ? item.Name.ToString() : "").ToLowerInvariant();
             string id = (item.StringId ?? "").ToLowerInvariant();
 
             // Material metadata must not turn a name such as battle_crown into a shape claim.
-            if (item.ArmorComponent == null) return "防护装备材质";
+            if (item.ArmorComponent == null) return IllustratorText.Get("Hero_433");
 
             switch (item.ArmorComponent.MaterialType)
             {
                 case ArmorComponent.ArmorMaterialTypes.Cloth:
-                    if (name.Contains("丝") || id.Contains("silk")) return "丝织物";
-                    if (name.Contains("麻") || id.Contains("linen") || id.Contains("burlap")) return "麻布织物";
-                    return "布料织物";
+                    if (name.Contains(IllustratorText.Raw("Hero_434")) || id.Contains("silk")) return IllustratorText.Get("Hero_435");
+                    if (name.Contains(IllustratorText.Raw("Hero_436")) || id.Contains("linen") || id.Contains("burlap")) return IllustratorText.Get("Hero_437");
+                    return IllustratorText.Get("Hero_438");
                 case ArmorComponent.ArmorMaterialTypes.Leather:
-                    return "皮革";
+                    return IllustratorText.Get("Hero_439");
                 case ArmorComponent.ArmorMaterialTypes.Chainmail:
-                    return "金属锁子甲";
+                    return IllustratorText.Get("Hero_440");
                 case ArmorComponent.ArmorMaterialTypes.Plate:
-                    return "金属甲胄";
+                    return IllustratorText.Get("Hero_441");
                 default:
-                    return "复合防护材质";
+                    return IllustratorText.Get("Hero_442");
             }
         }
 
@@ -747,7 +750,7 @@ namespace AnimusForge.Illustrator.Context
                 }
 
                 string itemName = element.Item.Name != null ? element.Item.Name.ToString() : element.Item.StringId;
-                string modifierStr = element.ItemModifier?.Name != null ? element.ItemModifier.Name.ToString() + "的" : "";
+                string modifierStr = element.ItemModifier?.Name != null ? element.ItemModifier.Name.ToString() + IllustratorText.Get("Hero_443") : "";
 
                 if (element.Item.ItemType == ItemObject.ItemTypeEnum.Banner)
                 {
@@ -761,28 +764,28 @@ namespace AnimusForge.Illustrator.Context
                     {
                         profile.HasHeraldicShield = true;
                     }
-                    if (profile.EquipmentSource?.Contains("百科") != true)
+                    if (profile.EquipmentSource?.Contains(IllustratorText.Raw("Hero_444")) != true)
                     {
-                        profile.WeaponDetails.Add($"盾牌: {modifierStr}{itemName}；仅为装备持有记录，不是展示要求；禁止背负或用作背景摆设；其他场景只有明确的实际持盾动作依据才可少量入镜，图案仅在确已入镜时参照本人纹章，不能为展示纹章增加盾牌或军旗");
+                        profile.WeaponDetails.Add(IllustratorText.Format("Hero_445", modifierStr, itemName));
                     }
                 }
                 else if (element.Item.ItemType == ItemObject.ItemTypeEnum.Crossbow)
                 {
-                    profile.WeaponDetails.Add($"远程武器: {modifierStr}{itemName} (挂在背后 slung across back)");
+                    profile.WeaponDetails.Add(IllustratorText.Format("Hero_446", modifierStr, itemName));
                 }
                 else if (element.Item.ItemType == ItemObject.ItemTypeEnum.OneHandedWeapon || element.Item.ItemType == ItemObject.ItemTypeEnum.TwoHandedWeapon)
                 {
-                    profile.WeaponDetails.Add($"近战武器: {modifierStr}{itemName}；仅为装备持有记录，实际是否入画、手持或佩挂由现场事实与人物参考图确认，不按武器类别指定携带方式");
+                    profile.WeaponDetails.Add(IllustratorText.Format("Hero_447", modifierStr, itemName));
                 }
                 else
                 {
-                    profile.WeaponDetails.Add($"武器: {modifierStr}{itemName}");
+                    profile.WeaponDetails.Add(IllustratorText.Format("Hero_448", modifierStr, itemName));
                 }
             }
 
             if (!hasShield)
             {
-                profile.WeaponDetails.Add("盾牌: 无盾牌 (NO shield held in hand or on back)");
+                profile.WeaponDetails.Add(IllustratorText.Get("Hero_449"));
             }
         }
 
@@ -793,7 +796,7 @@ namespace AnimusForge.Illustrator.Context
             {
                 string horseName = horse.Item.Name != null ? horse.Item.Name.ToString() : horse.Item.StringId;
                 EquipmentElement harness = equipment[EquipmentIndex.HorseHarness];
-                string harnessName = harness.Item != null ? ("配备" + (harness.Item.Name != null ? harness.Item.Name.ToString() : harness.Item.StringId)) : "无马铠";
+                string harnessName = harness.Item != null ? (IllustratorText.Get("Hero_450") + (harness.Item.Name != null ? harness.Item.Name.ToString() : harness.Item.StringId)) : IllustratorText.Get("Hero_451");
                 profile.MountDetail = $"{horseName} ({harnessName})";
             }
         }
@@ -805,9 +808,9 @@ namespace AnimusForge.Illustrator.Context
             {
                 string hId = (headItem.StringId ?? "").ToLowerInvariant();
                 string hName = (headItem.Name?.ToString() ?? "").ToLowerInvariant();
-                if (hId.Contains("daimao") || hName.Contains("呆喵"))
+                if (hId.Contains("daimao") || hName.Contains(IllustratorText.Raw("Hero_452")))
                 {
-                    return "【头部全包覆猫咪头饰】：人物头部佩戴着标志性的蓝白色呆喵立体猫猫头饰（正脸为白色猫猫面具表情，后脑与猫耳为天蓝色），完全遮覆住整张面孔与头部，完整呈现该蓝白猫咪头饰本身的标志形态与色彩。";
+                    return IllustratorText.Get("Hero_453");
                 }
             }
 
@@ -821,11 +824,11 @@ namespace AnimusForge.Illustrator.Context
 
         internal static string BuildPhysicalFeaturesDescription(int age, bool hidesHair, bool hidesBeard)
         {
-            return "【面貌骨相与发型】：" + (age > 0 ? $"约{age}岁" : "年龄未确认") + "；五官、肤色、发型轮廓与须发颜色以本人身份参考图为准。" +
-                "先辨认有无可见头发与胡须，再转写可辨的长短、分缝、束发方式与胡须形状；秃头、无须及非人类外观照图保留，看不清的部分不补造。年龄、性别、文化和头衔不能推导发型、须型或白发。" +
-                (hidesHair ? "当前装备隐藏全部头发，不补画被隐藏的头发。" : "") +
-                (hidesBeard ? "当前装备隐藏全部胡须，不补画被隐藏的胡须。" : "") +
-                "仅表现参考图中实际露出的五官与须发，不为展示面貌移除或打开头盔护具。";
+            return IllustratorText.Get("Hero_454") + (age > 0 ? IllustratorText.Format("Hero_455", age) : IllustratorText.Get("Hero_456")) + IllustratorText.Get("Hero_457") +
+                IllustratorText.Get("Hero_458") +
+                (hidesHair ? IllustratorText.Get("Hero_459") : "") +
+                (hidesBeard ? IllustratorText.Get("Hero_460") : "") +
+                IllustratorText.Get("Hero_461");
         }
 
         private static string ExtractBackgroundLore(Hero hero)
@@ -842,7 +845,7 @@ namespace AnimusForge.Illustrator.Context
                     {
                         bio = System.Text.RegularExpressions.Regex.Replace(bio, "<.*?>", string.Empty).Trim();
                         if (bio.Length > 280) bio = bio.Substring(0, 280) + "...";
-                        sb.Append($"【百科官方传记】：{bio}。");
+                        sb.Append(IllustratorText.Format("Hero_462", bio));
                     }
                 }
             }
@@ -854,23 +857,23 @@ namespace AnimusForge.Illustrator.Context
                 var relatives = new List<string>();
                 if (hero.Spouse != null && hero.Spouse.Name != null)
                 {
-                    relatives.Add($"配偶: {hero.Spouse.Name}");
+                    relatives.Add(IllustratorText.Format("Hero_463", hero.Spouse.Name));
                 }
                 if (hero.Father != null && hero.Father.Name != null)
                 {
-                    relatives.Add($"父亲: {hero.Father.Name}");
+                    relatives.Add(IllustratorText.Format("Hero_464", hero.Father.Name));
                 }
                 if (hero.Mother != null && hero.Mother.Name != null)
                 {
-                    relatives.Add($"母亲: {hero.Mother.Name}");
+                    relatives.Add(IllustratorText.Format("Hero_465", hero.Mother.Name));
                 }
                 if (hero.Children != null && hero.Children.Count > 0)
                 {
-                    relatives.Add($"育有{hero.Children.Count}名子女");
+                    relatives.Add(IllustratorText.Format("Hero_466", hero.Children.Count));
                 }
                 if (relatives.Count > 0)
                 {
-                    sb.Append($" 【至亲谱系】：{string.Join("，", relatives)}。");
+                    sb.Append(IllustratorText.Format("Hero_467", string.Join("，", relatives)));
                 }
             }
             catch { }
@@ -888,16 +891,16 @@ namespace AnimusForge.Illustrator.Context
                         {
                             if (settlements[i]?.Name != null) names.Add(settlements[i].Name.ToString());
                         }
-                        sb.Append($" 【领地封邑】：坐拥{settlements.Count}处领地 (包含: {string.Join("、", names)})。");
+                        sb.Append(IllustratorText.Format("Hero_468", settlements.Count, string.Join("、", names)));
                     }
                 }
                 if (hero.GovernorOf != null && hero.GovernorOf.Name != null)
                 {
-                    sb.Append($" 【总督职守】：担任{hero.GovernorOf.Name}总督。");
+                    sb.Append(IllustratorText.Format("Hero_469", hero.GovernorOf.Name));
                 }
                 if (hero.PartyBelongedTo != null && hero.PartyBelongedTo.LeaderHero == hero)
                 {
-                    sb.Append($" 【随行军力】：统率{hero.PartyBelongedTo.MemberRoster.TotalManCount}名武装军团。");
+                    sb.Append(IllustratorText.Format("Hero_470", hero.PartyBelongedTo.MemberRoster.TotalManCount));
                 }
             }
             catch { }
@@ -914,8 +917,8 @@ namespace AnimusForge.Illustrator.Context
             // into prose duplicated that image and could consume tens of thousands of
             // prompt characters for complex banners. Keep only attribution and carrier
             // semantics here; the reference image owns exact colors, shapes and layout.
-            return "家族纹章图案与配色以对应的真实纹章参考图为准；未提供纹章图时仅保留人物或现场参考中可辨的已有图案，不推测细节。" +
-                "【纹章载体说明】：仅在画面存在已确认的盾牌、罩袍、服饰纹章或背景旗帜等合理载体时还原，不新增盾牌、旗帜或其他载体，普通金属胸甲保持原装金属质感。";
+            return IllustratorText.Get("Hero_471") +
+                IllustratorText.Get("Hero_472");
         }
 
         public static string ResolveColorName(uint colorUint)
@@ -953,23 +956,23 @@ namespace AnimusForge.Illustrator.Context
             float s = max > 0.0001f ? (delta / max) : 0f;
             float v = max;
 
-            if (v < 0.16f) return "近黑色";
+            if (v < 0.16f) return IllustratorText.Get("Hero_473");
             if (s < 0.12f)
             {
-                if (v > 0.9f) return "近白色";
-                if (v > 0.6f) return "浅灰色";
-                return "灰色";
+                if (v > 0.9f) return IllustratorText.Get("Hero_474");
+                if (v > 0.6f) return IllustratorText.Get("Hero_475");
+                return IllustratorText.Get("Hero_476");
             }
-            if (s < 0.3f && v > 0.6f && h >= 20f && h < 70f) return "浅米色/灰米色";
-            string tone = v < 0.45f ? "深" : s < 0.35f ? "灰调" : string.Empty;
-            if (h >= 345f || h < 15f) return tone + "红色";
-            if (h < 45f) return v < 0.65f ? "棕褐色" : tone + "橙色";
-            if (h < 70f) return tone + "黄色";
-            if (h < 165f) return tone + "绿色";
-            if (h < 200f) return tone + "青色";
-            if (h < 250f) return tone + "蓝色";
-            if (h < 290f) return tone + "紫色";
-            return tone + "品红色";
+            if (s < 0.3f && v > 0.6f && h >= 20f && h < 70f) return IllustratorText.Get("Hero_477");
+            string tone = v < 0.45f ? IllustratorText.Get("Hero_478") : s < 0.35f ? IllustratorText.Get("Hero_479") : string.Empty;
+            if (h >= 345f || h < 15f) return tone + IllustratorText.Get("Hero_480");
+            if (h < 45f) return v < 0.65f ? IllustratorText.Get("Hero_481") : tone + IllustratorText.Get("Hero_482");
+            if (h < 70f) return tone + IllustratorText.Get("Hero_483");
+            if (h < 165f) return tone + IllustratorText.Get("Hero_484");
+            if (h < 200f) return tone + IllustratorText.Get("Hero_485");
+            if (h < 250f) return tone + IllustratorText.Get("Hero_486");
+            if (h < 290f) return tone + IllustratorText.Get("Hero_487");
+            return tone + IllustratorText.Get("Hero_488");
         }
 
     }

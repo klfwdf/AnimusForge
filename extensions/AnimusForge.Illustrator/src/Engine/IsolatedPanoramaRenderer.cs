@@ -160,7 +160,7 @@ namespace AnimusForge.Illustrator.Engine
                 // Native debug/resource labels have fixed-size buffers. A short process-local
                 // counter is unique without allowing GUID-based names to overflow those labels.
                 string nativeName = "afi_v" + Interlocked.Increment(ref _nextRendererId).ToString("x8");
-                if (nativeName.Length > 16) throw new InvalidOperationException("原生全景渲染名称超过安全长度。");
+                if (nativeName.Length > 16) throw new InvalidOperationException("The native panorama render name exceeds the safe length.");
                 TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Native render target name=" + nativeName);
                 renderer._texture = TableauView.AddTableau(nativeName, renderer.Paint, scene, size, size);
                 renderer._view = renderer._texture.TableauView;

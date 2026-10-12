@@ -210,7 +210,7 @@ namespace AnimusForge.XihaiAction
                 }
                 // The Y menu owns the actor selection. The NPC branch above is
                 // submitted without text; this textbox is therefore player-only.
-                string routedText = "我演讲：" + content;
+                string routedText = SceneActionVocabulary.Text("BattleSpeech.PlayerSpeechRoutingPrefix") + content;
                 bool queued = false;
                 try
                 {

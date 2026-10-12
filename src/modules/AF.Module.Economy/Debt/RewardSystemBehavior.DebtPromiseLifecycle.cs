@@ -160,7 +160,7 @@ public partial class RewardSystemBehavior
 		}
 		debtSummary = BuildDebtPromiseSummary(debtLine);
 		deadlineText = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
-		debtNote = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? "无" : debtLine.DebtNote;
+		debtNote = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? EconomySourceTexts.Get("S013") : debtLine.DebtNote;
 		// Pass raw deadline state so the task can use the native countdown instead of parsing display text.
 		dueDay = debtLine.DueDay;
 		isDueUnlimited = debtLine.IsDueUnlimited;
@@ -171,18 +171,18 @@ public partial class RewardSystemBehavior
 	{
 		if (debtLine == null)
 		{
-			return "未说明";
+			return EconomySourceTexts.Get("S026");
 		}
 		int num = Math.Max(0, debtLine.RemainingAmount);
 		if (debtLine.IsGold)
 		{
-			return num + " 第纳尔";
+			return num + EconomySourceTexts.Get("S027");
 		}
 		ItemObject itemObject = ResolveItemById(debtLine.ItemId);
 		string text = itemObject?.Name?.ToString();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = string.IsNullOrWhiteSpace(debtLine.ItemId) ? "物品" : debtLine.ItemId;
+			text = string.IsNullOrWhiteSpace(debtLine.ItemId) ? EconomySourceTexts.Get("S028") : debtLine.ItemId;
 		}
 		return text + " ×" + num;
 	}

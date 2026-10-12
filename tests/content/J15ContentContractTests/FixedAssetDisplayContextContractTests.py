@@ -1,6 +1,7 @@
 """Fixed asset display must not split arbitrary names on prose delimiters."""
 from pathlib import Path
 import re
+import json
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -15,7 +16,11 @@ def check(value, message):
     if not value:
         raise AssertionError(message)
 
-branches = re.findall(r'context.Matches\(value, "([^"]*)", "([^"]*)", "([^"]*)"\)\)\s*\{\s*return Text\("([^"]+)"', section)
+source_values = json.loads((ROOT / 'content/modules/AF.Module.Economy/ModuleData/EconomySourceTexts.json').read_text(encoding='utf-8-sig'))
+resource_branches = re.findall(r'context.Matches\(value, EconomySourceTexts.Get\("([^"]+)"\), EconomySourceTexts.Get\("([^"]+)"\), EconomySourceTexts.Get\("([^"]+)"\)\)\)\s*\{\s*return Text\("([^"]+)"', section)
+check([row[:3] for row in resource_branches] == [('S086', 'S087', 'S088'), ('S086', 'S087', 'S090'), ('S094', 'S098', 'S099'), ('S094', 'S098', 'S104')], 'four exact reader/branch identities')
+branches = [tuple(source_values[key] for key in row[:3]) + (row[3],) for row in resource_branches]
+check([row[:3] for row in branches] == [('执行成功：玩家已将 ', ' 转交给 ', ' 的家族（未自动扣款）。'), ('执行成功：玩家已将 ', ' 转交给 ', '（未自动扣款）。'), ('执行失败：', ' 不属于 ', ' 的家族，不能由其转给玩家。'), ('执行失败：', ' 不属于 ', '，不能由其转给玩家。')], 'all original raw match bytes preserved')
 check(len(branches) == 4 and '(.+)' not in section, 'all four ambiguous regexes replaced')
 for language, filename in [('en', 'afeconomy_strings.xml'), ('zh', 'CNs/afeconomy_strings-zh-CN.xml')]:
     resource = ROOT / 'content/modules/AF.Module.Economy/ModuleData/Languages' / filename

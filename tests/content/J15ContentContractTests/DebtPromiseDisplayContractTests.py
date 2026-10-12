@@ -1,6 +1,7 @@
 """Static debt presentation boundary, save-field and calendar contract checks."""
 from pathlib import Path
 import re
+import json
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -22,7 +23,9 @@ check('DebtPromiseCounterpartyForDisplay(_debtorName)' in quest and 'DebtPromise
       "default journal values project at display boundary")
 check('GetDisplayText(player?.Name?.ToString(), EconomyUiTexts.DebtPromisePlayer)' in quest,
       "missing player link gets localized display fallback")
-check('_debtorName = GetDisplayText(debtorName, "对方");' in quest, "raw stored participant default is not rewritten")
+source_values = json.loads(read('content/modules/AF.Module.Economy/ModuleData/EconomySourceTexts.json'))
+check(source_values['S066'] == '对方', 'raw participant compatibility value is unchanged')
+check('_debtorName = GetDisplayText(debtorName, EconomySourceTexts.Get("S066"));' in quest, "raw stored participant default uses the stable reader")
 for method in ('DebtPromiseCounterpartyForDisplay', 'DebtPromiseNoteForDisplay'):
     start = ui.index('public static string ' + method)
     end = ui.index('\n\t}', start)

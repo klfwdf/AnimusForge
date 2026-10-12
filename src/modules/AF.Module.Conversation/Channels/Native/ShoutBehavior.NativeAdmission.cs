@@ -133,7 +133,7 @@ public partial class ShoutBehavior
         if (owner == null || scope == null || !scope.IsOwnedBy(owner) || !scope.IsCurrent())
             return Task.FromResult("");
         if (!scope.TryBeginSubmission())
-            return Task.FromException<string>(new NativeConversationAdmissionException("native.presentation_scope_reused", "本次对话票据已使用，请重新提交。"));
+            return Task.FromException<string>(new NativeConversationAdmissionException("native.presentation_scope_reused", ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0648")));
         return owner.SubmitNativeConversationAdmittedAsync(playerText, onStreamText, currentDialogTextOverride,
             onPostprocessStarted, onMainReplyReady, npcInitiatedOpening, scope);
     }

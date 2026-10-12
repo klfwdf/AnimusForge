@@ -43,6 +43,7 @@ internal static class GcczTownRuleMemoryGenerationBridge
         }
         var prompt = TownPromptComposer.BuildSettlementRuleMemoryGenerationPrompt(record, currentDay, GcczTownPromptResourceProvider.GetCatalog());
         if (string.IsNullOrWhiteSpace(prompt.SystemPrompt) || string.IsNullOrWhiteSpace(prompt.UserPrompt)) return;
+        string systemPrompt = PromptComposerTexts.ApplyOutputLanguage(prompt.SystemPrompt);
         var completion = new Completion { Epoch = Interlocked.Read(ref _epoch),
             Generation = SaveRuntimeGuard.CaptureGeneration(), Record = record, Day = currentDay,
             Store = tryStore, OnStored = onStored };
@@ -57,7 +58,7 @@ internal static class GcczTownRuleMemoryGenerationBridge
             try
             {
                 var messages = new object[] {
-                    new { role = "system", content = prompt.SystemPrompt },
+                    new { role = "system", content = systemPrompt },
                     new { role = "user", content = prompt.UserPrompt } };
                 if (AIConfigHandler.TryCallBoundedAuxiliarySimpleDialogueOnceForExternal(messages, 384, 0.45f, out var content, out var error))
                 {

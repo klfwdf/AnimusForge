@@ -74,10 +74,10 @@ public sealed class DebtPromiseQuest : QuestBase
 	{
 		_debtId = (debtId ?? string.Empty).Trim();
 		_ownerKey = (ownerKey ?? string.Empty).Trim();
-		_debtorName = GetDisplayText(debtorName, "对方");
-		_debtSummary = GetDisplayText(debtSummary, "未说明");
-		_deadlineText = GetDisplayText(deadlineText, "未设期限");
-		_debtNote = GetDisplayText(debtNote, "无");
+		_debtorName = GetDisplayText(debtorName, EconomySourceTexts.Get("S066"));
+		_debtSummary = GetDisplayText(debtSummary, EconomySourceTexts.Get("S026"));
+		_deadlineText = GetDisplayText(deadlineText, EconomySourceTexts.Get("S067"));
+		_debtNote = GetDisplayText(debtNote, EconomySourceTexts.Get("S013"));
 		_journalFormatVersion = CurrentJournalFormatVersion;
 		_dueDay = NormalizeDueDay(dueDay, isDueUnlimited);
 		_isDueUnlimited = isDueUnlimited;
@@ -181,11 +181,11 @@ public sealed class DebtPromiseQuest : QuestBase
 		}
 		if (hasPlayerLink)
 		{
-			note = note.Replace("玩家", "{PLAYER.LINK}");
+			note = note.Replace(EconomySourceTexts.Get("S068"), "{PLAYER.LINK}");
 		}
 		else
 		{
-			note = note.Replace("玩家", GetDisplayText(player?.Name?.ToString(), EconomyUiTexts.DebtPromisePlayer));
+			note = note.Replace(EconomySourceTexts.Get("S068"), GetDisplayText(player?.Name?.ToString(), EconomyUiTexts.DebtPromisePlayer));
 		}
 		// Entity matching runs only while a task log is created or migrated, never in a campaign tick.
 		List<KeyValuePair<string, TextObject>> entityLinks = ReplaceKnownEntityNamesWithLinkTags(ref note);

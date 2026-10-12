@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -41,7 +42,7 @@ public static class WorldDiplomacyGenerationValidationRules
         && !WorldDiplomacyDocumentFactRules.ContainsDirectedPeaceTerm(text,
             payerName ?? "", string.Equals(payerId, authorId, StringComparison.OrdinalIgnoreCase), string.Equals(payerId, targetId, StringComparison.OrdinalIgnoreCase),
             receiverName ?? "", string.Equals(receiverId, authorId, StringComparison.OrdinalIgnoreCase), string.Equals(receiverId, targetId, StringComparison.OrdinalIgnoreCase),
-            "支付|缴纳|交付|给付"))
+            DiplomacyCompatibilityTexts.Get("Regex_PayKeywords")))
     {
         reason = "peace_terms_not_visible:tribute_direction";
         return true;
@@ -61,7 +62,7 @@ public static class WorldDiplomacyGenerationValidationRules
         && !WorldDiplomacyDocumentFactRules.ContainsDirectedPeaceTerm(text,
             cessionFromName ?? "", string.Equals(cessionFromId, authorId, StringComparison.OrdinalIgnoreCase), string.Equals(cessionFromId, targetId, StringComparison.OrdinalIgnoreCase),
             cessionToName ?? "", string.Equals(cessionToId, authorId, StringComparison.OrdinalIgnoreCase), string.Equals(cessionToId, targetId, StringComparison.OrdinalIgnoreCase),
-            "割让|移交|交还|归还"))
+            DiplomacyCompatibilityTexts.Get("Regex_CedeKeywords")))
     {
         reason = "peace_terms_not_visible:cession_direction";
         return true;
@@ -194,8 +195,7 @@ public static class WorldDiplomacyGenerationValidationRules
     if (!string.IsNullOrWhiteSpace(rulerName))
     {
         string escapedName = Regex.Escape(rulerName);
-        string invalidPersonalTitlePattern = "(?:" + escapedName + "(?:元老|议员|执政官|国王|女王|大公|可汗|苏丹)|(?:元老|议员|执政官|国王|女王|大公|可汗|苏丹)(?:阁下|大人)?" + escapedName
-            + "|" + escapedName + "(?:身为|作为|乃是|是)(?:一名|帝国的?)?(?:元老|议员|执政官|国王|女王|大公|可汗|苏丹))";
+        string invalidPersonalTitlePattern = "(?:" + escapedName + DiplomacyCompatibilityTexts.Get("Regex_NobleTitleList") + "|" + DiplomacyCompatibilityTexts.Get("Regex_NobleTitleList") + DiplomacyCompatibilityTexts.Get("Regex_HonorificSuffix") + escapedName + "|" + escapedName + DiplomacyCompatibilityTexts.Get("Regex_SelfTitlePrefix") + DiplomacyCompatibilityTexts.Get("Regex_NobleTitleList") + ")";
         if (Regex.IsMatch(visibleText, invalidPersonalTitlePattern, RegexOptions.CultureInvariant))
         {
             reason = "realm_ruler_title_conflicts_with_hard_fact";
@@ -204,13 +204,13 @@ public static class WorldDiplomacyGenerationValidationRules
     }
 
     if (string.Equals(kingdomId, "empire_s", StringComparison.OrdinalIgnoreCase)
-        && Regex.IsMatch(visibleText, @"(?:南帝国|我国|我朝|本国|本朝)(?:的|之)?(?:元老院|元老议会|元老们)", RegexOptions.CultureInvariant))
+        && Regex.IsMatch(visibleText, DiplomacyCompatibilityTexts.Get("Regex_SouthSenate"), RegexOptions.CultureInvariant))
     {
         reason = "southern_empire_government_conflicts_with_hard_fact";
         return true;
     }
     if (string.Equals(kingdomId, "empire_w", StringComparison.OrdinalIgnoreCase)
-        && Regex.IsMatch(visibleText, @"(?:西帝国|我国|我朝|本国|本朝)(?:的|之)?(?:元老院|元老议会|元老们)", RegexOptions.CultureInvariant))
+        && Regex.IsMatch(visibleText, DiplomacyCompatibilityTexts.Get("Regex_WestSenate"), RegexOptions.CultureInvariant))
     {
         reason = "western_empire_government_conflicts_with_hard_fact";
         return true;

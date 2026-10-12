@@ -10,7 +10,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Tyrell Highgarden ，；， Tyrell Highgarden 。 “”、、，：，。 Tyrell 、、、 Oldtown 、。 ，；， Highgarden ，。"
+      "Content": "House Tyrell is rooted in Highgarden, having originally served as high stewards to the Gardener kings; after Aegon the Conqueror burned the last Gardener king on the Field of Fire, the Tyrells yielded Highgarden and were raised up as lords paramount of the Reach. The golden rose on a green field and the words \"Growing Strong\" suit the Reach's fertile fields, rivers, abundance, and courtly pageantry, yet they cannot conceal an ever-present truth: their station came by royal grant rather than the royal bloodline of House Gardener. For that reason, Tyrell power depends all the more upon weaving bannermen, marriage alliances, grain, Oldtown, the Arbor, and tourney renown into a single network. Some slight them as upstart stewards, while others admire how skillfully they let prosperity speak on their behalf; both views admit that so long as the rose of Highgarden continues to feed the realm, it cannot easily be torn up by the roots."
     },
     {
       "Priority": 0,
@@ -30,7 +30,7 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "Highgarden ，。 Tyrell ，、、、。 ，、 Highgarden 。"
+      "Content": "Even when the lords of the Reach bow their heads to Highgarden, many still recite in their hearts their own closer blood ties to the Gardener kings. Lacking the oldest royal pedigree, House Tyrell relies all the more on courtesy, marriage pacts, offices, grain, and munificence to bind so many proud houses together. The thorns of the rose are not always bared in the open; more often they lie hidden in seating precedence, betrothals, and who is invited into Highgarden's gardens."
     },
     {
       "Priority": 0,
@@ -51,7 +51,7 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "Farmers and grain merchants paid little attention to whose grandmother was closer to the King Gardener. Highgarden 、、。 Tyrell ，；，。"
+      "Content": "Smallfolk farmers and grain merchants care little whose grandmother stood closer in blood to King Gardener. They look to whether Highgarden keeps the Mander open to river traffic, grain prices steady at the granaries, and the highroads clear of outlaws. When Tyrell prosperity lets common folk eat their fill as well, the golden rose truly grows strong; when rich harvests are piled only into noble storehouses, the thorns prick the tenants' hands first."
     },
     {
       "Priority": 0,
@@ -72,7 +72,7 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "Tyrell 、。 ，，。 Roses are rarely as scary as giant swords, but they can determine how long it will take for the wielder to starve."
+      "Content": "Nobles of neighboring realms regard the Tyrells as masters at turning weddings, tourneys, and banquets into statecraft. Some disdain such softness—until they discover that the grain of the Reach can feed a great host and the fleets of the Arbor can seal off the sea lanes. A rose is rarely as fearsome to look upon as a greatsword, yet it can decide how soon the man wielding the sword begins to starve."
     },
     {
       "Priority": 0,
@@ -90,7 +90,7 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "Entry House Tyrell Highgarden ，，。 “”、，。 The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+      "Content": "When lords and merchants weigh House Tyrell, they look first to its lands, marriage pacts, bloodline, and debts. The golden-rose house of Highgarden, formerly high stewards to the Gardener kings, was enfeoffed to rule the Reach after the Conquest. Its words, \"Growing Strong,\" are bound up with grain, marriage alliances, and networks of bannermen, while debates over bloodline legitimacy never wholly fade. A sigil is only a house's face; whether it can guard its fiefs, honor its marriage pacts, and muster men in an hour of crisis is the true measure of its weight."
     },
     {
       "Priority": 0,
@@ -108,7 +108,7 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "Entry House Tyrell Highgarden ，，。 “”、，。 Family reputation ultimately comes down to specific people and specific orders."
+      "Content": "When soldiers and travelers speak of House Tyrell, what they remember is who shared out grain beside the campfires, who left them outside the walls, and who still stood by the banner when a battle turned sour. The golden-rose house of Highgarden, formerly high stewards to the Gardener kings, was enfeoffed to rule the Reach after the Conquest. Its words, \"Growing Strong,\" are bound up with grain, marriage alliances, and networks of bannermen, while debates over bloodline legitimacy never wholly fade. In the end, a great house's renown comes down to specific men and specific orders."
     },
     {
       "Priority": 0,
@@ -126,7 +126,7 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "Entry House Tyrell Highgarden ，，。 “”、，。 The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+      "Content": "Artisans and clergy pay closer heed to the rites, tombs, and traditions left behind by House Tyrell. The golden-rose house of Highgarden, formerly high stewards to the Gardener kings, was enfeoffed to rule the Reach after the Conquest. Its words, \"Growing Strong,\" are bound up with grain, marriage alliances, and networks of bannermen, while debates over bloodline legitimacy never wholly fade. A house's ancestors may be celebrated in song, or they may become shackles upon their descendants; the older the bloodline, the more old debts its heirs are called upon to bear."
     },
     {
       "Priority": 0,
@@ -144,11 +144,11 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "Entry House Tyrell Highgarden ，，。 “”、，。 They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+      "Content": "Smallfolk and villagers truly encounter House Tyrell only when a lord collects taxes, levies troops, mends a road, or opens relief grain. The golden-rose house of Highgarden, formerly high stewards to the Gardener kings, was enfeoffed to rule the Reach after the Conquest. Its words, \"Growing Strong,\" are bound up with grain, marriage alliances, and networks of bannermen, while debates over bloodline legitimacy never wholly fade. They may not remember the full family tree, yet they remember which house opened its granaries in winter and which drove refugees back out into the snow."
     }
   ],
   "TextMappings": [],
   "RagShortTexts": [
-    "House Tyrell: Highgarden ，，。 “”、，。"
+    "House Tyrell: The golden-rose house of Highgarden, formerly high stewards to the Gardener kings and enfeoffed to rule the Reach after the Conquest. Its words \"Growing Strong\" are tied to grain, marriage alliances, and vassal networks, alongside enduring talk over bloodline legitimacy."
   ]
 }

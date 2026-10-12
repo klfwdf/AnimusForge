@@ -28,13 +28,13 @@ public static class InteractionComponentSafePatch
 					HarmonyMethod finalizer = new HarmonyMethod(typeof(InteractionComponentSafePatch).GetMethod("Finalizer", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, prefix, null, null, finalizer);
 					_patched = true;
-					Logger.LogTrace("System", "✅ InteractionComponentSafePatch 已对 MissionMainAgentInteractionComponent.FocusTick 打补丁（含 Finalizer）。");
+					Logger.LogTrace("System", "✅ InteractionComponentSafePatch Patched MissionMainAgentInteractionComponent.FocusTick (including Finalizer).");
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ InteractionComponentSafePatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ InteractionComponentSafePatch patch failed: " + ex.Message);
 		}
 	}
 

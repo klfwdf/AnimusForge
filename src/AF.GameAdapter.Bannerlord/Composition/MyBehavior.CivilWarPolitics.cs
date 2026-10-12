@@ -20,7 +20,7 @@ public partial class MyBehavior
 	internal static void RecordCivilWarMemoryFact(Hero hero, string text)
 	{
 		if (hero == null || hero == Hero.MainHero || string.IsNullOrWhiteSpace(text)) return;
-		AppendExternalDialogueHistory(hero, "", "", "[AFEF内战事实] " + text);
+		AppendExternalDialogueHistory(hero, "", "", AdapterPromptCaptureTexts.PcapCompat("Host_AfefCivilWarPrefix") + text);
 	}
 	// Thin main-thread adapter to the existing report, bulletin and character-fact owners.
 internal static void RecordCivilWarPoliticalResult(Kingdom kingdom, string key, string text, bool bulletin, Hero actor = null, Hero factionLeader = null)

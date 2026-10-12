@@ -59,6 +59,17 @@ internal static class TownScenePerceptionTests
         check(Prompt().Contains(Deaths(0)) && !Prompt().Contains("away8"), "perception: reentry starts without stale events");
         check(new TownPerceivedPerson("x", "Alice\nInjected").Name == "Alice Injected", "perception: names cannot inject additional prompt lines");
         var partial = new TownPromptTextCatalog { ScenePerceptionTexts = new Dictionary<string,string> { ["heading"] = "Custom" } };
+        var explicitChinese = TownPromptTextCatalog.CreateEnglishFallback();
+        explicitChinese.Language = "zh-CN";
+        explicitChinese.SceneSectionTitle = "Custom ASCII title";
+        var explicitEnglish = TownPromptTextCatalog.CreateEnglishFallback();
+        explicitEnglish.SceneSectionTitle = "自定义标题";
+        session.Observe("town", "speaker", new[] { a, b });
+        check(TownPromptTextCatalog.Resolve(explicitChinese).Language == "zh-CN"
+            && session.BuildPrompt("town", "speaker", false, explicitChinese).Contains("Alice、Bob"),
+            "perception: explicit Chinese package wins over ASCII heading");
+        check(session.BuildPrompt("town", "speaker", false, explicitEnglish).Contains("Alice, Bob"),
+            "perception: explicit English package wins over Chinese heading");
         check(session.BuildPrompt("town", "speaker", false, partial).StartsWith("Custom")
             && TownPromptTextCatalog.Resolve(partial).ScenePerceptionTexts.ContainsKey("killed"), "perception: old or partial resources receive safe fallback keys");
     }

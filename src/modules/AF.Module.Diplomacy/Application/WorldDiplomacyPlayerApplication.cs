@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Domain;
@@ -69,7 +70,7 @@ internal static class WorldDiplomacyPlayerApplication
         WorldDiplomacyDocument document = orchestration.CreateDocument(
             playerKingdom,
             null,
-            "外交宣言",
+            DiplomacyMiscPromptTexts.Get("Document_DefaultTitleDeclaration", "Diplomatic Declaration"),
             cleanBody,
             "player",
             isPlayerAuthored: true,
@@ -110,14 +111,13 @@ internal static class WorldDiplomacyPlayerApplication
         {
             string previousRoundId = round.RoundId;
             round = orchestration.EnsureActiveRound(player, target, isPlayerInsertion: true);
-            if (round != null) round.ExternalOpeningContext = "玩家回应独立成案；原事件=" + previousRoundId
-                + "；背景公文=" + sourceDocument.DocumentId + "。原事件已结束，旧提案不因此恢复有效。";
+            if (round != null) round.ExternalOpeningContext = string.Format(DiplomacyMiscPromptTexts.Get("PlayerApp_IndependentReplyFormat", "Player reply established independently; original round={0}; context document={1}. Original round has ended; legacy proposals do not regain validity."), previousRoundId, sourceDocument.DocumentId);
         }
         if (round == null) return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ReplyNoRound", "The diplomatic reply was not published: no negotiation round could be established.");
         WorldDiplomacyDocument response = orchestration.CreateDocument(
             player,
             target,
-            "外交回应",
+            DiplomacyMiscPromptTexts.Get("Document_DefaultReplyTitle", "Diplomatic Reply"),
             cleanBody,
             "player_response",
             isPlayerAuthored: true,

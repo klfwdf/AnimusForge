@@ -272,13 +272,13 @@ internal static class EntityInjectionAllocator
 				if (!string.IsNullOrWhiteSpace(scope.ClanId) && string.Equals(candidate.HeroClanId, scope.ClanId, StringComparison.OrdinalIgnoreCase))
 				{
 					score += 10000 + priorityBonus;
-					evidence.Add("家族:" + scope.Name);
+					evidence.Add("clan:" + scope.Name);
 					continue;
 				}
 				if (!string.IsNullOrWhiteSpace(scope.KingdomId) && string.Equals(candidate.HeroKingdomId, scope.KingdomId, StringComparison.OrdinalIgnoreCase))
 				{
 					score += 1000 + priorityBonus;
-					evidence.Add("王国:" + scope.Name);
+					evidence.Add("kingdom:" + scope.Name);
 				}
 			}
 			if (score <= 0)

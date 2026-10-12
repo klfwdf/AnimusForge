@@ -74,9 +74,14 @@ internal static class Program
     {
         var input = new WorldDiplomacyPlayerDraftInput("与瓦兰迪亚议和", 40, 200, 1);
         var messages = WorldDiplomacyPlayerDraftRules.BuildMessages(input, "简明冷峻");
-        Test.That(messages.Count == 3 && (string)messages[2]["content"] == "MODE=PLAYER_DRAFT\n【当前纸面内容】\n与瓦兰迪亚议和", "Only current player material");
-        Test.That((string)messages[1]["content"] == "【沿用外交MCM写作偏好，仅在忠实于玩家原意时适用】\n简明冷峻", "Shared preference verbatim");
-        Test.That(messages[0]["content"].ToString().Contains("40—200") && messages[0]["content"].ToString().Contains("禁止自行添加"), "Length and authorship guard");
+        bool english = Environment.GetEnvironmentVariable("AF_TEST_PROMPT_LANGUAGE") == "en";
+        string userHeader = english ? "MODE=PLAYER_DRAFT\n[Current paper content]\n" : "MODE=PLAYER_DRAFT\n【当前纸面内容】\n";
+        string preferenceHeader = english ? "[Applying diplomacy MCM writing preferences, valid only when faithful to player intent]\n" : "【沿用外交MCM写作偏好，仅在忠实于玩家原意时适用】\n";
+        Test.That(messages.Count == 3 && (string)messages[2]["content"] == userHeader + "与瓦兰迪亚议和", "Only current player material");
+        Test.That((string)messages[1]["content"] == preferenceHeader + "简明冷峻", "Shared preference verbatim");
+        Test.That(messages[0]["content"].ToString().Contains(english ? "40 to 200" : "40—200") && messages[0]["content"].ToString().Contains(english ? "forbidden from adding" : "禁止自行添加"), "Length and authorship guard");
+        if (english)
+            Test.That(!System.Text.RegularExpressions.Regex.IsMatch(messages[0]["content"].ToString(), "[\\u3400-\\u9fff]"), "English package system prompt has no Chinese text");
         Test.That(WorldDiplomacyPlayerDraftRules.BuildMessages(input, "").Count == 2, "Blank preference not replaced by autonomous contract");
         Test.That(WorldDiplomacyPlayerDraftRules.Parse(Json(Draft), input).Body == Draft, "Valid draft preserved");
         foreach (var invalid in new[] { "", "{}", "null", "[]", "{\"body\":null}", "{\"body\":42}", "{\"body\":\"甲\",\"actions\":[]}", "{\"body\":\"甲\",\"body\":\"乙\"}", "```json\n" + Json(Draft) + "\n```", Json(Draft) + " trailing", Json("太短"), Json(new string('字', 201)) })

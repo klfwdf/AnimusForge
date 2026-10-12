@@ -139,5 +139,11 @@
     <string id="AF_SETS_Entry_ReminderReconfigure" text=" Press U to reconfigure town, castle, or village escort." />
     <string id="AF_SETS_Entry_Spawned" text="SETS escort troops have entered the scene; you can adjust their orders through the native command UI." />
     <string id="AF_SETS_Entry_SpawnedConflict" text="They will assist you when the conflict begins." />
+    <string id="AF_SETS_Coup_HallGuardDeploy" text="[Usurpation] Hall guard deployment: {SPAWNED} this wave, {REMAINING} awaiting deployment." />
+    <string id="AF_SETS_Coup_DefenderReinforce" text="[Usurpation] Defender reinforcements wave {WAVE}, {REMAINING} awaiting entry (up to {MAX_WAVES} waves active; reinforcements stop after breaching the hall entrance)." />
+    <string id="AF_SETS_Coup_HallSpawnInvalid" text="Hall character failed to land on a valid spawn point. This deployment has been aborted; victory is not granted." />
+    <string id="AF_SETS_Coup_HallGuard" text="defender" />
+    <string id="AF_SETS_Coup_HallAssault" text="assault squad" />
+    <string id="AF_SETS_Coup_HallPointUnreachable" text="No reachable spawn point found in the lord's hall for {SIDE} for 15 consecutive seconds. Deployment has been stopped; victory is not granted, existing casualties retained." />
   </strings>
 </base>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <!-- CoupRebellionBridge runtime messages -->
+    <string id="AF_COUPX_SaveInvalid" text="The coup aftermath rebellion save is invalid; automatic replay has been disabled and the original record retained." />
+    <string id="AF_COUPX_SeamNotReady" text="AF rebellion seam, save, or kingdom not ready." />
+    <string id="AF_COUPX_CivilWarDisabled" text="Civil war system is disabled; skipping post-coup civil war." />
+    <string id="AF_COUPX_RebellionRegistered" text="Former ruler's supporters have gathered: {CLAN} will lead the resistance with {COUNT} additional clans responding; AF's existing naming and founding process will be used, waiting in sequence if busy." />
+    <string id="AF_COUPX_RegistrationFailed" text="Post-coup rebellion registration failed: {ERROR}" />
+    <string id="AF_COUPX_NoEligibleLoyalist" text="Among the former ruler's clan and clans more loyal to the former ruler, no candidates currently meet the conditions to raise an armed rebellion with land." />
+    <string id="AF_COUPX_StabilityDisabled" text="AF kingdom stability and rebellion system is disabled; skipping post-coup rebellion." />
+    <string id="AF_COUPX_ImmunityEnabled" text="Player kingdom rebellion immunity is enabled; skipping post-coup rebellion." />
+    <string id="AF_COUPX_IdentityMissing" text="Ruler identity before or after the coup is missing; cannot determine support relationships." />
+    <string id="AF_COUPX_FormerClanExcluded" text="Former ruler is captured; their clan will not participate in this civil war." />
+    <string id="AF_COUPX_SupportInsufficient" text="Support for the former ruler does not exceed support for the new ruler." />
+    <string id="AF_COUPX_StabilityEndSession" text="AF kingdom stability and rebellion system is disabled; this session ends." />
+    <string id="AF_COUPX_ImmunityEndSession" text="Player kingdom rebellion immunity is enabled; this session ends." />
+    <string id="AF_COUPX_ContextChanged" text="Kingdom, ruler, or original candidate clan leader has changed; this session ends without re-selecting clans." />
+    <string id="AF_COUPX_ValidationFailed" text="Original candidate clan no longer meets AF rules: {REASON}. This session ends." />
+    <string id="AF_COUPX_SupportChanged" text="Original candidate clan has changed support for the new and old rulers; will not raise rebellion this time." />
+    <string id="AF_COUPX_CivilWarEndSession" text="Civil war system is disabled; will not create rebels without settlement attribution this time." />
+    <string id="AF_COUPX_FormerClanIneligible" text="Former ruler's clan can no longer participate in restoration civil war; will not raise rebellion this time." />
+    <string id="AF_COUPX_ParticipantsUnavailable" text="Kingdom already founded, but civil war participant records are temporarily unavailable." />
+    <string id="AF_COUPX_DynastyNotJoined" text="Former ruler's clan has not yet joined the restoration rebels." />
+    <string id="AF_COUPX_WarRegistrationPending" text="Rebel kingdom established; civil war registration awaiting retry: {ERROR}" />
+    <string id="AF_COUPX_WarRetryHint" text=" You can select 'Retry Post-Coup Civil War Registration' from the town menu; the rebel kingdom will not be created again." />
+    <string id="AF_COUPX_NamingEmpty" text="AF naming result is empty." />
+    <string id="AF_COUPX_ExecutionConsumed" text="Post-coup rebellion execution starting; this assessment has been consumed." />
+    <string id="AF_COUPX_RebellionIncomplete" text="Rebellion not completed: {MESSAGE}" />
+    <string id="AF_COUPX_SettlementException" text="Rebellion settlement exception; changes made were retained and founding will not be repeated: {ERROR}" />
+    <string id="AF_COUPX_SeamException" text="Post-coup rebellion seam exception; this session ends: {ERROR}" />
+    <string id="AF_COUPX_NamingContext" text="\nRebellion background: the player just seized the throne through armed coup; the rebelling clan is the former ruler's clan or clans more loyal to the former ruler; this is a rebellion against usurpation and does not require negative relations with the new ruler. Use this as the background for kingdom naming and description." />
+    <string id="AF_COUPX_RestorationContext" text="\nFormer ruler has been released; this war's goal is restoration of the old dynasty; only rebel victory can restore, peace negotiations do not restore." />
+    <string id="AF_COUPX_CapturedContext" text="\nFormer ruler is captured; the former ruler and their clan do not participate in this civil war; do not claim the former ruler personally raised rebellion." />
+    <string id="AF_COUPX_NamingLogTarget" text="Post-coup rebellion kingdom naming - {CLAN}" />
+
+    <!-- CoupRebellionBridge outcome fact messages -->
+    <string id="AF_COUPX_OutcomeSeamNotReady" text="AF coup fact seam or save not ready." />
+    <string id="AF_COUPX_OutcomeIncomplete" text="Coup result has not completed actual settlement; cannot register final facts." />
+    <string id="AF_COUPX_OutcomeMismatch" text="Same coup ID has different facts; refusing to overwrite repeatedly." />
+    <string id="AF_COUPX_MemoryRejected" text="Coup memory not accepted: {ERROR}" />
+    <string id="AF_COUPX_MemoryIdentityChanged" text="Coup memory recovery identity changed; refusing to write repeatedly." />
+    <string id="AF_COUPX_MemoryIncomplete" text="Coup memory not completed: {ERROR}" />
+    <string id="AF_COUPX_BulletinRejected" text="Coup bulletin fact not yet accepted." />
+    <string id="AF_COUPX_FactsRegistered" text="Coup facts have been registered to action, memory, weekly, and bulletin entries according to current settings." />
+    <string id="AF_COUPX_FactRegistrationFailed" text="Coup fact registration not completed: {ERROR}" />
+
+    <!-- Coup outcome fact text templates -->
+    <string id="AF_COUPX_NpcFactSuccess" text="{PLAYER} launched an armed coup in {PLACE} and defeated you; this coup has succeeded." />
+    <string id="AF_COUPX_NpcFactFailure" text="{PLAYER} launched an armed coup against you in {PLACE}, but the assault failed and then withdrew the reserve forces." />
+    <string id="AF_COUPX_PlayerFactSuccess" text="You launched an armed coup against {KING} in {PLACE} and succeeded." />
+    <string id="AF_COUPX_PlayerFactFailure" text="You launched an armed coup against {KING} in {PLACE} and failed; reserve forces withdrew." />
+    <string id="AF_COUPX_WeeklyTitle" text="Armed Coup - {SETTLEMENT}" />
+    <string id="AF_COUPX_BulletinTimeLabel" text="Occurrence time: {DATE}" />
+    <string id="AF_COUPX_DefaultOriginalKingdom" text="the original kingdom" />
+
+    <!-- CoupSession eligibility reasons (already mapped in code) -->
+    <string id="AF_COUPX_MinimumTroopsConflict" text="Coup configuration conflict: minimum assault party size {MIN} exceeds street limit {LIMIT}; please adjust in MCM." />
+    <string id="AF_COUPX_InsufficientTier" text="Clan tier insufficient: {CURRENT}/{REQUIRED} tier." />
+    <string id="AF_COUPX_InsufficientInfluence" text="Influence insufficient: {CURRENT}/{REQUIRED} (checked only, not spent)." />
+    <string id="AF_COUPX_InsufficientTroops" text="At least {REQUIRED} healthy regular soldiers needed, with 1 person left as reserve; currently {CURRENT} people." />
+
+    <!-- CoupCaptivityBehavior -->
+    <string id="AF_COUPX_CaptivityProtectionUnavailable" text="Coup captivity protection unavailable, or target not yet captured by player." />
+
+    <!-- CoupCampaignBehavior settlement errors -->
+    <string id="AF_COUPX_PoliticalIncomplete" text="Coup victory status or former ruler's disposition incomplete; political settlement forbidden." />
+    <string id="AF_COUPX_CampaignIdentityChanged" text="Campaign identity changed; stopping automatic political settlement." />
+    <string id="AF_COUPX_ThroneTransferFailed" text="Throne transfer not effective." />
+    <string id="AF_COUPX_TownTransferFailed" text="Town transfer not effective." />
+    <string id="AF_COUPX_CaptivityUnavailable" text="Captivity protection unavailable; please restore compatibility components before settlement." />
+    <string id="AF_COUPX_KingCaptivityFailed" text="Former ruler's captivity not effective." />
+    <string id="AF_COUPX_EventSeamUnavailable" text="AF event and rebellion system unavailable." />
+    <string id="AF_COUPX_NewBattleStarted" text="New campaign battle has started; cannot automatically settle old coup." />
+    <string id="AF_COUPX_DefectionInconsistent" text="Defection or war declaration results inconsistent; stopping subsequent settlement." />
+    <string id="AF_COUPX_FailureFactUnavailable" text="Coup failure facts temporarily cannot be written." />
+    <string id="AF_COUPX_ReceptionPartyUnavailable" text="Reception party unavailable; cannot confirm withdrawal." />
+    <string id="AF_COUPX_EncounterChanged" text="Current encounter has changed; cannot execute withdrawal for another encounter." />
+    <string id="AF_COUPX_PartyNotExited" text="Reception party has not completely exited town encounter." />
+
+    <!-- CoupMissionBehavior -->
+    <string id="AF_COUPX_VanillaNoPlayer" text="Vanilla scene did not spawn player." />
+    <string id="AF_COUPX_SceneHandlingFailed" text="Coup scene handling failed: {ERROR}" />
+    <string id="AF_COUPX_ExitDefeat" text="Withdrew from coup battle through scene exit." />
+    <string id="AF_COUPX_HallTransitionFailed" text="Hall transition failed: {ERROR}" />
+    <string id="AF_COUPX_MissionContextChanged" text="Coup mission context has changed." />
+    <string id="AF_COUPX_NoHallEntrance" text="Street has no usable real lord's hall entrance." />
+    <string id="AF_COUPX_NoKingOrThrone" text="Lord's hall has no king or valid throne/guard spawn point." />
+    <string id="AF_COUPX_KingSpawnFailed" text="King cannot spawn in hall." />
+    <string id="AF_COUPX_PlayerDown" text="Player has fallen." />
+    <string id="AF_COUPX_KingLeftHall" text="Target king abnormally left hall; coup result not yet established." />
+    <string id="AF_COUPX_BattleEndedEarly" text="Coup battle ended prematurely." />
+
+    <!-- CoupSceneBridge -->
+    <string id="AF_COUPX_NoTownScene" text="Current location has no usable town scene." />
+    <string id="AF_COUPX_MissingStreetOrHall" text="This town lacks street or lord's hall scenes." />
+    <string id="AF_COUPX_NoPassageToHall" text="Town street has no vanilla passage leading to lord's hall." />
+
+    <!-- SettlementEntryTroopSelectionBehavior -->
+    <string id="AF_COUPX_SetsSeamNotReady" text="AF SETS compatibility bridge not ready." />
+    <string id="AF_COUPX_CoupOptionsCorrupted" text="Coup battle parameters corrupted." />
+    <string id="AF_COUPX_SetsLogicNotInScene" text="SETS town entry logic not in current scene." />
+  </strings>
+</base>

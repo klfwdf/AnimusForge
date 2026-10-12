@@ -70,36 +70,10 @@ internal static class RexLog
     {
         try
         {
-            var binaryDirectory = Path.GetDirectoryName(typeof(RexLog).Assembly.Location);
-            if (string.IsNullOrWhiteSpace(binaryDirectory))
-            {
-                return null;
-            }
-
-            var nestedVersionDirectory = Path.GetFileName(binaryDirectory);
-            var moduleRelativeRoot = string.Equals(nestedVersionDirectory, "1.3", StringComparison.Ordinal) ||
-                                     string.Equals(nestedVersionDirectory, "1.4", StringComparison.Ordinal)
-                ? Path.Combine(binaryDirectory, "..", "..", "..", "..")
-                : Path.Combine(binaryDirectory, "..", "..");
-            var moduleDirectory = Path.GetFullPath(moduleRelativeRoot);
-            var logPath = Path.Combine(moduleDirectory, "Vengeance.log");
-            // If the DLL is deployed to a non-standard layout (bin is the
-            // module root, or a tools folder), the walked-up directory may not
-            // be writable or may not be the module root at all. Fall back to the
-            // user temp folder rather than disabling diagnostics entirely.
-            try
-            {
-                var probe = Path.Combine(moduleDirectory, ".rex_write_probe");
-                File.WriteAllText(probe, string.Empty);
-                File.Delete(probe);
-            }
-            catch
-            {
-                return Path.Combine(
-                    Path.GetTempPath(),
-                    "Vengeance-RichExecutions.log");
-            }
-
+            var moduleDirectory = AnimusForge.AnimusForgeModulePaths.GetCurrentModuleRoot();
+            var logDirectory = Path.Combine(moduleDirectory, "Logs");
+            Directory.CreateDirectory(logDirectory);
+            var logPath = Path.Combine(logDirectory, "Vengeance.log");
             return logPath;
         }
         catch

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <!-- CivilWarUiText interface texts -->
+    <string id="AF_KINGDOM_CW_FactionTag_make_peace" text="Anti-war faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_continue_war" text="War faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_revoke_policy" text="Reform faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_redress" text="Retribution faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_autonomy" text="Separation faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_usurp" text="Claimant faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_unknown" text="Opposition faction" />
+
+    <string id="AF_KINGDOM_CW_Demand_make_peace" text="End the war with {TARGET} and negotiate peace" />
+    <string id="AF_KINGDOM_CW_Demand_continue_war" text="Do not make peace with {TARGET}" />
+    <string id="AF_KINGDOM_CW_Demand_revoke_policy" text="Repeal {TARGET}" />
+    <string id="AF_KINGDOM_CW_Demand_redress" text="Pay compensation and hold those responsible to account" />
+    <string id="AF_KINGDOM_CW_Demand_autonomy" text="Recognize autonomy for this faction's fiefs" />
+    <string id="AF_KINGDOM_CW_Demand_usurp" text="The king abdicates and the faction leader succeeds" />
+    <string id="AF_KINGDOM_CW_Demand_unknown" text="Pursue the faction's demand" />
+    <string id="AF_KINGDOM_CW_Target" text="the target" />
+
+    <string id="AF_KINGDOM_CW_Source_royal_execution" text="Royal execution" />
+    <string id="AF_KINGDOM_CW_Source_fief_denied" text="Fief denied" />
+    <string id="AF_KINGDOM_CW_Source_policy_imposed" text="Policy imposed" />
+    <string id="AF_KINGDOM_CW_Source_war_imposed" text="War imposed" />
+    <string id="AF_KINGDOM_CW_Source_peace_imposed" text="Peace imposed" />
+    <string id="AF_KINGDOM_CW_Source_lands_raided" text="Lands raided" />
+    <string id="AF_KINGDOM_CW_Source_fief_lost" text="Fief lost" />
+    <string id="AF_KINGDOM_CW_Source_broken_pledge" text="Royal pledge broken" />
+    <string id="AF_KINGDOM_CW_Source_demand_refused" text="Demand refused" />
+    <string id="AF_KINGDOM_CW_Source_royal_suppression" text="Royal suppression" />
+    <string id="AF_KINGDOM_CW_Source_unknown" text="Grievance" />
+
+    <string id="AF_KINGDOM_CW_Role_King" text="King" />
+    <string id="AF_KINGDOM_CW_Role_Crown" text="Crown faction" />
+    <string id="AF_KINGDOM_CW_Role_Member" text="{TAG} member" />
+    <string id="AF_KINGDOM_CW_Role_Leader" text="{TAG} leader" />
+    <string id="AF_KINGDOM_CW_Role_Middle" text="Uncommitted" />
+
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyHigh" text="Extremely high" />
+    <string id="AF_KINGDOM_CW_Stability_High" text="High" />
+    <string id="AF_KINGDOM_CW_Stability_FairlyHigh" text="Fairly high" />
+    <string id="AF_KINGDOM_CW_Stability_Average" text="Average" />
+    <string id="AF_KINGDOM_CW_Stability_Poor" text="Poor" />
+    <string id="AF_KINGDOM_CW_Stability_VeryPoor" text="Very poor" />
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyPoor" text="Extremely poor" />
+
+    <!-- Action result notices (sampled, full set in CivilWarUiText.cs) -->
+    <string id="AF_KINGDOM_CW_Action_NoOperation" text="No such operation." />
+    <string id="AF_KINGDOM_CW_Action_Disabled" text="Civil war factions are disabled, or the kingdom is no longer valid." />
+    <string id="AF_KINGDOM_CW_CampCrown" text="the crown camp" />
+
+    <!-- Core event chronicles -->
+    <string id="AF_KINGDOM_CW_Core_RebellionCooldown" text="The kingdom has just been through a rebellion; no new faction will form for {WEEKS} weeks." />
+    <string id="AF_KINGDOM_CW_Core_PledgeBroken" text="The king broke his pledge and made peace with {OTHER}" />
+    <string id="AF_KINGDOM_CW_Core_EnemyKingdom" text="an enemy kingdom" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumDelivered" text="{FACTION} has delivered an ultimatum: {DEMAND}" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumStatus" text="\n\nRefused {COUNT} times. Without an answer it will be decided automatically on day {DAY}. A refusal may lead to civil war." />
+    <string id="AF_KINGDOM_CW_Chronicle_SupportWithdrawn" text="{CLANS} grow discontent over {SOURCE} and withdraw their support for the crown, turning neutral" />
+  </strings>
+</base>

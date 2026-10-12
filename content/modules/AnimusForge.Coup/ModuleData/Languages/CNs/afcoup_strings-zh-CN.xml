@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <!-- CoupRebellionBridge 运行时消息 -->
+    <string id="AF_COUPX_SaveInvalid" text="政变后叛乱存档异常，已停用自动重放并保留原始记录。" />
+    <string id="AF_COUPX_SeamNotReady" text="AF 叛乱接缝、存档或王国尚未就绪。" />
+    <string id="AF_COUPX_CivilWarDisabled" text="内战系统已关闭，跳过政变后内战。" />
+    <string id="AF_COUPX_RebellionRegistered" text="旧王支持者已集结：{CLAN}将领导反抗，另有{COUNT}个家族响应；将使用 AF 原命名与建国流程，忙时顺序等待。" />
+    <string id="AF_COUPX_RegistrationFailed" text="政变后叛乱登记失败：{ERROR}" />
+    <string id="AF_COUPX_NoEligibleLoyalist" text="旧王家族及更支持旧王的家族中，目前没有具备带地起兵条件的候选人。" />
+    <string id="AF_COUPX_StabilityDisabled" text="AF 王国稳定度与叛乱已关闭，跳过政变后反叛。" />
+    <string id="AF_COUPX_ImmunityEnabled" text="玩家王国叛乱免疫已开启，跳过政变后反叛。" />
+    <string id="AF_COUPX_IdentityMissing" text="政变前后统治者身份缺失，不能判定支持关系。" />
+    <string id="AF_COUPX_FormerClanExcluded" text="旧王被扣押，其家族不参与本次内战。" />
+    <string id="AF_COUPX_SupportInsufficient" text="对旧王的支持未超过对新王的支持。" />
+    <string id="AF_COUPX_StabilityEndSession" text="AF 王国稳定度与叛乱已关闭，本次结束。" />
+    <string id="AF_COUPX_ImmunityEndSession" text="玩家王国叛乱免疫已开启，本次结束。" />
+    <string id="AF_COUPX_ContextChanged" text="王国、统治者或原候选族长已变化，本次结束，不重选家族。" />
+    <string id="AF_COUPX_ValidationFailed" text="原候选家族不再符合 AF 规则：{REASON} 本次结束。" />
+    <string id="AF_COUPX_SupportChanged" text="原候选家族已改变对新旧国王的支持，本次不再起兵。" />
+    <string id="AF_COUPX_CivilWarEndSession" text="内战系统已关闭，本次不创建无结算归属的叛军。" />
+    <string id="AF_COUPX_FormerClanIneligible" text="旧王家族已无法参与复位内战，本次不再起兵。" />
+    <string id="AF_COUPX_ParticipantsUnavailable" text="已经建国，但内战参与方记录暂不可用。" />
+    <string id="AF_COUPX_DynastyNotJoined" text="旧王家族尚未加入复位叛军。" />
+    <string id="AF_COUPX_WarRegistrationPending" text="叛军已建立，内战登记等待重试：{ERROR}" />
+    <string id="AF_COUPX_WarRetryHint" text=" 可在城镇菜单选择&quot;重试政变内战登记&quot;；不会再次创建叛军王国。" />
+    <string id="AF_COUPX_NamingEmpty" text="AF 命名结果为空。" />
+    <string id="AF_COUPX_ExecutionConsumed" text="政变后叛乱开始执行，本次判定已消费。" />
+    <string id="AF_COUPX_RebellionIncomplete" text="叛乱未完成：{MESSAGE}" />
+    <string id="AF_COUPX_SettlementException" text="叛乱结算异常，已发生变化保留且不会重复建国：{ERROR}" />
+    <string id="AF_COUPX_SeamException" text="政变后叛乱接缝异常，本次结束：{ERROR}" />
+    <string id="AF_COUPX_NamingContext" text="\n本次起兵背景：玩家刚通过武装政变夺位，起兵家族属于旧王家族或更支持旧王的家族；这是反对篡位的起兵，不要求与新王关系为负。请以此为建国命名与简介的背景。" />
+    <string id="AF_COUPX_RestorationContext" text="\n旧王已获释，本次战争目标为旧王朝复位；仅叛军胜利可复位，和平谈判不复位。" />
+    <string id="AF_COUPX_CapturedContext" text="\n旧王被扣押，旧王及其家族不参与本次内战，不要宣称旧王亲自起兵。" />
+    <string id="AF_COUPX_NamingLogTarget" text="政变后叛乱建国命名 - {CLAN}" />
+
+    <!-- CoupRebellionBridge 结果事实消息 -->
+    <string id="AF_COUPX_OutcomeSeamNotReady" text="AF 政变事实接缝或存档尚未就绪。" />
+    <string id="AF_COUPX_OutcomeIncomplete" text="政变结果尚未完成实际结算，不能登记最终事实。" />
+    <string id="AF_COUPX_OutcomeMismatch" text="同一政变编号的事实不同，拒绝重复覆盖。" />
+    <string id="AF_COUPX_MemoryRejected" text="政变记忆未接受：{ERROR}" />
+    <string id="AF_COUPX_MemoryIdentityChanged" text="政变记忆恢复身份发生变化，拒绝重复写入。" />
+    <string id="AF_COUPX_MemoryIncomplete" text="政变记忆未完成：{ERROR}" />
+    <string id="AF_COUPX_BulletinRejected" text="政变快报事实尚未接受。" />
+    <string id="AF_COUPX_FactsRegistered" text="政变事实已按当前设置登记到行动、记忆、周报与快报入口。" />
+    <string id="AF_COUPX_FactRegistrationFailed" text="政变事实登记未完成：{ERROR}" />
+
+    <!-- 政变结果事实文本模板 -->
+    <string id="AF_COUPX_NpcFactSuccess" text="{PLAYER}在{PLACE}发动武装政变并击败了你；这次政变已经成功。" />
+    <string id="AF_COUPX_NpcFactFailure" text="{PLAYER}在{PLACE}针对你发动武装政变，但突击失败，随后撤回留守部队。" />
+    <string id="AF_COUPX_PlayerFactSuccess" text="你在{PLACE}针对{KING}发动武装政变并取得成功。" />
+    <string id="AF_COUPX_PlayerFactFailure" text="你在{PLACE}针对{KING}发动武装政变失败，撤回留守部队。" />
+    <string id="AF_COUPX_WeeklyTitle" text="武装政变 - {SETTLEMENT}" />
+    <string id="AF_COUPX_BulletinTimeLabel" text="发生时间：{DATE}" />
+    <string id="AF_COUPX_DefaultOriginalKingdom" text="原王国" />
+
+    <!-- CoupSession 资格原因（代码中已映射） -->
+    <string id="AF_COUPX_MinimumTroopsConflict" text="篡位配置冲突：最低突击队人数{MIN}超过街道上限{LIMIT}，请在 MCM 中调整。" />
+    <string id="AF_COUPX_InsufficientTier" text="家族等级不足：{CURRENT}／{REQUIRED}级。" />
+    <string id="AF_COUPX_InsufficientInfluence" text="影响力不足：{CURRENT}／{REQUIRED}（仅检查，不扣除）。" />
+    <string id="AF_COUPX_InsufficientTroops" text="至少需要{REQUIRED}名健康普通士兵，其中1人留守接应；当前{CURRENT}人。" />
+
+    <!-- CoupCaptivityBehavior -->
+    <string id="AF_COUPX_CaptivityProtectionUnavailable" text="政变拘押保护不可用，或目标尚未由玩家拘押。" />
+
+    <!-- CoupCampaignBehavior 结算错误 -->
+    <string id="AF_COUPX_PoliticalIncomplete" text="政变胜利状态或旧王处置不完整，禁止政治结算。" />
+    <string id="AF_COUPX_CampaignIdentityChanged" text="战役身份发生变化，停止自动政治结算。" />
+    <string id="AF_COUPX_ThroneTransferFailed" text="王权转移未生效。" />
+    <string id="AF_COUPX_TownTransferFailed" text="城镇转移未生效。" />
+    <string id="AF_COUPX_CaptivityUnavailable" text="拘押保护不可用，请恢复兼容组件后结算。" />
+    <string id="AF_COUPX_KingCaptivityFailed" text="旧王拘押未生效。" />
+    <string id="AF_COUPX_EventSeamUnavailable" text="AF 事件与叛乱系统不可用。" />
+    <string id="AF_COUPX_NewBattleStarted" text="新的战役战斗已开始，不能自动结算旧政变。" />
+    <string id="AF_COUPX_DefectionInconsistent" text="叛离或宣战结果不一致，停止后续结算。" />
+    <string id="AF_COUPX_FailureFactUnavailable" text="政变失败事实暂时无法写入。" />
+    <string id="AF_COUPX_ReceptionPartyUnavailable" text="接应队伍不可用，不能确认撤出。" />
+    <string id="AF_COUPX_EncounterChanged" text="当前遭遇已改变，不能替其他遭遇执行撤出。" />
+    <string id="AF_COUPX_PartyNotExited" text="接应队伍尚未完整退出城镇遭遇。" />
+
+    <!-- CoupMissionBehavior -->
+    <string id="AF_COUPX_VanillaNoPlayer" text="原版场景没有生成玩家。" />
+    <string id="AF_COUPX_SceneHandlingFailed" text="政变场景处理失败：{ERROR}" />
+    <string id="AF_COUPX_ExitDefeat" text="从场景出口撤出了政变战斗。" />
+    <string id="AF_COUPX_HallTransitionFailed" text="大厅转场失败：{ERROR}" />
+    <string id="AF_COUPX_MissionContextChanged" text="政变任务上下文已改变。" />
+    <string id="AF_COUPX_NoHallEntrance" text="街道没有可用的真实领主大厅门口。" />
+    <string id="AF_COUPX_NoKingOrThrone" text="领主大厅没有国王或有效的王座/守军生成点。" />
+    <string id="AF_COUPX_KingSpawnFailed" text="国王无法在大厅生成。" />
+    <string id="AF_COUPX_PlayerDown" text="玩家已倒地。" />
+    <string id="AF_COUPX_KingLeftHall" text="目标国王异常离开大厅，政变结果尚未成立。" />
+    <string id="AF_COUPX_BattleEndedEarly" text="政变战斗已提前结束。" />
+
+    <!-- CoupSceneBridge -->
+    <string id="AF_COUPX_NoTownScene" text="当前地点没有可用的城镇场景。" />
+    <string id="AF_COUPX_MissingStreetOrHall" text="这座城镇缺少街道或领主大厅场景。" />
+    <string id="AF_COUPX_NoPassageToHall" text="城镇街道没有通向领主大厅的原版通道。" />
+
+    <!-- SettlementEntryTroopSelectionBehavior -->
+    <string id="AF_COUPX_SetsSeamNotReady" text="AF SETS兼容桥未就绪。" />
+    <string id="AF_COUPX_CoupOptionsCorrupted" text="政变战斗参数损坏。" />
+    <string id="AF_COUPX_SetsLogicNotInScene" text="SETS 进城逻辑不在当前场景。" />
+  </strings>
+</base>

@@ -133,12 +133,12 @@ internal static class PolicyEffectModuleRouter
 		string normalizedQuery = (query ?? string.Empty).Trim();
 		if (normalizedQuery.Length <= 0)
 		{
-			throw new InvalidOperationException("政策效果模块检索文本为空。");
+			throw new InvalidOperationException("Policy effect module retrieval text is empty.");
 		}
 		OnnxEmbeddingEngine embedding = OnnxEmbeddingEngine.Instance;
 		if (embedding == null || !embedding.IsAvailable || !embedding.TryGetEmbedding(normalizedQuery, out float[] queryVector) || queryVector == null || queryVector.Length <= 0)
 		{
-			throw new InvalidOperationException("政策效果模块 ONNX embedding 不可用：" + (embedding?.LastError ?? "unknown"));
+			throw new InvalidOperationException("Policy effect module ONNX embedding is unavailable: " + (embedding?.LastError ?? "unknown"));
 		}
 		return queryVector;
 	}
@@ -162,7 +162,7 @@ internal static class PolicyEffectModuleRouter
 		string normalizedQuery = (query ?? string.Empty).Trim();
 		if (normalizedQuery.Length == 0)
 		{
-			throw new InvalidOperationException("政策效果模块检索文本为空。");
+			throw new InvalidOperationException("Policy effect module retrieval text is empty.");
 		}
 		scopedModules ??= Array.Empty<IPolicyEffectModule>();
 		List<(string Text, int SourceOrdinal, bool CueMatched)> clauses = new List<(string, int, bool)>();
@@ -215,7 +215,7 @@ internal static class PolicyEffectModuleRouter
 		string authoritative = ((policyName ?? string.Empty).Trim() + "\n" + (policyContent ?? string.Empty).Trim()).Trim();
 		if (authoritative.Length == 0)
 		{
-			throw new InvalidOperationException("政策效果模块检索文本为空。");
+			throw new InvalidOperationException("Policy effect module retrieval text is empty.");
 		}
 		// The first query is the frozen policy name plus the complete original text. The tokenizer owns
 		// model-length truncation; C# must not replace the authoritative query with a narrative fragment.
@@ -237,23 +237,23 @@ internal static class PolicyEffectModuleRouter
 			string normalizedClause = NormalizeCueText(clause);
 			bool cueMatched = modules.Any(module => FindMatchedCueTerm(normalizedClause, module?.CueTerms).Length > 0);
 			bool numericOrTimed = clause.Any(char.IsDigit)
-				|| clause.IndexOf("每日", StringComparison.Ordinal) >= 0
-				|| clause.IndexOf("每天", StringComparison.Ordinal) >= 0
-				|| clause.IndexOf("一次性", StringComparison.Ordinal) >= 0
-				|| clause.IndexOf("单次", StringComparison.Ordinal) >= 0
-				|| clause.IndexOf("第纳尔", StringComparison.Ordinal) >= 0
-				|| clause.IndexOf("百分", StringComparison.Ordinal) >= 0;
+				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermDaily"), StringComparison.Ordinal) >= 0
+				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermEveryDay"), StringComparison.Ordinal) >= 0
+				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermOneTime"), StringComparison.Ordinal) >= 0
+				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermSingle"), StringComparison.Ordinal) >= 0
+				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermDenars"), StringComparison.Ordinal) >= 0
+				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermPercentage"), StringComparison.Ordinal) >= 0;
 			clauses.Add((clause, ordinal++, cueMatched, numericOrTimed));
 		}
 
 		List<string> supplements = new List<string>();
 		if (!string.IsNullOrWhiteSpace(impactSummary))
 		{
-			supplements.Add("影响概述：" + impactSummary.Trim());
+			supplements.Add(PolicyGenerationPromptTexts.Get("ModuleImpactQuery", "Impact overview: ") + impactSummary.Trim());
 		}
 		if (!string.IsNullOrWhiteSpace(numericIntent))
 		{
-			supplements.Add("数值意图：" + numericIntent.Trim());
+			supplements.Add(PolicyGenerationPromptTexts.Get("ModuleNumericQuery", "Numeric intent: ") + numericIntent.Trim());
 		}
 		int currentLimit = Math.Max(1, QueryIntentLimit - supplements.Count);
 		Action<IEnumerable<string>> addQueries = values =>
@@ -297,18 +297,18 @@ internal static class PolicyEffectModuleRouter
 	{
 		if (queryVector == null || queryVector.Length <= 0)
 		{
-			throw new ArgumentException("政策效果模块 query embedding 无效。", nameof(queryVector));
+			throw new ArgumentException("Invalid policy effect module query embedding.", nameof(queryVector));
 		}
 		List<IndexedModule> indexedModules = (scopedModules ?? Array.Empty<IPolicyEffectModule>())
 			.Select(module => Index.Value[module.Id])
 			.ToList();
 		if (indexedModules.Count <= 0)
 		{
-			throw new InvalidOperationException("当前政策作用域没有可用的效果模块。");
+			throw new InvalidOperationException("No effect modules are available for the current policy scope.");
 		}
 		if (!IsUsableEmbedding(queryVector, indexedModules[0].Vector.Length))
 		{
-			throw new ArgumentException("政策效果模块 query embedding 无效。", nameof(queryVector));
+			throw new ArgumentException("Invalid policy effect module query embedding.", nameof(queryVector));
 		}
 		List<PolicyEffectModuleSelection> recalled = indexedModules
 			.Select(item => new PolicyEffectModuleSelection
@@ -333,18 +333,18 @@ internal static class PolicyEffectModuleRouter
 	{
 		if (queryVector == null || queryVector.Length <= 0)
 		{
-			throw new ArgumentException("政策效果模块 query embedding 无效。", nameof(queryVector));
+			throw new ArgumentException("Invalid policy effect module query embedding.", nameof(queryVector));
 		}
 		List<IndexedModule> indexedModules = (scopedModules ?? Array.Empty<IPolicyEffectModule>())
 			.Select(module => Index.Value[module.Id])
 			.ToList();
 		if (indexedModules.Count == 0)
 		{
-			throw new InvalidOperationException("当前政策作用域没有可用的效果模块。");
+			throw new InvalidOperationException("No effect modules are available for the current policy scope.");
 		}
 		if (!IsUsableEmbedding(queryVector, indexedModules[0].Vector.Length))
 		{
-			throw new InvalidOperationException("政策效果模块 query embedding 维度或数值无效：intent="
+			throw new InvalidOperationException("Invalid policy effect module query embedding dimensions or values: intent="
 				+ intentOrdinal.ToString(System.Globalization.CultureInfo.InvariantCulture));
 		}
 		List<PolicyEffectModuleSelection> ranked = indexedModules
@@ -382,7 +382,7 @@ internal static class PolicyEffectModuleRouter
 			|| intentRecalls.Count == 0
 			|| intentRecalls.Any(intent => intent == null || intent.Ranked == null || intent.Ranked.Count == 0))
 		{
-			throw new ArgumentException("政策效果模块意图召回为空或无效。", nameof(intentRecalls));
+			throw new ArgumentException("Policy effect module intent recall is empty or invalid.", nameof(intentRecalls));
 		}
 		List<IPolicyEffectModule> modules = (scopedModules ?? Array.Empty<IPolicyEffectModule>())
 			.Where(module => module != null && !string.IsNullOrWhiteSpace(module.Id))
@@ -393,7 +393,7 @@ internal static class PolicyEffectModuleRouter
 			.ToList();
 		if (modules.Count == 0)
 		{
-			throw new ArgumentException("政策效果模块作用域目录为空。", nameof(scopedModules));
+			throw new ArgumentException("Policy effect module scope catalog is empty.", nameof(scopedModules));
 		}
 
 		Dictionary<string, PolicyEffectModuleSelection> aggregate = modules.ToDictionary(
@@ -778,7 +778,7 @@ internal static class PolicyEffectModuleRouter
 	{
 		if (queryVector == null || queryVector.Length <= 0)
 		{
-			throw new ArgumentException("政策效果模块 query embedding 无效。", nameof(queryVector));
+			throw new ArgumentException("Invalid policy effect module query embedding.", nameof(queryVector));
 		}
 		if (additionalQueryEmbeddingProvider == null)
 		{
@@ -787,7 +787,7 @@ internal static class PolicyEffectModuleRouter
 		IReadOnlyList<IPolicyEffectModule> enabledModules = scopedModules ?? Array.Empty<IPolicyEffectModule>();
 		if (enabledModules.Count == 0)
 		{
-			throw new InvalidOperationException("当前政策检索渠道没有启用的效果模块。");
+			throw new InvalidOperationException("No effect modules are enabled for the current policy retrieval channel.");
 		}
 		IReadOnlyList<string> intentTexts = BuildQueryIntents(query, enabledModules);
 		List<PolicyEffectModuleIntentRecall> intentRecalls = new List<PolicyEffectModuleIntentRecall>(intentTexts.Count)
@@ -799,7 +799,7 @@ internal static class PolicyEffectModuleRouter
 			float[] intentVector = additionalQueryEmbeddingProvider(intentTexts[intentOrdinal]);
 			if (intentVector == null || intentVector.Length == 0)
 			{
-				throw new InvalidOperationException("政策效果模块子意图 embedding 为空：intent="
+				throw new InvalidOperationException("Policy effect module sub-intent embedding is empty: intent="
 					+ intentOrdinal.ToString(System.Globalization.CultureInfo.InvariantCulture));
 			}
 			intentRecalls.Add(RecallIntent(
@@ -891,7 +891,7 @@ internal static class PolicyEffectModuleRouter
 			|| selections.Count <= 0
 			|| selections.Any(item => item?.Module == null || string.IsNullOrWhiteSpace(item.Module.Id)))
 		{
-			throw new ArgumentException("政策效果模块选择结果为空或无效。", parameterName);
+			throw new ArgumentException("Policy effect module selection result is empty or invalid.", parameterName);
 		}
 	}
 
@@ -937,7 +937,7 @@ internal static class PolicyEffectModuleRouter
 		OnnxEmbeddingEngine embedding = OnnxEmbeddingEngine.Instance;
 		if (embedding == null || !embedding.IsAvailable)
 		{
-			throw new InvalidOperationException("政策效果模块 ONNX embedding 不可用：" + (embedding?.LastError ?? "unknown"));
+			throw new InvalidOperationException("Policy effect module ONNX embedding is unavailable: " + (embedding?.LastError ?? "unknown"));
 		}
 		Dictionary<string, IndexedModule> result = new Dictionary<string, IndexedModule>(StringComparer.Ordinal);
 		int embeddingDimension = 0;
@@ -945,7 +945,7 @@ internal static class PolicyEffectModuleRouter
 		{
 			if (!embedding.TryGetEmbedding(module.RetrievalText, out float[] vector) || vector == null || vector.Length <= 0)
 			{
-				throw new InvalidOperationException("政策效果模块向量构建失败：" + module.Id + "：" + (embedding.LastError ?? "unknown"));
+				throw new InvalidOperationException("Failed to build policy effect module vector: " + module.Id + "：" + (embedding.LastError ?? "unknown"));
 			}
 			if (embeddingDimension == 0)
 			{
@@ -953,7 +953,7 @@ internal static class PolicyEffectModuleRouter
 			}
 			if (!IsUsableEmbedding(vector, embeddingDimension))
 			{
-				throw new InvalidOperationException("政策效果模块向量维度或数值无效：" + module.Id);
+				throw new InvalidOperationException("Invalid policy effect module vector dimensions or values: " + module.Id);
 			}
 			result.Add(module.Id, new IndexedModule { Module = module, Vector = vector });
 		}
@@ -965,29 +965,29 @@ internal static class PolicyEffectModuleRouter
 		OnnxEmbeddingEngine embedding = OnnxEmbeddingEngine.Instance;
 		if (embedding == null || !embedding.IsAvailable)
 		{
-			throw new InvalidOperationException("政策效果机制 ONNX embedding 不可用：" + (embedding?.LastError ?? "unknown"));
+			throw new InvalidOperationException("Policy effect mechanism ONNX embedding is unavailable: " + (embedding?.LastError ?? "unknown"));
 		}
 		Dictionary<PolicyEffectMechanismShape, string[]> seeds = new Dictionary<PolicyEffectMechanismShape, string[]>
 		{
 			[PolicyEffectMechanismShape.DirectChange] = new[]
 			{
-				"直接提高目标地区的繁荣与治安", "降低指定城堡的民兵", "让这些城镇获得每日忠诚变化", "只改变目标本身的指标"
+				PolicyGenerationPromptTexts.Get("MechanismDirectProsperity", "Directly increase prosperity and security in the target area"), PolicyGenerationPromptTexts.Get("MechanismDirectMilitia", "Reduce militia in the specified castle"), PolicyGenerationPromptTexts.Get("MechanismDirectLoyalty", "Give these towns a daily loyalty change"), PolicyGenerationPromptTexts.Get("MechanismDirectMetric", "Change only the target's own metrics")
 			},
 			[PolicyEffectMechanismShape.CrossTargetFlow] = new[]
 			{
-				"从一批地区调拨资源到另一批地区", "把敌国粮食转运到本国", "从其他地方转移税收到这里", "跨目标夺取并输送资源"
+				PolicyGenerationPromptTexts.Get("MechanismTransferAreas", "Transfer resources from one group of areas to another"), PolicyGenerationPromptTexts.Get("MechanismTransferFood", "Transport food from the enemy kingdom to our kingdom"), PolicyGenerationPromptTexts.Get("MechanismTransferTax", "Transfer tax revenue here from other places"), PolicyGenerationPromptTexts.Get("MechanismTransferCapture", "Seize and transfer resources across targets")
 			},
 			[PolicyEffectMechanismShape.IssuerAcquires] = new[]
 			{
-				"发布者从其他地区获得税收", "让我国从外国获取资源", "地方发布者得到粮食和财政收入", "把外地收益归于发布方"
+				PolicyGenerationPromptTexts.Get("MechanismIssuerTax", "The issuer obtains tax revenue from other areas"), PolicyGenerationPromptTexts.Get("MechanismIssuerForeignResources", "Let our kingdom obtain resources from foreign countries"), PolicyGenerationPromptTexts.Get("MechanismIssuerLocalIncome", "The local issuer receives food and fiscal revenue"), PolicyGenerationPromptTexts.Get("MechanismIssuerExternalRevenue", "Assign outside revenue to the issuer")
 			},
 			[PolicyEffectMechanismShape.IssuerProvides] = new[]
 			{
-				"发布者向目标地区提供援助", "我国出资支援外国城镇", "地方拿出粮食救济其他地区", "由发布方向受益方输送资源"
+				PolicyGenerationPromptTexts.Get("MechanismAidTarget", "The issuer provides aid to the target area"), PolicyGenerationPromptTexts.Get("MechanismAidForeign", "Our kingdom finances aid to foreign towns"), PolicyGenerationPromptTexts.Get("MechanismAidFood", "The local area supplies food to relieve other areas"), PolicyGenerationPromptTexts.Get("MechanismAidBeneficiary", "Transfer resources from the issuer to the beneficiary")
 			},
 			[PolicyEffectMechanismShape.Exchange] = new[]
 			{
-				"以财政成本换取建设收益", "付出粮食换取稳定与忠诚", "一项成本对应另一项收益", "交换资源并获得不同机制的回报"
+				PolicyGenerationPromptTexts.Get("MechanismCostConstruction", "Exchange fiscal costs for construction benefits"), PolicyGenerationPromptTexts.Get("MechanismCostFood", "Spend food in exchange for stability and loyalty"), PolicyGenerationPromptTexts.Get("MechanismCostBenefit", "One cost corresponds to another benefit"), PolicyGenerationPromptTexts.Get("MechanismCostExchange", "Exchange resources for returns through a different mechanism")
 			}
 		};
 		List<IndexedMechanismSeed> result = new List<IndexedMechanismSeed>();
@@ -997,7 +997,7 @@ internal static class PolicyEffectModuleRouter
 			{
 				if (!embedding.TryGetEmbedding(seed, out float[] vector) || vector == null || vector.Length == 0)
 				{
-					throw new InvalidOperationException("政策效果机制向量构建失败：" + pair.Key + " / " + (embedding.LastError ?? "unknown"));
+					throw new InvalidOperationException("Failed to build policy effect mechanism vector: " + pair.Key + " / " + (embedding.LastError ?? "unknown"));
 				}
 				result.Add(new IndexedMechanismSeed { Shape = pair.Key, Vector = vector });
 			}

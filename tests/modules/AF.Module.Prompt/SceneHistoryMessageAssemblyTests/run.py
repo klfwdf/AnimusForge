@@ -6,7 +6,7 @@ sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import minimal_test_environment
 s=importlib.util.spec_from_file_location('extract', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 m=importlib.util.module_from_spec(s); s.loader.exec_module(m)
-parser=argparse.ArgumentParser();parser.add_argument('--run-root',type=Path);parser.add_argument('--wilderness-current',action='store_true');parser.add_argument('--native-history-current',action='store_true');parser.add_argument('--lore-current',action='store_true');parser.add_argument('--public-targeted-current',action='store_true');parser.add_argument('--uncompressed-family-current',action='store_true');parser.add_argument('--uncompressed-family-host-current',action='store_true');parser.add_argument('--uncompressed-family-original',action='store_true');parser.add_argument('--uncompressed-family-mutate-inclusion',action='store_true');parser.add_argument('--strict-capture-current',action='store_true');parser.add_argument('--pure-message-current',action='store_true');parser.add_argument('--persisted-history-current',action='store_true');parser.add_argument('--api-line',choices=['1.3','1.4'],default='1.3');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--run-root',type=Path);parser.add_argument('--package-language',choices=['zh-CN','en'],default='zh-CN');parser.add_argument('--wilderness-current',action='store_true');parser.add_argument('--native-history-current',action='store_true');parser.add_argument('--lore-current',action='store_true');parser.add_argument('--public-targeted-current',action='store_true');parser.add_argument('--uncompressed-family-current',action='store_true');parser.add_argument('--uncompressed-family-host-current',action='store_true');parser.add_argument('--uncompressed-family-original',action='store_true');parser.add_argument('--uncompressed-family-mutate-inclusion',action='store_true');parser.add_argument('--strict-capture-current',action='store_true');parser.add_argument('--pure-message-current',action='store_true');parser.add_argument('--persisted-history-current',action='store_true');parser.add_argument('--api-line',choices=['1.3','1.4'],default='1.3');args=parser.parse_args()
 out=(args.run_root or ROOT/'artifacts/af2-host-terminal-closeout/line-b/scene-history-tests').resolve()
 out.mkdir(parents=True,exist_ok=True)
 if args.persisted_history_current:
@@ -209,6 +209,11 @@ if args.strict_capture_current and not (args.native_history_current or args.wild
     (out/'EmptyPartyNamespace.cs').write_text('namespace TaleWorlds.CampaignSystem.Party {}',encoding='utf-8')
 (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><Nullable>disable</Nullable><ImplicitUsings>enable</ImplicitUsings></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(ROOT/p)+'" />' for p in paths)+'</ItemGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
+sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Prompt/Composition'))
+from fixture_resources import add_history_resources
+add_history_resources(ROOT,out,out/'Tests.csproj',args.package_language)
+if args.package_language=='en':
+ f=out/'Program.cs';value=f.read_text('utf-8');value=value.replace('【你听见】Borin说：heard','[You hear] Borin says: heard');f.write_text(value,encoding='utf-8')
 dotnet=ROOT/'local/dotnet/8.0.425/dotnet.exe'
 env=minimal_test_environment(dotnet,out)
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Tests.csproj'),'-c','Release']+(['-p:DefineConstants=BANNERLORD_1_4_OR_GREATER'] if args.api_line=='1.4' else []),cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)

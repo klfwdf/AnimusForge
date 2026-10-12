@@ -34,10 +34,12 @@ internal sealed class DiplomacyConversationModuleAdapter : IDiplomacyConversatio
         var source = new DiplomacyPostprocessContextSource(ResolveHero(heroId));
         return DiplomacyPostprocessContextApplication.Build(ref source);
     }
-    public void ProcessDiplomacyTags(string heroId, ref string text)
+    public string ComposeDialogueReply(string body, System.Collections.Generic.IReadOnlyList<string> receipts, bool forUi) =>
+        DiplomacyOralTagApplication.ComposeReceiptText(body, receipts, forUi ? DiplomacyDialogueStatusUi.Project : (System.Func<string, string>)null);
+    public void ProcessDiplomacyTags(string heroId, ref string text, System.Collections.Generic.List<string> receipts = null)
     {
         var source = new DiplomacyOralTagSource(ResolveHero(heroId));
-        DiplomacyOralTagApplication.Process(source, ref text);
+        DiplomacyOralTagApplication.Process(source, ref text, receipts);
     }
     public bool TryBuildTributePowerContext(string payerId, string receiverId, out AfTributePowerContext context)
     {

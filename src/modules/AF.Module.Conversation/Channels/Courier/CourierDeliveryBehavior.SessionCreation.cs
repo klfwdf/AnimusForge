@@ -677,7 +677,7 @@ public sealed partial class CourierDeliveryBehavior
 		MobileParty mainParty = MobileParty.MainParty;
 		if (mainParty == null || flow?.Recipient == null || flow.CrewRoster == null || flow.CrewRoster.TotalManCount <= 0)
 		{
-			throw new InvalidOperationException("信使队数据不完整。");
+			throw new InvalidOperationException(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0615"));
 		}
 		string id = NewSessionId();
 		TroopRoster emptyMembers = TroopRoster.CreateDummyTroopRoster();
@@ -687,7 +687,7 @@ public sealed partial class CourierDeliveryBehavior
 		MobileParty courier = CustomPartyComponent.CreateCustomPartyWithTroopRoster(mainParty.Position, 0.05f, mainParty.CurrentSettlement, name, Clan.PlayerClan, emptyMembers, emptyPrisoners, Hero.MainHero, "", "", speed, true);
 		if (courier == null)
 		{
-			throw new InvalidOperationException("创建信使队失败。");
+			throw new InvalidOperationException(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0616"));
 		}
 		courier.IsVisible = true;
 		ApplyCourierMapBannerVisual(courier, "create");
@@ -915,7 +915,7 @@ public sealed partial class CourierDeliveryBehavior
 				InboundFallbackLetter = letterText.Trim(),
 				InboundLetterKind = InboundLetterKindDiplomacy,
 				InboundMotiveType = LetterMotiveDiplomacy,
-				InboundIntentText = "围绕当前真实外交事项写信，不得虚构已达成的结果。",
+				InboundIntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0617"),
 				IsNpcInitiated = true,
 				CrewEntries = BuildCargoEntriesFromRoster(members, "crew")
 			};

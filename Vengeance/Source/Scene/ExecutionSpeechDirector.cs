@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using RichExecutions.Campaign;
 using RichExecutions.Core;
 using RichExecutions.Diagnostics;
@@ -117,17 +118,27 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
         return true;
     }
 
+    private static readonly Regex CueLiteralSlots = new("REXCUEVALUE[1-7]", RegexOptions.CultureInvariant);
+
     private static string LocalizeCue(string id, string fallback, SpeechContext context)
     {
         var text = new TextObject("{=" + id + "}" + fallback);
-        text.SetTextVariable("VICTIM", context.VictimName);
-        text.SetTextVariable("EXECUTOR", context.ExecutorName);
-        text.SetTextVariable("CHARGE", context.ChargeName);
-        text.SetTextVariable("METHOD", context.MethodName);
-        text.SetTextVariable("VENUE", context.VenueName);
-        text.SetTextVariable("PLACE", context.EvidencePlace);
-        text.SetTextVariable("EVIDENCE_PLACE", context.EvidencePlace);
-        return text.ToString();
+        text.SetTextVariable("VICTIM", "REXCUEVALUE1");
+        text.SetTextVariable("EXECUTOR", "REXCUEVALUE2");
+        text.SetTextVariable("CHARGE", "REXCUEVALUE3");
+        text.SetTextVariable("METHOD", "REXCUEVALUE4");
+        text.SetTextVariable("VENUE", "REXCUEVALUE5");
+        text.SetTextVariable("PLACE", "REXCUEVALUE6");
+        text.SetTextVariable("EVIDENCE_PLACE", "REXCUEVALUE7");
+        return CueLiteralSlots.Replace(text.ToString(), match => (match.Value[match.Value.Length - 1] switch
+        {
+            '1' => context.VictimName,
+            '2' => context.ExecutorName,
+            '3' => context.ChargeName,
+            '4' => context.MethodName,
+            '5' => context.VenueName,
+            _ => context.EvidencePlace
+        }) ?? string.Empty);
     }
 
     internal bool TryPrepare(ExecutionRequest request, Agent? executioner, Agent? victim,
@@ -292,7 +303,7 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
     // A string text variable is re-parsed as a TextObject, so LLM text with
     // braces would be read as template syntax. Only the localized frame goes
     // through the engine; the line itself is substituted afterwards verbatim.
-    private const string MessageLogTextSlot = "REXSPEECHLINEBODY";
+    private static readonly Regex MessageLogSlots = new("REXSPEECHLINE(?:BODY|SPEAKER)", RegexOptions.CultureInvariant);
 
     private void EchoToMessageLog(SpeechCue cue)
     {
@@ -301,9 +312,11 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
             var text = cue.Text?.Trim();
             if (string.IsNullOrEmpty(text)) return;
             var frame = new TextObject("{=REX_Speech_Log_Line}{SPEAKER}: {TEXT}");
-            frame.SetTextVariable("SPEAKER", ResolveSpeakerLabel(cue.Speaker));
-            frame.SetTextVariable("TEXT", MessageLogTextSlot);
-            var line = frame.ToString().Replace(MessageLogTextSlot, text);
+            frame.SetTextVariable("SPEAKER", "REXSPEECHLINESPEAKER");
+            frame.SetTextVariable("TEXT", "REXSPEECHLINEBODY");
+            var speaker = ResolveSpeakerLabel(cue.Speaker);
+            var line = MessageLogSlots.Replace(frame.ToString(), match =>
+                match.Value == "REXSPEECHLINEBODY" ? text : speaker);
             InformationManager.DisplayMessage(new InformationMessage(line, MessageLogColor));
         }
         catch (Exception exception)

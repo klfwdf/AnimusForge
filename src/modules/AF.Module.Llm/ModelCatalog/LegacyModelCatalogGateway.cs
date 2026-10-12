@@ -113,13 +113,13 @@ public static class ModelCatalogErrorFormatter
             }
             switch (errorCode)
             {
-                case ModelCatalogErrorCodes.UrlMissing: return "API 地址为空，无法拉取模型列表。";
-                case ModelCatalogErrorCodes.ApiKeyMissing: return "API Key 为空，无法拉取模型列表。";
-                case ModelCatalogErrorCodes.Cancelled: return "模型列表拉取已取消。";
+                case ModelCatalogErrorCodes.UrlMissing: return LlmSourceTexts.Get("Legacy_359cbeaeff5b");
+                case ModelCatalogErrorCodes.ApiKeyMissing: return LlmSourceTexts.Get("Legacy_4e75be27e5d5");
+                case ModelCatalogErrorCodes.Cancelled: return LlmSourceTexts.Get("Legacy_954085c851eb");
                 case ModelCatalogErrorCodes.HttpFailure: return "HTTP " + status + (string.IsNullOrWhiteSpace(reason) ? "" : " " + reason);
-                case ModelCatalogErrorCodes.TransportFailed: return "模型列表请求失败。";
+                case ModelCatalogErrorCodes.TransportFailed: return LlmSourceTexts.Get("Legacy_1bcda3f2295b");
             }
-            return string.IsNullOrWhiteSpace(legacyMessage) ? "模型列表请求失败。" : legacyMessage;
+            return string.IsNullOrWhiteSpace(legacyMessage) ? LlmSourceTexts.Get("Legacy_1bcda3f2295b") : legacyMessage;
         }
         switch (errorCode)
         {
@@ -177,8 +177,8 @@ public sealed class LegacyModelCatalogGateway
                 string.Empty,
                 string.Empty,
                 includeAuthentication
-                    ? "API 地址为空，无法拉取模型列表。"
-                    : "API 地址为空，无法访问模型列表。",
+                    ? LlmSourceTexts.Get("Legacy_359cbeaeff5b")
+                    : LlmSourceTexts.Get("Legacy_71e3778484cb"),
                 cancelled: false,
                 ModelCatalogErrorCodes.UrlMissing,
                 null);
@@ -190,7 +190,7 @@ public sealed class LegacyModelCatalogGateway
                 0,
                 string.Empty,
                 string.Empty,
-                "API Key 为空，无法拉取模型列表。",
+                LlmSourceTexts.Get("Legacy_4e75be27e5d5"),
                 cancelled: false,
                 ModelCatalogErrorCodes.ApiKeyMissing,
                 null);
@@ -241,7 +241,7 @@ public sealed class LegacyModelCatalogGateway
                 0,
                 string.Empty,
                 string.Empty,
-                "模型列表请求已取消。",
+                LlmSourceTexts.Get("Legacy_208c9e91f73d"),
                 cancelled: true,
                 ModelCatalogErrorCodes.Cancelled,
                 null);

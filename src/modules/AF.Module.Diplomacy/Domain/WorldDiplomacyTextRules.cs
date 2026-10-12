@@ -315,70 +315,70 @@ public static class WorldDiplomacyTextRules
 		}
 		return false;
 	}
-public static string DocumentTypeLabel(WorldDiplomacyDocument document)
+public static string DocumentTypeLabel(WorldDiplomacyDocument document, Func<string, string, string> localize = null)
 	{
 		if (document == null)
 		{
-			return WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_072", "");
+			return WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_072", "Diplomatic announcement");
 		}
 		if (document.IsReminder)
 		{
-			return WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_073", "");
+			return WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_073", "Negotiation reminder");
 		}
-		if (document.Actions?.Count > 1) return WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_074", "");
+		if (document.Actions?.Count > 1) return WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_074", "Compound diplomatic declaration");
 		return WorldDiplomacyIntentVocabulary.NormalizeIntent(document.Intent) switch
 		{
-			"declare_war" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_075", ""),
-			"propose_peace" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_076", ""),
-			"accept_peace" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_077", ""),
-			"reject_peace" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_078", ""),
-			"propose_alliance" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_079", ""),
-			"accept_alliance" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_080", ""),
-			"reject_alliance" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_081", ""),
-			"break_alliance" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_082", ""),
-			"propose_trade" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_083", ""),
-			"accept_trade" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_084", ""),
-			"reject_trade" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_085", ""),
-			"cancel_trade" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_086", ""),
-            "release_subject" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_087", ""),
-			"comply_ultimatum" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_088", ""),
-			"ultimatum" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_089", ""),
-			"warning" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_090", ""),
-			"condemn" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_091", ""),
-			"apology" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_092", ""),
-			"concession" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_093", ""),
-			_ => document.IsResponse ? WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_094", "") : (document.RequiresResponse ? WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_095", "") : WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_072", ""))
+			"declare_war" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_075", "War declaration notice"),
+			"propose_peace" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_076", "Peace request"),
+			"accept_peace" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_077", "Peace response"),
+			"reject_peace" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_078", "Peace rejection"),
+			"propose_alliance" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_079", "Alliance request"),
+			"accept_alliance" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_080", "Alliance response"),
+			"reject_alliance" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_081", "Alliance rejection"),
+			"break_alliance" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_082", "Alliance dissolution notice"),
+			"propose_trade" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_083", "Trade request"),
+			"accept_trade" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_084", "Trade response"),
+			"reject_trade" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_085", "Trade rejection"),
+			"cancel_trade" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_086", "Trade termination"),
+            "release_subject" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_087", "Subject independence notice"),
+			"comply_ultimatum" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_088", "Concession"),
+			"ultimatum" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_089", "Ultimatum"),
+			"warning" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_090", "Condemnation"),
+			"condemn" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_091", "Public condemnation"),
+			"apology" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_092", "Diplomatic apology"),
+			"concession" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_093", "Diplomatic concession"),
+			_ => document.IsResponse ? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_094", "Negotiation response") : (document.RequiresResponse ? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_095", "Awaiting negotiation") : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_072", "Diplomatic announcement"))
 		};
 	}
-public static string BuildFallbackDocumentTitle(WorldDiplomacyDocument document, string intent)
+public static string BuildFallbackDocumentTitle(WorldDiplomacyDocument document, string intent, Func<string, string, string> localize = null)
 	{
 		string target = string.IsNullOrWhiteSpace(document?.TargetKingdomName) || document.TargetKingdomName == WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_096", "")
 			? ""
 			: document.TargetKingdomName;
 		string subject = WorldDiplomacyIntentVocabulary.NormalizeIntent(intent) switch
 		{
-			"declare_war" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_097", ""),
-			"propose_peace" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_098", ""),
-			"accept_peace" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_099", ""),
-			"reject_peace" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_100", ""),
-			"propose_alliance" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_101", ""),
-			"accept_alliance" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_102", ""),
-			"reject_alliance" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_103", ""),
-			"break_alliance" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_104", ""),
-			"propose_trade" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_105", ""),
-			"accept_trade" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_106", ""),
-			"reject_trade" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_107", ""),
-			"cancel_trade" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_108", ""),
-            "release_subject" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_109", ""),
-			"comply_ultimatum" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_110", ""),
-			"ultimatum" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_111", ""),
-			"warning" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_112", ""),
-			"condemn" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_091", ""),
-			"apology" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_113", ""),
-			"concession" => WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_114", ""),
-			_ => document?.IsResponse == true ? WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_115", "") : WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_116", "")
+			"declare_war" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_097", "Formal declaration of war"),
+			"propose_peace" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_098", "Propose a peace plan"),
+			"accept_peace" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_099", "Announce acceptance of peace"),
+			"reject_peace" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_100", "Reject peace terms"),
+			"propose_alliance" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_101", "Propose an alliance"),
+			"accept_alliance" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_102", "Announce an alliance"),
+			"reject_alliance" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_103", "Reject an alliance"),
+			"break_alliance" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_104", "Announce dissolution of the alliance"),
+			"propose_trade" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_105", "Propose a trade agreement"),
+			"accept_trade" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_106", "Announce a trade agreement"),
+			"reject_trade" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_107", "Reject a trade agreement"),
+			"cancel_trade" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_108", "Announce termination of trade"),
+            "release_subject" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_109", "Announce release of a subject kingdom"),
+			"comply_ultimatum" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_110", "Announce compliance with the ultimatum"),
+			"ultimatum" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_111", "Issue an ultimatum"),
+			"warning" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_112", "Issue a condemnation"),
+			"condemn" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_091", "Public condemnation"),
+			"apology" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_113", "Public apology"),
+			"concession" => WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_114", "Announce diplomatic concessions"),
+			_ => document?.IsResponse == true ? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_115", "Respond to diplomatic claims") : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_116", "Clarify the kingdom’s position")
 		};
-		return Limit(string.IsNullOrWhiteSpace(target) ? subject : WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_117", "") + target + subject, 36);
+		return Limit(string.IsNullOrWhiteSpace(target) ? subject : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_117", "To ") + target + (localize == null ? "" : localize("FallbackDocumentTitleTargetSeparator", ": ")) + subject, 36);
 	}
 public static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument document)
 	{
@@ -401,48 +401,48 @@ public static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument docum
 	}
 
 	public static string BuildCompactDocumentMemoryLine(WorldDiplomacyDocument document,
-		Func<int, string> formatDayFallback)
+		Func<int, string> formatDayFallback, Func<string, string, string> localize = null)
 	{
 		if (document == null)
 		{
 			return "";
 		}
 		string target = document.Actions?.Count > 1
-			? WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_117", "") + string.Join("、", document.Actions.Where(x => x != null)
-				.Select(x => WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(x.TargetKingdomName, x.TargetKingdomId) + "=" + WorldDiplomacyIntentVocabulary.IntentLabel(x.Intent)))
-			: (string.IsNullOrWhiteSpace(document.TargetKingdomName) ? "" : WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_123", "") + document.TargetKingdomName);
-		string result = string.IsNullOrWhiteSpace(document.MechanicalResult) ? "" : WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_124", "") + document.MechanicalResult;
+			? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_117", "") + string.Join("、", document.Actions.Where(x => x != null)
+				.Select(x => WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(x.TargetKingdomName, x.TargetKingdomId) + "=" + WorldDiplomacyIntentVocabulary.IntentLabel(x.Intent, localize)))
+			: (string.IsNullOrWhiteSpace(document.TargetKingdomName) ? "" : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_123", "") + document.TargetKingdomName);
+		string result = string.IsNullOrWhiteSpace(document.MechanicalResult) ? "" : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_124", "") + document.MechanicalResult;
 		string date = string.IsNullOrWhiteSpace(document.GameDate) ? formatDayFallback(document.Day) : document.GameDate;
 		return date
 			+ "，"
 			+ document.AuthorKingdomName
 			+ target
-			+ WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_125", "")
+			+ WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_125", "")
 			+ document.Title
 			+ "》（"
-			+ (document.Actions?.Count > 1 ? WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_126", "") : WorldDiplomacyIntentVocabulary.IntentLabel(document.Intent))
+			+ (document.Actions?.Count > 1 ? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_126", "") : WorldDiplomacyIntentVocabulary.IntentLabel(document.Intent, localize))
 			+ "）"
 			+ result;
 	}
 
 	public static string BuildDetailedDocumentMemoryLine(WorldDiplomacyDocument document,
-		Func<int, string> formatDayFallback)
+		Func<int, string> formatDayFallback, Func<string, string, string> localize = null)
 	{
 		if (document == null) return "";
-		string response = document.RequiresResponse ? WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_127", "") : "";
-		string source = string.IsNullOrWhiteSpace(document.SourceDocumentId) ? "" : WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_128", "") + document.SourceDocumentId;
-		string body = string.IsNullOrWhiteSpace(document.Body) ? "" : WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_129", "") + Limit(document.Body, 800);
-		return BuildCompactDocumentMemoryLine(document, formatDayFallback) + response + source + body;
+		string response = document.RequiresResponse ? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_127", "") : "";
+		string source = string.IsNullOrWhiteSpace(document.SourceDocumentId) ? "" : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_128", "") + document.SourceDocumentId;
+		string body = string.IsNullOrWhiteSpace(document.Body) ? "" : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_129", "") + Limit(document.Body, 800);
+		return BuildCompactDocumentMemoryLine(document, formatDayFallback, localize) + response + source + body;
 	}
 
 	public static void AppendProactiveDiscussionDocument(StringBuilder sb, WorldDiplomacyDocument document,
-		Func<int, string> formatDayFallback)
+		Func<int, string> formatDayFallback, Func<string, string, string> localize = null)
 	{
 		if (document == null)
 		{
 			return;
 		}
-		sb.AppendLine("- " + BuildCompactDocumentMemoryLine(document, formatDayFallback)
+		sb.AppendLine("- " + BuildCompactDocumentMemoryLine(document, formatDayFallback, localize)
 			+ (string.IsNullOrWhiteSpace(document.Body) ? "" : "：" + Limit(document.Body, 240)));
 	}
 
@@ -461,20 +461,20 @@ public static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument docum
 		return Limit(sb.ToString(), 2400);
 	}
 
-	public static string BuildDisplayedDocumentTitle(WorldDiplomacyDocument document)
+	public static string BuildDisplayedDocumentTitle(WorldDiplomacyDocument document, Func<string, string, string> localize = null)
 	{
 		return SanitizePublicDiplomacyText(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
 			document?.Title,
-			document?.AuthorKingdomName + WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_118", ""),
-			WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_119", "")));
+			document?.AuthorKingdomName + WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_118", " publishes a diplomatic declaration"),
+			WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_119", "Diplomatic declaration")));
 	}
 
 	public static string BuildNotificationDescription(WorldDiplomacyDocument document,
-		Func<int, string> formatDayFallback)
+		Func<int, string> formatDayFallback, Func<string, string, string> localize = null)
 	{
 		if (document == null)
 		{
-			return WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_136", "");
+			return WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_136", "Click to view the diplomatic declaration.");
 		}
 		string targetNames = document.Actions?.Count > 1
 			? string.Join("、", document.Actions.Where(x => x != null)
@@ -485,11 +485,11 @@ public static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument docum
 		string target = string.IsNullOrWhiteSpace(targetNames) ? "" : " · " + targetNames;
 		return WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDayFallback(document.Day))
 			+ " · "
-			+ DocumentTypeLabel(document)
+			+ DocumentTypeLabel(document, localize)
 			+ " · "
 			+ document.AuthorKingdomName
 			+ target
-			+ WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_137", "");
+			+ WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_137", ". Click to read the full text.");
 	}
 
 	public static string BuildDocumentEventMeta(WorldDiplomacyDocument document,
@@ -502,27 +502,40 @@ public static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument docum
 	}
 
 public static string FormatBattleKingdomNames(IEnumerable<string> kingdomIds,
-		Func<string, string> kingdomName)
+		Func<string, string> kingdomName, Func<string, string, string> localize = null)
 	{
 		List<string> names = WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder((kingdomIds ?? Enumerable.Empty<string>())
 			.Select(id => kingdomName(id)));
-		return names.Count == 0 ? WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_096", "") : string.Join("、", names);
+		return names.Count == 0 ? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_096", "Unknown kingdom") : string.Join(localize == null ? "、" : localize("PromptListSeparator", ", "), names);
 	}
 public static string FormatBattleFactForPrompt(WorldDiplomacyBattleFact fact,
-		Func<string, string> kingdomName, Func<int, string> formatDayFallback)
+		Func<string, string> kingdomName, Func<int, string> formatDayFallback, Func<string, string, string> localize = null)
 	{
-		string attackers = FormatBattleKingdomNames(fact?.AttackerKingdomIds, kingdomName);
-		string defenders = FormatBattleKingdomNames(fact?.DefenderKingdomIds, kingdomName);
+		string attackers = FormatBattleKingdomNames(fact?.AttackerKingdomIds, kingdomName, localize);
+		string defenders = FormatBattleKingdomNames(fact?.DefenderKingdomIds, kingdomName, localize);
 		string winner = string.Equals(fact?.WinnerSide, "attacker", StringComparison.OrdinalIgnoreCase) ? attackers : defenders;
 		string attackerLeaders = string.Join("、", fact?.AttackerLeaderNames ?? new List<string>());
 		string defenderLeaders = string.Join("、", fact?.DefenderLeaderNames ?? new List<string>());
 		return "- " + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(fact?.GameDate, formatDayFallback(fact?.Day ?? 0))
-			+ "，" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(fact?.Location, WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_139", "")) + WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_140", "") + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(fact?.BattleType, WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_141", ""))
-			+ WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_142", "") + attackers + WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_143", "") + defenders + WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_144", "") + winner
-			+ (string.IsNullOrWhiteSpace(attackerLeaders) ? "" : WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_145", "") + attackerLeaders)
-			+ (string.IsNullOrWhiteSpace(defenderLeaders) ? "" : WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_146", "") + defenderLeaders)
-			+ WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_147", "");
+			+ "，" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(fact?.Location, WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_139", "")) + WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_140", "") + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(ProjectBattleTypeForPrompt(fact?.BattleType, localize), WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_141", ""))
+			+ WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_142", "") + attackers + WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_143", "") + defenders + WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_144", "") + winner
+			+ (string.IsNullOrWhiteSpace(attackerLeaders) ? "" : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_145", "") + attackerLeaders)
+			+ (string.IsNullOrWhiteSpace(defenderLeaders) ? "" : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_146", "") + defenderLeaders)
+			+ WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_147", "");
 	}
+
+    private static readonly string[] BattleTypePromptKeys = { "BattleTypeSiege", "BattleTypeRaid", "BattleTypeField" };
+
+    private static string ProjectBattleTypeForPrompt(string type, Func<string, string, string> localize)
+    {
+        if (localize == null) return type;
+        foreach (string key in BattleTypePromptKeys)
+        {
+            if (string.Equals(type, WorldDiplomacyPromptContractRules.ContractText(null, key, ""), StringComparison.Ordinal))
+                return localize(key, key == "BattleTypeSiege" ? "Siege battle" : key == "BattleTypeRaid" ? "Raid battle" : "Field battle");
+        }
+        return type;
+    }
 public static string BuildRoundCompressionPrompt(IEnumerable<WorldDiplomacyDocument> documents,
 		Func<int, string> formatDayFallback)
 	{
@@ -586,11 +599,11 @@ public static string BuildRoundCompressionPrompt(IEnumerable<WorldDiplomacyDocum
 
 	public static string BuildRecentBilateralBattleContext(IEnumerable<WorldDiplomacyBattleFact> recentBattles,
 		string authorId, string targetId, int currentDay, int retentionDays,
-		Func<string, string> kingdomName, Func<int, string> formatDayFallback)
+		Func<string, string> kingdomName, Func<int, string> formatDayFallback, Func<string, string, string> localize = null)
 	{
 		if (string.IsNullOrWhiteSpace(authorId) || string.IsNullOrWhiteSpace(targetId))
 		{
-			return WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_159", "");
+			return WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_159", "");
 		}
 		int cutoff = currentDay - retentionDays;
 		List<WorldDiplomacyBattleFact> battles = (recentBattles ?? Enumerable.Empty<WorldDiplomacyBattleFact>())
@@ -600,14 +613,14 @@ public static string BuildRoundCompressionPrompt(IEnumerable<WorldDiplomacyDocum
 			.ToList();
 		if (battles.Count == 0)
 		{
-			return WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_160", "") + retentionDays.ToString(CultureInfo.InvariantCulture)
-				+ WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_161", "");
+			return WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_160", "") + retentionDays.ToString(CultureInfo.InvariantCulture)
+				+ WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_161", "");
 		}
-		return string.Join("\n", battles.Select(x => FormatBattleFactForPrompt(x, kingdomName, formatDayFallback)));
+		return string.Join("\n", battles.Select(x => FormatBattleFactForPrompt(x, kingdomName, formatDayFallback, localize)));
 	}
 
 	public static List<string> GetRecentOwnInternationalReputationReasons(IReadOnlyList<WorldDiplomacyDocument> documents,
-		string kingdomId, int currentDay, int retentionDays, Func<int, string> formatDayFallback)
+		string kingdomId, int currentDay, int retentionDays, Func<int, string> formatDayFallback, Func<string, string, string> localize = null)
 	{
 		List<string> reasons = new List<string>(MaxPromptRecentOwnReputationReasons);
 		string normalizedKingdomId = (kingdomId ?? "").Trim();
@@ -632,16 +645,16 @@ public static string BuildRoundCompressionPrompt(IEnumerable<WorldDiplomacyDocum
 			}
 			string reason = WorldDiplomacyTextRules.Limit(document.InternationalReputationEvaluationReason, 120);
 			if (string.IsNullOrWhiteSpace(reason)) continue;
-			string direction = document.InternationalReputationEvaluationDelta > 0 ? WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_162", "") : WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_163", "");
+			string direction = document.InternationalReputationEvaluationDelta > 0 ? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_162", "") : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_163", "");
 			reasons.Add(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDayFallback(document.Day))
-				+ "《" + WorldDiplomacyTextRules.Limit(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.Title, WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_164", "")), 50) + WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_165", "")
-				+ direction + WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_166", "") + reason);
+				+ "《" + WorldDiplomacyTextRules.Limit(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.Title, WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_164", "")), 50) + WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_165", "")
+				+ direction + WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_166", "") + reason);
 		}
 		return reasons;
 	}
 
 	public static List<string> GetRecentPublicNegativeReputationFacts(IReadOnlyList<WorldDiplomacyDocument> documents,
-		string kingdomId, int currentDay, int retentionDays, Func<int, string> formatDayFallback)
+		string kingdomId, int currentDay, int retentionDays, Func<int, string> formatDayFallback, Func<string, string, string> localize = null)
 	{
 		List<string> facts = new List<string>(MaxPromptRecentNegativeReputationFacts);
 		string normalizedKingdomId = (kingdomId ?? "").Trim();
@@ -670,14 +683,14 @@ public static string BuildRoundCompressionPrompt(IEnumerable<WorldDiplomacyDocum
 				continue;
 			}
 			facts.Add(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDayFallback(document.Day))
-				+ "《" + WorldDiplomacyTextRules.Limit(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.Title, WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_164", "")), 50) + "》：" + reason);
+				+ "《" + WorldDiplomacyTextRules.Limit(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.Title, WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_164", "")), 50) + "》：" + reason);
 		}
 		return facts;
 	}
 
 	public static string BuildLowReputationConflictOpportunityContext(int reputation,
 		IEnumerable<string> legalActions, IReadOnlyList<WorldDiplomacyDocument> documents, string targetId,
-		int currentDay, int retentionDays, Func<int, string> formatDayFallback)
+		int currentDay, int retentionDays, Func<int, string> formatDayFallback, Func<string, string, string> localize = null)
 	{
 		if (reputation >= LowInternationalReputationThreshold) return "";
 		HashSet<string> legalThreatActions = new HashSet<string>((legalActions ?? Enumerable.Empty<string>())
@@ -688,23 +701,23 @@ public static string BuildRoundCompressionPrompt(IEnumerable<WorldDiplomacyDocum
 			return "";
 		}
 
-		List<string> recentFacts = GetRecentPublicNegativeReputationFacts(documents, targetId, currentDay, retentionDays, formatDayFallback);
+		List<string> recentFacts = GetRecentPublicNegativeReputationFacts(documents, targetId, currentDay, retentionDays, formatDayFallback, localize);
 		if (recentFacts.Count == 0)
 		{
-			return WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_167", "")
-				+ WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_168", "");
+			return WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_167", "")
+				+ WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_168", "");
 		}
 
-		string severity = reputation < SevereInternationalReputationThreshold ? WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_169", "") : WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_170", "");
+		string severity = reputation < SevereInternationalReputationThreshold ? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_169", "") : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_170", "");
 		string legalThreatSummary = string.Join("/", legalThreatActions.OrderBy(x => x, StringComparer.OrdinalIgnoreCase));
-		return WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_171", "") + WorldDiplomacyReputationRules.DescribeInternationalReputation(reputation) + WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_172", "") + severity
-			+ WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_173", "") + string.Join("；", recentFacts) + "。"
-			+ WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_174", "")
-			+ WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_175", "") + legalThreatSummary + WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_176", "")
+		return WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_171", "") + WorldDiplomacyReputationRules.DescribeInternationalReputation(reputation, localize) + WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_172", "") + severity
+			+ WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_173", "") + string.Join("；", recentFacts) + "。"
+			+ WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_174", "")
+			+ WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_175", "") + legalThreatSummary + WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_176", "")
 			+ (reputation < SevereInternationalReputationThreshold && legalThreatActions.Contains("ultimatum")
-				? WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_177", "")
-				: WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_178", ""))
-			+ WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_179", "");
+				? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_177", "")
+				: WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_178", ""))
+			+ WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_179", "");
 	}
 
 	public static string DescribeWarPressure(int pressure)

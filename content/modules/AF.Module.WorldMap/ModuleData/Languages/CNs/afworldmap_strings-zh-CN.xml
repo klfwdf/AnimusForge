@@ -280,5 +280,55 @@
     <string id="AF_WM_Review_TroopXpInputs" text="兵种 XP 调整参数无效：{TROOP}" />
     <string id="AF_WM_Review_TroopXpWrite" text="兵种 XP 写入校验失败：{TROOP} context={CONTEXT}" />
     <string id="AF_WM_Review_Attacking" text="攻击" />
+
+    <!-- Command Task Prompt UI (BuildCurrentNpcCommandTasksPromptCore) -->
+    <string id="AF_WM_CurrentNpcCommandTasksHeader" text="【当前NPC命令任务】" />
+    <string id="AF_WM_NoTasks" text="无" />
+    <string id="AF_WM_TaskStatusCurrent" text="进行:" />
+    <string id="AF_WM_TaskStatusThen" text="随后:" />
+    <string id="AF_WM_TasksRemaining" text="另{COUNT}项" />
+
+    <!-- Command Summary UI (BuildNaturalCommandSummary) -->
+    <string id="AF_WM_CmdMergeToPlayer" text="归队{DAYS}天" />
+    <string id="AF_WM_CmdGoToSettlement" text="前往{TARGET}{DAYS}天" />
+    <string id="AF_WM_CmdClearHideout" text="清剿{TARGET}（时限{DAYS}天）" />
+    <string id="AF_WM_CmdPatrolSettlement" text="巡逻{TARGET}{DAYS}天" />
+    <string id="AF_WM_CmdFollow" text="跟随{TARGET}{DAYS}天" />
+    <string id="AF_WM_CmdAttack" text="攻击{TARGET}{DAYS}天" />
+    <string id="AF_WM_CmdForceAttack" text="强攻{TARGET}{DAYS}天" />
+    <string id="AF_WM_CmdUnknown" text="未知任务{DAYS}天" />
+
+    <!-- LLM Prompt Rule (pure prompt text) -->
+    <string id="AF_WM_PromptReturnToPartyRule" text="你在输出了其他ACTION:WORLDMAP时，如果玩家没有主动提到无需回归队伍，那么你必须输出此标签在最下方,严禁不输出该标签" />
+    <!-- 附加内部错误显示字符串 -->
+    <string id="AF_WM_Review_MergeSourceHasRemainingAssets" text="并入主队后源部队仍有未转移资产。" />
+    <string id="AF_WM_Review_GovernorRecordMissingIdentity" text="总督远征记录缺少必要身份信息。" />
+    <string id="AF_WM_Review_GovernorRollbackMissingTroop" text="总督远征名册回滚缺少兵种或名册。" />
+    <string id="AF_WM_Review_GovernorRollbackTroopFailed" text="总督远征名册精确回滚失败：{TROOP}" />
+    <string id="AF_WM_Review_GarrisonRollbackMissingSnapshot" text="驻军回滚缺少有效事务快照。" />
+    <string id="AF_WM_Review_GarrisonRollbackFailed" text="驻军事务快照回滚校验失败：{TROOP}" />
+    <string id="AF_WM_Review_GarrisonRosterSnapshotMismatch" text="驻军完整名册与建队前快照不一致。" />
+    <string id="AF_WM_Review_GovernorLeaderNotInRoster" text="远征队领队 Hero 已不在成员名册中。" />
+    <string id="AF_WM_Review_MergeChangedHeroIdentity" text="并队改变了随队 Hero 的家族、职业或同伴身份：{HERO}" />
+    <string id="AF_WM_Review_MergeCountConservationFailed" text="名册人数或伤员守恒校验失败：{TROOP}" />
+    <string id="AF_WM_Review_MergeXpBoundaryFailed" text="名册经验值边界校验失败：{TROOP}" />
+    <string id="AF_WM_Review_MergeTransferFailed" text="名册转移失败 troop={TROOP} step={STEP}" />
+    <string id="AF_WM_Review_MergePartiesUnavailable" text="并队时源部队或目标部队不可用。" />
+    <string id="AF_WM_Review_MergeHeroPartyChanged" text="随队 Hero 的所属部队已变化：{HERO}" />
+    <string id="AF_WM_Review_MergeHeroNotMerged" text="随队 Hero 未能并入玩家主队：{HERO}" />
+    <string id="AF_WM_Review_MergeRollbackShipsFailed" text="并队回滚未能恢复源队船只所有权。" />
+    <string id="AF_WM_Review_MergeRollbackAssetsMismatch" text="并队回滚后的源队资产与事务快照不一致。" />
+    <string id="AF_WM_Review_MergeRollbackMissingRecords" text="并队名册回滚缺少事务记录。" />
+    <string id="AF_WM_Review_MergeRollbackTroopFailed" text="并队名册事务快照回滚失败：{TROOP}" />
+    <string id="AF_WM_Review_MergeRollbackPrisonerFailed" text="Hero 俘虏并队回滚失败：{HERO}" />
+    <string id="AF_WM_Review_MergeRollbackItemsMissing" text="并队物资回滚缺少源、目标或快照。" />
+    <string id="AF_WM_Review_MergeRollbackItemsDiff" text="并队物资回滚差额异常。" />
+    <string id="AF_WM_Review_MergeRollbackItemsFailed" text="并队物资回滚校验失败。" />
+    <string id="AF_WM_Review_MergeItemsConservationFailed" text="物资守恒校验失败。" />
+    <string id="AF_WM_Review_MergeShipsInvalidSourceTarget" text="船只转移的来源或目标无效。" />
+    <string id="AF_WM_Review_MergeShipsOwnershipChanged" text="船只所有权在转移前已经变化。" />
+    <string id="AF_WM_Review_MergeShipsTransferFailed" text="船只所有权转移校验失败。" />
+    <string id="AF_WM_Review_MergeShipsTransferFailedRollbackFailed" text="船只转移失败且未能完整回滚。" />
+    <string id="AF_WM_Review_MergeShipsTransferFailedRollbackDone" text="船只转移失败，所有权已回滚。" />
   </strings>
 </base>

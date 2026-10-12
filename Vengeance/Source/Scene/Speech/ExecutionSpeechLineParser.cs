@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 
@@ -46,12 +47,12 @@ internal sealed class ExecutionSpeechLineParser
 
     private static readonly (string Label, ExecutionSpeechLineRole Role)[] Labels =
     {
-        ("刽子手", ExecutionSpeechLineRole.Executioner),
+        (LlmSourceTexts.Get("ExecutionSpeech_Role_Executioner"), ExecutionSpeechLineRole.Executioner),
         ("executioner", ExecutionSpeechLineRole.Executioner),
-        ("死刑犯", ExecutionSpeechLineRole.Victim),
+        (LlmSourceTexts.Get("ExecutionSpeech_Role_Victim"), ExecutionSpeechLineRole.Victim),
         ("condemned", ExecutionSpeechLineRole.Victim),
         ("victim", ExecutionSpeechLineRole.Victim),
-        ("围观", ExecutionSpeechLineRole.Crowd),
+        (LlmSourceTexts.Get("ExecutionSpeech_Role_Crowd"), ExecutionSpeechLineRole.Crowd),
         ("spectator", ExecutionSpeechLineRole.Crowd),
         ("crowd", ExecutionSpeechLineRole.Crowd)
     };
@@ -106,7 +107,7 @@ internal sealed class ExecutionSpeechLineParser
         line = default;
         var text = (raw ?? string.Empty).Trim();
         if (text.Length == 0) return false;
-        if (text == "[最后陈述]" || text.Equals("[last_statement]", StringComparison.OrdinalIgnoreCase))
+        if (text == LlmSourceTexts.Get("ExecutionSpeech_Marker_LastStatement") || text.Equals("[last_statement]", StringComparison.OrdinalIgnoreCase))
         {
             lastStatement = phase == ExecutionSpeechPhase.Opening;
             return false;
@@ -137,19 +138,19 @@ internal sealed class ExecutionSpeechLineParser
     {
         phase = ExecutionSpeechPhase.Opening;
         var marker = text.Trim().Trim('[', ']').Trim();
-        if (string.Equals(marker, "开场", StringComparison.OrdinalIgnoreCase) ||
+        if (string.Equals(marker, LlmSourceTexts.Get("ExecutionSpeech_Phase_Opening"), StringComparison.OrdinalIgnoreCase) ||
             string.Equals(marker, "opening", StringComparison.OrdinalIgnoreCase))
         {
             phase = ExecutionSpeechPhase.Opening;
             return true;
         }
-        if (string.Equals(marker, "行刑中", StringComparison.OrdinalIgnoreCase) ||
+        if (string.Equals(marker, LlmSourceTexts.Get("ExecutionSpeech_Phase_Execution"), StringComparison.OrdinalIgnoreCase) ||
             string.Equals(marker, "during", StringComparison.OrdinalIgnoreCase))
         {
             phase = ExecutionSpeechPhase.During;
             return true;
         }
-        if (string.Equals(marker, "结束后", StringComparison.OrdinalIgnoreCase) ||
+        if (string.Equals(marker, LlmSourceTexts.Get("ExecutionSpeech_Phase_Aftermath"), StringComparison.OrdinalIgnoreCase) ||
             string.Equals(marker, "aftermath", StringComparison.OrdinalIgnoreCase))
         {
             phase = ExecutionSpeechPhase.Aftermath;

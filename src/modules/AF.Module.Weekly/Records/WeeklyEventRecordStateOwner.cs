@@ -83,7 +83,7 @@ internal static List<string> SelectWeeklyShortReportKingdomIdsFromSnapshot(strin
 		return list2.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
 	}
 
-internal static string BuildWeeklyEpicWeekLabel(int weekIndex, Func<int,string> calendarDate) => weekIndex <= 0 ? "开局" : calendarDate(WeeklyReportSchedulePolicy.GetEndDay(weekIndex));
+internal static string BuildWeeklyEpicWeekLabel(int weekIndex, Func<int,string> calendarDate) => weekIndex <= 0 ? WorldBulletinPolicyTexts.Raw("WBLT_Raw_050") : calendarDate(WeeklyReportSchedulePolicy.GetEndDay(weekIndex));
 
 internal string GetPreviousWeeklyReportText(WeeklyEventMaterialPreviewGroup group, int currentWeekIndex, Func<int,string> calendarDate)
 	{
@@ -92,7 +92,7 @@ internal string GetPreviousWeeklyReportText(WeeklyEventMaterialPreviewGroup grou
 		EventRecordEntry eventRecordEntry = WeeklyEventDataImportOwner.SanitizeEventRecordEntries(Records, WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName, WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary, WeeklyGenerationRules.NormalizeWeeklyReportTagText).FirstOrDefault((EventRecordEntry x) => x != null && x.WeekIndex == currentWeekIndex - 1 && string.Equals((x.EventKind ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) && string.Equals((x.ScopeKingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase));
 		if (eventRecordEntry == null)
 		{
-			return "无";
+			return WorldBulletinPolicyTexts.Prompt("WBLT_Prompt_038");
 		}
 		string text3 = WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary(eventRecordEntry.ShortSummary);
 		if (string.IsNullOrWhiteSpace(text3))
@@ -101,9 +101,9 @@ internal string GetPreviousWeeklyReportText(WeeklyEventMaterialPreviewGroup grou
 		}
 		if (string.IsNullOrWhiteSpace(text3))
 		{
-			return "无";
+			return WorldBulletinPolicyTexts.Prompt("WBLT_Prompt_038");
 		}
-		return WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(BuildWeeklyEpicWeekLabel(eventRecordEntry.WeekIndex, calendarDate) + "短摘要：" + text3);
+		return WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(BuildWeeklyEpicWeekLabel(eventRecordEntry.WeekIndex, calendarDate) + WorldBulletinPolicyTexts.Prompt("WBLT_Prompt_039") + text3);
 	}
 
 internal static string BuildDefaultWeeklyReportTitle(WeeklyEventMaterialPreviewGroup group, int weekIndex, Func<int,string> calendarDate, Func<string,string> kingdomDisplay)
@@ -111,14 +111,14 @@ internal static string BuildDefaultWeeklyReportTitle(WeeklyEventMaterialPreviewG
 		string text = BuildWeeklyEpicWeekLabel(weekIndex, calendarDate);
 		if (string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase))
 		{
-			return text + "世界周报";
+			return text + WorldBulletinPolicyTexts.Prompt("WBLT_Prompt_040");
 		}
 		string text2 = kingdomDisplay(group?.KingdomId);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "某王国";
+			text2 = WorldBulletinPolicyTexts.Prompt("WBLT_Prompt_041");
 		}
-		return text2 + text + "周报";
+		return text2 + text + WorldBulletinPolicyTexts.Prompt("WBLT_Prompt_042");
 	}
 
 internal static bool HasWeeklyReportRulerContextMaterial(WeeklyEventMaterialPreviewGroup group)
@@ -143,7 +143,7 @@ internal static string AnnotateWeeklyReportRulerNameInText(string text, string r
 		string annotatedExistingSuffix = Regex.Replace(source, escapedName + "(?<suffix>[\\(（][^\\r\\n\\)）]{0,120}[\\)）])", delegate(Match match)
 		{
 			string suffix = match.Groups["suffix"]?.Value ?? "";
-			if (suffix.IndexOf("统治者", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (suffix.IndexOf(WorldBulletinPolicyTexts.Raw("WBLT_Raw_051"), StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				return match.Value;
 			}
@@ -152,9 +152,9 @@ internal static string AnnotateWeeklyReportRulerNameInText(string text, string r
 			string close = fullWidth ? "）" : ")";
 			string separator = fullWidth ? "；" : ";";
 			string inner = suffix.Length >= 2 ? suffix.Substring(1, suffix.Length - 2).Trim() : "";
-			return name + open + (string.IsNullOrWhiteSpace(inner) ? "统治者" : ("统治者" + separator + inner)) + close;
+			return name + open + (string.IsNullOrWhiteSpace(inner) ? WorldBulletinPolicyTexts.Raw("WBLT_Raw_051") : (WorldBulletinPolicyTexts.Raw("WBLT_Raw_051") + separator + inner)) + close;
 		}, RegexOptions.CultureInvariant);
-		return Regex.Replace(annotatedExistingSuffix, escapedName + "(?![\\(（])", match => name + "(统治者)", RegexOptions.CultureInvariant);
+		return Regex.Replace(annotatedExistingSuffix, escapedName + "(?![\\(（])", match => name + WorldBulletinPolicyTexts.Raw("WBLT_Raw_052"), RegexOptions.CultureInvariant);
 	}
 
 internal static string BuildWeeklyReportMaterialLines(List<EventMaterialReference> materials, Func<EventMaterialReference,string> renderLine)
@@ -162,7 +162,7 @@ internal static string BuildWeeklyReportMaterialLines(List<EventMaterialReferenc
 		List<EventMaterialReference> list = WeeklyPromptMaterialOwner.OrderWeeklyPreviewMaterials(materials).ToList();
 		if (list.Count == 0)
 		{
-			return "无可用素材。";
+			return WorldBulletinPolicyTexts.Prompt("WBLT_Prompt_043");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		foreach (EventMaterialReference item in list)
@@ -178,7 +178,7 @@ internal static string BuildWeeklyReportMaterialLines(List<EventMaterialReferenc
 			}
 		}
 		string text = stringBuilder.ToString().TrimEnd();
-		return string.IsNullOrWhiteSpace(text) ? "无可用素材。" : text;
+		return string.IsNullOrWhiteSpace(text) ? WorldBulletinPolicyTexts.Prompt("WBLT_Prompt_043") : text;
 	}
 
 internal static string BuildWeeklyReportMaterialLines(WeeklyEventMaterialPreviewGroup group, Func<EventMaterialReference,string> renderLine, Func<string,WeeklyEventMaterialPreviewGroup,string> annotate)
@@ -191,8 +191,8 @@ internal WeeklyEventMaterialPreviewGroup CreateWorldWeeklyEventMaterialPreviewGr
 		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = new WeeklyEventMaterialPreviewGroup
 		{
 			GroupKind = "world",
-			Title = "世界事件素材预览",
-			Summary = "用于世界事件的本周素材。",
+			Title = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_066", "World-event material preview"),
+			Summary = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_067", "This week's material for world events."),
 			Materials = new List<EventMaterialReference>()
 		};
 		if (!string.IsNullOrWhiteSpace(WorldOpening))
@@ -200,7 +200,7 @@ internal WeeklyEventMaterialPreviewGroup CreateWorldWeeklyEventMaterialPreviewGr
 			weeklyEventMaterialPreviewGroup.Materials.Add(new EventMaterialReference
 			{
 				MaterialType = "world_opening_summary",
-				Label = "世界开局概要",
+				Label = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_058", "World opening overview"),
 				SnapshotText = (WorldOpening ?? "").Trim()
 			});
 		}
@@ -218,7 +218,7 @@ internal static string BuildWeeklyReportPopupBodyText(EventRecordEntry entry)
 	{
 		if (entry == null)
 		{
-			return "当前周报正文为空。";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_068", "The current weekly-report body is empty.");
 		}
 		string text = (entry.Summary ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
@@ -226,7 +226,7 @@ internal static string BuildWeeklyReportPopupBodyText(EventRecordEntry entry)
 			return text;
 		}
 		text = (entry.ShortSummary ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "当前周报正文为空。" : text;
+		return string.IsNullOrWhiteSpace(text) ? WorldBulletinPolicyTexts.Title("AF_WBLT_UI_068", "The current weekly-report body is empty.") : text;
 	}
 
 internal static string BuildWeeklyReportPopupSubtitle(EventRecordEntry entry, Func<string,string> kingdomDisplay, Func<int,string> calendarDate)
@@ -238,12 +238,12 @@ internal static string BuildWeeklyReportPopupSubtitle(EventRecordEntry entry, Fu
 		if (WorldBulletinStateOwner.IsWorldBulletinEventId(entry.EventId))
 		{
 			string date = entry.CreatedDay >= 0 ? calendarDate(entry.CreatedDay) : (entry.CreatedDate ?? "").Trim();
-			return date.Length > 0 ? "时事快报 · " + date : "时事快报";
+			return date.Length > 0 ? WorldBulletinPolicyTexts.Title("AF_WBLT_UI_069", "News bulletin \u00b7 ") + date : WorldBulletinPolicyTexts.Title("AF_WBLT_Title_Default", "Current affairs bulletin");
 		}
-		string text = string.Equals((entry.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : kingdomDisplay(entry.ScopeKingdomId);
+		string text = string.Equals((entry.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? WorldBulletinPolicyTexts.Title("AF_WBLT_UI_070", "World weekly report") : kingdomDisplay(entry.ScopeKingdomId);
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "王国周报";
+			text = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_071", "Kingdom weekly report");
 		}
 		return text + " · " + (entry.CreatedDay >= 0 ? calendarDate(entry.CreatedDay) : BuildWeeklyEpicWeekLabel(entry.WeekIndex, calendarDate));
 	}

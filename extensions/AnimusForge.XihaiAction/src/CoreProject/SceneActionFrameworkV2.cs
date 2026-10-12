@@ -72,56 +72,56 @@ namespace AnimusForge.SceneActions.Core
                     Laugh,
                     ActionMode.OneShot,
                     true,
-                    "大笑", "哈哈大笑", "放声大笑", "开怀大笑", "仰头大笑",
-                    "笑出声", "笑了起来", "咧嘴大笑", "发出一阵笑声",
-                    "爆发出一阵笑声", "爆发出笑声", "骤然笑了出来",
-                    "朗声笑了起来", "放声笑了起来", "laugh", "laughed",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0001"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0002"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0003"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0004"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0005"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0006"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0007"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0008"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0009"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0010"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0011"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0012"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0013"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0014"), "laugh", "laughed",
                     "burst into laughter", "let out a burst of laughter",
-                    "笑得前仰后合", "前仰后合", "捧腹大笑起来"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0015"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0016"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0017")),
                 Entry(
                     Point,
                     ActionMode.OneShot,
                     true,
-                    "指向", "指了指", "伸手指向", "抬手指向", "用手指向",
-                    "朝旁边一指", "指向旁边", "指给", "point", "pointed", "抬起食指越过众人肩头", "明确朝门外点去", "食指点去", "朝门外点去"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0018"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0019"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0020"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0021"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0022"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0023"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0024"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0025"), "point", "pointed", SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0026"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0027"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0028"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0029")),
                 Entry(
                     Rage,
                     ActionMode.OneShot,
                     true,
-                    "愤怒", "发怒", "暴怒", "勃然大怒", "怒吼", "怒气冲冲",
-                    "愤怒挥手", "rage", "enraged", "挥舞双臂", "跺脚怒吼", "猛然挥舞双臂并跺脚怒吼"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0030"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0031"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0032"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0033"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0034"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0035"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0036"), "rage", "enraged", SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0037"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0038"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0039")),
                 Entry(
                     Fear,
                     ActionMode.RandomGroup,
                     true,
-                    "害怕", "恐惧", "惊恐", "惊慌", "慌里慌张", "畏惧",
-                    "吓得摆手", "惊慌摆手", "瑟瑟发抖", "fear", "afraid", "吓得连退", "连连摆手", "连退两步", "双手护住脑袋", "不停发抖"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0040"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0041"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0042"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0043"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0044"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0045"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0046"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0047"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0048"), "fear", "afraid", SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0049"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0050"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0051"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0052"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0053")),
                 Entry(
                     Disappointed,
                     ActionMode.RandomGroup,
                     true,
-                    "失望", "沮丧", "失落", "垂头丧气", "无奈叹气",
-                    "摇头叹息", "disappointed", "dejected", "长长叹了一口气", "垂下头", "无奈地摇了摇", "长叹一声",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0054"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0055"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0056"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0057"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0058"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0059"), "disappointed", "dejected", SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0060"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0061"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0062"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0063"),
                     "sighed and lowered his head in disappointment", "lowered his head in disappointment",
                     "sighed in disappointment", "sighed and lowered her head in disappointment", "lowered her head in disappointment"),
                 Entry(
                     Challenge,
                     ActionMode.RandomGroup,
                     true,
-                    "挑衅", "挑战", "叫阵", "勾手挑衅", "招手挑衅",
-                    "挑衅地招手", "challenge", "challenged", "朝自己勾了勾手指", "拍胸叫阵", "勾了勾手指叫阵"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0064"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0065"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0066"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0067"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0068"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0069"), "challenge", "challenged", SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0070"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0071"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0072")),
                 Entry(
                     Search,
                     ActionMode.RandomGroup,
                     true,
-                    "环顾", "环顾四周", "四下张望", "左右张望", "扫视四周",
-                    "警惕观察", "搜寻", "寻找", "search", "looked around", "伸长脖子", "缓慢环视大厅每个角落", "环视大厅每个角落", "四处看"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0073"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0074"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0075"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0076"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0077"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0078"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0079"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0080"), "search", "looked around", SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0081"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0082"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0083"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0084")),
                 Entry(
                     Dance,
                     ActionMode.Looping,
                     false,
-                    "跳舞", "舞蹈", "舞动", "翩翩起舞", "随着节奏起舞",
-                    "dance", "danced", "扭动身体跳起舞来", "跳起舞来")
+                    SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0085"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0086"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0087"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0088"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0089"),
+                    "dance", "danced", SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0090"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0091"))
             });
 
         private static readonly HashSet<string> KneelOverlayKeys =
@@ -131,10 +131,10 @@ namespace AnimusForge.SceneActions.Core
 
         private static readonly string[] UnsupportedActionCues =
         {
-            "挥手", "摆手", "招手", "哭泣", "大哭", "哭了起来", "坐下",
-            "躺下", "趴下", "转身", "走路", "走了两步", "走了过去", "走过去",
-            "走向", "走到", "走去", "迈步走向", "跑步", "奔跑", "拥抱", "亲吻",
-            "喝酒", "吃东西", "踢腿", "踢人", "攻击", "walked over", "walked toward",
+            SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0092"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0093"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0094"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0095"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0096"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0097"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0098"),
+            SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0099"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0100"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0101"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0102"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0103"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0104"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0105"),
+            SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0106"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0107"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0108"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0109"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0110"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0111"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0112"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0113"),
+            SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0114"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0115"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0116"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0117"), SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0118"), "walked over", "walked toward",
             "walked to", "moved toward", "approached", "sat down", "lay down",
             "hugged", "kissed", "drank", "ate", "kicked", "attacked"
         };
@@ -296,8 +296,8 @@ namespace AnimusForge.SceneActions.Core
             // This explicit alternative is a long-standing V1 safety case: the
             // refused Xihai gesture is not part of the performed respect action.
             if (performed.Contains(Respect) &&
-                (normalized.IndexOf("而是", StringComparison.Ordinal) >= 0 ||
-                 normalized.IndexOf("转而", StringComparison.Ordinal) >= 0))
+                (normalized.IndexOf(SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0119"), StringComparison.Ordinal) >= 0 ||
+                 normalized.IndexOf(SceneActionVocabulary.Text("SceneActionFrameworkV2.Raw0120"), StringComparison.Ordinal) >= 0))
             {
                 unmatched.RemoveAll(key => string.Equals(
                     key,

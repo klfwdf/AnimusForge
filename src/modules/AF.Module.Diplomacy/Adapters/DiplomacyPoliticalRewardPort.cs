@@ -65,7 +65,7 @@ internal sealed class DiplomacyPoliticalRewardPort : IDiplomacyPoliticalRewardPo
         string failureSuffix = applied
             ? ""
             : DiplomacyUiLocalization.Text("AF_DIP_UI_Reward_FailureSuffix", " failed");
-        InformationManager.DisplayMessage(new InformationMessage("【" + title + failureSuffix + "】" + status,
+        InformationManager.DisplayMessage(new InformationMessage("【" + title + failureSuffix + "】" + DiplomacyDialogueStatusUi.Project(status),
             Color.FromUint(applied ? 4278242559u : 4294936661u)));
     }
     public void Unsupported(DiplomacyPoliticalRewardKind kind, string tag) =>

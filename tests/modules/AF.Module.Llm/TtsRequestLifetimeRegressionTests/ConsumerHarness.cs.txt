@@ -1,35 +1,37 @@
 using AnimusForge;
 using System.Reflection;
+using TaleWorlds.MountAndBlade;
 
-namespace AnimusForge {
+namespace TaleWorlds.MountAndBlade {
  sealed class Mission { public static Mission Current=new(); }
+ sealed class Agent { }
+}
+namespace AnimusForge {
  static class SaveRuntimeGuard {public static long Generation=1;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long g)=>g==Generation;}
+ @@SCENE_OWNER@@
+ @@SCENE_PORTS@@
 }
 sealed class TtsConsumerSubject {
- readonly object _ttsBubbleSyncLock=new();
  int _sceneHistorySessionId=1,_sceneConversationEpoch=1;
- static readonly object _nativeConversationTtsPlaybackWaitLock=new();
- static TaskCompletionSource<bool> _nativeConversationTtsPlaybackWaitTcs;
- static int _nativeConversationTtsPlaybackWaitAgentIndex=int.MinValue,_nativeConversationTtsPlaybackWaitTimeoutMs;
- static long _nativeConversationTtsPlaybackWaitToken;
- static TtsEngine.PlaybackRequest _nativeConversationTtsPlaybackRequest;
- const int NativeConversationTtsPlaybackWaitMinTimeoutMs=30000,NativeConversationTtsPlaybackWaitMaxTimeoutMs=300000;
- @@METHODS@@
- public void Track(TtsEngine.PlaybackRequest r,Action prepare=null)=>TrackTtsPlaybackRequest(r,prepare);
- public bool Prepare(TtsEngine.PlaybackRequest r)=>PrepareTtsPlaybackRequest(r);
- public bool Active(TtsEngine.PlaybackRequest r,bool cancelled=false)=>IsActiveTtsPlaybackRequest(r,cancelled);
- public void Retire(TtsEngine.PlaybackRequest r)=>RetireTtsPlaybackRequest(r);
- public int Owners=>_ttsPlaybackOwners.Count;
- public bool IsCurrent(TtsEngine.PlaybackRequest r,bool cancelled=false)=>IsTtsPlaybackRequestCurrent(r,cancelled);
+ readonly SceneAudioLipSyncController _audio;
+ static readonly NativeConversationPlaybackWaitAdapter _wait = new(new NativeConversationPlaybackWaitPorts());
+ static readonly BindingFlags F=BindingFlags.Instance|BindingFlags.NonPublic;
+ public TtsConsumerSubject() { _audio=new(new SceneAudioLipSyncPort { SceneSessionId=()=>_sceneHistorySessionId, ConversationEpoch=()=>_sceneConversationEpoch }); }
+ public void Track(TtsEngine.PlaybackRequest r,Action prepare=null)=>_audio.TrackTtsPlaybackRequest(r,prepare);
+ public bool Prepare(TtsEngine.PlaybackRequest r)=>_audio.PrepareTtsPlaybackRequest(r);
+ public bool Active(TtsEngine.PlaybackRequest r,bool cancelled=false)=>_audio.IsActiveTtsPlaybackRequest(r,cancelled);
+ public void Retire(TtsEngine.PlaybackRequest r)=>_audio.RetireTtsPlaybackRequest(r);
+ public int Owners=>_audio._ttsPlaybackOwners.Count;
+ public bool IsCurrent(TtsEngine.PlaybackRequest r,bool cancelled=false)=>_audio.IsTtsPlaybackRequestCurrent(r,cancelled);
  public void NextSession()=>_sceneHistorySessionId++;
  public void NextEpoch()=>_sceneConversationEpoch++;
- public static long Register(TtsEngine.PlaybackRequest r)=>RegisterNativeConversationTtsPlaybackWait(r,1,5);
- public static Task Wait=>_nativeConversationTtsPlaybackWaitTcs?.Task;
- public static bool Complete(TtsEngine.PlaybackRequest r)=>CompleteNativeConversationTtsPlaybackWait(r,"fixture");
- public static void Reset()=>CompleteNativeConversationTtsPlaybackWait(null,"reset",true);
- public static bool Matches(TtsEngine.PlaybackRequest r)=>IsNativeConversationTtsPlaybackWaitRequest(r);
- public static bool Token(long t,int agent)=>IsNativeConversationTtsPlaybackWaitToken(t,agent);
- public static void CompleteToken(long t)=>CompleteNativeConversationTtsPlaybackWaitByToken(t,"timeout");
+ public static long Register(TtsEngine.PlaybackRequest r)=>_wait.RegisterNativeConversationTtsPlaybackWait(r,1,5);
+ public static Task Wait=>((TaskCompletionSource<bool>)typeof(NativeConversationPlaybackWaitAdapter).GetField("_nativeConversationTtsPlaybackWaitTcs",F).GetValue(_wait))?.Task;
+ public static bool Complete(TtsEngine.PlaybackRequest r)=>_wait.CompleteNativeConversationTtsPlaybackWait(r,"fixture");
+ public static void Reset()=>_wait.CompleteNativeConversationTtsPlaybackWait(null,"reset",true);
+ public static bool Matches(TtsEngine.PlaybackRequest r)=>_wait.IsNativeConversationTtsPlaybackWaitRequest(r);
+ public static bool Token(long t,int agent)=>_wait.IsNativeConversationTtsPlaybackWaitToken(t,agent);
+ public static void CompleteToken(long t)=>_wait.CompleteNativeConversationTtsPlaybackWaitByToken(t,"timeout");
 }
 static class ConsumerTests {
  static TtsEngine.PlaybackRequest Request(TtsEngine e,int agent=-1){TtsEngine.PlaybackRequest r=null;e.SpeakAsync("x",-1,1,agent,null,x=>r=x);return r;}

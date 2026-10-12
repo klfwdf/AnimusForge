@@ -116,5 +116,10 @@
     <string id="AF_KINGDOM_CW_Note_CrownSuppressed" text="The crown suppresses the rebellion." />
     <string id="AF_KINGDOM_CW_Note_RestorationKingdomRestored" text="The rebels won: {A} regains the throne, the kingdom is renamed to {B}, and the old king resumes rule." />
     <string id="AF_KINGDOM_CW_Note_RestorationKingdomHeir" text="The rebels won: {A} regains the throne, the kingdom is renamed to {B}, and the clan's current leader succeeds the deceased old king." />
+    <string id="AF_UI_KingdomRebellion_FollowerEligible" text="Eligible to join the rebellion coalition: relation with the rebel leader minus relation with the king = {DIFF} (&gt;= 15)." />
+    <string id="AF_UI_KingdomRebellion_FollowerIneligible" text="Not eligible to join the rebellion coalition: relation with the rebel leader minus relation with the king = {DIFF} (requires &gt;= 15)." />
+    <string id="AF_UI_KingdomRebellion_ForceEligible" text="Meets the forced-trigger conditions." />
+    <string id="AF_UI_KingdomRebellion_AutoEligible" text="Meets the automatic rebellion conditions." />
+    <string id="AF_UI_KingdomRebellion_OriginalKingdom" text="the original kingdom" />
 </strings>
 </base>

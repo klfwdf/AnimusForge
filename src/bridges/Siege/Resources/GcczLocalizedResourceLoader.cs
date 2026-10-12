@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -10,6 +11,9 @@ namespace AnimusForge;
 /// </summary>
 internal static class GcczLocalizedResourceLoader
 {
+    internal static bool UseChineseInterface => LocalizedTextManager.GetSubtitleExtensionOfLanguage(MBTextManager.ActiveTextLanguage)
+        ?.StartsWith("zh", StringComparison.OrdinalIgnoreCase) == true;
+
 	internal static T Load<T>(
 		string fileName,
 		string embeddedResourceName,

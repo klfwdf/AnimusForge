@@ -117,7 +117,7 @@ internal static string NormalizePromotedSkillKey(string key)
 				+ "\n" + PersonaPromptTexts.Format("AF_PERSONA_PROMPT_OldPersonality", "Previous personality (legacy reference): {PERSONALITY}", ("PERSONALITY", string.IsNullOrWhiteSpace(oldPersonality) ? PersonaPromptTexts.Get("AF_PERSONA_PROMPT_EmptyValue", "none") : oldPersonality))
 				+ "\n" + PersonaPromptTexts.Format("AF_PERSONA_PROMPT_OldBackground", "Previous background (legacy reference): {BACKGROUND}", ("BACKGROUND", string.IsNullOrWhiteSpace(oldBackground) ? PersonaPromptTexts.Get("AF_PERSONA_PROMPT_EmptyValue", "none") : oldBackground));
 		}
-        return new NpcPersonaPrompt(sys,user);
+        return new NpcPersonaPrompt(PromptComposerTexts.ApplyOutputLanguage(sys),user);
     }
     internal static NpcPersonaPrompt BuildPromoted(string name,string fullName,string troopName,string troopId,string culture,string scene,string joinFact,string history,string equipment,string facts,string requirements)
     {
@@ -135,7 +135,7 @@ internal static string NormalizePromotedSkillKey(string key)
 			userSb.AppendLine(facts);
 			userSb.AppendLine(PersonaPromptTexts.Get("AF_PERSONA_PROMPT_JoinHistoryHeading", "All available dialogue history between this NPC and the player before joining:"));
 			userSb.AppendLine(history);
-        return new NpcPersonaPrompt(sys,userSb.ToString().Trim());
+        return new NpcPersonaPrompt(PromptComposerTexts.ApplyOutputLanguage(sys),userSb.ToString().Trim());
     }
     internal static NpcPersonaPrompt BuildSkills(string personalName,string originalTroopName,string cultureName,string equipmentSummary,string skillSource,string personality,string background)
     {

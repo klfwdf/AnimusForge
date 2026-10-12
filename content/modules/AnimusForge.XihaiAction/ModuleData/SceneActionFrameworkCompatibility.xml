@@ -1,0 +1,1291 @@
+<?xml version='1.0' encoding='utf-8'?>
+<vocabulary version="1">
+  <!-- SceneActionFrameworkV3 compatibility cues -->
+  <list id="SceneActionFrameworkV3.UnsupportedActionCues">
+    <token>转身</token>
+    <token>回头</token>
+    <token>扭头</token>
+    <token>低头</token>
+    <token>抬头</token>
+    <token>点头</token>
+    <token>摇头</token>
+    <token>摆手</token>
+    <token>挥手</token>
+    <token>抬手</token>
+    <token>伸手</token>
+    <token>握拳</token>
+    <token>松开手</token>
+    <token>后退</token>
+    <token>上前</token>
+    <token>走近</token>
+    <token>靠近</token>
+    <token>蹲下</token>
+    <token>坐下</token>
+    <token>躺下</token>
+    <token>闭眼</token>
+    <token>睁眼</token>
+    <token>眨眼</token>
+    <token>皱眉</token>
+    <token>咬牙</token>
+    <token>咬唇</token>
+    <token>抿嘴</token>
+    <token>张嘴</token>
+    <token>深呼吸</token>
+    <token>叹气</token>
+    <token>摸下巴</token>
+    <token>摸头</token>
+    <token>挠头</token>
+    <token>turn around</token>
+    <token>turn back</token>
+    <token>look back</token>
+    <token>nod</token>
+    <token>shake head</token>
+    <token>wave hand</token>
+    <token>raise hand</token>
+    <token>step back</token>
+    <token>step forward</token>
+    <token>sit down</token>
+    <token>crouch</token>
+    <token>close eyes</token>
+    <token>open eyes</token>
+  </list>
+
+  <!-- ImplicitEmotionInferenceV1 physical cues -->
+  <list id="ImplicitEmotionInferenceV1.FearPallorCues">
+    <token>面色微微一白</token>
+    <token>脸色一白</token>
+    <token>脸色瞬间发白</token>
+    <token>脸色骤然发白</token>
+    <token>血色褪去</token>
+    <token>面上失了血色</token>
+    <token>唇色发白</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.FearFreezeCues">
+    <token>身形僵住</token>
+    <token>身体僵住</token>
+    <token>动作僵住</token>
+    <token>呼吸停了一瞬</token>
+    <token>呼吸一滞</token>
+    <token>喉结滚动</token>
+    <token>喉头滚动</token>
+    <token>脚步顿住</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.FearTremorCues">
+    <token>手指微微发颤</token>
+    <token>指尖发颤</token>
+    <token>双手轻颤</token>
+    <token>声音发紧</token>
+    <token>尾音发颤</token>
+    <token>嘴唇哆嗦</token>
+    <token>肩膀轻颤</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.FearMaskingCues">
+    <token>很快稳住身形</token>
+    <token>强迫自己站直</token>
+    <token>努力维持平静</token>
+    <token>强作镇定</token>
+    <token>故作镇定</token>
+    <token>勉强稳住呼吸</token>
+    <token>把慌乱压了下去</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.FearThreatCues">
+    <token>砍下你的头</token>
+    <token>砍掉你的头</token>
+    <token>砍下你的头颅</token>
+    <token>取你性命</token>
+    <token>要你的命</token>
+    <token>处死你</token>
+    <token>斩首</token>
+    <token>吊死</token>
+    <token>杀了你</token>
+    <token>弄死你</token>
+    <token>割断你的喉咙</token>
+    <token>提刀把你的头颅砍下来</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.FearVulnerabilityCues">
+    <token>无力反抗</token>
+    <token>饶我一命</token>
+    <token>留我一命</token>
+    <token>死个明白</token>
+    <token>是否还有活命</token>
+    <token>不敢违抗</token>
+    <token>任凭处置</token>
+    <token>求您开恩</token>
+    <token>别杀我</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.FearNegativeCues">
+    <token>毫无惧色</token>
+    <token>面不改色</token>
+    <token>神色自若</token>
+    <token>根本不怕</token>
+    <token>毫不害怕</token>
+    <token>没有丝毫恐惧</token>
+    <token>并不畏惧</token>
+    <token>从容不迫</token>
+    <token>镇定自若</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.RageBodyCues">
+    <token>咬紧牙关</token>
+    <token>牙关紧咬</token>
+    <token>下颌绷紧</token>
+    <token>腮帮绷紧</token>
+    <token>手背青筋凸起</token>
+    <token>额角青筋跳动</token>
+    <token>拳头攥得发白</token>
+    <token>五指收拢成拳</token>
+    <token>指节捏得发白</token>
+    <token>抓紧剑柄</token>
+    <token>掌心被指甲掐出印</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.RageMaskingCues">
+    <token>把话咽了回去</token>
+    <token>强忍着没有发作</token>
+    <token>压住即将出口的话</token>
+    <token>声音冷了下来</token>
+    <token>语气骤然变硬</token>
+    <token>眼神骤然冰冷</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.RageProvocationCues">
+    <token>废物</token>
+    <token>懦夫</token>
+    <token>叛徒</token>
+    <token>羞辱</token>
+    <token>侮辱</token>
+    <token>污蔑</token>
+    <token>背叛</token>
+    <token>栽赃</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.RageDialogueCues">
+    <token>你没有资格</token>
+    <token>这笔账</token>
+    <token>不会忘记</token>
+    <token>收回这句话</token>
+    <token>别逼我</token>
+    <token>记住你今天说的话</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.RageNegativeCues">
+    <token>没有动气</token>
+    <token>并未动气</token>
+    <token>神色平和</token>
+    <token>毫无怒意</token>
+    <token>只是平静地</token>
+    <token>不以为意</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.DisappointedBodyCues">
+    <token>目光黯淡下来</token>
+    <token>眼里的光暗了下去</token>
+    <token>肩膀缓缓垮下</token>
+    <token>原本挺直的背脊松了下来</token>
+    <token>垂下眼帘</token>
+    <token>沉默良久</token>
+    <token>长长吐出一口气</token>
+    <token>轻轻叹了口气</token>
+    <token>苦涩地扯了扯嘴角</token>
+    <token>将准备好的东西收了回去</token>
+    <token>慢慢收回伸出的手</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.DisappointedContextCues">
+    <token>食言</token>
+    <token>承诺作废</token>
+    <token>没有兑现</token>
+    <token>拒绝了</token>
+    <token>落空</token>
+    <token>白等</token>
+    <token>辜负</token>
+    <token>原以为</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.DisappointedDialogueCues">
+    <token>原来如此</token>
+    <token>我明白了</token>
+    <token>就当我没说</token>
+    <token>罢了</token>
+    <token>算了</token>
+    <token>到此为止</token>
+    <token>不必再提</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.DisappointedNegativeCues">
+    <token>欣然接受</token>
+    <token>喜出望外</token>
+    <token>眼前一亮</token>
+    <token>并不在意</token>
+    <token>如释重负</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.LaughBodyCues">
+    <token>嘴角压不住地上扬</token>
+    <token>唇角悄悄翘起</token>
+    <token>嘴角抽动了一下</token>
+    <token>把脸别到一旁</token>
+    <token>肩膀轻轻抖了两下</token>
+    <token>鼻间漏出短促气音</token>
+    <token>喉间溢出一声气音</token>
+    <token>抬手掩住嘴角</token>
+    <token>差点呛到</token>
+    <token>拍了拍自己的胸口</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.LaughContextCues">
+    <token>荒唐</token>
+    <token>滑稽</token>
+    <token>可笑</token>
+    <token>笑话</token>
+    <token>离谱</token>
+    <token>荒谬</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.LaughDialogueCues">
+    <token>这倒有意思</token>
+    <token>真有你的</token>
+    <token>你认真的吗</token>
+    <token>妙极了</token>
+    <token>好一个</token>
+    <token>竟能说出这种话</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.LaughNegativeCues">
+    <token>没有任何笑意</token>
+    <token>嘴角纹丝不动</token>
+    <token>神情严肃</token>
+    <token>并未觉得有趣</token>
+    <token>冷冷看着</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.UnsureBodyCues">
+    <token>几次张口又停住</token>
+    <token>话到嘴边又咽下</token>
+    <token>手指悬在半空</token>
+    <token>抬起的手又放下</token>
+    <token>脚步迈出半步又收回</token>
+    <token>目光在两人之间来回游移</token>
+    <token>视线反复扫过众人</token>
+    <token>反复摩挲指节</token>
+    <token>低头沉吟片刻</token>
+    <token>迟迟没有回答</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.UnsureContextCues">
+    <token>两个选择</token>
+    <token>只能选一个</token>
+    <token>相互矛盾</token>
+    <token>不同说法</token>
+    <token>立刻决定</token>
+    <token>究竟哪一个</token>
+    <token>二选一</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.UnsureDialogueCues">
+    <token>容我考虑</token>
+    <token>让我理一理</token>
+    <token>这件事没那么简单</token>
+    <token>我需要一点时间</token>
+    <token>两边都有道理</token>
+    <token>一时难以决定</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.UnsureNegativeCues">
+    <token>立刻作出决定</token>
+    <token>毫不迟疑</token>
+    <token>当即回答</token>
+    <token>没有任何停顿</token>
+    <token>早已有了答案</token>
+  </list>
+
+  <!-- ImplicitEmotionInferenceV1 ordered token sequences -->
+  <list id="ImplicitEmotionInferenceV1.FearPallorOrderedCues">
+    <token>面|失|血色</token>
+    <token>面色|白</token>
+    <token>脸色|白</token>
+    <token>唇|白</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.FearFreezeOrderedCues">
+    <token>身形|僵</token>
+    <token>身体|僵</token>
+    <token>呼吸|停</token>
+    <token>呼吸|滞</token>
+    <token>喉结|滚</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.FearTremorOrderedCues">
+    <token>手指|颤</token>
+    <token>指尖|颤</token>
+    <token>声音|紧</token>
+    <token>尾音|颤</token>
+    <token>嘴唇|哆嗦</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.RageBodyOrderedCues">
+    <token>下颌|绷紧</token>
+    <token>腮帮|绷紧</token>
+    <token>五指|成拳</token>
+    <token>拳头|发白</token>
+    <token>指节|发白</token>
+    <token>青筋|凸起</token>
+    <token>青筋|跳动</token>
+    <token>掌心|指甲|印</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.RageDialogueOrderedCues">
+    <token>逼|我</token>
+    <token>账|忘</token>
+    <token>话|收回</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.DisappointedBodyOrderedCues">
+    <token>目光|黯淡</token>
+    <token>眼|光|暗</token>
+    <token>肩膀|垮</token>
+    <token>背脊|松</token>
+    <token>眼帘|垂</token>
+    <token>手|收回</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.DisappointedContextOrderedCues">
+    <token>不会|兑现</token>
+    <token>承诺|作废</token>
+    <token>拒绝|提议</token>
+    <token>白|等</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.DisappointedDialogueOrderedCues">
+    <token>想得|太多</token>
+    <token>没有|意义</token>
+    <token>放下</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.LaughBodyOrderedCues">
+    <token>嘴角|上扬</token>
+    <token>唇角|翘</token>
+    <token>嘴角|抽动</token>
+    <token>肩膀|抖</token>
+    <token>鼻间|气音</token>
+    <token>喉间|气音</token>
+    <token>手|掩|嘴角</token>
+    <token>差点|呛到</token>
+    <token>拍|胸口</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.LaughBodyUnmistakableOrderedCues">
+    <token>嘴角|压不住|上扬</token>
+    <token>唇角|翘</token>
+    <token>肩膀|抖</token>
+    <token>鼻间|气音</token>
+    <token>喉间|气音</token>
+    <token>手|掩|嘴角</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.LaughContextOrderedCues">
+    <token>竟|当成</token>
+    <token>居然|当成</token>
+    <token>拿|当</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.LaughDialogueOrderedCues">
+    <token>你|认真</token>
+    <token>这|有意思</token>
+    <token>真有|你</token>
+    <token>不会|无聊</token>
+    <token>场面|难得</token>
+    <token>差点|信</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.UnsureBodyOrderedCues">
+    <token>张口|停</token>
+    <token>话|咽下</token>
+    <token>手指|半空</token>
+    <token>手|放下</token>
+    <token>脚步|收回</token>
+    <token>目光|来回</token>
+    <token>视线|反复</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.UnsureContextOrderedCues">
+    <token>命令|矛盾</token>
+    <token>说法|不同</token>
+    <token>选择|一个</token>
+  </list>
+
+  <list id="ImplicitEmotionInferenceV1.UnsureDialogueOrderedCues">
+    <token>让我|理一理</token>
+    <token>需要|时间</token>
+    <token>难以|决定</token>
+    <token>需要|确认</token>
+  </list>
+
+  <!-- Consent reply recognition -->
+  <list id="ConsentReplyInterpreter.AcceptReplies">
+    <token>好我答应</token>
+    <token>好的我答应</token>
+    <token>我答应</token>
+    <token>我答应你</token>
+    <token>答应你</token>
+    <token>我同意</token>
+    <token>同意</token>
+    <token>我愿意</token>
+    <token>愿意</token>
+    <token>遵命</token>
+    <token>是遵命</token>
+    <token>如你所愿</token>
+    <token>我会照做</token>
+    <token>我照做</token>
+    <token>照办</token>
+    <token>没问题我照做</token>
+    <token>yes</token>
+    <token>iagree</token>
+    <token>iaccept</token>
+    <token>iwilldoit</token>
+  </list>
+
+  <list id="ConsentReplyInterpreter.RefuseReplies">
+    <token>绝不</token>
+    <token>我拒绝</token>
+    <token>拒绝</token>
+    <token>我不答应</token>
+    <token>不答应</token>
+    <token>我不同意</token>
+    <token>不同意</token>
+    <token>我不愿意</token>
+    <token>不愿意</token>
+    <token>不可能</token>
+    <token>休想</token>
+    <token>做梦</token>
+    <token>没门</token>
+    <token>办不到</token>
+    <token>恕难从命</token>
+    <token>我不会照做</token>
+    <token>我不照做</token>
+    <token>no</token>
+    <token>irefuse</token>
+    <token>iwillnot</token>
+  </list>
+
+  <list id="ConsentReplyInterpreter.UnclearReplies">
+    <token>让我考虑</token>
+    <token>让我考虑一下</token>
+    <token>容我考虑</token>
+    <token>容我想想</token>
+    <token>让我想想</token>
+    <token>我想一想</token>
+    <token>我再想想</token>
+    <token>稍后再说</token>
+    <token>以后再说</token>
+    <token>等一下</token>
+    <token>等一等</token>
+    <token>也许</token>
+    <token>或许</token>
+    <token>看情况</token>
+    <token>不一定</token>
+    <token>maybe</token>
+    <token>letmethink</token>
+    <token>iwillconsiderit</token>
+  </list>
+
+  <!-- BattleSpeechFrameworkV2 trigger keywords -->
+  <list id="BattleSpeechFrameworkV2.ForcedPlayerSpeechPrefixes">
+    <token>强制指令我来演讲</token>
+    <token>强制指令我演讲</token>
+    <token>强制指令演讲</token>
+    <token>强制演讲</token>
+    <token>强制我演讲</token>
+    <token>强制我来演讲</token>
+    <token>我强制演讲</token>
+    <token>演讲</token>
+    <token>我演讲</token>
+    <token>我来演讲</token>
+  </list>
+
+  <list id="BattleSpeechFrameworkV2.SpeechMetaMarkers">
+    <token>正文如下</token>
+    <token>演讲正文</token>
+    <token>可用于测试</token>
+    <token>测试用</token>
+    <token>示例一</token>
+    <token>示例1</token>
+    <token>第1段</token>
+    <token>第1个</token>
+    <token>第2段</token>
+    <token>第2个</token>
+    <token>第3段</token>
+    <token>第3个</token>
+    <token>第4段</token>
+    <token>第4个</token>
+    <token>第5段</token>
+    <token>第5个</token>
+    <token>第6段</token>
+    <token>第6个</token>
+    <token>第7段</token>
+    <token>第7个</token>
+    <token>第8段</token>
+    <token>第8个</token>
+    <token>第9段</token>
+    <token>第9个</token>
+    <token>第10段</token>
+    <token>第10个</token>
+  </list>
+
+  <list id="BattleSpeechFrameworkV2.NegationCues">
+    <token>不要</token>
+    <token>别让</token>
+    <token>不许</token>
+    <token>不用</token>
+    <token>取消</token>
+    <token>停止</token>
+    <token>没让</token>
+    <token>并未</token>
+    <token>not </token>
+    <token>don't</token>
+    <token>do not</token>
+    <token>never</token>
+  </list>
+
+  <list id="BattleSpeechFrameworkV2.HypotheticalOrQuotedCues">
+    <token>如果</token>
+    <token>假如</token>
+    <token>要是</token>
+    <token>比如</token>
+    <token>所谓</token>
+    <token>这句话</token>
+    <token>这几个字</token>
+    <token>假设</token>
+    <token>if </token>
+    <token>what if</token>
+    <token>quote</token>
+  </list>
+
+  <list id="BattleSpeechFrameworkV2.AudienceCues">
+    <token>大家</token>
+    <token>众人</token>
+    <token>士兵</token>
+    <token>将士</token>
+    <token>弟兄</token>
+    <token>兄弟</token>
+    <token>队伍</token>
+    <token>全军</token>
+    <token>部队</token>
+    <token>军队</token>
+    <token>战士</token>
+    <token>troops</token>
+    <token>soldiers</token>
+    <token>everyone</token>
+    <token>army</token>
+  </list>
+
+  <list id="BattleSpeechFrameworkV2.SpeechCues">
+    <token>演讲</token>
+    <token>训话</token>
+    <token>动员</token>
+    <token>鼓舞</token>
+    <token>讲几句</token>
+    <token>讲两句</token>
+    <token>讲俩句</token>
+    <token>说几句</token>
+    <token>说两句</token>
+    <token>说俩句</token>
+    <token>喊几句</token>
+    <token>speech</token>
+    <token>address the troops</token>
+    <token>rally the troops</token>
+  </list>
+
+  <list id="BattleSpeechFrameworkV2.SpeechRequestCues">
+    <token>来给</token>
+    <token>去给</token>
+    <token>上前</token>
+    <token>请你</token>
+    <token>让你</token>
+    <token>你来</token>
+    <token>你去</token>
+    <token>劳烦</token>
+    <token>麻烦</token>
+    <token>替我</token>
+    <token>给大家</token>
+    <token>跟大家</token>
+    <token>向大家</token>
+    <token>对大家</token>
+    <token>给士兵</token>
+    <token>跟士兵</token>
+    <token>向士兵</token>
+    <token>能不能</token>
+    <token>能否</token>
+    <token>可否</token>
+    <token>give </token>
+    <token>go give</token>
+    <token>please give</token>
+    <token>address </token>
+  </list>
+
+  <list id="BattleSpeechFrameworkV2.SelfCues">
+    <token>我来</token>
+    <token>我要</token>
+    <token>由我</token>
+    <token>我给</token>
+    <token>我向</token>
+    <token>我跟</token>
+    <token>让我来</token>
+    <token>my speech</token>
+    <token>i will</token>
+    <token>let me</token>
+  </list>
+
+  <list id="BattleSpeechFrameworkV2.DirectTroopAddressCues">
+    <token>弟兄们</token>
+    <token>兄弟们</token>
+    <token>将士们</token>
+    <token>战士们</token>
+    <token>士兵们</token>
+    <token>全军</token>
+    <token>各位将士</token>
+    <token>各位</token>
+    <token>诸位</token>
+    <token>同袍们</token>
+    <token>同胞们</token>
+    <token>大家</token>
+    <token>所有人</token>
+    <token>伙计们</token>
+    <token>troops</token>
+    <token>soldiers</token>
+    <token>brothers</token>
+    <token>everyone</token>
+  </list>
+
+  <list id="BattleSpeechFrameworkV2.CollectiveSpeechCues">
+    <token>我们</token>
+    <token>咱们</token>
+    <token>吾等</token>
+    <token>共同</token>
+    <token>一起</token>
+    <token>跟我</token>
+    <token>听我</token>
+    <token>告诉你们</token>
+    <token>记住</token>
+    <token>let us</token>
+    <token>let's</token>
+    <token>we must</token>
+    <token>we will</token>
+  </list>
+
+  <list id="BattleSpeechFrameworkV2.DirectRallyCues">
+    <token>家园</token>
+    <token>敌人</token>
+    <token>该死</token>
+    <token>前方</token>
+    <token>冲锋</token>
+    <token>战斗</token>
+    <token>战场</token>
+    <token>胜利</token>
+    <token>后退</token>
+    <token>不能退</token>
+    <token>不后退</token>
+    <token>阵线</token>
+    <token>勇气</token>
+    <token>荣耀</token>
+    <token>守住</token>
+    <token>杀敌</token>
+    <token>迎敌</token>
+    <token>随我</token>
+    <token>为了</token>
+    <token>绝不</token>
+    <token>必将</token>
+    <token>必须</token>
+    <token>战争</token>
+    <token>进攻</token>
+    <token>前进</token>
+    <token>自由</token>
+    <token>复仇</token>
+    <token>报仇</token>
+    <token>听我</token>
+    <token>听令</token>
+    <token>号令</token>
+    <token>掠夺</token>
+    <token>袭击</token>
+    <token>人民</token>
+    <token>拼了</token>
+    <token>上啊</token>
+    <token>杀过去</token>
+    <token>保卫</token>
+    <token>家人</token>
+    <token>家乡</token>
+    <token>fight</token>
+    <token>enemy</token>
+    <token>victory</token>
+    <token>forward</token>
+    <token>retreat</token>
+    <token>battle</token>
+    <token>hold the line</token>
+  </list>
+
+  <!-- SceneActionFrameworkV1 compatibility cues -->
+  <list id="SceneActionFrameworkV1.StrongCueSuppressors">
+    <token>拒绝</token>
+    <token>不愿</token>
+    <token>不肯</token>
+    <token>不想</token>
+    <token>不打算</token>
+    <token>无意</token>
+    <token>只是想</token>
+    <token>仅想</token>
+    <token>只想</token>
+    <token>想</token>
+    <token>想要</token>
+    <token>试图</token>
+    <token>准备</token>
+    <token>打算</token>
+    <token>正要</token>
+    <token>刚要</token>
+    <token>欲要</token>
+    <token>本来要</token>
+    <token>本来想</token>
+    <token>本来打算</token>
+    <token>差点</token>
+    <token>险些</token>
+    <token>几乎</token>
+    <token>停止</token>
+    <token>没能</token>
+    <token>未能</token>
+    <token>避免</token>
+    <token>尝试</token>
+    <token>计划</token>
+    <token>企图</token>
+    <token>考虑</token>
+    <token>希望</token>
+    <token>设想</token>
+    <token>想象</token>
+    <token>假设</token>
+    <token>如果</token>
+    <token>假如</token>
+    <token>倘若</token>
+    <token>若是</token>
+    <token>要是</token>
+    <token>万一</token>
+    <token>口头表示</token>
+    <token>口头说</token>
+    <token>口头声称</token>
+    <token>只是说道</token>
+    <token>声称</token>
+    <token>回忆</token>
+    <token>先前</token>
+    <token>此前</token>
+    <token>曾经</token>
+    <token>刚才</token>
+    <token>之前</token>
+    <token>原本</token>
+    <token>嘴上</token>
+    <token>是否</token>
+    <token>会不会</token>
+    <token>能不能</token>
+    <token>要不要</token>
+    <token>请解释</token>
+    <token>解释</token>
+    <token>说出</token>
+    <token>只是说</token>
+    <token>提到</token>
+    <token>谈到</token>
+    <token>讨论</token>
+    <token>引用</token>
+    <token>念出</token>
+    <token>读出</token>
+    <token>写下</token>
+  </list>
+  <list id="SceneActionFrameworkV1.DirectCueSuppressors">
+    <token>没有</token>
+    <token>毫无</token>
+    <token>并无</token>
+    <token>并未</token>
+    <token>未曾</token>
+    <token>从未</token>
+    <token>绝不</token>
+    <token>不再</token>
+    <token>并不</token>
+    <token>没</token>
+    <token>未</token>
+    <token>不</token>
+  </list>
+  <list id="SceneActionFrameworkV1.NonPerformativeContextSuppressors">
+    <token>只是想</token>
+    <token>仅想</token>
+    <token>只想</token>
+    <token>想要</token>
+    <token>试图</token>
+    <token>准备</token>
+    <token>打算</token>
+    <token>正要</token>
+    <token>刚要</token>
+    <token>欲要</token>
+    <token>本来要</token>
+    <token>本来想</token>
+    <token>本来打算</token>
+    <token>差点</token>
+    <token>险些</token>
+    <token>几乎</token>
+    <token>尝试</token>
+    <token>计划</token>
+    <token>企图</token>
+    <token>考虑</token>
+    <token>希望</token>
+    <token>设想</token>
+    <token>想象</token>
+    <token>假设</token>
+    <token>如果</token>
+    <token>假如</token>
+    <token>倘若</token>
+    <token>若是</token>
+    <token>要是</token>
+    <token>万一</token>
+    <token>口头表示</token>
+    <token>口头说</token>
+    <token>口头声称</token>
+    <token>只是说道</token>
+    <token>声称</token>
+    <token>回忆</token>
+    <token>先前</token>
+    <token>此前</token>
+    <token>曾经</token>
+    <token>刚才</token>
+    <token>之前</token>
+    <token>原本</token>
+    <token>嘴上</token>
+    <token>是否</token>
+    <token>会不会</token>
+    <token>能不能</token>
+    <token>要不要</token>
+    <token>请解释</token>
+    <token>解释</token>
+    <token>说出</token>
+    <token>只是说</token>
+    <token>提到</token>
+    <token>谈到</token>
+    <token>讨论</token>
+    <token>引用</token>
+    <token>念出</token>
+    <token>读出</token>
+    <token>写下</token>
+  </list>
+  <list id="SceneActionFrameworkV1.PerformedDespiteNegationPrefixes">
+    <token>忍不住</token>
+    <token>不由得</token>
+    <token>不得不</token>
+    <token>没有犹豫</token>
+    <token>没有迟疑</token>
+    <token>毫不犹豫</token>
+    <token>毫不迟疑</token>
+    <token>不假思索</token>
+  </list>
+  <list id="SceneActionFrameworkV1.PerformanceRecoveryMarkers">
+    <token>但仍</token>
+    <token>却仍</token>
+    <token>仍然</token>
+    <token>依然</token>
+    <token>还是</token>
+    <token>转而</token>
+    <token>而是</token>
+    <token>随后</token>
+    <token>随即</token>
+    <token>然后</token>
+    <token>接着</token>
+    <token>继而</token>
+    <token>后来</token>
+    <token>反而</token>
+    <token>但是</token>
+    <token>不过</token>
+    <token>完成了</token>
+    <token>完成</token>
+    <token>作出</token>
+    <token>做出</token>
+    <token>只是</token>
+    <token>却</token>
+    <token>又</token>
+    <token>并且</token>
+    <token>同时</token>
+  </list>
+  <list id="SceneActionFrameworkV1.HypotheticalCueSuppressors">
+    <token>如果</token>
+    <token>假如</token>
+    <token>倘若</token>
+    <token>若是</token>
+    <token>要是</token>
+    <token>万一</token>
+    <token>假设</token>
+  </list>
+  <list id="SceneActionFrameworkV1.HypotheticalRecoveryMarkers">
+    <token>但</token>
+    <token>却</token>
+    <token>然而</token>
+    <token>不过</token>
+    <token>反而</token>
+    <token>而是</token>
+    <token>还是</token>
+  </list>
+  <list id="SceneActionFrameworkV1.AfterCueSuppressors">
+    <token>的念头</token>
+    <token>的打算</token>
+    <token>的想法</token>
+    <token>吗</token>
+    <token>么</token>
+    <token>呢</token>
+    <token>会怎样</token>
+    <token>会怎么样</token>
+    <token>是什么意思</token>
+    <token>意味着什么</token>
+    <token>是否可行</token>
+    <token>还是不</token>
+    <token>butnot</token>
+    <token>notto</token>
+    <token>notfor</token>
+    <token>ratherthan</token>
+    <token>insteadof</token>
+    <token>二字</token>
+    <token>这个词</token>
+    <token>一词</token>
+    <token>过</token>
+  </list>
+  <list id="SceneActionFrameworkV1.RagePhysicalCues">
+    <token>怒吼</token>
+    <token>怒喊</token>
+    <token>咆哮</token>
+    <token>挥舞</token>
+    <token>挥动</token>
+    <token>挥臂</token>
+    <token>挥拳</token>
+    <token>跺脚</token>
+    <token>暴跳</token>
+    <token>拍桌</token>
+  </list>
+  <list id="SceneActionFrameworkV1.FearPhysicalCues">
+    <token>发抖</token>
+    <token>颤抖</token>
+    <token>连退</token>
+    <token>后退</token>
+    <token>退了两步</token>
+    <token>护住</token>
+    <token>抱住脑袋</token>
+    <token>摆手</token>
+    <token>慌张摆手</token>
+    <token>惊慌失措</token>
+  </list>
+  <list id="SceneActionFrameworkV1.DisappointedPhysicalCues">
+    <token>叹气</token>
+    <token>叹息</token>
+    <token>长叹</token>
+    <token>垂头</token>
+    <token>低头</token>
+    <token>摇头</token>
+    <token>丧气</token>
+    <token>失落地</token>
+    <token>sighed</token>
+    <token>sigh</token>
+    <token>lowered his head</token>
+    <token>lowered her head</token>
+  </list>
+  <list id="SceneActionFrameworkV1.CheerPhysicalCues">
+    <token>振臂</token>
+    <token>高举拳头</token>
+    <token>呐喊</token>
+    <token>叫好</token>
+    <token>喝彩</token>
+    <token>欢呼起来</token>
+    <token>欢呼着</token>
+    <token>挥舞双臂</token>
+  </list>
+  <list id="SceneActionFrameworkV1.ApplaudPhysicalCues">
+    <token>拍手</token>
+    <token>拍掌</token>
+    <token>拍击</token>
+    <token>鼓起掌</token>
+    <token>双掌</token>
+    <token>掌声</token>
+  </list>
+  <list id="SceneActionFrameworkV1.ThreatPhysicalCues">
+    <token>挥拳</token>
+    <token>握紧拳</token>
+    <token>攥紧拳</token>
+    <token>攥拳</token>
+    <token>拳头</token>
+    <token>示威</token>
+    <token>作势</token>
+    <token>逼近</token>
+    <token>晃了晃</token>
+  </list>
+  <list id="SceneActionFrameworkV1.SurrenderPhysicalCues">
+    <token>放下武器</token>
+    <token>放下兵器</token>
+    <token>扔下</token>
+    <token>丢下</token>
+    <token>扔掉</token>
+    <token>扔到脚边</token>
+    <token>高举过头</token>
+    <token>高举双手</token>
+    <token>举起双手</token>
+    <token>双手高举</token>
+    <token>缴械</token>
+    <token>弃械</token>
+    <token>束手就擒</token>
+  </list>
+  <list id="SceneActionFrameworkV1.LaughPhysicalCues">
+    <token>大笑</token>
+    <token>笑出声</token>
+    <token>笑了起来</token>
+    <token>仰头</token>
+    <token>前仰后合</token>
+    <token>捧腹</token>
+    <token>发出一阵笑声</token>
+    <token>爆发出一阵笑声</token>
+    <token>爆发出笑声</token>
+    <token>骤然笑了出来</token>
+    <token>朗声笑了起来</token>
+    <token>放声笑了起来</token>
+  </list>
+  <list id="SceneActionFrameworkV1.PointPhysicalCues">
+    <token>指向</token>
+    <token>指了指</token>
+    <token>伸手指</token>
+    <token>抬手指</token>
+    <token>食指</token>
+    <token>一指</token>
+    <token>点去</token>
+    <token>点向</token>
+  </list>
+  <list id="SceneActionFrameworkV1.ChallengePhysicalCues">
+    <token>勾手</token>
+    <token>叫阵</token>
+    <token>拍胸</token>
+    <token>挑衅地招手</token>
+    <token>挑战姿态</token>
+  </list>
+  <list id="SceneActionFrameworkV1.SearchPhysicalCues">
+    <token>环顾</token>
+    <token>张望</token>
+    <token>扫视</token>
+    <token>搜寻</token>
+    <token>寻找</token>
+    <token>环视</token>
+    <token>伸长脖子</token>
+    <token>四处看</token>
+  </list>
+  <list id="SceneActionFrameworkV1.DancePhysicalCues">
+    <token>跳舞</token>
+    <token>起舞</token>
+    <token>舞动</token>
+    <token>扭动</token>
+    <token>随着节拍</token>
+    <token>转身跳</token>
+  </list>
+  <list id="SceneActionFrameworkV1.AgreePhysicalCues">
+    <token>点头</token>
+    <token>点了点头</token>
+    <token>点点头</token>
+    <token>颔首</token>
+  </list>
+  <list id="SceneActionFrameworkV1.DisagreePhysicalCues">
+    <token>摇头</token>
+    <token>摇了摇头</token>
+    <token>摇了几下头</token>
+    <token>摆手明确表示反对</token>
+    <token>摇头表示反对</token>
+  </list>
+  <list id="SceneActionFrameworkV1.UnsurePhysicalCues">
+    <token>摊手</token>
+    <token>摊开双手</token>
+    <token>耸肩</token>
+    <token>耸了耸肩</token>
+    <token>拿不准</token>
+    <token>不确定手势</token>
+  </list>
+  <list id="SceneActionFrameworkV1.ExplainPhysicalCues">
+    <token>比划</token>
+    <token>摊开手</token>
+    <token>手势解释</token>
+    <token>挥动双手</token>
+    <token>作出说明</token>
+    <token>来回比划</token>
+  </list>
+  <list id="SceneActionFrameworkV1.PromisePhysicalCues">
+    <token>举手起誓</token>
+    <token>抬手立誓</token>
+    <token>举起右手</token>
+    <token>郑重起誓</token>
+    <token>拍胸</token>
+    <token>作保证</token>
+    <token>承诺手势</token>
+  </list>
+  <list id="SceneActionFrameworkV1.CrossArmsPhysicalCues">
+    <token>抱臂</token>
+    <token>抱起双臂</token>
+    <token>交叉双臂</token>
+    <token>双臂交叉</token>
+    <token>交叉抱在胸前</token>
+    <token>收回双手</token>
+  </list>
+  <list id="SceneActionFrameworkV1.DeepBowPhysicalCues">
+    <token>深鞠</token>
+    <token>深深鞠</token>
+    <token>弯腰</token>
+    <token>躬身到底</token>
+    <token>九十度鞠躬</token>
+    <token>深深弯腰</token>
+  </list>
+  <list id="SceneActionFrameworkV1.GreetPhysicalCues">
+    <token>挥手</token>
+    <token>挥了挥</token>
+    <token>挥挥手</token>
+    <token>招手</token>
+    <token>抬手打招呼</token>
+    <token>打招呼</token>
+    <token>打了个招呼</token>
+    <token>挥手打招呼</token>
+    <token>挥手问候</token>
+  </list>
+  <list id="SceneActionFrameworkV1.CommandPhysicalCues">
+    <token>挥臂</token>
+    <token>抬臂</token>
+    <token>大手一挥</token>
+    <token>下令手势</token>
+    <token>命令手势</token>
+    <token>向众人下令</token>
+    <token>发号施令</token>
+  </list>
+  <list id="SceneActionFrameworkV1.FollowMePhysicalCues">
+    <token>招手</token>
+    <token>挥手示意</token>
+    <token>跟上手势</token>
+    <token>示意队伍跟上</token>
+    <token>示意同伴跟上</token>
+    <token>招手跟上</token>
+  </list>
+  <list id="SceneActionFrameworkV1.CutThroatPhysicalCues">
+    <token>喉前</token>
+    <token>划过喉</token>
+    <token>横划</token>
+    <token>抹脖子</token>
+    <token>割喉手势</token>
+  </list>
+  <list id="SceneActionFrameworkV1.GenericRespectCues">
+    <token>行礼</token>
+    <token>回礼</token>
+    <token>施礼</token>
+    <token>见礼</token>
+    <token>还礼</token>
+    <token>答礼</token>
+    <token>致礼</token>
+    <token>抬手致意</token>
+    <token>举手致意</token>
+  </list>
+  <list id="SceneActionFrameworkV1.RespectRecoveryMarkers">
+    <token>但仍</token>
+    <token>却仍</token>
+    <token>仍然</token>
+    <token>依然</token>
+    <token>还是</token>
+    <token>转而</token>
+    <token>而是</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiSpecificLimbs">
+    <token>右臂</token>
+    <token>右手</token>
+    <token>手臂</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiMotions">
+    <token>抬起</token>
+    <token>高抬</token>
+    <token>抬高</token>
+    <token>抬到</token>
+    <token>抬至</token>
+    <token>举起</token>
+    <token>举高</token>
+    <token>举到</token>
+    <token>举至</token>
+    <token>斜举</token>
+    <token>伸出</token>
+    <token>伸直</token>
+    <token>前伸</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiUpwardDirections">
+    <token>斜向上</token>
+    <token>向前斜上</token>
+    <token>朝前斜上</token>
+    <token>前斜上方</token>
+    <token>向斜上方</token>
+    <token>朝斜上方</token>
+    <token>斜上方</token>
+    <token>向前上方</token>
+    <token>前上方</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiFingerDetails">
+    <token>手指并拢</token>
+    <token>五指并拢</token>
+    <token>指尖并拢</token>
+    <token>手指伸直并拢</token>
+    <token>五指伸直并拢</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiPalmDetails">
+    <token>掌心向下</token>
+    <token>掌心朝下</token>
+    <token>手掌向下</token>
+    <token>手掌朝下</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiGeometryBlockers">
+    <token>左臂</token>
+    <token>左手</token>
+    <token>双臂</token>
+    <token>双手</token>
+    <token>挥手</token>
+    <token>摆手</token>
+    <token>招手</token>
+    <token>握手</token>
+    <token>举手发言</token>
+    <token>指向</token>
+    <token>拿起</token>
+    <token>拿着</token>
+    <token>握着</token>
+    <token>端起</token>
+    <token>托起</token>
+    <token>手持</token>
+    <token>举起酒杯</token>
+    <token>举着酒杯</token>
+    <token>举起杯子</token>
+    <token>举着杯子</token>
+    <token>举起武器</token>
+    <token>举着武器</token>
+    <token>举起兵器</token>
+    <token>举起盾牌</token>
+    <token>举起火把</token>
+    <token>举起旗帜</token>
+    <token>举起旗子</token>
+    <token>递出</token>
+    <token>递给</token>
+    <token>接过</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiEquipmentContinuations">
+    <token>军装</token>
+    <token>军服</token>
+    <token>战衣</token>
+    <token>制服</token>
+    <token>服饰</token>
+    <token>衣服</token>
+    <token>衣物</token>
+    <token>衣甲</token>
+    <token>套装</token>
+    <token>装备</token>
+    <token>盔甲</token>
+    <token>军帽</token>
+    <token>帽子</token>
+    <token>军靴</token>
+    <token>靴子</token>
+    <token>鞋子</token>
+    <token>鞋</token>
+  </list>
+</vocabulary>

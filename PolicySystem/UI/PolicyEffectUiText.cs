@@ -18,6 +18,14 @@ internal static class PolicyEffectUiText
         return Resolve(moduleId, fallback, "Name", "Module effect");
     }
 
+    internal static string PromptName(IPolicyEffectModule module)
+    {
+        string key = GetKey(module?.Id);
+        if (string.IsNullOrWhiteSpace(key))
+            return module?.Descriptor?.PlayerDisplayName ?? module?.Id ?? PolicyGenerationPromptTexts.Get("AFPOL_UI_ModuleEffect", "Module effect");
+        return PolicyGenerationPromptTexts.Get("AFPOL_UI_Effect_" + key + "Name", EnglishFallback(key, false));
+    }
+
     internal static string Summary(IPolicyEffectModule module)
     {
         return Summary(module?.Id, (module?.Descriptor?.CatalogSummary ?? module?.RetrievalText ?? string.Empty).Trim());

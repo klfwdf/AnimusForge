@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -97,7 +98,7 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
             WorldDiplomacyDocument sourceDocument = resolveDocument?.Invoke(job.SourceDocumentId);
             string title = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
                 WorldDiplomacyEnvelopeJsonRules.ReadString(json, "title"),
-                job.IsResponse ? "外交回应" : "王国外交宣言");
+                job.IsResponse ? DiplomacyMiscPromptTexts.Get("Document_DefaultReplyTitle", "Diplomatic Reply") : DiplomacyMiscPromptTexts.Get("Document_DefaultKingdomDeclarationTitle", "Kingdom Diplomatic Declaration"));
             title = WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(title), 100);
             string body = WorldDiplomacyTextRules.NormalizeBody(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "body", "public_document", "document")));
             if (string.IsNullOrWhiteSpace(body))

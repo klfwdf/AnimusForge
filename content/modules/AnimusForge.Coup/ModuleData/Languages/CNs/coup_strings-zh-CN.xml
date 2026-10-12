@@ -139,5 +139,6 @@
     <string id="AF_COUP_UI_AVAILABLE_SOLDIERS" text="可选士兵" />
     <string id="AF_COUP_UI_SELECTION_PARTY_NAME" text="{TITLE}（{MINIMUM} 至 {LIMIT} 人）" />
     <string id="AF_COUP_UI_SELECTION_COUNT_HINT" text="请选择 {MINIMUM} 至 {LIMIT} 名士兵。" />
+    <string id="AF_COUP_UI_REPORT_FAILURE_NO_WAR" text="政变失败，未夺取王位，家族带原有领地脱离原王国。" />
   </strings>
 </base>

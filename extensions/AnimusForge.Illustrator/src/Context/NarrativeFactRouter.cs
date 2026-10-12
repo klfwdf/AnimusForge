@@ -11,21 +11,21 @@ namespace AnimusForge.Illustrator.Context
         private static readonly Regex Tags = new Regex(@"<[^>]*>", RegexOptions.Compiled);
         private static readonly Regex Headings = new Regex(@"【[^】]*】|\[[^\]\r\n]*\]", RegexOptions.Compiled);
         private static readonly Regex Quotes = new Regex("[“\"「『][^”\"」』\\r\\n]*[”\"」』]", RegexOptions.Compiled);
-        private static readonly Regex DirectSpeech = new Regex("(?:说道|说|喊道|宣称|声称|写道|表示|said|says|claimed)\\s*[:：]?\\s*[“\"「『][^”\"」』]*[”\"」』]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex DirectSpeech = new Regex(IllustratorText.Raw("Residual_NarrativeFactRouter_5ac31d57431c"), RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex Sentences = new Regex(@"[^。！？!?\r\n]+[。！？!?]?", RegexOptions.Compiled);
         private static readonly Regex SpeechOrWrittenText = new Regex(
-            @"台词|对白|字幕|气泡|标牌|文字|写着|写道|说道|喊道|说出|说着|说：|说:|dialogue|caption|subtitle|speech\s+bubble|\bsays?\b|\bsaid\b|\breads?\b",
+            IllustratorText.Raw("Residual_NarrativeFactRouter_71ac1f4b6fc5"),
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly string[] EventTerms = {
-            "围城", "围攻", "围困", "攻城", "进攻", "击败", "战败", "战胜", "获胜", "撤退", "逃离", "被俘", "俘虏", "处决", "释放", "获释", "拒绝", "未能", "没有", "取消",
-            "占领", "易主", "移交", "归还", "投降", "停战", "和谈", "结盟", "宣战", "签订", "劫掠", "焚烧",
-            "死亡", "去世", "继位", "婚", "宴", "比武", "抵达", "出发", "行军", "失踪", "救援", "粮", "商", "瘟疫",
+            IllustratorText.Raw("Residual_NarrativeFactRouter_133b42f2747f"), IllustratorText.Raw("Residual_NarrativeFactRouter_12333fae46c7"), IllustratorText.Raw("Residual_NarrativeFactRouter_11cf4a1c0bd9"), IllustratorText.Raw("Residual_NarrativeFactRouter_660e3b93ff8f"), IllustratorText.Raw("Residual_NarrativeFactRouter_76be2c2fb446"), IllustratorText.Raw("Residual_NarrativeFactRouter_ce2ad91ea768"), IllustratorText.Raw("Residual_NarrativeFactRouter_bd5cdcb6f4f6"), IllustratorText.Raw("Residual_NarrativeFactRouter_5c161e4327bc"), IllustratorText.Raw("Residual_NarrativeFactRouter_842f69cf668c"), IllustratorText.Raw("Residual_NarrativeFactRouter_f2adfafb5b50"), IllustratorText.Raw("Residual_NarrativeFactRouter_6c217ce7dc69"), IllustratorText.Raw("Residual_NarrativeFactRouter_68ead4a51ea8"), IllustratorText.Raw("Residual_NarrativeFactRouter_d4d7cb2d3fda"), IllustratorText.Raw("Residual_NarrativeFactRouter_6d6d9ee1cf41"), IllustratorText.Raw("Residual_NarrativeFactRouter_cc3d94550a8c"), IllustratorText.Raw("Residual_NarrativeFactRouter_75dbe6df6e18"), IllustratorText.Raw("Residual_NarrativeFactRouter_136de7a8c46f"), IllustratorText.Raw("Residual_NarrativeFactRouter_4f2d9c358b11"), IllustratorText.Raw("Residual_NarrativeFactRouter_f127804b9227"), IllustratorText.Raw("Residual_NarrativeFactRouter_2cd0f3be8738"),
+            IllustratorText.Raw("Residual_NarrativeFactRouter_a9012846ac1c"), IllustratorText.Raw("Residual_NarrativeFactRouter_30c75b614eba"), IllustratorText.Raw("Residual_NarrativeFactRouter_f3e939a52d2c"), IllustratorText.Raw("Residual_NarrativeFactRouter_d94f1d858c94"), IllustratorText.Raw("Residual_NarrativeFactRouter_08f61250ec4d"), IllustratorText.Raw("Residual_NarrativeFactRouter_2731a6af3316"), IllustratorText.Raw("Residual_NarrativeFactRouter_011bca961b98"), IllustratorText.Raw("Residual_NarrativeFactRouter_45e7a9a2d6f8"), IllustratorText.Raw("Residual_NarrativeFactRouter_adc28d52034d"), IllustratorText.Raw("Residual_NarrativeFactRouter_d82817642e49"), IllustratorText.Raw("Residual_NarrativeFactRouter_8108b7f92bc2"), IllustratorText.Raw("Residual_NarrativeFactRouter_4c9ab4541ef9"),
+            IllustratorText.Raw("Residual_NarrativeFactRouter_82d3130fa582"), IllustratorText.Raw("Residual_NarrativeFactRouter_96a70c00ebaa"), IllustratorText.Raw("Residual_NarrativeFactRouter_3813a2ebb522"), IllustratorText.Raw("Residual_NarrativeFactRouter_ce5b647eae00"), IllustratorText.Raw("Residual_NarrativeFactRouter_2205cd519cfc"), IllustratorText.Raw("Residual_NarrativeFactRouter_bb892b639c3d"), IllustratorText.Raw("Residual_NarrativeFactRouter_893354ab1272"), IllustratorText.Raw("Residual_NarrativeFactRouter_efdc22fca1c6"), IllustratorText.Raw("Residual_NarrativeFactRouter_085f550d8a61"), IllustratorText.Raw("Residual_NarrativeFactRouter_6a972acd6363"), IllustratorText.Raw("Residual_NarrativeFactRouter_57ec946e84bf"), IllustratorText.Raw("Residual_NarrativeFactRouter_11612b46668a"), IllustratorText.Raw("Residual_NarrativeFactRouter_537ee404352f"), IllustratorText.Raw("Residual_NarrativeFactRouter_d8448689b34a"),
             "siege", "battle", "attack", "defeat", "victory", "retreat", "release", "prison", "peace", "died", "failed", "not "
         };
         private static readonly string[] VisualTerms = {
-            "外貌", "肤", "发色", "头发", "红发", "白发", "黑发", "金发", "银发", "眼", "瞳", "胡须", "伤疤", "面容",
-            "身材", "体型", "身高", "种族", "精灵", "矮人", "兽人", "兽耳", "尖耳", "鳞", "翅膀", "尾巴",
-            "穿", "佩", "服饰", "衣", "袍", "甲", "头巾", "冠", "纹章", "徽记", "旗帜", "建筑", "屋", "城墙",
+            IllustratorText.Raw("Residual_NarrativeFactRouter_c1508818118e"), IllustratorText.Raw("Residual_NarrativeFactRouter_a715360bed04"), IllustratorText.Raw("Residual_NarrativeFactRouter_557c2ff0af40"), IllustratorText.Raw("Residual_NarrativeFactRouter_476627a8c1b8"), IllustratorText.Raw("Residual_NarrativeFactRouter_dc4263f00f03"), IllustratorText.Raw("Residual_NarrativeFactRouter_bedff3a5dba1"), IllustratorText.Raw("Residual_NarrativeFactRouter_3c82117c7eb1"), IllustratorText.Raw("Residual_NarrativeFactRouter_8c6666fa899d"), IllustratorText.Raw("Residual_NarrativeFactRouter_ebe43b6fd588"), IllustratorText.Raw("Residual_NarrativeFactRouter_393ee0b5797e"), IllustratorText.Raw("Residual_NarrativeFactRouter_28d00c78273d"), IllustratorText.Raw("Residual_NarrativeFactRouter_5553cf603284"), IllustratorText.Raw("Residual_NarrativeFactRouter_b713626c882c"), IllustratorText.Raw("Residual_NarrativeFactRouter_7c4efdcff7fb"),
+            IllustratorText.Raw("Residual_NarrativeFactRouter_61833b2089d5"), IllustratorText.Raw("Residual_NarrativeFactRouter_c8900ba2f5a4"), IllustratorText.Raw("Residual_NarrativeFactRouter_2763b73dd129"), IllustratorText.Raw("Residual_NarrativeFactRouter_b49377b38c6c"), IllustratorText.Raw("Residual_NarrativeFactRouter_4ae171bd66d9"), IllustratorText.Raw("Residual_NarrativeFactRouter_5c478562daa6"), IllustratorText.Raw("Residual_NarrativeFactRouter_4bba868bd743"), IllustratorText.Raw("Residual_NarrativeFactRouter_a3186d2705e1"), IllustratorText.Raw("Residual_NarrativeFactRouter_452e4e2a1e19"), IllustratorText.Raw("Residual_NarrativeFactRouter_d6073c9183c1"), IllustratorText.Raw("Residual_NarrativeFactRouter_aca4c85ba79a"), IllustratorText.Raw("Residual_NarrativeFactRouter_797d828e8c31"),
+            IllustratorText.Raw("Residual_NarrativeFactRouter_9fdbcf447095"), IllustratorText.Raw("Residual_NarrativeFactRouter_82d53c0179cb"), IllustratorText.Raw("Residual_NarrativeFactRouter_4bc58093f01e"), IllustratorText.Raw("Residual_NarrativeFactRouter_59186bd4029c"), IllustratorText.Raw("Residual_NarrativeFactRouter_6782f34b65b4"), IllustratorText.Raw("Residual_NarrativeFactRouter_33e3580c0931"), IllustratorText.Raw("Residual_NarrativeFactRouter_d37aef4906bb"), IllustratorText.Raw("Residual_NarrativeFactRouter_b9ac9480719e"), IllustratorText.Raw("Residual_NarrativeFactRouter_38c5c6e4eccf"), IllustratorText.Raw("Residual_NarrativeFactRouter_8c9e2da30557"), IllustratorText.Raw("Residual_NarrativeFactRouter_f5aee0707cc1"), IllustratorText.Raw("Residual_NarrativeFactRouter_5b46860a8e8b"), IllustratorText.Raw("Residual_NarrativeFactRouter_de9ade549e10"), IllustratorText.Raw("Residual_NarrativeFactRouter_f9f9002cf492"),
             "skin", "hair", "eyes", "scar", "race", "elf", "elves", "dwarf", "dwarves", "orc", "wear", "armor", "armour", "robe", "herald"
         };
 
@@ -71,7 +71,7 @@ namespace AnimusForge.Illustrator.Context
             }
             // 保留完整证据句，不按关键词重组主谓宾，不把未知/计划/失败改写成成功。
             return facts.Count > 0 ? string.Join("。\n", facts) + "。"
-                : "事件行动与结果未获明确叙述；不得推定战胜、陷落、处决或死亡。";
+                : IllustratorText.Get("Facts_EventEvidenceUnknown");
         }
 
         public static string ExtractVisualEvidence(params string[] backgrounds)
@@ -99,7 +99,9 @@ namespace AnimusForge.Illustrator.Context
             {
                 // Conversation narration can already describe visible actions. Keep the
                 // stricter biography guard for the separately labelled character context.
-                int background = narrative.IndexOf("【人物背景】", StringComparison.Ordinal);
+                int background = narrative.IndexOf(IllustratorText.Raw("Residual_NarrativeFactRouter_7de9dd9804ba"), StringComparison.Ordinal);
+                int localizedBackground = narrative.IndexOf(IllustratorText.Get("Hero_292"), StringComparison.Ordinal);
+                if (localizedBackground >= 0 && (background < 0 || localizedBackground < background)) background = localizedBackground;
                 if (background >= 0)
                 {
                     if (HasNarrativeEcho(output, narrative.Substring(background), hardFacts)) return true;

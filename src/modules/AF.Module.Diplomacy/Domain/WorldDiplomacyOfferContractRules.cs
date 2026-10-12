@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -74,10 +75,10 @@ public static class WorldDiplomacyOfferContractRules
 	{
 		return WorldDiplomacyIntentVocabulary.NormalizeIntent(proposalIntent) switch
 		{
-			"propose_peace" => "双方已达成和平",
-			"propose_alliance" => "双方已缔结同盟",
-			"propose_trade" => "双方已缔结贸易协定",
-			_ => "外交关系已按接受结果生效"
+			"propose_peace" => DiplomacyMiscPromptTexts.Get("Offer_BothSidesPeace", "Both sides have made peace"),
+			"propose_alliance" => DiplomacyMiscPromptTexts.Get("Offer_BothSidesAlliance", "Both sides have formed an alliance"),
+			"propose_trade" => DiplomacyMiscPromptTexts.Get("Offer_BothSidesTrade", "Both sides have concluded a trade agreement"),
+			_ => DiplomacyMiscPromptTexts.Get("Offer_RelationsEffectiveAsAccepted", "Diplomatic relations took effect as accepted")
 		};
 	}
 
@@ -108,24 +109,24 @@ public static class WorldDiplomacyOfferContractRules
 		};
 	}
 
-	public static string FormatPeaceTermsForPrompt(WorldDiplomacyPeaceTerms terms)
+	public static string FormatPeaceTermsForPrompt(WorldDiplomacyPeaceTerms terms, Func<string, string, string> localize = null)
 	{
-		if (terms == null) return "无附加贡金或割地条款";
+		if (terms == null) return WorldDiplomacyPromptContractRules.ContractText(localize, "PeaceTermsNone", "No additional tribute or cession terms");
 		StringBuilder fact = new StringBuilder();
 		if (terms.DailyTribute > 0)
 		{
-			fact.Append("贡金=").Append(terms.TributePayerKingdomId ?? "")
+			fact.Append(WorldDiplomacyPromptContractRules.ContractText(localize, "PeaceTermsTribute", "Tribute=")).Append(terms.TributePayerKingdomId ?? "")
 				.Append("→").Append(terms.TributeReceiverKingdomId ?? "")
-				.Append(":每日").Append(terms.DailyTribute.ToString(CultureInfo.InvariantCulture))
-				.Append("第纳尔,共").Append(Math.Max(0, terms.DurationDays).ToString(CultureInfo.InvariantCulture)).Append("天");
+				.Append(WorldDiplomacyPromptContractRules.ContractText(localize, "PeaceTermsDaily", ": daily ")).Append(terms.DailyTribute.ToString(CultureInfo.InvariantCulture))
+				.Append(WorldDiplomacyPromptContractRules.ContractText(localize, "PeaceTermsDenarsFor", " denars, for ")).Append(Math.Max(0, terms.DurationDays).ToString(CultureInfo.InvariantCulture)).Append(WorldDiplomacyPromptContractRules.ContractText(localize, "PeaceTermsDays", " days"));
 		}
 		if (!string.IsNullOrWhiteSpace(terms.CessionSettlementId))
 		{
 			if (fact.Length > 0) fact.Append("；");
-			fact.Append("割地=").Append(terms.CessionFromKingdomId ?? "")
+			fact.Append(WorldDiplomacyPromptContractRules.ContractText(localize, "PeaceTermsCession", "Cession=")).Append(terms.CessionFromKingdomId ?? "")
 				.Append("→").Append(terms.CessionToKingdomId ?? "")
 				.Append(":").Append(terms.CessionSettlementId);
 		}
-		return fact.Length == 0 ? "无附加贡金或割地条款" : fact.ToString();
+		return fact.Length == 0 ? WorldDiplomacyPromptContractRules.ContractText(localize, "PeaceTermsNone", "No additional tribute or cession terms") : fact.ToString();
 	}
 }

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_MEMORY_UI_UnknownError" text="Unknown error" />
+    <string id="AF_MEMORY_UI_SummaryEmpty" text="SUMMARY is empty." />
+    <string id="AF_MEMORY_UI_TitleOrSummaryEmpty" text="TITLE or SUMMARY is empty." />
+    <string id="AF_MEMORY_UI_JsonParseFailed" text="JSON parsing failed." />
+    <string id="AF_MEMORY_UI_JsonObjectMissing" text="No JSON object could be found." />
+    <string id="AF_MEMORY_UI_UnknownParseError" text="Unknown parsing error." />
+    <string id="AF_MEMORY_UI_JsonRequiredFieldsMissing" text="No JSON object contained the required fields: {FIELDS}." />
+    <string id="AF_MEMORY_UI_SummaryParseFailed" text="Summary response format could not be parsed: {ERROR}\n\nFull model reply:\n{REPLY}" />
+    <string id="AF_MEMORY_UI_NoModelReply" text="No model reply was received or could be parsed" />
+    <string id="AF_MEMORY_UI_RecallBlockedTitle" text="Compressed memory recall blocked" />
+    <string id="AF_MEMORY_UI_RecallEmbeddingUnavailable" text="Local ONNX embedding is unavailable; rich-title RAG cannot select compressed memories above the candidate limit.\n\nFix the embedding model or reduce the number of memory blocks, then retry. The system will not silently fall back to dates or full text." />
+    <string id="AF_MEMORY_UI_RecallTitleEmbeddingFailed" text="Embedding failed for every compressed memory rich title.\n\nFix the embedding model, then retry." />
+    <string id="AF_MEMORY_UI_RecallExceptionTitle" text="Compressed memory recall exception" />
+    <string id="AF_MEMORY_UI_PreprocessFailedTitle" text="Compressed memory preprocessing failed" />
+    <string id="AF_MEMORY_UI_PreprocessRequestException" text="Memory preprocessing request exception: {ERROR}" />
+    <string id="AF_MEMORY_UI_PreprocessUnsuccessful" text="Memory preprocessing did not succeed: {ERROR}\n\nFix the preprocessing API, then retry." />
+    <string id="AF_MEMORY_UI_SelectionRequestFailed" text="Memory selection request failed: {ERROR}\n\nFix the preprocessing API, then retry." />
+    <string id="AF_MEMORY_UI_PreprocessInvalidReply" text="Memory preprocessing returned an invalid response: {ERROR}. Return only one JSON object containing rule_codes and memory_ids arrays.\n\nFull model reply:\n{REPLY}\n\nFix the preprocessing prompt or API output, then retry." />
+    <string id="AF_MEM_Recall_RememberPast" text="You recall your previous conversations and interactions" />
+    <string id="AF_MEM_Recall_TitlePrefix" text="#Title:" />
+    <string id="AF_MEM_Recall_ContentLabel" text="Content:" />
+    <string id="AF_MEM_Recall_AfefLabel" text="AFEF behavior supplement:" />
+    <string id="AF_MEM_Recall_NoAfef" text="None" />
+    <string id="AF_MEM_Recall_PastAfefPrefix" text="[Past behavior]" />
+    <string id="AF_MEM_Recall_CurrentAfefPrefix" text="[Current behavior]" />
+    <string id="AF_MEM_Recall_TimeToday" text="(today)" />
+    <string id="AF_MEM_Recall_TimeDaysAgo" text="({DAYS} days ago)" />
+    <string id="AF_MEM_Recall_TimeHourSingle" text="{HOUR}:00" />
+    <string id="AF_MEM_Recall_TimeHourRange" text="{START}:00-{END}:00" />
+    <string id="AF_MEM_Recall_FallbackTitle" text="Past conversation memory" />
+    <string id="AF_MEM_Recall_DayPrefix" text="Day " />
+    <string id="AF_MEM_Recall_DaySuffix" text="" />
+    <string id="AF_MEM_NpcAction_UnknownLocation" text="Unknown location" />
+    <string id="AF_MEM_NpcAction_UnknownScene" text="Unknown scene" />
+    <string id="AF_MEM_NpcAction_DefaultActor" text="This character" />
+    <string id="AF_MEM_NpcAction_RecentHeader" text="[Uncompressed major-history records]\n" />
+    <string id="AF_MEM_NpcAction_DayMarker" text="—— {DATE} ——" />
+    <string id="AF_MEM_NpcAction_DayFallback" text="Day {DAY}" />
+    <string id="AF_MEM_Ledger_AfefPlayerPrefix" text="[AFEF Player Action Supplement]" />
+    <string id="AF_MEM_Ledger_AfefNpcPrefix" text="[AFEF NPC Action Supplement]" />
+    <string id="AF_MEM_Ledger_SceneShoutPrefix" text="[Scene Shout]" />
+    <string id="AF_MEM_JsonFields_None" text="(none)" />
+    <string id="AF_MEM_History_BuildContextError" text="[ERROR] Failed to build context: {ERROR}" />
+    <string id="AF_MEM_WeekOrdinal_Prefix" text="Week " />
+  </strings>
+</base>

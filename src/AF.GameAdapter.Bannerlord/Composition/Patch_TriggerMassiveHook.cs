@@ -32,7 +32,7 @@ public static class Patch_TriggerMassiveHook
 			}
 			catch (Exception ex)
 			{
-				Logger.LogTrace("System", "拦截器异常: " + ex.Message);
+				Logger.LogTrace("System", "Interceptor exception: " + ex.Message);
 			}
 		}
 		EnsurePatchGroupIfDue();
@@ -125,11 +125,11 @@ public static class Patch_TriggerMassiveHook
 		var agents = mission?.Agents;
 		if (mission == null || agents == null)
 		{
-			Logger.LogTrace("System", "⚠\ufe0f 当前不在场景中，无法获取动作。");
+			Logger.LogTrace("System", "⚠\ufe0f Not currently in a scene; actions cannot be captured.");
 			return;
 		}
 		int num = 0;
-		Logger.LogTrace("System", "\ud83d\udcf8 ================= [F10] 全场动作点名 ================= \ud83d\udcf8");
+		Logger.LogTrace("System", "\ud83d\udcf8 ================= [F10] Scene-wide action snapshot ================= \ud83d\udcf8");
 		foreach (Agent agent in agents)
 		{
 			if (agent == null)
@@ -159,7 +159,7 @@ public static class Patch_TriggerMassiveHook
 					text3 = $"Index_{currentAction.Index}";
 				}
 				float currentActionProgress = agent.GetCurrentActionProgress(0);
-				Logger.LogTrace("Snapshot", $"\ud83d\udc49 [点名] {text} (ID:{text2}) | 动作: {text3} | 进度: {currentActionProgress:P0}");
+				Logger.LogTrace("Snapshot", $"\ud83d\udc49 [Snapshot] {text} (ID:{text2}) | Action: {text3} | Progress: {currentActionProgress:P0}");
 				num++;
 			}
 			catch (Exception ex)
@@ -167,6 +167,6 @@ public static class Patch_TriggerMassiveHook
 				Logger.LogTrace("Snapshot", "[F10] skipped agent dump. index=" + agent.Index + ", error=" + ex.Message);
 			}
 		}
-		Logger.LogTrace("System", $"\ud83d\udcf8 ================= 点名结束 (共 {num} 人) ================= \ud83d\udcf8");
+		Logger.LogTrace("System", $"\ud83d\udcf8 ================= Snapshot complete (total {num} agents) ================= \ud83d\udcf8");
 	}
 }

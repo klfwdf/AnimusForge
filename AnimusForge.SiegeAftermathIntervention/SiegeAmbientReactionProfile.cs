@@ -15,8 +15,16 @@ public static class SiegeAmbientReactionProfile
 
     public const float RangeShoutAutoReplySpacingSeconds = 9.0f;
 
-    public const string DefaultSettlementName = "这座刚被攻下的定居点";
+    public const string DefaultSettlementName = "this captured settlement";
+    public const string DefaultSettlementNameEn = "this captured settlement";
 
-    public const string DefaultFocusName = "附近的人";
+    public const string DefaultFocusName = "nearby person";
+    public const string DefaultFocusNameEn = "nearby person";
+
+    
+    
+    public static string GetDefaultSettlementName(bool isEnglish) => isEnglish ? DefaultSettlementNameEn : DefaultSettlementName;
+
+    public static string GetDefaultFocusName(bool isEnglish) => isEnglish ? DefaultFocusNameEn : DefaultFocusName;
 
 }

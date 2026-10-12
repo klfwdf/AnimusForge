@@ -6569,7 +6569,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		{
 			text2 = "";
 		}
-		return text.Contains("lance") || text.Contains("spear") || text.Contains("pike") || text2.Contains("骑枪") || text2.Contains("长矛") || text2.Contains("长枪") || text2.Contains("矛") || text2.Contains("枪");
+		return text.Contains("lance") || text.Contains("spear") || text.Contains("pike") || text2.Contains(AdapterPromptCaptureTexts.PcapCompat("Weapon_Lance")) || text2.Contains(AdapterPromptCaptureTexts.PcapCompat("Weapon_Spear")) || text2.Contains(AdapterPromptCaptureTexts.PcapCompat("Weapon_Pike")) || text2.Contains(AdapterPromptCaptureTexts.PcapCompat("Weapon_Polearm")) || text2.Contains(AdapterPromptCaptureTexts.PcapCompat("Weapon_Gun"));
 	}
 
 	private bool CanUseMeetingEscortWeaponWithShield(ItemObject itemObject)

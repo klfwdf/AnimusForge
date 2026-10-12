@@ -1,3 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+<tags><tag language="English" /></tags>
 <strings>
   <string id="AF_PERSONA_UI_ImportMissingDirectory" text="Import failed: the export directory could not be found." />
   <string id="AF_PERSONA_UI_ImportDuplicateFolderKey" text="Import failed: the import folder contains a duplicate Key ({KEY})." />
@@ -5,3 +8,4 @@
   <string id="AF_PERSONA_UI_ImportValidationException" text="Import failed: Key validation exception: {ERROR}" />
   <string id="AF_PERSONA_UI_UnknownNpc" text="Unknown NPC" />
 </strings>
+</base>

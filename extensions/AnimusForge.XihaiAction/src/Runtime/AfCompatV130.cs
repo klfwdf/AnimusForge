@@ -993,11 +993,7 @@ namespace AnimusForge.XihaiAction
                         request.ResponseTask,
                         cancellationToken).ConfigureAwait(false) ?? string.Empty).Trim();
                 cancellationToken.ThrowIfCancellationRequested();
-                if (string.IsNullOrWhiteSpace(response) ||
-                    response.StartsWith("（错误", StringComparison.Ordinal) ||
-                    response.StartsWith("(error:", StringComparison.OrdinalIgnoreCase) ||
-                    response.StartsWith("（没说话", StringComparison.Ordinal) ||
-                    response.StartsWith("（API请求失败", StringComparison.Ordinal))
+                if (SceneActionReplyCompatibility.IsFailureReply(response))
                 {
                     failure.Error = "AF returned an empty or failed NPC speech body.";
                     return failure;
@@ -1374,20 +1370,8 @@ namespace AnimusForge.XihaiAction
 
                 string promptWithoutPlayerCustomRule =
                     RemovePlayerCustomPromptRuleForNpcSpeech(__0);
-                const string ordinaryPreamble =
-                    "你是【站在你旁边的人】中的NPC角色,可能是多个人。你们的唯一任务是：根据下方提供的角色信息、场景信息和对话历史，以NPC身份直接回复";
-                const string ordinaryPreambleEnd =
-                    "\n禁止生成任何【】章节标题或格式说明。";
-                int start = promptWithoutPlayerCustomRule.IndexOf(ordinaryPreamble, StringComparison.Ordinal);
-                if (start < 0)
-                {
-                    return true;
-                }
-                int end = promptWithoutPlayerCustomRule.IndexOf(
-                    ordinaryPreambleEnd,
-                    start + ordinaryPreamble.Length,
-                    StringComparison.Ordinal);
-                if (end < 0)
+                if (!SceneActionReplyCompatibility.TryFindOrdinaryTaskBlock(
+                    promptWithoutPlayerCustomRule, out int start, out int length))
                 {
                     return true;
                 }
@@ -1396,7 +1380,7 @@ namespace AnimusForge.XihaiAction
                     SceneActionPromptPackage.Text("BattleSpeechPreamble");
                 __result = promptWithoutPlayerCustomRule.Substring(0, start) +
                            battleSpeechPreamble +
-                           promptWithoutPlayerCustomRule.Substring(end + ordinaryPreambleEnd.Length);
+                           promptWithoutPlayerCustomRule.Substring(start + length);
                 SceneActionsLog.Info(
                     "BATTLE_SPEECH_COMPAT",
                     "Removed AF ordinary player-reply task preamble and ignored PlayerCustomPromptRule for NPC battle speech.");

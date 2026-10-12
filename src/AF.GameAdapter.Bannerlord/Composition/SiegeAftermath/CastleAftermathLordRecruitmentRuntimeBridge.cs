@@ -96,11 +96,11 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 	{
 		if (capturedLord == null || !capturedLord.IsAlive || capturedLord == Hero.MainHero)
 		{
-			return Failed(branch, "目标领主无效或已经无法处置。");
+			return Failed(branch, CastleAftermathCompatibilityTexts.Raw("status_invalid"));
 		}
 		if (!CastleAftermathRuntimeBridge.ContainsSelectedLord(capturedLord))
 		{
-			return Failed(branch, "该领主不在本次带入城堡处置的俘虏名单中。");
+			return Failed(branch, CastleAftermathCompatibilityTexts.Raw("status_not_selected"));
 		}
 
 		try
@@ -114,26 +114,26 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 						capturedLord,
 						branch,
 						castle,
-						"请求玩家将自己带去面见玩家所属王国的统治者；家族归属和俘虏状态暂未改变。");
+						CastleAftermathCompatibilityTexts.Raw("status_audience"));
 				case SiegeCastleLordRecruitmentBranch.ClanLeaderSupportPlayerClaim:
 					return RecordDeferredPoliticalIntent(
 						capturedLord,
 						branch,
 						castle,
-						"表达了支持玩家称王的政治意向；不会在玩家尚无王国时凭空创建国家或转移家族。");
+						CastleAftermathCompatibilityTexts.Raw("status_claim"));
 				case SiegeCastleLordRecruitmentBranch.IntroduceClanLeaderByLetter:
 					return QueueClanLeaderIntroduction(capturedLord, castle, aiResponseText);
 				case SiegeCastleLordRecruitmentBranch.JoinPlayerAsCompanion:
 					return JoinPlayerAsCompanion(capturedLord, castle);
 				default:
-					return Failed(branch, "领主收编分支尚未明确。");
+					return Failed(branch, CastleAftermathCompatibilityTexts.Raw("status_unknown"));
 			}
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("CastleAftermath", "Apply castle lord recruitment branch failed. Hero="
 				+ (capturedLord.StringId ?? "N/A") + ", Branch=" + branch + ", Error=" + ex);
-			return Failed(branch, "执行领主收编分支时发生异常：" + ex.Message);
+			return Failed(branch, CastleAftermathCompatibilityTexts.Raw("exception_prefix") + ex.Message);
 		}
 	}
 
@@ -160,13 +160,13 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 				Hero recipient = FindHero(recipientId);
 				if (sender != null && recipient != null && recipient.IsAlive)
 				{
-					string senderName = sender.Name?.ToString() ?? "一名家族成员";
-					string recipientName = recipient.Name?.ToString() ?? "族长";
-					string location = string.IsNullOrWhiteSpace(castleName) ? "一座刚陷落的城堡" : castleName;
+					string senderName = sender.Name?.ToString() ?? CastleAftermathCompatibilityTexts.Raw("family_member");
+					string recipientName = recipient.Name?.ToString() ?? CastleAftermathCompatibilityTexts.Raw("clan_leader");
+					string location = string.IsNullOrWhiteSpace(castleName) ? CastleAftermathCompatibilityTexts.Raw("fallen_castle") : castleName;
 					string stableKey = "gccz_castle_lord_intro_letter:" + senderId + ":" + dueDay;
 					MyBehavior.RecordNpcActionForExternal(
 						sender,
-						"你履行了在 " + location + " 被俘后作出的承诺，写信向 " + recipientName + " 引见玩家。信件内容：" + body,
+						CastleAftermathCompatibilityTexts.Raw("sender_fact_prefix") + location + CastleAftermathCompatibilityTexts.Raw("sender_fact_middle") + recipientName + CastleAftermathCompatibilityTexts.Raw("sender_fact_suffix") + body,
 						stableKey + ":sender",
 						"gccz_castle_lord_intro_letter",
 						isMajor: true,
@@ -177,7 +177,7 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 						won: true);
 					MyBehavior.RecordNpcActionForExternal(
 						recipient,
-						"你收到了 " + senderName + " 的引见信。信中说明玩家在 " + location + " 的招揽，并附有如下内容：" + body,
+						CastleAftermathCompatibilityTexts.Raw("recipient_fact_prefix") + senderName + CastleAftermathCompatibilityTexts.Raw("recipient_fact_middle") + location + CastleAftermathCompatibilityTexts.Raw("recipient_fact_suffix") + body,
 						stableKey + ":recipient",
 						"gccz_castle_lord_intro_letter_received",
 						isMajor: true,
@@ -187,7 +187,7 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 						allowNonLordHero: false,
 						won: true);
 					MyBehavior.RecordPlayerActionForExternal(
-						"你收到了消息：" + senderName + " 已按约向族长 " + recipientName + " 写信引见你。",
+						CastleAftermathCompatibilityTexts.Raw("player_fact_prefix") + senderName + CastleAftermathCompatibilityTexts.Raw("player_fact_middle") + recipientName + CastleAftermathCompatibilityTexts.Raw("player_fact_suffix"),
 						stableKey + ":player",
 						"gccz_castle_lord_intro_letter_delivered",
 						isMajor: true,
@@ -220,7 +220,7 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 
 	private static CastleAftermathLordRecruitmentApplyResult JoinClanToPlayerKingdom(Hero capturedLord, Settlement castle)
 	{
-		string status = "AF奖励系统当前不可用。";
+		string status = CastleAftermathCompatibilityTexts.Raw("reward_unavailable");
 		if (RewardSystemBehavior.Instance == null
 			|| !RewardSystemBehavior.Instance.TryApplyClanLeaderJoinPlayerKingdomForExternal(capturedLord, out status))
 		{
@@ -230,7 +230,7 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 		RecordPoliticalMemory(capturedLord, castle, SiegeCastleLordRecruitmentBranch.ClanLeaderJoinPlayerKingdom, status);
 		if (!targetReleased)
 		{
-			status += " 政治转投已经完成，但俘虏或场景清理未完全完成，详情已写入日志。";
+			status += CastleAftermathCompatibilityTexts.Raw("kingdom_cleanup_suffix");
 		}
 		return Succeeded(SiegeCastleLordRecruitmentBranch.ClanLeaderJoinPlayerKingdom, status, targetReleased);
 	}
@@ -242,7 +242,7 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 		{
 			EndCaptivityAction.ApplyByReleasedByChoice(capturedLord, Hero.MainHero);
 		}
-		string status = "AF奖励系统当前不可用。";
+		string status = CastleAftermathCompatibilityTexts.Raw("reward_unavailable");
 		if (RewardSystemBehavior.Instance == null
 			|| !RewardSystemBehavior.Instance.TryApplyHeroJoinPlayerPartyForExternal(capturedLord, out status))
 		{
@@ -256,7 +256,7 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 		RecordPoliticalMemory(capturedLord, castle, SiegeCastleLordRecruitmentBranch.JoinPlayerAsCompanion, status);
 		if (!targetReleased)
 		{
-			status += " 同伴加入已经完成，但场景清理未完全完成，详情已写入日志。";
+			status += CastleAftermathCompatibilityTexts.Raw("companion_cleanup_suffix");
 		}
 		return Succeeded(SiegeCastleLordRecruitmentBranch.JoinPlayerAsCompanion, status, targetReleased);
 	}
@@ -279,13 +279,13 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 		Hero clanLeader = capturedLord.Clan?.Leader;
 		if (clanLeader == null || clanLeader == capturedLord || !clanLeader.IsAlive)
 		{
-			return Failed(SiegeCastleLordRecruitmentBranch.IntroduceClanLeaderByLetter, "未找到可接收引见信的在世族长。");
+			return Failed(SiegeCastleLordRecruitmentBranch.IntroduceClanLeaderByLetter, CastleAftermathCompatibilityTexts.Raw("no_leader"));
 		}
 		string senderId = capturedLord.StringId ?? string.Empty;
 		string recipientId = clanLeader.StringId ?? string.Empty;
 		if (senderId.Length == 0 || recipientId.Length == 0)
 		{
-			return Failed(SiegeCastleLordRecruitmentBranch.IntroduceClanLeaderByLetter, "领主或族长缺少稳定角色标识。");
+			return Failed(SiegeCastleLordRecruitmentBranch.IntroduceClanLeaderByLetter, CastleAftermathCompatibilityTexts.Raw("no_id"));
 		}
 		int delayDays = MBRandom.RandomInt(2) + 1;
 		int dueDay = CurrentDay() + delayDays;
@@ -294,8 +294,8 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 		_letterRecipientBySender[senderId] = recipientId;
 		_letterBodyBySender[senderId] = body;
 		_letterCastleBySender[senderId] = castle?.Name?.ToString() ?? string.Empty;
-		string status = "引见信已写好，将在 " + delayDays + " 天后直接送达族长 "
-			+ (clanLeader.Name?.ToString() ?? "未知族长") + "；不会生成AF信使部队，当前领主仍保持俘虏身份。";
+		string status = CastleAftermathCompatibilityTexts.Raw("letter_ready_prefix") + delayDays + CastleAftermathCompatibilityTexts.Raw("letter_ready_middle")
+			+ (clanLeader.Name?.ToString() ?? CastleAftermathCompatibilityTexts.Raw("unknown_clan_leader")) + CastleAftermathCompatibilityTexts.Raw("letter_ready_suffix");
 		RecordPoliticalMemory(capturedLord, castle, SiegeCastleLordRecruitmentBranch.IntroduceClanLeaderByLetter, status);
 		Logger.Log("CastleAftermath", "Queued castle lord introduction letter. Sender=" + senderId
 			+ ", Recipient=" + recipientId + ", DueDay=" + dueDay);
@@ -339,11 +339,11 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 	{
 		try
 		{
-			string lordName = capturedLord?.Name?.ToString() ?? "该被俘领主";
-			string castleName = castle?.Name?.ToString() ?? "刚陷落的城堡";
+			string lordName = capturedLord?.Name?.ToString() ?? CastleAftermathCompatibilityTexts.Raw("captured_lord");
+			string castleName = castle?.Name?.ToString() ?? CastleAftermathCompatibilityTexts.Raw("fallen_castle_short");
 			string stableKey = "gccz_castle_lord_recruit:" + (capturedLord?.StringId ?? "unknown")
 				+ ":" + CurrentDay() + ":" + branch;
-			string npcText = "你在 " + castleName + " 战败被俘后，与玩家达成了领主收编政治安排："
+			string npcText = CastleAftermathCompatibilityTexts.Raw("political_fact_prefix") + castleName + CastleAftermathCompatibilityTexts.Raw("political_fact_middle")
 				+ SiegeCastleLordRecruitmentBranchProfile.Describe(branch) + "。" + (status ?? string.Empty);
 			MyBehavior.RecordNpcActionForExternal(
 				capturedLord,
@@ -358,7 +358,7 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 				allowNonLordHero: false,
 				won: false);
 			MyBehavior.RecordPlayerActionForExternal(
-				"你在 " + castleName + " 与 " + lordName + " 达成了领主收编政治安排："
+				CastleAftermathCompatibilityTexts.Raw("political_fact_prefix") + castleName + CastleAftermathCompatibilityTexts.Raw("political_fact_between") + lordName + CastleAftermathCompatibilityTexts.Raw("political_fact_suffix")
 					+ SiegeCastleLordRecruitmentBranchProfile.Describe(branch) + "。",
 				stableKey + ":player",
 				"gccz_castle_lord_recruit",
@@ -384,11 +384,11 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 		}
 		if (aiText.Length == 0)
 		{
-			aiText = "我愿为玩家引见，请族长审慎考虑与其会面。";
+			aiText = CastleAftermathCompatibilityTexts.Raw("letter_ai_default");
 		}
-		return "致 " + (recipient?.Name?.ToString() ?? "族长") + "：我在 "
-			+ (castle?.Name?.ToString() ?? "刚陷落的城堡") + " 战败被俘后与玩家交谈。"
-			+ aiText + " ——" + (sender?.Name?.ToString() ?? "家族成员");
+		return CastleAftermathCompatibilityTexts.Raw("letter_prefix") + (recipient?.Name?.ToString() ?? CastleAftermathCompatibilityTexts.Raw("clan_leader")) + CastleAftermathCompatibilityTexts.Raw("letter_colon")
+			+ (castle?.Name?.ToString() ?? CastleAftermathCompatibilityTexts.Raw("fallen_castle_short")) + CastleAftermathCompatibilityTexts.Raw("letter_captive_middle")
+			+ aiText + " ——" + (sender?.Name?.ToString() ?? CastleAftermathCompatibilityTexts.Raw("family_member_short"));
 	}
 
 	private static Hero FindHero(string id)

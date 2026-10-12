@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -22,6 +22,12 @@ internal static partial class WeeklyPromptMaterialOwner
 		if (group.PromptMaterials == null)
 		{
 			group.PromptMaterials = new List<EventMaterialReference>();
+		}
+		foreach (EventMaterialReference material in group.PromptMaterials)
+		{
+			if (material == null || !PolicyWeeklyFactPromptProjection.IsPolicyKind(material.MaterialType)) continue;
+			material.Label = PolicyWeeklyFactPromptProjection.Label(material.MaterialType, material.Label);
+			material.SnapshotText = PolicyWeeklyFactPromptProjection.Snapshot(material.MaterialType, material.SnapshotText);
 		}
 	}
 
@@ -122,7 +128,7 @@ internal static partial class WeeklyPromptMaterialOwner
 		string text2 = resolveSettlementDisplay(eventMaterialReference.SettlementId);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = string.IsNullOrWhiteSpace(text) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0489") : text;
+			text2 = string.IsNullOrWhiteSpace(text) ? WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0489") : text;
 		}
 		List<EventMaterialReference> list2 = list.Where(IsWeeklyPromptVillageRaidCompletionMaterial).ToList();
 		List<string> list3 = new List<string>();
@@ -133,15 +139,15 @@ internal static partial class WeeklyPromptMaterialOwner
 		bool flag = IsWeeklyPromptVillageRaidStartedMaterial(list[list.Count - 1]);
 		if (list2.Count == 0)
 		{
-			list3.Add(text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0490"));
+			list3.Add(text2 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0490"));
 		}
 		else if (flag)
 		{
-			list3.Add(text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0491"));
+			list3.Add(text2 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0491"));
 		}
 		eventMaterialReference.MaterialType = "prompt_resolved_village_raid";
-		eventMaterialReference.Label = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0492") + text2;
-		eventMaterialReference.SnapshotText = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0493") + string.Join("\n- ", list3);
+		eventMaterialReference.Label = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0492") + text2;
+		eventMaterialReference.SnapshotText = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0493") + string.Join("\n- ", list3);
 		eventMaterialReference.ActionKind = "prompt_resolved:village_raid";
 		eventMaterialReference.ActionStableKey = "prompt_resolved_village_raid:" + text;
 		eventMaterialReference.SourceMaterialCount = list.Count;
@@ -171,13 +177,13 @@ internal static partial class WeeklyPromptMaterialOwner
 		switch ((outcome ?? "").Trim())
 		{
 		case "success":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0496");
+			return WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0496");
 		case "defended":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0497");
+			return WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0497");
 		case "aborted":
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0498");
+			return WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0498");
 		default:
-			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0499");
+			return WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0499");
 		}
 	}
 
@@ -402,26 +408,26 @@ internal static partial class WeeklyPromptMaterialOwner
 		}
 		List<string> list = ExtractWeeklyPromptShortMovementLocations(text).Take(5).ToList();
 		List<string> list2 = new List<string>();
-		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0515"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0516"));
-		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0517"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0518"));
-		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0519"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0520"));
-		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0521"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0522"));
-		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0523"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0524"));
-		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0525"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0526"));
-		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0527"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0528"));
+		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0515"), WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0516"));
+		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0517"), WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0518"));
+		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0519"), WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0520"));
+		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0521"), WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0522"));
+		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0523"), WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0524"));
+		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0525"), WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0526"));
+		AddWeeklyPromptShortMovementAction(list2, text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0527"), WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0528"));
 		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0529"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0530"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0531"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			AddUniqueId(list2, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0532"));
+			AddUniqueId(list2, WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0532"));
 		}
 		if (list2.Count == 0)
 		{
-			list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0533"));
+			list2.Add(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0533"));
 		}
-		string text2 = (list.Count > 0) ? string.Join("、", list) : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0534");
-		string text3 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0535") + num + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0536") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0537") + string.Join("、", list2) + "。";
+		string text2 = (list.Count > 0) ? string.Join("、", list) : WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0534");
+		string text3 = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0535") + num + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0536") + text2 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0537") + string.Join("、", list2) + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_SentenceEnd");
 		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
 		eventMaterialReference.MaterialType = "prompt_short_movement";
-		eventMaterialReference.Label = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0538");
+		eventMaterialReference.Label = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0538");
 		eventMaterialReference.SnapshotText = text3;
 		eventMaterialReference.ActionKind = "prompt_short:movement";
 		return eventMaterialReference;
@@ -475,15 +481,15 @@ internal static partial class WeeklyPromptMaterialOwner
 		{
 			num = 1;
 		}
-		string text5 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0540") + num + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0541");
+		string text5 = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0540") + num + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0541");
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			text5 += WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0542") + num2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0543") + num3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0544");
+			text5 += WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0542") + num2 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0543") + num3 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0544");
 		}
-		text5 += "。";
+		text5 += WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_SentenceEnd");
 		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
 		eventMaterialReference.MaterialType = "prompt_short_captivity";
-		eventMaterialReference.Label = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0545");
+		eventMaterialReference.Label = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0545");
 		eventMaterialReference.SnapshotText = text5;
 		eventMaterialReference.ActionKind = "prompt_short:captivity";
 		return eventMaterialReference;
@@ -537,15 +543,15 @@ internal static partial class WeeklyPromptMaterialOwner
 		{
 			num = 1;
 		}
-		string text5 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0547") + num + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0548");
+		string text5 = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0547") + num + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0548");
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			text5 += WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0549") + num2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0550") + num3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0551");
+			text5 += WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0549") + num2 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0550") + num3 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0551");
 		}
-		text5 += "。";
+		text5 += WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_SentenceEnd");
 		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
 		eventMaterialReference.MaterialType = "prompt_short_release";
-		eventMaterialReference.Label = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0552");
+		eventMaterialReference.Label = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0552");
 		eventMaterialReference.SnapshotText = text5;
 		eventMaterialReference.ActionKind = "prompt_short:release";
 		return eventMaterialReference;
@@ -580,46 +586,46 @@ internal static partial class WeeklyPromptMaterialOwner
 			}
 			if (string.Equals(text4, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0553"), StringComparison.OrdinalIgnoreCase))
 			{
-				AddUniqueId(list, string.IsNullOrWhiteSpace(text2) ? (text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0554")) : (text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0555") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0556")));
+				AddUniqueId(list, string.IsNullOrWhiteSpace(text2) ? (text + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0554")) : (text + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0555") + text2 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0556")));
 			}
 			else if (string.Equals(text4, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0557"), StringComparison.OrdinalIgnoreCase))
 			{
 				if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
 				{
-					AddUniqueId(list, text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0558") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0559") + text3);
+					AddUniqueId(list, text + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0558") + text2 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0559") + text3);
 				}
 				else if (!string.IsNullOrWhiteSpace(text3))
 				{
-					AddUniqueId(list, text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0560") + text3);
+					AddUniqueId(list, text + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0560") + text3);
 				}
 			}
 			else if (string.Equals(text4, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0561"), StringComparison.OrdinalIgnoreCase))
 			{
-				AddUniqueId(list, string.IsNullOrWhiteSpace(text3) ? (text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0562")) : (text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0563") + text3));
+				AddUniqueId(list, string.IsNullOrWhiteSpace(text3) ? (text + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0562")) : (text + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0563") + text3));
 			}
 			else if (!string.IsNullOrWhiteSpace(text3))
 			{
-				AddUniqueId(list, text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0564") + text3);
+				AddUniqueId(list, text + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0564") + text3);
 			}
 			else if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text4))
 			{
-				AddUniqueId(list, text + text4 + "：" + text2);
+				AddUniqueId(list, text + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_WordSeparator") + WeeklyMaterialTexts.ProjectRaw(text4) + "：" + text2);
 			}
 		}
 		string text5;
 		if (list.Count > 0)
 		{
-			bool flag = list.Any((string x) => (x ?? "").IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0565"), StringComparison.OrdinalIgnoreCase) >= 0);
-			text5 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0566") + (flag ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0567") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0568")) + "：" + string.Join("；", list.Take(6)) + "。";
+			bool flag = list.Any((string x) => (x ?? "").IndexOf(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0554"), StringComparison.OrdinalIgnoreCase) >= 0);
+			text5 = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0566") + (flag ? WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0567") : WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0568")) + "：" + string.Join("；", list.Take(6)) + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_SentenceEnd");
 		}
 		else
 		{
 			int num = Math.Max(1, Math.Max(0, source.SourceMaterialCount));
-			text5 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0569") + num + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0570");
+			text5 = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0569") + num + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0570");
 		}
 		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
 		eventMaterialReference.MaterialType = "prompt_short_strategic_shift";
-		eventMaterialReference.Label = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0571");
+		eventMaterialReference.Label = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0571");
 		eventMaterialReference.SnapshotText = text5;
 		eventMaterialReference.ActionKind = "prompt_short:strategic_shift";
 		return eventMaterialReference;
@@ -666,22 +672,22 @@ internal static partial class WeeklyPromptMaterialOwner
 			List<string> list3 = new List<string>();
 			if (list.Count > 0)
 			{
-				list3.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0576") + string.Join("、", list.Take(8)));
+				list3.Add(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0576") + string.Join("、", list.Take(8)));
 			}
 			if (list2.Count > 0)
 			{
-				list3.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0577") + string.Join("、", list2.Take(8)));
+				list3.Add(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0577") + string.Join("、", list2.Take(8)));
 			}
-			text2 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0578") + string.Join("；", list3) + "。";
+			text2 = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0578") + string.Join("；", list3) + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_SentenceEnd");
 		}
 		else
 		{
 			int num = Math.Max(1, Math.Max(0, source.SourceMaterialCount));
-			text2 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0579") + num + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0580");
+			text2 = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0579") + num + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0580");
 		}
 		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
 		eventMaterialReference.MaterialType = "prompt_short_army";
-		eventMaterialReference.Label = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0581");
+		eventMaterialReference.Label = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0581");
 		eventMaterialReference.SnapshotText = text2;
 		eventMaterialReference.ActionKind = "prompt_short:army";
 		return eventMaterialReference;
@@ -711,7 +717,7 @@ internal static partial class WeeklyPromptMaterialOwner
 				string text2 = ExtractWeeklyPromptShortSiegeTarget(text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0587"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0588"));
 				if (!string.IsNullOrWhiteSpace(text2))
 				{
-					AddUniqueId(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0589") + text2);
+					AddUniqueId(list, WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0589") + text2);
 				}
 				continue;
 			}
@@ -720,7 +726,7 @@ internal static partial class WeeklyPromptMaterialOwner
 				string text3 = ExtractWeeklyPromptShortSiegeTarget(text, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0591"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0592"));
 				if (!string.IsNullOrWhiteSpace(text3))
 				{
-					AddUniqueId(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0593") + text3);
+					AddUniqueId(list, WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0593") + text3);
 				}
 				continue;
 			}
@@ -730,7 +736,7 @@ internal static partial class WeeklyPromptMaterialOwner
 				string text5 = ExtractWeeklyPromptShortSiegeResult(text);
 				if (!string.IsNullOrWhiteSpace(text4) || !string.IsNullOrWhiteSpace(text5))
 				{
-					AddUniqueId(list2, (string.IsNullOrWhiteSpace(text4) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0597") : text4) + (string.IsNullOrWhiteSpace(text5) ? "" : ("：" + text5)));
+					AddUniqueId(list2, (string.IsNullOrWhiteSpace(text4) ? WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0597") : text4) + (string.IsNullOrWhiteSpace(text5) ? "" : ("：" + text5)));
 				}
 			}
 		}
@@ -741,16 +747,16 @@ internal static partial class WeeklyPromptMaterialOwner
 		List<string> list3 = new List<string>();
 		if (list.Count > 0)
 		{
-			list3.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0598") + string.Join("、", list.Take(6)));
+			list3.Add(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0598") + string.Join("、", list.Take(6)));
 		}
 		if (list2.Count > 0)
 		{
-			list3.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0599") + string.Join("；", list2.Take(6)));
+			list3.Add(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0599") + string.Join("；", list2.Take(6)));
 		}
 		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
 		eventMaterialReference.MaterialType = "prompt_short_siege";
-		eventMaterialReference.Label = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0600");
-		eventMaterialReference.SnapshotText = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0601") + string.Join("；", list3) + "。";
+		eventMaterialReference.Label = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0600");
+		eventMaterialReference.SnapshotText = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0601") + string.Join("；", list3) + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_SentenceEnd");
 		eventMaterialReference.ActionKind = "prompt_short:siege";
 		return eventMaterialReference;
 	}
@@ -804,10 +810,10 @@ internal static partial class WeeklyPromptMaterialOwner
 		{
 			return null;
 		}
-		string text2 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0609") + winCount + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0610") + lossCount + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0611") + (ownDied + ownWounded) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0612") + ownDied + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0613") + ownWounded + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0614") + (enemyDied + enemyWounded) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0615") + enemyDied + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0616") + enemyWounded + "）。";
+		string text2 = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0609") + winCount + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0610") + lossCount + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0611") + (ownDied + ownWounded) + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0612") + ownDied + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0613") + ownWounded + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0614") + (enemyDied + enemyWounded) + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0615") + enemyDied + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0616") + enemyWounded + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_ParenthesisSentenceEnd");
 		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
 		eventMaterialReference.MaterialType = "prompt_short_battle";
-		eventMaterialReference.Label = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0617");
+		eventMaterialReference.Label = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0617");
 		eventMaterialReference.SnapshotText = text2;
 		eventMaterialReference.ActionKind = "prompt_short:battle";
 		eventMaterialReference.KingdomId = (group?.KingdomId ?? eventMaterialReference.KingdomId ?? "").Trim();
@@ -892,7 +898,10 @@ internal static partial class WeeklyPromptMaterialOwner
 		{
 			return "";
 		}
-		return text.Substring(num + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0624").Length).Trim(' ', '。', '，', ',', ';', '；');
+		string result = text.Substring(num + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0624").Length).Trim(' ', '。', '，', ',', ';', '；');
+		// Aggregate records retain their original labels; project only the derived prompt.
+		return string.Join(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_ListSeparator"),
+			result.Split('、').Select(WeeklyMaterialTexts.ProjectRaw));
 	}
 
 	private static string ExtractWeeklyPromptShortSiegeTarget(string line, string beforeMarker, string afterMarker)
@@ -1138,21 +1147,21 @@ internal static partial class WeeklyPromptMaterialOwner
 			}
 		}
 		List<string> list2 = new List<string>();
-		list2.Add(Math.Max(hashSet.Count, list.Count) > 2 ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0637") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0638"));
+		list2.Add(Math.Max(hashSet.Count, list.Count) > 2 ? WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0637") : WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0638"));
 		List<string> trends = GetWeeklyPromptSettlementStatsOrder().Where((string orderKey) => dictionary.TryGetValue(orderKey, out var value3) && value3.Count > 0).Take(6).ToList();
 		if (trends.Count > 0)
 		{
-			list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0639") + string.Join("、", trends));
+			list2.Add(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0639") + string.Join("、", trends.Select(WeeklyMaterialTexts.ProjectRaw)));
 		}
 		List<string> list3 = reasonTagsBySettlement.OrderByDescending((KeyValuePair<string, HashSet<string>> x) => x.Value.Count).ThenBy((KeyValuePair<string, HashSet<string>> x) => x.Key, StringComparer.OrdinalIgnoreCase).Select((KeyValuePair<string, HashSet<string>> x) => x.Key).Take(5).ToList();
 		if (list3.Count > 0)
 		{
-			list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0640") + string.Join("、", list3));
+			list2.Add(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0640") + string.Join("、", list3.Select(WeeklyMaterialTexts.ProjectRaw)));
 		}
 		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(list[0]);
 		eventMaterialReference.MaterialType = "prompt_short_settlement_stats";
-		eventMaterialReference.Label = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0641");
-		eventMaterialReference.SnapshotText = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0642") + string.Join("；", list2) + "。";
+		eventMaterialReference.Label = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0641");
+		eventMaterialReference.SnapshotText = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0642") + string.Join("；", list2) + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_SentenceEnd");
 		eventMaterialReference.KingdomId = (group?.KingdomId ?? eventMaterialReference.KingdomId ?? "").Trim();
 		eventMaterialReference.ActionKind = "prompt_short:settlement_stats";
 		eventMaterialReference.SourceMaterialCount = list.Count;
@@ -1223,8 +1232,8 @@ internal static partial class WeeklyPromptMaterialOwner
 		}
 		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(list[0]);
 		eventMaterialReference.MaterialType = "prompt_short_village_raid";
-		eventMaterialReference.Label = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0643");
-		eventMaterialReference.SnapshotText = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0644") + num + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0645") + num2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0646") + num3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0647") + num4 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0648");
+		eventMaterialReference.Label = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0643");
+		eventMaterialReference.SnapshotText = WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0644") + num + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0645") + num2 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0646") + num3 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0647") + num4 + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Material_0648");
 		eventMaterialReference.KingdomId = text;
 		eventMaterialReference.ActionKind = "prompt_short:village_raid";
 		eventMaterialReference.SourceMaterialCount = list.Count;

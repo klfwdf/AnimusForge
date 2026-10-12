@@ -165,20 +165,20 @@ internal static class PartyTransferExecutionOwner
 						}
 					}
 				}
-				string batchSummary = "部队与俘虏转移汇总：尝试项" + attemptedEntries + "，成功项" + successfulEntries + "，失败或不足项" + failedOrPartialEntries + "，实际转移" + actualUnits + "人，实际指导总值约" + actualValue + "第纳尔。";
+				string batchSummary = EconomySourceTexts.Get("S042") + attemptedEntries + EconomySourceTexts.Get("S043") + successfulEntries + EconomySourceTexts.Get("S044") + failedOrPartialEntries + EconomySourceTexts.Get("S045") + actualUnits + EconomySourceTexts.Get("S046") + actualValue + EconomySourceTexts.Get("S047");
 				StringBuilder combinedFact = new StringBuilder(256);
-				combinedFact.Append("[AFEF NPC行为补充] ").Append(text2).Append(partialEffects.Length > 0 ? "执行部队与俘虏转移时发生部分失败。" : "已完成一次部队与俘虏转移。");
+				combinedFact.Append(EconomySourceTexts.Get("S048")).Append(text2).Append(partialEffects.Length > 0 ? EconomySourceTexts.Get("S049") : EconomySourceTexts.Get("S050"));
 				if (transferredTroopFacts.Length > 0)
 				{
-					combinedFact.Append("转入玩家麾下：").Append(transferredTroopFacts).Append('。');
+					combinedFact.Append(EconomySourceTexts.Get("S051")).Append(transferredTroopFacts).Append('。');
 				}
 				if (recruitedVolunteerFacts.Length > 0)
 				{
-					combinedFact.Append("允许玩家从原版待招募士兵中招募：").Append(recruitedVolunteerFacts).Append('。');
+					combinedFact.Append(EconomySourceTexts.Get("S052")).Append(recruitedVolunteerFacts).Append('。');
 				}
 				if (transferredPrisonerFacts.Length > 0)
 				{
-					combinedFact.Append("交给玩家的俘虏：").Append(transferredPrisonerFacts).Append('。');
+					combinedFact.Append(EconomySourceTexts.Get("S053")).Append(transferredPrisonerFacts).Append('。');
 				}
 				combinedFact.Append(batchSummary);
                 if (partialEffects.Length > 0) combinedFact.Append(partialEffects);
@@ -199,7 +199,7 @@ internal static class PartyTransferExecutionOwner
 		{
 			content = PartyTransferTagCodec.Strip(content);
             if (observedEffects && factResults.Count == 0)
-                factResults.Add("[AFEF NPC行为补充] 部队/俘虏转移已发生部分副作用，后续处理失败；不代表完整交付，不自动重试。");
+                factResults.Add(EconomySourceTexts.Get("S054"));
             return observedEffects;
 		}
 	}
@@ -229,7 +229,7 @@ internal static class PartyTransferExecutionOwner
     internal static string BuildPartialEffectFact(PartyTransferPromptEntry entry, PartyTransferEffectResult effect)
     {
         if (!effect.IsPartial || !effect.HasEffects) return "";
-        var text = new StringBuilder("[AFEF 玩家动作补充]");
+        var text = new StringBuilder(EconomySourceTexts.Get("S055"));
         AppendPartialEffect(text, entry, effect);
         return text.ToString();
     }
@@ -237,12 +237,12 @@ internal static class PartyTransferExecutionOwner
     {
         if (effect.Indeterminate)
         {
-            text.Append(" 转移结果无法完整核实：").Append(entry?.DisplayName ?? "未知单位")
-                .Append("，可能已发生部分副作用，不表示零转移；不自动重试。");
+            text.Append(EconomySourceTexts.Get("S056")).Append(entry?.DisplayName ?? EconomySourceTexts.Get("S057"))
+                .Append(EconomySourceTexts.Get("S058"));
             return;
         }
-        text.Append(" 转移部分失败：").Append(entry?.DisplayName ?? "未知单位")
-            .Append("，源实际扣除").Append(effect.Debited).Append("人，目标实际新增")
-            .Append(effect.Delivered).Append("人；不自动重试。");
+        text.Append(EconomySourceTexts.Get("S059")).Append(entry?.DisplayName ?? EconomySourceTexts.Get("S057"))
+            .Append(EconomySourceTexts.Get("S060")).Append(effect.Debited).Append(EconomySourceTexts.Get("S061"))
+            .Append(effect.Delivered).Append(EconomySourceTexts.Get("S062"));
     }
 }

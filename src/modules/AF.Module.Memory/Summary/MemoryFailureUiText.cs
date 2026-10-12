@@ -6,6 +6,7 @@ namespace AnimusForge;
 // Detached display descriptions can travel with worker diagnostics without resolving game text.
 internal sealed class MemoryFailureUiText
 {
+    private static readonly System.Text.RegularExpressions.Regex LiteralValues = new System.Text.RegularExpressions.Regex(@"AFMEMORYFAILURELITERAL([0-9]+)END", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
     private readonly string _id, _fallback;
     private readonly (string Name, object Value)[] _variables;
 
@@ -22,19 +23,31 @@ internal sealed class MemoryFailureUiText
     {
         MemoryFailureUiText detail = parseError?.Trim() switch
         {
-            "SUMMARY 为空。" => T("AF_MEMORY_UI_SummaryEmpty", "SUMMARY is empty."),
-            "TITLE 或 SUMMARY 为空。" => T("AF_MEMORY_UI_TitleOrSummaryEmpty", "TITLE or SUMMARY is empty."),
-            "JSON 解析失败。" => T("AF_MEMORY_UI_JsonParseFailed", "JSON parsing failed."),
-            "找不到 JSON 对象。" => T("AF_MEMORY_UI_JsonObjectMissing", "No JSON object could be found."),
+            var _ when string.Equals(parseError?.Trim(), MemoryTextResources.Raw("MEM_Raw_116"), StringComparison.Ordinal) => T("AF_MEMORY_UI_SummaryEmpty", "SUMMARY is empty."),
+            var _ when string.Equals(parseError?.Trim(), MemoryTextResources.Raw("MEM_Raw_117"), StringComparison.Ordinal) => T("AF_MEMORY_UI_TitleOrSummaryEmpty", "TITLE or SUMMARY is empty."),
+            var _ when string.Equals(parseError?.Trim(), MemoryTextResources.Raw("MEM_Raw_077"), StringComparison.Ordinal) => T("AF_MEMORY_UI_JsonParseFailed", "JSON parsing failed."),
+            var _ when string.Equals(parseError?.Trim(), MemoryTextResources.Raw("MEM_Raw_078"), StringComparison.Ordinal) => T("AF_MEMORY_UI_JsonObjectMissing", "No JSON object could be found."),
             null or "" => T("AF_MEMORY_UI_UnknownParseError", "Unknown parsing error."),
             _ => Raw(parseError.Trim())
         };
-        const string requiredFieldsPrefix = "未找到包含必需字段的 JSON 对象：";
+        string requiredFieldsPrefix = MemoryTextResources.Raw("MEM_Raw_076");
         if (parseError?.StartsWith(requiredFieldsPrefix, StringComparison.Ordinal) == true)
             detail = T("AF_MEMORY_UI_JsonRequiredFieldsMissing", "No JSON object contained the required fields: {FIELDS}.",
-                ("FIELDS", parseError.Substring(requiredFieldsPrefix.Length).TrimEnd('。')));
+                ("FIELDS", RequiredFieldsForDisplay(parseError.Substring(requiredFieldsPrefix.Length).TrimEnd('。'))));
         return T("AF_MEMORY_UI_SummaryParseFailed", "Summary response format could not be parsed: {ERROR}\n\nFull model reply:\n{REPLY}",
             ("ERROR", detail), ("REPLY", string.IsNullOrWhiteSpace(reply) ? T("AF_MEMORY_UI_NoModelReply", "No model reply was received or could be parsed") : Raw(reply.Trim())));
+    }
+
+    private static MemoryFailureUiText RequiredFieldsForDisplay(string fields)
+    {
+        string none = MemoryTextResources.Raw("MEM_Raw_079");
+        MemoryFailureUiText Group(string value) => value == none
+            ? T("AF_MEMORY_UI_JsonEmptyFieldGroup", "(none)") : Raw(value);
+        string[] groups = fields.Split(new[] { " + " }, StringSplitOptions.None);
+        return groups.Length == 2
+            ? T("AF_MEMORY_UI_JsonFieldGroups", "{PRIMARY} + {SECONDARY}",
+                ("PRIMARY", Group(groups[0])), ("SECONDARY", Group(groups[1])))
+            : Group(fields);
     }
 
     // Called only by UI publication/acceptance on the existing main-thread phase.
@@ -42,10 +55,14 @@ internal sealed class MemoryFailureUiText
     {
         if (_id == null) return _fallback;
         var text = new TextObject("{=" + _id + "}" + _fallback);
-        foreach (var variable in _variables)
-            text.SetTextVariable(variable.Name, variable.Value is MemoryFailureUiText nested
-                ? nested.Resolve() : Convert.ToString(variable.Value, System.Globalization.CultureInfo.InvariantCulture) ?? "");
-        return text.ToString();
+        for (int i = 0; i < _variables.Length; i++)
+            text.SetTextVariable(_variables[i].Name, "AFMEMORYFAILURELITERAL" + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + "END");
+        return LiteralValues.Replace(text.ToString(), match =>
+        {
+            object value = _variables[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)].Value;
+            return value is MemoryFailureUiText nested ? nested.Resolve()
+                : Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture) ?? "";
+        });
     }
 }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace TaleWorlds.Localization
 {
     // Fixture only: product text uses the real Bannerlord loader, verified separately.
-    internal sealed class TextObject
+    public sealed class TextObject
     {
         private readonly string _text;
         private readonly Dictionary<string, string> _variables = new Dictionary<string, string>();

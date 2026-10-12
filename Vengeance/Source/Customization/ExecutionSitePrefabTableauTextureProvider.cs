@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using RichExecutions.Diagnostics;
 using RichExecutions.Scene;
 using TaleWorlds.Core;

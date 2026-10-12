@@ -121,9 +121,7 @@ internal static class ExternalBrowserLauncher
 				}
 				ClearCachedBrowserPathIfMatching(item);
 			}
-			var failure = new TextObject("{=AF_UI_Browser_StartFailed}The default browser could not start, and no local browser could be launched from the registry or common installation paths. Install or configure Chrome, Edge, Firefox, or another browser and try again. Reason: {REASON}");
-			failure.SetTextVariable("REASON", ex.Message);
-			failureMessage = failure.ToString();
+			failureMessage = DeveloperUiText.Format("AF_UI_Browser_StartFailed", "The default browser could not start, and no local browser could be launched from the registry or common installation paths. Install or configure Chrome, Edge, Firefox, or another browser and try again. Reason: {REASON}", ("REASON", (object)ex.Message));
 			return false;
 		}
 	}

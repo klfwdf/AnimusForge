@@ -1,5 +1,6 @@
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
+using TaleWorlds.Localization;
 
 namespace AnimusForge.CoupSystem;
 
@@ -10,7 +11,7 @@ internal static class CoupSceneBridge
         reason = null;
         if (settlement?.IsTown != true || settlement.LocationComplex == null)
         {
-            reason = "当前地点没有可用的城镇场景。";
+            reason = new TextObject("{=AF_COUPX_NoTownScene}Current location has no usable town scene.").ToString();
             return false;
         }
         Location center = settlement.LocationComplex.GetLocationWithId("center");
@@ -19,13 +20,13 @@ internal static class CoupSceneBridge
         if (center == null || hall == null || string.IsNullOrWhiteSpace(center.GetSceneName(level))
             || string.IsNullOrWhiteSpace(hall.GetSceneName(level)))
         {
-            reason = "这座城镇缺少街道或领主大厅场景。";
+            reason = new TextObject("{=AF_COUPX_MissingStreetOrHall}This town lacks street or lord's hall scenes.").ToString();
             return false;
         }
         // Actual passage/navmesh availability is checked once the native scene has loaded.
         if (!center.LocationsOfPassages.Contains(hall))
         {
-            reason = "城镇街道没有通向领主大厅的原版通道。";
+            reason = new TextObject("{=AF_COUPX_NoPassageToHall}Town street has no vanilla passage leading to lord's hall.").ToString();
             return false;
         }
         return true;

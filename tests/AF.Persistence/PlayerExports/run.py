@@ -43,6 +43,9 @@ for name in ("Program.cs", "PlayerExportsTests.csproj"):
 project = (output / "PlayerExportsTests.csproj").read_text(encoding="utf-8").replace("../../../", (str(ROOT) + "/").replace("\\", "/"))
 newtonsoft = os.environ.get("AF_NEWTONSOFT") or str(ROOT / "local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll")
 project = project.replace("@@NEWTONSOFT@@", newtonsoft.replace("\\", "/"))
+# Resolve every remaining test fixture link before relocating the original project.
+project = re.sub(r'Include="(\.\./[^"\n]+)"', lambda match: 'Include="' + (HERE / match.group(1)).resolve().as_posix() + '"', project)
+
 if args.mutate:
     src_dir = output / "mutated"; src_dir.mkdir()
     if args.mutate == "name-mismatch-passes":
@@ -107,7 +110,7 @@ dto = dto_path.read_text(encoding="utf-8")
 constants = []
 for name in ("AutomaticNamingFailurePrefix", "NamingRetryFailurePrefix", "ForcedNamingFailurePrefix"):
     constants.append(re.search(r"internal const string " + name + r" = [^\n]+;", runtime_source).group(0))
-dto_path.write_text(dto + "\nnamespace AnimusForge { internal sealed partial class KingdomRebellionRuntimeController {" + "\n".join(constants) + "} }", encoding="utf-8")
+dto_path.write_text(dto + "\ninternal sealed partial class KingdomRebellionRuntimeController {" + "\n".join(constants) + "}", encoding="utf-8")
 
 # Reuse the existing J17 format fixture leaves, not a second production memory implementation.
 fixture = (ROOT / "tests/modules/AF.Module.Memory/J17ImportExportTests/OwnerChecks.cs").read_text(encoding="utf-8-sig")
@@ -143,6 +146,24 @@ links = ["src/AF.GameAdapter.Bannerlord/UI/Onboarding/OnboardingDatabaseImportCo
 project = project.replace("</ItemGroup>", ''.join('<Compile Include="' + str(ROOT / f).replace("\\", "/") + '" />' for f in links) + '<Compile Include="IdentityLeaves.cs" /><Compile Include="MemoryFixture.cs" /><Compile Include="OnboardingReflection.cs" /></ItemGroup>')
 if args.api == "1.4":
     project = project.replace("</PropertyGroup>", "<DefineConstants>BANNERLORD_1_4_OR_GREATER</DefineConstants></PropertyGroup>")
+# Link current externalized owners; no counterfeit localization/validation getters.
+reader_links = ["src/AF.GameAdapter.Bannerlord/ImportExport/ImportExportUiText.cs",
+ "src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperUiText.cs",
+ "src/modules/AF.Module.Knowledge/Host/KnowledgeUiTexts.cs",
+ "src/modules/AF.Module.Persona/Import/PersonaUiTexts.cs",
+ "src/modules/AF.Module.Memory/ImportExport/CompressedMemoryExportBundleReader.cs",
+ "src/modules/AF.Module.Memory/Runtime/MemoryTextResources.cs",
+ "src/modules/AF.Module.Memory/Summary/MemoryFailureUiText.cs",
+ "src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicyTexts.cs",
+ "src/AF.Persistence/AnimusForgeModulePaths.cs"]
+project=project.replace("</ItemGroup>", ''.join('<Compile Include="'+str(ROOT / f).replace("\\","/")+'" />' for f in reader_links)+"</ItemGroup>")
+main_project=(ROOT / "AnimusForge.csproj").read_text(encoding="utf-8-sig")
+for logical in ("AnimusForge.Memory.SourceTexts.json", "AnimusForge.Weekly.WorldBulletinCompatibility.json"):
+    resource=re.search(r'<EmbeddedResource Include="([^"]+)">\s*<LogicalName>'+re.escape(logical)+r'</LogicalName>',main_project)
+    assert resource, logical
+    project=project.replace("</ItemGroup>", '<EmbeddedResource Include="'+str(ROOT / resource.group(1).replace("\\","/")).replace("\\","/")+'" LogicalName="'+logical+'" WithCulture="false" /></ItemGroup>')
+(output / "EngineIoLeaf.cs").write_text('namespace TaleWorlds.Engine { internal static class Utilities { public static string GetBasePath()=>System.IO.Path.GetDirectoryName(System.Environment.GetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT")); } }',encoding="utf-8")
+project=project.replace("</ItemGroup>", '<Compile Include="EngineIoLeaf.cs" /></ItemGroup>')
 (output / "PlayerExportsTests.csproj").write_text(project, encoding="utf-8")
 (output / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
 temp = output / "temp"
@@ -155,11 +176,15 @@ if args.synthetic_root is not None:
         raise SystemExit("synthetic root must be a new direct child of the approved H7 A root")
     # No cleanup: the unique synthetic data is retained as evidence.
     data_root.mkdir(parents=True, exist_ok=False)
+    data_root = data_root / "AnimusForge"
     env["AF_H7_PERSONA_FORMATS"] = "1"
 else:
-    data_root = ROOT.parent / "AF-J15-PathOnly-PlayerExports"
+    data_root = output / "module-fixture" / "AnimusForge"
     if data_root.exists():
         raise SystemExit("synthetic path-only data root already exists; refusing to read it")
+data_root.mkdir(parents=True, exist_ok=True)
+(data_root / "ModuleData").mkdir(exist_ok=True)
+(data_root / "SubModule.xml").write_text('<Module><Id value="AnimusForge" /></Module>', encoding="utf-8")
 if args.terminal_red: env["AF_ONBOARDING_TDD_RED"]="1"
 env.update(AF_PLAYER_EXPORTS_TEST_TEMP=str(temp), ANIMUSFORGE_DATA_ROOT=str(data_root))
 build = subprocess.run([str(dotnet), "build", str(output / "PlayerExportsTests.csproj"), "-c", "Release", "--nologo", "-p:RestoreConfigFile=" + str(output / "NuGet.Config")], cwd=output, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
@@ -167,6 +192,19 @@ build = subprocess.run([str(dotnet), "build", str(output / "PlayerExportsTests.c
 if build.returncode != 0:
     print(build.stdout[-3000:])
     raise SystemExit("build failed: " + str(build.returncode))
+# Project only the four real published worldbooks, not unmapped alternate-language source directories.
+import json
+worldbook_fixture = output / "worldbook-fixture" / "AnimusForge"
+worldbook_fixture.mkdir(parents=True)
+(worldbook_fixture / "ModuleData").mkdir()
+(worldbook_fixture / "SubModule.xml").write_text('<Module><Id value="AnimusForge" /></Module>', encoding="utf-8")
+worldbook_rows = [x for x in json.loads((ROOT / "content/content-map.json").read_text("utf-8-sig"))["entries"] if x["target"].startswith("PlayerExports/")]
+for entry in worldbook_rows:
+    target = worldbook_fixture / entry["target"]
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(ROOT / entry["source"], target)
+env["AF_PLAYER_EXPORTS_WORLD_BOOK_MODULE"] = str(worldbook_fixture)
+(output / "worldbook-map.json").write_text(json.dumps(worldbook_rows, ensure_ascii=False, indent=2), encoding="utf-8")
 run = subprocess.run([str(dotnet), str(output / "bin/Release/net8.0/PlayerExportsTests.dll")], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
 (output / "run.log").write_text(run.stdout + run.stderr, encoding="utf-8")
 print((run.stdout + run.stderr).strip()[-2000:])

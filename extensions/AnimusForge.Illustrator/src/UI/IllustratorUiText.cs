@@ -10,38 +10,45 @@ namespace AnimusForge.Illustrator.UI
     /// </summary>
     internal static class IllustratorUiText
     {
+    // Resolve the template once, then insert display data without re-parsing its braces.
+    private static readonly System.Text.RegularExpressions.Regex LiteralValues = new System.Text.RegularExpressions.Regex(@"AFSWEEPLITERAL([0-9]+)END", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+    private static string RenderLiteral(TextObject text, params (string Name, object Value)[] values)
+    {
+        for (int i = 0; i < values.Length; i++)
+            if (values[i].Value is TextObject nested)
+                text.SetTextVariable(values[i].Name, nested);
+            else
+                text.SetTextVariable(values[i].Name, "AFSWEEPLITERAL" + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + "END");
+        return LiteralValues.Replace(text.ToString(), match => values[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty);
+    }
+
         internal static string Resolve(string id, string englishFallback)
             => new TextObject($"{{={id}}}{englishFallback}").ToString();
 
         internal static string Format(string id, string englishFallback, string variable, object value)
-        {
-            var text = new TextObject($"{{={id}}}{englishFallback}");
-            text.SetTextVariable(variable, DisplayValue(variable, value));
-            return text.ToString();
-        }
+    {
+        return RenderLiteral(new TextObject($"{{={id}}}{englishFallback}"), (variable, DisplayValue(variable, value)));
+    }
 
         internal static string Format2(string id, string englishFallback, string firstName, object firstValue, string secondName, object secondValue)
-        {
-            var text = new TextObject($"{{={id}}}{englishFallback}");
-            text.SetTextVariable(firstName, DisplayValue(firstName, firstValue));
-            text.SetTextVariable(secondName, DisplayValue(secondName, secondValue));
-            return text.ToString();
-        }
+    {
+        return RenderLiteral(new TextObject($"{{={id}}}{englishFallback}"), (firstName, DisplayValue(firstName, firstValue)), (secondName, DisplayValue(secondName, secondValue)));
+    }
 
         internal static string Format3(string id, string englishFallback, string firstName, object firstValue, string secondName, object secondValue, string thirdName, object thirdValue)
-        {
-            var text = new TextObject($"{{={id}}}{englishFallback}");
-            text.SetTextVariable(firstName, DisplayValue(firstName, firstValue));
-            text.SetTextVariable(secondName, DisplayValue(secondName, secondValue));
-            text.SetTextVariable(thirdName, DisplayValue(thirdName, thirdValue));
-            return text.ToString();
-        }
+    {
+        return RenderLiteral(new TextObject($"{{={id}}}{englishFallback}"), (firstName, DisplayValue(firstName, firstValue)), (secondName, DisplayValue(secondName, secondValue)), (thirdName, DisplayValue(thirdName, thirdValue)));
+    }
 
         private static string DisplayValue(string name, object value)
         {
             string raw = value?.ToString() ?? string.Empty;
             return name == "ERROR" ? IllustrationFailureUiText.Project(raw) : raw;
         }
+
+        internal static string ProjectKnownCachedPrompt(string value)
+            => string.Equals(value, IllustratorText.Raw("Residual_DiskImageCacheManager_ec79815ca580"), StringComparison.Ordinal)
+                ? Resolve("AF_ILL_UI_LOCAL_CACHE_PROMPT", "(A visual chronicle is retained locally)") : value;
 
         internal static string GalleryTitle => Resolve("AF_ILL_UI_GALLERY_TITLE", "Calradia Visual Chronicle Gallery");
         internal static string All => Resolve("AF_ILL_UI_ALL", "All");
@@ -144,26 +151,47 @@ namespace AnimusForge.Illustrator.UI
         internal static string ProjectKnownDefaultTitle(string title, string category)
         {
             if (string.IsNullOrWhiteSpace(title)) return title ?? string.Empty;
-            if (string.Equals(title, "卡拉迪亚历史画卷", StringComparison.Ordinal))
+            if (string.Equals(title, IllustratorText.Raw("Residual_IllustratorUiText_3e7ebd8d664d"), StringComparison.Ordinal))
                 return Resolve("AF_ILL_UI_GALLERY_LEGACY_DEFAULT_TITLE", "Calradia history illustration");
-            const string portraitSuffix = " 纪事肖像";
+            // Only the fixed built-in fallback templates are projected. Model and user titles remain data.
+            if (string.Equals(category, "encyclopedia", StringComparison.Ordinal))
+            {
+                string hero = DefaultTitleName(title, "Chronicle portrait · ", "")
+                    ?? DefaultTitleName(title, IllustratorText.Raw("Residual_IllustratorUiText_e8c9a56ad3e5"), "】");
+                if (hero != null) return PortraitTitle(hero == IllustratorText.Raw("Residual_IllustratorUiText_09e9b2088fa0") || hero == "Hero" ? DefaultHeroName : hero);
+            }
+            if (string.Equals(category, "conversation", StringComparison.Ordinal))
+            {
+                string partner = DefaultTitleName(title, "Conversation illustration · with ", "")
+                    ?? DefaultTitleName(title, IllustratorText.Raw("Residual_IllustratorUiText_02e40f24f75d"), "】");
+                if (partner != null) return ConversationTitle(partner == IllustratorText.Raw("Residual_IllustratorUiText_ddfdac569e37") || partner == "the other person" ? DefaultPartnerName : partner);
+            }
+            string portraitSuffix = IllustratorText.Raw("Residual_IllustratorUiText_82114fcb7616");
             if (string.Equals(category, "encyclopedia", StringComparison.Ordinal) && title.EndsWith(portraitSuffix, StringComparison.Ordinal))
             {
                 string hero = title.Substring(0, title.Length - portraitSuffix.Length);
-                if (!string.IsNullOrWhiteSpace(hero)) return PortraitTitle(string.Equals(hero, "英雄", StringComparison.Ordinal) ? DefaultHeroName : hero);
+                if (!string.IsNullOrWhiteSpace(hero)) return PortraitTitle(string.Equals(hero, IllustratorText.Raw("Residual_IllustratorUiText_09e9b2088fa0"), StringComparison.Ordinal) ? DefaultHeroName : hero);
             }
-            const string meetingPrefix = "与 ";
-            const string meetingSuffix = " 的会晤纪事";
+            string meetingPrefix = IllustratorText.Raw("Residual_IllustratorUiText_c37e425bf8af");
+            string meetingSuffix = IllustratorText.Raw("Residual_IllustratorUiText_1e2231fdda28");
             if (string.Equals(category, "conversation", StringComparison.Ordinal) && title.StartsWith(meetingPrefix, StringComparison.Ordinal) && title.EndsWith(meetingSuffix, StringComparison.Ordinal))
             {
                 int partnerLength = title.Length - meetingPrefix.Length - meetingSuffix.Length;
                 if (partnerLength > 0)
                 {
                     string partner = title.Substring(meetingPrefix.Length, partnerLength);
-                    return ConversationTitle(string.Equals(partner, "对方", StringComparison.Ordinal) ? DefaultPartnerName : partner);
+                    return ConversationTitle(string.Equals(partner, IllustratorText.Raw("Residual_IllustratorUiText_ddfdac569e37"), StringComparison.Ordinal) ? DefaultPartnerName : partner);
                 }
             }
             return title;
+        }
+
+        private static string DefaultTitleName(string title, string prefix, string suffix)
+        {
+            if (!title.StartsWith(prefix, StringComparison.Ordinal) || !title.EndsWith(suffix, StringComparison.Ordinal)
+                || title.Length <= prefix.Length + suffix.Length) return null;
+            string name = title.Substring(prefix.Length, title.Length - prefix.Length - suffix.Length);
+            return string.IsNullOrWhiteSpace(name) ? null : name;
         }
         internal static string ConversationSessionChanged => Resolve("AF_ILL_UI_CONVERSATION_SESSION_CHANGED", "The previous conversation illustration was archived; the current conversation has changed.");
         internal static string ConversationFirstImageRequired => Resolve("AF_ILL_UI_CONVERSATION_FIRST_IMAGE_REQUIRED", "Click Redraw to create the first scene illustration for this conversation.");
@@ -220,6 +248,7 @@ namespace AnimusForge.Illustrator.UI
         internal static string MissionStartFailed(string error) => Format("AF_ILL_MISSION_START_FAILED", "Could not start image generation: {ERROR}", "ERROR", error);
         internal static string MissionFailed(string error) => Format("AF_ILL_MISSION_FAILED", "Image generation failed: {ERROR}", "ERROR", error);
         internal static string MissionBattleTitle => Resolve("AF_ILL_MISSION_BATTLE_TITLE", "Battle scene");
+        internal static string MissionShoutTitle => Resolve("AF_ILL_MISSION_SHOUT_TITLE", "Scene shout");
         internal static string MissionInputHint => Resolve("AF_ILL_MISSION_INPUT_HINT", "Click Generate image to frame the scene freely. Press Enter to capture one or two images, then confirm for the director to plan the illustration.");
         internal static string MissionInputPlaceholder => Resolve("AF_ILL_MISSION_INPUT_PLACEHOLDER", "This mode only generates images from screenshots; it does not send NPC shouts.");
         internal static string MissionNoDialogue => Resolve("AF_ILL_MISSION_NO_DIALOGUE", "[Scene Shout] No dialogue channel is available in this custom battle.");

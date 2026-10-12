@@ -28,7 +28,7 @@ internal sealed class SettlementBalancePopup
 			_active?.Close();
 			SettlementBalanceSettings.Initialize();
 			var screen = ScreenManager.TopScreen;
-			if (screen == null) throw new InvalidOperationException(PolicyUiTexts.Get("AFPOL_UI_NoSettingsScreen", "No settings screen is available."));
+			if (screen == null) throw new InvalidOperationException("No settings screen is available.");
 			_active = new SettlementBalancePopup(screen);
 			_active._layer.LoadMovie("SettlementBalancePopup", _active._vm);
 			_active._layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
@@ -42,7 +42,10 @@ internal sealed class SettlementBalancePopup
 		{
 			_active?.Close();
 			PolicySystemLog.Failure("Balance", "popup-open-failed", ex.Message, ex.ToString());
-			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Format("AFPOL_UI_BalanceOpenFailed", "Unable to open settlement balance limits: {ERROR}", "ERROR", ex.Message)));
+			string displayError = ex.Message == "No settings screen is available."
+				? PolicyUiTexts.Get("AFPOL_UI_NoSettingsScreen", ex.Message)
+				: ex.Message;
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Format("AFPOL_UI_BalanceOpenFailed", "Unable to open settlement balance limits: {ERROR}", "ERROR", displayError)));
 		}
 	}
 	private void Request(int action) { if (!_closed && _pending == 0) _pending = action; }

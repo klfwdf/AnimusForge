@@ -113,12 +113,12 @@ internal sealed class MemorySummaryQueueRunRuntime<TDaily, TMajor, TOverview>
                 if (!run.IsCurrent || SaveRuntimeGuard.IsStale(generation, "memory_summary_queue_extra_results")) return;
             }
             if (await _ports.BuildPlanAsync(generation, false, null, true, run) == null) return;
-            string failureMessage = failures.Count == 0 ? null : await Task.Run(() => "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。");
+            string failureMessage = failures.Count == 0 ? null : await Task.Run(() => "The following end-of-day summary jobs still failed after 3 attempts:\n\n" + string.Join("\n", failures) + "\n\nFix the API or lower the memory summary RPM, then retry.");
             await _ports.RunPhaseAsync(run, generation, () =>
             {
                 if (failureMessage != null) {
                     string displayFailureLines = string.Join("\n", displayFailures.Select(x => x?.Resolve() ?? ""));
-                    _ports.BlockingPopup("日结压缩总结失败", failureMessage, generation,
+                    _ports.BlockingPopup("End-of-day summary failed", failureMessage, generation,
                     new MemoryFailureDisplay(MemoryFailureUiText.T("AF_MEMORY_UI_SummaryFailedTitle", "End-of-day summary failed"),
                         MemoryFailureUiText.T("AF_MEMORY_UI_SummaryFailedBody", "The following end-of-day summary jobs still failed after 3 attempts:\n\n{FAILURES}\n\nFix the API or lower the memory summary RPM, then retry.", ("FAILURES", displayFailureLines))));
                 }
@@ -132,7 +132,7 @@ internal sealed class MemorySummaryQueueRunRuntime<TDaily, TMajor, TOverview>
         {
             _ports.LogFailure(error);
             if (run.IsCurrent && SaveRuntimeGuard.IsCurrentGeneration(generation))
-                await _ports.RunPhaseAsync(run, generation, () => { _ports.BlockingPopup("压缩记忆总结异常", "任务可能已有部分写入，本轮已停止；请查看日志后再重试。\n\n" + error.Message, generation,
+                await _ports.RunPhaseAsync(run, generation, () => { _ports.BlockingPopup("Memory summary exception", "Some results may already have been saved. This run has stopped; check the log before retrying.\n\n" + error.Message, generation,
                     new MemoryFailureDisplay(MemoryFailureUiText.T("AF_MEMORY_UI_SummaryExceptionTitle", "Memory summary exception"),
                         MemoryFailureUiText.T("AF_MEMORY_UI_SummaryExceptionBody", "Some results may already have been saved. This run has stopped; check the log before retrying.\n\n{ERROR}", ("ERROR", MemoryFailureUiText.Error(error.Message))))); return true; });
         }

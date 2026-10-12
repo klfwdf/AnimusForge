@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_WBLT_Title_AllianceEnded" text="Alliance ended" />
+    <string id="AF_WBLT_Title_AllianceFormed" text="Alliance formed" />
+    <string id="AF_WBLT_Title_ArmyGathered" text="Army assembled" />
+    <string id="AF_WBLT_Title_Battle" text="Battle report" />
+    <string id="AF_WBLT_Title_CivilWar" text="Civil war erupts" />
+    <string id="AF_WBLT_Title_CivilWarPolitics" text="Faction negotiations" />
+    <string id="AF_WBLT_Title_CivilWarResolution" text="Civil war ends" />
+    <string id="AF_WBLT_Title_ClanDefection" text="Clan defects" />
+    <string id="AF_WBLT_Title_ClanDestroyed" text="Clan destroyed" />
+    <string id="AF_WBLT_Title_CoupFailure" text="Coup fails" />
+    <string id="AF_WBLT_Title_CoupSuccess" text="Coup succeeds" />
+    <string id="AF_WBLT_Title_Default" text="Current affairs bulletin" />
+    <string id="AF_WBLT_Title_DiplomaticDeclaration" text="Diplomatic declaration" />
+    <string id="AF_WBLT_Title_FiefGrant" text="Fief granted" />
+    <string id="AF_WBLT_Title_KingdomAnnexed" text="Kingdom annexed" />
+    <string id="AF_WBLT_Title_KingdomCreated" text="Kingdom founded" />
+    <string id="AF_WBLT_Title_KingdomDestroyed" text="Kingdom falls" />
+    <string id="AF_WBLT_Title_KingdomRebellion" text="Kingdom rebellion" />
+    <string id="AF_WBLT_Title_LordCaptured" text="Noble captured" />
+    <string id="AF_WBLT_Title_LordKilled" text="Noble slain" />
+    <string id="AF_WBLT_Title_NobleGathering" text="Noble gathering" />
+    <string id="AF_WBLT_Title_NobleMarriage" text="Noble marriage" />
+    <string id="AF_WBLT_Title_PeaceMade" text="Peace concluded" />
+    <string id="AF_WBLT_Title_Raid" text="Village raided" />
+    <string id="AF_WBLT_Title_RoyalMarriage" text="Royal marriage" />
+    <string id="AF_WBLT_Title_RulerChanged" text="New ruler" />
+    <string id="AF_WBLT_Title_RulerKilled" text="Ruler slain" />
+    <string id="AF_WBLT_Title_RulerPolicy" text="New ruler policy" />
+    <string id="AF_WBLT_Title_SallyOutBattle" text="Sally-out battle report" />
+    <string id="AF_WBLT_Title_SettlementSiege" text="Settlement changes hands" />
+    <string id="AF_WBLT_Title_SettlementTransfer" text="Territory transferred" />
+    <string id="AF_WBLT_Title_TournamentFinished" text="Tournament results" />
+    <string id="AF_WBLT_Title_TownRebellion" text="Town rebellion" />
+    <string id="AF_WBLT_Title_TownUnrest" text="Town unrest" />
+    <string id="AF_WBLT_Title_VassalageEnded" text="Vassalage ends" />
+    <string id="AF_WBLT_Title_VassalageEstablished" text="Vassalage established" />
+    <string id="AF_WBLT_Title_WarDeclared" text="War breaks out" />
+    <string id="AF_WBLT_UI_037" text="The model returned an empty response that could not be parsed." />
+    <string id="AF_WBLT_UI_038" text="The model response could not be parsed." />
+    <string id="AF_WBLT_UI_039" text="The API returned an empty response." />
+    <string id="AF_WBLT_UI_040" text="Missing [TAGS]." />
+    <string id="AF_WBLT_UI_041" text="The response contains conflicting stability tags." />
+    <string id="AF_WBLT_UI_042" text="No valid stability tag was found." />
+    <string id="AF_WBLT_UI_043" text="The batch weekly-report response is empty." />
+    <string id="AF_WBLT_UI_044" text="No REPORT_BLOCK was found in the response." />
+    <string id="AF_WBLT_UI_045" text="Missing report_id values in the batch response: " />
+    <string id="AF_WBLT_UI_046" text="Could not parse report_id values in the batch response: " />
+    <string id="AF_WBLT_UI_047" text="Missing or unparseable report_id values in the batch response: " />
+    <string id="AF_WBLT_UI_048" text="Empty block." />
+    <string id="AF_WBLT_UI_049" text="Missing report_id." />
+    <string id="AF_WBLT_UI_050" text="The report_id was not found in the input batch: " />
+    <string id="AF_WBLT_UI_051" text="The mode does not match the input batch." />
+    <string id="AF_WBLT_UI_052" text="The kingdom_id does not match the input batch." />
+    <string id="AF_WBLT_UI_053" text="World events" />
+    <string id="AF_WBLT_UI_054" text="Kingdom events" />
+    <string id="AF_WBLT_UI_055" text="Events near the player" />
+    <string id="AF_WBLT_UI_056" text="Uncategorized event" />
+    <string id="AF_WBLT_UI_057" text="Aggregated weekly-report material" />
+    <string id="AF_WBLT_UI_058" text="World opening overview" />
+    <string id="AF_WBLT_UI_059" text="Kingdom opening overview" />
+    <string id="AF_WBLT_UI_060" text="Current ruler" />
+    <string id="AF_WBLT_UI_061" text="Recent NPC actions" />
+    <string id="AF_WBLT_UI_062" text="Major NPC actions" />
+    <string id="AF_WBLT_UI_063" text="Raw text material" />
+    <string id="AF_WBLT_UI_064" text="Uncategorized material" />
+    <string id="AF_WBLT_UI_065" text="Could not find event_data\WorldOpeningSummary.json, event_data\KingdomOpeningSummaries.json or event_data\EventRecords.json." />
+    <string id="AF_WBLT_UI_066" text="World-event material preview" />
+    <string id="AF_WBLT_UI_067" text="This week's material for world events." />
+    <string id="AF_WBLT_UI_068" text="The current weekly-report body is empty." />
+    <string id="AF_WBLT_UI_069" text="News bulletin · " />
+    <string id="AF_WBLT_UI_070" text="World weekly report" />
+    <string id="AF_WBLT_UI_071" text="Kingdom weekly report" />
+  </strings>
+</base>

@@ -24,5 +24,6 @@
   "AF_PERSONA_PROMPT_SkillSourceLabel": "Current base skills (from the original troop template; retain these values if generation fails): {SKILL_SOURCE}",
   "AF_PERSONA_PROMPT_PersonaSummaryLabel": "Persona summary: {SUMMARY}",
   "AF_PERSONA_PROMPT_FallbackPersonality": "{NAME} was formerly a {TROOP_NAME}, retaining the vigilance, discipline, and survival instincts developed in that profession. Around the player, he keeps his earlier promises and interests in mind, is willing to follow the party's arrangements, and becomes cautious when endangered or betrayed.",
-  "AF_PERSONA_PROMPT_FallbackBackground": "{JOIN_FACT}He was previously active in {SCENE} as \"{FULL_NAME}\"; after joining, he goes by the personal name \"{NAME}\". The available experiences from earlier conversations become part of his reason for following the player: {HISTORY}"
+  "AF_PERSONA_PROMPT_FallbackBackground": "{JOIN_FACT}He was previously active in {SCENE} as \"{FULL_NAME}\"; after joining, he goes by the personal name \"{NAME}\". The available experiences from earlier conversations become part of his reason for following the player: {HISTORY}",
+  "AF_PERSONA_PROMPT_PromotedSkillNone": "(none)"
 }

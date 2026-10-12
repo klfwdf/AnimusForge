@@ -15,19 +15,23 @@ if (args.Length == 2 && args[0] == "--installed-library-contract")
     var exports = Path.Combine(module, "PlayerExports");
     var package = Path.Combine(exports, "worldbook");
     Directory.CreateDirectory(package);
-    File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module />");
+    Directory.CreateDirectory(Path.Combine(module, "ModuleData"));
+    File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
     var source = Path.Combine(package, "data.json");
     File.WriteAllText(source, "{\"playerModified\":true}");
-    var expected = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "AnimusForge", "UserData", "PlayerExports");
-    if (service.FindDefaultPlayerExportsRoot(module) != expected
+    var expected = exports;
+    if (service.SelectInstalledModule(module) != expected
         || service.ListPackages(exports).Single().FullPath != package)
         throw new InvalidOperationException("Installed library must not require a migration receipt.");
-    RejectWrite(() => service.CreatePackage(exports, "new"));
-    RejectWrite(() => service.SaveJsonDocument(package, source, "{}"));
     if (File.ReadAllText(source) != "{\"playerModified\":true}")
         throw new InvalidOperationException("Reading the installed library changed player files.");
-    Console.WriteLine("PASS installed library contract: no migration gate, user destination, module writes rejected");
+    var created = service.CreatePackage(exports, "new");
+    if (!Directory.Exists(created.FullPath)) throw new InvalidOperationException("Explicit module export creation failed.");
+    service.SaveJsonDocument(package, source, "{\"playerModified\":true,\"explicitEdit\":true}");
+    if (!File.ReadAllText(source).Contains("explicitEdit")) throw new InvalidOperationException("Explicit module edit was not saved.");
+    RejectWrite(() => service.CreatePackage(Path.Combine(installedLibraryFixture, "unknown", "PlayerExports"), "new"));
+    RejectWrite(() => service.SaveJsonDocument(package, Path.Combine(installedLibraryFixture, "escape.json"), "{}"));
+    Console.WriteLine("PASS installed library contract: read unchanged, explicit installed module writable, unknown and escape rejected");
     return 0;
 }
 
@@ -65,9 +69,11 @@ if (args.Length == 2 && args[0] == "--backup-contract")
 
 if (args.Contains("--path-contract", StringComparer.Ordinal))
 {
-    var isolated = Path.Combine(Path.GetTempPath(), "af-editor-path-" + Guid.NewGuid().ToString("N"));
+    var isolated = Path.Combine(Path.GetTempPath(), "af-editor-path-" + Guid.NewGuid().ToString("N"), "AnimusForge");
+    Directory.CreateDirectory(Path.Combine(isolated, "ModuleData"));
+    File.WriteAllText(Path.Combine(isolated, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
     Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", isolated);
-    var expected = Path.Combine(isolated, "UserData", "PlayerExports");
+    var expected = Path.Combine(isolated, "PlayerExports");
     if (service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory) != expected ||
         service.FindDefaultPlayerExportsRoot(Directory.GetCurrentDirectory()) != expected ||
         Directory.Exists(expected))
@@ -87,7 +93,7 @@ if (args.Contains("--path-contract", StringComparer.Ordinal))
     RejectWrite(() => service.MoveDataTypeToDeleted(legacyPackage, PlayerExportsDataType.EventData));
     var validPackage = Path.Combine(expected, "synthetic");
     RejectWrite(() => service.SaveJsonDocument(validPackage, Path.Combine(isolated, "escape.json"), "{}"));
-    Console.WriteLine("PASS editor path contract: shared override, no cwd fallback, no legacy or escaping writes");
+    Console.WriteLine("PASS editor path contract: explicit installed module, no cwd/AppData fallback, no source or escaping writes");
     return 0;
 }
 
@@ -107,7 +113,10 @@ if (args.Length == 2 && args[0] == "--isolated-full")
 var fixtureRoot = Path.Combine(Path.GetTempPath(), "af_playerexports_editor_" + Guid.NewGuid().ToString("N"));
 try
 {
-    RunDataTypeDeletionSmoke(service, Path.Combine(fixtureRoot, "UserData", "PlayerExports"));
+    var module = Path.Combine(fixtureRoot, "AnimusForge");
+    Directory.CreateDirectory(Path.Combine(module, "ModuleData"));
+    File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
+    RunDataTypeDeletionSmoke(service, Path.Combine(module, "PlayerExports"));
 }
 finally
 {
@@ -194,7 +203,7 @@ static int CountLocalized(IEnumerable<ConditionCandidate> candidates)
     return candidates.Count(x => (x.Label ?? "").Any(c => c > 127));
 }
 
-// Deletion fixture must live under a canonical <data-root>/UserData/PlayerExports; the caller owns cleanup.
+// Deletion fixture must live under a canonical installed-module/PlayerExports; the caller owns cleanup.
 static void RunDataTypeDeletionSmoke(PlayerExportsService service, string playerExportsRoot)
 {
     Directory.CreateDirectory(playerExportsRoot);
@@ -240,8 +249,10 @@ static int RunIsolatedFullSmoke(PlayerExportsService service, PlayerExportsValid
     var store = new JsonFileStore();
 
     // 1. Shared locator resolves to the synthetic data root only.
+    Directory.CreateDirectory(Path.Combine(dataRoot, "ModuleData"));
+    File.WriteAllText(Path.Combine(dataRoot, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
     var exports = service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory);
-    Check(exports == Path.Combine(dataRoot, "UserData", "PlayerExports"), "locator did not resolve the synthetic data root");
+    Check(exports == Path.Combine(dataRoot, "PlayerExports"), "locator did not resolve the synthetic module root");
     Check(!Directory.Exists(exports) && !File.Exists(exports), "synthetic PlayerExports already existed");
     Directory.CreateDirectory(exports);
 
@@ -361,7 +372,7 @@ static string RequireIsolatedRoot(string arg)
         throw new InvalidOperationException("Process temp path is outside the isolated smoke root.");
     var dataRoot = Path.TrimEndingDirectorySeparator(Path.GetFullPath(Environment.GetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT")!));
     var tempRoot = Path.TrimEndingDirectorySeparator(Path.GetFullPath(Path.GetTempPath()));
-    if (!string.Equals(dataRoot, Path.Combine(root, "data"), StringComparison.OrdinalIgnoreCase) ||
+    if (!string.Equals(dataRoot, Path.Combine(root, "data", "AnimusForge"), StringComparison.OrdinalIgnoreCase) ||
         !Directory.Exists(tempRoot) ||
         !string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(Environment.GetEnvironmentVariable("TEMP")!)), tempRoot, StringComparison.OrdinalIgnoreCase) ||
         !string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(Environment.GetEnvironmentVariable("TMP")!)), tempRoot, StringComparison.OrdinalIgnoreCase))

@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -623,7 +624,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         {
             return _runtime.CanonicalHistoryRenderCache;
         }
-        string rendered = WorldDiplomacyCanonicalHistoryRules.RenderCanonicalHistoryBlock(history, cutoff);
+        string rendered = WorldDiplomacyCanonicalHistoryRules.RenderCanonicalHistoryBlock(history, cutoff, _host.PromptWorld().LocalizePrompt);
         _runtime.CanonicalHistoryRenderCacheKey = cacheKey;
         _runtime.CanonicalHistoryRenderCache = rendered;
         return rendered;
@@ -830,7 +831,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         WorldDiplomacyRound round, string authorId, IEnumerable<string> targetKingdomIds,
         bool isRelayTurn, string resultSettlementSlotId, bool isExternalResponseOnly, WorldDiplomacyDocument responseSource)
     {
-        if (authorId == null) return "当前可选动作：无。";
+        if (authorId == null) return DiplomacyMiscPromptTexts.Get("Orch_AvailableActionsNone", "Available actions: None.");
         List<string> lines = new List<string>();
         foreach (string id in WorldDiplomacyRoundLifecycleRules.NormalizeOrderedIdList((targetKingdomIds ?? round?.RelayRouteKingdomIds ?? new List<string>())
             .Where(x => !string.Equals(x, authorId, StringComparison.OrdinalIgnoreCase))))
@@ -844,8 +845,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             lines.Add(id + "=" + string.Join("/", normalizedActions));
         }
         return lines.Count == 0
-            ? "当前可选动作：无；不得生成填充宣言。"
-            : "当前可选动作：" + string.Join("、", lines) + "。";
+            ? DiplomacyMiscPromptTexts.Get("Orch_AvailableActionsNoneNoFiller", "Available actions: None; do not generate filler declarations.")
+            : DiplomacyMiscPromptTexts.Get("Orch_AvailableActionsPrefix", "Available actions: ") + string.Join(", ", lines) + ".";
     }
 
     public bool HasCessionBoundMultiplePeaceAcceptanceOptions(
@@ -968,7 +969,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         if (Storage.Jobs.Any(IsPlayerSchedulingJob) && !Storage.RequestBudget.CanAdmit(true) && _lastPlayerPendingNoticeDay != day)
         {
             _lastPlayerPendingNoticeDay = day;
-            _host.Notify("外交今日请求额度已用完；你的宣言已公开，尚未完成的回应已保留，将在下一游戏日继续。");
+            _host.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_Orch_DailyQuotaUsed", "Today's diplomatic request quota is exhausted; your declaration is published and pending responses are saved to continue next day."));
         }
     }
 
@@ -1117,7 +1118,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public bool EnsureGenerationJobHasKingdomStrategicProfile(WorldDiplomacyJob job)
     {
         return WorldDiplomacyJobPreparationApplication.EnsureGenerationJobHasKingdomStrategicProfile(
-            _host.JobPreparation(), job);
+            _host.JobPreparation(), job, _host.PromptWorld().LocalizePrompt);
     }
 
     public bool RefreshDiplomaticActionPresentationAndPrompt(WorldDiplomacyJob job)
@@ -1204,7 +1205,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
                 ProposerKingdomId = document.AuthorKingdomId, TargetKingdomId = document.TargetKingdomId },
                 document, document.AuthorKingdomId, document.TargetKingdomId, out string peaceReason))
         {
-            document.MechanicalResult = "和平提案未执行：" + peaceReason;
+            document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Orch_PeaceProposalNotExecutedPrefix", "Peace proposal not executed: ") + peaceReason;
             SuppressInvalidDocumentBeforePropagation(document, "peace_terms_not_executable_without_changes");
             return;
         }
@@ -1213,7 +1214,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
                 document.AuthorKingdomId, document.TargetKingdomId, document.RespondingToOfferDocumentId,
                 document.RespondingToOfferActionId, out string treatyReason))
         {
-            document.MechanicalResult = "条约未执行：" + treatyReason;
+            document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Orch_TreatyNotExecutedPrefix", "Treaty not executed: ") + treatyReason;
             SuppressInvalidDocumentBeforePropagation(document, treatyReason);
             return;
         }
@@ -1246,7 +1247,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             RemoveJob,
             _host.Log);
         if (job?.Kind == "analyze" && ResolveDocument(job.DocumentId)?.AnalysisStatus == "analysis_execution_failed")
-            _host.Notify("外交宣言已发布，但外交处理未完整结束，请查看公文结果并核对当前局势。");
+            _host.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_Orch_ProcessingIncomplete", "The diplomatic declaration has been published, but diplomatic processing did not complete fully; check the document outcome and current situation."));
     }
 
     public void CommitGeneratedDocument(WorldDiplomacyJob job, string raw)
@@ -1970,7 +1971,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         TrimNativeSignals();
         if (action == "declare_war")
         {
-            AddWarPressure(sourceId, targetId, value, "原版宣战决议信号：" + reason, "");
+            AddWarPressure(sourceId, targetId, value, DiplomacyMiscPromptTexts.Get("Orch_NativeWarDecisionSignalPrefix", "Native war decision signal: ") + reason, "");
         }
         _host.Log("captured native diplomacy decision action=" + action + " source=" + sourceId
             + " target=" + targetId + " value=" + value.ToString(CultureInfo.InvariantCulture));

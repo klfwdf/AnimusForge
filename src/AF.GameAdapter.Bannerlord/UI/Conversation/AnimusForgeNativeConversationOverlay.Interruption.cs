@@ -21,7 +21,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
     {
         if (!IsSubmitGenerationCurrent(generation)) return;
         _displayTextGeneration = generation;
-        _submissionDisplayText = text ?? string.Empty;
+        _submissionDisplayText = LlmRetryPrompt.ProjectKnownErrorForUi(text) ?? string.Empty;
         ConversationHelper.UpdateDialogText(_submissionDisplayText);
     }
 

@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.Localization;
 
@@ -6,6 +8,7 @@ namespace AFWarStatsTerminal.Localization;
 
 internal static class AfWarStatsTexts
 {
+    private static readonly Regex LiteralValues = new Regex(@"AFWARSTATSLITERAL([0-9]+)END", RegexOptions.CultureInvariant);
     public static string Title => Get("AFWST_Title", "War Statistics");
 
     public static string CurrentWars => Get("AFWST_CurrentWars", "Current Wars");
@@ -340,10 +343,11 @@ internal static class AfWarStatsTexts
         TextObject text = Create(id, fallback);
         for (int i = 0; i < variables.Length; i += 2)
         {
-            text.SetTextVariable(variables[i], variables[i + 1] ?? string.Empty);
+            text.SetTextVariable(variables[i], "AFWARSTATSLITERAL" + i.ToString(CultureInfo.InvariantCulture) + "END");
         }
 
-        return text.ToString();
+        return LiteralValues.Replace(text.ToString(), match =>
+            variables[int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture) + 1] ?? string.Empty);
     }
 
     private static TextObject Create(string id, string fallback)

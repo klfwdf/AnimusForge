@@ -32,6 +32,7 @@ New-Item -ItemType Directory -Path (Split-Path -Parent $worldbook) -Force | Out-
 [System.IO.File]::WriteAllText($worldbook, "default-worldbook", [System.Text.UTF8Encoding]::new($false))
 $map = @{ schemaVersion = 1; entries = @(
     @{ owner = "Test"; source = "content/modules/Test/ModuleData/one.json"; target = "ModuleData/one.json" },
+    @{ owner = "Test"; source = "content/modules/Test/ModuleData/one.json"; target = "ModuleData/Defaults/CustomPrompts/Policy/one.json" },
     @{ owner = "Test"; source = "content/modules/Test/PlayerExports/worldbook/knowledge/rule.json"; target = "PlayerExports/worldbook/knowledge/rule.json" }
 ) }
 [System.IO.File]::WriteAllText((Join-Path $project "content\content-map.json"), ($map | ConvertTo-Json -Depth 5), [System.Text.UTF8Encoding]::new($false))
@@ -79,6 +80,18 @@ foreach ($relative in $artifactFiles.Keys) {
     Copy-Item -LiteralPath $source -Destination $target
 }
 Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage
+Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage -RequireCurrentArtifacts
+$overrideDirectory = Join-Path $stage 'CustomPrompts/Policy'
+New-Item -ItemType Directory -Path $overrideDirectory -Force | Out-Null
+Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage -RequireCurrentArtifacts
+$overrideFile = Join-Path $overrideDirectory 'one.json'
+[IO.File]::WriteAllText($overrideFile, 'user content')
+MustReject { Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage } 'Stage accepted a mutable prompt override as a packaged default'
+Remove-Item -LiteralPath $overrideFile
+$unknownDirectory = Join-Path $stage 'CustomPrompts/UnknownOwner'
+New-Item -ItemType Directory -Path $unknownDirectory -Force | Out-Null
+MustReject { Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage } 'Stage accepted an undeclared override subdirectory'
+Remove-Item -LiteralPath $unknownDirectory
 Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage -RequireCurrentArtifacts
 $staleArtifact = Join-Path $artifactRoot "bootstrap\AnimusForge.Bootstrap.pdb"
 [System.IO.File]::WriteAllText($staleArtifact, "stale")

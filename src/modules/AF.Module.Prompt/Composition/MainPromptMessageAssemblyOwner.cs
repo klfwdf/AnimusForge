@@ -11,13 +11,7 @@ internal static class MainPromptMessageAssemblyOwner
 {
 	internal static List<object> BuildCourierReplyMessages(string npcName, string playerName, string letterText, string extras, string deliveryFact, string history, IEnumerable<ConversationMessage> persistentMemoryRoleMessages, string npcRoleContext, string preprocessExcludedRuleBlock, string recentFacts, string senderIdentity, string senderRelationship, string currentLocationLine, string currentDateFact, string playerCustomRuleBlock)
 	{
-		string system = "你正在扮演 Mount & Blade II: Bannerlord 世界中的角色：" + npcName + "。\n"
-			+ "这不是面对面对话。你刚刚通过信使收到" + playerName + "写给你的一封信。\n"
-			+ "下面 messages 中 assistant 只代表你自己过去说过的话；role=user 包含来信、玩家发言、事实、旁听内容与规则。\n"
-			+ "你必须根据来信者的公开身份选择合适称呼；如果来信者是君主或统治者，不要降格称为勋爵、领主或普通贵族。\n"
-			+ "请只输出你要写在回信中的正文，不要写旁白、动作描写、系统说明或标签解释。\n"
-			+ "如果你认为没有必要回信，可以完全空回复。\n"
-			+ "如果你在回信中明确同意给玩家物品、部队、俘虏或固定资产，仍然按已注入的后处理规则在正文语义中表达，标签由后处理阶段生成。";
+		string system = PromptComposerTexts.Format("main_courier_reply_system", ("NPC", npcName), ("PLAYER", playerName));
 		if (!string.IsNullOrWhiteSpace(npcRoleContext))
 		{
 			system = system.TrimEnd() + "\n" + npcRoleContext.Trim();
@@ -26,7 +20,7 @@ internal static class MainPromptMessageAssemblyOwner
 		{
 			system = system.TrimEnd() + "\n" + preprocessExcludedRuleBlock.Trim();
 		}
-		system = JoinSystemSections(playerCustomRuleBlock, system);
+		system = BuildConversationSystemPrompt(JoinSystemSections(playerCustomRuleBlock, system));
 		StringBuilder context = new StringBuilder();
 		if (!string.IsNullOrWhiteSpace(senderIdentity))
 		{
@@ -34,11 +28,11 @@ internal static class MainPromptMessageAssemblyOwner
 		}
 		if (!string.IsNullOrWhiteSpace(senderRelationship))
 		{
-			AppendCourierUserSection(context, "【来信者与你的关系】", senderRelationship);
+			AppendCourierUserSection(context, PromptComposerTexts.Get("main_courier_000"), senderRelationship);
 		}
 		if (!string.IsNullOrWhiteSpace(currentLocationLine))
 		{
-			AppendCourierUserSection(context, "【当前位置信息】", currentLocationLine);
+			AppendCourierUserSection(context, PromptComposerTexts.Get("main_courier_001"), currentLocationLine);
 		}
 		if (!string.IsNullOrWhiteSpace(currentDateFact))
 		{
@@ -54,7 +48,7 @@ internal static class MainPromptMessageAssemblyOwner
 		}
 		if (!string.IsNullOrWhiteSpace(extras))
 		{
-			AppendCourierUserSection(context, "【本轮信件规则与补充】", extras);
+			AppendCourierUserSection(context, PromptComposerTexts.Get("main_courier_002"), extras);
 		}
 		List<object> messages = new List<object>
 		{
@@ -67,29 +61,23 @@ internal static class MainPromptMessageAssemblyOwner
 		}
 		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
 		StringBuilder current = new StringBuilder();
-		current.AppendLine("【信件内容】");
+		current.AppendLine(PromptComposerTexts.Get("main_courier_003"));
 		current.AppendLine(letterText ?? "");
 		if (!string.IsNullOrWhiteSpace(deliveryFact))
 		{
 			current.AppendLine();
-			current.AppendLine("【随信送达事实】");
-			current.AppendLine("【当下行为】" + deliveryFact.Trim());
+			current.AppendLine(PromptComposerTexts.Get("main_courier_004"));
+			current.AppendLine(PromptComposerTexts.Raw("history_section_scope_current") + deliveryFact.Trim());
 		}
 		current.AppendLine();
-		current.AppendLine("请以" + npcName + "的身份决定是否回信；如果回信，只输出信件正文。");
+		current.AppendLine(PromptComposerTexts.Get("main_courier_006") + npcName + PromptComposerTexts.Get("main_courier_007"));
 		messages.Add(CreateCourierChatMessage("user", current.ToString().Trim()));
 		return messages;
 	}
 
 	internal static List<object> BuildInboundNpcLetterMessages(string npcName, string playerName, string seed, string extras, string fact, string history, IEnumerable<ConversationMessage> persistentMemoryRoleMessages, string npcRoleContext, string preprocessExcludedRuleBlock, string recentFacts, string playerIdentity, string playerRelationship, string currentLocationLine, string currentDateFact, int targetChars, string letterKind, string playerCustomRuleBlock)
 	{
-		string system = "你正在扮演 Mount & Blade II: Bannerlord 世界中的角色：" + npcName + "。\n"
-			+ "这不是面对面对话。你决定主动通过信使给" + playerName + "写一封" + letterKind + "。\n"
-			+ "下面 messages 中 assistant 只代表你自己过去说过的话；role=user 包含历史、事实、旁听内容、规则与本次写信意图。\n"
-			+ "你必须根据收信人的公开身份选择合适称呼；如果收信人是君主或统治者，不要降格称为勋爵、领主或普通贵族。\n"
-			+ "请只输出你要写在信中的正文，不要写旁白、动作描写、系统说明、标签解释或方括号动作标签。\n"
-			+ "正文目标约" + targetChars + "字，只保留一个主要动机或一项具体请求。\n"
-			+ "只能使用已提供的事实；不能宣布" + playerName + "已经同意，也不能把尚未发生的交易、承诺、外交或其他机制结果写成事实。";
+		string system = PromptComposerTexts.Format("main_courier_inbound_system", ("NPC", npcName), ("PLAYER", playerName), ("KIND", letterKind), ("CHARS", targetChars));
 		if (!string.IsNullOrWhiteSpace(npcRoleContext))
 		{
 			system = system.TrimEnd() + "\n" + npcRoleContext.Trim();
@@ -98,7 +86,7 @@ internal static class MainPromptMessageAssemblyOwner
 		{
 			system = system.TrimEnd() + "\n" + preprocessExcludedRuleBlock.Trim();
 		}
-		system = JoinSystemSections(playerCustomRuleBlock, system);
+		system = BuildConversationSystemPrompt(JoinSystemSections(playerCustomRuleBlock, system));
 		StringBuilder context = new StringBuilder();
 		if (!string.IsNullOrWhiteSpace(playerIdentity))
 		{
@@ -106,11 +94,11 @@ internal static class MainPromptMessageAssemblyOwner
 		}
 		if (!string.IsNullOrWhiteSpace(playerRelationship))
 		{
-			AppendCourierUserSection(context, "【收信人与你的关系】", playerRelationship);
+			AppendCourierUserSection(context, PromptComposerTexts.Get("main_courier_008"), playerRelationship);
 		}
 		if (!string.IsNullOrWhiteSpace(currentLocationLine))
 		{
-			AppendCourierUserSection(context, "【当前位置信息】", currentLocationLine);
+			AppendCourierUserSection(context, PromptComposerTexts.Get("main_courier_009"), currentLocationLine);
 		}
 		if (!string.IsNullOrWhiteSpace(currentDateFact))
 		{
@@ -126,7 +114,7 @@ internal static class MainPromptMessageAssemblyOwner
 		}
 		if (!string.IsNullOrWhiteSpace(extras))
 		{
-			AppendCourierUserSection(context, "【本轮信件规则与补充】", extras);
+			AppendCourierUserSection(context, PromptComposerTexts.Get("main_courier_010"), extras);
 		}
 		List<object> messages = new List<object>
 		{
@@ -139,16 +127,16 @@ internal static class MainPromptMessageAssemblyOwner
 		}
 		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
 		StringBuilder current = new StringBuilder();
-		current.AppendLine("【本次 NPC 主动写信意图】");
+		current.AppendLine(PromptComposerTexts.Get("main_courier_011"));
 		current.AppendLine(seed ?? "");
 		if (!string.IsNullOrWhiteSpace(fact))
 		{
 			current.AppendLine();
-			current.AppendLine("【送信事实】");
-			current.AppendLine("【当下行为】" + fact.Trim());
+			current.AppendLine(PromptComposerTexts.Get("main_courier_012"));
+			current.AppendLine(PromptComposerTexts.Raw("history_section_scope_current") + fact.Trim());
 		}
 		current.AppendLine();
-		current.AppendLine("请以" + npcName + "的身份写给" + playerName + "一封会由信使送达的" + letterKind + "，只输出信件正文。");
+		current.AppendLine(PromptComposerTexts.Get("main_courier_014") + npcName + PromptComposerTexts.Get("main_courier_015") + playerName + PromptComposerTexts.Get("main_courier_016") + letterKind + PromptComposerTexts.Get("main_courier_017"));
 		messages.Add(CreateCourierChatMessage("user", current.ToString().Trim()));
 		return messages;
 	}
@@ -221,7 +209,7 @@ internal static class MainPromptMessageAssemblyOwner
 		}
 		string role = (message.Role ?? "").Trim();
 		string speaker = (message.SpeakerName ?? "").Trim();
-		string metadata = BuildCourierMemoryMetadataPrefix(message, string.IsNullOrWhiteSpace(speaker) ? "记录" : speaker);
+		string metadata = BuildCourierMemoryMetadataPrefix(message, string.IsNullOrWhiteSpace(speaker) ? PromptComposerTexts.Get("residual_record") : speaker);
 		if (ConversationRoleClassificationOwner.IsViewerAssistant(message, npcName, null, -1, useStableIdentity: false))
 		{
 			chatMessage = CreateCourierChatMessage("assistant", metadata + StripCourierSpeakerPrefix(content, npcName));
@@ -229,31 +217,31 @@ internal static class MainPromptMessageAssemblyOwner
 		}
 		if (role.Equals("system", StringComparison.OrdinalIgnoreCase))
 		{
-			chatMessage = CreateCourierChatMessage("user", metadata + "【过往行为】" + StripCourierPromptScopeLabel(content));
+			chatMessage = CreateCourierChatMessage("user", metadata + PromptComposerTexts.Raw("main_history_raw_019") + MemorySystemFactProjection.ProjectNpcFact(StripCourierPromptScopeLabel(content)));
 			return true;
 		}
 		if (role.Equals("assistant", StringComparison.OrdinalIgnoreCase))
 		{
-			string otherSpeaker = string.IsNullOrWhiteSpace(speaker) ? "某NPC" : speaker;
-			chatMessage = CreateCourierChatMessage("user", metadata + "【过往听闻】" + otherSpeaker + "说：" + StripCourierSpeakerPrefix(content, otherSpeaker));
+			string otherSpeaker = string.IsNullOrWhiteSpace(speaker) ? PromptComposerTexts.Get("residual_other_npc") : speaker;
+			chatMessage = CreateCourierChatMessage("user", metadata + PromptComposerTexts.Get("residual_past_heard") + otherSpeaker + PromptComposerTexts.Get("residual_says") + StripCourierSpeakerPrefix(content, otherSpeaker));
 			return true;
 		}
-		string player = string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName.Trim();
+		string player = string.IsNullOrWhiteSpace(playerName) ? PromptComposerTexts.Raw("player_fallback") : playerName.Trim();
 		chatMessage = CreateCourierChatMessage("user", metadata + StripCourierSpeakerPrefix(content, player));
 		return true;
 	}
 
 	internal static string BuildCourierMemoryMetadataPrefix(ConversationMessage message, string fallbackSpeaker)
 	{
-		string date = string.IsNullOrWhiteSpace(message?.GameDate) ? ("第" + Math.Max(0, message?.GameDayIndex ?? 0) + "日") : message.GameDate.Trim();
+		string date = string.IsNullOrWhiteSpace(message?.GameDate) ? (PromptComposerTexts.Get("residual_day_prefix") + Math.Max(0, message?.GameDayIndex ?? 0) + PromptComposerTexts.Get("residual_day_suffix")) : message.GameDate.Trim();
 		int hour = Math.Max(0, Math.Min(23, message?.GameHour ?? 0));
 		string scene = (message?.Scene ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		string speaker = string.IsNullOrWhiteSpace(fallbackSpeaker) ? "记录" : fallbackSpeaker.Trim();
+		string speaker = string.IsNullOrWhiteSpace(fallbackSpeaker) ? PromptComposerTexts.Get("residual_record") : fallbackSpeaker.Trim();
 		if (string.IsNullOrWhiteSpace(scene))
 		{
-			return "[" + date + " " + hour + "时｜" + speaker + "] ";
+			return "[" + date + " " + hour + PromptComposerTexts.Get("residual_hour_separator") + speaker + "] ";
 		}
-		return "[" + date + " " + hour + "时｜" + scene + "｜" + speaker + "] ";
+		return "[" + date + " " + hour + PromptComposerTexts.Get("residual_hour_separator") + scene + "｜" + speaker + "] ";
 	}
 
 	internal static string StripCourierPromptScopeLabel(string text)
@@ -263,7 +251,7 @@ internal static class MainPromptMessageAssemblyOwner
 		do
 		{
 			changed = false;
-			string[] prefixes = new string[4] { "【当下行为】", "【过往行为】", "[当下行为]", "[过往行为]" };
+			string[] prefixes = new string[4] { PromptComposerTexts.Raw("history_section_scope_current"), PromptComposerTexts.Raw("main_history_raw_019"), PromptComposerTexts.Raw("main_history_raw_031"), PromptComposerTexts.Raw("main_history_raw_032") };
 			foreach (string prefix in prefixes)
 			{
 				if (value.StartsWith(prefix, StringComparison.Ordinal))
@@ -374,6 +362,11 @@ internal static class MainPromptMessageAssemblyOwner
             new[] { postSystem }, new[] { postHistory }, new[] { postUser }, appendLatestVisibleReply: true);
         return new AnimusForge.Refactor.Contracts.DetachedInteractionPromptSections(main, postprocess);
     }
+
+    // The content edition owns reply language, including narrated actions and thoughts.
+    // This runs once per main request after custom rules; UI language and history never select it.
+    internal static string BuildConversationSystemPrompt(string system)
+        => PromptComposerTexts.ApplyOutputLanguage(system);
 
     private static string JoinSystemSections(string playerCustomRuleBlock, string system)
     {

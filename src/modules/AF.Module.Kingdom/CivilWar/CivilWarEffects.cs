@@ -229,7 +229,7 @@ internal static class CivilWarEffects
 		if (ctx.Faction.ResolutionReturnCompleted) return;
 		Kingdom home = ctx.Kingdom;
 		Kingdom rebel = ctx.RebelKingdom;
-		if (!CivilWarWorld.IsAlive(home)) throw new CivilWarRetryableEffectException("原王国已不存在，无法归国", "HomeKingdomGone");
+		if (!CivilWarWorld.IsAlive(home)) throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_035"), "HomeKingdomGone");
 		if (CivilWarWorld.IsAlive(rebel)) RequirePeace(home, rebel, "civil_war_return");
 		Clan leader = ctx.LeaderClan;
 		List<Clan> ordered = clans.Where(x => x != null && !x.IsEliminated).Distinct().OrderBy(x => x == leader ? 1 : 0).ToList();
@@ -255,13 +255,13 @@ internal static class CivilWarEffects
 				Logger.Log("KingdomCivilWar", "[WARN] return rebel clan failed clan=" + clan.StringId + " error=" + ex.Message);
 			}
 		}
-		if (returnFailed) throw new CivilWarRetryableEffectException("部分叛军家族尚未确认归国", "RebelClansNotHome");
+		if (returnFailed) throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_036"), "RebelClansNotHome");
 		if (CivilWarWorld.IsAlive(rebel))
 		{
 			if (ctx.Host == null || !ctx.Host.DiscontinueLandlessKingdom(rebel, "civil_war_return:" + ctx.Faction.Id))
-				throw new CivilWarRetryableEffectException("叛军王国尚未解散", "RebelKingdomNotDissolved");
-			if (CivilWarWorld.IsAlive(rebel)) throw new CivilWarRetryableEffectException("叛军王国解散尚未确认", "RebelKingdomDissolveUnconfirmed");
-			ctx.Note("RebelKingdomDissolved", CivilWarWorld.KingdomName(rebel) + "随叛军归国而解散", CivilWarWorld.KingdomName(rebel));
+				throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_037"), "RebelKingdomNotDissolved");
+			if (CivilWarWorld.IsAlive(rebel)) throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_038"), "RebelKingdomDissolveUnconfirmed");
+			ctx.Note("RebelKingdomDissolved", CivilWarWorld.KingdomName(rebel) + KingdomCivilWarTexts.Raw("KW_Raw_039"), CivilWarWorld.KingdomName(rebel));
 		}
 		ctx.Faction.ResolutionReturnCompleted = true;
 	}
@@ -270,7 +270,7 @@ internal static class CivilWarEffects
 	{
 		CivilWarWorld.MakePeaceSafe(first, second, reason);
 		if (CivilWarWorld.IsAlive(first) && CivilWarWorld.IsAlive(second) && first.IsAtWarWith(second))
-			throw new CivilWarRetryableEffectException("议和尚未生效：" + reason, "PeaceNotInEffect", reason);
+			throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_040") + reason, "PeaceNotInEffect", reason);
 	}
 }
 
@@ -282,14 +282,14 @@ internal sealed class MakePeaceWithTargetEffect : ICivilWarEffect
 	{
 		Kingdom target = CivilWarWorld.FindKingdom(ctx.Faction?.TargetId);
 		if (CivilWarWorld.IsAlive(target) && ctx.Kingdom.IsAtWarWith(target)) { reason = ""; return true; }
-		return CivilWarEffects.Refuse(ctx, "PeaceTargetNotAtWar", "议和对象已不在交战中", out reason);
+		return CivilWarEffects.Refuse(ctx, "PeaceTargetNotAtWar", KingdomCivilWarTexts.Raw("KW_Raw_041"), out reason);
 	}
 
 	public void Apply(CivilWarEffectContext ctx)
 	{
 		Kingdom target = CivilWarWorld.FindKingdom(ctx.Faction.TargetId);
 		CivilWarEffects.RequirePeace(ctx.Kingdom, target, "civil_war_make_peace");
-		ctx.Note("PeaceMade", CivilWarWorld.KingdomName(ctx.Kingdom) + "与" + CivilWarWorld.KingdomName(target) + "议和", CivilWarWorld.KingdomName(ctx.Kingdom), CivilWarWorld.KingdomName(target));
+		ctx.Note("PeaceMade", CivilWarWorld.KingdomName(ctx.Kingdom) + KingdomCivilWarTexts.Raw("KW_Raw_042") + CivilWarWorld.KingdomName(target) + KingdomCivilWarTexts.Raw("KW_Raw_043"), CivilWarWorld.KingdomName(ctx.Kingdom), CivilWarWorld.KingdomName(target));
 	}
 }
 
@@ -303,7 +303,7 @@ internal sealed class PledgeWarOnTargetEffect : ICivilWarEffect
 	{
 		Kingdom target = CivilWarWorld.FindKingdom(ctx.Faction?.TargetId);
 		if (CivilWarWorld.IsAlive(target)) { reason = ""; return true; }
-		return CivilWarEffects.Refuse(ctx, "WarTargetGone", "作战对象已不存在", out reason);
+		return CivilWarEffects.Refuse(ctx, "WarTargetGone", KingdomCivilWarTexts.Raw("KW_Raw_044"), out reason);
 	}
 
 	public void Apply(CivilWarEffectContext ctx)
@@ -312,7 +312,7 @@ internal sealed class PledgeWarOnTargetEffect : ICivilWarEffect
 		ctx.State.NoPeaceUntilWeek = ctx.Week + PledgeWeeks;
 		ctx.State.NoPeaceUntilDay = CivilWarWorld.CurrentDay() + PledgeWeeks * 7;
 		ctx.State.NoPeaceClanIds = ctx.FactionClans().Select(x => x.StringId).ToList();
-		ctx.Note("PledgeNoPeace", "国王承诺 " + PledgeWeeks + " 周内不与" + ctx.Faction.TargetName + "议和", PledgeWeeks.ToString(), ctx.Faction.TargetName);
+		ctx.Note("PledgeNoPeace", KingdomCivilWarTexts.Raw("KW_Raw_045") + PledgeWeeks + KingdomCivilWarTexts.Raw("KW_Raw_046") + ctx.Faction.TargetName + KingdomCivilWarTexts.Raw("KW_Raw_043"), PledgeWeeks.ToString(), ctx.Faction.TargetName);
 	}
 }
 
@@ -324,14 +324,14 @@ internal sealed class RevokeTargetPolicyEffect : ICivilWarEffect
 	{
 		PolicyObject policy = Find(ctx.Faction?.TargetId);
 		if (policy != null && ctx.Kingdom.ActivePolicies.Contains(policy)) { reason = ""; return true; }
-		return CivilWarEffects.Refuse(ctx, "PolicyNotInEffect", "该政策已不再生效", out reason);
+		return CivilWarEffects.Refuse(ctx, "PolicyNotInEffect", KingdomCivilWarTexts.Raw("KW_Raw_047"), out reason);
 	}
 
 	public void Apply(CivilWarEffectContext ctx)
 	{
 		PolicyObject policy = Find(ctx.Faction.TargetId);
 		ctx.Kingdom.RemovePolicy(policy);
-		ctx.Note("PolicyRevoked", "废除政策" + (policy.Name?.ToString() ?? ctx.Faction.TargetName), policy.Name?.ToString() ?? ctx.Faction.TargetName);
+		ctx.Note("PolicyRevoked", KingdomCivilWarTexts.Raw("KW_Raw_048") + (policy.Name?.ToString() ?? ctx.Faction.TargetName), policy.Name?.ToString() ?? ctx.Faction.TargetName);
 	}
 
 	private static PolicyObject Find(string id)
@@ -349,7 +349,7 @@ internal sealed class PayRedressEffect : ICivilWarEffect
 	public bool CanApply(CivilWarEffectContext ctx, out string reason)
 	{
 		if (ctx.Kingdom?.Leader != null && ctx.LeaderClan?.Leader != null) { reason = ""; return true; }
-		return CivilWarEffects.Refuse(ctx, "RedressPartiesGone", "赔偿双方不存在", out reason);
+		return CivilWarEffects.Refuse(ctx, "RedressPartiesGone", KingdomCivilWarTexts.Raw("KW_Raw_049"), out reason);
 	}
 
 	public void Apply(CivilWarEffectContext ctx)
@@ -360,7 +360,7 @@ internal sealed class PayRedressEffect : ICivilWarEffect
 		int amount = CivilWarPoliticalRules.RedressGold(ctx.LeaderClan.Tier, CivilWarRules.Clamp((ctx.Faction?.Grievance ?? 0f) / 100f, 0f, 1f), members, king.Gold, (ctx.Faction?.Id ?? "") + ":" + ctx.Week + ":redress");
 		if (amount > 0) GiveGoldAction.ApplyBetweenCharacters(king, leader, amount, disableNotification: true);
 		foreach (Clan clan in ctx.FactionClans()) CivilWarWorld.ChangeRelation(clan.Leader, king, clan == ctx.LeaderClan ? 10 : 5);
-		ctx.Note("RedressPaid", "国王向" + CivilWarWorld.ClanName(ctx.LeaderClan) + "赔偿 " + amount + " 第纳尔", CivilWarWorld.ClanName(ctx.LeaderClan), amount.ToString());
+		ctx.Note("RedressPaid", KingdomCivilWarTexts.Raw("KW_Raw_050") + CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.Raw("KW_Raw_051") + amount + KingdomCivilWarTexts.Raw("KW_Raw_052"), CivilWarWorld.ClanName(ctx.LeaderClan), amount.ToString());
 	}
 }
 
@@ -371,7 +371,7 @@ internal sealed class GrantPrivilegesEffect : ICivilWarEffect
 	public bool CanApply(CivilWarEffectContext ctx, out string reason)
 	{
 		if (ctx.Kingdom?.Leader != null) { reason = ""; return true; }
-		return CivilWarEffects.Refuse(ctx, "KingGone", "国王不存在", out reason);
+		return CivilWarEffects.Refuse(ctx, "KingGone", KingdomCivilWarTexts.Raw("KW_Raw_053"), out reason);
 	}
 
 	public void Apply(CivilWarEffectContext ctx)
@@ -385,7 +385,7 @@ internal sealed class GrantPrivilegesEffect : ICivilWarEffect
 			try { ChangeClanInfluenceAction.Apply(clan, (float)Math.Round(grant)); }
 			catch (Exception ex) { Logger.Log("KingdomCivilWar", "[WARN] influence grant failed: " + ex.Message); throw; }
 		}
-		ctx.Note("PrivilegesGranted", "国王承认" + CivilWarWorld.ClanName(ctx.LeaderClan) + "等家族的封地特权", CivilWarWorld.ClanName(ctx.LeaderClan));
+		ctx.Note("PrivilegesGranted", KingdomCivilWarTexts.Raw("KW_Raw_054") + CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.Raw("KW_Raw_055"), CivilWarWorld.ClanName(ctx.LeaderClan));
 	}
 }
 
@@ -396,13 +396,13 @@ internal sealed class AbdicateEffect : ICivilWarEffect
 	public bool CanApply(CivilWarEffectContext ctx, out string reason)
 	{
 		if (ctx.LeaderClan != null && ctx.LeaderClan.Kingdom == ctx.Kingdom && ctx.LeaderClan.Leader?.IsAlive == true) { reason = ""; return true; }
-		return CivilWarEffects.Refuse(ctx, "HeirNotInKingdom", "继位者不在本国", out reason);
+		return CivilWarEffects.Refuse(ctx, "HeirNotInKingdom", KingdomCivilWarTexts.Raw("KW_Raw_056"), out reason);
 	}
 
 	public void Apply(CivilWarEffectContext ctx)
 	{
 		ChangeRulingClanAction.Apply(ctx.Kingdom, ctx.LeaderClan);
-		ctx.Note("Abdicated", "国王退位，" + CivilWarWorld.ClanName(ctx.LeaderClan) + "继位", CivilWarWorld.ClanName(ctx.LeaderClan));
+		ctx.Note("Abdicated", KingdomCivilWarTexts.Raw("KW_Raw_057") + CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.Raw("KW_Raw_058"), CivilWarWorld.ClanName(ctx.LeaderClan));
 	}
 }
 
@@ -413,7 +413,7 @@ internal sealed class UsurpThroneEffect : ICivilWarEffect
 	public bool CanApply(CivilWarEffectContext ctx, out string reason)
 	{
 		if (ctx.LeaderClan != null && !ctx.LeaderClan.IsEliminated && ctx.LeaderClan.Leader?.IsAlive == true) { reason = ""; return true; }
-		return CivilWarEffects.Refuse(ctx, "RebelLeaderGone", "叛军领袖已不在", out reason);
+		return CivilWarEffects.Refuse(ctx, "RebelLeaderGone", KingdomCivilWarTexts.Raw("KW_Raw_059"), out reason);
 	}
 
 	public void Apply(CivilWarEffectContext ctx)
@@ -423,11 +423,11 @@ internal sealed class UsurpThroneEffect : ICivilWarEffect
 		{
 			Clan old = ctx.Kingdom.RulingClan;
 			ChangeRulingClanAction.Apply(ctx.Kingdom, ctx.LeaderClan);
-			if (ctx.Kingdom.RulingClan != ctx.LeaderClan) throw new CivilWarRetryableEffectException("王位转移尚未生效", "ThroneTransferNotInEffect");
+			if (ctx.Kingdom.RulingClan != ctx.LeaderClan) throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_060"), "ThroneTransferNotInEffect");
 			CivilWarWorld.ChangeRelation(old?.Leader, ctx.LeaderClan.Leader, -30);
-			ctx.Note("ThroneSeized", CivilWarWorld.ClanName(ctx.LeaderClan) + "夺取王位", CivilWarWorld.ClanName(ctx.LeaderClan));
+			ctx.Note("ThroneSeized", CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.Raw("KW_Raw_061"), CivilWarWorld.ClanName(ctx.LeaderClan));
 		}
-		else throw new CivilWarRetryableEffectException("叛军领袖未能回到本国，夺位尚未完成", "RebelLeaderNotHome");
+		else throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_062"), "RebelLeaderNotHome");
 	}
 }
 
@@ -438,13 +438,13 @@ internal sealed class SecedeEffect : ICivilWarEffect
 	public bool CanApply(CivilWarEffectContext ctx, out string reason)
 	{
 		if (CivilWarWorld.IsAlive(ctx.RebelKingdom)) { reason = ""; return true; }
-		return CivilWarEffects.Refuse(ctx, "RebelKingdomGone", "叛军王国已不存在", out reason);
+		return CivilWarEffects.Refuse(ctx, "RebelKingdomGone", KingdomCivilWarTexts.Raw("KW_Raw_063"), out reason);
 	}
 
 	public void Apply(CivilWarEffectContext ctx)
 	{
 		CivilWarEffects.RequirePeace(ctx.Kingdom, ctx.RebelKingdom, "civil_war_secede");
-		ctx.Note("Seceded", CivilWarWorld.KingdomName(ctx.RebelKingdom) + "获得承认，脱离" + CivilWarWorld.KingdomName(ctx.Kingdom), CivilWarWorld.KingdomName(ctx.RebelKingdom), CivilWarWorld.KingdomName(ctx.Kingdom));
+		ctx.Note("Seceded", CivilWarWorld.KingdomName(ctx.RebelKingdom) + KingdomCivilWarTexts.Raw("KW_Raw_064") + CivilWarWorld.KingdomName(ctx.Kingdom), CivilWarWorld.KingdomName(ctx.RebelKingdom), CivilWarWorld.KingdomName(ctx.Kingdom));
 	}
 }
 
@@ -455,7 +455,7 @@ internal sealed class ConcessionEffect : ICivilWarEffect
 	public bool CanApply(CivilWarEffectContext ctx, out string reason)
 	{
 		if (CivilWarWorld.IsAlive(ctx.Kingdom)) { reason = ""; return true; }
-		return CivilWarEffects.Refuse(ctx, "KingdomGone", "王国已灭亡", out reason);
+		return CivilWarEffects.Refuse(ctx, "KingdomGone", KingdomCivilWarTexts.Raw("KW_Raw_065"), out reason);
 	}
 
 	public void Apply(CivilWarEffectContext ctx)
@@ -469,16 +469,16 @@ internal sealed class ConcessionEffect : ICivilWarEffect
 		if (effect == CivilWarEffectIds.MakePeaceWithTarget)
 		{
 			Kingdom target = CivilWarWorld.FindKingdom(ctx.Faction.TargetId);
-			if (!CivilWarWorld.IsAlive(target) || !ctx.Kingdom.IsAtWarWith(target)) { ctx.Note("WarAlreadyEnded", "原诉求的战争已经结束"); return; }
+			if (!CivilWarWorld.IsAlive(target) || !ctx.Kingdom.IsAtWarWith(target)) { ctx.Note("WarAlreadyEnded", KingdomCivilWarTexts.Raw("KW_Raw_066")); return; }
 		}
 		if (effect == CivilWarEffectIds.RevokeTargetPolicy && !ctx.Kingdom.ActivePolicies.Any(x => x.StringId == ctx.Faction.TargetId))
-		{ ctx.Note("PolicyAlreadyRevoked", "原诉求的政策已经废除"); return; }
+		{ ctx.Note("PolicyAlreadyRevoked", KingdomCivilWarTexts.Raw("KW_Raw_067")); return; }
 		if (!CivilWarEffects.TryApply(effect, ctx, out string reason))
 		{
 			// The inner failure's display identity is forwarded unchanged so the notice describes the concrete
 			// cause; when the inner effect could not describe it, the raw text is kept instead of a guess.
-			if (ctx.RetryableFailure) throw new CivilWarRetryableEffectException("妥协条款未能兑现：" + reason, ctx.FailureCode, ctx.FailureArg, ctx.FailureArg2);
-			throw new CivilWarReviewRequiredException(ctx.FailureCode, "妥协条款执行异常：" + reason, ctx.FailureArg, ctx.FailureArg2);
+			if (ctx.RetryableFailure) throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_068") + reason, ctx.FailureCode, ctx.FailureArg, ctx.FailureArg2);
+			throw new CivilWarReviewRequiredException(ctx.FailureCode, KingdomCivilWarTexts.Raw("KW_Raw_069") + reason, ctx.FailureArg, ctx.FailureArg2);
 		}
 	}
 }
@@ -490,7 +490,7 @@ internal sealed class CrownVictoryEffect : ICivilWarEffect
 	public bool CanApply(CivilWarEffectContext ctx, out string reason)
 	{
 		if (CivilWarWorld.IsAlive(ctx.Kingdom)) { reason = ""; return true; }
-		return CivilWarEffects.Refuse(ctx, "KingdomGone", "王国已灭亡", out reason);
+		return CivilWarEffects.Refuse(ctx, "KingdomGone", KingdomCivilWarTexts.Raw("KW_Raw_065"), out reason);
 	}
 
 	public void Apply(CivilWarEffectContext ctx)
@@ -504,16 +504,16 @@ internal sealed class CrownVictoryEffect : ICivilWarEffect
 			try
 			{
 				ChangeKingdomAction.ApplyByLeaveKingdom(leader, showNotification: true);
-				ctx.Note("LeaderExiled", CivilWarWorld.ClanName(leader) + "被逐出王国，封地收归王室", CivilWarWorld.ClanName(leader));
+				ctx.Note("LeaderExiled", CivilWarWorld.ClanName(leader) + KingdomCivilWarTexts.Raw("KW_Raw_070"), CivilWarWorld.ClanName(leader));
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("KingdomCivilWar", "[WARN] exile leader failed: " + ex.Message);
 				throw;
 			}
-			if (leader.Kingdom == ctx.Kingdom) throw new CivilWarRetryableEffectException("叛军领袖尚未被逐出王国", "RebelLeaderNotExiled");
+			if (leader.Kingdom == ctx.Kingdom) throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_071"), "RebelLeaderNotExiled");
 		}
 		CivilWarWorld.ChangeRelation(leader?.Leader, ctx.Kingdom.Leader, -25);
-		ctx.Note("CrownSuppressed", "王室平定叛乱");
+		ctx.Note("CrownSuppressed", KingdomCivilWarTexts.Raw("KW_Raw_072"));
 	}
 }

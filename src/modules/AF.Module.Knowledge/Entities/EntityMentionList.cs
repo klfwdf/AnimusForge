@@ -36,6 +36,8 @@ internal static class EntityMentionList
 		{
 			return;
 		}
+char deChar = KnowledgeSourceTexts.Get("KN_Raw_000")[0];
+char zhiChar = KnowledgeSourceTexts.Get("KN_Raw_010")[0];
 		foreach (string value in values)
 		{
 			string text = (value ?? "").Trim();
@@ -43,7 +45,7 @@ internal static class EntityMentionList
 			{
 				continue;
 			}
-			if (text.IndexOf('的') < 0 && text.IndexOf('之') < 0)
+			if (text.IndexOf(deChar) < 0 && text.IndexOf(zhiChar) < 0)
 			{
 				AddMention(result, seen, text);
 				continue;
@@ -51,7 +53,7 @@ internal static class EntityMentionList
 			int segmentStart = 0;
 			for (int i = 0; i <= text.Length; i++)
 			{
-				if (i < text.Length && text[i] != '的' && text[i] != '之')
+				if (i < text.Length && text[i] != deChar && text[i] != zhiChar)
 				{
 					continue;
 				}

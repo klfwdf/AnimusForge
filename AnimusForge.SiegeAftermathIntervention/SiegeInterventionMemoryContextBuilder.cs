@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 
 namespace AnimusForge.SiegeAftermathIntervention;
@@ -8,6 +9,8 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeInterventionMemoryContextBuilder
 {
+    private static readonly char CjkRangeStart = SiegeAftermathCompatibilityTexts.Raw("compat_memory__cjk_range_start_51a75f4634df")[0];
+    private static readonly char CjkRangeEnd = SiegeAftermathCompatibilityTexts.Raw("compat_memory__cjk_range_end_3ab1b7b11e2b")[0];
     public const int MaxMemoryEvents = 10;
 
     public static string Build(IReadOnlyList<string> memoryEvents)
@@ -30,40 +33,53 @@ public static class SiegeInterventionMemoryContextBuilder
             return string.Empty;
         }
 
-        string baseContext = "【攻城处置记忆】" + string.Join("；", memoryEvents)
-            + "。这些是本次入城处置内已经发生的事实，后续NPC必须承认大概情况，不能表现得像玩家没有下过这些命令或民众没有被聚集过。";
+        TownPromptTextCatalog catalog = TownPromptTextCatalog.Resolve(promptText);
+        bool isChinese = IsChineseCatalog(catalog);
+        string delimiter = isChinese ? "；" : "; ";
+        string heading = !string.IsNullOrWhiteSpace(catalog.SiegeInterventionMemoryHeading)
+            ? catalog.SiegeInterventionMemoryHeading
+            : (isChinese ? SiegeAftermathCompatibilityTexts.Raw("compat_siege_intervention_memory_context_builder_05871cc5dc56") : "[SIEGE DISPOSITION MEMORY] ");
+        string instruction = !string.IsNullOrWhiteSpace(catalog.SiegeInterventionMemoryInstruction)
+            ? catalog.SiegeInterventionMemoryInstruction
+            : (isChinese
+                ? SiegeAftermathCompatibilityTexts.Raw("compat_siege_intervention_memory_context_builder_d75205474b7e")
+                : ". These are committed facts that occurred during this town entry disposition; subsequent NPCs must acknowledge the overall situation and not act as though the player never gave these orders or civilians were never assembled.");
+
+        string baseContext = heading + string.Join(delimiter, memoryEvents) + instruction;
         string perspective = BuildPerspective(
             memoryEvents,
             audience,
-            TownPromptTextCatalog.Resolve(promptText));
-        return string.IsNullOrWhiteSpace(perspective) ? baseContext : baseContext + perspective;
+            catalog,
+            isChinese);
+        return string.IsNullOrWhiteSpace(perspective) ? baseContext : baseContext + (isChinese ? "" : "\n") + perspective;
     }
 
     private static string BuildPerspective(
         IReadOnlyList<string> memoryEvents,
         SiegeInterventionMemoryAudience audience,
-        TownPromptTextCatalog promptText)
+        TownPromptTextCatalog promptText,
+        bool isChinese)
     {
-        string joined = string.Join("；", memoryEvents ?? new List<string>());
+        string joined = string.Join(";", memoryEvents ?? new List<string>());
         if (string.IsNullOrWhiteSpace(joined))
         {
             return string.Empty;
         }
 
-        bool hasMercy = ContainsAny(joined, "宽恕", "救济", "宣抚", "盟誓");
-        bool hasSoldierAppeasement = ContainsAny(joined, "安兵", "军心");
-        bool hasGather = ContainsAny(joined, "召集", "聚集");
-        bool hasRobbery = ContainsAny(joined, "抢钱");
-        bool hasPlunder = ContainsAny(joined, "搜掠");
-        bool hasMassacre = ContainsAny(joined, "血洗");
-        bool hasRepopulation = ContainsAny(joined, "殖民");
+        bool hasMercy = ContainsAny(joined, SiegeAftermathCompatibilityTexts.Raw("action_mercy"), SiegeAftermathCompatibilityTexts.Raw("compat_legacy_town_tag_adapter_ffd017edd459"), SiegeAftermathCompatibilityTexts.Raw("compat_legacy_town_tag_adapter_d92e6f19cd41"), SiegeAftermathCompatibilityTexts.Raw("compat_legacy_town_tag_adapter_96d322ea12a9"), "mercy", "relief", "reassurance", "oath");
+        bool hasSoldierAppeasement = ContainsAny(joined, SiegeAftermathCompatibilityTexts.Raw("appease_done_title"), SiegeAftermathCompatibilityTexts.Raw("appease_morale_title"), "appeasement", "morale");
+        bool hasGather = ContainsAny(joined, SiegeAftermathCompatibilityTexts.Raw("gather_memory_title"), SiegeAftermathCompatibilityTexts.Raw("assembly_memory_title"), "gather", "assembly");
+        bool hasRobbery = ContainsAny(joined, SiegeAftermathCompatibilityTexts.Raw("compat_legacy_town_tag_adapter_7d5ba7987540"), "robbery");
+        bool hasPlunder = ContainsAny(joined, SiegeAftermathCompatibilityTexts.Raw("compat_legacy_town_tag_adapter_42f0a44b7d95"), "plunder", "pillage");
+        bool hasMassacre = ContainsAny(joined, SiegeAftermathCompatibilityTexts.Raw("loot_action_massacre"), "massacre", "slaughter");
+        bool hasRepopulation = ContainsAny(joined, SiegeAftermathCompatibilityTexts.Raw("compat_legacy_town_tag_adapter_ee470e68a8ef"), "repopulation", "colonization");
 
         if (audience == SiegeInterventionMemoryAudience.AlliedSoldier)
         {
             var parts = new List<string>();
             if (hasRepopulation)
             {
-                parts.Add("你应知道处置已指向杀尽原住民并迁入己方人口，语气不能轻飘，服从中可带紧绷、沉默或同文化不适。");
+                parts.Add(promptText.RepopulationSoldierMemoryPerspective);
             }
             else if (hasMassacre)
             {
@@ -71,30 +87,33 @@ public static class SiegeInterventionMemoryContextBuilder
             }
             else if (hasPlunder)
             {
-                parts.Add("你应知道玩家承认了胜利方战利权，士兵可更兴奋、粗鲁或贪婪，但仍听玩家节制。");
+                parts.Add(promptText.PlunderSoldierMemoryPerspective);
             }
 
             if (hasRobbery)
             {
-                parts.Add("你听到过平民侧局部索财苗头时，可以向玩家请示是否扩大处置，但不能自行宣布全城搜掠。");
+                parts.Add(promptText.RobberySoldierMemoryPerspective);
             }
 
             if (hasMercy)
             {
-                parts.Add("你应承认玩家走过宽恕/救济/宣抚路线，服从之余可压着战利落空的不满，尤其在军心待安抚时更明显。");
+                parts.Add(promptText.MercySoldierMemoryPerspective);
             }
 
             if (hasSoldierAppeasement)
             {
-                parts.Add("你应承认玩家已经处理过军心问题，后续士兵口吻应更稳。");
+                parts.Add(promptText.SoldierAppeasementMemoryPerspective);
             }
 
             if (hasGather)
             {
-                parts.Add("你应知道民众正在被传来或已经聚集，回应时可把自己当成维持现场秩序的入城士兵。");
+                parts.Add(promptText.GatherSoldierMemoryPerspective);
             }
 
-            return BuildPerspectiveBlock("士兵视角记忆解读", parts);
+            string header = !string.IsNullOrWhiteSpace(promptText.MemoryPerspectiveHeaderSoldier)
+                ? promptText.MemoryPerspectiveHeaderSoldier
+                : (isChinese ? SiegeAftermathCompatibilityTexts.Raw("compat_siege_intervention_memory_context_builder_7f9a59fed88b") : "[SOLDIER PERSPECTIVE MEMORY INTERPRETATION]");
+            return BuildPerspectiveBlock(header, parts, isChinese);
         }
 
         if (audience == SiegeInterventionMemoryAudience.Civilian)
@@ -102,46 +121,54 @@ public static class SiegeInterventionMemoryContextBuilder
             var parts = new List<string>();
             if (hasRepopulation)
             {
-                parts.Add("你应知道玩家一方要清除原住民并迁入己方人口，平民反应应接近绝望、逃散、哀求或少数反抗，不能假装只是普通征税。");
+                parts.Add(promptText.RepopulationCivilianMemoryPerspective);
             }
             else if (hasMassacre)
             {
-                parts.Add("你应知道血洗已经开始或被明确下令，平民应恐慌、逃避、崩溃或在少数情况下反抗，不能表现得安全从容。");
+                parts.Add(promptText.MassacreCivilianMemoryPerspective);
             }
             else if (hasPlunder || hasRobbery)
             {
-                parts.Add("你应知道财物正被索取或搜掠，平民可藏财、求饶、讨价还价或交出钱物换安全。");
+                parts.Add(promptText.PlunderCivilianMemoryPerspective);
             }
 
             if (hasMercy)
             {
-                parts.Add("你应知道玩家给过宽恕、救济或安民承诺，恐惧仍在，但可从崩溃转为试探性顺从和求保障。");
+                parts.Add(promptText.MercyCivilianMemoryPerspective);
             }
 
             if (hasGather)
             {
-                parts.Add("你应知道民众正在被召集或已经到场听命，回应时应承认自己处在被胜利者集中处置的现场。");
+                parts.Add(promptText.GatherCivilianMemoryPerspective);
             }
 
-            return BuildPerspectiveBlock("平民视角记忆解读", parts);
+            string header = !string.IsNullOrWhiteSpace(promptText.MemoryPerspectiveHeaderCivilian)
+                ? promptText.MemoryPerspectiveHeaderCivilian
+                : (isChinese ? SiegeAftermathCompatibilityTexts.Raw("compat_siege_intervention_memory_context_builder_8cf509e6e479") : "[CIVILIAN PERSPECTIVE MEMORY INTERPRETATION]");
+            return BuildPerspectiveBlock(header, parts, isChinese);
         }
 
         if (hasMassacre || hasRepopulation || hasPlunder || hasMercy || hasGather)
         {
-            return "【记忆优先级】宽恕/救济/宣抚/盟誓、搜掠、血洗、殖民这类处置方向优先于传令和走位细节；后续回复必须承认当前大方向。";
+            return !string.IsNullOrWhiteSpace(promptText.MemoryPriorityNotice)
+                ? promptText.MemoryPriorityNotice
+                : (isChinese
+                    ? SiegeAftermathCompatibilityTexts.Raw("compat_siege_intervention_memory_context_builder_521324bcb4a4")
+                    : "[MEMORY PRIORITY] Mercy/relief/reassurance/oath, plunder, massacre, and colonization dispositions take priority over messenger and movement details; subsequent replies must acknowledge the current primary direction.");
         }
 
         return string.Empty;
     }
 
-    private static string BuildPerspectiveBlock(string title, List<string> parts)
+    private static string BuildPerspectiveBlock(string title, List<string> parts, bool isChinese)
     {
         if (parts == null || parts.Count == 0)
         {
             return string.Empty;
         }
 
-        return "【" + title + "】" + string.Join("", parts);
+        string sep = isChinese ? "" : " ";
+        return title + sep + string.Join(sep, parts);
     }
 
     private static bool ContainsAny(string text, params string[] tokens)
@@ -153,12 +180,30 @@ public static class SiegeInterventionMemoryContextBuilder
 
         foreach (string token in tokens)
         {
-            if (!string.IsNullOrWhiteSpace(token) && text.Contains(token))
+            if (!string.IsNullOrWhiteSpace(token) && text.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return true;
             }
         }
 
+        return false;
+    }
+
+    private static bool IsChineseCatalog(TownPromptTextCatalog catalog)
+    {
+        if (!string.IsNullOrEmpty(catalog?.Language)) return catalog.Language == "zh-CN";
+        string title = catalog?.SceneSectionTitle;
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            return false;
+        }
+        foreach (char c in title)
+        {
+            if (c >= CjkRangeStart && c <= CjkRangeEnd)
+            {
+                return true;
+            }
+        }
         return false;
     }
 }

@@ -44,7 +44,7 @@ public sealed partial class CourierDeliveryBehavior
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(recipient);
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+			playerName = Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0530");
 		}
 		string deliveryFact = string.IsNullOrWhiteSpace(deliveryFactForPrompt) ? (session?.DeliveryFactText ?? "") : deliveryFactForPrompt;
 		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(recipient, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), session.LetterText, deliveryFact);
@@ -62,7 +62,7 @@ public sealed partial class CourierDeliveryBehavior
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender);
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+			playerName = Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0531");
 		}
 		string fact = string.IsNullOrWhiteSpace(factForPrompt) ? (session?.DeliveryFactText ?? "") : factForPrompt;
 		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(sender, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), null, fact);
@@ -84,7 +84,7 @@ public sealed partial class CourierDeliveryBehavior
 			Settlement currentSettlement = recipient?.CurrentSettlement ?? party?.CurrentSettlement;
 			if (currentSettlement != null)
 			{
-				return "你当前位于" + FormatCourierSettlementNameWithType(currentSettlement) + "。";
+				return ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0532") + FormatCourierSettlementNameWithType(currentSettlement) + "。";
 			}
 			if (party == null)
 			{
@@ -95,25 +95,25 @@ public sealed partial class CourierDeliveryBehavior
 				Settlement nearest = FindNearestSettlementForCourierPrompt(party);
 				string nearestName = FormatCourierSettlementNameWithType(nearest);
 				string locationLine = string.IsNullOrWhiteSpace(nearestName)
-					? "你正位于海上。"
-					: "你正位于" + nearestName + "附近的海上。";
+					? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0533")
+					: ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0534") + nearestName + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0535");
 				string shipText = MapSeaContextGuard.BuildMobilePartyShipPromptText(party);
 				if (!string.IsNullOrWhiteSpace(shipText))
 				{
-					locationLine += "舰船：" + shipText + "。";
+					locationLine += ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0536") + shipText + "。";
 				}
 				return locationLine;
 			}
 			string terrainLabel = MapSeaContextGuard.BuildMobilePartyLandTerrainPromptLabel(party);
 			if (string.IsNullOrWhiteSpace(terrainLabel))
 			{
-				terrainLabel = "野外";
+				terrainLabel = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0537");
 			}
 			Settlement landNearest = FindNearestSettlementForCourierPrompt(party);
 			string landNearestName = FormatCourierSettlementNameWithType(landNearest);
 			return string.IsNullOrWhiteSpace(landNearestName)
-				? "你当前位于" + terrainLabel + "。"
-				: "你当前位于" + landNearestName + "附近的" + terrainLabel + "。";
+				? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0538") + terrainLabel + "。"
+				: ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0539") + landNearestName + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0540") + terrainLabel + "。";
 		}
 		catch
 		{
@@ -182,24 +182,24 @@ public sealed partial class CourierDeliveryBehavior
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(recipient);
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+			playerName = Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0541");
 		}
 		StringBuilder sb = new StringBuilder();
 		if (delivered)
 		{
-			sb.Append("[AFEF玩家行为补充] ").Append(playerName).Append("通过信使向你寄来一封信。");
+			sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0542")).Append(playerName).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0543"));
 		}
 		else
 		{
-			sb.Append("[AFEF玩家行为补充] ").Append(playerName).Append("已安排信使携带一封信出发。");
+			sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0544")).Append(playerName).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0545"));
 		}
 		string crewSummary = BuildCourierCrewSummaryForPrompt(session);
 		if (!string.IsNullOrWhiteSpace(crewSummary))
 		{
-			sb.Append("\n[AFEF玩家行为补充] ").Append(playerName)
-				.Append(delivered ? "派来送达这封信的信使队成员为：" : "安排的送信队伍成员为：")
+			sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0546")).Append(playerName)
+				.Append(delivered ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0547") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0548"))
 				.Append(crewSummary)
-				.Append("。这些成员只负责送信与护送回信，不属于随信赠与或转移给你的物资或部队。");
+				.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0549"));
 		}
 		foreach (CourierCargoEntry entry in session.Entries ?? new List<CourierCargoEntry>())
 		{
@@ -207,7 +207,7 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				continue;
 			}
-			string verb = delivered ? "通过信使" : "准备通过信使";
+			string verb = delivered ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0550") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0551");
 			string factEntryName = (entry.Kind == "item" || entry.Kind == "show_item")
 				? GetCourierLetterTransferFactDescriptionForExternal(entry.Id, 0u, entry.Name)
 				: entry.Name;
@@ -233,31 +233,31 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			if (entry.Kind == "gold")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 第纳尔").Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
+				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0552")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0553")).Append(entry.Amount).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0554")).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 			else if (entry.Kind == "item")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 个 ").Append(factEntryName).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
+				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0555")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0556")).Append(entry.Amount).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0557")).Append(factEntryName).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 			else if (entry.Kind == "show_gold")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("展示了 ").Append(entry.Amount).Append(" 第纳尔，但没有转移所有权。");
+				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0558")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0559")).Append(entry.Amount).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0560"));
 			}
 			else if (entry.Kind == "show_item")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("展示了 ").Append(entry.Amount).Append(" 个 ").Append(factEntryName).Append("，但没有转移所有权。");
+				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0561")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0562")).Append(entry.Amount).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0563")).Append(factEntryName).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0564"));
 			}
 			else if (entry.Kind == "troop")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 名 ").Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
+				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0565")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0566")).Append(entry.Amount).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0567")).Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 			else if (entry.Kind == "prisoner")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append(entry.IsHero ? "转移了俘虏 " : "转移了俘虏 ").Append(entry.IsHero ? entry.Name : (entry.Amount + " 名 " + entry.Name)).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
+				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0568")).Append(playerName).Append(verb).Append(entry.IsHero ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0569") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0570")).Append(entry.IsHero ? entry.Name : (entry.Amount + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0571") + entry.Name)).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 			else if (entry.Kind == "settlement")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了固定资产 ").Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
+				sb.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0572")).Append(playerName).Append(verb).Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0573")).Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 		}
 		return sb.ToString().Trim();
@@ -273,12 +273,12 @@ public sealed partial class CourierDeliveryBehavior
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender);
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+			playerName = Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0574");
 		}
 		string letterKind = GetInboundLetterKindDisplayText(session);
 		string fact = delivered
-			? "[AFEF NPC行为补充] " + senderName + "通过信使给" + playerName + "送来一封" + letterKind + "。"
-			: "[AFEF NPC行为补充] " + senderName + "已经派出信使，准备把一封" + letterKind + "送给" + playerName + "。";
+			? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0575") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0576") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0577") + letterKind + "。"
+			: ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0578") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0579") + letterKind + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0580") + playerName + "。";
 		if (!string.IsNullOrWhiteSpace(session.InboundIntentFact))
 		{
 			fact += "\n" + session.InboundIntentFact.Trim();
@@ -289,7 +289,7 @@ public sealed partial class CourierDeliveryBehavior
 			IFaction playerFaction = Hero.MainHero?.MapFaction;
 			if (senderFaction != null && playerFaction != null && senderFaction.IsAtWarWith(playerFaction))
 			{
-				fact += "\n[AFEF NPC行为补充] " + senderName + "所属势力与" + playerName + "所属势力当前仍处于战争状态；这封信属于私人或秘密通信，不代表停战、议和已经成立或敌对关系已经解除。";
+				fact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0581") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0582") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0583");
 			}
 		}
 		catch
@@ -298,7 +298,7 @@ public sealed partial class CourierDeliveryBehavior
 		string crewSummary = BuildCourierCrewSummaryForPrompt(session);
 		if (!string.IsNullOrWhiteSpace(crewSummary))
 		{
-			fact += "\n[AFEF NPC行为补充] " + senderName + "派出的信使队成员为：" + crewSummary + "。这些成员只负责送信，不属于随信赠与或转移给" + playerName + "的物资或部队。";
+			fact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0584") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0585") + crewSummary + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0586") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0587");
 		}
 		return fact;
 	}
@@ -306,10 +306,10 @@ public sealed partial class CourierDeliveryBehavior
 	private static string GetInboundLetterKindDisplayText(CourierSession session)
 	{
 		string kind = (session?.InboundLetterKind ?? "").Trim();
-		if (string.Equals(kind, InboundLetterKindNeedRequest, StringComparison.OrdinalIgnoreCase)) return "请求信";
-		if (string.Equals(kind, InboundLetterKindDiplomacy, StringComparison.OrdinalIgnoreCase)) return "外交信";
-		if (string.Equals(kind, InboundLetterKindPersonal, StringComparison.OrdinalIgnoreCase)) return "私人来信";
-		return "来信";
+		if (string.Equals(kind, InboundLetterKindNeedRequest, StringComparison.OrdinalIgnoreCase)) return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0588");
+		if (string.Equals(kind, InboundLetterKindDiplomacy, StringComparison.OrdinalIgnoreCase)) return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0589");
+		if (string.Equals(kind, InboundLetterKindPersonal, StringComparison.OrdinalIgnoreCase)) return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0590");
+		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0591");
 	}
 
 	private static string BuildCourierCrewSummaryForPrompt(CourierSession session)
@@ -330,7 +330,7 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				continue;
 			}
-			string role = entry.IsHero ? "角色" : "士兵";
+			string role = entry.IsHero ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0592") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0593");
 			parts.Add(name + "×" + Math.Max(1, entry.Amount) + "（" + role + "）");
 		}
 		return parts.Count == 0 ? "" : string.Join("，", parts);
@@ -339,7 +339,7 @@ public sealed partial class CourierDeliveryBehavior
 	private static string BuildCourierCargoValueSuffix(CourierCargoEntry entry)
 	{
 		long value = EstimateCourierCargoEntryTotalValue(entry);
-		return value > 0L ? ("（估值约 " + value + " 第纳尔）") : "";
+		return value > 0L ? (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0594") + value + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0595")) : "";
 	}
 
 	private static long EstimateCourierCargoEntryTotalValue(CourierCargoEntry entry)
@@ -373,14 +373,14 @@ public sealed partial class CourierDeliveryBehavior
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("信使成员：");
+		sb.AppendLine(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0596", "Courier party members:"));
 		sb.AppendLine("  " + RosterSummary(flow.CrewRoster));
 		if (flow.Mode == CourierPayloadMode.Normal || flow.SelectedEntries.Count == 0)
 		{
-			sb.AppendLine("随信内容：仅信件。");
+			sb.AppendLine(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0597", "Enclosed: letter only."));
 			return sb.ToString().Trim();
 		}
-		sb.AppendLine("随信内容：");
+		sb.AppendLine(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0598", "Enclosed:"));
 		foreach (CourierCargoEntry entry in flow.SelectedEntries)
 		{
 			if (entry == null)
@@ -390,31 +390,31 @@ public sealed partial class CourierDeliveryBehavior
 			sb.Append("  · ");
 			if (entry.Kind == "gold")
 			{
-				sb.Append("发送 ").Append(entry.Amount).Append(" 第纳尔");
+				sb.Append(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0599", "Send ")).Append(entry.Amount).Append(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0600", " denars"));
 			}
 			else if (entry.Kind == "show_gold")
 			{
-				sb.Append("展示 ").Append(entry.Amount).Append(" 第纳尔");
+				sb.Append(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0601", "Show ")).Append(entry.Amount).Append(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0600", " denars"));
 			}
 			else if (entry.Kind == "item")
 			{
-				sb.Append("发送 ").Append(entry.Amount).Append(" 个 ").Append(entry.Name);
+				sb.Append(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0599", "Send ")).Append(entry.Amount).Append(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0604", " × ")).Append(entry.Name);
 			}
 			else if (entry.Kind == "show_item")
 			{
-				sb.Append("展示 ").Append(entry.Amount).Append(" 个 ").Append(entry.Name);
+				sb.Append(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0601", "Show ")).Append(entry.Amount).Append(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0604", " × ")).Append(entry.Name);
 			}
 			else if (entry.Kind == "troop")
 			{
-				sb.Append("转移 ").Append(entry.Amount).Append(" 名 ").Append(entry.Name);
+				sb.Append(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0607", "Transfer ")).Append(entry.Amount).Append(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0608", " × ")).Append(entry.Name);
 			}
 			else if (entry.Kind == "prisoner")
 			{
-				sb.Append(entry.IsHero ? ("转移俘虏 " + entry.Name) : ("转移 " + entry.Amount + " 名 " + entry.Name + " 俘虏"));
+				sb.Append(entry.IsHero ? (ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0609", "Transfer prisoner ") + entry.Name) : (ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0607", "Transfer ") + entry.Amount + ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0608", " × ") + entry.Name + ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0612", " prisoners")));
 			}
 			else if (entry.Kind == "settlement")
 			{
-				sb.Append("转移固定资产 ").Append(entry.Name);
+				sb.Append(ConversationUiLocalization.Text("AF_CONV_UI_Runtime_0613", "Transfer fixed asset ")).Append(entry.Name);
 			}
 			sb.AppendLine();
 		}

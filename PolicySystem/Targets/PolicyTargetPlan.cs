@@ -347,12 +347,12 @@ internal static class PolicyTargetPlanResolver
 		error = string.Empty;
 		if (source == null)
 		{
-			error = "TargetPlan 不能为空。";
+			error = "TargetPlan cannot be empty.";
 			return false;
 		}
 		if (!IsSupportedVersionPair(source.PlanVersion, source.ResolverVersion))
 		{
-			error = "不支持的 TargetPlan 版本。";
+			error = "Unsupported TargetPlan version.";
 			return false;
 		}
 		List<PolicyTargetPlanBranchSaveData> branches = source.Branches ?? new List<PolicyTargetPlanBranchSaveData>();
@@ -361,17 +361,17 @@ internal static class PolicyTargetPlanResolver
 			| PolicyTargetPlanDependencies.DailyMetric;
 		if ((source.Dependencies & ~knownDependencies) != 0)
 		{
-			error = "TargetPlan 包含未知依赖标志。";
+			error = "TargetPlan contains unknown dependency flag.";
 			return false;
 		}
 		if (!Enum.IsDefined(typeof(PolicyTargetPlanResolutionStrategy), source.ResolutionStrategy))
 		{
-			error = "TargetPlan 包含未知解析策略。";
+			error = "TargetPlan contains unknown resolution strategy.";
 			return false;
 		}
 		if (branches.Count <= 0 || branches.Count > MaximumBranches)
 		{
-			error = "TargetPlan 分支数量必须为 1 到 " + MaximumBranches.ToString(CultureInfo.InvariantCulture) + "。";
+			error = "TargetPlan branch count must be between 1 and " + MaximumBranches.ToString(CultureInfo.InvariantCulture) + "。";
 			return false;
 		}
 		PolicyTargetPlanUniverse universe = branches[0]?.Universe ?? PolicyTargetPlanUniverse.PrimaryFiefs;
@@ -400,7 +400,7 @@ internal static class PolicyTargetPlanResolver
 			&& !string.Equals(claimedSignature, normalized.NormalizedSignature, StringComparison.Ordinal))
 		{
 			normalized = null;
-			error = "TargetPlan 规范化签名不匹配。";
+			error = "TargetPlan normalized signature mismatch.";
 			return false;
 		}
 		return true;
@@ -435,7 +435,7 @@ internal static class PolicyTargetPlanResolver
 			if (context?.Snapshot?.Entities == null)
 			{
 				failureKind = PolicyTargetPlanResolutionFailureKind.InternalFailure;
-				error = "TargetPlan 实时世界快照不可用。";
+				error = "TargetPlan live world snapshot unavailable.";
 				return false;
 			}
 			bool allowPersistedReferences = context.AllowPersistedValidatedReferences;
@@ -482,7 +482,7 @@ internal static class PolicyTargetPlanResolver
 		{
 			resolution = null;
 			failureKind = PolicyTargetPlanResolutionFailureKind.InternalFailure;
-			error = "TargetPlan 运行时解析异常：" + ex.GetType().Name;
+			error = "TargetPlan runtime resolution exception: " + ex.GetType().Name;
 			return false;
 		}
 	}
@@ -571,17 +571,17 @@ internal static class PolicyTargetPlanResolver
 		error = string.Empty;
 		if (source == null || source.Universe != requiredUniverse)
 		{
-			error = "TargetPlan 的 OR 分支必须使用同一目标 universe。";
+			error = "TargetPlan OR branches must use the same target universe.";
 			return false;
 		}
 		if (!AreBranchEnumsDefined(source))
 		{
-			error = "TargetPlan 包含未知操作符。";
+			error = "TargetPlan contains unknown operator.";
 			return false;
 		}
 		if (!IsEntityTypeAllowed(source.Universe, source.EntityType))
 		{
-			error = "TargetPlan entityType 与 universe 不兼容。";
+			error = "TargetPlan entityType incompatible with universe.";
 			return false;
 		}
 		if (source.Universe == PolicyTargetPlanUniverse.Kingdoms
@@ -591,7 +591,7 @@ internal static class PolicyTargetPlanResolver
 					|| value == PolicyTargetPlanExclusion.PlayerClanFiefs
 					|| value == PolicyTargetPlanExclusion.ProposerClanFiefs)))
 		{
-			error = "王国 TargetPlan 不能使用封地所有者或发布地排除条件。";
+			error = "Kingdom TargetPlan cannot use fief owner or source exclusion predicates.";
 			return false;
 		}
 		if (source.Universe != PolicyTargetPlanUniverse.PrimaryFiefs
@@ -600,7 +600,7 @@ internal static class PolicyTargetPlanResolver
 				|| value == PolicyTargetPlanExclusion.PlayerClanFiefs
 				|| value == PolicyTargetPlanExclusion.ProposerClanFiefs))
 		{
-			error = "非封地 TargetPlan 不能使用封地排除条件。";
+			error = "Non-fief TargetPlan cannot use fief exclusion predicates.";
 			return false;
 		}
 		if (source.Universe != PolicyTargetPlanUniverse.PrimaryFiefs
@@ -609,23 +609,23 @@ internal static class PolicyTargetPlanResolver
 				|| source.Distance != PolicyTargetPlanDistance.None
 				|| IsSettlementMetric(source.Metric)))
 		{
-			error = "非封地 TargetPlan 不能使用封地地理或定居点指标条件。";
+			error = "Non-fief TargetPlan cannot use fief geography or settlement metric predicates.";
 			return false;
 		}
 		if (source.Universe == PolicyTargetPlanUniverse.PrimaryFiefs && IsAggregateMetric(source.Metric))
 		{
-			error = "封地 TargetPlan 不能使用王国或家族聚合指标。";
+			error = "Fief TargetPlan cannot use kingdom or clan aggregated metrics.";
 			return false;
 		}
 		if (source.Metric != PolicyTargetPlanMetric.None && source.Distance != PolicyTargetPlanDistance.None)
 		{
-			error = "TargetPlan 的指标排序与距离排序不能同时出现。";
+			error = "TargetPlan cannot specify both metric order and distance order.";
 			return false;
 		}
 		if (source.Metric == PolicyTargetPlanMetric.None
 			&& source.SortDirection != PolicyTargetPlanSortDirection.None)
 		{
-			error = "TargetPlan 排序方向缺少对应指标。";
+			error = "TargetPlan order direction missing corresponding metric.";
 			return false;
 		}
 		bool hasMetricComparison = source.MetricComparison != PolicyTargetPlanMetricComparison.None;
@@ -636,23 +636,23 @@ internal static class PolicyTargetPlanResolver
 				|| hasMetricComparison
 				|| hasMetricThreshold))
 		{
-			error = "TargetPlan v2 不能使用 v3 指标或阈值字段。";
+			error = "TargetPlan v2 cannot use v3 metric or threshold fields.";
 			return false;
 		}
 		if (hasMetricComparison != hasMetricThreshold)
 		{
-			error = "TargetPlan 指标比较符与阈值必须同时存在。";
+			error = "TargetPlan metric comparison operator and threshold must both be present.";
 			return false;
 		}
 		if (hasMetricComparison && source.Metric == PolicyTargetPlanMetric.None)
 		{
-			error = "TargetPlan 指标阈值缺少对应指标。";
+			error = "TargetPlan metric threshold missing corresponding metric.";
 			return false;
 		}
 		if (hasMetricThreshold
 			&& (float.IsNaN(source.MetricThreshold.Value) || float.IsInfinity(source.MetricThreshold.Value)))
 		{
-			error = "TargetPlan 指标阈值必须是有限数值。";
+			error = "TargetPlan metric threshold must be a finite number.";
 			return false;
 		}
 		List<string> entityReferences = NormalizeIds(source.EntityReferences);
@@ -662,38 +662,38 @@ internal static class PolicyTargetPlanResolver
 			|| excludedReferences.Count > MaximumEntityReferences
 			|| namedKingdomIds.Count > MaximumEntityReferences)
 		{
-			error = "TargetPlan 实体引用超过安全上限。";
+			error = "TargetPlan entity references exceed safe limit.";
 			return false;
 		}
 		string anchorKingdomId = NormalizeId(source.AnchorKingdomId);
 		string referenceClanId = NormalizeId(source.ReferenceClanId);
 		if ((source.ScopeAnchor == PolicyTargetPlanScopeAnchor.NamedKingdom) != (anchorKingdomId.Length > 0))
 		{
-			error = "TargetPlan 王国锚点字段与 scopeAnchor 不一致。";
+			error = "TargetPlan kingdom anchor field inconsistent with scopeAnchor.";
 			return false;
 		}
 		if (source.Relation == PolicyTargetPlanRelation.Specific && namedKingdomIds.Count == 0)
 		{
-			error = "Specific relation 缺少王国引用。";
+			error = "Specific relation missing kingdom reference.";
 			return false;
 		}
 		if (source.Relation != PolicyTargetPlanRelation.Specific && namedKingdomIds.Count > 0)
 		{
-			error = "非 Specific relation 不得携带指定王国引用。";
+			error = "Non-specific relation must not carry specified kingdom reference.";
 			return false;
 		}
 		if ((source.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.SpecificClan
 				|| source.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.ExcludeSpecificClan)
 			&& referenceClanId.Length == 0)
 		{
-			error = "TargetPlan 家族谓词缺少参照家族。";
+			error = "TargetPlan clan predicate missing reference clan.";
 			return false;
 		}
 		if (source.OwnerClanPredicate != PolicyTargetPlanOwnerClanPredicate.SpecificClan
 			&& source.OwnerClanPredicate != PolicyTargetPlanOwnerClanPredicate.ExcludeSpecificClan
 			&& referenceClanId.Length > 0)
 		{
-			error = "非指定家族谓词不得携带家族引用。";
+			error = "Non-specified clan predicate must not carry clan reference.";
 			return false;
 		}
 		int limit = source.Limit;
@@ -703,7 +703,7 @@ internal static class PolicyTargetPlanResolver
 		}
 		else if (limit <= 0 || limit > MaximumCardinality)
 		{
-			error = "TargetPlan TopN/BottomN 必须在 1 到 " + MaximumCardinality.ToString(CultureInfo.InvariantCulture) + "。";
+			error = "TargetPlan TopN/BottomN must be between 1 and " + MaximumCardinality.ToString(CultureInfo.InvariantCulture) + "。";
 			return false;
 		}
 		List<PolicyTargetPlanExclusion> exclusions = (source.Exclusions ?? new List<PolicyTargetPlanExclusion>())
@@ -712,12 +712,12 @@ internal static class PolicyTargetPlanResolver
 			.ToList();
 		if (exclusions.Contains(PolicyTargetPlanExclusion.SpecificEntities) && excludedReferences.Count == 0)
 		{
-			error = "SpecificEntities exclusion 缺少实体引用。";
+			error = "SpecificEntities exclusion missing entity references.";
 			return false;
 		}
 		if (!exclusions.Contains(PolicyTargetPlanExclusion.SpecificEntities) && excludedReferences.Count > 0)
 		{
-			error = "非 SpecificEntities exclusion 不得携带排除实体引用。";
+			error = "Non-SpecificEntities exclusion must not carry excluded entity references.";
 			return false;
 		}
 		normalized = new PolicyTargetPlanBranchSaveData
@@ -778,7 +778,7 @@ internal static class PolicyTargetPlanResolver
 		if (anchorKingdomId.Length == 0 && !CanResolveWithoutKingdomAnchor(branch, context))
 		{
 			failureKind = PolicyTargetPlanResolutionFailureKind.MissingAnchor;
-			error = "TargetPlan 缺少可解析的王国锚点。";
+			error = "TargetPlan missing resolvable kingdom anchor.";
 			return false;
 		}
 		if (!ValidateReferences(branch, context, allowPersistedReferences, out error))
@@ -1004,7 +1004,7 @@ internal static class PolicyTargetPlanResolver
 			StringComparer.OrdinalIgnoreCase);
 		if (branch.EntityReferences.Any(id => !availableEntityIds.Contains(id)))
 		{
-			error = "TargetPlan 的明确实体引用已经失效。";
+			error = "TargetPlan explicit entity reference has become invalid.";
 			return false;
 		}
 		if (!string.IsNullOrWhiteSpace(branch.ReferenceClanId)
@@ -1012,7 +1012,7 @@ internal static class PolicyTargetPlanResolver
 				string.Equals(entity.Kind, PolicyTargetEntityKinds.Clan, StringComparison.OrdinalIgnoreCase)
 				&& SameId(entity.EntityId, branch.ReferenceClanId)))
 		{
-			error = "TargetPlan 的指定家族引用已经失效。";
+			error = "TargetPlan specified clan reference has become invalid.";
 			return false;
 		}
 		HashSet<string> availableKingdomIds = new HashSet<string>(
@@ -1022,7 +1022,7 @@ internal static class PolicyTargetPlanResolver
 		if ((branch.ScopeAnchor == PolicyTargetPlanScopeAnchor.NamedKingdom && !availableKingdomIds.Contains(branch.AnchorKingdomId))
 			|| branch.NamedKingdomIds.Any(id => !availableKingdomIds.Contains(id)))
 		{
-			error = "TargetPlan 的指定王国引用已经失效。";
+			error = "TargetPlan specified kingdom reference has become invalid.";
 			return false;
 		}
 		if (!allowPersistedReferences)
@@ -1034,7 +1034,7 @@ internal static class PolicyTargetPlanResolver
 				.Where(id => !string.IsNullOrWhiteSpace(id))
 				.Any(id => !allowedEntities.Contains(id)))
 			{
-				error = "TargetPlan 包含未由 C# 预验证的实体引用。";
+				error = "TargetPlan contains entity reference not pre-validated by C#.";
 				return false;
 			}
 			HashSet<string> allowedKingdoms = new HashSet<string>(context.AllowedKingdomReferenceIds ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase)
@@ -1045,7 +1045,7 @@ internal static class PolicyTargetPlanResolver
 			if ((branch.ScopeAnchor == PolicyTargetPlanScopeAnchor.NamedKingdom && !allowedKingdoms.Contains(branch.AnchorKingdomId))
 				|| branch.NamedKingdomIds.Any(id => !allowedKingdoms.Contains(id)))
 			{
-				error = "TargetPlan 包含未由 C# 预验证的王国引用。";
+				error = "TargetPlan contains kingdom reference not pre-validated by C#.";
 				return false;
 			}
 		}

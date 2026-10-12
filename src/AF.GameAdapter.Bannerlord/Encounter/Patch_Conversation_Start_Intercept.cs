@@ -30,16 +30,16 @@ public static class Patch_Conversation_Start_Intercept
 			{
 				harmony.Patch(item, new HarmonyMethod(prefix));
 				num++;
-				Logger.LogTrace("System", "✅ 手动注册 Patch_Conversation_Start_Intercept -> " + DescribeMethod(item));
+				Logger.LogTrace("System", "✅ Manually registered Patch_Conversation_Start_Intercept -> " + DescribeMethod(item));
 			}
 			if (num == 0)
 			{
-				Logger.LogTrace("System", "❌ 未找到可用的会话启动入口，跳过 Patch_Conversation_Start_Intercept。");
+				Logger.LogTrace("System", "❌ No available conversation start entry found; skipping Patch_Conversation_Start_Intercept.");
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ 手动注册 Patch_Conversation_Start_Intercept 失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ Manual registration of Patch_Conversation_Start_Intercept failed: " + ex.Message);
 		}
 	}
 
@@ -132,7 +132,7 @@ public static class Patch_Conversation_Start_Intercept
 				Logger.LogTrace("Patch_Conversation_Start_Intercept", "Native hostile settlement request meeting detected; allow native " + __originalMethod?.Name + ".");
 				return true;
 			}
-			Logger.LogTrace("Patch_Conversation_Start_Intercept", $"检测到 {__originalMethod?.Name} 原版对话启动，重定向至自定义会面菜单: {hero.Name}");
+			Logger.LogTrace("Patch_Conversation_Start_Intercept", $"Detected {__originalMethod?.Name} vanilla conversation start; redirecting to the custom meeting menu: {hero.Name}");
 			ProactiveNpcRequestBehavior.MarkEncounterOpened(hero);
 			LordEncounterBehavior.SetTarget(hero);
 			if (LordEncounterBehavior.OpenEncounterMenu(hero))

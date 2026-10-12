@@ -88,12 +88,12 @@ internal sealed class SceneRevisitRecordGameAdapter
 
 	internal static string BuildSceneRevisitFactBody(string playerDisplayName, int elapsedDays)
 	{
-		string text = string.IsNullOrWhiteSpace(playerDisplayName) ? "玩家" : playerDisplayName.Trim();
+		string text = string.IsNullOrWhiteSpace(playerDisplayName) ? AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920") : playerDisplayName.Trim();
 		if (elapsedDays <= 0)
 		{
-			return "今天稍早时候刚与" + text + "见过面。";
+			return AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_d2ec9b161997") + text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_e7b2a825a517");
 		}
-		return "距离你上次与" + text + "见面，已有" + elapsedDays + "天了。";
+		return AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_5aba7fdaaf35") + text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_3d2d95260200") + elapsedDays + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_2d625865a0fe");
 	}
 
 	internal void TryInjectSceneFirstMeetingFactsBeforePlayerMessage(List<NpcDataPacket> nearbyData)
@@ -154,7 +154,7 @@ internal sealed class SceneRevisitRecordGameAdapter
 		string playerDisplayNameForShout = _playerName();
 		if (string.IsNullOrWhiteSpace(playerDisplayNameForShout))
 		{
-			playerDisplayNameForShout = "玩家";
+			playerDisplayNameForShout = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920");
 		}
 		List<(Hero Hero, string SceneHistoryName, string RecordKey, int ElapsedDays)> list = new List<(Hero, string, string, int)>();
 		lock (_state.Gate)
@@ -194,11 +194,11 @@ internal sealed class SceneRevisitRecordGameAdapter
 		}
 		foreach (var item in list)
 		{
-			string text3 = string.IsNullOrWhiteSpace(item.SceneHistoryName) ? (item.Hero.Name?.ToString() ?? "对方") : item.SceneHistoryName;
+			string text3 = string.IsNullOrWhiteSpace(item.SceneHistoryName) ? (item.Hero.Name?.ToString() ?? AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_ddfdac569e37")) : item.SceneHistoryName;
 			string text4 = BuildSceneRevisitFactBody(playerDisplayNameForShout, item.ElapsedDays);
-			string extraFact = "[AFEF NPC行为补充] " + text3 + text4;
+			string extraFact = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_5f4a1277089e") + text3 + text4;
 			_recordFact(extraFact, nearbyData);
-			MyBehavior.AppendExternalDialogueHistory(item.Hero, null, null, "[AFEF NPC行为补充] " + text4);
+			MyBehavior.AppendExternalDialogueHistory(item.Hero, null, null, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_5f4a1277089e") + text4);
 		}
 	}
 }

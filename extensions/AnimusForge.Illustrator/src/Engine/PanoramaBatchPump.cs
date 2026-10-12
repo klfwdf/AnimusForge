@@ -30,7 +30,7 @@ namespace AnimusForge.Illustrator.Engine
             IllustratorRuntime.AssertMainThread();
             token.ThrowIfCancellationRequested();
             if (batch == null) throw new ArgumentNullException(nameof(batch));
-            if (_active != null) throw new InvalidOperationException("已有环境快照批次正在执行。");
+            if (_active != null) throw new InvalidOperationException("An environment snapshot batch is already running.");
             return _active = new PanoramaBatchPump(batch, token);
         }
 

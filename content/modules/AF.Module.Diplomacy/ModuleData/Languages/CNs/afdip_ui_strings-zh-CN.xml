@@ -1,6 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <base type="string">
-  <tags><tag language="简体中文" /></tags>
+  <tags>
+    <tag language="简体中文" />
+  </tags>
   <strings>
     <string id="AF_DIP_UI_Common_Acknowledge" text="知道了" />
     <string id="AF_DIP_UI_Common_Close" text="关闭" />
@@ -77,7 +79,7 @@
     <string id="AF_DIP_UI_Archive_Title" text="王国公告" />
     <string id="AF_DIP_UI_Archive_Empty" text="目前还没有王国公告。" />
     <string id="AF_DIP_UI_Archive_Day" text="第{DAY}天" />
-  <string id="AF_DIP_UI_KingdomProfile_EditCurrent" text="编辑当前国家…" />
+    <string id="AF_DIP_UI_KingdomProfile_EditCurrent" text="编辑当前国家…" />
     <string id="AF_DIP_UI_KingdomProfile_ExportAll" text="全量导出（国家战略与性格）" />
     <string id="AF_DIP_UI_KingdomProfile_ImportAll" text="全量导入（国家战略与性格）" />
     <string id="AF_DIP_UI_KingdomProfile_ResetAll" text="恢复全部国家的默认卡" />
@@ -191,7 +193,6 @@
     <string id="AF_DIP_UI_KingdomProfile_GenerationPausedEliminated" text="国家已覆灭，自动生成已停止" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationWaitingPrefix" text="等待生成（" />
     <string id="AF_DIP_UI_KingdomProfile_Empty" text="（空）" />
-
     <string id="AF_DIP_UI_CivilWar_ActionSuppress" text="压制" />
     <string id="AF_DIP_UI_CivilWar_ActionNegotiate" text="谈判" />
     <string id="AF_DIP_UI_CivilWar_ActionConcede" text="妥协" />
@@ -273,16 +274,18 @@
     <string id="AF_DIP_CivilWar_UltimatumTitle" text="反对派最后通牒" />
     <string id="AF_DIP_CivilWar_UltimatumAccept" text="接受诉求" />
     <string id="AF_DIP_CivilWar_UltimatumRefuse" text="拒绝" />
-      <string id="AF_DIP_UI_Vassalage_DeclareWarBlocked" text="王国议会不能在臣属条约有效时向{TARGET}宣战。若要解除条约，请先通过正式谈判处理。" />
+    <string id="AF_DIP_UI_Vassalage_DeclareWarBlocked" text="王国议会不能在臣属条约有效时向{TARGET}宣战。若要解除条约，请先通过正式谈判处理。" />
     <string id="AF_DIP_UI_Vassalage_ProtectedPeaceBlocked" text="此战因保护{SUBJECT}而起；敌国不能绕过受保护方直接向宗主国单独求和。" />
     <string id="AF_DIP_UI_Vassalage_ProtectedPeaceAllowed" text="此战因保护{SUBJECT}而起；宗主国和平将同步受保护朝贡国停战。" />
     <string id="AF_DIP_UI_Vassalage_ProtectionApplied" text="{SUZERAIN}履行了对{SUBJECT}的保护义务，已对{ENEMY}{ACTION}。" />
     <string id="AF_DIP_UI_Vassalage_SubjectWarSync" text="{PREFIX}{DECLARED} 个附庸国/卫戍国已参战，{QUEUED} 个将在局势安全时参战，{ALREADY} 个原本已在战。" />
     <string id="AF_DIP_UI_Vassalage_IndependenceChanged" text="{SUBJECT}的独立度由 {BEFORE} 变为 {AFTER}/100；当前脱离阈值为 {THRESHOLD}（{RULER}关系 {RELATION}）。" />
     <string id="AF_DIP_UI_Vassalage_IndependenceChangedNoName" text="{SUBJECT}的独立度由 {BEFORE} 变为 {AFTER}；当前脱离阈值为 {THRESHOLD}（统治者关系 {RELATION}）。" />
-    <string id="AF_DIP_UI_Vassalage_IndependenceReduced" text="因宗主国履行保护义务，{SUBJECT}的独立度由 {BEFORE} 降至 {AFTER}/100；当前脱离阈值为 {THRESHOLD}（{RULER}关系 {RELATION}）。" />    <string id="AF_DIP_UI_Vassalage_VassalWarNotice" text="{ATTACKER}已经向{SUBJECT}宣战。附庸国处于宗主国的直接保护之下；宫廷已按条约自动介入战争。" />
+    <string id="AF_DIP_UI_Vassalage_IndependenceReduced" text="因宗主国履行保护义务，{SUBJECT}的独立度由 {BEFORE} 降至 {AFTER}/100；当前脱离阈值为 {THRESHOLD}（{RULER}关系 {RELATION}）。" />
+    <string id="AF_DIP_UI_Vassalage_VassalWarNotice" text="{ATTACKER}已经向{SUBJECT}宣战。附庸国处于宗主国的直接保护之下；宫廷已按条约自动介入战争。" />
     <string id="AF_DIP_UI_Vassalage_TributaryProtectionRequest" text="{SUBJECT}遭到{ATTACKER}宣战。朝贡国以贡赋换取宗主庇护，但不承担出兵义务。&#10;&#10;是否履行庇护，向进攻者宣战？若拒绝，朝贡条约将立即终止。" />
-    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionRequest" text="{SUBJECT}遭到{ATTACKER}宣战。卫戍国是宗主国的军事屏障，承担随军作战义务，也期待宗主出兵保护。&#10;&#10;是否保护卫戍国？若拒绝，忠诚度将大幅下降；过低时将脱离臣属关系。" />    <string id="AF_DIP_UI_Vassalage_SubjectFallback" text="臣属国" />
+    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionRequest" text="{SUBJECT}遭到{ATTACKER}宣战。卫戍国是宗主国的军事屏障，承担随军作战义务，也期待宗主出兵保护。&#10;&#10;是否保护卫戍国？若拒绝，忠诚度将大幅下降；过低时将脱离臣属关系。" />
+    <string id="AF_DIP_UI_Vassalage_SubjectFallback" text="臣属国" />
     <string id="AF_DIP_UI_Vassalage_EstablishedTributaryDescription" text="{SUBJECT}已立誓为朝贡国，按期进献贡赋，接受你的庇护。" />
     <string id="AF_DIP_UI_Vassalage_EstablishedGarrisonDescription" text="{SUBJECT}已立誓为卫戍国，接受宗主号令，承担边境守卫与随军作战义务。" />
     <string id="AF_DIP_UI_Vassalage_EstablishedVassalDescription" text="{SUBJECT}已立誓为附庸国，接受宗主统辖，承担贡赋与出兵义务。" />
@@ -298,7 +301,7 @@
     <string id="AF_DIP_UI_Vassalage_TributePaymentDescription" text="{TRIBUTARY}按期送来贡赋，宗主国各领地已完成入账。" />
     <string id="AF_DIP_UI_Vassalage_TributePaymentDetailInvalid" text="贡赋簿册已经失效。" />
     <string id="AF_DIP_UI_Vassalage_TributePaymentDetail" text="朝贡车队已抵达宫廷，贡赋入库簿册如下：&#10;&#10;臣属国：{TRIBUTARY}&#10;入库日期：{DATE}&#10;贡赋价值：{VALUE}&#10;&#10;【宗主国各领地所得】&#10;{GAINS}&#10;【臣属国贡赋消耗】&#10;{COST}" />
-        <string id="AF_DIP_UI_KingdomProfile_EliminatedGenerationSkipped" text="已覆灭国家保留现有国家卡，但不会请求 LLM 重新生成。" />
+    <string id="AF_DIP_UI_KingdomProfile_EliminatedGenerationSkipped" text="已覆灭国家保留现有国家卡，但不会请求 LLM 重新生成。" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationConfigError" text="国家建国卡生成失败：事件/叛乱 API 尚未配置。" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedPrefix" text="已为新国家“" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedSuffix" text="”生成并固化国家性格与长期战略。" />
@@ -350,68 +353,68 @@
     <string id="AF_DIP_UI_Faction_KingFirst" text="国王在前，" />
     <string id="AF_DIP_UI_Faction_PlayerClanFirst" text="你的家族置顶，" />
     <string id="AF_DIP_UI_Faction_OthersByGrievance" text="其余按不满由高到低" />
-  <string id="AF_DIP_UI_Gathering_NoHostSettlement" text="你的家族没有可作为举办地的城镇或城堡。" />
-  <string id="AF_DIP_UI_Gathering_NoVenue" text="没有可用举办地。" />
-  <string id="AF_DIP_UI_Gathering_VenueTitle" text="召开宴会：选择举办地" />
-  <string id="AF_DIP_UI_Gathering_VenueDescription" text="举办地必须是你的家族拥有的城镇或城堡。" />
-  <string id="AF_DIP_UI_Gathering_Next" text="下一步" />
-  <string id="AF_DIP_UI_Gathering_Cancel" text="取消" />
-  <string id="AF_DIP_UI_Gathering_VenueAvailable" text="可作为宴会举办地。" />
-  <string id="AF_DIP_UI_Gathering_NoClans" text="没有可邀请的贵族家族。" />
-  <string id="AF_DIP_UI_Gathering_ConfirmCurrent" text="确认当前名单（{COUNT}人）" />
-  <string id="AF_DIP_UI_Gathering_ClearList" text="清空已选名单" />
-  <string id="AF_DIP_UI_Gathering_ClearHint" text="重新选择宴会宾客。" />
-  <string id="AF_DIP_UI_Gathering_ClanSelected" text="已选 {COUNT}" />
-  <string id="AF_DIP_UI_Gathering_ClanSelectedHint" text="该家族已选宾客 {COUNT} 人。" />
-  <string id="AF_DIP_UI_Gathering_ClanTitle" text="召开宴会：选择家族" />
-  <string id="AF_DIP_UI_Gathering_ClanDescription" text="举办地：{SETTLEMENT}&#10;已选宾客：{COUNT} 人。&#10;请选择一个家族打开成员名单。" />
-  <string id="AF_DIP_UI_Gathering_NoHeroes" text="所选家族没有可显示的贵族成员。" />
-  <string id="AF_DIP_UI_Gathering_SelectedMarker" text="[已选] " />
-  <string id="AF_DIP_UI_Gathering_HeroLabel" text="[{CLAN}] {HERO}（{IDENTITY}）" />
-  <string id="AF_DIP_UI_Gathering_HeroHint" text="{HERO} / {CLAN}&#10;{IDENTITY}&#10;{STATE}" />
-  <string id="AF_DIP_UI_Gathering_AlreadyInList" text="已经在当前宴会名单中。" />
-  <string id="AF_DIP_UI_Gathering_CanInvite" text="可发出赴宴邀请；没有独立部队者将按原版旅行机制前往主办地。" />
-  <string id="AF_DIP_UI_Gathering_CannotInvite" text="不可邀请：{REASON}" />
-  <string id="AF_DIP_UI_Gathering_HeroTitle" text="召开宴会：选择宾客" />
-  <string id="AF_DIP_UI_Gathering_HeroDescription" text="家族：{CLAN}&#10;这是玩家举办的宴会，总督仍可邀请。有独立部队的人会直接被调度；留在城里的贵族、总督、无部队英雄会按原版旅行机制前往主办地，宴会结束后返回原驻留地。&#10;已选宾客：{COUNT} 人。" />
-  <string id="AF_DIP_UI_Gathering_AddToList" text="加入名单" />
-  <string id="AF_DIP_UI_Gathering_Back" text="返回" />
-  <string id="AF_DIP_UI_Gathering_NoGuests" text="宴会未召开：没有可邀请的宾客。" />
-  <string id="AF_DIP_UI_Gathering_ConfirmTitle" text="确认召开宴会" />
-  <string id="AF_DIP_UI_Gathering_ConfirmBody" text="举办地：{SETTLEMENT}&#10;费用：{COST} 第纳尔&#10;持续：{DAYS} 天&#10;宾客：{GUESTS} 人&#10;&#10;确认后将扣款并向宾客下达前往举办地的宴会邀请。" />
-  <string id="AF_DIP_UI_Gathering_PayAndInvite" text="支付并发出邀请" />
-  <string id="AF_DIP_UI_Gathering_NotSelected" text="尚未选择宾客。" />
-  <string id="AF_DIP_UI_Gathering_IdentityUnknown" text="身份未知" />
-  <string id="AF_DIP_UI_Gathering_Governor" text="总督" />
-  <string id="AF_DIP_UI_Gathering_Ruler" text="君主" />
-  <string id="AF_DIP_UI_Gathering_ClanLeader" text="族长" />
-  <string id="AF_DIP_UI_Gathering_Lady" text="女士" />
-  <string id="AF_DIP_UI_Gathering_Lord" text="领主" />
-  <string id="AF_DIP_UI_Gathering_IdentityHint" text="身份：{IDENTITY}" />
-  <string id="AF_DIP_UI_Gathering_IdentityHintGoverned" text="身份：{IDENTITY}&#10;管辖：{SETTLEMENT}" />
-  <string id="AF_DIP_UI_Gathering_UnknownClan" text="未知家族" />
-  <string id="AF_DIP_UI_Gathering_UnknownSettlement" text="未知定居点" />
-  <string id="AF_DIP_UI_Gathering_ClanHint" text="成员 {MEMBERS} 人；有独立部队 {MOVABLE} 人；可原版旅行赴宴 {TRAVEL} 人。" />
-  <string id="AF_DIP_UI_Gathering_EndPlayerCancelled" text="宴会已取消：你在{PLACE}举办的宴会已经散场。{REASON}" />
-  <string id="AF_DIP_UI_Gathering_EndPlayerFinished" text="宴会已结束：你在{PLACE}举办的宴会已经散场。" />
-  <string id="AF_DIP_UI_Gathering_EndNpcCancelled" text="宴会已取消：{HOST}在{PLACE}举办的宴会已经散场。{REASON}" />
-  <string id="AF_DIP_UI_Gathering_EndNpcFinished" text="宴会已结束：{HOST}在{PLACE}举办的宴会已经散场。" />
-  <string id="AF_DIP_UI_Gathering_Reason" text=" 原因：{REASON}" />
-  <string id="AF_DIP_UI_Gathering_DialogueHostOption" text="召开宴会" />
-  <string id="AF_DIP_UI_Gathering_DialogueCompanionOption" text="我想举办一场宴会，你帮我安排。" />
-  <string id="AF_DIP_UI_Gathering_DialogueGovernorResponse" text="我会为您准备名单与请柬。" />
-  <string id="AF_DIP_UI_Gathering_DialogueCompanionResponse" text="明白，我会按您的意思准备举办地和宾客名单。" />
-  <string id="AF_DIP_UI_Gathering_Disabled" text="宴会功能已在 MCM 中关闭。" />
-  <string id="AF_DIP_UI_Gathering_Created" text="宴会已发出邀请：{SETTLEMENT}，宾客 {GUESTS} 人，持续 {DAYS} 天" />
-  <string id="AF_DIP_UI_Gathering_DisabledCancelled" text="宴会功能已关闭，正在进行的宴会已经取消，主人和宾客将陆续返程。" />
-  <string id="AF_DIP_UI_Gathering_GuestArrived" text="{HERO}已抵达{SETTLEMENT}参加宴会。" />
-  <string id="AF_DIP_UI_Gathering_AttendanceReward" text="你参加了{HOST}的宴会，与主办方的好感提升了。" />
-  <string id="AF_DIP_UI_Gathering_CrisisWar" text="王国已经卷入战争，主办人决定取消宴会。" />
-  <string id="AF_DIP_UI_Gathering_CrisisSiege" text="王国内的{SETTLEMENT}正遭围攻，主办人决定取消宴会。" />
-  <string id="AF_DIP_UI_Gathering_NpcCreated" text="{HOST}将在{SETTLEMENT}举办宴会。" />
-  <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST}致{PLAYER}：&#10;&#10;我将在{SETTLEMENT}举办一场宴会，诚邀你前来赴宴。宴会预计持续至 {DATE}；若你愿意，到达举办地即可。" />
-  <string id="AF_DIP_UI_Gathering_SelectedGuestsMore" text="已选：{NAMES} 等 {COUNT} 人。" />
-  <string id="AF_DIP_UI_Gathering_SelectedGuestsExact" text="已选：{NAMES}" />
+    <string id="AF_DIP_UI_Gathering_NoHostSettlement" text="你的家族没有可作为举办地的城镇或城堡。" />
+    <string id="AF_DIP_UI_Gathering_NoVenue" text="没有可用举办地。" />
+    <string id="AF_DIP_UI_Gathering_VenueTitle" text="召开宴会：选择举办地" />
+    <string id="AF_DIP_UI_Gathering_VenueDescription" text="举办地必须是你的家族拥有的城镇或城堡。" />
+    <string id="AF_DIP_UI_Gathering_Next" text="下一步" />
+    <string id="AF_DIP_UI_Gathering_Cancel" text="取消" />
+    <string id="AF_DIP_UI_Gathering_VenueAvailable" text="可作为宴会举办地。" />
+    <string id="AF_DIP_UI_Gathering_NoClans" text="没有可邀请的贵族家族。" />
+    <string id="AF_DIP_UI_Gathering_ConfirmCurrent" text="确认当前名单（{COUNT}人）" />
+    <string id="AF_DIP_UI_Gathering_ClearList" text="清空已选名单" />
+    <string id="AF_DIP_UI_Gathering_ClearHint" text="重新选择宴会宾客。" />
+    <string id="AF_DIP_UI_Gathering_ClanSelected" text="已选 {COUNT}" />
+    <string id="AF_DIP_UI_Gathering_ClanSelectedHint" text="该家族已选宾客 {COUNT} 人。" />
+    <string id="AF_DIP_UI_Gathering_ClanTitle" text="召开宴会：选择家族" />
+    <string id="AF_DIP_UI_Gathering_ClanDescription" text="举办地：{SETTLEMENT}&#10;已选宾客：{COUNT} 人。&#10;请选择一个家族打开成员名单。" />
+    <string id="AF_DIP_UI_Gathering_NoHeroes" text="所选家族没有可显示的贵族成员。" />
+    <string id="AF_DIP_UI_Gathering_SelectedMarker" text="[已选] " />
+    <string id="AF_DIP_UI_Gathering_HeroLabel" text="[{CLAN}] {HERO}（{IDENTITY}）" />
+    <string id="AF_DIP_UI_Gathering_HeroHint" text="{HERO} / {CLAN}&#10;{IDENTITY}&#10;{STATE}" />
+    <string id="AF_DIP_UI_Gathering_AlreadyInList" text="已经在当前宴会名单中。" />
+    <string id="AF_DIP_UI_Gathering_CanInvite" text="可发出赴宴邀请；没有独立部队者将按原版旅行机制前往主办地。" />
+    <string id="AF_DIP_UI_Gathering_CannotInvite" text="不可邀请：{REASON}" />
+    <string id="AF_DIP_UI_Gathering_HeroTitle" text="召开宴会：选择宾客" />
+    <string id="AF_DIP_UI_Gathering_HeroDescription" text="家族：{CLAN}&#10;这是玩家举办的宴会，总督仍可邀请。有独立部队的人会直接被调度；留在城里的贵族、总督、无部队英雄会按原版旅行机制前往主办地，宴会结束后返回原驻留地。&#10;已选宾客：{COUNT} 人。" />
+    <string id="AF_DIP_UI_Gathering_AddToList" text="加入名单" />
+    <string id="AF_DIP_UI_Gathering_Back" text="返回" />
+    <string id="AF_DIP_UI_Gathering_NoGuests" text="宴会未召开：没有可邀请的宾客。" />
+    <string id="AF_DIP_UI_Gathering_ConfirmTitle" text="确认召开宴会" />
+    <string id="AF_DIP_UI_Gathering_ConfirmBody" text="举办地：{SETTLEMENT}&#10;费用：{COST} 第纳尔&#10;持续：{DAYS} 天&#10;宾客：{GUESTS} 人&#10;&#10;确认后将扣款并向宾客下达前往举办地的宴会邀请。" />
+    <string id="AF_DIP_UI_Gathering_PayAndInvite" text="支付并发出邀请" />
+    <string id="AF_DIP_UI_Gathering_NotSelected" text="尚未选择宾客。" />
+    <string id="AF_DIP_UI_Gathering_IdentityUnknown" text="身份未知" />
+    <string id="AF_DIP_UI_Gathering_Governor" text="总督" />
+    <string id="AF_DIP_UI_Gathering_Ruler" text="君主" />
+    <string id="AF_DIP_UI_Gathering_ClanLeader" text="族长" />
+    <string id="AF_DIP_UI_Gathering_Lady" text="女士" />
+    <string id="AF_DIP_UI_Gathering_Lord" text="领主" />
+    <string id="AF_DIP_UI_Gathering_IdentityHint" text="身份：{IDENTITY}" />
+    <string id="AF_DIP_UI_Gathering_IdentityHintGoverned" text="身份：{IDENTITY}&#10;管辖：{SETTLEMENT}" />
+    <string id="AF_DIP_UI_Gathering_UnknownClan" text="未知家族" />
+    <string id="AF_DIP_UI_Gathering_UnknownSettlement" text="未知定居点" />
+    <string id="AF_DIP_UI_Gathering_ClanHint" text="成员 {MEMBERS} 人；有独立部队 {MOVABLE} 人；可原版旅行赴宴 {TRAVEL} 人。" />
+    <string id="AF_DIP_UI_Gathering_EndPlayerCancelled" text="宴会已取消：你在{PLACE}举办的宴会已经散场。{REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndPlayerFinished" text="宴会已结束：你在{PLACE}举办的宴会已经散场。" />
+    <string id="AF_DIP_UI_Gathering_EndNpcCancelled" text="宴会已取消：{HOST}在{PLACE}举办的宴会已经散场。{REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndNpcFinished" text="宴会已结束：{HOST}在{PLACE}举办的宴会已经散场。" />
+    <string id="AF_DIP_UI_Gathering_Reason" text=" 原因：{REASON}" />
+    <string id="AF_DIP_UI_Gathering_DialogueHostOption" text="召开宴会" />
+    <string id="AF_DIP_UI_Gathering_DialogueCompanionOption" text="我想举办一场宴会，你帮我安排。" />
+    <string id="AF_DIP_UI_Gathering_DialogueGovernorResponse" text="我会为您准备名单与请柬。" />
+    <string id="AF_DIP_UI_Gathering_DialogueCompanionResponse" text="明白，我会按您的意思准备举办地和宾客名单。" />
+    <string id="AF_DIP_UI_Gathering_Disabled" text="宴会功能已在 MCM 中关闭。" />
+    <string id="AF_DIP_UI_Gathering_Created" text="宴会已发出邀请：{SETTLEMENT}，宾客 {GUESTS} 人，持续 {DAYS} 天" />
+    <string id="AF_DIP_UI_Gathering_DisabledCancelled" text="宴会功能已关闭，正在进行的宴会已经取消，主人和宾客将陆续返程。" />
+    <string id="AF_DIP_UI_Gathering_GuestArrived" text="{HERO}已抵达{SETTLEMENT}参加宴会。" />
+    <string id="AF_DIP_UI_Gathering_AttendanceReward" text="你参加了{HOST}的宴会，与主办方的好感提升了。" />
+    <string id="AF_DIP_UI_Gathering_CrisisWar" text="王国已经卷入战争，主办人决定取消宴会。" />
+    <string id="AF_DIP_UI_Gathering_CrisisSiege" text="王国内的{SETTLEMENT}正遭围攻，主办人决定取消宴会。" />
+    <string id="AF_DIP_UI_Gathering_NpcCreated" text="{HOST}将在{SETTLEMENT}举办宴会。" />
+    <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST}致{PLAYER}：&#10;&#10;我将在{SETTLEMENT}举办一场宴会，诚邀你前来赴宴。宴会预计持续至 {DATE}；若你愿意，到达举办地即可。" />
+    <string id="AF_DIP_UI_Gathering_SelectedGuestsMore" text="已选：{NAMES} 等 {COUNT} 人。" />
+    <string id="AF_DIP_UI_Gathering_SelectedGuestsExact" text="已选：{NAMES}" />
     <string id="AF_DIP_UI_KingdomProfile_ExportDirectoryEmpty" text="导出目录为空。" />
     <string id="AF_DIP_UI_KingdomProfile_ExportedCount" text="已导出国家卡 {COUNT} 条。" />
     <string id="AF_DIP_UI_KingdomProfile_ExportTargetNotFound" text="找不到要导出的国家。" />
@@ -454,7 +457,6 @@
     <string id="AF_DIP_UI_KingdomProfile_NoJsonObject" text="LLM 返回内容中没有 JSON 对象。" />
     <string id="AF_DIP_UI_KingdomProfile_MissingFields" text="LLM JSON 缺少 national_personality 或 long_term_strategy。" />
     <string id="AF_DIP_UI_KingdomProfile_JsonParseFailed" text="LLM JSON 解析失败：{ERROR}" />
-
     <string id="AF_DIP_UI_Vassalage_Terminal_NoKingdom" text="你尚未拥有王国。" />
     <string id="AF_DIP_UI_Vassalage_Terminal_NotRuler" text="你的当前王国：{KINGDOM}&#10;&#10;你不是该王国的国王，不能查阅宗主国臣属名册。" />
     <string id="AF_DIP_UI_Vassalage_Terminal_Description" text="宗主国：{KINGDOM}&#10;选择有贡赋义务的臣属国，查看贡赋入库记录。" />
@@ -553,7 +555,6 @@
     <string id="AF_DIP_UI_Annexation_SameKingdom" text="吞并未成立：不能吞并自己的王国。" />
     <string id="AF_DIP_UI_Annexation_TargetRulerRequired" text="吞并未成立：对方无权代表目标王国放弃王权。" />
     <string id="AF_DIP_UI_Annexation_VassalageEndedReason" text="{TARGET}已并入你的王国，旧臣属条约随之作废。" />
-    <!-- Kingdom CivilWar UI Strings -->
     <string id="AF_KINGDOM_CW_Action_AcceptedAgreementSettling" text="已接受的协议仍在结算，不能解散。" />
     <string id="AF_KINGDOM_CW_Action_AgreementAlreadyAccepted" text="协议已接受并进入结算，不能重复答复或撤回；等待安全重试。" />
     <string id="AF_KINGDOM_CW_Action_AgreementSettling" text="已有协议正在结算，不能改建派系。" />
@@ -860,7 +861,7 @@
     <string id="AF_KINGDOM_CW_Stability_High" text="高" />
     <string id="AF_KINGDOM_CW_Stability_Poor" text="较弱" />
     <string id="AF_KINGDOM_CW_Stability_VeryPoor" text="微弱" />
-      <string id="AF_DIP_UI_Vassalage_TypeTributary" text="朝贡国" />
+    <string id="AF_DIP_UI_Vassalage_TypeTributary" text="朝贡国" />
     <string id="AF_DIP_UI_Vassalage_TypeGarrison" text="卫戍国" />
     <string id="AF_DIP_UI_Vassalage_TypeVassal" text="附庸国" />
     <string id="AF_DIP_UI_Vassalage_SubjectWarNoticeName" text="你的{TYPE}{KINGDOM}" />
@@ -1064,5 +1065,119 @@
     <string id="AF_KINGDOM_CW_Outcome_RebelsUsurp" text="叛军夺取王位" />
     <string id="AF_DIP_UI_Notice_ThirdPartyReceived" text="【第三方外交消息】{TITLE}。消息已传至本国，可在王国公告中查看全文。" />
     <string id="AF_DIP_UI_Notice_PlayerCourtDelivery" text="你的宣言已传播至{RECEIVER}。" />
-</strings>
+    <string id="AF_DIP_UI_StandingNoChange" text="无变化" />
+    <string id="AF_DIP_UI_StandingUpperBound" text="已达上限100" />
+    <string id="AF_DIP_UI_StandingLowerBound" text="已达下限0" />
+    <string id="AF_DIP_UI_StandingBoundaryNoChange" text="数值边界未产生实际位移" />
+    <string id="AF_DIP_UI_StandingNoActualChangePrefix" text="无实际变化（评价" />
+    <string id="AF_DIP_Source_072" text="外交公告" />
+    <string id="AF_DIP_Source_073" text="谈判催促" />
+    <string id="AF_DIP_Source_074" text="复合外交宣言" />
+    <string id="AF_DIP_Source_075" text="宣战告知" />
+    <string id="AF_DIP_Source_076" text="和平申请" />
+    <string id="AF_DIP_Source_077" text="和平回应" />
+    <string id="AF_DIP_Source_078" text="和平拒绝" />
+    <string id="AF_DIP_Source_079" text="同盟申请" />
+    <string id="AF_DIP_Source_080" text="同盟回应" />
+    <string id="AF_DIP_Source_081" text="同盟拒绝" />
+    <string id="AF_DIP_Source_082" text="解盟告知" />
+    <string id="AF_DIP_Source_083" text="贸易申请" />
+    <string id="AF_DIP_Source_084" text="贸易回应" />
+    <string id="AF_DIP_Source_085" text="贸易拒绝" />
+    <string id="AF_DIP_Source_086" text="贸易终止" />
+    <string id="AF_DIP_Source_087" text="臣属国独立告知" />
+    <string id="AF_DIP_Source_088" text="退让" />
+    <string id="AF_DIP_Source_089" text="最后通牒" />
+    <string id="AF_DIP_Source_090" text="谴责" />
+    <string id="AF_DIP_Source_091" text="公开谴责" />
+    <string id="AF_DIP_Source_092" text="外交致歉" />
+    <string id="AF_DIP_Source_093" text="外交让步" />
+    <string id="AF_DIP_Source_094" text="谈判回应" />
+    <string id="AF_DIP_Source_095" text="谈判等待" />
+    <string id="AF_DIP_Source_118" text="发布外交宣言" />
+    <string id="AF_DIP_Source_119" text="外交宣言" />
+    <string id="AF_DIP_Source_136" text="点击查看外交宣言。" />
+    <string id="AF_DIP_Source_137" text="。点击查看全文。" />
+    <!-- Player drafting UI error notices -->
+    <string id="AF_DIP_UI_Compose_DraftNeedBody" text="请先写下标题或拟文要点。" />
+    <string id="AF_DIP_UI_Compose_DraftStaleWindow" text="当前拟文窗口已因读档失效，请重新打开。" />
+    <string id="AF_DIP_UI_Compose_DraftApiMissing" text="书记官暂时无法拟稿，请检查外交使用的事件/叛乱API或主API设置。" />
+    <string id="AF_DIP_UI_Compose_DraftIncomplete" text="书记官未能返回完整稿件，原文已保留。请重试。" />
+    <string id="AF_DIP_UI_Compose_DraftFormatError" text="书记官返回的稿件格式不正确，原文已保留。请重试。" />
+    <string id="AF_DIP_UI_Compose_DraftTooLong" text="稿件过长，原文已保留。请调整外交字数设置后重试。" />
+    <string id="AF_DIP_UI_Compose_DraftLengthMismatch" text="稿件未符合外交字数设置（{MIN}—{MAX}字），原文已保留。请重试或调整设置。" />
+    <string id="AF_DIP_UI_Compose_DraftTruncated" text="稿件因输出上限被截断，原文已保留。请调整外交字数或API输出上限。" />
+    <!-- Document Execution Notifications -->
+    <string id="AF_DIP_UI_DocExec_MustContainAction" text="外交宣言没有发布：正文必须明确包含一项可执行的外交动作。" />
+    <string id="AF_DIP_UI_DocExec_IncompatibleAction" text="外交宣言没有发布：正文中的外交动作与当前真实状态不相容。" />
+    <string id="AF_DIP_UI_DocExec_CapacityReached" text="外交宣言没有发布：本次外交事件已无法再加入新的处理国。" />
+    <string id="AF_DIP_UI_DocExec_MustRespondPeace" text="外交宣言没有发布：本篇必须先接受或拒绝当前和平原案。" />
+    <!-- Orchestration Notifications -->
+    <string id="AF_DIP_UI_Orch_DailyQuotaUsed" text="外交今日请求额度已用完；你的宣言已公开，尚未完成的回应已保留，将在下一游戏日继续。" />
+    <string id="AF_DIP_UI_Orch_ProcessingIncomplete" text="外交宣言已发布，但外交处理未完整结束，请查看公文结果并核对当前局势。" />
+    <string id="AF_DIP_UI_Orch_SourceAuthorUnavailable" text="你的原宣言所属王国已不存在，尚未答复的外交回应已停止；旧承诺不会转给宗主国。" />
+    <string id="AF_DIP_UI_Orch_SourceOrTargetUnavailable" text="原宣言或回应国已不存在，尚未完成的回应已停止。请查看原公文与当前外交局势。" />
+    <string id="AF_DIP_UI_Orch_TargetUnavailable" text="宣言的原回应国已不存在；该国回应无法继续。" />
+    <string id="AF_DIP_UI_Orch_ResponsesEndedUnresolved" text="后续外交回应已结束，但仍有国家未能答复；原宣言和未完成记录已保留，可重新发布宣言，不会恢复旧提议。" />
+    <string id="AF_DIP_UI_Orch_RoundTransitionFollowup" text="原外交交涉已结束；尚未回应你的宣言已转入优先后续回应。" />
+    <string id="AF_DIP_UI_Gathering_CancelPlayerReason" text="玩家命令{HERO}立即散宴。" />
+    <string id="AF_DIP_UI_Gathering_CancelPlayerStatus" text="{HERO}已经遵照你的命令取消了在{SETTLEMENT}举办的宴会。" />
+    <string id="AF_DIP_UI_Gathering_CancelNpcReason" text="{HERO}接受玩家劝说后决定散宴。" />
+    <string id="AF_DIP_UI_Gathering_CancelNpcStatus" text="{HERO}已经接受你的劝说，取消了在{SETTLEMENT}举办的宴会。" />
+    <string id="AF_DIP_UI_Gathering_NeedGold" text="宴会无法召开：你需要 {COST} 第纳尔。" />
+    <string id="AF_DIP_UI_Gathering_Cooldown" text="宴会筹备尚在冷却中，还需要约 {DAYS} 天。" />
+    <string id="AF_DIP_UI_Gathering_TravellingTo" text="正在旅行至{SETTLEMENT}" />
+    <string id="AF_DIP_UI_Gathering_NativeTravelFailed" text="原版旅行下达失败：{ERROR}" />
+    <string id="AF_DIP_UI_Gathering_MovementCheckFailed" text="移动检查失败：{ERROR}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartTitle" text="贵族宴会举办 - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyAttendanceTitle" text="重要贵族赴宴 - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyCancelTitle" text="贵族宴会取消 - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_ReasonSuffix" text=" 原因：{REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndElapsed" text="宴会已经结束。" />
+    <string id="AF_DIP_UI_Gathering_EndInvalid" text="宴会因主办方或举办地失效而结束。" />
+    <string id="AF_DIP_UI_Gathering_DisabledReason" text="宴会功能已在 MCM 中关闭。" />
+    <string id="AF_DIP_UI_Gathering_WorldCommandsUnavailable" text="大地图命令系统未初始化。" />
+    <string id="AF_DIP_UI_Gathering_HostOriginMissing" text="找不到主办人的原始所在城。" />
+    <string id="AF_DIP_UI_Gathering_GuestOriginMissing" text="找不到宾客的原始所在城。" />
+    <string id="AF_DIP_UI_Gathering_Travelling" text="正在旅行" />
+    <string id="AF_DIP_UI_Gathering_HasParty" text="已有部队" />
+    <string id="AF_DIP_UI_Gathering_CannotMove" text="当前无法移动至定居点" />
+    <string id="AF_DIP_UI_Gathering_Unavailable" text="宴会系统未初始化。" />
+    <string id="AF_DIP_UI_Gathering_InvalidTag" text="宴会指令未执行：标签参数无法解析。" />
+    <string id="AF_DIP_UI_Gathering_CancelMissing" text="取消宴会失败：目标宴会不存在或已经结束。" />
+    <string id="AF_DIP_UI_Gathering_CancelUnauthorizedDelegate" text="取消宴会失败：当前对话对象不是你的总督或同伴，不能代你执行散宴命令。" />
+    <string id="AF_DIP_UI_Gathering_CancelUnauthorizedHost" text="取消宴会失败：只有宴会主人本人才能接受劝说并取消这场宴会。" />
+    <string id="AF_DIP_UI_Gathering_NoResolvedGuests" text="宴会未召开：没有解析到可赴宴宾客。" />
+    <string id="AF_DIP_UI_Gathering_InvalidHero" text="无效人物" />
+    <string id="AF_DIP_UI_Gathering_NotSpawned" text="尚未出现在世界" />
+    <string id="AF_DIP_UI_Gathering_UnderEighteen" text="未满十八岁" />
+    <string id="AF_DIP_UI_Gathering_ChildOrUnborn" text="未成年或未出世" />
+    <string id="AF_DIP_UI_Gathering_CannotHostDisabled" text="宴会无法召开：宴会功能已在 MCM 中关闭。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostVenue" text="宴会无法召开：必须选择有效城镇或城堡。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostLeader" text="宴会无法召开：只有家族族长能够作为宴会主人。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostOwnership" text="宴会无法召开：主办地必须是你自己家族拥有的定居点。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostSiege" text="宴会无法召开：该定居点正在被围攻。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostActive" text="宴会无法召开：你已经有一场正在进行的宴会。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostOccupied" text="宴会无法召开：该定居点已有正在进行的宴会。" />
+    <string id="AF_DIP_UI_Gathering_Prisoner" text="被俘" />
+    <string id="AF_DIP_UI_Gathering_Wounded" text="重伤" />
+    <string id="AF_DIP_UI_Gathering_NoIndependentParty" text="没有独立部队" />
+    <string id="AF_DIP_UI_Gathering_InArmy" text="正在军团中" />
+    <string id="AF_DIP_UI_Gathering_InBattleOrSiege" text="正在战斗或围城" />
+    <string id="AF_DIP_UI_Gathering_HasNonIndependentParty" text="已有非独立部队或正处于部队中" />
+    <string id="AF_DIP_UI_Gathering_OriginMissing" text="找不到原始所在城" />
+    <string id="AF_DIP_UI_Gathering_CannotHostInvalidGovernor" text="宴会无法召开：当前对话对象不是有效总督。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostNotGovernor" text="宴会无法召开：当前对话对象不是总督。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostGovernorOwnership" text="宴会无法召开：该总督管理的定居点不属于你的家族。" />
+    <string id="AF_DIP_UI_Gathering_RoleKing" text="国王" />
+    <string id="AF_DIP_UI_Gathering_RoleClanLeader" text="家族族长" />
+    <string id="AF_DIP_UI_Gathering_RoleNoble" text="贵族" />
+    <string id="AF_DIP_UI_Gathering_UnknownHero" text="未知贵族" />
+    <string id="AF_DIP_UI_Gathering_ListSeparator" text="、" />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartWithGuests" text="{HOST}（{ROLE}）在{SETTLEMENT}举办了一场贵族宴会，宴会计划持续{DAYS}天。 已接受邀请的重要宾客包括：{GUESTS}。 这是已经实际发出邀请并开始执行的宴会事件，不是未经证实的计划；尚未抵达的宾客只能写作接受邀请或准备赴宴。" />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartWithoutGuests" text="{HOST}（{ROLE}）在{SETTLEMENT}举办了一场贵族宴会，宴会计划持续{DAYS}天。 这是已经实际发出邀请并开始执行的宴会事件，不是未经证实的计划；尚未抵达的宾客只能写作接受邀请或准备赴宴。" />
+    <string id="AF_DIP_UI_Gathering_WeeklyAttendance" text="{HERO}（{ROLE}）已经实际抵达{SETTLEMENT}，参加了{HOST}举办的贵族宴会。这是一项已经发生的出席事实，可以写入本周王国纪事。" />
+    <string id="AF_DIP_UI_Gathering_WeeklyCancel" text="{HOST}取消了自己在{SETTLEMENT}举办的贵族宴会，宾客已经散去。{REASON}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyNameRole" text="{HERO}（{ROLE}）" />
+  </strings>
 </base>

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.IO;
-using System.Reflection;
 using ExportImportScope = AnimusForge.MyBehavior.ExportImportScope;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
@@ -56,34 +55,9 @@ internal sealed class PersonaEditorPort
 }
 internal sealed class PersonaEditorController
 {
-	private static readonly Type LocalizedTextObjectType = Type.GetType("TaleWorlds.Localization.TextObject, TaleWorlds.Localization");
-	private static readonly ConstructorInfo LocalizedTextObjectConstructor = LocalizedTextObjectType?.GetConstructor(new[] { typeof(string) });
-	private static readonly MethodInfo SetTextVariableMethod = LocalizedTextObjectType?.GetMethod("SetTextVariable", new[] { typeof(string), typeof(object) })
-		?? LocalizedTextObjectType?.GetMethod("SetTextVariable", new[] { typeof(string), typeof(string) });
-
 	private static string Localize(string id, string fallback, params (string Name, string Value)[] variables)
 	{
-		if (LocalizedTextObjectConstructor == null)
-		{
-			string result = fallback;
-			if (variables != null)
-			{
-				foreach (var variable in variables)
-				{
-					result = result.Replace("{" + variable.Name + "}", variable.Value ?? string.Empty);
-				}
-			}
-			return result;
-		}
-		object text = LocalizedTextObjectConstructor.Invoke(new object[] { $"{{={id}}}{fallback}" });
-		if (variables != null)
-		{
-			foreach (var variable in variables)
-			{
-				SetTextVariableMethod?.Invoke(text, new object[] { variable.Name, variable.Value ?? string.Empty });
-			}
-		}
-		return text.ToString();
+		return EventEditorUiText.T(id, fallback, variables);
 	}
 
  private readonly PersonaEditorPort _port;

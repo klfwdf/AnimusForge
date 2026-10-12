@@ -18,9 +18,16 @@ public static class SiegeCastleSoldierReactionProfile
     public const uint NeedMessageColor = 0xFFFFD27Fu;
     public const uint AppeasedMessageColor = 0xFFB6F7A8u;
 
-    public const string NeedMemoryTitle = "城堡战俘处置后的军心不满";
-    public const string AppeasementMemoryTitle = "城堡安兵";
-    public const string PenaltyMemoryTitle = "城堡战俘处置军心受损";
+    public const string NeedMemoryTitle = "Castle prisoner disposition morale discontent";
+    public const string NeedMemoryTitleEn = "Castle prisoner disposition morale concern";
+    public const string AppeasementMemoryTitle = "Castle soldier appeasement";
+    public const string AppeasementMemoryTitleEn = "Castle soldier appeasement";
+    public const string PenaltyMemoryTitle = "Castle prisoner disposition morale penalty";
+    public const string PenaltyMemoryTitleEn = "Castle prisoner disposition morale penalty";
+
+    public static string GetNeedMemoryTitle(bool isEnglish) => isEnglish ? NeedMemoryTitleEn : NeedMemoryTitle;
+    public static string GetAppeasementMemoryTitle(bool isEnglish) => isEnglish ? AppeasementMemoryTitleEn : AppeasementMemoryTitle;
+    public static string GetPenaltyMemoryTitle(bool isEnglish) => isEnglish ? PenaltyMemoryTitleEn : PenaltyMemoryTitle;
 
     public static bool CanReactTo(SiegeCastleActionKind action)
     {
@@ -81,27 +88,61 @@ public static class SiegeCastleSoldierReactionProfile
         SiegeCastleActionKind action,
         int affectedRegularPrisoners,
         bool sameCulture)
+        => BuildWitnessFact(playerName, action, affectedRegularPrisoners, sameCulture, false);
+
+    public static string BuildWitnessFact(
+        string playerName,
+        SiegeCastleActionKind action,
+        int affectedRegularPrisoners,
+        bool sameCulture,
+        bool isEnglish)
     {
-        string commander = string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName.Trim();
-        return "【城堡处置见证反应】" + commander + "刚刚决定对 "
-            + Clamp(affectedRegularPrisoners) + " 名战俘执行“" + DescribeConcernAction(action)
-            + "”。请只按你自己的性格、军纪观、双方文化和现场经历自由评论；可以赞同、中立、疑虑或不满，但不得抗命。"
-            + (sameCulture ? "你与受处置战俘中至少一部分同文化，应真实考虑这种身份冲突。" : string.Empty)
+        string commander = string.IsNullOrWhiteSpace(playerName) ? (isEnglish ? "The player" : CastleAftermathCompatibilityTexts.Raw("player_fallback")) : playerName.Trim();
+        if (isEnglish)
+        {
+            return "[CASTLE DISPOSITION WITNESS REACTION] " + commander + " just decided to execute '"
+                + DescribeConcernAction(action, true) + "' on " + Clamp(affectedRegularPrisoners)
+                + " prisoners. Comment freely according only to your personality, discipline view, shared culture, and firsthand observations; you may agree, stay neutral, question, or show discontent, but cannot disobey orders. "
+                + (sameCulture ? "You share culture with at least some affected captives; realistically consider this identity conflict. " : string.Empty)
+                + (SiegeCastleActionKindProfile.IsRecruitment(action)
+                    ? "Enlisting defeated enemy troops into the party creates real soldier unrest; your line should clearly show at least one concern or dissatisfaction. "
+                    : "Do not force discontent merely to trigger mechanics; if you approve, you may agree directly. ")
+                + "This is a free reaction; do not propose or execute new prisoner dispositions.";
+        }
+        return CastleAftermathCompatibilityTexts.Raw("soldier_reaction_witness_title") + commander + CastleAftermathCompatibilityTexts.Raw("soldier_reaction_witness_decided")
+            + Clamp(affectedRegularPrisoners) + CastleAftermathCompatibilityTexts.Raw("soldier_reaction_witness_count") + DescribeConcernAction(action)
+            + CastleAftermathCompatibilityTexts.Raw("soldier_reaction_witness_comment")
+            + (sameCulture ? CastleAftermathCompatibilityTexts.Raw("soldier_reaction_witness_culture") : string.Empty)
             + (SiegeCastleActionKindProfile.IsRecruitment(action)
-                ? "把战败敌兵编入本军必然使随军士兵产生现实军心压力，你的发言应明确表现至少一种担忧或不满。"
-                : "不要为了触发机制而强行不满；若你认可该决定，可以直接赞同。")
-            + "这只是一次自由发言，不得提出或结算新的战俘处置。";
+                ? CastleAftermathCompatibilityTexts.Raw("soldier_reaction_witness_recruit")
+                : CastleAftermathCompatibilityTexts.Raw("soldier_reaction_witness_no_force"))
+            + CastleAftermathCompatibilityTexts.Raw("soldier_reaction_witness_free_speech");
     }
 
     public static string BuildNeedMessage(
         SiegeCastleActionKind action,
         int affectedRegularPrisoners,
         int pendingPenalty)
+        => BuildNeedMessage(action, affectedRegularPrisoners, pendingPenalty, false);
+
+    public static string BuildNeedMessage(
+        SiegeCastleActionKind action,
+        int affectedRegularPrisoners,
+        int pendingPenalty,
+        bool isEnglish)
     {
-        return "【城堡处置】随军士兵对“" + DescribeConcernAction(action) + "”"
-            + Clamp(affectedRegularPrisoners) + " 名战俘表达了不满；离场前可直接安抚，否则部队士气 -"
+        if (isEnglish)
+        {
+            return "[Castle aftermath] Escort soldiers voiced concern regarding '" + DescribeConcernAction(action, true) + "' for "
+                + Clamp(affectedRegularPrisoners) + " prisoners; appease directly before leaving, otherwise party morale -"
+                + Clamp(pendingPenalty)
+                + (SiegeCastleActionKindProfile.IsRecruitment(action) ? " (recruitment scaled by actual recruits at departure)" : string.Empty)
+                + ".";
+        }
+        return CastleAftermathCompatibilityTexts.Raw("soldier_reaction_msg_prefix") + DescribeConcernAction(action) + CastleAftermathCompatibilityTexts.Raw("soldier_reaction_msg_quote")
+            + Clamp(affectedRegularPrisoners) + CastleAftermathCompatibilityTexts.Raw("soldier_reaction_msg_middle")
             + Clamp(pendingPenalty)
-            + (SiegeCastleActionKindProfile.IsRecruitment(action) ? "（收编部分按离场时实际入队人数折算）" : string.Empty)
+            + (SiegeCastleActionKindProfile.IsRecruitment(action) ? CastleAftermathCompatibilityTexts.Raw("soldier_reaction_msg_recruit_note") : string.Empty)
             + "。";
     }
 
@@ -109,51 +150,114 @@ public static class SiegeCastleSoldierReactionProfile
         SiegeCastleActionKind action,
         int affectedRegularPrisoners,
         int pendingPenalty)
+        => BuildNeedMemoryText(action, affectedRegularPrisoners, pendingPenalty, false);
+
+    public static string BuildNeedMemoryText(
+        SiegeCastleActionKind action,
+        int affectedRegularPrisoners,
+        int pendingPenalty,
+        bool isEnglish)
     {
-        return "玩家在城堡处置现场决定以“" + DescribeConcernAction(action) + "”处理 "
-            + Clamp(affectedRegularPrisoners) + " 名战败守军；一名随军士兵明确表达不满，当前待安抚士气惩罚为 "
+        if (isEnglish)
+        {
+            return "The player decided to handle " + Clamp(affectedRegularPrisoners) + " defeated garrison troops with '"
+                + DescribeConcernAction(action, true) + "'; an escort soldier clearly voiced discontent, pending morale penalty is "
+                + Clamp(pendingPenalty) + ".";
+        }
+        return CastleAftermathCompatibilityTexts.Raw("soldier_reaction_memory_prefix") + DescribeConcernAction(action) + CastleAftermathCompatibilityTexts.Raw("soldier_reaction_memory_action")
+            + Clamp(affectedRegularPrisoners) + CastleAftermathCompatibilityTexts.Raw("soldier_reaction_memory_penalty")
             + Clamp(pendingPenalty) + "。";
     }
 
     public static string BuildAppeasementMessage(int avoidedPenalty)
+        => BuildAppeasementMessage(avoidedPenalty, false);
+
+    public static string BuildAppeasementMessage(int avoidedPenalty, bool isEnglish)
     {
-        return "【城堡处置】己方士兵接受了玩家的解释、补偿与军令，已免除本次待结算的 -"
-            + Clamp(avoidedPenalty) + " 士气。";
+        if (isEnglish)
+        {
+            return "[Castle aftermath] Allied soldiers accepted the player\u0027s explanation, compensation, and orders; avoided -"
+                + Clamp(avoidedPenalty) + " morale.";
+        }
+        return CastleAftermathCompatibilityTexts.Raw("soldier_reaction_avoid_prefix")
+            + Clamp(avoidedPenalty) + CastleAftermathCompatibilityTexts.Raw("soldier_reaction_avoid_suffix");
     }
 
     public static string BuildAppeasementMemoryText(int avoidedPenalty)
+        => BuildAppeasementMemoryText(avoidedPenalty, false);
+
+    public static string BuildAppeasementMemoryText(int avoidedPenalty, bool isEnglish)
     {
-        return "玩家在城堡处置现场直接安抚了表达不满的随军士兵，避免部队士气降低 "
+        if (isEnglish)
+        {
+            return "The player directly appeased discontented escort soldiers on-site, preventing party morale from dropping "
+                + Clamp(avoidedPenalty) + ".";
+        }
+        return CastleAftermathCompatibilityTexts.Raw("soldier_reaction_avoid_memory")
             + Clamp(avoidedPenalty) + "。";
     }
 
     public static string BuildPenaltyMemoryText(int penalty)
+        => BuildPenaltyMemoryText(penalty, false);
+
+    public static string BuildPenaltyMemoryText(int penalty, bool isEnglish)
     {
-        return "玩家离开城堡前没有安抚对战俘处置表达不满的随军士兵，部队士气降低 "
+        if (isEnglish)
+        {
+            return "The player did not appease escort soldiers who expressed concern over prisoner disposition before leaving; party morale decreased by "
+                + Clamp(penalty) + ".";
+        }
+        return CastleAftermathCompatibilityTexts.Raw("soldier_reaction_penalty_memory_text")
             + Clamp(penalty) + "。";
     }
 
     public static string DescribeConcernAction(SiegeCastleActionKind action)
+        => DescribeConcernAction(action, false);
+
+    public static string DescribeConcernAction(SiegeCastleActionKind action, bool isEnglish)
     {
+        if (isEnglish)
+        {
+            return action switch
+            {
+                SiegeCastleActionKind.TreatPrisoners => "treating prisoners",
+                SiegeCastleActionKind.ReceiveArmaments => "confiscating prisoner arms",
+                SiegeCastleActionKind.ReleasePrisoners => "releasing prisoners",
+                SiegeCastleActionKind.SlaughterPrisoners => "slaughtering prisoners",
+                SiegeCastleActionKind.SellPrisoners => "selling prisoners",
+                SiegeCastleActionKind.LaborPrisonersVoluntary => "voluntary penal labor",
+                SiegeCastleActionKind.LaborPrisonersForced => "forced penal labor",
+                SiegeCastleActionKind.RepairCastleLaborVoluntary => "voluntary castle repair",
+                SiegeCastleActionKind.RepairCastleLaborForced => "forced castle repair",
+                SiegeCastleActionKind.InstructorPrisonersVoluntary => "voluntary instructors",
+                SiegeCastleActionKind.InstructorPrisonersForced => "forced instructors",
+                SiegeCastleActionKind.RecruitPrisonersVoluntary => "voluntary recruitment",
+                SiegeCastleActionKind.RecruitPrisonersForced => "forced recruitment",
+                SiegeCastleActionKind.RecruitLord => "recruiting captive lord",
+                SiegeCastleActionKind.SellLord => "selling captive lord",
+                SiegeCastleActionKind.ExecuteLord => "executing captive lord",
+                _ => "prisoner disposition"
+            };
+        }
         return action switch
         {
-            SiegeCastleActionKind.TreatPrisoners => "善待俘虏",
-            SiegeCastleActionKind.ReceiveArmaments => "收缴俘虏军械",
-            SiegeCastleActionKind.ReleasePrisoners => "释放战俘",
-            SiegeCastleActionKind.SlaughterPrisoners => "屠戮战俘",
-            SiegeCastleActionKind.SellPrisoners => "贩卖战俘",
-            SiegeCastleActionKind.LaborPrisonersVoluntary => "自愿劳役",
-            SiegeCastleActionKind.LaborPrisonersForced => "强制劳役",
-            SiegeCastleActionKind.RepairCastleLaborVoluntary => "自愿修缮城堡",
-            SiegeCastleActionKind.RepairCastleLaborForced => "强制修缮城堡",
-            SiegeCastleActionKind.InstructorPrisonersVoluntary => "自愿担任教官",
-            SiegeCastleActionKind.InstructorPrisonersForced => "强迫担任教官",
-            SiegeCastleActionKind.RecruitPrisonersVoluntary => "自愿收编",
-            SiegeCastleActionKind.RecruitPrisonersForced => "强制收编",
-            SiegeCastleActionKind.RecruitLord => "招揽被俘领主",
-            SiegeCastleActionKind.SellLord => "贩卖被俘领主",
-            SiegeCastleActionKind.ExecuteLord => "处决被俘领主",
-            _ => "处置战俘"
+            SiegeCastleActionKind.TreatPrisoners => CastleAftermathCompatibilityTexts.Raw("effect_treat"),
+            SiegeCastleActionKind.ReceiveArmaments => CastleAftermathCompatibilityTexts.Raw("effect_receive_armaments"),
+            SiegeCastleActionKind.ReleasePrisoners => CastleAftermathCompatibilityTexts.Raw("effect_release"),
+            SiegeCastleActionKind.SlaughterPrisoners => CastleAftermathCompatibilityTexts.Raw("effect_slaughter"),
+            SiegeCastleActionKind.SellPrisoners => CastleAftermathCompatibilityTexts.Raw("effect_sell"),
+            SiegeCastleActionKind.LaborPrisonersVoluntary => CastleAftermathCompatibilityTexts.Raw("staging_labor_voluntary"),
+            SiegeCastleActionKind.LaborPrisonersForced => CastleAftermathCompatibilityTexts.Raw("staging_labor_forced"),
+            SiegeCastleActionKind.RepairCastleLaborVoluntary => CastleAftermathCompatibilityTexts.Raw("staging_repair_voluntary"),
+            SiegeCastleActionKind.RepairCastleLaborForced => CastleAftermathCompatibilityTexts.Raw("staging_repair_forced"),
+            SiegeCastleActionKind.InstructorPrisonersVoluntary => CastleAftermathCompatibilityTexts.Raw("staging_instructor_voluntary"),
+            SiegeCastleActionKind.InstructorPrisonersForced => CastleAftermathCompatibilityTexts.Raw("staging_instructor_forced"),
+            SiegeCastleActionKind.RecruitPrisonersVoluntary => CastleAftermathCompatibilityTexts.Raw("effect_recruit_voluntary"),
+            SiegeCastleActionKind.RecruitPrisonersForced => CastleAftermathCompatibilityTexts.Raw("effect_recruit_forced"),
+            SiegeCastleActionKind.RecruitLord => CastleAftermathCompatibilityTexts.Raw("concern_recruit_lord"),
+            SiegeCastleActionKind.SellLord => CastleAftermathCompatibilityTexts.Raw("concern_sell_lord"),
+            SiegeCastleActionKind.ExecuteLord => CastleAftermathCompatibilityTexts.Raw("concern_execute_lord"),
+            _ => CastleAftermathCompatibilityTexts.Raw("concern_default")
         };
     }
 

@@ -590,7 +590,7 @@ internal sealed class KnowledgeRuleIndex
 					if (!string.IsNullOrWhiteSpace(text))
 					{
 						AddSemanticSeed(list, seen, text, 120);
-						AddSemanticSeed(list, seen, "关于" + text, 160);
+						AddSemanticSeed(list, seen, KnowledgePromptTexts.Get("KN_Prompt_052", "about ") + text, 160);
 					}
 				}
 			}

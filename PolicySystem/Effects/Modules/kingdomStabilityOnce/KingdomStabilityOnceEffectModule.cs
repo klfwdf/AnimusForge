@@ -21,11 +21,12 @@ internal sealed class KingdomStabilityOnceEffectModule : NumericPolicyEffectModu
 		allowedScopes: new[] { PolicyEffectScopes.Kingdom, PolicyEffectScopes.Vassal },
 		allowedSelectorKinds: new[] { PolicyEffectTargetKind.Kingdom },
 		targetKinds: new[] { PolicyEffectTargetKind.Kingdom },
-		cueTerms: new[] { "稳定度", "政局稳定", "中央权威", "国家动荡", "叛乱风险", "制度冲击", "政治危机" },
-		retrievalText: "王国稳定度、政局稳定、中央权威、国家动荡、叛乱风险、制度冲击、政治危机；政策正式生效时的一次性王国稳定度变化，地方政策不可用。",
-		catalogSummary: "政策生效时一次性王国稳定度变化",
-		mainInstruction: "政策若会在正式生效时直接造成王国层面的政治稳定或动荡冲击，请在 numericIntent 中说明目标、方向、强弱与理由；地方政策不可用，不要输出模块 ID 或数值。",
-		postprocessRule: "目标王国正式生效时一次性稳定度变化，正数提高、负数降低，最终 changes 值必须是整数；只用于王国或附庸国政策，地方政策禁止，不随持续天数每日累加，也不按城镇数量叠加。纯行政或普通地方数值变化通常为 0；明显改变民众信心、财政威望、封臣信任或王权合法性通常 ±4～7，重大改革、全国动员、贵族冲突或严重危机 ±7～14，内战边缘、国家存亡、体系崩溃或决定性胜利通常 ±14～22；极端且直接支持时可相称更高。",
+		cueTerms: new[] { PolicyCompatibilityTexts.Get("Module_kingdomStabilityOnce_Original_10"), PolicyCompatibilityTexts.Get("Module_kingdomStabilityOnce_Original_11"), PolicyCompatibilityTexts.Get("Module_kingdomStabilityOnce_Original_12"), PolicyCompatibilityTexts.Get("Module_kingdomStabilityOnce_Original_13"), PolicyCompatibilityTexts.Get("Module_kingdomStabilityOnce_Original_14"), PolicyCompatibilityTexts.Get("Module_kingdomStabilityOnce_Original_15"), PolicyCompatibilityTexts.Get("Module_kingdomStabilityOnce_Original_16") },
+		retrievalText: PolicyGenerationPromptTexts.Get("Module_kingdomStabilityOnce_retrievalText", "Kingdom stability, political stability, central authority, national unrest, rebellion risk, institutional shock, and political crises; a one-time kingdom stability change when the policy formally takes effect. Not available to local policies."),
+		catalogSummary: PolicyGenerationPromptTexts.Get("Module_kingdomStabilityOnce_catalogSummary", "One-time kingdom stability on policy activation"),
+		playerDisplayName: PolicyCompatibilityTexts.Get("Module_kingdomStabilityOnce_OriginalName"),
+		mainInstruction: PolicyGenerationPromptTexts.Get("Module_kingdomStabilityOnce_mainInstruction", "If the policy directly creates a kingdom-level shock to political stability or unrest when it formally takes effect, describe the target, direction, intensity, and reason in numericIntent. Local policies cannot use it. Do not output module IDs or values."),
+		postprocessRule: PolicyGenerationPromptTexts.Get("Module_kingdomStabilityOnce_postprocessRule", "A one-time stability change when the policy formally takes effect in the target kingdom. Positive values raise stability and negative values lower it; the final changes value must be an integer. Only kingdom or vassal policies may use it; local policies may not. It does not accumulate daily over the duration or stack by town count. Pure administration or ordinary local numeric changes usually warrant 0. Clear changes to public confidence, fiscal prestige, vassal trust, or royal legitimacy usually warrant ±4 to 7; major reforms, national mobilization, noble conflict, or severe crises warrant ±7 to 14; the brink of civil war, national survival, systemic collapse, or decisive victory usually warrant ±14 to 22. Extreme cases with direct support may be proportionately higher."),
 		payloadPromptSchema: PolicyEffectPayloadSchemas.CreateNumericValueSchema(),
 		family: PolicyEffectFamily.Stability,
 		executionKind: PolicyEffectExecutionKind.OneShot,
@@ -49,12 +50,12 @@ internal sealed class KingdomStabilityOnceEffectModule : NumericPolicyEffectModu
 		error = string.Empty;
 		if (string.Equals(scope, PolicyEffectScopes.Local, StringComparison.OrdinalIgnoreCase))
 		{
-			error = "kingdomStabilityOnce 不支持地方政策作用域";
+			error = "kingdomStabilityOnce does not support local policy scope";
 			return false;
 		}
 		if (float.IsNaN(rawValue) || float.IsInfinity(rawValue))
 		{
-			error = "数值必须是有限数字";
+			error = "The value must be finite";
 			return false;
 		}
 		normalizedValue = (float)Math.Round(rawValue, MidpointRounding.AwayFromZero);
@@ -79,7 +80,7 @@ internal sealed class KingdomStabilityOnceEffectModule : NumericPolicyEffectModu
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("kingdomStabilityOnce 缺少共享 game bridge");
+			return Failed("kingdomStabilityOnce requires a shared game bridge");
 		}
 		int requestedDelta = (int)payload.Value;
 		List<KeyValuePair<string, int>> applied = new List<KeyValuePair<string, int>>();
@@ -130,12 +131,12 @@ internal sealed class KingdomStabilityOnceEffectModule : NumericPolicyEffectModu
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("kingdomStabilityOnce rollback 缺少共享 game bridge");
+			return Failed("kingdomStabilityOnce rollback requires a shared game bridge");
 		}
 		PolicyEffectExecutionReceipt appliedReceipt = context.ExistingReceipt;
 		if (appliedReceipt == null)
 		{
-			return Failed("kingdomStabilityOnce rollback 缺少执行回执");
+			return Failed("kingdomStabilityOnce rollback requires an execution receipt");
 		}
 		if (appliedReceipt.Status == PolicyEffectExecutionStatus.RolledBack)
 		{
@@ -273,25 +274,25 @@ internal sealed class KingdomStabilityOnceEffectModule : NumericPolicyEffectModu
 	{
 		if (prepared == null || instance == null)
 		{
-			return "kingdomStabilityOnce 缺少执行上下文";
+			return "kingdomStabilityOnce requires an execution context";
 		}
 		if (string.IsNullOrWhiteSpace(prepared.IdempotencyKey))
 		{
-			return "kingdomStabilityOnce 缺少幂等键";
+			return "kingdomStabilityOnce requires an idempotency key";
 		}
 		if (!string.Equals(instance.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal) || payload == null)
 		{
-			return "kingdomStabilityOnce payload 与模块不匹配";
+			return "kingdomStabilityOnce payload does not match the module";
 		}
 		if (instance.TargetSet?.KingdomIds == null || instance.TargetSet.KingdomIds.Count <= 0)
 		{
-			return "kingdomStabilityOnce 缺少王国目标";
+			return "kingdomStabilityOnce requires a kingdom target";
 		}
 		foreach (string kingdomId in instance.TargetSet.KingdomIds)
 		{
 			if (string.IsNullOrWhiteSpace(kingdomId))
 			{
-				return "kingdomStabilityOnce 王国目标无效";
+				return "kingdomStabilityOnce kingdom target is invalid";
 			}
 		}
 		return string.Empty;

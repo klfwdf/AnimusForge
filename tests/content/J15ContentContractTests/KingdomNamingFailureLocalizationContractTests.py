@@ -37,10 +37,18 @@ assert "NamingRetryFailurePrefix + ex.Message" in runtime
 assert "ForcedNamingFailurePrefix + ex.Message" in editor
 base = subprocess.check_output(["git", "show", "f3c16e889:" + runtime_path], cwd=ROOT).decode("utf-8-sig")
 for signature in ("internal static RebelKingdomNamingResult BuildFailedRebelKingdomNamingResult(", "internal static string BuildRebelKingdomNamingSystemPrompt(", "internal RebelKingdomNamingResult GenerateRebelKingdomNamingFromPrompts("):
-    assert method(runtime, signature) == method(base, signature), signature
+    current_method = method(runtime, signature)
+    if signature.startswith("internal RebelKingdomNamingResult Generate"):
+        # Diagnostics may become English; retry/request/data/limit expressions must not change.
+        for english_literal, original_literal in (("Rebellion kingdom naming", "叛乱建国命名"), (" [attempt ", " [尝试 "), ("Error: ", "错误: "), ("unknown error", "未知错误")):
+            current_method = current_method.replace('"' + english_literal + '"', '"' + original_literal + '"')
+    assert current_method == method(base, signature), signature
 # No serialized/transient host DTO field was added or rewritten for display metadata.
 host_path = "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs"
-assert read(host_path) == subprocess.check_output(["git", "show", "f3c16e889:" + host_path], cwd=ROOT).decode("utf-8-sig")
+host = read(host_path)
+original_host = subprocess.check_output(["git", "show", "f3c16e889:" + host_path], cwd=ROOT).decode("utf-8-sig")
+for dto in ("RebelKingdomNamingResult", "PendingDevForcedKingdomRebellionContext", "PendingAutomaticKingdomRebellionContext"):
+    assert method(host, "internal sealed class " + dto) == method(original_host, "internal sealed class " + dto), dto + ": serialized/transient field contract changed"
 
 en_path = ROOT / "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml"
 cn_path = en_path.parent / "CNs/af_ui_strings-zh-CN.xml"

@@ -1,3 +1,4 @@
+using AnimusForge;
 using AnimusForge.Refactor.Contracts;
 using TaleWorlds.CampaignSystem;
 
@@ -9,7 +10,7 @@ public sealed partial class WorldDiplomacyBehavior
     {
         public bool RulerAlive(string id) => !string.IsNullOrEmpty(id) && Hero.Find(id)?.IsAlive == true;
         public bool IsPlayerRuler(string id) => Hero.MainHero?.StringId == id;
-        public string RulerName(string id) => Hero.Find(id)?.Name?.ToString() ?? "统治者";
+        public string RulerName(string id) => Hero.Find(id)?.Name?.ToString() ?? DiplomacyMiscPromptTexts.Get("Prompt_RulerFallback", "Ruler");
         public (bool available, bool cycle, bool existing) TreatyState(string receivingId, string joiningId)
         {
             var owner = Campaign.Current?.GetCampaignBehavior<VassalageBehavior>();

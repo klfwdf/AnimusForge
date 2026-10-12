@@ -182,7 +182,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         public void SetIllustration(string key, string spriteName, string prompt)
         {
             _currentKey = key;
-            PromptText = prompt ?? string.Empty;
+            PromptText = IllustratorUiText.ProjectKnownCachedPrompt(prompt) ?? string.Empty;
 
             // 强制 Gauntlet 刷新：先清空并触发属性通知，再重新赋值，彻底解决同名 Sprite 在重画时不刷新画面的问题
             _spriteName = string.Empty;

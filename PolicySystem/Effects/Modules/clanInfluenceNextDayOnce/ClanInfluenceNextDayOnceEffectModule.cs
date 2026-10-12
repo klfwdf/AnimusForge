@@ -21,11 +21,12 @@ internal sealed class ClanInfluenceNextDayOnceEffectModule : NumericPolicyEffect
 		allowedScopes: new[] { PolicyEffectScopes.Kingdom, PolicyEffectScopes.Local, PolicyEffectScopes.Vassal },
 		allowedSelectorKinds: new[] { PolicyEffectTargetKind.Settlement, PolicyEffectTargetKind.Clan, PolicyEffectTargetKind.Kingdom, PolicyEffectTargetKind.Hero },
 		targetKinds: new[] { PolicyEffectTargetKind.Clan },
-		cueTerms: new[] { "内部影响力一次性" },
-		retrievalText: "内部运行模块：政策通过后下一游戏日的一次性家族影响力变化。",
-		catalogSummary: "内部：家族影响力一次性变化",
-		mainInstruction: "内部模块，不向模型暴露。",
-		postprocessRule: "内部模块，不得直接输出。",
+		cueTerms: new[] { PolicyCompatibilityTexts.Get("Module_clanInfluenceNextDayOnce_Original_0") },
+		retrievalText: PolicyGenerationPromptTexts.Get("Module_clanInfluenceNextDayOnce_retrievalText", "Internal runtime module: a one-time clan influence change on the game day following policy adoption."),
+		catalogSummary: PolicyGenerationPromptTexts.Get("Module_clanInfluenceNextDayOnce_catalogSummary", "Internal: one-time clan influence change"),
+		playerDisplayName: PolicyCompatibilityTexts.Get("Module_clanInfluenceNextDayOnce_OriginalName"),
+		mainInstruction: PolicyGenerationPromptTexts.Get("Module_clanInfluenceNextDayOnce_mainInstruction", "Internal module; not exposed to the model."),
+		postprocessRule: PolicyGenerationPromptTexts.Get("Module_clanInfluenceNextDayOnce_postprocessRule", "Internal module; do not output it directly."),
 		payloadPromptSchema: PolicyEffectPayloadSchemas.CreateNumericValueSchema(),
 		family: PolicyEffectFamily.Governance,
 		executionKind: PolicyEffectExecutionKind.ScheduledOnce,
@@ -73,7 +74,7 @@ internal sealed class ClanInfluenceNextDayOnceEffectModule : NumericPolicyEffect
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("clanInfluenceNextDayOnce 缺少 game bridge", false);
+			return Failed("clanInfluenceNextDayOnce requires a game bridge", false);
 		}
 
 		List<InfluenceTargetReceipt> applied = new List<InfluenceTargetReceipt>();
@@ -114,11 +115,11 @@ internal sealed class ClanInfluenceNextDayOnceEffectModule : NumericPolicyEffect
 		PolicyEffectExecutionReceipt appliedReceipt = context.ExistingReceipt;
 		if (appliedReceipt == null)
 		{
-			return Failed("clanInfluenceNextDayOnce compensation 缺少执行回执", false);
+			return Failed("clanInfluenceNextDayOnce compensation requires an execution receipt", false);
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("clanInfluenceNextDayOnce compensation 缺少 game bridge", false);
+			return Failed("clanInfluenceNextDayOnce compensation requires a game bridge", false);
 		}
 		if (appliedReceipt.Status == PolicyEffectExecutionStatus.RolledBack)
 		{
@@ -290,12 +291,12 @@ internal sealed class ClanInfluenceNextDayOnceEffectModule : NumericPolicyEffect
 		payload = instance?.Payload as ClanInfluenceNextDayOncePayload;
 		if (instance == null || string.IsNullOrWhiteSpace(context.PreparedInstance.IdempotencyKey))
 		{
-			error = "clanInfluenceNextDayOnce 缺少执行上下文或幂等键";
+			error = "clanInfluenceNextDayOnce requires an execution context and idempotency key";
 			return false;
 		}
 		if (!string.Equals(instance.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal) || payload == null)
 		{
-			error = "clanInfluenceNextDayOnce payload 与模块不匹配";
+			error = "clanInfluenceNextDayOnce payload does not match the module";
 			return false;
 		}
 		if (!HasClanTargets(instance.TargetSet))

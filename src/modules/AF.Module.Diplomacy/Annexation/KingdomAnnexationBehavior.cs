@@ -47,8 +47,8 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 	public bool TryAnnexKingdom(Kingdom playerKingdom, Kingdom targetKingdom, Hero conversationHero, out string statusText)
 	{
 		statusText = WorldDiplomacyBehavior.SubmitOralDiplomaticCommitment(conversationHero,
-			"action=Annexation;move=NewMatter;target=" + playerKingdom?.StringId + ";receiving=" + playerKingdom?.StringId + ";joining=" + targetKingdom?.StringId);
-		return statusText.StartsWith("正式宣言") || statusText.StartsWith("约定已登记");
+			"action=Annexation;move=NewMatter;target=" + playerKingdom?.StringId + ";receiving=" + playerKingdom?.StringId + ";joining=" + targetKingdom?.StringId, out bool registered);
+		return registered;
 	}
 
 	internal bool TryExecuteFormalAnnexation(Kingdom receiving, Kingdom joining, out string statusText)
@@ -213,13 +213,12 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 			["targetKingdom"] = DescribeKingdom(targetKingdom),
 			["speaker"] = DescribeHero(speaker)
 		});
-		return "【AF国家吞并谈判事实】\n"
-			+ "玩家当前是" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "的国王。\n"
-			+ GetHeroDisplayName(speaker, "对话对象") + "当前是" + GetKingdomDisplayName(targetKingdom, "目标王国") + "的国王。\n"
-			+ "目标王国ID必须写作：" + targetKingdomId + "。\n"
-			+ "玩家作为接收国时的并入条款：目标王国放弃独立王权，所有家族归入玩家王国，原家族保留其领地归属并成为玩家王国臣民。\n"
-			+ "正文只能自然谈判，不要写动作标签；如果只是求和、结盟、停战、赔款、朝贡、臣属、附庸、保护国或普通归顺，都不是国家吞并。\n"
-			+ "只有当对方国王明确最终接受整个国家并入玩家王国、放弃独立王权、所有家族转入玩家王国时，才算形成发文约定；先正式提出，再等待另一方自行正式接受，不立即吞并。其他合法方向须明确接收国与并入国，走同一正式宣言链路。若仍在谈条件、索要保证、犹豫、拒绝或只是尊重玩家，不算同意。";
+		string template = DiplomacyMiscPromptTexts.Get("Annexation_NegotiationFact", "[AF Kingdom Annexation Negotiation Facts]\nThe player is currently the ruler of {PLAYER_KINGDOM}.\n{SPEAKER} is currently the ruler of {TARGET_KINGDOM}.\nThe target kingdom ID must be written as: {TARGET_ID}.\nAnnexation terms with player as recipient: the target kingdom abdicates independent sovereignty, all clans join the player's kingdom, and former clans retain their fiefs as subjects of the player's kingdom.\nThe reply must negotiate naturally without action tags. Seeking peace, alliances, truces, reparations, tributes, vassalage, protectorates, or ordinary surrender are not kingdom annexations.\nAn agreement to publish forms ONLY when the other ruler explicitly and definitively agrees to merge the entire kingdom into the player's kingdom, abdicate sovereignty, and transfer all clans to the player's kingdom; propose formally first and await official acceptance, do not annex immediately. Other directions must specify receiving and joining kingdoms via the same formal declaration pipeline. Ongoing bargaining, demanding guarantees, hesitating, refusing, or merely showing respect do not constitute consent.");
+		return PromptComposerTexts.FormatTemplate(template,
+			("PLAYER_KINGDOM", GetKingdomDisplayName(playerKingdom, DiplomacyMiscPromptTexts.Get("Prompt_PlayerKingdomFallback", "player's kingdom"))),
+			("SPEAKER", GetHeroDisplayName(speaker, DiplomacyMiscPromptTexts.Get("Prompt_SpeakerFallback", "speaker"))),
+			("TARGET_KINGDOM", GetKingdomDisplayName(targetKingdom, DiplomacyMiscPromptTexts.Get("Prompt_TargetKingdomFallback", "target kingdom"))),
+			("TARGET_ID", targetKingdomId ?? string.Empty));
 	}
 
 	public static string BuildRuntimeAnnexationConstraintHintForExternal(Hero targetHero, CharacterObject targetCharacter = null)
@@ -228,7 +227,8 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return "旧KINGDOM_ANNEX标签用于玩家接收方向，明确承诺只提交正式提案。其他合法方向使用DIPLOMACY:COMMIT并明确receiving/joining。旧标签的target_kingdom_id 必须为 " + (targetKingdom.StringId ?? "") + "。求和、结盟、停战、赔款、朝贡、臣属、附庸、保护国不得视为吞并。";
+		string template = DiplomacyMiscPromptTexts.Get("Annexation_ConstraintHint", "The legacy KINGDOM_ANNEX tag applies to the player-recipient direction; an explicit commitment only submits a formal proposal. Other directions use DIPLOMACY:COMMIT specifying receiving/joining. The legacy tag target_kingdom_id must be {TARGET_ID}. Peace, alliance, truce, reparations, tribute, vassalage, or protectorates must not be treated as annexation.");
+		return template.Replace("{TARGET_ID}", targetKingdom.StringId ?? string.Empty);
 	}
 
 	public static List<PostprocessRuleEntry> BuildRuntimeAnnexationPostprocessRulesForExternal(Hero targetHero, CharacterObject targetCharacter = null)
@@ -533,11 +533,11 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 		try
 		{
 			string name = kingdom?.Name?.ToString();
-			return string.IsNullOrWhiteSpace(name) ? (fallback ?? "王国") : name;
+			return string.IsNullOrWhiteSpace(name) ? (fallback ?? DiplomacyMiscPromptTexts.Get("Prompt_KingdomFallback", "kingdom")) : name;
 		}
 		catch
 		{
-			return fallback ?? "王国";
+			return fallback ?? DiplomacyMiscPromptTexts.Get("Prompt_KingdomFallback", "kingdom");
 		}
 	}
 
@@ -546,11 +546,11 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 		try
 		{
 			string name = hero?.Name?.ToString();
-			return string.IsNullOrWhiteSpace(name) ? (fallback ?? "对方") : name;
+			return string.IsNullOrWhiteSpace(name) ? (fallback ?? DiplomacyMiscPromptTexts.Get("Prompt_CounterpartFallback", "counterpart")) : name;
 		}
 		catch
 		{
-			return fallback ?? "对方";
+			return fallback ?? DiplomacyMiscPromptTexts.Get("Prompt_CounterpartFallback", "counterpart");
 		}
 	}
 
@@ -560,7 +560,7 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 		{
 			return "(null)";
 		}
-		return (kingdom.StringId ?? "") + "|" + GetKingdomDisplayName(kingdom, "王国") + "|eliminated=" + SafeBool(() => kingdom.IsEliminated);
+		return (kingdom.StringId ?? "") + "|" + GetKingdomDisplayName(kingdom, DiplomacyMiscPromptTexts.Get("Prompt_KingdomFallback", "kingdom")) + "|eliminated=" + SafeBool(() => kingdom.IsEliminated);
 	}
 
 	private static string DescribeClan(Clan clan)
@@ -569,7 +569,7 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 		{
 			return "(null)";
 		}
-		return (clan.StringId ?? "") + "|" + (clan.Name?.ToString() ?? "家族") + "|kingdom=" + (clan.Kingdom?.StringId ?? "") + "|eliminated=" + SafeBool(() => clan.IsEliminated);
+		return (clan.StringId ?? "") + "|" + (clan.Name?.ToString() ?? DiplomacyMiscPromptTexts.Get("Prompt_ClanFallback", "clan")) + "|kingdom=" + (clan.Kingdom?.StringId ?? "") + "|eliminated=" + SafeBool(() => clan.IsEliminated);
 	}
 
 	private static string DescribeHero(Hero hero)
@@ -578,7 +578,7 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 		{
 			return "(null)";
 		}
-		return (hero.StringId ?? "") + "|" + GetHeroDisplayName(hero, "英雄") + "|clan=" + (hero.Clan?.StringId ?? "") + "|kingdom=" + (hero.Clan?.Kingdom?.StringId ?? "");
+		return (hero.StringId ?? "") + "|" + GetHeroDisplayName(hero, DiplomacyMiscPromptTexts.Get("Prompt_HeroFallback", "hero")) + "|clan=" + (hero.Clan?.StringId ?? "") + "|kingdom=" + (hero.Clan?.Kingdom?.StringId ?? "");
 	}
 
 	private static string DescribeSettlement(Settlement settlement)

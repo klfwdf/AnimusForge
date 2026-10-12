@@ -11,7 +11,22 @@ for suffix, xml_path in (('', 'Languages/CNs/afdip_ui_strings-zh-CN.xml'), ('.en
     old_xml = subprocess.check_output(['git', 'show', 'a7de67231:' + base + xml_path], cwd=ROOT)
     expected = {n.get('id'): n.get('text').replace('[[AF_JSON_OPEN]]', '{').replace('[[AF_JSON_CLOSE]]', '}')
                 for n in ET.fromstring(old_xml).iter('string') if n.get('id').startswith('AF_DIP_Prompt_')}
-    assert {k: data[k] for k in expected} == expected and set(data) == set(expected) | {'AF_DIP_Contract_' + str(i).zfill(3) for i in range(118)} | {'AF_DIP_Fact_' + str(i).zfill(3) for i in range(50)}, suffix + ': exact package content migration'
+    additions = set(json.loads(Path(__file__).with_name('DiplomacyPackagedPromptAdditions.json').read_text(encoding='utf-8')))
+    original_keys = set(expected) | {'AF_DIP_Contract_' + str(i).zfill(3) for i in range(118)} | {'AF_DIP_Fact_' + str(i).zfill(3) for i in range(50)}
+    assert {k: data[k] for k in expected} == expected, suffix + ': original package content values preserved'
+    assert set(data) == original_keys | additions and not original_keys.intersection(additions), suffix + ': only explicitly reviewed additions allowed'
+    assert {'HistoryProjection_PolicyIssuer', 'HistoryProjection_PolicyScope', 'FallbackDocumentTitleTargetSeparator'} <= additions
+    paired = json.loads((ROOT / base / ('DiplomacyPromptTexts' + ('' if suffix else '.en') + '.json')).read_text(encoding='utf-8'))
+    assert data.keys() == paired.keys(), 'CN/EN additions must have identical identities'
+    import re
+    for key in additions:
+        assert isinstance(data[key], str) and isinstance(paired[key], str), key
+        assert sorted(re.findall(r'\{[A-Z_0-9]+\}', data[key])) == sorted(re.findall(r'\{[A-Z_0-9]+\}', paired[key])), key + ': placeholders'
+        if suffix: assert not re.search(r'[\u3400-\u9fff]', data[key]), key + ': English package added text contains Han'
+
+    protocol = r'\{[A-Za-z_][A-Za-z0-9_]*\}|\[(?:ACTION|RELAY|AD|ADP|AFEF):[^\]\r\n]*\]'
+    for key in data:
+        assert set(re.findall(protocol, data[key])) == set(re.findall(protocol, paired[key])), key + ': complete packaged action protocol identity'
     assert not any(n.get('id').startswith('AF_DIP_Prompt_') for n in ET.parse(ROOT / base / xml_path).iter('string'))
     schema = data['AF_DIP_Prompt_Composer_015']
     assert json.loads(schema[schema.index('{'):])['selected_kingdom_ids'] == ['ID']

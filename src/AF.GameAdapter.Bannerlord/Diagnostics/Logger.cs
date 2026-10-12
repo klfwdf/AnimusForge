@@ -230,7 +230,7 @@ public static class Logger
 			EnsureUtf8Bom(_tokenStatsPath);
 			EnsureUtf8Bom(_eventLogsPath);
 			EnsureUtf8Bom(_compatibilityAuditPath);
-			string contents = $"\n\n====== 游戏启动 {DateTime.Now:yyyy-MM-dd HH:mm:ss} ======\n";
+			string contents = $"\n\n====== Game started {DateTime.Now:yyyy-MM-dd HH:mm:ss} ======\n";
 			if (IsPathEnabled(_modLogPath))
 			{
 				AppendUtf8(_modLogPath, contents);
@@ -435,18 +435,18 @@ public static class Logger
 			string currentTraceId = CurrentTraceId;
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.AppendLine("==================================================");
-			stringBuilder.AppendLine("[时间] " + text);
+			stringBuilder.AppendLine("[Time] " + text);
 			if (!string.IsNullOrWhiteSpace(currentTraceId))
 			{
 				stringBuilder.AppendLine("[Trace] " + currentTraceId);
 			}
 			if (!string.IsNullOrWhiteSpace(targetLabel))
 			{
-				stringBuilder.AppendLine("[目标] " + targetLabel.Trim());
+				stringBuilder.AppendLine("[Target] " + targetLabel.Trim());
 			}
-			stringBuilder.AppendLine("[请求]");
+			stringBuilder.AppendLine("[Request]");
 			stringBuilder.AppendLine((requestText ?? "").Trim());
-			stringBuilder.AppendLine("[回复]");
+			stringBuilder.AppendLine("[Response]");
 			stringBuilder.AppendLine((replyText ?? "").Trim());
 			stringBuilder.AppendLine();
 			EnqueueLogWrite(_eventLogsPath, stringBuilder.ToString());
@@ -1171,7 +1171,9 @@ public static class Logger
 	{
 		try
 		{
-			return GlobalSettings<DuelSettings>.Instance;
+			// Logging must observe registration, never construct settings while a settings constructor is logging.
+            return MCM.Abstractions.BaseSettingsProvider.Instance?
+                .GetSettings("AnimusForge_global_settings") as DuelSettings;
 		}
 		catch
 		{
@@ -1319,8 +1321,8 @@ public static class Logger
 			string text = message ?? "";
 			return text.IndexOf("ERROR", StringComparison.OrdinalIgnoreCase) >= 0
 				|| text.IndexOf("WARN", StringComparison.OrdinalIgnoreCase) >= 0
-				|| text.Contains("错误")
-				|| text.Contains("失败")
+				|| text.IndexOf(AdapterPromptCaptureTexts.PcapCompat("Diagnostic_Error"), StringComparison.Ordinal) >= 0
+				|| text.IndexOf(AdapterPromptCaptureTexts.PcapCompat("Diagnostic_Failed"), StringComparison.Ordinal) >= 0
 				|| text.IndexOf("failed", StringComparison.OrdinalIgnoreCase) >= 0
 				|| text.IndexOf("exception", StringComparison.OrdinalIgnoreCase) >= 0;
 		}

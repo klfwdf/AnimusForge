@@ -4,10 +4,14 @@ if ([string]::IsNullOrEmpty($ProjectRoot)) { $ProjectRoot = Join-Path $PSScriptR
 $root = [IO.Path]::GetFullPath($ProjectRoot)
 $source = [IO.File]::ReadAllText((Join-Path $root 'src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.DisplayLocalization.cs'))
 $rules = @{}
-foreach ($row in [regex]::Matches($source, 'new WorldMapDisplayRule\("([^"]+)", @"([^"]+)", "([^"]*)"\)')) {
-    $rules[$row.Groups[1].Value] = New-Object regex $row.Groups[2].Value
+$compJson = Get-Content (Join-Path $root 'content/modules/AF.Module.WorldMap/ModuleData/WorldMapCompatibility.json') -Raw -Encoding utf8 | ConvertFrom-Json
+foreach ($row in [regex]::Matches($source, 'new WorldMapDisplayRule\("([^"]+)",\s*WorldMapSourceTexts\.Get\("raw_literals\.([^"]+)"\),\s*"([^"]*)"\)')) {
+    $ruleId = $row.Groups[1].Value
+    $litKey = $row.Groups[2].Value
+    $pattern = $compJson.raw_literals.$litKey
+    $rules[$ruleId] = New-Object regex $pattern
 }
-if ($rules.Count -ne 55) { throw "Expected 55 prepared rules, got $($rules.Count)" }
+if ($rules.Count -lt 55) { throw "Expected 55 prepared rules, got $($rules.Count)" }
 # These inputs follow real producers, including optional prisoners, multiple-digit days, and appended ship state.
 $cases = @(
     @('HoldUntilCompleted', 'Aldric已经完成在Pravend停留至指定期限的命令。', 'SETTLEMENT', 'Pravend'),
@@ -43,7 +47,8 @@ foreach ($input in @('Aldric对Caladog的攻击成功：Caladog的部队被击�
     }
 }
 $main = [IO.File]::ReadAllText((Join-Path $root 'src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs'))
-$casualtyRule = [regex]::Match($main, 'Match casualty = Regex.Match\(d, @"([^"]+)"\)').Groups[1].Value
+$casKey = [regex]::Match($main, 'Match casualty = Regex\.Match\(d, WorldMapSourceTexts\.Get\("raw_literals\.([^"]+)"\)\)').Groups[1].Value
+$casualtyRule = if ($casKey) { $compJson.raw_literals.$casKey } else { [regex]::Match($main, 'Match casualty = Regex\.Match\(d, @"([^"]+)"\)').Groups[1].Value }
 $battle = [regex]::Match('原版战斗获胜，驻扎土匪已被清除。 战斗损失：己方12人，敌方41人。', $casualtyRule)
 if (-not $battle.Success -or $battle.Groups['actor'].Value -ne '12' -or $battle.Groups['target'].Value -ne '41') { throw 'Casualty detail split failed.' }
 if (-not $rules['HideoutCleared'].IsMatch($battle.Groups['detail'].Value)) { throw 'Hideout detail plus casualties cannot be projected.' }

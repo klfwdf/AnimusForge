@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -211,12 +212,12 @@ public sealed partial class WorldDiplomacyBehavior
         public long PublishedWorldWeeklyHistoryRevision() => MyBehavior.GetPublishedWorldWeeklyReportHistoryRevisionForExternal();
         public void RecordDiplomacyBulletinMaterial(WorldDiplomacyDocument document)
         {
-            string author = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.AuthorKingdomName, KingdomName(ResolveKingdom(document.AuthorKingdomId)), "某国");
-            string sentence = author + "发布外交宣言《" + WorldDiplomacyTextRules.Limit(document.Title, 80)
-                + "》，宣言称：“" + WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.NormalizeBody(document.Body), 180) + "”。";
+            string author = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.AuthorKingdomName, KingdomName(ResolveKingdom(document.AuthorKingdomId)), DiplomacyMiscPromptTexts.Get("Orch_SomeKingdomFallback", "A kingdom"));
+            string sentence = string.Format(DiplomacyMiscPromptTexts.Get("Orch_DeclarationPublishedFormat", "{0} published diplomatic declaration \"{1}\", declaring: \"{2}\"."), author, WorldDiplomacyTextRules.Limit(document.Title, 80), WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.NormalizeBody(document.Body), 180));
+
             string detail = document.ChangedDiplomaticState && !string.IsNullOrWhiteSpace(document.MechanicalResult)
-                ? "已确认结果：" + WorldDiplomacyTextRules.Limit(document.MechanicalResult, 160)
-                : "仅确认宣言已发布，未确认其提议已经实施。";
+                ? DiplomacyMiscPromptTexts.Get("Orch_ConfirmedResultPrefix", "Confirmed result: ") + WorldDiplomacyTextRules.Limit(document.MechanicalResult, 160)
+                : DiplomacyMiscPromptTexts.Get("Orch_DeclarationOnlyPublishedNotImplemented", "Only confirmed declaration was published; proposal implementation unconfirmed.");
             MyBehavior.RecordDiplomacyBulletinMaterial(document.DocumentId, sentence, detail,
                 document.AuthorKingdomId, document.TargetKingdomId, document.AuthorRulerId, document.Day);
         }

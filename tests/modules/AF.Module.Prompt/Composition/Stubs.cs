@@ -3,6 +3,11 @@ using System.Linq;
 
 namespace AnimusForge
 {
+    internal static class AnimusForgeModulePaths
+    {
+        internal static string GetModuleDataFilePath(string name)
+            => System.IO.Path.Combine(System.AppContext.BaseDirectory, "ModuleData", name);
+    }
     // Minimal stand-ins for the production DTOs the routing stage touches; no game objects.
     public sealed class MentionedWorldEntities
     {

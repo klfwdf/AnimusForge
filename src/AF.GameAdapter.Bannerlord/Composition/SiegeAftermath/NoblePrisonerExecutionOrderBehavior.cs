@@ -93,7 +93,7 @@ public sealed class NoblePrisonerExecutionOrderBehavior : CampaignBehaviorBase
 					{
 						Tag = tag,
 						Description = BuildConsentRule(actor, prisoner,
-							"同意在离开对话后的 6—18 个游戏小时内，于大地图上处决该玩家主队俘虏。")
+							(GcczTownPromptResourceProvider.UseEnglishPrompt ? "Agrees to execute this prisoner of the player main party on the world map within 6–18 game hours after leaving the conversation." : SiegeAftermathCompatibilityTexts.Raw("escort_execution_consent")))
 					});
 				}
 			}
@@ -172,7 +172,7 @@ public sealed class NoblePrisonerExecutionOrderBehavior : CampaignBehaviorBase
 					actorDecision.RelationAttribution,
 					out reason))
 			{
-				Show("【贵族俘虏随行】处决行动未能开始。", WarningColor);
+				Show(GcczLocalizedResourceLoader.UseChineseInterface ? SiegeAftermathCompatibilityTexts.Raw("escort_execution_failed") : "[Noble prisoner escort] The execution could not start.", WarningColor);
 				return false;
 			}
 			return true;
@@ -233,7 +233,7 @@ public sealed class NoblePrisonerExecutionOrderBehavior : CampaignBehaviorBase
 			{
 				Tag = giveTag,
 				Description = BuildConsentRule(actor, prisoner,
-					"同意退出当前对话后亲自走向该随行俘虏、拔出武器处决，并把头颅交给玩家。")
+					(GcczTownPromptResourceProvider.UseEnglishPrompt ? "Agrees to leave the current conversation, personally walk to this escorted prisoner, draw a weapon and execute them, and give their head to the player." : SiegeAftermathCompatibilityTexts.Raw("escort_execution_give_head")))
 			});
 		}
 		if (!decision.MustGiveHeadToPlayer)
@@ -247,7 +247,7 @@ public sealed class NoblePrisonerExecutionOrderBehavior : CampaignBehaviorBase
 				{
 					Tag = keepTag,
 					Description = BuildConsentRule(actor, prisoner,
-						"同意退出当前对话后亲自处决该随行俘虏，但基于自身性格决定不把头颅交给玩家。")
+						(GcczTownPromptResourceProvider.UseEnglishPrompt ? "Agrees to personally execute this escorted prisoner after leaving the current conversation, but decides according to their personality not to give the head to the player." : SiegeAftermathCompatibilityTexts.Raw("escort_execution_keep_head")))
 				});
 			}
 		}
@@ -255,11 +255,16 @@ public sealed class NoblePrisonerExecutionOrderBehavior : CampaignBehaviorBase
 
 	private static string BuildConsentRule(Hero actor, Hero prisoner, string acceptedEffect)
 	{
-		return "仅在玩家本轮明确请求当前回应者“"
+		if (GcczTownPromptResourceProvider.UseEnglishPrompt)
+            return "Emit only when the player explicitly asks the current respondent \""
+                + (actor?.Name?.ToString() ?? "NPC") + "\" to execute \""
+                + (prisoner?.Name?.ToString() ?? "Prisoner")
+                + "\", and the current respondent independently and explicitly agrees according to personality and relationship. Never emit for refusal, hesitation, questions, reported speech, hypotheticals, historical content or execution of someone else. Effect: " + acceptedEffect;
+		return SiegeAftermathCompatibilityTexts.Raw("consent_prefix")
 			+ (actor?.Name?.ToString() ?? "NPC")
-			+ "”处决“"
-			+ (prisoner?.Name?.ToString() ?? "俘虏")
-			+ "”，且当前回应者按人格与关系自主明确同意时输出；拒绝、犹豫、提问、转述、假设、历史内容或处决其他人时不得输出。效果："
+			+ SiegeAftermathCompatibilityTexts.Raw("consent_middle")
+			+ (prisoner?.Name?.ToString() ?? SiegeAftermathCompatibilityTexts.Raw("consent_prisoner_fallback"))
+			+ SiegeAftermathCompatibilityTexts.Raw("consent_suffix")
 			+ acceptedEffect;
 	}
 
@@ -281,9 +286,9 @@ public sealed class NoblePrisonerExecutionOrderBehavior : CampaignBehaviorBase
 		string operationId = "exec_" + actor.StringId + "_" + prisoner.StringId + "_" + dueHour;
 		var record = new NobleExecutionTaskRecord(operationId, actor.StringId, prisoner.StringId, dueHour);
 		_tasks[operationId] = record;
-		Show("【处决委托】" + actor.Name + "已同意处决" + prisoner.Name + "，将在稍后执行。", SuccessColor);
+		Show(GcczLocalizedResourceLoader.UseChineseInterface ? SiegeAftermathCompatibilityTexts.Raw("execution_request_title") + actor.Name + SiegeAftermathCompatibilityTexts.Raw("execution_request_middle") + prisoner.Name + SiegeAftermathCompatibilityTexts.Raw("execution_request_suffix") : "[Execution request] " + actor.Name + " agreed to execute " + prisoner.Name + "; the execution will take place later.", SuccessColor);
 		MyBehavior.AppendExternalDialogueHistory(actor, null, null,
-			"[AFEF NPC行为补充] 你已明确同意玩家的请求，将在稍后处决玩家主队中的俘虏“" + prisoner.Name + "”。");
+			SiegeAftermathCompatibilityTexts.Raw("execution_fact_prefix") + prisoner.Name + SiegeAftermathCompatibilityTexts.Raw("execution_fact_suffix"));
 		return true;
 	}
 
@@ -320,9 +325,9 @@ public sealed class NoblePrisonerExecutionOrderBehavior : CampaignBehaviorBase
 				if (IsExecutionAccepted(prisoner))
 				{
 					_tasks.Remove(record.OperationId);
-					Show(actor.Name + "处决" + prisoner.Name, SuccessColor);
+					Show(GcczLocalizedResourceLoader.UseChineseInterface ? actor.Name + SiegeAftermathCompatibilityTexts.Raw("execution_display_middle") + prisoner.Name : actor.Name + " executed " + prisoner.Name, SuccessColor);
 					MyBehavior.AppendExternalDialogueHistory(actor, null, null,
-						"[AFEF NPC行为补充] 你依约处决了“" + prisoner.Name + "”。此事已发生，不能否认。 ");
+						SiegeAftermathCompatibilityTexts.Raw("execution_done_prefix") + prisoner.Name + SiegeAftermathCompatibilityTexts.Raw("execution_done_suffix"));
 				}
 			}
 			catch (Exception ex)

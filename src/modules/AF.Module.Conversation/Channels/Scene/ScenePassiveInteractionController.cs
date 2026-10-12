@@ -480,9 +480,9 @@ internal sealed class ScenePassiveInteractionController
 		string playerName = GetPlayerDisplayNameForShout();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = "玩家";
+			playerName = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0654");
 		}
-		return playerName + "看着你";
+		return playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0655");
 	}
 
 	internal static bool ShouldUseCombatPassiveReactionText(Agent targetAgent, out bool armed)
@@ -601,7 +601,7 @@ internal sealed class ScenePassiveInteractionController
 		try
 		{
 			string text3 = (ShoutUtils.GetCurrentSceneDescription() ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text3) && text3.IndexOf("竞技场", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (!string.IsNullOrWhiteSpace(text3) && text3.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0656"), StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				return true;
 			}
@@ -648,9 +648,9 @@ internal sealed class ScenePassiveInteractionController
 		string playerName = GetPlayerDisplayNameForShout();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = "玩家";
+			playerName = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0657");
 		}
-		return opponentContext ? ("[AFEF NPC行为补充] 你和" + playerName + "只是对手，正在赤手较量") : ("[AFEF NPC行为补充] 你和" + playerName + "互为敌人，正在互相殴打");
+		return opponentContext ? (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0658") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0659")) : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0660") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0661"));
 	}
 
 	internal static string BuildCombatPassiveArmedFactText(Agent targetAgent, bool opponentContext)
@@ -658,19 +658,19 @@ internal sealed class ScenePassiveInteractionController
 		string playerName = GetPlayerDisplayNameForShout();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = "玩家";
+			playerName = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0662");
 		}
 		string text = TryGetActiveWeaponDisplayNameForPassiveReaction(targetAgent);
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "武器";
+			text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0663");
 		}
-		return opponentContext ? ("[AFEF NPC行为补充] 你现在拿着" + text + "与" + playerName + "作为对手激烈交锋，但还未决出胜负") : ("[AFEF NPC行为补充] 你现在正拿着" + text + "与" + playerName + "作为敌人拼杀，还未决出胜负");
+		return opponentContext ? (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0664") + text + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0665") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0666")) : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0667") + text + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0668") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0669"));
 	}
 
 	internal static string BuildFallbackSceneTauntSpeech(bool escalatedToFight)
 	{
-		return escalatedToFight ? "少废话，既然你想找打，那就来吧。" : "嘴巴放干净点，别逼我动手。";
+		return escalatedToFight ? ConversationUiLocalization.Text("AF_CONV_UI_Taunt_FightFallback", "Enough talk. If you want a fight, come on.") : ConversationUiLocalization.Text("AF_CONV_UI_Taunt_WarningFallback", "Watch your mouth. Don’t make me use force.");
 	}
 
 	internal static string BuildCombatActiveShoutExtraFact(Agent targetAgent)

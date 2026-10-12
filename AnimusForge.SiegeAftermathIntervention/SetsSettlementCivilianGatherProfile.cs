@@ -25,47 +25,75 @@ public static class SetsSettlementCivilianGatherProfile
 
     public const string AiActionTagSource = "sets_settlement_civilian_gather_action_tag";
 
-    public const string NoEligibleCivilianMessage = "【SETS】当前没有可召集的成年平民。";
+    public const string NoEligibleCivilianMessage = "[SETS] There are no eligible adult civilians to gather.";
+    public const string NoEligibleCivilianMessageEn = "[SETS] There are no eligible adult civilians to gather.";
+
+
+    public static string GetNoEligibleCivilianMessage(bool isEnglish)
+        => isEnglish ? NoEligibleCivilianMessageEn : NoEligibleCivilianMessage;
 
     public static string BuildQueuedMessage(int civilianCount)
     {
-        return "【SETS】正在召集 " + Math.Max(0, civilianCount) + " 名成年平民，完成后将编入3号民众编队。";
+        return BuildQueuedMessage(civilianCount, isEnglish: false);
+    }
+
+    public static string BuildQueuedMessage(int civilianCount, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            return "[SETS] Gathering " + Math.Max(0, civilianCount) + " adult civilians; they will join command group 3 when ready.";
+        }
+        return isEnglish ? "[SETS] Gathering " + Math.Max(0, civilianCount) + " adult civilians; they will join command group 3 when ready." : SiegeAftermathCompatibilityTexts.Raw("sets_gather_queued_prefix") + Math.Max(0, civilianCount) + SiegeAftermathCompatibilityTexts.Raw("sets_gather_queued_suffix");
     }
 
     public static bool ShouldHandleExplicitPlayerCommand(string playerText)
     {
         string normalized = Normalize(playerText);
+        string lower = (playerText ?? string.Empty).ToLowerInvariant();
         if (string.IsNullOrEmpty(normalized)
-            || Contains(normalized, "不要召集")
-            || Contains(normalized, "别召集")
-            || Contains(normalized, "无需召集"))
+            || ContainsAny(normalized, LoadGatherStopTerms())
+            || lower.Contains("don't gather")
+            || lower.Contains("do not gather")
+            || lower.Contains("no need to gather")
+            || lower.Contains("stop gathering"))
         {
             return false;
         }
 
-        bool namesCivilians = Contains(normalized, "平民")
-            || Contains(normalized, "民众")
-            || Contains(normalized, "居民")
-            || Contains(normalized, "百姓")
-            || Contains(normalized, "城里人")
-            || Contains(normalized, "村民")
-            || Contains(normalized, "乡民")
-            || Contains(normalized, "村里人")
-            || Contains(normalized, "村中人")
-            || Contains(normalized, "大家");
-        bool givesGatherOrder = Contains(normalized, "召集")
-            || Contains(normalized, "集合")
-            || Contains(normalized, "聚集")
-            || Contains(normalized, "叫过来")
-            || Contains(normalized, "喊过来")
-            || Contains(normalized, "通知过来")
-            || Contains(normalized, "带过来");
+        bool namesCivilians = ContainsAny(normalized, LoadGatherNouns())
+            || lower.Contains("civilian")
+            || lower.Contains("civilians")
+            || lower.Contains("villager")
+            || lower.Contains("villagers")
+            || lower.Contains("resident")
+            || lower.Contains("residents")
+            || lower.Contains("people")
+            || lower.Contains("townsfolk")
+            || lower.Contains("everyone");
+
+        bool givesGatherOrder = ContainsAny(normalized, LoadGatherVerbs())
+            || lower.Contains("gather")
+            || lower.Contains("assemble")
+            || lower.Contains("rally")
+            || lower.Contains("call over")
+            || lower.Contains("bring over")
+            || lower.Contains("summon");
+
         return namesCivilians && givesGatherOrder;
     }
 
     public static string BuildGatheredMessage(int civilianCount)
     {
-        return "【SETS】已召集 " + Math.Max(0, civilianCount) + " 名成年平民并编入3号民众编队。";
+        return BuildGatheredMessage(civilianCount, isEnglish: false);
+    }
+
+    public static string BuildGatheredMessage(int civilianCount, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            return "[SETS] Gathered " + Math.Max(0, civilianCount) + " adult civilians and assigned them to command group 3.";
+        }
+        return isEnglish ? "[SETS] Gathered " + Math.Max(0, civilianCount) + " adult civilians and assigned them to command group 3." : SiegeAftermathCompatibilityTexts.Raw("sets_gathered_prefix") + Math.Max(0, civilianCount) + SiegeAftermathCompatibilityTexts.Raw("sets_gathered_suffix");
     }
 
     private static string Normalize(string text)
@@ -80,6 +108,16 @@ public static class SetsSettlementCivilianGatherProfile
                 .Replace("！", string.Empty)
                 .Replace("？", string.Empty)
                 .Trim();
+    }
+
+    private static string[] LoadGatherStopTerms() => SiegeAftermathCompatibilityTexts.Raw("sets_gather_stop_terms").Split(',');
+    private static string[] LoadGatherNouns() => SiegeAftermathCompatibilityTexts.Raw("sets_gather_nouns").Split(',');
+    private static string[] LoadGatherVerbs() => SiegeAftermathCompatibilityTexts.Raw("sets_gather_verbs").Split(',');
+    private static bool ContainsAny(string text, string[] terms)
+    {
+        if (string.IsNullOrEmpty(text) || terms == null) return false;
+        foreach (var t in terms) if (!string.IsNullOrEmpty(t) && text.Contains(t)) return true;
+        return false;
     }
 
     private static bool Contains(string text, string value)

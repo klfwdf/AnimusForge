@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="AF_LLM_UI_VoiceGroup_MaleYoung" text="青年男声 (&lt;30岁)" />
+    <string id="AF_LLM_UI_VoiceGroup_MaleMiddle" text="中年男声 (30-50岁)" />
+    <string id="AF_LLM_UI_VoiceGroup_MaleOld" text="老年男声 (&gt;50岁)" />
+    <string id="AF_LLM_UI_VoiceGroup_FemaleYoung" text="青年女声 (&lt;30岁)" />
+    <string id="AF_LLM_UI_VoiceGroup_FemaleMiddle" text="中年女声 (30-50岁)" />
+    <string id="AF_LLM_UI_VoiceGroup_FemaleOld" text="老年女声 (&gt;50岁)" />
+  </strings>
+</base>

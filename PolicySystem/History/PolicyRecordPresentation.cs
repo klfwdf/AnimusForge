@@ -190,7 +190,7 @@ public sealed partial class CustomPolicyBehavior
 		}
 		catch (Exception ex)
 		{
-			PolicySystemLog.Failure("History", "record-delete-notification-failed", "政策记录已删除，通知刷新失败。", ex.ToString());
+			PolicySystemLog.Failure("History", "record-delete-notification-failed", "The policy record was deleted, but notification refresh failed.", ex.ToString());
 		}
 		return true;
 	}

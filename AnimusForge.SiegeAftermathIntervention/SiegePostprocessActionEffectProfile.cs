@@ -6,55 +6,55 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegePostprocessActionEffectProfile
 {
-    public const string BlockedMercyTrackActionName = "降级处置";
+    public const string BlockedMercyTrackActionName = "Demoted disposition";
 
     public const string GatherCiviliansSource = "ai_tag";
 
-    public const string MercyTriggerSource = "场景对话宽恕";
+    public const string MercyTriggerSource = "Scene dialogue mercy";
 
-    public const string MercyTriggerDetail = "玩家通过场景对话选择宽恕普通民众。";
+    public const string MercyTriggerDetail = "The player chose mercy toward civilians in scene dialogue.";
 
-    public const string SoldierMaterialReliefTriggerSource = "士兵分发安抚";
+    public const string SoldierMaterialReliefTriggerSource = "Soldier distribution reassurance";
 
-    public const string SoldierMaterialReliefTriggerDetail = "玩家命令己方士兵分发共享物资安抚民众；士兵分发路线最高按安抚结算。";
+    public const string SoldierMaterialReliefTriggerDetail = "The player ordered allied soldiers to distribute shared supplies to civilians.";
 
-    public const string CivilianVerbalReliefTriggerSource = "平民对话安抚";
+    public const string CivilianVerbalReliefTriggerSource = "Civilian dialogue reassurance";
 
-    public const string CivilianVerbalReliefTriggerDetail = "玩家直接通过言语安抚战败民众，使其接受宽恕和秩序安排。";
+    public const string CivilianVerbalReliefTriggerDetail = "The player verbally reassured defeated civilians to accept mercy and order.";
 
-    public const string ConversationReliefTriggerSource = "场景对话安抚";
+    public const string ConversationReliefTriggerSource = "Scene dialogue relief";
 
-    public const string ConversationReliefTriggerDetail = "玩家通过场景对话选择安抚和救济民众。";
+    public const string ConversationReliefTriggerDetail = "The player chose relief and reassurance in scene dialogue.";
 
-    public const string InspirationTriggerSource = "场景对话安民宣抚";
+    public const string InspirationTriggerSource = "Scene dialogue public reassurance";
 
-    public const string InspirationTriggerDetail = "玩家通过场景对话召集民众并宣示新秩序，以提高忠诚度并争取本地要人支持。";
+    public const string InspirationTriggerDetail = "The player gathered civilians to declare a new civic order.";
 
-    public const string RallyOathTriggerSource = "场景对话归心盟誓";
+    public const string RallyOathTriggerSource = "Scene dialogue public oath";
 
-    public const string RallyOathTriggerDetail = "玩家通过场景对话组织公开盟誓，以强力争取民众归附和要人支持。";
+    public const string RallyOathTriggerDetail = "The player organized a public oath of allegiance.";
 
-    public const string CivilianRobberyTriggerSource = "场景对话触发抢钱";
+    public const string CivilianRobberyTriggerSource = "Scene dialogue extortion";
 
-    public const string CivilianRobberyGoldTriggerDetail = "玩家通过场景对话向当前平民、商人、头人或要人索取第纳尔，不触发原版掠夺。";
+    public const string CivilianRobberyGoldTriggerDetail = "The player demanded denars from a civilian, merchant, or notable without vanilla plunder.";
 
-    public const string CivilianRobberyGoodsTriggerDetail = "玩家通过场景对话向当前平民、商人、头人或要人索取货物或物资，不触发原版掠夺。";
+    public const string CivilianRobberyGoodsTriggerDetail = "The player demanded supplies from a civilian, merchant, or notable without vanilla plunder.";
 
-    public const string PlunderTriggerSource = "场景对话触发搜掠";
+    public const string PlunderTriggerSource = "Scene dialogue plunder";
 
-    public const string PlunderTriggerDetail = "玩家在攻城后亲自进城时通过己方士兵对话下令全城搜掠。";
+    public const string PlunderTriggerDetail = "The player ordered full-town plunder through allied soldiers.";
 
-    public const string MassacreTriggerSource = "场景对话触发血洗";
+    public const string MassacreTriggerSource = "Scene dialogue massacre";
 
-    public const string MassacreTriggerDetail = "NPC回复表明对话谈崩或玩家已明确下令血洗，攻城后处置升级为血洗。";
+    public const string MassacreTriggerDetail = "Negotiations collapsed or the player ordered massacre; escalated to massacre.";
 
     public const string MassacreStopTriggerSource = "ai_tag_massacre_stop";
 
     public const string MassacreStopTriggerDetail = "player_ordered_massacre_stop";
 
-    public const string CulturalRepopulationTriggerSource = "场景对话屠民迁殖";
+    public const string CulturalRepopulationTriggerSource = "Scene dialogue colonization";
 
-    public const string CulturalRepopulationTriggerDetail = "玩家通过场景对话要求杀尽原住民并将定居点改为己方文化。";
+    public const string CulturalRepopulationTriggerDetail = "The player ordered eradicating native inhabitants and converting town culture.";
 
     public static string GetReliefTriggerSource(bool targetIsCivilian)
     {

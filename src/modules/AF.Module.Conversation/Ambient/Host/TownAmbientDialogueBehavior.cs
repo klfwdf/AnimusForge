@@ -751,11 +751,11 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 			sceneTag ?? "street",
 			anchorLine.EventKey ?? "event",
 			(anchorLine.Text ?? "").Trim(),
-			playerContext?.Status ?? "旅人",
+			playerContext?.Status ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0909"),
 			CampaignTime.Now.GetHourOfDay / 4 + "",
-			string.Join(",", speakers.Select(s => (s.Role ?? "居民") + (s.IsFemale ? ":f" : ":m")))
+			string.Join(",", speakers.Select(s => (s.Role ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0910")) + (s.IsFemale ? ":f" : ":m")))
 		});
-		string townName = settlement?.Name?.ToString() ?? "定居点";
+		string townName = settlement?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0911");
 		string timePeriod = TownAmbientTime.GetDisplayName(CampaignTime.Now.GetHourOfDay);
 		int requestEpoch = Volatile.Read(ref _ambientPauseEpoch);
 		TownAmbientAiReadyBatch batch = new TownAmbientAiReadyBatch
@@ -892,14 +892,14 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 		if (string.IsNullOrWhiteSpace(text)) return false;
 		// These are outside actions and locations.  They are valid on a wall,
 		// gate or street, never in the lord's indoor hall.
-		return text.IndexOf("北墙", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("城墙", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("城门", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("巡逻", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("岗哨", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("粮仓", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("仓库", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("墙外", StringComparison.OrdinalIgnoreCase) >= 0;
+		return text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0912"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0913"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0914"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0915"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0916"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0917"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0918"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0919"), StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	private static bool NpcMatches(TownAmbientLine line, NpcDataPacket npc, string roleHaystack)
@@ -930,7 +930,7 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 	private static bool IsRecruitmentLine(TownAmbientLine line)
 	{
 		string haystack = ((line?.Id ?? "") + " " + (line?.Text ?? "") + " " + string.Join(" ", line?.TextVariants ?? new List<string>())).ToLowerInvariant();
-		return haystack.Contains("招人") || haystack.Contains("参军") || haystack.Contains("收下我") || haystack.Contains("为您效力") || haystack.Contains("加入") || haystack.Contains("肯卖命");
+		return haystack.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0920")) || haystack.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0921")) || haystack.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0922")) || haystack.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0923")) || haystack.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0924")) || haystack.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0925"));
 	}
 
 	private static bool IsAlreadyServingNpc(NpcDataPacket npc, string roleHaystack)
@@ -946,11 +946,11 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 		{
 			return true;
 		}
-		if (value == "female" || value == "woman" || value == "f" || value == "女" || value == "女性")
+		if (value == "female" || value == "woman" || value == "f" || value == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0926") || value == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0927"))
 		{
 			return npc.IsFemale;
 		}
-		if (value == "male" || value == "man" || value == "m" || value == "男" || value == "男性")
+		if (value == "male" || value == "man" || value == "m" || value == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0928") || value == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0929"))
 		{
 			return !npc.IsFemale;
 		}
@@ -1049,16 +1049,16 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 	private static string GetCanonicalNpcRole(NpcDataPacket npc, string haystack)
 	{
 		string roleDesc = (npc?.RoleDesc ?? "").Trim().ToLowerInvariant();
-		if (roleDesc.Contains("武器") || roleDesc.Contains("weaponsmith")) return "weaponsmith";
-		if (roleDesc.Contains("盔甲") || roleDesc.Contains("armorer")) return "armorer";
-		if (roleDesc.Contains("铁匠") || roleDesc.Contains("blacksmith") || roleDesc.Contains("smith")) return "blacksmith";
-		if (roleDesc.Contains("马商") || roleDesc.Contains("马夫") || roleDesc.Contains("horse") || roleDesc.Contains("groom") || roleDesc.Contains("stable")) return "horse_trader";
-		if (roleDesc.Contains("酒馆") || roleDesc.Contains("酒保") || roleDesc.Contains("女侍") || roleDesc.Contains("tavern") || roleDesc.Contains("bartender") || roleDesc.Contains("wench")) return "tavernkeeper";
-		if (roleDesc.Contains("乞丐") || roleDesc.Contains("beggar")) return "beggar";
-		if (roleDesc.Contains("歌") || roleDesc.Contains("乐师") || roleDesc.Contains("musician") || roleDesc.Contains("singer") || roleDesc.Contains("bard")) return "musician";
-		if (roleDesc.Contains("士兵") || roleDesc.Contains("卫兵") || roleDesc.Contains("soldier") || roleDesc.Contains("guard") || roleDesc.Contains("patrol")) return "soldier";
-		if (roleDesc.Contains("商") || roleDesc.Contains("merchant") || roleDesc.Contains("vendor") || roleDesc.Contains("trader")) return "merchant";
-		if (roleDesc.Contains("船") || roleDesc.Contains("码头") || roleDesc.Contains("水手") || roleDesc.Contains("ship") || roleDesc.Contains("dock") || roleDesc.Contains("sailor")) return "shipwright";
+		if (roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0930")) || roleDesc.Contains("weaponsmith")) return "weaponsmith";
+		if (roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0931")) || roleDesc.Contains("armorer")) return "armorer";
+		if (roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0932")) || roleDesc.Contains("blacksmith") || roleDesc.Contains("smith")) return "blacksmith";
+		if (roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0933")) || roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0934")) || roleDesc.Contains("horse") || roleDesc.Contains("groom") || roleDesc.Contains("stable")) return "horse_trader";
+		if (roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0935")) || roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0936")) || roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0937")) || roleDesc.Contains("tavern") || roleDesc.Contains("bartender") || roleDesc.Contains("wench")) return "tavernkeeper";
+		if (roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0938")) || roleDesc.Contains("beggar")) return "beggar";
+		if (roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0939")) || roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0940")) || roleDesc.Contains("musician") || roleDesc.Contains("singer") || roleDesc.Contains("bard")) return "musician";
+		if (roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0941")) || roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0942")) || roleDesc.Contains("soldier") || roleDesc.Contains("guard") || roleDesc.Contains("patrol")) return "soldier";
+		if (roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0943")) || roleDesc.Contains("merchant") || roleDesc.Contains("vendor") || roleDesc.Contains("trader")) return "merchant";
+		if (roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0944")) || roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0945")) || roleDesc.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0946")) || roleDesc.Contains("ship") || roleDesc.Contains("dock") || roleDesc.Contains("sailor")) return "shipwright";
 		string troop = ((npc?.TroopId ?? "") + " " + (npc?.UnnamedKey ?? "")).ToLowerInvariant();
 		if (troop.Contains("weaponsmith") || troop.Contains("weapon_smith")) return "weaponsmith";
 		if (troop.Contains("armorer") || troop.Contains("armor_smith")) return "armorer";
@@ -1123,13 +1123,13 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 	{
 		switch (title)
 		{
-			case "陛下":
+			case var conversationMatch947 when conversationMatch947 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0947"):
 				return new TextObject("{=AF_CONV_AMBIENT_Title_Majesty}Your Majesty").ToString();
-			case "大人":
+			case var conversationMatch948 when conversationMatch948 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0948"):
 				return new TextObject("{=AF_CONV_AMBIENT_Title_Lord}my Lord").ToString();
-			case "雇佣兵":
+			case var conversationMatch949 when conversationMatch949 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0949"):
 				return new TextObject("{=AF_CONV_AMBIENT_Title_Mercenary}mercenary").ToString();
-			case "旅人":
+			case var conversationMatch950 when conversationMatch950 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0950"):
 				return new TextObject("{=AF_CONV_AMBIENT_Title_Traveler}traveler").ToString();
 			default:
 				return title ?? string.Empty;
@@ -1140,15 +1140,15 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 	{
 		switch (status)
 		{
-			case "国家统治者":
+			case var conversationMatch951 when conversationMatch951 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0951"):
 				return new TextObject("{=AF_CONV_AMBIENT_Status_Ruler}Ruler of the Realm").ToString();
-			case "本地领主":
+			case var conversationMatch952 when conversationMatch952 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0952"):
 				return new TextObject("{=AF_CONV_AMBIENT_Status_LocalLord}Local Lord").ToString();
-			case "领主":
+			case var conversationMatch953 when conversationMatch953 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0953"):
 				return new TextObject("{=AF_CONV_AMBIENT_Status_Lord}Lord").ToString();
-			case "雇佣兵":
+			case var conversationMatch954 when conversationMatch954 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0954"):
 				return new TextObject("{=AF_CONV_AMBIENT_Status_Mercenary}Mercenary").ToString();
-			case "冒险者":
+			case var conversationMatch955 when conversationMatch955 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0955"):
 				return new TextObject("{=AF_CONV_AMBIENT_Status_Adventurer}Adventurer").ToString();
 			default:
 				return status ?? string.Empty;
@@ -1176,37 +1176,48 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 		string localizedTitle = LocalizePlayerTitle(playerContext.Title);
 		string localizedStatus = LocalizePlayerStatus(playerContext.Status);
 		string spokenText = ExtractSpokenText(text);
-		// Resolve stable TextObject tokens before dynamic ambient placeholders. The
-		// JSON keeps an English fallback while the native language resources supply
-		// the zh-CN line, so no custom language probing or per-tick reflection is
-		// needed. Legacy/plain strings still pass through unchanged.
-		spokenText = new TextObject(spokenText).ToString();
+		// Resolve the native language ID without running its variable grammar:
+		// ambient placeholders must survive until the single literal expansion below.
+		spokenText = LocalizeAmbientTemplate(spokenText);
 		string playerAddress = playerContext.IsFormalTitleHolder
 			? localizedTitle
-			: (playerContext.Name == "这位旅人"
+			: (playerContext.Name == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0956")
 				? new TextObject("{=AF_CONV_AMBIENT_Player_TravelerFallback}this traveler").ToString()
 				: playerContext.Name);
-		return spokenText.Replace("{speaker}", npc.Name ?? new TextObject("{=AF_CONV_AMBIENT_Speaker_Fallback}passerby").ToString())
-			.Replace("{town}", town)
-			.Replace("{owner}", owner)
-			.Replace("{culture}", npc.CultureId ?? new TextObject("{=AF_CONV_AMBIENT_Culture_Fallback}local").ToString())
-			.Replace("{role}", npc.RoleDesc ?? new TextObject("{=AF_CONV_AMBIENT_Role_Fallback}commoner").ToString())
-			.Replace("{age}", npc.Age.ToString("0"))
-			.Replace("{scene}", sceneTag ?? new TextObject("{=AF_CONV_AMBIENT_Scene_Fallback}street").ToString())
-			.Replace("{loyalty}", loyalty.ToString("0"))
-			.Replace("{prosperity}", prosperity.ToString("0"))
-			.Replace("{tax_mood}", taxMood)
-			.Replace("{time_greeting}", timeGreeting)
-			.Replace("{time_period}", timePeriod)
-			.Replace("{player_name}", playerAddress)
-			.Replace("{player_title}", localizedTitle)
-			.Replace("{player_status}", localizedStatus)
-			.Replace("{player_clan}", playerContext.ClanName == "无家族归属" ? new TextObject("{=AF_CONV_AMBIENT_Clan_Fallback}unaffiliated clan").ToString() : playerContext.ClanName)
-			.Replace("{player_kingdom}", playerContext.KingdomName == "无王国归属" ? new TextObject("{=AF_CONV_AMBIENT_Kingdom_Fallback}unaffiliated kingdom").ToString() : playerContext.KingdomName)
-			.Replace("{player_gold}", playerContext.Gold.ToString("N0"))
-			.Replace("{player_renown}", playerContext.Renown.ToString("0"))
-			.Replace("{player_tier}", playerContext.ClanTier.ToString("0"))
+		return PromptComposerTexts.FormatTemplate(spokenText,
+			("speaker", npc.Name ?? new TextObject("{=AF_CONV_AMBIENT_Speaker_Fallback}passerby").ToString()),
+			("town", town),
+			("owner", owner),
+			("culture", npc.CultureId ?? new TextObject("{=AF_CONV_AMBIENT_Culture_Fallback}local").ToString()),
+			("role", npc.RoleDesc ?? new TextObject("{=AF_CONV_AMBIENT_Role_Fallback}commoner").ToString()),
+			("age", npc.Age.ToString("0")),
+			("scene", sceneTag ?? new TextObject("{=AF_CONV_AMBIENT_Scene_Fallback}street").ToString()),
+			("loyalty", loyalty.ToString("0")),
+			("prosperity", prosperity.ToString("0")),
+			("tax_mood", taxMood),
+			("time_greeting", timeGreeting),
+			("time_period", timePeriod),
+			("player_name", playerAddress),
+			("player_title", localizedTitle),
+			("player_status", localizedStatus),
+			("player_clan", playerContext.ClanName == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0957") ? new TextObject("{=AF_CONV_AMBIENT_Clan_Fallback}unaffiliated clan").ToString() : playerContext.ClanName),
+			("player_kingdom", playerContext.KingdomName == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0958") ? new TextObject("{=AF_CONV_AMBIENT_Kingdom_Fallback}unaffiliated kingdom").ToString() : playerContext.KingdomName),
+			("player_gold", playerContext.Gold.ToString("N0")),
+			("player_renown", playerContext.Renown.ToString("0")),
+			("player_tier", playerContext.ClanTier.ToString("0")))
 			.Trim();
+	}
+
+	private static string LocalizeAmbientTemplate(string text)
+	{
+		if (string.IsNullOrEmpty(text) || !text.StartsWith("{=", StringComparison.Ordinal)) return text;
+		int end = text.IndexOf('}', 2);
+		if (end < 0) return text;
+		string fallback = text.Substring(end + 1);
+		string id = text.Substring(2, end - 2);
+		string language = MBTextManager.ActiveTextLanguage;
+		if (language == "English" || id == "!" || id == "*") return fallback;
+		return LocalizedTextManager.GetTranslatedText(language, id) ?? fallback;
 	}
 
 	private static string ExtractSpokenText(string text)
@@ -1257,12 +1268,12 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 			bool hasLuxuryEquipment = highestEquipmentValue >= 10000;
 			int currentHour = CampaignTime.Now.GetHourOfDay;
 			bool isNight = TownAmbientTime.IsNight(currentHour);
-			string name = hero?.Name?.ToString() ?? "这位旅人";
-			string clanName = clan?.Name?.ToString() ?? "无家族归属";
-			string kingdomName = kingdom?.Name?.ToString() ?? "无王国归属";
+			string name = hero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0959");
+			string clanName = clan?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0960");
+			string kingdomName = kingdom?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0961");
 			bool isLord = hero?.IsLord == true || ownsSettlement;
-			string title = isRuler ? "陛下" : isLord ? "大人" : isMercenary ? "雇佣兵" : "旅人";
-			string status = isRuler ? "国家统治者" : ownsSettlement ? "本地领主" : isLord ? "领主" : isMercenary ? "雇佣兵" : "冒险者";
+			string title = isRuler ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0962") : isLord ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0963") : isMercenary ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0964") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0965");
+			string status = isRuler ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0966") : ownsSettlement ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0967") : isLord ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0968") : isMercenary ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0969") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0970");
 			HashSet<string> tags = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 			{
 				"any", "player", sceneTag ?? "town", TownAmbientTime.GetTag(currentHour)
@@ -1349,14 +1360,14 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 		{
 			return;
 		}
-		string fact = "[AFEF NPC行为补充] 城镇环境台词[" + (line.Id ?? "ambient") + "]，地点=" + (settlement.Name?.ToString() ?? "未知定居点") + "，场景=" + sceneTag + "。";
+		string fact = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0971") + (line.Id ?? "ambient") + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0972") + (settlement.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0973")) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0974") + sceneTag + "。";
 		if (!string.IsNullOrWhiteSpace(line.Memory))
 		{
-			fact += "背景=" + Render(line.Memory, npc, settlement, sceneTag, playerContext) + "。";
+			fact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0975") + Render(line.Memory, npc, settlement, sceneTag, playerContext) + "。";
 		}
 		if (line.ReplyHints != null && line.ReplyHints.Count > 0)
 		{
-			fact += "可回应方向=" + string.Join("、", line.ReplyHints.Where(x => !string.IsNullOrWhiteSpace(x)).Take(4)) + "。";
+			fact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0976") + string.Join("、", line.ReplyHints.Where(x => !string.IsNullOrWhiteSpace(x)).Take(4)) + "。";
 		}
 		MyBehavior.AppendExternalNonHeroSceneDialogueHistory(memoryId, npc.Name, null, (renderedText ?? line.Text ?? "").Trim(), fact, ShoutBehavior.GetCurrentSceneHistorySessionIdForExternal(), npc.AgentIndex, npc.Name);
 	}
@@ -1427,8 +1438,8 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 
 	private static string DescribeAiScene(string sceneTag)
 	{
-		if (string.Equals(sceneTag, CoupStreetSceneTag, StringComparison.Ordinal)) return "政变中厮杀的城镇街道";
-		if (string.Equals(sceneTag, CoupHallSceneTag, StringComparison.Ordinal)) return "政变中被攻入的领主大厅";
+		if (string.Equals(sceneTag, CoupStreetSceneTag, StringComparison.Ordinal)) return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0977");
+		if (string.Equals(sceneTag, CoupHallSceneTag, StringComparison.Ordinal)) return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0978");
 		return sceneTag;
 	}
 
@@ -1566,15 +1577,15 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 
 internal sealed class TownAmbientPlayerContext
 {
-	public static readonly TownAmbientPlayerContext Empty = new TownAmbientPlayerContext("这位旅人", "旅人", "冒险者", "无家族归属", "无王国归属", 0, 0f, 0, false, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "any", "player", "day" });
+	public static readonly TownAmbientPlayerContext Empty = new TownAmbientPlayerContext(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0979"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0980"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0981"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0982"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0983"), 0, 0f, 0, false, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "any", "player", "day" });
 
 	public TownAmbientPlayerContext(string name, string title, string status, string clanName, string kingdomName, int gold, float renown, int clanTier, bool isFormalTitleHolder, HashSet<string> tags)
 	{
-		Name = name ?? "这位旅人";
-		Title = title ?? "旅人";
-		Status = status ?? "冒险者";
-		ClanName = clanName ?? "无家族归属";
-		KingdomName = kingdomName ?? "无王国归属";
+		Name = name ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0984");
+		Title = title ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0985");
+		Status = status ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0986");
+		ClanName = clanName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0987");
+		KingdomName = kingdomName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0988");
 		Gold = Math.Max(0, gold);
 		Renown = Math.Max(0f, renown);
 		ClanTier = Math.Max(0, clanTier);

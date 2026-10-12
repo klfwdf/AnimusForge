@@ -39,13 +39,13 @@ public static class PassageUsePointSafePatch
 				_patched = methodInfo != null || methodInfo2 != null;
 				if (_patched)
 				{
-					Logger.LogTrace("System", "✅ PassageUsePointSafePatch 已对 PassageUsePoint 打补丁。");
+					Logger.LogTrace("System", "✅ PassageUsePointSafePatch Patched PassageUsePoint successfully.");
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ PassageUsePointSafePatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ PassageUsePointSafePatch patch failed: " + ex.Message);
 		}
 	}
 

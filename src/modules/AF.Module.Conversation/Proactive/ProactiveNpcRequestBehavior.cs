@@ -174,9 +174,9 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			bool active = Instance?.IsActiveHero(hero) == true;
             Instance?.LogOpeningState("menu", hero, true, active ? "active_request" : "no_matching_request");
 			if (!active) return false;
-			string name = hero?.Name?.ToString() ?? "这位领主";
-			title = "NPC主动接触";
-			body = name + "的队伍主动追上了你。他似乎有事想找你谈谈。";
+			string name = hero?.Name?.ToString() ?? ConversationUiLocalization.Text("AF_CONV_UI_Proactive_ThisLord", "this lord");
+			title = ConversationUiLocalization.Text("AF_CONV_UI_Proactive_ContactTitle", "NPC approaches you");
+			body = ConversationUiLocalization.Text("AF_CONV_UI_Proactive_ContactBody", "{NAME}’s party has caught up with you. They seem to have something to discuss.", "NAME", name);
 			return true;
 		}
 		catch
@@ -962,19 +962,19 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string playerName = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "玩家").Trim();
-		string npcName = hero?.Name?.ToString() ?? "你";
+		string playerName = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0065")).Trim();
+		string npcName = hero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0066");
 		if (string.Equals(_activeSession.TriggerSource, TriggerSourceNotorietyDriven, StringComparison.OrdinalIgnoreCase))
 		{
-			return "[AFEF NPC行为补充] " + npcName + "曾听过" + playerName + "的事迹，因此在眼前有难处时想到了对方。";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0067") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0068") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0069");
 		}
-		return "[AFEF NPC行为补充] " + npcName + "是带着自己眼前的一桩事来找" + playerName + "的。";
+		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0070") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0071") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0072");
 	}
 
 	private static string BuildNpcInitiatedRequestFact(string npcName, string playerName, string situation)
 	{
 		string normalizedSituation = situation?.Trim() ?? "";
-		return "[AFEF NPC行为补充] " + npcName + "主动拦下" + playerName + "。" + normalizedSituation + "这是你自己的来意；" + playerName + "尚未答应任何事。";
+		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0073") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0074") + playerName + "。" + normalizedSituation + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0075") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0076");
 	}
 
 	private bool TryConsumePendingOpening(Hero hero, bool nativeConversation, out string extraFact, out string promptText)
@@ -1492,8 +1492,8 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private string BuildOpeningFact(Hero hero)
 	{
 		MobileParty party = hero?.PartyBelongedTo ?? ResolveActiveParty();
-		string playerName = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "玩家").Trim();
-		string npcName = hero?.Name?.ToString() ?? "你";
+		string playerName = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0077")).Trim();
+		string npcName = hero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0078");
 		List<string> activeNeedTypes = GetActiveNeedTypes();
 		string needType = activeNeedTypes.Count > 0 ? activeNeedTypes[0] : (string.IsNullOrWhiteSpace(_activeSession?.NeedType) ? NeedFoodShortage : _activeSession.NeedType);
 		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
@@ -1616,25 +1616,25 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase))
 		{
 			string firstName = (_activeSession?.LastKnownMarriageFirstUnmarriedName ?? "").Trim();
-			return "你的家族正为传承和婚配的事忧心" + (string.IsNullOrWhiteSpace(firstName) ? "" : "，尤其牵挂" + firstName) + "；你想与" + playerName + "谈谈联姻或家族间的长期互助";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0079") + (string.IsNullOrWhiteSpace(firstName) ? "" : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0080") + firstName) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0081") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0082");
 		}
 		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase))
 		{
 			string reason = (_activeSession?.LastKnownRevengeReasonText ?? "").Trim();
 			string target = (_activeSession?.LastKnownRevengeTargetName ?? "").Trim();
-			string targetText = string.IsNullOrWhiteSpace(target) ? "" : "，矛头可能指向 " + target;
-			return "你的家族正因" + (string.IsNullOrWhiteSpace(reason) ? "近来的风波" : reason) + "承受压力" + targetText + "；你想请" + playerName + "帮忙想个办法";
+			string targetText = string.IsNullOrWhiteSpace(target) ? "" : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0083") + target;
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0084") + (string.IsNullOrWhiteSpace(reason) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0085") : reason) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0086") + targetText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0087") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0088");
 		}
 		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase))
 		{
 			string fief = (_activeSession?.LastKnownFiefProblemName ?? "").Trim();
 			string issue = (_activeSession?.LastKnownFiefIssueText ?? "").Trim();
-			string fiefText = string.IsNullOrWhiteSpace(fief) ? "某处封地" : fief;
-			return fiefText + "正受" + (string.IsNullOrWhiteSpace(issue) ? "内外事务的困扰" : issue) + "困扰；你想请" + playerName + "帮忙稳住局面";
+			string fiefText = string.IsNullOrWhiteSpace(fief) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0089") : fief;
+			return fiefText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0090") + (string.IsNullOrWhiteSpace(issue) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0091") : issue) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0092") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0093");
 		}
 		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase))
 		{
-			return "你的家族在王国内显得孤立，正需要可信的盟友；你想与" + playerName + "谈谈彼此照应";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0094") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0095");
 		}
 		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
 		{
@@ -1644,24 +1644,24 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			Kingdom kingdom = ResolveHeroKingdom(hero);
 			string kingdomName = ResolveKnownKingdomName(kingdom);
-			return "你和" + playerName + "同属" + kingdomName + "，王国内有一件议事正需要有人表态；你想请" + playerName + "支持你的立场";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0096") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0097") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0098") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0099");
 		}
 		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase))
 		{
 			Kingdom kingdom = ResolveHeroKingdom(hero);
 			string kingdomName = ResolveKnownKingdomName(kingdom);
-			return "你是" + kingdomName + "的国王。王国正需要愿意长期分担责任的家族；你认为" + playerName + "值得一谈，想邀请对方为王国效力";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0100") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0101") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0102");
 		}
 		if (string.Equals(needType, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase))
 		{
 			Kingdom kingdom = ResolveHeroKingdom(hero);
 			string kingdomName = ResolveKnownKingdomName(kingdom);
-			string authorityText = IsKingdomLeader(hero, kingdom) ? "你是国王" : "你是正式领主";
-			return authorityText + "，可以代表" + kingdomName + "邀请雇佣兵。王国眼下需要能立刻上阵的人手；你想邀请" + playerName + "前来效力";
+			string authorityText = IsKingdomLeader(hero, kingdom) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0103") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0104");
+			return authorityText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0105") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0106") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0107");
 		}
 		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase))
 		{
-			return "你的部队人手单薄，难以独自应付眼前局面；你想向" + playerName + "问问有没有可借的助力";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0108") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0109");
 		}
 		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase))
 		{
@@ -1670,39 +1670,39 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			{
 				heroPrisonerCount = _activeSession.LastKnownHeroPrisonerCount;
 			}
-			return "你的队伍带着太多俘虏，已难以妥善看守" + (heroPrisonerCount > 0 ? "，其中还有身份要紧的人" : "") + "；你想请" + playerName + "帮忙想办法";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0110") + (heroPrisonerCount > 0 ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0111") : "") + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0112") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0113");
 		}
 		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase))
 		{
 			string captiveName = (_activeSession?.LastKnownCaptiveClanHeroName ?? "").Trim();
 			string holderName = (_activeSession?.LastKnownCaptiveClanHeroHolderName ?? "").Trim();
 			bool leaderHeld = _activeSession?.LastKnownCaptiveClanLeaderHeld == true;
-			string captiveText = string.IsNullOrWhiteSpace(captiveName) ? "一名家族成员" : captiveName;
-			string holderText = string.IsNullOrWhiteSpace(holderName) ? "" : "，目前看押方似乎是" + holderName;
-			string leaderText = leaderHeld ? "，其中包括家族领袖或关键成员" : "";
-			return captiveText + "被俘" + holderText + leaderText + "；你想请" + playerName + "帮忙打听或设法营救";
+			string captiveText = string.IsNullOrWhiteSpace(captiveName) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0114") : captiveName;
+			string holderText = string.IsNullOrWhiteSpace(holderName) ? "" : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0115") + holderName;
+			string leaderText = leaderHeld ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0116") : "";
+			return captiveText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0117") + holderText + leaderText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0118") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0119");
 		}
 		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase))
 		{
-			return "你的家族账目吃紧，维持开销十分艰难；你想向" + playerName + "寻求周转的办法";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0120") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0121");
 		}
 		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase))
 		{
-			return "你的队伍辎重过多，行军十分吃力；你想请" + playerName + "帮忙分担或转运一部分货物";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0122") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0123");
 		}
 		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase))
 		{
-			return "你的队伍缺少坐骑，行军明显受拖累；你想向" + playerName + "求购马匹，或请对方帮忙解围";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0124") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0125");
 		}
 		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase))
 		{
-			return "队中人心浮动，需要尽快稳住军心；你想请" + playerName + "帮忙渡过这段低潮";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0126") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0127");
 		}
 		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase))
 		{
-			return "军饷和行军开销让你难以周转；你想与" + playerName + "商量一条出路";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0128") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0129");
 		}
-		return "你的部队粮食将尽；你想向" + playerName + "求购粮食或请求援助";
+		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0130") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0131");
 	}
 
 	private string BuildDiplomacyOpeningFact(Hero hero, string playerName, string npcName)
@@ -1712,7 +1712,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return BuildNpcInitiatedRequestFact(npcName, playerName, _activeSession.DiplomacyDiscussionFact);
 		}
 		string kingdomName = ResolveKnownKingdomName(hero?.Clan?.Kingdom);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你与" + playerName + "同属" + kingdomName + "。本国近日收到了一些外交消息，你想与对方交换判断；不得替国王承诺或执行外交行动。");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0132") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0133") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0134"));
 	}
 
 	private string BuildPoliticalAgendaOpeningFact(Hero hero, string playerName, string npcName)
@@ -1720,7 +1720,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		Kingdom kingdom = hero?.Clan?.Kingdom;
 		string kingdomName = ResolveKnownKingdomName(kingdom);
 		string agendaContext = VoteDealBehavior.BuildPendingDecisionsContext(hero);
-		string text = BuildNpcInitiatedRequestFact(npcName, playerName, "你和" + playerName + "同属" + kingdomName + "。王国内有一件议事正需要有人表态，你想请对方支持你的立场。 ");
+		string text = BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0135") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0136") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0137"));
 		if (!string.IsNullOrWhiteSpace(agendaContext))
 		{
 			text += "\n" + agendaContext;
@@ -1730,13 +1730,13 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private string BuildPolicySupportOpeningFact(string playerName, string npcName)
 	{
-		string kingdomName = (_activeSession?.LastKnownPolicySupportKingdomName ?? "该王国").Trim();
-		string policyName = (_activeSession?.LastKnownPolicySupportPolicyName ?? "某项政策").Trim();
-		string description = (_activeSession?.LastKnownPolicySupportDescription ?? "无").Trim();
-		string effects = (_activeSession?.LastKnownPolicySupportEffects ?? "无").Trim();
+		string kingdomName = (_activeSession?.LastKnownPolicySupportKingdomName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0138")).Trim();
+		string policyName = (_activeSession?.LastKnownPolicySupportPolicyName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0139")).Trim();
+		string description = (_activeSession?.LastKnownPolicySupportDescription ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0140")).Trim();
+		string effects = (_activeSession?.LastKnownPolicySupportEffects ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0141")).Trim();
 		bool hasPendingDecision = _activeSession?.LastKnownPolicySupportHasPendingDecision == true;
-		string decisionState = hasPendingDecision ? "王国内正有人议论此事。" : "你想先为此事争取支持。";
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你与" + playerName + "同属" + kingdomName + "，两家向来交好。你一直主张《" + policyName + "》。此事关乎：" + description + "。若能施行，可能会带来：" + effects + "。" + decisionState);
+		string decisionState = hasPendingDecision ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0142") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0143");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0144") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0145") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0146") + policyName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0147") + description + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0148") + effects + "。" + decisionState);
 	}
 
 	private string BuildPolicyDiscussionOpeningFact(string playerName, string npcName)
@@ -1753,7 +1753,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private static string BuildDiplomacyOpeningSummary(Hero hero, string playerName, string npcName)
 	{
-		return npcName + "与" + playerName + "同属一个王国；他根据本国已经获知的近期外交宣言，主动来讨论局势、影响和可考虑的立场。不得替国王作出承诺，不得把建议说成已经执行的外交行动。";
+		return npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0149") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0150");
 	}
 
 	private string BuildKingdomMercenaryInviteOpeningFact(Hero hero, string playerName, string npcName)
@@ -1761,9 +1761,9 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		Kingdom kingdom = ResolveHeroKingdom(hero);
 		string kingdomName = ResolveKnownKingdomName(kingdom);
 		string authorityText = IsKingdomLeader(hero, kingdom)
-			? "你是" + kingdomName + "的国王"
-			: "你可以代表" + kingdomName + "发出邀请";
-		return BuildNpcInitiatedRequestFact(npcName, playerName, authorityText + "。" + kingdomName + "眼下需要能立刻上阵的人手；你想邀" + playerName + "以雇佣兵身份前来效力。 ");
+			? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0151") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0152")
+			: ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0153") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0154");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, authorityText + "。" + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0155") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0156"));
 	}
 
 	private string BuildKingdomVassalInviteOpeningFact(Hero hero, string playerName, string npcName)
@@ -1771,9 +1771,9 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		Kingdom kingdom = ResolveHeroKingdom(hero);
 		string kingdomName = ResolveKnownKingdomName(kingdom);
 		string playerState = IsPlayerMercenaryOfKingdom(kingdom)
-			? playerName + "当前已经以雇佣兵身份为" + kingdomName + "效力"
-			: playerName + "目前尚未向别的王国效力";
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你是" + kingdomName + "的国王。王国需要愿意长期分担责任的家族。" + playerState + "；你想邀" + playerName + "为" + kingdomName + "效力。 ");
+			? playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0157") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0158")
+			: playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0159");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0160") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0161") + playerState + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0162") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0163") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0164"));
 	}
 
 	private string BuildClanCaptiveOpeningFact(string playerName, string npcName)
@@ -1809,66 +1809,66 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private string BuildClanServiceOpeningFact(string playerName, string npcName)
 	{
 		string clanName = (_activeSession?.LastKnownClanServiceTargetClanName ?? npcName).Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你是" + clanName + "的族长。家族没有封地，也更愿意投向" + playerName + "的麾下；你想替家族求一条效力的路。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0165") + clanName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0166") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0167"));
 	}
 
 	private string BuildRomanticInteractionOpeningFact(string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你与" + playerName + "相识已久，心中有些牵挂想亲口说出来。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0168") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0169"));
 	}
 
 	private string BuildGreetingOpeningFact(string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你与" + playerName + "颇为熟稔，只是想问候近况。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0170") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0171"));
 	}
 
 	private string BuildFriendshipOpeningFact(string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你早已听闻" + playerName + "在这片土地上的名声，虽还不算熟悉，却觉得值得主动结识。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0172") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0173"));
 	}
 
 	private string BuildCourtshipOpeningFact(string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你早已听闻" + playerName + "的名声，虽还不算熟悉，却想亲口表达自己的好感。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0174") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0175"));
 	}
 
 	private string BuildBanditSuppressionOpeningFact(string playerName, string npcName)
 	{
-		string settlementName = (_activeSession?.LastKnownBanditSuppressionSettlementName ?? "某处封地").Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, settlementName + "附近强盗横行，百姓与商旅都不安生；你信得过" + playerName + "，想请对方相助清剿。 ");
+		string settlementName = (_activeSession?.LastKnownBanditSuppressionSettlementName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0176")).Trim();
+		return BuildNpcInitiatedRequestFact(npcName, playerName, settlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0177") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0178"));
 	}
 
 	private string BuildPoliticalRivalSuppressionOpeningFact(string playerName, string npcName)
 	{
-		string kingdomName = (_activeSession?.LastKnownPoliticalRivalSuppressionKingdomName ?? "该王国").Trim();
+		string kingdomName = (_activeSession?.LastKnownPoliticalRivalSuppressionKingdomName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0179")).Trim();
 		string requesterClanName = (_activeSession?.LastKnownPoliticalRivalSuppressionRequesterClanName ?? npcName).Trim();
-		string rivalClanName = (_activeSession?.LastKnownPoliticalRivalSuppressionRivalClanName ?? "同阵营家族").Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你是" + requesterClanName + "的族长，与你同属" + kingdomName + "。两家向来交好，而" + rivalClanName + "却与你积怨甚深；你想请" + playerName + "在王国事务上为你撑一撑。 ");
+		string rivalClanName = (_activeSession?.LastKnownPoliticalRivalSuppressionRivalClanName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0180")).Trim();
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0181") + requesterClanName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0182") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0183") + rivalClanName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0184") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0185"));
 	}
 
 	private string BuildSettlementPurchaseOpeningFact(string playerName, string npcName)
 	{
-		string kingdomName = (_activeSession?.LastKnownSettlementPurchaseKingdomName ?? "该王国").Trim();
-		string playerFiefsText = (_activeSession?.LastKnownSettlementPurchasePlayerFiefsText ?? "城镇：无；城堡：无").Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你与" + playerName + "同属" + kingdomName + "，你想为家族添一处封地。" + playerName + "手中的封地包括：" + playerFiefsText + "。你想商谈购入其中一处。 ");
+		string kingdomName = (_activeSession?.LastKnownSettlementPurchaseKingdomName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0186")).Trim();
+		string playerFiefsText = (_activeSession?.LastKnownSettlementPurchasePlayerFiefsText ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0187")).Trim();
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0188") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0189") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0190") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0191") + playerFiefsText + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0192"));
 	}
 
 	private string BuildSettlementSaleOpeningFact(string playerName, string npcName)
 	{
-		string kingdomName = (_activeSession?.LastKnownSettlementSaleKingdomName ?? "该王国").Trim();
-		string settlementName = (_activeSession?.LastKnownSettlementSaleTargetSettlementName ?? "某处封地").Trim();
-		string settlementType = (_activeSession?.LastKnownSettlementSaleTargetSettlementType ?? "封地").Trim();
-		string foreignFactionName = (_activeSession?.LastKnownSettlementSaleForeignFactionName ?? "其他势力").Trim();
-		string foreignSettlementName = (_activeSession?.LastKnownSettlementSaleForeignSettlementName ?? "边境封地").Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你与" + playerName + "同属" + kingdomName + "。" + settlementName + "是一处边境" + settlementType + "，收益不佳，又邻近" + foreignFactionName + "的" + foreignSettlementName + "；你想商谈将它转手。 ");
+		string kingdomName = (_activeSession?.LastKnownSettlementSaleKingdomName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0193")).Trim();
+		string settlementName = (_activeSession?.LastKnownSettlementSaleTargetSettlementName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0194")).Trim();
+		string settlementType = (_activeSession?.LastKnownSettlementSaleTargetSettlementType ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0195")).Trim();
+		string foreignFactionName = (_activeSession?.LastKnownSettlementSaleForeignFactionName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0196")).Trim();
+		string foreignSettlementName = (_activeSession?.LastKnownSettlementSaleForeignSettlementName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0197")).Trim();
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0198") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0199") + kingdomName + "。" + settlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0200") + settlementType + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0201") + foreignFactionName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0202") + foreignSettlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0203"));
 	}
 
 	private string BuildTerritorialInterrogationOpeningFact(string playerName, string npcName)
 	{
-		string kingdomName = (_activeSession?.LastKnownTerritorialInterrogationKingdomName ?? "该王国").Trim();
-		string settlementName = (_activeSession?.LastKnownTerritorialInterrogationSettlementName ?? "该王国定居点").Trim();
-		string npcCultureName = (_activeSession?.LastKnownTerritorialInterrogationNpcCultureName ?? "该文化").Trim();
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你属于" + kingdomName + "的" + npcCultureName + "人。一个来历不明的异乡人出现在" + settlementName + "附近；你想问清" + playerName + "从何而来、来此意欲何为。保持警惕，但不可把怀疑当成罪证。 ");
+		string kingdomName = (_activeSession?.LastKnownTerritorialInterrogationKingdomName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0204")).Trim();
+		string settlementName = (_activeSession?.LastKnownTerritorialInterrogationSettlementName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0205")).Trim();
+		string npcCultureName = (_activeSession?.LastKnownTerritorialInterrogationNpcCultureName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0206")).Trim();
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0207") + kingdomName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0208") + npcCultureName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0209") + settlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0210") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0211"));
 	}
 
 	private string BuildMarriageAlliancePressureOpeningFact(string playerName, string npcName)
@@ -1897,22 +1897,22 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private string BuildFoodShortageOpeningFact(MobileParty party, string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你的部队粮食将尽；你想向" + playerName + "求购粮食或请求援助。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0212") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0213"));
 	}
 
 	private string BuildMoneyShortageOpeningFact(MobileParty party, string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "军饷和行军开销让你难以周转；你想与" + playerName + "商量一条出路。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0214") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0215"));
 	}
 
 	private string BuildTroopShortageOpeningFact(MobileParty party, string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你的部队人手单薄，难以独自应付眼前局面；你想问问" + playerName + "有没有可借的助力。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0216") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0217"));
 	}
 
 	private string BuildPrisonerOverloadOpeningFact(MobileParty party, string playerName, string npcName)
 	{
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你带着太多俘虏，已难以妥善看守；你想请" + playerName + "帮忙安排他们的去处。 ");
+		return BuildNpcInitiatedRequestFact(npcName, playerName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0218") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0219"));
 	}
 
 	private static string BuildOpeningPrompt(IEnumerable<string> needTypes)
@@ -2733,7 +2733,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			}
 			if (holder == PartyBase.MainParty)
 			{
-				return MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "玩家";
+				return MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0220");
 			}
 			string leaderName = GetHeroDisplayName(holder.LeaderHero);
 			if (!string.IsNullOrWhiteSpace(leaderName))
@@ -2828,19 +2828,19 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				List<string> issues = new List<string>();
 				if (underAttack)
 				{
-					issues.Add("封地正在被围困或劫掠");
+					issues.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0221"));
 				}
 				if (loyaltyThreshold > 0 && loyalty >= 0f && loyalty <= loyaltyThreshold)
 				{
-					issues.Add("忠诚偏低");
+					issues.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0222"));
 				}
 				if (securityThreshold > 0 && security >= 0f && security <= securityThreshold)
 				{
-					issues.Add("治安偏低");
+					issues.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0223"));
 				}
 				if (garrisonThreshold > 0 && garrison >= 0 && garrison <= garrisonThreshold)
 				{
-					issues.Add("驻军薄弱");
+					issues.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0224"));
 				}
 				if (issues.Count <= 0)
 				{
@@ -2915,14 +2915,14 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			{
 				snapshot.PressureScore = 72f + Math.Min(16f, captiveSnapshot.Count * 4f);
 				snapshot.TargetName = captiveSnapshot.FirstHolderName;
-				snapshot.ReasonText = "家族成员被俘";
+				snapshot.ReasonText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0225");
 				return snapshot;
 			}
 			if (fiefSnapshot?.UnderAttack == true)
 			{
 				snapshot.PressureScore = 70f + Math.Min(16f, fiefSnapshot.ProblemCount * 4f);
 				snapshot.TargetName = ResolveFirstAttackerFactionName(requester.Clan);
-				snapshot.ReasonText = "家族封地遭到围困或劫掠";
+				snapshot.ReasonText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0226");
 				return snapshot;
 			}
 			if (targetKingdom == null || targetKingdom.FactionsAtWarWith == null)
@@ -2949,7 +2949,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			IFaction enemy = targetKingdom.FactionsAtWarWith.FirstOrDefault(f => f?.IsKingdomFaction == true);
 			snapshot.PressureScore = 56f + Math.Min(18f, warCount * 5f);
 			snapshot.TargetName = GetFactionDisplayName(enemy);
-			snapshot.ReasonText = "战争压力已经影响家族安全";
+			snapshot.ReasonText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0227");
 		}
 		catch
 		{
@@ -3172,7 +3172,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return name;
 		}
 		name = (_activeSession?.TargetKingdomName ?? "").Trim();
-		return string.IsNullOrWhiteSpace(name) ? "该王国" : name;
+		return string.IsNullOrWhiteSpace(name) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0228") : name;
 	}
 
 	private string BuildKingdomManpowerNeedText(Kingdom kingdom)
@@ -3190,9 +3190,9 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		int targetMercenaries = useSession ? _activeSession.KingdomTargetMercenaryClanCount : snapshot.TargetMercenaryClanCount;
 		int targetVassals = useSession ? _activeSession.KingdomTargetVassalClanCount : snapshot.TargetVassalClanCount;
 		string warText = warCount > 0
-			? "，正与约 " + warCount + " 个王国交战，敌我力量比约 " + powerRatio.ToString("0.00")
-			: "，当前没有主要王国战争";
-		return "王国当前正式封臣家族（不含执政家族）约 " + formalVassals + "/" + targetVassals + "，雇佣兵家族约 " + mercenaries + "/" + targetMercenaries + "，封地负担约 " + fiefScore + warText + "。";
+			? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0229") + warCount + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0230") + powerRatio.ToString("0.00")
+			: ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0231");
+		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0232") + formalVassals + "/" + targetVassals + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0233") + mercenaries + "/" + targetMercenaries + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0234") + fiefScore + warText + "。";
 	}
 
 	private static bool IsPlayerMercenaryOfKingdom(Kingdom kingdom)

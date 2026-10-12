@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <!-- Default display names -->
+    <string id="AF_DUEL_DefaultPlayer" text="Player" />
+    <string id="AF_DUEL_DefaultLoser" text="the loser" />
+    <string id="AF_DUEL_DefaultOpponent" text="the opponent" />
+    <string id="AF_DUEL_DefaultLoserClan" text="the loser's clan" />
+    <string id="AF_DUEL_DefaultWinnerClan" text="the winner's clan" />
+    <string id="AF_DUEL_DefaultProtagonist" text="the protagonist" />
+
+    <!-- Duel stake display -->
+    <string id="AF_DUEL_StakeDenars" text="{AMOUNT} denars" />
+    <string id="AF_DUEL_StakeItems" text="{COUNT} {ITEM}" />
+    <string id="AF_DUEL_StakeNone" text="(None)" />
+    <string id="AF_DUEL_ClanSuffix" text=" Clan" />
+
+    <!-- AFEF fact templates -->
+    <string id="AF_DUEL_FactNpcLostWilderness" text="[AFEF NPC action supplement] {NPC} was defeated by {PLAYER} in a wilderness duel." />
+    <string id="AF_DUEL_FactNpcWonWilderness" text="[AFEF NPC action supplement] {NPC} defeated {PLAYER} in a wilderness duel." />
+    <string id="AF_DUEL_FactPlayerAction" text="[AFEF Player action supplement] " />
+    <string id="AF_DUEL_FactNpcAction" text="[AFEF NPC action supplement] " />
+
+    <!-- Formal duel renown penalty fact -->
+    <string id="AF_DUEL_RenownPenaltyFact" text="{LOSER} was defeated in a formal duel with {WINNER}; {LOSER_CLAN} lost {PENALTY} renown and now has {AFTER}; {WINNER_CLAN} gained the same amount and now has {WINNER_AFTER}." />
+
+    <!-- Duel stake settlement history templates -->
+    <string id="AF_DUEL_StakeDebtNpc" text="You defeated {PLAYER} in a duel and recorded: {PLAYER} owes you {AMOUNT} denars{DEBT_ID} (duel stake){TERM}{NOTE}." />
+    <string id="AF_DUEL_StakeDebtPlayer" text="You lost to {NPC} in a duel and owe {NPC} {AMOUNT} denars{DEBT_ID} (duel stake){TERM}{NOTE}." />
+    <string id="AF_DUEL_StakeTransferNpcLoss" text="You lost to {PLAYER} in a duel and paid the stake: {ITEMS}." />
+    <string id="AF_DUEL_StakeTransferPlayerWin" text="You defeated {NPC} in a duel and received {ITEMS} (duel stake) from {NPC}." />
+    <string id="AF_DUEL_StakeDebtNpcWin" text="You defeated {PLAYER} in a duel and recorded: {PLAYER} owes you {ITEMS} (duel stake)." />
+    <string id="AF_DUEL_StakeDebtPlayerLoss" text="You lost to {NPC} in a duel and owe {NPC} {ITEMS} (duel stake)." />
+    <string id="AF_DUEL_StakeDebtIdLabel" text=" (Debt ID: {ID})" />
+    <string id="AF_DUEL_StakeNoteLabel" text=", note: {NOTE}" />
+
+    <!-- Default duel result lines -->
+    <string id="AF_DUEL_DefaultNpcWin" text="Hmph, no match at all." />
+    <string id="AF_DUEL_DefaultNpcLoss" text="…You're good, I'll give you that." />
+    <!-- Fourberie compatibility eligibility reasons -->
+    <string id="AF_UI_Duel_FourberieSceneBlocked" text="Fourberie is currently controlling this special combat or stealth scene. Leave this scene normally before starting an AnimusForge duel." />
+    <string id="AF_UI_Duel_FourberieHandToHandBlocked" text="Fourberie hand-to-hand combat state has not reset. To avoid crashes during duels, finish or leave Fourberie's arena/underground ring; if this persists, reload your save." />
+  </strings>
+</base>

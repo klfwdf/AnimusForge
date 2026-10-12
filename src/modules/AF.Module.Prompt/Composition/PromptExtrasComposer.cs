@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -47,9 +48,9 @@ internal struct PromptExtrasMarkers
 /// </summary>
 internal static class PromptExtrasComposer
 {
-	internal const string DefaultPlayerDisplayName = "玩家";
-	internal const string ResidentRecentActionsHeader = "【NPC近期行动（近10天，常驻）】";
-	internal const string VanillaIssueRuntimeBlockPrefix = "【原版任务上下文";
+	internal static string DefaultPlayerDisplayName => PromptComposerTexts.Get("extras_player");
+	internal static string ResidentRecentActionsHeader => PromptComposerTexts.Raw("ResidentRecentActionsHeader");
+	internal static string VanillaIssueRuntimeBlockPrefix => PromptComposerTexts.Raw("VanillaIssueRuntimeBlockPrefix");
 
 	internal static string ResolvePlayerDisplayName(string displayName)
 		=> string.IsNullOrWhiteSpace(displayName) ? DefaultPlayerDisplayName : displayName;
@@ -57,21 +58,19 @@ internal static class PromptExtrasComposer
 	internal static string BuildDuelResultLine(bool playerWon, string playerDisplayName)
 	{
 		string name = ResolvePlayerDisplayName(playerDisplayName);
-		return playerWon
-			? "【战斗结果】你刚刚在一场正式的决斗中输给了" + name + "。无论失败来自倒地、低血量、逃跑或撤退，这都已经按决斗失败结算；你可以不甘、恼怒或嘴硬，但不能否认自己输了。请认真考虑履行你在决斗前约定的赌注或补偿。"
-			: "【战斗结果】你刚刚在一场正式的决斗中打败了" + name + "。你可以据此调整对" + name + "的态度，或提醒" + name + "履行之前约定的赌注。";
+		return PromptComposerTexts.Format(playerWon ? "extras_duel_lost" : "extras_duel_won", ("NAME", name));
 	}
 
 	internal static string BuildVanillaBattleDefeatLine(string playerDisplayName)
 	{
 		string name = ResolvePlayerDisplayName(playerDisplayName);
-		return "【原版战斗结果】你刚刚在一场战斗中被" + name + "击败了。你的军队溃败，你必须承认这个事实。根据你的性格，你可以表现得愤怒、不甘、恳求或傲慢，但不能否认战败的事实。";
+		return PromptComposerTexts.Format("extras_battle_defeat", ("NAME", name));
 	}
 
 	internal static string BuildReleasedPrisonerLine(string playerDisplayName)
 	{
 		string name = ResolvePlayerDisplayName(playerDisplayName);
-		return "【释放通知】你之前被" + name + "俘虏关押，现在刚刚获得了自由。你应该意识到自己曾经是囚犯这个事实，并根据你的性格做出适当反应（感激、愤恨、或不屑等）。";
+		return PromptComposerTexts.Format("extras_prisoner_released", ("NAME", name));
 	}
 
 	/// <summary>Canonical order; blank sections are skipped, each non-blank section ends with a newline.</summary>
@@ -166,5 +165,5 @@ internal static class PromptExtrasComposer
 	}
 
 	internal static bool HasRuleBlock(string extras, string ruleId)
-		=> !string.IsNullOrEmpty(extras) && extras.IndexOf("【附加规则:" + ruleId + "】", StringComparison.OrdinalIgnoreCase) >= 0;
+		=> PromptRuleBlockText.Has(extras, ruleId);
 }

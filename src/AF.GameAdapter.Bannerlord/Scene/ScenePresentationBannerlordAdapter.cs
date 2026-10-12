@@ -141,7 +141,7 @@ internal sealed class ScenePresentationBannerlordAdapter
 	internal static bool SubmitScenePresentationTextForExternal(string text, out string status)
 	{
   ShoutBehavior owner=CurrentInstance;
-  if (owner==null) { status="场景会话已结束。"; return false; }
+  if (owner==null) { status=ConversationUiLocalization.Text("AF_CONV_UI_Scene_SessionEnded", "The scene conversation session has ended."); return false; }
   if (!owner._j17ScenePresentationBannerlordAdapter.Presentation.PrepareTextSubmission(text, IsBannerlordMainThreadForNativeActions, owner._j17ScenePresentationBannerlordAdapter.IsPresentationSubmitBlocked,
    owner._j17ScenePresentationBannerlordAdapter.IsPresentationRoundActive, out string content, out status)) return false;
 		// A staged give/show rides on this line, through the same commit as the one-shot flow.

@@ -108,12 +108,16 @@
       },
       {
         "identity": "personality_background/hero:ROTwanderer25",
+        "resolution_type": "independent_same_hero_id_variants",
         "zh_files": [
           "personality_background/ROTwanderer25__铁手杰斯林.json",
           "personality_background/ROTwanderer25__杰斯林.json"
         ],
-        "en_file": "personality_background/ROTwanderer25__Ironhand_Jacelyn.json",
-        "reason": "Both Chinese source files describe Jacelyn Bywater (Ironhand); merged into a single hero:ROTwanderer25 file."
+        "en_files": [
+          "personality_background/ROTwanderer25__Jacelyn_Bywater.json",
+          "personality_background/ROTwanderer25__Jacelyn.json"
+        ],
+        "reason": "Two Chinese source files share HeroId=ROTwanderer25 with distinct Personality/Background texts (ROTwanderer25__铁手杰斯林.json describes Ironhand Jacelyn/Jacelyn Bywater as gentle yet wary; ROTwanderer25__杰斯林.json describes Jacelyn as quiet and cautious). Preserved as two separate 1-to-1 English files retaining HeroId prefix ROTwanderer25 without lossy merge."
       }
     ]
   },
@@ -7715,11 +7719,13 @@
         },
         "personality_background/ROTwanderer25__铁手杰斯林.json": {
           "hero_id": "ROTwanderer25",
-          "en_file": "personality_background/ROTwanderer25__Jacelyn_Bywater.json"
+          "en_file": "personality_background/ROTwanderer25__Jacelyn_Bywater.json",
+          "variant_note": "Independent same-HeroId source variant 1/2 (铁手杰斯林 -> Jacelyn Bywater, gentle yet wary)."
         },
         "personality_background/ROTwanderer25__杰斯林.json": {
           "hero_id": "ROTwanderer25",
-          "en_file": "personality_background/ROTwanderer25__Jacelyn_Bywater.json"
+          "en_file": "personality_background/ROTwanderer25__Jacelyn.json",
+          "variant_note": "Independent same-HeroId source variant 2/2 (杰斯林 -> Jacelyn, quiet and cautious)."
         },
         "personality_background/ROTwanderer26__昆廷·马泰尔.json": {
           "hero_id": "ROTwanderer26",

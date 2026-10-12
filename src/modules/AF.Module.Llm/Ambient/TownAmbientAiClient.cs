@@ -139,19 +139,19 @@ public static class TownAmbientAiClient
 	{
 		if (!HasCompleteConfiguration())
 		{
-			return new TownAmbientAiResult { Error = "请先填写环境 AI 的 API 地址、Key 和模型名称。" };
+			return new TownAmbientAiResult { Error = LlmSourceTexts.Get("TownAmbientErrorMissingCredentials") };
 		}
 		object[] messages =
 		{
 			new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
 			{
 				["role"] = "system",
-				["content"] = "你是接口连通性测试助手。只回复两个汉字：正常。"
+				["content"] = LlmPromptTexts.Format("AF_LLM_PROMPT_TownAmbientTestSystem", "You are an endpoint connectivity test assistant. Reply with exactly: {EXPECTED_RESPONSE}.", ("EXPECTED_RESPONSE", LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientTestExpectedResponse", "OK")))
 			},
 			new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
 			{
 				["role"] = "user",
-				["content"] = "测试环境AI接口。"
+				["content"] = LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientTestUser", "Test the ambient AI endpoint.")
 			}
 		};
 		TownAmbientAiResult result = await SendAsync(messages, 96, 0, "town_ambient_ai_test").ConfigureAwait(false);
@@ -163,21 +163,20 @@ public static class TownAmbientAiClient
 
 	private static object[] BuildReplyMessages(string anchorText, string settlementName, string sceneTag, string timePeriod, string playerStatus, string topicHints, IReadOnlyList<TownAmbientAiSpeaker> responders)
 	{
-		string speakerList = string.Join("；", responders.Select((speaker, index) => string.Format(
-			"回应者{0}：身份={1}，性别={2}",
-			index + 1,
-			string.IsNullOrWhiteSpace(speaker.Role) ? "居民" : speaker.Role.Trim(),
-			speaker.IsFemale ? "女" : "男")));
-		string system = "你为中世纪城镇生活生成极短的多人接话。只写人物真正说出口的话，不写动作、旁白、姓名、冒号、引号或身份标签。每句8到28个汉字，口语自然；必须符合回应者职业、性别、地点和上一句内容。不得凭空把普通旅人称为陛下或大人。严格输出JSON：{\"replies\":[\"第一句\",\"第二句\"]}，数组长度必须与回应者数量相同。";
-		string user = string.Format(
-			"地点={0}；区域={1}；时间={2}；玩家身份={3}；上一句={4}；话题提示={5}；{6}",
-			string.IsNullOrWhiteSpace(settlementName) ? "定居点" : settlementName.Trim(),
-			string.IsNullOrWhiteSpace(sceneTag) ? "街道" : sceneTag.Trim(),
-			string.IsNullOrWhiteSpace(timePeriod) ? "白天" : timePeriod.Trim(),
-			string.IsNullOrWhiteSpace(playerStatus) ? "普通旅人" : playerStatus.Trim(),
-			(anchorText ?? "").Trim(),
-			string.IsNullOrWhiteSpace(topicHints) ? "自然接话，不引入新主题" : topicHints.Trim(),
-			speakerList);
+		string speakerList = string.Join(LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientSpeakerSeparator", "; "), responders.Select((speaker, index) => LlmPromptTexts.Format(
+			"AF_LLM_PROMPT_TownAmbientSpeakerLine", "Responder {INDEX}: role={ROLE}, gender={GENDER}",
+			("INDEX", (index + 1).ToString()),
+			("ROLE", string.IsNullOrWhiteSpace(speaker.Role) || speaker.Role == LlmSourceTexts.Get("TownAmbientDefaultResidentRole") ? LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientResidentRole", "resident") : speaker.Role.Trim()),
+			("GENDER", speaker.IsFemale ? LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientGenderFemale", "female") : LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientGenderMale", "male")))));
+		string system = LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientSystem", "Generate very short multi-person exchanges for life in a medieval town. Write only words actually spoken by the characters; do not write actions, narration, names, colons, quotation marks, or identity labels. Each line must be 8 to 28 characters in English and sound conversational; match each responder's occupation, gender, location, and the previous line. Do not invent titles such as emperor or lord for an ordinary traveler. Output strict JSON: {\"replies\":[\"Line one\",\"Line two\"]}; the array length must match the number of responders.");
+		string user = LlmPromptTexts.Format("AF_LLM_PROMPT_TownAmbientUser", "Location={SETTLEMENT}; area={SCENE}; time={TIME}; player status={PLAYER_STATUS}; previous line={ANCHOR}; topic hints={TOPIC_HINTS}; {RESPONDERS}",
+			("SETTLEMENT", string.IsNullOrWhiteSpace(settlementName) ? LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientDefaultSettlement", "settlement") : settlementName.Trim()),
+			("SCENE", string.IsNullOrWhiteSpace(sceneTag) ? LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientDefaultScene", "street") : sceneTag.Trim()),
+			("TIME", string.IsNullOrWhiteSpace(timePeriod) ? LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientDefaultTime", "daytime") : timePeriod.Trim()),
+			("PLAYER_STATUS", string.IsNullOrWhiteSpace(playerStatus) ? LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientDefaultPlayerStatus", "ordinary traveler") : playerStatus.Trim()),
+			("ANCHOR", (anchorText ?? "").Trim()),
+			("TOPIC_HINTS", string.IsNullOrWhiteSpace(topicHints) ? LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientDefaultTopics", "continue naturally without introducing a new topic") : topicHints.Trim()),
+			("RESPONDERS", speakerList));
 		return new object[]
 		{
 			new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
@@ -298,7 +297,7 @@ public static class TownAmbientAiClient
 		string model = DuelSettings.GetTownAmbientAiModelName();
 		if (string.IsNullOrWhiteSpace(apiUrl) || string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(model))
 		{
-			return new TownAmbientAiResult { Error = "环境 AI 配置不完整。" };
+			return new TownAmbientAiResult { Error = LlmSourceTexts.Get("TownAmbientErrorConfigIncomplete") };
 		}
 
 		Logger.RecordMessageDump("town_ambient_ai_request", messages, mode);
@@ -335,7 +334,7 @@ public static class TownAmbientAiClient
 				{
 					return new TownAmbientAiResult
 					{
-						Error = "接口返回成功，但没有可读的模型正文。若模型只返回推理，请提高最大输出 Tokens。",
+						Error = LlmSourceTexts.Get("TownAmbientErrorEmptyModelReply"),
 						InputTokens = inputTokens,
 						OutputTokens = outputTokens,
 						RawResponse = TruncateDiagnosticText(content)
@@ -356,7 +355,7 @@ public static class TownAmbientAiClient
 			{
 				return new TownAmbientAiResult
 				{
-					Error = "环境 AI 返回内容无法解析为接话数组。",
+					Error = LlmSourceTexts.Get("TownAmbientErrorParseFailure"),
 					InputTokens = inputTokens,
 					OutputTokens = outputTokens,
 					ModelReply = TruncateDiagnosticText(content),
@@ -374,7 +373,7 @@ public static class TownAmbientAiClient
 		}
 		catch (OperationCanceledException)
 		{
-			return new TownAmbientAiResult { Error = "环境 AI 请求超时（45秒）。" };
+			return new TownAmbientAiResult { Error = LlmSourceTexts.Get("TownAmbientErrorRequestTimeout") };
 		}
 		catch (Exception ex)
 		{
@@ -386,7 +385,7 @@ public static class TownAmbientAiClient
 	private static string TruncateDiagnosticText(string text)
 	{
 		string value = (text ?? "").Trim();
-		return value.Length <= 8000 ? value : value.Substring(0, 8000) + "\n…（响应过长，已截断）";
+		return value.Length <= 8000 ? value : value.Substring(0, 8000) + "\n... (response truncated)";
 	}
 
 	private static int ReadUsageToken(JObject envelope, string openAiName, string anthropicName)
@@ -475,7 +474,7 @@ public static class TownAmbientAiClient
 		}
 		if (text.Length > 48)
 		{
-			text = text.Substring(0, 48).TrimEnd('，', '。', '！', '？') + "。";
+			text = text.Substring(0, 48).TrimEnd(LlmSourceTexts.GetCharacterArray("TownAmbientTrailingPunctuation")) + LlmPromptTexts.Get("AF_LLM_PROMPT_SentencePeriod", ".");
 		}
 		return text;
 	}
@@ -483,7 +482,7 @@ public static class TownAmbientAiClient
 
 public sealed class TownAmbientAiSpeaker
 {
-	public string Role { get; set; } = "居民";
+	public string Role { get; set; } = LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientResidentRole", "resident");
 
 	public bool IsFemale { get; set; }
 }

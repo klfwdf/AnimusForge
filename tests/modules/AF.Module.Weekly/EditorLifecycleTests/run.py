@@ -20,10 +20,17 @@ out = new_run_root(ROOT, "weekly-editor-lifecycle", args.out)
 project = ET.parse(HERE / "EditorLifecycleTests.csproj")
 items = project.getroot().find("ItemGroup")
 manifest = []
-for item in items:
-    path = (HERE / item.get("Include")).resolve()
-    assert path.is_file(), path
-    item.set("Include", str(path))
+for item in project.getroot().iter():
+    if item.tag in ("Compile", "Content", "EmbeddedResource"):
+        path = (HERE / item.get("Include")).resolve()
+        assert path.is_file(), path
+        item.set("Include", str(path))
+    elif item.tag == "HintPath":
+        path = (HERE / item.text).resolve()
+        assert path.is_file(), path
+        item.text = str(path)
+    else:
+        continue
     manifest.append({"path": path.relative_to(ROOT).as_posix(), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
 for path in sorted(HERE.glob("*.cs")):
     ET.SubElement(items, "Compile", Include=str(path))

@@ -2,7 +2,7 @@
   "Id": "rule_Book_of_Hate",
   "Keywords": [
     "book of hatred",
-    "David's Revenge",
+    "Dawi Grudge",
     "Dwarven Oath",
     "revenge",
     "never forget"
@@ -22,7 +22,7 @@
         "SkillMin": null,
         "IdentityIds": null
       },
-      "Content": "The Book of Hatred—called \"Damaz Kron\" in Davik language—is the core document of dwarf civilization. In this huge iron book that is too heavy for mortals to move easily, every offense, every breach of contract, and every invasion suffered by the dwarf race since ancient times is recorded. From unpaid beer money to entire fortresses plundered, everything is recorded in detail and will remain forever in the dwarf's memory until the debt is paid in full. The motto of the dwarves is \"Never forget, never forgive.\""
+      "Content": "The Great Book of Grudges—known in Khazalid as the \"Dammaz Kron\"—is the foundational document of Dwarf civilization. Within this massive iron-bound tome, too heavy for a mortal man to lift with ease, is recorded every slight, every broken oath, and every invasion suffered by the Dwarf race since ancient times. From unpaid ale-reckonings to entire holds sacked and despoiled, every offense is set down in full and preserved forever in Dwarf memory until the debt is paid in full. The maxim of the Dwarfs is: \"Never forget, never forgive.\""
     },
     {
       "Priority": 0,
@@ -39,7 +39,7 @@
         "SkillMin": null,
         "IdentityIds": null
       },
-      "Content": "The Book of Hate is not an angry account of revenge—it is a memory of justice. Human beings say \"forgiveness is a virtue\" because they are weak, they have short memories, and they are afraid of the cost of repayment. But we David are different – ​​if we don’t remember who owes what, how can justice exist? Every stroke of Grugi is a promise to the world that the past will not just pass away and that wrongs will be righted, even if it takes a thousand years to do so. Greenskins destroy the east gate of Karak Eight Peaks? Make a note. The elves shaved off our messenger's beard? Make a note of it - even if we haven't paid it off in full to this day. But we will. It's credibility - your name on the Book of Hatred means you have a debt to pay before Dawe can trust you."
+      "Content": "The Book of Grudges is not a wrathful ledger of vengeance—it is the memory of justice. Men say \"forgiveness is a virtue\" because they are weak, their memories are short, and they fear the price of settling accounts. Yet we Dawi are different: if we do not remember who owes what, how can justice exist? Every Grudge entered is a promise to the world that the past will not simply pass away and that wrongs will be righted, even if righting them takes a thousand years. Greenskins smashed the east gate of Karak Eight Peaks? Strike it into the ledger. The Elves shaved the beard of our envoy? Strike it into the ledger—even if to this day that reckoning has not been settled in full. Yet we will settle it. That is credit and honor: having your name in the Book of Grudges means that before the Dawi can trust you, you have a debt waiting to be paid."
     },
     {
       "Priority": 0,
@@ -77,7 +77,7 @@
         },
         "IdentityIds": null
       },
-      "Content": "The system of \"Dammaz Kron\" (Dammaz Kron) is profound and complex, and its core principles can be summarized as follows: Each grudge entry (Grudge/Dammaz) contains five elements - the victim (the entire dwarf race/a specific Karak/a specific clan/a specific individual), the offender (a foreign race or an individual), the content of the offense (description of the event), the evidence (usually including the cross-testimony of multiple dwarf witnesses), and the settlement valuation (from the weight of gold to the volume of blood, evaluated by the Council of Elders). Entries are divided into four levels of severity: Trivial (beer watered down, human merchants shortchanged) - settlement usually involves payment of alternative goods or a formal apology; Common (territorial encroachment, serious breach of contract) - settlement can include trade reparations, formal humiliation of the offender, or military Serious level (Fall of Karak, Massacre) - The only way to pay off is war; Immortal level (Eight Peaks of Karak, Battle of Longbeard) - It is considered to be unable to pay off in the current time frame and will be inherited by all descendants of the dwarves until the final settlement is achieved. Crucially, the Book of Hatred doesn't just record negative content - it also records \"positive debts\": favors: any foreigner who has aided a dwarf is recorded in the book, and this positive entry can be offset by future offenses, or it can have an ongoing positive impact in the dwarf's legacy (such as a covenant). This was the true foundation of the Millennium Alliance between the Imperium of Man and the Dwarves - Sigmar's true story of saving the High King is still being reckoned with to this day for other minor transgressions of the Empire in the eyes of the Dwarves."
+      "Content": "The system of the Book of Grudges (Dammaz Kron) is intricate and exacting, and its core principles can be summarized as follows: every Grudge entry (Grudge/Dammaz) comprises five elements—the aggrieved party (the entire Dwarf race, a specific karak, a specific clan, or a specific individual), the offender (a foreign race or individual), the substance of the offense (a description of the event), the evidence (typically cross-testimony from multiple Dwarf witnesses), and the reckoning valuation (from a weight of gold to a measure of blood, assessed by the council of elders). Entries are divided into four tiers of severity: Trivial (watered-down ale, short-weight dealings by human merchants)—settled by payment, replacement goods, or a formal apology; Ordinary (border encroachment, serious breach of contract)—settled through trade reparations, formal humiliation of the offender, or military action; Severe (the fall of a karak, a mass slaughter)—for which war is the only reckoning; and Undying (Karak Eight Peaks, the War of Vengeance)—deemed impossible to settle within the current age and inherited by every generation of Dwarfs until final reckoning is achieved. Crucially, the Book of Grudges records not only negative entries, but also \"positive debts\"—boons and favors: any outsider who aids the Dwarfs is likewise inscribed in the tome, and that positive entry can offset future slights or exert a lasting favorable influence through Dwarf compacts and alliances. That is the true foundation of the millennial alliance between the Empire of Man and the Dwarfs—the positive entry for Sigmar rescuing the High King continues to this day to offset minor Imperial transgressions in the eyes of the Dwarfs."
     },
     {
       "Priority": 0,

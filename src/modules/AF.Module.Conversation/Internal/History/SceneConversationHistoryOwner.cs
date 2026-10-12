@@ -33,7 +33,7 @@ internal sealed class SceneConversationHistoryOwner {
    {
     ConversationMessage line = _publicHistory[i];
     if (line == null || string.IsNullOrWhiteSpace(line.Content)) continue;
-    string speaker = string.Equals(line.Role, "user", StringComparison.OrdinalIgnoreCase) ? "玩家" : line.SpeakerName ?? line.Role;
+    string speaker = string.Equals(line.Role, "user", StringComparison.OrdinalIgnoreCase) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0295") : line.SpeakerName ?? line.Role;
     output.Append(speaker);
     if (!string.IsNullOrWhiteSpace(line.TargetName)) output.Append(" → ").Append(line.TargetName);
     output.Append("：").AppendLine(line.Content);

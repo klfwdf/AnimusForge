@@ -10,7 +10,7 @@ using static AnimusForge.MyBehavior;
 namespace AnimusForge;
 internal class EventEditorDisplayPort
 {
- internal delegate string GetKingdomDisplayNameCapability(Kingdom kingdom, string fallback = "某个王国");
+ internal delegate string GetKingdomDisplayNameCapability(Kingdom kingdom, string fallback);
  internal GetKingdomDisplayNameCapability GetKingdomDisplayName;
  internal delegate string GetClanDisplayNameCapability(Clan clan);
  internal GetClanDisplayNameCapability GetClanDisplayName;
@@ -58,7 +58,7 @@ internal sealed class EventEditorPort : EventEditorDisplayPort
  internal SanitizeEventRecordEntriesCapability SanitizeEventRecordEntries;
  internal delegate void AppendDevNpcActionFieldCapability(StringBuilder stringBuilder, string label, string value);
  internal AppendDevNpcActionFieldCapability AppendDevNpcActionField;
- internal delegate void ShowDevLargeTextOrInquiryCapability(string title, string subtitle, string body, Action onClose, string closeText = "返回");
+ internal delegate void ShowDevLargeTextOrInquiryCapability(string title, string subtitle, string body, Action onClose, string closeText = null);
  internal ShowDevLargeTextOrInquiryCapability ShowDevLargeTextOrInquiry;
  internal delegate string BuildDevEventMaterialDetailTextCapability(EventMaterialReference material);
  internal BuildDevEventMaterialDetailTextCapability BuildDevEventMaterialDetailText;

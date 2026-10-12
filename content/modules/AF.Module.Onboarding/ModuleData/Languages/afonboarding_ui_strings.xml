@@ -298,5 +298,9 @@
           <string id="AF_ONBOARDING_INITIAL_GUIDE_TITLE" text="Welcome to AnimusForge" />
     <string id="AF_ONBOARDING_INITIAL_GUIDE_BODY" text="You do not need to open MCM to configure the APIs. The first-use setup guide will walk you through the API settings after you enter a save." />
     <string id="AF_COMMON_GOT_IT" text="Got it" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_CALRADIA" text="Calradia Chronicles" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_CALRADIALITE" text="Calradia Chronicles (Lite Edition) (choose this for a lower-performance CPU, such as the i5-12400F)" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_WARHAMMER" text="Warhammer Old World Chronicles" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_GAMEOFTHRONES" text="Game of Thrones Chronicles" />
 </strings>
 </base>

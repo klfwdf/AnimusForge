@@ -144,7 +144,7 @@ internal sealed partial class KingdomCivilWarOwner
 			var ended = Find(k);
 			if (ended != null) foreach (var f in ended.Factions.ToArray())
 			{
-				PublishPoliticalResult(k, ended, f, CivilWarWorld.FindClan(f.LeaderClanId), f.Id + ":war:resolved", "原王国已经消亡，派系及其内战流程终止；现存家族与王国归属保持实际状态。",
+				PublishPoliticalResult(k, ended, f, CivilWarWorld.FindClan(f.LeaderClanId), f.Id + ":war:resolved", KingdomCivilWarTexts.Raw("KW_Raw_145"),
 					displayText: CivilWarUiText.T("AF_KINGDOM_CW_Event_KingdomGoneWarEnded", "The original kingdom has been destroyed; the faction and its civil war are terminated, and the surviving clans and kingdom ownership stay as they are."));
 				FinishFaction(k, ended, f, CivilWarWorld.CurrentWeek(), DuelSettings.BuildCivilWarTuning(), null, 0); yield return true;
 			}
@@ -215,7 +215,7 @@ internal sealed partial class KingdomCivilWarOwner
 				{
 					// Diagnostic state only: ResolutionError is never rendered verbatim (only its emptiness is
 					// tested in the panel), so this stays a stable internal string.
-					if (f.PendingResponse.Accepted) { f.ResolutionNeedsReview = true; f.ResolutionError = "已接受协议的当事方发生变化，保留执行进度待核查。"; }
+					if (f.PendingResponse.Accepted) { f.ResolutionNeedsReview = true; f.ResolutionError = KingdomCivilWarTexts.Raw("KW_Raw_146"); }
 					else { f.PendingResponse = null; AddHistory(s, week, CivilWarUiText.T("AF_KINGDOM_CW_Event_ProposalPartiesChanged", "The parties to the negotiation changed; the unaccepted old proposal has been withdrawn.")); }
 					f.Version++; yield return true; continue;
 				}
@@ -307,12 +307,12 @@ internal sealed partial class KingdomCivilWarOwner
 		string display = null;
 		if (d.Id == CivilWarCatalog.UsurpDemandId && k.RulingClan?.StringId == f.LeaderClanId)
 		{
-			reason = "派系领袖已经继位，宣权诉求已满足。";
+			reason = KingdomCivilWarTexts.Raw("KW_Raw_147");
 			display = CivilWarUiText.T("AF_KINGDOM_CW_Event_ClaimSatisfied", "The faction leader has already taken the throne; the claim is satisfied.");
 		}
 		if (d.Target == CivilWarDemandTarget.ImposedPolicy && !k.ActivePolicies.Any(x => x.StringId == f.TargetId))
 		{
-			reason = "目标政策已撤销，诉求已满足。";
+			reason = KingdomCivilWarTexts.Raw("KW_Raw_148");
 			display = CivilWarUiText.T("AF_KINGDOM_CW_Event_PolicyRevoked", "The target policy has been repealed; the demand is satisfied.");
 		}
 		if (d.Target == CivilWarDemandTarget.EnemyKingdom)
@@ -320,19 +320,19 @@ internal sealed partial class KingdomCivilWarOwner
 			var target = CivilWarWorld.FindKingdom(f.TargetId);
 			if (!CivilWarWorld.IsAlive(target))
 			{
-				reason = "目标王国已失效，关闭旧诉求。";
+				reason = KingdomCivilWarTexts.Raw("KW_Raw_149");
 				display = CivilWarUiText.T("AF_KINGDOM_CW_Event_TargetKingdomGone", "The target kingdom no longer exists; the old demand is closed.");
 			}
 			else if (!k.IsAtWarWith(target))
 			{
 				if (d.Id == "make_peace")
 				{
-					reason = "双方已议和，诉求已满足。";
+					reason = KingdomCivilWarTexts.Raw("KW_Raw_150");
 					display = CivilWarUiText.T("AF_KINGDOM_CW_Event_PeaceMade", "The two sides have made peace; the demand is satisfied.");
 				}
 				else
 				{
-					reason = "战争已经结束，继续战争的旧诉求失效。";
+					reason = KingdomCivilWarTexts.Raw("KW_Raw_151");
 					display = CivilWarUiText.T("AF_KINGDOM_CW_Event_WarEnded", "The war has ended; the old demand to keep fighting is void.");
 				}
 			}
@@ -351,7 +351,7 @@ internal sealed partial class KingdomCivilWarOwner
 		f.LastDemandDay = day;
 		if (candidate == null || candidate.Id == f.DemandId || DemandAffinity(candidate, record) <= DemandAffinity(current, record) * 1.25f) return;
 		f.DemandId = candidate.Id; f.TargetId = ResolveTargetId(candidate, k, s); f.TargetName = ResolveTargetName(candidate, k, s); f.WarGoal = (int)CivilWarCatalog.EffectiveWarGoal(candidate);
-		PublishPoliticalResult(k, s, f, leader, f.Id + ":demand:" + day, "派系调整诉求为：" + FormatDemand(candidate, f.TargetName),
+		PublishPoliticalResult(k, s, f, leader, f.Id + ":demand:" + day, KingdomCivilWarTexts.Raw("KW_Raw_152") + FormatDemand(candidate, f.TargetName),
 			displayText: CivilWarUiText.T("AF_KINGDOM_CW_Event_DemandChanged", "The faction changes its demand to {DEMAND}", ("DEMAND", CivilWarUiText.DemandDisplayText(candidate, ResolveDemandTargetDisplay(candidate, f, k)))));
 	}
 

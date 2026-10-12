@@ -1,3 +1,4 @@
+using AnimusForge;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
@@ -23,7 +24,7 @@ public sealed partial class WorldDiplomacyBehavior
 				Day = day,
 				GameDate = FormatCampaignDate(day),
 				BattleType = ResolveMapEventBattleType(mapEvent),
-				Location = mapEvent.MapEventSettlement?.Name?.ToString() ?? "閲庡",
+				Location = mapEvent.MapEventSettlement?.Name?.ToString() ?? DiplomacyCompatibilityTexts.Get("Battle_Wilderness_Garbled"),
 				AttackerKingdomIds = attackers,
 				DefenderKingdomIds = defenders,
 				AttackerLeaderNames = ResolveMapEventSideLeaderNames(mapEvent.AttackerSide),

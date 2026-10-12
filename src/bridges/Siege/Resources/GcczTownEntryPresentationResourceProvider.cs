@@ -9,20 +9,22 @@ namespace AnimusForge;
 /// </summary>
 internal static class GcczTownEntryPresentationResourceProvider
 {
-	private const string FileName = "GcczTownEntryPresentation.zh-CN.json";
-	private const string EmbeddedResourceName = "AnimusForge.Defaults.GcczTownEntryPresentation.zh-CN.json";
-	private static readonly Lazy<TownEntryPresentationTextCatalog> CachedCatalog = new Lazy<TownEntryPresentationTextCatalog>(LoadCatalog, true);
+	private const string BaseName = "GcczTownEntryPresentation";
+	private static readonly Lazy<TownEntryPresentationTextCatalog> ChineseCatalog = new Lazy<TownEntryPresentationTextCatalog>(() => LoadCatalog("zh-CN"), true);
+	private static readonly Lazy<TownEntryPresentationTextCatalog> EnglishCatalog = new Lazy<TownEntryPresentationTextCatalog>(() => LoadCatalog("en"), true);
 
 	internal static TownEntryPresentationTextCatalog GetCatalog()
 	{
-		return CachedCatalog.Value;
+		return GcczLocalizedResourceLoader.UseChineseInterface ? ChineseCatalog.Value : EnglishCatalog.Value;
 	}
 
-	private static TownEntryPresentationTextCatalog LoadCatalog()
+	internal static TownEntryPresentationTextCatalog GetFactCatalog() => ChineseCatalog.Value;
+
+	private static TownEntryPresentationTextCatalog LoadCatalog(string language)
 	{
 		return GcczLocalizedResourceLoader.Load(
-			FileName,
-			EmbeddedResourceName,
+			BaseName + "." + language + ".json",
+			"AnimusForge.Defaults." + BaseName + "." + language + ".json",
 			"GcczEntry",
 			Deserialize,
 			TownEntryPresentationTextCatalog.CreateEnglishFallback);

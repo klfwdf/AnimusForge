@@ -36,4 +36,17 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleFinalRanking.cs" Link="PromptRuleFinalRanking.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalTexts.cs" />
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Prompt/AdapterPromptCaptureTexts.cs" />
+    <Compile Include="PackagePaths.cs" />
+    <Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalCompatibility.json" LogicalName="AnimusForge.Prompt.RetrievalCompatibility.json" />
+    <EmbeddedResource Include="../../../../content/foundation/AF.Foundation.Localization/ModuleData/AdapterPromptCaptureCompatibility.json" LogicalName="AnimusForge.AdapterPromptCapture.Compatibility.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Economy/Host/EconomyPromptTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Economy/Host/EconomySourceTexts.cs" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Economy/ModuleData/EconomySourceTexts.json" LogicalName="AnimusForge.Defaults.EconomySourceTexts.json" />
+  </ItemGroup>
 </Project>

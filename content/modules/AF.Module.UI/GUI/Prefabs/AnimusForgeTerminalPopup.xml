@@ -1,22 +1,22 @@
 <Prefab>
   <Window>
-    <!-- 全屏半透明遮罩，阻隔大地图/城镇底层界面与文字杂讯 -->
+    <!-- Full-screen translucent overlay blocks the underlying map/town interface and text clutter -->
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.92">
       <Children>
 
-        <!-- 终端居中主窗口：1280 × 820 黄金尺寸 -->
+        <!-- Centered terminal window: 1280 x 820 -->
         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1280" SuggestedHeight="820" HorizontalAlignment="Center" VerticalAlignment="Center">
           <Children>
-            <!-- 羊皮纸底层材质与暗角 -->
+            <!-- Parchment background and vignette -->
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" />
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" AlphaFactor="0.85" IsEnabled="false" />
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="22" ExtendTop="22" ExtendRight="22" ExtendBottom="22" AlphaFactor="0.65" IsEnabled="false" />
 
-            <!-- 内部内容容器 -->
+            <!-- Inner content container -->
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="30" MarginRight="30" MarginTop="24" MarginBottom="22">
               <Children>
 
-                <!-- 顶部标题与副标题栏 -->
+                <!-- Title and subtitle bar -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="82" VerticalAlignment="Top" Sprite="General\CharacterCreation\character_creation_background_gradient" AlphaFactor="0.25" Color="#000000FF">
                   <Children>
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="20" MarginRight="20" MarginTop="10" MarginBottom="10">
@@ -28,15 +28,15 @@
                   </Children>
                 </Widget>
 
-                <!-- 分割线 -->
+                <!-- Divider -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="12" VerticalAlignment="Top" MarginTop="86" Sprite="StdAssets\Popup\divider" />
 
-                <!-- 顶部分类 Tab 栏：严格居中对其，使用骑砍原生凸起金属按钮材质 -->
+                <!-- Centered category tabs with native raised metal button materials -->
                 <ListPanel DataSource="{TabItems}" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="44" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="104" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                   <ItemTemplate>
                     <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelect" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="42" MarginLeft="4" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                       <Children>
-                        <!-- 选中时呈现金色高亮原版按钮效果 -->
+                        <!-- Native gold highlight for the selected button -->
                         <Widget IsVisible="@IsSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Done.Button" IsEnabled="false" />
                         <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Center" Text="@DisplayText" />
                       </Children>
@@ -44,13 +44,13 @@
                   </ItemTemplate>
                 </ListPanel>
 
-                <!-- 面包屑导航指示（在非战争页面居中优雅展示当前层级） -->
+                <!-- Centered breadcrumb showing the current level outside the war page -->
                 <RichTextWidget IsVisible="@IsBreadcrumbVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="156" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Center" Text="@BreadcrumbText" />
 
-                <!-- 战争子标签切换与模式控制栏 (当前战争 / 历史战争 / 清除所有 / 单页多页切换) - 提升至面包屑位置 -->
+                <!-- War subtabs and controls (current / history / clear all / single or multiple pages), raised to the breadcrumb position -->
                 <Widget IsVisible="@IsWarStatsVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" VerticalAlignment="Top" MarginTop="150">
                   <Children>
-                    <!-- 中间：当前战争 / 历史战争 / 清除所有 (保持原有居中布局) -->
+                    <!-- Center: current wars / war history / clear all, retaining the existing centered layout -->
                     <ListPanel DataSource="{WarStatsVm}" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
                         <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="160" Brush="Popup.SelectionElement.Tuple" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelectCurrent">
@@ -75,7 +75,7 @@
                       </Children>
                     </ListPanel>
 
-                    <!-- 右侧：单页/多页切换按钮 (位于用户截图红框区域，对齐顶部分类栏右端) -->
+                    <!-- Right: single/multiple-page toggle in the screenshot red-box area, aligned with the right edge of the category bar -->
                     <Widget DataSource="{WarStatsVm}" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="134">
                       <Children>
                         <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleDisplayMode">
@@ -88,14 +88,14 @@
                   </Children>
                 </Widget>
 
-                <!-- 中央主视窗区域 (带暗色镶边框架) -->
+                <!-- Central viewport with a dark inset frame -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" VerticalAlignment="Top" MarginTop="192" MarginBottom="62">
                   <Children>
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="8" ExtendTop="8" ExtendRight="8" ExtendBottom="8" AlphaFactor="0.4" IsEnabled="false" />
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.22" IsEnabled="false" />
 
                     <!-- ======================================================== -->
-                    <!-- 视图 1: 主功能列表 (MenuList) - 经典居中卡片流 -->
+                    <!-- View 1: Main function list (MenuList), centered card flow -->
                     <!-- ======================================================== -->
                     <Widget IsVisible="@IsMenuListVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12">
                       <Children>
@@ -143,7 +143,7 @@
                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
                                       <Children>
 
-                                        <!-- 1. 分组标题栏 (Header) - 支持点击折叠与展开 -->
+                                        <!-- 1. Group header: click to collapse or expand -->
                                         <ButtonWidget IsVisible="@IsHeader" DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleCollapse" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="46" MarginTop="10" MarginBottom="6" Brush="Popup.SelectionElement.Tuple" UpdateChildrenStates="true">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#2A1B0EFF" AlphaFactor="0.85" IsEnabled="false" />
@@ -154,7 +154,7 @@
                                           </Children>
                                         </ButtonWidget>
 
-                                        <!-- 2. 原有快捷工具操作 (Action) -->
+                                        <!-- 2. Existing quick actions (Action) -->
                                         <ButtonWidget IsVisible="@IsAction" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpen" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="80" MarginBottom="8" Brush="Popup.SelectionElement.Tuple" UpdateChildrenStates="true">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1B150FFF" AlphaFactor="0.86" IsEnabled="false" />
@@ -189,7 +189,7 @@
                                           </Children>
                                         </ButtonWidget>
 
-                                        <!-- 3. 布尔开关配置 (Bool) -->
+                                        <!-- 3. Boolean settings (Bool) -->
                                         <Widget IsVisible="@IsBool" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1B150FFF" AlphaFactor="0.75" IsEnabled="false" />
@@ -215,7 +215,7 @@
                                           </Children>
                                         </Widget>
 
-                                        <!-- 4. 数值步进与输入 (Numeric) -->
+                                        <!-- 4. Numeric stepping and input (Numeric) -->
                                         <Widget IsVisible="@IsNumeric" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1B150FFF" AlphaFactor="0.75" IsEnabled="false" />
@@ -255,7 +255,7 @@
                                           </Children>
                                         </Widget>
 
-                                        <!-- 5. 下拉多选配置 (Dropdown) -->
+                                        <!-- 5. Dropdown selection (Dropdown) -->
                                         <Widget IsVisible="@IsDropdown" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1B150FFF" AlphaFactor="0.75" IsEnabled="false" />
@@ -270,7 +270,7 @@
                                                   </Children>
                                                 </ListPanel>
 
-                                                <!-- 下拉选择控件容器（增加底面板与边框，加宽尺寸以完整展示模型名称） -->
+                                                <!-- Dropdown container: background and border, widened to show the complete model name -->
                                                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="30" HorizontalAlignment="Right" VerticalAlignment="Center">
                                                   <Children>
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
@@ -283,7 +283,7 @@
                                           </Children>
                                         </Widget>
 
-                                        <!-- 6. 文本配置 (Text) -->
+                                        <!-- 6. Text settings (Text) -->
                                         <Widget IsVisible="@IsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1B150FFF" AlphaFactor="0.75" IsEnabled="false" />
@@ -298,7 +298,7 @@
                                                   </Children>
                                                 </ListPanel>
 
-                                                <!-- 输入框容器：深色凹槽背景 + 直接可编辑框 + 弹窗编辑按钮 -->
+                                                <!-- Input container: dark recessed background, direct editor, and popup edit button -->
                                                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="390" SuggestedHeight="42" HorizontalAlignment="Right" VerticalAlignment="Center">
                                                   <Children>
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -318,7 +318,7 @@
                                           </Children>
                                         </Widget>
 
-                                        <!-- 7. 触发按钮配置 (Button) -->
+                                        <!-- 7. Trigger buttons (Button) -->
                                         <Widget IsVisible="@IsButton" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1B150FFF" AlphaFactor="0.75" IsEnabled="false" />
@@ -343,7 +343,7 @@
                                           </Children>
                                         </Widget>
 
-                                        <!-- 8. 快捷键配置 (Hotkey) -->
+                                        <!-- 8. Hotkey settings (Hotkey) -->
                                         <Widget IsVisible="@IsHotkey" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1B150FFF" AlphaFactor="0.75" IsEnabled="false" />
@@ -381,7 +381,7 @@
                     </Widget>
 
                     <!-- ======================================================== -->
-                    <!-- 视图 2: 内嵌国家周报 (WeeklyReports) -->
+                    <!-- View 2: Embedded weekly kingdom reports (WeeklyReports) -->
                     <!-- ======================================================== -->
                     <Widget IsVisible="@IsWeeklyReportsVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12">
                       <Children><Widget DataSource="{WeeklyReportVm}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"><Children>
@@ -452,7 +452,7 @@
                     </Widget>
 
                     <!-- ======================================================== -->
-                    <!-- 视图 3: 内嵌臣属贡金管理 (Vassalage) -->
+                    <!-- View 3: Embedded vassal tribute management (Vassalage) -->
                     <!-- ======================================================== -->
                     <Widget IsVisible="@IsVassalageVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12">
                       <Children>
@@ -490,7 +490,7 @@
                     </Widget>
 
                     <!-- ======================================================== -->
-                    <!-- 视图 5: 查询详情 (Details) -->
+                    <!-- View 5: Query details (Details) -->
                     <!-- ======================================================== -->
                     <Widget IsVisible="@IsDetailsVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="22" MarginRight="22" MarginTop="12" MarginBottom="12">
                       <Children>
@@ -510,7 +510,7 @@
                     </Widget>
 
                     <!-- ======================================================== -->
-                    <!-- 视图 6: 内嵌系统诊断与报错分析 (Diagnostics) -->
+                    <!-- View 6: Embedded diagnostics and error analysis (Diagnostics) -->
                     <!-- ======================================================== -->
                     <Widget IsVisible="@IsDiagnosticsVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12">
                       <Children>
@@ -533,13 +533,13 @@
                     </Widget>
 
                     <!-- ======================================================== -->
-                    <!-- 视图 7: 内嵌战争态势与统计档案 (WarStats) -->
+                    <!-- View 7: Embedded war situation and archives (WarStats) -->
                     <!-- ======================================================== -->
                     <Widget IsVisible="@IsWarStatsVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <Widget DataSource="{WarStatsVm}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="10" MarginTop="8" MarginBottom="8">
                           <Children>
-                            <!-- 顶部战争数据概览卡片 (3 个紧凑金边方框) - 位于中央窗口顶部 -->
+                            <!-- War overview: three compact gold-framed cards at the top of the central window -->
                             <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="66" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="2" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                               <Children>
                                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="370">
@@ -575,13 +575,13 @@
                               </Children>
                             </ListPanel>
 
-                            <!-- 主内容区域：当前战争 / 历史战争 / 空白占位 (高度提升，起始MarginTop降低至72，底部留36留出分页控制栏空间) -->
+                            <!-- Main area: current wars / history / empty state; increased height, MarginTop 72, bottom margin 36 for pagination -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="72" MarginBottom="36">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.32" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#050403FF" AlphaFactor="0.25" IsEnabled="false" />
 
-                                <!-- 1. 当前战争列表面板 -->
+                                <!-- 1. Current war list panel -->
                                 <Widget IsVisible="@ShowCurrentPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="8" MarginTop="6" MarginBottom="6">
                                   <Children>
                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="46">
@@ -629,7 +629,7 @@
 
                                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                       <Children>
-                                                        <!-- 进攻方王国 -->
+                                                        <!-- Attacking kingdom -->
                                                         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="480">
                                                           <Children>
                                                             <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="52" SuggestedHeight="66" HorizontalAlignment="Left" VerticalAlignment="Center" MarginLeft="4" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenKingdomA" Command.AlternateClick="ExecuteOpenKingdomA" HoveredCursorState="RightClickLink">
@@ -660,7 +660,7 @@
                                                           </Children>
                                                         </Widget>
 
-                                                        <!-- 中间：战事状态与持续天数 -->
+                                                        <!-- Center: war status and duration -->
                                                         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="160">
                                                           <Children>
                                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#100C09FF" AlphaFactor="0.48" IsEnabled="false" />
@@ -672,7 +672,7 @@
                                                           </Children>
                                                         </Widget>
 
-                                                        <!-- 防御方王国 -->
+                                                        <!-- Defending kingdom -->
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                                                           <Children>
                                                             <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="52" SuggestedHeight="66" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenKingdomB" Command.AlternateClick="ExecuteOpenKingdomB" HoveredCursorState="RightClickLink">
@@ -724,7 +724,7 @@
                               </Children>
                             </Widget>
 
-                            <!-- 2. 历史战争档案面板 -->
+                            <!-- 2. Historical war archive panel -->
                             <Widget IsVisible="@ShowHistoryPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="8" MarginTop="6" MarginBottom="6">
                               <Children>
                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" LayoutImp.LayoutMethod="HorizontalLeftToRight">
@@ -753,7 +753,7 @@
                                   </Children>
                                 </ListPanel>
 
-                                <!-- 左侧历史战争列表 -->
+                                <!-- Left: historical war list -->
                                 <Widget IsVisible="@HasHistoryRows" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="490" MarginTop="36">
                                   <Children>
                                     <ScrollablePanel Id="HistoryWarsScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" AutoHideScrollBars="true" OnlyAcceptScrollEventIfCanScroll="true" MouseScrollAxis="Vertical" ClipRect="HistoryWarsClip" InnerPanel="HistoryWarsClip\HistoryWarsList" VerticalScrollbar="..\HistoryWarsScrollbar">
@@ -802,7 +802,7 @@
                                   </Children>
                                 </Widget>
 
-                                <!-- 右侧选中战争详细归档 -->
+                                <!-- Right: details of the selected archived war -->
                                 <Widget IsVisible="@ShowHistoryDetail" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="504" MarginTop="36">
                                   <Children>
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Left" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.55" IsEnabled="false" />
@@ -898,7 +898,7 @@
                                     <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="22" HorizontalAlignment="Right" MarginRight="55" MarginTop="216" Brush="Popup.Title.Text" Brush.FontSize="15" Brush.FontColor="#E4C98FFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@DefenderFallenLordsText" />
                                     <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="40" SuggestedHeight="22" HorizontalAlignment="Right" MarginRight="12" MarginTop="216" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#D8CDBAFF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@HistoryDeathCountB" />
 
-                                    <!-- 进攻方阵亡领主列表 -->
+                                    <!-- Fallen lords on the attacking side -->
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="310" HorizontalAlignment="Left" MarginLeft="8" MarginTop="242">
                                       <Children>
                                         <ScrollablePanel Id="HistoryDeathsScrollA" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" AutoHideScrollBars="true" OnlyAcceptScrollEventIfCanScroll="true" MouseScrollAxis="Vertical" ClipRect="HistoryDeathsClipA" InnerPanel="HistoryDeathsClipA\HistoryDeathsListA" VerticalScrollbar="..\HistoryDeathsScrollbarA">
@@ -931,7 +931,7 @@
                                       </Children>
                                     </Widget>
 
-                                    <!-- 防御方阵亡领主列表 -->
+                                    <!-- Fallen lords on the defending side -->
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="310" HorizontalAlignment="Right" MarginRight="8" MarginTop="242">
                                       <Children>
                                         <ScrollablePanel Id="HistoryDeathsScrollB" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" AutoHideScrollBars="true" OnlyAcceptScrollEventIfCanScroll="true" MouseScrollAxis="Vertical" ClipRect="HistoryDeathsClipB" InnerPanel="HistoryDeathsClipB\HistoryDeathsListB" VerticalScrollbar="..\HistoryDeathsScrollbarB">
@@ -970,7 +970,7 @@
                               </Children>
                             </Widget>
 
-                            <!-- 3. 空白数据状态提示 -->
+                            <!-- 3. Empty-data status -->
                             <Widget IsVisible="@ShowEmptyState" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="50">
                               <Children>
                                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="20" Brush.FontColor="#B7AC9AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@EmptyText" />
@@ -980,7 +980,7 @@
                           </Children>
                         </Widget>
 
-                        <!-- 底部翻页控制栏 (仅在分页模式下显示) -->
+                        <!-- Bottom pagination controls, visible only in paginated mode -->
                         <Widget IsVisible="@ShowPaginationControls" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="32" VerticalAlignment="Bottom">
                           <Children>
                             <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="120" HorizontalAlignment="Left" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecutePrevPage" IsEnabled="@CanGoPrev">
@@ -1005,12 +1005,12 @@
                   </Children>
                 </Widget>
 
-                <!-- 底部控制栏：左侧入口开关与提示文字，右侧原生按钮 -->
+                <!-- Bottom controls: entry toggles and hints on the left, native buttons on the right -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="52" VerticalAlignment="Bottom">
                   <Children>
                     <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Left" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight" MarginLeft="6">
                       <Children>
-                        <!-- 选项 1：按键呼出 -->
+                        <!-- Option 1: Open with a hotkey -->
                         <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="32" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight" MarginRight="16">
                           <Children>
                             <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" VerticalAlignment="Center" Brush="SPOptions.Checkbox.Empty.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleHotkey">
@@ -1026,7 +1026,7 @@
                           </Children>
                         </ListPanel>
 
-                        <!-- 选项 2：图标入口 -->
+                        <!-- Option 2: Icon entry -->
                         <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="32" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight" MarginRight="20">
                           <Children>
                             <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" VerticalAlignment="Center" Brush="SPOptions.Checkbox.Empty.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleMapIcon">
@@ -1042,10 +1042,10 @@
                           </Children>
                         </ListPanel>
 
-                        <!-- 垂直细分割线 -->
+                        <!-- Thin vertical divider -->
                         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="18" VerticalAlignment="Center" MarginRight="16" Sprite="BlankWhiteSquare_9" Color="#765D3C66" />
 
-                        <!-- 快捷操作提示 -->
+                        <!-- Quick-action hints -->
                         <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#8C806DFF" Text="@AF_UI_Terminal_Prefab_019Text" />
                       </Children>
                     </ListPanel>

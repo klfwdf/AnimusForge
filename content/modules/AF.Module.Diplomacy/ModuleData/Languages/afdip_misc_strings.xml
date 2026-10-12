@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <!-- VassalageBehavior: UI固定文本 -->
+    <string id="AF_DIP_MISC_Vassalage_Uncommitted" text="Vassalage treaty not executed: the current negotiation result does not belong to a signable vassalage treaty." />
+    <string id="AF_DIP_MISC_Vassalage_InvalidType" text="Vassalage treaty not executed: failed to recognize the agreed treaty type." />
+
+    <!-- WorldDiplomacyBehavior: UI/日志文本 -->
+    <string id="AF_DIP_MISC_WorldDip_UnknownKingdom" text="Unknown kingdom" />
+    <string id="AF_DIP_MISC_WorldDip_UnknownRuler" text="Unknown ruler" />
+    <string id="AF_DIP_MISC_WorldDip_InvalidDirectory" text="The export directory is invalid." />
+    <string id="AF_DIP_MISC_WorldDip_RaidBattle" text="Raid battle" />
+    <string id="AF_DIP_MISC_WorldDip_SiegeBattle" text="Siege battle" />
+    <string id="AF_DIP_MISC_WorldDip_FieldBattle" text="Field battle" />
+    <string id="AF_DIP_MISC_WorldDip_NoFiefs" text="No fiefs" />
+    <string id="AF_DIP_MISC_WorldDip_NoEnemies" text="No clear enemies" />
+    <string id="AF_DIP_MISC_WorldDip_Unknown" text="Unknown" />
+    <string id="AF_DIP_MISC_WorldDip_ApiNotConfigured" text="Event and rebellion API not configured." />
+    <string id="AF_DIP_MISC_WorldDip_KingdomEliminated" text="The kingdom has been eliminated; automatic founding card generation stopped." />
+    <string id="AF_DIP_MISC_WorldDip_KingdomObjectMissing" text="The kingdom object no longer exists; cannot generate founding card." />
+    <string id="AF_DIP_MISC_WorldDip_ApiRequestFailed" text="API request failed." />
+    <string id="AF_DIP_MISC_WorldDip_MissingJson" text="No JSON object in LLM return." />
+    <string id="AF_DIP_MISC_WorldDip_MissingFields" text="LLM JSON is missing national_personality or long_term_strategy." />
+    <string id="AF_DIP_MISC_WorldDip_ParseFailed" text="LLM JSON parsing failed: {ERROR}" />
+    <string id="AF_DIP_MISC_WorldDip_ReadFailure" text="Read failed" />
+
+    <!-- VoteDealBehavior: 议程UI文本 -->
+    <string id="AF_DIP_MISC_Agenda_NoProposals" text="No currently pending proposals" />
+    <string id="AF_DIP_MISC_Agenda_NoProposal" text="No proposal yet" />
+    <string id="AF_DIP_MISC_Agenda_Effective" text="Effective" />
+    <string id="AF_DIP_MISC_Agenda_NotEffective" text="Not effective" />
+    <string id="AF_DIP_MISC_Agenda_Abolish" text="Abolish" />
+    <string id="AF_DIP_MISC_Agenda_Adopt" text="Adopt" />
+    <string id="AF_DIP_MISC_Agenda_StrongSupport" text="Strongly support" />
+    <string id="AF_DIP_MISC_Agenda_Support" text="Tend to support" />
+    <string id="AF_DIP_MISC_Agenda_StrongOppose" text="Strongly oppose" />
+    <string id="AF_DIP_MISC_Agenda_Oppose" text="Tend to oppose" />
+    <string id="AF_DIP_MISC_Agenda_Neutral" text="Neutral" />
+    <string id="AF_DIP_MISC_Agenda_Commoner" text="Commoner orientation" />
+    <string id="AF_DIP_MISC_Agenda_Oligarchic" text="Oligarchic noble orientation" />
+    <string id="AF_DIP_MISC_Agenda_Authoritarian" text="Royal power orientation" />
+    <string id="AF_DIP_MISC_Agenda_Peace" text="Peace negotiation" />
+    <string id="AF_DIP_MISC_Agenda_War" text="Declare war" />
+    <string id="AF_DIP_MISC_Agenda_Alliance" text="Form alliance" />
+    <string id="AF_DIP_MISC_Agenda_Trade" text="Trade agreement" />
+    <string id="AF_DIP_MISC_Agenda_Expel" text="Expel clan" />
+    <string id="AF_DIP_MISC_Agenda_Fief" text="Reallocate fief" />
+    <string id="AF_DIP_MISC_Agenda_Policy" text="Abolish policy" />
+    <string id="AF_DIP_MISC_Agenda_AdoptPolicy" text="Adopt policy" />
+
+    <!-- WorldDiplomacyOrchestration.Dialogue: 口头外交状态 -->
+    <string id="AF_DIP_MISC_OralDip_Uncommitted" text="Diplomatic commitment not submitted: world diplomacy system is not enabled." />
+    <string id="AF_DIP_MISC_OralDip_InvalidFormat" text="Diplomatic commitment not submitted: clause format is invalid." />
+    <string id="AF_DIP_MISC_OralDip_Unauthorized" text="Diplomatic commitment not established: the other party does not have authority to represent the kingdom for official documentation." />
+    <string id="AF_DIP_MISC_OralDip_SubmitFailed" text="Diplomatic commitment not submitted: {REASON}." />
+    <string id="AF_DIP_MISC_OralDip_MultipleProposals" text="There are multiple related proposals; please specify which declaration and action to respond to first." />
+    <string id="AF_DIP_MISC_OralDip_UnavailableProposal" text="The original proposal is currently not answerable; please verify the proposal source and validity first." />
+
+    <!-- KingdomStrategicProfileBehavior: 建国卡UI文本 -->
+    <string id="AF_DIP_MISC_Profile_GenCompleted" text="Generated and locked the national personality and long-term strategy for new kingdom &quot;" />
+    <string id="AF_DIP_MISC_Profile_GenCompletedSuffix" text="&quot;." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_SubmissionRejected" text="Diplomatic commitment not submitted: {REASON}." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_Uncommitted" text="Diplomatic commitment not submitted: world diplomacy system is not enabled." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_InvalidFormat" text="Diplomatic commitment not submitted: clause format is invalid." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_Unauthorized" text="Diplomatic commitment not established: the other party does not have authority to represent the kingdom." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_SubmitFailedPrefix" text="Diplomatic commitment not submitted: " />
+    <string id="AF_DIP_STATUS_OralDiplomacy_MultipleProposals" text="There are multiple related proposals; please specify which one to respond to first." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_UnavailableProposal" text="The original proposal is currently not answerable; please verify the source first." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_Published" text="Official declaration published; bilateral treaty requires formal response from counterparty." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_Executed" text="Official declaration published and diplomatic action executed." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_DeferredPrefix" text="Commitment recorded; official documentation deferred due to: " />
+    <string id="AF_DIP_STATUS_OralDiplomacy_CancelledPrefix" text="Commitment recorded but official documentation cancelled due to situation change: " />
+    <string id="AF_DIP_STATUS_DialogueControl_InvalidFormat" text="Commitment disposition not submitted: invalid format." />
+    <string id="AF_DIP_STATUS_DialogueControl_AmbiguousSourceReason" text="Commitment disposition not submitted: source or reason unclear." />
+    <string id="AF_DIP_STATUS_DialogueControl_AlreadyUpdatedPrefix" text="Diplomatic commitment was previously updated: " />
+    <string id="AF_DIP_STATUS_DialogueControl_CannotWithdraw" text="The original proposal has taken effect, is closed, or cannot be withdrawn; completed diplomatic actions cannot be undone." />
+    <string id="AF_DIP_STATUS_DialogueControl_WithdrawIncomplete" text="Withdrawal declaration not completed; original proposal remains at its current state." />
+    <string id="AF_DIP_STATUS_DialogueControl_InvalidStatus" text="Commitment disposition not submitted: invalid status." />
+    <string id="AF_DIP_STATUS_DialogueControl_HasFormalResult" text="This commitment already has a formal outcome and cannot be rolled back through private discussion." />
+    <string id="AF_DIP_STATUS_DialogueControl_HistoricalCommitmentPrefix" text="Previous diplomatic commitment is currently " />
+    <string id="AF_DIP_STATUS_DialogueControl_ReasonPrefix" text=", reason: " />
+    <string id="AF_DIP_STATUS_DialogueControl_UpdatedPrefix" text="Diplomatic commitment updated: " />
+    <string id="AF_DIP_STATUS_DialogueControl_WithdrawStandalone" text="Withdrawal not executed: proposal withdrawal must be declared separately and cannot be mixed with other diplomatic actions." />
+    <string id="AF_DIP_STATUS_DialogueControl_WithdrawUnauthorized" text="Withdrawal not executed: original proposal is closed or publisher lacks authority." />
+    <string id="AF_DIP_STATUS_DialogueControl_WithdrawSuccess" text="Original diplomatic proposal withdrawn via formal declaration; effective diplomatic actions retain actual results." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_NotReady" text="Diplomatic commitment not submitted: world diplomacy system is not ready." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_DuplicatePrefix" text="This commitment has already been submitted to formal diplomacy, document ID: " />
+    <string id="AF_DIP_STATUS_OralDiplomacy_ReleaseSubjectUnavailable" text="Subject release not executed: subject system is unavailable." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_ReleaseSubjectInvalidFormat" text="Subject release not executed: invalid target or agreement token format." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_ReleaseSubjectStateChanged" text="Subject release not executed: missing player directive, or ruler authority, target, or direct treaty has changed." />
+    <string id="AF_DIP_STATUS_OralDiplomacy_CommitmentDisabled" text="AI diplomacy is disabled; existing commitment arrangements cannot be changed in the current mode." />
+    <string id="AF_DIP_STATUS_State_accepted" text="accepted; not yet published" />
+    <string id="AF_DIP_STATUS_State_deferred" text="publication deferred" />
+    <string id="AF_DIP_STATUS_State_cancelled" text="cancelled; not executed" />
+    <string id="AF_DIP_STATUS_State_published" text="published; awaiting formal outcome" />
+    <string id="AF_DIP_STATUS_State_executed" text="executed" />
+    <string id="AF_DIP_STATUS_State_withdrawn" text="proposal withdrawn" />
+    <string id="AF_DIP_STATUS_State_expired" text="expired" />
+    <string id="AF_DIP_STATUS_State_rejected" text="rejected" />
+    <string id="AF_DIP_STATUS_State_superseded" text="superseded" />
+  </strings>
+</base>

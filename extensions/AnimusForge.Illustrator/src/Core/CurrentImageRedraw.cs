@@ -18,7 +18,7 @@ namespace AnimusForge.Illustrator.Core
         {
             if (source == null || scope == null || !scope.IsCurrent || source.CampaignKey != scope.CampaignKey
                 || string.IsNullOrWhiteSpace(instruction) || options == null)
-            { fail("当前成图或请求已失效，未发送请求。"); return false; }
+            { fail(IllustratorText.Raw("Residual_CurrentImageRedraw_7c13f5e61eb1")); return false; }
             var snapshot = source.CopyMetadata();
             byte[] sourceBytes = source.ImageData;
             var editOptions = options.ForCurrentImageEdit();
@@ -28,7 +28,7 @@ namespace AnimusForge.Illustrator.Core
                 // Generated images are immutable; read at most once, from the selected image only.
                 byte[] bytes = ImagePayload.Normalize(sourceBytes ?? ImagePayload.ReadEncodedFile(snapshot.FilePath, token));
                 var references = new[] { new IllustrationReferenceImage(Convert.ToBase64String(bytes),
-                    "待编辑的当前成图", IllustrationReferenceKind.GeneratedImage) };
+                    IllustratorText.Get("Ref_CurrentEditingImage"), IllustrationReferenceKind.GeneratedImage) };
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(instruction, references, editOptions, token).ConfigureAwait(false);
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
@@ -43,7 +43,7 @@ namespace AnimusForge.Illustrator.Core
                     if (saved != null) DiskImageCacheManager.PromoteDefaultIfNewest(saved, snapshot.CampaignKey);
                 }
                 return new Completion { Result = result, Saved = saved };
-            }, complete, fail, value => value.Saved, value => value.Result?.ErrorMessage ?? "未能保存图片");
+            }, complete, fail, value => value.Saved, value => value.Result?.ErrorMessage ?? "Failed to save image");
         }
     }
 }

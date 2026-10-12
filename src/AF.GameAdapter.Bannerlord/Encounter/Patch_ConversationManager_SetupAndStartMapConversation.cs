@@ -32,16 +32,16 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 			}
 			if (methodInfo == null)
 			{
-				Logger.LogTrace("System", "❌ 未找到 SetupAndStartMapConversation(3参数) 目标方法，跳过手动注册。");
+				Logger.LogTrace("System", "❌ SetupAndStartMapConversation (3 parameters) target method not found; skipping manual registration.");
 				return;
 			}
 			MethodInfo method = AccessTools.Method(typeof(Patch_ConversationManager_SetupAndStartMapConversation), "Prefix");
 			harmony.Patch(methodInfo, new HarmonyMethod(method));
-			Logger.LogTrace("System", "✅ 手动注册 Patch_ConversationManager_SetupAndStartMapConversation 成功。");
+			Logger.LogTrace("System", "✅ Manual registration of Patch_ConversationManager_SetupAndStartMapConversation succeeded.");
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ 手动注册 Patch_ConversationManager_SetupAndStartMapConversation 失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ Manual registration of Patch_ConversationManager_SetupAndStartMapConversation failed: " + ex.Message);
 		}
 	}
 
@@ -49,7 +49,7 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 	{
 		try
 		{
-			Logger.LogTrace("Conversation_Intercept", ">>> SetupAndStartMapConversation Prefix 正在执行 <<<");
+			Logger.LogTrace("Conversation_Intercept", ">>> SetupAndStartMapConversation Prefix executing <<<");
 			if (LordEncounterBehavior.HasPendingNativeEncounterAttackForExternal())
 			{
 				Logger.LogTrace("Conversation_Intercept", "Native encounter attack is pending; suppress SetupAndStartMapConversation.");
@@ -156,10 +156,10 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 			}
 			if (hero != null)
 			{
-				Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation 遭遇对象: {hero.Name}, IsLord={hero.IsLord}, IsMainHero={hero == Hero.MainHero}");
+				Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation encounter target: {hero.Name}, IsLord={hero.IsLord}, IsMainHero={hero == Hero.MainHero}");
 				if (LordEncounterBehavior.IsNativeSettlementRequestMeetingContext(hero))
 				{
-					Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation 命中敌对定居点原版会面，放行原版对话: {hero.Name}");
+					Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation Matched vanilla meeting in a hostile settlement; allowing vanilla conversation: {hero.Name}");
 					return true;
 				}
 				PartyBase encounterParty = null;
@@ -177,13 +177,13 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 					LordEncounterBehavior.SetTarget(hero);
 					if (LordEncounterBehavior.OpenEncounterMenu(hero))
 					{
-						Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation 已重定向至自定义会面菜单: {hero.Name}");
+						Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation Redirected to the custom meeting menu: {hero.Name}");
 						return false;
 					}
 				}
 				else if (hero != Hero.MainHero && hero.IsLord)
 				{
-					Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation 遭遇对象不是可接管的王国贵族遭遇，放行原版对话: {hero.Name}");
+					Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation Encounter target is not an eligible kingdom noble encounter; allowing vanilla conversation: {hero.Name}");
 				}
 			}
 		}

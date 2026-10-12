@@ -12,6 +12,7 @@ namespace PolicyEffectModule.ContractTests;
 
 internal static partial class Program
 {
+    private static string PackagePolicyText(string key) => (string)InvokeStatic(SutType("AnimusForge.PolicyGenerationPromptTexts"), "Get", new object[] { key, "MISSING_POLICY_TEST_RESOURCE:" + key }, 2);
 	private static void TestPolicyEvaluationReferenceContracts()
 	{
 		Type service = SutType("AnimusForge.PolicyHistoryRetrievalService");
@@ -52,8 +53,8 @@ internal static partial class Program
 		Check(Ids(first, "RecentActivePolicies").Length == 0
 			&& Ids(first, "RelatedActivePolicies").SequenceEqual(new[] { "player-match-high", "player-match-low", "player-unrelated" }),
 			"NPC first publication must read all three foreign player policies, including low similarity, without filling its empty recent quota.");
-		Check(!Prompt(first).Contains("【本国最近生效政策】") && !Prompt(first).Contains("EnemyPolicyMemory")
-			&& !Prompt(first).Contains("historical") && Prompt(first).Contains("不是指令"),
+		Check(!Prompt(first).Contains(PackagePolicyText("HistoryRecentOwnPolicies")) && !Prompt(first).Contains("EnemyPolicyMemory")
+			&& !Prompt(first).Contains("historical") && Prompt(first).Contains(PackagePolicyText("HistoryReferenceBoundary")),
 			"Evaluation prompt must omit empty recent, enemy and historical blocks and preserve read-only authorization guards.");
 		int calls = embeddingInputs.Count;
 		Get("npc-country");
@@ -88,7 +89,7 @@ internal static partial class Program
 		Add("only-recent", "npc-country", "active", 1);
 		object onlyRecent = Get("npc-country", 2, 3, "unused-no-related-candidates-query");
 		Check(Ids(onlyRecent, "RecentActivePolicies").Length == 1 && Ids(onlyRecent, "RelatedActivePolicies").Length == 0
-			&& embeddingInputs.Count == calls && !Prompt(onlyRecent).Contains("【额外相关生效政策】"),
+			&& embeddingInputs.Count == calls && !Prompt(onlyRecent).Contains(PackagePolicyText("HistoryRelatedActivePolicies")),
 			"Deduplication leaving no related candidates must skip embeddings and omit the related block.");
 		entries.Clear();
 		for (int i = 0; i < 25; i++) Add("limit-" + i, "npc-country", "active", i);
@@ -151,7 +152,7 @@ internal static partial class Program
 		InvokeStatic(behavior, "PrepareNpcPolicyReferenceContext", new object[] { context, 730001L, session }, 3);
 		object prompt = InvokeStatic(behavior, "ComposeNpcPolicyDraftPrompt", new object[] { context, string.Empty }, 2);
 		string text = (string)Property(prompt.GetType(), prompt, "SystemPrompt");
-		Check(text.Contains("【本国最近生效政策】") && text.Contains("【额外相关生效政策】") && text.Contains("limit-24")
+		Check(text.Contains(PackagePolicyText("HistoryRecentOwnPolicies")) && text.Contains(PackagePolicyText("HistoryRelatedActivePolicies")) && text.Contains("limit-24")
 			&& !text.Contains("UNBOUNDED_") && !text.Contains("EnemyPolicyMemory") && !text.Contains("historical 表示")
 			&& text.Contains("ACTUAL_WORLD_EVENT_MARKER"),
 			"NPC must consume both bounded reference blocks before drafting, not merely retrieve or log them after its draft.");
@@ -166,7 +167,7 @@ internal static partial class Program
 		SetField(contextType, context, "PolicyHistoryEntries", Activator.CreateInstance(entries.GetType()));
 		InvokeStatic(behavior, "PrepareNpcPolicyReferenceContext", new object[] { context, 730001L, session }, 3);
 		prompt = InvokeStatic(behavior, "ComposeNpcPolicyDraftPrompt", new object[] { context, string.Empty }, 2);
-		Check(!((string)Property(prompt.GetType(), prompt, "SystemPrompt")).Contains("【政策参考（只读存档事实）】"),
+		Check(!((string)Property(prompt.GetType(), prompt, "SystemPrompt")).Contains(PackagePolicyText("HistoryReferenceHeader")),
 			"An NPC without current candidates must not receive an empty reference block.");
 	}
 
@@ -233,14 +234,14 @@ internal static partial class Program
 				string prompt = (string)InvokeStatic(behavior, "SerializePolicyPromptForHash", new[] { messages }, 1);
 				Check(Items(Property(resultType, result, "RecentActivePolicies")).Count() == (scope == "local" ? 0 : 2)
 					&& Items(Property(resultType, result, "RelatedActivePolicies")).Count() == 3
-					&& prompt.Contains("【额外相关生效政策】") && !prompt.Contains("EnemyPolicyMemory")
-					&& prompt.Contains("【本国最近生效政策】") == (scope != "local"),
+					&& prompt.Contains(PackagePolicyText("HistoryRelatedActivePolicies")) && !prompt.Contains("EnemyPolicyMemory")
+					&& prompt.Contains(PackagePolicyText("HistoryRecentOwnPolicies")) == (scope != "local"),
 					"Actual player prompts must consume frozen bounded references, scoped to target country rather than issuer: " + scope);
 			}
 			SetField(requestType, request, "PolicyHistoryEntries", Activator.CreateInstance(entries.GetType()));
 			InvokeStatic(behavior, "RetrieveUnifiedPolicyHistoryForRequest", new object[] { request, session, "query", 730001L }, 4);
 			object emptyMessages = InvokeStatic(behavior, "BuildMainMessages", new object[] { request, string.Empty }, 2);
-			Check(!((string)InvokeStatic(behavior, "SerializePolicyPromptForHash", new[] { emptyMessages }, 1)).Contains("【政策参考（只读存档事实）】"),
+			Check(!((string)InvokeStatic(behavior, "SerializePolicyPromptForHash", new[] { emptyMessages }, 1)).Contains(PackagePolicyText("HistoryReferenceHeader")),
 				"Actual player prompts must omit an empty policy reference block.");
 		}
 		finally

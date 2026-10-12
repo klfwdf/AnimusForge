@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -933,7 +934,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		independence = 0;
 		breakawayThreshold = CalculateSubjectBreakawayThreshold(0);
 		rulerRelation = 0;
-		rulerName = "无有效统治者";
+		rulerName = DiplomacyMiscPromptTexts.Get("Vassalage_NoValidRuler", "no valid ruler");
 		return Instance?.TryGetDirectVassalIndependenceStatus(vassalKingdomId, out independence, out breakawayThreshold, out rulerRelation, out rulerName) == true;
 	}
 
@@ -1258,7 +1259,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		});
 		if (!string.Equals(action, "SUBMIT", StringComparison.OrdinalIgnoreCase))
 		{
-			statusText = "臣属条约未执行：当前谈判结果不属于可签署的臣属条约。";
+			statusText = DiplomacyUiLocalization.Text("AF_DIP_MISC_Vassalage_Uncommitted", "Vassalage treaty not executed: the current negotiation result does not belong to a signable vassalage treaty.");
 			VassalageDiagnosticLog.Event("action.apply.reject", new Dictionary<string, object>
 			{
 				["reason"] = "unsupported_action",
@@ -1269,7 +1270,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		if (!TryParseVassalageType(typeToken, out var type))
 		{
-			statusText = "臣属条约未执行：未能识别约定的条约类型。";
+			statusText = DiplomacyUiLocalization.Text("AF_DIP_MISC_Vassalage_InvalidType", "Vassalage treaty not executed: failed to recognize the agreed treaty type.");
 			VassalageDiagnosticLog.Event("action.apply.reject", new Dictionary<string, object>
 			{
 				["reason"] = "invalid_type",
@@ -1291,8 +1292,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			: NormalizeVassalageType(type) == AfVassalageType.Garrison ? "Garrison" : "Vassal";
 		statusText = WorldDiplomacyBehavior.SubmitOralDiplomaticCommitment(negotiatedWith,
 			"action=" + actionName + ";move=NewMatter;target=" + GetPlayerKingdom()?.StringId
-			+ ";receiving=" + GetPlayerKingdom()?.StringId + ";joining=" + targetKingdom?.StringId);
-		bool result = statusText.StartsWith("正式宣言") || statusText.StartsWith("约定已登记");
+			+ ";receiving=" + GetPlayerKingdom()?.StringId + ";joining=" + targetKingdom?.StringId, out bool result);
 		VassalageDiagnosticLog.Event("action.apply.done", new Dictionary<string, object>
 		{
 			["ok"] = result,
@@ -1556,7 +1556,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return BuildKingdomVassalageRelationPromptLineForExternal(observerKingdom, counterpartKingdom, "面前此人所在王国");
+			return BuildKingdomVassalageRelationPromptLineForExternal(observerKingdom, counterpartKingdom, DiplomacyPromptTexts.Get("VassalageCounterpartKingdom", "The kingdom of the person before you"));
 		}
 		catch
 		{
@@ -1585,7 +1585,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		string counterpartLabel = (counterpartKingdomLabel ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(counterpartLabel))
 		{
-			counterpartLabel = "对方所在王国";
+			counterpartLabel = DiplomacyPromptTexts.Get("VassalageOtherKingdom", "The other party's kingdom");
 		}
 		string observerId = (observerKingdom.StringId ?? "").Trim();
 		string counterpartId = (counterpartKingdom.StringId ?? "").Trim();
@@ -1604,7 +1604,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			string suzerainId = (agreement.SuzerainKingdomId ?? "").Trim();
 			string vassalId = (agreement.VassalKingdomId ?? "").Trim();
 			AfVassalageType type = NormalizeVassalageType(agreement.Type);
-			string typeText = GetVassalageTypeDisplayName(type);
+			string typeText = GetVassalageTypePromptName(type);
 			string clause = BuildVassalagePromptClause(type);
 			if (string.Equals(observerId, vassalId, StringComparison.OrdinalIgnoreCase)
 				&& string.Equals(counterpartId, suzerainId, StringComparison.OrdinalIgnoreCase))
@@ -1615,7 +1615,9 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				return "【当前臣属关系】你所在的王国（" + GetKingdomDisplayName(vassal, "你的王国") + "）是" + counterpartLabel + "（" + GetKingdomDisplayName(suzerain, "对方王国") + "）的" + typeText + "；" + clause;
+				return DiplomacyPromptTexts.Format("VassalageObserverSubject", "[Current subject relationship] Your kingdom ({OBSERVER}) is the {TYPE} of {COUNTERPART} ({OTHER}); {CLAUSE}",
+					"OBSERVER", GetKingdomDisplayName(vassal, DiplomacyPromptTexts.Get("VassalageYourKingdom", "Your kingdom")), "TYPE", typeText,
+					"COUNTERPART", counterpartLabel, "OTHER", GetKingdomDisplayName(suzerain, DiplomacyPromptTexts.Get("VassalageOtherKingdom", "The other party's kingdom")), "CLAUSE", clause);
 			}
 			if (string.Equals(observerId, suzerainId, StringComparison.OrdinalIgnoreCase)
 				&& string.Equals(counterpartId, vassalId, StringComparison.OrdinalIgnoreCase))
@@ -1626,7 +1628,9 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				return "【当前臣属关系】你所在的王国（" + GetKingdomDisplayName(suzerain, "你的王国") + "）是" + counterpartLabel + "（" + GetKingdomDisplayName(vassal, "对方王国") + "）的宗主国；对方王国是你的" + typeText + "；" + clause;
+				return DiplomacyPromptTexts.Format("VassalageObserverSuzerain", "[Current subject relationship] Your kingdom ({OBSERVER}) is the suzerain of {COUNTERPART} ({OTHER}); that kingdom is your {TYPE}; {CLAUSE}",
+					"OBSERVER", GetKingdomDisplayName(suzerain, DiplomacyPromptTexts.Get("VassalageYourKingdom", "Your kingdom")), "TYPE", typeText,
+					"COUNTERPART", counterpartLabel, "OTHER", GetKingdomDisplayName(vassal, DiplomacyPromptTexts.Get("VassalageOtherKingdom", "The other party's kingdom")), "CLAUSE", clause);
 			}
 		}
 		return "";
@@ -1637,11 +1641,11 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		switch (NormalizeVassalageType(type))
 		{
 		case AfVassalageType.Tributary:
-			return "朝贡国缴纳贡赋换取庇护，通常保留军事自主权。";
+			return DiplomacyPromptTexts.Get("VassalageTributaryClause", "Tributaries pay tribute for protection and usually retain military autonomy.");
 		case AfVassalageType.Garrison:
-			return "卫戍国接受宗主军事号令，并承担出兵义务。";
+			return DiplomacyPromptTexts.Get("VassalageGarrisonClause", "Garrison kingdoms obey their suzerain's military orders and owe military service.");
 		default:
-			return "附庸国外交军事受宗主控制，并承担贡赋与出兵义务。";
+			return DiplomacyPromptTexts.Get("VassalageVassalClause", "Vassals' diplomacy and military are controlled by their suzerain; they owe tribute and military service.");
 		}
 	}
 
@@ -1656,7 +1660,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				data.DescriptionText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoKingdom", "You do not have a kingdom yet.");
 				return data;
 			}
-			string playerKingdomName = GetKingdomDisplayName(playerKingdom, "玩家王国");
+			string playerKingdomName = GetKingdomDisplayName(playerKingdom, DiplomacyMiscPromptTexts.Get("Vassalage_PlayerKingdom", "Player's Kingdom"));
 			if (!IsPlayerRuler(playerKingdom))
 			{
 				data.DescriptionText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_NotRuler", "Current kingdom: {KINGDOM}\n\nYou are not this kingdom's ruler and cannot view the suzerain's subject roster.", ("KINGDOM", playerKingdomName));
@@ -1670,7 +1674,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 					Vassal = agreement?.ResolveVassal()
 				})
 				.Where(x => x.Agreement != null && IsValidKingdom(x.Vassal))
-				.OrderBy(x => GetKingdomDisplayName(x.Vassal, "臣属国"), StringComparer.OrdinalIgnoreCase)
+				.OrderBy(x => GetKingdomDisplayName(x.Vassal, DiplomacyMiscPromptTexts.Get("Vassalage_SubjectKingdom", "subject kingdom")), StringComparer.OrdinalIgnoreCase)
 				.ToList();
 			data.DescriptionText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_Description", "Suzerain: {KINGDOM}\nSelect a subject with a tribute obligation to view recorded deposits.", ("KINGDOM", playerKingdomName));
 			if (agreements.Count <= 0)
@@ -1759,11 +1763,11 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			}
 			Kingdom vassal = agreement.ResolveVassal();
 			AfVassalageType normalizedType = NormalizeVassalageType(agreement.Type);
-			string vassalName = GetKingdomDisplayName(vassal, "臣属国");
+			string vassalName = GetKingdomDisplayName(vassal, DiplomacyMiscPromptTexts.Get("Vassalage_SubjectKingdom", "subject kingdom"));
 			int createdDay = Math.Max(0, agreement.CreatedDay);
 			int elapsedDays = Math.Max(0, GetCurrentCampaignDay() - createdDay);
 			data.TitleText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_HistoryTitle", "{SUBJECT} · Tribute records", ("SUBJECT", vassalName));
-			data.SubtitleText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_HistorySubtitle", "{TYPE} · Signed: {DATE} · Duration: {DAYS} days", ("TYPE", GetVassalageTypeDisplayName(normalizedType)), ("DATE", FormatCampaignDate(createdDay)), ("DAYS", elapsedDays.ToString(CultureInfo.InvariantCulture)));
+			data.SubtitleText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_HistorySubtitle", "{TYPE} · Signed: {DATE} · Duration: {DAYS} days", ("TYPE", GetVassalageTypeProjection(normalizedType)), ("DATE", FormatCampaignDate(createdDay)), ("DAYS", elapsedDays.ToString(CultureInfo.InvariantCulture)));
 			if (!IsTributePayingSubjectType(normalizedType))
 			{
 				data.EmptyStateText = DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_TypeNoTribute", "This subject type does not generate tribute records.");
@@ -1792,8 +1796,8 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 	private TerminalVassalageSubjectData BuildTerminalVassalageSubjectData(VassalageAgreement agreement, Kingdom vassal, int today)
 	{
 		AfVassalageType normalizedType = NormalizeVassalageType(agreement.Type);
-		string vassalName = GetKingdomDisplayName(vassal, "臣属国");
-		string typeName = GetVassalageTypeDisplayName(normalizedType);
+		string vassalName = GetKingdomDisplayName(vassal, DiplomacyMiscPromptTexts.Get("Vassalage_SubjectKingdom", "subject kingdom"));
+		string typeName = GetVassalageTypeProjection(normalizedType);
 		int createdDay = Math.Max(0, agreement.CreatedDay);
 		int elapsedDays = Math.Max(0, today - createdDay);
 		bool isTributePaying = IsTributePayingSubjectType(normalizedType);
@@ -1968,7 +1972,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
 					"AF_DIP_UI_Vassalage_DeclareWarBlocked",
 					"The kingdom council cannot declare war on {TARGET} while a vassalage treaty is active. Use formal negotiations to end the treaty first.",
-					("TARGET", GetKingdomDisplayName(targetKingdom, GetVassalageTypeDisplayName(targetAgreement.Type)))), Color.FromUint(4294936661u)));
+					("TARGET", GetKingdomDisplayName(targetKingdom, GetVassalageTypeProjection(targetAgreement.Type)))), Color.FromUint(4294936661u)));
 				return false;
 			}
 			bool allowWar = HandlePlayerWarAgainstSubject(targetAgreement, detail);
@@ -2176,7 +2180,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			if (TryFindActiveProtectedSubjectWar(null, playerPeaceEnemy, requirePlayerWar: true, out var protectedKey, out var protectedAgreement, out var protectedSubject, out var protectedEnemy))
 			{
 				bool enemyIsOfferingPeaceToPlayer = side2IsPlayer && !side1IsPlayer;
-				string subjectName = GetKingdomDisplayName(protectedSubject, "朝贡国");
+				string subjectName = GetKingdomDisplayName(protectedSubject, DiplomacyMiscPromptTexts.Get("Vassalage_TributaryKingdom", "tributary kingdom"));
 				if (enemyIsOfferingPeaceToPlayer)
 				{
 					InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
@@ -2395,9 +2399,8 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 	{
 		Hero speaker = targetHero ?? targetCharacter?.HeroObject;
 		if (!CanInjectVassalageRuleForExternal(speaker)) return "";
-		return "【臣属与并入谈判事实】\n你代表的王国ID=" + speaker.Clan.Kingdom.StringId
-			+ "；玩家王国ID=" + (Clan.PlayerClan?.Kingdom?.StringId ?? "无")
-			+ "。任何玩家可劝说，但签约方必须有国家权限；可谈合法的任一国家方向。明确接收/宗主国与并入/臣属国，口头答应先发布正式提案，须对方正式接受。玩家自己发文。\n"
+		return DiplomacyPromptTexts.Format("VassalageRuntimeNegotiation", "[Subject and annexation negotiation facts]\nYour represented kingdom ID={NPC}; player kingdom ID={PLAYER}. Any player may persuade, but signing parties must have national authority; either legal national direction may be discussed. Specify the receiving/suzerain and annexed/subject kingdoms. Oral assent first publishes a formal proposal, requiring formal acceptance by the other party. The player publishes their own declarations.\n",
+			"NPC", speaker.Clan.Kingdom.StringId, "PLAYER", Clan.PlayerClan?.Kingdom?.StringId ?? DiplomacyPromptTexts.Get("VassalageNoPlayerKingdom", "None"))
 			+ string.Join("\n", Kingdom.All.Where(x => x != null && !x.IsEliminated).Select(x => x.StringId + "=" + x.Name))
 			+ "\n" + WorldDiplomacyBehavior.BuildOralArrangementContext(speaker);
 	}
@@ -2405,7 +2408,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 	public static string BuildRuntimeVassalageConstraintHintForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 	{
 		return CanInjectVassalageRuleForExternal(targetHero, targetCharacter)
-			? "只有当前NPC统治者明确最终答应才提交；新条件另开事件，回应旧案准确绑定来源，歧义先澄清。臣属与并入均先正式发文，不能代玩家接受。" : "";
+			? DiplomacyPromptTexts.Get("VassalageRuntimeConstraint", "Submit only after the current NPC ruler explicitly gives final assent. New terms open a separate event; responses to existing proposals bind the source accurately. Clarify ambiguity first. Subject treaties and annexation both require formal declarations first; never accept on the player's behalf.") : "";
 	}
 
 	public static List<PostprocessRuleEntry> BuildRuntimeVassalagePostprocessRulesForExternal(Hero targetHero, CharacterObject targetCharacter = null)
@@ -2481,7 +2484,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			.Where(x => x != null && UsesSubjectIndependence(NormalizeVassalageType(x.Type)))
 			.ToList())
 		{
-			TryBreakSubjectAtCurrentThreshold(agreement, "subject_ruler_relation_threshold", "存档载入复核");
+			TryBreakSubjectAtCurrentThreshold(agreement, "subject_ruler_relation_threshold", "save-load-recheck");
 		}
 	}
 
@@ -2494,30 +2497,30 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		if (IsSameHero(effectiveHero, player))
 		{
-			TryCheckSubjectBreakawayForPotentialRuler(effectiveHeroGainedRelationWith, "关系变化");
+			TryCheckSubjectBreakawayForPotentialRuler(effectiveHeroGainedRelationWith, "relation-change");
 		}
 		if (IsSameHero(effectiveHeroGainedRelationWith, player))
 		{
-			TryCheckSubjectBreakawayForPotentialRuler(effectiveHero, "关系变化");
+			TryCheckSubjectBreakawayForPotentialRuler(effectiveHero, "relation-change");
 		}
 		if (IsSameHero(originalHero, player))
 		{
-			TryCheckSubjectBreakawayForPotentialRuler(originalGainedRelationWith, "关系变化");
+			TryCheckSubjectBreakawayForPotentialRuler(originalGainedRelationWith, "relation-change");
 		}
 		if (IsSameHero(originalGainedRelationWith, player))
 		{
-			TryCheckSubjectBreakawayForPotentialRuler(originalHero, "关系变化");
+			TryCheckSubjectBreakawayForPotentialRuler(originalHero, "relation-change");
 		}
 	}
 
 	private void OnRulingClanChanged(Kingdom kingdom, Clan changedClan)
 	{
-		TryCheckSubjectBreakawayForKingdom(kingdom, "统治氏族更替");
+		TryCheckSubjectBreakawayForKingdom(kingdom, "ruling-clan-change");
 	}
 
 	private void OnClanLeaderChanged(Hero oldLeader, Hero newLeader)
 	{
-		TryCheckSubjectBreakawayForPotentialRuler(newLeader, "统治者更替");
+		TryCheckSubjectBreakawayForPotentialRuler(newLeader, "ruler-change");
 	}
 
 	private void TryCheckSubjectBreakawayForPotentialRuler(Hero hero, string trigger)
@@ -2928,30 +2931,30 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		if (strength <= 500f)
 		{
 			return InterpolateTributaryPaymentTier(strength, 0f, 500f,
-				new TributaryPaymentTier { TownProsperity = 5, TownFood = 25, CastleProsperity = 3, CastleFood = 20, VillageHearth = 2, TierName = "微薄贡赋" },
-				new TributaryPaymentTier { TownProsperity = 15, TownFood = 50, CastleProsperity = 10, CastleFood = 40, VillageHearth = 6, TierName = "小额贡赋" });
+				new TributaryPaymentTier { TownProsperity = 5, TownFood = 25, CastleProsperity = 3, CastleFood = 20, VillageHearth = 2, TierName = DiplomacyMiscPromptTexts.Get("Tributary_Tier_Meager", "Meager Tribute") },
+				new TributaryPaymentTier { TownProsperity = 15, TownFood = 50, CastleProsperity = 10, CastleFood = 40, VillageHearth = 6, TierName = DiplomacyMiscPromptTexts.Get("Tributary_Tier_Minor", "Minor Tribute") });
 		}
 		if (strength <= 1000f)
 		{
 			return InterpolateTributaryPaymentTier(strength, 500f, 1000f,
-				new TributaryPaymentTier { TownProsperity = 15, TownFood = 50, CastleProsperity = 10, CastleFood = 40, VillageHearth = 6, TierName = "小额贡赋" },
-				new TributaryPaymentTier { TownProsperity = 35, TownFood = 100, CastleProsperity = 22, CastleFood = 70, VillageHearth = 12, TierName = "稳固贡赋" });
+				new TributaryPaymentTier { TownProsperity = 15, TownFood = 50, CastleProsperity = 10, CastleFood = 40, VillageHearth = 6, TierName = DiplomacyMiscPromptTexts.Get("Tributary_Tier_Minor", "Minor Tribute") },
+				new TributaryPaymentTier { TownProsperity = 35, TownFood = 100, CastleProsperity = 22, CastleFood = 70, VillageHearth = 12, TierName = DiplomacyMiscPromptTexts.Get("Tributary_Tier_Solid", "Solid Tribute") });
 		}
 		if (strength <= 3000f)
 		{
 			return InterpolateTributaryPaymentTier(strength, 1000f, 3000f,
-				new TributaryPaymentTier { TownProsperity = 35, TownFood = 100, CastleProsperity = 22, CastleFood = 70, VillageHearth = 12, TierName = "稳固贡赋" },
-				new TributaryPaymentTier { TownProsperity = 90, TownFood = 180, CastleProsperity = 55, CastleFood = 120, VillageHearth = 28, TierName = "丰厚贡赋" });
+				new TributaryPaymentTier { TownProsperity = 35, TownFood = 100, CastleProsperity = 22, CastleFood = 70, VillageHearth = 12, TierName = DiplomacyMiscPromptTexts.Get("Tributary_Tier_Solid", "Solid Tribute") },
+				new TributaryPaymentTier { TownProsperity = 90, TownFood = 180, CastleProsperity = 55, CastleFood = 120, VillageHearth = 28, TierName = DiplomacyMiscPromptTexts.Get("Tributary_Tier_Generous", "Generous Tribute") });
 		}
 		if (strength <= 7000f)
 		{
 			return InterpolateTributaryPaymentTier(strength, 3000f, 7000f,
-				new TributaryPaymentTier { TownProsperity = 90, TownFood = 180, CastleProsperity = 55, CastleFood = 120, VillageHearth = 28, TierName = "丰厚贡赋" },
-				new TributaryPaymentTier { TownProsperity = 180, TownFood = 300, CastleProsperity = 110, CastleFood = 220, VillageHearth = 55, TierName = "巨额贡赋" });
+				new TributaryPaymentTier { TownProsperity = 90, TownFood = 180, CastleProsperity = 55, CastleFood = 120, VillageHearth = 28, TierName = DiplomacyMiscPromptTexts.Get("Tributary_Tier_Generous", "Generous Tribute") },
+				new TributaryPaymentTier { TownProsperity = 180, TownFood = 300, CastleProsperity = 110, CastleFood = 220, VillageHearth = 55, TierName = DiplomacyMiscPromptTexts.Get("Tributary_Tier_Immense", "Immense Tribute") });
 		}
 		return InterpolateTributaryPaymentTier(strength, 7000f, 10000f,
-			new TributaryPaymentTier { TownProsperity = 180, TownFood = 300, CastleProsperity = 110, CastleFood = 220, VillageHearth = 55, TierName = "巨额贡赋" },
-			new TributaryPaymentTier { TownProsperity = 220, TownFood = 450, CastleProsperity = 140, CastleFood = 320, VillageHearth = 75, TierName = "王国贡赋" });
+			new TributaryPaymentTier { TownProsperity = 180, TownFood = 300, CastleProsperity = 110, CastleFood = 220, VillageHearth = 55, TierName = DiplomacyMiscPromptTexts.Get("Tributary_Tier_Immense", "Immense Tribute") },
+			new TributaryPaymentTier { TownProsperity = 220, TownFood = 450, CastleProsperity = 140, CastleFood = 320, VillageHearth = 75, TierName = DiplomacyMiscPromptTexts.Get("Tributary_Tier_Realm", "Realm Tribute") });
 	}
 
 	private static TributaryPaymentTier InterpolateTributaryPaymentTier(float strength, float minStrength, float maxStrength, TributaryPaymentTier minTier, TributaryPaymentTier maxTier)
@@ -2965,7 +2968,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			CastleProsperity = LerpTributaryPaymentValue(minTier.CastleProsperity, maxTier.CastleProsperity, ratio),
 			CastleFood = LerpTributaryPaymentValue(minTier.CastleFood, maxTier.CastleFood, ratio),
 			VillageHearth = LerpTributaryPaymentValue(minTier.VillageHearth, maxTier.VillageHearth, ratio),
-			TierName = "动态国力 " + FormatTributaryPaymentDiagnosticNumber(strength)
+			TierName = DiplomacyCompatibilityTexts.Get("Vassalage_DynamicStrength_Prefix") + FormatTributaryPaymentDiagnosticNumber(strength)
 		};
 	}
 
@@ -3852,8 +3855,8 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		foreach (string vassalId in endedVassalIds)
 		{
 			string reason = string.Equals(vassalId, id, StringComparison.OrdinalIgnoreCase)
-				? "目标附庸国已经灭亡"
-				: "宗主国已经灭亡";
+				? DiplomacyMiscPromptTexts.Get("Vassalage_TargetSubjectEliminated", "Target subject kingdom has been eliminated")
+				: DiplomacyMiscPromptTexts.Get("Vassalage_SuzerainEliminated", "Suzerain kingdom has been eliminated");
 			CustomPolicyBehavior.OnVassalRelationshipEndedForExternal(vassalId, reason);
 		}
 		foreach (string noticeId in _pendingInfoNotices.Keys.Where((string x) => (x ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0 || (_pendingInfoNotices[x] ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0).ToList())
@@ -3936,7 +3939,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		Kingdom playerKingdom = GetPlayerKingdom();
 		if (!IsValidKingdom(playerKingdom) || !IsPlayerRuler(playerKingdom))
 		{
-			statusText = "臣属条约未签署：你必须先成为自己王国的国王。";
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_MustBeKing", "Vassalage treaty not signed: you must first become the king of your kingdom.");
 			VassalageDiagnosticLog.Event("agreement.create.reject", new Dictionary<string, object>
 			{
 				["reason"] = "player_not_ruler",
@@ -3949,7 +3952,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		if (!IsValidKingdom(targetKingdom))
 		{
-			statusText = "臣属条约未签署：找不到有效的目标王国。";
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_TargetNotFound", "Vassalage treaty not signed: valid target kingdom not found.");
 			VassalageDiagnosticLog.Event("agreement.create.reject", new Dictionary<string, object>
 			{
 				["reason"] = "invalid_target_kingdom",
@@ -3962,7 +3965,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		if (targetKingdom == playerKingdom)
 		{
-			statusText = "臣属条约未签署：你的王国不能臣服于自己。";
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_CannotVassalizeSelf", "Vassalage treaty not signed: your kingdom cannot submit to itself.");
 			VassalageDiagnosticLog.Event("agreement.create.reject", new Dictionary<string, object>
 			{
 				["reason"] = "same_kingdom",
@@ -3974,7 +3977,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		if (!IsKingdomRuler(negotiatedWith, targetKingdom))
 		{
-			statusText = "臣属条约未签署：对方不是目标王国的国王，不能代表整个王国立约。";
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_OtherNotKing", "Vassalage treaty not signed: the other party is not the ruler of the target kingdom and cannot represent it.");
 			VassalageDiagnosticLog.Event("agreement.create.reject", new Dictionary<string, object>
 			{
 				["reason"] = "speaker_not_target_ruler",
@@ -3991,7 +3994,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			{
 				return TryRevisePlayerVassalage(negotiatedWith, targetKingdom, type, existing, out statusText);
 			}
-			statusText = GetKingdomDisplayName(targetKingdom, "该王国") + "已经承认" + GetKingdomDisplayName(existing.ResolveSuzerain(), "宗主国") + "的宗主权。";
+statusText = string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_AcknowledgedSuzeraintyFormat", "{0} has recognized the suzerainty of {1}."), GetKingdomDisplayName(targetKingdom, DiplomacyMiscPromptTexts.Get("StrategicProfile_DefaultKingdomFallback", "the kingdom")), GetKingdomDisplayName(existing.ResolveSuzerain(), DiplomacyMiscPromptTexts.Get("Vassalage_SuzerainKingdom", "suzerain kingdom")));
 			VassalageDiagnosticLog.Event("agreement.create.reject", new Dictionary<string, object>
 			{
 				["reason"] = "existing_agreement",
@@ -4047,15 +4050,15 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		bool peaceAfterAgreement = !wasAtWarWithPlayer || !IsAtWar(playerKingdom, targetKingdom);
 		string warSyncStatusText = normalizedNewType == AfVassalageType.Tributary
 				? ((syncedWarCount > 0 || queuedWarSyncCount > 0)
-					? "宗主国已接手朝贡国现有战事：" + syncedWarCount.ToString(CultureInfo.InvariantCulture) + "项已生效，" + queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + "项将在局势安全时生效。"
+					? DiplomacyMiscPromptTexts.Get("Vassalage_NpcSuzerainTookOverWarsFormat", "Suzerain took over tributary's active wars: {0} effective, {1} will take effect when situations are safe.").Split(':')[0] + ": " + syncedWarCount.ToString(CultureInfo.InvariantCulture) + ", " + queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + ", pending safe."
 					: "")
-			: ((syncedWarCount > 0 ? ("共同敌国已同步 " + syncedWarCount.ToString(CultureInfo.InvariantCulture) + " 项。") : "")
-				+ (queuedWarSyncCount > 0 ? (queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + " 项共同敌国将在局势安全时同步。") : ""));
-		statusText = GetKingdomDisplayName(targetKingdom, "该王国") + "已经承认" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "的宗主权，条约类型：" + GetVassalageTypeDisplayName(type) + "。"
-			+ (normalizedNewType == AfVassalageType.Tributary ? "朝贡国按期进贡，换取宗主庇护；朝贡国不随宗主国出征。" : "")
-			+ (wasAtWarWithPlayer ? (peaceAfterAgreement ? "旧日敌对已经随条约停息。" : "旧日敌对将在安全时同步停息。") : "")
+			: ((syncedWarCount > 0 ? (DiplomacyCompatibilityTexts.Get("Vassalage_CommonEnemiesSynced_Prefix") + syncedWarCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_Items_Suffix")) : "")
+				+ (queuedWarSyncCount > 0 ? (queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_CommonEnemiesSafe_Suffix")) : ""));
+statusText = string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_AcknowledgedPlayerSuzeraintyTypeFormat", "{0} has recognized the suzerainty of {1}; treaty type: {2}."), GetKingdomDisplayName(targetKingdom, DiplomacyMiscPromptTexts.Get("StrategicProfile_DefaultKingdomFallback", "the kingdom")), GetKingdomDisplayName(playerKingdom, DiplomacyMiscPromptTexts.Get("Vassalage_PlayerKingdom", "Player's Kingdom")), GetVassalageTypeDisplayName(type))
+			+ (normalizedNewType == AfVassalageType.Tributary ? DiplomacyMiscPromptTexts.Get("Vassalage_TributaryTermsDesc", "Tributary pays tribute periodically in exchange for suzerain protection; does not join military campaigns.") : "")
+			+ (wasAtWarWithPlayer ? (peaceAfterAgreement ? DiplomacyMiscPromptTexts.Get("Vassalage_HostilityCeased", "Former hostilities have ceased with the treaty.") : DiplomacyMiscPromptTexts.Get("Vassalage_HostilityWillCeaseSafe", "Former hostilities will cease synchronously when safe.")) : "")
 			+ warSyncStatusText
-			+ (otherQueuedDiplomacySyncCount > 0 ? ("另有 " + otherQueuedDiplomacySyncCount.ToString(CultureInfo.InvariantCulture) + " 项外交安排将在局势安全时生效。") : "");
+			+ (otherQueuedDiplomacySyncCount > 0 ? (DiplomacyCompatibilityTexts.Get("Vassalage_OtherDiplomacySafe_Prefix") + otherQueuedDiplomacySyncCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_OtherDiplomacySafe_Suffix")) : "");
 		Logger.Log("Vassalage", "Agreement created suzerain=" + agreement.SuzerainKingdomId + " vassal=" + agreement.VassalKingdomId + " type=" + agreement.Type);
 		MyBehavior.Instance?.CaptureWorldBulletinVassalage(playerKingdom, targetKingdom, GetVassalageTypeDisplayName(type), true);
 		VassalageDiagnosticLog.Event("agreement.create.success", new Dictionary<string, object>
@@ -4089,7 +4092,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		Kingdom playerKingdom = GetPlayerKingdom();
 		if (existing == null || !existing.IsValid() || !IsValidKingdom(playerKingdom) || !IsValidKingdom(targetKingdom))
 		{
-			statusText = "臣属条约未改订：找不到有效的既有臣属条约。";
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_ExistingTreatyNotFound", "Vassalage treaty not amended: existing valid treaty not found.");
 			return false;
 		}
 		AfVassalageType oldType = NormalizeVassalageType(existing.Type);
@@ -4097,7 +4100,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		bool preserveSubjectIndependence = UsesSubjectIndependence(oldType) && UsesSubjectIndependence(newType);
 		if (oldType == newType)
 		{
-			statusText = GetKingdomDisplayName(targetKingdom, "该王国") + "已经是你的" + GetVassalageTypeDisplayName(newType) + "，条约无需重复签署。";
+statusText = string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_AlreadyYourSubjectFormat", "{0} is already your {1}; signing again is unnecessary."), GetKingdomDisplayName(targetKingdom, DiplomacyMiscPromptTexts.Get("StrategicProfile_DefaultKingdomFallback", "the kingdom")), GetVassalageTypeDisplayName(newType));
 			VassalageDiagnosticLog.Event("agreement.revise.reject", new Dictionary<string, object>
 			{
 				["reason"] = "same_type",
@@ -4141,7 +4144,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		if (oldType == AfVassalageType.Vassal && newType != AfVassalageType.Vassal)
 		{
-			CustomPolicyBehavior.OnVassalRelationshipEndedForExternal(existing.VassalKingdomId, "臣属类型已改订为" + GetVassalageTypeDisplayName(newType));
+CustomPolicyBehavior.OnVassalRelationshipEndedForExternal(existing.VassalKingdomId, string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_TypeAmendedToFormat", "Vassalage type amended to {0}"), GetVassalageTypeDisplayName(newType)));
 		}
 		pendingDiplomacySyncCountBefore = _pendingDiplomacySyncs.Count;
 		if (wasAtWarWithPlayer && MakePeaceIfNeeded(playerKingdom, targetKingdom, "agreement_revise_player_subject_peace"))
@@ -4157,15 +4160,15 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		string newTypeText = GetVassalageTypeDisplayName(newType);
 		string revisedWarSyncStatusText = newType == AfVassalageType.Tributary
 				? ((syncedWarCount > 0 || queuedWarSyncCount > 0)
-					? "宗主国已接手朝贡国现有战事：" + syncedWarCount.ToString(CultureInfo.InvariantCulture) + "项已生效，" + queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + "项将在局势安全时生效。"
+					? DiplomacyMiscPromptTexts.Get("Vassalage_NpcSuzerainTookOverWarsFormat", "Suzerain took over tributary's active wars: {0} effective, {1} will take effect when situations are safe.").Split(':')[0] + ": " + syncedWarCount.ToString(CultureInfo.InvariantCulture) + ", " + queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + ", pending safe."
 					: "")
-			: ((syncedWarCount > 0 ? ("已同步双方当前战争 " + syncedWarCount.ToString(CultureInfo.InvariantCulture) + " 项。") : "")
-				+ (queuedWarSyncCount > 0 ? (queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + " 项当前战争将在局势安全时同步。") : ""));
-		statusText = GetKingdomDisplayName(targetKingdom, "该王国") + "的臣属条约已由" + oldTypeText + "改订为" + newTypeText + "。"
-			+ (newType == AfVassalageType.Tributary ? "朝贡国按期进贡，换取宗主庇护；朝贡国不随宗主国出征。" : "")
-			+ (wasAtWarWithPlayer ? (peaceAfterAgreement ? "双方已在改订后停战。" : "双方停战将在安全时同步执行。") : "")
+			: ((syncedWarCount > 0 ? (DiplomacyCompatibilityTexts.Get("Vassalage_MutualWarsSynced_Prefix") + syncedWarCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_Items_Suffix")) : "")
+				+ (queuedWarSyncCount > 0 ? (queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_MutualWarsSafe_Suffix")) : ""));
+statusText = string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_TypeAmendedFromToFormat", "Vassalage treaty of {0} amended from {1} to {2}"), GetKingdomDisplayName(targetKingdom, DiplomacyMiscPromptTexts.Get("StrategicProfile_DefaultKingdomFallback", "the kingdom")), oldTypeText, newTypeText)
+			+ (newType == AfVassalageType.Tributary ? DiplomacyMiscPromptTexts.Get("Vassalage_TributaryTermsDesc", "Tributary pays tribute periodically in exchange for suzerain protection; does not join military campaigns.") : "")
+			+ (wasAtWarWithPlayer ? (peaceAfterAgreement ? DiplomacyMiscPromptTexts.Get("Vassalage_BothSidesTruceAfterAmend", "Both sides made peace following the amendment.") : DiplomacyMiscPromptTexts.Get("Vassalage_BothSidesTrucePendingSync", "Truce between both sides will execute synchronously when safe.")) : "")
 			+ revisedWarSyncStatusText
-			+ (otherQueuedDiplomacySyncCount > 0 ? ("另有 " + otherQueuedDiplomacySyncCount.ToString(CultureInfo.InvariantCulture) + " 项外交安排将在局势安全时生效。") : "");
+			+ (otherQueuedDiplomacySyncCount > 0 ? (DiplomacyCompatibilityTexts.Get("Vassalage_OtherDiplomacySafe_Prefix") + otherQueuedDiplomacySyncCount.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("Vassalage_OtherDiplomacySafe_Suffix")) : "");
 		string summary = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_AgreementRevisedSummary",
 			"The vassalage treaty of {SUBJECT} has been revised from {OLD} to {NEW}.",
 			("SUBJECT", GetKingdomDisplayName(targetKingdom, GetVassalageTypeProjection(oldType))),
@@ -4848,7 +4851,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			&& !((reason ?? "").Trim().EndsWith("_controlled_subject_cascade", StringComparison.OrdinalIgnoreCase));
 		if (shouldDisplayControlledSubjectWarSyncNotice)
 		{
-			string subjectWarSyncNoticePrefix = declaredNowCount + queuedCount > 0 ? "宗主国战争状态已同步：" : "宗主国战争状态已确认：";
+string subjectWarSyncNoticePrefix = declaredNowCount + queuedCount > 0 ? DiplomacyMiscPromptTexts.Get("Vassalage_SuzerainWarsSyncedFormat", "Suzerain war status synchronized: ").Split(':')[0] + ": " : DiplomacyMiscPromptTexts.Get("Vassalage_SuzerainWarsConfirmedFormat", "Suzerain war status confirmed: ").Split(':')[0] + ": ";
 			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Format(
 				"AF_DIP_UI_Vassalage_SubjectWarSync",
 				"{PREFIX} {DECLARED} subjects joined the war, {QUEUED} will join when conditions are safe, and {ALREADY} were already at war.",
@@ -5245,9 +5248,9 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		Kingdom vassal = agreement.ResolveVassal();
 		AfVassalageType type = NormalizeVassalageType(agreement.Type);
-		string detailText = detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility ? "袭击了" : "向";
-		string actionText = detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility ? "的领主" : "宣战";
-		BreakAgreement(agreement, "player_broke_subject_agreement", "你" + detailText + GetKingdomDisplayName(vassal, GetVassalageTypeDisplayName(type)) + actionText + "。臣属誓约已被撕毁，战争将继续。");
+string detailText = detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility ? DiplomacyMiscPromptTexts.Get("Vassalage_PlayerAttackLord", "attacked") : DiplomacyMiscPromptTexts.Get("Vassalage_PlayerDeclareWar", "declared war on");
+string actionText = detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility ? DiplomacyMiscPromptTexts.Get("Vassalage_OfLord", "'s lord ") : DiplomacyMiscPromptTexts.Get("DecisionType_War", "War");
+BreakAgreement(agreement, "player_broke_subject_agreement", "You " + detailText + " " + GetKingdomDisplayName(vassal, GetVassalageTypeDisplayName(type)) + " " + actionText + DiplomacyMiscPromptTexts.Get("Vassalage_PledgeBrokenWarContinues", ". The vassalage pledge has been broken; war will continue."));
 		return true;
 	}
 
@@ -5258,7 +5261,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			return;
 		}
 		Kingdom vassal = agreement.ResolveVassal();
-		string vassalName = GetKingdomDisplayName(vassal, "该卫戍国");
+		string vassalName = GetKingdomDisplayName(vassal, DiplomacyMiscPromptTexts.Get("Vassalage_TargetMarchKingdom", "the march kingdom"));
 		int before = EnsureGarrisonObedience(agreement);
 		int after = ClampSubjectObedienceValue(before + delta);
 		int independenceBefore = IndependenceFromSubjectObedience(before);
@@ -5280,7 +5283,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			["tier"] = GetSubjectObedienceTierText(after),
 			["reason"] = reason ?? ""
 		});
-		if (TryBreakSubjectAtCurrentThreshold(agreement, reason ?? "garrison_obedience_collapsed", "卫戍国独立度变化"))
+		if (TryBreakSubjectAtCurrentThreshold(agreement, reason ?? "garrison_obedience_collapsed", "garrison-independence-change"))
 		{
 			return;
 		}
@@ -5306,7 +5309,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		independence = 0;
 		breakawayThreshold = CalculateSubjectBreakawayThreshold(0);
 		rulerRelation = 0;
-		rulerName = "无有效统治者";
+		rulerName = DiplomacyMiscPromptTexts.Get("Vassalage_NoValidRuler", "no valid ruler");
 		string id = (vassalKingdomId ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(id)
 			|| !_agreementsByVassalId.TryGetValue(id, out VassalageAgreement agreement)
@@ -5481,7 +5484,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		int afterObedience = SubjectObedienceFromIndependence(after);
 		_garrisonObedienceValues[id] = afterObedience;
 		Kingdom vassal = agreement.ResolveVassal();
-		string vassalName = GetKingdomDisplayName(vassal, "该附庸国");
+		string vassalName = GetKingdomDisplayName(vassal, DiplomacyMiscPromptTexts.Get("Vassalage_TargetVassalKingdom", "the vassal kingdom"));
 		TryGetSubjectIndependenceStatus(agreement, out _, out int breakawayThreshold, out int rulerRelation, out string rulerName);
 		VassalageDiagnosticLog.Event("independence.vassal_policy", new Dictionary<string, object>
 		{
@@ -5500,7 +5503,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		brokeAway = ShouldSubjectBreakAway(after, rulerRelation);
 		if (brokeAway)
 		{
-			BreakAgreement(agreement, "vassal_policy_independence_threshold", vassalName + "的独立度升至 " + after.ToString(CultureInfo.InvariantCulture) + "/100，已达到按统治者" + rulerName + "与玩家关系 " + FormatSignedRelation(rulerRelation) + " 计算的脱离阈值 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "，该国宣布脱离宗主控制。");
+BreakAgreement(agreement, "vassal_policy_independence_threshold", string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_SecessionThresholdMsg", "'s independence rose to {0}/100, reaching the threshold of {3} calculated based on ruler {1}'s relation with player {2}; the realm declared secession from suzerain control."), after.ToString(CultureInfo.InvariantCulture), rulerName, FormatSignedRelation(rulerRelation), breakawayThreshold.ToString(CultureInfo.InvariantCulture)));
 		}
 		else
 		{
@@ -5521,7 +5524,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		independence = 0;
 		breakawayThreshold = CalculateSubjectBreakawayThreshold(0);
 		rulerRelation = 0;
-		rulerName = "无有效统治者";
+		rulerName = DiplomacyMiscPromptTexts.Get("Vassalage_NoValidRuler", "no valid ruler");
 		Kingdom playerKingdom = agreement?.ResolveSuzerain();
 		Kingdom vassal = agreement?.ResolveVassal();
 		if (agreement == null
@@ -5536,7 +5539,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		Hero ruler = GetCurrentKingdomRuler(vassal);
 		rulerRelation = ruler == null || playerKingdom?.RulingClan?.Leader == null ? 0 : (int)ruler.GetRelation(playerKingdom.RulingClan.Leader);
 		breakawayThreshold = CalculateSubjectBreakawayThreshold(rulerRelation);
-		rulerName = GetHeroDisplayName(ruler, "无有效统治者");
+		rulerName = GetHeroDisplayName(ruler, DiplomacyMiscPromptTexts.Get("Vassalage_NoValidRuler", "no valid ruler"));
 		independence = IndependenceFromSubjectObedience(EnsureGarrisonObedience(agreement));
 		return true;
 	}
@@ -5567,7 +5570,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				["rulerName"] = rulerName,
 				["rulerRelation"] = rulerRelation
 			});
-			BreakAgreement(agreement, reason ?? "subject_ruler_relation_threshold", vassalName + "当前独立度为 " + independence.ToString(CultureInfo.InvariantCulture) + "/100，已达到按统治者" + rulerName + "与玩家关系 " + FormatSignedRelation(rulerRelation) + " 计算的脱离阈值 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "，该国宣布脱离宗主控制。");
+BreakAgreement(agreement, reason ?? "subject_ruler_relation_threshold", string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_SecessionThresholdCurrentMsg", "Current independence is {0}/100, reaching the threshold of {3} calculated based on ruler {1}'s relation with player {2}; the realm declared secession from suzerain control."), independence.ToString(CultureInfo.InvariantCulture), rulerName, FormatSignedRelation(rulerRelation), breakawayThreshold.ToString(CultureInfo.InvariantCulture)));
 			return true;
 		}
 		finally
@@ -5618,7 +5621,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		int delta = CalculateGarrisonProtectionSuccessDelta(agreement, out float playerStrength, out float subjectStrength, out float strengthRatio, out float strengthAdvantage);
 		Kingdom vassal = agreement.ResolveVassal();
-		string vassalName = GetKingdomDisplayName(vassal, "该卫戍国");
+		string vassalName = GetKingdomDisplayName(vassal, DiplomacyMiscPromptTexts.Get("Vassalage_TargetMarchKingdom", "the march kingdom"));
 		int before = EnsureGarrisonObedience(agreement);
 		int after = ClampSubjectObedienceValue(before + delta);
 		int independenceBefore = IndependenceFromSubjectObedience(before);
@@ -5640,7 +5643,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			["tier"] = GetSubjectObedienceTierText(after),
 			["reason"] = "garrison_protection_accepted"
 		});
-		if (TryBreakSubjectAtCurrentThreshold(agreement, "garrison_obedience_collapsed", "卫戍国保护履约结算"))
+		if (TryBreakSubjectAtCurrentThreshold(agreement, "garrison_obedience_collapsed", "garrison-protection-settlement"))
 		{
 			return;
 		}
@@ -5673,7 +5676,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				.ToList();
 			foreach (VassalageAgreement agreement in agreements)
 			{
-				BreakAgreement(agreement, reason ?? "kingdom_annexation", message ?? (GetKingdomDisplayName(annexedKingdom, "目标王国") + "已并入你的王国，旧臣属条约随之作废。"));
+				BreakAgreement(agreement, reason ?? "kingdom_annexation", message ?? (string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_AnnexedCancelledFormat", "{0} has merged into your kingdom; the former vassalage treaty is voided."), GetKingdomDisplayName(annexedKingdom, DiplomacyMiscPromptTexts.Get("Prompt_TargetKingdomFallback", "target kingdom")))));
 				removed++;
 			}
 			VassalageDiagnosticLog.Event("agreement.break_annexed_kingdom", new Dictionary<string, object>
@@ -5707,7 +5710,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			_agreementsByVassalId.Remove(vassalId);
 			_garrisonObedienceValues.Remove(vassalId);
 			_garrisonObedienceStorage.Remove(vassalId);
-			CustomPolicyBehavior.OnVassalRelationshipEndedForExternal(vassalId, reason ?? "臣属关系终止");
+			CustomPolicyBehavior.OnVassalRelationshipEndedForExternal(vassalId, reason ?? DiplomacyMiscPromptTexts.Get("Vassalage_TerminatedNoticeTitle", "Vassalage Terminated"));
 		}
 		foreach (string noticeId in _pendingProtectionNotices.Keys.Where((string x) => NoticeBelongsToAgreement(x, agreement)).ToList())
 		{
@@ -5810,8 +5813,8 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string declaringName = GetKingdomDisplayName(declaringKingdom, "朝贡国");
-		string targetName = GetKingdomDisplayName(targetKingdom, "臣属国");
+		string declaringName = GetKingdomDisplayName(declaringKingdom, DiplomacyMiscPromptTexts.Get("Vassalage_TributaryKingdom", "tributary kingdom"));
+		string targetName = GetKingdomDisplayName(targetKingdom, DiplomacyMiscPromptTexts.Get("Vassalage_SubjectKingdom", "subject kingdom"));
 		if (targetType == AfVassalageType.Garrison || targetType == AfVassalageType.Vassal)
 		{
 			Kingdom playerKingdom = GetPlayerKingdom();
@@ -6748,7 +6751,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		if (type == AfVassalageType.Tributary)
 		{
-			BreakAgreement(agreement, reason ?? "tributary_protection_refused", "你拒绝履行对" + GetKingdomDisplayName(vassal, "朝贡国") + "的庇护义务，朝贡条约已经终止。");
+BreakAgreement(agreement, reason ?? "tributary_protection_refused", string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_RefusedProtectionTerminatedFormat", "You refused protection obligations toward {0}; tributary treaty terminated."), GetKingdomDisplayName(vassal, DiplomacyMiscPromptTexts.Get("Vassalage_TributaryKingdom", "tributary kingdom"))));
 		}
 		else if (type == AfVassalageType.Garrison)
 		{
@@ -6794,7 +6797,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		});
 		if (type == AfVassalageType.Tributary)
 		{
-			BreakAgreement(agreement, "tributary_protection_dismissed", "你未回应" + GetKingdomDisplayName(vassal, "朝贡国") + "的求援，朝贡条约已视为终止。");
+BreakAgreement(agreement, "tributary_protection_dismissed", string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_UnresponsiveAidTerminatedFormat", "You did not respond to {0}'s call for aid; tributary treaty deemed terminated."), GetKingdomDisplayName(vassal, DiplomacyMiscPromptTexts.Get("Vassalage_TributaryKingdom", "tributary kingdom"))));
 		}
 		else if (type == AfVassalageType.Garrison)
 		{
@@ -7849,29 +7852,29 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		int num = ClampSubjectObedienceValue(value);
 		if (num >= 90)
 		{
-			return "极高";
+return DiplomacyMiscPromptTexts.Get("Vassalage_Tier_VeryHigh", "very high");
 		}
 		if (num >= 75)
 		{
-			return "高";
+return DiplomacyMiscPromptTexts.Get("Vassalage_Tier_High", "high");
 		}
 		if (num >= 60)
 		{
-			return "较高";
+return DiplomacyMiscPromptTexts.Get("Vassalage_Tier_UpperMedium", "moderately high");
 		}
 		if (num >= 40)
 		{
-			return "一般";
+return DiplomacyMiscPromptTexts.Get("Vassalage_Tier_Medium", "moderate");
 		}
 		if (num >= 25)
 		{
-			return "较差";
+return DiplomacyMiscPromptTexts.Get("Vassalage_Tier_LowerMedium", "moderately low");
 		}
 		if (num >= 10)
 		{
-			return "很差";
+return DiplomacyMiscPromptTexts.Get("Vassalage_Tier_Low", "low");
 		}
-		return "极差";
+return DiplomacyMiscPromptTexts.Get("Vassalage_Tier_VeryLow", "very low");
 	}
 
 	private static AfVassalageType NormalizeVassalageType(AfVassalageType type)
@@ -7929,23 +7932,23 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		string text = (typeToken ?? "").Trim();
 		if (string.Equals(text, "TRIBUTARY", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(text, "PROTECTORATE", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text, "朝贡国", StringComparison.OrdinalIgnoreCase))
+			|| string.Equals(text, DiplomacyCompatibilityTexts.Get("Vassalage_Type_Tributary_Raw"), StringComparison.OrdinalIgnoreCase))
 		{
 			type = AfVassalageType.Tributary;
 			return true;
 		}
 		if (string.Equals(text, "GARRISON", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(text, "MILITARY", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text, "卫戍国", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text, "军事附庸", StringComparison.OrdinalIgnoreCase))
+			|| string.Equals(text, DiplomacyCompatibilityTexts.Get("Vassalage_Type_March_Raw"), StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, DiplomacyCompatibilityTexts.Get("Vassalage_Type_MilitaryVassal_Raw"), StringComparison.OrdinalIgnoreCase))
 		{
 			type = AfVassalageType.Garrison;
 			return true;
 		}
 		if (string.Equals(text, "VASSAL", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(text, "PUPPET", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text, "附庸国", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text, "傀儡国", StringComparison.OrdinalIgnoreCase))
+			|| string.Equals(text, DiplomacyCompatibilityTexts.Get("Vassalage_Type_Vassal_Raw"), StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, DiplomacyCompatibilityTexts.Get("Vassalage_Type_Puppet_Raw"), StringComparison.OrdinalIgnoreCase))
 		{
 			type = AfVassalageType.Vassal;
 			return true;
@@ -8415,18 +8418,28 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		switch (NormalizeVassalageType(type))
 		{
 		case AfVassalageType.Tributary:
-			return "朝贡国";
+return DiplomacyMiscPromptTexts.Get("Vassalage_TributaryKingdom", "tributary kingdom");
 		case AfVassalageType.Garrison:
-			return "卫戍国";
+return DiplomacyMiscPromptTexts.Get("Vassalage_MarchKingdom", "march");
 		default:
-			return "附庸国";
+return DiplomacyMiscPromptTexts.Get("Vassalage_VassalKingdom", "vassal kingdom");
 		}
 	}
 
-	// Display-only projection of the vassalage type. The raw Chinese label above stays the shared
+	// Prompt and UI projections of the vassalage type. The raw Chinese label above stays the shared
 	// fact: it is embedded into world-bulletin LLM material by CaptureWorldBulletinVassalage
 	// (WorldBulletinCampaignMaterialPolicy.VassalageEstablishedSentence / VassalageEndedSentence).
 	// Use this projection only at strings that reach the player's screen.
+	private static string GetVassalageTypePromptName(AfVassalageType type)
+	{
+		return NormalizeVassalageType(type) switch
+		{
+			AfVassalageType.Tributary => DiplomacyPromptTexts.Get("VassalageTypeTributary", "tributary"),
+			AfVassalageType.Garrison => DiplomacyPromptTexts.Get("VassalageTypeGarrison", "garrison kingdom"),
+			_ => DiplomacyPromptTexts.Get("VassalageTypeVassal", "vassal")
+		};
+	}
+
 	private static string GetVassalageTypeProjection(AfVassalageType type)
 	{
 		switch (NormalizeVassalageType(type))
@@ -8511,7 +8524,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		{
 			return BuildPlayerSubjectWarNoticeName(kingdom, NormalizeVassalageType(agreement.Type));
 		}
-		return GetKingdomDisplayName(kingdom, "敌国");
+		return GetKingdomDisplayName(kingdom, DiplomacyMiscPromptTexts.Get("Vassalage_EnemyKingdom", "enemy kingdom"));
 	}
 
 	private static string BuildPlayerSubjectWarNoticeName(Kingdom kingdom, AfVassalageType type)
@@ -8550,7 +8563,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return settlement?.StringId ?? "未知定居点";
+		return settlement?.StringId ?? DiplomacyMiscPromptTexts.Get("Vassalage_UnknownSettlement", "unknown settlement");
 	}
 
 	private static string GetKingdomDisplayName(Kingdom kingdom, string fallback)
@@ -8566,7 +8579,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return kingdom?.StringId ?? fallback ?? "未知王国";
+		return kingdom?.StringId ?? fallback ?? DiplomacyMiscPromptTexts.Get("Prompt_UnknownKingdomFallback", "Unknown Kingdom");
 	}
 
 	private static string GetHeroDisplayName(Hero hero, string fallback)
@@ -8582,7 +8595,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return hero?.StringId ?? fallback ?? "对方";
+		return hero?.StringId ?? fallback ?? DiplomacyMiscPromptTexts.Get("Prompt_CounterpartFallback", "counterpart");
 	}
 }
 

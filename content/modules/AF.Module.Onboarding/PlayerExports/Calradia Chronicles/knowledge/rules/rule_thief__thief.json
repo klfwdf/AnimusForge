@@ -1,10 +1,10 @@
 {
   "Id": "rule_thief",
   "Keywords": [
-    "Thief"
+    "Mounted Highwaymen"
   ],
   "RagShortTexts": [
-    "The gang of thieves is elusive and extremely difficult to catch."
+    "The mounted highwayman bands move with elusive speed and are extraordinarily difficult to catch."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -21,7 +21,7 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "The Bandit Group is a bandit group led by a group of ruined nobles of Khuzait. They come and go like the wind, their whereabouts are unpredictable, and they are extremely difficult to catch. They are the most difficult group of bandits. They not only dare to rob villagers, but also dare to rob caravans and even small groups of regular soldiers."
+      "Content": "The mounted highwayman bands are steppe brigands led by ruined Khuzait nobles. Coming and going like the wind with unpredictable movements, they are extraordinarily difficult to track down and rank among the most troublesome outlaws to deal with. Not only do they raid villagers, they also dare to plunder merchant caravans and even ambush small detachments of regular soldiers."
     }
   ],
   "TextMappings": []

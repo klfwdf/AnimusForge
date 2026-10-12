@@ -469,8 +469,7 @@ internal sealed class AnimusForgeCourierReplyMapNotification : InformationData
 		Action replyAction = string.IsNullOrWhiteSpace(SenderHeroId) ? null : (() => CourierDeliveryBehavior.OpenCourierReplyFlowForExternal(SenderHeroId, SenderName));
 		try
 		{
-			var wrote = new TextObject("{=AF_UI_Courier_Wrote}{NAME} wrote:");
-			wrote.SetTextVariable("NAME", SenderName);
+			string wrote = DeveloperUiText.Format("AF_UI_Courier_Wrote", "{NAME} wrote:", ("NAME", (object)SenderName));
 			if (CourierLetterReplyPopup.ShowWithReply(new TextObject("{=AF_UI_Courier_ReplyTitle}The courier returned with a reply").ToString(), wrote.ToString(), body, replyAction,
 				new TextObject("{=AF_UI_Courier_Reply}Reply").ToString(), null, new TextObject("{=AF_UI_Courier_Close}Close").ToString()))
 			{
@@ -482,17 +481,15 @@ internal sealed class AnimusForgeCourierReplyMapNotification : InformationData
 		}
 		try
 		{
-			var wrote = new TextObject("{=AF_UI_Courier_Wrote}{NAME} wrote:");
-			wrote.SetTextVariable("NAME", SenderName);
+			string wrote = DeveloperUiText.Format("AF_UI_Courier_Wrote", "{NAME} wrote:", ("NAME", (object)SenderName));
 			InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_UI_Courier_ReplyTitle}The courier returned with a reply").ToString(), wrote.ToString() + "\n\n" + body, true, false,
 				new TextObject("{=AF_UI_Courier_EscapeClose}ESC: close").ToString(), "", null, null), true);
 			return true;
 		}
 		catch
 		{
-			var notice = new TextObject("{=AF_UI_Courier_Notice}The courier returned with a reply: {BODY}");
-			notice.SetTextVariable("BODY", body);
-			InformationManager.DisplayMessage(new InformationMessage(notice.ToString()));
+			string notice = DeveloperUiText.Format("AF_UI_Courier_Notice", "The courier returned with a reply: {BODY}", ("BODY", (object)body));
+			InformationManager.DisplayMessage(new InformationMessage(notice));
 			return true;
 		}
 	}

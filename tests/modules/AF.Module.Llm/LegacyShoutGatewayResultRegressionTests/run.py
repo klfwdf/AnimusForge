@@ -15,11 +15,14 @@ def main():
  (out/'Gateway.cs').write_text(gateway,encoding='utf-8')
  for name in ['src/AF.Contracts/Internal/InteractionContracts.cs','src/AF.Contracts/Internal/LlmContracts.cs','src/modules/AF.Module.Prompt/Composition/LegacyPromptPackageAdapter.cs','src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs']:
   (out/Path(name).name).write_text((ROOT/name).read_text(encoding='utf-8-sig'),encoding='utf-8')
+ sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Llm/RetryProjectionTests'))
+ from fixture_support import retry_members,add_retry_resources
  retry=(ROOT/'src/AF.GameAdapter.Bannerlord/UI/Errors/LlmRetryPrompt.cs').read_text(encoding='utf-8-sig')
- detail='\n'.join(ex.declaration(retry,sig) for sig in ['public static string BuildFailureDetail(','private static string NormalizeFullText('])
- (out/'Retry.cs').write_text('using System;using System.Text;namespace AnimusForge { public static class LlmRetryPrompt { '+detail+' } }',encoding='utf-8')
+ detail=retry_members(retry,ex.declaration,['public static string BuildFailureDetail(','private static string NormalizeFullText('])
+ (out/'Retry.cs').write_text('using System;using System.Text;using System.Runtime.CompilerServices;using TaleWorlds.Localization;namespace AnimusForge { public static class LlmRetryPrompt { '+detail+' } }',encoding='utf-8')
  (out/'Program.cs').write_text((HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
  (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><NuGetAudit>false</NuGetAudit></PropertyGroup></Project>')
+ add_retry_resources(ROOT,out/'Tests.csproj')
  (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
  env=os.environ.copy();env.update(DOTNET_ROOT=str(Path(a.dotnet).parent),DOTNET_CLI_HOME=str(out/'cli'),DOTNET_CLI_TELEMETRY_OPTOUT='1',DOTNET_NOLOGO='1',DOTNET_CLI_UI_LANGUAGE='en')
  r=subprocess.run([a.dotnet,'run','--project',str(out/'Tests.csproj'),'-c','Release'],cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)

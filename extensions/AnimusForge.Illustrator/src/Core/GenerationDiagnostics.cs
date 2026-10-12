@@ -213,7 +213,7 @@ namespace AnimusForge.Illustrator.Core
         { RecordResponse("director_response", rawResponse, httpStatus, finishReason); }
 
         internal void RecordDirectorText(string content)
-        { WriteReadablePrompt("导演正文.txt", content); }
+        { WriteReadablePrompt("director_body.txt", content); }
 
         private void WriteReadablePrompt(string fileName, string content)
         {
@@ -304,7 +304,7 @@ namespace AnimusForge.Illustrator.Core
                                 if (part["text"]?.Type == JTokenType.String) texts.Add(part["text"].Value<string>());
                     prompt = string.Join("\n\n", texts);
                 }
-                if (prompt != null) WriteReadablePrompt("最终生图提示词.txt", prompt);
+                if (prompt != null) WriteReadablePrompt("final_image_prompt.txt", prompt);
                 Safe(() => AddEvent("image_request", data));
             }
             catch (Exception ex) { RecordStage("diagnostic_request_omitted", new JObject { ["reason"] = ex.GetType().Name }); }

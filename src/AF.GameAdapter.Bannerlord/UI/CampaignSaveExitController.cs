@@ -17,9 +17,7 @@ internal sealed class CampaignSaveExitController
 
     private static string LocalizedError(string id, string fallback, string error)
     {
-        TextObject text = new TextObject("{=" + id + "}" + fallback);
-        text.SetTextVariable("ERROR", error ?? string.Empty);
-        return text.ToString();
+        return DeveloperUiText.Format(id, fallback, ("ERROR", (object)error));
     }
 
  private readonly Action _showWeeklyFailure;

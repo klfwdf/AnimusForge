@@ -172,7 +172,7 @@ internal sealed class DeveloperImportUiController
 		if (!isExport)
 		{
 			foreach (var folder in PlayerExportsStore.GetImportFolders())
-				elements.Add(new InquiryElement(folder.FullPath, folder.Name + "  [" + folder.SourceLabel + "]  (" + folder.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
+				elements.Add(new InquiryElement(folder.FullPath, folder.Name + "  [" + (folder.SourceLabel == "Module directory" ? new TaleWorlds.Localization.TextObject("{=AF_UI_ImportSource_ModuleDirectory}Module directory").ToString() : folder.SourceLabel == "Player exports" ? new TaleWorlds.Localization.TextObject("{=AF_UI_ImportSource_PlayerExports}Player exports").ToString() : folder.SourceLabel) + "]  (" + folder.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
 			return;
 		}
 		try

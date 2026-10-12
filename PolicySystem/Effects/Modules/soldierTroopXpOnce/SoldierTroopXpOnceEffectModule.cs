@@ -35,11 +35,11 @@ internal sealed class SoldierTroopXpOnceEffectModule
 			PolicyEffectTargetKind.Hero,
 		},
 		targetKinds: new[] { PolicyEffectTargetKind.Clan },
-		cueTerms: new[] { "内部家族士兵一次性经验" },
-		retrievalText: "内部运行模块：下一游戏日为目标家族领主队伍与封地驻军的普通士兵发放一次兵种经验。",
-		catalogSummary: "内部：家族士兵一次性兵种经验",
-		mainInstruction: "内部模块，不向模型暴露。",
-		postprocessRule: "内部模块，不得直接输出。",
+		cueTerms: new[] { PolicyCompatibilityTexts.Get("Module_soldierTroopXpOnce_Original_19") },
+		retrievalText: PolicyGenerationPromptTexts.Get("Module_soldierTroopXpOnce_retrievalText", "Internal runtime module: grant ordinary soldiers in the target clan's lord parties and fief garrisons one-time troop experience on the next game day."),
+		catalogSummary: PolicyGenerationPromptTexts.Get("Module_soldierTroopXpOnce_catalogSummary", "Internal: one-time troop experience for clan soldiers"),
+		mainInstruction: PolicyGenerationPromptTexts.Get("Module_soldierTroopXpOnce_mainInstruction", "Internal module; not exposed to the model."),
+		postprocessRule: PolicyGenerationPromptTexts.Get("Module_soldierTroopXpOnce_postprocessRule", "Internal module; do not output it directly."),
 		payloadPromptSchema: PolicyEffectPayloadSchemas.CreateIntegerValueSchema(),
 		family: PolicyEffectFamily.Military,
 		executionKind: PolicyEffectExecutionKind.ScheduledOnce,
@@ -53,9 +53,9 @@ internal sealed class SoldierTroopXpOnceEffectModule
 		supportsIdempotency: true,
 		promptVisible: false,
 		displayGroup: "soldierTroopXp",
-		playerDisplayName: "士兵精锐化",
-		editableUnderstandingPrompt: "内部一次性执行模块：下一游戏日让目标家族当前全部正式领主队伍及城镇、城堡驻军中的合格普通士兵获得相同的原版兵种经验。",
-		editableEvaluationPrompt: "value 是每名合格普通士兵的一次性原版经验，范围 1～5000；不按家族、队伍、封地或士兵数量摊薄，不直接升级。",
+		playerDisplayName: PolicyCompatibilityTexts.Get("Module_soldierTroopXpOnce_Original_20"),
+		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_soldierTroopXpOnce_editableUnderstandingPrompt", "Internal one-time execution module: on the next game day, grants the same native troop experience to eligible ordinary soldiers in all current official lord parties and town/castle garrisons of target clans."),
+		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_soldierTroopXpOnce_editableEvaluationPrompt", "value is one-time native experience per eligible ordinary soldier, ranging from 1 to 5000. Do not dilute by clan, party, fief or soldier counts; it does not directly upgrade troops."),
 		targetProjection: PolicyEffectTargetProjectionKind.None,
 		targetRefresh: PolicyEffectTargetRefreshKind.FrozenCanonicalIds,
 		allowIndependentClanTargets: true,
@@ -68,7 +68,7 @@ internal sealed class SoldierTroopXpOnceEffectModule
 		JToken value = rawPayload?["value"];
 		if (value?.Type != JTokenType.Integer)
 		{
-			error = "soldierTroopXpOnce 的 value 必须是整数";
+			error = "soldierTroopXpOnce value must be an integer";
 			return false;
 		}
 		try
@@ -76,14 +76,14 @@ internal sealed class SoldierTroopXpOnceEffectModule
 			long parsed = value.Value<long>();
 			if (parsed <= 0L || parsed > MaximumXpPerTroop)
 			{
-				error = "soldierTroopXpOnce 的 value 必须在 1～"
-					+ MaximumXpPerTroop.ToString(CultureInfo.InvariantCulture) + " 之间";
+				error = "soldierTroopXpOnce value must be between 1 and "
+					+ MaximumXpPerTroop.ToString(CultureInfo.InvariantCulture) + " inclusive";
 				return false;
 			}
 		}
 		catch
 		{
-			error = "soldierTroopXpOnce 的 value 超出整数范围";
+			error = "soldierTroopXpOnce value exceeds the integer range";
 			return false;
 		}
 		error = string.Empty;
@@ -100,7 +100,7 @@ internal sealed class SoldierTroopXpOnceEffectModule
 		normalizedValue = rawValue;
 		if (float.IsNaN(rawValue) || float.IsInfinity(rawValue))
 		{
-			error = "soldierTroopXpOnce 的 value 必须是有限数字";
+			error = "soldierTroopXpOnce value must be finite";
 			return false;
 		}
 		normalizedValue = (float)Math.Round(rawValue, MidpointRounding.AwayFromZero);
@@ -108,7 +108,7 @@ internal sealed class SoldierTroopXpOnceEffectModule
 		// above still requires a strictly positive integer.
 		if (normalizedValue < 0f || normalizedValue > MaximumXpPerTroop)
 		{
-			error = "soldierTroopXpOnce funding 后的 value 超出 0～"
+			error = "soldierTroopXpOnce funded value is outside 0 to "
 				+ MaximumXpPerTroop.ToString(CultureInfo.InvariantCulture);
 			return false;
 		}
@@ -133,7 +133,7 @@ internal sealed class SoldierTroopXpOnceEffectModule
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("soldierTroopXpOnce 缺少 game bridge", false);
+			return Failed("soldierTroopXpOnce requires a game bridge", false);
 		}
 
 		int xpPerTroop = (int)payload.Value;
@@ -282,7 +282,7 @@ internal sealed class SoldierTroopXpOnceEffectModule
 		}
 		if (context.GameBridge == null || context.ExistingReceipt == null)
 		{
-			return Failed("soldierTroopXpOnce compensation 缺少 game bridge 或回执", false);
+			return Failed("soldierTroopXpOnce compensation requires game bridge and receipt", false);
 		}
 		if (context.ExistingReceipt.Status == PolicyEffectExecutionStatus.RolledBack)
 		{
@@ -539,12 +539,12 @@ internal sealed class SoldierTroopXpOnceEffectModule
 		payload = instance?.Payload as SoldierTroopXpOncePayload;
 		if (instance == null || string.IsNullOrWhiteSpace(context.PreparedInstance.IdempotencyKey))
 		{
-			error = "soldierTroopXpOnce 缺少执行上下文或幂等键";
+			error = "soldierTroopXpOnce requires an execution context and idempotency key";
 			return false;
 		}
 		if (!string.Equals(instance.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal) || payload == null)
 		{
-			error = "soldierTroopXpOnce payload 与模块不匹配";
+			error = "soldierTroopXpOnce payload does not match the module";
 			return false;
 		}
 		error = string.Empty;

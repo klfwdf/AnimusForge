@@ -339,5 +339,41 @@
     <string id="AF_CONV_UI_Issue_TurnInAmbiguousBranch" text="原版交付链在中途出现多条分支，且无法高置信度自动选择。" />
     <string id="AF_CONV_UI_Issue_TurnInNotCompleted" text="原版交付链已运行，但任务仍未完成。" />
     <string id="AF_CONV_UI_Issue_UnknownCompanion" text="一位身份不明的同伴" />
+      <string id="AF_CONV_UI_Runtime_0062" text="这位领主" />
+    <string id="AF_CONV_UI_Runtime_0063" text="NPC主动接触" />
+    <string id="AF_CONV_UI_Runtime_0064" text="的队伍主动追上了你。他似乎有事想找你谈谈。" />
+    <string id="AF_CONV_UI_Runtime_0498" text="，许久未曾好好问候。愿你近来一切安好；得空时，也请回信告诉我你的近况。" />
+    <string id="AF_CONV_UI_Runtime_0501" text="，我写信只是想报个平安，也想知道你近来身在何处。若方便，请给我回信。" />
+    <string id="AF_CONV_UI_Runtime_0504" text="，想到我们过去的交往，我觉得有些话还是写下来更合适。愿你平安，也愿我们的信任不被辜负。" />
+    <string id="AF_CONV_UI_Runtime_0508" text="，近来发生了一件我想让你知道的事：" />
+    <string id="AF_CONV_UI_Runtime_0509" text="，我当前正面临“" />
+    <string id="AF_CONV_UI_Runtime_0510" text="一项具体困难" />
+    <string id="AF_CONV_UI_Runtime_0511" text="”，希望与你商量。若你愿意，请回信。" />
+    <string id="AF_CONV_UI_Runtime_0512" text="，我希望通过这封信与你讨论一项当前真实存在的外交事务。若你愿意，请回信说明看法。" />
+    <string id="AF_CONV_UI_Runtime_0621" text="失败" />
+      <string id="AF_CONV_UI_Runtime_0750" text="统一 LLM Gateway 请求失败：" />
+      <string id="AF_CONV_UI_Runtime_0751" text="模型回复为空，无法生成人设。" />
+      <string id="AF_CONV_UI_Runtime_0756" text="模型回复无法解析为人设 JSON。" />
+      <string id="AF_CONV_UI_Runtime_0419" text="无" />
+    <string id="AF_CONV_UI_Runtime_0420" text="未知" />
+    <string id="AF_CONV_UI_Runtime_0430" text="玩家" />
+    <string id="AF_CONV_UI_Runtime_0431" text="致" />
+    <string id="AF_CONV_UI_Runtime_0432" text="：&#10;&#10;我有一项确切的困难，希望与你商量。若你愿意，请回信。" />
+    <string id="AF_CONV_UI_Runtime_0434" text="：&#10;&#10;愿你近来安好。得空时，请回信告诉我你的近况。" />
+    <string id="AF_CONV_UI_Runtime_0436" text="：&#10;&#10;我希望以正式信件与你讨论当前事务。若你愿意，请回信说明你的看法。" />
+    <string id="AF_CONV_UI_Runtime_0596" text="信使成员：" />
+    <string id="AF_CONV_UI_Runtime_0597" text="随信内容：仅信件。" />
+    <string id="AF_CONV_UI_Runtime_0598" text="随信内容：" />
+    <string id="AF_CONV_UI_Runtime_0599" text="发送 " />
+    <string id="AF_CONV_UI_Runtime_0600" text=" 第纳尔" />
+    <string id="AF_CONV_UI_Runtime_0601" text="展示 " />
+    <string id="AF_CONV_UI_Runtime_0604" text=" 个 " />
+    <string id="AF_CONV_UI_Runtime_0607" text="转移 " />
+    <string id="AF_CONV_UI_Runtime_0608" text=" 名 " />
+    <string id="AF_CONV_UI_Runtime_0609" text="转移俘虏 " />
+    <string id="AF_CONV_UI_Runtime_0612" text=" 俘虏" />
+    <string id="AF_CONV_UI_Runtime_0613" text="转移固定资产 " />
+    <string id="AF_CONV_UI_Runtime_0670" text="少废话，既然你想找打，那就来吧。" />
+    <string id="AF_CONV_UI_Runtime_0671" text="嘴巴放干净点，别逼我动手。" />
   </strings>
 </base>

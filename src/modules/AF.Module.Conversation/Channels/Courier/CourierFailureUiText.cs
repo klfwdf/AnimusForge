@@ -22,7 +22,7 @@ internal static class CourierFailureUiText
     private static string FailureDetail(string template, string error)
     {
         var text = new LocalizedTextObject(template);
-        text.SetTextVariable("DETAIL", error ?? new LocalizedTextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString());
-        return text.ToString();
+        text.SetTextVariable("DETAIL", "AFCOURIERLITERALEND");
+        return text.ToString().Replace("AFCOURIERLITERALEND", LlmRetryPrompt.ProjectKnownErrorForUi(error) ?? new LocalizedTextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString());
     }
 }

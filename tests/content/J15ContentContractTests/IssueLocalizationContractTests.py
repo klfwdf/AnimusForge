@@ -215,8 +215,46 @@ match_nodes = list(match_root.findall("./Match"))
 match_ids = [node.get("id") for node in match_nodes]
 match_values = [node.text or "" for node in match_nodes]
 source_by_id = dict(zip(match_ids, match_values))
-expected_ids = re.findall(r'^\s*"([A-Za-z0-9]+)"\s*,?$', match_catalog.split("ExpectedIds", 1)[1].split("};", 1)[0], re.M)
-assert match_ids == expected_ids and len(match_ids) == len(set(match_ids)) == 23
+expected_ids = re.findall(r'^\s*"([A-Za-z0-9_]+)"\s*,?$', match_catalog.split("ExpectedIds", 1)[1].split("};", 1)[0], re.M)
+assert match_ids == expected_ids and len(match_ids) == len(set(match_ids))
+original_match = ET.fromstring(git_source("9126eca27ad8bcd5c1120b58f220f9d428eab1a7", "content/modules/AF.Module.Issue/ModuleData/IssueDisplayMatchSources.xml"))
+original_nodes = original_match.findall("./Match")
+assert len(original_nodes) == 23
+assert [(node.get("id"), node.text or "") for node in match_nodes[:23]] == [(node.get("id"), node.text or "") for node in original_nodes], "Original 23 values/order changed"
+assert match_ids[23:] == [f"Raw_{index:03}" for index in range(23, 55)], "Unexpected added compatibility identity/order"
+package_cn = json.loads(read("content/modules/AF.Module.Issue/ModuleData/IssuePromptTexts.json"))
+package_en = json.loads(read("content/modules/AF.Module.Issue/ModuleData/IssuePromptTexts.en.json"))
+assert package_cn.keys() == package_en.keys()
+for key in package_cn:
+    assert re.findall(r"\{[A-Z_][A-Z_0-9]*\}", package_cn[key]) == re.findall(r"\{[A-Z_][A-Z_0-9]*\}", package_en[key]), key
+    assert re.findall(r"\d+", package_cn[key]) == re.findall(r"\d+", package_en[key]), key
+    assert not CJK.search(package_en[key]), key
+covered_added = set()
+source_files = ["Actions/IssueActionOwner.cs", "Completion/IssueCompletionReceiptOwner.cs", "Host/VanillaIssueOfferBridge.cs", "Host/VanillaIssuePromptBehavior.cs", "Runtime/IssueRuntimeStateOwner.cs"]
+for suffix in source_files:
+    relative = "src/modules/AF.Module.Issue/" + suffix
+    current, original = read(relative), git_source(BASELINE, relative)
+    consumers = re.findall(r'IssueDisplayMatchCatalog.Get\("(Raw_\d+)"\)', current)
+    for key in consumers:
+        assert source_by_id[key] in csharp_string_literals(original), (relative, key, "no old literal source")
+    covered_added.update(consumers)
+    restored_source = re.sub(r'IssueDisplayMatchCatalog.Get\("([^"\n]+)"\)', lambda match: json.dumps(source_by_id[match[1]], ensure_ascii=False), current)
+    restored_source = re.sub(r'IssuePromptTexts.Get\("([^"\n]+)"\)', lambda match: json.dumps(package_cn[match[1]], ensure_ascii=False), restored_source)
+    # Technical log text has been translated, but categories, field order,
+    # object IDs and exception payload expressions must remain exact.
+    log_pattern = r'Logger\.Log\("Logic", ("(?:\\.|[^"\\])*")([^\n]*)'
+    before_logs, after_logs = re.findall(log_pattern, original), re.findall(log_pattern, restored_source)
+    assert len(before_logs) == len(after_logs), relative + ": log count changed"
+    for (before_literal, before_tail), (after_literal, after_tail) in zip(before_logs, after_logs):
+        assert before_tail == after_tail, relative + ": diagnostic payload changed"
+        before_text, after_text = json.loads(before_literal), json.loads(after_literal)
+        assert re.findall(r"\[[^\]]+\]|\b[A-Za-z_]+\s*=", before_text) == re.findall(r"\[[^\]]+\]|\b[A-Za-z_]+\s*=", after_text), relative + ": diagnostic identity/fields changed"
+        if before_literal != after_literal:
+            assert CJK.search(before_text) and not CJK.search(after_text), relative + ": unexpected non-translation log change"
+            restored_source = restored_source.replace('Logger.Log("Logic", ' + after_literal + after_tail, 'Logger.Log("Logic", ' + before_literal + before_tail, 1)
+    assert restored_source == original, relative + ": fact/recognition/business changed after exact resource restoration"
+assert covered_added == set(match_ids[23:]), "An added original-value resource has no real consumer"
+
 assert match_values[:15] == old_display_cjk
 
 candidate_method = old_issue_actions.split("internal static bool TryBuildAlternativeCandidates", 1)[1].split("private static string GetUnavailableCompanionReason", 1)[0]
@@ -232,6 +270,8 @@ assert cjk_literals(unnamed_method) == [match_values[21]]
 assert cjk_literals(journal_method) == [match_values[22]]
 
 assert set(en) == set(zh) and len(en) == 51
+assert all(package_cn.get(key) == value for key, value in zh.items()), "Original 51 Chinese package values lost or changed"
+assert all(package_en.get(key) == value for key, value in en.items()), "Original 51 English package values lost or changed"
 assert all(key.startswith("AF_ISSUE_PROMPT_") for key in en)
 for key in en:
     assert en[key] and zh[key]

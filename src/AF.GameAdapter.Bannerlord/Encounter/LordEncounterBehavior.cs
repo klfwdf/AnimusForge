@@ -6864,9 +6864,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		string text = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "玩家";
+			text = AdapterPromptCaptureTexts.PcapText("Project_Player");
 		}
-		return "若" + text + "辱骂、贬低或挑衅你，你可以在句末输出[ACTION:MEETING_TAUNT_BATTLE]；该标签会触发你和" + text + "的战斗，你的友军会上来帮助你，这与单挑和决斗有本质的不同。";
+		return AdapterPromptCaptureTexts.PcapFormat("encounter_taunt_rule", "If {PLAYER} insults, belittles or provokes you, you may output [ACTION:MEETING_TAUNT_BATTLE] at the end of a sentence. This tag triggers a battle between you and {PLAYER}; your allies will help you. This differs fundamentally from a one-on-one fight or duel.", ("PLAYER", AdapterPromptCaptureTexts.PcapProjectKnown(text)));
 	}
 
 	private static int GetRelationToPlayerSafe(Hero hero)
@@ -7011,7 +7011,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		privateRelation = 0;
 		averageRelation = 0;
 		kingRelation = 0;
-		kingName = "该势力的国王";
+		kingName = AdapterPromptCaptureTexts.PcapText("encounter_location_1");
 		negotiable = false;
 		try
 		{
@@ -7031,7 +7031,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					return false;
 				}
 				negotiable = true;
-				kingName = partyBase.MapFaction?.Name?.ToString() ?? "当前遭遇方";
+				kingName = partyBase.MapFaction?.Name?.ToString() ?? AdapterPromptCaptureTexts.PcapText("encounter_location_2");
 				return true;
 			}
 			clanRelation = GetEncounterReleaseClanRelationWithPlayer(resolvedTarget);
@@ -7039,7 +7039,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			averageRelation = (int)Math.Round((clanRelation + privateRelation) / 2.0, MidpointRounding.AwayFromZero);
 			Hero encounterReleaseKingHero = GetEncounterReleaseKingHero(resolvedTarget);
 			kingRelation = GetRelationToPlayerSafe(encounterReleaseKingHero);
-			kingName = encounterReleaseKingHero?.Name?.ToString() ?? "该势力的国王";
+			kingName = encounterReleaseKingHero?.Name?.ToString() ?? AdapterPromptCaptureTexts.PcapText("encounter_location_1");
 			negotiable = true;
 			return true;
 		}
@@ -7080,13 +7080,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "玩家";
+			text = AdapterPromptCaptureTexts.PcapText("Project_Player");
 		}
 		if (IsMeetingReleaseRuntimeSceneActive())
 		{
-			return $"【遭遇放走规则】当前不是敌对方拦截玩家的放走场景；普通通行、告别或结束谈话不算放走{text}。";
+			return AdapterPromptCaptureTexts.PcapFormat("encounter_release_inactive_scene", "[Encounter release rules] The current scene is not a hostile interception in which the player may be released. Ordinary passage, farewells or ending a conversation do not count as letting {PLAYER} go.", ("PLAYER", AdapterPromptCaptureTexts.PcapProjectKnown(text)));
 		}
-		return $"【遭遇放走规则】本轮无敌对遭遇放走机制；普通通行、告别或结束谈话不算放走{text}。";
+		return AdapterPromptCaptureTexts.PcapFormat("encounter_release_inactive_turn", "[Encounter release rules] This turn has no hostile-encounter release mechanism. Ordinary passage, farewells or ending a conversation do not count as letting {PLAYER} go.", ("PLAYER", AdapterPromptCaptureTexts.PcapProjectKnown(text)));
 	}
 
 	internal static string BuildMeetingPlayerReleaseRuntimeInstructionForExternal(Hero target, bool includeNonEligibleFallback = false)
@@ -7098,15 +7098,15 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "玩家";
+			text = AdapterPromptCaptureTexts.PcapText("Project_Player");
 		}
 		if (negotiable)
 		{
 			int encounterReleaseVanillaSafePassageQuote = TryGetEncounterReleaseVanillaSafePassageQuote(resolvedTarget);
-			string text2 = (encounterReleaseVanillaSafePassageQuote > 0) ? $"按原版谈判口径，这次“安全放行并约定五天内不主动攻击”的参考估值约为 {encounterReleaseVanillaSafePassageQuote} 第纳尔，你可以把它当作软参考来谈价、索赔或换物，但不必机械照搬这个数字。" : "";
-			return $"【遭遇放走规则】你和你的部队截停或试图向{text}发起攻击，但本轮可以谈是否放{text}离开；可要求巨额赎金、赔偿、立誓、交人、交钱或别的交换。{text2}如果你接受了玩家的条件或决定放行，必须在回复末尾输出标签[ACTION:LET_PLAYER_GO]；如果你拒绝放行并执意开战，必须在回复末尾输出标签[ACTION:MEETING_TAUNT_BATTLE]；只有你明确同意放{text}离开才输出放行标签，还在讨价还价或谈条件时禁止输出。";
+			string text2 = (encounterReleaseVanillaSafePassageQuote > 0) ? AdapterPromptCaptureTexts.PcapFormat("encounter_release_quote", "Under vanilla negotiation rules, safe passage with a promise not to initiate attacks for five days is valued at about {GOLD} denars. Use this as a soft reference for prices, compensation or exchanges; you need not copy the amount mechanically.", ("GOLD", encounterReleaseVanillaSafePassageQuote)) : "";
+			return AdapterPromptCaptureTexts.PcapFormat("encounter_release_negotiable", "[Encounter release rules] You and your troops intercepted or attempted to attack {PLAYER}, but this turn allows negotiation over letting {PLAYER} leave. You may demand a huge ransom, compensation, an oath, people, money or another exchange. {QUOTE}If you accept the player's terms or decide to grant passage, you must output [ACTION:LET_PLAYER_GO] at the end of your reply. If you refuse passage and insist on battle, you must output [ACTION:MEETING_TAUNT_BATTLE] at the end. Output the release tag only when you explicitly agree to let {PLAYER} leave; it is forbidden while still bargaining or discussing terms.", ("PLAYER", AdapterPromptCaptureTexts.PcapProjectKnown(text)), ("QUOTE", text2));
 		}
-		return $"【遭遇放走规则】你和你的部队试图向{text}发起攻击，并且你绝不可以放{text}走,他是你的势力的敌人，你必须在回复末尾输出标签[ACTION:MEETING_TAUNT_BATTLE]让你的部队攻击他";
+		return AdapterPromptCaptureTexts.PcapFormat("encounter_release_forbidden", "[Encounter release rules] You and your troops are attempting to attack {PLAYER}, and you must not let {PLAYER} go. They are an enemy of your faction. You must output [ACTION:MEETING_TAUNT_BATTLE] at the end of your reply so your troops attack them.", ("PLAYER", AdapterPromptCaptureTexts.PcapProjectKnown(text)));
 	}
 
 	internal static List<PostprocessRuleEntry> BuildMeetingPlayerReleasePostprocessRulesForExternal(Hero target)
@@ -9545,7 +9545,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				{
 					text = Settlement.CurrentSettlement.Name.ToString();
 				}
-				_encounterMeetingLocationInfoOverride = "你位于 " + text + "。";
+				_encounterMeetingLocationInfoOverride = AdapterPromptCaptureTexts.PcapText("encounter_location_16") + text + "。";
 			}
 			else
 			{
@@ -9566,11 +9566,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 						{
 							seaNearestName = settlement.Name.ToString();
 						}
-						_encounterMeetingLocationInfoOverride = "你正位于" + seaNearestName + "附近的海上。";
+						_encounterMeetingLocationInfoOverride = AdapterPromptCaptureTexts.PcapText("encounter_location_17") + seaNearestName + AdapterPromptCaptureTexts.PcapText("encounter_location_18");
 					}
 					else
 					{
-						_encounterMeetingLocationInfoOverride = "你正位于海上。";
+						_encounterMeetingLocationInfoOverride = AdapterPromptCaptureTexts.PcapText("encounter_location_19");
 					}
 					return;
 				}
@@ -9600,11 +9600,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					{
 						flag = false;
 					}
-					_encounterMeetingLocationInfoOverride = (flag ? $"你身处野外，靠近 {text2}。距离：{num:0.0} 公里。" : ("你身处野外，靠近 " + text2 + "。"));
+					_encounterMeetingLocationInfoOverride = (flag ? AdapterPromptCaptureTexts.PcapFormat("encounter_wilderness_distance", "You are in the wilderness near {PLACE}. Distance: {DISTANCE} km.", ("PLACE", text2), ("DISTANCE", num.ToString("0.0"))) : (AdapterPromptCaptureTexts.PcapText("encounter_location_20") + text2 + "。"));
 				}
 				else
 				{
-					_encounterMeetingLocationInfoOverride = "你身处野外。";
+					_encounterMeetingLocationInfoOverride = AdapterPromptCaptureTexts.PcapText("encounter_location_21");
 				}
 			}
 			try
@@ -9624,12 +9624,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 						MapWeatherModel.WeatherEvent weatherEventInPosition = mapWeatherModel.GetWeatherEventInPosition(_savedMainPartyPosition.ToVec2());
 						text4 = weatherEventInPosition switch
 						{
-							MapWeatherModel.WeatherEvent.Clear => "晴朗",
-							MapWeatherModel.WeatherEvent.LightRain => "小雨",
-							MapWeatherModel.WeatherEvent.HeavyRain => "大雨",
-							MapWeatherModel.WeatherEvent.Snowy => "降雪",
-							MapWeatherModel.WeatherEvent.Blizzard => "暴风雪",
-							MapWeatherModel.WeatherEvent.Storm => "风暴",
+							MapWeatherModel.WeatherEvent.Clear => AdapterPromptCaptureTexts.PcapText("encounter_location_3"),
+							MapWeatherModel.WeatherEvent.LightRain => AdapterPromptCaptureTexts.PcapText("encounter_location_4"),
+							MapWeatherModel.WeatherEvent.HeavyRain => AdapterPromptCaptureTexts.PcapText("encounter_location_5"),
+							MapWeatherModel.WeatherEvent.Snowy => AdapterPromptCaptureTexts.PcapText("encounter_location_6"),
+							MapWeatherModel.WeatherEvent.Blizzard => AdapterPromptCaptureTexts.PcapText("encounter_location_7"),
+							MapWeatherModel.WeatherEvent.Storm => AdapterPromptCaptureTexts.PcapText("encounter_location_8"),
 							_ => weatherEventInPosition.ToString(),
 						};
 					}
@@ -9639,10 +9639,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					text4 = "";
 				}
 				List<string> list = new List<string>();
-				list.Add("地形：" + text3);
+				list.Add(AdapterPromptCaptureTexts.PcapText("encounter_location_9") + text3);
 				if (!string.IsNullOrEmpty(text4))
 				{
-					list.Add("天气：" + text4);
+					list.Add(AdapterPromptCaptureTexts.PcapText("encounter_location_10") + text4);
 				}
 				if (list.Count <= 0)
 				{
@@ -9678,7 +9678,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			string text7 = (st.IsTown ? "城镇" : (st.IsCastle ? "城堡" : (st.IsVillage ? "村庄" : ((!st.IsFortification) ? "定居点" : "要塞"))));
+			string text7 = (st.IsTown ? AdapterPromptCaptureTexts.PcapText("encounter_location_11") : (st.IsCastle ? AdapterPromptCaptureTexts.PcapText("encounter_location_12") : (st.IsVillage ? AdapterPromptCaptureTexts.PcapText("encounter_location_13") : ((!st.IsFortification) ? AdapterPromptCaptureTexts.PcapText("encounter_location_14") : AdapterPromptCaptureTexts.PcapText("encounter_location_15")))));
 			return text6 + "（" + text7 + "）";
 		}
 	}

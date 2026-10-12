@@ -9,10 +9,28 @@
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs" Link="Production/WeeklyLegacyDtos.cs"/>
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs" Link="Production/WeeklyReportArchivePolicy.cs"/>
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs" Link="Production/WorldBulletinPolicy.cs"/>
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicyTexts.cs" Link="Production/WorldBulletinPolicyTexts.cs"/>
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Records/AdapterRecordTexts.cs" Link="Production/AdapterRecordTexts.cs"/>
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" Link="Production/PromptComposerTexts.cs"/>
+    <Compile Include="../../../../src/AF.Persistence/AnimusForgeModulePaths.cs" Link="Production/AnimusForgeModulePaths.cs"/>
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/CampaignSystemFactProjection.cs" Link="Production/CampaignSystemFactProjection.cs"/>
+    <Compile Include="../../../../extensions/AnimusForge.Coup/src/CoupSystem/CoupSourceTexts.cs" Link="Production/CoupSourceTexts.cs"/>
+    <Compile Include="../../../../extensions/AnimusForge.Coup/src/CoupSystem/CoupPromptTexts.cs" Link="Production/CoupPromptTexts.cs"/>
+    <Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
+    <EmbeddedResource Include="../../../../content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordCompatibility.json" LogicalName="AnimusForge.Adapter.RecordCompatibility.json"/>
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Weekly/ModuleData/WorldBulletinCompatibility.json" LogicalName="AnimusForge.Weekly.WorldBulletinCompatibility.json"/>
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json" LogicalName="AnimusForge.Prompt.Compatibility.json"/>
     <Compile Include="../WorldBulletinPolicy.SmokeTests/LayoutStub.cs" Link="LayoutStub.cs"/>
     <Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml" Link="ui-en.xml" CopyToOutputDirectory="PreserveNewest"/>
     <Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml" Link="ui-zh.xml" CopyToOutputDirectory="PreserveNewest"/>
     <Content Include="../../../../content/modules/AF.Module.Weekly/ModuleData/Languages/afweekly_ui_strings.xml" Link="weekly-en.xml" CopyToOutputDirectory="PreserveNewest"/>
     <Content Include="../../../../content/modules/AF.Module.Weekly/ModuleData/Languages/CNs/afweekly_ui_strings-zh-CN.xml" Link="weekly-zh.xml" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/afevent_ui_strings.xml" Link="event-en.xml" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/CNs/afevent_ui_strings-zh-CN.xml" Link="event-zh.xml" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.en.json" Link="Modules/AnimusForge/ModuleData/PromptComposerTexts.json" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="../../../../content/modules/AF.Module.Weekly/ModuleData/WorldBulletinPromptTexts.en.json" Link="Modules/AnimusForge/ModuleData/WorldBulletinPromptTexts.json" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="../../../../content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordPromptTexts.en.json" Link="Modules/AnimusForge/ModuleData/AdapterRecordPromptTexts.json" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="../../../../content/modules/AnimusForge.Coup/ModuleData/CoupSourceTexts.json" Link="Modules/AnimusForge/ModuleData/CoupSourceTexts.json" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="../../../../content/modules/AnimusForge.Coup/ModuleData/CoupPromptTexts.en.json" Link="Modules/AnimusForge/ModuleData/CoupPromptTexts.json" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
 </Project>

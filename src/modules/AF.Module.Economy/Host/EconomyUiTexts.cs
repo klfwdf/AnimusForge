@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using TaleWorlds.Localization;
 
@@ -11,6 +12,24 @@ namespace AnimusForge;
 /// </summary>
 internal static class EconomyUiTexts
 {
+    internal static string ProjectPartyAssetNameForUi(string value)
+    {
+        if (value == null) return null;
+        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_Other"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_Other", "the other party");
+        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_Unknown"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_Unknown", "unknown");
+        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_UnknownAsset"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_UnknownAsset", "unknown asset");
+        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_UnknownSettlement"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_UnknownSettlement", "unknown settlement");
+        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_Workshop"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_Workshop", "workshop");
+        if (string.Equals(value, EconomySourceTexts.Get("PartyAsset_Caravan"), StringComparison.Ordinal)) return Text("AF_ECO_UI_PartyAsset_Caravan", "caravan");
+        string workshop = EconomySourceTexts.Get("PartyAsset_Workshop");
+        string caravan = EconomySourceTexts.Get("PartyAsset_Caravan");
+        foreach (string label in new[] { workshop, caravan })
+            if (value.StartsWith(label + EconomySourceTexts.Get("PartyAsset_OpenName"), StringComparison.Ordinal) && value.EndsWith(EconomySourceTexts.Get("PartyAsset_CloseName"), StringComparison.Ordinal))
+                return ProjectPartyAssetNameForUi(label) + value.Substring(label.Length);
+        return value;
+    }
+
+    private static readonly Regex LiteralValues = new Regex(@"AFECOUILITERAL([0-9]+)END", RegexOptions.CultureInvariant);
 	internal readonly struct FixedAssetDisplayContext
 	{
 		internal readonly string AssetName;
@@ -29,13 +48,12 @@ internal static class EconomyUiTexts
 	{
 		TextObject text = new TextObject("{=" + id + "}" + fallback);
 		if (variables != null)
-		{
-			foreach ((string name, object value) in variables)
-			{
-				text.SetTextVariable(name, value?.ToString() ?? string.Empty);
-			}
-		}
-		return text.ToString();
+        {
+            for (int i = 0; i < variables.Length; i++)
+                text.SetTextVariable(variables[i].Name, "AFECOUILITERAL" + i.ToString(CultureInfo.InvariantCulture) + "END");
+        }
+        return LiteralValues.Replace(text.ToString(), match =>
+            variables[int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty);
 	}
 
 	/// <summary>
@@ -79,33 +97,33 @@ internal static class EconomyUiTexts
 	public static string DebtStatusForDisplay(string status)
 	{
 		string value = (status ?? string.Empty).Trim();
-		if (string.Equals(value, "参数无效：缺少NPC或债务ID。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S019"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_DebtStatusInvalidNpc", "Invalid debt request: the NPC or debt ID is missing.");
 		}
-		if (string.Equals(value, "未找到该NPC的债务记录。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S020"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_DebtStatusNpcRecordMissing", "No debt record was found for this NPC.");
 		}
-		if (string.Equals(value, "该NPC当前没有可还债务。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S021"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_DebtStatusNpcNoDebt", "This NPC has no debt that can currently be repaid.");
 		}
-		if (string.Equals(value, "参数无效：缺少市场债主或债务ID。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S024"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_DebtStatusInvalidMarket", "Invalid market debt request: the market creditor or debt ID is missing.");
 		}
-		if (string.Equals(value, "未找到该市场的债务记录。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S025"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_DebtStatusMarketRecordMissing", "No debt record was found for this market.");
 		}
-		if (string.Equals(value, "未找到可结算的债务ID，或该债务已清。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S022"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_DebtStatusLineMissing", "No unsettled debt line with that ID was found.");
 		}
 
-		const string marker = " 已按协商解除（";
-		const string prefix = "债务ID ";
+		string marker = EconomySourceTexts.Get("S069");
+		string prefix = EconomySourceTexts.Get("S070");
 		if (value.StartsWith(prefix, StringComparison.Ordinal))
 		{
 			int markerIndex = value.IndexOf(marker, prefix.Length, StringComparison.Ordinal);
@@ -260,7 +278,7 @@ internal static class EconomyUiTexts
 	public static string DebtPromiseCounterpartyForDisplay(string name)
 	{
 		string value = (name ?? string.Empty).Trim();
-		return string.IsNullOrWhiteSpace(value) || string.Equals(value, "对方", StringComparison.Ordinal)
+		return string.IsNullOrWhiteSpace(value) || string.Equals(value, EconomySourceTexts.Get("S066"), StringComparison.Ordinal)
 			? Text("AF_ECO_UI_DebtPromiseCounterparty", "the counterparty")
 			: value;
 	}
@@ -268,7 +286,7 @@ internal static class EconomyUiTexts
 	public static string DebtPromiseNoteForDisplay(string note)
 	{
 		string value = (note ?? string.Empty).Trim();
-		return string.IsNullOrWhiteSpace(value) || string.Equals(value, "无", StringComparison.Ordinal)
+		return string.IsNullOrWhiteSpace(value) || string.Equals(value, EconomySourceTexts.Get("S013"), StringComparison.Ordinal)
 			? Text("AF_ECO_UI_DebtPromiseNoNote", "None")
 			: value;
 	}
@@ -425,197 +443,197 @@ internal static class EconomyUiTexts
 			return string.Empty;
 		}
 
-		if (string.Equals(value, "执行失败：缺少转移双方。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S071"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FixedAssetMissingParties", "Missing transfer counterparties.");
 		}
-		if (string.Equals(value, "执行失败：后处理仅允许 NPC 向玩家转移固定资产。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S072"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FixedAssetNpcOnly", "Postprocess only allows NPCs to transfer fixed assets to the player.");
 		}
-		if (string.Equals(value, "执行失败：家族成员或同伴不允许通过固定资产转移。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S073"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FixedAssetClanMemberBlocked", "Clan members or companions cannot be transferred via fixed assets.");
 		}
-		if (string.Equals(value, "执行失败：缺少可转移固定资产。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S074"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FixedAssetMissingAsset", "Missing transferable fixed asset.");
 		}
-		if (string.Equals(value, "执行失败：未知固定资产类型。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S075"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FixedAssetUnknownType", "Unknown fixed asset type.");
 		}
-		if (string.Equals(value, "执行失败：固定资产数量必须为 1。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S076"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FixedAssetQuantityMustBeOne", "Fixed asset quantity must be 1.");
 		}
-		if (string.Equals(value, "执行失败：目标接收方没有合法家族。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S077"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FixedAssetTargetNoClan", "Target recipient does not have a valid clan.");
 		}
-		if (string.Equals(value, "执行失败：缺少工坊接收者。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S078"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FixedAssetWorkshopMissingRecipient", "Missing workshop recipient.");
 		}
-		if (string.Equals(value, "执行失败：工坊接收者不是有效存活英雄。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S079"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FixedAssetWorkshopRecipientInvalid", "Workshop recipient is not a valid living hero.");
 		}
-		if (string.Equals(value, "执行失败：缺少商队接收者。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S080"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FixedAssetCaravanMissingRecipient", "Missing caravan recipient.");
 		}
 
-		const string notFoundPrefix = "执行失败：未找到可转移的固定资产（";
+		string notFoundPrefix = EconomySourceTexts.Get("S081");
 		if (value.StartsWith(notFoundPrefix, StringComparison.Ordinal) && value.EndsWith("）。", StringComparison.Ordinal))
 		{
 			string token = value.Substring(notFoundPrefix.Length, value.Length - notFoundPrefix.Length - 2);
 			return Text("AF_ECO_UI_FixedAssetNotFound", "No transferable fixed asset was found ({TOKEN}).", ("TOKEN", token));
 		}
 
-		const string unknownDirPrefix = "执行失败：未知固定资产转移方向 ";
+		string unknownDirPrefix = EconomySourceTexts.Get("S082");
 		if (value.StartsWith(unknownDirPrefix, StringComparison.Ordinal) && value.EndsWith("。", StringComparison.Ordinal))
 		{
 			string dir = value.Substring(unknownDirPrefix.Length, value.Length - unknownDirPrefix.Length - 1);
 			return Text("AF_ECO_UI_FixedAssetUnknownDirection", "Unknown fixed asset transfer direction ({DIRECTION}).", ("DIRECTION", dir));
 		}
 
-		const string exPrefix = "执行失败（异常）：";
+		string exPrefix = EconomySourceTexts.Get("S083");
 		if (value.StartsWith(exPrefix, StringComparison.Ordinal))
 		{
 			string err = value.Substring(exPrefix.Length);
 			return Text("AF_ECO_UI_FixedAssetException", "Transfer failed with an error: {ERROR}", ("ERROR", err));
 		}
 
-		const string succSettlementPlayerPrefix = "执行成功：";
-		const string succSettlementPlayerSuffix = " 已转交给玩家家族（未自动扣款）。";
+		string succSettlementPlayerPrefix = EconomySourceTexts.Get("S084");
+		string succSettlementPlayerSuffix = EconomySourceTexts.Get("S085");
 		if (value.StartsWith(succSettlementPlayerPrefix, StringComparison.Ordinal) && value.EndsWith(succSettlementPlayerSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(succSettlementPlayerPrefix.Length, value.Length - succSettlementPlayerPrefix.Length - succSettlementPlayerSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetSettlementToPlayer", "{ASSET} was transferred to the player's clan (payment not automatically deducted).", ("ASSET", asset));
 		}
 
-		if (context.Matches(value, "执行成功：玩家已将 ", " 转交给 ", " 的家族（未自动扣款）。"))
+		if (context.Matches(value, EconomySourceTexts.Get("S086"), EconomySourceTexts.Get("S087"), EconomySourceTexts.Get("S088")))
 		{
 			return Text("AF_ECO_UI_FixedAssetSettlementToNpc", "Player transferred {ASSET} to {GIVER}'s clan (payment not automatically deducted).", ("ASSET", context.AssetName), ("GIVER", context.GiverName));
 		}
 
-		const string succAssetPlayerSuffix = " 已转交给玩家（未自动扣款）。";
+		string succAssetPlayerSuffix = EconomySourceTexts.Get("S089");
 		if (value.StartsWith(succSettlementPlayerPrefix, StringComparison.Ordinal) && value.EndsWith(succAssetPlayerSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(succSettlementPlayerPrefix.Length, value.Length - succSettlementPlayerPrefix.Length - succAssetPlayerSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetAssetToPlayer", "{ASSET} was transferred to the player (payment not automatically deducted).", ("ASSET", asset));
 		}
 
-		if (context.Matches(value, "执行成功：玩家已将 ", " 转交给 ", "（未自动扣款）。"))
+		if (context.Matches(value, EconomySourceTexts.Get("S086"), EconomySourceTexts.Get("S087"), EconomySourceTexts.Get("S090")))
 		{
 			return Text("AF_ECO_UI_FixedAssetAssetToNpc", "Player transferred {ASSET} to {GIVER} (payment not automatically deducted).", ("ASSET", context.AssetName), ("GIVER", context.GiverName));
 		}
 
-		const string skipClanPrefix = "执行跳过：";
-		const string skipClanSuffix = " 已经属于目标家族。";
+		string skipClanPrefix = EconomySourceTexts.Get("S091");
+		string skipClanSuffix = EconomySourceTexts.Get("S092");
 		if (value.StartsWith(skipClanPrefix, StringComparison.Ordinal) && value.EndsWith(skipClanSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(skipClanPrefix.Length, value.Length - skipClanPrefix.Length - skipClanSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetAlreadyTargetClan", "{ASSET} already belongs to the target clan.", ("ASSET", asset));
 		}
 
-		const string skipPersonSuffix = " 已经属于目标人物。";
+		string skipPersonSuffix = EconomySourceTexts.Get("S093");
 		if (value.StartsWith(skipClanPrefix, StringComparison.Ordinal) && value.EndsWith(skipPersonSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(skipClanPrefix.Length, value.Length - skipClanPrefix.Length - skipPersonSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetAlreadyTargetPerson", "{ASSET} already belongs to the target character.", ("ASSET", asset));
 		}
 
-		const string failPrefix = "执行失败：";
-		const string notFortSuffix = " 不是可转移的城市或城堡。";
+		string failPrefix = EconomySourceTexts.Get("S094");
+		string notFortSuffix = EconomySourceTexts.Get("S095");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(notFortSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - notFortSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetNotFortification", "{ASSET} is not a transferable town or castle.", ("ASSET", asset));
 		}
 
-		const string noOwnerSuffix = " 当前没有可识别的合法归属。";
+		string noOwnerSuffix = EconomySourceTexts.Get("S096");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(noOwnerSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - noOwnerSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetNoValidOwner", "{ASSET} has no recognized valid owner.", ("ASSET", asset));
 		}
 
-		const string underSiegeSuffix = " 当前处于战事或围攻状态，不能转移。";
+		string underSiegeSuffix = EconomySourceTexts.Get("S097");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(underSiegeSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - underSiegeSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetUnderSiege", "{ASSET} is currently in battle or under siege and cannot be transferred.", ("ASSET", asset));
 		}
 
-		if (context.Matches(value, "执行失败：", " 不属于 ", " 的家族，不能由其转给玩家。"))
+		if (context.Matches(value, EconomySourceTexts.Get("S094"), EconomySourceTexts.Get("S098"), EconomySourceTexts.Get("S099")))
 		{
 			return Text("AF_ECO_UI_FixedAssetNotGiverClan", "{ASSET} does not belong to {GIVER}'s clan and cannot be transferred to the player.", ("ASSET", context.AssetName), ("GIVER", context.GiverName));
 		}
 
-		const string notPlayerClanSuffix = " 当前不属于玩家家族。";
+		string notPlayerClanSuffix = EconomySourceTexts.Get("S100");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(notPlayerClanSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - notPlayerClanSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetNotPlayerClan", "{ASSET} currently does not belong to the player's clan.", ("ASSET", asset));
 		}
 
-		const string notWorkshopSuffix = " 不是可安全转移的工坊。";
+		string notWorkshopSuffix = EconomySourceTexts.Get("S101");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(notWorkshopSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - notWorkshopSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetNotWorkshop", "{ASSET} is not a workshop that can be safely transferred.", ("ASSET", asset));
 		}
 
-		const string noWorkshopOwnerSuffix = " 当前没有可识别的工坊主人。";
+		string noWorkshopOwnerSuffix = EconomySourceTexts.Get("S102");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(noWorkshopOwnerSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - noWorkshopOwnerSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetNoWorkshopOwner", "{ASSET} currently has no recognized workshop owner.", ("ASSET", asset));
 		}
 
-		const string workshopOwnerDeadSuffix = " 当前工坊主人无效或已死亡。";
+		string workshopOwnerDeadSuffix = EconomySourceTexts.Get("S103");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(workshopOwnerDeadSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - workshopOwnerDeadSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetWorkshopOwnerDead", "{ASSET}'s current workshop owner is invalid or deceased.", ("ASSET", asset));
 		}
 
-		if (context.Matches(value, "执行失败：", " 不属于 ", "，不能由其转给玩家。"))
+		if (context.Matches(value, EconomySourceTexts.Get("S094"), EconomySourceTexts.Get("S098"), EconomySourceTexts.Get("S104")))
 		{
 			return Text("AF_ECO_UI_FixedAssetNotGiver", "{ASSET} does not belong to {GIVER} and cannot be transferred to the player.", ("ASSET", context.AssetName), ("GIVER", context.GiverName));
 		}
 
-		const string notPlayerSuffix = " 当前不属于玩家本人。";
+		string notPlayerSuffix = EconomySourceTexts.Get("S105");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(notPlayerSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - notPlayerSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetNotPlayer", "{ASSET} currently does not belong to the player.", ("ASSET", asset));
 		}
 
-		const string notCaravanSuffix = " 不是可转移商队。";
+		string notCaravanSuffix = EconomySourceTexts.Get("S106");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(notCaravanSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - notCaravanSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetNotCaravan", "{ASSET} is not a transferable caravan.", ("ASSET", asset));
 		}
 
-		const string caravanEventSuffix = " 当前处于事件或战斗中，不能转移。";
+		string caravanEventSuffix = EconomySourceTexts.Get("S107");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(caravanEventSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - caravanEventSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetCaravanInEvent", "{ASSET} is currently in an event or battle and cannot be transferred.", ("ASSET", asset));
 		}
 
-		const string caravanOwnerDeadSuffix = " 当前商队主人无效或已死亡。";
+		string caravanOwnerDeadSuffix = EconomySourceTexts.Get("S108");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(caravanOwnerDeadSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - caravanOwnerDeadSuffix.Length);
 			return Text("AF_ECO_UI_FixedAssetCaravanOwnerDead", "{ASSET}'s current caravan owner is invalid or deceased.", ("ASSET", asset));
 		}
 
-		const string caravanNoHomeSuffix = " 缺少可用的商队归属定居点。";
+		string caravanNoHomeSuffix = EconomySourceTexts.Get("S109");
 		if (value.StartsWith(failPrefix, StringComparison.Ordinal) && value.EndsWith(caravanNoHomeSuffix, StringComparison.Ordinal))
 		{
 			string asset = value.Substring(failPrefix.Length, value.Length - failPrefix.Length - caravanNoHomeSuffix.Length);
@@ -633,36 +651,36 @@ internal static class EconomyUiTexts
 			return string.Empty;
 		}
 
-		if (string.Equals(value, "执行失败：未找到玩家家族。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S110"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_KingdomTransferPlayerClanNotFound", "Player clan was not found.");
 		}
-		if (string.Equals(value, "执行失败：当前对话对象不是可让位的王国国王。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S111"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_KingdomTransferNotKing", "The conversation partner is not a reigning king who can abdicate.");
 		}
-		if (string.Equals(value, "执行失败：当前对话对象没有有效王国。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S112"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_KingdomTransferNoKingdom", "The conversation partner has no valid kingdom.");
 		}
-		if (string.Equals(value, "执行失败：玩家家族不能通过对方让位重复取得王位。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S113"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_KingdomTransferAlreadyKing", "The player's clan cannot reacquire the crown through abdication.");
 		}
 
-		Match mSkip = Regex.Match(value, @"^执行跳过：(.+) 已经是 (.+) 的执政家族。$");
+		Match mSkip = Regex.Match(value, EconomySourceTexts.Get("S114"));
 		if (mSkip.Success)
 		{
 			return Text("AF_ECO_UI_KingdomTransferAlreadyRuling", "{CLAN} is already the ruling clan of {KINGDOM}.", ("CLAN", mSkip.Groups[1].Value), ("KINGDOM", mSkip.Groups[2].Value));
 		}
 
-		Match mNotKing = Regex.Match(value, @"^执行失败：(.+) 不是 (.+) 的国王，不能让出王位。$");
+		Match mNotKing = Regex.Match(value, EconomySourceTexts.Get("S115"));
 		if (mNotKing.Success)
 		{
 			return Text("AF_ECO_UI_KingdomTransferPartnerNotKing", "{GIVER} is not the king of {KINGDOM} and cannot abdicate.", ("GIVER", mNotKing.Groups[1].Value), ("KINGDOM", mNotKing.Groups[2].Value));
 		}
 
-		Match mJoinFailed = Regex.Match(value, @"^执行失败：玩家家族未能加入 (.+)，王位没有转移。$");
+		Match mJoinFailed = Regex.Match(value, EconomySourceTexts.Get("S116"));
 		if (mJoinFailed.Success)
 		{
 			return Text("AF_ECO_UI_KingdomTransferJoinFailed", "The player's clan failed to join {KINGDOM}; the crown was not transferred.", ("KINGDOM", mJoinFailed.Groups[1].Value));
@@ -672,7 +690,7 @@ internal static class EconomyUiTexts
 		// clan sentence, so the tail must be captured rather than swallowed by a
 		// greedy ".*": dropping it would hide old-kingdom repair, dissolution and
 		// election details from the player.
-		Match mSuccess = Regex.Match(value, @"^执行成功：(.+) 已将 (.+) 的王位让给(.+)，(.+) 成为新的执政家族(?<tail>[\s\S]*)。$");
+		Match mSuccess = Regex.Match(value, EconomySourceTexts.Get("S117"));
 		if (mSuccess.Success)
 		{
 			string rulingClanText = Text("AF_ECO_UI_KingdomTransferSuccess", "{GIVER} has abdicated the throne of {KINGDOM} to {PLAYER}; {CLAN} is now the ruling clan.",
@@ -680,7 +698,7 @@ internal static class EconomyUiTexts
 			return rulingClanText + EconomyRecruitmentDetailTexts.Describe(mSuccess.Groups["tail"].Value);
 		}
 
-		const string exPrefix = "执行失败（异常）：";
+		string exPrefix = EconomySourceTexts.Get("S083");
 		if (value.StartsWith(exPrefix, StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_KingdomTransferException", "Kingdom transfer failed with an error: {ERROR}", ("ERROR", value.Substring(exPrefix.Length)));
@@ -697,65 +715,65 @@ internal static class EconomyUiTexts
 			return string.Empty;
 		}
 
-		if (string.Equals(value, "执行失败：只有被招揽家族的现任族长才能代表全族归附。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S118"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionOnlyLeaderCanPledge", "Only the active clan leader can pledge the entire clan.");
 		}
-		if (string.Equals(value, "执行失败：玩家当前没有可接纳该家族的有效王国。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S119"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionNoKingdomToAccept", "The player currently has no valid kingdom to accept the clan.");
 		}
-		if (string.Equals(value, "执行失败：玩家不是所属王国的统治者，不能在城堡现场直接批准全族归附。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S120"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionPlayerNotRuler", "The player is not the ruler of the kingdom and cannot approve clan allegiance directly.");
 		}
-		if (string.Equals(value, "执行失败：目标王国无效或已经灭亡。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S121"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionTargetKingdomInvalid", "The target kingdom is invalid or has been eliminated.");
 		}
-		if (string.Equals(value, "执行失败：未找到当前NPC所属家族。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S122"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionNpcClanNotFound", "The NPC's clan could not be found.");
 		}
-		if (string.Equals(value, "执行失败：玩家家族不能通过当前NPC重复归附其他王国。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S123"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionCannotRePledgePlayerClan", "The player's clan cannot re-pledge allegiance through this NPC.");
 		}
-		if (string.Equals(value, "执行失败：只有当前家族族长本人才能代表全族选择效忠王国。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S124"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionOnlyClanLeaderCanChoose", "Only the clan leader can pledge the clan's allegiance to a kingdom.");
 		}
-		if (string.Equals(value, "执行失败：玩家当前未加入任何势力，无需退出。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S125"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionPlayerNotInKingdom", "The player is not currently part of any faction.");
 		}
-		if (string.Equals(value, "执行失败：玩家当前没有可供目标家族加入的王国。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S126"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionNoKingdomForTarget", "The player currently has no kingdom for the target clan to join.");
 		}
-		if (string.Equals(value, "执行失败：当前对话对象并非该势力正式封臣，不能签订雇佣兵契约。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S127"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionPartnerNotVassal", "The conversation partner is not a vassal of this faction and cannot sign a mercenary contract.");
 		}
-		if (string.Equals(value, "执行失败：玩家已是某王国正式封臣，不能再作为雇佣兵加入。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S128"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionPlayerAlreadyVassal", "The player is already a vassal of a kingdom and cannot join as a mercenary.");
 		}
-		if (string.Equals(value, "执行失败：只有目标王国的国王才能授予正式封臣身份。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S129"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionOnlyKingGrantsVassalage", "Only the king of the target kingdom can grant official vassalage.");
 		}
-		if (string.Equals(value, "执行失败：未找到玩家家族。", StringComparison.Ordinal))
+		if (string.Equals(value, EconomySourceTexts.Get("S110"), StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionPlayerClanNotFound", "The player's clan could not be found.");
 		}
 
 		// The leave-authorization failure embeds both the partner's kingdom and the
 		// kingdom the player is being asked to leave; both must survive projection.
-		const string leaveMismatchPrefix = "执行失败：当前对话对象属于 ";
+		string leaveMismatchPrefix = EconomySourceTexts.Get("S130");
 		if (value.StartsWith(leaveMismatchPrefix, StringComparison.Ordinal))
 		{
-			Match mLeaveMismatch = Regex.Match(value, @"^执行失败：当前对话对象属于 (.+?)，不能代表 (.+?) 批准玩家退出当前效力。$");
+			Match mLeaveMismatch = Regex.Match(value, EconomySourceTexts.Get("S131"));
 			if (mLeaveMismatch.Success)
 			{
 				return Text("AF_ECO_UI_FactionLeavePartyMismatch",
@@ -766,21 +784,21 @@ internal static class EconomyUiTexts
 
 		// These three failures embed a raw id/token produced by the caller rather
 		// than a localized name, so the token is passed through as-is.
-		Match mTargetKingdomIdInvalid = Regex.Match(value, @"^执行失败：目标王国ID无效（(.+)）。$");
+		Match mTargetKingdomIdInvalid = Regex.Match(value, EconomySourceTexts.Get("S132"));
 		if (mTargetKingdomIdInvalid.Success)
 		{
 			return Text("AF_ECO_UI_FactionTargetKingdomIdInvalid", "The target kingdom id is invalid ({TOKEN}).",
 				("TOKEN", mTargetKingdomIdInvalid.Groups[1].Value));
 		}
 
-		Match mTargetFactionInvalid = Regex.Match(value, @"^执行失败：目标势力无效（(.+)）。$");
+		Match mTargetFactionInvalid = Regex.Match(value, EconomySourceTexts.Get("S133"));
 		if (mTargetFactionInvalid.Success)
 		{
 			return Text("AF_ECO_UI_FactionTargetFactionInvalid", "The target faction is invalid ({TOKEN}).",
 				("TOKEN", mTargetFactionInvalid.Groups[1].Value));
 		}
 
-		const string unknownServicePrefix = "执行失败：未知势力效力类型 ";
+		string unknownServicePrefix = EconomySourceTexts.Get("S134");
 		if (value.StartsWith(unknownServicePrefix, StringComparison.Ordinal))
 		{
 			string serviceType = value.Substring(unknownServicePrefix.Length).TrimEnd('。');
@@ -793,26 +811,26 @@ internal static class EconomyUiTexts
 
 		// The clan-leader branch wraps an arbitrary exception message; it must be
 		// recognized before the generic clan-join failure pattern can claim it.
-		const string clanLeaderExceptionPrefix = "执行失败（族长归附异常）：";
+		string clanLeaderExceptionPrefix = EconomySourceTexts.Get("S135");
 		if (value.StartsWith(clanLeaderExceptionPrefix, StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionClanLeaderException", "Clan leader allegiance failed with an error: {ERROR}",
 				("ERROR", value.Substring(clanLeaderExceptionPrefix.Length)));
 		}
 
-		Match mSkipPledge = Regex.Match(value, @"^执行跳过：(.+) 已经效力于 (.+?)[。]?$");
+		Match mSkipPledge = Regex.Match(value, EconomySourceTexts.Get("S136"));
 		if (mSkipPledge.Success)
 		{
 			return Text("AF_ECO_UI_FactionAlreadyServesKingdom", "{CLAN} already serves {KINGDOM}.", ("CLAN", mSkipPledge.Groups[1].Value), ("KINGDOM", mSkipPledge.Groups[2].Value));
 		}
 
-		Match mClanDead = Regex.Match(value, @"^执行失败：(.+) 已经灭亡或不可用。$");
+		Match mClanDead = Regex.Match(value, EconomySourceTexts.Get("S137"));
 		if (mClanDead.Success)
 		{
 			return Text("AF_ECO_UI_FactionClanEliminated", "{CLAN} has been eliminated or is unavailable.", ("CLAN", mClanDead.Groups[1].Value));
 		}
 
-		Match mClanJoinFail = Regex.Match(value, @"^执行失败：(.+) 未能加入 (.+?)[。]?$");
+		Match mClanJoinFail = Regex.Match(value, EconomySourceTexts.Get("S138"));
 		if (mClanJoinFail.Success)
 		{
 			return Text("AF_ECO_UI_FactionClanJoinFailed", "{CLAN} failed to join {KINGDOM}.", ("CLAN", mClanJoinFail.Groups[1].Value), ("KINGDOM", mClanJoinFail.Groups[2].Value));
@@ -823,66 +841,66 @@ internal static class EconomyUiTexts
 		// transition summary.  Both are captured into "tail" and re-rendered by
 		// EconomyRecruitmentDetailTexts, which returns anything it does not
 		// recognise verbatim, so no detail is silently dropped.
-		Match mMercToLord = Regex.Match(value, @"^执行成功：(.+) 已结束旧雇佣关系，并作为领主加入 ([^（]+)（KingdomId=[^）]*）(?<tail>[\s\S]*)。$");
+		Match mMercToLord = Regex.Match(value, EconomySourceTexts.Get("S139"));
 		if (mMercToLord.Success)
 		{
 			return Text("AF_ECO_UI_FactionMercToLordSuccess", "{CLAN} ended its mercenary contract and joined {KINGDOM} as a lord.", ("CLAN", mMercToLord.Groups[1].Value), ("KINGDOM", mMercToLord.Groups[2].Value))
 				+ EconomyRecruitmentDetailTexts.Describe(mMercToLord.Groups["tail"].Value);
 		}
 
-		Match mDefectToLord = Regex.Match(value, @"^执行成功：(.+) 已脱离 (.+?)，并作为领主加入 ([^（]+)（KingdomId=[^）]*）(?<tail>[\s\S]*)。$");
+		Match mDefectToLord = Regex.Match(value, EconomySourceTexts.Get("S140"));
 		if (mDefectToLord.Success)
 		{
 			return Text("AF_ECO_UI_FactionDefectToLordSuccess", "{CLAN} defected from {OLD_KINGDOM} and joined {KINGDOM} as a lord.", ("CLAN", mDefectToLord.Groups[1].Value), ("OLD_KINGDOM", mDefectToLord.Groups[2].Value), ("KINGDOM", mDefectToLord.Groups[3].Value))
 				+ EconomyRecruitmentDetailTexts.Describe(mDefectToLord.Groups["tail"].Value);
 		}
 
-		Match mJoinAsLord = Regex.Match(value, @"^执行成功：(.+) 已作为领主加入 ([^（]+)（KingdomId=[^）]*）(?<tail>[\s\S]*)。$");
+		Match mJoinAsLord = Regex.Match(value, EconomySourceTexts.Get("S141"));
 		if (mJoinAsLord.Success)
 		{
 			return Text("AF_ECO_UI_FactionJoinAsLordSuccess", "{CLAN} joined {KINGDOM} as a lord.", ("CLAN", mJoinAsLord.Groups[1].Value), ("KINGDOM", mJoinAsLord.Groups[2].Value))
 				+ EconomyRecruitmentDetailTexts.Describe(mJoinAsLord.Groups["tail"].Value);
 		}
 
-		Match mEndMerc = Regex.Match(value, @"^执行成功：玩家已结束与 (.+) 的雇佣兵契约。$");
+		Match mEndMerc = Regex.Match(value, EconomySourceTexts.Get("S142"));
 		if (mEndMerc.Success)
 		{
 			return Text("AF_ECO_UI_FactionPlayerEndMercSuccess", "The player ended their mercenary contract with {KINGDOM}.", ("KINGDOM", mEndMerc.Groups[1].Value));
 		}
 
-		Match mLeaveVassal = Regex.Match(value, @"^执行成功：玩家已退出 (.+)，不再是其正式封臣。$");
+		Match mLeaveVassal = Regex.Match(value, EconomySourceTexts.Get("S143"));
 		if (mLeaveVassal.Success)
 		{
 			return Text("AF_ECO_UI_FactionPlayerLeaveVassalSuccess", "The player left {KINGDOM} and is no longer an official vassal.", ("KINGDOM", mLeaveVassal.Groups[1].Value));
 		}
 
-		Match mJoinMerc = Regex.Match(value, @"^执行成功：玩家已作为雇佣兵加入 ([^（]+)（KingdomId=[^）]*）(?<tail>[\s\S]*)。$");
+		Match mJoinMerc = Regex.Match(value, EconomySourceTexts.Get("S144"));
 		if (mJoinMerc.Success)
 		{
 			return Text("AF_ECO_UI_FactionPlayerJoinMercSuccess", "The player joined {KINGDOM} as a mercenary.", ("KINGDOM", mJoinMerc.Groups[1].Value))
 				+ EconomyRecruitmentDetailTexts.Describe(mJoinMerc.Groups["tail"].Value);
 		}
 
-		Match mAlreadyVassal = Regex.Match(value, @"^执行跳过：玩家已是 (.+) 的正式封臣。$");
+		Match mAlreadyVassal = Regex.Match(value, EconomySourceTexts.Get("S145"));
 		if (mAlreadyVassal.Success)
 		{
 			return Text("AF_ECO_UI_FactionPlayerAlreadyVassalSkip", "The player is already an official vassal of {KINGDOM}.", ("KINGDOM", mAlreadyVassal.Groups[1].Value));
 		}
 
-		Match mFailVassal = Regex.Match(value, @"^执行失败：玩家未能成为 (.+) 的正式封臣。$");
+		Match mFailVassal = Regex.Match(value, EconomySourceTexts.Get("S146"));
 		if (mFailVassal.Success)
 		{
 			return Text("AF_ECO_UI_FactionPlayerFailVassal", "The player failed to become an official vassal of {KINGDOM}.", ("KINGDOM", mFailVassal.Groups[1].Value));
 		}
 
-		Match mJoinVassal = Regex.Match(value, @"^执行成功：玩家已加入 ([^（]+) 成为正式封臣（KingdomId=[^）]*）(?<tail>[\s\S]*)。$");
+		Match mJoinVassal = Regex.Match(value, EconomySourceTexts.Get("S147"));
 		if (mJoinVassal.Success)
 		{
 			return Text("AF_ECO_UI_FactionPlayerJoinVassalSuccess", "The player joined {KINGDOM} as an official vassal.", ("KINGDOM", mJoinVassal.Groups[1].Value))
 				+ EconomyRecruitmentDetailTexts.Describe(mJoinVassal.Groups["tail"].Value);
 		}
 
-		const string exPrefix = "执行失败（异常）：";
+		string exPrefix = EconomySourceTexts.Get("S083");
 		if (value.StartsWith(exPrefix, StringComparison.Ordinal))
 		{
 			return Text("AF_ECO_UI_FactionException", "Faction action failed with an error: {ERROR}", ("ERROR", value.Substring(exPrefix.Length)));

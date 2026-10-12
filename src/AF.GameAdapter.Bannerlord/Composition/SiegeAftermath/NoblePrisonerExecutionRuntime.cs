@@ -495,8 +495,8 @@ internal static class NoblePrisonerExecutionRuntime
 		{
 			NoblePrisonerEscortLog.Log("Execution profile cleanup failed: " + ex.Message);
 		}
-		string actorName = pending.ActorHero?.Name?.ToString() ?? "某人";
-		string prisonerName = pending.PrisonerHero?.Name?.ToString() ?? "某贵族";
+		string actorName = pending.ActorHero?.Name?.ToString() ?? SiegeAftermathCompatibilityTexts.Raw("unknown_person");
+		string prisonerName = pending.PrisonerHero?.Name?.ToString() ?? SiegeAftermathCompatibilityTexts.Raw("unknown_noble");
 		try
 		{
 			InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.ExecutionCompleted(actorName, prisonerName), Color.FromUint(0xFFFF6B6Bu)));
@@ -526,8 +526,8 @@ internal static class NoblePrisonerExecutionRuntime
 			return;
 		}
 		pending.DispositionCompleted = true;
-		string actorName = pending.ActorHero?.Name?.ToString() ?? "某人";
-		string prisonerName = pending.PrisonerHero?.Name?.ToString() ?? "某贵族";
+		string actorName = pending.ActorHero?.Name?.ToString() ?? SiegeAftermathCompatibilityTexts.Raw("unknown_person");
+		string prisonerName = pending.PrisonerHero?.Name?.ToString() ?? SiegeAftermathCompatibilityTexts.Raw("unknown_noble");
 		bool giveHead = pending.HeadDisposition == NobleExecutionHeadDisposition.GiveToPlayer;
 		if (giveHead)
 		{
@@ -567,9 +567,9 @@ internal static class NoblePrisonerExecutionRuntime
 				pending.ActorHero,
 				null,
 				null,
-				"[AFEF NPC行为补充] 你在玩家面前亲手处决了“" + prisonerName + "”"
-				+ (giveHead ? "，随后把死者的头颅交给了玩家。" : "，并决定自己保留死者的头颅。")
-				+ "此事已经发生，不能否认。");
+				SiegeAftermathCompatibilityTexts.Raw("execution_scene_fact_prefix") + prisonerName
+				+ (giveHead ? SiegeAftermathCompatibilityTexts.Raw("execution_head_given_suffix") : SiegeAftermathCompatibilityTexts.Raw("execution_head_kept_suffix"))
+				+ SiegeAftermathCompatibilityTexts.Raw("execution_fact_end"));
 		}
 		catch (Exception ex)
 		{

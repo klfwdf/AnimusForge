@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="Chinese" />
+  </tags>
+  <strings>
+    <string id="AF_ADSC_Gather_WenchName" text="侍女" />
+    <string id="AF_ADSC_Gather_EndedNormally" text="宴会已经结束。" />
+    <string id="AF_ADSC_Gather_EndedInvalid" text="宴会因主办方或举办地失效而结束。" />
+    <string id="AF_ADSC_Reason_Traveling" text="正在旅行" />
+    <string id="AF_ADSC_Reason_TravelingTo" text="正在旅行至{TARGET}" />
+    <string id="AF_ADSC_Reason_CannotMove" text="当前无法移动至定居点" />
+    <string id="AF_ADSC_Reason_MoveFailed" text="移动检查失败：{ERROR}" />
+    <string id="AF_ADSC_Reason_InvalidHero" text="无效人物" />
+    <string id="AF_ADSC_Reason_NotSpawned" text="尚未出现在世界" />
+    <string id="AF_ADSC_Reason_Underage" text="未满十八岁" />
+    <string id="AF_ADSC_Reason_NotBorn" text="未成年或未出世" />
+    <string id="AF_ADSC_Reason_Prisoner" text="被俘" />
+    <string id="AF_ADSC_Reason_Wounded" text="受伤" />
+    <string id="AF_ADSC_Reason_NoParty" text="无独立部队" />
+    <string id="AF_ADSC_Reason_InArmy" text="在军团中" />
+    <string id="AF_ADSC_Reason_InBattle" text="在战斗中" />
+    <string id="AF_ADSC_Reason_HasParty" text="已有部队" />
+    <string id="AF_ADSC_Host_Disabled" text="宴会无法召开：宴会功能已在 MCM 中关闭。" />
+    <string id="AF_ADSC_Host_NoVenue" text="宴会无法召开：必须选择有效城镇或城堡。" />
+    <string id="AF_ADSC_Host_NotLeader" text="宴会无法召开：只有家族族长能够作为宴会主人。" />
+    <string id="AF_ADSC_Host_NotOwned" text="宴会无法召开：主办地必须是你自己家族拥有的定居点。" />
+    <string id="AF_ADSC_Host_UnderSiege" text="宴会无法召开：定居点正在被围攻。" />
+    <string id="AF_ADSC_Host_Cost" text="宴会无法召开：需要 {COST} 第纳尔。" />
+    <string id="AF_ADSC_Host_Cooldown" text="宴会无法召开：还需等待 {DAYS} 天。" />
+    <string id="AF_ADSC_Host_ActivePlayer" text="宴会无法召开：你已经有一场正在进行的宴会。" />
+    <string id="AF_ADSC_Host_ActiveVenue" text="宴会无法召开：所选举办地已经有一场正在进行的宴会。" />
+    <string id="AF_ADSC_Host_GovernorInvalid" text="宴会无法召开：该人物不是你的总督或同伴。" />
+    <string id="AF_ADSC_Tag_Uninitialized" text="宴会系统未初始化。" />
+    <string id="AF_ADSC_Tag_UnparsedArgs" text="宴会标签：无法解析参数。" />
+    <string id="AF_ADSC_Cancel_NoGathering" text="取消宴会失败：指定的宴会不存在或已经结束。" />
+    <string id="AF_ADSC_Cancel_NotDelegate" text="取消宴会失败：只有玩家的总督或同伴能够执行此命令。" />
+    <string id="AF_ADSC_Cancel_DelegateStatus" text="{DELEGATE}已经遵照你的命令取消了在{SETTLEMENT}举办的宴会。" />
+    <string id="AF_ADSC_Cancel_DelegateReason" text="{DELEGATE}遵照你的命令，取消了在{SETTLEMENT}举办的宴会，宾客已经散去。" />
+    <string id="AF_ADSC_Cancel_NotHost" text="取消宴会失败：只有宴会主人本人才能接受劝说并取消这场宴会。" />
+    <string id="AF_ADSC_Cancel_PersuadedStatus" text="{HOST}已经接受你的劝说，取消了在{SETTLEMENT}举办的宴会。" />
+    <string id="AF_ADSC_Cancel_PersuadedReason" text="{HOST}接受玩家劝说，取消了自己在{SETTLEMENT}举办的宴会，宾客已经散去。" />
+    <string id="AF_ADSC_Create_NoInvitees" text="宴会无法召开：没有邀请任何宾客。" />
+    <string id="AF_ADSC_Identity_Kingdom" text="王国" />
+    <string id="AF_ADSC_Identity_RulerLabel" text="{KINGDOM} 当前统治者" />
+    <string id="AF_ADSC_Identity_WeeklyTitle" text="{KINGDOM} 事件素材预览" />
+    <string id="AF_ADSC_Identity_WeeklySummary" text="{KINGDOM} 本周会使用该国开局概要，以及与该国有关的本周高价值行动。普通行军会被压缩，守备、袭扰和外国领主入境会优先保留。" />
+    <string id="AF_ADSC_Identity_OpeningLabel" text="{KINGDOM} 开局概要" />
+  </strings>
+</base>

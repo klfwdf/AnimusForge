@@ -16,6 +16,7 @@
   <LanguageFile xml_path="CNs/afeconomy_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afknowledge_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afmemory_ui_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afllm_ui_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afworldmap_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afdip_ui_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afconv_ui_strings-zh-CN.xml" />
@@ -29,4 +30,13 @@
   <LanguageFile xml_path="CNs/af_runtime_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afscene_catalog_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afscene_speech_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afissue_prompt_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afadapter_records_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afadapter_scene_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afweekly_bulletin_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afpol_misc_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afdip_misc_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afduel_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afcoup_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afpersona_ui_strings-zh-CN.xml" />
 </LanguageData>

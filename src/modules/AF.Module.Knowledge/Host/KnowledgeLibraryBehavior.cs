@@ -482,6 +482,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private List<RuleIndexItem> _ruleIndexCache;
 
+	private string _ruleIndexCacheUiLabelFormat;
+
 	private bool _loadedSaveIndexBuildAttempted;
 
 	private sealed class IndexPorts : IKnowledgeIndexPorts
@@ -666,7 +668,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			+ " version=" + expectedVersion + " result=" + (variant == null ? "variant_miss" : content.Length == 0 ? "content_empty" : "hit"));
 		if (content.Length == 0) return "";
 		string title = rule.Keywords?.FirstOrDefault(keyword => !string.IsNullOrWhiteSpace(keyword))?.Trim() ?? rule.Id ?? "";
-		return "【世界书资料：" + title + "】\n" + content;
+		return KnowledgePromptTexts.Format("PersonaLoreHeader", "[Worldbook reference: {TITLE}]\n", ("TITLE", title)) + content;
 	}
 
 	private static string TrimPreview(string s, int maxChars)
@@ -710,12 +712,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text2 = (npcDisplayName ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "该NPC";
+			text2 = KnowledgePromptTexts.Get("NpcFallback", "this NPC");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("【玩家外貌信息（常驻）】");
-		stringBuilder.AppendLine(text2 + "与玩家面对面互动时，都可以直接观察到这些外貌特征；");
+		stringBuilder.AppendLine(KnowledgePromptTexts.Get("PlayerAppearanceHeader", "[Player appearance (always available)]"));
+		stringBuilder.AppendLine(KnowledgePromptTexts.Format("PlayerAppearanceObservation", "{NPC} can directly observe these appearance features when interacting with the player face to face;", ("NPC", text2)));
 		stringBuilder.AppendLine(text);
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -1159,12 +1161,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			actualPlayerName = "";
 		}
 		const string actualNamePlaceholder = "\uE102AF_PLAYER_PERSONA_ACTUAL_NAME\uE103";
-		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, "玩家", StringComparison.Ordinal))
+		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, KnowledgeSourceTexts.Get("KN_Raw_007"), StringComparison.Ordinal))
 		{
 			result = result.Replace(actualPlayerName, actualNamePlaceholder);
 		}
-		result = result.Replace("玩家", PlayerPersonaRawNameBeginMarker + "玩家" + PlayerPersonaRawNameEndMarker);
-		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, "玩家", StringComparison.Ordinal))
+		result = result.Replace(KnowledgeSourceTexts.Get("KN_Raw_007"), PlayerPersonaRawNameBeginMarker + KnowledgeSourceTexts.Get("KN_Raw_007") + PlayerPersonaRawNameEndMarker);
+		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, KnowledgeSourceTexts.Get("KN_Raw_007"), StringComparison.Ordinal))
 		{
 			result = result.Replace(actualNamePlaceholder, PlayerPersonaRawNameBeginMarker + actualPlayerName + PlayerPersonaRawNameEndMarker);
 		}
@@ -1264,11 +1266,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		if (!wroteHeader)
 		{
 			stringBuilder.AppendLine(" ");
-			stringBuilder.AppendLine("参与互动让你的脑海里浮现了这些知识");
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KnowledgeRecallHeader", "This interaction brings the following knowledge to mind"));
 			wroteHeader = true;
 		}
-		string text4 = string.IsNullOrWhiteSpace(text2) ? (text ?? "相关语义") : text2;
-		string knowledgeHeader = "【以下是关于（" + text4 + "）的背景知识，" + npcDisplayName + "可酌情参考作为聊天素材】";
+		string text4 = string.IsNullOrWhiteSpace(text2) ? (text ?? KnowledgePromptTexts.Get("RelatedMeaning", "related concepts")) : text2;
+		string knowledgeHeader = KnowledgePromptTexts.Format("MatchedKnowledgeHeader", "[The following is background knowledge about ({TOPIC}); {NPC} may draw on it for conversation as appropriate]", ("TOPIC", text4), ("NPC", npcDisplayName));
 		if (IsPlayerPersonaRule(rule))
 		{
 			knowledgeHeader = ProtectPlayerPersonaRawNameReferences(knowledgeHeader);
@@ -1381,7 +1383,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (_ruleIndexCache != null && _ruleIndexCacheVersion == Index.Version)
+			string uiLabelFormat = KnowledgeUiTexts.RuleIndexLabel("", 0, 0, 0);
+			if (_ruleIndexCache != null && _ruleIndexCacheVersion == Index.Version && string.Equals(_ruleIndexCacheUiLabelFormat, uiLabelFormat, StringComparison.Ordinal))
 			{
 				return;
 			}
@@ -1415,7 +1418,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				{
 					text2 = text;
 				}
-				string label = $"{text2} (关键词:{(rule?.Keywords?.Count).GetValueOrDefault()} 条, RAG短句:{(rule?.RagShortTexts?.Count).GetValueOrDefault()} 条, 提示词:{(rule?.Variants?.Count).GetValueOrDefault()} 条)";
+				string label = KnowledgeUiTexts.RuleIndexLabel(text2, (rule?.Keywords?.Count).GetValueOrDefault(), (rule?.RagShortTexts?.Count).GetValueOrDefault(), (rule?.Variants?.Count).GetValueOrDefault());
 				list.Add(new RuleIndexItem
 				{
 					Id = text,
@@ -1431,6 +1434,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			_ruleIndexCache = list;
 			_ruleIndexCacheVersion = Index.Version;
+			_ruleIndexCacheUiLabelFormat = uiLabelFormat;
 		}
 		catch
 		{
@@ -2054,21 +2058,21 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			if (settlement.IsTown)
 			{
-				return "城镇";
+				return WorldEntityPromptTexts.Get("Town", "town");
 			}
 			if (settlement.IsCastle)
 			{
-				return "城堡";
+				return WorldEntityPromptTexts.Get("Castle", "castle");
 			}
 			if (settlement.IsVillage)
 			{
-				return "村子";
+				return WorldEntityPromptTexts.Get("KN_Prompt_203", "village");
 			}
 		}
 		catch
 		{
 		}
-		return "定居点";
+		return WorldEntityPromptTexts.Get("GenericSettlement", "settlement");
 	}
 
 	private static int GetSettlementTypeOrder(Settlement settlement)
@@ -3764,7 +3768,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text7Keyword = text7;
 		if (string.IsNullOrWhiteSpace(text7))
 		{
-			text7 = "该NPC";
+			text7 = KnowledgePromptTexts.Get("NpcFallback", "this NPC");
 		}
 		string text8 = (text7 ?? "").Replace("|", " ").Trim();
 		LogLoreContextTrace("hero", text2, "", text3, text4, text6, text5, flag, flag2, "", text);
@@ -4202,7 +4206,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text7Keyword = text7;
 		if (string.IsNullOrWhiteSpace(text7))
 		{
-			text7 = "该NPC";
+			text7 = KnowledgePromptTexts.Get("NpcFallback", "this NPC");
 		}
 		string text8 = (text7 ?? "").Replace("|", " ").Trim();
 		LogLoreContextTrace((hero != null) ? "character_hero" : "character", text2, textCharId, text3, text4, text6, text5, flag, flag2, kingdomIdOverride, text);
@@ -5471,10 +5475,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 
 	private static string GetPlayerPersonaForcedKeyword()
 	{
-		string text = (Hero.MainHero?.Name?.ToString() ?? "玩家").Trim();
+		string text = (Hero.MainHero?.Name?.ToString() ?? KnowledgeSourceTexts.Get("KN_Raw_007")).Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return "玩家";
+			return KnowledgeSourceTexts.Get("KN_Raw_007");
 		}
 		return text;
 	}
@@ -8058,7 +8062,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 
 	private static string BuildRagShortTextGenerationSystemPrompt()
 	{
-		return "你是一个本地RAG知识库的“检索短句生成器”。\n" + "你的输出会直接用于知识召回与重排，不是给NPC直接说的话。\n" + "请严格遵守：\n" + "1) 只围绕提供的知识材料生成，不得编造；\n" + "2) 每条都要显式保留实体名、主题词或关键概念，便于语义检索命中；\n" + "3) 可以写成简洁描述句或简洁提问式短句，但必须适合RAG程序检索；\n" + "4) 禁止第一人称口吻、抒情、解释、提示词说明、系统术语、ACTION标签；\n" + "5) 禁止直接照抄长提示词正文，只保留可检索的核心事实；\n" + "6) 每条最多 " + RagShortTextGeneratedMaxLength + " 个字符；\n" + "7) 只输出 JSON 数组字符串，例如 [\"...\",\"...\"]；禁止 Markdown 代码块、标题、序号和额外说明。";
+		return KnowledgePromptTexts.Format("System", "You are a retrieval short-text generator for a local RAG knowledge base.\nYour output is used directly for knowledge retrieval and reranking, not as dialogue for NPCs.\nFollow these rules strictly:\n1) Generate only from the supplied knowledge material; do not invent facts;\n2) Every entry must explicitly retain entity names, topic words, or key concepts to support semantic retrieval;\n3) Use concise descriptions or questions suitable for programmatic RAG retrieval;\n4) Do not use first-person narration, lyrical prose, explanations, prompt instructions, system terminology, or ACTION tags;\n5) Do not copy long passages from the source prompt; keep only searchable core facts;\n6) Each entry must contain at most {MAX} characters;\n7) Output only a JSON array of strings, such as [\"...\",\"...\"]; no Markdown code blocks, headings, numbering, or extra explanation.", ("MAX", RagShortTextGeneratedMaxLength.ToString()));
 	}
 
 	private static string BuildRagShortTextGenerationUserPrompt(LoreRule rule, int targetCount, IEnumerable<string> existingForPrompt = null)
@@ -8077,7 +8081,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text = (rule.Id ?? "").Trim();
 			if (!string.IsNullOrEmpty(text))
 			{
-				stringBuilder.AppendLine("规则ID: " + text);
+				stringBuilder.AppendLine(KnowledgePromptTexts.Get("RuleIdLabel", "Rule ID: ") + text);
 			}
 			List<string> list = new List<string>();
 			try
@@ -8101,7 +8105,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("关键词: " + ((list.Count > 0) ? string.Join(" / ", list) : "（无）"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Keywords", "Keywords: ") + ((list.Count > 0) ? string.Join(" / ", list) : KnowledgePromptTexts.Get("None", "(none)")));
 			List<string> list2 = new List<string>();
 			try
 			{
@@ -8125,7 +8129,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("已有RAG短句: " + ((list2.Count > 0) ? string.Join(" | ", list2) : "（无）"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Existing", "Existing RAG short texts: ") + ((list2.Count > 0) ? string.Join(" | ", list2) : KnowledgePromptTexts.Get("None", "(none)")));
 			List<string> list3 = new List<string>();
 			try
 			{
@@ -8147,7 +8151,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 						{
 							text4 = text4.Substring(0, 220).Trim() + "...";
 						}
-						list3.Add($"#{i + 1} {BuildWhenLabel(loreVariant.When)}: {text4}");
+						list3.Add($"#{i + 1} {BuildWhenPromptLabel(loreVariant.When)}: {text4}");
 						if (list3.Count >= 6)
 						{
 							break;
@@ -8158,10 +8162,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("提示词内容：");
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("PromptHeader", "Prompt content:"));
 			if (list3.Count <= 0)
 			{
-				stringBuilder.AppendLine("（无）");
+				stringBuilder.AppendLine(KnowledgePromptTexts.Get("None", "(none)"));
 			}
 			else
 			{
@@ -8170,13 +8174,13 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					stringBuilder.AppendLine(item2);
 				}
 			}
-			stringBuilder.AppendLine("任务：请基于“关键词 + 提示词内容”，生成 " + targetCount + " 条新的 RAG专用短句。");
-			stringBuilder.AppendLine("生成要求：");
-			stringBuilder.AppendLine("1) 每条 8~" + RagShortTextGeneratedMaxLength + " 字，中文自然，不要太虚；");
-			stringBuilder.AppendLine("2) 每条都要能帮助程序匹配玩家提问，尽量直接点明主题、实体与核心事实；");
-			stringBuilder.AppendLine("3) 不要直接复制原提示词正文的大段表达；");
-			stringBuilder.AppendLine("4) 不要与“已有RAG短句”重复；");
-			stringBuilder.AppendLine("5) 只输出 JSON 数组字符串。");
+			stringBuilder.AppendLine(KnowledgePromptTexts.Format("Task", "Task: Generate {COUNT} new RAG short texts based on the keywords and prompt content.", ("COUNT", targetCount.ToString())));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Requirements", "Generation requirements:"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Format("Length", "1) Each entry must contain 8~{MAX} characters; use natural English and avoid vague wording;", ("MAX", RagShortTextGeneratedMaxLength.ToString())));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Match", "2) Every entry must help the program match player questions; name the topic, entities, and core facts as directly as possible;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Copy", "3) Do not copy long passages from the original prompt;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Duplicate", "4) Do not duplicate the existing RAG short texts;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Json", "5) Output only a JSON array of strings."));
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -8326,7 +8330,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				return string.Empty;
 			}
-			if (text.IndexOf("提示词", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("RAG", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("检索短句", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (text.IndexOf(KnowledgeSourceTexts.Get("KN_Raw_008"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("RAG", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(KnowledgeSourceTexts.Get("KN_Raw_009"), StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				return string.Empty;
 			}
@@ -8391,17 +8395,17 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		foreach (string item in list2)
 		{
-			add(item + "是什么");
+			add(KnowledgePromptTexts.Format("FallbackWhat", "What is {KEYWORD}", ("KEYWORD", item)));
 			if (list.Count >= maxCount)
 			{
 				return list;
 			}
-			add("介绍" + item);
+			add(KnowledgePromptTexts.Format("FallbackIntroduce", "Introduce {KEYWORD}", ("KEYWORD", item)));
 			if (list.Count >= maxCount)
 			{
 				return list;
 			}
-			add(item + "的背景与特点");
+			add(KnowledgePromptTexts.Format("FallbackBackground", "{KEYWORD} background and traits", ("KEYWORD", item)));
 			if (list.Count >= maxCount)
 			{
 				return list;
@@ -8509,8 +8513,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Logic", "[Knowledge] 生成RAG专用短句失败: " + ex);
-			LlmRetryPrompt.ShowFailurePopup(KnowledgeUiTexts.RagGenerationFailureTitle, ex.Message);
+			Logger.Log("Logic", "[Knowledge] RAG retrieval phrase generation failed: " + ex);
+			LlmRetryPrompt.ShowFailurePopup(KnowledgeUiTexts.RagGenerationFailureTitle, KnowledgeUiTexts.RagFailureDetail(ex.Message));
 		}
 		onDone();
 	}
@@ -8676,7 +8680,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text = (rule.Id ?? "").Trim();
 			if (!string.IsNullOrEmpty(text))
 			{
-				stringBuilder.AppendLine("规则ID: " + text);
+				stringBuilder.AppendLine(KnowledgePromptTexts.Get("RuleIdLabel", "Rule ID: ") + text);
 			}
 			List<string> list = new List<string>();
 			try
@@ -8700,7 +8704,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("关键词: " + ((list.Count > 0) ? string.Join(" / ", list) : "（无）"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Keywords", "Keywords: ") + ((list.Count > 0) ? string.Join(" / ", list) : KnowledgePromptTexts.Get("None", "(none)")));
 			List<string> list4 = new List<string>();
 			try
 			{
@@ -8723,7 +8727,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("RAG专用短句: " + ((list4.Count > 0) ? string.Join(" | ", list4) : "（无）"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_023", "RAG retrieval phrases: ") + ((list4.Count > 0) ? string.Join(" | ", list4) : KnowledgePromptTexts.Get("None", "(none)")));
 			List<string> list2 = new List<string>();
 			try
 			{
@@ -8747,16 +8751,16 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("已有原型句: " + ((list2.Count > 0) ? string.Join(" | ", list2) : "（无）"));
-			stringBuilder.AppendLine("注意：本次生成只允许参考“关键词”和“RAG专用短句”，不要参考提示词内容（Variants）。");
-			stringBuilder.AppendLine("请生成 " + targetCount + " 条“语义原型句”，都必须表达同一意图但换不同说法。");
-			stringBuilder.AppendLine("必须符合：");
-			stringBuilder.AppendLine("1) 每条 8~30 字，中文自然口语；");
-			stringBuilder.AppendLine("2) 禁止包含 ACTION 标签、系统词、解释性文字；");
-			stringBuilder.AppendLine("3) 不要与“已有原型句”重复；");
-			stringBuilder.AppendLine("4) 只输出 JSON 数组字符串，例如 [\"...\",\"...\"]；禁止 Markdown 代码块；");
-			stringBuilder.AppendLine("5) 每条必须完整句，不要半句，不要前后引号，不要末尾逗号。");
-			stringBuilder.AppendLine("6) 语义范围仅围绕关键词展开，不能引入关键词之外的新主题。");
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_024", "Existing prototypes: ") + ((list2.Count > 0) ? string.Join(" | ", list2) : KnowledgePromptTexts.Get("None", "(none)")));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_025", "Use only the keywords and RAG retrieval phrases for this generation. Do not use prompt content (Variants)."));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_026", "Generate ") + targetCount + KnowledgePromptTexts.Get("KN_Prompt_027", " semantic prototype sentences expressing the same intent in different wording."));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_028", "Requirements:"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_029", "1) Each item must be 8\u201330 characters in natural spoken English;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_030", "2) Do not include ACTION tags, system terminology or explanatory text;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_031", "3) Do not duplicate existing prototypes;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_032", "4) Output only a JSON array of strings, such as [\"...\",\"...\"]; do not use Markdown code blocks;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_033", "5) Each item must be a complete sentence, not a fragment; do not add surrounding quotation marks within the value or a trailing comma."));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_034", "6) Stay within the meaning of the keywords; do not introduce unrelated topics."));
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -9002,11 +9006,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			topics = topics.Take(24).ToList();
 		}
-		string text = ((topics.Count > 0) ? topics[0] : "这件事");
+		string text = ((topics.Count > 0) ? topics[0] : KnowledgePromptTexts.Get("KN_Prompt_035", "this matter"));
 		string[] array = new string[12]
 		{
-			"你现在想聊{0}吗", "你是在问{0}的情况吗", "我们继续说{0}这件事", "你想确认{0}的细节吗", "这话题和{0}有关吗", "你提到的核心是{0}吗", "先把{0}说清楚", "你更关心{0}的哪一部分", "我们围绕{0}继续谈", "关于{0}你还想知道什么",
-			"你是想推进{0}这个话题吗", "你希望我解释{0}吗"
+			KnowledgePromptTexts.Get("KN_Prompt_036", "Do you want to discuss {0} now?"), KnowledgePromptTexts.Get("KN_Prompt_037", "Are you asking about the state of {0}?"), KnowledgePromptTexts.Get("KN_Prompt_038", "Let us continue discussing {0}."), KnowledgePromptTexts.Get("KN_Prompt_039", "Do you want to confirm the details of {0}?"), KnowledgePromptTexts.Get("KN_Prompt_040", "Is this topic related to {0}?"), KnowledgePromptTexts.Get("KN_Prompt_041", "Is {0} the main point you mentioned?"), KnowledgePromptTexts.Get("KN_Prompt_042", "Let us clarify {0} first."), KnowledgePromptTexts.Get("KN_Prompt_043", "Which part of {0} matters most to you?"), KnowledgePromptTexts.Get("KN_Prompt_044", "Let us keep talking about {0}."), KnowledgePromptTexts.Get("KN_Prompt_045", "What else would you like to know about {0}?"),
+			KnowledgePromptTexts.Get("KN_Prompt_046", "Do you want to develop the topic of {0}?"), KnowledgePromptTexts.Get("KN_Prompt_047", "Would you like me to explain {0}?")
 		};
 		foreach (string item in topics)
 		{
@@ -9032,9 +9036,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num = 1;
 		while (list.Count < maxCount && num <= 20)
 		{
-			add("我们继续把" + text + "讲具体一些");
-			add("你现在主要在问" + text);
-			add("这次对话的重点是" + text);
+			add(KnowledgePromptTexts.Get("KN_Prompt_048", "Let us discuss ") + text + KnowledgePromptTexts.Get("KN_Prompt_049", " in more detail."));
+			add(KnowledgePromptTexts.Get("KN_Prompt_050", "You are mainly asking about ") + text);
+			add(KnowledgePromptTexts.Get("KN_Prompt_051", "The focus of this conversation is ") + text);
 			num++;
 		}
 		return list;
@@ -9064,12 +9068,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null || string.IsNullOrWhiteSpace(settings.ApiKey))
 		{
-			throw new Exception("API Key 未配置。");
+			throw new Exception("API key is not configured.");
 		}
 		string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
 		if (string.IsNullOrWhiteSpace(effectiveApiUrl))
 		{
-			throw new Exception("API 地址为空。");
+			throw new Exception("API URL is empty.");
 		}
 		int actualMaxTokens = Math.Max(1, Math.Min(Math.Min(RagShortTextGenerationMaxTokens, maxTokens), settings.GetMainApiMaxTokens()));
 		PromptPackage prompt = new PromptPackage(
@@ -9108,7 +9112,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			CancellationToken.None).GetAwaiter().GetResult();
 		if (generated == null || generated.Status != LlmResultStatus.Succeeded || string.IsNullOrWhiteSpace(generated.RawText))
 		{
-			throw new Exception("RAG API 请求失败：" + (generated?.ErrorCode ?? "empty_result"));
+			throw new Exception("RAG API request failed: " + (generated?.ErrorCode ?? "empty_result"));
 		}
 		return generated.RawText.Trim();
 	}
@@ -10116,7 +10120,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text2 = "";
 			try
 			{
-				text2 = (item.IsLord ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleLord", "Lord") : (item.IsNotable ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleNotable", "Notable") : ((!item.IsWanderer) ? item.Occupation.ToString() : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleWanderer", "Wanderer"))));
+				text2 = (item.IsLord ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleLord", "Lord") : (item.IsNotable ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleNotable", "Notable") : ((!item.IsWanderer) ? KnowledgeUiTexts.Occupation(item.Occupation.ToString()) : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleWanderer", "Wanderer"))));
 			}
 			catch
 			{
@@ -10655,7 +10659,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoHero", "No selectable heroes found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Hero")), ("QUERY", text))));
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoHero", "No selectable heroes found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Hero", "Hero")), ("QUERY", text))));
 			onCancel();
 			return;
 		}
@@ -10668,7 +10672,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * pageSize;
 		List<Hero> list2 = list.Skip(num2).Take(pageSize).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Hero"))), null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Hero", "Hero"))), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
 			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
@@ -10704,7 +10708,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (text6)
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Hero"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Hero")), ("ID", "HeroId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Hero", "Hero"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Hero", "Hero")), ("ID", "HeroId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenHeroPickerSinglePaged(onPickTargetId, onCancel, 0, input);
 					}, delegate
@@ -10799,7 +10803,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoClan", "No selectable clans found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Clan")), ("QUERY", text))));
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoClan", "No selectable clans found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Clan", "Clan")), ("QUERY", text))));
 			onCancel();
 			return;
 		}
@@ -10812,7 +10816,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * pageSize;
 		List<Clan> list2 = list.Skip(num2).Take(pageSize).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Clan"))), null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Clan", "Clan"))), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
 			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
@@ -10849,7 +10853,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (text7)
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Clan"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Clan")), ("ID", "ClanId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Clan", "Clan"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Clan", "Clan")), ("ID", "ClanId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenClanPickerSinglePaged(onPickTargetId, onCancel, 0, input);
 					}, delegate
@@ -11474,6 +11478,22 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			onReturn();
 		});
 		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private static string BuildWhenPromptLabel(LoreWhen when)
+	{
+		if (when == null) return KnowledgePromptTexts.Get("WhenGeneral", "General");
+		List<string> categories = new List<string>();
+		if (when.Cultures != null && when.Cultures.Count > 0) categories.Add(KnowledgePromptTexts.Get("WhenCulture", "Culture"));
+		if (when.KingdomIds != null && when.KingdomIds.Count > 0) categories.Add(KnowledgePromptTexts.Get("WhenKingdom", "Faction"));
+		if (when.SettlementIds != null && when.SettlementIds.Count > 0) categories.Add(KnowledgePromptTexts.Get("WhenSettlement", "Settlement"));
+		if (when.Roles != null && when.Roles.Count > 0) categories.Add(KnowledgePromptTexts.Get("WhenRole", "Identity"));
+		if ((when.HeroIds != null && when.HeroIds.Count > 0) || (when.IdentityIds != null && when.IdentityIds.Count > 0)) categories.Add(KnowledgePromptTexts.Get("WhenSpecificIdentity", "Specific identity"));
+		if (when.IsFemale.HasValue) categories.Add(KnowledgePromptTexts.Get("WhenGender", "Gender"));
+		if (when.IsClanLeader.HasValue) categories.Add(KnowledgePromptTexts.Get("WhenClanLeader", "Clan leader"));
+		if (when.SkillMin != null && when.SkillMin.Count > 0) categories.Add(KnowledgePromptTexts.Get("WhenSkill", "Skill"));
+		return categories.Count == 0 ? KnowledgePromptTexts.Get("WhenGeneral", "General")
+			: KnowledgePromptTexts.Format("WhenSpecific", "Specific ({CATEGORIES})", ("CATEGORIES", string.Join("+", categories)));
 	}
 
 	private static string BuildWhenLabel(LoreWhen when)

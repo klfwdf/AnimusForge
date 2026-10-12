@@ -16,6 +16,11 @@ namespace AnimusForge.SceneActions.Core
             return Cache.Lists[key];
         }
 
+        internal static string Text(string key)
+        {
+            return Cache.Lists[key][0];
+        }
+
         private static class Cache
         {
             internal static readonly Dictionary<string, string[]> Lists = Load();

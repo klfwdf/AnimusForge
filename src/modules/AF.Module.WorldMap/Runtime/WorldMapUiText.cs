@@ -1,4 +1,6 @@
-using System;
+﻿using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using TaleWorlds.Localization;
 
 namespace AnimusForge;
@@ -9,17 +11,17 @@ namespace AnimusForge;
 /// </summary>
 internal static class WorldMapUiText
 {
+    private static readonly Regex LiteralValues = new Regex(@"AFWORLDMAPLITERAL([0-9]+)END", RegexOptions.CultureInvariant);
 	private static string Text(string id, string fallback, params (string Name, object Value)[] variables)
 	{
 		TextObject text = new TextObject("{=" + id + "}" + fallback);
 		if (variables != null)
 		{
-			foreach ((string name, object value) in variables)
-			{
-				text.SetTextVariable(name, value?.ToString() ?? "");
-			}
+            for (int i = 0; i < variables.Length; i++)
+                text.SetTextVariable(variables[i].Name, "AFWORLDMAPLITERAL" + i.ToString(CultureInfo.InvariantCulture) + "END");
 		}
-		return text.ToString();
+        return LiteralValues.Replace(text.ToString(), match =>
+            variables[int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture)].Value?.ToString() ?? "");
 	}
 
 	public static string GoToSettlement(string actor, string settlement, int days, bool holdUntilSpecified)

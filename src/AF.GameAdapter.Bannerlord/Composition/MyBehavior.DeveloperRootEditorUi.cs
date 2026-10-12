@@ -205,10 +205,10 @@ public partial class MyBehavior
 	private static string JoinDevActionIds(List<string> ids)
 		=> NpcActionEditorProjection.JoinDevActionIds(ids);
 
-	private static void ShowDevLargeTextOrInquiry(string title, string subtitle, string body, Action onClose, string closeText = "返回")
+	private static void ShowDevLargeTextOrInquiry(string title, string subtitle, string body, Action onClose, string closeText = null)
 		=> DeveloperEditorDialogPresenter.ShowDevLargeTextOrInquiry(BuildDevHistoryPreview, title, subtitle, body, onClose, closeText);
 
-	private static void ShowDevLargeSelectionOrInquiry(string title, string subtitle, string body, List<DevLargeSelectionPopup.Option> options, Action<string> onSelect, Action onCancel, string affirmativeText = "进入", string cancelText = "返回")
+	private static void ShowDevLargeSelectionOrInquiry(string title, string subtitle, string body, List<DevLargeSelectionPopup.Option> options, Action<string> onSelect, Action onCancel, string affirmativeText = null, string cancelText = null)
 		=> DeveloperEditorDialogPresenter.ShowDevLargeSelectionOrInquiry(BuildDevHistoryPreview, title, subtitle, body, options, onSelect, onCancel, affirmativeText, cancelText);
 
 	private static void ShowDevLargeConfirmOrInquiry(string title, string subtitle, string body, string confirmText, string cancelText, Action onConfirm, Action onCancel)

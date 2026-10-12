@@ -170,8 +170,8 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			string destinationText = destination == null ? "原家族势力范围" : GetSettlementName(destination);
-			LogFact(guest, GetHeroName(guest) + "所属势力已与玩家开战，因此结束外族客军随队状态并离开玩家主队，返回" + destinationText + "；此前已并入玩家主队的普通兵员和物资不自动撤回。");
+			string destinationText = destination == null ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0324") : GetSettlementName(destination);
+			LogFact(guest, GetHeroName(guest) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0326") + destinationText + WorldMapSourceTexts.Get("raw_literals.wm_lit_0327"));
 			DisplayCommandMessage(WorldMapUiText.ForeignGuestDepart(GetHeroName(guest)), CommandMessageTone.Failure);
 			return true;
 		}
@@ -199,7 +199,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			LogFact(guest, GetHeroName(guest) + "所属势力已与玩家开战，因此其外族客军分队已脱离玩家指挥并回归原家族的原版AI；该分队现有兵员和物资不自动转回玩家主队。");
+			LogFact(guest, GetHeroName(guest) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0328"));
 			DisplayCommandMessage(WorldMapUiText.ForeignGuestDetachmentReleased(GetHeroName(guest)), CommandMessageTone.Failure);
 			return true;
 		}
@@ -431,7 +431,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					continue;
 				}
 				bool won = mapEvent.WinningSide == actorSide;
-				string detail = won ? (GetStoredTargetName(state, command) + "的部队被击败。") : (GetStoredActorName(state) + "的部队被击退。");
+				string detail = won ? (GetStoredTargetName(state, command) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0329")) : (GetStoredActorName(state) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0330"));
 				detail += BuildMapEventCasualtySummary(mapEvent, actorSide, targetSide);
 				TryCompleteCurrentAttackResult(state, won ? CommandResultOutcome.Success : CommandResultOutcome.Failure, detail, won ? "map_event_attack_success" : "map_event_attack_failure");
 			}

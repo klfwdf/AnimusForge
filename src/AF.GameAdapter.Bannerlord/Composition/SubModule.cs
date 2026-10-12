@@ -41,6 +41,7 @@ public class SubModule : MBSubModuleBase
 	protected override void OnSubModuleLoad()
 	{
 		base.OnSubModuleLoad();
+		McmSettingsStorage.EnsureReady();
 		if (FeatureBridgeRuntime.Initialize(out string featureBridgeReason))
 		{
 			Logger.LogTrace("SubModule", ">>> Feature bridge catalog initialized: " + featureBridgeReason);

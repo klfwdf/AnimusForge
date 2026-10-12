@@ -159,9 +159,9 @@ internal static class CivilWarWorld
 		catch (Exception ex) { Logger.Log("KingdomCivilWar", "[WARN] relation change failed: " + ex.Message); }
 	}
 
-	internal static string ClanName(Clan clan) => clan?.Name?.ToString() ?? "某家族";
+	internal static string ClanName(Clan clan) => clan?.Name?.ToString() ?? KingdomCivilWarTexts.Raw("KW_Raw_074");
 
-	internal static string KingdomName(Kingdom kingdom) => kingdom?.Name?.ToString() ?? "某王国";
+	internal static string KingdomName(Kingdom kingdom) => kingdom?.Name?.ToString() ?? KingdomCivilWarTexts.Raw("KW_Raw_075");
 
 	internal static string FindClanOwnerKingdom(string settlementId)
 	{

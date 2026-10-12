@@ -30,22 +30,22 @@ public static class WorldDiplomacyCanonicalHistoryRules
 
     public static string RenderCanonicalHistoryBlock(
         WorldDiplomacyCanonicalHistoryState history,
-        long cutoff)
+        long cutoff, Func<string, string, string> localize = null)
 {
 StringBuilder sb = new StringBuilder();
-    sb.AppendLine("【全局长期外交历史】");
-    sb.AppendLine("本档案对所有王国可见；动态当前状态与本档案冲突时，以动态当前状态为准。提议或宣言不等于已执行结果，只有 verified=true 的 diplomatic_result 表示游戏机制已确认改变现实状态。");
-    string snapshotPayload = WorldDiplomacyCanonicalRenderRules.RenderCanonicalSnapshotPayload(history.Snapshot);
+    sb.AppendLine(WorldDiplomacyPromptContractRules.ContractText(localize, "HistoryPrompt_000", "[Global long-term diplomatic history]"));
+    sb.AppendLine(WorldDiplomacyPromptContractRules.ContractText(localize, "HistoryPrompt_001", "This archive is visible to all kingdoms. If current dynamic state conflicts with it, current dynamic state takes precedence. Proposals and declarations are not executed results; only a diplomatic_result with verified=true confirms that game mechanics changed reality."));
+    string snapshotPayload = WorldDiplomacyCanonicalRenderRules.RenderCanonicalSnapshotPayload(history.Snapshot, localize);
     if (!string.IsNullOrWhiteSpace(snapshotPayload) && history.Snapshot.CoveredThroughSequence <= cutoff)
     {
-        sb.AppendLine("【已压缩历史；覆盖至seq=" + history.Snapshot.CoveredThroughSequence.ToString(CultureInfo.InvariantCulture) + "】");
+        sb.AppendLine(WorldDiplomacyPromptContractRules.ContractText(localize, "HistoryPrompt_002", "[Compressed history; covered through seq=") + history.Snapshot.CoveredThroughSequence.ToString(CultureInfo.InvariantCulture) + WorldDiplomacyPromptContractRules.ContractText(localize, "HistoryPrompt_003", "]"));
         sb.AppendLine(snapshotPayload);
     }
     foreach (WorldDiplomacyCanonicalHistoryEntry entry in WorldDiplomacyRoundLifecycleRules.SelectDeltaEntriesThrough(history.DeltaEntries, cutoff))
     {
-        sb.AppendLine(WorldDiplomacyCanonicalRenderRules.RenderCanonicalHistoryEntry(entry));
+        sb.AppendLine(WorldDiplomacyCanonicalRenderRules.RenderCanonicalHistoryEntry(entry, localize));
     }
-    if (string.IsNullOrWhiteSpace(snapshotPayload) && !history.DeltaEntries.Any(x => x != null && x.Sequence <= cutoff)) sb.AppendLine("（暂无历史记录）");
+    if (string.IsNullOrWhiteSpace(snapshotPayload) && !history.DeltaEntries.Any(x => x != null && x.Sequence <= cutoff)) sb.AppendLine(WorldDiplomacyPromptContractRules.ContractText(localize, "HistoryPrompt_004", "(No history recorded yet)"));
     return sb.ToString().TrimEnd();
     }
 

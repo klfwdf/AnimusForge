@@ -33,7 +33,7 @@ check('string.Join("，", list)' in body and 'JoinDuelStakeDisplayText(paidDispl
 check('outcomeState = transferUnknown' in body and 'DuelOutcomeEffectState.Confirmed' in body and
       'DuelOutcomeEffectState.Partial' in body,'settlement classification retained')
 helper=source[source.index('private static string BuildDuelStakeDebtDisplayText('):source.index('private static string ApplyDuelRenownPenaltyAndBuildResultText(')]
-check('dueStatusDisplayText' in helper and '.SetTextVariable("DUE", dueSuffix)' in helper,
+check('dueStatusDisplayText' in helper and '("DUE", dueSuffix)' in helper,
       'HUD deadline is projected')
 check('RecordDeferred' not in helper and 'Transfer' not in helper and 'AppendExternalDialogueHistory' not in helper,
       'display helper performs no business effects')

@@ -34,7 +34,7 @@ internal static class WorldDiplomacyPromptComposer
 	{
 		StringBuilder sb = WorldDiplomacyPromptContractRules.CreateSystemPromptBuilder(world.GetCommonDiplomacyContract(round));
 	sb.AppendLine(WorldDiplomacyPromptContractRules.RoundPlanTaskMarker + world.LocalizePrompt("AF_DIP_Prompt_Composer_002", "MODE=ROUND_PLAN in the final message determines the task and output structure."));
-		return sb.ToString().TrimEnd();
+		return PromptComposerTexts.ApplyOutputLanguage(sb.ToString().TrimEnd());
 	}
 
 	internal static string BuildRoundPlanPrompt(IWorldDiplomacyPromptWorld world,
@@ -111,7 +111,7 @@ internal static class WorldDiplomacyPromptComposer
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_020", "Publisher of this document=") + author + "=" + world.KingdomName(author) + world.LocalizePrompt("AF_DIP_Prompt_Composer_021", ", authorizing ruler=") + world.RulerName(author));
 		if (priorityResponseOnly && prioritySource != null)
 		{
-			string priorityActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(prioritySource, author);
+			string priorityActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(prioritySource, author, world.LocalizePrompt);
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_022", "[Priority task: respond to the player kingdom's declaration]"));
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_023", "The following declaration from the player kingdom has reached this court and directly addresses this kingdom. This document must respond to it directly instead of following the original document sequence to discuss other kingdoms: source=")
 			+ prioritySource.DocumentId + world.LocalizePrompt("AF_DIP_Prompt_Composer_024", "|issuing kingdom=") + prioritySource.AuthorKingdomId + world.LocalizePrompt("AF_DIP_Prompt_Composer_025", "|title=") + prioritySource.Title
@@ -372,8 +372,8 @@ internal static class WorldDiplomacyPromptComposer
 		if (isResponse && sourceDocument != null)
 		{
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_085", "The following public diplomatic declaration has been delivered. Respond using a currently legal action for this document."));
-			string sourceActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(sourceDocument, author);
-			string sourcePeaceTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(sourceDocument, author);
+			string sourceActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(sourceDocument, author, world.LocalizePrompt);
+			string sourcePeaceTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(sourceDocument, author, world.LocalizePrompt);
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_086", "Source document ID:") + sourceDocument.DocumentId + world.LocalizePrompt("AF_DIP_Prompt_Composer_087", "; proposing kingdom=") + sourceDocument.AuthorKingdomId
 			+ (string.IsNullOrWhiteSpace(sourceActionFact) ? "" : world.LocalizePrompt("AF_DIP_Prompt_Composer_088", "; actions relevant to this kingdom=") + sourceActionFact));
 		if (!string.IsNullOrWhiteSpace(sourcePeaceTerms)) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_089", "Original peace offer terms=") + sourcePeaceTerms);
@@ -469,7 +469,7 @@ internal static class WorldDiplomacyPromptComposer
                 + world.LocalizePrompt("AF_DIP_Prompt_Composer_109", "|treaty roles=") + treaty?.ReceivingKingdomId + "/" + treaty?.JoiningKingdomId
 				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_025", "|title=") + WorldDiplomacyTextRules.Limit(source?.Title, 80) + world.LocalizePrompt("AF_DIP_Prompt_Composer_111", "|summary=") + WorldDiplomacyTextRules.Limit(source?.Body, 240)
 						+ (isPeaceOffer
-					? world.LocalizePrompt("AF_DIP_Prompt_Composer_112", "|original terms=") + WorldDiplomacyOfferContractRules.FormatPeaceTermsForPrompt(WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offer.SourceActionId))
+					? world.LocalizePrompt("AF_DIP_Prompt_Composer_112", "|original terms=") + WorldDiplomacyOfferContractRules.FormatPeaceTermsForPrompt(WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offer.SourceActionId), world.LocalizePrompt)
 						+ world.LocalizePrompt("AF_DIP_Prompt_Composer_113", "|response=accept unchanged or explicitly reject")
 							: ""));
 				}
@@ -481,8 +481,8 @@ internal static class WorldDiplomacyPromptComposer
 		if (sourceDocument != null)
 		{
 			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_116", "This document responds to:"));
-			string sourceActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(sourceDocument, document.AuthorKingdomId);
-			string sourcePeaceTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(sourceDocument, document.AuthorKingdomId);
+			string sourceActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(sourceDocument, document.AuthorKingdomId, world.LocalizePrompt);
+			string sourcePeaceTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(sourceDocument, document.AuthorKingdomId, world.LocalizePrompt);
 		if (!string.IsNullOrWhiteSpace(sourceActionFact)) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_117", "Actions relevant to this kingdom=") + sourceActionFact);
 		if (!string.IsNullOrWhiteSpace(sourcePeaceTerms)) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_089", "Original peace offer terms=") + sourcePeaceTerms);
 		sb.AppendLine(sourceDocument.AuthorKingdomName + "《" + sourceDocument.Title + "》：" + WorldDiplomacyTextRules.Limit(sourceDocument.Body, 1400));
@@ -498,7 +498,7 @@ internal static class WorldDiplomacyPromptComposer
 		return new JObject
 		{
 			["status"] = "fallback",
-			["title_summary"] = WorldDiplomacyTextRules.BuildFallbackDocumentTitle(document, "statement"),
+			["title_summary"] = WorldDiplomacyTextRules.BuildFallbackDocumentTitle(document, "statement", DiplomacyPromptTexts.Get),
 			["responding_to_offer_document_id"] = "",
 			["responding_to_threat_document_id"] = "",
 			["primary_target_kingdom_id"] = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document?.TargetKingdomId, targetKingdomId),
@@ -510,7 +510,7 @@ internal static class WorldDiplomacyPromptComposer
 			["tone"] = "neutral",
 			["confidence"] = 0.0,
 			["international_reputation_delta"] = 0,
-		["international_reputation_reason"] = "语义分析服务未完成评估，交由本地结构化规则给出非零评价。"
+		["international_reputation_reason"] = DiplomacyMiscPromptTexts.Get("PromptComposer_SemanticEvalFallback", "Semantic analysis service did not complete evaluation; assigned non-zero score by local structured rules.")
 		}.ToString(Formatting.None);
 	}
 
@@ -524,14 +524,14 @@ internal static class WorldDiplomacyPromptComposer
 		int reputation = world.InternationalReputation(authorId);
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_122", "[This kingdom's national prestige, international reputation trends and unresolved threats; internal dynamic facts: do not publish the numbers in the document]"));
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_123", "Current national prestige=") + prestige.ToString(CultureInfo.InvariantCulture)
-			+ "/100：" + WorldDiplomacyReputationRules.DescribeNationalPrestige(prestige) + "）");
+			+ "/100：" + WorldDiplomacyReputationRules.DescribeNationalPrestige(prestige, world.LocalizePrompt) + "）");
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_124", "National prestige measures whether this kingdom follows through on threats and commitments. Low prestige undermines the credibility of threats and dynamically reduces formal vassal clan leaders' relations with the ruler according to the prestige tier. Restored prestige removes this dynamic relation penalty."));
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_125", "Current international reputation=") + reputation.ToString(CultureInfo.InvariantCulture)
-			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_126", "/100 (foreign public assessment tier=") + WorldDiplomacyReputationRules.DescribeInternationalReputation(reputation)
-			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_127", "); current natural trend=") + WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(reputation)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_126", "/100 (foreign public assessment tier=") + WorldDiplomacyReputationRules.DescribeInternationalReputation(reputation, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_127", "); current natural trend=") + WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(reputation, world.LocalizePrompt)
 			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_128", ". Use the exact value, tier and trend to plan how to maintain, repair or spend this strategic capital for core interests. When the actual situation allows it, you may proactively issue substantive declarations to maintain reputation. Do not stay silent, avoid legitimate positions, mechanically switch actions or publish empty rhetoric just for reputation."));
 		List<string> recentReputationReasons = WorldDiplomacyTextRules.GetRecentOwnInternationalReputationReasons(
-				world.Documents(), authorId, world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate);
+				world.Documents(), authorId, world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate, world.LocalizePrompt);
 		if (recentReputationReasons.Count == 0)
 		{
 			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_129", "There are no recent settled international reputation events for this kingdom to review; do not invent reasons for gains or losses."));
@@ -694,12 +694,12 @@ internal static class WorldDiplomacyPromptComposer
 		int targetPrestige = world.NationalPrestige(targetId);
 		int targetReputation = world.InternationalReputation(targetId);
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_178", "Target kingdom's national prestige=") + targetPrestige.ToString(CultureInfo.InvariantCulture)
-			+ "/100：" + WorldDiplomacyReputationRules.DescribeNationalPrestige(targetPrestige) + world.LocalizePrompt("AF_DIP_Prompt_Composer_179", "); foreign public international reputation tier for this kingdom=")
-			+ WorldDiplomacyReputationRules.DescribeInternationalReputation(targetReputation)
+			+ "/100：" + WorldDiplomacyReputationRules.DescribeNationalPrestige(targetPrestige, world.LocalizePrompt) + world.LocalizePrompt("AF_DIP_Prompt_Composer_179", "); foreign public international reputation tier for this kingdom=")
+			+ WorldDiplomacyReputationRules.DescribeInternationalReputation(targetReputation, world.LocalizePrompt)
 			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_180", ". Low national prestige makes its threats less credible, but may also drive it to riskier follow-through to avoid losing more prestige. International reputation informs the credibility of commitments, terms of cooperation and diplomatic risk; it does not imply friendliness, a preference for peace or immunity from war declarations."));
 		string reputationConflictOpportunity = WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(
 				targetReputation, legalActions, world.Documents(), targetId,
-				world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate);
+				world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate, world.LocalizePrompt);
 		if (!string.IsNullOrWhiteSpace(reputationConflictOpportunity))
 		{
 			sb.AppendLine(reputationConflictOpportunity);
@@ -745,7 +745,7 @@ internal static class WorldDiplomacyPromptComposer
 		if (string.IsNullOrWhiteSpace(authorId)) return;
 		WorldDiplomacyRoundLifecycleRules.AppendRelayResponseSourceContext(
 			sb, round, authorId, responseSource, requiredSourceDocumentId,
-			world.Documents());
+			world.Documents(), world.LocalizePrompt);
 	}
 	private static string BuildCompactRoundPlanCandidateLine(
 		IWorldDiplomacyPromptWorld world,
@@ -761,7 +761,7 @@ internal static class WorldDiplomacyPromptComposer
 		if (!string.IsNullOrWhiteSpace(captivityHint)) line += "\n  " + captivityHint;
 		string reputationConflictOpportunity = string.IsNullOrWhiteSpace(candidateId) ? "" : WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(
 				world.InternationalReputation(candidateId), actions, world.Documents(), candidateId,
-				world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate);
+				world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate, world.LocalizePrompt);
 		return string.IsNullOrWhiteSpace(reputationConflictOpportunity)
 			? line
 			: line + "\n  " + reputationConflictOpportunity;
@@ -812,7 +812,7 @@ internal static class WorldDiplomacyPromptComposer
 			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_184", "; geography=")).Append(border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border, world.LocalizePrompt) : world.LocalizePrompt("AF_DIP_Prompt_Composer_185", "No shared border"))
 			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_186", "; overall military strength=")).Append(WorldDiplomacyTextRules.DescribeStrengthBalance(strengthSituation.AuthorStrength, strengthSituation.TargetStrength, world.LocalizePrompt))
 			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_206", "; national prestige=")).Append(world.NationalPrestige(candidateId).ToString(CultureInfo.InvariantCulture))
-			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_207", "; foreign public international reputation tier=")).Append(WorldDiplomacyReputationRules.DescribeInternationalReputation(candidateReputation));
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_207", "; foreign public international reputation tier=")).Append(WorldDiplomacyReputationRules.DescribeInternationalReputation(candidateReputation, world.LocalizePrompt));
 		if (!string.IsNullOrWhiteSpace(policy)) sb.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_208", "; policy leanings=")).Append(policy);
 		return sb.ToString();
 	}

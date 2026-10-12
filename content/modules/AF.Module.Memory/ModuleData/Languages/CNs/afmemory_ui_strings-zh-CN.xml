@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base type="string">
-  <tags><tag language="简体中文" /></tags>
+  <tags>
+    <tag language="简体中文" />
+  </tags>
   <strings>
+    <string id="AF_MEMORY_UI_JsonEmptyFieldGroup" text="（无）" />
+    <string id="AF_MEMORY_UI_JsonFieldGroups" text="{PRIMARY} + {SECONDARY}" />
     <string id="AF_MEMORY_UI_AddAfef" text="新增AFEF行" />
     <string id="AF_MEMORY_UI_AddAfefHint" text="新增一条 AFEF 机制行，不参与 LLM 对话压缩正文。" />
     <string id="AF_MEMORY_UI_AddAfefShortHint" text="新增一条 AFEF 机制行。" />
@@ -292,5 +296,25 @@
     <string id="AF_MEMORY_UI_TagDivorce" text="离婚" />
     <string id="AF_MEMORY_UI_TagAgenda" text="王国议程承诺" />
     <string id="AF_MEMORY_UI_TagSiege" text="攻城处置：{ACTION}" />
+    <string id="AF_MEMORY_UI_ExportInvalid" text="压缩记忆文件无效，请选择从“压缩记忆”导出的 JSON。" />
+    <string id="AF_MEMORY_UI_ExportPersona" text="这是个性/背景文件，不是压缩记忆。请在“单个 HeroNPC → 个性/背景导入”中读取；已有记忆未修改。" />
+    <string id="AF_MEMORY_UI_ExportNoFields" text="文件不含压缩记忆字段，请选择从“压缩记忆”导出的 JSON；已有记忆未修改。" />
+    <string id="AF_MEMORY_UI_ExportFieldType" text="压缩记忆字段“{FIELD}”类型错误，请选择有效的压缩记忆导出文件。" />
+    <string id="AF_MEMORY_UI_DeleteUnavailable" text="这条记录不能删除。" />
+    <string id="AF_MEMORY_UI_DeleteChanged" text="记录已变化，请重新打开历史后再删除。" />
+    <string id="AF_MEMORY_UI_DeleteDone" text="已删除该条记录。" />
+    <string id="AF_MEMORY_UI_DeleteDoneCompressed" text="已删除该条记录（该日记忆已压缩，压缩内容不受影响）。" />
+    <string id="AF_MEMORY_UI_HistoryEditUnavailable" text="这条记录不能编辑。" />
+    <string id="AF_MEMORY_UI_HistoryEditMainThread" text="只能在游戏主线程编辑记录。" />
+    <string id="AF_MEMORY_UI_HistoryStoreUnavailable" text="当前没有可用的记录存储。" />
+    <string id="AF_MEMORY_UI_HistoryEditFailed" text="编辑失败，记录未改动。" />
+    <string id="AF_MEMORY_UI_HistoryEditEmpty" text="内容不能为空；如需移除请使用删除。" />
+    <string id="AF_MEMORY_UI_HistoryEditChanged" text="记录已变化，请重新打开历史后再编辑。" />
+    <string id="AF_MEMORY_UI_HistoryEditFormat" text="这条记录的格式无法安全编辑。" />
+    <string id="AF_MEMORY_UI_HistoryEditUnchanged" text="内容未改变。" />
+    <string id="AF_MEMORY_UI_HistoryEditDone" text="已修改该条记录。" />
+    <string id="AF_MEMORY_UI_HistoryEditDoneCompressed" text="已修改该条记录（该日记忆已压缩，压缩内容不受影响）。" />
+    <string id="AF_MEMORY_UI_HistoryDeleteMainThread" text="只能在游戏主线程删除记录。" />
+    <string id="AF_MEMORY_UI_HistoryDeleteFailed" text="删除失败，记录未改动。" />
   </strings>
 </base>

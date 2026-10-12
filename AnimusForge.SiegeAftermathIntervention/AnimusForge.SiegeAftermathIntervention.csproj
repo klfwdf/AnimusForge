@@ -5,4 +5,10 @@
     <Nullable>disable</Nullable>
     <LangVersion>10.0</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.zh-CN.json" LogicalName="AnimusForge.Defaults.GcczTownPrompt.zh-CN.json" WithCulture="false" />
+    <EmbeddedResource Include="../content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.en.json" LogicalName="AnimusForge.Defaults.GcczTownPrompt.en.json" WithCulture="false" />
+    <EmbeddedResource Include="../content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/CastleAftermathCompatibility.json" LogicalName="AnimusForge.Defaults.CastleAftermathCompatibility.json" />
+    <EmbeddedResource Include="../content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/SiegeAftermathCompatibility.json" LogicalName="AnimusForge.Defaults.SiegeAftermathCompatibility.json" />
+  </ItemGroup>
 </Project>

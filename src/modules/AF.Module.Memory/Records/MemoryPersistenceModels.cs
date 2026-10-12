@@ -819,7 +819,7 @@ internal static class MemoryRecordRules
 		{
 			return "";
 		}
-		text = Regex.Replace(text, "^\\s*[\\[【(（]?[\\d\\-/:：年月日\\s时点春夏秋冬第]+[\\]】)）]?\\s*", "", RegexOptions.CultureInvariant).Trim();
+		text = Regex.Replace(text, MemoryTextResources.Raw("MEM_Raw_045"), "", RegexOptions.CultureInvariant).Trim();
 		text = Regex.Replace(text, "\\s+", " ").Trim();
 		if (text.Length > 36)
 		{

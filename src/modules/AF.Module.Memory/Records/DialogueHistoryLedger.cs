@@ -14,9 +14,9 @@ internal static class DialogueHistoryLedger
 {
 	internal const int MaxLines = 260;
 	internal const string SceneSessionMarkerPrefix = "[AF_SCENE_SESSION:";
-	internal const string AfefPlayerPrefix = "[AFEF玩家行为补充]";
-	internal const string AfefNpcPrefix = "[AFEF NPC行为补充]";
-	internal const string SceneShoutPrefix = "[场景喊话]";
+	internal static readonly string AfefPlayerPrefix = MemoryTextResources.Raw("MEM_Raw_018");
+	internal static readonly string AfefNpcPrefix = MemoryTextResources.Raw("MEM_Raw_006");
+	internal static readonly string SceneShoutPrefix = MemoryTextResources.Raw("MEM_Raw_036");
 
 	internal static string TagSceneSession(string line, int sceneSessionId)
 	{
@@ -86,11 +86,11 @@ internal static class DialogueHistoryLedger
 		{
 			return true;
 		}
-		if (body.StartsWith("今天稍早时候刚与", StringComparison.Ordinal) && body.EndsWith("见过面。", StringComparison.Ordinal))
+		if (body.StartsWith(MemoryTextResources.Raw("MEM_Raw_037"), StringComparison.Ordinal) && body.EndsWith(MemoryTextResources.Raw("MEM_Raw_038"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		return body.StartsWith("距离你上次与", StringComparison.Ordinal) && body.Contains("见面，已有") && body.EndsWith("天了。", StringComparison.Ordinal);
+		return body.StartsWith(MemoryTextResources.Raw("MEM_Raw_039"), StringComparison.Ordinal) && body.Contains(MemoryTextResources.Raw("MEM_Raw_040")) && body.EndsWith(MemoryTextResources.Raw("MEM_Raw_041"), StringComparison.Ordinal);
 	}
 
 	/// <summary>

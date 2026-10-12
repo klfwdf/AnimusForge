@@ -20,7 +20,7 @@ internal sealed class MemoryEntityIdentityBannerlordAdapter
 	internal static string GetHeroDisplayName(Hero hero)
 	{
 		string text = (hero?.Name?.ToString() ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "某位领主" : text;
+		return string.IsNullOrWhiteSpace(text) ? AdapterSceneTexts.Raw("HeroFallback") : text;
 	}
 
 	internal static string GetHeroId(Hero hero)
@@ -31,10 +31,13 @@ internal sealed class MemoryEntityIdentityBannerlordAdapter
 	internal static string GetClanDisplayName(Clan clan)
 	{
 		string text = (clan?.Name?.ToString() ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "某个" : text;
+		return string.IsNullOrWhiteSpace(text) ? AdapterSceneTexts.Raw("ClanFallback") : text;
 	}
 
-	internal static string GetKingdomDisplayName(Kingdom kingdom, string fallback = "某个王国")
+	internal static string GetKingdomDisplayName(Kingdom kingdom)
+		=> GetKingdomDisplayName(kingdom, AdapterSceneTexts.Raw("KingdomFallback"));
+
+	internal static string GetKingdomDisplayName(Kingdom kingdom, string fallback)
 	{
 		string text = (kingdom?.Name?.ToString() ?? "").Trim();
 		return string.IsNullOrWhiteSpace(text) ? fallback : text;
@@ -45,11 +48,11 @@ internal sealed class MemoryEntityIdentityBannerlordAdapter
 		string text = (settlement?.Name?.ToString() ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return "某处定居点";
+			return AdapterSceneTexts.Raw("SettlementFallback");
 		}
-		if (settlement?.IsTown == true && !text.EndsWith("市", StringComparison.Ordinal))
+		if (settlement?.IsTown == true && !text.EndsWith(AdapterSceneTexts.Raw("SettlementTownSuffix"), StringComparison.Ordinal))
 		{
-			return text + "市";
+			return text + AdapterSceneTexts.Raw("SettlementTownSuffix");
 		}
 		return text;
 	}
@@ -63,7 +66,49 @@ internal sealed class MemoryEntityIdentityBannerlordAdapter
 		}
 		Hero hero = army?.ArmyOwner ?? army?.LeaderParty?.LeaderHero;
 		string text2 = hero?.Name?.ToString();
-		return string.IsNullOrWhiteSpace(text2) ? "一支军团" : (text2.Trim() + "的军团");
+		return string.IsNullOrWhiteSpace(text2) ? AdapterSceneTexts.Raw("ArmyFallback") : AdapterSceneTexts.RawFormat("ArmyName", ("HERO", text2.Trim()));
+	}
+
+	internal static string GetHeroDisplayNameForPrompt(Hero hero)
+	{
+		string name = (hero?.Name?.ToString() ?? "").Trim();
+		return name.Length == 0 ? AdapterSceneTexts.Get("Identity_Hero_Fallback", "an unnamed lord") : name;
+	}
+
+	internal static string GetClanDisplayNameForPrompt(Clan clan)
+	{
+		string name = (clan?.Name?.ToString() ?? "").Trim();
+		return name.Length == 0 ? AdapterSceneTexts.Get("Identity_Clan_Fallback", "an unspecified clan") : name;
+	}
+
+	internal static string GetKingdomDisplayNameForPrompt(Kingdom kingdom)
+	{
+		string name = (kingdom?.Name?.ToString() ?? "").Trim();
+		return name.Length == 0 ? AdapterSceneTexts.Get("Identity_Kingdom_Fallback", "an unspecified kingdom") : name;
+	}
+
+	internal static string GetFactionDisplayNameForPrompt(IFaction faction)
+	{
+		string name = (faction?.Name?.ToString() ?? "").Trim();
+		return name.Length == 0 ? AdapterSceneTexts.Get("Identity_Faction_Fallback", "an unspecified faction") : name;
+	}
+
+	internal static string GetSettlementDisplayNameForPrompt(Settlement settlement)
+	{
+		string name = (settlement?.Name?.ToString() ?? "").Trim();
+		if (name.Length == 0) return AdapterSceneTexts.Get("Identity_Settlement_Fallback", "an unspecified settlement");
+		string suffix = AdapterSceneTexts.Get("Identity_Settlement_Suffix", "");
+		return settlement.IsTown && !name.EndsWith(suffix, StringComparison.Ordinal) ? name + suffix : name;
+	}
+
+	internal static string GetArmyDisplayNameForPrompt(Army army)
+	{
+		string name = army?.Name?.ToString();
+		if (!string.IsNullOrWhiteSpace(name)) return name.Trim();
+		Hero leader = army?.ArmyOwner ?? army?.LeaderParty?.LeaderHero;
+		string leaderName = leader?.Name?.ToString();
+		return string.IsNullOrWhiteSpace(leaderName) ? AdapterSceneTexts.Get("Identity_Army_Fallback", "an army")
+			: AdapterSceneTexts.Format("Identity_Army_Format", "{HERO}'s army", ("HERO", leaderName.Trim()));
 	}
 
 internal static string GetClanId(Clan clan)
@@ -90,7 +135,10 @@ internal static string GetSettlementId(Settlement settlement)
 		return (settlement?.StringId ?? "").Trim();
 	}
 
-internal static string GetFactionDisplayName(IFaction faction, string fallback = "某势力")
+internal static string GetFactionDisplayName(IFaction faction)
+	=> GetFactionDisplayName(faction, AdapterSceneTexts.Raw("FactionFallback"));
+
+internal static string GetFactionDisplayName(IFaction faction, string fallback)
 	{
 		string text = faction?.Name?.ToString();
 		return string.IsNullOrWhiteSpace(text) ? fallback : text.Trim();
@@ -98,7 +146,7 @@ internal static string GetFactionDisplayName(IFaction faction, string fallback =
 
 internal static string GetHeroFactionDisplayName(Hero hero, IFaction fallbackFaction = null)
 	{
-		return GetFactionDisplayName(hero?.MapFaction ?? fallbackFaction, "某势力");
+		return GetFactionDisplayName(hero?.MapFaction ?? fallbackFaction, AdapterSceneTexts.Raw("FactionFallback"));
 	}
 
 internal static Hero FindHeroById(string heroId)
@@ -270,11 +318,11 @@ internal static string GetCurrentGameDateTextSafe()
 		try
 		{
 			string text = CampaignTime.Now.ToString();
-			return string.IsNullOrWhiteSpace(text) ? ("第 " + GetCurrentGameDayIndexSafe() + " 日") : text.Trim();
+			return string.IsNullOrWhiteSpace(text) ? (AdapterSceneTexts.Raw("DatePrefix") + GetCurrentGameDayIndexSafe() + AdapterSceneTexts.Raw("DateSuffix")) : text.Trim();
 		}
 		catch
 		{
-			return "第 " + GetCurrentGameDayIndexSafe() + " 日";
+			return AdapterSceneTexts.Raw("DatePrefix") + GetCurrentGameDayIndexSafe() + AdapterSceneTexts.Raw("DateSuffix");
 		}
 	}
 
@@ -481,16 +529,16 @@ internal static string BuildResidentRecentActionsPrompt(MemoryBusinessStateOwner
 			? PlayerNotorietyBehavior.BuildPlayerRecentRuntimeInstructionForExternal(observerHero)
 			: PlayerNotorietyBehavior.BuildPlayerRecentRuntimeInstructionForExternal(targetKey(null, targetCharacter, targetAgentIndex), targetCharacter?.Culture?.StringId);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【NPC近期行动（近10天，常驻）】");
+		stringBuilder.AppendLine(AdapterSceneTexts.Get("IdentityLive_000"));
 		if (string.IsNullOrWhiteSpace(npcRecent))
 		{
-			stringBuilder.AppendLine("当前没有可确认记录；不得编造。");
+			stringBuilder.AppendLine(AdapterSceneTexts.Get("IdentityLive_001"));
 		}
 		else
 		{
 			stringBuilder.AppendLine(npcRecent.Trim());
 		}
-		stringBuilder.Append("边界：这里只表示近10天事实，不代表完整履历；未列出的近期行动不得编造。");
+		stringBuilder.Append(AdapterSceneTexts.Get("IdentityLive_002"));
 		if (!string.IsNullOrWhiteSpace(playerRecent))
 		{
 			stringBuilder.AppendLine().AppendLine().Append(playerRecent.Trim());
@@ -532,18 +580,19 @@ internal static string BuildWeeklyReportMaterialLine(EventMaterialReference mate
 		string text = (material.MaterialType ?? "").Trim().ToLowerInvariant();
 		if (text == "world_opening_summary")
 		{
-			return PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal("世界开局概要：" + WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(material.SnapshotText));
+			return PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(AdapterSceneTexts.Get("IdentityLive_003") + WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(material.SnapshotText));
 		}
 		if (text == "kingdom_opening_summary")
 		{
-			return PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(ResolveKingdomDisplay(material.KingdomId) + "的开局概要：" + WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(material.SnapshotText));
+			return PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(ResolveKingdomDisplay(material.KingdomId) + AdapterSceneTexts.Get("IdentityLive_004") + WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(material.SnapshotText));
 		}
-		string text2 = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(material.SnapshotText));
+		string projected = CampaignSystemFactProjection.ProjectWeeklyMaterial(text, material.ActionStableKey, material.SnapshotText);
+        string text2 = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(projected));
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
 			return text2;
 		}
-		return PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(material.Label));
+		return PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(CampaignSystemFactProjection.ProjectWeeklyMaterial(text, material.ActionStableKey, material.Label)));
 	}
 
 internal static string AnnotateWeeklyReportRulerInMaterialText(string materialText, WeeklyEventMaterialPreviewGroup group)
@@ -564,7 +613,7 @@ internal static string AnnotateWeeklyReportRulerInMaterialText(string materialTe
 		Kingdom kingdom = FindKingdomById(group?.KingdomId);
 		Hero ruler = kingdom?.Leader ?? kingdom?.RulingClan?.Leader;
 		string rulerName = GetHeroDisplayName(ruler);
-		if (ruler == null || string.IsNullOrWhiteSpace(rulerName) || string.Equals(rulerName, "某位领主", StringComparison.OrdinalIgnoreCase) || rulerName.Trim().Length < 2)
+		if (ruler == null || string.IsNullOrWhiteSpace(rulerName) || string.Equals(rulerName, AdapterSceneTexts.Raw("HeroFallback"), StringComparison.OrdinalIgnoreCase) || rulerName.Trim().Length < 2)
 		{
 			return text;
 		}
@@ -612,11 +661,11 @@ internal static bool ShouldIncludeKingdomPreviewAction(Hero hero, NpcActionEntry
 			return true;
 		}
 		string text2 = (entry.StableKey ?? "").Trim();
-		if (text2.IndexOf("raidsettlement", StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf("袭扰", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text2.IndexOf("raidsettlement", StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf(AdapterSceneTexts.Raw("ActionToken_Raid"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return true;
 		}
-		if (text2.IndexOf("defendsettlement", StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf("守备", StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf("保卫", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text2.IndexOf("defendsettlement", StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf(AdapterSceneTexts.Raw("ActionToken_Defend"), StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf(AdapterSceneTexts.Raw("MemoryIdentityRaw_007"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return true;
 		}
@@ -677,7 +726,7 @@ internal static bool ShouldSuppressWeeklyPreviewAction(NpcActionEntry entry)
 			return true;
 		}
 		string text = (entry.Text ?? "").Trim();
-		return text.IndexOf("击败了", StringComparison.OrdinalIgnoreCase) >= 0 && CampaignBattleRecordCaptureAdapter.ContainsRoutineBanditText(text);
+		return text.IndexOf(AdapterSceneTexts.Raw("ActionToken_Defeat"), StringComparison.OrdinalIgnoreCase) >= 0 && CampaignBattleRecordCaptureAdapter.ContainsRoutineBanditText(text);
 	}
 
 internal static bool IsBanditClanId(string clanId)
@@ -717,7 +766,7 @@ internal static void TryAddKingdomCurrentRulerMaterial(List<EventMaterialReferen
 		}
 		Hero ruler = kingdom.Leader ?? kingdom.RulingClan?.Leader;
 		string rulerName = GetHeroDisplayName(ruler);
-		if (ruler == null || string.IsNullOrWhiteSpace(rulerName) || string.Equals(rulerName, "某位领主", StringComparison.OrdinalIgnoreCase))
+		if (ruler == null || string.IsNullOrWhiteSpace(rulerName) || string.Equals(rulerName, AdapterSceneTexts.Raw("HeroFallback"), StringComparison.OrdinalIgnoreCase))
 		{
 			return;
 		}
@@ -725,17 +774,17 @@ internal static void TryAddKingdomCurrentRulerMaterial(List<EventMaterialReferen
 		string kingdomName = GetKingdomDisplayName(kingdom, ResolveKingdomDisplay(kingdomId));
 		string rulingClanName = GetClanDisplayName(rulingClan);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("当前王国：").Append(kingdomName).Append("。");
-		stringBuilder.Append("当前统治者：").Append(rulerName.Trim()).Append("。");
-		if (rulingClan != null && !string.IsNullOrWhiteSpace(rulingClanName) && !string.Equals(rulingClanName, "某个", StringComparison.OrdinalIgnoreCase))
+		stringBuilder.Append(AdapterSceneTexts.Format("Identity_Ruler_Kingdom", "Current kingdom: {KINGDOM}.", ("KINGDOM", kingdomName)));
+		stringBuilder.Append(AdapterSceneTexts.Format("Identity_Ruler_Name", "Current ruler: {RULER}.", ("RULER", rulerName.Trim())));
+		if (rulingClan != null && !string.IsNullOrWhiteSpace(rulingClanName) && !string.Equals(rulingClanName, AdapterSceneTexts.Raw("ClanFallback"), StringComparison.OrdinalIgnoreCase))
 		{
-			stringBuilder.Append("执政家族：").Append(rulingClanName.Trim()).Append("。");
+			stringBuilder.Append(AdapterSceneTexts.Format("Identity_Ruler_Clan", "Ruling clan: {CLAN}.", ("CLAN", rulingClanName.Trim())));
 		}
-		stringBuilder.Append("事实约束：这是本期王国周报目标的现任统治者上下文，不代表本周发生过继位、政变、叛乱或王位更替；除非其他素材明确写明，否则不要把它写成新事件。");
+		stringBuilder.Append(AdapterSceneTexts.Get("Identity_Ruler_Constraint"));
 		EventMaterialReference material = new EventMaterialReference
 		{
 			MaterialType = "kingdom_current_ruler",
-			Label = kingdomName + " 当前统治者",
+			Label = ConversationUiLocalization.Text("AF_ADSC_Identity_RulerLabel", "{KINGDOM} current ruler", ("KINGDOM", kingdomName)),
 			SnapshotText = stringBuilder.ToString(),
 			HeroId = GetHeroId(ruler),
 			KingdomId = kingdomId,
@@ -773,13 +822,13 @@ internal static Clan FindClanById(string clanId)
 
 internal static WeeklyEventMaterialPreviewGroup CreateKingdomWeeklyEventMaterialPreviewGroup(WeeklyEventRecordStateOwner records, Kingdom kingdom)
 	{
-		string text = kingdom?.Name?.ToString() ?? (kingdom?.StringId ?? "王国");
+		string text = kingdom?.Name?.ToString() ?? (kingdom?.StringId ?? ConversationUiLocalization.Text("AF_ADSC_Identity_Kingdom", "Kingdom"));
 		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = new WeeklyEventMaterialPreviewGroup
 		{
 			GroupKind = "kingdom",
 			KingdomId = kingdom?.StringId ?? "",
-			Title = text + " 事件素材预览",
-			Summary = text + " 本周会使用该国开局概要，以及与该国有关的本周高价值行动。普通行军会被压缩，守备、袭扰和外国领主入境会优先保留。",
+			Title = ConversationUiLocalization.Text("AF_ADSC_Identity_WeeklyTitle", "{KINGDOM} event material preview", ("KINGDOM", text)),
+			Summary = ConversationUiLocalization.Text("AF_ADSC_Identity_WeeklySummary", "This week's {KINGDOM} report uses the kingdom's opening summary and related high-value actions. Routine travel is compressed; defenses, raids and foreign lords entering the realm are prioritized.", ("KINGDOM", text)),
 			Materials = new List<EventMaterialReference>()
 		};
 		string kingdomOpeningSummary = WeeklyEventDataImportOwner.GetKingdomOpeningSummary(kingdom?.StringId, records.KingdomOpenings);
@@ -788,7 +837,7 @@ internal static WeeklyEventMaterialPreviewGroup CreateKingdomWeeklyEventMaterial
 			weeklyEventMaterialPreviewGroup.Materials.Add(new EventMaterialReference
 			{
 				MaterialType = "kingdom_opening_summary",
-				Label = text + " 开局概要",
+				Label = ConversationUiLocalization.Text("AF_ADSC_Identity_OpeningLabel", "{KINGDOM} opening summary", ("KINGDOM", text)),
 				KingdomId = kingdom?.StringId ?? "",
 				SnapshotText = kingdomOpeningSummary
 			});
@@ -1273,17 +1322,17 @@ internal static string GetSettlementTypeLabel(Settlement settlement)
 		}
 		if (settlement.IsVillage)
 		{
-			return "村庄";
+			return AdapterSceneTexts.Raw("MemoryIdentityRaw_011");
 		}
 		if (settlement.IsTown)
 		{
-			return "城镇";
+			return AdapterSceneTexts.Raw("MemoryIdentityRaw_012");
 		}
 		if (settlement.IsCastle)
 		{
-			return "城堡";
+			return AdapterSceneTexts.Raw("MemoryIdentityRaw_013");
 		}
-		return "定居点";
+		return AdapterSceneTexts.Raw("MemoryIdentityRaw_014");
 	}
 
 internal static string ResolveSettlementDisplay(string settlementId)
@@ -1438,15 +1487,15 @@ internal static string BuildNpcActionActorNarrativeText(NpcActionEntry entry)
 		{
 			return text;
 		}
-		if (text.StartsWith("你的", StringComparison.Ordinal))
+		if (text.StartsWith(AdapterSceneTexts.Raw("Pronoun_Your"), StringComparison.Ordinal))
 		{
-			return text2 + "的" + text.Substring(2);
+			return text2 + AdapterSceneTexts.Raw("ExternalObservation_015") + text.Substring(2);
 		}
-		if (text.StartsWith("你", StringComparison.Ordinal))
+		if (text.StartsWith(AdapterSceneTexts.Raw("ExternalObservation_056"), StringComparison.Ordinal))
 		{
 			return text2 + text.Substring(1);
 		}
-		return text.Replace(" 你", " " + text2).Replace("；你", "；" + text2).Replace("，你", "，" + text2);
+		return text.Replace(AdapterSceneTexts.Raw("Pronoun_Space_You"), " " + text2).Replace(AdapterSceneTexts.Raw("Pronoun_Semicolon_You"), "；" + text2).Replace(AdapterSceneTexts.Raw("Pronoun_Comma_You"), "，" + text2);
 	}
 
 internal static string ResolveHeroDisplay(string heroId)

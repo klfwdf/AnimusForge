@@ -330,7 +330,7 @@ internal static class Program
         Check(PromptRuleTextEvidence.SemanticSeeds("ordinary", "ignored", new List<string>()).Single() == "ordinary",
             "rule ID remains fallback seed when no keyword exists");
         Check(PromptRuleTextEvidence.RerankText("reward", "group", "奖励。其余说明", new List<string> { "礼物", "礼物" })
-            .Contains("用途: reward 奖励") && PromptRuleTextEvidence.RerankText("reward", "group", "", null).Contains("规则组: group"),
+            .Contains(PromptRetrievalTexts.Prompt("Purpose") + "reward 奖励") && PromptRuleTextEvidence.RerankText("reward", "group", "", null).Contains(PromptRetrievalTexts.Prompt("RuleGroup") + "group"),
             "rerank document retains group, ID, instruction and deduplicated keywords");
         var evalSnapshot = PromptRuleEvaluationAssembler.Create("key", intentRules, intentRecall);
         evalSnapshot.IntentCount = 1; evalSnapshot.ReturnCap = 1;

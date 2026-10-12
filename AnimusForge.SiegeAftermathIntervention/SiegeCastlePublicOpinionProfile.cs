@@ -12,24 +12,56 @@ public static class SiegeCastlePublicOpinionProfile
         int notableRelationDelta,
         int notableTrustDelta)
     {
-        string player = string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName.Trim();
+        return Build(playerName, settlementTrustDelta, villageTrustDelta, notableRelationDelta, notableTrustDelta, isEnglish: false);
+    }
+
+    public static string Build(
+        string playerName,
+        int settlementTrustDelta,
+        int villageTrustDelta,
+        int notableRelationDelta,
+        int notableTrustDelta,
+        bool isEnglish)
+    {
+        string player = string.IsNullOrWhiteSpace(playerName) ? (isEnglish ? "The player" : CastleAftermathCompatibilityTexts.Raw("player_fallback")) : playerName.Trim();
         int score = settlementTrustDelta + villageTrustDelta + notableRelationDelta + notableTrustDelta;
+        if (isEnglish)
+        {
+            if (score >= 45)
+            {
+                return "Nearby villagers and notables praise " + player + " as restrained and just; trust has risen noticeably.";
+            }
+            if (score >= 15)
+            {
+                return "Nearby civilians generally approve of " + player + "\u0027s disposition; villagers\u0027 and notables\u0027 attitudes have warmed.";
+            }
+            if (score > -15)
+            {
+                return "Nearby civilians are still waiting and watching " + player + "; no clear praise or resentment has formed.";
+            }
+            if (score > -45)
+            {
+                return "Nearby villagers and notables are displeased with " + player + "\u0027s treatment of captives; trust is declining.";
+            }
+            return "Nearby civilians fear and resent " + player + " for harsh dispositions; villages and notables strongly object.";
+        }
+
         if (score >= 45)
         {
-            return "附近村民与要人盛赞 " + player + " 克制而公正，信任明显上升。";
+            return CastleAftermathCompatibilityTexts.Raw("opinion_tier_45").Replace("{player}", player);
         }
         if (score >= 15)
         {
-            return "附近平民总体认可 " + player + " 的处置，村庄与要人的态度转暖。";
+            return CastleAftermathCompatibilityTexts.Raw("opinion_tier_15").Replace("{player}", player);
         }
         if (score > -15)
         {
-            return "附近平民仍在观望 " + player + "，没有形成明显赞许或怨恨。";
+            return CastleAftermathCompatibilityTexts.Raw("opinion_tier_neutral").Replace("{player}", player);
         }
         if (score > -45)
         {
-            return "附近村民与要人不满 " + player + " 对俘虏的做法，信任正在下降。";
+            return CastleAftermathCompatibilityTexts.Raw("opinion_tier_neg15").Replace("{player}", player);
         }
-        return "附近平民因 " + player + " 的严酷处置而恐惧怨恨，村庄与要人强烈反感。";
+        return CastleAftermathCompatibilityTexts.Raw("opinion_tier_neg45").Replace("{player}", player);
     }
 }

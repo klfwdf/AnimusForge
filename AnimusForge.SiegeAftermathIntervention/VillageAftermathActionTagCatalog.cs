@@ -6,42 +6,56 @@ namespace AnimusForge.SiegeAftermathIntervention;
 
 public static class VillageAftermathActionTagCatalog
 {
-    public const string GatherEldersTag = "[VILLAGE_ACTION:召集长老]";
-    public const string RestrainTroopsTag = "[VILLAGE_ACTION:约束军纪]";
-    public const string PacifyTag = "[VILLAGE_ACTION:平息]";
-    public const string ReliefTag = "[VILLAGE_ACTION:赈济]";
-    public const string FineTag = "[VILLAGE_ACTION:罚赎]";
-    public const string RequisitionFoodTag = "[VILLAGE_ACTION:征粮]";
-    public const string RequisitionProduceTag = "[VILLAGE_ACTION:征收物产]";
-    public const string RequisitionLivestockTag = "[VILLAGE_ACTION:征收牲畜]";
-    public const string LevyRecruitsTag = "[VILLAGE_ACTION:征丁]";
-    public const string PunishRingleaderTag = "[VILLAGE_ACTION:惩办首恶]";
-    public const string ConfiscatePropertyTag = "[VILLAGE_ACTION:查抄村产]";
-    public const string DestroyLivelihoodTag = "[VILLAGE_ACTION:毁坏生计]";
-    public const string MassacreTag = "[VILLAGE_ACTION:屠村]";
-    public const string CulturalReformTag = "[VILLAGE_ACTION:文化改造]";
+    public static readonly string GatherEldersTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_a58c06142f99");
+    public static readonly string RestrainTroopsTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_74b12ce80e6c");
+    public static readonly string PacifyTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_a97f30e3a3b1");
+    public static readonly string ReliefTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_dbbda88e5b0d");
+    public static readonly string FineTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_0668ff5c4c6b");
+    public static readonly string RequisitionFoodTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_b968afab0e0a");
+    public static readonly string RequisitionProduceTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_d5357c95d911");
+    public static readonly string RequisitionLivestockTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_cb5008d0d4e8");
+    public static readonly string LevyRecruitsTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_fdd24f29c48f");
+    public static readonly string PunishRingleaderTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_6562809f2e10");
+    public static readonly string ConfiscatePropertyTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_896c810ea0a9");
+    public static readonly string DestroyLivelihoodTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_a66666f702e7");
+    public static readonly string MassacreTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_d633546da871");
+    public static readonly string CulturalReformTag = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_ef43f0e48a1f");
 
-    public const string AnyActionTagPattern = @"\[VILLAGE_ACTION:(?<name>召集长老|约束军纪|平息|赈济|罚赎|征粮|征收物产|征收牲畜|征丁|惩办首恶|查抄村产|毁坏生计|屠村|文化改造)\]";
+    public static readonly string AnyActionTagPattern = SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_103951f75bf9");
 
     private static readonly Regex ActionRegex = new Regex(AnyActionTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly IReadOnlyDictionary<string, VillageAftermathActionKind> NameToKind =
         new Dictionary<string, VillageAftermathActionKind>(StringComparer.OrdinalIgnoreCase)
         {
-            ["召集长老"] = VillageAftermathActionKind.GatherElders,
-            ["约束军纪"] = VillageAftermathActionKind.RestrainTroops,
-            ["平息"] = VillageAftermathActionKind.Pacify,
-            ["赈济"] = VillageAftermathActionKind.Relief,
-            ["罚赎"] = VillageAftermathActionKind.Fine,
-            ["征粮"] = VillageAftermathActionKind.RequisitionFood,
-            ["征收物产"] = VillageAftermathActionKind.RequisitionProduce,
-            ["征收牲畜"] = VillageAftermathActionKind.RequisitionLivestock,
-            ["征丁"] = VillageAftermathActionKind.LevyRecruits,
-            ["惩办首恶"] = VillageAftermathActionKind.PunishRingleader,
-            ["查抄村产"] = VillageAftermathActionKind.ConfiscateProperty,
-            ["毁坏生计"] = VillageAftermathActionKind.DestroyLivelihood,
-            ["屠村"] = VillageAftermathActionKind.Massacre,
-            ["文化改造"] = VillageAftermathActionKind.CulturalReform,
+            [SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_d328854d7a88")] = VillageAftermathActionKind.GatherElders,
+            [SiegeAftermathCompatibilityTexts.Raw("village_action_restrain")] = VillageAftermathActionKind.RestrainTroops,
+            [SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_a707c61c167a")] = VillageAftermathActionKind.Pacify,
+            [SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_f090d14830f0")] = VillageAftermathActionKind.Relief,
+            [SiegeAftermathCompatibilityTexts.Raw("village_action_fine")] = VillageAftermathActionKind.Fine,
+            [SiegeAftermathCompatibilityTexts.Raw("village_action_food")] = VillageAftermathActionKind.RequisitionFood,
+            [SiegeAftermathCompatibilityTexts.Raw("village_action_produce")] = VillageAftermathActionKind.RequisitionProduce,
+            [SiegeAftermathCompatibilityTexts.Raw("village_action_livestock")] = VillageAftermathActionKind.RequisitionLivestock,
+            [SiegeAftermathCompatibilityTexts.Raw("village_action_recruits")] = VillageAftermathActionKind.LevyRecruits,
+            [SiegeAftermathCompatibilityTexts.Raw("village_action_ringleader")] = VillageAftermathActionKind.PunishRingleader,
+            [SiegeAftermathCompatibilityTexts.Raw("village_action_property")] = VillageAftermathActionKind.ConfiscateProperty,
+            [SiegeAftermathCompatibilityTexts.Raw("village_action_livelihood")] = VillageAftermathActionKind.DestroyLivelihood,
+            [SiegeAftermathCompatibilityTexts.Raw("village_action_massacre")] = VillageAftermathActionKind.Massacre,
+            [SiegeAftermathCompatibilityTexts.Raw("compat_village_aftermath_action_tag_catalog_e2e515f8ff94")] = VillageAftermathActionKind.CulturalReform,
+            ["GATHER_ELDERS"] = VillageAftermathActionKind.GatherElders,
+            ["RESTRAIN_TROOPS"] = VillageAftermathActionKind.RestrainTroops,
+            ["PACIFY"] = VillageAftermathActionKind.Pacify,
+            ["RELIEF"] = VillageAftermathActionKind.Relief,
+            ["FINE"] = VillageAftermathActionKind.Fine,
+            ["REQUISITION_FOOD"] = VillageAftermathActionKind.RequisitionFood,
+            ["REQUISITION_PRODUCE"] = VillageAftermathActionKind.RequisitionProduce,
+            ["REQUISITION_LIVESTOCK"] = VillageAftermathActionKind.RequisitionLivestock,
+            ["LEVY_RECRUITS"] = VillageAftermathActionKind.LevyRecruits,
+            ["PUNISH_RINGLEADER"] = VillageAftermathActionKind.PunishRingleader,
+            ["CONFISCATE_PROPERTY"] = VillageAftermathActionKind.ConfiscateProperty,
+            ["DESTROY_LIVELIHOOD"] = VillageAftermathActionKind.DestroyLivelihood,
+            ["MASSACRE"] = VillageAftermathActionKind.Massacre,
+            ["CULTURAL_REFORM"] = VillageAftermathActionKind.CulturalReform,
         };
 
     private static readonly IReadOnlyDictionary<VillageAftermathActionKind, string> KindToTag =

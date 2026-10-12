@@ -1,4 +1,5 @@
 using System;
+using AnimusForge;
 
 namespace AnimusForge.Refactor.Adapters;
 
@@ -81,7 +82,7 @@ internal static class LlmRequestConfigurationCaptureAdapter
 		apiKey = "";
 		modelName = "";
 		resolvedRoute = "main";
-		errorMessage = "请检查 MCM 设置。";
+		errorMessage = DuelSettingsUiLocalization.Text("AF_UI_Retry_CheckMcm", "Please check MCM settings.");
 		bool hasAuxiliaryDedicatedFields = false;
 		bool hasEventAndRebellionDedicatedFields = false;
 		if (settings == null)

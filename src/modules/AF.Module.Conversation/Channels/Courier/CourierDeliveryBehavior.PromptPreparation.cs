@@ -133,7 +133,7 @@ public partial class CourierDeliveryBehavior
             Seed = string.IsNullOrWhiteSpace(IntentText)
                 ? (string.IsNullOrWhiteSpace(LetterText) ? fallbackLetter : LetterText.Trim())
                 : IntentText.Trim();
-            RoutingInput = inbound ? "[NPC主动写信意图] " + Seed : LetterText;
+            RoutingInput = inbound ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0614") + Seed : LetterText;
             History = history;
         }
     }

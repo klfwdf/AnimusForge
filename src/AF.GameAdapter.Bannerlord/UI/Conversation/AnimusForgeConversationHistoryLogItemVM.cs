@@ -9,6 +9,25 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 {
 	private static string Localize(string id, string fallback)
 		=> new TextObject("{=" + id + "}" + fallback).ToString();
+
+	// Only classified facts with the exact canonical role label are projected for UI.
+	// Unknown speakers and names remain opaque; ordinary rows never load compatibility text.
+	internal static string LocalizeSpeakerForDisplay(string speaker, string kind)
+	{
+		string value = string.IsNullOrWhiteSpace(speaker) ? Localize("AF_UI_ConversationHistory_SpeakerFallback", "Record") : speaker.Trim();
+		if (string.Equals(kind, "afef_player", StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(value, PromptComposerTexts.Raw("weekly_memory_compat_d26ab0225ce9"), StringComparison.Ordinal))
+		{
+			return Localize("AF_UI_ConversationHistory_PlayerAction", "Player action");
+		}
+		if (string.Equals(kind, "afef_npc", StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(value, PromptComposerTexts.Raw("weekly_memory_compat_d0d9d4e1d4c0"), StringComparison.Ordinal))
+		{
+			return Localize("AF_UI_ConversationHistory_NpcAction", "NPC action");
+		}
+		return value;
+	}
+
 	private string _chatItemTime;
 
 	private string _chatSpeaker;
@@ -80,7 +99,7 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 	{
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		ChatItemTime = time ?? "";
-		ChatSpeaker = string.IsNullOrWhiteSpace(speaker) ? Localize("AF_UI_ConversationHistory_SpeakerFallback", "Record") : speaker.Trim();
+		ChatSpeaker = LocalizeSpeakerForDisplay(speaker, kind);
 		// Build only a disposable RichText copy; the persisted dialogue entry stays plain for memory and LLM reuse.
 		string rawDisplayText = string.IsNullOrWhiteSpace(ChatSpeaker) ? (text ?? "") : "(" + ChatSpeaker + ")" + (text ?? "");
 		ChatText = linkDisplaySession?.Format(rawDisplayText, conversationTargetHero, conversationTargetCharacter) ?? EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(rawDisplayText);

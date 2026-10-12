@@ -11,20 +11,7 @@ public static class AnimusForgeModulePaths
 
 	public static string GetCurrentModuleRoot()
 	{
-		try
-		{
-			string assemblyLocation = typeof(AnimusForgeModulePaths).Assembly.Location;
-			string assemblyDir = string.IsNullOrWhiteSpace(assemblyLocation) ? "" : Path.GetDirectoryName(assemblyLocation);
-			string moduleRoot = ResolveModuleRootFromAssemblyDir(assemblyDir);
-			if (!string.IsNullOrWhiteSpace(moduleRoot))
-			{
-				return moduleRoot;
-			}
-		}
-		catch
-		{
-		}
-		return GetFallbackModuleRoot();
+		return AnimusForgeDataPaths.GetCurrentRoot();
 	}
 
 	public static string GetModuleDataFilePath(string fileName)
@@ -35,10 +22,6 @@ public static class AnimusForgeModulePaths
 			safeFileName = "AIConfig.json";
 		}
 		string moduleRoot = GetCurrentModuleRoot();
-		if (string.IsNullOrWhiteSpace(moduleRoot))
-		{
-			return safeFileName;
-		}
 		return Path.Combine(moduleRoot, "ModuleData", safeFileName);
 	}
 
@@ -82,50 +65,4 @@ public static class AnimusForgeModulePaths
 		return roots;
 	}
 
-	private static string ResolveModuleRootFromAssemblyDir(string assemblyDir)
-	{
-		try
-		{
-			string text = assemblyDir;
-			for (int i = 0; i < 6 && !string.IsNullOrWhiteSpace(text); i++)
-			{
-				if (IsCurrentModuleRoot(text))
-				{
-					return text;
-				}
-				DirectoryInfo parent = Directory.GetParent(text);
-				text = parent?.FullName;
-			}
-		}
-		catch
-		{
-		}
-		return "";
-	}
-
-	private static bool IsCurrentModuleRoot(string path)
-	{
-		if (string.IsNullOrWhiteSpace(path))
-		{
-			return false;
-		}
-		string folderName = Path.GetFileName(path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-		return string.Equals(folderName, CurrentModuleFolderName, StringComparison.OrdinalIgnoreCase)
-			&& File.Exists(Path.Combine(path, "SubModule.xml"))
-			&& Directory.Exists(Path.Combine(path, "ModuleData"));
-	}
-
-	private static string GetFallbackModuleRoot()
-	{
-		try
-		{
-			string basePath = TaleWorlds.Engine.Utilities.GetBasePath();
-			string modulesDir = Path.Combine(basePath, "Modules");
-			return Path.Combine(modulesDir, CurrentModuleFolderName);
-		}
-		catch
-		{
-		}
-		return "";
-	}
 }

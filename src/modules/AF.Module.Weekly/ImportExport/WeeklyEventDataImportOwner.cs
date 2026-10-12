@@ -226,7 +226,7 @@ internal static class WeeklyEventDataImportOwner
 			}
 			if (!payload.HasWorldSummaryFile && !payload.HasKingdomSummariesFile && !payload.HasEventRecordsFile)
 			{
-				error = "找不到 event_data\\WorldOpeningSummary.json、event_data\\KingdomOpeningSummaries.json 或 event_data\\EventRecords.json。";
+				error = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_065", "Could not find event_data\\WorldOpeningSummary.json, event_data\\KingdomOpeningSummaries.json or event_data\\EventRecords.json.");
 				return false;
 			}
 			return true;
@@ -243,7 +243,7 @@ internal static class WeeklyEventDataImportOwner
     {
 		if (payload == null || !payload.HasWorldSummaryFile || !payload.HasKingdomSummariesFile)
 		{
-			throw new InvalidOperationException("开局知识重载计划不完整。");
+			throw new InvalidOperationException(WorldBulletinPolicyTexts.Raw("WBLT_Raw_043"));
 		}
 		worldSummary = (payload.WorldSummary ?? "").Trim();
 		kingdomSummaries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

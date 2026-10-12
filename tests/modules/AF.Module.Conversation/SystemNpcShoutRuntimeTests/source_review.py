@@ -3,6 +3,8 @@ from pathlib import Path
 import importlib.util,re,subprocess
 ROOT=Path(__file__).resolve().parents[4]
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+__import__('sys').path.insert(0, str(ROOT/'tests/content/J15ContentContractTests'))
+from reviewed_localization_inverse import restore_conversation_resources, restore_scene_receipts
 main_path='src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs'
 old_source=subprocess.check_output(['git','show','ab1d3e48:'+main_path],cwd=ROOT).decode('utf-8-sig')
 old=ex.declaration(old_source,'private void EnqueueSystemNpcShout(')
@@ -39,6 +41,7 @@ assert bridge.count('internal static void ProcessDiplomacyTagsDispatch(')==1
 assert 'DiplomacyModuleServices.Conversation.ProcessDiplomacyTags(' in bridge
 assert new.count('DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(')==1
 new=new.replace('DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(', 'DiplomacyBehavior.ProcessDiplomacyTagsDispatch(',1)
+new=restore_conversation_resources(restore_scene_receipts(new, system=True))
 tokens=lambda text:re.findall(r'@"(?:""|[^"])*"|"(?:\\.|[^"\\])*"|\w+|[^\s]',text)
 assert tokens(old)==tokens(new),'unreviewed system effects/history/TTS/notification/exit rule drift'
 entry=ex.declaration(runtime,'internal async Task<bool> Enqueue(')

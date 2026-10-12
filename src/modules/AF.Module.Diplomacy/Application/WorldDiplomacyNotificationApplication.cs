@@ -157,8 +157,8 @@ internal sealed class WorldDiplomacyNotificationApplication
                 _notifiedDocumentIdsThisSession.Add(document.DocumentId);
                 sink.ShowNotice(new WorldDiplomacyNotice(
                     document.DocumentId,
-                    WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document),
-                    WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate), showOnMap));
+                    WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text),
+                    WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate, DiplomacyUiLocalization.Text), showOnMap));
                 document.IsNotified = true;
                 _updatingOwnFlags = true;
                 document.FormalNoticeShown = true;

@@ -360,5 +360,58 @@
     <string id="AF_ECO_UI_RpForgeRollbackIssueRecordCleanupFailed" text="cleaning the records or caches failed with {ERROR}" />
     <string id="AF_ECO_UI_RpForgeRollbackIssueUnregisterFailed" text="unregistering the generated object failed with {ERROR}" />
     <string id="AF_ECO_UI_RpForgeLabelUnknownType" text="Unknown" />
+    <string id="AF_ECO_UI_ItemType_S285" text="whip" />
+    <string id="AF_ECO_UI_ItemType_S286" text="dagger" />
+    <string id="AF_ECO_UI_ItemType_S287" text="sword" />
+    <string id="AF_ECO_UI_ItemType_S288" text="axe" />
+    <string id="AF_ECO_UI_ItemType_S289" text="mace" />
+    <string id="AF_ECO_UI_ItemType_S290" text="pick" />
+    <string id="AF_ECO_UI_ItemType_S291" text="polearm" />
+    <string id="AF_ECO_UI_ItemType_S292" text="arrows" />
+    <string id="AF_ECO_UI_ItemType_S293" text="bolts" />
+    <string id="AF_ECO_UI_ItemType_S294" text="sling stones" />
+    <string id="AF_ECO_UI_ItemType_S295" text="ammunition" />
+    <string id="AF_ECO_UI_ItemType_S296" text="bow" />
+    <string id="AF_ECO_UI_ItemType_S297" text="crossbow" />
+    <string id="AF_ECO_UI_ItemType_S298" text="sling" />
+    <string id="AF_ECO_UI_ItemType_S299" text="throwing axe" />
+    <string id="AF_ECO_UI_ItemType_S300" text="throwing knives" />
+    <string id="AF_ECO_UI_ItemType_S301" text="javelins" />
+    <string id="AF_ECO_UI_ItemType_S302" text="firearm" />
+    <string id="AF_ECO_UI_ItemType_S303" text="shield" />
+    <string id="AF_ECO_UI_ItemType_S304" text="banner" />
+    <string id="AF_ECO_UI_ItemType_S305" text="alcohol" />
+    <string id="AF_ECO_UI_ItemType_S306" text="food" />
+    <string id="AF_ECO_UI_ItemType_S307" text="pack animal" />
+    <string id="AF_ECO_UI_ItemType_S308" text="livestock" />
+    <string id="AF_ECO_UI_ItemType_S309" text="timber" />
+    <string id="AF_ECO_UI_ItemType_S310" text="iron" />
+    <string id="AF_ECO_UI_ItemType_S311" text="salt" />
+    <string id="AF_ECO_UI_ItemType_S312" text="tools" />
+    <string id="AF_ECO_UI_ItemType_S313" text="pottery" />
+    <string id="AF_ECO_UI_ItemType_S314" text="cloth" />
+    <string id="AF_ECO_UI_ItemType_S315" text="raw materials" />
+    <string id="AF_ECO_UI_ItemType_S316" text="oil" />
+    <string id="AF_ECO_UI_ItemType_S317" text="valuables" />
+    <string id="AF_ECO_UI_ItemType_S318" text="goods" />
+    <string id="AF_ECO_UI_ItemType_S319" text="horse" />
+    <string id="AF_ECO_UI_ItemType_S320" text="one-handed weapon" />
+    <string id="AF_ECO_UI_ItemType_S321" text="two-handed weapon" />
+    <string id="AF_ECO_UI_ItemType_S322" text="polearm" />
+    <string id="AF_ECO_UI_ItemType_S323" text="thrown weapon" />
+    <string id="AF_ECO_UI_ItemType_S324" text="helmet" />
+    <string id="AF_ECO_UI_ItemType_S325" text="body armor" />
+    <string id="AF_ECO_UI_ItemType_S326" text="leg armor" />
+    <string id="AF_ECO_UI_ItemType_S327" text="hand armor" />
+    <string id="AF_ECO_UI_ItemType_S328" text="book" />
+    <string id="AF_ECO_UI_ItemType_S329" text="cape" />
+    <string id="AF_ECO_UI_ItemType_S330" text="harness" />
+    <string id="AF_ECO_UI_ItemType_S028" text="item" />
+      <string id="AF_ECO_UI_PartyAsset_Other" text="the other party" />
+    <string id="AF_ECO_UI_PartyAsset_Unknown" text="unknown" />
+    <string id="AF_ECO_UI_PartyAsset_UnknownAsset" text="unknown asset" />
+    <string id="AF_ECO_UI_PartyAsset_UnknownSettlement" text="unknown settlement" />
+    <string id="AF_ECO_UI_PartyAsset_Workshop" text="workshop" />
+    <string id="AF_ECO_UI_PartyAsset_Caravan" text="caravan" />
   </strings>
 </base>

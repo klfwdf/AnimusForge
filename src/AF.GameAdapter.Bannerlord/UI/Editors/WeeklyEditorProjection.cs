@@ -230,7 +230,12 @@ internal static class WeeklyEditorProjection
 			}
 			return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text2) ? T("AF_UI_WeeklyProjection_UnknownLord", "A lord") : text2);
 		}
-		string text5 = port.BuildDevSummaryPreview(!string.IsNullOrWhiteSpace(material.Label) ? material.Label : material.SnapshotText, 24);
+		string previewSource = !string.IsNullOrWhiteSpace(material.Label) ? material.Label : material.SnapshotText;
+		if (string.Equals((material.MaterialType ?? "").Trim(), "noble_gathering", StringComparison.OrdinalIgnoreCase)
+			|| (string.Equals((material.MaterialType ?? "").Trim(), "raw_text", StringComparison.OrdinalIgnoreCase)
+				&& (material.ActionStableKey ?? "").StartsWith("noble_gathering:", StringComparison.Ordinal)))
+			previewSource = NobleGatheringTextProjection.ProjectForUi(previewSource);
+		string text5 = port.BuildDevSummaryPreview(previewSource, 24);
 		return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text5) ? T("AF_UI_WeeklyProjection_NoPreview", "No preview") : text5);
 	}
 }

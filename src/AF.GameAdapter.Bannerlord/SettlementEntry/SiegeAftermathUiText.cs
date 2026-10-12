@@ -12,14 +12,16 @@ namespace AnimusForge;
 /// </summary>
 internal static class SiegeAftermathUiText
 {
+    // Resolve the template once, then insert display data without re-parsing its braces.
+    private static readonly System.Text.RegularExpressions.Regex LiteralValues = new System.Text.RegularExpressions.Regex(@"AFSWEEPLITERAL([0-9]+)END", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
     private static string Text(string id, string fallback, params (string Name, string Value)[] variables)
     {
-        TextObject text = new TextObject("{=" + id + "}" + fallback);
-        foreach ((string Name, string Value) variable in variables ?? Array.Empty<(string Name, string Value)>())
-        {
-            text.SetTextVariable(variable.Name, variable.Value ?? string.Empty);
-        }
-        return text.ToString();
+        var text = new TextObject("{=" + id + "}" + fallback);
+        if (variables != null)
+        for (int i = 0; i < variables.Length; i++)
+            text.SetTextVariable(variables[i].Name, "AFSWEEPLITERAL" + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + "END");
+        return LiteralValues.Replace(text.ToString(), match => variables[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty);
     }
 
     private static string Number(long value) => Math.Max(0, value).ToString(CultureInfo.InvariantCulture);

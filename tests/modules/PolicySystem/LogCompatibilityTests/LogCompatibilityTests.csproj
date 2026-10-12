@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
+    <Compile Include="Program.cs" />
+    <Compile Include="../../../../PolicySystem/Core/PolicySystemLog.cs" Link="PolicySystemLog.cs" />
+    <Compile Include="../../../../PolicySystem/Core/PolicyCompatibilityTexts.cs" Link="PolicyCompatibilityTexts.cs" />
+    <Reference Include="Newtonsoft.Json"><HintPath>../../../../_deps_auto/Newtonsoft.Json.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

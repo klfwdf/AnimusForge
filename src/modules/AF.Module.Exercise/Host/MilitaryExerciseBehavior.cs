@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -4006,7 +4006,7 @@ public static class MilitaryExerciseBehavior
 
 	private static void DisplayFailure(string title, Exception ex)
 	{
-		Display(title + "：" + GetPlayerVisibleFailureReason(ex));
+		Display(title + ": " + GetPlayerVisibleFailureReason(ex));
 	}
 
 	private static string GetPlayerVisibleFailureReason(Exception ex)

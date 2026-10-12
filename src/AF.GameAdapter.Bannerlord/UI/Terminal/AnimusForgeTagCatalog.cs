@@ -284,7 +284,7 @@ internal static class AnimusForgeTagCatalog
 			|| name.Equals("obj", StringComparison.OrdinalIgnoreCase)
 			|| name.Equals("Logs", StringComparison.OrdinalIgnoreCase)
 			|| name.Equals("ONNX", StringComparison.OrdinalIgnoreCase)
-			|| name.StartsWith("原版游戏本体代码", StringComparison.OrdinalIgnoreCase);
+			|| name.StartsWith(AdapterPromptCaptureTexts.PcapCompat("TagCat_DirNative"), StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool ShouldScanTextFile(string path)
@@ -432,7 +432,7 @@ internal static class AnimusForgeTagCatalog
 				return;
 			}
 			byte[] bytes = File.ReadAllBytes(assemblyPath);
-			string source = "程序集:" + Path.GetFileName(assemblyPath);
+			string source = AdapterPromptCaptureTexts.PcapCompat("TagCat_AssemblyPrefix") + Path.GetFileName(assemblyPath);
 			ExtractTagsFromText(Encoding.UTF8.GetString(bytes), source, entries, "compiled-utf8");
 			ExtractTagsFromText(Encoding.Unicode.GetString(bytes), source, entries, "compiled-utf16");
 		}
@@ -448,7 +448,7 @@ internal static class AnimusForgeTagCatalog
 		{
 			foreach (SiegePostprocessRuleDefinition rule in SiegePostprocessRuleCatalog.GetFallbackRules())
 			{
-				AddTag(entries, rule.Tag, "后处理/GCCZ", rule.Description, "SiegePostprocessRuleCatalog", SiegePostprocessRuleCatalog.RuleId);
+				AddTag(entries, rule.Tag, AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryGccz"), rule.Description, "SiegePostprocessRuleCatalog", SiegePostprocessRuleCatalog.RuleId);
 			}
 		}
 		catch
@@ -462,17 +462,17 @@ internal static class AnimusForgeTagCatalog
 		{
 			if (VillageAftermathActionTagCatalog.TryGetCanonicalTag(action, out string tag))
 			{
-				AddTag(entries, tag, "后处理/GCCZ村庄", "仅在有权限的普通村庄场景中，由玩家明确命令触发：" + action, "VillageAftermathActionTagCatalog", VillageAftermathRuntimePromptProfile.RuleId);
+				AddTag(entries, tag, AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryVillage"), AdapterPromptCaptureTexts.PcapCompat("TagCat_VillagePrefix") + action, "VillageAftermathActionTagCatalog", VillageAftermathRuntimePromptProfile.RuleId);
 			}
 		}
 	}
 
 	private static void AddBuiltInEntries(Dictionary<string, AnimusForgeTagCatalogEntry> entries)
 	{
-		AddTag(entries, "正文（自然语言）", "正文", "不是动作标签。标签测试输入框里除动作标签外的文本会作为 NPC 可见正文显示或写入历史。", "内置说明", "");
-		AddTag(entries, "[CONTENT]", "正文/历史", "内部正文分隔标记。通常不是玩家手写动作标签。", "内置说明", "");
-		AddTag(entries, "[AFEF玩家行为补充]", "正文/事实", "玩家行为事实写入标记，用于告诉 LLM 已实际发生的玩家行为。", "内置说明", "");
-		AddTag(entries, "[AFEF NPC行为补充]", "正文/事实", "NPC行为事实写入标记，用于告诉 LLM 已实际发生的 NPC 行为。", "内置说明", "");
+		AddTag(entries, AdapterPromptCaptureTexts.PcapCompat("TagCat_NaturalLanguage"), AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryBody"), AdapterPromptCaptureTexts.PcapCompat("TagCat_DescBody"), AdapterPromptCaptureTexts.PcapCompat("TagCat_BuiltInSource"), "");
+		AddTag(entries, "[CONTENT]", AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryHistory"), AdapterPromptCaptureTexts.PcapCompat("TagCat_DescContent"), AdapterPromptCaptureTexts.PcapCompat("TagCat_BuiltInSource"), "");
+		AddTag(entries, AdapterPromptCaptureTexts.PcapCompat("TagCat_AfefPlayer"), AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryFacts"), AdapterPromptCaptureTexts.PcapCompat("TagCat_DescPlayerFact"), AdapterPromptCaptureTexts.PcapCompat("TagCat_BuiltInSource"), "");
+		AddTag(entries, AdapterPromptCaptureTexts.PcapCompat("TagCat_AfefNpc"), AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryFacts"), AdapterPromptCaptureTexts.PcapCompat("TagCat_DescNpcFact"), AdapterPromptCaptureTexts.PcapCompat("TagCat_BuiltInSource"), "");
 	}
 
 	private static void AddTag(Dictionary<string, AnimusForgeTagCatalogEntry> entries, string rawTag, string category, string description, string source, string context)
@@ -488,7 +488,7 @@ internal static class AnimusForgeTagCatalog
 			entry = new AnimusForgeTagCatalogEntry
 			{
 				Tag = tag,
-				Category = string.IsNullOrWhiteSpace(category) ? "标签" : category.Trim(),
+				Category = string.IsNullOrWhiteSpace(category) ? AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryTag") : category.Trim(),
 				Description = (description ?? "").Trim()
 			};
 			entries[key] = entry;
@@ -529,7 +529,7 @@ internal static class AnimusForgeTagCatalog
 		{
 			return false;
 		}
-		if (string.Equals(text, "正文（自然语言）", StringComparison.Ordinal))
+		if (string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("TagCat_NaturalLanguage"), StringComparison.Ordinal))
 		{
 			return true;
 		}
@@ -569,25 +569,25 @@ internal static class AnimusForgeTagCatalog
 	private static string ClassifyTag(string tag, bool explicitJsonRule)
 	{
 		string text = (tag ?? "").Trim();
-		if (string.Equals(text, "正文（自然语言）", StringComparison.Ordinal))
+		if (string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("TagCat_NaturalLanguage"), StringComparison.Ordinal))
 		{
-			return "正文";
+			return AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryBody");
 		}
 		if (text.StartsWith("[AFEF", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[AF_SCENE_SESSION:", StringComparison.OrdinalIgnoreCase) || text.Equals("[CONTENT]", StringComparison.OrdinalIgnoreCase))
 		{
-			return "正文/历史";
+			return AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryHistory");
 		}
 		if (text.StartsWith("[RELAY:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "后处理/接力";
+			return AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryRelay");
 		}
 		if (SiegeActionTagCatalog.ContainsRecognizedTag(text))
 		{
-			return "后处理/GCCZ";
+			return AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryGccz");
 		}
 		if (text.StartsWith("[VILLAGE_ACTION:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "后处理/GCCZ村庄";
+			return AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryVillage");
 		}
 		if (text.StartsWith("[ACTION:", StringComparison.OrdinalIgnoreCase)
 			|| text.Equals("[A:H_J_P_P_C/L]", StringComparison.OrdinalIgnoreCase)
@@ -608,16 +608,16 @@ internal static class AnimusForgeTagCatalog
 			|| text.Equals("[STP]", StringComparison.OrdinalIgnoreCase)
 			|| text.Equals("[END]", StringComparison.OrdinalIgnoreCase))
 		{
-			return explicitJsonRule ? "后处理/规则表" : "后处理";
+			return explicitJsonRule ? AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryRules") : AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryPostprocess");
 		}
-		return "标签";
+		return AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryTag");
 	}
 
 	private static string BuildExportText(AnimusForgeTagCatalogSnapshot snapshot, string moduleRoot)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		int bodyCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("正文", StringComparison.Ordinal));
-		int postprocessCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("后处理", StringComparison.Ordinal));
+		int bodyCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith(AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryBody"), StringComparison.Ordinal));
+		int postprocessCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith(AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryPostprocess"), StringComparison.Ordinal));
 		stringBuilder.AppendLine(TagCatalogUiText.ExportTitle);
 		stringBuilder.AppendLine(TagCatalogUiText.ExportTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)));
 		stringBuilder.AppendLine(TagCatalogUiText.ExportRoot(moduleRoot ?? ""));
@@ -636,7 +636,7 @@ internal static class AnimusForgeTagCatalog
 		}
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine(TagCatalogUiText.ExportExplanation);
-		foreach (IGrouping<string, AnimusForgeTagCatalogEntry> group in snapshot.Entries.GroupBy((AnimusForgeTagCatalogEntry x) => string.IsNullOrWhiteSpace(x.Category) ? "标签" : x.Category).OrderBy((IGrouping<string, AnimusForgeTagCatalogEntry> x) => CategoryOrder(x.Key)).ThenBy((IGrouping<string, AnimusForgeTagCatalogEntry> x) => x.Key, StringComparer.OrdinalIgnoreCase))
+		foreach (IGrouping<string, AnimusForgeTagCatalogEntry> group in snapshot.Entries.GroupBy((AnimusForgeTagCatalogEntry x) => string.IsNullOrWhiteSpace(x.Category) ? AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryTag") : x.Category).OrderBy((IGrouping<string, AnimusForgeTagCatalogEntry> x) => CategoryOrder(x.Key)).ThenBy((IGrouping<string, AnimusForgeTagCatalogEntry> x) => x.Key, StringComparer.OrdinalIgnoreCase))
 		{
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine("==== " + TagCatalogUiText.Category(group.Key) + " ====");
@@ -664,19 +664,19 @@ internal static class AnimusForgeTagCatalog
 	private static int CategoryOrder(string category)
 	{
 		string text = category ?? "";
-		if (text.StartsWith("正文", StringComparison.Ordinal))
+		if (text.StartsWith(AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryBody"), StringComparison.Ordinal))
 		{
 			return 0;
 		}
-		if (text.StartsWith("后处理/规则表", StringComparison.Ordinal))
+		if (text.StartsWith(AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryRules"), StringComparison.Ordinal))
 		{
 			return 1;
 		}
-		if (text.StartsWith("后处理/GCCZ", StringComparison.Ordinal))
+		if (text.StartsWith(AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryGccz"), StringComparison.Ordinal))
 		{
 			return 2;
 		}
-		if (text.StartsWith("后处理", StringComparison.Ordinal))
+		if (text.StartsWith(AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryPostprocess"), StringComparison.Ordinal))
 		{
 			return 3;
 		}

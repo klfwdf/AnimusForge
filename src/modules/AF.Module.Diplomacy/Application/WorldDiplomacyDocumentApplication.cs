@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,7 +66,7 @@ internal static class WorldDiplomacyDocumentApplication
             TargetKingdomId = source.TargetKingdomId ?? "",
             TargetKingdomName = source.HasTarget ? source.TargetKingdomName : "",
             Title = WorldDiplomacyTextRules.Limit(
-                WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(source.Title, "外交宣言"), 100),
+                WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(source.Title, DiplomacyMiscPromptTexts.Get("Document_DefaultTitleDeclaration", "Diplomatic Declaration")), 100),
             Body = WorldDiplomacyTextRules.NormalizeBody(source.Body),
             Origin = source.Origin ?? "",
             Day = source.Day,

@@ -103,10 +103,10 @@ internal static class DiplomacyPostprocessContextApplication
     private static string BuildIndependent(DiplomacyIndependentPeaceContextSnapshot value)
     {
         var independent = new StringBuilder();
-        independent.AppendLine("【独立家族议和运行时事实】");
-        independent.AppendLine("玩家家族“" + value.PlayerClanName + "”是独立家族；定居点数：" + value.SettlementCount);
-        independent.AppendLine("你是敌对王国“" + value.TargetName + "”的当前国王。");
-        independent.AppendLine("双方当前敌对：是");
+        independent.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_IndependentPeaceFacts", "[Independent clan peace runtime facts]"));
+        independent.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_IndependentClanPrefix", "The player's clan \"") + value.PlayerClanName + DiplomacyPromptTexts.Get("AF_DIP_IndependentClanSuffix", "\" is independent; settlement count: ") + value.SettlementCount);
+        independent.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_IndependentEnemyPrefix", "You are the current monarch of the hostile kingdom \"") + value.TargetName + DiplomacyPromptTexts.Get("AF_DIP_IndependentEnemySuffix", "\"."));
+        independent.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_IndependentHostility", "The two sides are currently hostile: yes"));
         return independent.ToString().TrimEnd();
     }
 
@@ -114,25 +114,25 @@ internal static class DiplomacyPostprocessContextApplication
         bool allowFullDiplomacy) where TSource : struct, IDiplomacyPostprocessContextSource
     {
         var sb = new StringBuilder();
-        sb.AppendLine(); sb.AppendLine("【外交后处理标签】");
-        sb.AppendLine("天数说明：21天=一季度，84天=一年，没有月和周概念。");
-        sb.AppendLine("【王国ID对照表】");
+        sb.AppendLine(); sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_PostprocessTagsHeader", "[Diplomacy postprocess tags]"));
+        sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_PostprocessCalendar", "Time units: 21 days = one quarter, 84 days = one year; there are no months or weeks."));
+        sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_KingdomIdDirectory", "[Kingdom ID reference]"));
         if (value.Kingdoms != null)
             foreach (DiplomacyKingdomSummary kingdom in value.Kingdoms)
                 if (!kingdom.Eliminated) sb.AppendLine($"  {kingdom.Id} = {kingdom.Name}");
         sb.AppendLine();
-        sb.AppendLine("【关键身份】");
-        sb.AppendLine($"  你的王国ID：{value.NpcId}（{value.NpcName}）");
+        sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_KeyIdentities", "[Key identities]"));
+        sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_NpcKingdomIdentity", "  Your kingdom ID: {0} ({1})"), value.NpcId, value.NpcName));
         if (value.PlayerKingdomExists && !value.PlayerKingdomEliminated)
-            sb.AppendLine($"  玩家王国ID：{value.PlayerId}（{value.PlayerName}）" + (value.PlayerIsRuler ? "，玩家是国王" : ""));
-        else sb.AppendLine("  玩家当前没有可代表的王国。");
+            sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_PlayerKingdomIdentity", "  Player kingdom ID: {0} ({1})"), value.PlayerId, value.PlayerName) + (value.PlayerIsRuler ? DiplomacyPromptTexts.Get("AF_DIP_PlayerIsRulerSuffix", "; the player is the monarch") : ""));
+        else sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_PlayerNoKingdom", "  The player currently has no kingdom to represent."));
         if (allowFullDiplomacy && (!(source is IDiplomacyOralPostprocessSource mode) || mode.UseFormalCommitments))
         {
             string annexationHint = source.GetAnnexationHint();
             if (!string.IsNullOrWhiteSpace(annexationHint))
             {
                 sb.AppendLine();
-                sb.AppendLine("【国家吞并约束】");
+                sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_AnnexationConstraintsHeader", "[Kingdom annexation constraints]"));
                 sb.AppendLine(annexationHint);
             }
         }
@@ -142,10 +142,10 @@ internal static class DiplomacyPostprocessContextApplication
             sb.AppendLine(native.NativeActionInstruction());
             return sb.ToString().TrimEnd();
         }
-        sb.AppendLine("仅 NPC 明确最终答应时使用 [ACTION:DIPLOMACY:COMMIT:action=Peace;move=NewMatter;target=王国ID]；action 可为 Peace/Alliance/Trade/DeclareWar/BreakAlliance/CancelTrade/Annexation/Tributary/Garrison/Vassal。考虑、报价、假设不输出。move=AcceptProposal 或 RejectProposal 时附 source_document=原宣言ID;source_action=原动作ID（单动作公文无动作ID可留空）。原案歧义先让玩家选择。贡金必须明确金额与期限；未明确先澄清，无贡金的和平期限为0。和平可附 payer/receiver/tribute/days/cession_from/cession_to/settlement，必须复制明确同意的原始条款；不改接受原案条款。吞并或臣属必须附 receiving=接收国/宗主国ID;joining=并入国/臣属国ID。接受原案可以省略条款表示完全接受原案，不能省略来源。新条件必须 NewMatter，不能假装接受原案。玩家不是立约方也可劝说你回应第三国提案。不得代玩家发布宣言。NPC 口头答应宣战使用 COMMIT，由 NPC 正式发文再开战。");
-        sb.AppendLine("NPC 明确决定延期、取消或恢复自己的发文约定时，用 [ACTION:DIPLOMACY:COMMITMENT:arrangement=约定ID;state=deferred|cancelled|accepted;reason=明确原因]。ID从约定上下文复制；已发布且尚未被接受的自己提案只能 cancelled，系统另发正式撤回宣言。已生效的行动不能撤销；改变条款另用 COMMIT:NewMatter。");
+        sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_CommitInstruction", "Use [ACTION:DIPLOMACY:COMMIT:action=Peace;move=NewMatter;target=KINGDOM_ID] only when the NPC explicitly gives final agreement; action may be Peace/Alliance/Trade/DeclareWar/BreakAlliance/CancelTrade/Annexation/Tributary/Garrison/Vassal. Do not output it for consideration, quotes, or hypotheticals. For move=AcceptProposal or RejectProposal, include source_document=ORIGINAL_DOCUMENT_ID;source_action=ORIGINAL_ACTION_ID (the action ID may be empty for a single-action document without one). If the original proposal is ambiguous, first ask the player to choose. Tribute requires an explicit amount and duration; clarify missing terms first. Peace without tribute has duration 0. Peace may include payer/receiver/tribute/days/cession_from/cession_to/settlement; copy the original terms explicitly agreed to and do not modify accepted proposal terms. Annexation or vassalage requires receiving=RECEIVING_KINGDOM_OR_SUZERAIN_ID;joining=JOINING_KINGDOM_OR_VASSAL_ID. Acceptance may omit terms to mean full acceptance of the original proposal, but must not omit its source. New terms require NewMatter, not a false acceptance. A player who is not a contracting party may still persuade you to respond to a third kingdom's proposal. Do not publish declarations on the player's behalf. For an NPC's oral agreement to declare war, use COMMIT; war begins only after the NPC formally publishes the declaration."));
+        sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_CommitmentInstruction", "When the NPC explicitly decides to defer, cancel, or resume their own publication commitment, use [ACTION:DIPLOMACY:COMMITMENT:arrangement=ARRANGEMENT_ID;state=deferred|cancelled|accepted;reason=EXPLICIT_REASON]. Copy the ID from the commitment context. Their own published proposal that has not yet been accepted may only be cancelled; the system publishes a separate formal withdrawal. Actions already in effect cannot be undone; use COMMIT:NewMatter separately to change terms."));
         if (value.PlayerIsRuler && value.PlayerKingdomExists && value.KingdomsDiffer)
-            sb.AppendLine("玩家以国王身份亲自明确向你的王国宣战，使用 [ACTION:DIPLOMACY:DECLARE_WAR:" + value.PlayerId + ":" + value.NpcId + "]，此项立即生效；不得把劝说、威胁或假设当宣战。");
+            sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_PlayerWarPrefix", "If the player personally and explicitly declares war on your kingdom as monarch, use [ACTION:DIPLOMACY:DECLARE_WAR:") + value.PlayerId + ":" + value.NpcId + DiplomacyPromptTexts.Get("AF_DIP_PlayerWarSuffix", "]; this takes effect immediately. Do not treat persuasion, threats, or hypotheticals as declarations of war."));
         sb.AppendLine(AnimusForge.DiplomacyDialogue.DialoguePeaceClarificationRules.PostprocessInstruction);
         return sb.ToString().TrimEnd();
     }

@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -186,7 +187,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		bool completed = _port.CancelPolicy(
 			threat.PolicyConditionPolicyId,
 			threat.PolicyConditionOwnerKingdomId,
-			"澶栦氦濞佹厬閫€璁╋細" + threat.ThreatId,
+			DiplomacyMiscPromptTexts.Get("ThreatSettlement_CancelPolicyReasonPrefix", "Diplomatic threat concession: ") + threat.ThreatId,
 			out string policyName,
 			out string result);
 		if (!completed)
@@ -380,7 +381,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		if (WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAlreadyRecorded(threat, document.DocumentId))
 		{
 			document.ChangedDiplomaticState = true;
-			document.MechanicalResult = "已明确服从阶段=" + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage);
+			document.MechanicalResult = DiplomacyMiscPromptTexts.Get("ThreatSettlement_CompliedStagePrefix", "Explicitly complied with stage=") + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage);
 			return true;
 		}
 		if (!WorldDiplomacyRoundLifecycleRules.IsThreatComplianceStageMatch(
@@ -390,16 +391,16 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		int prestigeChange = WorldDiplomacyRoundLifecycleRules.ResolveCompliancePrestigeDelta(
 			threat.Stage, _port.UltimatumCompliancePrestigeChange, _port.WarningCompliancePrestigeChange);
 		_orchestration.ApplyNationalPrestigeDelta(issuer, prestigeChange, document,
-			"迫使" + _port.KingdomName(compliantKingdom) + "服从" + WorldDiplomacyRoundLifecycleRules.DescribeThreatStageDiplomaticLabel(threat.Stage));
+			string.Format(DiplomacyMiscPromptTexts.Get("ThreatSettlement_ForcedOpponentComplyFormat", "Forced {0} to comply with {1}"), _port.KingdomName(compliantKingdom), WorldDiplomacyRoundLifecycleRules.DescribeThreatStageDiplomaticLabel(threat.Stage)));
 		_orchestration.ApplyNationalPrestigeDelta(compliantKingdom, -prestigeChange, document,
-			"在压力下服从" + _port.KingdomName(issuer) + "的" + WorldDiplomacyRoundLifecycleRules.DescribeThreatStageDiplomaticLabel(threat.Stage));
+			string.Format(DiplomacyMiscPromptTexts.Get("ThreatSettlement_CompliedUnderPressureFormat", "Complied with {0}'s {1} under pressure"), _port.KingdomName(issuer), WorldDiplomacyRoundLifecycleRules.DescribeThreatStageDiplomaticLabel(threat.Stage)));
 		bool domesticPenaltyCompleted = TryApplyUltimatumComplianceDomesticPenalty(_storage, _port, _orchestration, threat, compliantKingdom, out int affectedClanCount);
 		bool policyCancellationCompleted = TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, _orchestration, threat);
 		bool issuerRewardCompleted = TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, _orchestration, threat, issuer, out int rewardedClanCount);
 		document.ChangedDiplomaticState = true;
-		document.MechanicalResult = "已明确服从阶段=" + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage)
+		document.MechanicalResult = DiplomacyMiscPromptTexts.Get("ThreatSettlement_CompliedStagePrefix", "Explicitly complied with stage=") + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage)
 			+ (WorldDiplomacyRoundLifecycleRules.IsThreatCancellationStatusCancelled(threat.PolicyConditionCancellationStatus)
-			? "；附带政策《" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.PolicyConditionPolicyName, threat.PolicyConditionPolicyId) + "》已取消"
+			? string.Format(DiplomacyMiscPromptTexts.Get("ThreatSettlement_AttachedPolicyCancelledFormat", "; Attached policy \"{0}\" was cancelled"), WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.PolicyConditionPolicyName, threat.PolicyConditionPolicyId))
 				: "");
 		_port.Log("diplomatic threat complied threat=" + threat.ThreatId
 			+ " issuer=" + issuer + " target=" + compliantKingdom

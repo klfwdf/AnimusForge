@@ -1,0 +1,143 @@
+{
+  "Version": 1,
+  "Default": {
+    "OpeningPrompt": "Explain your reason for approaching the player, focusing solely on a single request regarding your current difficulty. Output only the NPC's spoken line; do not assume any agreement or outcome has already occurred.",
+    "LetterIntent": "Write a concise letter regarding your current difficulty, making only a single request using strictly the provided facts.",
+    "CompanionIntent": "Approach the player to speak of your sole current motivation; rely only on provided facts without assuming any relationship or outcome is established.",
+    "NaturalExpressionGuide": "Transform background context into natural spoken character dialogue; do not mention numeric stats or game mechanics, only describe what the character perceives."
+  },
+  "Requests": {
+    "FoodShortage": {
+      "OpeningPrompt": "Explain your reason for approaching, asking for relief or to purchase food due to shortages. Output only the NPC's spoken line; do not assume a transaction has occurred.",
+      "LetterIntent": "Write a concise letter regarding food shortages, requesting aid or purchasing food; do not assume a transaction has occurred."
+    },
+    "MoneyShortage": {
+      "OpeningPrompt": "Explain your reason for approaching, asking for funding, advance payment, employment, or trade opportunities due to cash shortages, troop wages, or financial strain. Output only the NPC's spoken line; do not assume credit, trade, or debt is established.",
+      "LetterIntent": "Write a concise letter regarding financial pressure, proposing a single funding, advance payment, employment, or trade request; do not assume credit or debt is established."
+    },
+    "TroopShortage": {
+      "OpeningPrompt": "Explain your reason for approaching, requesting soldiers, prisoners, mercenaries, guards, or short-term military cooperation due to troop shortages. Output only the NPC's spoken line.",
+      "LetterIntent": "Write a concise letter regarding troop shortages, proposing a single reinforcement or short-term military cooperation request."
+    },
+    "PrisonerOverload": {
+      "OpeningPrompt": "Explain your reason for approaching, asking the player to ransom, take over, transport prisoners, or connect with ransom brokers due to heavy prisoner burden. Output only the NPC's spoken line; do not assume payment or transfer has occurred.",
+      "LetterIntent": "Write a concise letter regarding prisoner burden, proposing a single ransom, transfer, transport, or broker request; do not assume payment or transfer has occurred."
+    },
+    "ClanCaptive": {
+      "OpeningPrompt": "Explain your reason for approaching, asking for ransom, rescue, mediation, or intelligence regarding captured clan members. Output only the NPC's spoken line; do not assume rescue, release, or payment has occurred.",
+      "LetterIntent": "Write a concise letter regarding captured clan members, proposing a single ransom, rescue, mediation, or inquiry request; do not assume outcomes are established."
+    },
+    "LowMorale": {
+      "OpeningPrompt": "Explain your reason for approaching, requesting supplies, gold, food and drink, escort, victory opportunities, or short-term cooperation due to low party morale. Output only the NPC's spoken line; do not assume assistance is finalized.",
+      "LetterIntent": "Write a concise letter regarding low morale, proposing a single supply, escort, or cooperation request; do not assume assistance is finalized."
+    },
+    "MountShortage": {
+      "OpeningPrompt": "Explain your reason for approaching, asking to buy horses, pack animals, request escort, or overcome mobility disadvantage due to lack of mounts. Output only the NPC's spoken line; do not assume trade or escort is finalized.",
+      "LetterIntent": "Write a concise letter regarding lack of mounts and mobility, proposing a single horse, pack animal, or escort request; do not assume trade is finalized."
+    },
+    "Overburdened": {
+      "OpeningPrompt": "Explain your reason for approaching, asking to sell, transport, escort, or obtain pack animals due to party overburdening. Output only the NPC's spoken line; do not assume trade or cargo transfer is finalized.",
+      "LetterIntent": "Write a concise letter regarding overburdened cargo, proposing a single purchase, transport, escort, or pack animal request; do not assume cargo transfer is finalized."
+    },
+    "ClanFinanceStrain": {
+      "OpeningPrompt": "Explain your reason for approaching, asking for investment, advances, trade liquidity, mercenary earnings, or short-term financial aid due to clan financial strain. Output only the NPC's spoken line; do not assume debt, trade, or transactions are finalized.",
+      "LetterIntent": "Write a concise letter regarding clan financial strain, proposing a single investment, advance, liquidity, or aid request; do not assume debt or transactions are finalized."
+    },
+    "ClanService": {
+      "OpeningPrompt": "Explain your reason for approaching, representing a landless clan seeking service in the player's kingdom. Output only the NPC's spoken line; do not assume clan allegiance, fealty, or fief status has changed.",
+      "LetterIntent": "Write a concise letter representing a landless clan seeking service in the player's kingdom; do not assume allegiance or fief status has changed."
+    },
+    "RomanticInteraction": {
+      "OpeningPrompt": "Explain your reason for approaching, expressing care, admiration, or romantic expectations based on your intimate relationship with the player. Output only the NPC's spoken line; do not assume courtship, betrothal, or promises are already established.",
+      "LetterIntent": "Write a concise letter regarding your intimate relationship with the player, expressing longing, affection, or fond thoughts; do not assume courtship, betrothal, or promises are established.",
+      "CompanionIntent": "Approach the player with romantic interest, expressing care, admiration, or expectations fitting your private relationship; do not invent promises, and do not assume betrothal or status changes have occurred."
+    },
+    "Greeting": {
+      "OpeningPrompt": "Explain your reason for approaching, offering a friendly greeting, inquiring about recent wellbeing, or casual pleasantries. Output only the NPC's spoken line; do not invent events, promises, or relationship shifts.",
+      "LetterIntent": "This request is only used for face-to-face greetings; do not write a letter.",
+      "CompanionIntent": "This request does not apply to party companions."
+    },
+    "Friendship": {
+      "OpeningPrompt": "Explain your reason for approaching, expressing goodwill and a desire to make the player's acquaintance after hearing of their renown. Output only the NPC's spoken line; do not assume friendship, promises, or relationship changes have occurred.",
+      "LetterIntent": "Write a concise letter expressing goodwill and a wish to get acquainted after hearing of the player's renown; do not assume friendship or promises are established.",
+      "CompanionIntent": "This request does not apply to party companions."
+    },
+    "Courtship": {
+      "OpeningPrompt": "Explain your reason for approaching, expressing admiration and intent to get acquainted and pursue courtship. Output only the NPC's spoken line; do not assume courtship, betrothal, promises, or relationship changes have occurred.",
+      "LetterIntent": "Write a concise letter expressing admiration and intent to get acquainted and pursue courtship; do not assume betrothal or promises are established.",
+      "CompanionIntent": "This request does not apply to party companions."
+    },
+    "ArmyJoinRequest": {
+      "OpeningPrompt": "This request only occurs via letter, not map pursuit.",
+      "LetterIntent": "As army commander, write a concise letter explaining insufficient forces for war and inviting the player to join the army. Offer only the invitation; do not assume the player has joined.",
+      "CompanionIntent": "This request does not apply to party companions."
+    },
+    "BanditSuppression": {
+      "OpeningPrompt": "Explain your reason for approaching, asking the player to help eliminate or disperse bandits proliferating near clan fiefs. Output only the NPC's spoken line; do not assume eradication, reward, or pledges are finalized.",
+      "LetterIntent": "Write a concise letter regarding bandits near clan fiefs, requesting assistance to clear or disperse them. Do not assume reward or pledges are finalized.",
+      "CompanionIntent": "This request does not apply to party companions."
+    },
+    "PoliticalRivalSuppression": {
+      "OpeningPrompt": "Explain your reason for approaching, seeking the player's political support against a faction rival to isolate, suppress, or weaken their influence. Output only the NPC's spoken line; do not assume votes, expulsions, land seizure, or outcomes are settled.",
+      "LetterIntent": "Write a concise letter regarding a political rival in the faction, requesting political backing to isolate or weaken them. Do not assume votes or political outcomes are settled.",
+      "CompanionIntent": "This request does not apply to party companions."
+    },
+    "SettlementPurchase": {
+      "OpeningPrompt": "Explain your reason for approaching, discussing the purchase of one of the player's towns or castles. Output only the NPC's spoken line; do not assume prices, payment, buyer, or ownership transfers are finalized.",
+      "LetterIntent": "Write a concise letter regarding the purchase of one of the player's towns or castles. Do not assume prices, payment, or ownership transfers are finalized.",
+      "CompanionIntent": "This request does not apply to party companions."
+    },
+    "SettlementSale": {
+      "OpeningPrompt": "Explain your reason for approaching, discussing the sale of the clan's lowest-income border town or castle. Output only the NPC's spoken line; do not assume prices, payment, sale, or ownership transfers are finalized.",
+      "LetterIntent": "Write a concise letter regarding the sale of the clan's lowest-income border town or castle. Do not assume prices, payment, or ownership transfers are finalized.",
+      "CompanionIntent": "This request does not apply to party companions."
+    },
+    "TerritorialInterrogation": {
+      "OpeningPrompt": "Explain your reason for approaching, interrogating why this foreign-culture stranger is near your kingdom's lands, where they come from, and what they intend. Output only the NPC's spoken line; remain vigilant without presuming guilt, identity, or purpose.",
+      "LetterIntent": "This request is only used for face-to-face questioning; do not write a letter.",
+      "CompanionIntent": "This request does not apply to party companions."
+    },
+    "MarriageAlliancePressure": {
+      "OpeningPrompt": "Explain your reason for approaching, asking for marriage introductions, clan mutual aid, or long-term cooperation due to succession and alliance pressures. Output only the NPC's spoken line; do not assume betrothals or pledges are established.",
+      "LetterIntent": "Write a concise letter regarding marriage alliance pressures, proposing a single marriage introduction, clan aid, or cooperation request; do not assume betrothals are established."
+    },
+    "RevengePressure": {
+      "OpeningPrompt": "Explain your reason for approaching, asking for intelligence, rescue, vengeance, or military aid due to clan insults, captured kin, raided fiefs, or war pressures. Output only the NPC's spoken line; do not assume actions are finalized.",
+      "LetterIntent": "Write a concise letter regarding clan grievances, proposing a single intelligence, rescue, vengeance, or military aid request; do not assume actions are finalized."
+    },
+    "FiefGovernanceAnxiety": {
+      "OpeningPrompt": "Explain your reason for approaching, requesting food, gold, escort, garrison, or political support due to fief loyalty, security, garrison, raid, or siege pressures. Output only the NPC's spoken line; do not assume support is finalized.",
+      "LetterIntent": "Write a concise letter regarding fief governance pressures, proposing a single food, gold, escort, garrison, or political support request; do not assume support is finalized."
+    },
+    "AllySupport": {
+      "OpeningPrompt": "Explain your reason for approaching, asking for endorsement, voting support, political mutual aid, or short-term cooperation due to clan isolation, low influence, or lack of allies in the kingdom. Output only the NPC's spoken line; do not assume an alliance is finalized.",
+      "LetterIntent": "Write a concise letter regarding clan isolation, proposing a single endorsement, vote support, or mutual aid request; do not assume an alliance is finalized."
+    },
+    "KingdomMercenaryInvite": {
+      "OpeningPrompt": "Explain your reason for approaching, inviting the player to serve as a mercenary due to kingdom shortage of hirelings. Output only the NPC's spoken line.",
+      "LetterIntent": "Write a concise invitation letter regarding the kingdom's need for mercenaries, inviting the player to enter mercenary service; do not assume a contract is finalized."
+    },
+    "KingdomVassalInvite": {
+      "OpeningPrompt": "Explain your reason for approaching, inviting the player to serve the realm due to a shortage of long-term vassals; you may propose vassalage or a mercenary contract. Output only the NPC's spoken line.",
+      "LetterIntent": "Write a concise invitation letter regarding the kingdom's need for vassals, proposing vassalage or a mercenary contract; do not assume fealty is finalized."
+    },
+    "PoliticalAgenda": {
+      "OpeningPrompt": "Explain your reason for approaching, asking for the player's backing on kingdom agenda items, proposals, or vote canvassing. You may offer compensation or concessions; do not assume the player agrees, and do not output system tags. Output only the NPC's spoken line.",
+      "LetterIntent": "Write a concise letter regarding kingdom agenda items, requesting votes or political support; do not assume the player agrees."
+    },
+    "PolicySupport": {
+      "OpeningPrompt": "Explain your reason for approaching, seeking the player's backing for a kingdom policy strongly favored by your clan. Output only the NPC's spoken line; do not assume proposal, voting, enactment, or implementation is finalized.",
+      "LetterIntent": "Write a concise letter regarding a kingdom policy strongly favored by your clan, asking the player to support it in upcoming proposals or current voting. Do not assume policy outcomes are finalized.",
+      "CompanionIntent": "This request does not apply to party companions."
+    },
+    "PolicyDiscussion": {
+      "OpeningPrompt": "Explain your reason for approaching, discussing a recent policy and your views on it. Output only the NPC's spoken line; do not assume any outcome is established.",
+      "LetterIntent": "Write a concise letter discussing a recent policy, expressing your perspective and inviting dialogue; do not assume any outcome is established.",
+      "CompanionIntent": "Approach the player to discuss a recent policy and your views; rely strictly on the provided policy text and do not assume outcomes are established."
+    },
+    "Diplomacy": {
+      "OpeningPrompt": "Explain your reason for approaching, discussing the current diplomatic situation, impacts, and viable stances with a player of the same realm based on official declarations known to the realm. You may solicit opinions, but do not make commitments or execute actions on behalf of the monarch; output only the NPC's spoken line.",
+      "LetterIntent": "Write a concise letter based on diplomatic declarations officially known to the realm, inviting a fellow faction member to discuss current affairs; do not present proposals as established facts."
+    }
+  }
+}

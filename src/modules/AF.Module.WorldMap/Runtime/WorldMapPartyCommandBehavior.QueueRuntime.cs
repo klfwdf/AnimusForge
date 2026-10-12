@@ -35,7 +35,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			if (IsCurrentAttackCommand(state))
 			{
-				TryCompleteCurrentAttackResult(state, CommandResultOutcome.Failure, "执行者已经失去可控制部队或被俘，命令失败。", "actor_invalid:" + reason);
+				TryCompleteCurrentAttackResult(state, CommandResultOutcome.Failure, WorldMapSourceTexts.Get("raw_literals.wm_lit_0341"), "actor_invalid:" + reason);
 				return;
 			}
 			FinishQueue(hero, party, state, "actor_invalid:" + reason, appendFact: true);
@@ -335,7 +335,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			RequestFollowSiegeRefresh();
 			if (appendFact)
 			{
-				LogFact(state, hero, GetActorName(state, hero, party) + "的大地图命令队列已经结束；当前原版战斗结算后将安全退出攻城并回归原版行动状态。");
+				LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0342"));
 			}
 			return;
 		}
@@ -358,9 +358,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			&& string.Equals(finishingRecord.Phase, GovernorExpeditionPhaseReturning, StringComparison.OrdinalIgnoreCase);
 		if (appendFact)
 		{
-			LogFact(state, hero, GetActorName(state, hero, party) + "的大地图命令队列已经结束（" + GetQueueEndReasonText(reason) + "），"
-				+ (returningGovernorExpedition ? "临时总督远征队开始返驻地交还兵员。"
-					: governorExpeditionHandled ? "临时总督远征已按当前游戏状态结束或交还原版 AI。" : "回归原版行动状态。"));
+			LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0086") + GetQueueEndReasonText(reason) + "），"
+				+ (returningGovernorExpedition ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0343")
+					: governorExpeditionHandled ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0344") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0345")));
 		}
 		Log("finish actor=" + GetActorLogId(state, hero, party) + " reason=" + reason);
 	}

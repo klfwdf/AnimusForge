@@ -460,7 +460,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         Instance._session.FailureReason = reason;
         SettlementEntryTroopSelectionBehavior.ClearArmedCoup();
         Instance.Log("suspended: " + reason);
-        Show((Instance._session.ResumePhase == CoupPhase.AwaitingResolution ? CoupUiText.ResolutionPendingPrefix : CoupUiText.SuspendedPrefix) + reason + (Instance._session.HasPoliticalCommit
+        Show((Instance._session.ResumePhase == CoupPhase.AwaitingResolution ? CoupUiText.ResolutionPendingPrefix : CoupUiText.SuspendedPrefix) + CoupUiText.LocalizeReason(reason) + (Instance._session.HasPoliticalCommit
             ? CoupUiText.PoliticalChangesRetained : CoupUiText.CasualtiesRetained));
     }
     private void SetFailure(string reason)
@@ -641,14 +641,14 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
 
     private void CommitVictory()
     {
-        if (!_session.IsValid() || !_session.Started || !_session.KingSubdued || _session.Disposition == CoupKingDisposition.Undecided) throw new InvalidOperationException("政变胜利状态或旧王处置不完整，禁止政治结算。");
+        if (!_session.IsValid() || !_session.Started || !_session.KingSubdued || _session.Disposition == CoupKingDisposition.Undecided) throw new InvalidOperationException(CoupSourceTexts.Get("PoliticalIncomplete"));
         Settlement town = Settlement.Find(_session.SettlementId);
         Kingdom kingdom = Clan.PlayerClan?.Kingdom;
         Hero king = FindKing();
         if (town == null || kingdom?.StringId != _session.KingdomId || kingdom.IsEliminated || king?.IsAlive != true
             || (kingdom.RulingClan != Clan.PlayerClan && kingdom.RulingClan?.StringId != _session.OriginalRulingClanId)
             || town.MapFaction != kingdom || Clan.PlayerClan.Leader != Hero.MainHero)
-            throw new InvalidOperationException("战役身份发生变化，停止自动政治结算。");
+            throw new InvalidOperationException(CoupSourceTexts.Get("CampaignIdentityChanged"));
         CommitCasualties();
         _session.PoliticalCommitStarted = true;
         if (!_session.RulingClanCommitted)
@@ -657,13 +657,13 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             MyBehavior.SuppressWorldBulletinRulerChange = true;
             try { if (kingdom.RulingClan != Clan.PlayerClan) ChangeRulingClanAction.Apply(kingdom, Clan.PlayerClan); }
             finally { MyBehavior.SuppressWorldBulletinRulerChange = false; }
-            if (kingdom.RulingClan != Clan.PlayerClan) throw new InvalidOperationException("王权转移未生效。");
+            if (kingdom.RulingClan != Clan.PlayerClan) throw new InvalidOperationException(CoupSourceTexts.Get("ThroneTransferFailed"));
             _session.RulingClanCommitted = true;
         }
         if (!_session.TownCommitted)
         {
             if (town.OwnerClan != Clan.PlayerClan) ChangeOwnerOfSettlementAction.ApplyByRebellion(Hero.MainHero, town);
-            if (town.OwnerClan != Clan.PlayerClan) throw new InvalidOperationException("城镇转移未生效。");
+            if (town.OwnerClan != Clan.PlayerClan) throw new InvalidOperationException(CoupSourceTexts.Get("TownTransferFailed"));
             _session.TownCommitted = true;
         }
         if (!_session.CustodyCommitted)
@@ -671,16 +671,16 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             king.HitPoints = Math.Max(1, Math.Min(king.HitPoints, (int)_session.KingHealth));
             if (_session.Disposition == CoupKingDisposition.Capture)
             {
-                if (!CoupGuards.CaptivityProtectionAvailable) throw new InvalidOperationException("拘押保护不可用，请恢复兼容组件后结算。");
+                if (!CoupGuards.CaptivityProtectionAvailable) throw new InvalidOperationException(CoupSourceTexts.Get("CaptivityUnavailable"));
                 if (!king.IsPrisoner) TakePrisonerAction.Apply(MobileParty.MainParty.Party, king);
                 if (!king.IsPrisoner || king.PartyBelongedToAsPrisoner != MobileParty.MainParty.Party)
-                    throw new InvalidOperationException("旧王拘押未生效。");
+                    throw new InvalidOperationException(CoupSourceTexts.Get("KingCaptivityFailed"));
                 CoupCaptivityBehavior.RegisterDetention(_session.Id, king);
             }
             _session.CustodyCommitted = true;
         }
         var owner = CoupRebellionBridge.Instance;
-        if (owner == null) throw new InvalidOperationException("AF 事件与叛乱系统不可用。");
+        if (owner == null) throw new InvalidOperationException(CoupSourceTexts.Get("EventSeamUnavailable"));
         if (!_session.FactsCommitted)
         {
             if (!owner.TryRecordCoupOutcome(_session, king, town, true, _session.Disposition == CoupKingDisposition.Capture, out string message)) throw new InvalidOperationException(message);
@@ -786,7 +786,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
 
     private void CommitFailure()
     {
-        if (PlayerEncounterCompat.HasEncounterBattleContext()) throw new InvalidOperationException("新的战役战斗已开始，不能自动结算旧政变。");
+        if (PlayerEncounterCompat.HasEncounterBattleContext()) throw new InvalidOperationException(CoupSourceTexts.Get("NewBattleStarted"));
         CommitCasualties();
         _session.PoliticalCommitStarted = true;
         if (!_session.DefectionCommitted)
@@ -797,7 +797,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             if (Clan.PlayerClan?.Kingdom == null && original != null && !original.IsEliminated && !Clan.PlayerClan.IsAtWarWith(original))
                 DeclareWarAction.ApplyByRebellion(Clan.PlayerClan, original);
             if (Clan.PlayerClan == null || Clan.PlayerClan.Kingdom != null || (original != null && !original.IsEliminated && !Clan.PlayerClan.IsAtWarWith(original)))
-                throw new InvalidOperationException("叛离或宣战结果不一致，停止后续结算。");
+                throw new InvalidOperationException(CoupSourceTexts.Get("DefectionInconsistent"));
             _session.DefectionCommitted = true;
         }
         if (!_session.WithdrawalCommitted)
@@ -806,7 +806,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         {
             var owner = CoupRebellionBridge.Instance;
             if (owner == null || !owner.TryRecordCoupOutcome(_session, FindKing(), Settlement.Find(_session.SettlementId), false, false, out _))
-                throw new InvalidOperationException("政变失败事实暂时无法写入。");
+                throw new InvalidOperationException(CoupSourceTexts.Get("FailureFactUnavailable"));
             _session.FactsCommitted = true;
         }
         Log("failure_committed");
@@ -816,7 +816,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
     private void CommitWithdrawal()
     {
         MobileParty party = MobileParty.MainParty;
-        if (party == null) throw new InvalidOperationException("接应队伍不可用，不能确认撤出。");
+        if (party == null) throw new InvalidOperationException(CoupSourceTexts.Get("ReceptionPartyUnavailable"));
         var location = PlayerEncounter.LocationEncounter;
         bool inTarget = party.CurrentSettlement?.StringId == _session.SettlementId;
         bool targetLocation = location?.Settlement?.StringId == _session.SettlementId;
@@ -832,12 +832,12 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         if ((location != null && !targetLocation) || (party.CurrentSettlement != null && !inTarget)
             || (encountered != null && encountered.Settlement?.StringId != _session.SettlementId)
             || (PlayerEncounter.Current != null && !targetLocation && encountered?.Settlement?.StringId != _session.SettlementId))
-            throw new InvalidOperationException("当前遭遇已改变，不能替其他遭遇执行撤出。");
+            throw new InvalidOperationException(CoupSourceTexts.Get("EncounterChanged"));
         if (PlayerEncounter.Current != null) PlayerEncounter.Finish(true);
         if (party.CurrentSettlement?.StringId == _session.SettlementId) LeaveSettlementAction.ApplyForParty(party);
         if (party.CurrentSettlement?.StringId == _session.SettlementId
             || PlayerEncounter.LocationEncounter?.Settlement?.StringId == _session.SettlementId)
-            throw new InvalidOperationException("接应队伍尚未完整退出城镇遭遇。");
+            throw new InvalidOperationException(CoupSourceTexts.Get("PartyNotExited"));
         _session.WithdrawalCommitted = true;
     }
 
@@ -883,6 +883,6 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
                 total += Math.Max(0, roster.GetElementNumber(i) - roster.GetElementWoundedNumber(i));
         return total;
     }
-    private static void Show(string message) { if (!string.IsNullOrEmpty(message)) InformationManager.DisplayMessage(new InformationMessage(CoupUiText.Prefix + message)); }
+    private static void Show(string message) { if (!string.IsNullOrEmpty(message)) InformationManager.DisplayMessage(new InformationMessage(CoupUiText.Prefix + CoupUiText.LocalizeReason(message))); }
     private void Log(string message) => Logger.Log("Coup", "event=" + _session?.Id + " phase=" + _session?.Phase + " town=" + _session?.SettlementId + " " + message);
 }

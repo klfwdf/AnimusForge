@@ -160,7 +160,7 @@ internal static class PartyTransferProjectionOwner
 		List<SettlementTransferPromptEntry> list = (entries ?? Enumerable.Empty<SettlementTransferPromptEntry>()).Where(isValid).ToList();
 		if (list.Count == 0)
 		{
-			sb.AppendLine("（无）");
+			sb.AppendLine(EconomyPromptTexts.Get("S643"));
 			return;
 		}
 		foreach (SettlementTransferPromptEntry item in list)
@@ -170,11 +170,11 @@ internal static class PartyTransferProjectionOwner
 			{
 				stringBuilder.Append(item.PromptIndex).Append(". ");
 			}
-			stringBuilder.Append(item.DisplayName)
-				.Append(" | ID ").Append(string.IsNullOrWhiteSpace(assetId(item)) ? "未知" : assetId(item))
-				.Append(" | 类型 ").Append(string.IsNullOrWhiteSpace(item.TypeLabel) ? "固定资产" : item.TypeLabel)
-				.Append(" | 每日收益 ").Append(Math.Max(0, item.DailyIncomeDenars)).Append(" 第纳尔")
-				.Append(" | 一次结清指导价 ").Append(Math.Max(0, item.GuidePriceDenars)).Append(" 第纳尔");
+			stringBuilder.Append(EconomyPromptTexts.ProjectPartyAssetName(item.DisplayName))
+				.Append(" | ID ").Append(string.IsNullOrWhiteSpace(assetId(item)) ? EconomyPromptTexts.Get("S624") : assetId(item))
+				.Append(EconomyPromptTexts.Get("S644")).Append(string.IsNullOrWhiteSpace(item.TypeLabel) ? EconomyPromptTexts.Get("S645") : EconomyPromptTexts.ProjectSource(item.TypeLabel))
+				.Append(EconomyPromptTexts.Get("S646")).Append(Math.Max(0, item.DailyIncomeDenars)).Append(EconomyPromptTexts.Get("S027"))
+				.Append(EconomyPromptTexts.Get("S647")).Append(Math.Max(0, item.GuidePriceDenars)).Append(EconomyPromptTexts.Get("S027"));
 			sb.AppendLine(stringBuilder.ToString());
 		}
 	}
@@ -189,7 +189,7 @@ internal static class PartyTransferProjectionOwner
 		List<PartyTransferPromptEntry> list = (entries ?? Enumerable.Empty<PartyTransferPromptEntry>()).ToList();
 		if (list.Count == 0)
 		{
-			sb.AppendLine("（无）");
+			sb.AppendLine(EconomyPromptTexts.Get("S643"));
 			return;
 		}
 		foreach (PartyTransferPromptEntry item in list)
@@ -203,33 +203,33 @@ internal static class PartyTransferProjectionOwner
 			{
 				stringBuilder.Append(item.PromptIndex).Append(" ");
 			}
-			stringBuilder.Append(item.DisplayName).Append(" | 数量 ").Append(Math.Max(0, item.Count));
+			stringBuilder.Append(EconomyPromptTexts.ProjectPartyAssetName(item.DisplayName)).Append(EconomyPromptTexts.Get("S648")).Append(Math.Max(0, item.Count));
 			if (isPrisoner)
 			{
 				if (item.IsHero)
 				{
-					stringBuilder.Append(" | 英雄俘虏");
+					stringBuilder.Append(EconomyPromptTexts.Get("S649"));
 				}
-				string source = sourceLabel(item);
+				string source = EconomyPromptTexts.ProjectPrisonerSource(sourceLabel(item));
 				if (!string.IsNullOrWhiteSpace(source))
 				{
-					stringBuilder.Append(" | 来源 ").Append(source);
+					stringBuilder.Append(EconomyPromptTexts.Get("S650")).Append(source);
 				}
-				stringBuilder.Append(" | 购买价 ").Append(Math.Max(1, item.BuyPriceDenarsPerUnit)).Append("第纳尔/人");
+				stringBuilder.Append(EconomyPromptTexts.Get("S651")).Append(Math.Max(1, item.BuyPriceDenarsPerUnit)).Append(EconomyPromptTexts.Get("S652"));
 			}
 			else
 			{
-				stringBuilder.Append(" | 类型 ").Append(typeLabel(item));
+				stringBuilder.Append(EconomyPromptTexts.Get("S644")).Append(EconomyPromptTexts.ProjectSource(typeLabel(item)));
 				if (item.Section == PartyTransferEntrySection.NpcVolunteers)
 				{
-					stringBuilder.Append(" | 来源 原版要人募兵");
+					stringBuilder.Append(EconomyPromptTexts.Get("S653"));
 				}
 				if (item.WoundedCount > 0)
 				{
-					stringBuilder.Append(" | 其中伤兵 ").Append(item.WoundedCount);
+					stringBuilder.Append(EconomyPromptTexts.Get("S654")).Append(item.WoundedCount);
 				}
-				stringBuilder.Append(" | 日薪 ").Append(Math.Max(1, item.WageDenarsPerDay)).Append("第纳尔/天");
-				stringBuilder.Append(" | 雇佣价 ").Append(Math.Max(1, item.HirePriceDenarsPerUnit)).Append("第纳尔/人");
+				stringBuilder.Append(EconomyPromptTexts.Get("S655")).Append(Math.Max(1, item.WageDenarsPerDay)).Append(EconomyPromptTexts.Get("S656"));
+				stringBuilder.Append(EconomyPromptTexts.Get("S657")).Append(Math.Max(1, item.HirePriceDenarsPerUnit)).Append(EconomyPromptTexts.Get("S652"));
 			}
 			sb.AppendLine(stringBuilder.ToString());
 		}
@@ -250,10 +250,10 @@ internal static class PartyTransferProjectionOwner
 		foreach (PartyTransferPromptEntry item in list)
 		{
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append(item.DisplayName).Append(" | 类型 ").Append(typeLabel(item)).Append(" | 阶级 ").Append(tier(item)).Append(" | 数量 ").Append(Math.Max(0, item.Count));
+			stringBuilder.Append(EconomyPromptTexts.ProjectPartyAssetName(item.DisplayName)).Append(EconomyPromptTexts.Get("S644")).Append(EconomyPromptTexts.ProjectSource(typeLabel(item))).Append(EconomyPromptTexts.Get("S658")).Append(tier(item)).Append(EconomyPromptTexts.Get("S648")).Append(Math.Max(0, item.Count));
 			if (item.WoundedCount > 0)
 			{
-				stringBuilder.Append(" | 其中伤兵 ").Append(item.WoundedCount);
+				stringBuilder.Append(EconomyPromptTexts.Get("S654")).Append(item.WoundedCount);
 			}
 			sb.AppendLine(stringBuilder.ToString());
 		}

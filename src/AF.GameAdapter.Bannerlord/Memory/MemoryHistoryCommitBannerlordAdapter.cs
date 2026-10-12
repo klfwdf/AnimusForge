@@ -237,10 +237,10 @@ internal static bool IsSingleUseNpcFactLine(string line)
 internal static bool IsFirstMeetingNpcFactBody(string text)
 	{
 		string value = (text ?? "").Trim();
-		return value.StartsWith("你第一次见到", StringComparison.Ordinal)
-			|| value.StartsWith("你第一次与玩家", StringComparison.Ordinal)
-			|| value.StartsWith("你第一次与面前此人", StringComparison.Ordinal)
-			|| value.StartsWith("你第一次与面前这个", StringComparison.Ordinal);
+		return value.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_cdf0b7f2b2ed"), StringComparison.Ordinal)
+			|| value.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_cd1f2e83f279"), StringComparison.Ordinal)
+			|| value.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_8abdc4deefe8"), StringComparison.Ordinal)
+			|| value.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_fa2aa9d7cc69"), StringComparison.Ordinal);
 	}
 
 internal static int CountDialogueHistoryLines(IEnumerable<DialogueDay> records)
@@ -325,13 +325,13 @@ internal static string StripSpeakerPrefixForRecall(string line)
 		{
 			return "";
 		}
-		if (text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal))
+		if (text.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_6d7b96ecf184"), StringComparison.Ordinal))
 		{
-			return text.Substring("[AFEF玩家行为补充]".Length).Trim();
+			return text.Substring(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_6d7b96ecf184").Length).Trim();
 		}
-		if (text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		if (text.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_c231f39bb72c"), StringComparison.Ordinal))
 		{
-			return text.Substring("[AFEF NPC行为补充]".Length).Trim();
+			return text.Substring(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_c231f39bb72c").Length).Trim();
 		}
 		if (AnimusForge.Refactor.Adapters.MemoryRecallInputCaptureAdapter.TryStripPlayerSpeechPrefix(text, out var stripped))
 		{
@@ -450,31 +450,31 @@ internal List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesById(str
 internal static void ClassifyDialogueHistoryLine(string line, out string speaker, out string text, out string kind)
 	{
 		string value = (line ?? "").Trim();
-		speaker = "记录";
+		speaker = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_9fad24e2c377");
 		text = value;
 		kind = "system";
 		if (string.IsNullOrWhiteSpace(value))
 		{
 			return;
 		}
-		if (value.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal))
+		if (value.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_6d7b96ecf184"), StringComparison.Ordinal))
 		{
-			speaker = "AFEF 玩家行为";
-			text = value.Substring("[AFEF玩家行为补充]".Length).Trim();
+			speaker = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_d26ab0225ce9");
+			text = value.Substring(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_6d7b96ecf184").Length).Trim();
 			kind = "afef_player";
 			return;
 		}
-		if (value.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		if (value.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_c231f39bb72c"), StringComparison.Ordinal))
 		{
-			speaker = "AFEF NPC行为";
-			text = value.Substring("[AFEF NPC行为补充]".Length).Trim();
+			speaker = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_d0d9d4e1d4c0");
+			text = value.Substring(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_c231f39bb72c").Length).Trim();
 			kind = "afef_npc";
 			return;
 		}
-		if (value.StartsWith("[场景喊话]", StringComparison.Ordinal))
+		if (value.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_a9bcee692b61"), StringComparison.Ordinal))
 		{
-			speaker = "场景喊话";
-			text = value.Substring("[场景喊话]".Length).Trim();
+			speaker = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_ca867334ed3b");
+			text = value.Substring(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_a9bcee692b61").Length).Trim();
 			kind = "scene";
 			return;
 		}
@@ -486,9 +486,9 @@ internal static void ClassifyDialogueHistoryLine(string line, out string speaker
 			kind = ConversationRoleClassificationOwner.IsLikelyPlayerHistorySpeaker(speaker) ? "player" : "npc";
 			return;
 		}
-		if (value.IndexOf("玩家", StringComparison.Ordinal) >= 0)
+		if (value.IndexOf(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920"), StringComparison.Ordinal) >= 0)
 		{
-			speaker = "玩家";
+			speaker = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920");
 			kind = "player";
 		}
 	}
@@ -528,9 +528,9 @@ internal static bool IsFirstMeetingNpcFactLine(string line)
 			return false;
 		}
 		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
-		if (text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		if (text.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_c231f39bb72c"), StringComparison.Ordinal))
 		{
-			text = text.Substring("[AFEF NPC行为补充]".Length).Trim();
+			text = text.Substring(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_c231f39bb72c").Length).Trim();
 		}
 		return IsFirstMeetingNpcFactBody(text);
 	}
@@ -583,7 +583,7 @@ internal bool AppendDialogueHistory(Hero hero, string playerText, string aiText,
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("DialogueHistory", "[错误] 追加失败: " + ex.Message);
+			Logger.Log("DialogueHistory", "[Error] Append failed: " + ex.Message);
 			return false;
 		}
 	}
@@ -664,7 +664,7 @@ internal bool AppendDialogueHistoryById(string memoryId, string npcNameForMemory
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("DialogueHistory", "[错误] 追加失败: " + ex.Message);
+			Logger.Log("DialogueHistory", "[Error] Append failed: " + ex.Message);
 			return false;
 		}
 	}
@@ -705,20 +705,20 @@ internal static string BuildFirstMeetingNpcFactText(Hero observer)
 	{
 		AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.TryBuildPlayerPublicDisplayNameForPrompt(observer, out var displayName, out var isCompleteIdentity);
 		string text = (displayName ?? "").Trim();
-		if (isCompleteIdentity && !string.Equals(text, "玩家", StringComparison.Ordinal))
+		if (isCompleteIdentity && !string.Equals(text, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920"), StringComparison.Ordinal))
 		{
-			return "[AFEF NPC行为补充] 你第一次与玩家（" + text + "）当面交谈；你已经知道他的公开身份和已公开履历，但此前没有直接见过他。";
+			return AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_3047ca2d8faf") + text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_ea97afa87d58");
 		}
-		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, "玩家", StringComparison.Ordinal))
+		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920"), StringComparison.Ordinal))
 		{
-			return "[AFEF NPC行为补充] 你第一次与面前这个" + text + "见面；你只知道他的可见外貌称呼，不知道他的真实姓名、背景和来历。";
+			return AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_686b7da17b14") + text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_962a032e749a");
 		}
-		return "[AFEF NPC行为补充] 你第一次与玩家见面；除可见外貌与装备外，你不了解他的姓名、背景和来历。";
+		return AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_5f59039da0e7");
 	}
 
 internal static string NormalizeFirstMeetingNpcFactForPrompt(string line)
 	{
-		return IsFirstMeetingNpcFactLine(line) ? BuildFirstMeetingNpcFactText() : "";
+		return IsFirstMeetingNpcFactLine(line) ? MemorySystemFactProjection.ProjectNpcFact(BuildFirstMeetingNpcFactText()) : "";
 	}
 
 internal static bool HasMeaningfulDirectConversationHistory(List<DialogueDay> records)
@@ -757,7 +757,7 @@ internal static string ResolveInteractionMemoryOriginGameDate(int originDay, int
             if (!string.IsNullOrWhiteSpace(date)) return date.Trim();
         }
         catch { }
-        return "第 " + Math.Max(0, originDay).ToString(CultureInfo.InvariantCulture) + " 日";
+        return AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_9552fe3bd366") + Math.Max(0, originDay).ToString(CultureInfo.InvariantCulture) + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_4d27420c3ba9");
     }
 
 internal InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(InteractionMemoryCommit commit,string normalizedMemoryId,bool isNonHero,string npcName,Hero hero) {
@@ -1168,8 +1168,8 @@ internal void AppendLoreToHistory(Hero hero, string loreText)
 			{
 				return;
 			}
-			bool flag = text.IndexOf("【触发相关话题/背景】", StringComparison.OrdinalIgnoreCase) >= 0;
-			bool flag2 = text.IndexOf("【玩家触发了（", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("【以下是关于（", StringComparison.OrdinalIgnoreCase) >= 0;
+			bool flag = text.IndexOf(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_2661c7df36fc"), StringComparison.OrdinalIgnoreCase) >= 0;
+			bool flag2 = text.IndexOf(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_45f1515f311c"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_fd2edac46857"), StringComparison.OrdinalIgnoreCase) >= 0;
 			if (!flag && !flag2)
 			{
 				string text2 = "";
@@ -1183,14 +1183,14 @@ internal void AppendLoreToHistory(Hero hero, string loreText)
 				}
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					text2 = "该NPC";
+					text2 = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_97072d692b3e");
 				}
 				string text4 = AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.BuildPlayerPublicDisplayNameForPrompt(hero);
 				if (string.IsNullOrWhiteSpace(text4))
 				{
-					text4 = "玩家";
+					text4 = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920");
 				}
-				text = "【以下是关于（相关）的背景知识，" + text2 + "可酌情参考，但不要假设" + text4 + "提起过此话题】\n" + text;
+				text = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_a8201d9dfd88") + text2 + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_e77284740762") + text4 + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_0e1d3ae86da0") + text;
 			}
 			string text3 = text;
 			if (dialogueDay.Lines.Count > 0)
@@ -1235,7 +1235,7 @@ internal bool DeleteDialogueHistoryLine(string memoryId, int gameDayIndex, int l
 		string id = NormalizeMemoryHeroId(memoryId);
 		if (string.IsNullOrWhiteSpace(id) || gameDayIndex < 0 || lineOrdinal < 0)
 		{
-			status = "这条记录不能删除。";
+			status = new TaleWorlds.Localization.TextObject("{=AF_MEMORY_UI_DeleteUnavailable}This record cannot be deleted.").ToString();
 			return false;
 		}
 		List<DialogueDay> records = LoadDialogueHistoryById(id);
@@ -1243,7 +1243,7 @@ internal bool DeleteDialogueHistoryLine(string memoryId, int gameDayIndex, int l
 		// The ordinal comes from the panel's snapshot; re-check the text so a stale list can never delete a different line.
 		if (day?.Lines == null || lineOrdinal >= day.Lines.Count || !DisplayTextMatches(day.Lines[lineOrdinal], expectedText))
 		{
-			status = "记录已变化，请重新打开历史后再删除。";
+			status = new TaleWorlds.Localization.TextObject("{=AF_MEMORY_UI_DeleteChanged}The record changed. Reopen the history before deleting it.").ToString();
 			return false;
 		}
 		string rawLine = day.Lines[lineOrdinal];
@@ -1256,7 +1256,7 @@ internal bool DeleteDialogueHistoryLine(string memoryId, int gameDayIndex, int l
 		SaveDialogueHistoryById(id, records);
 		bool draftRemoved = RemoveMatchingDraftLine(id, gameDayIndex, syncKey);
 		Logger.Log("DialogueHistory", "deleted line memoryId=" + id + " day=" + gameDayIndex + " ordinal=" + lineOrdinal + " draftRemoved=" + draftRemoved);
-		status = draftRemoved ? "已删除该条记录。" : "已删除该条记录（该日记忆已压缩，压缩内容不受影响）。";
+		status = new TaleWorlds.Localization.TextObject(draftRemoved ? "{=AF_MEMORY_UI_DeleteDone}The record was deleted." : "{=AF_MEMORY_UI_DeleteDoneCompressed}The record was deleted. That day was already compressed; compressed memory is unchanged.").ToString();
 		return true;
 	}
 

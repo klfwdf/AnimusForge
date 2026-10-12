@@ -403,7 +403,7 @@ public static class WorldMessageTimelineUi
 				names.Add(actionTargetName);
 			}
 		}
-		return string.Join("、", names.Take(4));
+		return string.Join(DeveloperUiText.T("AF_UI_Scene_NameSeparator", ", "), names.Take(4));
 	}
 
 	private static string BuildDiplomacyMetaText(WorldDiplomacyTimelineDocument document, string label, string authorName, string targetName)
@@ -423,16 +423,12 @@ public static class WorldMessageTimelineUi
 
 	private static string FormatWeeklyTitle(string countryName)
 	{
-		var text = new TextObject("{=AF_UI_Timeline_WeeklyTitle}{NAME} weekly report");
-		text.SetTextVariable("NAME", countryName ?? string.Empty);
-		return text.ToString();
+		return DeveloperUiText.Format("AF_UI_Timeline_WeeklyTitle", "{NAME} weekly report", ("NAME", (object)countryName));
 	}
 
 	private static string FormatBodyTitle(string kind)
 	{
-		var text = new TextObject("{=AF_UI_Timeline_BodyTitle}{KIND} body");
-		text.SetTextVariable("KIND", kind ?? string.Empty);
-		return text.ToString();
+		return DeveloperUiText.Format("AF_UI_Timeline_BodyTitle", "{KIND} body", ("KIND", (object)kind));
 	}
 
 	private static string LimitMultiline(string text, int maxCharacters, int maxLines, string fallback)
@@ -1556,7 +1552,7 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.DiplomacyCategoryId)) labels.Add(new TextObject("{=AF_UI_Timeline_Diplomacy}Diplomacy").ToString());
 		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.PolicyCategoryId)) labels.Add(new TextObject("{=AF_UI_Timeline_Policy}Policy").ToString());
 		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.WeeklyCategoryId)) labels.Add(new TextObject("{=AF_UI_Timeline_Weekly}Bulletin / weekly report").ToString());
-		return labels.Count == 0 ? new TextObject("{=AF_UI_Timeline_AllMessages}All messages").ToString() : string.Join("、", labels);
+		return labels.Count == 0 ? new TextObject("{=AF_UI_Timeline_AllMessages}All messages").ToString() : string.Join(DeveloperUiText.T("AF_UI_Scene_NameSeparator", ", "), labels);
 	}
 
 	private string BuildCountrySelectionText()
@@ -1574,12 +1570,10 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 			.ToList();
 		if (names.Count <= 2)
 		{
-			return string.Join("、", names);
+			return string.Join(DeveloperUiText.T("AF_UI_Scene_NameSeparator", ", "), names);
 		}
-		var text = new TextObject("{=AF_UI_Timeline_MultiCountry}{NAME} and {COUNT} more");
-		text.SetTextVariable("NAME", names[0]);
-		text.SetTextVariable("COUNT", names.Count.ToString(CultureInfo.InvariantCulture));
-		return text.ToString();
+		return DeveloperUiText.Format("AF_UI_Timeline_MultiCountry", "{NAME} and others ({COUNT} total)",
+			("NAME", (object)names[0]), ("COUNT", names.Count.ToString(CultureInfo.InvariantCulture)));
 	}
 
 	private static string NormalizeCategoryId(string categoryId)
@@ -1686,6 +1680,8 @@ public sealed class WorldMessageTimelineCountryItemVM : ViewModel
 	[DataSourceProperty]
 	public string RecordCountText => RecordCount.ToString(CultureInfo.InvariantCulture);
 	[DataSourceProperty]
+	public string SelectedMarkerText => new TextObject("{=AF_UI_Weekly_Timeline_Selected}Selected").ToString();
+	[DataSourceProperty]
 	public bool IsSelected
 	{
 		get => _isSelected;
@@ -1737,6 +1733,8 @@ public sealed class WorldMessageTimelineRecordItemVM : ViewModel
 
 	public int Index { get; }
 	public string EntryId { get; }
+	[DataSourceProperty]
+	public string SelectedMarkerText => new TextObject("{=AF_UI_Weekly_Timeline_Selected}Selected").ToString();
 	[DataSourceProperty]
 	public string CategoryLabel { get; }
 	[DataSourceProperty]

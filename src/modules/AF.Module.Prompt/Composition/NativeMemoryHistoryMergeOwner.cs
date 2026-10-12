@@ -1,4 +1,5 @@
-﻿using System;
+using AnimusForge;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -109,7 +110,7 @@ internal static class NativeMemoryHistoryMergeOwner
                 || string.Equals(speaker, (playerName ?? "").Trim(), StringComparison.Ordinal);
             if (!player) return false;
             // Only remove the storage wrapper whose exact speaker/recipient are in the captured identity.
-            string addressed = speaker + "对" + target + "说";
+            string addressed = speaker + PromptComposerTexts.Raw("History_SpeechAddressedInfix") + target + PromptComposerTexts.Raw("History_SpeechAddressedSuffix");
             if (target.Length > 0 && content.StartsWith(addressed + ":", StringComparison.Ordinal))
                 content = content.Substring(addressed.Length + 1).Trim();
             else if (target.Length > 0 && content.StartsWith(addressed + "：", StringComparison.Ordinal))

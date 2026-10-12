@@ -69,7 +69,13 @@ build = subprocess.run([str(dotnet), "build", str(output / "PromptCompositionTes
 if build.returncode != 0:
     print(build.stdout[-3000:])
     raise SystemExit("build failed: " + str(build.returncode))
-run = subprocess.run([str(dotnet), str(output / "bin/Release/net8.0/PromptCompositionTests.dll")], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
-(output / "run.log").write_text(run.stdout + run.stderr, encoding="utf-8")
-print((run.stdout + run.stderr).strip()[-2000:])
-sys.exit(run.returncode)
+module_data = output / "bin/Release/net8.0/ModuleData"
+module_data.mkdir()
+for language in ("zh-CN", "en"):
+    shutil.copyfile(ROOT / f"content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.{language}.json", module_data / "PromptComposerTexts.json")
+    shutil.copyfile(ROOT / ("content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalTexts.en.json" if language == "en" else "content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalTexts.json"), module_data / "PromptRetrievalTexts.json")
+    run = subprocess.run([str(dotnet), str(output / "bin/Release/net8.0/PromptCompositionTests.dll"), language], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    (output / f"run-{language}.log").write_text(run.stdout + run.stderr, encoding="utf-8")
+    print(language + ": " + (run.stdout + run.stderr).strip()[-2000:])
+    if run.returncode:
+        sys.exit(run.returncode)

@@ -122,9 +122,14 @@ for raw, language, expected in date_cases:
 memory_date = (ROOT / "src/AF.GameAdapter.Bannerlord/Memory/MemoryEntityIdentityBannerlordAdapter.cs").read_text(encoding="utf-8-sig")
 assert "Math.Floor(CampaignTime.Now.ToDays)" in memory_date
 safe_date = memory_date.split("internal static string GetCurrentGameDateTextSafe()", 1)[1].split("internal static Vec2?", 1)[0]
+scene_raw = json.loads((ROOT / "content/foundation/AF.Foundation.Localization/ModuleData/AdapterSceneCompatibility.json").read_text(encoding="utf-8"))
+assert scene_raw["DatePrefix"] == "第 " and scene_raw["DateSuffix"] == " 日"
+safe_date = re.sub(r'AdapterSceneTexts.Raw\("(DatePrefix|DateSuffix)"\)', lambda match: json.dumps(scene_raw[match[1]], ensure_ascii=False), safe_date)
 assert "CampaignTime.Now.ToString()" in safe_date and '"第 " + GetCurrentGameDayIndexSafe() + " 日"' in safe_date
 week_zero = (ROOT / "src/AF.GameAdapter.Bannerlord/Weekly/WeekZeroOpeningSummaryGenerationController.cs").read_text(encoding="utf-8-sig")
-assert "eventRecordEntry.CreatedDay = 0;" in week_zero and 'eventRecordEntry.CreatedDate = "第 0 日";' in week_zero
+prompt_raw = json.loads((ROOT / 'content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json').read_text(encoding='utf-8-sig'))
+assert prompt_raw['weekly_memory_compat_e06eabeb34b7'] == '第 0 日', 'original archived week-zero date unchanged'
+assert "eventRecordEntry.CreatedDay = 0;" in week_zero and 'eventRecordEntry.CreatedDate = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_e06eabeb34b7");' in week_zero
 weekly_runtime = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyRuntime.cs").read_text(encoding="utf-8-sig")
 assert "CurrentDay = GetCurrentGameDayIndexSafe, CurrentDate = GetCurrentGameDateTextSafe" in weekly_runtime
 assert 'Localize("AF_UI_Weekly_Browser_DayNumber", "Day {DAY}"' in date_policy
@@ -159,6 +164,8 @@ def method_body(text, name):
     end = text.index("\n\t}", start) + len("\n\t}")
     return text[start:end].replace("\r\n", "\n")
 
+record_raw = json.loads((ROOT / "content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordCompatibility.json").read_text(encoding="utf-8"))
+diagnostic = re.sub(r'AdapterRecordTexts.Raw\("([^"\n]+)"\)', lambda match: json.dumps(record_raw[match[1]], ensure_ascii=False), diagnostic)
 for old, new in (("BuildWeeklyReportPromptPreviewText", "BuildSingle"),
                  ("BuildWeeklyBatchPromptPreviewText", "BuildBatch")):
     assert method_body(baseline, old) == method_body(diagnostic, new), old

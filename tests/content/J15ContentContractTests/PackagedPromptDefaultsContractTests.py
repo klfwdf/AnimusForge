@@ -45,6 +45,10 @@ check(layer.index('TryReadCustomPromptTextJsonFile(overridePath')<layer.index('T
       'user overrides still have priority')
 check('File.Write' not in defaults and 'ChangeLanguage' not in defaults and 'GetLanguage' not in defaults,
       'no implicit migration/write/language detection')
-check('private const string DefaultPlayerCustomPromptRule =' in settings and 'DefaultPlayerCustomPromptRule' not in defaults,
-      'known non-equivalent player-rule default is not silently changed')
+source_defaults=json.loads((ROOT/'content/foundation/AF.Foundation.Localization/ModuleData/McmPromptSourceCompatibility.json').read_text(encoding='utf-8'))
+active_cn=json.loads((ROOT/'content/foundation/AF.Foundation.Localization/ModuleData/McmPromptDefaults.zh-CN.json').read_text(encoding='utf-8'))
+check(active_cn['DefaultPlayerCustomPromptRule']==source_defaults['DefaultPlayerCustomPromptRule']
+      and 'SourceDefaultPlayerCustomPromptRule' in settings
+      and 'McmPromptDefaults.Get("DefaultPlayerCustomPromptRule")' in settings,
+      'distinct player-rule source default preserved and connected to content package')
 print(f'PASS packaged prompt defaults static contract: {checks} checks; current product compilation NOT RUN')

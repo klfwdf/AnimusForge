@@ -14,7 +14,7 @@ public sealed class TownPerceivedPerson
     private static string Clean(string value)
     {
         string text = (value ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-        return text.Length == 0 ? "一名附近人物" : text.Substring(0, Math.Min(48, text.Length));
+        return text.Length == 0 ? "Nearby person" : text.Substring(0, Math.Min(48, text.Length));
     }
 }
 
@@ -103,8 +103,11 @@ public sealed class TownScenePerceptionSession
             Dictionary<string, string> text = TownPromptTextCatalog.Resolve(catalog).ScenePerceptionTexts;
             var lines = new List<string> { text["heading"], text[ownedIncident ? "owned" : "occupied"] };
             if (state.Initialized)
+            {
+                string sep = IsChineseCatalog(catalog) ? "、" : ", ";
                 lines.Add(state.Visible.Count == 0 ? text["none"] : text["present"].Replace("{names}",
-                    string.Join("、", state.Visible.Values.Take(MaximumListedPeople).Select(x => x.Name))));
+                    string.Join(sep, state.Visible.Values.Take(MaximumListedPeople).Select(x => x.Name))));
+            }
             foreach (PerceptionEvent item in state.Events)
             {
                 string cause = item.Cause.Length == 0 ? text["unknown_cause"] : text["cause"].Replace("{actor}", item.Cause);
@@ -124,5 +127,16 @@ public sealed class TownScenePerceptionSession
     {
         state.Events.Enqueue(new PerceptionEvent { Kind = kind, Name = name, Cause = cause });
         while (state.Events.Count > MaximumRecentEvents) state.Events.Dequeue();
+    }
+    private static bool IsChineseCatalog(TownPromptTextCatalog catalog)
+    {
+        if (!string.IsNullOrEmpty(catalog?.Language)) return catalog.Language == "zh-CN";
+       string title = catalog?.SceneSectionTitle;
+        if (string.IsNullOrWhiteSpace(title)) return false;
+        foreach (char c in title)
+        {
+            if (c >= 0x4e00 && c <= 0x9fff) return true;
+        }
+        return false;
     }
 }

@@ -14,6 +14,9 @@ namespace AnimusForge.Refactor.Domain
     public static class WorldDiplomacyCanonicalRenderRules
     {
     public static string RenderCanonicalHistoryEntry(WorldDiplomacyCanonicalHistoryEntry entry)
+        => RenderCanonicalHistoryEntry(entry, null);
+
+    public static string RenderCanonicalHistoryEntry(WorldDiplomacyCanonicalHistoryEntry entry, Func<string, string, string> localize)
     {
         if (entry == null) return "";
         StringBuilder sb = new StringBuilder();
@@ -40,8 +43,80 @@ namespace AnimusForge.Refactor.Domain
             .Append("|intent=").Append(entry.Intent ?? "")
             .Append("|commitment=").Append(entry.Commitment ?? "")
             .Append("|verified=").Append(entry.Verified ? "true" : "false").AppendLine("]");
-        sb.Append(entry.Text ?? "");
+        string text = entry.Text ?? "";
+        if (localize != null)
+        {
+            text = ProjectCanonicalEntryText(entry.Kind, text, localize);
+        }
+        sb.Append(text);
         return sb.ToString().TrimEnd();
+    }
+
+    private static string ProjectCanonicalEntryText(string kind, string text, Func<string, string, string> localize)
+    {
+        if (string.IsNullOrWhiteSpace(text) || localize == null) return text ?? string.Empty;
+        if (string.Equals(kind, "policy_published", StringComparison.OrdinalIgnoreCase) || string.Equals(kind, "policy_snapshot", StringComparison.OrdinalIgnoreCase))
+        {
+            // Stored prose may itself quote these labels. Only project known structural
+            // positions; never rewrite the policy title, body, impact or effect values.
+            int newline = text.IndexOf('\n');
+            if (newline < 0) return text;
+            string header = ProjectPolicyHeader(text.Substring(0, newline), localize) + "\n";
+            string body = ProjectPrefix(text.Substring(newline + 1), DiplomacyCompatibilityTexts.Get("Render_Prefix_PolicyState"),
+                "HistoryProjection_PolicyStatus", "Policy status=", localize);
+            return header + body;
+        }
+        if (string.Equals(kind, "diplomatic_result", StringComparison.OrdinalIgnoreCase))
+        {
+            return ProjectPrefix(text, DiplomacyCompatibilityTexts.Get("Render_Prefix_Confirmed"), "HistoryProjection_Confirmed",
+                "[Confirmed by game mechanics] ", localize);
+        }
+        if (string.Equals(kind, "world_weekly", StringComparison.OrdinalIgnoreCase))
+        {
+            return text.StartsWith(DiplomacyCompatibilityTexts.Get("Render_Prefix_WeeklyCorrection"), StringComparison.Ordinal)
+                ? ProjectPrefix(text, DiplomacyCompatibilityTexts.Get("Render_Prefix_WeeklyCorrection"), "HistoryProjection_WeeklyCorrection",
+                    "[World Bulletin Final Edition (Correction)]", localize)
+                : ProjectPrefix(text, DiplomacyCompatibilityTexts.Get("Render_Prefix_Weekly"), "HistoryProjection_Weekly",
+                    "[World Bulletin Final Edition]", localize);
+        }
+        return text;
+    }
+
+    private static string ProjectPrefix(string text, string source, string key, string fallback,
+        Func<string, string, string> localize)
+        => text.StartsWith(source, StringComparison.Ordinal)
+            ? localize(key, fallback) + text.Substring(source.Length) : text;
+
+    // The publication owner emits this first-line schema from artifact fields.
+    // Ambiguous/legacy headers retain their original metadata; never parse the body.
+    private static string ProjectPolicyHeader(string header, Func<string, string, string> localize)
+    {
+        string opening = DiplomacyCompatibilityTexts.Get("Render_PolicyOpening"), issuerLabel = DiplomacyCompatibilityTexts.Get("Render_IssuerLabel"), scopeLabel = DiplomacyCompatibilityTexts.Get("Render_ScopeLabel");
+        string headingOnly = ProjectPrefix(header, opening, "HistoryProjection_Policy", "Policy 《", localize);
+        if (!header.StartsWith(opening, StringComparison.Ordinal)) return header;
+        int closing = header.IndexOf('》', opening.Length);
+        if (closing < 0 || closing != header.LastIndexOf('》')) return headingOnly;
+        string suffix = header.Substring(closing + 1);
+        string issuer = null, scope = null;
+        if (suffix.StartsWith(issuerLabel, StringComparison.Ordinal))
+        {
+            string values = suffix.Substring(issuerLabel.Length);
+            if (values.IndexOf(issuerLabel, StringComparison.Ordinal) >= 0) return headingOnly;
+            int scopeAt = values.IndexOf(scopeLabel, StringComparison.Ordinal);
+            issuer = scopeAt < 0 ? values : values.Substring(0, scopeAt);
+            if (scopeAt >= 0) scope = values.Substring(scopeAt + scopeLabel.Length);
+        }
+        else if (suffix.StartsWith(scopeLabel, StringComparison.Ordinal)) scope = suffix.Substring(scopeLabel.Length);
+        else if (suffix.Length != 0) return headingOnly;
+        if ((issuer != null && issuer.Length == 0) || (scope != null && (scope.Length == 0
+            || scope.IndexOf(scopeLabel, StringComparison.Ordinal) >= 0 || scope.IndexOf(issuerLabel, StringComparison.Ordinal) >= 0))) return headingOnly;
+        // Preserve every dynamic value and stable scope token; only labels use the package.
+        var output = new StringBuilder();
+        output.Append(localize("HistoryProjection_Policy", "Policy 《"))
+            .Append(header, opening.Length, closing - opening.Length + 1);
+        if (issuer != null) output.Append(localize("HistoryProjection_PolicyIssuer", "; issuing kingdom=")).Append(issuer);
+        if (scope != null) output.Append(localize("HistoryProjection_PolicyScope", "; scope=")).Append(scope);
+        return output.ToString();
     }
 
     public static string ProtectedFactStableKey(WorldDiplomacyCanonicalProtectedFact fact)
@@ -100,7 +175,7 @@ namespace AnimusForge.Refactor.Domain
 
     public static string RenderCanonicalProtectedFacts(
         IEnumerable<WorldDiplomacyCanonicalProtectedFact> protectedFacts,
-        IEnumerable<string> preservedResultSourceIds)
+        IEnumerable<string> preservedResultSourceIds, Func<string, string, string> localize = null)
     {
         List<WorldDiplomacyCanonicalProtectedFact> facts = WorldDiplomacyRoundLifecycleRules.OrderProtectedFactsBySequence((protectedFacts ?? Enumerable.Empty<WorldDiplomacyCanonicalProtectedFact>())
                 .Where(x => x != null)).ToList();
@@ -110,7 +185,7 @@ namespace AnimusForge.Refactor.Domain
             .Where(x => !exactResultIds.Contains(x)));
         if (facts.Count == 0 && legacyResultIds.Count == 0) return "";
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine("【确定性保留的外交硬事实；压缩摘要不得覆盖】");
+        sb.AppendLine(WorldDiplomacyPromptContractRules.ContractText(localize, "HistoryPrompt_005", "[Deterministically preserved diplomatic hard facts; compressed summaries must not override them]"));
         foreach (WorldDiplomacyCanonicalProtectedFact fact in facts)
         {
             if (string.Equals(fact.Kind, "response_link", StringComparison.OrdinalIgnoreCase))
@@ -131,7 +206,7 @@ namespace AnimusForge.Refactor.Domain
                 .Append("|intent=").Append(fact.Intent ?? "")
                 .Append("|commitment=").Append(fact.Commitment ?? "")
                 .AppendLine("|verified=true]");
-            sb.AppendLine(fact.Text ?? "");
+            sb.AppendLine(ProjectCanonicalEntryText("diplomatic_result", fact.Text, localize));
         }
         foreach (string sourceId in legacyResultIds)
         {
@@ -141,12 +216,12 @@ namespace AnimusForge.Refactor.Domain
         return sb.ToString().TrimEnd();
     }
 
-    public static string RenderCanonicalSnapshotPayload(WorldDiplomacyCanonicalHistorySnapshot snapshot)
+    public static string RenderCanonicalSnapshotPayload(WorldDiplomacyCanonicalHistorySnapshot snapshot, Func<string, string, string> localize = null)
     {
         if (snapshot == null) return "";
         StringBuilder sb = new StringBuilder();
         if (!string.IsNullOrWhiteSpace(snapshot.Content)) sb.AppendLine(snapshot.Content.Trim());
-        string protectedFacts = RenderCanonicalProtectedFacts(snapshot.ProtectedFacts, snapshot.PreservedResultSourceIds);
+        string protectedFacts = RenderCanonicalProtectedFacts(snapshot.ProtectedFacts, snapshot.PreservedResultSourceIds, localize);
         if (!string.IsNullOrWhiteSpace(protectedFacts)) sb.AppendLine(protectedFacts);
         return sb.ToString().TrimEnd();
     }

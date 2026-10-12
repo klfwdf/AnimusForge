@@ -33,15 +33,95 @@ for name, item in categories.items():
 prefix = 'src/AF.GameAdapter.Bannerlord/UI/Terminal/'
 def normalized_literals(text):
     return LEX.sub(lambda m: json.dumps(decode(m[0]), ensure_ascii=False) if m.lastgroup == 'string' else m[0], text)
+
+def restore_reviewed_terminal_description_literals(source):
+    """Invert only approved Hint/Group literals; every other source token still has its old oracle."""
+    fixture = json.loads((ROOT / 'tests/content/J15ContentContractTests/Fixtures/TerminalHintTranslationInverse.json').read_text('utf-8'))
+    changes = fixture['literalChanges']
+    assert len(changes) == 209 and len({(row['setting'], row['part']) for row in changes}) == 209
+    string = r'"(?:\\.|[^"\\])*"'
+    group = r'(?:' + string + r'|DuelSettings\.NewsSettingsGroup)'
+    category = r'(?:' + string + r'|TerminalCategories\.\w+)'
+    pattern = re.compile(r'new TerminalSettingDef\((' + string + r'),\s*(' + category + r'),\s*(' + group + r'),\s*(' + string + r'),\s*(' + string + r')')
+    definitions = {decode(match[1]): match for match in pattern.finditer(source)}
+    assert len(definitions) == 259
+    replacements = []
+    for row in changes:
+        assert row['part'] in ('Hint', 'Group')
+        match = definitions[row['setting']]
+        position = 5 if row['part'] == 'Hint' else 3
+        assert match[position] == row['after'], row['setting'] + ': approved full translation changed'
+        replacements.append((match.start(position), match.end(position), row['before']))
+    for start, end, original in sorted(replacements, reverse=True):
+        source = source[:start] + original + source[end:]
+    return source
+
+# Exact inverse of nine reviewed literal-safe display bindings. Formatting is
+# ignored outside lexed strings/comments; data/logic tokens remain compared.
+def code_tokens(text):
+    parts, cursor = [], 0
+    for token in LEX.finditer(text):
+        parts.append(re.sub(r'\s+', '', text[cursor:token.start()]))
+        parts.append(json.dumps(decode(token[0]), ensure_ascii=False) if token.lastgroup == 'string' else token[0])
+        cursor = token.end()
+    parts.append(re.sub(r'\s+', '', text[cursor:]))
+    return ''.join(parts)
+
+def restore_reviewed_display_bindings(source):
+    raw = json.loads((ROOT / 'content/foundation/AF.Foundation.Localization/ModuleData/AdapterPromptCaptureCompatibility.json').read_text(encoding='utf-8-sig'))
+    mcm = json.loads((ROOT / 'content/foundation/AF.Foundation.Localization/ModuleData/McmPromptSourceCompatibility.json').read_text(encoding='utf-8-sig'))
+    assert mcm['Mcm_ManualDropdownModelName'] == '*手动填写*'
+    source = re.sub(r'AdapterPromptCaptureTexts.PcapCompat\("([^"\n]+)"\)', lambda match: json.dumps(raw[match[1]], ensure_ascii=False), source)
+    source = re.sub(r'McmPromptDefaults.Raw\("([^"\n]+)"\)', lambda match: json.dumps(mcm[match[1]], ensure_ascii=False), source)
+    source = code_tokens(source)
+    bindings = [
+        ('hotkeyMessage', 'HotkeySet', 'Hotkey {TITLE} set to [{KEY}]', '("TITLE", (object)_activeListeningItem.Title), ("KEY", keyName)', 'hotkeyMessage.SetTextVariable("TITLE", _activeListeningItem.Title ?? ""); hotkeyMessage.SetTextVariable("KEY", keyName);'),
+        ('exported', 'ExportedTo', 'Exported to:\n{PATH}', '("PATH", (object)path)', 'exported.SetTextVariable("PATH", path);'),
+        ('titleText', 'NumericTitle', 'Set {TITLE}', '("TITLE", (object)Title)', 'titleText.SetTextVariable("TITLE", Title ?? "");'),
+        ('promptText', 'NumericPrompt', 'Enter a value (valid range: {MIN} ~ {MAX}):\n{HINT}', '("MIN", (object)SettingDef.MinValue), ("MAX", SettingDef.MaxValue), ("HINT", HintText)', 'promptText.SetTextVariable("MIN", SettingDef.MinValue); promptText.SetTextVariable("MAX", SettingDef.MaxValue); promptText.SetTextVariable("HINT", HintText ?? "");'),
+        ('titleText', 'DropdownTitle', 'Select {TITLE}', '("TITLE", (object)Title)', 'titleText.SetTextVariable("TITLE", Title ?? "");'),
+        ('promptText', 'DropdownPrompt', 'Choose from the available options:\n{HINT}', '("HINT", (object)HintText)', 'promptText.SetTextVariable("HINT", HintText ?? "");'),
+        ('titleText', 'TextTitle', 'Edit {TITLE}', '("TITLE", (object)Title)', 'titleText.SetTextVariable("TITLE", Title ?? "");'),
+        ('triggeredMessage', 'SettingTriggered', 'Triggered: {TITLE}', '("TITLE", (object)Title)', 'triggeredMessage.SetTextVariable("TITLE", Title ?? "");'),
+        ('triggerFailedMessage', 'SettingTriggerFailed', 'Trigger failed: {ERROR}', '("ERROR", (object)(ex.Message ?? new TextObject("{=AF_UI_Terminal_UnknownError}Unknown error.").ToString()))', 'triggerFailedMessage.SetTextVariable("ERROR", ex.Message ?? "Unknown error.");'),
+    ]
+    en_path = ROOT / 'content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml'
+    en = {node.get('id'): node.get('text') for node in ET.parse(en_path).iter('string')}
+    zh = {node.get('id'): node.get('text') for node in ET.parse(en_path.parent / 'CNs/af_ui_strings-zh-CN.xml').iter('string')}
+    historical_en = {node.get('id'): node.get('text') for node in ET.fromstring(subprocess.check_output(['git', 'show', '192390cbb:content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml'], cwd=ROOT)).iter('string')}
+    historical_zh = {node.get('id'): node.get('text') for node in ET.fromstring(subprocess.check_output(['git', 'show', '192390cbb:content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml'], cwd=ROOT)).iter('string')}
+    for variable, suffix, fallback, actual_variables, original_binding in bindings:
+        key = 'AF_UI_Terminal_' + suffix
+        assert en[key] == historical_en[key] and zh[key] == historical_zh[key], key + ': both original resource values unchanged'
+        assert sorted(re.findall(r'\{\w+\}', fallback)) == sorted(re.findall(r'\{\w+\}', en[key])) == sorted(re.findall(r'\{\w+\}', zh[key])), key
+        actual = code_tokens('string ' + variable + ' = DeveloperUiText.Format(' + json.dumps(key) + ', ' + json.dumps(fallback) + ', ' + actual_variables + ');')
+        original = code_tokens('var ' + variable + ' = new TextObject(' + json.dumps('{=' + key + '}' + fallback) + ');' + original_binding)
+        assert source.count(actual) == 1, key + ': exact variable identity and single consumer'
+        source = source.replace(actual, original, 1)
+    for name in ('hotkeyMessage', 'triggeredMessage', 'triggerFailedMessage'):
+        actual = 'newInformationMessage(' + name + ','
+        assert source.count(actual) == 1
+        source = source.replace(actual, 'newInformationMessage(' + name + '.ToString(),', 1)
+    assert source.count(',exported);') == 1
+    source = source.replace(',exported);', ',exported.ToString());', 1)
+    formatter = (ROOT / 'src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperUiText.cs').read_text(encoding='utf-8-sig')
+    assert 'LiteralValues.Replace(text.ToString(), match =>' in formatter
+    assert 'variables[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty' in formatter
+    return source
+
 for name in ('TerminalSettingsRegistry.cs', 'AnimusForgeTerminalUiModels.cs'):
     current = (ROOT / prefix / name).read_text(encoding='utf-8-sig')
     original = subprocess.check_output(['git', 'show', '192390cbb:' + prefix + name], cwd=ROOT).decode('utf-8-sig').replace('\r\n', '\n')
+    if name == 'TerminalSettingsRegistry.cs':
+        current = restore_reviewed_terminal_description_literals(current)
     restored = restore_terminal_categories(current, categories)
     if name == 'TerminalSettingsRegistry.cs':
         replacement = 'DuelSettingsUiLocalization.Text("AF_MCM_Option_DeviceCpu", "CPU (default)")'
         check(restored.count(replacement) == 1, 'one null-device display fallback uses its existing resource')
         restored = restored.replace(replacement, '"CPU（默认）"')
-    check(normalized_literals(restored) == normalized_literals(original), name + ' inverse preserves all other logic')
+    if name == 'AnimusForgeTerminalUiModels.cs':
+        restored = restore_reviewed_display_bindings(restored)
+    check(code_tokens(restored) == code_tokens(original), name + ' inverse preserves all other logic')
 registry = (ROOT / prefix / 'TerminalSettingsRegistry.cs').read_text(encoding='utf-8-sig')
 check(not any(HAN.search(decode(m[0])) for m in LEX.finditer(registry) if m.lastgroup == 'string'), 'registry has no remaining Chinese runtime string literals')
 check(len(re.findall(r'new TerminalSettingDef\("[^"]+", TerminalCategories\.\w+,', registry)) == 259, 'all definitions routed through preserved categories')

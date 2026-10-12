@@ -109,32 +109,32 @@ namespace AnimusForge.SceneActions.Core
             new SemanticRule(
                 SceneActionFrameworkV4.Promise,
                 50,
-                "我保证", "我发誓", "我承诺", "向你们保证", "以此起誓", "以我的名义起誓",
-                "绝不辜负", "同生共死", "生死与共", "i swear", "i promise", "i vow", "my word"),
+                SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0001"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0002"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0003"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0004"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0005"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0006"),
+                SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0007"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0008"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0009"), "i swear", "i promise", "i vow", "my word"),
             new SemanticRule(
                 SceneActionFrameworkV4.Rage,
                 45,
-                "复仇", "血债", "付出代价", "碾碎", "撕碎", "斩尽", "杀光", "怒火",
-                "绝不屈服", "宁死不降", "踏平", "vengeance", "make them pay", "crush them",
+                SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0010"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0011"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0012"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0013"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0014"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0015"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0016"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0017"),
+                SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0018"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0019"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0020"), "vengeance", "make them pay", "crush them",
                 "no mercy", "never surrender"),
             new SemanticRule(
                 SceneActionFrameworkV4.Command,
                 40,
-                "听令", "听我号令", "守住", "列阵", "举起武器", "握紧武器", "保持阵型",
-                "稳住阵线", "不许后退", "跟我来", "跟紧我", "向前", "冲锋", "进攻",
-                "准备战斗", "hold the line", "stand firm", "advance", "charge", "follow me",
+                SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0021"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0022"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0023"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0024"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0025"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0026"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0027"),
+                SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0028"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0029"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0030"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0031"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0032"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0033"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0034"),
+                SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0035"), "hold the line", "stand firm", "advance", "charge", "follow me",
                 "raise your weapons"),
             new SemanticRule(
                 SceneActionFrameworkV4.Point,
                 35,
-                "前方", "那里", "那边", "身后", "城墙", "城门", "山口", "河岸", "敌人就在",
-                "看那里", "看前方", "望向", "ahead", "over there", "behind us", "the walls",
+                SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0036"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0037"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0038"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0039"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0040"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0041"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0042"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0043"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0044"),
+                SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0045"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0046"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0047"), "ahead", "over there", "behind us", "the walls",
                 "that hill", "look there"),
             new SemanticRule(
                 SceneActionFrameworkV4.Explain,
                 20,
-                "因为", "所以", "因此", "如今", "听我说", "记住", "你们知道", "我们为何",
-                "局势", "我们的优势", "他们以为", "今日之战", "because", "therefore", "remember",
+                SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0048"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0049"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0050"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0051"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0052"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0053"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0054"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0055"),
+                SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0056"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0057"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0058"), SceneActionVocabulary.Text("BattleSpeechPerformancePlannerV1.LegacySource0059"), "because", "therefore", "remember",
                 "you know", "the reason", "today's battle")
         };
 

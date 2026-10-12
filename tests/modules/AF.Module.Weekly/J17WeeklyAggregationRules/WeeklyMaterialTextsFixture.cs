@@ -1,23 +1,25 @@
-using System.Collections.Generic;
+using System;
 using System.IO;
-using System.Text.Json;
 
 namespace AnimusForge;
 
-// Test-only seam for this net8.0, engine-free source replay.
-// Read the authoritative compatibility corpus: do not duplicate translations or
-// substitute the package-selected product prompt reader in aggregation tests.
-// The three explicitly linked owners call Raw only; no Prompt locale is selected.
-internal static class WeeklyMaterialTexts
+// Only the module filesystem boundary is replaced. The project links the production
+// WeeklyMaterialTexts reader and supplies real package-selected CN/EN prompt files.
+// Run each language in a separate process because the production reader caches once.
+internal static class WeeklyPromptFixture
 {
-    private static readonly Dictionary<string, string> Values = Load();
+    internal static bool English { get; private set; }
 
-    internal static string Raw(string key) => Values[key];
-
-    private static Dictionary<string, string> Load()
+    internal static void Select(string[] args)
     {
-        using Stream stream = typeof(WeeklyMaterialTexts).Assembly.GetManifestResourceStream(
-            "AnimusForge.Weekly.MaterialCompatibility.json");
-        return JsonSerializer.Deserialize<Dictionary<string, string>>(stream);
+        if (args.Length == 0 || args.Length == 1 && args[0] == "cn") English = false;
+        else if (args.Length == 1 && args[0] == "en") English = true;
+        else throw new ArgumentException("Use cn or en to select the prompt package fixture.");
     }
+}
+
+internal static class AnimusForgeModulePaths
+{
+    internal static string GetModuleDataFilePath(string filename)
+        => Path.Combine(AppContext.BaseDirectory, "prompt-fixtures", WeeklyPromptFixture.English ? "en" : "cn", "ModuleData", filename);
 }

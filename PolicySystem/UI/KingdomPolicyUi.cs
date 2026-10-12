@@ -257,6 +257,8 @@ public sealed class CustomPolicyComposePopup
 
 public sealed class CustomPolicyComposePopupVM : ViewModel
 {
+	private readonly string _rawDateText;
+
 	private readonly Action<string, string, string, string, string> _onPublish;
 
 	private readonly Action<PlayerPolicyAutoDraftRequest> _onAutoDraft;
@@ -319,7 +321,8 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		NameLabelText = string.IsNullOrWhiteSpace(nameLabelText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyNameLabel", "Policy Name") : nameLabelText;
 		ContentLabelText = string.IsNullOrWhiteSpace(contentLabelText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyContentLabel", "Policy Content") : contentLabelText;
 		DurationLabelText = PolicyUiTexts.Get("AFPOL_UI_DurationLabel", "Effect duration in days (leave blank for permanent)");
-		DateText = string.IsNullOrWhiteSpace(dateText) ? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date") : dateText;
+		_rawDateText = dateText ?? "";
+		DateText = string.IsNullOrWhiteSpace(dateText) ? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date") : PolicyDateTextProjection.ForUi(dateText);
 		PolicyName = prefill?.PolicyName ?? "";
 		PolicyContent = prefill?.PolicyContent ?? "";
 		DurationText = prefill?.DurationText ?? "";
@@ -607,7 +610,7 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 			}
 			return;
 		}
-		_onPublish?.Invoke(PolicyName ?? "", PolicyContent ?? "", DurationText ?? "", DateText ?? "", SelectedTargetId ?? "");
+		_onPublish?.Invoke(PolicyName ?? "", PolicyContent ?? "", DurationText ?? "", _rawDateText, SelectedTargetId ?? "");
 	}
 
 	public void ExecuteCancel()
@@ -634,7 +637,7 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 			ScopeKind = TargetItems?.FirstOrDefault(item => item.IsSelected)?.ScopeKind ?? "kingdom",
 			TargetKingdomId = SelectedTargetId ?? "",
 			TargetKingdomName = TargetItems?.FirstOrDefault(item => item.IsSelected)?.DisplayText ?? "",
-			DateText = DateText ?? ""
+			DateText = _rawDateText
 		};
 		_isAutoDrafting = true;
 		AutoDraftText = PolicyUiTexts.Get("AFPOL_UI_AiDrafting", "AI drafting…");
@@ -1601,7 +1604,7 @@ public sealed class CustomPolicyHistoryRecordItemVM : ViewModel
 		RecordId = record?.RecordId ?? string.Empty;
 		CanReReview = record?.CanReReview == true;
 		ReReviewText = string.IsNullOrWhiteSpace(record?.ReReviewText) ? PolicyUiTexts.Get("AFPOL_UI_ReReview", "Re-review") : record.ReReviewText.Trim();
-		DateText = (record?.DateText ?? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date")).Trim();
+		DateText = PolicyDateTextProjection.ForUi((record?.DateText ?? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date")).Trim());
 		PolicyNameText = (record?.PolicyNameText ?? PolicyUiTexts.Get("AFPOL_UI_UnnamedPolicy", "Unnamed Policy")).Trim();
 		CostText = (record?.CostText ?? "").Trim();
 		ContentSectionTitleText = string.IsNullOrWhiteSpace(record?.ContentSectionTitleText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyContentSection", "[Policy Content]") : record.ContentSectionTitleText.Trim();

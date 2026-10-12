@@ -1,0 +1,6 @@
+{
+  "Version": 1,
+  "ModuleId": "securityPerDay",
+  "UnderstandingPrompt": "Security is mainly affected by banditry, patrols, law enforcement, justice, corruption, military rule, suppression and local order. When policies continuously change local safety through these mechanisms, security is a direct consequence.",
+  "EvaluationPrompt": "Judge daily changes per affected town. Mild impact: ±0.1 to ±0.3; regular patrols, law enforcement, anti-corruption or banditry changes: ±0.3 to ±0.7; strong security campaigns, military rule, border disorder or banditry outbreaks: ±0.8 to ±1.5; severe disorder or high-pressure suppression: ±1.5 to ±2.5. More than ±2.5 is reserved for brief extreme internal unrest, bloody suppression or large-scale banditry."
+}

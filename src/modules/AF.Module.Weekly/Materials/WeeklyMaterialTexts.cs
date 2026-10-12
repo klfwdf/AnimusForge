@@ -22,4 +22,16 @@ internal static class WeeklyMaterialTexts
 
     internal static string Raw(string key) => RawValues.Value[key];
     internal static string Prompt(string key) => PromptValues.Value[key];
+
+    private static readonly Lazy<Dictionary<string, string>> SourceProjection = new Lazy<Dictionary<string, string>>(() =>
+    {
+        var projection = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var entry in PromptValues.Value)
+            if (RawValues.Value.TryGetValue(entry.Key, out string source)) projection[source] = entry.Value;
+        return projection;
+    });
+
+    // Project derived parser labels only at the prompt boundary; facts and grouping keys retain their source values.
+    internal static string ProjectRaw(string source)
+        => source != null && SourceProjection.Value.TryGetValue(source, out string text) ? text : source;
 }

@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -168,26 +169,26 @@ internal sealed class NpcTributeVassalageBehavior : CampaignBehaviorBase
 		VassalageBehavior vassalageBehavior = VassalageBehavior.Instance;
 		if (vassalageBehavior == null)
 		{
-			statusText = "NPC 臣属条约未签署：臣属系统未初始化。";
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_NpcNotInitialized", "NPC vassalage treaty not signed: vassalage system is not initialized.");
 			LogAgreementCreateReject("vassalage_behavior_missing", suzerainKingdom, vassalKingdom, source, statusText);
 			return false;
 		}
 		if (!VassalageBehavior.IsValidKingdomForVassalage(suzerainKingdom) || !VassalageBehavior.IsValidKingdomForVassalage(vassalKingdom))
 		{
-			statusText = "NPC 臣属条约未签署：宗主国或臣属国无效。";
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_NpcInvalidKingdoms", "NPC vassalage treaty not signed: suzerain or subject kingdom is invalid.");
 			LogAgreementCreateReject("invalid_kingdom", suzerainKingdom, vassalKingdom, source, statusText);
 			return false;
 		}
 		if (suzerainKingdom == vassalKingdom)
 		{
-			statusText = "NPC 臣属条约未签署：王国不能臣服于自己。";
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_NpcCannotVassalizeSelf", "NPC vassalage treaty not signed: a kingdom cannot submit to itself.");
 			LogAgreementCreateReject("same_kingdom", suzerainKingdom, vassalKingdom, source, statusText);
 			return false;
 		}
 		Kingdom playerKingdom = vassalageBehavior.GetPlayerKingdomForVassalage();
 		if (VassalageBehavior.IsValidKingdomForVassalage(playerKingdom) && (suzerainKingdom == playerKingdom || vassalKingdom == playerKingdom))
 		{
-			statusText = "NPC 臣属条约未签署：玩家王国参与时必须走现有谈判/标签链路。";
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_NpcPlayerMustUseTagPipeline", "NPC vassalage treaty not signed: player kingdom must use negotiation/tag pipeline.");
 			LogAgreementCreateReject("player_kingdom_involved", suzerainKingdom, vassalKingdom, source, statusText, playerKingdom);
 			return false;
 		}
@@ -196,20 +197,20 @@ internal sealed class NpcTributeVassalageBehavior : CampaignBehaviorBase
 		VassalageAgreement existing = vassalageBehavior.GetAnyVassalageAgreementForBridge(vassalKingdom);
 		if (existing != null)
 		{
-			statusText = GetKingdomDisplayName(vassalKingdom, "该王国") + "已经承认" + GetKingdomDisplayName(existing.ResolveSuzerain(), "宗主国") + "的宗主权。";
+statusText = string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_NpcAcknowledgedSuzerainFormat", "{0} has recognized the suzerainty of {1}."), GetKingdomDisplayName(vassalKingdom, DiplomacyMiscPromptTexts.Get("StrategicProfile_DefaultKingdomFallback", "the kingdom")), GetKingdomDisplayName(existing.ResolveSuzerain(), DiplomacyMiscPromptTexts.Get("Vassalage_SuzerainKingdom", "suzerain kingdom")));
 			LogAgreementCreateReject("existing_vassal_agreement", suzerainKingdom, vassalKingdom, source, statusText, playerKingdom, existing);
 			return false;
 		}
 		VassalageAgreement reverse = vassalageBehavior.GetAnyVassalageAgreementForBridge(suzerainKingdom);
 		if (reverse != null && string.Equals(reverse.SuzerainKingdomId ?? "", vassalId, StringComparison.OrdinalIgnoreCase))
 		{
-			statusText = "NPC 臣属条约未签署：双方已经存在反向臣属关系。";
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_NpcReverseVassalageExists", "NPC vassalage treaty not signed: reverse vassalage relationship already exists.");
 			LogAgreementCreateReject("direct_reverse_agreement", suzerainKingdom, vassalKingdom, source, statusText, playerKingdom, reverse);
 			return false;
 		}
 		if (vassalageBehavior.WouldCreateVassalageCycleForBridge(suzerainId, vassalId, out string cycleChain))
 		{
-			statusText = "NPC 臣属条约未签署：该关系会形成循环臣属链。";
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_NpcCircularChain", "NPC vassalage treaty not signed: this relationship would create a circular vassalage chain.");
 			LogAgreementCreateReject("vassalage_cycle", suzerainKingdom, vassalKingdom, source, statusText, playerKingdom, null, cycleChain);
 			return false;
 		}
@@ -228,13 +229,13 @@ internal sealed class NpcTributeVassalageBehavior : CampaignBehaviorBase
 		agreementId = agreement.AgreementId;
 		int queuedWarSyncCount = 0;
 		int syncedWarCount = SynchronizeExistingWarsForNewNpcTributaryAgreement(vassalageBehavior, agreement, suzerainKingdom, vassalKingdom, vassalEnemies, out queuedWarSyncCount);
-		statusText = GetKingdomDisplayName(vassalKingdom, "该王国") + "在国力悬殊的议和后承认" + GetKingdomDisplayName(suzerainKingdom, "宗主国") + "的宗主权，条约类型：朝贡国。"
+statusText = string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_NpcTributePeaceAcknowledgedFormat", "{0} recognized the suzerainty of {1} after a disparate peace; treaty type: tributary kingdom."), GetKingdomDisplayName(vassalKingdom, DiplomacyMiscPromptTexts.Get("StrategicProfile_DefaultKingdomFallback", "the kingdom")), GetKingdomDisplayName(suzerainKingdom, DiplomacyMiscPromptTexts.Get("Vassalage_SuzerainKingdom", "suzerain kingdom")))
 			+ ((syncedWarCount > 0 || queuedWarSyncCount > 0)
-				? ("宗主国已接手朝贡国现有战事：" + syncedWarCount.ToString(CultureInfo.InvariantCulture) + "项已生效，" + queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + "项将在局势安全时生效。")
+? string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_NpcSuzerainTookOverWarsFormat", "Suzerain took over tributary's active wars: {0} effective, {1} will take effect when situations are safe."), syncedWarCount.ToString(CultureInfo.InvariantCulture), queuedWarSyncCount.ToString(CultureInfo.InvariantCulture))
 				: "");
 		vassalageBehavior.QueueNpcTributaryVassalageNoticeForBridge(agreement);
 		Logger.Log(LogCategory, "Agreement created suzerain=" + agreement.SuzerainKingdomId + " vassal=" + agreement.VassalKingdomId + " type=" + agreement.Type);
-		MyBehavior.Instance?.CaptureWorldBulletinVassalage(suzerainKingdom, vassalKingdom, "朝贡国", true);
+		MyBehavior.Instance?.CaptureWorldBulletinVassalage(suzerainKingdom, vassalKingdom, DiplomacyMiscPromptTexts.Get("Vassalage_TributeKingdom", "tributary kingdom"), true);
 		NpcTributeVassalageDiagnosticLog.Event("agreement.create.success", new Dictionary<string, object>
 		{
 			["agreementId"] = agreement.AgreementId,
@@ -553,7 +554,7 @@ internal sealed class NpcTributeVassalageBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return kingdom?.StringId ?? fallback ?? "未知王国";
+		return kingdom?.StringId ?? fallback ?? DiplomacyMiscPromptTexts.Get("Prompt_UnknownKingdomFallback", "Unknown Kingdom");
 	}
 
 	private static bool IsWeakActivePeaceSide(

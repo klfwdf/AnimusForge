@@ -4,37 +4,36 @@ namespace AnimusForge;
 
 internal static class NobleGatheringUiText
 {
-	private static string Resolve(string id, string fallback) => new TextObject("{=" + id + "}" + fallback).ToString();
+    // Resolve the template once, then insert display data without re-parsing its braces.
+    private static readonly System.Text.RegularExpressions.Regex LiteralValues = new System.Text.RegularExpressions.Regex(@"AFSWEEPLITERAL([0-9]+)END", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+    private static string RenderLiteral(TextObject text, params (string Name, object Value)[] values)
+    {
+        for (int i = 0; i < values.Length; i++)
+            if (values[i].Value is TextObject nested)
+                text.SetTextVariable(values[i].Name, nested);
+            else
+                text.SetTextVariable(values[i].Name, "AFSWEEPLITERAL" + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + "END");
+        return LiteralValues.Replace(text.ToString(), match => values[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty);
+    }
+
+	internal static string Resolve(string id, string fallback) => new TextObject("{=" + id + "}" + fallback).ToString();
+	internal static string Render(string id, string fallback, params (string Name, object Value)[] values) => RenderLiteral(new TextObject("{=" + id + "}" + fallback), values);
 	private static string Format(string id, string fallback, string name, object value)
-	{
-		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		text.SetTextVariable(name, value?.ToString() ?? string.Empty);
-		return text.ToString();
-	}
+    {
+        return RenderLiteral(new TextObject("{=" + id + "}" + fallback), (name, value?.ToString() ?? string.Empty));
+    }
 	private static string Format2(string id, string fallback, string firstName, object firstValue, string secondName, object secondValue)
-	{
-		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		text.SetTextVariable(firstName, firstValue?.ToString() ?? string.Empty);
-		text.SetTextVariable(secondName, secondValue?.ToString() ?? string.Empty);
-		return text.ToString();
-	}
+    {
+        return RenderLiteral(new TextObject("{=" + id + "}" + fallback), (firstName, firstValue?.ToString() ?? string.Empty), (secondName, secondValue?.ToString() ?? string.Empty));
+    }
 	private static string Format3(string id, string fallback, string firstName, object firstValue, string secondName, object secondValue, string thirdName, object thirdValue)
-	{
-		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		text.SetTextVariable(firstName, firstValue?.ToString() ?? string.Empty);
-		text.SetTextVariable(secondName, secondValue?.ToString() ?? string.Empty);
-		text.SetTextVariable(thirdName, thirdValue?.ToString() ?? string.Empty);
-		return text.ToString();
-	}
+    {
+        return RenderLiteral(new TextObject("{=" + id + "}" + fallback), (firstName, firstValue?.ToString() ?? string.Empty), (secondName, secondValue?.ToString() ?? string.Empty), (thirdName, thirdValue?.ToString() ?? string.Empty));
+    }
 	private static string Format4(string id, string fallback, string firstName, object firstValue, string secondName, object secondValue, string thirdName, object thirdValue, string fourthName, object fourthValue)
-	{
-		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		text.SetTextVariable(firstName, firstValue?.ToString() ?? string.Empty);
-		text.SetTextVariable(secondName, secondValue?.ToString() ?? string.Empty);
-		text.SetTextVariable(thirdName, thirdValue?.ToString() ?? string.Empty);
-		text.SetTextVariable(fourthName, fourthValue?.ToString() ?? string.Empty);
-		return text.ToString();
-	}
+    {
+        return RenderLiteral(new TextObject("{=" + id + "}" + fallback), (firstName, firstValue?.ToString() ?? string.Empty), (secondName, secondValue?.ToString() ?? string.Empty), (thirdName, thirdValue?.ToString() ?? string.Empty), (fourthName, fourthValue?.ToString() ?? string.Empty));
+    }
 
 	internal static string NoHostSettlement => Resolve("AF_DIP_UI_Gathering_NoHostSettlement", "The clan has no town or castle available as a gathering venue.");
 	internal static string NoVenue => Resolve("AF_DIP_UI_Gathering_NoVenue", "No eligible gathering venue is available.");
@@ -68,7 +67,7 @@ internal static class NobleGatheringUiText
 	internal static string ConfirmBody(string settlement, int cost, int days, int guests) => Format4("AF_DIP_UI_Gathering_ConfirmBody", "Venue: {SETTLEMENT}\nCost: {COST} denars\nDuration: {DAYS} days\nGuests: {GUESTS}\n\nConfirming will deduct the cost and send gathering invitations to the guests.", "SETTLEMENT", settlement, "COST", cost, "DAYS", days, "GUESTS", guests);
 	internal static string PayAndInvite => Resolve("AF_DIP_UI_Gathering_PayAndInvite", "Pay and send invitations");
 	internal static string NotSelected => Resolve("AF_DIP_UI_Gathering_NotSelected", "No guests selected yet.");
-	internal static string SelectedGuests(string names, int count, bool more) => Format2(more ? "AF_DIP_UI_Gathering_SelectedGuestsMore" : "AF_DIP_UI_Gathering_SelectedGuestsExact", more ? "Selected: {NAMES} and {COUNT} more." : "Selected: {NAMES}", "NAMES", names, "COUNT", count);
+	internal static string SelectedGuests(string names, int count, bool more) => Format2(more ? "AF_DIP_UI_Gathering_SelectedGuestsMore" : "AF_DIP_UI_Gathering_SelectedGuestsExact", more ? "Selected: {NAMES} and others, {COUNT} in total." : "Selected: {NAMES}", "NAMES", names, "COUNT", count);
 	internal static string IdentityUnknown => Resolve("AF_DIP_UI_Gathering_IdentityUnknown", "Unknown identity");
 	internal static string Governor => Resolve("AF_DIP_UI_Gathering_Governor", "Governor");
 	internal static string Ruler => Resolve("AF_DIP_UI_Gathering_Ruler", "Ruler");
@@ -76,6 +75,7 @@ internal static class NobleGatheringUiText
 	internal static string Lady => Resolve("AF_DIP_UI_Gathering_Lady", "Lady");
 	internal static string Lord => Resolve("AF_DIP_UI_Gathering_Lord", "Lord");
 	internal static string IdentityHint(string identity, string settlement) => string.IsNullOrWhiteSpace(settlement) ? Format("AF_DIP_UI_Gathering_IdentityHint", "Identity: {IDENTITY}", "IDENTITY", identity) : Format2("AF_DIP_UI_Gathering_IdentityHintGoverned", "Identity: {IDENTITY}\nGoverned settlement: {SETTLEMENT}", "IDENTITY", identity, "SETTLEMENT", settlement);
+	internal static string ListSeparator => Resolve("AF_DIP_UI_Gathering_ListSeparator", ", ");
 	internal static string UnknownClan => Resolve("AF_DIP_UI_Gathering_UnknownClan", "Unknown clan");
 	internal static string UnknownSettlement => Resolve("AF_DIP_UI_Gathering_UnknownSettlement", "Unknown settlement");
 	internal static string ClanHint(int members, int movable, int travel) => Format3("AF_DIP_UI_Gathering_ClanHint", "Members: {MEMBERS}; independent parties: {MOVABLE}; can travel to a gathering by the native system: {TRAVEL}.", "MEMBERS", members, "MOVABLE", movable, "TRAVEL", travel);

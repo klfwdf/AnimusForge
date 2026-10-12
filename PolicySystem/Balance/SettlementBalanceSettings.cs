@@ -29,7 +29,7 @@ internal static class SettlementBalanceSettings
 	internal static bool TrySave(SettlementBalanceSnapshot snapshot, out string error)
 	{
 		Initialize();
-		if (_store == null) { error = "无法定位政策设置目录。"; return false; }
+		if (_store == null) { error = "Cannot locate policy settings directory."; return false; }
 		return _store.TrySave(snapshot, out error);
 	}
 
@@ -52,14 +52,14 @@ internal static class SettlementBalanceSettings
 		{
 			var document = JObject.Parse(json);
 			if (document["Version"]?.Type != JTokenType.Integer || document["Version"].Value<int>() != 1 || !(document["Limits"] is JObject limits))
-				throw new FormatException("总量上限配置版本或结构无效。");
+				throw new FormatException("Aggregate cap settings version or structure is invalid.");
 			var candidate = snapshot;
 			foreach (var definition in SettlementBalanceRules.Definitions)
 			{
 				JToken token = limits[definition.Id];
 				if (token == null) continue;
 				if (!(token is JObject row) || row["Enabled"]?.Type != JTokenType.Boolean || row["Value"]?.Type != JTokenType.Integer)
-					throw new FormatException(definition.Name + "配置无效。");
+					throw new FormatException(definition.Name + " settings are invalid.");
 				candidate = candidate.With(definition.Metric, row["Enabled"].Value<bool>(), row["Value"].Value<int>());
 			}
 			if (!candidate.TryValidate(out error)) return false;
@@ -82,7 +82,7 @@ internal sealed class SettlementBalanceSettingsStore
 		try
 		{
 			if (!File.Exists(path)) return;
-			if (new FileInfo(path).Length > 65536) throw new FormatException("总量上限配置文件过大。");
+			if (new FileInfo(path).Length > 65536) throw new FormatException("Aggregate cap settings file is too large.");
 			if (!SettlementBalanceSettings.TryDecode(File.ReadAllText(path, new UTF8Encoding(false, true)), out var loaded, out string error))
 				throw new FormatException(error);
 			_snapshot = loaded;
@@ -93,7 +93,7 @@ internal sealed class SettlementBalanceSettingsStore
 	internal bool TrySave(SettlementBalanceSnapshot snapshot, out string error)
 	{
 		error = string.Empty;
-		if (snapshot == null) { error = "配置为空。"; return false; }
+		if (snapshot == null) { error = "Configuration is empty."; return false; }
 		if (!snapshot.TryValidate(out error)) return false;
 		string temp = _path + ".tmp-" + Guid.NewGuid().ToString("N");
 		try

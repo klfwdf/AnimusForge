@@ -69,7 +69,7 @@ internal static class PolicyEffectTargetJurisdiction
 			if (failOnUnauthorized && HasAnyTarget(targetSet))
 			{
 				targetSet = null;
-				error = "政策效果目标缺少发布地王国边界。";
+				error = "Policy effect target missing issuing kingdom boundary.";
 				return false;
 			}
 			return true;
@@ -166,8 +166,8 @@ internal static class PolicyEffectTargetJurisdiction
 		{
 			string firstRejected = string.Join(", ", rejected.Take(6));
 			targetSet = null;
-			error = "政策效果目标越过发布地管辖边界"
-				+ (moduleAllowsCross ? "或缺少明确跨国授权" : "，且该模块未开放跨国目标")
+			error = "Policy effect target exceeds issuing jurisdiction boundary"
+				+ (moduleAllowsCross ? " or lacks explicit cross-kingdom authorization" : ", and this module does not allow cross-kingdom targets")
 				+ "：" + firstRejected;
 			return false;
 		}
@@ -260,7 +260,7 @@ internal static class PolicyEffectTargetJurisdiction
 		if (failOnUnauthorized && rejected.Count > 0)
 		{
 			targetSet = null;
-			error = "政策效果目标越过地方封地及明确授权目标边界：" + string.Join(", ", rejected.Take(6));
+			error = "Policy effect target exceeds local fief and explicitly authorized target boundaries: " + string.Join(", ", rejected.Take(6));
 			return false;
 		}
 		return true;
@@ -322,7 +322,7 @@ internal static class PolicyEffectTargetJurisdiction
 			{
 				continue;
 			}
-			error = "目标王国 " + kingdomId + " 未被当前政策效果模块授权为可执行跨国目标。";
+			error = "Target kingdom " + kingdomId + " is not authorized by the current policy effect module as an executable cross-kingdom target.";
 			return false;
 		}
 		if (explicitForeignKingdomIds.Count > 0)
@@ -337,19 +337,19 @@ internal static class PolicyEffectTargetJurisdiction
 		{
 			if (!module.Descriptor.AllowCrossKingdomTargets)
 			{
-				error = "模块 " + module.Id + " 未开放跨国目标。";
+				error = "Module " + module.Id + " does not allow cross-kingdom targets.";
 				return false;
 			}
 			List<string> persistedAuthorized = NormalizeIds(targetSet.AuthorizedCrossKingdomIds);
 			if (persistedAuthorized.Count == 0)
 			{
-				error = "跨国目标缺少明确授权王国集合。";
+				error = "Cross-kingdom target missing explicitly authorized kingdom set.";
 				return false;
 			}
 			string unauthorized = persistedAuthorized.FirstOrDefault(id => !allowedCross.Contains(id));
 			if (!string.IsNullOrWhiteSpace(unauthorized))
 			{
-				error = "目标王国 " + unauthorized + " 未被当前政策请求授权为可执行跨国目标。";
+				error = "Target kingdom " + unauthorized + " is not authorized by the current policy request as an executable cross-kingdom target.";
 				return false;
 			}
 			targetSet.AuthorizedCrossKingdomIds = persistedAuthorized;

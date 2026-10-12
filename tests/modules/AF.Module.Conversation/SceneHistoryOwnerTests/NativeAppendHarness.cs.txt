@@ -7,7 +7,7 @@ internal readonly struct CampaignTime {
  internal static bool Fails;internal static CampaignTime Now=>Fails?throw new Exception("clock unavailable"):new();
  internal double ToDays=>5;public override string ToString()=>"day5";
 }
-internal static class MyBehavior {internal static int GetCurrentMemoryGameHourForExternal()=>9;internal static string ResolveCurrentMemorySceneLabelForExternal()=>"town";}
+internal static class MyBehavior {internal static int GetCurrentMemoryGameHourForExternal()=>9;internal static string ResolveCurrentMemorySceneLabelForExternal()=>"town";internal static string CaptureCurrentPromptMemorySessionKey()=>"test-session";}
 internal sealed class NativeBridgeProbe {
  internal int Calls;internal bool Fails;internal long Sequence;
  internal void AppendNativeConversationSessionLineToSceneHistory(Hero h,CharacterObject c,string n,string s,string t,string k,long sequence,int index,NpcDataPacket npc,int target,string targetName){Calls++;Sequence=sequence;if(Fails)throw new Exception("bridge failed after session append");}
@@ -24,6 +24,7 @@ internal static class NativeAppendCaptureProbe {
  AppendNativeConversationSessionHistoryCaptured(null,null,"Ada","Player","  hello  ","player",capturedHistoryKey:"frozen",playerTargetAgentIndex:11,playerTargetName:"Other");
  var entry=_nativeSessionOwner.Snapshot("frozen",100)[0];C(KeyCaptures==0&&entry.Text=="hello"&&entry.EventSequence==1,"held key avoids live recapture; trim; next sequence");
  C(entry.GameDayIndex==5&&entry.GameDate=="day5"&&entry.GameHour==9&&entry.Scene=="town","actual adapter clock captures before true owner append");
+ C(entry.PromptMemorySessionKey=="test-session","entry is stamped before session append and snapshot retains provenance");
  C(CurrentInstance.Calls==1&&CurrentInstance.Sequence==1&&entry.TargetAgentIndex==11,"same event bridges only after actual SessionOwner.Append");
  AppendNativeConversationSessionHistoryCaptured(null,null,"Ada","NPC","reply","npc",50,false);C(KeyCaptures==1&&CurrentInstance.Calls==1&&_nativeSessionOwner.Snapshot("captured",100)[0].EventSequence==50,"uncaptured key leaf and disabled bridge preserve sequence");
  CampaignTime.Fails=true;AppendNativeConversationSessionHistoryCaptured(null,null,"Ada","NPC","clock fallback","npc",51,false,capturedHistoryKey:"clock");CampaignTime.Fails=false;

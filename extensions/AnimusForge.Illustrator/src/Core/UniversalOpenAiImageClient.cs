@@ -54,7 +54,7 @@ namespace AnimusForge.Illustrator.Core
             System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> single = null;
             if (!string.IsNullOrWhiteSpace(inputBase64Image))
             {
-                single = new[] { new IllustrationReferenceImage(inputBase64Image, "游戏内真实画面参考", IllustrationReferenceKind.Scene) };
+                single = new[] { new IllustrationReferenceImage(inputBase64Image, IllustratorText.Get("ImageClient_857"), IllustrationReferenceKind.Scene) };
             }
             return GenerateImageAsync(prompt, single, options, cancellationToken);
         }
@@ -81,7 +81,7 @@ namespace AnimusForge.Illustrator.Core
             var settings = options;
             if (settings == null || !settings.EnableImageGeneration)
             {
-                result.ErrorMessage = "AI 生图系统未启用";
+                result.ErrorMessage = "AI image generation is disabled.";
                 GenerationDiagnostics.Current?.RecordImageResult(result);
                 return result;
             }
@@ -89,7 +89,7 @@ namespace AnimusForge.Illustrator.Core
             string baseUrl = (settings.ApiBaseUrl ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
-                result.ErrorMessage = "未配置生图 API 端点 (Base URL)";
+                result.ErrorMessage = "No image API endpoint (Base URL) is configured.";
                 GenerationDiagnostics.Current?.RecordImageResult(result);
                 return result;
             }
@@ -151,15 +151,15 @@ namespace AnimusForge.Illustrator.Core
                 var composed = imageEdit ? new ComposedImagePrompt() : ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.IsMissionScreenshot ? 0 : settings.Randomness,
                     (player2 || settings.IsMissionScreenshot) ? ImagePromptProfile.Full : ResolvePromptProfile(model, isChatProtocol), playerRedraw, settings.OutputFrameRequirement, settings.IsMissionScreenshot || settings.PreserveEquipmentFidelity, nativeGemini);
                 string effectivePrompt = imageEdit
-                    ? "修改指定部分，未指定部分保持原图。\n" + prompt + "\n" + settings.OutputFrameRequirement
+                    ? IllustratorText.Get("ImageClient_860") + prompt + "\n" + settings.OutputFrameRequirement
                     : composed.Text;
                 if (imageEdit && (string.IsNullOrWhiteSpace(prompt) || referenceImages?.Count != 1 || referenceImages[0]?.Kind != IllustrationReferenceKind.GeneratedImage))
-                    throw new InvalidOperationException("基于本图重绘需要一张有效的当前成图，未发送请求。");
+                    throw new InvalidOperationException("Redrawing from this image requires a valid current image. No request was sent.");
                 string route = nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : configuredEditsEndpoint || (requestedRefImages > 0 && !settings.UseExactEndpointUrl) ? "ImagesEdits" : "Images";
                 GenerationDiagnostics.Current?.RecordStage("image_route", new JObject { ["protocol"] = route, ["endpoint"] = SensitiveLogText.SafeUrl(route == "ImagesEdits" ? (player2 ? ResolvePlayer2Endpoint(baseUrl, true) : ResolveEditsEndpointUrl(baseUrl)) : endpointUrl), ["requestedRefs"] = requestedRefImages, ["reason"] = settings.UseExactEndpointUrl ? "explicit exact endpoint" : isChatProtocol ? "model or chat preference" : requestedRefImages > 0 ? "references present: edits first; no text-only reference fallback" : configuredEditsEndpoint ? "edit endpoint requires image" : "no references: text-to-image", ["referenceGenerationEnabled"] = settings.EnableReferenceImageForGeneration });
                 if (configuredEditsEndpoint && requestedRefImages == 0)
                 {
-                    result.ErrorMessage = "images/edits 端点需要可用的参考图；请开启参考图并取得人物或场景参考后再生成。未发送请求。";
+                    result.ErrorMessage = "The images/edits endpoint requires a usable reference image. Enable references and capture a character or scene reference before generating. No request was sent.";
                     GenerationDiagnostics.Current?.RecordStage("image_route_rejected", new JObject { ["failureCode"] = "image.edit_reference_missing", ["error"] = result.ErrorMessage });
                     return result;
                 }
@@ -168,7 +168,7 @@ namespace AnimusForge.Illustrator.Core
                     // /images/generations has no image field. Do not report a successful
                     // text-only generation as if the caller's identity/scene references were
                     // honored when an exact images/generations URL explicitly selected that endpoint.
-                    result.ErrorMessage = "精确 images/generations 端点不能携带参考图；请改用 /images/edits 或开启对话多模态生图通道。未发送请求。";
+                    result.ErrorMessage = "The exact images/generations endpoint cannot accept reference images. Use /images/edits or enable the conversation multimodal image channel. No request was sent.";
                     GenerationDiagnostics.Current?.RecordStage("image_route_rejected", new JObject { ["failureCode"] = "image.generations_cannot_carry_references", ["error"] = result.ErrorMessage });
                     return result;
                 }
@@ -201,7 +201,7 @@ namespace AnimusForge.Illustrator.Core
                         // A generations request cannot carry the references. Stopping here
                         // avoids a visually valid but identity/scene-invalid image. The user
                         // can opt into the chat multimodal route when the provider supports it.
-                        errorMessage = "images/edits 不支持当前参考图请求；为避免静默丢失人物/场景参考，已停止生成。请开启“优先对话多模态生图通道”或配置可用的 /images/edits 端点。";
+                        errorMessage = "The images/edits endpoint does not support this reference image request. Generation stopped to avoid silently losing character or scene references. Enable the preferred conversation multimodal image channel or configure a usable /images/edits endpoint.";
                         stopAfterEditFailure = true;
                     }
                 }
@@ -218,7 +218,7 @@ namespace AnimusForge.Illustrator.Core
                     // 3. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
                     if (!player2 && !success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl && !settings.IsApiTest && !imageEdit && !settings.IsMissionScreenshot)
                     {
-                        Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
+                        Log(string.Format("[Illustrator] The image endpoint does not support model {0}; trying the existing /chat/completions multimodal fallback...", model));
                         string chatEffectivePrompt = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness, ImagePromptProfile.Full, playerRedraw, settings.OutputFrameRequirement, settings.PreserveEquipmentFidelity).Text;
                         string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
                         var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint, playerRedraw: playerRedraw, preserveEquipment: settings.PreserveEquipmentFidelity).ConfigureAwait(false);
@@ -246,13 +246,13 @@ namespace AnimusForge.Illustrator.Core
                 }
                 else
                 {
-                    result.ErrorMessage = errorMessage ?? "未能从服务端响应中提取到有效图像数据";
+                    result.ErrorMessage = errorMessage ?? "No valid image data could be extracted from the server response.";
                     Log("[Illustrator] Generation failed; details in request diagnostics.");
                 }
             }
             catch (OperationCanceledException)
             {
-                result.ErrorMessage = callerToken.IsCancellationRequested ? "生图请求已取消" : "生图请求超过" + budgetSeconds + "秒总预算";
+                result.ErrorMessage = callerToken.IsCancellationRequested ? "The image generation request was cancelled." : "The image generation request exceeded " + budgetSeconds + " seconds total budget";
                 GenerationDiagnostics.Current?.RecordStage("image_transport_cancelled", new JObject { ["failureCode"] = callerToken.IsCancellationRequested ? "image.cancelled" : "image.timeout", ["error"] = result.ErrorMessage });
             }
             catch (InvalidDataException ex)
@@ -262,7 +262,7 @@ namespace AnimusForge.Illustrator.Core
             }
             catch (Exception ex)
             {
-                result.ErrorMessage = "生图通信异常: " + ex.Message;
+                result.ErrorMessage = "Image generation communication error: " + ex.Message;
                 GenerationDiagnostics.Current?.RecordStage("image_transport_exception", new JObject { ["failureCode"] = "image.communication_exception", ["error"] = ex.GetType().Name + ": " + ex.Message });
                 Log($"[Illustrator] Exception during generation: {ex.GetType().Name}");
             }
@@ -319,10 +319,10 @@ namespace AnimusForge.Illustrator.Core
         {
             if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri) ||
                 (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp))
-                throw new ArgumentException("生图端点必须是完整的 HTTP/HTTPS URL。");
+                throw new ArgumentException("The image endpoint must be a complete HTTP/HTTPS URL.");
             string path = uri.AbsolutePath.TrimEnd('/');
             if (path.EndsWith("/image/edits", StringComparison.OrdinalIgnoreCase))
-                throw new ArgumentException("标准生图编辑端点是 /images/edits（images复数），不是 /image/edits；特殊服务路径请使用完整URL模式。");
+                throw new ArgumentException("The standard image editing endpoint is /images/edits (plural), not /image/edits. Use complete URL mode for special service paths.");
             bool completeEndpoint = false;
             foreach (string known in new[] { "/images/generations", "/images/edits", "/chat/completions" })
                 if (path.EndsWith(known, StringComparison.OrdinalIgnoreCase))
@@ -418,13 +418,13 @@ namespace AnimusForge.Illustrator.Core
             if (string.IsNullOrWhiteSpace(resolved)) return string.Empty;
 
             var anchor = new StringBuilder();
-            anchor.Append("【最高优先级画风锚点】整幅成图必须统一采用指定画风：")
+            anchor.Append(IllustratorText.Get("ImageClient_873"))
                 .Append(resolved)
-                .Append("。参考图只提供人物身份、装备、纹章载体和已确认场景事实，不决定最终媒介、渲染质感或摄影风格；从零重绘人物与环境，保持指定画风的笔触、材质和光影一致。");
-            if (resolved.IndexOf("油画", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                .Append(IllustratorText.Get("ImageClient_874"));
+            if (resolved.IndexOf(IllustratorText.Raw("ImageClient_875"), StringComparison.OrdinalIgnoreCase) >= 0 ||
                 resolved.IndexOf("oil painting", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                anchor.Append("必须看得见有层次的油彩笔触、画布质感和概括性笔触，禁止输出照片、3D渲染、游戏截图或平滑的数字插画质感。");
+                anchor.Append(IllustratorText.Get("ImageClient_876"));
             }
             return anchor.ToString();
         }
@@ -440,12 +440,12 @@ namespace AnimusForge.Illustrator.Core
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var reference = references[index];
-                string failure = "图片解码或格式转换失败";
+                string failure = "Image decoding or format conversion failed";
                 try
                 {
                     if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image))
                     {
-                        failure = "图片数据为空";
+                        failure = "Image data is empty";
                         throw new InvalidDataException();
                     }
                     string encoded = reference.Base64Image.Trim();
@@ -456,20 +456,20 @@ namespace AnimusForge.Illustrator.Core
                         if (comma < 0 || metadataEnd < 0 ||
                             encoded.IndexOf(";base64", metadataEnd, StringComparison.OrdinalIgnoreCase) < 0)
                         {
-                            failure = "data URI 格式错误";
+                            failure = "The data URI format is invalid";
                             throw new InvalidDataException();
                         }
                         encoded = encoded.Substring(comma + 1);
                     }
                     if (encoded.Length > ImagePayload.MaxBytes * 4L / 3L + 8)
                     {
-                        failure = "超过单图24 MiB限制";
+                        failure = "The image exceeds the 24 MiB per-image limit";
                         throw new InvalidDataException();
                     }
                     byte[] normalized = ImagePayload.Normalize(Convert.FromBase64String(encoded));
                     if (totalBytes > MaxReferencePayloadBytes - normalized.Length)
                     {
-                        failure = "参考图累计超过48 MiB限制";
+                        failure = "Reference images exceed the combined 48 MiB limit";
                         throw new InvalidDataException();
                     }
                     totalBytes += normalized.Length;
@@ -480,7 +480,7 @@ namespace AnimusForge.Illustrator.Core
                 {
                     // Once selected, every reference must survive preparation. Optional
                     // captures are omitted by their producer, never silently dropped here.
-                    throw new InvalidDataException($"参考图 {index + 1}（{reference?.Kind.ToString() ?? "未知用途"}）无效：{failure}；已停止生成，未发送请求。", ex);
+                    throw new InvalidDataException(string.Format("Reference image {0} ({1}) is invalid: {2}. Generation stopped; no request was sent.", index + 1, reference?.Kind.ToString() ?? "unknown purpose", failure), ex);
                 }
             }
             return prepared;
@@ -497,7 +497,7 @@ namespace AnimusForge.Illustrator.Core
             // A separate heading keeps it outside flexible director sections in the final budget.
             if (!preserveEquipment) prompt += "\n" + VisualFidelityRules.FreeEquipmentRule;
             string frameTail = string.IsNullOrWhiteSpace(outputFrameRequirement) ? string.Empty
-                : "\n【本次输出画幅（固定）】" + outputFrameRequirement;
+                : IllustratorText.Get("ImageClient_884") + outputFrameRequirement;
             // 通用负面词只覆盖成图缺陷；遮面/装备按人物事实与参考图处理。
             string mergedNegative = string.IsNullOrWhiteSpace(negativePrompt)
                 ? BuiltinNegativePrompt
@@ -510,9 +510,9 @@ namespace AnimusForge.Illustrator.Core
                 int limit = PromptCharLimit(profile);
                 string styleText = !string.IsNullOrWhiteSpace(customStyleHint) ? customStyleHint.Trim() : (style ?? string.Empty).Trim();
                 string head = styleText.Length == 0 ? string.Empty
-                    : "画风：" + TrimToBudget(styleText, limit > 0 ? Math.Min(600, limit / 3) : 600) + "\n";
+                    : IllustratorText.Get("ImageClient_885") + TrimToBudget(styleText, limit > 0 ? Math.Min(600, limit / 3) : 600) + "\n";
                 bool separateNegative = profile == ImagePromptProfile.Diffusion;
-                string tail = separateNegative ? string.Empty : "\n[画面中严禁出现的元素/Negative]: " + mergedNegative;
+                string tail = separateNegative ? string.Empty : IllustratorText.Get("ImageClient_886") + mergedNegative;
                 tail += frameTail;
                 string body = (prompt ?? string.Empty).Trim();
                 if (limit > 0) body = TrimToBudget(body, limit - head.Length - tail.Length);
@@ -528,20 +528,20 @@ namespace AnimusForge.Illustrator.Core
                 : (prompt ?? string.Empty);
             // One full style anchor shared by Chat, Edits and Generations.
             string styleAnchor = BuildImageStyleAnchor(customStyleHint, style);
-            if (!preserveEquipment) styleAnchor = styleAnchor.Replace("人物身份、装备、纹章载体和已确认场景事实", "人物身份、纹章图案和已确认场景事实");
+            if (!preserveEquipment) styleAnchor = styleAnchor.Replace(IllustratorText.Get("ImageClient_887"), IllustratorText.Get("ImageClient_888"));
             if (!string.IsNullOrWhiteSpace(styleAnchor))
             {
                 effectivePrompt = styleAnchor + "\n" + effectivePrompt;
             }
-            effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + mergedNegative;
+            effectivePrompt += IllustratorText.Get("ImageClient_889") + mergedNegative;
             // 0 完全沿用旧版，不追加本段；正数只增加艺术表现变化，不放松硬事实。
             if (randomness > 0 && !playerRedraw && preserveEquipment)
             {
                 int strength = Math.Min(100, randomness);
                 string clause = strength >= 100
-                    ? "在事实允许的范围内，最大程度探索不同取景、留白、景深与光影表现"
-                    : $"艺术表现随机强度为 {strength}/100；数值越高，越主动探索不同取景、留白、景深与光影表现。低值仅作轻微变化";
-                effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备身份、家族纹章及所有已确认游戏事实保持一致；已发生的衣物状态变化按导演正文呈现。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把身份图的姿势、背景、构图或光影用作画面模板。场景按导演正文组织：已确认的现场空间关系严格保留，明确标记的非具名艺术布景可以围绕导演主题和空间设计丰富发挥，补充与时代文化一致的材质、装饰与光影细节。保留导演选择的环境内容，不以人物为主为由清空背景；真实现场不补造未知陈设，人物数量与事件结果不改写。取景与绘画表现可大胆变化，同时保持本次行动及空间关系成立。" + clause + "。";
+                    ? IllustratorText.Get("ImageClient_890")
+                    : IllustratorText.Format("ImageClient_891", strength);
+                effectivePrompt += IllustratorText.Get("ImageClient_892") + clause + "。";
             }
             if (playerRedraw) effectivePrompt += Environment.NewLine + VisualFidelityRules.PlayerRedrawImagePriority;
             effectivePrompt += frameTail;
@@ -573,7 +573,7 @@ namespace AnimusForge.Illustrator.Core
             {
                 if (_player2ProbeOrigin == origin && DateTime.UtcNow < _player2ProbeExpires)
                 {
-                    if (!_player2ProbeResult && uri.Port == 4315) throw new InvalidOperationException("Player2接口未确认，请稍后检查应用状态；未发送生图请求。");
+                    if (!_player2ProbeResult && uri.Port == 4315) throw new InvalidOperationException("The Player2 interface is unconfirmed. Check the application status later. No image request was sent.");
                     return _player2ProbeResult;
                 }
                 bool confirmed = false;
@@ -602,7 +602,7 @@ namespace AnimusForge.Illustrator.Core
                 _player2ProbeResult = confirmed;
                 _player2ProbeExpires = DateTime.UtcNow.AddSeconds(confirmed ? 300 : 15);
                 if (!confirmed && uri.Port == 4315)
-                    throw new InvalidOperationException("无法确认Player2图片接口，请检查应用已运行并登录，以及端口是否正确；未发送生图请求。");
+                    throw new InvalidOperationException("The Player2 image interface could not be confirmed. Check that the application is running and signed in and that the port is correct. No image request was sent.");
                 return confirmed;
             }
             finally { Player2ProbeGate.Release(); }
@@ -656,7 +656,7 @@ namespace AnimusForge.Illustrator.Core
                 ["originalBytes"] = originalBytes, ["sentBytes"] = bytes, ["limitBytes"] = budget,
                 ["referenceCount"] = references?.Count ?? 0, ["requestSent"] = false,
                 ["fits"] = bytes <= budget });
-            if (bytes > budget) throw new InvalidDataException("Player2请求体仍超过上传预算；已保留全部参考图且不再降低细节，请求未发送。请缩短提示词或自定义规则。");
+            if (bytes > budget) throw new InvalidDataException("The Player2 payload still exceeds its upload budget. All reference images were retained without further loss of detail. No request was sent. Shorten the prompt or custom rules.");
             return json;
         }
 
@@ -686,9 +686,9 @@ namespace AnimusForge.Illustrator.Core
             if (second < 0) return references;
             byte[] bytes = ImagePayload.PairSceneReferences(Convert.FromBase64String(references[first].Base64Image),
                 Convert.FromBase64String(references[second].Base64Image), token);
-            string label = "A（左）主视角原说明：" + references[first].Label
-                + "\nB（右）辅助视角原说明：" + references[second].Label
-                + "\n上述两份说明分别对应资料板A/B；辅助说明中的前一张主图指本资料板A，不指人物参考图。";
+            string label = IllustratorText.Get("ImageClient_896") + references[first].Label
+                + IllustratorText.Get("ImageClient_897") + references[second].Label
+                + IllustratorText.Get("ImageClient_898");
             var combined = new IllustrationReferenceImage(Convert.ToBase64String(bytes), label, IllustrationReferenceKind.PairedScenePerspective);
             var result = new List<IllustrationReferenceImage>(3);
             for (int i = 0; i < references.Count; i++)
@@ -737,14 +737,14 @@ namespace AnimusForge.Illustrator.Core
             bool grokJson = !player2 && UsesGrokJsonEdits(model);
             string protocol = player2 ? "Player2Edit" : grokJson ? "ImagesEditsJson" : "ImagesEdits";
             if (grokJson && (referenceImages?.Count ?? 0) > 5)
-                return (false, null, null, "Grok 图片编辑最多支持5张参考图；未丢弃参考图，请求未发送。", false, effectivePrompt ?? string.Empty);
+                return (false, null, null, "Grok image editing supports at most 5 reference images. No references were discarded and no request was sent.", false, effectivePrompt ?? string.Empty);
             bool hadReferences = referenceImages != null && referenceImages.Count > 0;
             bool missionScreenshot = hadReferences && referenceImages[0]?.Kind == IllustrationReferenceKind.MissionScreenshot;
             if (missionScreenshot) MissionScreenshotRules.RequireReferences(referenceImages);
             referenceImages = PrepareReferenceImages(referenceImages, cancellationToken);
             if (grokJson) referenceImages = PairGrokSceneReferences(referenceImages, cancellationToken);
             if (hadReferences && (referenceImages == null || referenceImages.Count == 0))
-                return (false, null, null, "没有可用的参考图；请求未发送。", false, effectivePrompt ?? string.Empty);
+                return (false, null, null, "No usable reference image is available. No request was sent.", false, effectivePrompt ?? string.Empty);
             string sentPrompt = effectivePrompt ?? string.Empty;
             try
             {
@@ -763,10 +763,10 @@ namespace AnimusForge.Illustrator.Core
                     foreach (var reference in referenceImages)
                     {
                         // PrepareReferenceImages already normalized and validated every image.
-                        labels.Append("\n参考图 ").Append(sent + 1);
+                        labels.Append(IllustratorText.Get("ImageClient_901")).Append(sent + 1);
                         if (grokJson) labels.Append("（<IMAGE_").Append(sent).Append(">）：");
                         else labels.Append("（reference_").Append(sent).Append(".png）：");
-                        labels.Append(imageEdit ? "待编辑的当前成图；修改指定部分，其他保持。" : missionScreenshot ? reference.Label + " " + MissionScreenshotRules.SpatialContract : (playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedReferenceLabel(reference) : VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + " " + reference.Label);
+                        labels.Append(imageEdit ? IllustratorText.Get("ImageClient_902") : missionScreenshot ? reference.Label + " " + MissionScreenshotRules.SpatialContract : (playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedReferenceLabel(reference) : VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + " " + reference.Label);
                         if (player2) jsonImages.Add("data:image/png;base64," + reference.Base64Image);
                         else if (grokJson)
                             jsonImages.Add(new JObject { ["url"] = "data:image/png;base64," + reference.Base64Image });
@@ -881,7 +881,7 @@ namespace AnimusForge.Illustrator.Core
             if (missionScreenshot) MissionScreenshotRules.RequireReferences(referenceImages);
             referenceImages = PrepareReferenceImages(referenceImages, cancellationToken);
             if (hadReferences && (referenceImages == null || referenceImages.Count == 0))
-                return (false, null, null, "没有可用的参考图；请求未发送。", false, effectivePrompt ?? string.Empty);
+                return (false, null, null, "No usable reference image is available. No request was sent.", false, effectivePrompt ?? string.Empty);
             string sentPrompt = effectivePrompt ?? string.Empty;
             if (isChatProtocol)
             {
@@ -945,7 +945,7 @@ namespace AnimusForge.Illustrator.Core
                             content.Add(new JObject
                             {
                                 ["type"] = "text",
-                                ["text"] = "【上图专属约束】" + label
+                                ["text"] = IllustratorText.Get("ImageClient_904") + label
                             });
                         }
 
@@ -955,16 +955,16 @@ namespace AnimusForge.Illustrator.Core
                             content.Add(new JObject
                             {
                                 ["type"] = "text",
-                                ["text"] = "【所选事件的可选参考，不指定画面主角】" + VisualFidelityRules.ReferenceRoleInstruction(reference.Kind)
+                                ["text"] = IllustratorText.Get("ImageClient_905") + VisualFidelityRules.ReferenceRoleInstruction(reference.Kind)
                             });
                         }
                         else if (isHero)
                         {
                             if (!isDetail) heroIndex++;
-                            string roleHint = isDetail ? "【同名人物头肩细节补充，不增加人物数量】" : (heroCount > 1)
-                                ? $"【人物身份参考图 {heroIndex}】" : "【核心人物官方真实视觉基准图】";
+                            string roleHint = isDetail ? IllustratorText.Get("ImageClient_906") : (heroCount > 1)
+                                ? IllustratorText.Format("ImageClient_907", heroIndex) : IllustratorText.Get("ImageClient_908");
 
-                            string fidelityMandate = roleHint + "：" + VisualFidelityRules.CharacterAppearancePriority + "参考图不是画中画或额外人物。";
+                            string fidelityMandate = roleHint + "：" + VisualFidelityRules.CharacterAppearancePriority + IllustratorText.Get("ImageClient_909");
                             content.Add(new JObject
                             {
                                 ["type"] = "text",
@@ -976,7 +976,7 @@ namespace AnimusForge.Illustrator.Core
                             content.Add(new JObject
                             {
                                 ["type"] = "text",
-                                ["text"] = "【家族纹章图案样板】：上图仅为家族纹章图案标准样板；仅当画面中已有明确纹章载体（盾牌、纹章罩袍、背景旗帜或其他已确认的纹章穿戴物）时参照此图案绘制，绝不是人物相貌，也不可凭样图新增载体或在普通金属板甲胸甲表面硬印该图案！"
+                                ["text"] = IllustratorText.Get("ImageClient_910")
                             });
                         }
                         else if (isScene)
@@ -984,10 +984,10 @@ namespace AnimusForge.Illustrator.Core
                             content.Add(new JObject
                             {
                                 ["type"] = "text",
-                                ["text"] = (reference.Kind == IllustrationReferenceKind.MapConversationScene ? "【地图对话单视角布景参考】" :
-                                    reference.Kind == IllustrationReferenceKind.ScenePerspective ? "【场景普通透视结构参考】" :
-                                    reference.Kind == IllustrationReferenceKind.SceneViews ? "【场景前后双视角参考】" : reference.Kind == IllustrationReferenceKind.ScenePanorama ? "【场景预制体全景参考】" : "【当前位置与环境定位参考】") +
-                                    VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + " 按导演画风重绘，不复制UI或游戏渲染质感。"
+                                ["text"] = (reference.Kind == IllustrationReferenceKind.MapConversationScene ? IllustratorText.Get("ImageClient_911") :
+                                    reference.Kind == IllustrationReferenceKind.ScenePerspective ? IllustratorText.Get("ImageClient_912") :
+                                    reference.Kind == IllustrationReferenceKind.SceneViews ? IllustratorText.Get("ImageClient_913") : reference.Kind == IllustrationReferenceKind.ScenePanorama ? IllustratorText.Get("ImageClient_914") : IllustratorText.Get("ImageClient_915")) +
+                                    VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + IllustratorText.Get("ImageClient_916")
                             });
                         }
                         actualRefImages++;
@@ -995,18 +995,18 @@ namespace AnimusForge.Illustrator.Core
 
                     // The complete selected style is already in effectivePrompt.
                     string styleClause = (!string.IsNullOrWhiteSpace(customStyleHint) || !string.IsNullOrWhiteSpace(style))
-                        ? "1. 严格遵循前述画风锚点，从零完整重绘整幅画面，统一处理人物、环境、材质、光照与透视；不要复制参考图像素、UI或游戏截图痕迹。\n"
-                        : "1. 从零完整重绘整幅画面，统一处理人物、环境、材质、光照与透视；不要复制参考图像素、UI或游戏截图痕迹。\n";
+                        ? IllustratorText.Get("ImageClient_917")
+                        : IllustratorText.Get("ImageClient_918");
 
                     content.Add(new JObject
                     {
                         ["type"] = "text",
-                        ["text"] = missionScreenshot ? MissionScreenshotRules.SpatialContract : (playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedRedrawRepaint : "【最终呈现规范/Artistic Redraw & Fidelity Mandate】：\n" +
+                        ["text"] = missionScreenshot ? MissionScreenshotRules.SpatialContract : (playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedRedrawRepaint : IllustratorText.Get("ImageClient_919") +
                                    styleClause +
-                                   "2. 人物容貌和衣着装备身份以对应参考图为准，已发生的衣物破损、污渍、湿透等状态以导演正文为准；动作及互动按导演从已发生叙事提取的描述呈现。有环境参考时，建筑布局与陈设关系以环境图为准，正文不能覆盖图中结构。\n" +
-                                   "3. 单幅完整艺术画卷（Single Unified Canvas）：整幅画面为单一完整画面，画面无画中画（No picture-in-picture）、无贴片小图或缩略图框（No inset reference boxes or thumbnails）、无角色设定立绘板（No character concept sheets or turnarounds）。\n" +
-                                   "4. 姿态与互动遵循导演描述，与支撑物和空间关系保持物理一致。\n" +
-                                   "5. 落实导演选定的场所、空间关系与构图；非具名艺术布景可补充与主题一致的材质、装饰和光影细节，真实现场仅保留有依据的内容。背景须保留导演设计的空间与环境细节。"
+                                   IllustratorText.Get("ImageClient_920") +
+                                   IllustratorText.Get("ImageClient_921") +
+                                   IllustratorText.Get("ImageClient_922") +
+                                   IllustratorText.Get("ImageClient_923")
                     });
 
                     if (playerRedraw) content.Add(new JObject { ["type"] = "text", ["text"] = VisualFidelityRules.PlayerRedrawReferenceException + VisualFidelityRules.PlayerRedrawImagePriority });
@@ -1175,8 +1175,8 @@ namespace AnimusForge.Illustrator.Core
 
         private static string DescribeMissingImageResponse(string responseText)
         {
-            if (string.IsNullOrWhiteSpace(responseText)) return FormatMissingImageError("服务端返回空响应体");
-            string reason = "响应未包含可识别的图片数据";
+            if (string.IsNullOrWhiteSpace(responseText)) return FormatMissingImageError("The server returned an empty response body");
+            string reason = "The response contains no recognizable image data";
             try
             {
                 var parsed = JObject.Parse(responseText);
@@ -1185,14 +1185,14 @@ namespace AnimusForge.Illustrator.Core
                 string nativeFinish = parsed.SelectToken("candidates[0].finishReason")?.Value<string>();
                 if (parsed.SelectToken("promptFeedback.blockReason") != null || nativeFinish == "SAFETY"
                     || nativeFinish == "IMAGE_SAFETY" || !string.IsNullOrWhiteSpace(message?["refusal"]?.ToString()) || choice?["finish_reason"]?.ToString() == "content_filter")
-                    reason = "服务端拒绝生成图片或触发内容过滤";
+                    reason = "The server refused image generation or applied content filtering";
                 else if (nativeFinish == "MAX_TOKENS" || choice?["finish_reason"]?.ToString() == "length")
-                    reason = "服务端输出达到长度上限，未取得图片";
+                    reason = "The server output reached its length limit; no image was obtained";
                 else if (message != null && string.IsNullOrWhiteSpace(message["content"]?.ToString()) &&
                     !(message["images"] is JArray images && images.Count > 0))
-                    reason = "服务端返回空回复，未提供文字或图片";
+                    reason = "The server returned an empty reply without text or images";
                 else if (!string.IsNullOrWhiteSpace(message?["content"]?.ToString()))
-                    reason = "服务端返回了内容，但未能提取图片；请检查响应格式或模型输出";
+                    reason = "The server returned content, but no image could be extracted. Check the response format or model output";
             }
             catch (JsonException) { }
             // The complete sanitized response was recorded before parsing. Keep provider
@@ -1204,8 +1204,8 @@ namespace AnimusForge.Illustrator.Core
         {
             string id = GenerationDiagnostics.Current?.Id;
             string diagnostic = string.IsNullOrEmpty(id) ? string.Empty :
-                " 诊断：" + id.Substring(Math.Max(0, id.Length - 8));
-            return reason + "；未自动重试，可稍后手动重绘。" + diagnostic;
+                " Diagnostic: " + id.Substring(Math.Max(0, id.Length - 8));
+            return reason + "; no automatic retry was made. You may redraw manually later." + diagnostic;
         }
 
         private static async Task<ExtractedImage> ExtractImageAsync(string responseText, CancellationToken cancellationToken)
@@ -1317,7 +1317,7 @@ namespace AnimusForge.Illustrator.Core
             if (string.IsNullOrWhiteSpace(uriOrBase64)) return null;
 
             cancellationToken.ThrowIfCancellationRequested();
-            if (uriOrBase64.Length > ImagePayload.MaxResponseBytes) throw new InvalidDataException("图片编码超过限制。");
+            if (uriOrBase64.Length > ImagePayload.MaxResponseBytes) throw new InvalidDataException("The encoded image exceeds the limit.");
             uriOrBase64 = uriOrBase64.Trim();
             if (uriOrBase64.StartsWith("data:image", StringComparison.OrdinalIgnoreCase))
             {

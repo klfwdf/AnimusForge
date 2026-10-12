@@ -17,15 +17,7 @@ internal sealed class KingdomStabilityLabController
  private static string Ui(string id, string fallback) => new TextObject("{=" + id + "}" + fallback).ToString();
  private static string Ui(string id, string fallback, params (string Name, string Value)[] variables)
  {
-  var text = new TextObject("{=" + id + "}" + fallback);
-  if (variables != null)
-  {
-   foreach (var variable in variables)
-   {
-    text.SetTextVariable(variable.Name, variable.Value ?? string.Empty);
-   }
-  }
-  return text.ToString();
+  return EventEditorUiText.T(id, fallback, variables);
  }
 	internal void OpenDevKingdomStabilityLabMenu()
 	{

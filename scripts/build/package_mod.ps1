@@ -22,6 +22,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "coup_seam_gate.ps1")
+if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
+    throw "Canonical CN/EN package filenames do not accept -PackageLabel. Remove -PackageLabel."
+}
 if ($IncludeOnnx -or $IncludeReranker) {
     throw "Unified client packages never include the ONNX model folder. Remove -IncludeOnnx/-IncludeReranker."
 }
@@ -798,31 +801,31 @@ function Write-ZipFromModule {
     Assert-AnimusForgeCleanStage -ProjectRoot $projectRoot -StageModuleDir $moduleFull -RequireCurrentArtifacts
     New-Item -ItemType Directory -Path $outputFull -Force | Out-Null
 
-    $versionForName = $PackageVersion -replace "[^\w\.\-]", "_"
-    $labelForName = ""
-    if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
-        $labelForName = "_" + ($PackageLabel -replace "[^\w\.\-]", "_")
-    }
-    $timestamp = Get-Date -Format "yyyyMMdd_HHmmss_fff"
-    $baseName = "AnimusForge_$versionForName$labelForName`_$timestamp"
+    $parts = Parse-Version -VersionText $PackageVersion -Label "Package version"
+    $versionForName = "v$($parts.Major).$($parts.Minor).$($parts.Patch)"
+    if ($null -ne $parts.Micro) { $versionForName += ".$($parts.Micro)" }
+    $timestamp = Get-Date -Format "MMdd_HHmm"
+    $baseName = "AnimusForge_$versionForName"
     $zipPaths = @{}
     $suffix = 1
-    $releaseBaseName = $baseName
-    while ((Test-Path -LiteralPath (Join-Path $outputFull ($releaseBaseName + '_CN.zip'))) -or
-        (Test-Path -LiteralPath (Join-Path $outputFull ($releaseBaseName + '_EN.zip')))) {
-        $releaseBaseName = "{0}_{1}" -f $baseName, $suffix
+    $releaseStamp = $timestamp
+    while ((Test-Path -LiteralPath (Join-Path $outputFull ("{0}_CN_{1}.zip" -f $baseName, $releaseStamp))) -or
+        (Test-Path -LiteralPath (Join-Path $outputFull ("{0}_EN_{1}.zip" -f $baseName, $releaseStamp)))) {
+        $releaseStamp = "{0}_{1}" -f $timestamp, $suffix
         $suffix += 1
     }
+    $releaseBaseName = "{0}_{1}" -f $baseName, $releaseStamp
     $temporaryPaths = @{}
     $published = [System.Collections.Generic.List[string]]::new()
     try {
         Assert-AnimusForgeEnglishRuntimeSource -ProjectRoot $projectRoot
+        $sharedTextResourceHashes = Get-AnimusForgeSharedTextResourceHashes -ProjectRoot $projectRoot
         foreach ($relative in @('AnimusForge.Bootstrap.dll', 'versions/1.3/AnimusForge.dll', 'versions/1.4/AnimusForge.dll')) {
-            Assert-AnimusForgeEnglishRuntimeDll -DllPath (Join-Path $moduleFull ('bin/Win64_Shipping_Client/' + $relative))
+            Assert-AnimusForgeEnglishRuntimeDll -DllPath (Join-Path $moduleFull ('bin/Win64_Shipping_Client/' + $relative)) -SharedTextResourceHashes $sharedTextResourceHashes
         }
         $projections = @{}
         foreach ($language in @('CN', 'EN')) {
-            $zipPaths[$language] = Join-Path $outputFull ($releaseBaseName + "_$language.zip")
+            $zipPaths[$language] = Join-Path $outputFull ("{0}_{1}_{2}.zip" -f $baseName, $language, $releaseStamp)
             $temporaryPaths[$language] = Join-Path $outputFull (".{0}.{1}.{2}.tmp" -f $releaseBaseName, $language, [Guid]::NewGuid().ToString('N'))
             $projections[$language] = @(Get-AnimusForgePackageProjection -ProjectRoot $projectRoot -StageModuleDir $moduleFull -Language $language -PackageVersion $PackageVersion)
         }

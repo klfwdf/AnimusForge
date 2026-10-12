@@ -315,11 +315,11 @@ internal List<KingdomRebellionFollowerInfo> EvaluateKingdomRebellionFollowers(Ki
 				int num = relationToLeader - relationToKing;
 				if (flag)
 				{
-					kingdomRebellionFollowerInfo.Note = "满足联合叛乱跟随条件：对叛乱领袖关系减去对国王关系 = " + num + "（>= 15）。";
+					kingdomRebellionFollowerInfo.Note = KingdomUiText.F("AF_UI_KingdomRebellion_FollowerEligible", "Eligible to join the rebellion coalition: relation with the rebel leader minus relation with the king = {DIFF} (>= 15).", ("DIFF", num));
 				}
 				else
 				{
-					kingdomRebellionFollowerInfo.Note = "不满足联合叛乱跟随条件：对叛乱领袖关系减去对国王关系 = " + num + "（需 >= 15）。";
+					kingdomRebellionFollowerInfo.Note = KingdomUiText.F("AF_UI_KingdomRebellion_FollowerIneligible", "Not eligible to join the rebellion coalition: relation with the rebel leader minus relation with the king = {DIFF} (requires >= 15).", ("DIFF", num));
 				}
 			}
 			list.Add(kingdomRebellionFollowerInfo);
@@ -361,7 +361,7 @@ internal List<KingdomRebellionCandidateInfo> EvaluateKingdomRebellionCandidates(
 			else
 			{
 				kingdomRebellionCandidateInfo.Eligible = true;
-				kingdomRebellionCandidateInfo.Note = forceTrigger ? "满足强制触发条件。" : "满足自动叛乱条件。";
+				kingdomRebellionCandidateInfo.Note = forceTrigger ? KingdomUiText.T("AF_UI_KingdomRebellion_ForceEligible", "Meets the forced-trigger conditions.") : KingdomUiText.T("AF_UI_KingdomRebellion_AutoEligible", "Meets the automatic rebellion conditions.");
 				kingdomRebellionCandidateInfo.RelationToKing = relationToKing;
 				kingdomRebellionCandidateInfo.TownCount = townCount;
 				kingdomRebellionCandidateInfo.CastleCount = castleCount;
@@ -561,18 +561,18 @@ internal static string BuildHeroBackgroundForRebelNamingPrompt(Hero hero)
 
 internal static string BuildKingdomBackgroundForRebelNamingPrompt(Kingdom kingdom, WeeklyEventRecordStateOwner records)
 	{
-		return RebellionNamingRules.KingdomBackground(kingdom != null, kingdom?.EncyclopediaText?.ToString(), kingdom != null ? WeeklyEventDataImportOwner.GetKingdomOpeningSummary(kingdom.StringId, records.KingdomOpenings) : "", MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, "该王国"));
+		return RebellionNamingRules.KingdomBackground(kingdom != null, kingdom?.EncyclopediaText?.ToString(), kingdom != null ? WeeklyEventDataImportOwner.GetKingdomOpeningSummary(kingdom.StringId, records.KingdomOpenings) : "", MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom")));
 	}
 
 internal static string BuildSettlementBackgroundForRebelNamingPrompt(Settlement settlement)
 	{
-		return RebellionNamingRules.SettlementBackground(settlement != null, settlement?.EncyclopediaText?.ToString(), MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), settlement?.IsTown ?? false, settlement?.IsCastle ?? false, settlement?.Culture?.Name?.ToString(), MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(settlement?.MapFaction as Kingdom, "未明确归属王国"));
+		return RebellionNamingRules.SettlementBackground(settlement != null, settlement?.EncyclopediaText?.ToString(), MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), settlement?.IsTown ?? false, settlement?.IsCastle ?? false, settlement?.Culture?.Name?.ToString(), MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(settlement?.MapFaction as Kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_UnknownKingdom", "an unknown kingdom")));
 	}
 
 internal static string BuildRebelBackgroundForNamingPrompt(Kingdom oldKingdom, int weekIndex, WeeklyEventRecordStateOwner records)
 	{
 		EventRecordEntry weeklyReportRecordByWeek = records.FindWeeklyReportRecordByWeek("kingdom", MemoryEntityIdentityBannerlordAdapter.GetKingdomId(oldKingdom), weekIndex - 1);
-		return RebellionNamingRules.RebelBackground(weeklyReportRecordByWeek?.ShortSummary, weeklyReportRecordByWeek?.Summary, MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(oldKingdom, "原王国"));
+		return RebellionNamingRules.RebelBackground(weeklyReportRecordByWeek?.ShortSummary, weeklyReportRecordByWeek?.Summary, MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(oldKingdom, KingdomUiText.T("AF_UI_KingdomRebellion_OriginalKingdom", "the original kingdom")));
 	}
 
 internal static bool IsDuplicateKingdomName(string text)

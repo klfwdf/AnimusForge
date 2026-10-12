@@ -323,8 +323,8 @@ public partial class RewardSystemBehavior
 		int num2 = AdjustTrust(giver, num, 0, "auto_gift_value_accumulated", out var appliedUnits);
 		string text = (num2 > 0) ? EconomyUiTexts.PublicTrustGain(num2) : "";
 		string text2 = FormatTrustUnits(appliedUnits);
-		giverFacts?.Add($"你因累计向玩家实际交付的价值达到阈值，对玩家的个人信任提升了 {text2}{text}。");
-		receiverFacts?.Add($"{giverName} 因累计向你实际交付的价值达到阈值，对你的个人信任提升了 {text2}{text}。");
+		giverFacts?.Add(string.Format(EconomySourceTexts.Get("S724"), text2, text));
+		receiverFacts?.Add(string.Format(EconomySourceTexts.Get("S725"), giverName, text2, text));
 		string message = EconomyUiTexts.TrustChanged(giverName, text2, text);
 		InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(4278242559u)));
 		ShowRewardQuickInfo(message, giver);
@@ -345,8 +345,8 @@ public partial class RewardSystemBehavior
 		string settlementMerchantDebtLabel = BuildSettlementMerchantDebtLabel(settlement, kind);
 		string text = (num2 > 0) ? EconomyUiTexts.PublicTrustGain(num2) : "";
 		string text2 = FormatTrustUnits(appliedUnits);
-		merchantFacts?.Add($"你因累计向玩家实际交付的价值达到阈值，对玩家的市场信任提升了 {text2}{text}。");
-		playerFacts?.Add($"{giverName} 代表的{settlementMerchantDebtLabel}因累计向你实际交付的价值达到阈值，对你的市场信任提升了 {text2}{text}。");
+		merchantFacts?.Add(string.Format(EconomySourceTexts.Get("S726"), text2, text));
+		playerFacts?.Add(string.Format(EconomySourceTexts.Get("S727"), giverName, settlementMerchantDebtLabel, text2, text));
 		string message = EconomyUiTexts.MarketTrustChanged(settlementMerchantDebtLabel, text2, text);
 		ShowRewardMessage(message, Color.FromUint(4278242559u), giverCharacter);
 	}
@@ -1034,7 +1034,7 @@ public partial class RewardSystemBehavior
 		catch
 		{
 		}
-		return "其所属势力";
+		return EconomySourceTexts.Get("S728");
 	}
 
 	public int GetNpcTrust(Hero npc)
@@ -1178,7 +1178,7 @@ public partial class RewardSystemBehavior
 	{
 		if (npc == null)
 		{
-			return EconomyPromptProjection.BuildTrustStatus(0, "中性观望", 6);
+			return EconomyPromptProjection.BuildTrustStatus(0, EconomyPromptTexts.Get("S699"), 6);
 		}
 		int effectiveTrust = GetEffectiveTrust(npc);
 		return EconomyPromptProjection.BuildTrustStatus(

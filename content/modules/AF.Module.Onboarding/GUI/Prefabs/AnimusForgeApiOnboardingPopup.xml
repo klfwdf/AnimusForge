@@ -1,21 +1,21 @@
 <Prefab>
   <Window>
-    <!-- 全屏半透明遮罩 -->
+    <!-- Full-screen translucent overlay -->
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000C8">
       <Children>
 
-        <!-- 主弹窗窗体 (古典卡拉迪亚边框) -->
+        <!-- Main popup with a classical Calradian frame -->
         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="940" SuggestedHeight="740" HorizontalAlignment="Center" VerticalAlignment="Center">
           <Children>
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#16120EFF" />
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" AlphaFactor="0.88" />
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14" Color="#C5A878FF" AlphaFactor="0.75" IsEnabled="false" />
 
-            <!-- 内部内容边距容器 -->
+            <!-- Inner content margin container -->
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" MarginTop="18" MarginBottom="16">
               <Children>
 
-                <!-- ================= 顶栏 Header ================= -->
+                <!-- ================= Header ================= -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" VerticalAlignment="Top">
                   <Children>
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="General\CharacterCreation\character_creation_background_gradient" AlphaFactor="0.4" Color="#000000FF" />
@@ -25,11 +25,11 @@
                   </Children>
                 </Widget>
 
-                <!-- ================= 主体内容容器 Body ================= -->
+                <!-- ================= Body container ================= -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="86" MarginBottom="62">
                   <Children>
 
-                    <!-- ================= 1. 主选单面板 ================= -->
+                    <!-- ================= 1. Main menu panel ================= -->
                     <Widget IsVisible="@IsMainViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ListPanel WidthSizePolicy="Fixed" SuggestedWidth="660" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
@@ -64,13 +64,13 @@
                       </Children>
                     </Widget>
 
-                    <!-- ================= 2. YJ API 专属二级菜单 ================= -->
+                    <!-- ================= 2. YJ API submenu ================= -->
                     <Widget IsVisible="@IsYjMenuViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
                           <Children>
 
-                            <!-- 说明框 -->
+                            <!-- Description box -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="66" MarginBottom="14">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1A1510FF" AlphaFactor="0.8" IsEnabled="false" />
@@ -79,7 +79,7 @@
                               </Children>
                             </Widget>
 
-                            <!-- 1. 单分组模式 -->
+                            <!-- 1. Single-group mode -->
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteYjSingleGroup" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -104,7 +104,7 @@
                               </Children>
                             </ButtonWidget>
 
-                            <!-- 2. 多分组模式 -->
+                            <!-- 2. Multiple-group mode -->
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteYjMultiGroup" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -129,7 +129,7 @@
                               </Children>
                             </ButtonWidget>
 
-                            <!-- 3. 获取 API Key / 购买额度 -->
+                            <!-- 3. Obtain an API key or purchase quota -->
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenYjWeb" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -154,7 +154,7 @@
                               </Children>
                             </ButtonWidget>
 
-                            <!-- 4. 复制交流 QQ 群号 -->
+                            <!-- 4. Copy the community QQ group number -->
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCopyQqGroup" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -184,7 +184,7 @@
                       </Children>
                     </Widget>
 
-                    <!-- ================= 3. 多 API 集中设置面板 (Custom / YJ-Multi) ================= -->
+                    <!-- ================= 3. Central API settings (Custom / YJ-Multi) ================= -->
                     <Widget IsVisible="@IsMultiApiViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="MultiApiClip" InnerPanel="MultiApiClip\MultiApiInner" AutoHideScrollBars="true" VerticalScrollbar="..\MultiApiScrollbar\Scrollbar">
@@ -196,7 +196,7 @@
                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
 
-                                        <!-- Block 1: 主 API -->
+                                        <!-- Block 1: Main API -->
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.75" IsEnabled="false" />
@@ -256,7 +256,7 @@
                                           </Children>
                                         </Widget>
 
-                                        <!-- Block 2: 前处理 API -->
+                                        <!-- Block 2: Preprocessing API -->
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.75" IsEnabled="false" />
@@ -314,7 +314,7 @@
                                           </Children>
                                         </Widget>
 
-                                        <!-- Block 3: 后处理 API -->
+                                        <!-- Block 3: Postprocessing API -->
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.75" IsEnabled="false" />
@@ -372,7 +372,7 @@
                                           </Children>
                                         </Widget>
 
-                                        <!-- Block 4: 周报与叛乱 API -->
+                                        <!-- Block 4: Weekly report and rebellion API -->
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.75" IsEnabled="false" />
@@ -442,13 +442,13 @@
                       </Children>
                     </Widget>
 
-                    <!-- ================= 4. YJ 4-模型集中挑选面板 ================= -->
+                    <!-- ================= 4. Central selection of four YJ models ================= -->
                     <Widget IsVisible="@IsYjModelsViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
                           <Children>
 
-                            <!-- Key 状态栏 -->
+                            <!-- Key status bar -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="56" MarginBottom="14">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1A1510FF" AlphaFactor="0.8" IsEnabled="false" />
@@ -467,8 +467,8 @@
                               </Children>
                             </Widget>
 
-                            <!-- 4 路模型选择行 -->
-                            <!-- 模型 1: 主 API -->
+                            <!-- Four model selection rows -->
+                            <!-- Model 1: Main API -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" MarginBottom="8">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -493,7 +493,7 @@
                               </Children>
                             </Widget>
 
-                            <!-- 模型 2: 前处理 -->
+                            <!-- Model 2: Preprocessing -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" MarginBottom="8">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -518,7 +518,7 @@
                               </Children>
                             </Widget>
 
-                            <!-- 模型 3: 后处理 -->
+                            <!-- Model 3: Postprocessing -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" MarginBottom="8">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -543,7 +543,7 @@
                               </Children>
                             </Widget>
 
-                            <!-- 模型 4: 周报与叛乱 -->
+                            <!-- Model 4: Weekly reports and rebellion -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" MarginBottom="4">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -573,14 +573,14 @@
                       </Children>
                     </Widget>
 
-                    <!-- ================= 5. 测试握手面板 ================= -->
+                    <!-- ================= 5. Handshake test panel ================= -->
                     <Widget IsVisible="@IsTestingViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
                           <Children>
                             <RichTextWidget Text="@TestOverallNotice" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="20" Brush="Popup.Tuple.Text" Brush.FontSize="17" Brush.FontColor="#F5E3C3FF" Brush.TextHorizontalAlignment="Center" />
 
-                            <!-- 4 路测试状态行 -->
+                            <!-- Four test status rows -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="56" MarginBottom="8">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.7" IsEnabled="false" />
@@ -662,7 +662,7 @@
                       </Children>
                     </Widget>
 
-                    <!-- ================= 6. 测试成功与保存面板 ================= -->
+                    <!-- ================= 6. Successful test and save panel ================= -->
                     <Widget IsVisible="@IsSuccessViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
@@ -697,7 +697,7 @@
                   </Children>
                 </Widget>
 
-                <!-- ================= 底栏动作 Footer ================= -->
+                <!-- ================= Footer actions ================= -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="54" VerticalAlignment="Bottom">
                   <Children>
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="8" VerticalAlignment="Top" Sprite="StdAssets\Popup\divider" />
@@ -771,7 +771,7 @@
               </Children>
             </Widget>
 
-            <!-- ================= 弹窗遮罩 1: 填写 API Key 模态框 ================= -->
+            <!-- ================= Modal overlay 1: Enter API key ================= -->
             <Widget IsVisible="@IsKeyPromptVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000D2">
               <Children>
                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="520" SuggestedHeight="250" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -814,7 +814,7 @@
               </Children>
             </Widget>
 
-            <!-- ================= 弹窗遮罩 2: 支持制作组模态框 ================= -->
+            <!-- ================= Modal overlay 2: Support the developers ================= -->
             <Widget IsVisible="@IsSupportModalVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000D2">
               <Children>
                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="520" SuggestedHeight="270" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -845,7 +845,7 @@
               </Children>
             </Widget>
 
-            <!-- ================= 浮动 Toast 提示 ================= -->
+            <!-- ================= Floating toast ================= -->
             <Widget IsVisible="@IsToastVisible" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="72">
               <Children>
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#16120EFF" AlphaFactor="0.95" IsEnabled="false" />

@@ -309,14 +309,14 @@ internal static class CastleAftermathDispositionSessionBridge
 		{
 			if (RegularDeferredAllocations.TryGetValue(action, out TroopRoster roster) && roster.TotalManCount > 0)
 			{
-				parts.Add(SiegeCastleRegularDispositionStagingProfile.Describe(action) + " " + roster.TotalManCount + " 人");
+				parts.Add(SiegeCastleRegularDispositionStagingProfile.Describe(action) + " " + roster.TotalManCount + CastleAftermathCompatibilityTexts.Raw("count_unit"));
 			}
 		}
 		if ((_activeSlaughterTargets?.TotalManCount ?? 0) > 0)
 		{
-			parts.Add("现场屠戮目标 " + _activeSlaughterTargets.TotalManCount + " 人");
+			parts.Add(CastleAftermathCompatibilityTexts.Raw("slaughter_target_prefix") + _activeSlaughterTargets.TotalManCount + CastleAftermathCompatibilityTexts.Raw("count_unit"));
 		}
-		return parts.Count == 0 ? "尚未分配" : string.Join("；", parts);
+		return parts.Count == 0 ? CastleAftermathCompatibilityTexts.Raw("unassigned") : string.Join(CastleAftermathCompatibilityTexts.Raw("list_separator"), parts);
 	}
 
 	internal static void UnmarkApplied(

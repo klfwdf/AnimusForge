@@ -82,6 +82,11 @@ internal sealed class PolicyTargetPlanRouteResult
 
 internal static class PolicyTargetPlanRouter
 {
+	private static readonly char PolicyLegacyCharacter0 = PolicyCompatibilityTexts.Get("Closeout_PolicyTargetPlanRouter_Legacy_Closeout_0")[0];
+	private static readonly char PolicyLegacyCharacter1 = PolicyCompatibilityTexts.Get("Closeout_PolicyTargetPlanRouter_Legacy_Closeout_1")[0];
+	private static readonly char PolicyLegacyCharacter2 = PolicyCompatibilityTexts.Get("Closeout_PolicyTargetPlanRouter_Legacy_Closeout_2")[0];
+	private static readonly char PolicyLegacyCharacter3 = PolicyCompatibilityTexts.Get("Closeout_PolicyTargetPlanRouter_Legacy_Closeout_3")[0];
+
 	internal const int QueryInputLimit = 6;
 
 	internal const int RecallPerInputLimit = 8;
@@ -101,36 +106,86 @@ internal static class PolicyTargetPlanRouter
 
 	private const int QueryEmbeddingCacheLimit = 64;
 
+	// Fixed bilingual input aliases are built once, independent of the UI/content package language.
+	private static readonly IReadOnlyDictionary<string, string[]> EnglishIntentSeeds =
+		new Dictionary<string, string[]>(StringComparer.Ordinal)
+		{
+			{ "relation_domestic", new[] { "our kingdom", "domestic settlements", "settlements in our kingdom" } },
+			{ "relation_enemy", new[] { "enemy kingdom", "enemy settlements", "settlements belonging to enemies" } },
+			{ "relation_ally", new[] { "allied kingdom", "allied settlements", "settlements belonging to allies" } },
+			{ "relation_foreign", new[] { "foreign kingdoms", "other kingdoms", "settlements outside our kingdom" } },
+			{ "anchor_issuer", new[] { "issuing kingdom", "the kingdom issuing this policy", "our own kingdom" } },
+			{ "type_primary_fief", new[] { "towns and castles", "towns or castles", "major settlements" } },
+			{ "type_town", new[] { "towns", "cities", "town settlements", "town", "city" } },
+			{ "type_castle", new[] { "castles", "castle settlements", "fortresses", "castle", "fortress" } },
+			{ "type_clan", new[] { "clans", "families", "noble clans", "clan" } },
+			{ "type_kingdom", new[] { "kingdoms", "nations", "kingdom entities", "kingdom" } },
+			{ "exclude_publication", new[] { "exclude the publication settlement", "except the issuing settlement", "all other locations" } },
+			{ "exclude_specific_entity", new[] { "exclude a specified settlement", "except the named settlement", "exclude specified entities" } },
+			{ "exclude_player_clan", new[] { "exclude the player clan", "except my clan", "not the player clan" } },
+			{ "owner_other_clans", new[] { "other clans", "clans other than the issuing clan", "exclude the proposer clan" } },
+			{ "owner_proposer_clan", new[] { "the issuing clan", "the proposer clan", "the clan that proposed this policy" } },
+			{ "geography_border", new[] { "border settlements", "frontier settlements", "settlements on the border" } },
+			{ "direction_north", new[] { "northern settlements", "settlements in the north", "north" } },
+			{ "direction_south", new[] { "southern settlements", "settlements in the south", "south" } },
+			{ "direction_east", new[] { "eastern settlements", "settlements in the east", "east" } },
+			{ "direction_west", new[] { "western settlements", "settlements in the west", "west" } },
+			{ "distance_nearest", new[] { "nearest settlements", "closest settlements", "the nearest castle", "nearest", "closest" } },
+			{ "distance_farthest", new[] { "farthest settlements", "most distant settlements", "the farthest castle", "farthest", "furthest" } },
+			{ "cardinality_all", new[] { "all settlements", "every settlement", "all" } },
+			{ "cardinality_top", new[] { "top ranked settlements", "the top few settlements", "top" } },
+			{ "cardinality_bottom", new[] { "bottom ranked settlements", "the bottom few settlements", "bottom" } },
+			{ "metric_wealth_high", new[] { "richest", "highest wealth", "wealth is high", "settlements with the highest wealth" } },
+			{ "metric_wealth_low", new[] { "poorest", "lowest wealth", "wealth is low", "settlements with the lowest wealth" } },
+			{ "metric_influence_high", new[] { "most influential", "highest influence", "influence is high", "settlements with the highest influence" } },
+			{ "metric_influence_low", new[] { "least influential", "lowest influence", "influence is low", "settlements with the lowest influence" } },
+			{ "metric_strength_high", new[] { "strongest", "highest strength", "strength is high", "settlements with the highest strength" } },
+			{ "metric_strength_low", new[] { "weakest", "lowest strength", "strength is low", "settlements with the lowest strength" } },
+			{ "metric_fiefs_high", new[] { "most fiefs", "highest number of fiefs", "number of fiefs is high", "settlements with the highest number of fiefs" } },
+			{ "metric_fiefs_low", new[] { "fewest fiefs", "lowest number of fiefs", "number of fiefs is low", "settlements with the lowest number of fiefs" } },
+			{ "metric_food_high", new[] { "most food", "highest food", "food is high", "settlements with the highest food" } },
+			{ "metric_food_low", new[] { "least food", "lowest food", "food is low", "settlements with the lowest food" } },
+			{ "metric_prosperity_high", new[] { "most prosperous", "highest prosperity", "prosperity is high", "settlements with the highest prosperity" } },
+			{ "metric_prosperity_low", new[] { "least prosperous", "lowest prosperity", "prosperity is low", "settlements with the lowest prosperity" } },
+			{ "metric_loyalty_high", new[] { "most loyal", "highest loyalty", "loyalty is high", "settlements with the highest loyalty" } },
+			{ "metric_loyalty_low", new[] { "least loyal", "lowest loyalty", "loyalty is low", "settlements with the lowest loyalty" } },
+			{ "metric_security_high", new[] { "most secure", "highest security", "security is high", "settlements with the highest security" } },
+			{ "metric_security_low", new[] { "least secure", "lowest security", "security is low", "settlements with the lowest security" } },
+			{ "metric_hearth_high", new[] { "most village hearths", "highest village hearths", "village hearths is high", "settlements with the highest village hearths" } },
+			{ "metric_hearth_low", new[] { "fewest village hearths", "lowest village hearths", "village hearths is low", "settlements with the lowest village hearths" } },
+			{ "metric_militia_high", new[] { "most militia", "highest militia", "militia is high", "settlements with the highest militia" } },
+			{ "metric_militia_low", new[] { "least militia", "lowest militia", "militia is low", "settlements with the lowest militia" } },
+		};
 	private static readonly IReadOnlyList<PolicyTargetPlanIntentAtom> AtomSnapshot = BuildAtoms();
 
 	private static readonly KeyValuePair<PolicyTargetPlanMetric, string>[] MetricThresholdAliases =
 	{
-		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Hearth, "附属村庄平均户数"),
+		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Hearth, PolicyCompatibilityTexts.Get("Targets_Compat_e6692b7928d8")),
 		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Hearth, "hearth"),
-		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Hearth, "炉户"),
-		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Hearth, "户数"),
+		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Hearth, PolicyCompatibilityTexts.Get("Targets_Compat_cfab635d1c1b")),
+		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Hearth, PolicyCompatibilityTexts.Get("Targets_Compat_4cfd3da9115f")),
 		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Militia, "militia"),
-		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Militia, "民兵")
+		new KeyValuePair<PolicyTargetPlanMetric, string>(PolicyTargetPlanMetric.Militia, PolicyCompatibilityTexts.Get("Module_militiaPerDay_playerDisplayName"))
 	};
 
 	private static readonly KeyValuePair<string, PolicyTargetPlanMetricComparison>[] MetricComparisonCues =
 	{
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("不高于", PolicyTargetPlanMetricComparison.LessThanOrEqual),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("不超过", PolicyTargetPlanMetricComparison.LessThanOrEqual),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("小于等于", PolicyTargetPlanMetricComparison.LessThanOrEqual),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_80c4751b0481"), PolicyTargetPlanMetricComparison.LessThanOrEqual),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_671e1f421e67"), PolicyTargetPlanMetricComparison.LessThanOrEqual),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_035d78382d6f"), PolicyTargetPlanMetricComparison.LessThanOrEqual),
 		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("<=", PolicyTargetPlanMetricComparison.LessThanOrEqual),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("至多", PolicyTargetPlanMetricComparison.LessThanOrEqual),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("不低于", PolicyTargetPlanMetricComparison.GreaterThanOrEqual),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("大于等于", PolicyTargetPlanMetricComparison.GreaterThanOrEqual),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_4c0b2b9f4253"), PolicyTargetPlanMetricComparison.LessThanOrEqual),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_19cd915c5a14"), PolicyTargetPlanMetricComparison.GreaterThanOrEqual),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_e1feef07d1b8"), PolicyTargetPlanMetricComparison.GreaterThanOrEqual),
 		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(">=", PolicyTargetPlanMetricComparison.GreaterThanOrEqual),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("至少", PolicyTargetPlanMetricComparison.GreaterThanOrEqual),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("低于", PolicyTargetPlanMetricComparison.LessThan),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("少于", PolicyTargetPlanMetricComparison.LessThan),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("小于", PolicyTargetPlanMetricComparison.LessThan),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_7ef93a55e5a1"), PolicyTargetPlanMetricComparison.GreaterThanOrEqual),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_e57d3dc19d83"), PolicyTargetPlanMetricComparison.LessThan),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_30f5e365f11d"), PolicyTargetPlanMetricComparison.LessThan),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_a39accd3595f"), PolicyTargetPlanMetricComparison.LessThan),
 		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("<", PolicyTargetPlanMetricComparison.LessThan),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("高于", PolicyTargetPlanMetricComparison.GreaterThan),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("超过", PolicyTargetPlanMetricComparison.GreaterThan),
-		new KeyValuePair<string, PolicyTargetPlanMetricComparison>("大于", PolicyTargetPlanMetricComparison.GreaterThan),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_47d524d0f1e0"), PolicyTargetPlanMetricComparison.GreaterThan),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_a2e0be841cce"), PolicyTargetPlanMetricComparison.GreaterThan),
+		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(PolicyCompatibilityTexts.Get("Targets_Compat_b4614ab230a5"), PolicyTargetPlanMetricComparison.GreaterThan),
 		new KeyValuePair<string, PolicyTargetPlanMetricComparison>(">", PolicyTargetPlanMetricComparison.GreaterThan)
 	};
 
@@ -221,7 +276,7 @@ internal static class PolicyTargetPlanRouter
 		PolicyTargetPlanRouteResult result = Route(queryText, context);
 		candidates = result.Candidates;
 		error = result.ShouldRejectPolicy
-			? result.Issues.Select(issue => issue?.Message).FirstOrDefault(message => !string.IsNullOrWhiteSpace(message)) ?? "明确目标无法安全解析。"
+			? result.Issues.Select(issue => issue?.Message).FirstOrDefault(message => !string.IsNullOrWhiteSpace(message)) ?? PolicyGenerationPromptTexts.Get("Targets_Text_8d174b7a7be8", "The explicit target cannot be resolved safely.")
 			: string.Empty;
 		return !result.ShouldRejectPolicy;
 	}
@@ -365,14 +420,15 @@ internal static class PolicyTargetPlanRouter
 			return true;
 		}
 		string typeCueQuery = BuildUnboundTypeCueText(normalizedQuery, mentionedEntities);
-		return HasExplicitTargetBoundary(FindExplicitAtomIds(normalizedQuery, typeCueQuery));
+		return HasExplicitTargetBoundary(FindExplicitAtomIds(normalizedQuery, typeCueQuery, query));
 	}
 
 	private static bool IsMissingRuntimeAnchorError(string error)
 	{
 		return !string.IsNullOrWhiteSpace(error)
-			&& (error.IndexOf("锚点", StringComparison.Ordinal) >= 0
-				|| error.IndexOf("引用已经失效", StringComparison.Ordinal) >= 0);
+			&& (error.IndexOf(PolicyCompatibilityTexts.Get("Targets_Compat_1821ae192b56"), StringComparison.Ordinal) >= 0
+				|| error.IndexOf(PolicyCompatibilityTexts.Get("Targets_Compat_e8026f4654f7"), StringComparison.Ordinal) >= 0
+				|| string.Equals(error, PolicyGenerationPromptTexts.Get("Targets_Text_764dfa9fd71d", "\"Other places\" lacks the current publication-location anchor."), StringComparison.Ordinal));
 	}
 
 	private static IReadOnlyList<PolicyTargetPlanCandidate> BuildBoundedPlanCandidates(
@@ -485,90 +541,90 @@ internal static class PolicyTargetPlanRouter
 		string normalizedQuery = NormalizeText(query);
 		bool centralizationCue = ContainsAny(
 			normalizedQuery,
-			"中央集权",
-			"加强集权",
-			"强化集权",
-			"权力集中",
-			"权力收归中央",
-			"收归中央",
-			"削弱领主",
-			"降低领主影响力",
-			"领主影响力降低",
-			"领主的影响力降低",
-			"减少领主影响力",
-			"领主影响力减少",
-			"领主的影响力减少",
-			"家族影响力降低",
-			"家族的影响力降低",
-			"家族影响力减少",
-			"家族的影响力减少");
+			PolicyCompatibilityTexts.Get("Module_clanInfluence_Original_10"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_308dbfed9d76"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_9bfd29d0623b"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_93c03d4eae31"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_01146936a29e"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_e4d1db5f493a"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_f2ddec4de5b8"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_c49c99bce7fd"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_407617e38225"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_2ead8ff6bf82"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_2d521840207f"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_90343c1795db"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_69b71ae2b12a"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_f6cadea2a00f"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_a1dff4058f6b"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_ffca6a30dc50"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_6aa5c62f0b3a"));
 		bool allTargetKingdomClansCue = ContainsAny(
 			normalizedQuery,
-			"目标王国全部家族",
-			"目标王国所有家族",
-			"王国内全部家族",
-			"王国内所有家族",
-			"本国全部家族",
-			"本国所有家族",
-			"国内全部家族",
-			"国内所有家族",
-			"全国领主",
-			"全体领主",
-			"所有领主",
-			"全国贵族",
-			"全体贵族",
-			"所有贵族");
+			PolicyCompatibilityTexts.Get("Targets_Compat_b2f74dad5cf2"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_da7cea859a8e"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_836af340d63e"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_68755450ac21"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_8282d0fc8389"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_2f66616fcfa5"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_13217d378272"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_38f20f31dd4f"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_2f78fba165bb"),
+			PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomLordTargetLabel_107"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_8b032bde3294"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_36225a806046"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_39e6e62091a3"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_351eb55a6290"));
 		bool otherTargetKingdomClansCue = ContainsAny(
 			normalizedQuery,
-			"除发布者家族外",
-			"发布者家族以外",
-			"除提案方家族外",
-			"提案方家族以外",
-			"除发布者氏族外",
-			"发布者氏族以外",
-			"其他家族",
-			"别的家族",
-			"其余家族",
-			"其他氏族",
-			"其他领主",
-			"其余领主",
-			"其他贵族",
-			"其余贵族");
+			PolicyCompatibilityTexts.Get("Targets_Compat_47b37d096fd8"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_801435c1ac44"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_5e0e22137b90"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_55f77e17d365"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_fb09a5c2ffff"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_4807ef250d2d"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_63f197695d20"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_329714d7b714"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_cec8e18146e7"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_597bb26ac400"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_335822ee7736"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_3a980cebd71b"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_66a2f31d716a"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_fc732f694f6d"));
 		bool proposerClanCue = ContainsAny(
 			normalizedQuery,
-			"发布者家族",
-			"政策发布者家族",
-			"提案方家族",
-			"提案者家族",
-			"发布者氏族",
-			"提案方氏族",
-			"发布者影响力",
-			"发布者的影响力",
-			"提案者影响力",
-			"提案者的影响力")
+			PolicyCompatibilityTexts.Get("Targets_Compat_02142ecca8da"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_0f73d761314f"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_37a90292077f"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_171719c3632d"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_c8c147056a97"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_d7e6b2737138"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_932904029459"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_ca56861814e2"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_06042131a9ac"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_5fd81e3a63a4"))
 			|| (SameId(context.PlayerClanId, context.ProposerClanId)
 				&& ContainsAny(
 					normalizedQuery,
-					"玩家家族",
-					"玩家氏族",
-					"玩家影响力",
-					"玩家的影响力"));
+					PolicyCompatibilityTexts.Get("Targets_Compat_4c35ed8cec1d"),
+					PolicyCompatibilityTexts.Get("Targets_Compat_adc8fbd40507"),
+					PolicyCompatibilityTexts.Get("Targets_Compat_a4d7e1087b11"),
+					PolicyCompatibilityTexts.Get("Targets_Compat_82338d0ddf67")));
 		bool affectedRegionOwnerCue = ContainsAny(
 			normalizedQuery,
-			"受影响地区的领主",
-			"受影响地区领主",
-			"影响地区的领主",
-			"影响地区领主",
-			"作用地区的领主",
-			"政策地区的领主",
-			"这些地区的领主",
-			"相关地区的领主",
-			"受影响地区的家族",
-			"影响地区的家族",
-			"受影响地区所有者",
-			"影响地区所有者",
-			"当地领主",
-			"当地家族");
+			PolicyCompatibilityTexts.Get("Targets_Compat_3a0328d5a4b8"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_b7160b7f46c5"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_787997f12422"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_df6c3de2f742"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_7beb5e4a458d"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_9434a66c3541"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_47a262e16727"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_860fb13fd938"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_c1aa0c85dc47"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_4c9405aa2ecc"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_2c521c628075"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_9da653307395"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_bc8f898e366d"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_c60b8c15ceb4"));
 		if (!centralizationCue
 			&& !allTargetKingdomClansCue
 			&& !otherTargetKingdomClansCue
@@ -581,30 +637,30 @@ internal static class PolicyTargetPlanRouter
 		}
 		bool compositionalClanFilterCue = ContainsAny(
 			normalizedQuery,
-			"敌国",
-			"交战国",
-			"盟国",
-			"外国",
-			"国外",
-			"边境",
-			"前线",
-			"北方",
-			"南方",
-			"东方",
-			"西方",
-			"最近",
-			"最远",
-			"最高",
-			"最低",
-			"最多",
-			"最少",
-			"最强",
-			"最弱",
-			"最富",
-			"最穷",
-			"排名",
-			"前几个",
-			"后几个")
+			PolicyCompatibilityTexts.Get("Targets_Compat_99fe7bff6c95"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_ca257753a7b9"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_31564e1f372e"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_eef932646f02"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_ce989e71b6f5"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_2059d7f1e966"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_087269aeaf58"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_78e20875d600"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_551ee9cf1235"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_67bad5bd2b80"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_8257f728a0d6"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_997a5e6e513f"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_da0a1e4badc7"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_8672864e9041"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_8b5f2a61b797"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_eea3b2d2f03b"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_477e3eac4043"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_64dfcc065cea"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_788d5efc1161"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_a3865f53eaef"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_09e09a1a634e"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_6570a98f2850"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_7ec3939922dc"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_5c523ba29f3d"))
 			|| FindExactMentionedEntities(
 				context.Snapshot.Entities,
 				normalizedQuery,
@@ -615,16 +671,16 @@ internal static class PolicyTargetPlanRouter
 		// 的词面提示错误收窄成家族执行目标。
 		bool explicitClanFiefCue = ContainsAny(
 			normalizedQuery,
-			"家族封地",
-			"家族领地",
-			"氏族封地",
-			"氏族领地",
-			"领主封地",
-			"领主领地",
-			"贵族封地",
-			"贵族领地");
+			PolicyCompatibilityTexts.Get("Targets_Compat_88867878def8"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_e98151e2e218"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_7e837cd23ba3"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_a217b3ac878c"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_34c329c15408"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_ac0814be9fc8"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_5d56a2cfbf9c"),
+			PolicyCompatibilityTexts.Get("Targets_Compat_dae9aaeba326"));
 		string typeCueQuery = BuildUnboundTypeCueText(normalizedQuery, context.Snapshot.Entities);
-		HashSet<string> explicitAtomIds = FindExplicitAtomIds(normalizedQuery, typeCueQuery);
+		HashSet<string> explicitAtomIds = FindExplicitAtomIds(normalizedQuery, typeCueQuery, query);
 		NormalizeExplicitTypeCues(explicitAtomIds, explicitClanFiefCue, typeCueQuery);
 		bool hasExplicitSettlementTarget = explicitAtomIds.Contains("type_primary_fief")
 			|| explicitAtomIds.Contains("type_town")
@@ -663,7 +719,7 @@ internal static class PolicyTargetPlanRouter
 			&& !TryAddDeterministicCandidate(
 				result,
 				CreateClanTargetPlan(PolicyTargetPlanOwnerClanPredicate.Any, PolicyTargetPlanRelation.Domestic),
-				"目标王国全部家族",
+				PolicyGenerationPromptTexts.Get("Targets_Text_b2f74dad5cf2", "All clans in the target kingdom"),
 				"deterministic=target-kingdom-all-clans",
 				out error))
 		{
@@ -673,7 +729,7 @@ internal static class PolicyTargetPlanRouter
 			&& !TryAddDeterministicCandidate(
 				result,
 				CreateClanTargetPlan(PolicyTargetPlanOwnerClanPredicate.ExcludeProposerClan, PolicyTargetPlanRelation.Domestic),
-				"目标王国其他家族（不含发布者家族）",
+				PolicyGenerationPromptTexts.Get("Targets_Text_eb4ca338a487", "Other clans in the target kingdom (excluding the publishing clan)"),
 				"deterministic=target-kingdom-other-clans",
 				out error))
 		{
@@ -683,7 +739,7 @@ internal static class PolicyTargetPlanRouter
 			&& !TryAddDeterministicCandidate(
 				result,
 				CreateClanTargetPlan(PolicyTargetPlanOwnerClanPredicate.ProposerClan, PolicyTargetPlanRelation.Any),
-				"发布者家族",
+				PolicyGenerationPromptTexts.Get("Targets_Text_02142ecca8da", "Publishing clan"),
 				"deterministic=proposer-clan",
 				out error))
 		{
@@ -709,7 +765,7 @@ internal static class PolicyTargetPlanRouter
 				&& !TryAddDeterministicCandidate(
 					result,
 					CreateAffectedRegionOwnerPlan(primarySettlementIds),
-					"受影响地区当前所有者家族",
+					PolicyGenerationPromptTexts.Get("Targets_Text_1b8974cbc9b3", "Current owner clans of the affected area"),
 					"deterministic=affected-region-current-owner-clans",
 					out error))
 			{
@@ -848,7 +904,7 @@ internal static class PolicyTargetPlanRouter
 		string typeCueQuery = BuildUnboundTypeCueText(
 			normalizedQuery,
 			mentionedSettlements.Concat(mentionedClans).Concat(mentionedKingdoms));
-		HashSet<string> explicitAtomIds = FindExplicitAtomIds(normalizedQuery, typeCueQuery);
+		HashSet<string> explicitAtomIds = FindExplicitAtomIds(normalizedQuery, typeCueQuery, query);
 		bool rejectedGenericForeignExpansion = context.StrictEntityEvidence
 			&& explicitAtomIds.Remove("relation_foreign");
 		if (rejectedGenericForeignExpansion
@@ -869,8 +925,8 @@ internal static class PolicyTargetPlanRouter
 		{
 			return false;
 		}
-		bool explicitMetricAscending = ContainsAny(normalizedQuery, "升序", "从低到高", "由低到高");
-		bool explicitMetricDescending = ContainsAny(normalizedQuery, "降序", "从高到低", "由高到低");
+		bool explicitMetricAscending = ContainsAny(normalizedQuery, PolicyCompatibilityTexts.Get("Targets_Compat_ca715c0d8d83"), PolicyCompatibilityTexts.Get("Targets_Compat_1606ac42755a"), PolicyCompatibilityTexts.Get("Targets_Compat_96209b5f421b"));
+		bool explicitMetricDescending = ContainsAny(normalizedQuery, PolicyCompatibilityTexts.Get("Targets_Compat_4b77c3546823"), PolicyCompatibilityTexts.Get("Targets_Compat_5d1671517ac1"), PolicyCompatibilityTexts.Get("Targets_Compat_22c3b494ee6e"));
 		if (explicitMetricAscending && explicitMetricDescending)
 		{
 			return false;
@@ -891,8 +947,8 @@ internal static class PolicyTargetPlanRouter
 		{
 			explicitAtomIds.Add("exclude_specific_entity");
 		}
-		bool fiefCue = ContainsAny(normalizedQuery, "城镇", "城市", "城堡", "领地", "封地", "地方", "定居点", "边境", "粮食", "繁荣", "忠诚", "治安", "户数", "炉户", "hearth", "民兵", "militia");
-		bool clanFiefCue = ContainsAny(normalizedQuery, "家族封地", "家族领地", "氏族封地", "氏族领地", "贵族封地", "贵族领地");
+		bool fiefCue = ContainsAny(normalizedQuery, PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_1462a7d8531e"), PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_095"), PolicyCompatibilityTexts.Get("Targets_Compat_2059d7f1e966"), PolicyCompatibilityTexts.Get("Targets_Compat_661b85c39112"), PolicyCompatibilityTexts.Get("Targets_Compat_b28c4dbf4295"), PolicyCompatibilityTexts.Get("Targets_Compat_eaf086f666cf"), PolicyCompatibilityTexts.Get("Targets_Compat_fe5e1225977e"), PolicyCompatibilityTexts.Get("Targets_Compat_4cfd3da9115f"), PolicyCompatibilityTexts.Get("Targets_Compat_cfab635d1c1b"), "hearth", PolicyCompatibilityTexts.Get("Module_militiaPerDay_playerDisplayName"), "militia");
+		bool clanFiefCue = ContainsAny(normalizedQuery, PolicyCompatibilityTexts.Get("Targets_Compat_88867878def8"), PolicyCompatibilityTexts.Get("Targets_Compat_e98151e2e218"), PolicyCompatibilityTexts.Get("Targets_Compat_7e837cd23ba3"), PolicyCompatibilityTexts.Get("Targets_Compat_a217b3ac878c"), PolicyCompatibilityTexts.Get("Targets_Compat_5d56a2cfbf9c"), PolicyCompatibilityTexts.Get("Targets_Compat_dae9aaeba326"));
 		bool isLocalScope = string.Equals(context.Scope, "local", StringComparison.OrdinalIgnoreCase);
 		NormalizeExplicitTypeCues(explicitAtomIds, clanFiefCue, typeCueQuery);
 		if (includedSettlements.Count > 0 || includedClans.Count > 0 || includedKingdoms.Count > 0)
@@ -923,7 +979,7 @@ internal static class PolicyTargetPlanRouter
 		{
 			// Explicit operands are validated before ONNX so an unavailable model cannot
 			// hide a deterministic request error behind an embedding failure.
-			error = "“其他地方”缺少当前发布地锚点。";
+			error = PolicyGenerationPromptTexts.Get("Targets_Text_764dfa9fd71d", "\"Other places\" lacks the current publication-location anchor.");
 			return false;
 		}
 		bool hasExactEntityOperand = mentionedSettlements.Count > 0
@@ -1172,7 +1228,7 @@ internal static class PolicyTargetPlanRouter
 		{
 			if (mentionedClans.Count > 1)
 			{
-				error = "“其他家族”存在多个可能的参照家族。";
+				error = PolicyGenerationPromptTexts.Get("Targets_Text_239f71f7f829", "\"Other clans\" has multiple possible reference clans.");
 				return false;
 			}
 			if (mentionedClans.Count == 1)
@@ -1262,7 +1318,7 @@ internal static class PolicyTargetPlanRouter
 			&& branch.Exclusions.Contains(PolicyTargetPlanExclusion.PublicationParents)
 			&& (context.SourceSettlementIds?.Count ?? 0) == 0)
 		{
-			error = "“其他地方”缺少当前发布地锚点。";
+			error = PolicyGenerationPromptTexts.Get("Targets_Text_764dfa9fd71d", "\"Other places\" lacks the current publication-location anchor.");
 			return false;
 		}
 		evidence = "atoms=" + string.Join(",", selected.Values.Select(item => item.Atom.Id).OrderBy(value => value, StringComparer.Ordinal))
@@ -1288,7 +1344,7 @@ internal static class PolicyTargetPlanRouter
 			if (isLocalScope && explicitAtomIds.Contains("exclude_publication"))
 			{
 				prunedAtomIds = Array.Empty<string>();
-				error = "“其他地方”缺少当前发布地锚点。";
+				error = PolicyGenerationPromptTexts.Get("Targets_Text_764dfa9fd71d", "\"Other places\" lacks the current publication-location anchor.");
 				return false;
 			}
 			pruned.Add("exclude_publication");
@@ -1471,7 +1527,7 @@ internal static class PolicyTargetPlanRouter
 
 	private static void ApplyCardinalityFromText(string query, PolicyTargetPlanBranchSaveData branch)
 	{
-		if (ContainsAny(query, "全部", "所有", "每个", "每一", "各地", "各领地", "各城镇", "各城堡", "各村庄", "全境", "全体"))
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_5c55a67935af"), PolicyCompatibilityTexts.Get("Targets_Compat_ae99f297e9f5"), PolicyCompatibilityTexts.Get("Targets_Compat_57e34a600712"), PolicyCompatibilityTexts.Get("Targets_Compat_752b90b744bd"), PolicyCompatibilityTexts.Get("Targets_Compat_fe5591bd9cc1"), PolicyCompatibilityTexts.Get("Targets_Compat_e755b0716035"), PolicyCompatibilityTexts.Get("Targets_Compat_3b8c14de9027"), PolicyCompatibilityTexts.Get("Targets_Compat_988ba5fd2a5f"), PolicyCompatibilityTexts.Get("Targets_Compat_78b43744dd81"), PolicyCompatibilityTexts.Get("Targets_Compat_6d47ebde28fd"), PolicyCompatibilityTexts.Get("Targets_Compat_08b602275aee")))
 		{
 			branch.Cardinality = PolicyTargetPlanCardinality.All;
 			branch.Limit = 0;
@@ -1480,7 +1536,7 @@ internal static class PolicyTargetPlanRouter
 		int count = ParseRequestedCount(query);
 		if (count > 0)
 		{
-			branch.Cardinality = ContainsAny(query, "后", "最低", "最少", "最弱", "最穷", "最差")
+			branch.Cardinality = ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_60be66d61586"), PolicyCompatibilityTexts.Get("Targets_Compat_8b5f2a61b797"), PolicyCompatibilityTexts.Get("Targets_Compat_477e3eac4043"), PolicyCompatibilityTexts.Get("Targets_Compat_788d5efc1161"), PolicyCompatibilityTexts.Get("Targets_Compat_09e09a1a634e"), PolicyCompatibilityTexts.Get("Targets_Compat_ef2e2e8ee22a"))
 				? PolicyTargetPlanCardinality.BottomN
 				: PolicyTargetPlanCardinality.TopN;
 			branch.Limit = count;
@@ -1506,20 +1562,20 @@ internal static class PolicyTargetPlanRouter
 				return Math.Max(1, value);
 			}
 		}
-		string[] chinese = { "零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十" };
+		string[] chinese = { PolicyCompatibilityTexts.Get("Targets_Compat_9489a4a6f3fb"), PolicyCompatibilityTexts.Get("Targets_Compat_51a75f4634df"), PolicyCompatibilityTexts.Get("Targets_Compat_084b42f6e95e"), PolicyCompatibilityTexts.Get("Targets_Compat_a4c3313deb18"), PolicyCompatibilityTexts.Get("Targets_Compat_754a9d5828d5"), PolicyCompatibilityTexts.Get("Targets_Compat_c9b87f516a38"), PolicyCompatibilityTexts.Get("Targets_Compat_de07b5383874"), PolicyCompatibilityTexts.Get("Targets_Compat_1b0542878c67"), PolicyCompatibilityTexts.Get("Targets_Compat_2c467d367392"), PolicyCompatibilityTexts.Get("Targets_Compat_df897da6e02e"), PolicyCompatibilityTexts.Get("Targets_Compat_fc7edd399a5c") };
 		for (int value = 10; value >= 1; value--)
 		{
-			if (query.Contains("前" + chinese[value])
-				|| query.Contains("后" + chinese[value])
-				|| query.Contains(chinese[value] + "座")
-				|| query.Contains(chinese[value] + "处")
-				|| query.Contains(chinese[value] + "名")
-				|| query.Contains(chinese[value] + "家"))
+			if (query.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_6044e9f095e0") + chinese[value])
+				|| query.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_60be66d61586") + chinese[value])
+				|| query.Contains(chinese[value] + PolicyCompatibilityTexts.Get("Targets_Compat_001d9c64f7f1"))
+				|| query.Contains(chinese[value] + PolicyCompatibilityTexts.Get("Targets_Compat_34ee554a469c"))
+				|| query.Contains(chinese[value] + PolicyCompatibilityTexts.Get("Targets_Compat_51a5d681a99c"))
+				|| query.Contains(chinese[value] + PolicyCompatibilityTexts.Get("Targets_Compat_c8ae97be80f3")))
 			{
 				return value;
 			}
 		}
-		if (ContainsAny(query, "前两", "后两", "两座", "两处", "两名", "两家"))
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_5fad1e271651"), PolicyCompatibilityTexts.Get("Targets_Compat_60999bbd1d51"), PolicyCompatibilityTexts.Get("Targets_Compat_dfc348f2b17b"), PolicyCompatibilityTexts.Get("Targets_Compat_fd8fcaec5221"), PolicyCompatibilityTexts.Get("Targets_Compat_a427863be055"), PolicyCompatibilityTexts.Get("Targets_Compat_59675f8778f6")))
 		{
 			return 2;
 		}
@@ -1572,11 +1628,11 @@ internal static class PolicyTargetPlanRouter
 	private static int ExtendNamedEntityTypeSuffix(string query, int start, string entityKind)
 	{
 		IReadOnlyList<string> suffixes = string.Equals(entityKind, PolicyTargetEntityKinds.Kingdom, StringComparison.OrdinalIgnoreCase)
-			? new[] { "王国", "国家", "政权", "帝国" }
+			? new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151"), PolicyCompatibilityTexts.Get("Targets_Compat_24c60e89e082") }
 			: string.Equals(entityKind, PolicyTargetEntityKinds.Clan, StringComparison.OrdinalIgnoreCase)
-				? new[] { "家族", "氏族", "部族" }
+				? new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_b8003d4ad0d6") }
 				: string.Equals(entityKind, PolicyTargetEntityKinds.Settlement, StringComparison.OrdinalIgnoreCase)
-					? new[] { "城镇", "城市", "城堡", "村庄", "堡", "城", "村" }
+					? new[] { PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_051"), PolicyCompatibilityTexts.Get("Targets_Compat_61a401cf32d4"), PolicyCompatibilityTexts.Get("Targets_Compat_76f47004cc12"), PolicyCompatibilityTexts.Get("Targets_Compat_32bd97013331") }
 					: Array.Empty<string>();
 		foreach (string suffix in suffixes.OrderByDescending(value => value.Length))
 		{
@@ -1589,36 +1645,36 @@ internal static class PolicyTargetPlanRouter
 		return start;
 	}
 
-	private static HashSet<string> FindExplicitAtomIds(string query, string typeCueQuery)
+	private static HashSet<string> FindExplicitAtomIds(string query, string typeCueQuery, string originalQuery = null)
 	{
 		HashSet<string> result = new HashSet<string>(StringComparer.Ordinal);
 		string typeQuery = string.IsNullOrWhiteSpace(typeCueQuery) ? query : typeCueQuery;
-		if (ContainsAny(query, "其他地方", "别的地方", "其余地方", "剩余地方", "除发布地", "发布地以外")) result.Add("exclude_publication");
-		if (ContainsAny(query, "除玩家家族", "排除玩家家族", "玩家家族以外", "非玩家家族")) result.Add("exclude_player_clan");
-		if (ContainsAny(query, "其他家族", "别的家族", "其余家族", "其他氏族")) result.Add("owner_other_clans");
-		if (ContainsAny(query, "发布者家族", "政策发布者家族", "提案方家族", "提案者家族", "发布者氏族", "提案方氏族", "发布者影响力", "发布者的影响力", "提案者影响力", "提案者的影响力"))
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_c873aa60bb4e"), PolicyCompatibilityTexts.Get("Targets_Compat_d6d0d79ca0cd"), PolicyCompatibilityTexts.Get("Targets_Compat_5bbb51e32bb1"), PolicyCompatibilityTexts.Get("Targets_Compat_4c4db24b0391"), PolicyCompatibilityTexts.Get("Targets_Compat_678d0ef06078"), PolicyCompatibilityTexts.Get("Targets_Compat_c3703d114def"))) result.Add("exclude_publication");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_b88dfb017a3d"), PolicyCompatibilityTexts.Get("Targets_Compat_6a912db4db2b"), PolicyCompatibilityTexts.Get("Targets_Compat_1470f04c3e45"), PolicyCompatibilityTexts.Get("Targets_Compat_842368f6a52f"))) result.Add("exclude_player_clan");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_63f197695d20"), PolicyCompatibilityTexts.Get("Targets_Compat_329714d7b714"), PolicyCompatibilityTexts.Get("Targets_Compat_cec8e18146e7"), PolicyCompatibilityTexts.Get("Targets_Compat_597bb26ac400"))) result.Add("owner_other_clans");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_02142ecca8da"), PolicyCompatibilityTexts.Get("Targets_Compat_0f73d761314f"), PolicyCompatibilityTexts.Get("Targets_Compat_37a90292077f"), PolicyCompatibilityTexts.Get("Targets_Compat_171719c3632d"), PolicyCompatibilityTexts.Get("Targets_Compat_c8c147056a97"), PolicyCompatibilityTexts.Get("Targets_Compat_d7e6b2737138"), PolicyCompatibilityTexts.Get("Targets_Compat_932904029459"), PolicyCompatibilityTexts.Get("Targets_Compat_ca56861814e2"), PolicyCompatibilityTexts.Get("Targets_Compat_06042131a9ac"), PolicyCompatibilityTexts.Get("Targets_Compat_5fd81e3a63a4")))
 		{
 			result.Add("owner_proposer_clan");
 			result.Add("type_clan");
 		}
-		if (ContainsAny(query, "本国", "国内", "境内")) result.Add("relation_domestic");
-		if (ContainsAny(query, "敌国", "交战国", "敌对国家")) result.Add("relation_enemy");
-		if (ContainsAny(query, "盟国", "同盟国", "盟友国家")) result.Add("relation_ally");
-		if (ContainsAny(query, "外国", "国外", "其他国家", "其他王国", "别国", "别的王国", "其余王国")) result.Add("relation_foreign");
-		if (ContainsAny(query, "发布者王国", "提案方王国", "发布方王国", "宗主国为参照")) result.Add("anchor_issuer");
-		if (ContainsAny(typeQuery, "城镇", "城市")) result.Add("type_town");
-		if (typeQuery.Contains("城堡")) result.Add("type_castle");
-		if (ContainsAny(typeQuery, "封地", "领地", "定居点")) result.Add("type_primary_fief");
-		if (ContainsAny(typeQuery, "家族", "氏族", "领主", "贵族")) result.Add("type_clan");
-		if (ContainsAny(typeQuery, "王国", "国家", "政权")) result.Add("type_kingdom");
-		if (ContainsAny(query, "边境", "边疆", "前线")) result.Add("geography_border");
-		if (ContainsAny(query, "北方", "北部", "以北")) result.Add("direction_north");
-		if (ContainsAny(query, "南方", "南部", "以南")) result.Add("direction_south");
-		if (ContainsAny(query, "东方", "东部", "以东")) result.Add("direction_east");
-		if (ContainsAny(query, "西方", "西部", "以西")) result.Add("direction_west");
-		if (ContainsAny(query, "最近", "就近", "邻近")) result.Add("distance_nearest");
-		if (ContainsAny(query, "最远", "偏远")) result.Add("distance_farthest");
-		bool all = ContainsAny(query, "全部", "所有", "每个", "每一", "各地", "各领地", "各城镇", "各城堡", "各村庄", "全境", "全体");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_f752e00f622d"), PolicyCompatibilityTexts.Get("Targets_Compat_cec69ce03690"), PolicyCompatibilityTexts.Get("Targets_Compat_5f9569f60b3b"))) result.Add("relation_domestic");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_99fe7bff6c95"), PolicyCompatibilityTexts.Get("Targets_Compat_ca257753a7b9"), PolicyCompatibilityTexts.Get("Targets_Compat_7a9cd001d20f"))) result.Add("relation_enemy");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_31564e1f372e"), PolicyCompatibilityTexts.Get("Targets_Compat_35f0f6278ac7"), PolicyCompatibilityTexts.Get("Targets_Compat_4a3527415471"))) result.Add("relation_ally");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_eef932646f02"), PolicyCompatibilityTexts.Get("Targets_Compat_ce989e71b6f5"), PolicyCompatibilityTexts.Get("Targets_Compat_3b8a4a9a31d2"), PolicyCompatibilityTexts.Get("Targets_Compat_927841294109"), PolicyCompatibilityTexts.Get("Targets_Compat_979c8c7e1957"), PolicyCompatibilityTexts.Get("Targets_Compat_915d13c50c2b"), PolicyCompatibilityTexts.Get("Targets_Compat_14db7c0fdab1"))) result.Add("relation_foreign");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_53667078705b"), PolicyCompatibilityTexts.Get("Targets_Compat_598c015fde8c"), PolicyCompatibilityTexts.Get("Targets_Compat_22d694c339ae"), PolicyCompatibilityTexts.Get("Targets_Compat_3cfde176aac7"))) result.Add("anchor_issuer");
+		if (ContainsAny(typeQuery, PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"))) result.Add("type_town");
+		if (typeQuery.Contains(PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"))) result.Add("type_castle");
+		if (ContainsAny(typeQuery, PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_095"))) result.Add("type_primary_fief");
+		if (ContainsAny(typeQuery, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54"), PolicyCompatibilityTexts.Get("Targets_Compat_f49dc9dc440f"))) result.Add("type_clan");
+		if (ContainsAny(typeQuery, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151"))) result.Add("type_kingdom");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_2059d7f1e966"), PolicyCompatibilityTexts.Get("Targets_Compat_4f4e7575b174"), PolicyCompatibilityTexts.Get("Targets_Compat_087269aeaf58"))) result.Add("geography_border");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_78e20875d600"), PolicyCompatibilityTexts.Get("Targets_Compat_10aaace7ab59"), PolicyCompatibilityTexts.Get("Targets_Compat_9ec7c9b52e1b"))) result.Add("direction_north");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_551ee9cf1235"), PolicyCompatibilityTexts.Get("Targets_Compat_95261be7958c"), PolicyCompatibilityTexts.Get("Targets_Compat_3a9a886ae29d"))) result.Add("direction_south");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_67bad5bd2b80"), PolicyCompatibilityTexts.Get("Targets_Compat_529c35b3573b"), PolicyCompatibilityTexts.Get("Targets_Compat_46db57d7fc3b"))) result.Add("direction_east");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_8257f728a0d6"), PolicyCompatibilityTexts.Get("Targets_Compat_dca3ed381925"), PolicyCompatibilityTexts.Get("Targets_Compat_f9a7268fde03"))) result.Add("direction_west");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_997a5e6e513f"), PolicyCompatibilityTexts.Get("Targets_Compat_128befdd4693"), PolicyCompatibilityTexts.Get("Targets_Compat_a37b34464c33"))) result.Add("distance_nearest");
+		if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_da0a1e4badc7"), PolicyCompatibilityTexts.Get("Targets_Compat_61e29b9f4464"))) result.Add("distance_farthest");
+		bool all = ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_5c55a67935af"), PolicyCompatibilityTexts.Get("Targets_Compat_ae99f297e9f5"), PolicyCompatibilityTexts.Get("Targets_Compat_57e34a600712"), PolicyCompatibilityTexts.Get("Targets_Compat_752b90b744bd"), PolicyCompatibilityTexts.Get("Targets_Compat_fe5591bd9cc1"), PolicyCompatibilityTexts.Get("Targets_Compat_e755b0716035"), PolicyCompatibilityTexts.Get("Targets_Compat_3b8c14de9027"), PolicyCompatibilityTexts.Get("Targets_Compat_988ba5fd2a5f"), PolicyCompatibilityTexts.Get("Targets_Compat_78b43744dd81"), PolicyCompatibilityTexts.Get("Targets_Compat_6d47ebde28fd"), PolicyCompatibilityTexts.Get("Targets_Compat_08b602275aee"));
 		if (all)
 		{
 			result.Add("cardinality_all");
@@ -1626,19 +1682,97 @@ internal static class PolicyTargetPlanRouter
 		else
 		{
 			int requestedCount = ParseRequestedCount(query);
-			if (requestedCount > 0 || ContainsAny(query, "最高", "最多", "最强", "最富", "最好"))
+			if (requestedCount > 0 || ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_8672864e9041"), PolicyCompatibilityTexts.Get("Targets_Compat_eea3b2d2f03b"), PolicyCompatibilityTexts.Get("Targets_Compat_64dfcc065cea"), PolicyCompatibilityTexts.Get("Targets_Compat_a3865f53eaef"), PolicyCompatibilityTexts.Get("Targets_Compat_041e0910b5cc")))
 			{
 				result.Add("cardinality_top");
 			}
-			if (ContainsAny(query, "最低", "最少", "最弱", "最穷", "最差"))
+			if (ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_8b5f2a61b797"), PolicyCompatibilityTexts.Get("Targets_Compat_477e3eac4043"), PolicyCompatibilityTexts.Get("Targets_Compat_788d5efc1161"), PolicyCompatibilityTexts.Get("Targets_Compat_09e09a1a634e"), PolicyCompatibilityTexts.Get("Targets_Compat_ef2e2e8ee22a")))
 			{
 				result.Remove("cardinality_top");
 				result.Add("cardinality_bottom");
 			}
 		}
 		AddMetricExplicitCues(result, query);
+		AddEnglishExplicitAtomCues(result, originalQuery, typeQuery);
 		return result;
 	}
+
+
+    private static void AddEnglishExplicitAtomCues(ISet<string> result, string originalQuery, string typeCueQuery)
+    {
+        if (string.IsNullOrWhiteSpace(originalQuery)) return;
+        string text = originalQuery.ToLowerInvariant();
+        // These aliases identify target attributes only; uncertain/questions do not gain explicit evidence.
+        if (text.IndexOf('?') >= 0 || HasEnglishPhrase(text, "maybe") || HasEnglishPhrase(text, "perhaps")
+            || HasEnglishPhrase(text, "possibly") || HasEnglishPhrase(text, "might")
+            || HasEnglishPhrase(text, "not sure") || HasEnglishPhrase(text, "whether")
+            || StartsEnglishQuestion(text)) return;
+        foreach (KeyValuePair<string, string[]> entry in EnglishIntentSeeds)
+        {
+            bool exclusion = entry.Key.StartsWith("exclude_", StringComparison.Ordinal)
+                || entry.Key == "owner_other_clans";
+            foreach (string phrase in entry.Value)
+            {
+                int start = 0;
+                while (start < text.Length)
+                {
+                    int index = text.IndexOf(phrase, start, StringComparison.Ordinal);
+                    if (index < 0) break;
+                    start = index + phrase.Length;
+                    if (!IsEnglishPhraseBoundary(text, index, phrase.Length)) continue;
+                    // Names already removed by the existing entity cue path cannot become entity types.
+                    if (entry.Key.StartsWith("type_", StringComparison.Ordinal)
+                        && !(typeCueQuery ?? string.Empty).Contains(NormalizeText(phrase))) continue;
+                    if (!exclusion && IsEnglishCueNegated(text, index)) continue;
+                    result.Add(entry.Key);
+                    break;
+                }
+                if (result.Contains(entry.Key)) break;
+            }
+        }
+    }
+
+    private static bool StartsEnglishQuestion(string text)
+    {
+        string trimmed = text.TrimStart();
+        return trimmed.StartsWith("should ", StringComparison.Ordinal)
+            || trimmed.StartsWith("could ", StringComparison.Ordinal)
+            || trimmed.StartsWith("would ", StringComparison.Ordinal)
+            || trimmed.StartsWith("can ", StringComparison.Ordinal)
+            || trimmed.StartsWith("is ", StringComparison.Ordinal)
+            || trimmed.StartsWith("are ", StringComparison.Ordinal)
+            || trimmed.StartsWith("what ", StringComparison.Ordinal)
+            || trimmed.StartsWith("which ", StringComparison.Ordinal)
+            || trimmed.StartsWith("how ", StringComparison.Ordinal);
+    }
+
+    private static bool HasEnglishPhrase(string text, string phrase)
+    {
+        int start = 0;
+        while (start < text.Length)
+        {
+            int index = text.IndexOf(phrase, start, StringComparison.Ordinal);
+            if (index < 0) return false;
+            if (IsEnglishPhraseBoundary(text, index, phrase.Length)) return true;
+            start = index + phrase.Length;
+        }
+        return false;
+    }
+
+    private static bool IsEnglishPhraseBoundary(string text, int index, int length)
+        => (index == 0 || !char.IsLetterOrDigit(text[index - 1]))
+            && (index + length == text.Length || !char.IsLetterOrDigit(text[index + length]));
+
+    private static bool IsEnglishCueNegated(string text, int index)
+    {
+        int begin = index;
+        while (begin > 0 && ",;.!?\n".IndexOf(text[begin - 1]) < 0) begin--;
+        string prefix = text.Substring(begin, index - begin);
+        return HasEnglishPhrase(prefix, "not") || HasEnglishPhrase(prefix, "don't")
+            || HasEnglishPhrase(prefix, "never") || HasEnglishPhrase(prefix, "exclude")
+            || HasEnglishPhrase(prefix, "excluding") || HasEnglishPhrase(prefix, "except")
+            || HasEnglishPhrase(prefix, "without") || HasEnglishPhrase(prefix, "rather than");
+    }
 
 	private static void NormalizeExplicitTypeCues(ISet<string> atomIds, bool clanFiefCue, string typeCueQuery)
 	{
@@ -1658,8 +1792,8 @@ internal static class PolicyTargetPlanRouter
 			&& (HasExplicitRelationCue(atomIds)
 				|| HasHierarchicalContainmentCue(
 					typeCueQuery,
-					new[] { "王国", "国家", "政权" },
-					new[] { "家族", "氏族", "领主", "贵族" })))
+					new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151") },
+					new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54"), PolicyCompatibilityTexts.Get("Targets_Compat_f49dc9dc440f") })))
 		{
 			// The higher-level kingdom phrase constrains clan membership.
 			atomIds.Remove("type_kingdom");
@@ -1672,8 +1806,8 @@ internal static class PolicyTargetPlanRouter
 			&& (HasExplicitRelationCue(atomIds)
 				|| HasHierarchicalContainmentCue(
 					typeCueQuery,
-					new[] { "王国", "国家", "政权" },
-					new[] { "城镇", "城市", "城堡", "封地", "领地", "定居点" })))
+					new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151") },
+					new[] { PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_095") })))
 		{
 			// A kingdom is a scope container only when relation or containment syntax
 			// binds a lower-level settlement target. Independent kingdom and settlement
@@ -1684,8 +1818,8 @@ internal static class PolicyTargetPlanRouter
 			&& atomIds.Contains("type_clan")
 			&& HasHierarchicalContainmentCue(
 				typeCueQuery,
-				new[] { "家族", "氏族", "领主", "贵族" },
-				new[] { "城镇", "城市", "城堡", "封地", "领地", "定居点" }))
+				new[] { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_091"), PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29"), PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54"), PolicyCompatibilityTexts.Get("Targets_Compat_f49dc9dc440f") },
+				new[] { PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"), PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"), PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_052"), PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d"), PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_095") }))
 		{
 			atomIds.Remove("type_clan");
 		}
@@ -1737,7 +1871,7 @@ internal static class PolicyTargetPlanRouter
 					}
 					string bridge = normalized.Substring(containerEnd, memberIndex - containerEnd);
 					if (bridge.Length == 0
-						|| ContainsAny(bridge, "的", "所属", "辖下", "辖内", "境内", "全境", "范围内", "拥有", "控制", "各", "全部", "所有"))
+						|| ContainsAny(bridge, PolicyCompatibilityTexts.Get("Targets_Compat_8af2350cfd65"), PolicyCompatibilityTexts.Get("Targets_Compat_dae8c66b6329"), PolicyCompatibilityTexts.Get("Targets_Compat_bd09d69fa2f3"), PolicyCompatibilityTexts.Get("Targets_Compat_74713a5e576a"), PolicyCompatibilityTexts.Get("Targets_Compat_5f9569f60b3b"), PolicyCompatibilityTexts.Get("Targets_Compat_6d47ebde28fd"), PolicyCompatibilityTexts.Get("Targets_Compat_166f5a8e8ab3"), PolicyCompatibilityTexts.Get("Targets_Compat_a70dafd11ed0"), PolicyCompatibilityTexts.Get("Targets_Compat_4f51d0285e88"), PolicyCompatibilityTexts.Get("Targets_Compat_4bc81e480383"), PolicyCompatibilityTexts.Get("Targets_Compat_5c55a67935af"), PolicyCompatibilityTexts.Get("Targets_Compat_ae99f297e9f5")))
 					{
 						return true;
 					}
@@ -1757,7 +1891,7 @@ internal static class PolicyTargetPlanRouter
 		{
 			if (group.Count() > 1)
 			{
-				error = "TargetPlan 子句包含互相矛盾的 " + group.Key + " 操作符。";
+				error = PolicyGenerationPromptTexts.Get("Targets_Text_b6f7213758fb", "The TargetPlan clause contains mutually contradictory ") + group.Key + PolicyGenerationPromptTexts.Get("Targets_Text_3d10ed03caa2", " operators.");
 				return false;
 			}
 		}
@@ -1789,20 +1923,20 @@ internal static class PolicyTargetPlanRouter
 
 	private static void AddMetricExplicitCues(ISet<string> result, string query)
 	{
-		AddMetricCue(result, query, "wealth", new[] { "最富", "财富最高", "最有钱" }, new[] { "最穷", "财富最低", "最贫穷" });
-		AddMetricCue(result, query, "influence", new[] { "影响力最高", "最有权势" }, new[] { "影响力最低", "最无权势" });
-		AddMetricCue(result, query, "strength", new[] { "实力最强", "最强大", "军力最强" }, new[] { "实力最弱", "最弱小", "军力最弱" });
-		AddMetricCue(result, query, "fiefs", new[] { "封地最多", "领地最多" }, new[] { "封地最少", "领地最少" });
-		AddMetricCue(result, query, "food", new[] { "粮食最多", "储粮最高", "粮食充足" }, new[] { "粮食最少", "储粮最低", "缺粮" });
-		AddMetricCue(result, query, "prosperity", new[] { "最繁荣", "繁荣度最高" }, new[] { "最贫困", "繁荣度最低", "最落后" });
-		AddMetricCue(result, query, "loyalty", new[] { "忠诚最高", "最忠诚" }, new[] { "忠诚最低", "最不忠" });
-		AddMetricCue(result, query, "security", new[] { "治安最好", "安全度最高" }, new[] { "治安最差", "安全度最低", "最危险" });
+		AddMetricCue(result, query, "wealth", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_a3865f53eaef"), PolicyCompatibilityTexts.Get("Targets_Compat_ebf7ba6c6238"), PolicyCompatibilityTexts.Get("Targets_Compat_dbf66e702a25") }, new[] { PolicyCompatibilityTexts.Get("Targets_Compat_09e09a1a634e"), PolicyCompatibilityTexts.Get("Targets_Compat_c445dab91a30"), PolicyCompatibilityTexts.Get("Targets_Compat_95fdea83adeb") });
+		AddMetricCue(result, query, "influence", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_afeca66471bc"), PolicyCompatibilityTexts.Get("Targets_Compat_711558272138") }, new[] { PolicyCompatibilityTexts.Get("Targets_Compat_86f70cf134c1"), PolicyCompatibilityTexts.Get("Targets_Compat_d25dfb0d4e1f") });
+		AddMetricCue(result, query, "strength", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_b966d70c4e21"), PolicyCompatibilityTexts.Get("Targets_Compat_b7091dd57763"), PolicyCompatibilityTexts.Get("Targets_Compat_524cf8127828") }, new[] { PolicyCompatibilityTexts.Get("Targets_Compat_8a2170491cda"), PolicyCompatibilityTexts.Get("Targets_Compat_5ef87dfbb51b"), PolicyCompatibilityTexts.Get("Targets_Compat_a9373eb73daa") });
+		AddMetricCue(result, query, "fiefs", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_29dd8f5d0c70"), PolicyCompatibilityTexts.Get("Targets_Compat_54b7110bbe10") }, new[] { PolicyCompatibilityTexts.Get("Targets_Compat_69aebe97fc87"), PolicyCompatibilityTexts.Get("Targets_Compat_3bc922351fac") });
+		AddMetricCue(result, query, "food", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_5fc1f9f360a9"), PolicyCompatibilityTexts.Get("Targets_Compat_53b72f94c899"), PolicyCompatibilityTexts.Get("Targets_Compat_8947fe3b3ae5") }, new[] { PolicyCompatibilityTexts.Get("Targets_Compat_6b78594b10cd"), PolicyCompatibilityTexts.Get("Targets_Compat_2bb4bece0314"), PolicyCompatibilityTexts.Get("Targets_Compat_08ea9309c0d7") });
+		AddMetricCue(result, query, "prosperity", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_22f308cf5845"), PolicyCompatibilityTexts.Get("Targets_Compat_72455a2cd877") }, new[] { PolicyCompatibilityTexts.Get("Targets_Compat_c5ba611faf9c"), PolicyCompatibilityTexts.Get("Targets_Compat_9e757df3cd99"), PolicyCompatibilityTexts.Get("Targets_Compat_7e1e2461c3d6") });
+		AddMetricCue(result, query, "loyalty", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_debfa4109450"), PolicyCompatibilityTexts.Get("Targets_Compat_ded05fb591bc") }, new[] { PolicyCompatibilityTexts.Get("Targets_Compat_0ff1ac94f916"), PolicyCompatibilityTexts.Get("Targets_Compat_ffb566d5fc86") });
+		AddMetricCue(result, query, "security", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_7db09fccb350"), PolicyCompatibilityTexts.Get("Targets_Compat_d44bfb35d6f7") }, new[] { PolicyCompatibilityTexts.Get("Targets_Compat_64199b73d82c"), PolicyCompatibilityTexts.Get("Targets_Compat_872f15c89c33"), PolicyCompatibilityTexts.Get("Targets_Compat_85b599c97400") });
 		AddMetricCue(result, query, "hearth",
-			new[] { "户数最高", "炉户最多", "hearth最高", "户数降序", "hearth降序" },
-			new[] { "户数最低", "炉户最少", "hearth最低", "户数升序", "hearth升序" });
+			new[] { PolicyCompatibilityTexts.Get("Targets_Compat_f921402d4807"), PolicyCompatibilityTexts.Get("Targets_Compat_636caa462621"), PolicyCompatibilityTexts.Get("Targets_Compat_ff17650ae0ee"), PolicyCompatibilityTexts.Get("Targets_Compat_d4c83cae1dc0"), PolicyCompatibilityTexts.Get("Targets_Compat_d5f26c1fd2ee") },
+			new[] { PolicyCompatibilityTexts.Get("Targets_Compat_61fc5322baef"), PolicyCompatibilityTexts.Get("Targets_Compat_3319d42d3d70"), PolicyCompatibilityTexts.Get("Targets_Compat_ad4ed611cd05"), PolicyCompatibilityTexts.Get("Targets_Compat_fc7da7050c40"), PolicyCompatibilityTexts.Get("Targets_Compat_90cc1aa3969a") });
 		AddMetricCue(result, query, "militia",
-			new[] { "民兵最高", "民兵最多", "militia最高", "民兵降序", "militia降序" },
-			new[] { "民兵最低", "民兵最少", "militia最低", "民兵升序", "militia升序" });
+			new[] { PolicyCompatibilityTexts.Get("Targets_Compat_feb498c95623"), PolicyCompatibilityTexts.Get("Targets_Compat_685f1c9b2982"), PolicyCompatibilityTexts.Get("Targets_Compat_3e9e251395f7"), PolicyCompatibilityTexts.Get("Targets_Compat_a5f7a0092c1d"), PolicyCompatibilityTexts.Get("Targets_Compat_59ecc8526552") },
+			new[] { PolicyCompatibilityTexts.Get("Targets_Compat_58f6804bec79"), PolicyCompatibilityTexts.Get("Targets_Compat_9223743744c3"), PolicyCompatibilityTexts.Get("Targets_Compat_4f75ddadcfe1"), PolicyCompatibilityTexts.Get("Targets_Compat_099a268c5f6d"), PolicyCompatibilityTexts.Get("Targets_Compat_4cb65dffb51d") });
 	}
 
 	private static void AddMetricCue(ISet<string> result, string query, string metric, IEnumerable<string> high, IEnumerable<string> low)
@@ -1889,7 +2023,7 @@ internal static class PolicyTargetPlanRouter
 		int index = start;
 		while (index < query.Length
 			&& (query[index] == '=' || query[index] == ':' || query[index] == '：'
-				|| query[index] == '为' || query[index] == '是'))
+				|| query[index] == PolicyLegacyCharacter0 || query[index] == PolicyLegacyCharacter1))
 		{
 			index++;
 		}
@@ -1974,14 +2108,14 @@ internal static class PolicyTargetPlanRouter
 			}
 			if (ContainsAny(
 				normalizedQuery,
-				"排除" + normalizedAlias,
-				"不包括" + normalizedAlias,
-				"不含" + normalizedAlias,
-				"除去" + normalizedAlias,
-				"除了" + normalizedAlias,
-				"除" + normalizedAlias,
-				normalizedAlias + "以外",
-				normalizedAlias + "之外"))
+				PolicyCompatibilityTexts.Get("Targets_Compat_ac83d3972fe9") + normalizedAlias,
+				PolicyCompatibilityTexts.Get("Targets_Compat_682a7700683c") + normalizedAlias,
+				PolicyCompatibilityTexts.Get("Targets_Compat_64765e93acd6") + normalizedAlias,
+				PolicyCompatibilityTexts.Get("Targets_Compat_8587db1ec106") + normalizedAlias,
+				PolicyCompatibilityTexts.Get("Targets_Compat_322272e54a20") + normalizedAlias,
+				PolicyCompatibilityTexts.Get("Targets_Compat_d213ae206e7e") + normalizedAlias,
+				normalizedAlias + PolicyCompatibilityTexts.Get("Targets_Compat_8555187709af"),
+				normalizedAlias + PolicyCompatibilityTexts.Get("Targets_Compat_649dd16df123")))
 			{
 				return true;
 			}
@@ -2052,42 +2186,42 @@ internal static class PolicyTargetPlanRouter
 	{
 		List<PolicyTargetPlanIntentAtom> result = new List<PolicyTargetPlanIntentAtom>
 		{
-			Atom("relation_domestic", "relation", "目标属于当前政策王国境内的本国对象。", "本国全部领地", "国内各地", "境内城镇城堡"),
-			Atom("relation_enemy", "relation", "目标属于当前与锚点王国交战的敌国。", "敌国领地", "交战国城镇", "敌对国家"),
-			Atom("relation_ally", "relation", "目标属于当前与锚点王国结盟的盟国。", "盟国领地", "同盟国家城镇", "盟友王国"),
-			Atom("relation_foreign", "relation", "目标属于锚点王国以外的外国，不要求敌对或结盟。", "外国领地", "其他国家城镇", "其他王国的定居点", "国外对象"),
-			Atom("anchor_issuer", "anchor", "关系、方向和距离以政策发布者或提案方所属王国为锚点。", "以发布者王国为准", "相对提案方王国", "以宗主国为参照"),
-			Atom("type_primary_fief", "type", "一级政策地理对象是城市或城堡，不包含独立村庄。", "城镇和城堡", "全部封地", "主要领地"),
-			Atom("type_town", "type", "一级政策地理对象只包含城市或城镇。", "所有城市", "指定城镇", "商业城市"),
-			Atom("type_castle", "type", "一级政策地理对象只包含城堡或要塞。", "所有城堡", "边境要塞", "指定堡垒"),
-			Atom("type_clan", "type", "政策机械对象是家族或氏族。", "其他家族", "指定氏族", "贵族家族"),
-			Atom("type_kingdom", "type", "政策机械对象是整个国家、王国或政权。", "全部敌国", "指定王国", "盟友国家"),
-			Atom("exclude_publication", "exclusion", "从目标集合中排除当前政策发布地对应的父级城镇或城堡，不排除玩家整个家族。", "其他地方", "除当前发布地外", "发布地以外的其余地区", "别的地方"),
-			Atom("exclude_specific_entity", "specific_exclusion", "从目标集合中排除句中明确命名并由 C# 实体目录验证的王国、家族、城镇或城堡。", "排除指定目标", "不包括点名对象", "除明确对象之外"),
-			Atom("exclude_player_clan", "owner", "从本国一级封地中排除玩家家族拥有的全部城市和城堡。", "除玩家家族外", "排除玩家家族封地", "非玩家家族领地"),
-			Atom("owner_other_clans", "owner", "目标是参照家族以外的其他家族或其他家族封地。", "其他家族封地", "别的家族领地", "其余氏族"),
-			Atom("owner_proposer_clan", "owner", "目标只包含政策发布者或提案方自己的家族。", "发布者家族", "提案方家族", "发布者氏族"),
-			Atom("geography_border", "geography", "目标必须是当前边境或前线的城市和城堡。", "边境城镇", "前线城堡", "边疆领地"),
-			Atom("direction_north", "direction", "目标位于发布地或王国中心以北。", "北方领地", "北部城市", "以北城堡"),
-			Atom("direction_south", "direction", "目标位于发布地或王国中心以南。", "南方领地", "南部城市", "以南城堡"),
-			Atom("direction_east", "direction", "目标位于发布地或王国中心以东。", "东方领地", "东部城市", "以东城堡"),
-			Atom("direction_west", "direction", "目标位于发布地或王国中心以西。", "西方领地", "西部城市", "以西城堡"),
-			Atom("distance_nearest", "distance", "按地图距离选择最近或邻近目标。", "最近的城镇", "就近领地", "邻近城堡"),
-			Atom("distance_farthest", "distance", "按地图距离选择最远或偏远目标。", "最远的城镇", "偏远领地", "距离最远的城堡"),
-			Atom("cardinality_all", "cardinality", "选择满足条件的全部目标。", "全部目标", "所有符合条件者", "每一个对象"),
-			Atom("cardinality_top", "cardinality", "从既定排序中选择前 N 个目标。", "前几个目标", "排名靠前对象", "取前 N 个"),
-			Atom("cardinality_bottom", "cardinality", "从既定排序中选择后 N 个或最低的目标。", "后几个目标", "排名靠后对象", "取后 N 个")
+			Atom("relation_domestic", "relation", PolicyCompatibilityTexts.Get("Targets_Compat_c2eb9e61e5d9"), PolicyCompatibilityTexts.Get("Targets_Compat_3da4f655d5e1"), PolicyCompatibilityTexts.Get("Targets_Compat_552d1d1b49bf"), PolicyCompatibilityTexts.Get("Targets_Compat_4d04abd03e50")),
+			Atom("relation_enemy", "relation", PolicyCompatibilityTexts.Get("Targets_Compat_73b4c8b6ec50"), PolicyCompatibilityTexts.Get("Targets_Compat_e1becc67c0e4"), PolicyCompatibilityTexts.Get("Targets_Compat_3f3ab38a4c6b"), PolicyCompatibilityTexts.Get("Targets_Compat_7a9cd001d20f")),
+			Atom("relation_ally", "relation", PolicyCompatibilityTexts.Get("Targets_Compat_1923127a8c96"), PolicyCompatibilityTexts.Get("Targets_Compat_138cd23b77aa"), PolicyCompatibilityTexts.Get("Targets_Compat_926b75840ca8"), PolicyCompatibilityTexts.Get("Targets_Compat_6f24fb5eacd8")),
+			Atom("relation_foreign", "relation", PolicyCompatibilityTexts.Get("Targets_Compat_b729e4d8817f"), PolicyCompatibilityTexts.Get("Targets_Compat_c896abd925f3"), PolicyCompatibilityTexts.Get("Targets_Compat_e518dc3a15b8"), PolicyCompatibilityTexts.Get("Targets_Compat_8d222a08c6ab"), PolicyCompatibilityTexts.Get("Targets_Compat_7a5f23e7a08a")),
+			Atom("anchor_issuer", "anchor", PolicyCompatibilityTexts.Get("Targets_Compat_f62b93848377"), PolicyCompatibilityTexts.Get("Targets_Compat_2561a66d3b99"), PolicyCompatibilityTexts.Get("Targets_Compat_50b4d1d1e3a8"), PolicyCompatibilityTexts.Get("Targets_Compat_1c93240c971f")),
+			Atom("type_primary_fief", "type", PolicyCompatibilityTexts.Get("Targets_Compat_46cdb4c0571b"), PolicyCompatibilityTexts.Get("Targets_Compat_77f6c56690d3"), PolicyCompatibilityTexts.Get("Targets_Compat_97e36126b464"), PolicyCompatibilityTexts.Get("Targets_Compat_1a76a34f43b8")),
+			Atom("type_town", "type", PolicyCompatibilityTexts.Get("Targets_Compat_3552bd1e9b83"), PolicyCompatibilityTexts.Get("Targets_Compat_2e1cf1f16353"), PolicyCompatibilityTexts.Get("Targets_Compat_f15e9e679eec"), PolicyCompatibilityTexts.Get("Targets_Compat_3df1b2b7911a")),
+			Atom("type_castle", "type", PolicyCompatibilityTexts.Get("Targets_Compat_d0560a023f77"), PolicyCompatibilityTexts.Get("Targets_Compat_681be0936234"), PolicyCompatibilityTexts.Get("Targets_Compat_3661ad04a5d6"), PolicyCompatibilityTexts.Get("Targets_Compat_ef3973cdec6a")),
+			Atom("type_clan", "type", PolicyCompatibilityTexts.Get("Targets_Compat_2b3fab65749e"), PolicyCompatibilityTexts.Get("Targets_Compat_63f197695d20"), PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_134"), PolicyCompatibilityTexts.Get("Targets_Compat_e653a3ed9305")),
+			Atom("type_kingdom", "type", PolicyCompatibilityTexts.Get("Targets_Compat_a3d56b8d6749"), PolicyCompatibilityTexts.Get("Targets_Compat_61c71c424030"), PolicyCompatibilityTexts.Get("Targets_Compat_0b5b16b3da4e"), PolicyCompatibilityTexts.Get("Targets_Compat_4a3527415471")),
+			Atom("exclude_publication", "exclusion", PolicyCompatibilityTexts.Get("Targets_Compat_644caa7dbd79"), PolicyCompatibilityTexts.Get("Targets_Compat_c873aa60bb4e"), PolicyCompatibilityTexts.Get("Targets_Compat_84e7364fe0b3"), PolicyCompatibilityTexts.Get("Targets_Compat_9c86cfd7e73d"), PolicyCompatibilityTexts.Get("Targets_Compat_d6d0d79ca0cd")),
+			Atom("exclude_specific_entity", "specific_exclusion", PolicyCompatibilityTexts.Get("Targets_Compat_de116e04ffdf"), PolicyCompatibilityTexts.Get("Targets_Compat_76ee3673cebe"), PolicyCompatibilityTexts.Get("Targets_Compat_0300fdfee0c2"), PolicyCompatibilityTexts.Get("Targets_Compat_19d0098da62d")),
+			Atom("exclude_player_clan", "owner", PolicyCompatibilityTexts.Get("Targets_Compat_f539184104bd"), PolicyCompatibilityTexts.Get("Targets_Compat_bb7901720fd8"), PolicyCompatibilityTexts.Get("Targets_Compat_d1c494ec57e1"), PolicyCompatibilityTexts.Get("Targets_Compat_a3350baa3c8f")),
+			Atom("owner_other_clans", "owner", PolicyCompatibilityTexts.Get("Targets_Compat_1667acdaa01b"), PolicyCompatibilityTexts.Get("Targets_Compat_30776c1cfe9b"), PolicyCompatibilityTexts.Get("Targets_Compat_64cfe70a42ba"), PolicyCompatibilityTexts.Get("Targets_Compat_c3792b224d4e")),
+			Atom("owner_proposer_clan", "owner", PolicyCompatibilityTexts.Get("Targets_Compat_2f9d81e90990"), PolicyCompatibilityTexts.Get("Targets_Compat_02142ecca8da"), PolicyCompatibilityTexts.Get("Targets_Compat_37a90292077f"), PolicyCompatibilityTexts.Get("Targets_Compat_c8c147056a97")),
+			Atom("geography_border", "geography", PolicyCompatibilityTexts.Get("Targets_Compat_c8c7b653f2f2"), PolicyCompatibilityTexts.Get("Targets_Compat_ef1efbc6a333"), PolicyCompatibilityTexts.Get("Targets_Compat_cd3317df4510"), PolicyCompatibilityTexts.Get("Targets_Compat_ba6089cb607a")),
+			Atom("direction_north", "direction", PolicyCompatibilityTexts.Get("Targets_Compat_6d7b8484a86b"), PolicyCompatibilityTexts.Get("Targets_Compat_67cd9d04f13c"), PolicyCompatibilityTexts.Get("Targets_Compat_8e0494fb6a42"), PolicyCompatibilityTexts.Get("Targets_Compat_c9ca9e1d5e79")),
+			Atom("direction_south", "direction", PolicyCompatibilityTexts.Get("Targets_Compat_1ee9cbaa1b6c"), PolicyCompatibilityTexts.Get("Targets_Compat_856fb909cc6e"), PolicyCompatibilityTexts.Get("Targets_Compat_65a6826b90e1"), PolicyCompatibilityTexts.Get("Targets_Compat_e3a1156a373e")),
+			Atom("direction_east", "direction", PolicyCompatibilityTexts.Get("Targets_Compat_525a72f7f130"), PolicyCompatibilityTexts.Get("Targets_Compat_7437d5f4a0ed"), PolicyCompatibilityTexts.Get("Targets_Compat_2b20bbd7aad2"), PolicyCompatibilityTexts.Get("Targets_Compat_f16c5467f191")),
+			Atom("direction_west", "direction", PolicyCompatibilityTexts.Get("Targets_Compat_195d6473ec71"), PolicyCompatibilityTexts.Get("Targets_Compat_5756cdf12dae"), PolicyCompatibilityTexts.Get("Targets_Compat_1ca04a016247"), PolicyCompatibilityTexts.Get("Targets_Compat_1ae6d1b5ef32")),
+			Atom("distance_nearest", "distance", PolicyCompatibilityTexts.Get("Targets_Compat_4ec0fd9c78f2"), PolicyCompatibilityTexts.Get("Targets_Compat_909ea6d2fa17"), PolicyCompatibilityTexts.Get("Targets_Compat_9465689da422"), PolicyCompatibilityTexts.Get("Targets_Compat_2db212be08af")),
+			Atom("distance_farthest", "distance", PolicyCompatibilityTexts.Get("Targets_Compat_95a24920fad2"), PolicyCompatibilityTexts.Get("Targets_Compat_ce5cb8681767"), PolicyCompatibilityTexts.Get("Targets_Compat_12494c85f78f"), PolicyCompatibilityTexts.Get("Targets_Compat_39ffa0ee6cec")),
+			Atom("cardinality_all", "cardinality", PolicyCompatibilityTexts.Get("Targets_Compat_ca995b37b137"), PolicyCompatibilityTexts.Get("Targets_Compat_488f030d6275"), PolicyCompatibilityTexts.Get("Targets_Compat_9b9f42f4801f"), PolicyCompatibilityTexts.Get("Targets_Compat_754441091486")),
+			Atom("cardinality_top", "cardinality", PolicyCompatibilityTexts.Get("Targets_Compat_e6d5e682f8b3"), PolicyCompatibilityTexts.Get("Targets_Compat_ff4e4dd8e487"), PolicyCompatibilityTexts.Get("Targets_Compat_d6f412844bb4"), PolicyCompatibilityTexts.Get("Targets_Compat_0e99e9d0ef4a")),
+			Atom("cardinality_bottom", "cardinality", PolicyCompatibilityTexts.Get("Targets_Compat_a7feb405a131"), PolicyCompatibilityTexts.Get("Targets_Compat_2d8c195105ed"), PolicyCompatibilityTexts.Get("Targets_Compat_14920b0482df"), PolicyCompatibilityTexts.Get("Targets_Compat_e7a59d88d3d0"))
 		};
-		result.AddRange(MetricAtoms("wealth", "财富", "最富有", "最贫穷"));
-		result.AddRange(MetricAtoms("influence", "影响力", "影响力最高", "影响力最低"));
-		result.AddRange(MetricAtoms("strength", "实力", "实力最强", "实力最弱"));
-		result.AddRange(MetricAtoms("fiefs", "封地数量", "封地最多", "封地最少"));
-		result.AddRange(MetricAtoms("food", "粮食储备", "粮食最多", "粮食最少"));
-		result.AddRange(MetricAtoms("prosperity", "繁荣度", "最繁荣", "最贫困"));
-		result.AddRange(MetricAtoms("loyalty", "忠诚度", "忠诚最高", "忠诚最低"));
-		result.AddRange(MetricAtoms("security", "治安", "治安最好", "治安最差"));
-		result.AddRange(MetricAtoms("hearth", "附属村庄平均户数", "户数最高", "户数最低"));
-		result.AddRange(MetricAtoms("militia", "民兵", "民兵最高", "民兵最低"));
+		result.AddRange(MetricAtoms("wealth", PolicyCompatibilityTexts.Get("Targets_Compat_8610e9b28806"), PolicyCompatibilityTexts.Get("Targets_Compat_f6e57fd96e1f"), PolicyCompatibilityTexts.Get("Targets_Compat_95fdea83adeb")));
+		result.AddRange(MetricAtoms("influence", PolicyCompatibilityTexts.Get("Module_clanInfluence_Original_7"), PolicyCompatibilityTexts.Get("Targets_Compat_afeca66471bc"), PolicyCompatibilityTexts.Get("Targets_Compat_86f70cf134c1")));
+		result.AddRange(MetricAtoms("strength", PolicyCompatibilityTexts.Get("Targets_Compat_3b75cb0169b7"), PolicyCompatibilityTexts.Get("Targets_Compat_b966d70c4e21"), PolicyCompatibilityTexts.Get("Targets_Compat_8a2170491cda")));
+		result.AddRange(MetricAtoms("fiefs", PolicyCompatibilityTexts.Get("Targets_Compat_c7dcae5c6d8e"), PolicyCompatibilityTexts.Get("Targets_Compat_29dd8f5d0c70"), PolicyCompatibilityTexts.Get("Targets_Compat_69aebe97fc87")));
+		result.AddRange(MetricAtoms("food", PolicyCompatibilityTexts.Get("Module_foodPerDay_playerDisplayName"), PolicyCompatibilityTexts.Get("Targets_Compat_5fc1f9f360a9"), PolicyCompatibilityTexts.Get("Targets_Compat_6b78594b10cd")));
+		result.AddRange(MetricAtoms("prosperity", PolicyCompatibilityTexts.Get("Targets_Compat_7dbfe9cc7f6b"), PolicyCompatibilityTexts.Get("Targets_Compat_22f308cf5845"), PolicyCompatibilityTexts.Get("Targets_Compat_c5ba611faf9c")));
+		result.AddRange(MetricAtoms("loyalty", PolicyCompatibilityTexts.Get("Targets_Compat_b81e967d8c41"), PolicyCompatibilityTexts.Get("Targets_Compat_debfa4109450"), PolicyCompatibilityTexts.Get("Targets_Compat_0ff1ac94f916")));
+		result.AddRange(MetricAtoms("security", PolicyCompatibilityTexts.Get("Targets_Compat_fe5e1225977e"), PolicyCompatibilityTexts.Get("Targets_Compat_7db09fccb350"), PolicyCompatibilityTexts.Get("Targets_Compat_64199b73d82c")));
+		result.AddRange(MetricAtoms("hearth", PolicyCompatibilityTexts.Get("Targets_Compat_e6692b7928d8"), PolicyCompatibilityTexts.Get("Targets_Compat_f921402d4807"), PolicyCompatibilityTexts.Get("Targets_Compat_61fc5322baef")));
+		result.AddRange(MetricAtoms("militia", PolicyCompatibilityTexts.Get("Module_militiaPerDay_playerDisplayName"), PolicyCompatibilityTexts.Get("Targets_Compat_feb498c95623"), PolicyCompatibilityTexts.Get("Targets_Compat_58f6804bec79")));
 		return result;
 	}
 
@@ -2098,7 +2232,9 @@ internal static class PolicyTargetPlanRouter
 			Id = id,
 			Group = group,
 			Document = document,
-			Seeds = (seeds ?? Array.Empty<string>()).Where(value => !string.IsNullOrWhiteSpace(value)).Distinct(StringComparer.Ordinal).ToArray()
+			Seeds = (seeds ?? Array.Empty<string>())
+				.Concat(EnglishIntentSeeds.TryGetValue(id, out string[] englishSeeds) ? englishSeeds : Array.Empty<string>())
+				.Where(value => !string.IsNullOrWhiteSpace(value)).Distinct(StringComparer.Ordinal).ToArray()
 		};
 	}
 
@@ -2129,12 +2265,12 @@ internal static class PolicyTargetPlanRouter
 		int connectorLength = 0;
 		for (int index = 0; index < query.Length; index++)
 		{
-			if (query[index] != '或')
+			if (query[index] != PolicyLegacyCharacter2)
 			{
 				continue;
 			}
 			int currentLength = index + 1 < query.Length
-				&& (query[index + 1] == '者' || query[index + 1] == '是')
+				&& (query[index + 1] == PolicyLegacyCharacter3 || query[index + 1] == PolicyLegacyCharacter1)
 				? 2
 				: 1;
 			if (connectorIndex >= 0)
@@ -2172,7 +2308,7 @@ internal static class PolicyTargetPlanRouter
 
 	private static string BuildDisplayName(PolicyTargetPlanSaveData plan)
 	{
-		return string.Join(" 或 ", plan.Branches.Select(branch =>
+		return string.Join(PolicyGenerationPromptTexts.Get("Targets_Text_60ab743988bb", " or "), plan.Branches.Select(branch =>
 		{
 			if (branch.Universe == PolicyTargetPlanUniverse.Kingdoms
 				&& branch.Relation == PolicyTargetPlanRelation.Domestic
@@ -2185,27 +2321,27 @@ internal static class PolicyTargetPlanRouter
 				&& branch.Metric == PolicyTargetPlanMetric.None
 				&& branch.Cardinality == PolicyTargetPlanCardinality.All)
 			{
-				return "当前目标王国";
+				return PolicyGenerationPromptTexts.Get("Targets_Text_c686ba462211", "Current target kingdom");
 			}
-			string relation = branch.Relation == PolicyTargetPlanRelation.Domestic ? "本国"
-				: branch.Relation == PolicyTargetPlanRelation.Enemy ? "敌国"
-				: branch.Relation == PolicyTargetPlanRelation.Ally ? "盟国"
-				: branch.Relation == PolicyTargetPlanRelation.Foreign ? "外国"
-				: branch.Relation == PolicyTargetPlanRelation.Specific ? "指定王国" : string.Empty;
-			string type = branch.EntityType == PolicyTargetPlanEntityType.Town ? "城镇"
-				: branch.EntityType == PolicyTargetPlanEntityType.Castle ? "城堡"
-				: branch.EntityType == PolicyTargetPlanEntityType.Clan ? "家族"
-				: branch.EntityType == PolicyTargetPlanEntityType.Kingdom ? "王国" : "城镇/城堡";
+			string relation = branch.Relation == PolicyTargetPlanRelation.Domestic ? PolicyGenerationPromptTexts.Get("Targets_Text_f752e00f622d", "Domestic ")
+				: branch.Relation == PolicyTargetPlanRelation.Enemy ? PolicyGenerationPromptTexts.Get("Targets_Text_99fe7bff6c95", "Enemy ")
+				: branch.Relation == PolicyTargetPlanRelation.Ally ? PolicyGenerationPromptTexts.Get("Targets_Text_31564e1f372e", "Allied ")
+				: branch.Relation == PolicyTargetPlanRelation.Foreign ? PolicyGenerationPromptTexts.Get("Targets_Text_eef932646f02", "Foreign ")
+				: branch.Relation == PolicyTargetPlanRelation.Specific ? PolicyGenerationPromptTexts.Get("Targets_Text_0b5b16b3da4e", "Specified kingdom ") : string.Empty;
+			string type = branch.EntityType == PolicyTargetPlanEntityType.Town ? PolicyGenerationPromptTexts.Get("Targets_PlanTown", "towns")
+				: branch.EntityType == PolicyTargetPlanEntityType.Castle ? PolicyGenerationPromptTexts.Get("Targets_PlanCastle", "castles")
+				: branch.EntityType == PolicyTargetPlanEntityType.Clan ? PolicyGenerationPromptTexts.Get("Targets_PlanClan", "clans")
+				: branch.EntityType == PolicyTargetPlanEntityType.Kingdom ? PolicyGenerationPromptTexts.Get("Targets_PlanKingdom", "kingdoms") : PolicyGenerationPromptTexts.Get("Targets_PlanPrimaryFief", "towns/castles");
 			List<string> qualifiers = new List<string>();
-			if (branch.Exclusions.Contains(PolicyTargetPlanExclusion.PublicationParents)) qualifiers.Add("不含发布地");
-			if (branch.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.ExcludePlayerClan) qualifiers.Add("不含玩家家族");
-			else if (branch.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.ExcludeProposerClan) qualifiers.Add("其他家族");
-			else if (branch.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.ProposerClan) qualifiers.Add("发布者家族");
-			else if (branch.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.SpecificClan) qualifiers.Add("指定家族");
-			else if (branch.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.ExcludeSpecificClan) qualifiers.Add("排除指定家族");
-			if (branch.BorderOnly) qualifiers.Add("边境");
+			if (branch.Exclusions.Contains(PolicyTargetPlanExclusion.PublicationParents)) qualifiers.Add(PolicyGenerationPromptTexts.Get("Targets_Text_061d12705975", "excluding the publication location"));
+			if (branch.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.ExcludePlayerClan) qualifiers.Add(PolicyGenerationPromptTexts.Get("Targets_Text_a8f949c2197f", "excluding the player clan"));
+			else if (branch.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.ExcludeProposerClan) qualifiers.Add(PolicyGenerationPromptTexts.Get("Targets_Text_63f197695d20", "other clans"));
+			else if (branch.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.ProposerClan) qualifiers.Add(PolicyGenerationPromptTexts.Get("Targets_Text_02142ecca8da", "Publishing clan"));
+			else if (branch.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.SpecificClan) qualifiers.Add(PolicyGenerationPromptTexts.Get("Targets_Text_db2c3a511732", "specified clan"));
+			else if (branch.OwnerClanPredicate == PolicyTargetPlanOwnerClanPredicate.ExcludeSpecificClan) qualifiers.Add(PolicyGenerationPromptTexts.Get("Targets_Text_6471baf9aa1b", "excluding the specified clan"));
+			if (branch.BorderOnly) qualifiers.Add(PolicyGenerationPromptTexts.Get("Targets_Text_2059d7f1e966", "border"));
 			if (branch.Direction != PolicyTargetPlanDirection.Any) qualifiers.Add(DirectionText(branch.Direction));
-			if (branch.Distance != PolicyTargetPlanDistance.None) qualifiers.Add(branch.Distance == PolicyTargetPlanDistance.Nearest ? "最近" : "最远");
+			if (branch.Distance != PolicyTargetPlanDistance.None) qualifiers.Add(branch.Distance == PolicyTargetPlanDistance.Nearest ? PolicyGenerationPromptTexts.Get("Targets_Text_997a5e6e513f", "nearest") : PolicyGenerationPromptTexts.Get("Targets_Text_da0a1e4badc7", "farthest"));
 			if (branch.MetricComparison != PolicyTargetPlanMetricComparison.None && branch.MetricThreshold.HasValue)
 			{
 				qualifiers.Add(MetricText(branch.Metric) + MetricComparisonText(branch.MetricComparison)
@@ -2214,12 +2350,12 @@ internal static class PolicyTargetPlanRouter
 			else if (branch.Metric != PolicyTargetPlanMetric.None)
 			{
 				qualifiers.Add(MetricText(branch.Metric)
-					+ (branch.SortDirection == PolicyTargetPlanSortDirection.Ascending ? "低" : "高"));
+					+ (branch.SortDirection == PolicyTargetPlanSortDirection.Ascending ? PolicyGenerationPromptTexts.Get("Targets_Text_aa9e366f68d3", " low") : PolicyGenerationPromptTexts.Get("Targets_Text_b1c27820fec2", " high")));
 			}
 			string exclusion = qualifiers.Count > 0 ? "（" + string.Join("、", qualifiers) + "）" : string.Empty;
-			string count = branch.Cardinality == PolicyTargetPlanCardinality.All ? "全部"
-				: branch.Cardinality == PolicyTargetPlanCardinality.TopN ? "前" + branch.Limit.ToString(CultureInfo.InvariantCulture) + "个"
-				: "后" + branch.Limit.ToString(CultureInfo.InvariantCulture) + "个";
+			string count = branch.Cardinality == PolicyTargetPlanCardinality.All ? PolicyGenerationPromptTexts.Get("Targets_Text_5c55a67935af", "all ")
+				: branch.Cardinality == PolicyTargetPlanCardinality.TopN ? PolicyGenerationPromptTexts.Get("Targets_Text_6044e9f095e0", "top ") + branch.Limit.ToString(CultureInfo.InvariantCulture) + PolicyGenerationPromptTexts.Get("Targets_Text_3a116815bc9d", " ")
+				: PolicyGenerationPromptTexts.Get("Targets_Text_60be66d61586", "bottom ") + branch.Limit.ToString(CultureInfo.InvariantCulture) + PolicyGenerationPromptTexts.Get("Targets_Text_3a116815bc9d", " ");
 			return relation + count + type + exclusion;
 		}));
 	}
@@ -2228,10 +2364,10 @@ internal static class PolicyTargetPlanRouter
 	{
 		switch (direction)
 		{
-			case PolicyTargetPlanDirection.North: return "北方";
-			case PolicyTargetPlanDirection.South: return "南方";
-			case PolicyTargetPlanDirection.East: return "东方";
-			case PolicyTargetPlanDirection.West: return "西方";
+			case PolicyTargetPlanDirection.North: return PolicyGenerationPromptTexts.Get("Targets_Text_78e20875d600", "north");
+			case PolicyTargetPlanDirection.South: return PolicyGenerationPromptTexts.Get("Targets_Text_551ee9cf1235", "south");
+			case PolicyTargetPlanDirection.East: return PolicyGenerationPromptTexts.Get("Targets_Text_67bad5bd2b80", "east");
+			case PolicyTargetPlanDirection.West: return PolicyGenerationPromptTexts.Get("Targets_Text_8257f728a0d6", "west");
 			default: return string.Empty;
 		}
 	}
@@ -2240,16 +2376,16 @@ internal static class PolicyTargetPlanRouter
 	{
 		switch (metric)
 		{
-			case PolicyTargetPlanMetric.Wealth: return "财富";
-			case PolicyTargetPlanMetric.Influence: return "影响力";
-			case PolicyTargetPlanMetric.Strength: return "实力";
-			case PolicyTargetPlanMetric.FiefCount: return "封地数";
-			case PolicyTargetPlanMetric.Food: return "粮食";
-			case PolicyTargetPlanMetric.Prosperity: return "繁荣";
-			case PolicyTargetPlanMetric.Loyalty: return "忠诚";
-			case PolicyTargetPlanMetric.Security: return "治安";
-			case PolicyTargetPlanMetric.Hearth: return "附属村庄平均户数";
-			case PolicyTargetPlanMetric.Militia: return "民兵";
+			case PolicyTargetPlanMetric.Wealth: return PolicyGenerationPromptTexts.Get("Targets_Text_8610e9b28806", "wealth");
+			case PolicyTargetPlanMetric.Influence: return PolicyGenerationPromptTexts.Get("Targets_Text_58d673e6a21c", "influence");
+			case PolicyTargetPlanMetric.Strength: return PolicyGenerationPromptTexts.Get("Targets_Text_3b75cb0169b7", "strength");
+			case PolicyTargetPlanMetric.FiefCount: return PolicyGenerationPromptTexts.Get("Targets_Text_68e5650dd93b", "fief count");
+			case PolicyTargetPlanMetric.Food: return PolicyGenerationPromptTexts.Get("Targets_Text_661b85c39112", "food");
+			case PolicyTargetPlanMetric.Prosperity: return PolicyGenerationPromptTexts.Get("Targets_Text_b28c4dbf4295", "prosperity");
+			case PolicyTargetPlanMetric.Loyalty: return PolicyGenerationPromptTexts.Get("Targets_Text_eaf086f666cf", "loyalty");
+			case PolicyTargetPlanMetric.Security: return PolicyGenerationPromptTexts.Get("Targets_Text_fe5e1225977e", "security");
+			case PolicyTargetPlanMetric.Hearth: return PolicyGenerationPromptTexts.Get("Targets_Text_e6692b7928d8", "average attached-village hearths");
+			case PolicyTargetPlanMetric.Militia: return PolicyGenerationPromptTexts.Get("AFPOL_UI_Effect_MilitiaPerDayName", "Militia");
 			default: return string.Empty;
 		}
 	}
@@ -2270,10 +2406,10 @@ internal static class PolicyTargetPlanRouter
 	{
 		return new[]
 		{
-			Atom("metric_" + id + "_high", "metric", "按当前" + noun + "从高到低选择目标。",
-				high, noun + "最高", noun + "最多", noun + "高的目标"),
-			Atom("metric_" + id + "_low", "metric", "按当前" + noun + "从低到高选择目标。",
-				low, noun + "最低", noun + "最少", noun + "低的目标")
+			Atom("metric_" + id + "_high", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_3d491caf91bc") + noun + PolicyCompatibilityTexts.Get("Targets_Compat_9f892922ac29"),
+				high, noun + PolicyCompatibilityTexts.Get("Targets_Compat_8672864e9041"), noun + PolicyCompatibilityTexts.Get("Targets_Compat_eea3b2d2f03b"), noun + PolicyCompatibilityTexts.Get("Targets_Compat_6109b50aef73")),
+			Atom("metric_" + id + "_low", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_3d491caf91bc") + noun + PolicyCompatibilityTexts.Get("Targets_Compat_ce2a7f70d23d"),
+				low, noun + PolicyCompatibilityTexts.Get("Targets_Compat_8b5f2a61b797"), noun + PolicyCompatibilityTexts.Get("Targets_Compat_477e3eac4043"), noun + PolicyCompatibilityTexts.Get("Targets_Compat_b76034647250"))
 		};
 	}
 
@@ -2284,19 +2420,19 @@ internal static class PolicyTargetPlanRouter
 
 	private static bool HasRequestedCountContext(string before, string after)
 	{
-		return before.EndsWith("前", StringComparison.Ordinal)
-			|| before.EndsWith("后", StringComparison.Ordinal)
-			|| before.EndsWith("最多", StringComparison.Ordinal)
-			|| before.EndsWith("至多", StringComparison.Ordinal)
-			|| before.EndsWith("取前", StringComparison.Ordinal)
-			|| before.EndsWith("取后", StringComparison.Ordinal)
+		return before.EndsWith(PolicyCompatibilityTexts.Get("Targets_Compat_6044e9f095e0"), StringComparison.Ordinal)
+			|| before.EndsWith(PolicyCompatibilityTexts.Get("Targets_Compat_60be66d61586"), StringComparison.Ordinal)
+			|| before.EndsWith(PolicyCompatibilityTexts.Get("Targets_Compat_eea3b2d2f03b"), StringComparison.Ordinal)
+			|| before.EndsWith(PolicyCompatibilityTexts.Get("Targets_Compat_4c0b2b9f4253"), StringComparison.Ordinal)
+			|| before.EndsWith(PolicyCompatibilityTexts.Get("Targets_Compat_6de090e745df"), StringComparison.Ordinal)
+			|| before.EndsWith(PolicyCompatibilityTexts.Get("Targets_Compat_63cc257d10b4"), StringComparison.Ordinal)
 			|| before.EndsWith("top", StringComparison.Ordinal)
 			|| before.EndsWith("bottom", StringComparison.Ordinal)
-			|| after.StartsWith("个", StringComparison.Ordinal)
-			|| after.StartsWith("座", StringComparison.Ordinal)
-			|| after.StartsWith("处", StringComparison.Ordinal)
-			|| after.StartsWith("名", StringComparison.Ordinal)
-			|| after.StartsWith("家", StringComparison.Ordinal);
+			|| after.StartsWith(PolicyCompatibilityTexts.Get("Targets_Compat_3a116815bc9d"), StringComparison.Ordinal)
+			|| after.StartsWith(PolicyCompatibilityTexts.Get("Targets_Compat_001d9c64f7f1"), StringComparison.Ordinal)
+			|| after.StartsWith(PolicyCompatibilityTexts.Get("Targets_Compat_34ee554a469c"), StringComparison.Ordinal)
+			|| after.StartsWith(PolicyCompatibilityTexts.Get("Targets_Compat_51a5d681a99c"), StringComparison.Ordinal)
+			|| after.StartsWith(PolicyCompatibilityTexts.Get("Targets_Compat_c8ae97be80f3"), StringComparison.Ordinal);
 	}
 
 	private static string NormalizeText(string value)

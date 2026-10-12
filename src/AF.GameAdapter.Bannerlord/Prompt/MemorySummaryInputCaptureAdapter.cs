@@ -170,7 +170,7 @@ internal sealed class MemorySummaryInputCaptureAdapter
                 TargetChars = Math.Max(80, input.Context.DailySourceCharCount / Math.Max(1, LlmRequestConfigurationCaptureAdapter.GetMemoryCompressionDenominatorFromSettings())),
                 Requirements = MemorySummaryRules.WritingRequirements(DuelSettings.GetSettings()?.DailyMemoryCompressionWritingRequirements),
                 PlayerName = PlayerNotorietyBehavior.BuildPlayerHistoryNameForExternal(),
-                ObserverName = string.IsNullOrWhiteSpace(observerName) ? "玩家" : observerName,
+                ObserverName = string.IsNullOrWhiteSpace(observerName) ? AdapterPromptCaptureTexts.PcapText("Project_Player") : observerName,
                 TrustText = trust.ToString(),
                 Scene = CaptureMemorySummaryDailySceneContext(input.Context)
             };
@@ -229,7 +229,7 @@ internal sealed class MemorySummaryInputCaptureAdapter
 	}
 	internal static string BuildMemorySummaryUserPrompt(Hero hero, DailyMemoryDraft draft)
 	{
-		string text = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
+		string text = string.IsNullOrWhiteSpace(draft.GameDate) ? AdapterPromptCaptureTexts.PcapFormat("memory_capture_day", "Day {DAY}", ("DAY", draft.GameDayIndex)) : draft.GameDate.Trim();
 		List<DailyMemoryLine> normalLines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && !x.IsAfef).ToList();
 		List<DailyMemoryLine> afefLines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && x.IsAfef).ToList();
 		int startHour = normalLines.Concat(afefLines).Select((DailyMemoryLine x) => MBMath.ClampInt(x.GameHour, 0, 23)).DefaultIfEmpty(0).Min();
@@ -244,13 +244,13 @@ internal sealed class MemorySummaryInputCaptureAdapter
 		string heroName = hero?.Name?.ToString() ?? draft.HeroName ?? "NPC";
 		int trust = RewardSystemBehavior.Instance?.GetEffectiveTrust(hero) ?? 0;
 		string playerDisplayName = PersonaIdentityPromptCaptureAdapter.BuildPlayerPublicDisplayNameForPrompt(hero);
-		if (string.IsNullOrWhiteSpace(playerDisplayName)) playerDisplayName = "玩家";
+		if (string.IsNullOrWhiteSpace(playerDisplayName)) playerDisplayName = AdapterPromptCaptureTexts.PcapText("Project_Player");
 		string playerHistoryName = PlayerNotorietyBehavior.BuildPlayerHistoryNameForExternal();
 		var normalTexts = new List<string>();
 		foreach (DailyMemoryLine line in normalLines) normalTexts.Add(MemorySummaryApplicationAdapter.BuildDailyMemoryLineForPrompt(line, MemoryRecallInputCaptureAdapter.ResolveCapturedMemoryLineSceneForPrompt));
 		var afefTexts = new List<string>();
 		if (afefLines.Count > 0)
-			foreach (DailyMemoryLine line in afefLines) afefTexts.Add(MemorySummaryApplicationAdapter.BuildDailyMemoryLineForPrompt(line, MemoryRecallInputCaptureAdapter.ResolveCapturedMemoryLineSceneForPrompt));
+			foreach (DailyMemoryLine line in afefLines) afefTexts.Add(MemorySystemFactProjection.ProjectRecordedFactForPrompt(MemorySummaryApplicationAdapter.BuildDailyMemoryLineForPrompt(line, MemoryRecallInputCaptureAdapter.ResolveCapturedMemoryLineSceneForPrompt)));
 		return MemorySummaryRules.DailyUserPrompt(text, hours, heroName, trust, scenes,
 			playerDisplayName, playerHistoryName, normalTexts, afefTexts, afefLines.Count > 0);
 	}

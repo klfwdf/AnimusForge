@@ -13,14 +13,40 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 	private static string Localize(string id, string fallback)
 		=> new TextObject("{=" + id + "}" + fallback).ToString();
 
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_003Text => Localize("AF_UI_Terminal_Prefab_003", "Previous page");
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_004Text => Localize("AF_UI_Terminal_Prefab_004", "Next page");
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_008Text => Localize("AF_UI_Terminal_Prefab_008", "All");
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_009Text => Localize("AF_UI_Terminal_Prefab_009", "Bulletin");
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_010Text => Localize("AF_UI_Terminal_Prefab_010", "Diplomacy");
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_011Text => Localize("AF_UI_Terminal_Prefab_011", "Policies");
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_012Text => Localize("AF_UI_Terminal_Prefab_012", "Recent events");
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_013Text => Localize("AF_UI_Terminal_Prefab_013", "Weekly report");
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_014Text => Localize("AF_UI_Terminal_Prefab_014", "Back to list");
+
+	[DataSourceProperty]
+	public string AF_UI_Terminal_Prefab_015Text => Localize("AF_UI_Terminal_Prefab_015", "Generate full report");
+
+
 	private static string Localize(string id, string fallback, params (string Name, string Value)[] variables)
 	{
-		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		foreach ((string Name, string Value) variable in variables ?? Array.Empty<(string Name, string Value)>())
-		{
-			text.SetTextVariable(variable.Name, variable.Value ?? string.Empty);
-		}
-		return text.ToString();
+		return EventEditorUiText.T(id, fallback, variables);
 	}
 
 	private readonly Action _onClose;
@@ -451,12 +477,7 @@ public sealed class TerminalWeeklyReportCountryItemVM : ViewModel
 {
 	private static string Localize(string id, string fallback, params (string Name, string Value)[] variables)
 	{
-		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		foreach ((string Name, string Value) variable in variables ?? Array.Empty<(string Name, string Value)>())
-		{
-			text.SetTextVariable(variable.Name, variable.Value ?? string.Empty);
-		}
-		return text.ToString();
+		return EventEditorUiText.T(id, fallback, variables);
 	}
 
 	private Action<string> _onSelect;

@@ -3,10 +3,10 @@
   "Keywords": [
     "Politics of the Southern Empire",
     "Hereditary monarchy",
-    "Secular official system"
+    "Hereditary office system"
   ],
   "RagShortTexts": [
-    "The politics of the Southern Empire were centered on hereditary monarchy and secular officialdom."
+    "The politics of the Southern Empire centered on hereditary monarchy and a hereditary office system."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -23,7 +23,7 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "The political system of the Southern Empire? How do we know? I just heard others say that everything is hereditary, that’s all"
+      "Content": "The political system of the Southern Empire? How would folk like us know? We only hear people say that everything is hereditary, that's all."
     },
     {
       "Priority": 0,
@@ -40,7 +40,7 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "In the Southern Empire, they emphasize that everything is hereditary and private property is sacred and inviolable, so they chose Rhagaea, the extreme blood theory, as their queen. What the city lords of these city-states fear most is to lose their territory, wealth, and status, and other things are not important - such as paying some taxes and sending some troops. They don't care what other people do, they just want to protect their own territory."
+      "Content": "In the Southern Empire, they emphasize that everything is hereditary and that private property is sacred and inviolable, which is why they chose Rhagaea—that extreme bloodline legitimist—as their empress. What the archons of those city-states fear most is losing their territories, wealth, and status; everything else is secondary, such as paying a bit of tax or sending a few troops. They do not care what others do so long as they can preserve their own domains."
     },
     {
       "Priority": 0,

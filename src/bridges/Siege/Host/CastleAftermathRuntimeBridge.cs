@@ -482,7 +482,7 @@ internal static class CastleAftermathRuntimeBridge
 		bool allowed = SiegeCastleRosterSelectionProfile.IsWithinLimits(memberCount, prisonerCount);
 		return new Tuple<bool, TextObject>(allowed, allowed
 			? TextObject.GetEmpty()
-			: new TextObject(SiegeCastleRosterSelectionProfile.BuildLimitMessage(memberCount, prisonerCount)));
+			: new TextObject(SiegeCastleRosterSelectionProfile.BuildLimitMessage(memberCount, prisonerCount, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface)));
 	}
 
 	private static bool IsCastleSelectionTroopTransferable(
@@ -1810,7 +1810,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			+ ", Created=" + createdCount + ", Active=" + activeCount + ", Formed=" + formedCount
 			+ ", Regular=" + _spawnedRegulars + ", Lords=" + _spawnedLords
 			+ ", MissionAgents=" + (mission.Agents?.Count ?? 0) + ", CommandUiReady=" + commandUiReady);
-		AnimusForgeQuickInfo.Show(SiegeCastleRosterSelectionProfile.BuildPrisonerSceneReadyMessage(_selectedCount, activeCount));
+		AnimusForgeQuickInfo.Show(SiegeCastleRosterSelectionProfile.BuildPrisonerSceneReadyMessage(_selectedCount, activeCount, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface));
 	}
 
 	private void Cleanup(string reason)

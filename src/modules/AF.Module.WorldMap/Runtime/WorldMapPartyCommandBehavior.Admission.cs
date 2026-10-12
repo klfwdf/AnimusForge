@@ -171,9 +171,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					}
 					bool opened = behavior.TryOpenCreateCompanionParty(targetHero, createCommands, out string createMessage);
 					notifications.Add(createMessage);
-					generatedFacts.Add("[AFEF NPC行为补充] " + GetHeroName(targetHero) + (opened
-						? "接受了新的大地图任务；将先从玩家主队分兵，随后按输出顺序执行命令。"
-						: "无法创建同伴部队：" + createMessage));
+					generatedFacts.Add(WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(targetHero) + (opened
+						? WorldMapSourceTexts.Get("raw_literals.wm_lit_0002")
+						: WorldMapSourceTexts.Get("raw_literals.wm_lit_0003") + createMessage));
 					result.Handled = opened;
 					result.CompanionPartyCreationQueued = opened;
 					result.AddedCommandCount = opened ? createCommands.Count : 0;
@@ -195,9 +195,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 				bool accepted = behavior.TryStartGovernorExpeditionRequest(targetHero, expeditionCommands, out string expeditionMessage, out bool queuedForChannelExit);
 				notifications.Add(expeditionMessage);
-				generatedFacts.Add("[AFEF NPC行为补充] " + GetHeroName(targetHero) + (accepted
-					? "接受了新的大地图任务；将从管辖地驻军抽调兵力组建临时远征队，任务结束后返城交还兵员并尝试复职。"
-					: "无法组建总督远征队：" + expeditionMessage));
+				generatedFacts.Add(WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(targetHero) + (accepted
+					? WorldMapSourceTexts.Get("raw_literals.wm_lit_0004")
+					: WorldMapSourceTexts.Get("raw_literals.wm_lit_0005") + expeditionMessage));
 				result.Handled = accepted;
 				result.GovernorExpeditionCreationQueued = accepted && queuedForChannelExit;
 				result.AddedCommandCount = accepted ? expeditionCommands.Count : 0;
@@ -263,7 +263,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			if (!string.IsNullOrWhiteSpace(notification))
 			{
-				bool failure = notification.IndexOf("失败", StringComparison.OrdinalIgnoreCase) >= 0
+				bool failure = notification.IndexOf(WorldMapSourceTexts.Get("attack_detail_outcomes.failure"), StringComparison.OrdinalIgnoreCase) >= 0
 					|| notification.IndexOf("failed", StringComparison.OrdinalIgnoreCase) >= 0
 					|| notification.IndexOf("invalid", StringComparison.OrdinalIgnoreCase) >= 0
 					|| notification.IndexOf("cannot", StringComparison.OrdinalIgnoreCase) >= 0

@@ -22,7 +22,7 @@ namespace AnimusForge.Illustrator.Engine
                     // Exclusive read waits for the native writer to close, not merely for file creation.
                     using (var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
                     {
-                        if (file.Length > MaximumRawBytes) throw new InvalidDataException("原生截图超过96 MiB采集上限。");
+                        if (file.Length > MaximumRawBytes) throw new InvalidDataException("The native capture exceeds the 96 MiB capture limit.");
                         if (file.Length >= 54)
                         {
                             byte[] bytes = new byte[checked((int)file.Length)];
@@ -48,23 +48,23 @@ namespace AnimusForge.Illustrator.Engine
         internal static void ValidateBitmap(byte[] bytes)
         {
             if (bytes == null || bytes.Length < 54 || bytes.Length > MaximumRawBytes || bytes[0] != 'B' || bytes[1] != 'M')
-                throw new InvalidDataException("原生截图不是完整有效的 BMP。");
+                throw new InvalidDataException("The native capture is not a complete, valid BMP.");
             int declared = BitConverter.ToInt32(bytes, 2), pixelOffset = BitConverter.ToInt32(bytes, 10);
             int header = BitConverter.ToInt32(bytes, 14), width = BitConverter.ToInt32(bytes, 18), height = BitConverter.ToInt32(bytes, 22);
             int bits = BitConverter.ToUInt16(bytes, 28), compression = BitConverter.ToInt32(bytes, 30);
-            if (height == int.MinValue) throw new InvalidDataException("截图高度无效。");
+            if (height == int.MinValue) throw new InvalidDataException("The capture height is invalid.");
             ValidateDimensions(width, Math.Abs(height));
             long row = ((long)width * bits + 31) / 32 * 4;
             if (declared != bytes.Length || header < 40 || pixelOffset < 14L + header || pixelOffset > bytes.Length
                 || BitConverter.ToUInt16(bytes, 26) != 1 || (bits != 24 && bits != 32) || (compression != 0 && compression != 3)
                 || pixelOffset + row * Math.Abs(height) > bytes.Length)
-                throw new InvalidDataException("原生 BMP 尚不完整或像素格式不受支持。");
+                throw new InvalidDataException("The native BMP is incomplete or its pixel format is unsupported.");
         }
 
         private static void ValidateDimensions(int width, int height)
         {
             if (width <= 0 || height <= 0 || (long)width * height > MaximumPixels)
-                throw new InvalidDataException("截图像素尺寸无效或超过24百万像素上限。");
+                throw new InvalidDataException("The capture dimensions are invalid or exceed the 24-million-pixel limit.");
         }
 
         internal static byte[] ToPng(byte[] bytes, CancellationToken token)
@@ -114,7 +114,7 @@ namespace AnimusForge.Illustrator.Engine
                     ["samplePixels"] = sample.Width * sample.Height, ["visiblePixels"] = visible,
                     ["minimumVisiblePercent"] = 1, ["gpu_frame_identity_verified"] = false });
                 if (visible * 100 < sample.Width * sample.Height)
-                    throw new InvalidDataException("现场截图几乎全黑，无法识别人物与环境；已停止生成，未发送导演或生图请求。");
+                    throw new InvalidDataException("The scene capture is almost entirely black; characters and surroundings cannot be identified. Generation stopped. No director or image request was sent.");
             }
         }
     }

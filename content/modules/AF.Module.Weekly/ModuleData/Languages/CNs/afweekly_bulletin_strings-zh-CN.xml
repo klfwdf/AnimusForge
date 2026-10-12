@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="AF_WBLT_Title_AllianceEnded" text="盟约解除" />
+    <string id="AF_WBLT_Title_AllianceFormed" text="盟约缔结" />
+    <string id="AF_WBLT_Title_ArmyGathered" text="大军集结" />
+    <string id="AF_WBLT_Title_Battle" text="战场急报" />
+    <string id="AF_WBLT_Title_CivilWar" text="内战爆发" />
+    <string id="AF_WBLT_Title_CivilWarPolitics" text="派系交涉" />
+    <string id="AF_WBLT_Title_CivilWarResolution" text="内战结束" />
+    <string id="AF_WBLT_Title_ClanDefection" text="家族改投" />
+    <string id="AF_WBLT_Title_ClanDestroyed" text="家族覆亡" />
+    <string id="AF_WBLT_Title_CoupFailure" text="政变失败" />
+    <string id="AF_WBLT_Title_CoupSuccess" text="政变夺位" />
+    <string id="AF_WBLT_Title_Default" text="时事快报" />
+    <string id="AF_WBLT_Title_DiplomaticDeclaration" text="外交宣言" />
+    <string id="AF_WBLT_Title_FiefGrant" text="封地授予" />
+    <string id="AF_WBLT_Title_KingdomAnnexed" text="王国并吞" />
+    <string id="AF_WBLT_Title_KingdomCreated" text="新国崛起" />
+    <string id="AF_WBLT_Title_KingdomDestroyed" text="王国覆灭" />
+    <string id="AF_WBLT_Title_KingdomRebellion" text="叛旗高举" />
+    <string id="AF_WBLT_Title_LordCaptured" text="贵胄被俘" />
+    <string id="AF_WBLT_Title_LordKilled" text="贵族殒命" />
+    <string id="AF_WBLT_Title_NobleGathering" text="贵族宴集" />
+    <string id="AF_WBLT_Title_NobleMarriage" text="贵胄联姻" />
+    <string id="AF_WBLT_Title_PeaceMade" text="干戈暂息" />
+    <string id="AF_WBLT_Title_Raid" text="村庄遭劫" />
+    <string id="AF_WBLT_Title_RoyalMarriage" text="王室联姻" />
+    <string id="AF_WBLT_Title_RulerChanged" text="新君即位" />
+    <string id="AF_WBLT_Title_RulerKilled" text="君王陨落" />
+    <string id="AF_WBLT_Title_RulerPolicy" text="施政新令" />
+    <string id="AF_WBLT_Title_SallyOutBattle" text="出城战报" />
+    <string id="AF_WBLT_Title_SettlementSiege" text="城池易主" />
+    <string id="AF_WBLT_Title_SettlementTransfer" text="领地移交" />
+    <string id="AF_WBLT_Title_TournamentFinished" text="竞技捷报" />
+    <string id="AF_WBLT_Title_TownRebellion" text="城中民变" />
+    <string id="AF_WBLT_Title_TownUnrest" text="民心浮动" />
+    <string id="AF_WBLT_Title_VassalageEnded" text="宗藩决裂" />
+    <string id="AF_WBLT_Title_VassalageEstablished" text="称臣纳贡" />
+    <string id="AF_WBLT_Title_WarDeclared" text="烽烟再起" />
+    <string id="AF_WBLT_UI_037" text="模型返回为空，且无法解析。" />
+    <string id="AF_WBLT_UI_038" text="模型返回无法解析。" />
+    <string id="AF_WBLT_UI_039" text="接口返回为空响应。" />
+    <string id="AF_WBLT_UI_040" text="缺少 [TAGS]。" />
+    <string id="AF_WBLT_UI_041" text="包含多个相互冲突的稳定度标签。" />
+    <string id="AF_WBLT_UI_042" text="缺少合法稳定度标签。" />
+    <string id="AF_WBLT_UI_043" text="批量周报响应为空。" />
+    <string id="AF_WBLT_UI_044" text="响应中没有找到任何 REPORT_BLOCK。" />
+    <string id="AF_WBLT_UI_045" text="批量周报响应缺少部分 report_id：" />
+    <string id="AF_WBLT_UI_046" text="批量周报响应中的 report_id 解析失败：" />
+    <string id="AF_WBLT_UI_047" text="批量周报响应缺少或解析失败的 report_id：" />
+    <string id="AF_WBLT_UI_048" text="空 block。" />
+    <string id="AF_WBLT_UI_049" text="缺少 report_id。" />
+    <string id="AF_WBLT_UI_050" text="report_id 未在输入批次中找到：" />
+    <string id="AF_WBLT_UI_051" text="mode 与输入批次不一致。" />
+    <string id="AF_WBLT_UI_052" text="kingdom_id 与输入批次不一致。" />
+    <string id="AF_WBLT_UI_053" text="世界事件" />
+    <string id="AF_WBLT_UI_054" text="王国事件" />
+    <string id="AF_WBLT_UI_055" text="玩家周边事件" />
+    <string id="AF_WBLT_UI_056" text="未分类事件" />
+    <string id="AF_WBLT_UI_057" text="周报聚合素材" />
+    <string id="AF_WBLT_UI_058" text="世界开局概要" />
+    <string id="AF_WBLT_UI_059" text="王国开局概要" />
+    <string id="AF_WBLT_UI_060" text="当前统治者" />
+    <string id="AF_WBLT_UI_061" text="NPC近期行动" />
+    <string id="AF_WBLT_UI_062" text="NPC重大行动" />
+    <string id="AF_WBLT_UI_063" text="原始文本素材" />
+    <string id="AF_WBLT_UI_064" text="未分类素材" />
+    <string id="AF_WBLT_UI_065" text="找不到 event_data\WorldOpeningSummary.json、event_data\KingdomOpeningSummaries.json 或 event_data\EventRecords.json。" />
+    <string id="AF_WBLT_UI_066" text="世界事件素材预览" />
+    <string id="AF_WBLT_UI_067" text="用于世界事件的本周素材。" />
+    <string id="AF_WBLT_UI_068" text="当前周报正文为空。" />
+    <string id="AF_WBLT_UI_069" text="时事快报 · " />
+    <string id="AF_WBLT_UI_070" text="世界周报" />
+    <string id="AF_WBLT_UI_071" text="王国周报" />
+  </strings>
+</base>

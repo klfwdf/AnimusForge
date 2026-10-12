@@ -138,8 +138,17 @@ public static class NoblePrisonerExecutionPolicy
 
     public static string BuildHeadItemName(string prisonerName)
     {
+        return BuildHeadItemName(prisonerName, isEnglish: false);
+    }
+
+    public static string BuildHeadItemName(string prisonerName, bool isEnglish)
+    {
         string name = (prisonerName ?? string.Empty).Trim();
-        return (name.Length == 0 ? "无名贵族" : name) + "的头颅";
+        if (isEnglish)
+        {
+            return (name.Length == 0 ? "Unnamed Noble" : name) + "\'s Head";
+        }
+        return (name.Length == 0 ? "Unnamed Noble" : name) + "'s Head";
     }
 
     private static NobleExecutionActorDecision Invalid(string reasonCode)

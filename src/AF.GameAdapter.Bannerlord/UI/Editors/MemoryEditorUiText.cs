@@ -9,6 +9,9 @@ namespace AnimusForge;
 /// </summary>
 internal static class MemoryEditorUiText
 {
+    // Resolve the template once, then insert display data without re-parsing its braces.
+    private static readonly System.Text.RegularExpressions.Regex LiteralValues = new System.Text.RegularExpressions.Regex(@"AFSWEEPLITERAL([0-9]+)END", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
     internal static string T(string id, string englishFallback)
         => new TextObject("{=" + id + "}" + englishFallback).ToString();
 
@@ -16,13 +19,9 @@ internal static class MemoryEditorUiText
     {
         var text = new TextObject("{=" + id + "}" + englishFallback);
         if (variables != null)
-        {
             for (int i = 0; i + 1 < variables.Length; i += 2)
-            {
-                text.SetTextVariable(variables[i], variables[i + 1] ?? string.Empty);
-            }
-        }
-        return text.ToString();
+                text.SetTextVariable(variables[i], "AFSWEEPLITERAL" + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + "END");
+        return LiteralValues.Replace(text.ToString(), match => variables[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture) + 1] ?? string.Empty);
     }
 
     internal static string WithHero(string id, string englishFallback, string hero)

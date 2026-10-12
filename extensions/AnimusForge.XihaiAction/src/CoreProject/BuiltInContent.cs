@@ -404,56 +404,56 @@ namespace AnimusForge.SceneActions.Core
             }
 
             List<AliasDefinition> aliases = new List<AliasDefinition>();
-            AddCommandAliases(aliases, "kneel", "跪下", "kneel", TargetMode.FramedSelection);
-            AddCommandAliases(aliases, "stand_up", "站起来", "stand up", TargetMode.FramedSelection);
-            AddAlias(aliases, "起身", "stand_up", true, true, TargetMode.FramedSelection);
-            AddAlias(aliases, "起来", "stand_up", true, true, TargetMode.FramedSelection);
+            AddCommandAliases(aliases, "kneel", SceneActionVocabulary.Text("BuiltInContent.LegacySource0001"), "kneel", TargetMode.FramedSelection);
+            AddCommandAliases(aliases, "stand_up", SceneActionVocabulary.Text("BuiltInContent.LegacySource0002"), "stand up", TargetMode.FramedSelection);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0003"), "stand_up", true, true, TargetMode.FramedSelection);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0004"), "stand_up", true, true, TargetMode.FramedSelection);
             AddAlias(aliases, "standup", "stand_up", true, true, TargetMode.FramedSelection);
             AddAlias(aliases, "getup", "stand_up", true, true, TargetMode.FramedSelection);
             AddAlias(aliases, "kneel_loop", "kneel", true, true, TargetMode.FramedSelection);
 
-            AddAlias(aliases, "我跪下", "kneel", true, true, TargetMode.Player);
-            AddAlias(aliases, "我自己跪下", "kneel", true, true, TargetMode.Player);
-            AddAlias(aliases, "你跪下", "kneel", true, true, TargetMode.Primary);
-            AddAlias(aliases, "你们跪下", "kneel", true, true, TargetMode.FramedSelection);
-            AddAlias(aliases, "让他们跪下", "kneel", true, true, TargetMode.FramedSelection);
-            AddAlias(aliases, "我站起来", "stand_up", true, true, TargetMode.Player);
-            AddAlias(aliases, "你站起来", "stand_up", true, true, TargetMode.Primary);
-            AddAlias(aliases, "你们站起来", "stand_up", true, true, TargetMode.FramedSelection);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0005"), "kneel", true, true, TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0006"), "kneel", true, true, TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0007"), "kneel", true, true, TargetMode.Primary);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0008"), "kneel", true, true, TargetMode.FramedSelection);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0009"), "kneel", true, true, TargetMode.FramedSelection);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0010"), "stand_up", true, true, TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0011"), "stand_up", true, true, TargetMode.Primary);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0012"), "stand_up", true, true, TargetMode.FramedSelection);
 
-            AddAlias(aliases, "西海", "xihai", true, false, TargetMode.FramedSelection);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0013"), "xihai", true, false, TargetMode.FramedSelection);
             AddAlias(aliases, "xihai", "xihai", true, false, TargetMode.FramedSelection);
             AddAlias(aliases, "af_xihai", "xihai", true, false, TargetMode.FramedSelection);
 
-            AddCommandAliases(aliases, "cheer", "欢呼", "cheer", TargetMode.Player);
-            AddAlias(aliases, "你欢呼", "cheer", true, true, TargetMode.Primary);
-            AddAlias(aliases, "你们欢呼", "cheer", true, true, TargetMode.FramedSelection);
-            AddCommandAliases(aliases, "applaud", "鼓掌", "applaud", TargetMode.Player);
-            AddAlias(aliases, "拍手", "applaud", true, true, TargetMode.Player);
-            AddCommandAliases(aliases, "respect", "行礼", "salute", TargetMode.Player);
-            AddAlias(aliases, "你给我行礼", "respect", true, true, TargetMode.Primary);
-            AddCommandAliases(aliases, "threat", "威胁", "threaten", TargetMode.Primary);
-            AddCommandAliases(aliases, "surrender", "投降", "surrender", TargetMode.FramedSelection);
-            AddCommandAliases(aliases, "laugh", "大笑", "laugh", TargetMode.Player);
-            AddAlias(aliases, "哈哈大笑", "laugh", true, true, TargetMode.Player);
-            AddCommandAliases(aliases, "point", "指向", "point", TargetMode.Player);
-            AddAlias(aliases, "指向旁边", "point", true, true, TargetMode.Player);
-            AddCommandAliases(aliases, "rage", "愤怒", "rage", TargetMode.Player);
-            AddAlias(aliases, "发怒", "rage", true, true, TargetMode.Player);
-            AddCommandAliases(aliases, "fear", "害怕", "fear", TargetMode.Player);
-            AddAlias(aliases, "惊恐", "fear", true, true, TargetMode.Player);
+            AddCommandAliases(aliases, "cheer", SceneActionVocabulary.Text("BuiltInContent.LegacySource0014"), "cheer", TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0015"), "cheer", true, true, TargetMode.Primary);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0016"), "cheer", true, true, TargetMode.FramedSelection);
+            AddCommandAliases(aliases, "applaud", SceneActionVocabulary.Text("BuiltInContent.LegacySource0017"), "applaud", TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0018"), "applaud", true, true, TargetMode.Player);
+            AddCommandAliases(aliases, "respect", SceneActionVocabulary.Text("BuiltInContent.LegacySource0019"), "salute", TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0020"), "respect", true, true, TargetMode.Primary);
+            AddCommandAliases(aliases, "threat", SceneActionVocabulary.Text("BuiltInContent.LegacySource0021"), "threaten", TargetMode.Primary);
+            AddCommandAliases(aliases, "surrender", SceneActionVocabulary.Text("BuiltInContent.LegacySource0022"), "surrender", TargetMode.FramedSelection);
+            AddCommandAliases(aliases, "laugh", SceneActionVocabulary.Text("BuiltInContent.LegacySource0023"), "laugh", TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0024"), "laugh", true, true, TargetMode.Player);
+            AddCommandAliases(aliases, "point", SceneActionVocabulary.Text("BuiltInContent.LegacySource0025"), "point", TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0026"), "point", true, true, TargetMode.Player);
+            AddCommandAliases(aliases, "rage", SceneActionVocabulary.Text("BuiltInContent.LegacySource0027"), "rage", TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0028"), "rage", true, true, TargetMode.Player);
+            AddCommandAliases(aliases, "fear", SceneActionVocabulary.Text("BuiltInContent.LegacySource0029"), "fear", TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0030"), "fear", true, true, TargetMode.Player);
             AddCommandAliases(
                 aliases,
                 "disappointed",
-                "失望",
+                SceneActionVocabulary.Text("BuiltInContent.LegacySource0031"),
                 "disappointed",
                 TargetMode.Player);
-            AddAlias(aliases, "沮丧", "disappointed", true, true, TargetMode.Player);
-            AddCommandAliases(aliases, "challenge", "挑衅", "challenge", TargetMode.Player);
-            AddAlias(aliases, "叫阵", "challenge", true, true, TargetMode.Player);
-            AddCommandAliases(aliases, "search", "环顾", "search", TargetMode.Player);
-            AddAlias(aliases, "四下张望", "search", true, true, TargetMode.Player);
-            AddCommandAliases(aliases, "dance", "跳舞", "dance", TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0032"), "disappointed", true, true, TargetMode.Player);
+            AddCommandAliases(aliases, "challenge", SceneActionVocabulary.Text("BuiltInContent.LegacySource0033"), "challenge", TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0034"), "challenge", true, true, TargetMode.Player);
+            AddCommandAliases(aliases, "search", SceneActionVocabulary.Text("BuiltInContent.LegacySource0035"), "search", TargetMode.Player);
+            AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0036"), "search", true, true, TargetMode.Player);
+            AddCommandAliases(aliases, "dance", SceneActionVocabulary.Text("BuiltInContent.LegacySource0037"), "dance", TargetMode.Player);
 
             if (includeV3)
             {
@@ -497,30 +497,30 @@ namespace AnimusForge.SceneActions.Core
 
             if (includeRuntimeControls)
             {
-                AddAlias(aliases, "停止当前动作", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "停止动作", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "停止欢呼", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "别再欢呼", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "停止跳舞", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "别跳了", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "结束此项", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "恢复正常", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "恢复站姿", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "站好", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "放下手臂", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "把手放下", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "收回手臂", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "结束行礼", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "停止行礼", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0038"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0039"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0040"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0041"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0042"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0043"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0044"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0045"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0046"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0047"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0048"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0049"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0050"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0051"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0052"), SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
                 AddAlias(aliases, "stop action", SceneActionRuntimeControlsV1.StopAction, true, true, TargetMode.Player);
-                AddAlias(aliases, "拔剑", SceneActionRuntimeControlsV1.DrawWeapon, true, true, TargetMode.Player);
-                AddAlias(aliases, "抽剑", SceneActionRuntimeControlsV1.DrawWeapon, true, true, TargetMode.Player);
-                AddAlias(aliases, "拔出武器", SceneActionRuntimeControlsV1.DrawWeapon, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0053"), SceneActionRuntimeControlsV1.DrawWeapon, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0054"), SceneActionRuntimeControlsV1.DrawWeapon, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0055"), SceneActionRuntimeControlsV1.DrawWeapon, true, true, TargetMode.Player);
                 AddAlias(aliases, "draw weapon", SceneActionRuntimeControlsV1.DrawWeapon, true, true, TargetMode.Player);
                 AddAlias(aliases, "draw sword", SceneActionRuntimeControlsV1.DrawWeapon, true, true, TargetMode.Player);
-                AddAlias(aliases, "收剑", SceneActionRuntimeControlsV1.SheatheWeapon, true, true, TargetMode.Player);
-                AddAlias(aliases, "收起武器", SceneActionRuntimeControlsV1.SheatheWeapon, true, true, TargetMode.Player);
-                AddAlias(aliases, "还剑入鞘", SceneActionRuntimeControlsV1.SheatheWeapon, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0056"), SceneActionRuntimeControlsV1.SheatheWeapon, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0057"), SceneActionRuntimeControlsV1.SheatheWeapon, true, true, TargetMode.Player);
+                AddAlias(aliases, SceneActionVocabulary.Text("BuiltInContent.LegacySource0058"), SceneActionRuntimeControlsV1.SheatheWeapon, true, true, TargetMode.Player);
                 AddAlias(aliases, "sheathe weapon", SceneActionRuntimeControlsV1.SheatheWeapon, true, true, TargetMode.Player);
             }
 

@@ -20,31 +20,7 @@ internal static class PlayerExportsStore
 
 	internal static string GetModuleRootPath()
 	{
-		try
-		{
-			string location = typeof(PlayerExportsStore).Assembly.Location;
-			string text = (string.IsNullOrEmpty(location) ? "" : Path.GetDirectoryName(Path.GetFullPath(location)));
-			DirectoryInfo directoryInfo = (string.IsNullOrEmpty(text) ? null : new DirectoryInfo(text));
-			while (directoryInfo != null && directoryInfo.Exists)
-			{
-				if (File.Exists(Path.Combine(directoryInfo.FullName, "SubModule.xml")))
-				{
-					return directoryInfo.FullName;
-				}
-				directoryInfo = directoryInfo.Parent;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			return Path.GetFullPath(Directory.GetCurrentDirectory());
-		}
-		catch
-		{
-			return "";
-		}
+		return AnimusForgeDataPaths.GetCurrentRoot();
 	}
 
 	internal static string GetPlayerExportsRootPath()
@@ -81,8 +57,8 @@ internal static class PlayerExportsStore
 	{
 		var folders = new List<ImportFolder>();
 		var roots = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		AddImportFolders(folders, roots, Path.Combine(moduleRoot, FolderName), "模组目录");
-		AddImportFolders(folders, roots, userRoot, "玩家导出");
+		AddImportFolders(folders, roots, Path.Combine(moduleRoot, FolderName), "Module directory");
+		AddImportFolders(folders, roots, userRoot, "Player exports");
 		return folders;
 	}
 
@@ -94,7 +70,7 @@ internal static class PlayerExportsStore
 			string fullRoot = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 			if (!roots.Add(fullRoot) || !Directory.Exists(fullRoot)) return;
 			foreach (DirectoryInfo directory in new DirectoryInfo(fullRoot).GetDirectories()
-				.Where(d => !d.Name.StartsWith(".", StringComparison.Ordinal))
+				.Where(d => !d.Name.StartsWith(".", StringComparison.Ordinal) && (d.Attributes & FileAttributes.ReparsePoint) == 0)
 				.OrderByDescending(d => d.LastWriteTimeUtc))
 				folders.Add(new ImportFolder(directory, sourceLabel));
 		}
@@ -176,7 +152,7 @@ internal static class PlayerExportsStore
 			}
 			DirectoryInfo directoryInfo = new DirectoryInfo(root);
 			return (from d in directoryInfo.GetDirectories()
-				where !d.Name.StartsWith(".", StringComparison.Ordinal)
+				where !d.Name.StartsWith(".", StringComparison.Ordinal) && (d.Attributes & FileAttributes.ReparsePoint) == 0
 				orderby d.LastWriteTimeUtc descending
 				select d).FirstOrDefault()?.FullName;
 		}

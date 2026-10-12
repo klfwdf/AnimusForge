@@ -143,8 +143,8 @@ internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(
 			return preparedLabel;
 		}
 		List<string> list = (batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Select(BuildWeeklyReportGroupDisplayLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-		string text = ((batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "短" : "全";
-		return (list.Count == 0) ? ("未命名周报批次[" + text + "]") : ("批次[" + text + "]：" + string.Join(" | ", list));
+		string text = ((batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "short" : "full";
+		return (list.Count == 0) ? ("Unnamed weekly-report batch[" + text + "]") : ("Batch[" + text + "]: " + string.Join(" | ", list));
 	}
 
 	// UI projection of the batch/group labels above. The verbatim labels keep feeding the prompt-exchange
@@ -934,14 +934,14 @@ internal static string BuildWeeklyReportGroupDisplayLabel(WeeklyEventMaterialPre
 	{
 		if (group == null)
 		{
-			return "未命名分组";
+			return "Unnamed group";
 		}
 		string text = (group.Title ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
 		{
 			return text;
 		}
-		return string.Equals((group.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : "王国周报";
+		return string.Equals((group.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "World weekly report" : "Kingdom weekly report";
 	}
 // UI projection. group.Title is authored material/model text and is returned unchanged; only the
 // synthesized placeholder (null group / missing title) is localized for the editor display.
@@ -1729,13 +1729,13 @@ internal static string TranslateEventKindForDev(string eventKind)
 		switch ((eventKind ?? "").Trim().ToLowerInvariant())
 		{
 		case "world":
-			return "世界事件";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_053", "World events");
 		case "kingdom":
-			return "王国事件";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_054", "Kingdom events");
 		case "player_local":
-			return "玩家周边事件";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_055", "Events near the player");
 		default:
-			return string.IsNullOrWhiteSpace(eventKind) ? "未分类事件" : eventKind.Trim();
+			return string.IsNullOrWhiteSpace(eventKind) ? WorldBulletinPolicyTexts.Title("AF_WBLT_UI_056", "Uncategorized event") : eventKind.Trim();
 		}
 	}
 
@@ -1744,24 +1744,24 @@ internal static string TranslateEventMaterialTypeForDev(string materialType)
 		string text = (materialType ?? "").Trim().ToLowerInvariant();
 		if (text.StartsWith("prompt_agg_", StringComparison.OrdinalIgnoreCase))
 		{
-			return "周报聚合素材";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_057", "Aggregated weekly-report material");
 		}
 		switch (text)
 		{
 		case "world_opening_summary":
-			return "世界开局概要";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_058", "World opening overview");
 		case "kingdom_opening_summary":
-			return "王国开局概要";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_059", "Kingdom opening overview");
 		case "kingdom_current_ruler":
-			return "当前统治者";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_060", "Current ruler");
 		case "npc_recent_action":
-			return "NPC近期行动";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_061", "Recent NPC actions");
 		case "npc_major_action":
-			return "NPC重大行动";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_062", "Major NPC actions");
 		case "raw_text":
-			return "原始文本素材";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_063", "Raw text material");
 		default:
-			return string.IsNullOrWhiteSpace(materialType) ? "未分类素材" : materialType.Trim();
+			return string.IsNullOrWhiteSpace(materialType) ? WorldBulletinPolicyTexts.Title("AF_WBLT_UI_064", "Uncategorized material") : materialType.Trim();
 		}
 	}
 }

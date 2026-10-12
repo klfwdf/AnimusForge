@@ -2013,7 +2013,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					new JObject
 					{
 						["role"] = "user",
-						["content"] = "请回复“连接成功”。"
+						["content"] = OnboardingPromptTexts.ConnectionTest
 					}
 				},
 				["stream"] = false
@@ -2994,7 +2994,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 						new JObject
 						{
 							["role"] = "user",
-							["content"] = "请回复“连接成功”。"
+							["content"] = OnboardingPromptTexts.ConnectionTest
 						}
 					},
 					["stream"] = false
@@ -3744,7 +3744,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			list2.Add(new InquiryElement("__manual__", OnboardingUiText.T("AF_ONBOARDING_IMPORT_MANUAL_PATH", "Enter folder name/path manually"), null));
 			list2.Add(new InquiryElement("__latest__", OnboardingUiText.T("AF_ONBOARDING_IMPORT_LATEST", "Use latest player export (automatic)"), null));
 			foreach (var folder in PlayerExportsStore.GetImportFolders())
-				list2.Add(new InquiryElement(folder.FullPath, folder.Name + "  [" + folder.SourceLabel + "]", null));
+			{
+				string sourceLabel = folder.SourceLabel == "Module directory"
+					? OnboardingUiText.T("AF_UI_ImportSource_ModuleDirectory", "Module directory")
+					: folder.SourceLabel == "Player exports"
+						? OnboardingUiText.T("AF_UI_ImportSource_PlayerExports", "Player exports")
+						: folder.SourceLabel;
+				list2.Add(new InquiryElement(folder.FullPath, OnboardingUiText.ImportFolderDisplayName(folder.SourceLabel, folder.Name) + "  [" + sourceLabel + "]", null));
+			}
 			MultiSelectionInquiryData data = new MultiSelectionInquiryData(OnboardingUiText.T("AF_ONBOARDING_IMPORT_PICKER_TITLE", "Choose import folder"), OnboardingUiText.T("AF_ONBOARDING_IMPORT_PICKER_BODY", "Choose a module folder or a player-exported world book:"), list2, isExitShown: true, 0, 1, OnboardingUiText.T("AF_ONBOARDING_IMPORT_BUTTON", "Import"), OnboardingUiText.T("AF_COMMON_BACK", "Back"), delegate(List<InquiryElement> selected)
 			{
 				if (selected == null || selected.Count == 0)

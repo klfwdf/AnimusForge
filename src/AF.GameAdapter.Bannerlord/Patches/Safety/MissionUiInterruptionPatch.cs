@@ -23,18 +23,18 @@ public static class MissionUiInterruptionPatch
 			MethodInfo methodInfo = AccessTools.Method(typeof(MissionSingleplayerViewHandler), "OnMissionScreenTick");
 			if (methodInfo == null)
 			{
-				Logger.LogTrace("System", "❌ MissionUiInterruptionPatch: 找不到 MissionSingleplayerViewHandler.OnMissionScreenTick。");
+				Logger.LogTrace("System", "❌ MissionUiInterruptionPatch: MissionSingleplayerViewHandler.OnMissionScreenTick not found.");
 				return;
 			}
 			Harmony harmony = new Harmony("AnimusForge.missionui.interruption");
 			HarmonyMethod prefix = new HarmonyMethod(typeof(MissionUiInterruptionPatch).GetMethod("Prefix", BindingFlags.Static | BindingFlags.Public));
 			harmony.Patch(methodInfo, prefix);
 			_patched = true;
-			Logger.LogTrace("System", "✅ MissionUiInterruptionPatch 已启用任务界面切换保护。");
+			Logger.LogTrace("System", "✅ MissionUiInterruptionPatch Enabled mission UI transition protection.");
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ MissionUiInterruptionPatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ MissionUiInterruptionPatch patch failed: " + ex.Message);
 		}
 	}
 

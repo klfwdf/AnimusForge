@@ -205,7 +205,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 	{
 		Settlement village = ResolveActiveVillage();
 		return IsActive()
-			? VillageAftermathRuntimePromptProfile.BuildPrompt(village?.Name?.ToString(), village?.Village?.Bound?.Name?.ToString(), _activeAuthorityKind)
+			? VillageAftermathRuntimePromptProfile.BuildPrompt(village?.Name?.ToString(), village?.Village?.Bound?.Name?.ToString(), _activeAuthorityKind, textCatalog: GcczTownPromptResourceProvider.GetCatalog())
 			: string.Empty;
 	}
 
@@ -218,20 +218,20 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 
 		return new List<PostprocessRuleEntry>
 		{
-			Rule(VillageAftermathActionTagCatalog.GatherEldersTag, "玩家明确要求召集村民、长老或头人时输出；把成年村民编入3号民众编队。"),
-			Rule(VillageAftermathActionTagCatalog.RestrainTroopsTag, "玩家明确要求约束随行军纪、停止扰民时输出。"),
-			Rule(VillageAftermathActionTagCatalog.PacifyTag, "玩家明确决定平息村情、停止追究时输出。"),
-			Rule(VillageAftermathActionTagCatalog.ReliefTag, "玩家明确决定支付第纳尔赈济村民时输出。"),
-			Rule(VillageAftermathActionTagCatalog.FineTag, "玩家明确决定向村庄罚赎时输出。"),
-			Rule(VillageAftermathActionTagCatalog.RequisitionFoodTag, "玩家明确决定征收粮食时输出。"),
-			Rule(VillageAftermathActionTagCatalog.RequisitionProduceTag, "玩家明确决定征收村庄物产时输出。"),
-			Rule(VillageAftermathActionTagCatalog.RequisitionLivestockTag, "玩家明确决定征收牲畜时输出。"),
-			Rule(VillageAftermathActionTagCatalog.LevyRecruitsTag, "玩家明确决定从村庄民兵征丁时输出。"),
-			Rule(VillageAftermathActionTagCatalog.PunishRingleaderTag, "玩家明确决定惩办村庄首恶时输出。"),
-			Rule(VillageAftermathActionTagCatalog.ConfiscatePropertyTag, "玩家明确决定查抄村产时输出。"),
-			Rule(VillageAftermathActionTagCatalog.DestroyLivelihoodTag, "玩家明确决定毁坏村庄生产与生计时输出。"),
-			Rule(VillageAftermathActionTagCatalog.MassacreTag, "玩家明确决定屠村时输出。"),
-			Rule(VillageAftermathActionTagCatalog.CulturalReformTag, "玩家明确要求改变村庄文化时输出；只打开玩家确认界面。"),
+			Rule(VillageAftermathActionTagCatalog.GatherEldersTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly asks to gather villagers, elders or headmen; place adult villagers in civilian formation 3." : SiegeAftermathCompatibilityTexts.Raw("auto_village_71a959836d48"))),
+			Rule(VillageAftermathActionTagCatalog.RestrainTroopsTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly asks to restrain accompanying troops and stop disturbing civilians." : SiegeAftermathCompatibilityTexts.Raw("auto_village_eb81fdbfe883"))),
+			Rule(VillageAftermathActionTagCatalog.PacifyTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to pacify the village and end the pursuit of blame." : SiegeAftermathCompatibilityTexts.Raw("auto_village_d5aaa911e197"))),
+			Rule(VillageAftermathActionTagCatalog.ReliefTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to pay denars for village relief." : SiegeAftermathCompatibilityTexts.Raw("auto_village_587d0579c543"))),
+			Rule(VillageAftermathActionTagCatalog.FineTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to demand a fine from the village." : SiegeAftermathCompatibilityTexts.Raw("auto_village_4e3d1b886b3d"))),
+			Rule(VillageAftermathActionTagCatalog.RequisitionFoodTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to requisition food." : SiegeAftermathCompatibilityTexts.Raw("auto_village_0ba93283dc50"))),
+			Rule(VillageAftermathActionTagCatalog.RequisitionProduceTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to requisition village produce." : SiegeAftermathCompatibilityTexts.Raw("auto_village_da1dad5f51f3"))),
+			Rule(VillageAftermathActionTagCatalog.RequisitionLivestockTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to requisition livestock." : SiegeAftermathCompatibilityTexts.Raw("auto_village_e206eb1f8f8f"))),
+			Rule(VillageAftermathActionTagCatalog.LevyRecruitsTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to levy recruits from the village militia." : SiegeAftermathCompatibilityTexts.Raw("auto_village_ab66b507a1df"))),
+			Rule(VillageAftermathActionTagCatalog.PunishRingleaderTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to punish the village ringleader." : SiegeAftermathCompatibilityTexts.Raw("auto_village_aa047ffa0a27"))),
+			Rule(VillageAftermathActionTagCatalog.ConfiscatePropertyTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to confiscate village property." : SiegeAftermathCompatibilityTexts.Raw("auto_village_72c9eaf28061"))),
+			Rule(VillageAftermathActionTagCatalog.DestroyLivelihoodTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to destroy village production and livelihoods." : SiegeAftermathCompatibilityTexts.Raw("auto_village_c09e3bdbb9f9"))),
+			Rule(VillageAftermathActionTagCatalog.MassacreTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to massacre the village." : SiegeAftermathCompatibilityTexts.Raw("auto_village_8fc1c244b8f7"))),
+			Rule(VillageAftermathActionTagCatalog.CulturalReformTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly requests a change of village culture; only open the player confirmation UI." : SiegeAftermathCompatibilityTexts.Raw("auto_village_ed6b7dc90a5c"))),
 		};
 	}
 
@@ -242,11 +242,17 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 			return string.Empty;
 		}
 		Settlement village = ResolveActiveVillage();
-		return "当前村庄=" + (village?.Name?.ToString() ?? "未知")
-			+ "；上级封地=" + (village?.Village?.Bound?.Name?.ToString() ?? "未知")
-			+ "；玩家权限=" + _activeAuthorityKind
-			+ "；是否直接回复玩家=" + replyIsDirectPlayerResponse
-			+ "。GCCZ村庄标签不得取代或阻断普通AF与原版标签。";
+		if (GcczTownPromptResourceProvider.UseEnglishPrompt)
+            return "Current village=" + (village?.Name?.ToString() ?? "Unknown")
+                + "; bound settlement=" + (village?.Village?.Bound?.Name?.ToString() ?? "Unknown")
+                + "; player authority=" + _activeAuthorityKind
+                + "; direct reply to player=" + replyIsDirectPlayerResponse
+                + ". GCCZ village tags must not replace or block ordinary AF or native tags.";
+		return SiegeAftermathCompatibilityTexts.Raw("auto_village_210e9ee4acd2") + (village?.Name?.ToString() ?? SiegeAftermathCompatibilityTexts.Raw("auto_village_d9c32a4c3dda"))
+			+ SiegeAftermathCompatibilityTexts.Raw("auto_village_fbc6f6884123") + (village?.Village?.Bound?.Name?.ToString() ?? SiegeAftermathCompatibilityTexts.Raw("auto_village_d9c32a4c3dda"))
+			+ SiegeAftermathCompatibilityTexts.Raw("auto_village_5764d1d108d0") + _activeAuthorityKind
+			+ SiegeAftermathCompatibilityTexts.Raw("auto_village_9c5a9e0b2b31") + replyIsDirectPlayerResponse
+			+ SiegeAftermathCompatibilityTexts.Raw("auto_village_f2b367a5fec9");
 	}
 
 	internal static string NormalizePostprocessTagsForExternal(string raw, List<PostprocessRuleEntry> rules)
@@ -393,7 +399,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 				IncreaseSettlementHealthAction.Apply(village, -village.SettlementHitPoints * (action == VillageAftermathActionKind.Massacre ? 0.8f : 0.5f));
 			}
 
-			string extra = gained > 0 ? "；获得/征集 " + gained + " 单位" : string.Empty;
+			string extra = gained > 0 ? SiegeAftermathCompatibilityTexts.Raw("auto_village_7b6d341a56a4") + gained + SiegeAftermathCompatibilityTexts.Raw("auto_village_d2f9922e1ecb") : string.Empty;
 			uint color = effect.IsDestructive ? DestructiveColor : SuccessColor;
 			InformationManager.DisplayMessage(new InformationMessage(
 				SiegeAftermathUiText.VillageActionApplied(SiegeAftermathUiText.VillageActionName(action), oldHearth.ToString("0"), village.Village.Hearth.ToString("0"), extra),

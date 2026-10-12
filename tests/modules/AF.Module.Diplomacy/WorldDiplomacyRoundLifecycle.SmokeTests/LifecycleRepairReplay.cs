@@ -138,14 +138,14 @@ internal static class LifecycleRepairReplay
     {
         var world = new PlayerWorld(); var orch = new PlayerOrch(world);
         string Submit() => WorldDiplomacyPlayerApplication.Execute(world, new WorldDiplomacyPlayerDocumentCommand("回应原文", 1, "source", "old"), orch);
-        Test.True(Submit().Contains("已经公开发布") && world.Published!.RoundId == "old" && orch.Openings == 0, "normal reply uses original event");
+        Test.True(Submit().Contains((SmokeLocalizationEnvironment.EnglishUi ? "has been published" : "已经公开发布")) && world.Published!.RoundId == "old" && orch.Openings == 0, "normal reply uses original event");
         world.Round.State = "closed";
         Test.True(WorldDiplomacyPresentationQueries.Detail(world.Source, world.Round, world.Player, _ => "today").CanReply,
             "closed foreign public document retains existing reply entry");
-        Test.True(Submit().Contains("已经公开发布") && world.Published!.RoundId == "new" && world.Published.SourceDocumentId == "source"
+        Test.True(Submit().Contains((SmokeLocalizationEnvironment.EnglishUi ? "has been published" : "已经公开发布")) && world.Published!.RoundId == "new" && world.Published.SourceDocumentId == "source"
             && orch.Openings == 1 && world.NewRound.RootDocumentId == world.Published.DocumentId, "late reply publishes once as independent root");
         world.Player = new(1, "p", false, true, "p");
-        Test.True(Submit().Contains("不再是王国统治者") && orch.Openings == 1, "reply submission revalidates ruler before effects");
+        Test.True(Submit().Contains((SmokeLocalizationEnvironment.EnglishUi ? "no longer the ruler of your kingdom" : "不再是王国统治者")) && orch.Openings == 1, "reply submission revalidates ruler before effects");
     }
 
     private static void TreatyClauses()

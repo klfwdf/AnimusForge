@@ -3,6 +3,7 @@
 import json
 import re
 import subprocess
+import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -10,6 +11,21 @@ ROOT = Path(__file__).resolve().parents[3]
 BASELINE = "c8b6c652ebeaf43e0f503298ec3a76f9b60505f1"
 DIRECTORY = ROOT / "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath"
 HELPER = (DIRECTORY / "CastleAftermathUiText.cs").read_text(encoding="utf-8-sig")
+sys.path.insert(0, str(ROOT / "tools/localization"))
+from inventory_untranslated import decode
+
+
+def restore_compatibility_literals(source):
+    # Keep the full historical source comparison; a changed resource value
+    # must still fail it after these exact getter calls are reversed.
+    folder = ROOT / "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData"
+    tables = {prefix: json.loads((folder / (prefix + "AftermathCompatibility.json")).read_text("utf-8-sig"))
+              for prefix in ("Castle", "Siege")}
+    def replace(match):
+        value = tables[match[1]][match[2]]
+        assert isinstance(value, str), match[0]
+        return json.dumps(value, ensure_ascii=False)
+    return re.sub(r'(Castle|Siege)AftermathCompatibilityTexts.Raw\("([^"\r\n]+)"\)', replace, source)
 
 
 def main():
@@ -76,7 +92,42 @@ def main():
         path = DIRECTORY / filename
         current = path.read_text(encoding="utf-8-sig").strip()
         baseline = subprocess.check_output(["git", "show", BASELINE + ":" + path.relative_to(ROOT).as_posix()], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n").strip()
-        assert notice.sub("<notice>", current) == notice.sub("<notice>", baseline), f"Changed source outside notification: {filename}"
+        restored = restore_compatibility_literals(current)
+        # Residual UI fields and Prompt-only relief projection are textual adapters.
+        restored = re.sub(r'\(GcczLocalizedResourceLoader.UseChineseInterface \? (\w+Profile\.\w+) : \1En\)', r'\1', restored)
+        restored = re.sub(r'GcczLocalizedResourceLoader.UseChineseInterface \? (soldierProfile\.\w+) : \1En', r'\1', restored)
+        restored = re.sub(r'GcczLocalizedResourceLoader.UseChineseInterface \? (SiegeLootAccountingProfile\.MassacreActionName) : \1En', r'\1', restored)
+        restored = restored.replace('DescribeSharedCivilianReliefPoolForContext(forPrompt: true)', 'DescribeSharedCivilianReliefPoolForContext()').replace('DescribeSharedCivilianReliefPoolForContext(bool forPrompt = false)', 'DescribeSharedCivilianReliefPoolForContext()')
+        restored = restored.replace('SiegeSharedReliefPoolFormatter.DescribeForContext(BuildSharedCivilianReliefPoolFacts(), isEnglish: forPrompt && GcczTownPromptResourceProvider.UseEnglishPrompt)', 'SiegeSharedReliefPoolFormatter.DescribeForContext(BuildSharedCivilianReliefPoolFacts())')
+        restored = restored.replace('forPrompt && GcczTownPromptResourceProvider.UseEnglishPrompt ? SiegeSharedReliefPoolFormatter.UnavailableStatsDescriptionEn : SiegeSharedReliefPoolFormatter.UnavailableStatsDescription', 'SiegeSharedReliefPoolFormatter.UnavailableStatsDescription')
+        if filename == "SiegeAiInterventionBehavior.cs":
+            # Later accepted GCCZ host wiring separates UI, package Prompt and
+            # stable facts. Retain the mutation/log gate after reversing these
+            # exact language adapters, not arbitrary source changes.
+            restored = restored.replace(', isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface', '').replace('isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface', '').replace(', isEnglish: GcczTownPromptResourceProvider.UseEnglishPrompt', '')
+            restored = restored.replace(', textCatalog: GcczTownPromptResourceProvider.GetCatalog()', '')
+            restored = restored.replace(', textCatalog: GcczTownPromptResourceProvider.GetFactCatalog()', '')
+            assert 'SiegeDestructiveInquiryProfile.BuildInquiryFact(sourceName, reason, textCatalog: GcczTownPromptResourceProvider.GetFactCatalog())' in current, 'private-history facts must use the fixed Chinese catalog'
+            for provider in ("GcczTownPromptResourceProvider", "GcczTownHiddenResidentResourceProvider", "GcczTownActionPresentationResourceProvider"):
+                provider_source = (ROOT / "src/bridges/Siege/Resources" / (provider + ".cs")).read_text(encoding="utf-8-sig")
+                assert re.search(r'GetFactCatalog\(\)\s*=> (?:ChinesePresentation|ChineseCatalog)\.Value;', provider_source), provider + ': saved facts must use canonical Chinese cache'
+            assert 'returnedParts.Add(SiegeSharedReliefPoolFormatter.BuildGoldAmountText(returnedGold));' in current
+            assert 'returnedParts.Add(SiegeSharedReliefPoolFormatter.BuildItemAmountText(amount, item.Name?.ToString() ?? pair.Key));' in current
+            assert 'BuildReturnedToPlayerMemoryText(summary)' in current and 'BuildReturnedToPlayerMemoryText(returnedUiParts)' not in current
+            # UI list is used only by the visible notice; the two original fact
+            # additions, inventory transfer and memory summary remain below.
+            for line in (
+                '\t\t\tList<string> returnedUiParts = new List<string>();\n',
+                '\t\t\t\treturnedUiParts.Add(SiegeSharedReliefPoolFormatter.BuildGoldAmountText(returnedGold));\n',
+                '\t\t\t\treturnedUiParts.Add(SiegeSharedReliefPoolFormatter.BuildItemAmountText(amount, item.Name?.ToString() ?? pair.Key));\n',
+            ):
+                assert restored.count(line) == 1, line
+                restored = restored.replace(line, '')
+            restored = restored.replace('SiegeSharedReliefPoolFormatter.JoinAmountParts(!GcczLocalizedResourceLoader.UseChineseInterface, goldText, itemText)', 'SiegeSharedReliefPoolFormatter.JoinAmountParts(goldText, itemText)')
+            restored = restored.replace('GcczTownPromptResourceProvider.GetFactCatalog()', 'GcczTownPromptResourceProvider.GetCatalog()').replace('GcczTownPromptResourceProvider.GetPresentationCatalog()', 'GcczTownPromptResourceProvider.GetCatalog()')
+            restored = restored.replace('\t\t\t\tTownHiddenResidentTextCatalog factText = GcczTownHiddenResidentResourceProvider.GetFactCatalog();\n\t\t\t\tRecordInterventionMemory(factText.MemoryTitle, factText.BuildMemory(outcome.SpawnedCount));', '\t\t\t\tRecordInterventionMemory(text.MemoryTitle, text.BuildMemory(outcome.SpawnedCount));')
+            restored = restored.replace('GcczTownActionPresentationResourceProvider.GetFactCatalog()', 'GetTownActionPresentationText()')
+        assert notice.sub("<notice>", restored) == notice.sub("<notice>", baseline), f"Changed source outside reviewed language adapter/notification: {filename}"
         direct = current.count("CastleAftermathUiText.")
         assert direct == sum(block.count("CastleAftermathUiText.") for block in notice.findall(current)), filename
         calls += direct
@@ -99,16 +150,36 @@ def main():
     selection = selection_path.read_text(encoding="utf-8-sig").replace("\r\n", "\n")
     selection_baseline = subprocess.check_output(["git", "show", "d650b5e8c:" + selection_path.relative_to(ROOT).as_posix()], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
     profile = (ROOT / "AnimusForge.SiegeAftermathIntervention/SiegeCastleRosterSelectionProfile.cs").read_text(encoding="utf-8-sig")
+    profile = restore_compatibility_literals(profile)
+    historical_profile = subprocess.check_output([
+        "git", "show", "d650b5e8c:AnimusForge.SiegeAftermathIntervention/SiegeCastleRosterSelectionProfile.cs"
+    ], cwd=ROOT).decode("utf-8-sig")
+    english_profile_defaults = {
+        "AvailableRosterTitle": "Select Main Party Troops, Army Commanders / Prisoners",
+        "SelectedRosterTitle": "Castle Aftermath Roster",
+        "ScreenHeader": "Select Troops and Prisoners to Enter Castle",
+    }
     for key, old in (
         ("AF_CASTLE_UI_ROSTER_AVAILABLE", "AvailableRosterTitle"),
         ("AF_CASTLE_UI_ROSTER_SELECTED", "SelectedRosterTitle"),
         ("AF_CASTLE_UI_ROSTER_HEADER", "ScreenHeader"),
     ):
-        assert chinese[key] == re.search(r'const string ' + old + r' = "([^"]+)";', profile).group(1), key
+        field = re.search(r'(?:const|static readonly) string ' + old + r' = ("(?:\\.|[^"\\])*");', profile)
+        assert field is not None, old
+        original_field = re.search(r'const string ' + old + r' = ("(?:\\.|[^"\\])*");', historical_profile)
+        assert original_field is not None, old
+        assert chinese[key] == decode(original_field.group(1)), key
+        assert decode(field.group(1)) == english_profile_defaults[old], old
         needle = 'new TextObject("{=' + key + '}' + english[key] + '")'
         assert selection.count(needle) == 1, key
         selection = selection.replace(needle, "new TextObject(SiegeCastleRosterSelectionProfile." + old + ")")
-    assert selection == selection_baseline, "Roster selection rules, limits or callbacks changed outside the three titles"
+    for call in (
+        'SiegeCastleRosterSelectionProfile.BuildLimitMessage(memberCount, prisonerCount, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface)',
+        'SiegeCastleRosterSelectionProfile.BuildPrisonerSceneReadyMessage(_selectedCount, activeCount, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface)',
+    ):
+        assert selection.count(call) == 1, call
+        selection = selection.replace(call, call.replace(', isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface', ''))
+    assert selection == selection_baseline, "Roster selection rules, limits or callbacks changed outside the three titles and UI message language arguments"
     print(f"PASS castle projection keys={len(en)} new={len(en)-23}; notification consumers={calls}; enum/reason/status producer coverage; unchanged facts/logs/persistence outside notices")
 
 

@@ -142,7 +142,7 @@ internal static class PolicyEffectBundleContract
 			string instanceId = (shell.InstanceId ?? string.Empty).Trim();
 			if (instanceId.Length == 0 || !IsFinite(shell.StartDay) || !IsFinite(shell.EndDay))
 			{
-				error = "policy effect 目标壳缺少有效 instanceId 或期限";
+				error = "Policy effect target shell missing valid instanceId or duration";
 				return false;
 			}
 			if (!byInstanceId.TryGetValue(instanceId, out PolicyEffectInstanceSaveData aggregate))
@@ -155,7 +155,7 @@ internal static class PolicyEffectBundleContract
 			}
 			if (!AreCompatibleShellInstances(aggregate, shell))
 			{
-				error = "同一 policy effect instanceId 的目标壳数据不一致: " + instanceId;
+				error = "Target shell data inconsistent for policy effect instanceId: " + instanceId;
 				return false;
 			}
 			aggregate.TargetSet = MergeTargetSets(aggregate.TargetSet, shell.TargetSet);

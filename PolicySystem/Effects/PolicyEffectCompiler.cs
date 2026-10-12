@@ -962,7 +962,7 @@ internal static class PolicyEffectCompiler
 				? request.EndDay != 0f
 				: request.EndDay <= request.StartDay))
 		{
-			error = "policy effect compiler request 无效";
+			error = "Policy effect compiler request is invalid";
 			return false;
 		}
 		request.Scope = request.Scope.Trim();
@@ -1103,18 +1103,18 @@ internal static class PolicyEffectCompiler
 		error = string.Empty;
 		if (ContainsTypeMetadata(payload))
 		{
-			error = "policy effect payload 不得包含 $type 元数据";
+			error = "Policy effect payload must not contain $type metadata";
 			return false;
 		}
 		int payloadBytes = Encoding.UTF8.GetByteCount(payload?.ToString(Formatting.None) ?? "null");
 		if (payloadBytes > request.MaxPayloadBytes)
 		{
-			error = "单个 policy effect payload 不得超过 " + request.MaxPayloadBytes + " bytes";
+			error = "Single policy effect payload must not exceed " + request.MaxPayloadBytes + " bytes";
 			return false;
 		}
 		if (totalPayloadBytes > request.MaxTotalPayloadBytes - payloadBytes)
 		{
-			error = "policy effect payload 总量不得超过 " + request.MaxTotalPayloadBytes + " bytes";
+			error = "Total policy effect payload must not exceed " + request.MaxTotalPayloadBytes + " bytes";
 			return false;
 		}
 		totalPayloadBytes += payloadBytes;
@@ -1132,7 +1132,7 @@ internal static class PolicyEffectCompiler
 		error = string.Empty;
 		if (module == null || rawPayload == null || rawPayload.Type == JTokenType.Null)
 		{
-			error = "效果 payload 不能为空";
+			error = "Effect payload cannot be empty";
 			return false;
 		}
 

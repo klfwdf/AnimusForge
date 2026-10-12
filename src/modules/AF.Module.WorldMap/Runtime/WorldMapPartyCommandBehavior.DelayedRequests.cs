@@ -67,7 +67,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (!TryOpenCreateCompanionParty(hero, request.FollowUpCommands, out string message))
 		{
-			LogFact(hero, GetHeroName(hero) + "无法创建同伴部队：" + message);
+			LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0003") + message);
 		}
 	}
 
@@ -206,7 +206,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (!TryCreateGovernorExpeditionNow(hero, request.OriginSettlementId, request.OriginClanId, request.FollowUpCommands, out string message))
 		{
-			LogFact(hero, GetHeroName(hero) + "无法组建总督远征队：" + message);
+			LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0005") + message);
 		}
 	}
 
@@ -413,7 +413,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			if (fromCancel)
 			{
-				LogFact(hero, GetHeroName(hero) + "的同伴部队创建已取消，后续大地图命令未执行。");
+				LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0233"));
 				return;
 			}
 			Hero partyHero = FindHeroInRoster(leftMemberRoster) ?? hero;
@@ -425,12 +425,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			createdParty = MobilePartyHelper.CreateNewClanMobileParty(partyHero, partyHero.Clan);
 			if (!IsPartyUsable(createdParty) || createdParty.LeaderHero != partyHero)
 			{
-				throw new InvalidOperationException("新任务队伍未能正确建立。");
+				throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0234"));
 			}
 			RegisterPlayerDetachedParty(partyHero, createdParty);
 			int movedMembers = MoveSelectedTroopsToCreatedParty(createdParty, partyHero, leftMemberRoster, rightOwnerParty);
 			int movedPrisoners = MoveSelectedPrisonersToCreatedParty(createdParty, leftPrisonRoster, rightOwnerParty);
-			LogFact(partyHero, GetHeroName(partyHero) + "已经创建同伴部队，并接收了" + movedMembers + "名士兵" + (movedPrisoners > 0 ? ("、" + movedPrisoners + "名俘虏") : "") + "。");
+			LogFact(partyHero, GetHeroName(partyHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0235") + movedMembers + WorldMapSourceTexts.Get("raw_literals.wm_lit_0236") + (movedPrisoners > 0 ? ("、" + movedPrisoners + WorldMapSourceTexts.Get("raw_literals.wm_lit_0237")) : "") + "。");
 			if (followUpCommands != null && followUpCommands.Count > 0)
 			{
 				if (TryAppendQueue(partyHero, followUpCommands, out string fact, out string queueMessage, out _))
@@ -443,7 +443,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					LogFact(partyHero, GetHeroName(partyHero) + "创建同伴部队后无法接续后续大地图命令：" + queueMessage);
+					LogFact(partyHero, GetHeroName(partyHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0238") + queueMessage);
 				}
 			}
 		}
@@ -453,7 +453,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			if (hero != null)
 			{
 				EnsureHeroRemainsAvailableAfterCreateFailure(hero, createdParty);
-				LogFact(hero, GetHeroName(hero) + "创建同伴部队失败：" + ex.Message);
+				LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0239") + ex.Message);
 			}
 		}
 	}

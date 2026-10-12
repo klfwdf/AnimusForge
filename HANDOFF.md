@@ -1,4 +1,28 @@
+# 当前交接：双语回归修正版 EN 已部署；远端 main 融合已预审（2026-10-12）
+
+- 本轮切片 `1ffb30f620594bebfdc1955f59fe86df97e89487`：修复实际EN对话请求、控件和上下文识别，AF运行数据按用途回模组；后续双语和双包命名已写skill/AGENTS。两实现+Bootstrap/Coup、完整CN/EN投影、当前EN安装SHA与真实DLL回放通过；实机/provider/旧档和正式ZIP未验。
+- 远端 main `a9013b705` 64提交/104路径已只读审查/三方预览，口头外交双方同意、取消job请求、双语接线三缺口应先处理；未拉取融合或push，main和原暂存不变。
+- 当前有效状态见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bilingual-runtime-maintenance-20261012)、[职责图](docs/architecture/af-framework-code-scope.md#bilingual-runtime-maintenance-20261012)与[交付](docs/handoffs/2026-10-12-bilingual-runtime-maintenance.md)。下面原交接保留为已被本条接续的历史。
+
+# 当前交接：EN 版已部署（2026-10-12，DEPLOYED_EN / IN_GAME_NOT_VERIFIED）
+
+- 用户要求部署 EN 并明确“不用备份”。使用已验收 Release 双 API / Bootstrap，完整 EN 投影 3518 文件，实际更新 3353 文件；3 DLL 与全部标准文件哈希核对通过，2561 个原未列入部署文件逐字节保留。目标为 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，版本 `v1.5.7`；Prompt/世界书 EN，UI 仍双语。
+- 完整投影发现10个阻断，补1个物品名双语键并翻译9份XML的123条注释；控件非注释字节、物品ID/属性及原语言键保持，双TW各632解析PASS。十二文件均非嵌入资源，C#和3 DLL未变；源码/DLL门禁按冻结哈希复用，原完整EN内容门禁实际PASS。按用户要求使用任务内直接原子替换，未新增游戏部署备份；原一键脚本未改。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-deployment-20261012)；[部署验收](docs/handoffs/2026-10-12-en-deployment.md)；[代码边界](docs/architecture/af-framework-code-scope.md#en-deployment-20261012)。游戏未启动，实机/旧档/全量语义/正式ZIP仍未验。下方“未部署”是本条之前的历史；本轮源码可 focused inverse，旧安装未留新备份。
+
+# 当前交接：Policy 接手修复与全仓双语化离线验收（2026-10-12，OFFLINE_VERIFIED / NOT_RELEASE_READY）
+
+- 用户确认 Policy 外部写入停止后已接手修复：542 个解码后运行汉字位置清零，所有产品范围为 0；UI 随界面、Prompt 随包，兼容原值与动态姓名保留。修复政策目标/日期/知识过滤/legacy 请求/周报消费及英文设置说明与 fallback，新增 3 条标准资源映射。
+- 原源码与两份实际 DLL 英文发行门禁、双 API Release / Bootstrap / Coup gate、44 项静态契约均 PASS；原政策全模块双 API × 英文/中文各 1491 断言、18 模块 PASS。两实现仍各 363 警告 / 0 错误，未屏蔽警告。Jev 已按用户指令在本会话启用，一次 14 项定向复核，不能代替全仓语义/实机验收。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#policy-bilingual-closeout-20261012)；[修复与验证报告](docs/handoffs/2026-10-12-policy-bilingual-closeout.md)；[职责图](docs/architecture/af-framework-code-scope.md#policy-bilingual-closeout-20261012)；[本轮本地切片与回滚收据](artifacts/policy-bilingual-closeout-20261012/local-slice-commits.json)。未验实机、真实 provider、旧档、全部语句或正式双包；未打包、部署、镜像、推送。下方 Policy 阻断及旧交接均为历史，由本条明确接续；只回滚本轮 focused 增量，不能覆盖其他作者的 dirty 工作树。
+
+# 当前交接：全仓双语化审查修复（2026-10-12，OFFLINE_VERIFIED / POLICY_BLOCKED）
+
+- 主线与已交付GCCZ的真实缺键、UI/Prompt选版、动态slot、canonical协议、资源消费与原值损失已修；GCCZ源码解码汉字0。最终双API各0错误/363警告，Bootstrap/双Coup gate、39对UI两版各50940解析、44静态合同通过。全仓EN门禁仍被Policy542处阻断，外部施工按约定只读登记；未验实机、真实provider、旧档、逐句语义或正式双包，未部署/推送。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bilingual-full-audit-20261012)；[完整修复与证据](docs/handoffs/2026-10-12-full-bilingual-audit.md)；[代码职责图](docs/architecture/af-framework-code-scope.md#bilingual-full-audit-20261012)。仅本地分支 `codex/bilingual-audit-20261012-slices` 与focused inverse保存本轮增量，不能用其baseline覆盖全部dirty工作树。下方旧交接保留为历史，当前口径以上述主台账为准。
+
 # 当前交接：全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
+- 2026-10-11接管批已验：修资源/640旧英文键/三处编译错误；整合DuelSettings、Coup、Knowledge、WorldMap及Records，最终双API/Bootstrap/Coup门禁PASS；两份实际DLL各16政策显示+548嵌入值，语言DLL各48,384解析PASS。B世界书映射已接线，3133对契约最终通过，62项隔离ZIP投影PASS。源码快照16028中文位置、1072待消费者核查，仍非漏译完成率。[本轮主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#2026-10-11-接管与恢复active基线-97ad1ed14)，[剩余盘点](artifacts/localization-takeover-20261011/inventory/REPORT.md)。下一片为WorldEntity知识上下文与未接线Prompt目录；保留stash与B资产，全量目标ACTIVE，实机/旧档/正式双包未验，未部署/推送。
 - 当前主线`d00e33d07`：全模组中文硬编码外置/双语目标继续，B/C由用户派发外部；内战事实/显示、图库新物品名、债务/决斗已完成源码接线，27资源对和专项静态/既有双API资源解析PASS。全量20860位置/590文件（起始22357，含并行修改），不以UI清零当完成。Player默认规则语义差异、兼容词表EN门禁及大量运行时文本仍OPEN；当前产品编译/实机/正式包NOT-RUN。[主台账当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)，[切片与代码证据](docs/handoffs/2026-10-10-localization-mainline-integration.md)。下文旧进度按历史保留。
 - 主线已接收政策C `19f11c941`（20文件/621对键），raw/display及失败边界修复；raw30/模块90/失败92/oracle272项、26资源对、既有双API各2484资源解析PASS。城堡选择器/处刑显示 `b8ad0a54a`（7对键）已交付。稳定盘点confirmed UI 0/待审1250位置，不是全英文完成率；E待最终回执，当前编译/实机/正式双包NOT-RUN。[最新主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
 

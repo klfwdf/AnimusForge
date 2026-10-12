@@ -37,7 +37,7 @@ internal static class NativeConversationMainReplyStage
         }
         if (string.IsNullOrWhiteSpace(output))
             return new NativeConversationMainReplyResult(NativeConversationMainReplyStatus.EmptyReply, "");
-        if (output.StartsWith("（错误") || output.StartsWith("（程序错误") || output.StartsWith("（API请求失败") || output.StartsWith("（API响应格式错误"))
+        if (output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0623")) || output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0624")) || output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0625")) || output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0626")))
         {
             host.ReportProviderFailure(output.Trim());
             return new NativeConversationMainReplyResult(NativeConversationMainReplyStatus.ProviderFailure, output.Trim());

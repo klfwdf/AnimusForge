@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -151,7 +152,7 @@ internal static class WorldDiplomacyThreatBindingApplication
             existing.ObligationClaimedDay = 0;
             existing.ResolutionReason = "";
             applyNationalPrestigeDelta?.Invoke(issuerKingdomId, escalationPrestigeReward, document,
-                "在谴责遭拒后按承诺升级为最后通牒");
+                DiplomacyMiscPromptTexts.Get("Threat_EscalateToUltimatumAfterDenunciationRejected", "Escalated to ultimatum as promised after denunciation rejected"));
             log?.Invoke("diplomatic warning escalated to ultimatum threat=" + existing.ThreatId
                 + " issuer=" + issuerKingdomId + " target=" + targetKingdomId);
             return true;
@@ -219,7 +220,7 @@ internal static class WorldDiplomacyThreatBindingApplication
         if (enforced != null)
         {
             applyNationalPrestigeDelta?.Invoke(authorKingdomId, ultimatumWarPrestigeReward, document,
-                "在对方拒绝最后通牒后兑现宣战承诺");
+                DiplomacyMiscPromptTexts.Get("Threat_DeclareWarAfterUltimatumRejected", "Fulfilled war promise after opponent rejected ultimatum"));
             enforced.Status = "enforced";
             enforced.ResolutionRoundId = document.RoundId ?? "";
             enforced.ResolutionDocumentId = document.DocumentId ?? "";

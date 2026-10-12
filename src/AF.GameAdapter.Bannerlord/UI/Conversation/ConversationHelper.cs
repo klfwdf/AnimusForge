@@ -227,12 +227,12 @@ public static class ConversationHelper
 				_vmCaptureCount++;
 				if (_vmCaptureCount <= 3)
 				{
-					Logger.LogTrace("ConversationHelper", $"✅ VM 捕获 #{_vmCaptureCount}。Prop={_dialogTextProp != null}, Field={_dialogTextField != null}, OnPropChanged={_onPropertyChangedMethod != null}, VM类型={type.FullName}");
+					Logger.LogTrace("ConversationHelper", $"✅ VM captured #{_vmCaptureCount}. Prop={_dialogTextProp != null}, Field={_dialogTextField != null}, OnPropChanged={_onPropertyChangedMethod != null}, VM type={type.FullName}");
 				}
 			}
 			catch (Exception ex)
 			{
-				Logger.LogTrace("ConversationHelper", "❌ 获取 DialogText 属性/字段失败: " + ex.Message);
+				Logger.LogTrace("ConversationHelper", "❌ Failed to retrieve DialogText property/field: " + ex.Message);
 			}
 		}
 		ApplyNameLabelToVM();
@@ -263,13 +263,13 @@ public static class ConversationHelper
 		{
 			StopTypewriterNoLock(clearText: true);
 		}
-		Logger.LogTrace("ConversationHelper", "\ud83d\udd04 BeginStreaming - 流式传输开始");
+		Logger.LogTrace("ConversationHelper", "\ud83d\udd04 BeginStreaming - Streaming started");
 	}
 
 	public static void EndStreaming()
 	{
 		_isStreaming = false;
-		Logger.LogTrace("ConversationHelper", $"✅ EndStreaming - 流式传输结束 (TickApply={_tickApplyCount}, RefreshReapply={_refreshReapplyCount})");
+		Logger.LogTrace("ConversationHelper", $"✅ EndStreaming - Streaming ended (TickApply={_tickApplyCount}, RefreshReapply={_refreshReapplyCount})");
 	}
 
 	internal static void EndStreaming(object owner)
@@ -422,7 +422,7 @@ public static class ConversationHelper
 			_tickApplyCount++;
 			if (_tickApplyCount <= 5)
 			{
-				Logger.LogTrace("ConversationHelper", $"\ud83d\udcdd Tick #{_tickApplyCount} 应用文本 (len={text.Length}, VM={_currentVM != null}, Prop={_dialogTextProp != null})");
+				Logger.LogTrace("ConversationHelper", $"\ud83d\udcdd Tick #{_tickApplyCount} Applied text (len={text.Length}, VM={_currentVM != null}, Prop={_dialogTextProp != null})");
 			}
 			ApplyTextToVM(text);
 			ApplyNameLabelToVM();
@@ -646,7 +646,7 @@ public static class ConversationHelper
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("ConversationHelper", "❌ ApplyTextToVM 失败: " + ex.Message);
+			Logger.LogTrace("ConversationHelper", "❌ ApplyTextToVM failed: " + ex.Message);
 		}
 	}
 

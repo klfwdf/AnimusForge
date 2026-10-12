@@ -182,7 +182,7 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 				update.Record,
 				currentDay,
 				generationPending,
-				GcczTownPromptResourceProvider.GetCatalog());
+				GcczTownPromptResourceProvider.GetPresentationCatalog());
 		}
 		catch (Exception ex)
 		{
@@ -268,7 +268,7 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 				if (update.CultureChanged)
 					Store.TryRecordConfirmedEvent(settlement.StringId, new SettlementRuleMemoryFact(
 						"culture:" + update.Record.CurrentRule.Evolution.Revision,
-						"城镇文化已变更为“" + settlement.Culture?.Name + "”（当时领主：“" + settlement.OwnerClan?.Leader?.Name + "”）。",
+						SiegeAftermathCompatibilityTexts.Raw("culture_changed") + settlement.Culture?.Name + SiegeAftermathCompatibilityTexts.Raw("culture_changed_tail") + settlement.OwnerClan?.Leader?.Name + SiegeAftermathCompatibilityTexts.Raw("culture_changed_end"),
 						GetCurrentCampaignDay()));
 			}
 			if (update.Accepted)
@@ -325,7 +325,7 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 			{
 				ObserveCurrentRule(settlement, null, day);
 				Store.TryRecordConfirmedEvent(settlement.StringId, new SettlementRuleMemoryFact(eventId,
-					"当时领主：“" + settlement.OwnerClan?.Leader?.Name + "”。" + fact, day));
+					SiegeAftermathCompatibilityTexts.Raw("owner_at_time") + settlement.OwnerClan?.Leader?.Name + SiegeAftermathCompatibilityTexts.Raw("owner_at_time_end") + fact, day));
 			}
 		}
 		catch (Exception ex) { Logger.Log("GcczTownRuleMemory", "Confirmed event capture failed: " + ex.Message); }
@@ -348,7 +348,7 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 				{
 					Store.TryRecordConfirmedEvent(settlement.StringId, new SettlementRuleMemoryFact(
 						"owner:" + update.Record.CurrentRule.Evolution.Revision,
-						"城镇领主由“" + (oldOwner?.Name?.ToString() ?? "未知") + "”变为“" + newOwner.Name + "”。", day));
+						SiegeAftermathCompatibilityTexts.Raw("owner_changed_prefix") + (oldOwner?.Name?.ToString() ?? SiegeAftermathCompatibilityTexts.Raw("unknown")) + SiegeAftermathCompatibilityTexts.Raw("owner_changed_middle") + newOwner.Name + SiegeAftermathCompatibilityTexts.Raw("owner_changed_end"), day));
 					ChangedSettlementIds.Enqueue(settlement.StringId);
 				}
 			}
