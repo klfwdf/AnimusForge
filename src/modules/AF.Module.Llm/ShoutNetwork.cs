@@ -710,6 +710,7 @@ public static class ShoutNetwork
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
 		messages = PrimaryChatMessagePolicy.EnsureFinalUserTurn(messages, out string originalLastRole);
+		PromptLanguageAudit.Log("primary_non_stream", messages);
 		LogNormalizedMessageTail("non_stream", originalLastRole, messages);
 		Stopwatch sw = Stopwatch.StartNew();
 		int msgCount = messages?.Count ?? 0;
@@ -934,6 +935,7 @@ public static class ShoutNetwork
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
 		messages = PrimaryChatMessagePolicy.EnsureFinalUserTurn(messages, out string originalLastRole);
+		PromptLanguageAudit.Log("primary_stream", messages);
 		LogNormalizedMessageTail("stream", originalLastRole, messages);
 		PlayerReferenceStreamFilter outputFilter = new PlayerReferenceStreamFilter();
 		StringBuilder fullText = new StringBuilder();
