@@ -14,6 +14,7 @@
 - 后续修正 `fad94b1e8` 清掉 EN Prompt 中残留的乱码/中文自然语言片段（当前 `content/**/*.en.json` 不再含替换字符）；AFEF/稳定标签仍按协议原值保留，不能当作自然语言翻译缺口。
 - 增量 `1d33282c7` 在主请求发送前接入 `PromptLanguageAudit`：固定 system Prompt 中未投影中文会记录 `unprojectedSystem`，动态历史/玩家内容单独计数并保持原值；协议标签白名单放行，不改存档或请求正文。1.4 Debug 编译 0 错误/363 警告。
 - `640135a30` 收敛项目规范与双语 skill：后续运行内容任务必须先读本地双语 skill，只维护 CN/EN；并将记忆事实投影改为显式 `PromptFactRecord(FactKind + 参数 + 原文)`，已知模板按包语言渲染，未知内容保留原文。`BilingualFactRecallReplay` CN/EN 各 1462 项通过，1.4 Debug 编译 0 错误/363 警告。
+- `cb8128b0b` 将信使事实也通过 typed prompt record 渲染；`d3db28a0b` 接入外交 messages 语言审计；`9452a4cfd` 接入世界快报 system/user Prompt pair 审计。1.4 Debug 构建均为 0 错误/363 警告；运行时审计只记录，不阻断动态中文输入。
 # 当前交接：EN 运行时文本投影补全与 EN 安装（2026-10-13，OFFLINE_VERIFIED / DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
 
 - 修复 EN 包下仍显示中文的运行时文本：终端子选项入口、外交宣言索引标题、世界快报事实句、事件捕获参与者角色、公开处决周报句、家族首领记忆。写入端原句与存档身份不变，投影只在读取/组句边界；CN 词表下输出对改动前逐字相同，EN 无汉字。
