@@ -797,5 +797,22 @@
   "policy_weekly_label_vassal": "玩家附庸政策",
   "policy_weekly_no_numeric_change": "无持续数值变化",
   "memory_diplomacy_oral_delayed": "此前答应的外交宣言尚未发布，待重新拟文；约定条款没有改变。",
-  "memory_diplomacy_oral_withdrawal": "我已明确同意撤回此前的公开外交提案，待正式撤回宣言发布；原案尚未因此失效。"
+  "memory_diplomacy_oral_withdrawal": "我已明确同意撤回此前的公开外交提案，待正式撤回宣言发布；原案尚未因此失效。",
+  "campaign_kill_clan_member": "{0}所在的{1}家族失去了{2}。",
+  "campaign_kill_clan_tail_0000": "其公开处决。",
+  "campaign_kill_clan_tail_0001": "其公开处决，罪名为{1}。",
+  "campaign_kill_clan_tail_0010": "其以{1}公开处决。",
+  "campaign_kill_clan_tail_0011": "其以{1}公开处决，罪名为{2}。",
+  "campaign_kill_clan_tail_0100": "其由{1}公开处决。",
+  "campaign_kill_clan_tail_0101": "其由{1}公开处决，罪名为{2}。",
+  "campaign_kill_clan_tail_0110": "其由{1}以{2}公开处决。",
+  "campaign_kill_clan_tail_0111": "其由{1}以{2}公开处决，罪名为{3}。",
+  "campaign_kill_clan_tail_1000": "其在{1}公开处决。",
+  "campaign_kill_clan_tail_1001": "其在{1}公开处决，罪名为{2}。",
+  "campaign_kill_clan_tail_1010": "其在{1}以{2}公开处决。",
+  "campaign_kill_clan_tail_1011": "其在{1}以{2}公开处决，罪名为{3}。",
+  "campaign_kill_clan_tail_1100": "其在{1}由{2}公开处决。",
+  "campaign_kill_clan_tail_1101": "其在{1}由{2}公开处决，罪名为{3}。",
+  "campaign_kill_clan_tail_1110": "其在{1}由{2}以{3}公开处决。",
+  "campaign_kill_clan_tail_1111": "其在{1}由{2}以{3}公开处决，罪名为{4}。"
 }

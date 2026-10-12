@@ -104,24 +104,24 @@ internal void RecordKingdomDestroyedMaterial(Kingdom destroyedKingdom, string so
 		{
 			return;
 		}
-		string kingdomDisplayName = GetKingdomDisplayName(destroyedKingdom, AdapterRecordTexts.Raw("AF_REC_Bulletin_0001"));
+		string kingdomDisplayName = GetKingdomDisplayName(destroyedKingdom, AdapterRecordTexts.Prompt("AF_REC_Bulletin_KingdomFallback"));
 		string text = BuildKingdomDestroyedSnapshotText(destroyedKingdom, GetLastKingdomRulingClan(destroyedKingdom));
 		string stableKey = "kingdom_destroyed:" + kingdomId;
-		_record().RecordEventSourceMaterial("kingdom_destroyed", AdapterRecordTexts.Raw("AF_REC_Bulletin_0002") + kingdomDisplayName, text, stableKey, kingdomId, "", includeInWorld: true, includeInKingdom: true);
+		_record().RecordEventSourceMaterial("kingdom_destroyed", AdapterRecordTexts.PromptFormat("AF_REC_Bulletin_KingdomDestroyedLabel", ("KINGDOM", kingdomDisplayName)), text, stableKey, kingdomId, "", includeInWorld: true, includeInKingdom: true);
 		Logger.Log("EventMaterial", "[KINGDOM_DESTROYED] source=" + (source ?? "") + " kingdom=" + kingdomId + " name=" + kingdomDisplayName);
 	}
 
 internal static string BuildKingdomDestroyedSnapshotText(Kingdom destroyedKingdom, Clan rulingClan)
 	{
-		string kingdomDisplayName = GetKingdomDisplayName(destroyedKingdom, AdapterRecordTexts.Raw("AF_REC_Bulletin_0001"));
+		string kingdomDisplayName = GetKingdomDisplayName(destroyedKingdom, AdapterRecordTexts.Prompt("AF_REC_Bulletin_KingdomFallback"));
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(kingdomDisplayName).Append(AdapterRecordTexts.Raw("AF_REC_Bulletin_0004"));
+		stringBuilder.Append(AdapterRecordTexts.PromptFormat("AF_REC_Bulletin_KingdomDestroyedBody", ("KINGDOM", kingdomDisplayName)));
 		if (rulingClan != null)
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Bulletin_0005")).Append(GetClanDisplayName(rulingClan)).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.PromptFormat("AF_REC_Bulletin_KingdomDestroyedRulingClan", ("CLAN", GetClanDisplayName(rulingClan))));
 			if (rulingClan.Leader != null)
 			{
-				stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Bulletin_0006")).Append(GetHeroDisplayName(rulingClan.Leader)).Append("。");
+				stringBuilder.Append(AdapterRecordTexts.PromptFormat("AF_REC_Bulletin_KingdomDestroyedLastRuler", ("HERO", GetHeroDisplayName(rulingClan.Leader))));
 			}
 		}
 		List<string> clans = new List<string>();
@@ -134,7 +134,7 @@ internal static string BuildKingdomDestroyedSnapshotText(Kingdom destroyedKingdo
 		}
 		if (clans.Count > 0)
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Bulletin_0007")).Append(string.Join("、", clans)).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.PromptFormat("AF_REC_Bulletin_KingdomDestroyedClans", ("LIST", string.Join(AdapterRecordTexts.Prompt("AF_REC_Bulletin_ListSeparator"), clans))));
 		}
 		List<string> settlements = new List<string>();
 		try
@@ -146,11 +146,11 @@ internal static string BuildKingdomDestroyedSnapshotText(Kingdom destroyedKingdo
 		}
 		if (settlements.Count > 0)
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Bulletin_0008")).Append(string.Join("、", settlements)).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.PromptFormat("AF_REC_Bulletin_KingdomDestroyedFiefs", ("LIST", string.Join(AdapterRecordTexts.Prompt("AF_REC_Bulletin_ListSeparator"), settlements))));
 		}
 		else
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Bulletin_0009"));
+			stringBuilder.Append(AdapterRecordTexts.Prompt("AF_REC_Bulletin_KingdomDestroyedNoFiefs"));
 		}
 		return stringBuilder.ToString().Trim();
 	}
@@ -254,7 +254,7 @@ internal void OnWorldBulletinWarDeclared(IFaction faction1, IFaction faction2, D
 			string sentence = WorldBulletinCampaignMaterialPolicy.WarSentence(GetKingdomDisplayName(k1), GetKingdomDisplayName(k2));
 			string detailText = WorldBulletinCampaignMaterialPolicy.WarDetail(GetHeroDisplayName(k1.Leader), GetHeroDisplayName(k2.Leader), WorldBulletinCampaignMaterialPolicy.WarReason(detail.ToString()));
 			CaptureWorldBulletinEvent("war_declared", "war:" + GetKingdomId(k1) + ":" + GetKingdomId(k2) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("war_declared"), sentence, false,
-				"diplomacy:" + WorldBulletinPairKey(k1, k2), detailText, BulletinParticipants((k1.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0010")), (k2.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0011"))), GetKingdomId(k1), GetKingdomId(k2));
+				"diplomacy:" + WorldBulletinPairKey(k1, k2), detailText, BulletinParticipants((k1.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleWarDeclarer")), (k2.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleWarTarget"))), GetKingdomId(k1), GetKingdomId(k2));
 		}
 		catch (Exception ex)
 		{
@@ -278,7 +278,7 @@ internal void OnWorldBulletinMakePeace(IFaction side1, IFaction side2, MakePeace
 			string sentence = WorldBulletinCampaignMaterialPolicy.PeaceSentence(GetKingdomDisplayName(k1), GetKingdomDisplayName(k2));
 			string detailText = WorldBulletinCampaignMaterialPolicy.PeaceDetail(GetKingdomDisplayName(k1), GetHeroDisplayName(k1.Leader), GetKingdomDisplayName(k2), GetHeroDisplayName(k2.Leader), detail == MakePeaceAction.MakePeaceDetail.ByKingdomDecision);
 			if (CaptureWorldBulletinEvent("peace_made", "peace:" + GetKingdomId(k1) + ":" + GetKingdomId(k2) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("peace_made"), sentence, false,
-				"diplomacy:" + WorldBulletinPairKey(k1, k2), detailText, BulletinParticipants((k1.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0012")), (k2.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0013"))), GetKingdomId(k1), GetKingdomId(k2)))
+				"diplomacy:" + WorldBulletinPairKey(k1, k2), detailText, BulletinParticipants((k1.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RolePeaceFirst")), (k2.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RolePeaceSecond"))), GetKingdomId(k1), GetKingdomId(k2)))
 			{
 				ApplyWorldBulletinStability(GetKingdomId(k1), 2);
 				ApplyWorldBulletinStability(GetKingdomId(k2), 2);
@@ -305,15 +305,15 @@ internal void OnWorldBulletinSettlementOwnerChanged(Settlement settlement, bool 
 			string name = GetSettlementDisplayName(settlement);
 			bool involvesPlayer = IsWorldBulletinPlayerHero(newOwner) || IsWorldBulletinPlayerHero(oldOwner) || IsWorldBulletinPlayerHero(capturerHero);
 			string key = "settlement:" + GetSettlementId(settlement) + ":" + GetHeroId(newOwner) + ":" + GetCurrentGameDayIndexSafe();
-			string oldName = GetKingdomDisplayName(oldKingdom, GetClanDisplayName(oldOwner?.Clan) + AdapterRecordTexts.Raw("AF_REC_Bulletin_0014"));
-			string newName = GetKingdomDisplayName(newKingdom, GetClanDisplayName(newOwner?.Clan) + AdapterRecordTexts.Raw("AF_REC_Bulletin_0015"));
+			string oldName = GetKingdomDisplayName(oldKingdom, GetClanDisplayName(oldOwner?.Clan) + AdapterRecordTexts.Prompt("AF_REC_Bulletin_ClanSuffix"));
+			string newName = GetKingdomDisplayName(newKingdom, GetClanDisplayName(newOwner?.Clan) + AdapterRecordTexts.Prompt("AF_REC_Bulletin_ClanSuffix"));
 			string settlementGroup = "siege:" + GetSettlementId(settlement);
 			string ownerDetail = WorldBulletinCampaignMaterialPolicy.OwnerDetail(settlement.IsTown, oldOwner != null, GetHeroDisplayName(oldOwner), WorldBulletinHeroTitle(oldOwner), newOwner != null, GetHeroDisplayName(newOwner), WorldBulletinHeroTitle(newOwner));
 			if (detail == ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.BySiege)
 			{
 				Hero actor = capturerHero ?? newOwner;
 				string sentence = WorldBulletinCampaignMaterialPolicy.SiegeSentence(GetHeroDisplayName(actor), name, oldName, newName);
-			if (CaptureWorldBulletinEvent("settlement_siege", key, WorldBulletinCampaignMaterialPolicy.SiegePriority(settlement.IsTown), sentence, involvesPlayer, settlementGroup, ownerDetail + AdapterRecordTexts.Raw("AF_REC_Bulletin_0016") + GetHeroDisplayName(actor), BulletinParticipants((actor, AdapterRecordTexts.Raw("AF_REC_Bulletin_0017")), (oldOwner, AdapterRecordTexts.Raw("AF_REC_Bulletin_0018")), (newOwner, AdapterRecordTexts.Raw("AF_REC_Bulletin_0019"))), newId, oldId))
+			if (CaptureWorldBulletinEvent("settlement_siege", key, WorldBulletinCampaignMaterialPolicy.SiegePriority(settlement.IsTown), sentence, involvesPlayer, settlementGroup, ownerDetail + AdapterRecordTexts.PromptFormat("AF_REC_Bulletin_SiegeCommanderDetail", ("HERO", GetHeroDisplayName(actor))), BulletinParticipants((actor, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleSiegeCommander")), (oldOwner, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleOldLordAbsent")), (newOwner, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleNewLordAbsent"))), newId, oldId))
 				{
 					ApplyWorldBulletinStability(newId, WorldBulletinCampaignMaterialPolicy.SiegeStability(settlement.IsTown, true));
 					ApplyWorldBulletinStability(oldId, WorldBulletinCampaignMaterialPolicy.SiegeStability(settlement.IsTown, false));
@@ -324,11 +324,11 @@ internal void OnWorldBulletinSettlementOwnerChanged(Settlement settlement, bool 
 			if (WorldBulletinCampaignMaterialPolicy.SameKingdom(newId, oldId))
 			{
 				string grant = WorldBulletinCampaignMaterialPolicy.GrantSentence(name, GetHeroDisplayName(newOwner), label);
-				CaptureWorldBulletinEvent("fief_grant", key, WorldBulletinCampaignMaterialPolicy.EventPriority("fief_grant"), grant, involvesPlayer, "fief_grant:" + newId + ":" + GetCurrentGameDayIndexSafe(), ownerDetail, BulletinParticipants((newOwner, AdapterRecordTexts.Raw("AF_REC_Bulletin_0020"))), newId);
+				CaptureWorldBulletinEvent("fief_grant", key, WorldBulletinCampaignMaterialPolicy.EventPriority("fief_grant"), grant, involvesPlayer, "fief_grant:" + newId + ":" + GetCurrentGameDayIndexSafe(), ownerDetail, BulletinParticipants((newOwner, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleGrantee"))), newId);
 				return;
 			}
 			string transfer = WorldBulletinCampaignMaterialPolicy.TransferSentence(name, oldName, newName, label);
-			CaptureWorldBulletinEvent("settlement_transfer", key, WorldBulletinCampaignMaterialPolicy.EventPriority("settlement_transfer"), transfer, involvesPlayer, settlementGroup, ownerDetail, BulletinParticipants((newOwner, AdapterRecordTexts.Raw("AF_REC_Bulletin_0021")), (oldOwner, AdapterRecordTexts.Raw("AF_REC_Bulletin_0022"))), newId, oldId);
+			CaptureWorldBulletinEvent("settlement_transfer", key, WorldBulletinCampaignMaterialPolicy.EventPriority("settlement_transfer"), transfer, involvesPlayer, settlementGroup, ownerDetail, BulletinParticipants((newOwner, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleNewLord")), (oldOwner, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleOldLord"))), newId, oldId);
 		}
 		catch (Exception ex)
 		{
@@ -347,14 +347,14 @@ internal void OnWorldBulletinHeroPrisonerTaken(PartyBase capturer, Hero prisoner
 			Hero captor = capturer?.LeaderHero ?? capturer?.MobileParty?.LeaderHero;
 			bool ruler = IsWorldBulletinRuler(prisoner);
 			Kingdom kingdom = prisoner.Clan?.Kingdom;
-			string who = WorldBulletinCampaignMaterialPolicy.CapturedWho(ruler, GetKingdomDisplayName(kingdom), GetHeroDisplayName(prisoner), GetKingdomDisplayName(kingdom, GetClanDisplayName(prisoner.Clan) + AdapterRecordTexts.Raw("AF_REC_Bulletin_0023")));
+			string who = WorldBulletinCampaignMaterialPolicy.CapturedWho(ruler, GetKingdomDisplayName(kingdom), GetHeroDisplayName(prisoner), GetKingdomDisplayName(kingdom, GetClanDisplayName(prisoner.Clan) + AdapterRecordTexts.Prompt("AF_REC_Bulletin_ClanSuffix")));
 			string sentence = WorldBulletinCampaignMaterialPolicy.CapturedSentence(who, captor != null, GetHeroDisplayName(captor));
 			string kingdomId = GetKingdomId(kingdom);
 			// Same group as the day's clashes between these realms, so a battle and its captives read as one story.
 			string group = "clash:" + GetCurrentGameDayIndexSafe() + ":" + WorldBulletinPairKey(captor?.MapFaction, prisoner.MapFaction);
 			string detailText = WorldBulletinCampaignMaterialPolicy.CapturedDetail(WorldBulletinHeroTitle(prisoner), captor != null, GetHeroDisplayName(captor), WorldBulletinHeroTitle(captor));
 			if (CaptureWorldBulletinEvent(ruler ? "ruler_captured" : "lord_captured", "captured:" + GetHeroId(prisoner) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.CapturedPriority(ruler), sentence, IsWorldBulletinPlayerHero(captor),
-				group, detailText, BulletinParticipants((prisoner, AdapterRecordTexts.Raw("AF_REC_Bulletin_0024")), (captor, AdapterRecordTexts.Raw("AF_REC_Bulletin_0025"))), kingdomId, GetKingdomId(captor?.Clan?.Kingdom)))
+				group, detailText, BulletinParticipants((prisoner, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleCaptive")), (captor, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleCaptor"))), kingdomId, GetKingdomId(captor?.Clan?.Kingdom)))
 			{
 				ApplyWorldBulletinStability(kingdomId, WorldBulletinCampaignMaterialPolicy.CapturedStability(ruler));
 			}
@@ -375,7 +375,7 @@ internal void OnWorldBulletinKingdomDestroyed(Kingdom kingdom)
 			}
 			Hero ruler = GetLastKingdomRulingClan(kingdom)?.Leader;
 			CaptureWorldBulletinEvent("kingdom_destroyed", "kingdom_destroyed:" + GetKingdomId(kingdom), WorldBulletinCampaignMaterialPolicy.EventPriority("kingdom_destroyed"), WorldBulletinCampaignMaterialPolicy.DestroyedSentence(GetKingdomDisplayName(kingdom)), false,
-				"realm:" + GetKingdomId(kingdom), WorldBulletinCampaignMaterialPolicy.DestroyedDetail(GetHeroDisplayName(ruler)), BulletinParticipants((ruler, AdapterRecordTexts.Raw("AF_REC_Bulletin_0026"))), GetKingdomId(kingdom));
+				"realm:" + GetKingdomId(kingdom), WorldBulletinCampaignMaterialPolicy.DestroyedDetail(GetHeroDisplayName(ruler)), BulletinParticipants((ruler, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleRulerConcerned"))), GetKingdomId(kingdom));
 		}
 		catch (Exception ex)
 		{
@@ -401,7 +401,7 @@ internal void OnWorldBulletinClanChangedKingdom(Clan clan, Kingdom oldKingdom, K
 			{
 				string sentence = WorldBulletinCampaignMaterialPolicy.RebellionSentence(GetClanDisplayName(clan), GetKingdomDisplayName(oldKingdom));
 				if (CaptureWorldBulletinEvent("kingdom_rebellion", "rebellion:" + GetClanId(clan) + ":" + GetKingdomId(oldKingdom), WorldBulletinCampaignMaterialPolicy.EventPriority("kingdom_rebellion"), sentence, involvesPlayer,
-					"realm:" + GetKingdomId(oldKingdom), WorldBulletinCampaignMaterialPolicy.RebellionDetail(GetHeroDisplayName(clan.Leader), GetHeroDisplayName(oldKingdom.Leader)), BulletinParticipants((clan.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0027")), (oldKingdom.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0028"))), GetKingdomId(oldKingdom)))
+					"realm:" + GetKingdomId(oldKingdom), WorldBulletinCampaignMaterialPolicy.RebellionDetail(GetHeroDisplayName(clan.Leader), GetHeroDisplayName(oldKingdom.Leader)), BulletinParticipants((clan.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleRebelLeader")), (oldKingdom.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleOldRulerAbsent"))), GetKingdomId(oldKingdom)))
 				{
 					ApplyWorldBulletinStability(GetKingdomId(oldKingdom), -8);
 				}
@@ -410,7 +410,7 @@ internal void OnWorldBulletinClanChangedKingdom(Clan clan, Kingdom oldKingdom, K
 			{
 				string sentence = WorldBulletinCampaignMaterialPolicy.CreatedSentence(GetClanDisplayName(clan), GetKingdomDisplayName(newKingdom));
 				CaptureWorldBulletinEvent("kingdom_created", "kingdom_created:" + GetKingdomId(newKingdom), WorldBulletinCampaignMaterialPolicy.EventPriority("kingdom_created"), sentence, involvesPlayer,
-					"realm:" + GetKingdomId(oldKingdom ?? newKingdom), WorldBulletinCampaignMaterialPolicy.CreatedDetail(GetHeroDisplayName(clan.Leader), oldKingdom != null, GetKingdomDisplayName(oldKingdom)), BulletinParticipants((clan.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0029"))), GetKingdomId(newKingdom), GetKingdomId(oldKingdom));
+					"realm:" + GetKingdomId(oldKingdom ?? newKingdom), WorldBulletinCampaignMaterialPolicy.CreatedDetail(GetHeroDisplayName(clan.Leader), oldKingdom != null, GetKingdomDisplayName(oldKingdom)), BulletinParticipants((clan.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleFounder"))), GetKingdomId(newKingdom), GetKingdomId(oldKingdom));
 			}
 		}
 		catch (Exception ex)
@@ -434,11 +434,11 @@ internal void OnWorldBulletinRaidCompleted(BattleSideEnum winnerSide, RaidEventC
 				return;
 			}
 			string victimId = GetKingdomId(settlement.MapFaction);
-			string sentence = WorldBulletinCampaignMaterialPolicy.RaidSentence(settlement.Name?.ToString(), GetHeroDisplayName(raider), MemoryEntityIdentityBannerlordAdapter.GetFactionDisplayName(raider.MapFaction, AdapterRecordTexts.Raw("AF_REC_Bulletin_0030")));
+			string sentence = WorldBulletinCampaignMaterialPolicy.RaidSentence(settlement.Name?.ToString(), GetHeroDisplayName(raider), MemoryEntityIdentityBannerlordAdapter.GetFactionDisplayName(raider.MapFaction, AdapterRecordTexts.Prompt("AF_REC_Bulletin_FactionFallback")));
 			// A realm's raids on one day collapse into a single "等N起" line.
 			string owner = settlement.Village?.Bound != null ? GetSettlementDisplayName(settlement.Village.Bound) : "";
 			if (CaptureWorldBulletinEvent("raid", "raid:" + GetSettlementId(settlement) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("raid"), sentence, IsWorldBulletinPlayerHero(raider),
-				"raid:" + GetCurrentGameDayIndexSafe() + ":" + GetKingdomId(raider.MapFaction) + ">" + victimId, WorldBulletinCampaignMaterialPolicy.RaidDetail(owner), BulletinParticipants((raider, AdapterRecordTexts.Raw("AF_REC_Bulletin_0031"))), victimId, GetKingdomId(raider.MapFaction)))
+				"raid:" + GetCurrentGameDayIndexSafe() + ":" + GetKingdomId(raider.MapFaction) + ">" + victimId, WorldBulletinCampaignMaterialPolicy.RaidDetail(owner), BulletinParticipants((raider, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleRaidLeader"))), victimId, GetKingdomId(raider.MapFaction)))
 			{
 				ApplyWorldBulletinStability(victimId, -1);
 			}
@@ -459,7 +459,7 @@ internal void CaptureWorldBulletinCivilWar(string kingdomId, string stableKey)
 				return;
 			}
 			CaptureWorldBulletinEvent("civil_war", "civil_war:" + (stableKey ?? GetKingdomId(kingdom)), WorldBulletinCampaignMaterialPolicy.EventPriority("civil_war"), WorldBulletinCampaignMaterialPolicy.CivilWarSentence(GetKingdomDisplayName(kingdom)), Clan.PlayerClan?.Kingdom == kingdom,
-				"realm:" + GetKingdomId(kingdom), WorldBulletinCampaignMaterialPolicy.CivilWarDetail(GetHeroDisplayName(kingdom.Leader)), BulletinParticipants((kingdom.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0032"))), GetKingdomId(kingdom));
+				"realm:" + GetKingdomId(kingdom), WorldBulletinCampaignMaterialPolicy.CivilWarDetail(GetHeroDisplayName(kingdom.Leader)), BulletinParticipants((kingdom.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleRulerConcerned"))), GetKingdomId(kingdom));
 		}
 		catch (Exception ex)
 		{
@@ -563,9 +563,9 @@ internal void OnWorldBulletinHeroKilled(Hero victim, Hero killer, KillCharacterA
                 Who = who, VictimTitle = victimTitle, Age = (int)victim.Age,
                 HasKiller = killer != null, KillerName = killerName, KillerTitle = killer != null ? WorldBulletinHeroTitle(killer) : "",
                 Detail = deathDetail, Execution = execution, HasPublicExecutionFacts = executionFacts != null,
-                Venue = executionFacts != null ? CampaignCharacterRecordCaptureAdapter.BuildPublicExecutionVenueText(executionFacts) : "",
-                Method = executionFacts != null ? CampaignCharacterRecordCaptureAdapter.BuildPublicExecutionMethodText(executionFacts) : "",
-                Charge = executionFacts != null ? CampaignCharacterRecordCaptureAdapter.BuildPublicExecutionChargeText(executionFacts) : "",
+                VenueName = executionFacts?.Venue != null && !string.IsNullOrWhiteSpace(executionFacts.Venue.Name?.ToString()) ? GetSettlementDisplayNameForPrompt(executionFacts.Venue) : "",
+                MethodLabel = executionFacts?.MethodLabel ?? "",
+                ChargeLabel = executionFacts?.ChargeLabel ?? "",
                 ToneLabel = executionFacts?.ToneLabel, LegitimacyLabel = executionFacts?.LegitimacyLabel,
                 PlayerStruck = executionFacts?.PlayerStruck ?? false,
                 ExecutionPlace = execution && executionFacts == null ? CampaignCharacterRecordCaptureAdapter.ResolveHeroExecutionLocationText(CampaignCharacterRecordCaptureAdapter.ResolveHeroExecutionSettlement(victim, killer), victim, killer) : ""
@@ -577,7 +577,7 @@ internal void OnWorldBulletinHeroKilled(Hero victim, Hero killer, KillCharacterA
             string group = WorldBulletinCampaignMaterialPolicy.DeathGroup(execution, deathDetail, GetHeroId(killer), GetHeroId(victim), GetCurrentGameDayIndexSafe(),
                 deathDetail == "DiedInBattle" ? WorldBulletinPairKey(killer?.MapFaction, victim.MapFaction) : "");
             string detailText = WorldBulletinCampaignMaterialPolicy.DeathDetail(material);
-			if (CaptureWorldBulletinEvent(kind, "killed:" + victimId, score, sentence, IsWorldBulletinPlayerHero(killer) || IsWorldBulletinPlayerHero(victim), group, detailText, BulletinParticipants((victim, AdapterRecordTexts.Raw("AF_REC_Bulletin_0033")), (natural ? null : killer, AdapterRecordTexts.Raw("AF_REC_Bulletin_0034"))), kingdomId, GetKingdomId(killer?.Clan?.Kingdom)))
+			if (CaptureWorldBulletinEvent(kind, "killed:" + victimId, score, sentence, IsWorldBulletinPlayerHero(killer) || IsWorldBulletinPlayerHero(victim), group, detailText, BulletinParticipants((victim, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleVictim")), (natural ? null : killer, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleKiller"))), kingdomId, GetKingdomId(killer?.Clan?.Kingdom)))
 			{
 				ApplyWorldBulletinStability(kingdomId, WorldBulletinCampaignMaterialPolicy.DeathStability(ruler, natural));
 			}
@@ -620,8 +620,8 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			}
 			int score = WorldBulletinCampaignMaterialPolicy.BattlePriority(troops, 500, lordVsLord, siege);
 			string location = CampaignBattleRecordCaptureAdapter.GetMapEventLocationLabel(mapEvent);
-			string winnerFaction = GetFactionDisplayName(winner.MapFaction, AdapterRecordTexts.Raw("AF_REC_Bulletin_0035"));
-			string loserFaction = GetFactionDisplayName(loser.MapFaction, AdapterRecordTexts.Raw("AF_REC_Bulletin_0036"));
+			string winnerFaction = GetFactionDisplayName(winner.MapFaction, AdapterRecordTexts.Prompt("AF_REC_Bulletin_SideOne"));
+			string loserFaction = GetFactionDisplayName(loser.MapFaction, AdapterRecordTexts.Prompt("AF_REC_Bulletin_SideOther"));
 			string sentence = WorldBulletinCampaignMaterialPolicy.BattleSentence(location, sallyOut, siege, CampaignBattleRecordCaptureAdapter.GetPrimaryOtherSideLabel(winner), winnerFaction, CampaignBattleRecordCaptureAdapter.GetPrimaryOtherSideLabel(loser), loserFaction, troops);
 			string winnerId = GetKingdomId(winner.MapFaction);
 			string loserId = GetKingdomId(loser.MapFaction);
@@ -629,7 +629,7 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 				? "siege:" + GetSettlementId(mapEvent.MapEventSettlement)
 				: "clash:" + GetCurrentGameDayIndexSafe() + ":" + WorldBulletinPairKey(winner.MapFaction, loser.MapFaction);
 			string detailText = WorldBulletinCampaignMaterialPolicy.BattleDetail(CampaignBattleRecordCaptureAdapter.GetMapEventSideCommittedTroopCount(winner), CampaignBattleRecordCaptureAdapter.BuildMapEventCasualtyText(winner), CampaignBattleRecordCaptureAdapter.GetMapEventSideCommittedTroopCount(loser), CampaignBattleRecordCaptureAdapter.BuildMapEventCasualtyText(loser), sallyOut, winnerLord, winnerLord ? WorldBulletinHeroTitle(winner.LeaderParty.LeaderHero) : "", loserLord, loserLord ? WorldBulletinHeroTitle(loser.LeaderParty.LeaderHero) : "");
-			if (CaptureWorldBulletinEvent(sallyOut ? "sally_out_battle" : siege ? "siege_battle" : "battle", "battle:" + CampaignBattleRecordCaptureAdapter.BuildMapEventStableKey(mapEvent, location), score, sentence, involvesPlayer, group, detailText, BulletinParticipants((winner.LeaderParty?.LeaderHero, AdapterRecordTexts.Raw("AF_REC_Bulletin_0037")), (loser.LeaderParty?.LeaderHero, AdapterRecordTexts.Raw("AF_REC_Bulletin_0038"))), winnerId, loserId))
+			if (CaptureWorldBulletinEvent(sallyOut ? "sally_out_battle" : siege ? "siege_battle" : "battle", "battle:" + CampaignBattleRecordCaptureAdapter.BuildMapEventStableKey(mapEvent, location), score, sentence, involvesPlayer, group, detailText, BulletinParticipants((winner.LeaderParty?.LeaderHero, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleWinnerCommander")), (loser.LeaderParty?.LeaderHero, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleLoserCommander"))), winnerId, loserId))
 			{
 				int swing = WorldBulletinCampaignMaterialPolicy.BattleStability(troops, 500);
 				ApplyWorldBulletinStability(winnerId, swing);
@@ -693,7 +693,7 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			string sentence = formed ? WorldBulletinCampaignMaterialPolicy.AllianceFormedSentence(first, second) : WorldBulletinCampaignMaterialPolicy.AllianceEndedSentence(first, second);
 			CaptureWorldBulletinEvent(kind, kind + ":" + WorldBulletinPairKey(k1, k2) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority(kind), sentence, false,
 				"diplomacy:" + WorldBulletinPairKey(k1, k2), WorldBulletinCampaignMaterialPolicy.AllianceDetail(first, GetHeroDisplayName(k1.Leader), second, GetHeroDisplayName(k2.Leader)),
-				BulletinParticipants((k1.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0039")), (k2.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0040"))), GetKingdomId(k1), GetKingdomId(k2));
+				BulletinParticipants((k1.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleAlliancePartyOne")), (k2.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleAlliancePartyTwo"))), GetKingdomId(k1), GetKingdomId(k2));
 		}
 		catch (Exception ex)
 		{
@@ -729,7 +729,7 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			string detail = WorldBulletinCampaignMaterialPolicy.RulerChangedDetail(previous != null, GetHeroDisplayName(previous), GetClanDisplayName(previous?.Clan), dying != null);
 			CaptureWorldBulletinEvent("ruler_changed", "ruler_changed:" + kingdomId + ":" + GetHeroId(ruler) + ":" + GetCurrentGameDayIndexSafe() + (interim ? ":interim" : ""), WorldBulletinCampaignMaterialPolicy.RulerChangedPriority(interim), sentence,
 				IsWorldBulletinPlayerHero(ruler) || IsWorldBulletinPlayerHero(previous), "realm:" + kingdomId, detail,
-				BulletinParticipants((ruler, interim ? AdapterRecordTexts.Raw("AF_REC_Bulletin_0041") : AdapterRecordTexts.Raw("AF_REC_Bulletin_0042")), (previous, dying != null ? AdapterRecordTexts.Raw("AF_REC_Bulletin_0043") : AdapterRecordTexts.Raw("AF_REC_Bulletin_0044"))), kingdomId);
+				BulletinParticipants((ruler, interim ? AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleInterimRuler") : AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleNewRuler")), (previous, dying != null ? AdapterRecordTexts.Prompt("AF_REC_Bulletin_RolePreviousRulerDied") : AdapterRecordTexts.Prompt("AF_REC_Bulletin_RolePreviousRuler"))), kingdomId);
 		}
 		catch (Exception ex)
 		{
@@ -755,7 +755,7 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			string sentence = WorldBulletinCampaignMaterialPolicy.MarriageSentence(GetHeroDisplayName(first), WorldBulletinHeroTitle(first), GetHeroDisplayName(second), WorldBulletinHeroTitle(second));
 			CaptureWorldBulletinEvent(royal ? "royal_marriage" : "noble_marriage", "marriage:" + pair, WorldBulletinCampaignMaterialPolicy.MarriagePriority(royal), sentence,
 				IsWorldBulletinPlayerHero(first) || IsWorldBulletinPlayerHero(second), "marriage:" + pair, "",
-				BulletinParticipants((first, AdapterRecordTexts.Raw("AF_REC_Bulletin_0045")), (second, AdapterRecordTexts.Raw("AF_REC_Bulletin_0046"))), GetKingdomId(first.Clan?.Kingdom), GetKingdomId(second.Clan?.Kingdom));
+				BulletinParticipants((first, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleSpouseOne")), (second, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleSpouseTwo"))), GetKingdomId(first.Clan?.Kingdom), GetKingdomId(second.Clan?.Kingdom));
 		}
 		catch (Exception ex)
 		{
@@ -780,8 +780,8 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			string sentence = WorldBulletinCampaignMaterialPolicy.DefectionSentence(GetClanDisplayName(clan), fiefs.Count, oldKingdom != null, GetKingdomDisplayName(oldKingdom), GetKingdomDisplayName(newKingdom));
 			// Shares the realm group, so a civil war or rebellion and its defections read as one story.
 			CaptureWorldBulletinEvent("clan_defection", "defection:" + GetClanId(clan) + ":" + GetKingdomId(newKingdom) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("clan_defection"), sentence,
-				clan == Clan.PlayerClan, "realm:" + GetKingdomId(oldKingdom ?? newKingdom), WorldBulletinCampaignMaterialPolicy.DefectionDetail(GetHeroDisplayName(clan.Leader), string.Join("、", fiefs.Take(4)) + (fiefs.Count > 4 ? AdapterRecordTexts.Raw("AF_REC_Bulletin_0047") : "")),
-				BulletinParticipants((clan.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0048")), (newKingdom.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0049"))), GetKingdomId(newKingdom), GetKingdomId(oldKingdom));
+				clan == Clan.PlayerClan, "realm:" + GetKingdomId(oldKingdom ?? newKingdom), WorldBulletinCampaignMaterialPolicy.DefectionDetail(GetHeroDisplayName(clan.Leader), string.Join("、", fiefs.Take(4)) + (fiefs.Count > 4 ? AdapterRecordTexts.Prompt("AF_REC_Bulletin_FiefEtc") : "")),
+				BulletinParticipants((clan.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleDefectingLeader")), (newKingdom.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleReceivingRuler"))), GetKingdomId(newKingdom), GetKingdomId(oldKingdom));
 		}
 		catch (Exception ex)
 		{
@@ -804,7 +804,7 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			CaptureWorldBulletinEvent("clan_destroyed", "clan_destroyed:" + clanId, WorldBulletinCampaignMaterialPolicy.EventPriority("clan_destroyed"),
 				WorldBulletinCampaignMaterialPolicy.ClanDestroyedSentence(GetClanDisplayName(clan), kingdom != null, GetKingdomDisplayName(kingdom)), false,
 				kingdom != null ? "realm:" + kingdomId : "clan_destroyed:" + clanId, WorldBulletinCampaignMaterialPolicy.ClanDestroyedDetail(clan.Leader != null ? GetHeroDisplayName(clan.Leader) : ""),
-				BulletinParticipants((clan.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0050"))), kingdomId);
+				BulletinParticipants((clan.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleLastClanLeader"))), kingdomId);
 		}
 		catch (Exception ex)
 		{
@@ -835,10 +835,10 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			string place = CampaignBattleRecordCaptureAdapter.ResolveGatheringPointLabel(gatheringPoint, army.LeaderParty);
 			string kingdomId = GetKingdomId(kingdom);
 			// The player's own muster is not news to the player; it stays a supporting line.
-			string sentence = WorldBulletinCampaignMaterialPolicy.ArmyGatheredSentence(GetKingdomDisplayName(kingdom), IsWorldBulletinRuler(leader) ? AdapterRecordTexts.Raw("AF_REC_Bulletin_0051") : AdapterRecordTexts.Raw("AF_REC_Bulletin_0052"), GetHeroDisplayName(leader), troops, place == AdapterRecordTexts.Raw("AF_REC_Bulletin_0053") ? "" : place);
+			string sentence = WorldBulletinCampaignMaterialPolicy.ArmyGatheredSentence(GetKingdomDisplayName(kingdom), IsWorldBulletinRuler(leader) ? AdapterRecordTexts.Prompt("AF_REC_Bulletin_TitleRuler") : AdapterRecordTexts.Prompt("AF_REC_Bulletin_TitleHeir"), GetHeroDisplayName(leader), troops, place == AdapterRecordTexts.Prompt("AF_REC_Bulletin_GatheringPointFallback") || place == AdapterRecordTexts.Raw("AF_REC_Battle_0245") ? "" : place);
 			CaptureWorldBulletinEvent("army_gathered", "army:" + GetHeroId(leader) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("army_gathered"), sentence,
 				false, "army:" + kingdomId + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.ArmyGatheredDetail(army.Parties.Count),
-				BulletinParticipants((leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0054"))), kingdomId);
+				BulletinParticipants((leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleArmyCommander"))), kingdomId);
 		}
 		catch (Exception ex)
 		{
@@ -860,7 +860,7 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			// Loyalty hovering at the threshold can flip daily; one unrest line per town per week.
 			CaptureWorldBulletinEvent("town_unrest", "town_unrest:" + settlementId + ":" + (GetCurrentGameDayIndexSafe() / 7), WorldBulletinCampaignMaterialPolicy.EventPriority("town_unrest"),
 				WorldBulletinCampaignMaterialPolicy.TownUnrestSentence(GetSettlementDisplayName(settlement), owner != null ? GetHeroDisplayName(owner) : ""), IsWorldBulletinPlayerHero(owner),
-				"siege:" + settlementId, "", BulletinParticipants((owner, AdapterRecordTexts.Raw("AF_REC_Bulletin_0055"))), GetKingdomId(settlement.MapFaction));
+				"siege:" + settlementId, "", BulletinParticipants((owner, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleTownLordAbsent"))), GetKingdomId(settlement.MapFaction));
 		}
 		catch (Exception ex)
 		{
@@ -880,9 +880,9 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			Clan rebels = settlement.OwnerClan != oldOwnerClan ? settlement.OwnerClan : null;
 			Hero oldOwner = oldOwnerClan?.Leader;
 			string settlementId = GetSettlementId(settlement);
-			string sentence = WorldBulletinCampaignMaterialPolicy.TownRebellionSentence(GetSettlementDisplayName(settlement), GetClanDisplayName(oldOwnerClan) + AdapterRecordTexts.Raw("AF_REC_Bulletin_0056"), rebels != null ? GetClanDisplayName(rebels) : AdapterRecordTexts.Raw("AF_REC_Bulletin_0057"));
+			string sentence = WorldBulletinCampaignMaterialPolicy.TownRebellionSentence(GetSettlementDisplayName(settlement), GetClanDisplayName(oldOwnerClan) + AdapterRecordTexts.Prompt("AF_REC_Bulletin_ClanSuffix"), rebels != null ? GetClanDisplayName(rebels) : AdapterRecordTexts.Prompt("AF_REC_Bulletin_RebelsFallback"));
 			CaptureWorldBulletinEvent("town_rebellion", "town_rebellion:" + settlementId + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("town_rebellion"), sentence,
-				IsWorldBulletinPlayerHero(oldOwner), "siege:" + settlementId, "", BulletinParticipants((rebels?.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0058")), (oldOwner, AdapterRecordTexts.Raw("AF_REC_Bulletin_0059"))), GetKingdomId(oldOwnerClan?.Kingdom));
+				IsWorldBulletinPlayerHero(oldOwner), "siege:" + settlementId, "", BulletinParticipants((rebels?.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleRebelChief")), (oldOwner, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleOldLordAbsent"))), GetKingdomId(oldOwnerClan?.Kingdom));
 		}
 		catch (Exception ex)
 		{
@@ -904,7 +904,7 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			CaptureWorldBulletinEvent("kingdom_annexed", "kingdom_annexed:" + annexedId, WorldBulletinCampaignMaterialPolicy.EventPriority("kingdom_annexed"),
 				WorldBulletinCampaignMaterialPolicy.AnnexedSentence(GetKingdomDisplayName(receiving), GetKingdomDisplayName(annexed)), IsWorldBulletinPlayerHero(receiving.Leader),
 				"realm:" + annexedId, WorldBulletinCampaignMaterialPolicy.AnnexedDetail(GetHeroDisplayName(receiving.Leader), GetHeroDisplayName(formerRuler), transferredClans),
-				BulletinParticipants((receiving.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0060")), (formerRuler, AdapterRecordTexts.Raw("AF_REC_Bulletin_0061"))), GetKingdomId(receiving), annexedId);
+				BulletinParticipants((receiving.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleAnnexer")), (formerRuler, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleAnnexedLastRuler"))), GetKingdomId(receiving), annexedId);
 		}
 		catch (Exception ex)
 		{
@@ -927,7 +927,7 @@ internal void OnWorldBulletinMapEventEnded(MapEvent mapEvent)
 			string sentence = established ? WorldBulletinCampaignMaterialPolicy.VassalageEstablishedSentence(suzerainName, vassalName, typeName) : WorldBulletinCampaignMaterialPolicy.VassalageEndedSentence(suzerainName, vassalName, typeName);
 			CaptureWorldBulletinEvent(kind, kind + ":" + GetKingdomId(suzerain) + ">" + GetKingdomId(vassal) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority(kind), sentence, false,
 				"diplomacy:" + WorldBulletinPairKey(suzerain, vassal), WorldBulletinCampaignMaterialPolicy.VassalageDetail(GetHeroDisplayName(suzerain.Leader), GetHeroDisplayName(vassal.Leader)),
-				BulletinParticipants((suzerain.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0062")), (vassal.Leader, AdapterRecordTexts.Raw("AF_REC_Bulletin_0063"))), GetKingdomId(suzerain), GetKingdomId(vassal));
+				BulletinParticipants((suzerain.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleSuzerainRuler")), (vassal.Leader, AdapterRecordTexts.Prompt("AF_REC_Bulletin_RoleVassalRuler"))), GetKingdomId(suzerain), GetKingdomId(vassal));
 		}
 		catch (Exception ex)
 		{
@@ -961,7 +961,7 @@ internal void CaptureCivilNewsMaterial(string kind, string stableKey, string lab
         if (!WorldBulletinStateOwner.IsWorldBulletinEnabled() || day != GetCurrentGameDayIndexSafe() || string.IsNullOrWhiteSpace(stableKey)) return;
         string newsKind = kind == "player_vassal_policy" ? "ruler_policy" : kind;
         string sentence = WorldBulletinPolicy.Truncate(snapshot, 650);
-        string detail = AdapterRecordTexts.Raw("AF_REC_Bulletin_0064");
+        string detail = AdapterRecordTexts.Prompt("AF_REC_Bulletin_NoExtraEffects");
         try
         {
             _bulletin().CaptureCivilNewsMaterial(newsKind, "material:" + day + ":" + stableKey,

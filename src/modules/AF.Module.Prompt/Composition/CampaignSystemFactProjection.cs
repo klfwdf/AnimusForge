@@ -165,9 +165,69 @@ internal static class CampaignSystemFactProjection
             if(Extract(raw,template.Parts,out string[] values))return Expand(template.Key,new[]{actor,values[0]});
         return null;
     }
+    // Clan leader memory. Stored (Chinese) as HEAD alone, or HEAD directly followed by an execution TAIL:
+    //   HEAD  <you>\u6240\u5728\u7684{clan}\u5bb6\u65cf\u5931\u53bb\u4e86{hero}\u3002
+    //   TAIL  \u5176[\u5728{venue}][\u7531{killer}](\u516c\u5f00\u5904\u51b3|\u4ee5{method}\u516c\u5f00\u5904\u51b3)[\uff0c\u7f6a\u540d\u4e3a{charge}]\u3002
+    // Both halves must be recognised or the whole line is left untouched, so a fact is never dropped or half translated.
+    // Lookups only (a handful of string compares per rendered memory line); nothing here runs per frame.
+    private static readonly Template ClanMemberKilled = new Template("campaign_kill_clan_member",new string[]{"name","name"});
+    private static readonly Template[] ClanTails = BuildClanTails();
+    private static Template[] BuildClanTails()
+    {
+        // shape = venue*8 + killer*4 + method*2 + charge, matching the digits in the key; index 0 is the richest shape.
+        // Most specific first: a shorter pattern's variable slot would otherwise absorb the longer pattern's extra words.
+        var result = new Template[16];
+        for(int index=0;index<16;index++)
+        {
+            int shape = 15 - index;
+            bool venue=(shape&8)!=0, killer=(shape&4)!=0, method=(shape&2)!=0, charge=(shape&1)!=0;
+            var roles = new System.Collections.Generic.List<string>();
+            if(venue) roles.Add("name"); if(killer) roles.Add("name"); if(method) roles.Add("method"); if(charge) roles.Add("charge");
+            string key = "campaign_kill_clan_tail_" + (venue?"1":"0") + (killer?"1":"0") + (method?"1":"0") + (charge?"1":"0");
+            result[index] = new Template(key, roles.ToArray());
+        }
+        return result;
+    }
+    internal static string ProjectClanMemberKilled(string raw,string actor)
+    {
+        if(string.IsNullOrEmpty(raw)||string.IsNullOrEmpty(actor)||PromptComposerTexts.Get("campaign_fact_language")=="zh-CN")return null;
+        // The head ends at its first full stop. A clan or hero name containing one is not recognised (left untouched).
+        int stop = raw.IndexOf('\u3002');
+        if(stop<0)return null;
+        string head = raw.Substring(0,stop+1), tail = raw.Substring(stop+1);
+        if(!Extract(head,ClanMemberKilled.Parts,out string[] names))return null;
+        if(tail.Length==0)return Expand(ClanMemberKilled.Key,new[]{actor,names[0],names[1]});
+        foreach(var template in ClanTails)
+        {
+            if(!Extract(tail,template.Parts,out string[] values))continue;
+            for(int i=0;i<values.Length;i++)
+            {
+                if(template.Roles[i]=="method")for(int m=0;m<Methods.Length;m++)if(values[i]==Methods[m]){values[i]=PromptComposerTexts.Get("campaign_fact_method_"+m);break;}
+                if(template.Roles[i]=="charge")for(int m=0;m<ExecutionValues.Length;m++)if(values[i]==ExecutionValues[m]){values[i]=PromptComposerTexts.Get("weekly_execution_value_"+m);break;}
+            }
+            var all=new string[values.Length+1];all[0]=actor;Array.Copy(values,0,all,1,values.Length);
+            return Expand(ClanMemberKilled.Key,new[]{actor,names[0],names[1]}) + " " + Expand(template.Key,all);
+        }
+        return null;
+    }
     private static readonly Template PersonalExecution = new Template("weekly_execution_actor_personal",new string[]{"name"});
     private static readonly Template OrderedExecution = new Template("weekly_execution_actor_ordered",new string[]{"name"});
     private static readonly string[] ExecutionValues = {PromptComposerTexts.Raw("weekly_execution_value_0_source"),PromptComposerTexts.Raw("weekly_execution_value_1_source"),PromptComposerTexts.Raw("weekly_execution_value_2_source"),PromptComposerTexts.Raw("weekly_execution_value_3_source"),PromptComposerTexts.Raw("weekly_execution_value_4_source"),PromptComposerTexts.Raw("weekly_execution_value_5_source"),PromptComposerTexts.Raw("weekly_execution_value_6_source"),PromptComposerTexts.Raw("weekly_execution_value_7_source"),PromptComposerTexts.Raw("weekly_execution_value_8_source"),PromptComposerTexts.Raw("weekly_execution_value_9_source"),PromptComposerTexts.Raw("weekly_execution_value_10_source"),PromptComposerTexts.Raw("weekly_execution_value_11_source")};
+    // Package-language label for a stored execution method / charge / tone / legitimacy label.
+    // The stored value is the invariant source label; unknown (extension) labels pass through unchanged.
+    // Table lookups only; called while composing one bulletin fact, never per frame.
+    internal static string ExecutionMethodForPackage(string sourceLabel)
+    {
+        for (int m = 0; m < Methods.Length; m++)
+            if (sourceLabel == Methods[m]) return PromptComposerTexts.Get("campaign_fact_method_" + m);
+        return sourceLabel;
+    }
+    internal static string ExecutionValueForPackage(string sourceLabel)
+    {
+        for (int m = 0; m < ExecutionValues.Length; m++)
+            if (sourceLabel == ExecutionValues[m]) return PromptComposerTexts.Get("weekly_execution_value_" + m);
+        return sourceLabel;
+    }
     internal static string ProjectWeeklyMaterial(string type, string key, string raw)
     {
         if (type == "noble_gathering" || (type == "raw_text" && (key ?? "").StartsWith("noble_gathering:", StringComparison.Ordinal)))

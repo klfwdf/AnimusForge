@@ -10,6 +10,8 @@ internal static class MemoryActionFactProjection
         if (string.IsNullOrEmpty(raw) || string.IsNullOrEmpty(actor)) return null;
         if(kind == "hero_killed" || kind == "hero_executed_victim")
             return CampaignSystemFactProjection.ProjectNpcKill(kind,raw,actor);
+        if(kind == "clan_member_killed")
+            return CampaignSystemFactProjection.ProjectClanMemberKilled(raw,actor);
         if (kind == "civil_war")
         {
             string projected = CampaignSystemFactProjection.Project(kind, raw);

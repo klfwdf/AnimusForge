@@ -130,7 +130,7 @@ internal static class WorldDiplomacyPresentationQueries
                 HeaderRightText: WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(targetSummary, DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_WorldBulletin", "World bulletin")),
                 DateText: date,
                 TitleText: WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text),
-                IndexTitleText: WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(document),
+                IndexTitleText: WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(document, DiplomacyUiLocalization.Text),
                 MetaText: date + "  ·  " + typeLabel + "  ·  " + document.AuthorKingdomName + (string.IsNullOrWhiteSpace(targetSummary) ? "" : " → " + targetSummary) + eventMeta,
                 PolicyNameText: "",
                 BodyText: string.IsNullOrWhiteSpace(document.Body) ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_BodyCompressed", "This older declaration's body has been compressed; see the matching annual diplomatic summary.") : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(document.Body),

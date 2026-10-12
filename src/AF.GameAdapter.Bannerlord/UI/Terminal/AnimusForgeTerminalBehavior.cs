@@ -698,7 +698,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 			Title = title ?? "",
 
-			Category = string.IsNullOrWhiteSpace(category) ? Ui("AF_TERMINAL_UI_CategoryAll", "All") : category,
+			Category = string.IsNullOrWhiteSpace(category) ? TerminalCategories.All : category,
 
 			Icon = string.IsNullOrWhiteSpace(icon) ? "❖" : icon,
 
@@ -738,49 +738,49 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 		{
 
-			Node("custom_policy_management", Ui("AF_TERMINAL_UI_Root_KingdomNotices", "Kingdom notices"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "♚", Ui("AF_TERMINAL_UI_Root_KingdomNotices_Hint", "Open the subpanel for notices and local policies."),
+			Node("custom_policy_management", Ui("AF_TERMINAL_UI_Root_KingdomNotices", "Kingdom notices"), TerminalCategories.Diplomacy, "♚", Ui("AF_TERMINAL_UI_Root_KingdomNotices_Hint", "Open the subpanel for notices and local policies."),
 
-				Node("policy_compose", Ui("AF_TERMINAL_UI_Root_ComposeNotice", "Compose kingdom notice"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "✍", Ui("AF_TERMINAL_UI_Root_ComposeNotice_Hint", "Continue to custom policy or diplomatic declaration."),
+				Node("policy_compose", Ui("AF_TERMINAL_UI_Root_ComposeNotice", "Compose kingdom notice"), TerminalCategories.Diplomacy, "✍", Ui("AF_TERMINAL_UI_Root_ComposeNotice_Hint", "Continue to custom policy or diplomatic declaration."),
 
-					Node("custom_policy", Ui("AF_TERMINAL_UI_Root_CustomPolicy", "Compose custom policy"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "⚖", Ui("AF_TERMINAL_UI_Root_CustomPolicy_Hint", "Open the custom policy editor.")),
+					Node("custom_policy", Ui("AF_TERMINAL_UI_Root_CustomPolicy", "Compose custom policy"), TerminalCategories.Diplomacy, "⚖", Ui("AF_TERMINAL_UI_Root_CustomPolicy_Hint", "Open the custom policy editor.")),
 
-					Node("diplomatic_document", Ui("AF_TERMINAL_UI_Root_DiplomaticDocument", "Compose diplomatic declaration"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "⚐", Ui("AF_TERMINAL_UI_Root_DiplomaticDocument_Hint", "Publish a diplomatic declaration."))),
+					Node("diplomatic_document", Ui("AF_TERMINAL_UI_Root_DiplomaticDocument", "Compose diplomatic declaration"), TerminalCategories.Diplomacy, "⚐", Ui("AF_TERMINAL_UI_Root_DiplomaticDocument_Hint", "Publish a diplomatic declaration."))),
 
-				Node("local_policies", Ui("AF_TERMINAL_UI_Root_LocalPolicies", "Local policies"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "♜", Ui("AF_TERMINAL_UI_Root_LocalPolicies_Hint", "Publish policies that affect only the player's clan fiefs."))),
+				Node("local_policies", Ui("AF_TERMINAL_UI_Root_LocalPolicies", "Local policies"), TerminalCategories.Diplomacy, "♜", Ui("AF_TERMINAL_UI_Root_LocalPolicies_Hint", "Publish policies that affect only the player's clan fiefs."))),
 
-			Node("vassalage_management", Ui("AF_TERMINAL_UI_Root_Vassalage", "Vassalage management"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "⚜", Ui("AF_TERMINAL_UI_Root_Vassalage_Hint", "View existing vassal states; use LLM dialogue for termination, amendment, or annexation.")),
+			Node("vassalage_management", Ui("AF_TERMINAL_UI_Root_Vassalage", "Vassalage management"), TerminalCategories.Diplomacy, "⚜", Ui("AF_TERMINAL_UI_Root_Vassalage_Hint", "View existing vassal states; use LLM dialogue for termination, amendment, or annexation.")),
 
-			Node("weekly_reports", Ui("AF_TERMINAL_UI_Root_KingdomNews", "Kingdom news"), Ui("AF_TERMINAL_UI_CategoryDiplomacy", "Diplomacy and state"), "✉", Ui("AF_TERMINAL_UI_Root_KingdomNews_Hint", "View recent diplomatic declarations, policies, bulletins, and news from each kingdom.")),
-
-
-
-			Node("tag_catalog", Ui("AF_TERMINAL_UI_Root_TagCatalog", "Tag catalog"), Ui("AF_TERMINAL_UI_CategoryPrompts", "Prompts and rules"), "❖", Ui("AF_TERMINAL_UI_Root_TagCatalog_Hint", "View and refresh the body/postprocess tag index or export it to TXT.")),
-
-			Node("reload_database", Ui("AF_TERMINAL_UI_Root_ReloadDatabase", "Reload database"), Ui("AF_TERMINAL_UI_CategoryPrompts", "Prompts and rules"), "⚡", Ui("AF_TERMINAL_UI_Root_ReloadDatabase_Hint", "Replace non-player knowledge, world/kingdom starting knowledge, kingdom personalities/strategy, and voices.")),
+			Node("weekly_reports", Ui("AF_TERMINAL_UI_Root_KingdomNews", "Kingdom news"), TerminalCategories.Diplomacy, "✉", Ui("AF_TERMINAL_UI_Root_KingdomNews_Hint", "View recent diplomatic declarations, policies, bulletins, and news from each kingdom.")),
 
 
 
-			Node("api_onboarding", Ui("AF_TERMINAL_UI_Root_ApiOnboarding", "Run API setup again"), Ui("AF_TERMINAL_UI_CategoryAiCore", "AI core"), "⚙", Ui("AF_TERMINAL_UI_Root_ApiOnboarding_Hint", "Select and test API configuration again.")),
+			Node("tag_catalog", Ui("AF_TERMINAL_UI_Root_TagCatalog", "Tag catalog"), TerminalCategories.Prompt, "❖", Ui("AF_TERMINAL_UI_Root_TagCatalog_Hint", "View and refresh the body/postprocess tag index or export it to TXT.")),
 
-			Node("analyze_latest_error", Ui("AF_TERMINAL_UI_Root_AnalyzeError", "Analyze latest error"), Ui("AF_TERMINAL_UI_CategoryAiCore", "AI core"), "⚠", Ui("AF_TERMINAL_UI_Root_AnalyzeError_Hint", "Use the preprocessing API to analyze the latest AnimusForge error in this campaign.")),
-
-
-
-			Node("settlement_entry_troops", Ui("AF_TERMINAL_UI_Root_SettlementEntryTroops", "Settlement entry escort"), Ui("AF_TERMINAL_UI_CategoryDuelTroops", "Duel and troops"), "♞", Ui("AF_TERMINAL_UI_Root_SettlementEntryTroops_Hint", "Configure companions and troops automatically brought into towns, castles, and villages by SETS.")),
-
-			Node("noble_prisoner_escort", Ui("AF_TERMINAL_UI_Root_NoblePrisonerEscort", "Noble prisoner escort"), Ui("AF_TERMINAL_UI_CategoryDuelTroops", "Duel and troops"), "⚓", Ui("AF_TERMINAL_UI_Root_NoblePrisonerEscort_Hint", "Configure hero prisoners brought into sieges, settlements, lord halls, and wilderness meetings.")),
-
-			Node("troop_inspection", Ui("AF_TERMINAL_UI_Root_TroopInspection", "Inspect troops"), Ui("AF_TERMINAL_UI_CategoryDuelTroops", "Duel and troops"), "⚔", Ui("AF_TERMINAL_UI_Root_TroopInspection_Hint", "Open the troop inspection flow.")),
-
-			Node("military_exercise", Ui("AF_TERMINAL_UI_Root_MilitaryExercise", "Military exercise"), Ui("AF_TERMINAL_UI_CategoryDuelTroops", "Duel and troops"), "⚑", Ui("AF_TERMINAL_UI_Root_MilitaryExercise_Hint", "Open the military exercise flow.")),
+			Node("reload_database", Ui("AF_TERMINAL_UI_Root_ReloadDatabase", "Reload database"), TerminalCategories.Prompt, "⚡", Ui("AF_TERMINAL_UI_Root_ReloadDatabase_Hint", "Replace non-player knowledge, world/kingdom starting knowledge, kingdom personalities/strategy, and voices.")),
 
 
 
-			Node("player_persona", Ui("AF_TERMINAL_UI_Root_PlayerPersona", "Edit player appearance and background"), Ui("AF_TERMINAL_UI_CategoryCharacters", "Characters and companions"), "♟", Ui("AF_TERMINAL_UI_Root_PlayerPersona_Hint", "Edit the player's RP appearance and background.")),
+			Node("api_onboarding", Ui("AF_TERMINAL_UI_Root_ApiOnboarding", "Run API setup again"), TerminalCategories.Ai, "⚙", Ui("AF_TERMINAL_UI_Root_ApiOnboarding_Hint", "Select and test API configuration again.")),
 
-			Node("player_rp_forge", Ui("AF_TERMINAL_UI_Root_PlayerRpForge", "Craft RP item"), Ui("AF_TERMINAL_UI_CategoryCharacters", "Characters and companions"), "⚒", Ui("AF_TERMINAL_UI_Root_PlayerRpForge_Hint", "Spend denars to craft a personal RP item or weapon/equipment.")),
+			Node("analyze_latest_error", Ui("AF_TERMINAL_UI_Root_AnalyzeError", "Analyze latest error"), TerminalCategories.Ai, "⚠", Ui("AF_TERMINAL_UI_Root_AnalyzeError_Hint", "Use the preprocessing API to analyze the latest AnimusForge error in this campaign.")),
 
-			Node("trust_query", Ui("AF_TERMINAL_UI_Root_TrustQuery", "Trust query"), Ui("AF_TERMINAL_UI_CategoryCharacters", "Characters and companions"), "⚖", Ui("AF_TERMINAL_UI_Root_TrustQuery_Hint", "Query trust sources for heroes, settlements, and merchants."))
+
+
+			Node("settlement_entry_troops", Ui("AF_TERMINAL_UI_Root_SettlementEntryTroops", "Settlement entry escort"), TerminalCategories.Duel, "♞", Ui("AF_TERMINAL_UI_Root_SettlementEntryTroops_Hint", "Configure companions and troops automatically brought into towns, castles, and villages by SETS.")),
+
+			Node("noble_prisoner_escort", Ui("AF_TERMINAL_UI_Root_NoblePrisonerEscort", "Noble prisoner escort"), TerminalCategories.Duel, "⚓", Ui("AF_TERMINAL_UI_Root_NoblePrisonerEscort_Hint", "Configure hero prisoners brought into sieges, settlements, lord halls, and wilderness meetings.")),
+
+			Node("troop_inspection", Ui("AF_TERMINAL_UI_Root_TroopInspection", "Inspect troops"), TerminalCategories.Duel, "⚔", Ui("AF_TERMINAL_UI_Root_TroopInspection_Hint", "Open the troop inspection flow.")),
+
+			Node("military_exercise", Ui("AF_TERMINAL_UI_Root_MilitaryExercise", "Military exercise"), TerminalCategories.Duel, "⚑", Ui("AF_TERMINAL_UI_Root_MilitaryExercise_Hint", "Open the military exercise flow.")),
+
+
+
+			Node("player_persona", Ui("AF_TERMINAL_UI_Root_PlayerPersona", "Edit player appearance and background"), TerminalCategories.Characters, "♟", Ui("AF_TERMINAL_UI_Root_PlayerPersona_Hint", "Edit the player's RP appearance and background.")),
+
+			Node("player_rp_forge", Ui("AF_TERMINAL_UI_Root_PlayerRpForge", "Craft RP item"), TerminalCategories.Characters, "⚒", Ui("AF_TERMINAL_UI_Root_PlayerRpForge_Hint", "Spend denars to craft a personal RP item or weapon/equipment.")),
+
+			Node("trust_query", Ui("AF_TERMINAL_UI_Root_TrustQuery", "Trust query"), TerminalCategories.Characters, "⚖", Ui("AF_TERMINAL_UI_Root_TrustQuery_Hint", "Query trust sources for heroes, settlements, and merchants."))
 
 		};
 

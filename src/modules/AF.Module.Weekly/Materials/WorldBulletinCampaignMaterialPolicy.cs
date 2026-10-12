@@ -14,22 +14,24 @@ internal static class WorldBulletinCampaignMaterialPolicy
     internal static int MarriagePriority(bool royal)=>royal?65:40;
     internal static bool SameKingdom(string newId,string oldId)=>!string.IsNullOrEmpty(newId)&&string.Equals(newId,oldId,StringComparison.OrdinalIgnoreCase);
     internal static string KingdomContextLine(string kingdom,string ruler,int towns,int castles,bool stabilityEnabled,int stability,System.Collections.Generic.IReadOnlyCollection<string> enemies)
-        => kingdom+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0736")+ruler+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0737")+towns+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0738")+castles+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0739")+(stabilityEnabled?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0740")+stability:"")+"，"+(enemies.Count>0?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0741")+string.Join("、",enemies)+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0742"):WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0743"));
+        => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_KingdomContext", ("kingdom", kingdom), ("ruler", ruler), ("towns", towns.ToString()), ("castles", castles.ToString()),
+            ("stability", stabilityEnabled?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_KingdomContextStability", ("stability", stability.ToString())):""),
+            ("war", enemies.Count>0?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_KingdomContextAtWar", ("enemies", string.Join(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_ListSeparator"),enemies))):WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_KingdomContextAtPeace")));
     internal static string PairKey(string x,string y) => string.CompareOrdinal(x,y)<=0?x+"|"+y:y+"|"+x;
     internal static string WarReason(string detail) => detail switch {
-        "CausedByPlayerHostility" => WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0744"),
-        "CausedByKingdomDecision" => WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0745"), "CausedByRebellion" => WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0746"),
-        "CausedByCrimeRatingChange" => WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0747"), "CausedByKingdomCreation" => WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0748"),
-        "CausedByClaimOnThrone" => WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0749"), "CausedByCallToWarAgreement" => WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0750"), _ => WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0751") };
-    internal static string WarSentence(string first,string second) => first+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0752")+second+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0753");
-    internal static string WarDetail(string firstLeader,string secondLeader,string reason) => WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0754")+firstLeader+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0755")+secondLeader+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0756")+reason;
-    internal static string PeaceSentence(string first,string second) => first+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0757")+second+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0758");
-    internal static string PeaceDetail(string first,string firstLeader,string second,string secondLeader,bool decision) => first+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0759")+firstLeader+"；"+second+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0760")+secondLeader+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0761")+(decision?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0762"):WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0763"));
-    internal static string HeroTitle(bool ruler,string kingdom,string clan,bool clanLeader) => ruler?kingdom+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0764"):kingdom+clan+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0765")+(clanLeader?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0766"):WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0767"));
-    internal static string OwnerDetail(bool town,bool hasOld,string oldName,string oldTitle,bool hasNew,string newName,string newTitle) => (town?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0768"):WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0769"))+(hasOld?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0770")+oldName+"（"+oldTitle+"）":"")+(hasNew?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0771")+newName+"（"+newTitle+"）":"");
-    internal static string SiegeSentence(string actor,string settlement,string oldOwner,string newOwner) => actor+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0772")+settlement+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0773")+oldOwner+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0774")+newOwner+"。";
-    internal static string GrantSentence(string settlement,string owner,string label) => settlement+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0775")+owner+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0776")+label+"）。";
-    internal static string TransferSentence(string settlement,string oldOwner,string newOwner,string label) => settlement+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0777")+label+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0778")+oldOwner+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0779")+newOwner+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0780");
+        "CausedByPlayerHostility" => WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_WarReasonPlayerHostility"),
+        "CausedByKingdomDecision" => WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_WarReasonKingdomDecision"), "CausedByRebellion" => WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_WarReasonRebellion"),
+        "CausedByCrimeRatingChange" => WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_WarReasonCrimeRating"), "CausedByKingdomCreation" => WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_WarReasonKingdomCreation"),
+        "CausedByClaimOnThrone" => WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_WarReasonClaimOnThrone"), "CausedByCallToWarAgreement" => WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_WarReasonCallToWar"), _ => WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_WarReasonUnknown") };
+    internal static string WarSentence(string first,string second) => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_WarSentence", ("first", first), ("second", second));
+    internal static string WarDetail(string firstLeader,string secondLeader,string reason) => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_WarDetail", ("firstLeader", firstLeader), ("secondLeader", secondLeader), ("reason", reason));
+    internal static string PeaceSentence(string first,string second) => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_PeaceSentence", ("first", first), ("second", second));
+    internal static string PeaceDetail(string first,string firstLeader,string second,string secondLeader,bool decision) => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_PeaceDetail", ("first", first), ("firstLeader", firstLeader), ("second", second), ("secondLeader", secondLeader), ("how", WeeklyMaterialTexts.Prompt(decision?"AF_WEEKLY_Fact_PeaceByDecision":"AF_WEEKLY_Fact_PeaceByAgreement")));
+    internal static string HeroTitle(bool ruler,string kingdom,string clan,bool clanLeader) => ruler?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_HeroTitleRuler", ("kingdom", kingdom)):clanLeader?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_HeroTitleClanLeader", ("kingdom", kingdom), ("clan", clan)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_HeroTitleClanMember", ("kingdom", kingdom), ("clan", clan));
+    internal static string OwnerDetail(bool town,bool hasOld,string oldName,string oldTitle,bool hasNew,string newName,string newTitle) => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_OwnerDetailBase", ("kind", WeeklyMaterialTexts.Prompt(town?"AF_WEEKLY_Fact_OwnerKindTown":"AF_WEEKLY_Fact_OwnerKindCastle")))+(hasOld?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_OwnerDetailOld", ("oldName", oldName), ("oldTitle", oldTitle)):"")+(hasNew?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_OwnerDetailNew", ("newName", newName), ("newTitle", newTitle)):"");
+    internal static string SiegeSentence(string actor,string settlement,string oldOwner,string newOwner) => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_SiegeSentence", ("actor", actor), ("settlement", settlement), ("oldOwner", oldOwner), ("newOwner", newOwner));
+    internal static string GrantSentence(string settlement,string owner,string label) => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_GrantSentence", ("settlement", settlement), ("owner", owner), ("label", label));
+    internal static string TransferSentence(string settlement,string oldOwner,string newOwner,string label) => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_TransferSentence", ("settlement", settlement), ("oldOwner", oldOwner), ("newOwner", newOwner), ("label", label));
     internal static int SiegePriority(bool town)=>town?65:45;
     // Softer than before: per-battle cost now also builds war weariness, which drains stability weekly.
     internal static int SiegeStability(bool town,bool winner)=>winner?(town?3:1):(town?-4:-2);
@@ -40,69 +42,81 @@ internal static class WorldBulletinCampaignMaterialPolicy
     // Only large field battles swing stability, by one point; the rest is carried by war weariness.
     internal static int BattleStability(int troops,int threshold)=>troops>threshold?1:0;
     internal static string BattleSentence(string location,bool sallyOut,bool siege,string winner,string winnerFaction,string loser,string loserFaction,int troops)
-        => location+(sallyOut?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0781"):siege?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0782"):WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0783"))+winner+"（"+winnerFaction+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0784")+loser+"（"+loserFaction+"）"+(sallyOut?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0785"):"")+"。";
+        => WeeklyMaterialTexts.Fact(sallyOut?"AF_WEEKLY_Fact_BattleSentenceSally":siege?"AF_WEEKLY_Fact_BattleSentenceSiege":"AF_WEEKLY_Fact_BattleSentenceField", ("location", location), ("winner", winner), ("winnerFaction", winnerFaction), ("loser", loser), ("loserFaction", loserFaction));
     internal static string BattleDetail(int winnerTroops,string winnerLoss,int loserTroops,string loserLoss,bool sallyOut,bool winnerLord,string winnerTitle,bool loserLord,string loserTitle)
-        => WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0786")+winnerTroops+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0787")+winnerLoss+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0788")+loserTroops+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0789")+loserLoss+(winnerLord?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0790")+winnerTitle:"")+(loserLord?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0791")+loserTitle:"")+(sallyOut?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0792"):"");
-    internal static string CapturedWho(bool ruler,string kingdom,string name,string affiliation)=>ruler?kingdom+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0793")+name:name+"（"+affiliation+"）";
-    internal static string CapturedSentence(string who,bool hasCaptor,string captor)=>who+(hasCaptor?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0794")+captor+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0795"):WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0796"));
-    internal static string CapturedDetail(string title,bool hasCaptor,string captor,string captorTitle)=>WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0797")+title+(hasCaptor?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0798")+captor+"（"+captorTitle+"）":"");
+        => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_BattleDetailBase", ("winnerTroops", winnerTroops.ToString()), ("winnerLoss", winnerLoss), ("loserTroops", loserTroops.ToString()), ("loserLoss", loserLoss))
+            +(winnerLord?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_BattleDetailWinnerLord", ("winnerTitle", winnerTitle)):"")+(loserLord?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_BattleDetailLoserLord", ("loserTitle", loserTitle)):"")+(sallyOut?WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_BattleDetailSallyNote"):"");
+    internal static string CapturedWho(bool ruler,string kingdom,string name,string affiliation)=>ruler?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CapturedWhoRuler", ("kingdom", kingdom), ("name", name)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CapturedWhoOther", ("name", name), ("affiliation", affiliation));
+    internal static string CapturedSentence(string who,bool hasCaptor,string captor)=>hasCaptor?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CapturedSentenceBy", ("who", who), ("captor", captor)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CapturedSentenceEnemy", ("who", who));
+    internal static string CapturedDetail(string title,bool hasCaptor,string captor,string captorTitle)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CapturedDetailBase", ("title", title))+(hasCaptor?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CapturedDetailCaptor", ("captor", captor), ("captorTitle", captorTitle)):"");
     // Below the 30-point headline floor: an ordinary captive is a supporting line, never the lead.
     internal static int CapturedPriority(bool ruler)=>ruler?65:28;
     internal static int CapturedStability(bool ruler)=>ruler?-4:-1;
-    internal static string DestroyedSentence(string kingdom)=>kingdom+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0799");
-    internal static string DestroyedDetail(string ruler)=>WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0800")+ruler;
-    internal static string RebellionSentence(string clan,string kingdom)=>clan+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0801")+kingdom+"。";
-    internal static string RebellionDetail(string clanLeader,string king)=>WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0802")+clanLeader+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0803")+king;
-    internal static string CreatedSentence(string clan,string kingdom)=>clan+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0804")+kingdom+"。";
-    internal static string CreatedDetail(string founder,bool hadOld,string old)=>WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0805")+founder+(hadOld?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0806")+old:"");
+    internal static string DestroyedSentence(string kingdom)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DestroyedSentence", ("kingdom", kingdom));
+    internal static string DestroyedDetail(string ruler)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DestroyedDetail", ("ruler", ruler));
+    internal static string RebellionSentence(string clan,string kingdom)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_RebellionSentence", ("clan", clan), ("kingdom", kingdom));
+    internal static string RebellionDetail(string clanLeader,string king)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_RebellionDetail", ("clanLeader", clanLeader), ("king", king));
+    internal static string CreatedSentence(string clan,string kingdom)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CreatedSentence", ("clan", clan), ("kingdom", kingdom));
+    internal static string CreatedDetail(string founder,bool hadOld,string old)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CreatedDetailBase", ("founder", founder))+(hadOld?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CreatedDetailOld", ("old", old)):"");
     internal const int ArmyGatheredTroopThreshold = 1000;
-    internal static string RaidSentence(string settlement,string raider,string faction)=>settlement+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0807")+raider+"（"+faction+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0808");
-    internal static string RaidDetail(string owner)=>owner.Length>0?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0809")+owner:"";
-    internal static string CivilWarSentence(string kingdom)=>kingdom+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0810");
-    internal static string CivilWarDetail(string ruler)=>WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0811")+ruler;
-    internal static string AllianceFormedSentence(string first,string second)=>first+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0812")+second+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0813");
-    internal static string AllianceEndedSentence(string first,string second)=>first+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0814")+second+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0815");
-    internal static string AllianceDetail(string first,string firstLeader,string second,string secondLeader)=>first+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0816")+firstLeader+"；"+second+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0817")+secondLeader;
+    internal static string RaidSentence(string settlement,string raider,string faction)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_RaidSentence", ("settlement", settlement), ("raider", raider), ("faction", faction));
+    internal static string RaidDetail(string owner)=>owner.Length>0?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_RaidDetail", ("owner", owner)):"";
+    internal static string CivilWarSentence(string kingdom)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CivilWarSentence", ("kingdom", kingdom));
+    internal static string CivilWarDetail(string ruler)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CivilWarDetail", ("ruler", ruler));
+    internal static string AllianceFormedSentence(string first,string second)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_AllianceFormedSentence", ("first", first), ("second", second));
+    internal static string AllianceEndedSentence(string first,string second)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_AllianceEndedSentence", ("first", first), ("second", second));
+    internal static string AllianceDetail(string first,string firstLeader,string second,string secondLeader)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_AllianceDetail", ("first", first), ("firstLeader", firstLeader), ("second", second), ("secondLeader", secondLeader));
     internal static string RulerChangedSentence(string kingdom,string ruler,string clan,bool interim)
-        => interim?kingdom+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0818")+clan+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0819")+ruler+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0820"):ruler+"（"+clan+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0821")+kingdom+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0822");
+        => interim?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_RulerChangedInterim", ("kingdom", kingdom), ("clan", clan), ("ruler", ruler)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_RulerChangedNew", ("ruler", ruler), ("clan", clan), ("kingdom", kingdom));
     internal static string RulerChangedDetail(bool hasPrevious,string previous,string previousClan,bool previousDying)
-        => hasPrevious?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0823")+previous+"（"+previousClan+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0824")+(previousDying?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0825"):""):WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0826");
-    internal static string MarriageSentence(string first,string firstTitle,string second,string secondTitle)=>firstTitle+first+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0827")+secondTitle+second+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0828");
+        => hasPrevious?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_RulerChangedPrevious", ("previous", previous), ("previousClan", previousClan))+(previousDying?WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_RulerChangedPreviousDying"):""):WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_RulerChangedUnknown");
+    internal static string MarriageSentence(string first,string firstTitle,string second,string secondTitle)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_MarriageSentence", ("first", first), ("firstTitle", firstTitle), ("second", second), ("secondTitle", secondTitle));
     internal static string DefectionSentence(string clan,int fiefs,bool hadOld,string oldKingdom,string newKingdom)
-        => clan+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0829")+fiefs+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0830")+(hadOld?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0831")+oldKingdom+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0832"):WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0833"))+newKingdom+"。";
-    internal static string DefectionDetail(string leader,string fiefs)=>WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0834")+leader+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0835")+fiefs;
-    internal static string ClanDestroyedSentence(string clan,bool hadKingdom,string kingdom)=>(hadKingdom?kingdom+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0836"):"")+clan+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0837");
-    internal static string ClanDestroyedDetail(string leader)=>leader.Length>0?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0838")+leader:WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0839");
+        => hadOld?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DefectionSwitch", ("clan", clan), ("fiefs", fiefs.ToString()), ("oldKingdom", oldKingdom), ("newKingdom", newKingdom)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DefectionNew", ("clan", clan), ("fiefs", fiefs.ToString()), ("newKingdom", newKingdom));
+    internal static string DefectionDetail(string leader,string fiefs)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DefectionDetail", ("leader", leader), ("fiefs", fiefs));
+    internal static string ClanDestroyedSentence(string clan,bool hadKingdom,string kingdom)=>hadKingdom?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_ClanDestroyedKingdom", ("kingdom", kingdom), ("clan", clan)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_ClanDestroyedNoKingdom", ("clan", clan));
+    internal static string ClanDestroyedDetail(string leader)=>leader.Length>0?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_ClanDestroyedDetail", ("leader", leader)):WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_ClanDestroyedDetailUnknown");
     internal static string ArmyGatheredSentence(string kingdom,string leaderTitle,string leader,int troops,string place)
-        => kingdom+leaderTitle+leader+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0840")+troops+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0841")+(place.Length>0?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0842")+place:"")+"。";
-    internal static string ArmyGatheredDetail(int parties)=>WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0843")+parties+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0844");
-    internal static string TownUnrestSentence(string town,string owner)=>town+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0845")+(owner.Length>0?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0846")+owner:"")+"。";
-    internal static string TownRebellionSentence(string town,string oldOwner,string rebels)=>town+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0847")+oldOwner+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0848")+rebels+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0849");
-    internal static string AnnexedSentence(string receiving,string annexed)=>annexed+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0850")+receiving+"，"+annexed+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0851")+receiving+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0852");
-    internal static string AnnexedDetail(string receivingRuler,string formerRuler,int clans)=>WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0853")+receivingRuler+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0854")+formerRuler+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0855")+clans+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0856");
-    internal static string VassalageEstablishedSentence(string suzerain,string vassal,string type)=>vassal+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0857")+suzerain+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0858")+type+"。";
-    internal static string VassalageEndedSentence(string suzerain,string vassal,string type)=>vassal+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0859")+suzerain+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0860")+type+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0861");
-    internal static string VassalageDetail(string suzerainRuler,string vassalRuler)=>WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0862")+suzerainRuler+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0863")+vassalRuler;
+        => place.Length>0?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_ArmyGatheredPlace", ("kingdom", kingdom), ("leaderTitle", leaderTitle), ("leader", leader), ("troops", troops.ToString()), ("place", place)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_ArmyGathered", ("kingdom", kingdom), ("leaderTitle", leaderTitle), ("leader", leader), ("troops", troops.ToString()));
+    internal static string ArmyGatheredDetail(int parties)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_ArmyGatheredDetail", ("parties", parties.ToString()));
+    internal static string TownUnrestSentence(string town,string owner)=>owner.Length>0?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_TownUnrestOwner", ("town", town), ("owner", owner)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_TownUnrest", ("town", town));
+    internal static string TownRebellionSentence(string town,string oldOwner,string rebels)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_TownRebellion", ("town", town), ("oldOwner", oldOwner), ("rebels", rebels));
+    internal static string AnnexedSentence(string receiving,string annexed)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_AnnexedSentence", ("annexed", annexed), ("receiving", receiving));
+    internal static string AnnexedDetail(string receivingRuler,string formerRuler,int clans)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_AnnexedDetail", ("receivingRuler", receivingRuler), ("formerRuler", formerRuler), ("clans", clans.ToString()));
+    internal static string VassalageEstablishedSentence(string suzerain,string vassal,string type)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_VassalageEstablished", ("vassal", vassal), ("suzerain", suzerain), ("type", type));
+    internal static string VassalageEndedSentence(string suzerain,string vassal,string type)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_VassalageEnded", ("vassal", vassal), ("suzerain", suzerain), ("type", type));
+    internal static string VassalageDetail(string suzerainRuler,string vassalRuler)=>WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_VassalageDetail", ("suzerainRuler", suzerainRuler), ("vassalRuler", vassalRuler));
     internal static bool IsNaturalDeath(string detail)=>detail=="DiedOfOldAge"||detail=="DiedInLabor";
-    internal static string KilledWho(bool ruler,string kingdom,string clan,string name)=>ruler?kingdom+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0864")+name:kingdom+clan+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0865")+name;
+    internal static string KilledWho(bool ruler,string kingdom,string clan,string name)=>ruler?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_KilledWhoRuler", ("kingdom", kingdom), ("name", name)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_KilledWhoLord", ("kingdom", kingdom), ("clan", clan), ("name", name));
     internal static int DeathPriority(bool ruler,bool natural)=>ruler?(natural?70:90):(natural?25:50);
     internal static string DeathKind(bool ruler)=>ruler?"ruler_killed":"lord_killed";
     internal static int DeathStability(bool ruler,bool natural)=>ruler?-8:(natural?0:-2);
     internal static string DeathSentence(WorldBulletinDeathMaterialCapture c)
     {
-        if(c.HasPublicExecutionFacts)return c.Who+c.Venue+(c.HasKiller?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0866")+c.KillerName:WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0867"))+c.Method+c.Charge+"。";
-        if(c.Execution)return c.Who+(c.HasKiller?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0868")+c.KillerName+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0869"):WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0870"));
-        if(c.Detail=="DiedInBattle")return c.Who+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0871")+(c.HasKiller?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0872")+c.KillerName+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0873"):"。");
-        if(c.Detail=="Murdered")return c.Who+(c.HasKiller?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0874")+c.KillerName+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0875"):WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0876"));
-        if(c.Detail=="DiedOfOldAge")return c.Who+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0877");
-        return c.Who+WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0878");
+        if(c.HasPublicExecutionFacts)return PublicExecutionSentence(c);
+        if(c.Execution)return c.HasKiller?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DeathExecutedBy", ("who", c.Who), ("killer", c.KillerName)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DeathExecuted", ("who", c.Who));
+        if(c.Detail=="DiedInBattle")return c.HasKiller?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DeathBattleKiller", ("who", c.Who), ("killer", c.KillerName)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DeathBattle", ("who", c.Who));
+        if(c.Detail=="Murdered")return c.HasKiller?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DeathMurderKiller", ("who", c.Who), ("killer", c.KillerName)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DeathMurder", ("who", c.Who));
+        if(c.Detail=="DiedOfOldAge")return WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DeathOldAge", ("who", c.Who));
+        return WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DeathOther", ("who", c.Who));
+    }
+    // Whole-sentence templates keep each package language's own word order. Method and charge come from the invariant
+    // source labels and are projected to the package language; unknown (extension) labels pass through unchanged.
+    private static string PublicExecutionSentence(WorldBulletinDeathMaterialCapture c)
+    {
+        string venue=string.IsNullOrWhiteSpace(c.VenueName)?"":WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_Exec_Venue",("VENUE",c.VenueName));
+        string method=string.IsNullOrWhiteSpace(c.MethodLabel)?WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_Exec_MethodPlain"):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_Exec_MethodBy",("METHOD",CampaignSystemFactProjection.ExecutionMethodForPackage(c.MethodLabel)));
+        string charge=string.IsNullOrWhiteSpace(c.ChargeLabel)?"":WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_Exec_Charge",("CHARGE",CampaignSystemFactProjection.ExecutionValueForPackage(c.ChargeLabel)));
+        return c.HasKiller
+            ?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_Exec_BulletinByKiller",("WHO",c.Who),("VENUE",venue),("KILLER",c.KillerName),("METHOD",method),("CHARGE",charge))
+            :WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_Exec_BulletinNoKiller",("WHO",c.Who),("VENUE",venue),("METHOD",method),("CHARGE",charge));
     }
     internal static string DeathDetail(WorldBulletinDeathMaterialCapture c)
     {
-        var text=new StringBuilder();text.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0879")).Append(c.VictimTitle).Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0880")).Append(c.Age).Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0881"));
-        if(c.HasKiller)text.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0882")).Append(c.KillerName).Append("（").Append(c.KillerTitle).Append("）");
-        if(c.HasPublicExecutionFacts)text.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0883")).Append(c.ToneLabel).Append("，").Append(c.LegitimacyLabel).Append(c.PlayerStruck?WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0884"):WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0885"));
-        else if(c.Execution&&!string.IsNullOrWhiteSpace(c.ExecutionPlace))text.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0886")).Append(c.ExecutionPlace);
+        var text=new StringBuilder();text.Append(WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DeathDetailBase", ("victimTitle", c.VictimTitle), ("age", c.Age.ToString())));
+        if(c.HasKiller)text.Append(WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DeathDetailKiller", ("killer", c.KillerName), ("killerTitle", c.KillerTitle)));
+        if(c.HasPublicExecutionFacts)text.Append(WeeklyMaterialTexts.Fact(c.PlayerStruck?"AF_WEEKLY_Fact_DeathDetailTrialStruck":"AF_WEEKLY_Fact_DeathDetailTrialHeadsman", ("tone", c.ToneLabel), ("legitimacy", c.LegitimacyLabel)));
+        else if(c.Execution&&!string.IsNullOrWhiteSpace(c.ExecutionPlace))text.Append(WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_DeathDetailPlace", ("place", c.ExecutionPlace)));
         return text.ToString();
     }
     internal static string DeathGroup(bool execution,string detail,string killerId,string victimId,int day,string pairKey)
@@ -111,6 +125,8 @@ internal static class WorldBulletinCampaignMaterialPolicy
 internal sealed class WorldBulletinDeathMaterialCapture
 {
     internal string Who, VictimTitle, KillerName, KillerTitle, Detail, Venue, Method, Charge, ToneLabel, LegitimacyLabel, ExecutionPlace;
+    // Public execution: invariant source labels. The package-language sentence is composed in DeathSentence.
+    internal string VenueName, MethodLabel, ChargeLabel;
     internal int Age;
     internal bool HasKiller, HasPublicExecutionFacts, Execution, PlayerStruck;
 }
