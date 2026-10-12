@@ -1,0 +1,163 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Xml.Linq;
+
+// A controlled MCM provider around the actual four product settings types.
+// Metadata, original setters, terminal definitions and native UI localization are real;
+// SaveSettings records routing/failure, without writing the game configuration.
+public static class TerminalProviderProbe
+{
+    public static readonly Dictionary<string, object> Owners = new Dictionary<string, object>();
+    public static readonly List<string> Saved = new List<string>();
+    public static string FailId;
+    public static object Get(string id) => Owners.TryGetValue(id, out object value) ? value : null;
+    public static void Save(object owner)
+    {
+        string id = (string)owner.GetType().GetProperty("Id").GetValue(owner);
+        if (id == FailId) throw new InvalidOperationException("Controlled save failure");
+        Saved.Add(id);
+    }
+}
+
+internal static class TerminalSettingsChecks
+{
+    const BindingFlags S = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+    static int checks;
+    static void Check(bool value, string name) { checks++; if (!value) throw new Exception("FAIL terminal " + name); }
+    static object Property(object value, string name) => value.GetType().GetProperty(name).GetValue(value);
+    static object Call(Type type, string name, params object[] values)
+        => type.GetMethods(S).Single(m => m.Name == name && m.GetParameters().Length == values.Length).Invoke(null, values);
+    internal static void Run(Assembly product, string moduleRoot)
+    {
+        var mcm = Assembly.Load("MCMv5");
+        Type provider = mcm.GetType("MCM.Abstractions.BaseSettingsProvider", true);
+        var instance = provider.GetField("<Instance>k__BackingField", S);
+        object prior = instance.GetValue(null);
+        try
+        {
+            instance.SetValue(null, BuildProvider(provider));
+            var types = new[] { "AnimusForge.DuelSettings", "AnimusForge.DialogueUI.DialogueUiSettings",
+                "AnimusForge.Illustrator.IllustratorSettings", "AnimusForge.CoupSystem.CoupSettings" };
+            foreach (string name in types)
+            {
+                object owner = Activator.CreateInstance(product.GetType(name, true));
+                TerminalProviderProbe.Owners.Add((string)Property(owner, "Id"), owner);
+            }
+            Type registry = product.GetType("AnimusForge.TerminalSettingsRegistry", true);
+            Type localization = Assembly.Load("TaleWorlds.Localization").GetType("TaleWorlds.Localization.MBTextManager", true);
+            Type metadata = mcm.GetType("MCM.Abstractions.Attributes.BaseSettingPropertyAttribute", true);
+            object duel = TerminalProviderProbe.Owners["AnimusForge_global_settings"];
+            foreach (string language in new[] { "English", "简体中文", "English" })
+            {
+                localization.GetMethod("ChangeLanguage").Invoke(null, new object[] { language });
+                var defs = ((IEnumerable)registry.GetProperty("AllDefinitions").GetValue(null)).Cast<object>().ToDictionary(d => (string)Property(d, "Id"));
+                int attributed = 0;
+                foreach (string name in types)
+                {
+                    Type type = product.GetType(name, true);
+                    object owner = TerminalProviderProbe.Owners.Values.Single(o => o.GetType() == type);
+                    string prefix = type.Name == "DuelSettings" ? "" : type.Name == "DialogueUiSettings" ? "DialogueUi." : type.Name == "IllustratorSettings" ? "Illustrator." : "Coup.";
+                    foreach (PropertyInfo property in type.GetProperties())
+                    {
+                        var attribute = property.GetCustomAttributes(metadata, true).SingleOrDefault();
+                        if (attribute == null) continue;
+                        attributed++;
+                        string id = prefix + property.Name;
+                        Check(defs.ContainsKey(id), "every attributed property has a real definition " + id);
+                        object def = defs[id];
+                        object raw = property.GetValue(owner);
+                        var getter = (Delegate)Property(def, "Getter");
+                        var setter = Property(def, "Setter") as Delegate;
+                        string kind = Property(def, "SettingType").ToString();
+                        if (kind == "Button") { Check(Property(def, "Invoker") != null, "original action connected " + id); continue; }
+                        object shown = getter.DynamicInvoke(duel);
+                        if (kind == "Dropdown")
+                        {
+                            int count = (int)Property(raw, "Count");
+                            int index = (int)Property(raw, "SelectedIndex");
+                            if (count > 1) {
+                                int next = (index + 1) % count;
+                                bool completion = setter.Method.DeclaringType.FullName.IndexOf("TerminalSettingsCoverage", StringComparison.Ordinal) >= 0;
+                                // Model selectors can normalize manual selection
+                                // back to the stored model. Use the native setter
+                                // as the control instead of changing its semantics.
+                                int expectedIndex = next;
+                                if (completion) {
+                                    raw.GetType().GetProperty("SelectedIndex").SetValue(raw, next);
+                                    property.SetValue(owner, raw);
+                                    expectedIndex = (int)Property(property.GetValue(owner), "SelectedIndex");
+                                    object reset = property.GetValue(owner);
+                                    reset.GetType().GetProperty("SelectedIndex").SetValue(reset, index);
+                                    property.SetValue(owner, reset);
+                                }
+                                setter.DynamicInvoke(duel, next);
+                                Check((int)Property(property.GetValue(owner), "SelectedIndex") == expectedIndex,
+                                    (completion ? "new completion preserves native setter normalization " : "existing terminal selection remains connected ") + id);
+                                setter.DynamicInvoke(duel, index);
+                            }
+                            Check(Property(def, "DropdownGetter") != null, "dropdown editor bound " + id);
+                        }
+                        else
+                        {
+                            Check(Equals(raw, shown), "getter reads its original owner " + id);
+                            object next = raw is bool b ? (object)!b : raw is int n ? n == 0 ? 1 : n-1 : raw is float f ? f+0.05f : raw is string str ? str+"_REPLAY" : null;
+                            Check(next != null, "supported original property type " + id);
+                            setter.DynamicInvoke(duel, next);
+                            Check(Equals(property.GetValue(owner), next), "setter writes its original owner " + id);
+                            setter.DynamicInvoke(duel, raw);
+                        }
+                    }
+                }
+                Check(defs.Count == attributed, "no missing or duplicate metadata definitions");
+                var ui = ((IEnumerable)Call(registry, "GetByCategory", "UI")).Cast<object>().Select(d => (string)Property(d, "Id")).ToArray();
+                foreach (string id in new[] { "CourierLetterThemeDropdown", "DialogueUi.InterfaceStyleDropdown", "DialogueUi.BodyFontSize", "DialogueUi.ShoutPanelStyleDropdown", "DialogueUi.ShowHistoryDelete", "BubbleFontSize", "WeeklyReportPopupBodyFontSize" })
+                    Check(ui.Contains(id), "UI page contains " + id);
+                Type textObject = Assembly.Load("TaleWorlds.Localization").GetType("TaleWorlds.Localization.TextObject", true);
+                string courierGroup = "{=AF_MCM_Group_CourierStationery}NPC contact / courier stationery";
+                Check((string)Property(defs["CourierLetterThemeDropdown"], "GroupName") == Activator.CreateInstance(textObject, new object[] { courierGroup, null }).ToString(), "slashes inside a localized group fallback do not leak untranslated suffixes");
+                string path = System.IO.Path.Combine(moduleRoot, "ModuleData/Languages", language == "English" ? "af_ui_strings.xml" : "CNs/af_ui_strings-zh-CN.xml");
+                string expected = XDocument.Load(path).Descendants("string").Single(e => (string)e.Attribute("id") == "AF_UI_Terminal_Ui").Attribute("text").Value;
+                Type categories = product.GetType("AnimusForge.TerminalCategories", true);
+                string text = (string)Call(categories, "DisplayText", "UI");
+                Check(Activator.CreateInstance(textObject, new object[] { text, null }).ToString() == expected, "native UI page label " + language);
+                Console.WriteLine("Terminal actual metadata: " + defs.Count + " definitions, " + ui.Length + " UI settings, language=" + language);
+            }
+            TerminalProviderProbe.Saved.Clear();
+            TerminalProviderProbe.FailId = "AnimusForge_DialogueUI_v1";
+            Check(!(bool)Call(registry, "SaveSettings"), "partial owner save failure is reported");
+            Check(TerminalProviderProbe.Saved.Contains("AnimusForge_Illustrator_v1") && TerminalProviderProbe.Saved.Contains("AnimusForge_Coup_v1"), "other dirty owners still save");
+            TerminalProviderProbe.Saved.Clear(); TerminalProviderProbe.FailId = null;
+            Check((bool)Call(registry, "SaveSettings"), "failed dirty owner can retry");
+            Check(TerminalProviderProbe.Saved.Contains("AnimusForge_DialogueUI_v1"), "failed owner is retained for retry");
+            Check(!TerminalProviderProbe.Saved.Contains("AnimusForge_Illustrator_v1") && !TerminalProviderProbe.Saved.Contains("AnimusForge_Coup_v1"), "successfully saved owners are not repeatedly saved");
+            Console.WriteLine("PASS actual terminal settings: " + checks + " checks; controlled provider persistence routing, live Gauntlet NOT RUN.");
+        }
+        finally { instance.SetValue(null, prior); TerminalProviderProbe.Owners.Clear(); TerminalProviderProbe.Saved.Clear(); TerminalProviderProbe.FailId=null; }
+    }
+
+    static object BuildProvider(Type provider)
+    {
+        var assembly = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("TerminalProviderFixture"), AssemblyBuilderAccess.Run);
+        var builder = assembly.DefineDynamicModule("Fixture").DefineType("Provider", TypeAttributes.Public, provider);
+        foreach (MethodInfo method in provider.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(m => m.IsAbstract))
+        {
+            Type[] parameters = method.GetParameters().Select(p => p.ParameterType).ToArray();
+            var implementation = builder.DefineMethod(method.Name, MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.HideBySig, method.ReturnType, parameters);
+            ILGenerator il = implementation.GetILGenerator();
+            if (method.Name == "GetSettings") {
+                il.Emit(OpCodes.Ldarg_1); il.Emit(OpCodes.Call, typeof(TerminalProviderProbe).GetMethod("Get")); il.Emit(OpCodes.Castclass, method.ReturnType);
+            } else if (method.Name == "SaveSettings") {
+                il.Emit(OpCodes.Ldarg_1); il.Emit(OpCodes.Call, typeof(TerminalProviderProbe).GetMethod("Save"));
+            } else if (method.ReturnType != typeof(void)) {
+                if (method.ReturnType.IsValueType) { var temp=il.DeclareLocal(method.ReturnType); il.Emit(OpCodes.Ldloca_S,temp); il.Emit(OpCodes.Initobj,method.ReturnType); il.Emit(OpCodes.Ldloc,temp); }
+                else il.Emit(OpCodes.Ldnull);
+            }
+            il.Emit(OpCodes.Ret); builder.DefineMethodOverride(implementation, method);
+        }
+        return Activator.CreateInstance(builder.CreateType());
+    }
+}

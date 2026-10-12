@@ -34,7 +34,7 @@
                 <!-- Centered category tabs with native raised metal button materials -->
                 <ListPanel DataSource="{TabItems}" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="44" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="104" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                   <ItemTemplate>
-                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelect" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="42" MarginLeft="4" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelect" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="126" SuggestedHeight="42" MarginLeft="4" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                       <Children>
                         <!-- Native gold highlight for the selected button -->
                         <Widget IsVisible="@IsSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Done.Button" IsEnabled="false" />

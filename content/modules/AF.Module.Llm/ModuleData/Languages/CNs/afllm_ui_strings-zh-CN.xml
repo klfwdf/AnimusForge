@@ -10,5 +10,32 @@
     <string id="AF_LLM_UI_VoiceGroup_FemaleYoung" text="青年女声 (&lt;30岁)" />
     <string id="AF_LLM_UI_VoiceGroup_FemaleMiddle" text="中年女声 (30-50岁)" />
     <string id="AF_LLM_UI_VoiceGroup_FemaleOld" text="老年女声 (&gt;50岁)" />
-  </strings>
+    <string id="AF_LLM_UI_TtsError_EndpointUnsupported" text="API 地址无效或协议不支持；V3 请使用 /api/v3/tts/unidirectional，Agent Plan 使用 /api/v3/plan/tts/unidirectional（非 SSE/WS）。" />
+    <string id="AF_LLM_UI_TtsError_ConfigurationIncomplete" text="请检查凭据、Resource ID 和音色；V1 还需要 AppID。" />
+    <string id="AF_LLM_UI_TtsError_ExtraParametersInvalid" text="附加参数不是有效 JSON；V3 要求 JSON 对象。" />
+    <string id="AF_LLM_UI_TtsError_V3SpeedInvalid" text="V3 语速须为 0.5–2.0 倍，未自动修改您的设置。" />
+    <string id="AF_LLM_UI_TtsError_V3SampleRateInvalid" text="V3 采样率须为 8000、16000、22050、24000、32000、44100 或 48000。" />
+    <string id="AF_LLM_UI_TtsError_AudioFormatUnsupported" text="播放器只支持 wav 或 pcm。" />
+    <string id="AF_LLM_UI_TtsError_V3TextInvalid" text="V3 文本为空或超过 AF 单次 64 KiB UTF-8 限制。" />
+    <string id="AF_LLM_UI_TtsError_V3LoudnessInvalid" text="V3 云端音量倍率须为 0.5–2.0。" />
+    <string id="AF_LLM_UI_TtsError_Timeout" text="合成超时（30 秒）；未自动重试。" />
+    <string id="AF_LLM_UI_TtsError_Cancelled" text="语音请求已取消。" />
+    <string id="AF_LLM_UI_TtsError_Http401" text="鉴权失败；V3 请填写对应服务的 API Key，Agent Plan 使用套餐专属 API Key，并检查资源与音色授权。" />
+    <string id="AF_LLM_UI_TtsError_Http403" text="鉴权失败；V3 请填写对应服务的 API Key，Agent Plan 使用套餐专属 API Key，并检查资源与音色授权。" />
+    <string id="AF_LLM_UI_TtsError_Http429" text="请求受限；请检查额度/并发，未自动重试。" />
+    <string id="AF_LLM_UI_TtsError_ResponseTooLarge" text="响应超过 AF 音频/传输大小限制。" />
+    <string id="AF_LLM_UI_TtsError_UrlMissing" text="TTS API 地址未配置。" />
+    <string id="AF_LLM_UI_TtsError_CredentialMissing" text="TTS Token / API Key 未配置；V1 需要 Token，V3 需要对应服务或套餐的 API Key。" />
+    <string id="AF_LLM_UI_TtsError_AppIdMissing" text="V1 TTS AppID 未配置。" />
+    <string id="AF_LLM_UI_TtsError_ResourceIdMissing" text="TTS Resource ID 未配置。" />
+    <string id="AF_LLM_UI_TtsError_VoiceIdMissing" text="TTS 音色 ID 未配置。" />
+    <string id="AF_LLM_UI_TtsError_Unknown" text="语音合成失败（{CODE}），请查看 TtsEngine 日志；未自动重试。" />
+    <string id="AF_LLM_UI_Tts_TestFailure" text="[TTS] 测试语音失败：{REASON}" />
+    <string id="AF_LLM_UI_TtsError_DisabledDuringPlayback" text="播放期间 TTS 已关闭，回退到文字气泡。" />
+  <string id="AF_LLM_UI_TtsError_UnsupportedPlaybackFormat" text="不支持的 TTS 音频格式，仅支持 wav/pcm。" />
+  <string id="AF_LLM_UI_TtsError_TargetBeforeSynthesis" text="合成前场景发言目标已不可用。" />
+  <string id="AF_LLM_UI_TtsError_EmptyAudio" text="TTS 合成返回空音频。" />
+  <string id="AF_LLM_UI_TtsError_AudioParseFailed" text="TTS 音频解析失败。" />
+  <string id="AF_LLM_UI_TtsError_TargetBeforePlayback" text="播放前场景发言目标已不可用。" />
+</strings>
 </base>

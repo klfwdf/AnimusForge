@@ -795,5 +795,7 @@
   "policy_weekly_vassal_parts": "Player vassal policy. Issuing party: |. Effective target: |. Publisher: |. Attribution: issued by the suzerain player, not independently enacted by the vassal ruler. Policy: \"|\". Policy summary: |. Consequent events: |. Weekly attribution kingdom: |. Actual daily effects: |.",
   "policy_weekly_label_ruler": "Ruler policy",
   "policy_weekly_label_vassal": "Player vassal policy",
-  "policy_weekly_no_numeric_change": "No ongoing numerical changes"
+  "policy_weekly_no_numeric_change": "No ongoing numerical changes",
+  "memory_diplomacy_oral_delayed": "The diplomatic declaration previously promised has not yet been published and awaits redrafting; the agreed terms have not changed.",
+  "memory_diplomacy_oral_withdrawal": "I have explicitly agreed to withdraw the earlier public diplomatic proposal, pending publication of the formal withdrawal declaration; the original proposal has not become invalid as a result yet."
 }

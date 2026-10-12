@@ -30,7 +30,19 @@ internal static class AuthorityReplay
             Test.True(result.CanReply == ruler, "player ruler can answer outstanding reply regardless of independent authority");
         }
         round.Participants[0].MandatoryReplyPending = false;
-        Test.True(!WorldDiplomacyPresentationQueries.Detail(doc, round, new WorldDiplomacyPlayerContext(2, "a", true, true, ""), _ => "").CanReply, "completed obligation removes reply eligibility");
+        Test.True(WorldDiplomacyPresentationQueries.Detail(doc, round, new WorldDiplomacyPlayerContext(2, "a", true, true, ""), _ => "").CanReply, "compose shortcut does not require an outstanding obligation");
+        foreach (string state in new[] { "active", "closed", "" })
+        foreach (bool independent in new[] { false, true })
+        foreach (bool ruler in new[] { false, true })
+        {
+            round.State = state;
+            round.Participants.Clear();
+            var player = new WorldDiplomacyPlayerContext(2, "a", ruler, independent, "");
+            Test.True(WorldDiplomacyPresentationQueries.Detail(doc, round, player, _ => "").CanReply == ruler,
+                "only ruler authority gates the shortcut regardless of round state, membership or independence");
+            Test.True(WorldDiplomacyPresentationQueries.Detail(doc, null!, player, _ => "").CanReply == ruler,
+                "missing old round does not hide the shortcut");
+        }
         Test.True(WorldDiplomacyWarPressureRules.CalculatePeacePressure(7, 0, 0, 1000, 1000, 0, 0, 0, 0) == 0, "peace pressure neutral baseline");
         Test.True(WorldDiplomacyWarPressureRules.CalculatePeacePressure(119, 0, 500, 1000, 2500, 2000, 0, 2, 2) == 300, "peace pressure preserves all seven terms and ceiling");
     }

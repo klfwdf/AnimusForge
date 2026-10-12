@@ -56,7 +56,7 @@ $script:failAtSecond = $true
 
 function Get-FileSha256 {
     param([string]$LiteralPath)
-    $active = Join-Path $env:LOCALAPPDATA 'AnimusForge\Recovery\deploy'
+    $active = Join-Path $modules '.AnimusForge.Recovery\deploy'
     if ($script:failAtSecond -and $LiteralPath -eq (Join-Path $stage 'b.txt') -and
         @(Get-ChildItem -LiteralPath $active -Recurse -Filter 'activating' -File -ErrorAction SilentlyContinue).Count -gt 0) {
         $script:failAtSecond = $false
@@ -73,7 +73,7 @@ foreach ($name in @('a.txt', 'b.txt')) {
     if ([System.IO.File]::ReadAllText((Join-Path $target $name)) -ne "old-$name") { throw 'Rollback did not restore managed bytes.' }
 }
 Assert-UnmanagedUnchanged
-$recovery = Join-Path $local 'AnimusForge\Recovery\deploy'
+$recovery = Join-Path $modules '.AnimusForge.Recovery\deploy'
 $failed = @(Get-ChildItem -LiteralPath $recovery -Directory)
 if ($failed.Count -ne 1 -or -not (Test-Path -LiteralPath (Join-Path $failed[0].FullName 'rolled-back'))) {
     throw 'Failed deployment lacks a rolled-back recovery record.'
@@ -162,9 +162,11 @@ $builtinTarget = Join-Path $target $builtinRelative
 New-Item -ItemType Directory -Path (Split-Path -Parent $builtinStage),(Split-Path -Parent $builtinTarget) -Force | Out-Null
 [System.IO.File]::WriteAllText($builtinStage, 'new-default-worldbook')
 [System.IO.File]::WriteAllText($builtinTarget, 'player-modified-worldbook')
+[System.IO.File]::SetLastWriteTimeUtc($builtinTarget, [datetime]'2020-01-01T00:00:00Z')
+[System.IO.File]::SetLastWriteTimeUtc($builtinStage, [datetime]'2021-01-01T00:00:00Z')
 Invoke-ManagedStageDeployment -StageModuleDir $stage -TargetModuleDir $target -ModulesDir $modules
 if ([System.IO.File]::ReadAllText($builtinTarget) -ne 'new-default-worldbook') {
-    throw 'Ordinary overwrite was blocked for a built-in worldbook.'
+    throw 'Incoming newer default should update an older built-in worldbook.'
 }
 Assert-UnmanagedUnchanged
 

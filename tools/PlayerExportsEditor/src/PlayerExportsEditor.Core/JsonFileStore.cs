@@ -18,6 +18,7 @@ public sealed class JsonFileStore
 
     public string ReadUtf8(string filePath)
     {
+        AnimusForge.AnimusForgeDataPaths.ValidatePath(filePath);
         using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         using var reader = new StreamReader(stream, new UTF8Encoding(false, true), detectEncodingFromByteOrderMarks: true);
         return reader.ReadToEnd();
@@ -55,6 +56,7 @@ public sealed class JsonFileStore
     public string SaveUtf8WithBackup(string filePath, string contents, string packageRoot)
     {
         ValidateJson(contents);
+        AnimusForge.AnimusForgeDataPaths.ValidatePath(filePath);
 
         var backupPath = "";
         Directory.CreateDirectory(Path.GetDirectoryName(filePath) ?? ".");
@@ -64,6 +66,7 @@ public sealed class JsonFileStore
         }
 
         var tmpPath = filePath + ".tmp";
+        AnimusForge.AnimusForgeDataPaths.ValidatePath(tmpPath);
         File.WriteAllText(tmpPath, contents, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         ValidateJson(ReadUtf8(tmpPath));
 
@@ -91,6 +94,7 @@ public sealed class JsonFileStore
 
         var backupRoot = Path.Combine(safePackageRoot, ".backups", DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_" + Guid.NewGuid().ToString("N"));
         var backupPath = Path.Combine(backupRoot, relativePath);
+        AnimusForge.AnimusForgeDataPaths.ValidatePath(backupPath);
         Directory.CreateDirectory(Path.GetDirectoryName(backupPath) ?? backupRoot);
         File.Copy(filePath, backupPath, overwrite: false);
         return backupPath;

@@ -62,6 +62,7 @@ exe=test_editor/'bin/Release/net10.0/Tests.dll'
 execute([sdk10,exe,'--path-contract'],editor,env,'path')
 execute([sdk10,exe,'--path-contract-invalid'],editor,env,'path-invalid')
 execute([sdk10,exe,'--installed-library-contract',editor/'installed-fixture'],editor,env,'installed-library')
+execute([sdk10,exe,'--module-storage-contract',editor/'author-guard-fixture'],ROOT,env,'incoming-module-storage')
 execute([sdk10,exe,'--backup-contract','runtime-storage-'+OUT.name.replace('run-','')],ROOT,env,'backup')
 isolated=editor/'full-fixture';isolated.mkdir()
 env_full=minimal_test_environment(sdk10,isolated)

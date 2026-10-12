@@ -17,6 +17,21 @@ internal enum PolicyEffectRetrievalContext
 	PlayerVassal
 }
 
+// Request-only value; never re-read mutable MCM settings after the draft await.
+internal sealed class PolicyEffectModuleRetrievalRequestSnapshot
+{
+	internal PolicyEffectModuleRetrievalRequestSnapshot(PolicyEffectRetrievalContext context, IEnumerable<string> enabledModuleIds, int requestedDetailCount)
+	{
+		Context = context;
+		EnabledModuleIds = Array.AsReadOnly((enabledModuleIds ?? Array.Empty<string>()).Distinct(StringComparer.Ordinal).ToArray());
+		RequestedDetailCount = requestedDetailCount;
+	}
+
+	internal PolicyEffectRetrievalContext Context { get; }
+	internal IReadOnlyList<string> EnabledModuleIds { get; }
+	internal int RequestedDetailCount { get; }
+}
+
 internal sealed class PolicyEffectModuleRetrievalState
 {
 	[JsonProperty("PlayerPolicyEnabled")]
@@ -99,6 +114,11 @@ internal static class PolicyEffectModuleRetrievalSettings
 			: Array.Empty<IPolicyEffectModule>();
 	}
 
+	internal static PolicyEffectModuleRetrievalRequestSnapshot CaptureRequestSnapshot(PolicyEffectRetrievalContext context, int requestedDetailCount)
+	{
+		return new PolicyEffectModuleRetrievalRequestSnapshot(context, GetEnabledModules(context).Select(module => module.Id), requestedDetailCount);
+	}
+
 	internal static Dictionary<string, PolicyEffectModuleRetrievalState> CreateEditableStateSnapshot()
 	{
 		RetrievalSnapshot snapshot = GetSnapshot();
@@ -140,6 +160,8 @@ internal static class PolicyEffectModuleRetrievalSettings
 		{
 			lock (Sync)
 			{
+				string path = GetSettingsPath(requireDirectory: true);
+				if (File.Exists(path)) ReadSettingsDocument(path);
 				RetrievalSnapshot current = _snapshot ?? LoadSnapshot();
 				Dictionary<string, PolicyEffectModuleRetrievalState> normalizedStates
 					= new Dictionary<string, PolicyEffectModuleRetrievalState>(StringComparer.Ordinal);
@@ -167,7 +189,7 @@ internal static class PolicyEffectModuleRetrievalSettings
 					["Version"] = CurrentVersion,
 					["Modules"] = moduleDocuments
 				};
-				WriteJsonAtomically(GetSettingsPath(requireDirectory: true), document);
+				WriteJsonAtomically(path, document);
 				RetrievalSnapshot replacement = CreateSnapshot(normalizedStates, ReadRawModuleDocuments(moduleDocuments));
 				Volatile.Write(ref _snapshot, replacement);
 			}
@@ -227,16 +249,8 @@ internal static class PolicyEffectModuleRetrievalSettings
 		{
 			try
 			{
-				FileInfo info = new FileInfo(path);
-				if (info.Length < 0 || info.Length > MaxJsonBytes)
-				{
-					throw new InvalidOperationException("Policy effect module retrieval settings file size is invalid.");
-				}
-				JObject document = JObject.Parse(File.ReadAllText(path, StrictUtf8));
-				if (document.Value<int?>("Version") != CurrentVersion || document["Modules"] is not JObject modules)
-				{
-					throw new InvalidOperationException("Policy effect module retrieval settings version or Modules structure is invalid.");
-				}
+				JObject document = ReadSettingsDocument(path);
+				JObject modules = (JObject)document["Modules"];
 				rawDocuments = ReadRawModuleDocuments(modules);
 				foreach (IPolicyEffectModule module in PolicyEffectModuleCatalog.Modules)
 				{
@@ -286,6 +300,19 @@ internal static class PolicyEffectModuleRetrievalSettings
 			frozenStates,
 			rawDocuments.ToDictionary(pair => pair.Key, pair => pair.Value?.DeepClone(), StringComparer.Ordinal),
 			enabled);
+	}
+
+	private static JObject ReadSettingsDocument(string path)
+	{
+		AnimusForgeDataPaths.ValidatePath(path);
+		if (new FileInfo(path).Length > MaxJsonBytes)
+			throw new InvalidOperationException("Policy effect retrieval settings file size is invalid; original preserved.");
+		JObject document = JObject.Parse(StrictUtf8.GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF'));
+		if (document.Value<int?>("Version") != CurrentVersion || document["Modules"] is not JObject modules)
+			throw new InvalidOperationException("Policy effect retrieval settings version or Modules structure is invalid; original preserved.");
+		foreach (IPolicyEffectModule module in PolicyEffectModuleCatalog.Modules)
+			if (modules[module.Id] is JObject state) ReadState(state);
+		return document;
 	}
 
 	private static PolicyEffectModuleRetrievalState CreateDefaultState(IPolicyEffectModule module)
@@ -373,11 +400,14 @@ internal static class PolicyEffectModuleRetrievalSettings
 			}
 			return string.Empty;
 		}
-		return Path.Combine(directory, FileName);
+		string path = Path.Combine(directory, FileName);
+		AnimusForgeDataPaths.ValidatePath(path);
+		return path;
 	}
 
 	private static void WriteJsonAtomically(string path, JObject document)
 	{
+		AnimusForgeDataPaths.ValidatePath(path);
 		string directory = Path.GetDirectoryName(path);
 		if (string.IsNullOrWhiteSpace(directory))
 		{
@@ -394,7 +424,9 @@ internal static class PolicyEffectModuleRetrievalSettings
 				writer.Flush();
 				stream.Flush(flushToDisk: true);
 			}
+			if (new FileInfo(tempPath).Length > MaxJsonBytes) throw new InvalidOperationException("Policy retrieval settings JSON exceeds the size limit; original preserved.");
 			JObject.Parse(File.ReadAllText(tempPath, StrictUtf8));
+			AnimusForgeDataPaths.ValidatePath(path);
 			if (File.Exists(path))
 			{
 				File.Replace(tempPath, path, null);

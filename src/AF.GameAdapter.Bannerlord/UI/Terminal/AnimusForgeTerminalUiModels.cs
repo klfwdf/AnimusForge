@@ -884,7 +884,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 
 
-		string[] tabs = new[] { TerminalCategories.War, TerminalCategories.All, TerminalCategories.Diplomacy, TerminalCategories.Prompt, TerminalCategories.Ai, TerminalCategories.Duel, TerminalCategories.Scene, TerminalCategories.Characters };
+		string[] tabs = new[] { TerminalCategories.War, TerminalCategories.All, TerminalCategories.Diplomacy, TerminalCategories.Prompt, TerminalCategories.Ai, TerminalCategories.Duel, TerminalCategories.Scene, TerminalCategories.Characters, TerminalCategories.Ui };
 
 		foreach (string tab in tabs)
 

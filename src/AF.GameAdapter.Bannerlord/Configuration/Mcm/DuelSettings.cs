@@ -1713,39 +1713,39 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public bool EnableTtsSpeech { get; set; } = true;
 
-	[SettingPropertyBool("{=AF_MCM_Tts_VolcEnabled}Enable Volcengine dedicated mode", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Tts_VolcEnabled_Hint}Routes TTS requests through the Volcengine V1 native non-streaming HTTP protocol (Authorization: Bearer;token plus app/user/audio/request structure).")]
+	[SettingPropertyBool("{=AF_MCM_Tts_VolcEnabled}Enable Volcengine dedicated mode", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Tts_VolcEnabled_Hint}Selects V1 or V3 HTTP unidirectional synthesis (including Agent Plan) by API URL. Both collect all audio before playback; existing settings are not migrated automatically.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public bool TtsVolcDedicatedEnabled { get; set; } = false;
 
-	[SettingPropertyText("{=AF_MCM_Tts_Url}Volcengine dedicated API address", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Tts_Url_Hint}V1 non-streaming endpoint: https://openspeech.bytedance.com/api/v1/tts")]
+	[SettingPropertyText("{=AF_MCM_Tts_Url}Volcengine dedicated API address", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Tts_Url_Hint}V1: https://openspeech.bytedance.com/api/v1/tts; V3: https://openspeech.bytedance.com/api/v3/tts/unidirectional; Agent Plan: https://openspeech.bytedance.com/api/v3/plan/tts/unidirectional (HTTP, not SSE/WS).")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public string TtsVolcDedicatedApiUrl { get; set; } = "https://openspeech.bytedance.com/api/v1/tts";
 
-	[SettingPropertyText("{=AF_MCM_Tts_Token}Volcengine dedicated token (Authorization Bearer)", -1, true, "", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Tts_Token_Hint}The request header is written as documented: Authorization: Bearer; followed by your dedicated token.")]
+	[SettingPropertyText("{=AF_MCM_Tts_Token}Volcengine dedicated token / API key", -1, true, "", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Tts_Token_Hint}V1 uses your legacy token; its HTTP header is Authorization: Bearer; followed by the token. V3 uses the corresponding speech-service API key (X-Api-Key). Agent Plan requires its dedicated API key; do not reuse the old token.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public string TtsVolcDedicatedApiKey { get; set; } = "";
 
-	[SettingPropertyText("{=AF_MCM_Tts_AppId}Volcengine dedicated App ID", -1, true, "", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Tts_AppId_Hint}The app.appid field in the V1 request body.")]
+	[SettingPropertyText("{=AF_MCM_Tts_AppId}Volcengine dedicated App ID", -1, true, "", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Tts_AppId_Hint}V1 requires app.appid. V3 API-key authentication does not use it, so it may be blank. Switching protocols does not clear the old value.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public string TtsVolcDedicatedAppKey { get; set; } = "";
 
-	[SettingPropertyText("{=AF_MCM_Tts_ResourceId}Volcengine dedicated resource ID", -1, true, "", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Tts_ResourceId_Hint}Written to the X-Api-Resource-Id request header.\nAccepted values include seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0.")]
+	[SettingPropertyText("{=AF_MCM_Tts_ResourceId}Volcengine dedicated resource ID", -1, true, "", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Tts_ResourceId_Hint}Written to the X-Api-Resource-Id request header. The resource and voice must be enabled and authorized; synthesis voices from model 2.0 use V3. Accepted values include seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public string TtsVolcDedicatedResourceId { get; set; } = "";
 
-	[SettingPropertyText("{=AF_MCM_Tts_VoiceType}Volcengine dedicated voice_type", -1, true, "", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Tts_VoiceType_Hint}Example: zh_male_M392_conversation_wvae_bigtts")]
+	[SettingPropertyText("{=AF_MCM_Tts_VoiceType}Volcengine dedicated voice ID", -1, true, "", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Tts_VoiceType_Hint}Maps to voice_type in V1 and speaker in V3. It must match the resource ID and account authorization; the old voice is not replaced automatically.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public string TtsVolcDedicatedSpeaker { get; set; } = "";
 
-	[SettingPropertyText("{=AF_MCM_Tts_ExtraParam}Volcengine dedicated extra_param (JSON object)", -1, true, "", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Tts_ExtraParam_Hint}Written verbatim to request.extra_param as a string. Example key/value: disable_markdown_filter=true")]
+	[SettingPropertyText("{=AF_MCM_Tts_ExtraParam}Volcengine dedicated extra parameters (JSON object)", -1, true, "", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Tts_ExtraParam_Hint}Written to request.extra_param in V1 or req_params.additions in V3, both as JSON strings. Use parameters supported by the selected endpoint.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public string TtsVolcDedicatedAdditionsJson { get; set; } = "{}";
 
-	[SettingPropertyText("{=AF_MCM_Tts_AudioFormat}Volcengine dedicated audio format", -1, true, "", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Tts_AudioFormat_Hint}V1 encoding; the current player supports wav or pcm only.")]
+	[SettingPropertyText("{=AF_MCM_Tts_AudioFormat}Volcengine dedicated audio format", -1, true, "", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Tts_AudioFormat_Hint}Supports wav or pcm only. V1 requests the selected format unchanged. V3 always receives PCM and wraps it as selected here, retaining the current player.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public string TtsVolcDedicatedAudioFormat { get; set; } = "wav";
 
-	[SettingPropertyInteger("{=AF_MCM_Tts_SampleRate}Volcengine dedicated sample rate", 8000, 24000, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Tts_SampleRate_Hint}Recommended V1 rate values: 8000 / 16000 / 24000.")]
+	[SettingPropertyInteger("{=AF_MCM_Tts_SampleRate}Volcengine dedicated sample rate", 8000, 24000, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Tts_SampleRate_Hint}Recommended values: 8000 / 16000 / 24000 Hz. V3 also supports 22050 Hz; arbitrary integer sample rates are not accepted by V3.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public int TtsVolcDedicatedSampleRate { get; set; } = 24000;
 
@@ -1757,7 +1757,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public bool TtsSceneUseWinmmAudible { get; set; } = true;
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_Tts_Speed}Volcengine dedicated speech speed", 0.1f, 2f, "0.00", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Tts_Speed_Hint}V1 speed_ratio, range [0.1, 2.0].")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_Tts_Speed}Volcengine dedicated speech speed", 0.1f, 2f, "0.00", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Tts_Speed_Hint}V1 supports 0.1–2.0 times normal; V3 supports 0.5–2.0 (1.0 is normal). A value that is too low after switching to V3 produces an error and is not changed automatically.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public float TtsVolcDedicatedSpeed { get; set; } = 1f;
 
@@ -1765,7 +1765,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public float TtsLipSyncSoundEventVolume { get; set; } = 0f;
 
-	[SettingPropertyButton("{=AF_MCM_Tts_Test}Test voice", -1, true, "", Content = "{=AF_MCM_Tts_TestContent}Play test", Order = 14, RequireRestart = false, HintText = "{=AF_MCM_Tts_Test_Hint}Test the Volcengine V1 native parameters with a fixed sample phrase.")]
+	[SettingPropertyButton("{=AF_MCM_Tts_Test}Test voice", -1, true, "", Content = "{=AF_MCM_Tts_TestContent}Play test", Order = 14, RequireRestart = false, HintText = "{=AF_MCM_Tts_Test_Hint}Tests the fixed phrase “At your service, traveler!” using the current API URL and credential. Real synthesis may incur charges.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
 	public Action TestTtsVolcDedicatedVoice { get; set; }
 
@@ -3652,8 +3652,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	internal void SaveNpcRulerPolicyPromptFromEditor(string input)
 	{
 		string text = NormalizeNpcRulerPolicyPromptText(input);
-		bool persistedToFile = TryPersistNpcRulerPolicyPromptFile(string.IsNullOrWhiteSpace(input) ? "" : text);
-		if (persistedToFile && string.IsNullOrWhiteSpace(input)) text = LoadNpcRulerPolicyPromptFromDiskOrDefault();
+		bool persistedToFile = TryPersistNpcRulerPolicyPromptFile(text);
 		NpcRulerPolicyPrompt = text;
 		try
 		{
@@ -4209,8 +4208,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private static bool TryPersistNpcRulerPolicyPromptFile(string text)
 	{
-		return TryPersistPolicyPromptTextFile(NpcRulerPolicyPromptJsonFileName,
-			string.IsNullOrWhiteSpace(text) ? "" : NormalizeNpcRulerPolicyPromptText(text));
+		return TryPersistPolicyPromptTextFile(NpcRulerPolicyPromptJsonFileName, NormalizeNpcRulerPolicyPromptText(text));
 	}
 
 	private static bool TryPersistWorldDiplomacyPromptFile(string text)
@@ -4446,16 +4444,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 			throw new InvalidOperationException("Existing custom prompt file is corrupted; please back up or repair the file. The original file was not overwritten: " + path);
 		}
-		if (string.IsNullOrWhiteSpace(text)
-			&& !string.Equals(Path.GetFileName(path), NpcPersonaGenerationRequirementsJsonFileName, StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(Path.GetFileName(path), WorldBulletinWritingRequirementsJsonFileName, StringComparison.OrdinalIgnoreCase))
-		{
-			if (File.Exists(path)) File.Delete(path);
-		}
-		else
-		{
-			WriteCustomPromptTextJsonFileUnlocked(path, text);
-		}
+		WriteCustomPromptTextJsonFileUnlocked(path, text);
 	}
 
 	private static void EnsureCustomPromptTextStoreFilesUnlocked(string directory, CustomPromptTextStoreJson initialStore)
@@ -4521,8 +4510,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	private static void WriteCustomPromptTextJsonFileUnlocked(string path, string text)
+	private static void WriteCustomPromptTextJsonFileUnlocked(string path, string text, bool replaceExisting = true)
 	{
+		AnimusForgeDataPaths.ValidatePath(path);
 		string directoryName = Path.GetDirectoryName(path);
 		if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
 		{
@@ -4544,8 +4534,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				writer.Flush();
 				stream.Flush(flushToDisk: true);
 			}
+			if (IsCustomPromptTextFileTooLarge(candidate)) throw new InvalidOperationException("Custom prompt JSON exceeds the size limit; the original was not overwritten.");
 			JsonConvert.DeserializeObject<CustomPromptTextJson>(File.ReadAllText(candidate, CustomPromptStrictUtf8Encoding));
-			if (File.Exists(path)) File.Replace(candidate, path, null);
+			AnimusForgeDataPaths.ValidatePath(path);
+			if (File.Exists(path))
+			{
+				if (!replaceExisting) return;
+				File.Replace(candidate, path, null);
+			}
 			else File.Move(candidate, path);
 		}
 		finally
@@ -4625,6 +4621,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			{
 				return false;
 			}
+			AnimusForgeDataPaths.ValidatePath(path);
 			if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
 			{
 				LogPlayerCustomPromptRuleWarning("Custom prompt JSON is an unapproved reparse file; preserved it and fell back to defaults: " + Path.GetFileName(path));
@@ -4638,7 +4635,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			string json;
 			try
 			{
-				json = File.ReadAllText(path, CustomPromptStrictUtf8Encoding);
+				json = CustomPromptStrictUtf8Encoding.GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF');
 			}
 			catch (DecoderFallbackException ex)
 			{
@@ -4910,26 +4907,25 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		try
 		{
 			string path = GetLegacyCustomPromptTextStorePath();
+			if (!string.IsNullOrWhiteSpace(path)) AnimusForgeDataPaths.ValidatePath(path);
 			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
 			{
 				return false;
 			}
 			if (IsCustomPromptTextFileTooLarge(path))
 			{
-				LogPlayerCustomPromptRuleWarning("Legacy custom prompt JSON too large; quarantined it and restored current defaults: " + path);
-				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "too_large");
+				LogPlayerCustomPromptRuleWarning("Legacy custom prompt JSON too large; preserved the original and used current defaults: " + path);
 				// 不让坏损的 aggregate 默认值覆盖已成功读取的更旧独立文本。
 				return false;
 			}
 			string json;
 			try
 			{
-				json = File.ReadAllText(path, CustomPromptStrictUtf8Encoding);
+				json = CustomPromptStrictUtf8Encoding.GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF');
 			}
 			catch (DecoderFallbackException ex)
 			{
-				LogPlayerCustomPromptRuleWarning("Legacy custom prompt JSON is not strict UTF-8; quarantined it and restored current defaults: " + path + " - " + ex.Message);
-				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "non_utf8");
+				LogPlayerCustomPromptRuleWarning("Legacy custom prompt JSON is not strict UTF-8; preserved the original and used current defaults: " + path + " - " + ex.Message);
 				return false;
 			}
 			CustomPromptTextStoreJson parsed;
@@ -4939,20 +4935,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			}
 			catch (Exception ex)
 			{
-				LogPlayerCustomPromptRuleWarning("Legacy custom prompt JSON is malformed; quarantined it and restored current defaults: " + path + " - " + ex.Message);
-				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "invalid_json");
+				LogPlayerCustomPromptRuleWarning("Legacy custom prompt JSON is malformed; preserved the original and used current defaults: " + path + " - " + ex.Message);
 				return false;
 			}
 			if (parsed == null)
 			{
-				LogPlayerCustomPromptRuleWarning("Legacy custom prompt JSON has no valid content; quarantined it and restored current defaults: " + path);
-				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "invalid_schema");
+				LogPlayerCustomPromptRuleWarning("Legacy custom prompt JSON has no valid content; preserved the original and used current defaults: " + path);
 				return false;
 			}
 			bool needsMigration = parsed.Version < WorldDiplomacyPromptJsonVersion;
 			if (needsMigration)
 			{
-				BackupCustomPromptMigrationSourceUnlocked(path, "aggregate-v" + Math.Max(1, parsed.Version).ToString(CultureInfo.InvariantCulture));
 				parsed.WorldDiplomacyPrompt = MigrateLegacyWorldDiplomacyPromptText(parsed.WorldDiplomacyPrompt);
 			}
 			parsed.WorldBulletinWritingRequirements = MigrateLegacyWorldBulletinWritingRequirements(parsed.WorldBulletinWritingRequirements);
@@ -4960,7 +4953,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			if (needsMigration)
 			{
 				store.Version = WorldDiplomacyPromptJsonVersion;
-				WriteLegacyCustomPromptTextStoreUnlocked(path, store);
 			}
 			return true;
 		}
@@ -6702,90 +6694,48 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				TtsEngine instance = TtsEngine.Instance;
 				if (instance == null || !instance.IsReady)
 				{
-						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_NotReady", "[TTS] The engine is not initialized, so it cannot be tested."), Color.FromUint(4294901760u)));
+					InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_NotReady", "[TTS] The engine is not initialized, so it cannot be tested."), Color.FromUint(4294901760u)));
 				}
 				else if (!runtimeSettings.EnableTtsSpeech)
 				{
-						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_EnableSpeech", "[TTS] Enable TTS speech first."), Color.FromUint(4294901760u)));
+					InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_EnableSpeech", "[TTS] Enable TTS speech first."), Color.FromUint(4294901760u)));
 				}
 				else if (!runtimeSettings.TtsVolcDedicatedEnabled)
 				{
-						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_EnableVolc", "[TTS] Enable Volcengine dedicated mode first."), Color.FromUint(4294901760u)));
+					InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_EnableVolc", "[TTS] Enable Volcengine dedicated mode first."), Color.FromUint(4294901760u)));
 				}
 				else if (string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedApiUrl))
 				{
-						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_MissingUrl", "[TTS] Enter the Volcengine dedicated API URL first."), Color.FromUint(4294901760u)));
+					InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_MissingUrl", "[TTS] Enter the Volcengine dedicated API URL first."), Color.FromUint(4294901760u)));
 				}
-				else if (string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedAppKey))
+				else if (VolcTtsGateway.GetVersion(runtimeSettings.TtsVolcDedicatedApiUrl) == 0)
 				{
-						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_MissingAppId", "[TTS] Enter the Volcengine dedicated App ID first."), Color.FromUint(4294901760u)));
+					InformationManager.DisplayMessage(new InformationMessage("[TTS] " + TtsErrorUiText.Describe("tts_endpoint_unsupported"), Color.FromUint(4294901760u)));
+				}
+				else if (VolcTtsGateway.GetVersion(runtimeSettings.TtsVolcDedicatedApiUrl) == 1 && string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedAppKey))
+				{
+					InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_MissingAppId", "[TTS] Enter the Volcengine dedicated App ID first."), Color.FromUint(4294901760u)));
 				}
 				else if (string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedResourceId))
 				{
-						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_MissingResource", "[TTS] Enter the Volcengine dedicated resource ID first."), Color.FromUint(4294901760u)));
+					InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_MissingResource", "[TTS] Enter the Volcengine dedicated resource ID first."), Color.FromUint(4294901760u)));
 				}
 				else
 				{
-						InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Tts_Testing", "[TTS] Testing Volcengine V1... (API={API}, scene channel={CHANNEL}, main voice volume={VOLUME}, speed={SPEED}, lip-sync volume={LIP_VOLUME})", ("API", runtimeSettings.TtsVolcDedicatedApiUrl), ("CHANNEL", runtimeSettings.TtsSceneUseWinmmAudible ? "winmm" : Ui("AF_MCM_Tts_LipSyncChannel", "lip-sync")), ("VOLUME", runtimeSettings.TtsVolcDedicatedVolume.ToString("F2", CultureInfo.InvariantCulture)), ("SPEED", runtimeSettings.TtsVolcDedicatedSpeed.ToString("F2", CultureInfo.InvariantCulture)), ("LIP_VOLUME", runtimeSettings.TtsLipSyncSoundEventVolume.ToString("F2", CultureInfo.InvariantCulture))), Color.FromUint(4294967040u)));
-					instance.SpeakTestAsync(Ui("AF_MCM_Tts_TestPhrase", "At your service, traveler!"), runtimeSettings.TtsVolcDedicatedSpeed);
+					if (instance.SpeakTestAsync(Ui("AF_MCM_Tts_TestPhrase", "At your service, traveler!"), runtimeSettings.TtsVolcDedicatedSpeed, TtsTestFeedback.ReportFailure))
+					{
+						InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Tts_TestingVersion", "[TTS] Testing Volcengine V{VERSION}... (scene channel={CHANNEL}, main voice volume={VOLUME}, speed={SPEED}, lip-sync volume={LIP_VOLUME})", ("VERSION", VolcTtsGateway.GetVersion(runtimeSettings.TtsVolcDedicatedApiUrl)), ("CHANNEL", runtimeSettings.TtsSceneUseWinmmAudible ? "winmm" : Ui("AF_MCM_Tts_LipSyncChannel", "lip-sync")), ("VOLUME", runtimeSettings.TtsVolcDedicatedVolume.ToString("F2", CultureInfo.InvariantCulture)), ("SPEED", runtimeSettings.TtsVolcDedicatedSpeed.ToString("F2", CultureInfo.InvariantCulture)), ("LIP_VOLUME", runtimeSettings.TtsLipSyncSoundEventVolume.ToString("F2", CultureInfo.InvariantCulture))), Color.FromUint(4294967040u)));
+					}
+					else
+					{
+						InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_TestNotQueued", "[TTS] Test voice was not queued: the queue is full or the engine has stopped. Try again later."), Color.FromUint(4294901760u)));
+					}
 				}
 			}
 			catch (Exception ex)
 			{
-				InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_TestException", "[TTS] Volcengine test error: ") + ex.Message, Color.FromUint(4294901760u)));
+				InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Tts_TestException", "[TTS] Volcengine test error: {ERROR}", ("ERROR", ex.Message)), Color.FromUint(4294901760u)));
 			}
-		};
-		FetchMainModelList = delegate
-		{
-			StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelMain"), ApiUrl, ApiKey, ApplyMainModelList);
-		};
-		FetchAuxiliaryModelList = delegate
-		{
-			StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelPreprocess"), AuxiliaryApiUrl, AuxiliaryApiKey, ApplyAuxiliaryModelList);
-		};
-		FetchActionPostprocessModelList = delegate
-		{
-			StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelPostprocess"), ActionPostprocessApiUrl, ActionPostprocessApiKey, ApplyActionPostprocessModelList);
-		};
-		FetchEventAndRebellionModelList = delegate
-		{
-			StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelEventRebellion"), EventAndRebellionApiUrl, EventAndRebellionApiKey, ApplyEventAndRebellionModelList);
-		};
-		FetchTownAmbientAiModelList = delegate
-		{
-			StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelAmbient"), TownAmbientAiApiUrl, TownAmbientAiApiKey, ApplyTownAmbientAiModelList);
-		};
-		TestTownAmbientAiConnection = delegate
-		{
-			LlmRetryPrompt.CaptureMainThreadContext();
-			ConnectionTestText testText = ConnectionTestText.Capture("Ambient");
-			Task.Run(async delegate
-			{
-				try
-				{
-					InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Ambient_Testing", "[Ambient AI] Testing the independent endpoint you entered; this test uses a small number of tokens."), Color.FromUint(4294967040u)));
-					TownAmbientAiResult result = await TownAmbientAiClient.TestConnectionAsync().ConfigureAwait(false);
-					if (result != null && result.Success)
-					{
-						InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Ambient_Success", "[Ambient AI] Connection succeeded. This test used about {INPUT} input + {OUTPUT} output tokens.", ("INPUT", result.InputTokens), ("OUTPUT", result.OutputTokens)), Color.FromUint(4278255360u)));
-						Logger.Log("DuelSettings", testText.SuccessPrefix + "inputTokens=" + result.InputTokens + " outputTokens=" + result.OutputTokens);
-					}
-					else
-					{
-						string failure = result?.Error ?? Ui("AF_MCM_Api_UnknownError", "Unknown error.");
-						if (result != null && (result.InputTokens > 0 || result.OutputTokens > 0))
-						{
-							failure += "\n\n" + UiFormat("AF_MCM_Ambient_TokenUsage", "This request used about {INPUT} input + {OUTPUT} output tokens.", ("INPUT", result.InputTokens), ("OUTPUT", result.OutputTokens));
-						}
-						ShowLlmFailurePopup(Ui("AF_MCM_Ambient_FailureTitle", "Ambient AI connection test failed"), failure, result?.ModelReply, result?.RawResponse);
-					}
-				}
-				catch (Exception ex)
-				{
-					ShowLlmFailurePopup(Ui("AF_MCM_Ambient_ExceptionTitle", "Ambient AI connection test error"), ex.Message);
-					Logger.Log("DuelSettings", testText.ExceptionPrefix + ex.Message);
-				}
-			});
 		};
 		TestConnection = delegate
 		{

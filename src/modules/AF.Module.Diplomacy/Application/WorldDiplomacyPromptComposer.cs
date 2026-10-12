@@ -480,7 +480,10 @@ internal static class WorldDiplomacyPromptComposer
 		WorldDiplomacyDocument sourceDocument = world.ResolveDocument(document.SourceDocumentId);
 		if (sourceDocument != null)
 		{
-			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_116", "This document responds to:"));
+			sb.AppendLine(document.IsPlayerAuthored
+                ? world.LocalizePrompt("PlayerReply_AdvisoryContext", "The player opened drafting from the following document, which provides background only. Whether to respond, whom to respond to and what action to take are determined by the player's text. This entry does not revive an old proposal or force participation in the original negotiations:")
+                : world.LocalizePrompt("AF_DIP_Prompt_Composer_116", "This document responds to:"));
+            sb.AppendLine(world.LocalizePrompt("PlayerReply_ContextDocumentId", "Background document ID: ") + sourceDocument.DocumentId);
 			string sourceActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(sourceDocument, document.AuthorKingdomId, world.LocalizePrompt);
 			string sourcePeaceTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(sourceDocument, document.AuthorKingdomId, world.LocalizePrompt);
 		if (!string.IsNullOrWhiteSpace(sourceActionFact)) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_117", "Actions relevant to this kingdom=") + sourceActionFact);

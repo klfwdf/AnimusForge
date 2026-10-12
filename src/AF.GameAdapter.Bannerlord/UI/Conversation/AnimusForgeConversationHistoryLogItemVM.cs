@@ -28,6 +28,13 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 		return value;
 	}
 
+	internal static string LocalizeFactBodyForDisplay(string text, string kind)
+	{
+		return string.Equals(kind, "afef_player", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(kind, "afef_npc", StringComparison.OrdinalIgnoreCase)
+			? DiplomacyDialogueStatusUi.ProjectFactForUi(text ?? "") : text ?? "";
+	}
+
 	private string _chatItemTime;
 
 	private string _chatSpeaker;
@@ -101,7 +108,8 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 		ChatItemTime = time ?? "";
 		ChatSpeaker = LocalizeSpeakerForDisplay(speaker, kind);
 		// Build only a disposable RichText copy; the persisted dialogue entry stays plain for memory and LLM reuse.
-		string rawDisplayText = string.IsNullOrWhiteSpace(ChatSpeaker) ? (text ?? "") : "(" + ChatSpeaker + ")" + (text ?? "");
+		string displayBody = LocalizeFactBodyForDisplay(text, kind);
+		string rawDisplayText = string.IsNullOrWhiteSpace(ChatSpeaker) ? displayBody : "(" + ChatSpeaker + ")" + displayBody;
 		ChatText = linkDisplaySession?.Format(rawDisplayText, conversationTargetHero, conversationTargetCharacter) ?? EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(rawDisplayText);
 		FontColor = ResolveFontColor(kind);
 	}

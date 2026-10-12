@@ -1104,9 +1104,9 @@
     <string id="AF_DIP_UI_Compose_DraftApiMissing" text="书记官暂时无法拟稿，请检查外交使用的事件/叛乱API或主API设置。" />
     <string id="AF_DIP_UI_Compose_DraftIncomplete" text="书记官未能返回完整稿件，原文已保留。请重试。" />
     <string id="AF_DIP_UI_Compose_DraftFormatError" text="书记官返回的稿件格式不正确，原文已保留。请重试。" />
-    <string id="AF_DIP_UI_Compose_DraftTooLong" text="稿件过长，原文已保留。请调整外交字数设置后重试。" />
+    <string id="AF_DIP_UI_Compose_DraftTooLong" text="书记官返回的稿件超过编辑器容量，原文已保留。请重试。" />
     <string id="AF_DIP_UI_Compose_DraftLengthMismatch" text="稿件未符合外交字数设置（{MIN}—{MAX}字），原文已保留。请重试或调整设置。" />
-    <string id="AF_DIP_UI_Compose_DraftTruncated" text="稿件因输出上限被截断，原文已保留。请调整外交字数或API输出上限。" />
+    <string id="AF_DIP_UI_Compose_DraftTruncated" text="稿件因输出上限被截断，原文已保留。请调高API输出上限。" />
     <!-- Document Execution Notifications -->
     <string id="AF_DIP_UI_DocExec_MustContainAction" text="外交宣言没有发布：正文必须明确包含一项可执行的外交动作。" />
     <string id="AF_DIP_UI_DocExec_IncompatibleAction" text="外交宣言没有发布：正文中的外交动作与当前真实状态不相容。" />
@@ -1179,5 +1179,9 @@
     <string id="AF_DIP_UI_Gathering_WeeklyAttendance" text="{HERO}（{ROLE}）已经实际抵达{SETTLEMENT}，参加了{HOST}举办的贵族宴会。这是一项已经发生的出席事实，可以写入本周王国纪事。" />
     <string id="AF_DIP_UI_Gathering_WeeklyCancel" text="{HOST}取消了自己在{SETTLEMENT}举办的贵族宴会，宾客已经散去。{REASON}" />
     <string id="AF_DIP_UI_Gathering_WeeklyNameRole" text="{HERO}（{ROLE}）" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplySourceUnavailable" text="原公文已不可用，请重新打开撰写界面。" />
+    <string id="AF_DIP_UI_OralGeneration_DelayedFact" text="此前答应的外交宣言尚未发布，待重新拟文；约定条款没有改变。" />
+    <string id="AF_DIP_UI_OralGeneration_WithdrawalFact" text="我已明确同意撤回此前的公开外交提案，待正式撤回宣言发布；原案尚未因此失效。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceNotExecutedDetail" text="和平提案未执行：{REASON}" />
   </strings>
 </base>

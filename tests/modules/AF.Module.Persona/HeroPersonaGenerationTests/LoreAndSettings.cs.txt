@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Security.Cryptography;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -9,17 +10,19 @@ using Newtonsoft.Json.Linq;
 namespace AnimusForge {
  internal sealed class DuelSettings {
   private const string NpcPersonaGenerationRequirementsJsonFileName="NpcPersonaGenerationRequirements.json";
+  private const string WorldBulletinWritingRequirementsJsonFileName="WorldBulletinWritingRequirements.json";
+  private static string MigrateLegacyWorldBulletinWritingRequirements(string text)=>text; // Unused weekly migration leaf in this persona fixture.
   private const int WorldDiplomacyPromptJsonVersion=1;
   private static readonly Encoding CustomPromptStrictUtf8Encoding=new UTF8Encoding(false,true),CustomPromptWriteEncoding=new UTF8Encoding(false);
   private static bool IsCustomPromptTextFileTooLarge(string p)=>new FileInfo(p).Length>1024*1024;
   private static bool IsWorldDiplomacyPromptPath(string p)=>false;
   private static string MigrateLegacyWorldDiplomacyPromptText(string t)=>t;
-  private static void LogPlayerCustomPromptRuleWarning(string t){}
+   private static void LogPlayerCustomPromptRuleWarning(string t){Console.WriteLine(t);}
   private static bool IsPolicyPromptFileName(string name)=>false;
   private static string GetPolicyPromptTextFilePath(string dir,string file)=>Path.Combine(dir,file);
   private static string GetCustomPromptTextFilePath(string dir,string file)=>Path.Combine(dir,file);
   internal static void Save(string path,string text)=>PersistCustomPromptTextFileUnlocked(path,text);
-  internal static string Load(string over,string package,string file){if(!TryReadLayeredCustomPromptTextJsonFile(over,package,file,null,"",out var t))throw new Exception("fixture load failed");return t;}
+  internal static string Load(string directory,string file){if(!TryReadLayeredCustomPromptTextJsonFile(directory,AnimusForgeDataPaths.GetPackagedCustomPromptsDirectory(AnimusForgeDataPaths.GetCurrentRoot()),file,null,"",out var t))throw new Exception("fixture load failed");return t;}
   @@SETTINGS@@
  }
 #if PERSONA_LORE
@@ -45,30 +48,37 @@ internal static class Program {
  static int checks;
  static void Check(bool ok,string text){checks++;if(!ok)throw new Exception("FAIL "+text);}
  static void SettingsCases(string root,string packagedSource){
-  string package=Path.Combine(root,"package"),over=Path.Combine(root,"overrides"),name="NpcPersonaGenerationRequirements.json";
-  Directory.CreateDirectory(package);
-  string packaged=File.ReadAllText(packagedSource,Encoding.UTF8);File.WriteAllText(Path.Combine(package,name),packaged,new UTF8Encoding(false));
+  string module=Path.Combine(root,"AnimusForge"),package=Path.Combine(module,"CustomPrompts"),name="NpcPersonaGenerationRequirements.json";
+  Directory.CreateDirectory(Path.Combine(module,"ModuleData"));Directory.CreateDirectory(package);
+  File.WriteAllText(Path.Combine(module,"SubModule.xml"),"<Module><Id value=\"AnimusForge\" /></Module>");
+  Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT",module);
+  string fixedDefaults=Path.Combine(module,"ModuleData","Defaults","CustomPrompts");Directory.CreateDirectory(fixedDefaults);
+  string packaged=File.ReadAllText(packagedSource,Encoding.UTF8);File.WriteAllText(Path.Combine(fixedDefaults,name),packaged,new UTF8Encoding(false));
   string defaultText=(string)JObject.Parse(packaged)["Text"];
   Check(!string.IsNullOrWhiteSpace(defaultText)&&defaultText.Contains("300"),"packaged complete editable writing requirements");
-  Check(AnimusForge.DuelSettings.Load(over,package,name)==defaultText&&!Directory.Exists(over),"default read does not materialize overrides");
-  string path=Path.Combine(over,name);AnimusForge.DuelSettings.Save(path,"USER_CUSTOM_ONLY");
-  Check(AnimusForge.DuelSettings.Load(over,package,name)=="USER_CUSTOM_ONLY","custom replaces defaults without concatenation");
-  Check(File.ReadAllText(Path.Combine(package,name),Encoding.UTF8)==packaged,"packaged default remains unchanged");
+  Check(AnimusForge.DuelSettings.Load(package,name)==defaultText,"default read uses module document");
+  string path=Path.Combine(package,name);AnimusForge.DuelSettings.Save(path,"USER_CUSTOM_ONLY");
+  Check(AnimusForge.DuelSettings.Load(package,name)=="USER_CUSTOM_ONLY","custom replaces defaults without concatenation");
+  Check(File.ReadAllText(packagedSource,Encoding.UTF8)==packaged,"source default remains unchanged while module document is edited");
   AnimusForge.DuelSettings.Save(path,"");
   Check(File.Exists(path)&&(string)JObject.Parse(File.ReadAllText(path))["Text"]=="","persona clear persists explicit empty Text");
-  Check(AnimusForge.DuelSettings.Load(over,package,name)==""&&AnimusForge.DuelSettings.Load(over,package,name)=="","fresh disk reload does not restore writing requirements");
+  Check(AnimusForge.DuelSettings.Load(package,name)==""&&AnimusForge.DuelSettings.Load(package,name)=="","fresh disk reload does not restore writing requirements");
   string empty=File.ReadAllText(path);Check((int)JObject.Parse(empty)["Version"]==1,"existing JSON schema retained");
   Check(File.ReadAllText(path)==empty,"reading existing empty override does not rewrite it");
-  AnimusForge.DuelSettings.Save(path,"NEXT_CUSTOM");Check(AnimusForge.DuelSettings.Load(over,package,name)=="NEXT_CUSTOM","edit after clearing works");
+  AnimusForge.DuelSettings.Save(path,"NEXT_CUSTOM");Check(AnimusForge.DuelSettings.Load(package,name)=="NEXT_CUSTOM","edit after clearing works");
   File.WriteAllText(path,"{broken");bool rejected=false;try{AnimusForge.DuelSettings.Save(path,"");}catch(InvalidOperationException){rejected=true;}
   Check(rejected&&File.ReadAllText(path)=="{broken","corrupt original not overwritten");
-  Check(AnimusForge.DuelSettings.Load(over,package,name)==defaultText,"corrupt override falls back without mutation");
+   Check(AnimusForge.DuelSettings.Load(package,name)==defaultText&&File.ReadAllText(path)=="{broken","corrupt user document falls back to fixed package default without mutation");
+   string fixedFile=Path.Combine(fixedDefaults,name);File.Move(fixedFile,fixedFile+".fixture-held");
+   bool readRejected=false;try{AnimusForge.DuelSettings.Load(package,name);}catch(Exception){readRejected=true;}
+   Check(readRejected&&File.ReadAllText(path)=="{broken","corrupt module document rejects reading without a secondary layer or mutation");
+   File.Move(fixedFile+".fixture-held",fixedFile);
   foreach(string ordinary in new[]{"PlayerCustomPromptRule.json","WeeklyReportWritingRequirements.json"}){
    File.WriteAllText(Path.Combine(package,ordinary),"{\"Version\":1,\"Text\":\"ORDINARY_DEFAULT\"}");
-   AnimusForge.DuelSettings.Save(Path.Combine(over,ordinary),"USER");AnimusForge.DuelSettings.Save(Path.Combine(over,ordinary),"");
-   Check(!File.Exists(Path.Combine(over,ordinary))&&AnimusForge.DuelSettings.Load(over,package,ordinary)=="ORDINARY_DEFAULT","other prompt clear behavior unchanged: "+ordinary);
+    AnimusForge.DuelSettings.Save(Path.Combine(package,ordinary),"USER");AnimusForge.DuelSettings.Save(Path.Combine(package,ordinary),"");
+    Check(File.Exists(Path.Combine(package,ordinary))&&AnimusForge.DuelSettings.Load(package,ordinary)=="","ordinary clear persists empty module Text: "+ordinary);
   }
-  Check(!Directory.EnumerateFiles(over,".afp-*").Any(),"no atomic write candidate leak");
+   Check(!Directory.EnumerateFiles(package,".afp-*").Any(),"no atomic write candidate leak");
  }
 #if PERSONA_LORE
  static void LoreCases(string promptLanguage){
@@ -83,7 +93,7 @@ internal static class Program {
   string source=owner.BuildPersonaLoreSource(hero,selected,v);
   Check(source==(promptLanguage=="en"?"[Worldbook reference: NPC family]\nspecific-body":"【世界书资料：NPC family】\nspecific-body"),"packaged language changes only the worldbook header and preserves its newline and body");
   Check(source.Contains("specific-body")&&!source.Contains("generic-body")&&!source.Contains("self-body"),"one applicable version using target settlement, not current player scene");
-  Check(!source.Contains("聊天素材")&&!source.Contains("参与互动"),"persona source is not a dialogue prompt");
+  Check(!source.Contains("鑱婂ぉ绱犳潗")&&!source.Contains("鍙備笌浜掑姩"),"persona source is not a dialogue prompt");
   int calls=AnimusForge.KnowledgeLibraryBehavior.Ports.RerankCalls;
   AnimusForge.KnowledgeLibraryBehavior.CollectPersonaLoreRule(mentions,v,settings);
   Check(calls==AnimusForge.KnowledgeLibraryBehavior.Ports.RerankCalls,"ranked cache reused");

@@ -461,7 +461,7 @@ internal static bool IsWorldBulletinPublishingEnabled()
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
-			return settings == null || (settings.UseWorldBulletin && settings.AutoGenerateWeeklyReports);
+			return settings == null || (settings.UseWorldBulletin && settings.AutoGenerateWorldBulletins);
 		}
 		catch
 		{

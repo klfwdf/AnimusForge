@@ -102,7 +102,7 @@ public static class AnimusForgeTerminalSettings
 
 	internal static string GetSettingsPath()
 	{
-		return Path.Combine(AnimusForgeDataPaths.GetSettingsDirectory(AnimusForgeDataPaths.GetCurrentRoot()), SettingsFileName);
+		return Path.Combine(AnimusForgeDataPaths.GetSettingsDirectory(AnimusForgeModulePaths.GetCurrentModuleRoot()), SettingsFileName);
 	}
 
 	internal static bool TryLoadSettingsFile(string path, out AnimusForgeTerminalSettingsData data)

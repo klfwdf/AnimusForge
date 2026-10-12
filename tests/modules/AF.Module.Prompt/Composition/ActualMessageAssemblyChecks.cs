@@ -93,6 +93,7 @@ internal static class ActualMessageAssemblyChecks
                 Check((string)Call(retry, "ProjectKnownErrorForUi", modelBody) == modelBody, "unstructured player-like detail stays untouched");
             }
             RuntimeLanguageChecks.Writers(product);
+            TerminalSettingsChecks.Run(product, resolvedRoot);
             RuntimeLanguageChecks.EntityMatches(product);
             Type dto = product.GetType("AnimusForge.ConversationMessage", true);
             object Message(string role, string content, string speaker, int agent = -1) {

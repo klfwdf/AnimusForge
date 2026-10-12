@@ -10,5 +10,32 @@
     <string id="AF_LLM_UI_VoiceGroup_FemaleYoung" text="Young female (&lt;30 years)" />
     <string id="AF_LLM_UI_VoiceGroup_FemaleMiddle" text="Middle-aged female (30-50 years)" />
     <string id="AF_LLM_UI_VoiceGroup_FemaleOld" text="Elderly female (&gt;50 years)" />
-  </strings>
+    <string id="AF_LLM_UI_TtsError_EndpointUnsupported" text="Invalid API URL or unsupported protocol; V3 requires /api/v3/tts/unidirectional and Agent Plan requires /api/v3/plan/tts/unidirectional (HTTP, not SSE/WS)." />
+    <string id="AF_LLM_UI_TtsError_ConfigurationIncomplete" text="Check the credential, resource ID, and voice; V1 also requires an App ID." />
+    <string id="AF_LLM_UI_TtsError_ExtraParametersInvalid" text="Extra parameters must be valid JSON; V3 requires a JSON object." />
+    <string id="AF_LLM_UI_TtsError_V3SpeedInvalid" text="V3 speed must be 0.5–2.0 times normal; the setting was not changed automatically." />
+    <string id="AF_LLM_UI_TtsError_V3SampleRateInvalid" text="V3 sample rate must be 8000, 16000, 22050, 24000, 32000, 44100, or 48000 Hz." />
+    <string id="AF_LLM_UI_TtsError_AudioFormatUnsupported" text="The player supports wav or pcm only." />
+    <string id="AF_LLM_UI_TtsError_V3TextInvalid" text="V3 text is empty or exceeds the AF limit of 64 KiB UTF-8 per request." />
+    <string id="AF_LLM_UI_TtsError_V3LoudnessInvalid" text="V3 cloud volume must be 0.5–2.0 times normal." />
+    <string id="AF_LLM_UI_TtsError_Timeout" text="Synthesis timed out after 30 seconds; no automatic retry." />
+    <string id="AF_LLM_UI_TtsError_Cancelled" text="The voice request was cancelled." />
+    <string id="AF_LLM_UI_TtsError_Http401" text="Authentication failed; V3 requires the matching service API key, Agent Plan requires its dedicated API key, and resource/voice authorization must match." />
+    <string id="AF_LLM_UI_TtsError_Http403" text="Authentication failed; V3 requires the matching service API key, Agent Plan requires its dedicated API key, and resource/voice authorization must match." />
+    <string id="AF_LLM_UI_TtsError_Http429" text="Rate limited; check quota/concurrency. No automatic retry." />
+    <string id="AF_LLM_UI_TtsError_ResponseTooLarge" text="The response exceeded the AF audio or transfer size limit." />
+    <string id="AF_LLM_UI_TtsError_UrlMissing" text="The TTS API URL is missing." />
+    <string id="AF_LLM_UI_TtsError_CredentialMissing" text="The TTS token / API key is missing; V1 needs a token and V3 needs the matching service or plan API key." />
+    <string id="AF_LLM_UI_TtsError_AppIdMissing" text="The V1 TTS App ID is missing." />
+    <string id="AF_LLM_UI_TtsError_ResourceIdMissing" text="The TTS resource ID is missing." />
+    <string id="AF_LLM_UI_TtsError_VoiceIdMissing" text="The TTS voice ID is missing." />
+    <string id="AF_LLM_UI_TtsError_Unknown" text="Synthesis failed ({CODE}); check the TtsEngine log. No automatic retry." />
+    <string id="AF_LLM_UI_Tts_TestFailure" text="[TTS] Test voice failed: {REASON}" />
+    <string id="AF_LLM_UI_TtsError_DisabledDuringPlayback" text="TTS disabled during playback; fallback to text bubble." />
+  <string id="AF_LLM_UI_TtsError_UnsupportedPlaybackFormat" text="Unsupported TTS audio format. Only wav/pcm is supported." />
+  <string id="AF_LLM_UI_TtsError_TargetBeforeSynthesis" text="Scene speech target became unavailable before synthesis." />
+  <string id="AF_LLM_UI_TtsError_EmptyAudio" text="TTS synthesis returned empty audio." />
+  <string id="AF_LLM_UI_TtsError_AudioParseFailed" text="TTS audio parse failed." />
+  <string id="AF_LLM_UI_TtsError_TargetBeforePlayback" text="Scene speech target became unavailable before playback." />
+</strings>
 </base>

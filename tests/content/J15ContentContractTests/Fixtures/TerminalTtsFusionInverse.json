@@ -1,0 +1,89 @@
+{
+  "purpose": "Explicit display-only adoption of remote V3 TTS fields; property IDs/delegates/values remain unchanged.",
+  "literalChanges": [
+    {
+      "setting": "TtsVolcDedicatedEnabled",
+      "part": "Hint",
+      "before": "\"When enabled, TTS requests use the native Volcengine V1 HTTP non-streaming protocol (Authorization: Bearer;token and the app/user/audio/request structure).\"",
+      "after": "\"Selects V1 or V3 HTTP unidirectional synthesis (including Agent Plan) by API URL. Both collect all audio before playback; existing settings are not migrated automatically.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedApiUrl",
+      "part": "Hint",
+      "before": "\"V1 non-streaming endpoint: https://openspeech.bytedance.com/api/v1/tts\"",
+      "after": "\"V1: https://openspeech.bytedance.com/api/v1/tts; V3: https://openspeech.bytedance.com/api/v3/tts/unidirectional; Agent Plan: https://openspeech.bytedance.com/api/v3/plan/tts/unidirectional (HTTP, not SSE/WS).\""
+    },
+    {
+      "setting": "TtsVolcDedicatedApiKey",
+      "part": "Title",
+      "before": "\"TTS Volc Dedicated API Key\"",
+      "after": "\"Volcengine dedicated token / API key\""
+    },
+    {
+      "setting": "TtsVolcDedicatedApiKey",
+      "part": "Hint",
+      "before": "\"The documented request header is: Authorization: Bearer;{token}\"",
+      "after": "\"V1 uses your legacy token; its HTTP header is Authorization: Bearer; followed by the token. V3 uses the corresponding speech-service API key (X-Api-Key). Agent Plan requires its dedicated API key; do not reuse the old token.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedAppKey",
+      "part": "Hint",
+      "before": "\"The app.appid field in the V1 request body.\"",
+      "after": "\"V1 requires app.appid. V3 API-key authentication does not use it, so it may be blank. Switching protocols does not clear the old value.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedResourceId",
+      "part": "Hint",
+      "before": "\"Written to the X-Api-Resource-Id request header. Supported entries: seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0\"",
+      "after": "\"Written to the X-Api-Resource-Id request header. The resource and voice must be enabled and authorized; synthesis voices from model 2.0 use V3. Accepted values include seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedSpeaker",
+      "part": "Title",
+      "before": "\"TTS Volc Dedicated Speaker\"",
+      "after": "\"Volcengine dedicated voice ID\""
+    },
+    {
+      "setting": "TtsVolcDedicatedSpeaker",
+      "part": "Hint",
+      "before": "\"Example: zh_male_M392_conversation_wvae_bigtts\"",
+      "after": "\"Maps to voice_type in V1 and speaker in V3. It must match the resource ID and account authorization; the old voice is not replaced automatically.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedAdditionsJson",
+      "part": "Title",
+      "before": "\"TTS Volc Dedicated Additions JSON\"",
+      "after": "\"Volcengine dedicated extra parameters (JSON object)\""
+    },
+    {
+      "setting": "TtsVolcDedicatedAdditionsJson",
+      "part": "Hint",
+      "before": "\"Write the TTS Volc Dedicated Additions JSON verbatim to request.extra_param as a string. Use a JSON object.\"",
+      "after": "\"Written to request.extra_param in V1 or req_params.additions in V3, both as JSON strings. Use parameters supported by the selected endpoint.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedAudioFormat",
+      "part": "Hint",
+      "before": "\"V1 encoding. The current player supports only wav or pcm.\"",
+      "after": "\"Supports wav or pcm only. V1 requests the selected format unchanged. V3 always receives PCM and wraps it as selected here, retaining the current player.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedSampleRate",
+      "part": "Hint",
+      "before": "\"Recommended V1 rate values: 8000 / 16000 / 24000.\"",
+      "after": "\"Recommended values: 8000 / 16000 / 24000 Hz. V3 also supports 22050 Hz; arbitrary integer sample rates are not accepted by V3.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedSpeed",
+      "part": "Hint",
+      "before": "\"V1 speed_ratio; range [0.1, 2.0].\"",
+      "after": "\"V1 supports 0.1–2.0 times normal; V3 supports 0.5–2.0 (1.0 is normal). A value that is too low after switching to V3 produces an error and is not changed automatically.\""
+    },
+    {
+      "setting": "TestTtsVolcDedicatedVoice",
+      "part": "Hint",
+      "before": "\"Uses native Volcengine V1 parameters to test the fixed text “At your service, traveler!”\"",
+      "after": "\"Tests the fixed phrase “At your service, traveler!” using the current API URL and credential. Real synthesis may incur charges.\""
+    }
+  ]
+}

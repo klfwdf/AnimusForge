@@ -331,6 +331,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
             }
 			string proposalIntent = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent);
 			if (!command.IsPlayerAuthored && !string.IsNullOrWhiteSpace(proposalIntent)
+				&& !(orchestration is WorldDiplomacyOrchestration oralOwner && oralOwner.HasConfirmedOralPlayerAgreement(document))
 				&& !WorldDiplomacyRoundLifecycleRules.HasOpenProposalForDocument(document, author, target, proposalIntent, port.ResolveRound))
 			{
 				orchestration.SuppressInvalidDocumentBeforePropagation(document, "offer_ownership_guard");
@@ -422,7 +423,8 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 if (!legacy && !noAction && TryGetExecutionStateViolation(orchestration, document,
                     command.IsPlayerAuthored, playerDiplomacy, input.Intent, input.Commitment, author, target, out string executionBlockReason))
 				{
-					document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Analysis_MechanicNotExecutedPrefix", "Diplomatic action not executed: ") + executionBlockReason;
+					document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Analysis_MechanicNotExecutedPrefix", "Diplomatic action not executed: ")
+                        + WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic(executionBlockReason);
 					port.Log("multi-target diplomatic action became invalid during batch execution document="
 						+ command.DocumentId + " action=" + input.ActionId + " reason=" + executionBlockReason);
 				}

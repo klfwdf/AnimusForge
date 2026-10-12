@@ -1146,5 +1146,13 @@
   "Closeout_LocalPolicyUi_Legacy_Closeout_9": "AI编写返回了空的政策名或政策正文。",
   "Closeout_LocalPolicyUi_Legacy_Closeout_10": "AI编写修改了玩家已指定的政策名。",
   "Closeout_LocalPolicyUi_Legacy_Closeout_11": "AI编写请求失败，请检查连接设置并查看日志。",
-  "Closeout_LocalPolicyUi_Legacy_Closeout_12": "政策草案请求已因读档失效。"
+  "Closeout_LocalPolicyUi_Legacy_Closeout_12": "政策草案请求已因读档失效。",
+  "RecallQuery_ContrastTerms": "而是|但是|but|instead|however",
+  "RecallQuery_SentenceDelimiters": "\r\n。；;！!？?",
+  "RecallQuery_TimingTerms": "每日|每天|一次性|单次|第纳尔|百分|daily|each day|every day|one-time|once|denars|percent",
+  "RecallQuery_PolicyPrefixes": "本政策|此政策|本方案|本措施|this policy|the policy|this plan|this measure",
+  "RecallQuery_ExclusionPrefixes": "不改变|不调整|不执行|不实施|不影响|不会改变|无需改变|不增加|不减少|不提高|不降低|do not change|does not change|will not change|do not adjust|does not adjust|do not execute|does not execute|do not implement|does not implement|does not affect|do not affect|do not increase|does not increase|do not decrease|does not decrease|will not increase|will not decrease",
+  "RecallQuery_RepealPrefixes": "废除|repeal|abolish",
+  "RecallQuery_ProhibitionTerms": "禁令|ban|prohibition",
+  "RecallQuery_NoNumericIntentValues": "无直接数值意图|No direct numeric intent"
 }

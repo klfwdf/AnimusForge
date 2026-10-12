@@ -72,6 +72,15 @@ internal static class RuntimeLanguageChecks
         }
         string literal = "Vimi {NAME} $1";
         Check((string)Call(item, "LocalizeSpeakerForDisplay", literal, "afef_player") == literal, "dynamic speaker remains literal");
+        foreach (string suffix in new[] { "delayed", "withdrawal" }) {
+            string key = "memory_diplomacy_oral_" + suffix;
+            string raw = Prompt(product, "Raw", key + "_source");
+            string uiKey = suffix == "delayed" ? "AF_DIP_UI_OralGeneration_DelayedFact" : "AF_DIP_UI_OralGeneration_WithdrawalFact";
+            foreach (string kind in new[] { "afef_player", "afef_npc" })
+                Check((string)Call(item, "LocalizeFactBodyForDisplay", raw, kind) == rows[uiKey], "known oral fact body follows UI " + language + "/" + kind);
+            Check((string)Call(item, "LocalizeFactBodyForDisplay", raw, "user") == raw, "ordinary user body remains literal");
+            Check((string)Call(item, "LocalizeFactBodyForDisplay", raw + literal, "afef_npc") == raw + literal, "unknown or edited fact body remains literal");
+        }
         Type status = product.GetType("AnimusForge.Illustrator.UI.IllustrationStatusUiText", true);
         Type illustrator = product.GetType("AnimusForge.Illustrator.IllustratorText", true);
         string defaultTheme = (string)Call(illustrator, "Raw", "Residual_IllustrationStatusUiText_ade70c013f11");
@@ -119,7 +128,10 @@ internal static class RuntimeLanguageChecks
         foreach (string preference in new[] { "", literal }) {
             var messages = (JArray)Call(product.GetType("AnimusForge.WorldDiplomacyPlayerDraftRules", true), "BuildMessages", input, preference);
             Guard((string)messages.OfType<JObject>().Last(message => (string)message["role"] == "system")["content"], "player diplomatic draft");
-            Check(messages.Count == (preference == "" ? 2 : 3) && ((string)messages.Last["content"]).EndsWith(literal, StringComparison.Ordinal), "draft roles and original player input preserved");
+            string userHeader = (string)Call(product.GetType("AnimusForge.DiplomacyMiscPromptTexts", true), "GetRequired", "PlayerDraft_UserHeader");
+            Check(messages.Count == 2 && (string)messages[0]["role"] == "system" && (string)messages[1]["role"] == "user"
+                && (string)messages[1]["content"] == userHeader + literal
+                && (preference == "" || ((string)messages[0]["content"]).Contains(preference)), "incoming two-role draft keeps preference in system and exact original player material");
         }
         Type policy = product.GetType("AnimusForge.PolicyLlmClient", true);
         var original = new JArray(new JObject { ["role"]="system", ["content"]=literal }, new JObject { ["role"]="user", ["content"]=literal });

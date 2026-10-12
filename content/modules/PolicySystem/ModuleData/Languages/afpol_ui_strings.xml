@@ -729,5 +729,6 @@
     <string id="AFPOL_UI_SeasonSummer" text="Summer" />
     <string id="AFPOL_UI_SeasonAutumn" text="Autumn" />
     <string id="AFPOL_UI_SeasonWinter" text="Winter" />
+      <string id="AFPOL_UI_PromptFileTooLarge" text="The policy prompt JSON exceeds the size limit; the original was not overwritten." />
   </strings>
 </base>

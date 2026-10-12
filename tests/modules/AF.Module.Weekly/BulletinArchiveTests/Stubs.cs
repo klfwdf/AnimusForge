@@ -1,6 +1,6 @@
 // Only external/game/render/settings boundaries are fakes; production algorithms are linked/extracted.
 namespace TaleWorlds.CampaignSystem {
- public interface IDataStore { bool SyncData<T>(string key, ref T data); }
+ public interface IDataStore { bool IsLoading { get; } bool IsSaving { get; } bool SyncData<T>(string key, ref T data); }
  public class Campaign { public static Campaign Current=new(); public EncyclopediaManager EncyclopediaManager=new(); }
  public class Hero { public string StringId; public bool IsLord; public Clan Clan; public Settlement CurrentSettlement; public Party PartyBelongedTo; }
  public class CharacterObject { public Hero HeroObject; }
@@ -119,8 +119,9 @@ namespace AnimusForge {
   private static bool IsPolicyPromptFileName(string file)=>false;
   private static string GetPolicyPromptTextFilePath(string dir,string file)=>System.IO.Path.Combine(dir,file);
   private static string GetCustomPromptTextFilePath(string dir,string file)=>System.IO.Path.Combine(dir,file);
-  internal static bool ReplayReadPrompt(string path,out string text)=>TryReadCustomPromptTextJsonFile(path,NormalizeWorldBulletinWritingRequirementsText,DefaultWorldBulletinWritingRequirements,out text);
-  internal static bool ReplayReadLayered(string over,string packaged,out string text)=>TryReadLayeredCustomPromptTextJsonFile(over,packaged,WorldBulletinWritingRequirementsJsonFileName,NormalizeWorldBulletinWritingRequirementsText,DefaultWorldBulletinWritingRequirements,out text);
+  internal static bool ReplayReadPrompt(string path,out string text)=>TryReadCustomPromptTextJsonFile(System.IO.Path.GetFullPath(path),NormalizeWorldBulletinWritingRequirementsText,DefaultWorldBulletinWritingRequirements,out text);
+  internal static bool ReplayReadDirectory(string directory,out string text,string packaged=null)=>TryReadLayeredCustomPromptTextJsonFile(System.IO.Path.GetFullPath(directory),packaged==null?null:System.IO.Path.GetFullPath(packaged),WorldBulletinWritingRequirementsJsonFileName,NormalizeWorldBulletinWritingRequirementsText,DefaultWorldBulletinWritingRequirements,out text);
+  internal static void ReplaySavePrompt(string path,string text)=>PersistCustomPromptTextFileUnlocked(System.IO.Path.GetFullPath(path),text);
   internal static string ReplayMigratePrompt(string text)=>MigrateLegacyWorldBulletinWritingRequirements(text);
  }
  internal static class WeeklyGenerationRules {
@@ -131,7 +132,11 @@ namespace AnimusForge {
  internal sealed class MemoryStore:TaleWorlds.CampaignSystem.IDataStore {
   public readonly System.Collections.Generic.Dictionary<string,object> Data;
   private readonly bool _loading;
+  public bool IsLoading=>_loading;
+  public bool IsSaving=>!_loading;
   internal MemoryStore(System.Collections.Generic.Dictionary<string,object> data,bool loading=false){Data=data;_loading=loading;}
   public bool SyncData<T>(string key,ref T value){if(!_loading){Data[key]=value;return true;}if(Data.TryGetValue(key,out var v)){value=(T)v;return true;}return false;}
  }
 }
+
+namespace TaleWorlds.Engine { internal static class Utilities { internal static string GetBasePath()=>throw new System.Exception("Uncovered legacy module lookup invoked"); } }

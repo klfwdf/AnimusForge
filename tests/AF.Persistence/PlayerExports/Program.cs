@@ -343,7 +343,7 @@ internal static class Program
         Check(folders.Count == 1 && folders[0].FullPath == builtin, "fresh install works with missing user root and no migration receipt");
         Check(!Directory.Exists(user), "listing builtins never creates or migrates user data");
         Check(PlayerExportsStore.ResolveImportFolderPath("same-name", module, user) == builtin, "named import reads installed worldbook first");
-        Check(PlayerExportsStore.ResolveImportFolderPath("", module, user) == null, "blank import never falls back to a builtin");
+        Check(PlayerExportsStore.ResolveImportFolderPath("", module, user) == builtin, "incoming blank import selects latest module package");
         string player = Path.Combine(user, "same-name");
         string newest = Path.Combine(user, "newest");
         Directory.CreateDirectory(player);
@@ -353,15 +353,17 @@ internal static class Program
         Directory.SetLastWriteTimeUtc(player, new DateTime(2020, 1, 1));
         Directory.SetLastWriteTimeUtc(newest, new DateTime(2021, 1, 1));
         folders = PlayerExportsStore.GetImportFolders(module, user);
-        Check(folders.Count == 3, "both roots listed; hidden candidates excluded");
-        Check(folders[0].Name == folders[2].Name && folders[0].SourceLabel != folders[2].SourceLabel, "same names retain distinct source labels");
-        Check(PlayerExportsStore.ResolveImportFolderPath(folders[2].FullPath, module, user) == player, "selected user path cannot switch to same-name builtin");
+        Check(folders.Count == 1 && folders[0].FullPath == builtin, "incoming module-only menu excludes old user roots and hidden candidates");
+        Check(folders[0].SourceLabel == "Module directory" && Directory.Exists(player), "module source identity remains stable and old user data is retained");
+        bool outsideRejected=false; try { PlayerExportsStore.ResolveImportFolderPath(player, module, user); } catch (ArgumentException) { outsideRejected=true; }
+        Check(outsideRejected && Directory.Exists(player), "incoming absolute import refuses old user root without deleting it");
         Check(PlayerExportsStore.ResolveImportFolderPath("same-name", module, user) == builtin, "installed source has priority over same-name user export");
-        Check(PlayerExportsStore.ResolveImportFolderPath("newest", module, user) == newest, "user-only name still resolves");
-        Check(PlayerExportsStore.ResolveImportFolderPath(null, module, user) == newest, "blank input retains newest-user-export semantics");
+        Check(PlayerExportsStore.ResolveImportFolderPath("newest", module, user) == Path.Combine(installed,"newest"), "incoming name remains under module even when same name exists in old user root");
+        Check(PlayerExportsStore.ResolveImportFolderPath(null, module, user) == builtin, "incoming blank input selects newest module package only");
         Check(PlayerExportsStore.GetImportFolders(module, installed).Count == 1, "identical roots are not listed twice");
         string missing = Path.Combine(fixture, "does-not-exist");
-        Check(PlayerExportsStore.ResolveImportFolderPath(missing, module, user) == missing, "missing absolute source is not reinterpreted as a relative package");
+        bool missingRejected=false; try { PlayerExportsStore.ResolveImportFolderPath(missing, module, user); } catch (ArgumentException) { missingRejected=true; }
+        Check(missingRejected && !Directory.Exists(missing), "incoming outside missing absolute path is rejected without side effects");
         bool rejected = false;
         try { PlayerExportsStore.ResolveImportFolderPath("..", module, user); }
         catch (ArgumentException) { rejected = true; }
@@ -415,7 +417,7 @@ internal static class Program
         Check(Path.IsPathRooted(root) && root.EndsWith(Path.DirectorySeparatorChar + PlayerExportsStore.FolderName) && PlayerExportsStore.GetModuleRootPath().Length > 0, "root path shape: " + root);
 
         string tempRoot = Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP") ?? Path.GetTempPath();
-        string temp = Path.Combine(tempRoot, "af-player-exports-" + Guid.NewGuid().ToString("N"));
+        string temp = Path.Combine(root, "af-player-exports-" + Guid.NewGuid().ToString("N"));
         try
         {
             Check(PlayerExportsStore.FindLatestExportFolder(temp) == null, "missing root → null");

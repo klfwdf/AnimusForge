@@ -31,6 +31,9 @@
 - 资源与真实 reader、消费者、内容映射/嵌入逻辑名、语言注册和包选择必须一起完成；核对 prefab 的 DataSource 文案属性与绑定。语义、实际接线、词法扫描和实机分别验收，不能用“无汉字/编译通过”替代。
 - 所有新增自然语言生成链路，在最终请求的 system 中明确使用内容包语言，包括对话、信件、周报/公报、人物背景、记忆、政策、命名和插画文字；约束在用户写作要求之后收口并保留协议、事实、JSON字段、数字和专名。覆盖配置、三渠道、重试及真实 messages 都须验证；只翻译提示词不等于模型会按包语言输出。
 - AF 运行数据按用途写入当前已安装模组：`CustomPrompts/` 用户提示词、`Logs/` 日志、`Configs/` 设置、`PlayerExports/` 导入导出、`Cache/` 缓存和临时音频、`Recovery/` 恢复资料；复用 `AnimusForgeDataPaths` 的身份/路径/ancestor reparse 校验。不得自动转写 AppData、Documents 或 TEMP；独立编辑器显式选择合法模块，旧位置只作兼容读取/一次迁移来源。MCM 路由只覆盖 AF 自有 ID。
+- 设置维护以原 MCM 属性为配置和持久化来源；终端 `TerminalSettingsCoverage` 一次缓存四个 AF owner 的属性与编译委托，补齐未手工注册项。新增设置同步核对终端分类、范围、双语说明、原 setter 与保存 owner；不能只按属性同名判断已接线。
+- MCM 前端只保留 API 设置和“0支持制作组”；通过 `AnimusForgeMcmVisibility` 的 UI 投影隐藏其余入口，保留完整属性、默认值、JSON 字段和 preset，不把隐藏改成功能禁用，也不影响其他模组。
+- 外观、字体、对话历史控件、信件样式、显示通知与插画外观集中在终端“UI”页；既有分类路由值、信件样式索引和原配置对象保持。终端修改扩展设置后按各自 owner 保存，失败保留待重试；不在 Tick 扫描元数据或读写配置。
 - 固定包默认提示词位于 `ModuleData/Defaults/CustomPrompts/`，`CustomPrompts/` 保留用户编辑。按 `McmKnownPromptDefaults.json` 的确切已知默认哈希识别旧发布文件，维护清册时同步两种资产；已编辑、未知和旧用户内容保值。映射迁移需要新建干净 Stage 并保留旧项目输出，不能放行 Stage 中未知文件来解决旧输出冲突。
 - 正式打包必须一次生成 CN 和 EN 两份 ZIP，名称为 `AnimusForge_v1.X.X_CN_MMdd_HHmm.zip` / `AnimusForge_v1.X.X_EN_MMdd_HHmm.zip`，例如 `AnimusForge_v1.5.8_CN_1007_0802.zip`。同一对包共用版本和本机月日/时分；重名时两包同加 `_1`、`_2` 等尾号，保留旧包，禁止自定义 PackageLabel 改名。
 - 每份 ZIP 只有一个 `AnimusForge/` 模块，含 Bootstrap 和 1.3/1.4 实现。正式发行验证完整 Stage 的两种内容投影及旧值/变量/语义；日常验证按变更风险复用有效证据，保持缓存策略，不新增 Tick IO/扫描。遵守原版本事务、两包校验成功后才发布、失败清理及不隐式部署规则。

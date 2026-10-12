@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using AnimusForge.DiplomacyDialogue;
 
 using AnimusForge.Refactor.Domain;
 using static AnimusForge.Refactor.Domain.WorldDiplomacyIntentVocabulary;
@@ -13,7 +14,7 @@ namespace AnimusForge;
 
 internal sealed partial class WorldDiplomacyOrchestration
 {
-    internal string ControlOralDiplomaticCommitment(string rulerId, string actorId, string payload)
+    internal string ControlOralDiplomaticCommitment(string rulerId, string actorId, string payload, DialogueInteractionOrigin capturedOrigin = null)
     {
         var owner = this;
         if (owner == null || !_host.WorldDiplomacyEnabled() || !DialogueRulerIsCurrent(actorId, rulerId) || _host.IsPlayerParty(actorId)) return "";
@@ -35,24 +36,22 @@ internal sealed partial class WorldDiplomacyOrchestration
             var round = owner.ResolveRound(item.RoundId);
             var offer = round?.PendingOffers?.FirstOrDefault(x => x.SourceDocumentId == item.DocumentId && x.Status == "open");
             if (source == null || offer == null) return DiplomacyMiscPromptTexts.Get("DialogueControl_CannotWithdraw", "The original proposal has taken effect, is closed, or cannot be withdrawn; completed diplomatic actions cannot be undone.");
-            var document = owner.CreateDocument(actorId, ResolveDialogueParty(item.TargetKingdomId), DiplomacyMiscPromptTexts.Get("DialogueControl_WithdrawProposalTitle", "Withdraw Diplomatic Proposal"),
-                string.Format(DiplomacyMiscPromptTexts.Get("DialogueControl_WithdrawProposalBody",
-                    "The court of {0} formally withdraws the earlier proposal to {1}: {2}. The other party has not formally accepted it; the original proposal is no longer open."),
-                    source.AuthorKingdomName, source.TargetKingdomName, IntentLabel(source.Intent, DiplomacyPromptTexts.Get)),
-                "dialogue_commitment", false, true, round.RoundId);
-            document.Intent = "withdraw_offer"; document.Commitment = "binding";
-            document.RespondingToOfferDocumentId = source.DocumentId; document.RespondingToOfferActionId = offer.SourceActionId;
-            document.SourceDocumentId = source.DocumentId; document.AnalysisStatus = "success";
-            owner.AddDocument(document);
-            owner.ProcessAnalyzedDocument(document, document.Intent, document.Commitment, false, "firm", 1f);
-            if (offer.Status != "withdrawn") return DiplomacyMiscPromptTexts.Get("DialogueControl_WithdrawIncomplete", "Withdrawal declaration not completed; original proposal remains at its current state.");
-            item.Status = "withdrawn"; item.Reason = reason;
+            QueueOralWithdrawal(item, source, offer, reason, capturedOrigin);
+            item.Reason = reason;
         }
         else if (item.Status == "accepted" || item.Status == "deferred")
         {
             if (state == "cancelled") owner.CancelUnpublishedCommitmentWork(id, item.Version, reason);
-            else if (state == "deferred") { item.Status = "deferred"; item.Reason = reason; item.ExplicitlyDeferred = true; }
-            else if (state == "accepted") { item.Status = "accepted"; item.Reason = reason; item.ExplicitlyDeferred = false; owner.PublishDialogueArrangement(item); }
+            else if (state == "deferred")
+            {
+                item.Status = "deferred"; item.Reason = reason; item.ExplicitlyDeferred = true;
+                foreach (var job in Storage.Jobs.Where(x => x.DialogueArrangementId == item.ArrangementId).ToList()) RemoveJob(job.JobId);
+            }
+            else if (state == "accepted")
+            {
+                item.Status = "accepted"; item.Reason = reason; item.ExplicitlyDeferred = false;
+                item.GenerationRetryAfterDay = -1; owner.PublishDialogueArrangement(item);
+            }
             else return DiplomacyMiscPromptTexts.Get("DialogueControl_InvalidStatus", "Commitment disposition not submitted: invalid status.");
         }
         else return DiplomacyMiscPromptTexts.Get("DialogueControl_HasFormalResult", "This commitment already has a formal outcome and cannot be rolled back through private discussion.");

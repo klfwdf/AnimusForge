@@ -7,6 +7,7 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" Link="PromptComposerTexts.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>$(USERPROFILE)/.nuget/packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll</HintPath></Reference>
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyPlayerDraftRules.cs" Link="WorldDiplomacyPlayerDraftRules.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyMiscPromptTexts.cs" Link="DiplomacyMiscPromptTexts.cs" />
@@ -21,5 +22,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../../../../content/foundation/AF.Foundation.Localization/ModuleData/RuntimeStaleRequestCompatibility.txt" LogicalName="AnimusForge.Foundation.StaleRequestError.txt" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json" LogicalName="AnimusForge.Prompt.Compatibility.json" />
   </ItemGroup>
 </Project>

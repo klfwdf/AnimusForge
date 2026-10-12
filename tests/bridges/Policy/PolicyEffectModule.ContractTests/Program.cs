@@ -116,6 +116,32 @@ internal static partial class Program
 			ConfigureOnnxRuntimeSearchPath();
 			LoadAssemblies(args);
 			ConfigureOnnxModuleRootOverride(args);
+			if (args.Any(value => value == "--module-runtime-storage-only"))
+			{
+				TestModuleRuntimeStorageContracts();
+				Console.WriteLine("PASS moduleRuntimeStorageAssertions=" + _assertionCount);
+				return 0;
+			}
+			if (args.Any(value => value == "--module-prompt-storage-only"))
+			{
+				TestModulePromptStorageContracts();
+				Console.WriteLine("PASS modulePromptStorageAssertions=" + _assertionCount);
+				return 0;
+			}
+			if (args.Any(value => value == "--policy-production-retrieval-only"))
+			{
+				TestProductionPolicyRetrievalContracts();
+				Console.WriteLine("PASS productionPolicyRetrievalAssertions=" + _assertionCount);
+				return 0;
+			}
+			if (args.Any(value => value == "--policy-production-onnx-only"))
+			{
+				Check(!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(OnnxRuntimeDirectoryEnvironmentVariable))
+					&& args.Contains(OnnxModuleRootOption), "Production ONNX matrix requires explicit runtime and module assets; skipping is not a pass.");
+				TestProductionPolicyOnnxMatrix();
+				Console.WriteLine("PASS productionPolicyOnnxAssertions=" + _assertionCount);
+				return 0;
+			}
 			if (args.Any(value => value == "--policy-record-management-only"))
 			{
 				TestPolicyRecordManagementContracts();
@@ -628,6 +654,15 @@ internal static partial class Program
 			patchedAssemblies);
 		foreach (Assembly assembly in patchedAssemblies)
 		{
+			if (args.Contains("--policy-production-onnx-only"))
+			{
+				MethodInfo logsPrefix = typeof(Program).GetMethod(nameof(OverrideProductionOnnxContractLogs), All);
+				patch.Invoke(harmony, new[] { (object)assembly.GetType("AnimusForge.AnimusForgeModulePaths", true).GetMethod("GetLogsDirectory", All),
+					Activator.CreateInstance(harmonyMethodType, logsPrefix), null, null, null });
+				VerifyOnnxContractPaths(assembly, moduleRoot, "ResolveEmbedding", "ONNX", true);
+				InitializeOnnxContractEmbedding(assembly.GetType("AnimusForge.OnnxEmbeddingEngine", throwOnError: true), moduleRoot);
+				continue;
+			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--onnx-cold-main-only", StringComparison.OrdinalIgnoreCase)))
 			{
 				if (assembly == _sut) VerifyOnnxContractColdMainGate(assembly, moduleRoot);
@@ -858,6 +893,12 @@ internal static partial class Program
 			return true;
 		}
 		__result = moduleRoot;
+		return false;
+	}
+
+	private static bool OverrideProductionOnnxContractLogs(ref string __result)
+	{
+		__result = Path.Combine(Path.GetTempPath(), "af-policy-onnx-contract-logs");
 		return false;
 	}
 
@@ -9526,10 +9567,12 @@ internal static partial class Program
 		PolicyEffectPromptService.SetStorageDirectoryOverrideForContractTests(tempRoot);
 		try
 		{
-		string dataRoot = (string)InvokeStatic(SutType("AnimusForge.AnimusForgeDataPaths"), "GetCurrentRoot", Array.Empty<object>(), 0);
-		string ordinaryOverrideDirectory = (string)InvokeStatic(settingsType, "GetCustomPromptTextStoreDirectory", Array.Empty<object>(), 0);
+		string dataRoot = AnimusForgeModulePaths.GetCurrentModuleRoot();
+		string ordinaryDirectory = (string)InvokeStatic(settingsType, "GetCustomPromptTextStoreDirectory", Array.Empty<object>(), 0);
+		Check(string.Equals(ordinaryDirectory, Path.Combine(AnimusForgeModulePaths.GetCurrentModuleRoot(), "CustomPrompts"), StringComparison.OrdinalIgnoreCase),
+			"Production editable prompts must use the current module directory, not user data or CWD.");
 		string cachePath = (string)InvokeStatic(settingsType, "GetModelDropdownCachePath", Array.Empty<object>(), 0);
-		Check(string.Equals(ordinaryOverrideDirectory, Path.Combine(dataRoot, "CustomPrompts"), StringComparison.OrdinalIgnoreCase)
+		Check(string.Equals(ordinaryDirectory, Path.Combine(dataRoot, "CustomPrompts"), StringComparison.OrdinalIgnoreCase)
 			&& string.Equals(AnimusForgeModulePaths.GetLogsDirectory(), Path.Combine(dataRoot, "Logs"), StringComparison.OrdinalIgnoreCase)
 			&& string.Equals(cachePath, Path.Combine(dataRoot, "Cache", "ModelDropdownCache.json"), StringComparison.OrdinalIgnoreCase),
 			"Production prompt overrides, logs and model dropdown cache must resolve by purpose under the active module root, never CWD or AppData.");
@@ -9579,8 +9622,8 @@ internal static partial class Program
 			"Saving over a corrupt ordinary override must fail without changing its bytes or leaking a candidate.");
 			string legacyPlayerPath = Path.Combine(tempRoot, "CustomPolicyEvaluatorPrompt.json");
 			string legacyNpcPath = Path.Combine(tempRoot, "NpcRulerPolicyPrompt.json");
-			File.WriteAllText(legacyPlayerPath, "{\"Version\":1,\"Text\":\"PLAYER_CUSTOM_MUST_STAY\"}", new UTF8Encoding(false));
-			File.WriteAllText(legacyNpcPath, "{\"Version\":1,\"Text\":\"NPC_CUSTOM_MUST_STAY\"}", new UTF8Encoding(false));
+			File.WriteAllText(legacyPlayerPath, "{\"Version\":1,\"Text\":\"PLAYER_CUSTOM_MUST_STAY\"}");
+			File.WriteAllText(legacyNpcPath, "{\"Version\":1,\"Text\":\"NPC_CUSTOM_MUST_STAY\"}");
 			Check(PolicyEffectPromptService.EnsureStorageFiles(out string ensureError),
 				"Policy prompt storage files must initialize independently: " + ensureError);
 			Check(File.ReadAllText(legacyPlayerPath, Encoding.UTF8).Contains("PLAYER_CUSTOM_MUST_STAY")
@@ -9588,18 +9631,8 @@ internal static partial class Program
 				"Initializing new policy prompt files must not overwrite legacy player or NPC custom prompt files.");
 			string autoDraftPath = Path.Combine(tempRoot, PolicyEffectPromptService.AutoDraftPromptFileName);
 			string effectDirectory = Path.Combine(tempRoot, PolicyEffectPromptService.EffectPromptDirectoryName);
-			Check(!File.Exists(autoDraftPath) && !Directory.Exists(effectDirectory),
-				"Opening the policy prompt editor must not materialize packaged defaults as user overrides.");
-			Directory.CreateDirectory(effectDirectory);
-			File.Copy(Path.Combine(policyPromptDirectory, PolicyEffectPromptService.AutoDraftPromptFileName), autoDraftPath);
-			File.Copy(Path.Combine(policyPromptDirectory, PolicyEffectPromptService.EffectPromptDirectoryName,
-				PolicyEffectPromptService.CommonEffectPromptFileName),
-				Path.Combine(effectDirectory, PolicyEffectPromptService.CommonEffectPromptFileName));
-			foreach (IPolicyEffectModule module in visibleModules)
-			{
-				File.Copy(Path.Combine(policyPromptDirectory, PolicyEffectPromptService.EffectPromptDirectoryName, module.Id + ".json"),
-					Path.Combine(effectDirectory, module.Id + ".json"));
-			}
+			Check(File.Exists(autoDraftPath) && Directory.Exists(effectDirectory),
+				"Opening the policy prompt editor initializes missing module defaults.");
 			JObject initializedAutoDraft = JObject.Parse(File.ReadAllText(autoDraftPath, Encoding.UTF8));
 			JObject initializedCommon = JObject.Parse(File.ReadAllText(
 				Path.Combine(effectDirectory, PolicyEffectPromptService.CommonEffectPromptFileName), Encoding.UTF8));
@@ -9679,7 +9712,7 @@ internal static partial class Program
 				"Saving one known module must rewrite only that module file.");
 			Check(PolicyEffectPromptService.TrySaveModulePrompt(firstId, PolicyEffectPromptKind.Understanding, "", out saveError)
 				&& string.Equals(PolicyEffectPromptService.GetUnderstandingPrompt(visibleModules[0]), visibleModules[0].Descriptor.EditableUnderstandingPrompt, StringComparison.Ordinal)
-				&& JObject.Parse(File.ReadAllText(firstPath, Encoding.UTF8))["UnderstandingPrompt"] == null,
+				&& (string)JObject.Parse(File.ReadAllText(firstPath, Encoding.UTF8))["UnderstandingPrompt"] == visibleModules[0].Descriptor.EditableUnderstandingPrompt,
 				"Saving a blank module prompt must restore only that prompt to its module default.");
 			Check(PolicyEffectPromptService.TrySaveCommonEvaluationPrompt("COMMON_EFFECT_SAVED", out saveError)
 				&& string.Equals(PolicyEffectPromptService.GetCommonEvaluationPrompt(), "COMMON_EFFECT_SAVED", StringComparison.Ordinal)
@@ -9688,7 +9721,7 @@ internal static partial class Program
 				"The shared effect calibration must be editable and injected exactly once per frozen candidate request.");
 			Check(PolicyEffectPromptService.TrySaveCommonEvaluationPrompt("", out saveError)
 				&& string.Equals(PolicyEffectPromptService.GetCommonEvaluationPrompt(), PolicyEffectPromptService.DefaultCommonEvaluationPrompt, StringComparison.Ordinal)
-				&& !File.Exists(commonPath),
+				&& (string)JObject.Parse(File.ReadAllText(commonPath, Encoding.UTF8))["CommonEvaluationPrompt"] == PolicyEffectPromptService.DefaultCommonEvaluationPrompt,
 				"Blank shared-effect text must restore only the tested shared default.");
 
 			File.WriteAllText(firstPath, "{broken", new UTF8Encoding(false));
@@ -9830,55 +9863,29 @@ internal static partial class Program
 				&& !PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("policyContent"),
 				"Blank AI-writing prompt must restore the natural-language default without exposing the built-in transport contract.");
 
-			string layeredPackageDirectory = Path.Combine(tempRoot, "layered-package");
-			string layeredUserDirectory = Path.Combine(tempRoot, "layered-user");
-			string layeredPackageEffects = Path.Combine(layeredPackageDirectory, PolicyEffectPromptService.EffectPromptDirectoryName);
-			Directory.CreateDirectory(layeredPackageEffects);
-			string layeredPackageAuto = Path.Combine(layeredPackageDirectory, PolicyEffectPromptService.AutoDraftPromptFileName);
-			string layeredPackageCommon = Path.Combine(layeredPackageEffects, PolicyEffectPromptService.CommonEffectPromptFileName);
-			string layeredPackageModule = Path.Combine(layeredPackageEffects, firstId + ".json");
-			File.WriteAllText(layeredPackageAuto, "{\"Version\":1,\"Text\":\"PACKAGE_AUTO\"}", new UTF8Encoding(false));
-			File.WriteAllText(layeredPackageCommon, "{\"Version\":1,\"CommonEvaluationPrompt\":\"PACKAGE_COMMON\"}", new UTF8Encoding(false));
-			File.WriteAllText(layeredPackageModule, new JObject
-			{
-				["Version"] = 1,
-				["ModuleId"] = firstId,
-				["UnderstandingPrompt"] = "PACKAGE_UNDERSTANDING",
-				["EvaluationPrompt"] = "PACKAGE_EVALUATION"
-			}.ToString(Formatting.None), new UTF8Encoding(false));
-			byte[] packageModuleBytes = File.ReadAllBytes(layeredPackageModule);
-			PolicyEffectPromptService.SetStorageDirectoryOverrideForContractTests(layeredUserDirectory);
-			PolicyEffectPromptService.SetPackagedStorageDirectoryOverrideForContractTests(layeredPackageDirectory);
-			Check(string.Equals(PolicyEffectPromptService.GetAutoDraftPrompt(), "PACKAGE_AUTO", StringComparison.Ordinal)
-				&& string.Equals(PolicyEffectPromptService.GetCommonEvaluationPrompt(), "PACKAGE_COMMON", StringComparison.Ordinal)
-				&& string.Equals(PolicyEffectPromptService.GetUnderstandingPrompt(visibleModules[0]), "PACKAGE_UNDERSTANDING", StringComparison.Ordinal)
-				&& !Directory.Exists(layeredUserDirectory),
-				"Policy prompt reads must use packaged defaults without creating user override files.");
-			Check(PolicyEffectPromptService.TrySaveModulePrompt(firstId, PolicyEffectPromptKind.Evaluation, "USER_EVALUATION", out saveError),
-				"Saving a policy effect override must succeed without modifying the packaged default: " + saveError);
-			string layeredUserModule = Path.Combine(layeredUserDirectory, PolicyEffectPromptService.EffectPromptDirectoryName, firstId + ".json");
-			JObject layeredSaved = JObject.Parse(File.ReadAllText(layeredUserModule, Encoding.UTF8));
-			Check(layeredSaved["UnderstandingPrompt"] == null
-				&& string.Equals((string)layeredSaved["EvaluationPrompt"], "USER_EVALUATION", StringComparison.Ordinal)
-				&& string.Equals(PolicyEffectPromptService.GetUnderstandingPrompt(visibleModules[0]), "PACKAGE_UNDERSTANDING", StringComparison.Ordinal)
-				&& packageModuleBytes.SequenceEqual(File.ReadAllBytes(layeredPackageModule)),
-				"Saving one policy effect field must preserve the other packaged field and never rewrite the package.");
+			string modulePolicyDirectory = Path.Combine(tempRoot, "single-module-policy");
+			PolicyEffectPromptService.SetStorageDirectoryOverrideForContractTests(modulePolicyDirectory);
+			Check(PolicyEffectPromptService.EnsureStorageFiles(out saveError), "Module policy files must initialize: " + saveError);
+			string modulePromptPath = Path.Combine(modulePolicyDirectory, PolicyEffectPromptService.EffectPromptDirectoryName, firstId + ".json");
+			Check(PolicyEffectPromptService.TrySaveModulePrompt(firstId, PolicyEffectPromptKind.Evaluation, "MODULE_EVALUATION", out saveError),
+				"Saving a policy effect must update its module document: " + saveError);
+			JObject savedModulePrompt = JObject.Parse(File.ReadAllText(modulePromptPath, Encoding.UTF8));
+			Check(string.Equals((string)savedModulePrompt["UnderstandingPrompt"], visibleModules[0].Descriptor.EditableUnderstandingPrompt, StringComparison.Ordinal)
+				&& string.Equals((string)savedModulePrompt["EvaluationPrompt"], "MODULE_EVALUATION", StringComparison.Ordinal),
+				"Saving one field preserves the other module field.");
 			Check(PolicyEffectPromptService.TrySaveModulePrompt(firstId, PolicyEffectPromptKind.Evaluation, "", out saveError)
-				&& !File.Exists(layeredUserModule)
-				&& string.Equals(PolicyEffectPromptService.GetEvaluationPrompt(visibleModules[0]), "PACKAGE_EVALUATION", StringComparison.Ordinal)
-				&& packageModuleBytes.SequenceEqual(File.ReadAllBytes(layeredPackageModule)),
-				"Blank policy effect text must remove only its override and reveal the current packaged default.");
-			File.WriteAllText(layeredUserModule, "{broken", new UTF8Encoding(false));
-			byte[] corruptLayeredBytes = File.ReadAllBytes(layeredUserModule);
+				&& File.Exists(modulePromptPath)
+				&& string.Equals((string)JObject.Parse(File.ReadAllText(modulePromptPath))["EvaluationPrompt"], visibleModules[0].Descriptor.EditableEvaluationPrompt, StringComparison.Ordinal),
+				"Blank policy effect text persists its descriptor default, not deletion.");
+			File.WriteAllText(modulePromptPath, "{broken", new UTF8Encoding(false));
+			byte[] corruptModuleBytes = File.ReadAllBytes(modulePromptPath);
 			PolicyEffectPromptService.ReloadForContractTests();
-			Check(string.Equals(PolicyEffectPromptService.GetEvaluationPrompt(visibleModules[0]), "PACKAGE_EVALUATION", StringComparison.Ordinal)
-				&& corruptLayeredBytes.SequenceEqual(File.ReadAllBytes(layeredUserModule))
-				&& packageModuleBytes.SequenceEqual(File.ReadAllBytes(layeredPackageModule)),
-				"A corrupt policy effect override must be preserved and fall back to the packaged file.");
+			Check(string.Equals(PolicyEffectPromptService.GetEvaluationPrompt(visibleModules[0]), visibleModules[0].Descriptor.EditableEvaluationPrompt, StringComparison.Ordinal)
+				&& corruptModuleBytes.SequenceEqual(File.ReadAllBytes(modulePromptPath)),
+				"A corrupt module file remains untouched and falls back only to its descriptor.");
 		}
 		finally
 		{
-			PolicyEffectPromptService.SetPackagedStorageDirectoryOverrideForContractTests(null);
 			PolicyEffectPromptService.SetStorageDirectoryOverrideForContractTests(null);
 			try { Directory.Delete(tempRoot, recursive: true); } catch { }
 		}

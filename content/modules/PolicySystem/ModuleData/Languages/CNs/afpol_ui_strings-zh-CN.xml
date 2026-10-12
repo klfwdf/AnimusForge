@@ -729,5 +729,6 @@
     <string id="AFPOL_UI_SeasonSummer" text="夏" />
     <string id="AFPOL_UI_SeasonAutumn" text="秋" />
     <string id="AFPOL_UI_SeasonWinter" text="冬" />
+      <string id="AFPOL_UI_PromptFileTooLarge" text="政策提示词 JSON 超过大小限制，原件未覆盖。" />
   </strings>
 </base>

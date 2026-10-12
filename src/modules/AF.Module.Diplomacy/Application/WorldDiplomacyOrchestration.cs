@@ -608,6 +608,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public bool TryRebuildPendingJob(WorldDiplomacyJob job)
     {
+        if (IsOralDeclarationJob(job)) return RebuildOralDeclarationJob(job);
         return WorldDiplomacyJobPreparationApplication.Rebuild(_host.JobPreparation(), this, job, _host.PromptWorld().LocalizePrompt);
     }
 
@@ -1123,12 +1124,14 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public bool RefreshDiplomaticActionPresentationAndPrompt(WorldDiplomacyJob job)
     {
+        if (IsOralDeclarationJob(job)) return RebuildOralDeclarationJob(job);
         return WorldDiplomacyJobPreparationApplication.RefreshDiplomaticActionPresentationAndPrompt(
             _host.JobPreparation(), this, job, _host.PromptWorld().LocalizePrompt);
     }
 
     public bool RefreshDiplomaticThreatPresentationAndPrompt(WorldDiplomacyJob job)
     {
+        if (IsOralDeclarationJob(job)) return RebuildOralDeclarationJob(job);
         return WorldDiplomacyJobPreparationApplication.RefreshDiplomaticThreatPresentationAndPrompt(
             _host.JobPreparation(), this, job, _host.PromptWorld().LocalizePrompt);
     }
@@ -1153,6 +1156,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void AbandonRejectedGeneration(WorldDiplomacyJob job, string authorId, string targetId, string reason)
     {
+        if (IsOralDeclarationJob(job)) { DeferOralDeclarationJob(job, reason); return; }
         DeferUnpublishedPlayerResponses(job);
         WorldDiplomacyGenerationTaskApplication.AbandonRejectedGeneration(
             job,
@@ -1175,6 +1179,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         WorldDiplomacyJob job, string rejectedRaw, string authorId, string targetId, string reason,
         Newtonsoft.Json.Linq.JObject parsedJson)
     {
+        if (IsOralDeclarationJob(job)) { DeferOralDeclarationJob(job, reason); return; }
         WorldDiplomacyDraftRepairApplication.RejectGeneratedDraftBeforePublication(
             _host.DraftRepairWorld(), this, job, rejectedRaw, authorId, targetId, reason, parsedJson);
     }
@@ -1195,19 +1200,11 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         WorldDiplomacyDocument document, string intent, string commitment,
         bool requiresResponse, string tone, float confidence)
     {
+        if (!string.IsNullOrEmpty(document?.DialogueArrangementId) && document.IsReadyForPublication) return;
         if (document?.IsPlayerAuthored == true)
         {
             EnsurePlayerDocumentRound(document);
             BindPlayerDeclarationToSharedEvent(document);
-        }
-        if (document?.IsPlayerAuthored == true && intent == "propose_peace"
-            && !WorldDiplomacyPeaceAdmissionApplication.TryValidateOfferedPeaceTerms(_host.PeaceAdmission(), new WorldDiplomacyRoundOffer {
-                ProposerKingdomId = document.AuthorKingdomId, TargetKingdomId = document.TargetKingdomId },
-                document, document.AuthorKingdomId, document.TargetKingdomId, out string peaceReason))
-        {
-            document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Orch_PeaceProposalNotExecutedPrefix", "Peace proposal not executed: ") + peaceReason;
-            SuppressInvalidDocumentBeforePropagation(document, "peace_terms_not_executable_without_changes");
-            return;
         }
         if (WorldDiplomacyIntentVocabulary.IsFormalTreatyIntent(intent)
             && !ValidateFormalTreatyDeclaration(document, intent, document.TreatyTerms,
@@ -1229,6 +1226,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void CommitFailedJob(WorldDiplomacyJob job, string error)
     {
+        if (IsOralDeclarationJob(job)) { DeferOralDeclarationJob(job, error); return; }
         WorldDiplomacyFailureApplication.Commit(
             job,
             error,
@@ -1252,6 +1250,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void CommitGeneratedDocument(WorldDiplomacyJob job, string raw)
     {
+        if (IsOralDeclarationJob(job)) { CommitOralDeclaration(job, raw); return; }
         WorldDiplomacyGeneratedCompletionApplication.Commit(
             job,
             raw,
@@ -2312,11 +2311,16 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public WorldDiplomacyOfferOutcome TrySettleRelayOffer(WorldDiplomacyDocument document)
     {
+        if (HasConfirmedOralPlayerAgreement(document)) return ExecuteConfirmedOralPlayerAgreement(document);
         return WorldDiplomacyOfferApplication.Settle(document, _host.OfferAction(), this);
     }
 
     public WorldDiplomacyImmediateActionReceipt ExecuteImmediateIntent(string authorId, string targetId, string intent, WorldDiplomacyDocument document)
     {
+        // Agreed oral treaties are executed exactly once by the offer effect
+        // owner below, including treaties classified as immediate by vocabulary.
+        if (HasConfirmedOralPlayerAgreement(document) && WorldDiplomacyIntentVocabulary.IsFormalTreatyIntent(intent))
+            return new WorldDiplomacyImmediateActionReceipt(false, "");
         if (WorldDiplomacyIntentVocabulary.NormalizeIntent(intent) == "release_subject")
             return ExecutePlayerSubjectRelease(authorId, targetId, document);
         return WorldDiplomacyImmediateActionApplication.Execute(_host.ImmediateAction(), authorId, targetId, intent, document);
@@ -2432,7 +2436,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         bool partiesEligible = document != null && authorId != null && targetId != null
             && !_host.PartiesShareIdentity(authorId, targetId)
             && !_host.IsEliminatedParty(authorId) && !_host.IsEliminatedParty(targetId);
-        return WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation(
+        if (WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation(
             document, intent, commitment, authorId, targetId, partiesEligible,
             normalizedIntent =>
             {
@@ -2447,7 +2451,17 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
                     claimedThreatDocumentId, out string threatReason);
                 return (violation, threatReason);
             },
-            ResolveRound, ResolveDocument, out reason);
+            ResolveRound, ResolveDocument, out reason)) return true;
+        // The executor projects each action's own terms before preflight and again
+        // before its effect. New proposals have no existing source offer to resolve.
+        if (WorldDiplomacyIntentVocabulary.NormalizeIntent(intent) == "propose_peace"
+            && !WorldDiplomacyPeaceAdmissionApplication.TryValidatePeaceTerms(
+                _host.PeaceAdmission(), document.PeaceTerms, authorId, targetId, out string peaceReason))
+        {
+            reason = "peace_terms_not_executable_without_changes:" + peaceReason;
+            return true;
+        }
+        return false;
     }
 
     public WorldDiplomacyPeaceTerms ParseAndValidatePeaceTerms(
@@ -2505,6 +2519,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public string BuildGenerationLegalActionSignature(WorldDiplomacyJob job)
     {
+        if (IsOralDeclarationJob(job)) return BuildOralDeclarationSignature(job);
         if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return "";
         string authorId = _host.ResolvePartyId(job.AuthorKingdomId);
         if (authorId == null) return "missing_author";

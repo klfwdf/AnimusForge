@@ -7,6 +7,7 @@
     <NoWarn>$(NoWarn);MSB3277</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/AF.Persistence/AnimusForgeModulePaths.cs" Link="Production/AnimusForgeModulePaths.cs" />
     <Compile Include="../../../../PolicySystem/Balance/*.cs" Link="Production/%(Filename)%(Extension)" />
     <Compile Include="../../../../PolicySystem/UI/SettlementBalanceEditorVM.cs" Link="Production/SettlementBalanceEditorVM.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.SettlementBalance.cs" Link="Production/DuelSettings.SettlementBalance.cs" />

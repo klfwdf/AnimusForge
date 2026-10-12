@@ -22,6 +22,8 @@ internal static class MemorySystemFactProjection
         new Template("memory_fact_execution_last", PromptComposerTexts.Raw("Template_execution_last").Split('|')),
         new Template("memory_fact_execution_speech", PromptComposerTexts.Raw("Template_execution_speech").Split('|')),
         new Template("memory_policy_agenda_submission", PromptComposerTexts.Raw("policy_agenda_source_parts").Split('|')),
+        new Template("memory_diplomacy_oral_delayed", PromptComposerTexts.Raw("memory_diplomacy_oral_delayed_source")),
+        new Template("memory_diplomacy_oral_withdrawal", PromptComposerTexts.Raw("memory_diplomacy_oral_withdrawal_source")),
     };
 
     private static readonly string[] CourierKeys =

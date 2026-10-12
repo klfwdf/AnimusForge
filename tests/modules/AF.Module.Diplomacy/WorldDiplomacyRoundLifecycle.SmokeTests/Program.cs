@@ -96,6 +96,12 @@ internal static class Program
         CanonicalProjectionPreservesProse();
         PackagedOralProtocolParity();
         AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
+        if (args.Length == 1 && args[0] == "--oral-declaration")
+        {
+            OralDeclarationReplay.Run();
+            Console.WriteLine($"Oral AI declaration replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--propagation-closure")
         {
             PropagationLifecycleReplay.Run(); PropagationApplicationReplay.Run();
@@ -213,6 +219,7 @@ internal static class Program
         LlmDispatchApplicationReplay.Run();
         CompletionApplicationReplay.Run();
         Dpl090PresentationReplay.Run();
+        ReplyShortcutReplay.Run();
         ProactiveDiscussionApplicationReplay.Run();
         Dpl080PromptReplay.Run();
         VerifyReconcileAfterLoadDecisionTable();
@@ -364,6 +371,7 @@ RunRepairCorrectionAndJobDecisionTests();
         AnalysisApplicationReplay.Run();
         PlayerSemanticReplay.Run();
         PeaceAdmissionReplay.Run();
+        PeaceProposalReplay.Run();
         PersistenceSyncReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
