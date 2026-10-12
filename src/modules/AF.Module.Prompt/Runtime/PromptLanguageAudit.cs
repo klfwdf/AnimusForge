@@ -64,6 +64,15 @@ internal static class PromptLanguageAudit
             + " dynamicOriginal=" + result.DynamicMessageCount
             + " action=preserve_original_dynamic_text");
     }
+
+    internal static void LogPair(string channel, string system, string user)
+    {
+        Log(channel, new JArray
+        {
+            new JObject { ["role"] = "system", ["content"] = system ?? "" },
+            new JObject { ["role"] = "user", ["content"] = user ?? "" }
+        });
+    }
 }
 
 internal sealed class PromptLanguageAuditResult
