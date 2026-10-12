@@ -797,5 +797,22 @@
   "policy_weekly_label_vassal": "Player vassal policy",
   "policy_weekly_no_numeric_change": "No ongoing numerical changes",
   "memory_diplomacy_oral_delayed": "The diplomatic declaration previously promised has not yet been published and awaits redrafting; the agreed terms have not changed.",
-  "memory_diplomacy_oral_withdrawal": "I have explicitly agreed to withdraw the earlier public diplomatic proposal, pending publication of the formal withdrawal declaration; the original proposal has not become invalid as a result yet."
+  "memory_diplomacy_oral_withdrawal": "I have explicitly agreed to withdraw the earlier public diplomatic proposal, pending publication of the formal withdrawal declaration; the original proposal has not become invalid as a result yet.",
+  "campaign_kill_clan_member": "{0}'s clan, {1}, lost {2}.",
+  "campaign_kill_clan_tail_0000": "The deceased was publicly executed.",
+  "campaign_kill_clan_tail_0001": "The deceased was publicly executed, on the charge of {1}.",
+  "campaign_kill_clan_tail_0010": "The deceased was publicly executed by {1}.",
+  "campaign_kill_clan_tail_0011": "The deceased was publicly executed by {1}, on the charge of {2}.",
+  "campaign_kill_clan_tail_0100": "The deceased was publicly executed at the hands of {1}.",
+  "campaign_kill_clan_tail_0101": "The deceased was publicly executed at the hands of {1}, on the charge of {2}.",
+  "campaign_kill_clan_tail_0110": "The deceased was publicly executed by {2} at the hands of {1}.",
+  "campaign_kill_clan_tail_0111": "The deceased was publicly executed by {2} at the hands of {1}, on the charge of {3}.",
+  "campaign_kill_clan_tail_1000": "The deceased was publicly executed at {1}.",
+  "campaign_kill_clan_tail_1001": "The deceased was publicly executed at {1}, on the charge of {2}.",
+  "campaign_kill_clan_tail_1010": "The deceased was publicly executed by {2} at {1}.",
+  "campaign_kill_clan_tail_1011": "The deceased was publicly executed by {2} at {1}, on the charge of {3}.",
+  "campaign_kill_clan_tail_1100": "The deceased was publicly executed at {1} at the hands of {2}.",
+  "campaign_kill_clan_tail_1101": "The deceased was publicly executed at {1} at the hands of {2}, on the charge of {3}.",
+  "campaign_kill_clan_tail_1110": "The deceased was publicly executed by {3} at {1} at the hands of {2}.",
+  "campaign_kill_clan_tail_1111": "The deceased was publicly executed by {3} at {1} at the hands of {2}, on the charge of {4}."
 }

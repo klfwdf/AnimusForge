@@ -1,3 +1,8 @@
+# 当前交接：EN 运行时文本投影补全与 EN 安装（2026-10-13，OFFLINE_VERIFIED / DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
+
+- 修复 EN 包下仍显示中文的运行时文本：终端子选项入口、外交宣言索引标题、世界快报事实句、事件捕获参与者角色、公开处决周报句、家族首领记忆。写入端原句与存档身份不变，投影只在读取/组句边界；CN 词表下输出对改动前逐字相同，EN 无汉字。
+- [主台账本条](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-runtime-text-projection-20261013)。已按原受管部署事务安装 EN（3519 文件逐 SHA 一致，Recovery `deploy-e4b37db9…`）；实机、1.3 线实际加载、正式双包与语义审校仍未验。
+
 # 当前交接：授权快进交付远端 main（2026-10-13，AUTHORIZED_MAIN_DELIVERY / LIVE_PENDING）
 
 - 用户明确要求“推送远端main”；目标 `origin/main`，发布前基线 `41c22a952` 是源码/安装交接提交 `cfc42dc8d` 的祖先，原19个待推送提交及全部代码、测试、双语资源和配套文档保留。正常快进，不强推、不重写历史，不再合并未知远端变化。

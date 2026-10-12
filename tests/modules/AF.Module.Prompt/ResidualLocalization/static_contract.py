@@ -21,7 +21,9 @@ assert 'promptBody + PromptComposerTexts.Get("npc_initiated_fact_supplement")' i
 assert 'PlayerCraftedAfefInspectionSuffix => PromptComposerTexts.Raw("history_afef_inspection_suffix")' in scene
 history=(R/'src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs').read_text('utf-8-sig')
 assert 'MemorySystemFactProjection.ProjectNpcFact(factLine)' in history
-assert '"【当下行为】" : "【过往行为】"' in history
+assert 'isCurrent ? PromptComposerTexts.Raw("history_section_scope_current") : PromptComposerTexts.Raw("history_section_scope_historical")' in history
+assert '【当下行为】' not in history and '【过往行为】' not in history, 'scope markers must stay in the invariant corpus'
+assert raw['history_section_scope_current'] == '【当下行为】' and raw['history_section_scope_historical'] == raw['main_history_raw_019'] == '【过往行为】', 'past-fact marker must match every other consumer'
 config=(R/'src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs').read_text('utf-8-sig')
 assert 'PromptComposerTexts.Format("residual_player_fixed_id", ("ID", playerId))' in config
 assert 'return PromptComposerTexts.Get("residual_player_colon") + playerText;' in config

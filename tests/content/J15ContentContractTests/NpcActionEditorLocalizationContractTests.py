@@ -59,7 +59,13 @@ action_fact_additions = {
     "ActionFactPrisonRescueLocation",
 }
 assert {key for key in prompt_cn if key.startswith("ActionFact")} == action_fact_additions
-assert len(prompt_cn) == 82 + len(action_fact_additions), "unexpected package resource additions"
+# Bulletin capture text (kingdom-fall wording, participant roles, name fallbacks) moved from the
+# invariant compatibility corpus into the package-selected corpus. Every addition must be an
+# AF_REC_Bulletin_* key; the exact count is pinned by BULLETIN_PROMPT_KEY_COUNT.
+BULLETIN_PROMPT_KEY_COUNT = 59
+bulletin_additions = {key for key in prompt_cn if key.startswith("AF_REC_Bulletin_")}
+assert len(bulletin_additions) == BULLETIN_PROMPT_KEY_COUNT, "unexpected bulletin resource additions"
+assert len(prompt_cn) == 82 + len(action_fact_additions) + len(bulletin_additions), "unexpected package resource additions"
 for key in prompt_cn:
     cn_variables = re.findall(r"\{[A-Z_]+\}", prompt_cn[key])
     en_variables = re.findall(r"\{[A-Z_]+\}", prompt_en[key])

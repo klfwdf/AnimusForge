@@ -821,7 +821,7 @@ internal static class Program
 			"the U-key archive must expose every published declaration immediately, even before the player joins a kingdom");
 		Test.True(source.Contains("!document.HasReachedPlayerCourt || document.FormalNoticeShown", StringComparison.Ordinal),
 			"the right-side formal notice must still wait for delivery to the player's affiliated court");
-		Test.True(archive.Contains("IndexTitleText: WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(document)", StringComparison.Ordinal)
+		Test.True(archive.Contains("IndexTitleText: WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(document, DiplomacyUiLocalization.Text)", StringComparison.Ordinal)
 			&& archive.Contains("IndexMetaText: \"外交宣言：\" + typeLabel", StringComparison.Ordinal),
 			"the archive index must show a clean title and centered declaration type line");
 		string displayedTitle = ExtractMethod(documentTextRules, "public static string BuildDisplayedDocumentTitle(");

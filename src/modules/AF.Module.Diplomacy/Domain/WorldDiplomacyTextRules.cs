@@ -380,9 +380,9 @@ public static string BuildFallbackDocumentTitle(WorldDiplomacyDocument document,
 		};
 		return Limit(string.IsNullOrWhiteSpace(target) ? subject : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_117", "To ") + target + (localize == null ? "" : localize("FallbackDocumentTitleTargetSeparator", ": ")) + subject, 36);
 	}
-public static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument document)
+public static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument document, Func<string, string, string> localize = null)
 	{
-		string title = WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document?.Title, document?.AuthorKingdomName + WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_118", ""), WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_119", "")));
+		string title = WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document?.Title, document?.AuthorKingdomName + WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_118", " publishes a diplomatic declaration"), WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_119", "Diplomatic declaration")));
 		string cleaned = Regex.Replace(
 			title,
 			WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_120", ""),
@@ -397,7 +397,7 @@ public static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument docum
 				"",
 				RegexOptions.CultureInvariant);
 		}
-		return WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(cleaned, title, WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_119", ""));
+		return WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(cleaned, title, WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_119", "Diplomatic declaration"));
 	}
 
 	public static string BuildCompactDocumentMemoryLine(WorldDiplomacyDocument document,

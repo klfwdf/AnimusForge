@@ -1,3 +1,13 @@
+<a id="en-runtime-text-projection-20261013"></a>
+## 2026-10-13 EN 运行时文本投影补全与 EN 安装（OFFLINE_VERIFIED / DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
+
+- 范围：EN 包下仍显示中文的运行时文本。终端子选项入口（19 处入口分类误存显示文字，改回内部路由值）、外交宣言索引默认标题（读中文兼容语料，改为传入 UI 本地化）、世界快报事实句（Policy 的 100 余个中文碎片拼接改为按包选版的整句模板，含战斗/死亡/君主更替/倒戈/吞并/附庸/劫掠/内战/叛乱/集结/民变/战争缘由/领地归属/王国概况）、事件捕获参与者角色与名字兜底（42 处 `AF_REC_Bulletin_*`）、公开处决周报句（方式与罪名在组句时投影）、家族首领记忆 `clan_member_killed`（读取边界新增头句与 16 种处决后缀投影）。
+- 存档与协议身份不变：写入端仍保留原中文原句/原标签，旧存档不改写；新增投影只发生在读取或组句边界，未知扩展刑罚/罪名原样保留。
+- 验证：每批先用改动前代码生成对照样本，CN 词表下新代码输出逐字相同（Policy 75 样本、公开处决 288 组合）；EN 无汉字、无残留占位符；词表中英键集合与 `{变量}` 一致；家族首领投影 288 组合 EN 全命中且 CN 全部保持原句；英文源码门禁、三项契约测试、`ResidualLocalization` 静态契约通过；1.4 实现编译 0 错误，双实现经统一入口构建且注册冒烟 PASS。门禁曾拒绝家族首领英文多出的变量槽位，已改为固定主语 `The deceased` 并同步删除代码多传的槽位。
+- 数据修复：`history_section_scope_historical` 误为 `【历史行为】`，其余所有消费者均为 `【过往行为】`，已改回，`ResidualLocalization` 断言改为“源码读词条、词条值与其他消费者一致”。
+- 安装：对 Debug 项目 Stage 做 EN 投影（3519 文件，1877 个用 `.en` 正文替换），三道门禁通过后经原受管部署事务写入 `Modules/AnimusForge`，3519 个文件逐 SHA 一致；`SubModule.xml` 仅声明 Bootstrap。Recovery：`deploy-e4b37db9476b4e078ec243f78c2015cd`。
+- 未验：实机 UI/战役/真实 LLM/旧档；1.3 游戏线实际加载；完整 CN/EN 正式分发 ZIP 与逐条语义审校；玩家处决周报素材 `0094`–`0123` 仍为中文拼接，靠既有 `ProjectPlayerExecution` 读取时投影；名字含句号的家族首领记忆保持中文原句（有意保守）。
+
 <a id="main-push-20261013"></a>
 ## 2026-10-13 授权交付远端 main（AUTHORIZED_MAIN_DELIVERY / OFFLINE_VERIFIED / LIVE_PENDING）
 
