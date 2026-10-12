@@ -1,3 +1,10 @@
+# 当前交接：场景接力、MCM 模型拉取与 EN Prompt 固定文本修复（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 修复 `DuelSettings` 构造时五个模型列表按钮未绑定委托；点击现在按当前 MCM 编辑值调用既有 `StartFetchModelList`，保留原解析、缓存和主线程 UI 刷新。模型列表回归 `72/72` 通过。
+- 修复 EN `scene_auto_group_relay` 标签模板被过滤后退回短兜底规则；规则筛选兼容 `[RELAY:relay number]`，真实线协议仍为 `[RELAY:n]`。场景接力回归 `51` 项通过；实机日志此前确有“current speaker selected itself”停止证据，需游戏内复测真实模型选择。
+- EN 快报主稿改为 160–240 / 200–300 words，短条 40 words；标题解析上限 96 字符。EN 插画提示保留 ASCII `[[AFI_PROTOCOL_*]]` 标记，运行时不再把标记替换成中文；解析器兼容 ASCII 与旧中文标记，标题明确要求英文。
+- 验证：四份 JSON 可解析；统一 Debug 双实现构建通过（1.3/1.4/Bootstrap/Coup gate）；`SceneRelayContinuationTests` 51 项、`ModelPresetTests` 72 项通过。WorldBulletinPolicy smoke 仍受其原有测试夹具缺少 `WorldBulletinPolicyTexts` 阻断；Illustrator 独立工程仍受既有 `WorldBulletinIllustrationPlan` 访问级别错误阻断。未部署、未打包、未启动游戏、未调用真实 provider。
+- 回滚点：`73a77c4ad`（接力/MCM/快报/插画标题修复）、`e5a2d3276`（EN 插画协议标记保持与双格式解析）；此前检查点 `b86740d`。
 # 当前交接：EN 运行时文本投影补全与 EN 安装（2026-10-13，OFFLINE_VERIFIED / DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
 
 - 修复 EN 包下仍显示中文的运行时文本：终端子选项入口、外交宣言索引标题、世界快报事实句、事件捕获参与者角色、公开处决周报句、家族首领记忆。写入端原句与存档身份不变，投影只在读取/组句边界；CN 词表下输出对改动前逐字相同，EN 无汉字。
@@ -2233,3 +2240,4 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 ## UI 本地化第二轮三方接力（2026-10-10，VERIFY）
 
 旧 B/C 已审查，Memory注册/换行、外交XML加载及TTS fallback已修；主线A新增Illustrator30对。最新扫描1,352个UI候选/192文件，不是确认漏译总数。主线A 513/86，外部B 435/26，外部C 404/80；文件边界和新接力链接见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#localization-wave2-20261010)。24对契约、真实1.3/1.4本地化DLL各37,748次解析PASS；本轮未构建/实机/部署/push，待三方收敛统一验证。
+
