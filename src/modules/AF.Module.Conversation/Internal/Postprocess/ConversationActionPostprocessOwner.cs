@@ -1510,7 +1510,10 @@ internal static List<PostprocessRuleEntry> BuildAutoGroupRelayPostprocessRulesFo
 			return null;
 		}
 		List<PostprocessRuleEntry> rules = AIConfigHandler.GetGuardrailRulePostprocessRules(AutoGroupRelayRuleId) ?? new List<PostprocessRuleEntry>();
-		rules = rules.Where((PostprocessRuleEntry x) => x != null && string.Equals((x.Tag ?? "").Trim(), AutoGroupRelayTagTemplate, StringComparison.OrdinalIgnoreCase))
+		// The EN catalog translated the template payload; actual RELAY:n wire tags are unchanged.
+		rules = rules.Where((PostprocessRuleEntry x) => x != null &&
+			(string.Equals((x.Tag ?? "").Trim(), AutoGroupRelayTagTemplate, StringComparison.OrdinalIgnoreCase)
+			 || string.Equals((x.Tag ?? "").Trim(), "[RELAY:relay number]", StringComparison.OrdinalIgnoreCase)))
 			.Select((PostprocessRuleEntry x) => new PostprocessRuleEntry
 			{
 				Tag = (x.Tag ?? "").Trim(),

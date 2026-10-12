@@ -87,6 +87,8 @@ def main():
     }
     output = new_run_root(ROOT, "scene-relay-continuation", args.run_root)
     harness = (HERE / "Harness.cs.txt").read_text(encoding="utf-8")
+    system_method = re.search(r'internal static string BuildConversationSystemPrompt\(string system\)\s*=>[^;]+;', main_owner)
+    harness = harness.replace('@@MAIN_SYSTEM@@', system_method.group())
     config_path = "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json"
     def relay_rows(value):
         if isinstance(value, dict):
@@ -98,6 +100,10 @@ def main():
     assert len(configured) == 1, "canonical relay rule must have one configured tag"
     harness = harness.replace("@@CONFIG_GROUP@@", json.dumps(configured[0]["Description"], ensure_ascii=True))
     harness = harness.replace("@@CONFIG_SINGLE@@", json.dumps(configured[0]["SingleFramedNpcDescription"], ensure_ascii=True))
+    english = next(row for row in json.loads(source(config_path.replace('.json', '.en.json'), args.source_ref))["RulePrompts"]
+                   if row["Id"] == "scene_auto_group_relay")["PostprocessRules"][0]
+    for field in ("Tag", "Description", "SingleFramedNpcDescription"):
+        harness = harness.replace("@@CONFIG_EN_" + field + "@@", json.dumps(english[field], ensure_ascii=True))
     for key, value in snippets.items(): harness = harness.replace("@@" + key + "@@", value)
     if "@@" in harness: raise ValueError("Unexpanded harness placeholder")
     (output / "Program.cs").write_text(harness, encoding="utf-8")

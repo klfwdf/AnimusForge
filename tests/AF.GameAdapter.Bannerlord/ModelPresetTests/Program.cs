@@ -101,6 +101,18 @@ static class Program
         }
         var s=new DuelSettings();
         // Main getter hydrates all five fields before AuxiliaryModelName is loaded.
+        foreach(var n in Names)
+        {
+            string stem=n=="Main" ? "" : n;
+            var url=typeof(DuelSettings).GetProperty(stem+"ApiUrl");
+            var key=typeof(DuelSettings).GetProperty(stem+"ApiKey");
+            var clickAction=(Action)typeof(DuelSettings).GetProperty("Fetch"+n+"ModelList").GetValue(s);
+            Check(clickAction!=null,n+" fetch button is bound");
+            url.SetValue(s,"https://fixture.invalid/edited/"+n);key.SetValue(s,"fixture-key-"+n);
+            clickAction?.Invoke();
+            Check(s.LastUrl==(string)url.GetValue(s) && s.LastKey==(string)key.GetValue(s)
+                && s.LastApply=="Apply"+n+"ModelList",n+" click captures current unsaved fields and matching owner");
+        }
         _=s.MainModelDropdown;
         foreach(var n in Names)Select(s,n,"chosen-"+n);
         var json=Save(s);

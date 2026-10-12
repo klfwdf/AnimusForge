@@ -62,6 +62,8 @@ namespace AnimusForge.Illustrator.Core
         internal static IllustrationDirection SplitMetadata(string output)
         {
             var result = new IllustrationDirection();
+            int titleLimit = int.TryParse(IllustratorText.Get("Direction_TitleMaxCharacters"), out int configuredTitleLimit)
+                ? Math.Max(18, Math.Min(96, configuredTitleLimit)) : 18;
             result.Prompt = Regex.Replace(output ?? string.Empty,
                 IllustratorText.Raw("Direction_722"), match =>
                 {
@@ -73,7 +75,7 @@ namespace AnimusForge.Illustrator.Core
                     }
                     // Theme is shown in a wrapping/scrolling viewport. Keep its full sentence
                     // in metadata instead of permanently cutting it off before disk save.
-                    string value = CleanLabel(match.Groups[2].Value, label == IllustratorText.Raw("Direction_726") ? 18 : label == IllustratorText.Raw("Direction_727") ? int.MaxValue : 160);
+                    string value = CleanLabel(match.Groups[2].Value, label == IllustratorText.Raw("Direction_726") ? titleLimit : label == IllustratorText.Raw("Direction_727") ? int.MaxValue : 160);
                     if (label == IllustratorText.Raw("Direction_728")) result.Title = value;
                     else if (label == IllustratorText.Raw("Direction_729")) result.Theme = value;
                     else result.ActionSummary = value;

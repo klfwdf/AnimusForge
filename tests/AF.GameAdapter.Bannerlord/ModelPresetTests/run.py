@@ -36,6 +36,12 @@ for name in ['Main','Auxiliary','ActionPostprocess','EventAndRebellion','TownAmb
     parts.append(ex.declaration(s,'public string '+selected+'('))
     effective='GetEffective'+name+'ModelName'
     parts.append(ex.declaration(s,'public string '+effective+'('))
+assert 'BindModelListActions();' in ex.declaration(src, 'public DuelSettings()'), 'real settings constructor must bind fetch actions'
+parts.append(ex.declaration(src, 'private void BindModelListActions('))
+parts.append('public DuelSettings() { BindModelListActions(); } public string LastUrl, LastKey, LastApply; private void StartFetchModelList(string channel, string url, string key, Action<List<string>> apply) { LastUrl=url; LastKey=key; LastApply=apply.Method.Name; }')
+for name in ['Main','Auxiliary','ActionPostprocess','EventAndRebellion','TownAmbientAi']:
+    stem='' if name=='Main' else name
+    parts.append(f'public string {stem}ApiUrl {{get;set;}} public string {stem}ApiKey {{get;set;}} public Action Fetch{name}ModelList {{get;set;}} private void Apply{name}ModelList(List<string> models) {{}}')
 code='\n'.join(parts)
 prefix='internal static void ModelPresetIndexPrefix(IRef __0, ref object __1) {}' if args.baseline else ex.declaration(ui,'internal static void ModelPresetIndexPrefix(')
 header='using System; using System.IO; using System.Text; using System.Linq; using System.Collections.Generic; using MCM.Common; using MCM.Abstractions.Attributes; using MCM.Abstractions.Attributes.v2; using Newtonsoft.Json; using Newtonsoft.Json.Linq;\n'
