@@ -20,6 +20,10 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 	private readonly Action _onEditPersona;
 
 	private readonly Action _onTagTest;
+	private readonly Action _onDirectActions;
+	[DataSourceProperty] public bool CanOpenDirectActions { get => _canOpenDirectActions; set { if (_canOpenDirectActions != value) { _canOpenDirectActions = value; OnPropertyChangedWithValue(value, nameof(CanOpenDirectActions)); } } }
+	private bool _canOpenDirectActions = true;
+	public void OpenDirectActions() { if (CanOpenDirectActions) _onDirectActions?.Invoke(); }
 
 	private string _inputText;
 
@@ -232,8 +236,9 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 	}
 
 	public AnimusForgeNativeConversationOverlayVM(Action<string> onSubmit, Action onSwitchTalk, Action onShowHistory, Action onGiveShow, Action onEditPersona, Action onTagTest,
-        Func<bool> illustrationAvailable = null, Action onIllustration = null)
+        Func<bool> illustrationAvailable = null, Action onIllustration = null, Action onDirectActions = null)
 	{
+        _onDirectActions = onDirectActions;
         _illustrationAvailable = illustrationAvailable;
         _onIllustration = onIllustration;
 		_onSubmit = onSubmit;

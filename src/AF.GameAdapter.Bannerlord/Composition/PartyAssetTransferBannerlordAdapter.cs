@@ -1532,6 +1532,21 @@ internal static class PartyAssetTransferBannerlordAdapter
 
 	internal static List<PartyTransferPromptEntry> BuildDisplayIndexedPartyTransferEntries(IEnumerable<PartyTransferPromptEntry> entries) => PartyTransferProjectionOwner.BuildDisplayIndexedPartyTransferEntries(entries);
 
+    // On demand from the direct-action inquiry; the same authorization owner and display indices
+    // as normal tags, without requiring an earlier AI topic-selection pass.
+    internal static PartyTransferAuthorizationSnapshot CapturePlayerDirectTransferCandidates(Hero hero, CharacterObject character, int agentIndex)
+    {
+        var entries = BuildPartyTransferPromptEntriesInternal(hero, character, agentIndex, out var wilderness);
+        var snapshot = PartyTransferAuthorizationOwner.Build(entries,
+            ResolvePartyTransferRecruitMaxTier(ResolvePartyTransferRecruitTrustLevelIndex(hero, character)),
+            wilderness != null, GetPartyTransferTroopTier);
+        PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferTroopsSnapshotScope, hero, character, agentIndex, snapshot.IndexedTroops);
+        PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferPrisonersSnapshotScope, hero, character, agentIndex, snapshot.AllPrisoners);
+        PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope, hero, character, agentIndex, snapshot.AllTroops);
+        PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllPrisonersSnapshotScope, hero, character, agentIndex, snapshot.AllPrisoners);
+        return snapshot;
+    }
+
     internal static IEnumerable<PartyTransferPromptEntry> FilterAllowedNpcTransferTroopEntries(IEnumerable<PartyTransferPromptEntry> entries, Hero targetHero, CharacterObject targetCharacter)
         => PartyTransferAuthorizationOwner.FilterAllowed(entries,
             ResolvePartyTransferRecruitMaxTier(ResolvePartyTransferRecruitTrustLevelIndex(targetHero, targetCharacter)), GetPartyTransferTroopTier);

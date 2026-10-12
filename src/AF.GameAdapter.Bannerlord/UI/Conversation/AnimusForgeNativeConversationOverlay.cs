@@ -111,7 +111,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
                     if (!_isClosed && ReferenceEquals(_screen, ScreenManager.TopScreen) && ShoutBehavior.CanSubmitNativeConversationForExternal())
                         DialogueUI.Native.IllustratorBridge.Invoke();
                 });
-            });
+            }, HandleDirectActionsRequested);
 		_layer = new GauntletLayer("AnimusForgeNativeConversationOverlay", 350, false);
 	}
 
@@ -256,6 +256,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		// The existing UI Tick reads only the admission identity stamp, not agents.
 		_dataSource.CanSwitchTalk = !_dataSource.IsCustomAnswerVisible ||
 			(!_isSubmitting && !ShoutBehavior.IsNativeConversationBackendBusyForUi());
+        _dataSource.CanOpenDirectActions = !_isSubmitting && !ShoutBehavior.IsNativeConversationBackendBusyForUi();
 		bool personaEditVisible;
 		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.ResolvePersonaVisibility"))
 		{
@@ -657,7 +658,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				return false;
 			}
 			float bottom = _dataSource?.IsTagTestVisible == true ? 385f : (_dataSource?.IsPersonaEditVisible == true ? 335f : 285f);
-			return mouse.x >= width - 330f && mouse.y >= 60f && mouse.y <= bottom;
+			return mouse.x >= width - 330f && mouse.y >= 20f && mouse.y <= bottom;
 		}
 		catch
 		{
@@ -737,6 +738,24 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			Logger.Log("NativeConversationOverlay", "[WARN] Failed to open NPC editor: " + ex.Message);
 		}
 	}
+
+    private void HandleDirectActionsRequested()
+    {
+        if (_isClosed || _isSubmitting || ShoutBehavior.IsNativeConversationBackendBusyForUi()) return;
+        try
+        {
+            HideOverlayRoot();
+            _layer.InputRestrictions.ResetInputRestrictions();
+            _layer.IsFocusLayer = false;
+            ScreenManager.TryLoseFocus(_layer);
+            if (!ShoutBehavior.OpenNativePlayerDirectActions(RestoreFocusAfterHistory)) RestoreFocusAfterHistory();
+        }
+        catch (Exception ex)
+        {
+            RestoreFocusAfterHistory();
+            Logger.Log("NativeConversationOverlay", "[WARN] Failed to open direct actions: " + ex.Message);
+        }
+    }
 
 	private void HandleTagTestRequested()
 	{

@@ -2,6 +2,12 @@
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
       <Children>
+        <ButtonWidget DoNotPassEventsToChildren="false" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Command.Click="OpenDirectActions" IsEnabled="@CanOpenDirectActions" VerticalAlignment="Top" HorizontalAlignment="Right" MarginTop="30" MarginRight="60">
+          <Children>
+            <TextWidget WidthSizePolicy="CoverChildren" DoNotAcceptEvents="true" HeightSizePolicy="Fixed" SuggestedHeight="30" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Right" Text="直接动作" Brush.FontSize="26" />
+          </Children>
+        </ButtonWidget>
+
         <ButtonWidget DoNotPassEventsToChildren="false" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Command.Click="SwitchTalk" IsEnabled="@CanSwitchTalk" VerticalAlignment="Top" HorizontalAlignment="Right" MarginTop="80" MarginRight="60">
           <Children>
             <TextWidget WidthSizePolicy="CoverChildren" DoNotAcceptEvents="true" HeightSizePolicy="Fixed" SuggestedHeight="30" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Right" Text="@SwitchTitle" Brush.FontSize="26" />
