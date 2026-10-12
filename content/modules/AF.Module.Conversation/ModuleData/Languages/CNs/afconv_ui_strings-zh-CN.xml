@@ -447,5 +447,56 @@
     <string id="AF_CONV_UI_Direct_IssueHero" text="原版任务需要当前目标是已有英雄。" />
     <string id="AF_CONV_UI_Direct_IssueProgress" text="当前英雄没有进行中的原版任务；交付条件仍由原执行入口检查。" />
     <string id="AF_CONV_UI_Direct_IssueOffer" text="当前英雄没有可接取的原版任务。" />
+    <string id="AF_CONV_UI_Direct_Map_Go" text="前往指定地点" />
+    <string id="AF_CONV_UI_Direct_Map_Patrol" text="在指定地点巡逻" />
+    <string id="AF_CONV_UI_Direct_Map_FollowTarget" text="跟随指定目标" />
+    <string id="AF_CONV_UI_Direct_Map_Attack" text="攻击指定目标" />
+    <string id="AF_CONV_UI_Direct_Map_ClearHideout" text="清剿藏身点" />
+    <string id="AF_CONV_UI_Direct_Map_Merge" text="返回玩家队伍" />
+    <string id="AF_CONV_UI_Direct_Map_Stop" text="停止大地图指令" />
+    <string id="AF_CONV_UI_Direct_Map_StopWarning" text="这会清空该 NPC 的全部大地图任务队列，不只是停止跟随。战斗中的任务仍遵循原有安全退出规则。" />
+    <string id="AF_CONV_UI_Direct_Map_NoTargets" text="当前没有符合原机制资格的大地图目标。" />
+    <string id="AF_CONV_UI_Direct_Map_SelectTarget" text="请选择真实目标。可以按名称搜索；类型和 ID 用于区分同名对象。" />
+    <string id="AF_CONV_UI_Direct_Map_Expired" text="大地图执行对象或目标已失效，未提交任何指令。" />
+    <string id="AF_CONV_UI_Direct_Map_ModeAI" text="AI（默认：按原有 AI 攻击判断）" />
+    <string id="AF_CONV_UI_Direct_Map_ModeForce" text="FORCE（沿用原有强制攻击规则及后果）" />
+    <string id="AF_CONV_UI_Direct_Map_StayDays" text="抵达后驻留天数" />
+    <string id="AF_CONV_UI_Direct_Map_FollowDays" text="抵达目标后跟随天数" />
+    <string id="AF_CONV_UI_Direct_Map_PatrolDays" text="抵达后巡逻天数" />
+    <string id="AF_CONV_UI_Direct_Map_DeadlineDays" text="指令期限（天）" />
+    <string id="AF_CONV_UI_Direct_Map_DaysInput" text="请输入正整数；留空使用原默认值（{DAYS} 天）。" />
+    <string id="AF_CONV_UI_Direct_Map_InvalidDays" text="天数必须是支持的整数范围内的正整数。" />
+    <string id="AF_CONV_UI_Direct_Map_Append" text="追加（默认）" />
+    <string id="AF_CONV_UI_Direct_Map_AppendHint" text="保留已有任务，将新指令加在队列末尾。" />
+    <string id="AF_CONV_UI_Direct_Map_Replace" text="替换已有任务" />
+    <string id="AF_CONV_UI_Direct_Map_ReplaceHint" text="先清空旧队列。战斗中、等待安全退出或受外部指令来源保护时拒绝替换。" />
+    <string id="AF_CONV_UI_Direct_Map_QueueInput" text="请选择追加或替换。不选择直接确认时默认追加。" />
+    <string id="AF_CONV_UI_Direct_Map_Confirm" text="执行 NPC：{ACTOR}&#10;目标：{TARGET}&#10;天数：{DAYS}&#10;攻击模式：{MODE}&#10;队列方式：{QUEUE}&#10;" />
+    <string id="AF_CONV_UI_Direct_Map_PlayerParty" text="玩家队伍" />
+    <string id="AF_CONV_UI_Direct_Map_GoWarning" text="原机制可能因目的地敌对或正遭敌方围城，将前往地点转为攻击。" />
+    <string id="AF_CONV_UI_Direct_Map_AttackWarning" text="战斗、外交、损失等副作用均遵循原指令机制。" />
+    <string id="AF_CONV_UI_Direct_Map_MergeWarning" text="原有归队/合并机制可能转移成员和资产，并解散独立队伍。" />
+    <string id="AF_CONV_UI_Direct_Map_ExitWarning" text="若需要组建同伴任务队伍或总督出征，当前交流会自动关闭，必要时退出当前场景返回大地图。提交不代表完成。" />
+    <string id="AF_CONV_UI_Direct_Map_Restricted" text="战斗、演习或其他受限场景中不能下达大地图指令。" />
+    <string id="AF_CONV_UI_Direct_Map_ActorIneligible" text="按原有规则，当前人物不具备接受大地图队伍指令的资格。" />
+    <string id="AF_CONV_UI_Direct_Map_StopAccepted" text="原大地图 owner 已处理 STOP。请以其安全退出回执和实际状态为准，不代表 NPC 已经停下。" />
+    <string id="AF_CONV_UI_Direct_Map_Accepted" text="原大地图 owner 已接受 {COUNT} 条指令。请查看原机制的提示和状态；接受不代表已经移动或完成。" />
+    <string id="AF_CONV_UI_Direct_Map_Partial" text="STOP 已处理，但新指令未完整接受。请检查原 owner 回执和队列；不会自动重试。" />
+    <string id="AF_CONV_UI_Direct_Map_NotAccepted" text="原大地图 owner 未接受完整请求。请检查其回执和状态；不会自动重试。" />
+    <string id="AF_CONV_UI_Direct_Map_ActorUnavailable" text="大地图 owner 或执行对象的队伍来源不可用或已改变。" />
+    <string id="AF_CONV_UI_Direct_Map_MergeIneligible" text="当前执行对象不符合原有返回玩家队伍机制的资格。" />
+    <string id="AF_CONV_UI_Direct_Map_NoParty" text="当前 NPC 没有合法、可控制的大地图队伍来源。" />
+    <string id="AF_CONV_UI_Direct_Map_InvalidOrder" text="大地图指令参数无效，没有更改任何任务。" />
+    <string id="AF_CONV_UI_Direct_Map_TargetUnavailable" text="所选地点或藏身点已不符合资格，没有更改任何任务。" />
+    <string id="AF_CONV_UI_Direct_Map_Protected" text="该队列受外部指令来源保护，没有更改任何任务。" />
+    <string id="AF_CONV_UI_Direct_Map_SafeExit" text="旧任务正在等待安全退出，请在退出完成后重新操作；旧队列已保留。" />
+    <string id="AF_CONV_UI_Direct_Map_BattleReplace" text="旧任务正处于战斗或围城控制中，已拒绝替换并保留旧队列。" />
+    <string id="AF_CONV_UI_Direct_Map_HeroType" text="英雄" />
+    <string id="AF_CONV_UI_Direct_Map_PartyType" text="队伍" />
+    <string id="AF_CONV_UI_Direct_Map_LocationType" text="地点" />
+    <string id="AF_CONV_UI_Direct_Map_TownType" text="城镇" />
+    <string id="AF_CONV_UI_Direct_Map_CastleType" text="城堡" />
+    <string id="AF_CONV_UI_Direct_Map_VillageType" text="村庄" />
+    <string id="AF_CONV_UI_Direct_Map_HideoutType" text="藏身点" />
   </strings>
 </base>

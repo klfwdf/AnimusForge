@@ -447,5 +447,56 @@
     <string id="AF_CONV_UI_Direct_IssueHero" text="Vanilla quests require an existing hero as the current target." />
     <string id="AF_CONV_UI_Direct_IssueProgress" text="This hero has no ongoing vanilla quest. Turn-in conditions are still checked by the original execution entry." />
     <string id="AF_CONV_UI_Direct_IssueOffer" text="This hero has no available vanilla quest." />
+    <string id="AF_CONV_UI_Direct_Map_Go" text="Go to a location" />
+    <string id="AF_CONV_UI_Direct_Map_Patrol" text="Patrol a location" />
+    <string id="AF_CONV_UI_Direct_Map_FollowTarget" text="Follow a world-map target" />
+    <string id="AF_CONV_UI_Direct_Map_Attack" text="Attack a world-map target" />
+    <string id="AF_CONV_UI_Direct_Map_ClearHideout" text="Clear a hideout" />
+    <string id="AF_CONV_UI_Direct_Map_Merge" text="Return to the player's party" />
+    <string id="AF_CONV_UI_Direct_Map_Stop" text="Stop world-map orders" />
+    <string id="AF_CONV_UI_Direct_Map_StopWarning" text="This clears the NPC's entire world-map command queue, not just following. Battles still obey the original safe-exit rules." />
+    <string id="AF_CONV_UI_Direct_Map_NoTargets" text="There are no valid world-map targets for this command." />
+    <string id="AF_CONV_UI_Direct_Map_SelectTarget" text="Select a real target. Use the name search; type and ID distinguish duplicate names." />
+    <string id="AF_CONV_UI_Direct_Map_Expired" text="The world-map actor or target has expired. Nothing was submitted." />
+    <string id="AF_CONV_UI_Direct_Map_ModeAI" text="AI (default: original attack decisions)" />
+    <string id="AF_CONV_UI_Direct_Map_ModeForce" text="FORCE (original forced-attack rules and consequences)" />
+    <string id="AF_CONV_UI_Direct_Map_StayDays" text="Days to stay after arrival" />
+    <string id="AF_CONV_UI_Direct_Map_FollowDays" text="Days to follow after reaching the target" />
+    <string id="AF_CONV_UI_Direct_Map_PatrolDays" text="Days to patrol after arrival" />
+    <string id="AF_CONV_UI_Direct_Map_DeadlineDays" text="Command deadline in days" />
+    <string id="AF_CONV_UI_Direct_Map_DaysInput" text="Enter a positive integer; leave blank for the original default ({DAYS})." />
+    <string id="AF_CONV_UI_Direct_Map_InvalidDays" text="Days must be a positive integer within the supported integer range." />
+    <string id="AF_CONV_UI_Direct_Map_Append" text="Append (default)" />
+    <string id="AF_CONV_UI_Direct_Map_AppendHint" text="Keep existing tasks and add this command at the end." />
+    <string id="AF_CONV_UI_Direct_Map_Replace" text="Replace existing tasks" />
+    <string id="AF_CONV_UI_Direct_Map_ReplaceHint" text="Clear the old queue first. Replacement is refused during battle, safe exit or protected external orders." />
+    <string id="AF_CONV_UI_Direct_Map_QueueInput" text="Choose append or replace. Confirming with no selection defaults to append." />
+    <string id="AF_CONV_UI_Direct_Map_Confirm" text="Actor: {ACTOR}&#10;Target: {TARGET}&#10;Days: {DAYS}&#10;Mode: {MODE}&#10;Queue: {QUEUE}&#10;" />
+    <string id="AF_CONV_UI_Direct_Map_PlayerParty" text="Player's party" />
+    <string id="AF_CONV_UI_Direct_Map_GoWarning" text="Original rules may convert travel to an attack if the destination is hostile or under hostile siege." />
+    <string id="AF_CONV_UI_Direct_Map_AttackWarning" text="Combat, diplomacy, losses and other consequences follow the original command rules." />
+    <string id="AF_CONV_UI_Direct_Map_MergeWarning" text="The original return/merge mechanic may transfer members and assets and dissolve the independent party." />
+    <string id="AF_CONV_UI_Direct_Map_ExitWarning" text="If a companion task party or governor expedition must be formed, this conversation and, when needed, the current scene will close automatically. Submission is not completion." />
+    <string id="AF_CONV_UI_Direct_Map_Restricted" text="World-map commands are unavailable during combat, exercises or other restricted missions." />
+    <string id="AF_CONV_UI_Direct_Map_ActorIneligible" text="The current character cannot receive world-map party commands under the original rules." />
+    <string id="AF_CONV_UI_Direct_Map_StopAccepted" text="The original world-map owner handled STOP. Check its safe-exit receipt and state; this is not confirmation that the NPC has already stopped." />
+    <string id="AF_CONV_UI_Direct_Map_Accepted" text="The original world-map owner accepted {COUNT} command(s). Check its messages and state; acceptance is not movement or completion." />
+    <string id="AF_CONV_UI_Direct_Map_Partial" text="STOP was processed but the new command was not fully accepted. Check the original owner's receipt and queue; no automatic retry will occur." />
+    <string id="AF_CONV_UI_Direct_Map_NotAccepted" text="The original world-map owner did not accept the complete request. Check its receipt and state; no automatic retry will occur." />
+    <string id="AF_CONV_UI_Direct_Map_TownType" text="Town" />
+    <string id="AF_CONV_UI_Direct_Map_CastleType" text="Castle" />
+    <string id="AF_CONV_UI_Direct_Map_VillageType" text="Village" />
+    <string id="AF_CONV_UI_Direct_Map_HideoutType" text="Hideout" />
+    <string id="AF_CONV_UI_Direct_Map_HeroType" text="Hero" />
+    <string id="AF_CONV_UI_Direct_Map_PartyType" text="Party" />
+    <string id="AF_CONV_UI_Direct_Map_LocationType" text="Location" />
+    <string id="AF_CONV_UI_Direct_Map_ActorUnavailable" text="The world-map owner or actor's party source is unavailable or has changed." />
+    <string id="AF_CONV_UI_Direct_Map_MergeIneligible" text="The original return-to-player mechanic is not available for this actor." />
+    <string id="AF_CONV_UI_Direct_Map_NoParty" text="The current NPC has no valid controllable world-map party." />
+    <string id="AF_CONV_UI_Direct_Map_InvalidOrder" text="The world-map command parameters are invalid. No task was changed." />
+    <string id="AF_CONV_UI_Direct_Map_TargetUnavailable" text="The selected destination or hideout is no longer eligible. No task was changed." />
+    <string id="AF_CONV_UI_Direct_Map_Protected" text="This queue belongs to a protected external order source. No task was changed." />
+    <string id="AF_CONV_UI_Direct_Map_SafeExit" text="The old task is waiting for a safe exit. Retry after it finishes; the old queue was preserved." />
+    <string id="AF_CONV_UI_Direct_Map_BattleReplace" text="The old task is in battle or siege control. Replacement was refused and the old queue was preserved." />
   </strings>
 </base>

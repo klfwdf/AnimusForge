@@ -3,6 +3,9 @@
 using System;
 using System.Collections.Generic;
 
+// Notification/fact text leaf only; this fixture does not assert localized output.
+static class WorldMapSourceTexts { internal static string Get(string key) => key; }
+
 class Hero { public string StringId = "hero"; }
 class Settlement
 {
