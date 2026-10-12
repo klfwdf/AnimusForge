@@ -30,7 +30,7 @@
 - UI 随游戏界面语言，Prompt/世界书随 CN/EN 内容包；两包都保留双语 UI。新内部标识与技术诊断用英文，既有存档/协议/AFEF 身份、动态名字与用户内容保留原值，在显示或请求边界投影。
 - 资源与真实 reader、消费者、内容映射/嵌入逻辑名、语言注册和包选择必须一起完成；核对 prefab 的 DataSource 文案属性与绑定。语义、实际接线、词法扫描和实机分别验收，不能用“无汉字/编译通过”替代。
 - 所有新增自然语言生成链路，在最终请求的 system 中明确使用内容包语言，包括对话、信件、周报/公报、人物背景、记忆、政策、命名和插画文字；约束在用户写作要求之后收口并保留协议、事实、JSON字段、数字和专名。覆盖配置、三渠道、重试及真实 messages 都须验证；只翻译提示词不等于模型会按包语言输出。
-- AF 运行数据按用途写入当前已安装模组：`CustomPrompts/` 用户提示词、`Logs/` 日志、`Configs/` 设置、`PlayerExports/` 导入导出、`Cache/` 缓存和临时音频、`Recovery/` 恢复资料；复用 `AnimusForgeDataPaths` 的身份/路径/ancestor reparse 校验。不得自动转写 AppData、Documents 或 TEMP；独立编辑器显式选择合法模块，旧位置只作兼容读取/一次迁移来源。MCM 路由只覆盖 AF 自有 ID。
+- AF 运行数据按用途写入当前已安装模组：`CustomPrompts/` 用户提示词、`Logs/` 日志、`Configs/` 设置、`PlayerExports/` 导入导出、`Cache/` 缓存和临时音频、`Recovery/` 恢复资料；复用 `AnimusForgeDataPaths` 的身份/路径/ancestor reparse 校验。不得自动转写 AppData、Documents 或 TEMP；独立编辑器显式选择合法模块；旧 AF AppData/Documents 数据不读取、不迁移、不删除，已经存在模组内的数据保持。MCM 路由只覆盖 AF 自有 ID。
 - 设置维护以原 MCM 属性为配置和持久化来源；终端 `TerminalSettingsCoverage` 一次缓存四个 AF owner 的属性与编译委托，补齐未手工注册项。新增设置同步核对终端分类、范围、双语说明、原 setter 与保存 owner；不能只按属性同名判断已接线。
 - MCM 前端只保留 API 设置和“0支持制作组”；通过 `AnimusForgeMcmVisibility` 的 UI 投影隐藏其余入口，保留完整属性、默认值、JSON 字段和 preset，不把隐藏改成功能禁用，也不影响其他模组。
 - 外观、字体、对话历史控件、信件样式、显示通知与插画外观集中在终端“UI”页；既有分类路由值、信件样式索引和原配置对象保持。终端修改扩展设置后按各自 owner 保存，失败保留待重试；不在 Tick 扫描元数据或读写配置。
