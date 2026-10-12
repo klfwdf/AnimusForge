@@ -1,3 +1,17 @@
+<a id="remote-merge-deploy-20261012"></a>
+## 2026-10-12 合并远端并部署 D 盘：保留直接动作与双语（DEPLOYED / LIVE_PENDING）
+
+- 最新用户授权仅拉取、合并与指定游戏根部署，不包含push、版本递增、打包、启动游戏或存档操作。实际工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`，原HEAD `306e2540c`，检查点 `40b8474cd`；fetch远端 `59dc32bf3`，双方3/333提交分叉，合并 `a09faa91dedf73e356ee6cb391332bd6e5c04a22` 双父为检查点与远端，已验证origin/main祖先关系，未切分支/改写历史。
+- 七处冲突：保留三份台账双方记录；PartyAsset/债务/Issue完整保留规范化远端，仅加入原直接动作按需查询；场景菜单保留远端本地化和原默认入口，接回已选Agent身份及直接分支。原标签/副作用/补足/零天与两入口保护保留，全普通物品仍为逐项原`:ALL`批量，不改全局ALL拒绝规则。
+- 应用合并后的长期双语规则：直接动作71个固定文案中英同键加入既有Conversation UI XML，原ConversationUiLocalization真实reader、基础语言注册、content-map和原版DataSource绑定接通。动作标题保存原目标名字，避免按翻译前缀长度截名字；动作列表打开时取当前UI语言，无新增Tick IO、全量扫描、存档或公开API。仅当前直接动作链补译，不重开全仓本地化或制作组玩法。
+- 验证：349直接动作/真实reader与XML边界替身，50实际生产Y菜单+真实Harmony回放，48债务，50原版布局PASS。额外综合GiveAssetTagCodec.StressTests在Program.cs:300的竞技大会检查FAIL：仍要求生产源码含旧中文正文/未命名参赛者字面量，而远端owner已使用AdapterRecordTexts.Raw；这两个文件与origin/main规范化源码相同，未修改或删除断言，不能声称新版80574断言/fuzz全部通过。无需实际游戏的专项不替代完整战役效果。
+- 失败/适配留痕：直接夹具缺远端新UI reader/Economy通知叶子后补源链接和边界替身；三份纯夹具最初NETSDK1005缺net10资产，显式force restore/build后债务和布局通过，codec暴露上述真实失败。轮盘仍net472，生成测试工程使用现有完整Harmony依赖，不改生产断言。最初收据选到33276文件含无关原版反编译目录，尚未调用构建即停止该任务worker；最终绑定Git树与获准生产/脚本/版本输入。远端已有CRLF按原字节保留，检查使用cr-at-eol，不改全局Git设置。
+- 原 `scripts/build/build_single_module.ps1 -Configuration Debug -Stage`，明确引用 `v1.3.15.110062` / `v1.4.6.115628`；两实现各363 warning/0 error，Bootstrap/probe 0/0，两Coup门禁及干净StagePASS，生产输入SHA未变。树到合并提交差异仅测试夹具，实际DLL仍绑定同一产品；构建/部署脚本未自行修改，使用远端获准更新。
+- 原deploy_module.ps1在无Bannerlord进程条件下更新唯一 `D:/steam/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，XML版本v1.5.8、Bootstrap唯一加载、两实现不同SHA且分别与产物/marker一致。3362受管目标和对应Stage哈希复核，3186旧文件备份哈希复核，complete标记存在。恢复资料 `D:/steam/steamapps/common/Mount & Blade II Bannerlord/Modules/.AnimusForge.Recovery/deploy/deploy-f114dd87d60b4befa0039143b44690d9`，不清理该目录。
+- 3211受保护文件前后检查：78字节与修改时间不变，3133 PlayerExports按原较新覆盖/相同时间安装优先规则合并（1个正文更新、3132仅时间戳）且有原字节已核备份；不把时间合并宣称所有导出逐字不变。CustomPrompts/Configs/Logs/Cache/Recovery/ONNX及已有TerminalSettings保持原规则，无意外受保护变化。未部署Stage外文件、原版TaleWorlds DLL或旧双模块目录；不改存档，不读写旧C盘数据。
+- 本地证据目录 `artifacts/tests/remote-merge-deploy-20261012/run-6f31902b/`：verification-receipt.json、build-final/receipt.json/build.log、deploy-result.json、各专项与codec失败日志、原保护快照、14锚点code-map.json（记录提交/working-tree均PASS）。[当前代码边界](architecture/af-framework-code-scope.md#remote-merge-deploy-20261012)。本条明确替代此前直接动作“未部署”状态，不替代实机/旧sav/provider/全仓/覆盖率验收。
+- 回滚：源码采用合并提交具名focused inverse并保留其他作者历史；游戏文件按本次Recovery manifest经重新授权和当前哈希复核后恢复，不自动覆盖后来编辑。未push、ZIP或启动游戏，相关历史HOLD不被本轮局部通过消除。
+
 <a id="player-direct-actions-20261012"></a>
 ## 2026-10-12 玩家直接动作：14 项，正常标签 owner，无 AI（OFFLINE_VERIFIED / LIVE_PENDING）
 

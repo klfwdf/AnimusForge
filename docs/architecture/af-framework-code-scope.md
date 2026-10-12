@@ -1,3 +1,16 @@
+<a id="remote-merge-deploy-20261012"></a>
+### 远端双语合并、直接动作与实际部署：a09faa91d
+
+当前候选源码 `a09faa91dedf73e356ee6cb391332bd6e5c04a22`，远端父 `59dc32bf3`，保留全部远端owner及本地直接动作。14个一基符号锚点在本地 `artifacts/tests/remote-merge-deploy-20261012/run-6f31902b/code-map.json` 两模式PASS；[主台账含部署、原字节保护及codec失败](../animusforge-refactoring-and-repository-reorganization-plan.md#remote-merge-deploy-20261012)。下方4b9901a4表为前序切片，不再代表当前债务坐标或原owner与旧检查点一致。
+
+| 当前变化/范围 | 实际消费者与边界 |
+| --- | --- |
+| `RewardSystemBehavior.DebtLedger.cs:1188–1201`，GetPlayerDirectDebtCandidates | 当前查询坐标随远端债务改动后移；保留远端完整owner，仅加入按需原记录候选，不重写AD/ADP |
+| `AnimusForgeNativeConversationOverlayVM.cs:28`，DirectActionsButtonText；原Controller.cs:99–123、SceneShoutInputController.cs:1443–1575 | 71个AF_CONV_UI_Direct_键由真实ConversationUiLocalization读取；英文fallback/中文XML、基础language_data/content-map、原版prefab绑定同包完成；标题保动态名字，原动作和会话保护不改 |
+| 两套Conversation UI XML新增71键、原版prefab:5–9；原其余13锚点保留相同符号范围（债务除外） | 349专项/50真实Harmony轮盘、48债务、50布局及双API/Bootstrap/Stage/3362落盘哈希；合成边界不是GPU/完整Campaign验收，综合codec竞技大会旧字面断言FAIL登记，不宣称全仓通过 |
+
+单次询问/UI语言读取，不增加Tick IO、全量扫描或新的存档/API。已部署D盘单模块v1.5.8，未push、打包或启动游戏；详细文件哈希、备份和回滚集中主台账收据，不复制完整列表。
+
 <a id="player-direct-actions-20261012"></a>
 ### 玩家直接动作：两个 UI 入口、14 标签动作、原 owner 执行
 
