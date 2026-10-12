@@ -115,6 +115,7 @@ internal static NpcDataPacket BuildSceneNpcDataFromLocationCharacter(LocationCha
 			npcDataPacket.PersonalityDesc = (personality ?? "").Trim();
 
 			npcDataPacket.BackgroundDesc = (background ?? "").Trim();
+			npcDataPacket.PersonaContext = MyBehavior.GetNpcPersonaContextForExternal(hero);
 
 		}
 
@@ -231,6 +232,8 @@ internal static NpcDataPacket BuildSceneNpcDataFromLocationCharacter(LocationCha
 			PersonalityDesc = npc.PersonalityDesc,
 
 			BackgroundDesc = npc.BackgroundDesc,
+
+			PersonaContext = npc.PersonaContext,
 
 			AgentIndex = npc.AgentIndex,
 

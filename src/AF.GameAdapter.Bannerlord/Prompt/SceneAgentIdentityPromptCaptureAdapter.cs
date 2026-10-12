@@ -1574,6 +1574,8 @@ internal static string BuildSceneNonHeroNamingNoteForPrompt(IEnumerable<NpcDataP
 
 			BackgroundDesc = (background ?? "").Trim(),
 
+			PersonaContext = targetHero == null ? "" : MyBehavior.GetNpcPersonaContextForExternal(targetHero),
+
 			AgentIndex = -1,
 
 			IsHero = !isNonHero,

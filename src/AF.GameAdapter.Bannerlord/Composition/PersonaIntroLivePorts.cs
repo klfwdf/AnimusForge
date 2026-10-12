@@ -19,6 +19,8 @@ internal sealed class MyPersonaIntroLivePort {
  internal GetHeroFactionAndLiegeForPromptQuery GetHeroFactionAndLiegeForPrompt;
  internal delegate void GetNpcPersonaStringsQuery(Hero hero, out string personality, out string background);
  internal GetNpcPersonaStringsQuery GetNpcPersonaStrings;
+ internal delegate string GetNpcPersonaContextQuery(Hero hero);
+ internal GetNpcPersonaContextQuery GetNpcPersonaContext;
 }
 internal sealed class ScenePersonaIntroLivePort {
  internal delegate string BuildCeremonyRoleFactForPromptQuery(int agentIndex);

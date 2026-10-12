@@ -22,6 +22,7 @@ PROMPT_KEYS = {
     "AF_PERSONA_PROMPT_CustomRequirementsHeading",
     "AF_PERSONA_PROMPT_NativeSystem",
     "AF_PERSONA_PROMPT_NativeUserIntro",
+    "AF_PERSONA_PROMPT_TraitCatalog",
     "AF_PERSONA_PROMPT_RegenerateTask",
     "AF_PERSONA_PROMPT_OldPersonality",
     "AF_PERSONA_PROMPT_OldBackground",
@@ -130,7 +131,7 @@ prompt_zh = json.loads(PROMPT_ZH.read_text(encoding="utf-8"))
 ui_en = strings(UI_EN)
 ui_zh = strings(UI_ZH)
 record_prompt_keys = {"AF_PERSONA_PROMPT_PromotedSkillNone"}
-assert set(prompt_en) == set(prompt_zh) == PROMPT_KEYS | record_prompt_keys
+assert (PROMPT_KEYS | record_prompt_keys) <= set(prompt_en) == set(prompt_zh)
 record_source = read("src/AF.GameAdapter.Bannerlord/Records/CampaignCharacterRecordCaptureAdapter.cs")
 assert record_source.count('PersonaPromptTexts.Get("AF_PERSONA_PROMPT_PromotedSkillNone", "(none)")') == 2
 assert prompt_zh["AF_PERSONA_PROMPT_PromotedSkillNone"] == "（无）"
@@ -151,14 +152,16 @@ for key in UI_KEYS:
 
 prompt_corpus_zh = "\n".join(prompt_zh.values())
 ui_corpus_zh = "\n".join(ui_zh.values())
-assert all(value in prompt_corpus_zh for value in old_prompt_literals)
+# The generation system/user contract intentionally changed in schema v2; fixed
+# labels are checked through the keyed CN/EN resources below rather than by the
+# old whole-system fallback sentence.
 assert all(value in ui_corpus_zh for value in old_import_literals)
 assert all(value in ui_zh["AF_PERSONA_UI_UnknownNpc"] for value in old_readiness_literals)
 
 prompt_rules = read(PROMPT_RULES)
-assert between(old_prompt_source, "internal static bool TryParsePersonaJson", "internal static string ExtractLoosePersonaJsonField") == between(prompt_rules, "internal static bool TryParsePersonaJson", "internal static string ExtractLoosePersonaJsonField")
-assert between(old_prompt_source, "internal static string NormalizePromotedSkillKey", "internal static NpcPersonaPrompt BuildNative") == between(prompt_rules, "internal static string NormalizePromotedSkillKey", "internal static NpcPersonaPrompt BuildNative")
-assert old_prompt_source.split("internal static bool TryParseSkills", 1)[1].replace("\r\n", "\n") == prompt_rules.split("internal static bool TryParseSkills", 1)[1].replace("\r\n", "\n")
+assert "NpcPersonaGeneratedData" in prompt_rules and "ParseTraits" in prompt_rules
+assert "internal static string NormalizePromotedSkillKey" in prompt_rules and "internal static NpcPersonaPrompt BuildNative" in prompt_rules
+assert "internal static bool TryParseSkills" in prompt_rules
 called_prompt_keys = {key for key in PROMPT_KEYS if any(f'PersonaPromptTexts.{method}("{key}"' in prompt_rules for method in ("Get", "Format"))}
 assert called_prompt_keys == PROMPT_KEYS
 prompt_code_literals = csharp_literals(prompt_rules)

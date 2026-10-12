@@ -66,10 +66,11 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
                 try
                 {
 			string resp = apiCallResult.Content ?? "";
-			if (apiCallResult.Success && !string.IsNullOrWhiteSpace(resp) && NpcPersonaTextRules.TryParsePersonaJson(resp, out var genP, out var genB))
+				NpcPersonaGeneratedData generated = null;
+				if (apiCallResult.Success && !string.IsNullOrWhiteSpace(resp) && NpcPersonaTextRules.TryParsePersonaJson(resp, out generated))
 			{
-				genP = NpcPersonaProfilePolicy.NormalizeGenerated(genP);
-				genB = NpcPersonaProfilePolicy.NormalizeGenerated(genB);
+					string genP = NpcPersonaProfilePolicy.NormalizeGenerated(generated?.Personality);
+					string genB = NpcPersonaProfilePolicy.NormalizeGenerated(generated?.Background);
 				if (string.IsNullOrWhiteSpace(genP) && !string.IsNullOrWhiteSpace(genB))
 				{
 					genP = genB;
@@ -78,11 +79,16 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
 				{
 					genB = genP;
 				}
-				NpcPersonaProfile prof = _persona.GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
+					NpcPersonaProfile prof = _persona.GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
 				prof.Personality = genP.Trim();
 				prof.Background = genB.Trim();
+					NpcPersonaGenerationApplicationAdapter.ApplyGeneratedExtras(prof, prof, generated, overwriteExisting: false);
+					prof.SchemaVersion = Math.Max(prof.SchemaVersion, 2);
 				_persona.SaveNpcPersonaProfile(hero, prof);
-				personaSaved = !string.IsNullOrWhiteSpace(prof.Personality) || !string.IsNullOrWhiteSpace(prof.Background);
+				personaSaved = !string.IsNullOrWhiteSpace(prof.Personality) || !string.IsNullOrWhiteSpace(prof.Background)
+					|| (prof.Traits?.Count ?? 0) > 0 || (prof.Motivations?.Count ?? 0) > 0
+					|| (prof.Values?.Count ?? 0) > 0 || (prof.Fears?.Count ?? 0) > 0
+					|| !string.IsNullOrWhiteSpace(prof.SpeechStyle);
 				Logger.Log("NpcPersona", "Promoted companion persona generated hero=" + heroId + " name=" + name);
 			}
 			if (!personaSaved)
