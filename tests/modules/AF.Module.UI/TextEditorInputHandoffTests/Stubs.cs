@@ -13,15 +13,28 @@ namespace TaleWorlds.InputSystem {public sealed class InputContext {public void 
 namespace TaleWorlds.ScreenSystem {
  using TaleWorlds.Library;using TaleWorlds.InputSystem;
  public class InputRestrictions {private static int _nextId;public readonly int Id=++_nextId;public int Order;public bool MouseVisibility;public InputUsageMask InputUsageMask;public InputRestrictions(int order){Order=order;}public void SetInputRestrictions(bool visible=true,InputUsageMask mask=InputUsageMask.All){MouseVisibility=visible;InputUsageMask=mask;}public void ResetInputRestrictions(){MouseVisibility=false;InputUsageMask=InputUsageMask.Invalid;}}
- public class ScreenLayer {public static event Action<ScreenLayer> OnLayerActiveStateChanged;public string Name;public bool IsFinalized,IsActive,IsFocusLayer,LastActiveState=true;public bool Hit=true;public InputRestrictions InputRestrictions;public InputContext Input=new();public InputUsageMask InputUsageMask=>InputRestrictions.InputUsageMask;public ScreenLayer(string name,int order){Name=name;InputRestrictions=new(order);}public void SetActive(bool active){IsActive=active;if(!active)ScreenManager.TryLoseFocus(this);OnLayerActiveStateChanged?.Invoke(this);}}
+ public class ScreenLayer {public static event Action<ScreenLayer> OnLayerActiveStateChanged;public string Name;public bool IsFinalized,IsActive,IsFocusLayer,LastActiveState=true;public bool Hit=true;public int RenderOrder;public virtual bool IsRendering=>IsActive;public InputRestrictions InputRestrictions;public InputContext Input=new();public InputUsageMask InputUsageMask=>InputRestrictions.InputUsageMask;public ScreenLayer(string name,int order){Name=name;InputRestrictions=new(order);}public virtual void SetActive(bool active){IsActive=active;if(!active)ScreenManager.TryLoseFocus(this);OnLayerActiveStateChanged?.Invoke(this);}}
  public class ScreenBase {public bool IsFinalized;public List<ScreenLayer> Layers=new();public bool HasLayer(ScreenLayer l)=>Layers.Contains(l);public void AddLayer(ScreenLayer l){Layers.Add(l);l.SetActive(true);}public void RemoveLayer(ScreenLayer l){Layers.Remove(l);l.SetActive(false);l.IsFinalized=true;}}
  public static class ScreenManager {
   public static ScreenBase TopScreen;public static ScreenLayer FocusedLayer,FirstHitLayer;public static event Action<ScreenBase> OnPushScreen,OnPopScreen;public static int PushSubscribers=>OnPushScreen?.GetInvocationList().Length??0;
   public static void SetSuspendLayer(ScreenLayer l,bool isSuspended){l.SetActive(!isSuspended);l.LastActiveState=!isSuspended;}
+  // Mirror the native active/inactive render-order split, including SceneViews that stay enabled.
+  public static void RefreshGlobalOrder(){int active=-2000,inactive=10000;foreach(var layer in TopScreen.Layers.OrderBy(x=>x.InputRestrictions.Order)){layer.RenderOrder=layer.IsActive?active++:inactive++;}}
+  public static bool IsVisible(ScreenLayer layer){RefreshGlobalOrder();return layer.IsRendering&&!TopScreen.Layers.OfType<TaleWorlds.Engine.Screens.SceneLayer>().Any(scene=>scene.IsRendering&&scene.RenderOrder>layer.RenderOrder);}
   public static void TrySetFocus(ScreenLayer l){if((FocusedLayer==null||FocusedLayer.InputRestrictions.Order<=l.InputRestrictions.Order||!l.IsActive)&&l.IsFocusLayer)FocusedLayer=l;}
   public static void TryLoseFocus(ScreenLayer l){if(ReferenceEquals(FocusedLayer,l))FocusedLayer=TopScreen?.Layers.Where(x=>x!=l&&x.IsActive&&x.IsFocusLayer).OrderByDescending(x=>x.InputRestrictions.Order).ThenByDescending(x=>x.InputRestrictions.Id).FirstOrDefault();}
   public static (ScreenLayer Mouse,ScreenLayer Keyboard) Dispatch(){var mouse=TopScreen.Layers.Where(x=>x.IsActive&&!x.IsFinalized&&x.Hit&&(x.InputUsageMask&InputUsageMask.MouseButtons)!=0).OrderByDescending(x=>x.InputRestrictions.Order).ThenByDescending(x=>x.InputRestrictions.Id).FirstOrDefault();return(mouse,FocusedLayer?.IsActive==true?FocusedLayer:null);}
   public static void Push(ScreenBase screen){foreach(var l in TopScreen.Layers.ToArray()){if(l.IsActive){l.LastActiveState=true;l.SetActive(false);}}TopScreen=screen;OnPushScreen?.Invoke(screen);}
+ }
+}
+namespace TaleWorlds.Engine.Screens {
+ using TaleWorlds.ScreenSystem;
+ // MapScreen creates SceneLayer(true, false): deactivation leaves its SceneView rendering.
+ public sealed class SceneLayer:ScreenLayer {
+  public readonly bool AutoToggleSceneView;public bool SceneViewEnabled=true;public int Deactivations;
+  public SceneLayer(bool autoToggle):base("SceneLayer",-100){AutoToggleSceneView=autoToggle;IsFocusLayer=true;}
+  public override bool IsRendering=>SceneViewEnabled;
+  public override void SetActive(bool active){base.SetActive(active);if(!active)Deactivations++;if(AutoToggleSceneView)SceneViewEnabled=active;}
  }
 }
 namespace TaleWorlds.Engine.GauntletUI {
