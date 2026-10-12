@@ -1,3 +1,23 @@
+<a id="manual-worldmap-tags-20261012"></a>
+### 手动标签大地图接线：4a982ec42
+
+源码 `4a982ec42b26506462a522979619cb6b4d6423ad`，工作区 `E:/AnimusForge-klfwdf`，26个一基锚点在 `artifacts/tests/manual-worldmap-tags-20261012/code-map.json` 记录提交/working-tree双模式核验。[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#manual-worldmap-tags-20261012)记录范围、命令/失败/DLL绑定及未验项；此表接续而不重写原14动作/入口职责。
+
+| 一基范围 / 符号 | 真实消费者、覆盖与保留边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Conversation/PlayerDirectActionController.cs:49–57,63–112`；ActionName / IsWorldMap / TagTemplate / TryBuildWorldMap | 同一Context决定名称/模板/20动作闭集；原地图grammar与安全ID/天数，替换只拼原STOP＋任务，普通场景Follow不变 |
+| 同文件 `170–201,267–296,298–344`；Open / BeginWorldMap / WorldMapMode / WorldMapDays / WorldMapQueue | 捕获Context与owner预检callback；真实候选原询问/原生搜索，默认AI/追加/原天数；取消/once/revision过期保护。Gauntlet实际渲染/点击未验 |
+| 同文件 `346–376`；ConfirmWorldMap / CommitWorldMap | 明示NPC/目标/天数/模式/队列和原副作用，提交前完整owner预检；复核后释放焦点、再验会话，不调用AI、不伪造发言 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PlayerDirectActions.cs:22–40,78–233,235–243`；CapturePlayerDirectActionContext / OpenPlayerDirectActions / PlayerDirectMapTargetType | 普通scene、无Mission、已有meeting且有Agent/Battle模式分流；受限上下文禁用。原native/持续场景入口共用捕获目标与Campaign/Mission/token/epoch/generation/manager身份，场景领主地图任务仍合法 |
+| 同文件 `178–204`；ApplyNativeConversationActionTags实际回执与NeedsChannelExit分支 | 经正常Native effects→原地图Admission，真实接受/停止/部分失败提示；必要时原close/Schedule/Flush，捕获身份下立即退出，不关晚开的交流。原场景移动owner/等待退出路径保持 |
+| `src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.PlayerDirectActions.cs:38–62,64–84`；CapturePlayerDirectOrderActor / IsPlayerDirectOrderActorCurrent / GetPlayerDirectOrderUnavailableReason | 内部只读Campaign/owner/character/party/clan/governor/roster快照；复用原Prompt exclusion、队伍来源、组队、总督/归队限制，不新增public API或存档状态 |
+| 同文件 `88–136,144–196`；ValidatePlayerDirectOrder / CapturePlayerDirectOrderTargets | 全请求解析与资格、当前目标和SourceId/安全退出/战斗预检后才交STOP；一次点击生成候选、所选引用定点复核。原完整Admission/queue/pendingpayload/资格算法回放，不以引擎叶子替身证明实际移动 |
+| `src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.Admission.cs:237`；ProcessWorldMapOrderTagsDispatch(Hero,CharacterObject,int,ref string) | 既有正常地图执行入口未变；原战争、party AI、组队/出征、归队和事实owner保持。没有新增替换协议、延迟替换、dev入口或直接改AI |
+| CN/EN `content/modules/AF.Module.Conversation/ModuleData/Languages/[CNs/]afconv_ui_strings[-zh-CN].xml:450–500`；51个AF_CONV_UI_Direct_Map键 | 新名称/参数/禁用/确认/结果全部同步；真实 `ConversationUiLocalization.cs:46–56` reader与原动态文字保护，两版TW各171项通过 |
+| `content/foundation/AF.Foundation.Localization/ModuleData/Languages/[CNs/]language_data.xml:22`；现有注册，`content/content-map.json:16–22`；资源映射 | 两语言的实际资源来源/目标保持，语言随UI，不改包选择/注册身份/一键流程。未Stage/安装/ZIP，本候选不在游戏目录 |
+
+仅3个生产C#与2个资源改动；同DLL内部入口，不扩Api.V1。955直接动作/owner、34原地图pure子集、24地点驻留、29藏身点及双API/Bootstrap/Coup通过；旧J12全套因外交迁移路径CS2001仍未通过，真实游戏/旧档/外MOD/覆盖率边界见台账。
+
 <a id="no-legacy-data-cache-refresh-20261012"></a>
 ### 旧 AF 数据入口退役与模型缓存时间刷新：8f4c5a80c
 

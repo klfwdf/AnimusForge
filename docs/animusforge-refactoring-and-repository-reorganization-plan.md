@@ -1,3 +1,28 @@
+<a id="manual-worldmap-tags-20261012"></a>
+## 2026-10-12～13 手动触发标签接入既有大地图指令（LOCAL_ONLY / OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 最新授权为完整实现计划；用户暂停后明确“继续”。实际工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`，开工干净 HEAD `5fa272cf1`，本地意图检查点 `eec88483d`，产品/回归切片 `4a982ec42b26506462a522979619cb6b4d6423ad`。保留远端融合、原手动标签入口、旧数据退役及其他作者历史；本条接续[此前14动作入口](#manual-tags-ui-20261012)，不改写其部署验收。**本轮未 Stage、部署、ZIP、push、启动游戏、操作旧档或写外仓；当前游戏安装不含本候选。**
+- 原按钮和参数询问复用：普通场景“跟随我/停止跟随”仍交原 Agent 路径；无 Mission 的地图交流和已有 lord/meeting runtime/lock 判定的非战斗自定义会面交地图 FOLLOW 玩家 / STOP（包括存在真实 Agent、使用 Battle mode 的会面）。战斗/战斗结果、升级战斗、演习/检阅、Deployment/Duel/Stealth/Tournament 与原 scene 排除上下文禁用，不退化为地图任务。名称、模板、候选、执行复用同一捕获上下文及原 campaign/mission/token/epoch/generation/Agent/选中名牌保护。
+- 新增前往地点、地点巡逻、跟随英雄/队伍、攻击英雄/队伍/城镇/城堡/村庄、清剿合法已发现藏身点、返回玩家队伍，共20动作。合格领主/同伴/总督在城镇/大厅仍可下地图任务；普通 NPC、不可控来源和不合格归队显示原资格原因。只在打开目标步骤时生成真实对象列表，原多选询问支持名称搜索，同名显示类型与 ID；玩家不手填 ID，最终按所选 ID→原对象引用/队伍来源定点复核。
+- 正整数天数，空白使用原默认：一般任务与英雄/队伍攻击1、村庄攻击5、城镇/城堡攻击15、清剿藏身点5。驻留、巡逻/跟随时长和攻击期限分开提示，攻击模式复用 AI/FORCE。每条新任务先选追加/替换，空选默认追加；替换先完整解析/资格/目标及旧队列预检，再一次正常提交原 `STOP`＋新任务，未创造替换协议或延迟替换状态。战斗/跟随围城控制/藏身点战斗、等待安全退出、外部 SourceId 保护或目标失效时不发 STOP，旧任务保留；单独 STOP 明示清空全部任务和安全退出语义。
+- 确认显示 NPC、目标、天数、模式、队列方式，并提示旅行因敌对/敌方围城转换攻击、战斗外交损失、归队合并资产/解散队伍及必要自动退出。WorldMap owner 内仅增加 internal 只读快照、资格、候选和预检，调用原解析/队列/战争/组队/总督/归队/藏身点规则；正常 Native effects 链消费实际 `WorldMapOrderApplyResult`，区分接受/停止待安全退出/STOP后部分拒绝/未接受，不将排队写成行动成功、不自动重试。
+- 同伴组队或总督出征的真实回执请求退出时，沿原 native close + Schedule/Flush 退出路径；本操作无 speech，捕获身份下立即 flush，确认后的晚回执不能关后来开启的交流。普通场景的原跟随退出队列保持。归队除 prompt variant 还需原 `CanMergeToPlayer` 通过：原真实 executor 对已在主队/无独立合法队伍更严格，UI不强造“归队”，避免替换先清任务再被原 owner 拒绝。
+- 性能：菜单只捕获一次共用 actor/governor资格；目标参数打开时一次 O(H+P+S) 候选/排序，最终只复核所选对象与当前来源；无新增 Tick 扫描、IO、反射或轮询。没有新增公共 API、存档字段/键、协议身份或直接改队伍 AI；原三渠道、开发测试入口、一键构建/覆盖流程不改。51对新中英键通过原 ConversationUiLocalization、既有 language_data 和 content-map 实际消费，保留动态姓名、用户内容及标签 ID 原值。
+
+### 验证、失败及产物绑定
+
+- 完整直接动作专项 **955 PASS**：20标签/模板、普通场景与地图共用跟随、三种已有会面有 Agent/Battle、受限上下文、场景合法领主地图任务、同名真实目标/类型/ID、全部攻击目标/默认天数/AI-FORCE、无效天数/注入 ID、所有参数取消/重复确认、候选/会话失效、追加和一次 STOP＋新任务顺序、过期退出及真实部分回执。命令 `dotnet run --project tests/AF.GameAdapter.Bannerlord/PlayerDirectActionTests/PlayerDirectActionTests.csproj --no-restore -p:DirectPythonExe=C:/Python314/python.exe`，日志 `direct-closed.log`；fixture仍1个CS0649警告，未屏蔽。
+- 同一专项执行完整生产 Protocol/Admission declarations 和原 append/STOP、延期请求payload/ticket、战争地点转换、非英雄队伍、同伴/总督资格及请求、藏身点/归队资格方法：断言旧队列/内容保留及实际pending命令数量，不用替身调用次数声称移动。引擎对象、foreign guest/detachment信号、UI、队伍实际生成和AI移动叶子仍为夹具；**不证明实际NPC/队伍已移动或组队出征完成。**
+- 原 J12 的三个完整 WorldMap 测试方法/Expect与原三个pure owner隔离回放 **34 PASS**，证据 `artifacts/tests/manual-worldmap-protocol/run-8a1055e58f964b3da9c6f1858dcddc5a/`。原地点驻留 runner/完整24断言 **24 PASS**（`settlement-closed/result.log`）；原藏身点 Program/全部断言 **29 PASS**（`hideout-verified.log`）。本机缺所需net8引用包，纯测试用net10进程覆盖/仅隔离生成工程适配，不改生产TFM、原统一入口或断言。地点夹具因前序双语迁移缺 WorldMapSourceTexts，仅补未参与本专项断言的通知文本叶子。
+- `run_localization.py` 用实际 TaleWorlds 1.3/1.4 本地化程序集加载既有注册完整目录和真实 reader：两版各 **171 PASS**；51对key/fallback/placeholder、English→简体中文→English切换和确认的动态原值保留。证据 `artifacts/tests/manual-worldmap-localization/run-206f372b985b4a7c83b928f51820da59/`。原生未设置变量会展开，首次把原生输出与未填参数fallback直比失败；探针改为传真实消费者参数后通过，不改生产本地化规则。
+- 原 `scripts/build/build_single_module.ps1` Debug，无Stage/Deploy，实际参考 `v1.3.15.110062` / `v1.4.6.115628`，两实现各 **363 warning / 0 error**，Bootstrap/probe **0/0**，双Coup gate PASS。沿仓库前序已诊断的进程 wrapper 对主工程加 `EnableDefaultNoneItems=false` 防 ignored artifact污染，不改工程或构建脚本。最终 `final-build-closed/receipt.json` exit0、输入SHA未变，三个当前DLL实测SHA与marker一致。
+- 已诊断失败保留：首次双构建 CS0103 因新增adapter命名空间未导入，补实际 using 后通过；最后直接测试默认python在MSBuild cmd无法解析（MSB3073/9009），显式现有python.exe路径后955通过。**旧 J12 总套件仍 CS2001 / exit1**：工程引用已迁移的 Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs；`legacy-j12-boundary.log`保留，未修无关外交、删断言或把地图子集写成总套件通过。net8 NU1100、未填参数比对及地点夹具失败日志保留在相关run目录；另曾因net10覆盖未重新restore出现NETSDK1005，force restore后解决，该信号登记于本条而不冒称已有独立日志。无需外部包安装。
+- 总收据 `artifacts/tests/manual-worldmap-tags-20261012/verification-receipt.json` 绑定本地切片、17文件SHA、直接专项、相关原测试、两版本语言、官方完整构建与DLL marker、失败和NOT-RUN。26个源码/消费者/注册锚点 `code-map.json` 在记录提交/working-tree双模式核验；[真实职责与一基坐标](architecture/af-framework-code-scope.md#manual-worldmap-tags-20261012)。证据层级不混用：编译/回放通过不等于实机。
+
+### 未验与回滚
+
+未验真实 Gauntlet渲染/点击/搜索、NPC与队伍实际移动、同伴组队界面/总督实体生成及回归地图、战役资产/外交/战争全副作用、双版实机、旧sav、其他MOD冲突、全仓套件/覆盖率；本轮也不包括Stage/安装/ZIP/push。实机下一步应验证场景与有Agent地图会面的同按钮、地图目标/替换旧队列保护以及同伴/总督退出流程，需另行授权。本地源码回滚只对 `4a982ec42` 做focused inverse，保留先前双语/入口/旧数据退役和其他作者历史，禁止reset/rewrite；没有本轮安装变动可回滚。
+
 <a id="no-legacy-data-cache-refresh-20261012"></a>
 ## 2026-10-12 关闭旧 AF 用户数据入口，恢复模型缓存按时间重读（LOCAL_ONLY / OFFLINE_VERIFIED）
 
