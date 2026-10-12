@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
@@ -17,6 +18,26 @@ namespace AnimusForge;
 public partial class ShoutBehavior
 {
     private readonly PlayerDirectActionController _playerDirectActions = new();
+
+    private static PlayerDirectActionContext CapturePlayerDirectActionContext()
+    {
+        var mission = Mission.Current;
+        if (MeetingBattleRuntime.IsCombatEscalated || IsActiveSceneConversationDuelCombat()
+            || PlayerEncounterCompat.HasBattleOrEncounteredBattle() || PlayerEncounterCompat.HasCampaignBattleResult())
+            return PlayerDirectActionContext.Restricted;
+        if (mission == null) return PlayerDirectActionContext.WorldMap;
+        if (TroopInspectionBehavior.ShouldSuppressReinforcementSystem(mission)
+            || (MilitaryExerciseBehavior.IsCurrentExerciseRuntime() && mission.GetMissionBehavior<MilitaryExerciseMissionLogic>() != null)
+            || mission.Mode == MissionMode.Deployment || mission.Mode == MissionMode.Duel
+            || mission.Mode == MissionMode.Stealth || mission.Mode == MissionMode.Tournament)
+            return PlayerDirectActionContext.Restricted;
+        // Meetings can contain real Agents and use Battle mode without being combat.
+        if (LordEncounterBehavior.IsEncounterMeetingMissionActive || MeetingBattleRuntime.IsMeetingActive
+            || mission.GetMissionBehavior<MeetingBattleLockMissionBehavior>() != null)
+            return PlayerDirectActionContext.WorldMap;
+        return AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission()
+            ? PlayerDirectActionContext.Restricted : PlayerDirectActionContext.Scene;
+    }
 
     internal static bool OpenNativePlayerDirectActions(Action onFinished)
     {
@@ -65,13 +86,17 @@ public partial class ShoutBehavior
         long generation = SaveRuntimeGuard.CaptureGeneration();
         var agent = index >= 0 ? mission?.Agents?.FirstOrDefault(a => a != null && a.Index == index) : null;
         if (campaign == null || (index >= 0 && agent == null) || isEntryCurrent?.Invoke() == false) return false;
+        var context = CapturePlayerDirectActionContext();
+        var mapActor = WorldMapPartyCommandBehavior.CapturePlayerDirectOrderActor(hero, character, index);
+        bool mapRuleExcluded = PromptRuleCaptureBannerlordAdapter.ShouldExcludeWorldMapCommandRuleForTarget(hero, character, index);
         bool Current()
         {
             if (!IsBannerlordMainThreadForNativeActions() || !ReferenceEquals(CurrentInstance, this)
                 || !ReferenceEquals(campaign, Campaign.Current) || !ReferenceEquals(mission, Mission.Current)
                 || mission?.IsMissionEnding == true || !ReferenceEquals(settlement, Settlement.CurrentSettlement)
                 || !SaveRuntimeGuard.IsCurrentGeneration(generation) || epoch != _sceneConversationEpoch
-                || !ReferenceEquals(manager, Campaign.Current?.ConversationManager) || isEntryCurrent?.Invoke() == false) return false;
+                || !ReferenceEquals(manager, Campaign.Current?.ConversationManager) || isEntryCurrent?.Invoke() == false
+                || context != CapturePlayerDirectActionContext()) return false;
             if (native)
             {
                 if (manager?.IsConversationInProgress != true || manager.ActiveToken != token
@@ -84,6 +109,17 @@ public partial class ShoutBehavior
         }
         string Unavailable(PlayerDirectActionKind kind)
         {
+            if (PlayerDirectActionProtocol.IsWorldMap(kind, context))
+            {
+                if (context == PlayerDirectActionContext.Restricted)
+                    return PlayerDirectActionProtocol.MapText("Restricted", "World-map commands are unavailable during combat, exercises or other restricted missions.");
+                if (mapRuleExcluded)
+                    return PlayerDirectActionProtocol.MapText("ActorIneligible", "The current character cannot receive world-map party commands under the original rules.");
+                // The initial common qualification (including governor roster checks) is captured once.
+                return kind == PlayerDirectActionKind.MergeToPlayer || kind == PlayerDirectActionKind.StopFollow
+                    ? WorldMapPartyCommandBehavior.GetPlayerDirectOrderUnavailableReason(mapActor, PlayerDirectActionProtocol.WorldMapKind(kind))
+                    : mapActor.InitialReason;
+            }
             var reward = RewardSystemBehavior.Instance;
             bool merchant = character != null && settlement != null && reward?.TryGetSettlementMerchantKind(character, out _) == true;
             switch (kind)
@@ -104,7 +140,7 @@ public partial class ShoutBehavior
                     return reward != null && hero != null && hero != Hero.MainHero && Clan.PlayerClan != null && MobileParty.MainParty != null
                         ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_052", "An existing hero, player clan and player party are required. Promoting ordinary NPCs is outside this feature's scope.");
                 case PlayerDirectActionKind.Follow: case PlayerDirectActionKind.StopFollow:
-                    return agent != null && agent != Agent.Main ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_053", "A valid NPC Agent in the current scene is required. The original movement tag restrictions still apply.");
+                    return context == PlayerDirectActionContext.Scene && agent != null && agent != Agent.Main ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_053", "A valid NPC Agent in the current scene is required. The original movement tag restrictions still apply.");
                 case PlayerDirectActionKind.LordsHall:
                     return settlement?.IsTown == true && mission != null && CampaignMission.Current?.Location?.StringId == "center"
                         && LocationComplex.Current?.GetLocationWithId("lordshall") != null && campaign.GameMenuManager != null
@@ -114,19 +150,58 @@ public partial class ShoutBehavior
                 default: return ConversationUiLocalization.Text("AF_CONV_UI_Direct_055", "Unsupported direct action.");
             }
         }
+        List<PlayerDirectActionChoice> Candidates(PlayerDirectActionKind kind)
+        {
+            if (!PlayerDirectActionProtocol.IsWorldMap(kind, context)) return BuildPlayerDirectCandidates(kind, hero, character, index);
+            return WorldMapPartyCommandBehavior.CapturePlayerDirectOrderTargets(mapActor, PlayerDirectActionProtocol.WorldMapKind(kind),
+                playerOnly: kind == PlayerDirectActionKind.Follow).Select(x => new PlayerDirectActionChoice(x.Id,
+                    x.Name + " — " + PlayerDirectMapTargetType(x) + " [" + x.Id + "]",
+                    x.IsCurrent, targetType: x.Type, defaultDays: x.DefaultDays)).ToList();
+        }
         void Finished()
         {
             // Never restore time/movement on a replacement campaign or mission.
             if (ReferenceEquals(campaign, Campaign.Current) && ReferenceEquals(mission, Mission.Current)) onFinished?.Invoke();
         }
         _playerDirectActions.Open(name, Current, Unavailable,
-            kind => BuildPlayerDirectCandidates(kind, hero, character, index),
+            Candidates,
             (kind, choice) => choice == null || choice.IsCurrent?.Invoke() == true,
             (kind, choice, raw) => {
                 if (!Current() || (choice != null && choice.IsCurrent?.Invoke() != true))
                 { InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Direct_056", "The target or candidate has expired. No action was executed."))); return; }
                 try
                 {
+                    if (PlayerDirectActionProtocol.IsWorldMap(kind, context))
+                    {
+                        string reason = WorldMapPartyCommandBehavior.ValidatePlayerDirectOrder(mapActor, raw);
+                        if (!string.IsNullOrEmpty(reason)) { InformationManager.DisplayMessage(new InformationMessage(reason)); return; }
+                        var result = _nativeGameEffects.ApplyNativeConversationActionTags(hero, character, ref raw, index,
+                            expectedConversationManager: manager, expectedConversationToken: native ? token : int.MinValue,
+                            actionChainName: "player_direct_action", npcReplyTextOverride: "");
+                        InformationManager.DisplayMessage(new InformationMessage(result?.Handled == true
+                            ? result.StopApplied && result.AddedCommandCount == 0
+                                ? PlayerDirectActionProtocol.MapText("StopAccepted", "The original world-map owner handled STOP. Check its safe-exit receipt and state; this is not confirmation that the NPC has already stopped.")
+                                : PlayerDirectActionProtocol.MapText("Accepted", "The original world-map owner accepted {COUNT} command(s). Check its messages and state; acceptance is not movement or completion.", ("COUNT", result.AddedCommandCount))
+                            : result?.StopApplied == true
+                                ? PlayerDirectActionProtocol.MapText("Partial", "STOP was processed but the new command was not fully accepted. Check the original owner's receipt and queue; no automatic retry will occur.")
+                                : PlayerDirectActionProtocol.MapText("NotAccepted", "The original world-map owner did not accept the complete request. Check its receipt and state; no automatic retry will occur.")));
+                        if (result?.NeedsChannelExit == true && Current())
+                        {
+                            if (native) CloseNativeConversationForSceneMechanism("worldmap_implicit_party_creation");
+                            // No speech to await. Flush the existing exit immediately under captured identity,
+                            // so no delayed callback can close a subsequently opened conversation.
+                            if (mission != null && ReferenceEquals(mission, Mission.Current) && ReferenceEquals(CurrentInstance, this)
+                                && ReferenceEquals(campaign, Campaign.Current) && SaveRuntimeGuard.IsCurrentGeneration(generation)
+                                && epoch == _sceneConversationEpoch && ReferenceEquals(manager, campaign.ConversationManager)
+                                && manager?.IsConversationInProgress != true)
+                            {
+                                int exitIndex = index >= 0 ? index : Agent.Main?.Index ?? -1;
+                                ScheduleWorldMapMissionExitAfterSpeech(exitIndex, null);
+                                FlushWorldMapMissionExitAfterSpeech(exitIndex);
+                            }
+                        }
+                        return;
+                    }
                     if (kind == PlayerDirectActionKind.Follow || kind == PlayerDirectActionKind.StopFollow)
                     {
                         var npc = BuildNativeConversationNpcData(hero, character);
@@ -153,9 +228,19 @@ public partial class ShoutBehavior
                     Logger.Log("PlayerDirectActions", "dispatch failed: " + ex.Message);
                     InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Direct_059", "An error occurred while submitting the action. Check the original mechanic's state; there will be no automatic retry.")));
                 }
-            }, Finished);
+            }, Finished, context, raw => WorldMapPartyCommandBehavior.ValidatePlayerDirectOrder(mapActor, raw));
         return true;
     }
+
+    private static string PlayerDirectMapTargetType(WorldMapPartyCommandBehavior.PlayerDirectOrderTarget target) => target.DisplayType switch {
+        "TownType" => PlayerDirectActionProtocol.MapText("TownType", "Town"),
+        "CastleType" => PlayerDirectActionProtocol.MapText("CastleType", "Castle"),
+        "VillageType" => PlayerDirectActionProtocol.MapText("VillageType", "Village"),
+        "HideoutType" => PlayerDirectActionProtocol.MapText("HideoutType", "Hideout"),
+        _ => target.Type == "hero" ? PlayerDirectActionProtocol.MapText("HeroType", "Hero")
+            : target.Type == "party" ? PlayerDirectActionProtocol.MapText("PartyType", "Party")
+            : PlayerDirectActionProtocol.MapText("LocationType", "Location")
+    };
 
     private static List<PlayerDirectActionChoice> BuildPlayerDirectCandidates(PlayerDirectActionKind kind, Hero hero, CharacterObject character, int index)
     {

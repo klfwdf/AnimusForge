@@ -10,8 +10,11 @@ namespace AnimusForge;
 internal enum PlayerDirectActionKind
 {
     Gold, Item, FixedAsset, Troops, Prisoners, Debt, ResolveDebt, Companion, Family,
-    Follow, StopFollow, LordsHall, AcceptIssue, TurnInQuest
+    Follow, StopFollow, LordsHall, AcceptIssue, TurnInQuest,
+    GoToSettlement, PatrolSettlement, FollowTarget, AttackTarget, ClearHideout, MergeToPlayer
 }
+
+internal enum PlayerDirectActionContext { Scene, WorldMap, Restricted }
 
 internal sealed class PlayerDirectActionChoice
 {
@@ -19,8 +22,11 @@ internal sealed class PlayerDirectActionChoice
     // Live identity check is supplied by the candidate's authoritative owner, not a name lookup.
     internal readonly Func<bool> IsCurrent;
     internal readonly IReadOnlyList<string> BatchAssetTokens;
-    internal PlayerDirectActionChoice(string token, string label, Func<bool> isCurrent = null, IEnumerable<string> batchAssetTokens = null)
-    { Token = token; Label = label; IsCurrent = isCurrent; BatchAssetTokens = batchAssetTokens?.ToArray(); }
+    internal readonly string TargetType;
+    internal readonly int DefaultDays;
+    internal PlayerDirectActionChoice(string token, string label, Func<bool> isCurrent = null, IEnumerable<string> batchAssetTokens = null,
+        string targetType = null, int defaultDays = 1)
+    { Token = token; Label = label; IsCurrent = isCurrent; BatchAssetTokens = batchAssetTokens?.ToArray(); TargetType = targetType; DefaultDays = defaultDays; }
 }
 
 internal static class PlayerDirectActionProtocol
@@ -33,9 +39,28 @@ internal static class PlayerDirectActionProtocol
             Pair(PlayerDirectActionKind.ResolveDebt, ConversationUiLocalization.Text("AF_CONV_UI_Direct_007", "Clear a debt")), Pair(PlayerDirectActionKind.Companion, ConversationUiLocalization.Text("AF_CONV_UI_Direct_008", "Make the current hero a companion")),
             Pair(PlayerDirectActionKind.Family, ConversationUiLocalization.Text("AF_CONV_UI_Direct_009", "Make the current hero a clan member")), Pair(PlayerDirectActionKind.Follow, ConversationUiLocalization.Text("AF_CONV_UI_Direct_010", "Follow me")),
             Pair(PlayerDirectActionKind.StopFollow, ConversationUiLocalization.Text("AF_CONV_UI_Direct_011", "Stop following")), Pair(PlayerDirectActionKind.LordsHall, ConversationUiLocalization.Text("AF_CONV_UI_Direct_012", "Enter the lord's hall")),
-            Pair(PlayerDirectActionKind.AcceptIssue, ConversationUiLocalization.Text("AF_CONV_UI_Direct_013", "Accept quest")), Pair(PlayerDirectActionKind.TurnInQuest, ConversationUiLocalization.Text("AF_CONV_UI_Direct_014", "Turn in quest")) };
+            Pair(PlayerDirectActionKind.AcceptIssue, ConversationUiLocalization.Text("AF_CONV_UI_Direct_013", "Accept quest")), Pair(PlayerDirectActionKind.TurnInQuest, ConversationUiLocalization.Text("AF_CONV_UI_Direct_014", "Turn in quest")),
+            Pair(PlayerDirectActionKind.GoToSettlement, MapText("Go", "Go to a location")), Pair(PlayerDirectActionKind.PatrolSettlement, MapText("Patrol", "Patrol a location")),
+            Pair(PlayerDirectActionKind.FollowTarget, MapText("FollowTarget", "Follow a world-map target")), Pair(PlayerDirectActionKind.AttackTarget, MapText("Attack", "Attack a world-map target")),
+            Pair(PlayerDirectActionKind.ClearHideout, MapText("ClearHideout", "Clear a hideout")), Pair(PlayerDirectActionKind.MergeToPlayer, MapText("Merge", "Return to the player's party")) };
+    internal static string MapText(string key, string fallback, params (string Name, object Value)[] variables) =>
+        ConversationUiLocalization.Text("AF_CONV_UI_Direct_Map_" + key, fallback, variables);
     private static KeyValuePair<PlayerDirectActionKind, string> Pair(PlayerDirectActionKind kind, string label) => new(kind, label);
-    internal static string TagTemplate(PlayerDirectActionKind kind) => kind switch
+    internal static string ActionName(PlayerDirectActionKind kind, PlayerDirectActionContext context) =>
+        kind == PlayerDirectActionKind.StopFollow && context == PlayerDirectActionContext.WorldMap
+            ? MapText("Stop", "Stop world-map orders") : Actions.Single(x => x.Key == kind).Value;
+    internal static bool IsWorldMap(PlayerDirectActionKind kind, PlayerDirectActionContext context) =>
+        kind is PlayerDirectActionKind.GoToSettlement or PlayerDirectActionKind.PatrolSettlement or PlayerDirectActionKind.FollowTarget
+            or PlayerDirectActionKind.AttackTarget or PlayerDirectActionKind.ClearHideout or PlayerDirectActionKind.MergeToPlayer
+        || (context == PlayerDirectActionContext.WorldMap
+            && (kind == PlayerDirectActionKind.Follow || kind == PlayerDirectActionKind.StopFollow));
+    internal static string WorldMapKind(PlayerDirectActionKind kind) => kind switch {
+        PlayerDirectActionKind.Follow or PlayerDirectActionKind.FollowTarget => "FOLLOW",
+        PlayerDirectActionKind.StopFollow => "STOP", PlayerDirectActionKind.GoToSettlement => "GO_TO_SETTLEMENT",
+        PlayerDirectActionKind.PatrolSettlement => "PATROL_SETTLEMENT", PlayerDirectActionKind.AttackTarget => "ATTACK",
+        PlayerDirectActionKind.ClearHideout => "CLEAR_HIDEOUT", PlayerDirectActionKind.MergeToPlayer => "MERGE_TO_PLAYER", _ => ""
+    };
+    internal static string TagTemplate(PlayerDirectActionKind kind, PlayerDirectActionContext context = PlayerDirectActionContext.Scene) => kind switch
     {
         PlayerDirectActionKind.Gold => "[ACTION:GIVE_ASSET:GOLD:<amount>]",
         PlayerDirectActionKind.Item => "[ACTION:GIVE_ASSET:<item_id>:<quantity|ALL>]",
@@ -44,8 +69,41 @@ internal static class PlayerDirectActionProtocol
         PlayerDirectActionKind.Prisoners => "[ATP:<index|ALL>:<quantity|ALL>]",
         PlayerDirectActionKind.Debt => "[AD:<value>:<days>:P:<note>]",
         PlayerDirectActionKind.ResolveDebt => "[ADP:<debt_id>]",
+        PlayerDirectActionKind.Follow when context == PlayerDirectActionContext.WorldMap => "[ACTION:WORLDMAP_ORDER:FOLLOW:hero:<player_hero_id>:<days>]",
+        PlayerDirectActionKind.StopFollow when context == PlayerDirectActionContext.WorldMap => "[ACTION:WORLDMAP_ORDER:STOP]",
+        PlayerDirectActionKind.GoToSettlement => "[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:<id>:<days>]",
+        PlayerDirectActionKind.PatrolSettlement => "[ACTION:WORLDMAP_ORDER:PATROL_SETTLEMENT:settlement:<id>:<days>]",
+        PlayerDirectActionKind.FollowTarget => "[ACTION:WORLDMAP_ORDER:FOLLOW:<hero|party>:<id>:<days>]",
+        PlayerDirectActionKind.AttackTarget => "[ACTION:WORLDMAP_ORDER:ATTACK:<hero|party|settlement>:<id>:<days>:<AI|FORCE>]",
+        PlayerDirectActionKind.ClearHideout => "[ACTION:WORLDMAP_ORDER:CLEAR_HIDEOUT:settlement:<id>:<days>]",
+        PlayerDirectActionKind.MergeToPlayer => "[ACTION:WORLDMAP_ORDER:MERGE_TO_PLAYER:<days>]",
         _ => TryBuild(kind, null, null, 0, null, out string tag) ? tag : ""
     };
+    internal static bool TryBuildWorldMap(PlayerDirectActionKind kind, PlayerDirectActionChoice choice, int days, string mode, bool replace, out string tag)
+    {
+        tag = null;
+        string command = WorldMapKind(kind);
+        if (command == "STOP") { tag = "[ACTION:WORLDMAP_ORDER:STOP]"; return !replace; }
+        if (command.Length == 0 || days <= 0) return false;
+        string arguments;
+        if (command == "MERGE_TO_PLAYER") arguments = days.ToString(CultureInfo.InvariantCulture);
+        else
+        {
+            if (choice == null || !SafeToken(choice.Token) || choice.Token.Contains(":")) return false;
+            bool targetAllowed = command == "FOLLOW" ? choice.TargetType == "hero" || choice.TargetType == "party"
+                : command == "ATTACK" ? choice.TargetType == "hero" || choice.TargetType == "party" || choice.TargetType == "settlement"
+                : choice.TargetType == "settlement";
+            if (!targetAllowed || (kind == PlayerDirectActionKind.Follow && choice.TargetType != "hero")) return false;
+            arguments = choice.TargetType + ":" + choice.Token + ":" + days.ToString(CultureInfo.InvariantCulture);
+            if (command == "ATTACK")
+            {
+                if (mode != "AI" && mode != "FORCE") return false;
+                arguments += ":" + mode;
+            }
+        }
+        tag = (replace ? "[ACTION:WORLDMAP_ORDER:STOP] " : "") + "[ACTION:WORLDMAP_ORDER:" + command + ":" + arguments + "]";
+        return true;
+    }
     private static bool SafeToken(string token) => !string.IsNullOrWhiteSpace(token) && token.IndexOfAny(new[] {'[', ']', '\r', '\n'}) < 0;
     internal static bool TryBuild(PlayerDirectActionKind kind, string token, string quantity, int days, string note, out string tag)
     {
@@ -105,22 +163,27 @@ internal sealed class PlayerDirectActionController
         internal Func<PlayerDirectActionKind, PlayerDirectActionChoice, bool> Revalidate;
         internal Action<PlayerDirectActionKind, PlayerDirectActionChoice, string> Execute;
         internal Action Finish;
+        internal PlayerDirectActionContext Context;
+        internal Func<string, string> ValidateWorldMap;
     }
 
     internal void Open(string name, Func<bool> isCurrent, Func<PlayerDirectActionKind, string> unavailable,
         Func<PlayerDirectActionKind, List<PlayerDirectActionChoice>> candidates,
         Func<PlayerDirectActionKind, PlayerDirectActionChoice, bool> revalidate,
-        Action<PlayerDirectActionKind, PlayerDirectActionChoice, string> execute, Action onFinished)
+        Action<PlayerDirectActionKind, PlayerDirectActionChoice, string> execute, Action onFinished,
+        PlayerDirectActionContext context = PlayerDirectActionContext.Scene, Func<string, string> validateWorldMap = null)
     {
         if (_active != null) Close(_active);
         var s = _active = new Session { TargetName = name, Title = ConversationUiLocalization.Text("AF_CONV_UI_Direct_015", "Manual tags — ") + name, IsCurrent = isCurrent, Unavailable = unavailable,
-            Candidates = candidates, Revalidate = revalidate, Execute = execute, Finish = onFinished };
+            Candidates = candidates, Revalidate = revalidate, Execute = execute, Finish = onFinished, Context = context, ValidateWorldMap = validateWorldMap };
         Advance(s, () => {
             if (!isCurrent()) { Reject(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_016", "The target or conversation has expired. Reopen Manual tags.")); return; }
             var elements = PlayerDirectActionProtocol.Actions.Select(pair => {
                 string reason = unavailable(pair.Key);
-                string tagInfo = ConversationUiLocalization.Text("AF_CONV_UI_Direct_TagTemplate", "Tag: {TAG}", ("TAG", PlayerDirectActionProtocol.TagTemplate(pair.Key)));
-                return new InquiryElement(pair.Key, pair.Value, null, string.IsNullOrEmpty(reason), tagInfo + "\n" + (reason ?? ConversationUiLocalization.Text("AF_CONV_UI_Direct_017", "Execute existing tag rules without calling AI.")));
+                string tagInfo = ConversationUiLocalization.Text("AF_CONV_UI_Direct_TagTemplate", "Tag: {TAG}", ("TAG", PlayerDirectActionProtocol.TagTemplate(pair.Key, s.Context)));
+                string label = pair.Key == PlayerDirectActionKind.StopFollow
+                    ? PlayerDirectActionProtocol.ActionName(pair.Key, s.Context) : pair.Value;
+                return new InquiryElement(pair.Key, label, null, string.IsNullOrEmpty(reason), tagInfo + "\n" + (reason ?? ConversationUiLocalization.Text("AF_CONV_UI_Direct_017", "Execute existing tag rules without calling AI.")));
             }).ToList();
             long stamp = ++_revision;
             MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(s.Title,
@@ -176,8 +239,9 @@ internal sealed class PlayerDirectActionController
     {
         string reason = s.Unavailable(kind);
         if (!string.IsNullOrEmpty(reason)) { Reject(s, reason); return; }
-        s.Title += " — " + PlayerDirectActionProtocol.Actions.Single(x => x.Key == kind).Value;
-        s.TagInfo = ConversationUiLocalization.Text("AF_CONV_UI_Direct_TagTemplate", "Tag: {TAG}", ("TAG", PlayerDirectActionProtocol.TagTemplate(kind))) + "\n";
+        s.Title += " — " + PlayerDirectActionProtocol.ActionName(kind, s.Context);
+        s.TagInfo = ConversationUiLocalization.Text("AF_CONV_UI_Direct_TagTemplate", "Tag: {TAG}", ("TAG", PlayerDirectActionProtocol.TagTemplate(kind, s.Context))) + "\n";
+        if (PlayerDirectActionProtocol.IsWorldMap(kind, s.Context)) { BeginWorldMap(s, kind); return; }
         switch (kind)
         {
             case PlayerDirectActionKind.Gold:
@@ -197,6 +261,117 @@ internal sealed class PlayerDirectActionController
             default: Commit(s, kind, null, null); break;
         }
     }
+    private static string MapText(string key, string fallback, params (string Name, object Value)[] variables) =>
+        PlayerDirectActionProtocol.MapText(key, fallback, variables);
+
+    private void BeginWorldMap(Session s, PlayerDirectActionKind kind)
+    {
+        if (kind == PlayerDirectActionKind.StopFollow)
+        {
+            Confirm(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_029", "Target: ") + s.TargetName + "\n"
+                + MapText("StopWarning", "This clears the NPC's entire world-map command queue, not just following. Battles still obey the original safe-exit rules."),
+                () => CommitWorldMap(s, kind, null, 0, "AI", false));
+            return;
+        }
+        if (kind == PlayerDirectActionKind.MergeToPlayer) { WorldMapDays(s, kind, null, "AI"); return; }
+        var choices = s.Candidates(kind) ?? new List<PlayerDirectActionChoice>();
+        if (choices.Count == 0) { Reject(s, MapText("NoTargets", "There are no valid world-map targets for this command.")); return; }
+        if (kind == PlayerDirectActionKind.Follow) { WorldMapDays(s, kind, choices.Single(), "AI"); return; }
+        // Native search filters this one captured list; it never recaptures game objects per keystroke.
+        var elements = choices.Select(x => new InquiryElement(x, x.Label, null, true, x.TargetType + ":" + x.Token)).ToList();
+        long stamp = ++_revision;
+        MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(s.Title,
+            s.TagInfo + MapText("SelectTarget", "Select a real target. Use the name search; type and ID distinguish duplicate names."),
+            elements, true, 1, 1, ConversationUiLocalization.Text("AF_CONV_UI_Direct_019", "OK"), ConversationUiLocalization.Text("AF_CONV_UI_Direct_020", "Cancel"),
+            selected => {
+                if (!Consume(s, stamp)) return;
+                Advance(s, () => {
+                    var item = selected?.Count == 1 ? selected[0] : null;
+                    if (item == null || !elements.Contains(item) || item.Identifier is not PlayerDirectActionChoice choice) { Close(s); return; }
+                    if (!s.Revalidate(kind, choice)) { Reject(s, MapText("Expired", "The world-map actor or target has expired. Nothing was submitted.")); return; }
+                    if (kind == PlayerDirectActionKind.AttackTarget) WorldMapMode(s, kind, choice);
+                    else WorldMapDays(s, kind, choice, "AI");
+                });
+            }, _ => { if (Consume(s, stamp)) Close(s); }, isSeachAvailable: true), pauseGameActiveState: true);
+    }
+
+    private void WorldMapMode(Session s, PlayerDirectActionKind kind, PlayerDirectActionChoice choice)
+    {
+        var elements = new List<InquiryElement> {
+            new("AI", MapText("ModeAI", "AI (default: original attack decisions)"), null, true, "AI"),
+            new("FORCE", MapText("ModeForce", "FORCE (original forced-attack rules and consequences)"), null, true, "FORCE") };
+        long stamp = ++_revision;
+        MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(s.Title, s.TagInfo + choice.Label,
+            elements, true, 0, 1, ConversationUiLocalization.Text("AF_CONV_UI_Direct_019", "OK"), ConversationUiLocalization.Text("AF_CONV_UI_Direct_020", "Cancel"),
+            selected => {
+                if (!Consume(s, stamp)) return;
+                var item = selected?.Count == 1 ? selected[0] : null;
+                if (selected?.Count > 1 || (item != null && !elements.Contains(item))) { Close(s); return; }
+                Advance(s, () => WorldMapDays(s, kind, choice, item?.Identifier as string ?? "AI"));
+            }, _ => { if (Consume(s, stamp)) Close(s); }), pauseGameActiveState: true);
+    }
+
+    private void WorldMapDays(Session s, PlayerDirectActionKind kind, PlayerDirectActionChoice choice, string mode)
+    {
+        int defaultDays = choice?.DefaultDays ?? 1;
+        string purpose = kind == PlayerDirectActionKind.GoToSettlement ? MapText("StayDays", "Days to stay after arrival")
+            : kind == PlayerDirectActionKind.Follow || kind == PlayerDirectActionKind.FollowTarget ? MapText("FollowDays", "Days to follow after reaching the target")
+            : kind == PlayerDirectActionKind.PatrolSettlement ? MapText("PatrolDays", "Days to patrol after arrival")
+            : MapText("DeadlineDays", "Command deadline in days");
+        Text(s, (choice?.Label ?? "") + "\n" + purpose + "\n" + MapText("DaysInput", "Enter a positive integer; leave blank for the original default ({DAYS}).", ("DAYS", defaultDays)), value => {
+            int days = defaultDays;
+            if (value.Length > 0 && (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out days) || days <= 0))
+            { Reject(s, MapText("InvalidDays", "Days must be a positive integer within the supported integer range.")); return; }
+            WorldMapQueue(s, kind, choice, days, mode);
+        });
+    }
+
+    private void WorldMapQueue(Session s, PlayerDirectActionKind kind, PlayerDirectActionChoice choice, int days, string mode)
+    {
+        var elements = new List<InquiryElement> {
+            new("append", MapText("Append", "Append (default)"), null, true, MapText("AppendHint", "Keep existing tasks and add this command at the end.")),
+            new("replace", MapText("Replace", "Replace existing tasks"), null, true, MapText("ReplaceHint", "Clear the old queue first. Replacement is refused during battle, safe exit or protected external orders.")) };
+        long stamp = ++_revision;
+        MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(s.Title,
+            MapText("QueueInput", "Choose append or replace. Confirming with no selection defaults to append."), elements, true, 0, 1,
+            ConversationUiLocalization.Text("AF_CONV_UI_Direct_019", "OK"), ConversationUiLocalization.Text("AF_CONV_UI_Direct_020", "Cancel"),
+            selected => {
+                if (!Consume(s, stamp)) return;
+                var item = selected?.Count == 1 ? selected[0] : null;
+                if (selected?.Count > 1 || (item != null && !elements.Contains(item))) { Close(s); return; }
+                Advance(s, () => ConfirmWorldMap(s, kind, choice, days, mode, item?.Identifier as string == "replace"));
+            }, _ => { if (Consume(s, stamp)) Close(s); }), pauseGameActiveState: true);
+    }
+
+    private void ConfirmWorldMap(Session s, PlayerDirectActionKind kind, PlayerDirectActionChoice choice, int days, string mode, bool replace)
+    {
+        string description = MapText("Confirm", "Actor: {ACTOR}\nTarget: {TARGET}\nDays: {DAYS}\nMode: {MODE}\nQueue: {QUEUE}\n",
+            ("ACTOR", s.TargetName), ("TARGET", choice?.Label ?? MapText("PlayerParty", "Player's party")), ("DAYS", days),
+            ("MODE", kind == PlayerDirectActionKind.AttackTarget ? mode : "—"),
+            ("QUEUE", replace ? MapText("Replace", "Replace existing tasks") : MapText("Append", "Append (default)")));
+        if (replace) description += MapText("ReplaceHint", "Clear the old queue first. Replacement is refused during battle, safe exit or protected external orders.") + "\n";
+        if (kind == PlayerDirectActionKind.GoToSettlement)
+            description += MapText("GoWarning", "Original rules may convert travel to an attack if the destination is hostile or under hostile siege.") + "\n";
+        if (kind == PlayerDirectActionKind.AttackTarget || kind == PlayerDirectActionKind.ClearHideout)
+            description += MapText("AttackWarning", "Combat, diplomacy, losses and other consequences follow the original command rules.") + "\n";
+        if (kind == PlayerDirectActionKind.MergeToPlayer)
+            description += MapText("MergeWarning", "The original return/merge mechanic may transfer members and assets and dissolve the independent party.") + "\n";
+        description += MapText("ExitWarning", "If a companion task party or governor expedition must be formed, this conversation and, when needed, the current scene will close automatically. Submission is not completion.");
+        Confirm(s, description, () => CommitWorldMap(s, kind, choice, days, mode, replace));
+    }
+
+    private void CommitWorldMap(Session s, PlayerDirectActionKind kind, PlayerDirectActionChoice choice, int days, string mode, bool replace)
+    {
+        if (!s.IsCurrent() || !string.IsNullOrEmpty(s.Unavailable(kind)) || !s.Revalidate(kind, choice)
+            || !PlayerDirectActionProtocol.TryBuildWorldMap(kind, choice, days, mode, replace, out string raw))
+        { Reject(s, MapText("Expired", "The world-map actor or target has expired. Nothing was submitted.")); return; }
+        string reason = s.ValidateWorldMap?.Invoke(raw);
+        if (!string.IsNullOrEmpty(reason)) { Reject(s, reason); return; }
+        Close(s);
+        if (!s.IsCurrent()) { InformationManager.DisplayMessage(new InformationMessage(MapText("Expired", "The world-map actor or target has expired. Nothing was submitted."))); return; }
+        s.Execute(kind, choice, raw);
+    }
+
     private void Choose(Session s, PlayerDirectActionKind kind)
     {
         var choices = s.Candidates(kind) ?? new List<PlayerDirectActionChoice>();

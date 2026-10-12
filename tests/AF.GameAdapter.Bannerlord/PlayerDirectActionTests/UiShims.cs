@@ -7,10 +7,10 @@ namespace TaleWorlds.Library
     }
     public class MultiSelectionInquiryData
     {
-        public string Title, Text; public List<InquiryElement> Elements; public Action<List<InquiryElement>> AffirmativeAction, NegativeAction;
+        public string Title, Text; public bool SearchAvailable; public List<InquiryElement> Elements; public Action<List<InquiryElement>> AffirmativeAction, NegativeAction;
         public MultiSelectionInquiryData(string title, string text, List<InquiryElement> elements, bool exit, int min, int max,
             string yes, string no, Action<List<InquiryElement>> affirmative, Action<List<InquiryElement>> negative,
-            string sound="", bool isSeachAvailable=false) { Title=title; Text=text; Elements=elements; AffirmativeAction=affirmative; NegativeAction=negative; }
+            string sound="", bool isSeachAvailable=false) { Title=title; Text=text; SearchAvailable=isSeachAvailable; Elements=elements; AffirmativeAction=affirmative; NegativeAction=negative; }
     }
     public class TextInquiryData
     {
@@ -21,17 +21,20 @@ namespace TaleWorlds.Library
     }
     public class InquiryData
     {
+        public string Text;
         public Action AffirmativeAction, NegativeAction;
         public InquiryData(string title, string text, bool yesShown, bool noShown, string yes, string no,
-            Action affirmative, Action negative) { AffirmativeAction=affirmative; NegativeAction=negative; }
+            Action affirmative, Action negative) { Text=text; AffirmativeAction=affirmative; NegativeAction=negative; }
     }
-    public class InformationMessage { public InformationMessage(string text) { } }
+    public struct Color { public Color(float r,float g,float b) { } }
+    public class InformationMessage { public string Text; public InformationMessage(string text, Color color=default) { Text=text; } }
     public static class InformationManager
     {
         public static object Popup;
+        public static List<string> Messages=new();
         public static void ShowTextInquiry(TextInquiryData data, bool pauseGameActiveState=false) => Popup=data;
         public static void ShowInquiry(InquiryData data, bool pauseGameActiveState=false) => Popup=data;
-        public static void DisplayMessage(InformationMessage message) { }
+        public static void DisplayMessage(InformationMessage message) => Messages.Add(message.Text);
     }
 }
 // Native localization is a boundary substitute; actual production reader and registered XML are linked/read.

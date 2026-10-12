@@ -6,10 +6,14 @@
     <Compile Include="../../../src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PlayerDirectActions.cs" Link="ShoutBehavior.PlayerDirectActions.cs" />
     <Compile Include="../../../src/modules/AF.Module.Economy/Host/GiveAssetTagCodec.cs" Link="GiveAssetTagCodec.cs" />
     <Compile Include="../../../src/modules/AF.Module.Economy/Host/TransferQuantitySpec.cs" Link="TransferQuantitySpec.cs" />
+    <Compile Include="../../../src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.PlayerDirectActions.cs" Link="WorldMapPartyCommandBehavior.PlayerDirectActions.cs" />
+    <Compile Include="../../../src/modules/AF.Module.WorldMap/Runtime/WorldMapOrderCoordination.cs" Link="WorldMapOrderCoordination.cs" />
+    <Compile Include="../../../src/modules/AF.Module.WorldMap/Runtime/WorldMapPendingRequestCoordinator.cs" Link="WorldMapPendingRequestCoordinator.cs" />
+    <Compile Include="../../../src/modules/AF.Module.WorldMap/Runtime/NpcHideoutClearPolicy.cs" Link="NpcHideoutClearPolicy.cs" />
   </ItemGroup>
   <Target Name="LinkNormalGoldOwner" BeforeTargets="BeforeBuild">
     <PropertyGroup><NormalGoldSource>$(IntermediateOutputPath)normal-gold/NormalGold.cs</NormalGoldSource></PropertyGroup>
     <Exec Command="&quot;$(DirectPythonExe)&quot; -B &quot;$(MSBuildProjectDirectory)/extract_normal_gold.py&quot; &quot;$(MSBuildProjectDirectory)/$(NormalGoldSource)&quot;" />
-    <ItemGroup><Compile Include="$(NormalGoldSource)" Link="NormalGold.cs" /></ItemGroup>
+    <ItemGroup><Compile Include="$(NormalGoldSource)" Link="NormalGold.cs" /><Compile Include="$(IntermediateOutputPath)normal-gold/WorldMapOwner.cs" Link="WorldMapOwnerProduction.cs" /></ItemGroup>
   </Target>
 </Project>

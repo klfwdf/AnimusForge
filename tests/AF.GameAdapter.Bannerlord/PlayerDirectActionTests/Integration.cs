@@ -94,7 +94,7 @@ internal static class Integration
         PresentationSession(); int finishes = 0;
         check(ShoutBehavior.OpenScenePresentationPlayerDirectActionsForExternal(() => finishes++), "persistent panel opens manual tags without API setup");
         var panelMenu = (MultiSelectionInquiryData)InformationManager.Popup;
-        check(panelMenu.Title.EndsWith("Headman") && panelMenu.Elements.Count == 14, "manual-tag menu bound to selected headman's nameplate, not audience");
+        check(panelMenu.Title.EndsWith("Headman") && panelMenu.Elements.Count == 20, "manual-tag menu bound to selected headman's nameplate, not audience");
         Select(PlayerDirectActionKind.Gold); money = (TextInquiryData)InformationManager.Popup;
         check(money.Text.Contains("[ACTION:GIVE_ASSET:GOLD:<amount>]"), "money parameter view displays the selected tag");
         money.AffirmativeAction("23"); money.AffirmativeAction("23");

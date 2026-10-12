@@ -45,7 +45,7 @@ var expected = new Dictionary<PlayerDirectActionKind,string> {
  [PlayerDirectActionKind.Family]="[A:H_J_P_P_L]", [PlayerDirectActionKind.Follow]="[ACTION:SCENE_FOLLOW_PLAYER]",
  [PlayerDirectActionKind.StopFollow]="[ACTION:SCENE_STOP_FOLLOW]", [PlayerDirectActionKind.LordsHall]="[ACTION:OPEN_LORDS_HALL]",
  [PlayerDirectActionKind.AcceptIssue]="[ACTION:ISSUE_ACCEPT_SELF]", [PlayerDirectActionKind.TurnInQuest]="[ACTION:QUEST_TURN_IN]" };
-Check(PlayerDirectActionProtocol.Actions.Count == 14, "all 14 actions");
+Check(PlayerDirectActionProtocol.Actions.Count == 20, "14 existing plus six world-map actions");
 foreach (var action in PlayerDirectActionProtocol.Actions)
     Check(PlayerDirectActionProtocol.TagTemplate(action.Key).StartsWith("[") && PlayerDirectActionProtocol.TagTemplate(action.Key).EndsWith("]"), "all choices expose their existing tag template: " + action.Key);
 foreach (var pair in expected) {
@@ -104,6 +104,9 @@ controller.Open("NPC",()=>true,_=>null,_=>throw new InvalidOperationException("c
 before=executions;Select(PlayerDirectActionKind.Item);
 Check(finished==finishedBefore+1 && executions==before,"candidate exception restores controls without retry or effects");
 Integration.Run(Check);
+WorldMapActions.Run(Check);
+WorldMapOwner.Run(Check);
+WorldMapIntegration.Run(Check);
 var root=new DirectoryInfo(AppContext.BaseDirectory);
 while(root!=null && !File.Exists(Path.Combine(root.FullName,"AnimusForge.csproj")))root=root.Parent;
 Check(root!=null,"repository root");
@@ -114,6 +117,8 @@ TaleWorlds.Localization.TextObject.English=ReadLanguage("afconv_ui_strings.xml")
 TaleWorlds.Localization.TextObject.Chinese=ReadLanguage("CNs/afconv_ui_strings-zh-CN.xml");
 foreach(var pair in TaleWorlds.Localization.TextObject.English.Where(x=>x.Key.StartsWith("AF_CONV_UI_Direct_"))) {
  Check(TaleWorlds.Localization.TextObject.Chinese.ContainsKey(pair.Key),"matching Chinese direct-action key "+pair.Key);
+ Check(System.Text.RegularExpressions.Regex.Matches(pair.Value,@"\{[A-Z_]+\}").Select(x=>x.Value).Order().SequenceEqual(
+    System.Text.RegularExpressions.Regex.Matches(TaleWorlds.Localization.TextObject.Chinese[pair.Key],@"\{[A-Z_]+\}").Select(x=>x.Value).Order()),"CN/EN placeholder parity "+pair.Key);
  foreach(var language in new[]{"English","简体中文"}) {
   TaleWorlds.Localization.TextObject.Language=language;
   Check(ConversationUiLocalization.Text(pair.Key,pair.Value)==(language=="English"?pair.Value:TaleWorlds.Localization.TextObject.Chinese[pair.Key]),"actual reader resolves "+language+" "+pair.Key);
@@ -122,11 +127,18 @@ foreach(var pair in TaleWorlds.Localization.TextObject.English.Where(x=>x.Key.St
 foreach(var language in new[]{"English","简体中文"}) {
  TaleWorlds.Localization.TextObject.Language=language;
  Open(); var localizedMenu=(MultiSelectionInquiryData)InformationManager.Popup;
- Check(localizedMenu.Title.EndsWith("NPC") && localizedMenu.Elements.Count==14,"localized action inquiry retains target and count");
+ Check(localizedMenu.Title.EndsWith("NPC") && localizedMenu.Elements.Count==20,"localized action inquiry retains target and count");
  Check(localizedMenu.Elements[0].Name==(language=="English"?"NPC gives me gold":"NPC 给我钱"),"actual controller uses current UI language");
+ Check(localizedMenu.Elements.Single(x=>Equals(x.Identifier,PlayerDirectActionKind.GoToSettlement)).Name==(language=="English"?"Go to a location":"前往指定地点"),"map actions use the same live language reader");
  localizedMenu.NegativeAction(null);
 }
 TaleWorlds.Localization.TextObject.Language="English";
+foreach(var (index,file) in new[]{("language_data.xml","afconv_ui_strings.xml"),("CNs/language_data.xml","CNs/afconv_ui_strings-zh-CN.xml")})
+ Check(System.Xml.Linq.XDocument.Load(Path.Combine(root.FullName,"content/foundation/AF.Foundation.Localization/ModuleData/Languages",index)).Descendants("LanguageFile").Any(x=>(string)x.Attribute("xml_path")==file),"actual language registration "+file);
+using(var map=System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName,"content/content-map.json"))))
+ foreach(var file in new[]{"afconv_ui_strings.xml","CNs/afconv_ui_strings-zh-CN.xml"})
+  Check(map.RootElement.GetProperty("entries").EnumerateArray().Any(x=>x.GetProperty("source").GetString()=="content/modules/AF.Module.Conversation/ModuleData/Languages/"+file
+    &&x.GetProperty("target").GetString()=="ModuleData/Languages/"+file),"unchanged standard resource map "+file);
 var xml=System.Xml.Linq.XDocument.Load(Path.Combine(root.FullName,"content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml"));
 var button=xml.Descendants("ButtonWidget").Single(x=>(string)x.Attribute("Command.Click")=="OpenDirectActions");
 Check((string)button.Attribute("MarginTop")=="30" && (string)button.Attribute("IsEnabled")=="@CanOpenDirectActions","native top-right binding");
