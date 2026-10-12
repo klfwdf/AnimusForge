@@ -193,6 +193,7 @@ internal async Task RunWorldBulletinRequestAsync(double windowEndHour, long gene
 		WorldBulletinText result = null;
 		try
 		{
+			PromptLanguageAudit.LogPair("world_bulletin", systemPrompt, userPrompt);
 			ApiCallResult api = await _port.CallApi(systemPrompt, userPrompt).ConfigureAwait(false);
 			if (api != null && api.Success)
 			{
