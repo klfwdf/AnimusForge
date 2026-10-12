@@ -79,7 +79,7 @@ internal sealed class SessionLayer
     internal readonly Mission Mission;
     private readonly ScreenBase _screen;
     private readonly GauntletLayer _layer;
-    private readonly SceneSessionVM _vm = new SceneSessionVM();
+    private readonly SceneSessionVM _vm;
     private readonly SceneStyler _styler = new SceneStyler();
     private Widget _root;
     private int _version = int.MinValue;
@@ -92,6 +92,31 @@ internal sealed class SessionLayer
         _screen = screen;
         Mission = Mission.Current;
         _layer = new GauntletLayer("AFSceneSession", 900, false);
+        _vm = new SceneSessionVM(OpenDirectActions);
+    }
+
+    private void OpenDirectActions()
+    {
+        if (_closed || !_vm.CanOpenDirectActions || !ReferenceEquals(Mission, Mission.Current)
+            || !ReferenceEquals(ScreenManager.TopScreen, _screen) || InformationManager.IsAnyInquiryActive()) return;
+        // Native inquiries are below this layer. Release focus before opening, not one tick later.
+        ApplyInput(false);
+        _vm.SetHidden(true);
+        void Restore()
+        {
+            if (!_closed && ReferenceEquals(Mission, Mission.Current)) _vm.SetHidden(false);
+        }
+        try
+        {
+            if (ShoutBehavior.OpenScenePresentationPlayerDirectActionsForExternal(Restore)) return;
+            Restore();
+            InformationManager.DisplayMessage(new InformationMessage(DialogueUiLocalization.Text("AFD_UI_ManualTagsUnavailable", "Manual tags could not be opened. The selected target or scene session has expired, or an interaction is still running.")));
+        }
+        catch (Exception ex)
+        {
+            Restore();
+            DialogueUiRuntime.Log("Manual tag menu failed to open: " + ex.Message);
+        }
     }
 
     internal static SessionLayer TryOpen(ShoutPanelStyle style)

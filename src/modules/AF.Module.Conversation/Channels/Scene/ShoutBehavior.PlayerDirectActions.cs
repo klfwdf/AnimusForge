@@ -36,7 +36,26 @@ public partial class ShoutBehavior
             && OpenPlayerDirectActions(character.HeroObject, character, agent.Index, npc.Name, false, onFinished);
     }
 
-    private bool OpenPlayerDirectActions(Hero hero, CharacterObject character, int index, string name, bool native, Action onFinished)
+    // The UI owns focus; this seam captures only its selected nameplate, never the framed crowd.
+    public static bool OpenScenePresentationPlayerDirectActionsForExternal(Action onFinished)
+    {
+        var owner = CurrentInstance;
+        if (owner == null || !IsBannerlordMainThreadForNativeActions() || owner.IsPresentationSubmitBlocked()) return false;
+        var presentation = owner.Presentation;
+        var member = presentation.IsPresentationSessionLive()
+            ? presentation.FindPresentationMember(presentation._presentationAddresseeIndex) : null;
+        if (member?.Character == null || !presentation.IsPresentationAudience(member)
+            || !ReferenceEquals(member.Agent?.Character, member.Character)) return false;
+        bool CurrentPresentation() => presentation.IsPresentationSessionLive()
+            && presentation._presentationAddresseeIndex == member.AgentIndex
+            && ReferenceEquals(presentation.FindPresentationMember(member.AgentIndex), member)
+            && presentation.IsPresentationAudience(member) && !owner.IsPresentationSubmitBlocked();
+        return owner.OpenPlayerDirectActions(member.Character.HeroObject, member.Character, member.AgentIndex,
+            member.Name, false, onFinished, CurrentPresentation);
+    }
+
+    private bool OpenPlayerDirectActions(Hero hero, CharacterObject character, int index, string name, bool native, Action onFinished,
+        Func<bool> isEntryCurrent = null)
     {
         var mission = Mission.Current;
         var campaign = Campaign.Current;
@@ -45,14 +64,14 @@ public partial class ShoutBehavior
         int token = manager?.ActiveToken ?? int.MinValue, epoch = _sceneConversationEpoch;
         long generation = SaveRuntimeGuard.CaptureGeneration();
         var agent = index >= 0 ? mission?.Agents?.FirstOrDefault(a => a != null && a.Index == index) : null;
-        if (campaign == null || (index >= 0 && agent == null)) return false;
+        if (campaign == null || (index >= 0 && agent == null) || isEntryCurrent?.Invoke() == false) return false;
         bool Current()
         {
             if (!IsBannerlordMainThreadForNativeActions() || !ReferenceEquals(CurrentInstance, this)
                 || !ReferenceEquals(campaign, Campaign.Current) || !ReferenceEquals(mission, Mission.Current)
                 || mission?.IsMissionEnding == true || !ReferenceEquals(settlement, Settlement.CurrentSettlement)
                 || !SaveRuntimeGuard.IsCurrentGeneration(generation) || epoch != _sceneConversationEpoch
-                || !ReferenceEquals(manager, Campaign.Current?.ConversationManager)) return false;
+                || !ReferenceEquals(manager, Campaign.Current?.ConversationManager) || isEntryCurrent?.Invoke() == false) return false;
             if (native)
             {
                 if (manager?.IsConversationInProgress != true || manager.ActiveToken != token
@@ -118,7 +137,11 @@ public partial class ShoutBehavior
                             { InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Direct_057", "The current scene action could not be submitted."))); return; }
                             CloseNativeConversationForSceneMechanism("player_direct_action");
                         }
-                        else _sceneMovement.TryExecuteDeferredSceneFollowTagsDirectly(npc, raw);
+                        else
+                        {
+                            DeactivateMultiSceneMovementSuppression();
+                            _sceneMovement.TryExecuteDeferredSceneFollowTagsDirectly(npc, raw);
+                        }
                     }
                     else _nativeGameEffects.ApplyNativeConversationActionTags(hero, character, ref raw, index,
                         expectedConversationManager: manager, expectedConversationToken: native ? token : int.MinValue,

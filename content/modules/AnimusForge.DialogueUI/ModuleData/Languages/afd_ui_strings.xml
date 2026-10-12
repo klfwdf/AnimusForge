@@ -182,6 +182,8 @@
     <string id="AFD_UI_Trade_GiveListExpired" text="The give list is no longer valid. Reopen it." />
     <string id="AFD_UI_Trade_ResourcesUpdated" text="The resource list has been updated. Reopen it." />
     <string id="AFD_UI_Trade_SelectionExpired" text="The resource or amount is no longer valid. Select again." />
+    <string id="AFD_UI_ManualTags" text="Trigger tags manually" />
+    <string id="AFD_UI_ManualTagsUnavailable" text="Manual tags could not be opened. The selected target or scene session has expired, or an interaction is still running." />
     <string id="AFD_SubModule_Name" text="AnimusForge - Parchment Dialogue UI" />
   </strings>
 </base>

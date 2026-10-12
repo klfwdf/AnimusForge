@@ -405,7 +405,7 @@ public static class NativeUiAdapter
             _auxiliary = root.FindChild("AFDialogueAuxiliaryPanel", true);
             Wrappers.TryGetValue(original, out _wrapper);
             InputEditor = root.FindChild("AFDialogueInputEditor", true);
-            foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AnimusForgeConversationIllustrateButton", "AFDialogueSwitch", "AFDialogueLeave" })
+            foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AFDialogueDirectActions", "AnimusForgeConversationIllustrateButton", "AFDialogueSwitch", "AFDialogueLeave" })
             {
                 var button = root.FindChild(id, true);
                 if (button != null)

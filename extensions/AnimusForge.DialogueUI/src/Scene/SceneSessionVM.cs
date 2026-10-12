@@ -21,6 +21,9 @@ public sealed class SceneSessionVM : ViewModel
     private int _historySignature;
     private Action _pending;
     private bool _released;
+    private readonly Action _openDirectActions;
+    [DataSourceProperty] public string DirectActionsButtonText => DialogueUiLocalization.Text("AFD_UI_ManualTags", "Trigger tags manually");
+    [DataSourceProperty] public bool CanOpenDirectActions => !_released && !_isBusy && !Trade.IsOpen;
     private int _illustrationVersion = -1;
     [DataSourceProperty] public bool IsIllustrationVisible => ShoutBehavior.IsSceneIllustrationAvailableForExternal;
     [DataSourceProperty] public bool CanIllustrate => IsIllustrationVisible && !ShoutBehavior.IsSceneIllustrationBusyForExternal;
@@ -89,7 +92,7 @@ public sealed class SceneSessionVM : ViewModel
     [DataSourceProperty] public bool HasStagedTrade => !string.IsNullOrEmpty(_stagedTrade);
     [DataSourceProperty] public string StagedTradeText => HasStagedTrade ? DialogueUiLocalization.Text("AFD_UI_Scene_StagedTrade", "Staged · {TRADE} (delivered with the next line)", "TRADE", _stagedTrade) : "";
 
-    public SceneSessionVM() { Trade = new SceneTradeVM(SetStatus, OnTradeVisibilityChanged); }
+    public SceneSessionVM(Action openDirectActions = null) { _openDirectActions = openDirectActions; Trade = new SceneTradeVM(SetStatus, OnTradeVisibilityChanged); }
 
     // Rows are styled after list changes in either the session or its give panel.
     internal int StyleVersion => LayoutVersion * 4099 + Trade.LayoutVersion;
@@ -115,6 +118,10 @@ public sealed class SceneSessionVM : ViewModel
     public void ExecuteSubmit() => Queue(Submit);
     public void ExecuteToggleHistory() => Queue(() => { _isHistoryOpen = !_isHistoryOpen; OnPropertyChanged(nameof(IsHistoryOpen)); RefreshHistory(force: true); });
     public void ExecuteGift() => Queue(() => OpenTrade("give"));
+    public void ExecuteDirectActions()
+    {
+        Queue(() => { if (CanOpenDirectActions) _openDirectActions?.Invoke(); });
+    }
     public void ExecuteCancelStagedTrade() => Queue(() => { ShoutBehavior.CancelScenePresentationTradeForExternal(); SetStatus(DialogueUiLocalization.Text("AFD_UI_Scene_TradeCancelled", "The staged gift was cancelled.")); });
     public void ExecuteToggleDocket() => Queue(() =>
     {
@@ -132,6 +139,7 @@ public sealed class SceneSessionVM : ViewModel
 
     internal void OnTradeVisibilityChanged()
     {
+        OnPropertyChanged(nameof(CanOpenDirectActions));
         OnPropertyChanged(nameof(IsTradeOpen));
         OnPropertyChanged(nameof(IsChromeVisible));
     }
@@ -194,6 +202,7 @@ public sealed class SceneSessionVM : ViewModel
         }
         if (_isBusy == busy) return;
         _isBusy = busy;
+        OnPropertyChanged(nameof(CanOpenDirectActions));
         OnPropertyChanged(nameof(IsBusy));
         OnPropertyChanged(nameof(CanSend));
         OnPropertyChanged(nameof(SendText));

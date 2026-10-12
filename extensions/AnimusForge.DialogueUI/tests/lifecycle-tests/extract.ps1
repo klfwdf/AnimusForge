@@ -22,5 +22,7 @@ $adapter = Join-Path $module 'src/Native/NativeUiAdapter.cs'
 $methods = @('public static bool TryWrap(', 'private static bool NpcOpeningPrefix(', 'public static void Release(', 'private static void ReleaseOverlay(', 'private static void OverlayClosed(', 'private static void OverlayRestored(')
 $native = ($methods | ForEach-Object { Extract $adapter $_ }) -join "`n"
 $router = Extract (Join-Path $module 'src/PresentationRouter.cs') 'private static void ReleaseOwned('
-$generated = "using System; using TaleWorlds.Library; using TaleWorlds.CampaignSystem; using TaleWorlds.MountAndBlade; namespace AnimusForge.DialogueUI.Native { public static partial class NativeUiAdapter { $native } } namespace AnimusForge.DialogueUI { internal static partial class PresentationRouter { $router } }"
+$manualLayer = Extract (Join-Path $module 'src/Scene/SceneSessionPanel.cs') 'private void OpenDirectActions('
+$manualVm = (@('public bool CanOpenDirectActions', 'public string DirectActionsButtonText', 'public void ExecuteDirectActions(') | ForEach-Object { Extract (Join-Path $module 'src/Scene/SceneSessionVM.cs') $_ }) -join "`n"
+$generated = "using System; using TaleWorlds.Library; using TaleWorlds.CampaignSystem; using TaleWorlds.MountAndBlade; using TaleWorlds.ScreenSystem; namespace AnimusForge.DialogueUI.Native { public static partial class NativeUiAdapter { $native } } namespace AnimusForge.DialogueUI { internal static partial class PresentationRouter { $router } } namespace AnimusForge.DialogueUI.Scene { internal partial class SessionLayer { $manualLayer } public partial class SceneSessionVM { $manualVm } }"
 [System.IO.File]::WriteAllText([System.IO.Path]::GetFullPath($Output), $generated)

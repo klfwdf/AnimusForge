@@ -3,6 +3,40 @@ using TaleWorlds.Library;
 
 int checks=0;
 void Check(bool value, string name) { checks++; if (!value) throw new Exception(name); }
+var repo = new DirectoryInfo(AppContext.BaseDirectory);
+while (repo != null && !File.Exists(Path.Combine(repo.FullName, "AnimusForge.csproj"))) repo = repo.Parent;
+Check(repo != null, "repository root for actual displayed UI");
+foreach (var entry in new[] { ("AFSceneSessionScroll.xml", "ExecuteDirectActions"), ("AFSceneSessionFolio.xml", "ExecuteDirectActions"), ("AFDialogueNativeOverlay.xml", "OpenDirectActions") })
+{
+    var prefab = System.Xml.Linq.XDocument.Load(Path.Combine(repo.FullName, "extensions/AnimusForge.DialogueUI/GUI/Prefabs", entry.Item1));
+    var buttons = prefab.Descendants("ButtonWidget").Where(x => (string)x.Attribute("Command.Click") == entry.Item2).ToList();
+    Check(buttons.Count == 1, "actual displayed panel has exactly one manual-tag button: " + entry.Item1);
+    var manual = buttons.Single();
+    Check((string)manual.Attribute("IsEnabled") == "@CanOpenDirectActions", "manual-tag button enable binding: " + entry.Item1);
+    Check(manual.Attribute("IsVisible") == null || (string)manual.Attribute("IsVisible") == "@IsToolbarVisible", "button not gated by AI/Hero/developer/illustration: " + entry.Item1);
+    Check((string)manual.Attribute("DoNotPassEventsToChildren") == "true" && (string)manual.Descendants("TextWidget").Single().Attribute("DoNotAcceptEvents") == "true", "manual-tag button owns clicks: " + entry.Item1);
+    string id = (string)manual.Attribute("Id");
+    double N(System.Xml.Linq.XElement element, string attr) => double.TryParse((string)element.Attribute(attr), out var value) ? value : 0;
+    foreach (var sibling in manual.Parent.Elements().Where(x => x != manual && (x.Name.LocalName is "ButtonWidget" or "TextWidget" or "ListPanel")
+        && (string)x.Attribute("HorizontalAlignment") == "Left" && (string)x.Attribute("VerticalAlignment") == "Top"))
+    {
+        double x=N(manual,"MarginLeft"), y=N(manual,"MarginTop"), w=N(manual,"SuggestedWidth"), h=N(manual,"SuggestedHeight");
+        double sx=N(sibling,"MarginLeft"), sy=N(sibling,"MarginTop"), sw=N(sibling,"SuggestedWidth"), sh=N(sibling,"SuggestedHeight");
+        Check(Math.Max(x,sx) >= Math.Min(x+w,sx+sw) || Math.Max(y,sy) >= Math.Min(y+h,sy+sh), "manual button does not overlap sibling control/text: " + entry.Item1 + " " + (string)sibling.Attribute("Id") + (string)sibling.Attribute("Text"));
+    }
+    if (entry.Item1 == "AFSceneSessionFolio.xml")
+    {
+        var status = manual.Parent.Elements("TextWidget").Single(x => (string)x.Attribute("Text") == "@StatusText");
+        var hint = manual.Parent.Elements("TextWidget").Single(x => (string)x.Attribute("Text") == "@InputHintText");
+        Check(Math.Max(N(status,"MarginLeft"),N(hint,"MarginLeft")) >= Math.Min(N(status,"MarginLeft")+N(status,"SuggestedWidth"),N(hint,"MarginLeft")+N(hint,"SuggestedWidth"))
+            || Math.Max(N(status,"MarginTop"),N(hint,"MarginTop")) >= Math.Min(N(status,"MarginTop")+N(status,"SuggestedHeight"),N(hint,"MarginTop")+N(hint,"SuggestedHeight")), "folio status remains separate from the input hint");
+    }
+    if (entry.Item2 == "OpenDirectActions")
+    {
+        foreach (string file in new[] { "Native/NativeUiAdapter.cs", "PresentationRouter.cs" })
+            Check(File.ReadAllText(Path.Combine(repo.FullName, "extensions/AnimusForge.DialogueUI/src", file)).Contains("\"" + id + "\""), "native manual button participates in hit protection and styling: " + file);
+    }
+}
 var expected = new Dictionary<PlayerDirectActionKind,string> {
  [PlayerDirectActionKind.Gold]="[ACTION:GIVE_ASSET:GOLD:23]", [PlayerDirectActionKind.Item]="[ACTION:GIVE_ASSET:grain:23]",
  [PlayerDirectActionKind.FixedAsset]="[ACTION:GIVE_ASSET:town_1:1]", [PlayerDirectActionKind.Troops]="[ATT:2:23]",
@@ -12,6 +46,8 @@ var expected = new Dictionary<PlayerDirectActionKind,string> {
  [PlayerDirectActionKind.StopFollow]="[ACTION:SCENE_STOP_FOLLOW]", [PlayerDirectActionKind.LordsHall]="[ACTION:OPEN_LORDS_HALL]",
  [PlayerDirectActionKind.AcceptIssue]="[ACTION:ISSUE_ACCEPT_SELF]", [PlayerDirectActionKind.TurnInQuest]="[ACTION:QUEST_TURN_IN]" };
 Check(PlayerDirectActionProtocol.Actions.Count == 14, "all 14 actions");
+foreach (var action in PlayerDirectActionProtocol.Actions)
+    Check(PlayerDirectActionProtocol.TagTemplate(action.Key).StartsWith("[") && PlayerDirectActionProtocol.TagTemplate(action.Key).EndsWith("]"), "all choices expose their existing tag template: " + action.Key);
 foreach (var pair in expected) {
  string token=pair.Key switch { PlayerDirectActionKind.Item=>"grain", PlayerDirectActionKind.FixedAsset=>"town_1",
   PlayerDirectActionKind.Troops or PlayerDirectActionKind.Prisoners=>"2", PlayerDirectActionKind.ResolveDebt=>"debt_1", _=>null };

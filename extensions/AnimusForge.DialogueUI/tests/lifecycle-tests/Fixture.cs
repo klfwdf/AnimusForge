@@ -1,8 +1,54 @@
 using System.ComponentModel;
 using System.Reflection;
 
+// Only localization/engine boundaries are doubles; production readers, VM and commands are compiled.
+namespace TaleWorlds.Localization
+{
+    public class TextObject
+    {
+        public static Dictionary<string, string> Catalog = new();
+        private readonly string _text;
+        private readonly Dictionary<string, object> _variables = new();
+        public TextObject(string text) { _text = text; }
+        public void SetTextVariable(string name, object value) => _variables[name] = value;
+        public override string ToString()
+        {
+            string text = _text;
+            if (text.StartsWith("{=")) { int end = text.IndexOf('}'); text = Catalog.TryGetValue(text.Substring(2, end - 2), out var value) ? value : text.Substring(end + 1); }
+            foreach (var pair in _variables) text = text.Replace("{" + pair.Key + "}", pair.Value?.ToString() ?? "");
+            return text;
+        }
+    }
+}
+namespace TaleWorlds.ScreenSystem { public static class ScreenManager { public static object TopScreen = new(); } }
+namespace AnimusForge.DialogueUI.Scene
+{
+    public partial class SceneSessionVM
+    {
+        private readonly Action _openDirectActions;
+        internal bool _released, _isBusy, Hidden;
+        private Action _pending;
+        internal FakeTrade Trade = new();
+        internal SceneSessionVM(Action open) { _openDirectActions = open; }
+        private void Queue(Action action) => _pending = action;
+        internal void Flush() { var action = _pending; _pending = null; action?.Invoke(); }
+        internal void SetHidden(bool hidden) => Hidden = hidden;
+    }
+    internal sealed class FakeTrade { internal bool IsOpen; }
+    internal partial class SessionLayer
+    {
+        private readonly object _screen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen;
+        internal readonly TaleWorlds.MountAndBlade.Mission Mission = TaleWorlds.MountAndBlade.Mission.Current;
+        internal readonly SceneSessionVM _vm;
+        internal bool _closed, Interactive = true;
+        internal SessionLayer() { _vm = new SceneSessionVM(OpenDirectActions); }
+        private void ApplyInput(bool interactive) => Interactive = interactive;
+    }
+}
 namespace TaleWorlds.Library
 {
+    public static class InformationManager { public static bool Inquiry; public static bool IsAnyInquiryActive() => Inquiry; public static void DisplayMessage(InformationMessage message) { } }
+    public class InformationMessage { public InformationMessage(string text) { } }
     public interface IViewModel { }
     [AttributeUsage(AttributeTargets.Property)] public class DataSourcePropertyAttribute : Attribute { }
     public class PropertyChangedWithValueEventArgs : EventArgs { public string PropertyName; }
@@ -49,9 +95,12 @@ namespace HarmonyLib
 }
 namespace AnimusForge
 {
+    internal static class LlmRetryPrompt { internal static string ProjectKnownErrorForUi(string value) => value; }
     public class NpcDataPacket { public int AgentIndex; }
     public class ShoutBehavior
     {
+        public static Func<Action, bool> ManualMenu;
+        public static bool OpenScenePresentationPlayerDirectActionsForExternal(Action onFinished) => ManualMenu(onFinished);
         internal readonly SceneShoutInputController _j17SceneShoutInputController = new();
         internal readonly SceneTradeController _j17SceneTradeController = new();
         public static int SceneIllustrationVersionForExternal => 0;

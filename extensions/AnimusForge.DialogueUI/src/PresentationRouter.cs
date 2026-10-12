@@ -181,7 +181,7 @@ namespace AnimusForge.DialogueUI
                     NativeUiAdapter.OnMovieLoaded(movieName, identifier.Movie.RootWidget, identifier.DataSource);
                     if (movieName == "AnimusForgeNativeConversationOverlay")
                     {
-                        foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AnimusForgeConversationIllustrateButton", "AFDialogueSwitch", "AFDialogueLeave" })
+                        foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AFDialogueDirectActions", "AnimusForgeConversationIllustrateButton", "AFDialogueSwitch", "AFDialogueLeave" })
                         {
                             try
                             {

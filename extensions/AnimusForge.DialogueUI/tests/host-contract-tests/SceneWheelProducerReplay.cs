@@ -42,7 +42,11 @@ internal static class SceneWheelProducerReplay
     private static void PrepareTarget(Harmony harmony, MethodInfo method, object packet)
     {
         int index = Values.Count; Values.Add(packet);
-        var argument = method.GetParameters().Single().ParameterType;
+        var parameters = method.GetParameters();
+        Check(parameters.Length == 2 && parameters[0].ParameterType.GetElementType() == packet.GetType()
+            && parameters[1].ParameterType == typeof(bool) && parameters[1].IsOptional
+            && Equals(parameters[1].DefaultValue, true), "current target preparation keeps the chat setup guard enabled by default");
+        var argument = parameters[0].ParameterType;
         var prefix = new DynamicMethod("WheelPrepareTarget", typeof(bool), new[] { typeof(bool).MakeByRefType(), argument }, typeof(SceneWheelProducerReplay), true);
         prefix.DefineParameter(1, ParameterAttributes.None, "__result"); prefix.DefineParameter(2, ParameterAttributes.None, "__0");
         ILGenerator il = prefix.GetILGenerator();

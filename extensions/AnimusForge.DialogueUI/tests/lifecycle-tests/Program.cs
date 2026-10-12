@@ -14,13 +14,70 @@ Campaign.Current = new Campaign();
 Campaign.Current.ConversationManager.IsConversationInProgress = true;
 Campaign.Current.ConversationManager.OneToOneConversationCharacter = new CharacterObject { IsHero = true };
 Mission.Current = new Mission();
-int switches = 0, submissions = 0;
+int switches = 0, submissions = 0, manualTags = 0;
 string submitted = null;
 AnimusForgeNativeConversationOverlayVM host = null;
-host = new(s => { submissions++; submitted = s; }, () => { switches++; host.SetInputVisible(!host.IsCustomAnswerVisible); }, null, null, null, null);
+host = new(s => { submissions++; submitted = s; }, () => { switches++; host.SetInputVisible(!host.IsCustomAnswerVisible); }, null, null, null, null, onDirectActions: () => manualTags++);
 Check(NativeUiAdapter.TryWrap(host, out var wrapper), "first native wrapping succeeds");
 var vm = (NativeOverlayVM)wrapper;
 Check(switches == 1 && vm.IsCustomAnswerVisible, "captured default applied once");
+var manualMethod = typeof(NativeOverlayVM).GetMethod("OpenDirectActions");
+var manualEnabled = typeof(NativeOverlayVM).GetProperty("CanOpenDirectActions");
+Check(manualMethod != null && manualEnabled != null, "displayed native wrapper exposes manual-tag command and binding");
+manualMethod.Invoke(vm, null);
+Check(manualTags == 1 && submissions == 0 && (bool)manualEnabled.GetValue(vm), "native manual button forwards only to existing tag menu, not chat");
+host.CanOpenDirectActions = false; manualMethod.Invoke(vm, null);
+Check(manualTags == 1 && !(bool)manualEnabled.GetValue(vm), "native wrapper honors busy host manual guard");
+host.CanOpenDirectActions = true;
+int sceneOpens = 0;
+var sceneLayer = new AnimusForge.DialogueUI.Scene.SessionLayer();
+Action finishScene = null;
+ShoutBehavior.ManualMenu = finish => {
+    sceneOpens++; finishScene = finish;
+    Check(!sceneLayer.Interactive && sceneLayer._vm.Hidden, "scene layer releases focus and hides before native tag inquiry opens");
+    return true;
+};
+sceneLayer._vm.ExecuteDirectActions(); sceneLayer._vm.ExecuteDirectActions();
+Check(sceneOpens == 0, "scene manual click queues work, never reads game state in click callback");
+sceneLayer._vm.Flush();
+Check(sceneOpens == 1, "double click before tick coalesces to one manual menu");
+finishScene(); Check(!sceneLayer._vm.Hidden && !sceneLayer.Interactive, "cancel/finish reveals panel but leaves focus released until next regular tick");
+sceneLayer._vm._isBusy = true; sceneLayer._vm.ExecuteDirectActions(); sceneLayer._vm.Flush();
+Check(sceneOpens == 1 && !sceneLayer._vm.CanOpenDirectActions, "pending reply blocks scene manual command");
+sceneLayer._vm._isBusy = false; sceneLayer._vm.Trade.IsOpen = true;
+sceneLayer._vm.ExecuteDirectActions(); sceneLayer._vm.Flush();
+Check(sceneOpens == 1, "trade editor does not race manual command");
+sceneLayer._vm.Trade.IsOpen = false; InformationManager.Inquiry = true;
+sceneLayer._vm.ExecuteDirectActions(); sceneLayer._vm.Flush();
+Check(sceneOpens == 1, "active inquiry cannot be replaced by repeated scene click");
+InformationManager.Inquiry = false;
+ShoutBehavior.ManualMenu = _ => false;
+sceneLayer._vm.ExecuteDirectActions(); sceneLayer._vm.Flush();
+Check(!sceneLayer._vm.Hidden, "failed admission restores scene chrome");
+ShoutBehavior.ManualMenu = _ => throw new InvalidOperationException("test menu failure");
+sceneLayer._vm.ExecuteDirectActions(); sceneLayer._vm.Flush();
+Check(!sceneLayer._vm.Hidden && DialogueUiRuntime.Logs.Any(x => x.Contains("test menu failure")), "opening exception restores scene chrome without retry");
+ShoutBehavior.ManualMenu = finish => { sceneOpens++; finishScene = finish; return true; };
+sceneLayer._vm.ExecuteDirectActions(); sceneLayer._vm.Flush();
+Mission oldMission = Mission.Current; Mission.Current = new(); finishScene();
+Check(sceneLayer._vm.Hidden, "stale finish does not restore another mission's controls");
+int opened = sceneOpens; sceneLayer._vm.ExecuteDirectActions(); sceneLayer._vm.Flush();
+Check(sceneOpens == opened, "old UI layer rejects replacement mission");
+Mission.Current = oldMission; sceneLayer._vm._released = true;
+sceneLayer._vm.ExecuteDirectActions(); sceneLayer._vm.Flush();
+Check(sceneOpens == opened, "disposed scene VM rejects delayed click");
+foreach (string language in new[] { "English", "Chinese" })
+{
+    string languageDir = language == "English" ? "" : "CNs/";
+    foreach (var catalog in new[] { ("AF.Module.Conversation", "afconv_ui_strings"), ("AnimusForge.DialogueUI", "afd_ui_strings") })
+    {
+        string name = languageDir + catalog.Item2 + (language == "English" ? ".xml" : "-zh-CN.xml");
+        foreach (var row in XDocument.Load(Path.Combine(args[0], "content/modules", catalog.Item1, "ModuleData/Languages", name)).Descendants("string"))
+            TaleWorlds.Localization.TextObject.Catalog[(string)row.Attribute("id")] = (string)row.Attribute("text");
+    }
+    string label = language == "English" ? "Trigger tags manually" : "手动触发标签";
+    Check(vm.DirectActionsButtonText == label && sceneLayer._vm.DirectActionsButtonText == label, "actual native/scene readers resolve manual button in " + language);
+}
 int shieldChanges = 0;
 int modeShieldChanges = 0;
 vm.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(NativeOverlayVM.IsReplyPending)) shieldChanges++; };
