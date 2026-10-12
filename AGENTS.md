@@ -2,7 +2,7 @@
 
 ## AF skill coordination
 
-- For every new or changed AF runtime text/content, read `.agents/skills/af-bilingual-localization/SKILL.md` and complete CN/EN resources plus actual consumers within the same task; routine development covers the affected chain rather than reopening a whole-repository migration.
+- For every new or changed AF runtime text/content, the first implementation step must be reading `.agents/skills/af-bilingual-localization/SKILL.md`; do not modify the affected product path before reading it. Complete CN/EN resources plus actual consumers within the same task; routine development covers the affected chain rather than reopening a whole-repository migration.
 - For verified AF development/maintenance, read the single repository copy at `.claude/skills/animusforge-maintainer/SKILL.md`; select its workflow for the actual task, not a permanent whole-project refactor agenda.
 - The selected maintenance source is `D:/下载/af-skill/af-skill` (version 0.2.0). This repository reads its reviewed local copy, not that external path at runtime. Merge shared-file updates deliberately; preserve the local framework coordination adaptation and other authors' changes. Do not install or overwrite other copies implicitly.
 - For AF core/framework/internal-module/public-API work, also read `.agents/skills/af-core-framework/SKILL.md`. Reconcile them through `.claude/skills/animusforge-maintainer/references/framework-coordination.md`: same-DLL internal ports and versioned external public API remain separate; logical Foundation/Module/Bridge names do not mandate separate DLLs or expand the user's task scope.
@@ -26,8 +26,12 @@
 
 ## 长期双语化维护（后续内容必须双语）
 
+- 后续所有涉及 AF 运行内容的任务都必须先读 `.agents/skills/af-bilingual-localization/SKILL.md`；未读取该 skill 不得开始相关源码、资源、Prompt、事实投影、世界书或 UI 文案修改。
 - 后续新增或修改的玩家可见文案、MCM/终端说明、提示词、模型上下文、事实投影、默认资产和世界书，必须同步维护中文与英文并接通真实消费者；双语属于同一功能的完成条件，不留单语实现等待后续补译。
 - UI 随游戏界面语言，Prompt/世界书随 CN/EN 内容包；两包都保留双语 UI。新内部标识与技术诊断用英文，既有存档/协议/AFEF 身份、动态名字与用户内容保留原值，在显示或请求边界投影。
+- 本地产品范围只维护 CN/EN 两种内容包；不在本任务范围内增加第三语言资源、运行时第三语言切换或第三语言打包矩阵。新增 Prompt/事实模板必须保持稳定 key、变量、协议、ID 和 CN/EN 成对资源。
+- 事实与历史优先按稳定 `FactKind`/ID/参数在请求边界渲染 CN/EN；已知旧字符串可在读取边界解析后投影，未知动态旧文本、玩家输入、专名和引用原文保留原值，不做全局替换或静默翻译。
+- 最终 messages 的固定 system Prompt 应进行 CN/EN 语言审计；运行时审计只记录未投影固定文本和动态原文来源，不因玩家中文输入或旧历史阻断请求。发布/Stage 门禁才可阻止固定资源漏译。
 - 资源与真实 reader、消费者、内容映射/嵌入逻辑名、语言注册和包选择必须一起完成；核对 prefab 的 DataSource 文案属性与绑定。语义、实际接线、词法扫描和实机分别验收，不能用“无汉字/编译通过”替代。
 - 所有新增自然语言生成链路，在最终请求的 system 中明确使用内容包语言，包括对话、信件、周报/公报、人物背景、记忆、政策、命名和插画文字；约束在用户写作要求之后收口并保留协议、事实、JSON字段、数字和专名。覆盖配置、三渠道、重试及真实 messages 都须验证；只翻译提示词不等于模型会按包语言输出。
 - AF 运行数据按用途写入当前已安装模组：`CustomPrompts/` 用户提示词、`Logs/` 日志、`Configs/` 设置、`PlayerExports/` 导入导出、`Cache/` 缓存和临时音频、`Recovery/` 恢复资料；复用 `AnimusForgeDataPaths` 的身份/路径/ancestor reparse 校验。不得自动转写 AppData、Documents 或 TEMP；独立编辑器显式选择合法模块；旧 AF AppData/Documents 数据不读取、不迁移、不删除，已经存在模组内的数据保持。MCM 路由只覆盖 AF 自有 ID。
