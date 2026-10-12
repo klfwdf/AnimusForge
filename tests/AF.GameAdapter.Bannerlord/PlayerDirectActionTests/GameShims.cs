@@ -74,9 +74,10 @@ namespace AnimusForge
     public static class VanillaIssueOfferBridge { public static string GetPlayerDirectIssueUnavailableReason(Hero h,bool turnIn)=>h!=null?null:"hero required"; }
     public class FakeNativeEffects
     {
+        public Hero LastHero;
         public List<string> Tags=new(); public void ApplyNativeConversationActionTags(Hero h,CharacterObject c,ref string raw,int i,
             ConversationManager expectedConversationManager=null,int expectedConversationToken=int.MinValue,string actionChainName=null,string npcReplyTextOverride=null)
-        { if(npcReplyTextOverride!="")throw new Exception("fake NPC speech"); Tags.Add(raw); }
+        { if(npcReplyTextOverride!="")throw new Exception("fake NPC speech"); LastHero=h; Tags.Add(raw); }
     }
     public class FakeMovement { public int Calls; public bool TryExecuteDeferredSceneFollowTagsDirectly(ShoutBehavior.NpcDataPacket npc,string raw) {Calls++;return true;} }
     public partial class ShoutBehavior
@@ -86,6 +87,10 @@ namespace AnimusForge
         private int _sceneConversationEpoch;
         internal readonly FakeNativeEffects _nativeGameEffects=new(); internal readonly FakeMovement _sceneMovement=new();
         public int QueueCalls, CloseCalls;
+        internal readonly FakePresentation Presentation = new();
+        private bool IsPresentationSubmitBlocked() => Busy;
+        public int MovementReleases;
+        private void DeactivateMultiSceneMovementSuppression() => MovementReleases++;
         public void NextEpoch()=>_sceneConversationEpoch++;
         public class NpcDataPacket { public int AgentIndex; public string Name; }
         private static bool IsBannerlordMainThreadForNativeActions()=>MainThread;
@@ -98,5 +103,16 @@ namespace AnimusForge
         private static NpcDataPacket BuildNativeConversationNpcData(Hero h,CharacterObject c)=>new(){Name="NPC"};
         private bool TryQueueNativeSceneMechanismActionAfterConversationExit(NpcDataPacket npc,object a,object b,object c,ref string raw) {QueueCalls++;return true;}
         private static void CloseNativeConversationForSceneMechanism(string reason) {CurrentInstance.CloseCalls++;Campaign.Current.ConversationManager.IsConversationInProgress=false;}
+    }
+    // Engine membership boundary only. Admission, selected-target capture and execution are real source.
+    internal sealed class FakePresentation
+    {
+        internal sealed class Member { internal Agent Agent; internal CharacterObject Character; internal int AgentIndex; internal string Name; internal bool InRange = true; }
+        internal bool Active;
+        internal int _presentationAddresseeIndex = -1;
+        internal readonly List<Member> Members = new();
+        internal bool IsPresentationSessionLive() => Active;
+        internal Member FindPresentationMember(int index) => Members.FirstOrDefault(x => x.AgentIndex == index);
+        internal bool IsPresentationAudience(Member member) => member != null && member.InRange && member.Agent.IsActive();
     }
 }

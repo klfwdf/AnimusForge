@@ -389,10 +389,10 @@
     <string id="AF_CONV_UI_Direct_012" text="进入领主大厅" />
     <string id="AF_CONV_UI_Direct_013" text="接取任务" />
     <string id="AF_CONV_UI_Direct_014" text="交付任务" />
-    <string id="AF_CONV_UI_Direct_015" text="直接动作 — " />
-    <string id="AF_CONV_UI_Direct_016" text="当前目标或会话已过期，请重新打开直接动作。" />
+    <string id="AF_CONV_UI_Direct_015" text="手动触发标签 — " />
+    <string id="AF_CONV_UI_Direct_016" text="当前目标或会话已过期，请重新打开手动触发标签。" />
     <string id="AF_CONV_UI_Direct_017" text="按现有标签规则执行，不调用 AI。" />
-    <string id="AF_CONV_UI_Direct_018" text="仅对当前目标执行。资格、数量、费用与副作用沿用原机制。" />
+    <string id="AF_CONV_UI_Direct_018" text="选择标签后打开对应参数界面；无参数标签确认后执行。仅对当前目标执行，资格、数量、费用与副作用沿用原机制。" />
     <string id="AF_CONV_UI_Direct_019" text="确定" />
     <string id="AF_CONV_UI_Direct_020" text="取消" />
     <string id="AF_CONV_UI_Direct_021" text="当前目标或会话已过期，未执行动作。" />
@@ -420,7 +420,7 @@
     <string id="AF_CONV_UI_Direct_043" text="已选：" />
     <string id="AF_CONV_UI_Direct_044" text="&#10;输入正整数数量：" />
     <string id="AF_CONV_UI_Direct_045" text="参数无效，未执行动作。请重新选择并输入正整数数量／金额或允许的 ALL。" />
-    <string id="AF_CONV_UI_Direct_046" text="目标、场景或候选已经变化，未执行动作。请重新打开直接动作。" />
+    <string id="AF_CONV_UI_Direct_046" text="目标、场景或候选已经变化，未执行动作。请重新打开手动触发标签。" />
     <string id="AF_CONV_UI_Direct_047" text="会话已过期，未执行动作。" />
     <string id="AF_CONV_UI_Direct_048" text="原机制只支持英雄、定居点商人或有实际来源的野外部队。" />
     <string id="AF_CONV_UI_Direct_049" text="固定资产需要已有英雄及其原机制可转交资产。" />
@@ -441,7 +441,8 @@
     <string id="AF_CONV_UI_Direct_064" text="（剩余 " />
     <string id="AF_CONV_UI_Direct_065" text=" 第纳尔" />
     <string id="AF_CONV_UI_Direct_066" text="，无期限）" />
-    <string id="AF_CONV_UI_Direct_Button" text="直接动作" />
+    <string id="AF_CONV_UI_Direct_Button" text="手动触发标签" />
+    <string id="AF_CONV_UI_Direct_TagTemplate" text="标签：{TAG}" />
     <string id="AF_CONV_UI_Direct_Description" text="仅对当前主目标执行现有标签，不调用 AI。" />
     <string id="AF_CONV_UI_Direct_IssueHero" text="原版任务需要当前目标是已有英雄。" />
     <string id="AF_CONV_UI_Direct_IssueProgress" text="当前英雄没有进行中的原版任务；交付条件仍由原执行入口检查。" />

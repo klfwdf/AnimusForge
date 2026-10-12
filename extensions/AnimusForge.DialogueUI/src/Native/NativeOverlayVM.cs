@@ -53,6 +53,8 @@ public sealed class NativeOverlayVM : ViewModel
     [DataSourceProperty] public string LeaveText => DialogueUiLocalization.Text("AFD_UI_Native_Leave", "Leave");
     [DataSourceProperty] public string AIChatHistoryButtonText => Original.AIChatHistoryButtonText;
     [DataSourceProperty] public string GiveShowButtonText => Original.GiveShowButtonText;
+    [DataSourceProperty] public string DirectActionsButtonText => Original.DirectActionsButtonText;
+    [DataSourceProperty] public bool CanOpenDirectActions => IsInteractionEnabled && Original.CanOpenDirectActions;
     [DataSourceProperty] public string PersonaEditButtonText => Original.PersonaEditButtonText;
     [DataSourceProperty] public string TagTestButtonText => Original.TagTestButtonText;
     [DataSourceProperty] public bool IsCustomAnswerVisible => Original.IsCustomAnswerVisible && !Auxiliary.IsOpen;
@@ -101,6 +103,7 @@ public sealed class NativeOverlayVM : ViewModel
     public void ShowGiveShowMenu() { if (!_disposed) { CloseMore(); Auxiliary.Open(false); } }
     public void EditPersona() { if (!_disposed) { CloseMore(); Original.EditPersona(); } }
     public void OpenTagTest() { if (!_disposed) { CloseMore(); Original.OpenTagTest(); } }
+    public void OpenDirectActions() { if (CanOpenDirectActions) { CloseMore(); Original.OpenDirectActions(); } }
     public void StartTyping() { if (!_disposed) Original.StartTyping(); }
     public void StopTyping() { if (!_disposed) Original.StopTyping(); }
     public void ToggleMore() { if (!_disposed) { _moreVisible = !_moreVisible; OnPropertyChanged(nameof(IsMoreVisible)); } }
@@ -114,6 +117,7 @@ public sealed class NativeOverlayVM : ViewModel
         OnPropertyChanged(nameof(IsReplyPending));
         OnPropertyChanged(nameof(IsNativeContinueBlocked));
         OnPropertyChanged(nameof(CanSwitchTalk));
+        OnPropertyChanged(nameof(CanOpenDirectActions));
         OnPropertyChanged(nameof(CanLeave));
         OnPropertyChanged(nameof(IsIllustrationAvailable));
         AuxiliaryStateChanged();
@@ -125,6 +129,7 @@ public sealed class NativeOverlayVM : ViewModel
         OnPropertyChanged(nameof(IsCustomAnswerVisible));
         ModeChanged();
         OnPropertyChanged(nameof(IsInteractionEnabled));
+        OnPropertyChanged(nameof(CanOpenDirectActions));
         OnPropertyChanged(nameof(CanSwitchTalk));
         NativeUiAdapter.AuxiliaryStateChanged(this);
         if (!Auxiliary.IsOpen && !_disposed) Original.RequestInputFocus();

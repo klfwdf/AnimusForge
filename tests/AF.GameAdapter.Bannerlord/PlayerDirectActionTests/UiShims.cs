@@ -2,8 +2,8 @@ namespace TaleWorlds.Library
 {
     public class InquiryElement
     {
-        public object Identifier; public bool IsEnabled; public string Name;
-        public InquiryElement(object id, string name, object image, bool isEnabled, string hint) { Identifier=id; Name=name; IsEnabled=isEnabled; }
+        public object Identifier; public bool IsEnabled; public string Name, Hint;
+        public InquiryElement(object id, string name, object image, bool isEnabled, string hint) { Identifier=id; Name=name; IsEnabled=isEnabled; Hint=hint; }
     }
     public class MultiSelectionInquiryData
     {
@@ -14,9 +14,10 @@ namespace TaleWorlds.Library
     }
     public class TextInquiryData
     {
+        public string Text;
         public Action<string> AffirmativeAction; public Action NegativeAction;
         public TextInquiryData(string title, string text, bool yesShown, bool noShown, string yes, string no,
-            Action<string> affirmative, Action negative) { AffirmativeAction=affirmative; NegativeAction=negative; }
+            Action<string> affirmative, Action negative) { Text=text; AffirmativeAction=affirmative; NegativeAction=negative; }
     }
     public class InquiryData
     {

@@ -13,6 +13,8 @@
     <Compile Include="../../src/Scene/AFSceneAudienceDocketWidget.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlayVM.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs" />
+    <Compile Include="../../src/DialogueUiLocalization.cs" />
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Conversation/ConversationUiLocalization.cs" />
   </ItemGroup>
   <Target Name="ExtractProductionLifecycle" BeforeTargets="BeforeCompile">
     <Exec Command="&quot;$(PowerShellExecutable)&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)/extract.ps1&quot; -Output &quot;$(IntermediateOutputPath)Lifecycle.generated.cs&quot;" />

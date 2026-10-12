@@ -389,14 +389,14 @@
     <string id="AF_CONV_UI_Direct_012" text="Enter the lord's hall" />
     <string id="AF_CONV_UI_Direct_013" text="Accept quest" />
     <string id="AF_CONV_UI_Direct_014" text="Turn in quest" />
-    <string id="AF_CONV_UI_Direct_015" text="Direct actions — " />
-    <string id="AF_CONV_UI_Direct_016" text="The target or conversation has expired. Reopen Direct actions." />
+    <string id="AF_CONV_UI_Direct_015" text="Manual tags — " />
+    <string id="AF_CONV_UI_Direct_016" text="The target or conversation has expired. Reopen Manual tags." />
     <string id="AF_CONV_UI_Direct_017" text="Execute existing tag rules without calling AI." />
-    <string id="AF_CONV_UI_Direct_018" text="Only the current target is affected. Eligibility, quantity, costs and side effects follow the existing mechanics." />
+    <string id="AF_CONV_UI_Direct_018" text="Select a tag. Parameter fields open after selection; tags without parameters run on confirmation. Only the current target is affected. Eligibility, quantity, costs and side effects follow the existing mechanics." />
     <string id="AF_CONV_UI_Direct_019" text="OK" />
     <string id="AF_CONV_UI_Direct_020" text="Cancel" />
     <string id="AF_CONV_UI_Direct_021" text="The target or conversation has expired. No action was executed." />
-    <string id="AF_CONV_UI_Direct_022" text="An error occurred while reading parameters or submitting the action. Direct actions was closed without automatic retry. Check the original mechanic's state." />
+    <string id="AF_CONV_UI_Direct_022" text="An error occurred while reading parameters or submitting the action. Manual tags was closed without automatic retry. Check the original mechanic's state." />
     <string id="AF_CONV_UI_Direct_023" text="Confirm action" />
     <string id="AF_CONV_UI_Direct_024" text="Enter the gold amount the NPC gives you (positive integer). Insufficient funds still follow the original tag's shortfall-completion rules." />
     <string id="AF_CONV_UI_Direct_025" text="Enter the value of the player's debt or promise (positive integer):" />
@@ -420,7 +420,7 @@
     <string id="AF_CONV_UI_Direct_043" text="Selected: " />
     <string id="AF_CONV_UI_Direct_044" text="&#10;Enter a positive integer quantity:" />
     <string id="AF_CONV_UI_Direct_045" text="Invalid parameters. No action was executed. Select again and enter a positive quantity/amount or an allowed ALL." />
-    <string id="AF_CONV_UI_Direct_046" text="The target, scene or candidate has changed. No action was executed. Reopen Direct actions." />
+    <string id="AF_CONV_UI_Direct_046" text="The target, scene or candidate has changed. No action was executed. Reopen Manual tags." />
     <string id="AF_CONV_UI_Direct_047" text="The conversation has expired. No action was executed." />
     <string id="AF_CONV_UI_Direct_048" text="The existing mechanics only support heroes, settlement merchants or wilderness parties with a valid source." />
     <string id="AF_CONV_UI_Direct_049" text="Fixed assets require an existing hero and assets transferable through the original mechanic." />
@@ -441,7 +441,8 @@
     <string id="AF_CONV_UI_Direct_064" text=" (remaining " />
     <string id="AF_CONV_UI_Direct_065" text=" denars" />
     <string id="AF_CONV_UI_Direct_066" text=", no deadline)" />
-    <string id="AF_CONV_UI_Direct_Button" text="Direct actions" />
+    <string id="AF_CONV_UI_Direct_Button" text="Trigger tags manually" />
+    <string id="AF_CONV_UI_Direct_TagTemplate" text="Tag: {TAG}" />
     <string id="AF_CONV_UI_Direct_Description" text="Execute existing tags only for the selected primary target, without calling AI." />
     <string id="AF_CONV_UI_Direct_IssueHero" text="Vanilla quests require an existing hero as the current target." />
     <string id="AF_CONV_UI_Direct_IssueProgress" text="This hero has no ongoing vanilla quest. Turn-in conditions are still checked by the original execution entry." />

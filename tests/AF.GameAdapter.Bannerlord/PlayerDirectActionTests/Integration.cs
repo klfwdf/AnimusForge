@@ -80,5 +80,53 @@ internal static class Integration
         ShoutBehavior.OpenNativePlayerDirectActions(()=>{});Select(PlayerDirectActionKind.FixedAsset);Select("town_7");
         RewardSystemBehavior.Instance.Assets[0]=new(){AssetId="town_7",OwnerClan=new()};((InquiryData)InformationManager.Popup).AffirmativeAction();
         check(ShoutBehavior.CurrentInstance._nativeGameEffects.Tags.Count==0,"asset ownership changed during confirmation rejects");
+
+        void PresentationSession()
+        {
+            Reset(); Campaign.Current.ConversationManager.IsConversationInProgress = false;
+            var p = ShoutBehavior.CurrentInstance.Presentation;
+            p.Active = true; p._presentationAddresseeIndex = 7;
+            p.Members.Add(new() { Agent = Mission.Current.Agents[0], Character = ShoutBehavior.TargetCharacter, AgentIndex = 7, Name = "Headman" });
+            var other = new Agent { Index = 9, Character = new CharacterObject { HeroObject = new Hero() } };
+            Mission.Current.Agents.Add(other);
+            p.Members.Add(new() { Agent = other, Character = other.Character, AgentIndex = 9, Name = "Bystander" });
+        }
+        PresentationSession(); int finishes = 0;
+        check(ShoutBehavior.OpenScenePresentationPlayerDirectActionsForExternal(() => finishes++), "persistent panel opens manual tags without API setup");
+        var panelMenu = (MultiSelectionInquiryData)InformationManager.Popup;
+        check(panelMenu.Title.EndsWith("Headman") && panelMenu.Elements.Count == 14, "manual-tag menu bound to selected headman's nameplate, not audience");
+        Select(PlayerDirectActionKind.Gold); money = (TextInquiryData)InformationManager.Popup;
+        check(money.Text.Contains("[ACTION:GIVE_ASSET:GOLD:<amount>]"), "money parameter view displays the selected tag");
+        money.AffirmativeAction("23"); money.AffirmativeAction("23");
+        check(finishes == 1 && ShoutBehavior.CurrentInstance._nativeGameEffects.Tags.SequenceEqual(new[] {"[ACTION:GIVE_ASSET:GOLD:23]"}), "persistent panel confirmation consumed once");
+        check(ReferenceEquals(ShoutBehavior.CurrentInstance._nativeGameEffects.LastHero, ShoutBehavior.Target), "money applied only to selected headman, not bystander");
+        foreach (var mutate in new Action[] {
+            () => ShoutBehavior.CurrentInstance.Presentation._presentationAddresseeIndex = 9,
+            () => ShoutBehavior.CurrentInstance.Presentation.Active = false,
+            () => ShoutBehavior.CurrentInstance.Presentation.Members.Clear(),
+            () => { var p = ShoutBehavior.CurrentInstance.Presentation; p.Members[0] = new() { Agent = p.Members[0].Agent, Character = p.Members[0].Character, AgentIndex = 7 }; },
+            () => ShoutBehavior.CurrentInstance.Presentation.Members[0].InRange = false,
+            () => ShoutBehavior.Busy = true,
+            () => Mission.Current.Agents[0].Active = false,
+            () => Mission.Current = new(), () => SaveRuntimeGuard.Generation++, () => ShoutBehavior.CurrentInstance.NextEpoch()
+        })
+        {
+            PresentationSession(); var owner = ShoutBehavior.CurrentInstance;
+            check(ShoutBehavior.OpenScenePresentationPlayerDirectActionsForExternal(() => {}), "persistent selected-target popup starts");
+            Select(PlayerDirectActionKind.Gold); money = (TextInquiryData)InformationManager.Popup;
+            mutate(); money.AffirmativeAction("23");
+            check(owner._nativeGameEffects.Tags.Count == 0, "changed target/member/session/range/busy/agent/mission/generation/epoch denies persistent tag");
+        }
+        PresentationSession(); ShoutBehavior.Busy = true;
+        check(!ShoutBehavior.OpenScenePresentationPlayerDirectActionsForExternal(() => {}), "pending reply cannot race manual tag");
+        PresentationSession(); ShoutBehavior.CurrentInstance.Presentation._presentationAddresseeIndex = 99;
+        check(!ShoutBehavior.OpenScenePresentationPlayerDirectActionsForExternal(() => {}), "missing selected nameplate never substitutes another NPC");
+        PresentationSession(); finishes = 0;
+        ShoutBehavior.OpenScenePresentationPlayerDirectActionsForExternal(() => finishes++);
+        ((MultiSelectionInquiryData)InformationManager.Popup).NegativeAction(null);
+        check(finishes == 1 && ShoutBehavior.CurrentInstance._nativeGameEffects.Tags.Count == 0, "persistent cancel restores UI without tag dispatch");
+        PresentationSession(); ShoutBehavior.OpenScenePresentationPlayerDirectActionsForExternal(() => {}); Select(PlayerDirectActionKind.Follow);
+        check(ShoutBehavior.CurrentInstance.MovementReleases == 1 && ShoutBehavior.CurrentInstance._sceneMovement.Calls == 1,
+            "persistent follow releases conversation movement suppression before original command");
     }
 }

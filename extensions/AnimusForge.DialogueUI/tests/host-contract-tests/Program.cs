@@ -34,6 +34,16 @@ internal static class Program
         };
         Assembly host = Assembly.LoadFrom(dll);
         Type behavior = host.GetType("AnimusForge.ShoutBehavior", true);
+        Require(behavior.GetMethod("OpenScenePresentationPlayerDirectActionsForExternal", Flags, null,
+            new[] { typeof(Action) }, null)?.ReturnType == typeof(bool), "actual selected-nameplate manual-tag entry");
+        foreach (string typeName in new[] { "AnimusForge.DialogueUI.Native.NativeOverlayVM", "AnimusForge.DialogueUI.Scene.SceneSessionVM" })
+        {
+            Type vm = host.GetType(typeName, true);
+            Require(vm.GetProperty("DirectActionsButtonText", Flags)?.PropertyType == typeof(string), "actual manual-tag label binding: " + typeName);
+            Require(vm.GetProperty("CanOpenDirectActions", Flags)?.PropertyType == typeof(bool), "actual manual-tag enabled binding: " + typeName);
+            string command = typeName.EndsWith("SceneSessionVM") ? "ExecuteDirectActions" : "OpenDirectActions";
+            Require(vm.GetMethod(command, Flags, null, Type.EmptyTypes, null)?.ReturnType == typeof(void), "actual prefab command binding: " + typeName);
+        }
         FieldInfo ownerField = behavior.GetField("_j17SceneTradeController", Flags);
         Require(ownerField != null, "current trade owner field");
         Type owner = ownerField.FieldType;
