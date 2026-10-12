@@ -1,4 +1,10 @@
-# 当前交接：安全合并远端并安装 D 盘（2026-10-13，DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
+# 当前交接：授权快进交付远端 main（2026-10-13，AUTHORIZED_MAIN_DELIVERY / LIVE_PENDING）
+
+- 用户明确要求“推送远端main”；目标 `origin/main`，发布前基线 `41c22a952` 是源码/安装交接提交 `cfc42dc8d` 的祖先，原19个待推送提交及全部代码、测试、双语资源和配套文档保留。正常快进，不强推、不重写历史，不再合并未知远端变化。
+- 待推送历史107个新增blob与每个提交的文件树完成有界路径/凭据模式检查：没有新增本地专用交接、玩家数据、构建产物或凭据模式命中；ignored证据留本地。仅补本条及主台账，产品源码/资源与已构建、已安装候选不变，沿用既有双API/Bootstrap和专项证据，不声称重跑构建或实机。
+- [唯一主台账与发布核对](docs/animusforge-refactoring-and-repository-reorganization-plan.md#main-push-20261013)；[已验代码范围](docs/architecture/af-framework-code-scope.md#remote-merge-install-20261013)。实际发布成功以远端 `refs/heads/main` 与最终本地提交相等为准；本次不打包、再安装、启动游戏或操作存档。下方未push/LOCAL_ONLY标记为前序历史，不再代表当前授权；实机及旧档仍未验。
+
+# 前序交接：安全合并远端并安装 D 盘（2026-10-13，DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
 
 - 检查点 `21bcf5844`，合并 `6ca84557e` 纳入远端 `41c22a952` 的1提交/4路径，预览/实际无冲突。远端输入租约修复保留scene渲染；本地地图标签、旧数据退役、缓存时间刷新与其他作者历史逐字保留。
 - 原Release双API各363 warning/0 error、Bootstrap/probe0/0、双Coup与3519文件干净Stage通过；85原编辑器输入/渲染模型专项、955完整直接动作再次PASS。原地图/地点/藏身点/双语专项按17文件SHA复用，旧J12总套件失效外交引用仍未通过；32锚点双模式PASS，不代表实机。
