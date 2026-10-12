@@ -32,6 +32,10 @@
     "Characters": {
       "LegacyValue": "角色与同伴",
       "DisplayText": "{=AF_UI_Terminal_Characters}Characters and companions"
+    },
+    "Ui": {
+      "LegacyValue": "UI",
+      "DisplayText": "{=AF_UI_Terminal_Ui}UI settings"
     }
   }
 }

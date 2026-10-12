@@ -69,7 +69,8 @@ internal static class AnimusForgeDataPaths
 
     private static string ValidateAbsoluteLocalPath(string? path, string parameter)
     {
-        if (string.IsNullOrWhiteSpace(path) || !Path.IsPathRooted(path) || path!.StartsWith(@"\\", StringComparison.Ordinal))
+        if (string.IsNullOrWhiteSpace(path) || !Path.IsPathRooted(path) || path!.StartsWith(@"\\", StringComparison.Ordinal)
+            || path.IndexOf(':', Math.Min(2, path.Length)) >= 0)
             throw new ArgumentException("AnimusForge storage root must be a local absolute path.", parameter);
         string full = Path.GetFullPath(path!).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         string? volume = Path.GetPathRoot(full);

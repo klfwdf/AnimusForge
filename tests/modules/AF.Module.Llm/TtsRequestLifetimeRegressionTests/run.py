@@ -22,8 +22,16 @@ def main():
  if a.mutation=='duplicate-terminal':source=source.replace(' || job.TerminalPublished','',1)
  if a.mutation=='late-legacy-event':source=source.replace('if (!job.Request.IsCancellationRequested) { legacyEvent?.Invoke(); }','legacyEvent?.Invoke();',1).replace('InvokePlaybackSubscribers(OnPlaybackFinished, handler => handler(job.AgentIndex), job.Request)','InvokePlaybackSubscribers(OnPlaybackFinished, handler => handler(job.AgentIndex), job.Request, allowCancelled: true)')
  (out/'TtsEngine.cs').write_text(source,encoding='utf-8')
- (out/'Program.cs').write_text((HERE/'Harness.cs.txt').read_text(encoding='utf-8'),encoding='utf-8')
+ 
  spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+ settings_path=ROOT/'src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs'
+ settings=settings_path.read_text(encoding='utf-8-sig')
+ button=ex.declaration(settings,'TestTtsVolcDedicatedVoice = delegate')+';'
+ helpers='\n'.join(ex.declaration(settings,x) for x in ['private static string Ui(', 'private static string UiFormat('])
+ program=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@TTS_TEST_BUTTON@@',button).replace('@@UI_HELPERS@@',helpers)
+ assert '@@' not in program
+ (out/'Program.cs').write_text(program,encoding='utf-8')
+
  frozen_inputs={path:hashlib.sha256(path.read_bytes()).hexdigest() for path in [ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.cs',a.consumer_source,a.native_consumer_source,ROOT/'src/AF.Persistence/AnimusForgeDataPaths.cs',ROOT/'src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs',ROOT/'content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json',ROOT/'_deps_auto/Newtonsoft.Json.dll',HERE/'Harness.cs.txt',HERE/'ConsumerHarness.cs.txt']}
  consumer=a.consumer_source.read_text(encoding='utf-8-sig')
  native=a.native_consumer_source.read_text(encoding='utf-8-sig')
@@ -48,13 +56,24 @@ def main():
  (out/'Consumer.cs').write_text(harness,encoding='utf-8')
  (out/'NativeConversationPlaybackWaitAdapter.cs').write_text(native,encoding='utf-8')
  (out/'consumer-source.json').write_text(json.dumps({'responsibility':'exact current Scene request lifecycle methods and complete Native wait adapter/ports; game and network leaves are controlled','inputs':{str(path.relative_to(ROOT)):sha for path,sha in frozen_inputs.items()},'consumerAssertions':harness.count('check("consumer:'),'mutation':a.mutation},indent=2),encoding='utf-8')
- (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup><Compile Include="F:/AnimusForge-main/src/AF.Persistence/AnimusForgeDataPaths.cs" Link="AnimusForgeDataPaths.cs" /><Compile Include="F:/AnimusForge-main/src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs" Link="LlmSourceTexts.cs" /><EmbeddedResource Include="F:/AnimusForge-main/content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" WithCulture="false" /><Reference Include="Newtonsoft.Json"><HintPath>F:/AnimusForge-main/_deps_auto/Newtonsoft.Json.dll</HintPath></Reference></ItemGroup></Project>')
+ assets=json.loads((ROOT/'tools/Coup.RuntimeProbe/obj/project.assets.json').read_text('utf-8-sig'))
+ refdir=next(Path(x)/'microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2' for x in assets['packageFolders'] if (Path(x)/'microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2/mscorlib.dll').exists())
+ from xml.sax.saxutils import escape
+ links=[refdir/'Facades/netstandard.dll',ROOT/'_deps_auto/Newtonsoft.Json.dll',ROOT/'.tmp/build_check/1.3/TaleWorlds.Localization.dll',ROOT/'.tmp/build_check/1.3/TaleWorlds.Library.dll']
+ refs='<Reference Include="System.Net.Http" />'+''.join('<Reference Include="'+x.stem+'"><HintPath>'+escape(str(x))+'</HintPath></Reference>' for x in links)
+ sources=[ROOT/x for x in ['src/AF.Persistence/AnimusForgeDataPaths.cs','src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs','src/modules/AF.Module.Llm/Tts/VolcTtsGateway.cs','src/modules/AF.Module.Llm/Tts/LlmUiTexts.cs','src/AF.GameAdapter.Bannerlord/UI/Errors/TtsTestFeedback.cs','src/AF.GameAdapter.Bannerlord/UI/Errors/TtsErrorUiText.cs','src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettingsUiLocalization.cs']]
+ includes=''.join('<Compile Include="'+escape(str(x))+'" />' for x in sources)
+ frozen_inputs.update({x:hashlib.sha256(x.read_bytes()).hexdigest() for x in sources+links+[settings_path]})
+ (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><PlatformTarget>x64</PlatformTarget><LangVersion>10</LangVersion><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages><FrameworkPathOverride>'+escape(str(refdir))+'</FrameworkPathOverride></PropertyGroup><ItemGroup>'+refs+includes+'<EmbeddedResource Include="'+escape(str(ROOT/'content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json'))+'" LogicalName="AnimusForge.Llm.RuntimeSources.json" WithCulture="false" /></ItemGroup></Project>',encoding='utf-8')
  (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
  env=minimal_test_environment(Path(a.dotnet),out)
  module=out/'module-fixture'/'AnimusForge';(module/'ModuleData').mkdir(parents=True)
  (module/'SubModule.xml').write_text('<Module><Id value="AnimusForge" /></Module>',encoding='utf-8')
  env['ANIMUSFORGE_DATA_ROOT']=str(module)
- r=subprocess.run([a.dotnet,'run','--project',str(out/'Tests.csproj'),'-c','Release'],cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
+ build=subprocess.run([a.dotnet,'build',str(out/'Tests.csproj'),'-c','Release'],cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
+ (out/'build.log').write_text(build.stdout+build.stderr,encoding='utf-8')
+ if build.returncode: print(build.stdout+build.stderr);return build.returncode
+ r=subprocess.run([str(out/'bin/Release/net472/Tests.exe')],cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
  assert all(hashlib.sha256(path.read_bytes()).hexdigest()==sha for path,sha in frozen_inputs.items()), 'consumer/source drift during probe'
  log='TtsEngine SHA256='+hashlib.sha256(raw.encode()).hexdigest()+'\n'+r.stdout+r.stderr
  (out/'run.log').write_text(log,encoding='utf-8');print(log);return r.returncode

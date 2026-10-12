@@ -18,7 +18,7 @@ internal static class WorldDiplomacyPlayerDraftApplication
         WorldDiplomacyPlayerDraftInput snapshot = new WorldDiplomacyPlayerDraftInput(body, minimum, maximum, generation);
         string preference = DuelSettings.GetSettings()?.WorldDiplomacyPrompt ?? "";
         if (!WorldDiplomacyLlmClient.TryPrepareSingleCall(WorldDiplomacyPlayerDraftRules.BuildMessages(snapshot, preference),
-            1800, 90000, "WorldDiplomacyPlayerDraft", generation, out var call, out _))
+            WorldDiplomacyPlayerDraftRules.GetOutputTokenBudget(snapshot), 90000, "WorldDiplomacyPlayerDraft", generation, out var call, out _))
         {
             error = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftApiMissing", "The scribe cannot draft documents right now. Check the event/rebellion API or main API settings.");
             return false;
@@ -29,10 +29,10 @@ internal static class WorldDiplomacyPlayerDraftApplication
             WorldDiplomacyApiCallResult result = await call(token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
             if (result?.IsOutputTruncated == true)
-                return WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftTruncated", "The draft was truncated by the output limit; original text was kept. Adjust diplomacy length or API output limit."));
+                return WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftTruncated", "The draft was truncated by the output limit; original text was kept. Please raise the API output limit."));
             if (result?.Success != true)
                 return WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftFailed", "The scribe could not draft the document; original text was kept. Try again."));
-            return WorldDiplomacyPlayerDraftRules.Parse(result.Content, snapshot);
+            return WorldDiplomacyPlayerDraftRules.Parse(result.Content);
         };
         return true;
     }

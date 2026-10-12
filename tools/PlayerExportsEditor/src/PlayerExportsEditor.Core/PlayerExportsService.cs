@@ -227,7 +227,6 @@ public sealed class PlayerExportsService
         if (!string.Equals(Path.GetFileName(full), "PlayerExports", StringComparison.OrdinalIgnoreCase)
             || parent == null)
             throw new InvalidOperationException("Editable PlayerExports must be directly under an installed AnimusForge module.");
-
         var expected = AnimusForgeDataPaths.GetPlayerExportsDirectory(parent.FullName);
         if (!string.Equals(full, expected, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("Editable PlayerExports root is not canonical.");

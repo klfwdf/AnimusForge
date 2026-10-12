@@ -7,6 +7,10 @@ namespace AnimusForge;
 
 public sealed class WorldDiplomacyDialogueArrangement
 {
+    // Empty in legacy saves: old public proposals never gain inferred player consent.
+    public string ConfirmedPlayerRulerId { get; set; } = "";
+    public int GenerationRetryAfterDay { get; set; } = -1;
+    public bool IsWithdrawal { get; set; }
     public string Fingerprint { get; set; } = "";
     public bool ExplicitlyDeferred { get; set; }
     public string ArrangementId { get; set; } = ""; public int Version { get; set; } = 1;

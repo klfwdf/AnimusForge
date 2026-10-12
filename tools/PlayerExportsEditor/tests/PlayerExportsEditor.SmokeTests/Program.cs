@@ -3,6 +3,76 @@ using PlayerExportsEditor.Core;
 var service = new PlayerExportsService();
 var validator = new PlayerExportsValidator();
 
+if (args.Length == 2 && args[0] == "--module-storage-contract")
+{
+    if (!OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("Windows ACL/junction fixture required.");
+    var fixture = Path.GetFullPath(args[1]);
+    if (!fixture.StartsWith(Path.Combine(Directory.GetCurrentDirectory(), "artifacts") + Path.DirectorySeparatorChar,
+            StringComparison.OrdinalIgnoreCase) || Directory.Exists(fixture))
+        throw new InvalidOperationException("New workspace-only editor fixture required.");
+    var module = Path.Combine(fixture, "AnimusForge");
+    Directory.CreateDirectory(Path.Combine(module, "ModuleData"));
+    File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
+    var exports = Path.Combine(module, "PlayerExports");
+    var ignored = Path.Combine(fixture, "user-data");
+    // Workspace ancestors intentionally reject implicit module discovery. Use
+    // the supported explicit, identity-checked fixture selection instead.
+    Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", module);
+    if (service.FindDefaultPlayerExportsRoot(module) != exports || Directory.Exists(exports))
+        throw new InvalidOperationException("Default editor root must be module-local without creating it.");
+    var package = service.CreatePackage(exports, "local-package");
+    var file = Path.Combine(package.FullPath, "event_data", "WorldOpeningSummary.json");
+    service.SaveJsonDocument(package.FullPath, file, "{\"Summary\":\"MODULE\"}");
+    if (!File.ReadAllText(file).Contains("MODULE") || service.ListPackages(exports).Count != 1)
+        throw new InvalidOperationException("Module package create/edit/list failed.");
+    var nested = Path.Combine(module, "bin", "editor");
+    Directory.CreateDirectory(nested);
+    if (service.FindDefaultPlayerExportsRoot(nested) != exports)
+        throw new InvalidOperationException("Editor must locate the nearest valid module ancestor.");
+    RejectWrite(() => service.CreatePackage(Path.Combine(ignored, "UserData", "PlayerExports"), "invalid"));
+    RejectWrite(() => service.LoadPackage(Path.Combine(ignored, "UserData", "PlayerExports", "old-package")));
+    RejectWrite(() => service.SaveJsonDocument(package.FullPath, Path.Combine(fixture, "escape.json"), "{}"));
+    Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", "relative-invalid-root");
+    if (service.FindDefaultPlayerExportsRoot(module) != exports || Directory.Exists(ignored))
+        throw new InvalidOperationException("Old user-data override must be ignored.");
+    File.WriteAllText(file, "{bad json");
+    var previous = File.ReadAllText(file);
+    try { service.SaveJsonDocument(package.FullPath, file, "{bad replacement"); }
+    catch (System.Text.Json.JsonException) { }
+    if (File.ReadAllText(file) != previous) throw new InvalidOperationException("Bad edit destroyed original.");
+    var linked = Path.Combine(exports, "linked-package");
+    using (var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(
+        Path.Combine(Environment.SystemDirectory, "cmd.exe"), "/c mklink /J \"" + linked + "\" \"" + package.FullPath + "\"")
+        { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true }))
+    {
+        var output = process!.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
+        process.WaitForExit();
+        if (process.ExitCode != 0) throw new InvalidOperationException("Junction fixture failed: " + output);
+    }
+    RejectWrite(() => service.LoadPackage(linked));
+    RejectWrite(() => service.SaveJsonDocument(linked, Path.Combine(linked, "event_data", "WorldOpeningSummary.json"), "{}"));
+    File.SetAttributes(file, FileAttributes.ReadOnly);
+    var readonlyFailed = false;
+    try { service.SaveJsonDocument(package.FullPath, file, "{}"); }
+    catch (UnauthorizedAccessException) { readonlyFailed = true; }
+    finally { File.SetAttributes(file, FileAttributes.Normal); }
+    if (!readonlyFailed || File.ReadAllText(file) != previous) throw new InvalidOperationException("Readonly edit reported success or damaged original.");
+    var sid = System.Security.Principal.WindowsIdentity.GetCurrent().User!.Value;
+    FixtureAcl("\"" + package.FullPath + "\" /deny *" + sid + ":(OI)(CI)(WD,AD)");
+    try
+    {
+        readonlyFailed = false;
+        try { service.SaveJsonDocument(package.FullPath, file, "{}"); }
+        catch (UnauthorizedAccessException) { readonlyFailed = true; }
+        if (!readonlyFailed || File.ReadAllText(file) != previous) throw new InvalidOperationException("Readonly directory damaged original or reported success.");
+    }
+    finally { FixtureAcl("\"" + package.FullPath + "\" /remove:d *" + sid); }
+    Console.WriteLine("PASS editor module storage default=1 ancestor=1 createEditList=1 overrideIgnored=1 traversal=1 invalidPreserved=1 userLoadRejected=1 reparse=1 readonlyFileAndDirectory=1");
+    return 0;
+}
+
+
+
 if (args.Length == 2 && args[0] == "--installed-library-contract")
 {
     var installedLibraryFixture = Path.GetFullPath(args[1]);
@@ -195,7 +265,18 @@ static void RejectWrite(Action action)
     try { action(); }
     catch (ArgumentException) { return; }
     catch (InvalidOperationException) { return; }
+    catch (IOException ex) when (ex.Message.Contains("reparse point", StringComparison.OrdinalIgnoreCase)) { return; }
     throw new InvalidOperationException("Expected path rejection before any write.");
+}
+
+static void FixtureAcl(string arguments)
+{
+    using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(
+        Path.Combine(Environment.SystemDirectory, "icacls.exe"), arguments)
+        { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true });
+    var output = process!.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
+    process.WaitForExit();
+    if (process.ExitCode != 0) throw new InvalidOperationException("Workspace ACL fixture failed: " + output);
 }
 
 static int CountLocalized(IEnumerable<ConditionCandidate> candidates)

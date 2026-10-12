@@ -80,13 +80,16 @@ internal sealed partial class WorldDiplomacyOrchestration
     {
         reason = "";
         if (NormalizeIntent(intent) == "accept_trade")
+        {
+            if (HasConfirmedOralPlayerAgreement(document)) return ValidateFormalTreatyTerms(intent, terms?.ToTerms(), author, target, out reason);
             return WorldDiplomacyOfferActionApplication.TryResolveTradeAcceptanceTerms(
                 ResolveDocument(sourceId), sourceActionId, terms, out _, out reason);
+        }
         if (!IsFormalTreatyIntent(intent)) return true;
         if (NormalizeIntent(intent).StartsWith("reject_")) return true;
         if (terms != null && (terms.DailyTribute != 0 || terms.DurationDays != 0 || !string.IsNullOrEmpty(terms.CessionSettlementId)))
         { reason = "unsupported_extra_treaty_clause"; return false; }
-        if (NormalizeIntent(intent).StartsWith("accept_"))
+        if (NormalizeIntent(intent).StartsWith("accept_") && !HasConfirmedOralPlayerAgreement(document))
         {
             var original = ResolveDialogueTerms(ResolveDocument(sourceId), sourceActionId);
             if (terms != null && !terms.ToTerms().Equals(original))

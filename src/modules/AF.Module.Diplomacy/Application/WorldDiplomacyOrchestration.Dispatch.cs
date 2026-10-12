@@ -29,6 +29,14 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (job.Kind == "analyze" || (job.Kind == "generate" && IsPlayerDiplomacyJob(job))) job.MaxTokens = _host.AnalysisMaxTokens();
         var round = ResolveRound(job.RoundId);
         bool frozenRepair = job.SemanticRepairAttempts > 0 && round != null && job.RoundConversationRevision == round.ConversationRevision;
+        if (IsOralDeclarationJob(job))
+        {
+            RebuildOralDeclarationJob(job);
+            job.RequestLane = "player";
+            job.PersonalMemoryRulerId = _host.PartyRulerId(job.AuthorKingdomId);
+            job.RoundConversationRevision = round?.ConversationRevision ?? 0;
+            return;
+        }
         if (frozenRepair) return;
         PrepareSharedEventRequest(job);
         job.RequestLane = IsPlayerSchedulingJob(job) ? "player" : round?.EventSourceType == "dialogue_commitment" ? "oral" : "normal";
@@ -41,6 +49,8 @@ internal sealed partial class WorldDiplomacyOrchestration
     {
         if (result.RequestAttempt > 0 && result.RequestAttempt != job.RequestAttempt) return false;
         job.IsRunning = false;
+        if (IsOralDeclarationJob(job) && !IsCurrentOralDeclarationJob(job))
+        { RemoveJob(job.JobId); return false; }
         if (result.Error == "world_diplomacy_request_budget_deferred") return false;
         var round = ResolveRound(job.RoundId);
         if (job.Kind == "generate" && (!IsLiveRound(round)

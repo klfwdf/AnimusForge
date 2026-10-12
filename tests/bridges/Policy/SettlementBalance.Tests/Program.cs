@@ -68,6 +68,7 @@ internal static class Program
         File.WriteAllText(corruptPath, "{");
         Check(new SettlementBalanceSettingsStore(corruptPath).Current.Get(SettlementBalanceMetric.Food).Value == 1000, "corrupt configuration uses defaults");
         Check(File.ReadAllText(corruptPath) == "{", "corrupt user file retained");
+        Check(!new SettlementBalanceSettingsStore(corruptPath).TrySave(edited, out _) && File.ReadAllText(corruptPath) == "{", "corrupt original rejected on save");
         var blockedParent = Path.Combine(directory, "blocked-parent");
         File.WriteAllText(blockedParent, "fixture");
         var blocked = new SettlementBalanceSettingsStore(Path.Combine(blockedParent, "settings.json"));
@@ -91,3 +92,5 @@ namespace AnimusForge
         internal static void Failure(string area, string code, string message, string detail) { }
     }
 }
+
+namespace TaleWorlds.Engine { internal static class Utilities { internal static string GetBasePath() => throw new System.InvalidOperationException("Pure tests must not resolve a real game directory."); } }

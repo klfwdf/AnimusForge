@@ -71,6 +71,8 @@ namespace AnimusForge
     {
         internal static string GetModuleDataFilePath(string name)
         {
+            string selected = Environment.GetEnvironmentVariable("AF_TEST_PACKAGE_ROOT");
+            if (!string.IsNullOrEmpty(selected)) return System.IO.Path.Combine(selected, name);
             string dir = System.AppContext.BaseDirectory;
             while (!string.IsNullOrEmpty(dir) && !System.IO.File.Exists(System.IO.Path.Combine(dir, "AnimusForge.sln")))
             {
@@ -79,8 +81,10 @@ namespace AnimusForge
                 dir = parent;
             }
             string package = Environment.GetEnvironmentVariable("AF_TEST_PROMPT_LANGUAGE");
-            string file = package == "en" ? System.IO.Path.GetFileNameWithoutExtension(name) + ".en.json" : name;
-            return System.IO.Path.Combine(dir ?? "", "content/modules/AF.Module.Diplomacy/ModuleData", file);
+            string file = package == "en" ? System.IO.Path.GetFileNameWithoutExtension(name) + ".en.json"
+                : name == "PromptComposerTexts.json" ? "PromptComposerTexts.zh-CN.json" : name;
+            return System.IO.Path.Combine(dir ?? "", name == "PromptComposerTexts.json"
+                ? "content/modules/AF.Module.Prompt/ModuleData" : "content/modules/AF.Module.Diplomacy/ModuleData", file);
         }
     }
 

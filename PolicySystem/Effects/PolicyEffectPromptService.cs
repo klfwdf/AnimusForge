@@ -113,11 +113,12 @@ internal static class PolicyEffectPromptService
 		{
 			string directory = RequireStorageDirectory();
 			string prompt = NormalizeAutoDraftPrompt(input);
+            if (prompt.Length == 0) prompt = DefaultAutoDraftPrompt;
 			lock (Sync)
 			{
 				Directory.CreateDirectory(directory);
 				string path = Path.Combine(directory, AutoDraftPromptFileName);
-				JObject document = new JObject();
+				JObject document = new JObject { ["Version"] = CurrentVersion, ["Text"] = DefaultAutoDraftPrompt };
 				if (File.Exists(path))
 				{
 					if (!TryReadJsonObject(path, out JObject existing) || !IsSupportedVersion(existing, path))
@@ -127,20 +128,8 @@ internal static class PolicyEffectPromptService
 					document = (JObject)existing.DeepClone();
 				}
 				document["Version"] = CurrentVersion;
-				if (prompt.Length == 0)
-				{
-					document.Remove("Text");
-					if (document.Properties().Count() == 1)
-					{
-						if (File.Exists(path)) File.Delete(path);
-					}
-					else WriteJsonAtomically(path, document);
-				}
-				else
-				{
-					document["Text"] = prompt;
-					WriteJsonAtomically(path, document);
-				}
+				document["Text"] = prompt;
+				WriteJsonAtomically(path, document);
 				_snapshot = RefreshSnapshotUnlocked(null, directory);
 				DelayRefreshUnlocked();
 			}
@@ -162,12 +151,13 @@ internal static class PolicyEffectPromptService
 		{
 			string directory = RequireStorageDirectory();
 			string prompt = NormalizeCommonEvaluationPrompt(input);
+            if (prompt.Length == 0) prompt = DefaultCommonEvaluationPrompt;
 			lock (Sync)
 			{
 				string effectsDirectory = GetEffectsDirectory(directory);
 				Directory.CreateDirectory(effectsDirectory);
 				string path = Path.Combine(effectsDirectory, CommonEffectPromptFileName);
-				JObject document = new JObject();
+				JObject document = CreateDefaultCommonDocument();
 				if (File.Exists(path))
 				{
 					if (!TryReadJsonObject(path, out JObject existing) || !IsSupportedVersion(existing, path))
@@ -177,20 +167,8 @@ internal static class PolicyEffectPromptService
 					document = (JObject)existing.DeepClone();
 				}
 				document["Version"] = CurrentVersion;
-				if (prompt.Length == 0)
-				{
-					document.Remove("CommonEvaluationPrompt");
-					if (document.Properties().Count() == 1)
-					{
-						if (File.Exists(path)) File.Delete(path);
-					}
-					else WriteJsonAtomically(path, document);
-				}
-				else
-				{
-					document["CommonEvaluationPrompt"] = prompt;
-					WriteJsonAtomically(path, document);
-				}
+				document["CommonEvaluationPrompt"] = prompt;
+				WriteJsonAtomically(path, document);
 				_snapshot = RefreshSnapshotUnlocked(null, directory);
 				DelayRefreshUnlocked();
 			}
@@ -223,12 +201,15 @@ internal static class PolicyEffectPromptService
 		{
 			string directory = RequireStorageDirectory();
 			string prompt = NormalizePrompt(input);
+            if (prompt.Length == 0)
+                prompt = kind == PolicyEffectPromptKind.Understanding
+                    ? module.Descriptor.EditableUnderstandingPrompt : module.Descriptor.EditableEvaluationPrompt;
 			lock (Sync)
 			{
 				string effectsDirectory = GetEffectsDirectory(directory);
 				Directory.CreateDirectory(effectsDirectory);
 				string path = GetModulePromptPath(effectsDirectory, module.Id);
-				JObject document = new JObject();
+				JObject document = CreateDefaultModuleDocument(module);
 				if (File.Exists(path))
 				{
 					if (!TryReadModuleDocument(path, module, out JObject existing, out _, out _))
@@ -242,20 +223,8 @@ internal static class PolicyEffectPromptService
 				string fieldName = kind == PolicyEffectPromptKind.Understanding
 					? "UnderstandingPrompt"
 					: "EvaluationPrompt";
-				if (prompt.Length == 0)
-				{
-					document.Remove(fieldName);
-					if (document.Properties().Count() == 2)
-					{
-						if (File.Exists(path)) File.Delete(path);
-					}
-					else WriteJsonAtomically(path, document);
-				}
-				else
-				{
-					document[fieldName] = prompt;
-					WriteJsonAtomically(path, document);
-				}
+				document[fieldName] = prompt;
+				WriteJsonAtomically(path, document);
 				_snapshot = RefreshSnapshotUnlocked(null, directory);
 				DelayRefreshUnlocked();
 			}
@@ -278,7 +247,7 @@ internal static class PolicyEffectPromptService
 			string directory = RequireStorageDirectory();
 			lock (Sync)
 			{
-				Directory.CreateDirectory(directory);
+				EnsureStorageFilesUnlocked(directory);
 				InvalidateUnlocked();
 			}
 			return true;
@@ -290,6 +259,42 @@ internal static class PolicyEffectPromptService
 				"Failed to initialize policy prompt files: " + ex.Message);
 			return false;
 		}
+	}
+
+
+private static JObject CreateDefaultCommonDocument()
+	{
+		return new JObject { ["Version"] = CurrentVersion, ["CommonEvaluationPrompt"] = DefaultCommonEvaluationPrompt };
+	}
+
+private static JObject CreateDefaultModuleDocument(IPolicyEffectModule module)
+	{
+		return new JObject
+		{
+			["Version"] = CurrentVersion, ["ModuleId"] = module.Id,
+			["UnderstandingPrompt"] = module.Descriptor.EditableUnderstandingPrompt,
+			["EvaluationPrompt"] = module.Descriptor.EditableEvaluationPrompt
+		};
+	}
+
+private static void EnsureStorageFilesUnlocked(string directory)
+	{
+		AnimusForgeDataPaths.ValidatePath(directory);
+		Directory.CreateDirectory(directory);
+		WriteJsonIfMissing(Path.Combine(directory, AutoDraftPromptFileName),
+			new JObject { ["Version"] = CurrentVersion, ["Text"] = DefaultAutoDraftPrompt });
+		string effectsDirectory = GetEffectsDirectory(directory);
+		WriteJsonIfMissing(Path.Combine(effectsDirectory, CommonEffectPromptFileName), CreateDefaultCommonDocument());
+		foreach (IPolicyEffectModule module in PolicyEffectModuleCatalog.Modules)
+		{
+			if (module?.Descriptor?.PromptVisible == true)
+				WriteJsonIfMissing(GetModulePromptPath(effectsDirectory, module.Id), CreateDefaultModuleDocument(module));
+		}
+	}
+
+private static void WriteJsonIfMissing(string path, JObject document)
+	{
+		if (!File.Exists(path)) WriteJsonAtomically(path, document, replaceExisting: false);
 	}
 
 	internal static void SetStorageDirectoryOverrideForContractTests(string directory)
@@ -497,7 +502,8 @@ internal static class PolicyEffectPromptService
 					"Policy prompt file is too large; using the corresponding default content.");
 				return false;
 			}
-			document = JObject.Parse(File.ReadAllText(path, StrictUtf8));
+			AnimusForgeDataPaths.ValidatePath(path);
+            document = JObject.Parse(StrictUtf8.GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF'));
 			return true;
 		}
 		catch (Exception ex)
@@ -535,8 +541,9 @@ internal static class PolicyEffectPromptService
 		return NormalizePrompt(token.Value<string>());
 	}
 
-	private static void WriteJsonAtomically(string path, JObject document)
+	private static void WriteJsonAtomically(string path, JObject document, bool replaceExisting = true)
 	{
+        AnimusForgeDataPaths.ValidatePath(path);
 		string directory = Path.GetDirectoryName(path);
 		if (string.IsNullOrWhiteSpace(directory))
 		{
@@ -554,9 +561,12 @@ internal static class PolicyEffectPromptService
 				writer.Flush();
 				stream.Flush(flushToDisk: true);
 			}
-			JObject.Parse(File.ReadAllText(tempPath, StrictUtf8));
+			if (new FileInfo(tempPath).Length > MaxJsonBytes) throw new InvalidOperationException("The policy prompt JSON exceeds the size limit; the original was not overwritten.");
+            JObject.Parse(File.ReadAllText(tempPath, StrictUtf8));
+            AnimusForgeDataPaths.ValidatePath(path);
 			if (File.Exists(path))
 			{
+                if (!replaceExisting) return;
 				File.Replace(tempPath, path, null);
 			}
 			else
@@ -671,6 +681,8 @@ internal static class PolicyEffectPromptService
 	{
 		switch (error)
 		{
+            case "The policy prompt JSON exceeds the size limit; the original was not overwritten.":
+                return PolicyUiTexts.Get("AFPOL_UI_PromptFileTooLarge", "The policy prompt JSON exceeds the size limit; the original was not overwritten.");
 			case "The existing player AI drafting prompt file is corrupted; back up or repair the original first. The original was not overwritten.":
 				return PolicyUiTexts.Get("AFPOL_UI_PromptAutoDraftFileCorrupt", error);
 			case "The existing shared effect requirements file is corrupted; the original was not overwritten.":

@@ -570,5 +570,7 @@
   "policy_weekly_vassal_parts": "玩家附庸政策。发布方：|。生效对象：|。发布者：|。归属说明：由宗主玩家发布，不是附庸统治者自行颁布。政策：《|》。政策摘要：|。衍生事件：|。周报归属国：|。相关每日影响：|。",
   "policy_weekly_label_ruler": "统治者政策",
   "policy_weekly_label_vassal": "玩家附庸政策",
-  "policy_weekly_no_numeric_change": "无持续数值变化"
+  "policy_weekly_no_numeric_change": "无持续数值变化",
+  "memory_diplomacy_oral_delayed_source": "此前答应的外交宣言尚未发布，待重新拟文；约定条款没有改变。",
+  "memory_diplomacy_oral_withdrawal_source": "我已明确同意撤回此前的公开外交提案，待正式撤回宣言发布；原案尚未因此失效。"
 }

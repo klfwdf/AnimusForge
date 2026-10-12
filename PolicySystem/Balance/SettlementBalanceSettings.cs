@@ -81,9 +81,10 @@ internal sealed class SettlementBalanceSettingsStore
 		_snapshot = SettlementBalanceSnapshot.Default;
 		try
 		{
+			AnimusForgeDataPaths.ValidatePath(path);
 			if (!File.Exists(path)) return;
 			if (new FileInfo(path).Length > 65536) throw new FormatException("Aggregate cap settings file is too large.");
-			if (!SettlementBalanceSettings.TryDecode(File.ReadAllText(path, new UTF8Encoding(false, true)), out var loaded, out string error))
+			if (!SettlementBalanceSettings.TryDecode(new UTF8Encoding(false, true).GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF'), out var loaded, out string error))
 				throw new FormatException(error);
 			_snapshot = loaded;
 		}
@@ -98,6 +99,13 @@ internal sealed class SettlementBalanceSettingsStore
 		string temp = _path + ".tmp-" + Guid.NewGuid().ToString("N");
 		try
 		{
+			AnimusForgeDataPaths.ValidatePath(_path);
+			if (File.Exists(_path))
+			{
+				if (new FileInfo(_path).Length > 65536) throw new FormatException("Existing aggregate cap settings file is too large; original preserved.");
+				if (!SettlementBalanceSettings.TryDecode(new UTF8Encoding(false, true).GetString(File.ReadAllBytes(_path)).TrimStart('\uFEFF'), out _, out error))
+					throw new FormatException("Existing aggregate cap settings are invalid; original preserved: " + error);
+			}
 			Directory.CreateDirectory(Path.GetDirectoryName(_path));
 			using (var stream = new FileStream(temp, FileMode.CreateNew, FileAccess.Write, FileShare.None))
 			using (var writer = new StreamWriter(stream, new UTF8Encoding(false), 4096, leaveOpen: true))
@@ -107,6 +115,7 @@ internal sealed class SettlementBalanceSettingsStore
 				stream.Flush(flushToDisk: true);
 			}
 			if (!SettlementBalanceSettings.TryDecode(File.ReadAllText(temp), out _, out error)) return false;
+			AnimusForgeDataPaths.ValidatePath(_path);
 			if (File.Exists(_path)) File.Replace(temp, _path, null);
 			else File.Move(temp, _path);
 			Volatile.Write(ref _snapshot, snapshot);

@@ -343,4 +343,15 @@ for apply in (False, True):
     assert model_snapshot() == before_models, "retired model migration changed model or Recovery bytes"
 assert not (model_root / "AnimusForge").exists(), "retired model command wrote a user root"
 
+# Incoming author's CLI retirement is intentional. Historical helper fixtures remain
+# evidence of old data preservation, not an active migration command.
+for kind in ("player-exports", "prompts", "terminal-settings"):
+    for apply in (False, True):
+        command=[sys.executable,"-B",str(ROOT/"tools/af2_migrate.py"),"--data-kind",kind,"--installed-module",str(model_source)]
+        if apply:command.append("--apply")
+        denied=subprocess.run(command,cwd=ROOT,env=env,capture_output=True,text=True)
+        assert denied.returncode != 0 and "module-local" in denied.stderr, denied
+        assert model_snapshot()==before_models,"retired CLI changed source or recovery"
+        assert not (model_root/"AnimusForge").exists(),"retired CLI materialized a C-style user root"
+
 print("PASS AF2 migration synthetic: PlayerExports, Prompt, TerminalSettings and retired model migration rejection; conflicts, repeat, interruption, backup corruption, disk full, bad root")

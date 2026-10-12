@@ -1,8 +1,8 @@
 # AnimusForge PlayerExports Editor
 
-Standalone Windows editor for `%LOCALAPPDATA%/AnimusForge/UserData/PlayerExports` data packages. `ANIMUSFORGE_DATA_ROOT` selects a validated alternate AF data root for an isolated copy.
+Standalone Windows editor for the current module's `AnimusForge/PlayerExports` data packages. An explicit `ANIMUSFORGE_DATA_ROOT` may select a valid installed module when the standalone editor has no module ancestor. Retired AppData libraries are not active roots.
 
-This tool is intentionally independent from Bannerlord and the AnimusForge mod runtime. It does not reference `TaleWorlds.*` or load `AnimusForge.dll`; it compiles the same pure .NET path contract as the game. Legacy module/source folders may be browsed for inspection, but edits require a validated `AFDataRoot/UserData/PlayerExports/<package>` path. A nearby legacy source without a matching completed migration record blocks default-root editing.
+This tool is intentionally independent from Bannerlord and the AnimusForge mod runtime. It does not reference `TaleWorlds.*` or load `AnimusForge.dll`; it compiles the same pure .NET path contract as the game. The default locator checks only the startup directory's parent chain for a valid `AnimusForge` module with `SubModule.xml` and `ModuleData`. If none is found, manually select that module's `PlayerExports` folder. Old user-data roots, path escapes and reparse paths are rejected; missing permissions are errors, not a reason to fall back to AppData.
 
 ## Projects
 
@@ -75,15 +75,16 @@ dotnet run --project tools\PlayerExportsEditor\tests\PlayerExportsEditor.SmokeTe
 dotnet run --project tools\PlayerExportsEditor\tests\PlayerExportsEditor.SmokeTests\PlayerExportsEditor.SmokeTests.csproj -- --path-contract-invalid
 ```
 
-Full synthetic edit/save/backup/restore/soft-delete smoke. After explicit approval for the exact external test root, the runner pre-creates it with `data` and a temporary directory. `ANIMUSFORGE_DATA_ROOT` must be the absolute `<root>/data`; `TEMP`, `TMP` and the process temp path must agree on one existing directory inside the root. The test rejects reparse roots and existing exports, and leaves all fixtures as evidence:
+Full synthetic edit/save/backup/restore/soft-delete smoke. Use a fresh workspace artifact root with an existing temporary directory. The runner creates a synthetic module, ignores the old data-root override, and leaves all fixtures as evidence. `TEMP`, `TMP` and the process temp path must agree on one directory inside the root:
 
 ```powershell
-$r = 'E:\AF-editor-smoke-<new-id>'; New-Item -ItemType Directory "$r\data","$r\tmp" | Out-Null
-$env:ANIMUSFORGE_DATA_ROOT="$r\data"; $env:TEMP="$r\tmp"; $env:TMP="$r\tmp"
+$r = Join-Path (Get-Location) ('artifacts\tests\editor-smoke-' + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory "$r\tmp" | Out-Null
+$env:TEMP="$r\tmp"; $env:TMP="$r\tmp"
 dotnet run --project tools\PlayerExportsEditor\tests\PlayerExportsEditor.SmokeTests\PlayerExportsEditor.SmokeTests.csproj -c Release -- --isolated-full $r
 ```
 
-The legacy full smoke without flags needs a populated user data root and performs a synthetic delete/move fixture; do not run it against real packages for a privacy-safe offline path check.
+The no-flag inspection resolves a module beside the test binary; use the isolated smoke above for privacy-safe offline edit checks, not real player packages.
 
 ## Current Features
 

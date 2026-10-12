@@ -9,6 +9,18 @@ public static class AnimusForgeModulePaths
 	private const string CurrentModuleFolderName = "AnimusForge";
 	private static readonly string[] LegacyModuleFolderNames = new string[2] { "AnimusForge_1_3_x", "AnimusForge_1_4_5" };
 
+
+    internal static string GetCustomPromptsDirectory()
+    {
+        string root = AnimusForgeDataPaths.ResolveRoot(GetCurrentModuleRoot());
+        string directory = Path.Combine(root, "CustomPrompts");
+        ValidateCustomPromptPath(directory);
+        return directory;
+    }
+
+    internal static void ValidateCustomPromptPath(string path)
+        => AnimusForgeDataPaths.ValidatePath(path);
+
 	public static string GetCurrentModuleRoot()
 	{
 		return AnimusForgeDataPaths.GetCurrentRoot();

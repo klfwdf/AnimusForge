@@ -247,5 +247,14 @@
   "PeaceScore_PeaceInclined": "王庭倾向寻找和平条件",
   "PeaceScore_PeaceNotInclined": "王庭暂不倾向议和",
   "RulerScore_PrivateRelationPrefix": "统治者私人关系=",
-  "RulerScore_CultureClaimsPrefix": "对方占有本文化领地="
+  "RulerScore_CultureClaimsPrefix": "对方占有本文化领地=",
+  "OralGeneration_DelayedFact": "此前答应的外交宣言尚未发布，待重新拟文；约定条款没有改变。",
+  "OralGeneration_WithdrawalFact": "我已明确同意撤回此前的公开外交提案，待正式撤回宣言发布；原案尚未因此失效。",
+  "Analysis_RejectedPeacePrefix": "和平提案未执行：",
+  "OralGeneration_ReceiptRegistered": "约定已登记",
+  "OralGeneration_ReceiptPublished": "正式宣言已发布",
+  "OralGeneration_ReceiptExecuted": "外交行动已生效",
+  "OralGeneration_ReceiptDeferred": "正式发文暂缓",
+  "OralGeneration_ReceiptInvalidTerms": "条款格式无效",
+  "OralGeneration_ReceiptControlRejected": "约定处置未提交"
 }

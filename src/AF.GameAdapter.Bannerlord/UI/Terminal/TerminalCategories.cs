@@ -16,6 +16,7 @@ internal static class TerminalCategories
     internal static readonly string Duel = Cache.Data.Categories[nameof(Duel)].LegacyValue;
     internal static readonly string Scene = Cache.Data.Categories[nameof(Scene)].LegacyValue;
     internal static readonly string Characters = Cache.Data.Categories[nameof(Characters)].LegacyValue;
+    internal static readonly string Ui = Cache.Data.Categories[nameof(Ui)].LegacyValue;
 
     internal static string DisplayText(string legacyValue)
         => legacyValue != null && Cache.Data.DisplayByLegacy.TryGetValue(legacyValue, out string text)
@@ -51,10 +52,10 @@ internal static class TerminalCategories
             {
                 Corpus data = JsonConvert.DeserializeObject<Corpus>(reader.ReadToEnd(),
                     new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error, MaxDepth = 8 });
-                if (data == null || data.SchemaVersion != 1 || data.Categories == null || data.Categories.Count != 8)
+                if (data == null || data.SchemaVersion != 1 || data.Categories == null || data.Categories.Count != 9)
                     throw new InvalidDataException("Invalid terminal category resource.");
                 data.DisplayByLegacy = new Dictionary<string, string>(StringComparer.Ordinal);
-                foreach (string key in new[] { nameof(All), nameof(War), nameof(Diplomacy), nameof(Prompt), nameof(Ai), nameof(Duel), nameof(Scene), nameof(Characters) })
+                foreach (string key in new[] { nameof(All), nameof(War), nameof(Diplomacy), nameof(Prompt), nameof(Ai), nameof(Duel), nameof(Scene), nameof(Characters), nameof(Ui) })
                 {
                     if (!data.Categories.TryGetValue(key, out Category item) || item == null ||
                         string.IsNullOrEmpty(item.LegacyValue) || string.IsNullOrEmpty(item.DisplayText) ||

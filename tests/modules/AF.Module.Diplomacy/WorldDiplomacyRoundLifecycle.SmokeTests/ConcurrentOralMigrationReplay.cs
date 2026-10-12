@@ -13,6 +13,10 @@ internal static class ConcurrentOralMigrationReplay
     {
         internal WorldDiplomacyOrchestration Owner;
         internal bool PublishEnabled;
+        internal bool PlayerAwareExecution;
+        internal bool OralEffectPortsEnabled;
+        internal (int minimum, int maximum)? OralRange;
+        public override (int minimum, int maximum) DeclarationCharacterRange() => OralRange ?? base.DeclarationCharacterRange();
         internal readonly List<string> Notices = new();
         internal readonly List<string> Facts = new();
         internal bool Dead, Cycle, Partial;
@@ -44,12 +48,15 @@ internal static class ConcurrentOralMigrationReplay
         public override bool TradeKnown() => true;
         public override void Notify(string value) => Notices.Add(value);
         public override IWorldDiplomacyOfferActionPort OfferAction() => new OfferPort(this);
+        public override IWorldDiplomacyImmediateActionPort ImmediateAction() => OralEffectPortsEnabled ? new ImmediatePort(this) : base.ImmediateAction();
+        public override IWorldDiplomacyPeaceAdmissionPort PeaceAdmission() => OralEffectPortsEnabled
+            ? new PeaceAdmissionReplay.Port { KingdomIds = new[] { "a", "b", "c", "p" } } : base.PeaceAdmission();
         public override IWorldDiplomacyPublicationPort Publication() => new PublicationPort(this);
         public override int MaxPropagationArrivalsPerDay() => 1200;
         public override string ResolvePropagationReceiverId(string kingdomId, string settlementId) => kingdomId ?? settlementId;
         public override IWorldDiplomacyHistoryCapturePort HistoryCapture() => new HistoryPort(this);
         public override IWorldDiplomacyDocumentExecutionPort DocumentExecution() => PublishEnabled
-            ? new DocumentExecutionReplay.Port { Owner = Owner } : null;
+            ? new DocumentExecutionReplay.Port { Owner = Owner, PlayerKingdomId = PlayerAwareExecution ? "p" : null } : null;
         public override IWorldDiplomacyActionSelectionPort ActionSelection() => PublishEnabled ? new SelectionPort(this) : null;
         public override IWorldDiplomacyThreatBindingPort ThreatBinding() => PublishEnabled ? new SelectionPort(this) : null;
         public override IWorldDiplomacyPrestigePort Prestige() => PublishEnabled ? new PrestigeApplicationReplay.Port() : null;
@@ -127,15 +134,33 @@ internal static class ConcurrentOralMigrationReplay
         public WorldDiplomacyRound ResolveRound(string id) => _h.Owner.ResolveRound(id);
         public WorldDiplomacyDocument ResolveDocument(string id) => _h.Owner.ResolveDocument(id);
         public bool ResolveParties(WorldDiplomacyRoundOffer offer) => true;
-        public WorldDiplomacyOfferActionReceipt ExecutePeace(string first, string second, WorldDiplomacyPeaceTerms terms) => new(false, "unused");
+        public WorldDiplomacyOfferActionReceipt ExecutePeace(string first, string second, WorldDiplomacyPeaceTerms terms)
+        { if (!_h.OralEffectPortsEnabled) return new(false, "unused"); _h.Effects++; return new(true, "peace applied"); }
         public WorldDiplomacyCessionReceipt ApplyCession(string first, string second, WorldDiplomacyPeaceTerms terms) => default;
-        public WorldDiplomacyOfferActionReceipt ExecuteAlliance(string first, string second) => new(false, "unused");
+        public WorldDiplomacyOfferActionReceipt ExecuteAlliance(string first, string second)
+        { if (!_h.OralEffectPortsEnabled) return new(false, "unused"); _h.Effects++; return new(true, "alliance applied"); }
         public WorldDiplomacyOfferActionReceipt ExecuteTrade(string first, string second) => new(false, "unused");
         public WorldDiplomacyOfferActionReceipt ExecuteTrade(string first, string second, int durationDays)
         { _h.TradeDuration = durationDays; return new(true, "trade applied"); }
         public WorldDiplomacyOfferActionReceipt ReadPeace(string first, string second, WorldDiplomacyPeaceTerms terms) => new(false, "unused");
         public bool HasTakenEffect(string intent, string first, string second) => false;
         public void Log(string value) { }
+    }
+    private sealed class ImmediatePort : IWorldDiplomacyImmediateActionPort
+    {
+        private readonly Host _h;
+        internal ImmediatePort(Host h) => _h = h;
+        public WorldDiplomacyStorage Storage => _h.Owner.CurrentStorage;
+        public int CurrentDay => _h.CurrentDayValue;
+        public bool CanAiAuthor(string author, out string reason) => _h.CanAiAuthorParty(author, out reason);
+        public bool IsPlayerDiplomacy(WorldDiplomacyDocument doc) => doc.TargetKingdomId == "p";
+        public WorldDiplomacyImmediateActionReceipt DeclareWar(string a, string t, WorldDiplomacyDocument doc)
+        { _h.Effects++; return new(true, "war applied"); }
+        public WorldDiplomacyImmediateActionReceipt BreakAlliance(string a, string t, WorldDiplomacyDocument doc)
+        { _h.Effects++; return new(true, "alliance broken"); }
+        public WorldDiplomacyImmediateActionReceipt CancelTrade(string a, string t, WorldDiplomacyDocument doc)
+        { _h.Effects++; return new(true, "trade cancelled"); }
+        public void Log(string message) { }
     }
     private static object Invoke(WorldDiplomacyOrchestration owner, string method, params object[] args) =>
         typeof(WorldDiplomacyOrchestration).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic).Invoke(owner, args);
@@ -311,7 +336,7 @@ internal static class ConcurrentOralMigrationReplay
         Invoke(o, "CarryUnansweredPlayerResponses", a);
         var followup = o.CurrentStorage.ConcurrentRounds.Single(x => x.EventSourceType == "player_followup");
         Test.True(followup.PlayerResponses.Count == pendingCount && followup.PlayerResponses.All(x => x.OriginalRoundId == a.RoundId), "closing transfers obligations with original source/event identity");
-        Test.True(followup.PendingOffers.Count == 0 && followup.ExternalOpeningContext.Contains("不得恢复"), "followup does not revive old treaty proposals");
+        Test.True(followup.PendingOffers.Count == 0 && followup.ExternalOpeningContext == string.Format(DiplomacyMiscPromptTexts.Get("Scheduling_OriginalEventClosedFormat", ""), a.RoundId), "followup does not revive old treaty proposals");
         var carried = followup.PlayerResponses.First();
         var carriedSource = o.ResolveDocument(carried.SourceDocumentId);
         Test.True(WorldDiplomacyNoActionApplication.IsAllowed(followup, null,
@@ -373,6 +398,9 @@ internal static class ConcurrentOralMigrationReplay
         publicationOwner.SubmitOralDiplomaticCommitment("ruler_a", "a", "action=Trade;move=NewMatter;target=b;days=14",
             new DialogueInteractionOrigin("courier", "publish", "publish_session", "PRIVATE_PLAYER", "PRIVATE_NPC"));
         var publishedArrangement = publicationOwner.CurrentStorage.DialogueArrangements.Single();
+        Test.True(publicationOwner.CurrentStorage.Documents.Count == 0, "oral publishing waits for AI declaration writing");
+        var publicationJob = publicationOwner.CurrentStorage.Jobs.Single(x => !string.IsNullOrEmpty(x.DialogueArrangementId));
+        publicationOwner.CommitGeneratedDocument(publicationJob, OralDeclarationReplay.Draft(publishedArrangement, "propose_trade"));
         var publishedDocument = publicationOwner.ResolveDocument(publishedArrangement.DocumentId);
         Test.True(publishedArrangement.Status == "published" && publishedDocument.IsReadyForPublication,
             "actual oral submission publishes through the module document executor: " + publishedArrangement.Status + ": " + publishedArrangement.Reason);
@@ -385,15 +413,17 @@ internal static class ConcurrentOralMigrationReplay
             && !(bool)Invoke(publicationOwner, "DialogueDocumentKnown", "c", publishedDocument.DocumentId)
             && !publicationOwner.CurrentStorage.PropagationArrivals.Any(x => x.DocumentId == publishedDocument.DocumentId && x.KingdomId == "b"),
             "oral counterparty knows the agreed declaration at once while other courts keep distance delivery and private provenance stays private");
-        var playerHost = new Host { PublishEnabled = true };
+        var playerHost = new Host { PublishEnabled = true, PlayerAwareExecution = true };
         var playerOwner = new WorldDiplomacyOrchestration(playerHost, new WorldDiplomacyRuntimeState());
         playerHost.Owner = playerOwner;
         playerOwner.SubmitOralDiplomaticCommitment("ruler_a", "a", "action=Annexation;move=NewMatter;target=p;receiving=a;joining=p",
             new DialogueInteractionOrigin("courier", "annex", "annex_session", "PRIVATE_PLAYER", "PRIVATE_NPC"));
         var annexArrangement = playerOwner.CurrentStorage.DialogueArrangements.Single();
+        playerOwner.CommitGeneratedDocument(playerOwner.CurrentStorage.Jobs.Single(x => !string.IsNullOrEmpty(x.DialogueArrangementId)),
+            OralDeclarationReplay.Draft(annexArrangement, "accept_annexation"));
         var annexDocument = playerOwner.ResolveDocument(annexArrangement.DocumentId);
-        Test.True(annexArrangement.Status == "published" && annexDocument.HasReachedPlayerCourt
-            && playerOwner.PlayerAnalysisOffers("p").Any(x => x.SourceDocumentId == annexDocument.DocumentId),
-            "player king can formally accept an oral annexation proposal immediately: " + annexArrangement.Reason);
+        Test.True(annexArrangement.Status == "executed" && annexDocument.HasReachedPlayerCourt
+            && playerHost.Effects == 1 && !playerOwner.PlayerAnalysisOffers("p").Any(x => x.SourceDocumentId == annexDocument.DocumentId),
+            "agreed oral annexation fulfills when AI declaration publishes without another player acceptance: " + annexArrangement.Reason);
     }
 }

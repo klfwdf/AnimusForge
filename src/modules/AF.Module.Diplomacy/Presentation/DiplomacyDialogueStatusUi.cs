@@ -68,6 +68,17 @@ internal static class DiplomacyDialogueStatusUi
         return message;
     }
 
+    // Called only at an already identified AFEF body boundary. The stored receipt
+    // and its identity remain untouched; unknown/player/model text is opaque.
+    internal static string ProjectFactForUi(string body)
+    {
+        if (body == DiplomacyCompatibilityTexts.Get("OralGeneration_DelayedFact"))
+            return DiplomacyUiLocalization.Text("AF_DIP_UI_OralGeneration_DelayedFact", "The diplomatic declaration previously promised has not yet been published and awaits redrafting; the agreed terms have not changed.");
+        if (body == DiplomacyCompatibilityTexts.Get("OralGeneration_WithdrawalFact"))
+            return DiplomacyUiLocalization.Text("AF_DIP_UI_OralGeneration_WithdrawalFact", "I have explicitly agreed to withdraw the earlier public diplomatic proposal, pending publication of the formal withdrawal declaration; the original proposal has not become invalid as a result yet.");
+        return body;
+    }
+
     private static string ProjectState(string status)
     {
         // Only exact generated state tokens are projected. User reasons stay untouched.

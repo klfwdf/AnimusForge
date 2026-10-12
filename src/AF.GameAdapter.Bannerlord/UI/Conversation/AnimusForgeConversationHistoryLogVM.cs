@@ -475,7 +475,7 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 		AnimusForgeDialogueHistoryEntry entry = _historyEntries[entryIndex];
 		string speaker = AnimusForgeConversationHistoryLogItemVM.LocalizeSpeakerForDisplay(entry.Speaker, entry.Kind);
 		// Only the disposable UI copy contains native RichText links; persisted dialogue stays untouched for memory and LLM reuse.
-		string rawDisplayText = "(" + speaker + ")" + (entry.Text ?? string.Empty);
+		string rawDisplayText = "(" + speaker + ")" + AnimusForgeConversationHistoryLogItemVM.LocalizeFactBodyForDisplay(entry.Text, entry.Kind);
 		string formattedText;
 		try
 		{

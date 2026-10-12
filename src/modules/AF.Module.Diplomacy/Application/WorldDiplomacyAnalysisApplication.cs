@@ -509,6 +509,13 @@ internal static class WorldDiplomacyAnalysisApplication
 	internal static string DescribeRejectedPlayerMechanic(string reason)
 	{
 		string code = reason ?? "";
+		const string peacePrefix = "peace_terms_not_executable_without_changes:";
+		int peaceReasonIndex = code.IndexOf(peacePrefix, StringComparison.Ordinal);
+		if (peaceReasonIndex >= 0)
+		{
+			string peaceReason = code.Substring(peaceReasonIndex + peacePrefix.Length).Trim();
+			if (!string.IsNullOrWhiteSpace(peaceReason)) return DiplomacyCompatibilityTexts.Get("Analysis_RejectedPeacePrefix") + peaceReason;
+		}
 		const string warPrefix = "declare_war_not_legal:";
 		int warReasonIndex = code.IndexOf(warPrefix, StringComparison.Ordinal);
 		if (warReasonIndex >= 0)
@@ -574,6 +581,14 @@ internal static class WorldDiplomacyAnalysisApplication
 	internal static string DescribeRejectedPlayerMechanicForDisplay(string reason)
 	{
 		string code = reason ?? "";
+		const string peacePrefix = "peace_terms_not_executable_without_changes:";
+		int peaceReasonIndex = code.IndexOf(peacePrefix, StringComparison.Ordinal);
+		if (peaceReasonIndex >= 0)
+		{
+			string peaceReason = code.Substring(peaceReasonIndex + peacePrefix.Length).Trim();
+			if (!string.IsNullOrWhiteSpace(peaceReason))
+				return DiplomacyUiLocalization.Format("AF_DIP_UI_WorldDiplomacy_Reject_PeaceNotExecutedDetail", "Peace proposal not executed: {REASON}", ("REASON", peaceReason));
+		}
 		const string warPrefix = "declare_war_not_legal:";
 		int warReasonIndex = code.IndexOf(warPrefix, StringComparison.Ordinal);
 		if (warReasonIndex >= 0)

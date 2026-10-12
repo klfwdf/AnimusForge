@@ -89,6 +89,234 @@
 
 root共享资源/宿主与GCCZ独占职责分别记录；新增词表/Regex/reader只在首次初始化缓存与既有文本生成边界执行，无Tick IO/反射/全量游戏扫描。PolicySystem保持只读，由外部停止后的后续切片负责。实际实机/完整provider/旧档/正式CNEN包未验证；原始用户文本、事实与存档身份不作为可自由英译数据。下方历史代码图保留其原修订和范围。
 
+<!-- Historical additions accepted from origin/main a9013b705; current task status is above. -->
+
+<a id="oral-diplomacy-declaration-20261012"></a>
+### 口头外交：AI 正式宣言、已合意执行与可见输出
+
+产品修订 `f8ac6c267f73839aa81f4bd666635d2c5fa93e7d`；本地 `artifacts/oral-diplomacy-declaration-20261012/code-map.json` 的20锚点在记录修订与 working-tree 两模式 PASS。以下是一基源码范围及真实调用责任；详细证据、既存目录校验失败与实机边界统一归[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#oral-diplomacy-declaration-20261012)。本轮不新增公开 API 或独立 DLL。
+
+| 源码范围 / 符号 | owner、消费者及验证边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs:34–65`；Process | 共享外交标签消费层执行合法标签但删除系统回执，畸形/缺人物/模块不可用/异常不泄露代码；原 NPC 台词保留。通过原 bridge 消费：`Adapters/DiplomacyConversationModuleAdapter.cs:37–42` ProcessDiplomacyTags |
+| `src/modules/AF.Module.Conversation/Channels/Native/NativeConversationGameEffectsRuntime.cs:136–138`；`src/modules/AF.Module.Conversation/Channels/Scene/SceneSpeechEffectController.cs:174–176`；`src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs:82–84` | 三渠道现有消费入口，未单独改变可见历史/TTS规则；共享输出回放通过，真实 UI/TTS 未验 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Dialogue.cs:169–222,292–304`；SubmitDialogueWork / PublishDialogueArrangementCore | 记录本次玩家/NPC交谈与玩家国王身份，约定版本绑定原 generate 队列；旧记录无确认字段继续正常提案；不立即发布固定模板 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.OralGeneration.cs:42–83,115–158,170–249`；TryValidateOralDeclarationWork / RebuildOralDeclarationJob / CommitOralDeclaration | 国家/统治者/版本/来源/条款重验，复用普通写作合同和配置篇幅，以对话及固定动作拟文；AI改约、短稿、技术正文、坏 JSON 不发布，最早次日重试。网络与游戏叶为离线夹具，不代表真实生成质量 |
+| 同文件 `:241–253,253–267,266–285`；HasConfirmedOralPlayerAgreement / ExecuteConfirmedOralPlayerAgreement / QueueOralWithdrawal | scoped 玩家已合意发布即执行，复用原效果 owner，未归档输入不制造玩家公文；重复/已发布不重放。撤回同样由AI拟文，只撤原开放提案，原案被接受后迟到稿不得撤回 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueControl.cs:17–64`；ControlOralDiplomaticCommitment；`src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DialogueAdapter.cs:23` | 显式延期/取消清旧队列、撤回绑定原提案及来源；GameAdapter继续沿现有 scope 提供真实交谈材料 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Dispatch.cs:48–77`；AdmitCompletion；`WorldDiplomacyOrchestration.Treaties.cs:77–116`；ValidateFormalTreatyDeclaration；`WorldDiplomacyDocumentExecutionApplication.cs:333–335` | 沿既有请求 attempt / generation / 回合 revision / 签名门禁；仅有确认且绑定本篇的玩家协议免原公文 offer 要求，权限与条款检查仍由原 owner 执行；第三国不获得旁路 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/OralDeclarationReplay.cs:183–207,226–250`；RunWithdrawal / RunYieldedCompletion | 原案撤回及被接受保护、真实 completion dispatcher 强制异步 yield 后条款/取消/存档变化回放；141专项与4209外交回归不替代 provider、游戏对象和旧玩家sav验收 |
+
+可选 JSON 字段只扩充既有约定/工作记录，严格存档分块 owner、旧键/类型/枚举不变。运行在交谈提交、送出、完成与既有日维护边界，每日维护上限4项及原队列预算/lease保留，无新增 Tick 序列化、轮询或全世界扫描。
+
+<a id="module-runtime-storage-20261011"></a>
+### 缓存、导出、终端设置与恢复备份：恢复模组/Modules 目录
+
+运行时 `2f8edb1f`、编辑器 `bfcdb4da`、部署 `60c9439751a2bfc6298faa3c5e885d77b5493a14`，导入边界 `ad39448de802442171fbc981aa7fe2dbed1c5fc3`；20锚点 `artifacts/tests/module-runtime-20261011/code-map.json` 在记录提交和 working-tree 均通过。本段替代此前缓存“每实例只加载一次”、AppData/双来源与模组不可编辑合同；其他业务/存档和提示词职责不扩大。详见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#module-runtime-storage-20261011)。
+
+| 一基范围 / 符号 | 实际 owner、消费者与覆盖边界 |
+| --- | --- |
+| `src/AF.Persistence/AnimusForgeDataPaths.cs:12–22,25–38,46–57`；ResolveRoot / FindModuleRoot / ValidatePath | 复用纯内部助手校验当前模组及固定子目录；游戏根仍由原 ModulePaths 选定，编辑器仅启动父链定位；无环境变量、AppData或CWD存储回退，不新增公开 API |
+| `src/AF.Persistence/PlayerExportsStore.cs:21–29,47–75,78–84,119–143,193–213`；GetModuleRootPath / GetImportFolders / BeginExportPackage / ResolveImportFolderPath / ReadJson | 开局数据库菜单、开发者导入/导出、王国档案仍消费唯一 owner；单来源目录，列举/最新选择跳过reparse包，JSON读取验证祖先及文件；绝对选择不得越出模组 PlayerExports；旧包候选/并发校验/恢复事务仍为未改的 PlayerExportsPackageExport，Recovery与活动包分离 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:5243–5297,5299–5345,5348–5363`；EnsureModelDropdownCacheHydrated / PersistModelDropdownCacheSnapshot / GetModelDropdownCachePath / ReadModelDropdownCacheSnapshot | 五模型既有 MCM getter 检查单文件时间；较新mtime才解码/合并，读取失败保留当前选项。保存同目录候选，严格UTF-8、坏原件拒绝覆盖；无新增Tick/全量扫描，预设与模型名绑定由原逻辑保留 |
+| `src/modules/AF.Module.UI/Settings/AnimusForgeTerminalSettings.cs:103–106,109–121,124–181`；GetSettingsPath / TryLoadSettingsFile / TrySaveSettingsFile / Save | 原终端热键、地图按钮及开关读写模组 ModuleData；旧两bool类型/字段不变，防锁死与保存失败内存回退保留；实际 DLL 冷加载、坏原件、只读文件/目录夹具，不代表Gauntlet实机 |
+| `tools/PlayerExportsEditor/src/PlayerExportsEditor.Core/PlayerExportsService.cs:11–29,79–91,214–253,436–456`；FindDefaultPlayerExportsRoot / LoadPackage / ValidateEditablePlayerExportsRoot / BuildPackageInfo；`JsonFileStore.cs:19–26,56–101`；ReadUtf8 / SaveUtf8WithBackup / CreateBackup | 独立编辑器共享纯路径合同，不加载AF/TaleWorlds；模组包可编辑，旧用户根/越界/reparse拒绝；原JSON备份和软删除保持，读取/候选/备份路径防reparse。WinForms编译与合成九步通过，真实界面未启动 |
+| `scripts/build/deploy_module.ps1:536–696`；Invoke-ManagedStageDeployment | 安装事务内时间合并，仅Stage文件；保留额外包、已有提示词/终端，排除Logs/Recovery；Modules本地备份、哈希/mtime重验、原子替换、字节与时间回滚及中断阻断。源码/Stage不反向同步，真实安装/ZIP未运行 |
+| `tools/af2_migrate.py:605–619`；main | argparse后、读取LOCALAPPDATA之前退役所有四类激活/清点入口；保留历史函数和证据，没有执行迁移 |
+
+<a id="module-custom-prompts-20261011"></a>
+### 自定义提示词：恢复模组内单目录合同
+
+产品 `45c630666d160e48d54c360557f053e1e762b15f`，部署保护 `ebb29ac5`；16 锚点 `artifacts/tests/module-prompts-20261011/code-map.json` 已验证当时记录提交与 working-tree。下表的缓存/导出不变边界及部署坐标已由[本轮恢复](#module-runtime-storage-20261011)替代，提示词行为仍保持。详细 red/green、组合候选、原失败和未覆盖责任见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#module-custom-prompts-20261011)，不替代实机验收。
+
+| 一基范围 / 符号 | owner、消费者与覆盖边界 |
+| --- | --- |
+| `src/AF.Persistence/AnimusForgeModulePaths.cs:13–42`；GetCustomPromptsDirectory / ValidateCustomPromptPath | 唯一模组解析和绝对本地/reparse 检查；不修改生产日志/缓存/PlayerExports 路径，测试 override 仅供隔离夹具 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:3501–3521,4485–4580,4628–4741,5136–5143`；OpenCustomPromptTextStoreFolder / TryReadCustomPromptTextStore / PersistCustomPromptTextFileUnlocked / EnsureCustomPromptTextStoreFilesUnlocked / WriteCustomPromptTextJsonFileUnlocked | MCM 与普通提示词消费者共用模组文件；一秒缓存、补缺失、普通空 Text、即时失效、原子写；旧格式初始化兼容仍归本 owner，不宣称整个 DuelSettings 已重构 |
+| `PolicySystem/Effects/PolicyEffectPromptService.cs:150–186,320–333,359–387,562–607`；TrySaveAutoDraftPrompt / EnsureStorageFilesUnlocked / GetSnapshot / WriteJsonAtomically | 政策默认写回、逐模块保留字段、五秒缓存与候选限额；共同/模块保存仍为本服务，非独立存储层 |
+| `PolicySystem/Effects/PolicyEffectModuleRetrievalSettings.cs:305–316,390–406`；ReadSettingsDocument / GetSettingsPath；`PolicySystem/Balance/SettlementBalanceSettings.cs:17–27,78–126`；Initialize / TrySave | 两类配套配置同 Policy 路径；初始化/UI 保存验证原件，热 getter 不读盘，没有 Tick 配置扫描 |
+| `PolicySystem/UI/PolicyPromptEditorUi.cs:27–35`；Open（未改） | 原政策编辑入口调用 EnsureStorageFiles；实际 DLL 存储专项不等于 Gauntlet 界面验收 |
+| `scripts/build/deploy_module.ps1:536,585–589`；Invoke-ManagedStageDeployment | 验路径后仅保留已有 CustomPrompts，补缺失，其他文件恢复规则不变；Stage/ZIP 不合并玩家内容，真实部署/打包未执行 |
+
+<a id="meeting-real-troop-escort-20261011"></a>
+### 会面护卫：原版真实士兵身份与有限初始化
+
+产品 `30e70d3704256b0a53b205b08133634c51045f71`；以下一基坐标及消费者已按产品修订和工作树核对，本地 `artifacts/tests/meeting-escort-official-build/run-7cf761c9a0de475299b68a5293ee0efd/code-map.json` 保存结果。red/green、框架引用失败、正式双构建与产物身份统一归[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#meeting-real-troop-escort-20261011)；不验收完整Mission或实机。
+
+| 一基范围 / 符号 | owner、实际消费者与覆盖边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:4600–4605`（未改） | 原会面入口仍只在 MeetingActive/原版 BattleEndLogic 命中时添加真实 MeetingBattleLockMissionBehavior；不改默认交互入口 |
+| `src/AF.GameAdapter.Bannerlord/Encounter/MeetingBattleLockMissionBehavior.cs:132–140,295–360,640–669`；AfterStart / OnMissionTick | 原实例状态初始化与领主安置完成开始计时；原Tick只在未结束时0.5秒重试，转战分支在选人前返回 |
+| 同文件 `5445–5509,5511–5523`；TryPlaceEscortGuards / ResolveMeetingEscortForSide | 最多单护卫、原Agent缓存，侧完成后不重选；无健康士兵结束、5秒超时单次日志，不阻塞会面；删除额外生成入口及独占helper |
+| 同文件 `5525–5555,5557–5574,5576–5589`；SelectExistingMeetingEscortAgent / IsReusableMeetingEscortCandidate / HasHigherMeetingEscortPriority | 每侧一次线性扫描，16米附近最近优先，远处既有优先级；同Team/Party/原PartyGroup Origin/Troop一致，排除英雄/玩家/领主/坐骑/演员。无Origin或名单写入 |
+| 同文件 `3167–3182,5591–5633,6346–6383`（方法原文保持）；ConfigureMeetingHoldFormations / MoveExtraMeetingCircleTroopsAway / PositionEscortAgents | 真实护卫继续沿用原编队、站位、武器和暂停处理；专项的场景叶为替身，站位真实引擎效果未验 |
+| 同文件 `3863–3871,3927–3940,3942–4069`（原文保持）；OnAgentHit / OnAgentRemoved / OnScoreHit | 原伤害/死亡/移除处理入口未改；原版Origin伤亡方法夹具验证兵员唯一性，不吞噬结算异常、不验证完整实机事件次序 |
+| 同文件 `1060–1187,3835–3861,5161–5232`（原文保持）；ForceAgentsIntoCombatReadiness / RestoreTargetLordControllerForCombat / ReleaseMeetingLocksForCombat | 原转战恢复/释放不改，选中的真实护卫沿既有流程恢复；不新增敌对或死亡处理 |
+| `tests/AF.GameAdapter.Bannerlord/MeetingEscortRosterRegressionTests/run.py:33–139`；main提取/接线与Harness | 原生产方法/计时字段/Tick子块和两版原Origin伤亡方法原文编译；38用例/版，8方法不变断言，旧源码同夹具失败。scene/spawn/supplier/roster是替身；net10离线证据，非实机或玩家档验收 |
+
+频率仅每次会面初始化最多5秒、0.5秒节流；每侧一次选人扫描、不全量排序，选中后O(1)校验，既有站位/编队扫描责任未重构。公开接口、配置、存档字段与模块身份不变。
+
+<a id="refactor-wiring-debug-20261011"></a>
+### 当前回退坐标与历史补丁修复地图
+
+用户已明确撤销 `8097f599` 与 `aba208e8`；正常 inverse `a6bf41a6` / `ca994df8` 后，当前源码重新等于各自修复父提交。八锚点 `artifacts/tests/diplomacy-requested-rollback/run-638fa65c868549f5a47fea1a6c895e81/code-map.json` 绑定 `ca994df8029bdf46d1976b5e114067931a9f01b3`，记录提交和 working-tree 均 PASS；仅证明回退定位，不证明玩家原故障已解决。
+
+| 当前一基范围 / 符号 | 回退责任与边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs:30–33,35–52,54–59`；ModuleInit / ApplyGlobalPatchesOnce / RegisterEvents | 精确恢复原注册实现，撤销后置完成标记；不是新增失败策略或根因修复 |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs:157–170,203–272`；RegisterEvents / RegisterHarmonyPatches | 精确恢复原九事件与安装实现，撤销新增补装、成功目标缓存/helper及其诊断分支；其他业务代码和消费者未改 |
+
+**以下两张图仅为旧提交的历史证据**；新增四个测试文件已随逆向提交撤销，旧地图不再用于当前 working-tree 校验。详细范围、双版本结果与未覆盖根因见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#refactor-wiring-debug-20261011)。
+
+#### 历史：直接外交注册恢复
+
+
+产品 `8097f59924705e8e2de2d2ba85f2cf716371dfba`；本地八锚点 `artifacts/tests/wiring-debug-final-20261011/run-21bf27f91e3e40b0b0949206f142f686/code-map.json` 在产品修订与 working-tree 均通过。详细 red/green、双实现/Bootstrap/双 Coup 证据、原 gate 失败及未覆盖责任集中在[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#refactor-wiring-debug-20261011)，本条不替代其他产品验收。
+
+| 一基范围 / 符号 | owner、消费者与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs:30–33,35–52,54–59`；ModuleInit / ApplyGlobalPatchesOnce / RegisterEvents | 唯一生产改动：安装成功后才设完成标记；首次安装失败保留战役注册重试，成功日志失败不重复安装。无 Tick/全量扫描/新生命周期入口 |
+| 同文件 `75–90`；Patch_BuildDiplomacyContext_Postfix（未改） | 既有共享 prompt 追加外交上下文；规则内容与执行语义保留，受控注册回归不证明真实 Harmony 或实机 prompt 成功 |
+| `src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModuleComposition.cs:12`（未改） | 战役装配仍添加真实 DiplomacyBehavior，进而调用 RegisterEvents，不为修复启用历史孤儿补丁 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SceneExternalPromptCaptureAdapter.cs:59–68`；`src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs:177–181`（未改） | Scene/Native 共享捕获与 Courier 仍调用同一 BuildShoutPromptContextForExternal；这里只核对消费者坐标，不将其当成三渠道完整验收 |
+| `tests/modules/AF.Module.Diplomacy/DiplomacyPatchRegistrationTests/Program.cs:33–79`；Main | 链接完整生产类和实际 CLR ModuleInitializer，18 项失败恢复/成功去重检查；Harmony、game 和 logging 叶受控，默认 net8 未验，本机显式 net10 |
+
+#### 历史：世界外交多 hook 部分失败恢复
+
+产品 `aba208e82aadd0f54e75ac125863f9e29dbb140c`；12 锚点 `artifacts/tests/world-diplomacy-unified-build/run-ecc750db9c3244a1b41b12f589642aa2/code-map.json` 双模式通过。详细 red/green、组合工作树构建身份和未覆盖责任仍归上述唯一主台账，不将锚点或 Coup gate 当成实机外交验收。
+
+| 一基范围 / 符号 | owner、实际消费者与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs:103,212–302,304–310`；RegisterHarmonyPatches / ApplyHarmonyPatchOnce | 按成功目标缓存，缺失/失败不发布全完成；只在启动/战役注册补失败项，成功不重复。少量 MethodBase 元数据，无 Tick/全表扫描 |
+| 同文件 `158–179`；RegisterEvents | 原九监听和 owner 身份保持；监听后补装，构造失败隔离。非重排生命周期/新后台重试 |
+| 同文件 `995–1029`；Patch_BuildSharedDiplomacyMemory_Postfix（未改） | 仍向共享 prompt Extras 追加 DiplomacyConversationBridge 记忆；只修安装接线，不改变三渠道记忆内容或执行语义 |
+| `src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs:510` → `src/bridges/Diplomacy/DiplomacyModuleServices.cs:12` → `src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModule.cs:21` → `DiplomacyModuleComposition.cs:14`（均未改） | 真实启动安装消费者；战役 `CampaignComposition.cs:47` → Services.Register → Composition.Register `:9–13` 添加真实 World owner，不擅自启用历史孤儿补丁 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyPatchRegistrationTests/run.py:17–69`；`Program.cs:54–116` | 完整真实注册/事件/日志/helper 声明回放，18 场景/315 检查；记录型叶受控、非完整 World 类/真实 Harmony。精灵 owner 内部实现、外交机制/玩家档和实机未验 |
+
+<a id="tts-agent-plan-20261011"></a>
+### Agent Plan：HTTP TTS 路由与实际消费者
+
+产品 `1376309e1d91864dc5170d0a6ebc047e67a8fe54`；本地八锚点 `artifacts/tts-agent-plan-20261011/code-map.json` 已按产品修订与 working-tree 核验。行为、回归、构建、部署及未覆盖边界见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#tts-agent-plan-20261011)。本条只接续套餐 HTTP 地址兼容，不替代历史 TTS 生命周期或实机验收。
+
+| 一基范围 / 符号 | owner、消费者与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Llm/Tts/VolcTtsGateway.cs:21–31`；GetVersion | 精确新增套餐 HTTP 路径识别，复用原 V3 gateway；仍拒绝其他 V3/WS/SSE/ASR 路径，不重写用户 URL、不追加回退请求 |
+| 同文件 `40–60`；DescribeError | 地址与鉴权失败提示包含 Agent Plan；错误反馈继续走原主线程队列 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:1955–1975`；TtsVolcDedicatedEnabled/ApiUrl/ApiKey；`src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs:178–184` | 两设置入口同步套餐地址及专属 Key 说明；默认值、保存键和设置身份不变 |
+| MCM 同文件 `6683–6746`；TestTtsVolcDedicatedVoice（未改） | 原测试按钮调用共享路由；套餐地址不要求 AppID，仍检验总开关、专用开关和队列接受结果 |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.cs:1011–1051`；CallVolcApi（未改） | 生产消费者透传 endpoint、请求取消 token、DTO 与凭据，复用原独立 V3 HttpClient；不改变播放器、口型和任务所有者 |
+| `tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests/Harness.cs.txt:60–76`；Agent Plan 三用例 | 完整生产 engine/router 与提取的正式按钮，provider/game/native 叶受控；验证空 AppID、单次请求和取消所有权，拒绝 stream |
+| `tests/replay/TtsGatewayReplayTests/V3Cases.cs:14–141`；Run | 刚构建的实际 1.4 DLL + loopback server，校验两类 V3 地址/请求头/PCM/WAV、非法路径、HTTP 错误不重试、取消/超时/容量；不调用收费服务、不证明账号授权或实机声音 |
+
+频率为每次合成/测试预检一次有界路径比较；无新增 Tick、全量扫描、反射或缓存状态。V1 默认与已有播放/存档/公共 API 责任仍保留原 owner。
+
+<a id="diplomacy-draft-length-20261011"></a>
+### 书记官代笔：生成前篇幅预算与完整稿回填
+
+产品源码 `462d0e9297070dfb852bd1ae54ad2b55a6a4feac`；详细行为、65项回放、双版本/Bootstrap构建、剩余实机边界与回滚见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-draft-length-20261011)。本地六锚点 `artifacts/diplomacy-draft-length-20261011/code-map.json` 已按产品修订及working-tree核验；仅覆盖以下责任。
+
+| 当前源码（一基范围）/符号 | owner、实际消费者与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyPlayerDraftRules.cs:45–61`；BuildMessages | 代笔篇幅范围/中点目标/提纲扩写/文风优先级；应用在点击时传入实际HTTP请求，不替代真实provider语义验收 |
+| 同文件 `63–68`；GetOutputTokenBudget | 最大篇幅×4＋256输出容量，由同一应用传入既有LLM client；client继续遵守玩家API配置上限 |
+| 同文件 `70–91`；Parse | 完整有效稿不以MCM范围拒收；空/坏协议/既有6000字符编辑器容量仍保护原文；不改发布链路 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerDraftApplication.cs:9–39`；TryPrepare | 主线程冻结MCM/正文/偏好和预算，后台单请求/结果解析；不改HTTP transport、NPC自主外交或存档 |
+| `src/modules/AF.Module.Diplomacy/Presentation/WorldDiplomacyComposePopupVM.AutoDraft.cs:109–135`；ProcessAutoDraftCompletion（源码保持） | 实际UI回填消费者，继续重验owner/request/generation/revision；本次范围外稿通过正式消费者直接回填，无字数提示 |
+| `tests/modules/AF.Module.Diplomacy/PlayerDocumentDraftTests/Program.cs:129–157`；LengthBudgetAndFill | 受控HTTP+正式VM回放范围/预算/显式API上限、范围外完整稿显示、零字数提示与零修稿重试；Gauntlet/MCM为替身 |
+
+<a id="policy-effect-bounded-retrieval-20261010"></a>
+### 政策效果检索：真实query、详情owner及玩家/NPC消费者
+
+公开片1`b7809f99`，最终产品源码`a1a4aa213f0ff82eb836dee25c40aaecbe492d29`，分别与原本地已验片1/片2源码树完全一致；发布映射、双API/真实ONNX证据与已知基线失败见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#policy-effect-bounded-retrieval-20261010)。本地13锚点`artifacts/policy-retrieval-refactor-20261010/code-map-publication.json`已按公开产品提交/working-tree校验。本表只覆盖具名职责，不覆盖整份Behavior或下方历史交付。
+
+| 当前源码（一基范围）/符号 | 已接通的责任及未覆盖边界 |
+| --- | --- |
+| `PolicySystem/Effects/PolicyEffectRecallQueryBuilder.cs:19–73,75–96`；Build / IsExplicitExclusion / Windows | 实际查询组成与来源/否定标记owner：完整原文、独立措施、摘要、长文尾窗及窗口预算；不替代LLM的语义判断或游戏动作 |
+| `PolicySystem/Effects/PolicyEffectDetailSelector.cs:10–38,40–49`；Rank / HasCue / ApplyTargetCapabilities | 实际原文覆盖排序、已授权目录资格后的候选内补位与裁剪；不增添candidate，不改变授权器/执行器 |
+| `PolicySystem/Effects/PolicyEffectModuleRouter.cs:214–220,511–597`；BuildPostAssessmentQueries / RouteAfterAssessment | 查询API保持兼容；真实生产route接入新owner、仍用缓存ONNX index和Top4+cue并集。旧Route及SelectDetails兼容调用保留，不误称其为生产第二阶段 |
+| `PolicySystem/Effects/PolicyEffectModuleRetrievalSettings.cs:20–34,117–120`；PolicyEffectModuleRetrievalRequestSnapshot / CaptureRequestSnapshot | 不可变请求设置副本；不改设置文件schema或执行阶段MCM读取 |
+| `PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs:151–278,280–424`；TryStartSuggestedPolicyInternal / TryStartPolicyGeneration；具体capture `234–235,375–376` | 建议/自主两入口在queue前冻结；其余资格/调度/重试代码保留，不宣称完整NPC线程重写 |
+| 同文件`3467–3470,3854–3926`；候选/详情界限 / PrepareNpcPolicyEffectRouting；`.Persistence.cs:1755–1758`运行时snapshot字段 | draft await之后只读冻结设置，候选界限共用router；实际目录消费者接入补位并同步DetailedModuleIds。运行时batch字段不进已存政策record/SyncData |
+| `PolicySystem/Core/CustomPolicyBehavior.Generation.cs:2197–2209`；GeneratePolicyResultAsync目标目录段 | 玩家实际candidate目录→详情资格→SelectedEffectModuleIds；普通评议/后处理、target授权、source编译、效果与存档owner仍保留原职责 |
+| `PolicySystem/Effects/Modules/clanLeaderRelationOnce/ClanLeaderRelationOnceEffectModule.cs:24`；ModuleDescriptor.RetrievalText | 唯一模块语义文本调整；payload/数值/执行及JSON评估prompt未变 |
+| `tests/bridges/Policy/PolicyEffectModule.ContractTests/PolicyEffectRetrievalTests.cs:17–206`；Production contracts / NPC request snapshot / Detail coverage / ONNX matrix | 真实DLL算法、yield设置变更、受控目标目录和实际ONNX推理；fixture224案例，不覆盖真实provider输出、游戏目标/线程、UI或旧坏档 |
+
+无全量模块注入、数值或存档重构、外部API/DLL拆分、构建脚本变更、Tick新增、Stage/部署/打包；用户本轮追加推送授权及干净交付边界见主台账。本包源码/contract/native推理通过不代表全仓合同或实机接受；两项同基线失败保留在主台账。
+
+<a id="bulletin-independent-publishing-toggle-20261010"></a>
+### 快报独立自动发布开关：实际门控与消费者
+
+产品修订 `9bba267ef93d4d43cd525cf057d2112a1bae08d0`；行为、验证与未覆盖边界集中在[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-independent-publishing-toggle-20261010)。本地坐标/hash见 `artifacts/tests/bulletin-switch-20261010/code-map.json`，不改变下方其他交付的责任范围。
+
+| 当前源码（一基范围）/符号 | 实际责任及覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs:459–470`；`IsWorldBulletinPublishingEnabled` | 唯一生产变更：读快报独立开关；空设置/异常回退保持，无新增扫描或轮询 |
+| 同文件 `368–397`；`OnWorldBulletinHourlyTick`；`236–271`；`CompleteWorldBulletin` | 未改的真实消费者：发起前及完成后共用门控；关闭时不发请求、不发布晚结果 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WorldBulletin.cs:61`；`WorldBulletinState`端口绑定 | 未改的真实宿主接线；`PublishingEnabled=IsWorldBulletinPublishingEnabled`，不是测试专用入口 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.News.cs:43–47`；`AutoGenerateWorldBulletins` | 未改的设置属性及旧开关缺省兼容；真实partial迁移专项另验 |
+| `tests/modules/AF.Module.Weekly/F4GenerationOwnerTests/Program.cs:8–46,47–104`；`TestBulletinPublishingSettings`、`TestBulletinDelayedCompletion` | 实际生产owner门控、小时请求与晚结果；设置/provider/game叶受控，不能替代实机MCM或玩家档 |
+
+124 owner /141策略/12设置为显式 .NET 10离线检查，原双API/Bootstrap/双DLL门禁通过；.NET 8引用包缺失、实机与真实provider仍未覆盖。未处理重复桥段，未部署。
+
+<a id="peace-proposal-admission-20261010"></a>
+### 玩家和平提案逐动作校验
+
+源码 `b28bb5d40`，基线 `75317d47c`，状态/回归/实机限制见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#peace-proposal-admission-20261010)。范围仅为本包，下列坐标不代表全文件或全仓验收。
+
+| 一基范围 / 符号 | 责任与消费者 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPeaceAdmissionApplication.cs:80–138`，TryValidateOfferedPeaceTerms / TryValidatePeaceTerms | 保留已有原案来源/动作身份校验，分离可复用条款校验；新提案、旧提案接受共同使用相同贡金/割地规则 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs:1193–1218, 2406–2451`，ProcessAnalyzedDocument / TryGetPlayerWorldStateIntentViolation | 移除无SourceActionId的临时原案检查，将新提案自身条款接入真实逐动作owner guard |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs:323–329, 415–428`，ExecuteItems | 已有当前动作投影、预检和效果前重验消费该guard；迟到拒绝结果转为具体可读原因 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyAnalysisApplication.cs:506–517`，DescribeRejectedPlayerMechanic | 公开公文拒绝通知解析和平条款具体原因，原机器码仍在日志 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/PeaceProposalReplay.cs:9–167`，Run / Fixture | 实际解析到owner到执行器到pending offer回放：原日志、flat、遗漏/显式条款、多动作排序/双对象、非法条款、执行前归属变化和重复完成；游戏对象为已有detached端口 |
+
+未覆盖真实Campaign、实际provider、实机UI或玩家旧档；旧拒绝宣言不自动重放，修复后重新提交倡议。未改存档身份、三渠道口头外交、默认交互入口、Bootstrap或一键脚本。
+
+<a id="diplomacy-reply-shortcut-20261010"></a>
+### 外交回应撰写快捷入口
+
+源码 `d612425e9`（基线 `bdf51ff48`）；状态、失败与实机限制统一见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-reply-shortcut-20261010)。局部5处机器坐标及SHA保存在 `artifacts/diplomacy-reply-shortcut-20261010/code-map.json`，记录提交/working-tree已校验；不更新或宣称全仓历史坐标全绿。
+
+| 一基范围 / 符号 | 责任与消费者 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs:82–91`，Detail | 公文弹窗 CanReply 只检查当前玩家为本国统治者，封臣拒绝；通知目标筛选未改 |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Presentation.cs:86–90`，CanOpenReply | UI快捷入口重验 owner/generation/原公文及君主身份，不依赖旧回合是否存在或改变 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs:43–97`，Execute / SubmitPlayerDocument | 公告与回应按钮统一立即公开和一次分析；原文ID只作上下文，后续实际owner决定归属，不预置回应目标/深度或修改原待回应状态 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs:479–492`，BuildAnalysisPrompt 来源上下文 | 原文/来源ID作为分析背景，玩家正文决定对象/动作，不能由按钮恢复旧案 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/ReplyShortcutReplay.cs:10–84`；AuthorityReplay / Dpl090PresentationReplay / LifecycleRepairReplay | 实际生产提交/调度、资格矩阵、prompt和生命周期回放；世界/游戏为已有fixture，实机UI/真实provider不覆盖 |
+
+未改外交通知路由、动作执行/原案校验、三渠道记忆、存档协议、外部API、Bootstrap或构建脚本。旧文本枚举测试同基线失败另记，双API编译与专项回放不能替代实机。
+
+<a id="tts-test-feedback-20261010"></a>
+### 测试语音失败回执修补
+
+源码 `77ca7886`；验证/限制见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#tts-test-feedback-20261010)。
+
+| 一基范围 / 符号 | 责任与消费者 |
+| --- | --- |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.cs:76, 308–329, 637–647`，TestFailure / SpeakTestAsync / NotifyPlaybackFailed | 每测试 job 的回执，既有取消/一次终态/订阅者异常隔离；普通 job 不设置此回执 |
+| `src/AF.GameAdapter.Bannerlord/UI/Errors/TtsTestFeedback.cs:8–29` | 只排队失败，应用主线程显示时重验取消；不读取场景对象、不合成或重试 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:6729–6740`；`src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs:57, 101` | 原按钮绑定测试回执并检查入队结果；快速/观察 tick 均消费同一反馈队列 |
+| `tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests/` | 61 项生产源码回放与 8 个 mutation；游戏/UI/网络为 fixture，不能代替实机 |
+
+<a id="volc-tts-v3-compat-20261010"></a>
+### 火山 TTS V3 兼容升级
+
+最终源码 `0fe97a1a`（产品 `1b2fd919`），状态/测试/限制统一见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#volc-tts-v3-compat-20261010)。以下一基行号只定位本次责任，不是全文件验收。
+
+| 范围 / 符号 | 实际责任与边界 |
+| --- | --- |
+| `src/modules/AF.Module.Llm/Tts/VolcTtsGateway.cs:10–58`，GetVersion / SynthesizeAsync / DescribeError | URL 路由、单次协议选择与安全错误提示；TtsEngine 和测试按钮使用；未知 V3 拒绝，不自动降级 |
+| `src/modules/AF.Module.Llm/Tts/VolcV3TtsGateway.cs:15–149`，SynthesizeAsync / WrapWav / BoundedReadStream | HTTP API Key 协议、参数、总超时、取消、有界 JSON/PCM 收集和一次 WAV 封装；不持有游戏对象、不播放声音 |
+| `src/modules/AF.Module.Llm/Tts/LegacyVolcTtsGateway.cs:24–29` | 仅将 V1 AppID 必填检查放在 V1 请求入口；实际 V1 请求体/请求头/返回码保持 |
+| `src/AF.Contracts/Internal/TtsContracts.cs:12–62` | 请求 AppID 允许空供 V3 使用，V1 仍守卫；结果增加安全 LogId，保留原构造签名和 ITtsGateway 方法 |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.cs:104–113, 647–782, 1003–1044` | 原 worker 的协议预检/路由/失败反馈，V1/V3 客户端隔离；PCM/WAV 后续生产解析与 playback、请求归属/队列/口型流程不变 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:1955–2008, 6683–6740`；`src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs:177–193` | 原键/默认值保留，更新协议帮助/测试按钮 AppID 条件及错误 URL 拦截；真实 UI 渲染未验证 |
+| `tests/replay/TtsGatewayReplayTests/Program.cs` / `V3Cases.cs`；`tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests/` | 实际候选 DLL HTTP 与生产方法/按钮行为回放；后者网络、游戏状态、音频设备为 fixture，不能代替实机 |
+
+未修改的直接消费者：VoiceMapper、SceneAudioLipSyncController、NativeConversationPlaybackWaitAdapter，以及 Scene/Native 调用入口。无新增存档字段、外部 Api.V1 或 GPT-SoVITS/伴侣功能。
+
 <a id="mcm-model-preset-continuation-20261009"></a>
 ### MCM 模型预设与快报战事修复接续
 

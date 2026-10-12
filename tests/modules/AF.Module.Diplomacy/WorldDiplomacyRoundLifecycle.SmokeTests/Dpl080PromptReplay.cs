@@ -101,7 +101,7 @@ internal sealed class PromptWorldFixture : IWorldDiplomacyDraftRepairWorld
         return JObject.Parse(reader.ReadToEnd()).Properties().ToDictionary(x => x.Name, x => (string)x.Value);
     }
     public string LocalizePrompt(string id, string englishFallback)
-        => (EnglishPrompts ? englishFallback : ChinesePrompts[id]).Replace("[[AF_JSON_OPEN]]", "{").Replace("[[AF_JSON_CLOSE]]", "}");
+        => (EnglishPrompts ? englishFallback : ChinesePrompts.TryGetValue(id, out var legacy) ? legacy : DiplomacyPromptTexts.Get(id, englishFallback)).Replace("[[AF_JSON_OPEN]]", "{").Replace("[[AF_JSON_CLOSE]]", "}");
     internal readonly List<string> Events = new();
     internal readonly List<WorldDiplomacyJob> Enqueued = new();
     internal readonly List<string> Abandoned = new();

@@ -1671,7 +1671,7 @@ internal sealed class SceneAudioLipSyncController
 		bool suppressUserErrorMessage = (errorMessage ?? "").IndexOf("Scene speech target became unavailable", StringComparison.OrdinalIgnoreCase) >= 0;
 		string failText = string.IsNullOrWhiteSpace(errorMessage)
 			? ConversationUiLocalization.Text("AF_CONV_UI_Native_TtsSynthesisFallback", "Speech synthesis failed; switched to a text bubble.")
-			: ConversationUiLocalization.Text("AF_CONV_UI_Native_TtsError", "[TTS error] {ERROR}", "ERROR", errorMessage);
+			: ConversationUiLocalization.Text("AF_CONV_UI_Native_TtsError", "[TTS error] {ERROR}", "ERROR", TtsErrorUiText.Describe(errorMessage));
 		Logger.Log("LipSync", $"[OnPlaybackFailed] agentIndex={agentIndex}, error={errorMessage}");
 		Report("PlaybackFailed", agentIndex, $"error={errorMessage};hasInteractionToken={hasInteractionToken};hasBubble={hasBubble};typingDuration={typingDuration:F2}");
 		RunTtsMainThreadEventStep(delegate

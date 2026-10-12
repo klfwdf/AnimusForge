@@ -5,15 +5,56 @@ internal static class Program {
  static int n;static void Check(bool ok,string label){if(!ok)throw new Exception(label);n++;}
  static string Body(string title="title")=>"[TITLE]"+title+"[SHORT]summary[REPORT]report[TAGS]STAB_FLAT";
  static string Block(string id,string body,string extra="")=>"[REPORT_BLOCK_BEGIN]\nreport_id="+id+"\n"+extra+body+"\n[REPORT_BLOCK_END]";
+ static void TestBulletinPublishingSettings()
+ {
+     var previous=DuelSettings.Current;
+     try
+     {
+         foreach(bool mode in new[]{false,true})
+         foreach(bool bulletin in new[]{false,true})
+         foreach(bool weekly in new[]{false,true})
+         {
+             DuelSettings.Current=new(){UseWorldBulletin=mode,AutoGenerateWorldBulletins=bulletin,AutoGenerateWeeklyReports=weekly};
+             Check(WorldBulletinStateOwner.IsWorldBulletinEnabled()==mode,"collection follows news mode only");
+             Check(WorldBulletinStateOwner.IsWorldBulletinPublishingEnabled()==(mode&&bulletin),"publication follows bulletin toggle independently of weekly toggle: "+mode+"/"+bulletin+"/"+weekly);
+         }
+         DuelSettings.Current=null;
+         Check(WorldBulletinStateOwner.IsWorldBulletinEnabled()&&WorldBulletinStateOwner.IsWorldBulletinPublishingEnabled(),"missing settings retain enabled fallback");
+         DuelSettings.Current=new(){AutoGenerateWorldBulletins=false,AutoGenerateWeeklyReports=true};
+         double hour=100;int calls=0,notices=0,auto=0;
+         var records=new List<EventRecordEntry>{new(){EventId="weekly_report:world:bulletin:previous",Summary="historical issue"}};
+         var owner=new WorldBulletinStateOwner();
+         owner.Bind(new WorldBulletinPort {
+             Enabled=WorldBulletinStateOwner.IsWorldBulletinEnabled,PublishingEnabled=WorldBulletinStateOwner.IsWorldBulletinPublishingEnabled,
+             CurrentDay=()=>(int)(hour/24),CurrentHour=()=>hour,CurrentDate=()=>"controlled date",Render=x=>x,Focus=()=>new(),
+             AutoWeek=()=>auto,SetAutoWeek=value=>auto=value,CapturePromptFacts=(selection,focus)=>new(){ScopeLine="world",Date="controlled date",KingdomContext=new()},
+             Records=()=>records,FindRecord=id=>records.FirstOrDefault(r=>r.EventId==id),ProductState=r=>r?.Summary??"",
+             NotifyProductChanged=(before,after)=>{},NotifyTimeline=()=>{},ResolveKingdom=id=>id,QueueNotice=id=>notices++,PrepareIssue=id=>{},PrepareSelection=plan=>{},
+             CallApi=(system,user)=>{calls++;return Task.FromResult(new ApiCallResult{Success=false,ErrorMessage="controlled fallback"});},Log=(area,text)=>{}
+         });
+         Check(owner.CaptureWorldBulletinEvent("war_declared","lead",70,"confirmed war",false,"lead",""),"publishing off still captures NPC facts");
+         owner.CaptureWorldBulletinEvent("alliance_formed","minor-one",45,"confirmed alliance",false,"minor-one","");
+         owner.CaptureWorldBulletinEvent("alliance_ended","minor-two",40,"confirmed break",false,"minor-two","");
+         hour=124;owner.OnWorldBulletinHourlyTick();owner.ProcessWorldBulletinMainThreadActions();
+         Check(calls==0&&!owner.InFlight&&owner.State.Events.Count==3&&records.Count==1,"bulletin off blocks requests without dropping facts or archives");
+         DuelSettings.Current.AutoGenerateWorldBulletins=true;DuelSettings.Current.AutoGenerateWeeklyReports=false;
+         owner.OnWorldBulletinHourlyTick();owner.ProcessWorldBulletinMainThreadActions();
+         Check(calls==1&&notices==1&&records.Count==2&&!owner.InFlight,"bulletin on publishes while weekly toggle is off");
+         Check(records[0].Summary=="historical issue","independent publication preserves historical archive");
+     }
+     finally {DuelSettings.Current=previous;}
+ }
  static async Task TestBulletinDelayedCompletion()
  {
-     foreach(string mode in new[]{"epoch","generation","disabled","success","battle-rejected"})
+     foreach(string mode in new[]{"epoch","generation","disabled","success","battle-rejected","settings-disabled","settings-independent"})
      {
+         var previousSettings=DuelSettings.Current;
+         DuelSettings.Current=new(){AutoGenerateWeeklyReports=mode!="settings-independent"};
          var records=new List<EventRecordEntry>();var api=new TaskCompletionSource<ApiCallResult>();
          int cancelled=0,notices=0;bool publishing=true;
          var owner=new WorldBulletinStateOwner();
          owner.Bind(new WorldBulletinPort {
-             Enabled=()=>true,PublishingEnabled=()=>publishing,CurrentDay=()=>4,CurrentHour=()=>102,
+             Enabled=()=>true,PublishingEnabled=(mode=="settings-disabled"||mode=="settings-independent")?WorldBulletinStateOwner.IsWorldBulletinPublishingEnabled:()=>publishing,CurrentDay=()=>4,CurrentHour=()=>102,
              CurrentDate=()=>"卡拉迪亚1084年秋季21日",Render=x=>x,Focus=()=>new(),
              Records=()=>records,FindRecord=id=>records.FirstOrDefault(r=>r.EventId==id),
              ProductState=r=>r?.Summary??"",NotifyProductChanged=(before,after)=>{},NotifyTimeline=()=>{},
@@ -38,13 +79,14 @@ internal static class Program {
          }
          if(mode=="generation")SaveRuntimeGuard.AdvanceGeneration("bulletin delayed save switch");
          if(mode=="disabled")publishing=false;
+         if(mode=="settings-disabled")DuelSettings.Current.AutoGenerateWorldBulletins=false;
          api.SetResult(new ApiCallResult {Success=true,Content=mode=="battle-rejected"?"[TITLE]战报\n[MAJOR]双方三百人对五百人，阵亡八十人。\n[SHORT]阵亡八十人。":"{bad response"});await pending;
          Check(records.Count==0&&owner.MainThreadActions.Count==1,"completed worker only enqueues commit "+mode);
          owner.ProcessWorldBulletinMainThreadActions();
          if(mode=="epoch")Check(records.Count==0&&cancelled==1&&owner.InFlight&&state.World.WindowEndHour==102,"old epoch cannot publish or retire new equal-window request");
          if(mode=="generation")Check(records.Count==0&&notices==0,"old save generation cannot publish records or notices");
-         if(mode=="disabled")Check(records.Count==0&&cancelled==1&&!owner.InFlight&&state.World.WindowEndHour<0,"disabled publishing closes window without records");
-         if(mode=="success") {
+         if(mode=="disabled"||mode=="settings-disabled")Check(records.Count==0&&cancelled==1&&!owner.InFlight&&state.World.WindowEndHour<0,"disabled publishing closes window without records "+mode);
+         if(mode=="success"||mode=="settings-independent") {
              var issue=records.Single(r=>WeeklyReportArchivePolicy.IsBulletin(r.EventId));
              Check(issue.CreatedDay==4&&issue.CreatedDate=="卡拉迪亚1084年秋季21日"&&notices==1&&!owner.InFlight,"accepted commit uses current campaign calendar and releases one notice");
              Check(issue.Materials.Any(m=>m.SourceStableKeys.Contains("confirmed-fact")),"accepted commit retains factual source graph after provider parse failure");
@@ -57,6 +99,7 @@ internal static class Program {
              Check(string.IsNullOrEmpty(issue.BulletinAnecdote),"rejected response does not enter NPC anecdote");
              Check(notices==1&&issue.Materials.Any(m=>m.SourceStableKeys.Contains("confirmed-fact")),"fallback keeps publication notice and confirmed source graph");
          }
+         DuelSettings.Current=previousSettings;
      }
  }
  static void TestRegionalNewsAttachment()
@@ -182,7 +225,7 @@ internal static class Program {
      notices=new(); owner.State.PendingNoticeEventIds.Add(id);owner.ResetRuntime("new_game_created");owner.ProcessWorldBulletinMainThreadActions();
      Check(owner.State==null&&notices.Unread.Count==0&&owner.MainThreadActions.IsEmpty,"new game does not recover prior campaign notices");
  }
- static async Task Main(){await TestBulletinDelayedCompletion();TestBulletinNoticeRecovery();var rules=new WeeklyGenerationRules(x=>x.Replace("{player}","Alice"));var world=new WeeklyEventMaterialPreviewGroup{GroupKind="world"};var king=new WeeklyEventMaterialPreviewGroup{GroupKind="kingdom",KingdomId="k"};var batch=new WeeklyReportBatchRequest{Groups=new(){world,king},SystemPrompt="sys",UserPrompt="usr",PromptPreview="preview"};
+ static async Task Main(){TestBulletinPublishingSettings();await TestBulletinDelayedCompletion();TestBulletinNoticeRecovery();var rules=new WeeklyGenerationRules(x=>x.Replace("{player}","Alice"));var world=new WeeklyEventMaterialPreviewGroup{GroupKind="world"};var king=new WeeklyEventMaterialPreviewGroup{GroupKind="kingdom",KingdomId="k"};var batch=new WeeklyReportBatchRequest{Groups=new(){world,king},SystemPrompt="sys",UserPrompt="usr",PromptPreview="preview"};
  Check(rules.TryParseWeeklyBatchResponse(Block("world",Body()),batch,out var blocks,out var missing,out var error)&&missing.SequenceEqual(new[]{"kingdom:k"}),"partial block retains missing");
  Check(rules.TryParseWeeklyBatchResponse(Block("world","invalid")+Block("world",Body())+Block("kingdom:k",Body()),batch,out blocks,out missing,out error)&&missing.Count==0&&blocks.Count==3,"valid duplicate wins expected identity");
  Check(!rules.TryParseWeeklyBatchResponse(Block("unknown",Body()),batch,out blocks,out missing,out error)&&missing.Count==2,"unexpected identity not accepted");

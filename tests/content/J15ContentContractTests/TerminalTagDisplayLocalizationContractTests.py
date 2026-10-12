@@ -122,7 +122,13 @@ def main():
     restored_catalog = re.sub(r'AdapterPromptCaptureTexts.PcapCompat\("([^"\n]+)"\)', lambda match: json.dumps(raw[match[1]], ensure_ascii=False), restored_catalog)
     assert code_tokens(restored_catalog) == code_tokens(old("AnimusForgeTagCatalog.cs")), "Snapshot/scan/cache/ID/tag/category/group/sort/log/export-file behavior changed"
     categories = json.loads((ROOT / "content/foundation/AF.Foundation.Localization/ModuleData/TerminalCategories.json").read_text(encoding="utf-8"))["Categories"]
-    assert restore_reviewed_display_bindings(restore(restore_terminal_categories(vm, categories), vm_pairs)) == code_tokens(old("AnimusForgeTerminalUiModels.cs")), "VM input/lifecycle/search/original routing changed"
+    vm = vm.replace(', TerminalCategories.Ui };', ' };')
+    original_vm = old("AnimusForgeTerminalUiModels.cs")
+    # Report filter labels were moved to their actual nested datasource to fix
+    # blank controls; preserve the remaining input/lifecycle/tag/search oracle.
+    for suffix in range(8,16):
+        original_vm = re.sub(r'\[DataSourceProperty\]\s*public string AF_UI_Terminal_Prefab_' + f'{suffix:03}' + r'Text =>[^\n]+;', '', original_vm)
+    assert restore_reviewed_display_bindings(restore(restore_terminal_categories(vm, categories), vm_pairs)) == code_tokens(original_vm), "VM input/lifecycle/search/original routing changed"
     helper = (ROOT / PREFIX / "TagCatalogUiText.cs").read_text(encoding="utf-8-sig")
     assert 'return raw;' in helper and 'return description;' in helper
     assert ': raw ?? string.Empty;' in helper and 'return raw != null && raw.StartsWith(prefix, StringComparison.Ordinal)' in helper

@@ -29,6 +29,10 @@ internal sealed class PolicyEffectModuleIntentRecall
 
 	internal bool IsPrimary { get; set; }
 
+	internal PolicyEffectRecallQuerySource QuerySource { get; set; }
+
+	internal bool IsExplicitExclusion { get; set; }
+
 	internal string QueryText { get; set; } = string.Empty;
 
 	internal IReadOnlyList<PolicyEffectModuleSelection> Ranked { get; set; } = Array.Empty<PolicyEffectModuleSelection>();
@@ -41,6 +45,8 @@ internal sealed class PolicyEffectModuleRoutingResult
 	internal IReadOnlyList<PolicyEffectModuleSelection> Candidates { get; set; }
 
 	internal IReadOnlyList<PolicyEffectModuleSelection> Details { get; set; }
+
+	internal IReadOnlyList<PolicyEffectModuleSelection> DetailPriority { get; set; }
 
 	internal int RequestedDetailLimit { get; set; }
 
@@ -206,77 +212,11 @@ internal static class PolicyEffectModuleRouter
 	}
 
 	internal static IReadOnlyList<string> BuildPostAssessmentQueries(
-		string policyName,
-		string policyContent,
-		string impactSummary,
-		string numericIntent,
+		string policyName, string policyContent, string impactSummary, string numericIntent,
 		IReadOnlyList<IPolicyEffectModule> enabledModules)
 	{
-		string authoritative = ((policyName ?? string.Empty).Trim() + "\n" + (policyContent ?? string.Empty).Trim()).Trim();
-		if (authoritative.Length == 0)
-		{
-			throw new InvalidOperationException("Policy effect module retrieval text is empty.");
-		}
-		// The first query is the frozen policy name plus the complete original text. The tokenizer owns
-		// model-length truncation; C# must not replace the authoritative query with a narrative fragment.
-		List<string> queries = new List<string>(QueryIntentLimit) { authoritative };
-		HashSet<string> seen = new HashSet<string>(queries, StringComparer.Ordinal);
-		IReadOnlyList<IPolicyEffectModule> modules = enabledModules ?? Array.Empty<IPolicyEffectModule>();
-		List<(string Text, int Ordinal, bool CueMatched, bool NumericOrTimed)> clauses = new List<(string, int, bool, bool)>();
-		int ordinal = 0;
-		foreach (string part in (policyContent ?? string.Empty).Split(
-			new[] { '\r', '\n', '。', '；', ';', '，', ',', '！', '!', '？', '?' },
-			StringSplitOptions.RemoveEmptyEntries))
-		{
-			string clause = LimitText(part.Trim(), QueryIntentCharacterLimit);
-			if (clause.Length < 2 || !seen.Add(clause))
-			{
-				ordinal++;
-				continue;
-			}
-			string normalizedClause = NormalizeCueText(clause);
-			bool cueMatched = modules.Any(module => FindMatchedCueTerm(normalizedClause, module?.CueTerms).Length > 0);
-			bool numericOrTimed = clause.Any(char.IsDigit)
-				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermDaily"), StringComparison.Ordinal) >= 0
-				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermEveryDay"), StringComparison.Ordinal) >= 0
-				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermOneTime"), StringComparison.Ordinal) >= 0
-				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermSingle"), StringComparison.Ordinal) >= 0
-				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermDenars"), StringComparison.Ordinal) >= 0
-				|| clause.IndexOf(PolicyCompatibilityTexts.Get("ModuleRouterTermPercentage"), StringComparison.Ordinal) >= 0;
-			clauses.Add((clause, ordinal++, cueMatched, numericOrTimed));
-		}
-
-		List<string> supplements = new List<string>();
-		if (!string.IsNullOrWhiteSpace(impactSummary))
-		{
-			supplements.Add(PolicyGenerationPromptTexts.Get("ModuleImpactQuery", "Impact overview: ") + impactSummary.Trim());
-		}
-		if (!string.IsNullOrWhiteSpace(numericIntent))
-		{
-			supplements.Add(PolicyGenerationPromptTexts.Get("ModuleNumericQuery", "Numeric intent: ") + numericIntent.Trim());
-		}
-		int currentLimit = Math.Max(1, QueryIntentLimit - supplements.Count);
-		Action<IEnumerable<string>> addQueries = values =>
-		{
-			foreach (string value in values ?? Array.Empty<string>())
-			{
-				string clean = LimitText(value, QueryIntentCharacterLimit);
-				if (queries.Count >= currentLimit)
-				{
-					break;
-				}
-				if (clean.Length >= 2 && seen.Add(clean))
-				{
-					queries.Add(clean);
-				}
-			}
-		};
-		addQueries(clauses.Where(item => item.CueMatched).OrderBy(item => item.Ordinal).Select(item => item.Text));
-		addQueries(clauses.Where(item => item.NumericOrTimed).OrderBy(item => item.Ordinal).Select(item => item.Text));
-		addQueries(clauses.OrderBy(item => item.Ordinal).Select(item => item.Text));
-		currentLimit = QueryIntentLimit;
-		addQueries(supplements);
-		return queries;
+		return PolicyEffectRecallQueryBuilder.Build(policyName, policyContent, impactSummary, numericIntent, enabledModules)
+			.Select(query => query.Text).ToArray();
 	}
 
 	internal static IReadOnlyList<PolicyEffectModuleSelection> Recall(float[] queryVector, string scope)
@@ -609,7 +549,7 @@ internal static class PolicyEffectModuleRouter
 			};
 		}
 
-		IReadOnlyList<string> queries = BuildPostAssessmentQueries(
+		IReadOnlyList<PolicyEffectRecallQuery> queries = PolicyEffectRecallQueryBuilder.Build(
 			policyName,
 			policyContent,
 			impactSummary,
@@ -618,12 +558,15 @@ internal static class PolicyEffectModuleRouter
 		List<PolicyEffectModuleIntentRecall> recalls = new List<PolicyEffectModuleIntentRecall>(queries.Count);
 		for (int index = 0; index < queries.Count; index++)
 		{
-			recalls.Add(RecallIntent(
-				embeddingSession.GetEmbedding(queries[index]),
-				queries[index],
+			PolicyEffectModuleIntentRecall recall = RecallIntent(
+				embeddingSession.GetEmbedding(queries[index].Text),
+				queries[index].Text,
 				enabledModules,
 				index,
-				index == 0));
+				index == 0);
+			recall.QuerySource = queries[index].Source;
+			recall.IsExplicitExclusion = queries[index].IsExplicitExclusion;
+			recalls.Add(recall);
 		}
 		string authoritative = ((policyName ?? string.Empty).Trim() + "\n" + (policyContent ?? string.Empty).Trim()).Trim();
 		IReadOnlyList<PolicyEffectModuleSelection> candidates = MergeCandidates(
@@ -632,13 +575,13 @@ internal static class PolicyEffectModuleRouter
 			authoritative,
 			out int cueMatchCount,
 			out bool candidatePoolBounded);
+		IReadOnlyList<PolicyEffectModuleSelection> detailPriority = PolicyEffectDetailSelector.Rank(candidates, recalls);
 		return new PolicyEffectModuleRoutingResult
 		{
 			Recalled = candidates,
 			Candidates = candidates,
-			Details = candidates.Count == 0
-				? Array.Empty<PolicyEffectModuleSelection>()
-				: SelectDetails(candidates, requestedDetailLimit),
+			DetailPriority = detailPriority,
+			Details = detailPriority.Take(effectiveDetailLimit).ToArray(),
 			RequestedDetailLimit = requestedDetailLimit,
 			EffectiveDetailLimit = effectiveDetailLimit,
 			DetailLimitClamped = effectiveDetailLimit != requestedDetailLimit,

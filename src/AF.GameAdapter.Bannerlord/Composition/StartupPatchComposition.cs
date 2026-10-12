@@ -15,6 +15,14 @@ internal static class StartupPatchComposition
 			Harmony harmony = new Harmony("com.AnimusForge.spy");
 			try
 			{
+				AnimusForgeMcmVisibility.EnsurePatched(harmony);
+			}
+			catch (Exception mcmVisibilityEx)
+			{
+				Logger.LogTrace("SubModule", ">>> MCM frontend visibility patch failed: " + mcmVisibilityEx.Message);
+			}
+			try
+			{
 				PatchClassProcessor patchClassProcessor2 = harmony.CreateClassProcessor(typeof(Patch_TriggerMassiveHook));
 				patchClassProcessor2.Patch();
 			}

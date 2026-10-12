@@ -7,7 +7,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $deploy = Get-Content -LiteralPath (Join-Path $ProjectRoot 'scripts\build\deploy_module.ps1') -Raw -Encoding UTF8
 if ($deploy.Contains('Merge-PlayerExports') -or $deploy.Contains('Sync-PlayerExportsBackToSource') -or
-    $deploy.Contains('PlayerExports') -or $deploy.Contains('/MIR')) {
+    $deploy.Contains('/MIR')) {
     throw 'AF2 deployment still contains legacy PlayerExports or broad-copy behavior.'
 }
 if (-not $deploy.Contains('Legacy AnimusForge module folders were left untouched')) {
@@ -23,4 +23,4 @@ if ($books.Count -ne 3139 -or @($books | Where-Object {
 }
 & (Join-Path $PSScriptRoot 'ManagedDeployContractTests.ps1') -ProjectRoot $ProjectRoot -RunRoot $RunRoot
 if (-not $?) { throw 'Managed deployment contract failed.' }
-Write-Output 'playerExportsDeployment noSourceBackSync=1 noInstallMerge=1 fixedDefaultFiles=3139 PASS'
+Write-Output 'playerExportsDeployment noSourceBackSync=1 timestampInstallMerge=1 fixedDefaultFiles=3139 PASS'

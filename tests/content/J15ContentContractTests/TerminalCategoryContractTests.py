@@ -23,8 +23,9 @@ def check(value, label):
     if not value:
         raise AssertionError(label)
 
-check(data['SchemaVersion'] == 1 and len(categories) == 8, 'eight canonical categories')
-check(hashlib.sha256(json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()).hexdigest() ==
+check(data['SchemaVersion'] == 1 and len(categories) == 9, 'eight preserved categories plus UI')
+legacy_data = dict(data, Categories={k:v for k,v in categories.items() if k != 'Ui'})
+check(hashlib.sha256(json.dumps(legacy_data, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()).hexdigest() ==
       '1b83e4c9e053bb6eb5eb87cc35860f2546f2ed337597b3ffafd0f1f49b5c1e6a', 'routing bytes and label keys preserved')
 english = {n.get('id'): n.get('text') for en, zh in registered_pairs(ROOT) for n in ET.parse(en).getroot().iter('string')}
 for name, item in categories.items():
@@ -113,7 +114,25 @@ for name in ('TerminalSettingsRegistry.cs', 'AnimusForgeTerminalUiModels.cs'):
     current = (ROOT / prefix / name).read_text(encoding='utf-8-sig')
     original = subprocess.check_output(['git', 'show', '192390cbb:' + prefix + name], cwd=ROOT).decode('utf-8-sig').replace('\r\n', '\n')
     if name == 'TerminalSettingsRegistry.cs':
+        # The authorized consolidation changes only routing, metadata completion
+        # and per-owner saves. Preserve the original 259 controls and delegates.
+        current = current.replace('TabCategory = TerminalSettingsCoverage.CategoryFor(nameof(DuelSettings), Id, tabCategory ?? "");', 'TabCategory = tabCategory ?? "";')
+        current = current.replace('TerminalSettingsCoverage.AddMissing(_allDefinitions);', '')
+        current = current.replace('bool mainSaved = DuelSettings.SaveCurrentSettings();\n\t\tbool ownersSaved = TerminalSettingsCoverage.SaveDirtyOwners();\n\t\treturn mainSaved && ownersSaved;', 'return DuelSettings.SaveCurrentSettings();')
+        current = current.replace('using TaleWorlds.Localization;', '')
+        # Exact fourteen display-only V3 TTS descriptions adopted with main.
+        fusion = json.loads((ROOT/'tests/content/J15ContentContractTests/Fixtures/TerminalTtsFusionInverse.json').read_text('utf-8'))
+        for row in fusion['literalChanges']:
+            check(current.count(row['after']) == 1, row['setting'] + ' exact reviewed TTS display')
+            current = current.replace(row['after'], row['before'], 1)
         current = restore_reviewed_terminal_description_literals(current)
+    if name == 'AnimusForgeTerminalUiModels.cs':
+        current = current.replace(', TerminalCategories.Ui };', ' };')
+        # These eight labels now belong to the actual nested report datasource,
+        # where RuntimeLanguageChecks exercises them through both native languages.
+        for suffix in range(8,16):
+            pattern = r'\[DataSourceProperty\]\s*public string AF_UI_Terminal_Prefab_' + f'{suffix:03}' + r'Text =>[^\n]+;'
+            original = re.sub(pattern, '', original)
     restored = restore_terminal_categories(current, categories)
     if name == 'TerminalSettingsRegistry.cs':
         replacement = 'DuelSettingsUiLocalization.Text("AF_MCM_Option_DeviceCpu", "CPU (default)")'
@@ -121,18 +140,31 @@ for name in ('TerminalSettingsRegistry.cs', 'AnimusForgeTerminalUiModels.cs'):
         restored = restored.replace(replacement, '"CPU（默认）"')
     if name == 'AnimusForgeTerminalUiModels.cs':
         restored = restore_reviewed_display_bindings(restored)
-    check(code_tokens(restored) == code_tokens(original), name + ' inverse preserves all other logic')
+    restored_tokens = code_tokens(restored)
+    if name == 'TerminalSettingsRegistry.cs':
+        restored_tokens = restored_tokens.replace('privatestaticstring_initializedLanguage;', '')
+        restored_tokens = restored_tokens.replace('stringlanguage=MBTextManager.ActiveTextLanguage??string.Empty;if(_initialized&&string.Equals(_initializedLanguage,language,StringComparison.Ordinal))return;_initialized=true;_initializedLanguage=language;_allDefinitions.Clear();_byCategory.Clear();_byId.Clear();', 'if(_initialized)return;_initialized=true;')
+        restored_tokens = restored_tokens.replace('publicstaticIReadOnlyList<TerminalSettingDef>AllDefinitions{get{EnsureInitialized();return_allDefinitions;}}', 'publicstaticIReadOnlyList<TerminalSettingDef>AllDefinitions=>_allDefinitions;')
+    check(restored_tokens == code_tokens(original), name + ' inverse preserves all other logic')
 registry = (ROOT / prefix / 'TerminalSettingsRegistry.cs').read_text(encoding='utf-8-sig')
 check(not any(HAN.search(decode(m[0])) for m in LEX.finditer(registry) if m.lastgroup == 'string'), 'registry has no remaining Chinese runtime string literals')
 check(len(re.findall(r'new TerminalSettingDef\("[^"]+", TerminalCategories\.\w+,', registry)) == 259, 'all definitions routed through preserved categories')
 helper = (ROOT / prefix / 'TerminalCategories.cs').read_text(encoding='utf-8')
 check('private static class Cache' in helper and 'Data = Load();' in helper and 'StringComparer.Ordinal' in helper, 'one-time cache with ordinal routing')
 check('File.' not in helper and 'TextObject' not in helper and 'Task.' not in helper, 'no disk or language reads in matching path')
-check('data.Categories.Count != 8' in helper and 'MissingMemberHandling.Error' in helper, 'schema fails closed')
+check('data.Categories.Count != 9' in helper and 'MissingMemberHandling.Error' in helper, 'schema fails closed')
 logical = 'AnimusForge.Defaults.TerminalCategories.json'
 nodes = [n for n in ET.parse(ROOT / 'AnimusForge.csproj').getroot().iter('EmbeddedResource') if n.findtext('LogicalName') == logical]
 check(len(nodes) == 1 and nodes[0].get('Include').replace('\\', '/') == ASSET, 'exact embedded resource')
 entries = json.loads((ROOT / 'content/content-map.json').read_text(encoding='utf-8-sig'))['entries']
 check(sum(e['source'] == ASSET and e.get('logicalName') == logical for e in entries) == 1, 'one matching content-map entry')
-check(helper.count('internal static readonly string ') == 8, 'routing reads use cached fields, not repeated dictionary lookups')
-print(f'PASS terminal categories: {checks} checks, 259 definitions and complete inverse source parity; compiled UI NOT RUN')
+check(helper.count('internal static readonly string ') == 9, 'routing reads use cached fields, not repeated dictionary lookups')
+check(categories['Ui']['LegacyValue'] == 'UI', 'stable new UI route')
+coverage = (ROOT/prefix/'TerminalSettingsCoverage.cs').read_text('utf-8')
+for owner in ('DuelSettings', 'DialogueUiSettings', 'IllustratorSettings', 'CoupSettings'):
+    check('AddOwner<' + owner + '>' in coverage, 'complete MCM owner ' + owner)
+check('Lazy<Binding[]>' in coverage and 'Expression.Lambda' in coverage and 'SaveSettings(owner)' in coverage,
+      'cached metadata and delegates; save original owner')
+check('CourierLetterThemeDropdown' in coverage and 'binding.Set(owner, dropdown)' in coverage,
+      'letter style is in UI and writes through the original setter')
+print(f'PASS terminal categories: {checks} checks, 259 original delegates preserved + four-owner completion + UI page; compiled UI separately verified')

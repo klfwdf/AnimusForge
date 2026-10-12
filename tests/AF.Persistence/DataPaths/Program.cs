@@ -61,6 +61,10 @@ internal static class Program
             Reject(() => AnimusForgeDataPaths.GetOverridePath(isolated, "../PlayerExports/secrets.json"), "override traversal rejected");
             Reject(() => AnimusForgeDataPaths.GetOverridePath(isolated, "C:/absolute.json"), "absolute override rejected");
             Reject(() => AnimusForgeDataPaths.GetOverridePath(isolated, "prompt.json:stream"), "alternate stream rejected");
+            Reject(() => AnimusForgeDataPaths.ValidatePath(Path.Combine(isolated, "prompt.json:stream")), "incoming direct alternate-stream guard retained");
+            Reject(() => AnimusForgeDataPaths.ResolveRoot("C:drive-relative"), "incoming drive-relative root rejected");
+            Reject(() => AnimusForgeDataPaths.ResolveRoot(@"\\server\AnimusForge"), "incoming UNC root rejected");
+            Reject(() => AnimusForgeDataPaths.ResolveRoot(Path.Combine(Path.GetDirectoryName(isolated), "missing", "AnimusForge")), "incoming missing module rejected");
         }
         finally
         {
@@ -146,6 +150,7 @@ internal static class Program
         Check(!Directory.Exists(pendingExports) && File.ReadAllText(legacyFile) == "{\"old\":true}", "reading legacy data does not migrate or modify it");
 
         string settingsPath = Path.Combine(workspace, "artifacts", "tests", "af2-terminal-settings", Guid.NewGuid().ToString("N"), "TerminalSettings.json");
+        AnimusForgeModulePaths.TestModuleRoot = isolatedRoot();
         Check(AnimusForgeTerminalSettings.GetSettingsPath() == Path.Combine(isolatedRoot(), "Configs", "TerminalSettings.json"), "TerminalSettings uses typed user path");
         Check(!AnimusForgeTerminalSettings.TryLoadSettingsFile(settingsPath, out _), "missing TerminalSettings uses built-in defaults");
         AnimusForgeTerminalSettings.TrySaveSettingsFile(settingsPath, new AnimusForgeTerminalSettingsData { IsHotkeyEnabled = false, IsMapIconEnabled = true });

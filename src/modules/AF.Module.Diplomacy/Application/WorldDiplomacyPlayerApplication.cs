@@ -46,14 +46,14 @@ internal static class WorldDiplomacyPlayerApplication
     {
         if (command == null || orchestration == null || command.Generation != world.Player.Generation) return "";
         if (!command.IsReply) return SubmitPlayerDocument(world, command.Body, orchestration);
-        // Resolve the original identities at submission; never retain a record in a UI callback.
+        // Resolve advisory context at submission, without requiring its old round
+        // to exist or treating the button as a separate response mechanism.
         WorldDiplomacyDocument source = world.ResolveDocument(command.SourceDocumentId);
-        WorldDiplomacyRound round = world.ResolveRound(command.RoundId);
-        if (source == null || round == null || !string.Equals(source.RoundId, round.RoundId, StringComparison.Ordinal)) return "";
-        return SubmitPlayerReply(world, command.Body, source, round, orchestration);
+        if (source == null) return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ReplySourceUnavailable", "The original document is no longer available. Please reopen the drafting window.");
+        return SubmitPlayerDocument(world, command.Body, orchestration, source);
     }
     internal static string SubmitPlayerDocument(IWorldDiplomacyPlayerWorld world, string body,
-        IWorldDiplomacyOrchestration orchestration)
+        IWorldDiplomacyOrchestration orchestration, WorldDiplomacyDocument sourceDocument = null)
     {
         string cleanBody = WorldDiplomacyTextRules.NormalizeBody(body);
         if (string.IsNullOrWhiteSpace(cleanBody))
@@ -77,6 +77,7 @@ internal static class WorldDiplomacyPlayerApplication
             isResponse: false,
             exchangeId: round?.RoundId ?? "");
         document.RoundId = round?.RoundId ?? "";
+        document.SourceDocumentId = sourceDocument?.DocumentId ?? "";
         WorldDiplomacyResultSettlementSlot playerSettlementSlot = round?.ResultSettlementPending == true
             ? WorldDiplomacyRoundLifecycleRules.SelectWaitingPlayerSettlementSlot(
                 round.ResultSettlementSlots, round.ResultSettlementCurrentSlotId, playerKingdom)
@@ -95,45 +96,5 @@ internal static class WorldDiplomacyPlayerApplication
         orchestration.PublishPlayerAuthoredDocumentImmediately(document);
         orchestration.EnqueueAnalysisJob(document, priority: 100);
         return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_DeclarePublished", "The diplomatic declaration has been published; the system is resolving its target, demands, and diplomatic actions in the background.");
-    }
-    internal static string SubmitPlayerReply(IWorldDiplomacyPlayerWorld world, string body,
-        WorldDiplomacyDocument sourceDocument, WorldDiplomacyRound round,
-        IWorldDiplomacyOrchestration orchestration)
-    {
-        WorldDiplomacyPlayerContext context = world.Player;
-        string cleanBody = WorldDiplomacyTextRules.NormalizeBody(body);
-        if (string.IsNullOrWhiteSpace(cleanBody)) return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ReplyBodyEmpty", "The diplomatic reply body cannot be empty.");
-        if (!context.IsRuler) return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ReplyNotRuler", "You are no longer the ruler of your kingdom, so the diplomatic reply was not published.");
-        string player = context.KingdomId;
-        string target = world.KingdomExists(sourceDocument.AuthorKingdomId) ? sourceDocument.AuthorKingdomId : null;
-        if (player == null || target == null) return "";
-        if (!WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State))
-        {
-            string previousRoundId = round.RoundId;
-            round = orchestration.EnsureActiveRound(player, target, isPlayerInsertion: true);
-            if (round != null) round.ExternalOpeningContext = string.Format(DiplomacyMiscPromptTexts.Get("PlayerApp_IndependentReplyFormat", "Player reply established independently; original round={0}; context document={1}. Original round has ended; legacy proposals do not regain validity."), previousRoundId, sourceDocument.DocumentId);
-        }
-        if (round == null) return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ReplyNoRound", "The diplomatic reply was not published: no negotiation round could be established.");
-        WorldDiplomacyDocument response = orchestration.CreateDocument(
-            player,
-            target,
-            DiplomacyMiscPromptTexts.Get("Document_DefaultReplyTitle", "Diplomatic Reply"),
-            cleanBody,
-            "player_response",
-            isPlayerAuthored: true,
-            isResponse: true,
-            exchangeId: round.RoundId);
-        response.RoundId = round.RoundId;
-        response.SourceDocumentId = sourceDocument.DocumentId;
-        response.AutomaticReplyDepth = Math.Max(1, sourceDocument.AutomaticReplyDepth + 1);
-        round.RootDocumentId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round.RootDocumentId, response.DocumentId);
-        orchestration.AddDocument(response);
-        WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, player, "active", mandatoryReply: false);
-        participant.MandatoryReplyPending = false;
-        participant.LastTriggeredDocumentId = sourceDocument.DocumentId;
-        round.LastActivityDay = world.CurrentDay();
-        orchestration.PublishPlayerAuthoredDocumentImmediately(response);
-        orchestration.EnqueueAnalysisJob(response, priority: 100);
-        return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ReplyPublished", "The diplomatic reply has been published; the system is resolving its demands and diplomatic actions in the background.");
     }
 }

@@ -1104,9 +1104,9 @@
     <string id="AF_DIP_UI_Compose_DraftApiMissing" text="The scribe cannot draft documents right now. Check the event/rebellion API or main API settings." />
     <string id="AF_DIP_UI_Compose_DraftIncomplete" text="The scribe failed to return a complete draft; original text was kept. Please try again." />
     <string id="AF_DIP_UI_Compose_DraftFormatError" text="The draft returned by the scribe was in an invalid format; original text was kept. Please try again." />
-    <string id="AF_DIP_UI_Compose_DraftTooLong" text="The draft was too long; original text was kept. Please adjust the diplomacy character limit and try again." />
+    <string id="AF_DIP_UI_Compose_DraftTooLong" text="The scribe returned a draft exceeding the editor capacity; original text was kept. Please try again." />
     <string id="AF_DIP_UI_Compose_DraftLengthMismatch" text="The draft did not meet the diplomacy character length settings ({MIN}-{MAX} characters); original text was kept. Please try again or adjust settings." />
-    <string id="AF_DIP_UI_Compose_DraftTruncated" text="The draft was truncated by the output limit; original text was kept. Adjust diplomacy length or API output limit." />
+    <string id="AF_DIP_UI_Compose_DraftTruncated" text="The draft was truncated by the output limit; original text was kept. Please raise the API output limit." />
     <!-- Document Execution Notifications -->
     <string id="AF_DIP_UI_DocExec_MustContainAction" text="The diplomatic declaration was not published: the text must clearly include an actionable diplomatic action." />
     <string id="AF_DIP_UI_DocExec_IncompatibleAction" text="The diplomatic declaration was not published: the diplomatic action in the text is incompatible with the current realm state." />
@@ -1179,5 +1179,9 @@
     <string id="AF_DIP_UI_Gathering_WeeklyAttendance" text="{HERO} ({ROLE}) has actually arrived at {SETTLEMENT} and attended the noble gathering hosted by {HOST}. This attendance has occurred and may be included in this week’s kingdom chronicle." />
     <string id="AF_DIP_UI_Gathering_WeeklyCancel" text="{HOST} cancelled their noble gathering at {SETTLEMENT}; the guests have dispersed.{REASON}" />
     <string id="AF_DIP_UI_Gathering_WeeklyNameRole" text="{HERO} ({ROLE})" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplySourceUnavailable" text="The original document is no longer available. Please reopen the drafting window." />
+    <string id="AF_DIP_UI_OralGeneration_DelayedFact" text="The diplomatic declaration previously promised has not yet been published and awaits redrafting; the agreed terms have not changed." />
+    <string id="AF_DIP_UI_OralGeneration_WithdrawalFact" text="I have explicitly agreed to withdraw the earlier public diplomatic proposal, pending publication of the formal withdrawal declaration; the original proposal has not become invalid as a result yet." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceNotExecutedDetail" text="Peace proposal not executed: {REASON}" />
   </strings>
 </base>
