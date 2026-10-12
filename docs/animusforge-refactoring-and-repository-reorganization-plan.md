@@ -1,3 +1,25 @@
+<a id="no-legacy-data-cache-refresh-20261012"></a>
+## 2026-10-12 关闭旧 AF 用户数据入口，恢复模型缓存按时间重读（LOCAL_ONLY / OFFLINE_VERIFIED）
+
+- 最新批准范围只在工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010` 修改、验证和本地提交。开工干净 HEAD `5e77d9ec4`，意图检查点 `5b980de90`，主产品/回归 `460881249b494818bfcf7cec529a246bf198ec11`，补闭切片 `8f4c5a80c6895e4d1a7f41936e6f22ef0ebed071`；保留远端融合、手动标签 UI、双语化与其他作者的改动。**未 fetch、push、Stage、部署、ZIP、启动游戏或操作存档**；当前游戏安装仍是前序已部署候选，不含本修复。
+- 本条明确替代[双语运行维护](#bilingual-runtime-maintenance-20261012)中允许旧 AppData/Documents 兼容读取/一次迁移的边界，以及此前模型缓存“加载一次”的合同；不是回滚双语包或此前模组内路径重构。旧 C 盘 AF 数据不读、不迁移、不删除；模组内现有 `LegacyImported` 与其他旧内容继续视为当前模组数据，不追溯或清理来源。
+- `AnimusForgeDataPaths` 的提示词、PlayerExports、Configs getter 只组合合法模组路径。两个旧路径查询返回 null；目录迁移只保留目标校验，文件复制校验目标后返回 false，不探测/枚举/哈希/复制来源，不生成迁移日志或候选。共享 Vengeance 保留其兼容调用和源码，由退役助手阻止旧 Documents 访问；未修改复仇玩法、公开签名、JSON 字段或模块身份。
+- DuelSettings 删除提示词旧 C 盘补齐与缓存旧源导入，McmSettingsStorage 删除旧全局设置/preset 复制。调用链补查发现已编入主DLL的 SceneActionsMcmSettings 仍独立读取 Documents，先补 RED（旧查询源码 guard 在任何旧路径执行前失败），再撤除外部导入；保留其已加载模组设置的默认值升级、版本2身份和原持久化。保留当前 `CustomPrompts` 用户层、`ModuleData/Defaults/CustomPrompts` CN/EN 包默认层、确切已知默认哈希和模组内已有导入层；`Configs/Cache/PlayerExports/Recovery` 设计、安全根选择与 AF 自有 MCM ID 路由保持。浏览器可执行程序定位等非 AF 用户数据访问不在范围内。
+- 模型缓存仍在当前模组 `Cache/ModelDropdownCache.json`；移除永久 hydration 返回，首次或 **mtime 严格更新**时沿原选择规则读取合并，相同/更旧时间不重新解析。保存仍同目录候选、严格 UTF-8、原件校验及原子替换。检查只发生在既有模型访问入口；保留原身份/ancestor 校验，无新增 Tick IO、旧目录扫描或后台轮询。
+
+### 验证与失败证据
+
+- 先写失败用例：显式工作区旧源的 pure IO RED `retired migration never imports legacy files`；真实 MCM source-linked RED `hydrated owner accepts a newer cache timestamp`。RED 都在旧路径生产查询之前停止，不用真实 C 盘作夹具。首次 pure 测试变量残留编译 CS0103 已修复夹具后复现行为失败，保留两份日志，不把编译失败冒充合同失败。
+- 原 `tests/AF.Persistence/RuntimeStorage/run.py` 完整运行 exit0：pure IO **31**、路径 **67**、编辑器路径/非法根/安装库/模组存储/12次唯一备份/9步完整流程 PASS。旧源字节及时间不变、锁定源与不可用 UNC 不读取、目标越界与阻塞仍拒绝、无迁移收据/候选；编辑器 reparse/只读/损坏/旧用户根保护保持。pure symlink 创建因 Windows privilege 1314 **NOT-RUN**，编辑器与实际 DLL 的 junction/reparse 检查 PASS，二者不混称。
+- 原真实 MCM 模型预设 runner **62/62 PASS**，保留原57项并补同实例较新/相同/更旧时间、再次更新与保存后冷实例回读。两份本轮实际 DLL 各 **93 runtime storage + 100 prompt storage PASS**：旧路径不可用、伪旧设置/preset不导入、当前配置路由与其他模组ID、缓存读取失败隔离/损坏JSON/非法UTF-8/只读/reparse、场景动作真实桥保留用户开关/版本身份/本地默认升级，终端内存回滚、导出/备份安全、包默认回退与模组已有导入/用户编辑优先。测试不是完整 MCM UI 或游戏内验收。
+- 原统一 `scripts/build/build_single_module.ps1` Debug，不带 Stage/Deploy：1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628` 各 **363 warning/0 error**；Bootstrap/probe **0 warning/0 error**，双 Coup 门禁 PASS。沿前序已诊断的本次进程 wrapper 加 `EnableDefaultNoneItems=false`，避免无关 ignored artifact 进入 CandidateAssemblyFiles；未改工程/构建脚本或放宽门禁。仅清理用户明确批准的 `bin/Debug/single_module_artifacts` 与 `obj/single_module/Debug`，两目标及祖先/子项 reparse 已预检。
+- 实际 DLL 测试设施先缺 netstandard facade（CS0012）、临时工程未保留 friend AssemblyName（CS0122），后补现有 facade 与原 AssemblyName；未改生产公开权限。原测试 Program 在 Main 前初始化政策描述，最初缺合法模组导致 TypeInitializationException，改为进程启动前预置工作区默认资源夹具后 native net472 exe 通过。重新构建封装还先假定了不存在的 PowerShell 路径（启动前 WinError 2），解析实际 pwsh 后，最小进程环境缺 PATHEXT 导致 native dotnet 未启动/LASTEXITCODE空；用 --version 最小复现证实，补进程 PATHEXT/ComSpec后原入口完整 exit0。失败日志均保留；未改脚本、删断言或把启动异常当 PASS。
+- 总证据 `artifacts/tests/no-legacy-cache-20261012/run-92b9eca4d1d744d6befec22695042269/verification-receipt.json`，原构建日志/marker/SHA、RED、最终两版 DLL 日志、source audit 与17锚点 code-map 同目录；路径/编辑器 `artifacts/tests/runtime-storage/run-d4b9fc5539384462b3b0dffd7eba66a7`，MCM `artifacts/tests/model-presets/run-714f9378b6084d14a13e589a7ab03b9a`。构建输入 SHA 未变，DLL 测试 SUT 与两版构建 hash 相同；code-map 记录提交/working-tree 均 PASS。[真实源码与消费者边界](architecture/af-framework-code-scope.md#no-legacy-data-cache-refresh-20261012)。
+
+### 取舍、未验与回滚
+
+以后缺失模组文件只使用当前默认值或现有模组内容，不再从旧 C 盘补齐；已经导入进模组的数据保持，不提供自动识别/精准迁移/恢复。相同时间覆盖文件和时间倒退按旧规则不触发缓存重读。未测覆盖率、全仓套件、实际 MCM/编辑器 UI、双版游戏或旧存档；不解除其他历史 HOLD。本轮不写真实 C 盘 AF 数据及游戏安装。需要部署/实机验证时另行授权；回滚按 `8f4c5a80c`、`460881249` 逆序做 focused inverse，保留其他作者历史，不 reset/rewrite。
+
 <a id="manual-tags-ui-20261012"></a>
 ## 2026-10-12 手动触发标签：实际场景/头人对话按钮（DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
 

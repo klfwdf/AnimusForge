@@ -1,3 +1,20 @@
+<a id="no-legacy-data-cache-refresh-20261012"></a>
+### 旧 AF 数据入口退役与模型缓存时间刷新：8f4c5a80c
+
+最终源码 `8f4c5a80c6895e4d1a7f41936e6f22ef0ebed071`（主切片460881249、补闭8f4c5a80c）；工作区 `E:/AnimusForge-klfwdf`，17个一基锚点在 `artifacts/tests/no-legacy-cache-20261012/run-92b9eca4d1d744d6befec22695042269/code-map.json` 记录提交/working-tree 均 PASS。[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#no-legacy-data-cache-refresh-20261012)记录授权、失败、产物与未验边界；此表不代替完整原有 owner 地图。
+
+| 一基范围 / 符号 | 实际消费者、覆盖与保留边界 |
+| --- | --- |
+| `src/AF.Persistence/AnimusForgeDataPaths.cs:96–104`；GetPlayerExportsDirectory / GetSettingsDirectory / GetOverridePath | 游戏导入导出、独立编辑器、终端/提示词与MCM读取当前合法模组目录；不自动补旧用户文件。路径31/67与编辑器流程回放，已有身份、祖先reparse、越界/只读拒绝保持 |
+| 同文件 `108–120`；GetLegacyDataPath / GetLegacyDocumentsPath / MigrateLegacyDirectoryOnce / CopyLegacyFileIfMissing；`122–133` RequireUnderRoot | 兼容签名保留，查询null/复制false/目录迁移无source IO；保留目标安全校验。共享Vengeance的preset/catalog调用不再访问旧Documents，共享玩法源码未变；锁定和不可用旧源专项验证 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/McmSettingsStorage.cs:53–73,75–86`；RouteJson / RoutePresetDirectory | 真实MCM global/preset均路由模组Configs，移除旧目录导入；实际DLL+真实GameDirectory93项中的路由测试通过，其他模组ID仍透传。实际MCM UI未验 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:4756–4764`；GetCustomPromptUserReadPath | 不再读取旧C盘覆盖；保留确切默认哈希与现有模组LegacyImported优先规则，用户编辑再优先；包默认真实reader与原100项prompt测试通过，CN/EN资源及content-map未修改 |
+| 同文件 `5147–5201`；EnsureModelDropdownCacheHydrated | 模型访问入口按首读或严格较新mtime合并，原选项/手写/默认选择算法保持；62项真实MCM source-linked及两版实际DLL验证。mtime相同/倒退不解析；无新增Tick IO/旧目录扫描 |
+| 同文件 `5203–5251,5253–5256,5258–5264`；PersistModelDropdownCacheSnapshot / GetModelDropdownCachePath / ReadModelDropdownCacheSnapshot | 当前模组Cache，严格UTF-8及损坏原件保护，同目录候选/原子替换和保存后冷实例回读。两版actual DLL损坏/只读/读取失败/reparse覆盖；不是实机验收 |
+| `extensions/AnimusForge.XihaiAction/src/Runtime/SceneActionsMcmSettings.cs:333–343,345–452`；EnsureLegacyMigration / MigrateLegacyBattleSpeechDefaults | 主DLL实际Scene/BattleSpeech配置桥不再查询Documents；只保留已经加载的模组设置版本/默认升级与原保存。先源码guard RED，后两版实际反射检查用户开关、version2与30/80→60/160升级；未改独立玩法或新建路径系统 |
+
+仅上述4个生产文件变更，无公开API/JSON/设置ID/双语资源/Bootstrap/构建脚本/Vengeance变更；终端、导出、编辑器等沿同一个退役路径助手，不另造存储系统。两实现/Bootstrap/双Coup通过，未Stage/部署/打包/push；当前游戏安装不包含该本地候选。
+
 <a id="manual-tags-ui-20261012"></a>
 ### 实际场景/头人对话手动标签入口：f2bb30685
 

@@ -1,3 +1,11 @@
+# 当前交接：关闭旧 AF 数据入口，恢复缓存时间刷新（2026-10-12，LOCAL_ONLY / OFFLINE_VERIFIED）
+
+- 检查点 `5b980de90`，产品/回归 `460881249` + 补闭场景动作旧导入 `8f4c5a80c`。包括场景动作旧 MCM 导入在内，旧 C 盘 AF 数据不读、不迁移、不删除；以后缺失文件不再从旧 AppData/Documents 补齐。模组内已存在的 `LegacyImported` 等文件保持使用，不识别或清理来源。
+- 保留后续双语化、用户/包默认提示词分层及 `Configs/Cache/PlayerExports/Recovery`。模型缓存恢复同实例按严格较新mtime重读；相同/更旧时间跳过，原合并与原子保存、安全保护保留，无新增Tick IO。
+- 路径31/67、编辑器完整9步及备份流程、真实MCM模型预设62项、两版实际DLL各93运行存储/100提示词检查PASS；原双API各363 warning/0 error、Bootstrap/probe0/0、双Coup PASS。17锚点双模式PASS；pure symlink创建受privilege1314限制，另有实际junction检查通过。未测覆盖率、全仓/实机/旧档。
+- [主台账与失败证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#no-legacy-data-cache-refresh-20261012)；[真实代码范围](docs/architecture/af-framework-code-scope.md#no-legacy-data-cache-refresh-20261012)。总收据 `artifacts/tests/no-legacy-cache-20261012/run-92b9eca4d1d744d6befec22695042269/verification-receipt.json`。
+- **只本地提交，未Stage、部署、打包或推送；游戏安装尚未更新，不包含本修复。** 下方部署交接是前序历史，不授权发布本候选；实机/部署需另行授权。源码回滚按补闭/主切片逆序focused inverse，不回滚其他对话改动。
+
 # 当前交接：场景/头人对话“手动触发标签”（2026-10-12，DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
 
 - 修复真正漏接的持续场景Scroll/Folio与原版替换Native面板，不是玩家漏看。产品/回归 `f2bb30685`；按钮统一“手动触发标签”，两入口复用原14动作与参数/确认弹窗，无AI判断/API配置要求，原标签/补足/ALL/债务零天及业务owner保持。
