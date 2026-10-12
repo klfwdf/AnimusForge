@@ -28,11 +28,54 @@ internal static class Program
         return root;
     }
     private static string Hash(string path) => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+    private static void TestRetiredMigration(string root, string fixture)
+    {
+        string legacy = Path.Combine(fixture, "legacy", "exports");
+        string destination = Path.Combine(root, "PlayerExports", "Custom");
+        Directory.CreateDirectory(legacy);
+        Directory.CreateDirectory(destination);
+        string old = Path.Combine(legacy, "unknown{VALUE}$1.json");
+        File.WriteAllText(old, "{\"unknown\":\"literal {NAME} $1 中文\",\"counter\":9001}");
+        string existing = Path.Combine(destination, "conflict.json");
+        File.WriteAllText(existing, "{\"moduleUser\":true}");
+        string sourceBefore = Hash(old), existingBefore = Hash(existing);
+        DateTime sourceTime = File.GetLastWriteTimeUtc(old);
+        DateTime timestamp = new DateTime(2020, 1, 2, 3, 4, 5, DateTimeKind.Utc);
+        Directory.SetLastWriteTimeUtc(destination, timestamp);
+        AnimusForgeDataPaths.MigrateLegacyDirectoryOnce(root, destination, legacy);
+        Check(!File.Exists(Path.Combine(destination, Path.GetFileName(old))), "retired migration never imports legacy files");
+        Check(Hash(old) == sourceBefore && File.GetLastWriteTimeUtc(old) == sourceTime, "legacy bytes and timestamp untouched");
+        Check(Hash(existing) == existingBefore, "existing module user wins");
+        Check(Directory.GetLastWriteTimeUtc(destination) == timestamp, "existing package ordering timestamp preserved");
+        Check(!Directory.Exists(Path.Combine(root, "Recovery", "RuntimeStorage")), "retired migration writes no recovery receipt");
+        using (new FileStream(old, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            AnimusForgeDataPaths.MigrateLegacyDirectoryOnce(root, destination, legacy);
+            Check(!AnimusForgeDataPaths.CopyLegacyFileIfMissing(root, old, Path.Combine(destination, "copy.json")), "retired copy neither reads locked source nor reports success");
+        }
+        AnimusForgeDataPaths.MigrateLegacyDirectoryOnce(root, destination, @"\\unavailable\legacy");
+        Check(!AnimusForgeDataPaths.CopyLegacyFileIfMissing(root, @"\\unavailable\legacy.json", Path.Combine(destination, "missing.json")), "retired helpers do not probe unavailable sources");
+        Reject(() => AnimusForgeDataPaths.CopyLegacyFileIfMissing(root, old, Path.Combine(fixture, "escape.json")), "copy destination guard");
+        Check(Directory.GetFiles(destination, ".af-migration-*").Length == 0, "retired migration creates no candidates");
+        string blocked = Path.Combine(root, "Configs", "blocked");
+        Directory.CreateDirectory(Path.GetDirectoryName(blocked)!);
+        File.WriteAllText(blocked, "not a directory");
+        Reject(() => AnimusForgeDataPaths.MigrateLegacyDirectoryOnce(root, Path.Combine(blocked, "child"), legacy), "retired migration retains target validation");
+        Reject(() => AnimusForgeDataPaths.MigrateLegacyDirectoryOnce(root, Path.Combine(blocked, "child"), legacy), "invalid target remains rejected");
+        Check(File.ReadAllText(blocked) == "not a directory", "blocked original preserved");
+    }
     private static void Main(string[] args)
     {
         string fixture = Path.GetFullPath(args[0]);
         if (!fixture.StartsWith(Path.GetFullPath(Directory.GetCurrentDirectory()) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("Fixtures must remain inside the calling output directory.");
+        // Red replay exercises only explicit workspace sources, never live AppData/Documents.
+        if (args.Contains("--no-legacy-only"))
+        {
+            TestRetiredMigration(Module(Path.Combine(fixture, "active")), fixture);
+            Console.WriteLine("PASS retired legacy checks=" + checks);
+            return;
+        }
         Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, null);
         Reject(() => AnimusForgeDataPaths.ResolveRoot(), "missing module never uses CWD/AppData/TEMP");
         string root = Module(Path.Combine(fixture, "active"));
@@ -58,35 +101,9 @@ internal static class Program
         Check(AnimusForgeDataPaths.FindModuleRootFromDirectory(Path.Combine(root, "bin", "Win64_Shipping_Client", "versions", "1.4")) == null,
             "automatic discovery cannot silently select the surrounding checkout");
 
-        string legacy = Path.Combine(fixture, "legacy", "exports");
-        string destination = Path.Combine(root, "PlayerExports", "Custom");
-        Directory.CreateDirectory(legacy);
-        Directory.CreateDirectory(destination);
-        string old = Path.Combine(legacy, "unknown{VALUE}$1.json");
-        File.WriteAllText(old, "{\"unknown\":\"literal {NAME} $1 中文\",\"counter\":9001}");
-        File.WriteAllText(Path.Combine(legacy, "conflict.json"), "{\"old\":true}");
-        File.WriteAllText(Path.Combine(destination, "conflict.json"), "{\"moduleUser\":true}");
-        string sourceBefore = Hash(old), existingBefore = Hash(Path.Combine(destination, "conflict.json"));
-        DateTime timestamp = new DateTime(2020, 1, 2, 3, 4, 5, DateTimeKind.Utc);
-        Directory.SetLastWriteTimeUtc(destination, timestamp);
-        AnimusForgeDataPaths.MigrateLegacyDirectoryOnce(root, destination, legacy);
-        Check(Hash(old) == sourceBefore, "legacy source byte-preserved");
-        Check(Hash(Path.Combine(destination, "unknown{VALUE}$1.json")) == sourceBefore, "unknown fields/content byte-preserved");
-        Check(Hash(Path.Combine(destination, "conflict.json")) == existingBefore, "existing module user wins");
-        Check(Directory.GetLastWriteTimeUtc(destination) == timestamp, "existing package ordering timestamp preserved");
-        Check(File.ReadAllText(Path.Combine(root, "Recovery", "RuntimeStorage", "migration.log")).Contains("destination-preserved"), "conflict receipt");
-        File.WriteAllText(Path.Combine(legacy, "later.json"), "{}");
-        AnimusForgeDataPaths.MigrateLegacyDirectoryOnce(root, destination, legacy);
-        Check(!File.Exists(Path.Combine(destination, "later.json")), "cold migration does not rescan ongoing C data");
-        Reject(() => AnimusForgeDataPaths.CopyLegacyFileIfMissing(root, old, Path.Combine(fixture, "escape.json")), "copy destination guard");
-        Check(Directory.GetFiles(destination, ".af-migration-*").Length == 0, "atomic candidates cleaned");
-
-        string blocked = Path.Combine(root, "Configs", "blocked");
-        Directory.CreateDirectory(Path.GetDirectoryName(blocked)!);
-        File.WriteAllText(blocked, "not a directory");
-        Reject(() => AnimusForgeDataPaths.MigrateLegacyDirectoryOnce(root, Path.Combine(blocked, "child"), legacy), "blocked destination");
-        Reject(() => AnimusForgeDataPaths.MigrateLegacyDirectoryOnce(root, Path.Combine(blocked, "child"), legacy), "failed migration stays explicit, no repeated scan");
-        Check(File.ReadAllText(blocked) == "not a directory", "blocked original preserved");
+        Check(AnimusForgeDataPaths.GetLegacyDataPath("UserData/PlayerExports") == null, "old AppData root is unavailable");
+        Check(AnimusForgeDataPaths.GetLegacyDocumentsPath("Mount and Blade II Bannerlord/Configs") == null, "old Documents root is unavailable");
+        TestRetiredMigration(root, fixture);
         string candidateLink = Path.Combine(fixture, "link-container", "AnimusForge");
         Directory.CreateDirectory(Path.GetDirectoryName(candidateLink)!);
         try

@@ -1,8 +1,6 @@
 #nullable enable
 using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Xml;
 
 namespace AnimusForge;
@@ -95,123 +93,30 @@ internal static class AnimusForgeDataPaths
     }
 
     internal static string GetUserDataDirectory(string root) => ResolveRoot(root);
-    internal static string GetPlayerExportsDirectory(string root)
-    {
-        string path = CombineUnderRoot(root, "PlayerExports");
-        MigrateLegacyDirectoryOnce(root, path, GetLegacyDataPath("UserData/PlayerExports"));
-        return path;
-    }
-    internal static string GetSettingsDirectory(string root)
-    {
-        string path = CombineUnderRoot(root, "Configs");
-        MigrateLegacyDirectoryOnce(root, path, GetLegacyDataPath("UserData/Settings"));
-        return path;
-    }
+    internal static string GetPlayerExportsDirectory(string root) => CombineUnderRoot(root, "PlayerExports");
+    internal static string GetSettingsDirectory(string root) => CombineUnderRoot(root, "Configs");
     internal static string GetOverridesDirectory(string root) => ResolveRoot(root);
     internal static string GetCacheDirectory(string root) => CombineUnderRoot(root, "Cache");
     internal static string GetLogsDirectory(string root) => CombineUnderRoot(root, "Logs");
     internal static string GetRecoveryDirectory(string root) => CombineUnderRoot(root, "Recovery");
     internal static string GetPackagedCustomPromptsDirectory(string root) => CombineUnderRoot(root, "ModuleData/Defaults/CustomPrompts");
 
-    internal static string GetOverridePath(string root, string relativePath)
-    {
-        string relative = ValidateRelativePath(relativePath);
-        if (string.Equals(relative, "CustomPrompts", StringComparison.OrdinalIgnoreCase)
-            || relative.StartsWith("CustomPrompts/", StringComparison.OrdinalIgnoreCase))
-            MigrateLegacyDirectoryOnce(root, CombineUnderRoot(root, "CustomPrompts"), GetLegacyDataPath("UserData/Overrides/CustomPrompts"));
-        return CombineUnderRoot(root, relative);
-    }
+    internal static string GetOverridePath(string root, string relativePath) => CombineUnderRoot(root, relativePath);
 
-    // Legacy locations are read-only sources, never active roots or fallbacks.
-    internal static string? GetLegacyDataPath(string relative)
-    {
-        string local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        return string.IsNullOrWhiteSpace(local) ? null
-            : Path.Combine(local, "AnimusForge", ValidateRelativePath(relative).Replace('/', Path.DirectorySeparatorChar));
-    }
-    internal static string? GetLegacyDocumentsPath(string relative)
-    {
-        string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        return string.IsNullOrWhiteSpace(documents) ? null
-            : Path.Combine(documents, ValidateRelativePath(relative).Replace('/', Path.DirectorySeparatorChar));
-    }
-
-    private static readonly object MigrationGate = new object();
-    private static readonly HashSet<string> MigratedDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-    private static readonly Dictionary<string, Exception> FailedMigrations = new Dictionary<string, Exception>(StringComparer.OrdinalIgnoreCase);
+    // Retired compatibility signatures used by shared source. Do not resolve,
+    // inspect or import legacy AppData/Documents data, even when a target is missing.
+    internal static string? GetLegacyDataPath(string relative) => null;
+    internal static string? GetLegacyDocumentsPath(string relative) => null;
 
     internal static void MigrateLegacyDirectoryOnce(string root, string target, string? source)
     {
-        root = ResolveRoot(root);
-        RequireUnderRoot(root, target);
-        lock (MigrationGate)
-        {
-            string key = Path.GetFullPath(target) + "|" + (string.IsNullOrWhiteSpace(source) ? string.Empty : Path.GetFullPath(source));
-            if (FailedMigrations.TryGetValue(key, out Exception? failure))
-                throw new IOException("Legacy runtime storage migration failed; original files remain available.", failure);
-            if (!MigratedDirectories.Add(key)) return;
-            if (string.IsNullOrWhiteSpace(source) || !Directory.Exists(source)) return;
-            try
-            {
-                ValidateAncestors(Path.GetFullPath(source));
-                CopyDirectoryMissingFiles(root, source!, target);
-            }
-            catch (Exception ex)
-            {
-                FailedMigrations[key] = ex;
-                RecordMigration(root, "failed", source!, target, ex.GetType().Name);
-                throw;
-            }
-        }
-    }
-
-    private static void CopyDirectoryMissingFiles(string root, string source, string target)
-    {
-        var directory = new DirectoryInfo(source);
-        if ((directory.Attributes & FileAttributes.ReparsePoint) != 0)
-            throw new InvalidOperationException("Legacy migration cannot cross a reparse point.");
-        DateTime previous = Directory.Exists(target) ? Directory.GetLastWriteTimeUtc(target) : directory.LastWriteTimeUtc;
-        try
-        {
-            foreach (var file in directory.GetFiles()) CopyLegacyFileIfMissing(root, file.FullName, Path.Combine(target, file.Name));
-            foreach (var child in directory.GetDirectories()) CopyDirectoryMissingFiles(root, child.FullName, Path.Combine(target, child.Name));
-        }
-        finally
-        {
-            if (Directory.Exists(target)) Directory.SetLastWriteTimeUtc(target, previous);
-        }
+        RequireUnderRoot(ResolveRoot(root), target);
     }
 
     internal static bool CopyLegacyFileIfMissing(string root, string source, string target)
     {
-        root = ResolveRoot(root);
-        RequireUnderRoot(root, target);
-        if (!File.Exists(source)) return false;
-        ValidateAncestors(Path.GetDirectoryName(Path.GetFullPath(source))!);
-        if ((File.GetAttributes(source) & FileAttributes.ReparsePoint) != 0)
-            throw new InvalidOperationException("Legacy migration cannot read a reparse file.");
-        if (File.Exists(target))
-        {
-            if (FileHash(source) != FileHash(target)) RecordMigration(root, "destination-preserved", source, target, "conflict");
-            return false;
-        }
-        string directory = Path.GetDirectoryName(target)!;
-        Directory.CreateDirectory(directory);
-        string candidate = Path.Combine(directory, ".af-migration-" + Guid.NewGuid().ToString("N"));
-        try
-        {
-            File.Copy(source, candidate, false);
-            File.Move(candidate, target);
-            File.SetLastWriteTimeUtc(target, File.GetLastWriteTimeUtc(source));
-            RecordMigration(root, "copied", source, target, FileHash(target));
-            return true;
-        }
-        catch (IOException) when (File.Exists(target))
-        {
-            RecordMigration(root, "destination-preserved", source, target, "concurrent creation");
-            return false;
-        }
-        finally { if (File.Exists(candidate)) File.Delete(candidate); }
+        RequireUnderRoot(ResolveRoot(root), target);
+        return false;
     }
 
     private static void RequireUnderRoot(string root, string path)
@@ -226,21 +131,6 @@ internal static class AnimusForgeDataPaths
             ValidateAncestors(Path.GetDirectoryName(full)!);
         }
         else ValidateAncestors(full);
-    }
-
-    private static string FileHash(string path)
-    {
-        using (var stream = File.OpenRead(path))
-        using (var hash = SHA256.Create())
-            return BitConverter.ToString(hash.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
-    }
-
-    private static void RecordMigration(string root, string result, string source, string target, string detail)
-    {
-        string directory = CombineUnderRoot(root, "Recovery/RuntimeStorage");
-        Directory.CreateDirectory(directory);
-        string line = DateTime.UtcNow.ToString("O") + "\t" + result + "\t" + source + "\t" + target + "\t" + detail;
-        File.AppendAllText(Path.Combine(directory, "migration.log"), line + Environment.NewLine);
     }
 
     internal static void ValidatePath(string path)

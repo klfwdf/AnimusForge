@@ -4760,13 +4760,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		string prefix = Path.Combine(root, "CustomPrompts") + Path.DirectorySeparatorChar;
 		string relative = Path.GetFullPath(path).Substring(prefix.Length);
 		string imported = Path.Combine(root, "CustomPrompts", "LegacyImported", relative);
-		// Do not overwrite the old bundle file or lose an older user override
-		// merely because it shares that bundle's filename.
-		if (!File.Exists(imported))
-		{
-			string legacy = AnimusForgeDataPaths.GetLegacyDataPath("UserData/Overrides/CustomPrompts/" + relative.Replace('\\', '/'));
-			if (!string.IsNullOrWhiteSpace(legacy)) AnimusForgeDataPaths.CopyLegacyFileIfMissing(root, legacy, imported);
-		}
 		return File.Exists(imported) ? imported : null;
 	}
 
@@ -5153,7 +5146,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private void EnsureModelDropdownCacheHydrated()
 	{
-		if (_modelDropdownCacheHydrated) return;
 		string modelDropdownCachePath;
 		try { modelDropdownCachePath = GetModelDropdownCachePath(); }
 		catch (Exception ex)
@@ -5258,34 +5250,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	private static bool _legacyModelDropdownCacheMigrationAttempted;
-
 	private static string GetModelDropdownCachePath()
 	{
-		string root = AnimusForgeDataPaths.GetCurrentRoot();
-		string path = Path.Combine(AnimusForgeDataPaths.GetCacheDirectory(root), ModelDropdownCacheFileName);
-		lock (ModelDropdownCacheFileLock)
-		{
-			if (!_legacyModelDropdownCacheMigrationAttempted)
-			{
-				_legacyModelDropdownCacheMigrationAttempted = true;
-				string legacy = AnimusForgeDataPaths.GetLegacyDataPath("Cache/" + ModelDropdownCacheFileName);
-				try
-				{
-					if (!File.Exists(path) && !string.IsNullOrWhiteSpace(legacy) && File.Exists(legacy))
-					{
-						// Validate before copying; retain every original JSON byte/field.
-						ReadModelDropdownCacheSnapshot(legacy);
-						AnimusForgeDataPaths.CopyLegacyFileIfMissing(root, legacy, path);
-					}
-				}
-				catch (Exception ex)
-				{
-					Logger.Log("DuelSettings", "[WARN] Legacy model dropdown cache retained without migration: " + ex.GetType().Name);
-				}
-			}
-		}
-		return path;
+		return Path.Combine(AnimusForgeDataPaths.GetCacheDirectory(AnimusForgeDataPaths.GetCurrentRoot()), ModelDropdownCacheFileName);
 	}
 
 	private static ModelDropdownCacheSnapshot ReadModelDropdownCacheSnapshot(string path)

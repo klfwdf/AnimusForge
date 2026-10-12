@@ -49,13 +49,57 @@ static class Program
         Directory.CreateDirectory(AnimusForgeDataPaths.GetCacheDirectory(AnimusForgeDataPaths.GetCurrentRoot()));
         File.WriteAllText(Path.Combine(AnimusForgeDataPaths.GetCacheDirectory(AnimusForgeDataPaths.GetCurrentRoot()),"ModelDropdownCache.json"),j.ToString());
     }
-    static int Main()
+    static void TestCacheRefresh()
+    {
+        string path = Path.Combine(AnimusForgeDataPaths.GetCacheDirectory(AnimusForgeDataPaths.GetCurrentRoot()), "ModelDropdownCache.json");
+        var owner = new DuelSettings();
+        var hydrate = typeof(DuelSettings).GetMethod("EnsureModelDropdownCacheHydrated", BindingFlags.Instance | BindingFlags.NonPublic);
+        var hydrated = typeof(DuelSettings).GetField("_modelDropdownCacheHydrated", BindingFlags.Instance | BindingFlags.NonPublic);
+        var stamp = typeof(DuelSettings).GetField("_modelDropdownCacheLastWriteUtcTicks", BindingFlags.Instance | BindingFlags.NonPublic);
+        var options = typeof(DuelSettings).GetField("_mainApiModelOptions", BindingFlags.Instance | BindingFlags.NonPublic);
+        File.WriteAllText(path, "{\"MainOptions\":[\"external-model\"],\"MainSelected\":\"external-model\"}");
+        File.SetLastWriteTimeUtc(path, DateTime.UtcNow.AddMinutes(1));
+        // The old permanent guard returns before any legacy path lookup in the red replay.
+        hydrated.SetValue(owner, true);
+        stamp.SetValue(owner, 0L);
+        hydrate.Invoke(owner, null);
+        bool refreshed = ((IEnumerable<string>)options.GetValue(owner)).Contains("external-model");
+        Check(refreshed, "hydrated owner accepts a newer cache timestamp");
+        if (!refreshed) return;
+        object originalOptions = options.GetValue(owner);
+        DateTime loadedStamp = File.GetLastWriteTimeUtc(path);
+        File.WriteAllText(path, "{broken");
+        File.SetLastWriteTimeUtc(path, loadedStamp);
+        hydrate.Invoke(owner, null);
+        Check(ReferenceEquals(originalOptions, options.GetValue(owner)), "unchanged timestamp bypasses parsing and allocations");
+        File.WriteAllText(path, "{\"MainOptions\":[\"later-model\"],\"MainSelected\":\"later-model\"}");
+        File.SetLastWriteTimeUtc(path, loadedStamp.AddSeconds(1));
+        hydrate.Invoke(owner, null);
+        Check(((IEnumerable<string>)options.GetValue(owner)).Contains("later-model"), "same owner merges a second newer snapshot");
+        object latestOptions = options.GetValue(owner);
+        File.WriteAllText(path, "{\"MainOptions\":[\"stale-model\"]}");
+        File.SetLastWriteTimeUtc(path, loadedStamp);
+        hydrate.Invoke(owner, null);
+        Check(ReferenceEquals(latestOptions, options.GetValue(owner))
+            && !((IEnumerable<string>)latestOptions).Contains("stale-model"), "older timestamp keeps the original monotonic refresh rule");
+        typeof(DuelSettings).GetMethod("PersistModelDropdownCacheSnapshot", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(owner, null);
+        var cold = new DuelSettings();
+        hydrate.Invoke(cold, null);
+        Check(((IEnumerable<string>)options.GetValue(cold)).Contains("later-model"), "saved snapshot survives a fresh owner");
+    }
+    static int Main(string[] args)
     {
         string module = Path.Combine(Environment.CurrentDirectory, "module-fixture", "AnimusForge");
         Directory.CreateDirectory(Path.Combine(module, "ModuleData"));
         File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
         Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", module);
-        Cache(false);var s=new DuelSettings();
+        Cache(false);
+        if (args.Contains("--refresh-only"))
+        {
+            TestCacheRefresh();
+            Console.WriteLine($"{checks-failures}/{checks} passed");return failures==0?0:1;
+        }
+        var s=new DuelSettings();
         // Main getter hydrates all five fields before AuxiliaryModelName is loaded.
         _=s.MainModelDropdown;
         foreach(var n in Names)Select(s,n,"chosen-"+n);
@@ -116,6 +160,7 @@ static class Program
         Check(live.GetEffectiveAuxiliaryModelName()=="actual-action-choice","real patched MCM action selects preset name");
         actionType.GetMethod("UndoAction").Invoke(action,null);
         Check(D(live,"Auxiliary").SelectedIndex==oldIndex&&live.GetEffectiveAuxiliaryModelName()=="live-choice","real MCM action undo preserves previous model");
+        TestCacheRefresh();
         Console.WriteLine($"{checks-failures}/{checks} passed");return failures==0?0:1;
     }
 }

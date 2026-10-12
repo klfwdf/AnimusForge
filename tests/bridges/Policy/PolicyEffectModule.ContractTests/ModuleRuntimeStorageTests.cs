@@ -27,6 +27,11 @@ internal static partial class Program
         Type settings = SutType("AnimusForge.DuelSettings");
         Type terminal = SutType("AnimusForge.AnimusForgeTerminalSettings");
         Type exports = SutType("AnimusForge.PlayerExportsStore");
+        Type dataPaths = SutType("AnimusForge.AnimusForgeDataPaths");
+        Check(InvokeStatic(dataPaths, "GetLegacyDataPath", new object[] { "UserData/PlayerExports" }, 1) == null,
+            "actual module cannot resolve old AppData data");
+        Check(InvokeStatic(dataPaths, "GetLegacyDocumentsPath", new object[] { "Mount and Blade II Bannerlord/Configs" }, 1) == null,
+            "actual module cannot resolve old Documents data");
         string cache = Path.Combine(module, "Cache", "ModelDropdownCache.json");
         Check(string.Equals((string)InvokeStatic(settings, "GetModelDropdownCachePath", Array.Empty<object>(), 0), cache,
             StringComparison.OrdinalIgnoreCase), "cache belongs to user-approved module Cache");
@@ -47,6 +52,8 @@ internal static partial class Program
             == Path.Combine(module, "PlayerExports", "module-package"), "latest module import ignores reparse package");
 
         object instance = Activator.CreateInstance(settings);
+        TestModuleMcmRouting(instance, module, fakeUser);
+        TestRetainedPromptLayers(settings, module);
         Directory.CreateDirectory(Path.GetDirectoryName(cache));
         File.WriteAllText(cache, "{\"MainOptions\":[\"module-model\"],\"MainSelected\":\"module-model\"}");
         settings.GetMethod("EnsureModelDropdownCacheHydrated", All).Invoke(instance, null);
@@ -54,7 +61,7 @@ internal static partial class Program
         File.WriteAllText(cache, "{\"MainOptions\":[\"external-model\"],\"MainSelected\":\"external-model\"}");
         File.SetLastWriteTimeUtc(cache, DateTime.UtcNow.AddMinutes(1));
         settings.GetMethod("EnsureModelDropdownCacheHydrated", All).Invoke(instance, null);
-        Check(((System.Collections.IEnumerable)settings.GetField("_mainApiModelOptions", All).GetValue(instance)).Cast<string>().Contains("module-model"), "retained local hydration guard does not replace a live model selection");
+        Check(((System.Collections.IEnumerable)settings.GetField("_mainApiModelOptions", All).GetValue(instance)).Cast<string>().Contains("external-model"), "same cache owner accepts a newer module snapshot");
         object rehydrated = Activator.CreateInstance(settings);
         settings.GetMethod("EnsureModelDropdownCacheHydrated", All).Invoke(rehydrated, null);
         instance=rehydrated;
@@ -163,5 +170,78 @@ internal static partial class Program
         catch { rejected = true; }
         Check(rejected, "missing module cannot fall back to CWD or AppData");
         SetFixtureModuleRoot(module);
+    }
+
+    private static void TestModuleMcmRouting(object settings, string module, string fakeUser)
+    {
+        Type routing = SutType("AnimusForge.McmSettingsStorage");
+        var route = routing.GetMethod("RouteJson", All);
+        Type directoryType = route.GetParameters()[1].ParameterType.GetElementType();
+        var constructor = directoryType.GetConstructors().Single(c => c.GetParameters().Length == 2
+            && c.GetParameters()[0].ParameterType.IsEnum && c.GetParameters()[1].ParameterType == typeof(string));
+        object application = Enum.Parse(constructor.GetParameters()[0].ParameterType, "Application");
+        string oldDirectory = Path.Combine(fakeUser, "ModSettings", "Global", "AnimusForge");
+        Directory.CreateDirectory(oldDirectory);
+        string oldFile = Path.Combine(oldDirectory, "legacy.json");
+        File.WriteAllText(oldFile, "{\"legacySetting\":true}");
+        DateTime oldStamp = File.GetLastWriteTimeUtc(oldFile);
+        object[] args = { settings, constructor.Invoke(new object[] { application, oldDirectory }), "legacy" };
+        route.Invoke(null, args);
+        string target = Path.Combine(module, "Configs", "ModSettings", "Global", "AnimusForge");
+        Check(((string)directoryType.GetProperty("Path").GetValue(args[1])).TrimEnd('\\', '/') == target,
+            "MCM global serializer routes into current module Configs");
+        Check(!File.Exists(Path.Combine(target, "legacy.json")), "MCM route does not import an old absolute profile file");
+        Check(File.ReadAllText(oldFile) == "{\"legacySetting\":true}" && File.GetLastWriteTimeUtc(oldFile) == oldStamp,
+            "MCM old profile bytes and timestamp remain unchanged");
+        string oldPresets = Path.Combine(fakeUser, "ModSettings", "Presets");
+        string id = "AnimusForge_global_settings";
+        Directory.CreateDirectory(Path.Combine(oldPresets, id));
+        File.WriteAllText(Path.Combine(oldPresets, id, "old.json"), "{}");
+        object[] presetArgs = { constructor.Invoke(new object[] { application, oldPresets }), id, null };
+        Check(!(bool)routing.GetMethod("RoutePresetDirectory", All).Invoke(null, presetArgs), "owned MCM preset route remains active");
+        Check(!File.Exists(Path.Combine(module, "Configs", "ModSettings", "Presets", id, "old.json")),
+            "MCM presets do not import old profile files");
+        object[] foreignArgs = { presetArgs[0], "OtherMod_settings", null };
+        Check((bool)routing.GetMethod("RoutePresetDirectory", All).Invoke(null, foreignArgs) && foreignArgs[2] == null,
+            "MCM preset route leaves other mod IDs untouched");
+    }
+
+    private static void TestRetainedPromptLayers(Type settings, string module)
+    {
+        const string file = "PlayerCustomPromptRule.json";
+        string repository = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+        JObject map = JObject.Parse(File.ReadAllText(Path.Combine(repository, "content", "content-map.json")));
+        JObject row = map["entries"].OfType<JObject>().Single(entry =>
+            (string)entry["target"] == "ModuleData/Defaults/CustomPrompts/" + file);
+        string source = Path.Combine(repository, (string)row["source"]);
+        string english = Path.Combine(Path.GetDirectoryName(source), Path.GetFileNameWithoutExtension(source) + ".en.json");
+        if (File.Exists(english)) source = english;
+        string packaged = Path.Combine(module, "ModuleData", "Defaults", "CustomPrompts");
+        string user = Path.Combine(module, "CustomPrompts");
+        Directory.CreateDirectory(packaged);
+        Directory.CreateDirectory(user);
+        File.Copy(source, Path.Combine(packaged, file));
+        string userFile = Path.Combine(user, file);
+        File.Copy(source, userFile);
+        Check((bool)InvokeStatic(settings, "IsKnownPackagedCustomPromptFile", new object[] { userFile }, 1),
+            "current clean default remains recognized by exact known hash");
+        Check(InvokeStatic(settings, "GetCustomPromptUserReadPath", new object[] { userFile }, 1) == null,
+            "known old bundle without module import uses package defaults, not C data");
+        object[] readArgs = { user, packaged, file, null, "", null };
+        Check((bool)settings.GetMethod("TryReadLayeredCustomPromptTextJsonFile", All).Invoke(null, readArgs)
+            && (string)readArgs[5] == ((string)JObject.Parse(File.ReadAllText(source))["Text"]).Replace("\r\n", "\n").Trim(),
+            "localized package default layer still supplies actual prompt content");
+        string imported = Path.Combine(user, "LegacyImported", file);
+        Directory.CreateDirectory(Path.GetDirectoryName(imported));
+        File.WriteAllText(imported, "{\"Version\":1,\"Text\":\"already-imported\"}");
+        Check((string)InvokeStatic(settings, "GetCustomPromptUserReadPath", new object[] { userFile }, 1) == imported,
+            "already imported module prompt remains readable without migration");
+        readArgs[5] = null;
+        Check((bool)settings.GetMethod("TryReadLayeredCustomPromptTextJsonFile", All).Invoke(null, readArgs)
+            && (string)readArgs[5] == "already-imported", "module import retains precedence over packaged defaults");
+        File.WriteAllText(userFile, "{\"Version\":1,\"Text\":\"module-user-edit\"}");
+        readArgs[5] = null;
+        Check((bool)settings.GetMethod("TryReadLayeredCustomPromptTextJsonFile", All).Invoke(null, readArgs)
+            && (string)readArgs[5] == "module-user-edit", "edited module prompt retains precedence over imported and packaged content");
     }
 }
