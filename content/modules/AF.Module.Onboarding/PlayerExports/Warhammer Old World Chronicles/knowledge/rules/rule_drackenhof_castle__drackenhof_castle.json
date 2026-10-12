@@ -1,0 +1,209 @@
+{
+  "Id": "rule_drackenhof_castle",
+  "Keywords": [
+    "Drakenhof Castle",
+    "von Carstein center of power",
+    "gathering place of the dead",
+    "Dark Fortress",
+    "Vampire Throne",
+    "Sylvania heart",
+    "Court of Dark Night",
+    "Immortal Fortress"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Castle Drakenhof is the dark heart of Sylvania, the eternal throne of the von Carstein family. This black castle towering on the dead ground is the final gathering place for all the undead armies. Countless skeletons, zombies and more terrifying night creatures are constantly awakening from the cemetery around the castle. No one can enter Drakenhof alive and leave alive - because the castle's owners have no need for living visitors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Drakenhof - our home, our fortress, our eternal immortal throne. Its black spiers pierce Sylvania's ever-gloomy skies, and its catacombs stretch deeper than any human mine - where sleep our oldest ancestors and their most powerful undead minions. The walls of Drakenhof were not built of stone – they were built of fear. Every window in the castle faces north, never welcoming the sunlight; every hall echoes with the whispers and plots of von Carstein's heirs over thousands of years. While the humans of the Imperium squabble over the Elector Count's seat in Altdorf, here we are - in Drakenhof - plotting the harvest of the entire Old World by the centuries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Castle Drakenhof is the ultimate target - and biggest trap - in any military campaign against Sylvania. All villages and cemeteries for dozens of miles around the castle are within the coverage of the vampire's undead magic, and any siege army must first deal with the constantly awakening dead within the siege before facing the defense of the castle itself. Historical attempts to siege Drakkenhof - including the First Undead War in the 2000s of Imperial History - have failed because the besieging forces found themselves attacked from behind by the corpses of their own fallen soldiers. The only possible window for attacking Drakenhof is during the shortest hours of winter daylight - when the undead are least active - but even then the probability of success is considered to be close to zero."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The architectural history of Drakenhof Castle can be traced back to about 500 BC. The original Drakenhof was just a border stone castle controlling the eastern pass of Sylvania. It was built by early imperial settlers. Around 1100 AD, Vlad von Carstein—who had just infiltrated Sylvania as a human noble at the time—used his dark influence to acquire Drakenhof and its surrounding territories. Over the next three centuries, Vlad used undead labor to massively expand the castle underground, adding a system of catacombs totaling twelve levels, a massive atrium capable of housing an entire army of undead, and a network of secret tunnels leading to cemeteries across Sylvania. When Vlad launched the First Undead War against the Empire in 1797 of the Imperial Calendar, Drakenhof was already a building complex second only to the Altdorf Palace in size. Today, the castle's defense relies on a three-fold system: the outer undead mist (which disorients intruders), the dark magic turret installed on the middle wall (powered by the wraiths bound in the gun barrel), and the deepest blood chamber - the core of the castle that only the von Carstein bloodline can safely enter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Drakenhof Castle represents to me the fundamental nightmare of old world politics - an enemy that you can attack with any military force but can never be wiped off the map. The most important lesson I learned while running my realm on the Stirland frontier was this: You don't need to conquer Drakenhof to defend yourself from the vampire threat. Just make sure that every cemetery in your domain has been consecrated at least three times during the winter, that every village has an old man who can tell the signs of the awakening of the dead, and that every priest knows how to light a beacon fire as soon as the first moving corpse is discovered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The threat to the Old World from Drakkenhof comes not only from the undead army it directly controls - but also from the family infiltration model it represents. The von Carstein family has been sending out blood servants and transformed midnight nobles from the Drakenhof for centuries to infiltrate the aristocratic circles of the imperial provinces. My family must ask themselves at every meeting of the Council: Is there anyone here whose lifeline extends to the Night Court of Drakenhof? This uncertainty is a weapon in itself—and it’s completely free."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "If you ever end up as a mercenary and need to find shelter in Sylvania - my advice is: keep riding and don't stop. No village around Drakenhof Castle would admit outsiders - not because they were unfriendly, but because they wouldn't dare. If a villager is found to be hiding enemies of the castle, his whole family will be dragged directly into the castle dungeon by the undead. But Sylvania's smuggling routes—hidden mountain passes regularly patrolled by undead patrols but still used by some—are the most expensive shortcuts in the Old World. If you're willing to pay enough gold crowns, silent smuggling guides will take you late at night through a river valley just three miles from Drakenhof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The presence of Druckenhof caused a permanent distortion in the direction of commerce in Stihlland and Ostermark. The trade route from Tarabeckheim to the World's Edge Mountains was supposed to be a straight line - but the road happened to pass through less than fifty miles from Drakenhof. The result is: all transportation contracts of our chamber of commerce are detoured north through the coastal trade route in Nordland - adding an additional 40% to the transportation cost of each truckload of goods. No insurance company would cover any caravan within a hundred miles of the perimeter of Drakenhof, and this meant that Sylvania was the largest man-made economic dead zone in the history of the Old World."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Castle Drakenhof - the Dark Throne of House von Carstein, the center of Sylvania's undead rule",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The geographical location and strategic significance of Drakenhof Castle"
+  ]
+}

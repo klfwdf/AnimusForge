@@ -27,17 +27,7 @@ internal sealed class PolicyVotePersonalityProfile
 
 internal static class PolicyVotePersonality
 {
-	internal const string PromptContract =
-		"- votePersonality:object，必须且只能包含 mercy、honor、generosity、valor、calculating 五个 number，均在 [-1,1]，允许全部为 0。"
-		+ "只按政策正文实际采用的手段评估，不按民众反馈、政策名称中的关键词、发布者性格或希望谁赞成来评分。"
-		+ "正值表示该手段契合相应正向性格，负值表示契合其反面；无直接依据填 0。"
-		+ "mercy：保护生命、宽恕、减少无辜者痛苦为正，明确残酷惩罚或伤害无辜者为负；禁止暴行应为正，不能因提到暴行就填负。"
-		+ "honor：守约、履行明确承诺、公正程序为正，背约、欺骗、出尔反尔为负。"
-		+ "generosity：主动救济、分享资源、照顾部属为正，明确自利侵吞、苛刻拒绝应有供养为负；普通税制变化本身不等于吝啬。"
-		+ "valor：明确承担危险、迎战为正，因恐惧逃避责任为负；普通民政与审慎停战不自动扣分。"
-		+ "calculating：有明确预案、风险权衡、克制和长期安排为正，明确冲动冒险、无视已知风险为负；残酷不自动等于审慎。"
-		+ "稳定度、忠诚度、税收等数值损益由独立利益评分处理，不得仅因这些数值升降推断性格；"
-		+ "降低忠诚度不自动意味着残酷，也不应给所有负面性格一并加分。";
+	internal static string PromptContract => PolicyGenerationPromptTexts.Get("VotePersonalityContract", "- votePersonality:object must contain exactly five number fields: mercy, honor, generosity, valor, and calculating. Each must be in [-1,1]; all may be 0.Assess only the means actually used in the policy body, not public feedback, keywords in the policy name, the issuer's personality, or who is expected to support it.A positive value means the means align with the corresponding positive trait, and a negative value means alignment with its opposite. Use 0 when there is no direct evidence.mercy: protecting life, forgiveness, and reducing suffering of innocents are positive; explicit cruel punishment or harm to innocents is negative. Prohibiting atrocities is positive; do not assign a negative value merely because atrocities are mentioned.honor: keeping agreements, fulfilling explicit promises, and fair procedure are positive; breaking agreements, deception, and reversing promises are negative.generosity: voluntary relief, sharing resources, and caring for subordinates are positive; explicit selfish appropriation or harsh refusal of owed support is negative. Ordinary tax changes alone do not imply stinginess.valor: explicitly accepting danger or facing battle is positive; evading responsibility out of fear is negative. Ordinary civil administration and prudent truces do not automatically lose points.calculating: explicit contingency plans, weighing risks, restraint, and long-term planning are positive; explicit impulsive risk-taking or ignoring known risks is negative. Cruelty does not automatically imply prudence.Numeric gains and losses in stability, loyalty, taxation, and similar metrics are handled by independent interest scoring; do not infer personality solely from these increases or decreases.Reducing loyalty does not automatically imply cruelty and should not increase every negative personality score.");
 
 	private static readonly string[] Fields = { "mercy", "honor", "generosity", "valor", "calculating" };
 
@@ -46,7 +36,7 @@ internal static class PolicyVotePersonality
 		if (!(token is JObject value) || value.Count != Fields.Length
 			|| Fields.Any(field => value[field] == null))
 		{
-			throw new JsonException("votePersonality 必须包含且仅包含五项性格评分。");
+			throw new JsonException("votePersonality must contain exactly five personality scores.");
 		}
 		foreach (string field in Fields)
 		{
@@ -54,7 +44,7 @@ internal static class PolicyVotePersonality
 			if ((number.Type != JTokenType.Float && number.Type != JTokenType.Integer)
 				|| !IsValid(number.Value<double>()))
 			{
-				throw new JsonException("votePersonality 性格评分必须为 [-1,1] 的有限数值：" + field);
+				throw new JsonException("votePersonality score must be a finite number in [-1, 1]: " + field);
 			}
 		}
 		return value.ToObject<PolicyVotePersonalityProfile>();

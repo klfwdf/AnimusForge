@@ -27,13 +27,13 @@ public static class NameMarkerSafePatch
 					HarmonyMethod prefix = new HarmonyMethod(typeof(NameMarkerSafePatch).GetMethod("Prefix", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, prefix);
 					_patched = true;
-					Logger.LogTrace("System", "✅ NameMarkerSafePatch 已对 DefaultMissionNameMarkerHandler.OnTick 打补丁。");
+					Logger.LogTrace("System", "✅ NameMarkerSafePatch Patched DefaultMissionNameMarkerHandler.OnTick successfully.");
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ NameMarkerSafePatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ NameMarkerSafePatch patch failed: " + ex.Message);
 		}
 	}
 

@@ -17,8 +17,8 @@ internal static class SceneHistoryProjectionOwner
             SpeakerName = targetName, SpeakerAgentIndex = targetAgentIndex, VisibleAgentIndices = visible };
         if (normalizedKind == "fact") return new ConversationMessage {
             EventSequence = sequence, Role = "system", Content = ConversationSpeechTextRules.NormalizeNativeConversationFactLineForPrompt(text, speaker),
-            SpeakerName = "系统", SpeakerAgentIndex = -1, VisibleAgentIndices = visible };
-        return new ConversationMessage { EventSequence = sequence, Role = "user", Content = text, SpeakerName = "你", SpeakerAgentIndex = -1,
+            SpeakerName = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0296"), SpeakerAgentIndex = -1, VisibleAgentIndices = visible };
+        return new ConversationMessage { EventSequence = sequence, Role = "user", Content = text, SpeakerName = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0297"), SpeakerAgentIndex = -1,
             TargetAgentIndex = playerTargetAgentIndex, TargetName = playerTargetName, PlayerDistanceMeters = distance, VisibleAgentIndices = visible };
     }
     internal static List<ConversationMessage> CapturePromptMessages(IEnumerable<ConversationMessage> source)
@@ -242,20 +242,20 @@ internal static string BuildSceneHistoryMergeKey(ConversationMessage msg, Conver
 internal static bool IsSingleUseSceneNpcFactText(string text)
 	{
 		string text2 = (text ?? "").Trim();
-		if (!text2.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		if (!text2.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0298"), StringComparison.Ordinal))
 		{
 			return false;
 		}
-		string text3 = text2.Substring("[AFEF NPC行为补充]".Length).Trim();
+		string text3 = text2.Substring(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0299").Length).Trim();
 		if (string.IsNullOrWhiteSpace(text3))
 		{
 			return false;
 		}
-		if (text3.StartsWith("今天稍早时候刚与", StringComparison.Ordinal) && text3.EndsWith("见过面。", StringComparison.Ordinal))
+		if (text3.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0300"), StringComparison.Ordinal) && text3.EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0301"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text3.StartsWith("距离你上次与", StringComparison.Ordinal) && text3.Contains("见面，已有") && text3.EndsWith("天了。", StringComparison.Ordinal))
+		if (text3.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0302"), StringComparison.Ordinal) && text3.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0303")) && text3.EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0304"), StringComparison.Ordinal))
 		{
 			return true;
 		}

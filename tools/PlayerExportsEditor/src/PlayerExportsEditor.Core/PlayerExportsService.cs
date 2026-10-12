@@ -10,10 +10,16 @@ public sealed class PlayerExportsService
 
     public string FindDefaultPlayerExportsRoot(string startDirectory)
     {
-        var dataRoot = AnimusForgeDataPaths.FindModuleRoot(startDirectory);
+        // A packaged editor resolves its module ancestor. A separately located
+        // editor may select the installed module explicitly, never a source/Stage.
+        string? located = AnimusForgeDataPaths.FindModuleRootFromDirectory(startDirectory);
+        var dataRoot = located ?? AnimusForgeDataPaths.GetCurrentRoot();
         var exports = AnimusForgeDataPaths.GetPlayerExportsDirectory(dataRoot);
         return exports;
     }
+
+    public string SelectInstalledModule(string moduleDirectory)
+        => AnimusForgeDataPaths.GetPlayerExportsDirectory(AnimusForgeDataPaths.ResolveRoot(moduleDirectory));
 
     public IReadOnlyList<PlayerExportsPackageInfo> ListPackages(string playerExportsRoot)
     {
@@ -218,8 +224,9 @@ public sealed class PlayerExportsService
 
         var full = Path.GetFullPath(playerExportsRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         var parent = Directory.GetParent(full);
-        if (!string.Equals(Path.GetFileName(full), "PlayerExports", StringComparison.OrdinalIgnoreCase) || parent == null)
-            throw new InvalidOperationException("Editable PlayerExports must belong to an AnimusForge module.");
+        if (!string.Equals(Path.GetFileName(full), "PlayerExports", StringComparison.OrdinalIgnoreCase)
+            || parent == null)
+            throw new InvalidOperationException("Editable PlayerExports must be directly under an installed AnimusForge module.");
         var expected = AnimusForgeDataPaths.GetPlayerExportsDirectory(parent.FullName);
         if (!string.Equals(full, expected, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("Editable PlayerExports root is not canonical.");

@@ -100,7 +100,7 @@ internal sealed class SceneExternalPromptCaptureAdapter
 		string playerName = _ports.GetPlayerDisplayNameForShout();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = "玩家";
+			playerName = AdapterPromptCaptureTexts.PcapText("Project_Player");
 		}
 		string layered = MainPromptMessageAssemblyOwner.BuildSceneCompositeUserBlock(
 			string.Empty,

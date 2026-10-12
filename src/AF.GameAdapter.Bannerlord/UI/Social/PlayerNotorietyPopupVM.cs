@@ -1,5 +1,6 @@
 using System;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -38,14 +39,14 @@ public sealed class PlayerNotorietyPopupVM : ViewModel
 	public void ApplyData(PlayerNotorietyPopupData data)
 	{
 		PlayerNotorietyPopupData source = data ?? new PlayerNotorietyPopupData();
-		HistoryText = string.IsNullOrWhiteSpace(source.HistoryText) ? "尚无可展示的公开履历。" : source.HistoryText.Trim();
+		HistoryText = string.IsNullOrWhiteSpace(source.HistoryText) ? new TextObject("{=AF_UI_Notoriety_NoHistory}No public history is available.").ToString() : source.HistoryText.Trim();
 		CenturyText = string.IsNullOrWhiteSpace(source.CenturyText) ? "" : source.CenturyText.Trim();
 		WorldFillPercent = ClampPercent(source.WorldFillPercent);
 		ShowEditButton = source.ShowEditButton;
-		EditText = string.IsNullOrWhiteSpace(source.EditText) ? "编辑履历" : source.EditText.Trim();
+		EditText = string.IsNullOrWhiteSpace(source.EditText) ? new TextObject("{=AF_UI_Notoriety_Edit}Edit history").ToString() : source.EditText.Trim();
 		IsLowProfileModeEnabled = source.IsLowProfileModeEnabled;
 		LowProfileToggleText = string.IsNullOrWhiteSpace(source.LowProfileToggleText)
-			? (source.IsLowProfileModeEnabled ? "关闭低调模式" : "开启低调模式")
+			? (source.IsLowProfileModeEnabled ? new TextObject("{=AF_UI_Notoriety_DisableLowProfile}Disable low-profile mode").ToString() : new TextObject("{=AF_UI_Notoriety_EnableLowProfile}Enable low-profile mode").ToString())
 			: source.LowProfileToggleText.Trim();
 		CultureItems = new MBBindingList<PlayerNotorietyCultureItemVM>();
 		foreach (PlayerNotorietyCultureRowData row in source.CultureRows ?? Array.Empty<PlayerNotorietyCultureRowData>())
@@ -207,7 +208,7 @@ public sealed class PlayerNotorietyCultureItemVM : ViewModel
 
 	public PlayerNotorietyCultureItemVM(PlayerNotorietyCultureRowData row)
 	{
-		CultureName = string.IsNullOrWhiteSpace(row?.CultureName) ? "未知文化" : row.CultureName.Trim();
+		CultureName = string.IsNullOrWhiteSpace(row?.CultureName) ? new TextObject("{=AF_UI_Notoriety_UnknownCulture}Unknown culture").ToString() : row.CultureName.Trim();
 		float score = row == null ? 0f : row.FillPercent;
 		FillPercent = score;
 		ScoreText = FormatScore(score);

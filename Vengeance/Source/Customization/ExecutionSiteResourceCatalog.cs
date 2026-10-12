@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -40,9 +40,19 @@ public static class ExecutionSiteResourceCatalog
             ExecutionSiteCrucifixDecoration.RoleId)
     };
 
-    public static string ExternalCatalogPath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        @"Mount and Blade II Bannerlord\Configs\RichExecutions\mesh_catalog.json");
+    public static string ExternalCatalogPath
+    {
+        get
+        {
+            string root = AnimusForge.AnimusForgeDataPaths.GetCurrentRoot();
+            string path = Path.Combine(AnimusForge.AnimusForgeDataPaths.GetSettingsDirectory(root), "RichExecutions", "mesh_catalog.json");
+            string legacy = AnimusForge.AnimusForgeDataPaths.GetLegacyDocumentsPath(
+                @"Mount and Blade II Bannerlord\Configs\RichExecutions\mesh_catalog.json");
+            if (!File.Exists(path) && !string.IsNullOrWhiteSpace(legacy))
+                AnimusForge.AnimusForgeDataPaths.CopyLegacyFileIfMissing(root, legacy, path);
+            return path;
+        }
+    }
 
     public static IReadOnlyList<ExecutionSiteResourceDefinition> Load()
     {

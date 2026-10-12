@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Storm_Coast_Evenfall_Hall",
+  "Keywords": [
+    "Evenfall Hall",
+    "Tarth",
+    "Sapphire Isle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Hall of Evening is the main seat of Tarth, where House Tarth has ruled for generations. Tas Island is also known as Sapphire Island. Rumors and maritime trade have spread the story of sapphires far away; but the real wealth of the island also includes harbors, woods, fishing grounds, pastures and ships that can transport islanders to the mainland. Dusk Advent Hall faces the coast of Storm's End and the Narrow Sea. It has the relative independence of the island, but it is also unable to break away from the navigation routes of Storm's End and the King's Territory. The identity of the Tarth people often belongs to both the island and the mainland: they cherish local customs and enter the order of the Seven Kingdoms with knighthood and vassal obligations. Any temporary war should not cover this longer geographical and social background."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Evenfall Hall Local families also depend on rainforest timber, game, barren farmland, fisheries, and roofs to protect themselves from storms; any time a road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Evenfall Hall Entry Evenfall Hall"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Evenfall Hall They also recognize the accents, laws, and credentials of the Stormlands; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Evenfall Hall Entry Evenfall Hall"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Evenfall Hall If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Evenfall Hall A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Evenfall Hall They care about rainforest timber, prey, barren farmland, fish catches, and roofs to shelter from storms. They also look at whether seeds are left after harvesting grain, and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Evenfall Hall: The Hall of Evening is the main seat of Tarth, where House Tarth has ruled for generations. Tas Island is also known as Sapphire Island. Rumors and maritime trade have spread the story of sapphires far away; but the real wealth of the island also includes harbors, woods, fishing grounds, pastures and ships that can transport islanders to the mainland. Dusk Advent Hall faces the coast of Storm's End and the Narrow Sea. It has the relative independence of the island, but it is also unable to break away from the navigation routes of Storm's End and the King's Territory. The identity of the Tarth people often belongs to both the island and the mainland: they cherish local customs and enter the order of the Seven Kingdoms with knighthood and vassal obligations. Any temporary war should not cover this longer geographical and social background."
+  ]
+}

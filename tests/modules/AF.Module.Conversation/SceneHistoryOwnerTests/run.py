@@ -22,7 +22,14 @@ owner=(R/'src/modules/AF.Module.Conversation/Internal/History/SceneConversationH
 assert 'private readonly Dictionary<int,List<ConversationMessage>> _npcHistory' in owner
 assert 'private readonly List<ConversationMessage> _publicHistory' in owner
 capture_path=R/'src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs'
-assert 'nativeSessions.Append(key, NativeHistoryIdentityProjectionOwner.BuildEntry(' in capture_path.read_text(encoding='utf-8-sig')
+append_body=ex.declaration(capture_path.read_text(encoding='utf-8-sig'),'internal static void AppendNativeConversationSessionHistoryCaptured(')
+build_entry='var entry = NativeHistoryIdentityProjectionOwner.BuildEntry('
+stamp_entry='entry.PromptMemorySessionKey = MyBehavior.CaptureCurrentPromptMemorySessionKey();'
+append_entry='nativeSessions.Append(key, entry);'
+assert all(append_body.count(token)==1 for token in (build_entry,stamp_entry,append_entry))
+assert append_body.index(build_entry)<append_body.index(stamp_entry)<append_body.index(append_entry)
+import re
+assert len(re.findall(r'\bentry\s*=',append_body))==1,'same entry must be stamped and passed to session owner'
 print('PASS 48 actual terminal history consumers; sole private scene stores; existing native SessionOwner append')
 main=(R/'src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs').read_text(encoding='utf-8-sig');utils=(R/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutUtils.cs').read_text(encoding='utf-8-sig')
 program=(H/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@CREATE@@',ex.declaration(main,'internal static object CreateCourierChatMessage('))
@@ -37,7 +44,15 @@ actual_append=ex.declaration(capture_path.read_text(encoding='utf-8-sig'),'inter
 (out/'Program.cs').write_text(program,encoding='utf-8');(out/'LegacyProjection.cs').write_text((H/'LegacyProjection.cs.txt').read_text(encoding='utf-8'),encoding='utf-8')
 if presentation.exists():(out/'PresentationProbe.cs').write_text(presentation.read_text(encoding='utf-8'),encoding='utf-8')
 paths=['src/modules/AF.Module.Conversation/Internal/History/SceneConversationHistoryOwner.cs','src/modules/AF.Module.Conversation/Internal/History/SceneHistoryProjectionOwner.cs','src/modules/AF.Module.Conversation/Internal/History/NativeHistoryIdentityProjectionOwner.cs','src/modules/AF.Module.Prompt/Composition/HistorySectionProjectionOwner.cs','src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs','src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs','src/modules/AF.Module.Conversation/Channels/Native/NativeConversationSessionOwner.cs','src/modules/AF.Module.Memory/Records/AnimusForgeDialogueHistoryEntry.cs','src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs']
+paths.append('src/modules/AF.Module.Conversation/Internal/ConversationRuntimeTexts.cs')
+paths.append('src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs')
+paths.append('src/modules/AF.Module.Prompt/Composition/MemorySystemFactProjection.cs')
 (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(R/x)+'" />' for x in paths)+'</ItemGroup></Project>',encoding='utf-8')
+(out/'RuntimeResourcePath.cs').write_text('namespace AnimusForge; internal static class AnimusForgeModulePaths { internal static string GetModuleDataFilePath(string name) => System.IO.Path.Combine(System.AppContext.BaseDirectory, name); }',encoding='utf-8')
+resources=R/'content/modules/AF.Module.Conversation/ModuleData'
+prompt_res=R/'content/modules/AF.Module.Prompt/ModuleData'
+items='<ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+str(R/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll')+'</HintPath></Reference><EmbeddedResource Include="'+str(resources/'ConversationRuntimeCompatibility.json')+'"><LogicalName>AnimusForge.Conversation.RuntimeCompatibility.json</LogicalName><WithCulture>false</WithCulture></EmbeddedResource><Content Include="'+str(resources/'ConversationRuntimePrompts.json')+'"><Link>ConversationRuntimePrompts.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content><EmbeddedResource Include="'+str(prompt_res/'PromptCompatibility.json')+'"><LogicalName>AnimusForge.Prompt.Compatibility.json</LogicalName><WithCulture>false</WithCulture></EmbeddedResource><Content Include="'+str(prompt_res/'PromptComposerTexts.zh-CN.json')+'"><Link>PromptComposerTexts.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content></ItemGroup>'
+(out/'Tests.csproj').write_text((out/'Tests.csproj').read_text(encoding='utf-8').replace('</Project>',items+'</Project>'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 d=R/'local/dotnet/8.0.425/dotnet.exe'
 try:r=subprocess.run([str(d),'run','--project',str(out/'Tests.csproj'),'-c','Release'],cwd=out,env=minimal_test_environment(d,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)

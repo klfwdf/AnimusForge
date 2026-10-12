@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Quaro",
+  "Keywords": [
+    "Quaro",
+    "House Quaro"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Quarlo family lives between the nobility of the upper town of Norvos, the marketplace of the lower town, and the roads leading inland, and any wealth is subject to the religious authority of the bearded monks. If Quaro runs a caravan, he needs to be protected by ax monks and guards; if he runs a workshop, he is bound by the rhythm of life stipulated by bells, festivals and divine laws. Norvos is divided into the upper city on the cliff and the lower city by the river. Giant bells, stone steps and axe-bearing monks jointly maintain the theocratic order dominated by bearded monks. Caravans, carpets, armor, and inland roads brought wealth, but noble families still had to respect religious judgment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "norvos"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quaro Wealth can buy guards and mansions, but it is difficult to openly disobey those who have masters of divine law and armed monks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "norvos"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quaro The upper-city banquets were far away from them, but every religious decision fell down the stone steps to the market-place."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quaro Quaro is a local family in Norvos, and its politics and livelihood must obey the bearded monks, the order of the giant bell, and the inland trade routes. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quaro Quaro is a local family in Norvos, and its politics and livelihood must obey the bearded monks, the order of the giant bell, and the inland trade routes. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quaro Quaro is a local family in Norvos, and its politics and livelihood must obey the bearded monks, the order of the giant bell, and the inland trade routes. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quaro Quaro is a local family in Norvos, and its politics and livelihood must obey the bearded monks, the order of the giant bell, and the inland trade routes. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Quaro: Quaro is a local family in Norvos, and its politics and livelihood must obey the bearded monks, the order of the giant bell, and the inland trade routes."
+  ]
+}

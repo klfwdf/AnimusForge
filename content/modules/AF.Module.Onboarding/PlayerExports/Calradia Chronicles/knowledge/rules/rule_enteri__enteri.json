@@ -1,0 +1,227 @@
+{
+  "Id": "rule_enteri",
+  "Keywords": [
+    "Enteri",
+    "Earl of Enteri"
+  ],
+  "RagShortTexts": [
+    "Count of Enteri commanding the crossbowman phalanx at the Battle of Pandrak"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Enteri is a count in Vlandia and has a considerable voice in the military. He commanded Vlandia's crossbowmen phalanx at the Battle of Pandrak. In that battle, they shot down a large number of Khuzait's horse archers, but were then directly run over by the Empire's armored cavalry. The crossbowmen suffered heavy losses, and he himself escaped with the retreating troops. Later he married into the Dai Aromanke family and became the husband of Baroness Caratilde."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Count Enteri is an old man in our Vlandia military. During the Battle of Pandrak, he commanded a phalanx of crossbowmen and shot down the Khuzait horse archers. But before they could take a breath, the Empire's armored cavalry rushed over from the flanks, crushing the entire crossbowman phalanx like a hammer smashing an egg. He was lucky enough to withdraw with the remaining soldiers, but almost all of his crossbowmen were responsible for that battle. Now he still has a voice in the military, but he seems reluctant to lead troops on expeditions again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Everyone knows exactly what happened to the marriage of Enteri and Cara Tilde. Caratilde, a woman, sat in the position of baron. Her reputation was not justified and she needed the support of the military. Enteri was influential in the military, but he was not from a noble family, so marrying into the Dai Aromanc family would be a good destination for him. But what’s interesting about this couple is that Enteri doesn’t like to lead troops, but Caratilde particularly likes to lead troops on expeditions. Some said it was the disastrous defeat at Pandrac that made him disheartened, while others said he just preferred to strategize from the rear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Count Enteri? The one who married Baroness Cara Tilde. I heard that he commanded the crossbowmen in the Battle of Pandrak, and the battle was brutal. Most of his men died. He was lucky to come back alive. Now he is not willing to lead troops to fight, but his wife, who is a baron, particularly likes to lead legions on expeditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Enteri? During the Battle of Pandrak, it was he who commanded Vlandia's crossbowmen on the opposite side. To be honest, those crossbowmen did cause us a lot of trouble. Khuzait's horse archers suffered heavy casualties from them. But in the end, the Empire's armored cavalry crushed them. I heard that Enteri survived that battle and later became the husband of a certain baroness in Vlandia. Interestingly, he himself seems no longer keen on leading troops himself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Enteri was a count of Vlandia and had some influence in the military. He commanded the crossbowmen in the great battle of Pandrak."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Enteri was a military figure in Vlandia who commanded the crossbowmen at the Battle of Pandrak, where he suffered heavy losses from the Empire's armored cavalry. Later he married into the Dai Aromanke family and became the husband of Baroness Caratilde."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Enteri was a count of Vlandia who commanded the crossbowmen at the Battle of Pandrak."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Enteri is a name that we Khuzait people will not forget. During the Battle of Pandrak, the Vlandia crossbowmen under his command killed many of our horse archers! In that battle, almost all the men of the Kujit family died. Although in the end the Empire's armored cavalry crushed their crossbowmen phalanx and avenged us, the blood debt will not be erased so easily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have heard many stories about Count Enteri in Vlandia. In the battle of Pandrak, he commanded the crossbowmen and shot the Khuzait people to tears, but as soon as the imperial armored cavalry rushed over, his crossbowmen were reduced to pulp. He ordered a large evacuation on his own, but it is said that since then he has had little interest in leading troops himself. He married Baroness Caratilde, a woman who loved to lead troops into war. Interesting? The husband is a veteran who has fought in tragic wars, but he no longer likes to lead troops; the wife is a woman who became a baron just to prove herself, but she especially likes to lead the army on expeditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Enteri was an eyewitness to the Battle of Pandrak. In that battle, he commanded Vlandia's crossbowmen phalanx, which first severely damaged the Khuzait horse archers and was later defeated by the imperial armored cavalry. This experience profoundly affected his later military attitude - although he still had influence in the military, he rarely personally led troops on expeditions. His marriage to Caratilde was a typical political marriage: Caratilde needed a military background to consolidate her precarious status as a baron, while Enteri needed to enhance his status through marriage with a ruling family. The couple's reversal of roles - the baroness was keen on the military and the military husband disliked leading troops - was a rarity in Vlandia's feudal system."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Enteri",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Dai Aromanke",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Pandrak",
+      "Kind": "bound_event_name",
+      "TargetId": "__bound_event__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

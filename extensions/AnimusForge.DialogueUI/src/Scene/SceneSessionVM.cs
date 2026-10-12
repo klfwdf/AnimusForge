@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AnimusForge;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ImageIdentifiers;
 using TaleWorlds.Library;
@@ -23,7 +24,29 @@ public sealed class SceneSessionVM : ViewModel
     private int _illustrationVersion = -1;
     [DataSourceProperty] public bool IsIllustrationVisible => ShoutBehavior.IsSceneIllustrationAvailableForExternal;
     [DataSourceProperty] public bool CanIllustrate => IsIllustrationVisible && !ShoutBehavior.IsSceneIllustrationBusyForExternal;
-    [DataSourceProperty] public string IllustrationButtonText => ShoutBehavior.IsSceneIllustrationBusyForExternal ? "截图中…" : "生图";
+    [DataSourceProperty] public string IllustrationButtonText => ShoutBehavior.IsSceneIllustrationBusyForExternal ? DialogueUiLocalization.Text("AFD_UI_Illustration_Busy", "Capturing…") : DialogueUiLocalization.Text("AFD_UI_Illustration_Button", "Illustrate");
+    [DataSourceProperty] public string SessionTitleText => DialogueUiLocalization.Text("AFD_UI_Scene_SessionTitle", "Scene conversation folio");
+    [DataSourceProperty] public string CollapseText => DialogueUiLocalization.Text("AFD_UI_Scene_Collapse", "Collapse interface");
+    [DataSourceProperty] public string IncludeAllText => DialogueUiLocalization.Text("AFD_UI_Scene_IncludeAll", "Include all");
+    [DataSourceProperty] public string KeepLockedText => DialogueUiLocalization.Text("AFD_UI_Scene_KeepLocked", "Keep locked only");
+    [DataSourceProperty] public string SceneHistorySeparatorText => DialogueUiLocalization.Text("AFD_UI_Scene_HistorySeparator", "—— Scene conversation record ——");
+    [DataSourceProperty] public string CancelGiftText => DialogueUiLocalization.Text("AFD_UI_Scene_CancelGift", "Cancel gift");
+    [DataSourceProperty] public string InputPlaceholderText => DialogueUiLocalization.Text("AFD_UI_Scene_InputPlaceholder", "Tell the people around you something…");
+    [DataSourceProperty] public string InputHintText => DialogueUiLocalization.Text("AFD_UI_Scene_InputHint", "[Enter] send · [Shift+Enter] new line · distribute to the audience");
+    [DataSourceProperty] public string HistoryText => DialogueUiLocalization.Text("AFD_UI_Scene_History", "History");
+    [DataSourceProperty] public string GiftText => DialogueUiLocalization.Text("AFD_UI_Scene_Gift", "Gift");
+    [DataSourceProperty] public string GalleryText => DialogueUiLocalization.Text("AFD_UI_Scene_Gallery", "Gallery");
+    [DataSourceProperty] public string EncyclopediaText => DialogueUiLocalization.Text("AFD_UI_Scene_Encyclopedia", "Encyclopedia");
+    [DataSourceProperty] public string LeaveText => DialogueUiLocalization.Text("AFD_UI_Scene_Leave", "Leave");
+    [DataSourceProperty] public string InterruptText => DialogueUiLocalization.Text("AFD_UI_Scene_Interrupt", "Interrupt · interject");
+    [DataSourceProperty] public string SceneHistoryTitleText => DialogueUiLocalization.Text("AFD_UI_Scene_HistoryTitle", "Scene conversation record");
+    [DataSourceProperty] public string CloseText => DialogueUiLocalization.Text("AFD_UI_Scene_Close", "Close");
+    [DataSourceProperty] public string ReturnText => DialogueUiLocalization.Text("AFD_UI_Scene_Return", "Back to conversation");
+    [DataSourceProperty] public string ExpandFolioText => DialogueUiLocalization.Text("AFD_UI_Scene_ExpandFolio", "Expand\nconversation folio");
+    [DataSourceProperty] public string ExpandFolioHintText => DialogueUiLocalization.Text("AFD_UI_Scene_ExpandFolioHint", "(Press T)");
+    [DataSourceProperty] public string DocketInstructionsText => DialogueUiLocalization.Text("AFD_UI_Scene_DocketInstructions", "Click a nameplate = address that person · click a seal = participate / hide / lock");
+    [DataSourceProperty] public string MoreHistoryText => DialogueUiLocalization.Text("AFD_UI_Scene_MoreHistory", "Scroll for more");
+    [DataSourceProperty] public string RollUpDocketText => DialogueUiLocalization.Text("AFD_UI_Scene_RollUpDocket", "Roll up docket");
     public void ExecuteIllustrate() => Queue(() => { if (CanIllustrate) ShoutBehavior.RequestSceneIllustrationForExternal(() => !_released && ShoutBehavior.IsScenePresentationActiveForExternal); });
     public void ExecuteOpenGallery() => Queue(() => { if (!_released && IsIllustrationVisible) ShoutBehavior.OpenSceneIllustrationGalleryForUi(); });
     internal void RefreshIllustration()
@@ -45,7 +68,7 @@ public sealed class SceneSessionVM : ViewModel
     [DataSourceProperty] public bool IsHistoryOpen => _isHistoryOpen && !_isCollapsed;
     [DataSourceProperty] public bool IsBusy => _isBusy;
     [DataSourceProperty] public bool CanSend => !_isBusy;
-    [DataSourceProperty] public string SendText => _isBusy ? "等待回应…" : "发送 (Enter)";
+    [DataSourceProperty] public string SendText => _isBusy ? DialogueUiLocalization.Text("AFD_UI_Scene_Waiting", "Waiting for response…") : DialogueUiLocalization.Text("AFD_UI_Scene_Send", "Send (Enter)");
     [DataSourceProperty] public string StatusText => _status;
     [DataSourceProperty] public string AddresseeText => _addressee;
     [DataSourceProperty] public string AudienceTitle => _audienceTitle;
@@ -61,10 +84,10 @@ public sealed class SceneSessionVM : ViewModel
     private bool _isDocketOpen = true;
     [DataSourceProperty] public bool IsDocketOpen => _isDocketOpen;
     [DataSourceProperty] public bool IsDocketRolled => !_isDocketOpen;
-    [DataSourceProperty] public string DocketTagText => "展开受众名录 · " + Participants.Count + " 人";
+    [DataSourceProperty] public string DocketTagText => DialogueUiLocalization.Text("AFD_UI_Scene_Docket", "Expand audience docket · {COUNT} people", "COUNT", Participants.Count.ToString());
     private string _stagedTrade = "";
     [DataSourceProperty] public bool HasStagedTrade => !string.IsNullOrEmpty(_stagedTrade);
-    [DataSourceProperty] public string StagedTradeText => HasStagedTrade ? "待交付 · " + _stagedTrade + "（随下一句话一起交付）" : "";
+    [DataSourceProperty] public string StagedTradeText => HasStagedTrade ? DialogueUiLocalization.Text("AFD_UI_Scene_StagedTrade", "Staged · {TRADE} (delivered with the next line)", "TRADE", _stagedTrade) : "";
 
     public SceneSessionVM() { Trade = new SceneTradeVM(SetStatus, OnTradeVisibilityChanged); }
 
@@ -92,7 +115,7 @@ public sealed class SceneSessionVM : ViewModel
     public void ExecuteSubmit() => Queue(Submit);
     public void ExecuteToggleHistory() => Queue(() => { _isHistoryOpen = !_isHistoryOpen; OnPropertyChanged(nameof(IsHistoryOpen)); RefreshHistory(force: true); });
     public void ExecuteGift() => Queue(() => OpenTrade("give"));
-    public void ExecuteCancelStagedTrade() => Queue(() => { ShoutBehavior.CancelScenePresentationTradeForExternal(); SetStatus("已取消待交付的给予。"); });
+    public void ExecuteCancelStagedTrade() => Queue(() => { ShoutBehavior.CancelScenePresentationTradeForExternal(); SetStatus(DialogueUiLocalization.Text("AFD_UI_Scene_TradeCancelled", "The staged gift was cancelled.")); });
     public void ExecuteToggleDocket() => Queue(() =>
     {
         _isDocketOpen = !_isDocketOpen;
@@ -121,20 +144,20 @@ public sealed class SceneSessionVM : ViewModel
         OnTradeVisibilityChanged();
         return true;
     }
-    public void ExecuteEncyclopedia() => Queue(() => { if (!ShoutBehavior.OpenScenePresentationEncyclopediaForExternal()) SetStatus("当前对话对象没有图鉴条目。"); });
+    public void ExecuteEncyclopedia() => Queue(() => { if (!ShoutBehavior.OpenScenePresentationEncyclopediaForExternal()) SetStatus(DialogueUiLocalization.Text("AFD_UI_Scene_NoEncyclopedia", "The current conversation target has no encyclopedia entry.")); });
     public void ExecuteLeave() => Queue(() => ShoutBehavior.EndScenePresentationForExternal("leave"));
     public void ExecuteCollapse() => Queue(() => ShoutBehavior.SetScenePresentationCollapsedForExternal(true));
     public void ExecuteExpand() => Queue(() => ShoutBehavior.SetScenePresentationCollapsedForExternal(false));
     public void ExecuteIncludeAll() => Queue(() => ShoutBehavior.SetAllScenePresentationParticipantsForExternal(true));
     public void ExecuteKeepLocked() => Queue(() => ShoutBehavior.SetAllScenePresentationParticipantsForExternal(false));
-    internal void QueueSelect(int agentIndex) => Queue(() => { if (!ShoutBehavior.SetScenePresentationAddresseeForExternal(agentIndex)) SetStatus("此人已离开范围，不能作为对话对象。"); });
+    internal void QueueSelect(int agentIndex) => Queue(() => { if (!ShoutBehavior.SetScenePresentationAddresseeForExternal(agentIndex)) SetStatus(DialogueUiLocalization.Text("AFD_UI_Scene_TargetOutOfRange", "This person has left the area and cannot be addressed.")); });
     internal void QueueCycle(int agentIndex) => Queue(() => ShoutBehavior.CycleScenePresentationParticipantForExternal(agentIndex));
 
     private void Submit()
     {
         if (IsInputEmpty)
         {
-            if (HasStagedTrade) SetStatus("给予会随话语一起交付，请先写一句要对对方说的话。");
+            if (HasStagedTrade) SetStatus(DialogueUiLocalization.Text("AFD_UI_Scene_TradeNeedsText", "The gift will be delivered with your line. Write something to say first."));
             return;
         }
         string text = AnimusForgeTextInputSanitizer.SanitizeSingleLine(_inputText, AnimusForgeTextInputSanitizer.MaxNativeConversationChars);
@@ -181,7 +204,7 @@ public sealed class SceneSessionVM : ViewModel
     [DataSourceProperty] public bool CanInterrupt => _canInterrupt;
     public void ExecuteInterrupt() => Queue(() =>
     {
-        if (ShoutBehavior.InterruptScenePresentationForExternal()) SetStatus("已打断，可以说下一句了。");
+        if (ShoutBehavior.InterruptScenePresentationForExternal()) SetStatus(DialogueUiLocalization.Text("AFD_UI_Scene_Interrupted", "Interrupted. You can send the next line."));
     });
 
     internal void Refresh(bool forceHistory = false)
@@ -239,10 +262,10 @@ public sealed class SceneSessionVM : ViewModel
             else if (info.IsInRange) participating++;
             if (info.IsAddressee) addressee = info.Name;
         }
-        _addressee = string.IsNullOrWhiteSpace(addressee) ? "" : "对 " + addressee + " 说：";
-        _audienceTitle = "场景受众名录 · " + infos.Count + " 人";
-        _audienceStats = participating + " 人参与 · " + excluded + " 人屏蔽";
-        _collapsedText = "展开场景对话 (T)" + (string.IsNullOrWhiteSpace(addressee) ? "" : " · " + addressee + (infos.Count > 1 ? " 等 " + infos.Count + " 人" : ""));
+        _addressee = string.IsNullOrWhiteSpace(addressee) ? "" : DialogueUiLocalization.Text("AFD_UI_Scene_Address", "To {NAME}:", "NAME", addressee);
+        _audienceTitle = DialogueUiLocalization.Text("AFD_UI_Scene_AudienceTitle", "Scene audience docket · {COUNT} people", "COUNT", infos.Count.ToString());
+        _audienceStats = DialogueUiLocalization.Text("AFD_UI_Scene_AudienceStats", "{PARTICIPATING} participating · {EXCLUDED} hidden", "PARTICIPATING", participating.ToString(), "EXCLUDED", excluded.ToString());
+        _collapsedText = DialogueUiLocalization.Text("AFD_UI_Scene_Collapsed", "Expand scene conversation (T)") + (string.IsNullOrWhiteSpace(addressee) ? "" : DialogueUiLocalization.Text("AFD_UI_Scene_CollapsedTarget", " · {NAME}{MORE}", "NAME", addressee, "MORE", infos.Count > 1 ? DialogueUiLocalization.Text("AFD_UI_Scene_MorePeople", " and {COUNT} others", "COUNT", (infos.Count - 1).ToString()) : ""));
         OnPropertyChanged(nameof(AddresseeText));
         OnPropertyChanged(nameof(AudienceTitle));
         OnPropertyChanged(nameof(AudienceStats));
@@ -312,10 +335,10 @@ public sealed class SceneParticipantVM : ViewModel
     {
         string name = (info.IsAddressee ? "★ " : "") + info.Name;
         string detail = string.IsNullOrWhiteSpace(info.Role) ? "" : "【" + info.Role + "】";
-        if (info.IsAddressee) detail += " 当前对话对象";
-        else if (!info.IsInRange) detail += " 已离开范围";
-        string state = info.State == ScenePresentationParticipantState.Locked ? "锁定"
-            : info.State == ScenePresentationParticipantState.Excluded ? "屏蔽" : "参与";
+        if (info.IsAddressee) detail += " " + DialogueUiLocalization.Text("AFD_UI_Scene_CurrentTarget", "Current target");
+        else if (!info.IsInRange) detail += " " + DialogueUiLocalization.Text("AFD_UI_Scene_LeftArea", "Out of range");
+        string state = info.State == ScenePresentationParticipantState.Locked ? DialogueUiLocalization.Text("AFD_UI_Scene_StateLocked", "Locked")
+            : info.State == ScenePresentationParticipantState.Excluded ? DialogueUiLocalization.Text("AFD_UI_Scene_StateHidden", "Hidden") : DialogueUiLocalization.Text("AFD_UI_Scene_StateParticipating", "Participating");
         Set(ref _name, name, nameof(Name));
         Set(ref _detail, detail.Trim(), nameof(Detail));
         Set(ref _stateText, state, nameof(StateText));

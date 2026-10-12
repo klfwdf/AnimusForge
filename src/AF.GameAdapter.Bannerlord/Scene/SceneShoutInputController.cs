@@ -1017,7 +1017,7 @@ internal sealed class SceneShoutInputController
 		{
 			Logger.Log("ShoutBehavior", "[ERROR] TriggerShout failed: " + ex.Message);
 			ResumeGame();
-			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 打开喊话界面失败，已重置状态。", new Color(1f, 0.3f, 0.3f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_OpenFailed", "[Scene shout] Failed to open the shout interface; state was reset."), new Color(1f, 0.3f, 0.3f)));
 		}
 	}
 
@@ -1106,7 +1106,7 @@ internal sealed class SceneShoutInputController
 		catch
 		{
 		}
-		InformationManager.DisplayMessage(new InformationMessage("正在处理中...", new Color(1f, 1f, 0f)));
+		InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_Processing", "Processing..."), new Color(1f, 1f, 0f)));
 	}
 
 	internal bool IsMissionPausedByShoutUi()
@@ -1206,7 +1206,7 @@ internal sealed class SceneShoutInputController
 			_nativeConversationInputTargetKey = ResolveCurrentNativeConversationTargetKey();
 			if (showMessage)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("\u5df2\u6253\u5f00 AnimusForge \u81ea\u7531\u5bf9\u8bdd\u8f93\u5165\u6846\u3002", new Color(0.4f, 1f, 0.4f)));
+				InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_NOTIFY_NativeConversation_InputOpened}AnimusForge free conversation input is open.").ToString(), new Color(0.4f, 1f, 0.4f)));
 			}
 		}
 		catch
@@ -1448,7 +1448,7 @@ internal sealed class SceneShoutInputController
 		{
 			return;
 		}
-		string text = primaryDataPacket?.Name ?? "附近的人";
+		string text = primaryDataPacket?.Name ?? ConversationUiLocalization.Text("AF_CONV_UI_Shout_TargetFallback", "nearby person");
         Agent directActionTarget = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == primaryDataPacket.AgentIndex);
 		bool battleSpeechMenu = BattleSpeechRuntimeHost.CanOpenSpeechMenu(Mission.Current);
 		List<Agent> battleSpeechFramedTargets = null;
@@ -1467,38 +1467,38 @@ internal sealed class SceneShoutInputController
 				battleSpeechPrimaryTarget);
 		List<InquiryElement> inquiryElements = new List<InquiryElement>
 		{
-			new InquiryElement("normal", "交流", null, isEnabled: true, ""),
-			new InquiryElement("give", "给予其物品并交流", null, isEnabled: true, ""),
-			new InquiryElement("show", "向其展示物品并交流", null, isEnabled: true, ""),
-			new InquiryElement("give_troops", "给予部队并交流", null, isEnabled: true, ""),
-			new InquiryElement("give_prisoners", "给予俘虏并交流", null, isEnabled: true, ""),
-			new InquiryElement("give_settlements", "转移固定资产并交流", null, isEnabled: true, ""),
-            new InquiryElement("direct_actions", "直接动作", null, isEnabled: true, "仅对当前主目标执行现有标签，不调用 AI。")
+			new InquiryElement("normal", ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModeNormal", "Talk"), null, isEnabled: true, ""),
+			new InquiryElement("give", ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModeGive", "Give items and talk"), null, isEnabled: true, ""),
+			new InquiryElement("show", ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModeShow", "Show items and talk"), null, isEnabled: true, ""),
+			new InquiryElement("give_troops", ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModeTroops", "Give troops and talk"), null, isEnabled: true, ""),
+			new InquiryElement("give_prisoners", ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModePrisoners", "Give prisoners and talk"), null, isEnabled: true, ""),
+			new InquiryElement("give_settlements", ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModeAssets", "Transfer fixed assets and talk"), null, isEnabled: true, ""),
+            new InquiryElement("direct_actions", ConversationUiLocalization.Text("AF_CONV_UI_Direct_Button", "Direct actions"), null, isEnabled: true, ConversationUiLocalization.Text("AF_CONV_UI_Direct_Description", "Execute existing tags only for the selected primary target, without calling AI."))
 		};
 		if (MyBehavior.IsDevDataManagementEnabledForExternal())
 		{
-			inquiryElements.Add(new InquiryElement("tag_test", "标签测试", null, isEnabled: true, "输入 NPC 可见正文和后处理标签，不调用 API，按当前目标立即执行。"));
+			inquiryElements.Add(new InquiryElement("tag_test", ConversationUiLocalization.Text("AF_CONV_UI_Shout_TagTest", "Tag test"), null, isEnabled: true, ConversationUiLocalization.Text("AF_CONV_UI_Shout_TagTestDescription", "Enter NPC-visible text and post-processing tags without calling the API; execute them immediately for the current target.")));
 		}
 		if (battleSpeechMenu)
 		{
 			inquiryElements.Add(new InquiryElement(
 				"battle_speech_player",
-				"演讲",
+				ConversationUiLocalization.Text("AF_CONV_UI_Shout_BattleSpeechPlayer", "Speech"),
 				null,
 				isEnabled: Agent.Main != null && Agent.Main.IsActive(),
-				"你亲自面向己方士兵发表演讲。"));
+				ConversationUiLocalization.Text("AF_CONV_UI_Shout_BattleSpeechPlayerDescription", "Give a speech to your allied soldiers.")));
 			if (npcSpeechTargetAllowed)
 			{
 				inquiryElements.Add(new InquiryElement(
 					"battle_speech_npc",
-					"他人演讲",
+					ConversationUiLocalization.Text("AF_CONV_UI_Shout_BattleSpeechNpc", "NPC speech"),
 					null,
 					isEnabled: true,
-					"让当前框选的己方主目标发表演讲。"));
+					ConversationUiLocalization.Text("AF_CONV_UI_Shout_BattleSpeechNpcDescription", "Have the currently highlighted allied primary target give a speech.")));
 			}
 		}
         MultiSelectionInquiryData data = null;
-		data = new MultiSelectionInquiryData(text, "当前目标：" + text + "\n此菜单用于边交流边给予或展示物品，也可转移部队、俘虏或固定资产。\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
+        data = new MultiSelectionInquiryData(text, ConversationUiLocalization.Text("AF_CONV_UI_Shout_ModeDescription", "Current target: {TARGET}\nThis menu lets you talk while giving or showing items, or transfer troops, prisoners, or fixed assets.\nChoose an interaction mode:", ("TARGET", text)), inquiryElements, isExitShown: true, 1, 1, ConversationUiLocalization.Text("AF_CONV_UI_Courier_Confirm", "Confirm"), ConversationUiLocalization.Text("AF_CONV_UI_Courier_Cancel", "Cancel"), delegate(List<InquiryElement> selected)
 		{
             if (!ConsumeShoutModeInquiry(data, menuRevision)) return;
 			if (selected == null || selected.Count == 0)
@@ -1598,7 +1598,7 @@ internal sealed class SceneShoutInputController
 		if (!opened)
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				"演讲输入框无法打开，已返回普通场景状态。",
+				ConversationUiLocalization.Text("AF_CONV_UI_Shout_SpeechInputFailed", "The speech input could not be opened; returning to normal scene state."),
 				new Color(1f, 0.5f, 0.3f)));
 			AfCompatV130.CompleteDedicatedSpeechMenuInput();
 		}
@@ -1651,7 +1651,7 @@ internal sealed class SceneShoutInputController
 		List<Agent> nearbyNPCAgents = GetAgentsForShoutTargetingContext(targetingContext);
 		if (nearbyNPCAgents == null || nearbyNPCAgents.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("你正在自言自语...", new Color(0.6f, 0.6f, 0.6f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_SelfTalk", "You are talking to yourself..."), new Color(0.6f, 0.6f, 0.6f)));
 			ResumeGame();
 			return false;
 		}
@@ -1662,14 +1662,14 @@ internal sealed class SceneShoutInputController
 		Agent primaryTarget = ResolvePrimaryAgentForShoutTargetingContext(targetingContext, nearbyNPCAgents);
 		if (primaryTarget == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 异色主对象已经离场，请重新框选。", new Color(1f, 0.5f, 0.3f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_PrimaryGone", "[Scene shout] The primary highlighted target has left; select targets again."), new Color(1f, 0.5f, 0.3f)));
 			ResumeGame();
 			return false;
 		}
 		primaryDataPacket = source.FirstOrDefault((NpcDataPacket d) => d.AgentIndex == primaryTarget.Index);
 		if (primaryDataPacket == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 没有找到可交流的目标。", new Color(1f, 0.5f, 0.3f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_PrimaryMissing", "[Scene shout] No primary highlighted target was found; select targets again."), new Color(1f, 0.5f, 0.3f)));
 			ResumeGame();
 			return false;
 		}
@@ -1679,16 +1679,17 @@ internal sealed class SceneShoutInputController
 
 	internal void OpenShoutTextInput(NpcDataPacket primaryDataPacket, string preface, string extraFact)
 	{
-		string text = primaryDataPacket?.Name ?? "附近的人";
+		string text = primaryDataPacket?.Name ?? ConversationUiLocalization.Text("AF_CONV_UI_Shout_TargetFallback", "nearby person");
 		string titleText = text;
 		string text2 = string.IsNullOrWhiteSpace(preface) ? "" : preface;
 		PauseGame();
-		if (!ShoutTextInputPopup.Show(titleText, text2, "请输入你想说的话：", "", delegate(string input)
+		string inputHint = ConversationUiLocalization.Text("AF_CONV_UI_Shout_InputHint", "Tell them something:");
+		if (!ShoutTextInputPopup.Show(titleText, text2, inputHint, "", delegate(string input)
 		{
 			OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
         }, OnShoutCancelled, BuildShoutTargetEncyclopediaAction(primaryDataPacket), enableIllustration: true))
 		{
-			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, (string.IsNullOrWhiteSpace(text2) ? "" : (text2 + "\n")) + "请输入你想说的话：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "发送", "取消", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, (string.IsNullOrWhiteSpace(text2) ? "" : (text2 + "\n")) + inputHint, isAffirmativeOptionShown: true, isNegativeOptionShown: true, ConversationUiLocalization.Text("AF_CONV_UI_Shout_Send", "Send"), ConversationUiLocalization.Text("AF_CONV_UI_Shout_Close", "Close"), delegate(string input)
 			{
 				OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
 			}, OnShoutCancelled), pauseGameActiveState: true);
@@ -1699,20 +1700,21 @@ internal sealed class SceneShoutInputController
 	{
 		if (!MyBehavior.IsDevDataManagementEnabledForExternal())
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[标签测试] 请先在 MCM 开启数据管理。", new Color(1f, 0.45f, 0.25f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_TagTest_EnableData", "[Tag test] Enable data management in MCM first."), new Color(1f, 0.45f, 0.25f)));
 			OnShoutCancelled();
 			return;
 		}
-		string text = primaryDataPacket?.Name ?? "附近的人";
-		string titleText = "标签输入 - " + text;
-		string subtitle = "当前目标：" + text + "\n输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前目标立即执行。";
+		string text = primaryDataPacket?.Name ?? ConversationUiLocalization.Text("AF_CONV_UI_Shout_TargetFallback", "nearby person");
+		string titleText = ConversationUiLocalization.Text("AF_CONV_UI_Shout_TagTitle", "Tag input - {TARGET}", ("TARGET", text));
+		string subtitle = ConversationUiLocalization.Text("AF_CONV_UI_Shout_TagSubtitle", "Current target: {TARGET}\nEnter NPC-visible text and post-processing tags. No API call is made; tags execute immediately for the current target.", ("TARGET", text));
 		PauseGame();
-		if (!ShoutTextInputPopup.Show(titleText, subtitle, "输入正文和标签：", "", delegate(string input)
+		string tagInputHint = ConversationUiLocalization.Text("AF_CONV_UI_Shout_TagInputHint", "Enter the text and tags:");
+		if (!ShoutTextInputPopup.Show(titleText, subtitle, tagInputHint, "", delegate(string input)
 		{
 			OnShoutTagTestConfirmed(input, primaryDataPacket?.AgentIndex);
 		}, OnShoutCancelled, BuildShoutTargetEncyclopediaAction(primaryDataPacket)))
 		{
-			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, subtitle + "\n\n输入正文和标签：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "执行", "取消", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, subtitle + "\n\n" + tagInputHint, isAffirmativeOptionShown: true, isNegativeOptionShown: true, ConversationUiLocalization.Text("AF_CONV_UI_Shout_Execute", "Run"), ConversationUiLocalization.Text("AF_CONV_UI_Shout_Close", "Close"), delegate(string input)
 			{
 				OnShoutTagTestConfirmed(input, primaryDataPacket?.AgentIndex);
 			}, OnShoutCancelled), pauseGameActiveState: true);

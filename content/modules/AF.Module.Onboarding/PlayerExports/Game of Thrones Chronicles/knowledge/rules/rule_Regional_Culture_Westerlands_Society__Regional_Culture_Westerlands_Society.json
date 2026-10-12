@@ -1,0 +1,134 @@
+{
+  "Id": "rule_Regional_Culture_Westerlands_Society",
+  "Keywords": [
+    "Westerlands Culture",
+    "Westerlands Society",
+    "Gold Mines"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The hills, mines, ports, and House Lannister of the Westerland have shaped a society where wealth, debt, and family respectability are all important. Gold and silver can buy armor, marriage alliances, mercenaries and palace influence, but they cannot automatically grow food or guard mountain passes; the prosperity of the Western TerritoryRong still relies on miners, caravans, manors, Lannisport and vassal network. Nobility valued prestige and repaying old debts, while commoners knew that mines, roads, and taxes were closer to daily life than golden coats of arms. The ruthlessness or generosity of people in the West is often attributed to wealth by outsiders. The real root cause lies in how resources are concentrated and distributed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerlands Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerlands Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerlands Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerlands Culture Westerlands Society: The hills, mines, ports, and House Lannister of the Westerland have shaped a society where wealth, debt, and family respectability are all important. Gold and silver can buy armor, marriage alliances, mercenaries and palace influence, but they cannot automatically grow food or guard mountain passes; the prosperity of the Western Territory They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerlands Culture Westerlands Society: The hills, mines, ports, and House Lannister of the Westerland have shaped a society where wealth, debt, and family respectability are all important. Gold and silver can buy armor, marriage alliances, mercenaries and palace influence, but they cannot automatically grow food or guard mountain passes; the prosperity of the Western Territory Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerlands Culture Westerlands Society: The hills, mines, ports, and House Lannister of the Westerland have shaped a society where wealth, debt, and family respectability are all important. Gold and silver can buy armor, marriage alliances, mercenaries and palace influence, but they cannot automatically grow food or guard mountain passes; the prosperity of the Western Territory They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Westerlands Society: The hills, mines, ports, and House Lannister of the Westerland have shaped a society where wealth, debt, and family respectability are all important. Gold and silver can buy armor, marriage alliances, mercenaries and palace influence, but they cannot automatically grow food or guard mountain passes; the prosperity of the Western Territory"
+  ]
+}

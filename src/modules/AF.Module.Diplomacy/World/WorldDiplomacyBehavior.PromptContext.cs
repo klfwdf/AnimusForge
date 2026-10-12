@@ -23,6 +23,8 @@ public sealed partial class WorldDiplomacyBehavior
         private readonly Dictionary<string, Kingdom> _all = new Dictionary<string, Kingdom>(StringComparer.OrdinalIgnoreCase);
         private bool _kingdomIndexInitialized;
         internal PromptWorld(WorldDiplomacyBehavior owner) => _owner = owner;
+        string IWorldDiplomacyPromptWorld.LocalizePrompt(string id, string englishFallback)
+            => DiplomacyPromptTexts.Get(id, englishFallback);
         private void EnsureKingdomIndex()
         {
             if (_kingdomIndexInitialized) return;
@@ -140,7 +142,7 @@ public sealed partial class WorldDiplomacyBehavior
             _owner._storage?.RecentBattles, authorId, targetId, WorldDiplomacyBehavior.CurrentDay(),
             WorldDiplomacyBehavior.RecentBattleRetentionDays,
             id => WorldDiplomacyBehavior.KingdomName(Resolve(id) ?? ResolveAny(id)),
-            WorldDiplomacyBehavior.FormatCampaignDate);
+            WorldDiplomacyBehavior.FormatCampaignDate, DiplomacyPromptTexts.Get);
         WorldDiplomacyRulerCaptivity IWorldDiplomacyPromptWorld.AuthorRulerCaptivity(string authorId) => WorldDiplomacyBehavior.ResolveAuthorRulerCaptivity(Resolve(authorId));
         string IWorldDiplomacyDraftRepairWorld.BuildGovernmentHardFact(string author) => WorldDiplomacyBehavior.BuildCanonicalRealmGovernmentHardFact(Resolve(author), WorldDiplomacyBehavior.ResolveRealmRulerTitle(Resolve(author), Resolve(author)?.Leader ?? Resolve(author)?.RulingClan?.Leader));
         string IWorldDiplomacyDraftRepairWorld.NewId(string prefix) => WorldDiplomacyBehavior.NewId(prefix);

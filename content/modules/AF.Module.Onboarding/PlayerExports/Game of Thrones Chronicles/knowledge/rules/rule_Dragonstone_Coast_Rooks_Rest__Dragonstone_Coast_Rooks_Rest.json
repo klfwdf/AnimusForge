@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Dragonstone_Coast_Rooks_Rest",
+  "Keywords": [
+    "Rook's Rest",
+    "Battle at Rook's Rest"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Crow's Roost Castle is located on the north shore of Blackwater Bay. It is a royal castle that monitors the coastal waterways. Its land faces the bay and the traffic of ships. It is neither separated from the influence of King's Landing nor surrounded by bricks and people like the capital city. Raven's Roost's name is etched in the memory of the Targaryen dynasty's wars, indicating that small castles are also involved in the history books with dragons, fleets and succession disputes; but to everyday residents, more often than not it means crops, fishing nets, checkpoints and distant sails. The strategic value of the area came from its coastal location and road connections, rather than from the temporary presence of a single army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rook's Rest Local families also rely on fishing, salt production, docks, volcanic rock fields and narrow sea navigation; if any road, well or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rook's Rest Entry Rook's Rest"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rook's Rest They'll also recognize the accents, laws, and credentials of Dragonstone's waters; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rook's Rest Entry Rook's Rest"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rook's Rest If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "From workshops to sanctuaries, Crow's Roost juxtaposes shipbuilding wood, canvas, salt, fish catches, and wind-resistant stones with memories of the temples, flames, and old dragons left when the Seven Gods and the Lord of Light coexisted. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rook's Rest They care about fishing, salt industry, wharves, volcanic rock fields and narrow sea shipping. They also care about whether seeds are left after harvesting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Rook's Rest: Crow's Roost Castle is located on the north shore of Blackwater Bay. It is a royal castle that monitors the coastal waterways. Its land faces the bay and the traffic of ships. It is neither separated from the influence of King's Landing nor surrounded by bricks and people like the capital city. Raven's Roost's name is etched in the memory of the Targaryen dynasty's wars, indicating that small castles are also involved in the history books with dragons, fleets and succession disputes; but to everyday residents, more often than not it means crops, fishing nets, checkpoints and distant sails. The strategic value of the area came from its coastal location and road connections, rather than from the temporary presence of a single army."
+  ]
+}

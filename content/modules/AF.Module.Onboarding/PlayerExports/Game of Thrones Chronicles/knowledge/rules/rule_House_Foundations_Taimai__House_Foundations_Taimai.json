@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Taimai",
+  "Keywords": [
+    "Taimai",
+    "House Taimai",
+    "Chariot Tradition"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Taimai is one of the strong families of Salol. In the old memories of the Salor people, there are knights wearing steel and spider silk armor, coal-black war horses, and sword-wheeled chariots driven by wives and daughters. There is also a loose order in which the kings of the cities nominally respect the high king, but in fact each protects his own interests. Taimai's status comes from being able to translate this glory into reality: training chariots and horses, maintaining roads, stocking arrows and spears, and finding executable common interests when cities quarrel. It does not have to follow the same leader forever, but if it only relies on ancient names to demand obedience without assuming defense, the glory of the old kingdom will illuminate the emptiness of today."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the warriors of Salor look at Taimai, they first look at the stables and axles, and then listen to the songs of their ancestors. The chariot tradition is no banquet decoration; without smooth roads, skilled drivers and spare wheels, glory will never go far."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The guardians of the old rites wanted Taimai to remember that there had always been both oaths and disputes between the High King and the kings. True tradition is not about pretending to be perfect in the past, but about finding common ground despite division."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wheelwrights, horse breeders, and farmers knew who supported the noble cavalry. They respect Taimai who is willing to pay wages and protect the road, but they will also resent the owner who takes the last plow horse for honor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Taimai The powerful family of Salol maintains its identity between the rituals of the Old Kingdom, the military tradition of chariots, and the reality of city defense. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Taimai The powerful family of Salol maintains its identity between the rituals of the Old Kingdom, the military tradition of chariots, and the reality of city defense. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Taimai The powerful family of Salol maintains its identity between the rituals of the Old Kingdom, the military tradition of chariots, and the reality of city defense. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Taimai The powerful family of Salol maintains its identity between the rituals of the Old Kingdom, the military tradition of chariots, and the reality of city defense. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Taimai: The powerful family of Salol maintains its identity between the rituals of the Old Kingdom, the military tradition of chariots, and the reality of city defense."
+  ]
+}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace AnimusForge;
 
@@ -47,13 +48,13 @@ internal static class SettlementBalanceRules
 {
 	internal static readonly IReadOnlyList<SettlementBalanceDefinition> Definitions = Array.AsReadOnly(new[]
 	{
-		new SettlementBalanceDefinition(SettlementBalanceMetric.CityProsperity, "城市繁荣度", "繁荣度", 0, 50000, 10000),
-		new SettlementBalanceDefinition(SettlementBalanceMetric.CastleProsperity, "城堡繁荣度", "繁荣度", 0, 50000, 3000),
-		new SettlementBalanceDefinition(SettlementBalanceMetric.VillageHearth, "村庄户数", "户", 10, 10000, 1500),
-		new SettlementBalanceDefinition(SettlementBalanceMetric.CityMilitia, "城市民兵总人数", "人", 0, 5000, 500),
-		new SettlementBalanceDefinition(SettlementBalanceMetric.CastleMilitia, "城堡民兵总人数", "人", 0, 5000, 300),
-		new SettlementBalanceDefinition(SettlementBalanceMetric.VillageMilitia, "村庄民兵总人数", "人", 0, 5000, 100),
-		new SettlementBalanceDefinition(SettlementBalanceMetric.Food, "城市／城堡粮食库存容量", "粮食（最终容量）", 1, 10000, 1000, true)
+		new SettlementBalanceDefinition(SettlementBalanceMetric.CityProsperity, PolicyUiTexts.Get("AFPOL_UI_CityProsperity", "City Prosperity"), PolicyUiTexts.Get("AFPOL_UI_ProsperityUnit", "Prosperity"), 0, 50000, 10000),
+		new SettlementBalanceDefinition(SettlementBalanceMetric.CastleProsperity, PolicyUiTexts.Get("AFPOL_UI_CastleProsperity", "Castle Prosperity"), PolicyUiTexts.Get("AFPOL_UI_ProsperityUnit", "Prosperity"), 0, 50000, 3000),
+		new SettlementBalanceDefinition(SettlementBalanceMetric.VillageHearth, PolicyUiTexts.Get("AFPOL_UI_VillageHearth", "Village Hearth"), PolicyUiTexts.Get("AFPOL_UI_HearthUnit", "Hearth"), 10, 10000, 1500),
+		new SettlementBalanceDefinition(SettlementBalanceMetric.CityMilitia, PolicyUiTexts.Get("AFPOL_UI_CityMilitia", "City Militia"), PolicyUiTexts.Get("AFPOL_UI_PersonUnit", "people"), 0, 5000, 500),
+		new SettlementBalanceDefinition(SettlementBalanceMetric.CastleMilitia, PolicyUiTexts.Get("AFPOL_UI_CastleMilitia", "Castle Militia"), PolicyUiTexts.Get("AFPOL_UI_PersonUnit", "people"), 0, 5000, 300),
+		new SettlementBalanceDefinition(SettlementBalanceMetric.VillageMilitia, PolicyUiTexts.Get("AFPOL_UI_VillageMilitia", "Village Militia"), PolicyUiTexts.Get("AFPOL_UI_PersonUnit", "people"), 0, 5000, 100),
+		new SettlementBalanceDefinition(SettlementBalanceMetric.Food, PolicyUiTexts.Get("AFPOL_UI_FoodCapacity", "City/Castle Food Capacity"), PolicyUiTexts.Get("AFPOL_UI_FoodUnit", "Food (final capacity)"), 1, 10000, 1000, true)
 	});
 
 	internal static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
@@ -97,7 +98,12 @@ internal sealed class SettlementBalanceSnapshot
 			int value = Get(definition.Metric).Value;
 			if (value < definition.Minimum || value > definition.Maximum)
 			{
-				error = definition.Name + "必须在 " + definition.Minimum + "–" + definition.Maximum + " 之间。";
+				error = PolicyUiTexts.Format(
+					"AFPOL_UI_BalanceValueOutOfRange",
+					"{NAME} must be between {MIN} and {MAX}.",
+					"NAME", definition.Name,
+					"MIN", definition.Minimum.ToString(CultureInfo.InvariantCulture),
+					"MAX", definition.Maximum.ToString(CultureInfo.InvariantCulture));
 				return false;
 			}
 		}

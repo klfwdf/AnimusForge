@@ -1,0 +1,212 @@
+{
+  "Id": "rule_chaos",
+  "Keywords": [
+    "chaos",
+    "Chaos Warriors",
+    "evil god",
+    "northern barbarians",
+    "power of destruction",
+    "Eternal Chosen",
+    "Daemon Prince of Chaos",
+    "Four Gods of Chaos",
+    "Chaos ascends to demon",
+    "wind of mutation",
+    "Chaos Tribe"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chaos is the ultimate threat to all civilizations in the old world - it is not only the barbarian army in the northern wasteland, but also a force of magical destruction that continuously pours out from the collapsed polar star gates. The will of the evil god penetrates into the souls of mortals through mutations, dreams, whispers and blessings, transforming all who accept its temptation into slaves of Chaos. In the north, the Chaos Warriors - servants of the evil god wearing heavy black iron armor - are gathering under the banner of the Everchosen, preparing to set off an apocalyptic frenzy that will sweep through the old world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chaos is not destruction - it is truth. When the Stargate collapsed, the thin veil between the mortal world and the immaterial world was torn open, and the true face of the gods was revealed to mortals for the first time. The mutations that weak Southerners call curses are gifts we accept voluntarily - every extra limb, every inch of horny skin, every gaze that burns mortals, is the recognition of the soul by the Four Powers. Khorne gave him the pure thrill of battle, Nurgle gave him a toughness beyond the reach of disease, Xinrej gave him the wisdom to see through the threads of fate, and Slaanesh gave him perfect speed and beauty beyond mortal perception. One day - when Archaon's Crown of Unity reflects the last rays of daylight over the ruins of Altdorf - all the Old World will understand: Chaos is not the end, Chaos is the beginning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The nature of chaos is far more than simple evil - it is a primordial force that has existed since the birth of the universe, and is the embodiment of the tension between reality and the immaterial realm. After the collapse of the ancient star gate, chaotic energy poured in from the poles. Since then, the North has become the intersection of the mortal world and the realm of chaos. The four great evil gods—Khorne (the Blood God), Nurgle (the Plaguefather), Xinrej (The Weaver of Destiny), and Slaanesh (the Prince of Darkness)—each represent the legal embodiment of an extreme emotion. If a mortal accepts the gift from the evil god, his body and soul will undergo irreversible mutations, and he may eventually become a demon prince and gain a near-immortal existence - the price paid is the complete annihilation of himself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The way society of the Chaos Warriors is organized is based on a psychic hierarchy known as the Chaos Mark System. Every warrior of the Northern Tribe will go through the process of going from an unmarked marauder, to a Chaos Warrior who obtains the low-level mark of the first Evil God, to being marked by the Evil God as the Chosen One of Chaos God for his special attention, and finally in rare cases - completing the Demon Ascension Ceremony to become a Demon Prince or Chaos Champion. The competition for followers among the four gods is constant, relentless, and often breaks out on the battlefield in the form of Chaos Civil War - the followers of Khorne hate Slaanesh's hedonism, and the followers of Nurgle despise Xin'rej's scheming. This kind of internal fighting is the only weakness of Chaos that the empire can rely on when defending the northern border - the alliance of the four gods is very short-lived, and usually breaks down into sneak attacks and plots against each other immediately after achieving a specific goal. Archaon is the only mortal known to have received the blessings of all four gods simultaneously and is not completely controlled by any single evil god - his Crown of Unity allows him to temporarily coordinate the followers of the four gods in joint operations, but even he cannot forever suppress the eternal hostility between the evil gods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The female lords of the northern reaches of the Empire understood Chaos in a completely different way than what was described in the church pulpits. Official doctrine describes Chaos as the evil enemy from afar, but the noblewomen of the North know that the most common way for Chaos to penetrate is not through the armies of the north - but through the temptations a woman encounters on her doorstep. The harvests on your farmland have failed for three consecutive years, your young son is dying of the plague, and a friendly midnight visitor—perhaps an old woman—whispers in your ear that all you need to do is bury a black seed in the moonlight to guarantee next year's harvest. You did it, and the harvest turned out better, and your children survived. You think it's luck. A year later you discover that your son is speaking a language you never taught him behind your back. This is the true intrusion of Chaos on the borders of humanity - not a trumpet, but a whisper."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chaos is the darkest page in my family tree—not because anyone in my family fell to Chaos, but because we refused to fall to Chaos at the expense of four consecutive generations. After my great-grandfather defeated a Nurgle warband on the borders of Osterland, the warlock's warlock cursed him before he died - and for the next sixty-three years, every member of my family who lived past the age of fifty succumbed to the same slow, corrosive lung disease. The witch hunters confirmed that this was not a magical infection - they repeatedly tested all territories and family members with salt water, silverware and fire. But the curse itself - it doesn't require magic to perpetuate. It perpetuates itself through grief, fear, and anticipation: Each generation of parents in our family expected that their children would die in middle age, and that expectation itself became the vehicle for the curse. Chaos doesn't defeat magic through magic alone - it spreads through memory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Everyone who worked as a mercenary in Norsca had one thing in common - they never talked about exactly what they saw in Norsca. Not because mercenaries have confidentiality agreements, but because you can't describe it. Chaos mutations are described in books as growing tentacles or an extra eye - but it's how subtle those mutations are that will really blow you away. I've seen a Norsca raider with some kind of living pattern appear on the skin of his back - the patterns moved slowly under the skin, like a constantly redrawn miniature map, showing the precise location of the enemies he would kill that day. He never lost a fight. But every night after taking off his armor, he sat by the fire and watched his back move in the firelight - the expression was not pride, but submission."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chaos' greatest impact on Old World economies was not the destruction of war—it was the paralysis of the insurance industry and long-term investment. Any fixed assets located north of the forty-fifth parallel - castles, mining sites, forest logging rights - have an insurance rating below C in the Imperial Merchant Guild, meaning they cannot qualify for standard commercial loan rates. The economy of the Northern Provinces is therefore permanently in a state of semi-stasis - not because of a lack of resources and labor, but because any rational investor would be afraid to bury their capital in a place that in a few years might be converted into a skeleton harvest zone by Chaos warbands."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Four Gods of Chaos - Khorne/Nurgle/Xinlieji/Slaanesh, respectively represent the embodiment of extreme emotions of violence/plague/conspiracy/pleasure.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaos Chaos Warriors Evil God"
+  ]
+}

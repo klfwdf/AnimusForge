@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Chaos_Demon_Realm",
+  "Keywords": [
+    "Chaos Demon Realm",
+    "subspace",
+    "The abode of the evil god",
+    "Chaos Demon Realm Immaterial Realm",
+    "pure energy",
+    "Beyond the Stargate",
+    "northern wasteland",
+    "Four Gods Territory",
+    "eternal war",
+    "Soul destination",
+    "Realm of Madness"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Demon Realm is a subspace realm outside the mortal world. It is composed of pure chaotic energy. The four evil gods compete here. It is the origin of all dark power, mutation and madness, and is also the final destination of the souls of the Chaos Warriors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Realm of Chaos is neither a fable nor a myth - it is real. Many of us have seen it in our dreams: the blood-red sky, the ever-changing landscape, the screams rising from the ground. That is where the power comes from. Mortal rules fail there, and time twists like a melting candle. Most people will be devoured by madness after passing through the Star Gate, but those who survive - they come back with the fire of chaos burning in their eyes and the \"blessing\" of the Demon Realm on their bodies. You can't describe that place in words, because words have no meaning in the Demon Realm. Only warriors who become strong enough can walk there, and the strong will be rewarded there beyond mortal imagination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Demon Realm is your ultimate source of power and your greatest threat. Promise your followers the rewards of the Demon Realm - they will fight and die for it. But you must personally step into the Demon Realm and return alive to be truly recognized as a Chaos Lord. During combat, you can use rituals to briefly open rifts in the Demon Realm and summon demonic reinforcements. But remember: the power of the Demon Realm is never free, and the rewards it demands may exceed your imagination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to the academic analysis of \"Subspace Theory\", the Chaos Demon Realm is not a single space, but a non-material dimension composed of infinite levels, and its \"geography\" changes with emotions and beliefs. Each of the four evil gods has its own independent domain: Khorne's \"Throne of Blood\" is an eternal plain of war, flowing with endless blood; Nurgle's \"Plague Garden\" is a decaying and vibrant swamp jungle; Slaanesh's \"Six Circles of Joy\" is a six-layer intertwined extreme sensory experience space; Tzeentch's \"Crystal Maze\" is an infinite library that is constantly reorganized. The largest entrance to the Demon Realm is located in the center of the \"Chaos Wasteland\" in the northern wasteland, the so-called \"Ultra North Star Gate\". There are only twelve mortals in history who have clear records of entering the Demon Realm and successfully bringing back valuable information. The most famous of them is the Imperial scholar \"Blind Eye\" Heinrich. His record \"Chaos Observation\" is still the only reliable text for studying the Demon Realm - even though he himself went completely crazy and ate his own fingers shortly after his return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a woman, you need to be tougher than men in the Chaos Realm. The evil god doesn't care about gender, only strength. The path I have walked is more difficult than any of my male counterparts have ever walked - but that only proves my worth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a clan leader, the Demon Realm is the place your clansmen fear and desire most. You need to regularly send the bravest warriors through the star gate to accept the test. Those who return with \"gifts\" will become your capable generals. Those who \"failed\" - you'd better not ask about their whereabouts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Far on the northern skyline, you see it—the Stargate. A purple-red crack was suspended in mid-air, and the surrounding land was twisted into incredible shapes. You feel an invisible force pulling at your soul."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The existence of the Chaos Demon Realm is the common source of fear for all races in the old world. Scholars debate whether the Demonic Realm is an independent dimension or a product of collective consciousness, but the shamans of the northern tribes have no doubt - they tell the story of the Demonic Realm by the fire every night, both as a warning and a temptation."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Chaos Demon Realm - the subspace realm outside the mortal world, the residence of the four evil gods and the source of the power of chaos.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The residence of the evil god in the subspace of Chaos Demon Realm"
+  ]
+}

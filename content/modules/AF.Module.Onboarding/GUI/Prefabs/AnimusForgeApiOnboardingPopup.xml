@@ -1,21 +1,21 @@
 <Prefab>
   <Window>
-    <!-- 全屏半透明遮罩 -->
+    <!-- Full-screen translucent overlay -->
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000C8">
       <Children>
 
-        <!-- 主弹窗窗体 (古典卡拉迪亚边框) -->
+        <!-- Main popup with a classical Calradian frame -->
         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="940" SuggestedHeight="740" HorizontalAlignment="Center" VerticalAlignment="Center">
           <Children>
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#16120EFF" />
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" AlphaFactor="0.88" />
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14" Color="#C5A878FF" AlphaFactor="0.75" IsEnabled="false" />
 
-            <!-- 内部内容边距容器 -->
+            <!-- Inner content margin container -->
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" MarginTop="18" MarginBottom="16">
               <Children>
 
-                <!-- ================= 顶栏 Header ================= -->
+                <!-- ================= Header ================= -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" VerticalAlignment="Top">
                   <Children>
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="General\CharacterCreation\character_creation_background_gradient" AlphaFactor="0.4" Color="#000000FF" />
@@ -25,38 +25,38 @@
                   </Children>
                 </Widget>
 
-                <!-- ================= 主体内容容器 Body ================= -->
+                <!-- ================= Body container ================= -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="86" MarginBottom="62">
                   <Children>
 
-                    <!-- ================= 1. 主选单面板 ================= -->
+                    <!-- ================= 1. Main menu panel ================= -->
                     <Widget IsVisible="@IsMainViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ListPanel WidthSizePolicy="Fixed" SuggestedWidth="660" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
                           <Children>
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectYj" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <TextWidget Text="YJ API 中转专线" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
+                                <TextWidget Text="@AF_UI_Onboarding_Prefab_001Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekFlash" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <TextWidget Text="DeepSeek Flash" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
+                                <TextWidget Text="@AF_UI_Onboarding_DeepSeekFlashButtonText" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekPro" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <TextWidget Text="DeepSeek Pro" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
+                                <TextWidget Text="@AF_UI_Onboarding_DeepSeekProButtonText" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectCustom" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <TextWidget Text="自定义 API 配置" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
+                                <TextWidget Text="@AF_UI_Onboarding_Prefab_002Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteUseExistingConfig" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <TextWidget Text="使用现有 API 配置" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
+                                <TextWidget Text="@AF_UI_Onboarding_Prefab_003Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
                           </Children>
@@ -64,22 +64,22 @@
                       </Children>
                     </Widget>
 
-                    <!-- ================= 2. YJ API 专属二级菜单 ================= -->
+                    <!-- ================= 2. YJ API submenu ================= -->
                     <Widget IsVisible="@IsYjMenuViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
                           <Children>
 
-                            <!-- 说明框 -->
+                            <!-- Description box -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="66" MarginBottom="14">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1A1510FF" AlphaFactor="0.8" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.4" IsEnabled="false" />
-                                <RichTextWidget Text="国内各大运营商直连无需代理。单分组填入 1 个 Key 后直接进入 4 模型统一选择面板；多分组直接进入预设好 YJ URL 的多 API 配置面板。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="16" MarginRight="16" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D4C8B8FF" />
+                                <RichTextWidget Text="@AF_UI_Onboarding_Prefab_004Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="16" MarginRight="16" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D4C8B8FF" />
                               </Children>
                             </Widget>
 
-                            <!-- 1. 单分组模式 -->
+                            <!-- 1. Single-group mode -->
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteYjSingleGroup" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -88,15 +88,15 @@
                                   <Children>
                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="150" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
-                                        <RichTextWidget Text="1. 单分组模式：填入 Key ➔ 进入多模型选择面板（推荐）" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
-                                        <RichTextWidget Text="只填入 1 个 Key，随后进入集中面板同时为对话、前处理、后处理、周报挑选模型。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_005Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_006Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="130" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
                                       <Children>
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.35" IsEnabled="false" />
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.6" IsEnabled="false" />
-                                        <TextWidget Text="填入 Key ➔" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                        <TextWidget Text="@AF_UI_Onboarding_Prefab_007Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                                       </Children>
                                     </Widget>
                                   </Children>
@@ -104,7 +104,7 @@
                               </Children>
                             </ButtonWidget>
 
-                            <!-- 2. 多分组模式 -->
+                            <!-- 2. Multiple-group mode -->
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteYjMultiGroup" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -113,15 +113,15 @@
                                   <Children>
                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="150" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
-                                        <RichTextWidget Text="2. 多分组模式：进入多 API 面板（预设好 YJ URL）" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
-                                        <RichTextWidget Text="直接进入多 API 配置面板，Base URL 已自动填充为 YJ 专线，支持 4 路分别填入不同 Key。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_008Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_009Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="130" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
                                       <Children>
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.35" IsEnabled="false" />
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.6" IsEnabled="false" />
-                                        <TextWidget Text="进入多 API 面板 ➔" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                        <TextWidget Text="@AF_UI_Onboarding_Prefab_010Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                                       </Children>
                                     </Widget>
                                   </Children>
@@ -129,7 +129,7 @@
                               </Children>
                             </ButtonWidget>
 
-                            <!-- 3. 获取 API Key / 购买额度 -->
+                            <!-- 3. Obtain an API key or purchase quota -->
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenYjWeb" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -138,15 +138,15 @@
                                   <Children>
                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="150" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
-                                        <RichTextWidget Text="3. 获取 API Key 并购买额度（打开官网）" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
-                                        <RichTextWidget Text="在浏览器中依次唤起 YJ API 的 Key 管理页面与额度充值页面，完成后返回输入。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_011Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_012Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="130" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
                                       <Children>
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.35" IsEnabled="false" />
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.6" IsEnabled="false" />
-                                        <TextWidget Text="打开网页 ↗" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                        <TextWidget Text="@AF_UI_Onboarding_Prefab_013Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                                       </Children>
                                     </Widget>
                                   </Children>
@@ -154,7 +154,7 @@
                               </Children>
                             </ButtonWidget>
 
-                            <!-- 4. 复制交流 QQ 群号 -->
+                            <!-- 4. Copy the community QQ group number -->
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCopyQqGroup" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -163,15 +163,15 @@
                                   <Children>
                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="150" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
-                                        <RichTextWidget Text="4. 复制 YJ 玩家交流 QQ 群号" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
-                                        <RichTextWidget Text="群号：1097237977。群内提供额度福利活动、常见问题答疑与维护通知。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_014Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_015Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="130" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
                                       <Children>
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.35" IsEnabled="false" />
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.6" IsEnabled="false" />
-                                        <TextWidget Text="一键复制群号 📋" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                        <TextWidget Text="@AF_UI_Onboarding_Prefab_016Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                                       </Children>
                                     </Widget>
                                   </Children>
@@ -184,7 +184,7 @@
                       </Children>
                     </Widget>
 
-                    <!-- ================= 3. 多 API 集中设置面板 (Custom / YJ-Multi) ================= -->
+                    <!-- ================= 3. Central API settings (Custom / YJ-Multi) ================= -->
                     <Widget IsVisible="@IsMultiApiViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="MultiApiClip" InnerPanel="MultiApiClip\MultiApiInner" AutoHideScrollBars="true" VerticalScrollbar="..\MultiApiScrollbar\Scrollbar">
@@ -196,7 +196,7 @@
                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
 
-                                        <!-- Block 1: 主 API -->
+                                        <!-- Block 1: Main API -->
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.75" IsEnabled="false" />
@@ -205,14 +205,14 @@
                                               <Children>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <RichTextWidget Text="1. 主 API（角色对话正文）" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E3C3FF" />
+                                                    <RichTextWidget Text="@AF_UI_Onboarding_Prefab_017Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E3C3FF" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="8" SuggestedHeight="1" />
                                                     <TextWidget Text="@MultiApiModeTag" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Description.Text" Brush.FontSize="11" Brush.FontColor="#C5A878FF" />
                                                   </Children>
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="26" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="Base URL:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_BaseUrlLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="6">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -227,7 +227,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_ApiKeyLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -238,7 +238,7 @@
                                                         </ButtonWidget>
                                                       </Children>
                                                     </Widget>
-                                                    <TextWidget Text="模型:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_Prefab_018Text" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="300" MarginRight="8">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
@@ -247,7 +247,7 @@
                                                       </Children>
                                                     </Widget>
                                                     <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteFetchPrimaryModels" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="72" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                                                      <Children><TextWidget Text="拉取模型" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                                                      <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_019Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                     </ButtonWidget>
                                                   </Children>
                                                 </ListPanel>
@@ -256,7 +256,7 @@
                                           </Children>
                                         </Widget>
 
-                                        <!-- Block 2: 前处理 API -->
+                                        <!-- Block 2: Preprocessing API -->
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.75" IsEnabled="false" />
@@ -265,12 +265,12 @@
                                               <Children>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <RichTextWidget Text="2. 前处理 API（意图分类路由）" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E3C3FF" />
+                                                    <RichTextWidget Text="@AF_UI_Onboarding_Prefab_020Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E3C3FF" />
                                                   </Children>
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="26" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="Base URL:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_BaseUrlLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="6">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -285,7 +285,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_ApiKeyLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -296,7 +296,7 @@
                                                         </ButtonWidget>
                                                       </Children>
                                                     </Widget>
-                                                    <TextWidget Text="模型:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_Prefab_018Text" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="300" MarginRight="8">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
@@ -305,7 +305,7 @@
                                                       </Children>
                                                     </Widget>
                                                     <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteFetchAuxiliaryModels" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="72" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                                                      <Children><TextWidget Text="拉取模型" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                                                      <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_019Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                     </ButtonWidget>
                                                   </Children>
                                                 </ListPanel>
@@ -314,7 +314,7 @@
                                           </Children>
                                         </Widget>
 
-                                        <!-- Block 3: 后处理 API -->
+                                        <!-- Block 3: Postprocessing API -->
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.75" IsEnabled="false" />
@@ -323,12 +323,12 @@
                                               <Children>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <RichTextWidget Text="3. 后处理 API（指令标签动作提取）" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E3C3FF" />
+                                                    <RichTextWidget Text="@AF_UI_Onboarding_Prefab_021Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E3C3FF" />
                                                   </Children>
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="26" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="Base URL:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_BaseUrlLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="6">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -343,7 +343,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_ApiKeyLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -354,7 +354,7 @@
                                                         </ButtonWidget>
                                                       </Children>
                                                     </Widget>
-                                                    <TextWidget Text="模型:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_Prefab_018Text" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="300" MarginRight="8">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
@@ -363,7 +363,7 @@
                                                       </Children>
                                                     </Widget>
                                                     <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteFetchPostprocessModels" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="72" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                                                      <Children><TextWidget Text="拉取模型" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                                                      <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_019Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                     </ButtonWidget>
                                                   </Children>
                                                 </ListPanel>
@@ -372,7 +372,7 @@
                                           </Children>
                                         </Widget>
 
-                                        <!-- Block 4: 周报与叛乱 API -->
+                                        <!-- Block 4: Weekly report and rebellion API -->
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118" MarginBottom="6">
                                           <Children>
                                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.75" IsEnabled="false" />
@@ -381,12 +381,12 @@
                                               <Children>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <RichTextWidget Text="4. 每日与周报 API（宏观大局提炼）" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E3C3FF" />
+                                                    <RichTextWidget Text="@AF_UI_Onboarding_Prefab_022Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E3C3FF" />
                                                   </Children>
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="26" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="Base URL:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_BaseUrlLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="6">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -401,7 +401,7 @@
                                                 </ListPanel>
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
-                                                    <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_ApiKeyLabelText" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
@@ -412,7 +412,7 @@
                                                         </ButtonWidget>
                                                       </Children>
                                                     </Widget>
-                                                    <TextWidget Text="模型:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
+                                                    <TextWidget Text="@AF_UI_Onboarding_Prefab_018Text" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
                                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="300" MarginRight="8">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
@@ -421,7 +421,7 @@
                                                       </Children>
                                                     </Widget>
                                                     <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteFetchEventModels" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="72" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                                                      <Children><TextWidget Text="拉取模型" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                                                      <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_019Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                     </ButtonWidget>
                                                   </Children>
                                                 </ListPanel>
@@ -442,33 +442,33 @@
                       </Children>
                     </Widget>
 
-                    <!-- ================= 4. YJ 4-模型集中挑选面板 ================= -->
+                    <!-- ================= 4. Central selection of four YJ models ================= -->
                     <Widget IsVisible="@IsYjModelsViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
                           <Children>
 
-                            <!-- Key 状态栏 -->
+                            <!-- Key status bar -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="56" MarginBottom="14">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1A1510FF" AlphaFactor="0.8" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.4" IsEnabled="false" />
                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="16" MarginRight="16" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                   <Children>
-                                    <TextWidget Text="🔑 已绑定 Key:" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E3C3FF" Brush.TextVerticalAlignment="Center" />
+                                    <TextWidget Text="@AF_UI_Onboarding_Prefab_023Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E3C3FF" Brush.TextVerticalAlignment="Center" />
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="8" SuggestedHeight="1" />
                                     <TextWidget Text="@YjKeyMasked" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="14" Brush.FontColor="#F5E8D0FF" Brush.TextVerticalAlignment="Center" />
                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" />
                                     <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteFetchAllYjModels" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="34" VerticalAlignment="Center" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                                      <Children><TextWidget Text="刷新所有模型 🔄" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                                      <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_024Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                     </ButtonWidget>
                                   </Children>
                                 </ListPanel>
                               </Children>
                             </Widget>
 
-                            <!-- 4 路模型选择行 -->
-                            <!-- 模型 1: 主 API -->
+                            <!-- Four model selection rows -->
+                            <!-- Model 1: Main API -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" MarginBottom="8">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -477,8 +477,8 @@
                                   <Children>
                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="360" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
-                                        <RichTextWidget Text="1. 主 API 角色对话模型（沉浸扮演核心）" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
-                                        <RichTextWidget Text="推荐 deepseek-chat 或 gpt-4o-mini，负责与 NPC 的正文交谈。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_025Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_026Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -493,7 +493,7 @@
                               </Children>
                             </Widget>
 
-                            <!-- 模型 2: 前处理 -->
+                            <!-- Model 2: Preprocessing -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" MarginBottom="8">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -502,8 +502,8 @@
                                   <Children>
                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="360" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
-                                        <RichTextWidget Text="2. 前处理意图分类模型（快速分流）" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
-                                        <RichTextWidget Text="推荐极速通道 deepseek-chat，负责判断玩家说话动机与场景机制。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_027Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_028Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -518,7 +518,7 @@
                               </Children>
                             </Widget>
 
-                            <!-- 模型 3: 后处理 -->
+                            <!-- Model 3: Postprocessing -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" MarginBottom="8">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -527,8 +527,8 @@
                                   <Children>
                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="360" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
-                                        <RichTextWidget Text="3. 后处理指令标签模型（动作执行）" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
-                                        <RichTextWidget Text="负责从回复中提取决斗、交易、入队等游戏行为标签。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_029Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_030Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -543,7 +543,7 @@
                               </Children>
                             </Widget>
 
-                            <!-- 模型 4: 周报与叛乱 -->
+                            <!-- Model 4: Weekly reports and rebellion -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" MarginBottom="4">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
@@ -552,8 +552,8 @@
                                   <Children>
                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="360" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
-                                        <RichTextWidget Text="4. 每日与周报写作模型（天下大势）" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
-                                        <RichTextWidget Text="负责总结卡拉迪亚战争形势、领地发展与叛乱情报。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_031Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_032Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
                                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -573,21 +573,21 @@
                       </Children>
                     </Widget>
 
-                    <!-- ================= 5. 测试握手面板 ================= -->
+                    <!-- ================= 5. Handshake test panel ================= -->
                     <Widget IsVisible="@IsTestingViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
                           <Children>
                             <RichTextWidget Text="@TestOverallNotice" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="20" Brush="Popup.Tuple.Text" Brush.FontSize="17" Brush.FontColor="#F5E3C3FF" Brush.TextHorizontalAlignment="Center" />
 
-                            <!-- 4 路测试状态行 -->
+                            <!-- Four test status rows -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="56" MarginBottom="8">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.7" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.3" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18">
                                   <Children>
-                                    <TextWidget Text="1. 主 API 握手状态:" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" Brush.TextVerticalAlignment="Center" />
+                                    <TextWidget Text="@AF_UI_Onboarding_Prefab_033Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" Brush.TextVerticalAlignment="Center" />
                                     <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                       <Children>
                                         <TextWidget Text="@PrimaryStatusText" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="14" Brush.FontColor="#F5E8D0FF" Brush.TextVerticalAlignment="Center" />
@@ -606,7 +606,7 @@
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.3" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18">
                                   <Children>
-                                    <TextWidget Text="2. 前处理意图路由握手状态:" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" Brush.TextVerticalAlignment="Center" />
+                                    <TextWidget Text="@AF_UI_Onboarding_Prefab_034Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" Brush.TextVerticalAlignment="Center" />
                                     <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                       <Children>
                                         <TextWidget Text="@AuxiliaryStatusText" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="14" Brush.FontColor="#F5E8D0FF" Brush.TextVerticalAlignment="Center" />
@@ -625,7 +625,7 @@
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.3" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18">
                                   <Children>
-                                    <TextWidget Text="3. 后处理指令标签握手状态:" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" Brush.TextVerticalAlignment="Center" />
+                                    <TextWidget Text="@AF_UI_Onboarding_Prefab_035Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" Brush.TextVerticalAlignment="Center" />
                                     <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                       <Children>
                                         <TextWidget Text="@PostprocessStatusText" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="14" Brush.FontColor="#F5E8D0FF" Brush.TextVerticalAlignment="Center" />
@@ -644,7 +644,7 @@
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.3" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18">
                                   <Children>
-                                    <TextWidget Text="4. 每日与周报 API 握手状态:" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" Brush.TextVerticalAlignment="Center" />
+                                    <TextWidget Text="@AF_UI_Onboarding_Prefab_036Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" Brush.TextVerticalAlignment="Center" />
                                     <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                       <Children>
                                         <TextWidget Text="@EventStatusText" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="14" Brush.FontColor="#F5E8D0FF" Brush.TextVerticalAlignment="Center" />
@@ -662,12 +662,12 @@
                       </Children>
                     </Widget>
 
-                    <!-- ================= 6. 测试成功与保存面板 ================= -->
+                    <!-- ================= 6. Successful test and save panel ================= -->
                     <Widget IsVisible="@IsSuccessViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
                           <Children>
-                            <RichTextWidget Text="全部 4 路 API 测试通过，配置已就绪！" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="14" Brush="Popup.Tuple.Text" Brush.FontSize="20" Brush.FontColor="#F5E3C3FF" Brush.TextHorizontalAlignment="Center" />
+                            <RichTextWidget Text="@AF_UI_Onboarding_Prefab_037Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="14" Brush="Popup.Tuple.Text" Brush.FontSize="20" Brush.FontColor="#F5E3C3FF" Brush.TextHorizontalAlignment="Center" />
 
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="190" MarginBottom="16">
                               <Children>
@@ -677,10 +677,10 @@
                                   <Children>
                                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
-                                        <RichTextWidget Text="✔ 主 API: @PrimaryModel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" />
-                                        <RichTextWidget Text="✔ 前处理 API: @AuxiliaryModel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" />
-                                        <RichTextWidget Text="✔ 后处理 API: @PostprocessModel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" />
-                                        <RichTextWidget Text="✔ 每日与周报 API: @EventModel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_038Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_039Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_040Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" />
+                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_041Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#E2D4BDFF" />
                                       </Children>
                                     </ListPanel>
                                   </Children>
@@ -688,7 +688,7 @@
                               </Children>
                             </Widget>
 
-                            <RichTextWidget Text="点击下方保存设置；新档将继续世界书导入与人物背景配置，已完成引导的存档将返回游戏。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" />
+                            <RichTextWidget Text="@AF_UI_Onboarding_Prefab_042Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" />
                           </Children>
                         </ListPanel>
                       </Children>
@@ -697,7 +697,7 @@
                   </Children>
                 </Widget>
 
-                <!-- ================= 底栏动作 Footer ================= -->
+                <!-- ================= Footer actions ================= -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="54" VerticalAlignment="Bottom">
                   <Children>
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="8" VerticalAlignment="Top" Sprite="StdAssets\Popup\divider" />
@@ -706,10 +706,10 @@
                     <Widget IsVisible="@IsMainViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenSupport" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="160" SuggestedHeight="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                          <Children><TextWidget Text="支持制作组" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                          <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_043Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                         </ButtonWidget>
                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteClose" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="42" HorizontalAlignment="Right" VerticalAlignment="Bottom" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                          <Children><TextWidget Text="关闭退出" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                          <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_044Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                         </ButtonWidget>
                       </Children>
                     </Widget>
@@ -718,7 +718,7 @@
                     <Widget IsVisible="@IsYjMenuViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteBackToMain" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                          <Children><TextWidget Text="⇦ 返回上级" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                          <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_045Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                         </ButtonWidget>
                       </Children>
                     </Widget>
@@ -727,10 +727,10 @@
                     <Widget IsVisible="@IsMultiApiViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteBackFromMultiApi" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                          <Children><TextWidget Text="⇦ 返回上级" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                          <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_045Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                         </ButtonWidget>
                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteStartCombinedTest" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="42" HorizontalAlignment="Right" VerticalAlignment="Bottom" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                          <Children><TextWidget Text="立即连通性测试 ➔" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                          <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_046Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                         </ButtonWidget>
                       </Children>
                     </Widget>
@@ -739,10 +739,10 @@
                     <Widget IsVisible="@IsYjModelsViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteBackToYjMenu" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="42" HorizontalAlignment="Left" VerticalAlignment="Bottom" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                          <Children><TextWidget Text="⇦ 返回上级" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                          <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_045Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                         </ButtonWidget>
                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteStartCombinedTest" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="42" HorizontalAlignment="Right" VerticalAlignment="Bottom" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                          <Children><TextWidget Text="完成选择并测试连通性 ➔" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                          <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_047Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                         </ButtonWidget>
                       </Children>
                     </Widget>
@@ -751,7 +751,7 @@
                     <Widget IsVisible="@IsTestingViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCancelTest" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="160" SuggestedHeight="42" HorizontalAlignment="Center" VerticalAlignment="Bottom" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                          <Children><TextWidget Text="取消测试" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                          <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_048Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                         </ButtonWidget>
                       </Children>
                     </Widget>
@@ -760,7 +760,7 @@
                     <Widget IsVisible="@IsSuccessViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSaveAndFinish" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="260" SuggestedHeight="42" HorizontalAlignment="Right" VerticalAlignment="Bottom" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                          <Children><TextWidget Text="保存设置并进入卡拉迪亚 ➔" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                          <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_049Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                         </ButtonWidget>
                       </Children>
                     </Widget>
@@ -771,7 +771,7 @@
               </Children>
             </Widget>
 
-            <!-- ================= 弹窗遮罩 1: 填写 API Key 模态框 ================= -->
+            <!-- ================= Modal overlay 1: Enter API key ================= -->
             <Widget IsVisible="@IsKeyPromptVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000D2">
               <Children>
                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="520" SuggestedHeight="250" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -791,7 +791,7 @@
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
                             <EditableTextWidget Text="@PromptKeyInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="36" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="14" Brush.FontColor="#F5E8D0FF" MaxLength="4096" />
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEditPromptKey" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="28" SuggestedHeight="28" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                              <Children><TextWidget Text="贴" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                              <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_050Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                             </ButtonWidget>
                           </Children>
                         </Widget>
@@ -799,11 +799,11 @@
                         <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Bottom" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                           <Children>
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCancelPromptKey" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="120" SuggestedHeight="38" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                              <Children><TextWidget Text="取消" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                              <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_051Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                             </ButtonWidget>
                             <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="1" />
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteConfirmPromptKey" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="120" SuggestedHeight="38" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                              <Children><TextWidget Text="确定 ➔" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                              <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_052Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                             </ButtonWidget>
                           </Children>
                         </ListPanel>
@@ -814,7 +814,7 @@
               </Children>
             </Widget>
 
-            <!-- ================= 弹窗遮罩 2: 支持制作组模态框 ================= -->
+            <!-- ================= Modal overlay 2: Support the developers ================= -->
             <Widget IsVisible="@IsSupportModalVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000D2">
               <Children>
                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="520" SuggestedHeight="270" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -824,17 +824,17 @@
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="8" ExtendTop="8" ExtendRight="8" ExtendBottom="8" Color="#D4AF37FF" AlphaFactor="0.6" IsEnabled="false" />
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="20" MarginRight="20" MarginTop="16" MarginBottom="16">
                       <Children>
-                        <AutoHideRichTextWidget Text="支持 AnimusForge 制作组" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Title.Text" Brush.FontSize="18" Brush.FontColor="#F7E8C6FF" Brush.TextHorizontalAlignment="Center" />
-                        <RichTextWidget Text="AnimusForge 模组完全免费开源！你的支持是持续更新沉浸式 AI 玩法、深度大地图演进与新功能的最大动力。欢迎前往爱发电支持我们！" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="38" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#E2D4BDFF" />
+                        <AutoHideRichTextWidget Text="@AF_UI_Onboarding_Prefab_053Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Title.Text" Brush.FontSize="18" Brush.FontColor="#F7E8C6FF" Brush.TextHorizontalAlignment="Center" />
+                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_054Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="38" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#E2D4BDFF" />
 
                         <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Bottom" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                           <Children>
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCloseSupportModal" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="120" SuggestedHeight="38" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                              <Children><TextWidget Text="关闭" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                              <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_055Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                             </ButtonWidget>
                             <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="20" SuggestedHeight="1" />
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenAfdianWeb" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="160" SuggestedHeight="38" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                              <Children><TextWidget Text="前往爱发电 ↗" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                              <Children><TextWidget Text="@AF_UI_Onboarding_Prefab_056Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                             </ButtonWidget>
                           </Children>
                         </ListPanel>
@@ -845,7 +845,7 @@
               </Children>
             </Widget>
 
-            <!-- ================= 浮动 Toast 提示 ================= -->
+            <!-- ================= Floating toast ================= -->
             <Widget IsVisible="@IsToastVisible" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="72">
               <Children>
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#16120EFF" AlphaFactor="0.95" IsEnabled="false" />

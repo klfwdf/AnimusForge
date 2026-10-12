@@ -16,58 +16,58 @@ namespace AnimusForge;
 /// </summary>
 public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 {
-	[SettingPropertyBool("启用定居点环境闲谈与额外居民", Order = 0, RequireRestart = false,
-		HintText = "覆盖城镇、村庄、港口和领主大厅。关闭后不再生成环境气泡，也不再补充额外居民；重新进入场景后完全生效。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活", GroupOrder = -50)]
+	[SettingPropertyBool("{=AF_MCM_TownAmbient_Enable}Enable settlement ambient chatter and extra residents", Order = 0, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Enable_Hint}Covers towns, villages, ports, and lord halls. Disabling stops ambient bubbles and extra residents; it takes full effect after re-entering the scene.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life", GroupOrder = -50)]
 	public bool EnableTownAmbientDialogue { get; set; } = true;
 
-	[SettingPropertyInteger("定居点生活性能档位", 0, 3, "0", Order = 1, RequireRestart = false,
-		HintText = "0=关闭，1=低负担，2=标准，3=高密度。档位会同时调整城镇、村庄、港口和领主大厅的台词冒出率与额外居民数量。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活", GroupOrder = -50)]
+	[SettingPropertyInteger("{=AF_MCM_TownAmbient_Density}Settlement-life performance tier", 0, 3, "0", Order = 1, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Density_Hint}0=off, 1=low, 2=standard, 3=high density. The tier adjusts chatter rates and extra residents across towns, villages, ports, and lord halls.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life", GroupOrder = -50)]
 	public int TownAmbientDialogueDensity { get; set; } = 2;
 
-	[SettingPropertyFloatingInteger("额外居民目标倍率", 1.0f, 3.0f, "0.0", Order = 2, RequireRestart = false,
-		HintText = "以原版当前定居点居民数为基准，标准值 2.0 左右；高档位最多按 3 倍目标补充。受场景可用出生点和安全上限限制。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活", GroupOrder = -50)]
+	[SettingPropertyFloatingInteger("{=AF_MCM_TownAmbient_Population}Extra resident target multiplier", 1.0f, 3.0f, "0.0", Order = 2, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Population_Hint}Uses the native resident count as the baseline. The standard target is about 2.0; high density can target up to 3x, limited by scene spawn points and safety caps.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life", GroupOrder = -50)]
 	public float TownAmbientPopulationMultiplier { get; set; } = 2.2f;
 
-	[SettingPropertyBool("启用环境多人接话", Order = 3, RequireRestart = false,
-		HintText = "偶尔让附近另一名居民接上上一句台词；使用本地预设文本，不调用 AI。关闭可进一步降低气泡与扫描负担。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活", GroupOrder = -50)]
+	[SettingPropertyBool("{=AF_MCM_TownAmbient_Echo}Enable ambient multi-person replies", Order = 3, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Echo_Hint}Occasionally lets another nearby resident continue the previous line using local preset text without AI. Disabling reduces bubbles and scanning work.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life", GroupOrder = -50)]
 	public bool EnableTownAmbientEventEcho { get; set; } = true;
 
-	[SettingPropertyBool("启用环境 AI 接口（明确授权）", Order = 4, RequireRestart = false,
-		HintText = "默认关闭。只有你填写独立接口并主动开启后，环境多人接话才可能调用 AI；未开启时始终使用本地预设文本，消耗 0 Token。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyBool("{=AF_MCM_TownAmbient_Ai}Enable ambient AI interface (explicit opt-in)", Order = 4, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Ai_Hint}Off by default. Ambient replies use AI only after you enter a separate endpoint and opt in; otherwise they use local preset text and consume 0 tokens.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public bool EnableTownAmbientAi { get; set; } = false;
 
-	[SettingPropertyText("环境 AI API 地址（支持 Base URL）", -1, true, "", Order = 0, RequireRestart = false,
-		HintText = "例如 https://api.openai.com/v1 或完整的 /v1/chat/completions。只会连接你填写的地址，不经过 AnimusForge 服务器。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyText("{=AF_MCM_TownAmbient_ApiUrl}Ambient AI API address (Base URL supported)", -1, true, "", Order = 0, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_ApiUrl_Hint}For example, https://api.openai.com/v1 or a full /v1/chat/completions URL. Only the address you enter is contacted; AnimusForge servers are not used.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public string TownAmbientAiApiUrl { get; set; } = "";
 
-	[SettingPropertyText("环境 AI API 密钥（Key）", -1, true, "", Order = 1, RequireRestart = false,
-		HintText = "使用你自己的 API Key。Key 只用于本地直连接口，日志和用量提示不会显示完整密钥。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyText("{=AF_MCM_TownAmbient_ApiKey}Ambient AI API key", -1, true, "", Order = 1, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_ApiKey_Hint}Use your own API key. It is sent only to the local endpoint you configure; logs and usage notices never show the full key.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public string TownAmbientAiApiKey { get; set; } = "";
 
-	[SettingPropertyText("环境 AI 模型名称", -1, true, "", Order = 2, RequireRestart = false,
-		HintText = "例如 gpt-4o-mini、deepseek-chat。请填写该接口实际支持的模型名。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyText("{=AF_MCM_TownAmbient_Model}Ambient AI model name", -1, true, "", Order = 2, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Model_Hint}For example, gpt-4o-mini or deepseek-chat. Enter a model supported by the configured endpoint.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public string TownAmbientAiModelName
 	{
 		get => ReadModelNameForPreset(ref _townAmbientAiModelName, _townAmbientAiModelDropdown);
 		set => SetModelNameForPreset(value, ref _townAmbientAiModelName, ref _townAmbientAiModelDropdown, ref _townAmbientAiModelOptions);
 	}
 
-	[SettingPropertyButton("拉取环境 AI 模型列表", -1, true, "", Content = "点击拉取", Order = 3, RequireRestart = false,
-		HintText = "使用你填写的环境 AI 地址和 Key 请求 /models；拉取本身通常不产生聊天 Token。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyButton("{=AF_MCM_TownAmbient_Fetch}Fetch ambient AI model list", -1, true, "", Content = "{=AF_MCM_TownAmbient_FetchContent}Fetch", Order = 3, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Fetch_Hint}Requests /models using the ambient AI address and key. Fetching normally produces no chat tokens.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public Action FetchTownAmbientAiModelList { get; set; }
 
-	[SettingPropertyDropdown("环境 AI 模型名称（下拉）", Order = 4, RequireRestart = false,
-		HintText = "先拉取模型列表，再从下拉选择；选择“*手动填写*”时使用上方文本框。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyDropdown("{=AF_MCM_TownAmbient_Dropdown}Ambient AI model name (dropdown)", Order = 4, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Dropdown_Hint}Fetch the model list first, then choose an entry. Selecting *manual entry* uses the text field above.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public Dropdown<string> TownAmbientAiModelDropdown
 	{
 		get
@@ -90,34 +90,34 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	[SettingPropertyButton("测试环境 AI 接口", -1, true, "", Content = "点击测试", Order = 5, RequireRestart = false,
-		HintText = "只发送一条很短的测试请求；测试本身会消耗少量 Token，并会在游戏内明确提示。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyButton("{=AF_MCM_TownAmbient_Test}Test ambient AI interface", -1, true, "", Content = "{=AF_MCM_TownAmbient_TestContent}Test", Order = 5, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Test_Hint}Sends one short test request. The test consumes a small number of tokens and shows an explicit in-game notice.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public Action TestTownAmbientAiConnection { get; set; }
 
-	[SettingPropertyInteger("环境 AI 每次最大输出 Tokens", 32, 512, "0", Order = 6, RequireRestart = false,
-		HintText = "环境接话只需要很短的句子，建议 64～128。数值越高，单次潜在消耗越高。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyInteger("{=AF_MCM_TownAmbient_MaxTokens}Ambient AI maximum output tokens", 32, 512, "0", Order = 6, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_MaxTokens_Hint}Ambient replies need only short sentences; 64-128 is recommended. Higher values increase potential per-request usage.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public int TownAmbientAiMaxOutputTokens { get; set; } = 128;
 
-	[SettingPropertyInteger("环境 AI 触发概率（%）", 0, 100, "0", Order = 7, RequireRestart = false,
-		HintText = "只影响已经产生多人接话事件的场合，不会让 AI 主动扫描或主动发起事件。建议 5～10。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyInteger("{=AF_MCM_TownAmbient_Chance}Ambient AI trigger chance (%)", 0, 100, "0", Order = 7, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Chance_Hint}Only affects an existing multi-person reply event. It never makes AI scan or start events. 5-10 is recommended.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public int TownAmbientAiChancePercent { get; set; } = 8;
 
-	[SettingPropertyInteger("环境 AI 每分钟最多请求", 0, 10, "0", Order = 8, RequireRestart = false,
-		HintText = "0 表示禁止环境 AI 请求；建议低配 0～1，中配 1～2。超过上限时自动回退本地台词。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyInteger("{=AF_MCM_TownAmbient_Rate}Ambient AI requests per minute", 0, 10, "0", Order = 8, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Rate_Hint}0 forbids ambient AI requests; 0-1 is recommended for low-end systems and 1-2 for mid-range systems. Local text is used after the cap is reached.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public int TownAmbientAiRequestsPerMinute { get; set; } = 2;
 
-	[SettingPropertyInteger("环境 AI 本次启动预算 Tokens", 0, 100000, "0", Order = 9, RequireRestart = false,
-		HintText = "本次启动期间环境 AI 的输入+输出估算上限。达到上限后自动回退本地台词。0 表示不允许调用。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyInteger("{=AF_MCM_TownAmbient_Budget}Ambient AI session token budget", 0, 100000, "0", Order = 9, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Budget_Hint}Estimated input plus output limit for ambient AI during this session. Local text is used after the limit; 0 forbids calls.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public int TownAmbientAiSessionTokenBudget { get; set; } = 5000;
 
-	[SettingPropertyBool("显示环境 AI 用量提示", Order = 10, RequireRestart = false,
-		HintText = "每次环境 AI 回复完成后显示本次估算输入/输出 Token 和本次启动累计用量；建议保持开启。")]
-	[SettingPropertyGroup("3. 场景喊话/定居点生活/环境 AI 接口", GroupOrder = -49)]
+	[SettingPropertyBool("{=AF_MCM_TownAmbient_Usage}Show ambient AI usage notices", Order = 10, RequireRestart = false,
+		HintText = "{=AF_MCM_TownAmbient_Usage_Hint}After each ambient AI reply, show estimated input/output tokens and the session total. Keeping this enabled is recommended.")]
+	[SettingPropertyGroup("{=AF_MCM_TownAmbient_Group}3. Scene shout / Settlement life/{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface", GroupOrder = -49)]
 	public bool TownAmbientAiShowUsageNotifications { get; set; } = true;
 
 	public static bool IsTownAmbientDialogueEnabled()

@@ -1,0 +1,230 @@
+{
+  "Id": "rule_petros",
+  "Keywords": [
+    "Petros",
+    "The Petros family"
+  ],
+  "RagShortTexts": [
+    "The Petros family is the family of the late Emperor Arenicos, and Queen Rhagaea rules the Southern Empire."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Petlos, the family of the late Emperor Arenicos, now ruled by his widow, Empress Rhagaea, ruled the southern part of the empire. During the lifetime of the late emperor, the Petros family was the undisputed first family in the empire. After the assassination of the late emperor, the empire was divided, and Rhagaea raised the flag of House Petros in Lycaron, claiming to inherit the late emperor's legacy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Petros family is the family of the late emperor, there is nothing to argue about. Arenicos reigned for twenty years, pacifying Khuzait in the east and Vlandia in the west. It was he who put the empire on the verge of collapse back together. Now that there are no people left and the empire is split into three pieces, his family is still holding on in the south. Some people say that the Petros family represents orthodoxy, and some people say why should a woman inherit the throne - but think about it, without Arenicos, the empire would have died long ago."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Petros family is the only orthodoxy in the empire! The purple robe of Emperor Arenicos was awarded by the Senate and the people after the death of the late Emperor Nereitses in battle. He married Rhagaea and gave birth to Princess Ila, so the throne should certainly remain in the house of Petlos. Those who say that \"the throne is not hereditary\" are all making excuses for themselves to seize the throne. Only the true royal bloodline is what we support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Empress Rhagaea, the late emperor's widow, held up the blood-stained robe of Arenicus in the forum of Lycaron. I will never forget that scene. A woman whose husband died and the empire fell into pieces could have fled back to her parents' home. But she didn't. She stood up and said that she represented the will of the late emperor and wanted to reunite the empire. I don't know if she can do it, but this courage is worth picking up a spear and fighting for her."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_n"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Petros family? Hum, when Arenicos was alive, no one dared to question their family's status. But now that the late emperor is dead, the empire should return to its ancestral system - with the Senate electing a new emperor when the throne becomes vacant. Rhagaea is a woman who was married from outside the empire. Why should she regard the throne as her family's private property? If the Petros family wants to establish a hereditary inheritance, it is digging into the foundation of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Petros family? The late emperor was indeed a good emperor, but being a good emperor did not mean that his wife and daughter were qualified to rule the empire. General Galios shed blood on the battlefield for half his life, and his veterans sacrificed their lives to gain the territory of the empire, so that they could be qualified to elect a new emperor. The Petros family hid in the palace of Lycaron and relied on the reputation of the late emperor. How many wars did they fight?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Petros family controls the southern part of the empire. That area is mountainous and has many ports. It is not easy to conquer, but its commercial value is extremely high. Although Queen Rhagaea is a widow, she is not stupid - she guards the ports of Lycaron and Guyaz, controls the trade lines of the Peras Sea, and has no shortage of dinars. Vlandia's Chamber of Commerce has had many dealings with the Petlos family, and to be honest, it's much more comfortable than dealing with that old stubborn Lucon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The relationship between the Petlos family and us is actually quite deep. Queen Rhagaea's father was the chief of a small country in the east, and his bloodline to Aserai was closer than that of the empire. Arenicos married her in order to open up the trade route to the East. The Petros family controls the trade routes in the south, and our Aserai caravans will have to look at their family's face when they go to the hinterland of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The current situation of the Petlos family is very delicate. Queen Rhagaea wields the prestige of the late emperor and the revenue from southern trade, but her legitimacy has been questioned by Lucon and Gallius. Her daughter Princess Ila is a good fighter, but she has a bad temper. Whether the Petros family can survive this civil war depends on whether Rhagaea can find a strong enough ally."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Petros family is an unavoidable topic in studying the history of the decline and fall of the empire. Arenicos reigned for twenty years and ostensibly restored the unity and order of the empire, but he never resolved the fundamental contradiction: whether the succession to the throne should be hereditary, electoral, or military. While he is alive, all three forces can hold him down; when he is dead, Rhagaea represents the hereditary bloodline, Lucon represents the Senate tradition, and Galios represents the will of the army. The Petros were not the cause of the civil war, they were the heirs to all the unresolved conflicts of Arenicos' time."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Petros",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Rhagaea",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Arenicos",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Dwarf_Helicopter",
+  "Keywords": [
+    "dwarf helicopter",
+    "rotorcraft",
+    "steam gun",
+    "aerial harassment",
+    "Dwarf Air Force",
+    "Solo flight",
+    "gyroplane",
+    "reconnaissance flight",
+    "steam",
+    "air",
+    "Dwarven Engineering",
+    "flying wing"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dwarf helicopter - also known as the gyrocopter - is a strange creation of the Dwarf Artisan Academy that folds steam kinetic energy and aviation physics: a dwarf pilot sits under the roaring steam engine, the rotor blades spin wildly, spraying steam bullets from the air towards the enemy below and dropping small rotor bombs. It wasn't elegant, but it was the most reliable flying scout and harasser in the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dwarf helicopter! Humans call it the buzz monster - they say it trembles in the sky and looks like it's about to fall down at any moment! Pooh! Can your artificial kites made of wood and canvas fly in the air for half a day without having to come down to refuel? able? cannot! Our helicopters use compressed steam boilers - what do you use? Dragon's fart? The sound of the rotors is noisy - this is my first time wearing earplugs - but when you hear the sound of \"wood saws and iron pots smashing against each other\" from far and near on the battlefield, you know that there are a pair of dwarf eyes above that have seen all the goblin ambush on the ground, and then the steam gun shoots iron pellets into the goblin pile with white steam! Our pilots have to be tougher than any other branch of the underground - you have to rub your leather pants against the red-hot copper pipe when the engine is overheated, and then use a wooden wrench to smash the jammed propeller shaft, and at the same time pull out the small hand crossbow from your waist and shoot the harpy flying below in the face! The happiest moment is when you fly over and see your own infantry below raising an ax at you and yelling - that's what it means, \"Brother, just rest those greenskins and I'll kick them for you.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The core capabilities that the Gyrocopter provides commanders are not firepower but reconnaissance and battlefield control. A helicopter can conduct overhead surveillance of enemy positions for several hours while continuously cruising, exposing Warcraft ambush, hidden troops in forest belts, or any movement of rear reserves on your map - this is an intelligence precision that cannot be achieved by ground scouts alone in conventional warfare. Its steam gun works well against unarmored light units - especially warg cavalry and goblin swarms - but can only be used as secondary harassment against heavy cavalry or aerial magic monsters. The decisive tactical value lies in \"air superiority\": once you deploy helicopters, no flying units of the enemy can safely reach your supply baggage without aerial engagement - this forces an additional layer of delay and consumption in every move of the enemy's air forces."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The engineering archives of the Gyrocopter reveal a painful evolution from theory to practice. Its earliest test-flight version—the Dwarven Engineers Guild's \"Project Spin\"—began around 170 BC, initiated by Kharak Kaderin's steam engineer Dorin Bronzebeard, and evolved from an engineering sketch that erected the wind shaft of a mill. Ten of the original twelve prototypes crashed on their first takeoff, killing seven test pilots - an unprecedented loss of life in the history of Dwarf engineering. But the dwarves did not give up: By about the 50th year of the Empire, the fourth-generation rotorcraft - \"Spinfly 4\" - completed the first manned three-mile sustained flight. Its improvements include a double-layer counter-rotator (to offset the spin torque) and a lightweight compression boiler (replacing the cast iron pot wall with a thin copper plate wrapped with a copper wire mesh). , and the introduction of the \"Buzz Copper\" propeller shaft alloy that human engineers cannot copy at all - this copper-tin-nickel ternary alloy produces an automatic lubrication function of the microporous layer on the surface under high heat, so that the propeller shaft can still run continuously at high speeds for several hours without seizure without grease lubrication. The dwarf rotary-wing fleet (officially known as the \"Karak Rotor Sentinel\") is estimated to have about 120 to 150 active aircraft in the entire old world, which are dispersed and deployed in the top-level aircraft fortresses of major Karak. During the Great Chaos Invasion in 2302 of the Imperial Era, Karak Kaderin's rotorcraft fleet persisted in flying in the Arctic cyclone belt for four full months, using steam guns to shoot at the Chaos flying monsters approaching the Varagona Pass in an environment of minus 60 degrees Celsius. In the end, after the blizzard stopped, it gave the dwarf and human coalition forces time to set up the formation on the south side of the pass."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My first Gyrocopter sighting was at the military demonstration site at Karak Kaderin. The sound of the machine—a hammered-metal tone coupled with a constant hiss of leaking air—sounded like it was about to fall from the sky at any moment. But it didn't turn over. After three circles in the sky, it hovered accurately over the shooting range, and used a stream of mist-like steam to shoot out more than forty iron bullets, which were set in the center of the wooden target. The imperial engineer next to me watched the entire process with his mouth open, and then whispered something that should not be said or recorded."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "A young dwarf rotor pilot in the territory of my tribe once crashed on a snowy peak - the rotor was broken and the steam boiler exploded - but he miraculously climbed out of the wreckage and limped back to the camp for a day and night. The information he brought back was far more important than the rotor he flew: he discovered an entire army of orcs who had detoured southward into our territory via an unmarked ancient glacier trail. The size and direction of the enemy force were clearly marked on his map—a map he drew with his bloody hand next to the wreckage after landing. Based on this, I deployed the defenders one day in advance and won the ambush battle that was originally unprepared."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When we were leading a caravan in the World's Edge Mountains, a fleet of Dwarf helicopters flew over our heads - just two of them. The buzzing sound came from the back of the mountain and caused the gravel on the roadside to roll down. They split the sun's rays into whirling fragments as they flew over our heads, then fired a full circle of steam-gun shells from a height of about sixty feet into a patch of bushes half a mile ahead. Later, we walked over and saw the corpses of six night goblin raiders lying in the bushes - they were all waiting to ambush us, and they were spotted by the gyrocopter from above."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Imperial College of Engineers has a dedicated team studying the wreckage of the Dwarf gyroplane - they are trying to reproduce the propeller shaft transmission system. However, the composition of a special lightweight anti-friction copper alloy used by the dwarves - called \"humming copper\" in the dwarf language - has not been fully analyzed by the human metallurgical guild, because the dwarves divided the smelting process into ten steps, each step was completed in a different Karak, and no one knew the complete process. Our propeller's bearings began to deform after flying for thirteen minutes; the dwarf's propeller could only fly all morning without landing. This disgraced us in the trading council."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Dwarf steam-driven one-man rotor reconnaissance and harassment aircraft, the most reliable aerial sentry platform in the old world",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "dwarf helicopter rotorcraft steam gun"
+  ]
+}

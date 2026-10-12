@@ -1,0 +1,75 @@
+{
+  "Id": "rule_Lagetas_three_way_saw",
+  "Keywords": [
+    "Cassinon",
+    "Battania Heiress",
+    "Northwest Front",
+    "Three Kingdoms Confrontation",
+    "Laqta changes hands"
+  ],
+  "RagShortTexts": [
+    "Lageta is the city that changes hands most frequently in Calradia - the Western Empire, Battania, and Vlandia have been at loggerheads here for decades, and the flags on the city wall have never been able to be firmly planted once."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lagotta is the most famous tug-of-war city in Calradia. Originally the domain of the Pala people, it was taken away by the Empire through a despicable murder - an exiled Imperial merchant killed the Pala chief who hired him and dedicated the city to the Empire. Now it fell into the hands of the Western Empire and was guarded by the Dionysian family for generations. But the three forces are all staring at it. The people of Battania believe that Lagta is a legacy of the Pala people, who are of the same origin as Battania and who have a natural reason to recover their lost lands. The Vlandians are eyeing it from the west - the corridor in which Lagta stands controls the main route from the heart of the empire to the west coast. The Western Empire needed the Lakta to block the Battanians' access to the Empire's heartland. The three families took turns taking action, and the siege of Laguta took place almost every year. Sometimes it was the forest shooters of Battania who came from the east, sometimes it was the knights of Vlandia who charged from the west, and sometimes it was the defenders of the Western Empire who took the initiative. The walls of Laghta were repaired and collapsed, and collapsed and repaired again. The soil under the walls was mixed with the broken bones of three generations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "west_empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Laqta is our western gate. Old General Clotor guarded it all his life, blocking the Battania people in the forest and unable to get out. But now Clottor is old, and the sword has been in the account for many years. When he went on an expedition, his wife Lysica and daughter Huaiya patrolled the border for him - they were indeed capable of fighting, and the people of Battania suffered a lot at Huaiya's hands. But the problem is: Huaiya is a woman. In the military merit system of the Western Empire, women could lead troops, defend cities, and kill people—but they could not inherit fiefdoms. Clotor had no sons—or rather, his only son, Cassinon, was too young and had never proven himself. The Dionysian family has guarded Lagerta for several generations, but who will take over after Clotor? If Huaiya cannot inherit legitimately, and Cassinon cannot take over, the gate of Lageta will be breached sooner or later. The people of Battania have been waiting for that day. The people of Vlandia are also waiting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Laqta is our place. Not from the Empire, not from the Western Empire. It is the land of the Para people, it is our people. The Empire stole it with a traitor's knife, and now it's the Western Empire's turn to hold it for them, but we never forget it. Every time an envoy from the empire comes to talk about peace with a treaty and says that the empire is trustworthy and honest, we use one word: Lagta. They just shut up. This city is now in the hands of the Western Empire. The people of the Dionys family can indeed attack. That old guy Clotor has blocked us for decades. But he is old. His daughter Huaiya is capable, but the soldiers in the Western Empire will not let a woman become a general. As soon as Crotor closes his eyes, Lagta will return to where it belongs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Laqta is a good city. The location is stuck at the mouth of the canyon, and whoever occupies it can block the throat leading in and out of the empire's hinterland. We Vlandians fought it several times and captured it, but we couldn't hold it - reinforcements from the Western Empire came too quickly, and the Battanians stabbed it in the back. That city is like a hot iron ball, everyone wants to catch it and everyone gets burned."
+    }
+  ],
+  "TextMappings": []
+}

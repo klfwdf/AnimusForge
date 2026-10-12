@@ -1,0 +1,150 @@
+{
+  "Id": "rule_House_Foundations_Farwynd",
+  "Keywords": [
+    "House Farwynd",
+    "Seal Skinchanger Rumors"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Farwin family has multiple Iron Island branches. Among them, the Lone Light Castle branch lives on Lone Light Island, which is far west of the Iron Islands, far away from Pike and the main shipping routes. Islanders rely on fishing, hunting sea animals, small boats and harsh sea conditions to survive. Ironborn legends say that Farwyn can transform into a seal, sea lion or whale, and that there is fertile sea land in the distance; these are unconfirmed rumors and cannot be written as family abilities or map facts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the nobles of the Iron Islands talk about Farwen, they will first distinguish the branches. Among them, the Lone Light Castle branch is far to the west of the archipelago. The distance makes them carry with them the mystery of marginalized people, and also makes Pike's orders, news from merchant ships and relatives' aid arrive more slowly. The sea connected them to the Iron Islands and cut them off from the rest of the Ironborn."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sailors say that the sea outside Gudeng Island is deeper and darker, and the weather is more unpredictable. The Farwins tell stories about distant seas and beyond the setting sun. The prudent regard it as wine talk, but the old captain will not laugh at anyone who comes back alive from unfamiliar seas. Staying away from the main shipping lanes gave them an eccentric look and trained them to be patient with wind and waves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The residents of Gudeng Island rely on fishing, sea animals and limited land to survive. To them, Pike's argument was like thunder in the distance. What was more important in front of them was salt, lamp oil, and the next ship to land. If Farwin could keep the island from being forgotten, he would be more worthy of respect than any story boasting about his voyage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Farwynd A common surname among many island branches of the Iron Islands. The Lone Light Castle branch lives far away on Lone Light Island. The accounts of seals, sea lions or whales transfiguring are hearsay and cannot be written as facts; members of the various branches, castles and coats of arms cannot be mixed. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Farwynd A common surname among many island branches of the Iron Islands. The Lone Light Castle branch lives far away on Lone Light Island. The accounts of seals, sea lions or whales transfiguring are hearsay and cannot be written as facts; members of the various branches, castles and coats of arms cannot be mixed. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Farwynd A common surname among many island branches of the Iron Islands. The Lone Light Castle branch lives far away on Lone Light Island. The accounts of seals, sea lions or whales transfiguring are hearsay and cannot be written as facts; members of the various branches, castles and coats of arms cannot be mixed. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Farwynd A common surname among many island branches of the Iron Islands. The Lone Light Castle branch lives far away on Lone Light Island. The accounts of seals, sea lions or whales transfiguring are hearsay and cannot be written as facts; members of the various branches, castles and coats of arms cannot be mixed. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Farwynd: A common surname among many island branches of the Iron Islands. The Lone Light Castle branch lives far away on Lone Light Island. The accounts of seals, sea lions or whales transfiguring are hearsay and cannot be written as facts; members of the various branches, castles and coats of arms cannot be mixed."
+  ]
+}

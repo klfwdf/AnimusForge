@@ -11,13 +11,13 @@ namespace AnimusForge;
 public partial class DuelSettings
 {
     // Full-width slash is intentional: MCM uses ASCII '/' to create subgroups.
-    internal const string NewsSettingsGroup = "12. 周报／快报";
-    private Dropdown<string> _newsMode = new Dropdown<string>(new[] { "周报", "快报" }, 1);
+    internal const string NewsSettingsGroup = "{=AF_MCM_Group_News}Weekly reports / bulletins";
+    private Dropdown<string> _newsMode = new Dropdown<string>(new[] { "{=AF_MCM_News_Weekly}Weekly report", "{=AF_MCM_News_Bulletin}Bulletin" }, 1);
     private bool _newsModeLoaded;
     private bool? _autoGenerateWorldBulletins;
 
-    [SettingPropertyDropdown("主模式", Order = 0, RequireRestart = false,
-        HintText = "周报：汇总世界与各国事件。快报：发生大事后收集近期消息，再发布一期快报。切换模式会从现在重新收集并取消旧重试；切到周报后累计7个游戏日再生成首期，已有档案保留。两种模式互斥，默认快报。")]
+    [SettingPropertyDropdown("{=AF_MCM_News_Mode}Primary mode", Order = 0, RequireRestart = false,
+        HintText = "{=AF_MCM_News_Mode_Hint}Weekly reports summarize world and kingdom events. Bulletins collect recent news after major events. Switching mode restarts collection and cancels old retries; existing archives are kept.")]
     [SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
     public Dropdown<string> NewsMode
     {
@@ -25,7 +25,7 @@ public partial class DuelSettings
         set
         {
             int index = value?.SelectedIndex ?? 1;
-            _newsMode = new Dropdown<string>(new[] { "周报", "快报" }, index == 0 ? 0 : 1);
+            _newsMode = new Dropdown<string>(new[] { "{=AF_MCM_News_Weekly}Weekly report", "{=AF_MCM_News_Bulletin}Bulletin" }, index == 0 ? 0 : 1);
             _newsModeLoaded = true;
         }
     }
@@ -37,9 +37,9 @@ public partial class DuelSettings
         set => _newsMode.SelectedIndex = value ? 1 : 0;
     }
 
-    [SettingPropertyBool("自动发布快报", Order = 0, RequireRestart = false,
-        HintText = "仅主模式为快报时生效。关闭后不再发起新的快报生成，仍记录近期事件供 NPC 知情；已有档案保留。关闭前已发出的请求可能继续完成，但不会发布。与周报自动生成开关独立。")]
-    [SettingPropertyGroup(NewsSettingsGroup + "/快报", GroupOrder = 1)]
+    [SettingPropertyBool("{=AF_MCM_News_AutoBulletin}Auto-publish bulletins", Order = 0, RequireRestart = false,
+        HintText = "{=AF_MCM_News_AutoBulletin_Hint}Applies only in bulletin mode. When disabled, no new bulletin generation starts, while recent events remain available to NPCs and existing archives are kept.")]
+    [SettingPropertyGroup(NewsSettingsGroup + "/{=AF_MCM_News_Bulletin}Bulletin", GroupOrder = 1)]
     public bool AutoGenerateWorldBulletins
     {
         get => _autoGenerateWorldBulletins ?? AutoGenerateWeeklyReports;
@@ -98,3 +98,4 @@ public partial class DuelSettings
             UseWorldBulletin = stored.Value<bool>("UseWorldBulletin");
     }
 }
+

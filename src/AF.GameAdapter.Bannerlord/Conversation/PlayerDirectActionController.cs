@@ -25,15 +25,15 @@ internal sealed class PlayerDirectActionChoice
 
 internal static class PlayerDirectActionProtocol
 {
-    internal static readonly IReadOnlyList<KeyValuePair<PlayerDirectActionKind, string>> Actions =
+    internal static IReadOnlyList<KeyValuePair<PlayerDirectActionKind, string>> Actions =>
         new[] {
-            Pair(PlayerDirectActionKind.Gold, "NPC 给我钱"), Pair(PlayerDirectActionKind.Item, "NPC 给我物品"),
-            Pair(PlayerDirectActionKind.FixedAsset, "NPC 转交固定资产"), Pair(PlayerDirectActionKind.Troops, "NPC 交给我部队"),
-            Pair(PlayerDirectActionKind.Prisoners, "NPC 交给我俘虏"), Pair(PlayerDirectActionKind.Debt, "记录玩家欠款／承诺"),
-            Pair(PlayerDirectActionKind.ResolveDebt, "解除债务"), Pair(PlayerDirectActionKind.Companion, "当前英雄成为同伴"),
-            Pair(PlayerDirectActionKind.Family, "当前英雄成为家族成员"), Pair(PlayerDirectActionKind.Follow, "跟随我"),
-            Pair(PlayerDirectActionKind.StopFollow, "停止跟随"), Pair(PlayerDirectActionKind.LordsHall, "进入领主大厅"),
-            Pair(PlayerDirectActionKind.AcceptIssue, "接取任务"), Pair(PlayerDirectActionKind.TurnInQuest, "交付任务") };
+            Pair(PlayerDirectActionKind.Gold, ConversationUiLocalization.Text("AF_CONV_UI_Direct_001", "NPC gives me gold")), Pair(PlayerDirectActionKind.Item, ConversationUiLocalization.Text("AF_CONV_UI_Direct_002", "NPC gives me items")),
+            Pair(PlayerDirectActionKind.FixedAsset, ConversationUiLocalization.Text("AF_CONV_UI_Direct_003", "NPC transfers fixed assets to me")), Pair(PlayerDirectActionKind.Troops, ConversationUiLocalization.Text("AF_CONV_UI_Direct_004", "NPC transfers troops to me")),
+            Pair(PlayerDirectActionKind.Prisoners, ConversationUiLocalization.Text("AF_CONV_UI_Direct_005", "NPC transfers prisoners to me")), Pair(PlayerDirectActionKind.Debt, ConversationUiLocalization.Text("AF_CONV_UI_Direct_006", "Record the player's debt or promise")),
+            Pair(PlayerDirectActionKind.ResolveDebt, ConversationUiLocalization.Text("AF_CONV_UI_Direct_007", "Clear a debt")), Pair(PlayerDirectActionKind.Companion, ConversationUiLocalization.Text("AF_CONV_UI_Direct_008", "Make the current hero a companion")),
+            Pair(PlayerDirectActionKind.Family, ConversationUiLocalization.Text("AF_CONV_UI_Direct_009", "Make the current hero a clan member")), Pair(PlayerDirectActionKind.Follow, ConversationUiLocalization.Text("AF_CONV_UI_Direct_010", "Follow me")),
+            Pair(PlayerDirectActionKind.StopFollow, ConversationUiLocalization.Text("AF_CONV_UI_Direct_011", "Stop following")), Pair(PlayerDirectActionKind.LordsHall, ConversationUiLocalization.Text("AF_CONV_UI_Direct_012", "Enter the lord's hall")),
+            Pair(PlayerDirectActionKind.AcceptIssue, ConversationUiLocalization.Text("AF_CONV_UI_Direct_013", "Accept quest")), Pair(PlayerDirectActionKind.TurnInQuest, ConversationUiLocalization.Text("AF_CONV_UI_Direct_014", "Turn in quest")) };
     private static KeyValuePair<PlayerDirectActionKind, string> Pair(PlayerDirectActionKind kind, string label) => new(kind, label);
     private static bool SafeToken(string token) => !string.IsNullOrWhiteSpace(token) && token.IndexOfAny(new[] {'[', ']', '\r', '\n'}) < 0;
     internal static bool TryBuild(PlayerDirectActionKind kind, string token, string quantity, int days, string note, out string tag)
@@ -86,7 +86,7 @@ internal sealed class PlayerDirectActionController
     private Session _active;
     private sealed class Session
     {
-        internal string Title;
+        internal string Title, TargetName;
         internal bool Closed;
         internal Func<bool> IsCurrent;
         internal Func<PlayerDirectActionKind, string> Unavailable;
@@ -102,17 +102,17 @@ internal sealed class PlayerDirectActionController
         Action<PlayerDirectActionKind, PlayerDirectActionChoice, string> execute, Action onFinished)
     {
         if (_active != null) Close(_active);
-        var s = _active = new Session { Title = "直接动作 — " + name, IsCurrent = isCurrent, Unavailable = unavailable,
+        var s = _active = new Session { TargetName = name, Title = ConversationUiLocalization.Text("AF_CONV_UI_Direct_015", "Direct actions — ") + name, IsCurrent = isCurrent, Unavailable = unavailable,
             Candidates = candidates, Revalidate = revalidate, Execute = execute, Finish = onFinished };
         Advance(s, () => {
-            if (!isCurrent()) { Reject(s, "当前目标或会话已过期，请重新打开直接动作。"); return; }
+            if (!isCurrent()) { Reject(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_016", "The target or conversation has expired. Reopen Direct actions.")); return; }
             var elements = PlayerDirectActionProtocol.Actions.Select(pair => {
                 string reason = unavailable(pair.Key);
-                return new InquiryElement(pair.Key, pair.Value, null, string.IsNullOrEmpty(reason), reason ?? "按现有标签规则执行，不调用 AI。");
+                return new InquiryElement(pair.Key, pair.Value, null, string.IsNullOrEmpty(reason), reason ?? ConversationUiLocalization.Text("AF_CONV_UI_Direct_017", "Execute existing tag rules without calling AI."));
             }).ToList();
             long stamp = ++_revision;
             MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(s.Title,
-                "仅对当前目标执行。资格、数量、费用与副作用沿用原机制。", elements, true, 1, 1, "确定", "取消",
+                ConversationUiLocalization.Text("AF_CONV_UI_Direct_018", "Only the current target is affected. Eligibility, quantity, costs and side effects follow the existing mechanics."), elements, true, 1, 1, ConversationUiLocalization.Text("AF_CONV_UI_Direct_019", "OK"), ConversationUiLocalization.Text("AF_CONV_UI_Direct_020", "Cancel"),
                 selected => {
                     if (!Consume(s, stamp)) return;
                     var item = selected?.Count == 1 ? selected[0] : null;
@@ -126,7 +126,7 @@ internal sealed class PlayerDirectActionController
     {
         if (s.Closed || !ReferenceEquals(_active, s) || stamp != _revision) return false;
         ++_revision;
-        if (!s.IsCurrent()) { Reject(s, "当前目标或会话已过期，未执行动作。"); return false; }
+        if (!s.IsCurrent()) { Reject(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_021", "The target or conversation has expired. No action was executed.")); return false; }
         return true;
     }
     private void Close(Session s)
@@ -144,20 +144,20 @@ internal sealed class PlayerDirectActionController
         catch (Exception ex)
         {
             Logger.Log("PlayerDirectActions", "inquiry failed: " + ex.Message);
-            Reject(s, "读取动作参数或提交时出现异常，已关闭直接动作；不会自动重试。请检查原机制状态。");
+            Reject(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_022", "An error occurred while reading parameters or submitting the action. Direct actions was closed without automatic retry. Check the original mechanic's state."));
         }
     }
     private void Text(Session s, string prompt, Action<string> next)
     {
         long stamp = ++_revision;
-        InformationManager.ShowTextInquiry(new TextInquiryData(s.Title, prompt, true, true, "确定", "取消",
+        InformationManager.ShowTextInquiry(new TextInquiryData(s.Title, prompt, true, true, ConversationUiLocalization.Text("AF_CONV_UI_Direct_019", "OK"), ConversationUiLocalization.Text("AF_CONV_UI_Direct_020", "Cancel"),
             value => { if (Consume(s, stamp)) Advance(s, () => next(value?.Trim() ?? "")); },
             () => { if (Consume(s, stamp)) Close(s); }), pauseGameActiveState: true);
     }
     private void Confirm(Session s, string message, Action next)
     {
         long stamp = ++_revision;
-        InformationManager.ShowInquiry(new InquiryData(s.Title, message, true, true, "确认执行", "取消",
+        InformationManager.ShowInquiry(new InquiryData(s.Title, message, true, true, ConversationUiLocalization.Text("AF_CONV_UI_Direct_023", "Confirm action"), ConversationUiLocalization.Text("AF_CONV_UI_Direct_020", "Cancel"),
             () => { if (Consume(s, stamp)) Advance(s, next); }, () => { if (Consume(s, stamp)) Close(s); }), pauseGameActiveState: true);
     }
     private void Begin(Session s, PlayerDirectActionKind kind)
@@ -167,18 +167,18 @@ internal sealed class PlayerDirectActionController
         switch (kind)
         {
             case PlayerDirectActionKind.Gold:
-                Text(s, "输入 NPC 给你的金额（正整数）。不足时仍按原标签补足规则执行。", amount => Commit(s, kind, null, amount)); break;
+                Text(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_024", "Enter the gold amount the NPC gives you (positive integer). Insufficient funds still follow the original tag's shortfall-completion rules."), amount => Commit(s, kind, null, amount)); break;
             case PlayerDirectActionKind.Debt:
-                Text(s, "输入玩家欠款／承诺价值（正整数）：", amount => Text(s, "输入期限天数（0 保留原有无期限语义）：", days => {
-                    if (!int.TryParse(days, out int deadline) || deadline < 0) { Reject(s, "期限必须是非负整数。"); return; }
-                    Text(s, "输入备注（不能包含方括号或换行）：", note => Commit(s, kind, null, amount, deadline, note));
+                Text(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_025", "Enter the value of the player's debt or promise (positive integer):"), amount => Text(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_026", "Enter the deadline in days (0 retains the existing unlimited-deadline meaning):"), days => {
+                    if (!int.TryParse(days, out int deadline) || deadline < 0) { Reject(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_027", "The deadline must be a non-negative integer.")); return; }
+                    Text(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_028", "Enter a note (no square brackets or line breaks):"), note => Commit(s, kind, null, amount, deadline, note));
                 })); break;
             case PlayerDirectActionKind.Item: case PlayerDirectActionKind.FixedAsset:
             case PlayerDirectActionKind.Troops: case PlayerDirectActionKind.Prisoners: case PlayerDirectActionKind.ResolveDebt:
                 Choose(s, kind); break;
             case PlayerDirectActionKind.Companion: case PlayerDirectActionKind.Family:
-                Confirm(s, "目标：" + s.Title.Substring("直接动作 — ".Length) + "\n将按原标签转入玩家家族，身份为"
-                    + (kind == PlayerDirectActionKind.Companion ? "同伴。" : "家族成员／领主。") + "原有身份、部队和归属副作用全部保留。",
+                Confirm(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_029", "Target: ") + s.TargetName + ConversationUiLocalization.Text("AF_CONV_UI_Direct_030", "\nThe existing tag will move this hero into the player's clan as a ")
+                    + (kind == PlayerDirectActionKind.Companion ? ConversationUiLocalization.Text("AF_CONV_UI_Direct_031", "companion. ") : ConversationUiLocalization.Text("AF_CONV_UI_Direct_032", "clan member/lord. ")) + ConversationUiLocalization.Text("AF_CONV_UI_Direct_033", "All existing identity, party and ownership side effects are retained."),
                     () => Commit(s, kind, null, null)); break;
             default: Commit(s, kind, null, null); break;
         }
@@ -186,10 +186,10 @@ internal sealed class PlayerDirectActionController
     private void Choose(Session s, PlayerDirectActionKind kind)
     {
         var choices = s.Candidates(kind) ?? new List<PlayerDirectActionChoice>();
-        if (choices.Count == 0) { Reject(s, "当前目标没有符合原机制的可选物品、资产、部队、俘虏或未解除债务。"); return; }
-        var elements = choices.Select(x => new InquiryElement(x.Token, x.Label, null, true, "按原机制执行；执行前复核当前候选。")).ToList();
+        if (choices.Count == 0) { Reject(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_034", "This target has no eligible items, assets, troops, prisoners or outstanding debts under the existing mechanics.")); return; }
+        var elements = choices.Select(x => new InquiryElement(x.Token, x.Label, null, true, ConversationUiLocalization.Text("AF_CONV_UI_Direct_035", "Use the existing mechanics; recheck the selected candidate before execution."))).ToList();
         long stamp = ++_revision;
-        MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(s.Title, "请选择：", elements, true, 1, 1, "确定", "取消",
+        MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(s.Title, ConversationUiLocalization.Text("AF_CONV_UI_Direct_036", "Select:"), elements, true, 1, 1, ConversationUiLocalization.Text("AF_CONV_UI_Direct_019", "OK"), ConversationUiLocalization.Text("AF_CONV_UI_Direct_020", "Cancel"),
             selected => {
                 if (!Consume(s, stamp)) return;
                 Advance(s, () => {
@@ -198,7 +198,7 @@ internal sealed class PlayerDirectActionController
                     if (index < 0) { Close(s); return; }
                     var choice = choices[index];
                     if (kind == PlayerDirectActionKind.FixedAsset)
-                        Confirm(s, "目标：" + s.Title + "\n转交资产：" + choice.Label + "\n归属将转给玩家，沿用原标签所有检查与后果。", () => Commit(s, kind, choice, "1"));
+                        Confirm(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_029", "Target: ") + s.Title + ConversationUiLocalization.Text("AF_CONV_UI_Direct_037", "\nTransfer asset: ") + choice.Label + ConversationUiLocalization.Text("AF_CONV_UI_Direct_038", "\nOwnership will pass to the player, subject to all existing tag checks and consequences."), () => Commit(s, kind, choice, "1"));
                     else if (kind == PlayerDirectActionKind.ResolveDebt) Commit(s, kind, choice, null);
                     else if (TransferQuantitySpec.IsAllValue(choice.Token)) Commit(s, kind, choice, "ALL");
                     else Quantity(s, kind, choice);
@@ -208,17 +208,17 @@ internal sealed class PlayerDirectActionController
     private void Quantity(Session s, PlayerDirectActionKind kind, PlayerDirectActionChoice choice)
     {
         var elements = new List<InquiryElement> {
-            new("quantity", "输入数量", null, true, "输入正整数；补足或实际转移数量仍按原标签规则。"),
-            new("ALL", "该项全部", null, true, "只对已选单项输出 ALL，保留原语义。") };
+            new("quantity", ConversationUiLocalization.Text("AF_CONV_UI_Direct_039", "Enter quantity"), null, true, ConversationUiLocalization.Text("AF_CONV_UI_Direct_040", "Enter a positive integer; shortfall completion or actual transferred quantities follow the existing tag rules.")),
+            new("ALL", ConversationUiLocalization.Text("AF_CONV_UI_Direct_041", "All of this entry"), null, true, ConversationUiLocalization.Text("AF_CONV_UI_Direct_042", "Emit ALL only for the selected entry, retaining its existing meaning.")) };
         long stamp = ++_revision;
-        MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(s.Title, "已选：" + choice.Label, elements, true, 1, 1, "确定", "取消",
+        MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(s.Title, ConversationUiLocalization.Text("AF_CONV_UI_Direct_043", "Selected: ") + choice.Label, elements, true, 1, 1, ConversationUiLocalization.Text("AF_CONV_UI_Direct_019", "OK"), ConversationUiLocalization.Text("AF_CONV_UI_Direct_020", "Cancel"),
             selected => {
                 if (!Consume(s, stamp)) return;
                 Advance(s, () => {
                     var item = selected?.Count == 1 ? selected[0] : null;
                     if (item == null || !elements.Contains(item)) { Close(s); return; }
                     if (Equals(item.Identifier, "ALL")) Commit(s, kind, choice, "ALL");
-                    else Text(s, "已选：" + choice.Label + "\n输入正整数数量：", amount => Commit(s, kind, choice, amount));
+                    else Text(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_043", "Selected: ") + choice.Label + ConversationUiLocalization.Text("AF_CONV_UI_Direct_044", "\nEnter a positive integer quantity:"), amount => Commit(s, kind, choice, amount));
                 });
             }, _ => { if (Consume(s, stamp)) Close(s); }), pauseGameActiveState: true);
     }
@@ -241,11 +241,11 @@ internal sealed class PlayerDirectActionController
         }
         else valid = PlayerDirectActionProtocol.TryBuild(kind, choice?.Token, amount, days, note, out tag);
         if (!valid)
-        { Reject(s, "参数无效，未执行动作。请重新选择并输入正整数数量／金额或允许的 ALL。"); return; }
+        { Reject(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_045", "Invalid parameters. No action was executed. Select again and enter a positive quantity/amount or an allowed ALL.")); return; }
         if (!s.IsCurrent() || !string.IsNullOrEmpty(s.Unavailable(kind)) || !s.Revalidate(kind, choice))
-        { Reject(s, "目标、场景或候选已经变化，未执行动作。请重新打开直接动作。"); return; }
+        { Reject(s, ConversationUiLocalization.Text("AF_CONV_UI_Direct_046", "The target, scene or candidate has changed. No action was executed. Reopen Direct actions.")); return; }
         Close(s); // Release popup focus and scene movement suppression before applying effects.
-        if (!s.IsCurrent()) { InformationManager.DisplayMessage(new InformationMessage("会话已过期，未执行动作。")); return; }
+        if (!s.IsCurrent()) { InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Direct_047", "The conversation has expired. No action was executed."))); return; }
         s.Execute(kind, choice, tag);
     }
 }

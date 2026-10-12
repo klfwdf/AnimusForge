@@ -1,0 +1,94 @@
+{
+  "Id": "rule_alisweirst",
+  "Keywords": [
+    "Alisweirst",
+    "Swamp"
+  ],
+  "RagShortTexts": [
+    "Alisweirst is an important grain-producing area for Rovalt."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alisweirst is a village near Rovalt. It was once a barren swamp, but Vlandian settlers drained the water, cleared farmland in the valley, and planted wheat and rye. Today it has become an important grain-producing area for Rovalt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When our ancestors first came to Alisweirst, the whole place was nothing but festering mudflats with more mosquitoes than people. Later they drained the swamp by sheer grit and opened up fine fields fit for growing wheat. All those settlers in Rovalt depend on grain from Alisweirst to fill their bellies. Carving a granary out of boggy mud is no feat just anyone could pull off."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wheat flour from Alisweirst sells well in Rovalt. The fields there were cleared after draining a swamp, leaving soil as black as ink where anything you plant thrives. When the miners up in the mountains around Rovalt eat bread, most of the flour has been hauled in from Alisweirst."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The fields of Alisweirst are laid out neat and orderly, looking quite different from elsewhere. The locals say the whole place used to be liquid mud until their ancestors dug ditches shovel by shovel to drain the water and turned the swamp into fertile farmland. Walking along the field ridges today, you can still see the drainage ditches dug decades ago running with water beside the fields."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Alisweirst",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Rovalt",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

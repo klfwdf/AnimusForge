@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Holy_Grail_Relic",
+  "Keywords": [
+    "Holy Grail Relic",
+    "reliquary",
+    "Fallen Knight",
+    "Serf Pilgrimage",
+    "morale booster",
+    "holy remains",
+    "holy corpse",
+    "Paladin Relics",
+    "Pilgrimage Box"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Grail Relic is one of the most striking sights on the battlefields of Bretonnia - a crude wooden cart pushed by serfs, upon which lies a reliquary decorated with a reliquary, containing the remains of a fallen Grail Knight. Groups of serf pilgrims followed the relic carts, not coming to fight, but to witness the relics and gain the courage to face death in the holy light, while the relics themselves would emit a gray divine light during battle that inspired the Bretonnian warriors to continue fighting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Grail Relic is the most sacred and controversial tradition in Bretonnian war culture. When a Grail Knight dies in battle, his body is not buried underground to be reunited with his ancestors—the fate of a Knight of the Realm and a serf—but instead is received by the Sisters of the Holy Grail and sealed away in a reliquary. Made of blessed oak and sterling silver, these reliquaries are so large that it requires at least six serfs to lift them, and contain the remains of the Grail Knight—sometimes his sword, sometimes his skull protected in a crystal case, sometimes a full body of the holy corpse. The peasants of Bretonnia believe that the remains of fallen saints have the power to protect mortals - this belief originates from the early theology of the Lady of the Lake, which mentions that the bodies of those who die in the goddess's grace will not be corrupted by Chaos - so when war comes, serfs will abandon their fields and homes, roll the Holy Grail relic cart into the battlefield, and sing ancient pilgrim hymns. These serfs are not warriors - many of them have no weapons but grass-cutting scythes or even nothing at all - but in the presence of a Grail Relic Cart, the morale of all Bretonnia on the battlefield increases to an almost irrational level: the knights' lances are more accurate, and the serfs' fear melts into the soft gray light of the relic. But the existence of the Grail Relic also means that knights have a heavy responsibility on the battlefield: to protect this fragile car from capture - for the greatest shame is not losing a castle, but having the Grail Knight's body taken away by heretics or orcs and taking away anything that does not belong to them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The tactical value of the Grail Relic is highly dependent on the religious sensitivities of the enemy. To an Orc, Beastman, or Chaos Cultist, the glow of the Grail Relic is merely a potential target - it does not in any way frighten them or weaken their combat effectiveness. But for the undead legions—vampires, necromancers, and their skeleton servants—the Holy Grail relic has a substantial battlefield weakening effect: the light of the holy remains can directly suppress low-level necromantic rituals, slowing down the movement speed of nearby skeletons and zombies, and occasionally even causing them to lose control. Therefore, any Lord of Bretonnia who goes against a Sylvanian neighbor will go to great lengths to ensure that at least one Grail Relic Vehicle is included in the expeditionary force. But the Holy Grail relic also brings a military management burden: not only do the serfs who protect the reliquary have no combat training, they are also extremely vulnerable to being shot and killed on a large scale by enemy archers or spells - these casualties will cause morale around the relic to decrease and are directly contrary to the effect of the relic itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The doctrinal basis and cultural relic history of the Holy Grail relics is a research field in Bretonnian religious anthropology that is of great historical value but lacks systematic documentation. According to the oral tradition passed down within the Sisters of the Holy Grail - which has never been completely written down - the sanctity of the holy relic comes from the \"eternal covenant\" made by the Lady of the Lake to the fallen Grail Knight: the goddess bestowed the Holy Grail to the knight during his lifetime, and did not take back the gift after his death, but transferred it to the knight's remains. Theologically speaking, this means that every properly preserved Grail Knight remains is a \"living mirror\" of the Lady of the Lake's existence. Approximately one hundred to one hundred and twenty Grail Knight remains are preserved in various forms throughout Bretonnia - some as family shrines in ducal castles, others as village talismans in village chapels, and only about twenty have been converted into battlefield chalice relic vehicles and issued to frontline legions. The earliest recorded use of the Holy Grail Relic Cart occurred in the seventh century of the Bretonnian calendar - during the final battle with the Red Duke, Bretonnian infantry pushed the Paladin Emeric's Holy Cart into the decisive battle in a desperate situation where the enemy was outnumbered. Since then, the Holy Grail Relic has been institutionalized as a legitimate component of the Bretonnian war machine. Each Holy Grail relic cart must undergo a ritual called \"Holy Activation\" before entering battle - the details of this ritual have never been written down, and are only performed by the Holy Grail Sisters before the battle, and non-nuns are not allowed to watch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Grail Relic strikes a strange emotional chord in us Bretonnian women - when a convoy of Grail Relics passes through a village, the women drop their spindles and kneel by the roadside to sing hymns. For these serf women, the reliquary was the only thing that allowed them to see the sacred in war - their sons and husbands usually did not have enough status to contact the upper echelons of the church or knightly society, but they believed that the relics could communicate directly with the goddess and provide shelter for their relatives on the battlefield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The family ownership of the Holy Grail relics falls into an extremely subtle gray area legally. The presence within a duchy of a fallen Grail Knight's remains meant that nearby monasteries and parishes would long receive donations and offerings from pilgrims. This leaves competing families secretly competing to have more relics of the fallen Grail Knight placed within their lands - not a clean thing to do."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Holy Grail relic is the most contradictory thing I have ever seen in Bretonnia - a wooden cart containing a skeleton and glowing gray, surrounded by a group of mud-covered serfs, poorer than us, not to mention swords, not even a few short-handled knives in their hands, but in the face of death they became as unflinching as the bravest mercenaries I have ever seen in the aura of the relic. I don’t understand what confronts them, and I’m not sure I want to understand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The manufacture of reliquaries was the most religiously bound luxury industry among Bretonnian crafts. The craftsmen who made the reliquaries had to be licensed by the Church—these craftsmen themselves had to be holy craftsmen who had been baptized and took a vow of purity. The oak is sourced from the oldest forests in Bretonnia, the sterling silver ingots are blessed raw materials provided by the Sisters of the Lady of the Lake, and the crystal box is blown by the exclusive glass master of the Gray Mountains Monastery - the final assembly of all components must be completed in the church and must not be opened in the moonlight."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Reliquary - A mobile relic made of sacred oak and sterling silver that holds the remains of the fallen Grail Knight",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Holy Grail Relic Reliquary Fallen Knight"
+  ]
+}

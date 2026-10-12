@@ -10,5 +10,10 @@
   <ItemGroup>
     <Compile Include="..\..\..\Vengeance\Source\Scene\Speech\ExecutionSpeechLineParser.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="..\..\..\src\modules\AF.Module.Llm\Protocol\LlmSourceTexts.cs" />
+    <EmbeddedResource Include="..\..\..\content\modules\AF.Module.Llm\ModuleData\LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" />
+    <EmbeddedResource Include="..\..\..\content\modules\AF.Module.Prompt\ModuleData\ExecutionRulePrompts.en.json" LogicalName="Test.ExecutionPrompt.en.json" WithCulture="false" />
+    <EmbeddedResource Include="..\..\..\content\modules\AF.Module.Prompt\ModuleData\RuleBehaviorPrompts.en.json" LogicalName="Test.RulePrompt.en.json" WithCulture="false" />
+    <Reference Include="Newtonsoft.Json"><HintPath>..\..\..\_deps_auto\Newtonsoft.Json.dll</HintPath></Reference>
   </ItemGroup>
 </Project>

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Goddess_blessing",
+  "Keywords": [
+    "Goddess' blessing",
+    "Blessed by the Lake Goddess",
+    "magic shield",
+    "prayer before battle",
+    "Remote protection",
+    "Power of the Holy Grail",
+    "goddess blessing",
+    "Holy Light Barrier",
+    "prayer ceremony",
+    "power of faith",
+    "divine protection",
+    "Miracle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Blessing of the Goddess is the divine protection of the Lake Goddess to the devout Bretonnia knights, forming an invisible magical barrier on the battlefield, especially good at resisting ranged attacks. Knights obtain this grace through prayer before fighting. The deeper the faith, the stronger the protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The blessing of the goddess! There is nothing more comforting than feeling the warm light of the goddess envelope you on the battlefield. Before each expedition, we would pray all night in the Holy Grail Chapel, wash away our sins with water, and purify our souls with incense. A truly devout knight can feel a layer of halo that is difficult to discern with the naked eye wrapping around his body. The enemy's arrows seem to hit an invisible wall of sighs when they touch them, and their trajectories are deflected one after another. This is no superstition - I have personally seen a Chaos Dwarf's buckshot deflect out of thin air three inches away from me, leaving only shallow scratches on the breastplate. The Goddess protects the pious, but those who turn away will be as helpless as naked bodies in the hail of arrows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The goddess's blessing changed the way the Bretonnian armies fought on a tactical level. Since long-range protection is extremely reliable, we can calmly form the team under enemy archer fire, allowing the knights to launch a more precise charge. But beware - the strength of the blessing is directly related to the knight's piety, and piety can be wane through fear or wavering on the battlefield. In addition, Blessing's protection against melee damage is far inferior to that of long-range damage, which means that once entering hand-to-hand combat, the knight will lose this advantage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Goddess's blessing is theologically classified as a \"group-protective divine miracle,\" and its operating mechanism is fundamentally different from the war prayers of the Imperial Sigmar Church. The blessing of the Lake Goddess is not actively cast by the priest, but is \"passively triggered\" through the knight's own piety and prayer - which means that in theory, every knight is a priest of his own faith. The protection effect of blessing decreases in a gradient: it has the strongest protection against light long-range attacks such as arrows and darts, followed by heavy projectiles such as ballistae and boulders, has zero protection against magic missiles, and is almost ineffective against melee damage. Research from the seminary shows that the intensity of the blessing is positively correlated with the length and sincerity of the knight's prayers before battle. The greatest blessing recorded in history occurred to Guillaume, the Grail Knight in the Battle of Atonement - he charged with thousands of poisonous arrows from the night goblins, and afterward had 300 arrowheads embedded in his armor, but he remained unscathed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The goddess's blessing is more than just a battlefield shield. It represents the respect shown to women by the Lady of the Lake - herself a female deity who bestows upon us the spiritual power to transcend the shackles of the world. Even if a pious woman does not hold a sword, she can still protect her knights and people with the power of prayer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our people have believed in the goddess of the lake for generations and have never stopped. Our ancestors relied on the grace of the goddess in their expeditions to cross the battlefield where arrows rained like locusts. The elders of the clan often say: Blessings are not free - you must first prove your worth with actions before the goddess will favor you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I don’t believe in God, but I have to admit that the blessing of the goddess is real. I've seen knights charge against a hail of arrows without losing a cent. That's not the merit of armor. Maybe there really is some ancient power in this land that selects people worthy of protection - but they are named \"goddess\" by humans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Goddess's blessing does affect the weapons market. Since ranged weapons are less effective against devout knights, smart buyers will spend their money on melee weapons. The sales volume of spears, swords, and maces is much higher than that of crossbows. Some speculators have tried selling \"blessed\" arrows - all scammers, but good business."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Goddess's Blessing is the goddess of the lake's divine magical protection for devout knights, and is especially good at resisting long-range attacks.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Theological attributes and belief systems of the goddess's blessings"
+  ]
+}

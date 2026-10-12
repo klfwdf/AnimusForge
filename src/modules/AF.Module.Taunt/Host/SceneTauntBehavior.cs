@@ -364,7 +364,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			}
 			Hero executor = capturer.LeaderHero ?? faction.Leader;
 			QueuePendingForcedPlayerExecutionForExternal(executor, "", "scene_taunt_capture_execution_threshold");
-			AnimusForgeQuickInfo.Show($"{faction.Name} 认定你的罪行已满，俘虏后将处决你。", executor?.CharacterObject);
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_ForcedExecutionCapture", "{FACTION} has judged your crime level to be full. You will be executed after capture.", ("FACTION", faction.Name)), executor?.CharacterObject);
 			Logger.Log("SceneTaunt", $"Queued forced execution after capture. Captor={capturer.Name}, Faction={faction.Name}, EffectiveCrime={effectiveCrimeRatingForExternal:0.##}, Executor={executor?.Name}");
 		}
 		catch (Exception ex)
@@ -843,7 +843,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 				}
 				float num6 = _penaltyLedger.GetDeferredCrime(text);
 					ChangeCrimeRatingAction.Apply(factionById, num5, true);
-					AnimusForgeQuickInfo.Show($"离开当前场景后，{factionById.Name} 的累计犯罪度 +{num5:0.#}。");
+					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_CrimeCommittedAfterScene", "After leaving the scene, {FACTION} crime increases by {AMOUNT}.", ("FACTION", factionById.Name), ("AMOUNT", num5.ToString("0.#"))));
 					Logger.Log("SceneTaunt", $"Injected scene-taunt crime pool into native crime. Faction={factionById.Name}, NativeBefore={num2:0.##}, Added={num5:0.##}, RemainingPool={num6:0.##}, NativeAfter={MathF.Max(0f, factionById.MainHeroCrimeRating):0.##}");
 				}
 				catch (Exception ex)
@@ -1098,7 +1098,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			AnimusForgeQuickInfo.Show($"你在{faction.Name}积累了{trackedCrimeTotalAmount:0.#}犯罪度！");
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_CrimeAccumulated", "You have accumulated {AMOUNT} crime with {FACTION}.", ("FACTION", faction.Name), ("AMOUNT", trackedCrimeTotalAmount.ToString("0.#"))));
 		}
 		catch (Exception ex)
 		{
@@ -1142,8 +1142,8 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				RewardSystemBehavior.Instance.AdjustSettlementLocalPublicTrustForExternal(settlement, num2, "scene_taunt_criminal_knockdown_reward");
 			}
-			string text2 = string.IsNullOrWhiteSpace(victimName) ? "匪类" : victimName;
-			AnimusForgeQuickInfo.Show($"击倒 {text2}：{settlement.Name} 的公共信任 +1.3。");
+			string text2 = string.IsNullOrWhiteSpace(victimName) ? SceneTauntUiLocalization.Text("AF_TAUNT_UI_Criminal", "criminal") : victimName;
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_CriminalKnockdownTrust", "Knocked down {VICTIM}: {SETTLEMENT} public trust +1.3.", ("VICTIM", text2), ("SETTLEMENT", settlement.Name)));
 			Logger.Log("SceneTaunt", $"Rewarded settlement trust for criminal knockdown. Settlement={settlement.Name}, Victim={text2}, GrantedTenths=13, WholeApplied={num2}, CarryTenths={num3}");
 		}
 		catch (Exception ex)
@@ -1777,11 +1777,11 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			string text = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "玩家";
+				text = TauntPromptTexts.Get("AF_TAUNT_PROMPT_PlayerFallback", "player");
 			}
 			if (IsChildSceneProtectedTarget(targetCharacter))
 			{
-				return "他是未成年。禁止输出[ACTION:SCENE_TAUNT_WARN]或[ACTION:SCENE_TAUNT_FIGHT]；只能害怕、求救或躲开。";
+				return TauntPromptTexts.Get("AF_TAUNT_PROMPT_ChildTarget", "He is underage. Do not output [ACTION:SCENE_TAUNT_WARN] or [ACTION:SCENE_TAUNT_FIGHT]; only express fear, ask for help, or flee.");
 			}
 			if (!IsSceneTauntApplicable(targetHero, targetCharacter, targetAgentIndex))
 			{
@@ -1789,7 +1789,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			}
 			if (SceneTauntMissionBehavior.IsSettlementCriminalConflictTargetExternal(targetHero, targetCharacter))
 			{
-				return "【AFEF与匪徒冲突规则】你是匪徒/帮派成员，这一类冲突不走普通场景口角的警告-升级流程，也不要输出[ACTION:SCENE_TAUNT_WARN]。" + text + "若只是嘴硬、试探、骂你几句，你可以继续放狠话、威胁、索要买路钱或逼他滚开；只有当你明确决定和他短暂对峙后翻脸开打时，才在句末输出[ACTION:SCENE_TAUNT_FIGHT]。输出后会先维持对话约10秒，然后自动退出对话并进入原版匪徒冲突流程。";
+				return TauntPromptTexts.Format("AF_TAUNT_PROMPT_CriminalConflict", "[AFEF Bandit Conflict Rules] You are a bandit/gang member. This kind of conflict does not use the normal scene-banter warning/escalation flow, and do not output [ACTION:SCENE_TAUNT_WARN]. If {PLAYER} only mouths off, tests you, or insults you, you may keep threatening them, demanding a passage toll, or ordering them to leave. Only when you explicitly decide to turn the brief standoff into a fight should you output [ACTION:SCENE_TAUNT_FIGHT] at the end of your message. After outputting it, the conversation remains open for about 10 seconds, then exits automatically and enters the vanilla bandit-conflict flow.", ("PLAYER", text));
 			}
 			string sceneTauntTargetKey = BuildSceneTauntTargetKey(targetHero, targetCharacter, targetAgentIndex);
 			bool flag = HasSceneTauntWarning(sceneTauntTargetKey);
@@ -1800,15 +1800,15 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				if (flag4)
 				{
-					return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:SCENE_TAUNT_FIGHT]；输出后会先维持对话约10秒，然后自动退出对话并爆发冲突，场上己方士兵和领主会来帮你砍他。";
+					return TauntPromptTexts.Format("AF_TAUNT_PROMPT_AlreadyWarnedLord", "You have already warned {PLAYER}. If you can no longer tolerate them, output [ACTION:SCENE_TAUNT_FIGHT] at the end of your message. After outputting it, the conversation remains open for about 10 seconds, then exits automatically and a conflict breaks out; your soldiers and lord on the field will help attack them.", ("PLAYER", text));
 				}
-				return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:SCENE_TAUNT_FIGHT]，短暂对峙后用拳头教训他。输出后会先维持对话约10秒，然后自动退出对话并爆发冲突。";
+				return TauntPromptTexts.Format("AF_TAUNT_PROMPT_AlreadyWarnedOther", "You have already warned {PLAYER}. If you can no longer tolerate them, output [ACTION:SCENE_TAUNT_FIGHT] at the end of your message, then teach them a lesson with your fists after a brief standoff. After outputting it, the conversation remains open for about 10 seconds, then exits automatically and a conflict breaks out.", ("PLAYER", text));
 			}
 			if (flag4)
 			{
-				return "若" + text + "辱骂，贬低或者招惹你你可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]。输出后会先维持对话约10秒，然后自动退出对话并爆发冲突，场上己方士兵和领主会来帮你砍他。";
+				return TauntPromptTexts.Format("AF_TAUNT_PROMPT_NotWarnedLord", "If {PLAYER} insults, belittles, or provokes you, you may output [ACTION:SCENE_TAUNT_WARN] at the end of your message to warn them. If you cannot tolerate it any longer, you may directly output [ACTION:SCENE_TAUNT_FIGHT]. After outputting it, the conversation remains open for about 10 seconds, then exits automatically and a conflict breaks out; your soldiers and lord on the field will help attack them.", ("PLAYER", text));
 			}
-			return "若" + text + "辱骂，贬低或者招惹你可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]，短暂对峙后用拳头教训他。输出后会先维持对话约10秒，然后自动退出对话并爆发冲突。";
+			return TauntPromptTexts.Format("AF_TAUNT_PROMPT_NotWarnedOther", "If {PLAYER} insults, belittles, or provokes you, you may output [ACTION:SCENE_TAUNT_WARN] at the end of your message to warn them. If you cannot tolerate it any longer, you may directly output [ACTION:SCENE_TAUNT_FIGHT], then teach them a lesson with your fists after a brief standoff. After outputting it, the conversation remains open for about 10 seconds, then exits automatically and a conflict breaks out.", ("PLAYER", text));
 		}
 		catch
 		{
@@ -2040,24 +2040,24 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		if (isHeroMeeting)
 		{
-			dictionary["tauntContext"] = "hero会面场景";
+			dictionary["tauntContext"] = TauntPromptTexts.Get("AF_TAUNT_PROMPT_MeetingContext", "hero meeting scene");
 			dictionary["warnTag"] = "MEETING_TAUNT_BATTLE";
 			dictionary["fightTag"] = "MEETING_TAUNT_BATTLE";
-			dictionary["fightEffectText"] = "这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。";
+			dictionary["fightEffectText"] = TauntPromptTexts.Get("AF_TAUNT_PROMPT_MeetingFightEffect", "This immediately escalates the current meeting to a battle, with consequences handled as if the player attacked your army.");
 		}
 		else if (isSceneLord)
 		{
-			dictionary["tauntContext"] = "非会面场景中的领主互动";
+			dictionary["tauntContext"] = TauntPromptTexts.Get("AF_TAUNT_PROMPT_LordContext", "lord interaction in a non-meeting scene");
 			dictionary["warnTag"] = "SCENE_TAUNT_WARN";
 			dictionary["fightTag"] = "SCENE_TAUNT_FIGHT";
-			dictionary["fightEffectText"] = "这会在约10秒对峙后自动退出对话，并把当前场景升级为持械冲突；该领主和场上士兵会拿武器围攻玩家；并且会按玩家公开敌对该领主所属势力来处理，必要时会先强制让玩家脱离原势力再宣战。";
+			dictionary["fightEffectText"] = TauntPromptTexts.Get("AF_TAUNT_PROMPT_LordFightEffect", "After an approximately 10-second standoff, the conversation exits automatically and the current scene escalates into an armed conflict. The lord and soldiers present will arm themselves and attack the player. It is also handled as the player openly declaring hostility toward the lord's faction; if needed, the player is first forcibly removed from their current faction before war is declared.");
 		}
 		else
 		{
-			dictionary["tauntContext"] = "普通NPC的场景互动";
+			dictionary["tauntContext"] = TauntPromptTexts.Get("AF_TAUNT_PROMPT_NpcContext", "ordinary NPC scene interaction");
 			dictionary["warnTag"] = "SCENE_TAUNT_WARN";
 			dictionary["fightTag"] = "SCENE_TAUNT_FIGHT";
-			dictionary["fightEffectText"] = "这会在约10秒对峙后自动退出对话，并把当前场景升级为冲突。";
+			dictionary["fightEffectText"] = TauntPromptTexts.Get("AF_TAUNT_PROMPT_NpcFightEffect", "After an approximately 10-second standoff, the conversation exits automatically and the current scene escalates into a conflict.");
 		}
 		return dictionary;
 	}
@@ -2099,7 +2099,6 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 public class SceneTauntMissionBehavior : MissionBehavior
 {
-	internal const string WantedSceneExitNotice = "你现在正在被通缉，无法离开当前场景！请立刻跑出地图边缘红区，摆脱追击。";
 
 	private static readonly FieldInfo PlayerSideOldTeamDataField = AccessTools.Field(typeof(MissionFightHandler), "_playerSideAgentsOldTeamData");
 
@@ -2628,9 +2627,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "玩家";
+				text = TauntSourceTexts.Get("PlayerFallback");
 			}
-			return "[AFEF玩家行为补充] " + text + "在定居点内乱砍人，你被吓的半死。";
+			return TauntSourceTexts.Format("AFEF_FrightenedCivilian", ("PLAYER", text));
 		}
 		catch (Exception ex)
 		{
@@ -3454,29 +3453,29 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			string settlementName = settlement?.Name?.ToString();
 			if (string.IsNullOrWhiteSpace(settlementName))
 			{
-				settlementName = "当前定居点";
+				settlementName = TauntSourceTexts.Get("CurrentSettlementFallback");
 			}
 			string locationName = CampaignMission.Current?.Location?.Name?.ToString();
 			if (string.IsNullOrWhiteSpace(locationName))
 			{
 				locationName = CampaignMission.Current?.Location?.StringId;
 			}
-			string locationSuffix = string.IsNullOrWhiteSpace(locationName) ? "" : "的" + locationName.Trim();
+			string locationSuffix = string.IsNullOrWhiteSpace(locationName) ? "" : TauntSourceTexts.Get("LocationPossessivePrefix") + locationName.Trim();
 			string victimName = victimAgent.Name?.ToString();
 			if (string.IsNullOrWhiteSpace(victimName))
 			{
-				victimName = victimHero?.Name?.ToString() ?? victimCharacter?.Name?.ToString() ?? "目标";
+				victimName = victimHero?.Name?.ToString() ?? victimCharacter?.Name?.ToString() ?? TauntSourceTexts.Get("TargetFallback");
 			}
-			string verb = normalizedKind == "killed" ? "杀死了" : (normalizedKind == "unconscious" ? "击倒了" : "攻击并打伤了");
-			string text = "你在" + settlementName + locationSuffix + verb + victimName + "。";
+			string verb = normalizedKind == "killed" ? TauntSourceTexts.Get("ActionVerbKilled") : (normalizedKind == "unconscious" ? TauntSourceTexts.Get("ActionVerbUnconscious") : TauntSourceTexts.Get("ActionVerbDamage"));
+			string text = TauntSourceTexts.Format("PlayerSceneRecentAction", ("SETTLEMENT", settlementName), ("LOCATION", locationSuffix), ("VERB", verb), ("VICTIM", victimName));
 			if (crimeAmount > 0f)
 			{
-				text += "你的犯罪度因此上升约 " + crimeAmount.ToString("0.#") + "。";
+				text += TauntSourceTexts.Format("PlayerSceneCrimeIncrease", ("AMOUNT", crimeAmount.ToString("0.#")));
 			}
 			bool criminalTarget = IsSettlementCriminalConflictTarget(victimHero, victimCharacter);
 			if (criminalTarget)
 			{
-				text += "对方被当地视为犯罪分子。";
+				text += TauntSourceTexts.Get("CriminalTargetNote");
 			}
 			bool authorityTarget = IsAuthorityPhysicalAttackTarget(victimHero, victimCharacter);
 			bool ownedSettlementPassiveAttack = (reason ?? "").IndexOf("owned_settlement", StringComparison.OrdinalIgnoreCase) >= 0;
@@ -3562,53 +3561,53 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return;
 			}
-			string settlementName = string.IsNullOrWhiteSpace(draft.SettlementName) ? "当前定居点" : draft.SettlementName.Trim();
-			string locationSuffix = string.IsNullOrWhiteSpace(draft.LocationText) ? "" : "的" + draft.LocationText.Trim();
+			string settlementName = string.IsNullOrWhiteSpace(draft.SettlementName) ? TauntSourceTexts.Get("CurrentSettlementFallback") : draft.SettlementName.Trim();
+			string locationSuffix = string.IsNullOrWhiteSpace(draft.LocationText) ? "" : TauntSourceTexts.Get("LocationPossessivePrefix") + draft.LocationText.Trim();
 			int victimCount = draft.VictimKeys.Count;
 			string victimSummary = BuildPlayerSceneConflictVictimSummary(draft);
-			string text = "你在" + settlementName + locationSuffix + "卷入和平场景冲突";
+			string text = TauntSourceTexts.Format("PlayerSceneMajorIntro", ("SETTLEMENT", settlementName), ("LOCATION", locationSuffix));
 			if (victimCount > 0)
 			{
-				text += "，伤及 " + victimCount + " 名 NPC";
+				text += TauntSourceTexts.Format("PlayerSceneMajorVictimCount", ("COUNT", victimCount.ToString()));
 			}
 			if (!string.IsNullOrWhiteSpace(victimSummary))
 			{
-				text += "（" + victimSummary + "）";
+				text += TauntSourceTexts.Format("PlayerSceneMajorVictimSummary", ("SUMMARY", victimSummary));
 			}
 			List<string> consequences = new List<string>();
 			if (draft.KilledCount > 0)
 			{
-				consequences.Add("杀死 " + draft.KilledCount + " 人");
+				consequences.Add(TauntSourceTexts.Format("PlayerSceneMajorKilledCount", ("COUNT", draft.KilledCount.ToString())));
 			}
 			if (draft.UnconsciousCount > 0)
 			{
-				consequences.Add("击倒 " + draft.UnconsciousCount + " 人");
+				consequences.Add(TauntSourceTexts.Format("PlayerSceneMajorKnockdownCount", ("COUNT", draft.UnconsciousCount.ToString())));
 			}
 			if (draft.DamageCount > 0)
 			{
-				consequences.Add("造成 " + draft.DamageCount + " 次伤害");
+				consequences.Add(TauntSourceTexts.Format("PlayerSceneMajorDamageCount", ("COUNT", draft.DamageCount.ToString())));
 			}
 			if (consequences.Count > 0)
 			{
-				text += "，" + string.Join("，", consequences);
+				text += TauntSourceTexts.Get("PlayerSceneMajorConsequencesSeparator") + string.Join(TauntSourceTexts.Get("PlayerSceneMajorConsequencesSeparator"), consequences);
 			}
 			if (draft.CrimeAmount > 0f)
 			{
-				text += "，犯罪度累计上升约 " + draft.CrimeAmount.ToString("0.#");
+				text += TauntSourceTexts.Format("PlayerSceneMajorCrimeIncrease", ("AMOUNT", draft.CrimeAmount.ToString("0.#")));
 			}
 			if (draft.HadOwnedSettlementPassiveAttack)
 			{
-				text += "，并在自有定居点内造成忠诚度损失";
+				text += TauntSourceTexts.Get("PlayerSceneMajorOwnedSettlementLoyaltyLoss");
 			}
 			if (draft.HadAuthorityTarget)
 			{
-				text += "，目标包含当地权威人物";
+				text += TauntSourceTexts.Get("PlayerSceneMajorAuthorityTarget");
 			}
 			if (draft.HadCriminalTarget)
 			{
-				text += "，目标中包含当地犯罪分子";
+				text += TauntSourceTexts.Get("PlayerSceneMajorCriminalTarget");
 			}
-			text += "。";
+			text += TauntSourceTexts.Get("SentencePeriod");
 			int day = draft.Day >= 0 ? draft.Day : GetCurrentGameDayIndexForSceneConflictAction();
 			int hash = text.GetHashCode() & int.MaxValue;
 			string stableKey = "scene_conflict_player_major:" + day + ":" + (draft.SettlementId ?? "") + ":" + (draft.LocationText ?? "") + ":" + hash;
@@ -3648,10 +3647,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return "";
 		}
 		int count = Math.Min(3, draft.VictimNames.Count);
-		string text = string.Join("、", draft.VictimNames.Take(count));
+		string text = string.Join(TauntSourceTexts.Get("PlayerSceneVictimNameSeparator"), draft.VictimNames.Take(count));
 		if (draft.VictimNames.Count > count)
 		{
-			text += "等";
+			text += TauntSourceTexts.Get("PlayerSceneVictimMoreSuffix");
 		}
 		return text;
 	}
@@ -3696,11 +3695,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			string text = CampaignTime.Now.ToString();
-			return string.IsNullOrWhiteSpace(text) ? ("第 " + day + " 日") : text.Trim();
+			return string.IsNullOrWhiteSpace(text) ? TauntSourceTexts.Format("DayFallback", ("DAY", day.ToString())) : text.Trim();
 		}
 		catch
 		{
-			return "第 " + day + " 日";
+			return TauntSourceTexts.Format("DayFallback", ("DAY", day.ToString()));
 		}
 	}
 
@@ -3735,8 +3734,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			float num = MBMath.ClampFloat(loyalty - penalty, 0f, 100f);
 			loyaltySettlement.Town.Loyalty = num;
 			float num2 = MathF.Max(0f, loyalty - num);
-			string text = targetAgent?.Name?.ToString() ?? "NPC";
-			AnimusForgeQuickInfo.Show($"{loyaltySettlement.Name} 忠诚度 -{num2:0.#}：你在自己的定居点内伤害了 {text}。", targetAgent?.Character as BasicCharacterObject);
+			string text = targetAgent?.Name?.ToString() ?? SceneTauntUiLocalization.Text("AF_TAUNT_UI_Npc", "NPC");
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_OwnedSettlementLoyaltyPenalty", "{SETTLEMENT} loyalty -{AMOUNT}: you harmed {TARGET} in your own settlement.", ("SETTLEMENT", loyaltySettlement.Name), ("AMOUNT", num2.ToString("0.#")), ("TARGET", text)), targetAgent?.Character as BasicCharacterObject);
 			Logger.Log("SceneTaunt", $"Owned settlement passive attack loyalty penalty. CurrentSettlement={currentSettlement?.StringId}, LoyaltySettlement={loyaltySettlement.StringId}, Target={text}, Reason={reason}, Loyalty={loyalty:0.##}->{num:0.##}, Requested={penalty}, Applied={num2:0.##}");
 		}
 		catch (Exception ex)
@@ -3791,9 +3790,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "玩家";
+				text = TauntSourceTexts.Get("PlayerFallback");
 			}
-			string factText = knockedDown ? ("[AFEF NPC行为补充] " + text + "在自己的定居点内把你击倒了。这里属于" + text + "的家族，" + text + "是此地领主/主人；你已经被领主打倒，正在原地抱头，不会反击。你必须把" + text + "当作你的领主大人来回应，只能恐惧、服从、求饶、认错，说出类似“领主大人饶命”“求您宽恕我”的话。不要强硬回嘴、威胁、挑衅、摆贵族架子、宣称对方不敢动你、指责对方会遭报应，也不要用民族或国家立场顶嘴。不要生成犯罪值相关内容。") : ("[AFEF NPC行为补充] " + text + "在自己的定居点内直接打伤了你。这里属于" + text + "的家族，" + text + "是此地领主/主人；你被领主惩戒后正在原地抱头，不会反击。你必须把" + text + "当作你的领主大人来回应，只能恐惧、服从、求饶、认错，说出类似“领主大人饶命”“求您宽恕我”的话。不要强硬回嘴、威胁、挑衅、摆贵族架子、宣称对方不敢动你、指责对方会遭报应，也不要用民族或国家立场顶嘴。不要生成犯罪值相关内容。");
+			string factText = knockedDown
+				? TauntSourceTexts.Format("AFEF_OwnedSettlementKnockdown", ("PLAYER", text))
+				: TauntSourceTexts.Format("AFEF_OwnedSettlementAttack", ("PLAYER", text));
 			ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, targetAgent.Index, persistHeroPrivateHistory: true, suppressStare: true);
 		}
 		catch (Exception ex)
@@ -4894,7 +4895,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			RemoveSceneGoldDrop(nearestDrop, removeEntity: true);
 			if (pickedGold > 0)
 			{
-				AnimusForgeQuickInfo.Show($"你拾取了 {pickedGold} 第纳尔。");
+				AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_GoldPickedUp", "You picked up {AMOUNT} denars.", ("AMOUNT", pickedGold)));
 				Logger.Log("SceneTaunt", $"Scene gold drop picked. AgentIndex={nearestDrop.AgentIndex}, Amount={pickedGold}, HeroDrop={nearestDrop.IsHeroDrop}");
 			}
 		}
@@ -5944,9 +5945,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "玩家";
+			text = TauntSourceTexts.Get("PlayerFallback");
 		}
-		return "[AFEF NPC行为补充] "+text + "一拳打到了你的身上，你也开始拿拳头殴打玩家。";
+		return TauntSourceTexts.Format("AFEF_DirectBrawl", ("PLAYER", text));
 	}
 
 	private static string BuildDirectArmedImmediateReactionFactText(Agent targetAgent)
@@ -5954,14 +5955,14 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "玩家";
+			text = TauntSourceTexts.Get("PlayerFallback");
 		}
 		string text2 = TryGetActiveWeaponDisplayName(targetAgent);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "武器";
+			text2 = TauntSourceTexts.Get("WeaponFallback");
 		}
-		return "[AFEF NPC行为补充] ，" + text + "一刀砍向了你，而你现在也拔出了" + text2 + "与" + text + "厮杀了起来。";
+		return TauntSourceTexts.Format("AFEF_DirectArmed", ("PLAYER", text), ("WEAPON", text2));
 	}
 
 	private static string TryGetActiveWeaponDisplayName(Agent agent)
@@ -6031,9 +6032,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "玩家";
+				text = TauntSourceTexts.Get("PlayerFallback");
 			}
-			string factText = "经过交流，你和" + text + "发生了冲突";
+			string factText = TauntSourceTexts.Format("AFEF_VerbalConflict", ("PLAYER", text));
 			ShoutBehavior.AppendExternalTargetedSceneNpcFactForExternal(factText, targetAgentIndex, persistHeroPrivateHistory: true);
 		}
 		catch (Exception ex)
@@ -6053,7 +6054,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "玩家";
+				text = TauntSourceTexts.Get("PlayerFallback");
 			}
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == _activeTargetAgentIndex);
 			CharacterObject characterObject = agent?.Character as CharacterObject;
@@ -6079,23 +6080,29 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			else if (flag3)
 			{
-				factText = "经过交流，你和" + text + "彻底撕破了脸，你身边的士兵立刻拔出武器开始围剿他";
+				factText = TauntSourceTexts.Format("AFEF_VerbalArmedLord", ("PLAYER", text));
 			}
 			else if (flag2)
 			{
-				factText = "经过交流，你和" + text + "发生了冲突，周围的士兵立刻拔出武器开始围剿他";
+				factText = TauntSourceTexts.Format("AFEF_VerbalArmedSoldier", ("PLAYER", text));
 			}
 			else if (flag5)
 			{
-				factText = flag4 ? "经过交流，你和" + text + "彻底闹翻了，他直接亮出了武器，你也开始和他械斗" : "经过交流，你和" + text + "彻底闹翻了，他突然亮出了武器，你被吓得开始逃跑";
+				factText = flag4
+					? TauntSourceTexts.Format("AFEF_VerbalArmedCriminalArmed", ("PLAYER", text))
+					: TauntSourceTexts.Format("AFEF_VerbalArmedCriminalFlee", ("PLAYER", text));
 			}
 			else if (flag4)
 			{
-				factText = flag ? "经过交流，你和" + text + "发生了冲突，你也拿出武器开始和他械斗，周围的守卫也开始帮助你" : "经过交流，你和" + text + "发生了冲突，你也拿出武器开始和他械斗";
+				factText = flag
+					? TauntSourceTexts.Format("AFEF_VerbalArmedCombatGuard", ("PLAYER", text))
+					: TauntSourceTexts.Format("AFEF_VerbalArmedCombat", ("PLAYER", text));
 			}
 			else
 			{
-				factText = flag ? "经过交流，你和" + text + "发生了冲突，他随即亮出了武器，周围的守卫立刻开始围剿他" : "经过交流，你和" + text + "发生了冲突，他随即亮出了武器，你被吓得开始逃跑";
+				factText = flag
+					? TauntSourceTexts.Format("AFEF_VerbalArmedViolenceGuard", ("PLAYER", text))
+					: TauntSourceTexts.Format("AFEF_VerbalArmedViolenceFlee", ("PLAYER", text));
 			}
 			ShoutBehavior.AppendExternalTargetedSceneNpcFactForExternal(factText, _activeTargetAgentIndex, persistHeroPrivateHistory: true);
 		}
@@ -6134,7 +6141,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "玩家";
+			text = TauntSourceTexts.Get("PlayerFallback");
 		}
 		Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == _activeTargetAgentIndex);
 		CharacterObject characterObject = agent?.Character as CharacterObject;
@@ -6154,23 +6161,29 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			if (flag2 || flag3)
 			{
-				return text + "在定居点内与你爆发了冲突，你和其他守卫开始向他发动攻击";
+				return TauntSourceTexts.Format("AFEF_GuardVerbalLord", ("PLAYER", text));
 			}
 			if (flag4)
 			{
-				return text + (flag ? "在定居点内和暴徒爆发了冲突，并亮出了武器，周围的人立刻开始躲避" : "在定居点内和暴徒爆发了冲突，周围的人立刻开始躲避");
+				return flag
+					? TauntSourceTexts.Format("AFEF_GuardVerbalCriminalArmed", ("PLAYER", text))
+					: TauntSourceTexts.Format("AFEF_GuardVerbalCriminal", ("PLAYER", text));
 			}
-			return text + (flag ? "在定居点内和你爆发了冲突，并亮出了武器，你和其他守卫开始向他发动攻击" : "在定居点内和你爆发了冲突，你和其他守卫开始向他发动攻击");
+			return flag
+				? TauntSourceTexts.Format("AFEF_GuardVerbalCitizenArmed", ("PLAYER", text))
+				: TauntSourceTexts.Format("AFEF_GuardVerbalCitizen", ("PLAYER", text));
 		}
 		if (flag4)
 		{
-			return text + (flag ? "在定居点内和暴徒爆发了械斗，周围的人立刻开始四散躲避" : "在定居点内和暴徒爆发了冲突，周围的人立刻开始四散躲避");
+			return flag
+				? TauntSourceTexts.Format("AFEF_GuardArmedCriminal", ("PLAYER", text))
+				: TauntSourceTexts.Format("AFEF_GuardCriminal", ("PLAYER", text));
 		}
 		if (!flag && (_openedAsUnarmedBrawl || flag2 || flag3))
 		{
-			return text + "在定居点内殴打了平民，你和其他守卫开始向他发动攻击";
+			return TauntSourceTexts.Format("AFEF_GuardAttackCivilian", ("PLAYER", text));
 		}
-		return text + "在定居点内拿武器乱砍人，你和其他守卫开始向他发动攻击";
+		return TauntSourceTexts.Format("AFEF_GuardArmed", ("PLAYER", text));
 	}
 
 	private void TryAppendGuardBehaviorFactsForArmedEscalation()
@@ -6203,11 +6216,6 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (main == null || !main.IsActive())
 			{
 				return;
-			}
-			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				text = "玩家";
 			}
 			string factText = BuildGuardReactionFactText();
 			TryRollArmedEscalationBehaviorFacts(main, factText);
@@ -6897,18 +6905,20 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		if (ShouldShowWantedSceneExitNoticeExternal(mission))
 		{
-			AnimusForgeQuickInfo.Show(WantedSceneExitNotice);
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Text("AF_TAUNT_UI_WantedExitBlocked", "You are wanted and cannot leave this scene. Run beyond the red map-edge zone to escape pursuit."));
 		}
 		else
 		{
-			AnimusForgeQuickInfo.Show("这场冲突还没结束，不能离开场景。");
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Text("AF_TAUNT_UI_ConflictExitBlocked", "You cannot leave while this conflict is still active."));
 		}
 	}
 
 	internal static InquiryData CreateBlockedSceneExitInquiry(Mission mission)
 	{
-		string text = ShouldShowWantedSceneExitNoticeExternal(mission) ? WantedSceneExitNotice : "这场冲突还没结束，不能离开场景。";
-		return new InquiryData("无法离开", text, isAffirmativeOptionShown: false, isNegativeOptionShown: true, "", "确定", null, null);
+		string text = ShouldShowWantedSceneExitNoticeExternal(mission)
+			? SceneTauntUiLocalization.Text("AF_TAUNT_UI_WantedExitBlocked", "You are wanted and cannot leave this scene. Run beyond the red map-edge zone to escape pursuit.")
+			: SceneTauntUiLocalization.Text("AF_TAUNT_UI_ConflictExitBlocked", "You cannot leave while this conflict is still active.");
+		return new InquiryData(SceneTauntUiLocalization.Text("AF_TAUNT_UI_CannotLeaveTitle", "Cannot leave"), text, isAffirmativeOptionShown: false, isNegativeOptionShown: true, "", SceneTauntUiLocalization.Text("AF_TAUNT_UI_Acknowledge", "OK"), null, null);
 	}
 
 	private Agent ResolveTargetAgent(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
@@ -7236,9 +7246,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "玩家";
+				text = TauntSourceTexts.Get("PlayerFallback");
 			}
-			string factText = ((reason ?? "").IndexOf("verbal", StringComparison.OrdinalIgnoreCase) >= 0) ? ("经过交流，" + text + "把你彻底激怒了，你立刻招呼同伙扑上去，要狠狠干他一顿") : ("经过交流，" + text + "竟敢直接对你动手，你一边破口大骂，一边立刻招呼同伙围上去狠狠干他一顿");
+			string factText = ((reason ?? "").IndexOf("verbal", StringComparison.OrdinalIgnoreCase) >= 0)
+				? TauntSourceTexts.Format("AFEF_CriminalReactionVerbal", ("PLAYER", text))
+				: TauntSourceTexts.Format("AFEF_CriminalReactionAttack", ("PLAYER", text));
 			ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, targetAgent.Index, persistHeroPrivateHistory: true, suppressStare: true);
 		}
 		catch (Exception ex)
@@ -7257,8 +7269,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			RewardSystemBehavior.Instance?.AdjustTrustForExternal(ownerHero, -1, 0, "scene_taunt_criminal_owner_knockdown");
 			RomanceSystemBehavior.Instance?.AdjustPrivateLove(ownerHero, -1, "scene_taunt_criminal_owner_knockdown");
-			string text = string.IsNullOrWhiteSpace(victimName) ? "匪类" : victimName;
-			AnimusForgeQuickInfo.Show($"击倒 {text}：{ownerHero.Name} 的个人信任 -1，私人关系 -1。", ownerHero.CharacterObject);
+			string text = string.IsNullOrWhiteSpace(victimName) ? SceneTauntUiLocalization.Text("AF_TAUNT_UI_Criminal", "criminal") : victimName;
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_CriminalOwnerPenalty", "Knocked down {VICTIM}: {OWNER} personal trust -1, private relation -1.", ("VICTIM", text), ("OWNER", ownerHero.Name)), ownerHero.CharacterObject);
 			Logger.Log("SceneTaunt", $"Applied criminal owner penalty after knockdown. Owner={ownerHero.Name}, Victim={text}, PersonalTrustDelta=-1, PrivateLoveDelta=-1");
 		}
 		catch (Exception ex)
@@ -7559,7 +7571,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (!_armedCarryoverNoAuthoritySceneNotified && !SceneTauntBehavior.HasShownCarryoverNoAuthorityAlertForCurrentLocationExternal())
 			{
 				AlarmNearbyBystanders();
-				AnimusForgeQuickInfo.Show("持械冲突的警报蔓延到了这个场景，周围的人立刻紧张起来。");
+				AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Text("AF_TAUNT_UI_ArmedConflictAlert", "The armed-conflict alarm has reached this scene. Everyone nearby is on edge."));
 				_armedCarryoverNoAuthoritySceneNotified = true;
 				_armedCarryoverHandledInThisMission = true;
 				SceneTauntBehavior.MarkCarryoverNoAuthorityAlertShownForCurrentLocationExternal();
@@ -7580,7 +7592,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			_baseConsequencesApplied = true;
 			_appliedCrimeRatingAmount = SceneTauntInitialArmedCrimeAmount;
 			_activeTargetKey = "armed_settlement_carryover";
-			_activeTargetName = Settlement.CurrentSettlement?.Name?.ToString() ?? "当前场景";
+			_activeTargetName = Settlement.CurrentSettlement?.Name?.ToString() ?? TauntSourceTexts.Get("CurrentSceneFallback");
 			_playerAgentIndices.Clear();
 			_opponentAgentIndices.Clear();
 			_guardAgentIndices.Clear();
@@ -7628,7 +7640,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			LogPerfElapsed("carryover.alarmNearbyBystanders", sectionStart, null, SceneTauntPerfHeavyStageThresholdMs);
 			_armedCarryoverSceneInitialized = true;
 			_armedCarryoverHandledInThisMission = true;
-			AnimusForgeQuickInfo.Show("你的持械冲突已经蔓延到这个场景，守卫和武装平民立刻开始围堵你。");
+			AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Text("AF_TAUNT_UI_ArmedConflictCarryover", "Your armed conflict has spread to this scene. Guards and armed civilians are closing in on you."));
 			Logger.Log("SceneTaunt", $"Activated armed settlement carryover in scene. Settlement={Settlement.CurrentSettlement?.Name}, Opponents={list2.Count}, Guards={guardAgents.Count}, Source={SceneTauntBehavior.GetArmedCarryoverSourceForCurrentSettlement()}");
 			LogPerfPoint("carryover.end", $"elapsedMs={GetElapsedPerfMs(totalStart):0.###}");
 		}
@@ -8643,12 +8655,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				if (targetCharacter != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var kind))
 				{
 					RewardSystemBehavior.Instance.AdjustSettlementMerchantTrustForExternal(currentSettlement, kind, -10, "scene_taunt_brawl");
-					AnimusForgeQuickInfo.Show($"{currentSettlement.Name} 的{GetMerchantTrustLabel(kind)}信任 -10。");
+					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_MerchantTrustPenalty", "{SETTLEMENT} {MERCHANT} trust -10.", ("SETTLEMENT", currentSettlement.Name), ("MERCHANT", GetMerchantTrustLabel(kind))));
 				}
 				else
 				{
 					RewardSystemBehavior.Instance.AdjustSettlementLocalPublicTrustForExternal(currentSettlement, -10, "scene_taunt_brawl");
-					AnimusForgeQuickInfo.Show($"{currentSettlement.Name} 的公共信任 -10。");
+					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_PublicTrustPenalty", "{SETTLEMENT} public trust -10.", ("SETTLEMENT", currentSettlement.Name)));
 				}
 			}
 		}
@@ -8830,7 +8842,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
-		string text = victimName ?? victimCharacter?.Name?.ToString() ?? "目标";
+		string text = victimName ?? victimCharacter?.Name?.ToString() ?? SceneTauntUiLocalization.Text("AF_TAUNT_UI_Target", "target");
 		if (IsSettlementCriminalConflictTarget(victimCharacter?.HeroObject, victimCharacter))
 		{
 			TryRewardSettlementTrustForCriminalKnockdown(currentSettlement, text);
@@ -8849,12 +8861,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				if (victimCharacter != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(victimCharacter, out var kind))
 				{
 					RewardSystemBehavior.Instance.AdjustSettlementMerchantTrustForExternal(currentSettlement, kind, -SceneTauntPerKnockdownTrustPenalty, "scene_taunt_armed_knockdown");
-					AnimusForgeQuickInfo.Show($"击倒 {text}：{currentSettlement.Name} 的{GetMerchantTrustLabel(kind)}信任 -{SceneTauntPerKnockdownTrustPenalty}。");
+					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_KnockdownMerchantTrustPenalty", "Knocked down {VICTIM}: {SETTLEMENT} {MERCHANT} trust -{PENALTY}.", ("VICTIM", text), ("SETTLEMENT", currentSettlement.Name), ("MERCHANT", GetMerchantTrustLabel(kind)), ("PENALTY", SceneTauntPerKnockdownTrustPenalty)));
 				}
 				else
 				{
 					RewardSystemBehavior.Instance.AdjustSettlementLocalPublicTrustForExternal(currentSettlement, -SceneTauntPerKnockdownTrustPenalty, "scene_taunt_armed_knockdown");
-					AnimusForgeQuickInfo.Show($"击倒 {text}：{currentSettlement.Name} 的公共信任 -{SceneTauntPerKnockdownTrustPenalty}。");
+					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_KnockdownPublicTrustPenalty", "Knocked down {VICTIM}: {SETTLEMENT} public trust -{PENALTY}.", ("VICTIM", text), ("SETTLEMENT", currentSettlement.Name), ("PENALTY", SceneTauntPerKnockdownTrustPenalty)));
 				}
 			}
 		}
@@ -8868,7 +8880,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				ApplySceneTauntCrimeWithDeferredCap(currentSettlement.MapFaction, SceneTauntPerKnockdownCrimeAmount, "scene_taunt_armed_knockdown");
 				_appliedCrimeRatingAmount += SceneTauntPerKnockdownCrimeAmount;
-				AnimusForgeQuickInfo.Show($"击倒 {text}：累计犯罪度 +{SceneTauntPerKnockdownCrimeAmount:0.#}。超出 59 的部分会在离开定居点后再结算。");
+				AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_KnockdownCrimePenalty", "Knocked down {VICTIM}: crime increases by {AMOUNT}. Any amount above 59 is settled after leaving the settlement.", ("VICTIM", text), ("AMOUNT", SceneTauntPerKnockdownCrimeAmount.ToString("0.#"))));
 			}
 		}
 		catch (Exception ex2)
@@ -9840,12 +9852,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		return kind switch
 		{
-			RewardSystemBehavior.SettlementMerchantKind.Weapon => "武器市场",
-			RewardSystemBehavior.SettlementMerchantKind.Armor => "盔甲市场",
-			RewardSystemBehavior.SettlementMerchantKind.Horse => "马匹市场",
-			RewardSystemBehavior.SettlementMerchantKind.Goods => "杂货市场",
-			RewardSystemBehavior.SettlementMerchantKind.Blacksmith => "铁匠铺",
-			_ => "市场"
+			RewardSystemBehavior.SettlementMerchantKind.Weapon => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantWeapon", "weapon market"),
+			RewardSystemBehavior.SettlementMerchantKind.Armor => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantArmor", "armor market"),
+			RewardSystemBehavior.SettlementMerchantKind.Horse => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantHorse", "horse market"),
+			RewardSystemBehavior.SettlementMerchantKind.Goods => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantGoods", "goods market"),
+			RewardSystemBehavior.SettlementMerchantKind.Blacksmith => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantBlacksmith", "blacksmith"),
+			_ => SceneTauntUiLocalization.Text("AF_TAUNT_UI_MerchantMarket", "market")
 		};
 	}
 
@@ -10194,7 +10206,7 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 				SceneTauntBehavior.ClearDeferredCrimeForExternal(faction, "scene_taunt_execution_threshold");
 				SceneTauntBehavior.QueuePendingForcedPlayerExecutionForExternal(hero, executionMenuId, "scene_taunt_execution_threshold");
 				missionBehavior.MarkPlayerDefeatOutcomeHandled();
-				AnimusForgeQuickInfo.Show($"你的累计犯罪度已达 {SceneTauntBehavior.ForcedExecutionCrimeThreshold:0}，你将被处决。", hero?.CharacterObject);
+				AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_ForcedExecutionDefeat", "Your accumulated crime has reached {THRESHOLD}. You will be executed.", ("THRESHOLD", SceneTauntBehavior.ForcedExecutionCrimeThreshold.ToString("0"))), hero?.CharacterObject);
 				try
 				{
 					Mission.Current.NextCheckTimeEndMission = 0f;
@@ -10348,12 +10360,12 @@ public static class SceneTauntWieldBlockPatch
 			_patched = num > 0;
 			if (_patched)
 			{
-				Logger.LogTrace("System", $"✅ SceneTauntWieldBlockPatch 已打补丁。Patched={num}");
+				Logger.LogTrace("System", TauntSourceTexts.Format("Log_WieldBlockSuccess", ("num", num.ToString())));
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ SceneTauntWieldBlockPatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", TauntSourceTexts.Get("Log_WieldBlockFailurePrefix") + ex.Message);
 		}
 	}
 
@@ -10402,11 +10414,11 @@ public static class SceneTauntMissionDifficultyPatch
 			Harmony harmony = new Harmony("AnimusForge.scene.taunt.damagemultiplier");
 			harmony.Patch(method, postfix: new HarmonyMethod(method2));
 			_patched = true;
-			Logger.LogTrace("System", "✅ SceneTauntMissionDifficultyPatch 已打补丁。");
+			Logger.LogTrace("System", TauntSourceTexts.Get("Log_MissionDifficultySuccess"));
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ SceneTauntMissionDifficultyPatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", TauntSourceTexts.Get("Log_MissionDifficultyFailurePrefix") + ex.Message);
 		}
 	}
 
@@ -10448,11 +10460,11 @@ public static class SceneTauntFightAutoEndDelayPatch
 			Harmony harmony = new Harmony("AnimusForge.scene.taunt.fightautodelay");
 			harmony.Patch(method, prefix: new HarmonyMethod(method2));
 			_patched = true;
-			Logger.LogTrace("System", "✅ SceneTauntFightAutoEndDelayPatch 已打补丁。");
+			Logger.LogTrace("System", TauntSourceTexts.Get("Log_FightAutoEndSuccess"));
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ SceneTauntFightAutoEndDelayPatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", TauntSourceTexts.Get("Log_FightAutoEndFailurePrefix") + ex.Message);
 		}
 	}
 
@@ -10526,12 +10538,12 @@ public static class SceneTauntNativeConversationBlockPatch
 			_patched = num > 0;
 			if (_patched)
 			{
-				Logger.LogTrace("System", $"✅ SceneTauntNativeConversationBlockPatch 已打补丁。Patched={num}");
+				Logger.LogTrace("System", TauntSourceTexts.Format("Log_NativeConversationBlockSuccess", ("num", num.ToString())));
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ SceneTauntNativeConversationBlockPatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", TauntSourceTexts.Get("Log_NativeConversationBlockFailurePrefix") + ex.Message);
 		}
 	}
 
@@ -10619,12 +10631,12 @@ public static class SceneTauntLeaveMissionBlockPatch
 			_patched = num > 0;
 			if (_patched)
 			{
-				Logger.LogTrace("System", $"✅ SceneTauntLeaveMissionBlockPatch 已打补丁。Patched={num}");
+				Logger.LogTrace("System", TauntSourceTexts.Format("Log_LeaveMissionBlockSuccess", ("num", num.ToString())));
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ SceneTauntLeaveMissionBlockPatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", TauntSourceTexts.Get("Log_LeaveMissionBlockFailurePrefix") + ex.Message);
 		}
 	}
 

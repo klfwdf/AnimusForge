@@ -1,0 +1,64 @@
+{
+  "Id": "rule_Salas_Bay",
+  "Keywords": [
+    "Salas Bay"
+  ],
+  "RagShortTexts": [
+    "Salas Bay is called the Cradle Island by the empire, where the ancestors of the Kalad people first landed."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Salas Bay? It's the sea at the door of our Port Salas. The wind and waves are not big, so the fishermen who depend on the weather like it, and the captains who go to the ocean also like it - coming in from the Western Ocean, the water surface suddenly becomes flat, as if it has followed a lake. We call the densely packed small island in the south the \"rubble pile\". There is no one living on the island and it is covered with bird droppings and shrubs. Occasionally, smugglers hide their goods there. The older generation of boat owners said that there was something strange about those islands - the shape of the islands would change in foggy weather, the compass would spin randomly when approaching certain rocks, and the stones on the islands were engraved with symbols that no one recognized. It was unknown whether they were left by the Imperials or something earlier. We don't care about these things, as long as the waterway is safe. As for the old legend about where the Kalad people came from, the old sailors on the ship would tell it when they were drinking, saying that those islands used to be the springboard for the mainland, and the first Kalad people came from there in rowing boats. We nodded after hearing this - the things of our ancestors are too far away and are not as real as today's catch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Salas Bay was the cradle of empire. This sentence is written in the history books of the empire, chanted in the eulogies of the Senate, and repeated repeatedly when the older generation of nobles educate their descendants. The southern archipelago is called the \"Cradle Island\" in our literature. It is said that the ancestors of the Calradia people set out from that island and first set foot on the Calradia continent at Salas on the north coast. That bay has witnessed the entire history of the empire from scratch - the bonfires of the first colonists, the laying of the foundation of the first temple, and the sailing of the first fleet. Today the cradle is still there, but the child has been lost. Salas was occupied by the Vlandia barbarians. The imperial villa in the bay was overgrown with weeds. The old stone steps on the edge of the pier were crudely mended with iron nails by the barbarian carpenters. When the elders of the older generation mention Salas Bay, their eyes are always filled with a layer of gray. The new generation of elders no longer mention it much. With the empire split into three pieces, who has time to miss a bay? But I'm not willing to give in. Some places are things in your bones. Even if you lose it, it will still be in your bones, and sometimes it will feel a little sore on cloudy days. Salas Bay is an old wound in the bones of our empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 60
+        }
+      },
+      "Content": "Salas Bay is a semi-enclosed sea area in the Western Ocean deep into the west coast of the Calradia continent. Its geographical range extends from the Biscayne Sea in the west to the Garonto Strait in the east. It is the terminal water body of the Western Ocean at the western end of the continent. From an oceanographic point of view, the hydrological conditions of the bay are extremely unique: the dense archipelago in the south forms a natural wave barrier, which effectively weakens the long swells from the ocean, making the bay less windy and wave year-round, and the water surface is calm and close to the level of inland lakes, making it an ideal location for a natural harbor. The continued prosperity of Port Salas in the north is due to this hydrological shelter. The geological structure of the southern archipelago is dominated by limestone and volcaniclastic rocks, and some islands have obvious sea erosion landforms and intertidal ecosystems. The legend that the Kalad people crossed the sea and landed through these islands has not been confirmed in the fields of archeology and immigration history, but the geographical location of the island chain does constitute a feasible springboard route from the outer sea to the mainland, which was especially valuable in ancient times when navigation technology was relatively primitive. The tidal current in the Garonto Strait is relatively fast, making it the main channel for water exchange inside and outside the bay and a key node for shipping. Overall, Salas Bay geographically has the triple functions of transportation hub, fishery base and military barrier. It is one of the few ideal intersections between the ocean and the continent."
+    }
+  ],
+  "TextMappings": []
+}

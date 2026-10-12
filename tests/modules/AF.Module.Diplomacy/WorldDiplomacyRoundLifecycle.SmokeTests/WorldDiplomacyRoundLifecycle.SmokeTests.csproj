@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptRuleBlockText.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SubjectRelease.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/DiplomacySubjectReleasePayload.cs" />
     <Compile Include="../../../../src/AF.Contracts/Internal/InteractionContracts.cs" Link="InteractionContracts.cs" />
@@ -140,6 +142,7 @@
   </ItemGroup>
 <ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyEventRules.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyGeographyRules.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNativeDecisionApplication.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyBattleApplication.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeographyApplication.cs" /></ItemGroup><ItemGroup><Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyDocumentReadCommandContracts.cs" /></ItemGroup><ItemGroup>
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Dialogue.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.OralGeneration.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueControl.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueIndex.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueMemory.cs" />
@@ -162,4 +165,20 @@
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyLiveRoundRules.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyDialogueRecords.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyPlayerResponse.cs" />
-</ItemGroup><ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRequestHistoryApplication.cs" /></ItemGroup></Project>
+</ItemGroup><ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRequestHistoryApplication.cs" /></ItemGroup><ItemGroup><EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptCompatibility.json" LogicalName="AnimusForge.Diplomacy.PromptCompatibility.json" /></ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyPromptTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyMiscPromptTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyCompatibilityTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyUiLocalization.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyDialogueStatusUi.cs" />
+    <Reference Include="TaleWorlds.Localization"><HintPath>F:/SteamLibrary/steamapps/common/Mount &amp; Blade II Bannerlord/bin/Win64_Shipping_Client/TaleWorlds.Localization.dll</HintPath></Reference>
+    <Reference Include="TaleWorlds.Library"><HintPath>F:/SteamLibrary/steamapps/common/Mount &amp; Blade II Bannerlord/bin/Win64_Shipping_Client/TaleWorlds.Library.dll</HintPath></Reference>
+    <Reference Include="TaleWorlds.DotNet"><HintPath>F:/SteamLibrary/steamapps/common/Mount &amp; Blade II Bannerlord/bin/Win64_Shipping_Client/TaleWorlds.DotNet.dll</HintPath></Reference>
+    <Content Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json" Link="ModuleData/DiplomacyPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.json" Link="ModuleData/DiplomacyMiscPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json" Link="ModuleData/DiplomacyMiscCompatibility.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.zh-CN.json" Link="ModuleData/PromptComposerTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json" LogicalName="AnimusForge.Prompt.Compatibility.json" />
+  </ItemGroup>
+</Project>

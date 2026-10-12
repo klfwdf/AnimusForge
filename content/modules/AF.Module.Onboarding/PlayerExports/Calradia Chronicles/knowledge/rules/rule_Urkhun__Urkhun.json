@@ -1,0 +1,46 @@
+{
+  "Id": "rule_Urkhun",
+  "Keywords": [
+    "Urkhun",
+    "Urkhun Khan"
+  ],
+  "RagShortTexts": [
+    "Urkhun united the Khuzait and annexed the eastern provinces of the Empire."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Urkhun? That terrifying steppe khan? Even though he has been dead for thirty years, his name still echoes far and wide—he united the Khuzait, wiped out a host of eastern realms, and annexed the Empire's eastern provinces. He was truly terrifying."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Urkhun Khan had a strong sense of honor and was an idealist who wanted to spread his dominion across all of Calradia—but he was wrong. We supported him only for coin, people, and land. Most of the time he satisfied our demands, yet whenever a tribe suffered losses and its noyans came to negotiate with him, he brushed them off. The khan we want is one who leads us to plunder and profit, not an idealistic philosopher-king! Thankfully he died. Monchug does a little better than he did, though not by much. If Monchug follows in Urkhun's footsteps, we will depose him and raise a new khan!"
+    }
+  ],
+  "TextMappings": []
+}

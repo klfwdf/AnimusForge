@@ -133,7 +133,7 @@ public partial class RewardSystemBehavior
 		string clean = CleanRpItemIntroductionContextText(introduction, AnimusForgeTextInputSanitizer.MaxCourierLetterChars);
 		if (string.IsNullOrWhiteSpace(clean))
 		{
-			error = "物品介绍为空，未修改已有介绍。";
+			error = EconomySourceTexts.Get("S628");
 			return false;
 		}
 		if (!TrySetGeneratedRpItemIntroductionInternal(itemStringId, clean, "player", out error))
@@ -510,7 +510,7 @@ public partial class RewardSystemBehavior
 			string key = (itemStringId ?? "").Trim();
 			if (instance == null || !IsGeneratedRewardItemStringId(key))
 			{
-				error = "未找到生成的 RP 物品。";
+				error = EconomySourceTexts.Get("S629");
 				return false;
 			}
 			int maxChars = string.Equals(source, "npc", StringComparison.OrdinalIgnoreCase)
@@ -519,20 +519,20 @@ public partial class RewardSystemBehavior
 			string clean = CleanRpItemIntroductionContextText(introduction, maxChars);
 			if (string.IsNullOrWhiteSpace(clean))
 			{
-				error = "物品介绍为空。";
+				error = EconomySourceTexts.Get("S630");
 				return false;
 			}
 			instance.EnsureGeneratedRewardItemData();
 			GeneratedRewardItemRecord record = instance.GetGeneratedRewardItemRecord(key);
 			if (record == null)
 			{
-				error = "未找到生成的 RP 物品记录。";
+				error = EconomySourceTexts.Get("S631");
 				return false;
 			}
 			record = NormalizeGeneratedRewardItemRecord(key, record);
 			if (record == null)
 			{
-				error = "生成的 RP 物品记录无效。";
+				error = EconomySourceTexts.Get("S632");
 				return false;
 			}
 			record.RpItemIntroductionText = clean;

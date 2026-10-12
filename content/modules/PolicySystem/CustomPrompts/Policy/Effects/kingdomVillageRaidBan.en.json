@@ -1,0 +1,6 @@
+{
+  "Version": 1,
+  "ModuleId": "kingdomVillageRaidBan",
+  "UnderstandingPrompt": "A kingdom village raid ban is a national rule from the publisher prohibiting its own kingdom's lords and lord parties from proactively burning, attacking or raiding any village. The target is automatically fixed to the publisher's kingdom; foreign kingdoms cannot be selected. It is not a global shield protecting the publisher's villages and does not prevent foreign lords from burning villages.",
+  "EvaluationPrompt": "Judge only whether the policy explicitly establishes a continuing rule against village raids by lords of the publisher's own kingdom. When matched, activate the complete prohibition without intensity or probability assessment. Multiple active policies still produce only one prohibition. General care for the population, improved security, protected agriculture, punishment of enemies or defense of certain villages does not qualify without prohibiting one's own lords from burning villages."
+}

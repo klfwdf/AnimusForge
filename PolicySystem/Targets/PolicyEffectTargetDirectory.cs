@@ -167,23 +167,23 @@ internal static class PolicyEffectDirectPlanContract
 	internal static string BuildOutputContract(bool requireExecutable, bool requireSingleTargetPerEffect)
 	{
 		string dispositionRule = requireExecutable
-			? "disposition 必须是 executable，effects 必须至少包含一项。"
-			: "disposition 只能是 executable、narrativeOnly 或 unsupported；后两者要求 effects=[]。";
+			? PolicyGenerationPromptTexts.Get("ContractExecutable", "disposition must be executable, and effects must contain at least one entry.")
+			: PolicyGenerationPromptTexts.Get("ContractDisposition", "disposition may only be executable, narrativeOnly, or unsupported; the latter two require effects=[].");
 		string targetCountRule = requireSingleTargetPerEffect
-			? "每条 effect 的 targetHandles 必须恰好包含一个句柄；同一模块作用于不同合法句柄时分别输出 effect。"
-			: "targetHandles 必须包含至少一个互不重复的合法句柄。";
-		return "根对象必须且只能包含 effectPlanVersion、disposition、reason、effects。effectPlanVersion 必须为 1。"
+			? PolicyGenerationPromptTexts.Get("ContractSingleTarget", "Each effect's targetHandles must contain exactly one handle; output separate effects when the same module acts on different legal handles.")
+			: PolicyGenerationPromptTexts.Get("ContractTargetCount", "targetHandles must contain at least one distinct legal handle.");
+		return PolicyGenerationPromptTexts.Get("ContractRoot", "The root object must contain exactly effectPlanVersion, disposition, reason, and effects. effectPlanVersion must be 1.")
 			+ dispositionRule
-			+ "executable 的每个 effect 必须且只能包含 mechanismId、mechanismKind、role、moduleId、targetHandles、payload、reason。"
-			+ "mechanismKind 只能是 independent 或 linked；independent 必须使用 role=subject。"
-			+ "linked 必须在同一 mechanismId 下包含至少两条真实可执行资源流转腿，并同时包含 source 与 destination/beneficiary；不得输出 cost。"
-			+ "moduleId 只能取执行目录 capabilities 映射的属性名；targetHandles 只能精确复制该 moduleId 的 allowedTargetHandles，并且必须同时存在于 targets 映射中；不得拼接 kind、description 或任何附加字符。"
-			+ "每个 capability 的 defaultTargetHandle 是该模块在当前政策类型下的默认结算范围；若非空且原文没有明确要求更小范围、指定人物/家族/领地/外国对象，必须选择该默认句柄。"
-			+ "allowedSubsetTargetHandles 只用于原文明确要求细分或直接结算到点名对象时替换默认；defaultTargetHandle 为空的模块只有在原文明确指定 subset 对象时才可输出，否则应省略该模块。"
-			+ "不得把参考、比较、报告、经验来源、背景材料中的外国候选当作执行目标；不得把地方政策默认扩大到发布地之外；不得把附庸政策的 K1 自动当作受影响方；heroGold 无明确人物接收者时不得输出。"
-			+ "payload 必须符合该 ID 的详细契约。"
+			+ PolicyGenerationPromptTexts.Get("ContractEffectFields", "Each executable effect must contain exactly mechanismId, mechanismKind, role, moduleId, targetHandles, payload, and reason.")
+			+ PolicyGenerationPromptTexts.Get("ContractMechanismKind", "mechanismKind may only be independent or linked; independent must use role=subject.")
+			+ PolicyGenerationPromptTexts.Get("ContractLinked", "linked must contain at least two genuine executable resource-transfer legs under the same mechanismId, including both source and destination/beneficiary; do not output cost.")
+			+ PolicyGenerationPromptTexts.Get("ContractModuleAuthorization", "moduleId may only be a property name in the execution directory's capabilities map. targetHandles must exactly copy entries from that moduleId's allowedTargetHandles and must also exist in the targets map; do not concatenate kind, description, or any additional characters.")
+			+ PolicyGenerationPromptTexts.Get("ContractDefaultTarget", "Each capability's defaultTargetHandle defines the module's default settlement scope for the current policy type. If nonempty, select it unless the original text explicitly requires a smaller scope or names specific characters, clans, fiefs, or foreign objects.")
+			+ PolicyGenerationPromptTexts.Get("ContractSubsetTarget", "allowedSubsetTargetHandles replace the default only when the original text explicitly requires subdivision or direct settlement on a named object. A module with an empty defaultTargetHandle may be output only when the original text explicitly names a subset object; otherwise omit it.")
+			+ PolicyGenerationPromptTexts.Get("ContractForeignTarget", "Do not treat foreign candidates appearing only in references, comparisons, reports, sources of experience, or background material as execution targets. Do not expand local policies beyond their publication location by default. Do not automatically treat K1 as an affected party in vassal policies. Do not output heroGold without an explicit character recipient.")
+			+ PolicyGenerationPromptTexts.Get("ContractPayload", "payload must satisfy the detailed contract for that ID.")
 			+ targetCountRule
-			+ "每个句柄代表完整 canonical target set；载荷数值按每个 canonical target 和能力自身执行频率独立解释，不按目标数或期限乘除。"
-			+ "输出形状：{\"effectPlanVersion\":1,\"disposition\":\"executable\",\"reason\":\"...\",\"effects\":[{\"mechanismId\":\"M0\",\"mechanismKind\":\"independent\",\"role\":\"subject\",\"moduleId\":\"...\",\"targetHandles\":[\"...\"],\"payload\":{},\"reason\":\"...\"}]}";
+			+ PolicyGenerationPromptTexts.Get("ContractPerTarget", "Each handle represents a complete canonical target set. Interpret payload values independently per canonical target and according to the capability's execution frequency; do not multiply or divide by target count or duration.")
+			+ PolicyGenerationPromptTexts.Get("ContractShape", "Output shape: {\"effectPlanVersion\":1,\"disposition\":\"executable\",\"reason\":\"...\",\"effects\":[{\"mechanismId\":\"M0\",\"mechanismKind\":\"independent\",\"role\":\"subject\",\"moduleId\":\"...\",\"targetHandles\":[\"...\"],\"payload\":{},\"reason\":\"...\"}]}");
 	}
 }

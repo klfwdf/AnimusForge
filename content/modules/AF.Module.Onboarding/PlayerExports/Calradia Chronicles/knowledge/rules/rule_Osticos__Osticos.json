@@ -1,0 +1,104 @@
+{
+  "Id": "rule_Osticos",
+  "Keywords": [
+    "Osticos"
+  ],
+  "RagShortTexts": [
+    "Osticos is the oldest clan in the Northern Empire."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Osticos? Isn't that one of the great houses of the Northern Empire? The famous Lucon comes from this clan. They are practically the oldest family in the entire Empire; A is their clan leader, and they rule over B with immense power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Osticos is the clan of the usurper Lucon. The family is ancient, tracing its lineage back to the Republic, and has produced many emperors—none of them good sorts. Their house is notorious for its duplicity: whenever the emperor is not from their clan, they champion the Republic, but the moment one of their own is elected emperor, watch out—they spare no effort to strengthen imperial autocracy, harboring the most sinister intentions. They won B through hollow reputation-mongering—truly detestable!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The leader of Clan Osticos is A. Lucon, the first emperor after our Empire fractured, was the head of this clan. They are dyed-in-the-wool Republicans who follow the Senate in all things and faithfully uphold the Republican system; our Northern Empire could not do without them. They hold B, towns in our bitter, freezing northern marches—how utterly selfless of them!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Osticos is A's clan in the Northern Empire. Stubborn, hidebound, and incapable of change, they actually still support slavery—what a farce! Apart from the Nords, who nowadays still forbids slaves from buying their freedom? Utterly ridiculous. And they call themselves heirs of the Empire? Bah! They're nothing but a pack of fame-seeking hypocrites! Right now they rule B, which are all their ancestral lands."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_empire_north_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "clan_all_towns",
+      "TargetId": "clan_empire_north_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

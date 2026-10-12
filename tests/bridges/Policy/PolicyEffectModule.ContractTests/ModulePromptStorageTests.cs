@@ -23,21 +23,22 @@ internal static partial class Program
         Directory.CreateDirectory(root);
         string moduleRoot = Path.Combine(root, "AnimusForge");
         Directory.CreateDirectory(Path.Combine(moduleRoot, "ModuleData"));
-        File.WriteAllText(Path.Combine(moduleRoot, "SubModule.xml"), "<Module />");
+        File.WriteAllText(Path.Combine(moduleRoot, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
         string prompts = Path.Combine(moduleRoot, "CustomPrompts");
         string policy = Path.Combine(prompts, "Policy");
         Directory.CreateDirectory(policy);
         Type settings = SutType("AnimusForge.DuelSettings");
         Type paths = SutType("AnimusForge.AnimusForgeModulePaths");
         // Also isolate production Logger initialization before invoking any disk helpers.
-        InvokeStatic(paths, "SetModuleRootOverrideForContractTests", new object[] { moduleRoot }, 1);
+        PrepareFixtureModuleAssets(moduleRoot);
+        SetFixtureModuleRoot(moduleRoot);
         string ordinary = Path.Combine(prompts, "PlayerCustomPromptRule.json");
         InvokeStatic(settings, "PersistCustomPromptTextFileUnlocked", new object[] { ordinary, "custom" }, 2);
         InvokeStatic(settings, "PersistCustomPromptTextFileUnlocked", new object[] { ordinary, "" }, 2);
         Check(File.Exists(ordinary) && (string)JObject.Parse(File.ReadAllText(ordinary))["Text"] == "",
             "blank ordinary text must remain a module JSON, not delete an override");
 
-        InvokeStatic(paths, "SetModuleRootOverrideForContractTests", new object[] { moduleRoot }, 1);
+        SetFixtureModuleRoot(moduleRoot);
         string oldDataRoot = Environment.GetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT");
         try
         {
@@ -182,7 +183,7 @@ internal static partial class Program
 
             string readonlyRoot = Path.Combine(root, "readonly", "AnimusForge");
             Directory.CreateDirectory(Path.Combine(readonlyRoot, "ModuleData"));
-            File.WriteAllText(Path.Combine(readonlyRoot, "SubModule.xml"), "<Module />");
+            File.WriteAllText(Path.Combine(readonlyRoot, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
             string readonlyPrompts = Path.Combine(readonlyRoot, "CustomPrompts");
             Directory.CreateDirectory(readonlyPrompts);
             string readonlyOriginal = Path.Combine(readonlyPrompts, "PlayerCustomPromptRule.json");
@@ -191,7 +192,7 @@ internal static partial class Program
             RunPromptFixtureCommand("icacls.exe", "\"" + readonlyPrompts + "\" /deny *" + sid + ":(OI)(CI)(WD,AD)");
             try
             {
-                InvokeStatic(paths, "SetModuleRootOverrideForContractTests", new object[] { readonlyRoot }, 1);
+                SetFixtureModuleRoot(readonlyRoot);
                 settings.GetField("_customPromptTextStoreCached", All).SetValue(null, null);
                 settings.GetField("_customPromptTextStoreNextRefreshTimestamp", All).SetValue(null, 0L);
                 Check((string)InvokeStatic(settings, "LoadPlayerCustomPromptRuleFromDiskOrDefault", Array.Empty<object>(), 0) == "READONLY_DIRECTORY",
@@ -202,7 +203,7 @@ internal static partial class Program
                     "read-only directory policy initialization explicitly fails");
             }
             finally { RunPromptFixtureCommand("icacls.exe", "\"" + readonlyPrompts + "\" /remove:d *" + sid); }
-            InvokeStatic(paths, "SetModuleRootOverrideForContractTests", new object[] { Path.Combine(root, "missing-module") }, 1);
+            SetFixtureModuleRoot(Path.Combine(root, "missing-module"));
             Check(!(bool)InvokeStatic(settings, "TryPersistPlayerCustomPromptRuleFile", new object[] { "NO" }, 1)
                 && !Directory.Exists(Path.Combine(root, "missing-module")), "unresolved module refuses save without CWD/AppData fallback");
         }
@@ -210,9 +211,37 @@ internal static partial class Program
         {
             PolicyEffectPromptService.SetStorageDirectoryOverrideForContractTests(null);
             PolicyEffectPromptService.ReloadForContractTests();
-            InvokeStatic(paths, "SetModuleRootOverrideForContractTests", new object[] { null }, 1);
+            SetFixtureModuleRoot(null);
             Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", oldDataRoot);
         }
+    }
+
+    private static void PrepareFixtureModuleAssets(string module)
+    {
+        string repository=FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+        var map=JObject.Parse(File.ReadAllText(Path.Combine(repository,"content","content-map.json")));
+        foreach(JObject row in map["entries"])
+        {
+            string relative=(string)row["target"];
+            if(relative==null || !relative.StartsWith("ModuleData/",StringComparison.Ordinal)
+                || !relative.EndsWith(".json",StringComparison.OrdinalIgnoreCase)
+                || relative.StartsWith("ModuleData/Defaults/",StringComparison.Ordinal)) continue;
+            string source=Path.Combine(repository,(string)row["source"]);
+            string english=Path.Combine(Path.GetDirectoryName(source),Path.GetFileNameWithoutExtension(source)+".en.json");
+            if(File.Exists(english))source=english;
+            string destination=Path.Combine(module,relative.Replace('/',Path.DirectorySeparatorChar));
+            Directory.CreateDirectory(Path.GetDirectoryName(destination));
+            if(!File.Exists(destination))File.Copy(source,destination,false);
+        }
+    }
+
+    // Restart only the cold cached path owner in the fixture; execute the production resolver unchanged.
+    private static void SetFixtureModuleRoot(string root)
+    {
+        Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", root);
+        Type data=SutType("AnimusForge.AnimusForgeDataPaths");
+        var lazy=new Lazy<string>(() => (string)data.GetMethod("ResolveRoot", All).Invoke(null,new object[]{root}));
+        data.GetField("CurrentRoot", All).SetValue(null,lazy);
     }
 
     private static void RunPromptFixtureCommand(string executable, string arguments)

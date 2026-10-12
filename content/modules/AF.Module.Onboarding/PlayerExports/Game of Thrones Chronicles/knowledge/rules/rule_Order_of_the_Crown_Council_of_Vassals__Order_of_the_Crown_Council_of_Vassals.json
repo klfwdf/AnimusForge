@@ -1,0 +1,148 @@
+{
+  "Id": "rule_Order_of_the_Crown_Council_of_Vassals",
+  "Keywords": [
+    "Council of Vassals"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vassal councils brought together scattered lords to discuss taxes, wars, inheritances, and common threats. It may not have a fixed legal form, but it can form a strong consensus. If the king can hear different voices, his rule will be more stable. If he only listens to those who agree, the crisis will come more suddenly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Council of Vassals"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Council of Vassals"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Council of Vassals"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Council of Vassals Vassal councils brought together scattered lords to discuss taxes, wars, inheritances, and common threats. It may not have a fixed legal form, but it can form a strong consensus. If the king can hear different voices, his rule will be more stable. If he only listens to those who agree, the crisis will come more suddenly. They start by asking who is obligated, who is protected, and who will seek justice after a breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Council of Vassals Vassal councils brought together scattered lords to discuss taxes, wars, inheritances, and common threats. It may not have a fixed legal form, but it can form a strong consensus. If the king can hear different voices, his rule will be more stable. If he only listens to those who agree, the crisis will come more suddenly. For them, what really matters is whether the orders can arrive, whether the roads are safe, and whether the food and pay can be received on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Council of Vassals Vassal councils brought together scattered lords to discuss taxes, wars, inheritances, and common threats. It may not have a fixed legal form, but it can form a strong consensus. If the king can hear different voices, his rule will be more stable. If he only listens to those who agree, the crisis will come more suddenly Beautiful oaths that are not backed up by land, military strength, or sacred tradition can quickly be reinterpreted by the next crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Council of Vassals Vassal councils brought together scattered lords to discuss taxes, wars, inheritances, and common threats. It may not have a fixed legal form, but it can form a strong consensus. If the king can hear different voices, his rule will be more stable. If he only listens to those who agree, the crisis will come more suddenly. What is remembered is not who spoke the loudest in the hall, but which rule saved the family from starvation, conscription, or endless fighting."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Council of Vassals: Vassal councils brought together scattered lords to discuss taxes, wars, inheritances, and common threats. It may not have a fixed legal form, but it can form a strong consensus. If the king can hear different voices, his rule will be more stable. If he only listens to those who agree, the crisis will come more suddenly."
+  ]
+}

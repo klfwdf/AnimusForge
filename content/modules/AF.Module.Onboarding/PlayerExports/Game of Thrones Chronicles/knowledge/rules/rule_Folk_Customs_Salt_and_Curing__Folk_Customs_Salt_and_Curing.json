@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Salt_and_Curing",
+  "Keywords": [
+    "Salt and Curing"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Salt preserves the meat, fish, and cheese of summer for the long cold, and clearly distinguishes the tables of the poor from those of the rich. Northerners use salted meat as winter storage, port people see livelihood in pickled fish, and nobles use salt, spices and exquisite dishes to declare their wealth; when there is a shortage of salt,Even an ordinary soup pot can turn into an anxiety attack."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Curing"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Curing"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Curing"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Curing Salt preserves the meat, fish, and cheese of summer for the long cold, and clearly distinguishes the tables of the poor from those of the rich. Northerners used salt meat as winter storage, port people saw livelihood in pickled fish, and nobles used salt, spices and exquisite dishes to declare their wealth; when there was a shortage of salt. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Curing Salt preserves the meat, fish, and cheese of summer for the long cold, and clearly distinguishes the tables of the poor from those of the rich. Northerners used salt meat as winter storage, port people saw livelihood in pickled fish, and nobles used salt, spices and exquisite dishes to declare their wealth; when there was a shortage of salt. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Curing Salt preserves the meat, fish, and cheese of summer for the long cold, and clearly distinguishes the tables of the poor from those of the rich. Northerners used salt meat as winter storage, port people saw livelihood in pickled fish, and nobles used salt, spices and exquisite dishes to declare their wealth; when there was a shortage of salt. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Salt and Curing: Salt preserves the meat, fish, and cheese of summer for the long cold, and clearly distinguishes the tables of the poor from those of the rich. Northerners use salted meat as winter storage, port people see livelihood in pickled fish, and nobles use salt, spices and exquisite dishes to declare their wealth; when there is a shortage of salt,"
+  ]
+}

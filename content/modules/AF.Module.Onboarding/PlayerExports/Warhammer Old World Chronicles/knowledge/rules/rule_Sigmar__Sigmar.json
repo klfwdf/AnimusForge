@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Sigmar",
+  "Keywords": [
+    "Sigmar",
+    "God-Emperor",
+    "Imperial God",
+    "Sigmar twin-tailed comet",
+    "Ubersek",
+    "Sigmar Gail Maraz",
+    "Sigmar Sigmar Church",
+    "Sigmar Codex",
+    "Deification",
+    "Sigmar Imperial Faith",
+    "Battle Priest (Sigmar)"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Sigmar is the founder and supreme god of the empire. Before he became a god, he was once a mortal - the son of the chief of the Ubersrik tribe. With his warhammer 'Gael Maraz', he defeated a hundred thousand greenskin army at the Blackfire Pass and unified the human tribes scattered in the middle of the old world. Fifty years after his reign, he went to the East alone and was promoted to god. His war hammer is still held in the hands of every imperial emperor as the highest symbol of imperial power and divine grace."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Sigmar is our Father, our God, our reason for being here. He was not some distant god born out of nothing, unattainable - Sigmar was a mortal man! When a twin-tailed comet tore through the night sky at his birth, the shaman of the Ubersrik tribe predicted that the baby would achieve great things. When he was a teenager, he single-handedly killed a giant wild boar that was ravaging the tribe. When he was a young man, he summoned the chiefs of the twelve tribes at the Blackfire Pass. He wielded the war hammer Gael Maraz given by the dwarves - that hammer could break any mortal weapon - and smashed the heads of all the orcs and goblin generals who dared to resist in front of their armies. After that day, no one dared question his authority. He unified the empire, formulated the \"Sigmar Code\", established the Elector Count system, and left alone after the world was at peace - he did not sit on the throne and rot like an old king who was greedy for power, but headed east to find new challenges and the final answer. His ascension to godhood was a given, and anyone who had seen him wield the hammer would never doubt it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Sigmar's legacy is both a source of strength and a heavy bind for the rulers of the Empire. Each emperor had to pass the investiture rite of the Sigmar Church to gain full legitimacy - the Archbishop handed Gael Malaz into the hands of the new emperor, an act that in a theological sense represented the recognition of the successor by Sigmar himself. But this also means that the Emperor will forever live in Sigmar's shadow: every decision you make is compared to the God-Emperor's achievements, and every failure you make is a stain on the God-Emperor's legacy. In military tradition, the Sigmar way of fighting - with hoplites at its core and thundering charges to crush the enemy - remains a cornerstone of Imperial tactics to this day. In terms of governance, the Twelve Principles of the Sigmar Code - Justice, Valor, Loyalty, Unity, Wisdom, Diligence, Mercy, Frugality, Honor, Discipline, Faith and Watchfulness - are inscribed on the walls of every Imperial court. Any lord who wishes to rule an empire would do well to study Sigmar's life: he did not conquer by godhood - he conquered by personality."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Sigmar's transformation from mortal to divine is one of the most fascinating subjects of study in the history of Old World religions. Academics generally believe that Sigmar's deification has gone through three stages: the first stage is 'living deification' - history books in the first century of the imperial calendar have begun to depict Sigmar as a transcendent existence, and his invincible military record is attributed to some kind of divine destiny; the second stage is 'ascension narrative' - Sigmar After abdicating the throne, his journey eastward alone was theologized. He did not die, but entered heaven in the flesh, and continued to fight against Chaos in a realm untouchable by mortals; the third stage was 'institutionalized worship' - after the establishment of the Sigmar Church, Sigmar gradually transformed from a tribal hero to the protector of the empire. Its theological system absorbed the ancient belief elements of the Ubersrik tribe, and the 'North-South War' with the Ulric Church was also finalized during this period. The core teachings of the Sigmar Church believe that Sigmar not only represents war and victory, but also represents the order of civilization and the unity of mankind - which explains why his symbol is a combination of a two-tailed comet and a warhammer. The comet symbolizes revelation from the heavens, and the warhammer represents the human means of establishing order through violence. Gael Maraz itself is a masterpiece of dwarven forging, forged from meteorite, and legend has it that only those chosen by Sigmar can lift it - and Emperor Karl Franz is the only emperor since Magnus to wield the hammer with ease."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are woefully few accounts of women in the Sigmar faith - the twelve original Grail Knight-like followers were all men, the high priesthood of the Sigmar church is still held by men, and there is almost no mention of Sigmar relationships with women in official theology. But any woman who grew up in the coterie of imperial aristocratic women would have heard from her mother and grandmother another version of the Sigmar legend—fragments that had been omitted from official theology. There is an old legend circulating in my family: that Sigmar, on his way to the East, met a sage woman on the shores of an unnamed lake, who predicted his deification and founded the first monastery in his name after his departure - this version of the legend does not exist in the official documents of the Sigmar Church, but is preserved in almost identical versions in the attic libraries of at least five ancient noble families. I don’t think this is a historical fact, but I think it reflects a collective compensatory narrative that women in the Empire developed after being marginalized for so long in the official narrative. Sigmar means battle and victory to the men of the Empire - for the women of the Empire, he is more like a symbol: a being who can transcend the limitations of his origin and prove himself in the face of doubts. This is at least a common experience for all imperial women."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Sigmar presents a very different face as a family faith than as the Empire's state religion. There is a Sigmar wall in our family church that has been passed down for seventeen generations - but in the mezzanine behind this wall is a Sigmar book that is related to our family and has never been approved by the church. Its content differs subtly but fundamentally from the official canon: the names of the Twelve Apostles of Sigmar in the official canon differ in three places from those recorded in our family biographies, which are not scribal errors but reflect the legacy of competing narratives of Sigmar's legacy by different tribal powers at the founding of the early empire. Almost every Elector Count family has its own 'family version of the Sigmar Book' - each emphasizing the parts of the Sigmar legend related to their own family ancestors and downplaying the involvement of other tribes. This familial religious belief is superficially subordinated to the orthodox authority of the Altdorf Cathedral, but at the spiritual and ritual level, there is a subtle and unbridgeable gap between the faith displayed by the ancient families and the faith practiced in their own chapels."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have mixed feelings about Sigmar - his hammer saved my life, at least that's what the Imperial Army propaganda said, but people from his church burned an old woman I knew as a herbalist in Ostermark on the grounds that her treatment with herbs was considered 'unorthodox healing without church authorization'. From the perspective of the Wanderer, Sigmar means very different things at different levels of the Empire: to the Elector Count he is the sacred endorsement of imperial power, to the Battle Priests he is the source of divine power that splits the heads of Chaos Demons, and to the ordinary citizens on the streets of Altdorf he is the reason for the existence of the Empire - but to the poor on the border, Sigmar's name is often accompanied by the smell of the Inquisitor's leather boots and the smoke of the stake. I once met a blind old monk in a remote village in the Steel Territory, who was guarding an abandoned stone sculpture of Sigmar alone in the ruins of an abandoned church - he told me that the real Sigmar does not lie in the rituals and laws of the church, but in the moment when a man still chooses to swing the hammer in the face of despair. I don't know which one is the real Sigmar, but I do know that the hammered light in the old monk's eyes in that ruined, forgotten temple was closer to the divine than any gold leaf I saw in Altdorf Cathedral."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The commercial value of Sigmar's faith is a topic that every Imperial merchant knows very well but never talks about in public. The Church of Sigmar is one of the largest landowners in the Empire, owning monastic estates, estates, vineyards and mineral rights across the estates - and the management of these properties is in reality market-run by agents of the Chamber of Commerce like us in a way that the Church cannot directly operate. The annual display of relics at Sigmar's Cathedral - including fragments of a scabbard purportedly used by Sigmar and fragments of a meteorite from the night of the comet's fall - attracts pilgrims from all over the Old World, who directly contribute to a third of Altdorf's year-round wine tour revenue. The symbolic capital of the Sigmar Church is equally convertible on financial markets: a neutral arbitration agreement endorsed by the Sigmar Church will have much higher enforceability than an ordinary commercial contract in any court in the empire. The Sigmar foreign missions actually function as semi-official overseas representatives of the Imperial Chamber of Commerce - while they spread the faith in Kislev and the dwarf kingdom, they also open the first door to the local market for imperial merchants. Faith is faith, and commerce is commerce—but in the Empire, the line between the two is scrawled over and over again in daily practice by a giant invisible hand."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Gael Maraz - the iron hammer given to Sigmar by the dwarves, the highest symbol of the imperial power of the empire",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Sigmar God Emperor Lord God"
+  ]
+}

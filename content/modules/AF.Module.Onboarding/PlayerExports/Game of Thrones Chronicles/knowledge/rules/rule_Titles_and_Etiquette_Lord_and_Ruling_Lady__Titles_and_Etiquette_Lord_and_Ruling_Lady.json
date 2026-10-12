@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Lord_and_Ruling_Lady",
+  "Keywords": [
+    "Lord and Ruling Lady"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Lords and lords held land, family names, and the right to exact duties from their subjects, but the respectability of the word obscured the specific differences: some held a city and a land, others just a tower. For farmers, the lord first collected taxes, judged and decided whether to start the disaster year"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord and Ruling Lady"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord and Ruling Lady"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord and Ruling Lady"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord and Ruling Lady Lords and lords held land, family names, and the right to exact duties from their subjects, but the respectability of the word obscured the specific differences: some held a city and a land, others just a tower. For farmers, the lord first collected taxes, judged and decided whether to start the disaster year. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord and Ruling Lady Lords and lords held land, family names, and the right to exact duties from their subjects, but the respectability of the word obscured the specific differences: some held a city and a land, others just a tower. For farmers, the lord first collected taxes, judged and decided whether to start the disaster year. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord and Ruling Lady Lords and lords held land, family names, and the right to exact duties from their subjects, but the respectability of the word obscured the specific differences: some held a city and a land, others just a tower. For farmers, the lord first collected taxes, judged and decided whether to start the disaster year. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Lord and Ruling Lady: Lords and lords held land, family names, and the right to exact duties from their subjects, but the respectability of the word obscured the specific differences: some held a city and a land, others just a tower. For farmers, the lord first collected taxes, judged and decided whether to start the disaster year."
+  ]
+}

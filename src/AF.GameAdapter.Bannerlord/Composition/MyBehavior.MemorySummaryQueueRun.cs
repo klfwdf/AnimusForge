@@ -19,7 +19,7 @@ public partial class MyBehavior
             RequestsPerMinute = GetMemorySummaryRequestsPerMinuteFromSettings,
             IsHostCurrent = () => ReferenceEquals(Instance, this),
             Notify = text => InformationManager.DisplayMessage(new InformationMessage(text)),
-            BlockingPopup = ShowCompressedMemoryBlockingPopup,
+            BlockingPopup = (title, message, generation, display) => MemoryFailureNotices.PublishMemoryFailureNotice(title, message, generation, display),
             LogFailure = error => Logger.Log("CompressedMemory", "[ERROR] ProcessMemorySummaryQueueAsync failed: " + error),
             DelayAsync = milliseconds => Task.Delay(milliseconds),
             Daily = new MemorySummaryResultPort<MemorySummaryExecutionResult> {
@@ -29,7 +29,8 @@ public partial class MyBehavior
                 Succeeded = result => result?.Success ?? false,
                 ApplySuccess = result => ApplyMemorySummarySuccess(result.Job, result.Block),
                 MarkFailure = result => MarkMemorySummaryFailure(result.Job, result.Error),
-                FailureText = result => (result.Job.HeroName ?? result.Job.HeroId) + " 第" + result.Job.GameDayIndex + "日：" + (result.Error ?? "未知错误")
+                FailureText = result => (result.Job.HeroName ?? result.Job.HeroId) + AdapterPromptCaptureTexts.PcapCompat("Host_MemoryDayPrefix") + result.Job.GameDayIndex + AdapterPromptCaptureTexts.PcapCompat("Host_MemoryDaySuffix") + (result.Error ?? AdapterPromptCaptureTexts.PcapCompat("Host_UnknownError")),
+                FailureDisplayText = result => MemoryFailureUiText.T("AF_MEMORY_UI_DailyFailureLine", "{NAME}, day {DAY}: {ERROR}", ("NAME", result.Job.HeroName ?? result.Job.HeroId), ("DAY", result.Job.GameDayIndex), ("ERROR", result.ErrorDisplay ?? MemoryFailureUiText.Error(result.Error)))
             },
             Major = new MemorySummaryResultPort<MajorActionSummaryExecutionResult> {
                 HasJob = result => result?.Job != null,
@@ -38,7 +39,8 @@ public partial class MyBehavior
                 Succeeded = result => result?.Success ?? false,
                 ApplySuccess = result => ApplyMajorActionSummarySuccess(result.Job, result.State),
                 MarkFailure = result => MarkMajorActionSummaryFailure(result.Job, result.Error),
-                FailureText = result => (result.Job.HeroName ?? result.Job.HeroId) + " 重大履历：" + (result.Error ?? "未知错误")
+                FailureText = result => (result.Job.HeroName ?? result.Job.HeroId) + AdapterPromptCaptureTexts.PcapCompat("Host_MajorHistoryFailure") + (result.Error ?? AdapterPromptCaptureTexts.PcapCompat("Host_UnknownError")),
+                FailureDisplayText = result => MemoryFailureUiText.T("AF_MEMORY_UI_MajorFailureLine", "{NAME}, major history: {ERROR}", ("NAME", result.Job.HeroName ?? result.Job.HeroId), ("ERROR", result.ErrorDisplay ?? MemoryFailureUiText.Error(result.Error)))
             },
             Overview = new MemorySummaryResultPort<MemoryOverviewExecutionResult> {
                 HasJob = result => result?.Job != null,
@@ -47,7 +49,8 @@ public partial class MyBehavior
                 Succeeded = result => result?.Success ?? false,
                 ApplySuccess = result => ApplyMemoryOverviewSuccess(result.Job, result.State),
                 MarkFailure = result => MarkMemoryOverviewFailure(result.Job, result.Error),
-                FailureText = result => (result.Job.HeroName ?? result.Job.HeroId) + " 记忆总览：" + (result.Error ?? "未知错误")
+                FailureText = result => (result.Job.HeroName ?? result.Job.HeroId) + AdapterPromptCaptureTexts.PcapCompat("Host_OverviewFailure") + (result.Error ?? AdapterPromptCaptureTexts.PcapCompat("Host_UnknownError")),
+                FailureDisplayText = result => MemoryFailureUiText.T("AF_MEMORY_UI_OverviewFailureLine", "{NAME}, memory overview: {ERROR}", ("NAME", result.Job.HeroName ?? result.Job.HeroId), ("ERROR", result.ErrorDisplay ?? MemoryFailureUiText.Error(result.Error)))
             }
         });
 }

@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Order_of_War_Sellswords_and_Contracts",
+  "Keywords": [
+    "Mercenaries",
+    "Free Companies",
+    "Sellswords and Contracts"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mercenaries are bound together by coin, plunder, ransom, and enforceable contracts rather than blood ties and feudal oaths. The Free Cities possess a mature sellsword tradition, where great companies such as the Golden Company, the Second Sons, and the Stormcrows can be hired for distant wars, while smaller bands of hired swords mingle among caravans, castles, and local feuds. Mercenaries are not inevitably faithless; they care above all whether an employer pays, supplies, and honors promises as agreed. To nobles, they can rapidly fill out an army's ranks, and can also become a new threat when finances collapse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sellswords and Contracts"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sellswords and Contracts"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sellswords and Contracts"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mercenaries Sellswords and Contracts: Mercenaries are bound together by coin, plunder, ransom, and enforceable contracts rather than blood ties and feudal oaths. The Free Cities possess a mature sellsword tradition, where great companies such as the Golden Company, the Second Sons, and the Stormcrows can be hired for distant wars, while smaller bands of hired swords mingle among caravans Victory or defeat on the battlefield is important, but who can keep the army with horse supplies and silver coins in the second month often determines the length of the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mercenaries Sellswords and Contracts: Mercenaries are bound together by coin, plunder, ransom, and enforceable contracts rather than blood ties and feudal oaths. The Free Cities possess a mature sellsword tradition, where great companies such as the Golden Company, the Second Sons, and the Stormcrows can be hired for distant wars, while smaller bands of hired swords mingle among caravans They look at whether the flag is at the front, whether the order is clear, and whether the wounded are recovered; a beautiful strategy is not worth singing if it does not allow people to return to the camp alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mercenaries Sellswords and Contracts: Mercenaries are bound together by coin, plunder, ransom, and enforceable contracts rather than blood ties and feudal oaths. The Free Cities possess a mature sellsword tradition, where great companies such as the Golden Company, the Second Sons, and the Stormcrows can be hired for distant wars, while smaller bands of hired swords mingle among caravans Blacksmiths re-heat broken swords red, priests keep vigil for the dead; the war continues long after it has left the battlefield, on anvils, in graveyards, and on empty seats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mercenaries Sellswords and Contracts: Mercenaries are bound together by coin, plunder, ransom, and enforceable contracts rather than blood ties and feudal oaths. The Free Cities possess a mature sellsword tradition, where great companies such as the Golden Company, the Second Sons, and the Stormcrows can be hired for distant wars, while smaller bands of hired swords mingle among caravans The expedition took away horses, grain, and sons. The flags were changed several times, but they still had to repair houses, bury people, and wait for the next winter; they judged victory or defeat only by whether the village was still there."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sellswords and Contracts: Mercenaries are bound together by coin, plunder, ransom, and enforceable contracts rather than blood ties and feudal oaths. The Free Cities possess a mature sellsword tradition, where great companies such as the Golden Company, the Second Sons, and the Stormcrows can be hired for distant wars, while smaller bands of hired swords mingle among caravans"
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "Id": "rule_pledge_gold",
+  "Keywords": [
+    "pledge money",
+    "sacred currency",
+    "Dwarven Forging Materials",
+    "Vow binding",
+    "Rune Artifact",
+    "David's Gold",
+    "oath metal",
+    "Dwarf Reputation"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Oath gold is a unique sacred trading medium in dwarf society - it is not ordinary gold. Each piece of oath gold is engraved with the oath made by both parties in the name of the dwarf ancestors when it is cast. Those who break the oath gold will be regarded as eternal enemies by all dwarves, while the oath gold that completes the oath will be integrated into the rune artifact and become an eternal witness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Oath Gold - This is not the krona in your pocket, little human. An oath is an oath, a metalized hatred, gratitude, or debt. Do you know how to cast a pledge gold? You stand before the ancestral forge, your hand pressed to the Book of Hatred or the Book of Favor, dictating what you owe the other person, and what the other person owes you—a runesmith stands beside you, hammering the weight of each of your words into that nugget of gold. When it's done, that nugget of gold isn't just gold: it sparkles with a shimmer that you know your soul is bound to inside. If the swearing party breaks the oath, the oath gold will turn into a dull leaden color from the inside out, and you can feel its corruption no matter how far away you are. On the contrary, when the oath is fulfilled completely, the oath gold can be melted into a real rune artifact by the rune blacksmith - so that the weapon will forever bear the glory of your ancestors who fulfilled the oath. The entire society, entire commerce, and entire military alliances of the dwarves are built on this small piece of metal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Oath gold is the core mechanism of dwarven diplomacy and military alliances. When making an alliance with dwarves, if the other party does not ask you to swear an oath with oath gold, it means that they do not take your promise seriously at all - you have not yet gained their true trust. Once you make a covenant with your oath gold, it's an irrevocable commitment: your Legion must show up on the date and place specified in the oath. Equally important, Oath Gold is also the only high-level currency used to purchase war supplies from dwarves - gold can only buy ordinary iron tools from dwarves. To purchase rune equipment, organ cannons or meteorite iron products, only Oath Gold counts. This also explains why human countries are often unable to provide the means of payment that dwarves need in times of real crisis - not because of lack of money, but because there are not enough 'fulfillable oaths'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The oath gold system is called the 'Kazalid Monetary Mechanism' in dwarven science. Its origins can be traced back to the early days of the Age of Vengeance (approximately 1400 BC). It was founded by High King Gotrek Starbeard after the First Greenskin War - the original intention was to provide an unforgeable medium of credit exchange between clans that were scattered by the war. The casting process of oath gold is divided into four standard steps: in the first step, the contracting parties state the terms face to face next to the Book of Hatred or the Book of Favor in the Hall of the Ancestors; in the second step, the rune blacksmith opens a furnace to melt the gold and infuses the 'Voice of Truth' rune (this is a special resident mantra rune that makes the metal and the soul of the contracting party produce (to produce permanent resonance); in the third step, both parties to the contract touch the liquid gold surface with their finger blood in turn - the gold will absorb trace amounts of soul elements in the blood when it solidifies; in the fourth step, the cooled oath gold is hammered three times by the rune blacksmith to finalize it, and a unique metal sound is emitted, which is the 'real name' of the oath gold. The oldest known surviving oath gold in history is the 'Black Rock Covenant Gold' (forged in 1398 BC between Karak Eight Peaks and Karak Kaderin, with the content of non-aggression and trade priority), and is currently in the High King's Treasury at Eternal Peak. It is worth mentioning that the Dwarf Research Institute of Altdorf University conducted a spectral analysis on metamorphic oath gold in 2350 AD and found that its color change was not chemical corrosion, but a 'change in the resonance frequency of the soul' at the crystal level. This discovery made the Academy of Humanity admit for the first time that 'the soul may be physically measurable'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have always believed that oath gold is the greatest cultural contribution of dwarf civilization to the old world - it turns an abstract concept (integrity) into a touchable and testable physical entity. Can you imagine if a human noble could use his own honor to cast similar gold, and then people all over the continent could see that the quality of the gold changed with his actions? Politics will be completely different."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The circulation of oath gold among dwarf clans is very complicated. Our family's treasury holds pledge gold from seventeen different families - each piece representing a bilateral obligation to be recorded in the Book of Favors or the Book of Hatreds. It can take generations to repay a pledge of gold. But if you break the contract - my ancestors made the oath gold turn leaden gray seven hundred years ago because they failed to send troops to assist the Greybeard clan in time. To this day, the gray gold is still placed in the center of the clan hall, and every foreigner who comes to visit is invited to take a look."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I heard a story about oath gold in the dwarf tavern on the Eternal Peak: a human businessman tried to forge oath gold, melting a piece of ordinary gold and engraving fake runes on it, trying to deceive an old dwarf blacksmith. The dwarf took the gold and looked at it, without even a second, saying, 'This gold is lying,' and then smashed the fake oath gold on the table with the human merchant's hand with a hammer. No one knows how the dwarves tell - maybe they see things we can't."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Human bankers are both fascinated and troubled by the oath deposit system—fascinated because it creates an absolutely safe credit system, and troubled because it is completely incompatible with human financial rules. The Marienburg Bank Alliance once proposed to create a set of 'human version of the oath gold' - with the Sigmar Church as the guarantor, and each 'covenant gold' bound to the terms of the contract. After hearing the news, the dwarf sneered and said: 'Your church must first ensure that it will not be corrupted. 'The project came to an end."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Khazarite Currency Mechanism: The official dwarven name of the Oath Gold system, founded by High King Gotrek Starwhisker around 1400 BC.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Oath Gold Holy Currency Dwarven Forging Material"
+  ]
+}

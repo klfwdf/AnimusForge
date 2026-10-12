@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Seasons_of_Athel_Loren_Seasons_of_Athel_Loren",
+  "Keywords": [
+    "Seasons of Athel Loren",
+    "forest reincarnation",
+    "spring recovery",
+    "summer rage",
+    "Autumn and winter sleep",
+    "magic season",
+    "cycle of life",
+    "Seasonal change",
+    "forest rhythm",
+    "natural cycle",
+    "eternal return",
+    "The power of the four seasons"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Seasons of Athel Loren aren't just about the passage of time—it's an eternal cycle of magic. In spring, everything revives and magical energy surges; in summer, the forest shows its furious power; in autumn and winter, it is a time of sleep and purification, and the entire forest enters a mysterious state of introspection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "People outside will never understand what the seasons mean to us. When spring comes to Athel Loren, we feel the fresh power surge in our blood - it is the day of the Celebration of the Sprout, when every elf lays down his arms to sing and dance. During the summer, the forests become hot and dangerous, and the Glade Guard redoubles their patrols, as enemies are also drawn to the summer's fury. In autumn, we hold a \"falling leaf festival\" to remember our departed ancestors and offer the most abundant fruits to the oak tree. In winter, the whole forest almost falls into sleep - we reduce our activities and gather around the fire to tell old stories. If you haven't experienced the seasons of Athel Loren, you haven't truly lived."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The changing seasons will directly affect your military decisions. Spring: The best time to attack, when the magic energy is strongest and the dryads awaken. Summer: Defense is strengthened, forest creatures are fierce, and environmental traps can be used. Autumn: Resource harvest is abundant and supplies are sufficient, suitable for long-term attrition wars. Winter: Shrink defense and conserve strength. The combat effectiveness of almost all Wood Elf units will decrease - with the exception of Wildwood Rangers, who are more terrifying in winter nights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The theory of seasonal magic was first systematically elaborated by the elf sage \"Stargazer\" Velandil in \"The Wheel of Time\". He discovered that seven days before and after each season, Athel Loren's magical borders would temporarily \"soften\", allowing specific magical entities to enter and exit. The alternation of spring produces the \"Gate of Life\" - the energy of life magic leaks out, which can give birth to new tree spirits; the alternation of summer forms the \"Door of Anger\" - the flame element is active; the alternation of autumn opens the \"Door of Death\" - the breath of the undead is temporarily enhanced; the alternation of winter triggers the \"Door of Silence\" - the effect of time magic is amplified. The four main festivals of the Wood Elves correspond to the four \"Gates of Time\". Each festival lasts for seven days and seven nights. During this period, all elves stop fighting. According to custom, attacking the Wood Elves during this period is considered a blasphemy against nature."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The seasons have taught me patience and wisdom. As a woman, I am naturally more aware of the subtleties in the flow of the seasons—the vitality of spring, the sadness of autumn, which guide me in how I govern my territory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The clan's calendar of celebrations must strictly follow the changes of the seasons. Missing the Germination Celebration will demoralize the clan for an entire year. Each season has its accompanying rituals and hunting taboos - break these rules and you risk offending the entire forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You've never seen such a stark change of seasons. When spring arrives, the entire forest blooms overnight; and at dusk when autumn arrives, all the leaves turn from emerald green to golden yellow at the same time. Time here seems to have its own rhythm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The seasons of Athel Loren not only affect the elves themselves, but also have a profound impact on all magical creations in the forest. Dryads are most vigorous in the spring, most ferocious in the summer, go dormant in the fall, and resemble actual wood statues in the winter. Giant eagles migrate south to the forest edges during the winter."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Seasons of Athel Loren - the eternal cycle of magic that affects the entire forest, the core rhythm of elven culture.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Athel Loren's Four Seasons Forest Reincarnation and Spring Resurrection"
+  ]
+}

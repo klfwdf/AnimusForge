@@ -101,114 +101,90 @@ namespace AnimusForge.SceneActions.Core
                 {
                     NewAction(
                         Command,
-                        "发号施令",
-                        "实际挥臂、抬手或摆出手势向群体发号施令；口头命令和单纯指向不算该动作。",
+                        SceneActionCatalogText.Get("command", true).Name,
+                        SceneActionCatalogText.Get("command", true).Description,
                         new[]
                         {
-                            "发号施令", "下令手势", "挥臂下令", "command",
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0001"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0002"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0003"), "command",
                             "command gesture", "issue order gesture"
                         },
                         new[]
                         {
-                            "挥臂向众人下令", "抬手向众人下令", "挥手向众人发号施令",
-                            "挥臂发号施令", "挥臂向整支队伍发号施令", "抬手发号施令",
-                            "作出下令手势",
-                            "做出下令手势", "向众人作出命令手势", "朝队伍挥臂下令",
-                            "抬手向众人作出明确的下令手势",
-                            "挥臂向整队下令",
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0004"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0005"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0006"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0007"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0008"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0009"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0010"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0011"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0012"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0013"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0014"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0015"),
                             "raised his arm to command the group",
                             "swept her arm in a command gesture",
                             "swept his arm to command the entire group",
                             "swept her arm to command the entire group",
-                            "gestured an order to the troops", "面向整队士兵大手一挥", "抬臂作出明确的下令手势", "大手一挥下令", "挥臂下令",
-                            "面向士兵挥臂发令", "抬手示意众人听令", "issued a command with a sweeping arm"
+                            "gestured an order to the troops", SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0016"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0017"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0018"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0003"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0019"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0020"), "issued a command with a sweeping arm"
                         },
                         new[]
                         {
-                            "发号施令", "下令手势", "命令手势",
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0001"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0002"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0021"),
                             "command", "order", "ordered",
                             "command gesture", "issue order gesture"
                         },
-                        new[]
-                        {
-                            "他挥臂向整支队伍发号施令。",
-                            "她抬手向众人作出明确的下令手势。"
-                        },
-                        new[]
-                        {
-                            "他只是说：‘前进。’", "他伸手指向门口。",
-                            "她命令别人服从，但没有做手势。"
-                        }),
+                        SceneActionCatalogText.Get("command", true).Positive,
+                        SceneActionCatalogText.Get("command", true).Negative),
                     NewAction(
                         FollowMe,
-                        "招手跟上",
-                        "实际向同伴或队伍招手示意跟上、跟随或向前；友好问候和对敌勾手叫阵不算该动作。",
+                        SceneActionCatalogText.Get("follow_me", true).Name,
+                        SceneActionCatalogText.Get("follow_me", true).Description,
                         new[]
                         {
-                            "招手示意跟上", "跟上手势", "follow_me",
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0022"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0023"), "follow_me",
                             "follow me gesture", "beckon to follow"
                         },
                         new[]
                         {
-                            "招手示意跟上", "招手示意同伴跟上", "朝同伴招手示意跟上",
-                            "向队伍招手让他们跟上", "回头招手示意队伍跟随",
-                            "挥手示意众人跟上", "作出跟上手势", "做出跟上手势",
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0022"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0024"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0025"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0026"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0027"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0028"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0029"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0030"),
                             "beckoned his companions to follow",
-                            "waved the group forward to follow", "招手示意众人跟上", "向队伍招手示意跟上", "朝同伴连续招手", "示意整支队伍跟上", "回过身朝同伴连续招手", "招手示意队伍跟上",
-                            "朝身后招手让大家跟来", "回头挥手示意队伍前进", "waved the group forward"
+                            "waved the group forward to follow", SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0031"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0032"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0033"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0034"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0035"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0036"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0037"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0038"), "waved the group forward"
                         },
                         new[]
                         {
-                            "跟上手势", "招手跟上", "跟我来", "跟上",
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0023"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0039"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0040"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0041"),
                             "follow me", "follow me gesture", "beckon to follow"
                         },
-                        new[]
-                        {
-                            "他朝同伴招手示意跟上。",
-                            "她挥手示意众人跟上。"
-                        },
-                        new[]
-                        {
-                            "他说：‘跟我来。’", "他向朋友挥手问好。",
-                            "她朝对手勾手挑衅。"
-                        }),
+                        SceneActionCatalogText.Get("follow_me", true).Positive,
+                        SceneActionCatalogText.Get("follow_me", true).Negative),
                     NewAction(
                         CutThroat,
-                        "割喉手势",
-                        "实际用手指横划喉前作出割喉威胁手势；口头威胁和真实持刀割喉或攻击都不算该手势。",
+                        SceneActionCatalogText.Get("cut_throat", true).Name,
+                        SceneActionCatalogText.Get("cut_throat", true).Description,
                         new[]
                         {
-                            "割喉手势", "抹脖子手势", "cut_throat",
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0042"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0043"), "cut_throat",
                             "cut throat gesture", "throat cutting gesture"
                         },
                         new[]
                         {
-                            "用手指划过喉前", "用手指在喉前划过", "用手指在喉前缓缓划过",
-                            "手指从喉前划过", "抬手在脖子前横划",
-                            "做出割喉手势", "作出割喉手势", "比出抹脖子动作",
-                            "用拇指划过喉前", "made a throat-cutting gesture",
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0044"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0045"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0046"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0047"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0048"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0049"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0050"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0051"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0052"), "made a throat-cutting gesture",
                             "drew a finger across his throat", "drew one finger across his throat",
-                            "drew one finger across her throat", "ran a finger across his throat", "用食指在自己的喉前横划了一下",
-                            "用食指在自己的喉前横划一下作割喉手势",
-                            "手指在自己的喉前横划一下", "在自己的喉前横划一下",
-                            "从喉前横划", "手指在喉前横划", "用食指在喉咙前做了个划过的动作",
-                            "抬手横过脖子作割喉威胁"
+                            "drew one finger across her throat", "ran a finger across his throat", SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0053"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0054"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0055"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0056"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0057"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0058"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0059"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0060")
                         },
                         new[]
                         {
-                            "割喉手势", "抹脖子手势", "划喉手势", "割断你的喉咙",
-                            "割喉", "抹脖子", "cut throat", "cut throat gesture", "slit your throat"
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0042"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0043"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0061"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0062"),
+                            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0063"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0064"), "cut throat", "cut throat gesture", "slit your throat"
                         },
-                        new[]
-                        {
-                            "他冷冷地用手指从喉前划过。",
-                            "她做出割喉手势。"
-                        },
-                        new[]
-                        {
-                            "他说：‘我要割断你的喉咙。’", "他只是挥拳恐吓。",
-                            "她拔刀真的砍向对方喉咙。"
-                        })
+                        SceneActionCatalogText.Get("cut_throat", true).Positive,
+                        SceneActionCatalogText.Get("cut_throat", true).Negative)
                 })
                 .ToArray());
 
@@ -222,10 +198,10 @@ namespace AnimusForge.SceneActions.Core
 
         private static readonly string[] ActualViolenceCues =
         {
-            "拔刀割喉", "持刀割喉", "用刀割喉", "刀刃划过喉咙",
-            "割开喉咙", "割开对方的喉咙", "割断喉咙", "划开对方的喉咙",
-            "拔刀划开喉咙", "拔刀划开对方的喉咙", "刀刃划开喉咙",
-            "用刀划过喉咙", "砍向喉咙", "刺向喉咙", "攻击他的喉咙",
+            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0065"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0066"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0067"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0068"),
+            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0069"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0070"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0071"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0072"),
+            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0073"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0074"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0075"),
+            SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0076"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0077"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0078"), SceneActionVocabulary.Text("SceneActionFrameworkV4.LegacySource0079"),
             "drew a sword", "drew his sword", "drew her sword",
             "attacked the target", "attacked him", "attacked her",
             "slashed his throat", "slashed her throat", "cut his throat",
@@ -491,6 +467,9 @@ namespace AnimusForge.SceneActions.Core
             return false;
         }
         public static string BuildClassifierDefinitionBlock(IEnumerable<string> allowedIntentKeys)
+            => BuildClassifierDefinitionBlock(allowedIntentKeys, true);
+
+        public static string BuildClassifierDefinitionBlock(IEnumerable<string> allowedIntentKeys, bool useChinese)
         {
             HashSet<string> allowed = new HashSet<string>(
                 allowedIntentKeys ?? Enumerable.Empty<string>(),
@@ -498,10 +477,7 @@ namespace AnimusForge.SceneActions.Core
             return string.Join("\n", Entries
                 .Where(entry => allowed.Contains(entry.IntentKey))
                 .Select(entry =>
-                    entry.IntentKey + "（" + entry.DisplayNameZhCn + "）：" +
-                    entry.SemanticDescriptionZhCn +
-                    " 正例：" + string.Join("；", entry.PositiveExamples) +
-                    " 反例：" + string.Join("；", entry.NegativeExamples)));
+                    SceneActionCatalogText.FormatEntry(entry.IntentKey, useChinese, true)));
         }
 
         public static void ValidateCatalog(SceneActionCatalog catalog)

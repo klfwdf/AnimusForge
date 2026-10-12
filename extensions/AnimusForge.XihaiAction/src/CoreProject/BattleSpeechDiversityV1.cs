@@ -121,6 +121,14 @@ namespace AnimusForge.SceneActions.Core
             int maximumEntries = 3,
             int maximumCharactersPerEntry = 90)
         {
+            return BuildAvoidanceInstruction(true, previous, maximumEntries, maximumCharactersPerEntry);
+        }
+
+        public static string BuildAvoidanceInstruction(bool useChinese,
+            IEnumerable<string> previous,
+            int maximumEntries = 3,
+            int maximumCharactersPerEntry = 90)
+        {
             if (previous == null || maximumEntries <= 0)
             {
                 return string.Empty;
@@ -137,6 +145,13 @@ namespace AnimusForge.SceneActions.Core
                 {
                     normalized = normalized.Substring(0, maximumCharactersPerEntry);
                 }
+                // Preserve readable word boundaries in English prompt history.
+                if (!useChinese)
+                {
+                    normalized = (value ?? string.Empty).Replace("\r", " ").Replace("\n", " ").Trim();
+                    if (normalized.Length > maximumCharactersPerEntry)
+                        normalized = normalized.Substring(0, maximumCharactersPerEntry);
+                }
                 snippets.Add(normalized);
                 if (snippets.Count >= maximumEntries)
                 {
@@ -147,9 +162,9 @@ namespace AnimusForge.SceneActions.Core
             {
                 return string.Empty;
             }
-            return "同一演讲者最近已经使用过以下正文片段（只作避让参考，不得复用其开头、句式、" +
-                   "连续短语或号召，也不要只替换几个词）：" + string.Join(" / ", snippets) +
-                   "。这次必须改用明显不同的切入点、节奏和号召。";
+            return BattleSpeechText.Text("Prompt_Diversity_01", useChinese) +
+                   BattleSpeechText.Text("Prompt_Diversity_02", useChinese) + string.Join(" / ", snippets) +
+                   BattleSpeechText.Text("Prompt_Diversity_03", useChinese);
         }
 
         private static double DiceBigrams(string a, string b)

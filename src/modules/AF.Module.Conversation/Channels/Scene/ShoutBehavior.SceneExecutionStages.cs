@@ -185,7 +185,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			_ports.EnqueueSpeechLineWithOptions(speaker, replyText, audience,
 				commitHistory: false, suppressStare: false, allowPlayerDirectedActions: true,
 				conversationEpoch, sceneSummonTargets, sceneGuideTargets,
-				hasPostprocess ? "正在处理NPC行为............" : null, speechCompletion,
+				hasPostprocess ? ConversationUiLocalization.Text("AF_CONV_UI_Scene_PostprocessStatus", "Processing NPC actions...") : null, speechCompletion,
 				interactionTimeoutSeconds, Math.Max(1, participantCount),
 				canStillPublish: CanStillPublish,
 				playerDirectedActionText: replyIsDirectPlayerResponse ? playerText : string.Empty,

@@ -1,0 +1,158 @@
+{
+  "Id": "rule_bastogne",
+  "Keywords": [
+    "Duchy of Bastogne_BA",
+    "Bastogne Territory_BA",
+    "Bastogne Beast Hunting Ground_BA",
+    "Duke of Bastogne_BA",
+    "Bath Province_BA"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Baston is located in southern Bretonnia at the junction of the forests of Athel Loren and is ruled by Duke Bohemond Beastslayer. The Duke is considered one of the most powerful knights in contemporary Bretonnia, having single-handedly slain dragons, manticores, and wyverns. Bastogne was known as \"the land of beasts of prey\" because of him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Bastogne - the cradle of heroes! Duke Bohemond is a living legend among us in Bretonnia, the man who decapitated three dragons with a great sword. Every boy in Bastogne dreamed of following the Duke in hunting the great beasts, and instead of tapestries hanging in the halls of our castle, we had skulls and skins stripped from monsters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The military value of the Principality of Bastog lies in its elite giant beast hunting troops. Duke Bohemond's Beast Slayer Knights are a unique unit in Bretonnia - they are equipped with special heavy spears and trap devices, specializing in hunting large monsters. On the battlefield, these knights can crush the enemy's behemoth charges, and have fatal restraints on green giants, chaos spawns and undead horrors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economy of the Principality of Bastogne relies heavily on the giant beast hunting industry. There are more than ten large-scale hunting grounds scattered within the principality, and materials such as dragon scales, manticore poison needles, and wyvern leather are extremely scarce in the old world market. A complete piece of dragon scale armor can be sold for more than five hundred gold crowns, and the refined dragon venom is a raw material coveted by alchemists and pharmacists. The Ilana Mountains on the border of the principality contain veins of silver ore, and mining revenue provides stable financial support for Duke Bohemond's military operations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The female nobles of Bastogne do not stay in their towers waiting for the knights to return. The women here know how to process the furs of prey, brew animal bone potions, and care for injured hunters. The wife of Duke Bohemond was famous for her proficiency in anatomy and trauma surgery. The \"Handbook for the Treatment of Hunting Trauma\" compiled by her was available in every infirmary at Bastogne Castle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family prides itself on raising beast-slaying hunters. Each generation of clan leader must personally hunt an adult giant beast. This is a mandatory condition for becoming the leader of the clan. Duke Bohemond valued our family's hunting skills and gave us the best hunting ground in the principality to manage. The competition between hunting families is sometimes more fierce than the palace competition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The wild beauty of Bastogne is stunning. Unknown calls from Athel Loren can be heard in the distance at the edge of the forest, and huge beast footprints can be found in the mountains. I met Duke Bohemond himself at the country inn in Bastogne - he was sitting in the corner, his huge sword across his knees, wiping the blood on the blade with a coarse cloth. That scene still sends chills down my spine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Bastogne's trade in behemoth materials is incredibly profitable but full of uncertainties. A successful hunt may yield dragon scales or dragon venom sacs worth thousands of gold crowns, but the hunting party may also be wiped out deep in the mountains. Savvy businessmen often contract with multiple hunting groups at the same time to spread the risk. The Imperial Northern Army is the largest buyer of Bastogne dragon scale armor."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Duchy of Baston is located on the edge of Athel Loren in southern Bretonnia and is famous for its great beast hunting tradition and the legend of Duke Bohemond.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Principality of Bastogne, the home of giant beast hunting and slaughter"
+  ]
+}

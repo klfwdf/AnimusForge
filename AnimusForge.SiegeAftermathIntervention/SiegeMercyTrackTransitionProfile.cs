@@ -10,11 +10,21 @@ public static class SiegeMercyTrackTransitionProfile
 
     public const uint ReversiblePlunderStoppedMessageColor = 0xFFB6F7A8u;
 
-    public const string ReversiblePlunderStoppedMessage = "【攻城处置】搜掠已被后续宽恕/宣抚类指令覆盖，士兵停止索财；离场将按当前正向处置结算。";
+    public const string ReversiblePlunderStoppedMessage = "[Siege aftermath] Plunder was superseded by subsequent mercy/reassurance orders; soldiers ceased extortion, and the aftermath will be settled under the current constructive disposition.";
+    public const string ReversiblePlunderStoppedMessageEn = "[Siege aftermath] Pillage was superseded by subsequent mercy/reassurance orders; soldiers stopped demanding wealth; departure settles according to current positive disposition.";
 
     public static string BuildBlockedAfterDestructiveMessage(string actionName)
+        => BuildBlockedAfterDestructiveMessage(actionName, false);
+
+    public static string BuildBlockedAfterDestructiveMessage(string actionName, bool isEnglish)
     {
-        string safeActionName = string.IsNullOrWhiteSpace(actionName) ? "安抚" : actionName.Trim();
-        return "【攻城处置】" + safeActionName + "不能覆盖已经升级的处置；血洗不能回退为搜掠、宽恕或救济，屠民迁殖是最高级结算。";
+        string safeActionName = string.IsNullOrWhiteSpace(actionName)
+            ? "Reassurance"
+            : actionName.Trim();
+        if (isEnglish)
+        {
+            return "[Siege aftermath] " + safeActionName + " cannot override an already-escalated disposition; massacre cannot revert to plunder, mercy, or relief; colonization is the highest irrevocable settlement.";
+        }
+        return "[Siege aftermath] " + safeActionName + " cannot supersede an escalated disposition; massacre cannot be rolled back to plunder, mercy, or relief, and repopulation is final.";
     }
 }

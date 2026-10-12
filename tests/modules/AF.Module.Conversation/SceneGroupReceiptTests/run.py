@@ -86,6 +86,9 @@ def main():
     receipt_paths=history_paths+['src/AF.GameAdapter.Bannerlord/Prompt/SceneRosterPromptCaptureAdapter.cs','src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs','src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneHistoryMessages.cs','src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs','src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneSubmission.cs']
     (output/'current-consumer-source.json').write_text(__import__('json').dumps({'sources':{x:__import__('hashlib').sha256((ROOT/x).read_bytes()).hexdigest() for x in receipt_paths},'scope':'actual group receipt/wrapper, candidate and strict capture declarations; real history/pending/assembly stores; game identity/context leaves controlled'},indent=2),encoding='utf-8')
     (output / 'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding='utf-8')
+    sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Prompt/Composition'))
+    from fixture_resources import add_history_resources
+    add_history_resources(ROOT,output,output/'Tests.csproj')
     env = minimal_test_environment(Path(args.dotnet).resolve(), output)
     result = subprocess.run([args.dotnet, 'run', '--project', str(output / 'Tests.csproj'), '-c', 'Release'],
                             cwd=output, env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=90)

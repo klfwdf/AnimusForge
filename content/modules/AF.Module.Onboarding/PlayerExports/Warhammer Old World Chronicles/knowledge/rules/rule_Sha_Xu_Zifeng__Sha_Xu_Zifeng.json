@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Sha_Xu_Zifeng",
+  "Keywords": [
+    "Sha Xu Zifeng",
+    "wind of death",
+    "Amethyst Academy",
+    "end magic",
+    "LoreOfDeath",
+    "end of life",
+    "Time goes by",
+    "Cleanse of the Undead",
+    "purple magic",
+    "death boundary"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Shasu - Purple Wind - is the wind of endings, transitions and boundaries. It is not the brutal killing wind - that is the domain of the red wind - Shash represents the last molecular bond of life that cannot continue to function, the last remaining warmth of a piece of wood as it rots, and the density of the air at dusk above the cemetery that is so silent that you forget to breathe. Shash is most intense near battlefields and gallows, and at dawn and dusk—when the ever-so-short border between day and night is torn—Shash’s energy surges briefly. Amethyst Academy (Amethyst Mages) are the most socially isolated group among the Eight Winds - they have no friends, cannot smile in public, are prohibited from getting married, and are required by Imperial law to wear heavy robes that cover their entire faces and all skin. They didn't do it to scare people—but because Shasu's winds left an echo of death in their presence that was enough for the average human eye to perceive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Zifeng's use in the imperial army has the strictest magic license control - Shaxu's spell is classified as a 'precision beheading magic' and is strictly differentiated from Red Wind's large-scale destruction. An Amethyst Battle Mage's battlefield duty is not to burn enemy formations or summon thunder - his mission is to pass through a chaotic battlefield of hundreds of yards, amidst the screams of thousands of people and the sound of metal collisions, to synchronize his consciousness with the wind of Shasu to the extent that he can accurately sense the life force flowing away from an enemy general or behemoth, and then - 'stop'. Shash's core combat spell 'Finger of Death' is theoretically one of the simplest and most dangerous imperial magics: the Purple Wind Mage focuses Shash's energy on a finger and points it at the target, and then the wind of Shash will rapidly remove the most critical small part of life force from the target's body - not to destroy the entire body, but to precisely extinguish the remaining nerve energy that controls the beating of the heart or the breathing reflex of the brain. The target fell without any external injuries, and military doctors could find no cause of death. In an Greenskin Legion or Chaos Raider with the Barbarian Chieftain as the core cohesion, this is a precise rout with more impact than a hundred corpses. Purple Wind also has an irreplaceable function after the war: purifying the remnants of the undead on the battlefield - every humanoid remains that is not purified by the Amethyst Mage within one day and night after death may be resurrected by undead magic. The essence of Zifeng's purification ritual is not to dispel, but to accelerate - to release the last few strands of all the life energy remaining in the corpse normally, making the remains magically become 'pure bones that can no longer be resurrected'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Sha Xu Zifeng is an ominous but necessary tool in the hands of the ruler. Amethyst Academy mages play a silent but unavoidable role in Imperial politics - the ultimate form of execution. Imperial law allows for three methods of execution: hanging (for commoners), beheading (for nobles), and 'purple delivery' (for all mages confirmed to have used dark magic or have affairs with the undead). 'Purple Robe Delivery' means that an Amethyst mage in a fully enclosed robe puts a hand on the forehead of the victim, and then in an instant the wind of Sha Xu completes the termination of all life functions of the victim. This execution involved no bloodshed, no destruction of the body (which was left intact for Maul's funeral), and - most crucially - blocked any possibility of the victim's soul being forcibly snatched from his final moments by Nagash. The Amethyst Academy is the Empire's first line of magical defense against Nagash's great undead empire - only Purple Wind can ensure that the Empire's nobles, generals, and battle mages do not become Nagash's undead minions after death. This gives the Amethyst Academy an unsettling political aloofness: no one dares challenge an Amethyst mage for any reason, because you do need him when you die."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The theological abyss of Sha Xu Zifeng is the deepest among the Eight Winds - it touches on the fundamental logical fissure between human religion and death in the old world. Maul - the god of death - is the ultimate recipient of human souls, and Shash - the wind of death - is the magical escort that ensures the soul's smooth journey to the realm of Maul. There is a rare cooperative relationship between Amethyst Academy and the Moorish Church that is not publicly recognized but is tacitly followed by both parties: Moorish priests are responsible for protecting the souls of the deceased from being corrupted by Chaos (through funeral rituals), while Amethyst mages are responsible for ensuring that the corpses of the deceased are not controlled by necromancy (through purification rituals). On a theoretical level, these two characters respectively represent the two solutions to the problem of death in the old world: Moore's path is apocalyptic, theological, and non-technical - you are accepted because you believe; Shash's path is psychic, technical, and non-faith - you are purified because the remaining vitality of your corpse is blown away by the purple wind. Nagash's ultimate insult - fully absorbing the Wind of Shash as his own divine power - is the simultaneous denial of both paths: when the Undead Witch-King elevated himself to the god of Shash, he claimed that he was no longer just a person who controlled death, but the bearer of death itself - this meant that any soul lost in the Wind of Shash indirectly became a subject of Nagash, and the Moorish Church was helpless. This is the Amethyst Academy's greatest fear - not any mortal enemy, but that the very winds they wield have been claimed by a godhead that still exists."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Amethyst Academy's ban on female students is the most stringent among the eight academies - women are not allowed to come into contact with the Wind of Shaxu at all. The Academy's official rationale is that Shash is psychically mutually exclusive with the female creative nature of life - any attempt to inject Shash energy into a fertile woman will result in irreversible physical collapse. This reason is supported by the well-documented thirty-seven confirmed death records in the secret files of the Imperial Ministry of Magic - but none of the recorded victims were willing subjects. The 'female subjects' in all records were female dark magic criminals who were executed by Zifeng in the death row method. In other words, all the evidence for the academy’s mutual exclusion of women from Shashu comes from observations of death row inmates during executions—no woman has ever received systematic Shashu training under non-executive conditions. Is this a self-fulfilling prophecy or a true psychic mutual exclusion - no one knows the answer because no one has ever performed a control experiment in a voluntary and informed manner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the deepest part of my family's tomb, there is an amethyst sealed in a lead box - it is not a piece of jewelry, it is the deathbed relic of the ninth generation ancestor of my family. My ancestor—a retired master of the Amethyst Academy who did not want to leave his full name in the family history—sucked the wind of Shasu into an amethyst with his last bit of consciousness before he died, and sealed the crystal with wax and lead. He wrote in his will: 'When one of my descendants faces the desperate situation of certain death, smash this crystal, and my death will take away that person's death - I will enter the purple wind for her before the messenger of Nagash arrives. 'No one has ever smashed it - not out of distrust, but because my family has been lucky enough that no one has ever had to smash it. But the elders of each generation will pass this story to the next generation of heirs during the inheritance ceremony - the purpose of this story is not to be used, but to let the children know in the years when they are most afraid of death: death can wait for you, if you have someone waiting for you to pass it first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Purple wind is the one that you least need to actively search for among the eight winds - if you walk in the old world long enough, you will sooner or later stumble upon an abandoned battlefield being purified by an amethyst mage. When you feel the density of the wind of Shasu in the air in front of you, your first reaction is not fear - it is something different from any emotion you have experienced in all the years you have lived. It is heavier than sadness, quieter than fear, and older than anger. In that kind of wind your heartbeat might automatically slow down by half a beat—not because there's something wrong with your heart, but because the density of the air around you has changed to the point where your body mistakenly thinks it's entered some critical state where breathing should be still. I met an old man from Amethyst College on an unnamed road in Steel Territory, casting a purification spell alone at dusk next to a forgotten, unnamed remains - he didn't need to know who the remains were, he said that Shash never cared about names, Shash only cared about whether there was any unfinished life left on the bones. After he finished the ritual, he glanced at me - his eyes were purple, not the color of the iris, but the entire eyeball had been assimilated with the frequency of the wind of Shasu in some irreversible way to the point where you could directly see a ray of purple seeping through the bottom of the hem of his robe that covered his entire face. He said 'Shash in the desert is stronger than here' and left."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Shaxu Zifeng gave birth to an extremely special high-end elite service in the empire's funeral industry - Zifeng Funeral Insurance. There is a private agreement between Marienburg's Lloyd's Insurance Company and Amethyst Academy: when any imperial noble or wealthy businessman who has purchased Zifeng's funeral insurance dies, Amethyst Academy will give priority to sending an Amethyst mage to perform a purification ceremony on his body. The annual premium for this insurance is extremely high - about six times that of ordinary life insurance of the same age - but it provides not only a corpse that will not turn into a zombie, but also a hidden status symbol in the social circle of the imperial aristocracy: being able to afford Zifeng's funeral insurance is considered to be a sign that the liquidity of the family's assets has reached a level that cannot be questioned by the outside world. The revenue Amethyst Academy receives from this insurance share is not a large proportion of its overall annuity - the Academy is primarily funded by grants from the Imperial Ministry of Magic - but it provides Amethyst mages with one of the few legal channels for commercialized interaction with the society of the living."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Shaxu Zifeng - one of the eight winds of ending, transition and boundary, with the strongest power on the battlefield and at dusk",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Sha Xu Zifeng’s magic attributes and energy sources"
+  ]
+}

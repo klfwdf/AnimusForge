@@ -1,0 +1,95 @@
+{
+  "Id": "rule_drapon",
+  "Keywords": [
+    "Drapon",
+    "Cape Fal"
+  ],
+  "RagShortTexts": [
+    "Drapon is an important seafaring village on Cape Fal, where the villagers hunt whales."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Drapon is a village near Fort Drapon, located on the tip of Cape Farr just south of the mouth of the Traang River. It is the most important seafaring village on this coast, and its villagers venture deep into the sea to hunt right whales and black whales, sometimes even traveling as far north as the Bainland region to chase bowhead whales and narwhals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The whalers of Drapon are the most desperate sailors in Vlandia. The wind and waves at Cape Fal were frightening, but they still took the boat out to the open sea to chase whales. A whale brought back was enough to feed the whole village for the whole winter, and the whale oil was used to light lamps and the whale bones were used to make utensils. The defenders of Fort Drapon were able to have no shortage of lamp oil all year round, all thanks to these fishermen who dared to trade their lives for fish."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Drapon’s whale oil is a sought-after commodity along the entire Vlandia coast, and it burns with less smoke and a brighter flame. There is also whale baleen, a good material for making bow strings. But you have to be brave to do business there. The waves at Cape Fal are so strong that the local whalers always lose several lives to the sea every year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "seafarer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I went out to sea with a whaler once in Drapon, and that was the closest I came to death in my life. A black whale was harpooned and dragged the boat for half an hour, almost taking us all into the waves. But after being dragged back, the whale oil was refined and lit, and it was as bright as daylight. All the whalers in Drapon compete with the Sea Dragon King for food."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Drapon",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Fort Drapon",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

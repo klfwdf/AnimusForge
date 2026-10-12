@@ -1,0 +1,58 @@
+{
+  "Id": "rule_Nordvigs_readiness_to_go",
+  "Keywords": [
+    "Kingdom of Nord",
+    "Brotherhood of the Shield",
+    "Longship",
+    "Beihai",
+    "War sail",
+    "Nord Expansion",
+    "Nord Kingship"
+  ],
+  "RagShortTexts": [
+    "Nordvig was already a centralized kingdom in 1084, but its expansion ambitions were as strong as its internal tensions - royal power, Jarl autonomy and the southward tide were rising at the same time."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nordvig's wealth came from the sea. The longships sailed south carrying walrus tusks, whale oil, and fish, sold their goods, and returned to the fjords laden with booty and captives. Volbjorn - known as \"The Hungry Man\" - traveled south as a young man and served in the Empire's Vaegian Guard for ten years. When he returned, he brought a ship full of wealth and military experience, forcing the leaders of the six tribes in the North to swear allegiance to him and respect him as the Lord of Yaar in the North. Before his unification, Nordvig was nothing more than a patchwork of scattered sands - six or seven so-called \"kings\" each occupying their own territory, controlling little more than temples or slave markets surrounded by wooden fences. Volbjorn changed all that. His sons now rule the land, but the ties that hold this new kingdom together are still tenuous—the Yaers of the nine clans each own longships and territories, and their obedience to the crown depends entirely on personal loyalty and profit calculations. If Nordvig truly wants to become a stable kingdom, it must either rely on generations of strong lords to maintain it, or turn the attention of its vassals to external conquests. Traveling south to Calradia - a land of warmer lands, richer cities, and gentler women - is every Nord longship owner's dream. The Shield Brotherhood - a purely Nord mercenary group operating within Sturgia - has paved the way for them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The wind over the North Sea is already changing. My father’s generation was still thinking about how to raise more sheep in the winter, but our generation was already asking the question: The Sturgians occupy the best ports, and the Imperials occupy the best land—why can’t it be our turn? The king knew the answer. New boats are launched every year, and every year young people carry axes and go south to try their luck. Not many came back - either died there, infiltrated the Brotherhood of Shields, or found homes in the coastal settlements of Sturgia. But someone always comes back with messages and maps. The south was torn apart, the empire was split into three pieces, and Sturgia was fighting among itself. If this isn't an opportunity, what is?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nordvig? People from the North Sea. They look similar to the Sturgians and speak similar words, but the Sturgians are semi-settled northerners, while Nordvig are northerners who have not yet landed. Their longships have been wandering in the northern seas for several years, and they will pop up on the coast every once in a while to grab a handful and leave. Sturgia was on guard against them, but he was reluctant to take a fatal blow - after all, for several generations, everyone came out of the same fjord. But we Imperials are different from the people of Vlandia. If Nordvig moves south on a large scale, Sturgia will be the first to be unlucky - when Sturgia can no longer bear it, it will be our turn."
+    }
+  ],
+  "TextMappings": []
+}

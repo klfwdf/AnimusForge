@@ -32,11 +32,11 @@ internal sealed class ClanInfluenceEffectModule : PolicyEffectModuleBase<ClanInf
 		allowedScopes: new[] { PolicyEffectScopes.Kingdom, PolicyEffectScopes.Local, PolicyEffectScopes.Vassal },
 		allowedSelectorKinds: new[] { PolicyEffectTargetKind.Settlement, PolicyEffectTargetKind.Clan, PolicyEffectTargetKind.Kingdom, PolicyEffectTargetKind.Hero },
 		targetKinds: new[] { PolicyEffectTargetKind.Clan },
-		cueTerms: new[] { "影响力", "贵族权势", "领主权力", "中央集权", "削藩", "王权" },
-		retrievalText: "家族影响力、贵族权势、领主权力、中央集权、削弱封臣、加强王权；可同时给出下一游戏日的一次性变化与此后每日变化。",
-		catalogSummary: "家族影响力：一次性与每日变化",
-		mainInstruction: "政策若会改变发布者家族或目标王国家族的影响力，请分别填写 onceDelta 与 dailyDelta；两者都允许为 0。一次性部分在政策通过后的下一个游戏日结算，每日部分也从该日开始。中央集权通常给其他家族负值、发布者家族正值。不要输出内部模块 ID。",
-		postprocessRule: "输出结构必须是 {\"onceDelta\": number, \"dailyDelta\": number}。数值必须有限，可正可负，也可为 0。onceDelta 只在下一个游戏日执行一次；dailyDelta 在政策有效期间每日执行，不回收历史累计。若两项均为 0，应省略该效果。",
+		cueTerms: new[] { PolicyCompatibilityTexts.Get("Module_clanInfluence_Original_7"), PolicyCompatibilityTexts.Get("Module_clanInfluence_Original_8"), PolicyCompatibilityTexts.Get("Module_clanInfluence_Original_9"), PolicyCompatibilityTexts.Get("Module_clanInfluence_Original_10"), PolicyCompatibilityTexts.Get("Module_clanInfluence_Original_11"), PolicyCompatibilityTexts.Get("Module_clanInfluence_Original_12"), "influence", "noble power", "centralization", "royal authority" },
+		retrievalText: PolicyGenerationPromptTexts.Get("Module_clanInfluence_retrievalText", "Clan influence, aristocratic power, lord authority, centralization, weakening vassals, and strengthening royal power; a one-time change on the next game day and subsequent daily changes may both be specified."),
+		catalogSummary: PolicyGenerationPromptTexts.Get("Module_clanInfluence_catalogSummary", "Clan influence: one-time and daily changes"),
+		mainInstruction: PolicyGenerationPromptTexts.Get("Module_clanInfluence_mainInstruction", "If the policy changes influence for the issuer's clan or clans in the target kingdom, specify onceDelta and dailyDelta separately; both may be 0. The one-time portion settles on the game day following policy adoption, and the daily portion starts on the same day. Centralization usually gives negative values to other clans and positive values to the issuer's clan. Do not output internal module IDs."),
+		postprocessRule: PolicyGenerationPromptTexts.Get("Module_clanInfluence_postprocessRule", "The output structure must be {\"onceDelta\": number, \"dailyDelta\": number}. Values must be finite and may be positive, negative, or 0. onceDelta executes only once on the next game day; dailyDelta executes each day while the policy is active, without reclaiming historical accumulation. If both are 0, omit the effect."),
 		payloadPromptSchema: CreatePayloadSchema(),
 		family: PolicyEffectFamily.Governance,
 		executionKind: PolicyEffectExecutionKind.Composite,
@@ -48,9 +48,9 @@ internal sealed class ClanInfluenceEffectModule : PolicyEffectModuleBase<ClanInf
 		payloadSchemaVersion: 1,
 		promptVisible: true,
 		displayGroup: "clanInfluence",
-		playerDisplayName: "家族影响力",
-		editableUnderstandingPrompt: "家族影响力代表发布者家族或目标王国家族的政治资本、贵族权势、中央集权程度和封臣地位。政策直接改变这些权力关系时，家族影响力就是实际后果；中央集权通常削弱其他家族并加强发布者家族，但仍须符合政策原文和执行路径。",
-		editableEvaluationPrompt: "即时变化在政策通过后的下一游戏日结算一次；持续变化从同一天起在政策有效期间每日结算。原版普通政策的每日影响力变化常在约 ±0.2 到 ±1，君主级特殊政策可到约 +3；自定义政策若明确改变权力结构，不应无理由停留在 0.1 到 0.5 的象征性变化。一次性变化：轻微声望或利益调整通常为每个家族 ±10 到 ±25，明确政治奖惩或权力让渡为 ±25 到 ±60，重大中央集权、削藩、特权授予或广泛贵族冲突为 ±60 到 ±120，统治结构重组或国家存亡级处置可为 ±120 到 ±250。每日变化：轻微持续影响为 ±0.5 到 ±1，明确制度性改变为 ±1 到 ±3，重大且持续的权力重分配为 ±3 到 ±6，极端中央集权、系统性剥夺或非常规政治动员为 ±6 到 ±10。只有政策同时形成通过时的即时政治资本变化和后续持续制度时才同时使用两部分；不得把同一影响机械重复计算，也不得因目标家族数量多、政策长期或永久而均摊每个家族的单点值。低财政成本不等于低影响力，关键依据是权力改变深度、执行权威、贵族服从或反抗以及持续执行能力。",
+		playerDisplayName: PolicyCompatibilityTexts.Get("Module_clanInfluence_Original_13"),
+		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_clanInfluence_editableUnderstandingPrompt", "Clan influence represents political capital, aristocratic power, the degree of centralization, and vassal standing for the issuer's clan or clans in the target kingdom. When a policy directly changes these power relationships, clan influence is an actual consequence. Centralization usually weakens other clans and strengthens the issuer's clan, but must still follow the original policy and its execution path."),
+		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_clanInfluence_editableEvaluationPrompt", "The immediate change settles once on the game day following policy adoption; the ongoing change settles daily starting on that same day while the policy remains active. Ordinary native policies commonly change daily influence by about ±0.2 to ±1, and exceptional monarch-level policies may reach about +3. A custom policy that explicitly changes power structures should not remain at symbolic changes of 0.1 to 0.5 without reason. One-time changes: mild prestige or interest adjustments usually warrant ±10 to ±25 per clan; explicit political rewards, punishments, or transfers of power warrant ±25 to ±60; major centralization, weakening vassals, granting privileges, or widespread noble conflict warrants ±60 to ±120; restructuring governance or handling an existential state crisis may warrant ±120 to ±250. Daily changes: mild continuing effects warrant ±0.5 to ±1; explicit institutional changes warrant ±1 to ±3; major sustained redistribution of power warrants ±3 to ±6; extreme centralization, systematic deprivation, or extraordinary political mobilization warrants ±6 to ±10. Use both components only when the policy causes both an immediate change in political capital on adoption and a subsequent ongoing institution. Do not mechanically double-count the same effect or divide per-clan values because there are many target clans or the policy is long-term or permanent. Low fiscal cost does not mean low influence: judge the depth of power changes, execution authority, noble compliance or resistance, and sustained execution capability."),
 		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
@@ -70,7 +70,7 @@ internal sealed class ClanInfluenceEffectModule : PolicyEffectModuleBase<ClanInf
 		}
 		if (!IsFinite(payload.OnceDelta) || !IsFinite(payload.DailyDelta))
 		{
-			error = "clanInfluence 的 onceDelta 与 dailyDelta 必须是有限数字";
+			error = "clanInfluence onceDelta and dailyDelta must be finite numbers";
 			return false;
 		}
 		error = string.Empty;
@@ -108,7 +108,7 @@ internal sealed class ClanInfluenceEffectModule : PolicyEffectModuleBase<ClanInf
 		children = Array.Empty<PolicyEffectCompositeChild>();
 		if (context == null || !(payload is ClanInfluencePayload typed))
 		{
-			error = "clanInfluence 缺少有效的编译上下文或 payload";
+			error = "clanInfluence requires a valid compilation context and payload";
 			return false;
 		}
 		if (!TryNormalizeTypedPayload(typed, context.SourceScope, out ClanInfluencePayload normalized, out error))
@@ -153,8 +153,8 @@ internal sealed class ClanInfluenceEffectModule : PolicyEffectModuleBase<ClanInf
 	{
 		return payload == null
 			? string.Empty
-			: "一次 " + payload.OnceDelta.ToString("0.###", CultureInfo.InvariantCulture)
-				+ " / 每日 " + payload.DailyDelta.ToString("0.###", CultureInfo.InvariantCulture);
+			: PolicyCompatibilityTexts.Get("RawPayloadOnce") + payload.OnceDelta.ToString("0.###", CultureInfo.InvariantCulture)
+				+ PolicyCompatibilityTexts.Get("RawPayloadDaily") + payload.DailyDelta.ToString("0.###", CultureInfo.InvariantCulture);
 	}
 
 	private static JObject CreatePayloadSchema()

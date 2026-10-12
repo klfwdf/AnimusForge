@@ -34,11 +34,12 @@ internal sealed class KingdomStabilityNextDayOnceEffectModule : NumericPolicyEff
 		allowedScopes: new[] { PolicyEffectScopes.Kingdom, PolicyEffectScopes.Vassal },
 		allowedSelectorKinds: new[] { PolicyEffectTargetKind.Kingdom },
 		targetKinds: new[] { PolicyEffectTargetKind.Kingdom },
-		cueTerms: new[] { "内部稳定度次日一次性" },
-		retrievalText: "内部运行模块：政策通过后的下一游戏日一次性王国稳定度变化。",
-		catalogSummary: "内部：次日王国稳定度变化",
-		mainInstruction: "内部模块，不向模型暴露。",
-		postprocessRule: "内部模块，不得直接输出。",
+		cueTerms: new[] { PolicyCompatibilityTexts.Get("Module_kingdomStabilityNextDayOnce_Original_8") },
+		retrievalText: PolicyGenerationPromptTexts.Get("Module_kingdomStabilityNextDayOnce_retrievalText", "Internal runtime module: a one-time kingdom stability change on the game day following policy adoption."),
+		catalogSummary: PolicyGenerationPromptTexts.Get("Module_kingdomStabilityNextDayOnce_catalogSummary", "Internal: next-day kingdom stability change"),
+		playerDisplayName: PolicyCompatibilityTexts.Get("Module_kingdomStabilityNextDayOnce_OriginalName"),
+		mainInstruction: PolicyGenerationPromptTexts.Get("Module_kingdomStabilityNextDayOnce_mainInstruction", "Internal module; not exposed to the model."),
+		postprocessRule: PolicyGenerationPromptTexts.Get("Module_kingdomStabilityNextDayOnce_postprocessRule", "Internal module; do not output it directly."),
 		payloadPromptSchema: PolicyEffectPayloadSchemas.CreateNumericValueSchema(),
 		family: PolicyEffectFamily.Stability,
 		executionKind: PolicyEffectExecutionKind.ScheduledOnce,
@@ -61,12 +62,12 @@ internal sealed class KingdomStabilityNextDayOnceEffectModule : NumericPolicyEff
 		normalizedValue = rawValue;
 		if (string.Equals(scope, PolicyEffectScopes.Local, StringComparison.OrdinalIgnoreCase))
 		{
-			error = "kingdomStabilityNextDayOnce 不支持地方政策作用域";
+			error = "kingdomStabilityNextDayOnce does not support local policy scope";
 			return false;
 		}
 		if (float.IsNaN(rawValue) || float.IsInfinity(rawValue))
 		{
-			error = "kingdomStabilityNextDayOnce 的 value 必须是有限数字";
+			error = "kingdomStabilityNextDayOnce value must be finite";
 			return false;
 		}
 		normalizedValue = (float)Math.Round(rawValue, MidpointRounding.AwayFromZero);
@@ -90,7 +91,7 @@ internal sealed class KingdomStabilityNextDayOnceEffectModule : NumericPolicyEff
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("kingdomStabilityNextDayOnce 缺少 game bridge", false);
+			return Failed("kingdomStabilityNextDayOnce requires a game bridge", false);
 		}
 
 		int requestedDelta = (int)payload.Value;
@@ -180,11 +181,11 @@ internal sealed class KingdomStabilityNextDayOnceEffectModule : NumericPolicyEff
 		PolicyEffectExecutionReceipt appliedReceipt = context.ExistingReceipt;
 		if (appliedReceipt == null)
 		{
-			return Failed("kingdomStabilityNextDayOnce compensation 缺少执行回执", false);
+			return Failed("kingdomStabilityNextDayOnce compensation requires an execution receipt", false);
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("kingdomStabilityNextDayOnce compensation 缺少 game bridge", false);
+			return Failed("kingdomStabilityNextDayOnce compensation requires a game bridge", false);
 		}
 		if (appliedReceipt.Status == PolicyEffectExecutionStatus.RolledBack)
 		{
@@ -332,17 +333,17 @@ internal sealed class KingdomStabilityNextDayOnceEffectModule : NumericPolicyEff
 		payload = instance?.Payload as KingdomStabilityNextDayOncePayload;
 		if (instance == null || string.IsNullOrWhiteSpace(context.PreparedInstance.IdempotencyKey))
 		{
-			error = "kingdomStabilityNextDayOnce 缺少执行上下文或幂等键";
+			error = "kingdomStabilityNextDayOnce requires an execution context and idempotency key";
 			return false;
 		}
 		if (!string.Equals(instance.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal) || payload == null)
 		{
-			error = "kingdomStabilityNextDayOnce payload 与模块不匹配";
+			error = "kingdomStabilityNextDayOnce payload does not match the module";
 			return false;
 		}
 		if (instance.TargetSet?.KingdomIds == null || !DistinctIds(instance.TargetSet.KingdomIds).Any())
 		{
-			error = "kingdomStabilityNextDayOnce 缺少有效王国目标";
+			error = "kingdomStabilityNextDayOnce requires valid kingdom targets";
 			return false;
 		}
 		error = string.Empty;

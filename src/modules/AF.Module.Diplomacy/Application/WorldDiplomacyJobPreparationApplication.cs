@@ -30,7 +30,7 @@ public static bool HasStaleDiplomaticActionPresentation(
     }
 
     internal static bool Rebuild(IWorldDiplomacyJobPreparationPort port, IWorldDiplomacyOrchestration orchestration,
-        WorldDiplomacyJob job)
+        WorldDiplomacyJob job, Func<string, string, string> localize = null)
         => RebuildPendingJob(job, port.Storage, port.GenerationMaxTokens, port.AnalysisMaxTokens,
             port.CharacterRange, port.KingdomExists, orchestration.GetResultSettlementActionableTargetIds,
             port.ResolveRound, port.CommonContract, port.ResolveDocument,
@@ -41,9 +41,9 @@ public static bool HasStaleDiplomaticActionPresentation(
                 source.AllowUntargeted, candidates, source.IsExternalResponseOnly),
             orchestration.BuildGenerationLegalActionSignature,
             source => orchestration.CaptureCanonicalHistoryForJob(source, syncSources: false),
-            orchestration.BuildAnalysisPrompt, orchestration.BuildRoundPlanSystemPrompt, orchestration.BuildRoundPlanPrompt);
+            orchestration.BuildAnalysisPrompt, orchestration.BuildRoundPlanSystemPrompt, orchestration.BuildRoundPlanPrompt, localize);
 
-    internal static bool EnsureGenerationJobHasKingdomStrategicProfile(IWorldDiplomacyJobPreparationPort port, WorldDiplomacyJob job)
+    internal static bool EnsureGenerationJobHasKingdomStrategicProfile(IWorldDiplomacyJobPreparationPort port, WorldDiplomacyJob job, Func<string, string, string> localize = null)
 	{
 		if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return true;
 		string authorId = (job.AuthorKingdomId ?? "").Trim();
@@ -64,7 +64,7 @@ public static bool HasStaleDiplomaticActionPresentation(
 			{
 				WorldDiplomacyLlmMessage message = job.LlmMessages[index];
 				if (message == null || !string.Equals(message.Role, "user", StringComparison.OrdinalIgnoreCase)) continue;
-				message.Content = WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(message.Content, profilePrompt, authorId);
+				message.Content = WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(message.Content, profilePrompt, authorId, localize);
 				message.StrategicProfileKingdomId = authorId;
 				job.UserPrompt = message.Content;
 				job.StrategicProfileKingdomId = authorId;
@@ -77,25 +77,25 @@ public static bool HasStaleDiplomaticActionPresentation(
 			port.LogProfile(job, profilePrompt);
 			return true;
 		}
-		job.UserPrompt = WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(job.UserPrompt, profilePrompt, authorId);
+		job.UserPrompt = WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(job.UserPrompt, profilePrompt, authorId, localize);
 		job.StrategicProfileKingdomId = authorId;
 		port.LogProfile(job, profilePrompt);
 		return true;
 	}
 
     internal static bool RefreshDiplomaticActionPresentationAndPrompt(IWorldDiplomacyJobPreparationPort port,
-        IWorldDiplomacyOrchestration orchestration, WorldDiplomacyJob job)
+        IWorldDiplomacyOrchestration orchestration, WorldDiplomacyJob job, Func<string, string, string> localize = null)
 	{
 		if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return false;
 		job.LlmMessages?.Clear();
 		job.SemanticRepairAttempts = 0;
 		job.HistoryPrefixHash = "";
 		job.IsRunning = false;
-		return Rebuild(port, orchestration, job);
+		return Rebuild(port, orchestration, job, localize);
 	}
 
     internal static bool RefreshDiplomaticThreatPresentationAndPrompt(IWorldDiplomacyJobPreparationPort port,
-        IWorldDiplomacyOrchestration orchestration, WorldDiplomacyJob job)
+        IWorldDiplomacyOrchestration orchestration, WorldDiplomacyJob job, Func<string, string, string> localize = null)
 	{
 		if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return false;
 		job.PresentedThreatDocumentIds = WorldDiplomacyRoundLifecycleRules.SelectPresentedThreatStageDocumentIds(port.Storage?.DiplomaticThreats, job.AuthorKingdomId);
@@ -104,7 +104,7 @@ public static bool HasStaleDiplomaticActionPresentation(
 		job.SemanticRepairAttempts = 0;
 		job.HistoryPrefixHash = "";
 		job.IsRunning = false;
-		return Rebuild(port, orchestration, job);
+		return Rebuild(port, orchestration, job, localize);
 	}
 
     public static bool RebuildPendingJob(
@@ -124,7 +124,8 @@ public static bool HasStaleDiplomaticActionPresentation(
         Action<WorldDiplomacyJob> captureCanonicalHistory,
         Func<WorldDiplomacyDocument, string> buildAnalysisPrompt,
         Func<WorldDiplomacyRound, string> buildRoundPlanSystemPrompt,
-        Func<WorldDiplomacyDocument, List<string>, string> buildRoundPlanUserPrompt)
+        Func<WorldDiplomacyDocument, List<string>, string> buildRoundPlanUserPrompt,
+        Func<string, string, string> localize = null)
 {
 	if (job == null) return false;
 	if (IsJobOfKind(job, "generate"))
@@ -144,14 +145,14 @@ public static bool HasStaleDiplomaticActionPresentation(
 		job.AllowAutonomousNoAction = false;
 		string commonContract = getCommonContract?.Invoke(round);
 		(int minimumCharacters, int maximumCharacters) = declarationCharRange?.Invoke() ?? (0, 0);
-		job.SystemPrompt = job.IsRelayTurn ? WorldDiplomacyPromptContractRules.BuildRelayGenerationSystemPrompt(commonContract, minimumCharacters, maximumCharacters) : WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt(commonContract, minimumCharacters, maximumCharacters);
+		job.SystemPrompt = job.IsRelayTurn ? WorldDiplomacyPromptContractRules.BuildRelayGenerationSystemPrompt(commonContract, minimumCharacters, maximumCharacters, localize) : WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt(commonContract, minimumCharacters, maximumCharacters, localize);
 		List<string> candidates = job.CandidateKingdomIds ?? new List<string>();
 		if (job.IsRelayTurn && round == null) return false;
 		string dynamicPrompt = job.IsRelayTurn
 			? buildRelayTurnPrompt?.Invoke(round, job, resolveDocument?.Invoke(job.SourceDocumentId))
 			: buildGenerationPrompt?.Invoke(job, ResolveExchange(storage?.ActiveExchange, storage?.SuspendedExchanges, job.ExchangeId),
 				resolveDocument?.Invoke(job.SourceDocumentId), candidates);
-		job.UserPrompt = WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(dynamicPrompt);
+		job.UserPrompt = WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(dynamicPrompt, localize);
 		job.CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey;
 		job.ProfiledKingdomId = "";
 		job.StrategicProfileKingdomId = job.AuthorKingdomId;
@@ -166,7 +167,7 @@ public static bool HasStaleDiplomaticActionPresentation(
 		if (document == null) return false;
 		job.PresentedThreatDocumentIds = SelectPresentedThreatStageDocumentIds(storage?.DiplomaticThreats, document.AuthorKingdomId);
 		job.PresentedThreatFollowThroughDocumentIds = SelectNoncompliedThreatStageDocumentIds(storage?.DiplomaticThreats, document.AuthorKingdomId);
-		job.SystemPrompt = WorldDiplomacyPromptContractRules.BuildAnalysisSystemPrompt(getCommonContract?.Invoke(resolveRound?.Invoke(FirstNonEmpty(document.RoundId, document.ExchangeId))));
+		job.SystemPrompt = WorldDiplomacyPromptContractRules.BuildAnalysisSystemPrompt(getCommonContract?.Invoke(resolveRound?.Invoke(FirstNonEmpty(document.RoundId, document.ExchangeId))), localize);
 		job.UserPrompt = buildAnalysisPrompt?.Invoke(document);
 		job.CacheAffinityKey = "analyze";
 		job.MaxTokens = analysisMaxTokens;
@@ -197,7 +198,7 @@ public static void PrepareAnalysisJob(
         Func<string, WorldDiplomacyRound> resolveRound,
         Func<WorldDiplomacyRound, string> getCommonContract,
         Func<WorldDiplomacyDocument, string> buildAnalysisPrompt,
-        Action<WorldDiplomacyJob> enqueueJob)
+        Action<WorldDiplomacyJob> enqueueJob, Func<string, string, string> localize = null)
 {
 	if (document == null)
 	{
@@ -219,7 +220,7 @@ public static void PrepareAnalysisJob(
 		PresentedThreatDocumentIds = SelectPresentedThreatStageDocumentIds(storage?.DiplomaticThreats, document.AuthorKingdomId),
 		PresentedThreatFollowThroughDocumentIds = SelectNoncompliedThreatStageDocumentIds(storage?.DiplomaticThreats, document.AuthorKingdomId),
 		IsResponse = document.IsResponse,
-		SystemPrompt = WorldDiplomacyPromptContractRules.BuildAnalysisSystemPrompt(frozenCommonContract),
+		SystemPrompt = WorldDiplomacyPromptContractRules.BuildAnalysisSystemPrompt(frozenCommonContract, localize),
 		UserPrompt = buildAnalysisPrompt?.Invoke(document),
 		CacheAffinityKey = "analyze",
 		MaxTokens = analysisMaxTokens

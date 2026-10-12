@@ -51,18 +51,18 @@ internal static class KnowledgeImportValidationOwner
 		{
 			if (kb == null)
 			{
-				error = "导入失败：KnowledgeLibraryBehavior 未初始化。";
+				error = KnowledgeUiTexts.ImportBehaviorUnavailable;
 				return false;
 			}
 			if (rule == null)
 			{
-				error = "导入失败：规则为空。";
+				error = KnowledgeUiTexts.ImportRuleEmpty;
 				return false;
 			}
 			string text = (rule.Id ?? "").Trim();
 			if (string.IsNullOrEmpty(text))
 			{
-				error = "导入失败：RuleId 为空。";
+				error = KnowledgeUiTexts.ImportRuleIdEmpty;
 				return false;
 			}
 			Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -75,7 +75,7 @@ internal static class KnowledgeImportValidationOwner
 					{
 						if (dictionary.ContainsKey(text2))
 						{
-							error = "导入失败：导入规则中存在重复关键词（" + text2 + "）。";
+							error = KnowledgeUiTexts.ImportDuplicateKeyword(text2);
 							return false;
 						}
 						dictionary[text2] = text;
@@ -109,7 +109,7 @@ internal static class KnowledgeImportValidationOwner
 					{
 						if (dictionary2.TryGetValue(item, out var value2) && !string.Equals(value2, text3, StringComparison.OrdinalIgnoreCase))
 						{
-							error = "导入失败：当前存档中已存在重复关键词（" + item + "），请先在游戏内修复后再导入。";
+							error = KnowledgeUiTexts.ImportExistingKeyword(item);
 							return false;
 						}
 						dictionary2[item] = text3;
@@ -120,7 +120,7 @@ internal static class KnowledgeImportValidationOwner
 			{
 				if (dictionary2.TryGetValue(item2.Key, out var value3) && !string.Equals(value3, text, StringComparison.OrdinalIgnoreCase))
 				{
-					error = "导入失败：关键词冲突（" + item2.Key + "）。当前存档中该关键词属于规则 " + value3 + "，导入规则为 " + text + "。";
+					error = KnowledgeUiTexts.ImportKeywordConflict(item2.Key, value3, text);
 					return false;
 				}
 			}
@@ -128,7 +128,7 @@ internal static class KnowledgeImportValidationOwner
 		}
 		catch (Exception ex)
 		{
-			error = "导入失败：关键词校验异常：" + ex.Message;
+			error = KnowledgeUiTexts.ImportValidationFailed(ex.Message);
 			return false;
 		}
 	}
@@ -140,13 +140,13 @@ internal static class KnowledgeImportValidationOwner
 		{
 			if (knowledgeLibraryBehavior == null)
 			{
-				error = "导入失败：KnowledgeLibraryBehavior 未初始化。";
+				error = KnowledgeUiTexts.ImportBehaviorUnavailable;
 				return false;
 			}
 			List<KnowledgeLibraryBehavior.LoreRule> list = KnowledgeImportSupport.LoadKnowledgeRulesFromImportDir(importDir);
 			if (list == null || list.Count <= 0)
 			{
-				error = "导入失败：导入目录中未找到可导入的知识规则文件。";
+				error = KnowledgeUiTexts.ImportNoRulesFound;
 				return false;
 			}
 			Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -161,7 +161,7 @@ internal static class KnowledgeImportValidationOwner
 				{
 					if (dictionary.TryGetValue(item2, out var value) && !string.Equals(value, text, StringComparison.OrdinalIgnoreCase))
 					{
-						error = "导入失败：导入文件夹中存在重复关键词（" + item2 + "），分别属于规则 " + value + " 与 " + text + "。";
+						error = KnowledgeUiTexts.ImportFolderDuplicateKeyword(item2, value, text);
 						return false;
 					}
 					dictionary[item2] = text;
@@ -205,7 +205,7 @@ internal static class KnowledgeImportValidationOwner
 					{
 						if (dictionary2.TryGetValue(item3, out var value3) && !string.Equals(value3, text2, StringComparison.OrdinalIgnoreCase))
 						{
-							error = "导入失败：当前存档中已存在重复关键词（" + item3 + "），请先在游戏内修复后再导入。";
+							error = KnowledgeUiTexts.ImportExistingKeyword(item3);
 							return false;
 						}
 						dictionary2[item3] = text2;
@@ -229,7 +229,7 @@ internal static class KnowledgeImportValidationOwner
 			{
 				if (dictionary2.TryGetValue(item6.Key, out var value5) && !string.Equals(value5, item6.Value, StringComparison.OrdinalIgnoreCase))
 				{
-					error = "导入失败：关键词冲突（" + item6.Key + "）。当前存档中该关键词属于规则 " + value5 + "，导入规则为 " + item6.Value + "。";
+					error = KnowledgeUiTexts.ImportKeywordConflict(item6.Key, value5, item6.Value);
 					return false;
 				}
 			}
@@ -237,7 +237,7 @@ internal static class KnowledgeImportValidationOwner
 		}
 		catch (Exception ex)
 		{
-			error = "导入失败：关键词校验异常：" + ex.Message;
+			error = KnowledgeUiTexts.ImportValidationFailed(ex.Message);
 			return false;
 		}
 	}
@@ -247,13 +247,13 @@ internal static class KnowledgeImportValidationOwner
 		error = "";
 		if (rule == null)
 		{
-			error = "资料包包含空知识条目。";
+			error = KnowledgeUiTexts.DatabaseReloadEmptyEntry;
 			return false;
 		}
 		string originalRuleId = (rule.Id ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(originalRuleId))
 		{
-			error = "知识条目 “" + (sourceLabel ?? "") + "” 的 RuleId 为空。";
+			error = KnowledgeUiTexts.DatabaseReloadRuleIdEmpty(sourceLabel ?? "");
 			return false;
 		}
 		// Never turn a second package player-profile entry into ordinary lore by renaming it.
@@ -268,7 +268,7 @@ internal static class KnowledgeImportValidationOwner
 			effectiveRuleId = BuildDatabaseReloadDisambiguatedRuleId(originalRuleId, sourceLabel, knownRuleIds);
 			if (string.IsNullOrWhiteSpace(effectiveRuleId) || !knownRuleIds.Add(effectiveRuleId))
 			{
-				error = "无法为重复知识 RuleId 生成稳定 ID：" + originalRuleId;
+				error = KnowledgeUiTexts.DatabaseReloadDuplicateId(originalRuleId);
 				return false;
 			}
 			rule.Id = effectiveRuleId;

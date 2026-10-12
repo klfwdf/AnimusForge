@@ -2,31 +2,34 @@ using System;using System.Collections.Generic;using System.Linq;using TaleWorlds
 namespace AnimusForge;
 internal static class DeveloperEditorDialogPresenter
 {
-	internal static void ShowDevLargeTextOrInquiry(Func<string,int,string> preview, string title, string subtitle, string body, Action onClose, string closeText = "返回")
+	internal static void ShowDevLargeTextOrInquiry(Func<string,int,string> preview, string title, string subtitle, string body, Action onClose, string closeText = null)
 	{
-		string safeBody = string.IsNullOrWhiteSpace(body) ? "（无数据）" : body.Trim();
-		if (DevLargeSelectionPopup.ShowText(title, subtitle, safeBody, onClose, closeText))
+		string safeBody = string.IsNullOrWhiteSpace(body) ? DeveloperUiText.T("AF_UI_Developer_NoData", "(No data)") : body.Trim();
+		string safeCloseText = string.IsNullOrWhiteSpace(closeText) ? DeveloperUiText.T("AF_UI_Common_Back", "Back") : closeText;
+		if (DevLargeSelectionPopup.ShowText(title, subtitle, safeBody, onClose, safeCloseText))
 		{
 			return;
 		}
-		InformationManager.ShowInquiry(new InquiryData(title ?? "AnimusForge", BuildDevLargeFallbackDescription(subtitle, safeBody), isAffirmativeOptionShown: true, isNegativeOptionShown: false, closeText ?? "返回", "", onClose, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData(title ?? "AnimusForge", BuildDevLargeFallbackDescription(subtitle, safeBody), isAffirmativeOptionShown: true, isNegativeOptionShown: false, safeCloseText, "", onClose, null), pauseGameActiveState: true);
 	}
 
-	internal static void ShowDevLargeSelectionOrInquiry(Func<string,int,string> preview, string title, string subtitle, string body, List<DevLargeSelectionPopup.Option> options, Action<string> onSelect, Action onCancel, string affirmativeText = "进入", string cancelText = "返回")
+	internal static void ShowDevLargeSelectionOrInquiry(Func<string,int,string> preview, string title, string subtitle, string body, List<DevLargeSelectionPopup.Option> options, Action<string> onSelect, Action onCancel, string affirmativeText = null, string cancelText = null)
 	{
 		options = options ?? new List<DevLargeSelectionPopup.Option>();
-		string safeBody = string.IsNullOrWhiteSpace(body) ? "请选择要执行的操作。" : body.Trim();
-		if (DevLargeSelectionPopup.Show(title, subtitle, safeBody, options, onSelect, onCancel, cancelText))
+		string safeBody = string.IsNullOrWhiteSpace(body) ? DeveloperUiText.T("AF_UI_Developer_ChooseOperation", "Choose an operation.") : body.Trim();
+		string safeAffirmativeText = string.IsNullOrWhiteSpace(affirmativeText) ? DeveloperUiText.T("AF_UI_Developer_Enter", "Enter") : affirmativeText;
+		string safeCancelText = string.IsNullOrWhiteSpace(cancelText) ? DeveloperUiText.T("AF_UI_Common_Back", "Back") : cancelText;
+		if (DevLargeSelectionPopup.Show(title, subtitle, safeBody, options, onSelect, onCancel, safeCancelText))
 		{
 			return;
 		}
 		if (options.Count == 0)
 		{
-			ShowDevLargeTextOrInquiry(preview, title, subtitle, safeBody, onCancel, cancelText);
+			ShowDevLargeTextOrInquiry(preview, title, subtitle, safeBody, onCancel, safeCancelText);
 			return;
 		}
 		List<InquiryElement> list = options.Select((DevLargeSelectionPopup.Option x) => new InquiryElement(x.Id, BuildDevLargeFallbackOptionText(preview, x), null)).ToList();
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title ?? "AnimusForge", BuildDevLargeFallbackDescription(subtitle, safeBody), list, isExitShown: true, 0, 1, affirmativeText ?? "进入", cancelText ?? "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title ?? "AnimusForge", BuildDevLargeFallbackDescription(subtitle, safeBody), list, isExitShown: true, 0, 1, safeAffirmativeText, safeCancelText, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -49,7 +52,7 @@ internal static class DeveloperEditorDialogPresenter
 
 		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
 		{
-			new DevLargeSelectionPopup.Option("__confirm__", confirmText ?? "确认", isDanger: true, isPrimary: true)
+			new DevLargeSelectionPopup.Option("__confirm__", string.IsNullOrWhiteSpace(confirmText) ? DeveloperUiText.T("AF_UI_Developer_Confirm", "Confirm") : confirmText, isDanger: true, isPrimary: true)
 		};
 		ShowDevLargeSelectionOrInquiry(preview, title, subtitle, body, options, delegate(string id)
 		{
@@ -61,7 +64,7 @@ internal static class DeveloperEditorDialogPresenter
 			{
 				onCancel?.Invoke();
 			}
-		}, onCancel, confirmText ?? "确认", cancelText ?? "取消");
+		}, onCancel, string.IsNullOrWhiteSpace(confirmText) ? DeveloperUiText.T("AF_UI_Developer_Confirm", "Confirm") : confirmText, string.IsNullOrWhiteSpace(cancelText) ? DeveloperUiText.T("AF_UI_Common_Cancel", "Cancel") : cancelText);
 	}
 
 	internal static string BuildDevLargeFallbackDescription(string subtitle, string body)

@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Heartland_of_the_Rose_Honeyholt",
+  "Keywords": [
+    "Honeyholt (Heartland of the Rose Honeyholt)",
+    "Oldtown Hinterlands",
+    "Mead"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hive City is the Hightower castle in the southern reaches of the Reach, within the sphere of influence of Oldtown and its hinterland. Honey, beeswax, and mead are among the products such estates can export, but the true foundation of the Hive City is still the fields, orchards, pastures, and roads that transport goods to Oldtown. House Hightower's power derives from the Tower and the Citadel, as well as from many such local holdings; the great city requires the countryside to provide it with food, wood, wine, and taxes. Life in the Beehive City includes banquets and rituals, as well as harvesting, beekeeping, canal repair, and guarding against bandits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Honeyholt Local families also relied on grain, wine, orchards, pastures, and markets along the Mander River; if any road, well, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Honeyholt Entry Honeyholt"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Honeyholt They also recognize the accents, laws, and credentials of the Reach; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Honeyholt Entry Honeyholt"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Honeyholt If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Honeyholt A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Honeyholt They care about grain, wine, orchards, pastures and markets along the Mander River. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Honeyholt: Hive City is the Hightower castle in the southern reaches of the Reach, within the sphere of influence of Oldtown and its hinterland. Honey, beeswax, and mead are among the products such estates can export, but the true foundation of the Hive City is still the fields, orchards, pastures, and roads that transport goods to Oldtown. House Hightower's power derives from the Tower and the Citadel, as well as from many such local holdings; the great city requires the countryside to provide it with food, wood, wine, and taxes. Life in the Beehive City includes banquets and rituals, as well as harvesting, beekeeping, canal repair, and guarding against bandits."
+  ]
+}

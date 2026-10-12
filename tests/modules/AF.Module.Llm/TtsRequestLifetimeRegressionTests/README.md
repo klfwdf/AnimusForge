@@ -8,19 +8,19 @@ python -B tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests/run_muta
 python -B -m unittest discover -s tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests -p test_wiring.py
 ```
 
-默认读取当前工作树 `src/modules/AF.Module.Llm/Tts/TtsEngine.cs` 和 `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs`。输出与日志仅在本目录 `.generated/`。`--consumer-source` 可显式传入待集成源码；日志记录路径和 SHA-256，**该模式不能声称已验证生产接线**。SDK 可通过 `--dotnet` 指定（默认使用 AFMOD 本地 SDK）。
+默认读取当前工作树 `src/modules/AF.Module.Llm/Tts/TtsEngine.cs` 和 `src/AF.GameAdapter.Bannerlord/Scene/SceneAudioLipSyncController.cs` 与 `NativeConversationPlaybackWaitAdapter.cs`。输出与日志只在独立 artifacts 根。`--consumer-source` 可显式传入待集成源码；日志记录路径和 SHA-256，**该模式不能声称已验证生产接线**。SDK 可通过 `--dotnet` 指定（默认使用 AFMOD 本地 SDK）。
 
 ## 证据边界
 
 - 编译完整真实 `src/modules/AF.Module.Llm/Tts/TtsEngine.cs`，生命周期、WorkerLoop、ProcessJob、Gateway 调用桥、事件发布、CTS 与实际线程均非测试重写。
 - 11 个 P/Invoke 声明只在生成的测试副本中替换为立即抛异常，禁止加载原生音频/窗口 API。游戏对象/设置、网络 Gateway 是 fixture；不调用真实在线 TTS、Bannerlord 或存档。
-- 成功音频使用 16 字节 PCM fixture，写入 `.generated/<run>/audio-fixtures/`，以无声 Tableau 路径推进真实事件和计时循环，不播放声音。
+- 成功音频使用 16 字节 PCM fixture，写入独立 run root 的 `audio-fixtures/`，以无声 Tableau 路径推进真实事件和计时循环，不播放声音。
 - 消费端提取真实请求 owner、注册/完成/timeout wait 方法；Mission、save generation 为 stub。不以简化消费端替代完整 ShoutBehavior 编译和实机验证。
 - `test_wiring.py` 检查实际订阅/解绑、主线程 callback 二次身份守卫、Scene/Native onAccepted 预注册及晚音频清理；它是静态接线检查，不冒充全部 UI/动作功能回放。
 
 ## 覆盖
 
-61 个可执行场景（原 43 项 + 6 项测试按钮预检 + 2 项 V3 路由 + 10 项测试失败回执）：队列满、取消、dequeue/activation 空隙、发布前接受回调、锁外回调、回调重入/异常、Stop/Dispose、重复 terminal、worker 存活、极速合成、传给 Gateway 的真实 cancellation token、晚网络失败及已排队 UI callback、同 AgentIndex 新轮、两条同 Agent 合法 FIFO、取消 active-old 保留 queued-new、mission/session/epoch/save generation 失效。
+64 个可执行场景（原 43 项保留，补齐远端 V3/AgentPlan 和测试失败回执）：队列满、取消、dequeue/activation 空隙、发布前接受回调、锁外回调、回调重入/异常、Stop/Dispose、重复 terminal、worker 存活、极速合成、传给 Gateway 的真实 cancellation token、晚网络失败及已排队 UI callback、同 AgentIndex 新轮、两条同 Agent 合法 FIFO、取消 active-old 保留 queued-new、mission/session/epoch/save generation 失效。
 
 Scene 在 onAccepted 注册 RequestId 独立 owner 及准备回调，在该请求首个主线程事件消费前一次性激活 bubble/token/feed，不以最新 accepted 覆盖仍在正常播放的请求。terminal/cancel 和显式 Mission reset 回收 owner 与 Mission 引用。
 
@@ -39,7 +39,7 @@ Scene 在 onAccepted 注册 RequestId 独立 owner 及准备回调，在该请�
 - 测试按钮 delegate 从当前 DuelSettings 原文抽取，覆盖 V3 无 AppID 入队、总开关/专用开关关闭、空 URL、不支持 V3 协议、V1 缺 AppID 禁止入队；UI 显示是 stub，非游戏点击。
 - 真 HTTP 见现有 `tests/replay/TtsGatewayReplayTests`：7 组 V1 契约检查 + 29 项 V3 回放，实际候选 DLL、实际 HttpClient、loopback TCP chunked server，包含真实播放器 WAV 解析和生产 V3 禁重定向客户端。30 秒请求体停顿测试不访问线上服务。
 - 所有输出使用 `tests/output_isolation.py` 的独立 artifacts run root。`--consumer-source` 只用于显式当前 owner 拼接候选，不能以旧平铺源码假冒当前消费链。
-- 遗留 `test_wiring.py` 仍绑定历史全仓 projection，不在本轮扩展修复范围；上述行为测试不是全仓静态接线/实机验收。
+- `test_wiring.py` 的 8 个责任断言已按当前真实 SceneAudio、ScenePresentation、NativeConversationSpeech 和 Queue owner 接线，保原订阅/身份/注册/清理/请求 token 边界；不调用失效的历史全仓 projection。
 
 ### 测试语音失败反馈修补（2026-10-10）
 

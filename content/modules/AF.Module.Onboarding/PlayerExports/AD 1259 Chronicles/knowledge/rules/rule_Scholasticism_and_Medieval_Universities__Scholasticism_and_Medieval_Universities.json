@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Scholasticism_and_Medieval_Universities",
+  "Keywords": [
+    "Scholasticism",
+    "Medieval Universities",
+    "Thomas Aquinas",
+    "University of Paris",
+    "Aristotelianism",
+    "Theology"
+  ],
+  "RagShortTexts": [
+    "Scholasticism flourished in thirteenth-century universities like Paris and Oxford, reconciling Christian theology with classical Aristotelian logic."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The thirteenth century was the golden age of Scholasticism and the rise of autonomous European universities (universitates). Institutions such as the University of Paris (the Sorbonne), Oxford, Bologna, and Montpellier enjoyed papal and royal charters, granting faculty and students legal immunity and self-governance under the faculties of Arts, Medicine, Canon Law, and Theology.\n\nIn 1259, scholastic intellectual life was electrified by the rediscovery of Aristotle’s complete works translated from Arabic and Greek. Master thinkers like Thomas Aquinas and Albertus Magnus of the Dominican Order, alongside Roger Bacon and Bonaventure of the Franciscans, developed rigorous dialectical methods (the quaestio disputata) to harmonize Christian dogma with rational philosophical inquiry, laying the foundations of Western academic philosophy."
+    }
+  ],
+  "TextMappings": []
+}

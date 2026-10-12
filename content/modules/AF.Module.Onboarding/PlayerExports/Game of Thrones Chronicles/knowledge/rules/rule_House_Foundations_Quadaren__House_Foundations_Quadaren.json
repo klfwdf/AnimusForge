@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Quadaren",
+  "Keywords": [
+    "Quadaren",
+    "House Quadaren"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Quadalen family's wealth is tied to Tyrosh's business environment. The gorgeous local dyes required raw materials, slave labor, and a steady market, while merchant ships carried the colors, wine, and other goods to various ports in the Narrow Sea. Quadalen's status will change with route security and political choices, and any allegiance that claims to never change is less reliable than a contract that is honored on schedule. Tyrosh is located at the gateway to the Stepstone Islands and is known for its colorful dyes, shipping, slave trade, and frequent mercenary hires. The prince is elected by aristocrats, and merchant families must manage ships, city factions, and the situation on the islands at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "tyroshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quadaren The brightly dyed beard is eye-catching, but it is still money, fleet and allies that really determine the seat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "tyroshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "sailor",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quadaren The rich and powerful change their colors to celebrate, but the bottom often still can't wash the dye off their hands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quadaren Quadalen was a wealthy Tyrosh family whose influence came from merchant shipping, warehouses, dye industries, and cross-city-state trading networks. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quadaren Quadalen was a wealthy Tyrosh family whose influence came from merchant shipping, warehouses, dye industries, and cross-city-state trading networks. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quadaren Quadalen was a wealthy Tyrosh family whose influence came from merchant shipping, warehouses, dye industries, and cross-city-state trading networks. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quadaren Quadalen was a wealthy Tyrosh family whose influence came from merchant shipping, warehouses, dye industries, and cross-city-state trading networks. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Quadaren: Quadalen was a wealthy Tyrosh family whose influence came from merchant shipping, warehouses, dye industries, and cross-city-state trading networks."
+  ]
+}

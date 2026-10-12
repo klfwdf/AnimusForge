@@ -13,12 +13,14 @@ internal sealed class MemoryFailureNoticeOwner
         internal readonly string Title;
         internal readonly string Message;
         internal readonly long Generation;
+        internal readonly MemoryFailureDisplay Display;
 
-        internal MemoryFailureNotice(string title, string message, long generation)
+        internal MemoryFailureNotice(string title, string message, long generation, MemoryFailureDisplay display)
         {
             Title = title;
             Message = message ?? "";
             Generation = generation;
+            Display = display;
         }
     }
 
@@ -26,7 +28,7 @@ internal sealed class MemoryFailureNoticeOwner
     private MemoryFailureNotice _pendingMemoryFailureNotice;
     private long _memoryFailurePopupRevision;
 
-    internal void PublishMemoryFailureNotice(string title, string message, long generation)
+    internal void PublishMemoryFailureNotice(string title, string message, long generation, MemoryFailureDisplay display = null)
     {
         _port.Observe(title, message);
         if (!_port.IsCurrentOwner(generation) || Volatile.Read(ref Active)) return;
@@ -35,7 +37,7 @@ internal sealed class MemoryFailureNoticeOwner
         {
             // First valid failure wins. A retired save's slot cannot suppress the current save.
             Interlocked.CompareExchange(ref _pendingMemoryFailureNotice,
-                new MemoryFailureNotice(title, message, generation), pending);
+                new MemoryFailureNotice(title, message, generation, display), pending);
         }
         if (_port.IsMainThread()) ProcessPendingMemoryFailureNotice();
     }
@@ -50,7 +52,9 @@ internal sealed class MemoryFailureNoticeOwner
         try
         {
             Volatile.Write(ref Active, true);
-            _port.Show(notice.Title, notice.Message, () => CompleteMemoryFailureNotice(notice.Generation, revision));
+            _port.Show(notice.Display?.Title.Resolve() ?? notice.Title,
+                notice.Display?.Message.Resolve() ?? notice.Message,
+                () => CompleteMemoryFailureNotice(notice.Generation, revision));
         }
         catch (Exception)
         {

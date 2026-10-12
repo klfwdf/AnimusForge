@@ -17,9 +17,10 @@ internal sealed class MemorySummaryResultPort<T> where T : class
     internal Func<T, bool> HasJob, IsObsolete, IsSourceCurrent, Succeeded, ApplySuccess;
     internal Action<T> MarkFailure;
     internal Func<T, string> FailureText;
-    internal bool Accept(T result, List<string> failures) => MemorySummaryAttemptRunner.Accept(
+    internal Func<T, MemoryFailureUiText> FailureDisplayText;
+    internal bool Accept(T result, List<string> failures, List<MemoryFailureUiText> displayFailures) => MemorySummaryAttemptRunner.Accept(
         HasJob(result), IsObsolete(result), () => IsSourceCurrent(result), Succeeded(result),
-        () => ApplySuccess(result), () => { MarkFailure(result); failures.Add(FailureText(result)); });
+        () => ApplySuccess(result), () => { MarkFailure(result); failures.Add(FailureText(result)); displayFailures.Add(FailureDisplayText(result)); });
 }
 internal sealed class MemorySummaryQueueRunPort<TDaily, TMajor, TOverview>
     where TDaily : class where TMajor : class where TOverview : class
@@ -32,7 +33,7 @@ internal sealed class MemorySummaryQueueRunPort<TDaily, TMajor, TOverview>
     internal Func<int> RequestsPerMinute;
     internal Func<bool> IsHostCurrent;
     internal Action<string> Notify;
-    internal Action<string, string, long> BlockingPopup;
+    internal Action<string, string, long, MemoryFailureDisplay> BlockingPopup;
     internal Action<Exception> LogFailure;
     internal Func<int, Task> DelayAsync;
     internal MemorySummaryResultPort<TDaily> Daily;
@@ -70,7 +71,8 @@ internal sealed class MemorySummaryQueueRunRuntime<TDaily, TMajor, TOverview>
                 }
                 else _ports.QueueDirtyOverview();
                 burst = _ports.RequestsPerMinute();
-                if (items.Count > 0) _ports.Notify("AnimusForge 开始日结压缩任务，共 " + items.Count + " 个；对话记忆 " + plan.DailyCount + " 个，重大履历 " + plan.MajorCount + " 个，记忆总览 " + plan.OverviewCount + " 个；每分钟上限 " + burst + "。");
+                if (items.Count > 0) _ports.Notify(MemoryFailureUiText.T("AF_MEMORY_UI_SummaryStarted", "AnimusForge started {TOTAL} end-of-day summary jobs: {DAILY} dialogue memories, {MAJOR} major histories, {OVERVIEW} memory overviews; limit {RPM} per minute.",
+                    ("TOTAL", items.Count), ("DAILY", plan.DailyCount), ("MAJOR", plan.MajorCount), ("OVERVIEW", plan.OverviewCount), ("RPM", burst)).Resolve());
                 return true;
             });
             if (!accepted || items.Count == 0) return;
@@ -78,22 +80,23 @@ internal sealed class MemorySummaryQueueRunRuntime<TDaily, TMajor, TOverview>
             await RunQueueItemsAsync(items, burst, daily, major, overview, run);
             if (!run.IsCurrent || SaveRuntimeGuard.IsStale(generation, "memory_summary_queue_results")) return;
             var failures = new List<string>();
+            var displayFailures = new List<MemoryFailureUiText>();
             int appliedDaily = 0, appliedMajor = 0, appliedOverview = 0;
             foreach (var result in daily)
             {
-                accepted = await _ports.RunPhaseAsync(run, generation, () => { if (_ports.Daily.Accept(result, failures)) appliedDaily++; return true; });
+                accepted = await _ports.RunPhaseAsync(run, generation, () => { if (_ports.Daily.Accept(result, failures, displayFailures)) appliedDaily++; return true; });
                 if (!accepted) return;
             }
             foreach (var result in major)
             {
-                accepted = await _ports.RunPhaseAsync(run, generation, () => { if (_ports.Major.Accept(result, failures)) appliedMajor++; return true; });
+                accepted = await _ports.RunPhaseAsync(run, generation, () => { if (_ports.Major.Accept(result, failures, displayFailures)) appliedMajor++; return true; });
                 if (!accepted) return;
             }
             for (int wave = 0; wave < 2; wave++)
             {
                 foreach (var result in overview)
                 {
-                    accepted = await _ports.RunPhaseAsync(run, generation, () => { if (_ports.Overview.Accept(result, failures)) appliedOverview++; return true; });
+                    accepted = await _ports.RunPhaseAsync(run, generation, () => { if (_ports.Overview.Accept(result, failures, displayFailures)) appliedOverview++; return true; });
                     if (!accepted) return;
                 }
                 if (wave == 1) break;
@@ -110,12 +113,18 @@ internal sealed class MemorySummaryQueueRunRuntime<TDaily, TMajor, TOverview>
                 if (!run.IsCurrent || SaveRuntimeGuard.IsStale(generation, "memory_summary_queue_extra_results")) return;
             }
             if (await _ports.BuildPlanAsync(generation, false, null, true, run) == null) return;
-            string failureMessage = failures.Count == 0 ? null : await Task.Run(() => "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。");
+            string failureMessage = failures.Count == 0 ? null : await Task.Run(() => "The following end-of-day summary jobs still failed after 3 attempts:\n\n" + string.Join("\n", failures) + "\n\nFix the API or lower the memory summary RPM, then retry.");
             await _ports.RunPhaseAsync(run, generation, () =>
             {
-                if (failureMessage != null) _ports.BlockingPopup("日结压缩总结失败", failureMessage, generation);
+                if (failureMessage != null) {
+                    string displayFailureLines = string.Join("\n", displayFailures.Select(x => x?.Resolve() ?? ""));
+                    _ports.BlockingPopup("End-of-day summary failed", failureMessage, generation,
+                    new MemoryFailureDisplay(MemoryFailureUiText.T("AF_MEMORY_UI_SummaryFailedTitle", "End-of-day summary failed"),
+                        MemoryFailureUiText.T("AF_MEMORY_UI_SummaryFailedBody", "The following end-of-day summary jobs still failed after 3 attempts:\n\n{FAILURES}\n\nFix the API or lower the memory summary RPM, then retry.", ("FAILURES", displayFailureLines))));
+                }
                 else if (appliedDaily + appliedMajor + appliedOverview > 0)
-                    _ports.Notify("AnimusForge 日结压缩完成：对话记忆 " + appliedDaily + " 个，重大履历 " + appliedMajor + " 个，记忆总览 " + appliedOverview + " 个。");
+                    _ports.Notify(MemoryFailureUiText.T("AF_MEMORY_UI_SummaryCompleted", "AnimusForge end-of-day summaries completed: {DAILY} dialogue memories, {MAJOR} major histories, {OVERVIEW} memory overviews.",
+                        ("DAILY", appliedDaily), ("MAJOR", appliedMajor), ("OVERVIEW", appliedOverview)).Resolve());
                 return true;
             });
         }
@@ -123,7 +132,9 @@ internal sealed class MemorySummaryQueueRunRuntime<TDaily, TMajor, TOverview>
         {
             _ports.LogFailure(error);
             if (run.IsCurrent && SaveRuntimeGuard.IsCurrentGeneration(generation))
-                await _ports.RunPhaseAsync(run, generation, () => { _ports.BlockingPopup("压缩记忆总结异常", "任务可能已有部分写入，本轮已停止；请查看日志后再重试。\n\n" + error.Message, generation); return true; });
+                await _ports.RunPhaseAsync(run, generation, () => { _ports.BlockingPopup("Memory summary exception", "Some results may already have been saved. This run has stopped; check the log before retrying.\n\n" + error.Message, generation,
+                    new MemoryFailureDisplay(MemoryFailureUiText.T("AF_MEMORY_UI_SummaryExceptionTitle", "Memory summary exception"),
+                        MemoryFailureUiText.T("AF_MEMORY_UI_SummaryExceptionBody", "Some results may already have been saved. This run has stopped; check the log before retrying.\n\n{ERROR}", ("ERROR", MemoryFailureUiText.Error(error.Message))))); return true; });
         }
         finally { run.Dispose(); }
     }

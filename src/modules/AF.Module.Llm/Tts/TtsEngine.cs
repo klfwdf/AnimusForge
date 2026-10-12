@@ -234,11 +234,11 @@ internal sealed class TtsEngine : IDisposable
 				};
 				_workerThread.Start();
 				_initialized = true;
-				Logger.Log("TtsEngine", "在线 TTS 引擎初始化成功");
+				Logger.Log("TtsEngine", "Online TTS engine initialized");
 			}
 			catch (Exception ex)
 			{
-				Logger.Log("TtsEngine", "[ERROR] 初始化失败: " + ex.Message);
+				Logger.Log("TtsEngine", "[ERROR] Initialization failed: " + ex.Message);
 			}
 		}
 	}
@@ -293,7 +293,7 @@ internal sealed class TtsEngine : IDisposable
 			};
 			if (!TryEnqueueJob(item, onAccepted))
 			{
-				Logger.Log("TtsEngine", "[WARN] TTS 请求未入队（已取消、已关闭或队列已满）: " + "textChars=" + text.Length);
+				Logger.Log("TtsEngine", "[WARN] TTS request not queued (cancelled, disabled, or queue full): textChars=" + text.Length);
 				return false;
 			}
 			return true;
@@ -321,7 +321,7 @@ internal sealed class TtsEngine : IDisposable
 				TestFailure = onFailure
 			};
 			if (TryEnqueueJob(item, null)) { return true; }
-			Logger.Log("TtsEngine", "[WARN] 测试语音未入队（队列已满或引擎已停止）");
+			Logger.Log("TtsEngine", "[WARN] Test voice was not queued (queue full or engine stopped)");
 		}
 		return false;
 	}
@@ -564,7 +564,7 @@ internal sealed class TtsEngine : IDisposable
 
 	private void WorkerLoop()
 	{
-		Logger.Log("TtsEngine", "工作线程已启动");
+		Logger.Log("TtsEngine", "Worker thread started");
 		try
 		{
 			while (!_stopWorker)
@@ -601,10 +601,10 @@ internal sealed class TtsEngine : IDisposable
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("TtsEngine", "[ERROR] WorkerLoop 异常退出: " + ex.Message);
+			Logger.Log("TtsEngine", "[ERROR] WorkerLoop terminated unexpectedly: " + ex.Message);
 			BannerlordExceptionSentinel.ReportObservedException("TtsEngine.WorkerLoop", ex);
 		}
-		Logger.Log("TtsEngine", "工作线程已退出");
+		Logger.Log("TtsEngine", "Worker thread stopped");
 	}
 
 
@@ -705,54 +705,54 @@ internal sealed class TtsEngine : IDisposable
 		if (!flag2 && !job.BypassEnabledCheck)
 		{
 			NotifyPlaybackFailed(job, "TTS disabled during playback; fallback to text bubble.");
-			Logger.Log("TtsEngine", "[WARN] 火山专用模式未开启，跳过合成");
+			Logger.Log("TtsEngine", "[WARN] Volcengine mode is disabled; synthesis skipped");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			NotifyPlaybackFailed(job, "TTS API URL is missing.");
-			Logger.Log("TtsEngine", "[WARN] 火山 API 地址未配置");
+			NotifyPlaybackFailed(job, "tts_url_missing");
+			Logger.Log("TtsEngine", "[WARN] Volcengine API URL is not configured");
 			return;
 		}
 		int protocolVersion = VolcTtsGateway.GetVersion(text);
 		if (protocolVersion == 0)
 		{
-			NotifyPlaybackFailed(job, VolcTtsGateway.DescribeError("tts_endpoint_unsupported"));
-			Logger.Log("TtsEngine", "[WARN] " + VolcTtsGateway.DescribeError("tts_endpoint_unsupported"));
+			NotifyPlaybackFailed(job, "tts_endpoint_unsupported");
+			Logger.Log("TtsEngine", "[WARN] Unsupported TTS endpoint or protocol");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			NotifyPlaybackFailed(job, "TTS Token / API Key is missing.");
-			Logger.Log("TtsEngine", "[WARN] 火山凭据未配置；V1 需要 Token，V3 需要新控制台 API Key");
+			NotifyPlaybackFailed(job, "tts_credential_missing");
+			Logger.Log("TtsEngine", "[WARN] Volcengine credential is not configured; V1 requires a token and V3 requires a service API key");
 			return;
 		}
 		if (protocolVersion == 1 && string.IsNullOrWhiteSpace(text3))
 		{
-			NotifyPlaybackFailed(job, "TTS app id is missing.");
-			Logger.Log("TtsEngine", "[WARN] 火山 V1 AppID 未配置");
+			NotifyPlaybackFailed(job, "tts_app_id_missing");
+			Logger.Log("TtsEngine", "[WARN] Volcengine V1 AppID is not configured");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(text4))
 		{
-			NotifyPlaybackFailed(job, "TTS resource id is missing.");
-			Logger.Log("TtsEngine", "[WARN] 火山 Resource ID 未配置（X-Api-Resource-Id）");
+			NotifyPlaybackFailed(job, "tts_resource_id_missing");
+			Logger.Log("TtsEngine", "[WARN] Volcengine resource ID is not configured (X-Api-Resource-Id)");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(text5))
 		{
-			NotifyPlaybackFailed(job, "TTS voice type is missing.");
-			Logger.Log("TtsEngine", "[WARN] 火山音色未配置");
+			NotifyPlaybackFailed(job, "tts_voice_id_missing");
+			Logger.Log("TtsEngine", "[WARN] Volcengine voice ID is not configured");
 			return;
 		}
 		string audioEncoding = (text6 ?? "wav").Trim().ToLowerInvariant();
 		if (audioEncoding != "wav" && audioEncoding != "pcm")
 		{
 			NotifyPlaybackFailed(job, "Unsupported TTS audio format. Only wav/pcm is supported.");
-			Logger.Log("TtsEngine", "[ERROR] 当前播放器仅支持 wav/pcm，请将【火山专用音频格式】改为 wav 或 pcm");
+			Logger.Log("TtsEngine", "[ERROR] The player supports wav/pcm only; set the Volcengine audio format to wav or pcm");
 			return;
 		}
-		Logger.Log("TtsEngine", $"在线合成开始: protocol=V{protocolVersion}, textChars={job.Text.Length}, voice={text5}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
+		Logger.Log("TtsEngine", $"Online synthesis started: protocol=V{protocolVersion}, textChars={job.Text.Length}, voice={text5}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
 		LogTtsReport("ProcessJob.SynthesisBegin", job.AgentIndex, $"voice={text5};encoding={audioEncoding};sampleRate={num};audible={flag}");
 		if (job.AgentIndex >= 0 && !ShoutBehavior.CanAgentParticipateInSceneSpeechExternal(job.AgentIndex))
 		{
@@ -765,7 +765,7 @@ internal sealed class TtsEngine : IDisposable
 		if (array == null || array.Length == 0)
 		{
 			NotifyPlaybackFailed(job, string.IsNullOrEmpty(synthesisError) ? "TTS synthesis returned empty audio." : synthesisError);
-			Logger.Log("TtsEngine", "[WARN] 火山 API 未获得可播放音频");
+			Logger.Log("TtsEngine", "[WARN] Volcengine API returned no playable audio");
 		}
 		else
 		{
@@ -773,7 +773,7 @@ internal sealed class TtsEngine : IDisposable
 			{
 				return;
 			}
-			Logger.Log("TtsEngine", $"在线合成完成: {array.Length} bytes");
+			Logger.Log("TtsEngine", $"Online synthesis completed: {array.Length} bytes");
 			LogTtsReport("ProcessJob.SynthesisReady", job.AgentIndex, $"bytes={array.Length}");
 			ParseAudioData(array, audioEncoding, out var pcmData, out var sampleRate);
 			if (audioEncoding == "pcm")
@@ -787,7 +787,7 @@ internal sealed class TtsEngine : IDisposable
 			if (pcmData == null || pcmData.Length == 0)
 			{
 				NotifyPlaybackFailed(job, "TTS audio parse failed.");
-				Logger.Log("TtsEngine", "[WARN] 音频数据解析失败");
+				Logger.Log("TtsEngine", "[WARN] Audio data could not be parsed");
 			}
 			else
 			{
@@ -876,7 +876,7 @@ internal sealed class TtsEngine : IDisposable
 				}
 				catch (Exception ex)
 				{
-					Logger.Log("TtsEngine", "[WARN] Rhubarb 准备失败: " + ex.Message);
+					Logger.Log("TtsEngine", "[WARN] Rhubarb preparation failed: " + ex.Message);
 					LogTtsReport("ProcessJob.OnAudioFileReadyFailed", job.AgentIndex, "error=" + ex.Message);
 				}
 				try
@@ -1031,8 +1031,8 @@ internal sealed class TtsEngine : IDisposable
 				.GetResult();
 			if (!result.Success)
 			{
-				failureReason = VolcTtsGateway.DescribeError(result.ErrorCode);
-				Logger.Log("TtsEngine", "[ERROR] 火山 Gateway failure: " + (result.ErrorCode ?? "unknown") + "; logId=" + result.LogId);
+				failureReason = result.ErrorCode ?? "tts_unknown";
+				Logger.Log("TtsEngine", "[ERROR] Volcengine gateway failure: " + (result.ErrorCode ?? "unknown") + "; logId=" + result.LogId);
 				return null;
 			}
 			cancellationToken.ThrowIfCancellationRequested();
@@ -1044,8 +1044,8 @@ internal sealed class TtsEngine : IDisposable
 		}
 		catch (Exception exception)
 		{
-			failureReason = VolcTtsGateway.DescribeError("tts_gateway_" + exception.GetType().Name);
-			Logger.Log("TtsEngine", "[ERROR] 火山 Gateway invocation failed: " + exception.GetType().Name);
+			failureReason = "tts_gateway_" + exception.GetType().Name;
+			Logger.Log("TtsEngine", "[ERROR] Volcengine gateway invocation failed: " + exception.GetType().Name);
 			return null;
 		}
 	}
@@ -1158,14 +1158,14 @@ internal sealed class TtsEngine : IDisposable
 			}
 			else
 			{
-				Logger.Log("TtsEngine", $"[WARN] 未识别 WAV 编码(formatTag={num}, bits={num8}, ch={num7})，按原始 data 区回退");
+				Logger.Log("TtsEngine", $"[WARN] Unrecognized WAV encoding(formatTag={num}, bits={num8}, ch={num7}), falling back to raw data");
 				pcmData = new byte[num3];
 				Buffer.BlockCopy(data, num2, pcmData, 0, num3);
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("TtsEngine", "[WARN] WAV 解析异常，回退原始数据: " + ex.Message);
+			Logger.Log("TtsEngine", "[WARN] WAV parsing failed; falling back to raw data: " + ex.Message);
 			if (data.Length > 44)
 			{
 				pcmData = new byte[data.Length - 44];
@@ -1195,7 +1195,7 @@ internal sealed class TtsEngine : IDisposable
 		int num = waveOutOpen(out var phwo, uint.MaxValue, ref pwfx, IntPtr.Zero, IntPtr.Zero, 0u);
 		if (num != 0)
 		{
-			Logger.Log("TtsEngine", $"[ERROR] waveOutOpen 失败, result={num}");
+			Logger.Log("TtsEngine", $"[ERROR] waveOutOpen failed, result={num}");
 			return;
 		}
 		lock (_playbackLock)
@@ -1224,7 +1224,7 @@ internal sealed class TtsEngine : IDisposable
 			num = waveOutPrepareHeader(phwo, ref pwh, cbwh);
 			if (num != 0)
 			{
-				Logger.Log("TtsEngine", $"[ERROR] waveOutPrepareHeader 失败, result={num}");
+				Logger.Log("TtsEngine", $"[ERROR] waveOutPrepareHeader failed, result={num}");
 				return;
 			}
 			lock (_playbackLock)
@@ -1238,7 +1238,7 @@ internal sealed class TtsEngine : IDisposable
 			}
 			if (num != 0)
 			{
-				Logger.Log("TtsEngine", $"[ERROR] waveOutWrite 失败, result={num}");
+				Logger.Log("TtsEngine", $"[ERROR] waveOutWrite failed, result={num}");
 				waveOutUnprepareHeader(phwo, ref pwh, cbwh);
 				return;
 			}
@@ -1339,7 +1339,7 @@ internal sealed class TtsEngine : IDisposable
 	{
 		if (_tempAudioDir == null)
 		{
-			_tempAudioDir = Path.Combine(Path.GetTempPath(), "AnimusForge_TtsAudio");
+			_tempAudioDir = Path.Combine(AnimusForgeDataPaths.GetCacheDirectory(AnimusForgeDataPaths.GetCurrentRoot()), "TtsAudio");
 		}
 		if (!Directory.Exists(_tempAudioDir))
 		{
@@ -1458,6 +1458,6 @@ internal sealed class TtsEngine : IDisposable
 		{
 			_workerThread.Join(3000);
 		}
-		Logger.Log("TtsEngine", "TTS 引擎已释放");
+		Logger.Log("TtsEngine", "TTS engine disposed");
 	}
 }

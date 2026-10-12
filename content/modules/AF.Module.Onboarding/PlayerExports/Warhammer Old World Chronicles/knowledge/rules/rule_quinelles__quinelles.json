@@ -1,0 +1,159 @@
+{
+  "Id": "rule_quinelles",
+  "Keywords": [
+    "Principality of Quinelles_QU",
+    "Duchy of Quinelles_QU",
+    "Quinelles Territory_QU",
+    "Quinelles Forest_QU",
+    "Duke of Quinelles_QU",
+    "Quinelles Woods_QU"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Quinelles is located in eastern Bretonnia, bordering the Forest of Athel Loren, and is ruled by Duke Tancred II de Quinelles. This place has the closest relationship with the Wood Elves among the Bretonnia principalities, and the ancient alliance between the two parties can be traced back to the era of Gilles. The magic of elves and the spear of knights coexist harmoniously here."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Quinelles—elven friends at the edge of the forest! Lord Tancred II continues his ancient oath to Athel Loren. Our castle tower was covered with ivy, and forest spirits sometimes visited our garden by moonlight. The knights of Quinelles know the secrets of the forest better than those of other principalities, and logging is strictly prohibited here."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The strategic value of the Principality of Quinelles lies in its special relationship with the Wood Elves. Duke Tancred II is the only ruler in Bretonnia who can call upon the Wood Elves for military aid - a relationship that could change the tide of battle in a border conflict. Quinelles also guards the eastern entrance to Athel Loren, preventing greenskin tribes from invading the forest from the direction of the Gray Mountains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economy of the Principality of Quinelles is unique. Due to a ban on large-scale logging, the duchy does not export wood and instead imports processed wood from the Empire and the dwarves of the Gray Mountains. Agriculture is based on intensive farming of small plots in the forest, producing herbs, honey and rare mushrooms. Quinelles honey is renowned in the Old World - bees gather nectar on the fringes of Athel Loren. The principality also produces a medicinal plant called \"Elven Grass\", which only grows on the edge of Athel Loren. It has miraculous effects on treating certain diseases and is extremely expensive. The forbidden trade with the Wood Elves—restricted to principally chartered merchants—involves elven artifacts and magical talismans, and is extremely profitable but equally risky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The female nobility of Quinelles are closer to the magic of nature than women anywhere. It is said that the original place of manifestation of the Lake Goddess was beside a clear spring at the junction of Quinelles and Athel Loren. The court of Duke Tancred II has the position of \"Forest Lady\", who is responsible for negotiating with the female envoys of the wood elves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family has been the \"forest messenger\" between Quinelles and Athel Loren for generations. This duty can only be passed down from generation to generation - elves distrust strangers. Duke Tancred II needs our family as a bridge, because we understand both human etiquette and elven rules. Once that trust is lost, Quinelles loses its most prized ally."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is a disturbing beauty to the forests of Quinelles. The trees are arranged so neatly, and the light and shadow in the forest seem to have a will of their own. When I camped at the edge of the forest, I once saw Elven Sentinels passing silently among the tree canopies in the morning light. Local residents warned me never to go too far into the forest - they said those who went too deep never spoke again when they came back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Business opportunities in Quinelles lie in plain sight. Honey and herbal medicine are two businesses that can be started without much capital - Quinelles honey can be sold for five times the price of ordinary honey in the empire. Elf grass is a hugely profitable commodity. A bundle of dried elf grass can be exchanged for an equal weight of silver at the Altdorf drugstore. But elven trade goods must not be counterfeited—wood elves value goodwill beyond human imagination."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Principality of Quinelles is located on the edge of Athel Loren in eastern Bretonnia and is known for its ancient alliance with the wood elves and guardianship of the forest.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Fringe Elf Allies of Athel Loren, Principality of Quinelles"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_manticore",
+  "Keywords": [
+    "Manticore",
+    "Flying behemoth",
+    "Sphinx and Bat Wings",
+    "Poisonous Scorpion Tail",
+    "chaos twist",
+    "Furious Mount",
+    "aerial predator",
+    "deadly sting",
+    "Shadow Flying Beast",
+    "manticore hybrid",
+    "monster mount",
+    "Chaos Beast"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The manticore is a flying behemoth born from the distortion of chaotic energy. It has the body of a lion, the wing membrane of a giant bat, and a venomous scorpion tail. It hovers in the air in search of prey. Once it dives, it will tear the target into pieces with its poisonous sting and fangs. It is a violent mount that the Chaos Lords compete to tame."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Taming a manticore is one of the greatest personal achievements we can achieve. They inhabit the \"Fang Mountains\" in the north - those peaks are shrouded in purple mist all year round. You need to go up the mountain alone, without weapons - the manticore only respects challengers who dare to do so. When you stand in front of it, its tail will swing a few inches above your head, and its venom will fall on your shoulders drop by drop. If you don't move, it won't attack - and then you have to look directly into its four pairs of eyes. If it accepts you, it will lower its head and let you touch its mane. From that moment on, you are its only rider. A Chaos Lord flying across the battlefield on a manticore would strike fear into the hearts of even the bravest knights of the South."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Manticore is an excellent flying mount, providing air superiority and a powerful dive attack. Its poisonous tail can kill low-level enemy generals with one stab, and the venom will cause the wound to fester within seconds. But manticores have a violent temper - they can lose control during a fight and attack the nearest living creature, friend or foe. Be sure to perform the Bloodthirsty Ritual before each battle to ensure its attack is focused on the enemy. In siege battles, use manticores to climb over city walls and attack enemy artillery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to the classification of \"Chaos Biology\", the Manticore is a \"composite Chaos Behemoth\" - formed by the forcible fusion of the characteristics of two or more different animals by chaotic energy. The composition of its venom has been analyzed by imperial alchemists and contains at least seventeen known toxins and seven unknown compounds. The antidote has not yet been successfully developed. The manticore's ability to fly does not come from actual wings, but from its membranes creating anti-gravity levitation through chaotic energy - which may explain why they can hover at high altitudes without air lift. The most famous manticore in history is \"Night Venom\" - it is the mount of the great demon \"Bloodhorn\" of Khorne. According to records, its size is much larger than that of ordinary manticores, with a wingspan of forty meters and a tail as thick as the trunk of an ancient tree. In its life, it killed no less than ten Chaos Lords who tried to tame it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My manticore \"Darkwing\" only bows its head to me. The day I tamed it, I walked up the mountain with my bare hands and told it with my eyes that I was not prey - I was a companion, or worse, an opponent that should not be taken lightly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Offer advice on taming the manticore to the bravest warriors in the tribe, but do not force it on anyone - no tamer who refuses survives. If someone in your tribe successfully tames a manticore, it will be a festival for the whole tribe, because it means that your combat power has jumped to a new level."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You are walking through a valley strewn with broken bones, and you look up to see several manticores circling overhead. They are not attacking - which means they are full. You hurry up and get out of here."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The manticore symbolizes strength and freedom in northern tribal culture. They accept only the strongest riders, an exclusivity that makes the Rider of the Manticore the most coveted military position in the North. Each manticore will only recognize one rider throughout its life. If the rider dies, the manticore will eat his body and return to the wilderness."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Manticore - a flying behemoth with a lion body, bat wings and a manticore tail, the high-level mount of the Chaos Lord.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Manticore flying behemoth lion body bat wings"
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "Id": "rule_imperial_geography",
+  "Keywords": [
+    "imperial geography",
+    "imperial provinces",
+    "Empire territory",
+    "Rick River",
+    "imperial geography gray mountains",
+    "Empire Geography World's Edge Mountains",
+    "imperial road",
+    "imperial forest",
+    "imperial trade routes",
+    "ostermark bog",
+    "imperial territory"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The empire's territory stretches from the Gray Mountains in the west to the World's Edge Mountains in the east, from the waves of the North Sea to the banks of the River Ivey, and is divided into thirteen provinces. The core Reikland sits on the Reikland waterway and the imperial capital Altdorf. Middenland is famous for the faith of Ulric's Holy Fire and the wolf capital Middenheim. Nulnland is the heart of the empire's industry and the headquarters of the artillery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Every inch of the empire was carved out by our ancestors with swords and plows. Reikland is our heart - Altdorf spans both sides of the Reik River, the cathedral's spiers pierce the sky, and the Imperial Council hall hangs the flags of past emperors. Middenland is the country of Ulric. The white wolf city Middenheim is built on the huge rocks standing on the plain. The men there are rougher and bolder than those in the south. Nunn belongs to the military craftsmen. The cannons in Nunn City roar and test day and night. Seven out of ten muskets in the empire come from the hands of the blacksmiths here. Osterland and Ostermark Territory are the northeastern frontiers. Farmers there plant wheat during busy periods and chop orcs during slack periods. The land is barren but their hearts are as strong as iron. Tarabek Territory has the largest forest in the empire, the Tarabek River runs through the entire territory, and the city of Tarabekheim is the lifeblood of the north-south trade route. The cavalry of Steele's leader was the best in the empire, and the horses galloped on the open plains. The Weisen Territory borders the Border Prince Territory to the south and is the gateway to the southern states. The Nordlands guard the North Sea coastline, and there is only a thin line between the Nords and the Norsca barbarians - that line is called the Imperial Fleet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The key to controlling the empire can be summed up in one sentence geographically: whoever controls the Reik River controls trade; whoever controls trade controls the empire. Altdorf is irreplaceable not only because it is the capital, but also because the Reik River flows into the sea here, making it the busiest inland port in the empire. The strategic value of Middenheim lies in its impregnability - it is built on a steep rocky mountain of more than 300 meters, making it almost impossible for the siege forces to cut off its supplies. Nunn's gunpowder factory and gunnery academy are the empire's most important military resources. If any army loses Nunn's ammunition supply, its muskets and artillery will be nothing more than a pile of scrap metal. The eastern lands—Osterland, Ostermarkland, and the partially destroyed Thorland—are the first line of defense against the vampire Earl Sylvania, and are also the only way for the Chaos Horde to go south. The generals stationed here need to have nerves of steel and never-ending vigilance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Each of the empire's thirteen provinces has its own unique geographical features and historical destiny. The Reikland (Great Province) was the political and economic center of the empire, and the trade brought by the Reikland River made Altdorf one of the largest cities in the Old World. Middenland is the largest province in the empire, covering the deep Drakenwald Forest - a forest that is not only a source of wood and furs, but also harbors beastman tribes and Chaos mutants. Nordland borders the North Sea, and the Nords have long been at war with Norsca raiders, developing a strong tradition of naval warfare and a natural wariness against outsiders. Osterland is the electoral province with the smallest population in the empire, and its desolate swamps and frozen soil have forged the toughest border people in the empire. Tarabekheim in the Tarabek Territory is known as the \"City of the Woods\" and controls the trade route along the Tarabek River to Kislev. Steele Territory is the cradle of the Imperial Cavalry, and the vast grasslands are suitable for grazing high-quality Imperial war horses. Iverland is named after the Iver River and has the most beautiful vineyards and the most fertile farmland in the empire. The lost lands of Thor and Dripa are an unhealed scar in the history of the empire - the former was destroyed by the Chaos invasion, and the latter lost its right to vote in political conspiracy. The Border Prince territory of Wesenland is an adventurer's paradise and a lawless frontier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The mountains and rivers of the empire will not treat you more gently because you are a woman, but they will teach you the survival wisdom that men cannot learn in the palace. The first time I crossed the Ostermark Swamp as an adult, it was during the spring thaw, and the guide said that even the army would not use this road at this season. I looked at the half-cart wreckage and abandoned fragments of plate armor soaked in the swamp, and understood why the eastern frontier of the Empire has swallowed the lives of at least three Elector Count heirs every century. The geography of the empire is not the provincial boundaries drawn on paper, but the suffocatingly real mud, cold wind and abyss - the trees in the Drakenwald Forest in Middenland will make a wind noise similar to that of a crying baby in winter, the grasslands in Steele Land will be so hot in midsummer that even war horses refuse to graze, and the waves crashing along the coast of Nord in the North Sea during storm season can directly break the breakwater made of wood and stone. As a woman, I couldn't ride into the battlefield like a man to prove my control over the province, but I learned to conquer this land in another way - I made sure that every post road in my province had a post station to shelter from the wind, and every border village had enough firewood for the winter before midsummer. These are details that the barons never pay attention to."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The empire's thirteen provinces are like thirteen disparate families—and to maintain this fragile unity, you must understand the family geography behind each land. Our family has held hereditary fiefdoms in Stirland since the Dark Ages, but the real power base of the family is the marriage network across three provinces: my grandmother comes from a branch of the Wolfgaard family in Middenland, my brother-in-law is the second son of an earl in Talabekland, and my brother-in-law owns a wealthy vineyard in Iverland. In the eyes of family leaders, the map of the empire is not a provincial border but a blood kinship network - it doesn't matter where you have a fiefdom, what matters is in which provinces you have doors that can be knocked open with the family crest. Each ancient family strategically spreads its bloodline branches across multiple provinces, not just for safety backup - but also because in imperial politics, when you need to push a resolution in parliament, a Stirland elector with distant cousins ​​in Middenheim has immeasurable more intangible capital than an elector with only the support of local vassals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The map of the Empire etched a truer imprint on the soles of my feet and the tip of my knife than any piece of parchment could. The Imperial Way from Altdorf to Middenheim is claimed to be the safest public road in the old world - in fact every fifty miles you can see the corpses of travelers stripped of their armor on the roadside, which the imperial tax official calls 'natural wear and tear'. The passes of the Gray Mountains are a popular passage for caravans in the summer, and the most reluctant errand for a mercenary like me in the winter - the kind of wind that can freeze your lungs directly through three layers of leather armor. At the foot of the World's Edge Mountains are dotted a string of mining villages that have long been abandoned by the Empire. In the dilapidated mines, you can find traces of the first generation of Imperial immigrants working together with the dwarves to mine. The place that fascinates me the most about the Empire is the Border Princes - that unclaimed wilderness outside the Empire's territory, full of desperadoes who don't believe in fate, where a person can change from a deserter with nothing to a bandit leader with thirty spearmen overnight, and then be decapitated by another person more ruthless than him the next night. These places never figure in the discussions of the Imperial Council, but they are the true frontiers of the Empire - not lines drawn on a map, but the gray zone between civilization and chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The geography of the empire was nothing more than a cost-benefit web for merchants—every road and every river had its price. The Reik River is the main artery of the empire's commerce. A load of Nun muskets can be transported upstream from Altdorf to Tara Beckheim in seventeen days, while traveling by land requires forty-two days plus at least three escort fees to deal with bandits. The towering rocks of Middenheim gave the city a reputation of being unassailable, but from a merchant's perspective, this meant that every barrel of ale and every bundle of cloth had to be transported by mule carts on a three-hundred-meter-high mountain road, and the freight was three times that of plain cities - this was the only reason why prices in the north were 30% more expensive than in the south. The dwarven trade routes of the World's Edge Mountains were regarded as gold mines by successive emperors of the Empire - the dwarves provided the highest quality ores and metalwork at the fairest prices, and all Imperial merchants had to pay was patience, as a single contract negotiation by the dwarves could last three generations. I have a copy of the original manuscript of the dwarf trade contract passed down by my family for three generations. My grandfather mentioned in the notes on page 27 that 'the dwarf friends believed that it would take another twenty years of discussion to reach a complete consensus' - they finally signed it, and our family relied on this contract to accumulate wealth that rivaled that of a small Elector Count."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Reik River—the great river that runs through the heart of the empire, is the lifeblood of imperial trade and politics.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The topography, climate and location characteristics of the empire"
+  ]
+}

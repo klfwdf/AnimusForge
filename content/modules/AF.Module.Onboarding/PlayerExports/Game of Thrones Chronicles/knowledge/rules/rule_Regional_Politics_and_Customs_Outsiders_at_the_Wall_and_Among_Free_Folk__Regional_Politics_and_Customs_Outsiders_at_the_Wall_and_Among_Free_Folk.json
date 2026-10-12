@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Regional_Politics_and_Customs_Outsiders_at_the_Wall_and_Among_Free_Folk",
+  "Keywords": [
+    "Outsiders at the Wall and Among Free Folk"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "How the Great Wall and beyond view outsiders often says more about its character than official etiquette. Southerners often referred to those outside the Wall as savages, while free folk viewed the South's kneeling allegiance as an incomprehensible bondage; trade routes, marriage alliances, and wars would continue to force these judgment changes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outsiders at the Wall and Among Free Folk"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outsiders at the Wall and Among Free Folk"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outsiders at the Wall and Among Free Folk"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outsiders at the Wall and Among Free Folk How the Great Wall and beyond view outsiders often says more about its character than official etiquette. Southerners often referred to those outside the Wall as savages, while free folk viewed the South's kneeling allegiance as an incomprehensible bondage; trade routes, marriage alliances, and wars would continue to force these Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outsiders at the Wall and Among Free Folk How the Great Wall and beyond view outsiders often says more about its character than official etiquette. Southerners often referred to those outside the Wall as savages, while free folk viewed the South's kneeling allegiance as an incomprehensible bondage; trade routes, marriage alliances, and wars would continue to force these The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outsiders at the Wall and Among Free Folk How the Great Wall and beyond view outsiders often says more about its character than official etiquette. Southerners often referred to those outside the Wall as savages, while free folk viewed the South's kneeling allegiance as an incomprehensible bondage; trade routes, marriage alliances, and wars would continue to force these If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Outsiders at the Wall and Among Free Folk How the Great Wall and beyond view outsiders often says more about its character than official etiquette. Southerners often referred to those outside the Wall as savages, while free folk viewed the South's kneeling allegiance as an incomprehensible bondage; trade routes, marriage alliances, and wars would continue to force these They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Outsiders at the Wall and Among Free Folk: How the Great Wall and beyond view outsiders often says more about its character than official etiquette. Southerners often referred to those outside the Wall as savages, while free folk viewed the South's kneeling allegiance as an incomprehensible bondage; trade routes, marriage alliances, and wars would continue to force these"
+  ]
+}

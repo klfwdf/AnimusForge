@@ -1,0 +1,48 @@
+{
+  "Id": "rule_Siege_of_Diatema",
+  "Keywords": [
+    "Siege of Dyatma",
+    "Dryans"
+  ],
+  "RagShortTexts": [
+    "The Dryans were the northernmost tribe among the Pala tribes and eventually disappeared from the empire"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "The Dryans were the northernmost of the Pala tribes, and they were also the last Pala people to disappear from the empire. Almost all independent records about them have been lost, and there are only sporadic imperial military archives and folk oral accounts around Lake Laconis for reference. In limited records, the Dryans once occupied the woodlands and foothills north of Lake Laconis, and were a marginal tribe of the Pala people. As the front line of imperial expansion advanced northward across the plains, the Dryans mounted a last organized resistance. The exact date of this rebellion and the names of its leaders are unknown. The only thing that was repeatedly mentioned was their ending: the Dryans were surrounded by the imperial army at the shallows of Lake Laconis, fought with their backs against the water, and had no way to retreat, and eventually all died in the battle. Legend has it that the water of the lake was dyed scarlet with blood, and one person fell one after another, and the corpses filled the shallows into embankments. It was not until the last soldier sank into the lake that the water surface returned to silence. On the site of this final battle, Diatema, the city of the Holy Judgment, was later built."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_en2"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dryans were the northernmost of the Pala tribes and the last Pala people to disappear from the empire. The founding of Diathma was both the ultimate negation of the Dryans' resistance and the sanctification of their land. The Dryans as a group have since disappeared from historical records, leaving only the scarlet legend of the lake, passed down from generation to generation in the fishing villages around Diatma. Fishermen still say that on certain evenings, rust-colored ripples appear in the water in the shallows."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Geographical_Dossier_Planky_Town",
+  "Keywords": [
+    "Planky Town",
+    "Planky Town Geography",
+    "Planky Town History",
+    "Planky Town Strategy"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Slatted Town is located at the mouth of the Greenblood River in the southeastern part of Dorne. It consists of rafts, barges, pile houses and waterfront streets. It belongs to the Dornish territory of Sunspear and is the outlet for Greenblood shipping and trade on the Summer Sea; the Rhoynar traditions of the orphans are most vividly preserved here, and river boats and shallow water navigation are more important than thick walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Planky Town Local families also rely on wells, irrigation canals, orchards, drought-tolerant livestock, and travel to avoid the hot sun; if any road, well, or dock fails, the cost falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Planky Town Entry Planky Town"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Planky Town They also recognize Dornish accents, laws and credentials; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Planky Town Entry Planky Town"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Planky Town If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who repair the Plank Town are familiar with the workshops, markets, roof tiles, church bells and the streets that have expanded through the ages, and those who comfort the families of the deceased are familiar with the shared memories of the Seven Gods, the Rhoynar legacy and the different bloodlines under the prince's rule. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Planky Town They care about wells and springs, irrigation canals, orchards, drought-tolerant livestock, and routes to avoid the scorching sun. They also look at whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Planky Town: Slatted Town is located at the mouth of the Greenblood River in the southeastern part of Dorne. It consists of rafts, barges, pile houses and waterfront streets. It belongs to the Dornish territory of Sunspear and is the outlet for Greenblood shipping and trade on the Summer Sea; the Rhoynar traditions of the orphans are most vividly preserved here, and river boats and shallow water navigation are more important than thick walls."
+  ]
+}

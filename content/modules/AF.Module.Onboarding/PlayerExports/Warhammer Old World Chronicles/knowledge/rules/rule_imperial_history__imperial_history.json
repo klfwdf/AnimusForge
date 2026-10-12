@@ -1,0 +1,213 @@
+{
+  "Id": "rule_imperial_history",
+  "Keywords": [
+    "imperial history",
+    "Origin of empire",
+    "Sigmar Jianguo",
+    "Magnus ZTE",
+    "The Three Emperors Separated",
+    "vampire war",
+    "Chaos Invasion",
+    "dark ages",
+    "golden age",
+    "imperial chronicle",
+    "Fasha Pass",
+    "blackfire pass"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Empire was founded by the mortal God-Emperor Sigmar in the First Year of the Imperial Annals. He defeated the greenskin army at the Battle of Blackfire Pass and unified the human tribes scattered in the central part of the Old World. Since then, the empire has experienced many ups and downs - two thousand years of Dark Ages, the Chaos Invasion, the Vampire War and the separation of the Three Emperors - but the accession of Emperor Karl Franz to the throne has brought hope to this ancient country again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our history is written in blood on parchment. Sigmar was not born a god - he was the son of the chieftain of the Ulbersric tribe, who defeated the orc-goblin alliance in Rykdorf and saved the twelve tribes from the savagery of killing each other. A thousand years into the empire's history, after the death of Emperor Ludwig, plague and civil war broke out across the country. The Dark Ages lasted for nearly a thousand years, and the fire of civilization lingered in monasteries and dwarf fortresses. Until the 2300th year of the Imperial Calendar, Magnus rebuilt the empire on the ruins of the Chaos Invasion, and gathered the greatest army in the old world with Nunn as the center to march north to confront Asava Kuhl, the eternal god of Chaos. Our ancestors fought the armies of Chaos at the Pass of Farsa, using steel and gunpowder to defeat the Chosen of the Dark Gods. Now that Emperor Karl Franz is on the throne, the empire once again stands at the crossroads of destiny. The forces of Chaos in the north are ready to move, and the vampire count in the south has never truly rested."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The historical lessons of the empire tell us: every internal division will lead to invasion by foreign enemies. During the Secession of the Three Emperors, when Talabek, Midden, and Reikland each had their own emperors, the vampire Count Vlad von Carstein nearly swept the entire empire from Sylvania. The reason why the Chaos Invasion was almost successful was because the empire at that time was exhausted from the religious wars. What the wise learn from history is this: Personal grievances between the Elector Counts must be settled in the Imperial Council and internal strife must not be allowed to weaken the defenses of the frontiers. The Inquisitors of the Church of Sigmar still hunt hidden Chaos followers and Vampire agents to this day, because they know better than anyone - the enemies of the Imperium have never defeated us head-on in history, and they are always looking for treachery from within."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The chronicles of the Empire can be divided into six major eras: The Age of Sigmar witnessed the birth of the Empire and the divine rule of the first emperor; the Dark Ages began with the plague, famine and continuous civil war after the death of Emperor Ludwig in 1111 Imperial Calendar - this period of nearly a thousand years is still the most difficult research topic for imperial historians, and a large number of archives were destroyed by war and plague; the Era of Redemption was marked by the rise of Emperor Magnus, who rebuilt the city of Nunn and summoned the Electors after the Chaos Invasion. Count rebuilt the parliament; the period of separation of the Three Emperors was the most chaotic stage of imperial politics, Wolfsburg in Midden Territory, Tara Beckheim in Talabeck Territory and Altdorf in Reikland Each of them proclaimed an emperor, and this legal battle did not end until Magnus convened the Grand Council; the Golden Age was the pinnacle of the empire's technology and military, with the birth of steam tanks at this time, and the growth of the School of Engineering and the School of Magic; and finally, the current era - the reign of Karl Franz, an emperor considered by scholars to be one of the most capable emperors in the history of the Empire, but the threats he faced were more complex and more difficult to detect than in Magnus's time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Most of the history books of the empire were written by monks and male scholars, but any woman who has actually been in charge of family archives in a noble family knows that these official histories leave out too much. I looked through my great-grandmother's private diary - she lived at the end of the Three Emperors' period and managed a castle on the border of Ostermark alone for seventeen years after her husband died in the war. The official history will only record the victory and defeat of that border war, but the diary is full of how to use a cellar of pickled winter grains to appease the garrison who was about to mutiny, how to order the burning of the entire village to stop the spread of the plague, and the days and nights she spent every winter kneeling before the Sigmar statue to pray for her son to live another year. The history of the empire is not only that of the emperors and generals, but also that of countless women who have been supported alone in the cracks of history - they were not elected to the Imperial Parliament, but they gave birth to and educated the men who would sit in the parliament hall in the future."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Family memory is the most authentic carrier of imperial history. Our family hall hangs twelve banners preserved from the days of Magnus, each one corresponding to a battle in which an ancestor died in defense of the Empire's frontiers. The official chronicles of the empire will only record the name of the emperor and the victory or defeat of the battle, but will not tell you that the fifth ancestor stood alone for two days in the blizzard in Steele Territory before waiting for reinforcements. That frozen loneliness is the spiritual legacy of the descendants of our family, and is more precious than any crown jewel. Each ancient family in the empire has its own 'Ashes File' - events that have been erased from official records: family branches that were declared heretics by the church, ancestors who were deprived of elector qualifications due to rebellion and then secretly restored to power, and illegitimate children whose inheritance was covered up in the name of adoption. The official history of the empire is for the public to see. The real history is hidden in the secret files of the major families. One day these files will be gathered together to tell a story that is completely different from the official history."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have heard more historical stories than any old scholar in any academy during my years of wandering around the empire - but these stories were not read in libraries, but told orally by veterans and refugees around campfires, in tavern corners and in marching tents. Official history says that the Dark Ages ended with the rise of Emperor Magnus, but fishermen along the coast of Nordland will tell you that darkness has never left the North Sea - the Norsca longships still appear on the horizon every foggy morning. Official history says that the Vampire War is over, but the border residents of Osterland know that those who disappeared after going out alone at night never came back, and their bodies were often found weeks later in the direction of Sylvania, with an eerie serenity on their faces. The truth of history does not lie in the monuments to the victors, but in the silence of those who dare not be told in public - you will only tell you that what he saw at Fasha Pass was more than glory after drinking the third pot of ale with a veteran."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the eyes of merchants, the history of the empire is first and foremost a history of trade. Sigmar's defeat of the Greenskins at Blackfire Pass was more than a military victory - it opened up a trade corridor from the Reik River to the World's Edge Mountains, a corridor that remains the Old World's most important commercial artery. The reason why the Dark Ages were 'dark' is reflected in merchants' accounts as rampant pirates in the Reik River, various checkpoints set up arbitrarily by warlords, and an Altdorf gold coin in Middenheim that can only be exchanged for one-third of its face value in silver. The collapse of the monetary system reflects the suffering of an era better than any war. Emperor Magnus's most underestimated achievement was not his military victory, but his restoration of the unified coinage system of the Empire, making the Nun Silver Mark a common hard currency throughout the realm. The account books left by my Chamber of Commerce predecessors record two centuries of price fluctuations, and in them can be read every war, every plague, and every political crisis. In the five years of the Black Death, the sinuous line left by the price of wheat on the ledger mapped the despair of the empire more accurately than any chronicle."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Blackfire Pass - the place where Sigmar defeated the greenskin coalition for the first time, the starting point of the empire's history",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Empire was founded by the mortal God-Emperor Sigmar in the First Year of the Imperial Annals"
+  ]
+}

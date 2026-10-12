@@ -1,0 +1,31 @@
+{
+  "Id": "rule_wani_people",
+  "Keywords": [
+    "Vani",
+    "Alabat"
+  ],
+  "RagShortTexts": [
+    "The Wani influence the Alabat accent"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Alabat lies deep in the forests of northeastern Sturgia. This remote land has long been a refuge for people from all over the north fleeing oppression, debt and feuding, and the local accent is heavily influenced by the Vanni, a forest people."
+    }
+  ],
+  "TextMappings": []
+}

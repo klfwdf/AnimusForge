@@ -1,0 +1,211 @@
+{
+  "Id": "rule_The_First_Chaos_Invasion",
+  "Keywords": [
+    "The complete history of the first great invasion of Chaos",
+    "The Legend of Asaval, the Eternal Chosen One",
+    "Records of the Southern Invasion of the Eternal Gods",
+    "Chronicles of Emperor Magnus",
+    "History of the Defense of Kislev",
+    "Chronicle of the Fall of Plagg",
+    "Chronicles of the Unification of the Empire",
+    "History of the Founding of the Magic Academy",
+    "Chronicle of the Great Holy War Counterattack",
+    "Chronicles of the Chaos Frenzy Invasion"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The First Great Chaos Invasion - known in Imperial history as the Great Crusade - was the closest crisis to total annihilation in the Old World's modern history. In 2302 AD, an unprecedented Eternal God-Chosen Asavar Kuhl rose up in the Chaos Wastes. He united all the divided tribes in the Chaos Wastes and led a Chaos army southward whose size cannot be accurately estimated so far. Within two years Kislev had fallen, Plagg was reduced to a corrupted ruin raved by madmen, and the Empire - at that moment - was still torn apart by the civil wars of the Three Emperors era. It was Magnus von Nunn - a Nunn noble often underestimated in historical narratives - who welded the fragments of the Empire back into a shield and founded the Imperial Academy of Magic with the help of Tyger Lys."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Invasion nearly ended everything. Before Asaval Kull emerged from the northern snows, we Imperials thought Chaos was just a legend from the far north—a bedtime story mothers told to frighten their rebellious children, a deformed savage with an extra arm or an extra horn described in exaggerated tones by border officers. We are so stupid. Asavar Kul is no barbarian - he is the Ever-Chosen, crowned with the full power of the four Chaos Gods at once, his armor bearing the sigils of all four gods, and his blade burning with the wrathful fire of Khorne, the plagued ichor of Nurgle, the hallucinogenic mists of Slaanesh, and the endless transformations of Sinléj. He rolled over Kislev with unstoppable momentum from north to south, and Praag became the most horribly cursed place in the Old World after it was captured - it is said that the screams of the defenders trapped in the corrosive chaos magic can still be heard in the ruins of Praag to this day. The Elector Counts of the Three Emperors era were still attacking each other when the Legions of Chaos emerged on the northern border of the Empire - the three so-called Emperors were still wasting their armies in a pointless civil war over the throne. It was Magnus who stood in the center of the rift - he traveled alone to every Elector Count's court, convincing them through pure reason, fear and faith that disunity was destruction. In the final battle before the walls of Kislev, the Empire, the remnants of Kislev, and the Dwarf reinforcements fought side by side, repelling Chaos at almost any cost to them with casualties. After his victory, Magnus did one of the most important things in the history of the Old World: he invited Lys, the High Elves' most powerful mage, to teach humans how to use magic safely. The decision to establish the Imperial Academy of Magic in Altdorf transformed the Empire from a backward nation that could only fight magic with gunpowder and faith into a modern power with systematized magical power - the only but most precious legacy left to us by the Chaos Invasion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The military lessons of the Chaos Invasion were cold and precise to the rulers of the Old World. Asabar Kuhl's invasion proved three things. First, the civil war divisions of the Three Emperors era were a self-imposed death sentence for the Empire - without Magnus' last-minute unification, the Imperial provinces would have fallen one by one like dominoes. Second, Kislev's strategic value as a buffer zone is irreplaceable - if Kislev did not exist, the Empire would directly border the Chaos Wastes, which means that the Imperial army would always be attrition on the border with no strategic depth. Third, the institutionalization of magic is the most important upgrade of the empire in the arms race - before the invasion of Chaos, the way humans fought against magic was to \"burn the mages if they caught them.\" But when the shamans of the Chaos Legion used magic to tear apart the imperial shield wall on the front line, the torches of the witch hunters looked extremely ridiculous. Tyger Lys's genius lay not in his personal spellcasting abilities - but in his devising a system of instruction that combined the low magical sensitivity of humans with the theoretical knowledge of magic in elves, allowing the Imperium to mass-produce qualified battle mages. In this sense, the greatest contribution of the Chaos Invasion to the Empire was to extort institutional changes from the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The detailed chronology of the Chaos Invasion stretches from 2301 to 2304, but its prelude can be observed in earlier years. Summer 2301 - The stars in the north show a visible color shift, the aurora over the Chaos Wastes rarely expands southward to Kislev's southern border, and Kislev shamans report a measurable increase in the density of magical energy in the wind. Autumn and Winter 2301 - Tribal warfare in the Chaos Wastes suddenly decreases. The Kislev Border Patrol notices that the tribes are gathering in the same direction southward, which is extremely unusual in the behavioral patterns of nomadic tribes. Spring 2302 - Asaval Kull was crowned the Eternal Chosen by four evil gods simultaneously in the heart of the Chaos Wastes with miracles. When the news reached Kislev through prisoner interrogation, no one believed it. Summer 2302 - The Legions of Chaos cross the Talon Coast into Kislev, border towns are exterminated one by one within weeks, and a wave of refugees begins to flow towards the Empire. Autumn 2302 - Plagg is besieged and Magnus begins his persuasive tour across the country. Winter 2302 - Plagg fell, and the defenders were corrupted by Chaos magic into living statues that could not die but retained consciousness - this was the most chilling event of the entire invasion, as it proved that the weapon of Chaos was not death but \"something worse than death\". Spring 2303 - Magnus successfully persuades the majority of the Elector Counts to accept an armistice and form a combined legion, and the Imperial forces begin to gather north. Summer to autumn of 2303 - A tug-of-war lasted for dozens of days on the plains in front of Kislev City. The dwarf reinforcements flanked the Chaos rear forces from the direction of the World's Edge Mountains, forcing their supply lines to collapse. Winter 2303 - Asaval Kuhl's forces are driven back north, but the Everchosen himself escapes. 2304 - Magnus is unanimously elected Emperor by the Elector Count in Altdorf, officially ending the Era of the Three Emperors. Tiger Lys arrives in Altdorf at the invitation of Magnus, and the Imperial Academy of Magic is established. In the same year, Magnus promulgated the \"Magnus Reform Edict\" to establish the imperial state military system. This reform transformed the empire's military force from relying on non-standardized conscription in each province to a standardized armed force that was uniformly trained, equipped, and paid by the imperial center. It was the institutional basis for the empire to withstand countless wars in the next few hundred years without being overwhelmed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The history of women during the Chaos Invasion is a picture that was deliberately burned—not because of a lack of material, but because the male church historians who had the power to write it after the war were unwilling to admit how much women had borne in this disaster. As the male cavalry charge against the Chaos Knights on the plains of Kislev, who maintains the horses' forage supply lines and armor repair workshops at the rear? Is female. During the siege of Prague, as one male officer after another was killed, final command of the defense effectively fell into the hands of an emergency committee composed of several high-ranking nuns and widows of nobles - yet their names are not included in the official narrative of the siege of Prague. During the days when Magnus traveled from province to province to persuade the Elector Count, it was the female managers of his territories who maintained the day-to-day affairs of government - without this rear security, his national united front would collapse within a month due to the vacuum of territorial management. When Magnus promulgated state army reforms after the war, he vetoed the old clauses that excluded women from the army's logistics system - not because of the concept of equality in the modern sense, but because he learned a painful lesson in war practice: every woman excluded from domestic customs is a wasted logistics capability, and in the face of chaos, the empire cannot afford to waste any capability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For the patriarchs who rule ancient houses, the Chaos Invasion is not a disaster of the past - it is a timely danger that will inevitably reappear in the future. Continuous meteorological and magic wind monitoring records in our family archives - recorded quarterly since the time of our great-great-grandfather - reveal a terrifying pattern: significant spikes in magical energy density in the direction of the Chaos Wastes occur every few hundred years, and each spike is almost coincident with a massive southward march of Chaos. The peak of the previous round occurred in 2302 - that is, the Great Invasion. Depending on the wavelength and spacing of this cycle, the next big spike is within about six generations. This is why our family has continued to stock up on iron ingots, saltpeter and grain in various estates in the north over the past hundreds of years - not for speculation, but so that when Chaos next moves south on a large scale, our family's private armory on the border can support an independent defensive buffer zone in our own territory. Every established family with a family record spanning more than a century should make the same calculation - if they do it and keep silent, they at least have time. If they hadn't done it at all, their castle foundations would have been more fragile than a sandcastle when Chaos came."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I've walked through the ruins of Plaag - not as a tourist, but as some lunatic who dared to escort a shipment of items commissioned by Kislev's old nobility across the Corruption. It's not an \"empty town\" - it's alive. Plagg's stones are alive, the rotting walls tremble slightly at night, and the interior walls of certain buildings ooze a crimson slime of coagulated human plasma mixed with Chaos magic. The scariest thing is the sound. As you walk through one of Prague's streets, you hear a chorus muffled by the thick layer of earth coming from beneath the ground - the remaining consciousness of the defenders forced by Chaos magic to repeat the last Kislev war song they sang before they died in battle. The true horror of the Chaos Invasion was not in how many people it killed, but in that it proved to the old world that death was not the end in the face of Chaos, but a starting point that could be infinitely extended and distorted. This knowledge had a seismic impact on the religious belief systems of the old world, because it fundamentally shook the core comfort that exists in almost all warrior belief systems: \"A heroic death can lead to peace.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The destruction of the old world's trading system by the Chaos Invasion is still clearly visible in the data. In the fifteen years following the invasion, fur and amber production in northern Kislev fell to three percent of pre-invasion levels—two industries that have yet to fully recover. The disappearance of Prag as Kislev's second largest trading city created a connection gap in the empire's northern trade network that has not yet been filled - all goods from the empire to the west of Kislev must bypass the Linkska Passage, causing transportation time and costs to nearly double. However, the Chaos invasion also created certain new markets: Magnus's imperial reconstruction project after the war - including the construction of roads, bridges, fortresses, and magical schools - spawned the largest wave of infrastructure investment in the modern history of the Old World, and the empire's iron, wood, stone, and labor markets thus experienced a boom cycle that lasted for decades. It can be clearly seen from the financial archives of three generations of our Chamber of Commerce that those business families who did not evacuate the northern market during the invasion, but instead ate up land and mineral rights in the ruins at the lowest price, obtained a \"disaster investment\" with the highest rate of return in the history of the old world after the war - the moral contradiction of this fact still makes me feel slight stomach cramps every year in the annual report of the Chamber of Commerce."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Asaval Kull - the twelfth Eternal Chosen God who was crowned by four evil gods at the same time in 2302",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The First Great Invasion of Chaos in History: The Legend of Asaval, the Eternal Chosen Records of the Southern Invasion of the Eternal Chosen"
+  ]
+}

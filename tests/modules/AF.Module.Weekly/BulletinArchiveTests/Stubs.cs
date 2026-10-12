@@ -120,7 +120,8 @@ namespace AnimusForge {
   private static string GetPolicyPromptTextFilePath(string dir,string file)=>System.IO.Path.Combine(dir,file);
   private static string GetCustomPromptTextFilePath(string dir,string file)=>System.IO.Path.Combine(dir,file);
   internal static bool ReplayReadPrompt(string path,out string text)=>TryReadCustomPromptTextJsonFile(System.IO.Path.GetFullPath(path),NormalizeWorldBulletinWritingRequirementsText,DefaultWorldBulletinWritingRequirements,out text);
-  internal static bool ReplayReadDirectory(string directory,out string text)=>TryReadCustomPromptTextJsonFileFromDirectory(System.IO.Path.GetFullPath(directory),WorldBulletinWritingRequirementsJsonFileName,NormalizeWorldBulletinWritingRequirementsText,DefaultWorldBulletinWritingRequirements,out text);
+  internal static bool ReplayReadDirectory(string directory,out string text,string packaged=null)=>TryReadLayeredCustomPromptTextJsonFile(System.IO.Path.GetFullPath(directory),packaged==null?null:System.IO.Path.GetFullPath(packaged),WorldBulletinWritingRequirementsJsonFileName,NormalizeWorldBulletinWritingRequirementsText,DefaultWorldBulletinWritingRequirements,out text);
+  internal static void ReplaySavePrompt(string path,string text)=>PersistCustomPromptTextFileUnlocked(System.IO.Path.GetFullPath(path),text);
   internal static string ReplayMigratePrompt(string text)=>MigrateLegacyWorldBulletinWritingRequirements(text);
  }
  internal static class WeeklyGenerationRules {
@@ -137,3 +138,5 @@ namespace AnimusForge {
   public bool SyncData<T>(string key,ref T value){if(!_loading){Data[key]=value;return true;}if(Data.TryGetValue(key,out var v)){value=(T)v;return true;}return false;}
  }
 }
+
+namespace TaleWorlds.Engine { internal static class Utilities { internal static string GetBasePath()=>throw new System.Exception("Uncovered legacy module lookup invoked"); } }

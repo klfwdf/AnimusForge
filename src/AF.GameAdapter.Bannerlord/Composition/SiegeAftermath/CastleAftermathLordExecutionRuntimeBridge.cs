@@ -177,9 +177,9 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 	{
 		return _pending?.Stage == RuntimeStage.FinalizingCampaignDeath
 			|| HasExecutionDeathMark(_pending?.Hero)
-				? SiegeCastleActionOutcomeTextProfile.BuildLordExecutionFinalizationPendingMessage(
+				? CastleAftermathUiText.ExecutionFinalizationPending(
 					_pending?.Hero?.Name?.ToString())
-				: SiegeCastleActionOutcomeTextProfile.BuildLordExecutionConfirmationPendingMessage(
+				: CastleAftermathUiText.ExecutionConfirmationPending(
 					_pending?.Hero?.Name?.ToString());
 	}
 
@@ -428,7 +428,7 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		}
 		pending.FinalizationWarningShown = true;
 		InformationManager.DisplayMessage(new InformationMessage(
-			SiegeCastleActionOutcomeTextProfile.BuildLordExecutionFinalizationPendingMessage(
+			CastleAftermathUiText.ExecutionFinalizationPending(
 				pending.Hero?.Name?.ToString()),
 			Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 		Logger.Log("CastleAftermath", "Castle lord execution campaign finalization pending. Hero="
@@ -641,11 +641,11 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 					"native_execution_exception",
 					StringComparison.Ordinal);
 			string message = cancelled
-				? SiegeCastleActionOutcomeTextProfile.BuildLordExecutionCancelledMessage(pending.Hero?.Name?.ToString())
+				? CastleAftermathUiText.ExecutionCancelled(pending.Hero?.Name?.ToString())
 				: persistenceFailed
-					? SiegeCastleActionOutcomeTextProfile.BuildLordExecutionPersistenceFailedMessage(
+					? CastleAftermathUiText.ExecutionPersistenceFailed(
 						pending.Hero?.Name?.ToString())
-					: SiegeCastleActionOutcomeTextProfile.BuildLordExecutionFailedMessage(pending.Hero?.Name?.ToString());
+					: CastleAftermathUiText.ExecutionFailed(pending.Hero?.Name?.ToString());
 			InformationManager.DisplayMessage(new InformationMessage(
 				message,
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));

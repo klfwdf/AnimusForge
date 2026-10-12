@@ -1,0 +1,168 @@
+{
+  "Id": "rule_Kingdom_of_the_Canni",
+  "Keywords": [
+    "Kingdom of the Canni",
+    "Kan city-state",
+    "Guyaz"
+  ],
+  "RagShortTexts": [
+    "How did the Aserai cause the demise of the Canni kingdom?"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The kingdom of the Canni was the oldest maritime polity on the coast of the Pelas Sea, existing long before the arrival of the Aserai. It was not a unified empire, but a maritime alliance composed of a series of commercial city-states, of which Guyaz was the most powerful city-state. In today's Aserai land, the kingdom of the Canni people has long since died, and its city-states were either destroyed or taken over by the Aserai people. Just as the Empire covered the civilization of the Pala people, the Aserai people covered the civilization of the Canni people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The kingdom of the Canni? That was before us Aserai arrived. Guyaz was once their republican city-state, managing trade in the Western Sea and the Perlas Sea. Then we Aserai came and their city-states fell one after another. Some were beaten down, and some were bought with dinars from merchants. Now Guyaz still exists, but it is ruled by the Banu Hulayan family, not the elders of the Kanni people. Their kingdom is long gone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Aserai seldom mention the kingdom of the Kanni, just as the Imperial people do not love the Tipara people. But the fact is that the land beneath our feet once fluttered the grapevine flag of the Canni people. Their alliance of city-states controlled the trade of the Perath Sea until our ancestors arrived with the scimitars of the desert and the calculations of merchants. They disappear and we stay. This is how history is written."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The port of Guyaz still uses the old wharf of the Canni people. Over the centuries, the stones have been smoothed away, but the foundation underneath was still laid by the Canni people. We Aserai merchants are best at doing business, but to be honest, the trade routes on the Perlas Sea were first developed by the Canni people. They were gone and we took over."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The kingdoms of the Canni, like the Pala confederacy within our empire, were barbarians swallowed up by civilization—or, rather, early civilizations swallowed up by later barbarians. The Empire swallowed up the Pala, and the Aserai swallowed up the Canni. The difference is that our empire at least left citizenship rights and seats in the Senate to the Pala people. What about the Canni? Nothing is left."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Canni kingdom represents the earliest maritime commercial civilization along the Pelas Sea. With Guyaz as the core city-state, it formed a loose commercial republican system. But the relationship with the Aserai is the same as the relationship between the Pala and the Empire - the earlier natives were overtaken by the expanding powers that rose later. The Aserai gradually dismantled the Canni League through military conquest and economic penetration, with its city-states taken over and its population assimilated. Today, only the remaining place names of old ports such as ancient Yaz and some of the technological heritage absorbed by Aserai navigation remain in the Canni kingdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "seafarer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The city-state era of the Canni people was the freest time in the Pelas Sea. They don't have to pay taxes to anyone, they just travel on the routes between city-states. Then the Aserai came, and the flags of the Canni were lowered one by one, and the crescent flags of the Aserai were raised one by one. The old sailor said that the Perlas Sea has not changed, but the people on the shore have changed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Canni kingdom is typical of the maritime civilization of Calradia that was completely covered by later generations. Its relationship to the Aserai parallels the Para's relationship to the Empire - an earlier indigenous maritime civilization swallowed up by a later expanding power. The Canni League, centered on Guyaz, once dominated trade in the Perlas Sea. But the Aserai gradually disintegrated this alliance through military conquest and commercial penetration, and incorporated the Canni city-states into their own rule system. Today the Canni people no longer exist as an independent people, and their culture survives only in the form of technological heritage and place names."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kingdom of the Canni",
+      "Kind": "bound_kingdom_name",
+      "TargetId": "__bound_kingdom__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Guyaz",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

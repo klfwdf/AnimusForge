@@ -72,17 +72,17 @@ namespace AnimusForge.Illustrator.Context
                 {
                     if (context == ConversationContext.CapturedLord || context == ConversationContext.FreeOrCapturePrisonerHero)
                         return new ConversationEntry(ConversationEntryKind.PostBattlePrisoners,
-                            "【会话入口】战斗刚刚结束，正在处置战场上的俘虏（解救或收押）；这是战后的场面，不是战前谈判，战场痕迹、伤亡与战利品只有现场记录确认时才入画");
+                            IllustratorText.Get("ConversationEntry_PostBattlePrisoners"));
                     return new ConversationEntry(ConversationEntryKind.PostBattle,
-                        "【会话入口】战斗刚刚结束后的遭遇流程；这是战后的场面，不是战前谈判，战场痕迹、伤亡与战利品只有现场记录确认时才入画");
+                        IllustratorText.Get("ConversationEntry_PostBattle"));
                 }
 
                 // A live encounter that has not started a battle: party met on the map.
                 if (encounter != null && hasState && (state == PlayerEncounterState.Begin || state == PlayerEncounterState.Wait))
                 {
                     return hostile
-                        ? new ConversationEntry(ConversationEntryKind.PreBattleParley, "【会话入口】大地图上与交战方队伍的阵前接触，战斗尚未开始")
-                        : new ConversationEntry(ConversationEntryKind.PartyMeeting, "【会话入口】大地图行军途中与另一支队伍相遇的会面，双方未交战，不是战前谈判");
+                        ? new ConversationEntry(ConversationEntryKind.PreBattleParley, IllustratorText.Get("ConversationEntry_PreBattleParley"))
+                        : new ConversationEntry(ConversationEntryKind.PartyMeeting, IllustratorText.Get("ConversationEntry_PartyMeeting"));
                 }
 
                 // Party-screen talks are map conversations without any PlayerEncounter.
@@ -104,10 +104,10 @@ namespace AnimusForge.Illustrator.Context
                         }
                         if (prisoner)
                             return new ConversationEntry(ConversationEntryKind.OwnPartyPrisoner,
-                                "【会话入口】玩家在部队界面选中己方队伍关押的俘虏后发起的行军途中对话；俘虏由玩家队伍看押，现场是行军停留处，不是据点地牢，也不是战前谈判");
+                                IllustratorText.Get("ConversationEntry_OwnPartyPrisoner"));
                         if (member)
                             return new ConversationEntry(ConversationEntryKind.OwnPartyMember,
-                                "【会话入口】玩家在部队界面选中己方队伍成员后发起的行军途中对话，双方同属玩家队伍，不是与敌军的谈判");
+                                IllustratorText.Get("ConversationEntry_OwnPartyMember"));
                     }
                 }
             }

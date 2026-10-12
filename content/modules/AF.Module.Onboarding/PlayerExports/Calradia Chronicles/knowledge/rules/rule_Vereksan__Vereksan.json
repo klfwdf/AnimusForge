@@ -1,0 +1,93 @@
+{
+  "Id": "rule_Vereksan",
+  "Keywords": [
+    "Vereksan"
+  ],
+  "RagShortTexts": [
+    "The village of Vereksan uses the water of Lake Oaks to grow wheat to supply the castle."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vereksan is a village near Vereksanburg, on the shores of Lake Oaks. Local villagers grow wheat on the flat grasslands around the lake and use the lake water for irrigation. The food produced is supplied to the castle and surrounding areas."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vereksan is on the edge of Oaks Lake. The land near the lake is flat and the water source is convenient, so it is perfect for growing wheat. The defenders of Vereksanburg had no worries about food, and the wheat threshed in the village down the mountain was sent directly up. This place is stable and far away from Battania, so farmers don’t have to worry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The wheat yield in Vereksan is stable, and the water in Lake Oaks is not afraid of drought. The harvest was good every season. In addition to supplying the castle, the excess was also shipped to Oaks Hall. The black soil by the lake is getting richer and richer with planting, and this village is one of the few places in Vlandia where there is no need to worry about food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vereksan is close to Lake Oaks, and the scenery is good. In the morning, the lake surface was foggy and white. Wheat fields spread along the lakeside, dazzlingly green. The villagers watered the fields with lake water, and the waterwheels kept turning. The place was quiet, with more birds chirping than people."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Vereksan",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Vereksanburg",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

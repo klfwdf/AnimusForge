@@ -190,8 +190,8 @@ internal static class WeeklyMaterialAggregationOwner
 		list2 = list2.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select(NormalizeWeeklyPromptKeyPart).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
 		List<string> list3 = new List<string>
 		{
-			ExtractWeeklyPromptBattleMarkedText(material.SnapshotText, "我方死伤"),
-			ExtractWeeklyPromptBattleMarkedText(material.SnapshotText, "敌方死伤")
+			ExtractWeeklyPromptBattleMarkedText(material.SnapshotText, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0332")),
+			ExtractWeeklyPromptBattleMarkedText(material.SnapshotText, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0333"))
 		};
 		list3 = list3.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select(NormalizeWeeklyPromptKeyPart).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
 		string text3 = string.Join("~", new string[5]
@@ -273,7 +273,7 @@ internal static class WeeklyMaterialAggregationOwner
 		{
 			return "";
 		}
-		Match match = Regex.Match(text2, "战前投入兵力：我方(?<own>[^；。]+)；敌方(?<enemy>[^。；]+)", RegexOptions.IgnoreCase);
+		Match match = Regex.Match(text2, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0334"), RegexOptions.IgnoreCase);
 		if (!match.Success)
 		{
 			return "";
@@ -433,25 +433,25 @@ internal static class WeeklyMaterialAggregationOwner
 		switch ((category ?? "").Trim().ToLowerInvariant())
 		{
 		case "strategic_shift":
-			return "家族与王国归属";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0335");
 		case "decision":
-			return "王国决议";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0336");
 		case "siege":
-			return "围城与守城";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0337");
 		case "settlement_change":
-			return "定居点易主";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0338");
 		case "captivity":
-			return "人物被俘";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0339");
 		case "release":
-			return "人物获释";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0340");
 		case "army":
-			return "军团行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0341");
 		case "battle":
-			return "战场交锋";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0342");
 		case "movement":
-			return "行军与袭扰";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0343");
 		default:
-			return "其他事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0344");
 		}
 	}
 }

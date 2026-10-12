@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using AnimusForge.PolicyEffects;
 using AnimusForge.PolicyTargets;
+using AnimusForge;
 
 namespace PolicyEffectModule.ContractTests;
 
@@ -37,6 +38,7 @@ internal static partial class Program
 			"The literal no-numeric-intent sentinel must not consume an embedding or distort numeric retrieval.");
 		TestNpcRetrievalRequestSnapshot();
 		TestProductionDetailCoverageAndTargets(modules);
+		TestBilingualOriginalClauseRecall(modules);
 		IReadOnlyList<PolicyEffectRecallQuery> typed = PolicyEffectRecallQueryBuilder.Build("混合条款",
 			"本政策不增加税收而是每日给领主发放300第纳尔；不得劫掠村庄；降低部队上限10人", "", "", modules);
 		Check(typed.Any(q => q.Source == PolicyEffectRecallQuerySource.OriginalClause && q.IsExplicitExclusion && q.Text.Contains("税收"))
@@ -46,13 +48,33 @@ internal static partial class Program
 			"Explicit unchanged clauses may be deprioritized, but valid prohibitions, decreases and adversative positive measures must survive.");
 		queries = PolicyEffectModuleRouter.BuildPostAssessmentQueries("有界查询",
 			string.Join("；", Enumerable.Range(0, 30).Select(i => "每日粮食增加" + i)), "影响概述", "每日5点", modules);
-		Check(queries.Count == 12 && queries.Distinct().Count() == 12 && queries.Last().StartsWith("数值意图："),
+		Check(queries.Count == 12 && queries.Distinct().Count() == 12 && queries.Last().StartsWith(PolicyGenerationPromptTexts.Get("ModuleNumericQuery", "Numeric intent: ")),
 			"Original windows and supplements must share the twelve-query budget without duplicate embeddings.");
 		PolicyEffectModuleRoutingResult none = PolicyEffectModuleRouter.RouteAfterAssessment("关闭", "增加粮食", "", "",
 			PolicyEffectRetrievalContext.PlayerKingdom, Array.Empty<string>(), 30,
 			new AnimusForge.PolicyTextEmbeddingSession(_ => throw new InvalidOperationException("Embedding must not run for an empty frozen allowlist."), "empty"));
 		Check(none.Candidates.Count == 0 && none.Details.Count == 0 && none.EffectiveDetailLimit == 8,
 			"Disabled modules cannot be filled back in, and persisted detail values above eight must remain clamped.");
+	}
+
+	private static void TestBilingualOriginalClauseRecall(IPolicyEffectModule[] modules)
+	{
+		const string content = "This policy does not increase taxes, but gives each lord 300 denars daily. Prohibit raiding villages; reduce party size by 10.";
+		IReadOnlyList<PolicyEffectRecallQuery> typed = PolicyEffectRecallQueryBuilder.Build("Reform", content, "", "No direct numeric intent", modules);
+		Check(typed[0].Text == "Reform\n" + content,
+			"Bilingual clause recognition must retain the original authoritative input byte-for-byte.");
+		Check(typed.Any(query => query.Source == PolicyEffectRecallQuerySource.OriginalClause && query.IsExplicitExclusion && query.Text.Contains("taxes"))
+			&& typed.Any(query => query.Source == PolicyEffectRecallQuerySource.OriginalClause && !query.IsExplicitExclusion && query.Text.Contains("300 denars")),
+			"English no-change and adversative positive clauses must carry the same ranking hints as their Chinese counterparts.");
+		Check(typed.Any(query => query.Source == PolicyEffectRecallQuerySource.OriginalClause && !query.IsExplicitExclusion && query.Text.Contains("Prohibit raiding"))
+			&& typed.Any(query => query.Source == PolicyEffectRecallQuerySource.OriginalClause && !query.IsExplicitExclusion && query.Text.Contains("reduce party size")),
+			"English prohibitions and numeric decreases remain valid measures, never exclusion authorization.");
+		Check(!typed.Any(query => query.Source == PolicyEffectRecallQuerySource.Assessment),
+			"The English no-numeric-intent sentinel must not add an assessment embedding.");
+		typed = PolicyEffectRecallQueryBuilder.Build("Decimal", "Increase loyalty by 1.5 daily. Improve food stores by 2.25 daily.", "", "", modules);
+		Check(typed.Any(query => query.Source == PolicyEffectRecallQuerySource.OriginalClause && query.Text.Contains("1.5"))
+			&& typed.Any(query => query.Source == PolicyEffectRecallQuerySource.OriginalClause && query.Text.Contains("2.25")),
+			"English sentence separators must preserve decimal magnitudes and original clauses.");
 	}
 
 	private static void TestProductionDetailCoverageAndTargets(IPolicyEffectModule[] modules)

@@ -1,0 +1,150 @@
+{
+  "Id": "rule_House_Foundations_The_Others",
+  "Keywords": [
+    "The Others"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The White Walker is an icy being in the legend of the Far North. It has a body shape similar to that of a human, but has pale skin, deep blue eyes and the grace to move silently on the snow. They use sharp blades that seem to be made of ice, causing extremely cold temperatures wherever they go, and can make the dead move again in the form of corpses. Obsidian can kill white ghosts, and fire can effectively deal with wights; this knowledge has long been regarded as an old woman's story, but it has been rediscovered with the blood of those who have experienced it. The White Walkers have no genealogy, fiefdom, or throne claim to negotiate, and they make the living's wars seem ephemeral and the Night's Watch's oldest mission regain meaning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Free folk don’t argue about White Walkers as Maesters. The missing hunting party, the walking dead, and the blue eyes approaching from the darkness have entered their personal memories; going south is not a fight for the throne, but a living person escaping from death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There are still some doubts in Night's Watch, but there are rangers who have seen corpses open their eyes. For the brothers in black, the most dangerous thing is not that they don’t know how many enemies there are, but that the southern princes still regard the Great Wall as a place to exile criminals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Bachelors are accustomed to requiring evidence. This caution can prevent panic and may also cause people to miss preparation time. If obsidian, ancient records, and survivor testimonies corroborate one another, reason does not demand continued ridicule but a reexamination of old conclusions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Others The White Walkers are inhuman beings from the cold and darkness of the far north who can drive the dead. Their appearance shakes the Citadel's suspicion and the old order on both sides of the Wall. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Others The White Walkers are inhuman beings from the cold and darkness of the far north who can drive the dead. Their appearance shakes the Citadel's suspicion and the old order on both sides of the Wall. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Others The White Walkers are inhuman beings from the cold and darkness of the far north who can drive the dead. Their appearance shakes the Citadel's suspicion and the old order on both sides of the Wall. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Others The White Walkers are inhuman beings from the cold and darkness of the far north who can drive the dead. Their appearance shakes the Citadel's suspicion and the old order on both sides of the Wall. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Others: The White Walkers are inhuman beings from the cold and darkness of the far north who can drive the dead. Their appearance shakes the Citadel's suspicion and the old order on both sides of the Wall."
+  ]
+}

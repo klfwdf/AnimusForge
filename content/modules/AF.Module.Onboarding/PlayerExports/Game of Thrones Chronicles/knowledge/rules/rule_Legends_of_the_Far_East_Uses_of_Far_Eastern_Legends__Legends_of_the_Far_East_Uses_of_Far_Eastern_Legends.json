@@ -1,0 +1,149 @@
+{
+  "Id": "rule_Legends_of_the_Far_East_Uses_of_Far_Eastern_Legends",
+  "Keywords": [
+    "Uses of Far Eastern Legends"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Kingdom of Dawn, the Emperor of Heaven, the Amethyst Queen and the Bloodstone Emperor are not only ancient stories, but also provide Yi Di and outsiders with a language to explain power, disaster and hope. They should not be regarded as future predictions, nor should they be compressed into simple truth and falsehood; myths themselves are the world"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Uses of Far Eastern Legends"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Uses of Far Eastern Legends"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Uses of Far Eastern Legends"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Uses of Far Eastern Legends The Kingdom of Dawn, the Emperor of Heaven, the Amethyst Queen and the Bloodstone Emperor are not only ancient stories, but also provide Yi Di and outsiders with a language to explain power, disaster and hope. They should not be regarded as future predictions, nor should they be compressed into simple truth and falsehood; myths themselves are the world Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Uses of Far Eastern Legends The Kingdom of Dawn, the Emperor of Heaven, the Amethyst Queen and the Bloodstone Emperor are not only ancient stories, but also provide Yi Di and outsiders with a language to explain power, disaster and hope. They should not be regarded as future predictions, nor should they be compressed into simple truth and falsehood; myths themselves are the world Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Uses of Far Eastern Legends The Kingdom of Dawn, the Emperor of Heaven, the Amethyst Queen and the Bloodstone Emperor are not only ancient stories, but also provide Yi Di and outsiders with a language to explain power, disaster and hope. They should not be regarded as future predictions, nor should they be compressed into simple truth and falsehood; myths themselves are the world Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Uses of Far Eastern Legends The Kingdom of Dawn, the Emperor of Heaven, the Amethyst Queen and the Bloodstone Emperor are not only ancient stories, but also provide Yi Di and outsiders with a language to explain power, disaster and hope. They should not be regarded as future predictions, nor should they be compressed into simple truth and falsehood; myths themselves are the world They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Uses of Far Eastern Legends: The Kingdom of Dawn, the Emperor of Heaven, the Amethyst Queen and the Bloodstone Emperor are not only ancient stories, but also provide Yi Di and outsiders with a language to explain power, disaster and hope. They should not be regarded as future predictions, nor should they be compressed into simple truth and falsehood; myths themselves are the world"
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Rivaz_tribe",
+  "Keywords": [
+    "Revaz Tribe_RV",
+    "Broken Tooth Grebe_RV",
+    "Reavaz_RV",
+    "Badlands Scavenger_RV"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Revaz tribe lives a scavenging life in the southeastern part of the Badlands that is completely different from other greenskin tribes - they do not rely on frontal combat as their main way of survival, but follow the large greenskin Waaagh! Behind the lines, search the ruins of the battlefield for usable weapon fragments, armor remnants, and any war materiel that is still usable. The nickname of the leader, Broken Tooth Greb, came from the fact that half of his teeth shattered when he bit open the shell of a dwarf iron helmet in his early years. After every battle since then, he would personally inspect every helmeted corpse on the battlefield and collect their front teeth as compensation. The Revaz tribe is seen as weak and 'green-skinned waste' in the eyes of most other orc tribes, but those tribes who ridicule them often ignore the fact that the equipment and supply stocks of the Revaz tribe are often more abundant than their own after the war lasts for months."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We belong to Revaz! Other tribes said that we were just scavengers - but by the second month of fighting in the bad land, their ax blades were curled and their shields were cracked. The good axes we picked up from the dead were even newer than their new axes! Boss Broken Tooth said that fighting is not just about swinging fists - smart people pick up the dead people's things and beat the living ones! Last time, the iron cans from the Iron Tribe chased our camp for three days and three nights, trying to teach us a lesson - but we got into an underground cave and got rid of them, and when we came out from another exit, we overturned all their baggage trucks. They chased for three days and the result was that all their spare armor was worn on us!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Revaz tribe is militarily positioned as the most unpredictable battlefield scavengers in the Badlands. They usually do not engage in direct combat, but systematically collect abandoned equipment on the battlefields between two powerful tribes, which means that any Imperial army that achieves victory in the Badlands may find within a day or two that the weapons of the tribe they defeated have all fallen into the hands of Revaz - who may then resell them in the next battle to other tribes attacking the Empire's borders. The indirect threat of Revaz is that they effectively act as a mobile redistribution hub for the Badlands' weapons ecosystem: weapons lost by the defeated side don't disappear, but flow through Revaz to the next tribe in need of weapons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Revaz tribe plays a severely underestimated role as a 'logistics recycling node' in the Badlands greenskin economic system. In Imperial military doctrine, attacking the enemy's logistical lines is one of the core strategies for weakening their combat effectiveness - but this strategy's effectiveness in the Badlands is greatly reduced by the presence of scavenging tribes like Revaz. The weapons and equipment left behind after the imperial army was defeated on the battlefield—especially those metal products that could not be completely recycled by the victors due to logistical constraints—will not naturally degrade in the badland environment, but will be systematically collected and classified and stored by the Revaz tribe within a few days after the war. Their system of classification is crude but practical: iron, steel, leather, serviceable poles, complete weapons, repairable weapons - each category is stored in separate underground caves within the tribe's encampment area. These stores are put back into circulation the next time any tribe issues a barter or challenge to Revaz. There is a serious lack of research on this phenomenon of 'battlefield material recycling' in imperial military logistics, which leads the imperial army to often overestimate the long-term effect of defeating the greenskin tribes when evaluating the full-cycle strategic benefits of a battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Revaz taught me a sharp lesson about border defense: clearing the battlefield is as important as winning the battle. During that battle we defeated a small orc raiding party in a beautiful ambush, captured their weapons and piled them in a ditch next to the battlefield for recycling the next day. The next morning the pile of weapons disappeared - there was only a line of drag marks at the bottom of the ditch, and a few broken teeth were scattered. Brokenfang Greb arrived on the battlefield that night and completed his work while we slept, and the weapons appeared three weeks later in the hands of a goblin horde attacking the eastern side of my territory. After that lesson, I promulgated the most unpopular but most effective battlefield regulations in the territory: after victory, no matter how deep the night is, battlefield recovery must be completed within four hours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Broken Tooth Grib of the Revaz Tribe is a peculiar third party that developed by accident during six generations of my family's border operations—we never fought him because he never actively attacked us, and he never allied with us because he was greenskin. But our family has become accustomed to a self-circulating cycle over the past sixty years of border defense: we defeat an incoming Greenskin horde, and then assume that the tribe's arsenal will be recovered by Revaz before the next season, and some of these weapons will inevitably end up in the hands of Greenskins attacking other Imperial border lords - Revaz is a shadow economic entity that we cannot see but constantly interacts with us indirectly. I once formally proposed a plan to proactively exterminate the Revaz tribe at an annual strategic meeting of the family. The meeting rejected it after two hours of debate. The reason was not military impossibility, but a cold calculation in economic logic: the behavior of Revaz recycling weapons and then dispersing and reselling them has objectively increased. Lowering the weapons reserve level of any single greenskin tribe to launch a saturation attack on us - he unintentionally acts as a diverter of Badland weapons, and eliminating him will leave all tribes to produce their own weapons from scratch, at which time the entire Badland's violent economy may be reorganized in a more concentrated and dangerous way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a wasteland in the southeast of the Badlands that I still don’t know the name of. It is not a landmark or a tribal territory, it is just an ordinary cracked land in the Badlands. However, every dozen steps you take, you can find a rivet torn from the armor in the cracks of dry mud. It wasn't the mark of a battle - the area where the rivets were scattered was so large, covering nearly a square mile. I squatted down and looked closely at the surface of those rivets - each one had been bitten off instead of being pulled out from the armor. There were obvious molar indentations on the cross-section of the rivets. Broken Tooth Greeb has been here. Maybe he picked up a new piece of chest armor here that he really wanted, but when he took it off, he found that the rivets were rusted, so he used his teeth-the few broken teeth that were left-to bite the rivets off the belt one by one. When you travel alone in the badlands, these rivets are the calling cards Greb leaves for you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Revaz is an awkward gray area in the Imperial military scrap recycling market. Imperial regulations prohibit the sale of any military-grade metalwork to non-Imperial entities - but Imperial regulations do not prohibit Imperial scrap dealers from purchasing \"recycled metal of unknown origin\" from non-Imperial sources. This gave rise to a triangular trade chain on the Badland border: the Revaz tribe sold scavenger weapons to Badland goblin traders, who defaced them and modified them into non-military appearances, and then sold them to some middlemen registered as \"civilian scrap iron recyclers\" on the Imperial border. These middlemen smelted them into metal ingots and sold them at market prices on the open metal market in Nunn. The end result is this: an Imperial sword held in the hand of an Imperial soldier as he dies on a Badlands battlefield may be reforged into another Imperial sword five years later, with all intermediary profits shared by everyone except the Imperial Treasury."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Revaz Tribe—a unique greenskin tribe in the southeastern part of the Badlands that makes a living by scavenging and recovering loot.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Rewaz Tribe Broken Tooth Grebe Badlands Scavenging Weapons Recycling"
+  ]
+}

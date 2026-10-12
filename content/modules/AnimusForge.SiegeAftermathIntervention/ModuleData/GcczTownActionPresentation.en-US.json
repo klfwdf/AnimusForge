@@ -1,0 +1,96 @@
+{
+  "Version": 1,
+  "Actions": {
+    "mercy": {
+      "ActionLabel": "Pardon",
+      "CommandConfirmation": "The order of mercy echoes through the streets. Soldiers sheath their weapons, while fearful residents watch to see if your word holds. Final aftermath outcomes finalize upon departure.",
+      "MemoryTitle": "Pardon",
+      "FirstMemoryTemplate": "The player ordered mercy for commoners, forbidding killing or looting, and commanded soldiers to keep discipline.",
+      "RepeatMemoryTemplate": "The player reaffirmed mercy and discipline; witnesses know this order remains active."
+    },
+    "relief": {
+      "ActionLabel": "Relief",
+      "CommandConfirmation": "Soldiers tally materials you delivered and distribute them under the gaze of the townsfolk. Some remain wary, while others cautiously approach.",
+      "MemoryTitle": "Relief",
+      "FirstMemoryTemplate": "The player ordered denars, grain, and goods delivered via AF Give distributed to commoners. Shared pool status: {shared_pool}.",
+      "RepeatMemoryTemplate": "The player requested further distribution of unused shared relief. Shared pool status: {shared_pool}."
+    },
+    "civilian_verbal_relief": {
+      "ActionLabel": "Verbal Pacification",
+      "CommandConfirmation": "Promises of protection, resettlement, and order spread from this exchange into nearby alleys. Citizens do not relax immediately, but some linger to listen.",
+      "MemoryTitle": "Relief",
+      "FirstMemoryTemplate": "The player did not distribute goods, but promised protection, discipline, and order face-to-face, reassuring defeated commoners.",
+      "RepeatMemoryTemplate": "The player continued reassuring residents through direct dialogue; witnesses acknowledge protection pledges remain active."
+    },
+    "inspiration": {
+      "ActionLabel": "Pacification",
+      "CommandConfirmation": "Soldiers clear a square as sheltered citizens are cautiously guided forward. Your proclamation spreads through the alleys; the new order faces its first scrutiny.",
+      "MemoryTitle": "Pacification",
+      "FirstMemoryTemplate": "The player assembled commoners and proclaimed a restrained new order; residents and notables heard the pacification.",
+      "RepeatMemoryTemplate": "The player maintained pacification; witnesses acknowledge public pledges to the new order."
+    },
+    "rally_oath": {
+      "ActionLabel": "Pledge of Allegiance",
+      "CommandConfirmation": "Representatives are ushered forward as the square falls quiet. Swearing allegiance is a public ceremony witnessed by all present.",
+      "MemoryTitle": "Allegiance",
+      "FirstMemoryTemplate": "The player organized a public pledge of allegiance; commoners, headmen, and notables witnessed the submission ceremony.",
+      "RepeatMemoryTemplate": "The player maintained the submission policy; local commoners and notables are recognized as having formally yielded."
+    },
+    "plunder": {
+      "ActionLabel": "Pillage",
+      "CommandConfirmation": "Pillaging squads deploy down the avenues. Soldiers confiscate wealth from merchants, notables, and citizens, logging seizures. Halting stops future looting without undoing past losses.",
+      "MemoryTitle": "Pillage",
+      "FirstMemoryTemplate": "The player ordered targeted pillage; soldiers began questioning residents and recording seized wealth. Before escalating to slaughter, this order may be halted.",
+      "RepeatMemoryTemplate": "The player maintained pillage orders; witnesses know soldiers continue systematic looting."
+    },
+    "massacre": {
+      "ActionLabel": "Slaughter",
+      "CommandConfirmation": "The order plunges the occupied settlement into violence. Soldiers pursue designated targets as survivors scatter or plead. Halting stops further pursuit, but deaths and penalties cannot be reversed.",
+      "MemoryTitle": "Slaughter",
+      "FirstMemoryTemplate": "The player escalated disposition to slaughter; soldiers began hunting targeted commoners and notables. Even if halted later, survivors remain terrified.",
+      "RepeatMemoryTemplate": "The player maintained slaughter orders; soldiers continue hunting targeted survivors."
+    },
+    "cultural_repopulation": {
+      "ActionLabel": "Colonization",
+      "CommandConfirmation": "Colonization ordered as top-level disposition toward {target_culture}. Soldiers hunt targeted residents; halting before completion settles partial slaughter; exiting submits colonization.",
+      "MemoryTitle": "Colonization",
+      "FirstMemoryTemplate": "The player ordered colonization through soldiers, demanding eradication of targeted natives to resettle as {target_culture}.",
+      "RepeatMemoryTemplate": "The player maintained orders to colonize as {target_culture}; soldiers hunt surviving targets.",
+      "SceneTransitionTemplate": "Colonization targets in {settlement} cleared; culture shifted to {target_culture}. Executed notables: {killed_notables}; new notables: {spawned_notables}. Devastation and penalties finalize on departure."
+    }
+  },
+  "SharedPoolUnavailableText": "Shared pool statistics unavailable",
+  "ReliefSoldierTargetValidation": "[Siege Settlement]Ordering distribution of shared relief must be directed to your own soldiers in the settlement.",
+  "ReliefMissingSharedPoolValidation": "[Siege Settlement]Before ordering soldiers to distribute relief, deliver denars, food, or goods using the AF Give feature.",
+  "ReliefRequiredSharedMaterialValidation": "[Siege Settlement]Relief distribution requires shared supplies; if merely commanding not to harm or loot, choose Pardon.",
+  "CulturalRepopulationTargetValidation": "[Siege Settlement]Colonization must be ordered through your own soldiers; civilians cannot trigger it.",
+  "PlayerHeroCultureSourceLabel": "Player Hero Culture",
+  "PlayerKingdomCultureSourceLabel": "Player Kingdom Culture",
+  "PlayerClanCultureSourceLabel": "Player Clan Culture",
+  "PlayerCultureFallbackLabel": "Player Culture",
+  "CultureSourceWrapperTemplate": "{culture} ({source})",
+  "DoneContinueOptionText": "Continue...",
+  "DoneMenuFallbackText": "In-scene settlement disposition complete. Continuing exits the siege encounter.",
+  "CompletedSummaryFallbackText": "In-scene settlement disposition complete; exiting siege encounter.",
+  "MassacreVictoryMessage": "[Siege Settlement]All targets locked for slaughter have perished. Final loot and penalties finalize upon departure.",
+  "MassacreVictoryQuickText": "Slaughter targets cleared; finalizes on departure.",
+  "LeaveEncounterQuickText": "Settlement disposition complete; leaving encounter.",
+  "CulturalRepopulationCompletedLabel": "Colonization",
+  "DevastateCompletedLabel": "Devastation",
+  "PlunderCompletedLabel": "Pillage",
+  "MercyCompletedLabel": "Mercy and Pacification",
+  "DefaultCompletedLabel": "Disposition",
+  "CompletedEncounterTemplate": "[Siege Settlement]Final aftermath for {action} submitted; ending siege encounter.",
+  "LootSettlementSummaryTemplate": "[Loot Tally]Final receipts: Market goods {market_item_total} / {market_stack_kinds} types, market vault {market_gold}, civilian denars {civilian_gold}.",
+  "SummaryTitleTemplate": "Post-siege {action} of {settlement} completed.",
+  "UnknownSettlementName": "this settlement",
+  "UnknownTargetCultureText": "target culture",
+  "SummaryCulturalRepopulationTemplate": "Irreversible colonization submitted: settlement treated as devastated; culture shifted to {target_culture}.",
+  "SummaryMassacreText": "Slaughter entered final settlement; casualties, survivors, and cumulative penalties follow the ledger.",
+  "SummaryPlunderText": "Pillage entered final settlement; receipts and penalties calculated from ledger totals.",
+  "SummaryMercyText": "Mercy and pacification entered final settlement; promises, relief, and reactions stored in town memory.",
+  "SummaryMarketItemsTemplate": "Market goods: {market_item_total} items / {market_stack_kinds} types, valued at {market_item_value}.",
+  "SummaryMarketGoldTemplate": "Market vault: {market_gold} denars.",
+  "SummaryCivilianGoldTemplate": "Civilian denars: {civilian_gold}, targeted persons {civilian_targets}.",
+  "SummaryClosingText": "Continuing exits the siege encounter."
+}

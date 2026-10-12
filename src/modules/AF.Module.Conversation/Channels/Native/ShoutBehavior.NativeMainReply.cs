@@ -53,5 +53,5 @@ namespace AnimusForge;
         }
 
         public void ReportProviderFailure(string output)
-            => LlmRetryPrompt.ShowFailurePopup("自由对话正文生成失败", output);
+            => LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_NativeReplyFailed}Free conversation reply generation failed", output);
     }

@@ -30,8 +30,8 @@ namespace AnimusForge.SceneActions.Core
             EnemyRemovedSinceBaseline = NormalizeCount(enemyRemovedSinceBaseline);
             EnemyNearby = enemyNearby;
             SpeakerInCombat = speakerInCombat;
-            BattleType = string.IsNullOrWhiteSpace(battleType) ? "未知战斗类型" : battleType.Trim();
-            Phase = string.IsNullOrWhiteSpace(phase) ? "未知阶段" : phase.Trim();
+            BattleType = string.IsNullOrWhiteSpace(battleType) ? BattleSpeechText.FactLabel("UnknownBattleType", true) : battleType.Trim();
+            Phase = string.IsNullOrWhiteSpace(phase) ? BattleSpeechText.FactLabel("UnknownPhase", true) : phase.Trim();
             FriendlyFactionName = NormalizeName(friendlyFactionName);
             SpeakerFactionName = NormalizeName(speakerFactionName);
             SpeakerCultureName = NormalizeName(speakerCultureName);
@@ -59,50 +59,55 @@ namespace AnimusForge.SceneActions.Core
 
         public string ToPromptBlock()
         {
+            return ToPromptBlock(true);
+        }
+
+        public string ToPromptBlock(bool useChinese)
+        {
             List<string> facts = new List<string>();
             if (HasReliableForceCounts)
             {
                 facts.Add(
-                    "我方当前有效人类约" + FriendlyActiveHumanCount +
-                    "人，敌方当前有效人类约" + EnemyActiveHumanCount + "人");
+                    BattleSpeechText.Text("Prompt_Facts_01", useChinese) + FriendlyActiveHumanCount +
+                    BattleSpeechText.Text("Prompt_Facts_02", useChinese) + EnemyActiveHumanCount + BattleSpeechText.Text("Prompt_Facts_03", useChinese));
             }
             if (FriendlyRemovedSinceBaseline >= 0 || EnemyRemovedSinceBaseline >= 0)
             {
                 facts.Add(
-                    "本模组记录的战斗中减员：我方" +
+                    BattleSpeechText.Text("Prompt_Facts_04", useChinese) +
                     Math.Max(0, FriendlyRemovedSinceBaseline) +
-                    "人、敌方" + Math.Max(0, EnemyRemovedSinceBaseline) + "人");
+                    BattleSpeechText.Text("Prompt_Facts_05", useChinese) + Math.Max(0, EnemyRemovedSinceBaseline) + BattleSpeechText.Text("Prompt_Facts_06", useChinese));
             }
-            facts.Add("敌人是否已接近演讲者：" + (EnemyNearby ? "是" : "否"));
-            facts.Add("演讲者是否正在交战：" + (SpeakerInCombat ? "是" : "否"));
-            facts.Add("战斗类型：" + BattleType);
-            facts.Add("当前阶段：" + Phase);
+            facts.Add(BattleSpeechText.Text("Prompt_Facts_07", useChinese) + (EnemyNearby ? BattleSpeechText.Text("Prompt_Facts_08", useChinese) : BattleSpeechText.Text("Prompt_Facts_09", useChinese)));
+            facts.Add(BattleSpeechText.Text("Prompt_Facts_10", useChinese) + (SpeakerInCombat ? BattleSpeechText.Text("Prompt_Facts_11", useChinese) : BattleSpeechText.Text("Prompt_Facts_12", useChinese)));
+            facts.Add(BattleSpeechText.Text("Prompt_Facts_13", useChinese) + BattleSpeechText.ProjectFactLabel(BattleType, useChinese));
+            facts.Add(BattleSpeechText.Text("Prompt_Facts_14", useChinese) + BattleSpeechText.ProjectFactLabel(Phase, useChinese));
             if (!string.IsNullOrWhiteSpace(FriendlyFactionName))
             {
-                facts.Add("玩家方当前政治势力：" + FriendlyFactionName);
+                facts.Add(BattleSpeechText.Text("Prompt_Facts_15", useChinese) + FriendlyFactionName);
             }
             if (!string.IsNullOrWhiteSpace(SpeakerFactionName))
             {
-                facts.Add("演讲者当前随军政治所属：" + SpeakerFactionName);
+                facts.Add(BattleSpeechText.Text("Prompt_Facts_16", useChinese) + SpeakerFactionName);
             }
             if (!string.IsNullOrWhiteSpace(SpeakerCultureName))
             {
-                facts.Add("演讲者文化出身：" + SpeakerCultureName);
+                facts.Add(BattleSpeechText.Text("Prompt_Facts_17", useChinese) + SpeakerCultureName);
             }
             if (EnemyFactionNames.Count > 0)
             {
-                facts.Add("当前敌方政治势力：" + string.Join("、", EnemyFactionNames));
+                facts.Add(BattleSpeechText.Text("Prompt_Facts_18", useChinese) + string.Join(BattleSpeechText.Text("Prompt_Facts_19", useChinese), EnemyFactionNames));
             }
 
-            return "【当前战场事实快照（程序事实，不是预先给出的主题结论）】" +
-                   string.Join("；", facts) + "。" +
-                   "地形、天气、阵线缺口和具体眼前动静只可使用 AF 当前场景上下文中已经提供的内容；" +
-                   "文化、兵种名和装备名只表示出身或类型，不等于当前政治效忠。若使用国家、王国、统治者或家族口号，" +
+            return BattleSpeechText.Text("Prompt_Facts_20", useChinese) +
+                   string.Join(BattleSpeechText.Text("Prompt_Facts_21", useChinese), facts) + BattleSpeechText.Text("Prompt_Facts_22", useChinese) +
+                   BattleSpeechText.Text("Prompt_Facts_23", useChinese) +
+                   BattleSpeechText.Text("Prompt_Facts_24", useChinese) +
                    (string.IsNullOrWhiteSpace(FriendlyFactionName)
-                       ? "我方政治势力未知，因此避免使用任何国家万岁、为了某国、某国必胜或效忠某国的口号；改用我方、队伍或阵线。"
-                       : "只能以玩家方当前政治势力“" + FriendlyFactionName + "”为我方；不得因文化出身高喊其他国家万岁、荣耀、必胜或效忠口号。") +
-                   "快照没有提供的事实不得补造。请你根据这些事实、角色身份和当前场景自行选择一种主风格，" +
-                   "不要把快照原样写成战况报告。";
+                       ? BattleSpeechText.Text("Prompt_Facts_25", useChinese)
+                       : BattleSpeechText.Text("Prompt_Facts_26", useChinese) + FriendlyFactionName + BattleSpeechText.Text("Prompt_Facts_27", useChinese)) +
+                   BattleSpeechText.Text("Prompt_Facts_28", useChinese) +
+                   BattleSpeechText.Text("Prompt_Facts_29", useChinese);
         }
 
         public bool IsFriendlyPoliticalName(string value)

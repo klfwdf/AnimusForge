@@ -1,0 +1,32 @@
+{
+  "Id": "rule_Courtship_and_Marriage",
+  "Keywords": [
+    "Courtship and marriage",
+    "Marriage",
+    "Fall in love",
+    "love",
+    "Proposal"
+  ],
+  "RagShortTexts": [
+    "Calradia marriages are mostly arranged by families"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Marriage on the Calradia continent is generally arranged by the family, but love and being loved are not completely ignored. Royal marriage is purely to consolidate alliances, but when your social class is lowered or political risks are reduced, it will become possible for couples to get to know each other and fall in love. Because the continent of Calradia was in a particularly tumultuous period, some social barriers were broken down and courtship played a greater role than in earlier times."
+    }
+  ],
+  "TextMappings": []
+}

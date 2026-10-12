@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Commodities_and_Trade_Urban_Grain_Supply_of_the_Crownlands",
+  "Keywords": [
+    "Urban Grain Supply of the Crownlands"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A huge city like King's Landing cannot feed itself off its walls; food must constantly flow in from the Reach, the Riverlands, the Crown's villages, and the sea routes. Royal officials focused on warehousing and rationing, businessmen focused on profits, and hungry citizens only cared about whether they could still afford bread tomorrow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Urban Grain Supply of the Crownlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Urban Grain Supply of the Crownlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Urban Grain Supply of the Crownlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Urban Grain Supply of the Crownlands A huge city like King's Landing cannot feed itself off its walls; food must constantly flow in from the Reach, the Riverlands, the Crown's villages, and the sea routes. Royal officials focused on warehousing and rationing, businessmen focused on profits, and hungry citizens only cared about whether they could still afford bread tomorrow. Any break in the place of origin, checkpoints, shipping schedules, debts and protection fees will immediately make the nobles in the distance feel the changes in price and power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Urban Grain Supply of the Crownlands A huge city like King's Landing cannot feed itself off its walls; food must constantly flow in from the Reach, the Riverlands, the Crown's villages, and the sea routes. Royal officials focused on warehousing and rationing, businessmen focused on profits, and hungry citizens only cared about whether they could still afford bread tomorrow. They may not necessarily understand ledgers, but they know the true weight of a bag of salt and a nail on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Urban Grain Supply of the Crownlands A huge city like King's Landing cannot feed itself off its walls; food must constantly flow in from the Reach, the Riverlands, the Crown's villages, and the sea routes. Royal officials focused on warehousing and rationing, businessmen focused on profits, and hungry citizens only cared about whether they could still afford bread tomorrow. Some people turn raw materials into tools, cloth and medicine, others set festivals and taboos for exchange; wealth is piled up by many hands, and rarely belongs to just one name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Urban Grain Supply of the Crownlands A huge city like King's Landing cannot feed itself off its walls; food must constantly flow in from the Reach, the Riverlands, the Crown's villages, and the sea routes. Royal officials focused on warehousing and rationing, businessmen focused on profits, and hungry citizens only cared about whether they could still afford bread tomorrow. If prices rise but wages do not, prosperity in distant places will only become thinner bread; if roads are safe, even small villages can get a little spring from trade."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Urban Grain Supply of the Crownlands: A huge city like King's Landing cannot feed itself off its walls; food must constantly flow in from the Reach, the Riverlands, the Crown's villages, and the sea routes. Royal officials focused on warehousing and rationing, businessmen focused on profits, and hungry citizens only cared about whether they could still afford bread tomorrow."
+  ]
+}

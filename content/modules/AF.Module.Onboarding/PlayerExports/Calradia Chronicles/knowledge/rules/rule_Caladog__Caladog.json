@@ -1,0 +1,180 @@
+{
+  "Id": "rule_Caladog",
+  "Keywords": [
+    "Caladog"
+  ],
+  "RagShortTexts": [
+    "Caladog is the current High King of Battania, who became famous in the Battle of Pandrak when he used forest ambush tactics to annihilate the Imperial Vanguard.",
+    "He was originally the adopted son and son-in-law of the late King Eric. He succeeded to the throne after Eric mysteriously disappeared. The method of succession is still full of controversy.",
+    "After the war, he was obsessed with cleaning the battlefield and distributing spoils of war, which led to the death of his ally Archduke Vadinslav in the battle, and he and Sturgia became enemies from then on."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Caladog is the current High King of Battania, who rose to fame at the Battle of Pandrak. He was originally the adopted son and son-in-law of the late King Eric, and succeeded him as king after Eric disappeared mysteriously. He led an alliance between Battania and Sturgia, and used forest ambush tactics to eliminate the Empire's vanguard at Pandrak, winning Battania's most glorious victory against the Empire since the Mongol era. But after the war, he was obsessed with cleaning the battlefield and distributing the spoils, which led to the death of his ally, Archduke Vadinslav, in isolation, and the relationship between Sturgia and Sturgia began. He is a figure whom the people of Battania both respect and fear - respect for his victories and fear for his methods and ambitions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Caladog is our High King, no one denies this. But when it comes to him as a person - if you ask ten people in Battania, you'll hear ten different tones. Some people straightened their backs and said that he was the greatest supreme king after King Mongolia. In that battle, Pandrak shot the Imperial people into hedgehogs and avenged a century of revenge. Some people lowered their voices and said that King Ariel's disappearance was too coincidental, and that his adopted son and son-in-law succeeded to the throne on the eve of the war. Some say he was too cruel - after the war the Sturgian Vadinslav was still bleeding on the battlefield, dividing the spoils, and from that moment on there were no northern allies. Others say that it was inevitable chaos on the battlefield and Caladog cannot be entirely blamed. Some people feel that he is trying to make Battania stronger - that he is trying to make the coalition obey a unified command and no longer be dragged along by the selfish interests of each clan. Some people feel that this is where he is dangerous - what he wants is not just victory, but power. He said that a wise shepherd would kill the old bull that led the herd to the cliff. You can understand it as a confession of patricide, or you can understand it as a pragmatic decisiveness. You can understand it as if he is clearing obstacles for the future of Battania, or you can understand him as making excuses for his own ambitions. He never explains himself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Caladog spoke in the council of lords, everyone listened. It's not because he has a loud voice, it's because he's beaten Pandrake and we haven't. He used the empire's tricks to trick the empire itself - he set up an ambush on the forest path, lured the empire's vanguard into a trap, and not a single one escaped under the rain of arrows. After the battle, those who supported him said that Battania finally had a king who dared to fight. But then he fell out with the Sturgians—Vadinslav was dead, Langward hated us, and our northern allies became a northern danger. When the spoils were divided after the war, he left the best things to his tribe of trusted followers. Some people think this is a reward based on merit, while some people think this is trying to win people's hearts. He is promoting the reform of the coalition army and wants to make the wartime command power of each tribe more centralized. Some people feel that this is a hurdle that Battania must overcome, while others feel that this is him tightening the rope around the clan's neck step by step. The same Caladog, the same meeting of lords, everyone comes out with a different expression."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "On the day of Pandrak, Caladog stood on the high ground, waved his arm, and rain of arrows rained down from both sides. The Imperials were jumping wildly in the valley, really like fish in a net. Then he ordered a charge, and the scythe soldiers rushed in, falling piece by piece like sickles cutting wheat. That was the happiest day of my life. Later he argued with the Sturgians about the spoils of war, and we listened. Some people say that he is too greedy. His allies are still collecting corpses on the battlefield, and he has already begun to settle accounts. But honestly, no one cared that day whether Sturgia was tall or not. We won, we survived. But then every time the Sturgians gave us trouble on the border, someone would mention Vadinslav's name and what happened that day after the war. Caladog fought a good fight, but it also buried a thorn in its side."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Caladog has fought many battles since he succeeded to the throne, and the Imperial people now no longer dare to enter the woods casually. But there are also a lot fewer men in the village. When King Ariel was on the throne, he did not fight any major wars. Although the days were tight, everyone was there. Caladog is different - he wins every time he goes out, but every time he comes back there are people hanging white flags. Do you think he is a good king or a bad king? I have no idea. He did make the Imperials pay, something Ariel couldn't do. But he also made us pay. Maybe this is the price of war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Caladog is an eternal disgrace to the Empire. On the day of Pandrak, Emperor Nereitses ignored the warnings of his scouts and allowed Galios's vanguard to plunge into a Battanian ambush. Caladog treated our legionary infantry like fish in a net and shot them through a sieve. Galios managed to escape, but Nereitses was later beheaded by the Sturgians. This man defeated us using our tactics - setting ambushes in the forest, attrition with bows and arrows, then harvesting with scythes, stepping on the Achilles' heel of Imperial tactics at every step. When his adoptive father Ariel was in power, Battania was still a negotiable opponent, but after he came to power, Battania completely became the most difficult nail to pull out in the northern part of the empire. His greed for spoils after the battle at Pendrak also turned the Sturgians against him - one of the few diplomatic rifts the Empire could exploit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Caladog owes us a life—the life of Grand Duke Vadinslav. Old Vadinslav rushed to the front with a shield wall to help the Battanians block the impact of the imperial armored cavalry. So what is Caladog doing? Cleaning the battlefield, dividing the spoils, counting dinars. When Vadinslav was besieged, the Battanians did not send even a single reinforcement. After Langward took the throne, his face turned ugly every time he mentioned this matter. Some people say that there was too much chaos on the battlefield that day, and that Caladog didn’t mean to save anyone—but do you think Langvald believed it? Do we Sturgians believe it?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Caladog is a strong obstacle blocking our way eastward. Pandrak made a name for himself and used forest ambush to devour the Empire's vanguard. Since then, our commander has been figuring out how to deal with his archers and scythes in the woodlands. But he also has weaknesses: the Sturgians don't trust him, the way he takes the throne has planted a thorn in Battania, and the coalition reforms he promotes make some old counts very uncomfortable. A person who is isolated, has internal disputes, and whose reforms offend his own family will sooner or later have flaws. We're waiting for that break."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our Khuzait scouts had actually discovered the ambush Caladog carried out in Pandrak. If Nereitse doesn't listen, that's because he's stupid. But Caladog did have a knack - he introduced the Imperials into the terrain that Battania was best at, and then harvested them in the most Battanian way possible. This man doesn't just rely on brute force, he has brains and is ruthless. I heard that he even dared to kill his own adoptive father. Such a person would either become the greatest khan on the grassland, or his own people would have his throat cut in the middle of the night. He also had a falling out with the Sturgians after the war, over the spoils of war. Greedy people are prone to flaws."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Caladog is one of the most controversial High Kings in Battania's history. The way he succeeded to the throne - the mysterious disappearance of the late king Ariel and the rapid coronation of his adopted son and son-in-law - would trigger a crisis of legitimacy in any political system. Caladog himself never tried to clarify these suspicions. Instead, he used the metaphor of 'a herdsman killing an old cow' in public to hint at the logic of his actions. This rhetoric produced completely opposite interpretations among different audiences. Militarily, he used forest ambush tactics to annihilate the Imperial Vanguard in Pandrak, demonstrating excellent tactical command capabilities. It was a classic example of Battania taking advantage of its terrain to the extreme. But diplomatically, the unequal distribution of post-war spoils and indirect responsibility for the death of ally Vadin Slav led to long-standing tensions in Sturgia's relations with Battania. Internally, his strongman politics integrated the various clans of Battania into a more combat-effective whole, but the coalition reforms he promoted at the same time - aiming to weaken the autonomy of the clans and strengthen the unified command of the High King - touched the fundamental interests of each clan, making advancement extremely difficult. A series of his decisions can be interpreted from both sides. This inherent contradiction makes him both the most capable strategist and the most uneasy centralizer."
+    }
+  ],
+  "TextMappings": []
+}

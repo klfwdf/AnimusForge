@@ -1,0 +1,146 @@
+{
+  "Id": "rule_Commodities_and_Trade_Port_Transshipment_of_Oldtown",
+  "Keywords": [
+    "Port Transshipment of Oldtown"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Oldtown connects the Mander River, the Sunset Sea and the southbound route. The warehouse can be stocked with grain, wood, wine barrels, spices and distant fabrics at the same time. The prosperity here depends on the day-to-day work of sailors, porters and tax collectors, and a port closure or epidemic can turn the glorious history into a disaster"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port Transshipment of Oldtown"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port Transshipment of Oldtown"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port Transshipment of Oldtown"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port Transshipment of Oldtown Oldtown connects the Mander River, the Sunset Sea and the southbound route. The warehouse can be stocked with grain, wood, wine barrels, spices and distant fabrics at the same time. The prosperity here depends on the day-to-day work of sailors, porters and tax collectors, and a port closure or epidemic can turn the glorious history into a disaster. Any break in the place of origin, checkpoints, shipping schedules, debts and protection fees will immediately make the nobles in the distance feel the changes in price and power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port Transshipment of Oldtown Oldtown connects the Mander River, the Sunset Sea and the southbound route. The warehouse can be stocked with grain, wood, wine barrels, spices and distant fabrics at the same time. The prosperity here depends on the day-to-day work of sailors, porters and tax collectors, and a port closure or epidemic can turn the glorious history into a disaster. They may not necessarily understand ledgers, but they know the true weight of a bag of salt and a nail on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port Transshipment of Oldtown Oldtown connects the Mander River, the Sunset Sea and the southbound route. The warehouse can be stocked with grain, wood, wine barrels, spices and distant fabrics at the same time. The prosperity here depends on the day-to-day work of sailors, porters and tax collectors, and a port closure or epidemic can turn the glorious history into a disaster. Some people turn raw materials into tools, cloth and medicine, others set festivals and taboos for exchange; wealth is piled up by many hands, and rarely belongs to just one name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port Transshipment of Oldtown Oldtown connects the Mander River, the Sunset Sea and the southbound route. The warehouse can be stocked with grain, wood, wine barrels, spices and distant fabrics at the same time. The prosperity here depends on the day-to-day work of sailors, porters and tax collectors, and a port closure or epidemic can turn the glorious history into a disaster. If prices rise but wages do not, prosperity in distant places will only become thinner bread; if roads are safe, even small villages can get a little spring from trade."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Port Transshipment of Oldtown: Oldtown connects the Mander River, the Sunset Sea and the southbound route. The warehouse can be stocked with grain, wood, wine barrels, spices and distant fabrics at the same time. The prosperity here depends on the day-to-day work of sailors, porters and tax collectors, and a port closure or epidemic can turn the glorious history into a disaster."
+  ]
+}

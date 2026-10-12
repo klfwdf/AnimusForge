@@ -25,7 +25,7 @@
                           <Children>
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#211810FF" AlphaFactor="0.84" IsEnabled="false" />
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="5" MarginRight="5" MarginTop="5" MarginBottom="5" Sprite="BlankWhiteSquare_9" Color="#5A4936FF" AlphaFactor="0.38" IsEnabled="false" />
-                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginLeft="18" MarginRight="18" MarginTop="16" Brush="Popup.Title.Text" Brush.FontSize="23" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Center" Text="国家" />
+                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginLeft="18" MarginRight="18" MarginTop="16" Brush="Popup.Title.Text" Brush.FontSize="23" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Center" Text="@CountryColumnTitleText" />
                             <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="CountryClipRect" InnerPanel="CountryClipRect\CountryInnerPanel" MarginLeft="14" MarginRight="16" MarginTop="58" MarginBottom="16" AutoHideScrollBars="true" VerticalScrollbar="..\CountryScrollbar\Scrollbar">
                               <Children>
                                 <Widget Id="CountryClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
@@ -124,7 +124,7 @@
 
                             <Widget IsVisible="@ShowSelectedCountryEmptyState" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="40" MarginRight="40" HorizontalAlignment="Center" VerticalAlignment="Center">
                               <Children>
-                                <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" HorizontalAlignment="Center" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="该国暂无事件" />
+                                <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" HorizontalAlignment="Center" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@SelectedCountryEmptyStateText" />
                               </Children>
                             </Widget>
                           </Children>

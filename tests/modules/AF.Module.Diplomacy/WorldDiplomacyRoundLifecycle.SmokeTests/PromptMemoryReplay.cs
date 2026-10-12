@@ -54,7 +54,7 @@ internal static class PromptMemoryReplay
         Test.True(DiplomacyPostprocessContextApplication.Build(ref peacePostprocess).Contains(
             AnimusForge.DiplomacyDialogue.DialoguePeaceClarificationRules.PostprocessInstruction),
             "shared postprocess checks complete peace terms without inventing duration");
-        Test.True(text.Contains("都是国王") && text.Contains("你方明显占优") && text.Contains("兼并规则") && text.Contains("level_3"), "royal prompt, war position, annexation and trust share one application");
+        Test.True(text.Contains((SmokeLocalizationEnvironment.EnglishPackage ? "both monarchs" : "都是国王")) && text.Contains((SmokeLocalizationEnvironment.EnglishPackage ? "Your side has a clear advantage" : "你方明显占优")) && text.Contains("兼并规则") && text.Contains("level_3"), "royal prompt, war position, annexation and trust share one application");
         Test.True(prompt.Captures == 1 && prompt.Wars == 1, "capture world values once per selected prompt");
         prompt = new Prompt { Oral = "arrangement=owned;source_document=original;version=2" };
         Test.True(DiplomacyPromptApplication.Build(prompt, "").Length == 0 && prompt.OralReads == 0,
@@ -77,7 +77,7 @@ internal static class PromptMemoryReplay
             "disabled main reply does not force formal peace publication or annexation flow");
         prompt = new Prompt { Independent = true, PlayerRuler = false };
         text = DiplomacyPromptApplication.Build(prompt, "【附加规则:diplomacy】");
-        Test.True(text.Contains("独立有城家族：家族") && prompt.Templates.SequenceEqual(new[] { "player_independent_settlement_clan", "level_3" }), "missing independent-clan template retains trust fallback");
+        Test.True(text.Contains((SmokeLocalizationEnvironment.EnglishPackage ? "Independent landholding clan: 家族" : "独立有城家族：家族")) && prompt.Templates.SequenceEqual(new[] { "player_independent_settlement_clan", "level_3" }), "missing independent-clan template retains trust fallback");
         prompt = new Prompt { PlayerRuler = false };
         Test.True(DiplomacyPromptApplication.Build(prompt, "【附加规则:diplomacy】").Contains("player_not_king") && prompt.Templates.Count == 1, "non-ruler state stops before trust template");
         prompt = new Prompt { TopicAllowed = false };
@@ -91,9 +91,9 @@ internal static class PromptMemoryReplay
         }
         memory.Storage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "secret", Title = "秘密", Body = "不可见内容", Day = 100 });
         text = WorldDiplomacyMemoryApplication.Build(memory, "hero", "a", "外交", null, false);
-        Test.True(memory.Captures == 1 && !text.Contains("不可见内容") && text.Split("[直接相关]").Length - 1 == 3, "one captured knowledge set preserves visibility and three direct-document slots");
+        Test.True(memory.Captures == 1 && !text.Contains("不可见内容") && text.Split((SmokeLocalizationEnvironment.EnglishPackage ? "[Directly relevant]" : "[直接相关]")).Length - 1 == 3, "one captured knowledge set preserves visibility and three direct-document slots");
         text = WorldDiplomacyMemoryApplication.Build(memory, "hero", "a", "可见公文9", null, false);
-        Test.True(text.Contains("[当前问题命中]") && text.Contains("正文9"), "known title triggers query-aware memory without a topic hit");
+        Test.True(text.Contains((SmokeLocalizationEnvironment.EnglishPackage ? "[Matches the current question]" : "[当前问题命中]")) && text.Contains("正文9"), "known title triggers query-aware memory without a topic hit");
         Test.True(WorldDiplomacyMemoryApplication.Build(memory, "hero", "a", "秘密", null, false) == "", "unknown titles cannot trigger memory");
     }
 }

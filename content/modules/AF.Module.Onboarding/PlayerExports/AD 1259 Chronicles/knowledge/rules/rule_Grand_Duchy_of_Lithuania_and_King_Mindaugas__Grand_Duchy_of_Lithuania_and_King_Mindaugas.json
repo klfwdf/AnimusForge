@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Grand_Duchy_of_Lithuania_and_King_Mindaugas",
+  "Keywords": [
+    "Kingdom of Lithuania",
+    "Grand Duchy of Lithuania",
+    "Mindaugas",
+    "Baltic Crusades",
+    "Samogitia",
+    "Pagan Resistance"
+  ],
+  "RagShortTexts": [
+    "Mindaugas unified the Baltic clans into the Kingdom of Lithuania, balancing Christian baptism against intense pagan Samogitian resistance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The rise of Lithuania in the thirteenth century was an extraordinary phenomenon of indigenous tribal consolidation. Facing existential encirclement by the Swordbrothers and the Teutonic Order, Duke Mindaugas eliminated rival chieftains and unified the Aukštaitian and Samogitian clans into a centralized Baltic realm.\n\nIn 1251, Mindaugas adopted Roman Catholicism to break the legal pretext of the Northern Crusades, receiving a royal crown from Pope Innocent IV in 1253. In 1259, King Mindaugas walked an agonizing diplomatic path: while maintaining formal relations with Rome and Riga, his pagan Samogitian subjects under Treniota prepared to annihilate the combined knightly armies at the upcoming Battle of Durbe (1260), threatening to undo his royal baptism."
+    }
+  ],
+  "TextMappings": []
+}

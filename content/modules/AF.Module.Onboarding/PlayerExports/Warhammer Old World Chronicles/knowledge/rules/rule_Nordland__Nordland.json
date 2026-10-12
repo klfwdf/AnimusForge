@@ -1,0 +1,170 @@
+{
+  "Id": "rule_Nordland",
+  "Keywords": [
+    "Nordland",
+    "Nordic province_ND",
+    "Nordland Elector Count _ND",
+    "Salzenmund_ND",
+    "Theodoric Gowther_ND",
+    "Imperial Navy First Fleet_ND",
+    "Mannan Temple_ND",
+    "Nordland Coast_ND",
+    "Norsca Raider_ND"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nordland is a province on the northern coast of the empire, bordering the Sea of ​​Mana, where the empire's first fleet is stationed. The capital, Salzenmund, is a port town built on gray cliffs, shrouded in sea fog and the horns of fishing boats all year round. Nordland's economy is based on navigation, shipbuilding and fishing. Its people believe in Mannan, the god of the sea. Every fishing boat that goes out to sea has Mannan's amulet engraved on the bow. This land has a complicated historical entanglement with the Wasteland Province - before Marienburg called itself a free city - many Nordlanders still believe that Marienburg should be returned to the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Nordlanders are the most pirate-like navy in the Empire - this is not a derogatory statement, it is an accurate description of themselves. The port of Nordland has a salty sea breeze blowing all year round. The docks are piled with longship planks dismantled from the wreckage of Norsca's pirate ships. The fishermen in the tavern can curse in five languages ​​- at least two of which were learned while fighting the Norsca people at sea. Most of the officers of the First Fleet of the Imperial Navy were gilded at the Military Academy in Altdorf, but the sailors were almost all recruited from the fishing villages in Nordland - these children could sail a small boat in a storm at the age of ten, and knew how to use a harpoon to deal with the Chaos predators who climbed onto the deck at the age of fifteen. The Nordlanders' hatred of Marienburg is one of the empire's longest-standing political grievances: they still believe that Marienburg's status as a \"free city\" was the result of an elaborate political blackmail four hundred years ago, and that Nordland was supposed to be the empire's only northern maritime gateway."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The strategic value of Nordland is the most easily overlooked but most fatal link on the empire's military map - the navy. The empire's land defense system has become very mature after two thousand years of operation, but coastal defense almost entirely relies on the Nord Territory's First Fleet and lighthouse outposts scattered along the coastline. The threat of Chaos does not only come from the eastern continent. Norsca's longship fleet can bypass Kislev's land defenses and sail directly to the hinterland of the empire from the sea. The last time they did this, the Nordland fleet lost half of its ships in a three-day naval battle, but it sank enough longships of the Norsca people to make them give up their ambitions for Altdorf. Theodoric Gauthier, the Elector Count, has a much milder political personality than Lys Todbringer, but he has a demand that is equally inconvenient to compromise: the proportion of the Imperial Navy's military expenditure in the entire empire's budget has been declining year by year since the end of the Three Emperors era, and currently only accounts for less than 10% of the Empire's total military expenditure. Anyone who wants to forge a strategic alliance with Nordland must commit to pushing for an increase in the naval budget in the Imperial Senate - otherwise you might win the Elector Count's handshake, but not the presence of his fleet in your port at a crucial moment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Nordland's governance faced one of the most common structural contradictions of Old World coastal regions: it needed to maintain a standing fleet strong enough to combat Norsca pirates, but taxes on sea trade - the main source of funding for the fleet - existed in a centuries-long rivalry with Marienburg's customs system. Nordland's port has an average annual throughput of only one-third that of Marienburg, putting its fleet budget at a long-term competitive disadvantage. The Church of Mannan plays a similar role in the politics of Nordland as the Church of Ulric does in Middenland - the priests of the Ocean God have actual jurisdiction over port construction, dock operations and fishing season rules, and the secular authority of the Elector Count must consult with the high priest of the Great Temple of Mannan on issues involving the sea. Theodoric Gauthier's proposal for a \"naval tithe\" - which would have required all coastal provinces of the empire (including Marienburg) to pay a uniform proportion of taxes for the imperial navy - had been stalled in the Imperial Diet for more than thirty years. Nordland currently relies on an informal economic compensation mechanism to maintain financial balance: when the Imperial First Fleet intercepts the belongings of Norsca pirates on the high seas, the province legally draws 30% of the money as the naval supply fund - this is a financial model that operates in a moral and legal gray area, but for a coastal province that is short of money all year round, there is no better alternative."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The noble women of Nordland live on the edge of the sea - this sentence has two meanings. The first level is geographical: Salzenmund's aristocratic mansion is built on the cliff. The sound of waves hitting the cliff every night is the background sound for you to fall asleep. Your clothes always have a light layer of salt flowers, and your fingers have fine lines that are chapped by the sea breeze all year round. The other layer is political: the male nobles of Nordland either perished with the Norscans in naval battles or perished on long trade voyages, leaving behind a number of noble widows far exceeding the average of the empire. These widows are not forgotten widows - they are the de facto administrators of Nordland. The Mannan Church is much more open-minded than the Ulric Church in accepting female believers as priests (the gender of the sea goddess itself provides natural legitimacy for women's religion). Many female nobles in Nordland are also senior priests of the Mannan Church. They have more practical influence in port affairs than male officers. The women of Nordland don't need to prove their strength to anyone - the sea has proven for them who can survive the storms and Norsca raids."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The rule of the Gowther family in Nordland is inseparable from the sea - they are not talking about the Elector Count family on land, but the captain family on the deck. At least one adult male in every generation of the Gothel family died in naval battles - the most recent being Theodoric's elder brother Andreas, who was sunk with his flagship in the Sea of ​​Mana during a campaign to intercept a Norsca marauding fleet. Running a family in Nordland means you have to think of the ocean as a living family member, not just a geographical environment. The key asset that controls the power of Nordland is not the manor or the mine - it is the shipyard. Four of the five large shipyards in Salzenmund are directly or indirectly controlled by the Gauthier family and its associated families, and all the main warships of the Empire's First Fleet come from these shipyards. If you want to establish an influential family in Nordland, you must invest in at least one armed merchant ship and establish a maritime trade network, and then win the recognition of the Church of Mannan through your performance in naval battles. The nobles of Nordland don't look at the thickness of their family trees - they look at how high the masts on the ship are."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nordland is the only province in the empire where you can sign up at the dock and go out to sea as a sailor - no recommendation letter or nobility introduction is required, you only need to be able to prove that you did not cry and jump into the sea the last time you encountered a storm at sea. My first job in Salzenmund was as a merchant escort - carrying iron ingots from Nord to Marienburg, and spirits and Bretonnia wines on the way back. The route sounds simple, but the weather on the Mana Sea can go from sunny to deadly storm in half an hour, and the Norsca pirate longships never send you a declaration of war. The Nordland navy recruits ex-pirates - as long as your criminal record does not include burning an Imperial ship, the Imperial First Fleet takes a pragmatic approach to your past: you understand Norscan tactics, you know their lanes, and you can even shout out the terms of surrender in their language if need be - these are things that cannot be taught in naval academies. The only price is that you have to accept the discipline of the Navy - stealing a barrel of fresh water from a ship is a heavier sentence than stealing a horse on land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Business opportunities in Nordland lie at sea - but everything on the sea is not cheap in Nordland. Shipbuilding contracts for the Imperial Navy's First Fleet are the largest business sector here: House Gauthier purchases materials and manpower for new ships through annual tenders through the provincial chamber of commerce, from keel wood (must be the oldest oak cut from deep in the Drakwald forest) to sailcloth (anti-freeze canvas imported from Kislev is most favored). A secondary commercial opportunity lay in maritime privateering - the Imperial Navy granted generous tax breaks to merchant ships that intercepted Norsca pirate cargo via legal privateering licenses. But the most stable source of profit is still fishery: Nordland's salt fish and smoked fish supply nearly 30% of the empire's winter meat demand. The amount of fish caught during the annual autumn fishing season directly determines the economic conditions of several fishing port towns in the province throughout the year. A business rule worthy of serious consideration: before doing any business in Nordland, go to the Great Temple of Mannan to make a decent offering to the sea god - the priests of the Church of Mannan have more direct influence among the port merchants than Elector Count Gowther himself, and having a Mannan priest mention the blessing of your business name in a Sunday sermon is more effective than posting a hundred advertisements on the docks."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Nordland - the northern coastal province of the empire, home to the Imperial Navy's First Fleet, confronting the Norsca Chaos Raiders across the sea",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Nordland Imperial Province Naval Coast Norsca"
+  ]
+}

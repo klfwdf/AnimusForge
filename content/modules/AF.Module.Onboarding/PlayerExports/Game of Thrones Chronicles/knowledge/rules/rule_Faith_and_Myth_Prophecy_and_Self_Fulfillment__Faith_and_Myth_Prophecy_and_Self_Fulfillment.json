@@ -1,0 +1,145 @@
+{
+  "Id": "rule_Faith_and_Myth_Prophecy_and_Self_Fulfillment",
+  "Keywords": [
+    "Prophecy and Self-Fulfillment"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The most dangerous thing about a prophecy is not whether it is accurate but whether people will act to avoid or realize it. Kings, priests and ordinary people may hear what they want to hear most from vague words; when explanations replace facts, prophecies have begun to change the world"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prophecy and Self-Fulfillment"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prophecy and Self-Fulfillment"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prophecy and Self-Fulfillment"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prophecy and Self-Fulfillment The most dangerous thing about a prophecy is not whether it is accurate but whether people will act to avoid or realize it. Kings, priests and ordinary people may hear what they want to hear most from vague words; when explanations replace facts, prophecies have begun to change the world Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prophecy and Self-Fulfillment The most dangerous thing about a prophecy is not whether it is accurate but whether people will act to avoid or realize it. Kings, priests and ordinary people may hear what they want to hear most from vague words; when explanations replace facts, prophecies have begun to change the world Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prophecy and Self-Fulfillment The most dangerous thing about a prophecy is not whether it is accurate but whether people will act to avoid or realize it. Kings, priests and ordinary people may hear what they want to hear most from vague words; when explanations replace facts, prophecies have begun to change the world Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prophecy and Self-Fulfillment The most dangerous thing about a prophecy is not whether it is accurate but whether people will act to avoid or realize it. Kings, priests and ordinary people may hear what they want to hear most from vague words; when explanations replace facts, prophecies have begun to change the world They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Prophecy and Self-Fulfillment: The most dangerous thing about a prophecy is not whether it is accurate but whether people will act to avoid or realize it. Kings, priests and ordinary people may hear what they want to hear most from vague words; when explanations replace facts, prophecies have begun to change the world"
+  ]
+}

@@ -25,7 +25,7 @@ internal static class DiplomacyMemoryMaterial
         {
             ConversationMessage message = messages[i];
             if (message == null || string.IsNullOrWhiteSpace(message.Content)) continue;
-            string heading = "【近期交涉 role=" + (message.Role ?? "unknown") + "】\n";
+            string heading = MemoryTextResources.Prompt("MEM_Prompt_054") + (message.Role ?? "unknown") + MemoryTextResources.Prompt("AF_MEM_Prompt_SectionEnd");
             int available = Math.Min(sectionLimit, maximumChars - used - Environment.NewLine.Length);
             if (available <= heading.Length) break;
             string section = Truncate(heading + message.Content.Trim(), available);

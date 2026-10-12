@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Brax",
+  "Keywords": [
+    "House Brax",
+    "Purple Unicorn"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Brax family is based in Horndale City and is the western vassal of the Lannister family. The family emblem is a purple unicorn on a silver background. Corner Valley City is located between the Westland Valley and the road. The family's strength comes from land, knights, marriage relationships and the fulfillment of the call of Casterly Rock. The purple unicorn stands out on the tourney, but the Lord of the West will have more practical questions in mind: which roads can Brax hold, and how many riders can get there in time. People in distant places may not have heard of this family name, but the people of Kakudani know them from every rent collection, trial and recruitment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the West recognize the purple unicorn of Horned Valley City. The Brax do not need mythical beast forms to add to their legend; their status is measured by vassal obligations, lands, and ties to Casterly Rock. The coat of arms is eye-catching on the tourney, and on the discussion table, others are more concerned about how many riders and credibility this unicorn can bring."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of Kakudani City are used to seeing purple unicorns, but they rarely talk about it as a real beast. Farmers remember the day when rent is collected, and soldiers remember which column the flag bearer stands on. To ordinary people, Brax's reputation lies not in whether unicorns exist, but in whether the Lord's promises are more reliable than legend."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Brax The Western vassals of Corner Valley City use the purple unicorn as their family emblem; land, knights, roads and the fulfillment of the Casterly Rock call constitute the weight of the family. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Brax The Western vassals of Corner Valley City use the purple unicorn as their family emblem; land, knights, roads and the fulfillment of the Casterly Rock call constitute the weight of the family. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Brax The Western vassals of Corner Valley City use the purple unicorn as their family emblem; land, knights, roads and the fulfillment of the Casterly Rock call constitute the weight of the family. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Brax The Western vassals of Corner Valley City use the purple unicorn as their family emblem; land, knights, roads and the fulfillment of the Casterly Rock call constitute the weight of the family. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Brax: The Western vassals of Corner Valley City use the purple unicorn as their family emblem; land, knights, roads and the fulfillment of the Casterly Rock call constitute the weight of the family."
+  ]
+}

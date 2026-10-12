@@ -1,0 +1,48 @@
+{
+  "Id": "rule_Barbarian_Republic",
+  "Keywords": [
+    "Barbarian Republic",
+    "Republic of Litu",
+    "Republic of Mizayad",
+    "Republic of MIZA"
+  ],
+  "RagShortTexts": [
+    "Barbarian patriarch Li Tu established the Republic of Mizeia"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Barbarian Republic? We don't know. It seems like a republic founded by Li Tu from Pala? It's too ancient, it's been two or three hundred years, so I'm not interested."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 60
+        }
+      },
+      "Content": "The Republic of Mizeia, known as the \"Barbarian Republic\" in history, was a short-lived regime established in the Mizeia region by the barbarian patriarch Li Tu during the imperial period. It lasted less than two years. This regime was framed by a republican system that imitated the empire. It was the last large-scale armed resistance launched by the remaining republican forces within the empire against the increasingly centralized imperial power system. Background and establishment Li Tu was born into a barbarian aristocratic family in the border provinces of the empire. Because his tribe surrendered to the empire after several wars, he was awarded the title of senator and entered the political center of the empire. In the party disputes within the empire over the distribution of power and the direction of the political system, Li Tu's faction advocated retaining the traditional authority of the Senate and opposed the emperor's increasing concentration of power. After the failure of the party struggle, Li Tu was squeezed out of the core of power and forced to return to his fiefdom in Mizeya. After returning to Mizeya, Li Tu did not settle down. He called on the empire to abandon its republican ideals and trample on the dignity of the senators, and openly raised its troops to rebel. Mizea and the surrounding areas have long been on the border of the empire. The local residents are mainly Pala people and have long-standing grievances against the empire's heavy taxes and bureaucratic rule. Li Tu's army quickly received widespread response. Neighboring barbarian settlements, urban militias, and even some nobles dissatisfied with the imperial policies joined in, and the momentum was huge for a time. Government structure and organization After taking control of the Mizea region, Li Tu declared the establishment of the \"Mizea Republic\". In terms of political design, he deliberately imitated the structure of the early republican era of the empire - setting up the Senate as a deliberation body, with local dignitaries and tribal leaders serving as senators; setting up the position of consul to handle daily government affairs, and Li Tu appointed himself consul for life; at the same time, he minted coins with the words \"Liberty and Republic\" engraved on them to declare legitimacy. Because most of its core supporters were Pala barbarians, the empire's official and later history books generally referred to it as the \"Barbarian Republic\". The military power of the Republic is based on Li Tu's tribal private soldiers as the backbone, supplemented by militia armed by responders from all over the country. Its control area once extended to the entire Mizea and several nearby towns, posing a direct threat to the western border of the empire. Suppression and Disintegration Facing the challenge from the Republic of Mizeia, the empire initially mobilized regular troops to suppress the army with force. However, due to the complex local terrain, the rebels' familiarity with the terrain, and support from the people, the frontal attack had little effect. After that, the empire changed its strategy and turned to the methods of disintegration and bribery of traitors. The empire's emissaries sneaked into areas controlled by the Republic with heavy sums of money, and secretly contacted tribal leaders and town leaders who were shaken by the uneven distribution of power or fear of the empire's future liquidation. Under the temptation of money, promises of pardon and official positions, several core generals of the Republic and local powerful figures defected one after another. The originally loose rebel alliance quickly collapsed from within. Li Tu's military deployment and logistical supplies were destroyed, and the towns under his control surrendered one after another. Ending After the situation was over, Li Tu tried to escape abroad under the cover of his cronies, but was betrayed by defectors on the way and captured by the imperial army. He was taken to the western town of Palavinos - known today as Palabund - and publicly executed for treason in the city's square. The Republic of Mizeia was subsequently destroyed, and the remaining resistance forces were wiped out one by one in the following months. Historical Impact Although the uprising of the Republic of Mizeia failed after only lasting less than two years, it had a profound impact on the evolution of the imperial government. This rebellion led by barbarian elders under the banner of republic made the imperial ruling class fundamentally wary of and rejected the remaining republican system and local autonomy tradition within the territory. In the years after the suppression of the uprising, the empire successively abolished the remaining republican institutions in many provinces and city-states. The actual power of the Senate was further emptied out, and the republican shell originally used as a political balancing mechanism was completely stripped away. The empire's political system thus accelerated its shift to a highly centralized monarchy, setting the tone for the ruling model for the next several centuries."
+    }
+  ],
+  "TextMappings": []
+}

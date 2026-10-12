@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_House_Rowan",
+  "Keywords": [
+    "House Rowan",
+    "Golden Tree"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Rowan, with its roots in Goldentree City, is a wealthy and influential vassal of Tyrell in the Reach. Their family sigil is a golden tree on silver. Rowan's real power comes from fertile lands, knights, marriage, and the ability to maintain respectability among the powerful powers of the Reach. Outsiders rarely spoke of Rowan alone, but the Lords of the Reach knew that Golden Tree City could bring food, soldiers, and a seat that needed to be taken seriously at important meetings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The princes of the River Bend regard Luo Wan as a wealthy, stable and important vassal of Jinshucheng. Legends from the days of golden trees and gardeners graced their houses, but their weight at the table came from land, military service and marriage alliances. Luo Wan does not need to occupy all the attention like a rose. As long as a tree has deep roots, others will naturally grow around it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The citizens of Golden Tree City are used to hearing family stories about golden trees, but what they are really familiar with are orchards, woodlands, barns, and wood shavings in the hands of carpenters. People wanted to believe that the lord protected the place like a shade tree, and would also sneer at the time of heavy taxation. The reason why the golden tree shines is because it sucks every copper coin out of the mud."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Rowan A powerful vassal of the city of Riverbend Golden Tree, his family crest is Golden Tree on silver. Its status comes from local memories of a time of fertile soil, knights, marriages and gardeners. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Rowan A powerful vassal of the city of Riverbend Golden Tree, his family crest is Golden Tree on silver. Its status comes from local memories of a time of fertile soil, knights, marriages and gardeners. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Rowan A powerful vassal of the city of Riverbend Golden Tree, his family crest is Golden Tree on silver. Its status comes from local memories of a time of fertile soil, knights, marriages and gardeners. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Rowan A powerful vassal of the city of Riverbend Golden Tree, his family crest is Golden Tree on silver. Its status comes from local memories of a time of fertile soil, knights, marriages and gardeners. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Rowan: A powerful vassal of the city of Riverbend Golden Tree, his family crest is Golden Tree on silver. Its status derives from local memories of a time of fertile soil, knights, marriages and gardeners;"
+  ]
+}

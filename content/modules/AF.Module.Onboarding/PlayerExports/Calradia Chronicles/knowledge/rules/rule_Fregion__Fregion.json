@@ -1,0 +1,93 @@
+{
+  "Id": "rule_Fregion",
+  "Keywords": [
+    "Fregion"
+  ],
+  "RagShortTexts": [
+    "Fregion is located in the northern plain of Palawind and is a climatic boundary point."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fregion is a village near Oaks Hall, located on the plains north of Palawind. From here, the warm currents from the south of Vlandia give way to the cold air from the north. Local villagers grow flax in swamps and meadows, and linen is their main output."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fregion is a place where the climatic divide can be felt by people traveling from north to south. Going south, the sea breeze is still warm; going north, the wind becomes cooler. Flax grows well here, and the marshes and lowland pastures are best suited to this crop. Phregian linen is durable, and the boyars from Sturgia to the north sometimes send people to buy it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Phregian linens are strong and reasonably priced. The flax grown in the local swamps has long fibers, and the cloth woven from it is much more durable than the thin materials in the south. People who run the trade route to the north are willing to buy a batch of goods here."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "It was autumn when I passed by Fregion. The flax was being cut in the marshes one after another, and the air was chilly. Going north from here, you can clearly feel the temperature dropping. Locals say Fregion is the last stop where the warm winds of Vlandia can reach."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Fregion",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Oaks Hall",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

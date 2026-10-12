@@ -21,14 +21,14 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM
 
     [DataSourceProperty] public bool IsReading => _readerItem != null;
     [DataSourceProperty] public bool ShowReportList => !IsReading;
-    [DataSourceProperty] public string FilterText => _typeFilter == "all" ? "全部" : _typeFilter == "bulletin" ? "快报" : _typeFilter == "diplomacy" ? "外交" : _typeFilter == "policy" ? "政策" : _typeFilter == "recent" ? "近况" : "周报";
+    [DataSourceProperty] public string FilterText => _typeFilter == "all" ? Localize("AF_UI_Weekly_Browser_FilterAll", "All") : _typeFilter == "bulletin" ? Localize("AF_UI_Weekly_Browser_FilterBulletin", "Bulletin") : _typeFilter == "diplomacy" ? Localize("AF_UI_Weekly_Browser_FilterDiplomacy", "Diplomacy") : _typeFilter == "policy" ? Localize("AF_UI_Weekly_Browser_FilterPolicy", "Policy") : _typeFilter == "recent" ? Localize("AF_UI_Weekly_Browser_FilterRecent", "Recent") : Localize("AF_UI_Weekly_Browser_FilterWeekly", "Weekly report");
     [DataSourceProperty] public bool IsDiplomacySelected => _typeFilter == "diplomacy";
     [DataSourceProperty] public bool IsPolicySelected => _typeFilter == "policy";
     [DataSourceProperty] public bool IsAllSelected => _typeFilter == "all";
     [DataSourceProperty] public bool IsBulletinSelected => _typeFilter == "bulletin";
     [DataSourceProperty] public bool IsRecentSelected => _typeFilter == "recent";
     [DataSourceProperty] public bool IsWeeklySelected => _typeFilter == "weekly";
-    [DataSourceProperty] public string PageText => (_filteredReports.Count == 0 ? 0 : _page + 1) + " / " + Math.Max(1,(_filteredReports.Count + PageSize - 1) / PageSize);
+    [DataSourceProperty] public string PageText => Localize("AF_UI_Weekly_Browser_PageStatus", "Page {CURRENT} / {TOTAL}", ("CURRENT", (_filteredReports.Count == 0 ? 0 : _page + 1).ToString()), ("TOTAL", Math.Max(1, (_filteredReports.Count + PageSize - 1) / PageSize).ToString()));
     [DataSourceProperty] public bool CanPreviousPage => _page > 0;
     [DataSourceProperty] public bool CanNextPage => (_page + 1) * PageSize < _filteredReports.Count;
     [DataSourceProperty] public float ListScrollPosition { get => _listScrollPosition; set { _listScrollPosition=value; OnPropertyChangedWithValue(value,nameof(ListScrollPosition)); } }
@@ -70,8 +70,8 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM
         foreach (var entry in _filteredReports.Skip(_page*PageSize).Take(PageSize))
             rows.Add(new TerminalWeeklyReportEntryItemVM(entry,RequestViewFullReport,RequestOpenReport));
         ReportItems=rows; HasReportItems=rows.Count>0; ShowEmptyState=!HasReportItems;
-        EmptyStateText="当前筛选下暂无内容。";
-        SelectedCountryMetaText="共 " + _filteredReports.Count + " 条 · 每页 " + PageSize + " 条";
+        EmptyStateText=Localize("AF_UI_Weekly_Browser_FilteredEmpty", "No entries match the current filter.");
+        SelectedCountryMetaText=Localize("AF_UI_Weekly_Browser_PageSummary", "{COUNT} entries · {PAGE_SIZE} per page", ("COUNT", _filteredReports.Count.ToString()), ("PAGE_SIZE", PageSize.ToString()));
         OnPropertyChangedWithValue(PageText,nameof(PageText));
         OnPropertyChangedWithValue(CanPreviousPage,nameof(CanPreviousPage));
         OnPropertyChangedWithValue(CanNextPage,nameof(CanNextPage));

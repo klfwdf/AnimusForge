@@ -32,16 +32,16 @@ namespace AnimusForge;
 
 public partial class DuelSettings
 {
-	[SettingPropertyFloatingInteger("军事演习死亡率强度", 0f, 1f, "#0%", Order = 0, RequireRestart = false, HintText = "仅用于军事演习。0% = 所有人类单位倒地只伤不死；50% = 使用原版死亡率；100% = 原版允许死亡的目标倒地时必死。")]
-	[SettingPropertyGroup("11. 军事演习")]
+	[SettingPropertyFloatingInteger("{=AF_EX_MCM_DeathRate}Military exercise death rate intensity", 0f, 1f, "#0%", Order = 0, RequireRestart = false, HintText = "{=AF_EX_MCM_DeathRate_Hint}Military exercise only. 0% = human units can fall only wounded; 50% = native death rate; 100% = eligible targets always die when they fall.")]
+	[SettingPropertyGroup("{=AF_EX_MCM_Group}11. Military exercise")]
 	public float MilitaryExerciseDeathRate { get; set; } = 0.02f;
 
-	[SettingPropertyBool("玩家可战死", Order = 1, RequireRestart = false, HintText = "仅用于军事演习。开启：玩家本人按军事演习死亡率强度可能战死。关闭：玩家本人倒地后必定只伤不死。")]
-	[SettingPropertyGroup("11. 军事演习")]
+	[SettingPropertyBool("{=AF_EX_MCM_PlayerDeath}Allow player death", Order = 1, RequireRestart = false, HintText = "{=AF_EX_MCM_PlayerDeath_Hint}Military exercise only. Enabled: the player may die according to the exercise death rate. Disabled: the player is always wounded instead of killed when downed.")]
+	[SettingPropertyGroup("{=AF_EX_MCM_Group}11. Military exercise")]
 	public bool MilitaryExerciseAllowPlayerDeath { get; set; } = false;
 
-	[SettingPropertyBool("同伴可战死", Order = 2, RequireRestart = false, HintText = "仅用于军事演习。开启：参演英雄同伴按军事演习死亡率强度可能战死。关闭：参演英雄同伴倒地后必定只伤不死。普通士兵不受此开关保护。")]
-	[SettingPropertyGroup("11. 军事演习")]
+	[SettingPropertyBool("{=AF_EX_MCM_CompanionDeath}Allow companion death", Order = 2, RequireRestart = false, HintText = "{=AF_EX_MCM_CompanionDeath_Hint}Military exercise only. Enabled: participating hero companions may die according to the exercise death rate. Disabled: participating companions are always wounded instead of killed when downed. Regular soldiers are not protected by this setting.")]
+	[SettingPropertyGroup("{=AF_EX_MCM_Group}11. Military exercise")]
 	public bool MilitaryExerciseAllowCompanionDeath { get; set; } = false;
 
 	public static int MilitaryExerciseDeathRatePercent
@@ -964,7 +964,7 @@ public static class MilitaryExerciseBehavior
 				{
 					Log("queued second failed: " + ex.GetType().Name + ": " + ex.Message);
 					ResetPendingSelection("queued_second_exception");
-					DisplayFailure("打开选择界面失败", ex);
+					DisplayFailure(ExerciseUiLocalization.Text("AF_EX_UI_OpenSelectionFailed", "Failed to open selection screen"), ex);
 				}
 			}
 		}
@@ -990,7 +990,7 @@ public static class MilitaryExerciseBehavior
 			if (!_sessionOwner.BeginBattle()) return;
 			OpenMilitaryExerciseBattleMission(_runtime);
 			_isOpening = false;
-			Display("军事演习开始。");
+			Display(ExerciseUiLocalization.Text("AF_EX_UI_ExerciseStarted", "Military exercise started."));
 		}
 		catch (Exception ex)
 		{
@@ -999,7 +999,7 @@ public static class MilitaryExerciseBehavior
 			_runtime = null;
 			_isOpening = false;
 			_sessionOwner.ResetSelection();
-			DisplayFailure("军事演习开启失败", ex);
+			DisplayFailure(ExerciseUiLocalization.Text("AF_EX_UI_ExerciseOpenFailed", "Failed to start military exercise."), ex);
 		}
 	}
 
@@ -1014,12 +1014,12 @@ public static class MilitaryExerciseBehavior
 		EnsureHarmonyPatched();
 		if (_isOpening)
 		{
-			Display("军事演习正在准备中。");
+			Display(ExerciseUiLocalization.Text("AF_EX_UI_ExercisePreparing", "Military exercise is preparing."));
 			return;
 		}
 		if (_sessionOwner.HasActiveRuntime || _queuedOpenBattle)
 		{
-			Display("已有军事演习正在进行中。");
+			Display(ExerciseUiLocalization.Text("AF_EX_UI_ExerciseAlreadyActive", "A military exercise is already in progress."));
 			return;
 		}
 		if (_pendingSelection != null && _pendingSelection.Stage == MilitaryExerciseSelectionStage.SecondTeam)
@@ -1039,13 +1039,13 @@ public static class MilitaryExerciseBehavior
 			{
 				Log("resume second failed: " + ex.GetType().Name + ": " + ex.Message);
 				ResetPendingSelection("resume_second_exception");
-				DisplayFailure("打开选择界面失败", ex);
+				DisplayFailure(ExerciseUiLocalization.Text("AF_EX_UI_OpenSelectionFailed", "Failed to open selection screen"), ex);
 			}
 			return;
 		}
 		if (IsCurrentExerciseRuntime())
 		{
-			Display("军事演习正在处理中。");
+			Display(ExerciseUiLocalization.Text("AF_EX_UI_ExerciseProcessing", "Military exercise is being processed."));
 			return;
 		}
 		_isOpening = true;
@@ -1065,7 +1065,7 @@ public static class MilitaryExerciseBehavior
 		{
 			Log("open failed: " + ex.GetType().Name + ": " + ex.Message);
 			ResetPendingSelection("open_exception");
-			DisplayFailure("打开军事演习失败", ex);
+			DisplayFailure(ExerciseUiLocalization.Text("AF_EX_UI_ExerciseOpenFailed", "Failed to open military exercise."), ex);
 		}
 	}
 
@@ -1734,22 +1734,22 @@ public static class MilitaryExerciseBehavior
 		{
 			if (Campaign.Current == null || mainParty == null || PartyBase.MainParty == null)
 			{
-				blockedReason = "当前没有可用于军事演习的玩家部队。";
+				blockedReason = ExerciseUiLocalization.Text("AF_EX_UI_ExerciseNoPlayerParty", "There is no player party available for a military exercise.");
 				return false;
 			}
 			if (Mission.Current != null)
 			{
-				blockedReason = "当前任务中无法开始军事演习。";
+				blockedReason = ExerciseUiLocalization.Text("AF_EX_UI_ExerciseMissionBlocked", "A military exercise cannot start during a mission.");
 				return false;
 			}
 			if (PlayerEncounter.Current != null || MapEvent.PlayerMapEvent != null || mainParty.MapEvent != null)
 			{
-				blockedReason = "当前已有遭遇或战斗事件，无法开始军事演习。";
+				blockedReason = ExerciseUiLocalization.Text("AF_EX_UI_ExerciseEncounterBlocked", "An encounter or battle is already active, so a military exercise cannot start.");
 				return false;
 			}
 			if (CountSelectableNonPlayerMembers(mainParty.MemberRoster) <= 0)
 			{
-				blockedReason = "玩家部队中除玩家外没有可用于第二队选择的成员。";
+				blockedReason = ExerciseUiLocalization.Text("AF_EX_UI_ExerciseNoSecondTeamMembers", "The player party has no members available for the second team.");
 				return false;
 			}
 			return true;
@@ -1757,7 +1757,7 @@ public static class MilitaryExerciseBehavior
 		catch (Exception ex)
 		{
 			Log("precheck exception: " + ex.GetType().Name + ": " + ex.Message);
-			blockedReason = "当前状态无法开始军事演习。";
+			blockedReason = ExerciseUiLocalization.Text("AF_EX_UI_ExerciseStateBlocked", "The current state prevents a military exercise from starting.");
 			return false;
 		}
 	}
@@ -1799,8 +1799,8 @@ public static class MilitaryExerciseBehavior
 			emptyPrisonRoster,
 			firstTeamRoster,
 			TroopRoster.CreateDummyTroopRoster(),
-			new TextObject("可选成员"),
-			new TextObject("第一队（玩家固定属于此队）"),
+			ExerciseUiLocalization.Object("AF_EX_UI_ExerciseSelectableMembers", "Selectable members"),
+			ExerciseUiLocalization.Object("AF_EX_UI_ExerciseFirstTeam", "First team (the player is fixed to this team)"),
 			Math.Max(availableRoster.TotalManCount, 0),
 			Math.Max(mainParty.Party?.PartySizeLimit ?? availableRoster.TotalManCount, availableRoster.TotalManCount),
 			new PartyPresentationDoneButtonConditionDelegate(FirstTeamDoneCondition),
@@ -1829,7 +1829,7 @@ public static class MilitaryExerciseBehavior
 			if (fromCancel)
 			{
 				ResetPendingSelection("first_cancel");
-				Display("已取消军事演习。");
+				Display(ExerciseUiLocalization.Text("AF_EX_UI_ExerciseCancelled", "Military exercise cancelled."));
 				return;
 			}
 			TroopRoster firstTeamRoster = BuildSelectionRosterFromUi(rightMemberRoster);
@@ -1845,7 +1845,7 @@ public static class MilitaryExerciseBehavior
 		{
 			Log("first_team_screen failed: " + ex.GetType().Name + ": " + ex.Message);
 			ResetPendingSelection("first_exception");
-			DisplayFailure("选择失败", ex);
+			DisplayFailure(ExerciseUiLocalization.Text("AF_EX_UI_SelectionFailed", "Selection failed."), ex);
 		}
 	}
 
@@ -1859,8 +1859,8 @@ public static class MilitaryExerciseBehavior
 			TroopRoster.CreateDummyTroopRoster(),
 			opponentRoster,
 			TroopRoster.CreateDummyTroopRoster(),
-			new TextObject("剩余成员"),
-			new TextObject("第二队"),
+			ExerciseUiLocalization.Object("AF_EX_UI_ExerciseRemainingMembers", "Remaining members"),
+			ExerciseUiLocalization.Object("AF_EX_UI_ExerciseSecondTeam", "Second team"),
 			Math.Max(remainingRoster.TotalManCount, 0),
 			Math.Max(remainingRoster.TotalManCount, 1),
 			new PartyPresentationDoneButtonConditionDelegate(SecondTeamDoneCondition),
@@ -1875,7 +1875,7 @@ public static class MilitaryExerciseBehavior
 	{
 		if (rightMemberRoster == null || rightMemberRoster.TotalManCount <= 0)
 		{
-			return new Tuple<bool, TextObject>(false, new TextObject("第二队必须至少 1 人。"));
+			return new Tuple<bool, TextObject>(false, ExerciseUiLocalization.Object("AF_EX_UI_ExerciseSecondTeamMinimum", "The second team must contain at least one member."));
 		}
 		return new Tuple<bool, TextObject>(true, TextObject.GetEmpty());
 	}
@@ -1893,7 +1893,7 @@ public static class MilitaryExerciseBehavior
 			if (fromCancel)
 			{
 				ResetPendingSelection("second_cancel");
-				Display("已取消军事演习。");
+				Display(ExerciseUiLocalization.Text("AF_EX_UI_ExerciseCancelled", "Military exercise cancelled."));
 				return;
 			}
 			if (_pendingSelection.FirstTeamRoster == null)
@@ -1907,7 +1907,7 @@ public static class MilitaryExerciseBehavior
 			{
 				Log("second_team_screen rejected: empty opponent");
 				ResetPendingSelection("empty_opponent");
-				Display("第二队必须至少 1 人。");
+				Display(ExerciseUiLocalization.Text("AF_EX_UI_ExerciseSecondTeamMinimum", "The second team must contain at least one member."));
 				return;
 			}
 			_runtime = new MilitaryExerciseRuntime
@@ -1949,7 +1949,7 @@ public static class MilitaryExerciseBehavior
 				}
 				_pendingSelection = null;
 				_isOpening = false;
-				DisplayFailure("军事演习准备失败", splitEx);
+				DisplayFailure(ExerciseUiLocalization.Text("AF_EX_UI_ExercisePreparationFailed", "Military exercise preparation failed."), splitEx);
 				return;
 			}
 			_pendingSelection = null;
@@ -1973,7 +1973,7 @@ public static class MilitaryExerciseBehavior
 				_sessionOwner.ReleaseRuntime(failedRuntime);
 			}
 			ResetPendingSelection("second_exception");
-			DisplayFailure("选择失败", ex);
+			DisplayFailure(ExerciseUiLocalization.Text("AF_EX_UI_SelectionFailed", "Selection failed."), ex);
 		}
 	}
 
@@ -2190,8 +2190,8 @@ public static class MilitaryExerciseBehavior
 		CampaignVec2 holdingPosition = mainPosition + holdingOffset.Normalized() * 0.4f;
 		string opponentId = OpponentDummyPartyPrefix + DateTime.UtcNow.Ticks + "_" + MBRandom.RandomInt(1000000);
 		string holdingId = HoldingDummyPartyPrefix + DateTime.UtcNow.Ticks + "_" + MBRandom.RandomInt(1000000);
-		runtime.OpponentDummyParty = MobileParty.CreateParty(opponentId, new OpponentDummyPartyComponent(opponentPosition, new TextObject("AnimusForge 军事演习对抗队"), Hero.MainHero, Clan.PlayerClan));
-		runtime.HoldingDummyParty = MobileParty.CreateParty(holdingId, new HoldingDummyPartyComponent(holdingPosition, new TextObject("AnimusForge 军事演习待命队"), Hero.MainHero, Clan.PlayerClan));
+		runtime.OpponentDummyParty = MobileParty.CreateParty(opponentId, new OpponentDummyPartyComponent(opponentPosition, ExerciseUiLocalization.Object("AF_EX_UI_ExerciseOpponentParty", "AnimusForge military exercise opponent"), Hero.MainHero, Clan.PlayerClan));
+		runtime.HoldingDummyParty = MobileParty.CreateParty(holdingId, new HoldingDummyPartyComponent(holdingPosition, ExerciseUiLocalization.Object("AF_EX_UI_ExerciseHoldingParty", "AnimusForge military exercise reserve"), Hero.MainHero, Clan.PlayerClan));
 		if (runtime.OpponentDummyParty == null)
 		{
 			throw new InvalidOperationException("Failed to create opponent dummy party.");
@@ -2882,14 +2882,14 @@ public static class MilitaryExerciseBehavior
 			}
 			ValidateMainPartyHeroRosterReadyForExercise(MobileParty.MainParty, MobileParty.MainParty?.MemberRoster, "cleanup_" + reason);
 			Log("cleanup_state_validate_ok reason=" + reason + " main=" + RosterSummary(MobileParty.MainParty?.MemberRoster));
-			Display("军事演习结束。");
+			Display(ExerciseUiLocalization.Text("AF_EX_UI_ExerciseEnded", "Military exercise ended."));
 			Log($"no_retreat_summary suppressed={Volatile.Read(ref runtime.NoRetreatSuppressions)} routed_restored={summary.RoutedRestored}");
 			Log($"cleanup_exercise end reason={reason} xp_committed={summary.XpCommitted} opponent_returned={summary.OpponentReturned} holding_returned={summary.HoldingReturned}");
 		}
 		catch (Exception ex)
 		{
 			Log("cleanup_exercise failed: " + ex.GetType().Name + ": " + ex.Message + "\n" + ex.StackTrace);
-			DisplayFailure("军事演习结算异常", ex);
+			DisplayFailure(ExerciseUiLocalization.Text("AF_EX_UI_ExerciseSettlementError", "Military exercise settlement failed."), ex);
 		}
 		finally
 		{
@@ -4006,7 +4006,7 @@ public static class MilitaryExerciseBehavior
 
 	private static void DisplayFailure(string title, Exception ex)
 	{
-		Display(title + "：" + GetPlayerVisibleFailureReason(ex));
+		Display(title + ": " + GetPlayerVisibleFailureReason(ex));
 	}
 
 	private static string GetPlayerVisibleFailureReason(Exception ex)
@@ -4014,41 +4014,41 @@ public static class MilitaryExerciseBehavior
 		string message = ex?.Message ?? "";
 		if (string.IsNullOrWhiteSpace(message))
 		{
-			return "原因未知。";
+			return ExerciseUiLocalization.Text("AF_EX_UI_ExerciseFailureUnknown", "Unknown reason.");
 		}
 		if (message.IndexOf("Roster totals mismatch", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "队伍选择数据不一致，请重新选择队伍。";
+			return ExerciseUiLocalization.Text("AF_EX_UI_ExerciseFailureRosterMismatch", "The team selection is inconsistent. Please select the teams again.");
 		}
 		if (message.IndexOf("Not enough source wounded troops", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "队伍选择数据不一致，请重新选择队伍。";
+			return ExerciseUiLocalization.Text("AF_EX_UI_ExerciseFailureRosterMismatch", "The team selection is inconsistent. Please select the teams again.");
 		}
 		if (message.IndexOf("Opponent dummy party has no members", StringComparison.OrdinalIgnoreCase) >= 0
 			|| message.IndexOf("empty opponent", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "第二队没有可参演成员。";
+			return ExerciseUiLocalization.Text("AF_EX_UI_ExerciseFailureEmptySecondTeam", "The second team has no participating members.");
 		}
 		if (message.IndexOf("MainParty is null", StringComparison.OrdinalIgnoreCase) >= 0
 			|| message.IndexOf("MainParty missing", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "玩家队伍状态不可用。请回到大地图后重试。";
+			return ExerciseUiLocalization.Text("AF_EX_UI_ExerciseFailureMainParty", "The player party is unavailable. Return to the campaign map and try again.");
 		}
 		if (message.IndexOf("Player is not in MainParty", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "玩家不在主队中，无法开始军事演习。";
+			return ExerciseUiLocalization.Text("AF_EX_UI_ExerciseFailurePlayerParty", "The player is not in the main party, so the military exercise cannot start.");
 		}
 		if (message.IndexOf("Failed to create field battle MapEvent", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "无法进入演习战场，请移动到其他位置后重试。";
+			return ExerciseUiLocalization.Text("AF_EX_UI_ExerciseFailureBattleScene", "The exercise battle could not be opened. Move elsewhere and try again.");
 		}
 		if (message.IndexOf("Battle scene is empty", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "无法进入演习战场，请移动到其他位置后重试。";
+			return ExerciseUiLocalization.Text("AF_EX_UI_ExerciseFailureBattleScene", "The exercise battle could not be opened. Move elsewhere and try again.");
 		}
 		if (message.IndexOf("CampaignMission.OpenBattleMission returned non-Mission", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "无法进入演习战场，请移动到其他位置后重试。";
+			return ExerciseUiLocalization.Text("AF_EX_UI_ExerciseFailureBattleScene", "The exercise battle could not be opened. Move elsewhere and try again.");
 		}
 		if (message.Length > 90)
 		{

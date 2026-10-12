@@ -1,0 +1,83 @@
+{
+  "Id": "rule_Aserais_two_old_debts",
+  "Keywords": [
+    "Banusalam",
+    "Banu Hulayan",
+    "Banu Gilad (Aserais two old debts)",
+    "Adram",
+    "Houssenfuleger",
+    "Rachih",
+    "Hubia",
+    "Aserai feud",
+    "Aserai infighting"
+  ],
+  "RagShortTexts": [
+    "There are two old feuds stacked up inside Aserai - the territory account between Banu Salan and the Winged family, and the bloody new feud between Banu Salan and Banu Gilad."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Aserai was not held back by foreign enemies, but by two old debts stacked up in his own family. The first account was the land boundary account between Banu Saran and the Winged family. About two hundred years ago, Banu Salan was expelled from the Aserai and lived in exile outside the desert for nearly two hundred years. When they finally returned to the south, they captured Hussenfuleg and Rachkh from the Wingeds. The Wingeds, seeking to keep the Aserai united, eventually acknowledged their status - but only in recognition, not forgiveness. Banu Saran believes that he has an ancient bloodline and is no younger than any other family in his ancestry, so he should not be treated as a \"latecomer\". The other clans always looked at them with a layer of separation, saying, \"These people have left and come back again.\" The second account is the death of Nimr. Nimr Banu Salan led the Salan soldiers to participate in the Battle of Pandlak, fighting for the empire, and was honored even though he was defeated on the battlefield. After returning home, he had an affair with a woman from Banu Gilad, which offended Thaïs. Thaïs had Nimr tied up and executed in Hubia, and his body was hung in an iron cage in the market for public display. Adlam - Nimr's people - witnessed all this. To him, this matter was more unforgivable than the empire's default on military rewards - it was expected that the empire would not pay, but it was another matter for his own family to kill his own family members and hang their bodies in humiliation. As Sultan, Winged could suppress the situation and avoid a full-scale civil war, but he could not close either of these two cracks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My name is Adlam. I stood in the marketplace of Hubia when Nimr died. He was tied to a pillar, and Thaïs cut his throat with his own hands. Then they stuffed the body into an iron cage and hung it at the entrance to the market place. People coming and going can be seen. They say that we, the Salan tribe, are arrogant and unruly - that women of our tribe are insulting their husbands' families by finding other men. But is that a death sentence? That's the way to kill prisoners. Nimr was the leader of Saran. He was not an enemy who was killed on the battlefield - he was executed by \"his own people\" using the same methods used against the enemy. I will never forget this account. Winged Sultan said the overall situation should be put first. The big picture. Saran's blood flowed outside for two hundred years before returning to the desert, where it was hung in an iron cage to stink. That's the big picture they gave us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nimr be damned. He slept with the wife of one of my people, and when he was caught he didn't even ask for mercy - he stood there and said that his semen was nobler than the blood of our Gilad. Why should he? Just because he is the patriarch of Salan? Banu Salan wandered outside for two hundred years. When he came back, he was like a pack of hungry wolves. He robbed Hussenfuleg and Rachikh. Sultan Winged recognized their territory for the sake of peace. Then their men came to sleep with our women. Nimr's body hung in the iron cage for a month, and I took a look at it every day. I don't regret it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The account between Banu Saran and Banu Gilad will have to be settled sooner or later. Winged was able to suppress the situation because he had oases, trade routes, and wartime supplies in his hands. Both Salan and Gilad needed his supplies, so they both gave him face. But Nimr's life, which was between the two families, could not be wiped away just to give the Sultan face. The Salans said it was murder, the Girards said it was justice—both sides felt they were justified."
+    }
+  ],
+  "TextMappings": []
+}

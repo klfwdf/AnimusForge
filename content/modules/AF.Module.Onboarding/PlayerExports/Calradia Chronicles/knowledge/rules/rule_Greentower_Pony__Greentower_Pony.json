@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Greentower_Pony",
+  "Keywords": [
+    "Greentower Pony"
+  ],
+  "RagShortTexts": [
+    "Greentower Pony has poor performance, short battery life and poor physical strength."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Greentower Pony is the finest horse of the Battanians. But it's very bad, it's just the shortcomings of hundreds of schools of thought. It has a short endurance, poor stamina, eats a lot, has little strength, its legs are slow in sprinting, and its body is generally heavy, but this is the only horse that can handle it in this cold forest."
+    }
+  ],
+  "TextMappings": []
+}

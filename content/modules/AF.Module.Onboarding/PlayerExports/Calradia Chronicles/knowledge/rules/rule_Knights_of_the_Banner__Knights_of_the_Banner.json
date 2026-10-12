@@ -1,0 +1,168 @@
+{
+  "Id": "rule_Knights_of_the_Banner",
+  "Keywords": [
+    "Knights of the Banner"
+  ],
+  "RagShortTexts": [
+    "The equipment of the flag knights is expensive, and the heavy armored cavalry charge is very intimidating."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Knights of the Banner? The retinue will gain seniority, earn military exploits, be lucky enough to be favored by a certain baron, and hang a square flag on the lance when being canonized, and you will be considered stable for the rest of your life. The equipment cost of the Knights of the Square Flag is not a small sum of money - a full-face helmet, cloth armor, chain mail lining, and war horse armor. One set can support a team of crossbowmen for several years. But worth it. A knight with a square banner laid his lance flat in front of the formation, his horse hooves dug into the ground, and his cloak stretched into a wall behind his back. The infantrymen on the opposite side felt weak at the sight of it. But I have to be honest: Knights of the Banner are difficult to manage. They are too proud. Everyone is fighting, and what is hanging on everyone's waist is not a sword but a record. If you ask him to line up, he will line up, but if you ask him not to rush, he may not listen. Ingatell led a group of flag knights to chase the light infantry in Pandrak. In the end, they were counterattacked by the imperial armored cavalry, and many people were killed. The Knight of the Banner is the sharpest knife in Vlandia, but the knife is too fast and can easily cut your own hands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Knights of the Banner? That has nothing to do with us. If a Knight of the Square Banner appeared in our village, smoke would rise from the ancestral graves of the whole village. To be a Knight of the Banner, you must first be a retinue, and the retinue must have someone to vouch for you, and the person vouching for you must be at least a knight. The eight generations above our family are all farmers, and we can't even have the stableman as the guarantor. I saw a knight with square flags once in the market. He was riding on that tall horse. His body was covered in iron and his face was invisible. He could only see a slit under the rim of his helmet. The light coming out of that slit was enough to make people dare not breathe. Their horses are also scary, their armor is worth more than my house, and their hooves are as big as my head. No one dared to look at the Knight of the Square Banner when he was crossing the street. It was not because he was afraid that he would slap you, but because if his iron hooves hit you, he would be gone in one fell swoop. But then again, we still have to rely on them to fight the war. The crossbowmen are good at shooting arrows, but if they really want to overwhelm the opposing line, they have to press on them with these iron men."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:vlandian_banner_knight"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I was a retinue when I was young, and I was granted a title in the city not long ago. On the day of the canonization, His Excellency the Baron handed me the square flag with his own hands, saying that the flag was with me. I said nothing. Afterwards, my retinue said that the flag was too small and inferior to other large flags. I told him that the flag is not for you to measure the cloth, but for your life to hang on your lance. The archers on the other side were aiming at this flag. I charged with it to tell the other side that I was here and come to attack me. Those who can fly the square flag will not hide or hide. When we charge, we will be the first to rush in, and when we withdraw, we will be the last to leave. The Imperials say their armored cavalry is better than ours, I won't argue. They were well disciplined and we fought hard. Those who are disciplined will not die in the array, and those who fight fiercely will survive in the melee. We, the Banner Knights of Vlandia, never compete with others on discipline. We compete on who can break the opposite shield wall first. But to be honest, sometimes I rush too deep, and when I look back and see that the support has not caught up, I feel a little cold. You can't say this to your subordinates, you can only keep it in your heart."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:vlandian_crossbowman",
+          "char:vlandian_footman",
+          "char:vlandian_infantry",
+          "char:vlandian_levy_crossbowman",
+          "char:vlandian_marine_t5",
+          "char:vlandian_militia_archer",
+          "char:vlandian_militia_spearman",
+          "char:vlandian_recruit",
+          "char:vlandian_sergeant",
+          "char:vlandian_sharpshooter",
+          "char:vlandian_spearman",
+          "char:vlandian_swordsman",
+          "char:vlandian_voulgier"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have been squatting in the crossbowmen formation for six years. What I fear most is not the charging horse from the opposite side, but the flag knight in front of me who suddenly decides to charge without waiting for an order. As soon as they move, the entire line will be exposed. We crossbowmen have to quickly retract the crossbows and retreat to the flanks. If we are slow, we will be bitten by the opposite Qingqi. But I also obey them. Once, when the empire from the opposite side came forward with heavy steps, our infantry line could no longer hold on and took two steps back. Then the flag knights on the right lowered their lances without making a sound. No one gave an order. They organized themselves into a team. The horses' hooves beat together, and everyone on our side breathed a sigh of relief. The flags were clattering as they rushed out, and the sound of them crashing into the opposing formation was like iron hitting iron. The imperial soldiers who had been pressing forward just now were instantly thrown into chaos. The knight with the square flag wasted no time in fighting and turned his horse back. When we came back, there were a few people missing, and there were empty stirrups on the horses, but those who came back alive were still there. Their lances were broken and they were replaced with swords and they continued to line up. I can't say that I like them - they are too proud to speak to the infantry, but I recognize them. With them in front, my hands didn't shake when I loaded the crossbow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia Banner Knights are the only force on the continent that can compete with the Empire's armored cavalry in heavy cavalry duels. The equipment was excellent, the equestrian skills were superb, and the personal prowess was unquestionable. Their weakness lies in discipline - Vlandia's knightly tradition emphasizes personal honor, resulting in the Banner Knights tending to act freely in the formation rather than fighting together. The imperial armored cavalry does this better. In a large-scale battle, a neat line of uniformed cavalry can charge back and forth through the formation of the Banner Knights, because the Banner Knights will unconsciously disperse when charging, each looking for its own target. But in melees and border conflicts, the Banner Knights often have the upper hand - they are more accustomed to small-scale, high-intensity independent battles and can organize breakthroughs on their own without relying on orders. From the perspective of military expenditure, the equipment and maintenance costs of the Banner Knights are ridiculously high. Vlandia can support so many heavy cavalry only because of the low cost of the crossbowmen formation to make up for their shortcomings. If their king cuts the Banner Knights' budget one day, Vlandia's military strength will be cut in half overnight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Knight of the Banner? Cataphracts of Vlandia. I saw him once from a distance on the business road. At that time, our caravan was parked on the hillside waiting for Luka to let us go. They were practicing on the flat ground below. Those cavalrymen were made of iron from head to toe, and their horses were also wrapped in iron clothing. The ground shook when they ran. I counted, and there were small square flags hanging on the ends of the lances, colorful, and they made a snapping sound when the wind blew. When they charged, it was like the mountain was collapsing. My legs felt weak even when I was standing on the hillside. The guide said that you have to shout \"Master Fangqi\" below. If you shout wrong, you will be whipped. I asked them if they were serious about fighting. He said he ranked second among the cavalry. Who is first? Imperial Cavalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We had a battle with the Banner Knights. They didn't look at us and focused on the middle. That time I learned what heavy cavalry was - our men shot arrows from the side, and the arrows bounced off their armor, but they ignored them and just rolled forward. When the horse crashed into the infantry formation, I felt the ground sinking, and then there was a broken gun barrel and screams. Our Qingqi did not dare to pick up the enemy and withdrew. When we got home, the officer slapped the table and scolded us, saying we were cowards. I said that the armor of those banner knights is thicker than our shields, and they charge with lances as fast as lightning. How do you want us to catch them? The Imperial people say that the Knights of the Banner have poor discipline, but I think that’s bullshit. Can a poor charging discipline smash me through the middle? What they lacked was their discipline after the charge - they rushed over and started looking for people to kill, and the formation broke up. If you really want to pick them up, you have to take advantage of them to disperse and bite them before they regroup. But the cost of biting them is not small, and those iron men are equally deadly when using short weapons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:imperial_cataphract",
+          "char:imperial_elite_cataphract"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia Banner Knight? The only cavalry on the continent worthy of our eyes. Their equipment is very similar to ours, cloth armor versus our pierced armor, chain armor versus scale armor, and competitive horses versus our Parmartine horses. When both sides charge at each other, no one can say who is better at taking a beating than the other. Their equestrian skills are not inferior to ours, and their marksmanship is not bad either. Looking at it alone, the personal qualities of the Knights of the Square Flag are no weaker than any of us. But they have a fatal flaw: discipline. When the array was hedging, we stepped in as a whole according to the order, the spear tips were level, the speed was consistent, and the rhythm was unified. The Banner Knights charged harder than us, but they were also more chaotic than us. Their speed is not the overall rhythm, it is set by each person based on the situation. In the second half of the charge, the formation broke up, and the gap was our breakthrough. What we rely on to defeat them is not faster guns, but more orderly column stamina. After rushing through the first wave, we can still turn around and rush into the second wave - provided that there is cavalry cover, which is not possible with the square flag knights. I'm not kidding about Vlandia's cavalry, their Banner Knights are really not weak in single combat. But fighting is not a one-on-one battle, it is a competition of formation and discipline. At this point, they still have hundreds more years of practice."
+    }
+  ],
+  "TextMappings": []
+}

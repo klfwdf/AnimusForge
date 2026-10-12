@@ -11,6 +11,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PromptConfigurationSnapshot.cs" Link="PromptConfigurationSnapshot.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/RevisionedPromptConfigurationStore.cs" Link="RevisionedPromptConfigurationStore.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PromptRuleRegistry.cs" Link="PromptRuleRegistry.cs" />
+    <Content Include="../../../../content/modules/AF.Module.Prompt/ModuleData/Defaults/*.json" Link="RealPackageDefaults/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath>
     </Reference>

@@ -230,17 +230,17 @@ public sealed class LegacyShoutNetworkGateway : ILlmGateway, ILlmStreamingGatewa
         string text = (rawText ?? string.Empty).TrimStart();
         // ShoutNetwork returns BuildFailureDetail envelopes, not typed errors. Match its
         // reserved reason prefixes AND detail marker, never exception words in NPC dialogue.
-        if (text.IndexOf("【模型回复（完整）】", StringComparison.Ordinal) < 0) { return false; }
-        if (text.StartsWith("（错误：未配置 API Key）", StringComparison.Ordinal)
-            || text.StartsWith("（错误：未配置模型名称）", StringComparison.Ordinal))
+        if (text.IndexOf(LlmSourceTexts.Get("LegacyErrorDetailMarker"), StringComparison.Ordinal) < 0) { return false; }
+        if (text.StartsWith(LlmSourceTexts.Get("LegacyErrorPrefixMissingApiKey"), StringComparison.Ordinal)
+            || text.StartsWith(LlmSourceTexts.Get("LegacyErrorPrefixMissingModel"), StringComparison.Ordinal))
         {
             status = LlmResultStatus.NonRetryableFailure;
             errorCode = "legacy_config_invalid";
             return true;
         }
-        return text.StartsWith("（API请求失败:", StringComparison.Ordinal)
-            || text.StartsWith("（API响应格式错误:", StringComparison.Ordinal)
-            || text.StartsWith("（程序错误:", StringComparison.Ordinal);
+        return text.StartsWith(LlmSourceTexts.Get("LegacyErrorPrefixApiRequestFailed"), StringComparison.Ordinal)
+            || text.StartsWith(LlmSourceTexts.Get("LegacyErrorPrefixApiResponseError"), StringComparison.Ordinal)
+            || text.StartsWith(LlmSourceTexts.Get("LegacyErrorPrefixProgramError"), StringComparison.Ordinal);
     }
 
     private static async Task<LlmGenerateResult> GenerateActionPostprocessAsync(

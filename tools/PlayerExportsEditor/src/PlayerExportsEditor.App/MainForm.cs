@@ -239,14 +239,24 @@ public sealed class MainForm : Form
     {
         using var dialog = new FolderBrowserDialog
         {
-            Description = "\u9009\u62e9 PlayerExports \u6839\u76ee\u5f55",
+            Description = "Select the installed AnimusForge module folder or its PlayerExports folder.",
             SelectedPath = Directory.Exists(_rootBox.Text) ? _rootBox.Text : Directory.GetCurrentDirectory()
         };
 
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
-            _rootBox.Text = dialog.SelectedPath;
-            LoadPackages();
+            try
+            {
+                string selected = dialog.SelectedPath;
+                if (string.Equals(Path.GetFileName(selected), "PlayerExports", StringComparison.OrdinalIgnoreCase))
+                    selected = Path.GetDirectoryName(selected) ?? selected;
+                _rootBox.Text = _service.SelectInstalledModule(selected);
+                LoadPackages();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "PlayerExports path unavailable", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 

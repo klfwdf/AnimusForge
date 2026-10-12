@@ -98,7 +98,7 @@ internal static class Program
         Check(WeeklyReportPopupIllustrationPatch.Requests.Count == requests + 1, "Publication/open joins selected image job");
         BulletinIllustrationPreloader.CancelSelection(plan);
         WeeklyReportPopupIllustrationPatch.Requests[requests](WeeklyReportPopupIllustrationPatch.Success());
-        Check(!selected.Pending && !selected.Ready && selected.Scope.Closed && selected.Status.Contains("作废"), "Invalidated selection rejects late completion");
+        Check(!selected.Pending && !selected.Ready && selected.Scope.Closed && (selected.Status.Contains("作废") || selected.Status.Contains("discarded")), "Invalidated selection rejects late completion");
         BulletinIllustrationPreloader.Reset();
         BulletinIllustrationPreloader.PrepareSelection(plan);
         WeeklyReportPopupIllustrationPatch.Requests[WeeklyReportPopupIllustrationPatch.Requests.Count - 1](WeeklyReportPopupIllustrationPatch.Success());
@@ -178,11 +178,12 @@ namespace AnimusForge.Illustrator.Core
         { try { complete(work(CancellationToken.None).GetAwaiter().GetResult()); } catch (Exception e) { fail(e.Message); } return true; }
         internal void Close() { Closed = true; }
     }
-    internal class ImageGenerationResult { internal bool Success; internal byte[] ImageBytes; internal string ErrorMessage; }
+    internal class ImageGenerationResult { internal bool Success; internal byte[] ImageBytes; internal string ErrorMessage; internal string ResolvedPrompt; }
+    internal class IllustrationOptions { }
 }
 namespace AnimusForge.Illustrator.Engine
 {
-    internal class CachedIllustrationItem { internal byte[] ImageData; internal string Prompt; internal string DisplayStatusText => "ready"; }
+    internal class CachedIllustrationItem { internal byte[] ImageData; internal string Prompt; internal string SubjectKey = "test_key"; internal string DisplayStatusText => "ready"; }
     internal static class DiskImageCacheManager
     {
         internal static int Loads; internal static string LastKey; internal static CachedIllustrationItem Cached; internal static bool Throw;
@@ -225,5 +226,18 @@ internal static class BulletinTestTask
         if (!SpinWait.SpinUntil(() => { lock (IllustratorRuntime.Critical) return IllustratorRuntime.Critical.Count >= timers.Length; }, 5000))
             throw new Exception("timeout continuation did not reach fake main thread");
         IllustratorRuntime.Drain();
+    }
+}
+
+namespace AnimusForge.Illustrator.Core
+{
+    internal static class CurrentImageRedraw
+    {
+        internal class Completion { internal ImageGenerationResult Result; internal CachedIllustrationItem Saved; }
+        internal static bool Start(IllustrationScope scope, CachedIllustrationItem source, string prompt, IllustrationOptions options,
+            string sessionKey, Action<Completion> complete, Action<string> fail)
+        {
+            return true;
+        }
     }
 }

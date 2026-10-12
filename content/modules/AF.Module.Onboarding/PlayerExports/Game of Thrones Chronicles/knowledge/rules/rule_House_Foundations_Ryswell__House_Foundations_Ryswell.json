@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Ryswell",
+  "Keywords": [
+    "Ryswell",
+    "House Ryswell"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Ryswell family is based in the Brookland area and is an ancient vassal under the command of Stark in the north. The family emblem is a black horse head on a bronze background. The territory is located between the plains and hills in the western part of the North, and horses, pastures and riders form an important part of local life. The Dustin families of Rythwell and Barrowton have long been connected to their neighbors through marriage, which means that their influence in the western part of the North is rarely isolated. The horse's head can symbolize riding skills, but it cannot make every choice for the family; northerners still measure Ryswell by how they treat their neighbors, respond to the call of Winterfell, and protect the pasture roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When nobles in the western part of the North talk about Ryswell, they often mention Dustin and the Barrowlands. Marriage, pastoralism, and adjacent land intertwined the interests of the two families and made it easy for any dispute to extend beyond a single hall. The weight of the horse-head flag on the discussion table comes from the relatives and riders behind it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ranchers knew Laiswell from their horses, pastures and stolen livestock, and the cavalrymen looked to see if they could provide hardy mounts. A good lord will clear up water and grass disputes and maintain roads; in bad years, if he only takes away the best horses, the black horse heads will remind farmers of empty stables."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ryswell Entry Ryswell The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ryswell Entry Ryswell Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ryswell Entry Ryswell The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ryswell Entry Ryswell They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Ryswell: Entry Ryswell"
+  ]
+}

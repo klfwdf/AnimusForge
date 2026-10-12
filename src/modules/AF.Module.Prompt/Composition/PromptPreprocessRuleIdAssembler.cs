@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ internal static class PromptPreprocessRuleIdAssembler
 {
 	internal const string PersistentAdpDebtRuleId = "persistent_adp_debt";
 	internal const string NobleGatheringRuleId = "noble_gathering";
-	private const string NobleGatheringInjectedBlockMarker = "【附加规则:noble_gathering】";
+	private static string NobleGatheringInjectedBlockMarker => PromptRuleBlockText.Header("noble_gathering");
 
 	internal static List<string> Assemble(IEnumerable<string> auxiliaryRuleHitIds, PromptRoutedTopicFlags flags, HashSet<string> preprocessExcludedRuleIds, string triggeredRuleInstructions)
 	{

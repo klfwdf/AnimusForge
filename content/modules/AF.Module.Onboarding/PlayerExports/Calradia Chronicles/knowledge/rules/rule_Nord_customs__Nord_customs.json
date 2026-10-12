@@ -1,0 +1,109 @@
+{
+  "Id": "rule_Nord_customs",
+  "Keywords": [
+    "Nordic customs and customs"
+  ],
+  "RagShortTexts": [
+    "The Nords rely on ship axes to survive, and the climate is harsh and they are not afraid of death."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord",
+          "sturgia",
+          "vakken"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Customs and customs? The wind in Nord blows all year round, and the soil freezes half the year. The favor is not to come to borrow food in winter. Nords live by two things: boats and axes. With these two things, you can dig food from the sea, chop wood from the forest, and kill people if you encounter blind people. Everything else is false. Outsiders say the Nords are hospitable. What a shit. You were knocking on the door of my house on a stormy day, and the Nords gave you a bowl of hot fish soup. They were afraid that it would be unlucky for you to freeze to death on my doorstep. But after you drink it, go away quickly and don't miss the dried fish the Nords are drying behind the house. The good and evil of Nords is very simple - you are good to me, and I am good to you. If you steal a fish, you'll be buried on the beach. When the tide comes, you'll explain it to Poseidon. The Nords drink and brag because the winter is too long. If you don’t drink, your hands will shake, if you don’t brag, your mouth will be stiff. The Nords occasionally went to war with the Sturgians, and always won. I know it's bragging, but it's not illegal to brag. Times are tough, but the Nords don't complain. What's the use of complaining? The storm doesn't listen to your complaints. Mend the net, sharpen the ax, and wait until the wind stops to go out to sea, even if you don't come back, you will die. Nords don't want a good death, they just want to live a life that is not in vain before they die."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The customs and customs of Nord can be summed up in two words: dissatisfaction. The people raised in this land naturally do not believe that there is anyone above them to take care of them. The fishermen under my rule, if you ask them to pay taxes, they will ask you how many storms the taxes you paid last year prevented them from. I said I couldn't stop him, but he said I should take less of it. I couldn't talk to him about the kingdom's finances, so I could only use part of the taxes to mend his fishing nets. He nodded muffledly. This is Nord civilians - they don't believe the pie you draw, they only recognize what you put in their hands. Hospitality is a rule passed down from our ancestors, but in our hands it is no longer just a rule. The longhouse on my territory is constantly visited all year round. Businessmen passing by, pirates washing their hands ashore, and distant relatives from Sturgia can all come in for a meal. The more people you invite, the more voices will speak of your generosity. At NORD, generosity is power. But power also requires money to fill the stomach. Killing a cow can last for a week, and no matter how big the family is, it cannot afford to entertain all the passers-by. We are culturally close to Sturgia and speak the same language, but it is true that we dislike each other. They chose the Grand Duke earlier than we did, dressed more gorgeously than us, had more rules than us, and always felt that they were more civilized than us. But every time they come to the fjord as guests, our girls sing a barcarolle, and their men cry too. After crying, he went back and continued to call us barbaric. Your enlightened tears will not have the same taste if they fall into the northern sea water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": [
+          "clan_nord_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "I am Haldarr. You asked me about the customs of the Nords, and I said it was an unedged knife. Can chop, but cut off the hand. People in this place still rely on fishing nets and oaths to maintain relationships. In their eyes, Yaer is not an official, but the leading fisherman. The king is not a monarch, but the bastard with the best luck. Before my grandfather became king, the Nords didn't listen to anyone else's family; my father used a knife to pinch everyone together; in my hands, I chose to give them the freedom to brag, drink, and scold me at the Yar Meeting in exchange for them temporarily recognizing me as the king. Surrender here doesn't mean kneeling down, it means picking up the cup and touching it with you, saying, \"I respect you for this cup, but don't come to me to collect taxes tomorrow.\" Do you think this is acceptable? Even I can't tell. Hospitality is my way of winning people over and it is a Nordic tradition. I want to be a king who keeps his word, and I don’t want to be like my father. But to make them really listen to me, this alone is not enough. The people in this place do not believe in the system or the law, they only believe in the leader who can lead them to victory and avoid starvation. So I have to keep the fishing grounds full, the trade routes open, and people to mend the nets after the storm, and keep working day, month, and year - my father used blood and fear to bring them together, and I have to use long-term habits to make them willing to stay. My mother went to the forest. Some say it became a legend, while others say it was just a legend that told her to come back. But I feel that she has not gone far. The stubbornness in the bones of the Nords, those things that refuse to be tamed, are like her eyes still lingering in the north wind. But I didn’t want to be as far away from people as she was, or chained to the land like my father was. I just want the firepit in the longhouse to be always lit, so that every Nord who opens the door can have hot soup, and slowly understand that the king is not an extra guest at this table."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nords? Those fishermen in the north. I heard from a businessman who ran a boat that the place where they lived was frozen for half the year, so the land couldn't be planted, so they had to rely on boats to make a living. If the ship capsizes, no one will be dead, so the Nords are not afraid of death. People who are not afraid of death are not afraid of anything. This is easy to understand. The businessman said that Nords are very generous when they invite people to dinner, and a stranger came into the house and gave him fish soup. I asked them what they were eating. The businessman said they also eat fish. I ate fish every day, even when entertaining guests, and my life was too hard. But think about it, in such a cold place nothing else but fish can grow, so that person must not be picky about food. Nords are great braggarts. The businessman said that one time a Nord was drunk and pounded the table saying that his grandfather had chopped down a man who had overturned a boat. The Sturgia people said that his grandfather was beheading the lame man in their village, and he could not catch up with him. The Nords and the Sturgians speak the same ancestral language. When their ancestors were separated, they were like brothers. Now they live next to each other, grabbing the same things, drinking the same wine, and crying about the same things."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "battania",
+          "darshi",
+          "empire",
+          "khuzait",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nordvig’s customs and customs can be summarized in one sentence: the social trust network shaped by the harsh environment operates with direct reciprocity as its core and has a very low degree of institutionalization. The obedience of commoners to their lords was based on actual rewards for the distribution of spoils and protection of fisheries, rather than on blood or legal superiority. The authority of the Yar class relies on a combination of generosity and personal military exploits. This structure is a typical early pre-feudal form in politics - there are lords and obligations, but the sense of contract is weak, and personal relationships overwhelm institutional relationships. The hospitality tradition of the Nords is not just a moral custom, but a risk dispersion mechanism formed in areas with low population density and high survival risks. You entertain a stranger today, and tomorrow he may be the one who saves your family's lives after a storm. Drinking and bragging are essential entertainment needs for winter social interaction. They help maintain morale and cohesion within the tribe during a season when effective productive labor cannot be organized for a long time. Proximity and language exchange with Sturgia provided a natural window for Nordic diplomacy, but also brought constant low-intensity friction. From an external perspective, Nordvig's cultural resilience is its strongest wall, but its lack of institutionalization is the source of long-term instability in the royal power. The advice to Haldarr had always been this: take control of the longships in his own name, take the fishing tax revenue away from the Yaar, and give the royal family its own financial lineage. Otherwise, the customs will eventually return to their original owners, and the throne will have only one more backrest than the bench."
+    }
+  ],
+  "TextMappings": []
+}

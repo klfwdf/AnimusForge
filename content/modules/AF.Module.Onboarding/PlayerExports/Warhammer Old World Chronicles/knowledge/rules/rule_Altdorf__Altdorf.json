@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Altdorf",
+  "Keywords": [
+    "Altdorf",
+    "imperial capital",
+    "emperor's residence",
+    "Altdorf Reik",
+    "location of magic academy",
+    "Great Temple of Sigmar",
+    "largest city in the old world",
+    "Capital of Reikland",
+    "imperial palace",
+    "Altdorf Royal Zoo",
+    "Altdorf University",
+    "Rick's Bridge"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Altdorf is the Imperial capital, located on the south bank of the River Reik, chosen by Sigmar himself after the Battle of Blackfire Pass as the heart of the unified Imperium of Man. It is the largest human city in the old world, the residence of the Imperial Emperor, the home of the Great Temple of Sigmar and the Eight Magic Academies - it is said that the spiers and chimneys in the city are so dense that even birds flying by will be smoked and lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Altdorf - Just saying this name is enough to make any Imperial person stand up straight! Our capital is a gift from the gods to mankind and a concentrated display of all the civilizational achievements of the old world. Standing on the Reik Bridge and looking north, the golden dome of the Imperial Palace burns with the glory of Sigmar in the morning light; looking south, the high tower of Altdorf University and the eight-color spiers of the Academy of Magic complement each other. The whole city is like a crown placed by the gods on the banks of the Reik River. Altdorf is not a city, it is the body of the empire's soul - here, the bells of the Great Temple of Sigmar determine the hour of the hour throughout the empire, the vote of the Imperial Parliament determines the livelihood of all people from Ostermark to the Wesenland, and the griffons and strange beasts imprisoned in the Royal Zoo are themselves a declaration of the empire's conquest of nature. Of course, we have to admit that the foggy season of the Reik River in the lower town of Altdorf can make people's lungs sick, and the pickpocket guilds on the streets have organizational power comparable to the imperial intelligence system - but then again, which great city does not have a dark side? The merchants of Marienburg would not be able to build a second Altdorf in three lifetimes, and they knew it very well."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Altdorf is first of all a geographical problem for the imperial military commanders - this giant city spans both sides of the Reik River and is connected to the north and south by three stone bridges. When the enemy is besieging the city, the bridges are both the lifeline and the biggest weakness of the defenders. Whoever controls the bridge controls the economic circulation of the city; whoever controls the river channels strangles the heart of the empire. Altdorf city defense consists of three rings of walls: the outer wall surrounds the lower town and the river harbor business district, the middle wall protects the academy area and noble residences, and the inner wall is the core of the castle where the Imperial Palace and the Great Temple of Sigmar are located. The key to the strategic defense of Altdorf was not the walls themselves - it was the necessity to keep the enemy at least fifty miles upstream of the Reik, for once the enemy controlled the upper waterway, they could simply poison the river to render half the capital's inhabitants so diarrhoea-like that they could no longer stand within a week. The Reik Guards are the only permanent elites in Altdorf, but it usually takes at least two weeks for the Elector Count's forces in each province to assemble and move out - a wise Altdorf garrison should always start preparations three weeks before the enemy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Altdorf's history of city-building is a history of imperial politics that can be read stratigraphically. The earliest Altdorf - the Rickdorf of the Sigmar era - was located at a bend in the Reik River in what is today known as the 'Old Port'. The foundations and stone platforms on its site can be traced back to the era of human tribes in the first ten centuries of the Empire. In about 200 AD, Emperor Sigmund II ordered the construction of the first stone castle above the Old Port - traces of this castle can still be seen in the third layer of archaeological bedrock beneath the Imperial Palace. By the time of the separation of the Three Emperors, the city construction of Altdorf had basically stagnated. It was not until Emperor Magnus unified the empire in 2304 that the century-old city construction movement known as the 'Magnus Expansion' began. Today's main building of Altdorf University and the earliest eight towers of the Academy of Magic are all products of this period. The Rick's Bridge was originally a wooden structure. After being burned down by the Euric rebels in 1850, it was rebuilt into a three-arch stone bridge. The inscriptions of the Euric Prayer on the bridge piers are still clear to this day. The Imperial Palace underwent a large-scale renovation in 2050 in the Imperial History, led by the Nordland dwarf master stonemason Granny Hammer. Its famous golden dome was actually composed of 1,600 copper-plated tiles - this legend of the 'pure gold dome' that was widely spread by the outside world was itself a clever lie in the history of imperial public relations. Altdorf's underground is equally rich: there are at least six abandoned subterranean temples from the Ubersrik period in the drainage and refuge passages beneath the city, some of which have not yet been fully explored."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The court of Altdorf is a golden labyrinth for a noblewoman - every corridor hides a rumor that can ruin your reputation, and the seating arrangements at every banquet silently redefine the political intimacy between the families. The afternoon teas I hosted at my Altdorf mansion had more influence on the course of the Empire than much that happened in the Imperial Council Hall - for here the men laid down their swords and ceremonial guards, and in their relaxed chatter I heard how much reinforcements the northern frontier really needed, or how a certain Elector Count really felt about Karl Franz. Altdorf taught me one thing: the real power in this city is not in the throne, but in the hands of those who know what will happen to the throne when."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Altdorf is both an arena to conquer and a sacred place for our family to remain humble. Our family owns three mansions in Altdorf, two river port warehouses and a private chapel chartered by Archbishop Sigmar – assets that are testament to five generations of political investment that took our family to take root in the capital. Every imperial noble family must face the same fact: no matter how powerful you are in the province, as long as you don't have a wedge driven into the political structure in Altdorf, your family will always be a 'local force' and cannot become an 'imperial force'. Our family has a permanent agent and two lobby judges in the Imperial Diet - this is not a lust for power, this is a survival strategy. In Altdorf, a family without an agent is a warrior without a shield - you might be stabbed in the back by an invisible dagger at some point."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have lived in Altdorf for seven years, and I still don’t know much about it – this city is a cold machine that continuously exploits you and then rejects you for those who have no money and no last name. During the day, you worked at the river port from dawn to dusk, carrying the spices and iron ingots shipped from Marienburg on your shoulders. The few copper coins you received were just enough to buy a night of unventilated sleep in a cheap rental house on Fishhook Street; at night, you listened to the bragging of those idle guys who claimed to know the \"nephew of Baron So-and-so\" in the tavern in the lower town, knowing in your heart that they, like you, would have to go to the dock tomorrow. But I have seen another side of Altdorf: during the festival of the Twin-tailed Comet, the square in front of the Great Temple is crowded with pilgrims from all provinces of the empire, and the light of the torch illuminates the faces of strangers. At that moment, there is suddenly no class distance between you and those border farmers who cannot afford three square meals in their lives - you are all looking up to the same light. The most cruel thing about Altdorf is that it gives you dreams, and the most generous thing is also - it at least gives you dreams."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are three economic lifelines in Altdorf: the shipping of the Reik River, the consumption power of the Imperial Parliament, and the pilgrimage and academic economy brought by the magic academy and major churches. I have been running a grain transfer station in the river port area on the south bank of the Reik River for twenty years - Altdorf itself does not produce a grain of grain, and its entire grain supply relies on the Iveyland grain growing area upstream of the Reik River and the Marienburg grain futures market downstream. This means a fact that all Altdorf politicians are ashamed to admit: anyone who controls the free passage of the Reik River controls the stomach of the people of Altdorf - and whoever controls the stomach is, in a sense, more powerful than the Emperor. The Magic Academy District is another commercial gold mine that few people talk about - the annual transaction volume of spellcasting materials, parchment, ink, potion raw materials and experimental animals consumed by the eight major colleges is not inferior to the annual tax revenue of a medium-sized province, and these purchases all pass through the hands of our guild. The merchants of Altdorf do not rule the city - but we ensure that any house wishing to rule it does so without consulting us first."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Reikshafen - Altdorf's main river port, the core hub of the empire's waterborne commerce",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Altdorf Imperial Capital Emperor's Residence"
+  ]
+}

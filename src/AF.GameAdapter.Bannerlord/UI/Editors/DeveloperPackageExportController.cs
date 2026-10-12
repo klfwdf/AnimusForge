@@ -33,11 +33,11 @@ internal sealed class DeveloperPackageExportController
 			if (!_knowledge.TryExportKnowledgeToDir(text, out var exportedKnowledgeCount, out var knowledgeExportError))
 			{
 				export.RestoreSubdirectory("knowledge");
-				InformationManager.DisplayMessage(new InformationMessage("警告：Knowledge 导出失败，已保留旧导出。原因：" + knowledgeExportError));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Warning_Knowledge_export_failed_the_previous_export_was_kept","Warning: Knowledge export failed; the previous export was kept. Reason: ") + knowledgeExportError));
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage("Knowledge 已导出 " + exportedKnowledgeCount + " 条。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.F("AF_UI_Developer_Knowledge_exported","Knowledge exported: {COUNT} entries.", "COUNT", exportedKnowledgeCount.ToString())));
 			}
 			ShoutUtils.ExportUnnamedPersonaToDir(text);
 			_voice.ExportVoiceMappingToDirectory(text);
@@ -45,15 +45,15 @@ internal sealed class DeveloperPackageExportController
 			if (KingdomStrategicProfileBehavior.Instance != null && !KingdomStrategicProfileBehavior.Instance.ExportAllToDirectory(text, out var kingdomProfileExportMessage))
 			{
 				export.RestoreSubdirectory("kingdom_profiles");
-				InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导出失败，已保留旧导出。原因：" + kingdomProfileExportMessage));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Warning_kingdom_strategy_personality_export_failed_the_previ","Warning: kingdom strategy/personality export failed; the previous export was kept. Reason: ") + kingdomProfileExportMessage));
 			}
 			export.Publish();
 			VoiceMapper.SetPreferredExportFolder(export.FinalPath);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Export_completed","Export completed: ") + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Export_failed","Export failed: ") + ex.Message));
 		}
 	}
 
@@ -71,11 +71,11 @@ internal sealed class DeveloperPackageExportController
 			_memory.ExportCompressedMemoryToDirectory(text, lookup);
 			_debt.ExportDebtToDirectory(text, lookup);
 			export.Publish();
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Export_completed","Export completed: ") + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Export_failed","Export failed: ") + ex.Message));
 		}
 	}
 }

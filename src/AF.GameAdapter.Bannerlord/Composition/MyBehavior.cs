@@ -236,6 +236,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string Error = "";
 
+		[JsonIgnore] internal MemoryFailureUiText ErrorDisplay;
+
 		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
 		public bool IsObsolete;
 
@@ -254,6 +256,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string Error = "";
 
+		[JsonIgnore] internal MemoryFailureUiText ErrorDisplay;
+
 		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
 		public bool IsObsolete;
 
@@ -271,6 +275,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public MajorActionSummaryState State;
 
 		public string Error = "";
+
+		[JsonIgnore] internal MemoryFailureUiText ErrorDisplay;
 
 		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
 		public bool IsObsolete;
@@ -924,6 +930,10 @@ internal struct PatienceSnapshot
 
 		public string FailedGroupTitle;
 
+		// Transient UI projection of FailedGroupTitle. FailedGroupTitle keeps its verbatim value (it is
+		// not persisted); the failure/retry reach-outs show this field and fall back when it is empty.
+		public string FailedGroupTitleForUi;
+
 		public string FailedReason;
 
 		public int AttemptsUsed;
@@ -1556,11 +1566,9 @@ internal struct PatienceSnapshot
 
 	private const int RoyalDomainConversationDelightedLoyaltyDelta = 4;
 
-	private static readonly string[] PatienceLevelTexts = new string[10] { "枯竭", "烦躁", "不耐", "冷淡", "一般", "尚可", "愿听", "投入", "热络", "兴致高" };
 
 
 
-	private static readonly string[] RelationAiBehaviorTexts = new string[10] { "把玩家视为重大威胁，语气强硬且排斥，不愿合作。", "明显敌意与戒备，倾向拒绝请求，回应尖锐。", "主观反感较强，容易挑刺，合作意愿很低。", "保持距离与怀疑，只做最基本交流。", "态度偏冷，交流克制，基本不主动示好。", "无明显好恶，按利益与场面决定态度。", "对玩家有一定熟悉感，语气较缓，可有限合作。", "整体友好，愿意倾听并给出建设性回应。", "明显信任玩家，交流积极，合作意愿高。", "高度信任与支持，语气亲近，优先站在玩家一边。" };
 
 	private static readonly Regex MoodTagRegex = new Regex("\\[ACTION:MOOD:([^\\]\\r\\n]+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -1638,7 +1646,7 @@ public MyBehavior()
         };
         _campaignSaveExit = new CampaignSaveExitController(() => QueueWeeklyReportFailurePopup(_weeklyReportRetryContext, showImmediate: true));
         _memoryHistoryCommit = new MemoryHistoryCommitBannerlordAdapter(_memoryBusinessState, () => MemoryRecoveryState);
-        _campaignCharacterRecordCapture = new CampaignCharacterRecordCaptureAdapter(_memoryBusinessState, _npcActionRecords, _campaignMaterialRecords, _weeklyReportMaterialRevisions.MarkAll, _weeklyReportMaterialRevisions.MarkDay, entry => NpcActionEditorProjection.BuildDevNpcActionPreviewText(NpcActionEditorDisplay, entry), () => _weeklyEventRecords, ApplyWeeklyPromptMaterialAggregation, () => MemoryQueueState, new CharacterPersonaReadinessPorts { Needs = hero => NpcPersonaGenerationApplication.NeedsNpcPersonaGeneration(hero), InFlight = hero => NpcPersonaGenerationApplication.IsNpcPersonaGenerationInFlight(hero), Ensure = hero => NpcPersonaGenerationApplication.EnsureNpcPersonaGeneratedAsync(hero) }, () => _worldBulletinEventCapture, _weeklyReportMaterialRevisions.MarkRuntimeChange, _weeklyReportMaterialRevisions.MarkAppend, IsAfterNewsCollectionStart);
+        _campaignCharacterRecordCapture = new CampaignCharacterRecordCaptureAdapter(_memoryBusinessState, _npcActionRecords, _campaignMaterialRecords, _weeklyReportMaterialRevisions.MarkAll, _weeklyReportMaterialRevisions.MarkDay, entry => NpcActionMaterialPreviewProjection.Build(NpcActionEditorDisplay, entry), () => _weeklyEventRecords, ApplyWeeklyPromptMaterialAggregation, () => MemoryQueueState, new CharacterPersonaReadinessPorts { Needs = hero => NpcPersonaGenerationApplication.NeedsNpcPersonaGeneration(hero), InFlight = hero => NpcPersonaGenerationApplication.IsNpcPersonaGenerationInFlight(hero), Ensure = hero => NpcPersonaGenerationApplication.EnsureNpcPersonaGeneratedAsync(hero) }, () => _worldBulletinEventCapture, _weeklyReportMaterialRevisions.MarkRuntimeChange, _weeklyReportMaterialRevisions.MarkAppend, IsAfterNewsCollectionStart);
         _kingdomPersistence = new CampaignKingdomPersistenceAdapter(_kingdomStability, _rebelKingdomIdentity);
         _kingdomRebellionGameAdapter = new KingdomRebellionGameAdapter(_rebelKingdomIdentity, () => _kingdomStability, _kingdomPersistence);
         _kingdomRebellionRuntime = new KingdomRebellionRuntimeController(_weeklyEventRecords, GetWeeklyReportRequestIntervalMs, () => _kingdomRebellionGameAdapter, () => _kingdomStabilityGameAdapter, new KingdomRebellionPumpCapabilities { Maintenance = () => KingdomMaintenance, Automatic = () => AutomaticKingdomRebellions, EditableKingdoms = EventEditorProjection.GetDevEditableKingdoms, RecentFacts = _campaignMaterialRecords.GetRecentKingdomEventFacts, DeferredWeekly = TryStartDeferredAutoWeeklyReports, CompletionPopup = ShowAutomaticKingdomRebellionCompletionPopup, NamingFailurePopup = ShowAutomaticKingdomRebellionNamingFailurePopup, ClearBlockedNamingUi = () => { _blockedAutomaticKingdomRebellionContext = null; _kingdomRebellionReopenAfterApiConfig = false; } });
@@ -2096,7 +2104,7 @@ public MyBehavior()
 	{
 		try
 		{
-			RecordWarOrPeaceMaterial("war_declared", "宣战", faction1, faction2, detail.ToString());
+			RecordWarOrPeaceMaterial("war_declared", AdapterPromptCaptureTexts.PcapCompat("Host_WarDeclared"), faction1, faction2, detail.ToString());
 		}
 		catch (Exception ex)
 		{
@@ -2108,7 +2116,7 @@ public MyBehavior()
 	{
 		try
 		{
-			RecordWarOrPeaceMaterial("peace_made", "停战议和", side1Faction, side2Faction, detail.ToString());
+			RecordWarOrPeaceMaterial("peace_made", AdapterPromptCaptureTexts.PcapCompat("Host_PeaceMade"), side1Faction, side2Faction, detail.ToString());
 		}
 		catch (Exception ex)
 		{
@@ -2437,7 +2445,8 @@ public MyBehavior()
 
 	private static string GetClanDisplayName(Clan clan) => MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(clan);
 
-	private static string GetKingdomDisplayName(Kingdom kingdom, string fallback = "某个王国") => MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, fallback);
+	private static string GetKingdomDisplayName(Kingdom kingdom) => MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom);
+	private static string GetKingdomDisplayName(Kingdom kingdom, string fallback) => MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, fallback);
 
 	private static string GetSettlementDisplayName(Settlement settlement) => MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement);
 
@@ -2724,15 +2733,6 @@ public MyBehavior()
 
 	private static string GetSiegeAftermathLabel(SiegeAftermathAction.SiegeAftermath aftermathType) => CampaignBattleRecordCaptureAdapter.GetSiegeAftermathLabel(aftermathType);
 
-	private static string GetBattleSideLabel(BattleSideEnum side)
-	{
-		return side switch
-		{
-			BattleSideEnum.Attacker => "进攻方",
-			BattleSideEnum.Defender => "防守方",
-			_ => side.ToString()
-		};
-	}
 
 	private static string GetRaidOutcomeLabel(BattleSideEnum side) => CampaignBattleRecordCaptureAdapter.GetRaidOutcomeLabel(side);
 
@@ -3462,7 +3462,8 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 
 	private static int GetTroopRosterTotalManCount(TroopRoster roster) => CampaignBattleRecordCaptureAdapter.GetTroopRosterTotalManCount(roster);
 
-		private static string GetFactionDisplayName(IFaction faction, string fallback = "某势力") => MemoryEntityIdentityBannerlordAdapter.GetFactionDisplayName(faction, fallback);
+	private static string GetFactionDisplayName(IFaction faction) => MemoryEntityIdentityBannerlordAdapter.GetFactionDisplayName(faction);
+	private static string GetFactionDisplayName(IFaction faction, string fallback) => MemoryEntityIdentityBannerlordAdapter.GetFactionDisplayName(faction, fallback);
 
 		private static string GetHeroFactionDisplayName(Hero hero, IFaction fallbackFaction = null) => MemoryEntityIdentityBannerlordAdapter.GetHeroFactionDisplayName(hero, fallbackFaction);
 
@@ -3952,16 +3953,16 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		AIConfigHandler.ReloadConfig();
 		AIConfigHandler.TryStartBackgroundSemanticWarmup("session_launch");
 		TryHookOverlayQuickTalkDisable();
-		starter.AddGameMenu("AnimusForge_dev_root", "{=!}开发者工具", DevRootMenuInit, GameMenu.MenuOverlayType.SettlementWithBoth);
-		starter.AddGameMenuOption("town", "AnimusForge_dev_root_entry", "【开发】数据管理", DevRootEntryCondition, DevRootEntryConsequence, isLeave: false, 99);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_hero", "HeroNPC编辑（领主/流浪者/同伴）", DevRootSubOptionCondition, DevRootHeroOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_nonhero", "非heroNPC编辑（士兵/平民/无名/无姓NPC）", DevRootSubOptionCondition, DevRootNonHeroOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_knowledge", "知识编辑", DevRootSubOptionCondition, DevRootKnowledgeOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_event", "事件编辑", DevRootSubOptionCondition, DevRootEventOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_kingdom_strategic_profiles", "国家战略与性格", DevRootSubOptionCondition, DevRootKingdomStrategicProfilesOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_all", "全部导出/导入", DevRootSubOptionCondition, DevRootAllOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_voice", "声音映射管理（VoiceMapping）", DevRootSubOptionCondition, DevRootVoiceMappingOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_back", "返回", DevRootBackCondition, DevRootBackConsequence, isLeave: true);
+		starter.AddGameMenu("AnimusForge_dev_root", "{=AF_UI_Developer_Developer_tools}Developer tools", DevRootMenuInit, GameMenu.MenuOverlayType.SettlementWithBoth);
+		starter.AddGameMenuOption("town", "AnimusForge_dev_root_entry", "{=AF_UI_Developer_RootEntry}[Dev] Data management", DevRootEntryCondition, DevRootEntryConsequence, isLeave: false, 99);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_hero", "{=AF_UI_Developer_RootHero}Hero NPC editor (lords, wanderers, companions)", DevRootSubOptionCondition, DevRootHeroOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_nonhero", "{=AF_UI_Developer_RootNonHero}Non-hero NPC editor (troops, civilians, unnamed NPCs)", DevRootSubOptionCondition, DevRootNonHeroOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_knowledge", "{=AF_UI_Developer_RootKnowledge}Knowledge editor", DevRootSubOptionCondition, DevRootKnowledgeOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_event", "{=AF_UI_Developer_RootEvent}Event editor", DevRootSubOptionCondition, DevRootEventOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_kingdom_strategic_profiles", "{=AF_UI_Developer_RootKingdomProfiles}Kingdom strategy and personality", DevRootSubOptionCondition, DevRootKingdomStrategicProfilesOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_all", "{=AF_UI_Developer_RootImportExport}Export / import all data", DevRootSubOptionCondition, DevRootAllOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_voice", "{=AF_UI_Developer_RootVoiceMapping}Voice mapping management (VoiceMapping)", DevRootSubOptionCondition, DevRootVoiceMappingOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_back", "{=AF_UI_Developer_Back}Back", DevRootBackCondition, DevRootBackConsequence, isLeave: true);
 	}
 
 	private void TryHookOverlayQuickTalkDisable()
@@ -3993,7 +3994,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				Hero heroToTalkTo = e.HeroToTalkTo;
 				if (ShouldDisableSettlementOverlayQuickTalk(heroToTalkTo))
 				{
-					e.IsTalkAvailable(arg1: false, new TextObject("该交谈选项已被模组禁用，请使用造访进入场景后再互动。"));
+					e.IsTalkAvailable(arg1: false, new TextObject("{=AF_UI_QuickTalkDisabled}This conversation option is disabled by the mod. Visit the location and enter the scene to interact."));
 				}
 			}
 		}
@@ -4119,7 +4120,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return PersonaGenerationFactCaptureAdapter.BuildClanOverviewForPersonaPrompt(clan);
 	}
 
-	private const string NpcSkillLevelReference = "技能水平参考: 0-49平庸，50-99一般，100-149良好，150-199极佳，200-274大师，275以上传奇。";
 
 	private string BuildHeroFactsForPersonaGeneration(Hero hero)
 	{
@@ -5346,7 +5346,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 			{
 				text2 = "NPC";
 			}
-			AppendExternalDialogueHistory(hero, null, null, "[AFEF NPC行为补充] " + text2 + ": " + text);
+			AppendExternalDialogueHistory(hero, null, null, AdapterPromptCaptureTexts.PcapCompat("Host_AfefNpcPrefix") + text2 + ": " + text);
 		}
 		catch
 		{
@@ -5366,7 +5366,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 			{
 				return;
 			}
-			AppendExternalDialogueHistory(hero, null, null, "[AFEF玩家行为补充] " + text);
+			AppendExternalDialogueHistory(hero, null, null, AdapterPromptCaptureTexts.PcapCompat("Host_AfefPlayerPrefix") + text);
 		}
 		catch
 		{
@@ -5602,7 +5602,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 		{
 			if (!IsDevDataManagementEnabledForExternal())
 			{
-				InformationManager.DisplayMessage(new InformationMessage("开发者数据管理未开启（请在 MCM 中启用）。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Developer_data_management_is_disabled_enable_it_", "Developer data management is disabled (enable it in MCM).")));
 				try
 				{
 					onFinished?.Invoke();
@@ -5628,7 +5628,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("EncyclopediaPersona", "[WARN] 打开 Hero 个性背景编辑失败: " + ex.Message);
+			Logger.Log("EncyclopediaPersona", "[WARN] Failed to open Hero personality/background editing: " + ex.Message);
 			try
 			{
 				onFinished?.Invoke();
@@ -5646,15 +5646,15 @@ private void OpenKingdomRebellionApiRepairFlow()
 			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			if (myBehavior == null || hero == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("当前无法为该 Hero 重新生成个性与背景。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Persona_RerollUnavailable", "This Hero cannot regenerate personality and background right now.")));
 				return;
 			}
 			_ = myBehavior.RunHeroPersonaRerollAsync(hero, null);
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("EncyclopediaPersona", "[WARN] 打开 Hero 重生个性背景失败: " + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage("打开重生个性背景功能失败。"));
+			Logger.Log("EncyclopediaPersona", "[WARN] Failed to open Hero personality/background regeneration: " + ex.Message);
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Persona_RerollOpenFailed", "Could not open personality and background regeneration.")));
 		}
 	}
 
@@ -5669,7 +5669,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 		{
 			if (!IsDevDataManagementEnabledForExternal())
 			{
-				InformationManager.DisplayMessage(new InformationMessage("开发者数据管理未开启（请在 MCM 中启用）。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Developer_data_management_is_disabled_enable_it_", "Developer data management is disabled (enable it in MCM).")));
 				try
 				{
 					onFinished?.Invoke();
@@ -5695,7 +5695,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("NpcEditor", "[WARN] 打开 HeroNPC 编辑失败: " + ex.Message);
+			Logger.Log("NpcEditor", "[WARN] Failed to open HeroNPC editing: " + ex.Message);
 			try
 			{
 				onFinished?.Invoke();
@@ -5752,9 +5752,9 @@ private void OpenKingdomRebellionApiRepairFlow()
 		string text = hero?.Name?.ToString()?.Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "该NPC";
+			text = DeveloperUiText.T("AF_UI_Persona_NpcFallback", "this NPC");
 		}
-		return "正在生成" + text + "的个性与背景，请稍等......";
+		return DeveloperUiText.F("AF_UI_Persona_GeneratingHint", "Generating personality and background for {NAME}; please wait...", "NAME", text);
 	}
 
 	public static string BuildCurrentDateFactForExternal()
@@ -5849,7 +5849,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 		return ArmyIdentityPromptCaptureAdapter.BuildPlayerCourierIdentityForExternal(observer, participantLabel, formalAddressContext);
 	}
 
-	public static string BuildPlayerVassalageRelationPromptLineForExternal(Hero observer, CharacterObject observerCharacter = null, string kingdomIdOverride = null, string counterpartKingdomLabel = "玩家所在王国", int targetAgentIndex = -1)
+	public static string BuildPlayerVassalageRelationPromptLineForExternal(Hero observer, CharacterObject observerCharacter = null, string kingdomIdOverride = null, string counterpartKingdomLabel = null, int targetAgentIndex = -1)
 	{
 		return ArmyIdentityPromptCaptureAdapter.BuildPlayerVassalageRelationPromptLineForExternal(observer, observerCharacter, kingdomIdOverride, counterpartKingdomLabel, targetAgentIndex);
 	}
@@ -7195,14 +7195,6 @@ private void ApplyPatiencePostprocessMoodOverrideFromUnnamedResponse(string unna
 	private static List<string> BuildWeeklyBatchExpectedReportIds(WeeklyReportBatchRequest batch) => WeeklyGenerationRules.BuildWeeklyBatchExpectedReportIds(batch);
 
 
-#if false
-	private static string BuildWeeklyReportBatchDisplayLabel(WeeklyReportBatchRequest batch)
-	{
-		List<string> list = (batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Select(BuildWeeklyReportGroupDisplayLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-		return (list.Count == 0) ? "链懡鍚嶅懆鎶ユ壒娆? : ("鎵规锛? + string.Join(" | ", list));
-	}
-
-#endif
 
 
 	private static bool IsWeeklyReportBatchPromptPrepared(WeeklyReportBatchRequest batch) => WeeklyGenerationRules.IsWeeklyReportBatchPromptPrepared(batch);
@@ -7511,7 +7503,7 @@ private void ApplyPatiencePostprocessMoodOverrideFromUnnamedResponse(string unna
 		}
 		catch (Exception ex)
 		{
-			HandleSaveAndExitFailure(SaveAndExitReason.WeeklyReport, "保存并退出失败：" + ex.Message);
+			HandleSaveAndExitFailure(SaveAndExitReason.WeeklyReport, MemoryEditorUiText.F("AF_UI_SaveExit_Failed", "Save and exit failed: {ERROR}", "ERROR", ex.Message));
 		}
 	}
 
@@ -7711,7 +7703,7 @@ private void ApplyPatiencePostprocessMoodOverrideFromUnnamedResponse(string unna
 		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
 		WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = _weeklyReportMaterialRevisions.Capture(num, currentGameDayIndexSafe);
 		List<WeeklyEventMaterialPreviewGroup> list = OrderWeeklyReportGenerationGroups(BuildWeeklyEventMaterialPreviewGroups(num, currentGameDayIndexSafe));
-		await GenerateWeeklyReportsBatchedAsyncInternal(list, num2, num, currentGameDayIndexSafe, "本周周报草案", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: false, sourceSnapshotOverride: sourceSnapshot);
+		await GenerateWeeklyReportsBatchedAsyncInternal(list, num2, num, currentGameDayIndexSafe, WeeklyReportUiText.Get("AF_UI_Weekly_CurrentDraft", "This week's report draft"), openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: false, sourceSnapshotOverride: sourceSnapshot);
 	}
 
 

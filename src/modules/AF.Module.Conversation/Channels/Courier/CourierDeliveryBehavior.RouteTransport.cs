@@ -844,11 +844,11 @@ public sealed partial class CourierDeliveryBehavior
 		LogCourierStatus("recipient_wait_set session=" + session.Id + " recipient=" + session.RecipientHeroId + " status=" + normalized + " source=" + (source ?? "") + " action=safe_wait safeSettlement=" + (session.SafeSettlementId ?? ""));
 		if (string.Equals(normalized, "fugitive", StringComparison.OrdinalIgnoreCase))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("信使目标正在逃亡，信使正前往最近定居点等待。", Colors.Yellow));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_TargetEscaping", "The courier's target is fleeing; the courier is waiting at the nearest settlement."), Colors.Yellow));
 		}
 		else if (string.Equals(normalized, "prisoner", StringComparison.OrdinalIgnoreCase))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("信使目标处于俘虏状态，信使正前往最近定居点等待。", Colors.Yellow));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_TargetCaptive", "The courier's target is captive; the courier is waiting at the nearest settlement."), Colors.Yellow));
 		}
 	}
 
@@ -866,7 +866,7 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			LogCourierStatus("recipient_wait_cleared session=" + session.Id + " recipient=" + session.RecipientHeroId + " previousStatus=" + previous + " source=" + (source ?? "") + " status=resume_route");
 			Log("recipient reappeared session=" + session.Id + " recipient=" + session.RecipientHeroId + " previousStatus=" + previous + " source=" + (source ?? "") + " status=resume_route");
-			InformationManager.DisplayMessage(new InformationMessage("信使目标重新出现，信使正在路上。", Colors.Green));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_TargetReturned", "The courier's target has reappeared; the courier is on the way."), Colors.Green));
 			return;
 		}
 		Log("recipient wait cleared session=" + session.Id + " previousStatus=" + previous + " source=" + (source ?? ""));

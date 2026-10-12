@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Vaith",
+  "Keywords": [
+    "Vaith",
+    "House Vaith"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Vance family is the lord of the Red Hill City of Dorne. Its land stretches along the Vance River, with deep sand to the west. The ancestors of this family are believed to be Andal adventurers who settled on the eastern edge of the dunes after entering Dorne, and the family name later remained on the river. The power of Hongqiu City comes first from water: whoever maintains rivers, wells, springs, and oasis roads can keep travelers, herds, and fields alive in the heat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish nobles knew that the value of Red Hill City was not only in its walls, but also in its rivers and sandy roads. If Vance could allow business travelers to find the wells and allow border riders to send messages in time, he would have maintained a more practical power than a gorgeous title."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nomads on the edge of deep sand do not waste water, nor do they easily forget who sealed a well. For them, whether Lord Vance is worthy of respect depends on whether the water bladder can be filled during the dry season, rather than how beautiful the words are at the banquet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaith The Vance family rules the Red Hill City of Dorne and the valley of the same name. The family property is located on the edge of deep sand, connecting water sources, oasis and desert roads. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaith The Vance family rules the Red Hill City of Dorne and the valley of the same name. The family property is located on the edge of deep sand, connecting water sources, oasis and desert roads. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaith The Vance family rules the Red Hill City of Dorne and the valley of the same name. The family property is located on the edge of deep sand, connecting water sources, oasis and desert roads. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaith The Vance family rules the Red Hill City of Dorne and the valley of the same name. The family property is located on the edge of deep sand, connecting water sources, oasis and desert roads. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Vaith: The Vance family rules the Red Hill City of Dorne and the valley of the same name. The family property is located on the edge of deep sand, connecting water sources, oasis and desert roads."
+  ]
+}

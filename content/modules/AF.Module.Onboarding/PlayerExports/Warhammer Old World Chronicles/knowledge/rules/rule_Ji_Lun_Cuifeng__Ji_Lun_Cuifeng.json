@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Ji_Lun_Cuifeng",
+  "Keywords": [
+    "Ji Lun Cuifeng",
+    "wind of life",
+    "Emerald Academy",
+    "healing magic",
+    "LoreOfLife",
+    "force of nature",
+    "water magic",
+    "Forest recovery",
+    "life energy",
+    "green wind"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ji Lun - Green Wind - is the wind of life, growth and healing. The first leaf that sprouts in spring, the first heartbeat of a baby in the mother's body, the first drop of rainwater seeping into the parched earth - all these carry the pulse of Guillen. Jiren is the most merciful of the Eight Winds but is by no means weak: on the battlefield, the mages of the Emerald Academy can make tangled thorns grow wildly in the enemy's lines, make wounds heal during battle, and turn a pool of stagnant water into an unsinkable land that engulfs the enemy. Guilon's power multiplies near rivers and forests, and weakens in the dry, biting winds of winter. Alariel, Queen of Avalon, is the supreme controller of Cuifeng in the world - her control of Jiren has transcended the scope of magic and entered a kind of sacred symbiosis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Jiren Cui Feng is the lifeline of our Imperial armies - in every major battle, the Druidic battle mages of the Emerald Academy bring hundreds of wounded soldiers back from shock with their healing spells. All the imperial military doctors can do is debridement and amputation, and when one of your hoplites is able to stand up and pick up the halberd again after a crack is opened in his chest by an orc's giant axe, that's when Guillen is re-knitting bones, tendons and blood vessels together stitch by stitch through the hands of an Emerald Mage. But Guillen's fighting side goes far beyond healing. Only those who have seen the Emerald Mage officially release the 'Storm of Thorns' know how terrifying the Emerald Wind is - he doesn't need you to send any signal, he just stands quietly behind the array, his hands opening to both sides at an extremely slow speed, and then every piece of grass under the enemy's feet opens up in an instant. The thorns began to twist upward wildly, and the thorns pierced the leather boots at a speed visible to the naked eye, hooked the calf tendons, and nailed the entire row of enemy infantry to the spot within ten seconds. This was not destruction, but a trap, and traps were more valuable to the commander of the cavalry charge than destruction. Guillen's only Achilles heel is winter - in any field battle between December and February, the ability of Emerald mages is reduced by at least one-third of their output, so the number of Emerald Academy members in the Imperial Army's winter battle sequences is usually deliberately reduced and replaced by other Academy mages who can maintain full output in the cold."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Emerald Academy is the most practical magical resource in the territory for any ruler - not because of its combat power, but because of its potential for agricultural applications. A properly deployed Emerald Mage - who does not need to have a high-level professional title - can increase the crop yield in the fief by more than 30% through a series of low-level Jilun spells during the sowing season. This may not sound like a militarily important issue, but when you need to mobilize 20,000 people's food reserves in six months before an expedition, the Emerald Mage's agricultural yield-increasing effect can make the difference between whether you can set off on time. However, the transfer of mages from the Emerald Academy is strictly controlled by the Imperial Ministry of Magic - the official reason for the academy is to prevent the abuse of Jiren energy by private lords as a disguised means of economic expansion rather than as a magical defense resource. Another core ability of the druid-style Jiren mage - water manipulation - has irreplaceable tactical value in siege warfare: an emerald mage can instantly raise the water level of the moat to chest level, blocking the movement of the enemy's siege tower; it can drain the well water of a besieged castle, causing the defenders to surrender within a week; it can extract underground water from sixty feet underground during a desert march, saving the entire army. These are magics that do not produce beautiful flames or shake the sky, but any commander who has suffered from water shortages and food and grass shortages in actual combat knows that these three abilities strategically surpass any fireball."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Ji Lun Cuifeng's psychic philosophy is the closest to the elves' thinking mode among all the eight winds - it does not regard magic as a tool that can be 'invoked', but as a resonance of life that can be 'requested'. The most senior scholars of the Emerald Academy - a handful of ancient mages known as the 'Deep Emerald Sages' - refuse to use the term 'spellcasting': they describe their interactions with Gyron as 'asking Gyron's ilk to manifest themselves in a specific form in the material world'. This language is not rhetoric, it reflects the fundamental difference between Ji Lun and the other winds: the fire of the red wind is caused by your burning armor, the lightning of the blue wind is pulled from the sky - but the thorn growth of the green wind is the self-response of the seed's own vitality after you make an accelerated request to the growth essence that already exists in that seed. This determines that Emerald Mages cannot create life out of thin air - they can only accelerate, redirect, or inhibit life processes that already exist. Therefore, the reason why Guilun is almost useless in deserts and wastelands is not because of the absence of wind, but because of the lack of enough living entities that can be amplified to prevent Guilun's resonance from happening. The elven Queen Alariel is believed to be able to circumvent this restriction - it is said that she can make flowers bloom directly in the dead land where there is no grass. However, this statement has not been empirically proven by any Imperial Emerald Mage to the Academy Committee."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ji Lun Cuifeng has the highest proportion of female students among the Eight Winds (accounting for about 50%, making it the only academy with a roughly balanced gender ratio among all the colleges). It is also the only one with more than 30% of senior instructors being women. The culture within the Emerald Academy - very different from the male-dominated atmosphere of the Fire or Gold Academy - is privately considered to be closer to a monastery of female elders and male disciples than to a military academy. Female Emerald Mages are statistically significantly more focused on healing spells than males - whether this difference is biological, psychological, or the result of the academy's culture has yet to be determined. I personally prefer the third explanation: The Jade Academy's internal review system gives a disproportionately high rating to the healing spells of female mages (because healing is the most visible, safest, and most popular application of Jilun), while giving a disproportionately low rating to the offensive Jilun spells of female mages. Source support - This leads to a self-fulfilling cycle: female trainees become good at healing while being encouraged to heal, become bad at attacking while being ignored in attack training, and then the academy uses 'women are better at healing' as statistical evidence to rationalize the original resource allocation bias."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the center of my family property is a hazelnut tree we call 'Grandma Hazel' - its age is untraceable before my genealogy began to be recorded. According to the secret family tradition, the hazelnut tree was a weak Gyron ley node that existed before the founding of Emerald Academy - it was not a river, a lake, a large forest - just a tree that had been nurtured by countless generations of ancestors with silent low-grade Gyron care (watering, pruning, talking to the roots with private family spells on full-moon nights) for perhaps more than a thousand years. A certain deep green sage from the Jade Academy who did not want to be named once visited Grandma Hazel in secret. He told me that this tree is a 'liability of life' - its existence itself is consuming the traces of Ji Lun essence in the surrounding twenty miles of land, and if one day it dies, the twenty miles of land will suffer from a reduction in production for several years. But Grandma Hazel is still alive, and every spring she still produces just enough hazelnuts for the family to eat in the winter - no more, no less - as if she is counting every child's mouth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Guillen's most precious application in Wanderers isn't healing and thorns—it's a glass of water. A traveler with even the most rudimentary emerald training—not necessarily a mage recognized by the Academy—can distill approximately a pint of drinking water per day from the air, from cracks in underground rock formations, or from the roots of any plant in any environment that is not completely dry. The value of this ability cannot be measured in any gold coins when crossing the alkaline wasteland of the Border Princedom or the summer gravel zone of the southern section of the Gray Mountains - a pint of water is the dividing line between life and death when you are so dehydrated that you start to see things that are not there. I met an undocumented female mage who was expelled from the Emerald Academy in the Taubenheim territory - she could put her hand on the bark of a dead tree, close her eyes for half a moment and tell you how long it will take for the tree to completely die, which roots are still drawing groundwater, and the depth of the groundwater. Her charge is a meal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Emerald Academy plays a deliberately downplayed but extremely fundamental role in the Empire's agricultural economy. Master Guilun - especially those low-ranking Emerald Messengers who are assigned to rural areas of the Empire - provide so-called 'Emerald Patrol' services to the Empire's major grain-producing areas every year during the sowing and harvesting seasons, and their yield-increasing effects are quantified in undisclosed memos within the Imperial Ministry of Agriculture as approximately seven to fourteen percent of the Empire's total annual grain output. If one takes into account the frost prevention effect of Guilon on the main wine-producing areas of the Empire - the Emerald Mage can use weak Guilon airflow during the spring frost to maintain the temperature ten feet directly above the vineyards being two degrees higher than the surrounding area - this economic contribution is enough for the Imperial Winery to save about 80,000 gold crowns in frost damage every year. But the Emerald Academy never charges for these services - the academy's charter prohibits any Emerald mage from selling Jiren's services for commercial purposes - which allows the Emerald Academy to maintain a unique moral high ground in imperial politics: no one can criticize the Emerald Academy's mages for not doing anything for money, because they don't take any money."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Ji Lun Cuifeng - one of the eight winds of life, growth and healing, most powerful in spring and near water",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Ji Lun Cuifeng’s magical properties and energy sources"
+  ]
+}

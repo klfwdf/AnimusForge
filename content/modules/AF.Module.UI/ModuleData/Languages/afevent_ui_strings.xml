@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_UI_Event_Menu_EditWorld" text="Edit world opening summary" />
+    <string id="AF_UI_Event_Menu_EditKingdom" text="Edit kingdom opening summaries" />
+    <string id="AF_UI_Event_Menu_PreviewMaterials" text="Preview this week's event materials" />
+    <string id="AF_UI_Event_Menu_PreviewPrompts" text="Preview weekly report prompts" />
+    <string id="AF_UI_Event_Menu_GenerateReports" text="Generate weekly report drafts" />
+    <string id="AF_UI_Event_Menu_StabilityLab" text="Kingdom stability and rebellion lab" />
+    <string id="AF_UI_Event_Menu_ViewEvents" text="View events and materials" />
+    <string id="AF_UI_Event_Menu_Export" text="Export all (event editor - choose a folder)" />
+    <string id="AF_UI_Event_Menu_Import" text="Import all (event editor - choose a folder)" />
+    <string id="AF_UI_Event_Menu_Clear" text="Clear all event summaries" />
+    <string id="AF_UI_Event_Title_Editor" text="Event editor" />
+    <string id="AF_UI_Event_Action_Enter" text="Enter" />
+    <string id="AF_UI_Event_Action_Edit" text="Edit" />
+    <string id="AF_UI_Event_Action_View" text="View" />
+    <string id="AF_UI_Event_Action_ViewMaterial" text="View material" />
+    <string id="AF_UI_Event_Action_Back" text="Back" />
+    <string id="AF_UI_Event_Action_BackToList" text="Back to event list" />
+    <string id="AF_UI_Event_Action_BackToDetails" text="Back to event details" />
+    <string id="AF_UI_Event_Action_BackToMaterials" text="Back to materials list" />
+    <string id="AF_UI_Event_Action_PreviousPage" text="Previous page" />
+    <string id="AF_UI_Event_Action_NextPage" text="Next page" />
+    <string id="AF_UI_Event_Menu_ExportPicker" text="Export all (event editor) - choose a folder" />
+    <string id="AF_UI_Event_Menu_ImportPicker" text="Import all (event editor) - choose a folder" />
+    <string id="AF_UI_Event_Status_WorldSummary" text="World opening summary: {STATUS}" />
+    <string id="AF_UI_Event_Status_KingdomSummary" text="Kingdom opening summaries: {SET}/{TOTAL} set" />
+    <string id="AF_UI_Event_Status_EventRecords" text="Event records: {COUNT}" />
+    <string id="AF_UI_Event_Status_ReportProfile" text="Weekly report profile: {PROFILE}" />
+    <string id="AF_UI_Event_Status_Stability" text="Kingdom stability: {CHANGED}/{TOTAL} values differ from default" />
+    <string id="AF_UI_Event_Status_Set" text="set" />
+    <string id="AF_UI_Event_Status_NotSet" text="not set" />
+    <string id="AF_UI_Event_EditWorld_Title" text="Edit world opening summary" />
+    <string id="AF_UI_Event_EditWorld_Subtitle" text="This text provides the initial background for the world event system." />
+    <string id="AF_UI_Event_EditWorld_Hint" text="Enter the world opening summary (leave blank to clear)." />
+    <string id="AF_UI_Event_EditWorld_Cleared" text="World opening summary cleared." />
+    <string id="AF_UI_Event_EditWorld_Updated" text="World opening summary updated." />
+    <string id="AF_UI_Event_Kingdom_None" text="There are no editable kingdoms." />
+    <string id="AF_UI_Event_Kingdom_Fallback" text="kingdom" />
+    <string id="AF_UI_Event_Kingdom_ChooseBody" text="Choose a kingdom opening summary to edit.\nThese texts provide the background for that kingdom's future weekly events." />
+    <string id="AF_UI_Event_Kingdom_Title" text="Edit kingdom opening summary" />
+    <string id="AF_UI_Event_Kingdom_NotFound" text="The selected kingdom could not be found." />
+    <string id="AF_UI_Event_Kingdom_EditTitle" text="Edit kingdom opening summary - {KINGDOM}" />
+    <string id="AF_UI_Event_Kingdom_EditSubtitle" text="This text provides the kingdom's opening background for future weekly event generation." />
+    <string id="AF_UI_Event_Kingdom_EditHint" text="Enter this kingdom's opening summary (leave blank to clear)." />
+    <string id="AF_UI_Event_Kingdom_Cleared" text="{KINGDOM}'s opening summary was cleared." />
+    <string id="AF_UI_Event_Kingdom_Updated" text="{KINGDOM}'s opening summary was updated." />
+    <string id="AF_UI_Event_Clear_Title" text="Confirm clearing event summaries" />
+    <string id="AF_UI_Event_Clear_Body" text="This clears the world opening summary and all kingdom opening summaries.\nThis action cannot be undone. Continue?" />
+    <string id="AF_UI_Event_Clear_Confirm" text="Clear" />
+    <string id="AF_UI_Event_Clear_Cancel" text="Cancel" />
+    <string id="AF_UI_Event_Clear_Done" text="All event summaries cleared." />
+    <string id="AF_UI_Event_Kingdom_Invalid" text="Invalid kingdom" />
+    <string id="AF_UI_Event_Viewer_Title" text="Event viewer" />
+    <string id="AF_UI_Event_Viewer_Body" text="Review events recorded by the event system and the materials referenced by each event.\nMaterials may include world and kingdom opening summaries, recent NPC actions, major NPC actions, and future summary sources.\n\nTotal events: {COUNT}\nPage: {PAGE}/{PAGES}{EMPTY}" />
+    <string id="AF_UI_Event_Viewer_Empty" text="\n\nThere are no event records yet.\nFuture weekly events will appear here with their referenced materials." />
+    <string id="AF_UI_Event_Detail_Title" text="Event details" />
+    <string id="AF_UI_Event_Detail_Short" text="View short summary" />
+    <string id="AF_UI_Event_Detail_Report" text="View weekly report" />
+    <string id="AF_UI_Event_Detail_EditTitle" text="Edit title" />
+    <string id="AF_UI_Event_Detail_EditReport" text="Edit weekly report" />
+    <string id="AF_UI_Event_Detail_Tags" text="View tag layer" />
+    <string id="AF_UI_Event_Detail_Prompt" text="View request Prompt" />
+    <string id="AF_UI_Event_Detail_Materials" text="View materials list" />
+    <string id="AF_UI_Event_Detail_Operations" text="Operations" />
+    <string id="AF_UI_Event_Detail_OperationsBody" text="The short summary, weekly report, tag layer, Prompt, and materials list each have a separate entry point." />
+    <string id="AF_UI_Event_Detail_NoShort" text="This event has no short summary." />
+    <string id="AF_UI_Event_Detail_HasShort" text="This event has a short summary; use View short summary to open it." />
+    <string id="AF_UI_Event_Detail_NoReport" text="This event has no report body." />
+    <string id="AF_UI_Event_Detail_HasReport" text="This event has a report body; use View weekly report or Edit weekly report to open it." />
+    <string id="AF_UI_Event_Detail_NoTags" text="This event has no tag layer." />
+    <string id="AF_UI_Event_Detail_HasTags" text="This event has a tag layer; use View tag layer to open it." />
+    <string id="AF_UI_Event_Detail_NoMaterials" text="This event has no attached material references." />
+    <string id="AF_UI_Event_Detail_HasMaterials" text="This event has attached materials; use View materials list to open them." />
+    <string id="AF_UI_Event_Field_Title" text="Event title" />
+    <string id="AF_UI_Event_Field_WorldSummary" text="World opening summary" />
+    <string id="AF_UI_Event_Field_ReportProfile" text="Weekly report profile" />
+    <string id="AF_UI_Event_Field_Type" text="Event type" />
+    <string id="AF_UI_Event_Field_WeekLabel" text="Week" />
+    <string id="AF_UI_Event_Field_DateLabel" text="Created date" />
+    <string id="AF_UI_Event_Field_Page" text="Page" />
+    <string id="AF_UI_Event_Field_Week" text="Week {WEEK}" />
+    <string id="AF_UI_Event_Field_Date" text="Day {DAY}" />
+    <string id="AF_UI_Event_Field_Kingdom" text="Kingdom" />
+    <string id="AF_UI_Event_Field_MaterialCount" text="Material count" />
+    <string id="AF_UI_Event_Field_Short" text="Short summary" />
+    <string id="AF_UI_Event_Field_Tags" text="Tag layer" />
+    <string id="AF_UI_Event_Field_Prompt" text="Prompt" />
+    <string id="AF_UI_Event_Field_Saved" text="saved" />
+    <string id="AF_UI_Event_Field_NotSaved" text="not saved" />
+    <string id="AF_UI_Event_Materials_Title" text="Event materials" />
+    <string id="AF_UI_Event_Materials_Body" text="Each item below is a material referenced while this weekly report was generated." />
+    <string id="AF_UI_Event_Materials_Page" text="Page {PAGE}/{PAGES}" />
+    <string id="AF_UI_Event_EditReport_Title" text="Edit weekly report" />
+    <string id="AF_UI_Event_EditReport_Subtitle" text="This changes the final report text shown to players; the original materials are unchanged." />
+    <string id="AF_UI_Event_EditReport_Hint" text="Enter the new weekly report body." />
+    <string id="AF_UI_Event_EditReport_Updated" text="Weekly report body updated." />
+    <string id="AF_UI_Event_EditTitle_Title" text="Edit weekly report title" />
+    <string id="AF_UI_Event_EditTitle_Subtitle" text="Edit the title saved for this event record." />
+    <string id="AF_UI_Event_EditTitle_Hint" text="Enter a new title (leave blank to use the default title)." />
+    <string id="AF_UI_Event_EditTitle_Updated" text="Weekly report title updated." />
+    <string id="AF_UI_Event_Report_Title" text="Weekly report - {TITLE}" />
+    <string id="AF_UI_Event_Short_Title" text="Short summary - {TITLE}" />
+    <string id="AF_UI_Event_Tags_Title" text="Tag layer - {TITLE}" />
+    <string id="AF_UI_Event_Prompt_Title" text="Request Prompt - {TITLE}" />
+    <string id="AF_UI_Event_Material_Title" text="Material details - {MATERIAL}" />
+    <string id="AF_UI_Event_Empty_Report" text="This event has no report body." />
+    <string id="AF_UI_Event_Empty_Short" text="This event has no short summary." />
+    <string id="AF_UI_Event_Empty_Tags" text="This event has no tag layer." />
+    <string id="AF_UI_Event_Empty_Prompt" text="No request Prompt was saved for this weekly report." />
+    <string id="AF_UI_Event_Invalid_Record" text="Invalid event" />
+    <string id="AF_UI_Event_Invalid_Material" text="Invalid material" />
+    <string id="AF_UI_Event_NoPreview" text="No preview" />
+    <string id="AF_UI_Event_WorldReport" text="World weekly report" />
+    <string id="AF_UI_Event_Rebellion_NoResult" text="No rebellion result is available to display." />
+    <string id="AF_UI_Event_Rebellion_Kingdom" text="Kingdom: {KINGDOM}" />
+    <string id="AF_UI_Event_Rebellion_Stability" text="Stability: {VALUE} ({TIER})" />
+    <string id="AF_UI_Event_Rebellion_Chance" text="Weekly rebellion chance: {VALUE}" />
+    <string id="AF_UI_Event_Rebellion_Roll" text="Roll: {VALUE}" />
+    <string id="AF_UI_Event_Rebellion_Forced" text="Mode: forced trigger (probability gate skipped)" />
+    <string id="AF_UI_Event_Rebellion_SelectedClan" text="Selected clan: {CLAN}" />
+    <string id="AF_UI_Event_Rebellion_Followers" text="Expected responding clans: {CLANS}" />
+    <string id="AF_UI_Event_Rebellion_Result" text="Result: {RESULT}" />
+    <string id="AF_UI_Event_Rebellion_Candidates" text="Candidate clans:" />
+    <string id="AF_UI_Event_Rebellion_Eligible" text="eligible" />
+    <string id="AF_UI_Event_Rebellion_Ineligible" text="ineligible" />
+    <string id="AF_UI_Event_Rebellion_RelationKing" text="relation {VALUE}" />
+    <string id="AF_UI_Event_Rebellion_Towns" text="towns {VALUE}" />
+    <string id="AF_UI_Event_Rebellion_Castles" text="castles {VALUE}" />
+    <string id="AF_UI_Event_Rebellion_Score" text="score {VALUE}" />
+    <string id="AF_UI_Event_Rebellion_FollowerPreview" text="  If it leads the rebellion, expected responses: {CLANS}" />
+    <string id="AF_UI_Event_Rebellion_NoFollowerPreview" text="  If it leads the rebellion, no other clans are expected to respond." />
+    <string id="AF_UI_Event_Rebellion_FollowerCandidates" text="Potential responding clans:" />
+    <string id="AF_UI_Event_Rebellion_WillJoin" text="will join" />
+    <string id="AF_UI_Event_Rebellion_WillNotJoin" text="will not join" />
+    <string id="AF_UI_Event_Rebellion_RelationToKing" text="king {VALUE}" />
+    <string id="AF_UI_Event_Rebellion_RelationToLeader" text="leader {VALUE}" />
+  </strings>
+</base>

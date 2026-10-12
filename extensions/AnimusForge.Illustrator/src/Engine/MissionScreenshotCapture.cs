@@ -65,9 +65,9 @@ namespace AnimusForge.Illustrator.Engine
             _states = Game.Current?.GameStateManager;
             if (_mission?.Scene == null || _screen?.CombatCamera == null || _screen.SceneView == null || !ReferenceEquals(_screen.Mission, mission)
                 || !_screen.MissionStartedRendering() || mission.MissionEnded || GameNetwork.IsMultiplayer)
-                throw new InvalidOperationException("当前任务尚无可采集的单人游戏画面。");
+                throw new InvalidOperationException("The current mission has no single-player frame available for capture.");
             // A different custom/photo camera remains its owner's responsibility.
-            if (_screen.IsPhotoModeEnabled) throw new InvalidOperationException("请先退出原版摄影模式，再从生图按钮开始取景。");
+            if (_screen.IsPhotoModeEnabled) throw new InvalidOperationException("Exit the native photo mode before starting capture from the illustration button.");
             _oldCustom = _screen.CustomCamera;
             _oldHideUi = MBDebug.DisableAllUI;
             _oldPaused = _missionState?.Paused == true;
@@ -76,8 +76,8 @@ namespace AnimusForge.Illustrator.Engine
             try
             {
                 _ownsStage = ScreenCaptureHelper.TryAcquireMissionScreenshotStage();
-                if (!_ownsStage) throw new InvalidOperationException("原生图片采集正在进行，请等待后再点击。");
-                if (mission.GetRequestedTimeSpeed(PauseRequestId, out float _)) throw new InvalidOperationException("截图暂停请求已被占用。");
+                if (!_ownsStage) throw new InvalidOperationException("A native image capture is in progress. Wait before clicking again.");
+                if (mission.GetRequestedTimeSpeed(PauseRequestId, out float _)) throw new InvalidOperationException("The capture pause request is already in use.");
                 _backup = Camera.CreateCamera();
                 _backup.FillParametersFrom(_screen.CombatCamera);
                 _captureCamera = Camera.CreateCamera();
@@ -95,7 +95,7 @@ namespace AnimusForge.Illustrator.Engine
                 MBDebug.DisableAllUI = false; // Only our hint/buttons remain; previous Gauntlet roots are hidden.
                 _changedCamera = true;
                 _screen.CustomCamera = _captureCamera;
-                _overlay = new MissionPhotoOverlay(_screen, Submit, Continue, Restart, () => Cancel("本次取景已取消。"));
+                _overlay = new MissionPhotoOverlay(_screen, Submit, Continue, Restart, () => Cancel(IllustratorText.Raw("Residual_MissionScreenshotCapture_b04a943bafb8")));
                 ResumeAim();
                 ApplyCamera();
             }
@@ -109,9 +109,9 @@ namespace AnimusForge.Illustrator.Engine
             {
                 if (!ReferenceEquals(Mission.Current, _mission) || !ReferenceEquals(ScreenManager.TopScreen, _screen)
                     || _screen.IsFinalized || _mission.MissionEnded)
-                    throw new InvalidOperationException("取景尚未完成时已离开场景，采集已终止。");
+                    throw new InvalidOperationException("The scene was left before capture finished. Capture was terminated.");
                 if (!ReferenceEquals(_screen.CustomCamera, _captureCamera))
-                    throw new InvalidOperationException("取景期间相机被其他功能接管，已终止采集。");
+                    throw new InvalidOperationException("Another feature took control of the camera during capture. Capture was terminated.");
                 _overlay.HideOtherUi();
                 bool enter = Input.IsKeyDown(InputKey.Enter) || Input.IsKeyDown(InputKey.NumpadEnter);
                 bool escape = Input.IsKeyDown(InputKey.Escape);
@@ -176,7 +176,7 @@ namespace AnimusForge.Illustrator.Engine
         }
         private void ProcessExport()
         {
-            if (_clock.ElapsedMilliseconds - _exportStart >= CaptureBudgetMs) throw new TimeoutException("截图导出超时，已恢复原画面；未发送生图请求。");
+            if (_clock.ElapsedMilliseconds - _exportStart >= CaptureBudgetMs) throw new TimeoutException("Capture export timed out. The original view was restored; no image request was sent.");
             if (_read == null)
             {
                 if (IllustratorRuntime.ApplicationFrame - _exportFrame < 4 || _clock.ElapsedMilliseconds - _exportStart < 250) return;

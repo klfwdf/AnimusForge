@@ -12,13 +12,17 @@ public static class SiegeLootAccountingProfile
 
     public const uint DirectPlunderSettlementMessageColor = 0xFFFFC46Bu;
 
-    public const string MassacreActionName = "血洗";
+    public const string MassacreActionName = "Massacre";
+    public const string MassacreActionNameEn = "massacre";
 
-    public const string CulturalRepopulationActionName = "屠民迁殖";
+    public const string CulturalRepopulationActionName = "Colonization";
+    public const string CulturalRepopulationActionNameEn = "colonization";
 
-    public const string PlunderSettlementLootReason = "搜掠结算";
+    public const string PlunderSettlementLootReason = "Plunder settlement";
+    public const string PlunderSettlementLootReasonEn = "pillage settlement";
 
-    public const string MassacreSettlementLootReason = "血洗结算";
+    public const string MassacreSettlementLootReason = "Massacre settlement";
+    public const string MassacreSettlementLootReasonEn = "massacre settlement";
 
     public const string CivilianHeroFallbackGoldSource = "civilian_hero_fallback";
 
@@ -43,66 +47,130 @@ public static class SiegeLootAccountingProfile
     public const float MassacreMarketInventoryMaxRatio = 1.00f;
 
     public static string BuildDirectDevastateSettlementMessage(string actionName)
+        => BuildDirectDevastateSettlementMessage(actionName, false);
+
+    public static string BuildDirectDevastateSettlementMessage(string actionName, bool isEnglish)
     {
-        return "【攻城处置】" + NormalizeActionName(actionName, "血洗")
-            + "已按毁坏处置结算；城镇受到进一步毁坏影响。即将进入战利品界面领取截获物资。";
+        if (isEnglish)
+        {
+            return "[Siege aftermath] " + NormalizeActionName(actionName, "Massacre")
+                + " has settled as devastation; the town suffers devastation effects. Opening loot screen.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("loot_msg_prefix") + NormalizeActionName(actionName, SiegeAftermathCompatibilityTexts.Raw("loot_action_massacre"))
+            + SiegeAftermathCompatibilityTexts.Raw("loot_devastate_suffix");
     }
 
     public static string BuildDirectPlunderSettlementMessage()
+        => BuildDirectPlunderSettlementMessage(false);
+
+    public static string BuildDirectPlunderSettlementMessage(bool isEnglish)
     {
-        return "【攻城处置】搜掠已按掠夺处置结算；即将进入战利品界面领取截获物资。";
+        return isEnglish
+            ? "[Siege aftermath] Pillage has settled as plunder; opening loot screen to collect seized supplies."
+            : SiegeAftermathCompatibilityTexts.Raw("loot_plunder_msg");
     }
 
     public static string BuildLootCreditedSummaryMessage(int marketGold, int civilianGold, int itemTotal, int stackKinds)
+        => BuildLootCreditedSummaryMessage(marketGold, civilianGold, itemTotal, stackKinds, false);
+
+    public static string BuildLootCreditedSummaryMessage(int marketGold, int civilianGold, int itemTotal, int stackKinds, bool isEnglish)
     {
-        return "【战利清点】金钱已入账：市场金库 " + ClampNonNegative(marketGold)
-            + "，民众第纳尔 " + ClampNonNegative(civilianGold)
-            + "；物资 " + ClampNonNegative(itemTotal)
-            + " 件 / " + ClampNonNegative(stackKinds)
-            + " 类。";
+        if (isEnglish)
+        {
+            return "[Loot tally] Wealth received: Market vault " + ClampNonNegative(marketGold)
+                + ", civilian denars " + ClampNonNegative(civilianGold)
+                + "; supplies " + ClampNonNegative(itemTotal)
+                + " items / " + ClampNonNegative(stackKinds) + " types.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("loot_tally_gold_prefix") + ClampNonNegative(marketGold)
+            + SiegeAftermathCompatibilityTexts.Raw("loot_tally_civilian_gold") + ClampNonNegative(civilianGold)
+            + SiegeAftermathCompatibilityTexts.Raw("loot_tally_supplies") + ClampNonNegative(itemTotal)
+            + SiegeAftermathCompatibilityTexts.Raw("loot_tally_items_sep") + ClampNonNegative(stackKinds)
+            + SiegeAftermathCompatibilityTexts.Raw("loot_tally_kinds_suffix");
     }
 
     public static string BuildCivilianExitSettlementMessage(int recordedCivilianCount, int lootedCivilianCount, int gainedGold)
+        => BuildCivilianExitSettlementMessage(recordedCivilianCount, lootedCivilianCount, gainedGold, false);
+
+    public static string BuildCivilianExitSettlementMessage(int recordedCivilianCount, int lootedCivilianCount, int gainedGold, bool isEnglish)
     {
-        return "【战利清点】本次入城处置共记录 " + ClampNonNegative(recordedCivilianCount)
-            + " 名普通民众；离场时结算剩余 " + ClampNonNegative(lootedCivilianCount)
-            + " 名，共新增 " + ClampNonNegative(gainedGold)
-            + " 第纳尔。";
+        if (isEnglish)
+        {
+            return "[Loot tally] Total " + ClampNonNegative(recordedCivilianCount)
+                + " civilians recorded; settled remaining " + ClampNonNegative(lootedCivilianCount)
+                + " at exit, gained +" + ClampNonNegative(gainedGold) + " denars.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("loot_tally_entry_prefix") + ClampNonNegative(recordedCivilianCount)
+            + SiegeAftermathCompatibilityTexts.Raw("loot_tally_entry_middle") + ClampNonNegative(lootedCivilianCount)
+            + SiegeAftermathCompatibilityTexts.Raw("loot_tally_entry_gained") + ClampNonNegative(gainedGold) + SiegeAftermathCompatibilityTexts.Raw("loot_tally_entry_suffix");
     }
 
     public static string BuildCivilianLootMessage(string actorName, string targetName, int amount)
+        => BuildCivilianLootMessage(actorName, targetName, amount, false);
+
+    public static string BuildCivilianLootMessage(string actorName, string targetName, int amount, bool isEnglish)
     {
-        return "【战利清点】" + BuildCivilianLootLine(actorName, targetName, amount);
+        return (isEnglish ? "[Loot tally] " : SiegeAftermathCompatibilityTexts.Raw("loot_tally_tag")) + BuildCivilianLootLine(actorName, targetName, amount, isEnglish);
     }
 
     public static string BuildMarketGoldMessage(string reason, int amount)
+        => BuildMarketGoldMessage(reason, amount, false);
+
+    public static string BuildMarketGoldMessage(string reason, int amount, bool isEnglish)
     {
-        return "【战利清点】" + NormalizeReason(reason) + "市场金库：获得 " + ClampNonNegative(amount) + " 第纳尔。";
+        if (isEnglish)
+        {
+            return "[Loot tally] " + NormalizeReason(reason) + " market vault: gained " + ClampNonNegative(amount) + " denars.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("loot_tally_tag") + NormalizeReason(reason) + SiegeAftermathCompatibilityTexts.Raw("loot_tally_market_gold") + ClampNonNegative(amount) + SiegeAftermathCompatibilityTexts.Raw("loot_tally_entry_suffix");
     }
 
     public static string BuildMarketInventoryMessage(string reason, int itemTotal, int stackKinds, int itemValue)
+        => BuildMarketInventoryMessage(reason, itemTotal, stackKinds, itemValue, false);
+
+    public static string BuildMarketInventoryMessage(string reason, int itemTotal, int stackKinds, int itemValue, bool isEnglish)
     {
-        return "【战利清点】" + NormalizeReason(reason) + "市场库存：截获 " + ClampNonNegative(itemTotal)
-            + " 件货物（" + ClampNonNegative(stackKinds)
-            + " 类，估值 " + ClampNonNegative(itemValue)
-            + "）；离场后进入战利品界面领取。";
+        if (isEnglish)
+        {
+            return "[Loot tally] " + NormalizeReason(reason) + " market inventory: seized " + ClampNonNegative(itemTotal)
+                + " items (" + ClampNonNegative(stackKinds) + " types, val " + ClampNonNegative(itemValue) + "); collect on loot screen at departure.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("loot_tally_tag") + NormalizeReason(reason) + SiegeAftermathCompatibilityTexts.Raw("loot_tally_market_stock") + ClampNonNegative(itemTotal)
+            + SiegeAftermathCompatibilityTexts.Raw("loot_tally_stock_items") + ClampNonNegative(stackKinds)
+            + SiegeAftermathCompatibilityTexts.Raw("loot_tally_stock_val") + ClampNonNegative(itemValue)
+            + SiegeAftermathCompatibilityTexts.Raw("loot_tally_stock_suffix");
     }
 
     public static string BuildCivilianSpoilsMessage(int gold)
+        => BuildCivilianSpoilsMessage(gold, false);
+
+    public static string BuildCivilianSpoilsMessage(int gold, bool isEnglish)
     {
-        return "【战利清点】民众财物：取得 " + ClampNonNegative(gold) + " 第纳尔。";
+        if (isEnglish)
+        {
+            return "[Loot tally] Civilian spoils: obtained " + ClampNonNegative(gold) + " denars.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("loot_tally_civilian_prop") + ClampNonNegative(gold) + SiegeAftermathCompatibilityTexts.Raw("loot_tally_entry_suffix");
     }
 
     public static string BuildCivilianLootLine(string actorName, string targetName, int amount)
+        => BuildCivilianLootLine(actorName, targetName, amount, false);
+
+    public static string BuildCivilianLootLine(string actorName, string targetName, int amount, bool isEnglish)
     {
-        string safeTargetName = string.IsNullOrWhiteSpace(targetName) ? "目标" : targetName.Trim();
+        string safeTargetName = string.IsNullOrWhiteSpace(targetName) ? (isEnglish ? "target" : SiegeAftermathCompatibilityTexts.Raw("loot_target_fallback")) : targetName.Trim();
         int safeAmount = ClampNonNegative(amount);
+        if (isEnglish)
+        {
+            return string.IsNullOrWhiteSpace(actorName)
+                ? "Obtained " + safeAmount + " denars from " + safeTargetName + "."
+                : actorName.Trim() + " questioned " + safeTargetName + " and obtained " + safeAmount + " denars.";
+        }
         if (string.IsNullOrWhiteSpace(actorName))
         {
-            return "从 " + safeTargetName + " 取得 " + safeAmount + " 第纳尔。";
+            return SiegeAftermathCompatibilityTexts.Raw("loot_from_prefix") + safeTargetName + SiegeAftermathCompatibilityTexts.Raw("loot_obtained") + safeAmount + SiegeAftermathCompatibilityTexts.Raw("loot_tally_entry_suffix");
         }
-
-        return actorName.Trim() + " 盘问 " + safeTargetName + " 后取得 " + safeAmount + " 第纳尔。";
+        return actorName.Trim() + SiegeAftermathCompatibilityTexts.Raw("loot_interrogated") + safeTargetName + SiegeAftermathCompatibilityTexts.Raw("loot_after_obtained") + safeAmount + SiegeAftermathCompatibilityTexts.Raw("loot_tally_entry_suffix");
     }
 
     private static string NormalizeReason(string reason)

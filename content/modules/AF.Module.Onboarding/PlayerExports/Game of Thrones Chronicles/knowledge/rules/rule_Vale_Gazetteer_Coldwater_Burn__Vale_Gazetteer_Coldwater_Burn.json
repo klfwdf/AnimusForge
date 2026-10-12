@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Vale_Gazetteer_Coldwater_Burn",
+  "Keywords": [
+    "Coldwater Burn",
+    "Coldwater Stream"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Coldwater Burn is a traditional stronghold of House Corbray, located where the Vale meets the approaches to the High Road and the mountain fringes. Coldwater Burn and its nearby springs, river valleys, and trails give the place its name and set the rhythm of its residents' lives: in the spring thaw they must guard against floods, in winter against ice, while merchants and knights must reckon whether the mountain paths are passable. House Corbray is famed in the Vale for martial renown and ancient lineage, yet any martial renown must be sustained by farmlands, stables, river crossings, and retainers willing to serve. Coldwater Burn is not far from the seat of power at the Eyrie, yet retains its own local society and judgment over the roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Coldwater Burn Local families also rely on goats, thin fields, orchards, and pack teams crossing the Mingyue Mountains; if any road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Coldwater Burn Entry Coldwater Burn"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Coldwater Burn They also recognize the accents, laws, and credentials of the valley; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Coldwater Burn Entry Coldwater Burn"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Coldwater Burn If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The traces left by generations at Coldwater Burn lie half hidden in boats, bridge timbers, millstones, fishing nets, and riverside septs, and half in chapels of the Seven, the threat of the mountain clans, and Andal knightly tradition. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Coldwater Burn They care about goats, thin fields, orchards, and pack teams crossing the Mingyue Mountains. They also look at whether seeds are left after collecting grain, and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Coldwater Burn: Coldwater Burn is a traditional stronghold of House Corbray, located where the Vale meets the approaches to the High Road and the mountain fringes. Coldwater Burn and its nearby springs, river valleys, and trails give the place its name and set the rhythm of its residents' lives: in the spring thaw they must guard against floods, in winter against ice, while merchants and knights must reckon whether the mountain paths are passable. House Corbray is famed in the Vale for martial renown and ancient lineage, yet any martial renown must be sustained by farmlands, stables, river crossings, and retainers willing to serve. Coldwater Burn is not far from the seat of power at the Eyrie, yet retains its own local society and judgment over the roads."
+  ]
+}

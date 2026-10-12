@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Lord_Lady_and_Regional_Title_Translations",
+  "Keywords": [
+    "Lord, Lady, and Regional Title Translations"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Different regions and translations will use titles such as count and countess to express noble status, but the real power of Westeros still depends on the fiefdom, military strength and legal system. Titles can be fancy, but they cannot replace a defensible castle and vassals willing to respond."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord, Lady, and Regional Title Translations"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord, Lady, and Regional Title Translations"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord, Lady, and Regional Title Translations"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord, Lady, and Regional Title Translations Different regions and translations will use titles such as count and countess to express noble status, but the real power of Westeros still depends on the fiefdom, military strength and legal system. Titles can be fancy, but they cannot replace a defensible castle and vassals willing to respond. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord, Lady, and Regional Title Translations Different regions and translations will use titles such as count and countess to express noble status, but the real power of Westeros still depends on the fiefdom, military strength and legal system. Titles can be fancy, but they cannot replace a defensible castle and vassals willing to respond. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lord, Lady, and Regional Title Translations Different regions and translations will use titles such as count and countess to express noble status, but the real power of Westeros still depends on the fiefdom, military strength and legal system. Titles can be fancy, but they cannot replace a defensible castle and vassals willing to respond. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Lord, Lady, and Regional Title Translations: Different regions and translations will use titles such as count and countess to express noble status, but the real power of Westeros still depends on the fiefdom, military strength and legal system. Titles can be fancy, but they cannot replace a defensible castle and vassals willing to respond."
+  ]
+}

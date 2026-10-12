@@ -1,0 +1,105 @@
+{
+  "Id": "rule_Southern_Empire",
+  "Keywords": [
+    "Southern Empire",
+    "South Karad Empire",
+    "Southern Karad Empire",
+    "Southern territories of the empire"
+  ],
+  "RagShortTexts": [
+    "The Southern Empire is ruled by Queen Rhagaea over the southern territories of Karad"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Southern Empire is the southern territory of the Kalad Empire ruled by Queen Rhagaea, who was supported by the southern nobles of the empire who advocated hereditary blood inheritance after the split of the Kalad Empire. This was once a prosperous commercial area of ​​the Karad Empire, and people generally hoped that everything they had could be passed down through blood, whether it was fields, official positions, or even the throne. People here generally believe that blood inheritance can bring stability and avoid civil strife caused by inheritance disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Queen Rhagaea of ​​the Southern Empire destroyed the republican tradition of the Kalad Empire. After the death of Arenicos, she established herself as queen without being recommended by the Senate. This was regarded by the republicans of the Northern Empire and their leader Lucon as the greatest betrayal of the Kalad Empire and Emperor Kaladius."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Queen Rhagaea of ​​the Southern Empire was the widow of Arenicos, the emperor before the Kalad Empire split. Arenicos died mysteriously. Rhagaea took out a purple robe stained with blood and claimed that Lucon had murdered Arenicos, and inherited the throne with the support of the southern nobles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [],
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Business in the Southern Empire was prosperous, and the Khuzait people always coveted the wealth and land of the Southern Empire. Think of the Southern Empire as a warehouse that you can draw upon when you are short of money and food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {}
+      },
+      "Content": "The Southern Empire borders Aserai. The border between the two countries is on an important trade route to the east. Mastering the trade route means controlling the lifeline of the entire Calradia continent's huge trade with the East. There are often frictions between the Southern Empire and Aserai over control of the trade route."
+    }
+  ],
+  "TextMappings": []
+}

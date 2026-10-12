@@ -22,6 +22,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "coup_seam_gate.ps1")
+if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
+    throw "Canonical CN/EN package filenames do not accept -PackageLabel. Remove -PackageLabel."
+}
 if ($IncludeOnnx -or $IncludeReranker) {
     throw "Unified client packages never include the ONNX model folder. Remove -IncludeOnnx/-IncludeReranker."
 }
@@ -36,6 +39,7 @@ if (-not (Test-Path -LiteralPath $contentLayoutHelper -PathType Leaf)) {
     throw "Content layout helper not found: $contentLayoutHelper"
 }
 . $contentLayoutHelper
+. (Join-Path $PSScriptRoot "package_localization.ps1")
 $VersionPattern = "^(?<prefix>v?)(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?:\.(?<micro>\d))?$"
 $ModuleName = "AnimusForge"
 $BootstrapAssemblyName = "AnimusForge.Bootstrap"
@@ -781,6 +785,7 @@ function Write-ZipFromModule {
     param(
         [Parameter(Mandatory = $true)][string]$ModulePath,
         [Parameter(Mandatory = $true)][string]$PackageVersion,
+        [string]$ProjectRoot = "",
         [bool]$AutoDetected
     )
 
@@ -792,92 +797,68 @@ function Write-ZipFromModule {
     if ($outputFull.StartsWith($moduleFull + "\", [System.StringComparison]::OrdinalIgnoreCase)) {
         throw "OutputDir must not be inside the Stage: $outputFull"
     }
-    Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..\..")) -StageModuleDir $moduleFull -RequireCurrentArtifacts
+    $projectRoot = if ([string]::IsNullOrWhiteSpace($ProjectRoot)) { Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..\..") } else { Get-FullPathSafe -Path $ProjectRoot }
+    Assert-AnimusForgeCleanStage -ProjectRoot $projectRoot -StageModuleDir $moduleFull -RequireCurrentArtifacts
     New-Item -ItemType Directory -Path $outputFull -Force | Out-Null
 
-    $versionForName = $PackageVersion -replace "[^\w\.\-]", "_"
-    $labelForName = ""
-    if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
-        $labelForName = "_" + ($PackageLabel -replace "[^\w\.\-]", "_")
-    }
-    $timestamp = Get-Date -Format "yyyyMMdd_HHmmss_fff"
-    $baseName = "AnimusForge_$versionForName$labelForName`_$timestamp"
-    $zipPath = Join-Path $outputFull ($baseName + ".zip")
+    $parts = Parse-Version -VersionText $PackageVersion -Label "Package version"
+    $versionForName = "v$($parts.Major).$($parts.Minor).$($parts.Patch)"
+    if ($null -ne $parts.Micro) { $versionForName += ".$($parts.Micro)" }
+    $timestamp = Get-Date -Format "MMdd_HHmm"
+    $baseName = "AnimusForge_$versionForName"
+    $zipPaths = @{}
     $suffix = 1
-    while (Test-Path -LiteralPath $zipPath) {
-        $zipPath = Join-Path $outputFull ("{0}_{1}.zip" -f $baseName, $suffix)
+    $releaseStamp = $timestamp
+    while ((Test-Path -LiteralPath (Join-Path $outputFull ("{0}_CN_{1}.zip" -f $baseName, $releaseStamp))) -or
+        (Test-Path -LiteralPath (Join-Path $outputFull ("{0}_EN_{1}.zip" -f $baseName, $releaseStamp)))) {
+        $releaseStamp = "{0}_{1}" -f $timestamp, $suffix
         $suffix += 1
     }
-    $temporaryZipPath = Join-Path $outputFull (".{0}.{1}.tmp" -f $baseName, [Guid]::NewGuid().ToString("N"))
-    $zip = $null
-    $finalZipCreated = $false
+    $releaseBaseName = "{0}_{1}" -f $baseName, $releaseStamp
+    $temporaryPaths = @{}
+    $published = [System.Collections.Generic.List[string]]::new()
     try {
-        try {
-            $zip = [System.IO.Compression.ZipFile]::Open($temporaryZipPath, [System.IO.Compression.ZipArchiveMode]::Create)
-            $files = @(Get-ChildItem -LiteralPath $moduleFull -Recurse -File -Force | Sort-Object FullName)
-
-            foreach ($file in $files) {
-                $relative = $file.FullName.Substring($moduleFull.Length).TrimStart('\', '/') -replace '\\', '/'
-                if ($relative -ceq "SubModule.xml") {
-                    $entry = $zip.CreateEntry("AnimusForge/SubModule.xml", [System.IO.Compression.CompressionLevel]::Optimal)
-                    $stream = $entry.Open()
-                    try {
-                        $bytes = Get-VersionedSubModuleBytes -SubModulePath $file.FullName -NewVersion $PackageVersion
-                        $stream.Write($bytes, 0, $bytes.Length)
-                    }
-                    finally { $stream.Dispose() }
-                }
-                else {
-                    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $file.FullName, "AnimusForge/$relative", [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
-                }
-            }
+        Assert-AnimusForgeEnglishRuntimeSource -ProjectRoot $projectRoot
+        $sharedTextResourceHashes = Get-AnimusForgeSharedTextResourceHashes -ProjectRoot $projectRoot
+        foreach ($relative in @('AnimusForge.Bootstrap.dll', 'versions/1.3/AnimusForge.dll', 'versions/1.4/AnimusForge.dll')) {
+            Assert-AnimusForgeEnglishRuntimeDll -DllPath (Join-Path $moduleFull ('bin/Win64_Shipping_Client/' + $relative)) -SharedTextResourceHashes $sharedTextResourceHashes
         }
-        finally {
-            if ($null -ne $zip) {
-                $zip.Dispose()
-                $zip = $null
-            }
+        $projections = @{}
+        foreach ($language in @('CN', 'EN')) {
+            $zipPaths[$language] = Join-Path $outputFull ("{0}_{1}_{2}.zip" -f $baseName, $language, $releaseStamp)
+            $temporaryPaths[$language] = Join-Path $outputFull (".{0}.{1}.{2}.tmp" -f $releaseBaseName, $language, [Guid]::NewGuid().ToString('N'))
+            $projections[$language] = @(Get-AnimusForgePackageProjection -ProjectRoot $projectRoot -StageModuleDir $moduleFull -Language $language -PackageVersion $PackageVersion)
         }
-
-        Assert-ZipLayout -ZipPath $temporaryZipPath -ExpectedVersion $PackageVersion -OnnxMustBeAbsent:$true -CustomPromptsMustBeAbsent:$false
-        Assert-ZipMatchesCleanStage -ZipPath $temporaryZipPath -StageModuleDir $moduleFull -PackageVersion $PackageVersion
-        Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..\..")) -StageModuleDir $moduleFull -RequireCurrentArtifacts
-        [System.IO.File]::Move($temporaryZipPath, $zipPath)
-        $finalZipCreated = $true
-
-        Write-Host "Package Mode : one ZIP for both supported game versions"
+        foreach ($language in @('CN', 'EN')) {
+            Write-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
+            Assert-ZipLayout -ZipPath $temporaryPaths[$language] -ExpectedVersion $PackageVersion -OnnxMustBeAbsent:$true -CustomPromptsMustBeAbsent:$false
+            Assert-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
+        }
+        Assert-AnimusForgeCleanStage -ProjectRoot $projectRoot -StageModuleDir $moduleFull -RequireCurrentArtifacts
+        foreach ($language in @('CN', 'EN')) {
+            # Recheck both source snapshots after both archives have been written.
+            Assert-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
+        }
+        foreach ($language in @('CN', 'EN')) {
+            [System.IO.File]::Move($temporaryPaths[$language], $zipPaths[$language])
+            $published.Add($zipPaths[$language])
+        }
+        Write-Host "Package Mode : CN and EN ZIPs, each with both supported game versions"
         Write-Host "Module Path  : $moduleFull"
         Write-Host "Module Detect: $(if ($AutoDetected) { 'Auto' } else { 'Manual' })"
-        Write-Host "Output ZIP   : $zipPath"
-        Write-Host "Input Rule   : exact clean Stage file set; no exclusion scan"
+        Write-Host "Output CN    : $($zipPaths['CN'])"
+        Write-Host "Output EN    : $($zipPaths['EN'])"
+        Write-Host "Input Rule   : verified clean Stage plus locked language projection"
         Write-Host "ONNX ZIP     : Excluded by unified client package policy"
-        return $zipPath
+        return @($zipPaths['CN'], $zipPaths['EN'])
     }
     catch {
         $zipFailure = $_
         $cleanupFailures = New-Object System.Collections.Generic.List[string]
-        if ($null -ne $zip) {
-            try {
-                $zip.Dispose()
-            }
-            catch {
-                $cleanupFailures.Add("ZIP stream: $($_.Exception.Message)")
-            }
-        }
-        if (Test-Path -LiteralPath $temporaryZipPath -PathType Leaf) {
-            try {
-                Remove-Item -LiteralPath $temporaryZipPath -Force
-            }
-            catch {
-                $cleanupFailures.Add("${temporaryZipPath}: $($_.Exception.Message)")
-            }
-        }
-        if ($finalZipCreated -and (Test-Path -LiteralPath $zipPath -PathType Leaf)) {
-            try {
-                Remove-Item -LiteralPath $zipPath -Force
-            }
-            catch {
-                $cleanupFailures.Add("${zipPath}: $($_.Exception.Message)")
+        foreach ($candidate in @($temporaryPaths.Values) + @($published)) {
+            if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+                try { Remove-Item -LiteralPath $candidate -Force }
+                catch { $cleanupFailures.Add("${candidate}: $($_.Exception.Message)") }
             }
         }
         if ($cleanupFailures.Count -gt 0) {
@@ -986,7 +967,7 @@ function Invoke-VersionedModulePackage {
         }
         $written[$stageXml] = Get-VersionedSubModuleBytes -SubModulePath $stageXml -NewVersion $packageVersion
         [System.IO.File]::WriteAllBytes($stageXml, $written[$stageXml])
-        return Write-ZipFromModule -ModulePath $stage -PackageVersion $packageVersion -AutoDetected:$false
+        return Write-ZipFromModule -ModulePath $stage -PackageVersion $packageVersion -ProjectRoot $root -AutoDetected:$false
     }
     catch {
         $failure = $_
@@ -1026,6 +1007,8 @@ if ($outputFullPreflight.Equals($moduleFull.TrimEnd('\', '/'), [System.StringCom
     throw "OutputDir must not be the module directory itself: $outputFullPreflight"
 }
 
+# Reject incomplete runtime localization before consuming a version or starting a build.
+Assert-AnimusForgeEnglishRuntimeSource -ProjectRoot $projectRootFull
 $createdZipPath = Invoke-VersionedModulePackage -ProjectRoot $projectRootFull -StageModuleDir $moduleFull
 Write-Host "Package Result: success"
 Write-Host "Package       : $createdZipPath"

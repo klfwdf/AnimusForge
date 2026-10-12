@@ -1,0 +1,194 @@
+{
+  "Id": "rule_detail",
+  "Keywords": [
+    "Detel"
+  ],
+  "RagShortTexts": [
+    "King Detel’s weak character and arbitration style of governance"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_16"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Detel is the weakest man I have ever seen, but he wears a golden crown. Where was Pandrak when I charged into battle? In the mountains. The knight bleeds in the front, and he reads the map in the back. After the fight, the barons blamed him, and he said it was our idea to start the war - which was true, but it was shameful for a king to pass the responsibility to his vassals. His greatest skill in life is to get a group of people who dislike each other to sit down and chat, and then go back to their respective homes to continue to dislike each other. He said that the wild dogs fought over the bones, but he never thought about taking the bones away. He would only act as a referee next to the bones. What Vlandia wants is not the referee, but the king. It's not that I don't recognize him as a king, I just don't think he is. If he could be as ruthless as one finger of his ancestor Osric, the western part of the empire would have been filled with our flags. But he didn't. He held his oath to the empire and his thoughts of arbitration in his heart, but he could not hold Vlandia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Detail is a good man. This is the highest praise I can give him, and it is also the most deadly. A good man does not make a good king in Vlandia. I have no personal grudge against him. We toasted each other in person, but privately he knew who Northern Vlandia listened to, and I also knew that the golden crown was on his head. But here's the problem - he knew about my influence in the north, but he never really took action against me. Don't you dare? Still don’t think it’s necessary? I still can't figure it out. He was right when he said after Pendrac that a king can only lead others but not follow them. Did he do it himself? He was coerced by the barons to join the war, and was provoked to turn around by a scolding letter from Nereitses. He was not a leader, he was being led by others. But I have to admit, he's held Vlandia down over the years. It's not about convincing, it's about persuading. How long can persuasion last? When his son succeeds to the throne, all the grudges he has suppressed will be revealed. I'm not in a hurry. I can afford to wait."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King Detail is a monarch we would like to follow, not because his sword is quick - his sword is not quick - but because he does not draw his sword easily. Nteri often said that the hardest thing about being a king in Vlandia was not winning a battle, but not fighting wars that shouldn't be fought. The lesson that Detail learned after Pandrac was something we saw him swallow with our own eyes. He could have fallen out with the barons, but he didn't. He could have put all the responsibility for the defeat on Ingatell and the others, but he didn't. He swallowed his bitterness, turned around and continued to sit at the negotiating table, pulling those who scolded him back one by one to talk. This requires a kind of courage, but this kind of courage is not as easy to understand as rushing into battle. Cara Tilde had spoken privately, saying that she was worried that Detail was too tired. Arbitration is not about raising a sword, it is about raising a cup. The cup is not heavy, but lifting it all day long is heavier than anything else. We, the Dai Aromanke family, do not seek to take an additional piece of land from under the crown. We only hope to share a little weight for him. But we also know that some weight cannot be replaced by others. He sits under a golden crown, not enjoying power but enduring it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King Deterre? To be honest, I don't see him more than once a year. My fiefdom only has a few castles, and news from the royal city has to be brought by passing caravans. I heard that he doesn't like fighting very much and likes to persuade people to make peace. This is actually a good thing for people like me - my family cannot withstand a lot of trouble, because Catal and the others are shouting to fight and kill every day. After the fight, they grab the credit and land, and our little baron follows behind to eat ashes. If Detail doesn't fight big wars, the taxes won't be that heavy. But there is also a problem with his efforts to persuade peace: the people he persuades to make peace are all big barons. If our little baron has a dispute with him, he will not hear it. I have to find someone to back me up, either Ingatell or Aldric. Detail is too far, the Grand Baron is too close. The king's arbitration is for big people, and small people can only find their own solutions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Detel de Meroc is an anomaly. Vlandia founded the country with iron blood, but he ruled with arbitration. The Empire had mixed feelings about him - when he was young, he advocated abiding by the alliance with the Empire, but Neretses didn't appreciate it and pushed him to the other side with insults. Now that the empire is broken, no one can care about reviewing this old score, but someone in the Senate mentioned: If Nereitses had not written that letter back then, the Vlandia people of Pandrak might have sided with the empire. The Sturgians worked with him once and concluded that this person was too soft to fight a tough battle. The Battanians don't care, as long as Vlandia doesn't beat them. Khuzait is too far away from Aserai and has no idea about him. Those of us who keep an eye on Vlandia have a consensus: Detel suppressed the internal strife in Vlandia, but did not resolve it. He relied on personal patience and finesse to maintain a balance that was difficult to sustain after his death. Either his heir is ten times tougher than he is, or Vlandia is back to wild dogs fighting over bones. Galios once commented that Detel was a negotiable opponent. But then he added another sentence: You can negotiate, don’t be afraid."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lord King? Detel. I heard that he doesn't like fighting and likes to sit down and break up fights. My family was drafted into the army last year and spent half a year squatting on the border. We didn’t fight any major battles and came back intact. I won't scold him just for this. The people from the next village were conscripted to fight against the Imperials, and they didn't come back even half of the time. When the people there mentioned Detel, they gritted their teeth and said that the king wasn't ruthless enough and retreated too quickly after the battle, so they didn't take advantage. But I am different, my family is back. I don't care if he is ruthless or not. But the elders shook their heads when they mentioned the golden crown on his head. It's unlucky to say it's a gift from the empire. If you take something from the empire, you have to protect the empire from disasters. As a result, your own people will be beaten by your own people. Detail himself said that they were bones, and the dogs kept biting them when he threw them among the dogs. A king calls his nobles wild dogs - what is he himself? I don't understand this, I just care that the rice jar at home is full of dissatisfaction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Tertel de Merok was the least Vlandian king of Vlandia. Our Senate has made a systematic judgment on him: He advocates keeping promises, which is a rare quality, but it is a pity that Neretses ruined it. After Pendrac, he turned to arbitration rule and restrained a group of warlords around the negotiating table. Those of us who manage the Senate know the difficulty of this matter best - a room of nobles can quarrel every day, but he is in charge of half a continent of barons. Some people laugh at him for being cowardly, but we don’t laugh at him. A cowardly person cannot sit in that position for so many years. But he was no friend of the Empire. He was just an old debt to the Empire. After our empire was split into three parts, A from the west had trade relations with him, B from the north was not interested in him, and C from the south occasionally sent people to inquire about his current health. It's not about caring, it's about evaluating. Every day Detel is in power, the internal pressure in Vlandia increases. If he is gone one day, who will own those bones is still unknown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The king of Vlandia is called Deter? The name doesn't sound like a barbarian. They said he didn't fight much, and he had been on the throne for many years, unlike the previous kings of Vlandia who all fought on horseback. He liked to break up fights - he said he would call the barons into a room to talk, then slam the door and leave, and talk another day. Business people say he is one of the few reasonable people in Vlandia. But what's the use of being reasonable? The people under him don’t talk about it. Every time the merchants paid tolls, they would scold you: Didn’t your king persuade you to make peace? Why are there still cards here to collect money? We didn’t understand anything like oaths, and we just hoped that their king would control his men and collect less tolls."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_w",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "C",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_s",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Social_Order_Guest_Right",
+  "Keywords": [
+    "Guest Right",
+    "Bread and Salt",
+    "Sacred Oaths"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The rights of guests are an ancient custom widely recognized in the Seven Kingdoms: after a guest receives bread and salt under the lord's roof, the host must not harm him during the banquet, and the guest should also respect the host's roof and table. It is not a royal law filled with clauses, but a divine terror Violators may win a battle but lose allies, trust, and the dignity of their name. Commoners, nobles, and travelers all understood it differently, but they all knew that feasting could both establish peace and make betrayal seem particularly terrifying."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Guest Right"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Guest Right"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Guest Right"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Guest Right The rights of guests are an ancient custom widely recognized in the Seven Kingdoms: after a guest receives bread and salt under the lord's roof, the host must not harm him during the banquet, and the guest should also respect the host's roof and table. It is not a royal law filled with clauses, but a divine terror Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Guest Right The rights of guests are an ancient custom widely recognized in the Seven Kingdoms: after a guest receives bread and salt under the lord's roof, the host must not harm him during the banquet, and the guest should also respect the host's roof and table. It is not a royal law filled with clauses, but a divine terror The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Guest Right The rights of guests are an ancient custom widely recognized in the Seven Kingdoms: after a guest receives bread and salt under the lord's roof, the host must not harm him during the banquet, and the guest should also respect the host's roof and table. It is not a royal law filled with clauses, but a divine terror If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Guest Right The rights of guests are an ancient custom widely recognized in the Seven Kingdoms: after a guest receives bread and salt under the lord's roof, the host must not harm him during the banquet, and the guest should also respect the host's roof and table. It is not a royal law filled with clauses, but a divine terror They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Guest Right: The rights of guests are an ancient custom widely recognized in the Seven Kingdoms: after a guest receives bread and salt under the lord's roof, the host must not harm him during the banquet, and the guest should also respect the host's roof and table. It is not a royal law filled with clauses, but a divine terror"
+  ]
+}

@@ -370,8 +370,8 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		Hero sender = candidate.Sender;
 		string npcName = sender.Name?.ToString() ?? "NPC";
-		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender) ?? Hero.MainHero?.Name?.ToString() ?? "玩家";
-		string bondFact = "[AFEF NPC行为补充] " + npcName + "与" + playerName + "已有私人交往。" + DescribeNpcInitiatedLetterBond(candidate);
+		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender) ?? Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0492");
+		string bondFact = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0493") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0494") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0495") + DescribeNpcInitiatedLetterBond(candidate);
 		if (candidate.PrivateLove > 20 && !ProactiveNpcRequestBehavior.IsGreetingUnavailableForExternal())
 		{
 			AddNpcLetterMotive(candidate, settings, nowDays, new NpcInitiatedLetterMotive
@@ -379,26 +379,26 @@ public sealed partial class CourierDeliveryBehavior
 				MotiveType = LetterMotiveGreeting,
 				LetterKind = InboundLetterKindPersonal,
 				NeedType = "Greeting",
-				IntentText = "你决定主动写一封问候信，关心玩家近况。不要虚构任何事件或请求。",
-				FactText = bondFact + " " + npcName + "决定主动写信问候" + playerName + "。",
-				FallbackLetter = playerName + "，许久未曾好好问候。愿你近来一切安好；得空时，也请回信告诉我你的近况。"
+				IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0496"),
+				FactText = bondFact + " " + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0497") + playerName + "。",
+				FallbackLetter = ConversationRuntimeTexts.FormatPrompt("letter_fallback_greeting", ("PLAYER", playerName))
 			});
 		}
 		AddNpcLetterMotive(candidate, settings, nowDays, new NpcInitiatedLetterMotive
 		{
 			MotiveType = LetterMotiveStatus,
 			LetterKind = InboundLetterKindPersonal,
-			IntentText = "你决定主动写一封近况信，只能使用当前地点、身份和已提供的真实经历。",
-			FactText = bondFact + " " + npcName + "决定把自己当前可确认的近况写给" + playerName + "。",
-			FallbackLetter = playerName + "，我写信只是想报个平安，也想知道你近来身在何处。若方便，请给我回信。"
+			IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0499"),
+			FactText = bondFact + " " + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0500") + playerName + "。",
+			FallbackLetter = ConversationRuntimeTexts.FormatPrompt("letter_fallback_status", ("PLAYER", playerName))
 		});
 		AddNpcLetterMotive(candidate, settings, nowDays, new NpcInitiatedLetterMotive
 		{
 			MotiveType = LetterMotiveEmotion,
 			LetterKind = InboundLetterKindPersonal,
-			IntentText = "按两人的真实交情表达关切或感受；克制，不夸大感情，也不虚构承诺。",
-			FactText = bondFact + " " + npcName + "决定主动写信表达与当前关系程度相符的关切或感受。",
-			FallbackLetter = playerName + "，想到我们过去的交往，我觉得有些话还是写下来更合适。愿你平安，也愿我们的信任不被辜负。"
+			IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0502"),
+			FactText = bondFact + " " + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0503"),
+			FallbackLetter = ConversationRuntimeTexts.FormatPrompt("letter_fallback_emotion", ("PLAYER", playerName))
 		});
 		string senderId = SafeHeroId(sender);
 		if (MyBehavior.TryGetLatestNpcRecentActionForExternal(sender, out string eventKey, out string eventText, out int eventDay)
@@ -410,9 +410,9 @@ public sealed partial class CourierDeliveryBehavior
 				MotiveType = LetterMotiveEvent,
 				LetterKind = InboundLetterKindPersonal,
 				EventKey = eventKey,
-				IntentText = "你决定把这件近期真实经历写给玩家。只能围绕该事件，不要改写结果或虚构后续。",
-				FactText = bondFact + " [AFEF NPC行为补充] " + npcName + "近期有一段真实经历：" + eventText,
-				FallbackLetter = playerName + "，近来发生了一件我想让你知道的事：" + eventText
+				IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0505"),
+				FactText = bondFact + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0506") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0507") + eventText,
+				FallbackLetter = ConversationRuntimeTexts.FormatPrompt("letter_fallback_event", ("PLAYER", playerName), ("EVENT", eventText))
 			});
 		}
 		List<ProactiveNpcRequestBehavior.LetterNeedSnapshot> needs = ProactiveNpcRequestBehavior.GetLetterNeedSnapshotsForExternal(sender);
@@ -428,7 +428,7 @@ public sealed partial class CourierDeliveryBehavior
 				NeedType = selectedNeed.NeedType,
 				IntentText = selectedNeed.IntentText,
 				FactText = bondFact + " " + selectedNeed.FactText,
-				FallbackLetter = playerName + "，我当前正面临“" + (string.IsNullOrWhiteSpace(selectedNeed.DisplayName) ? "一项具体困难" : selectedNeed.DisplayName) + "”，希望与你商量。若你愿意，请回信。"
+				FallbackLetter = ConversationRuntimeTexts.FormatPrompt("letter_fallback_need", ("PLAYER", playerName), ("NEED", string.IsNullOrWhiteSpace(selectedNeed.DisplayName) ? ConversationRuntimeTexts.Prompt("letter_need_unknown") : selectedNeed.DisplayName))
 			});
 		}
 		ProactiveNpcRequestBehavior.LetterNeedSnapshot diplomacyNeed = (needs ?? new List<ProactiveNpcRequestBehavior.LetterNeedSnapshot>())
@@ -442,7 +442,7 @@ public sealed partial class CourierDeliveryBehavior
 				NeedType = diplomacyNeed.NeedType,
 				IntentText = diplomacyNeed.IntentText,
 				FactText = bondFact + " " + diplomacyNeed.FactText,
-				FallbackLetter = playerName + "，我希望通过这封信与你讨论一项当前真实存在的外交事务。若你愿意，请回信说明看法。"
+				FallbackLetter = ConversationRuntimeTexts.FormatPrompt("letter_fallback_diplomacy", ("PLAYER", playerName))
 			});
 		}
 	}
@@ -451,21 +451,21 @@ public sealed partial class CourierDeliveryBehavior
 	{
 		if (candidate == null)
 		{
-			return "两人之间仍有旧日往来。";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0513");
 		}
 		if (candidate.PrivateLove < -20 || candidate.PersonalTrust < -20)
 		{
-			return "两人虽有往来，心里仍有芥蒂。";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0514");
 		}
 		if (candidate.BondScore >= 70)
 		{
-			return "彼此十分亲近，也敢把心里话说出来。";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0515");
 		}
 		if (candidate.BondScore >= 40)
 		{
-			return "彼此颇为亲近，足以相互信赖。";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0516");
 		}
-		return "彼此熟识，但说话仍留着分寸。";
+		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0517");
 	}
 
 	private void AddNpcLetterMotive(NpcInitiatedLetterCandidate candidate, DuelSettings settings, float nowDays, NpcInitiatedLetterMotive motive)
@@ -767,26 +767,26 @@ public sealed partial class CourierDeliveryBehavior
 		Kingdom senderKingdom = sender?.Clan?.Kingdom;
 		Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
 		string senderName = sender?.Name?.ToString() ?? "NPC";
-		string senderKingdomName = senderKingdom?.Name?.ToString() ?? senderKingdom?.StringId ?? "unknown kingdom";
-		string playerKingdomName = playerKingdom?.Name?.ToString() ?? playerKingdom?.StringId ?? "your kingdom";
+		string senderKingdomName = senderKingdom?.Name?.ToString() ?? senderKingdom?.StringId ?? ConversationRuntimeTexts.Prompt("letter_unknown_kingdom");
+		string playerKingdomName = playerKingdom?.Name?.ToString() ?? playerKingdom?.StringId ?? ConversationRuntimeTexts.Prompt("letter_player_kingdom");
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender);
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = Hero.MainHero?.Name?.ToString() ?? "player";
+			playerName = Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0530");
 		}
 		string kind = (diplomacyKind ?? "").Trim().ToUpperInvariant();
 		if (kind == "MAKE_PEACE")
 		{
-			return senderName + "致" + playerName + "：\n\n我们两国，" + senderKingdomName + "与" + playerKingdomName + "，继续流血只会削弱各自的王冠。我愿意讨论议和，包括无条件和平、贡金方向和期限。若你愿意给出条件，请回信或当面谈判。";
+			return ConversationRuntimeTexts.FormatPrompt("letter_diplomacy_peace", ("SENDER", senderName), ("PLAYER", playerName), ("SENDER_KINGDOM", senderKingdomName), ("PLAYER_KINGDOM", playerKingdomName));
 		}
 		if (kind == "FORM_ALLIANCE")
 		{
-			return senderName + "致" + playerName + "：\n\n" + senderKingdomName + "与" + playerKingdomName + "面对共同威胁。若我们结盟，双方都能从中获益。我愿意听取你的条件，也可以讨论期限和互相支持的边界。";
+			return ConversationRuntimeTexts.FormatPrompt("letter_diplomacy_alliance", ("SENDER", senderName), ("PLAYER", playerName), ("SENDER_KINGDOM", senderKingdomName), ("PLAYER_KINGDOM", playerKingdomName));
 		}
 		if (kind == "MAKE_TRADE")
 		{
-			return senderName + "致" + playerName + "：\n\n" + senderKingdomName + "愿与" + playerKingdomName + "建立贸易协议，让商队与市场都获得更稳定的道路。我愿意讨论协议期限和附带条件。";
+			return ConversationRuntimeTexts.FormatPrompt("letter_diplomacy_trade", ("SENDER", senderName), ("PLAYER", playerName), ("SENDER_KINGDOM", senderKingdomName), ("PLAYER_KINGDOM", playerKingdomName));
 		}
-		return senderName + "致" + playerName + "：\n\n我希望以国王身份与你讨论两国外交。若你愿意，请回信说明你的条件。";
+		return ConversationRuntimeTexts.FormatPrompt("letter_diplomacy_formal", ("SENDER", senderName), ("PLAYER", playerName), ("SENDER_KINGDOM", senderKingdomName), ("PLAYER_KINGDOM", playerKingdomName));
 	}
 }

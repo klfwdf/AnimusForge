@@ -1,0 +1,4 @@
+interface:
+  display_name: "AnimusForge 双语维护"
+  short_description: "日常维护与全量审查中英运行内容，接通界面、提示词、世界书和双语包验收"
+  default_prompt: "使用 $af-bilingual-localization 完成本次 AnimusForge 改动的中英双语资源、真实接线和相应验证。"

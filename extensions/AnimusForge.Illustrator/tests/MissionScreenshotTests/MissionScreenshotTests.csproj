@@ -6,9 +6,16 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
     <Compile Include="Program.cs" />
+    <Compile Include="PackagePaths.cs" />
+    <Compile Include="../../src/Core/IllustratorText.cs" Link="IllustratorText.cs" />
+    <Compile Include="../../src/UI/IllustratorUiText.cs" Link="IllustratorUiText.cs" />
+    <Compile Include="../../src/UI/IllustrationFailureUiText.cs" Link="IllustrationFailureUiText.cs" />
+    <Compile Include="../../src/UI/IllustratorRemainingUiText.cs" Link="IllustratorRemainingUiText.cs" />
+    <Compile Include="../LocalizationCardSlice/LocalizationTextObject.cs" Link="LocalizationTextObject.cs" />
     <Compile Include="../../src/UI/Overlays/MissionPhotoOverlay.cs" Link="MissionPhotoOverlay.cs" />
     <Compile Include="NativeFakes.cs" />
     <Compile Include="../../src/Engine/MissionScreenshotCapture.cs" Link="MissionScreenshotCapture.cs" />
@@ -16,5 +23,7 @@
     <Compile Include="../../src/Engine/ImagePayload.cs" Link="ImagePayload.cs" />
     <Compile Include="../../src/Core/MissionScreenshotRules.cs" Link="MissionScreenshotRules.cs" />
     <Compile Include="../../src/Core/IllustrationReferenceImage.cs" Link="IllustrationReferenceImage.cs" />
+    <Content Include="../../../../content/modules/AnimusForge.Illustrator/ModuleData/IllustratorPromptTexts.json" Link="ModuleData/IllustratorPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AnimusForge.Illustrator/ModuleData/IllustratorCompatibilityTexts.json" Link="ModuleData/IllustratorCompatibilityTexts.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

@@ -45,7 +45,10 @@ public sealed class CourierLetterReplyPopup
 	public static bool Show(string senderName, string bodyText, Action onClose = null)
 	{
 		string name = string.IsNullOrWhiteSpace(senderName) ? "NPC" : senderName.Trim();
-		return Show("信使带回了回信", name + "写道：", bodyText, onClose, "");
+		return Show(
+			ConversationUiLocalization.Text("AF_CONV_UI_Courier_ReplyTitle", "The courier brought a reply"),
+			ConversationUiLocalization.Text("AF_CONV_UI_Courier_Wrote", "{NAME} wrote:", "NAME", name),
+			bodyText, onClose, "");
 	}
 
 	public static bool Show(string titleText, string subtitleText, string bodyText, Action onClose = null, string closeText = null)

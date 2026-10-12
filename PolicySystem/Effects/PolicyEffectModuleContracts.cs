@@ -298,10 +298,10 @@ internal sealed class PolicyEffectModuleDescriptor
 			? (catalogSummary ?? string.Empty).Trim()
 			: playerDisplayName.Trim();
 		EditableUnderstandingPrompt = string.IsNullOrWhiteSpace(editableUnderstandingPrompt)
-			? "仅当政策措施会直接影响“" + PlayerDisplayName + "”时，才把它列为实际政策后果；应说明受影响对象、变化方向、强弱和直接原因。"
+			? PolicyGenerationPromptTexts.Get("DefaultUnderstandingPrefix", "Only when the policy measures directly affect \"") + PlayerDisplayName + PolicyGenerationPromptTexts.Get("DefaultUnderstandingSuffix", "\" should it be listed as an actual policy consequence; explain the affected objects, direction, intensity, and direct cause.")
 			: editableUnderstandingPrompt.Trim();
 		EditableEvaluationPrompt = string.IsNullOrWhiteSpace(editableEvaluationPrompt)
-			? "根据政策原文、执行范围和资源承诺，判断“" + PlayerDisplayName + "”是否发生变化，并给出符合游戏尺度的方向与强度；没有直接因果时不要添加。"
+			? PolicyGenerationPromptTexts.Get("DefaultEvaluationPrefix", "Based on the original policy, execution scope, and resource commitments, judge whether \"") + PlayerDisplayName + PolicyGenerationPromptTexts.Get("DefaultEvaluationSuffix", "\" changes and specify direction and intensity appropriate to the game's scale; do not add it without direct causation.")
 			: editableEvaluationPrompt.Trim();
 		TargetProjection = targetProjection;
 		TargetRefresh = targetRefresh;
@@ -554,7 +554,7 @@ internal abstract class PolicyEffectModuleBase : IPolicyEffectModule
 		migratedState = null;
 		if (sourceVersion != Descriptor.RuntimeStateSchemaVersion)
 		{
-			error = "效果 runtime state 版本不受支持: " + sourceVersion;
+			error = "Effect runtime state version is unsupported: " + sourceVersion;
 			return false;
 		}
 		migratedState = persistedState?.DeepClone();
@@ -571,7 +571,7 @@ internal abstract class PolicyEffectModuleBase : IPolicyEffectModule
 	public virtual bool TryNormalizeValue(float rawValue, string scope, out float normalizedValue, out string error)
 	{
 		normalizedValue = 0f;
-		error = "该模块不是 legacy 数值效果";
+		error = "This module is not a legacy numeric effect";
 		return false;
 	}
 
@@ -599,7 +599,7 @@ internal abstract class PolicyEffectModuleBase<TPayload> : PolicyEffectModuleBas
 		if (sourceVersion != Descriptor.PayloadSchemaVersion)
 		{
 			migratedPayload = null;
-			error = "效果 payload 版本不受支持: " + sourceVersion;
+			error = "Effect payload version is unsupported: " + sourceVersion;
 			return false;
 		}
 		return TryDeserializeTypedPayload(persistedPayload, out migratedPayload, out error)
@@ -611,7 +611,7 @@ internal abstract class PolicyEffectModuleBase<TPayload> : PolicyEffectModuleBas
 		fundedPayload = null;
 		if (Descriptor.FundingStrategy != PolicyEffectFundingStrategy.None)
 		{
-			error = "结构化效果的非 None funding 策略必须由模块覆写 TryApplyTypedFunding";
+			error = "Modules with structured effects and a non-None funding strategy must override TryApplyTypedFunding";
 			return false;
 		}
 		fundedPayload = payload;
@@ -622,7 +622,7 @@ internal abstract class PolicyEffectModuleBase<TPayload> : PolicyEffectModuleBas
 	{
 		if (context == null)
 		{
-			return PolicyEffectPrepareResult.Rejected("效果编译上下文不能为空");
+			return PolicyEffectPrepareResult.Rejected("Effect compilation context must not be null");
 		}
 		if (!TryValidateEnvelope(payload, out string error))
 		{
@@ -690,7 +690,7 @@ internal abstract class PolicyEffectModuleBase<TPayload> : PolicyEffectModuleBas
 		fundedPayload = null;
 		if (!(payload is TPayload typedPayload))
 		{
-			error = "效果 payload 类型与模块不匹配";
+			error = "Effect payload type does not match the module";
 			return false;
 		}
 		if (!TryApplyTypedFunding(typedPayload, funding, out TPayload fundedTypedPayload, out error))
@@ -705,7 +705,7 @@ internal abstract class PolicyEffectModuleBase<TPayload> : PolicyEffectModuleBas
 	{
 		return payload is TPayload typedPayload
 			? PrepareTyped(context, typedPayload)
-			: PolicyEffectPrepareResult.Rejected("效果 payload 类型与模块不匹配");
+			: PolicyEffectPrepareResult.Rejected("Effect payload type does not match the module");
 	}
 
 	public sealed override string DescribePayload(PolicyEffectPayload payload)
@@ -717,7 +717,7 @@ internal abstract class PolicyEffectModuleBase<TPayload> : PolicyEffectModuleBas
 	{
 		if (payload == null)
 		{
-			error = "效果 payload 不能为空";
+			error = "Effect payload must not be null";
 			return false;
 		}
 		if (string.IsNullOrWhiteSpace(payload.ModuleId))
@@ -730,12 +730,12 @@ internal abstract class PolicyEffectModuleBase<TPayload> : PolicyEffectModuleBas
 		}
 		if (!string.Equals(payload.ModuleId, Id, StringComparison.Ordinal))
 		{
-			error = "效果 payload 的 moduleId 与模块不匹配";
+			error = "Effect payload moduleId does not match the module";
 			return false;
 		}
 		if (payload.SchemaVersion != Descriptor.PayloadSchemaVersion)
 		{
-			error = "效果 payload 版本不受支持";
+			error = "Effect payload version is unsupported";
 			return false;
 		}
 		error = string.Empty;
@@ -748,7 +748,7 @@ internal abstract class PolicyEffectModuleBase<TPayload> : PolicyEffectModuleBas
 		error = string.Empty;
 		if (token == null || token.Type == JTokenType.Null)
 		{
-			error = "效果 payload 不能为空";
+			error = "Effect payload must not be null";
 			return false;
 		}
 		try
@@ -756,14 +756,14 @@ internal abstract class PolicyEffectModuleBase<TPayload> : PolicyEffectModuleBas
 			payload = token.ToObject<TPayload>(SafeSerializer);
 			if (payload == null)
 			{
-				error = "效果 payload 无法反序列化";
+				error = "Effect payload cannot be deserialized";
 				return false;
 			}
 			return true;
 		}
 		catch (Exception ex)
 		{
-			error = "效果 payload 无法反序列化: " + ex.Message;
+			error = "Effect payload cannot be deserialized: " + ex.Message;
 			return false;
 		}
 	}
@@ -779,7 +779,7 @@ internal abstract class NumericPolicyEffectModuleBase<TPayload> : PolicyEffectMo
 		if (float.IsNaN(rawValue) || float.IsInfinity(rawValue))
 		{
 			normalizedValue = 0f;
-			error = "必须是有限数字";
+			error = "Must be a finite number";
 			return false;
 		}
 		return TryNormalizeNumericValue(rawValue, scope, out normalizedValue, out error);
@@ -826,11 +826,11 @@ internal abstract class NumericPolicyEffectModuleBase<TPayload> : PolicyEffectMo
 				break;
 			case PolicyEffectFundingStrategy.Custom:
 				fundedPayload = null;
-				error = "Custom funding 策略必须由模块覆写 TryApplyTypedFunding";
+				error = "Modules using the Custom funding strategy must override TryApplyTypedFunding";
 				return false;
 			default:
 				fundedPayload = null;
-				error = "未知 funding 策略";
+				error = "Unknown funding strategy";
 				return false;
 		}
 		TPayload candidate = new TPayload

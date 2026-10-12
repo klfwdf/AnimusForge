@@ -23,7 +23,7 @@ internal static string GetSceneLocationDisplayName(Location location)
 		{
 		}
 		string text2 = (location?.StringId ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text2) ? "当前位置" : text2;
+		return string.IsNullOrWhiteSpace(text2) ? AdapterPromptCaptureTexts.PcapCompat("LocationRaw_000") : text2;
 	}
 	internal static string ResolveCurrentMemorySceneLabel()
 	{
@@ -71,7 +71,7 @@ internal static string GetSceneLocationDisplayName(Location location)
 		catch
 		{
 		}
-		return "大地图或未知场景";
+		return AdapterPromptCaptureTexts.PcapCompat("LocationRaw_001");
 	}
 
 	internal static string BuildCurrentWildernessMemorySceneLabel()
@@ -88,21 +88,21 @@ internal static string GetSceneLocationDisplayName(Location location)
 			string terrainLabel = "";
 			if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party))
 			{
-				terrainLabel = "海上";
+				terrainLabel = AdapterPromptCaptureTexts.PcapCompat("Project_Sea");
 			}
 			else
 			{
 				terrainLabel = MapSeaContextGuard.BuildMobilePartyLandTerrainPromptLabel(party);
 				if (string.IsNullOrWhiteSpace(terrainLabel))
 				{
-					terrainLabel = "野外";
+					terrainLabel = AdapterPromptCaptureTexts.PcapCompat("Project_Wilderness");
 				}
 			}
 			if (string.IsNullOrWhiteSpace(settlementName))
 			{
 				return terrainLabel;
 			}
-			return settlementName + "附近的" + terrainLabel;
+			return settlementName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_004") + terrainLabel;
 		}
 		catch
 		{
@@ -114,16 +114,16 @@ internal static string ConvertCountToChineseForPrompt(int count)
 	{
 		return count switch
 		{
-			2 => "两个",
-			3 => "三个",
-			4 => "四个",
-			5 => "五个",
-			6 => "六个",
-			7 => "七个",
-			8 => "八个",
-			9 => "九个",
-			10 => "十个",
-			_ => count.ToString() + "个",
+			2 => AdapterPromptCaptureTexts.PcapText("Location_Count_2"),
+			3 => AdapterPromptCaptureTexts.PcapText("Location_Count_3"),
+			4 => AdapterPromptCaptureTexts.PcapText("Location_Count_4"),
+			5 => AdapterPromptCaptureTexts.PcapText("Location_Count_5"),
+			6 => AdapterPromptCaptureTexts.PcapText("Location_Count_6"),
+			7 => AdapterPromptCaptureTexts.PcapText("Location_Count_7"),
+			8 => AdapterPromptCaptureTexts.PcapText("Location_Count_8"),
+			9 => AdapterPromptCaptureTexts.PcapText("Location_Count_9"),
+			10 => AdapterPromptCaptureTexts.PcapText("Location_Count_10"),
+			_ => count.ToString() + AdapterPromptCaptureTexts.PcapText("Location_CountSuffix"),
 		};
 	}
 internal static string NormalizeFactionRelationLabelForPrompt(IFaction faction, IFaction referenceFaction)
@@ -132,40 +132,37 @@ internal static string NormalizeFactionRelationLabelForPrompt(IFaction faction, 
 		{
 			if (faction == null || referenceFaction == null)
 			{
-				return "中立";
+				return AdapterPromptCaptureTexts.PcapCompat("Project_Neutral");
 			}
 			string factionId = (faction.StringId ?? "").Trim();
 			string referenceId = (referenceFaction.StringId ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(factionId) && string.Equals(factionId, referenceId, StringComparison.OrdinalIgnoreCase))
 			{
-				return "友方";
+				return AdapterPromptCaptureTexts.PcapCompat("Project_Friendly");
 			}
 			if (ReferenceEquals(faction, referenceFaction))
 			{
-				return "友方";
+				return AdapterPromptCaptureTexts.PcapCompat("Project_Friendly");
 			}
 			if (referenceFaction.IsAtWarWith(faction) || faction.IsAtWarWith(referenceFaction))
 			{
-				return "敌对";
+				return AdapterPromptCaptureTexts.PcapCompat("Project_Hostile");
 			}
-			return "中立";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Neutral");
 		}
 		catch
 		{
-			return "中立";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Neutral");
 		}
 	}
 internal static string ConvertNpcSideRelationLabelForPrompt(string relation)
 	{
-		switch ((relation ?? "").Trim())
-		{
-		case "敌对":
-			return "敌人";
-		case "友方":
-			return "友方";
-		default:
-			return "中立";
-		}
+		string value = (relation ?? "").Trim();
+		if (string.Equals(value, AdapterPromptCaptureTexts.PcapCompat("Project_Hostile"), StringComparison.Ordinal) || string.Equals(value, "hostile", StringComparison.OrdinalIgnoreCase))
+			return AdapterPromptCaptureTexts.PcapText("Location_NpcEnemy");
+		if (string.Equals(value, AdapterPromptCaptureTexts.PcapCompat("Project_Friendly"), StringComparison.Ordinal) || string.Equals(value, "friendly", StringComparison.OrdinalIgnoreCase))
+			return AdapterPromptCaptureTexts.PcapText("Location_NpcFriendly");
+		return AdapterPromptCaptureTexts.PcapText("Location_NpcNeutral");
 	}
 internal static void ParseCurrentScenePlaceAndSpotForPrompt(out string placeName, out string spotName)
 	{
@@ -191,42 +188,42 @@ internal static void ParseCurrentScenePlaceAndSpotForPrompt(out string placeName
 			{
 				return;
 			}
-			if (sceneDescription.StartsWith("你正位于", StringComparison.Ordinal))
+			if (sceneDescription.StartsWith(AdapterPromptCaptureTexts.PcapCompat("LocationRaw_021"), StringComparison.Ordinal))
 			{
-				string body = sceneDescription.Substring("你正位于".Length).Trim();
+				string body = sceneDescription.Substring(AdapterPromptCaptureTexts.PcapCompat("LocationRaw_021").Length).Trim();
 				body = body.TrimEnd('。', '.', ' ');
-				const string seaSuffix = "附近的海上";
+				string seaSuffix = AdapterPromptCaptureTexts.PcapCompat("LocationRaw_023");
 				if (body.EndsWith(seaSuffix, StringComparison.Ordinal))
 				{
 					placeName = body.Substring(0, body.Length - seaSuffix.Length).Trim();
-					spotName = "海上";
+					spotName = AdapterPromptCaptureTexts.PcapCompat("Project_Sea");
 					return;
 				}
-				if (string.Equals(body, "海上", StringComparison.Ordinal))
+				if (string.Equals(body, AdapterPromptCaptureTexts.PcapCompat("Project_Sea"), StringComparison.Ordinal))
 				{
-					spotName = "海上";
-					return;
-				}
-			}
-			if (sceneDescription.StartsWith("位于 ", StringComparison.Ordinal))
-			{
-				string body = sceneDescription.Substring("位于 ".Length).Trim();
-				int splitIndex = body.LastIndexOf(" 的 ", StringComparison.Ordinal);
-				if (splitIndex > 0)
-				{
-					placeName = body.Substring(0, splitIndex).Trim();
-					spotName = body.Substring(splitIndex + " 的 ".Length).Trim();
+					spotName = AdapterPromptCaptureTexts.PcapCompat("Project_Sea");
 					return;
 				}
 			}
-			if (sceneDescription.StartsWith("靠近 ", StringComparison.Ordinal))
+			if (sceneDescription.StartsWith(AdapterPromptCaptureTexts.PcapCompat("LocationRaw_027"), StringComparison.Ordinal))
 			{
-				string body = sceneDescription.Substring("靠近 ".Length).Trim();
-				int splitIndex = body.LastIndexOf(" 的 ", StringComparison.Ordinal);
+				string body = sceneDescription.Substring(AdapterPromptCaptureTexts.PcapCompat("LocationRaw_027").Length).Trim();
+				int splitIndex = body.LastIndexOf(AdapterPromptCaptureTexts.PcapCompat("LocationRaw_029"), StringComparison.Ordinal);
 				if (splitIndex > 0)
 				{
 					placeName = body.Substring(0, splitIndex).Trim();
-					spotName = body.Substring(splitIndex + " 的 ".Length).Trim();
+					spotName = body.Substring(splitIndex + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_029").Length).Trim();
+					return;
+				}
+			}
+			if (sceneDescription.StartsWith(AdapterPromptCaptureTexts.PcapCompat("LocationRaw_031"), StringComparison.Ordinal))
+			{
+				string body = sceneDescription.Substring(AdapterPromptCaptureTexts.PcapCompat("LocationRaw_031").Length).Trim();
+				int splitIndex = body.LastIndexOf(AdapterPromptCaptureTexts.PcapCompat("LocationRaw_029"), StringComparison.Ordinal);
+				if (splitIndex > 0)
+				{
+					placeName = body.Substring(0, splitIndex).Trim();
+					spotName = body.Substring(splitIndex + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_029").Length).Trim();
 					return;
 				}
 			}
@@ -245,9 +242,9 @@ internal static bool IsUnknownSceneDescriptionForPrompt(string sceneDescription)
 		{
 			return true;
 		}
-		return string.Equals(text, "未知场景", StringComparison.Ordinal)
-			|| string.Equals(text, "大地图或未知场景", StringComparison.Ordinal)
-			|| string.Equals(text, "某个地方", StringComparison.Ordinal);
+		return string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("LocationRaw_035"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("LocationRaw_001"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("LocationRaw_037"), StringComparison.Ordinal);
 	}
 internal static string NormalizeSettlementNameForPromptLookup(string name)
 	{
@@ -356,7 +353,7 @@ internal static string BuildSceneLocationAndSettlementLineForPrompt(Hero perspec
 			bool wildernessContext = !seaContext && (IsWildernessSpotForPrompt(spotName) || (!parsedPlaceName && !IsCurrentSettlementContextForPrompt()));
 			if (seaContext)
 			{
-				spotName = "海上";
+				spotName = AdapterPromptCaptureTexts.PcapCompat("Project_Sea");
 			}
 			else
 			{
@@ -374,39 +371,40 @@ internal static string BuildSceneLocationAndSettlementLineForPrompt(Hero perspec
 			}
 			if (string.IsNullOrWhiteSpace(placeName))
 			{
-				placeName = "当前区域";
+				placeName = AdapterPromptCaptureTexts.PcapText("Project_CurrentArea");
 			}
 			if (string.IsNullOrWhiteSpace(spotName))
 			{
-				spotName = wildernessContext ? "野外" : "某处";
+				spotName = wildernessContext ? AdapterPromptCaptureTexts.PcapCompat("Project_Wilderness") : AdapterPromptCaptureTexts.PcapCompat("Project_Somewhere");
 			}
-			if (wildernessContext && settlement == null && string.Equals(placeName, "当前区域", StringComparison.Ordinal))
+			if (wildernessContext && settlement == null && string.Equals(placeName, AdapterPromptCaptureTexts.PcapText("Project_CurrentArea"), StringComparison.Ordinal))
 			{
-				return "你现在身处" + spotName + "。";
+				return AdapterPromptCaptureTexts.PcapFormat("Location_WildernessUnknown", "You are currently in {SPOT}.", ("SPOT", AdapterPromptCaptureTexts.PcapProjectKnown(spotName)));
 			}
 			string cultureName = (settlement?.Culture?.Name?.ToString() ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(cultureName))
 			{
-				cultureName = "未知";
+				cultureName = AdapterPromptCaptureTexts.PcapText("Project_Unknown");
 			}
 			string rulerName = (settlement?.OwnerClan?.Leader?.Name?.ToString() ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(rulerName))
 			{
-				rulerName = "未知人物";
+				rulerName = AdapterPromptCaptureTexts.PcapText("Project_UnknownPerson");
 			}
 			string clanName = (settlement?.OwnerClan?.Name?.ToString() ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(clanName))
 			{
-				clanName = "未知";
+				clanName = AdapterPromptCaptureTexts.PcapText("Project_Unknown");
 			}
-			if (!clanName.EndsWith("家族", StringComparison.Ordinal))
+			string clanSuffix = AdapterPromptCaptureTexts.PcapText("Location_ClanSuffix");
+			if (!clanName.EndsWith(AdapterPromptCaptureTexts.PcapCompat("Location_ClanSuffix"), StringComparison.Ordinal) && !clanName.EndsWith(clanSuffix, StringComparison.OrdinalIgnoreCase))
 			{
-				clanName += "家族";
+				clanName += clanSuffix;
 			}
 			string factionName = (settlement?.MapFaction?.Name?.ToString() ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(factionName))
 			{
-				factionName = "未知势力";
+				factionName = AdapterPromptCaptureTexts.PcapText("Project_UnknownFaction");
 			}
 			bool isRuledByPerspectiveHero = perspectiveHero != null && settlement?.OwnerClan?.Leader == perspectiveHero;
 			IFaction settlementFaction = settlement?.MapFaction;
@@ -417,37 +415,43 @@ internal static string BuildSceneLocationAndSettlementLineForPrompt(Hero perspec
 			string playerName = SceneTradeBannerlordAdapter.GetPlayerDisplayNameForShout();
 			if (string.IsNullOrWhiteSpace(playerName))
 			{
-				playerName = "玩家";
+				playerName = AdapterPromptCaptureTexts.PcapText("Project_Player");
 			}
+			string Describe(string key) => AdapterPromptCaptureTexts.PcapFormat(key, "",
+				("PLACE", placeName), ("SPOT", AdapterPromptCaptureTexts.PcapProjectKnown(spotName)),
+				("CULTURE", cultureName), ("RULER", rulerName),
+				("CLAN", clanName), ("FACTION", factionName),
+				("PLAYER", playerName), ("RELATION", AdapterPromptCaptureTexts.PcapProjectKnown(playerRelation)),
+				("NPC_RELATION", ConvertNpcSideRelationLabelForPrompt(npcRelation)));
 			if (seaContext)
 			{
 				if (settlement == null)
 				{
-					if (string.Equals(placeName, "当前区域", StringComparison.Ordinal))
+					if (string.Equals(placeName, AdapterPromptCaptureTexts.PcapText("Project_CurrentArea"), StringComparison.Ordinal))
 					{
-						return "你正位于海上。";
+						return AdapterPromptCaptureTexts.PcapText("Location_AtSea");
 					}
-					return "你正位于" + placeName + "附近的海上。";
+					return Describe("Location_SeaNear");
 				}
 				if (isRuledByPerspectiveHero)
 				{
-					return "你正位于" + placeName + "附近的海上；最近定居点是" + placeName + "，该定居点属" + cultureName + "文化，由你统治，隶属于" + factionName + "，与" + playerName + "保持" + playerRelation + "。";
+					return Describe("Location_SeaOwn");
 				}
-				return "你正位于" + placeName + "附近的海上；最近定居点是" + placeName + "，该定居点属" + cultureName + "文化，由" + clanName + "的" + rulerName + "统治，隶属于" + factionName + "，是你的" + ConvertNpcSideRelationLabelForPrompt(npcRelation) + "，但与" + playerName + "保持" + playerRelation + "。";
+				return Describe("Location_SeaOther");
 			}
 			if (isRuledByPerspectiveHero)
 			{
 				if (wildernessContext)
 				{
-					return "你现在位于" + placeName + "附近的" + spotName + "；最近定居点是" + placeName + "，该定居点属" + cultureName + "文化，由你统治，隶属于" + factionName + "，与" + playerName + "保持" + playerRelation + "。";
+					return Describe("Location_WildernessOwn");
 				}
-				return "你现在位于" + placeName + "的" + spotName + "；该定居点属" + cultureName + "文化，由你统治，隶属于" + factionName + "，与" + playerName + "保持" + playerRelation + "。";
+				return Describe("Location_SettlementOwn");
 			}
 			if (wildernessContext)
 			{
-				return "你现在位于" + placeName + "附近的" + spotName + "；最近定居点是" + placeName + "，该定居点属" + cultureName + "文化，由" + clanName + "的" + rulerName + "统治，隶属于" + factionName + "，是你的" + ConvertNpcSideRelationLabelForPrompt(npcRelation) + "，但与" + playerName + "保持" + playerRelation + "。";
+				return Describe("Location_WildernessOther");
 			}
-			return "你现在位于" + placeName + "的" + spotName + "；该定居点属" + cultureName + "文化，由" + clanName + "的" + rulerName + "统治，隶属于" + factionName + "，是你的" + ConvertNpcSideRelationLabelForPrompt(npcRelation) + "，但与" + playerName + "保持" + playerRelation + "。";
+			return Describe("Location_SettlementOther");
 		}
 		catch
 		{
@@ -457,28 +461,28 @@ internal static string BuildSceneLocationAndSettlementLineForPrompt(Hero perspec
 internal static bool IsWildernessSpotForPrompt(string spotName)
 	{
 		string text = (spotName ?? "").Trim();
-		return string.Equals(text, "野外", StringComparison.Ordinal)
-			|| string.Equals(text, "平原", StringComparison.Ordinal)
-			|| string.Equals(text, "森林", StringComparison.Ordinal)
-			|| string.Equals(text, "丘陵山地", StringComparison.Ordinal)
-			|| string.Equals(text, "雪原", StringComparison.Ordinal)
-			|| string.Equals(text, "沙漠", StringComparison.Ordinal)
-			|| string.Equals(text, "草原", StringComparison.Ordinal)
-			|| string.Equals(text, "沼泽", StringComparison.Ordinal)
-			|| string.Equals(text, "峡谷", StringComparison.Ordinal)
-			|| string.Equals(text, "沙丘", StringComparison.Ordinal)
-			|| string.Equals(text, "乡野", StringComparison.Ordinal)
-			|| string.Equals(text, "海滩", StringComparison.Ordinal)
-			|| string.Equals(text, "峭壁", StringComparison.Ordinal)
-			|| string.Equals(text, "浅滩", StringComparison.Ordinal)
-			|| string.Equals(text, "桥梁", StringComparison.Ordinal)
-			|| text.IndexOf("野外", StringComparison.Ordinal) >= 0;
+		return string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Wilderness"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Plains"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Forest"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Hills"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Snow"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Desert"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Steppe"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Swamp"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Canyon"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Dunes"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Countryside"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Beach"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Cliff"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Shallows"), StringComparison.Ordinal)
+			|| string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Bridge"), StringComparison.Ordinal)
+			|| text.IndexOf(AdapterPromptCaptureTexts.PcapCompat("Project_Wilderness"), StringComparison.Ordinal) >= 0;
 	}
 internal static bool IsSeaSpotForPrompt(string spotName)
 	{
 		string text = (spotName ?? "").Trim();
-		return string.Equals(text, "海上", StringComparison.Ordinal)
-			|| text.IndexOf("海上", StringComparison.Ordinal) >= 0;
+		return string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Project_Sea"), StringComparison.Ordinal)
+			|| text.IndexOf(AdapterPromptCaptureTexts.PcapCompat("Project_Sea"), StringComparison.Ordinal) >= 0;
 	}
 internal static bool IsCurrentSettlementContextForPrompt()
 	{
@@ -538,16 +542,16 @@ internal static string BuildSettlementFlavorLineForPrompt(Hero perspectiveHero)
 			List<string> removablePrefixes = new List<string>();
 			if (!string.IsNullOrWhiteSpace(settlementName) && !string.IsNullOrWhiteSpace(factionName) && !string.IsNullOrWhiteSpace(officialTitle) && !string.IsNullOrWhiteSpace(rulerName))
 			{
-				removablePrefixes.Add(settlementName + "被" + factionName + "的" + officialTitle + "，" + rulerName + "统治着。");
+				removablePrefixes.Add(settlementName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_059") + factionName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_060") + officialTitle + "，" + rulerName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_061"));
 			}
 			if (!string.IsNullOrWhiteSpace(settlementName) && !string.IsNullOrWhiteSpace(rulerName))
 			{
-				removablePrefixes.Add(settlementName + "由" + rulerName + "统治。");
-				removablePrefixes.Add(settlementName + "由" + rulerName + "控制。");
+				removablePrefixes.Add(settlementName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_062") + rulerName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_063"));
+				removablePrefixes.Add(settlementName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_062") + rulerName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_065"));
 			}
 			if (!string.IsNullOrWhiteSpace(settlementName) && settlement.OwnerClan == Clan.PlayerClan)
 			{
-				removablePrefixes.Add(settlementName + "是你的封地。");
+				removablePrefixes.Add(settlementName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_066"));
 			}
 			foreach (string prefix in removablePrefixes)
 			{
@@ -559,7 +563,7 @@ internal static string BuildSettlementFlavorLineForPrompt(Hero perspectiveHero)
 			}
 			if (!string.IsNullOrWhiteSpace(clanName))
 			{
-				string familyPrefix = "所属家族：" + clanName + "。";
+				string familyPrefix = AdapterPromptCaptureTexts.PcapCompat("LocationRaw_067") + clanName + "。";
 				if (nativeInfo.StartsWith(familyPrefix, StringComparison.Ordinal))
 				{
 					nativeInfo = nativeInfo.Substring(familyPrefix.Length).Trim();
@@ -591,7 +595,7 @@ internal static string BuildSettlementRulerPresenceLineForPrompt()
 			{
 				isPresent = false;
 			}
-			return isPresent ? "当前这座城镇的统治者在该处。" : "当前这座城镇的统治者不在该处。";
+			return isPresent ? AdapterPromptCaptureTexts.PcapText("Location_RulerPresent") : AdapterPromptCaptureTexts.PcapText("Location_RulerAbsent");
 		}
 		catch
 		{

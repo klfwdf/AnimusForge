@@ -297,7 +297,7 @@ internal static string BuildPresentationRole(Agent agent, CharacterObject charac
 			if (hero != null)
 			{
 				string clan = hero.Clan?.Name?.ToString();
-				string title = hero.IsLord ? "领主" : hero.IsNotable ? "显要" : hero.IsWanderer ? "流浪者" : "";
+				string title = hero.IsLord ? ConversationUiLocalization.Text("AF_CONV_UI_Scene_RoleLord", "Lord") : hero.IsNotable ? ConversationUiLocalization.Text("AF_CONV_UI_Scene_RoleNotable", "Notable") : hero.IsWanderer ? ConversationUiLocalization.Text("AF_CONV_UI_Scene_RoleWanderer", "Wanderer") : "";
 				return string.IsNullOrWhiteSpace(clan) ? title : (string.IsNullOrWhiteSpace(title) ? clan : clan + " · " + title);
 			}
 			return character?.Name?.ToString() ?? agent?.Character?.Name?.ToString() ?? "";
@@ -449,7 +449,7 @@ internal void TickPresentationSession(float dt)
 		{
 			_presentationCollapsed = true;
 			changed = true;
-			InformationManager.DisplayMessage(new InformationMessage("[场景会话] 你受到了攻击，会话面板已收起（按 T 展开）。", new Color(1f, 0.55f, 0.3f)));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Scene_Attacked", "[Scene session] You were attacked; the session panel was collapsed (press T to expand)."), new Color(1f, 0.55f, 0.3f)));
 		}
 		_presentationLastPlayerHealth = player.Health;
 		float maxRange = _maxRange();
@@ -477,7 +477,7 @@ internal void TickPresentationSession(float dt)
 			if (next < 0)
 			{
 				EndPresentationSession("no_participants");
-				InformationManager.DisplayMessage(new InformationMessage("[场景会话] 周围已经没有可交谈的人，会话结束。", new Color(0.8f, 0.75f, 0.6f)));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Scene_NoParticipants", "[Scene session] There is no one nearby to talk to; the session ended."), new Color(0.8f, 0.75f, 0.6f)));
 				return;
 			}
 			_presentationAddresseeIndex = next;
@@ -697,7 +697,8 @@ private static ScenePresentationHistoryLine BuildHistoryLine(ScenePresentationHi
 		if (role.Equals("user", StringComparison.OrdinalIgnoreCase))
 		{
 			string target = (message.TargetName ?? "").Trim();
-			return new ScenePresentationHistoryLine { Speaker = string.IsNullOrWhiteSpace(target) ? "你" : "你 → " + target, Text = content, Kind = "player" };
+			string playerName = ConversationUiLocalization.Text("AF_CONV_UI_Scene_PlayerSpeaker", "You");
+			return new ScenePresentationHistoryLine { Speaker = string.IsNullOrWhiteSpace(target) ? playerName : playerName + " → " + target, Text = content, Kind = "player" };
 		}
 		if (role.Equals("assistant", StringComparison.OrdinalIgnoreCase))
 		{
@@ -705,7 +706,7 @@ private static ScenePresentationHistoryLine BuildHistoryLine(ScenePresentationHi
 		}
 		// Only confirmed AFEF facts are shown; scene descriptions and prompt scaffolding stay internal.
 		return normalizeFact(content, out var fact)
-			? new ScenePresentationHistoryLine { Speaker = "记录", Text = fact, Kind = "fact" }
+			? new ScenePresentationHistoryLine { Speaker = ConversationUiLocalization.Text("AF_CONV_UI_Scene_FactSpeaker", "Record"), Text = fact, Kind = "fact" }
 			: null;
 	}
 internal bool UpdateHotkey(ScenePresentationHotkeyPort input, InputKey shoutKey, InputKey specialMenuKey)
@@ -758,13 +759,13 @@ internal bool UpdateHotkey(ScenePresentationHotkeyPort input, InputKey shoutKey,
   out string content, out string status)
  {
   status=""; content=(text ?? "").Replace("\r", "").Trim();
-  if (!IsPresentationSessionLive()) { status="场景会话已结束。"; return false; }
+  if (!IsPresentationSessionLive()) { status=ConversationUiLocalization.Text("AF_CONV_UI_Scene_SessionEnded", "The scene conversation session has ended."); return false; }
   if (string.IsNullOrWhiteSpace(content) || !isMainThread()) return false;
-  if (blocked()) { status=roundActive() ? "上一轮回应还没结束；想插话请点「打断」。" : "上一句还在处理中，请稍候。"; return false; }
+  if (blocked()) { status=roundActive() ? ConversationUiLocalization.Text("AF_CONV_UI_Scene_RoundActive", "The previous response is still running; click \"Interrupt\" to speak over it.") : ConversationUiLocalization.Text("AF_CONV_UI_Scene_Processing", "The previous line is still processing. Please wait."); return false; }
   if (!IsPresentationAudience(FindPresentationMember(_presentationAddresseeIndex)))
   {
    _presentationAddresseeIndex=ChoosePresentationAddressee();
-   if (_presentationAddresseeIndex<0) { EndPresentationSession("no_participants"); status="周围已经没有可交谈的人。"; return false; }
+   if (_presentationAddresseeIndex<0) { EndPresentationSession("no_participants"); status=ConversationUiLocalization.Text("AF_CONV_UI_Scene_NoParticipants", "[Scene session] There is no one nearby to talk to; the session ended."); return false; }
   }
   return true;
  }

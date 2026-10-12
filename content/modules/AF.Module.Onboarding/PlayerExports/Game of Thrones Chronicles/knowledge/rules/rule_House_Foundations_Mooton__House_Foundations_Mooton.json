@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Mooton",
+  "Keywords": [
+    "Mooton",
+    "House Mooton"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Mouton family is based in Maidenpool and is an important town noble in the Riverlands. The family emblem is represented by a red salmon. Maiden Springs is located in the bay on the west side of the Chelic Foot Peninsula. It has ports, roads, fisheries, salt industries, and a reputation for pilgrimage and travel due to the legend of Jonquil Spring. The wealth of the towns made Mouton different from vassals who relied only on country estates: they had to deal with merchants, shipowners, craftsmen, churches, city walls and surrounding farmland at the same time. Maidenpool is close to the royal territory and the Narrow Sea Route, so it is easily affected by dynastic wars, marches and ships. Mouton's flag will enter the war with the vassal obligation, but the people in the city always hope that the lord will remember that a prosperous town cannot withstand repeated looting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The river princes looked at Mouton not only as vassals in the Tully system, but also as the port taxes, city walls and royal territory news brought by Maiden Fountain. A wealthy town can provide money and food, and is more likely to be an enemy target than an ordinary castle; every time Mouton takes a stand, he risks the entire city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The merchants and shipowners of Maiden Springs evaluated Mouton, first looking at the port rules, market weights and night patrols. Nobles can send troops for honor, but merchants know how many years of savings will be burned in a siege. Sockeye Salmon would truly be worthy of this city if it could keep its waterways open."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pilgrims remember Qiongqi Spring, and farmers remember the fields outside the city. If Mouton can protect the springs, churches and harvests, the reputation of Maiden Spring will not only belong to the singers; if the army passes through here repeatedly, no matter how holy the water is, it will not wash away the resentment of the people against the conquest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mooton Entry Mooton The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mooton Entry Mooton Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mooton Entry Mooton The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mooton Entry Mooton They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Mooton: Entry Mooton"
+  ]
+}

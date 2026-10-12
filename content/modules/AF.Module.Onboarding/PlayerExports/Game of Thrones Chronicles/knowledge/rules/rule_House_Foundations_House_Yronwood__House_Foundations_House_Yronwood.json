@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_House_Yronwood",
+  "Keywords": [
+    "House Yronwood",
+    "The Bloodroyal",
+    "Warden of the Stone Way",
+    "Black Portcullis"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Yronwood is based in the city of Yronwood and is one of the ancient powerful families in Dorne after Martell. The ancestor was once the High King in the eastern part of Dorne. The head of the family retains ancient titles such as \"Noble of Blood\" and \"Guardian of the Bone Road\"; the family emblem has a black gate on a sand-colored background as the core. After the arrival of the Rhoynar, Yronwood fought with Nymeria-Martell Alliance for a long time and finally surrendered. However, the bloodline of the old king and the military value of the Bone Road always kept the relationship between the two parties with the memory of competition. Martell needs them to hold the pass, and Yronwood never forgets that he once wore the crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The princes of Dorne knew that Yronwood was once the King of the East, and they also knew that the title of \"Noble of Blood\" was not an empty decoration. The Black Dragon stands between the sand and the mountain pass, making this house both an important pillar of Martell and an old power that no Sunspear ruler can ignore. Ancient surrender can be very strong, or it can always remain a crack."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The soldiers and caravans who guarded the fort saw Yronwood as part of the road itself. Whoever controls the water sources, passes, and access east of the Red Mountains can determine the price paid for troops and goods. For them, the majesty of the black dragon does not lie in the legend of the king, but in when the city gate opens and how much money is required to pass through."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Lords of the Stormlands know Yronwood from the Pass and the Old War. That is not an exotic name deep in Sunspear, but a powerful neighbor on the other side of the Crimson Mountains who can gather riders and block roads. Opponents can taunt the Dornishmen in ways that rarely leave the Black Dragon on the march map."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Yronwood The ancient powerful Dornish family of Yronwood City was formerly known as the Blood Nobles and guarded the Bone Road. Their family emblem was a black gate on the sand. He once competed with Nymeria-Martell, and still retains the memory of the old king's competition after surrendering. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Yronwood The ancient powerful Dornish family of Yronwood City was formerly known as the Blood Nobles and guarded the Bone Road. Their family emblem was a black gate on the sand. He once competed with Nymeria-Martell, and still retains the memory of the old king's competition after surrendering. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Yronwood The ancient powerful Dornish family of Yronwood City was formerly known as the Blood Nobles and guarded the Bone Road. Their family emblem was a black gate on the sand. He once competed with Nymeria-Martell, and still retains the memory of the old king's competition after surrendering. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Yronwood The ancient powerful Dornish family of Yronwood City was formerly known as the Blood Nobles and guarded the Bone Road. Their family emblem was a black gate on the sand. He once competed with Nymeria-Martell, and still retains the memory of the old king's competition after surrendering. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Yronwood: The ancient powerful Dornish family of Yronwood City was formerly known as the Blood Nobles and guarded the Bone Road. Their family emblem was a black gate on the sand. He once competed with Nymeria-Martell, and still retains the memory of the old king's competition after surrendering."
+  ]
+}

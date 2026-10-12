@@ -31,13 +31,13 @@ internal static partial class VanillaIssueOfferBridge
 			if (!IssueRuntimeStateOwner.TryGetOfferableIssue(giver, out var issue))
 			{
 				Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=no_offerable_issue giver=" + (giver?.StringId ?? ""));
-				ShowInfo("当前没有可接取的原版任务。", isError: true);
+				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_NoOfferable", "No vanilla quest is currently available to accept."), isError: true);
 				return false;
 			}
 			if (!TryCheckQuestPreconditions(issue, giver, out var text))
 			{
 				Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=preconditions giver=" + (giver?.StringId ?? "") + " issue=" + (issue?.StringId ?? "") + " reason=" + (text ?? ""));
-				ShowInfo(string.IsNullOrWhiteSpace(text) ? "当前不满足该任务的接取条件。" : ("当前还不能接这项任务：" + text), isError: true);
+				ShowInfo(string.IsNullOrWhiteSpace(text) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_PreconditionsNotMet", "You do not currently meet the requirements to accept this quest.") : ConversationUiLocalization.Text("AF_CONV_UI_Issue_CannotAcceptReason", "Cannot accept this quest right now: {REASON}", ("REASON", IssueDisplayTexts.ForDisplay(text))), isError: true);
 				return false;
 			}
 			try
@@ -45,7 +45,7 @@ internal static partial class VanillaIssueOfferBridge
 				if (Campaign.Current?.IssueManager == null)
 				{
 					Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=issue_manager_null giver=" + (giver?.StringId ?? "") + " issue=" + (issue?.StringId ?? ""));
-					ShowInfo("IssueManager 不可用，无法启动任务。", isError: true);
+					ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_ManagerUnavailable", "IssueManager is unavailable; cannot start quest."), isError: true);
 					return false;
 				}
 				bool flag = Campaign.Current.IssueManager.StartIssueQuest(giver);
@@ -53,26 +53,26 @@ internal static partial class VanillaIssueOfferBridge
 				if (!flag)
 				{
 					Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=start_issue_quest_false giver=" + (giver?.StringId ?? "") + " issue=" + (issue?.StringId ?? ""));
-					ShowInfo("原版任务启动失败。", isError: true);
+					ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_StartFailed", "Failed to start vanilla quest."), isError: true);
 					return false;
 				}
 				if (!FinalizeClassicQuestAcceptance(issue, out var text2))
 				{
 					Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=finalize giver=" + (giver?.StringId ?? "") + " issue=" + (issue?.StringId ?? "") + " questId=" + (issue?.IssueQuest?.StringId ?? "") + " error=" + (text2 ?? ""));
-					ShowInfo(string.IsNullOrWhiteSpace(text2) ? "任务已生成，但未能完成原版接受收尾。" : text2, isError: true);
+					ShowInfo(string.IsNullOrWhiteSpace(text2) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_FinalizeFailed", "Quest was created, but failed to finalize vanilla acceptance.") : IssueDisplayTexts.ForDisplay(text2), isError: true);
 					return false;
 				}
 				string text3 = GetSafeIssueTitle(issue);
-				MyBehavior.AppendExternalNpcFact(giver, "你已经把任务“" + text3 + "”正式交给了玩家。");
-				MyBehavior.AppendExternalPlayerFact(giver, "你已经正式接下了对方交给你的任务“" + text3 + "”。");
-				ShowInfo("已接取任务：" + text3, isError: false);
-				Logger.Log("Logic", "[IssueOffer] 自身接取成功 giver=" + (giver.StringId ?? "") + " issue=" + text3);
+				MyBehavior.AppendExternalNpcFact(giver, IssueDisplayMatchCatalog.Get("Raw_023") + text3 + IssueDisplayMatchCatalog.Get("Raw_024"));
+				MyBehavior.AppendExternalPlayerFact(giver, IssueDisplayMatchCatalog.Get("Raw_025") + text3 + "”。");
+				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_AcceptedSelf", "Accepted quest: {TITLE}", ("TITLE", text3)), isError: false);
+				Logger.Log("Logic", "[IssueOffer] Personal quest acceptance succeeded giver=" + (giver.StringId ?? "") + " issue=" + text3);
 				return true;
 			}
 			catch (Exception ex)
 			{
-				Logger.Log("Logic", "[IssueOffer] 自身接取异常: " + ex);
-				ShowInfo("接取任务时出现异常。", isError: true);
+				Logger.Log("Logic", "[IssueOffer] Personal quest acceptance exception: " + ex);
+				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_AcceptException", "An error occurred while accepting the quest."), isError: true);
 				return false;
 			}
 		}
@@ -81,33 +81,33 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			if (!IssueRuntimeStateOwner.TryGetOfferableIssue(giver, out var issue))
 			{
-				ShowInfo("当前没有可接取的原版任务。", isError: true);
+				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_NoOfferable", "No vanilla quest is currently available to accept."), isError: true);
 				return false;
 			}
 			if (_dispatchOwner.HasPending)
 			{
-				ShowInfo("当前已有一个待确认的同伴代办派兵界面。", isError: true);
+				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_AltDispatchPending", "A companion dispatch screen is already pending confirmation."), isError: true);
 				return false;
 			}
 			if (!TryCheckQuestPreconditions(issue, giver, out var text))
 			{
-				ShowInfo(string.IsNullOrWhiteSpace(text) ? "当前还不能接这项任务。" : ("当前还不能接这项任务：" + text), isError: true);
+				ShowInfo(string.IsNullOrWhiteSpace(text) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_PreconditionsNotMet", "You do not currently meet the requirements to accept this quest.") : ConversationUiLocalization.Text("AF_CONV_UI_Issue_CannotAcceptReason", "Cannot accept this quest right now: {REASON}", ("REASON", IssueDisplayTexts.ForDisplay(text))), isError: true);
 				return false;
 			}
 			if (!TryBuildAlternativeCandidates(issue, out var list, out var text2))
 			{
-				ShowInfo(string.IsNullOrWhiteSpace(text2) ? "当前不能通过同伴代办这项任务。" : ("当前不能同伴代办：" + text2), isError: true);
+				ShowInfo(string.IsNullOrWhiteSpace(text2) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_NoAltSolution", "This quest cannot be solved by a companion right now.") : ConversationUiLocalization.Text("AF_CONV_UI_Issue_CannotAltReason", "Cannot assign to companion: {REASON}", ("REASON", IssueDisplayTexts.ForDisplay(text2))), isError: true);
 				return false;
 			}
 			CompanionCandidate companionCandidate = list.FirstOrDefault((CompanionCandidate x) => string.Equals(x.HeroId, (companionId ?? "").Trim(), StringComparison.OrdinalIgnoreCase));
 			if (companionCandidate == null || companionCandidate.Hero == null)
 			{
-				ShowInfo("LLM 选择的同伴不在当前允许列表中。", isError: true);
+				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionNotAllowed", "The chosen companion is not in the allowed list."), isError: true);
 				return false;
 			}
 			if (!IsValidAlternativeCompanion(companionCandidate.Hero, out var text3))
 			{
-				ShowInfo(string.IsNullOrWhiteSpace(text3) ? "该同伴当前不可用。" : text3, isError: true);
+				ShowInfo(string.IsNullOrWhiteSpace(text3) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionUnavailable", "This companion is currently unavailable.") : IssueDisplayTexts.ForDisplay(text3), isError: true);
 				return false;
 			}
 			try
@@ -133,8 +133,8 @@ internal static partial class VanillaIssueOfferBridge
 						(leftMembers, leftPrisoners, rightMembers, rightPrisoners, leftLimit, rightLimit) => AlternativePartyScreenDoneCondition(leftMembers, leftPrisoners, rightMembers, rightPrisoners, leftLimit, rightLimit, pending),
 						(leftParty, leftMembers, leftPrisoners, rightParty, rightMembers, rightPrisoners, fromCancel) => OnAlternativePartyScreenClosed(leftParty, leftMembers, leftPrisoners, rightParty, rightMembers, rightPrisoners, fromCancel, pending),
 						(character, type, side, leftParty) => AlternativeTroopTransferableDelegate(character, type, side, leftParty, pending), null);
-					ShowInfo("已确认由 " + GetHeroName(companionCandidate.Hero) + " 带队，接下来请选择随行士兵。", isError: false);
-					Logger.Log("Logic", "[IssueOffer] 打开同伴代办派兵界面 giver=" + (giver.StringId ?? "") + " companion=" + (companionCandidate.Hero.StringId ?? ""));
+					ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionConfirmedSelectTroops", "Confirmed that {HERO} will lead. Please select the accompanying troops.", ("HERO", IssueDisplayTexts.CompanionNameForDisplay(GetHeroName(companionCandidate.Hero)))), isError: false);
+					Logger.Log("Logic", "[IssueOffer] Opening companion assignment troop dispatch giver=" + (giver.StringId ?? "") + " companion=" + (companionCandidate.Hero.StringId ?? ""));
 					return true;
 				}
 				return CompleteAlternativeDispatch(giver, issue, companionCandidate.Hero);
@@ -142,9 +142,9 @@ internal static partial class VanillaIssueOfferBridge
 			catch (Exception ex)
 			{
 				_dispatchOwner.Clear();
-				Logger.Log("Logic", "[IssueOffer] 同伴代办启动异常: " + ex);
+				Logger.Log("Logic", "[IssueOffer] Companion assignment startup exception: " + ex);
 				SafeRestoreAlternativeRoster(issue);
-				ShowInfo("启动同伴代办流程时出现异常。", isError: true);
+				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_AltStartException", "An error occurred while starting the companion solution."), isError: true);
 				return false;
 			}
 		}
@@ -162,17 +162,17 @@ internal static partial class VanillaIssueOfferBridge
 				issue.StartIssueWithAlternativeSolution();
 				string safeIssueTitle = GetSafeIssueTitle(issue);
 				string heroName = GetHeroName(companion);
-				MyBehavior.AppendExternalNpcFact(giver, "你已经同意让玩家派 " + heroName + " 率队代办任务“" + safeIssueTitle + "”。");
-				MyBehavior.AppendExternalPlayerFact(giver, "你已经与对方谈妥，让 " + heroName + " 率队代办任务“" + safeIssueTitle + "”。");
-				ShowInfo("已由 " + heroName + " 接手任务：" + safeIssueTitle, isError: false);
-				Logger.Log("Logic", "[IssueOffer] 同伴代办启动成功 giver=" + (giver?.StringId ?? "") + " companion=" + (companion?.StringId ?? "") + " issue=" + safeIssueTitle);
+				MyBehavior.AppendExternalNpcFact(giver, IssueDisplayMatchCatalog.Get("Raw_026") + heroName + IssueDisplayMatchCatalog.Get("Raw_027") + safeIssueTitle + "”。");
+				MyBehavior.AppendExternalPlayerFact(giver, IssueDisplayMatchCatalog.Get("Raw_028") + heroName + IssueDisplayMatchCatalog.Get("Raw_027") + safeIssueTitle + "”。");
+				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_AltAccepted", "{HERO} has taken over the quest: {TITLE}", ("HERO", IssueDisplayTexts.CompanionNameForDisplay(heroName)), ("TITLE", safeIssueTitle)), isError: false);
+				Logger.Log("Logic", "[IssueOffer] Companion assignment started giver=" + (giver?.StringId ?? "") + " companion=" + (companion?.StringId ?? "") + " issue=" + safeIssueTitle);
 				return true;
 			}
 			catch (Exception ex)
 			{
-				Logger.Log("Logic", "[IssueOffer] CompleteAlternativeDispatch 异常: " + ex);
+				Logger.Log("Logic", "[IssueOffer] CompleteAlternativeDispatch exception: " + ex);
 				SafeRestoreAlternativeRoster(issue);
-				ShowInfo("确认同伴代办时出现异常。", isError: true);
+				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_AltConfirmException", "An error occurred while confirming companion assignment."), isError: true);
 				return false;
 			}
 		}
@@ -183,7 +183,7 @@ internal static partial class VanillaIssueOfferBridge
 			failureReason = "";
 			if (issue == null || !issue.IsThereAlternativeSolution)
 			{
-				failureReason = "该任务不支持同伴代办。";
+				failureReason = ConversationUiLocalization.Text("AF_CONV_UI_Issue_NoAltSolution", "This quest cannot be solved by a companion right now.");
 				return false;
 			}
 			TextObject explanation;
@@ -196,7 +196,7 @@ internal static partial class VanillaIssueOfferBridge
 			TroopRoster mainPartyRoster = MobileParty.MainParty?.MemberRoster ?? PartyBase.MainParty?.MemberRoster;
 			if (mainPartyRoster == null)
 			{
-				failureReason = "当前玩家队伍不可用。";
+				failureReason = ConversationUiLocalization.Text("AF_CONV_UI_Issue_PartyUnavailable", "Player party is currently unavailable.");
 				return false;
 			}
 			foreach (TroopRosterElement troopRosterElement in mainPartyRoster.GetTroopRoster())
@@ -213,39 +213,39 @@ internal static partial class VanillaIssueOfferBridge
 					ValueTuple<SkillObject, int> issueAlternativeSolutionSkill = issueModel.GetIssueAlternativeSolutionSkill(heroObject, issue);
 					if (issueAlternativeSolutionSkill.Item1 != null)
 					{
-						list.Add((issueAlternativeSolutionSkill.Item1.Name?.ToString() ?? "技能") + "=" + heroObject.GetSkillValue(issueAlternativeSolutionSkill.Item1));
+						list.Add((issueAlternativeSolutionSkill.Item1.Name?.ToString() ?? IssueDisplayMatchCatalog.Get("CandidateSkillFallback")) + "=" + heroObject.GetSkillValue(issueAlternativeSolutionSkill.Item1));
 					}
 					if (issue.AlternativeSolutionHasFailureRisk)
 					{
 						float num = issueModel.GetFailureRiskForHero(heroObject, issue);
-						list.Add("失败风险=" + MathF.Round(num * 100f, 1) + "%");
+						list.Add(IssueDisplayMatchCatalog.Get("CandidateFailureRiskLabel") + MathF.Round(num * 100f, 1) + "%");
 					}
 					if (issue.AlternativeSolutionHasScaledDuration)
 					{
-						list.Add("预计耗时=" + Math.Max(1, (int)Math.Round(issueModel.GetDurationOfResolutionForHero(heroObject, issue).ToDays)) + "天");
+						list.Add(IssueDisplayMatchCatalog.Get("CandidateDurationLabel") + Math.Max(1, (int)Math.Round(issueModel.GetDurationOfResolutionForHero(heroObject, issue).ToDays)) + IssueDisplayMatchCatalog.Get("CandidateDaysSuffix"));
 					}
 					else
 					{
-						list.Add("预计耗时=" + Math.Max(1, issue.GetTotalAlternativeSolutionDurationInDays()) + "天");
+						list.Add(IssueDisplayMatchCatalog.Get("CandidateDurationLabel") + Math.Max(1, issue.GetTotalAlternativeSolutionDurationInDays()) + IssueDisplayMatchCatalog.Get("CandidateDaysSuffix"));
 					}
 					if (issue.AlternativeSolutionHasScaledRequiredTroops)
 					{
-						list.Add("需士兵=" + Math.Max(0, issueModel.GetTroopsRequiredForHero(heroObject, issue)));
+						list.Add(IssueDisplayMatchCatalog.Get("CandidateTroopsLabel") + Math.Max(0, issueModel.GetTroopsRequiredForHero(heroObject, issue)));
 					}
 					else
 					{
-						list.Add("需士兵=" + Math.Max(0, issue.GetTotalAlternativeSolutionNeededMenCount()));
+						list.Add(IssueDisplayMatchCatalog.Get("CandidateTroopsLabel") + Math.Max(0, issue.GetTotalAlternativeSolutionNeededMenCount()));
 					}
 					if (issue.AlternativeSolutionHasCasualties)
 					{
 						ValueTuple<int, int> causalityForHero = issueModel.GetCausalityForHero(heroObject, issue);
-						list.Add((causalityForHero.Item1 == causalityForHero.Item2) ? ("预计伤亡=" + causalityForHero.Item1) : ("预计伤亡=" + causalityForHero.Item1 + "-" + causalityForHero.Item2));
+						list.Add((causalityForHero.Item1 == causalityForHero.Item2) ? (IssueDisplayMatchCatalog.Get("CandidateCasualtiesLabel") + causalityForHero.Item1) : (IssueDisplayMatchCatalog.Get("CandidateCasualtiesLabel") + causalityForHero.Item1 + "-" + causalityForHero.Item2));
 					}
 				}
 				else
 				{
-					list.Add("预计耗时=" + Math.Max(1, issue.GetTotalAlternativeSolutionDurationInDays()) + "天");
-					list.Add("需士兵=" + Math.Max(0, issue.GetTotalAlternativeSolutionNeededMenCount()));
+					list.Add(IssueDisplayMatchCatalog.Get("CandidateDurationLabel") + Math.Max(1, issue.GetTotalAlternativeSolutionDurationInDays()) + IssueDisplayMatchCatalog.Get("CandidateDaysSuffix"));
+					list.Add(IssueDisplayMatchCatalog.Get("CandidateTroopsLabel") + Math.Max(0, issue.GetTotalAlternativeSolutionNeededMenCount()));
 				}
 				candidates.Add(new CompanionCandidate
 				{
@@ -256,7 +256,7 @@ internal static partial class VanillaIssueOfferBridge
 			}
 			if (candidates.Count == 0)
 			{
-				failureReason = "玩家队伍里当前没有符合条件的可用同伴。";
+				failureReason = ConversationUiLocalization.Text("AF_CONV_UI_Issue_NoEligibleCompanion", "No eligible companion is available in your party.");
 				return false;
 			}
 			return true;
@@ -266,23 +266,23 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			if (hero == null)
 			{
-				return "未找到同伴。";
+				return ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionNotFound", "Companion not found.");
 			}
 			if (hero.PartyBelongedTo != MobileParty.MainParty)
 			{
-				return "该同伴当前不在主队。";
+				return ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionNotInParty", "This companion is not in your main party.");
 			}
 			if (!hero.CanHaveCampaignIssues())
 			{
-				return "该同伴当前不可用。";
+				return ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionUnavailable", "This companion is currently unavailable.");
 			}
 			if (hero.IsWounded)
 			{
-				return "该同伴当前负伤。";
+				return ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionWounded", "This companion is currently wounded.");
 			}
 			if (hero.IsPregnant)
 			{
-				return "该同伴当前怀孕。";
+				return ConversationUiLocalization.Text("AF_CONV_UI_Issue_CompanionPregnant", "This companion is currently pregnant.");
 			}
 			return "";
 		}
@@ -297,19 +297,19 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			if (!IssueRuntimeStateOwner.TryGetReadyToTurnInIssue(giver, out var issue, out var probe))
 			{
-				ShowInfo("当前没有可通过原版 discuss 流交付的任务。", isError: true);
+				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_NoTurnInQuest", "No quest available to turn in via conversation."), isError: true);
 				return false;
 			}
 			if (!TryProbeQuestTurnIn(giver, issue, execute: true, out _, out var executionError))
 			{
-				ShowInfo(string.IsNullOrWhiteSpace(executionError) ? "原版任务交付执行失败。" : executionError, isError: true);
+				ShowInfo(string.IsNullOrWhiteSpace(executionError) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_TurnInFailed", "Failed to turn in vanilla quest.") : IssueDisplayTexts.ForDisplay(executionError), isError: true);
 				return false;
 			}
 			string safeIssueTitle = GetSafeIssueTitle(issue);
-			MyBehavior.AppendExternalNpcFact(giver, "你已确认玩家完成了任务“" + safeIssueTitle + "”。该任务奖励会按原版流程自动发放，无需你手动再次支付。");
-			MyBehavior.AppendExternalPlayerFact(giver, "你已向对方交付并验收任务“" + safeIssueTitle + "”。该任务奖励会按原版流程自动结算，无需NPC手动再次发放。");
-			ShowInfo("已交付任务：" + safeIssueTitle, isError: false);
-			Logger.Log("Logic", "[IssueOffer] 任务交付成功 giver=" + (giver?.StringId ?? "") + " issue=" + safeIssueTitle + " option=" + (probe?.SuccessOptionId ?? ""));
+			MyBehavior.AppendExternalNpcFact(giver, IssueDisplayMatchCatalog.Get("Raw_029") + safeIssueTitle + IssueDisplayMatchCatalog.Get("Raw_030"));
+			MyBehavior.AppendExternalPlayerFact(giver, IssueDisplayMatchCatalog.Get("Raw_031") + safeIssueTitle + IssueDisplayMatchCatalog.Get("Raw_032"));
+			ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_TurnedIn", "Turned in quest: {TITLE}", ("TITLE", safeIssueTitle)), isError: false);
+			Logger.Log("Logic", "[IssueOffer] Quest turn-in succeeded giver=" + (giver?.StringId ?? "") + " issue=" + safeIssueTitle + " option=" + (probe?.SuccessOptionId ?? ""));
 			return true;
 		}
 

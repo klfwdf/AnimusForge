@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Security.Cryptography;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,10 +22,13 @@ namespace AnimusForge {
   private static string GetPolicyPromptTextFilePath(string dir,string file)=>Path.Combine(dir,file);
   private static string GetCustomPromptTextFilePath(string dir,string file)=>Path.Combine(dir,file);
   internal static void Save(string path,string text)=>PersistCustomPromptTextFileUnlocked(path,text);
-  internal static string Load(string directory,string file){if(!TryReadCustomPromptTextJsonFileFromDirectory(directory,file,null,"",out var t))throw new Exception("fixture load failed");return t;}
+  internal static string Load(string directory,string file){if(!TryReadLayeredCustomPromptTextJsonFile(directory,AnimusForgeDataPaths.GetPackagedCustomPromptsDirectory(AnimusForgeDataPaths.GetCurrentRoot()),file,null,"",out var t))throw new Exception("fixture load failed");return t;}
   @@SETTINGS@@
  }
 #if PERSONA_LORE
+ internal static class AnimusForgeModulePaths {
+  internal static string GetModuleDataFilePath(string name)=>Path.Combine(AppContext.BaseDirectory,name);
+ }
  internal sealed class PromptLoreSettings {internal bool Enabled=true;internal int SemanticTopK=4;internal float SemanticMinScore=.21f;}
  internal sealed class FakePorts:IKnowledgeIndexPorts {
   internal bool Onnx=true,Rerank=true,FailRerank;
@@ -44,9 +48,12 @@ internal static class Program {
  static int checks;
  static void Check(bool ok,string text){checks++;if(!ok)throw new Exception("FAIL "+text);}
  static void SettingsCases(string root,string packagedSource){
-  string package=Path.Combine(root,"module"),name="NpcPersonaGenerationRequirements.json";
-  Directory.CreateDirectory(package);
-  string packaged=File.ReadAllText(packagedSource,Encoding.UTF8);File.WriteAllText(Path.Combine(package,name),packaged,new UTF8Encoding(false));
+  string module=Path.Combine(root,"AnimusForge"),package=Path.Combine(module,"CustomPrompts"),name="NpcPersonaGenerationRequirements.json";
+  Directory.CreateDirectory(Path.Combine(module,"ModuleData"));Directory.CreateDirectory(package);
+  File.WriteAllText(Path.Combine(module,"SubModule.xml"),"<Module><Id value=\"AnimusForge\" /></Module>");
+  Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT",module);
+  string fixedDefaults=Path.Combine(module,"ModuleData","Defaults","CustomPrompts");Directory.CreateDirectory(fixedDefaults);
+  string packaged=File.ReadAllText(packagedSource,Encoding.UTF8);File.WriteAllText(Path.Combine(fixedDefaults,name),packaged,new UTF8Encoding(false));
   string defaultText=(string)JObject.Parse(packaged)["Text"];
   Check(!string.IsNullOrWhiteSpace(defaultText)&&defaultText.Contains("300"),"packaged complete editable writing requirements");
   Check(AnimusForge.DuelSettings.Load(package,name)==defaultText,"default read uses module document");
@@ -61,8 +68,11 @@ internal static class Program {
   AnimusForge.DuelSettings.Save(path,"NEXT_CUSTOM");Check(AnimusForge.DuelSettings.Load(package,name)=="NEXT_CUSTOM","edit after clearing works");
   File.WriteAllText(path,"{broken");bool rejected=false;try{AnimusForge.DuelSettings.Save(path,"");}catch(InvalidOperationException){rejected=true;}
   Check(rejected&&File.ReadAllText(path)=="{broken","corrupt original not overwritten");
+   Check(AnimusForge.DuelSettings.Load(package,name)==defaultText&&File.ReadAllText(path)=="{broken","corrupt user document falls back to fixed package default without mutation");
+   string fixedFile=Path.Combine(fixedDefaults,name);File.Move(fixedFile,fixedFile+".fixture-held");
    bool readRejected=false;try{AnimusForge.DuelSettings.Load(package,name);}catch(Exception){readRejected=true;}
    Check(readRejected&&File.ReadAllText(path)=="{broken","corrupt module document rejects reading without a secondary layer or mutation");
+   File.Move(fixedFile+".fixture-held",fixedFile);
   foreach(string ordinary in new[]{"PlayerCustomPromptRule.json","WeeklyReportWritingRequirements.json"}){
    File.WriteAllText(Path.Combine(package,ordinary),"{\"Version\":1,\"Text\":\"ORDINARY_DEFAULT\"}");
     AnimusForge.DuelSettings.Save(Path.Combine(package,ordinary),"USER");AnimusForge.DuelSettings.Save(Path.Combine(package,ordinary),"");
@@ -71,7 +81,7 @@ internal static class Program {
    Check(!Directory.EnumerateFiles(package,".afp-*").Any(),"no atomic write candidate leak");
  }
 #if PERSONA_LORE
- static void LoreCases(){
+ static void LoreCases(string promptLanguage){
   var hero=new AnimusForge.Hero {StringId="hero",Name=new(){Value="NPC"},Culture=new(){StringId="empire"},Clan=new(){Kingdom=new(){StringId="empire_s"}},CurrentSettlement=new(){StringId="hero_town"},IsLord=true};hero.Clan.Leader=hero;
   AnimusForge.Settlement.CurrentSettlement=new(){StringId="player_town"};
   var self=new AnimusForge.KnowledgeLibraryBehavior.LoreRule {Id="self",Keywords=new(){"NPC"},Variants=new(){new(){Content="self-body"}}};
@@ -81,6 +91,7 @@ internal static class Program {
   var selected=AnimusForge.KnowledgeLibraryBehavior.CollectPersonaLoreRule(mentions,v,settings);
   Check(ReferenceEquals(selected,family),"reranked top one wins, not forced exact name");
   string source=owner.BuildPersonaLoreSource(hero,selected,v);
+  Check(source==(promptLanguage=="en"?"[Worldbook reference: NPC family]\nspecific-body":"【世界书资料：NPC family】\nspecific-body"),"packaged language changes only the worldbook header and preserves its newline and body");
   Check(source.Contains("specific-body")&&!source.Contains("generic-body")&&!source.Contains("self-body"),"one applicable version using target settlement, not current player scene");
   Check(!source.Contains("鑱婂ぉ绱犳潗")&&!source.Contains("鍙備笌浜掑姩"),"persona source is not a dialogue prompt");
   int calls=AnimusForge.KnowledgeLibraryBehavior.Ports.RerankCalls;

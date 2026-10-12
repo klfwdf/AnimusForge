@@ -1,0 +1,734 @@
+<?xml version='1.0' encoding='utf-8'?>
+<base type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="AFPOL_UI_PayloadOnceDaily" text="一次 {ONCE} / 每日 {DAILY}" />
+    <string id="AFPOL_UI_PayloadXpPerSoldier" text=" XP/兵" />
+    <string id="AFPOL_UI_PayloadPartyMembers" text="{VALUE} 人" />
+    <string id="AFPOL_UI_PayloadVillageRaidBan" text="发布者本国领主禁止劫掠村庄" />
+    <string id="AFPOL_UI_Management_error_request_empty_0" text="政策请求为空。" />
+    <string id="AFPOL_UI_Management_error_policy_record_not_exist_0" text="地方政策记录不存在。" />
+    <string id="AFPOL_UI_Management_error_cannot_extend_0" text="该地方政策当前不能延长效果。" />
+    <string id="AFPOL_UI_Management_error_all_fiefs_lost_0" text="原目标封地已经全部失去。" />
+    <string id="AFPOL_UI_Management_error_no_executable_target_0" text="发布地政策效果已经没有可执行目标。" />
+    <string id="AFPOL_UI_Management_error_cannot_recover_effect_0" text="发布地政策效果已经无法恢复。" />
+    <string id="AFPOL_UI_Management_error_cannot_merge_multi_target_0" text="地方政策多目标效果无法合并：" />
+    <string id="AFPOL_UI_Management_error_lifecycle_prepare_failed_0" text="延长效果的模块生命周期准备失败：" />
+    <string id="AFPOL_UI_Management_error_shell_sync_failed_0" text="延长效果的 record shell 同步失败：" />
+    <string id="AFPOL_UI_Management_error_validation_failed_0" text="延长效果状态验证失败：" />
+    <string id="AFPOL_UI_Management_error_vassal_record_not_exist_0" text="附庸国政策记录不存在。" />
+    <string id="AFPOL_UI_Management_error_vassal_cannot_renew_0" text="该政策当前不能续约。" />
+    <string id="AFPOL_UI_Management_error_no_ruler_authority_0" text="当前没有原发布王国的统治者权限。" />
+    <string id="AFPOL_UI_Management_error_no_longer_direct_vassal_0" text="目标国家已不再是玩家王国的直属附庸国。" />
+    <string id="AFPOL_UI_Management_error_renewal_external_prepare_failed_0" text="续约外部提交准备失败：" />
+    <string id="AFPOL_UI_Management_error_vassal_effect_cannot_recover_0" text="目标附庸国的政策效果已经无法恢复。" />
+    <string id="AFPOL_UI_Management_error_vassal_cannot_merge_0" text="附庸国政策多目标效果无法合并：" />
+    <string id="AFPOL_UI_Management_error_renewal_lifecycle_failed_0" text="续约模块生命周期准备失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_shell_sync_failed_0" text="续约 record shell 同步失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_validation_failed_0" text="续约状态验证失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_breakaway_validation_failed_0" text="脱离后的续约状态验证失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_commit_not_observable_0" text="续约独立度提交结果暂不可观察，已保留 externalCommitPending 供每日幂等对账。" />
+    <string id="AFPOL_UI_Management_error_renewal_commit_not_happened_0" text="续约独立度外部提交未发生，已恢复提交前 AF 状态。" />
+    <string id="AFPOL_UI_Management_error_no_merge_target_0" text="没有可合并的续约 target shell" />
+    <string id="AFPOL_UI_Management_error_shell_inconsistent_0" text="target shell 的 record/scope/duration/progress 不一致" />
+    <string id="AFPOL_UI_Management_error_shell_empty_or_duplicate_id_0" text="target shell 包含空或重复的 InstanceId" />
+    <string id="AFPOL_UI_Management_error_invalid_merged_instance_count_0" text="合并后的逻辑模块实例数量无效" />
+    <string id="AFPOL_UI_Management_error_instance_incompatible_2" text=" 的 target shell 不兼容：" />
+    <string id="AFPOL_UI_Management_error_instance_empty_0" text="实例为空" />
+    <string id="AFPOL_UI_Management_error_module_payload_inconsistent_0" text="module/payload 不一致" />
+    <string id="AFPOL_UI_Management_error_policy_runtime_inconsistent_0" text="policy/runtime/lifecycle/timeline 不一致" />
+    <string id="AFPOL_UI_Management_error_renewal_instance_invalid_2" text=" 续约实例无效：" />
+    <string id="AFPOL_UI_Management_error_renewal_prepare_failed_2" text=" 续约 Prepare 失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_onrenewed_failed_2" text=" OnRenewed 失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_invalid_receipt_2" text=" OnRenewed 返回了无效回执" />
+    <string id="AFPOL_UI_Management_error_active_v8_incomplete_0" text="Active v8 延长效果结构不完整" />
+    <string id="AFPOL_UI_Management_error_local_renewal_no_target_0" text="地方续约 Active 缺少当前定居点目标" />
+    <string id="AFPOL_UI_Management_error_vassal_renewal_invalid_target_0" text="附庸国续约 Active 的目标王国无效" />
+    <string id="AFPOL_UI_Management_error_renewal_module_invalid_0" text="续约模块实例无效：" />
+    <string id="AFPOL_UI_Management_error_renewal_payload_too_large_0" text="续约模块 payload 总量超过 32KiB" />
+    <string id="AFPOL_UI_Management_error_unknown_module_no_target_0" text="未知模块续约实例缺少可保留的规范目标：" />
+    <string id="AFPOL_UI_Management_error_renewal_payload_not_executable_2" text=" 续约 payload 无法执行：" />
+    <string id="AFPOL_UI_Management_error_renewal_target_scope_invalid_2" text=" 续约目标或作用域无效：" />
+    <string id="AFPOL_UI_Management_error_renewal_cannot_replay_oneshot_2" text=" 续约时不得重放 OneShot" />
+    <string id="AFPOL_UI_Management_error_renewal_invalid_receipt_set_0" text="续约 Active 包含无效、重复或孤立的执行回执" />
+    <string id="AFPOL_UI_Management_error_target_empty_2" text=" 目标为空" />
+    <string id="AFPOL_UI_Management_error_target_not_exist_2" text=" 目标不存在：" />
+    <string id="AFPOL_UI_Management_error_shell_active_not_exist_0" text="record shell 引用了不存在的 Active：" />
+    <string id="AFPOL_UI_Management_error_shell_empty_or_duplicate_instance_0" text="record shell 包含空或重复的 InstanceId" />
+    <string id="AFPOL_UI_Management_error_shell_instance_not_in_active_0" text="record shell 的逻辑实例未进入 Active：" />
+    <string id="AFPOL_UI_Management_error_shell_instance_no_target_0" text="record shell 的逻辑实例缺少目标：" />
+    <string id="AFPOL_UI_Management_error_shell_no_instance_0" text="record shell 不包含模块实例" />
+    <string id="AFPOL_UI_Management_error_renewal_active_serialize_failed_0" text="续约 Active 序列化结果超过限制或无法规范化" />
+    <string id="AFPOL_UI_Management_error_renewal_active_duplicate_id_0" text="续约 Active effectId 重复：" />
+    <string id="AFPOL_UI_Management_error_renewal_record_v6_incomplete_0" text="续约 record v6 结构不完整" />
+    <string id="AFPOL_UI_Management_error_renewal_record_active_mismatch_0" text="续约 record 与 Active 引用集合不一致" />
+    <string id="AFPOL_UI_Management_error_renewal_record_serialize_failed_0" text="续约 record 序列化结果超过限制或无法规范化" />
+    <string id="AFPOL_UI_Management_error_renewal_state_serialize_exception_0" text="续约状态序列化失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_commit_incomplete_0" text="续约提交数据不完整。" />
+    <string id="AFPOL_UI_Management_error_renewal_effectid_conflict_0" text="续约 effectId 与现有 Active 冲突：" />
+    <string id="AFPOL_UI_Management_error_vassal_effect_record_invalid_0" text="附庸国政策效果记录无效。" />
+    <string id="AFPOL_UI_Management_MissingPrepared" text="未返回 prepared instance" />
+    <string id="AFPOL_UI_Management_MissingRenewed" text="未返回成功结果" />
+    <string id="AFPOL_UI_Management_CommitFailed" text="续约状态提交失败；" />
+    <string id="AFPOL_UI_Management_SnapshotRestored" text="已恢复旧快照。" />
+    <string id="AFPOL_UI_Management_SnapshotRestoreFailed" text="旧快照恢复也失败。" />
+    <string id="AFPOL_UI_BalanceDescription" text="每日按原版＋政策的净变化结算：正数最多加到总量上限；负数照常扣除，超额旧存量不削减。" />
+    <string id="AFPOL_UI_BalanceFoodRule" text="玩家和 NPC 全部适用。默认仅开启城市／城堡粮仓容量1000，其余六项默认关闭；粮仓不叠加城堡、建筑加成。&#10;繁荣度耗粮由 MCM“取消繁荣度耗粮”独立开关控制，默认关闭并保留原版；与本窗口各项开关无关。驻军耗粮、围城、供粮和政策粮食变化保留。" />
+    <string id="AFPOL_UI_BalanceInitialStatus" text="未开启的预填数值不生效。保存后应用；取消或 Esc 丢弃编辑；恢复默认后需保存。" />
+    <string id="AFPOL_UI_BalanceIntegerRange" text="请输入 {MIN}–{MAX} 之间的整数。" />
+    <string id="AFPOL_UI_BalanceOpenFailed" text="无法打开总量上限设置：{ERROR}" />
+    <string id="AFPOL_UI_BalanceSaved" text="总量上限已保存；旧存量不会被削减。" />
+    <string id="AFPOL_UI_BalanceTitle" text="政策相关数值上限调整" />
+    <string id="AFPOL_UI_Cancel" text="取消" />
+    <string id="AFPOL_UI_CastleMilitia" text="城堡民兵总人数" />
+    <string id="AFPOL_UI_CastleProsperity" text="城堡繁荣度" />
+    <string id="AFPOL_UI_CityMilitia" text="城市民兵总人数" />
+    <string id="AFPOL_UI_CityProsperity" text="城市繁荣度" />
+    <string id="AFPOL_UI_Disabled" text="已关闭" />
+    <string id="AFPOL_UI_Enabled" text="已开启" />
+    <string id="AFPOL_UI_FoodCapacity" text="城市／城堡粮食库存容量" />
+    <string id="AFPOL_UI_FoodUnit" text="粮食（最终容量）" />
+    <string id="AFPOL_UI_HearthUnit" text="户" />
+    <string id="AFPOL_UI_LocalPolicy" text="地方政策" />
+    <string id="AFPOL_UI_Module" text="模块" />
+    <string id="AFPOL_UI_ModuleManagerDescription" text="分别控制四类新政策能检索到哪些效果。修改只在保存后生效，不会改变已有、待审或正在生成的政策。" />
+    <string id="AFPOL_UI_ModuleManagerInitialStatus" text="所有改动都暂存在当前界面；取消或 Esc 会丢弃本次修改。" />
+    <string id="AFPOL_UI_ModuleManagerOpenFailed" text="无法打开政策效果模块管理界面。" />
+    <string id="AFPOL_UI_ModuleManagerSaveFailed" text="保存政策效果模块设置失败：{ERROR}" />
+    <string id="AFPOL_UI_ModuleManagerSaved" text="政策效果模块设置已保存，仅影响之后新发起的政策。" />
+    <string id="AFPOL_UI_ModuleManagerTitle" text="政策效果模块管理" />
+    <string id="AFPOL_UI_NoSettingsScreen" text="没有可用的设置页面。" />
+    <string id="AFPOL_UI_PersonUnit" text="人" />
+    <string id="AFPOL_UI_PlayerPolicy" text="玩家政策" />
+    <string id="AFPOL_UI_ProsperityUnit" text="繁荣度" />
+    <string id="AFPOL_UI_RestoreDefaults" text="恢复默认" />
+    <string id="AFPOL_UI_RestoredDefaultsStatus" text="已把工作副本恢复为所有兼容渠道开启；点击“保存并关闭”后才会写入。" />
+    <string id="AFPOL_UI_RulerPolicy" text="统治者政策" />
+    <string id="AFPOL_UI_SaveAndClose" text="保存并关闭" />
+    <string id="AFPOL_UI_SaveFailed" text="保存失败：{ERROR}" />
+    <string id="AFPOL_UI_SaveFailedShort" text="保存失败。" />
+    <string id="AFPOL_UI_Unavailable" text="不可用" />
+    <string id="AFPOL_UI_UnsavedStatus" text="有未保存的修改。只有新发起的政策会使用保存后的检索范围。" />
+    <string id="AFPOL_UI_VassalPolicy" text="附庸国政策" />
+    <string id="AFPOL_UI_VillageHearth" text="村庄户数" />
+    <string id="AFPOL_UI_VillageMilitia" text="村庄民兵总人数" />
+    <string id="AFPOL_UI_CapExplanation" text="玩家设置的总量瓶颈" />
+    <string id="AFPOL_UI_DailyPatchFailed" text="总量瓶颈未启用：日结补丁安装失败，详见政策日志。" />
+    <string id="AFPOL_UI_ProsperityFoodPatchFailed" text="无法取消繁荣耗粮：原版补丁结构不匹配；未应用估算补偿。" />
+    <string id="AFPOL_UI_CustomFoodModelUnsupported" text="第三方粮食模型未使用原版计算，无法确认繁荣耗粮已取消。" />
+    <string id="AFPOL_UI_WorldPolicyTitle" text="世界政策" />
+    <string id="AFPOL_UI_WorldPolicySubtitle" text="只读查看各国已经发布的玩家与非玩家统治者政策及政策衍生事件。" />
+    <string id="AFPOL_UI_WorldPolicyEmpty" text="暂无世界事件。统治者政策与政策衍生事件会出现在这里。" />
+    <string id="AFPOL_UI_Close" text="关闭" />
+    <string id="AFPOL_UI_UnknownKingdom" text="未知国家" />
+    <string id="AFPOL_UI_WorldEvent" text="世界事件" />
+    <string id="AFPOL_UI_Day" text="第{DAY}天" />
+    <string id="AFPOL_UI_UnknownDate" text="未知日期" />
+    <string id="AFPOL_UI_NoDetails" text="（无详情）" />
+    <string id="AFPOL_UI_EventDetails" text="事件详情" />
+    <string id="AFPOL_UI_New" text="新" />
+    <string id="AFPOL_UI_RelatedHero" text="相关人物：{NAME}" />
+    <string id="AFPOL_UI_Back" text="返回" />
+    <string id="AFPOL_UI_Edit" text="编辑" />
+    <string id="AFPOL_UI_Open" text="打开" />
+    <string id="AFPOL_UI_Save" text="保存" />
+    <string id="AFPOL_UI_PromptAutoDraftTitle" text="玩家 AI 编写" />
+    <string id="AFPOL_UI_PromptAutoDraftHint" text="使用唯一的玩家可编辑提示词扩写当前输入；不会自动提交或发布。" />
+    <string id="AFPOL_UI_PromptPlayerEvaluationTitle" text="玩家政策评议" />
+    <string id="AFPOL_UI_PromptPlayerEvaluationHint" text="调整全国、地方和附庸政策的社会反应、成本、期限与总体强度偏好。" />
+    <string id="AFPOL_UI_PromptNpcPolicyTitle" text="NPC 统治者政策" />
+    <string id="AFPOL_UI_PromptNpcPolicyHint" text="调整统治者制定政策时的题材、文风、现实依据和治理取向。" />
+    <string id="AFPOL_UI_PromptEffectRequirementsTitle" text="政策效果要求" />
+    <string id="AFPOL_UI_PromptEffectRequirementsHint" text="按效果类别分别调整政策理解和具体强度判断；玩家与统治者政策共用。" />
+    <string id="AFPOL_UI_PromptCommonEffectTitle" text="全部效果共同要求" />
+    <string id="AFPOL_UI_PromptCommonEffectHint" text="只调整所有效果共用的持续时间、直接因果、多项效果和投入定标原则。" />
+    <string id="AFPOL_UI_PromptRootTitle" text="政策提示词管理" />
+    <string id="AFPOL_UI_PromptRootDescription" text="请选择要编辑的要求。输出格式、合法目标、效果边界和执行安全仍由模组固定保证。" />
+    <string id="AFPOL_UI_PromptRootOpenFailed" text="打开政策提示词管理失败：{ERROR}" />
+    <string id="AFPOL_UI_PromptAutoDraftEditorTitle" text="编辑玩家 AI 编写提示词" />
+    <string id="AFPOL_UI_PromptAutoDraftEditorDescription" text="这里只编辑扩写方式、文风和内容偏好；玩家原文和已填写标题会另行提供。" />
+    <string id="AFPOL_UI_PromptAutoDraftEditorHint" text="输出格式和字段由系统内置，无需也不应写入这里。留空保存会恢复默认内容。" />
+    <string id="AFPOL_UI_PromptAutoDraftSaveFailed" text="保存玩家 AI 编写提示词失败：{ERROR}" />
+    <string id="AFPOL_UI_PromptAutoDraftSaved" text="玩家 AI 编写提示词已保存。" />
+    <string id="AFPOL_UI_PromptPlayerEvaluationEditorTitle" text="编辑玩家政策评议要求" />
+    <string id="AFPOL_UI_PromptPlayerEvaluationEditorDescription" text="全国、地方和附庸政策共用这份总体评议要求。" />
+    <string id="AFPOL_UI_PromptPlayerEvaluationEditorHint" text="适合调整执行成本、社会反应、期限、文风和总体强度偏好。留空保存会恢复默认内容。" />
+    <string id="AFPOL_UI_PromptNpcPolicyEditorTitle" text="编辑 NPC 统治者政策要求" />
+    <string id="AFPOL_UI_PromptNpcPolicyEditorDescription" text="这段文字指导统治者如何依据身份、性格和当前局势制定政策。" />
+    <string id="AFPOL_UI_PromptNpcPolicyEditorHint" text="可以调整题材、文风、现实依据和治理取向。留空保存会恢复默认内容。" />
+    <string id="AFPOL_UI_PromptEffectEntryHint" text="分别编辑发生条件和数值判定要求。" />
+    <string id="AFPOL_UI_PromptEffectListTitle" text="政策效果要求" />
+    <string id="AFPOL_UI_PromptEffectListDescription" text="请选择一个当前可用的效果类别。新增并启用的效果类别会自动出现在这里。" />
+    <string id="AFPOL_UI_PromptEffectListOpenFailed" text="打开政策效果要求列表失败：{ERROR}" />
+    <string id="AFPOL_UI_PromptCommonEffectEditorTitle" text="编辑全部效果共同要求" />
+    <string id="AFPOL_UI_PromptCommonEffectEditorDescription" text="这段文字只规定所有效果共同采用的持续时间、直接因果、多项效果和投入定标原则。" />
+    <string id="AFPOL_UI_PromptCommonEffectEditorHint" text="单项效果的发生条件和数值尺度请在对应效果类别中编辑。留空保存会恢复默认内容。" />
+    <string id="AFPOL_UI_PromptCommonEffectSaveFailed" text="保存全部效果共同要求失败：{ERROR}" />
+    <string id="AFPOL_UI_PromptCommonEffectSaved" text="全部效果共同要求已保存。" />
+    <string id="AFPOL_UI_PromptUnderstandingTitle" text="政策理解要求" />
+    <string id="AFPOL_UI_PromptUnderstandingHint" text="指导主评议在什么情况下把这一类别视为政策的实际后果。" />
+    <string id="AFPOL_UI_PromptEvaluationTitle" text="效果判定要求" />
+    <string id="AFPOL_UI_PromptEvaluationHint" text="指导效果评估如何判断方向、结算频率、单位和数值尺度。" />
+    <string id="AFPOL_UI_PromptModuleDescription" text="请选择要编辑的要求。留空保存只会恢复当前这一项的默认内容。" />
+    <string id="AFPOL_UI_PromptEffectUnavailable" text="所选效果类别已经不可用。" />
+    <string id="AFPOL_UI_PromptModuleEditorTitle" text="{NAME} - {REQUIREMENT}" />
+    <string id="AFPOL_UI_PromptUnderstandingEditorDescription" text="说明什么样的政策措施会直接影响这一效果类别。" />
+    <string id="AFPOL_UI_PromptEvaluationEditorDescription" text="说明如何判断变化方向、结算频率、单位和数值尺度。" />
+    <string id="AFPOL_UI_PromptModuleEditorHint" text="请使用自然语言。留空保存会恢复当前项默认内容；不会改变可用效果类别或合法作用范围。" />
+    <string id="AFPOL_UI_PromptModuleSaveFailed" text="保存政策效果要求失败：{ERROR}" />
+    <string id="AFPOL_UI_PromptModuleSaved" text="已保存{NAME}的{REQUIREMENT}。" />
+    <string id="AFPOL_UI_AiDraftUnavailable" text="AI编写入口不可用。" />
+    <string id="AFPOL_UI_AiDraftUiError" text="AI编写遇到界面错误，请查看日志。" />
+    <string id="AFPOL_UI_KingdomPublishTitle" text="发布王国政策" />
+    <string id="AFPOL_UI_LocalPublishTitle" text="发布地方政策" />
+    <string id="AFPOL_UI_PolicyNameLabel" text="政策名" />
+    <string id="AFPOL_UI_PolicyContentLabel" text="政策内容" />
+    <string id="AFPOL_UI_LocalPolicyContentLabel" text="政策内容 / AI编写原文" />
+    <string id="AFPOL_UI_DurationLabel" text="效果持续天数（留空为永久）" />
+    <string id="AFPOL_UI_AiDraft" text="AI编写" />
+    <string id="AFPOL_UI_PlayerKingdom" text="玩家王国" />
+    <string id="AFPOL_UI_PolicyReady" text="填写政策名和政策内容后即可发布。" />
+    <string id="AFPOL_UI_CannotPublishPolicy" text="当前不能发布政策。" />
+    <string id="AFPOL_UI_CannotPublishLocalPolicy" text="当前不能发布地方政策。" />
+    <string id="AFPOL_UI_FillTitleOrContent" text="请先填写政策标题或政策内容。" />
+    <string id="AFPOL_UI_AiDrafting" text="AI编写中…" />
+    <string id="AFPOL_UI_AiDraftStatus" text="AI正在按照玩家可编辑提示词扩写当前内容；不会读取政策通用提示词、世界上下文或历史政策，也不会自动发布。" />
+    <string id="AFPOL_UI_AiDraftFormChanged" text="AI编写期间表单已改变，已丢弃过期结果。" />
+    <string id="AFPOL_UI_AiDraftFailed" text="AI编写失败，原输入已保留。" />
+    <string id="AFPOL_UI_AiDraftCompleted" text="AI编写内容已回填；请检查并修改后再发布。" />
+    <string id="AFPOL_UI_VassalPublishTitle" text="发布附庸国政策" />
+    <string id="AFPOL_UI_FillForAiDraft" text="请填写政策标题或政策内容后使用AI编写。" />
+    <string id="AFPOL_UI_AiCompleteTitle" text="可点击AI编写补全政策标题和正文。" />
+    <string id="AFPOL_UI_AiCompleteContent" text="可点击AI编写，根据政策标题补全正文。" />
+    <string id="AFPOL_UI_InvalidPolicyTarget" text="原目标当前无效，请明确重新选择一个当前可用目标。" />
+    <string id="AFPOL_UI_DurationRequired" text="旧记录无法确认原持续时间，请明确填写正整数天数。" />
+    <string id="AFPOL_UI_DurationPositive" text="持续天数必须留空或填写正整数。" />
+    <string id="AFPOL_UI_PublishAwaitingReview" text="点击发布后将等待智能评议；成功落地时扣除已配置成本。" />
+    <string id="AFPOL_UI_PolicyRecordsTitle" text="政策记录" />
+    <string id="AFPOL_UI_PolicyHistoryEmpty" text="尚无成功落地的政策记录。" />
+    <string id="AFPOL_UI_BackToPolicyManagement" text="返回政策管理" />
+    <string id="AFPOL_UI_ReReview" text="重新评议" />
+    <string id="AFPOL_UI_PolicyPublished" text="政策已经发布" />
+    <string id="AFPOL_UI_Acknowledge" text="知道了" />
+    <string id="AFPOL_UI_RetryManually" text="手动重试" />
+    <string id="AFPOL_UI_DeleteRecord" text="删除记录" />
+    <string id="AFPOL_UI_UnnamedPolicy" text="未命名政策" />
+    <string id="AFPOL_UI_PolicyContentSection" text="【政策内容】" />
+    <string id="AFPOL_UI_PolicyFeedbackSection" text="【民众反馈】" />
+    <string id="AFPOL_UI_PolicyDailyImpactSection" text="【每日影响】" />
+    <string id="AFPOL_UI_LocalScopeTitle" text="选择作用封地" />
+    <string id="AFPOL_UI_SelectAll" text="全选" />
+    <string id="AFPOL_UI_ClearSelection" text="清空" />
+    <string id="AFPOL_UI_SelectOwnedFief" text="请至少选择一个玩家家族拥有的城镇或城堡。" />
+    <string id="AFPOL_UI_SelectedFiefs" text="已选择 {COUNT} 个封地；作用范围由所选封地自动确定。" />
+    <string id="AFPOL_UI_UnknownFief" text="未知封地" />
+    <string id="AFPOL_UI_Fief" text="封地" />
+    <string id="AFPOL_UI_LocalHistorySubtitle" text="地方政策与附庸国政策分别管理；有效记录保留，已结束记录只保留最近 100 条。" />
+    <string id="AFPOL_UI_RenewEffect" text="延长效果" />
+    <string id="AFPOL_UI_AbolishPolicy" text="停止政策" />
+    <string id="AFPOL_UI_BackToPolicyMenu" text="返回政策菜单" />
+    <string id="AFPOL_UI_EmptyVassalRecords" text="暂无附庸国政策记录。" />
+    <string id="AFPOL_UI_EmptyLocalRecords" text="暂无地方政策记录。" />
+    <string id="AF_POL_EFFECT_MaintenanceCost" text="自定义政策维护费" />
+    <string id="AF_POL_EFFECT_PolicyIncome" text="《{POLICY}》政策收入" />
+    <string id="AF_POL_EFFECT_PolicyLabel" text="《{POLICY}》" />
+    <string id="AF_POL_EFFECT_PolicyTax" text="《{POLICY}》税收 {VALUE}%" />
+    <string id="AF_POL_EFFECT_PolicyConstruction" text="《{POLICY}》建造力 {VALUE}" />
+    <string id="AF_POL_EFFECT_PartySizeLimit" text="【{POLICY}】" />
+    <string id="AF_POL_EFFECT_PartySizeMinimum" text="自定义政策部队上限最低值" />
+    <string id="AF_POL_EFFECT_PartySizeMaximum" text="自定义政策部队上限安全值" />
+    <string id="AFPOL_UI_NotInitialized" text="自定义政策功能尚未初始化。" />
+    <string id="AFPOL_UI_LocalPolicyNotInitialized" text="地方政策功能尚未初始化。" />
+    <string id="AFPOL_UI_ReReviewPolicyTitle" text="重新评议政策" />
+    <string id="AFPOL_UI_SelectFiefHint" text="选择玩家家族拥有的城镇或城堡作为作用封地。" />
+    <string id="AFPOL_UI_NoOwnedFiefsWarning" text="玩家家族当前没有城镇或城堡，无法发布。" />
+    <string id="AFPOL_UI_LocalRecordsTitle" text="地方政策记录" />
+    <string id="AFPOL_UI_LocalRecordsHint" text="查看政策状态、目标、效果剩余天数、费用和延长历史，并可延长效果或废除政策。" />
+    <string id="AFPOL_UI_LocalPolicyDescription" text="地方政策由智能服务独立评议，成功后立即结算并在所选封地范围生效。" />
+    <string id="AFPOL_UI_Confirm" text="确定" />
+    <string id="AFPOL_UI_PreviousPolicyPending" text="上一份政策仍在等待评议，请稍候。" />
+    <string id="AFPOL_UI_SelectFiefAndFillPolicy" text="请选择作用封地并填写政策。" />
+    <string id="AFPOL_UI_ReReviewLocalPolicyTitle" text="重新评议地方政策" />
+    <string id="AFPOL_UI_SubmitReReview" text="提交重新评议" />
+    <string id="AFPOL_UI_OpenLocalPublishFailed" text="打开地方政策发布界面失败。" />
+    <string id="AFPOL_UI_FillNameContentAndFief" text="请填写政策名、政策内容并至少选择一个封地。" />
+    <string id="AFPOL_UI_ReReviewVassalPolicyTitle" text="重新评议附庸国政策" />
+    <string id="AFPOL_UI_ReReviewKingdomPolicyTitle" text="重新评议王国政策" />
+    <string id="AFPOL_UI_OpenComposeFailed" text="打开自定义政策撰写界面失败。" />
+    <string id="AFPOL_UI_TargetOwnKingdom" text="本国：{NAME}" />
+    <string id="AFPOL_UI_TargetOwnKingdomHint" text="沿用王国议程、政策成本与通过流程。" />
+    <string id="AFPOL_UI_TargetVassalKingdom" text="附庸：{NAME}" />
+    <string id="AFPOL_UI_TargetVassalKingdomHint" text="当前独立度 {CURRENT}/100；脱离阈值 {THRESHOLD}（{RULER}关系 {RELATION}）；发布立即生效并随机增加 5–10 点独立度。" />
+    <string id="AFPOL_UI_NameCannotBeEmpty" text="政策名不能为空。" />
+    <string id="AFPOL_UI_ContentCannotBeEmpty" text="政策内容不能为空。" />
+    <string id="AFPOL_UI_VassalInvalidOrNotRuler" text="所选附庸国已经失效，或你已不再是宗主国统治者。" />
+    <string id="AFPOL_UI_PolicySubmittedEvaluating" text="政策《{NAME}》已经提交给朝廷与民众评议。&#10;&#10;游戏时间已暂停，智能服务完成判断后会自动发布结果并显示民众反馈与影响效果。" />
+    <string id="AFPOL_UI_PolicyEvaluatingPaused" text="政策正在评议中，游戏时间已暂停。" />
+    <string id="AFPOL_UI_DateLabel" text="日期：{DATE}" />
+    <string id="AFPOL_UI_FeedbackUnclear" text="民众尚未形成明确反馈。" />
+    <string id="AFPOL_UI_NoApplicableModuleEffects" text="未产生可落地的模块效果。" />
+    <string id="AFPOL_UI_PartialEffectsFailedNotice" text="部分效果未能落地，详细信息已写入日志。" />
+    <string id="AFPOL_UI_PolicySettledNotice" text="政策效果已按各模块规则结算，数值效果会在有效状态内生效。你可以继续发布新的政策。" />
+    <string id="AFPOL_UI_NoCostDeducted" text="本次未扣除费用。" />
+    <string id="AFPOL_UI_VassalAnnouncementFormat" text="【附庸国政策】{PUBLISHER}发布《{NAME}》，对{TARGET}生效：{CONTENT}" />
+    <string id="AFPOL_UI_SuzerainPlayer" text="宗主玩家" />
+    <string id="AFPOL_UI_SuzerainPlayerWithName" text="宗主玩家（{NAME}）" />
+    <string id="AFPOL_UI_TargetVassalDefault" text="目标附庸国" />
+    <string id="AFPOL_UI_TargetVassalWithName" text="附庸国{NAME}" />
+    <string id="AFPOL_UI_KingdomAnnouncementFormat" text="【王国政策】{ISSUER}颁布《{NAME}》：{CONTENT}" />
+    <string id="AFPOL_UI_KingdomDefault" text="王国" />
+    <string id="AFPOL_UI_PublicFeedbackFormat" text="【民众反馈】{SUBJECT}《{NAME}》：{FEEDBACK}" />
+    <string id="AFPOL_UI_PolicyHistorySubtitle" text="显示最近 {COUNT} 条已发布政策；旧系统政策已停止效果，但保留历史记录。" />
+    <string id="AFPOL_UI_NoSuccessfulPoliciesYet" text="还没有成功发布并生效的政策。" />
+    <string id="AFPOL_UI_NoContentSummary" text="（没有记录政策内容摘要）" />
+    <string id="AFPOL_UI_FeedbackNotRecorded" text="民众反馈未记录。" />
+    <string id="AFPOL_UI_PolicyImpactSectionTitle" text="【政策效果】" />
+    <string id="AFPOL_UI_PolicyFullTextSectionTitle" text="【政策正文】" />
+    <string id="AFPOL_UI_LegacyPolicyStatusSectionTitle" text="【旧政策状态】" />
+    <string id="AFPOL_UI_LegacySaveDateNotRecorded" text="旧存档日期未记录" />
+    <string id="AFPOL_UI_LegacySaveCostNotice" text="旧存档费用信息未完整保留；重新评议时按当前配置重新计算。" />
+    <string id="AFPOL_UI_LegacySaveNoFeedback" text="旧存档未保留民众反馈。" />
+    <string id="AFPOL_UI_LegacyPolicyUpgradedStopped" text="旧政策系统升级后已停止持续效果。" />
+    <string id="AFPOL_UI_StatusEndPending" text="结束处理未完成，系统会继续重试恢复已应用效果" />
+    <string id="AFPOL_UI_StatusReverting" text="效果恢复中，补偿完成前相关模块暂停继续结算" />
+    <string id="AFPOL_UI_StatusMaintenancePaused" text="维护费不足，数值效果已暂停；资金满足后会自动恢复" />
+    <string id="AFPOL_UI_StatusActive" text="正常生效" />
+    <string id="AFPOL_UI_NoRecordedImpact" text="未记录影响效果。" />
+    <string id="AFPOL_UI_RuntimeStatusSection" text="&#10;【运行状态】{STATUS}" />
+    <string id="AFPOL_UI_PermanentActive" text="永久生效" />
+    <string id="AFPOL_UI_Ended" text="已结束" />
+    <string id="AFPOL_UI_RemainingDaysFormat" text="剩余 {REMAINING}/{TOTAL} 天" />
+    <string id="AFPOL_UI_InEffect" text="生效中" />
+    <string id="AFPOL_UI_UnknownSuzerain" text="未知宗主国" />
+    <string id="AFPOL_UI_VassalTargetSummary" text="宗主国：{ISSUER}；目标附庸国：{TARGET}" />
+    <string id="AFPOL_UI_VassalIndependenceStatus" text="；当前独立度 {CURRENT}/100；脱离阈值 {THRESHOLD}（{RULER}关系 {RELATION}）" />
+    <string id="AFPOL_UI_VassalStatusEnded" text="；臣属关系已失效" />
+    <string id="AFPOL_UI_VassalIndependenceSettlement" text="首次独立度结算：{BEFORE} + 随机费用 {COST} + 政策修正 {DELTA}（净变化 {NET}）；累计随机费用 {TOTAL}" />
+    <string id="AFPOL_UI_VassalIndependenceReason" text="；修正原因：{REASON}" />
+    <string id="AFPOL_UI_VassalRenewalHistoryNone" text="续约历史：无" />
+    <string id="AFPOL_UI_VassalRenewalHistoryTitle" text="续约历史：&#10;" />
+    <string id="AFPOL_UI_VassalRenewalHistoryEntry" text="- {DATE}：独立度 {BEFORE} + {COST} = {AFTER}/100，增加 {DAYS} 天" />
+    <string id="AFPOL_UI_UnnamedVassalPolicy" text="未命名附庸国政策" />
+    <string id="AFPOL_UI_NoFeedbackRecorded" text="未记录政策反馈。" />
+    <string id="AFPOL_UI_VassalStatusAndRenewals" text="状态：{STATUS}；续约次数 {COUNT}" />
+    <string id="AFPOL_UI_ContinuousEffectsEnded" text="持续效果已结束" />
+    <string id="AFPOL_UI_NoContinuousNumericEffects" text="无持续数值效果" />
+    <string id="AFPOL_UI_NumericEffectsPermanent" text="数值效果：永久" />
+    <string id="AFPOL_UI_EffectRemainingAndOriginalDays" text="效果剩余 {REMAINING} 天；原始效果周期 {ORIGINAL} 天" />
+    <string id="AFPOL_UI_StatusValid" text="有效" />
+    <string id="AFPOL_UI_StatusExpired" text="自然到期" />
+    <string id="AFPOL_UI_StatusTargetsLost" text="全部失地" />
+    <string id="AFPOL_UI_StatusAbolished" text="玩家废除" />
+    <string id="AFPOL_UI_StatusVassalageEnded" text="臣属关系终止" />
+    <string id="AFPOL_UI_StatusTerminated" text="已结束" />
+    <string id="AFPOL_UI_CannotReReviewTitle" text="无法重新评议" />
+    <string id="AFPOL_UI_ReReviewRecordIdEmpty" text="政策记录编号为空。" />
+    <string id="AFPOL_UI_ReReviewNoFullContent" text="该记录没有保存完整政策正文，不能重新评议。" />
+    <string id="AFPOL_UI_ReReviewPendingConfirmation" text="该政策谱系已有待确认的新评议，请先等待其完成。" />
+    <string id="AFPOL_UI_ReReviewOnlySummary" text="该记录只保存了摘要，没有可复用的完整政策正文。" />
+    <string id="AFPOL_UI_ReReviewPendingVote" text="该政策谱系已有待表决的新评议，请先等待议程结束。" />
+    <string id="AFPOL_UI_OpenLocalRecordsFailed" text="打开地方政策记录界面失败。" />
+    <string id="AFPOL_UI_LocalRecordNotExist" text="地方政策记录不存在。" />
+    <string id="AFPOL_UI_PermanentEffectNoExtension" text="永久效果不需要延长。" />
+    <string id="AFPOL_UI_CannotExtendEffectTitle" text="无法延长效果" />
+    <string id="AFPOL_UI_NoOwnedOriginalFiefsForExtension" text="当前没有归玩家所有的原目标封地，无法续期；收复原目标后可再次尝试。" />
+    <string id="AFPOL_UI_ExtendLocalPolicyTitle" text="延长地方政策效果" />
+    <string id="AFPOL_UI_ExtendLocalPolicyPrompt" text="是否为《{NAME}》增加一个完整效果周期（{DAYS} 天）？&#10;&#10;本次消耗预估为 {COST} 第纳尔；若持有金额低于预估消耗，将按实际扣除金额比例折算本期效果。不会重新调用智能服务，也不会重放任何一次性模块。" />
+    <string id="AFPOL_UI_EffectExtendedTitle" text="效果已延长" />
+    <string id="AFPOL_UI_EffectExtendedMessage" text="《{NAME}》的数值效果已增加 {DAYS} 天；本次实付 {COST} 第纳尔（按 {SCALE} 比例生效）。" />
+    <string id="AFPOL_UI_LocalPolicyExtendedRefreshFailed" text="地方政策效果已延长，但界面或通知刷新失败。" />
+    <string id="AFPOL_UI_ExtendEffectFailedTitle" text="延长效果失败" />
+    <string id="AFPOL_UI_ExtendEffectFailedMessage" text="延长效果时发生异常，详细技术信息已写入日志。" />
+    <string id="AFPOL_UI_OnlyActivePolicyCanBeAbolished" text="只有当前有效的地方政策可以废除。" />
+    <string id="AFPOL_UI_StopVassalPolicyTitle" text="停止附庸国政策" />
+    <string id="AFPOL_UI_StopVassalPolicyPrompt" text="确定立即停止《{NAME}》吗？&#10;&#10;该政策在所有国家的持续效果会立即停止；独立度不变，且已生效影响不会回滚。" />
+    <string id="AFPOL_UI_AbolishLocalPolicyTitle" text="废除地方政策" />
+    <string id="AFPOL_UI_AbolishLocalPolicyPrompt" text="确定立即废除《{NAME}》吗？&#10;&#10;效果会立即停止，已支付费用不退还。" />
+    <string id="AFPOL_UI_StopPolicyFailedTitle" text="停止政策失败" />
+    <string id="AFPOL_UI_StopPolicyFailedMessage" text="停止政策时发生异常，详细技术信息已写入日志。" />
+    <string id="AFPOL_UI_VassalPolicyStoppedTitle" text="附庸国政策已停止" />
+    <string id="AFPOL_UI_LocalPolicyAbolishedTitle" text="地方政策已废除" />
+    <string id="AFPOL_UI_VassalPolicyStoppedMessage" text="《{NAME}》在所有国家的持续效果已经停止；独立度不变。" />
+    <string id="AFPOL_UI_LocalPolicyAbolishedMessage" text="《{NAME}》的效果已经停止；费用不退还。" />
+    <string id="AFPOL_UI_CannotRenewTitle" text="无法续约" />
+    <string id="AFPOL_UI_NoRulerPermissionToRenew" text="当前没有原发布王国的统治者权限，未修改政策。" />
+    <string id="AFPOL_UI_TargetNotVassalTerminated" text="目标国家已不再是玩家王国的直属附庸国，政策已经终止。" />
+    <string id="AFPOL_UI_RenewVassalPolicyTitle" text="续约附庸国政策" />
+    <string id="AFPOL_UI_RenewVassalPolicyPrompt" text="是否为《{NAME}》增加一个完整周期（{DAYS} 天）？&#10;&#10;本次会重复增加首次随机费用 {COST} 点独立度；当前独立度为 {CURRENT}/100，脱离阈值为 {THRESHOLD}（{RULER}关系 {RELATION}）。不会重新调用智能服务、不会重复政策好坏修正或重放任何一次性模块，也不会新增世界政策事件。" />
+    <string id="AFPOL_UI_ConfirmRenewal" text="确认续约" />
+    <string id="AFPOL_UI_RenewalSuccessTitle" text="续约成功" />
+    <string id="AFPOL_UI_VassalRenewalSuccessMessage" text="《{NAME}》已增加 {DAYS} 天；独立度 {BEFORE} + {COST} = {AFTER}/100；脱离阈值 {THRESHOLD}（{RULER}关系 {RELATION}）。" />
+    <string id="AFPOL_UI_VassalBreakawayNotice" text="&#10;&#10;独立度达到脱离阈值，臣属关系已经解除，政策全部持续效果已立即停止。" />
+    <string id="AFPOL_UI_VassalRenewedRefreshFailed" text="附庸国政策已续约，但续约后的界面或通知刷新失败。" />
+    <string id="AFPOL_UI_RenewalFailedTitle" text="续约失败" />
+    <string id="AFPOL_UI_RenewalFailedMessage" text="续约处理发生异常，详细技术信息已写入日志。" />
+    <string id="AFPOL_UI_PolicyRenewedTitle" text="政策已续期" />
+    <string id="AFPOL_UI_PolicyRenewedMessage" text="《{NAME}》已续期 {DAYS} 天&#10;本次续期消耗：{COST} 第纳尔。&#10;本期效果按 {SCALE} 生效。" />
+    <string id="AFPOL_UI_PolicyAdoptionFailedTitle" text="政策落地失败" />
+    <string id="AFPOL_UI_PolicyAdoptionFailedMessage" text="议程投票已经通过，但政策效果、账本或费用的原子提交失败。AnimusForge 已撤销本次采用，政策未生效且不会显示为现行政策。详细原因已写入 PolicySystem.txt。" />
+    <string id="AFPOL_UI_LocalPolicyCancelledTitle" text="地方政策已取消" />
+    <string id="AFPOL_UI_LocalPolicyLostFiefsCancelled" text="评议期间已失去全部目标封地，因此未扣费、未生效、未写入成功记录。" />
+    <string id="AFPOL_UI_LocalPolicyCannotPublishTitle" text="地方政策无法发布" />
+    <string id="AFPOL_UI_LocalPolicyEvalFailedTitle" text="地方政策评议失败" />
+    <string id="AFPOL_UI_LocalPolicyPublishFailedTitle" text="地方政策发布失败" />
+    <string id="AFPOL_UI_NoLocalNumericEffects" text="没有生成可执行的地方数值效果，未扣费、未生效。" />
+    <string id="AFPOL_UI_PostprocessNoNumericEffects" text="后处理没有生成可执行数值效果，未扣费、未写入记录。" />
+    <string id="AFPOL_UI_PolicyCommitFailed" text="提交政策时发生错误，已撤销效果且未保留成功记录。详细技术信息已写入日志。" />
+    <string id="AFPOL_UI_PartialRollbackIncomplete" text="&#10;部分回滚步骤未完成，请查看日志。" />
+    <string id="AFPOL_UI_VassalPolicyCancelledTitle" text="附庸国政策已取消" />
+    <string id="AFPOL_UI_VassalRelationshipChangedCancelled" text="评议期间宗主关系或统治者身份已经变化，因此政策未生效、未增加独立度、未写入成功记录。" />
+    <string id="AFPOL_UI_VassalPolicyPublishFailedTitle" text="附庸国政策发布失败" />
+    <string id="AFPOL_UI_VassalNoValidEffects" text="没有生成作用于目标附庸国的有效持续效果，政策未生效、未增加独立度。" />
+    <string id="AFPOL_UI_PolicySubmissionFailed" text="政策提交失败。" />
+    <string id="AFPOL_UI_VassalPublishResultSummary" text="&#10;&#10;独立度：{BEFORE} + 发布费用 {COST} + 政策修正 {DELTA} = {AFTER}/100&#10;当前脱离阈值：{THRESHOLD}（{RULER}关系 {RELATION}）" />
+    <string id="AFPOL_UI_VassalBreakawayTerminated" text="&#10;目标附庸国已达到脱离阈值；脱离是不可逆最终提交，臣属关系和全部持续效果已经终止。" />
+    <string id="AFPOL_UI_MaintenancePaidResume" text="《{NAME}》维护费已恢复支付，数值效果恢复生效。" />
+    <string id="AFPOL_UI_MaintenanceSettlementError" text="《{NAME}》维护费结算异常，今日数值效果暂停；下一日会自动重试。" />
+    <string id="AFPOL_UI_MaintenanceInsufficientFunds" text="《{NAME}》维护费不足，今日数值效果暂停；下一日会自动重试。" />
+    <string id="AFPOL_UI_PolicyFeedbackTitleFormat" text="《{NAME}》的民间回响" />
+    <string id="AFPOL_UI_SuzerainEnacted" text="宗主发布" />
+    <string id="AFPOL_UI_AssociatedPolicy" text="关联政策：《{POLICY}》" />
+    <string id="AFPOL_UI_EventCourse" text="事件经过" />
+    <string id="AFPOL_UI_PolicyFeedbackAftermath" text="《{NAME}》的余波" />
+    <string id="AFPOL_UI_NewPolicy" text="新政策" />
+    <string id="AFPOL_UI_LocalPolicySubmittedEvaluating" text="地方政策《{NAME}》正在由智能服务评议。&#10;&#10;游戏时间已暂停；成功后会立即结算并只对所选封地及附属村庄生效，不进入王国议程。" />
+    <string id="AFPOL_UI_VassalPolicySubmittedEvaluating" text="附庸国政策《{NAME}》正在由智能服务评议。&#10;&#10;游戏时间已暂停；成功后会直接生效、写入附庸国与世界政策记录，并结算独立度。" />
+    <string id="AFPOL_UI_WaitingLocalPolicyEval" text="等待地方政策评议" />
+    <string id="AFPOL_UI_WaitingVassalPolicyEval" text="等待附庸国政策评议" />
+    <string id="AFPOL_UI_WaitingPolicyEval" text="等待政策评议" />
+    <string id="AFPOL_UI_UnknownVassalKingdom" text="未知附庸国" />
+    <string id="AFPOL_UI_StatusPrefix" text="状态：{STATUS}" />
+    <string id="AFPOL_UI_ConfirmExtend" text="确认延长" />
+    <string id="AFPOL_UI_ExtendLocalPolicyNoStartupFeePrompt" text="是否为《{NAME}》增加一个完整效果周期（{DAYS} 天）？&#10;&#10;延长效果不再次收取启动费，不重新调用智能服务，也不会重放一次性效果或再次发布民众反馈。" />
+    <string id="AFPOL_UI_ConfirmStop" text="确认停止" />
+    <string id="AFPOL_UI_ConfirmAbolish" text="确认废除" />
+    <string id="AFPOL_UI_StopVassalPolicyDetailedPrompt" text="确定立即停止《{NAME}》吗？&#10;&#10;该政策在所有国家的持续效果会立即停止；独立度不会变化，不会退款、不会刷新冷却，且以后不能续约。" />
+    <string id="AFPOL_UI_AbolishLocalPolicyDetailedPrompt" text="确定立即废除《{NAME}》吗？&#10;&#10;效果会立即停止，已支付费用不退还，且此政策以后不能再延长效果。" />
+    <string id="AFPOL_UI_PolicyRenewedDetailedBody" text="《{NAME}》已续期 {DAYS} 天。&#10;本次续期消耗：{COST} 第纳尔。&#10;本期效果按 {SCALE} 生效。" />
+    <string id="AFPOL_UI_PolicyRenewedDetailedNoScale" text="《{NAME}》已续期 {DAYS} 天。&#10;本次续期消耗：{COST} 第纳尔。" />
+    <string id="AFPOL_UI_EffectExtendedRemaining" text="《{NAME}》的数值效果已增加 {DAYS} 天，当前剩余 {REMAINING} 天。" />
+    <string id="AFPOL_UI_LocalPolicyCannotPublishSuffix" text="&#10;&#10;评议已经完成，但未扣费、未生效、未写入成功记录。" />
+    <string id="AFPOL_UI_NoFeesNotEnactedSuffix" text="&#10;&#10;未扣费、未生效。" />
+    <string id="AFPOL_UI_NoFeesNoRecordSuffix" text="&#10;&#10;未扣费、未写入成功记录。" />
+    <string id="AFPOL_UI_SuzerainTargetPrefix" text="宗主国：{SUZERAIN}&#10;发布对象：{TARGET}&#10;&#10;" />
+    <string id="AFPOL_UI_PolicyImpactEffects" text="政策影响效果" />
+    <string id="AFPOL_UI_PolicyDerivedEvent" text="政策衍生事件" />
+      <string id="AFPOL_UI_NpcRulerPolicyStage" text="统治者政策拟定" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryTitle" text="统治者政策拟定失败" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryBody" text="阶段：{STAGE}&#10;原因：{REASON}&#10;原请求编号：{REQUEST}&#10;&#10;可点击下方“手动重试”重新提交原建议，或点击右上角 X 关闭。&#10;本次没有发布政策，也没有应用任何效果。" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryDefaultReason" text="政策拟定失败。" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryReasonGenerationFailed" text="统治者政策拟定、解析或提交前安全校验失败，政策尚未进入议程。详细信息已写入日志。" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryReasonTargetChanged" text="目标王国或接受建议的统治者已经变化，当前不能重新提交。" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryReasonUnavailable" text="当前无法重新提交政策建议。" />
+    <string id="AFPOL_UI_FreezeSettingsFailedPrefix" text="无法冻结本次政策评议配置：" />
+    <string id="AFPOL_UI_RetryOriginalRequestUnavailable" text="原政策请求已不可用，无法重试。" />
+    <string id="AFPOL_UI_EmptyPolicyRequest" text="政策请求为空。" />
+    <string id="AFPOL_UI_NoPolicyContentRecorded" text="未记录政策正文。" />
+    <string id="AFPOL_UI_RuntimeStatusInlineLabel" text="运行状态：" />
+    <string id="AFPOL_UI_LocalPublishFiefPrefix" text="发布地：" />
+    <string id="AFPOL_UI_NoRemainingTargets" text="无剩余目标" />
+    <string id="AFPOL_UI_TargetOverflowSuffix" text="，另{COUNT}处" />
+    <string id="AFPOL_UI_LocalRenewalHistoryNone" text="延长效果历史：无" />
+    <string id="AFPOL_UI_LocalRenewalHistoryTitle" text="延长效果历史：&#10;" />
+    <string id="AFPOL_UI_LocalRenewalHistoryEntry" text="- {DATE}：增加 {DAYS} 天" />
+    <string id="AFPOL_UI_UnnamedLocalPolicy" text="未命名地方政策" />
+    <string id="AFPOL_UI_LocalRecordCostLine" text="启动所需 {REQUIRED}；启动实付 {PAID}；每日维护 {DAILY}；累计维护 {TOTAL}；效果比例 {SCALE}" />
+    <string id="AFPOL_UI_LocalPolicyStatusPrefix" text="政策状态：" />
+    <string id="AFPOL_UI_LocalEffectStatusPrefix" text="效果状态：" />
+    <string id="AFPOL_UI_LocalRenewalCountPrefix" text="延长次数：" />
+    <string id="AFPOL_UI_CannotReReviewNow" text="该政策当前不能重新评议。" />
+    <string id="AFPOL_UI_ReReviewLineageInvalid" text="重新评议谱系信息无效。" />
+    <string id="AFPOL_UI_RecordCostAiGoldOnly" text="智能评估消耗：启动所需 {REQUIRED}；启动实付 {PAID}；每日维护 {DAILY}；累计维护 {TOTAL}；全部效果 {SCALE}" />
+    <string id="AFPOL_UI_RecordCostAiMixed" text="智能评估消耗：完整需 {REQUIRED}；已支付 {PAID}；经济/民生 {GOLD_SCALE}，政治/秩序 {INFLUENCE_SCALE}" />
+    <string id="AFPOL_UI_RecordCostPaid" text="已支付：{COST}" />
+    <string id="AFPOL_UI_RecordCostFixedLine" text="启动所需 {REQUIRED}；启动实付 {PAID}；每日维护 {DAILY}；累计维护 {TOTAL}" />
+    <string id="AFPOL_UI_CostGoldAmount" text="{AMOUNT} 第纳尔" />
+    <string id="AFPOL_UI_CostGoldNone" text="不消耗第纳尔" />
+    <string id="AFPOL_UI_CostInfluenceAmount" text="{AMOUNT} 影响力" />
+    <string id="AFPOL_UI_CostGoldAndInfluenceNone" text="不消耗第纳尔或影响力" />
+    <string id="AFPOL_UI_CostGoldAndInfluenceAmount" text="{GOLD} 第纳尔、{INFLUENCE} 影响力" />
+    <string id="AFPOL_UI_EffectUnreadable" text="无法读取的模块效果" />
+    <string id="AFPOL_UI_EffectNotExecutable" text="当前版本无法执行的模块效果" />
+    <string id="AFPOL_UI_ModuleEffect" text="模块效果" />
+    <string id="AFPOL_UI_EffectNameValue" text="{NAME}：{VALUE}" />
+    <string id="AFPOL_UI_InfluenceValue" text="影响力：{VALUE}" />
+    <string id="AFPOL_UI_HeroGoldValue" text="人物第纳尔：{VALUE}" />
+    <string id="AFPOL_UI_SoldierTroopXpValue" text="士兵精锐训练：{VALUE}" />
+    <string id="AFPOL_UI_PartySizeLimitValue" text="领主部队上限：{VALUE}" />
+    <string id="AFPOL_UI_KingdomStabilityValue" text="王国稳定：{SCHEDULE}{VALUE}" />
+    <string id="AFPOL_UI_ScheduleNextDayOnce" text="次日一次 {VALUE}" />
+    <string id="AFPOL_UI_ScheduleThenDaily" text="此后每日 {VALUE}" />
+    <string id="AFPOL_UI_ScheduleNextDayOnceXpPerSoldier" text="次日一次 {VALUE} 经验/士兵" />
+    <string id="AFPOL_UI_ScheduleThenDailyXpPerSoldier" text="此后每日 {VALUE} 经验/士兵" />
+    <string id="AFPOL_UI_ScheduleOnActivation" text="生效时一次 {VALUE}" />
+    <string id="AFPOL_UI_ScheduleDaily" text="每日 {VALUE}" />
+    <string id="AFPOL_UI_ScheduleNextDayOncePrefix" text="次日一次 " />
+    <string id="AFPOL_UI_ScheduleOnActivationPrefix" text="生效时一次 " />
+    <string id="AFPOL_UI_NativeTaxIncomePercent" text="原版主要税收收入 {VALUE}%" />
+    <string id="AFPOL_UI_RelativeVolunteerDailyChancePercent" text="相对原版每日志愿兵检查频率 {VALUE}%" />
+    <string id="AFPOL_UI_RelativeVillageGoodsProductionPercent" text="相对原版村庄货物产出 {VALUE}%" />
+    <string id="AFPOL_UI_RelativeCandidateScorePercent" text="相对原版候选分数 {VALUE}%" />
+    <string id="AFPOL_UI_NativePartySizeLimit" text="原版部队上限 {VALUE}" />
+    <string id="AFPOL_UI_ListSeparator" text="；" />
+    <string id="AFPOL_UI_NoChange" text="无变化" />
+    <string id="AFPOL_UI_AgendaRulerAcceptedDrafting" text="统治者已接受建议，AF 正在拟定；完成后将直接提交目标王国议程，无需再次确认。" />
+    <string id="AFPOL_UI_BalanceValueOutOfRange" text="{NAME}必须在 {MIN}–{MAX} 之间。" />
+	<string id="AFPOL_UI_PolicyNameHeader" text="《{NAME}》" />
+	<string id="AFPOL_UI_SentencePeriod" text="。" />
+	<string id="AFPOL_UI_RuntimeStatusSeparator" text="；" />
+	<string id="AFPOL_UI_ListItemSeparator" text="、" />
+	<string id="AFPOL_UI_LocalSectionSeparator" text="；" />
+	<string id="AFPOL_UI_EffectTargetSeparator" text="｜" />
+	<string id="AFPOL_UI_ReasonSuffix" text="｜原因：{REASON}" />
+	<string id="AFPOL_UI_EndReasonSeparator" text="：" />
+	<string id="AFPOL_UI_StatusSuffix" text="｜状态：{STATUS}" />
+	<string id="AFPOL_UI_UnknownCountry" text="未知国家" />
+	<string id="AFPOL_UI_UnknownTarget" text="未知目标" />
+	<string id="AFPOL_UI_UnknownTargetNoEffects" text="未知目标｜未记录模块效果" />
+	<string id="AFPOL_UI_NoModuleEffects" text="无模块效果" />
+	<string id="AFPOL_UI_LocalPublishFiefScope" text="发布地" />
+	<string id="AFPOL_UI_LocalMentionedTargetEffect" text="本国提及目标效果" />
+	<string id="AFPOL_UI_LocalPublishFiefEffect" text="发布地效果" />
+	<string id="AFPOL_UI_DurationSuffix" text="｜期限：{DURATION}" />
+	<string id="AFPOL_UI_DurationPermanent" text="永久" />
+	<string id="AFPOL_UI_DurationDays" text="持续 {DAYS} 天" />
+	<string id="AFPOL_UI_TargetLabel" text="目标：{TARGET}" />
+	<string id="AFPOL_UI_TargetLabelCount" text="目标：{COUNT} {UNIT}" />
+	<string id="AFPOL_UI_TargetCategoryLabel" text="目标{CATEGORY}：{SUMMARY}" />
+	<string id="AFPOL_UI_TargetOverflowWithUnit" text="（共 {COUNT} {UNIT}）" />
+	<string id="AFPOL_UI_TargetCategoryHeroes" text="人物" />
+	<string id="AFPOL_UI_TargetUnitHeroes" text="名人物" />
+	<string id="AFPOL_UI_TargetCategoryClans" text="氏族" />
+	<string id="AFPOL_UI_TargetUnitClans" text="个氏族" />
+	<string id="AFPOL_UI_TargetCategoryVillages" text="村庄" />
+	<string id="AFPOL_UI_TargetUnitVillages" text="个村庄" />
+	<string id="AFPOL_UI_TargetCategoryTowns" text="城镇" />
+	<string id="AFPOL_UI_TargetUnitTowns" text="个城镇" />
+	<string id="AFPOL_UI_TargetCategorySettlements" text="定居点" />
+	<string id="AFPOL_UI_TargetUnitSettlements" text="个定居点" />
+	<string id="AFPOL_UI_TargetCategoryKingdoms" text="王国" />
+	<string id="AFPOL_UI_TargetUnitKingdoms" text="个王国" />
+	<string id="AFPOL_UI_TargetCategoryAttachedVillages" text="附属村庄" />
+	<string id="AFPOL_UI_TargetUnitAttachedVillages" text="组附属村庄" />
+	<string id="AFPOL_UI_AttachedVillagesOf" text="{NAME}的附属村庄" />
+	<string id="AFPOL_UI_ClanWithLeader" text="{CLAN}（领主：{LEADER}）" />
+	<string id="AFPOL_UI_TargetKingdomLabel" text="目标王国：{TARGET}" />
+	<string id="AFPOL_UI_TargetKingdomCountKingdoms" text="目标王国：{COUNT} 个王国" />
+	<string id="AFPOL_UI_TargetKingdomOverflowKingdoms" text="等 {COUNT} 个王国" />
+	<string id="AFPOL_UI_TargetKingdomSummaryAllLords" text="目标王国：{SUMMARY}（全部领主）" />
+	<string id="AFPOL_UI_TargetKingdomAllLords" text="目标王国：{TARGET} 的全部领主" />
+	<string id="AFPOL_UI_TargetKingdomCountKingdomsAllLords" text="目标王国：{COUNT} 个王国的全部领主" />
+	<string id="AFPOL_UI_EndReasonRollbackPending" text="等待效果回滚" />
+	<string id="AFPOL_UI_EndReasonInternalRecorded" text="内部状态已记录" />
+	<string id="AFPOL_UI_EndReasonParenthetical" text="（{REASON}）" />
+	<string id="AFPOL_UI_EndReasonPlayerStopped" text="玩家主动停止" />
+	<string id="AFPOL_UI_EndReasonPlayerAbolished" text="玩家主动废除" />
+	<string id="AFPOL_UI_EndReasonReplacedByReReview" text="已由重新评议通过的新政策替代" />
+	<string id="AFPOL_UI_EndReasonRenewalTargetNotDirectVassal" text="续约时目标已不再是直属附庸国" />
+	<string id="AFPOL_UI_EndReasonRenewalTargetNotDirectVassalConfirmed" text="确认续约时目标已不再是直属附庸国" />
+	<string id="AFPOL_UI_EndReasonRenewalIndependenceBreakaway" text="续约独立度达到脱离阈值" />
+	<string id="AFPOL_UI_EndReasonDurationHasEnded" text="持续时间已结束" />
+	<string id="AFPOL_UI_EndReasonEffectTermEnded" text="效果期限结束" />
+	<string id="AFPOL_UI_EndReasonDurationEnded" text="持续时间结束" />
+	<string id="AFPOL_UI_EndReasonAllTargetFiefsLost" text="全部目标封地已经失去" />
+	<string id="AFPOL_UI_EndReasonTargetKingdomGone" text="目标王国不存在或已经消亡" />
+	<string id="AFPOL_UI_EndReasonLegacyUpgradeStopped" text="旧政策系统升级后停止，可重新评议" />
+	<string id="AFPOL_UI_SettlementTypeCastle" text="城堡" />
+	<string id="AFPOL_UI_SettlementTypeTown" text="城镇" />
+	<string id="AFPOL_UI_SettlementTypeVillage" text="村庄" />
+	<string id="AFPOL_UI_TargetKingdomLabelOnly" text="目标王国" />
+	<string id="AFPOL_UI_CannotRenewPendingTransaction" text="该政策仍有未完成交易，或记录不可用，当前无法续约。" />
+	<string id="AFPOL_UI_PolicyRecordStateUnconfirmedDeleteBlocked" text="无法确认政策记录状态，当前无法删除。" />
+	<string id="AFPOL_UI_PolicyRecordDeleteNotAllowed" text="仅已废除、自然到期、全部封地丧失或臣属关系终止，且无未完成交易的政策记录才可删除。" />
+	<string id="AFPOL_UI_PolicyRecordStateUnconfirmedNotDeleted" text="无法确认政策记录状态，未删除任何内容。" />
+	<string id="AFPOL_UI_DeletePolicyRecordTitle" text="删除政策记录" />
+	<string id="AFPOL_UI_DeletePolicyRecordConfirm" text="删除后，该记录不再出现在政策记录、传闻或政策检索中，也无法再从该记录续约或重新评议。历史效果不会回滚，已有对话记忆不会删除。确定删除？" />
+	<string id="AFPOL_UI_SaveSwitchedRecordNotDeleted" text="已切换存档，政策记录未删除。" />
+	<string id="AFPOL_UI_PolicyNameWrappedFormat" text="《{NAME}》" />
+	<string id="AFPOL_UI_HistoryStatusExpiryVotePending" text="到期废除投票中" />
+	<string id="AFPOL_UI_HistoryStatusAbolished" text="已废除" />
+	<string id="AFPOL_UI_HistoryStatusPendingVote" text="待投票" />
+	<string id="AFPOL_UI_HistoryStatusSubmitting" text="政策提交中" />
+	<string id="AFPOL_UI_HistoryStatusRenewalSubmitting" text="续约提交中" />
+	<string id="AFPOL_UI_HistoryStatusCommitSuspended" text="交易待完成" />
+	<string id="AFPOL_UI_HistoryStatusRejected" text="未通过" />
+	<string id="AFPOL_UI_HistoryStatusUnconfirmed" text="状态未确认" />
+	<string id="AFPOL_UI_ContinuousEffectsPermanent" text="持续效果：永久" />
+	<string id="AFPOL_UI_EffectSummaryRemainingDays" text="效果剩余 {DAYS} 天" />
+	<string id="AFPOL_UI_NoContinuousEffects" text="无持续效果" />
+    <string id="AFPOL_UI_PlayerPolicyStageDefault" text="政策评议" />
+    <string id="AFPOL_UI_PlayerPolicyStageFreezeSnapshot" text="冻结生成快照" />
+    <string id="AFPOL_UI_PlayerPolicyStageHistoryRecall" text="历史政策召回" />
+    <string id="AFPOL_UI_PlayerPolicyStageFirstParse" text="第一次通用评议解析" />
+    <string id="AFPOL_UI_PlayerPolicyStageFirstValidation" text="第一次通用评议校验" />
+    <string id="AFPOL_UI_PlayerPolicyStageEffectModuleRecall" text="效果模块召回" />
+    <string id="AFPOL_UI_PlayerPolicyStageTargetParsing" text="政策目标解析" />
+    <string id="AFPOL_UI_PlayerPolicyStageEffectPlanValidation" text="效果方案校验" />
+    <string id="AFPOL_UI_PlayerPolicyStageApiRequest" text="API 请求" />
+    <string id="AFPOL_UI_PlayerPolicyStageApiOrLocal" text="API 请求或本地处理" />
+    <string id="AFPOL_UI_PlayerPolicyStageManualRetrySubmit" text="手动重试提交" />
+    <string id="AFPOL_UI_PlayerPolicyRetryTitle" text="政策评议失败" />
+    <string id="AFPOL_UI_PlayerPolicyRetryBody" text="阶段：{STAGE}&#10;原因：{REASON}&#10;请求编号：{REQUEST}&#10;&#10;可点击下方“手动重试”重新提交原政策，或点击右上角 X 关闭。&#10;未扣除费用，也未应用任何效果。" />
+    <string id="AFPOL_UI_PlayerPolicyRequestIdUnavailable" text="不可用" />
+    <string id="AFPOL_UI_PlayerPolicyRetryDefaultReason" text="政策评议失败。" />
+    <string id="AFPOL_UI_PlayerPolicyInvalidTechnicalData" text="政策评议或效果处理返回了无效的技术数据。详细信息已写入日志。" />
+    <string id="AFPOL_UI_PlayerPolicyRetrySubmitFailed" text="重新校验并提交原政策时发生异常，详细技术信息已写入日志。" />
+    <string id="AFPOL_UI_PlayerPolicyNoResult" text="政策评议没有返回结果，未扣除费用。" />
+    <string id="AFPOL_UI_PlayerPolicyCostInvalid" text="政策消耗评估无效。" />
+    <string id="AFPOL_UI_PlayerPolicyNoFeesNoEffectsSuffix" text="&#10;&#10;未扣除费用，也未应用效果。" />
+    <string id="AFPOL_UI_PlayerPolicyCannotPublishTitle" text="政策无法发布" />
+    <string id="AFPOL_UI_PlayerPolicyConditionsChangedAfterEval" text="&#10;&#10;政策评议已经完成，但发布条件已变化，因此未扣除费用，也未应用效果。" />
+    <string id="AFPOL_UI_PlayerPolicyPublishFailedTitle" text="政策发布失败" />
+    <string id="AFPOL_UI_PlayerPolicyLandingFailed" text="政策评议完成后的落地处理失败，详细技术信息已写入日志。" />
+    <string id="AFPOL_UI_PlayerPolicyDoNotRepeatClick" text="&#10;&#10;未确认成功时不应重复点击；请查看日志。" />
+    <string id="AFPOL_UI_PlayerPolicyCannotSubmitTitle" text="政策无法提交" />
+    <string id="AFPOL_UI_PlayerPolicyConditionsChangedBeforeConfirm" text="&#10;&#10;确认前发布条件已变化，因此未扣除费用，也未应用效果。" />
+    <string id="AFPOL_UI_PlayerPolicySubmittedToAgendaTitle" text="政策已提交议程" />
+    <string id="AFPOL_UI_PlayerPolicySubmittedToAgendaBody" text="政策《{NAME}》已提交 AF 王国议程。议程通过前不会扣除政策成本，也不会产生数值效果。&#10;{COST}" />
+    <string id="AFPOL_UI_PlayerPolicyAgendaSubmitFailedTitle" text="政策提交失败" />
+    <string id="AFPOL_UI_PlayerPolicyAgendaSubmitFailedBody" text="政策未能提交议程，详细技术信息已写入日志。&#10;&#10;未扣除费用，也未应用效果。" />
+    <string id="AFPOL_UI_EffectFailIncompleteLinkedMechanism" text="模型返回的政策效果联动来源或去向不完整，系统已安全拒绝。" />
+    <string id="AFPOL_UI_EffectFailUnknownTargetHandle" text="模型返回了未知或未授权的政策效果目标句柄，系统已安全拒绝。" />
+    <string id="AFPOL_UI_EffectFailIncompatiblePair" text="模型返回的政策效果能力与目标句柄组合不兼容，系统已安全拒绝。" />
+    <string id="AFPOL_UI_EffectFailMissingIssuerKingdom" text="模型返回的跨国政策效果遗漏了发布王国一侧，系统已安全拒绝。" />
+    <string id="AFPOL_UI_EffectFailInvalidStructure" text="模型返回的政策效果缺少必需字段或字段类型不正确，系统已安全拒绝。" />
+    <string id="AFPOL_UI_EffectFailGeneric" text="模型返回的政策效果方案未通过结构与安全校验，系统已安全拒绝。" />
+    <string id="AFPOL_UI_TargetLabelShellTarget" text="目标" />
+    <string id="AFPOL_UI_TargetLabelShellPublishFief" text="发布地" />
+    <string id="AFPOL_UI_TargetLabelShellPublishFiefScope" text="发布地及附属村庄" />
+    <string id="AFPOL_UI_TargetLabelShellMentionedTarget" text="本国提及目标" />
+    <string id="AFPOL_UI_TargetLabelShellHomeKingdom" text="本国目标" />
+    <string id="AFPOL_UI_TargetLabelShellNoMatching" text="当前无符合条件目标" />
+    <string id="AFPOL_UI_TargetLabelShellDesignatedClan" text="指定氏族" />
+    <string id="AFPOL_UI_TargetLabelShellRulingClanHoldings" text="当前统治家族当前领地及附属村庄" />
+    <string id="AFPOL_UI_TargetLabelShellSelectedLocation" text="所选地方" />
+    <string id="AFPOL_UI_TargetLabelShellDesignatedSettlements" text="指定定居点" />
+    <string id="AFPOL_UI_TargetLabelShellCurrentHoldings" text="当前领地及附属村庄" />
+    <string id="AFPOL_UI_TargetLabelOwnerHoldings" text="{OWNER}当前领地及附属村庄" />
+    <string id="AFPOL_UI_TargetLabelParenthetical" text="（{TARGETS}）" />
+    <string id="AFPOL_UI_TargetLabelColonSeparator" text="：" />
+    <string id="AFPOL_UI_Unspecified" text="未指定" />
+    <string id="AFPOL_UI_NoticeNoClearNumericChange" text="没有明确的数值变化。" />
+    <string id="AFPOL_UI_NoticeSkippedUnknownTarget" text="跳过未知目标：{TARGET}" />
+    <string id="AFPOL_UI_NoticeSkippedInvalidDuration" text="跳过持续时间无效的效果：{TARGET}" />
+    <string id="AFPOL_UI_NoticeNoDailyDeltaDurationKept" text="{TARGET}没有每日数值变化，但政策有效期仍保留 {DAYS} 天。" />
+    <string id="AFPOL_UI_NoticeNoApplicableNumericChange" text="政策未产生可落地的数值变化。" />
+    <string id="AFPOL_UI_NoticeSkippedUnknownLocalTarget" text="跳过未知地方目标句柄：{TARGET}" />
+    <string id="AFPOL_UI_NoticeSkippedInvalidLocalTargetDuration" text="跳过持续时间无效的地方目标：{TARGET}" />
+    <string id="AFPOL_UI_NoticeAllDailyValuesZero" text="全部每日数值为 0：政策仍会计时、显示反馈并进入地方记录，费用仍按本次实际投入结算。" />
+    <string id="AFPOL_UI_BalanceUnitRange" text="{UNIT}；范围 {MIN}–{MAX}" />
+    <string id="AFPOL_UI_ModuleManagerSummary" text="已启用  玩家 {PLAYER_ON}/{PLAYER_TOTAL}   地方 {LOCAL_ON}/{LOCAL_TOTAL}   统治者 {RULER_ON}/{RULER_TOTAL}   附庸 {VASSAL_ON}/{VASSAL_TOTAL}" />
+    <string id="AFPOL_UI_NpcAgendaConfirmed" text="AF 已确认《{POLICY}》进入{KINGDOM}议程，预计 {DAYS} 天后审议；统治者将推动采纳。" />
+    <string id="AFPOL_UI_NpcAgendaUnconfirmed" text="AF 未能确认《{POLICY}》已进入目标王国议程。为避免重复决定，本次不提供直接重试；请查看政策日志。" />
+    <string id="AFPOL_UI_NpcAgendaResubmitted" text="已手动重新提交统治者政策建议；AF 将冻结新快照并生成新的议程请求。" />
+    <string id="AFPOL_UI_PolicyReadyAiCostStatus" text="填写政策名和政策内容后即可发布。智能服务会评估完整执行所需第纳尔；若第纳尔不足，将为你保留 {RESERVE} 第纳尔，并按实际投入比例折算全部效果。" />
+    <string id="AFPOL_UI_PolicyReadyFixedCostStatus" text="填写政策名和政策内容后即可发布。智能服务完成评议且成功落地时扣除：{COST}。无冷却限制，可连续发布。" />
+    <string id="AFPOL_UI_PolicyRequiresKingdom" text="你尚未加入任何王国，不能提交全国政策。" />
+    <string id="AFPOL_UI_OnlyKingdomRulerCanPublish" text="只有王国统治者才能提交全国政策；拥有城镇或城堡的非统治者请使用地方政策。" />
+    <string id="AFPOL_UI_KingdomPolicyCostRequired" text="发布政策需要 {AMOUNT} 第纳尔。" />
+    <string id="AFPOL_UI_LocalPolicyCostRequired" text="发布地方政策需要 {AMOUNT} 第纳尔。" />
+    <string id="AFPOL_UI_PlayerPolicyGoldCostSummary" text="启动所需：{REQUIRED}；启动实付：{PAID}；每日维护：{DAILY}；累计维护：{TOTAL}" />
+    <string id="AFPOL_UI_PlayerPolicyAiCostSettlementScale" text="（已为你保留 {RESERVE} 第纳尔）。全部政策效果按 {SCALE} 生效。" />
+    <string id="AFPOL_UI_PolicyFeedbackUnclearDefault" text="各地民众已经听闻这项新政策，但反馈尚不明朗。" />
+    <string id="AFPOL_UI_LocalPolicyFeedbackUnclearDefault" text="所选封地及其附属村庄的民众已经听闻这项地方政策，但反馈尚不明朗。" />
+    <string id="AFPOL_UI_PolicyImpactDefault" text="政策影响需按评判器与世界状态判断。" />
+    <string id="AFPOL_UI_VassalIndependenceNeutralDefault" text="政策对附庸国独立倾向的影响被评为中性。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorRequestEmpty" text="政策请求为空。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorApiConfigUnavailable" text="冻结的政策 API 配置不可用。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorHistoryRecall" text="历史政策语义召回失败。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorMainParse" text="政策主评判未返回可解析的结构化结果。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorDuration" text="政策主评议没有返回有效的正整数持续天数。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorPoliticalWeights" text="政策主评议没有返回三个有效且不全为零的意识形态权重；每项必须在 -1 到 1 之间。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorEffectModuleRecall" text="效果模块语义召回失败。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorTimeout" text="政策评议超过 3 分钟，网络请求已取消。请检查网络与智能服务状态后重试。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorException" text="政策评议请求发生异常，详细技术信息已写入日志。" />
+    <string id="AFPOL_UI_AutoDraftTargetUnavailable" text="所选政策国家已经失效，或玩家已不再具备发布资格。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorCheckApiSettings" text="请检查 MCM 的政策 API 来源或主 API 设置。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorMainApiIncomplete" text="主 API 配置不完整，政策生成无法开始。" />
+    <string id="AFPOL_UI_PlayerPolicyErrorSelectedAndMainApiIncomplete" text="所选政策 API 配置不完整，且主 API 也不完整，政策生成无法开始。" />
+    <string id="AFPOL_UI_AiDraftBlockedDuringEvaluation" text="上一份政策仍在评议，暂时不能使用AI编写。" />
+    <string id="AFPOL_UI_AiDraftAlreadyRunning" text="已有一份内容正在AI编写，请稍候。" />
+    <string id="AFPOL_UI_AiDraftServiceUnavailable" text="AI服务配置不可用，请检查模型、密钥与连接设置。" />
+    <string id="AFPOL_UI_AiDraftEmptyResult" text="AI编写没有返回有效的结构化结果。" />
+    <string id="AFPOL_UI_AiDraftUnparseableResult" text="AI编写返回的结构化结果无法解析。" />
+    <string id="AFPOL_UI_AiDraftFieldsOnly" text="AI编写只能返回政策名和政策正文两个字段。" />
+    <string id="AFPOL_UI_AiDraftFieldsMustBeText" text="AI编写返回的政策名和政策正文必须是文本。" />
+    <string id="AFPOL_UI_AiDraftEmptyFields" text="AI编写返回了空的政策名或政策正文。" />
+    <string id="AFPOL_UI_AiDraftChangedPolicyName" text="AI编写修改了玩家已指定的政策名。" />
+    <string id="AFPOL_UI_AiDraftRequestFailed" text="AI编写请求失败，请检查连接设置并查看日志。" />
+    <string id="AFPOL_UI_AiDraftDiscardedAfterLoad" text="政策草案请求已因读档失效。" />
+
+    <string id="AFPOL_UI_Effect_ClanInfluenceName" text="家族影响力" />
+    <string id="AFPOL_UI_Effect_ClanInfluenceSummary" text="家族影响力：一次性与每日变化" />
+    <string id="AFPOL_UI_Effect_HeroGoldName" text="人物第纳尔" />
+    <string id="AFPOL_UI_Effect_HeroGoldSummary" text="人物与原版职业群体的个人第纳尔变化" />
+    <string id="AFPOL_UI_Effect_KingdomStabilityName" text="王国稳定" />
+    <string id="AFPOL_UI_Effect_KingdomStabilitySummary" text="下一游戏日一次性王国稳定度变化" />
+    <string id="AFPOL_UI_Effect_PartySizeLimitName" text="领主部队上限" />
+    <string id="AFPOL_UI_Effect_PartySizeLimitSummary" text="调整统治者、家族或全国领主的部队人数上限" />
+    <string id="AFPOL_UI_Effect_SoldierTroopXpName" text="士兵精锐化" />
+    <string id="AFPOL_UI_Effect_SoldierTroopXpSummary" text="目标家族领主队伍与驻军普通士兵的一次性或每日经验" />
+    <string id="AFPOL_UI_Effect_ClanLeaderRelationName" text="家族领袖关系" />
+    <string id="AFPOL_UI_Effect_ClanLeaderRelationSummary" text="发布者与其他家族领袖的一次性关系变化" />
+    <string id="AFPOL_UI_Effect_ProsperityPerDayName" text="城镇繁荣变化" />
+    <string id="AFPOL_UI_Effect_ProsperityPerDaySummary" text="城镇每日繁荣变化" />
+    <string id="AFPOL_UI_Effect_VolunteerProductionGrowthName" text="志愿兵补充与成长" />
+    <string id="AFPOL_UI_Effect_VolunteerProductionGrowthSummary" text="目标领地志愿兵补充判定与原版成长尝试频率的相对变化" />
+    <string id="AFPOL_UI_Effect_ArmyFormationTendencyName" text="军团组建倾向" />
+    <string id="AFPOL_UI_Effect_ArmyFormationTendencySummary" text="目标家族合格领主的军团组建候选分数相对变化" />
+    <string id="AFPOL_UI_Effect_VillageProductionName" text="村庄商品产量" />
+    <string id="AFPOL_UI_Effect_VillageProductionSummary" text="行政附属村庄全部原版商品产量的相对变化" />
+    <string id="AFPOL_UI_Effect_MilitiaPerDayName" text="民兵" />
+    <string id="AFPOL_UI_Effect_MilitiaPerDaySummary" text="定居点每日民兵变化" />
+    <string id="AFPOL_UI_Effect_FoodPerDayName" text="粮食储备" />
+    <string id="AFPOL_UI_Effect_FoodPerDaySummary" text="城镇每日粮食库存变化" />
+    <string id="AFPOL_UI_Effect_LoyaltyPerDayName" text="城镇忠诚" />
+    <string id="AFPOL_UI_Effect_LoyaltyPerDaySummary" text="城镇每日忠诚变化" />
+    <string id="AFPOL_UI_Effect_TaxIncomeName" text="城镇与城堡税收" />
+    <string id="AFPOL_UI_Effect_TaxIncomeSummary" text="城镇或城堡所属氏族税收百分比变化" />
+    <string id="AFPOL_UI_Effect_KingdomVillageRaidBanName" text="王国禁掠村庄" />
+    <string id="AFPOL_UI_Effect_KingdomVillageRaidBanSummary" text="禁止发布者本国领主主动劫掠村庄" />
+    <string id="AFPOL_UI_Effect_SecurityPerDayName" text="城镇治安" />
+    <string id="AFPOL_UI_Effect_SecurityPerDaySummary" text="城镇每日治安变化" />
+    <string id="AFPOL_UI_Effect_HearthPerDayName" text="村庄户数" />
+    <string id="AFPOL_UI_Effect_HearthPerDaySummary" text="村庄每日户数变化" />
+    <string id="AFPOL_UI_Effect_ConstructionPerDayName" text="设施建造力" />
+    <string id="AFPOL_UI_Effect_ConstructionPerDaySummary" text="城镇或城堡每日建造力点数变化" />
+    <string id="AFPOL_UI_PromptAutoDraftFileCorrupt" text="已有玩家AI编写提示词文件损坏；请先备份或修复原件，未覆盖原件。" />
+    <string id="AFPOL_UI_PromptCommonEffectFileCorrupt" text="已有政策效果共同要求文件损坏；未覆盖原件。" />
+    <string id="AFPOL_UI_PromptModuleFileCorrupt" text="已有政策效果要求文件损坏；未覆盖原件。" />
+    <string id="AFPOL_UI_PromptEffectNotEditable" text="所选政策效果已不可编辑。" />
+    <string id="AFPOL_UI_PromptStorageFolderUnavailable" text="无法定位政策提示词文件夹。" />
+    <string id="AFPOL_UI_PromptTargetDirectoryEmpty" text="政策提示词目标目录为空。" />
+    <string id="AFPOL_UI_PromptModuleIdUnsafe" text="政策效果 ModuleId 不能安全映射为提示词文件名。" />
+    <string id="AFPOL_UI_VassalPolicyPrepareFailed" text="附庸关系无法冻结为可提交状态，政策未生效、独立度未变更。" />
+    <string id="AFPOL_UI_VassalPolicyCommitRolledBack" text="政策提交失败，已撤销效果与本地/统一记录；独立度尚未变更。" />
+    <string id="AFPOL_UI_VassalPolicyCommitUnconfirmed" text="独立度提交结果暂时无法确认；政策已保留为外部提交待对账状态，不会重复增加独立度。" />
+    <string id="AFPOL_UI_VassalPolicyCommitUnchanged" text="独立度提交前置状态已变化或提交未发生；AF 效果与记录已安全撤销。" />
+    <!-- Player policy autodraft UI notices -->
+    <string id="AFPOL_UI_AutoDraft_MissingDescription" text="缺少政策描述。" />
+    <string id="AFPOL_UI_AutoDraft_NeedTitleOrContent" text="请先填写政策标题或政策内容。" />
+    <string id="AFPOL_UI_AutoDraft_EvaluatingPrevious" text="上一份政策仍在评议，暂时不能使用AI编写。" />
+    <string id="AFPOL_UI_AutoDraft_AlreadyDrafting" text="已有一份内容正在AI编写，请稍候。" />
+    <string id="AFPOL_UI_AutoDraft_ApiUnavailable" text="AI服务配置不可用，请检查模型、密钥与连接设置。" />
+    <string id="AFPOL_UI_AutoDraft_Failed" text="AI编写失败。" />
+    <!-- LocalPolicyUi autodraft error mapping -->
+    <string id="AFPOL_UI_AutoDraft_RequestFailed" text="AI编写请求失败，请检查连接设置并查看日志。" />
+    <string id="AFPOL_UI_AutoDraft_StaleDraft" text="政策草案请求已因读档失效。" />
+    <string id="AFPOL_UI_AutoDraft_NoStructuredResult" text="AI编写没有返回有效的结构化结果。" />
+    <string id="AFPOL_UI_AutoDraft_CannotParseStructuredResult" text="AI编写返回的结构化结果无法解析。" />
+    <string id="AFPOL_UI_AutoDraft_OnlyTwoFieldsAllowed" text="AI编写只能返回政策名和政策正文两个字段。" />
+    <string id="AFPOL_UI_AutoDraft_FieldsMustBeText" text="AI编写返回的政策名和政策正文必须是文本。" />
+    <string id="AFPOL_UI_AutoDraft_FieldsCannotBeEmpty" text="AI编写返回了空的政策名或政策正文。" />
+    <string id="AFPOL_UI_AutoDraft_CannotModifyExistingName" text="AI编写修改了玩家已指定的政策名。" />
+      <string id="AFPOL_UI_CampaignDate" text="{YEAR}年{SEASON}季{DAY}日" />
+    <string id="AFPOL_UI_NoAvailablePolicySummary" text="该政策尚无可用摘要。" />
+    <string id="AFPOL_UI_SeasonSpring" text="春" />
+    <string id="AFPOL_UI_SeasonSummer" text="夏" />
+    <string id="AFPOL_UI_SeasonAutumn" text="秋" />
+    <string id="AFPOL_UI_SeasonWinter" text="冬" />
+      <string id="AFPOL_UI_PromptFileTooLarge" text="政策提示词 JSON 超过大小限制，原件未覆盖。" />
+  </strings>
+</base>

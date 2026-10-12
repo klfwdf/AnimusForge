@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="AF_NPCACTION_EDITOR_Day" text="第 {DAY} 日" />
+    <string id="AF_NPCACTION_EDITOR_DetailKind" text="查看行动记录（结构化） - {DATE} / {KIND}" />
+    <string id="AF_NPCACTION_EDITOR_DetailDate" text="查看行动记录（结构化） - {DATE}" />
+    <string id="AF_NPCACTION_EDITOR_ActionSummary" text="这是一条{KIND}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewLocation" text="地点在{SETTLEMENT}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewActorClanKingdom" text="其所属家族是{CLAN}，隶属于{KINGDOM}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewActorClan" text="其所属家族是{CLAN}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewActorKingdom" text="其隶属于{KINGDOM}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewOwnerClanKingdom" text="当时该地由{CLAN}掌控，隶属于{KINGDOM}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewOwnerKingdom" text="当时该地隶属于{KINGDOM}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewOwnerClan" text="当时该地由{CLAN}掌控" />
+    <string id="AF_NPCACTION_EDITOR_PreviewTargetHero" text="涉及人物是{HERO}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewTargetClan" text="涉及家族是{CLAN}" />
+    <string id="AF_NPCACTION_EDITOR_PreviewTargetKingdom" text="涉及王国是{KINGDOM}" />
+    <string id="AF_NPCACTION_EDITOR_ResultSentence" text="结果是{RESULT}。" />
+    <string id="AF_NPCACTION_EDITOR_ResultSummary" text="结果是{RESULT}" />
+    <string id="AF_NPCACTION_EDITOR_KindSentence" text="这属于{KIND}。" />
+    <string id="AF_NPCACTION_EDITOR_ActorClanKingdom" text="{ACTOR}所属家族是{CLAN}，隶属于{KINGDOM}。" />
+    <string id="AF_NPCACTION_EDITOR_ActorClan" text="{ACTOR}所属家族是{CLAN}。" />
+    <string id="AF_NPCACTION_EDITOR_ActorKingdom" text="{ACTOR}隶属于{KINGDOM}。" />
+    <string id="AF_NPCACTION_EDITOR_LocationSentence" text="地点是{SETTLEMENT}。" />
+    <string id="AF_NPCACTION_EDITOR_OwnerClanKingdom" text="当时该定居点由{CLAN}掌控，隶属于{KINGDOM}。" />
+    <string id="AF_NPCACTION_EDITOR_OwnerClan" text="当时该定居点由{CLAN}掌控。" />
+    <string id="AF_NPCACTION_EDITOR_OwnerKingdom" text="当时该定居点隶属于{KINGDOM}。" />
+    <string id="AF_NPCACTION_EDITOR_PreviousOwner" text="在此之前，这里由{CLAN}掌控，归属{KINGDOM}。" />
+    <string id="AF_NPCACTION_EDITOR_TargetHero" text="直接涉及的人物是{HERO}。" />
+    <string id="AF_NPCACTION_EDITOR_TargetClan" text="涉及的家族是{CLAN}。" />
+    <string id="AF_NPCACTION_EDITOR_TargetKingdom" text="涉及的王国是{KINGDOM}。" />
+    <string id="AF_NPCACTION_EDITOR_DateSentence" text="{DATE}。" />
+    <string id="AF_NPCACTION_EDITOR_NarrativeSentence" text="{NARRATIVE}。" />
+    <string id="AF_NPCACTION_EDITOR_Separator" text="；" />
+    <string id="AF_NPCACTION_EDITOR_Period" text="。" />
+    <string id="AF_NPCACTION_EDITOR_Invalid" text="无效行动" />
+    <string id="AF_NPCACTION_EDITOR_DetailTitle" text="查看行动记录（结构化）" />
+    <string id="AF_NPCACTION_EDITOR_SummaryHeading" text="【易读说明】" />
+    <string id="AF_NPCACTION_EDITOR_RawHeading" text="【原始字段】" />
+    <string id="AF_NPCACTION_EDITOR_FieldDate" text="日期" />
+    <string id="AF_NPCACTION_EDITOR_FieldDay" text="日序" />
+    <string id="AF_NPCACTION_EDITOR_FieldText" text="显示文本" />
+    <string id="AF_NPCACTION_EDITOR_FieldKind" text="行动类型" />
+    <string id="AF_NPCACTION_EDITOR_FieldMajor" text="是否重大行动" />
+    <string id="AF_NPCACTION_EDITOR_Yes" text="是" />
+    <string id="AF_NPCACTION_EDITOR_No" text="否" />
+    <string id="AF_NPCACTION_EDITOR_FieldResult" text="结果" />
+    <string id="AF_NPCACTION_EDITOR_Won" text="获胜" />
+    <string id="AF_NPCACTION_EDITOR_Lost" text="失利" />
+    <string id="AF_NPCACTION_EDITOR_FieldLocation" text="地点文本" />
+    <string id="AF_NPCACTION_EDITOR_FieldSettlement" text="定居点" />
+    <string id="AF_NPCACTION_EDITOR_FieldSettlementId" text="定居点ID" />
+    <string id="AF_NPCACTION_EDITOR_FieldOwnerHero" text="定居点所属领主" />
+    <string id="AF_NPCACTION_EDITOR_FieldOwnerClan" text="定居点所属家族" />
+    <string id="AF_NPCACTION_EDITOR_FieldOwnerKingdom" text="定居点所属王国" />
+    <string id="AF_NPCACTION_EDITOR_FieldPreviousHero" text="定居点前任领主" />
+    <string id="AF_NPCACTION_EDITOR_FieldPreviousClan" text="定居点前任家族" />
+    <string id="AF_NPCACTION_EDITOR_FieldPreviousKingdom" text="定居点前任王国" />
+    <string id="AF_NPCACTION_EDITOR_FieldActorHero" text="行动人物" />
+    <string id="AF_NPCACTION_EDITOR_FieldActorClan" text="行动家族" />
+    <string id="AF_NPCACTION_EDITOR_FieldActorKingdom" text="行动王国" />
+    <string id="AF_NPCACTION_EDITOR_FieldTargetHero" text="目标人物" />
+    <string id="AF_NPCACTION_EDITOR_FieldTargetClan" text="目标家族" />
+    <string id="AF_NPCACTION_EDITOR_FieldTargetKingdom" text="目标王国" />
+    <string id="AF_NPCACTION_EDITOR_FieldRelatedHeroes" text="相关人物ID" />
+    <string id="AF_NPCACTION_EDITOR_FieldRelatedClans" text="相关家族ID" />
+    <string id="AF_NPCACTION_EDITOR_FieldRelatedKingdoms" text="相关王国ID" />
+    <string id="AF_NPCACTION_EDITOR_MissingMetadata" text="提示：这条行动缺少较完整的结构化元数据，可能是旧版本记录，或当时游戏未提供足够目标信息。" />
+    <string id="AF_NPCACTION_EDITOR_NewRecords" text="建议让游戏继续跑 1-2 天，再观察新生成的行动记录。" />
+    <string id="AF_NPCACTION_EDITOR_PreviewMajor" text="属于重大行动" />
+    <string id="AF_NPCACTION_EDITOR_NoSummary" text="这条记录暂时没有可读摘要。" />
+    <string id="AF_NPCACTION_EDITOR_LimitedMetadata" text="这条记录的结构化信息较少" />
+    <string id="AF_NPCACTION_EDITOR_Actor" text="该人物" />
+    <string id="AF_NPCACTION_EDITOR_MajorSentence" text="这被归类为重大行动。" />
+    <string id="AF_NPCACTION_EDITOR_FieldValue" text="{LABEL}：{VALUE}" />
+    <string id="AF_NPCACTION_EDITOR_KindWithId" text="{KIND} ({ID})" />
+    <string id="AF_NPCACTION_EDITOR_KindArmyCreate" text="组建军团的行动" />
+    <string id="AF_NPCACTION_EDITOR_KindArmyGather" text="军团集结行动" />
+    <string id="AF_NPCACTION_EDITOR_KindArmyDisperse" text="军团解散行动" />
+    <string id="AF_NPCACTION_EDITOR_KindArmyJoin" text="加入军团的行动" />
+    <string id="AF_NPCACTION_EDITOR_KindArmyLeave" text="离开军团的行动" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeStartAttack" text="参与围攻的行动" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeStartDefend" text="参与守城的行动" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeEndAttack" text="围城结束后的攻方行动" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeEndDefend" text="围城结束后的守方行动" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeJoin" text="加入围城的行动" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeLeave" text="离开围城的行动" />
+    <string id="AF_NPCACTION_EDITOR_KindSiegeComplete" text="围城结果事件" />
+    <string id="AF_NPCACTION_EDITOR_KindDailyBehavior" text="近期行军动向" />
+    <string id="AF_NPCACTION_EDITOR_KindMapEvent" text="战场交锋" />
+    <string id="AF_NPCACTION_EDITOR_KindMapEventAftermath" text="战后余波" />
+    <string id="AF_NPCACTION_EDITOR_KindTournamentFinished" text="竞技大会胜出事件" />
+    <string id="AF_NPCACTION_EDITOR_KindDuelResult" text="正式决斗结果" />
+    <string id="AF_NPCACTION_EDITOR_KindMarriage" text="联姻事件" />
+    <string id="AF_NPCACTION_EDITOR_KindClanChangedKingdom" text="家族更换效忠对象的事件" />
+    <string id="AF_NPCACTION_EDITOR_KindClanDefected" text="家族叛逃事件" />
+    <string id="AF_NPCACTION_EDITOR_KindClanRebellion" text="家族叛乱事件" />
+    <string id="AF_NPCACTION_EDITOR_KindKingdomDecision" text="王国决议事件" />
+    <string id="AF_NPCACTION_EDITOR_KindDiplomacyPending" text="双边外交复议进展" />
+    <string id="AF_NPCACTION_EDITOR_KindDiplomacyOutcome" text="双边外交最终结果" />
+    <string id="AF_NPCACTION_EDITOR_KindRulingClanChanged" text="执政家族变更事件" />
+    <string id="AF_NPCACTION_EDITOR_KindSettlementGain" text="定居点归属增加事件" />
+    <string id="AF_NPCACTION_EDITOR_KindSettlementLoss" text="定居点归属失去事件" />
+    <string id="AF_NPCACTION_EDITOR_KindSettlementCapture" text="定居点易主事件" />
+    <string id="AF_NPCACTION_EDITOR_KindHeroKilled" text="英雄死亡事件" />
+    <string id="AF_NPCACTION_EDITOR_KindHeroExecuted" text="被处决事件" />
+    <string id="AF_NPCACTION_EDITOR_KindClanMemberKilled" text="家族成员死亡事件" />
+    <string id="AF_NPCACTION_EDITOR_KindPrisonerCaptor" text="俘获领主事件" />
+    <string id="AF_NPCACTION_EDITOR_KindPrisonerTaken" text="被俘事件" />
+    <string id="AF_NPCACTION_EDITOR_KindPrisonerReleased" text="囚犯获释事件" />
+    <string id="AF_NPCACTION_EDITOR_KindCaptivityEnded" text="结束囚禁事件" />
+    <string id="AF_NPCACTION_EDITOR_KindBirth" text="家族新生事件" />
+    <string id="AF_NPCACTION_EDITOR_KindClanLeaderChanged" text="家族族长更替事件" />
+  </strings>
+</base>

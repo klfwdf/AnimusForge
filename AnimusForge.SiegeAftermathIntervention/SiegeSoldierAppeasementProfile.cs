@@ -8,35 +8,53 @@ public sealed class SiegeSoldierAppeasementProfile
 {
     public const uint ValidationMessageColor = 0xFFFFD27Fu;
 
-    public const string TargetValidationMessage = "【攻城处置】安抚军心必须对己方入城士兵进行。";
+    public const string TargetValidationMessage = "[Siege aftermath] Appeasing soldier morale must be directed to an allied soldier.";
+    public const string TargetValidationMessageEn = "[Siege aftermath] Appeasing soldier morale must target allied soldiers who entered the town.";
 
     public int MoralePenalty { get; } = 20;
 
-    public string NeedMemoryTitle { get; } = "军心";
+    public string NeedMemoryTitle { get; } = SiegeAftermathCompatibilityTexts.Raw("appease_morale_title");
+    public string NeedMemoryTitleEn { get; } = "Morale";
 
-    public string NeedMessageText { get; } = "【攻城处置】部分士兵对放弃战利品有些不满；若离场前安抚己方士兵，可避免主队士气 -20。";
+    public string NeedMessageText { get; } = SiegeAftermathCompatibilityTexts.Raw("appease_need_msg");
+    public string NeedMessageTextEn { get; } = "[Siege aftermath] Some soldiers are discontented over missed loot; appease allied soldiers before leaving to avoid party morale -20.";
 
     public uint NeedMessageColor { get; } = 0xFFFFD27Fu;
 
-    public string AppeasementMemoryTitle { get; } = "安兵";
+    public string AppeasementMemoryTitle { get; } = SiegeAftermathCompatibilityTexts.Raw("appease_done_title");
+    public string AppeasementMemoryTitleEn { get; } = "Soldier Appeasement";
 
-    public string AppeasementMemoryText { get; } = "玩家已经安抚己方士兵，承诺军纪、补偿或日后战利安排，避免因宽恕/救济/宣抚/盟誓路线扣除士气。";
+    public string AppeasementMemoryText { get; } = SiegeAftermathCompatibilityTexts.Raw("appease_done_memory");
+    public string AppeasementMemoryTextEn { get; } = "The player appeased allied soldiers with discipline, compensation, or future loot arrangements, avoiding morale deductions from mercy/relief routes.";
 
-    public string AppeasementMessageText { get; } = "【攻城处置】你安抚了士兵，军中对放弃搜掠的怨气被压下，本次不会扣除士气。";
+    public string AppeasementMessageText { get; } = SiegeAftermathCompatibilityTexts.Raw("appease_done_msg");
+    public string AppeasementMessageTextEn { get; } = "[Siege aftermath] You appeased the soldiers; discontent over foregoing pillage was calmed, no morale deducted.";
 
     public uint AppeasementMessageColor { get; } = 0xFFB6F7A8u;
 
-    public string PenaltyMemoryTitle { get; } = "军心";
+    public string PenaltyMemoryTitle { get; } = SiegeAftermathCompatibilityTexts.Raw("appease_morale_title");
+    public string PenaltyMemoryTitleEn { get; } = "Morale";
 
-    public string PenaltyMemoryText { get; } = "玩家未在离场结算前安抚因放弃战利品而不满的士兵，主队士气扣除20。";
+    public string PenaltyMemoryText { get; } = SiegeAftermathCompatibilityTexts.Raw("appease_penalty_memory");
+    public string PenaltyMemoryTextEn { get; } = "The player did not appease soldiers discontented over missed loot before departure; party morale deducted by 20.";
 
-    public string PenaltyMessageText { get; } = "【攻城处置】士兵对放弃战利品仍有怨气，主队士气 -20。";
+    public string PenaltyMessageText { get; } = SiegeAftermathCompatibilityTexts.Raw("appease_penalty_msg");
+    public string PenaltyMessageTextEn { get; } = "[Siege aftermath] Soldiers remain resentful over missed loot; party morale -20.";
 
     public uint PenaltyMessageColor { get; } = 0xFFFF7777u;
 
     public string BuildNeedMemoryText(string outcomeName)
+        => BuildNeedMemoryText(outcomeName, false);
+
+    public string BuildNeedMemoryText(string outcomeName, bool isEnglish)
     {
-        string label = string.IsNullOrWhiteSpace(outcomeName) ? "宽恕处置" : outcomeName.Trim();
-        return "玩家选择" + label + "触发部分士兵对放弃战利品的含蓄不满；若离场前对己方士兵安抚并触发安兵标签，可避免士气惩罚。";
+        string label = string.IsNullOrWhiteSpace(outcomeName)
+            ? (isEnglish ? "mercy disposition" : SiegeAftermathCompatibilityTexts.Raw("appease_mercy_disposition"))
+            : outcomeName.Trim();
+        if (isEnglish)
+        {
+            return "The player\u0027s choice of " + label + " triggered subtle discontent over missed loot; appeasing allied soldiers before departure avoids morale penalty.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("appease_trigger_prefix") + label + SiegeAftermathCompatibilityTexts.Raw("appease_trigger_suffix");
     }
 }

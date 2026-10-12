@@ -1,0 +1,865 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_KNOWLEDGE_RuleIndexLabel" text="{NAME} (关键词:{KEYWORDS} 条, RAG短句:{RAG} 条, 提示词:{VARIANTS} 条)" />
+    <string id="AF_KNOWLEDGE_DuplicateConditionTitle" text="条件重复" />
+    <string id="AF_KNOWLEDGE_DuplicateCondition" text="不允许存在多个条件完全相同的提示词。&#10;&#10;重复对象：{ITEM} 条提示词&#10;&#10;重复条件：&#10;{CONDITION}" />
+    <string id="AF_KNOWLEDGE_Back" text="返回" />
+    <string id="AF_KNOWLEDGE_PlayerPersonaCreateFailed" text="打开玩家角色介绍失败：无法创建知识条目。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceCreateFailed" text="打开玩家外貌与背景编辑器失败：无法创建知识条目。" />
+    <string id="AF_KNOWLEDGE_PlayerNameKeywordConflict" text="玩家本名关键词未能自动加入，因为它已被其他知识占用（RuleId={RULE_ID}）。" />
+    <string id="AF_KNOWLEDGE_KeywordAlreadyExists" text="这个称呼已经存在了。" />
+    <string id="AF_KNOWLEDGE_KeywordConflict" text="添加失败：这个称呼已被其他知识占用（RuleId={RULE_ID}）。" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundRequiresCondition" text="细化背景至少需要保留一个条件；如果想写通用背景，请回到上一层使用“背景信息（照旧）”。" />
+    <string id="AF_KNOWLEDGE_SettingsUnavailable" text="无法读取 MCM 设置。" />
+    <string id="AF_KNOWLEDGE_InvalidInteger" text="请输入有效整数。" />
+    <string id="AF_KNOWLEDGE_CreateRuleEmpty" text="创建失败：第一个关键词为空或无法用于命名。" />
+    <string id="AF_KNOWLEDGE_CreateRuleDuplicate" text="创建失败：已存在同名知识条目（ID={ID}）。请换一个关键词。" />
+    <string id="AF_KNOWLEDGE_CreateRuleKeywordConflict" text="创建失败：关键词已被其他知识条目占用（关键词={KEYWORD}，RuleId={RULE_ID}）。" />
+    <string id="AF_KNOWLEDGE_BulkActionsCannotMix" text="批量删除页里，操作按钮不能和知识条目一起多选。" />
+    <string id="AF_KNOWLEDGE_NoRulesSelected" text="没有选中可删除的知识。" />
+    <string id="AF_KNOWLEDGE_ConfirmBulkDeleteTitle" text="确认批量删除" />
+    <string id="AF_KNOWLEDGE_ConfirmBulkDelete" text="将要删除以下知识：&#10;&#10;{PREVIEW}&#10;&#10;共 {COUNT} 条。此操作不可撤销。" />
+    <string id="AF_KNOWLEDGE_ConfirmDelete" text="确认删除" />
+    <string id="AF_KNOWLEDGE_Deleted" text="已删除知识 {COUNT} 条。" />
+    <string id="AF_KNOWLEDGE_AgeRangeTitle" text="设置年龄范围" />
+    <string id="AF_KNOWLEDGE_AgeRangePrompt" text="请输入年龄范围，格式为 最小-最大。&#10;例如：18-35&#10;当前值：{MIN}-{MAX}" />
+    <string id="AF_KNOWLEDGE_InvalidAgeRange" text="请输入合法范围，例如 18-35。" />
+    <string id="AF_KNOWLEDGE_Confirm" text="确定" />
+    <string id="AF_KNOWLEDGE_KeywordInRuleAlreadyExists" text="添加失败：该关键词已存在于本知识条目中。" />
+    <string id="AF_KNOWLEDGE_RagTooLong" text="添加失败：RAG专用短句不能超过 {MAX} 字符。" />
+    <string id="AF_KNOWLEDGE_RagAlreadyExists" text="添加失败：该RAG专用短句已存在于本知识条目中。" />
+    <string id="AF_KNOWLEDGE_RagGenerationNoSource" text="[知识] 生成失败：当前知识缺少可供生成的内容。" />
+    <string id="AF_KNOWLEDGE_RagGenerating" text="[知识] 正在生成 RAG专用短句，请稍候..." />
+    <string id="AF_KNOWLEDGE_RagGenerated" text="[知识] 已生成并添加 {COUNT} 条 RAG专用短句。" />
+    <string id="AF_KNOWLEDGE_RagNoNew" text="[知识] 未生成新的 RAG专用短句，可能与现有内容重复。" />
+    <string id="AF_KNOWLEDGE_PrototypeDisabled" text="[知识] 原型句功能已停用。请直接维护“关键词 + RAG专用短句 + 提示词”。" />
+
+    <string id="AF_KNOWLEDGE_EditorExisting" text="编辑现有知识" />
+    <string id="AF_KNOWLEDGE_EditorCreate" text="创建新知识" />
+    <string id="AF_KNOWLEDGE_EditorTitle" text="知识编辑系统" />
+    <string id="AF_KNOWLEDGE_ChooseAction" text="请选择操作：" />
+    <string id="AF_KNOWLEDGE_Enter" text="进入" />
+    <string id="AF_KNOWLEDGE_Select" text="选择" />
+    <string id="AF_KNOWLEDGE_Continue" text="继续" />
+    <string id="AF_KNOWLEDGE_Skip" text="跳过" />
+    <string id="AF_KNOWLEDGE_Delete" text="删除" />
+    <string id="AF_KNOWLEDGE_Cancel" text="取消" />
+    <string id="AF_KNOWLEDGE_Search" text="搜索" />
+    <string id="AF_KNOWLEDGE_PreviousPage" text="上一页" />
+    <string id="AF_KNOWLEDGE_NextPage" text="下一页" />
+    <string id="AF_KNOWLEDGE_ClearSearch" text="清空搜索" />
+    <string id="AF_KNOWLEDGE_Create" text="创建" />
+    <string id="AF_KNOWLEDGE_RuleListTitle" text="编辑现有知识（{COUNT} 条，第 {PAGE}/{PAGES} 页）" />
+    <string id="AF_KNOWLEDGE_RuleListEmptyTitle" text="编辑现有知识（0 条）" />
+    <string id="AF_KNOWLEDGE_RuleListChoose" text="请选择要编辑的知识：" />
+    <string id="AF_KNOWLEDGE_RuleListSearch" text="当前搜索：{QUERY}" />
+    <string id="AF_KNOWLEDGE_RuleListNoMatches" text="没有匹配项。可使用“搜索”或“创建新知识”。" />
+    <string id="AF_KNOWLEDGE_BulkDeleteTitle" text="批量删除知识（{COUNT} 条，第 {PAGE}/{PAGES} 页）" />
+    <string id="AF_KNOWLEDGE_BulkDeleteEmptyTitle" text="批量删除知识（0 条）" />
+    <string id="AF_KNOWLEDGE_BulkDeleteDescription" text="可多选当前页的知识后一起删除。{QUERY}{EMPTY}" />
+    <string id="AF_KNOWLEDGE_DeleteSelected" text="删除选中" />
+    <string id="AF_KNOWLEDGE_SearchKnowledgeTitle" text="搜索知识" />
+    <string id="AF_KNOWLEDGE_SearchKnowledgePrompt" text="输入关键词或 RuleId（可用空格分隔多个词）：" />
+    <string id="AF_KNOWLEDGE_CreateKnowledgeTitle" text="创建新知识" />
+    <string id="AF_KNOWLEDGE_CreateKnowledgePrompt" text="请输入该知识的“第一个关键词”（将用于该知识条目的 ID 与导出文件命名，不可重复；后续仍可继续添加更多关键词）：" />
+    <string id="AF_KNOWLEDGE_RuleMenuTitle" text="知识 - {LABEL}" />
+    <string id="AF_KNOWLEDGE_RuleMenuDescription" text="关键词：{KEYWORDS} 条&#10;RAG 专用短句：{RAG} 条&#10;提示词：{VARIANTS} 条&#10;词汇映射：{MAPPINGS} 条" />
+    <string id="AF_KNOWLEDGE_EditKeywords" text="编辑关键词" />
+    <string id="AF_KNOWLEDGE_EditRag" text="编辑 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_GenerateRag" text="一键生成 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_EditVariants" text="编辑提示词（条件组合）" />
+    <string id="AF_KNOWLEDGE_EditMappings" text="编辑词汇映射" />
+    <string id="AF_KNOWLEDGE_DeleteKnowledge" text="删除此知识" />
+    <string id="AF_KNOWLEDGE_AddMapping" text="新增词汇映射" />
+    <string id="AF_KNOWLEDGE_MappingListDescription" text="这里只会替换当前知识条目下的所有提示词内容，不会影响其他知识。" />
+    <string id="AF_KNOWLEDGE_MappingEditorTitle" text="词汇映射编辑" />
+    <string id="AF_KNOWLEDGE_AddMappingTitle" text="新增词汇映射" />
+    <string id="AF_KNOWLEDGE_AddMappingPrompt" text="请输入要被替换的原文本。命中这条知识后，会把它替换成你选择的动态对象值。" />
+    <string id="AF_KNOWLEDGE_NextStep" text="下一步" />
+    <string id="AF_KNOWLEDGE_EditSource" text="编辑原文本" />
+    <string id="AF_KNOWLEDGE_EditTarget" text="编辑映射目标" />
+    <string id="AF_KNOWLEDGE_EditTrueText" text="编辑状态为真文案" />
+    <string id="AF_KNOWLEDGE_EditFalseText" text="编辑状态为假文案" />
+    <string id="AF_KNOWLEDGE_EditEmptyText" text="编辑空值返回文案" />
+    <string id="AF_KNOWLEDGE_EditAgeRange" text="编辑年龄范围" />
+    <string id="AF_KNOWLEDGE_DeleteMapping" text="删除此映射" />
+    <string id="AF_KNOWLEDGE_EditSourcePrompt" text="请输入新的原文本：" />
+    <string id="AF_KNOWLEDGE_TrueTextPrompt" text="当状态判断结果为真时，使用这段文案替换原文本。留空表示真时不替换。" />
+    <string id="AF_KNOWLEDGE_FalseTextPrompt" text="当状态判断结果为假时，使用这段文案替换原文本。留空表示假时不替换。" />
+    <string id="AF_KNOWLEDGE_EmptyTextPrompt" text="当这条映射当前取不到值时，会改用这段文案替换原文本。留空表示空时保留原词。" />
+    <string id="AF_KNOWLEDGE_SetTrueTextTitle" text="设置状态为真文案" />
+    <string id="AF_KNOWLEDGE_SetFalseTextTitle" text="设置状态为假文案" />
+    <string id="AF_KNOWLEDGE_SetTrueTextPrompt" text="请输入当状态判断结果为真时要替换成的文本。留空表示真时不替换。" />
+    <string id="AF_KNOWLEDGE_SetFalseTextPrompt" text="请输入当状态判断结果为假时要替换成的文本。留空表示假时不替换。" />
+    <string id="AF_KNOWLEDGE_Finish" text="完成" />
+    <string id="AF_KNOWLEDGE_MappingSearchTitle" text="搜索映射类型" />
+    <string id="AF_KNOWLEDGE_MappingSearchPrompt" text="输入关键词，可用空格分隔多个词。&#10;例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡" />
+    <string id="AF_KNOWLEDGE_MappingSearchMenuTitle" text="你想取谁的什么？" />
+    <string id="AF_KNOWLEDGE_MappingSearchMenuDescription" text="先选一个方向，或者直接搜索具体映射项。除了普通映射，现在也支持状态判断。组合很多时，优先用搜索会更快。" />
+    <string id="AF_KNOWLEDGE_MappingChooseTypeTitle" text="选择映射类型" />
+    <string id="AF_KNOWLEDGE_MappingChooseType" text="选择一个具体映射项。" />
+    <string id="AF_KNOWLEDGE_MappingSearchResults" text="输入关键词搜索具体映射项，可用空格分隔多个词。&#10;例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡{QUERY}&#10;匹配结果：{COUNT} 项{EMPTY}" />
+    <string id="AF_KNOWLEDGE_KeywordMenuTitle" text="编辑关键词" />
+    <string id="AF_KNOWLEDGE_KeywordMenuDescription" text="一次输入一个关键词，确定后会加入列表。" />
+    <string id="AF_KNOWLEDGE_AddKeyword" text="添加关键词（一次一个）" />
+    <string id="AF_KNOWLEDGE_RemoveKeyword" text="删除关键词" />
+    <string id="AF_KNOWLEDGE_KeywordLabel" text="关键词：{KEYWORD}" />
+    <string id="AF_KNOWLEDGE_AddKeywordTitle" text="添加关键词" />
+    <string id="AF_KNOWLEDGE_AddKeywordPrompt" text="请输入一个关键词：" />
+    <string id="AF_KNOWLEDGE_RemoveKeywordTitle" text="删除关键词" />
+    <string id="AF_KNOWLEDGE_RemoveKeywordPrompt" text="选择要删除的关键词：" />
+    <string id="AF_KNOWLEDGE_AddRag" text="添加 RAG 专用短句（一次一条）" />
+    <string id="AF_KNOWLEDGE_RemoveRag" text="删除 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_RagLabel" text="RAG 短句：{TEXT}" />
+    <string id="AF_KNOWLEDGE_RagMenuTitle" text="编辑 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_RagMenuDescription" text="用于知识检索与重排的短句。建议写成便于提问匹配的简短描述，不要直接复制完整提示词正文；手动填写每条最多 {MAX} 字符，AI 自动生成会限制在 {GENERATED_MAX} 字符内，max_tokens 上限为 {MAX_TOKENS}。" />
+    <string id="AF_KNOWLEDGE_AddRagTitle" text="添加 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_AddRagPrompt" text="请输入一条 RAG 专用短句（最多 {MAX} 字符）：" />
+    <string id="AF_KNOWLEDGE_RemoveRagTitle" text="删除 RAG 专用短句" />
+    <string id="AF_KNOWLEDGE_RemoveRagPrompt" text="选择要删除的 RAG 专用短句：" />
+    <string id="AF_KNOWLEDGE_SearchByKeywordId" text="搜索（按关键词/ID）" />
+    <string id="AF_KNOWLEDGE_BulkDelete" text="批量删除知识" />
+
+    <string id="AF_KNOWLEDGE_MapCategoryStatus" text="状态判断" />
+    <string id="AF_KNOWLEDGE_MapCategoryCurrentNpc" text="当前 NPC 的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryPlayer" text="玩家的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryBound" text="本知识绑定对象的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryKingdom" text="王国的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategorySettlement" text="定居点的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryClan" text="家族的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryHero" text="英雄的什么？" />
+    <string id="AF_KNOWLEDGE_MapCategoryOther" text="其他" />
+    <string id="AF_KNOWLEDGE_MapCategoryStatusDescription" text="这些映射会先判断一个状态，再根据结果输出你自己写的真/假文案；真文案和假文案里也可以继续写其他映射词。" />
+    <string id="AF_KNOWLEDGE_MapCategoryCurrentNpcDescription" text="这些映射会自动从当前互动的 NPC 身上取值，你只需要决定要取它的哪一项信息。" />
+    <string id="AF_KNOWLEDGE_MapCategoryPlayerDescription" text="这些映射会自动从玩家角色身上取值，你只需要决定要取玩家的哪一项信息。" />
+    <string id="AF_KNOWLEDGE_MapCategoryBoundDescription" text="这些映射会从当前知识条目的条件组合里唯一绑定的王国、定居点或英雄身上取值。" />
+    <string id="AF_KNOWLEDGE_MapCategoryKingdomDescription" text="先选一个王国，再决定想取它的什么信息。" />
+    <string id="AF_KNOWLEDGE_MapCategorySettlementDescription" text="先选一个定居点，再决定想取它的什么信息。" />
+    <string id="AF_KNOWLEDGE_MapCategoryClanDescription" text="先选一个家族，再决定想取它的什么信息。" />
+    <string id="AF_KNOWLEDGE_MapCategoryHeroDescription" text="先选一个英雄，再决定想取它的什么信息。" />
+    <string id="AF_KNOWLEDGE_NoValue" text="（无）" />
+    <string id="AF_KNOWLEDGE_PlayerNameConflictStatus" text="（当前未能写入，因为与其他知识条目冲突）" />
+    <string id="AF_KNOWLEDGE_PlayerKeywordSetupTitle" text="玩家称呼设置" />
+    <string id="AF_KNOWLEDGE_PlayerKeywordSetupBody" text="欢迎游玩 AnimusForge！你可以在此界面为角色添加额外称呼；如果不需要，可以继续填写外貌与背景信息。&#10;&#10;角色姓名：{NAME}{CONFLICT}&#10;额外称呼：{OPTIONAL}" />
+    <string id="AF_KNOWLEDGE_AddOptionalName" text="添加额外称呼" />
+    <string id="AF_KNOWLEDGE_RemoveOptionalName" text="删除额外称呼" />
+    <string id="AF_KNOWLEDGE_OpenAppearanceBackground" text="编写外貌与背景" />
+    <string id="AF_KNOWLEDGE_AddOptionalNameTitle" text="添加额外称呼" />
+    <string id="AF_KNOWLEDGE_AddOptionalNamePrompt" text="请输入一个额外称呼；玩家本名已由系统自动保留，无需重复输入。" />
+    <string id="AF_KNOWLEDGE_RemoveOptionalNameTitle" text="删除额外称呼" />
+    <string id="AF_KNOWLEDGE_RemoveOptionalNamePrompt" text="系统保留的玩家本名不能删除；这里只会删除你额外添加的称呼。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceOption" text="外貌信息（常驻）" />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundOption" text="背景信息（通用）" />
+    <string id="AF_KNOWLEDGE_PlayerDetailedBackgroundOption" text="不同的人对您的背景看法" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDone" text="完成并开始游戏" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDoneDetail" text="保存当前设置并离开该界面。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundTitle" text="玩家外貌与背景" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundDescription" text="玩家信息分为外貌信息和背景信息。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceBackgroundBody" text="玩家信息分为外貌信息和背景信息。&#10;&#10;外貌信息（常驻）：&#10;{APPEARANCE}&#10;&#10;背景信息（通用）：&#10;{BACKGROUND}&#10;&#10;细化背景（有条件）：{COUNT} 条" />
+    <string id="AF_KNOWLEDGE_PlayerOptionUnset" text="当前未填写；点击后可输入完整内容。" />
+    <string id="AF_KNOWLEDGE_PlayerOptionFilled" text="已填写 {COUNT} 字；完整内容显示在左侧，可点击继续编辑。" />
+    <string id="AF_KNOWLEDGE_PlayerDetailedBackgroundCount" text="已设置 {COUNT} 条带条件背景。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceEditorTitle" text="玩家外貌信息（常驻）" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceEditorIntro" text="当前外貌信息已载入下方输入框。" />
+    <string id="AF_KNOWLEDGE_PlayerAppearanceEditorHint" text="请输入玩家可被 NPC 直接观察到的外貌特征；留空表示不设置。" />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundEditorTitle" text="玩家背景信息（通用）" />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundEditorIntro" text="当前通用背景信息已载入下方输入框。" />
+    <string id="AF_KNOWLEDGE_PlayerBackgroundEditorHint" text="请输入背景、来历、身份等内容；留空表示不设置。" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundListTitle" text="细化的玩家背景信息" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundListDescription" text="这里编辑的是带条件的背景信息；写入后的结构与其他知识提示词完全一致。" />
+    <string id="AF_KNOWLEDGE_AddDetailedBackground" text="新增一条细化介绍" />
+    <string id="AF_KNOWLEDGE_EmptyPreview" text="（空）" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundEditorTitle" text="细化介绍编辑" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundEditorDescription" text="当前条件：{CONDITION}&#10;&#10;当前内容预览：&#10;{PREVIEW}" />
+    <string id="AF_KNOWLEDGE_EditDetailedBackgroundContent" text="编辑介绍内容" />
+    <string id="AF_KNOWLEDGE_EditDetailedBackgroundCondition" text="编辑条件" />
+    <string id="AF_KNOWLEDGE_DeleteDetailedBackground" text="删除此条细化介绍" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundContentTitle" text="编辑背景内容" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundContentIntro" text="当前这条带条件的玩家背景信息已载入下方输入框。" />
+    <string id="AF_KNOWLEDGE_DetailedBackgroundContentHint" text="可直接编辑整段内容。" />
+    <string id="AF_KNOWLEDGE_RetrievalSourceMcm" text="MCM（当前生效）" />
+    <string id="AF_KNOWLEDGE_RetrievalSourceFile" text="RuleBehaviorPrompts.json（当前生效）" />
+    <string id="AF_KNOWLEDGE_RetrievalMode" text="逐名词召回 + 本地精排" />
+    <string id="AF_KNOWLEDGE_RetrievalOn" text="开启" />
+    <string id="AF_KNOWLEDGE_RetrievalOff" text="关闭" />
+    <string id="AF_KNOWLEDGE_RetrievalYes" text="是" />
+    <string id="AF_KNOWLEDGE_RetrievalNoKeywordFirst" text="否（关键词优先）" />
+    <string id="AF_KNOWLEDGE_RetrievalDescription" text="当前配置来源：{SOURCE}&#10;当前模式：{MODE}&#10;语义检索：{ENABLED}&#10;语义优先：{FIRST}&#10;知识返回上限：{TOPK}&#10;说明：按重要性顺序逐个名词独立检索，每个名词占一个知识槽；最高分知识若已被前面的名词占用，就顺延到第一条未占用知识。仅当上限大于名词数时，才额外补充后续名次。" />
+    <string id="AF_KNOWLEDGE_RetrievalSwitchSource" text="配置来源：切到 {SOURCE}" />
+    <string id="AF_KNOWLEDGE_RetrievalToggle" text="语义检索：{STATE}" />
+    <string id="AF_KNOWLEDGE_RetrievalTopK" text="设置知识返回上限（当前 {TOPK}）" />
+    <string id="AF_KNOWLEDGE_RetrievalReset" text="恢复默认（MCM）" />
+    <string id="AF_KNOWLEDGE_RetrievalSettingsTitle" text="知识检索设置" />
+    <string id="AF_KNOWLEDGE_RetrievalSelect" text="选择" />
+    <string id="AF_KNOWLEDGE_RetrievalTopKTitle" text="设置知识返回上限" />
+    <string id="AF_KNOWLEDGE_RetrievalTopKPrompt" text="请输入 1~12 的整数：" />
+
+    <string id="AF_KNOWLEDGE_MappingSource_hero" text="英雄" />
+    <string id="AF_KNOWLEDGE_MappingSource_current_npc_hero" text="当前NPC" />
+    <string id="AF_KNOWLEDGE_MappingSource_player_hero" text="玩家" />
+    <string id="AF_KNOWLEDGE_MappingSource_bound_hero" text="本知识绑定英雄" />
+    <string id="AF_KNOWLEDGE_MappingSource_clan" text="家族" />
+    <string id="AF_KNOWLEDGE_MappingSource_current_npc_clan" text="当前NPC所属家族" />
+    <string id="AF_KNOWLEDGE_MappingSource_player_clan" text="玩家家族" />
+    <string id="AF_KNOWLEDGE_MappingSource_bound_settlement_owner_clan" text="本知识绑定定居点统治家族" />
+    <string id="AF_KNOWLEDGE_MappingSource_bound_hero_clan" text="本知识绑定英雄所属家族" />
+    <string id="AF_KNOWLEDGE_MappingSource_kingdom" text="王国" />
+    <string id="AF_KNOWLEDGE_MappingSource_current_npc_kingdom" text="当前NPC所属王国" />
+    <string id="AF_KNOWLEDGE_MappingSource_player_kingdom" text="玩家所属王国" />
+    <string id="AF_KNOWLEDGE_MappingSource_bound_kingdom" text="本知识绑定王国" />
+    <string id="AF_KNOWLEDGE_MappingSource_settlement" text="定居点" />
+    <string id="AF_KNOWLEDGE_MappingSource_current_npc_settlement" text="当前NPC所在定居点" />
+    <string id="AF_KNOWLEDGE_MappingSource_player_settlement" text="玩家所在定居点" />
+    <string id="AF_KNOWLEDGE_MappingSource_bound_settlement" text="本知识绑定定居点" />
+    <string id="AF_KNOWLEDGE_MappingSource_Unknown" text="状态对象" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_alive" text="是否存活" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_dead" text="是否死亡" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_disabled" text="是否失能" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_missing" text="是否失踪/逃亡" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_married" text="是否已婚" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_widowed" text="是否丧偶" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_female" text="是否女性" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_male" text="是否男性" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_child" text="是否未成年" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_adult" text="是否成年" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_in_age_range" text="是否在年龄段内" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_clan_leader" text="是否家族族长" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_kingdom_leader" text="是否王国领袖" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_governor" text="是否总督" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_prisoner" text="是否被俘" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_in_settlement" text="是否在定居点内" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_in_field" text="是否在野外" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_wanderer" text="是否流浪者" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_notable" text="是否要人" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_lord" text="是否领主" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_merchant" text="是否商人" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_gang_leader" text="是否帮派头目" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_artisan" text="是否工匠" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_preacher" text="是否传教士" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_headman" text="是否村长" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_minor_faction_hero" text="是否小势力英雄" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_party_leader" text="是否带队" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_player_companion" text="是否玩家同伴" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_rebel" text="是否叛军" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_wounded" text="是否受伤" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_known_to_player" text="是否被玩家认识" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_children" text="是否有子女" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_father" text="是否有父亲" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_mother" text="是否有母亲" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_home_settlement" text="是否有家乡定居点" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_eliminated" text="是否已灭亡/被消灭" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_kingdom" text="是否有所属王国" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_leader" text="是否有领袖" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_ruling_clan" text="是否有执政家族" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_settlement" text="是否拥有任何定居点" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_town" text="是否拥有任何城镇" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_castle" text="是否拥有任何城堡" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_village" text="是否拥有任何村庄" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_members" text="是否有成员" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_male_members" text="是否有男性成员" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_female_members" text="是否有女性成员" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_age_range_members" text="是否有年龄段成员" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_mercenary" text="是否雇佣兵家族" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_minor_faction" text="是否小势力" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_rebel_clan" text="是否叛军家族" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_noble" text="是否贵族家族" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_bandit_faction" text="是否匪帮势力" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_outlaw" text="是否法外势力" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_clan" text="是否有任何家族" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_lord" text="是否有任何领主" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_active_policies" text="是否有生效政策" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_war" text="是否处于战争中" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_any_allies" text="是否有盟友" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_active" text="是否活跃" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_town" text="是否城镇" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_castle" text="是否城堡" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_village" text="是否村庄" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_fortification" text="是否堡垒" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_hideout" text="是否藏身处" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_under_siege" text="是否被围攻" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_under_raid" text="是否正在被劫掠" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_raided" text="是否已被劫掠" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_starving" text="是否饥荒" />
+    <string id="AF_KNOWLEDGE_MappingCondition_is_rebellious" text="是否处于叛乱状态" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_port" text="是否有港口" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_owner" text="是否有统治者" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_owner_clan" text="是否有统治家族" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_notables" text="是否有要人" />
+    <string id="AF_KNOWLEDGE_MappingCondition_has_parties" text="是否有驻留队伍" />
+    <string id="AF_KNOWLEDGE_MappingCondition_Unknown" text="未知状态" />
+    <string id="AF_KNOWLEDGE_MappingStatusLabel" text="状态判断：{SOURCE}：{CONDITION}" />
+    <string id="AF_KNOWLEDGE_MappingKind_Unknown" text="未知映射" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_name" text="王国名称" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_leader_name" text="王国当前领袖" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_ruling_clan_name" text="王国执政家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_culture_name" text="王国文化" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_initial_home_settlement_name" text="王国初始都城" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_clans" text="王国全部家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_lords" text="王国全部领主" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_towns" text="王国拥有的所有城镇" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_castles" text="王国拥有的所有城堡" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_villages" text="王国拥有的所有村庄" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_all_settlements" text="王国拥有的所有定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_active_policies" text="王国生效政策" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_allied_kingdoms" text="王国盟友" />
+    <string id="AF_KNOWLEDGE_MappingKind_kingdom_war_factions" text="王国交战势力" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_name" text="定居点名称" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_owner_clan_name" text="定居点统治家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_owner_leader_name" text="定居点统治者" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_owner_kingdom_name" text="定居点所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_owner_kingdom_leader_name" text="定居点所属王国领袖" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_culture_name" text="定居点文化" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_notables" text="定居点要人" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_parties" text="定居点驻留队伍" />
+    <string id="AF_KNOWLEDGE_MappingKind_settlement_bound_villages" text="定居点绑定村庄" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_name" text="家族名称" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_leader_name" text="家族当前族长" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_kingdom_name" text="家族所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_kingdom_leader_name" text="家族所属王国领袖" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_all_towns" text="家族统治的所有城镇" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_all_villages" text="家族统治的所有村子" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_all_settlements" text="家族统治的所有定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_members" text="家族成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_male_members" text="家族男性成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_female_members" text="家族女性成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_clan_age_range_members" text="家族年龄段成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_name" text="英雄当前名字" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_clan_name" text="英雄所属家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_kingdom_name" text="英雄所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_kingdom_leader_name" text="英雄效忠君主" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_spouse_name" text="英雄配偶" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_father_name" text="英雄父亲" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_mother_name" text="英雄母亲" />
+    <string id="AF_KNOWLEDGE_MappingKind_hero_current_settlement_name" text="英雄当前定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_name" text="当前NPC名字" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_name" text="当前NPC所属家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_kingdom_name" text="当前NPC所属家族的所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_kingdom_leader_name" text="当前NPC所属家族的所属王国领袖" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_all_towns" text="当前NPC所属家族的所有城镇" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_all_villages" text="当前NPC所属家族的所有村子" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_all_settlements" text="当前NPC所属家族的所有定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_members" text="当前NPC所属家族的成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_male_members" text="当前NPC所属家族的男性成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_female_members" text="当前NPC所属家族的女性成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_clan_age_range_members" text="当前NPC所属家族的年龄段成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_name" text="当前NPC所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_leader_name" text="当前NPC效忠君主" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_ruling_clan_name" text="当前NPC所属王国执政家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_culture_name" text="当前NPC所属王国文化" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_initial_home_settlement_name" text="当前NPC所属王国初始都城" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_clans" text="当前NPC所属王国全部家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_lords" text="当前NPC所属王国全部领主" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_towns" text="当前NPC所属王国拥有的所有城镇" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_castles" text="当前NPC所属王国拥有的所有城堡" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_villages" text="当前NPC所属王国拥有的所有村庄" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_all_settlements" text="当前NPC所属王国拥有的所有定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_active_policies" text="当前NPC所属王国生效政策" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_allied_kingdoms" text="当前NPC所属王国盟友" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_kingdom_war_factions" text="当前NPC所属王国交战势力" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_spouse_name" text="当前NPC配偶" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_father_name" text="当前NPC父亲" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_mother_name" text="当前NPC母亲" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_name" text="当前NPC所在定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_owner_clan_name" text="当前NPC所在定居点统治家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_owner_leader_name" text="当前NPC所在定居点统治者" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_owner_kingdom_name" text="当前NPC所在定居点所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_owner_kingdom_leader_name" text="当前NPC所在定居点所属王国领袖" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_culture_name" text="当前NPC所在定居点文化" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_notables" text="当前NPC所在定居点要人" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_parties" text="当前NPC所在定居点驻留队伍" />
+    <string id="AF_KNOWLEDGE_MappingKind_current_npc_current_settlement_bound_villages" text="当前NPC所在定居点绑定村庄" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_name" text="玩家名字" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_name" text="玩家家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_kingdom_name" text="玩家家族所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_kingdom_leader_name" text="玩家家族所属王国领袖" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_all_towns" text="玩家家族的所有城镇" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_all_villages" text="玩家家族的所有村子" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_all_settlements" text="玩家家族的所有定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_members" text="玩家家族的成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_male_members" text="玩家家族的男性成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_female_members" text="玩家家族的女性成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_clan_age_range_members" text="玩家家族的年龄段成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_kingdom_name" text="玩家所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_kingdom_leader_name" text="玩家效忠君主" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_spouse_name" text="玩家配偶" />
+    <string id="AF_KNOWLEDGE_MappingKind_player_current_settlement_name" text="玩家所在定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_name" text="本知识绑定王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_leader_name" text="本知识绑定王国领袖" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_ruling_clan_name" text="本知识绑定王国执政家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_culture_name" text="本知识绑定王国文化" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_initial_home_settlement_name" text="本知识绑定王国初始都城" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_clans" text="本知识绑定王国全部家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_lords" text="本知识绑定王国全部领主" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_towns" text="本知识绑定王国拥有的所有城镇" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_castles" text="本知识绑定王国拥有的所有城堡" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_villages" text="本知识绑定王国拥有的所有村庄" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_all_settlements" text="本知识绑定王国拥有的所有定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_active_policies" text="本知识绑定王国生效政策" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_allied_kingdoms" text="本知识绑定王国盟友" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_kingdom_war_factions" text="本知识绑定王国交战势力" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_name" text="本知识绑定定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_name" text="本知识绑定定居点统治家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_kingdom_name" text="本知识绑定定居点统治家族的所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_kingdom_leader_name" text="本知识绑定定居点统治家族的所属王国领袖" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_all_towns" text="本知识绑定定居点统治家族的所有城镇" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_all_villages" text="本知识绑定定居点统治家族的所有村子" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_all_settlements" text="本知识绑定定居点统治家族的所有定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_members" text="本知识绑定定居点统治家族的成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_male_members" text="本知识绑定定居点统治家族的男性成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_female_members" text="本知识绑定定居点统治家族的女性成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_clan_age_range_members" text="本知识绑定定居点统治家族的年龄段成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_leader_name" text="本知识绑定定居点统治者" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_kingdom_name" text="本知识绑定定居点所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_owner_kingdom_leader_name" text="本知识绑定定居点所属王国领袖" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_culture_name" text="本知识绑定定居点文化" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_notables" text="本知识绑定定居点要人" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_parties" text="本知识绑定定居点驻留队伍" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_settlement_bound_villages" text="本知识绑定定居点绑定村庄" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_name" text="本知识绑定英雄" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_name" text="本知识绑定英雄所属家族" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_kingdom_name" text="本知识绑定英雄所属家族的所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_kingdom_leader_name" text="本知识绑定英雄所属家族的所属王国领袖" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_all_towns" text="本知识绑定英雄所属家族的所有城镇" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_all_villages" text="本知识绑定英雄所属家族的所有村子" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_all_settlements" text="本知识绑定英雄所属家族的所有定居点" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_members" text="本知识绑定英雄所属家族的成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_male_members" text="本知识绑定英雄所属家族的男性成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_female_members" text="本知识绑定英雄所属家族的女性成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_clan_age_range_members" text="本知识绑定英雄所属家族的年龄段成员" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_kingdom_name" text="本知识绑定英雄所属王国" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_kingdom_leader_name" text="本知识绑定英雄效忠君主" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_spouse_name" text="本知识绑定英雄配偶" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_father_name" text="本知识绑定英雄父亲" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_mother_name" text="本知识绑定英雄母亲" />
+    <string id="AF_KNOWLEDGE_MappingKind_bound_hero_current_settlement_name" text="本知识绑定英雄所在定居点" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Hero" text="英雄" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Clan" text="家族" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Kingdom" text="王国" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Settlement" text="定居点" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Automatic" text="自动目标" />
+    <string id="AF_KNOWLEDGE_MappingTarget_Generic" text="目标" />
+    <string id="AF_KNOWLEDGE_PrototypeSearch" text="搜索原型句" />
+    <string id="AF_KNOWLEDGE_PrototypeClearSearch" text="清空搜索" />
+    <string id="AF_KNOWLEDGE_PrototypePreviousPage" text="上一页" />
+    <string id="AF_KNOWLEDGE_PrototypeNextPage" text="下一页" />
+    <string id="AF_KNOWLEDGE_PrototypeBack" text="返回原型句菜单" />
+    <string id="AF_KNOWLEDGE_PrototypeViewTitle" text="查看原型句" />
+    <string id="AF_KNOWLEDGE_PrototypeSearchTitle" text="搜索原型句" />
+    <string id="AF_KNOWLEDGE_PrototypeSearchPrompt" text="输入关键词：" />
+    <string id="AF_KNOWLEDGE_PrototypeDetailTitle" text="原型句详情" />
+    <string id="AF_KNOWLEDGE_PrototypeRemoveTitle" text="删除原型句" />
+    <string id="AF_KNOWLEDGE_PrototypeRemovePrompt" text="选择要删除的原型句：" />
+    <string id="AF_KNOWLEDGE_PrototypeCountSummary" text="{COUNT} 条，第 {PAGE}/{PAGES} 页。{SEARCH}{EMPTY}" />
+    <string id="AF_KNOWLEDGE_VariantAdd" text="新增提示词" />
+    <string id="AF_KNOWLEDGE_VariantMenuTitle" text="编辑提示词" />
+    <string id="AF_KNOWLEDGE_VariantMenuDescription" text="条件留空=通用；填写任意条件=专属。命中时会选最具体的一条。" />
+    <string id="AF_KNOWLEDGE_VariantEnter" text="进入" />
+    <string id="AF_KNOWLEDGE_VariantEditorTitle" text="提示词编辑" />
+    <string id="AF_KNOWLEDGE_VariantEditContent" text="编辑提示词内容" />
+    <string id="AF_KNOWLEDGE_VariantEditCondition" text="编辑条件" />
+    <string id="AF_KNOWLEDGE_VariantDelete" text="删除此提示词" />
+    <string id="AF_KNOWLEDGE_VariantCurrentCondition" text="当前条件：{CONDITION}" />
+    <string id="AF_KNOWLEDGE_VariantContentPrompt" text="请输入内容。" />
+    <string id="AF_KNOWLEDGE_VariantTruncated" text="&#10;……（内容过长，仅显示前 220 字）" />
+    <string id="AF_KNOWLEDGE_WhenCulture" text="文化（CultureId）" />
+    <string id="AF_KNOWLEDGE_WhenKingdom" text="势力/王国（KingdomId）" />
+    <string id="AF_KNOWLEDGE_WhenSettlement" text="定居点（SettlementId）" />
+    <string id="AF_KNOWLEDGE_WhenRole" text="身份（大类 + 细分 NPC）" />
+    <string id="AF_KNOWLEDGE_WhenGender" text="性别（不限/男/女）" />
+    <string id="AF_KNOWLEDGE_WhenClanLeader" text="是否家族族长（不限/是/否）" />
+    <string id="AF_KNOWLEDGE_WhenSkill" text="技能等级（SkillId &gt;= 值）" />
+    <string id="AF_KNOWLEDGE_WhenClear" text="清空全部条件（变成通用）" />
+    <string id="AF_KNOWLEDGE_WhenEditorTitle" text="编辑条件" />
+    <string id="AF_KNOWLEDGE_RoleSearchOption" text="搜索本类具体 NPC…" />
+    <string id="AF_KNOWLEDGE_RoleClearSearch" text="清除搜索" />
+    <string id="AF_KNOWLEDGE_RoleClearSpecificOption" text="清空本类细分已选（{COUNT}）" />
+    <string id="AF_KNOWLEDGE_RoleToggleAll" text="整类生效：{ROLE}" />
+    <string id="AF_KNOWLEDGE_RoleDescription" text="{ROLE}：可直接勾整类，也可只勾本类里的具体 NPC。&#10;当前整类：{SELECTED}&#10;当前细分已选：{SPECIFIC}&#10;结果总数：{TOTAL}，第 {PAGE}/{PAGES} 页" />
+    <string id="AF_KNOWLEDGE_RoleEditorTitle" text="身份条件" />
+    <string id="AF_KNOWLEDGE_RoleEditorDescription" text="先选一个大类，再进入该类选择具体 NPC。整类勾选继续保留；细分选择会在当前大类内搜索和分页。" />
+    <string id="AF_KNOWLEDGE_RoleClearAllSpecific" text="清空全部细分身份" />
+    <string id="AF_KNOWLEDGE_RoleSwitchSelection" text="切换选中" />
+    <string id="AF_KNOWLEDGE_RoleMultiSelectError" text="搜索、翻页、整类切换这类操作项不能和细分 NPC 一起多选。" />
+    <string id="AF_KNOWLEDGE_RoleSearchPrompt" text="输入名称、HeroId 或 CharacterId。搜索只在当前大类内进行。" />
+    <string id="AF_KNOWLEDGE_PickerAdd" text="添加" />
+    <string id="AF_KNOWLEDGE_PickerSelect" text="选择" />
+    <string id="AF_KNOWLEDGE_PickerNoNpc" text="未找到可选 NPC。" />
+    <string id="AF_KNOWLEDGE_PickerNpcTitle" text="选择 NPC" />
+    <string id="AF_KNOWLEDGE_PickerMultiDescription" text="可多选，确认后加入列表。" />
+    <string id="AF_KNOWLEDGE_PickerNoCulture" text="未找到可选文化。" />
+    <string id="AF_KNOWLEDGE_PickerCultureTitle" text="选择文化" />
+    <string id="AF_KNOWLEDGE_PickerNoFaction" text="未找到可选势力。" />
+    <string id="AF_KNOWLEDGE_PickerFactionTitle" text="选择势力/王国" />
+    <string id="AF_KNOWLEDGE_PickerFactionTypeKingdom" text="王国" />
+    <string id="AF_KNOWLEDGE_PickerFactionTypeFaction" text="势力" />
+    <string id="AF_KNOWLEDGE_PickerNoSettlement" text="未找到可选定居点。" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTitle" text="选择定居点" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeVillage" text="村庄" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeCastle" text="城堡" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeTown" text="城镇" />
+    <string id="AF_KNOWLEDGE_PickerSettlementTypeSettlement" text="定居点" />
+    <string id="AF_KNOWLEDGE_PickerNoKingdom" text="未找到可选王国。" />
+    <string id="AF_KNOWLEDGE_PickerKingdomTitle" text="选择王国" />
+    <string id="AF_KNOWLEDGE_PickerKingdomDescription" text="选择一个王国作为映射目标。" />
+    <string id="AF_KNOWLEDGE_PickerNoHero" text="未找到可选英雄。" />
+    <string id="AF_KNOWLEDGE_PickerHeroTitle" text="选择英雄" />
+    <string id="AF_KNOWLEDGE_PickerNoClan" text="未找到可选家族。" />
+    <string id="AF_KNOWLEDGE_PickerClanTitle" text="选择家族" />
+    <string id="AF_KNOWLEDGE_PickerStringListPick" text="从列表选择" />
+    <string id="AF_KNOWLEDGE_PickerStringListAdd" text="手动输入（一次一个）" />
+    <string id="AF_KNOWLEDGE_PickerDelete" text="删除" />
+    <string id="AF_KNOWLEDGE_PickerStringListDescription" text="一次输入一个值，确定后加入列表。" />
+    <string id="AF_KNOWLEDGE_PickerStringListInputPrompt" text="请输入一个值：" />
+    <string id="AF_KNOWLEDGE_PickerStringListRemoveTitle" text="删除 - {TITLE}" />
+    <string id="AF_KNOWLEDGE_PickerStringListRemovePrompt" text="选择要删除的项：" />
+    <string id="AF_KNOWLEDGE_SkillPicker" text="从列表选择技能" />
+    <string id="AF_KNOWLEDGE_SkillManual" text="手动输入 SkillId" />
+    <string id="AF_KNOWLEDGE_SkillRemove" text="删除技能条件" />
+    <string id="AF_KNOWLEDGE_SkillTitle" text="技能等级条件" />
+    <string id="AF_KNOWLEDGE_SkillDescription" text="配置 SkillId &gt;= 数值。数值=0 表示无门槛（Skill&gt;=0）；数值&lt;0 表示移除该技能条件。" />
+    <string id="AF_KNOWLEDGE_SkillManualTitle" text="手动输入 SkillId" />
+    <string id="AF_KNOWLEDGE_SkillPrompt" text="请输入 SkillId：" />
+    <string id="AF_KNOWLEDGE_SkillRemoveTitle" text="删除技能条件" />
+    <string id="AF_KNOWLEDGE_SkillRemovePrompt" text="选择要删除的项：" />
+    <string id="AF_KNOWLEDGE_SkillSetTitle" text="设置技能下限" />
+    <string id="AF_KNOWLEDGE_SkillSetPrompt" text="请输入最低技能等级（整数）：" />
+    <string id="AF_KNOWLEDGE_SkillNoSkills" text="未找到可选技能。" />
+    <string id="AF_KNOWLEDGE_SkillPickerTitle" text="选择技能" />
+    <string id="AF_KNOWLEDGE_SkillPickerDescription" text="选择一个技能后，继续设置最低等级。" />
+    <string id="AF_KNOWLEDGE_WhenGeneral" text="通用" />
+    <string id="AF_KNOWLEDGE_WhenCultureLabel" text="文化" />
+    <string id="AF_KNOWLEDGE_WhenKingdomLabel" text="势力" />
+    <string id="AF_KNOWLEDGE_WhenSettlementLabel" text="定居点" />
+    <string id="AF_KNOWLEDGE_WhenRoleLabel" text="身份" />
+    <string id="AF_KNOWLEDGE_WhenSpecificIdentityLabel" text="细分身份" />
+    <string id="AF_KNOWLEDGE_WhenGenderLabel" text="性别" />
+    <string id="AF_KNOWLEDGE_WhenClanLeaderLabel" text="族长" />
+    <string id="AF_KNOWLEDGE_WhenSkillLabel" text="技能" />
+    <string id="AF_KNOWLEDGE_WhenLabelExclusive" text="专属({CATEGORIES})" />
+    <string id="AF_KNOWLEDGE_WhenDetailGeneral" text="当前：通用（无条件）" />
+    <string id="AF_KNOWLEDGE_WhenDetail" text="当前条件：&#10;CultureId: {CULTURE}&#10;KingdomId: {KINGDOM}&#10;SettlementId: {SETTLEMENT}&#10;Roles: {ROLES}&#10;细分身份: {IDENTITIES}&#10;SkillMin: {SKILLS}&#10;Gender: {GENDER}&#10;ClanLeader: {CLAN_LEADER}" />
+    <string id="AF_KNOWLEDGE_WhenEmpty" text="（空）" />
+    <string id="AF_KNOWLEDGE_WhenAny" text="不限" />
+    <string id="AF_KNOWLEDGE_WhenFemale" text="女" />
+    <string id="AF_KNOWLEDGE_WhenMale" text="男" />
+    <string id="AF_KNOWLEDGE_WhenYes" text="是" />
+    <string id="AF_KNOWLEDGE_WhenNo" text="否" />
+    <string id="AF_KNOWLEDGE_RoleLord" text="领主" />
+    <string id="AF_KNOWLEDGE_RoleNotable" text="要人" />
+    <string id="AF_KNOWLEDGE_RoleWanderer" text="流浪者" />
+    <string id="AF_KNOWLEDGE_RoleSoldier" text="士兵" />
+    <string id="AF_KNOWLEDGE_RoleVillager" text="村民" />
+    <string id="AF_KNOWLEDGE_RoleTownsfolk" text="镇民" />
+    <string id="AF_KNOWLEDGE_RoleCommoner" text="未分类对象" />
+    <string id="AF_KNOWLEDGE_RoleUnknown" text="未知" />
+    <string id="AF_KNOWLEDGE_RoleEntryWithId" text="{NAME}（{TYPE}={ID}）" />
+    <string id="AF_KNOWLEDGE_PickerEntryWithLeader" text="{NAME} ({ID})" />
+    <string id="AF_KNOWLEDGE_PickerEntryWithLeaderNamed" text="{NAME}（{LABEL}：{LEADER}）" />
+    <string id="AF_KNOWLEDGE_PickerPageSummary" text="共 {COUNT} 个{KIND}，第 {PAGE}/{PAGES} 页。{SUFFIX}{SEARCH}" />
+    <string id="AF_KNOWLEDGE_PickerNoMatch" text="未找到可选{KIND}。" />
+    <string id="AF_KNOWLEDGE_PickerNoMatchQuery" text="未找到匹配的{KIND}：{QUERY}" />
+    <string id="AF_KNOWLEDGE_PickerCurrentLeader" text="现任领袖" />
+    <string id="AF_KNOWLEDGE_PickerCurrentClanLeader" text="当前族长" />
+    <string id="AF_KNOWLEDGE_PickerCurrentRuler" text="当前统治者" />
+    <string id="AF_KNOWLEDGE_PickerSearchTitle" text="搜索{KIND}" />
+    <string id="AF_KNOWLEDGE_PickerSearchPrompt" text="输入{KIND}名称或 {ID}：" />
+    <string id="AF_KNOWLEDGE_PickerRoleSearchTitle" text="搜索 {ROLE}" />
+    <string id="AF_KNOWLEDGE_PickerRoleSearchPrompt" text="输入名称、HeroId 或 CharacterId。搜索只在当前大类内进行。" />
+    <string id="AF_KNOWLEDGE_PickerNoSelectable" text="未找到可选{KIND}。" />
+    <string id="AF_KNOWLEDGE_PickerSearchNoMatch" text="未找到匹配的{KIND}：{QUERY}" />
+    <string id="AF_KNOWLEDGE_StringListRemoveTitle" text="删除 - {TITLE}" />
+    <string id="AF_KNOWLEDGE_SkillItem" text="{ID} &gt;= {VALUE}" />
+    <string id="AF_KNOWLEDGE_RoleCategoryItem" text="{PREFIX}{ROLE}{SPECIFIC}" />
+    <string id="AF_KNOWLEDGE_PickerKindHeroes" text="英雄" />
+    <string id="AF_KNOWLEDGE_PickerKindClans" text="家族" />
+    <string id="AF_KNOWLEDGE_PickerKindSettlements" text="定居点" />
+    <string id="AF_KNOWLEDGE_PickerKindSettlement" text="定居点" />
+    <string id="AF_KNOWLEDGE_PickerKindHero" text="英雄" />
+    <string id="AF_KNOWLEDGE_PickerKindClan" text="家族" />
+    <string id="AF_KNOWLEDGE_RoleSpecificCount" text="（细分已选 {COUNT}）" />
+    <string id="AF_KNOWLEDGE_PrototypeCurrentSearch" text="&#10;搜索：{QUERY}" />
+    <string id="AF_KNOWLEDGE_PrototypeNoContent" text="&#10;当前页无内容。" />
+    <string id="AF_KNOWLEDGE_RoleSelected" text="已选中" />
+    <string id="AF_KNOWLEDGE_RoleNotSelected" text="未选中" />
+    <string id="AF_KNOWLEDGE_PickerCurrentSearch" text="&#10;当前搜索：{QUERY}" />
+    <string id="AF_KNOWLEDGE_PickerSelectOneSuffix" text=" 选择一个后会加入列表。" />
+
+    <string id="AF_KNOWLEDGE_BulkDeleteMore" text="……以及另外 {COUNT} 条" />
+    <string id="AF_KNOWLEDGE_MappingTargetNotSelected" text="（未选择）" />
+    <string id="AF_KNOWLEDGE_MappingTargetCurrentNpc" text="当前互动NPC{SUFFIX}" />
+    <string id="AF_KNOWLEDGE_MappingTargetPlayer" text="玩家{SUFFIX}" />
+    <string id="AF_KNOWLEDGE_MappingTargetBoundKingdom" text="本知识绑定王国{SUFFIX}" />
+    <string id="AF_KNOWLEDGE_MappingTargetBoundSettlement" text="本知识绑定定居点{SUFFIX}" />
+    <string id="AF_KNOWLEDGE_MappingTargetBoundHero" text="本知识绑定英雄{SUFFIX}" />
+    <string id="AF_KNOWLEDGE_MappingTargetNameSuffix" text="（{NAME}）" />
+    <string id="AF_KNOWLEDGE_MappingTargetUnresolvedSuffix" text="（未唯一确定）" />
+    <string id="AF_KNOWLEDGE_MappingSummaryEmpty" text="（空）" />
+    <string id="AF_KNOWLEDGE_MappingSummaryNotSelected" text="（未选择）" />
+    <string id="AF_KNOWLEDGE_MappingSummaryNoValue" text="（当前无值）" />
+    <string id="AF_KNOWLEDGE_MappingSummaryAgeRange" text="{BASE}（{MIN}-{MAX} 岁）" />
+    <string id="AF_KNOWLEDGE_MappingSummaryStatus" text="{BASE}（真：{TRUE}/假：{FALSE}）" />
+    <string id="AF_KNOWLEDGE_MappingSummaryEmptyFallback" text=" [空=&gt;{TEXT}]" />
+    <string id="AF_KNOWLEDGE_MappingSummary" text="{SOURCE} -&gt; {KIND}（{TARGET}） =&gt; {VALUE}" />
+    <string id="AF_KNOWLEDGE_MappingEditorStatus" text="&#10;状态为真文案：{TRUE}&#10;状态为假文案：{FALSE}" />
+    <string id="AF_KNOWLEDGE_MappingEditorEmpty" text="&#10;空值返回文案：{TEXT}" />
+    <string id="AF_KNOWLEDGE_MappingEditorAgeRange" text="&#10;年龄范围：{RANGE} 岁" />
+    <string id="AF_KNOWLEDGE_MappingEditorDescription" text="原文本：{SOURCE}&#10;映射类型：{KIND}&#10;目标{TARGET_TYPE}：{TARGET}{STATUS}{EMPTY}{AGE}&#10;当前预览：{PREVIEW}" />
+    <string id="AF_KNOWLEDGE_ExportRuleEmpty" text="知识条目为空。" />
+    <string id="AF_KNOWLEDGE_ExportRagTooLong" text="知识条目“{NAME}”{ID}存在超过 {MAX} 字符的 RAG 专用短句，请先缩短后再继续。" />
+    <string id="AF_KNOWLEDGE_ExportRagMissing" text="知识条目“{NAME}”{ID}缺少 RAG 专用短句，请先填写后再导出。" />
+    <string id="AF_KNOWLEDGE_ExportRagValidationFailed" text="校验 RAG 专用短句失败：{DETAIL}" />
+    <string id="AF_KNOWLEDGE_ExportValidationFailed" text="校验知识导出内容失败：{DETAIL}" />
+    <string id="AF_KNOWLEDGE_ExportSingleValidationFailed" text="校验单条知识导出内容失败：{DETAIL}" />
+    <string id="AF_KNOWLEDGE_ExportRuleIdEmpty" text="RuleId 为空。" />
+    <string id="AF_KNOWLEDGE_ExportRuleNotFound" text="找不到该知识条目：{ID}" />
+    <string id="AF_KNOWLEDGE_ReloadNoRules" text="资料包中没有可重载的知识规则。" />
+    <string id="AF_KNOWLEDGE_ReloadEmptyRuleId" text="资料包中存在 RuleId 为空的知识条目。" />
+    <string id="AF_KNOWLEDGE_ReloadDuplicateRuleId" text="资料包中存在重复 RuleId：{ID}" />
+    <string id="AF_KNOWLEDGE_ReloadInvalidRule" text="资料包中的知识条目无效：{ID}{DETAIL}" />
+    <string id="AF_KNOWLEDGE_ReloadNoReplaceableRules" text="资料包中没有可替换的非主角知识。" />
+    <string id="AF_KNOWLEDGE_ReloadKeywordConflict" text="知识关键词与保留的主角资料或资料包规则冲突：{KEYWORD}" />
+    <string id="AF_KNOWLEDGE_ReloadFailed" text="重载知识库失败：{DETAIL}" />
+
+    <string id="AF_KNOWLEDGE_ExistingConditionFallback" text="已有" />
+    <string id="AF_KNOWLEDGE_GeneralCondition" text="通用（无条件）" />
+
+    <string id="AF_KNOWLEDGE_MappingTargetNoValue" text="{LABEL}（当前无值）" />
+    <string id="AF_KNOWLEDGE_MappingTargetValue" text="{LABEL}（{VALUE}）" />
+
+    <string id="AF_KNOWLEDGE_UnnamedKnowledge" text="未命名知识" />
+
+    <string id="AF_KNOWLEDGE_ImportRuleEmpty" text="规则为空。" />
+    <string id="AF_KNOWLEDGE_ImportRuleIdEmpty" text="RuleId 为空。" />
+    <string id="AF_KNOWLEDGE_ImportRagTooLong" text="RAG 专用短句超过 {MAX} 字符限制。" />
+    <string id="AF_KNOWLEDGE_ImportDuplicateCondition" text="规则内部存在重复条件的提示词：第 {FIRST} 条与第 {SECOND} 条条件完全相同。" />
+    <string id="AF_KNOWLEDGE_ImportWriteFailed" text="规则写入失败，可能是规则结构未通过校验。" />
+    <string id="AF_KNOWLEDGE_ImportValidationFailed" text="规则校验异常：{DETAIL}" />
+    <string id="AF_KNOWLEDGE_ImportBehaviorUnavailable" text="导入失败：KnowledgeLibraryBehavior 未初始化。" />
+    <string id="AF_KNOWLEDGE_ImportDuplicateKeyword" text="导入失败：导入规则中存在重复关键词（{KEYWORD}）。" />
+    <string id="AF_KNOWLEDGE_ImportExistingKeyword" text="导入失败：当前存档中已存在重复关键词（{KEYWORD}），请先在游戏内修复后再导入。" />
+    <string id="AF_KNOWLEDGE_ImportKeywordConflict" text="导入失败：关键词冲突（{KEYWORD}）。当前存档中该关键词属于规则 {EXISTING}，导入规则为 {INCOMING}。" />
+    <string id="AF_KNOWLEDGE_ImportNoRulesFound" text="导入失败：导入目录中未找到可导入的知识规则文件。" />
+    <string id="AF_KNOWLEDGE_ImportFolderDuplicateKeyword" text="导入失败：导入文件夹中存在重复关键词（{KEYWORD}），分别属于规则 {FIRST} 与 {SECOND}。" />
+    <string id="AF_KNOWLEDGE_DatabaseReloadEmptyEntry" text="资料包包含空知识条目。" />
+    <string id="AF_KNOWLEDGE_DatabaseReloadRuleIdEmpty" text="知识条目“{SOURCE}”的 RuleId 为空。" />
+    <string id="AF_KNOWLEDGE_DatabaseReloadDuplicateId" text="无法为重复知识 RuleId 生成稳定 ID：{ID}" />
+      <string id="AF_KNOWLEDGE_RoleDetailTitle" text="具体身份 - {ROLE}" />
+    <string id="AF_KNOWLEDGE_RoleSearchTitle" text="搜索{ROLE}" />
+    <string id="AF_KNOWLEDGE_VariantEditorDescription" text="当前条件：{CONDITION}&#10;&#10;当前内容预览：&#10;{PREVIEW}{TRUNCATED}" />
+    <string id="AF_KNOWLEDGE_RagParseFailureTitle" text="RAG 专用短句解析失败" />
+    <string id="AF_KNOWLEDGE_RagParseFailureReason" text="模型回复无法解析为 RAG 专用短句，系统将使用确定性兜底。" />
+    <string id="AF_KNOWLEDGE_RagGenerationFailureTitle" text="生成RAG专用短句失败" />
+
+    <string id="AF_KNOWLEDGE_UI_EntityPromptHeader" text="你和{PLAYER}交流可用的实体信息：" />
+    <string id="AF_KNOWLEDGE_UI_ResidentPlayerClan" text="常驻：玩家当前家族" />
+    <string id="AF_KNOWLEDGE_UI_ResidentPlayerKingdom" text="常驻：玩家当前王国" />
+    <string id="AF_KNOWLEDGE_UI_ResidentContextHeroSelf" text="常驻：{NAME}本人" />
+    <string id="AF_KNOWLEDGE_UI_ResidentContextHeroClan" text="常驻：{NAME}家族" />
+    <string id="AF_KNOWLEDGE_UI_ResidentContextHeroKingdom" text="常驻：{NAME}当前王国" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessResidentContextHeroOfClan" text="常驻：{NAME}的家族" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessResidentContextHeroOfKingdom" text="常驻：{NAME}的王国" />
+    <string id="AF_KNOWLEDGE_UI_DefaultHeroName" text="人物" />
+    <string id="AF_KNOWLEDGE_UI_DefaultSettlementName" text="地点" />
+    <string id="AF_KNOWLEDGE_UI_DefaultClanName" text="家族" />
+    <string id="AF_KNOWLEDGE_UI_DefaultKingdomName" text="王国" />
+    <string id="AF_KNOWLEDGE_UI_Player" text="玩家" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessInfoHeader" text="可能有效的信息：" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionHeroes" text="【人物】" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionSettlements" text="【地点】" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionClans" text="【家族】" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionKingdoms" text="【王国】" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionVisibleParties" text="【附近可见部队】" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessHeroEntry" text="{INDEX}. 名称：{NAME}；位置：{LOCATION}；ID：{ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSettlementEntry" text="{INDEX}. 名称：{NAME}；ID：{ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessClanEntry" text="{INDEX}. 名称：{NAME}；ID：{ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessKingdomEntry" text="{INDEX}. 名称：{NAME}；ID：{ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessMentionHint" text="；提示：{MENTION}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptPlayerSelf" text="【玩家本人】" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptPlayerInstruction" text="1. 名称：{NAME}；固定ID：{ID}；用于FOLLOW玩家时目标类型写hero，id填写{ID}。" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptVisiblePartiesHeader" text="【附近可见部队】" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyUnknown" text="{INDEX}. 名称：未知；数量：0" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyShip" text="；舰船：{INFO}" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyEntry" text="{INDEX}. 名称：{NAME}；数量：{COUNT}{SHIP}；部队ID：{ID}；从属：{AFFILIATION}{RELATION}；方位：{DIRECTION}；距离：{DISTANCE}" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyContextRelation" text="与NPC关系：{RELATION}" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyPlayerRelation" text="与玩家关系：{RELATION}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionHeroes" text="【人物】" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroEntry" text="{INDEX}. {NAME}（编号：{ID}；匹配分：{SCORE}；提及：{MENTION}）" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroClan" text="所属家族：{CLAN}；王国：{KINGDOM}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroTraits" text="特质：{TRAITS}；亲属：{RELATIVES}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroLocation" text="位置：{LOCATION}；状态：{STATUS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroAge" text="年龄：{AGE}；生死：{ALIVE}；性别：{GENDER}；职业/头衔：{OCCUPATION}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionSettlements" text="【地点】" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementEntry" text="{INDEX}. {NAME}（编号：{ID}；匹配分：{SCORE}；提及：{MENTION}）" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementOwner" text="所属家族：{CLAN}；王国：{KINGDOM}；文化：{CULTURE}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementStrength" text="兵力：{STRENGTH}；繁荣度：{PROSPERITY}；人口：{POPULATION}；忠诚度：{LOYALTY}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementVillages" text="下属村庄：{VILLAGES}；当前状态：{STATUS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionClans" text="【家族】" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanEntry" text="{INDEX}. {NAME}（编号：{ID}；匹配分：{SCORE}；提及：{MENTION}）" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanLeader" text="族长：{LEADER}；主要成员：{MEMBERS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanKingdom" text="所属王国：{KINGDOM}；影响力：{INFLUENCE}；文化：{CULTURE}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanWealth" text="财富：{WEALTH}；等级：{TIER}；是否灭亡：{ELIMINATED}；主要定居点：{SETTLEMENTS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionKingdoms" text="【王国】" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomEntry" text="{INDEX}. {NAME}（编号：{ID}；匹配分：{SCORE}；提及：{MENTION}）" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomLeader" text="国王：{LEADER}；总兵力：{STRENGTH}；文化：{CULTURE}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomEncyclopedia" text="百科背景：{BACKGROUND}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomSettlements" text="王国定居点概览：{SETTLEMENTS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomClans" text="主要家族：{CLANS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomStatus" text="王国当前状态：{STATUS}" />
+    <string id="AF_KNOWLEDGE_UI_RelationToContext" text="与{NAME}的关系：{RELATION}。" />
+    <string id="AF_KNOWLEDGE_UI_RelationSelf" text="与{NAME}的关系：本人" />
+    <string id="AF_KNOWLEDGE_UI_RelationPersonal" text="原版个人关系值：{VALUE}（{BAND}）" />
+    <string id="AF_KNOWLEDGE_UI_Unknown" text="未知" />
+    <string id="AF_KNOWLEDGE_UI_NoTraits" text="无显著特质" />
+    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryHeader" text="【NPC当前亲属与家族状态】\n人物：{NAME}\n{CONTENT}" />
+    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryFooter" text="\n以上为本轮游戏状态；若旧个性、背景或历史对话与此处生死状态冲突，以此处为准。已故者只能作为往事提及，不能描述为仍在活动或安排与其见面；未列出不代表已故，不得编造死因、时间或凶手。" />
+    <string id="AF_KNOWLEDGE_UI_NotRecorded" text="未记录" />
+    <string id="AF_KNOWLEDGE_UI_HeroAlive" text="（在世）" />
+    <string id="AF_KNOWLEDGE_UI_HeroDead" text="（已故）" />
+    <string id="AF_KNOWLEDGE_UI_HeroLocationSettlement" text="（定居点内）" />
+    <string id="AF_KNOWLEDGE_UI_HeroLocationPrisoner" text="（被俘）" />
+    <string id="AF_KNOWLEDGE_UI_HeroLocationPrisonerParty" text="（被俘，关押于：{HOLDER}）" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusDead" text="已故" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusCaptive" text="被俘；关押于：{HOLDER}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusLocation" text="在定居点：{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusTarget" text="队伍目标：{TARGET}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusNearby" text="附近：{LOCATION}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusArmy" text="在军队中：{ARMY}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusBehavior" text="行为：{BEHAVIOR}" />
+    <string id="AF_KNOWLEDGE_UI_NoSpecialStatus" text="无特殊状态" />
+    <string id="AF_KNOWLEDGE_UI_OccupationKingdomLeader" text="王国统治者" />
+    <string id="AF_KNOWLEDGE_UI_OccupationKingOrLeader" text="国王/领袖" />
+    <string id="AF_KNOWLEDGE_UI_OccupationClanLeader" text="家族族长" />
+    <string id="AF_KNOWLEDGE_UI_OccupationLord" text="领主" />
+    <string id="AF_KNOWLEDGE_UI_OccupationWanderer" text="流浪者" />
+    <string id="AF_KNOWLEDGE_UI_OccupationNotable" text="要人" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeVillage" text="村庄" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeTown" text="城镇" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeCastle" text="城堡" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeHideout" text="藏身处" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeFort" text="堡垒" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeGeneric" text="定居点" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStrengthMilitia" text="民兵：{COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStrengthGarrison" text="驻军：{COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStrengthTownGarrison" text="城镇驻军：{COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementProsperityVillage" text="户数：{COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementPopulationVillage" text="约{COUNT}人" />
+    <string id="AF_KNOWLEDGE_UI_SettlementPopulationNoField" text="无人口数据" />
+    <string id="AF_KNOWLEDGE_UI_SettlementVillagesNone" text="无" />
+    <string id="AF_KNOWLEDGE_UI_SettlementVillagesSummary" text="{COUNT}个村庄" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStatusBesieged" text="被围攻中" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStatusVillageState" text="村庄状态：{STATE}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStatusSecurity" text="安全度：{SECURITY}" />
+    <string id="AF_KNOWLEDGE_UI_ClanFiefsNone" text="无" />
+    <string id="AF_KNOWLEDGE_UI_ClanFiefsSummary" text="{SETTLEMENTS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomClansNone" text="无" />
+    <string id="AF_KNOWLEDGE_UI_KingdomClansSummary" text="{CLANS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomSettlementsNone" text="无" />
+    <string id="AF_KNOWLEDGE_UI_KingdomSettlementsSample" text="{SAMPLE}等" />
+    <string id="AF_KNOWLEDGE_UI_KingdomSettlementsSummary" text="{TOWNS}座城镇，{CASTLES}座城堡，{VILLAGES}个村庄" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusEliminated" text="已灭亡" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusWars" text="交战中：{FACTIONS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusAlliances" text="盟友：{KINGDOMS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusTrades" text="贸易协定：{FACTIONS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusEliminatedFlag" text="；已灭亡" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusNone" text="无" />
+    <string id="AF_KNOWLEDGE_UI_PartyAffiliationVillage" text="村庄：{VILLAGE}" />
+    <string id="AF_KNOWLEDGE_UI_PartyAffiliationFaction" text="势力：{FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_PartyAffiliationOwner" text="所属：{OWNER}" />
+    <string id="AF_KNOWLEDGE_UI_DirectionHere" text="当前位置" />
+    <string id="AF_KNOWLEDGE_UI_DirectionE" text="东" />
+    <string id="AF_KNOWLEDGE_UI_DirectionNE" text="东北" />
+    <string id="AF_KNOWLEDGE_UI_DirectionN" text="北" />
+    <string id="AF_KNOWLEDGE_UI_DirectionNW" text="西北" />
+    <string id="AF_KNOWLEDGE_UI_DirectionW" text="西" />
+    <string id="AF_KNOWLEDGE_UI_DirectionSW" text="西南" />
+    <string id="AF_KNOWLEDGE_UI_DirectionS" text="南" />
+    <string id="AF_KNOWLEDGE_UI_DirectionSE" text="东南" />
+    <string id="AF_KNOWLEDGE_UI_DistanceKm" text="{DISTANCE}千米" />
+    <string id="AF_KNOWLEDGE_UI_GenderMale" text="男" />
+    <string id="AF_KNOWLEDGE_UI_GenderFemale" text="女" />
+    <string id="AF_KNOWLEDGE_UI_EliminatedTrue" text="是" />
+    <string id="AF_KNOWLEDGE_UI_EliminatedFalse" text="否" />
+    <string id="AF_KNOWLEDGE_UI_RelationSpouse" text="配偶" />
+    <string id="AF_KNOWLEDGE_UI_RelationFather" text="父亲" />
+    <string id="AF_KNOWLEDGE_UI_RelationMother" text="母亲" />
+    <string id="AF_KNOWLEDGE_UI_RelationDaughter" text="女儿" />
+    <string id="AF_KNOWLEDGE_UI_RelationSon" text="儿子" />
+    <string id="AF_KNOWLEDGE_UI_RelationSister" text="姐妹" />
+    <string id="AF_KNOWLEDGE_UI_RelationBrother" text="兄弟" />
+    <string id="AF_KNOWLEDGE_UI_RelationSameClan" text="同一家族：{CLAN}" />
+    <string id="AF_KNOWLEDGE_UI_RelationContextIsClanLeader" text="该人物是{NAME}的家族族长" />
+    <string id="AF_KNOWLEDGE_UI_RelationTargetIsClanLeader" text="{NAME}是该人物的家族族长" />
+    <string id="AF_KNOWLEDGE_UI_RelationSameFaction" text="同一阵营：{FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_RelationHostileFaction" text="敌对阵营：{CONTEXT_FACTION} vs {TARGET_FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_RelationDifferentFaction" text="不同阵营：{CONTEXT_FACTION} vs {TARGET_FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandDeadly" text="死敌" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandHostile" text="敌对" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandUnfriendly" text="反感" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandNeutral" text="中立" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandFriendly" text="友好" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandClose" text="亲近" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandIntimate" text="至交" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationOwnParty" text="自己的队伍" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationFriendly" text="友好" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationHostile" text="敌对" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationNeutral" text="中立" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationPersonal" text="个人关系：{VALUE}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationSettlement" text="在{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationBesiege" text="围攻{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapNearby" text="靠近{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapTarget" text="前往{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapTerrain" text="地图上{TERRAIN}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapRecent" text="最近靠近{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapParty" text="随队伍{PARTY}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapFallback" text="世界地图" />
+    <string id="AF_KNOWLEDGE_UI_MapTerrainSuffix" text="（{TERRAIN}）" />
+    <string id="AF_KNOWLEDGE_UI_MapTerrainWater" text="海上" />
+    <string id="AF_KNOWLEDGE_UI_PrisonerHolder" text="关押者：{HOLDER}" />
+    <string id="AF_KNOWLEDGE_UI_PrisonerHolderParty" text="关押队伍：{PARTY}" />
+    <string id="AF_KNOWLEDGE_UI_RelativeExSpouses" text="已故前配偶" />
+    <string id="AF_KNOWLEDGE_UI_RelativeChildren" text="子女" />
+    <string id="AF_KNOWLEDGE_UI_RelativeSiblings" text="兄弟姐妹" />
+    <string id="AF_KNOWLEDGE_UI_RelativeClanMembers" text="本家族成员" />
+    <string id="AF_KNOWLEDGE_BulkDeleteNoMatches" text="&#10;&#10;没有匹配项。" />
+    <string id="AF_KNOWLEDGE_MappingSearchNoMatches" text="&#10;&#10;没有匹配项，请尝试其他关键词。" />
+    <string id="AF_KNOWLEDGE_RoleSearchOptionQuery" text="搜索：{QUERY}" />
+    <string id="AF_KNOWLEDGE_Occupation_NotAssigned" text="未指定" />
+    <string id="AF_KNOWLEDGE_Occupation_Tavernkeeper" text="酒馆老板" />
+    <string id="AF_KNOWLEDGE_Occupation_Mercenary" text="雇佣兵" />
+    <string id="AF_KNOWLEDGE_Occupation_Lord" text="领主" />
+    <string id="AF_KNOWLEDGE_Occupation_GoodsTrader" text="杂货商" />
+    <string id="AF_KNOWLEDGE_Occupation_ArenaMaster" text="竞技场主管" />
+    <string id="AF_KNOWLEDGE_Occupation_Villager" text="村民" />
+    <string id="AF_KNOWLEDGE_Occupation_Soldier" text="士兵" />
+    <string id="AF_KNOWLEDGE_Occupation_Townsfolk" text="市民" />
+    <string id="AF_KNOWLEDGE_Occupation_RansomBroker" text="赎金经纪人" />
+    <string id="AF_KNOWLEDGE_Occupation_Weaponsmith" text="武器商" />
+    <string id="AF_KNOWLEDGE_Occupation_Armorer" text="盔甲商" />
+    <string id="AF_KNOWLEDGE_Occupation_HorseTrader" text="马商" />
+    <string id="AF_KNOWLEDGE_Occupation_TavernWench" text="酒馆女侍" />
+    <string id="AF_KNOWLEDGE_Occupation_TavernGameHost" text="酒馆游戏主持人" />
+    <string id="AF_KNOWLEDGE_Occupation_Bandit" text="强盗" />
+    <string id="AF_KNOWLEDGE_Occupation_Wanderer" text="流浪者" />
+    <string id="AF_KNOWLEDGE_Occupation_Artisan" text="工匠" />
+    <string id="AF_KNOWLEDGE_Occupation_Merchant" text="商人" />
+    <string id="AF_KNOWLEDGE_Occupation_Preacher" text="传教士" />
+    <string id="AF_KNOWLEDGE_Occupation_Headman" text="村长" />
+    <string id="AF_KNOWLEDGE_Occupation_GangLeader" text="帮派头目" />
+    <string id="AF_KNOWLEDGE_Occupation_RuralNotable" text="乡村名人" />
+    <string id="AF_KNOWLEDGE_Occupation_PrisonGuard" text="监狱守卫" />
+    <string id="AF_KNOWLEDGE_Occupation_Guard" text="守卫" />
+    <string id="AF_KNOWLEDGE_Occupation_ShopWorker" text="店员" />
+    <string id="AF_KNOWLEDGE_Occupation_Musician" text="乐师" />
+    <string id="AF_KNOWLEDGE_Occupation_Gangster" text="帮派成员" />
+    <string id="AF_KNOWLEDGE_Occupation_Blacksmith" text="铁匠" />
+    <string id="AF_KNOWLEDGE_Occupation_BannerBearer" text="旗手" />
+    <string id="AF_KNOWLEDGE_Occupation_CaravanGuard" text="商队护卫" />
+    <string id="AF_KNOWLEDGE_Occupation_Special" text="特殊身份" />
+    <string id="AF_KNOWLEDGE_Occupation_ShipWright" text="造船匠" />
+    <string id="AF_KNOWLEDGE_RagApiKeyMissing" text="尚未配置 API 密钥。" />
+    <string id="AF_KNOWLEDGE_RagApiUrlMissing" text="API 地址为空。" />
+    <string id="AF_KNOWLEDGE_RagRequestFailed" text="RAG API 请求失败：{DETAIL}" />
+</strings>
+</base>

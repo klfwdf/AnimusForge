@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Joss",
+  "Keywords": [
+    "Joss",
+    "House Joss"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Qiaosi is a home in the Iban cultural circle of Shivering Sea. The Iban's wealth often comes from blubber, whale bones, furs, timber and seafood. The price is long voyages, cold and ships that may not return at any time. If Buckwheat wants to gain a foothold in the local area, it must maintain the credit of the crew's relatives, workshops, storage yards and external buyers; such a family business is more liquid than the southern manor, and is more likely to be broken down by bad sea conditions. A family's political choices can change, but its character will still be judged by how it treats shipwrecks, unpaid wages and winter reserves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Iban sailors look at buckwheat, they care most about whether the ship is repaired, whether the rations are sufficient, and whether the profits are divided as agreed. There are no noble chairs on the sea, only whose judgment can bring the whole ship home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Oil refiners, bonesmiths and left-behind families know that every harvest carries the shadow of the dead. If Buckwheat is willing to take care of the families of the victims, then their families will be worthy of sharing the wealth of the whale industry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Local elders hope that Qiao Si will respect the joint decision of the island community and not value foreign silver coins higher than local granaries. No matter how well-sold whale oil is, it cannot be used as food when shipping routes are cut off."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Joss The Iban local family is based on cold sea navigation, fur whale industry and cooperation with the islanders, rather than the southern knight-style sealing of land. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Joss The Iban local family is based on cold sea navigation, fur whale industry and cooperation with the islanders, rather than the southern knight-style sealing of land. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Joss The Iban local family is based on cold sea navigation, fur whale industry and cooperation with the islanders, rather than the southern knight-style sealing of land. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Joss The Iban local family is based on cold sea navigation, fur whale industry and cooperation with the islanders, rather than the southern knight-style sealing of land. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Joss: The Iban local family is based on cold sea navigation, fur whale industry and cooperation with the islanders, rather than the southern knight-style sealing of land."
+  ]
+}

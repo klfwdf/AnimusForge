@@ -55,18 +55,18 @@ public sealed partial class CourierDeliveryBehavior
 			if (IsInboundToPlayer(session))
 			{
 				string senderName = recipient?.Name?.ToString() ?? session.SenderName ?? "NPC";
-				InformationManager.ShowInquiry(new InquiryData("等待信使来信生成", "信使已经抵达你的队伍，正在等待" + senderName + "写完信件正文。\n\n游戏时间已暂停，信件生成完成后会自动送达。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true, prioritize: true);
+				InformationManager.ShowInquiry(new InquiryData(ConversationUiLocalization.Text("AF_CONV_UI_Courier_WaitInboundTitle", "Waiting for the incoming letter"), ConversationUiLocalization.Text("AF_CONV_UI_Courier_WaitInboundDescription", "The courier has reached your party and is waiting for {NAME} to finish writing the letter.\n\nGame time is paused; the letter will be delivered automatically when generation finishes.", "NAME", senderName), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true, prioritize: true);
 			}
 			else
 			{
 				string name = recipient?.Name?.ToString() ?? session.RecipientName ?? "NPC";
-				InformationManager.ShowInquiry(new InquiryData("等待信使回信生成", "信使已经抵达 " + name + " 的位置，正在等待对方读信并写下回信。\n\n游戏时间已暂停，回信生成完成后会自动继续并执行后处理标签。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true, prioritize: true);
+				InformationManager.ShowInquiry(new InquiryData(ConversationUiLocalization.Text("AF_CONV_UI_Courier_WaitOutboundTitle", "Waiting for a courier reply"), ConversationUiLocalization.Text("AF_CONV_UI_Courier_WaitOutboundDescription", "The courier has reached {NAME} and is waiting for them to read the letter and write a reply.\n\nGame time is paused; it will resume automatically after the reply is generated and post-processing tags are applied.", "NAME", name), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true, prioritize: true);
 			}
 		}
 		catch (Exception ex)
 		{
 			Log("show reply wait inquiry failed session=" + session.Id + " error=" + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage(IsInboundToPlayer(session) ? "信使已抵达，正在等待来信生成。游戏时间已暂停。" : "信使已抵达，正在等待回信生成。游戏时间已暂停。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(IsInboundToPlayer(session) ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_WaitInboundNotice", "The courier has arrived and is waiting for the incoming letter to be generated. Game time is paused.") : ConversationUiLocalization.Text("AF_CONV_UI_Courier_WaitOutboundNotice", "The courier has arrived and is waiting for a reply to be generated. Game time is paused."), Colors.Yellow));
 		}
 	}
 

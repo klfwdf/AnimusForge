@@ -10,6 +10,7 @@ using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
@@ -209,7 +210,7 @@ if (!IsStillMainPartyPrisoner(hero) || IsCurrentPublicExecutionVictim(hero))
 		if (spawned > 0)
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				"【贵族俘虏随行】已带入 " + spawned + " 名英雄俘虏，归入第 8 编队。",
+				new TextObject("{=AF_NOTIFY_Escort_PrisonersSpawned}[Noble prisoner escort] {COUNT} hero prisoners have entered the scene and joined formation 8.").SetTextVariable("COUNT", spawned).ToString(),
 				Color.FromUint(0xFFDFC16Bu)));
 		}
 	}

@@ -1,0 +1,150 @@
+{
+  "Id": "rule_House_Foundations_Valeros",
+  "Keywords": [
+    "Valeros",
+    "House Valeros"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Valeros family is an ancient Valyrian descendant of the Volantis, and their family name is connected to the old blood class within the Black Wall. Such families regard silver-gold hair, purple eyes and ancestry as political capital, and also rely on manors outside the city, trade routes, slaves and kinship marriage alliances to maintain real wealth. The old blood of Volantis is not a unified whole: Tigers and elephants, expansion and trade, personal ambition and family security will constantly tear the choices apart. To maintain influence, Valeros must find a position between the glory of its ancestors and the current interests of the city-state."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Oldblood nobles measure Valeros by marital purity, family wealth, and political allies. For those within the Black Wall, family dinners are as important as election deals, and an inappropriate engagement may be more difficult to recover than a business loss."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The free folk of Volantis are accustomed to the beauty and arrogance of the old blood. If Valeros only gives away food during the election season, his support will be eaten up as quickly as bread; he will stay longer if he can maintain jobs and low food prices."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants from other Free Cities will not count a coin less because of the noble ancestors of Valeros. They admit that the black wall network is useful, but they only believe in sealed contracts, guarantees and shipments that can be honored."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valeros Valeros is the old blood family of Volantis. It maintains its status within the Black Wall, its Valyrian ancestry and the city-state's commercial politics. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valeros Valeros is the old blood family of Volantis. It maintains its status within the Black Wall, its Valyrian ancestry and the city-state's commercial politics. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valeros Valeros is the old blood family of Volantis. It maintains its status within the Black Wall, its Valyrian ancestry and the city-state's commercial politics. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valeros Valeros is the old blood family of Volantis. It maintains its status within the Black Wall, its Valyrian ancestry and the city-state's commercial politics. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Valeros: Valeros is the old blood family of Volantis. It maintains its status within the Black Wall, its Valyrian ancestry and the city-state's commercial politics."
+  ]
+}

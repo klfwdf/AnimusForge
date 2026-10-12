@@ -257,15 +257,15 @@ internal sealed class VengeanceExecutionFacts
             ResolveChargeLabel(request.Charge),
             request.Tone switch
             {
-                ExecutionTone.Spectacle => "盛大示众",
-                ExecutionTone.Terror => "恐怖威慑",
-                _ => "司法宣判"
+                ExecutionTone.Spectacle => LlmSourceTexts.Get("ExecutionBridge_FactLabel_001"),
+                ExecutionTone.Terror => LlmSourceTexts.Get("ExecutionBridge_FactLabel_002"),
+                _ => LlmSourceTexts.Get("ExecutionBridge_FactLabel_003")
             },
             request.LegitimacyTier switch
             {
-                LegitimacyTier.Legal => "合法",
-                LegitimacyTier.Disputed => "有争议",
-                _ => "缺少合法授权"
+                LegitimacyTier.Legal => LlmSourceTexts.Get("ExecutionBridge_FactLabel_004"),
+                LegitimacyTier.Disputed => LlmSourceTexts.Get("ExecutionBridge_FactLabel_005"),
+                _ => LlmSourceTexts.Get("ExecutionBridge_FactLabel_006")
             },
             actor == ExecutionActor.Player,
             request.Venue);
@@ -273,24 +273,24 @@ internal sealed class VengeanceExecutionFacts
     // Mirrors CNs/vengeance_strings-zh-CN.xml; unknown extension ids fall back to the localized name.
     private static string ResolveMethodLabel(ExecutionMethodDefinition method) => (method?.StringId ?? "").Trim().ToLowerInvariant() switch
     {
-        ExecutionMethodRules.Beheading => "斩首",
-        ExecutionMethodRules.Hanging => "绞刑",
-        ExecutionMethodRules.Burning => "火刑",
-        ExecutionMethodRules.BreakingWheel => "轮刑",
-        ExecutionMethodRules.Impalement => "穿刺刑",
-        ExecutionMethodRules.Stoning => "石刑",
-        ExecutionMethodRules.CrossbowExecution => "弩决",
+        ExecutionMethodRules.Beheading => LlmSourceTexts.Get("ExecutionBridge_FactLabel_007"),
+        ExecutionMethodRules.Hanging => LlmSourceTexts.Get("ExecutionBridge_FactLabel_008"),
+        ExecutionMethodRules.Burning => LlmSourceTexts.Get("ExecutionBridge_FactLabel_009"),
+        ExecutionMethodRules.BreakingWheel => LlmSourceTexts.Get("ExecutionBridge_FactLabel_010"),
+        ExecutionMethodRules.Impalement => LlmSourceTexts.Get("ExecutionBridge_FactLabel_011"),
+        ExecutionMethodRules.Stoning => LlmSourceTexts.Get("ExecutionBridge_FactLabel_012"),
+        ExecutionMethodRules.CrossbowExecution => LlmSourceTexts.Get("ExecutionBridge_FactLabel_013"),
         _ => SafeName(() => method?.GetName()?.ToString())
     };
 
     private static string ResolveChargeLabel(ExecutionChargeDefinition charge) => (charge?.StringId ?? "").Trim().ToLowerInvariant() switch
     {
-        "treason" => "叛乱或叛国",
-        "raiding_civilians" => "劫掠平民",
-        "siege_atrocity" => "围城暴行",
-        "banditry" => "盗匪罪",
-        "public_enemy" => "王国公敌",
-        "personal_revenge" => "私人复仇",
+        "treason" => LlmSourceTexts.Get("ExecutionBridge_FactLabel_014"),
+        "raiding_civilians" => LlmSourceTexts.Get("ExecutionBridge_FactLabel_015"),
+        "siege_atrocity" => LlmSourceTexts.Get("ExecutionBridge_FactLabel_016"),
+        "banditry" => LlmSourceTexts.Get("ExecutionBridge_FactLabel_017"),
+        "public_enemy" => LlmSourceTexts.Get("ExecutionBridge_FactLabel_018"),
+        "personal_revenge" => LlmSourceTexts.Get("ExecutionBridge_FactLabel_019"),
         _ => SafeName(() => charge?.GetName()?.ToString())
     };
 

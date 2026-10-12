@@ -1,6 +1,6 @@
 # AnimusForge PlayerExports Editor
 
-Standalone Windows editor for the current module's `AnimusForge/PlayerExports` data packages. It ignores `ANIMUSFORGE_DATA_ROOT` and never reads or migrates the retired AppData library.
+Standalone Windows editor for the current module's `AnimusForge/PlayerExports` data packages. An explicit `ANIMUSFORGE_DATA_ROOT` may select a valid installed module when the standalone editor has no module ancestor. Retired AppData libraries are not active roots.
 
 This tool is intentionally independent from Bannerlord and the AnimusForge mod runtime. It does not reference `TaleWorlds.*` or load `AnimusForge.dll`; it compiles the same pure .NET path contract as the game. The default locator checks only the startup directory's parent chain for a valid `AnimusForge` module with `SubModule.xml` and `ModuleData`. If none is found, manually select that module's `PlayerExports` folder. Old user-data roots, path escapes and reparse paths are rejected; missing permissions are errors, not a reason to fall back to AppData.
 

@@ -55,17 +55,17 @@ public partial class RewardSystemBehavior
 		{
 			if (joiningHero == null)
 			{
-				statusText = "执行失败：缺少要加入玩家家族的目标英雄。";
+				statusText = SocialSourceTexts.Get("S409");
 				return false;
 			}
 			if (joiningHero == Hero.MainHero)
 			{
-				statusText = "执行跳过：目标本来就是玩家本人。";
+				statusText = SocialSourceTexts.Get("S410");
 				return false;
 			}
 			if (Clan.PlayerClan == null || MobileParty.MainParty == null)
 			{
-				statusText = "执行失败：玩家家族或玩家队伍不可用。";
+				statusText = SocialSourceTexts.Get("S411");
 				return false;
 			}
 			bool preservePlayerFamilyIdentity = asCompanion && ShouldPreservePlayerFamilyIdentityForCompanionJoin(joiningHero);
@@ -78,8 +78,8 @@ public partial class RewardSystemBehavior
 			if (asCompanion ? IsHeroPlayerCompanionInMainParty(joiningHero) : IsHeroPlayerClanLordInMainParty(joiningHero))
 			{
 				statusText = asCompanion
-					? $"执行跳过：{joiningHero.Name} 已经是玩家同伴并在玩家队伍中。"
-					: $"执行跳过：{joiningHero.Name} 已经是玩家家族成员并在玩家队伍中。";
+					? string.Format(SocialSourceTexts.Get("S412"), joiningHero.Name)
+					: string.Format(SocialSourceTexts.Get("S413"), joiningHero.Name);
 				return false;
 			}
 			MobileParty originalMobileParty = joiningHero.PartyBelongedTo;
@@ -101,9 +101,9 @@ public partial class RewardSystemBehavior
 			Town governorTown = joiningHero.GovernorOf;
 			if (governorTown != null)
 			{
-				string governorTownName = governorTown.Name?.ToString() ?? "原定居点";
+				string governorTownName = governorTown.Name?.ToString() ?? SocialSourceTexts.Get("S414");
 				ChangeGovernorAction.RemoveGovernorOf(joiningHero);
-				transitionNotes.Add("已解除其在 " + governorTownName + " 的总督职位");
+				transitionNotes.Add(SocialSourceTexts.Get("S415") + governorTownName + SocialSourceTexts.Get("S416"));
 			}
 			if (originalClan != null && originalClan != Clan.PlayerClan && originalClan.Leader == joiningHero && !originalClan.IsEliminated)
 			{
@@ -119,10 +119,10 @@ public partial class RewardSystemBehavior
 					}
 					if (newLeader == null || newLeader == joiningHero)
 					{
-						statusText = "执行失败：" + originalClanName + " 的族长继承未完成，已阻止将现任族长直接拉入队伍。";
+						statusText = SocialSourceTexts.Get("S220") + originalClanName + SocialSourceTexts.Get("S417");
 						return false;
 					}
-					transitionNotes.Add(originalClanName + " 已由 " + newLeader.Name + " 接任族长");
+					transitionNotes.Add(originalClanName + SocialSourceTexts.Get("S418") + newLeader.Name + SocialSourceTexts.Get("S419"));
 				}
 				else
 				{
@@ -133,7 +133,7 @@ public partial class RewardSystemBehavior
 						PrepareRulingClanTransitionForDepartingClan(originalKingdom, originalClan, transitionNotes, out destroyOriginalKingdomAfterClanDestroyed);
 					}
 					DestroyClanAction.ApplyByClanLeaderDeath(originalClan);
-					transitionNotes.Add(originalClanName + " 无可用继承人，已按原版族长死亡逻辑销毁原家族");
+					transitionNotes.Add(originalClanName + SocialSourceTexts.Get("S420"));
 					FinalizeRulingClanTransitionForDepartedClan(originalKingdom, destroyOriginalKingdomAfterClanDestroyed, transitionNotes);
 				}
 			}
@@ -170,10 +170,10 @@ public partial class RewardSystemBehavior
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
 			RecordHeroJoinedPlayerClanForExternal(joiningHero, preservePlayerFamilyIdentity ? "hero_join_party_family_preserved" : (asCompanion ? "hero_join_party_companion" : "hero_join_party_lord"), asCompanion, preservePlayerFamilyIdentity, joinedWildernessParty, joinedWildernessMembers, joinedWildernessPrisoners);
 			statusText = preservePlayerFamilyIdentity
-				? $"执行成功：{joiningHero.Name} 已保留{(preservePlayerSpouseIdentity ? "配偶" : "玩家家族成员")}身份，并加入玩家队伍{transitionSummary}。"
+				? string.Format(SocialSourceTexts.Get("S422"), joiningHero.Name, (preservePlayerSpouseIdentity ? SocialSourceTexts.Get("S277") : SocialSourceTexts.Get("S421")), transitionSummary)
 				: (asCompanion
-					? $"执行成功：{joiningHero.Name} 已成为玩家同伴，并加入玩家队伍{transitionSummary}。"
-					: $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。");
+					? string.Format(SocialSourceTexts.Get("S423"), joiningHero.Name, transitionSummary)
+					: string.Format(SocialSourceTexts.Get("S424"), joiningHero.Name, transitionSummary));
 			if (shouldCleanupOriginalMapParty && IsEmptyMapPartyAfterHeroJoin(originalMobileParty))
 			{
 				CloseHeroJoinMapPartyConversationImmediately(joiningHero, originalParty, originalMobileParty);
@@ -186,7 +186,7 @@ public partial class RewardSystemBehavior
 		}
 		catch (Exception ex)
 		{
-			statusText = "执行失败（异常）：" + ex.Message;
+			statusText = SocialSourceTexts.Get("S425") + ex.Message;
 			return false;
 		}
 	}
@@ -199,17 +199,17 @@ public partial class RewardSystemBehavior
 		{
 			if (joiningCharacter == null)
 			{
-				statusText = "执行失败：缺少要加入队伍的非英雄NPC。";
+				statusText = SocialSourceTexts.Get("S426");
 				return false;
 			}
 			if (joiningCharacter.IsHero)
 			{
-				statusText = "执行失败：目标是英雄，应走英雄入队链路。";
+				statusText = SocialSourceTexts.Get("S427");
 				return false;
 			}
 			if (MobileParty.MainParty == null || Hero.MainHero == null || Clan.PlayerClan == null)
 			{
-				statusText = "执行失败：玩家队伍或玩家家族不可用。";
+				statusText = SocialSourceTexts.Get("S428");
 				return false;
 			}
 			bool wildernessJoinHandled;
@@ -222,13 +222,13 @@ public partial class RewardSystemBehavior
 			{
 				promotedHero = existingPromotedHero;
 				string heroName = existingPromotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
-				statusText = $"执行跳过：{heroName} 已经由当前场景 NPC 升格为玩家家族 Hero，不能重复招募生成新的 Hero。";
+				statusText = string.Format(SocialSourceTexts.Get("S429"), heroName);
 				return false;
 			}
 			TavernMercenaryPoolJoinResolution tavernPoolResolution = ResolveTavernMercenaryPoolJoin(joiningCharacter, targetAgentIndex, out var mercenaryData, out int count);
 			if (tavernPoolResolution == TavernMercenaryPoolJoinResolution.Stale)
 			{
-				statusText = "执行拦截：酒馆雇佣兵池已被原版选项或其他流程处理，未重复执行入队。";
+				statusText = SocialSourceTexts.Get("S430");
 				Logger.Log("RewardSystemBehavior", "[NonHeroJoin] stale tavern pool join intercepted target=" + (joiningCharacter.StringId ?? "") + " agentIndex=" + targetAgentIndex);
 				return false;
 			}
@@ -241,15 +241,15 @@ public partial class RewardSystemBehavior
 				CampaignEventDispatcher.Instance.OnUnitRecruited(joiningCharacter, count);
 				RemoveJoinedNonHeroLocationCharacters(joiningCharacter, targetAgentIndex, removeAllMatchingTavernMercenaries: true);
 				RemoveJoinedLiveAgent(targetAgentIndex);
-				string name = joiningCharacter.Name?.ToString() ?? "该NPC";
-				statusText = $"执行成功：酒馆中 {count} 名{name} 已全部作为普通士兵加入玩家队伍。";
+				string name = joiningCharacter.Name?.ToString() ?? SocialSourceTexts.Get("S431");
+				statusText = string.Format(SocialSourceTexts.Get("S432"), count, name);
 				return true;
 			}
 			return TryPromoteNonHeroToCompanion(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, latestReply, asCompanion, out statusText, out promotedHero);
 		}
 		catch (Exception ex)
 		{
-			statusText = "执行失败（异常）：" + ex.Message;
+			statusText = SocialSourceTexts.Get("S425") + ex.Message;
 			return false;
 		}
 	}
@@ -261,7 +261,7 @@ public partial class RewardSystemBehavior
 		Agent agent = ResolveAgentForIndex(targetAgentIndex);
 		if (agent == null || !agent.IsActive())
 		{
-			statusText = "执行失败：找不到当前说话 NPC 的 live Agent，无法复制外观与装备，已取消升格。";
+			statusText = SocialSourceTexts.Get("S433");
 			return false;
 		}
 		CharacterObject template = agent.Character as CharacterObject;
@@ -271,25 +271,25 @@ public partial class RewardSystemBehavior
 		}
 		if (template == null || template.IsHero)
 		{
-			statusText = "执行失败：当前 Agent 不是可升格的非英雄兵种模板。";
+			statusText = SocialSourceTexts.Get("S434");
 			return false;
 		}
 		if (!TryCaptureAgentBodyProperties(agent, out var bodyProperties, out var bodyError))
 		{
-			statusText = "执行失败：复制当前 NPC 外观失败（" + bodyError + "），已取消升格。";
+			statusText = SocialSourceTexts.Get("S435") + bodyError + SocialSourceTexts.Get("S436");
 			return false;
 		}
 		if (!TryCaptureAgentEquipment(agent, out var capturedEquipment, out var equipmentError))
 		{
-			statusText = "执行失败：复制当前 NPC 装备失败（" + equipmentError + "），已取消升格。";
+			statusText = SocialSourceTexts.Get("S437") + equipmentError + SocialSourceTexts.Get("S436");
 			return false;
 		}
 		string originalFullName = ResolveNonHeroFullDisplayName(template, promptDisplayName, promptGivenName, targetAgentIndex);
-		string originalTroopName = template.Name?.ToString() ?? joiningCharacter.Name?.ToString() ?? "非英雄NPC";
+		string originalTroopName = template.Name?.ToString() ?? joiningCharacter.Name?.ToString() ?? SocialSourceTexts.Get("S438");
 		string personalName = ResolveNonHeroPersonalName(promptGivenName, originalFullName, originalTroopName);
 		if (string.IsNullOrWhiteSpace(personalName))
 		{
-			statusText = "执行失败：无法确定升格 Hero 的个人名，已取消升格。";
+			statusText = SocialSourceTexts.Get("S439");
 			return false;
 		}
 		PlayerOwnedTroopPromotionReservation reservedPlayerTroop;
@@ -335,16 +335,16 @@ public partial class RewardSystemBehavior
 				dialogueHistory.Add((string.IsNullOrWhiteSpace(originalFullName) ? "NPC" : originalFullName) + ": " + cleanLatestReply);
 			}
 			string joinFact = asCompanion
-				? $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家，成为玩家同伴并加入玩家队伍。"
-				: $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家，成为玩家家族成员并加入玩家队伍。";
-			MyBehavior.AppendExternalDialogueHistory(hero, null, null, "[AFEF NPC行为补充] " + joinFact);
+				? string.Format(SocialSourceTexts.Get("S440"), hero.Name, originalTroopName, sceneLabel)
+				: string.Format(SocialSourceTexts.Get("S441"), hero.Name, originalTroopName, sceneLabel);
+			MyBehavior.AppendExternalDialogueHistory(hero, null, null, SocialSourceTexts.Get("S308") + joinFact);
 			RecordHeroJoinedPlayerClanForExternal(hero, asCompanion ? "nonhero_join_party_companion_promotion" : "nonhero_join_party_lord_promotion", asCompanion);
 			AppendPromotedHeroPriorHistory(hero, dialogueHistory);
 			string equipmentSummary = BuildEquipmentSummaryForPrompt(capturedEquipment);
 			_ = MyBehavior.GeneratePromotedNonHeroCompanionProfileForExternalAsync(hero, personalName, originalFullName, originalTroopName, template.StringId ?? "", cultureName, sceneLabel, joinFact, BuildDialogueHistoryForPrompt(dialogueHistory), equipmentSummary);
 			statusText = asCompanion
-				? $"执行成功：{originalFullName} 已升格为玩家同伴“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。"
-				: $"执行成功：{originalFullName} 已升格为玩家家族 Hero“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
+				? string.Format(SocialSourceTexts.Get("S443"), originalFullName, hero.Name, (sceneFollowStarted ? SocialSourceTexts.Get("S442") : ""))
+				: string.Format(SocialSourceTexts.Get("S444"), originalFullName, hero.Name, (sceneFollowStarted ? SocialSourceTexts.Get("S442") : ""));
 			return true;
 		}
 		finally

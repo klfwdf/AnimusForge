@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Linq;
 using AnimusForge.DiplomacyDialogue;
@@ -29,7 +30,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             if (request.Move == DialogueDiplomaticMove.NewMatter && Storage.DialogueArrangements.Any(x =>
                 x.RulerId == request.RulerId && x.ActorKingdomId == request.ActorKingdomId && x.TargetKingdomId == request.TargetKingdomId
                 && x.Action == request.Action && CanInvalidateDialogueArrangement(x) && !x.Terms.ToTerms().Equals(request.Terms)))
-            { reason = "请明确要修改的旧约定ID及版本，不能同时保留未发布的旧条件"; return false; }
+            { reason = DiplomacyMiscPromptTexts.Get("Dialogue_SpecifyOldAgreementIdAndVersion", "Specify the old agreement ID and version to amend; cannot retain unpublished old terms simultaneously."); return false; }
             return true;
         }
         previous = Storage.DialogueArrangements.FirstOrDefault(x => x.ArrangementId == request.SupersedesArrangementId);
@@ -50,10 +51,9 @@ internal sealed partial class WorldDiplomacyOrchestration
     {
         // The replacement has passed all authority/terms/source checks and owns
         // its new event before the old work is invalidated. Main-thread only.
-        CancelUnpublishedCommitmentWork(previous.ArrangementId, previous.Version, "条款已明确修改：" + reason);
+        CancelUnpublishedCommitmentWork(previous.ArrangementId, previous.Version, DiplomacyMiscPromptTexts.Get("Dialogue_TermsExplicitlyModifiedPrefix", "Terms explicitly modified: ") + reason);
         previous.Status = "superseded"; previous.SupersededByArrangementId = replacement.ArrangementId;
-        RecordDialogueArrangementFact(replacement, "revision", "我已明确同意修改此前外交约定" + previous.ArrangementId
-            + "的第" + previous.Version + "版，旧条件不再用于发文。原因：" + reason);
+        RecordDialogueArrangementFact(replacement, "revision", string.Format(DiplomacyMiscPromptTexts.Get("Dialogue_AgreedModifyAgreementFormat", "I have explicitly agreed to modify version {1} of the earlier diplomatic agreement {0}; old terms will no longer be used for publication. Reason: {2}"), previous.ArrangementId, previous.Version, reason));
     }
 
     private bool IsCurrentDialoguePublicationWork(WorldDiplomacyDialogueArrangement item) => item != null

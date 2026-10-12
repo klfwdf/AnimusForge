@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Pyke",
+  "Keywords": [
+    "Pyke Surname"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kurt Pike was born in the Iron Islands as an illegitimate son with the surname \"Pike\" and later became the Commander of Eastwatch in Night's Watch. He is rude, tough, and familiar with ships, sea conditions, and coastal defenses; his experience at sea makes him see things more realistically than someone who only knows how to defend a city wall. Black gave a man without legal inheritance a way to gain a position based on his ability, and also put the Eastwatch fleet, the port, and the lives of his brothers on his judgment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The black brothers in Eastwatch know that Kurt has a bad temper and harsh words, but they admit that he understands boats. A moment's hesitation in giving orders at sea can lead to death; and in such a place a harsh rebuke is often more useful than an elegant speech."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ironborn heard \"Kurt Pike\" and knew he was an island bastard. Some people think that wearing black is the end of the road, but others will admit that it is better for an illegitimate son to command ports and ships with his ability than to beg for scraps outside the hall of relatives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchant ships and fishing boats in the north regard East Seaview as the gateway where the Great Wall connects with the sea. If Kurt could keep the lights on, the boats patrolling, and the docks in order, the captains would tolerate his bad temper."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pyke Surname Commander Kurt Pike of Eastwatch is a bastard from the Iron Islands, built on sea experience, tough style, and Night's Watch credentials. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pyke Surname Commander Kurt Pike of Eastwatch is a bastard from the Iron Islands, built on sea experience, tough style, and Night's Watch credentials. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pyke Surname Commander Kurt Pike of Eastwatch is a bastard from the Iron Islands, built on sea experience, tough style, and Night's Watch credentials. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pyke Surname Commander Kurt Pike of Eastwatch is a bastard from the Iron Islands, built on sea experience, tough style, and Night's Watch credentials. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Pyke Surname: Commander Kurt Pike of Eastwatch is a bastard from the Iron Islands, built on sea experience, tough style, and Night's Watch credentials."
+  ]
+}

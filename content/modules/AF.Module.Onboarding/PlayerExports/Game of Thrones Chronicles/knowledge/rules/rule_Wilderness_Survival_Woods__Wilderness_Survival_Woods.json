@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Wilderness_Survival_Woods",
+  "Keywords": [
+    "Forest Environment"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Forests provide wood, game, herbs, and cover, but they also block sight, direction, and paths. The ghost forest, wolf forest and rain forest each have different climates and dangers; identifying water flow, tree moss, sunlight and traces of old logging is more reliable than just relying on intuition to go deep into the dense forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Woods Forests provide wood, game, herbs, and cover, but they also block sight, direction, and paths. The ghost forest, wolf forest and rain forest each have different climates and dangers; identifying water flow, tree moss, sunlight and traces of old logging is more reliable than just relying on intuition to go deep into the dense forest. Wilderness does not mitigate the consequences of being cold, hungry, or lost because of your status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Woods Forests provide wood, game, herbs, and cover, but they also block sight, direction, and paths. The ghost forest, wolf forest and rain forest each have different climates and dangers; identifying water flow, tree moss, sunlight and traces of old logging is more reliable than just relying on intuition to go deep into the dense forest. Without preparation, weather and terrain can kill more men than enemy troops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Woods Forests provide wood, game, herbs, and cover, but they also block sight, direction, and paths. The ghost forest, wolf forest and rain forest each have different climates and dangers; identifying water flow, tree moss, sunlight and traces of old logging is more reliable than just relying on intuition to go deep into the dense forest. Reliable experience must be able to be verified repeatedly, not just rely on tall tales in the pub."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Woods Forests provide wood, game, herbs, and cover, but they also block sight, direction, and paths. The ghost forest, wolf forest and rain forest each have different climates and dangers; identifying water flow, tree moss, sunlight and traces of old logging is more reliable than just relying on intuition to go deep into the dense forest. If a disaster cuts off transportation, the consequences will be felt in distant cities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Woods Forests provide wood, game, herbs, and cover, but they also block sight, direction, and paths. The ghost forest, wolf forest and rain forest each have different climates and dangers; identifying water flow, tree moss, sunlight and traces of old logging is more reliable than just relying on intuition to go deep into the dense forest. The most expensive equipment in the wilderness cannot replace the correct timing of stopping."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Woods Forests provide wood, game, herbs, and cover, but they also block sight, direction, and paths. The ghost forest, wolf forest and rain forest each have different climates and dangers; identifying water flow, tree moss, sunlight and traces of old logging is more reliable than just relying on intuition to go deep into the dense forest. Someone explains why the disaster happened, and someone is responsible for letting the victims survive the night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Woods Forests provide wood, game, herbs, and cover, but they also block sight, direction, and paths. The ghost forest, wolf forest and rain forest each have different climates and dangers; identifying water flow, tree moss, sunlight and traces of old logging is more reliable than just relying on intuition to go deep into the dense forest. They looked at how much grain was left in the fields, whether the livestock could survive the winter, and whether the lord was willing to assume responsibility for its protection."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Woods: Forests provide wood, game, herbs, and cover, but they also block sight, direction, and paths. The ghost forest, wolf forest and rain forest each have different climates and dangers; identifying water flow, tree moss, sunlight and traces of old logging is more reliable than just relying on intuition to go deep into the dense forest."
+  ]
+}

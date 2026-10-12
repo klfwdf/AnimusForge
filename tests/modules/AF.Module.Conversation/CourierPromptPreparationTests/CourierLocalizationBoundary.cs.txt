@@ -1,0 +1,20 @@
+namespace TaleWorlds.Localization
+{
+    // This scalar boundary checks main-thread resolution and English fallback only.
+    internal sealed class TextObject
+    {
+        private string _text;
+
+        internal TextObject(string text)
+        {
+            AnimusForge.NativeHost.Game();
+            int end = text.StartsWith("{=", System.StringComparison.Ordinal) ? text.IndexOf('}') : -1;
+            _text = end < 0 ? text : text.Substring(end + 1);
+        }
+
+        internal void SetTextVariable(string name, object value)
+            => _text = _text.Replace("{" + name + "}", value?.ToString() ?? "");
+
+        public override string ToString() => _text;
+    }
+}

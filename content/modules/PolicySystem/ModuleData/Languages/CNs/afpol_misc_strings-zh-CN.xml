@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <!-- SaveCodec 错误消息 -->
+    <string id="AFPOL_MISC_SaveCodec_Msg_001" text="旧 DynamicPolicy 存档不得包含 $type 元数据" />
+    <string id="AFPOL_MISC_SaveCodec_Msg_002" text="旧 LocalPolicy 存档不得包含 $type 元数据" />
+
+    <!-- SaveCodec UI 显示 -->
+    <string id="AFPOL_MISC_SaveCodec_UnknownModule" text="无法读取的模块效果" />
+    <string id="AFPOL_MISC_SaveCodec_InertModule" text="当前版本无法执行的模块效果" />
+    <string id="AFPOL_MISC_SaveCodec_GenericEffect" text="模块效果" />
+
+    <!-- Generation 失败原因 -->
+    <string id="AFPOL_MISC_Generation_SessionNotReady" text="当前战役会话尚未就绪。" />
+    <string id="AFPOL_MISC_Generation_FeatureDisabled" text="非玩家统治者政策功能当前已关闭。" />
+    <string id="AFPOL_MISC_Generation_ApiNotConfigured" text="统治者政策的智能服务尚未配置，请检查模组设置。" />
+    <string id="AFPOL_MISC_Generation_InvalidTarget" text="政策建议目标不是有效的非玩家统治者。" />
+    <string id="AFPOL_MISC_Generation_TargetNoLongerRuler" text="政策建议目标已不是当前王国统治者。" />
+    <string id="AFPOL_MISC_Generation_EmptyProposal" text="玩家政策建议内容为空。" />
+    <string id="AFPOL_MISC_Generation_Busy" text="另一项统治者政策正在生成，请稍后再试。" />
+    <string id="AFPOL_MISC_Generation_DuplicateInFlight" text="这项统治者政策建议已经在处理中。" />
+    <string id="AFPOL_MISC_Generation_ScheduleFailed" text="无法安排统治者政策生成，详细技术信息已写入日志。" />
+    <string id="AFPOL_MISC_Generation_UnknownError" text="未知错误" />
+
+    <!-- Catalog 验证错误 -->
+    <string id="AFPOL_MISC_Catalog_EmptyModuleSet" text="契约测试模块集合不能为空。" />
+    <string id="AFPOL_MISC_Catalog_DuplicateModuleId" text="政策效果模块 ID 重复" />
+    <string id="AFPOL_MISC_Catalog_DuplicateOrder" text="政策效果模块 Order 重复" />
+    <string id="AFPOL_MISC_Catalog_LegacyIdConflict" text="政策效果模块 LegacyId 与现有 ID 冲突" />
+    <string id="AFPOL_MISC_Catalog_NoModulesFound" text="没有发现政策效果模块。" />
+  </strings>
+</base>

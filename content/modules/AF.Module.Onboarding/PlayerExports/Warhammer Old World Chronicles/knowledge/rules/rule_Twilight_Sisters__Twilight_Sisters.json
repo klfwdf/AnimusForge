@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Twilight_Sisters",
+  "Keywords": [
+    "twilight sisters",
+    "Alier Messenger",
+    "Twilight Sisters Forest Dragon",
+    "life and death twins",
+    "Dragoon Archer",
+    "twilight twins",
+    "Destiny Weaver"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Twilight sisters are the most mysterious twin messengers of Wood Elf Queen Alaire. One rides the forest dragon, the other controls the arrow of life and death. The two are born on the same thread of fate. They shuttle between the twilight of Athel Loren, both guardians of life and agents of death—two elves, a dragon, and a soul."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Twilight Sisters are the mirror of destiny for us wood elves - Naes represents the new life in the twilight, and Alestan represents the end before the dawn. They ride together on our sacred forest dragon 'Evening Wing'. One bow shoots healing vines, and the other bow shoots bone-eroding decay. They are symbols of Queen Alaire's chosen destiny in the mortal world: all life will eventually lead to death, and all death will eventually give birth to new life. As the Twilight Sisters sweep across the battlefield on the backs of dragons, our warriors look up and see the entire cycle of Athel Loren soaring in the sky, fueling our fighting spirit more than any war drum or horn. They were never generals but oracles - the land the Twilight sisters flew over was the land where Athel Loren's will had descended."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Twilight Sisters are the ultimate nightmare in the aerial battlefield - they not only possess the super-long-range suppressive power of elven bows, but also possess the absolute dominance of forest dragons in aerial melee combat. Any attempt to counter them with gryphons or Pegasus knights would be fatal: the forest dragon's swoop is enough to knock down all Imperial flying units in one go. The only tactical window is to use concentrated artillery to cover the forest dragon when it dives to attack, but this is just a gamble - the speed of the dragon is difficult to capture. If intelligence confirms that the Twilight Sisters will be on the battlefield, my only advice is this: don't let any air units take off, cover all tents with heavy shield troops, and pray that the flying conditions deteriorate due to the arrival of a storm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Twilight sisters - Naes and Alestan - are not biological twins, but mythical beings hatched by the Wood Elf Queen Allel in the 'Pond of Destiny' from two morning dews falling from the roots of the world. The ancient elven scroll \"Book of Dawn and Sunset\" records that the two girls each held different fragments of destiny when they were born: Naes holds the \"Arrow of Spring\", which can make the land hit by the arrow grow new vegetation and heal allies; Alestan holds the \"Arrow of Winter\", where the vegetation will wither and life will wither. The forest dragon they are riding, 'Xiyi', is the last known dragon born from natural mating rather than magical hatching. It is estimated to be over 3,000 years old. The most sensational record of the war between the Twilight sisters is the 'Battle of Gray Peak' in 2150 in the Imperial History - the two sisters took turns shooting twenty-four arrows from the back of the dragon, each of which accurately killed a Chaos Champion, disintegrating the entire command structure of the Chaos Warband in the North within seven minutes, directly reversing the critical battle that was almost lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What fascinates me about the Twilight Sisters’ story is not just their powers, but their relationship—two souls sharing a thread of destiny. Elvish ballads say that if one sister dies in battle, the other will die in the same instant, for they are not two persons, but two aspects of the same being. I can't help but wonder, what kind of connection is this? Sisters can be so close, but also so suffocating - after all, you can never escape a being who shares your soul."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There once was a distant relative of our family - a fallen nobleman who was obsessed with elven science - who spent thirty years collecting all the information about the Twilight sisters, hoping to find a secret that could \"forever unite\" the family. He wrote a book with a depressing conclusion: the Twilight Sisters' twin soul binding is not a ritual, but a pre-birth destiny arrangement, and any subsequent attempts to imitate it will only lead to schizophrenia. Ironically, the relative went for a walk in the forest the day after the book was completed and never returned. The story circulated in the family is that Queen Alaire took him away personally on the grounds that she was 'peeping into a fate that shouldn't be seen'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When I was camping on a high ground on the edge of Athel Loren, I once saw a forest dragon flying past the afterglow of the mountains to the west at twilight, with two slender elven figures vaguely visible on the dragon's back. The scene seemed like a myth emerging from a tapestry. It lasted less than ten breaths, but it lingered in my mind for several days and could not be dispelled. An older trooper in camp said I had been 'touched by twilight' - the elves believe that if you see sacred things you are not meant to see, you will always long to see them again. To be honest, every sunset since then, I will unconsciously look in the direction of Loren."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I was once commissioned to create a piece of jewelry for a noble of Middenheim that was modeled after the Twilight Sisters' double arrow design - a maiden's pendant in the shape of an arrow, with a dragon's wing as its base. The noble lady was later vilified socially and accused of 'worshipping heretical elven idols' by envious people. As a jeweler, I was not held accountable, but this incident taught me: if you do any business in the empire, as long as the word 'elf' is involved, you must be prepared to face the investigation of the Sigmar Church. I later changed the design draft and changed the pair of arrows into angel wings, and the sales immediately improved - it can be seen that the Imperial people are just afraid of the beauty that they are not familiar with."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Queen Alaire's twin messengers ride on the forest dragon Xiyi",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Twilight Sisters Aliel Herald Twilight Sisters Forest Dragon"
+  ]
+}

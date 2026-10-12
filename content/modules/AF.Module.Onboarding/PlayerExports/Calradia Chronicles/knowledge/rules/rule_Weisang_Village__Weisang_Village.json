@@ -1,0 +1,93 @@
+{
+  "Id": "rule_Weisang_Village",
+  "Keywords": [
+    "Wesang Village"
+  ],
+  "RagShortTexts": [
+    "The village of Wesan is located near Salas, where olive trees are nourished by the streams of Mount Epyr."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vessan is a village near Chalas, situated on a stream that flows down from the Epir hills. This warm land is ideal for the growth of olive trees, and the hillsides are dotted with olive groves. Merchant ships from Port Salas often transport olive oil from here overseas."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The olive trees in Wesan Village grew up drinking the water from the stream flowing down from Mount Epil. The fruits are full of water and the oil extracted is sweet. Merchant ships at the port of Salas often load olive oil from Wesan village and transport it to the north and east for sale."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Olive oil from the village of Wesan sells well in Salas. The water from the stream coming down from Mount Epyr is very clear, and the olive trees that water it produce large and round fruits. Local oil dealers stay in the village every autumn, waiting to harvest new oil."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is a small stream flowing from the mountain in Weisang Village. The water is cool and I washed my face there when I passed by. There is a row of olive trees beside the stream, and it is quite comfortable to sit under the shade. Villagers soak olives in stream water, saying it can remove the astringency."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Wesang Village",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Salas",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

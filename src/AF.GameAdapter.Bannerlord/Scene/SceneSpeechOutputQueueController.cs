@@ -476,7 +476,7 @@ internal sealed class SceneSpeechOutputQueueController
 
 	internal void RecordPlayerSpeechToMessageFeed(string content)
 	{
-		RecordSceneDialogueToMessageFeed("你", content, new Color(0.3f, 1f, 0.3f));
+		RecordSceneDialogueToMessageFeed(ConversationUiLocalization.Text("AF_CONV_UI_Scene_PlayerSpeaker", "You"), content, new Color(0.3f, 1f, 0.3f));
 	}
 
 	internal void RecordNpcSpeechToMessageFeed(string npcDisplayName, string content)

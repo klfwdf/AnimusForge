@@ -250,7 +250,7 @@ internal sealed class NativeConversationSpeechAdapter
 				Logger.Log("NativeConversation", "[TTS] SpeakAsync rejected native conversation reply. effectiveAgentIndex=" + effectiveAgentIndex + ", lipSyncSafe=" + lipSyncSafe + ", reason=" + lipSyncReason);
 				try
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[TTS] 自由对话语音未入队，请检查TTS设置或队列。", new Color(1f, 0.8f, 0.25f)));
+					InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Native_TtsQueueFailed", "[TTS] Free-conversation speech was not queued; check TTS settings or the queue."), new Color(1f, 0.8f, 0.25f)));
 				}
 				catch
 				{

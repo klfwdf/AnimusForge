@@ -48,24 +48,24 @@ internal static class IssueCompletionReceiptOwner
 	{
 		if (string.IsNullOrWhiteSpace(questTitleText))
 		{
-			questTitleText = "一项原版任务";
+			questTitleText = IssueDisplayMatchCatalog.Get("Raw_033");
 		}
-		string memoryFact = "你之前交给玩家的原版任务“" + questTitleText + "”已经有结果了。";
+		string memoryFact = IssueDisplayMatchCatalog.Get("Raw_034") + questTitleText + IssueDisplayMatchCatalog.Get("Raw_035");
 		if (!string.IsNullOrWhiteSpace(detailText))
 		{
-			memoryFact = memoryFact + " 结果：" + detailText + "。";
+			memoryFact = memoryFact + IssueDisplayMatchCatalog.Get("Raw_036") + detailText + "。";
 		}
 		if (rewardGold > 0)
 		{
-			memoryFact = memoryFact + " 该任务的原版奖励 " + rewardGold + " 第纳尔已经由系统自动发放，无需你手动再次支付。";
+			memoryFact = memoryFact + IssueDisplayMatchCatalog.Get("Raw_037") + rewardGold + IssueDisplayMatchCatalog.Get("Raw_038");
 		}
 		else
 		{
-			memoryFact = memoryFact + " 若有原版任务奖励，也已由系统按原版流程自动结算，无需你手动再次发放。";
+			memoryFact = memoryFact + IssueDisplayMatchCatalog.Get("Raw_039");
 		}
 		if (!string.IsNullOrWhiteSpace(lastJournal))
 		{
-			memoryFact = memoryFact + " 最近任务记录：" + lastJournal;
+			memoryFact = memoryFact + IssueDisplayMatchCatalog.Get("Raw_040") + lastJournal;
 		}
 		return memoryFact;
 	}
@@ -75,15 +75,15 @@ internal static class IssueCompletionReceiptOwner
 		switch (detail)
 		{
 		case QuestBase.QuestCompleteDetails.Success:
-			return "任务已成功完成";
+			return IssueDisplayMatchCatalog.Get("Raw_041");
 		case QuestBase.QuestCompleteDetails.Fail:
-			return "任务已失败";
+			return IssueDisplayMatchCatalog.Get("Raw_042");
 		case QuestBase.QuestCompleteDetails.FailWithBetrayal:
-			return "任务以背叛结局失败";
+			return IssueDisplayMatchCatalog.Get("Raw_043");
 		case QuestBase.QuestCompleteDetails.Timeout:
-			return "任务已超时结束";
+			return IssueDisplayMatchCatalog.Get("Raw_044");
 		case QuestBase.QuestCompleteDetails.Cancel:
-			return "任务已取消";
+			return IssueDisplayMatchCatalog.Get("Raw_045");
 		default:
 			return detail.ToString();
 		}

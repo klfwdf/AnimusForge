@@ -1,0 +1,28 @@
+{
+  "Id": "rule_reville_cross_country_horse",
+  "Keywords": [
+    "Revell Cross Country Horse"
+  ],
+  "RagShortTexts": [
+    "The Revel cross-country horse is Sturgia’s excellent war horse"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Revel cross-country horse is an excellent military horse of Sturgia. It is also a kind of bad-tempered horse. It is slightly faster than the Parmartine horse, but has a very bad temperament. Only Sturgia people can control these fierce horses."
+    }
+  ],
+  "TextMappings": []
+}

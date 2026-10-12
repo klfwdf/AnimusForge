@@ -14,18 +14,18 @@ internal static class IntentQueryOptimizer
 
 	private static readonly string[] LowSignalExactPhrases = new string[30]
 	{
-		"你好", "您好", "哈喽", "嗨", "hi", "hello", "hey", "喂", "在吗", "在不在",
-		"有人吗", "朋友", "兄弟", "老兄", "哥们", "姐妹", "大人", "阁下", "伙计", "你好朋友",
-		"你好啊", "您好啊", "你好呀", "您好呀", "打扰了", "请问", "谢谢", "多谢", "好的", "嗯"
+		PromptRetrievalTexts.Raw("Raw_670d9743542c"), PromptRetrievalTexts.Raw("Raw_609bc0751d56"), PromptRetrievalTexts.Raw("Raw_ba7dbdda7204"), PromptRetrievalTexts.Raw("Raw_c2defdcad302"), "hi", "hello", "hey", PromptRetrievalTexts.Raw("Raw_ea8ea533443d"), PromptRetrievalTexts.Raw("Raw_42e5dbf9def6"), PromptRetrievalTexts.Raw("Raw_eddbaaf1382f"),
+		PromptRetrievalTexts.Raw("Raw_29365f35b1ea"), PromptRetrievalTexts.Raw("Raw_677aad1a0ee4"), PromptRetrievalTexts.Raw("Raw_f6c71210522b"), PromptRetrievalTexts.Raw("Raw_a8a080f22176"), PromptRetrievalTexts.Raw("Raw_c7517eabd1a4"), PromptRetrievalTexts.Raw("Raw_22a82bc61fef"), PromptRetrievalTexts.Raw("Raw_44dd6014a532"), PromptRetrievalTexts.Raw("Raw_d59d3f60093b"), PromptRetrievalTexts.Raw("Raw_3427f58f0367"), PromptRetrievalTexts.Raw("Raw_2d68ccf36c8b"),
+		PromptRetrievalTexts.Raw("Raw_f63579f508ad"), PromptRetrievalTexts.Raw("Raw_9dabd2ff0d07"), PromptRetrievalTexts.Raw("Raw_d2033138c3b3"), PromptRetrievalTexts.Raw("Raw_308f3f8b2f76"), PromptRetrievalTexts.Raw("Raw_c7d5119a60f6"), PromptRetrievalTexts.Raw("Raw_42be23d8344a"), PromptRetrievalTexts.Raw("Raw_1bf7ac688560"), PromptRetrievalTexts.Raw("Raw_d037f54b4193"), PromptRetrievalTexts.Raw("Raw_536edaf7cdd1"), PromptRetrievalTexts.Raw("Raw_821ea6fd74a7")
 	};
 
 	private static readonly string[] LeadingPhrases = new string[38]
 	{
-		"你好朋友", "你好啊", "您好啊", "你好呀", "您好呀", "你好", "您好", "哈喽", "嗨", "hello",
-		"hi", "hey", "喂", "在吗", "在不在", "请问", "打扰了", "麻烦问一下", "想问一下", "想请教一下",
-		"我想问", "我想知道", "我想请教", "能告诉我", "能不能告诉我", "能不能说说", "可以告诉我", "可以说说",
-		"你知道不知道", "你知道吗", "你知道", "你可知道", "说说", "告诉我", "帮我说说", "麻烦说说",
-		"顺便问一下", "顺带问一下"
+		PromptRetrievalTexts.Raw("Raw_2d68ccf36c8b"), PromptRetrievalTexts.Raw("Raw_f63579f508ad"), PromptRetrievalTexts.Raw("Raw_9dabd2ff0d07"), PromptRetrievalTexts.Raw("Raw_d2033138c3b3"), PromptRetrievalTexts.Raw("Raw_308f3f8b2f76"), PromptRetrievalTexts.Raw("Raw_670d9743542c"), PromptRetrievalTexts.Raw("Raw_609bc0751d56"), PromptRetrievalTexts.Raw("Raw_ba7dbdda7204"), PromptRetrievalTexts.Raw("Raw_c2defdcad302"), "hello",
+		"hi", "hey", PromptRetrievalTexts.Raw("Raw_ea8ea533443d"), PromptRetrievalTexts.Raw("Raw_42e5dbf9def6"), PromptRetrievalTexts.Raw("Raw_eddbaaf1382f"), PromptRetrievalTexts.Raw("Raw_42be23d8344a"), PromptRetrievalTexts.Raw("Raw_c7d5119a60f6"), PromptRetrievalTexts.Raw("Raw_9f018fe48c5b"), PromptRetrievalTexts.Raw("Raw_77e53f095a76"), PromptRetrievalTexts.Raw("Raw_9c06ab11aa25"),
+		PromptRetrievalTexts.Raw("Raw_95d4a33c6b12"), PromptRetrievalTexts.Raw("Raw_a13d4472a2e2"), PromptRetrievalTexts.Raw("Raw_42edaea0b1f8"), PromptRetrievalTexts.Raw("Raw_20e3fd8bb7d2"), PromptRetrievalTexts.Raw("Raw_4ecfbe2d3b5b"), PromptRetrievalTexts.Raw("Raw_b50cddeaeeb7"), PromptRetrievalTexts.Raw("Raw_ad1fda86453e"), PromptRetrievalTexts.Raw("Raw_a0fb6f2f390a"),
+		PromptRetrievalTexts.Raw("Raw_6501f519f0b9"), PromptRetrievalTexts.Raw("Raw_39b4d254b443"), PromptRetrievalTexts.Raw("Raw_369a2a63eb6c"), PromptRetrievalTexts.Raw("Raw_e84d4b153710"), PromptRetrievalTexts.Raw("Raw_b6ce96340e0b"), PromptRetrievalTexts.Raw("Raw_3b888814e45a"), PromptRetrievalTexts.Raw("Raw_e83bd36bbb70"), PromptRetrievalTexts.Raw("Raw_82d9007350d7"),
+		PromptRetrievalTexts.Raw("Raw_94af60cfaae2"), PromptRetrievalTexts.Raw("Raw_a57c6bc40758")
 	};
 
 	private static readonly char[] TrimChars = new char[20]
@@ -144,7 +144,7 @@ internal static class IntentQueryOptimizer
 				}
 			}
 		}
-		text2 = text2.TrimEnd('吗', '么', '嘛', '呢', '呀', '啊', '吧', '呗', '啦', '了');
+text2 = text2.TrimEnd(PromptRetrievalTexts.Raw("ModalParticles_Cn").ToCharArray());
 		text2 = Regex.Replace(text2, "[\\s\\p{P}]+", "", RegexOptions.CultureInvariant);
 		return text2.Trim();
 	}

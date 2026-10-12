@@ -1,0 +1,6 @@
+{
+  "Version": 1,
+  "ModuleId": "hearthPerDay",
+  "UnderstandingPrompt": "Village hearths represent population and labor. They are mainly affected by labor availability, safety, corvée, resettlement, migration, flight, land reclamation, slaughter and disasters. When policies continuously change population in villages attached to the relevant towns or castles through these mechanisms, hearths are a direct consequence.",
+  "EvaluationPrompt": "Judge daily changes per affected village. Mild impact: ±0.1 to ±0.5; regular corvée, resettlement, labor recovery or migration: ±0.5 to ±1.5; strong immigration, wartime flight, oppressive taxes or large-scale forced labor: ±2 to ±4; nationwide population support, slaughter, disasters or forced migration: ±4 to ±7; extreme population changes or catastrophes: ±7 to ±10."
+}

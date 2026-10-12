@@ -138,15 +138,15 @@ internal static class LifecycleRepairReplay
     {
         var world = new PlayerWorld(); var orch = new PlayerOrch(world);
         string Submit() => WorldDiplomacyPlayerApplication.Execute(world, new WorldDiplomacyPlayerDocumentCommand("回应原文", 1, "source", "old"), orch);
-        Test.True(Submit().Contains("已经公开发布") && world.Published!.RoundId == "new" && orch.Openings == 1,
+        Test.True(Submit().Contains(SmokeLocalizationEnvironment.EnglishUi ? "has been published" : "已经公开发布") && world.Published!.RoundId == "new" && orch.Openings == 1,
             "normal shortcut uses archive compose routing before semantic analysis");
         world.Round.State = "closed";
         Test.True(WorldDiplomacyPresentationQueries.Detail(world.Source, world.Round, world.Player, _ => "today").CanReply,
             "closed foreign public document retains existing reply entry");
-        Test.True(Submit().Contains("已经公开发布") && world.Published!.RoundId == "new" && world.Published.SourceDocumentId == "source"
+        Test.True(Submit().Contains(SmokeLocalizationEnvironment.EnglishUi ? "has been published" : "已经公开发布") && world.Published!.RoundId == "new" && world.Published.SourceDocumentId == "source"
             && orch.Openings == 2 && world.NewRound.RootDocumentId == world.Published.DocumentId, "late shortcut uses the same compose routing");
         world.Player = new(1, "p", false, true, "p");
-        Test.True(Submit().Contains("不再是王国统治者") && orch.Openings == 2, "reply submission revalidates ruler before effects");
+        Test.True(Submit().Contains(SmokeLocalizationEnvironment.EnglishUi ? "no longer the ruler of your kingdom" : "不再是王国统治者") && orch.Openings == 2, "reply submission revalidates ruler before effects");
     }
 
     private static void TreatyClauses()

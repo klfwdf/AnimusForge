@@ -21,7 +21,11 @@ namespace AnimusForge.Illustrator.Core
             internal bool Ready;
             internal bool EditingCurrentImage;
             internal int Attempt;
-            internal string Status = "本期配图正在提前生成…";
+            internal string Status = "Preparing illustration for this issue...";
+            // Display-only state; raw Status remains available to diagnostics.
+            internal string DisplayCode = "preparing";
+            internal string DisplayDetail;
+            internal CachedIllustrationItem DisplayItem;
             // Main-thread only; each waiter runs exactly once when the job settles, is cancelled or times out.
             internal List<Action> Waiters;
         }
@@ -72,7 +76,8 @@ namespace AnimusForge.Illustrator.Core
             if (job == null) return;
             job.Pending = false;
             job.Ready = false;
-            job.Status = "本期事件已作废。";
+            job.Status = "This issue has been discarded.";
+            job.DisplayCode = "discarded";
             job.Scope?.Close();
             ReleaseWaiters(job);
             Updated?.Invoke(job.Key, null);
@@ -138,7 +143,7 @@ namespace AnimusForge.Illustrator.Core
             {
                 job.Scope = new IllustrationScope(null, "weekly_report", () =>
                 {
-                    if (Find(key) == job && job.Pending) Finish(job, "本期配图已取消，可点击重绘。", null);
+                    if (Find(key) == job && job.Pending) Finish(job, "Illustration for this issue was cancelled. Click Redraw to try again.", null, "cancelled");
                 }, campaignOwned: true);
                 if (published || redraw)
                     Generate(job, context, playerRedrawPrompt);
@@ -148,7 +153,7 @@ namespace AnimusForge.Illustrator.Core
                         if (cached == null)
                         {
                             if (generateOnCacheMiss) Generate(job, context, playerRedrawPrompt);
-                            else Finish(job, "暂无已生成插画，可点击重绘。", null);
+                            else Finish(job, "No generated illustration is available. Click Redraw to create one.", null, "missing");
                             return;
                         }
                         var result = new WeeklyReportPopupIllustrationPatch.GenerationResult
@@ -158,9 +163,9 @@ namespace AnimusForge.Illustrator.Core
                         };
                         Finish(job, cached.DisplayStatusText, result);
                         cached.ImageData = null;
-                    }, error => Finish(job, error + "；可点击重绘。", null));
+                    }, error => Finish(job, error + IllustratorText.Raw("Residual_BulletinIllustrationPreloader_01ad979b94a6"), null, "retry", error));
             }
-            catch (Exception ex) { Finish(job, "配图准备失败：" + ex.Message + "；可点击重绘。", null); }
+            catch (Exception ex) { Finish(job, "Illustration preparation failed: " + ex.Message + "; click Redraw to try again.", null, "prepare_failed", ex.Message); }
             return job;
         }
 
@@ -172,14 +177,14 @@ namespace AnimusForge.Illustrator.Core
             var job = new Job { Key = key, EditingCurrentImage = true, Attempt = (previous?.Attempt ?? 0) + 1 };
             Jobs[key] = job;
             job.Scope = new IllustrationScope(null, "weekly_report", () => {
-                if (Find(key) == job && job.Pending) Finish(job, "本图重绘已取消。", null);
+                if (Find(key) == job && job.Pending) Finish(job, "Redrawing this image was cancelled.", null, "redraw_cancelled");
             }, campaignOwned: true);
             CurrentImageRedraw.Start(job.Scope, source, prompt, options, null, value => {
                 if (value.Saved != null)
-                    Finish(job, "重绘完成，已保存为新版本。", new WeeklyReportPopupIllustrationPatch.GenerationResult {
-                        Result = value.Result, Saved = value.Saved, Prompt = value.Result.ResolvedPrompt });
-                else Finish(job, "重绘失败：" + (value.Result?.ErrorMessage ?? "未能保存图片"), null);
-            }, error => Finish(job, "重绘失败：" + error, null));
+                    Finish(job, "Redraw complete; a new version was saved.", new WeeklyReportPopupIllustrationPatch.GenerationResult {
+                        Result = value.Result, Saved = value.Saved, Prompt = value.Result.ResolvedPrompt }, "redraw_complete");
+                else Finish(job, "Redraw failed: " + (value.Result?.ErrorMessage ?? "Could not save image"), null, "redraw_failed", value.Result?.ErrorMessage);
+            }, error => Finish(job, "Redraw failed: " + error, null, "redraw_failed", error ?? string.Empty));
         }
 
         private static void Generate(Job job, WeeklyReportVisualContext context, string playerRedrawPrompt = null)
@@ -188,22 +193,26 @@ namespace AnimusForge.Illustrator.Core
                 result =>
                 {
                     bool saved = result.Result?.Success == true && result.Saved != null;
-                    Finish(job, saved ? result.Saved.DisplayStatusText : "配图失败：" + (result.Result?.ErrorMessage ?? "无法保存") + "；可点击重绘。", saved ? result : null);
+                    Finish(job, saved ? result.Saved.DisplayStatusText : "Illustration failed: " + (result.Result?.ErrorMessage ?? "Could not save") + "; click Redraw to try again.", saved ? result : null, saved ? "cached" : "image_failed", result.Result?.ErrorMessage);
                     if (result.Saved != null) result.Saved.ImageData = null;
-                }, error => Finish(job, error + "；可点击重绘。", null), status =>
+                }, error => Finish(job, error + IllustratorText.Raw("Residual_BulletinIllustrationPreloader_01ad979b94a6"), null, "retry", error), status =>
                 {
                     if (Find(job.Key) != job || !job.Pending) return;
                     job.Status = status;
+                    job.DisplayCode = "raw";
                     Updated?.Invoke(job.Key, null);
                 }, playerRedrawPrompt);
         }
 
-        private static void Finish(Job job, string status, WeeklyReportPopupIllustrationPatch.GenerationResult result)
+        private static void Finish(Job job, string status, WeeklyReportPopupIllustrationPatch.GenerationResult result, string displayCode = null, string displayDetail = null)
         {
             if (Find(job.Key) != job || !job.Pending) return;
             job.Pending = false;
             job.Ready = result != null || job.EditingCurrentImage;
             job.Status = status;
+            job.DisplayCode = displayCode ?? (result?.Saved != null ? "cached" : "raw");
+            job.DisplayDetail = displayDetail;
+            job.DisplayItem = result?.Saved;
             job.Scope?.Close();
             Updated?.Invoke(job.Key, result);
             ReleaseWaiters(job);
@@ -214,7 +223,8 @@ namespace AnimusForge.Illustrator.Core
             Job job = Find(key);
             if (job == null) return;
             job.Ready = false;
-            job.Status = "插画已移入回收区，点击【重绘】重新绘制。";
+            job.Status = "Illustration moved to recycle bin. Click Redraw to repaint.";
+            job.DisplayCode = "deleted";
         }
 
         internal static void Reset()

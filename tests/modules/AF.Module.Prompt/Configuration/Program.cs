@@ -67,13 +67,17 @@ internal static class Program
         io.Put("PreprocessPrompts.json", ValidPreprocess(2));
         io.Put("ProactiveNpcRequestPrompts.json", "{\"Marker\":\"proactive-user\"}");
         io.Put("RpItemIntroductionPrompts.json", "{\"Version\":1,\"SystemPrompt\":\"disk\",\"UserPromptTemplate\":\"{item_name}{dialogue}\"}");
-        io.Resource("AnimusForge.Defaults.PreprocessPrompts.json", ValidPreprocess(2));
-        io.Resource("AnimusForge.Defaults.RpItemIntroductionPrompts.json", "{\"Version\":1,\"SystemPrompt\":\"embedded\",\"UserPromptTemplate\":\"{item_name}{dialogue}\"}");
+        io.Put("Defaults/PreprocessPrompts.json", ValidPreprocess(2));
+        io.Put("Defaults/RpItemIntroductionPrompts.json", "{\"Version\":1,\"SystemPrompt\":\"embedded\",\"UserPromptTemplate\":\"{item_name}{dialogue}\"}");
         return io;
     }
 
     private static void Main()
     {
+        var productionPaths = new ProductionPromptConfigurationFiles();
+        Check(productionPaths.PathFor("Defaults/PreprocessPrompts.json") == Path.Combine(AnimusForgeModulePaths.GetCurrentModuleRoot(), "ModuleData", "Defaults", "PreprocessPrompts.json"), "production preprocess defaults keep package subdirectory");
+        Check(productionPaths.PathFor("Defaults/RpItemIntroductionPrompts.json") == Path.Combine(AnimusForgeModulePaths.GetCurrentModuleRoot(), "ModuleData", "Defaults", "RpItemIntroductionPrompts.json"), "production RP defaults keep package subdirectory");
+        Check(productionPaths.PathFor("AIConfig.json") == AnimusForgeModulePaths.GetModuleDataFilePath("AIConfig.json"), "ordinary config path keeps existing single-file helper");
         var io = FullFiles();
         var loader = new PromptConfigurationLoader(io);
         var normal = loader.Load();
@@ -84,31 +88,31 @@ internal static class Program
 
         io.Put("PreprocessPrompts.json", "{\"Version\":1}");
         var old = loader.Load();
-        Check(old.Snapshot.Preprocess.Version == 2 && old.Snapshot.PreprocessLoadError == "", "old preprocess schema uses embedded default");
-        Check(io.Logs.Any(x => x.Contains("旧版 PreprocessPrompts.json")), "old schema compatibility log");
+        Check(old.Snapshot.Preprocess.Version == 2 && old.Snapshot.PreprocessLoadError == "", "old preprocess schema uses packaged default");
+        Check(io.Logs.Any(x => x.Contains("legacy PreprocessPrompts.json")), "old schema compatibility log");
 
         io.Files.Remove("PreprocessPrompts.json");
-        Check(new PromptConfigurationLoader(io).Load().Snapshot.PreprocessLoadError.Contains("找不到 PreprocessPrompts.json"), "missing preprocess is error, not silent default");
+        Check(new PromptConfigurationLoader(io).Load().Snapshot.PreprocessLoadError.Contains("Missing PreprocessPrompts.json"), "missing preprocess is error, not silent default");
         io.Put("PreprocessPrompts.json", "not-json");
         Check(new PromptConfigurationLoader(io).Load().Snapshot.PreprocessLoadError.Length > 0, "corrupt preprocess is error");
         io.Put("PreprocessPrompts.json", ValidPreprocess(2));
-        io.Resource("AnimusForge.Defaults.PreprocessPrompts.json", "{\"Version\":0}");
-        Check(new PromptConfigurationLoader(io).Load().Snapshot.PreprocessLoadError.Contains("Version 无效"), "invalid embedded schema fails");
-        io.Resource("AnimusForge.Defaults.PreprocessPrompts.json", ValidPreprocess(2));
+        io.Put("Defaults/PreprocessPrompts.json", "{\"Version\":0}");
+        Check(new PromptConfigurationLoader(io).Load().Snapshot.PreprocessLoadError.Contains("Invalid Version"), "invalid packaged default schema fails");
+        io.Put("Defaults/PreprocessPrompts.json", ValidPreprocess(2));
 
         io.Files.Remove("RpItemIntroductionPrompts.json");
         var rpMissing = loader.Load();
-        Check(rpMissing.RpUsedEmbeddedDefaults && rpMissing.Snapshot.RpItemIntroduction.SystemPrompt == "embedded", "missing RP uses embedded");
+        Check(rpMissing.RpUsedEmbeddedDefaults && rpMissing.Snapshot.RpItemIntroduction.SystemPrompt == "embedded", "missing RP uses packaged defaults");
         rpMissing.Snapshot.RpItemIntroduction.SystemPrompt = "mutated-old-revision";
         var rpNext = loader.Load();
         Check(rpNext.Snapshot.RpItemIntroduction.SystemPrompt == "embedded"
             && !ReferenceEquals(rpMissing.Snapshot.RpItemIntroduction, rpNext.Snapshot.RpItemIntroduction),
-            "embedded RP fallback must be a fresh model per replacement generation");
+            "packaged RP fallback must be a fresh model per replacement generation");
         io.Files["RpItemIntroductionPrompts.json"] = new byte[] { 0xef, 0xbb, 0xbf }.Concat(Encoding.UTF8.GetBytes("{}" )).ToArray();
-        Check(new PromptConfigurationLoader(io).Load().RpUsedEmbeddedDefaults, "RP BOM uses embedded");
-        io.Resources.Remove("AnimusForge.Defaults.RpItemIntroductionPrompts.json");
+        Check(new PromptConfigurationLoader(io).Load().RpUsedEmbeddedDefaults, "RP BOM uses packaged defaults");
+        io.Files.Remove("Defaults/RpItemIntroductionPrompts.json");
         var rpBothBad = new PromptConfigurationLoader(io).Load();
-        Check(rpBothBad.RpBothUnavailable && rpBothBad.Snapshot.RpItemIntroduction.SystemPrompt == "", "invalid disk and embedded disables RP");
+        Check(rpBothBad.RpBothUnavailable && rpBothBad.Snapshot.RpItemIntroduction.SystemPrompt == "", "invalid disk and packaged defaults disables RP");
 
         io = FullFiles();
         io.Put("RuleBehaviorPrompts.json", "not-json");
@@ -149,7 +153,7 @@ internal static class Program
         io.Put("RpItemIntroductionPrompts.json", "not-json");
         var corruptRp = new PromptConfigurationLoader(io).Load();
         Check(corruptRp.RpUsedEmbeddedDefaults && corruptRp.Snapshot.RpItemIntroduction.SystemPrompt == "embedded",
-            "corrupt RP file uses embedded fallback");
+            "corrupt RP file uses packaged defaults fallback");
         var rules = new GuardrailConfigModel
         {
             Duel = new DuelConfig { TriggerInstruction = "legacy duel", AcceptKeywords = new List<string> { "  duel  ", "DUEL" } },

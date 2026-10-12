@@ -34,6 +34,7 @@ namespace AnimusForge;
 
 public sealed partial class CustomPolicyBehavior
 {
+
 	public void OnEngineTick()
 	{
 		CustomPolicyComposePopup.ProcessDeferredCloseAction();
@@ -69,7 +70,7 @@ public sealed partial class CustomPolicyBehavior
 		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
 		if (behavior == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("自定义政策功能尚未初始化。", Colors.Red));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_NotInitialized", "Custom policy feature is not initialized."), Colors.Red));
 			return;
 		}
 		behavior.OpenComposePopup();
@@ -80,7 +81,7 @@ public sealed partial class CustomPolicyBehavior
 		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
 		if (behavior == null)
 		{
-			InformationManager.ShowInquiry(new InquiryData("政策记录", "自定义政策功能尚未初始化。", true, false, "返回", "", onClose, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_PolicyRecordsTitle", "Policy Records"), PolicyUiTexts.Get("AFPOL_UI_NotInitialized", "Custom policy feature is not initialized."), true, false, PolicyUiTexts.Get("AFPOL_UI_Back", "Back"), "", onClose, null), pauseGameActiveState: true);
 			return;
 		}
 		behavior.OpenRecordHistoryPopup(onClose);
@@ -103,7 +104,7 @@ public sealed partial class CustomPolicyBehavior
 		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
 		if (behavior == null)
 		{
-			InformationManager.ShowInquiry(new InquiryData("重新评议政策", "自定义政策功能尚未初始化。", true, false, "返回", "", onReturn, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_ReReviewPolicyTitle", "Re-review Policy"), PolicyUiTexts.Get("AFPOL_UI_NotInitialized", "Custom policy feature is not initialized."), true, false, PolicyUiTexts.Get("AFPOL_UI_Back", "Back"), "", onReturn, null), pauseGameActiveState: true);
 			return;
 		}
 		behavior.OpenPolicyReReview(recordId, onReturn);
@@ -114,7 +115,7 @@ public sealed partial class CustomPolicyBehavior
 		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
 		if (behavior == null)
 		{
-			InformationManager.ShowInquiry(new InquiryData("地方政策", "地方政策功能尚未初始化。", true, false, "返回", "", onClose, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalPolicy", "Local Policy"), PolicyUiTexts.Get("AFPOL_UI_LocalPolicyNotInitialized", "Local policy feature is not initialized."), true, false, PolicyUiTexts.Get("AFPOL_UI_Back", "Back"), "", onClose, null), pauseGameActiveState: true);
 			return;
 		}
 		behavior.OpenLocalPolicyManagementPopup(onClose);
@@ -125,10 +126,10 @@ public sealed partial class CustomPolicyBehavior
 		bool hasFief = GetPlayerOwnedLocalPolicyFiefs().Count > 0;
 		List<InquiryElement> items = new List<InquiryElement>
 		{
-			new InquiryElement("publish_local", "发布地方政策", null, isEnabled: hasFief, hasFief ? "选择玩家家族拥有的城镇或城堡作为作用封地。" : "玩家家族当前没有城镇或城堡，无法发布。"),
-			new InquiryElement("local_records", "地方政策记录", null, isEnabled: true, "查看政策状态、目标、效果剩余天数、费用和延长历史，并可延长效果或废除政策。")
+			new InquiryElement("publish_local", PolicyUiTexts.Get("AFPOL_UI_LocalPublishTitle", "Publish Local Policy"), null, isEnabled: hasFief, hasFief ? PolicyUiTexts.Get("AFPOL_UI_SelectFiefHint", "Select towns or castles owned by the player clan as target fiefs.") : PolicyUiTexts.Get("AFPOL_UI_NoOwnedFiefsWarning", "The player clan currently owns no towns or castles; cannot publish.")),
+			new InquiryElement("local_records", PolicyUiTexts.Get("AFPOL_UI_LocalRecordsTitle", "Local Policy Records"), null, isEnabled: true, PolicyUiTexts.Get("AFPOL_UI_LocalRecordsHint", "View policy status, targets, remaining effect days, costs, and renewal history, and extend effects or abolish policies."))
 		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("地方政策", "地方政策由智能服务独立评议，成功后立即结算并在所选封地范围生效。", items, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalPolicy", "Local Policy"), PolicyUiTexts.Get("AFPOL_UI_LocalPolicyDescription", "Local policies are evaluated independently by the intelligence service, settled immediately upon success, and take effect within the selected fiefs."), items, isExitShown: true, 1, 1, PolicyUiTexts.Get("AFPOL_UI_Confirm", "Confirm"), PolicyUiTexts.Get("AFPOL_UI_Back", "Back"), delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -164,7 +165,7 @@ public sealed partial class CustomPolicyBehavior
 	{
 		if (_generationInProgress)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("上一份政策仍在等待评议，请稍候。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_PreviousPolicyPending", "The previous policy is still awaiting evaluation; please wait."), Colors.Yellow));
 			return;
 		}
 		PolicyRuntimeOptions options = BuildPolicyRuntimeOptions();
@@ -174,13 +175,15 @@ public sealed partial class CustomPolicyBehavior
 		{
 			DateText = FormatCurrentCampaignDate(),
 			CanPublish = eligibility.CanPublish,
-			BlockReason = eligibility.CanPublish ? "请选择作用封地并填写政策。" : eligibility.Reason,
+			BlockReason = eligibility.CanPublish
+				? PolicyUiTexts.Get("AFPOL_UI_SelectFiefAndFillPolicy", "Please select target fiefs and fill in policy details.")
+				: MapPlayerPolicyEligibilityReasonToDisplay(eligibility.Reason),
 			InitialPolicyName = reReviewContext?.PolicyName ?? string.Empty,
 			InitialPolicyContent = reReviewContext?.PolicyContent ?? string.Empty,
 			InitialDurationText = BuildPolicyReReviewDurationText(reReviewContext),
 			RequireExplicitDuration = reReviewContext != null && !reReviewContext.DurationKnown,
-			TitleText = reReviewContext == null ? "发布地方政策" : "重新评议地方政策",
-			PublishText = reReviewContext == null ? "发布地方政策" : "提交重新评议",
+			TitleText = reReviewContext == null ? PolicyUiTexts.Get("AFPOL_UI_LocalPublishTitle", "Publish Local Policy") : PolicyUiTexts.Get("AFPOL_UI_ReReviewLocalPolicyTitle", "Re-review Local Policy"),
+			PublishText = reReviewContext == null ? PolicyUiTexts.Get("AFPOL_UI_LocalPublishTitle", "Publish Local Policy") : PolicyUiTexts.Get("AFPOL_UI_SubmitReReview", "Submit Re-review"),
 			Fiefs = fiefs.Select(fief =>
 			{
 				LocalPolicyFiefData item = BuildLocalPolicyFiefUiData(fief);
@@ -193,7 +196,7 @@ public sealed partial class CustomPolicyBehavior
 			: (name, content, duration, date, fiefIds) => SubmitLocalPolicyFromPopup(name, content, duration, date, fiefIds, reReviewContext);
 		if (!LocalPolicyComposePopup.Show(data, onPublish, RequestPlayerPolicyAutoDraft, onCancel))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开地方政策发布界面失败。", Colors.Red));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_OpenLocalPublishFailed", "Failed to open local policy publishing interface."), Colors.Red));
 		}
 	}
 
@@ -210,26 +213,26 @@ public sealed partial class CustomPolicyBehavior
 		int manualDurationDays = 0;
 		if (reReviewContext != null && !reReviewContext.DurationKnown && string.IsNullOrWhiteSpace(durationText))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("旧记录无法确认原持续时间，请明确填写正整数天数。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_DurationRequired", "The old record has no confirmed duration; enter a positive integer number of days."), Colors.Yellow));
 			OpenLocalPolicyComposePopup(null, reReviewContext);
 			return;
 		}
 		if (!string.IsNullOrWhiteSpace(durationText)
 			&& (!int.TryParse(durationText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out manualDurationDays) || manualDurationDays <= 0))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("持续天数必须留空或填写正整数。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_DurationPositive", "Duration must be blank or a positive integer number of days."), Colors.Yellow));
 			OpenLocalPolicyComposePopup(null, reReviewContext);
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(policyName) || string.IsNullOrWhiteSpace(policyContent) || selectedFiefIds.Count <= 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("请填写政策名、政策内容并至少选择一个封地。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_FillNameContentAndFief", "Please enter a policy name, content, and select at least one fief."), Colors.Yellow));
 			OpenLocalPolicyComposePopup(null, reReviewContext);
 			return;
 		}
 		if (_generationInProgress)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("上一份政策仍在等待评议，请稍候。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_PreviousPolicyPending", "The previous policy is still awaiting evaluation; please wait."), Colors.Yellow));
 			return;
 		}
 		List<Settlement> validFiefs = ResolveOwnedLocalPolicyFiefs(selectedFiefIds);
@@ -237,7 +240,7 @@ public sealed partial class CustomPolicyBehavior
 		PolicyEligibility eligibility = EvaluateLocalPolicyEligibility(options, validFiefs.Count > 0);
 		if (!eligibility.CanPublish)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(eligibility.Reason, Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(MapPlayerPolicyEligibilityReasonToDisplay(eligibility.Reason), Colors.Yellow));
 			OpenLocalPolicyComposePopup(null, reReviewContext);
 			return;
 		}
@@ -285,7 +288,7 @@ public sealed partial class CustomPolicyBehavior
 		if (!TryFreezePlayerPolicyGenerationSettings(request, out string freezeError))
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				"无法冻结本次政策评议配置：" + freezeError,
+				PolicyUiTexts.Get("AFPOL_UI_FreezeSettingsFailedPrefix", "Unable to freeze this policy evaluation configuration: ") + MapPlayerPolicyFailureReasonToDisplay(freezeError),
 				Colors.Yellow));
 			return;
 		}
@@ -322,13 +325,15 @@ public sealed partial class CustomPolicyBehavior
 		if (_generationInProgress)
 		{
 			PolicyDebugLog("open-blocked", "generation already in progress");
-			InformationManager.DisplayMessage(new InformationMessage("上一份政策仍在等待评议，请稍候。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_PreviousPolicyPending", "The previous policy is still awaiting evaluation; please wait."), Colors.Yellow));
 			return;
 		}
 		PolicyRuntimeOptions options = BuildPolicyRuntimeOptions();
 		PolicyEligibility eligibility = EvaluateEligibility(options);
 		string dateText = FormatCurrentCampaignDate();
-		string statusText = eligibility.CanPublish ? BuildReadyStatus(options) : eligibility.Reason;
+		string statusText = eligibility.CanPublish
+			? BuildReadyStatus(options)
+			: MapPlayerPolicyEligibilityReasonToDisplay(eligibility.Reason);
 		List<PolicyComposeTargetData> targets = BuildPolicyComposeTargets();
 		bool requireExplicitTargetSelection = false;
 		if (reReviewContext != null)
@@ -347,9 +352,9 @@ public sealed partial class CustomPolicyBehavior
 				? (Action)(() => OpenLocalPolicyHistoryPopup(null))
 				: (Action)(() => OpenRecordHistoryPopup(null)));
 		bool shown = CustomPolicyComposePopup.Show(
-			reReviewContext == null ? "发布王国政策" : (string.Equals(reReviewContext.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase) ? "重新评议附庸国政策" : "重新评议王国政策"),
-			"政策名",
-			"政策内容 / AI编写原文",
+			reReviewContext == null ? PolicyUiTexts.Get("AFPOL_UI_KingdomPublishTitle", "Publish Kingdom Policy") : (string.Equals(reReviewContext.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase) ? PolicyUiTexts.Get("AFPOL_UI_ReReviewVassalPolicyTitle", "Re-review Vassal Policy") : PolicyUiTexts.Get("AFPOL_UI_ReReviewKingdomPolicyTitle", "Re-review Kingdom Policy")),
+			PolicyUiTexts.Get("AFPOL_UI_PolicyNameLabel", "Policy Name"),
+			PolicyUiTexts.Get("AFPOL_UI_LocalPolicyContentLabel", "Policy Content / AI Draft Input"),
 			dateText,
 			eligibility.CanPublish,
 			statusText,
@@ -364,14 +369,14 @@ public sealed partial class CustomPolicyBehavior
 				PolicyName = reReviewContext?.PolicyName ?? string.Empty,
 				PolicyContent = reReviewContext?.PolicyContent ?? string.Empty,
 				DurationText = BuildPolicyReReviewDurationText(reReviewContext),
-				PublishText = reReviewContext == null ? string.Empty : "提交重新评议",
+				PublishText = reReviewContext == null ? string.Empty : PolicyUiTexts.Get("AFPOL_UI_SubmitReReview", "Submit Re-review"),
 				RequireExplicitDuration = reReviewContext != null && !reReviewContext.DurationKnown,
 				RequireExplicitTargetSelection = requireExplicitTargetSelection
 			});
 		if (!shown)
 		{
 			PolicyDebugLog("open-failed", "CustomPolicyComposePopup.Show returned false");
-			InformationManager.DisplayMessage(new InformationMessage("打开自定义政策撰写界面失败。", Colors.Red));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_OpenComposeFailed", "Failed to open custom policy drafting interface."), Colors.Red));
 		}
 	}
 
@@ -385,8 +390,8 @@ public sealed partial class CustomPolicyBehavior
 			{
 				TargetId = playerKingdom.StringId ?? "",
 				ScopeKind = PolicyScopeKingdom,
-				DisplayText = "本国：" + GetKingdomName(playerKingdom),
-				HintText = "沿用王国议程、政策成本与通过流程。",
+				DisplayText = PolicyUiTexts.Format("AFPOL_UI_TargetOwnKingdom", "Own kingdom: {NAME}", "NAME", GetKingdomName(playerKingdom)),
+				HintText = PolicyUiTexts.Get("AFPOL_UI_TargetOwnKingdomHint", "Uses kingdom agenda, policy costs, and voting process."),
 				IsSelected = true
 			});
 		}
@@ -401,8 +406,8 @@ public sealed partial class CustomPolicyBehavior
 			{
 				TargetId = vassal.StringId ?? "",
 				ScopeKind = PolicyScopeVassal,
-				DisplayText = "附庸：" + GetKingdomName(vassal),
-				HintText = "当前独立度 " + independence.ToString(CultureInfo.InvariantCulture) + "/100；脱离阈值 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（" + rulerName + "关系 " + FormatSigned(rulerRelation) + "）；发布立即生效并随机增加 5–10 点独立度。"
+				DisplayText = PolicyUiTexts.Format("AFPOL_UI_TargetVassalKingdom", "Vassal: {NAME}", "NAME", GetKingdomName(vassal)),
+				HintText = PolicyUiTexts.Format("AFPOL_UI_TargetVassalKingdomHint", "Current independence: {CURRENT}/100; Breakaway threshold: {THRESHOLD} ({RULER} relation: {RELATION}); Takes effect immediately upon publication and increases independence by 5-10.", "CURRENT", independence.ToString(CultureInfo.InvariantCulture), "THRESHOLD", breakawayThreshold.ToString(CultureInfo.InvariantCulture), "RULER", rulerName, "RELATION", FormatSigned(rulerRelation))
 			});
 		}
 		return result;
@@ -427,14 +432,14 @@ public sealed partial class CustomPolicyBehavior
 		int manualDurationDays = 0;
 		if (reReviewContext != null && !reReviewContext.DurationKnown && string.IsNullOrWhiteSpace(durationText))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("旧记录无法确认原持续时间，请明确填写正整数天数。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_DurationRequired", "The old record has no confirmed duration; enter a positive integer number of days."), Colors.Yellow));
 			OpenComposePopup(reReviewContext, reReviewReturn);
 			return;
 		}
 		if (!string.IsNullOrWhiteSpace(durationText)
 			&& (!int.TryParse(durationText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out manualDurationDays) || manualDurationDays <= 0))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("持续天数必须留空或填写正整数。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_DurationPositive", "Duration must be blank or a positive integer number of days."), Colors.Yellow));
 			OpenComposePopup(reReviewContext, reReviewReturn);
 			return;
 		}
@@ -444,19 +449,19 @@ public sealed partial class CustomPolicyBehavior
 			+ " capturedDate=" + (capturedDateText ?? ""));
 		if (string.IsNullOrWhiteSpace(policyName))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("政策名不能为空。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_NameCannotBeEmpty", "Policy name cannot be empty."), Colors.Yellow));
 			OpenComposePopup(reReviewContext, reReviewReturn);
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(policyContent))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("政策内容不能为空。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_ContentCannotBeEmpty", "Policy content cannot be empty."), Colors.Yellow));
 			OpenComposePopup(reReviewContext, reReviewReturn);
 			return;
 		}
 		if (_generationInProgress)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("上一份政策仍在等待评议，请稍候。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_PreviousPolicyPending", "The previous policy is still awaiting evaluation; please wait."), Colors.Yellow));
 			return;
 		}
 		PolicyRuntimeOptions options = BuildPolicyRuntimeOptions();
@@ -464,7 +469,7 @@ public sealed partial class CustomPolicyBehavior
 		if (!eligibility.CanPublish)
 		{
 			PolicyDebugLog("submit-blocked", "eligibility failed: " + (eligibility.Reason ?? ""));
-			InformationManager.DisplayMessage(new InformationMessage(eligibility.Reason, Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(MapPlayerPolicyEligibilityReasonToDisplay(eligibility.Reason), Colors.Yellow));
 			OpenComposePopup(reReviewContext, reReviewReturn);
 			return;
 		}
@@ -477,7 +482,7 @@ public sealed partial class CustomPolicyBehavior
 		bool isVassalTarget = !isOwnKingdomTarget && policyKingdom != null;
 		if (policyKingdom == null || (isVassalTarget && !IsPlayerRuler(playerKingdom)))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("所选附庸国已经失效，或你已不再是宗主国统治者。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_VassalInvalidOrNotRuler", "The selected vassal kingdom is no longer valid, or you are no longer the ruler of the suzerain kingdom."), Colors.Yellow));
 			OpenComposePopup(reReviewContext, reReviewReturn);
 			return;
 		}
@@ -494,10 +499,10 @@ public sealed partial class CustomPolicyBehavior
 		{
 			VassalageBehavior.TryGetDirectVassalIndependenceStatusForExternal(policyKingdom.StringId, out int currentIndependence, out int breakawayThreshold, out int rulerRelation, out string rulerName);
 			promptContext.ExtensionContext = (promptContext.ExtensionContext ?? "")
-				+ "\n\n【附庸国政策上下文】\n宗主国：" + GetKingdomName(playerKingdom)
-				+ "\n发布对象：" + GetKingdomName(policyKingdom)
-				+ "\n当前独立度：" + currentIndependence.ToString(CultureInfo.InvariantCulture) + "/100。"
-				+ "\n当前统治者：" + rulerName + "；与玩家关系：" + FormatSigned(rulerRelation) + "；脱离阈值：" + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "。";
+				+ PolicyGenerationPromptTexts.Get("VassalWorldHeader", "\n\n[Vassal policy context]\nSuzerain kingdom: ") + GetPolicyPromptKingdomName(playerKingdom)
+				+ PolicyGenerationPromptTexts.Get("VassalPublicationTarget", "\nPublication target: ") + GetPolicyPromptKingdomName(policyKingdom)
+				+ PolicyGenerationPromptTexts.Get("VassalCurrentIndependence", "\nCurrent independence: ") + currentIndependence.ToString(CultureInfo.InvariantCulture) + "/100。"
+				+ PolicyGenerationPromptTexts.Get("VassalCurrentRuler", "\nCurrent ruler: ") + rulerName + PolicyGenerationPromptTexts.Get("VassalPlayerRelation", "; Relation to player: ") + FormatSigned(rulerRelation) + PolicyGenerationPromptTexts.Get("VassalBreakawayThreshold", "; Breakaway threshold: ") + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "。";
 		}
 		PolicyDraftRequest request = new PolicyDraftRequest
 		{
@@ -538,7 +543,7 @@ public sealed partial class CustomPolicyBehavior
 		if (!TryFreezePlayerPolicyGenerationSettings(request, out string freezeError))
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				"无法冻结本次政策评议配置：" + freezeError,
+				PolicyUiTexts.Get("AFPOL_UI_FreezeSettingsFailedPrefix", "Unable to freeze this policy evaluation configuration: ") + MapPlayerPolicyFailureReasonToDisplay(freezeError),
 				Colors.Yellow));
 			return;
 		}
@@ -567,7 +572,7 @@ public sealed partial class CustomPolicyBehavior
 	{
 		if (request == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("原政策请求已不可用，无法重试。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_RetryOriginalRequestUnavailable", "The original policy request is no longer available; cannot retry."), Colors.Yellow));
 			return;
 		}
 		try
@@ -607,8 +612,8 @@ public sealed partial class CustomPolicyBehavior
 			PolicySystemLog.Failure("Player", "manual-retry-submit-failed", BuildPolicyRequestLogPrefix(request), ex.ToString());
 			ShowPolicyGenerationRetryPopup(request, new PolicyGenerationResult
 			{
-				FailureStage = "手动重试提交",
-				Error = "重新校验并提交原政策时发生异常，详细技术信息已写入日志。"
+				FailureStage = PolicyCompatibilityTexts.Get("Legacy_MapPlayerPolicyFailureStageToDisplay_036"),
+				Error = PolicyCompatibilityTexts.Get("Legacy_TryMapPlayerPolicyFailureReasonToDisplay_001")
 			});
 		}
 	}
@@ -620,7 +625,7 @@ public sealed partial class CustomPolicyBehavior
 		error = string.Empty;
 		if (request == null)
 		{
-			error = "政策请求为空。";
+			error = PolicyUiTexts.Get("AFPOL_UI_Management_error_request_empty_0", "Policy request is empty.");
 			return false;
 		}
 		if (!PolicyLlmClient.TryResolvePlayerPolicyProfile(
@@ -726,12 +731,12 @@ public sealed partial class CustomPolicyBehavior
 			bool isLocal = IsLocalPolicyRequest(request);
 			bool isVassal = IsVassalPolicyRequest(request);
 			InformationManager.ShowInquiry(new InquiryData(
-				isLocal ? "等待地方政策评议" : (isVassal ? "等待附庸国政策评议" : "等待政策评议"),
+				isLocal ? PolicyUiTexts.Get("AFPOL_UI_WaitingLocalPolicyEval", "Awaiting Local Policy Evaluation") : (isVassal ? PolicyUiTexts.Get("AFPOL_UI_WaitingVassalPolicyEval", "Awaiting Vassal Policy Evaluation") : PolicyUiTexts.Get("AFPOL_UI_WaitingPolicyEval", "Awaiting Policy Evaluation")),
 				isLocal
-					? "地方政策《" + request.PolicyName + "》正在由智能服务评议。\n\n游戏时间已暂停；成功后会立即结算并只对所选封地及附属村庄生效，不进入王国议程。"
+					? PolicyUiTexts.Format("AFPOL_UI_LocalPolicySubmittedEvaluating", "Local policy \"{NAME}\" is being evaluated by the intelligence service.\n\nGame time is paused. Upon success, it will settle immediately and take effect only on selected fiefs and bound villages without entering kingdom agenda.", "NAME", request.PolicyName)
 					: (isVassal
-						? "附庸国政策《" + request.PolicyName + "》正在由智能服务评议。\n\n游戏时间已暂停；成功后会直接生效、写入附庸国与世界政策记录，并结算独立度。"
-						: "政策《" + request.PolicyName + "》已经提交给朝廷与民众评议。\n\n游戏时间已暂停，智能服务完成判断后会自动发布结果并显示民众反馈与影响效果。"),
+						? PolicyUiTexts.Format("AFPOL_UI_VassalPolicySubmittedEvaluating", "Vassal policy \"{NAME}\" is being evaluated by the intelligence service.\n\nGame time is paused. Upon success, it takes effect directly, is written to vassal and world policy records, and settles independence.", "NAME", request.PolicyName)
+						: PolicyUiTexts.Format("AFPOL_UI_PolicySubmittedEvaluating", "Policy \"{NAME}\" has been submitted for court and public evaluation.\n\nGame time is paused. Once the intelligence service completes evaluation, results will be published automatically along with public feedback and effects.", "NAME", request.PolicyName)),
 				isAffirmativeOptionShown: false,
 				isNegativeOptionShown: false,
 				"",
@@ -746,7 +751,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			_policyWaitPopupShown = false;
 			Log("show wait popup failed " + BuildPolicyRequestLogPrefix(request) + " error=" + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage("政策正在评议中，游戏时间已暂停。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_PolicyEvaluatingPaused", "Policy is being evaluated; game time is paused."), Colors.Yellow));
 		}
 	}
 
@@ -824,12 +829,12 @@ public sealed partial class CustomPolicyBehavior
 			return "";
 		}
 		text = text.Replace("**", "").Trim();
-		int start = text.IndexOf("民众反馈", StringComparison.Ordinal);
+		int start = text.IndexOf(PolicyCompatibilityTexts.Get("Legacy_ExtractMainFeedbackForPopup_071"), StringComparison.Ordinal);
 		if (start >= 0)
 		{
-			text = text.Substring(start + "民众反馈".Length);
+			text = text.Substring(start + PolicyCompatibilityTexts.Get("Legacy_ExtractMainFeedbackForPopup_071").Length);
 		}
-		int end = text.IndexOf("影响摘要", StringComparison.Ordinal);
+		int end = text.IndexOf(PolicyCompatibilityTexts.Get("Legacy_ExtractMainFeedbackForPopup_072"), StringComparison.Ordinal);
 		if (end >= 0)
 		{
 			text = text.Substring(0, end);
@@ -847,10 +852,10 @@ public sealed partial class CustomPolicyBehavior
 			return "";
 		}
 		text = text.Replace("**", "").Trim();
-		int start = text.IndexOf("影响摘要", StringComparison.Ordinal);
+		int start = text.IndexOf(PolicyCompatibilityTexts.Get("Legacy_ExtractMainFeedbackForPopup_072"), StringComparison.Ordinal);
 		if (start >= 0)
 		{
-			text = text.Substring(start + "影响摘要".Length);
+			text = text.Substring(start + PolicyCompatibilityTexts.Get("Legacy_ExtractMainFeedbackForPopup_072").Length);
 			int end = text.IndexOf('\n');
 			if (end >= 0)
 			{
@@ -902,14 +907,14 @@ public sealed partial class CustomPolicyBehavior
 		text = Regex.Replace(text, "\\[(AFEF|ACTION|REWARD|DUEL|VASSALAGE|KINGDOM|WORLD_MAP|PARTY_TRANSFER|DIPLOMACY|VOTE_DEAL)[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		for (int i = 0; i < 3; i++)
 		{
-			string cleaned = Regex.Replace(text, "^\\s*(民众反馈|反馈|publicFeedback)\\s*[：:]\\s*", "", RegexOptions.IgnoreCase).Trim();
+			string cleaned = Regex.Replace(text, PolicyCompatibilityTexts.Get("Legacy_CleanPolicyDisplayText_073"), "", RegexOptions.IgnoreCase).Trim();
 			if (string.Equals(cleaned, text, StringComparison.Ordinal))
 			{
 				break;
 			}
 			text = cleaned;
 		}
-		int impactIndex = text.IndexOf("影响摘要", StringComparison.Ordinal);
+		int impactIndex = text.IndexOf(PolicyCompatibilityTexts.Get("Legacy_ExtractMainFeedbackForPopup_072"), StringComparison.Ordinal);
 		if (impactIndex > 0)
 		{
 			text = text.Substring(0, impactIndex).Trim();
@@ -917,39 +922,56 @@ public sealed partial class CustomPolicyBehavior
 		return Regex.Replace(text, "\\s+", " ").Trim();
 	}
 
+	private static string MapPlayerPolicyNarrativeFallbackToDisplay(string text)
+	{
+		switch (text ?? string.Empty)
+		{
+			case var rawPolicyCase45 when string.Equals(rawPolicyCase45, PolicyCompatibilityTexts.Get("Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_074"), StringComparison.Ordinal):
+				return PolicyUiTexts.Get("AFPOL_UI_PolicyFeedbackUnclearDefault", "The public has heard of the new policy, but feedback is not yet clear.");
+			case var rawPolicyCase46 when string.Equals(rawPolicyCase46, PolicyCompatibilityTexts.Get("Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_075"), StringComparison.Ordinal):
+				return PolicyUiTexts.Get("AFPOL_UI_LocalPolicyFeedbackUnclearDefault", "The people of the selected fiefs and attached villages have heard of this local policy, but feedback is not yet clear.");
+			case var rawPolicyCase47 when string.Equals(rawPolicyCase47, PolicyCompatibilityTexts.Get("Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_076"), StringComparison.Ordinal):
+				return PolicyUiTexts.Get("AFPOL_UI_PolicyImpactDefault", "Policy impact is determined by the evaluator and world state.");
+			case var rawPolicyCase48 when string.Equals(rawPolicyCase48, PolicyCompatibilityTexts.Get("Legacy_MapPlayerPolicyNarrativeFallbackToDisplay_077"), StringComparison.Ordinal):
+				return PolicyUiTexts.Get("AFPOL_UI_VassalIndependenceNeutralDefault", "The policy was assessed as neutral for the vassal's independence tendency.");
+			default:
+				return text ?? string.Empty;
+		}
+	}
+
 	private static string BuildImpactPopupText(PolicyDraftRequest request, string feedback, PolicyApplicationResult application, bool costDeducted)
 	{
 		StringBuilder sb = new StringBuilder();
-		feedback = CleanPolicyDisplayText(feedback);
-		sb.AppendLine("《" + request.PolicyName + "》");
-		sb.AppendLine("日期：" + request.DateText);
+		feedback = MapPlayerPolicyNarrativeFallbackToDisplay(CleanPolicyDisplayText(feedback));
+		sb.AppendLine(PolicyUiTexts.Format("AFPOL_UI_PolicyNameHeader", "{NAME}", "NAME", request.PolicyName ?? string.Empty));
+		sb.AppendLine(PolicyUiTexts.Format("AFPOL_UI_DateLabel", "Date: {DATE}", "DATE", request.DateText));
 		sb.AppendLine();
-		sb.AppendLine("【民众反馈】");
-		sb.AppendLine(string.IsNullOrWhiteSpace(feedback) ? "民众尚未形成明确反馈。" : feedback.Trim());
+		sb.AppendLine(PolicyUiTexts.Get("AFPOL_UI_PolicyFeedbackSection", "[Public Feedback]"));
+		sb.AppendLine(string.IsNullOrWhiteSpace(feedback) ? PolicyUiTexts.Get("AFPOL_UI_FeedbackUnclear", "The public has not formed clear feedback yet.") : feedback.Trim());
 		sb.AppendLine();
-		sb.AppendLine("【政策效果】");
+		sb.AppendLine(PolicyUiTexts.Get("AFPOL_UI_PolicyImpactSectionTitle", "[Policy Effects]"));
 		if (application?.KingdomEffects != null && application.KingdomEffects.Count > 0)
 		{
 			foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null))
 			{
 				foreach (string line in BuildPlayerVisibleEffectLines(effect))
 				{
-					sb.AppendLine("- " + line + "。");
+					sb.AppendLine("- " + line + PolicyUiTexts.Get("AFPOL_UI_SentencePeriod", "."));
 				}
 			}
 		}
 		else
 		{
-			sb.AppendLine("未产生可落地的模块效果。");
+			sb.AppendLine(PolicyUiTexts.Get("AFPOL_UI_NoApplicableModuleEffects", "No applicable module effects were produced."));
 		}
 		if (application?.NoticeLines != null)
 		{
 			HashSet<string> shownNotices = new HashSet<string>(StringComparer.Ordinal);
 			foreach (string line in application.NoticeLines.Where(x => !string.IsNullOrWhiteSpace(x)))
 			{
-				string visibleNotice = CleanPlayerVisiblePolicySystemText(
+				string visibleNotice = CleanPolicyDisplaySystemText(
 					line,
-					"部分效果未能落地，详细信息已写入日志。");
+					PolicyUiTexts.Get("AFPOL_UI_PartialEffectsFailedNotice", "Some effects failed to take effect; details have been written to the log."));
 				if (!string.IsNullOrWhiteSpace(visibleNotice) && shownNotices.Add(visibleNotice))
 				{
 					sb.AppendLine("- " + visibleNotice);
@@ -961,18 +983,18 @@ public sealed partial class CustomPolicyBehavior
 		{
 			if (request?.UseAiEvaluatedCost == true)
 			{
-				sb.AppendLine(BuildAiEvaluatedCostPaymentText(request) + "政策效果已按各模块规则结算，数值效果会在有效状态内生效。你可以继续发布新的政策。");
+				sb.AppendLine(BuildAiEvaluatedCostPaymentText(request) + PolicyUiTexts.Get("AFPOL_UI_PolicySettledNotice", "Policy effects have been settled per module rules and numeric effects will remain active during validity. You may continue publishing new policies."));
 			}
 			else
 			{
-				sb.AppendLine(BuildPlayerPolicyGoldCostSummary(request) + "。政策效果已按各模块规则结算，数值效果会在有效状态内生效。你可以继续发布新的政策。");
+				sb.AppendLine(BuildPlayerPolicyGoldCostSummaryForDisplay(request) + PolicyUiTexts.Get("AFPOL_UI_SentencePeriod", ".") + PolicyUiTexts.Get("AFPOL_UI_PolicySettledNotice", "Policy effects have been settled per module rules and numeric effects will remain active during validity. You may continue publishing new policies."));
 			}
 		}
 		else
 		{
 			sb.AppendLine(IsVassalPolicyRequest(request)
-				? "本次未扣除费用。"
-				: "本次未扣除费用。" + BuildPlayerPolicyGoldCostSummary(request) + "。");
+				? PolicyUiTexts.Get("AFPOL_UI_NoCostDeducted", "No costs were deducted this time.")
+				: PolicyUiTexts.Get("AFPOL_UI_NoCostDeducted", "No costs were deducted this time.") + BuildPlayerPolicyGoldCostSummaryForDisplay(request) + PolicyUiTexts.Get("AFPOL_UI_SentencePeriod", "."));
 		}
 		string popupText = sb.ToString().TrimEnd();
 		return popupText;
@@ -1045,15 +1067,15 @@ public sealed partial class CustomPolicyBehavior
 			string content = CompactPolicyContextText(record.PolicyContent ?? string.Empty);
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				name = "未命名政策";
+				name = PolicyUiTexts.Get("AFPOL_UI_UnnamedPolicy", "Unnamed Policy");
 			}
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				content = "未记录政策正文。";
+				content = PolicyUiTexts.Get("AFPOL_UI_NoPolicyContentRecorded", "Policy content not recorded.");
 			}
-			string publisher = string.IsNullOrWhiteSpace(issuer) ? "宗主玩家" : "宗主玩家（" + issuer + "）";
-			string targetLabel = string.IsNullOrWhiteSpace(target) ? "目标附庸国" : "附庸国" + target;
-			return "【附庸国政策】" + publisher + "发布《" + name + "》，对" + targetLabel + "生效：" + content;
+			string publisher = string.IsNullOrWhiteSpace(issuer) ? PolicyUiTexts.Get("AFPOL_UI_SuzerainPlayer", "Suzerain Player") : PolicyUiTexts.Format("AFPOL_UI_SuzerainPlayerWithName", "Suzerain Player ({NAME})", "NAME", issuer);
+			string targetLabel = string.IsNullOrWhiteSpace(target) ? PolicyUiTexts.Get("AFPOL_UI_TargetVassalDefault", "Target Vassal") : PolicyUiTexts.Format("AFPOL_UI_TargetVassalWithName", "Vassal {NAME}", "NAME", target);
+			return PolicyUiTexts.Format("AFPOL_UI_VassalAnnouncementFormat", "[Vassal Policy] {PUBLISHER} enacted \"{NAME}\", taking effect on {TARGET}: {CONTENT}", "PUBLISHER", publisher, "NAME", name, "TARGET", targetLabel, "CONTENT", content);
 		}
 		return BuildKingdomPolicyAnnouncementText(record?.KingdomName, record?.PolicyName, record?.PolicyContent);
 	}
@@ -1065,14 +1087,14 @@ public sealed partial class CustomPolicyBehavior
 		string content = CompactPolicyContextText(policyContent ?? string.Empty);
 		if (string.IsNullOrWhiteSpace(name))
 		{
-			name = "未命名政策";
+			name = PolicyUiTexts.Get("AFPOL_UI_UnnamedPolicy", "Unnamed Policy");
 		}
 		if (string.IsNullOrWhiteSpace(content))
 		{
-			content = "未记录政策正文。";
+			content = PolicyUiTexts.Get("AFPOL_UI_NoPolicyContentRecorded", "Policy content not recorded.");
 		}
-		string policySubject = string.IsNullOrWhiteSpace(issuer) ? "王国" : issuer;
-		return "【王国政策】" + policySubject + "颁布《" + name + "》：" + content;
+		string policySubject = string.IsNullOrWhiteSpace(issuer) ? PolicyUiTexts.Get("AFPOL_UI_KingdomDefault", "Kingdom") : issuer;
+		return PolicyUiTexts.Format("AFPOL_UI_KingdomAnnouncementFormat", "[Kingdom Policy] {ISSUER} enacted \"{NAME}\": {CONTENT}", "ISSUER", policySubject, "NAME", name, "CONTENT", content);
 	}
 
 	internal static bool DisplayKingdomPolicyFeedbackMessage(string source, string policyId, string kingdomName, string policyName, string publicFeedback)
@@ -1084,15 +1106,15 @@ public sealed partial class CustomPolicyBehavior
 			string feedback = CompactPolicyContextText(CleanPolicyDisplayText(publicFeedback ?? ""));
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				name = "未命名政策";
+				name = PolicyUiTexts.Get("AFPOL_UI_UnnamedPolicy", "Unnamed Policy");
 			}
 			if (string.IsNullOrWhiteSpace(feedback))
 			{
-				feedback = "民众尚未形成明确反馈。";
+				feedback = PolicyUiTexts.Get("AFPOL_UI_FeedbackUnclear", "The public has not formed clear feedback yet.");
 			}
-			string policySubject = string.IsNullOrWhiteSpace(issuer) ? "王国" : issuer;
+			string policySubject = string.IsNullOrWhiteSpace(issuer) ? PolicyUiTexts.Get("AFPOL_UI_KingdomDefault", "Kingdom") : issuer;
 			InformationManager.DisplayMessage(new InformationMessage(
-				"【民众反馈】" + policySubject + "《" + name + "》：" + feedback,
+				PolicyUiTexts.Format("AFPOL_UI_PublicFeedbackFormat", "[Public Feedback] {SUBJECT} \"{NAME}\": {FEEDBACK}", "SUBJECT", policySubject, "NAME", name, "FEEDBACK", feedback),
 				Color.FromUint(4278242559u)));
 			PolicySystemLog.Write("Notice", "policy-feedback-displayed",
 				"source=" + (source ?? "")
@@ -1114,10 +1136,10 @@ public sealed partial class CustomPolicyBehavior
 		Dictionary<string, List<ActivePolicyEffectSaveData>> activeEffectsByRecordId = BuildActivePolicyEffectHistoryIndex();
 		PolicyHistoryData data = new PolicyHistoryData
 		{
-			TitleText = "政策记录",
-			SubtitleText = "显示最近 " + MaxPolicyRecordHistoryCount.ToString(CultureInfo.InvariantCulture) + " 条已发布政策；旧系统政策已停止效果，但保留正文可重新评议。",
-			EmptyStateText = "还没有成功发布并生效的政策。",
-			CloseText = "返回政策管理"
+			TitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyRecordsTitle", "Policy Records"),
+			SubtitleText = PolicyUiTexts.Format("AFPOL_UI_PolicyHistorySubtitle", "Showing latest {COUNT} published policies; legacy policies have ceased effects but history is preserved.", "COUNT", MaxPolicyRecordHistoryCount.ToString(CultureInfo.InvariantCulture)),
+			EmptyStateText = PolicyUiTexts.Get("AFPOL_UI_NoSuccessfulPoliciesYet", "No successfully published and enacted policies yet."),
+			CloseText = PolicyUiTexts.Get("AFPOL_UI_BackToPolicyManagement", "Back to Policy Management")
 		};
 		foreach (PolicyRecordSaveData record in records)
 		{
@@ -1131,17 +1153,21 @@ public sealed partial class CustomPolicyBehavior
 				HistoryKey = BuildPolicyHistoryKey("player_kingdom", record.RecordId),
 				CanDelete = CanDeletePolicyHistoryRecord(BuildPolicyHistoryKey("player_kingdom", record.RecordId), out _),
 				CanReReview = canReReview,
-				ReReviewText = "重新评议",
-				DateText = string.IsNullOrWhiteSpace(record.DateText) ? "未知日期" : record.DateText.Trim(),
-				PolicyNameText = string.IsNullOrWhiteSpace(record.PolicyName) ? "未命名政策" : "《" + record.PolicyName.Trim() + "》",
+				ReReviewText = PolicyUiTexts.Get("AFPOL_UI_ReReview", "Re-review"),
+				DateText = string.IsNullOrWhiteSpace(record.DateText) ? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date") : PolicyDateTextProjection.ForUi(record.DateText.Trim()),
+				PolicyNameText = string.IsNullOrWhiteSpace(record.PolicyName) ? PolicyUiTexts.Get("AFPOL_UI_UnnamedPolicy", "Unnamed Policy") : PolicyUiTexts.Format("AFPOL_UI_PolicyNameHeader", "{NAME}", "NAME", record.PolicyName.Trim()),
 				CostText = BuildPolicyRecordCostText(record),
-				ContentSectionTitleText = "【政策内容】",
-				ContentSummaryText = string.IsNullOrWhiteSpace(record.PolicyContentSummary) ? "（没有记录政策内容摘要）" : CleanLlmText(record.PolicyContentSummary),
-				FeedbackSectionTitleText = "【民众反馈】",
-				FeedbackSummaryText = string.IsNullOrWhiteSpace(record.PublicFeedbackSummary) ? "民众反馈未记录。" : CleanPolicyDisplayText(record.PublicFeedbackSummary),
-				ImpactSectionTitleText = "【政策效果】",
+				ContentSectionTitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyContentSection", "[Policy Content]"),
+				ContentSummaryText = string.IsNullOrWhiteSpace(record.PolicyContentSummary) ? PolicyUiTexts.Get("AFPOL_UI_NoContentSummary", "(No policy content summary recorded)") : CleanLlmText(record.PolicyContentSummary),
+				FeedbackSectionTitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyFeedbackSection", "[Public Feedback]"),
+				FeedbackSummaryText = MapPlayerPolicyNarrativeFallbackToDisplay(string.IsNullOrWhiteSpace(record.PublicFeedbackSummary)
+					? PolicyUiTexts.Get("AFPOL_UI_FeedbackNotRecorded", "Public feedback not recorded.")
+					: CleanPolicyDisplayText(record.PublicFeedbackSummary)),
+				ImpactSectionTitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyImpactSectionTitle", "[Policy Effects]"),
 				ImpactSummaryText = AppendPolicyRuntimeStatus(
-					string.IsNullOrWhiteSpace(effectSummary) ? CleanPolicyDisplayText(record.ImpactSummary ?? "") : effectSummary,
+					MapPlayerPolicyNarrativeFallbackToDisplay(string.IsNullOrWhiteSpace(effectSummary)
+						? CleanPolicyDisplayText(record.ImpactSummary ?? "")
+						: effectSummary),
 					runtimeStatus)
 			});
 		}
@@ -1165,16 +1191,16 @@ public sealed partial class CustomPolicyBehavior
 				HistoryKey = BuildPolicyHistoryKey("player_kingdom", dynamic.RecordId),
 				CanDelete = CanDeletePolicyHistoryRecord(BuildPolicyHistoryKey("player_kingdom", dynamic.RecordId), out _),
 				CanReReview = TryBuildPolicyReReviewContext(dynamic.RecordId, out _, out _),
-				ReReviewText = "重新评议",
-				DateText = FirstNonEmpty(unified?.GameDate, "旧存档日期未记录"),
-				PolicyNameText = "《" + FirstNonEmpty(dynamic.PolicyName, unified?.PolicyName, "未命名政策") + "》",
-				CostText = "旧存档费用信息未完整保留；重新评议时按当前配置重新计算。",
-				ContentSectionTitleText = "【政策正文】",
+				ReReviewText = PolicyUiTexts.Get("AFPOL_UI_ReReview", "Re-review"),
+				DateText = PolicyDateTextProjection.ForUi(FirstNonEmpty(unified?.GameDate, PolicyUiTexts.Get("AFPOL_UI_LegacySaveDateNotRecorded", "Legacy save date not recorded"))),
+				PolicyNameText = PolicyUiTexts.Format("AFPOL_UI_PolicyNameHeader", "{NAME}", "NAME", FirstNonEmpty(dynamic.PolicyName, unified?.PolicyName, PolicyUiTexts.Get("AFPOL_UI_UnnamedPolicy", "Unnamed Policy"))),
+				CostText = PolicyUiTexts.Get("AFPOL_UI_LegacySaveCostNotice", "Legacy cost info was not fully preserved; re-evaluation will recalculate using current settings."),
+				ContentSectionTitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyFullTextSectionTitle", "[Policy Full Text]"),
 				ContentSummaryText = CleanLlmText(dynamic.PolicyContent),
-				FeedbackSectionTitleText = "【民众反馈】",
-				FeedbackSummaryText = FirstNonEmpty(unified?.PublicFeedback, "旧存档未保留民众反馈。"),
-				ImpactSectionTitleText = "【旧政策状态】",
-				ImpactSummaryText = "旧政策系统升级后已停止持续效果。" + (string.IsNullOrWhiteSpace(dynamic.SecondaryEffects) ? string.Empty : "\n" + CleanPolicyDisplayText(dynamic.SecondaryEffects))
+				FeedbackSectionTitleText = PolicyUiTexts.Get("AFPOL_UI_PolicyFeedbackSection", "[Public Feedback]"),
+				FeedbackSummaryText = MapPlayerPolicyNarrativeFallbackToDisplay(FirstNonEmpty(unified?.PublicFeedback, PolicyUiTexts.Get("AFPOL_UI_LegacySaveNoFeedback", "Legacy save did not preserve public feedback."))),
+				ImpactSectionTitleText = PolicyUiTexts.Get("AFPOL_UI_LegacyPolicyStatusSectionTitle", "[Legacy Policy Status]"),
+				ImpactSummaryText = PolicyUiTexts.Get("AFPOL_UI_LegacyPolicyUpgradedStopped", "Legacy policy system upgrade has stopped continuous effects.") + (string.IsNullOrWhiteSpace(dynamic.SecondaryEffects) ? string.Empty : "\n" + CleanPolicyDisplayText(dynamic.SecondaryEffects))
 			});
 		}
 		return data;
@@ -1229,29 +1255,29 @@ public sealed partial class CustomPolicyBehavior
 		List<string> lines = new List<string>();
 		if (rollbackPending)
 		{
-			lines.Add("结束处理未完成，系统会继续重试恢复已应用效果");
+			lines.Add(PolicyUiTexts.Get("AFPOL_UI_StatusEndPending", "End processing incomplete; system will retry reverting applied effects."));
 		}
 		if (compensationPending)
 		{
-			lines.Add("效果恢复中，补偿完成前相关模块暂停继续结算");
+			lines.Add(PolicyUiTexts.Get("AFPOL_UI_StatusReverting", "Effects reverting; related modules paused until compensation finishes."));
 		}
 		if (maintenancePaused)
 		{
-			lines.Add("维护费不足，数值效果已暂停；资金满足后会自动恢复");
+			lines.Add(PolicyUiTexts.Get("AFPOL_UI_StatusMaintenancePaused", "Insufficient maintenance funds; numeric effects paused, will resume when funds allow."));
 		}
 		if (lines.Count == 0 && hasActiveEffect)
 		{
-			lines.Add("正常生效");
+			lines.Add(PolicyUiTexts.Get("AFPOL_UI_StatusActive", "Active"));
 		}
-		return string.Join("；", lines);
+		return string.Join(PolicyUiTexts.Get("AFPOL_UI_RuntimeStatusSeparator", "; "), lines);
 	}
 
 	private static string AppendPolicyRuntimeStatus(string text, string runtimeStatus)
 	{
-		string visibleText = string.IsNullOrWhiteSpace(text) ? "未记录影响效果。" : text.TrimEnd();
+		string visibleText = string.IsNullOrWhiteSpace(text) ? PolicyUiTexts.Get("AFPOL_UI_NoRecordedImpact", "No impact effects recorded.") : text.TrimEnd();
 		return string.IsNullOrWhiteSpace(runtimeStatus)
 			? visibleText
-			: visibleText + "\n【运行状态】" + runtimeStatus.Trim();
+			: visibleText + PolicyUiTexts.Format("AFPOL_UI_RuntimeStatusSection", "\n[Runtime Status] {STATUS}", "STATUS", runtimeStatus.Trim());
 	}
 
 	private static string BuildPolicyRuntimeStatusSuffix(
@@ -1259,7 +1285,7 @@ public sealed partial class CustomPolicyBehavior
 		IReadOnlyDictionary<string, List<ActivePolicyEffectSaveData>> activeEffectsByRecordId)
 	{
 		string runtimeStatus = BuildPolicyRuntimeStatusText(recordId, activeEffectsByRecordId);
-		return string.IsNullOrWhiteSpace(runtimeStatus) ? string.Empty : "；运行状态：" + runtimeStatus;
+		return string.IsNullOrWhiteSpace(runtimeStatus) ? string.Empty : PolicyUiTexts.Get("AFPOL_UI_RuntimeStatusSeparator", "; ") + PolicyUiTexts.Get("AFPOL_UI_RuntimeStatusInlineLabel", "Runtime status: ") + runtimeStatus;
 	}
 
 	private List<PolicyRecordSaveData> LoadPolicyRecordHistory()
@@ -1297,30 +1323,64 @@ public sealed partial class CustomPolicyBehavior
 		{
 			if (record.RequiredInfluenceCost <= 0.0001f && record.InfluenceCost <= 0.0001f)
 			{
-				return "智能评估消耗：启动所需 " + FormatGoldCostText(record.RequiredGoldCost)
-					+ "；启动实付 " + FormatGoldCostText(record.GoldCost)
-					+ "；每日维护 " + FormatGoldCostText(record.DailyMaintenanceGoldCost)
-					+ "；累计维护 " + FormatGoldCostText(record.TotalMaintenancePaidGold)
-					+ "；全部效果 " + FormatPercent(record.GoldEffectScale <= 0f && record.RequiredGoldCost <= 0 ? 1f : record.GoldEffectScale);
+				return PolicyUiTexts.Format("AFPOL_UI_RecordCostAiGoldOnly",
+					"AI-evaluated cost: startup required {REQUIRED}; startup paid {PAID}; daily upkeep {DAILY}; cumulative upkeep {TOTAL}; all effects {SCALE}",
+					"REQUIRED", FormatManagedGoldCostText(record.RequiredGoldCost),
+					"PAID", FormatManagedGoldCostText(record.GoldCost),
+					"DAILY", FormatManagedGoldCostText(record.DailyMaintenanceGoldCost),
+					"TOTAL", FormatManagedGoldCostText(record.TotalMaintenancePaidGold),
+					"SCALE", FormatPercent(record.GoldEffectScale <= 0f && record.RequiredGoldCost <= 0 ? 1f : record.GoldEffectScale));
 			}
-			return "智能评估消耗：完整需 " + FormatCostText(record.RequiredGoldCost, record.RequiredInfluenceCost)
-				+ "；已支付 " + FormatCostText(record.GoldCost, record.InfluenceCost)
-				+ "；经济/民生 " + FormatPercent(record.GoldEffectScale <= 0f && record.RequiredGoldCost <= 0 ? 1f : record.GoldEffectScale)
-				+ "，政治/秩序 " + FormatPercent(record.InfluenceEffectScale <= 0f && record.RequiredInfluenceCost <= 0f ? 1f : record.InfluenceEffectScale);
+			return PolicyUiTexts.Format("AFPOL_UI_RecordCostAiMixed",
+				"AI-evaluated cost: full requirement {REQUIRED}; paid {PAID}; economy/livelihood {GOLD_SCALE}, politics/order {INFLUENCE_SCALE}",
+				"REQUIRED", FormatManagedCostText(record.RequiredGoldCost, record.RequiredInfluenceCost),
+				"PAID", FormatManagedCostText(record.GoldCost, record.InfluenceCost),
+				"GOLD_SCALE", FormatPercent(record.GoldEffectScale <= 0f && record.RequiredGoldCost <= 0 ? 1f : record.GoldEffectScale),
+				"INFLUENCE_SCALE", FormatPercent(record.InfluenceEffectScale <= 0f && record.RequiredInfluenceCost <= 0f ? 1f : record.InfluenceEffectScale));
 		}
 		if ((record?.InfluenceCost ?? 0f) > 0.0001f)
 		{
-			return "已支付：" + FormatCostText(record?.GoldCost ?? 0, record?.InfluenceCost ?? 0f);
+			return PolicyUiTexts.Format("AFPOL_UI_RecordCostPaid", "Paid: {COST}", "COST", FormatManagedCostText(record?.GoldCost ?? 0, record?.InfluenceCost ?? 0f));
 		}
 		int fixedStartupRequired = Math.Max(0, record?.RequiredGoldCost ?? 0);
 		if (fixedStartupRequired == 0 && (record?.GoldCost ?? 0) > 0)
 		{
 			fixedStartupRequired = record.GoldCost;
 		}
-		return "启动所需 " + FormatGoldCostText(fixedStartupRequired)
-			+ "；启动实付 " + FormatGoldCostText(record?.GoldCost ?? 0)
-			+ "；每日维护 " + FormatGoldCostText(record?.DailyMaintenanceGoldCost ?? 0)
-			+ "；累计维护 " + FormatGoldCostText(record?.TotalMaintenancePaidGold ?? 0);
+		return PolicyUiTexts.Format("AFPOL_UI_RecordCostFixedLine",
+			"Startup required {REQUIRED}; startup paid {PAID}; daily upkeep {DAILY}; cumulative upkeep {TOTAL}",
+			"REQUIRED", FormatManagedGoldCostText(fixedStartupRequired),
+			"PAID", FormatManagedGoldCostText(record?.GoldCost ?? 0),
+			"DAILY", FormatManagedGoldCostText(record?.DailyMaintenanceGoldCost ?? 0),
+			"TOTAL", FormatManagedGoldCostText(record?.TotalMaintenancePaidGold ?? 0));
+	}
+
+	// Display-only cost fragments for the policy history panel. The shared helpers in
+	// CustomPolicyBehavior.Generation.cs keep their original text because other consumers persist it.
+	private static string FormatManagedGoldCostText(int goldCost)
+	{
+		return goldCost > 0
+			? PolicyUiTexts.Format("AFPOL_UI_CostGoldAmount", "{AMOUNT} denars", "AMOUNT", goldCost.ToString(CultureInfo.InvariantCulture))
+			: PolicyUiTexts.Get("AFPOL_UI_CostGoldNone", "No denars");
+	}
+
+	private static string FormatManagedCostText(int goldCost, float influenceCost)
+	{
+		bool hasGold = goldCost > 0;
+		bool hasInfluence = influenceCost > 0.0001f;
+		if (!hasGold && !hasInfluence)
+		{
+			return PolicyUiTexts.Get("AFPOL_UI_CostGoldAndInfluenceNone", "No denars or influence");
+		}
+		if (hasGold && hasInfluence)
+		{
+			return PolicyUiTexts.Format("AFPOL_UI_CostGoldAndInfluenceAmount", "{GOLD} denars, {INFLUENCE} influence", "GOLD", goldCost.ToString(CultureInfo.InvariantCulture), "INFLUENCE", FormatNumber(influenceCost));
+		}
+		if (hasGold)
+		{
+			return PolicyUiTexts.Format("AFPOL_UI_CostGoldAmount", "{AMOUNT} denars", "AMOUNT", goldCost.ToString(CultureInfo.InvariantCulture));
+		}
+		return PolicyUiTexts.Format("AFPOL_UI_CostInfluenceAmount", "{AMOUNT} influence", "AMOUNT", FormatNumber(influenceCost));
 	}
 
 	private void TrimPolicyRecordHistory()
@@ -1351,7 +1411,7 @@ public sealed partial class CustomPolicyBehavior
 	{
 		if (data == null)
 		{
-			return "尚无成功落地的政策记录。";
+			return PolicyUiTexts.Get("AFPOL_UI_PolicyHistoryEmpty", "No successfully enacted policy records yet.");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		if (!string.IsNullOrWhiteSpace(data.SubtitleText))
@@ -1361,7 +1421,7 @@ public sealed partial class CustomPolicyBehavior
 		}
 		if (data.Records == null || data.Records.Count <= 0)
 		{
-			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(data.EmptyStateText) ? "尚无成功落地的政策记录。" : data.EmptyStateText);
+			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(data.EmptyStateText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyHistoryEmpty", "No successfully enacted policy records yet.") : data.EmptyStateText);
 			return stringBuilder.ToString().TrimEnd();
 		}
 		for (int i = 0; i < data.Records.Count; i++)
@@ -1370,17 +1430,17 @@ public sealed partial class CustomPolicyBehavior
 			stringBuilder.AppendLine((i + 1).ToString(CultureInfo.InvariantCulture) + ". " + record.DateText + "  " + record.PolicyNameText + "  " + record.CostText);
 			if (!string.IsNullOrWhiteSpace(record.ContentSummaryText))
 			{
-				stringBuilder.AppendLine("【政策内容】");
+				stringBuilder.AppendLine(PolicyUiTexts.Get("AFPOL_UI_PolicyContentSection", "[Policy Content]"));
 				stringBuilder.AppendLine(record.ContentSummaryText);
 			}
 			if (!string.IsNullOrWhiteSpace(record.FeedbackSummaryText))
 			{
-				stringBuilder.AppendLine("【民众反馈】");
+				stringBuilder.AppendLine(PolicyUiTexts.Get("AFPOL_UI_PolicyFeedbackSection", "[Public Feedback]"));
 				stringBuilder.AppendLine(record.FeedbackSummaryText);
 			}
 			if (!string.IsNullOrWhiteSpace(record.ImpactSummaryText))
 			{
-				stringBuilder.AppendLine("【影响效果】");
+				stringBuilder.AppendLine(PolicyUiTexts.Get("AFPOL_UI_PolicyImpactSectionTitle", "[Policy Effects]"));
 				stringBuilder.AppendLine(record.ImpactSummaryText);
 			}
 			stringBuilder.AppendLine();
@@ -1388,11 +1448,346 @@ public sealed partial class CustomPolicyBehavior
 		return stringBuilder.ToString().TrimEnd();
 	}
 
+	// Raw summaries preserve the historical fact/prompt payload; UI uses the display methods below.
+	private static string BuildRawPolicyEffectSummary(PolicyApplicationResult application)
+	{
+		if (application?.KingdomEffects == null || application.KingdomEffects.Count <= 0)
+		{
+			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEffectSummary_078");
+		}
+		List<string> lines = new List<string>();
+		foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null))
+		{
+			foreach (string visibleLine in BuildRawPolicyEffectLines(effect))
+			{
+				string line = visibleLine;
+				if (!string.IsNullOrWhiteSpace(effect.Reason))
+				{
+					string visibleReason = CleanPlayerVisiblePolicySystemText(effect.Reason, string.Empty);
+					if (!string.IsNullOrWhiteSpace(visibleReason))
+					{
+						line += PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEffectSummary_079") + visibleReason;
+					}
+				}
+				lines.Add(line.TrimEnd('。') + "。");
+			}
+		}
+		return string.Join("\n", lines);
+	}
+
+	private static string BuildRawPolicyRecordEffectSummary(PolicyRecordSaveData record, bool includeRemainingDays = true)
+	{
+		if (record?.Effects == null || record.Effects.Count <= 0)
+		{
+			return CleanPlayerVisiblePolicySystemText(record?.ImpactSummary, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyRecordEffectSummary_080"));
+		}
+		List<string> lines = new List<string>();
+		foreach (PolicyRecordEffectSaveData effect in record.Effects.Where(x => x != null))
+		{
+			string status = effect.IsPermanentEffect && !effect.IsEnded
+				? PolicyUiTexts.Get("AFPOL_UI_PermanentActive", "Permanently active")
+				: effect.IsEnded || effect.RemainingDays <= 0
+					? PolicyUiTexts.Get("AFPOL_UI_Ended", "Ended")
+					: includeRemainingDays
+						? PolicyUiTexts.Format("AFPOL_UI_RemainingDaysFormat", "Remaining {REMAINING}/{TOTAL} days", "REMAINING", effect.RemainingDays.ToString(CultureInfo.InvariantCulture), "TOTAL", effect.TotalDurationDays.ToString(CultureInfo.InvariantCulture))
+						: PolicyUiTexts.Get("AFPOL_UI_InEffect", "In effect");
+			if (!string.IsNullOrWhiteSpace(effect.EndReason)
+				&& (effect.IsEnded || (!effect.IsPermanentEffect && effect.RemainingDays <= 0)))
+			{
+				status += "：" + BuildRawPolicyEndReason(effect.EndReason);
+			}
+			foreach (string visibleLine in BuildRawPolicyEffectLines(
+				FirstNonEmpty(effect.TargetLabel, effect.KingdomName),
+				effect.ModuleEffects,
+				effect.TotalDurationDays))
+			{
+				lines.Add(visibleLine + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyRecordEffectSummary_081") + status + "。");
+			}
+		}
+		return string.Join("\n", lines);
+	}
+
+	private static List<string> BuildRawPolicyEffectLines(AppliedKingdomEffect effect)
+	{
+		if (effect == null)
+		{
+			return new List<string> { PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEffectLines_082") };
+		}
+		return BuildRawPolicyEffectLines(
+			FirstNonEmpty(effect.TargetLabel, effect.KingdomName),
+			effect.ModuleEffects,
+			effect.DurationDays);
+	}
+
+	private static List<string> BuildRawPolicyEffectLines(
+		string targetName,
+		IEnumerable<PolicyEffectInstanceSaveData> moduleEffects,
+		int durationDays)
+	{
+		return BuildRawPolicyEffectLinesForExternal(targetName, moduleEffects, durationDays);
+	}
+
+	internal static List<string> BuildRawPolicyEffectLinesForExternal(
+		string fallbackTargetName,
+		IEnumerable<PolicyEffectInstanceSaveData> moduleEffects,
+		int durationDays)
+	{
+		List<PolicyEffectInstanceSaveData> instances = (moduleEffects ?? Enumerable.Empty<PolicyEffectInstanceSaveData>())
+			.Where(instance => instance != null)
+			.ToList();
+		Dictionary<PolicyEffectInstanceSaveData, PolicyEffectCanonicalTargetSet> visibleTargetSetByInstance
+			= new Dictionary<PolicyEffectInstanceSaveData, PolicyEffectCanonicalTargetSet>();
+		foreach (PolicyEffectInstanceSaveData instance in instances)
+		{
+			if (!visibleTargetSetByInstance.ContainsKey(instance))
+			{
+				visibleTargetSetByInstance.Add(instance, BuildPlayerVisibleTargetSet(instance));
+			}
+		}
+		instances = instances
+			.Where(instance => HasPlayerVisibleEffectTarget(instance, visibleTargetSetByInstance[instance]))
+			.ToList();
+		string durationText = durationDays < 0
+			? string.Empty
+			: durationDays == 0
+			? PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEffectLinesForExternal_083")
+			: PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEffectLinesForExternal_084") + durationDays.ToString(CultureInfo.InvariantCulture) + PolicyCompatibilityTexts.Get("Legacy_BuildPolicyWeeklyMaterialEffectSummary_069");
+		string durationSuffix = durationText.Length <= 0 ? string.Empty : PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEffectLinesForExternal_085") + durationText;
+		if (instances.Count <= 0)
+		{
+			return new List<string>
+			{
+				BuildRawPolicyTargetLabel(null, null, fallbackTargetName) + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEffectLinesForExternal_086") + durationSuffix
+			};
+		}
+
+		List<string> lines = new List<string>();
+		foreach (IGrouping<string, PolicyEffectInstanceSaveData> targetGroup in instances.GroupBy(
+			instance => BuildPlayerVisibleTargetGroupingKey(instance, visibleTargetSetByInstance[instance])))
+		{
+			PolicyEffectInstanceSaveData firstInstance = targetGroup.FirstOrDefault();
+			PolicyEffectCanonicalTargetSet targetSet = firstInstance == null
+				? null
+				: visibleTargetSetByInstance[firstInstance];
+			string targetLabel = BuildRawPolicyTargetLabel(firstInstance, targetSet, fallbackTargetName);
+			List<string> values = BuildRawPolicyEffectValues(targetGroup);
+			if (values.Count <= 0)
+			{
+				values.Add(PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEffectLinesForExternal_087"));
+			}
+			lines.AddRange(values
+				.Where(value => !string.IsNullOrWhiteSpace(value))
+				.Select(value => targetLabel + "｜" + value.Trim() + durationSuffix));
+		}
+		return lines;
+	}
+
+	private static string BuildRawPolicyTargetLabel(
+		PolicyEffectCanonicalTargetSet targetSet,
+		string fallbackTargetName)
+	{
+		return BuildRawPolicyTargetLabel(null, targetSet, fallbackTargetName);
+	}
+
+	private static string BuildRawPolicyTargetLabel(
+		PolicyEffectInstanceSaveData instance,
+		PolicyEffectCanonicalTargetSet targetSet,
+		string fallbackTargetName)
+	{
+		if (TryGetPlayerVisibleWholeKingdomLordTargetIds(instance, targetSet, out List<string> wholeKingdomIds))
+		{
+			return BuildRawPolicyWholeKingdomLordTargetLabel(wholeKingdomIds, fallbackTargetName);
+		}
+		if (TryGetPlayerVisibleWholeKingdomTargetIds(targetSet, out List<string> semanticKingdomIds))
+		{
+			return BuildRawPolicyWholeKingdomTargetLabel(semanticKingdomIds, fallbackTargetName);
+		}
+
+		List<string> heroIds = DistinctTargetIds(targetSet?.HeroIds);
+		if (heroIds.Count > 0)
+		{
+			List<string> names = heroIds
+				.Select(id => TryResolvePlayerVisibleHero(id)?.Name?.ToString() ?? string.Empty)
+				.Where(name => !string.IsNullOrWhiteSpace(name))
+				.ToList();
+			return BuildRawPolicyNamedOrCountTargetLabel(PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_088"), names, heroIds.Count, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_089"));
+		}
+
+		List<string> clanIds = DistinctTargetIds(targetSet?.ClanIds);
+		if (clanIds.Count > 0)
+		{
+			List<string> names = clanIds.Select(id =>
+			{
+				Clan clan = TryResolvePlayerVisibleClan(id);
+				if (clan == null)
+				{
+					return string.Empty;
+				}
+				string clanName = clan.Name?.ToString() ?? string.Empty;
+				string leaderName = clan.Leader?.Name?.ToString() ?? string.Empty;
+				return string.IsNullOrWhiteSpace(leaderName)
+					? clanName
+					: clanName + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_090") + leaderName + "）";
+			}).Where(name => !string.IsNullOrWhiteSpace(name)).ToList();
+			return BuildRawPolicyNamedOrCountTargetLabel(PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_091"), names, clanIds.Count, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_092"));
+		}
+
+		List<string> villageIds = DistinctTargetIds(targetSet?.VillageIds);
+		if (villageIds.Count > 0)
+		{
+			return BuildRawPolicyNamedOrCountTargetLabel(
+				PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_051"),
+				ResolveSettlementNames(villageIds),
+				villageIds.Count,
+				PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_093"));
+		}
+
+		List<string> townIds = DistinctTargetIds(targetSet?.TownIds);
+		if (townIds.Count > 0)
+		{
+			return BuildRawPolicyNamedOrCountTargetLabel(
+				PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"),
+				ResolveSettlementNames(townIds),
+				townIds.Count,
+				PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_094"));
+		}
+
+		List<string> settlementIds = DistinctTargetIds(targetSet?.SettlementIds);
+		if (settlementIds.Count > 0)
+		{
+			return BuildRawPolicyNamedOrCountTargetLabel(
+				PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_095"),
+				ResolveSettlementNames(settlementIds),
+				settlementIds.Count,
+				PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_096"));
+		}
+
+		List<string> kingdomIds = DistinctTargetIds(targetSet?.KingdomIds);
+		if (kingdomIds.Count > 0)
+		{
+			List<string> names = kingdomIds
+				.Select(id => TryResolvePlayerVisibleKingdom(id)?.Name?.ToString() ?? string.Empty)
+				.Where(name => !string.IsNullOrWhiteSpace(name))
+				.ToList();
+			return BuildRawPolicyNamedOrCountTargetLabel(PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_097"), names, kingdomIds.Count, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_098"));
+		}
+
+		List<string> parentIds = DistinctTargetIds(targetSet?.ParentSettlementIds);
+		if (parentIds.Count > 0)
+		{
+			List<string> names = ResolveSettlementNames(parentIds)
+				.Select(name => name + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_099"))
+				.ToList();
+			return BuildRawPolicyNamedOrCountTargetLabel(PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_100"), names, parentIds.Count, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_101"));
+		}
+
+		string fallback = string.IsNullOrWhiteSpace(fallbackTargetName) ? PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_102") : fallbackTargetName.Trim();
+		return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_103") + fallback;
+	}
+
+	private static string BuildRawPolicyWholeKingdomTargetLabel(
+		IEnumerable<string> kingdomIds,
+		string fallbackTargetName)
+	{
+		List<string> normalizedIds = DistinctTargetIds(kingdomIds);
+		List<string> names = normalizedIds
+			.Take(3)
+			.Select(id => TryResolvePlayerVisibleKingdom(id)?.Name?.ToString() ?? string.Empty)
+			.Where(name => !string.IsNullOrWhiteSpace(name))
+			.Distinct(StringComparer.Ordinal)
+			.ToList();
+		if (normalizedIds.Count == 1 && names.Count == 0 && !string.IsNullOrWhiteSpace(fallbackTargetName))
+		{
+			names.Add(fallbackTargetName.Trim());
+		}
+		if (normalizedIds.Count == 1 && names.Count == 1)
+		{
+			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_104") + names[0];
+		}
+		if (names.Count <= 0)
+		{
+			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_104") + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_105");
+		}
+		string summary = string.Join("、", names.Take(3));
+		if (normalizedIds.Count > names.Count)
+		{
+			summary += PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_106") + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_105");
+		}
+		return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_104") + summary;
+	}
+
+	private static string BuildRawPolicyWholeKingdomLordTargetLabel(
+		IEnumerable<string> kingdomIds,
+		string fallbackTargetName)
+	{
+		List<string> normalizedIds = DistinctTargetIds(kingdomIds);
+		List<string> names = normalizedIds
+			.Take(3)
+			.Select(id => TryResolvePlayerVisibleKingdom(id)?.Name?.ToString() ?? string.Empty)
+			.Where(name => !string.IsNullOrWhiteSpace(name))
+			.Distinct(StringComparer.Ordinal)
+			.ToList();
+		if (normalizedIds.Count == 1 && names.Count == 0 && !string.IsNullOrWhiteSpace(fallbackTargetName))
+		{
+			names.Add(fallbackTargetName.Trim());
+		}
+		if (normalizedIds.Count == 1 && names.Count == 1)
+		{
+			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_104") + names[0] + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomLordTargetLabel_107");
+		}
+		if (names.Count <= 0)
+		{
+			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_104") + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomLordTargetLabel_108");
+		}
+		string summary = string.Join("、", names.Take(3));
+		if (normalizedIds.Count > names.Count)
+		{
+			summary += PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_106") + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_105");
+		}
+		return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_104") + summary + PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomLordTargetLabel_109");
+	}
+
+	private static string BuildRawPolicyNamedOrCountTargetLabel(
+		string category,
+		IReadOnlyList<string> resolvedNames,
+		int totalCount,
+		string countUnit)
+	{
+		List<string> names = (resolvedNames ?? Array.Empty<string>())
+			.Where(name => !string.IsNullOrWhiteSpace(name))
+			.Distinct(StringComparer.Ordinal)
+			.ToList();
+		if (names.Count <= 0)
+		{
+			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_103") + totalCount.ToString(CultureInfo.InvariantCulture) + " " + countUnit;
+		}
+		string summary = string.Join("、", names.Take(3));
+		if (totalCount > names.Take(3).Count())
+		{
+			summary += PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomTargetLabel_106") + totalCount.ToString(CultureInfo.InvariantCulture) + " " + countUnit;
+		}
+		return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyNamedOrCountTargetLabel_110") + category + "：" + summary;
+	}
+
+	private static List<string> BuildRawPolicyEffectValues(IEnumerable<PolicyEffectInstanceSaveData> moduleEffects)
+	{
+		return PolicyEffectSaveCodec.DescribeRawPlayerVisibleInstances(moduleEffects);
+	}
+
+	private static string BuildRawPolicyEndReason(string reason)
+	{
+		if ((reason ?? string.Empty).StartsWith(PolicyEffectRollbackPendingPrefix, StringComparison.Ordinal))
+		{
+			return PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEndReason_111");
+		}
+		return CleanPlayerVisiblePolicySystemText(reason, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyEndReason_112"));
+	}
+
 	private static string BuildPolicyEffectSummary(PolicyApplicationResult application)
 	{
 		if (application?.KingdomEffects == null || application.KingdomEffects.Count <= 0)
 		{
-			return "未产生可落地的模块效果。";
+			return PolicyUiTexts.Get("AFPOL_UI_NoApplicableModuleEffects", "No applicable module effects were produced.");
 		}
 		List<string> lines = new List<string>();
 		foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null))
@@ -1402,13 +1797,13 @@ public sealed partial class CustomPolicyBehavior
 				string line = visibleLine;
 				if (!string.IsNullOrWhiteSpace(effect.Reason))
 				{
-					string visibleReason = CleanPlayerVisiblePolicySystemText(effect.Reason, string.Empty);
+					string visibleReason = CleanPolicyDisplaySystemText(effect.Reason, string.Empty);
 					if (!string.IsNullOrWhiteSpace(visibleReason))
 					{
-						line += "｜原因：" + visibleReason;
+						line += PolicyUiTexts.Format("AFPOL_UI_ReasonSuffix", " | Reason: {REASON}", "REASON", visibleReason);
 					}
 				}
-				lines.Add(line.TrimEnd('。') + "。");
+				lines.Add(line.TrimEnd('。', '.') + PolicyUiTexts.Get("AFPOL_UI_SentencePeriod", "."));
 			}
 		}
 		return string.Join("\n", lines);
@@ -1418,29 +1813,30 @@ public sealed partial class CustomPolicyBehavior
 	{
 		if (record?.Effects == null || record.Effects.Count <= 0)
 		{
-			return CleanPlayerVisiblePolicySystemText(record?.ImpactSummary, "未记录影响效果。");
+			return MapPlayerPolicyNarrativeFallbackToDisplay(
+				CleanPolicyDisplaySystemText(record?.ImpactSummary, PolicyUiTexts.Get("AFPOL_UI_NoRecordedImpact", "No impact effects recorded.")));
 		}
 		List<string> lines = new List<string>();
 		foreach (PolicyRecordEffectSaveData effect in record.Effects.Where(x => x != null))
 		{
 			string status = effect.IsPermanentEffect && !effect.IsEnded
-				? "永久生效"
+				? PolicyUiTexts.Get("AFPOL_UI_PermanentActive", "Permanently active")
 				: effect.IsEnded || effect.RemainingDays <= 0
-					? "已结束"
+					? PolicyUiTexts.Get("AFPOL_UI_Ended", "Ended")
 					: includeRemainingDays
-						? "剩余 " + effect.RemainingDays.ToString(CultureInfo.InvariantCulture) + "/" + effect.TotalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天"
-						: "生效中";
+						? PolicyUiTexts.Format("AFPOL_UI_RemainingDaysFormat", "Remaining {REMAINING}/{TOTAL} days", "REMAINING", effect.RemainingDays.ToString(CultureInfo.InvariantCulture), "TOTAL", effect.TotalDurationDays.ToString(CultureInfo.InvariantCulture))
+						: PolicyUiTexts.Get("AFPOL_UI_InEffect", "In effect");
 			if (!string.IsNullOrWhiteSpace(effect.EndReason)
 				&& (effect.IsEnded || (!effect.IsPermanentEffect && effect.RemainingDays <= 0)))
 			{
-				status += "：" + BuildPlayerVisiblePolicyEndReason(effect.EndReason);
+				status += PolicyUiTexts.Get("AFPOL_UI_EndReasonSeparator", ": ") + BuildPlayerVisiblePolicyEndReason(effect.EndReason);
 			}
 			foreach (string visibleLine in BuildPlayerVisibleEffectLines(
-				FirstNonEmpty(effect.TargetLabel, effect.KingdomName),
+				MapPolicyTargetLabelToDisplay(FirstNonEmpty(effect.TargetLabel, effect.KingdomName)),
 				effect.ModuleEffects,
 				effect.TotalDurationDays))
 			{
-				lines.Add(visibleLine + "｜状态：" + status + "。");
+				lines.Add(visibleLine + PolicyUiTexts.Format("AFPOL_UI_StatusSuffix", " | Status: {STATUS}", "STATUS", status) + PolicyUiTexts.Get("AFPOL_UI_SentencePeriod", "."));
 			}
 		}
 		return string.Join("\n", lines);
@@ -1450,10 +1846,10 @@ public sealed partial class CustomPolicyBehavior
 	{
 		if (effect == null)
 		{
-			return new List<string> { "未知目标｜未记录模块效果" };
+			return new List<string> { PolicyUiTexts.Get("AFPOL_UI_UnknownTargetNoEffects", "Unknown target | No module effects recorded") };
 		}
 		return BuildPlayerVisibleEffectLines(
-			FirstNonEmpty(effect.TargetLabel, effect.KingdomName),
+			MapPolicyTargetLabelToDisplay(FirstNonEmpty(effect.TargetLabel, effect.KingdomName)),
 			effect.ModuleEffects,
 			effect.DurationDays);
 	}
@@ -1489,14 +1885,14 @@ public sealed partial class CustomPolicyBehavior
 		string durationText = durationDays < 0
 			? string.Empty
 			: durationDays == 0
-			? "永久"
-			: "持续 " + durationDays.ToString(CultureInfo.InvariantCulture) + " 天";
-		string durationSuffix = durationText.Length <= 0 ? string.Empty : "｜期限：" + durationText;
+			? PolicyUiTexts.Get("AFPOL_UI_DurationPermanent", "Permanent")
+			: PolicyUiTexts.Format("AFPOL_UI_DurationDays", "{DAYS} days", "DAYS", durationDays.ToString(CultureInfo.InvariantCulture));
+		string durationSuffix = durationText.Length <= 0 ? string.Empty : PolicyUiTexts.Format("AFPOL_UI_DurationSuffix", " | Duration: {DURATION}", "DURATION", durationText);
 		if (instances.Count <= 0)
 		{
 			return new List<string>
 			{
-				BuildPlayerVisibleTargetLabel(null, null, fallbackTargetName) + "｜无模块效果" + durationSuffix
+				BuildPlayerVisibleTargetLabel(null, null, fallbackTargetName) + PolicyUiTexts.Get("AFPOL_UI_EffectTargetSeparator", " | ") + PolicyUiTexts.Get("AFPOL_UI_NoModuleEffects", "No module effects") + durationSuffix
 			};
 		}
 
@@ -1512,11 +1908,11 @@ public sealed partial class CustomPolicyBehavior
 			List<string> values = BuildPlayerVisibleEffectValues(targetGroup);
 			if (values.Count <= 0)
 			{
-				values.Add("无模块效果");
+				values.Add(PolicyUiTexts.Get("AFPOL_UI_NoModuleEffects", "No module effects"));
 			}
 			lines.AddRange(values
 				.Where(value => !string.IsNullOrWhiteSpace(value))
-				.Select(value => targetLabel + "｜" + value.Trim() + durationSuffix));
+				.Select(value => targetLabel + PolicyUiTexts.Get("AFPOL_UI_EffectTargetSeparator", " | ") + value.Trim() + durationSuffix));
 		}
 		return lines;
 	}
@@ -1612,7 +2008,7 @@ public sealed partial class CustomPolicyBehavior
 				.Select(id => TryResolvePlayerVisibleHero(id)?.Name?.ToString() ?? string.Empty)
 				.Where(name => !string.IsNullOrWhiteSpace(name))
 				.ToList();
-			return BuildNamedOrCountTargetLabel("人物", names, heroIds.Count, "位人物");
+			return BuildNamedOrCountTargetLabel(PolicyUiTexts.Get("AFPOL_UI_TargetCategoryHeroes", "characters"), names, heroIds.Count, PolicyUiTexts.Get("AFPOL_UI_TargetUnitHeroes", "characters"));
 		}
 
 		List<string> clanIds = DistinctTargetIds(targetSet?.ClanIds);
@@ -1629,39 +2025,39 @@ public sealed partial class CustomPolicyBehavior
 				string leaderName = clan.Leader?.Name?.ToString() ?? string.Empty;
 				return string.IsNullOrWhiteSpace(leaderName)
 					? clanName
-					: clanName + "（领袖：" + leaderName + "）";
+					: PolicyUiTexts.Format("AFPOL_UI_ClanWithLeader", "{CLAN} (leader: {LEADER})", "CLAN", clanName, "LEADER", leaderName);
 			}).Where(name => !string.IsNullOrWhiteSpace(name)).ToList();
-			return BuildNamedOrCountTargetLabel("家族", names, clanIds.Count, "个家族");
+			return BuildNamedOrCountTargetLabel(PolicyUiTexts.Get("AFPOL_UI_TargetCategoryClans", "clans"), names, clanIds.Count, PolicyUiTexts.Get("AFPOL_UI_TargetUnitClans", "clans"));
 		}
 
 		List<string> villageIds = DistinctTargetIds(targetSet?.VillageIds);
 		if (villageIds.Count > 0)
 		{
 			return BuildNamedOrCountTargetLabel(
-				"村庄",
+				PolicyUiTexts.Get("AFPOL_UI_TargetCategoryVillages", "villages"),
 				ResolveSettlementNames(villageIds),
 				villageIds.Count,
-				"个村庄");
+				PolicyUiTexts.Get("AFPOL_UI_TargetUnitVillages", "villages"));
 		}
 
 		List<string> townIds = DistinctTargetIds(targetSet?.TownIds);
 		if (townIds.Count > 0)
 		{
 			return BuildNamedOrCountTargetLabel(
-				"城镇",
+				PolicyUiTexts.Get("AFPOL_UI_TargetCategoryTowns", "towns"),
 				ResolveSettlementNames(townIds),
 				townIds.Count,
-				"座城镇");
+				PolicyUiTexts.Get("AFPOL_UI_TargetUnitTowns", "towns"));
 		}
 
 		List<string> settlementIds = DistinctTargetIds(targetSet?.SettlementIds);
 		if (settlementIds.Count > 0)
 		{
 			return BuildNamedOrCountTargetLabel(
-				"定居点",
+				PolicyUiTexts.Get("AFPOL_UI_TargetCategorySettlements", "settlements"),
 				ResolveSettlementNames(settlementIds),
 				settlementIds.Count,
-				"处定居点");
+				PolicyUiTexts.Get("AFPOL_UI_TargetUnitSettlements", "settlements"));
 		}
 
 		List<string> kingdomIds = DistinctTargetIds(targetSet?.KingdomIds);
@@ -1671,20 +2067,20 @@ public sealed partial class CustomPolicyBehavior
 				.Select(id => TryResolvePlayerVisibleKingdom(id)?.Name?.ToString() ?? string.Empty)
 				.Where(name => !string.IsNullOrWhiteSpace(name))
 				.ToList();
-			return BuildNamedOrCountTargetLabel("王国", names, kingdomIds.Count, "个王国");
+			return BuildNamedOrCountTargetLabel(PolicyUiTexts.Get("AFPOL_UI_TargetCategoryKingdoms", "kingdoms"), names, kingdomIds.Count, PolicyUiTexts.Get("AFPOL_UI_TargetUnitKingdoms", "kingdoms"));
 		}
 
 		List<string> parentIds = DistinctTargetIds(targetSet?.ParentSettlementIds);
 		if (parentIds.Count > 0)
 		{
 			List<string> names = ResolveSettlementNames(parentIds)
-				.Select(name => name + "的附属村庄")
+				.Select(name => PolicyUiTexts.Format("AFPOL_UI_AttachedVillagesOf", "Attached villages of {NAME}", "NAME", name))
 				.ToList();
-			return BuildNamedOrCountTargetLabel("附属村庄", names, parentIds.Count, "组附属村庄");
+			return BuildNamedOrCountTargetLabel(PolicyUiTexts.Get("AFPOL_UI_TargetCategoryAttachedVillages", "attached villages"), names, parentIds.Count, PolicyUiTexts.Get("AFPOL_UI_TargetUnitAttachedVillages", "attached village groups"));
 		}
 
-		string fallback = string.IsNullOrWhiteSpace(fallbackTargetName) ? "未知目标" : fallbackTargetName.Trim();
-		return "目标：" + fallback;
+		string fallback = string.IsNullOrWhiteSpace(fallbackTargetName) ? PolicyUiTexts.Get("AFPOL_UI_UnknownTarget", "Unknown Target") : fallbackTargetName.Trim();
+		return PolicyUiTexts.Format("AFPOL_UI_TargetLabel", "Target: {TARGET}", "TARGET", fallback);
 	}
 
 	private static bool TryGetPlayerVisibleWholeKingdomLordTargetIds(
@@ -1781,18 +2177,18 @@ public sealed partial class CustomPolicyBehavior
 		}
 		if (normalizedIds.Count == 1 && names.Count == 1)
 		{
-			return "目标王国：" + names[0];
+			return PolicyUiTexts.Format("AFPOL_UI_TargetKingdomLabel", "Target kingdom: {TARGET}", "TARGET", names[0]);
 		}
 		if (names.Count <= 0)
 		{
-			return "目标王国：" + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + " 个王国";
+			return PolicyUiTexts.Format("AFPOL_UI_TargetKingdomCountKingdoms", "Target kingdom: {COUNT} kingdoms", "COUNT", normalizedIds.Count.ToString(CultureInfo.InvariantCulture));
 		}
-		string summary = string.Join("、", names.Take(3));
+		string summary = string.Join(PolicyUiTexts.Get("AFPOL_UI_ListItemSeparator", ", "), names.Take(3));
 		if (normalizedIds.Count > names.Count)
 		{
-			summary += "等 " + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + " 个王国";
+			summary += PolicyUiTexts.Format("AFPOL_UI_TargetKingdomOverflowKingdoms", " ({COUNT} kingdoms total)", "COUNT", normalizedIds.Count.ToString(CultureInfo.InvariantCulture));
 		}
-		return "目标王国：" + summary;
+		return PolicyUiTexts.Format("AFPOL_UI_TargetKingdomLabel", "Target kingdom: {TARGET}", "TARGET", summary);
 	}
 
 	private static string BuildPlayerVisibleWholeKingdomLordTargetLabel(
@@ -1812,18 +2208,18 @@ public sealed partial class CustomPolicyBehavior
 		}
 		if (normalizedIds.Count == 1 && names.Count == 1)
 		{
-			return "目标王国：" + names[0] + "全体领主";
+			return PolicyUiTexts.Format("AFPOL_UI_TargetKingdomAllLords", "Target kingdom: all lords of {TARGET}", "TARGET", names[0]);
 		}
 		if (names.Count <= 0)
 		{
-			return "目标王国：" + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + " 个王国的全体领主";
+			return PolicyUiTexts.Format("AFPOL_UI_TargetKingdomCountKingdomsAllLords", "Target kingdom: all lords of {COUNT} kingdoms", "COUNT", normalizedIds.Count.ToString(CultureInfo.InvariantCulture));
 		}
-		string summary = string.Join("、", names.Take(3));
+		string summary = string.Join(PolicyUiTexts.Get("AFPOL_UI_ListItemSeparator", ", "), names.Take(3));
 		if (normalizedIds.Count > names.Count)
 		{
-			summary += "等 " + normalizedIds.Count.ToString(CultureInfo.InvariantCulture) + " 个王国";
+			summary += PolicyUiTexts.Format("AFPOL_UI_TargetKingdomOverflowKingdoms", " ({COUNT} kingdoms total)", "COUNT", normalizedIds.Count.ToString(CultureInfo.InvariantCulture));
 		}
-		return "目标王国：" + summary + "的全体领主";
+		return PolicyUiTexts.Format("AFPOL_UI_TargetKingdomSummaryAllLords", "Target kingdom: {SUMMARY} (all lords)", "SUMMARY", summary);
 	}
 
 	private static Hero TryResolvePlayerVisibleHero(string heroId)
@@ -1892,14 +2288,14 @@ public sealed partial class CustomPolicyBehavior
 			.ToList();
 		if (names.Count <= 0)
 		{
-			return "目标：" + totalCount.ToString(CultureInfo.InvariantCulture) + " " + countUnit;
+			return PolicyUiTexts.Format("AFPOL_UI_TargetLabelCount", "Target: {COUNT} {UNIT}", "COUNT", totalCount.ToString(CultureInfo.InvariantCulture), "UNIT", countUnit);
 		}
-		string summary = string.Join("、", names.Take(3));
+		string summary = string.Join(PolicyUiTexts.Get("AFPOL_UI_ListItemSeparator", ", "), names.Take(3));
 		if (totalCount > names.Take(3).Count())
 		{
-			summary += "等 " + totalCount.ToString(CultureInfo.InvariantCulture) + " " + countUnit;
+			summary += PolicyUiTexts.Format("AFPOL_UI_TargetOverflowWithUnit", " ({COUNT} {UNIT} total)", "COUNT", totalCount.ToString(CultureInfo.InvariantCulture), "UNIT", countUnit);
 		}
-		return "目标" + category + "：" + summary;
+		return PolicyUiTexts.Format("AFPOL_UI_TargetCategoryLabel", "Target {CATEGORY}: {SUMMARY}", "CATEGORY", category, "SUMMARY", summary);
 	}
 
 	private static List<string> BuildPlayerVisibleEffectValues(IEnumerable<PolicyEffectInstanceSaveData> moduleEffects)
@@ -1909,8 +2305,15 @@ public sealed partial class CustomPolicyBehavior
 
 	private static string CleanPlayerVisiblePolicySystemText(string text, string fallback)
 	{
+		return CleanPolicyDisplaySystemText(text, fallback);
+	}
+
+	private static string CleanPolicyDisplaySystemText(string text, string fallback)
+	{
 		string cleaned = CleanPolicyDisplayText(text);
-		return string.IsNullOrWhiteSpace(cleaned) || Regex.IsMatch(cleaned, "[A-Za-z]")
+		// Language is not evidence of an internal value. Suppress only explicit
+		// action tags and snake_case protocol identifiers, preserving English prose.
+		return string.IsNullOrWhiteSpace(cleaned) || Regex.IsMatch(cleaned, @"^(?:\[ACTION:[^\]\r\n]+\]|[a-z][a-z0-9]*(?:_[a-z0-9]+)+)$", RegexOptions.CultureInvariant)
 			? (fallback ?? string.Empty)
 			: cleaned;
 	}
@@ -1919,9 +2322,159 @@ public sealed partial class CustomPolicyBehavior
 	{
 		if ((reason ?? string.Empty).StartsWith(PolicyEffectRollbackPendingPrefix, StringComparison.Ordinal))
 		{
-			return "等待效果回滚";
+			return PolicyUiTexts.Get("AFPOL_UI_EndReasonRollbackPending", "Awaiting effect rollback");
 		}
-		return CleanPlayerVisiblePolicySystemText(reason, "内部状态已记录");
+		return MapPolicyEndReasonToDisplay(reason, CleanPolicyDisplaySystemText(reason, PolicyUiTexts.Get("AFPOL_UI_EndReasonInternalRecorded", "Internal state recorded")));
+	}
+
+	/// <summary>
+	/// Persisted marker written by <see cref="BuildLocalPolicyTargetSnapshot"/> when a settlement name
+	/// cannot be resolved. It is part of the save payload and must stay byte-identical; the display
+	/// boundary maps it on read instead of rewriting the stored value.
+	/// </summary>
+	private static string LocalPolicyTargetSnapshotUnknownName => PolicyCompatibilityTexts.Get("Legacy_BuildPlayerVisiblePolicyEndReason_113");
+
+	private static string BuildPlayerVisibleOriginalTargetName(LocalPolicyTargetSnapshotSaveData snapshot)
+	{
+		string name = snapshot?.Name;
+		if (string.IsNullOrWhiteSpace(name))
+		{
+			return string.Empty;
+		}
+		return string.Equals(name, LocalPolicyTargetSnapshotUnknownName, StringComparison.Ordinal)
+			? PolicyUiTexts.Get("AFPOL_UI_UnknownFief", "Unknown Fief")
+			: name;
+	}
+
+	/// <summary>
+	/// Display projection for the persisted <c>EndReason</c> payload. The producers keep writing the
+	/// original literals so save data, reconciliation and history stay byte-identical; only the text a
+	/// player can read is resolved here. Values outside the known set fall back to the caller-supplied
+	/// sanitized text so genuinely dynamic reasons are never swallowed.
+	/// </summary>
+	private static string MapPolicyEndReasonToDisplay(string reason, string fallback)
+	{
+		switch ((reason ?? string.Empty).Trim())
+		{
+			case var rawPolicyCase49 when string.Equals(rawPolicyCase49, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_114"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonPlayerStopped", "Stopped by the player");
+			case var rawPolicyCase50 when string.Equals(rawPolicyCase50, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_115"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonPlayerAbolished", "Abolished by the player");
+			case var rawPolicyCase51 when string.Equals(rawPolicyCase51, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_116"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonReplacedByReReview", "Replaced by the newly re-reviewed policy");
+			case var rawPolicyCase52 when string.Equals(rawPolicyCase52, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_117"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonRenewalTargetNotDirectVassal", "At renewal the target was no longer a direct vassal");
+			case var rawPolicyCase53 when string.Equals(rawPolicyCase53, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_118"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonRenewalTargetNotDirectVassalConfirmed", "Confirmed at renewal that the target was no longer a direct vassal");
+			case var rawPolicyCase54 when string.Equals(rawPolicyCase54, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_119"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonRenewalIndependenceBreakaway", "Renewal independence reached the breakaway threshold");
+			case var rawPolicyCase55 when string.Equals(rawPolicyCase55, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_120"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonDurationHasEnded", "Duration has ended");
+			case var rawPolicyCase56 when string.Equals(rawPolicyCase56, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_121"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonEffectTermEnded", "Effect term ended");
+			case var rawPolicyCase57 when string.Equals(rawPolicyCase57, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_122"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonAllTargetFiefsLost", "All target fiefs have been lost");
+			case var rawPolicyCase58 when string.Equals(rawPolicyCase58, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_123"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonTargetKingdomGone", "Target kingdom no longer exists");
+			case var rawPolicyCase59 when string.Equals(rawPolicyCase59, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_124"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonDurationEnded", "Duration ended");
+			case var rawPolicyCase60 when string.Equals(rawPolicyCase60, PolicyCompatibilityTexts.Get("SaveCodec_EndReason_Upgraded"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_EndReasonLegacyUpgradeStopped", "Stopped after the legacy policy system upgrade; can be re-reviewed");
+			case var rawPolicyCase61 when string.Equals(rawPolicyCase61, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_125"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_Ended", "Ended");
+			case var rawPolicyCase62 when string.Equals(rawPolicyCase62, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_126"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_StatusVassalageEnded", "Vassalage ended");
+			default: return fallback ?? string.Empty;
+		}
+	}
+
+	/// <summary>
+	/// Display projection for policy target labels. The label producers keep writing the original
+	/// literals because those strings are persisted into save data and round-trip through
+	/// <c>PolicyTargetHandleSaveData.DisplayName</c>. This method maps the closed set of known label
+	/// shells to localized display text at the moment the label reaches the player-visible effect
+	/// lines. Composed labels are split into shell plus dynamic target names so no information is
+	/// dropped; a value that matches no known shell (for example a label restored from an older save
+	/// or authored by the model) is returned unchanged, because guessing a translation would be worse
+	/// than showing the original.
+	/// </summary>
+	private static string MapPolicyTargetLabelToDisplay(string label)
+	{
+		string text = (label ?? string.Empty).Trim();
+		if (text.Length <= 0)
+		{
+			return string.Empty;
+		}
+
+		string head = text;
+		string targets = null;
+		int openIndex = text.IndexOf('（');
+		if (openIndex > 0 && text.EndsWith("）", StringComparison.Ordinal))
+		{
+			head = text.Substring(0, openIndex);
+			targets = text.Substring(openIndex + 1, text.Length - openIndex - 2);
+		}
+
+		string mappedHead = MapPolicyTargetLabelHeadToDisplay(head);
+		if (mappedHead == null)
+		{
+			return text;
+		}
+		return targets == null
+			? mappedHead
+			: mappedHead + PolicyUiTexts.Format("AFPOL_UI_TargetLabelParenthetical", " ({TARGETS})", "TARGETS", MapPolicyTargetLabelTargetsToDisplay(targets));
+	}
+
+	/// <summary>
+	/// Maps one label head, i.e. the part before an optional target list. Returns null when the head is
+	/// not a known shell so the caller can fall back to the untouched original.
+	/// </summary>
+	private static string MapPolicyTargetLabelHeadToDisplay(string head)
+	{
+		string text = (head ?? string.Empty).Trim();
+		if (text.Length <= 0)
+		{
+			return null;
+		}
+
+		string exact = MapPolicyTargetLabelShellToDisplay(text);
+		if (exact != null)
+		{
+			return exact;
+		}
+
+		string designatedSettlements = PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelHeadToDisplay_127");
+		if (text.StartsWith(designatedSettlements, StringComparison.Ordinal))
+		{
+			return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellDesignatedSettlements", "Designated settlements")
+				+ PolicyUiTexts.Get("AFPOL_UI_TargetLabelColonSeparator", ": ")
+				+ MapPolicyTargetLabelTargetsToDisplay(text.Substring(designatedSettlements.Length));
+		}
+
+		string holdingsSuffix = PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelHeadToDisplay_128");
+		if (text.EndsWith(holdingsSuffix, StringComparison.Ordinal))
+		{
+			string owner = text.Substring(0, text.Length - holdingsSuffix.Length).Trim();
+			return owner.Length <= 0
+				? PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellCurrentHoldings", "Current holdings and attached villages")
+				: PolicyUiTexts.Format("AFPOL_UI_TargetLabelOwnerHoldings", "{OWNER} current holdings and attached villages", "OWNER", MapPolicyTargetLabelTargetsToDisplay(owner));
+		}
+
+		return null;
+	}
+
+	/// <summary>
+	/// Maps a whole-string label shell, or null when it is not one of the known shells.
+	/// </summary>
+	private static string MapPolicyTargetLabelShellToDisplay(string text)
+	{
+		switch (text)
+		{
+			case var rawPolicyCase63 when string.Equals(rawPolicyCase63, PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyNamedOrCountTargetLabel_110"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellTarget", "Target");
+			case var rawPolicyCase64 when string.Equals(rawPolicyCase64, PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_129"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellPublishFief", "Publishing fief");
+			case var rawPolicyCase65 when string.Equals(rawPolicyCase65, PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_130"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellPublishFiefScope", "Publishing fief and attached villages");
+			case var rawPolicyCase66 when string.Equals(rawPolicyCase66, PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_131"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellMentionedTarget", "Mentioned target in the home kingdom");
+			case var rawPolicyCase67 when string.Equals(rawPolicyCase67, PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_132"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellHomeKingdom", "Home kingdom target");
+			case var rawPolicyCase68 when string.Equals(rawPolicyCase68, PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_133"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellNoMatching", "No matching target at present");
+			case var rawPolicyCase69 when string.Equals(rawPolicyCase69, PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_134"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellDesignatedClan", "Designated clan");
+			case var rawPolicyCase70 when string.Equals(rawPolicyCase70, PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_135"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellRulingClanHoldings", "Current ruling clan's current holdings and attached villages");
+			case var rawPolicyCase71 when string.Equals(rawPolicyCase71, PolicyCompatibilityTexts.Get("Legacy_MapPolicyTargetLabelShellToDisplay_136"), StringComparison.Ordinal): return PolicyUiTexts.Get("AFPOL_UI_TargetLabelShellSelectedLocation", "Selected location");
+			default: return null;
+		}
+	}
+
+	/// <summary>
+	/// Stored target names are opaque data. Typed UI producers own separators and counts.
+	/// </summary>
+	private static string MapPolicyTargetLabelTargetsToDisplay(string targets)
+	{
+		return (targets ?? string.Empty).Trim();
 	}
 
 	private static string CompactPolicyContextText(string text)
@@ -2107,24 +2660,24 @@ public sealed partial class CustomPolicyBehavior
 				targetText = BuildLocalPolicyEffectTargetLabel(
 					LocalPolicyTargetScopeSource,
 					"S",
-					"发布地",
+					PolicyUiTexts.Get("AFPOL_UI_LocalPublishFiefScope", "Publishing fief"),
 					Array.Empty<string>(),
 					Array.Empty<string>(),
 					false,
-					sourceSettlements);
+					sourceSettlements, uiText: true);
 			}
 			else
 			{
 				List<string> originalNames = (record.OriginalTargets ?? new List<LocalPolicyTargetSnapshotSaveData>())
 					.Where(x => x != null)
-					.Select(x => x.Name)
+					.Select(BuildPlayerVisibleOriginalTargetName)
 					.Where(x => !string.IsNullOrWhiteSpace(x))
 					.Distinct(StringComparer.OrdinalIgnoreCase)
 					.ToList();
-				targetText = "发布地：" + (originalNames.Count <= 0
-					? "无剩余目标"
-					: string.Join("、", originalNames.Take(6))
-						+ (originalNames.Count > 6 ? "，另" + (originalNames.Count - 6).ToString(CultureInfo.InvariantCulture) + "处" : ""));
+				targetText = PolicyUiTexts.Get("AFPOL_UI_LocalPublishFiefPrefix", "Publishing fief: ") + (originalNames.Count <= 0
+					? PolicyUiTexts.Get("AFPOL_UI_NoRemainingTargets", "No remaining targets")
+					: string.Join(PolicyUiTexts.Get("AFPOL_UI_ListItemSeparator", ", "), originalNames.Take(6))
+						+ (originalNames.Count > 6 ? PolicyUiTexts.Format("AFPOL_UI_TargetOverflowSuffix", ", {COUNT} more", "COUNT", (originalNames.Count - 6).ToString(CultureInfo.InvariantCulture)) : ""));
 			}
 			List<LocalPolicyEffectRecordSaveData> mentionedEffects = record.Effects
 				.Where(x => x != null && string.Equals(x.TargetScope, LocalPolicyTargetScopeMentioned, StringComparison.OrdinalIgnoreCase))
@@ -2136,40 +2689,45 @@ public sealed partial class CustomPolicyBehavior
 					mentionedEffect.DirectTargetSettlementIds,
 					mentionedEffect.FollowCurrentRulingClan,
 					sourceFiefs);
-				targetText += "；" + BuildLocalPolicyEffectTargetLabel(
+				targetText += PolicyUiTexts.Get("AFPOL_UI_LocalSectionSeparator", "; ") + BuildLocalPolicyEffectTargetLabel(
 					mentionedEffect.TargetScope,
 					mentionedEffect.TargetHandle,
 					mentionedEffect.TargetLabel,
 					mentionedEffect.TargetClanIds,
 					mentionedEffect.DirectTargetSettlementIds,
 					mentionedEffect.FollowCurrentRulingClan,
-					currentMentioned);
+					currentMentioned, uiText: true);
 			}
 			string statusText = GetLocalPolicyStatusText(record.Status);
-			string effectStatusText = !record.Effects.Any(effect => effect.ModuleEffects.Count > 0) ? "无持续数值效果" : GetLocalPolicyStatusText(record.EffectStatus);
+			string effectStatusText = !record.Effects.Any(effect => effect.ModuleEffects.Count > 0) ? PolicyUiTexts.Get("AFPOL_UI_NoContinuousNumericEffects", "No continuous numeric effects") : GetLocalPolicyStatusText(record.EffectStatus);
 			string renewalHistory = record.Renewals.Count <= 0
-				? "延长效果历史：无"
-				: "延长效果历史：\n" + string.Join("\n", record.Renewals.Select(x => "- " + (x.DateText ?? "未知日期") + "：增加 " + x.AddedDays.ToString(CultureInfo.InvariantCulture) + " 天"));
+				? PolicyUiTexts.Get("AFPOL_UI_LocalRenewalHistoryNone", "Extension history: None")
+				: PolicyUiTexts.Get("AFPOL_UI_LocalRenewalHistoryTitle", "Extension history:\n") + string.Join("\n", record.Renewals.Select(x =>
+					PolicyUiTexts.Format("AFPOL_UI_LocalRenewalHistoryEntry", "- {DATE}: added {DAYS} days", "DATE", PolicyDateTextProjection.ForUi(x.DateText ?? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date")), "DAYS", x.AddedDays.ToString(CultureInfo.InvariantCulture))));
 			data.Records.Add(new LocalPolicyHistoryRecordData
 			{
 				ScopeKind = PolicyScopeLocal,
 				RecordId = record.RecordId,
-				DateText = string.IsNullOrWhiteSpace(record.DateText) ? "未知日期" : record.DateText,
-				PolicyNameText = string.IsNullOrWhiteSpace(record.PolicyName) ? "未命名地方政策" : record.PolicyName,
+				DateText = string.IsNullOrWhiteSpace(record.DateText) ? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date") : PolicyDateTextProjection.ForUi(record.DateText),
+				PolicyNameText = string.IsNullOrWhiteSpace(record.PolicyName) ? PolicyUiTexts.Get("AFPOL_UI_UnnamedLocalPolicy", "Unnamed Local Policy") : record.PolicyName,
 				StatusText = statusText,
 				TargetText = targetText,
 				RemainingText = BuildLocalPolicyRemainingText(record),
 				ContentText = record.PolicyContent ?? "",
-				FeedbackText = string.IsNullOrWhiteSpace(record.PublicFeedback) ? "未记录民众反馈。" : record.PublicFeedback,
+				FeedbackText = MapPlayerPolicyNarrativeFallbackToDisplay(string.IsNullOrWhiteSpace(record.PublicFeedback)
+					? PolicyUiTexts.Get("AFPOL_UI_NoFeedbackRecorded", "No policy feedback recorded.")
+					: record.PublicFeedback),
 				EffectText = BuildLocalPolicyEffectText(record),
-				CostText = "启动所需 " + record.RequiredGoldCost.ToString(CultureInfo.InvariantCulture)
-					+ "；启动实付 " + record.InitialActualGoldCost.ToString(CultureInfo.InvariantCulture)
-					+ "；每日维护 " + record.DailyMaintenanceGoldCost.ToString(CultureInfo.InvariantCulture)
-					+ "；累计维护 " + record.TotalMaintenancePaidGold.ToString(CultureInfo.InvariantCulture)
-					+ " 第纳尔；效果比例 " + FormatPercent(record.GoldEffectScale),
-				CycleText = "政策状态：" + statusText + "；效果状态：" + effectStatusText
-					+ (string.IsNullOrWhiteSpace(record.EndReason) ? "" : "（" + BuildPlayerVisiblePolicyEndReason(record.EndReason) + "）")
-					+ "；延长次数 " + record.RenewalCount.ToString(CultureInfo.InvariantCulture)
+				CostText = PolicyUiTexts.Format("AFPOL_UI_LocalRecordCostLine",
+					"Startup required {REQUIRED}; startup paid {PAID}; daily upkeep {DAILY}; cumulative upkeep {TOTAL}; effect scale {SCALE}",
+					"REQUIRED", FormatManagedGoldCostText(record.RequiredGoldCost),
+					"PAID", FormatManagedGoldCostText(record.InitialActualGoldCost),
+					"DAILY", FormatManagedGoldCostText(record.DailyMaintenanceGoldCost),
+					"TOTAL", FormatManagedGoldCostText(record.TotalMaintenancePaidGold),
+					"SCALE", FormatPercent(record.GoldEffectScale)),
+				CycleText = PolicyUiTexts.Get("AFPOL_UI_LocalPolicyStatusPrefix", "Policy status: ") + statusText + PolicyUiTexts.Get("AFPOL_UI_LocalSectionSeparator", "; ") + PolicyUiTexts.Get("AFPOL_UI_LocalEffectStatusPrefix", "Effect status: ") + effectStatusText
+					+ (string.IsNullOrWhiteSpace(record.EndReason) ? "" : PolicyUiTexts.Format("AFPOL_UI_EndReasonParenthetical", " ({REASON})", "REASON", BuildPlayerVisiblePolicyEndReason(record.EndReason)))
+					+ PolicyUiTexts.Get("AFPOL_UI_LocalSectionSeparator", "; ") + PolicyUiTexts.Get("AFPOL_UI_LocalRenewalCountPrefix", "Renewal count: ") + record.RenewalCount.ToString(CultureInfo.InvariantCulture)
 					+ BuildPolicyRuntimeStatusSuffix(record.RecordId, activeEffectsByRecordId),
 				RenewalText = renewalHistory,
 				CanRenew = true,
@@ -2189,54 +2747,45 @@ public sealed partial class CustomPolicyBehavior
 		IReadOnlyDictionary<string, List<ActivePolicyEffectSaveData>> activeEffectsByRecordId)
 	{
 		bool relationValid = VassalageBehavior.TryGetDirectVassalIndependenceStatusForExternal(record.TargetKingdomId, out int currentIndependence, out int breakawayThreshold, out int rulerRelation, out string rulerName);
-		string targetName = FirstNonEmpty(record.TargetKingdomName, ResolveKingdomByIdOrName(record.TargetKingdomId, record.TargetKingdomName)?.Name?.ToString(), "未知附庸国");
-		string issuerName = FirstNonEmpty(record.IssuerKingdomName, "未知宗主国");
-		string targetText = "宗主国：" + issuerName + "；目标附庸国：" + targetName;
+		string targetName = FirstNonEmpty(record.TargetKingdomName, ResolveKingdomByIdOrName(record.TargetKingdomId, record.TargetKingdomName)?.Name?.ToString(), PolicyUiTexts.Get("AFPOL_UI_UnknownVassalKingdom", "Unknown Vassal Kingdom"));
+		string issuerName = FirstNonEmpty(record.IssuerKingdomName, PolicyUiTexts.Get("AFPOL_UI_UnknownSuzerain", "Unknown Suzerain"));
+		string targetText = PolicyUiTexts.Format("AFPOL_UI_VassalTargetSummary", "Suzerain: {ISSUER}; Target vassal: {TARGET}", "ISSUER", issuerName, "TARGET", targetName);
 		if (relationValid)
 		{
-			targetText += "；当前独立度 " + currentIndependence.ToString(CultureInfo.InvariantCulture)
-				+ "/100；脱离阈值 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture)
-				+ "（" + rulerName + "关系 " + FormatSigned(rulerRelation) + "）";
+			targetText += PolicyUiTexts.Format("AFPOL_UI_VassalIndependenceStatus", "; Current independence {CURRENT}/100; Breakaway threshold {THRESHOLD} ({RULER} relation {RELATION})", "CURRENT", currentIndependence.ToString(CultureInfo.InvariantCulture), "THRESHOLD", breakawayThreshold.ToString(CultureInfo.InvariantCulture), "RULER", rulerName, "RELATION", FormatSigned(rulerRelation));
 		}
 		else
 		{
-			targetText += "；臣属关系已失效";
+			targetText += PolicyUiTexts.Get("AFPOL_UI_VassalStatusEnded", "; Vassalage relationship terminated");
 		}
 		string statusText = GetLocalPolicyStatusText(record.Status);
 		int initialNetChange = record.InitialIndependenceCost + record.VassalQualityIndependenceDelta;
-		string costText = "首次独立度结算：" + record.IndependenceBefore.ToString(CultureInfo.InvariantCulture)
-			+ " + 随机费用 " + record.InitialIndependenceCost.ToString(CultureInfo.InvariantCulture)
-			+ " + 政策修正 " + FormatSigned(record.VassalQualityIndependenceDelta)
-			+ " = " + record.IndependenceAfter.ToString(CultureInfo.InvariantCulture)
-			+ "（净变化 " + FormatSigned(initialNetChange) + "）"
-			+ "；累计随机费用 " + record.TotalIndependenceCost.ToString(CultureInfo.InvariantCulture);
+		string costText = PolicyUiTexts.Format("AFPOL_UI_VassalIndependenceSettlement", "Initial independence settlement: {BEFORE} + random cost {COST} + policy modifier {DELTA} (net change {NET}); Cumulative random cost {TOTAL}", "BEFORE", record.IndependenceBefore.ToString(CultureInfo.InvariantCulture), "COST", record.InitialIndependenceCost.ToString(CultureInfo.InvariantCulture), "DELTA", FormatSigned(record.VassalQualityIndependenceDelta), "NET", FormatSigned(initialNetChange), "TOTAL", record.TotalIndependenceCost.ToString(CultureInfo.InvariantCulture));
 		if (!string.IsNullOrWhiteSpace(record.IndependenceReason))
 		{
-			costText += "；修正原因：" + record.IndependenceReason;
+			costText += PolicyUiTexts.Format("AFPOL_UI_VassalIndependenceReason", "; Modifier reason: {REASON}", "REASON", MapPlayerPolicyNarrativeFallbackToDisplay(record.IndependenceReason));
 		}
 		string renewalHistory = record.Renewals.Count <= 0
-			? "续约历史：无"
-			: "续约历史：\n" + string.Join("\n", record.Renewals.Select(x =>
-				"- " + (x.DateText ?? "未知日期")
-				+ "：独立度 " + x.IndependenceBefore.ToString(CultureInfo.InvariantCulture)
-				+ " + " + x.IndependenceCost.ToString(CultureInfo.InvariantCulture)
-				+ " = " + x.IndependenceAfter.ToString(CultureInfo.InvariantCulture)
-				+ "，增加 " + x.AddedDays.ToString(CultureInfo.InvariantCulture) + " 天"));
+			? PolicyUiTexts.Get("AFPOL_UI_VassalRenewalHistoryNone", "Renewal history: None")
+			: PolicyUiTexts.Get("AFPOL_UI_VassalRenewalHistoryTitle", "Renewal history:\n") + string.Join("\n", record.Renewals.Select(x =>
+				PolicyUiTexts.Format("AFPOL_UI_VassalRenewalHistoryEntry", "- {DATE}: Independence {BEFORE} + {COST} = {AFTER}/100, added {DAYS} days", "DATE", PolicyDateTextProjection.ForUi(x.DateText ?? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date")), "BEFORE", x.IndependenceBefore.ToString(CultureInfo.InvariantCulture), "COST", x.IndependenceCost.ToString(CultureInfo.InvariantCulture), "AFTER", x.IndependenceAfter.ToString(CultureInfo.InvariantCulture), "DAYS", x.AddedDays.ToString(CultureInfo.InvariantCulture))));
 		return new LocalPolicyHistoryRecordData
 		{
 			ScopeKind = PolicyScopeVassal,
 			RecordId = record.RecordId,
-			DateText = string.IsNullOrWhiteSpace(record.DateText) ? "未知日期" : record.DateText,
-			PolicyNameText = string.IsNullOrWhiteSpace(record.PolicyName) ? "未命名附庸国政策" : record.PolicyName,
+			DateText = string.IsNullOrWhiteSpace(record.DateText) ? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date") : PolicyDateTextProjection.ForUi(record.DateText),
+			PolicyNameText = string.IsNullOrWhiteSpace(record.PolicyName) ? PolicyUiTexts.Get("AFPOL_UI_UnnamedVassalPolicy", "Unnamed Vassal Policy") : record.PolicyName,
 			StatusText = statusText,
 			TargetText = targetText,
 			RemainingText = BuildLocalPolicyRemainingText(record),
 			ContentText = record.PolicyContent ?? "",
-			FeedbackText = string.IsNullOrWhiteSpace(record.PublicFeedback) ? "未记录政策反馈。" : record.PublicFeedback,
+			FeedbackText = MapPlayerPolicyNarrativeFallbackToDisplay(string.IsNullOrWhiteSpace(record.PublicFeedback)
+				? PolicyUiTexts.Get("AFPOL_UI_NoFeedbackRecorded", "No policy feedback recorded.")
+				: record.PublicFeedback),
 			EffectText = BuildLocalPolicyEffectText(record),
 			CostText = costText,
-			CycleText = "状态：" + statusText + (string.IsNullOrWhiteSpace(record.EndReason) ? "" : "（" + BuildPlayerVisiblePolicyEndReason(record.EndReason) + "）")
-				+ "；续约次数 " + record.RenewalCount.ToString(CultureInfo.InvariantCulture)
+			CycleText = PolicyUiTexts.Format("AFPOL_UI_StatusPrefix", "Status: {STATUS}", "STATUS", statusText) + (string.IsNullOrWhiteSpace(record.EndReason) ? "" : PolicyUiTexts.Format("AFPOL_UI_EndReasonParenthetical", " ({REASON})", "REASON", BuildPlayerVisiblePolicyEndReason(record.EndReason)))
+				+ PolicyUiTexts.Get("AFPOL_UI_LocalSectionSeparator", "; ") + PolicyUiTexts.Format("AFPOL_UI_VassalStatusAndRenewals", "Status: {STATUS}; Renewals {COUNT}", "STATUS", statusText, "COUNT", record.RenewalCount.ToString(CultureInfo.InvariantCulture))
 				+ BuildPolicyRuntimeStatusSuffix(record.RecordId, activeEffectsByRecordId),
 			RenewalText = renewalHistory,
 			CanRenew = true,
@@ -2254,47 +2803,46 @@ public sealed partial class CustomPolicyBehavior
 		record = NormalizeLocalPolicyRecord(record);
 		if (record?.Effects == null || record.Effects.Count == 0)
 		{
-			return "无模块效果";
+			return PolicyUiTexts.Get("AFPOL_UI_NoModuleEffects", "No module effects");
 		}
 		bool isVassalPolicy = string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase);
 		List<string> lines = new List<string>();
 		foreach (LocalPolicyEffectRecordSaveData effect in record.Effects.Where(x => x != null))
 		{
 			string label = isVassalPolicy
-				? FirstNonEmpty(effect.TargetKingdomName, effect.TargetLabel, "未知国家")
+				? FirstNonEmpty(effect.TargetKingdomName, effect.TargetLabel, PolicyUiTexts.Get("AFPOL_UI_UnknownCountry", "Unknown Country"))
 				: (!string.IsNullOrWhiteSpace(effect.TargetLabel)
 				? effect.TargetLabel
 				: (string.Equals(effect.TargetScope, LocalPolicyTargetScopeMentioned, StringComparison.OrdinalIgnoreCase)
-					? "本国提及目标效果"
-					: "发布地效果"));
+					? PolicyUiTexts.Get("AFPOL_UI_LocalMentionedTargetEffect", "Domestic mentioned target effect")
+					: PolicyUiTexts.Get("AFPOL_UI_LocalPublishFiefEffect", "Publishing fief effect")));
 			foreach (string value in BuildPlayerVisibleEffectLinesForExternal(label, effect.ModuleEffects, -1)
 				.Where(value => !string.IsNullOrWhiteSpace(value)))
 			{
-				string visibleReason = CleanPlayerVisiblePolicySystemText(effect.Reason, string.Empty);
+				string visibleReason = CleanPolicyDisplaySystemText(effect.Reason, string.Empty);
 				lines.Add(value.Trim()
-					+ (string.IsNullOrWhiteSpace(visibleReason) ? "" : "｜原因：" + visibleReason));
+					+ (string.IsNullOrWhiteSpace(visibleReason) ? "" : PolicyUiTexts.Format("AFPOL_UI_ReasonSuffix", " | Reason: {REASON}", "REASON", visibleReason)));
 			}
 		}
-		return lines.Count <= 0 ? "无模块效果" : string.Join("\n", lines);
+		return lines.Count <= 0 ? PolicyUiTexts.Get("AFPOL_UI_NoModuleEffects", "No module effects") : string.Join("\n", lines);
 	}
 
 	private static string BuildLocalPolicyRemainingText(LocalPolicyRecordSaveData record)
 	{
-		if (CanDeletePolicyHistoryState(record.Status, false, false)) return "持续效果已结束";
-		if (!record.Effects.Any(effect => effect.ModuleEffects.Count > 0)) return "无持续数值效果";
-		return record.IsPermanentEffect ? "数值效果：永久"
-			: "效果剩余 " + record.RemainingDays.ToString(CultureInfo.InvariantCulture)
-				+ " 天；原始效果周期 " + record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天";
+		if (CanDeletePolicyHistoryState(record.Status, false, false)) return PolicyUiTexts.Get("AFPOL_UI_ContinuousEffectsEnded", "Continuous effects ended");
+		if (!record.Effects.Any(effect => effect.ModuleEffects.Count > 0)) return PolicyUiTexts.Get("AFPOL_UI_NoContinuousNumericEffects", "No continuous numeric effects");
+		return record.IsPermanentEffect ? PolicyUiTexts.Get("AFPOL_UI_NumericEffectsPermanent", "Numeric effects: Permanent")
+			: PolicyUiTexts.Format("AFPOL_UI_EffectRemainingAndOriginalDays", "Effects remaining {REMAINING} days; original period {ORIGINAL} days", "REMAINING", record.RemainingDays.ToString(CultureInfo.InvariantCulture), "ORIGINAL", record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture));
 	}
 
 	private static string GetLocalPolicyStatusText(string status)
 	{
-		if (string.Equals(status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase)) return "有效";
-		if (string.Equals(status, LocalPolicyStatusExpired, StringComparison.OrdinalIgnoreCase)) return "自然到期";
-		if (string.Equals(status, LocalPolicyStatusTargetsLost, StringComparison.OrdinalIgnoreCase)) return "全部失地";
-		if (string.Equals(status, LocalPolicyStatusAbolished, StringComparison.OrdinalIgnoreCase)) return "玩家废除";
-		if (string.Equals(status, LocalPolicyStatusRelationshipEnded, StringComparison.OrdinalIgnoreCase)) return "臣属关系终止";
-		return "已结束";
+		if (string.Equals(status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase)) return PolicyUiTexts.Get("AFPOL_UI_StatusValid", "Valid");
+		if (string.Equals(status, LocalPolicyStatusExpired, StringComparison.OrdinalIgnoreCase)) return PolicyUiTexts.Get("AFPOL_UI_StatusExpired", "Expired");
+		if (string.Equals(status, LocalPolicyStatusTargetsLost, StringComparison.OrdinalIgnoreCase)) return PolicyUiTexts.Get("AFPOL_UI_StatusTargetsLost", "All fiefs lost");
+		if (string.Equals(status, LocalPolicyStatusAbolished, StringComparison.OrdinalIgnoreCase)) return PolicyUiTexts.Get("AFPOL_UI_StatusAbolished", "Abolished by player");
+		if (string.Equals(status, LocalPolicyStatusRelationshipEnded, StringComparison.OrdinalIgnoreCase)) return PolicyUiTexts.Get("AFPOL_UI_StatusVassalageEnded", "Vassalage ended");
+		return PolicyUiTexts.Get("AFPOL_UI_StatusTerminated", "Ended");
 	}
 
 	private static List<Settlement> GetPlayerOwnedLocalPolicyFiefs()
@@ -2347,7 +2895,7 @@ public sealed partial class CustomPolicyBehavior
 
 	private static string GetLocalPolicyFiefTypeText(Settlement fief)
 	{
-		return fief?.IsCastle == true ? "城堡" : "城镇";
+		return fief?.IsCastle == true ? PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049") : PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050");
 	}
 
 	private static string BuildPolicyReReviewDurationText(PolicyReReviewContext context)
@@ -2392,7 +2940,7 @@ public sealed partial class CustomPolicyBehavior
 			return true;
 		}
 
-		disabledReason = FirstNonEmpty(error, "该政策当前不能重新评议。");
+		disabledReason = FirstNonEmpty(error, PolicyUiTexts.Get("AFPOL_UI_CannotReReviewNow", "This policy cannot be re-reviewed right now."));
 		return true;
 	}
 
@@ -2406,7 +2954,7 @@ public sealed partial class CustomPolicyBehavior
 		string id = (recordId ?? string.Empty).Trim();
 		if (id.Length == 0)
 		{
-			error = "政策记录编号为空。";
+			error = PolicyUiTexts.Get("AFPOL_UI_ReReviewRecordIdEmpty", "Policy record ID is empty.");
 			return false;
 		}
 
@@ -2416,7 +2964,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			if (string.IsNullOrWhiteSpace(local.PolicyContent))
 			{
-				error = "该记录没有保存完整政策正文，不能重新评议。";
+				error = PolicyUiTexts.Get("AFPOL_UI_ReReviewNoFullContent", "The record does not have full policy content saved; cannot re-review.");
 				return false;
 			}
 			string scope = string.Equals(local.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase)
@@ -2425,7 +2973,7 @@ public sealed partial class CustomPolicyBehavior
 			string root = FirstNonEmpty(local.ReReviewRootRecordId, local.RecordId);
 			if (HasPendingPolicyReReview(scope, root))
 			{
-				error = "该政策谱系已有待确认的新评议，请先等待其完成。";
+				error = PolicyUiTexts.Get("AFPOL_UI_ReReviewPendingConfirmation", "This policy lineage already has a pending evaluation awaiting confirmation; please wait for it to complete.");
 				return false;
 			}
 			context = new PolicyReReviewContext
@@ -2453,13 +3001,13 @@ public sealed partial class CustomPolicyBehavior
 		string fullContent = FirstNonEmpty(dynamic?.PolicyContent, unified?.PolicyContent);
 		if (string.IsNullOrWhiteSpace(fullContent))
 		{
-			error = "该记录只保存了摘要，没有可复用的完整政策正文。";
+			error = PolicyUiTexts.Get("AFPOL_UI_ReReviewOnlySummary", "The record only saved a summary; no reusable full policy content.");
 			return false;
 		}
 		string dynamicRoot = FirstNonEmpty(dynamic?.ReReviewRootRecordId, unified?.ReReviewRootRecordId, id);
 		if (HasPendingPolicyReReview(PolicyScopeKingdom, dynamicRoot))
 		{
-			error = "该政策谱系已有待表决的新评议，请先等待议程结束。";
+			error = PolicyUiTexts.Get("AFPOL_UI_ReReviewPendingVote", "This policy lineage already has a pending evaluation awaiting a vote; please wait for the agenda to conclude.");
 			return false;
 		}
 		PolicyRecordSaveData history = LoadPolicyRecordHistory()
@@ -2498,12 +3046,12 @@ public sealed partial class CustomPolicyBehavior
 		}
 		if (request == null || string.IsNullOrWhiteSpace(context.RootRecordId))
 		{
-			error = "重新评议谱系信息无效。";
+			error = PolicyUiTexts.Get("AFPOL_UI_ReReviewLineageInvalid", "Re-review lineage information is invalid.");
 			return false;
 		}
 		if (HasPendingPolicyReReview(context.ScopeKind, context.RootRecordId))
 		{
-			error = "该政策谱系已有待确认的新评议，请先等待其完成。";
+			error = PolicyUiTexts.Get("AFPOL_UI_ReReviewPendingConfirmation", "This policy lineage already has a pending evaluation awaiting confirmation; please wait for it to complete.");
 			return false;
 		}
 		request.ReReviewRootRecordId = context.RootRecordId;
@@ -2567,7 +3115,7 @@ public sealed partial class CustomPolicyBehavior
 	{
 		if (!TryBuildPolicyReReviewContext(recordId, out PolicyReReviewContext context, out string error))
 		{
-			InformationManager.ShowInquiry(new InquiryData("无法重新评议", error, true, false, "返回", string.Empty,
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_CannotReReviewTitle", "Cannot Re-review"), error, true, false, PolicyUiTexts.Get("AFPOL_UI_Back", "Back"), string.Empty,
 				returnToSource, null), pauseGameActiveState: true);
 			return;
 		}
@@ -2594,7 +3142,7 @@ public sealed partial class CustomPolicyBehavior
 		return new LocalPolicyTargetSnapshotSaveData
 		{
 			FiefId = fief?.StringId ?? "",
-			Name = fief?.Name?.ToString() ?? fief?.StringId ?? "未知封地",
+			Name = fief?.Name?.ToString() ?? fief?.StringId ?? PolicyCompatibilityTexts.Get("Legacy_BuildPlayerVisiblePolicyEndReason_113"),
 			TypeText = GetLocalPolicyFiefTypeText(fief),
 			BoundVillageNames = GetBoundVillageSettlements(fief).Select(x => x.Name?.ToString() ?? x.StringId).Where(x => !string.IsNullOrWhiteSpace(x)).ToList()
 		};
@@ -2606,7 +3154,7 @@ public sealed partial class CustomPolicyBehavior
 		if (!CustomPolicyHistoryPopup.Show(data, recordId => OpenPolicyReReviewFromHistory(recordId, onClose), onClose,
 			key => RequestDeletePolicyHistoryRecord(key, () => OpenRecordHistoryPopup(onClose))))
 		{
-			InformationManager.ShowInquiry(new InquiryData(data.TitleText ?? "政策记录", BuildPolicyHistoryFallbackText(data), true, false, "返回", "", onClose, null), pauseGameActiveState: true, prioritize: false);
+			InformationManager.ShowInquiry(new InquiryData(data.TitleText ?? PolicyUiTexts.Get("AFPOL_UI_PolicyRecordsTitle", "Policy Records"), BuildPolicyHistoryFallbackText(data), true, false, PolicyUiTexts.Get("AFPOL_UI_Back", "Back"), "", onClose, null), pauseGameActiveState: true, prioritize: false);
 		}
 	}
 
@@ -2621,7 +3169,7 @@ public sealed partial class CustomPolicyBehavior
 			onClose,
 			key => RequestDeletePolicyHistoryRecord(key, () => OpenLocalPolicyHistoryPopup(onClose))))
 		{
-			InformationManager.ShowInquiry(new InquiryData("地方政策记录", "打开地方政策记录界面失败。", true, false, "返回", "", onClose, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalRecordsTitle", "Local Policy Records"), PolicyUiTexts.Get("AFPOL_UI_OpenLocalRecordsFailed", "Failed to open local policy records interface."), true, false, PolicyUiTexts.Get("AFPOL_UI_Back", "Back"), "", onClose, null), pauseGameActiveState: true);
 		}
 	}
 
@@ -2630,13 +3178,13 @@ public sealed partial class CustomPolicyBehavior
 		LocalPolicyRecordSaveData record = LoadLocalPolicyRecords().FirstOrDefault(x => string.Equals(x.RecordId, recordId, StringComparison.OrdinalIgnoreCase));
 		if (record == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("地方政策记录不存在。", Colors.Red));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_LocalRecordNotExist", "Local policy record does not exist."), Colors.Red));
 			OpenLocalPolicyHistoryPopup(onClose);
 			return;
 		}
 		if (record.IsPermanentEffect)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("永久效果不需要延长。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_PermanentEffectNoExtension", "Permanent effects do not need extension."), Colors.Yellow));
 			OpenLocalPolicyHistoryPopup(onClose);
 			return;
 		}
@@ -2654,10 +3202,10 @@ public sealed partial class CustomPolicyBehavior
 		List<Settlement> ownedTargets = ResolveOwnedLocalPolicyFiefs(GetLocalPolicyRenewalTargetIds(record));
 		if (ownedTargets.Count <= 0)
 		{
-			InformationManager.ShowInquiry(new InquiryData("无法延长效果", "当前没有归玩家所有的原目标封地，无法续期；收复原目标后可再次尝试。", true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_CannotExtendEffectTitle", "Cannot Extend Effect"), PolicyUiTexts.Get("AFPOL_UI_NoOwnedOriginalFiefsForExtension", "None of the original target fiefs are currently owned by the player; cannot renew. Try again after retaking them."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
 			return;
 		}
-		InformationManager.ShowInquiry(new InquiryData("延长地方政策效果", "是否为《" + record.PolicyName + "》增加一个完整效果周期（" + record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天）？\n\n延长效果不再次收取启动费，不重新调用智能服务，也不会重放一次性效果或再次发布民众反馈。", true, true, "确认延长", "取消",
+		InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_ExtendLocalPolicyTitle", "Extend Local Policy Effect"), PolicyUiTexts.Format("AFPOL_UI_ExtendLocalPolicyNoStartupFeePrompt", "Extend \"{NAME}\" by one full effect cycle ({DAYS} days)?\n\nExtension does not recharge startup fees, does not recall intelligence service, and will not replay one-shot effects or republish feedback.", "NAME", record.PolicyName, "DAYS", record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture)), true, true, PolicyUiTexts.Get("AFPOL_UI_ConfirmExtend", "Confirm Extension"), PolicyUiTexts.Get("AFPOL_UI_Cancel", "Cancel"),
 			() => ConfirmRenewLocalPolicy(record.RecordId, onClose),
 			() => OpenLocalPolicyHistoryPopup(onClose)), pauseGameActiveState: true);
 	}
@@ -2678,16 +3226,16 @@ public sealed partial class CustomPolicyBehavior
 		try
 		{
 			LocalPolicyRecordSaveData record = LoadLocalPolicyRecords().FirstOrDefault(x => string.Equals(x.RecordId, recordId, StringComparison.OrdinalIgnoreCase));
-			if (record == null) throw new InvalidOperationException("地方政策记录不存在。");
+			if (record == null) throw new InvalidOperationException("Local policy record does not exist.");
 			if (string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase)
 				|| record.IsPermanentEffect
 				|| !CanAttemptPolicyRenewal(record, out _))
 			{
-				throw new InvalidOperationException("该地方政策当前不能延长效果。");
+				throw new InvalidOperationException("This local policy cannot extend its effect at present.");
 			}
 			oldActiveRaw = SnapshotPolicyEffectRawByRecordId(record.RecordId, PolicyScopeLocal);
 			List<Settlement> ownedTargets = ResolveOwnedLocalPolicyFiefs(GetLocalPolicyRenewalTargetIds(record));
-			if (ownedTargets.Count <= 0) throw new InvalidOperationException("原目标封地已经全部失去。");
+			if (ownedTargets.Count <= 0) throw new InvalidOperationException("All original target fiefs have been lost.");
 			const int charge = 0;
 			List<ActivePolicyEffectSaveData> activeEffects = LoadActiveLocalPolicyEffectsByRecordId(record.RecordId);
 			ActivePolicyEffectSaveData sourceActive = activeEffects.FirstOrDefault(x => !IsMentionedLocalPolicyEffect(x));
@@ -2731,7 +3279,7 @@ public sealed partial class CustomPolicyBehavior
 				{
 					if (!IsMentionedLocalPolicyEffect(active))
 					{
-						throw new InvalidOperationException("发布地政策效果已经没有可执行目标。");
+						throw new InvalidOperationException("The publishing fief policy effect no longer has executable targets.");
 					}
 					effectRecord.ActiveEffectId = string.Empty;
 					effectRecord.RemainingDays = 0;
@@ -2751,11 +3299,11 @@ public sealed partial class CustomPolicyBehavior
 			}
 			if (!renewedShellEffects.Any(active => !IsMentionedLocalPolicyEffect(active)))
 			{
-				throw new InvalidOperationException("发布地政策效果已经无法恢复。");
+				throw new InvalidOperationException("The publishing fief policy effect can no longer be recovered.");
 			}
 			if (!TryMergeRenewedPolicyEffectShells(renewedShellEffects, string.Empty, out ActivePolicyEffectSaveData renewedActive, out string mergeError))
 			{
-				throw new InvalidOperationException("地方政策多目标效果无法合并：" + mergeError);
+				throw new InvalidOperationException("Local policy multi-target effects cannot be merged: " + mergeError);
 			}
 			List<ActivePolicyEffectSaveData> renewedActiveEffects = new List<ActivePolicyEffectSaveData> { renewedActive };
 			foreach (LocalPolicyEffectRecordSaveData effectRecord in renewedShellRecords)
@@ -2773,15 +3321,15 @@ public sealed partial class CustomPolicyBehavior
 			record.Renewals.Add(new LocalPolicyRenewalSaveData { Day = GetCurrentCampaignDay(), DateText = FormatCurrentCampaignDate(), PaidGold = charge, AddedDays = record.OriginalDurationDays });
 			if (!TryPrepareRenewedPolicyEffectsForCommit(renewedActiveEffects, out string lifecycleError))
 			{
-				throw new InvalidOperationException("延长效果的模块生命周期准备失败：" + lifecycleError);
+				throw new InvalidOperationException("Module lifecycle preparation for extension failed: " + lifecycleError);
 			}
 			if (!TrySynchronizeRenewalRecordEffects(record, renewedActiveEffects, out string synchronizationError))
 			{
-				throw new InvalidOperationException("延长效果的 record shell 同步失败：" + synchronizationError);
+				throw new InvalidOperationException("Record shell synchronization for extension failed: " + synchronizationError);
 			}
 			if (!TrySerializePreparedRenewalState(record, renewedActiveEffects, out string renewedRecordRaw, out Dictionary<string, string> renewedActiveRaw, out string serializationError))
 			{
-				throw new InvalidOperationException("延长效果状态验证失败：" + serializationError);
+				throw new InvalidOperationException("Extension state validation failed: " + serializationError);
 			}
 			ReplacePreparedPolicyRenewalState(
 				record.RecordId,
@@ -2810,7 +3358,7 @@ public sealed partial class CustomPolicyBehavior
 			});
 			EnqueueRenewedPolicyEffectWork(renewedActiveEffects);
 			InvokeLocalPolicyLifecycleMemoryHook("renewed", record.RecordId, record.TargetFiefIds);
-			InformationManager.ShowInquiry(new InquiryData("效果已延长", "《" + record.PolicyName + "》的数值效果已增加 " + record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天，当前剩余 " + record.RemainingDays.ToString(CultureInfo.InvariantCulture) + " 天。", true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_EffectExtendedTitle", "Effect Extended"), PolicyUiTexts.Format("AFPOL_UI_EffectExtendedRemaining", "Numeric effects for \"{NAME}\" have been extended by {DAYS} days; currently {REMAINING} days remaining.", "NAME", record.PolicyName, "DAYS", record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture), "REMAINING", record.RemainingDays.ToString(CultureInfo.InvariantCulture)), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
 		}
 		catch (Exception ex)
 		{
@@ -2823,7 +3371,7 @@ public sealed partial class CustomPolicyBehavior
 					StateBefore = LocalPolicyStatusActive,
 					StateAfter = LocalPolicyStatusActive
 				});
-				InformationManager.DisplayMessage(new InformationMessage("地方政策效果已延长，但界面或通知刷新失败。", Colors.Yellow));
+				InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_LocalPolicyExtendedRefreshFailed", "Local policy effects were extended, but UI or notification refresh failed."), Colors.Yellow));
 				return;
 			}
 			PolicySystemLog.Failure("Player", "renewal-failed", ex, new PolicyLogContext
@@ -2833,7 +3381,7 @@ public sealed partial class CustomPolicyBehavior
 				StateBefore = LocalPolicyStatusActive,
 				StateAfter = "unchanged"
 			});
-			InformationManager.ShowInquiry(new InquiryData("延长效果失败", "延长效果时发生异常，详细技术信息已写入日志。", true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_ExtendEffectFailedTitle", "Failed to Extend Effect"), PolicyUiTexts.Get("AFPOL_UI_ExtendEffectFailedMessage", "An exception occurred while extending effects; technical details have been written to the log."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
 		}
 	}
 
@@ -2842,18 +3390,18 @@ public sealed partial class CustomPolicyBehavior
 		LocalPolicyRecordSaveData record = LoadLocalPolicyRecords().FirstOrDefault(x => string.Equals(x.RecordId, recordId, StringComparison.OrdinalIgnoreCase));
 		if (record == null || !string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("只有当前有效的地方政策可以废除。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_OnlyActivePolicyCanBeAbolished", "Only currently active local policies can be abolished."), Colors.Yellow));
 			OpenLocalPolicyHistoryPopup(onClose);
 			return;
 		}
 		if (string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase))
 		{
-			InformationManager.ShowInquiry(new InquiryData("停止附庸国政策", "确定立即停止《" + record.PolicyName + "》吗？\n\n该政策在所有国家的持续效果会立即停止；独立度不会变化，不会退款、不会刷新冷却，且以后不能续约。", true, true, "确认停止", "取消",
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_StopVassalPolicyTitle", "Stop Vassal Policy"), PolicyUiTexts.Format("AFPOL_UI_StopVassalPolicyDetailedPrompt", "Are you sure you want to stop \"{NAME}\" immediately?\n\nContinuous effects across all kingdoms will cease immediately; independence will not change, fees are non-refundable, cooldown is not refreshed, and it cannot be renewed in the future.", "NAME", record.PolicyName), true, true, PolicyUiTexts.Get("AFPOL_UI_ConfirmStop", "Confirm Stop"), PolicyUiTexts.Get("AFPOL_UI_Cancel", "Cancel"),
 				() => ConfirmAbolishLocalPolicy(record.RecordId, onClose),
 				() => OpenLocalPolicyHistoryPopup(onClose)), pauseGameActiveState: true);
 			return;
 		}
-		InformationManager.ShowInquiry(new InquiryData("废除地方政策", "确定立即废除《" + record.PolicyName + "》吗？\n\n效果会立即停止，已支付费用不退还，且此政策以后不能再延长效果。", true, true, "确认废除", "取消",
+		InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_AbolishLocalPolicyTitle", "Abolish Local Policy"), PolicyUiTexts.Format("AFPOL_UI_AbolishLocalPolicyDetailedPrompt", "Are you sure you want to abolish \"{NAME}\" immediately?\n\nEffects will cease immediately, paid fees are non-refundable, and this policy cannot be extended in the future.", "NAME", record.PolicyName), true, true, PolicyUiTexts.Get("AFPOL_UI_ConfirmAbolish", "Confirm Abolish"), PolicyUiTexts.Get("AFPOL_UI_Cancel", "Cancel"),
 			() => ConfirmAbolishLocalPolicy(record.RecordId, onClose),
 			() => OpenLocalPolicyHistoryPopup(onClose)), pauseGameActiveState: true);
 	}
@@ -2871,12 +3419,12 @@ public sealed partial class CustomPolicyBehavior
 			StateAfter = "abolishing"
 		});
 		bool isVassalPolicy = string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase);
-		if (!TryStopLocalPolicyRecord(record.RecordId, isVassalPolicy ? "玩家主动停止" : "玩家主动废除", out string stopError))
+		if (!TryStopLocalPolicyRecord(record.RecordId, isVassalPolicy ? PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_114") : PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_115"), out string stopError))
 		{
 			PolicySystemLog.Failure("Player", "abolition-failed",
 				"transactionId=" + abolitionTransactionId + " recordId=" + (record.RecordId ?? string.Empty),
 				stopError);
-			InformationManager.ShowInquiry(new InquiryData("停止政策失败", "停止政策时发生异常，详细技术信息已写入日志。", true, false, "知道了", string.Empty,
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_StopPolicyFailedTitle", "Failed to Stop Policy"), PolicyUiTexts.Get("AFPOL_UI_StopPolicyFailedMessage", "An exception occurred while stopping policy; technical details have been written to the log."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), string.Empty,
 				() => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
 			return;
 		}
@@ -2888,11 +3436,11 @@ public sealed partial class CustomPolicyBehavior
 			StateBefore = LocalPolicyStatusActive,
 			StateAfter = LocalPolicyStatusAbolished
 		});
-		string title = isVassalPolicy ? "附庸国政策已停止" : "地方政策已废除";
+		string title = isVassalPolicy ? PolicyUiTexts.Get("AFPOL_UI_VassalPolicyStoppedTitle", "Vassal Policy Stopped") : PolicyUiTexts.Get("AFPOL_UI_LocalPolicyAbolishedTitle", "Local Policy Abolished");
 		string body = isVassalPolicy
-			? "《" + record.PolicyName + "》在所有国家的持续效果已经停止；独立度不变。"
-			: "《" + record.PolicyName + "》的效果已经停止；费用不退还。";
-		InformationManager.ShowInquiry(new InquiryData(title, body, true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
+			? PolicyUiTexts.Format("AFPOL_UI_VassalPolicyStoppedMessage", "Continuous effects of \"{NAME}\" across all kingdoms have ceased; independence remains unchanged.", "NAME", record.PolicyName)
+			: PolicyUiTexts.Format("AFPOL_UI_LocalPolicyAbolishedMessage", "Effects of \"{NAME}\" have ceased; fees are non-refundable.", "NAME", record.PolicyName);
+		InformationManager.ShowInquiry(new InquiryData(title, body, true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
 	}
 
 	private bool TryStopLocalPolicyRecord(string recordId, string reason, out string error)
@@ -2933,7 +3481,7 @@ public sealed partial class CustomPolicyBehavior
 		InvalidatePolicyRecordPresentation();
 		record.Status = LocalPolicyStatusAbolished;
 		record.EffectStatus = LocalPolicyStatusAbolished;
-		record.EndReason = string.IsNullOrWhiteSpace(reason) ? (isVassalPolicy ? "玩家主动停止" : "玩家主动废除") : reason;
+		record.EndReason = string.IsNullOrWhiteSpace(reason) ? (isVassalPolicy ? PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_114") : PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_115")) : reason;
 		record.RemainingDays = 0;
 		_localPolicyRecords[record.RecordId] = JsonConvert.SerializeObject(record);
 		_activePolicyEffectModelCache.Clear();
@@ -2975,7 +3523,7 @@ public sealed partial class CustomPolicyBehavior
 					&& string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase))
 				.ToList())
 			{
-				if (!TryStopLocalPolicyRecord(predecessor.RecordId, "已由重新评议通过的新政策替代", out string stopError))
+				if (!TryStopLocalPolicyRecord(predecessor.RecordId, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_116"), out string stopError))
 				{
 					success = false;
 					PolicySystemLog.Failure("ReReview", "local-predecessor-stop-failed", stopError,
@@ -3043,7 +3591,7 @@ public sealed partial class CustomPolicyBehavior
 			{
 				owner.RemovePolicy(policy);
 			}
-			CompleteDynamicPolicyAbolition(data, policy, "已由重新评议通过的新政策替代",
+			CompleteDynamicPolicyAbolition(data, policy, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_116"),
 				"record:" + data.RecordId + ":abolished:rereview");
 			data.CommitState = PolicyCommitStateEnded;
 			StoreDynamicPolicy(data);
@@ -3082,7 +3630,7 @@ public sealed partial class CustomPolicyBehavior
 			if (!FinalizePolicyReReviewReplacement(recordId))
 			{
 				PolicySystemLog.Failure("ReReview", "reload-reconciliation-incomplete",
-					"已保留 replacementCommitted 标记，将在后续读档再次对账。",
+					"The replacementCommitted marker was retained; reconciliation will be retried on a later load.",
 					"recordId=" + recordId);
 			}
 		}
@@ -3146,24 +3694,24 @@ public sealed partial class CustomPolicyBehavior
 		if (!IsPlayerRuler(playerKingdom)
 			|| !string.Equals(playerKingdom?.StringId ?? "", record.IssuerKingdomId ?? "", StringComparison.OrdinalIgnoreCase))
 		{
-			InformationManager.ShowInquiry(new InquiryData("无法续约", "当前没有原发布王国的统治者权限，未修改政策。", true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_CannotRenewTitle", "Cannot Renew"), PolicyUiTexts.Get("AFPOL_UI_NoRulerPermissionToRenew", "You do not have ruler authority of the issuing kingdom; policy unchanged."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
 			return;
 		}
 		if (targetKingdom == null || targetKingdom.IsEliminated
 			|| !VassalageBehavior.TryGetDirectVassalIndependenceStatusForExternal(record.TargetKingdomId, out int currentIndependence, out int breakawayThreshold, out int rulerRelation, out string rulerName))
 		{
-			OnVassalRelationshipEndedInternal(record.TargetKingdomId, "续约时目标已不再是直属附庸国");
-			InformationManager.ShowInquiry(new InquiryData("无法续约", "目标国家已不再是玩家王国的直属附庸国，政策已经终止。", true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
+			OnVassalRelationshipEndedInternal(record.TargetKingdomId, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_117"));
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_CannotRenewTitle", "Cannot Renew"), PolicyUiTexts.Get("AFPOL_UI_TargetNotVassalTerminated", "Target kingdom is no longer a direct vassal of the player kingdom; policy terminated."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
 			return;
 		}
 		int independenceCost = Math.Max(0, record.InitialIndependenceCost);
 		InformationManager.ShowInquiry(new InquiryData(
-			"续约附庸国政策",
-			"是否为《" + record.PolicyName + "》增加一个完整周期（" + record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天）？\n\n本次会重复增加首次随机费用 " + independenceCost.ToString(CultureInfo.InvariantCulture) + " 点独立度；当前独立度为 " + currentIndependence.ToString(CultureInfo.InvariantCulture) + "/100，脱离阈值为 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（" + rulerName + "关系 " + FormatSigned(rulerRelation) + "）。不会重新调用智能服务、不会重复政策好坏修正或重放任何一次性模块，也不会新增世界政策事件。",
+			PolicyUiTexts.Get("AFPOL_UI_RenewVassalPolicyTitle", "Renew Vassal Policy"),
+			PolicyUiTexts.Format("AFPOL_UI_RenewVassalPolicyPrompt", "Extend \"{NAME}\" by one full cycle ({DAYS} days)?\n\nThis will re-add the initial random cost of {COST} independence; current independence is {CURRENT}/100, breakaway threshold is {THRESHOLD} ({RULER} relation: {RELATION}). Intelligence service will not be recalled, good/bad modifiers will not repeat, one-shot modules will not replay, and no new world policy events will be created.", "NAME", record.PolicyName, "DAYS", record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture), "COST", independenceCost.ToString(CultureInfo.InvariantCulture), "CURRENT", currentIndependence.ToString(CultureInfo.InvariantCulture), "THRESHOLD", breakawayThreshold.ToString(CultureInfo.InvariantCulture), "RULER", rulerName, "RELATION", FormatSigned(rulerRelation)),
 			true,
 			true,
-			"确认续约",
-			"取消",
+			PolicyUiTexts.Get("AFPOL_UI_ConfirmRenewal", "Confirm Renewal"),
+			PolicyUiTexts.Get("AFPOL_UI_Cancel", "Cancel"),
 			() => ConfirmRenewVassalPolicy(record.RecordId, onClose),
 			() => OpenLocalPolicyHistoryPopup(onClose)), pauseGameActiveState: true);
 	}
@@ -3182,11 +3730,11 @@ public sealed partial class CustomPolicyBehavior
 			LocalPolicyRecordSaveData record = LoadLocalPolicyRecords().FirstOrDefault(x => string.Equals(x.RecordId, recordId, StringComparison.OrdinalIgnoreCase));
 			if (record == null || !string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase))
 			{
-				throw new InvalidOperationException("附庸国政策记录不存在。");
+				throw new InvalidOperationException("Vassal policy record does not exist.");
 			}
 			if (record.IsPermanentEffect || !CanAttemptPolicyRenewal(record, out _))
 			{
-				throw new InvalidOperationException("该政策当前不能续约。");
+				throw new InvalidOperationException("This policy cannot be renewed at present.");
 			}
 			oldActiveRaw = SnapshotPolicyEffectRawByRecordId(record.RecordId, PolicyScopeVassal);
 			Kingdom playerKingdom = GetPlayerKingdom();
@@ -3194,13 +3742,13 @@ public sealed partial class CustomPolicyBehavior
 			if (!IsPlayerRuler(playerKingdom)
 				|| !string.Equals(playerKingdom?.StringId ?? "", record.IssuerKingdomId ?? "", StringComparison.OrdinalIgnoreCase))
 			{
-				throw new InvalidOperationException("当前没有原发布王国的统治者权限。");
+				throw new InvalidOperationException("No ruler authority for the original publishing kingdom at present.");
 			}
 			if (targetKingdom == null || targetKingdom.IsEliminated
 				|| !VassalageBehavior.TryGetDirectVassalIndependenceStatusForExternal(record.TargetKingdomId, out int independenceBefore, out int breakawayThreshold, out int rulerRelation, out string rulerName))
 			{
-				OnVassalRelationshipEndedInternal(record.TargetKingdomId, "确认续约时目标已不再是直属附庸国");
-				throw new InvalidOperationException("目标国家已不再是玩家王国的直属附庸国。");
+				OnVassalRelationshipEndedInternal(record.TargetKingdomId, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_118"));
+				throw new InvalidOperationException("The target kingdom is no longer a direct vassal of the player's kingdom.");
 			}
 
 			List<ActivePolicyEffectSaveData> activeEffects = LoadActiveVassalPolicyEffectsByRecordId(record.RecordId);
@@ -3222,7 +3770,7 @@ public sealed partial class CustomPolicyBehavior
 				out VassalPolicyExternalCommitPlan externalPlan,
 				out string externalPrepareError))
 			{
-				throw new InvalidOperationException("续约外部提交准备失败：" + externalPrepareError);
+				throw new InvalidOperationException("Renewal external submission preparation failed: " + externalPrepareError);
 			}
 			List<ActivePolicyEffectSaveData> renewedShellEffects = new List<ActivePolicyEffectSaveData>();
 			List<LocalPolicyEffectRecordSaveData> renewedShellRecords = new List<LocalPolicyEffectRecordSaveData>();
@@ -3265,11 +3813,11 @@ public sealed partial class CustomPolicyBehavior
 				record.TargetKingdomId ?? string.Empty,
 				StringComparison.OrdinalIgnoreCase)))
 			{
-				throw new InvalidOperationException("目标附庸国的政策效果已经无法恢复。");
+				throw new InvalidOperationException("The target vassal's policy effect can no longer be recovered.");
 			}
 			if (!TryMergeRenewedPolicyEffectShells(renewedShellEffects, record.TargetKingdomId, out ActivePolicyEffectSaveData renewedActive, out string mergeError))
 			{
-				throw new InvalidOperationException("附庸国政策多目标效果无法合并：" + mergeError);
+				throw new InvalidOperationException("Vassal policy multi-target effects cannot be merged: " + mergeError);
 			}
 			List<ActivePolicyEffectSaveData> renewedActiveEffects = new List<ActivePolicyEffectSaveData> { renewedActive };
 			foreach (LocalPolicyEffectRecordSaveData effectRecord in renewedShellRecords)
@@ -3310,21 +3858,21 @@ public sealed partial class CustomPolicyBehavior
 			record.Renewals.Add(renewal);
 			if (!TryPrepareRenewedPolicyEffectsForCommit(renewedActiveEffects, out string lifecycleError))
 			{
-				throw new InvalidOperationException("续约模块生命周期准备失败：" + lifecycleError);
+				throw new InvalidOperationException("Renewal module lifecycle preparation failed: " + lifecycleError);
 			}
 			if (!TrySynchronizeRenewalRecordEffects(record, renewedActiveEffects, out string synchronizationError))
 			{
-				throw new InvalidOperationException("续约 record shell 同步失败：" + synchronizationError);
+				throw new InvalidOperationException("Renewal record shell synchronization failed: " + synchronizationError);
 			}
 			if (!TrySerializePreparedRenewalState(record, renewedActiveEffects, out string continuingRecordRaw, out Dictionary<string, string> renewedActiveRaw, out string serializationError))
 			{
-				throw new InvalidOperationException("续约状态验证失败：" + serializationError);
+				throw new InvalidOperationException("Renewal state validation failed: " + serializationError);
 			}
 			LocalPolicyRecordSaveData breakawayRecord = CloneRenewalRecord(record);
-			MarkPreparedVassalRenewalRelationshipEnded(breakawayRecord, "续约独立度达到脱离阈值");
+			MarkPreparedVassalRenewalRelationshipEnded(breakawayRecord, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_119"));
 			if (!TrySerializePreparedRenewalState(breakawayRecord, Array.Empty<ActivePolicyEffectSaveData>(), out string breakawayRecordRaw, out Dictionary<string, string> _, out string breakawaySerializationError))
 			{
-				throw new InvalidOperationException("脱离后的续约状态验证失败：" + breakawaySerializationError);
+				throw new InvalidOperationException("Renewal state validation after breakaway failed: " + breakawaySerializationError);
 			}
 
 			policyStateCommitAttempted = true;
@@ -3347,14 +3895,14 @@ public sealed partial class CustomPolicyBehavior
 				&& observation.IndependenceActual == independenceBefore && !observation.BreakawayActual;
 			if (externalResult == null || externalResult.Kind == VassalPolicyExternalCommitResultKind.Unknown || !observable)
 			{
-				throw new InvalidOperationException("续约独立度提交结果暂不可观察，已保留 externalCommitPending 供每日幂等对账。");
+				throw new InvalidOperationException("Renewal independence submission result is not yet observable; externalCommitPending retained for daily idempotent reconciliation.");
 			}
 			if ((externalResult.Kind == VassalPolicyExternalCommitResultKind.Unchanged
 					|| externalResult.Kind == VassalPolicyExternalCommitResultKind.Conflict)
 				&& unchanged)
 			{
 				TryRestorePolicyRenewalSnapshot(recordId, PolicyScopeVassal, hadOldRecord, oldRecordRaw, oldActiveRaw);
-				throw new InvalidOperationException("续约独立度外部提交未发生，已恢复提交前 AF 状态。");
+				throw new InvalidOperationException("Renewal independence external submission did not occur; pre-submission AF state restored.");
 			}
 			independenceSideEffectSucceeded = true;
 			int appliedBefore = independenceBefore;
@@ -3387,16 +3935,16 @@ public sealed partial class CustomPolicyBehavior
 				EnqueueRenewedPolicyEffectWork(renewedActiveEffects);
 			}
 			NpcRulerPolicyBehavior.TouchPlayerPolicyCooldownForExternal(record.RecordId, currentDay);
-			string resultText = "《" + record.PolicyName + "》已增加 " + record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天；独立度 " + appliedBefore.ToString(CultureInfo.InvariantCulture) + " + " + independenceCost.ToString(CultureInfo.InvariantCulture) + " = " + independenceAfter.ToString(CultureInfo.InvariantCulture) + "/100；脱离阈值 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（" + rulerName + "关系 " + FormatSigned(rulerRelation) + "）。";
-			if (brokeAway) resultText += "\n\n独立度达到脱离阈值，臣属关系已经解除，政策全部持续效果已立即停止。";
-			InformationManager.ShowInquiry(new InquiryData("续约成功", resultText, true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
+			string resultText = PolicyUiTexts.Format("AFPOL_UI_VassalRenewalSuccessMessage", "\"{NAME}\" extended by {DAYS} days; independence {BEFORE} + {COST} = {AFTER}/100; breakaway threshold {THRESHOLD} ({RULER} relation: {RELATION}).", "NAME", record.PolicyName, "DAYS", record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture), "BEFORE", appliedBefore.ToString(CultureInfo.InvariantCulture), "COST", independenceCost.ToString(CultureInfo.InvariantCulture), "AFTER", independenceAfter.ToString(CultureInfo.InvariantCulture), "THRESHOLD", breakawayThreshold.ToString(CultureInfo.InvariantCulture), "RULER", rulerName, "RELATION", FormatSigned(rulerRelation));
+			if (brokeAway) resultText += PolicyUiTexts.Get("AFPOL_UI_VassalBreakawayNotice", "\n\nIndependence reached breakaway threshold; vassalage has ended and all continuous effects have ceased immediately.");
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_RenewalSuccessTitle", "Renewal Succeeded"), resultText, true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
 		}
 		catch (Exception ex)
 		{
 			if (renewalCommitted)
 			{
 				PolicySystemLog.Write("VassalPolicy", "renew-post-commit-failed", ex.ToString());
-				InformationManager.DisplayMessage(new InformationMessage("附庸国政策已续约，但续约后的界面或通知刷新失败。", Colors.Yellow));
+				InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_VassalRenewedRefreshFailed", "Vassal policy renewed, but post-renewal UI or notification refresh failed."), Colors.Yellow));
 				return;
 			}
 			if (!policyStateCommitAttempted
@@ -3411,7 +3959,7 @@ public sealed partial class CustomPolicyBehavior
 				+ (independenceSideEffectSucceeded
 					? " externalSideEffectRollback=unavailable"
 					: (independenceSideEffectStarted && !independenceSideEffectReturned ? " externalSideEffectOutcome=unknown" : string.Empty)));
-			InformationManager.ShowInquiry(new InquiryData("续约失败", "续约处理发生异常，详细技术信息已写入日志。", true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_RenewalFailedTitle", "Renewal Failed"), PolicyUiTexts.Get("AFPOL_UI_RenewalFailedMessage", "An exception occurred during renewal; technical details have been written to the log."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
 		}
 	}
 
@@ -3466,7 +4014,7 @@ public sealed partial class CustomPolicyBehavior
 			.ToList();
 		if (shells.Count == 0)
 		{
-			error = "没有可合并的续约 target shell";
+			error = "No renewal target shell to merge";
 			return false;
 		}
 		string preferredKingdomId = (preferredTargetKingdomId ?? string.Empty).Trim();
@@ -3485,7 +4033,7 @@ public sealed partial class CustomPolicyBehavior
 				|| shell.SubmittedDay != source.SubmittedDay
 				|| shell.LastAppliedDay != source.LastAppliedDay)
 			{
-				error = "target shell 的 record/scope/duration/progress 不一致";
+				error = "Target shell record/scope/duration/progress are inconsistent";
 				return false;
 			}
 			HashSet<string> shellInstanceIds = new HashSet<string>(StringComparer.Ordinal);
@@ -3494,7 +4042,7 @@ public sealed partial class CustomPolicyBehavior
 				string instanceId = (instance?.InstanceId ?? string.Empty).Trim();
 				if (instanceId.Length == 0 || !shellInstanceIds.Add(instanceId))
 				{
-					error = "target shell 包含空或重复的 InstanceId";
+					error = "Target shell contains empty or duplicate InstanceId";
 					return false;
 				}
 			}
@@ -3520,7 +4068,7 @@ public sealed partial class CustomPolicyBehavior
 		}
 		if (instanceOrder.Count == 0 || instanceOrder.Count > PolicyEffectSaveCodec.MaxInstancesPerPolicy)
 		{
-			error = "合并后的逻辑模块实例数量无效";
+			error = "Merged logical module instance count is invalid";
 			return false;
 		}
 
@@ -3534,7 +4082,7 @@ public sealed partial class CustomPolicyBehavior
 			{
 				if (!AreRenewedPolicyEffectInstancesMergeCompatible(canonical, grouped[index], out string incompatibility))
 				{
-					error = "InstanceId " + instanceId + " 的 target shell 不兼容：" + incompatibility;
+					error = "InstanceId " + instanceId + " target shell is incompatible: " + incompatibility;
 					return false;
 				}
 				canonical.TargetSet = MergePolicyEffectCanonicalTargetSets(canonical.TargetSet, grouped[index].TargetSet);
@@ -3578,7 +4126,7 @@ public sealed partial class CustomPolicyBehavior
 		error = string.Empty;
 		if (canonical == null || candidate == null)
 		{
-			error = "实例为空";
+			error = "Instance is empty";
 			return false;
 		}
 		if (!string.Equals(canonical.ModuleId ?? string.Empty, candidate.ModuleId ?? string.Empty, StringComparison.Ordinal)
@@ -3586,7 +4134,7 @@ public sealed partial class CustomPolicyBehavior
 			|| canonical.PayloadSchemaVersion != candidate.PayloadSchemaVersion
 			|| !PolicyEffectTokensEqual(canonical.Payload, candidate.Payload))
 		{
-			error = "module/payload 不一致";
+			error = "module/payload are inconsistent";
 			return false;
 		}
 		if (!string.Equals(canonical.PolicyId ?? string.Empty, candidate.PolicyId ?? string.Empty, StringComparison.Ordinal)
@@ -3598,7 +4146,7 @@ public sealed partial class CustomPolicyBehavior
 			|| canonical.StartDay != candidate.StartDay
 			|| canonical.EndDay != candidate.EndDay)
 		{
-			error = "policy/runtime/lifecycle/timeline 不一致";
+			error = "policy/runtime/lifecycle/timeline are inconsistent";
 			return false;
 		}
 		return true;
@@ -3633,7 +4181,7 @@ public sealed partial class CustomPolicyBehavior
 					|| normalized.IsInert
 					|| normalized.RuntimeInstance == null)
 				{
-					error = module.Id + " 续约实例无效：" + FirstNonEmpty(normalizeError, normalized?.InertReason);
+					error = module.Id + " renewal instance is invalid: " + FirstNonEmpty(normalizeError, normalized?.InertReason);
 					return false;
 				}
 				string idempotencyKey = instance.InstanceId + ":renew:" + instance.EndDay.ToString("0.###", CultureInfo.InvariantCulture);
@@ -3652,7 +4200,7 @@ public sealed partial class CustomPolicyBehavior
 				}, normalized.RuntimeInstance.Payload);
 				if (prepare?.Success != true || prepare.PreparedInstance?.Instance == null)
 				{
-					error = module.Id + " 续约 Prepare 失败：" + (prepare?.Error ?? "未返回 prepared instance");
+					error = module.Id + " renewal Prepare failed: " + (prepare?.Error ?? "No prepared instance returned");
 					return false;
 				}
 				if (IsNonRenewableOneTimePolicyEffect(module))
@@ -3681,7 +4229,7 @@ public sealed partial class CustomPolicyBehavior
 				});
 				if (renewed?.Success != true)
 				{
-					error = module.Id + " OnRenewed 失败：" + (renewed?.Error ?? "未返回成功结果");
+					error = module.Id + " OnRenewed failed: " + (renewed?.Error ?? "No successful result returned");
 					return false;
 				}
 				if (renewed.RuntimeState != null)
@@ -3695,7 +4243,7 @@ public sealed partial class CustomPolicyBehavior
 						|| string.IsNullOrWhiteSpace(renewed.Receipt.ReceiptId)
 						|| renewed.Receipt.TargetSet == null)
 					{
-						error = module.Id + " OnRenewed 返回了无效回执";
+						error = module.Id + " OnRenewed returned an invalid receipt";
 						return false;
 					}
 					PolicyEffectExecutionReceipt receipt = ClonePolicyEffectExecutionReceipt(renewed.Receipt);
@@ -3732,7 +4280,7 @@ public sealed partial class CustomPolicyBehavior
 			|| (active.ModuleEffects?.Count ?? 0) <= 0
 			|| active.ModuleEffects.Count > PolicyEffectSaveCodec.MaxInstancesPerPolicy)
 		{
-			error = "Active v8 延长效果结构不完整";
+			error = "Active v8 extension structure is incomplete";
 			return false;
 		}
 		if (IsLocalActivePolicyEffect(active)
@@ -3740,7 +4288,7 @@ public sealed partial class CustomPolicyBehavior
 			&& !(active.ModuleEffects ?? new List<PolicyEffectInstanceSaveData>())
 				.Any(instance => HasDynamicPolicyEffectTargetDefinition(instance?.TargetSet)))
 		{
-			error = "地方续约 Active 缺少当前定居点目标";
+			error = "Local renewal Active lacks current settlement target";
 			return false;
 		}
 		if (IsVassalActivePolicyEffect(active))
@@ -3748,7 +4296,7 @@ public sealed partial class CustomPolicyBehavior
 			Kingdom target = ResolveKingdomByIdOrName(active.TargetKingdomId, active.TargetKingdomName);
 			if (target == null || target.IsEliminated)
 			{
-				error = "附庸国续约 Active 的目标王国无效";
+				error = "Vassal renewal Active has an invalid target kingdom";
 				return false;
 			}
 		}
@@ -3762,13 +4310,13 @@ public sealed partial class CustomPolicyBehavior
 			if (instanceId.Length == 0 || !instanceIds.Add(instanceId)
 				|| !PolicyEffectSaveCodec.TryNormalizeInstance(instance, out PolicyEffectNormalizedInstance normalized, out normalizeError))
 			{
-				error = "续约模块实例无效：" + FirstNonEmpty(instanceId, normalizeError);
+				error = "Renewal module instance is invalid: " + FirstNonEmpty(instanceId, normalizeError);
 				return false;
 			}
 			totalPayloadBytes += Encoding.UTF8.GetByteCount(instance.Payload.ToString(Formatting.None));
 			if (totalPayloadBytes > PolicyEffectSaveCodec.MaxTotalPayloadBytes)
 			{
-				error = "续约模块 payload 总量超过 32KiB";
+				error = "Renewal module payload total exceeds 32KiB";
 				return false;
 			}
 			moduleIdByInstanceId[instanceId] = instance.ModuleId ?? string.Empty;
@@ -3776,14 +4324,14 @@ public sealed partial class CustomPolicyBehavior
 			{
 				if (!HasAnyPolicyEffectCanonicalTarget(instance.TargetSet))
 				{
-					error = "未知模块续约实例缺少可保留的规范目标：" + (instance.ModuleId ?? string.Empty);
+					error = "Unknown module renewal instance lacks retainable canonical target: " + (instance.ModuleId ?? string.Empty);
 					return false;
 				}
 				continue;
 			}
 			if (normalized == null || normalized.IsInert || normalized.RuntimeInstance == null)
 			{
-				error = module.Id + " 续约 payload 无法执行：" + (normalized?.InertReason ?? string.Empty);
+				error = module.Id + " renewal payload is not executable: " + (normalized?.InertReason ?? string.Empty);
 				return false;
 			}
 			string targetError = string.Empty;
@@ -3792,13 +4340,13 @@ public sealed partial class CustomPolicyBehavior
 					&& !HasDynamicPolicyEffectTargetDefinition(instance.TargetSet))
 				|| !AreRenewedModuleTargetsResolvable(module, instance.TargetSet, out targetError))
 			{
-				error = module.Id + " 续约目标或作用域无效：" + targetError;
+				error = module.Id + " renewal target or scope is invalid: " + targetError;
 				return false;
 			}
 			if (IsNonRenewableOneTimePolicyEffect(module)
 				&& instance.LifecycleState != PolicyEffectLifecycleState.Completed)
 			{
-				error = module.Id + " 续约时不得重放 OneShot";
+				error = module.Id + " renewal must not replay OneShot";
 				return false;
 			}
 		}
@@ -3816,7 +4364,7 @@ public sealed partial class CustomPolicyBehavior
 				|| !string.Equals(moduleId, receipt.ModuleId ?? string.Empty, StringComparison.OrdinalIgnoreCase)
 				|| receipt.TargetSet == null)
 			{
-				error = "续约 Active 包含无效、重复或孤立的执行回执";
+				error = "Renewal Active contains invalid, duplicate, or orphaned execution receipts";
 				return false;
 			}
 		}
@@ -3850,7 +4398,7 @@ public sealed partial class CustomPolicyBehavior
 				{
 					continue;
 				}
-				error = targetKind + " 目标为空";
+				error = targetKind + " target is empty";
 				return false;
 			}
 			foreach (string id in normalizedIds)
@@ -3874,7 +4422,7 @@ public sealed partial class CustomPolicyBehavior
 				}
 				if (!valid)
 				{
-					error = targetKind + " 目标不存在：" + id;
+					error = targetKind + " target does not exist: " + id;
 					return false;
 				}
 			}
@@ -3909,7 +4457,7 @@ public sealed partial class CustomPolicyBehavior
 			}
 			if (!activeById.TryGetValue(effectRecord.ActiveEffectId, out ActivePolicyEffectSaveData active))
 			{
-				error = "record shell 引用了不存在的 Active：" + effectRecord.ActiveEffectId;
+				error = "Record shell references a non-existent Active: " + effectRecord.ActiveEffectId;
 				return false;
 			}
 			Dictionary<string, PolicyEffectInstanceSaveData> activeByInstanceId = (active.ModuleEffects
@@ -3923,18 +4471,18 @@ public sealed partial class CustomPolicyBehavior
 				string instanceId = (shellInstance?.InstanceId ?? string.Empty).Trim();
 				if (instanceId.Length == 0 || !shellInstanceIds.Add(instanceId))
 				{
-					error = "record shell 包含空或重复的 InstanceId";
+					error = "Record shell contains empty or duplicate InstanceId";
 					return false;
 				}
 				if (!activeByInstanceId.TryGetValue(instanceId, out PolicyEffectInstanceSaveData activeInstance))
 				{
-					error = "record shell 的逻辑实例未进入 Active：" + instanceId;
+					error = "Record shell logical instance did not enter Active: " + instanceId;
 					return false;
 				}
 				PolicyEffectCanonicalTargetSet shellTargetSet = NormalizePolicyEffectCanonicalTargetSet(shellInstance.TargetSet);
 				if (!HasAnyPolicyEffectCanonicalTarget(shellTargetSet))
 				{
-					error = "record shell 的逻辑实例缺少目标：" + instanceId;
+					error = "Record shell logical instance lacks target: " + instanceId;
 					return false;
 				}
 				PolicyEffectInstanceSaveData synchronized = ClonePolicyEffectSaveData(activeInstance);
@@ -3947,7 +4495,7 @@ public sealed partial class CustomPolicyBehavior
 			}
 			if (synchronizedShellInstances.Count == 0)
 			{
-				error = "record shell 不包含模块实例";
+				error = "Record shell contains no module instances";
 				return false;
 			}
 			effectRecord.RemainingDays = active.RemainingDays;
@@ -3985,12 +4533,12 @@ public sealed partial class CustomPolicyBehavior
 				if (Encoding.UTF8.GetByteCount(raw) > PolicyEffectSaveCodec.MaxSerializedEnvelopeBytes
 					|| !PolicyEffectSaveCodec.TryNormalizeActiveV4ToV8(JObject.Parse(raw), out _, out _, out error))
 				{
-					error = FirstNonEmpty(error, "续约 Active 序列化结果超过限制或无法规范化");
+					error = FirstNonEmpty(error, "Renewal Active serialization result exceeds limit or cannot be normalized");
 					return false;
 				}
 				if (activeRawById.ContainsKey(active.EffectId))
 				{
-					error = "续约 Active effectId 重复：" + active.EffectId;
+					error = "Renewal Active effectId is duplicate: " + active.EffectId;
 					return false;
 				}
 				activeRawById.Add(active.EffectId, raw);
@@ -4001,7 +4549,7 @@ public sealed partial class CustomPolicyBehavior
 				|| (!string.Equals(record.ScopeKind, PolicyScopeLocal, StringComparison.OrdinalIgnoreCase)
 					&& !string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase)))
 			{
-				error = "续约 record v6 结构不完整";
+				error = "Renewal record v6 structure is incomplete";
 				return false;
 			}
 			HashSet<string> referencedActiveIds = new HashSet<string>(
@@ -4013,14 +4561,14 @@ public sealed partial class CustomPolicyBehavior
 				|| (activeRawById.Count > 0 && !activeRawById.ContainsKey(record.ActiveEffectId ?? string.Empty))
 				|| (activeRawById.Count == 0 && !string.IsNullOrWhiteSpace(record.ActiveEffectId)))
 			{
-				error = "续约 record 与 Active 引用集合不一致";
+				error = "Renewal record and Active reference sets are inconsistent";
 				return false;
 			}
 			recordRaw = JsonConvert.SerializeObject(record, Formatting.None);
 			if (Encoding.UTF8.GetByteCount(recordRaw) > PolicyEffectSaveCodec.MaxSerializedEnvelopeBytes
 				|| !PolicyEffectSaveCodec.TryNormalizeLocalV1ToV6(JObject.Parse(recordRaw), out _, out _, out error))
 			{
-				error = FirstNonEmpty(error, "续约 record 序列化结果超过限制或无法规范化");
+				error = FirstNonEmpty(error, "Renewal record serialization result exceeds limit or cannot be normalized");
 				return false;
 			}
 			return true;
@@ -4029,7 +4577,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			recordRaw = string.Empty;
 			activeRawById.Clear();
-			error = "续约状态序列化失败：" + ex.Message;
+			error = "Renewal state serialization failed: " + ex.Message;
 			return false;
 		}
 	}
@@ -4051,14 +4599,14 @@ public sealed partial class CustomPolicyBehavior
 			|| string.IsNullOrWhiteSpace(newRecordRaw)
 			|| newActiveById.Count != (newActiveRaw?.Count ?? 0))
 		{
-			throw new InvalidOperationException("续约提交数据不完整。");
+			throw new InvalidOperationException("Renewal submission data is incomplete.");
 		}
 		foreach (string newEffectId in newActiveById.Keys)
 		{
 			if (_activePolicyEffects.ContainsKey(newEffectId)
 				&& !(oldActiveRaw?.ContainsKey(newEffectId) ?? false))
 			{
-				throw new InvalidOperationException("续约 effectId 与现有 Active 冲突：" + newEffectId);
+				throw new InvalidOperationException("Renewal effectId conflicts with existing Active: " + newEffectId);
 			}
 		}
 		try
@@ -4115,7 +4663,7 @@ public sealed partial class CustomPolicyBehavior
 			PolicySystemLog.Write("Effect", "renew-commit-rollback", "recordId=" + normalizedRecordId
 				+ " commitError=" + commitError
 				+ (string.IsNullOrWhiteSpace(restoreError) ? " restored=true" : " restored=false restoreError=" + restoreError));
-			throw new InvalidOperationException("续约状态提交失败；" + (string.IsNullOrWhiteSpace(restoreError) ? "已恢复旧快照。" : "旧快照恢复也失败。"), commitError);
+			throw new InvalidOperationException("Renewal state submission failed; " + (string.IsNullOrWhiteSpace(restoreError) ? "the old snapshot was restored." : "restoring the old snapshot also failed."), commitError);
 		}
 	}
 
@@ -4184,7 +4732,7 @@ public sealed partial class CustomPolicyBehavior
 			return;
 		}
 		record.Status = LocalPolicyStatusRelationshipEnded;
-		record.EndReason = string.IsNullOrWhiteSpace(reason) ? "臣属关系终止" : reason.Trim();
+		record.EndReason = string.IsNullOrWhiteSpace(reason) ? PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_126") : reason.Trim();
 		record.RemainingDays = 0;
 		record.ActiveEffectId = string.Empty;
 		foreach (LocalPolicyEffectRecordSaveData effect in record.Effects ?? new List<LocalPolicyEffectRecordSaveData>())
@@ -4527,7 +5075,7 @@ public sealed partial class CustomPolicyBehavior
 	{
 		if (record == null || effectRecord == null || targetKingdom == null)
 		{
-			throw new InvalidOperationException("附庸国政策效果记录无效。");
+			throw new InvalidOperationException("Vassal policy effect record is invalid.");
 		}
 		string effectId = Guid.NewGuid().ToString("N");
 		List<PolicyEffectExecutionReceipt> availableReceipts = SelectPolicyEffectExecutionReceiptsForInstances(
@@ -4580,7 +5128,7 @@ public sealed partial class CustomPolicyBehavior
 			if (!_localPolicyRecords.TryGetValue(recordId ?? "", out string raw)) return;
 			var record = JsonConvert.DeserializeObject<LocalPolicyRecordSaveData>(raw);
 			if (record == null) return;
-			string fact = AnimusForge.SiegeAftermathIntervention.SettlementRuleMemoryEventText.Policy(eventKind, record.PolicyName);
+			string fact = AnimusForge.SiegeAftermathUiText.Policy(eventKind, record.PolicyName);
 			if (string.IsNullOrWhiteSpace(fact)) return;
 			string eventId = "policy:" + recordId + ":" + eventKind + ":" + (record.Renewals?.Count ?? 0);
 			foreach (string id in (targetFiefIds ?? Array.Empty<string>()).Distinct(StringComparer.OrdinalIgnoreCase))
@@ -4592,26 +5140,17 @@ public sealed partial class CustomPolicyBehavior
 	private static void ShowPolicyRenewalResultPopup(string policyObjectId, PolicyDraftRequest request, PolicyApplicationResult application)
 	{
 		string sequencePolicyObjectId = (policyObjectId ?? "").Trim();
-		string policyName = string.IsNullOrWhiteSpace(request?.PolicyName) ? "未命名政策" : request.PolicyName.Trim();
+		string policyName = string.IsNullOrWhiteSpace(request?.PolicyName) ? PolicyUiTexts.Get("AFPOL_UI_UnnamedPolicy", "Unnamed Policy") : request.PolicyName.Trim();
 		int actualGoldCost = Math.Max(0, request?.GoldCost ?? 0);
 		int durationDays = application?.KingdomEffects?.Where(effect => effect != null)
 			.Select(effect => Math.Max(0, effect.DurationDays))
 			.DefaultIfEmpty(0)
 			.Max() ?? 0;
-		StringBuilder body = new StringBuilder();
-		body.Append("《").Append(policyName).Append("》已续期");
-		if (durationDays > 0)
-		{
-			body.Append(' ').Append(durationDays.ToString(CultureInfo.InvariantCulture)).Append(" 天");
-		}
-		body.AppendLine("。");
-		body.Append("本次续期消耗：").Append(actualGoldCost.ToString(CultureInfo.InvariantCulture)).Append(" 第纳尔。");
-		if (request != null && request.GoldEffectScale < 0.9999f)
-		{
-			body.AppendLine().Append("本期效果按 ").Append(FormatPercent(request.GoldEffectScale)).Append(" 生效。");
-		}
+		string body = request != null && request.GoldEffectScale < 0.9999f
+			? PolicyUiTexts.Format("AFPOL_UI_PolicyRenewedDetailedBody", "\"{NAME}\" extended {DAYS} days.\nRenewal cost: {COST} denars.\nEffects active at {SCALE} this cycle.", "NAME", policyName, "DAYS", durationDays.ToString(CultureInfo.InvariantCulture), "COST", actualGoldCost.ToString(CultureInfo.InvariantCulture), "SCALE", FormatPercent(request.GoldEffectScale))
+			: PolicyUiTexts.Format("AFPOL_UI_PolicyRenewedDetailedNoScale", "\"{NAME}\" extended {DAYS} days.\nRenewal cost: {COST} denars.", "NAME", policyName, "DAYS", durationDays.ToString(CultureInfo.InvariantCulture), "COST", actualGoldCost.ToString(CultureInfo.InvariantCulture));
 		BeginPolicySuccessResultSequence(sequencePolicyObjectId);
-		InformationManager.ShowInquiry(new InquiryData("政策已续期", body.ToString(), true, false, "知道了", "", delegate
+		InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_PolicyRenewedTitle", "Policy Extended"), body, true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", delegate
 		{
 			CompletePolicySuccessResultSequence(sequencePolicyObjectId);
 		}, null), pauseGameActiveState: true);
@@ -4622,13 +5161,13 @@ public sealed partial class CustomPolicyBehavior
 		string sequencePolicyObjectId = (policyObjectId ?? "").Trim();
 		string bodyText = impactText ?? "";
 		BeginPolicySuccessResultSequence(sequencePolicyObjectId);
-		bool shown = CustomPolicyResultPopup.Show("政策已经发布", bodyText, "知道了", delegate
+		bool shown = CustomPolicyResultPopup.Show(PolicyUiTexts.Get("AFPOL_UI_PolicyPublished", "Policy Published"), bodyText, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), delegate
 		{
 			CompletePolicySuccessResultSequence(sequencePolicyObjectId);
 		});
 		if (!shown)
 		{
-			InformationManager.ShowInquiry(new InquiryData("政策已经发布", bodyText, true, false, "知道了", "", delegate
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_PolicyPublished", "Policy Published"), bodyText, true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", delegate
 			{
 				CompletePolicySuccessResultSequence(sequencePolicyObjectId);
 			}, null), pauseGameActiveState: true);
@@ -4642,11 +5181,11 @@ public sealed partial class CustomPolicyBehavior
 		try
 		{
 			InformationManager.ShowInquiry(new InquiryData(
-				"政策落地失败",
-				"议程投票已经通过，但政策效果、账本或费用的原子提交失败。AnimusForge 已撤销本次采用，政策未生效且不会显示为现行政策。详细原因已写入 PolicySystem.txt。",
+				PolicyUiTexts.Get("AFPOL_UI_PolicyAdoptionFailedTitle", "Policy Enactment Failed"),
+				PolicyUiTexts.Get("AFPOL_UI_PolicyAdoptionFailedMessage", "Agenda vote passed, but atomic commit of policy effects, ledger, or costs failed. AnimusForge has reverted this adoption; the policy did not take effect and will not show as active. Detailed reasons written to PolicySystem.txt."),
 				true,
 				false,
-				"知道了",
+				PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"),
 				string.Empty,
 				delegate { CompletePolicySuccessResultSequence(sequencePolicyObjectId); },
 				null),

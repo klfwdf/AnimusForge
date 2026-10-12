@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Blackbar",
+  "Keywords": [
+    "Blackbar",
+    "House Blackbar"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Bleibbar holds Bendaeron in the Reach. The black horizontal stripe on a yellow background is its coat of arms. The lords of Bendalen rely on farmland, knights, and roads to neighboring lands to fulfill their vassal obligations; what truly maintains the name of the family is temperance when the harvest is poor, gathering in wartime, and trust in alliances. This family is not located at the highest point of power in the Reach, but it can maintain its position among the vassals of Highgarden through land, marriage, and continued performance of contracts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Knights of the Reach, seeing the black stripe of Bendaeren, will see Bleibar as one of the many local houses under Highgarden's command. Being able to bring well-trained troops under a summons is more important than boasting about non-existent legends at a banquet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers in Bundalen do not rely on heraldry to judge the year. If the lord leaves room for taxation and conscription, and is willing to repair granaries during bad harvests, no matter how simple a family name is, someone can maintain it; if not, the black horizontal stripe can only appear on the tax collector's flag."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackbar The Bleibbar family takes Bendalen as its seat, and its black horizontal stripes on a yellow background are very eye-catching among the river lords. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackbar The Bleibbar family takes Bendalen as its seat, and its black horizontal stripes on a yellow background are very eye-catching among the river lords. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackbar The Bleibbar family takes Bendalen as its seat, and its black horizontal stripes on a yellow background are very eye-catching among the river lords. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackbar The Bleibbar family takes Bendalen as its seat, and its black horizontal stripes on a yellow background are very eye-catching among the river lords. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Blackbar: The Bleibbar family takes Bendalen as its seat, and its black horizontal stripes on a yellow background are very eye-catching among the river lords."
+  ]
+}

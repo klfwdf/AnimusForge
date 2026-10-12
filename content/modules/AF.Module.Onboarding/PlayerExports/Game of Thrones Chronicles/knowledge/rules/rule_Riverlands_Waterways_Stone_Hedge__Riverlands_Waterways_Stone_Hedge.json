@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Riverlands_Waterways_Stone_Hedge",
+  "Keywords": [
+    "Stone Hedge",
+    "Blackwood"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Stonehedge is the seat of House Bracken, located near the Red Fork in the Riverlands. Stonewall is not a towering city. Its power comes from farmland, knights, manors, and a river valley that can repeatedly support people and horses. The Bracken family and the Blackwood family of Raventree have a deep feud. The dispute spans generations and involves land, riverbanks, reputations, and past events that both sides are unwilling to let go of. This hostility is also the epitome of the politics of the Riverlands - the grievances of small lords can be amplified in larger conflicts. The residents of Shili City have to deal with seasons, water levels, taxes, and neighbors, and family hatred is just the sharpest layer among them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People who live beside the walls and roads of Shili City first look at water levels, ferries, reed fields, arable highlands and rainy season roads. Local families also relied on river transportation, ferries, wheat fields, mills, and hiding places when war came; if any road, well, spring, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As the army approached Shili City, the map quickly gave way to bridges, fords, causeways, boats, and grain roads that did not get bogged down. Entry Stone Hedge"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Bachelors can memorize the history of Shili City, and merchants can first inquire about water transportation, bridge tax, ferry fees, mills and riverside markets. They also recognize the accents, laws, and credentials of the Riverlands; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stone Hedge Entry Stone Hedge"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As a tired team approached Shili City, everyone was concerned about where to ford the water and which causeway would not be swallowed up by the flood. If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Shili City is not just the main hall; boats, bridges, millstones, fishing nets, riverside churches and seven gods, ancient legends of river kings and the memory of land that changes hands repeatedly also shape this place. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stone Hedge They care about river transportation, ferries, wheat fields, mills, and hiding places when war comes. They also care about whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Stone Hedge: Stonehedge is the seat of House Bracken, located near the Red Fork in the Riverlands. Stonewall is not a towering city. Its power comes from farmland, knights, manors, and a river valley that can repeatedly support people and horses. The Bracken family and the Blackwood family of Raventree have a deep feud. The dispute spans generations and involves land, riverbanks, reputations, and past events that both sides are unwilling to let go of. This hostility is also the epitome of the politics of the Riverlands - the grievances of small lords can be amplified in larger conflicts. The residents of Shili City have to deal with seasons, water levels, taxes, and neighbors, and family hatred is just the sharpest layer among them."
+  ]
+}

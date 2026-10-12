@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_House_Frey",
+  "Keywords": [
+    "House Frey",
+    "Twin Towers Stone Bridge",
+    "Bridge Toll"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Frey family has its roots in the Twins on the Green Fork River. Two opposing castles and a stone bridge connecting them allowed Frey to collect bridge tolls from merchants, armies and nobles, and over hundreds of years the emerging families accumulated one of the wealthiest and most populous vassals in the Riverlands. The family emblem represents two connected towers; the ancient family often ridiculed Frey for his shallow family background and too many descendants, but Frey understood that the bridge of his ancestors can force people to stop negotiating more than many ancient songs. Local people have a more direct understanding of them: bridges can save roads and also charge fees, and the dignity of bridge keepers often appears at the same time as the price."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The river nobles often despise the Frey family for getting rich too late, but they cannot despise the bridge of the Twins. Ancient lineage can determine respect at a banquet, but a ferry can determine when an army arrives. The most disturbing thing about Frey is that they turn geography into negotiation: when others talk about honor, they first ask who wants to cross the river and what they are willing to pay."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants and farmers had a simpler view of Frey than the nobles. If the bridge is open, the wheels will be less stuck in the mud for a few days, and the goods can safely cross the Green Fork River; if the bridge tax is heavy, a year's profit will be left under the city gate. People cursed the toll and were afraid of floods and detours without the bridge. Resentment and dependence were therefore tied to the same iron chain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the soldiers look at the Twins, they first look at the arrow towers, the suspension bridge and the narrow bridge deck on both sides of the bank. That is a place that is difficult to break through with courage, and it is also a pass that any commander would like to negotiate in advance. The Frey flag may not endear you to anyone, but it can make an entire army pause and wait for a reply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Frey The Twins' bridge-keeping family on the Green Fork River rose to prominence with its twin forts, stone bridges, tolls and large descendants. The ancient people despised their family status, but the army and merchants could not despise the ferry. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Frey The Twins' bridge-keeping family on the Green Fork River rose to prominence with its twin forts, stone bridges, tolls and large descendants. The ancient people despised their family status, but the army and merchants could not despise the ferry. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Frey The Twins' bridge-keeping family on the Green Fork River rose to prominence with its twin forts, stone bridges, tolls and large descendants. The ancient people despised their family status, but the army and merchants could not despise the ferry. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Frey The Twins' bridge-keeping family on the Green Fork River rose to prominence with its twin forts, stone bridges, tolls and large descendants. The ancient people despised their family status, but the army and merchants could not despise the ferry. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Frey: The Twins' bridge-keeping family on the Green Fork River rose to prominence with its twin forts, stone bridges, tolls and large descendants. The ancient people despised their family status, but the army and merchants could not despise the ferry;"
+  ]
+}

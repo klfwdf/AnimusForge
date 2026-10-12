@@ -32,13 +32,13 @@ internal sealed class CoupEntryRequirements
     {
         reason = "";
         if (minimumTroops > streetLimit)
-            reason = "篡位配置冲突：最低突击队人数" + minimumTroops + "超过街道上限" + streetLimit + "，请在 MCM 中调整。";
+            reason = CoupUiText.MinimumTroopsConflict(minimumTroops, streetLimit);
         else if (tier < minimumTier)
-            reason = "家族等级不足：" + tier + "／" + minimumTier + "级。";
+            reason = CoupUiText.InsufficientTier(tier, minimumTier);
         else if (minimumInfluence > 0 && (float.IsNaN(influence) || float.IsInfinity(influence) || influence < minimumInfluence))
-            reason = "影响力不足：" + influence.ToString("0.##") + "／" + minimumInfluence + "（仅检查，不扣除）。";
+            reason = CoupUiText.InsufficientInfluence(influence.ToString("0.##"), minimumInfluence);
         else if (healthyRegulars < minimumTroops + 1)
-            reason = "至少需要" + (minimumTroops + 1) + "名健康普通士兵，其中1人留守接应；当前" + healthyRegulars + "人。";
+            reason = CoupUiText.InsufficientRegulars(minimumTroops + 1, healthyRegulars);
         return reason.Length == 0;
     }
 }

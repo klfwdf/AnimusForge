@@ -1,0 +1,48 @@
+{
+  "Id": "rule_Lake_Phoetis",
+  "Keywords": [
+    "Lake Phoetis"
+  ],
+  "RagShortTexts": [
+    "Lake Phoetis lies within Imperial territory near the Imperial capital.",
+    "Lake Phoetis was a sacred site of the Palaic people."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Phoetis... seems to be a small lake inside the Empire, near the capital. I hear it's quite beautiful."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Phoetis was once a sacred site of the Palaic people. Like the Battanians, the Palaics had a tradition of lake worship, offering sacrifices to holy spirits in the waters to pray for bountiful harvests and good fortune."
+    }
+  ],
+  "TextMappings": []
+}

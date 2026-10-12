@@ -195,41 +195,82 @@ public static class WorldDiplomacyIntentVocabulary
     {
 		return NormalizeIntent(intent) switch
 		{
-			"withdraw_offer" => "撤回原提案",
-			"propose_annexation" => "提议王国并入",
-			"accept_annexation" => "接受王国并入",
-			"reject_annexation" => "拒绝王国并入",
-			"propose_tributary" => "提议朝贡条约",
-			"accept_tributary" => "接受朝贡条约",
-			"reject_tributary" => "拒绝朝贡条约",
-			"propose_garrison" => "提议驻军条约",
-			"accept_garrison" => "接受驻军条约",
-			"reject_garrison" => "拒绝驻军条约",
-			"propose_vassal" => "提议完全臣属条约",
-			"accept_vassal" => "接受完全臣属条约",
-			"reject_vassal" => "拒绝完全臣属条约",
-			"declare_war" => "正式宣战",
-			"propose_peace" => "和平提议",
-			"accept_peace" => "接受和平",
-			"reject_peace" => "拒绝和平",
-			"propose_alliance" => "结盟提议",
-			"accept_alliance" => "接受结盟",
-			"reject_alliance" => "拒绝结盟",
-			"break_alliance" => "解除同盟",
-			"propose_trade" => "贸易提议",
-			"accept_trade" => "接受贸易",
-			"reject_trade" => "拒绝贸易",
-			"cancel_trade" => "终止贸易",
-            "release_subject" => "宗主释放臣属国",
-			"comply_ultimatum" => "服从最后通牒",
-			"ultimatum" => "最后通牒",
-			"warning" => "谴责",
-			"condemn" => "公开谴责",
-			"apology" => "公开致歉",
-			"concession" => "外交让步",
-			_ => "外交声明"
+			"withdraw_offer" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_withdraw_offer"),
+			"propose_annexation" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_annexation"),
+			"accept_annexation" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_annexation"),
+			"reject_annexation" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_annexation"),
+			"propose_tributary" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_tributary"),
+			"accept_tributary" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_tributary"),
+			"reject_tributary" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_tributary"),
+			"propose_garrison" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_garrison"),
+			"accept_garrison" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_garrison"),
+			"reject_garrison" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_garrison"),
+			"propose_vassal" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_vassal"),
+			"accept_vassal" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_vassal"),
+			"reject_vassal" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_vassal"),
+			"declare_war" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_declare_war"),
+			"propose_peace" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_peace"),
+			"accept_peace" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_peace"),
+			"reject_peace" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_peace"),
+			"propose_alliance" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_alliance"),
+			"accept_alliance" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_alliance"),
+			"reject_alliance" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_alliance"),
+			"break_alliance" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_break_alliance"),
+			"propose_trade" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_trade"),
+			"accept_trade" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_trade"),
+			"reject_trade" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_trade"),
+			"cancel_trade" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_cancel_trade"),
+            "release_subject" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_release_subject"),
+			"comply_ultimatum" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_comply_ultimatum"),
+			"ultimatum" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_ultimatum"),
+			"warning" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_warning"),
+			"condemn" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_condemn"),
+			"apology" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_apology"),
+			"concession" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_concession"),
+			_ => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_032")
 		};
 	}
+
+    public static string IntentLabel(string intent, Func<string, string, string> localize)
+    {
+        if (localize == null) return IntentLabel(intent);
+        return NormalizeIntent(intent) switch
+        {
+            "withdraw_offer" => localize("IntentLabel_withdraw_offer", "Withdraw the original proposal"),
+            "propose_annexation" => localize("IntentLabel_propose_annexation", "Propose kingdom annexation"),
+            "accept_annexation" => localize("IntentLabel_accept_annexation", "Accept kingdom annexation"),
+            "reject_annexation" => localize("IntentLabel_reject_annexation", "Reject kingdom annexation"),
+            "propose_tributary" => localize("IntentLabel_propose_tributary", "Propose a tributary treaty"),
+            "accept_tributary" => localize("IntentLabel_accept_tributary", "Accept a tributary treaty"),
+            "reject_tributary" => localize("IntentLabel_reject_tributary", "Reject a tributary treaty"),
+            "propose_garrison" => localize("IntentLabel_propose_garrison", "Propose a garrison treaty"),
+            "accept_garrison" => localize("IntentLabel_accept_garrison", "Accept a garrison treaty"),
+            "reject_garrison" => localize("IntentLabel_reject_garrison", "Reject a garrison treaty"),
+            "propose_vassal" => localize("IntentLabel_propose_vassal", "Propose a full vassal treaty"),
+            "accept_vassal" => localize("IntentLabel_accept_vassal", "Accept a full vassal treaty"),
+            "reject_vassal" => localize("IntentLabel_reject_vassal", "Reject a full vassal treaty"),
+            "declare_war" => localize("IntentLabel_declare_war", "Formal declaration of war"),
+            "propose_peace" => localize("IntentLabel_propose_peace", "Peace proposal"),
+            "accept_peace" => localize("IntentLabel_accept_peace", "Accept peace"),
+            "reject_peace" => localize("IntentLabel_reject_peace", "Reject peace"),
+            "propose_alliance" => localize("IntentLabel_propose_alliance", "Alliance proposal"),
+            "accept_alliance" => localize("IntentLabel_accept_alliance", "Accept an alliance"),
+            "reject_alliance" => localize("IntentLabel_reject_alliance", "Reject an alliance"),
+            "break_alliance" => localize("IntentLabel_break_alliance", "Dissolve the alliance"),
+            "propose_trade" => localize("IntentLabel_propose_trade", "Trade proposal"),
+            "accept_trade" => localize("IntentLabel_accept_trade", "Accept trade"),
+            "reject_trade" => localize("IntentLabel_reject_trade", "Reject trade"),
+            "cancel_trade" => localize("IntentLabel_cancel_trade", "Terminate trade"),
+            "release_subject" => localize("IntentLabel_release_subject", "Suzerain releases a subject kingdom"),
+            "comply_ultimatum" => localize("IntentLabel_comply_ultimatum", "Comply with the ultimatum"),
+            "ultimatum" => localize("IntentLabel_ultimatum", "Ultimatum"),
+            "warning" => localize("IntentLabel_warning", "Condemnation"),
+            "condemn" => localize("IntentLabel_condemn", "Public condemnation"),
+            "apology" => localize("IntentLabel_apology", "Public apology"),
+            "concession" => localize("IntentLabel_concession", "Diplomatic concession"),
+            _ => localize("IntentVocabulary_OriginalTerm_032", "Diplomatic statement")
+        };
+    }
 
     public static bool ResolveValidatedResponseObligation(
         WorldDiplomacyDocument document, string intent, bool modelRequestedResponse, int maxAutomaticReplyDepth)
@@ -250,10 +291,10 @@ public static class WorldDiplomacyIntentVocabulary
 	public static string InferTopicCategory(string topic, bool initiatorAndTargetAtWar)
 	{
 		string value = topic ?? "";
-		if (value.IndexOf("议和", StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf("停战", StringComparison.OrdinalIgnoreCase) >= 0) return "peace_terms";
-		if (ContainsAny(value, "战争", "宣战", "开战", "最后通牒", "谴责", "军事警告", "战争警告", "动武")) return "war_escalation";
-		if (ContainsAny(value, "贸易", "通商", "商路", "商贸", "互市", "关税", "商队")) return "trade_order";
-		if (value.IndexOf("同盟", StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf("盟约", StringComparison.OrdinalIgnoreCase) >= 0) return "alliance_duties";
+		if (value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_033"), StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_034"), StringComparison.OrdinalIgnoreCase) >= 0) return "peace_terms";
+		if (ContainsAny(value, global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_035"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_036"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_037"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_ultimatum"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_warning"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_038"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_039"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_040"))) return "war_escalation";
+		if (ContainsAny(value, global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_041"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_042"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_043"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_044"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_045"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_046"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_047"))) return "trade_order";
+		if (value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_048"), StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_049"), StringComparison.OrdinalIgnoreCase) >= 0) return "alliance_duties";
 		if (initiatorAndTargetAtWar) return "war_conduct";
 		return "regional_security";
 	}

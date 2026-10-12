@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Wood_Elf_Diplomacy",
+  "Keywords": [
+    "Wood Elf Diplomacy",
+    "xenophobic",
+    "forest border",
+    "Elf isolated",
+    "Bretonian border",
+    "Forbidden Forest",
+    "non-interference principle",
+    "temporary alliance",
+    "silent deal"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Wood elves have almost no overt diplomatic relations with the outside world. They are extremely xenophobic, and any foreigner who enters Athel Loren without invitation will be shot without mercy. The border lords of Bretonnia maintain a silent non-aggression agreement with the wood elves - as long as you don't cut down trees or cross the border, you'll be fine. Occasionally, on extremely rare occasions, wood elves will send emissaries to warn of some external threat or extend an invitation for cooperation, but these incidents are rare."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We do not need the friendship of outsiders, nor do we desire their understanding. Athel Loren itself is our only barrier and only realm - outside races are born, fight, and die as briefly as flies at the foot of the forest, which is nothing compared to the lifespan of a thousand-year poplar. Those stupid knights of Bretonia have at least learned to respect our borders - they frighten their children with stories of the 'Forbidden Forest' - which is somewhat of a germ of wisdom. As for the Empire, those humans with torches and axes are always the most dangerous threat, and our scouts have left plenty of warnings among the Empire's forest harvesting parties - often delivered in the form of arrows lodged in tree stumps. High elf? Occasionally they send emissaries to appeal to us in a disgustingly condescending manner to 'return to civilization'. Let them return to their homeland of Ulthuan. The dwarves, those stubborn cave dwellers, still hold grudges against us for refusing to send troops during the Longbeard War. Fine, let them bear their grudges, their axes vulnerable to the roots of Athel Loren."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a diplomatic perspective, the Wood Elves are an almost unpredictable force. They do not participate in any alliance system, accept no form of tribute or vassalship, and generally do not respond to any diplomatic gestures. However, in extreme cases - usually involving a major Chaos invasion or a serious threat to the forest - the Wood Elves will unexpectedly cooperate with other forces, but this cooperation is temporary, utilitarian, and will end as soon as the crisis is resolved. The relative peace between Bretonnia and Athel Loren is largely due to Bretonnia's respect for the forest - which hints at the key to coexisting with the Wood Elves: respecting forest boundaries and not engaging in any form of plundering of forest resources. Any settlement expansion or resource extraction near Athel Loren is bound to elicit a deadly response."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Wood Elves' model of diplomacy—or, more accurately, their lack of diplomacy—is rooted in the underlying philosophy of their civilization. Aslay does not regard outside races as equal objects of negotiation, because in their view, only those beings who can establish a spiritual connection with the forest have true 'personality'. Part of the reason Bretonnia enjoys better relations than the Empire is that Bretonnia's belief in the Lady of the Lake has some vague deep resonance with Athel Loren's spirit system - the two may share some ancient religious origins. Historical records indicate that the Wood Elves briefly allied themselves with dwarven and human armies during the Chaos Victory invasion, but this was more a reflection of their anger at Chaos' corrupted forests than any form of strategic alliance. The tension between the High Elves and the Wood Elves stems primarily from a subtle cultural dispute: the Ulthuan elves see Asrai as a lost being in need of 'rescue', while the Asrai view the Ulthuan elves as arrogant meddlers, and the two have fundamental philosophical differences over whether elven souls should essentially merge with nature."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a member of the Ariel Priestesses, I represented Athel Loren in a secret meeting with the Lady of the Lake Seer of Bretonnia—one of the very few instances of female-led interracial diplomacy. The maids of the Lady of the Lake understand the language of water, the power of moonlight and the ancient whispers in the depths of the forest just like us. Although their beliefs are roughened by layers of human chivalry and chivalry, their core is actually the same as our spirit worship. The result of this diplomatic contact was a verbal agreement that was never written on parchment: Bretonian knights would not enter Athel Loren under the pretext of 'slaying dragons' or 'clearing the woodland of vermin', and our scouts would not raid Bretonian border villages during the harvest season. Humans don’t understand why we distrust texts—because paper rots, while promises on water flow forever."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The chiefs of the Woodland Council have a unique diplomatic tool in foreign relations - the 'path of trust' maintained by each family for generations. My family, the Switchblades, have maintained intermittent personal ties with the three border baronial families of Bretonnia over the past three thousand years, relaying warnings or requests through message stones under certain ancient trees. This relationship needs to be recalibrated with every human generation - often it takes a new Baron missing a hunting party in the forest before he learns to read our markings. The point is that the nature of Aslay diplomacy is a test of patience: we do not seek immediate results, because the 'emergency' of a human generation is but a season in our time frame. As a Bretonnian baron anxiously awaits our reply, we may be assessing whether his request is worth disturbing an ancient tree in bloom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is an iron rule in the mercenary camps on the edge of Athel Loren: Never accept any contract involving 'entering the forest', no matter how high the reward. I've seen a team of Tyrell mercenaries accept a commission from an imperial noble - to retrieve his missing daughter in the forest - but only one of the twelve came back, and that man was crazy and kept muttering 'the trees are watching'. There's a subtle hierarchy in the way the wood elves treat intruders: if you're just a lost woodcutter, you might be escorted out safely but lose all memory of the forest; if you're an armed intruder, you'll get shot through the throat with an arrow before you get deep enough; if you're a logging party - well, no one has ever found the bodies of the logging team, but there are a few more neatly arranged new saplings at the edge of the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The silent trading system of the Wood Elves is one of the most bizarre underground economic phenomena in the old world. On the border between Quenel and Bretonnia, there is the so-called 'Elven City' - an open space under ancient trees that is not marked on any map. The traders leave the goods after placing them, and return the next morning to collect the equivalent exchange items. From a business perspective, this trade model completely circumvents tariffs, tolls and middlemen's commissions, allowing Asrai to obtain iron ore and salt and other materials that the forest cannot provide at almost zero transaction costs, while we human craftsmen obtain elven handicrafts that cannot be purchased on the open market. But don't think that this is taking advantage - the wood elves have a completely different understanding of value than we do: a carefully forged dwarf steel sword may only be worth a bag of forest herbs to them, while an elven gem that is priceless in the eyes of humans is just 'forest discarded debris' in their eyes."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Isolationism - the core principle of the wood elves' foreign relations: no contact with the outside world unless necessary",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Wood Elf’s external relations and alliance system"
+  ]
+}

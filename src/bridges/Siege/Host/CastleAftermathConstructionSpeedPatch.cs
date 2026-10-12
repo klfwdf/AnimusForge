@@ -35,7 +35,7 @@ internal static class CastleAftermathConstructionSpeedPatchRegistrar
 [HarmonyPatch(typeof(DefaultBuildingConstructionModel), nameof(DefaultBuildingConstructionModel.CalculateDailyConstructionPower))]
 internal static class CastleAftermathDailyConstructionPowerPatch
 {
-	private static readonly TextObject RepairLaborText = new TextObject("{=!}战俘修缮城堡");
+	private static readonly TextObject RepairLaborText = new TextObject("{=AF_UI_Castle_RepairLabor}Prisoner castle repairs");
 
 	private static void Postfix(Town town, ref ExplainedNumber __result)
 	{

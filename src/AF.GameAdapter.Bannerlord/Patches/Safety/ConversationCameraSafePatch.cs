@@ -23,7 +23,7 @@ public static class ConversationCameraSafePatch
 			Type type = AccessTools.TypeByName("SandBox.View.Missions.MissionConversationCameraView");
 			if (type == null)
 			{
-				Logger.LogTrace("System", "❌ ConversationCameraSafePatch: 找不到 MissionConversationCameraView 类型。");
+				Logger.LogTrace("System", "❌ ConversationCameraSafePatch: MissionConversationCameraView type not found.");
 				return;
 			}
 			Harmony harmony = new Harmony("AnimusForge.conversationcamera.safety");
@@ -48,11 +48,11 @@ public static class ConversationCameraSafePatch
 				}
 			}
 			_patched = true;
-			Logger.LogTrace("System", "✅ ConversationCameraSafePatch 已对 MissionConversationCameraView 相关方法打补丁，count=" + patchedCount + "。");
+			Logger.LogTrace("System", "✅ ConversationCameraSafePatch Patched MissionConversationCameraView methods; count=" + patchedCount + "。");
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ ConversationCameraSafePatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ ConversationCameraSafePatch patch failed: " + ex.Message);
 		}
 	}
 

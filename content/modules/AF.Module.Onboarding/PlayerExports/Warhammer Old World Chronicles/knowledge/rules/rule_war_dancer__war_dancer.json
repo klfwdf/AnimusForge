@@ -1,0 +1,208 @@
+{
+  "Id": "rule_war_dancer",
+  "Keywords": [
+    "war dancer",
+    "Locke's followers",
+    "war dance footwork",
+    "Double-edged Dancer",
+    "Unarmored Warrior",
+    "god of deceit",
+    "dance of death"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "War dancers are the most amazing warriors among the wood elves - they don't wear armor and only wield double blades. They use the mysterious war dance steps taught by the god of deceit, Locke, to walk through the enemy formation like the wind, and complete fatal beheadings while dancing. Watching a war dancer dance on the battlefield is not only like appreciating the most gorgeous sacrificial dance, but also like witnessing an inescapable death ceremony."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The War Dancer is the physical manifestation of the will of Locke, the deceitful god, and the eternally beating artistic heart of Athel Loren. Our war dancers sublimate combat into sacred drama - every spin, every leap, every flash of sword is a reinterpretation of Locke's myth. They do not rely on metal armor on the battlefield, because Locke's war dance footwork itself is the most perfect defense: when the blade is approaching, the dance steps have already turned. During the Locke Sacrifice at the spring and autumn equinoxes every year, war dancers will perform a three-day and night-long war dance ceremony among the golden woods, feeding the spiritual flow of the forest with blood and sweat. When humans' clumsy knights and stiff infantry encounter war dancers, they often fall to the ground before they understand the situation - they die of art."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "War dancers are the most uncertain factor that troubles commanders tactically. They are not bound by the logic of traditional infantry engagements - no formations, no lines of defense, no discipline, and they move freely across the battlefield with unpredictable and agile footwork. Hoplites were ineffective against them, because the clumsy heavy swords could not touch the hem of their clothes; cavalry charges were also of limited effect, because war dancers could complete five precise slashes in one horse's sprint. The most effective tactic against War Dancers is long-range saturation fire - their unarmored flesh cannot withstand a dense hail of arrows or musketry volleys. This is why the Wood Elves rarely let War Dancers appear alone: ​​they need other units to absorb the projected fire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The wardancer's religious and military traditions stem from Lok, the lesser god of trickery, deceit, laughter, and dark humor in Wood Elf mythology. In the pantheon of Athel Loren, Locke is not the main god, but his faith is regarded as supreme among the war dancers. There are nine sets of basic footwork used by war dancers, each of which corresponds to a narrative in Locke's mythology: 'Marauder's Leap' is used to continuously dodge in the face of multiple attacks; 'Fateweaver's Spin' is used to maximize the density of attacks in a small space; 'End of Laughter' is the most terrifying one - the performer will pretend to be hit and fall to the ground, and launch a fatal fatal blow from the ground at the moment when the opponent relaxes his vigilance. The most fascinating historical document is the \"Manuscript of the Elven War Dance\" collected in the Forbidden Library of Altdorf. It was written by a Brittanian elven descendant who had lived as a war dancer apprentice in Athel Loren for fifty years. In the book, he recorded in detail the complete process of the war dancers dancing to cut off the heads of twenty living captives as a sacrifice to Locke on the holy day of the 'Blade of Joy'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I had the honor to watch the performance of the war dancers at a diplomatic ceremony - eight elven dancers danced to invisible drums in the moonlight woodland, their blades drawing swirling silver rings in the night sky. One of the female dancers danced directly in front of me, stopped the blade an inch in front of my throat, smiled, saluted, and then spun away. The guards next to me all drew their swords, but I stopped them - I knew it was not a threat, but a greeting. A war dancer's blade won't kill you, unless their dance requires your part to complete a scene in Locke's narrative."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Every ten years our family will pay a tribute of refined mithril to Athel Loren in exchange for the peace of the forest. In the last round of the ceremony, there was a war dancer among the elf guards who handed over to us. He did not say a word during the whole process, but used dance to 'negotiate' - every dance step expressed a certain position and a certain inviolable boundary. My old butler - an old man who has dealt with elves all his life - translated it to me: The message conveyed by that dance is 'Your gold and silver are meaningless to us, but your sincerity - we remember'. From that day on, I learned something: to talk to wood elves, you have to learn to read the language of silence and blades."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In an elven inn on the edge of Athel Loren, I saw three war dancers duel with a dwarf butcher. Don't ask me why a dwarf butcher would challenge an elf - probably too much Bagman beer. The key point is that the battle didn't feel like a battle at all. Every time the dwarf swung his axe, the war dancer had already rotated to the position behind him and tapped his helmet with the blade, as if playing an elegant game. Three minutes later, the dwarf fell to the ground panting, unharmed but disgraced, while the war dancers had sat back at the bar and continued drinking their moonshine mead as if nothing had happened."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I received a sword from a retired old mercenary at the Talabek River market that was said to be one of the double blades used by war dancers - the blade was extremely light and surprisingly elastic, and under the light it showed a light green halo that did not belong to any known metal. After asking the Altdorf Goldsmiths Guild to identify it, they concluded that this alloy was mixed with an unknown plant cellulose material, which caused the sword blade to produce a weak aerodynamic vibrato when swung at high speed, which could not only confuse the opponent's auditory judgment, but also present a confusing light and shadow illusion at night. In other words, the sword is not just a weapon, it is a forged theatrical prop."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "An unarmored double-bladed war-dancing elf who worships Locke, the deceitful god.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "War Dancer Locke's War Dance Footwork"
+  ]
+}

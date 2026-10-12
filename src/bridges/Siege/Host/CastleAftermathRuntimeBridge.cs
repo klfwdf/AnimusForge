@@ -363,8 +363,8 @@ internal static class CastleAftermathRuntimeBridge
 				LeftPartyPrisonersSizeLimit = Math.Max(0, remainingPrisoners.TotalManCount),
 				RightPartyMembersSizeLimit = SiegeCastleRosterSelectionProfile.MaxAlliedTroops,
 				RightPartyPrisonersSizeLimit = SiegeCastleRosterSelectionProfile.MaxPrisoners,
-				LeftPartyName = new TextObject(SiegeCastleRosterSelectionProfile.AvailableRosterTitle),
-				RightPartyName = new TextObject(SiegeCastleRosterSelectionProfile.SelectedRosterTitle),
+				LeftPartyName = new TextObject("{=AF_CASTLE_UI_ROSTER_AVAILABLE}Available party troops, army leaders, and prisoners"),
+				RightPartyName = new TextObject("{=AF_CASTLE_UI_ROSTER_SELECTED}Castle aftermath party"),
 				TroopTransferableDelegate = new IsTroopTransferableDelegate(IsCastleSelectionTroopTransferable),
 				CanTalkToTroopDelegate = null,
 				PartyPresentationDoneButtonDelegate = new PartyPresentationDoneButtonDelegate(DoneHandler),
@@ -394,7 +394,7 @@ internal static class CastleAftermathRuntimeBridge
 				}),
 				IsDismissMode = true,
 				IsTroopUpgradesDisabled = true,
-				Header = new TextObject(SiegeCastleRosterSelectionProfile.ScreenHeader),
+				Header = new TextObject("{=AF_CASTLE_UI_ROSTER_HEADER}Select soldiers and prisoners to enter the castle"),
 				TransferHealthiesGetWoundedsFirst = true,
 				ShowProgressBar = false,
 				MemberTransferState = PartyScreenLogic.TransferState.Transferable,
@@ -482,7 +482,7 @@ internal static class CastleAftermathRuntimeBridge
 		bool allowed = SiegeCastleRosterSelectionProfile.IsWithinLimits(memberCount, prisonerCount);
 		return new Tuple<bool, TextObject>(allowed, allowed
 			? TextObject.GetEmpty()
-			: new TextObject(SiegeCastleRosterSelectionProfile.BuildLimitMessage(memberCount, prisonerCount)));
+			: new TextObject(SiegeCastleRosterSelectionProfile.BuildLimitMessage(memberCount, prisonerCount, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface)));
 	}
 
 	private static bool IsCastleSelectionTroopTransferable(
@@ -1810,7 +1810,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			+ ", Created=" + createdCount + ", Active=" + activeCount + ", Formed=" + formedCount
 			+ ", Regular=" + _spawnedRegulars + ", Lords=" + _spawnedLords
 			+ ", MissionAgents=" + (mission.Agents?.Count ?? 0) + ", CommandUiReady=" + commandUiReady);
-		AnimusForgeQuickInfo.Show(SiegeCastleRosterSelectionProfile.BuildPrisonerSceneReadyMessage(_selectedCount, activeCount));
+		AnimusForgeQuickInfo.Show(SiegeCastleRosterSelectionProfile.BuildPrisonerSceneReadyMessage(_selectedCount, activeCount, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface));
 	}
 
 	private void Cleanup(string reason)

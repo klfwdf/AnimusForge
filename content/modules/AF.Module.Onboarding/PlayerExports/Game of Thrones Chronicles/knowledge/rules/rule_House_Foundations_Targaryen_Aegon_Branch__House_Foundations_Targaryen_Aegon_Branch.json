@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Targaryen_Aegon_Branch",
+  "Keywords": [
+    "Targaryen (Aegon Branch)",
+    "Aegon Targaryen",
+    "Young Griff",
+    "Griff"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Targaryen claim formed around Young Griffin, taking the name \"Aegon Targaryen\" to connect Prince Rhaegar's legacy, Jon Connington's old loyalties, and the exiles' desire to return home in the Golden Company. Young people receive training in language, history, beliefs, art of war, and common people's work from an early age. They are taught to understand that a king should not only sit on the throne, but also know how the people live. Public stories claim he was a secretly swapped prince at the fall of King's Landing; doubters look to looks, timing, and the interests of those who supported him for another answer. Regardless of the authenticity of the bloodline, this claim already has real power: some hope that Rhaegar's son will return to repay old debts, while others fear that another dragon will turn the Seven Kingdoms into a pyre to prove his identity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The first reaction of the royal nobles to young Aegon is often not belief or denial, but calculation. If he was indeed the son of Rhaegar, the old dynasty would have a male heir; if not, an army and a group of staunch followers could still make the name dangerous. Genealogy requires evidence, and kingship sometimes only requires enough people to act at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stormlanders will recognize this claim from Jon Connington and the old name of Falcon's Nest. Rhaegar's friends were willing to bet the rest of their lives on the young man, which made some people feel that this matter was a loyal witness, while others suspected that it was just an exile trying to overturn the failure. The gryphon cleared the way for the dragon, so the old village was the first to hear the sound of wings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Exiled knights and mercenaries do not necessarily care about infant secrets. What they saw was a young man being trained to be a king, a flag that might lead them home, and the hope of redistributing the land after victory. For many in the Golden Company, truth and falsehood will ultimately be decided by whether the gates are open or not."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Targaryen (Aegon Branch) Young Griffin inherits Rhaegar's legacy in the name of Aegon Targaryen; Jon Connington, the Golden Company, the Exiles' wishes, and bloodline doubts surround this claim. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Targaryen (Aegon Branch) Young Griffin inherits Rhaegar's legacy in the name of Aegon Targaryen; Jon Connington, the Golden Company, the Exiles' wishes, and bloodline doubts surround this claim. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Targaryen (Aegon Branch) Young Griffin inherits Rhaegar's legacy in the name of Aegon Targaryen; Jon Connington, the Golden Company, the Exiles' wishes, and bloodline doubts surround this claim. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Young Griffin inherits Rhaegar's legacy in the name of Aegon Targaryen; Jon Connington, the Golden Company, the Exiles' wishes, and bloodline doubts surround this claim."
+  ]
+}

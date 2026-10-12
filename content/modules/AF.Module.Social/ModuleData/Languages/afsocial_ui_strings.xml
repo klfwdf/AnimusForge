@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_SOCIAL_UI_IntimacyCompleted" text="You and {NAME} shared an intimate encounter." />
+    <string id="AF_SOCIAL_UI_PrivateRelationshipDelta" text="[Private relationship] {NAME} {DELTA} (current {CURRENT})." />
+    <string id="AF_SOCIAL_UI_TrustDelta" text="[Trust change] {NAME}'s personal trust in you +{DELTA} (private relationship increase; current {CURRENT})." />
+    <string id="AF_SOCIAL_UI_MarriageFallbackMission" text="[Marriage system] The marriage has taken effect; the meeting or mission scene is active, so the marriage record and notice were restored." />
+    <string id="AF_SOCIAL_UI_MarriageFallbackNotice" text="[Marriage system] The marriage has taken effect; the wedding notice was restored." />
+    <string id="AF_SOCIAL_UI_MarriageFallbackQueued" text="[Marriage system] The marriage has taken effect; the wedding notice has been queued by the marriage event." />
+    <string id="AF_SOCIAL_UI_MarriageStatus" text="[Marriage system] {STATUS}" />
+    <string id="AF_SOCIAL_UI_RoyalDomainLoyalty" text="{SETTLEMENT} loyalty +{AMOUNT}" />
+    <string id="AF_SOCIAL_UI_RecruitmentFailed" text="[Recruitment failed] {DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentSkipped" text="[Recruitment skipped] {DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentIntercepted" text="[Recruitment intercepted] {DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentSucceeded" text="[Recruitment succeeded] {DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingClanHero" text="No target hero is available to join the player's clan." />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyPlayer" text="The target is already the player." />
+    <string id="AF_SOCIAL_UI_RecruitmentPlayerPartyUnavailable" text="The player's clan or party is unavailable." />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingNonHero" text="No non-hero NPC is available to join the party." />
+    <string id="AF_SOCIAL_UI_RecruitmentTargetIsHero" text="The target is a hero and must use the hero recruitment path." />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingLiveAgent" text="The speaking NPC's live agent could not be found; promotion was cancelled." />
+    <string id="AF_SOCIAL_UI_RecruitmentInvalidAgentTemplate" text="The current agent is not a promotable non-hero troop template." />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingPromotedName" text="The promoted hero's personal name could not be determined; promotion was cancelled." />
+    <string id="AF_SOCIAL_UI_RecruitmentTavernAlreadyHandled" text="The tavern mercenary pool was already handled by the native option or another flow; recruitment was not repeated." />
+    <string id="AF_SOCIAL_UI_RecruitmentCaptivityCleanupFailed" text="The target hero's captivity state or prisoner roster residue could not be cleared." />
+    <string id="AF_SOCIAL_UI_RecruitmentHeroActivationFailed" text="The target hero could not be restored to an active state for party entry." />
+    <string id="AF_SOCIAL_UI_RecruitmentLordJoinFailed" text="The target hero could not be made a player-clan member or assigned to the main party." />
+    <string id="AF_SOCIAL_UI_RecruitmentCompanionJoinFailed" text="The target hero could not be made a companion or assigned to the main party." />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyCompanion" text="{NAME} is already a player companion in the main party." />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyClanMember" text="{NAME} is already a player-clan member in the main party." />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyPromoted" text="{NAME} was already promoted from the current scene NPC; a second hero cannot be recruited." />
+    <string id="AF_SOCIAL_UI_RecruitmentTavernSoldiers" text="{COUNT} {NAME} mercenaries joined the player's party as regular troops." />
+    <string id="AF_SOCIAL_UI_RecruitmentPromotedCompanion" text="{NAME} was promoted to player companion &quot;{HERO}&quot; and joined the player's party{FOLLOW}." />
+    <string id="AF_SOCIAL_UI_RecruitmentPromotedLord" text="{NAME} was promoted to player-clan hero &quot;{HERO}&quot; and joined the player's party{FOLLOW}." />
+    <string id="AF_SOCIAL_UI_MarriageFormalFailed" text="Formal marriage failed: {REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageElopeFailed" text="Elope failed: {REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageDivorceFailed" text="Divorce failed: {REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageFormalSucceeded" text="Formal marriage succeeded: {LEFT} and {RIGHT} are now married. Tier gap D={TIER}, clan relation={RELATION}, leader trust={TRUST}.{EXTRA}" />
+    <string id="AF_SOCIAL_UI_MarriageElopeSucceeded" text="Elope succeeded: you and {TARGET} are now married. Current L={LOVE}, personal trust={TRUST}, family harmony F={HARMONY}." />
+    <string id="AF_SOCIAL_UI_MarriageDivorceSucceeded" text="Divorce succeeded: {LEFT} and {RIGHT} are no longer married.{EXTRA}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPair" text="The marriage pair could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonSelf" text="A character cannot marry themselves." />
+    <string id="AF_SOCIAL_UI_MarriageReasonAlreadyMarried" text="The pair already has an active marriage record." />
+    <string id="AF_SOCIAL_UI_MarriageReasonSameClan" text="A formal marriage requires two different clans." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingTarget" text="The target marriage partner could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPlayerCandidate" text="The player-clan marriage candidate could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonTargetNoClan" text="The target has no clan and cannot use the clan marriage flow." />
+    <string id="AF_SOCIAL_UI_MarriageReasonNoRecord" text="No active marriage record was found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonNotSpouses" text="The pair are not currently spouses." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPlayer" text="The player hero could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageBridePriceConsumed" text=" The previously prepaid bride price of {AMOUNT} denars was consumed." />
+    <string id="AF_SOCIAL_UI_MarriageBridePricePaid" text=" The other clan leader paid the player a bride price of {AMOUNT} denars." />
+    <string id="AF_SOCIAL_UI_MarriageBridePriceRefunded" text=" A bride price of {AMOUNT} denars was refunded." />
+    <string id="AF_SOCIAL_UI_RecruitmentFollowSuffix" text=" and is now following you in the scene" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingCompanionHero" text="No target hero is available to become a player companion." />
+    <string id="AF_SOCIAL_UI_RecruitmentClanSuccessionIncomplete" text="Clan leader succession for {CLAN} is incomplete; recruiting the active ruler was prevented." />
+    <string id="AF_SOCIAL_UI_RecruitmentCopyAppearanceFailed" text="Failed to copy current NPC appearance ({ERROR}); promotion cancelled." />
+    <string id="AF_SOCIAL_UI_RecruitmentCopyEquipmentFailed" text="Failed to copy current NPC equipment ({ERROR}); promotion cancelled." />
+    <string id="AF_SOCIAL_UI_RecruitmentBecameCompanion" text="{NAME} has become a player companion and joined the party{SUMMARY}." />
+    <string id="AF_SOCIAL_UI_RecruitmentBecameClanMember" text="{NAME} has become a player-clan member and joined the party{SUMMARY}." />
+    <string id="AF_SOCIAL_UI_RecruitmentRetainedIdentity" text="{NAME} retained {ROLE} status and joined the party{SUMMARY}." />
+    <string id="AF_SOCIAL_UI_RoleSpouse" text="spouse" />
+    <string id="AF_SOCIAL_UI_RoleClanMember" text="player-clan member" />
+    <string id="AF_SOCIAL_UI_SummarySeparator" text="; " />
+    <string id="AF_SOCIAL_UI_SummaryOpen" text=" (" />
+    <string id="AF_SOCIAL_UI_SummaryClose" text=")" />
+    <string id="AF_SOCIAL_UI_NoteGovernorRemoved" text="removed as governor of {TOWN}" />
+    <string id="AF_SOCIAL_UI_NoteClanLeaderSuccession" text="{HERO} succeeded as leader of {CLAN}" />
+    <string id="AF_SOCIAL_UI_NoteClanDestroyedNoHeir" text="{CLAN} had no heirs and was disbanded" />
+    <string id="AF_SOCIAL_UI_NotePartyMergedNoExtras" text="{PARTY} merged into player party with no extra troops or prisoners" />
+    <string id="AF_SOCIAL_UI_NotePartyTransferred" text="{COUNT} from {PARTY} transferred to player party" />
+    <string id="AF_SOCIAL_UI_RecruitmentException" text="Exception: {ERROR}" />
+    <string id="AF_SOCIAL_UI_RecruitmentJoinClanException" text="Join player clan exception: {ERROR}" />
+    <string id="AF_SOCIAL_UI_RecruitmentBecomeCompanionException" text="Become player companion exception: {ERROR}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorcePair" text="The divorce pair could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingTargetClanLeader" text="The target clan leader could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonPlayerCandidateNotClan" text="The player-side marriage candidate must belong to the player's clan." />
+    <string id="AF_SOCIAL_UI_MarriageReasonPlayerNotEligible" text="The player-side marriage candidate does not meet basic marriage requirements." />
+    <string id="AF_SOCIAL_UI_MarriageReasonTargetNotEligible" text="The target marriage candidate does not meet basic marriage requirements." />
+    <string id="AF_SOCIAL_UI_MarriageReasonAgeGapExceeded" text="The age gap between both parties exceeds the allowed limit." />
+    <string id="AF_SOCIAL_UI_MarriageReasonAgeGapUnverified" text="Could not verify whether the age gap meets marriage requirements." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingElopeTarget" text="The target partner could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorcePlayerCandidate" text="The player-clan divorce candidate could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorceTarget" text="The target divorce partner could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingClans" text="Clan information for both parties could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonNoPlayerEligibleMembers" text="The player clan currently has no eligible members for marriage." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMultiFailed" text="Polygamy execution failed: {DETAIL}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonActionFailed" text="MarriageAction execution failed: {DETAIL}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonDissolveException" text="Error dissolving marriage: {DETAIL}" />
+    <string id="AF_SOCIAL_UI_Notoriety_Heading" text="[Player notoriety]" />
+    <string id="AF_SOCIAL_UI_Notoriety_WorldScore" text="World notoriety: {EFFECTIVE}/100 ({LEVEL}; base {BASE} + clan bonus {BONUS})" />
+    <string id="AF_SOCIAL_UI_Notoriety_ClanBonus" text="Clan tier bonus: +{BONUS}" />
+    <string id="AF_SOCIAL_UI_Notoriety_CultureHeading" text="[Culture notoriety]" />
+    <string id="AF_SOCIAL_UI_Notoriety_NoCultures" text="(No culture notoriety yet)" />
+    <string id="AF_SOCIAL_UI_Notoriety_CultureScore" text="- {CULTURE}: {BASE}/100; effective {EFFECTIVE}/100 ({LEVEL})" />
+    <string id="AF_SOCIAL_UI_Notoriety_HistoryHeading" text="[Player history]" />
+    <string id="AF_SOCIAL_UI_Notoriety_PendingHeading" text="[Unsummarized material]" />
+    <string id="AF_SOCIAL_UI_Notoriety_NoPending" text="(None)" />
+    <string id="AF_SOCIAL_UI_Notoriety_Player" text="Player" />
+    <string id="AF_SOCIAL_UI_Notoriety_Day" text="Day {DAY}" />
+    <string id="AF_SOCIAL_UI_Notoriety_ActionLine" text="- {DATE}: {TEXT}" />
+    <string id="AF_SOCIAL_UI_Notoriety_UnknownCulture" text="Unknown culture" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level0" text="Obscure" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level1" text="Little known" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level2" text="Faintly recognized" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level3" text="Gaining recognition" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level4" text="Talked about" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level5" text="Widely known" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level6" text="Known far and wide" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level7" text="The talk of every street" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level8" text="Known to young and old" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level9" text="A household name" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level10" text="Known to everyone" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_01" text="Food shortage" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_02" text="Money shortage" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_03" text="Troop shortage" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_04" text="Excess prisoners or ransom" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_05" text="Captured clan member" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_06" text="Low party morale" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_07" text="Mount shortage" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_08" text="Overburdened party" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_09" text="Clan financial strain" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_10" text="Clan seeking service" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_11" text="Intimate interaction" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_12" text="A greeting" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_13" text="Discussion of recent policy" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_14" text="Making a new friend" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_15" text="Courtship" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_16" text="Request to join an army" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_17" text="Bandit suppression" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_18" text="Opposing a political rival" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_19" text="Buying a fief" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_20" text="Selling a border fief" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_21" text="Questioning a stranger in the realm" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_22" text="Marriage-alliance pressure" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_23" text="Revenge or rescue pressure" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_24" text="Fief governance pressure" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_25" text="Lack of allied support" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_26" text="Kingdom seeking mercenaries" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_27" text="Kingdom seeking vassals" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_28" text="Kingdom political agenda" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_29" text="Support for a policy" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_30" text="Discussion of diplomacy" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_31" text="A specific request" />
+    <string id="AF_SOCIAL_UI_Century" text="Century {NUMBER}" />
+  </strings>
+</base>
+

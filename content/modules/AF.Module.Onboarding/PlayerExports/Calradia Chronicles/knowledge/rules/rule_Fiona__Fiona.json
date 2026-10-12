@@ -1,0 +1,73 @@
+{
+  "Id": "rule_Fiona",
+  "Keywords": [
+    "Fiona",
+    "Fianna Champion",
+    "Fiona Champion"
+  ],
+  "RagShortTexts": [
+    "Battania The Fiona Tournament is held every year and includes a variety of jousts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I heard the businessman tell me about the Fiona Competition in Battania. It is said that it is once a year, and the competition lasts for several days, and the winner wears a bearskin and walks around. We also have martial arts competitions here, but they don’t have as many tricks as theirs - there is also a two-handed sword and two-handed ax archery team competition, which sounds complicated. They regard themselves as treasures, saying that those who can enter Fiona are heroes, and the champion is a person who is worthy of heaven. But what do you mean by martial arts competition? My neighbor Lao Wang has been butchering pigs for twenty years, and his sword skills are also very good. If you put him on the battlefield, his legs will be weak. The people of Battania just take advantage of the dense mountains and dense forests to hide and go to the flat ground to fight head-on. Their martial arts may not be easy to use. But I heard that their current supreme king was played by Fiona, and he won all the events. That's his real ability, not just bragging."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am from Battania and have lived in the mountains for half my life. Let me tell you about Fiona, whether you live in a large village or a small village, whether you are from a chief's family or a sheepherder, the opinions are not much different - these are the most important days of our year. Of course the people from the chief's family are more caring. Their children have horses to ride on, good iron to make swords, and they have practiced bows and swords since they were young. Fiona is the one who runs. If a champion emerges from a family, his bearskin cloak will be hung at the entrance of Dazhai, and people within a few dozen miles will know that this family is a great one. But the common people are equally concerned. We don’t have the ability to go up and fight, but we can watch. During those days in Fiona, the mountains and roads were full of people. They would drag their families with them for a few days to see them, and they would stand at the edge of the arena for a whole day, watching them chop and shoot. We will remember the name of the winner for the rest of our lives, and we will tell it to our children when we go back, and our children will tell it to their grandchildren - who was that person that year, who split such a thick shield with a single blow of his two-handed sword? In Battania, it doesn't matter whether you're rich or poor, Fiona has the final say. It doesn't matter who your father is, the truth is on your sword. This is the case for Supreme King Caladog - he has no father or mother, and was adopted by the Grufendoc family. If he were placed anywhere else, he would not be able to get in even if he was born with this background. But he defeated everyone on Fiona, and the old High King gave him his daughter. You mean bloodline? Feonaby's pedigree is solid. We recognize him for one reason: no one can beat him. But because of this, Fiona came up with a problem: everyone only recognized the ability to duel, but not anything else. The chiefs all think that they are heroes, capable of slashing and killing. Why should they listen to you? I can lose to you on the field, but you care about me outside the field. Who do you think you are? We Battania people follow the strong, and we are always ready to be that strong ourselves. Fiona is the grindstone for this rule."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "darshi",
+          "empire",
+          "khuzait",
+          "nord",
+          "sturgia",
+          "vakken",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is no doubt that Fiona is the backbone of Battania's military system. It undertook three functions at the same time: selecting elites, distributing honors, and consolidating royal power. From a military perspective, the champions and warriors selected by Fiona form the most reliable backbone of Battania's combat power - these people are killed from the field with real swords and guns, not idiots who rise to the top by blood. From a political perspective, Caladog, the current High King, gained legitimacy beyond blood through the overwhelming victory of the Fiona, an extremely rare breakthrough in the social structure of the Battania clan. The Grufendoc family turned from an unknown family into a royal family, not through marriage speculation, but through the reputation gained in the arena. But we also have to see the limitations of Fiona. What it cultivates at the tactical level is personal martial arts, not battle command. A Fianna champion might be able to cut down five Imperial legionnaires with a two-handed sword, but he might not know how to command five hundred men to move through the mountains to meet the enemy. Battania chiefs are generally very good at fighting alone but have mediocre ability to lead troops. This tendency is in line with Fiona's overall orientation. Caladog himself stands out among the Battanians precisely because he has fought regular Imperial-style battles and knows how to maneuver - something Fiona cannot teach. That being said, Fianna's role in rallying Battania's military strength is irreplaceable. There are so many scattered clans in the mountains, and they are willing to put aside their grievances and rush to the same place every year to watch the same group of people compete under the same set of rules. This in itself is worthy of attention."
+    }
+  ],
+  "TextMappings": []
+}

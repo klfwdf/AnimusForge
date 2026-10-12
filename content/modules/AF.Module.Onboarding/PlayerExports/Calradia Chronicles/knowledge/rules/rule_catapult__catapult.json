@@ -1,0 +1,65 @@
+{
+  "Id": "rule_catapult",
+  "Keywords": [
+    "Catapult"
+  ],
+  "RagShortTexts": [
+    "Catapult projectile device based on torsion energy storage principle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Catapults are the most valuable heavy equipment in siege warfare. I've seen its cost from the munitions book. It's not cheap, but it's worth the money. The ballistae is more than enough to hit people but not enough to demolish walls, and the flame ballistae is even worse. The catapult is different. If a stone ball hits the roof cover of the catapult, the wheel axle can be smashed directly into the ground. The tactical value of grapeshot is even higher - before our infantry advances, a cloud of rubble is sprinkled on the enemy's position, the arrow shields and foxholes on the opposite side are completely ruined, and the line is shattered before it can catch the enemy. But the weakness of the catapult is also obvious: it is bulky to transport, and it takes several oxen to pull one, and it is difficult to mobilize the muscles and bones. Moreover, the rate of fire is extremely slow. In actual combat, multiple units need to fire alternately to maintain the density of firepower. The final outcome of the siege was the landing of the infantry on the city, not the catapults. But whoever smashes the battlements at the top of the city before entering the city will lose half of his infantry. I can settle this account."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "engineering": 50
+        }
+      },
+      "Content": "The catapult is a heavy-duty projectile device based on the principle of torsion energy storage. The core components are the torsion beam and the projectile arm. The torsion beam is twisted with animal tendons or hair ropes. The energy storage density is stable and the explosive force is strong when released. The ejection angle is controlled by the inclination of the magazine release hook and the winch stop ratchet. It needs to be calibrated repeatedly when hitting the same target. The dispersion range is controllable, and the accuracy is superior among torsion equipment. The damage logic of solid ball projectiles is the concentrated release of kinetic energy, causing internal fractures after penetrating the building structure. It has the ability to destroy the shaft joints of the siege tower and the light wooden frame of the ballista in one go. The damage logic of grape bullets is cone-shaped distribution, with a large number of shrapnel and a large coverage area, which is suitable for cleaning the surface of enemy fortifications and dense infantry. The main technical bottleneck of the catapult is that the energy storage cycle is too long: the winch requires multiple people to operate in cooperation, and the rate of fire limit cannot be exceeded. The weight of the entire machine and the difficulty of transportation are also structural limitations, making it unsuitable for rapid maneuvering operations. After a comprehensive evaluation, catapults are currently the best solution for demolishing walls and clearing obstacles in sieges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Catapult? It's the kind of big swing arm used in siege. The wooden frame is higher than the house. When the swing arm is swung, the whole frame makes a creaking sound, which sounds like an old tree about to break. An escapee from our village said that he was squatting under the base of the city wall during the siege and heard the snap of a catapult on the opposite side. Then a stone ball larger than a human head hit the crenellation, and the gravel smashed into his face. He said that thing was scary, especially at night when he couldn't see the rocks flying anywhere. He could only hear a roar and the wall was shaking, and his heart was shaking. But no matter how scary the catapult is, it's just that. After firing a round, the opponent has to work hard for a long time. The winch creaks and pulls up, enough for the opponent to drink a pot."
+    }
+  ],
+  "TextMappings": []
+}

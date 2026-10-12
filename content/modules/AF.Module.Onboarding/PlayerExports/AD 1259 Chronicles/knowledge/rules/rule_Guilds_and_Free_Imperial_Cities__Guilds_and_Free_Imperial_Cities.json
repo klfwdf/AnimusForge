@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Guilds_and_Free_Imperial_Cities",
+  "Keywords": [
+    "Medieval Guilds",
+    "Free Imperial Cities",
+    "Communes",
+    "Craft Guilds",
+    "Burghers",
+    "Urban Liberties"
+  ],
+  "RagShortTexts": [
+    "Merchant and craft guilds organized medieval urban life, securing municipal charters that freed towns from feudal aristocratic control."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The thirteenth century saw the flourishing of urban liberties under the famous legal maxim, 'Stadtluft macht frei' (city air makes you free). Across Flanders, the Rhineland, northern Italy, and northern Germany, burghers pooled financial resources to purchase or fight for municipal charters, liberating their communities from manorial dues and establishing elected city councils (magistrates).\n\nUrban manufacturing and commerce were rigidly organized by guilds (Gilden or Zünfte). Merchant guilds maintained trade monopolies, while specialized craft guilds (weavers, tanners, blacksmiths, masons) regulated product quality, wages, training from apprentice to journeyman and master, and communal welfare. In the Holy Roman Empire, Free Imperial Cities answered only to the Emperor, fielding their own militias to defend civic autonomy."
+    }
+  ],
+  "TextMappings": []
+}

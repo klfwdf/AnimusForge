@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Bloodthirsty_Demon",
+  "Keywords": [
+    "Bloodthirsty Demon",
+    "Daemon of Khorne",
+    "Great Ax and Whip",
+    "war incarnate",
+    "High level demon",
+    "fury ultimate",
+    "Wrath of the Blood God",
+    "Bronze Armored Demon",
+    "giant bat wing",
+    "Hell's instrument of torture",
+    "unstoppable",
+    "Bringer of Destruction"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bloodthirsty demons are high-level demons under Khorne, the purest incarnation of war - they have bronze-hard skin, huge bat wings that can cover the sky, and giant axes and whips that can split city walls. Every time they come to the battlefield, it means an unstoppable feast of destruction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bloodthirsty - A mortal's heart will stop beating at the sound of its wings. They are the physical form of Khorne's wrath. You can't really \"summon\" them - you can only \"attract\" their attention through enough slaughter and sacrifice. When the Bloodthirster descends on the battlefield, its roar will shatter any nearby glass, and a single blow of its ax can split an entire squad of armored knights in half along with their horses. There is no protection against its attacks, no mortal can fight it one on one for more than three seconds - it is too great, too tall, too strong. But in Khorne's eyes, even bloodthirsty demons have weaknesses - they occasionally lose their judgment due to anger and attack opponents they should not attack. Otherwise, they are perfect."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Bloodthirsty is the most powerful combat unit you can summon. It is enough to single-handedly challenge any enemy general or behemoth on the field. But summoning the bloodthirsty demon requires a complete blood ritual - you must accumulate enough kill counts before the battle. Throw it where the enemy is strongest - don't let the Bloodthirsty waste time clearing out minions. Once summoned, it will return to the Chaos Demon Realm after the battle ends or it takes fatal damage. Note: Even your own troops should keep their distance from the Bloodthirster - its attack range is huge and it doesn't distinguish between friend and foe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to the classification of the \"Directory of High Demons in the Demon Realm\", the bloodthirsty demon is the highest-level existence among the \"Eight Blood Generals\" under Khorne. It is divided into three levels: \"Blood Rage\" - the lowest bloodthirsty demon. Although it is an existence beyond the reach of mortals, its status in the Demon Realm is only Equivalent to \"new recruits\"; \"Blood Whip\" - an intermediate bloodthirsty madman, who has the right to use the hell whip and can independently command an army of demons; \"Bloodthirsty Supreme\" - the highest level, there are only eight, called the \"Eight Blades of Khorne\", each of them commands an entire demon war zone. The most famous bloodthirsty demon is \"Skyblood\" Angrat - he single-handedly destroyed seven fortresses and an entire imperial army regiment in the empire during the first great invasion. He was eventually banished by the legendary dwarf demon-slaying warrior \"Stoneheart\" Gotrek using a rune giant ax and the time-space sealing spell of a human mage. The bloodthirsty's copper skin is innately immune to all non-magical weapons, and hitting them with mortal weapons is like hitting a stick against a rock."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have witnessed the arrival of the bloodthirsty demon with my own eyes. That kind of power is both feared and desired - I pray that one day I too can become so powerful, an unstoppable embodiment of war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Summoning a bloodthirsty demon is your ultimate trump card as a clan leader. But this process requires an extremely large blood sacrifice—at least eight hundred living creatures with souls sacrificed as sacrifices. Preserve these skulls and use them to build an altar to the Blood God. At the top of the altar, Khorne's true name and title of Bloodthirsty are called. Once it responds to your call, you will become a being feared by everyone in the entire northern wasteland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "An unnatural red light flashes across the sky, and then you hear a sound—a roar so deep that it resonates in your bones. A huge winged shadow darkens the sky and lands on the battlefield, kicking up strong winds that knock you to the ground. It was a bloodthirsty demon, and war itself took on a physical form."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The bloodthirsty demon is the highest-level \"big demon\" in the hierarchy of chaos demons - each of the four evil gods has its own big demon. The archdaemons of Khorne are the bloodthirsties, who usually appear in humanoid form, possessing giant horns, bat wings, and the famous \"infernal torture tools\" combination - a giant battle ax and a flaming whip."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Bloodthirsty Demon - the highest level demon under Khorne, the purest physical embodiment of war.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The bloodthirsty maniac’s family background and political status"
+  ]
+}

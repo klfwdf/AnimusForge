@@ -1,0 +1,109 @@
+{
+  "Id": "rule_House_Foundations_Bright_Banners",
+  "Keywords": [
+    "Bright Banners"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Bright Banners are a mercenary group active in the Free City of Essos and the Disputed Lands. A distinctive flag is easy to identify on the battlefield and is also a business sign: what the employer buys is not just a sword, but also a ready-made army that can assemble according to orders, defend the camp and realize the results of the battle. Members come from different cities and are united by contracts, military pay, loot rules and common experiences. Bright flags cannot hide the fragility of a mercenary’s life; lack of pay, cutoff of supplies, or the commander’s breach of trust may disintegrate the legion faster than the enemy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The wealthy merchants and rulers of the Free City State are willing to hire bright bannermen because it is cheaper to temporarily purchase troops than to maintain an army for a long time; they are also afraid that after the contract expires, this group of heavily armed people will still stand outside the city gate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mercenaries judge whether a flag is worth following not only by its color, but also by whether the pay is sufficient and whether the wounded have been abandoned. If the reputation of the Liangzhi Regiment can be exchanged for the next good contract, every veteran will have a reason to defend it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The villagers only care about whether the bright banner group will pay when they pass by. If what the employer calls a legitimate war falls on the village by seizing food and burning houses, no matter how beautiful the flag is, it will only be a notice of the arrival of bandits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bright Banners The Bright Flag Regiment is a mercenary group active in the free city-states. It maintains its team with eye-catching logos, contracts, military pay and the reputation of the leader. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bright Banners The Bright Flag Regiment is a mercenary group active in the free city-states. It maintains its team with eye-catching logos, contracts, military pay and the reputation of the leader. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Bright Banners: The Bright Flag Regiment is a mercenary group active in the free city-states. It maintains its team with eye-catching logos, contracts, military pay and the reputation of the leader."
+  ]
+}

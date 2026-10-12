@@ -46,20 +46,20 @@ internal static class WorldDiplomacyPresentationQueries
         StringBuilder sb = new StringBuilder();
         if (!string.IsNullOrWhiteSpace(document.MechanicalResult))
         {
-            sb.AppendLine("【外交结果】");
-            sb.AppendLine(document.MechanicalResult.Trim());
+            sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactResultSection", "【Diplomatic result】"));
+            sb.AppendLine(WorldDiplomacyAnalysisApplication.ProjectMechanicalResultForDisplay(document.MechanicalResult).Trim());
             sb.AppendLine();
         }
-        sb.AppendLine("【国际声誉】");
-        sb.AppendLine("变化：" + WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(document, international));
-        sb.AppendLine("原因：" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(international?.Reason,
+        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReputationSection", "【International reputation】"));
+        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(document, international, DiplomacyUiLocalization.Text));
+        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel", "Reason: ") + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(international?.Reason,
             document.InternationalReputationEvaluationReason,
-            "本篇没有形成明确的国际声誉变化。"));
+            DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactNoReputationChange", "This declaration produced no clear change in international reputation.")));
         sb.AppendLine();
-        sb.AppendLine("【国家威望】");
-        sb.AppendLine("变化：" + WorldDiplomacyReputationRules.FormatSignedStandingDelta(prestigeDelta));
-        sb.AppendLine("原因：" + (prestigeChanges.Count == 0 || string.IsNullOrWhiteSpace(prestigeReason)
-            ? "本篇没有触发国家威望结算。"
+        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactPrestigeSection", "【National prestige】"));
+        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.FormatSignedStandingDelta(prestigeDelta, DiplomacyUiLocalization.Text));
+        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel", "Reason: ") + (prestigeChanges.Count == 0 || string.IsNullOrWhiteSpace(prestigeReason)
+            ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactNoPrestigeChange", "This declaration triggered no national prestige settlement.")
             : prestigeReason));
         bool hasOtherKingdomImpact = false;
         foreach (WorldDiplomacyStandingChange other in changes.Where(x => x != null
@@ -68,13 +68,15 @@ internal static class WorldDiplomacyPresentationQueries
             sb.AppendLine();
             if (!hasOtherKingdomImpact)
             {
-                sb.AppendLine("【其他国家影响】");
+                sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactOtherKingdomsSection", "【Impact on other kingdoms】"));
                 hasOtherKingdomImpact = true;
             }
-            sb.AppendLine(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(other.KingdomName, other.KingdomId, "未知国家") + "："
-                + (string.Equals(other.Kind, "national_prestige", StringComparison.OrdinalIgnoreCase) ? "国家威望" : "国际声誉"));
-            sb.AppendLine("变化：" + WorldDiplomacyReputationRules.FormatSignedStandingDelta(other.Delta));
-            sb.AppendLine("原因：" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(other.Reason, "无说明"));
+            sb.AppendLine(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(other.KingdomName, other.KingdomId, DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_UnknownKingdom", "Unknown kingdom")) + ": "
+                + (string.Equals(other.Kind, "national_prestige", StringComparison.OrdinalIgnoreCase)
+                    ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactPrestigeSection", "【National prestige】")
+                    : DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReputationSection", "【International reputation】")));
+            sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.FormatSignedStandingDelta(other.Delta, DiplomacyUiLocalization.Text));
+            sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel", "Reason: ") + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(other.Reason, DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactNoReason", "no explanation given")));
         }
         return sb.ToString().TrimEnd();
     }
@@ -95,10 +97,10 @@ internal static class WorldDiplomacyPresentationQueries
     {
         string subtitle = document.AuthorKingdomName + " · " + document.AuthorRulerName + " · "
             + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day)) + " · "
-            + WorldDiplomacyTextRules.DocumentTypeLabel(document);
+            + WorldDiplomacyTextRules.DocumentTypeLabel(document, DiplomacyUiLocalization.Text);
         return new WorldDiplomacyDocumentDetail(document.DocumentId, document.RoundId, generation,
-            WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document), subtitle,
-            string.IsNullOrWhiteSpace(document.Body) ? "（该旧公文正文已压缩至年度摘要。）" : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(document.Body),
+            WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text), subtitle,
+            string.IsNullOrWhiteSpace(document.Body) ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_BodyArchived", "(This older declaration's body has been compressed into an annual summary.)") : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(document.Body),
             BuildImpactText(document), canReply, canRetryAnalysis);
     }
 
@@ -117,7 +119,7 @@ internal static class WorldDiplomacyPresentationQueries
             string kingdomId = document.AuthorKingdomId;
             string kingdomName = document.AuthorKingdomName;
             string date = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day));
-            string typeLabel = WorldDiplomacyTextRules.DocumentTypeLabel(document);
+            string typeLabel = WorldDiplomacyTextRules.DocumentTypeLabel(document, DiplomacyUiLocalization.Text);
             string eventMeta = WorldDiplomacyTextRules.BuildDocumentEventMeta(document, resolveRound, resolveDocument);
             string targetSummary = document.Actions?.Count > 1
                 ? string.Join("、", document.Actions.Where(x => x != null).Select(x => WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(x.TargetKingdomName, x.TargetKingdomId)))
@@ -125,18 +127,18 @@ internal static class WorldDiplomacyPresentationQueries
             records.Add(new WorldDiplomacyArchiveRecord(kingdomId, kingdomName,
                 EventId: document.DocumentId,
                 KindLabel: typeLabel,
-                HeaderRightText: WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(targetSummary, "世界公告"),
+                HeaderRightText: WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(targetSummary, DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_WorldBulletin", "World bulletin")),
                 DateText: date,
-                TitleText: WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document),
+                TitleText: WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text),
                 IndexTitleText: WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(document),
                 MetaText: date + "  ·  " + typeLabel + "  ·  " + document.AuthorKingdomName + (string.IsNullOrWhiteSpace(targetSummary) ? "" : " → " + targetSummary) + eventMeta,
                 PolicyNameText: "",
-                BodyText: string.IsNullOrWhiteSpace(document.Body) ? "该旧公文正文已经压缩，可查看对应年度外交摘要。" : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(document.Body),
-                BodySectionTitleText: "公告正文",
-                ImpactSectionTitleText: "外交结果与外交影响",
+                BodyText: string.IsNullOrWhiteSpace(document.Body) ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_BodyCompressed", "This older declaration's body has been compressed; see the matching annual diplomatic summary.") : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(document.Body),
+                BodySectionTitleText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_BodySectionTitle", "Declaration body"),
+                ImpactSectionTitleText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactSectionTitle", "Diplomatic result and impact"),
                 ImpactText: BuildImpactText(document),
-                IndexMetaText: "外交宣言：" + typeLabel,
-                UnreadMarkerText: document.IsRead ? "" : "新",
+                IndexMetaText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_IndexMetaDeclaration", "Diplomatic declaration: ") + typeLabel,
+                UnreadMarkerText: document.IsRead ? "" : DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_UnreadMarker", "New"),
                 IsUnread: !document.IsRead,
                 HasPolicyName: false,
                 HasImpact: true,
@@ -145,37 +147,37 @@ internal static class WorldDiplomacyPresentationQueries
         foreach (WorldDiplomacyAnnualSummary summary in storage.AnnualSummaries.OrderByDescending(x => x.Year))
         {
             string kingdomId = "diplomacy_archive";
-            string kingdomName = "外交编年档案";
+            string kingdomName = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ChronicleArchive", "Diplomatic chronicle archive");
             records.Add(new WorldDiplomacyArchiveRecord(kingdomId, kingdomName,
                 EventId: "diplomacy_summary:" + summary.Year.ToString(CultureInfo.InvariantCulture),
-                KindLabel: "年度外交摘要",
-                HeaderRightText: "世界共享记忆",
-                DateText: "第" + (summary.Year + 1).ToString(CultureInfo.InvariantCulture) + "年",
-                TitleText: "第" + (summary.Year + 1).ToString(CultureInfo.InvariantCulture) + "年外交纪要",
-                MetaText: "年度压缩档案",
+                KindLabel: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnnualSummaryKind", "Annual diplomatic summary"),
+                HeaderRightText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_WorldSharedMemory", "World shared memory"),
+                DateText: DiplomacyUiLocalization.Format("AF_DIP_UI_WorldDiplomacy_YearLabel", "Year {YEAR}", ("YEAR", (summary.Year + 1).ToString(CultureInfo.InvariantCulture))),
+                TitleText: DiplomacyUiLocalization.Format("AF_DIP_UI_WorldDiplomacy_AnnualRecordTitle", "Year {YEAR} diplomatic record", ("YEAR", (summary.Year + 1).ToString(CultureInfo.InvariantCulture))),
+                MetaText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnnualCompressedArchive", "Annual compressed archive"),
                 BodyText: summary.Summary,
-                BodySectionTitleText: "年度摘要",
-                ImpactSectionTitleText: summary.MajorEvents.Count > 0 ? "重大事件索引" : "",
+                BodySectionTitleText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnnualSummarySection", "Annual summary"),
+                ImpactSectionTitleText: summary.MajorEvents.Count > 0 ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_MajorEventsSection", "Major event index") : "",
                 ImpactText: string.Join("\n", summary.MajorEvents ?? new List<string>()),
-                IndexMetaText: "年度外交摘要",
+                IndexMetaText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnnualSummaryKind", "Annual diplomatic summary"),
                 HasImpact: summary.MajorEvents.Count > 0));
         }
         foreach (WorldDiplomacyCompressionSummary summary in (storage.CompressionSummaries ?? new List<WorldDiplomacyCompressionSummary>()).OrderByDescending(x => x.CreatedDay))
         {
             string kingdomId = "diplomacy_archive";
-            string kingdomName = "外交编年档案";
+            string kingdomName = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ChronicleArchive", "Diplomatic chronicle archive");
             records.Add(new WorldDiplomacyArchiveRecord(kingdomId, kingdomName,
                 EventId: "diplomacy_summary:" + summary.BatchId,
-                KindLabel: "外交历史整理",
-                HeaderRightText: "长期外交记忆",
+                KindLabel: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_HistoryCompactionKind", "Diplomatic history compaction"),
+                HeaderRightText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_LongTermMemory", "Long-term diplomatic memory"),
                 DateText: formatDate(summary.CreatedDay),
-                TitleText: "外交历史整理档案",
-                MetaText: "累计 " + summary.TokenCount.ToString("N0", CultureInfo.InvariantCulture) + " Tokens 后整理",
+                TitleText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_HistoryCompactionTitle", "Diplomatic history compaction record"),
+                MetaText: DiplomacyUiLocalization.Format("AF_DIP_UI_WorldDiplomacy_CompactionMeta", "Compacted after {TOKENS} accumulated tokens", ("TOKENS", summary.TokenCount.ToString("N0", CultureInfo.InvariantCulture))),
                 BodyText: summary.Summary,
-                BodySectionTitleText: "外交纪要",
-                ImpactSectionTitleText: summary.ConfirmedResults.Count > 0 ? "游戏确认结果" : "",
+                BodySectionTitleText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_DiplomaticRecordSection", "Diplomatic record"),
+                ImpactSectionTitleText: summary.ConfirmedResults.Count > 0 ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_GameConfirmedResultsSection", "Game-confirmed results") : "",
                 ImpactText: string.Join("\n", summary.ConfirmedResults),
-                IndexMetaText: "外交历史整理",
+                IndexMetaText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_HistoryCompactionKind", "Diplomatic history compaction"),
                 HasImpact: summary.ConfirmedResults.Count > 0));
         }
         return records.AsReadOnly();
@@ -185,11 +187,11 @@ internal static class WorldDiplomacyPresentationQueries
         if (kingdomId == null) return "";
             int prestige = WorldDiplomacyReputationRules.GetNationalPrestige(storage?.NationalPrestigeByKingdom, kingdomId);
             int reputation = WorldDiplomacyReputationRules.GetInternationalReputation(storage?.InternationalReputationByKingdom, kingdomId);
-            return "【国家威望与国际声誉】\n"
-                + "国家威望：" + prestige.ToString(CultureInfo.InvariantCulture)
-                + "/100（该国的外交信用与威慑；过低会损害国内贵族关系）\n"
-                + "国际声誉：" + reputation.ToString(CultureInfo.InvariantCulture)
-                + "/100（他国对该国的评价；影响合作意愿与施压倾向）";
+            return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_StandingSection", "【National prestige and international reputation】") + "\n"
+                + DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_StandingPrestigeLabel", "National prestige: ") + prestige.ToString(CultureInfo.InvariantCulture)
+                + DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_StandingPrestigeHint", "/100 (this kingdom's diplomatic credit and deterrence; too low a value damages relations with its nobles)") + "\n"
+                + DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_StandingReputationLabel", "International reputation: ") + reputation.ToString(CultureInfo.InvariantCulture)
+                + DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_StandingReputationHint", "/100 (how other kingdoms judge this one; affects willingness to cooperate and to apply pressure)");
     }
     internal static string ArchiveSubtitle(WorldDiplomacyStorage storage,
         Func<string, WorldDiplomacyDocument> resolveDocument, Func<string, string> representativeName,
@@ -199,9 +201,9 @@ internal static class WorldDiplomacyPresentationQueries
         if (round == null || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)
             || string.IsNullOrWhiteSpace(round.RootDocumentId))
         {
-            return "统一查看自定义政策、政策衍生事件与各国公开发布的外交宣言。";
+            return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ArchiveSubtitleIdle", "Review custom policies, policy-derived events, and diplomatic declarations published by every kingdom in one place.");
         }
-        string topic = WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round.RoundTopic, resolveDocument(round.RootDocumentId)?.Title, "外交交涉"));
+        string topic = WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round.RoundTopic, resolveDocument(round.RootDocumentId)?.Title, DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_DefaultTopic", "diplomatic negotiation")));
         List<string> participantNames = (round.Participants ?? new List<WorldDiplomacyRoundParticipant>())
             .Where(x => x != null && string.Equals(x.State, "active", StringComparison.OrdinalIgnoreCase))
             .Select(x => representativeName(x.KingdomId))
@@ -213,8 +215,8 @@ internal static class WorldDiplomacyPresentationQueries
             string initiator = kingdomName(round.InitiatorKingdomId);
             if (initiator != null) participantNames.Add(initiator);
         }
-        return "当前外交事件：" + WorldDiplomacyTextRules.Limit(topic, 60)
-            + "  ·  进行中"
-            + (participantNames.Count == 0 ? "" : "  ·  参与国：" + string.Join("、", participantNames));
+        return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ActiveEventPrefix", "Current diplomatic event: ") + WorldDiplomacyTextRules.Limit(topic, 60)
+            + DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ActiveEventInProgress", "  ·  In progress")
+            + (participantNames.Count == 0 ? "" : DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ActiveEventParticipants", "  ·  Participants: ") + string.Join(", ", participantNames));
     }
 }

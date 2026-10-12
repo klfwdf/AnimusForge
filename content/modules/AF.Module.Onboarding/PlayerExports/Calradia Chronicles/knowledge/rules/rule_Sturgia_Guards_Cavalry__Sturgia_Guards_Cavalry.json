@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Sturgia_Guards_Cavalry",
+  "Keywords": [
+    "Sturgia Guards Cavalry"
+  ],
+  "RagShortTexts": [
+    "The Sturgia Guards Cavalry is the pinnacle of Varyag infantry promotion and is the most important elite force that Boyer relies on."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Sturgia Guards are the most elite warriors under Boyer and the culmination of the Varyag Road. A warrior starts out as an ordinary Varyag and goes through countless fights on the battlefield before he is finally qualified to ride a war horse. They rode the unique northern pony horses, armed with spears and shields, and wore one-handed axes on their waists. They still retained the tradition of throwing throwing axes. They are the most important force that Boye relies on, and they are also the strongest elites that the Grand Duke can mobilize."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Janissaries are the pinnacle of our Sturgian warriors. Those who can survive from Varyag are only one in a hundred. The horses they ride are not the tall horses from the south, but our own short horses from the north - they don't run fast, but they have good endurance and are very stable in the snow and mud. The most important thing is that they are promoted from the infantry and can still fight even if they are dismounted, unlike those southern knights who become useless under the weight of their armor as soon as they fall off their horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Each of my personal guard cavalry has been promoted step by step from my Valiangry. The leap from infantry to cavalry is not only about status, but also about ability. I hand over the reins to them because they have proven themselves on the battlefield. I paid for their equipment, and their horses are the best in my racecourse. On the battlefield, they are my strongest fists."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "sturgia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:druzhinnik",
+          "char:druzhinnik_champion",
+          "char:varyag",
+          "char:varyag_veteran"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I started from Varyag, worked as an infantryman for several years, and then worked as a senior Varyag for several years before I was qualified to ride this horse. On the day I mounted the horse, Boyer personally handed the reins into my hands. We ride horses not to look good, but to rush to where we are needed faster. But at our core we are still infantry - we can still fight if we dismount and put up a shield. This is the biggest difference between us and the Southern Cavaliers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the Lord Cavalry of the Guards passes by on the street, we will all step to the side of the road. They fought their way up from Varyag, not by their birth, but by their military exploits. I heard that they can form a shield wall when dismounted, which is as strong as infantry. Although the horses they were riding were not tall, they were very stable in the snow in the north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sturgia's bodyguard cavalry are more agile than their heavy infantry and can cause trouble on the flanks. However, their horses were short and their charge lacked the momentum to crush everything. But there is one thing to be wary of: these cavalrymen were promoted from Varyag, and they can still fight after dismounting. If our heavy cavalry falls off their horses, they are basically doomed; Sturgia's personal guard cavalry falls off their horses, but they are still warriors even if they pick up their axes. In the terrain like the north, this quality is very important."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The kind of ponies that Sturgia's bodyguards ride on make our bannermen laugh when they look at them. On the plains, a single charge would knock them away. But in the snow and woodland in the north, our competitive horses cannot run, but their pony horses are very agile. Moreover, they can still fight when they are dismounted, but our fallen knights do not have that ability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sturgia's bodyguard cavalry horses are so slow that our mounted archers can circle them and shoot arrows until dark. But they have a solid foundation from the infantry, unlike the imperial cavalry who are useless as soon as they fall off their horses. Moreover, they also have throwing axes in their hands. It would not be fun if they get too close and get accidentally hit."
+    }
+  ],
+  "TextMappings": []
+}

@@ -43,8 +43,7 @@ internal static class PromptRuleInstructionComposer
 {
 	internal static string BuildUnqualifiedDuelBody(string playerDisplayName, int playerTier)
 	{
-		string name = string.IsNullOrWhiteSpace(playerDisplayName) ? "玩家" : playerDisplayName;
-		return $"{name}触发了决斗相关话题，但等级({playerTier})过低。请拒绝决斗并羞辱其不自量力。严禁使用决斗标签，如果玩家执意要和你单挑，那么你可以在回复末尾输出[ACTION:MEETING_TAUNT_BATTLE]，这样可以让你率领的所有军队攻击他";
+		return PromptComposerTexts.Format("rule_unqualified_duel", ("NAME", PromptExtrasComposer.ResolvePlayerDisplayName(playerDisplayName)), ("TIER", playerTier));
 	}
 
 	/// <summary>Legacy reward fallback chain: merchant(+runtime) → hero runtime / non-hero default → global default.</summary>

@@ -1,0 +1,158 @@
+{
+  "Id": "rule_Pala_people",
+  "Keywords": [
+    "Pala people"
+  ],
+  "RagShortTexts": [
+    "The attitude of the imperial nobles towards the Pala people varied depending on their political stance.",
+    "The Sturgians believe that the Pala people were the first masters of the continent"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When farmers in the western countryside of the empire were farming, they would occasionally dig out some old objects - pottery shards, stone axes, and broken tablets engraved with unfamiliar symbols. The old people said it was \"something left by the Para people\", but no one could tell what it was. People in the west know that their ancestors intermarried with the Pala people, people in the center know that there are a few Pala words in the dialect, and people in the east only know that the people of Phikaon are serious and rigid, with no sense of humor - it is said that this is a legacy of the Pala people. As for who the Pala people are, what gods they believe in, and what they say, most civilians in the empire don't care. That's the stuff of books, a matter of debate among scholars. Some people say that the Lageta was stolen, while others say that it was \"the victory of civilization over barbarism\". A farmer doesn't think about this - he only cares about this year's harvest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The attitude of the nobles of the empire towards the Pala people depended on their political stance. The generals of the Garius faction seldom mentioned the Pala people. In their narrative, the imperial legions conquered the barbarians and brought civilization, and that was it. As for how Lageta was obtained - \"That happened centuries ago, why bother settling old scores?\" The republicans in the Senate were different. They often mentioned Li Tu, the senator who tried to establish a \"barbarian republic\" in Mizea. In their mouths, Li Tu was a martyr for defending the ideals of Ancient Kalad, while the Pala people were allies who had been let down by the empire. Of course, they don't really care about the Pala people, they care about using this history to bash the current empire. There are also some scholars who went into the caves of Hetogea to debate whether those obscure verses were the original words of the Oracle of Pala. They spent decades verifying the authenticity of a word, but never asked: What happened to the oracle that issued the prophecy?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The peasants of Vlandia live in Palavind - the name was changed by the Vlandians, from a time when it was called Palavinos, and before that it was the land of the Pala people. But no one remembers when that happened. In Fregion, north of Palawind, people grow flax in the swamps; in the villages to the south, oak forests are lush. No one would think of the Para people while working - those piles of stones and pottery shards had long been dug into the soil and turned into fertilizer. Occasionally, an old man said that the mound to the east of the village was piled by \"people in ancient times\". As for who they were, they couldn't tell. Maybe the Pala people, maybe the Imperial people, maybe the earlier ones. Anyway, what we are growing now is the wheat of Vlandia, we believe in the god of Vlandia, and we pay taxes to the lord of Vlandia. That's enough."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The attitude of the nobles of Vlandia towards the Pala people is clear: that is part of the history of imperial conquest and has nothing to do with Vlandia. The Empire conquered the Pala people, Vlandia conquered the Imperial people, and that was it. Osric the Iron Wall captured Palawind without any blood, relying on negotiation with local imperial elders rather than massacre. This matter was mentioned repeatedly by the Dai Tier family to prove their legitimacy and \"civilization\". In their narrative, the surrender of Palawind was a peaceful transfer of power, with the Pala heritage handed over to the Empire and through the Empire to Vlandia. Where those Pala people went and who they became, the Vlandia nobles did not care. Their eyes were fixed on the old lands of the Empire, on the Battania on the Ukarion Plateau - those \"barbarians\" who were still alive and could resist. The dead Pala people are history, but the still living Battania people are the problem."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The peasants of Sturgia knew nothing of the Pala people. Their ancestors came across the sea from the north, put down roots on the Cachar Peninsula, fought with the Battania people, and did business with the Imperial people. But the Pala people? That was a matter in the south, before the Imperials came. Occasionally, merchants would bring some old things from the south—copper sheets with spiral patterns and knotted ropes. They said it was \"Pala's stuff\" and would fetch a good price in the Empire. The Sturgia farmer looked at it, shook his head, and continued chopping wood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Most of what the boyars of Sturgia know about the Pala people comes from wars and trade with the Empire. They knew that the Pala people were the earliest masters of this continent. They were conquered and assimilated by the empire, and became the strange-speaking peasants in the west of the empire. That's all. Some of the boyars would bring up the legends of the Palaites at banquets—that the deep lake in Ophthys led to another world, and that the caves of Hertogea contained oracles that foretold the rise and fall of empires. They find these stories interesting, like listening to oriental anecdotes. But no one really cares. The Sturgians have their own ancestors to worship and their own symbols to guard. As for the relationship between the Pala and the Battania people - in the eyes of the Sturgia people, they are both \"barbarians of the forest\" and there is not much difference."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Battania is as old as the Pala people. Only the old people know those stories. Lagta was stolen from the Pala people by the Empire. Lothai was razed by the empire. The king of Phikaon knelt down and begged for peace, so now the people of Phikaon have no sense of humor. The Dryateks drained their blood in the lake, and the water turned red. The stories about the Pala people are still told by the elders of Batania."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The chiefs of Battania knew exactly who the Pala people were. That was the neighbor they had lived with day and night, the original ruler of the half of the continent that was crushed by the empire. Whenever emissaries from the empire came to talk about peace, the chiefs nodded and said: \"Laqta.\" This one word was enough. It reminds everyone how the Empire got the first city of Para, through murder and betrayal. When King Caladog convened the tribes, he would mention the city-state of the Pala people. Phikaon sued for peace, so Phikaon is no longer Battania's. Lotai resisted, so Lotai was razed to the ground. The Tower of Lago was stolen, so it is now called the Imperial City. This is what happened to the Pala people - they sued for peace, they resisted, they were stolen from, the result was the same. Only the Badanians on the Ukarion Plateau were still standing. The chiefs know that those imperial people now live in the cities of the Pala people, cultivate the land of the Pala people, and speak in the Pala language. The chiefs feel that the imperial people are arrogantly trying to take away everything from the indigenous people of the Calradia continent, so the imperial people owe them that. Sooner or later, you have to pay it back."
+    }
+  ],
+  "TextMappings": []
+}

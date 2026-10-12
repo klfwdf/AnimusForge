@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Lyones",
+  "Keywords": [
+    "Principality of Leonis_LY",
+    "Duchy of Leonis_LY",
+    "Leonis Territory_LY",
+    "Lyonnese Island_LY",
+    "Duke Lyonnes_LY",
+    "Lyonnes Beach_LY"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Principality of Leonis is located on the western coast of Bretonnia. It is essentially a peninsula surrounded by reefs and fog. Duke Adarhard de Leonis rules this mysterious land. The knights here are known for their aloofness and bravery, fighting against Norsca raiders at sea and potentially dangerous creatures in the fog."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Leonis - the land of knights in the mist! The castle of Duke Adalhad stands on a rugged sea cliff. It is said that the goddess of the lake often comes riding the waves in the moonlight. The knights of Leonis rarely participate in the martial arts tournament in Curona. They prefer to practice martial arts alone on the beaches of their hometown to protect this cape favored by the goddess."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Principality of Leonis is a natural barrier and a naval base with great potential. From a strategic perspective, the channel here controls the shipping lanes along the west coast of Bretonnia. Although Duke Adalhad is not interested in politics, his knights are unrivaled in close combat at sea - Knight Leonis has practiced martial arts on the rocks since he was a child, and his agility is different from that of the knights inland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The geographical environment of the Principality of Lyonnes determines the uniqueness of its economy. The peninsula is surrounded by shoals and reefs and can only be accessed safely by local boatmen familiar with the waterways, which provides the principality with a natural trade monopoly protection. The tidal zone is rich in shellfish and rare seaweed. After the local seaweed is dried and ground, it can be made into the highest quality purple dye in the Old World, which is comparable to its weight in silver. The principality also has several natural grottoes, which are rumored to have been used as wartime storage warehouses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Leonis's court was small but its etiquette was extremely strict. The status of women here is quite high - it is said that the goddess of the lake often appears on the coast of Leonis, which gives the women of the duchy a great say in religious affairs. I used this tradition to gain more benefits for the family during the Duke's court proceedings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family has roots in Lyonnes for more than a dozen generations. Duke Adalhad relies on local families to maintain coastal defense. Every time a Norsca invasion is repelled in the sea area we are responsible for, the family's reputation will increase by one point. Lyonesse people are slow to warm to outsiders, but never betray an alliance once formed - this is our way of life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The fog in Lyonesse was as thick as a wall. When I spent the night in a seaside cave, I heard whispers that were not human. Local fishermen warned me not to approach the reefs on the west side on a full moon night - they said the rocks were not naturally formed but were the spiers of an ancient sunken city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Doing business in Lyonnes requires a lot of patience. The Duke's business taxes are not high, but the market here is limited and the population is sparse. What is truly valuable are local purple dyes and seashell pearls. These two goods can be sold for sky-high prices in the empire. But be careful - the only external access to Lyonnes is a mountain road, which is often closed due to thick fog in winter."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Principality of Leonis is located on the western peninsula of Bretonnia, surrounded by mist, and is famous for its aloof knights and the belief in the goddess of the lake.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Principality of Leonis Bretonnia Western Peninsula Misty Knight"
+  ]
+}

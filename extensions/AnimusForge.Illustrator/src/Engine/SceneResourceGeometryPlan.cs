@@ -117,16 +117,16 @@ namespace AnimusForge.Illustrator.Engine
         {
             token.ThrowIfCancellationRequested();
             if (string.IsNullOrWhiteSpace(resolvedSceneFile))
-                throw new InvalidDataException("未取得当前场景资源文件的实际路径。");
+                throw new InvalidDataException("The actual path of the current scene resource file was not obtained.");
             try
             {
                 string path = Path.GetFullPath(resolvedSceneFile);
                 var before = new FileInfo(path);
-                if (!before.Exists) throw new FileNotFoundException("当前场景资源文件不存在。", path);
+                if (!before.Exists) throw new FileNotFoundException("The current scene resource file does not exist.", path);
                 long length = before.Length;
                 DateTime writeTime = before.LastWriteTimeUtc;
                 if (length <= 0 || length > MaximumFileBytes)
-                    throw new InvalidDataException("场景资源为空或超过8MiB读取预算。");
+                    throw new InvalidDataException("The scene resource is empty or exceeds the 8 MiB read budget.");
                 lock (CacheLock)
                 {
                     token.ThrowIfCancellationRequested();
@@ -140,13 +140,13 @@ namespace AnimusForge.Illustrator.Engine
                 // No native objects or callbacks are reachable from this worker-side reader.
                 using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    if (stream.Length != length) throw new InvalidDataException("场景资源在读取前发生了变化，请重新采集。");
+                    if (stream.Length != length) throw new InvalidDataException("The scene resource changed before reading. Capture again.");
                     reader.Read(stream);
                 }
                 token.ThrowIfCancellationRequested();
                 var after = new FileInfo(path);
                 if (!after.Exists || after.Length != length || after.LastWriteTimeUtc != writeTime)
-                    throw new InvalidDataException("场景资源在读取期间发生了变化，请重新采集。");
+                    throw new InvalidDataException("The scene resource changed during reading. Capture again.");
                 var plan = new SceneResourceGeometryPlan(path, length, writeTime, activeMask, reader, token);
                 lock (CacheLock)
                 {
@@ -156,11 +156,11 @@ namespace AnimusForge.Illustrator.Engine
                 return plan;
             }
             catch (OperationCanceledException) { throw; }
-            catch (XmlException ex) { throw new InvalidDataException("无法解析当前场景XML资源：" + ex.Message, ex); }
-            catch (UnauthorizedAccessException ex) { throw new InvalidDataException("无法读取当前场景资源文件，访问被拒绝。", ex); }
+            catch (XmlException ex) { throw new InvalidDataException("The current scene XML resource could not be parsed: " + ex.Message, ex); }
+            catch (UnauthorizedAccessException ex) { throw new InvalidDataException("Access to the current scene resource file was denied.", ex); }
             catch (IOException ex)
             {
-                throw new InvalidDataException("读取当前场景资源失败：" + ex.Message, ex);
+                throw new InvalidDataException("Reading the current scene resource failed: " + ex.Message, ex);
             }
         }
 
@@ -204,17 +204,17 @@ namespace AnimusForge.Illustrator.Engine
                         if (xml.NodeType != XmlNodeType.Element) continue;
                         if (xml.Depth == 0)
                         {
-                            if (xml.Name != "scene") throw new InvalidDataException("当前资源不是有效的scene XML。");
+                            if (xml.Name != "scene") throw new InvalidDataException("The current resource is not valid scene XML.");
                             sawScene = true;
                         }
                         if (xml.Depth == 1 && xml.Name == "entities")
                         {
-                            if (sawEntities) throw new InvalidDataException("场景资源包含重复的entities节点。");
+                            if (sawEntities) throw new InvalidDataException("The scene resource contains duplicate entities nodes.");
                             sawEntities = true;
                         }
                         if (xml.Depth == 1 && xml.Name == "levels")
                         {
-                            if (sawLevels) throw new InvalidDataException("场景资源包含重复的levels节点。");
+                            if (sawLevels) throw new InvalidDataException("The scene resource contains duplicate levels nodes.");
                             sawLevels = true;
                             XmlElement levels = ReadSubtree(xml);
                             var root = levels.OwnerDocument.CreateElement("scene");
@@ -225,7 +225,7 @@ namespace AnimusForge.Illustrator.Engine
                         }
                     }
                 }
-                if (!sawScene || !sawEntities) throw new InvalidDataException("当前场景资源缺少scene或entities节点。");
+                if (!sawScene || !sawEntities) throw new InvalidDataException("The current scene resource lacks a scene or entities node.");
 
                 // Rewind this same read-locked file. Each root subtree is validated by
                 // the existing hierarchy/override rules, then released immediately.
@@ -254,13 +254,13 @@ namespace AnimusForge.Illustrator.Engine
             {
                 _token.ThrowIfCancellationRequested();
                 if (!xml.Read()) return false;
-                if (xml.Depth > MaximumDepth) throw new InvalidDataException("场景XML层级超过64层预算。");
+                if (xml.Depth > MaximumDepth) throw new InvalidDataException("The scene XML hierarchy exceeds the 64-level budget.");
                 if (xml.NodeType == XmlNodeType.Element)
                 {
                     if (++ElementCount > MaximumXmlElements)
-                        throw new InvalidDataException("场景XML流式扫描超过524288个元素预算。");
+                        throw new InvalidDataException("Scene XML streaming exceeded the 524288-element budget.");
                     if (!string.IsNullOrEmpty(xml.NamespaceURI))
-                        throw new InvalidDataException("场景XML使用了不支持的命名空间。");
+                        throw new InvalidDataException("The scene XML uses an unsupported namespace.");
                     if (xml.Name == "game_entity") EntityCount++;
                 }
                 return true;
@@ -277,7 +277,7 @@ namespace AnimusForge.Illustrator.Engine
                     if (xml.NodeType == XmlNodeType.Element)
                     {
                         if (++elements > MaximumSubtreeElements)
-                            throw new InvalidDataException("单个场景实体子树超过32768个元素内存预算。");
+                            throw new InvalidDataException("A scene entity subtree exceeds the 32768-element memory budget.");
                         PeakSubtreeElements = Math.Max(PeakSubtreeElements, elements);
                         var element = document.CreateElement(xml.Name);
                         if (xml.HasAttributes)
@@ -300,7 +300,7 @@ namespace AnimusForge.Illustrator.Engine
                     else if (xml.NodeType == XmlNodeType.Text || xml.NodeType == XmlNodeType.CDATA)
                         current?.AppendChild(document.CreateTextNode(xml.Value));
                 } while (ReadNext(xml));
-                throw new InvalidDataException("场景实体子树意外结束。");
+                throw new InvalidDataException("The scene entity subtree ended unexpectedly.");
             }
 
             private void ReadLevels(XmlElement root)
@@ -311,11 +311,11 @@ namespace AnimusForge.Illustrator.Engine
                 {
                     _token.ThrowIfCancellationRequested();
                     if (!(child is XmlElement level) || level.Name != "level")
-                        throw new InvalidDataException("场景升级层级定义无效。");
+                        throw new InvalidDataException("The scene upgrade level definition is invalid.");
                     string name = level.GetAttribute("name");
                     if (string.IsNullOrWhiteSpace(name) || !uint.TryParse(level.GetAttribute("mask"),
                         NumberStyles.None, CultureInfo.InvariantCulture, out uint mask) || mask == 0 || _levels.ContainsKey(name))
-                        throw new InvalidDataException("场景升级层级名称或mask定义无效。");
+                        throw new InvalidDataException("The scene upgrade level name or mask definition is invalid.");
                     _levels.Add(name, mask);
                     if (string.Equals(name, "base", StringComparison.OrdinalIgnoreCase)) BaseMask = mask;
                 }
@@ -468,7 +468,7 @@ namespace AnimusForge.Illustrator.Engine
 
             private void Add(Entry entry)
             {
-                if (Entries.Count >= MaximumEntries) throw new InvalidDataException("场景静态几何计划超过32768项预算。");
+                if (Entries.Count >= MaximumEntries) throw new InvalidDataException("The static scene geometry plan exceeds the 32768-item budget.");
                 Entries.Add(entry);
             }
 
@@ -486,7 +486,7 @@ namespace AnimusForge.Illustrator.Engine
                 foreach (XmlNode child in parent.ChildNodes)
                 {
                     if (!(child is XmlElement element) || element.Name != name) continue;
-                    if (found != null) throw new InvalidDataException("场景资源包含重复的" + name + "节点。");
+                    if (found != null) throw new InvalidDataException("The scene resource contains duplicate " + name + " nodes.");
                     found = element;
                 }
                 return found;

@@ -135,7 +135,7 @@ public partial class RewardSystemBehavior
 	{
 		if (isDueUnlimited)
 		{
-			return "还款期限：无限期（债务仍有效）";
+			return EconomySourceTexts.Get("S004");
 		}
 		if (dueDay <= 0f)
 		{
@@ -148,30 +148,44 @@ public partial class RewardSystemBehavior
 		if (num > 0.01f)
 		{
 			int num2 = Math.Max(1, (int)Math.Ceiling(num));
-			return $"还款期限：约 {num2} 天内（截止 {text}）";
+			return string.Format(EconomySourceTexts.Get("S005"), num2, text);
 		}
 		if (num >= -0.01f)
 		{
-			return "还款期限：今日到期（" + text + "）";
+			return EconomySourceTexts.Get("S006") + text + "）";
 		}
 		int num3 = Math.Max(1, (int)Math.Ceiling(0f - num));
-		return $"还款期限：已逾期 {num3} 天（截止 {text}）";
+		return string.Format(EconomySourceTexts.Get("S007"), num3, text);
 	}
 
 	private static string BuildDebtPromiseDeadlineText(float dueDay, bool isDueUnlimited)
 	{
 		string text = BuildDebtDueStatusText(dueDay, isDueUnlimited);
-		const string prefix = "还款期限：";
+		string prefix = EconomySourceTexts.Get("S008");
 		if (text.StartsWith(prefix, StringComparison.Ordinal))
 		{
 			text = text.Substring(prefix.Length).Trim();
 		}
-		return string.IsNullOrWhiteSpace(text) ? "未设定" : text;
+		return string.IsNullOrWhiteSpace(text) ? EconomySourceTexts.Get("S009") : text;
 	}
 
 	private static string NormalizeDebtNote(string note)
 	{
 		return EconomyDebtNormalizationPolicy.NormalizeNote(note);
+	}
+
+	// Request projection only: do not change persisted deadlines or quest/fact wording.
+	private static string BuildDebtPromptDeadlineText(float dueDay, bool isDueUnlimited)
+	{
+		if (isDueUnlimited) return EconomyPromptTexts.Get("DebtDeadlineUnlimited");
+		if (dueDay <= 0f) return EconomyPromptTexts.Get("S009");
+		float remaining = dueDay - GetNowCampaignDay();
+		string date = FormatAbsDayAsGameDate(ToDisplayDay(dueDay));
+		if (remaining > 0.01f)
+			return string.Format(EconomyPromptTexts.Get("DebtDeadlineRemaining"), Math.Max(1, (int)Math.Ceiling(remaining)), date);
+		if (remaining >= -0.01f)
+			return string.Format(EconomyPromptTexts.Get("DebtDeadlineToday"), date);
+		return string.Format(EconomyPromptTexts.Get("DebtDeadlineOverdue"), Math.Max(1, (int)Math.Ceiling(-remaining)), date);
 	}
 
 	private int EstimateDebtLineRemainingValue(Hero npc, DebtRecord.DebtLine line)
@@ -268,20 +282,20 @@ public partial class RewardSystemBehavior
 			maxLines = 1;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		string value = npc.Name?.ToString() ?? "该NPC";
-		stringBuilder.Append("【承诺或欠款提醒】你对 ").Append(value).Append(" 的承诺或欠款：");
+		string value = npc.Name?.ToString() ?? EconomySourceTexts.Get("S010");
+		stringBuilder.Append(EconomySourceTexts.Get("S011")).Append(value).Append(EconomySourceTexts.Get("S012"));
 		int num = Math.Min(maxLines, list.Count);
 		for (int num2 = 0; num2 < num; num2++)
 		{
 			DebtRecord.DebtLine debtLine = list[num2];
 			int debtValue = EstimateDebtLineRemainingValue(npc, debtLine);
 			string deadline = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
-			string note = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? "无" : debtLine.DebtNote;
-			stringBuilder.Append(" [ID:").Append(debtLine.DebtId).Append("] 承诺或欠款价值 ")
+			string note = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? EconomySourceTexts.Get("S013") : debtLine.DebtNote;
+			stringBuilder.Append(" [ID:").Append(debtLine.DebtId).Append(EconomySourceTexts.Get("S014"))
 				.Append(debtValue)
-				.Append(" 第纳尔，达成期限为：")
+				.Append(EconomySourceTexts.Get("S015"))
 				.Append(deadline)
-				.Append("，备注：")
+				.Append(EconomySourceTexts.Get("S016"))
 				.Append(note);
 			if (num2 < num - 1)
 			{
@@ -290,7 +304,7 @@ public partial class RewardSystemBehavior
 		}
 		if (list.Count > num)
 		{
-			stringBuilder.Append("；...还有 ").Append(list.Count - num).Append(" 笔");
+			stringBuilder.Append(EconomySourceTexts.Get("S017")).Append(list.Count - num).Append(EconomySourceTexts.Get("S018"));
 		}
 		return stringBuilder.ToString();
 	}
@@ -318,19 +332,19 @@ public partial class RewardSystemBehavior
 			maxLines = 1;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("【承诺或欠款提醒】你对 ").Append(BuildSettlementMerchantDebtLabel(settlement, kind)).Append(" 的承诺或欠款：");
+		stringBuilder.Append(EconomySourceTexts.Get("S011")).Append(BuildSettlementMerchantDebtLabel(settlement, kind)).Append(EconomySourceTexts.Get("S012"));
 		int num = Math.Min(maxLines, list.Count);
 		for (int i = 0; i < num; i++)
 		{
 			DebtRecord.DebtLine debtLine = list[i];
 			int debtValue = EstimateDebtLineRemainingValueForSettlement(settlement, debtLine);
 			string deadline = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
-			string note = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? "无" : debtLine.DebtNote;
-			stringBuilder.Append(" [ID:").Append(debtLine.DebtId).Append("] 承诺或欠款价值 ")
+			string note = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? EconomySourceTexts.Get("S013") : debtLine.DebtNote;
+			stringBuilder.Append(" [ID:").Append(debtLine.DebtId).Append(EconomySourceTexts.Get("S014"))
 				.Append(debtValue)
-				.Append(" 第纳尔，达成期限为：")
+				.Append(EconomySourceTexts.Get("S015"))
 				.Append(deadline)
-				.Append("，备注：")
+				.Append(EconomySourceTexts.Get("S016"))
 				.Append(note);
 			if (i < num - 1)
 			{
@@ -339,7 +353,7 @@ public partial class RewardSystemBehavior
 		}
 		if (list.Count > num)
 		{
-			stringBuilder.Append("；...还有 ").Append(list.Count - num).Append(" 笔");
+			stringBuilder.Append(EconomySourceTexts.Get("S017")).Append(list.Count - num).Append(EconomySourceTexts.Get("S018"));
 		}
 		return stringBuilder.ToString();
 	}
@@ -554,7 +568,7 @@ public partial class RewardSystemBehavior
 				lines.Add(new EconomyDebtPromptLine(
 					debtLine.DebtId,
 					EstimateDebtLineRemainingValue(npc, debtLine),
-					BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited),
+					BuildDebtPromptDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited),
 					debtLine.DebtNote));
 			}
 		}
@@ -586,12 +600,14 @@ public partial class RewardSystemBehavior
 				lines.Add(new EconomyDebtPromptLine(
 					debtLine.DebtId,
 					EstimateDebtLineRemainingValueForSettlement(settlement, debtLine),
-					BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited),
+					BuildDebtPromptDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited),
 					debtLine.DebtNote));
 			}
 		}
 		return EconomyPromptProjection.BuildSettlementMerchantDebtHint(
-			BuildSettlementMerchantDebtLabel(settlement, kind),
+			string.Format(EconomyPromptTexts.Get("DebtMerchantLabel"),
+				settlement?.Name?.ToString() ?? EconomyPromptTexts.ProjectSource(EconomySourceTexts.Get("S148")),
+				EconomyPromptTexts.ProjectSource(GetSettlementMerchantMarketLabel(kind))),
 			hasDebtContent,
 			lines);
 	}
@@ -607,15 +623,15 @@ public partial class RewardSystemBehavior
 			DebtRecord debtRecord = GetDebtRecord(npc);
 			if (debtRecord == null)
 			{
-				return "当前无欠款。";
+				return EconomyUiTexts.DebtSummaryNoDebt;
 			}
 			NormalizeDebtRecord(debtRecord);
 			if (!HasDebtContent(debtRecord))
 			{
-				return "当前无欠款。";
+				return EconomyUiTexts.DebtSummaryNoDebt;
 			}
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append("金币总欠款：").Append(debtRecord.OwedGold).AppendLine();
+			stringBuilder.AppendLine(EconomyUiTexts.DebtSummaryGold(debtRecord.OwedGold));
 			if (debtRecord.OwedItems != null && debtRecord.OwedItems.Count > 0)
 			{
 				List<string> list = new List<string>();
@@ -628,14 +644,13 @@ public partial class RewardSystemBehavior
 				}
 				if (list.Count > 0)
 				{
-					stringBuilder.AppendLine("物品总欠款：" + string.Join("，", list));
+					stringBuilder.AppendLine(EconomyUiTexts.DebtSummaryItems(string.Join(", ", list)));
 				}
 			}
 			List<DebtRecord.DebtLine> list2 = (from x in debtRecord.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && x.RemainingAmount > 0)
 				orderby x.IsDueUnlimited ? 1 : 0, x.DueDay, x.CreatedDay
 				select x).ToList() ?? new List<DebtRecord.DebtLine>();
-			stringBuilder.Append("分笔未清：").Append(list2.Count).Append(" 笔")
-				.AppendLine();
+			stringBuilder.AppendLine(EconomyUiTexts.DebtSummaryLines(list2.Count));
 			int num = 0;
 			for (int num2 = 0; num2 < list2.Count; num2++)
 			{
@@ -644,34 +659,58 @@ public partial class RewardSystemBehavior
 					break;
 				}
 				DebtRecord.DebtLine debtLine = list2[num2];
-				string value = BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited);
-				string value2 = (debtLine.IsGold ? "金币" : ("物品:" + debtLine.ItemId));
-				string value3 = (debtLine.IsGold ? (debtLine.RemainingAmount + " 第纳尔") : ("x" + debtLine.RemainingAmount));
-				stringBuilder.Append("- [").Append(debtLine.DebtId).Append("] ")
-					.Append(value2)
-					.Append("，剩余 ")
-					.Append(value3);
-				if (!string.IsNullOrWhiteSpace(value))
-				{
-					stringBuilder.Append("，").Append(value);
-				}
-				if (!debtLine.IsGold && debtLine.IsItemUnavailableDeclared)
-				{
-					stringBuilder.Append("，已标记无法归还原物");
-				}
-				stringBuilder.AppendLine();
+				string value = BuildDebtEditorDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited);
+				string value2 = debtLine.IsGold ? "gold" : ("item: " + debtLine.ItemId);
+				string value3 = debtLine.IsGold ? (debtLine.RemainingAmount + " denars") : ("x" + debtLine.RemainingAmount);
+				stringBuilder.AppendLine(EconomyUiTexts.DebtSummaryLine(debtLine.DebtId, value2, value3, value, !debtLine.IsGold && debtLine.IsItemUnavailableDeclared));
 				num++;
 			}
 			if (list2.Count > num)
 			{
-				stringBuilder.Append("... 还有 ").Append(list2.Count - num).Append(" 笔未显示。");
+				stringBuilder.Append(EconomyUiTexts.DebtSummaryMore(list2.Count - num));
 			}
 			return stringBuilder.ToString().Trim();
 		}
 		catch
 		{
-			return "欠款摘要读取失败。";
+			return EconomyUiTexts.DebtSummaryReadFailed;
 		}
+	}
+
+	private static string BuildDebtEditorDueStatusText(float dueDay, bool isDueUnlimited)
+	{
+		if (isDueUnlimited)
+		{
+			return EconomyUiTexts.DebtDueUnlimited;
+		}
+		if (dueDay <= 0f)
+		{
+			return string.Empty;
+		}
+		float remaining = dueDay - GetNowCampaignDay();
+		string date = FormatDebtDisplayDate(ToDisplayDay(dueDay));
+		if (remaining > 0.01f)
+		{
+			return EconomyUiTexts.DebtDueDays(Math.Max(1, (int)Math.Ceiling(remaining)), date);
+		}
+		if (remaining >= -0.01f)
+		{
+			return EconomyUiTexts.DebtDueToday(date);
+		}
+		return EconomyUiTexts.DebtOverdue(Math.Max(1, (int)Math.Ceiling(0f - remaining)), date);
+	}
+
+	// Mirrors the raw calendar arithmetic without changing AI-facing date text.
+	private static string FormatDebtDisplayDate(int absDay)
+	{
+		int daysInSeason = GetDaysInSeasonSafe();
+		int daysInYear = GetDaysInYearSafe();
+		int day = Math.Max(0, absDay);
+		int year = day / daysInYear;
+		int dayOfYear = day % daysInYear;
+		int season = NormalizeSeasonIndex(dayOfYear / daysInSeason);
+		int dayOfSeason = dayOfYear % daysInSeason + 1;
+		return EconomyUiTexts.DebtCalendarDate(year, EconomyUiTexts.DebtSeason(season), dayOfSeason);
 	}
 
 	private DebtRecord GetOrCreateDebtRecord(Hero npc)
@@ -1017,12 +1056,36 @@ public partial class RewardSystemBehavior
 	}
 
 	public bool RecordDeferredDuelDebtForNpc(Hero npc, int goldAmount, int dueDays, string debtNote, out string debtId, out string dueStatusText)
+		=> TryRecordDeferredDuelDebtForNpc(npc, goldAmount, dueDays, debtNote, out debtId, out dueStatusText, out _);
+
+	// Produce the HUD projection from the same authoritative debt line; never record a second debt.
+	public bool RecordDeferredDuelDebtForNpc(Hero npc, int goldAmount, int dueDays, string debtNote, out string debtId, out string dueStatusText, out string dueStatusDisplayText)
+	{
+		dueStatusDisplayText = string.Empty;
+		if (!TryRecordDeferredDuelDebtForNpc(npc, goldAmount, dueDays, debtNote, out debtId, out dueStatusText, out DebtRecord.DebtLine debtLine))
+		{
+			return false;
+		}
+		try
+		{
+			dueStatusDisplayText = BuildDebtEditorDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited);
+		}
+		catch
+		{
+			// A presentation failure must not turn an already-recorded debt into a failed action.
+			dueStatusDisplayText = dueStatusText;
+		}
+		return true;
+	}
+
+	private bool TryRecordDeferredDuelDebtForNpc(Hero npc, int goldAmount, int dueDays, string debtNote, out string debtId, out string dueStatusText, out DebtRecord.DebtLine debtLine)
 	{
 		debtId = "";
 		dueStatusText = "";
+		debtLine = null;
 		try
 		{
-			DebtRecord.DebtLine debtLine = SetDebtForNpc(npc, goldAmount, dueDays, debtNote);
+			debtLine = SetDebtForNpc(npc, goldAmount, dueDays, debtNote);
 			if (debtLine == null)
 			{
 				return false;
@@ -1035,6 +1098,7 @@ public partial class RewardSystemBehavior
 		{
 			debtId = "";
 			dueStatusText = "";
+			debtLine = null;
 			return false;
 		}
 	}
@@ -1096,25 +1160,25 @@ public partial class RewardSystemBehavior
 		line = null;
 		if (npc == null || string.IsNullOrWhiteSpace(debtId))
 		{
-			statusText = "参数无效：缺少NPC或债务ID。";
+			statusText = EconomySourceTexts.Get("S019");
 			return false;
 		}
 		rec = GetDebtRecord(npc);
 		if (rec == null)
 		{
-			statusText = "未找到该NPC的债务记录。";
+			statusText = EconomySourceTexts.Get("S020");
 			return false;
 		}
 		NormalizeDebtRecord(rec);
 		if (rec.DebtLines == null || rec.DebtLines.Count <= 0)
 		{
-			statusText = "该NPC当前没有可还债务。";
+			statusText = EconomySourceTexts.Get("S021");
 			return false;
 		}
 		line = rec.DebtLines.FirstOrDefault((DebtRecord.DebtLine x) => x != null && string.Equals(x.DebtId ?? "", debtId.Trim(), StringComparison.OrdinalIgnoreCase));
 		if (line == null || line.RemainingAmount <= 0)
 		{
-			statusText = "未找到可结算的债务ID，或该债务已清。";
+			statusText = EconomySourceTexts.Get("S022");
 			return false;
 		}
 		return true;
@@ -1148,7 +1212,7 @@ public partial class RewardSystemBehavior
 		NormalizeDebtRecord(rec);
 		// Complete this exact debt line's task even when the same NPC still has other unpaid lines.
 		CompleteDebtPromiseQuest(npc.StringId, line.DebtId);
-		statusText = $"债务ID {line.DebtId} 已按协商解除（{remainingAmount} -> 0）。";
+		statusText = string.Format(EconomySourceTexts.Get("S023"), line.DebtId, remainingAmount);
 		if (!HasDebtContent(rec) && !string.IsNullOrWhiteSpace(npc?.StringId))
 		{
 			_debts.Remove(npc.StringId);
@@ -1164,20 +1228,20 @@ public partial class RewardSystemBehavior
 		line = null;
 		if (settlement == null || kind == SettlementMerchantKind.None || string.IsNullOrWhiteSpace(debtId))
 		{
-			statusText = "参数无效：缺少市场债主或债务ID。";
+			statusText = EconomySourceTexts.Get("S024");
 			return false;
 		}
 		rec = GetSettlementMerchantDebtRecord(settlement, kind);
 		if (rec == null)
 		{
-			statusText = "未找到该市场的债务记录。";
+			statusText = EconomySourceTexts.Get("S025");
 			return false;
 		}
 		NormalizeDebtRecord(rec);
 		line = rec.DebtLines.FirstOrDefault((DebtRecord.DebtLine x) => x != null && string.Equals(x.DebtId ?? "", debtId.Trim(), StringComparison.OrdinalIgnoreCase));
 		if (line == null || line.RemainingAmount <= 0)
 		{
-			statusText = "未找到可结算的债务ID，或该债务已清。";
+			statusText = EconomySourceTexts.Get("S022");
 			return false;
 		}
 		return true;
@@ -1195,7 +1259,7 @@ public partial class RewardSystemBehavior
 		NormalizeDebtRecord(rec);
 		// Market obligations also complete by line ID, rather than waiting for the whole market balance to be cleared.
 		CompleteDebtPromiseQuest(BuildSettlementMerchantDebtKey(settlement, kind), line.DebtId);
-		statusText = $"债务ID {line.DebtId} 已按协商解除（{remainingAmount} -> 0）。";
+		statusText = string.Format(EconomySourceTexts.Get("S023"), line.DebtId, remainingAmount);
 		if (!HasDebtContent(rec))
 		{
 			_debts.Remove(BuildSettlementMerchantDebtKey(settlement, kind));

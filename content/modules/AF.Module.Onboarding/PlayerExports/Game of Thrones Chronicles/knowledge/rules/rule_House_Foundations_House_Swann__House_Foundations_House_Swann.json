@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_House_Swann",
+  "Keywords": [
+    "House Swann"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Siwen rules the southeastern part of the Stormlands from Stonehelm, and its coast, border roads, and vast vassal network give it long-term weight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Siwen family is based on Stonehelm City, and its territory faces the Dorne Sea and the southeastern road of the Stormlands. Coastal castles must guard against pirates, border conflicts, and levies from the interior at the same time, so the weight of history comes from stone walls, ships, knights, and judgments of wind direction. Old feuds on the Dornish borders make every marriage pact and caravan pass with extra caution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands",
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sailors use Stonehelm as a sea route marker, frontier soldiers use it as a post to observe the mountain passes and the sea, and Dornish merchants are concerned about whether the city gates are willing to open according to regulations. If Sven can let all three types of people know who to negotiate with, the castle will be more valuable than a simple stone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Swann House Siwen rules the southeastern part of the Stormlands from Stonehelm, and its coast, border roads, and vast vassal network give it long-term weight. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Swann House Siwen rules the southeastern part of the Stormlands from Stonehelm, and its coast, border roads, and vast vassal network give it long-term weight. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Swann House Siwen rules the southeastern part of the Stormlands from Stonehelm, and its coast, border roads, and vast vassal network give it long-term weight. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Swann House Siwen rules the southeastern part of the Stormlands from Stonehelm, and its coast, border roads, and vast vassal network give it long-term weight. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Swann: House Siwen rules the southeastern part of the Stormlands from Stonehelm, and its coast, border roads, and vast vassal network give it long-term weight."
+  ]
+}

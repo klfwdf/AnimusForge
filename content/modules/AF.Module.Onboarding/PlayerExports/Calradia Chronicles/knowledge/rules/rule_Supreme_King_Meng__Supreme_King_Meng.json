@@ -1,0 +1,298 @@
+{
+  "Id": "rule_Supreme_King_Meng",
+  "Keywords": [
+    "Supreme King Meng",
+    "Mongolia",
+    "Battania",
+    "Carl Bances",
+    "Fleet"
+  ],
+  "RagShortTexts": [
+    "High King Meng disappeared on the sea, and the people of Battania looked forward to the return of the fleet."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "High King Mon is the greatest ruler in Battania legend, a legendary figure who unified all the clans in ancient times. It is said that he led the Battania people to repel foreign enemies during the Darkest Age, but eventually disappeared at sea after a great battle. The people of Battania believe that Mon is not really dead - that one day he will return with a fleet to save his people from fire and water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Meng is the fire that never goes out in the hearts of us Battania people. Before the Imperials and Vlandians even set foot on this land, Meng unified all the clans and allowed us to stand together to face foreign enemies for the first time. The day he disappeared over the sea, all of Battania wept. But we believe he is not dead - and on the cliffs of Ka Banses, those with faith can see his fleet returning from the distance on a clear day. On that day, all the lost land will be returned to us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Every count of Battania knows the story of Mon. He was our first true High King, and the greatest yet. Before him, Battania was just a piece of loose sand; after him, we at least know what unity is. The Valchego Bay that can be seen from the cliffs of Ka Banses is said to be the direction in which he set sail. The legend of Meng is not only our nostalgia for the past, but also our expectations for the future."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old people said that Meng was the king chosen by the forest spirit. He united Battania, his fleets sailed the seas, and his swords split mountains. Then he disappeared - some said he went to the fairyland beyond the sea and would come back one day. Every spring, people from the Ca Banses climb up the cliffs of Etta Drouin to look north to see if he has returned."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Before the warriors of Battania went to war, someone would pray to Mon. He is not a god, but he is closer than a god - he was once one of us, a true Battanian. If he could return in our time and reunite all the clans, those Vlandia knights and Imperial legions would never set foot in our forests again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "elder"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Regarding the history of Mongolia, the Battania people have no written records, everything is preserved in songs and oral legends. What is certain is that he lived in a turbulent era before the expansion of the empire and was the first leader to be elected as the High King by all the clans. Different clans have different versions of the reason for his disappearance - some say he died in battle at sea, others say he sailed to the legendary land of immortality with his bodyguard. But all the clans agree on one thing: he will come back. This belief has become the spiritual pillar for the Battania people to persevere in a land that is constantly being encroached upon by foreigners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The High King Meng that the people of Battania talk about all day long is just a barbarian legend in the eyes of us imperial people. They said Mon would come back to save them—but where were Mon's fleet after all these years? On the contrary, our empire's legions drove into their forests one after another. But having said that, the people of Battania have been fighting for so many years and have not yet been conquered. The cohesion of that legend cannot be underestimated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "High King Mon is a central figure in the oral history of Battania. According to the records of imperial frontier officials, the people of Battania generally believed that Mon was an ancient heroic king who disappeared in the northern seas during an expedition and would return in a critical time in the future. This type of myth of the \"Sleeping King\" or the \"Returning King\" is not uncommon among the remote peoples of Calradia, but the legend of Mon has played an extremely practical role in the political mobilization of Battania - whenever foreign enemies invade, rumors about Mon's imminent return will quickly spread among the clans, having the effect of uniting people's hearts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We in Vlandia have also heard of Mon, whom the people of Battania believe in. After we conquered the area of ​​Ka Banses, we found that the locals always liked to squat on the cliffs and look north, just waiting to see their old king come back who had been dead for who knows how many years. To tell the truth, we Vlandians only believe in what we can see – the baron’s castle, the knight’s lance, the dinar in his hand. But the desperate vigor with which the people of Battania fought probably had something to do with this Mongolian."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "After Ka Banses fell into our hands, the Battania people were still talking about Meng coming back. To be honest, this is a bit annoying, but it also illustrates a problem - they can't defeat us in reality, so they can only hope that the legendary people will come to save them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mon of Battania? Our fishermen over at Walchego Bay said that the Battania people believed that their old king would come back from the sea. We Sturgians have similar legends about great dead heroes returning from the wind and snow. But we don't sit on the cliff and wait - we choose to find him ourselves, or reunite with him in Warsong."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of Battania believed that an ancient high king named Mon would come back to save them, and there were people waiting on the cliffs every year to see his fleet. Our Sultan of the Aserai need not wait for his return - the Sultan is now seated on the throne of Sannara. But those Battania people had not yet been wiped out among so many enemies, and that Mongolia probably did give them the bones of disobedience."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Mongolian believer in Battania sounds like an old song on the grassland. We also have our own legendary Great Khan, who after death will turn into a strong wind and come back to support the warriors on the grassland. But we Khuzait don’t wait for someone to come back – we go and get what we want ourselves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of Battania's belief in High King Mon makes me feel a little sad. Those who looked north from the cliffs of Ca Banses waited for generations, but Mon's fleet never appeared. Now even the flag of Battania no longer flies in that area, but instead the flags of Vlandia and Sturgia. But their old ladies would still tell stories about Meng to their children, their eyes as bright as if they had seen Meng with their own eyes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The status of the High King Meng in Battania culture is equivalent to that of a \"savior-like first-generation unifier.\" The structure of his legend contains many typical heroic narrative elements: unity in times of crisis, victory over foreign enemies, mysterious disappearance at sea, and prophesied return. This narrative has a strong mobilizing function politically - in the dilemma of Battania being squeezed from three sides by the Empire, Vlandia and Sturgia, Mon's return prophecy provides a shared symbol of hope for all clans. As a legendary place where Mon's return can be seen, Ka Banses has special religious and political significance, although now this land has fallen into the hands of foreigners."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Supreme King Meng",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Carl Bances",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

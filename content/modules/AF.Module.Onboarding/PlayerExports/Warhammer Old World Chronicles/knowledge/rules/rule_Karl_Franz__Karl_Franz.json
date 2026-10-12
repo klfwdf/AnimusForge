@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Karl_Franz",
+  "Keywords": [
+    "Karl Franz",
+    "emperor",
+    "Emperor Karl",
+    "Prince of Reikland",
+    "deathclaw",
+    "Gail Malaz",
+    "Griffin Emperor",
+    "imperial ruler",
+    "francz family",
+    "Emperor on horseback",
+    "elect emperor",
+    "empire renaissance"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Karl Franz is the current Emperor of the Empire and Prince Elector Count of Reikland, known as the greatest Imperial ruler since Magnus. He was famous for his outstanding swordsmanship and oratory talents in his youth. His majestic appearance when riding his gryphon mount \"Deathclaw\" on the battlefield was the highest symbol of the morale of the Imperial army, and his figure holding the Sigmar hammer Gael Maraz made every enemy of the Empire fearful."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Karl Franz is our Emperor, Sigmar's sword and shield in the world. After his father Louis Bird, the Elector Count, was killed in an Greenskin raid, young Karl succeeded Prince Reikland at the age of twenty-five, and subsequently won the imperial election with surprising political skills - he used Altdorf's wealth to convince the hesitant Elector Count, used his military exploits to wipe out the beastman tribe in Reikward Forest to win the respect of the Midden Territory, and established religious legitimacy with the public support of Archbishop Sigmar. Emperor Karl was by no means a puppet who read out decrees in the deep palace. The scene in which he rode the Griffin Deathclaw and personally led the Rick Guards to charge has been compiled into at least twenty marching songs. His approach to governance was both pragmatic and visionary: he expanded the University of Altdorf, increased funding for the School of Gunnery, restored regular envoys to the Dwarf Kingdom, and reorganized the Imperial espionage network to hunt down the Chaos cult. But he also faces unprecedented challenges - the forces of Chaos in the north are growing increasingly rampant, the undead in Sylvania are at work, and the feud between the Elector Counts is more difficult to reconcile than ever. No one is jealous of his throne, because everyone with a brain knows that the person who sits on it is actually using his own flesh and blood to block a dam that may collapse at any time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Karl Franz's Journey as Emperor is a vivid lesson in imperial politics. He didn't inherit the throne by blood - the Elector Counts elected him, which means he owes a huge political debt. His election was due to three key factors: first, Reikland's financial strength gave him an overwhelming financial advantage in the election; second, he launched a series of successful border campaigns as Prince of Reikland in the three years after his father's death, proving that he was not only a statesman but also a warrior; third, and most importantly, Sigmar The church's archbishop, Volkmar von Heinrich, publicly supported him - Volkmar's support not only brought church votes but also gave Karl divine legitimacy to use Gael Maraz. But gaining the throne is just the beginning: Karl needs to play warrior, diplomat, judge and businessman all at the same time. He is good at dividing the alliance among the Elector Counts in the Imperial Council, appeasing the loyal with rewards and punishing the uncooperative with snubs. On the battlefield, he personally held the hammer, not only to boost morale, but also to constantly remind everyone that the emperor was not only a politician, but also the most powerful warrior in the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The reign of Karl Franz represented a new model of imperial power - what scholars call 'active imperial power' or the 'emperor on horseback'. Unlike many of his predecessors, Karl never restricted himself to the palace of Altdorf. His governing philosophy is reflected on three levels: Politically, he implemented the 'Empire Restoration Plan', gradually weakening the independent military power of the Elector Count through the legal means of the Imperial Parliament, requiring each province to increase its contribution to the empire's central finance, and in exchange for building roads, dredging rivers and other public projects - these public projects not only have economic value, but also enhance the emperor's direct presence in each province. Militarily, he reformed the structure of the Reik Guard, increasing the proportion of musketry cavalry, and resumed regular cooperation with the Dwarf Engineering Guild to improve Imperial artillery. Diplomatically, he took the initiative to repair the Cold War relations between the Empire and Bretonnia - sending an embassy to attend the coronation of King Raun and reaching a formal agreement on the demarcation of the Gray Mountains' borders, a move that historians credited with averting a potential war crisis. However, Carr's most far-reaching influence may have been on a cultural level: he funded the Imperial Historical Society, organized scholars to compile the \"Imperial Review\" and established the Royal Archives. He used his actions to prove that the emperor of the empire could be a combination of scholars and warriors - a concept that was profoundly changing the empire's ruling culture."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There was a dimension to Emperor Karl Franz's style of rule that men overlooked - he was more pragmatic in his approach to the imperial women than any previous emperor. The emperors usually regarded female nobles as marriage chips and political decorations, but Karl noticed my report on the health conditions on the Ostermark border at his first Imperial Diet banquet - a detailed statistics provided by the Sisters and refugee shelters. He not only read the full text, but also sent his secretary to ask me for the original data in the appendix during the recess. The terms of the border epidemic prevention appropriation passed by the Imperial Parliament six months later almost copied the three measures recommended in my report. It's not that Carl has a particular preference for female advisors - his preference is competence, and he's not like most male Elector Counts who automatically skip a woman's article when he sees her name and instead just ask her father or husband for advice. I don't know if Karl was a great emperor, but I can say with certainty that he was one of only a handful of people in the history of the Empire who could forget a woman's gender when reading a report she submitted."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The rise of the Franz family is one of the most exciting cases in the Imperial Elector Count family genealogy - it relied not on lucky inheritance, but on three generations of carefully laid out family strategies. Emperor Karl's grandfather, Louis Bird the Elder, foresaw while he was still alive that Reikland needed a successor with strong ties to the Church of Sigmar, and so sent young Karl to receive a theological education under Bishop Volkmar. This arrangement produced immeasurable political payoff twenty years later in the form of Volkmar's public support for Karl's election as emperor. The second major strategic layout of the Franz family is economic - they use the shipping tax from the Reik River to establish ongoing trade cooperation with the dwarf kingdom. This cooperation generates a stable cash flow that other Elector Count families cannot match by relying on real estate income. The brilliance of the Franz family seems to be concentrated on Karl himself, but anyone who has studied the history of the family in depth will find that Karl is only standing on the high platform set up by two generations of predecessors - his personal talent is undoubtedly outstanding, but the reason why other Elector Count families lost to him is not because they do not have similar talents, but because they lack the family accumulation of three generations of continuous operation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I’ve heard no less than thirty legends about Karl Franz in my wanderings across the Empire, and the most authentic of them were told around campfires in marching tents and outposts—not official coronation narratives, but narrow escapes from death witnessed by veterans in battle. One of the stories comes from a retired sergeant major of the Reikguard: He said that Karl was once besieged by an ambush of beastmen in the Reikward Forest. For a full two hours before reinforcements arrived, the emperor himself stood at the forefront of the soldiers with a hammer, and after the arrow grazed his helmet, he joked to the young recruits next to him, \"The prayer you just prayed was louder than the cry of my gryphon, soldier - if you are more pious, Sigmar may be able to slip on the enemy's arrows.\" What really made me respect Karl wasn't the official narrative - it was that on the mercenary market the Altdorf garrison had one of the lowest pay arrears rates in the Empire, which meant that Karl at least did one seemingly small but highly unusual thing: he paid his soldiers on time. An emperor who kept his men fed was a good emperor in the Old World, no matter how gorgeous his crown and hammer looked."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Imperial trade policy under Karl Franz was the most commercially rational government blueprint of the Old World in the past fifty years. Karl was not the kind of emperor who would only impose heavy taxes on merchants to pay for the military - he rebuilt the imperial road system and shortened the transportation time of artillery from Nunn to Middenheim by one-third. This was an infrastructure investment that no Imperial Chamber of Commerce could achieve alone. He restored the unified standard of imperial coinage, effectively cracked down on privately minted bad coins in Nordland and Osterland, and increased the actual purchasing power of the imperial silver mark by nearly 20% in five years - for merchants doing inter-provincial trade, this was more valuable than any tax reduction policy. Of course, Karl also had a cold side towards merchants: the 'Imperial Trade Charter' system he promoted in parliament was actually an indirect co-optation of the provincial free chambers of commerce - any large chamber of commerce that wanted to obtain inter-provincial trade authorization had to register with the Imperial Treasury and undergo annual audits. This is a kind of tender regulatory expansion, but at least he knows better than most emperors what merchants need to make money, and after making money, through what channels the empire can legally extract part of the treasury."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Deathclaw - Emperor Karl's gryphon mount, the highest symbol of Imperial morale on the battlefield",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Emperor Karl Franz Emperor Karl"
+  ]
+}

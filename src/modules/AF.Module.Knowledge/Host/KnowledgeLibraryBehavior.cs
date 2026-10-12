@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -18,6 +18,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -481,6 +482,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private List<RuleIndexItem> _ruleIndexCache;
 
+	private string _ruleIndexCacheUiLabelFormat;
+
 	private bool _loadedSaveIndexBuildAttempted;
 
 	private sealed class IndexPorts : IKnowledgeIndexPorts
@@ -665,7 +668,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			+ " version=" + expectedVersion + " result=" + (variant == null ? "variant_miss" : content.Length == 0 ? "content_empty" : "hit"));
 		if (content.Length == 0) return "";
 		string title = rule.Keywords?.FirstOrDefault(keyword => !string.IsNullOrWhiteSpace(keyword))?.Trim() ?? rule.Id ?? "";
-		return "【世界书资料：" + title + "】\n" + content;
+		return KnowledgePromptTexts.Format("PersonaLoreHeader", "[Worldbook reference: {TITLE}]\n", ("TITLE", title)) + content;
 	}
 
 	private static string TrimPreview(string s, int maxChars)
@@ -709,12 +712,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text2 = (npcDisplayName ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "该NPC";
+			text2 = KnowledgePromptTexts.Get("NpcFallback", "this NPC");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("【玩家外貌信息（常驻）】");
-		stringBuilder.AppendLine(text2 + "与玩家面对面互动时，都可以直接观察到这些外貌特征；");
+		stringBuilder.AppendLine(KnowledgePromptTexts.Get("PlayerAppearanceHeader", "[Player appearance (always available)]"));
+		stringBuilder.AppendLine(KnowledgePromptTexts.Format("PlayerAppearanceObservation", "{NPC} can directly observe these appearance features when interacting with the player face to face;", ("NPC", text2)));
 		stringBuilder.AppendLine(text);
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -1158,12 +1161,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			actualPlayerName = "";
 		}
 		const string actualNamePlaceholder = "\uE102AF_PLAYER_PERSONA_ACTUAL_NAME\uE103";
-		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, "玩家", StringComparison.Ordinal))
+		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, KnowledgeSourceTexts.Get("KN_Raw_007"), StringComparison.Ordinal))
 		{
 			result = result.Replace(actualPlayerName, actualNamePlaceholder);
 		}
-		result = result.Replace("玩家", PlayerPersonaRawNameBeginMarker + "玩家" + PlayerPersonaRawNameEndMarker);
-		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, "玩家", StringComparison.Ordinal))
+		result = result.Replace(KnowledgeSourceTexts.Get("KN_Raw_007"), PlayerPersonaRawNameBeginMarker + KnowledgeSourceTexts.Get("KN_Raw_007") + PlayerPersonaRawNameEndMarker);
+		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, KnowledgeSourceTexts.Get("KN_Raw_007"), StringComparison.Ordinal))
 		{
 			result = result.Replace(actualNamePlaceholder, PlayerPersonaRawNameBeginMarker + actualPlayerName + PlayerPersonaRawNameEndMarker);
 		}
@@ -1263,11 +1266,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		if (!wroteHeader)
 		{
 			stringBuilder.AppendLine(" ");
-			stringBuilder.AppendLine("参与互动让你的脑海里浮现了这些知识");
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KnowledgeRecallHeader", "This interaction brings the following knowledge to mind"));
 			wroteHeader = true;
 		}
-		string text4 = string.IsNullOrWhiteSpace(text2) ? (text ?? "相关语义") : text2;
-		string knowledgeHeader = "【以下是关于（" + text4 + "）的背景知识，" + npcDisplayName + "可酌情参考作为聊天素材】";
+		string text4 = string.IsNullOrWhiteSpace(text2) ? (text ?? KnowledgePromptTexts.Get("RelatedMeaning", "related concepts")) : text2;
+		string knowledgeHeader = KnowledgePromptTexts.Format("MatchedKnowledgeHeader", "[The following is background knowledge about ({TOPIC}); {NPC} may draw on it for conversation as appropriate]", ("TOPIC", text4), ("NPC", npcDisplayName));
 		if (IsPlayerPersonaRule(rule))
 		{
 			knowledgeHeader = ProtectPlayerPersonaRawNameReferences(knowledgeHeader);
@@ -1380,7 +1383,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (_ruleIndexCache != null && _ruleIndexCacheVersion == Index.Version)
+			string uiLabelFormat = KnowledgeUiTexts.RuleIndexLabel("", 0, 0, 0);
+			if (_ruleIndexCache != null && _ruleIndexCacheVersion == Index.Version && string.Equals(_ruleIndexCacheUiLabelFormat, uiLabelFormat, StringComparison.Ordinal))
 			{
 				return;
 			}
@@ -1414,7 +1418,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				{
 					text2 = text;
 				}
-				string label = $"{text2} (关键词:{(rule?.Keywords?.Count).GetValueOrDefault()} 条, RAG短句:{(rule?.RagShortTexts?.Count).GetValueOrDefault()} 条, 提示词:{(rule?.Variants?.Count).GetValueOrDefault()} 条)";
+				string label = KnowledgeUiTexts.RuleIndexLabel(text2, (rule?.Keywords?.Count).GetValueOrDefault(), (rule?.RagShortTexts?.Count).GetValueOrDefault(), (rule?.Variants?.Count).GetValueOrDefault());
 				list.Add(new RuleIndexItem
 				{
 					Id = text,
@@ -1430,6 +1434,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			_ruleIndexCache = list;
 			_ruleIndexCacheVersion = Index.Version;
+			_ruleIndexCacheUiLabelFormat = uiLabelFormat;
 		}
 		catch
 		{
@@ -1767,48 +1772,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return IsClanAgeRangeMemberKind(kind) || IsStatusAgeRangeKind(kind);
 	}
 
-	private static string GetStatusSourceLabel(string sourceKey)
-	{
-		return (sourceKey ?? "").Trim().ToLowerInvariant() switch
-		{
-			"hero" => "英雄",
-			"current_npc_hero" => "当前NPC",
-			"player_hero" => "玩家",
-			"bound_hero" => "本知识绑定英雄",
-			"clan" => "家族",
-			"current_npc_clan" => "当前NPC所属家族",
-			"player_clan" => "玩家家族",
-			"bound_settlement_owner_clan" => "本知识绑定定居点统治家族",
-			"bound_hero_clan" => "本知识绑定英雄所属家族",
-			"kingdom" => "王国",
-			"current_npc_kingdom" => "当前NPC所属王国",
-			"player_kingdom" => "玩家所属王国",
-			"bound_kingdom" => "本知识绑定王国",
-			"settlement" => "定居点",
-			"current_npc_settlement" => "当前NPC所在定居点",
-			"player_settlement" => "玩家所在定居点",
-			"bound_settlement" => "本知识绑定定居点",
-			_ => "状态对象"
-		};
-	}
-
-	private static string GetStatusSourceTargetTypeLabel(string sourceKey)
-	{
-		switch ((sourceKey ?? "").Trim().ToLowerInvariant())
-		{
-		case "hero":
-			return "英雄";
-		case "clan":
-			return "家族";
-		case "kingdom":
-			return "王国";
-		case "settlement":
-			return "定居点";
-		default:
-			return "自动目标";
-		}
-	}
-
+	private static string GetStatusSourceLabel(string sourceKey) => KnowledgeMappingUiTexts.StatusSource(sourceKey);
+	private static string GetStatusSourceTargetTypeLabel(string sourceKey) => KnowledgeMappingUiTexts.TargetTypeForSource(sourceKey);
 	private static string GetStatusSourceObjectKind(string sourceKey)
 	{
 		switch ((sourceKey ?? "").Trim().ToLowerInvariant())
@@ -1860,89 +1825,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static string GetStatusConditionLabel(string statusKey)
-	{
-		return (statusKey ?? "").Trim().ToLowerInvariant() switch
-		{
-			"is_alive" => "是否存活",
-			"is_dead" => "是否死亡",
-			"is_disabled" => "是否失能",
-			"is_missing" => "是否失踪/逃亡",
-			"is_married" => "是否已婚",
-			"is_widowed" => "是否丧偶",
-			"is_female" => "是否女性",
-			"is_male" => "是否男性",
-			"is_child" => "是否未成年",
-			"is_adult" => "是否成年",
-			"is_in_age_range" => "是否在年龄段内",
-			"is_clan_leader" => "是否家族族长",
-			"is_kingdom_leader" => "是否王国领袖",
-			"is_governor" => "是否总督",
-			"is_prisoner" => "是否被俘",
-			"is_in_settlement" => "是否在定居点内",
-			"is_in_field" => "是否在野外",
-			"is_wanderer" => "是否流浪者",
-			"is_notable" => "是否要人",
-			"is_lord" => "是否领主",
-			"is_merchant" => "是否商人",
-			"is_gang_leader" => "是否帮派头目",
-			"is_artisan" => "是否工匠",
-			"is_preacher" => "是否传教士",
-			"is_headman" => "是否村长",
-			"is_minor_faction_hero" => "是否小势力英雄",
-			"is_party_leader" => "是否带队",
-			"is_player_companion" => "是否玩家同伴",
-			"is_rebel" => "是否叛军",
-			"is_wounded" => "是否受伤",
-			"is_known_to_player" => "是否被玩家认识",
-			"has_children" => "是否有子女",
-			"has_father" => "是否有父亲",
-			"has_mother" => "是否有母亲",
-			"has_home_settlement" => "是否有家乡定居点",
-			"is_eliminated" => "是否已灭亡/被消灭",
-			"has_kingdom" => "是否有所属王国",
-			"has_leader" => "是否有领袖",
-			"has_ruling_clan" => "是否有执政家族",
-			"has_any_settlement" => "是否拥有任何定居点",
-			"has_any_town" => "是否拥有任何城镇",
-			"has_any_castle" => "是否拥有任何城堡",
-			"has_any_village" => "是否拥有任何村庄",
-			"has_members" => "是否有成员",
-			"has_male_members" => "是否有男性成员",
-			"has_female_members" => "是否有女性成员",
-			"has_age_range_members" => "是否有年龄段成员",
-			"is_mercenary" => "是否雇佣兵家族",
-			"is_minor_faction" => "是否小势力",
-			"is_rebel_clan" => "是否叛军家族",
-			"is_noble" => "是否贵族家族",
-			"is_bandit_faction" => "是否匪帮势力",
-			"is_outlaw" => "是否法外势力",
-			"has_any_clan" => "是否有任何家族",
-			"has_any_lord" => "是否有任何领主",
-			"has_active_policies" => "是否有生效政策",
-			"has_any_war" => "是否处于战争中",
-			"has_any_allies" => "是否有盟友",
-			"is_active" => "是否活跃",
-			"is_town" => "是否城镇",
-			"is_castle" => "是否城堡",
-			"is_village" => "是否村庄",
-			"is_fortification" => "是否堡垒",
-			"is_hideout" => "是否藏身处",
-			"is_under_siege" => "是否被围攻",
-			"is_under_raid" => "是否正在被劫掠",
-			"is_raided" => "是否已被劫掠",
-			"is_starving" => "是否饥荒",
-			"is_rebellious" => "是否处于叛乱状态",
-			"has_port" => "是否有港口",
-			"has_owner" => "是否有统治者",
-			"has_owner_clan" => "是否有统治家族",
-			"has_notables" => "是否有要人",
-			"has_parties" => "是否有驻留队伍",
-			_ => "未知状态"
-		};
-	}
-
-	// 真/假文案只在状态型映射里生效，这里统一做读取和 trim。
+	private static string GetStatusConditionLabel(string statusKey) => KnowledgeMappingUiTexts.StatusCondition(statusKey);
 	private static string GetTextMappingStatusTrueText(LoreTextMapping mapping)
 	{
 		try
@@ -1970,318 +1853,14 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	// 把内部 kind 转成编辑器里可读的中文标签，方便列表展示和搜索。
 	private static string GetTextMappingKindLabel(string kind)
 	{
-		if (TryParseStatusMappingKind(kind, out var sourceKey, out var statusKey))
-		{
-			return "状态判断：" + GetStatusSourceLabel(sourceKey) + GetStatusConditionLabel(statusKey);
-		}
-		return (kind ?? "").Trim() switch
-		{
-			TextMappingKindKingdomName => "王国名称",
-			TextMappingKindKingdomLeaderName => "王国当前领袖",
-			TextMappingKindKingdomRulingClanName => "王国执政家族",
-			TextMappingKindKingdomCultureName => "王国文化",
-			TextMappingKindKingdomInitialHomeSettlementName => "王国初始都城",
-			TextMappingKindKingdomAllClans => "王国全部家族",
-			TextMappingKindKingdomAllLords => "王国全部领主",
-			TextMappingKindKingdomAllTowns => "王国拥有的所有城镇",
-			TextMappingKindKingdomAllCastles => "王国拥有的所有城堡",
-			TextMappingKindKingdomAllVillages => "王国拥有的所有村庄",
-			TextMappingKindKingdomAllSettlements => "王国拥有的所有定居点",
-			TextMappingKindKingdomActivePolicies => "王国生效政策",
-			TextMappingKindKingdomAlliedKingdoms => "王国盟友",
-			TextMappingKindKingdomWarFactions => "王国交战势力",
-			TextMappingKindSettlementName => "定居点名称",
-			TextMappingKindSettlementOwnerClanName => "定居点统治家族",
-			TextMappingKindSettlementOwnerLeaderName => "定居点统治者",
-			TextMappingKindSettlementOwnerKingdomName => "定居点所属王国",
-			TextMappingKindSettlementOwnerKingdomLeaderName => "定居点所属王国领袖",
-			TextMappingKindSettlementCultureName => "定居点文化",
-			TextMappingKindSettlementNotables => "定居点要人",
-			TextMappingKindSettlementParties => "定居点驻留队伍",
-			TextMappingKindSettlementBoundVillages => "定居点绑定村庄",
-			TextMappingKindClanName => "家族名称",
-			TextMappingKindClanLeaderName => "家族当前族长",
-			TextMappingKindClanKingdomName => "家族所属王国",
-			TextMappingKindClanKingdomLeaderName => "家族所属王国领袖",
-			TextMappingKindClanAllTowns => "家族统治的所有城镇",
-			TextMappingKindClanAllVillages => "家族统治的所有村子",
-			TextMappingKindClanAllSettlements => "家族统治的所有定居点",
-			TextMappingKindClanMembers => "家族成员",
-			TextMappingKindClanMaleMembers => "家族男性成员",
-			TextMappingKindClanFemaleMembers => "家族女性成员",
-			TextMappingKindClanAgeRangeMembers => "家族年龄段成员",
-			TextMappingKindHeroName => "英雄当前名字",
-			TextMappingKindHeroClanName => "英雄所属家族",
-			TextMappingKindHeroKingdomName => "英雄所属王国",
-			TextMappingKindHeroKingdomLeaderName => "英雄效忠君主",
-			TextMappingKindHeroSpouseName => "英雄配偶",
-			TextMappingKindHeroFatherName => "英雄父亲",
-			TextMappingKindHeroMotherName => "英雄母亲",
-			TextMappingKindHeroCurrentSettlementName => "英雄当前定居点",
-			TextMappingKindCurrentNpcName => "当前NPC名字",
-			TextMappingKindCurrentNpcClanName => "当前NPC所属家族",
-			TextMappingKindCurrentNpcClanKingdomName => "当前NPC所属家族的所属王国",
-			TextMappingKindCurrentNpcClanKingdomLeaderName => "当前NPC所属家族的所属王国领袖",
-			TextMappingKindCurrentNpcClanAllTowns => "当前NPC所属家族的所有城镇",
-			TextMappingKindCurrentNpcClanAllVillages => "当前NPC所属家族的所有村子",
-			TextMappingKindCurrentNpcClanAllSettlements => "当前NPC所属家族的所有定居点",
-			TextMappingKindCurrentNpcClanMembers => "当前NPC所属家族的成员",
-			TextMappingKindCurrentNpcClanMaleMembers => "当前NPC所属家族的男性成员",
-			TextMappingKindCurrentNpcClanFemaleMembers => "当前NPC所属家族的女性成员",
-			TextMappingKindCurrentNpcClanAgeRangeMembers => "当前NPC所属家族的年龄段成员",
-			TextMappingKindCurrentNpcKingdomName => "当前NPC所属王国",
-			TextMappingKindCurrentNpcKingdomLeaderName => "当前NPC效忠君主",
-			TextMappingKindCurrentNpcKingdomRulingClanName => "当前NPC所属王国执政家族",
-			TextMappingKindCurrentNpcKingdomCultureName => "当前NPC所属王国文化",
-			TextMappingKindCurrentNpcKingdomInitialHomeSettlementName => "当前NPC所属王国初始都城",
-			TextMappingKindCurrentNpcKingdomAllClans => "当前NPC所属王国全部家族",
-			TextMappingKindCurrentNpcKingdomAllLords => "当前NPC所属王国全部领主",
-			TextMappingKindCurrentNpcKingdomAllTowns => "当前NPC所属王国拥有的所有城镇",
-			TextMappingKindCurrentNpcKingdomAllCastles => "当前NPC所属王国拥有的所有城堡",
-			TextMappingKindCurrentNpcKingdomAllVillages => "当前NPC所属王国拥有的所有村庄",
-			TextMappingKindCurrentNpcKingdomAllSettlements => "当前NPC所属王国拥有的所有定居点",
-			TextMappingKindCurrentNpcKingdomActivePolicies => "当前NPC所属王国生效政策",
-			TextMappingKindCurrentNpcKingdomAlliedKingdoms => "当前NPC所属王国盟友",
-			TextMappingKindCurrentNpcKingdomWarFactions => "当前NPC所属王国交战势力",
-			TextMappingKindCurrentNpcSpouseName => "当前NPC配偶",
-			TextMappingKindCurrentNpcFatherName => "当前NPC父亲",
-			TextMappingKindCurrentNpcMotherName => "当前NPC母亲",
-			TextMappingKindCurrentNpcCurrentSettlementName => "当前NPC所在定居点",
-			TextMappingKindCurrentNpcCurrentSettlementOwnerClanName => "当前NPC所在定居点统治家族",
-			TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName => "当前NPC所在定居点统治者",
-			TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName => "当前NPC所在定居点所属王国",
-			TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName => "当前NPC所在定居点所属王国领袖",
-			TextMappingKindCurrentNpcCurrentSettlementCultureName => "当前NPC所在定居点文化",
-			TextMappingKindCurrentNpcCurrentSettlementNotables => "当前NPC所在定居点要人",
-			TextMappingKindCurrentNpcCurrentSettlementParties => "当前NPC所在定居点驻留队伍",
-			TextMappingKindCurrentNpcCurrentSettlementBoundVillages => "当前NPC所在定居点绑定村庄",
-			TextMappingKindPlayerName => "玩家名字",
-			TextMappingKindPlayerClanName => "玩家家族",
-			TextMappingKindPlayerClanKingdomName => "玩家家族所属王国",
-			TextMappingKindPlayerClanKingdomLeaderName => "玩家家族所属王国领袖",
-			TextMappingKindPlayerClanAllTowns => "玩家家族的所有城镇",
-			TextMappingKindPlayerClanAllVillages => "玩家家族的所有村子",
-			TextMappingKindPlayerClanAllSettlements => "玩家家族的所有定居点",
-			TextMappingKindPlayerClanMembers => "玩家家族的成员",
-			TextMappingKindPlayerClanMaleMembers => "玩家家族的男性成员",
-			TextMappingKindPlayerClanFemaleMembers => "玩家家族的女性成员",
-			TextMappingKindPlayerClanAgeRangeMembers => "玩家家族的年龄段成员",
-			TextMappingKindPlayerKingdomName => "玩家所属王国",
-			TextMappingKindPlayerKingdomLeaderName => "玩家效忠君主",
-			TextMappingKindPlayerSpouseName => "玩家配偶",
-			TextMappingKindPlayerCurrentSettlementName => "玩家所在定居点",
-			TextMappingKindBoundKingdomName => "本知识绑定王国",
-			TextMappingKindBoundKingdomLeaderName => "本知识绑定王国领袖",
-			TextMappingKindBoundKingdomRulingClanName => "本知识绑定王国执政家族",
-			TextMappingKindBoundKingdomCultureName => "本知识绑定王国文化",
-			TextMappingKindBoundKingdomInitialHomeSettlementName => "本知识绑定王国初始都城",
-			TextMappingKindBoundKingdomAllClans => "本知识绑定王国全部家族",
-			TextMappingKindBoundKingdomAllLords => "本知识绑定王国全部领主",
-			TextMappingKindBoundKingdomAllTowns => "本知识绑定王国拥有的所有城镇",
-			TextMappingKindBoundKingdomAllCastles => "本知识绑定王国拥有的所有城堡",
-			TextMappingKindBoundKingdomAllVillages => "本知识绑定王国拥有的所有村庄",
-			TextMappingKindBoundKingdomAllSettlements => "本知识绑定王国拥有的所有定居点",
-			TextMappingKindBoundKingdomActivePolicies => "本知识绑定王国生效政策",
-			TextMappingKindBoundKingdomAlliedKingdoms => "本知识绑定王国盟友",
-			TextMappingKindBoundKingdomWarFactions => "本知识绑定王国交战势力",
-			TextMappingKindBoundSettlementName => "本知识绑定定居点",
-			TextMappingKindBoundSettlementOwnerClanName => "本知识绑定定居点统治家族",
-			TextMappingKindBoundSettlementOwnerClanKingdomName => "本知识绑定定居点统治家族的所属王国",
-			TextMappingKindBoundSettlementOwnerClanKingdomLeaderName => "本知识绑定定居点统治家族的所属王国领袖",
-			TextMappingKindBoundSettlementOwnerClanAllTowns => "本知识绑定定居点统治家族的所有城镇",
-			TextMappingKindBoundSettlementOwnerClanAllVillages => "本知识绑定定居点统治家族的所有村子",
-			TextMappingKindBoundSettlementOwnerClanAllSettlements => "本知识绑定定居点统治家族的所有定居点",
-			TextMappingKindBoundSettlementOwnerClanMembers => "本知识绑定定居点统治家族的成员",
-			TextMappingKindBoundSettlementOwnerClanMaleMembers => "本知识绑定定居点统治家族的男性成员",
-			TextMappingKindBoundSettlementOwnerClanFemaleMembers => "本知识绑定定居点统治家族的女性成员",
-			TextMappingKindBoundSettlementOwnerClanAgeRangeMembers => "本知识绑定定居点统治家族的年龄段成员",
-			TextMappingKindBoundSettlementOwnerLeaderName => "本知识绑定定居点统治者",
-			TextMappingKindBoundSettlementOwnerKingdomName => "本知识绑定定居点所属王国",
-			TextMappingKindBoundSettlementOwnerKingdomLeaderName => "本知识绑定定居点所属王国领袖",
-			TextMappingKindBoundSettlementCultureName => "本知识绑定定居点文化",
-			TextMappingKindBoundSettlementNotables => "本知识绑定定居点要人",
-			TextMappingKindBoundSettlementParties => "本知识绑定定居点驻留队伍",
-			TextMappingKindBoundSettlementBoundVillages => "本知识绑定定居点绑定村庄",
-			TextMappingKindBoundHeroName => "本知识绑定英雄",
-			TextMappingKindBoundHeroClanName => "本知识绑定英雄所属家族",
-			TextMappingKindBoundHeroClanKingdomName => "本知识绑定英雄所属家族的所属王国",
-			TextMappingKindBoundHeroClanKingdomLeaderName => "本知识绑定英雄所属家族的所属王国领袖",
-			TextMappingKindBoundHeroClanAllTowns => "本知识绑定英雄所属家族的所有城镇",
-			TextMappingKindBoundHeroClanAllVillages => "本知识绑定英雄所属家族的所有村子",
-			TextMappingKindBoundHeroClanAllSettlements => "本知识绑定英雄所属家族的所有定居点",
-			TextMappingKindBoundHeroClanMembers => "本知识绑定英雄所属家族的成员",
-			TextMappingKindBoundHeroClanMaleMembers => "本知识绑定英雄所属家族的男性成员",
-			TextMappingKindBoundHeroClanFemaleMembers => "本知识绑定英雄所属家族的女性成员",
-			TextMappingKindBoundHeroClanAgeRangeMembers => "本知识绑定英雄所属家族的年龄段成员",
-			TextMappingKindBoundHeroKingdomName => "本知识绑定英雄所属王国",
-			TextMappingKindBoundHeroKingdomLeaderName => "本知识绑定英雄效忠君主",
-			TextMappingKindBoundHeroSpouseName => "本知识绑定英雄配偶",
-			TextMappingKindBoundHeroFatherName => "本知识绑定英雄父亲",
-			TextMappingKindBoundHeroMotherName => "本知识绑定英雄母亲",
-			TextMappingKindBoundHeroCurrentSettlementName => "本知识绑定英雄所在定居点",
-			_ => "未知映射"
-		};
+		if (TryParseStatusMappingKind(kind, out var sourceKey, out var statusKey)) return KnowledgeMappingUiTexts.StatusLabel(sourceKey, statusKey);
+		return KnowledgeMappingUiTexts.Kind(kind);
 	}
-
-	// 告诉编辑器“这个 kind 需要选什么目标”：
-	// 手动对象会走选择器，自动对象则会直接绑定到当前NPC/玩家/绑定实体。
 	private static string GetTextMappingTargetTypeLabel(string kind)
 	{
-		if (TryParseStatusMappingKind(kind, out var sourceKey, out var _))
-		{
-			return GetStatusSourceTargetTypeLabel(sourceKey);
-		}
-		return (kind ?? "").Trim() switch
-		{
-			TextMappingKindKingdomName => "王国",
-			TextMappingKindKingdomLeaderName => "王国",
-			TextMappingKindKingdomRulingClanName => "王国",
-			TextMappingKindKingdomCultureName => "王国",
-			TextMappingKindKingdomInitialHomeSettlementName => "王国",
-			TextMappingKindKingdomAllClans => "王国",
-			TextMappingKindKingdomAllLords => "王国",
-			TextMappingKindKingdomAllTowns => "王国",
-			TextMappingKindKingdomAllCastles => "王国",
-			TextMappingKindKingdomAllVillages => "王国",
-			TextMappingKindKingdomAllSettlements => "王国",
-			TextMappingKindKingdomActivePolicies => "王国",
-			TextMappingKindKingdomAlliedKingdoms => "王国",
-			TextMappingKindKingdomWarFactions => "王国",
-			TextMappingKindSettlementName => "定居点",
-			TextMappingKindSettlementOwnerClanName => "定居点",
-			TextMappingKindSettlementOwnerLeaderName => "定居点",
-			TextMappingKindSettlementOwnerKingdomName => "定居点",
-			TextMappingKindSettlementOwnerKingdomLeaderName => "定居点",
-			TextMappingKindSettlementCultureName => "定居点",
-			TextMappingKindSettlementNotables => "定居点",
-			TextMappingKindSettlementParties => "定居点",
-			TextMappingKindSettlementBoundVillages => "定居点",
-			TextMappingKindClanName => "家族",
-			TextMappingKindClanLeaderName => "家族",
-			TextMappingKindClanKingdomName => "家族",
-			TextMappingKindClanKingdomLeaderName => "家族",
-			TextMappingKindClanAllTowns => "家族",
-			TextMappingKindClanAllVillages => "家族",
-			TextMappingKindClanAllSettlements => "家族",
-			TextMappingKindClanMembers => "家族",
-			TextMappingKindClanMaleMembers => "家族",
-			TextMappingKindClanFemaleMembers => "家族",
-			TextMappingKindClanAgeRangeMembers => "家族",
-			TextMappingKindHeroName => "英雄",
-			TextMappingKindHeroClanName => "英雄",
-			TextMappingKindHeroKingdomName => "英雄",
-			TextMappingKindHeroKingdomLeaderName => "英雄",
-			TextMappingKindHeroSpouseName => "英雄",
-			TextMappingKindHeroFatherName => "英雄",
-			TextMappingKindHeroMotherName => "英雄",
-			TextMappingKindHeroCurrentSettlementName => "英雄",
-			TextMappingKindCurrentNpcName => "自动目标",
-			TextMappingKindCurrentNpcClanName => "自动目标",
-			TextMappingKindCurrentNpcClanKingdomName => "自动目标",
-			TextMappingKindCurrentNpcClanKingdomLeaderName => "自动目标",
-			TextMappingKindCurrentNpcClanAllTowns => "自动目标",
-			TextMappingKindCurrentNpcClanAllVillages => "自动目标",
-			TextMappingKindCurrentNpcClanAllSettlements => "自动目标",
-			TextMappingKindCurrentNpcClanMembers => "自动目标",
-			TextMappingKindCurrentNpcClanMaleMembers => "自动目标",
-			TextMappingKindCurrentNpcClanFemaleMembers => "自动目标",
-			TextMappingKindCurrentNpcClanAgeRangeMembers => "自动目标",
-			TextMappingKindCurrentNpcKingdomName => "自动目标",
-			TextMappingKindCurrentNpcKingdomLeaderName => "自动目标",
-			TextMappingKindCurrentNpcKingdomRulingClanName => "自动目标",
-			TextMappingKindCurrentNpcKingdomCultureName => "自动目标",
-			TextMappingKindCurrentNpcKingdomInitialHomeSettlementName => "自动目标",
-			TextMappingKindCurrentNpcKingdomAllClans => "自动目标",
-			TextMappingKindCurrentNpcKingdomAllLords => "自动目标",
-			TextMappingKindCurrentNpcKingdomAllTowns => "自动目标",
-			TextMappingKindCurrentNpcKingdomAllCastles => "自动目标",
-			TextMappingKindCurrentNpcKingdomAllVillages => "自动目标",
-			TextMappingKindCurrentNpcKingdomAllSettlements => "自动目标",
-			TextMappingKindCurrentNpcKingdomActivePolicies => "自动目标",
-			TextMappingKindCurrentNpcKingdomAlliedKingdoms => "自动目标",
-			TextMappingKindCurrentNpcKingdomWarFactions => "自动目标",
-			TextMappingKindCurrentNpcSpouseName => "自动目标",
-			TextMappingKindCurrentNpcFatherName => "自动目标",
-			TextMappingKindCurrentNpcMotherName => "自动目标",
-			TextMappingKindCurrentNpcCurrentSettlementName => "自动目标",
-			TextMappingKindCurrentNpcCurrentSettlementOwnerClanName => "自动目标",
-			TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName => "自动目标",
-			TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName => "自动目标",
-			TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName => "自动目标",
-			TextMappingKindCurrentNpcCurrentSettlementCultureName => "自动目标",
-			TextMappingKindCurrentNpcCurrentSettlementNotables => "自动目标",
-			TextMappingKindCurrentNpcCurrentSettlementParties => "自动目标",
-			TextMappingKindCurrentNpcCurrentSettlementBoundVillages => "自动目标",
-			TextMappingKindPlayerName => "自动目标",
-			TextMappingKindPlayerClanName => "自动目标",
-			TextMappingKindPlayerClanKingdomName => "自动目标",
-			TextMappingKindPlayerClanKingdomLeaderName => "自动目标",
-			TextMappingKindPlayerClanAllTowns => "自动目标",
-			TextMappingKindPlayerClanAllVillages => "自动目标",
-			TextMappingKindPlayerClanAllSettlements => "自动目标",
-			TextMappingKindPlayerClanMembers => "自动目标",
-			TextMappingKindPlayerClanMaleMembers => "自动目标",
-			TextMappingKindPlayerClanFemaleMembers => "自动目标",
-			TextMappingKindPlayerClanAgeRangeMembers => "自动目标",
-			TextMappingKindPlayerKingdomName => "自动目标",
-			TextMappingKindPlayerKingdomLeaderName => "自动目标",
-			TextMappingKindPlayerSpouseName => "自动目标",
-			TextMappingKindPlayerCurrentSettlementName => "自动目标",
-			TextMappingKindBoundKingdomName => "自动目标",
-			TextMappingKindBoundKingdomLeaderName => "自动目标",
-			TextMappingKindBoundKingdomRulingClanName => "自动目标",
-			TextMappingKindBoundKingdomCultureName => "自动目标",
-			TextMappingKindBoundKingdomInitialHomeSettlementName => "自动目标",
-			TextMappingKindBoundKingdomAllClans => "自动目标",
-			TextMappingKindBoundKingdomAllLords => "自动目标",
-			TextMappingKindBoundKingdomAllTowns => "自动目标",
-			TextMappingKindBoundKingdomAllCastles => "自动目标",
-			TextMappingKindBoundKingdomAllVillages => "自动目标",
-			TextMappingKindBoundKingdomAllSettlements => "自动目标",
-			TextMappingKindBoundKingdomActivePolicies => "自动目标",
-			TextMappingKindBoundKingdomAlliedKingdoms => "自动目标",
-			TextMappingKindBoundKingdomWarFactions => "自动目标",
-			TextMappingKindBoundSettlementName => "自动目标",
-			TextMappingKindBoundSettlementOwnerClanName => "自动目标",
-			TextMappingKindBoundSettlementOwnerClanKingdomName => "自动目标",
-			TextMappingKindBoundSettlementOwnerClanKingdomLeaderName => "自动目标",
-			TextMappingKindBoundSettlementOwnerClanAllTowns => "自动目标",
-			TextMappingKindBoundSettlementOwnerClanAllVillages => "自动目标",
-			TextMappingKindBoundSettlementOwnerClanAllSettlements => "自动目标",
-			TextMappingKindBoundSettlementOwnerClanMembers => "自动目标",
-			TextMappingKindBoundSettlementOwnerClanMaleMembers => "自动目标",
-			TextMappingKindBoundSettlementOwnerClanFemaleMembers => "自动目标",
-			TextMappingKindBoundSettlementOwnerClanAgeRangeMembers => "自动目标",
-			TextMappingKindBoundSettlementOwnerLeaderName => "自动目标",
-			TextMappingKindBoundSettlementOwnerKingdomName => "自动目标",
-			TextMappingKindBoundSettlementOwnerKingdomLeaderName => "自动目标",
-			TextMappingKindBoundSettlementCultureName => "自动目标",
-			TextMappingKindBoundSettlementNotables => "自动目标",
-			TextMappingKindBoundSettlementParties => "自动目标",
-			TextMappingKindBoundSettlementBoundVillages => "自动目标",
-			TextMappingKindBoundHeroName => "自动目标",
-			TextMappingKindBoundHeroClanName => "自动目标",
-			TextMappingKindBoundHeroClanKingdomName => "自动目标",
-			TextMappingKindBoundHeroClanKingdomLeaderName => "自动目标",
-			TextMappingKindBoundHeroClanAllTowns => "自动目标",
-			TextMappingKindBoundHeroClanAllVillages => "自动目标",
-			TextMappingKindBoundHeroClanAllSettlements => "自动目标",
-			TextMappingKindBoundHeroClanMembers => "自动目标",
-			TextMappingKindBoundHeroClanMaleMembers => "自动目标",
-			TextMappingKindBoundHeroClanFemaleMembers => "自动目标",
-			TextMappingKindBoundHeroClanAgeRangeMembers => "自动目标",
-			TextMappingKindBoundHeroKingdomName => "自动目标",
-			TextMappingKindBoundHeroKingdomLeaderName => "自动目标",
-			TextMappingKindBoundHeroSpouseName => "自动目标",
-			TextMappingKindBoundHeroFatherName => "自动目标",
-			TextMappingKindBoundHeroMotherName => "自动目标",
-			TextMappingKindBoundHeroCurrentSettlementName => "自动目标",
-			_ => "目标"
-		};
+		if (TryParseStatusMappingKind(kind, out var sourceKey, out var _)) return KnowledgeMappingUiTexts.TargetTypeForSource(sourceKey);
+		return KnowledgeMappingUiTexts.TargetTypeForKind(kind);
 	}
-
-	// 某些 kind 天生就是自动目标，比如当前NPC、玩家、绑定王国。
-	// 这里把 kind 映射到内部 target token，省掉用户再选一次对象。
 	private static string GetAutomaticTargetIdForKind(string kind)
 	{
 		if (TryParseStatusMappingKind(kind, out var sourceKey, out var _))
@@ -2479,21 +2058,21 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			if (settlement.IsTown)
 			{
-				return "城镇";
+				return WorldEntityPromptTexts.Get("Town", "town");
 			}
 			if (settlement.IsCastle)
 			{
-				return "城堡";
+				return WorldEntityPromptTexts.Get("Castle", "castle");
 			}
 			if (settlement.IsVillage)
 			{
-				return "村子";
+				return WorldEntityPromptTexts.Get("KN_Prompt_203", "village");
 			}
 		}
 		catch
 		{
 		}
-		return "定居点";
+		return WorldEntityPromptTexts.Get("GenericSettlement", "settlement");
 	}
 
 	private static int GetSettlementTypeOrder(Settlement settlement)
@@ -3237,28 +2816,28 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				Hero hero = ResolveRuntimeHeroFromMapping(mapping, rule, npcHero, npcCharacter);
 				string text5 = GetHeroDisplayName(hero);
 				string statusSourceLabel4 = GetStatusSourceLabel(text);
-				return string.IsNullOrWhiteSpace(text5) ? (statusSourceLabel4 + "（当前无值）") : (statusSourceLabel4 + "（" + text5 + "）");
+				return string.IsNullOrWhiteSpace(text5) ? KnowledgeUiTexts.MappingTargetNoValue(statusSourceLabel4) : KnowledgeUiTexts.MappingTargetValue(statusSourceLabel4, text5);
 			}
 			case "clan":
 			{
 				Clan clan = ResolveRuntimeClanFromMapping(mapping, rule, npcHero, npcCharacter);
 				string text4 = GetClanDisplayName(clan);
 				string statusSourceLabel3 = GetStatusSourceLabel(text);
-				return string.IsNullOrWhiteSpace(text4) ? (statusSourceLabel3 + "（当前无值）") : (statusSourceLabel3 + "（" + text4 + "）");
+				return string.IsNullOrWhiteSpace(text4) ? KnowledgeUiTexts.MappingTargetNoValue(statusSourceLabel3) : KnowledgeUiTexts.MappingTargetValue(statusSourceLabel3, text4);
 			}
 			case "kingdom":
 			{
 				Kingdom kingdom = ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter);
 				string text3 = GetKingdomDisplayName(kingdom);
 				string statusSourceLabel2 = GetStatusSourceLabel(text);
-				return string.IsNullOrWhiteSpace(text3) ? (statusSourceLabel2 + "（当前无值）") : (statusSourceLabel2 + "（" + text3 + "）");
+				return string.IsNullOrWhiteSpace(text3) ? KnowledgeUiTexts.MappingTargetNoValue(statusSourceLabel2) : KnowledgeUiTexts.MappingTargetValue(statusSourceLabel2, text3);
 			}
 			case "settlement":
 			{
 				Settlement settlement = ResolveRuntimeSettlementFromMapping(mapping, rule, npcHero, npcCharacter);
 				string text2 = GetSettlementDisplayName(settlement);
 				string statusSourceLabel = GetStatusSourceLabel(text);
-				return string.IsNullOrWhiteSpace(text2) ? (statusSourceLabel + "（当前无值）") : (statusSourceLabel + "（" + text2 + "）");
+				return string.IsNullOrWhiteSpace(text2) ? KnowledgeUiTexts.MappingTargetNoValue(statusSourceLabel) : KnowledgeUiTexts.MappingTargetValue(statusSourceLabel, text2);
 			}
 			default:
 				return GetStatusSourceLabel(text);
@@ -3635,7 +3214,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			string text = (mapping?.TargetId ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				return "（未选择）";
+				return KnowledgeUiTexts.MappingTargetNotSelected;
 			}
 			if (TryParseStatusMappingKind(mapping?.Kind, out var sourceKey, out var _))
 			{
@@ -3644,27 +3223,27 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			if (string.Equals(text, TextMappingTargetCurrentNpc, StringComparison.OrdinalIgnoreCase))
 			{
 				string text2 = GetHeroDisplayName(ResolveRuntimeHeroFromMapping(mapping, rule, npcHero, npcCharacter));
-				return string.IsNullOrWhiteSpace(text2) ? "当前互动NPC" : ("当前互动NPC（" + text2 + "）");
+				return KnowledgeUiTexts.MappingTargetCurrentNpc(string.IsNullOrWhiteSpace(text2) ? "" : KnowledgeUiTexts.MappingTargetNameSuffix(text2));
 			}
 			if (string.Equals(text, TextMappingTargetPlayer, StringComparison.OrdinalIgnoreCase))
 			{
 				string text3 = GetHeroDisplayName(Hero.MainHero);
-				return string.IsNullOrWhiteSpace(text3) ? "玩家" : ("玩家（" + text3 + "）");
+				return KnowledgeUiTexts.MappingTargetPlayer(string.IsNullOrWhiteSpace(text3) ? "" : KnowledgeUiTexts.MappingTargetNameSuffix(text3));
 			}
 			if (string.Equals(text, TextMappingTargetBoundKingdom, StringComparison.OrdinalIgnoreCase))
 			{
 				string text4 = GetKingdomDisplayName(ResolveBoundKingdomFromRule(rule));
-				return string.IsNullOrWhiteSpace(text4) ? "本知识绑定王国（未唯一确定）" : ("本知识绑定王国（" + text4 + "）");
+				return KnowledgeUiTexts.MappingTargetBoundKingdom(string.IsNullOrWhiteSpace(text4) ? KnowledgeUiTexts.MappingTargetUnresolvedSuffix : KnowledgeUiTexts.MappingTargetNameSuffix(text4));
 			}
 			if (string.Equals(text, TextMappingTargetBoundSettlement, StringComparison.OrdinalIgnoreCase))
 			{
 				string text5 = GetSettlementDisplayName(ResolveBoundSettlementFromRule(rule));
-				return string.IsNullOrWhiteSpace(text5) ? "本知识绑定定居点（未唯一确定）" : ("本知识绑定定居点（" + text5 + "）");
+				return KnowledgeUiTexts.MappingTargetBoundSettlement(string.IsNullOrWhiteSpace(text5) ? KnowledgeUiTexts.MappingTargetUnresolvedSuffix : KnowledgeUiTexts.MappingTargetNameSuffix(text5));
 			}
 			if (string.Equals(text, TextMappingTargetBoundHero, StringComparison.OrdinalIgnoreCase))
 			{
 				string text6 = GetHeroDisplayName(ResolveBoundHeroFromRule(rule));
-				return string.IsNullOrWhiteSpace(text6) ? "本知识绑定英雄（未唯一确定）" : ("本知识绑定英雄（" + text6 + "）");
+				return KnowledgeUiTexts.MappingTargetBoundHero(string.IsNullOrWhiteSpace(text6) ? KnowledgeUiTexts.MappingTargetUnresolvedSuffix : KnowledgeUiTexts.MappingTargetNameSuffix(text6));
 			}
 			switch ((mapping?.Kind ?? "").Trim())
 			{
@@ -4000,37 +3579,37 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text = TrimPreview((mapping?.SourceText ?? "").Trim(), 28);
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "（空）";
+			text = KnowledgeUiTexts.MappingSummaryEmpty;
 		}
 		string text2 = GetTextMappingKindLabel(mapping?.Kind);
 		string text3 = TrimPreview(GetTextMappingTargetDisplayName(mapping, rule), 24);
 		if (string.IsNullOrWhiteSpace(text3))
 		{
-			text3 = "（未选择）";
+			text3 = KnowledgeUiTexts.MappingSummaryNotSelected;
 		}
 		string text4 = TrimPreview(ResolveTextMappingValueOrFallback(mapping, rule), 24);
 		if (string.IsNullOrWhiteSpace(text4))
 		{
-			text4 = "（当前无值）";
+			text4 = KnowledgeUiTexts.MappingSummaryNoValue;
 		}
 		string text5 = TrimPreview(GetTextMappingEmptyValueText(mapping), 18);
 		if (IsTextMappingAgeRangeKind(mapping?.Kind))
 		{
 			int num = NormalizeMemberAgeBound(mapping?.AgeMin, 0);
 			int num2 = NormalizeMemberAgeBound(mapping?.AgeMax, 120);
-			text2 = text2 + $"（{num}-{num2}岁）";
+			text2 = KnowledgeUiTexts.MappingSummaryAgeRange(text2, num, num2);
 		}
 		if (IsStatusMappingKind(mapping?.Kind))
 		{
 			string text6 = TrimPreview(GetTextMappingStatusTrueText(mapping), 10);
 			string text7 = TrimPreview(GetTextMappingStatusFalseText(mapping), 10);
-			text2 = text2 + $"（真:{(string.IsNullOrWhiteSpace(text6) ? "空" : text6)}/假:{(string.IsNullOrWhiteSpace(text7) ? "空" : text7)}）";
+			text2 = KnowledgeUiTexts.MappingSummaryStatus(text2, string.IsNullOrWhiteSpace(text6) ? KnowledgeUiTexts.MappingSummaryEmpty : text6, string.IsNullOrWhiteSpace(text7) ? KnowledgeUiTexts.MappingSummaryEmpty : text7);
 		}
 		if (!string.IsNullOrWhiteSpace(text5))
 		{
-			text4 = text4 + " [空=>" + text5 + "]";
+			text4 = text4 + KnowledgeUiTexts.MappingSummaryEmptyFallback(text5);
 		}
-		return text + " -> " + text2 + "（" + text3 + "） => " + text4;
+		return KnowledgeUiTexts.MappingSummary(text, text2, text3, text4);
 	}
 
 	// 命中知识后，最终会在变体内容上执行这里的多轮替换。
@@ -4189,7 +3768,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text7Keyword = text7;
 		if (string.IsNullOrWhiteSpace(text7))
 		{
-			text7 = "该NPC";
+			text7 = KnowledgePromptTexts.Get("NpcFallback", "this NPC");
 		}
 		string text8 = (text7 ?? "").Replace("|", " ").Trim();
 		LogLoreContextTrace("hero", text2, "", text3, text4, text6, text5, flag, flag2, "", text);
@@ -4435,14 +4014,14 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	{
 		return ((roleKey ?? "").Trim().ToLowerInvariant()) switch
 		{
-			"lord" => "领主",
-			"notable" => "要人",
-			"wanderer" => "流浪者",
-			"soldier" => "士兵",
-			"villager" => "村民",
-			"townsfolk" => "镇民",
-			"commoner" => "未分类对象",
-			_ => string.IsNullOrWhiteSpace(roleKey) ? "未知" : roleKey
+			"lord" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleLord", "Lord"),
+			"notable" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleNotable", "Notable"),
+			"wanderer" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleWanderer", "Wanderer"),
+			"soldier" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleSoldier", "Soldier"),
+			"villager" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleVillager", "Villager"),
+			"townsfolk" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleTownsfolk", "Townsfolk"),
+			"commoner" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleCommoner", "Unclassified"),
+			_ => string.IsNullOrWhiteSpace(roleKey) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleUnknown", "Unknown") : roleKey
 		};
 	}
 
@@ -4627,7 +4206,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text7Keyword = text7;
 		if (string.IsNullOrWhiteSpace(text7))
 		{
-			text7 = "该NPC";
+			text7 = KnowledgePromptTexts.Get("NpcFallback", "this NPC");
 		}
 		string text8 = (text7 ?? "").Replace("|", " ").Trim();
 		LogLoreContextTrace((hero != null) ? "character_hero" : "character", text2, textCharId, text3, text4, text6, text5, flag, flag2, kingdomIdOverride, text);
@@ -4781,7 +4360,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			if (rule == null)
 			{
-				error = "知识条目为空。";
+				error = KnowledgeUiTexts.ExportRuleEmpty;
 				return false;
 			}
 			int num = 0;
@@ -4799,7 +4378,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					{
 						string text2 = GetRuleDisplayNameForExport(rule);
 						string text3 = (rule.Id ?? "").Trim();
-						error = (string.IsNullOrEmpty(text3) ? ("知识条目“" + text2 + "”存在超过 " + RagShortTextMaxLength + " 字符的 RAG专用短句，请先缩短后再继续。") : ("知识条目“" + text2 + "”（ID=" + text3 + "）存在超过 " + RagShortTextMaxLength + " 字符的 RAG专用短句，请先缩短后再继续。"));
+						error = KnowledgeUiTexts.ExportRagTooLong(text2, text3, RagShortTextMaxLength);
 						return false;
 					}
 				}
@@ -4808,13 +4387,13 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				string text4 = GetRuleDisplayNameForExport(rule);
 				string text5 = (rule.Id ?? "").Trim();
-				error = (string.IsNullOrEmpty(text5) ? ("知识条目“" + text4 + "”缺少 RAG专用短句，请先填写后再导出。") : ("知识条目“" + text4 + "”（ID=" + text5 + "）缺少 RAG专用短句，请先填写后再导出。"));
+				error = KnowledgeUiTexts.ExportRagMissing(text4, text5);
 				return false;
 			}
 		}
 		catch (Exception ex)
 		{
-			error = "校验 RAG专用短句失败：" + ex.Message;
+			error = KnowledgeUiTexts.ExportRagValidationFailed(ex.Message);
 			return false;
 		}
 		return true;
@@ -4833,7 +4412,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return (rule?.Id ?? "未命名知识").Trim();
+		return (rule?.Id ?? KnowledgeUiTexts.UnnamedKnowledge).Trim();
 	}
 
 	private static bool TryValidateRuleForExport(LoreRule rule, out string error)
@@ -4845,7 +4424,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			error = "校验知识导出内容失败：" + ex.Message;
+			error = KnowledgeUiTexts.ExportValidationFailed(ex.Message);
 			return false;
 		}
 	}
@@ -4873,7 +4452,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			error = "校验知识导出内容失败：" + ex.Message;
+			error = KnowledgeUiTexts.ExportValidationFailed(ex.Message);
 			return false;
 		}
 		return true;
@@ -4887,7 +4466,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			string text = (ruleId ?? "").Trim();
 			if (string.IsNullOrEmpty(text))
 			{
-				error = "RuleId 为空。";
+				error = KnowledgeUiTexts.ExportRuleIdEmpty;
 				return false;
 			}
 			if (_file == null)
@@ -4901,14 +4480,14 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LoreRule loreRule = _file.Rules.FirstOrDefault((LoreRule r) => r != null && string.Equals((r.Id ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
 			if (loreRule == null)
 			{
-				error = "找不到该知识条目：" + text;
+				error = KnowledgeUiTexts.ExportRuleNotFound(text);
 				return false;
 			}
 			return TryValidateRuleForExport(loreRule, out error);
 		}
 		catch (Exception ex)
 		{
-			error = "校验单条知识导出内容失败：" + ex.Message;
+			error = KnowledgeUiTexts.ExportSingleValidationFailed(ex.Message);
 			return false;
 		}
 	}
@@ -5166,7 +4745,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			if (sourceRules == null)
 			{
-				error = "资料包中没有可重载的知识规则。";
+				error = KnowledgeUiTexts.ReloadNoRules;
 				return false;
 			}
 			List<LoreRule> list = new List<LoreRule>();
@@ -5180,7 +4759,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				string text = (sourceRule.Id ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text))
 				{
-					error = "资料包中存在 RuleId 为空的知识条目。";
+					error = KnowledgeUiTexts.ReloadEmptyRuleId;
 					return false;
 				}
 				// A source package may contain its own player profile, but it must never replace this save's player data.
@@ -5190,20 +4769,20 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				if (!hashSet.Add(text))
 				{
-					error = "资料包中存在重复 RuleId：" + text;
+					error = KnowledgeUiTexts.ReloadDuplicateRuleId(text);
 					return false;
 				}
 				sourceRule.Id = text;
 				if (!TryValidateRagShortTexts(sourceRule, requireAtLeastOne: false, out var text2) || !ValidateVariantConditionsUnique(sourceRule, out var _, out var _))
 				{
-					error = string.IsNullOrWhiteSpace(text2) ? ("资料包中的知识条目无效：" + text) : text2;
+					error = string.IsNullOrWhiteSpace(text2) ? KnowledgeUiTexts.ReloadInvalidRule(text, "") : text2;
 					return false;
 				}
 				list.Add(sourceRule);
 			}
 			if (list.Count <= 0)
 			{
-				error = "资料包中没有可替换的非主角知识。";
+				error = KnowledgeUiTexts.ReloadNoReplaceableRules;
 				return false;
 			}
 			KnowledgeFile knowledgeFile = _file ?? new KnowledgeFile();
@@ -5232,7 +4811,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					}
 					if (dictionary.TryGetValue(text4, out var value) && !string.Equals(value, loreRule2.Id, StringComparison.OrdinalIgnoreCase))
 					{
-						error = "知识关键词与保留的主角资料或资料包规则冲突：" + text4;
+						error = KnowledgeUiTexts.ReloadKeywordConflict(text4);
 						return false;
 					}
 					dictionary[text4] = loreRule2.Id;
@@ -5255,7 +4834,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			error = "重载知识库失败：" + ex.Message;
+			error = KnowledgeUiTexts.ReloadFailed(ex.Message);
 			return false;
 		}
 	}
@@ -5467,9 +5046,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private void ShowDuplicateVariantConditionPrompt(LoreWhen when, int existingIndex)
 	{
-		string text = ((existingIndex >= 0) ? ("#" + (existingIndex + 1)) : "已有");
-		string text2 = ((NormalizeWhenForStorage(CloneWhen(when)) == null) ? "通用（无条件）" : BuildWhenDetail(NormalizeWhenForStorage(CloneWhen(when))));
-		InformationManager.ShowInquiry(new InquiryData("条件重复", "不允许存在多个条件完全相同的提示词。\n\n重复对象：" + text + " 条提示词\n\n重复条件：\n" + text2, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", null, null));
+		string text = ((existingIndex >= 0) ? ("#" + (existingIndex + 1)) : KnowledgeUiTexts.ExistingConditionFallback);
+		string text2 = ((NormalizeWhenForStorage(CloneWhen(when)) == null) ? KnowledgeUiTexts.GeneralCondition : BuildWhenDetail(NormalizeWhenForStorage(CloneWhen(when))));
+		InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_KNOWLEDGE_DuplicateConditionTitle}Duplicate condition").ToString(), KnowledgeUiTexts.DuplicateVariantCondition(text, text2), isAffirmativeOptionShown: true, isNegativeOptionShown: false, new TextObject("{=AF_KNOWLEDGE_Back}Back").ToString(), "", null, null));
 	}
 
 private static LoreVariant PickBestVariant(LoreRule rule, Hero npcHero, CharacterObject npcCharacter, string heroId, string cultureId, string kingdomId, string settlementId, string role, bool isFemale, bool isClanLeader)
@@ -5782,9 +5361,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			};
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("edit", "编辑现有知识", null));
-		list.Add(new InquiryElement("create", "创建新知识", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("知识编辑系统", "请选择操作：", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("edit", KnowledgeUiTexts.EditorExisting, null));
+		list.Add(new InquiryElement("create", KnowledgeUiTexts.EditorCreate, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.EditorTitle, KnowledgeUiTexts.ChooseAction, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -5824,7 +5403,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		LoreRule orCreatePlayerPersonaRule = GetOrCreatePlayerPersonaRule();
 		if (orCreatePlayerPersonaRule == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开玩家角色介绍失败：无法创建知识条目。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.PlayerPersonaCreateFailed));
 			onReturn();
 			return;
 		}
@@ -5846,7 +5425,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		LoreRule orCreatePlayerPersonaRule = GetOrCreatePlayerPersonaRule();
 		if (orCreatePlayerPersonaRule == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开玩家外貌与背景编辑器失败：无法创建知识条目。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.PlayerAppearanceCreateFailed));
 			onReturn();
 			return;
 		}
@@ -5896,10 +5475,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 
 	private static string GetPlayerPersonaForcedKeyword()
 	{
-		string text = (Hero.MainHero?.Name?.ToString() ?? "玩家").Trim();
+		string text = (Hero.MainHero?.Name?.ToString() ?? KnowledgeSourceTexts.Get("KN_Raw_007")).Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return "玩家";
+			return KnowledgeSourceTexts.Get("KN_Raw_007");
 		}
 		return text;
 	}
@@ -5954,7 +5533,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			if (showConflictMessage)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("玩家本名关键词未能自动加入，因为它已被其他知识占用（RuleId=" + foundRuleId + "）。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.PlayerNameKeywordConflict(foundRuleId)));
 			}
 			return false;
 		}
@@ -5998,15 +5577,15 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		bool flag = EnsurePlayerPersonaForcedKeyword(rule, showConflictMessage: false);
 		string playerPersonaForcedKeyword = GetPlayerPersonaForcedKeyword();
 		List<string> playerPersonaOptionalKeywords = GetPlayerPersonaOptionalKeywords(rule);
-		string text = "欢迎游玩Animusforge!你可以在此界面设置您的角色的额外称呼，如果您不需要，可以直接继续填写外貌与背景信息\n\n您的角色姓名：" + playerPersonaForcedKeyword + (flag ? "" : "（当前未能写入，因为与其他知识冲突）") + "\n额外称呼：" + ((playerPersonaOptionalKeywords.Count > 0) ? string.Join(" / ", playerPersonaOptionalKeywords) : "（无）");
+		string text = KnowledgeUiTexts.PlayerKeywordSetupBody(playerPersonaForcedKeyword, flag ? "" : KnowledgeUiTexts.PlayerNameConflictStatus, (playerPersonaOptionalKeywords.Count > 0) ? string.Join(" / ", playerPersonaOptionalKeywords) : KnowledgeUiTexts.NoValue);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("add", "添加额外称呼", null));
+		list.Add(new InquiryElement("add", KnowledgeUiTexts.AddOptionalName, null));
 		if (playerPersonaOptionalKeywords.Count > 0)
 		{
-			list.Add(new InquiryElement("remove", "删除额外称呼", null));
+			list.Add(new InquiryElement("remove", KnowledgeUiTexts.RemoveOptionalName, null));
 		}
-		list.Add(new InquiryElement("next", "编写外貌与背景", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("玩家称呼设置", text, list, isExitShown: true, 0, 1, "选择", "继续", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("next", KnowledgeUiTexts.OpenAppearanceBackground, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.PlayerKeywordSetupTitle, text, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Continue, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6017,7 +5596,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (selected[0].Identifier as string)
 				{
 				case "add":
-					InformationManager.ShowTextInquiry(new TextInquiryData("添加额外称呼", "请输入一个额外称呼；玩家本名已由系统自动保留，无需重复输入。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.AddOptionalNameTitle, KnowledgeUiTexts.AddOptionalNamePrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string text2 = (input ?? "").Trim();
 						string kwNorm = LoreCandidateRetriever.NormalizeKeywordForCompare(text2);
@@ -6039,12 +5618,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 							string foundRuleId;
 							if (flag)
 							{
-								InformationManager.DisplayMessage(new InformationMessage("这个称呼已经存在了。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.KeywordAlreadyExists));
 								OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
 							}
 							else if (TryFindRuleIdByKeyword(text2, rule.Id, out foundRuleId))
 							{
-								InformationManager.DisplayMessage(new InformationMessage("添加失败：这个称呼已被其他知识占用（RuleId=" + foundRuleId + "）。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.KeywordConflict(foundRuleId)));
 								OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
 							}
 							else
@@ -6101,7 +5680,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			list.Add(new InquiryElement(item, item, null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除额外称呼", "系统保留的玩家本名不能删除；这里只会删除你额外添加的称呼。", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RemoveOptionalNameTitle, KnowledgeUiTexts.RemoveOptionalNamePrompt, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6148,24 +5727,24 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		string text2 = BuildPlayerPersonaIntroMenuBody(appearanceText, simpleText, playerPersonaDetailedVariantIndices.Count);
 		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
 		{
-			new DevLargeSelectionPopup.Option("appearance", "外貌信息（常驻）", BuildPlayerPersonaOptionDetail(appearanceText), isPrimary: true),
-			new DevLargeSelectionPopup.Option("simple", "背景信息（照旧）", BuildPlayerPersonaOptionDetail(simpleText), isPrimary: true),
-			new DevLargeSelectionPopup.Option("detailed", "不同的人对您的背景看法", "已设置 " + playerPersonaDetailedVariantIndices.Count + " 条带条件背景。"),
-			new DevLargeSelectionPopup.Option("done", "完成并开始游戏", "保存当前设置并离开该界面。")
+			new DevLargeSelectionPopup.Option("appearance", KnowledgeUiTexts.PlayerAppearanceOption, BuildPlayerPersonaOptionDetail(appearanceText), isPrimary: true),
+			new DevLargeSelectionPopup.Option("simple", KnowledgeUiTexts.PlayerBackgroundOption, BuildPlayerPersonaOptionDetail(simpleText), isPrimary: true),
+			new DevLargeSelectionPopup.Option("detailed", KnowledgeUiTexts.PlayerDetailedBackgroundOption, KnowledgeUiTexts.PlayerDetailedBackgroundCount(playerPersonaDetailedVariantIndices.Count)),
+			new DevLargeSelectionPopup.Option("done", KnowledgeUiTexts.PlayerAppearanceBackgroundDone, KnowledgeUiTexts.PlayerAppearanceBackgroundDoneDetail)
 		};
-		if (DevLargeSelectionPopup.Show("玩家外貌与背景", "玩家信息分为外貌信息和背景信息。", text2, options, delegate(string selectedId)
+		if (DevLargeSelectionPopup.Show(KnowledgeUiTexts.PlayerAppearanceBackgroundTitle, KnowledgeUiTexts.PlayerAppearanceBackgroundDescription, text2, options, delegate(string selectedId)
 		{
 			HandlePlayerPersonaIntroSelection(rule, onDone, selectedId);
-		}, onDone, "跳过"))
+		}, onDone, KnowledgeUiTexts.Skip))
 		{
 			return;
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("appearance", "外貌信息（常驻）", null));
-		list.Add(new InquiryElement("simple", "背景信息（照旧）", null));
-		list.Add(new InquiryElement("detailed", "不同的人对您的背景看法", null));
-		list.Add(new InquiryElement("done", "完成并开始游戏", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("玩家外貌与背景", text2, list, isExitShown: true, 0, 1, "进入", "跳过", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("appearance", KnowledgeUiTexts.PlayerAppearanceOption, null));
+		list.Add(new InquiryElement("simple", KnowledgeUiTexts.PlayerBackgroundOption, null));
+		list.Add(new InquiryElement("detailed", KnowledgeUiTexts.PlayerDetailedBackgroundOption, null));
+		list.Add(new InquiryElement("done", KnowledgeUiTexts.PlayerAppearanceBackgroundDone, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.PlayerAppearanceBackgroundTitle, text2, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Skip, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6184,17 +5763,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 
 	private static string BuildPlayerPersonaIntroMenuBody(string appearanceText, string simpleText, int detailedCount)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("玩家信息分为外貌信息和背景信息。");
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("外貌信息（常驻）：");
-		stringBuilder.AppendLine(string.IsNullOrWhiteSpace(appearanceText) ? "（未填写）" : NormalizePlayerAppearanceForStorage(appearanceText));
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("背景信息（照旧）：");
-		stringBuilder.AppendLine(string.IsNullOrWhiteSpace(simpleText) ? "（未填写）" : (simpleText ?? "").Trim());
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("细化背景（有条件）：" + detailedCount + " 条");
-		return stringBuilder.ToString().TrimEnd();
+		return KnowledgeUiTexts.PlayerAppearanceBackgroundBody(string.IsNullOrWhiteSpace(appearanceText) ? KnowledgeUiTexts.NoValue : NormalizePlayerAppearanceForStorage(appearanceText), string.IsNullOrWhiteSpace(simpleText) ? KnowledgeUiTexts.NoValue : (simpleText ?? "").Trim(), detailedCount);
 	}
 
 	private static string BuildPlayerPersonaOptionDetail(string text)
@@ -6202,9 +5771,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int length = string.IsNullOrWhiteSpace(text) ? 0 : (text ?? "").Trim().Length;
 		if (length <= 0)
 		{
-			return "当前未填写；点击后可输入完整内容。";
+			return KnowledgeUiTexts.PlayerOptionUnset;
 		}
-		return "已填写 " + length + " 字；完整内容显示在左侧，可点击继续编辑。";
+		return KnowledgeUiTexts.PlayerOptionFilled(length);
 	}
 
 	private void HandlePlayerPersonaIntroSelection(LoreRule rule, Action onDone, string selectedId)
@@ -6251,7 +5820,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			_file = new KnowledgeFile();
 		}
 		string text = GetPlayerAppearanceForPrompt();
-		DevTextEditorHelper.ShowLongTextEditor("玩家外貌信息（常驻）", "当前外貌信息已载入下方输入框。", "请输入玩家可被NPC直接观察到的外貌特征；留空表示不设置。", text, delegate(string input)
+		DevTextEditorHelper.ShowLongTextEditor(KnowledgeUiTexts.PlayerAppearanceEditorTitle, KnowledgeUiTexts.PlayerAppearanceEditorIntro, KnowledgeUiTexts.PlayerAppearanceEditorHint, text, delegate(string input)
 		{
 			string text2 = NormalizePlayerAppearanceForStorage(input);
 			if (!string.Equals(_file.PlayerAppearance ?? "", text2, StringComparison.Ordinal))
@@ -6263,7 +5832,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}, delegate
 		{
 			onReturn();
-		}, "确定", "返回");
+		}, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Back);
 	}
 
 	private int GetPlayerPersonaSimpleVariantIndex(LoreRule rule)
@@ -6320,7 +5889,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		int playerPersonaSimpleVariantIndex = GetPlayerPersonaSimpleVariantIndex(rule);
 		string text = ((playerPersonaSimpleVariantIndex >= 0 && playerPersonaSimpleVariantIndex < rule.Variants.Count) ? (rule.Variants[playerPersonaSimpleVariantIndex]?.Content ?? "") : "");
-		DevTextEditorHelper.ShowLongTextEditor("玩家背景信息（照旧）", "当前通用背景信息已载入下方输入框。", "请输入背景、来历、身份等内容；留空表示不设置。", text, delegate(string input)
+		DevTextEditorHelper.ShowLongTextEditor(KnowledgeUiTexts.PlayerBackgroundEditorTitle, KnowledgeUiTexts.PlayerBackgroundEditorIntro, KnowledgeUiTexts.PlayerBackgroundEditorHint, text, delegate(string input)
 		{
 			string text2 = (input ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
@@ -6356,7 +5925,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}, delegate
 		{
 			onReturn();
-		}, "确定", "返回");
+		}, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Back);
 	}
 
 	private void OpenPlayerPersonaDetailedIntroMenu(LoreRule rule, Action onReturn)
@@ -6378,7 +5947,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		List<int> playerPersonaDetailedVariantIndices = GetPlayerPersonaDetailedVariantIndices(rule);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("add", "新增一条细化介绍", null));
+		list.Add(new InquiryElement("add", KnowledgeUiTexts.AddDetailedBackground, null));
 		foreach (int item in playerPersonaDetailedVariantIndices)
 		{
 			LoreVariant loreVariant = rule.Variants[item];
@@ -6386,11 +5955,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text = TrimPreview(loreVariant.Content ?? "", 24);
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "（空）";
+				text = KnowledgeUiTexts.EmptyPreview;
 			}
 			list.Add(new InquiryElement(item, $"#{item + 1} {arg}  {text}", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("细化的玩家背景信息", "这里编辑的是带条件的背景信息。它们写入后的结构，和其他知识提示词完全一样。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.DetailedBackgroundListTitle, KnowledgeUiTexts.DetailedBackgroundListDescription, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6515,14 +6084,14 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		string text2 = TrimPreview(v.Content ?? "", 220);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "（空）";
+			text2 = KnowledgeUiTexts.EmptyPreview;
 		}
-		string text3 = "当前条件：" + text + "\n\n当前内容预览：\n" + text2;
+		string text3 = KnowledgeUiTexts.DetailedBackgroundEditorDescription(text, text2);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("content", "编辑介绍内容", null));
-		list.Add(new InquiryElement("when", "编辑条件", null));
-		list.Add(new InquiryElement("delete", "删除此条细化介绍", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("细化介绍编辑", text3, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("content", KnowledgeUiTexts.EditDetailedBackgroundContent, null));
+		list.Add(new InquiryElement("when", KnowledgeUiTexts.EditDetailedBackgroundCondition, null));
+		list.Add(new InquiryElement("delete", KnowledgeUiTexts.DeleteDetailedBackground, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.DetailedBackgroundEditorTitle, text3, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6533,7 +6102,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (selected[0].Identifier as string)
 				{
 				case "content":
-					DevTextEditorHelper.ShowLongTextEditor("编辑背景内容", "当前这条带条件的玩家背景信息已载入下方输入框。", "可直接编辑整段内容。", v.Content ?? "", delegate(string input)
+					DevTextEditorHelper.ShowLongTextEditor(KnowledgeUiTexts.DetailedBackgroundContentTitle, KnowledgeUiTexts.DetailedBackgroundContentIntro, KnowledgeUiTexts.DetailedBackgroundContentHint, v.Content ?? "", delegate(string input)
 					{
 						v.Content = input ?? "";
 						TouchRuleData();
@@ -6541,7 +6110,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					}, delegate
 					{
 						OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
-					}, "确定", "取消");
+					}, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel);
 					break;
 				case "when":
 				{
@@ -6551,7 +6120,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 						loreWhen = NormalizeWhenForStorage(loreWhen);
 						if (loreWhen == null)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("细化背景至少需要保留一个条件；如果想写通用背景，请回到上一层使用“背景信息（照旧）”。"));
+							InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.DetailedBackgroundRequiresCondition));
 							OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
 						}
 						else
@@ -6623,7 +6192,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.SettingsUnavailable));
 			onReturn();
 			return;
 		}
@@ -6654,15 +6223,15 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		catch
 		{
 		}
-		string text = (AIConfigHandler.KnowledgeRetrievalFromMcm ? "MCM（当前生效）" : "RuleBehaviorPrompts.json（当前生效）");
-		string text2 = "逐名词召回 + 本地精排";
-		string descriptionText = "当前配置来源：" + text + "\n当前模式：" + text2 + "\n语义检索：" + (AIConfigHandler.KnowledgeRetrievalEnabled ? "开启" : "关闭") + "\n语义优先：" + (AIConfigHandler.KnowledgeSemanticFirst ? "是" : "否（关键词优先）") + "\n知识返回上限：" + AIConfigHandler.KnowledgeSemanticTopK + "\n说明：按重要性顺序逐个名词独立检索，每个名词占一个知识槽；最高分知识若已被前面的名词占用，就顺延到第一条未占用知识。仅当上限大于名词数时，才额外补充后续名次。";
+		string text = AIConfigHandler.KnowledgeRetrievalFromMcm ? KnowledgeUiTexts.RetrievalSourceMcm : KnowledgeUiTexts.RetrievalSourceFile;
+		string text2 = KnowledgeUiTexts.RetrievalMode;
+		string descriptionText = KnowledgeUiTexts.RetrievalDescription(text, text2, AIConfigHandler.KnowledgeRetrievalEnabled ? KnowledgeUiTexts.RetrievalOn : KnowledgeUiTexts.RetrievalOff, AIConfigHandler.KnowledgeSemanticFirst ? KnowledgeUiTexts.RetrievalYes : KnowledgeUiTexts.RetrievalNoKeywordFirst, AIConfigHandler.KnowledgeSemanticTopK);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("source", "配置来源：" + (settings.UseMcmKnowledgeRetrieval ? "切到 RuleBehaviorPrompts.json" : "切到 MCM"), null));
-		list.Add(new InquiryElement("enabled", "语义检索：" + (settings.KnowledgeRetrievalEnabled ? "关闭" : "开启"), null));
-		list.Add(new InquiryElement("topk", "设置知识返回上限（当前 " + topK + "）", null));
-		list.Add(new InquiryElement("reset", "恢复默认（MCM）", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("知识检索设置", descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("source", KnowledgeUiTexts.RetrievalSwitchSource(settings.UseMcmKnowledgeRetrieval ? KnowledgeUiTexts.RetrievalSourceFile : KnowledgeUiTexts.RetrievalSourceMcm), null));
+		list.Add(new InquiryElement("enabled", KnowledgeUiTexts.RetrievalToggle(settings.KnowledgeRetrievalEnabled ? KnowledgeUiTexts.RetrievalOff : KnowledgeUiTexts.RetrievalOn), null));
+		list.Add(new InquiryElement("topk", KnowledgeUiTexts.RetrievalTopK(topK), null));
+		list.Add(new InquiryElement("reset", KnowledgeUiTexts.RetrievalReset, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RetrievalSettingsTitle, descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.RetrievalSelect, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6693,12 +6262,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 						OpenRetrievalSettingsMenu(onReturn);
 						break;
 					case "topk":
-						InformationManager.ShowTextInquiry(new TextInquiryData("设置知识返回上限", "请输入 1~12 的整数：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+						InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.RetrievalTopKTitle, KnowledgeUiTexts.RetrievalTopKPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 						{
 							string s = (input ?? "").Trim();
 							if (!int.TryParse(s, out var result))
 							{
-								InformationManager.DisplayMessage(new InformationMessage("请输入有效整数。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.InvalidInteger));
 								OpenRetrievalSettingsMenu(onReturn);
 							}
 							else
@@ -6828,33 +6397,33 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			OpenRuleListMenuPaged(onReturn, num5 - 1, query);
 			return;
 		}
-		string text = "编辑现有知识";
-		string titleText = ((num5 > 0) ? $"{text}（{num3} 条，{page + 1}/{num5}）" : (text + "（0 条）"));
-		string text2 = "请选择要编辑的知识：";
+		string text = KnowledgeUiTexts.EditorExisting;
+		string titleText = ((num5 > 0) ? KnowledgeUiTexts.RuleListTitle(num3, page + 1, num5) : KnowledgeUiTexts.RuleListEmptyTitle);
+		string text2 = KnowledgeUiTexts.RuleListChoose;
 		if (!string.IsNullOrWhiteSpace(q))
 		{
-			text2 = text2 + "\n当前搜索：" + TrimPreview(q, 80);
+			text2 = text2 + "\n" + KnowledgeUiTexts.RuleListSearch(TrimPreview(q, 80));
 		}
 		if (num3 <= 0)
 		{
-			text2 += "\n\n没有匹配项。可使用“搜索”或“创建新知识”。";
+			text2 += "\n\n" + KnowledgeUiTexts.RuleListNoMatches;
 		}
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索（按关键词/ID）", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.SearchByKeywordId, null));
 		if (!string.IsNullOrWhiteSpace(q))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (num5 > 0 && page + 1 < num5)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
-		list3.Add(new InquiryElement("__create__", "创建新知识", null));
-		list3.Add(new InquiryElement("__bulk_delete__", "批量删除知识", null));
+		list3.Add(new InquiryElement("__create__", KnowledgeUiTexts.EditorCreate, null));
+		list3.Add(new InquiryElement("__bulk_delete__", KnowledgeUiTexts.BulkDelete, null));
 		if (list.Count > 0)
 		{
 			list3.Add(new InquiryElement("__sep__", "----------------", null));
@@ -6868,7 +6437,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list3.Add(new InquiryElement(text3, title, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(titleText, text2, list3, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(titleText, text2, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -6883,7 +6452,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					OpenRuleListMenuPaged(onReturn, page, query);
 					break;
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索知识", "输入关键词或 RuleId（可用空格分隔多个词）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.SearchKnowledgeTitle, KnowledgeUiTexts.SearchKnowledgePrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenRuleListMenuPaged(onReturn, 0, input);
 					}, delegate
@@ -6949,24 +6518,24 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			_file.Rules = new List<LoreRule>();
 		}
-		InformationManager.ShowTextInquiry(new TextInquiryData("创建新知识", "请输入该知识的“第一个关键词”（将用于该知识条目的ID与导出文件命名，不可重复；后续仍可继续添加更多关键词）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "创建", "返回", delegate(string input)
+		InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.CreateKnowledgeTitle, KnowledgeUiTexts.CreateKnowledgePrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Create, KnowledgeUiTexts.Back, delegate(string input)
 		{
 			string text = (input ?? "").Trim();
 			string text2 = BuildRuleIdFromKeyword(text);
 			string foundRuleId;
 			if (string.IsNullOrEmpty(text2))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("创建失败：第一个关键词为空或无法用于命名。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.CreateRuleEmpty));
 				CreateNewRule(onReturn);
 			}
 			else if (HasRuleIdIgnoreCase(text2))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("创建失败：已存在同名知识条目（ID=" + text2 + "）。请换一个关键词。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.CreateRuleDuplicate(text2)));
 				CreateNewRule(onReturn);
 			}
 			else if (TryFindRuleIdByKeyword(text, null, out foundRuleId))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("创建失败：关键词已被其他知识条目占用（关键词=" + text + "，RuleId=" + foundRuleId + "）。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.CreateRuleKeywordConflict(text, foundRuleId)));
 				CreateNewRule(onReturn);
 			}
 			else
@@ -7063,18 +6632,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			return;
 		}
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索（按关键词/ID）", null));
+	list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.SearchByKeywordId, null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (num4 > 0 && page + 1 < num4)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		if (list.Count > 0)
 		{
@@ -7089,17 +6658,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				}
 			}
 		}
-		string text3 = (num4 > 0) ? $"批量删除知识（{num3} 条，{page + 1}/{num4}）" : "批量删除知识（0 条）";
-		string text4 = "可多选当前页的知识后一起删除。";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text4 = text4 + "\n当前搜索：" + TrimPreview(text, 80);
-		}
-		if (num3 <= 0)
-		{
-			text4 += "\n\n没有匹配项。";
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text3, text4, list3, isExitShown: true, 0, Math.Max(1, list3.Count), "删除选中", "返回", delegate(List<InquiryElement> selected)
+	string text3 = (num4 > 0) ? KnowledgeUiTexts.BulkDeleteTitle(num3, page + 1, num4) : KnowledgeUiTexts.BulkDeleteEmptyTitle;
+	string text4 = KnowledgeUiTexts.BulkDeleteDescription(TrimPreview(text, 80), num3 <= 0);
+	MultiSelectionInquiryData data = new MultiSelectionInquiryData(text3, text4, list3, isExitShown: true, 0, Math.Max(1, list3.Count), KnowledgeUiTexts.DeleteSelected, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -7125,14 +6686,14 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				if (list4.Count > 1)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("批量删除页里，操作按钮不能和知识条目一起多选。"));
+					InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.BulkActionsCannotMix));
 					OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
 					return;
 				}
 				switch (list5[0])
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索知识", "输入关键词或 RuleId（可用空格分隔多个词）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.SearchKnowledgeTitle, KnowledgeUiTexts.SearchKnowledgePrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenRuleBulkDeleteMenuPaged(onReturn, 0, input);
 					}, delegate
@@ -7157,7 +6718,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			List<RuleIndexItem> list6 = list.Where((RuleIndexItem x) => x != null && list4.Contains((x.Id ?? "").Trim(), StringComparer.OrdinalIgnoreCase)).ToList();
 			if (list6.Count == 0)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("没有选中可删除的知识。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.NoRulesSelected));
 				OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
 				return;
 			}
@@ -7165,9 +6726,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text6 = string.Join("\n", list6.Take(8).Select((RuleIndexItem x) => "- " + TrimPreview((x.Label ?? x.Id ?? "").Trim(), 80)));
 			if (list6.Count > 8)
 			{
-				text6 = text6 + "\n- ... 以及另外 " + (list6.Count - 8) + " 条";
+				text6 = text6 + "\n- " + KnowledgeUiTexts.BulkDeleteMore(list6.Count - 8);
 			}
-			InformationManager.ShowInquiry(new InquiryData("确认批量删除", "将要删除以下知识：\n\n" + text6 + "\n\n共 " + list7.Count + " 条。此操作不可撤销。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认删除", "返回", delegate
+			InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_KNOWLEDGE_ConfirmBulkDeleteTitle}Confirm bulk deletion").ToString(), KnowledgeUiTexts.ConfirmBulkDelete(text6, list7.Count), isAffirmativeOptionShown: true, isNegativeOptionShown: true, new TextObject("{=AF_KNOWLEDGE_ConfirmDelete}Delete").ToString(), new TextObject("{=AF_KNOWLEDGE_Back}Back").ToString(), delegate
 			{
 				int num5 = 0;
 				try
@@ -7184,7 +6745,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				{
 					num5 = 0;
 				}
-				InformationManager.DisplayMessage(new InformationMessage("已删除知识 " + num5 + " 条。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Deleted(num5)));
 				OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
 			}, delegate
 			{
@@ -7210,18 +6771,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 			};
 		}
-		string text = ((rule.Keywords != null && rule.Keywords.Count > 0) ? rule.Keywords[0] : (rule.Id ?? "知识"));
+		string text = ((rule.Keywords != null && rule.Keywords.Count > 0) ? rule.Keywords[0] : (rule.Id ?? "Knowledge"));
 		EnsureRagShortTexts(rule);
 		EnsureTextMappings(rule);
-		string descriptionText = $"关键词：{rule.Keywords?.Count ?? 0} 条\nRAG专用短句：{rule.RagShortTexts?.Count ?? 0} 条\n提示词：{rule.Variants?.Count ?? 0} 条\n词汇映射：{rule.TextMappings?.Count ?? 0} 条";
+		string descriptionText = KnowledgeUiTexts.RuleMenuDescription(rule.Keywords?.Count ?? 0, rule.RagShortTexts?.Count ?? 0, rule.Variants?.Count ?? 0, rule.TextMappings?.Count ?? 0);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("keywords", "编辑关键词", null));
-		list.Add(new InquiryElement("rag_short_texts", "编辑RAG专用短句", null));
-		list.Add(new InquiryElement("generate_rag_short_texts", "一键生成RAG专用短句", null));
-		list.Add(new InquiryElement("variants", "编辑提示词（条件组合）", null));
-		list.Add(new InquiryElement("text_mappings", "编辑词汇映射", null));
-		list.Add(new InquiryElement("delete", "删除此知识", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("知识 - " + text, descriptionText, list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("keywords", KnowledgeUiTexts.EditKeywords, null));
+		list.Add(new InquiryElement("rag_short_texts", KnowledgeUiTexts.EditRag, null));
+		list.Add(new InquiryElement("generate_rag_short_texts", KnowledgeUiTexts.GenerateRag, null));
+		list.Add(new InquiryElement("variants", KnowledgeUiTexts.EditVariants, null));
+		list.Add(new InquiryElement("text_mappings", KnowledgeUiTexts.EditMappings, null));
+		list.Add(new InquiryElement("delete", KnowledgeUiTexts.DeleteKnowledge, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RuleMenuTitle(text), descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -7294,7 +6855,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		EnsureTextMappings(rule);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__add__", "新增词汇映射", null));
+		list.Add(new InquiryElement("__add__", KnowledgeUiTexts.AddMapping, null));
 		if (rule.TextMappings != null)
 		{
 			for (int i = 0; i < rule.TextMappings.Count; i++)
@@ -7306,8 +6867,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				}
 			}
 		}
-		string descriptionText = "这里只会替换当前知识条目下的所有提示词内容，不会影响其他知识。";
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑词汇映射", descriptionText, list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		string descriptionText = KnowledgeUiTexts.MappingListDescription;
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.EditMappings, descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -7354,7 +6915,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			};
 		}
 		EnsureTextMappings(rule);
-		InformationManager.ShowTextInquiry(new TextInquiryData("新增词汇映射", "请输入要被替换的原文本。命中这条知识后，会把它替换成你选择的动态对象值。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "取消", delegate(string input)
+		InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.AddMappingTitle, KnowledgeUiTexts.AddMappingPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.NextStep, KnowledgeUiTexts.Cancel, delegate(string input)
 		{
 			string text = (input ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text))
@@ -7413,34 +6974,34 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		string text2 = GetTextMappingEmptyValueText(loreTextMapping);
 		string text3 = GetTextMappingStatusTrueText(loreTextMapping);
 		string text4 = GetTextMappingStatusFalseText(loreTextMapping);
-		string text5 = (!string.IsNullOrWhiteSpace(text)) ? text : (string.IsNullOrWhiteSpace(text2) ? "（当前无值，空时保留原词）" : (text2 + "（空值兜底）"));
-		string descriptionText = "原文本：" + ((loreTextMapping.SourceText ?? "").Trim() == "" ? "（空）" : loreTextMapping.SourceText.Trim()) + "\n映射类型：" + GetTextMappingKindLabel(loreTextMapping.Kind) + "\n目标" + GetTextMappingTargetTypeLabel(loreTextMapping.Kind) + "：" + GetTextMappingTargetDisplayName(loreTextMapping, rule);
-		if (IsStatusMappingKind(loreTextMapping.Kind))
-		{
-			descriptionText = descriptionText + "\n状态为真文案：" + (string.IsNullOrWhiteSpace(text3) ? "（未设置）" : text3) + "\n状态为假文案：" + (string.IsNullOrWhiteSpace(text4) ? "（未设置）" : text4);
-		}
-		descriptionText = descriptionText + "\n空值返回文案：" + (string.IsNullOrWhiteSpace(text2) ? "（未设置，空时保留原词）" : text2) + "\n当前预览：" + text5;
+		string text5 = (!string.IsNullOrWhiteSpace(text)) ? text : (string.IsNullOrWhiteSpace(text2) ? KnowledgeUiTexts.MappingSummaryNoValue : text2);
+		string sourceText = string.IsNullOrWhiteSpace(loreTextMapping.SourceText) ? KnowledgeUiTexts.MappingSummaryEmpty : loreTextMapping.SourceText.Trim();
+		string ageRange = "";
 		if (IsTextMappingAgeRangeKind(loreTextMapping.Kind))
 		{
 			int num = NormalizeMemberAgeBound(loreTextMapping.AgeMin, 0);
 			int num2 = NormalizeMemberAgeBound(loreTextMapping.AgeMax, 120);
-			descriptionText = descriptionText + $"\n年龄范围：{num}-{num2} 岁";
+			ageRange = num + "-" + num2;
 		}
+		string statusText = IsStatusMappingKind(loreTextMapping.Kind) ? KnowledgeUiTexts.MappingEditorStatus(string.IsNullOrWhiteSpace(text3) ? KnowledgeUiTexts.NoValue : text3, string.IsNullOrWhiteSpace(text4) ? KnowledgeUiTexts.NoValue : text4) : "";
+		string emptyText = string.IsNullOrWhiteSpace(text2) ? "" : KnowledgeUiTexts.MappingEditorEmpty(text2);
+		string ageText = string.IsNullOrEmpty(ageRange) ? "" : KnowledgeUiTexts.MappingEditorAgeRange(ageRange);
+		string descriptionText = KnowledgeUiTexts.MappingEditorDescription(sourceText, GetTextMappingKindLabel(loreTextMapping.Kind), GetTextMappingTargetTypeLabel(loreTextMapping.Kind), GetTextMappingTargetDisplayName(loreTextMapping, rule), statusText, emptyText, text5, ageText);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("source", "编辑原文本", null));
-		list.Add(new InquiryElement("target", "编辑映射目标", null));
+		list.Add(new InquiryElement("source", KnowledgeUiTexts.EditSource, null));
+		list.Add(new InquiryElement("target", KnowledgeUiTexts.EditTarget, null));
 		if (IsStatusMappingKind(loreTextMapping.Kind))
 		{
-			list.Add(new InquiryElement("true_text", "编辑状态为真文案", null));
-			list.Add(new InquiryElement("false_text", "编辑状态为假文案", null));
+			list.Add(new InquiryElement("true_text", KnowledgeUiTexts.EditTrueText, null));
+			list.Add(new InquiryElement("false_text", KnowledgeUiTexts.EditFalseText, null));
 		}
-		list.Add(new InquiryElement("empty_value", "编辑空值返回文案", null));
+		list.Add(new InquiryElement("empty_value", KnowledgeUiTexts.EditEmptyText, null));
 		if (IsTextMappingAgeRangeKind(loreTextMapping.Kind))
 		{
-			list.Add(new InquiryElement("age_range", "编辑年龄范围", null));
+			list.Add(new InquiryElement("age_range", KnowledgeUiTexts.EditAgeRange, null));
 		}
-		list.Add(new InquiryElement("delete", "删除此映射", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("词汇映射编辑", descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("delete", KnowledgeUiTexts.DeleteMapping, null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.MappingEditorTitle, descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -7451,7 +7012,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (selected[0].Identifier as string)
 				{
 				case "source":
-					InformationManager.ShowTextInquiry(new TextInquiryData("编辑原文本", "请输入新的原文本：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.EditSource, KnowledgeUiTexts.EditSourcePrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string text = (input ?? "").Trim();
 						if (!string.IsNullOrWhiteSpace(text))
@@ -7482,7 +7043,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					});
 					break;
 				case "true_text":
-					InformationManager.ShowTextInquiry(new TextInquiryData("编辑状态为真文案", "当状态判断结果为真时，使用这段文案替换原文本。留空表示真时不替换。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.EditTrueText, KnowledgeUiTexts.TrueTextPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						loreTextMapping.TrueText = (input ?? "").Trim();
 						TouchRuleData();
@@ -7493,7 +7054,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					}, shouldInputBeObfuscated: false, null, loreTextMapping.TrueText ?? ""));
 					break;
 				case "false_text":
-					InformationManager.ShowTextInquiry(new TextInquiryData("编辑状态为假文案", "当状态判断结果为假时，使用这段文案替换原文本。留空表示假时不替换。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.EditFalseText, KnowledgeUiTexts.FalseTextPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						loreTextMapping.FalseText = (input ?? "").Trim();
 						TouchRuleData();
@@ -7504,7 +7065,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					}, shouldInputBeObfuscated: false, null, loreTextMapping.FalseText ?? ""));
 					break;
 				case "empty_value":
-					InformationManager.ShowTextInquiry(new TextInquiryData("编辑空值返回文案", "当这条映射当前取不到值时，会改用这段文案替换原文本。留空表示空时保留原词。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.EditEmptyText, KnowledgeUiTexts.EmptyTextPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						loreTextMapping.EmptyValueText = (input ?? "").Trim();
 						TouchRuleData();
@@ -7579,12 +7140,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		LoreTextMapping loreTextMapping = CloneTextMapping(mapping);
 		int num = NormalizeMemberAgeBound(loreTextMapping.AgeMin, 0);
 		int num2 = NormalizeMemberAgeBound(loreTextMapping.AgeMax, 120);
-		InformationManager.ShowTextInquiry(new TextInquiryData("设置年龄范围", $"请输入年龄范围，格式为 最小-最大。\n例如：18-35\n当前值：{num}-{num2}", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate(string input)
+		InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.AgeRangeTitle, KnowledgeUiTexts.AgeRangePrompt(num, num2), isAffirmativeOptionShown: true, isNegativeOptionShown: true, new TextObject("{=AF_KNOWLEDGE_Confirm}Confirm").ToString(), new TextObject("{=AF_KNOWLEDGE_Back}Back").ToString(), delegate(string input)
 		{
 			string[] array = ((input ?? "").Trim()).Replace(" ", "").Split(new char[1] { '-' }, StringSplitOptions.RemoveEmptyEntries);
 			if (array.Length != 2 || !int.TryParse(array[0], out var result) || !int.TryParse(array[1], out var result2))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("请输入合法范围，例如 18-35。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.InvalidAgeRange));
 				OpenTextMappingAgeRangeEditor(loreTextMapping, onConfigured, onCancel);
 				return;
 			}
@@ -7619,10 +7180,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			};
 		}
 		LoreTextMapping loreTextMapping = CloneTextMapping(mapping);
-		InformationManager.ShowTextInquiry(new TextInquiryData("设置状态为真文案", "请输入当状态判断结果为真时要替换成的文本。留空表示真时不替换。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
+		InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.SetTrueTextTitle, KnowledgeUiTexts.SetTrueTextPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.NextStep, KnowledgeUiTexts.Back, delegate(string input)
 		{
 			loreTextMapping.TrueText = (input ?? "").Trim();
-			InformationManager.ShowTextInquiry(new TextInquiryData("设置状态为假文案", "请输入当状态判断结果为假时要替换成的文本。留空表示假时不替换。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "完成", "返回", delegate(string input2)
+			InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.SetFalseTextTitle, KnowledgeUiTexts.SetFalseTextPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Finish, KnowledgeUiTexts.Back, delegate(string input2)
 			{
 				loreTextMapping.FalseText = (input2 ?? "").Trim();
 				onConfigured(loreTextMapping);
@@ -7705,15 +7266,15 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 	{
 		return (categoryKey ?? "").Trim() switch
 		{
-			"status" => "状态判断",
-			"current_npc" => "当前NPC的什么？",
-			"player" => "玩家的什么？",
-			"bound" => "本知识绑定对象的什么？",
-			"kingdom" => "王国的什么？",
-			"settlement" => "定居点的什么？",
-			"clan" => "家族的什么？",
-			"hero" => "英雄的什么？",
-			_ => "其他"
+			"status" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryStatus", "Status checks"),
+			"current_npc" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryCurrentNpc", "What about the current NPC?"),
+			"player" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryPlayer", "What about the player?"),
+			"bound" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryBound", "What about the object bound to this knowledge?"),
+			"kingdom" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryKingdom", "What about the kingdom?"),
+			"settlement" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategorySettlement", "What about the settlement?"),
+			"clan" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryClan", "What about the clan?"),
+			"hero" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryHero", "What about the hero?"),
+			_ => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryOther", "Other")
 		};
 	}
 
@@ -7721,15 +7282,15 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 	{
 		return (categoryKey ?? "").Trim() switch
 		{
-			"status" => "这些映射会先判断一个状态，再根据结果输出你自己写的真/假文案。真文案和假文案里也可以继续写其他映射词。",
-			"current_npc" => "这些映射会自动从当前互动的 NPC 身上取值，你只需要决定要取它的哪一项信息。",
-			"player" => "这些映射会自动从玩家角色身上取值，你只需要决定要取玩家的哪一项信息。",
-			"bound" => "这些映射会从当前知识条目在条件组合里唯一绑定的王国 / 定居点 / 英雄身上取值。",
-			"kingdom" => "先选一个王国，再决定想取它的什么信息。",
-			"settlement" => "先选一个定居点，再决定想取它的什么信息。",
-			"clan" => "先选一个家族，再决定想取它的什么信息。",
-			"hero" => "先选一个英雄，再决定想取它的什么信息。",
-			_ => "选择一个具体映射项。"
+			"status" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryStatusDescription", "These mappings check a status first, then output your true/false text. Other mapping tokens can also be used in those texts."),
+			"current_npc" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryCurrentNpcDescription", "These mappings read values from the NPC in the current interaction; choose which value to retrieve."),
+			"player" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryPlayerDescription", "These mappings read values from the player character; choose which value to retrieve."),
+			"bound" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryBoundDescription", "These mappings read from the kingdom, settlement or hero uniquely bound by this knowledge entry's conditions."),
+			"kingdom" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryKingdomDescription", "Choose a kingdom, then choose which value to retrieve."),
+			"settlement" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategorySettlementDescription", "Choose a settlement, then choose which value to retrieve."),
+			"clan" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryClanDescription", "Choose a clan, then choose which value to retrieve."),
+			"hero" => KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MapCategoryHeroDescription", "Choose a hero, then choose which value to retrieve."),
+			_ => KnowledgeUiTexts.MappingChooseType
 		};
 	}
 
@@ -7752,105 +7313,33 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		});
 	}
 
-	private static void AddStatusMappingKindOption(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string statusKey, string label)
+	private static void AddStatusMappingKindOption(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string statusKey)
 	{
-		AddTextMappingKindOption(list, categoryKey, BuildStatusMappingKind(sourceKey, statusKey), label);
+		AddTextMappingKindOption(list, categoryKey, BuildStatusMappingKind(sourceKey, statusKey), KnowledgeMappingUiTexts.StatusLabel(sourceKey, statusKey));
 	}
 
-	private static void AddHeroStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string prefix)
+	private static void AddHeroStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey)
 	{
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_alive", prefix + "：是否存活");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_dead", prefix + "：是否死亡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_disabled", prefix + "：是否失能");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_missing", prefix + "：是否失踪/逃亡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_married", prefix + "：是否已婚");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_widowed", prefix + "：是否丧偶");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_female", prefix + "：是否女性");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_male", prefix + "：是否男性");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_child", prefix + "：是否未成年");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_adult", prefix + "：是否成年");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_in_age_range", prefix + "：是否在年龄段内");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_clan_leader", prefix + "：是否家族族长");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_kingdom_leader", prefix + "：是否王国领袖");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_governor", prefix + "：是否总督");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_prisoner", prefix + "：是否被俘");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_in_settlement", prefix + "：是否在定居点内");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_in_field", prefix + "：是否在野外");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_wanderer", prefix + "：是否流浪者");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_notable", prefix + "：是否要人");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_lord", prefix + "：是否领主");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_merchant", prefix + "：是否商人");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_gang_leader", prefix + "：是否帮派头目");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_artisan", prefix + "：是否工匠");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_preacher", prefix + "：是否传教士");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_headman", prefix + "：是否村长");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_minor_faction_hero", prefix + "：是否小势力英雄");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_party_leader", prefix + "：是否带队");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_player_companion", prefix + "：是否玩家同伴");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_rebel", prefix + "：是否叛军");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_wounded", prefix + "：是否受伤");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_known_to_player", prefix + "：是否被玩家认识");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_children", prefix + "：是否有子女");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_father", prefix + "：是否有父亲");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_mother", prefix + "：是否有母亲");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_home_settlement", prefix + "：是否有家乡定居点");
+		foreach (string statusKey in new[] { "is_alive", "is_dead", "is_disabled", "is_missing", "is_married", "is_widowed", "is_female", "is_male", "is_child", "is_adult", "is_in_age_range", "is_clan_leader", "is_kingdom_leader", "is_governor", "is_prisoner", "is_in_settlement", "is_in_field", "is_wanderer", "is_notable", "is_lord", "is_merchant", "is_gang_leader", "is_artisan", "is_preacher", "is_headman", "is_minor_faction_hero", "is_party_leader", "is_player_companion", "is_rebel", "is_wounded", "is_known_to_player", "has_children", "has_father", "has_mother", "has_home_settlement" })
+			AddStatusMappingKindOption(list, categoryKey, sourceKey, statusKey);
 	}
 
-	private static void AddClanStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string prefix)
+	private static void AddClanStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey)
 	{
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_eliminated", prefix + "：是否已灭绝");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_kingdom", prefix + "：是否有所属王国");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_leader", prefix + "：是否有族长");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_settlement", prefix + "：是否拥有任何定居点");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_town", prefix + "：是否拥有任何城镇");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_castle", prefix + "：是否拥有任何城堡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_village", prefix + "：是否拥有任何村庄");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_members", prefix + "：是否有成员");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_male_members", prefix + "：是否有男性成员");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_female_members", prefix + "：是否有女性成员");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_age_range_members", prefix + "：是否有年龄段成员");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_mercenary", prefix + "：是否雇佣兵家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_minor_faction", prefix + "：是否小势力");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_rebel_clan", prefix + "：是否叛军家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_noble", prefix + "：是否贵族家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_bandit_faction", prefix + "：是否匪帮势力");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_outlaw", prefix + "：是否法外势力");
+		foreach (string statusKey in new[] { "is_eliminated", "has_kingdom", "has_leader", "has_any_settlement", "has_any_town", "has_any_castle", "has_any_village", "has_members", "has_male_members", "has_female_members", "has_age_range_members", "is_mercenary", "is_minor_faction", "is_rebel_clan", "is_noble", "is_bandit_faction", "is_outlaw" })
+			AddStatusMappingKindOption(list, categoryKey, sourceKey, statusKey);
 	}
 
-	private static void AddKingdomStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string prefix)
+	private static void AddKingdomStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey)
 	{
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_eliminated", prefix + "：是否已灭亡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_leader", prefix + "：是否有领袖");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_ruling_clan", prefix + "：是否有执政家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_settlement", prefix + "：是否拥有任何定居点");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_town", prefix + "：是否拥有任何城镇");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_castle", prefix + "：是否拥有任何城堡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_village", prefix + "：是否拥有任何村庄");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_clan", prefix + "：是否有任何家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_lord", prefix + "：是否有任何领主");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_active_policies", prefix + "：是否有生效政策");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_war", prefix + "：是否处于战争中");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_any_allies", prefix + "：是否有盟友");
+		foreach (string statusKey in new[] { "is_eliminated", "has_leader", "has_ruling_clan", "has_any_settlement", "has_any_town", "has_any_castle", "has_any_village", "has_any_clan", "has_any_lord", "has_active_policies", "has_any_war", "has_any_allies" })
+			AddStatusMappingKindOption(list, categoryKey, sourceKey, statusKey);
 	}
 
-	private static void AddSettlementStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey, string prefix)
+	private static void AddSettlementStatusKindOptions(List<TextMappingKindOption> list, string categoryKey, string sourceKey)
 	{
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_active", prefix + "：是否活跃");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_town", prefix + "：是否城镇");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_castle", prefix + "：是否城堡");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_village", prefix + "：是否村庄");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_fortification", prefix + "：是否堡垒");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_hideout", prefix + "：是否藏身处");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_under_siege", prefix + "：是否被围攻");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_under_raid", prefix + "：是否正在被劫掠");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_raided", prefix + "：是否已被劫掠");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_starving", prefix + "：是否饥荒");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "is_rebellious", prefix + "：是否处于叛乱状态");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_port", prefix + "：是否有港口");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_owner", prefix + "：是否有统治者");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_owner_clan", prefix + "：是否有统治家族");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_notables", prefix + "：是否有要人");
-		AddStatusMappingKindOption(list, categoryKey, sourceKey, "has_parties", prefix + "：是否有驻留队伍");
+		foreach (string statusKey in new[] { "is_active", "is_town", "is_castle", "is_village", "is_fortification", "is_hideout", "is_under_siege", "is_under_raid", "is_raided", "is_starving", "is_rebellious", "has_port", "has_owner", "has_owner_clan", "has_notables", "has_parties" })
+			AddStatusMappingKindOption(list, categoryKey, sourceKey, statusKey);
 	}
 
 	private static List<TextMappingKindOption> BuildTextMappingKindOptions(string categoryKey)
@@ -7860,180 +7349,180 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		switch (text)
 		{
 		case "status":
-			AddHeroStatusKindOptions(list, text, "current_npc_hero", "当前NPC");
-			AddHeroStatusKindOptions(list, text, "player_hero", "玩家");
-			AddHeroStatusKindOptions(list, text, "bound_hero", "本知识绑定英雄");
-			AddHeroStatusKindOptions(list, text, "hero", "英雄");
-			AddClanStatusKindOptions(list, text, "current_npc_clan", "当前NPC所属家族");
-			AddClanStatusKindOptions(list, text, "player_clan", "玩家家族");
-			AddClanStatusKindOptions(list, text, "bound_settlement_owner_clan", "本知识绑定定居点统治家族");
-			AddClanStatusKindOptions(list, text, "bound_hero_clan", "本知识绑定英雄所属家族");
-			AddClanStatusKindOptions(list, text, "clan", "家族");
-			AddKingdomStatusKindOptions(list, text, "current_npc_kingdom", "当前NPC所属王国");
-			AddKingdomStatusKindOptions(list, text, "player_kingdom", "玩家所属王国");
-			AddKingdomStatusKindOptions(list, text, "bound_kingdom", "本知识绑定王国");
-			AddKingdomStatusKindOptions(list, text, "kingdom", "王国");
-			AddSettlementStatusKindOptions(list, text, "current_npc_settlement", "当前NPC所在定居点");
-			AddSettlementStatusKindOptions(list, text, "player_settlement", "玩家所在定居点");
-			AddSettlementStatusKindOptions(list, text, "bound_settlement", "本知识绑定定居点");
-			AddSettlementStatusKindOptions(list, text, "settlement", "定居点");
+			AddHeroStatusKindOptions(list, text, "current_npc_hero");
+			AddHeroStatusKindOptions(list, text, "player_hero");
+			AddHeroStatusKindOptions(list, text, "bound_hero");
+			AddHeroStatusKindOptions(list, text, "hero");
+			AddClanStatusKindOptions(list, text, "current_npc_clan");
+			AddClanStatusKindOptions(list, text, "player_clan");
+			AddClanStatusKindOptions(list, text, "bound_settlement_owner_clan");
+			AddClanStatusKindOptions(list, text, "bound_hero_clan");
+			AddClanStatusKindOptions(list, text, "clan");
+			AddKingdomStatusKindOptions(list, text, "current_npc_kingdom");
+			AddKingdomStatusKindOptions(list, text, "player_kingdom");
+			AddKingdomStatusKindOptions(list, text, "bound_kingdom");
+			AddKingdomStatusKindOptions(list, text, "kingdom");
+			AddSettlementStatusKindOptions(list, text, "current_npc_settlement");
+			AddSettlementStatusKindOptions(list, text, "player_settlement");
+			AddSettlementStatusKindOptions(list, text, "bound_settlement");
+			AddSettlementStatusKindOptions(list, text, "settlement");
 			break;
 		case "current_npc":
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcName, "名字");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanName, "所属家族");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanKingdomName, "所属家族的所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanKingdomLeaderName, "所属家族的所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanMembers, "所属家族的成员");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanMaleMembers, "所属家族的男性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanFemaleMembers, "所属家族的女性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAgeRangeMembers, "所属家族的年龄段成员");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllTowns, "所属家族的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllVillages, "所属家族的所有村子");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllSettlements, "所属家族的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomName, "所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomLeaderName, "效忠君主");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomRulingClanName, "所属王国执政家族");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomCultureName, "所属王国文化");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomInitialHomeSettlementName, "所属王国初始都城");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllClans, "所属王国全部家族");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllLords, "所属王国全部领主");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllTowns, "所属王国拥有的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllCastles, "所属王国拥有的所有城堡");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllVillages, "所属王国拥有的所有村庄");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllSettlements, "所属王国拥有的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomActivePolicies, "所属王国生效政策");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAlliedKingdoms, "所属王国盟友");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomWarFactions, "所属王国交战势力");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcSpouseName, "配偶");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcFatherName, "父亲");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcMotherName, "母亲");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementName, "所在定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerClanName, "所在定居点统治家族");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName, "所在定居点统治者");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName, "所在定居点所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName, "所在定居点所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementCultureName, "所在定居点文化");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementNotables, "所在定居点要人");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementParties, "所在定居点驻留队伍");
-			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementBoundVillages, "所在定居点绑定村庄");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanMaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanMaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanFemaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanFemaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAgeRangeMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanAgeRangeMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcClanAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomRulingClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomRulingClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomInitialHomeSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomInitialHomeSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllClans, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllClans));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllLords, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllLords));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllCastles, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllCastles));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomActivePolicies, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomActivePolicies));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAlliedKingdoms, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomAlliedKingdoms));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomWarFactions, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcKingdomWarFactions));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcSpouseName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcSpouseName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcFatherName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcFatherName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcMotherName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcMotherName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementOwnerClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementNotables, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementNotables));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementParties, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementParties));
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementBoundVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindCurrentNpcCurrentSettlementBoundVillages));
 			break;
 		case "player":
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerName, "名字");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanName, "家族");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanKingdomName, "家族所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanKingdomLeaderName, "家族所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanMembers, "家族成员");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanMaleMembers, "家族男性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanFemaleMembers, "家族女性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAgeRangeMembers, "家族年龄段成员");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllTowns, "家族的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllVillages, "家族的所有村子");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllSettlements, "家族的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerKingdomName, "所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerKingdomLeaderName, "效忠君主");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerSpouseName, "配偶");
-			AddTextMappingKindOption(list, text, TextMappingKindPlayerCurrentSettlementName, "所在定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanMaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanMaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanFemaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanFemaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAgeRangeMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanAgeRangeMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerClanAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerClanAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerSpouseName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerSpouseName));
+			AddTextMappingKindOption(list, text, TextMappingKindPlayerCurrentSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindPlayerCurrentSettlementName));
 			break;
 		case "bound":
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomName, "王国名称");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomLeaderName, "王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomRulingClanName, "王国执政家族");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomCultureName, "王国文化");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomInitialHomeSettlementName, "王国初始都城");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllClans, "王国全部家族");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllLords, "王国全部领主");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllTowns, "王国拥有的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllCastles, "王国拥有的所有城堡");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllVillages, "王国拥有的所有村庄");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllSettlements, "王国拥有的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomActivePolicies, "王国生效政策");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAlliedKingdoms, "王国盟友");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomWarFactions, "王国交战势力");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementName, "定居点名称");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanName, "定居点统治家族");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanKingdomName, "定居点统治家族的所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanKingdomLeaderName, "定居点统治家族的所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanMembers, "定居点统治家族的成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanMaleMembers, "定居点统治家族的男性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanFemaleMembers, "定居点统治家族的女性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAgeRangeMembers, "定居点统治家族的年龄段成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllTowns, "定居点统治家族的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllVillages, "定居点统治家族的所有村子");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllSettlements, "定居点统治家族的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerLeaderName, "定居点统治者");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerKingdomName, "定居点所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerKingdomLeaderName, "定居点所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementCultureName, "定居点文化");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementNotables, "定居点要人");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementParties, "定居点驻留队伍");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementBoundVillages, "定居点绑定村庄");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroName, "英雄名字");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanName, "英雄所属家族");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanKingdomName, "英雄所属家族的所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanKingdomLeaderName, "英雄所属家族的所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanMembers, "英雄所属家族的成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanMaleMembers, "英雄所属家族的男性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanFemaleMembers, "英雄所属家族的女性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAgeRangeMembers, "英雄所属家族的年龄段成员");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllTowns, "英雄所属家族的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllVillages, "英雄所属家族的所有村子");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllSettlements, "英雄所属家族的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroKingdomName, "英雄所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroKingdomLeaderName, "英雄效忠君主");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroSpouseName, "英雄配偶");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroFatherName, "英雄父亲");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroMotherName, "英雄母亲");
-			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroCurrentSettlementName, "英雄所在定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomRulingClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomRulingClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomInitialHomeSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomInitialHomeSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllClans, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllClans));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllLords, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllLords));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllCastles, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllCastles));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomActivePolicies, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomActivePolicies));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAlliedKingdoms, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomAlliedKingdoms));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomWarFactions, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundKingdomWarFactions));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanMaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanMaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanFemaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanFemaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAgeRangeMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanAgeRangeMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerClanAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementOwnerKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementNotables, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementNotables));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementParties, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementParties));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementBoundVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundSettlementBoundVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanMaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanMaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanFemaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanFemaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAgeRangeMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanAgeRangeMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroClanAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroSpouseName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroSpouseName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroFatherName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroFatherName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroMotherName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroMotherName));
+			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroCurrentSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindBoundHeroCurrentSettlementName));
 			break;
 		case "kingdom":
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomName, "名称");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomLeaderName, "当前领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomRulingClanName, "执政家族");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomCultureName, "文化");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomInitialHomeSettlementName, "初始都城");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllClans, "全部家族");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllLords, "全部领主");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllTowns, "拥有的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllCastles, "拥有的所有城堡");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllVillages, "拥有的所有村庄");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllSettlements, "拥有的所有定居点");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomActivePolicies, "生效政策");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomAlliedKingdoms, "盟友");
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomWarFactions, "交战势力");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomRulingClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomRulingClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomInitialHomeSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomInitialHomeSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllClans, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllClans));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllLords, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllLords));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllCastles, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllCastles));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAllSettlements));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomActivePolicies, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomActivePolicies));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAlliedKingdoms, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomAlliedKingdoms));
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomWarFactions, KnowledgeMappingUiTexts.Kind(TextMappingKindKingdomWarFactions));
 			break;
 		case "settlement":
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementName, "名称");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerLeaderName, "统治者");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerClanName, "统治家族");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerKingdomName, "所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerKingdomLeaderName, "所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementCultureName, "文化");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementNotables, "要人");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementParties, "驻留队伍");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementBoundVillages, "绑定村庄");
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementOwnerLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementOwnerClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementOwnerKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementOwnerKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementCultureName, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementCultureName));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementNotables, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementNotables));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementParties, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementParties));
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementBoundVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindSettlementBoundVillages));
 			break;
 		case "clan":
-			AddTextMappingKindOption(list, text, TextMappingKindClanLeaderName, "当前族长");
-			AddTextMappingKindOption(list, text, TextMappingKindClanName, "名称");
-			AddTextMappingKindOption(list, text, TextMappingKindClanKingdomName, "所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindClanKingdomLeaderName, "所属王国领袖");
-			AddTextMappingKindOption(list, text, TextMappingKindClanMembers, "成员");
-			AddTextMappingKindOption(list, text, TextMappingKindClanMaleMembers, "男性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindClanFemaleMembers, "女性成员");
-			AddTextMappingKindOption(list, text, TextMappingKindClanAgeRangeMembers, "年龄段成员");
-			AddTextMappingKindOption(list, text, TextMappingKindClanAllTowns, "统治的所有城镇");
-			AddTextMappingKindOption(list, text, TextMappingKindClanAllVillages, "统治的所有村子");
-			AddTextMappingKindOption(list, text, TextMappingKindClanAllSettlements, "统治的所有定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindClanLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindClanLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindClanKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindClanKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindClanKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindClanKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindClanMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindClanMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindClanMaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindClanMaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindClanFemaleMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindClanFemaleMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindClanAgeRangeMembers, KnowledgeMappingUiTexts.Kind(TextMappingKindClanAgeRangeMembers));
+			AddTextMappingKindOption(list, text, TextMappingKindClanAllTowns, KnowledgeMappingUiTexts.Kind(TextMappingKindClanAllTowns));
+			AddTextMappingKindOption(list, text, TextMappingKindClanAllVillages, KnowledgeMappingUiTexts.Kind(TextMappingKindClanAllVillages));
+			AddTextMappingKindOption(list, text, TextMappingKindClanAllSettlements, KnowledgeMappingUiTexts.Kind(TextMappingKindClanAllSettlements));
 			break;
 		case "hero":
-			AddTextMappingKindOption(list, text, TextMappingKindHeroName, "当前名字");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroClanName, "所属家族");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroKingdomName, "所属王国");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroKingdomLeaderName, "效忠君主");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroSpouseName, "配偶");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroFatherName, "父亲");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroMotherName, "母亲");
-			AddTextMappingKindOption(list, text, TextMappingKindHeroCurrentSettlementName, "当前定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindHeroName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroClanName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroClanName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroKingdomName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroKingdomName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroKingdomLeaderName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroKingdomLeaderName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroSpouseName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroSpouseName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroFatherName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroFatherName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroMotherName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroMotherName));
+			AddTextMappingKindOption(list, text, TextMappingKindHeroCurrentSettlementName, KnowledgeMappingUiTexts.Kind(TextMappingKindHeroCurrentSettlementName));
 			break;
 		}
 		return list;
@@ -8096,18 +7585,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		List<TextMappingKindOption> list2 = list.Skip(page * pageSize).Take(pageSize).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "重新搜索", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Search, null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list3.Add(new InquiryElement("__clear__", "返回分类列表", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.Back, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		list3.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (TextMappingKindOption item in list2)
@@ -8115,17 +7604,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text2 = "【" + GetTextMappingKindCategoryLabel(item.CategoryKey) + "】" + (item.Label ?? GetTextMappingKindLabel(item.Kind));
 			list3.Add(new InquiryElement(item.Kind, text2, null));
 		}
-		string text3 = "输入关键词搜索具体映射项，可用空格分隔多个词。\n例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡 / 定居点 围攻";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text3 = text3 + "\n当前搜索：" + TrimPreview(text, 60);
-		}
-		text3 += $"\n匹配结果：{list.Count} 项";
-		if (list.Count == 0)
-		{
-			text3 += "\n\n没有匹配项，可以换个关键词继续搜。";
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("搜索映射类型", text3, list3, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text3 = KnowledgeUiTexts.MappingSearchResults(TrimPreview(text, 60), list.Count, list.Count == 0);
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.MappingSearchTitle, text3, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8136,7 +7616,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			switch (text4)
 			{
 			case "__search__":
-				InformationManager.ShowTextInquiry(new TextInquiryData("搜索映射类型", "输入关键词，可用空格分隔多个词。\n例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+				InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.MappingSearchTitle, KnowledgeUiTexts.MappingSearchPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Back, delegate(string input)
 				{
 					OpenTextMappingKindSearchResults(input, onPickKind, onCancel, 0);
 				}, delegate
@@ -8188,13 +7668,13 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			};
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__search__", "搜索映射类型", null));
+		list.Add(new InquiryElement("__search__", KnowledgeUiTexts.MappingSearchTitle, null));
 		list.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (string text in GetTextMappingKindCategoryKeys())
 		{
 			list.Add(new InquiryElement(text, GetTextMappingKindCategoryLabel(text), null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("你想取谁的什么？", "先选一个方向，或者直接搜索具体映射项。除了普通映射，现在也支持状态判断。组合很多时，优先用搜索会更快。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.MappingSearchMenuTitle, KnowledgeUiTexts.MappingSearchMenuDescription, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8205,7 +7685,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			switch (text2)
 			{
 			case "__search__":
-				InformationManager.ShowTextInquiry(new TextInquiryData("搜索映射类型", "输入关键词，可用空格分隔多个词。\n例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+				InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.MappingSearchTitle, KnowledgeUiTexts.MappingSearchPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Back, delegate(string input)
 				{
 					OpenTextMappingKindSearchResults(input, onPickKind, onCancel, 0);
 				}, delegate
@@ -8259,7 +7739,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			list2.Add(new InquiryElement(item.Kind, item.Label, null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择映射类型", GetTextMappingKindCategoryDescription(text), list2, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.MappingChooseTypeTitle, GetTextMappingKindCategoryDescription(text), list2, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8302,19 +7782,19 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			rule.Keywords = new List<string>();
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__add__", "添加关键词（一次一个）", null));
+		list.Add(new InquiryElement("__add__", KnowledgeUiTexts.AddKeyword, null));
 		if (rule.Keywords.Count > 0)
 		{
-			list.Add(new InquiryElement("__remove__", "删除关键词", null));
+			list.Add(new InquiryElement("__remove__", KnowledgeUiTexts.RemoveKeyword, null));
 		}
 		foreach (string keyword in rule.Keywords)
 		{
 			if (!string.IsNullOrWhiteSpace(keyword))
 			{
-				list.Add(new InquiryElement("__k__" + keyword, "关键词：" + keyword, null));
+				list.Add(new InquiryElement("__k__" + keyword, KnowledgeUiTexts.KeywordLabel(keyword), null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑关键词", "一次输入一个关键词，确定后会加入列表。", list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.KeywordMenuTitle, KnowledgeUiTexts.KeywordMenuDescription, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8325,7 +7805,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				string text = selected[0].Identifier as string;
 				if (text == "__add__")
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData("添加关键词", "请输入一个关键词：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.AddKeywordTitle, KnowledgeUiTexts.AddKeywordPrompt, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string text2 = (input ?? "").Trim();
 						string kwNorm = LoreCandidateRetriever.NormalizeKeywordForCompare(text2);
@@ -8347,12 +7827,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 							string foundRuleId;
 							if (flag)
 							{
-								InformationManager.DisplayMessage(new InformationMessage("添加失败：该关键词已存在于本知识条目中。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.KeywordInRuleAlreadyExists));
 								OpenKeywordMenu(rule, onReturn);
 							}
 							else if (TryFindRuleIdByKeyword(text2, rule.Id, out foundRuleId))
 							{
-								InformationManager.DisplayMessage(new InformationMessage("添加失败：关键词已被其他知识条目占用（关键词=" + text2 + "，RuleId=" + foundRuleId + "）。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.CreateRuleKeywordConflict(text2, foundRuleId)));
 								OpenKeywordMenu(rule, onReturn);
 							}
 							else
@@ -8408,7 +7888,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list.Add(new InquiryElement(keyword, keyword, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除关键词", "选择要删除的关键词：", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RemoveKeywordTitle, KnowledgeUiTexts.RemoveKeywordPrompt, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8446,22 +7926,22 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		EnsureRagShortTexts(rule);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__add__", "添加RAG专用短句（一次一条）", null));
-		list.Add(new InquiryElement("__generate__", "一键生成RAG专用短句", null));
+		list.Add(new InquiryElement("__add__", KnowledgeUiTexts.AddRag, null));
+		list.Add(new InquiryElement("__generate__", KnowledgeUiTexts.GenerateRag, null));
 		if (rule.RagShortTexts.Count > 0)
 		{
-			list.Add(new InquiryElement("__remove__", "删除RAG专用短句", null));
+			list.Add(new InquiryElement("__remove__", KnowledgeUiTexts.RemoveRag, null));
 		}
 		foreach (string ragShortText in rule.RagShortTexts)
 		{
 			string text = LoreCandidateRetriever.NormalizeKeywordForCompare(ragShortText);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
-				list.Add(new InquiryElement("__r__" + text, "RAG短句：" + text, null));
+				list.Add(new InquiryElement("__r__" + text, KnowledgeUiTexts.RagLabel(text), null));
 			}
 		}
-		string descriptionText = "用于知识检索与重排的短句。建议写成便于提问匹配的简短描述，不要直接复制完整提示词正文；手动填写每条最多 " + RagShortTextMaxLength + " 字符，AI 自动生成会限制在 " + RagShortTextGeneratedMaxLength + " 字符内，max_tokens 上限为 " + RagShortTextGenerationMaxTokens + "。";
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑RAG专用短句", descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string descriptionText = KnowledgeUiTexts.RagMenuDescription(RagShortTextMaxLength, RagShortTextGeneratedMaxLength, RagShortTextGenerationMaxTokens);
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RagMenuTitle, descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8472,7 +7952,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				string text2 = selected[0].Identifier as string;
 				if (text2 == "__add__")
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData("添加RAG专用短句", "请输入一条RAG专用短句（最多 " + RagShortTextMaxLength + " 字符）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.AddRagTitle, KnowledgeUiTexts.AddRagPrompt(RagShortTextMaxLength), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string text3 = LoreCandidateRetriever.NormalizeKeywordForCompare(input);
 						if (string.IsNullOrEmpty(text3))
@@ -8481,7 +7961,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 						}
 						else if (text3.Length > RagShortTextMaxLength)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("添加失败：RAG专用短句不能超过 " + RagShortTextMaxLength + " 字符。"));
+							InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagTooLong(RagShortTextMaxLength)));
 							OpenRagShortTextMenu(rule, onReturn);
 						}
 						else
@@ -8497,7 +7977,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 							}
 							if (flag)
 							{
-								InformationManager.DisplayMessage(new InformationMessage("添加失败：该RAG专用短句已存在于本知识条目中。"));
+								InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagAlreadyExists));
 							}
 							else
 							{
@@ -8557,7 +8037,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list.Add(new InquiryElement(text, text, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除RAG专用短句", "选择要删除的RAG专用短句：", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.RemoveRagTitle, KnowledgeUiTexts.RemoveRagPrompt, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8582,7 +8062,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 
 	private static string BuildRagShortTextGenerationSystemPrompt()
 	{
-		return "你是一个本地RAG知识库的“检索短句生成器”。\n" + "你的输出会直接用于知识召回与重排，不是给NPC直接说的话。\n" + "请严格遵守：\n" + "1) 只围绕提供的知识材料生成，不得编造；\n" + "2) 每条都要显式保留实体名、主题词或关键概念，便于语义检索命中；\n" + "3) 可以写成简洁描述句或简洁提问式短句，但必须适合RAG程序检索；\n" + "4) 禁止第一人称口吻、抒情、解释、提示词说明、系统术语、ACTION标签；\n" + "5) 禁止直接照抄长提示词正文，只保留可检索的核心事实；\n" + "6) 每条最多 " + RagShortTextGeneratedMaxLength + " 个字符；\n" + "7) 只输出 JSON 数组字符串，例如 [\"...\",\"...\"]；禁止 Markdown 代码块、标题、序号和额外说明。";
+		return KnowledgePromptTexts.Format("System", "You are a retrieval short-text generator for a local RAG knowledge base.\nYour output is used directly for knowledge retrieval and reranking, not as dialogue for NPCs.\nFollow these rules strictly:\n1) Generate only from the supplied knowledge material; do not invent facts;\n2) Every entry must explicitly retain entity names, topic words, or key concepts to support semantic retrieval;\n3) Use concise descriptions or questions suitable for programmatic RAG retrieval;\n4) Do not use first-person narration, lyrical prose, explanations, prompt instructions, system terminology, or ACTION tags;\n5) Do not copy long passages from the source prompt; keep only searchable core facts;\n6) Each entry must contain at most {MAX} characters;\n7) Output only a JSON array of strings, such as [\"...\",\"...\"]; no Markdown code blocks, headings, numbering, or extra explanation.", ("MAX", RagShortTextGeneratedMaxLength.ToString()));
 	}
 
 	private static string BuildRagShortTextGenerationUserPrompt(LoreRule rule, int targetCount, IEnumerable<string> existingForPrompt = null)
@@ -8601,7 +8081,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text = (rule.Id ?? "").Trim();
 			if (!string.IsNullOrEmpty(text))
 			{
-				stringBuilder.AppendLine("规则ID: " + text);
+				stringBuilder.AppendLine(KnowledgePromptTexts.Get("RuleIdLabel", "Rule ID: ") + text);
 			}
 			List<string> list = new List<string>();
 			try
@@ -8625,7 +8105,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("关键词: " + ((list.Count > 0) ? string.Join(" / ", list) : "（无）"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Keywords", "Keywords: ") + ((list.Count > 0) ? string.Join(" / ", list) : KnowledgePromptTexts.Get("None", "(none)")));
 			List<string> list2 = new List<string>();
 			try
 			{
@@ -8649,7 +8129,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("已有RAG短句: " + ((list2.Count > 0) ? string.Join(" | ", list2) : "（无）"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Existing", "Existing RAG short texts: ") + ((list2.Count > 0) ? string.Join(" | ", list2) : KnowledgePromptTexts.Get("None", "(none)")));
 			List<string> list3 = new List<string>();
 			try
 			{
@@ -8671,7 +8151,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 						{
 							text4 = text4.Substring(0, 220).Trim() + "...";
 						}
-						list3.Add($"#{i + 1} {BuildWhenLabel(loreVariant.When)}: {text4}");
+						list3.Add($"#{i + 1} {BuildWhenPromptLabel(loreVariant.When)}: {text4}");
 						if (list3.Count >= 6)
 						{
 							break;
@@ -8682,10 +8162,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("提示词内容：");
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("PromptHeader", "Prompt content:"));
 			if (list3.Count <= 0)
 			{
-				stringBuilder.AppendLine("（无）");
+				stringBuilder.AppendLine(KnowledgePromptTexts.Get("None", "(none)"));
 			}
 			else
 			{
@@ -8694,13 +8174,13 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					stringBuilder.AppendLine(item2);
 				}
 			}
-			stringBuilder.AppendLine("任务：请基于“关键词 + 提示词内容”，生成 " + targetCount + " 条新的 RAG专用短句。");
-			stringBuilder.AppendLine("生成要求：");
-			stringBuilder.AppendLine("1) 每条 8~" + RagShortTextGeneratedMaxLength + " 字，中文自然，不要太虚；");
-			stringBuilder.AppendLine("2) 每条都要能帮助程序匹配玩家提问，尽量直接点明主题、实体与核心事实；");
-			stringBuilder.AppendLine("3) 不要直接复制原提示词正文的大段表达；");
-			stringBuilder.AppendLine("4) 不要与“已有RAG短句”重复；");
-			stringBuilder.AppendLine("5) 只输出 JSON 数组字符串。");
+			stringBuilder.AppendLine(KnowledgePromptTexts.Format("Task", "Task: Generate {COUNT} new RAG short texts based on the keywords and prompt content.", ("COUNT", targetCount.ToString())));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Requirements", "Generation requirements:"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Format("Length", "1) Each entry must contain 8~{MAX} characters; use natural English and avoid vague wording;", ("MAX", RagShortTextGeneratedMaxLength.ToString())));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Match", "2) Every entry must help the program match player questions; name the topic, entities, and core facts as directly as possible;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Copy", "3) Do not copy long passages from the original prompt;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Duplicate", "4) Do not duplicate the existing RAG short texts;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Json", "5) Output only a JSON array of strings."));
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -8850,7 +8330,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				return string.Empty;
 			}
-			if (text.IndexOf("提示词", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("RAG", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("检索短句", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (text.IndexOf(KnowledgeSourceTexts.Get("KN_Raw_008"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("RAG", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(KnowledgeSourceTexts.Get("KN_Raw_009"), StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				return string.Empty;
 			}
@@ -8915,17 +8395,17 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		foreach (string item in list2)
 		{
-			add(item + "是什么");
+			add(KnowledgePromptTexts.Format("FallbackWhat", "What is {KEYWORD}", ("KEYWORD", item)));
 			if (list.Count >= maxCount)
 			{
 				return list;
 			}
-			add("介绍" + item);
+			add(KnowledgePromptTexts.Format("FallbackIntroduce", "Introduce {KEYWORD}", ("KEYWORD", item)));
 			if (list.Count >= maxCount)
 			{
 				return list;
 			}
-			add(item + "的背景与特点");
+			add(KnowledgePromptTexts.Format("FallbackBackground", "{KEYWORD} background and traits", ("KEYWORD", item)));
 			if (list.Count >= maxCount)
 			{
 				return list;
@@ -8991,11 +8471,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		string text2 = BuildRagShortTextGenerationUserPrompt(rule, RagShortTextAutoGenerateCount, list);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[知识] 生成失败：当前知识缺少可供生成的内容。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagGenerationNoSource));
 			onDone();
 			return;
 		}
-		InformationManager.DisplayMessage(new InformationMessage("[知识] 正在生成 RAG专用短句，请稍候..."));
+		InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagGenerating));
 		try
 		{
 			string systemPrompt = BuildRagShortTextGenerationSystemPrompt();
@@ -9003,7 +8483,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			List<string> list2 = ParseRagShortTextCandidates(raw, Math.Max(RagShortTextAutoGenerateCount * 2, 6));
 			if (list2.Count <= 0)
 			{
-				LlmRetryPrompt.ShowFailurePopup("RAG专用短句解析失败", LlmRetryPrompt.BuildFailureDetail("模型回复无法解析为 RAG 专用短句，系统将使用确定性兜底。", raw));
+				LlmRetryPrompt.ShowFailurePopup(KnowledgeUiTexts.RagParseFailureTitle, LlmRetryPrompt.BuildFailureDetail(KnowledgeUiTexts.RagParseFailureReason, raw));
 				list2 = BuildDeterministicRagShortTextFallback(rule, RagShortTextAutoGenerateCount);
 			}
 			int num = 0;
@@ -9024,24 +8504,24 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			if (num > 0)
 			{
 				TouchRuleData();
-				InformationManager.DisplayMessage(new InformationMessage("[知识] 已生成并添加 " + num + " 条 RAG专用短句。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagGenerated(num)));
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage("[知识] 未生成新的 RAG专用短句，可能与现有内容重复。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.RagNoNew));
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Logic", "[Knowledge] 生成RAG专用短句失败: " + ex);
-			LlmRetryPrompt.ShowFailurePopup("生成RAG专用短句失败", ex.Message);
+			Logger.Log("Logic", "[Knowledge] RAG retrieval phrase generation failed: " + ex);
+			LlmRetryPrompt.ShowFailurePopup(KnowledgeUiTexts.RagGenerationFailureTitle, KnowledgeUiTexts.RagFailureDetail(ex.Message));
 		}
 		onDone();
 	}
 
 	private void OpenPrototypeMenu(LoreRule rule, Action onReturn)
 	{
-		InformationManager.DisplayMessage(new InformationMessage("[知识] 原型句功能已停用。请直接维护“关键词 + RAG专用短句 + 提示词”。"));
+		InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.PrototypeDisabled));
 		onReturn?.Invoke();
 	}
 
@@ -9101,20 +8581,20 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * 12;
 		List<string> list2 = filtered.Skip(num2).Take(12).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索原型句", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeSearch", "Search prototype sentences"), null));
 		if (!string.IsNullOrWhiteSpace(q))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
-		list3.Add(new InquiryElement("__back__", "返回原型句菜单", null));
+		list3.Add(new InquiryElement("__back__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeBack", "Back to prototype menu"), null));
 		if (list2.Count > 0)
 		{
 			list3.Add(new InquiryElement("__sep__", "----------------", null));
@@ -9126,17 +8606,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string title = $"{num4 + 1}. {TrimPreview(s, 90)}";
 			list3.Add(new InquiryElement("__item__" + num4, title, null));
 		}
-		string text2 = $"共 {count} 条";
-		if (!string.IsNullOrWhiteSpace(q))
-		{
-			text2 = text2 + "（搜索：" + TrimPreview(q, 40) + "）";
-		}
-		text2 += $"，第 {page + 1}/{num} 页。";
-		if (list2.Count <= 0)
-		{
-			text2 += "\n当前页无内容。";
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("查看原型句", text2, list3, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text2 = KnowledgeUiTexts.PrototypeCountSummary(count, TrimPreview(q, 40), page + 1, num, list2.Count <= 0);
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeViewTitle", "View prototype sentences"), text2, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -9151,7 +8622,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					OpenPrototypeMenu(rule, onReturn);
 					return;
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索原型句", "输入关键词：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeSearchTitle", "Search prototype sentences"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeSearchPrompt", "Enter keywords:"), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Back, delegate(string input)
 					{
 						OpenPrototypeViewMenu(rule, onReturn, 0, (input ?? "").Trim());
 					}, delegate
@@ -9173,7 +8644,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					if (text3.StartsWith("__item__", StringComparison.Ordinal) && int.TryParse(text3.Substring("__item__".Length), out var result) && result >= 0 && result < filtered.Count)
 					{
 						string text4 = filtered[result] ?? "";
-						InformationManager.ShowInquiry(new InquiryData("原型句详情", text4, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+						InformationManager.ShowInquiry(new InquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeDetailTitle", "Prototype sentence"), text4, isAffirmativeOptionShown: true, isNegativeOptionShown: false, KnowledgeUiTexts.Back, "", delegate
 						{
 							OpenPrototypeViewMenu(rule, onReturn, page, q);
 						}, null));
@@ -9209,7 +8680,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text = (rule.Id ?? "").Trim();
 			if (!string.IsNullOrEmpty(text))
 			{
-				stringBuilder.AppendLine("规则ID: " + text);
+				stringBuilder.AppendLine(KnowledgePromptTexts.Get("RuleIdLabel", "Rule ID: ") + text);
 			}
 			List<string> list = new List<string>();
 			try
@@ -9233,7 +8704,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("关键词: " + ((list.Count > 0) ? string.Join(" / ", list) : "（无）"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("Keywords", "Keywords: ") + ((list.Count > 0) ? string.Join(" / ", list) : KnowledgePromptTexts.Get("None", "(none)")));
 			List<string> list4 = new List<string>();
 			try
 			{
@@ -9256,7 +8727,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("RAG专用短句: " + ((list4.Count > 0) ? string.Join(" | ", list4) : "（无）"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_023", "RAG retrieval phrases: ") + ((list4.Count > 0) ? string.Join(" | ", list4) : KnowledgePromptTexts.Get("None", "(none)")));
 			List<string> list2 = new List<string>();
 			try
 			{
@@ -9280,16 +8751,16 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			catch
 			{
 			}
-			stringBuilder.AppendLine("已有原型句: " + ((list2.Count > 0) ? string.Join(" | ", list2) : "（无）"));
-			stringBuilder.AppendLine("注意：本次生成只允许参考“关键词”和“RAG专用短句”，不要参考提示词内容（Variants）。");
-			stringBuilder.AppendLine("请生成 " + targetCount + " 条“语义原型句”，都必须表达同一意图但换不同说法。");
-			stringBuilder.AppendLine("必须符合：");
-			stringBuilder.AppendLine("1) 每条 8~30 字，中文自然口语；");
-			stringBuilder.AppendLine("2) 禁止包含 ACTION 标签、系统词、解释性文字；");
-			stringBuilder.AppendLine("3) 不要与“已有原型句”重复；");
-			stringBuilder.AppendLine("4) 只输出 JSON 数组字符串，例如 [\"...\",\"...\"]；禁止 Markdown 代码块；");
-			stringBuilder.AppendLine("5) 每条必须完整句，不要半句，不要前后引号，不要末尾逗号。");
-			stringBuilder.AppendLine("6) 语义范围仅围绕关键词展开，不能引入关键词之外的新主题。");
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_024", "Existing prototypes: ") + ((list2.Count > 0) ? string.Join(" | ", list2) : KnowledgePromptTexts.Get("None", "(none)")));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_025", "Use only the keywords and RAG retrieval phrases for this generation. Do not use prompt content (Variants)."));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_026", "Generate ") + targetCount + KnowledgePromptTexts.Get("KN_Prompt_027", " semantic prototype sentences expressing the same intent in different wording."));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_028", "Requirements:"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_029", "1) Each item must be 8\u201330 characters in natural spoken English;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_030", "2) Do not include ACTION tags, system terminology or explanatory text;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_031", "3) Do not duplicate existing prototypes;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_032", "4) Output only a JSON array of strings, such as [\"...\",\"...\"]; do not use Markdown code blocks;"));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_033", "5) Each item must be a complete sentence, not a fragment; do not add surrounding quotation marks within the value or a trailing comma."));
+			stringBuilder.AppendLine(KnowledgePromptTexts.Get("KN_Prompt_034", "6) Stay within the meaning of the keywords; do not introduce unrelated topics."));
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -9535,11 +9006,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			topics = topics.Take(24).ToList();
 		}
-		string text = ((topics.Count > 0) ? topics[0] : "这件事");
+		string text = ((topics.Count > 0) ? topics[0] : KnowledgePromptTexts.Get("KN_Prompt_035", "this matter"));
 		string[] array = new string[12]
 		{
-			"你现在想聊{0}吗", "你是在问{0}的情况吗", "我们继续说{0}这件事", "你想确认{0}的细节吗", "这话题和{0}有关吗", "你提到的核心是{0}吗", "先把{0}说清楚", "你更关心{0}的哪一部分", "我们围绕{0}继续谈", "关于{0}你还想知道什么",
-			"你是想推进{0}这个话题吗", "你希望我解释{0}吗"
+			KnowledgePromptTexts.Get("KN_Prompt_036", "Do you want to discuss {0} now?"), KnowledgePromptTexts.Get("KN_Prompt_037", "Are you asking about the state of {0}?"), KnowledgePromptTexts.Get("KN_Prompt_038", "Let us continue discussing {0}."), KnowledgePromptTexts.Get("KN_Prompt_039", "Do you want to confirm the details of {0}?"), KnowledgePromptTexts.Get("KN_Prompt_040", "Is this topic related to {0}?"), KnowledgePromptTexts.Get("KN_Prompt_041", "Is {0} the main point you mentioned?"), KnowledgePromptTexts.Get("KN_Prompt_042", "Let us clarify {0} first."), KnowledgePromptTexts.Get("KN_Prompt_043", "Which part of {0} matters most to you?"), KnowledgePromptTexts.Get("KN_Prompt_044", "Let us keep talking about {0}."), KnowledgePromptTexts.Get("KN_Prompt_045", "What else would you like to know about {0}?"),
+			KnowledgePromptTexts.Get("KN_Prompt_046", "Do you want to develop the topic of {0}?"), KnowledgePromptTexts.Get("KN_Prompt_047", "Would you like me to explain {0}?")
 		};
 		foreach (string item in topics)
 		{
@@ -9565,9 +9036,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num = 1;
 		while (list.Count < maxCount && num <= 20)
 		{
-			add("我们继续把" + text + "讲具体一些");
-			add("你现在主要在问" + text);
-			add("这次对话的重点是" + text);
+			add(KnowledgePromptTexts.Get("KN_Prompt_048", "Let us discuss ") + text + KnowledgePromptTexts.Get("KN_Prompt_049", " in more detail."));
+			add(KnowledgePromptTexts.Get("KN_Prompt_050", "You are mainly asking about ") + text);
+			add(KnowledgePromptTexts.Get("KN_Prompt_051", "The focus of this conversation is ") + text);
 			num++;
 		}
 		return list;
@@ -9597,12 +9068,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null || string.IsNullOrWhiteSpace(settings.ApiKey))
 		{
-			throw new Exception("API Key 未配置。");
+			throw new Exception("API key is not configured.");
 		}
 		string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
 		if (string.IsNullOrWhiteSpace(effectiveApiUrl))
 		{
-			throw new Exception("API 地址为空。");
+			throw new Exception("API URL is empty.");
 		}
 		int actualMaxTokens = Math.Max(1, Math.Min(Math.Min(RagShortTextGenerationMaxTokens, maxTokens), settings.GetMainApiMaxTokens()));
 		PromptPackage prompt = new PromptPackage(
@@ -9641,14 +9112,14 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			CancellationToken.None).GetAwaiter().GetResult();
 		if (generated == null || generated.Status != LlmResultStatus.Succeeded || string.IsNullOrWhiteSpace(generated.RawText))
 		{
-			throw new Exception("RAG API 请求失败：" + (generated?.ErrorCode ?? "empty_result"));
+			throw new Exception("RAG API request failed: " + (generated?.ErrorCode ?? "empty_result"));
 		}
 		return generated.RawText.Trim();
 	}
 
 	private void GenerateSemanticPrototypesByLlm(LoreRule rule, Action onDone)
 	{
-		InformationManager.DisplayMessage(new InformationMessage("[知识] 原型句功能已停用。"));
+		InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.PrototypeDisabled));
 		onDone?.Invoke();
 	}
 
@@ -9678,7 +9149,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list.Add(new InquiryElement(text, TrimPreview(text, 80), null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除原型句", "选择要删除的原型句：", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeRemoveTitle", "Delete prototype sentence"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PrototypeRemovePrompt", "Select a prototype sentence to delete:"), list, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -9719,7 +9190,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			rule.Variants = new List<LoreVariant>();
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__add__", "新增提示词", null));
+		list.Add(new InquiryElement("__add__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantAdd", "Add prompt"), null));
 		for (int num = 0; num < rule.Variants.Count; num++)
 		{
 			LoreVariant loreVariant = rule.Variants[num];
@@ -9735,7 +9206,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list.Add(new InquiryElement(num, title, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑提示词", "条件留空=通用；填任意条件=专属。命中时会选最具体的一条。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantMenuTitle", "Edit prompts"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantMenuDescription", "Leave the condition empty for a general prompt; any condition makes it specific. The most specific matching prompt is selected."), list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -9833,16 +9304,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		string text3 = (text2 ?? "").Replace("\r", "").Replace("\n", " ").Trim();
 		string text4 = TrimPreview(text2, 220);
 		bool flag = !string.IsNullOrEmpty(text3) && text3.Length > 220;
-		string text5 = "当前条件：" + text + "\n\n当前内容预览：\n" + (string.IsNullOrEmpty(text4) ? "（空）" : text4);
-		if (flag)
-		{
-			text5 += "\n……（内容过长，仅显示前 220 字）";
-		}
+		string text5 = KnowledgeUiTexts.VariantEditorDescription(text, text4, flag);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("content", "编辑提示词内容", null));
-		list.Add(new InquiryElement("when", "编辑条件", null));
-		list.Add(new InquiryElement("delete", "删除此提示词", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("提示词编辑", text5, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		list.Add(new InquiryElement("content", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantEditContent", "Edit prompt content"), null));
+		list.Add(new InquiryElement("when", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantEditCondition", "Edit conditions"), null));
+		list.Add(new InquiryElement("delete", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantDelete", "Delete this prompt"), null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantEditorTitle", "Prompt editor"), text5, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -9853,7 +9320,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (selected[0].Identifier as string)
 				{
 				case "content":
-					DevTextEditorHelper.ShowLongTextEditor("编辑提示词内容", "当前条件：" + text, "请输入内容。", v.Content ?? "", delegate(string input)
+					DevTextEditorHelper.ShowLongTextEditor(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantEditContent", "Edit prompt content"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantCurrentCondition", "Current conditions: {CONDITION}", ("CONDITION", text)), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_VariantContentPrompt", "Enter content."), v.Content ?? "", delegate(string input)
 					{
 						int duplicateVariantIndex = FindDuplicateVariantIndex(rule, v.When, idx);
 						if (duplicateVariantIndex >= 0)
@@ -9868,7 +9335,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					}, delegate
 					{
 						OpenVariantEditor(rule, idx, onReturn, isNewVariant);
-					}, "确定", "取消");
+					}, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel);
 					break;
 				case "when":
 				{
@@ -9931,16 +9398,16 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			};
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("culture", "文化（CultureId）", null));
-		list.Add(new InquiryElement("kingdom", "势力/王国（KingdomId）", null));
-		list.Add(new InquiryElement("settlement", "定居点（SettlementId）", null));
-		list.Add(new InquiryElement("role", "身份（大类 + 细分NPC）", null));
-		list.Add(new InquiryElement("gender", "性别（不限/男/女）", null));
-		list.Add(new InquiryElement("clan_leader", "是否家族族长（不限/是/否）", null));
-		list.Add(new InquiryElement("skill", "技能等级（SkillId >= 值）", null));
-		list.Add(new InquiryElement("clear", "清空全部条件（变成通用）", null));
+		list.Add(new InquiryElement("culture", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenCulture", "Culture (CultureId)"), null));
+		list.Add(new InquiryElement("kingdom", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenKingdom", "Faction/kingdom (KingdomId)"), null));
+		list.Add(new InquiryElement("settlement", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlement", "Settlement (SettlementId)"), null));
+		list.Add(new InquiryElement("role", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRole", "Identity (category + specific NPC)"), null));
+		list.Add(new InquiryElement("gender", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenGender", "Gender (any/male/female)"), null));
+		list.Add(new InquiryElement("clan_leader", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenClanLeader", "Clan leader (any/yes/no)"), null));
+		list.Add(new InquiryElement("skill", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSkill", "Skill level (SkillId >= value)"), null));
+		list.Add(new InquiryElement("clear", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenClear", "Clear all conditions (make general)"), null));
 		string descriptionText = BuildWhenDetail(when);
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑条件", descriptionText, list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenEditorTitle", "Edit conditions"), descriptionText, list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -9955,7 +9422,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					{
 						when.Cultures = new List<string>();
 					}
-					OpenStringListEditor("文化（CultureId）", when.Cultures, delegate
+					OpenStringListEditor(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenCulture", "Culture (CultureId)"), when.Cultures, delegate
 					{
 						OpenWhenEditor(when, onReturn);
 					});
@@ -9965,7 +9432,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					{
 						when.KingdomIds = new List<string>();
 					}
-					OpenStringListEditor("势力/王国（KingdomId）", when.KingdomIds, delegate
+					OpenStringListEditor(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenKingdom", "Faction/kingdom (KingdomId)"), when.KingdomIds, delegate
 					{
 						OpenWhenEditor(when, onReturn);
 					});
@@ -9975,7 +9442,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					{
 						when.SettlementIds = new List<string>();
 					}
-					OpenStringListEditor("定居点（SettlementId）", when.SettlementIds, delegate
+					OpenStringListEditor(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlement", "Settlement (SettlementId)"), when.SettlementIds, delegate
 					{
 						OpenWhenEditor(when, onReturn);
 					});
@@ -10400,32 +9867,32 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num3 = CountSelectedRoleIdentities(when, roleKey);
 		bool flag2 = ListContainsIgnoreCase(when.Roles, roleKey);
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__toggle_all__", (flag2 ? "[√] " : "[ ] ") + "整类生效：" + GetRoleDisplayName(roleKey), null));
-		list3.Add(new InquiryElement("__search__", string.IsNullOrWhiteSpace(query) ? "搜索本类具体NPC…" : ("搜索：" + query), null));
+		list3.Add(new InquiryElement("__toggle_all__", (flag2 ? "[√] " : "[ ] ") + KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleToggleAll", "Whole category: {ROLE}", ("ROLE", GetRoleDisplayName(roleKey))), null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.RoleSearchOption(query), null));
 		if (!string.IsNullOrWhiteSpace(query))
 		{
-			list3.Add(new InquiryElement("__clear_search__", "清除搜索", null));
+			list3.Add(new InquiryElement("__clear_search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleClearSearch", "Clear search"), null));
 		}
 		if (num3 > 0)
 		{
-			list3.Add(new InquiryElement("__clear_specific__", "清空本类细分已选（" + num3 + "）", null));
+			list3.Add(new InquiryElement("__clear_specific__", KnowledgeUiTexts.RoleClearSpecificOption(num3), null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page < num2 - 1)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		foreach (RoleDetailOption item3 in list2)
 		{
 			bool flag3 = IsRoleIdentitySelected(when, item3.EncodedId);
 			list3.Add(new InquiryElement(item3.EncodedId, (flag3 ? "[√] " : "[ ] ") + item3.Label, null));
 		}
-		string descriptionText = $"{GetRoleDisplayName(roleKey)}：可直接勾整类，也可只勾本类里的具体NPC。\n当前整类：{(flag2 ? "已选中" : "未选中")}\n当前细分已选：{num3}\n结果总数：{list.Count}，第 {page + 1}/{num2} 页";
+		string descriptionText = KnowledgeUiTexts.RoleDescription(GetRoleDisplayName(roleKey), flag2, num3, list.Count, page + 1, num2);
 		int num4 = Math.Max(1, list3.Count);
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("身份细分 - " + GetRoleDisplayName(roleKey), descriptionText, list3, isExitShown: true, 0, num4, "切换选中", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleDetailTitle", "Specific identity - {ROLE}", ("ROLE", GetRoleDisplayName(roleKey))), descriptionText, list3, isExitShown: true, 0, num4, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleSwitchSelection", "Switch selection"), KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -10443,7 +9910,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				if (list4.Count > 1)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("搜索、翻页、整类切换这类操作项不能和细分NPC一起多选。"));
+					InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleMultiSelectError", "Search, paging, and whole-category operations cannot be selected together with specific NPCs.")));
 					OpenRoleCategoryEditor(when, roleKey, onReturn, page, query);
 					return;
 				}
@@ -10456,7 +9923,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					OpenRoleCategoryEditor(when, roleKey, onReturn, page, query);
 					break;
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索 " + GetRoleDisplayName(roleKey), "输入名称、HeroId 或 CharacterId。搜索只在当前大类内进行。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleSearchTitle", "Search {ROLE}", ("ROLE", GetRoleDisplayName(roleKey))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleSearchPrompt", "Enter a name, HeroId or CharacterId. Search is limited to this category."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Back, delegate(string input)
 					{
 						OpenRoleCategoryEditor(when, roleKey, onReturn, 0, input);
 					}, delegate
@@ -10523,18 +9990,14 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			bool flag = ListContainsIgnoreCase(when.Roles, roleCategoryKey);
 			int num = CountSelectedRoleIdentities(when, roleCategoryKey);
-			string text = (flag ? "[整类√] " : "") + GetRoleDisplayName(roleCategoryKey);
-			if (num > 0)
-			{
-				text += "（细分已选 " + num + "）";
-			}
+			string text = KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleCategoryItem", "{PREFIX}{ROLE}{SPECIFIC}", ("PREFIX", flag ? "[√] " : ""), ("ROLE", GetRoleDisplayName(roleCategoryKey)), ("SPECIFIC", num > 0 ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleSpecificCount", " (specific entries selected: {COUNT})", ("COUNT", num.ToString())) : ""));
 			list.Add(new InquiryElement(roleCategoryKey, text, null));
 		}
 		if (when.IdentityIds.Count > 0)
 		{
-			list.Add(new InquiryElement("__clear_all_specific__", "清空全部细分身份", null));
+			list.Add(new InquiryElement("__clear_all_specific__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleClearAllSpecific", "Clear all specific identities"), null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("身份条件", "先选一个大类，再进入该类选择具体NPC。整类勾选继续保留；细分选择会在当前大类内搜索和分页。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleEditorTitle", "Identity conditions"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleEditorDescription", "Select a category first, then choose specific NPCs in it. Whole-category selection remains supported; specific entries can be searched and paged within the category."), list, isExitShown: true, 0, 1, KnowledgeUiTexts.Enter, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -10642,7 +10105,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			select h).ToList();
 		if (list2.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到可选NPC。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoNpc", "No selectable NPCs found.")));
 			onReturn();
 			return;
 		}
@@ -10657,7 +10120,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text2 = "";
 			try
 			{
-				text2 = (item.IsLord ? "领主" : (item.IsNotable ? "要人" : ((!item.IsWanderer) ? item.Occupation.ToString() : "流浪者")));
+				text2 = (item.IsLord ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleLord", "Lord") : (item.IsNotable ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleNotable", "Notable") : ((!item.IsWanderer) ? KnowledgeUiTexts.Occupation(item.Occupation.ToString()) : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_RoleWanderer", "Wanderer"))));
 			}
 			catch
 			{
@@ -10665,7 +10128,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			list3.Add(new InquiryElement(item.StringId, text + " (" + text2 + ", " + item.StringId + ")", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择NPC", "可多选，确认后加入列表。", list3, isExitShown: true, 0, list3.Count, "添加", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNpcTitle", "Select NPCs"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerMultiDescription", "Select multiple entries; confirm to add them to the list."), list3, isExitShown: true, 0, list3.Count, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerAdd", "Add"), KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected != null)
 			{
@@ -10722,7 +10185,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			select c).ToList();
 		if (list2.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到可选文化。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoCulture", "No selectable cultures found.")));
 			onReturn();
 			return;
 		}
@@ -10736,7 +10199,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			list3.Add(new InquiryElement(item2.StringId.ToLower(), text + " (" + item2.StringId + ")", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择文化", "可多选，确认后加入列表。", list3, isExitShown: true, 0, list3.Count, "添加", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerCultureTitle", "Select culture"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerMultiDescription", "Select multiple entries; confirm to add them to the list."), list3, isExitShown: true, 0, list3.Count, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerAdd", "Add"), KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected != null)
 			{
@@ -10789,7 +10252,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			select f).ToList();
 		if (list2.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到可选势力。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoFaction", "No selectable factions found.")));
 			onReturn();
 			return;
 		}
@@ -10801,10 +10264,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				text = item.StringId;
 			}
-			string text2 = (item.IsKingdomFaction ? "王国" : "势力");
+			string text2 = (item.IsKingdomFaction ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerFactionTypeKingdom", "Kingdom") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerFactionTypeFaction", "Faction"));
 			list3.Add(new InquiryElement(item.StringId.ToLower(), text + " (" + text2 + ", " + item.StringId + ")", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择势力/王国", "可多选，确认后加入列表。", list3, isExitShown: true, 0, list3.Count, "添加", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerFactionTitle", "Select faction/kingdom"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerMultiDescription", "Select multiple entries; confirm to add them to the list."), list3, isExitShown: true, 0, list3.Count, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerAdd", "Add"), KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected != null)
 			{
@@ -10875,7 +10338,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		if (list2.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? "未找到可选定居点。" : ("未找到匹配的定居点：" + text)));
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoSettlement", "No selectable settlements found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement")), ("QUERY", text))));
 			onReturn();
 			return;
 		}
@@ -10888,18 +10351,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * pageSize;
 		List<Settlement> list3 = list2.Skip(num2).Take(pageSize).ToList();
 		List<InquiryElement> list4 = new List<InquiryElement>();
-		list4.Add(new InquiryElement("__search__", "搜索定居点", null));
+		list4.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement"))), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list4.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list4.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list4.Add(new InquiryElement("__prev__", "上一页", null));
+			list4.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list4.Add(new InquiryElement("__next__", "下一页", null));
+			list4.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		list4.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (Settlement item2 in list3)
@@ -10909,15 +10372,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				text4 = item2.StringId;
 			}
-			string text5 = (item2.IsVillage ? "村庄" : (item2.IsCastle ? "城堡" : (item2.IsTown ? "城镇" : "定居点")));
+			string text5 = (item2.IsVillage ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeVillage", "Village") : (item2.IsCastle ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeCastle", "Castle") : (item2.IsTown ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeTown", "Town") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTypeSettlement", "Settlement"))));
 			list4.Add(new InquiryElement(item2.StringId.ToLowerInvariant(), text4 + " (" + text5 + ", " + item2.StringId + ")", null));
 		}
-		string text6 = $"共 {list2.Count} 个定居点，第 {page + 1}/{num} 页。选择一个后会加入列表。";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text6 = text6 + "\n当前搜索：" + TrimPreview(text, 60);
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择定居点", text6, list4, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text6 = KnowledgeUiTexts.PickerPageSummary(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKindSettlements", "settlements"), list2.Count, page + 1, num, TrimPreview(text, 60), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSelectOneSuffix", " Select one to add it to the list."));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTitle", "Select settlement"), text6, list4, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -10929,7 +10388,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (text7)
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索定居点", "输入定居点名称或 SettlementId：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement")), ("ID", "SettlementId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenSettlementIdPickerPaged(list, onReturn, 0, input);
 					}, delegate
@@ -11094,7 +10553,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		list = list.OrderBy((Kingdom k) => (k.Name != null) ? k.Name.ToString() : "", StringComparer.OrdinalIgnoreCase).ThenBy((Kingdom k) => k.StringId, StringComparer.OrdinalIgnoreCase).ToList();
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到可选王国。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoKingdom", "No selectable kingdoms found.")));
 			onCancel();
 			return;
 		}
@@ -11107,9 +10566,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				text = item2.StringId;
 			}
 			string text2 = (item2.Leader?.Name?.ToString() ?? "").Trim();
-			list2.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text2) ? (text + " (" + item2.StringId + ")") : (text + "（现任领袖：" + text2 + "）"), null));
+			list2.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text2) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeader", "{NAME} ({ID})", ("NAME", text), ("ID", item2.StringId)) : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeaderNamed", "{NAME} ({LABEL}: {LEADER})", ("NAME", text), ("LABEL", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerCurrentLeader", "current leader")), ("LEADER", text2)), null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择王国", "选择一个王国作为映射目标。", list2, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKingdomTitle", "Select kingdom"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKingdomDescription", "Select one kingdom as the mapping target."), list2, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11200,7 +10659,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? "未找到可选英雄。" : ("未找到匹配的英雄：" + text)));
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoHero", "No selectable heroes found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Hero", "Hero")), ("QUERY", text))));
 			onCancel();
 			return;
 		}
@@ -11213,18 +10672,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * pageSize;
 		List<Hero> list2 = list.Skip(num2).Take(pageSize).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索英雄", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Hero", "Hero"))), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		list3.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (Hero item in list2)
@@ -11236,12 +10695,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			list3.Add(new InquiryElement(item.StringId, text4 + " (" + item.StringId + ")", null));
 		}
-		string text5 = $"共 {list.Count} 个英雄，第 {page + 1}/{num} 页。";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text5 = text5 + "\n当前搜索：" + TrimPreview(text, 60);
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择英雄", text5, list3, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text5 = KnowledgeUiTexts.PickerPageSummary(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKindHeroes", "heroes"), list.Count, page + 1, num, TrimPreview(text, 60), "");
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerHeroTitle", "Select hero"), text5, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11253,7 +10708,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (text6)
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索英雄", "输入英雄名称或 HeroId：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Hero", "Hero"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Hero", "Hero")), ("ID", "HeroId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenHeroPickerSinglePaged(onPickTargetId, onCancel, 0, input);
 					}, delegate
@@ -11348,7 +10803,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? "未找到可选家族。" : ("未找到匹配的家族：" + text)));
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoClan", "No selectable clans found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Clan", "Clan")), ("QUERY", text))));
 			onCancel();
 			return;
 		}
@@ -11361,18 +10816,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * pageSize;
 		List<Clan> list2 = list.Skip(num2).Take(pageSize).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索家族", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Clan", "Clan"))), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		list3.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (Clan item2 in list2)
@@ -11383,14 +10838,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				text4 = item2.StringId;
 			}
 			string text5 = (item2.Leader?.Name?.ToString() ?? "").Trim();
-			list3.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text5) ? (text4 + " (" + item2.StringId + ")") : (text4 + "（当前族长：" + text5 + "）"), null));
+			list3.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text5) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeader", "{NAME} ({ID})", ("NAME", text4), ("ID", item2.StringId)) : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeaderNamed", "{NAME} ({LABEL}: {LEADER})", ("NAME", text4), ("LABEL", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerCurrentClanLeader", "current clan leader")), ("LEADER", text5)), null));
 		}
-		string text6 = $"共 {list.Count} 个家族，第 {page + 1}/{num} 页。";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text6 = text6 + "\n当前搜索：" + TrimPreview(text, 60);
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择家族", text6, list3, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text6 = KnowledgeUiTexts.PickerPageSummary(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKindClans", "clans"), list.Count, page + 1, num, TrimPreview(text, 60), "");
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerClanTitle", "Select clan"), text6, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11402,7 +10853,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (text7)
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索家族", "输入家族名称或 ClanId：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Clan", "Clan"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Clan", "Clan")), ("ID", "ClanId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenClanPickerSinglePaged(onPickTargetId, onCancel, 0, input);
 					}, delegate
@@ -11494,7 +10945,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? "未找到可选定居点。" : ("未找到匹配的定居点：" + text)));
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerNoSettlement", "No selectable settlements found.") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchNoMatch", "No matching {KIND} found: {QUERY}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement")), ("QUERY", text))));
 			onCancel();
 			return;
 		}
@@ -11507,18 +10958,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		int num2 = page * pageSize;
 		List<Settlement> list2 = list.Skip(num2).Take(pageSize).ToList();
 		List<InquiryElement> list3 = new List<InquiryElement>();
-		list3.Add(new InquiryElement("__search__", "搜索定居点", null));
+		list3.Add(new InquiryElement("__search__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement"))), null));
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+			list3.Add(new InquiryElement("__clear__", KnowledgeUiTexts.ClearSearch, null));
 		}
 		if (page > 0)
 		{
-			list3.Add(new InquiryElement("__prev__", "上一页", null));
+			list3.Add(new InquiryElement("__prev__", KnowledgeUiTexts.PreviousPage, null));
 		}
 		if (page + 1 < num)
 		{
-			list3.Add(new InquiryElement("__next__", "下一页", null));
+			list3.Add(new InquiryElement("__next__", KnowledgeUiTexts.NextPage, null));
 		}
 		list3.Add(new InquiryElement("__sep__", "----------------", null));
 		foreach (Settlement item2 in list2)
@@ -11529,14 +10980,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				text4 = item2.StringId;
 			}
 			string text5 = (item2.OwnerClan?.Leader?.Name?.ToString() ?? "").Trim();
-			list3.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text5) ? (text4 + " (" + item2.StringId + ")") : (text4 + "（当前统治者：" + text5 + "）"), null));
+			list3.Add(new InquiryElement(item2.StringId, string.IsNullOrWhiteSpace(text5) ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeader", "{NAME} ({ID})", ("NAME", text4), ("ID", item2.StringId)) : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerEntryWithLeaderNamed", "{NAME} ({LABEL}: {LEADER})", ("NAME", text4), ("LABEL", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerCurrentRuler", "current ruler")), ("LEADER", text5)), null));
 		}
-		string text6 = $"共 {list.Count} 个定居点，第 {page + 1}/{num} 页。";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text6 = text6 + "\n当前搜索：" + TrimPreview(text, 60);
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择定居点", text6, list3, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string text6 = KnowledgeUiTexts.PickerPageSummary(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerKindSettlements", "settlements"), list.Count, page + 1, num, TrimPreview(text, 60), "");
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSettlementTitle", "Select settlement"), text6, list3, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11548,7 +10995,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (text7)
 				{
 				case "__search__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("搜索定居点", "输入定居点名称或 SettlementId：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchTitle", "Search {KIND}", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement"))), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}:", ("KIND", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement")), ("ID", "SettlementId")), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Search, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						OpenSettlementPickerSinglePaged(onPickTargetId, onCancel, 0, input);
 					}, delegate
@@ -11609,12 +11056,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		List<InquiryElement> list2 = new List<InquiryElement>();
 		if (canPickHero || canPickCulture || canPickKingdom || canPickSettlement)
 		{
-			list2.Add(new InquiryElement("__pick__", "从列表选择", null));
+			list2.Add(new InquiryElement("__pick__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerStringListPick", "Select from list"), null));
 		}
-		list2.Add(new InquiryElement("__add__", "手动输入（一次一个）", null));
+		list2.Add(new InquiryElement("__add__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerStringListAdd", "Enter manually (one at a time)"), null));
 		if (list.Count > 0)
 		{
-			list2.Add(new InquiryElement("__remove__", "删除", null));
+			list2.Add(new InquiryElement("__remove__", KnowledgeUiTexts.Delete, null));
 		}
 		foreach (string item in list)
 		{
@@ -11623,7 +11070,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list2.Add(new InquiryElement("__v__" + item, item, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, "一次输入一个值，确定后加入列表。", list2, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerStringListDescription", "Enter one value at a time; confirm to add it to the list."), list2, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11663,7 +11110,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					break;
 				}
 				case "__add__":
-					InformationManager.ShowTextInquiry(new TextInquiryData(title, "请输入一个值：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(title, KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerStringListInputPrompt", "Enter a value:"), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string v = (input ?? "").Trim();
 						if (!string.IsNullOrEmpty(v) && !list.Any((string x) => string.Equals(x, v, StringComparison.OrdinalIgnoreCase)))
@@ -11712,7 +11159,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list2.Add(new InquiryElement(item, item, null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除 - " + title, "选择要删除的项：", list2, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.StringListRemoveTitle(title), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_PickerStringListRemovePrompt", "Select an item to delete:"), list2, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11753,21 +11200,21 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			when.SkillMin = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__pick__", "从列表选择技能", null));
-		list.Add(new InquiryElement("__add__", "手动输入 SkillId", null));
+		list.Add(new InquiryElement("__pick__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillPicker", "Select skill from list"), null));
+		list.Add(new InquiryElement("__add__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillManual", "Enter SkillId manually"), null));
 		if (when.SkillMin.Count > 0)
 		{
-			list.Add(new InquiryElement("__remove__", "删除技能条件", null));
+			list.Add(new InquiryElement("__remove__", KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillRemove", "Delete skill condition"), null));
 		}
 		foreach (KeyValuePair<string, int> item in when.SkillMin.OrderBy((KeyValuePair<string, int> k) => k.Key, StringComparer.OrdinalIgnoreCase))
 		{
 			string text = (item.Key ?? "").Trim();
 			if (!string.IsNullOrEmpty(text))
 			{
-				list.Add(new InquiryElement(text, text + " >= " + item.Value, null));
+				list.Add(new InquiryElement(text, KnowledgeUiTexts.SkillItem(text, item.Value), null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("技能等级条件", "配置 SkillId >= 数值。数值=0 表示无门槛（Skill>=0）；数值<0 表示移除该技能条件。", list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillTitle", "Skill level conditions"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillDescription", "Configure SkillId >= value. A value of 0 means no threshold (Skill>=0); a negative value removes the skill condition."), list, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11791,7 +11238,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					});
 					break;
 				case "__add__":
-					InformationManager.ShowTextInquiry(new TextInquiryData("手动输入 SkillId", "请输入 SkillId：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillManualTitle", "Enter SkillId manually"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillPrompt", "Enter SkillId:"), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 					{
 						string text3 = (input ?? "").Trim();
 						if (string.IsNullOrEmpty(text3))
@@ -11862,10 +11309,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			string text = (item.Key ?? "").Trim();
 			if (!string.IsNullOrEmpty(text))
 			{
-				list.Add(new InquiryElement(text, text + " >= " + item.Value, null));
+				list.Add(new InquiryElement(text, KnowledgeUiTexts.SkillItem(text, item.Value), null));
 			}
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除技能条件", "选择要删除的项：", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillRemoveTitle", "Delete skill condition"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillRemovePrompt", "Select an item to delete:"), list, isExitShown: true, 0, 1, KnowledgeUiTexts.Delete, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -11928,12 +11375,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			num = 0;
 		}
-		InformationManager.ShowTextInquiry(new TextInquiryData("设置技能下限", "请输入最低技能等级（整数）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+		InformationManager.ShowTextInquiry(new TextInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillSetTitle", "Set skill minimum"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillSetPrompt", "Enter minimum skill level (integer):"), isAffirmativeOptionShown: true, isNegativeOptionShown: true, KnowledgeUiTexts.Confirm, KnowledgeUiTexts.Cancel, delegate(string input)
 		{
 			string s = (input ?? "").Trim();
 			if (!int.TryParse(s, out var result))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("请输入有效整数。"));
+				InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.InvalidInteger));
 				onReturn();
 			}
 			else
@@ -11993,7 +11440,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		list = list.OrderBy((SkillObject s) => (s.Name != null) ? s.Name.ToString() : "", StringComparer.OrdinalIgnoreCase).ThenBy((SkillObject s) => s.StringId, StringComparer.OrdinalIgnoreCase).ToList();
 		if (list.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到可选技能。"));
+			InformationManager.DisplayMessage(new InformationMessage(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillNoSkills", "No selectable skills found.")));
 			onReturn();
 			return;
 		}
@@ -12007,7 +11454,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			list2.Add(new InquiryElement(item.StringId, text + " (" + item.StringId + ")", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择技能", "选择一个技能后，继续设置最低等级。", list2, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillPickerTitle", "Select skill"), KnowledgeUiTexts.Ui("AF_KNOWLEDGE_SkillPickerDescription", "Select a skill, then set its minimum level."), list2, isExitShown: true, 0, 1, KnowledgeUiTexts.Select, KnowledgeUiTexts.Back, delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -12033,84 +11480,61 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		MBInformationManager.ShowMultiSelectionInquiry(data);
 	}
 
+	private static string BuildWhenPromptLabel(LoreWhen when)
+	{
+		if (when == null) return KnowledgePromptTexts.Get("WhenGeneral", "General");
+		List<string> categories = new List<string>();
+		if (when.Cultures != null && when.Cultures.Count > 0) categories.Add(KnowledgePromptTexts.Get("WhenCulture", "Culture"));
+		if (when.KingdomIds != null && when.KingdomIds.Count > 0) categories.Add(KnowledgePromptTexts.Get("WhenKingdom", "Faction"));
+		if (when.SettlementIds != null && when.SettlementIds.Count > 0) categories.Add(KnowledgePromptTexts.Get("WhenSettlement", "Settlement"));
+		if (when.Roles != null && when.Roles.Count > 0) categories.Add(KnowledgePromptTexts.Get("WhenRole", "Identity"));
+		if ((when.HeroIds != null && when.HeroIds.Count > 0) || (when.IdentityIds != null && when.IdentityIds.Count > 0)) categories.Add(KnowledgePromptTexts.Get("WhenSpecificIdentity", "Specific identity"));
+		if (when.IsFemale.HasValue) categories.Add(KnowledgePromptTexts.Get("WhenGender", "Gender"));
+		if (when.IsClanLeader.HasValue) categories.Add(KnowledgePromptTexts.Get("WhenClanLeader", "Clan leader"));
+		if (when.SkillMin != null && when.SkillMin.Count > 0) categories.Add(KnowledgePromptTexts.Get("WhenSkill", "Skill"));
+		return categories.Count == 0 ? KnowledgePromptTexts.Get("WhenGeneral", "General")
+			: KnowledgePromptTexts.Format("WhenSpecific", "Specific ({CATEGORIES})", ("CATEGORIES", string.Join("+", categories)));
+	}
+
 	private static string BuildWhenLabel(LoreWhen when)
 	{
 		if (when == null)
 		{
-			return "通用";
+			return KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenGeneral", "General");
 		}
 		List<string> list = new List<string>();
-		if (when.Cultures != null && when.Cultures.Count > 0)
-		{
-			list.Add("文化");
-		}
-		if (when.KingdomIds != null && when.KingdomIds.Count > 0)
-		{
-			list.Add("势力");
-		}
-		if (when.SettlementIds != null && when.SettlementIds.Count > 0)
-		{
-			list.Add("定居点");
-		}
-		if (when.Roles != null && when.Roles.Count > 0)
-		{
-			list.Add("身份");
-		}
-		if ((when.HeroIds != null && when.HeroIds.Count > 0) || (when.IdentityIds != null && when.IdentityIds.Count > 0))
-		{
-			list.Add("细分身份");
-		}
-		if (when.IsFemale.HasValue)
-		{
-			list.Add("性别");
-		}
-		if (when.IsClanLeader.HasValue)
-		{
-			list.Add("族长");
-		}
-		if (when.SkillMin != null && when.SkillMin.Count > 0)
-		{
-			list.Add("技能");
-		}
-		if (list.Count == 0)
-		{
-			return "通用";
-		}
-		return "专属(" + string.Join("+", list) + ")";
+		if (when.Cultures != null && when.Cultures.Count > 0) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenCultureLabel", "Culture"));
+		if (when.KingdomIds != null && when.KingdomIds.Count > 0) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenKingdomLabel", "Faction"));
+		if (when.SettlementIds != null && when.SettlementIds.Count > 0) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSettlementLabel", "Settlement"));
+		if (when.Roles != null && when.Roles.Count > 0) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenRoleLabel", "Identity"));
+		if ((when.HeroIds != null && when.HeroIds.Count > 0) || (when.IdentityIds != null && when.IdentityIds.Count > 0)) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSpecificIdentityLabel", "Specific identity"));
+		if (when.IsFemale.HasValue) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenGenderLabel", "Gender"));
+		if (when.IsClanLeader.HasValue) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenClanLeaderLabel", "Clan leader"));
+		if (when.SkillMin != null && when.SkillMin.Count > 0) list.Add(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenSkillLabel", "Skill"));
+		if (list.Count == 0) return KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenGeneral", "General");
+		return KnowledgeUiTexts.WhenLabelExclusive(string.Join("+", list));
 	}
 
 	private static string BuildWhenDetail(LoreWhen when)
 	{
-		if (when == null)
-		{
-			return "当前：通用（无条件）";
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("当前条件：");
-		stringBuilder.AppendLine("CultureId: " + ListOrEmpty(when.Cultures));
-		stringBuilder.AppendLine("KingdomId: " + ListOrEmpty(when.KingdomIds));
-		stringBuilder.AppendLine("SettlementId: " + ListOrEmpty(when.SettlementIds));
-		stringBuilder.AppendLine("Roles: " + ListOrEmpty(FormatRoleListForDisplay(when.Roles)));
-		stringBuilder.AppendLine("细分身份: " + ListOrEmpty(FormatEffectiveIdentityListForDisplay(when)));
-		string text = "（空）";
+		if (when == null) return KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenDetailGeneral", "Current: general (no conditions)");
+		string skills = KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenEmpty", "(empty)");
 		try
 		{
 			if (when.SkillMin != null && when.SkillMin.Count > 0)
 			{
-				text = string.Join(", ", from kv in when.SkillMin.Where((KeyValuePair<string, int> kv) => !string.IsNullOrWhiteSpace(kv.Key) && kv.Value > 0).OrderBy((KeyValuePair<string, int> kv) => kv.Key, StringComparer.OrdinalIgnoreCase)
+				skills = string.Join(", ", from kv in when.SkillMin.Where((KeyValuePair<string, int> kv) => !string.IsNullOrWhiteSpace(kv.Key) && kv.Value > 0).OrderBy((KeyValuePair<string, int> kv) => kv.Key, StringComparer.OrdinalIgnoreCase)
 					select (kv.Key ?? "").Trim() + ">=" + kv.Value);
 			}
 		}
 		catch
 		{
-			text = "（空）";
+			skills = KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenEmpty", "(empty)");
 		}
-		stringBuilder.AppendLine("SkillMin: " + text);
-		stringBuilder.AppendLine("Gender: " + ((!when.IsFemale.HasValue) ? "不限" : (when.IsFemale.Value ? "女" : "男")));
-		stringBuilder.AppendLine("ClanLeader: " + ((!when.IsClanLeader.HasValue) ? "不限" : (when.IsClanLeader.Value ? "是" : "否")));
-		return stringBuilder.ToString();
+		string gender = !when.IsFemale.HasValue ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenAny", "Any") : (when.IsFemale.Value ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenFemale", "Female") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenMale", "Male"));
+		string clanLeader = !when.IsClanLeader.HasValue ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenAny", "Any") : (when.IsClanLeader.Value ? KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenYes", "Yes") : KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenNo", "No"));
+		return KnowledgeUiTexts.WhenDetail(ListOrEmpty(when.Cultures), ListOrEmpty(when.KingdomIds), ListOrEmpty(when.SettlementIds), ListOrEmpty(FormatRoleListForDisplay(when.Roles)), ListOrEmpty(FormatEffectiveIdentityListForDisplay(when)), skills, gender, clanLeader);
 	}
-
 	private static List<string> FormatRoleListForDisplay(List<string> list)
 	{
 		List<string> result = new List<string>();
@@ -12202,7 +11626,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 	{
 		if (list == null || list.Count == 0)
 		{
-			return "（空）";
+			return KnowledgeUiTexts.Ui("AF_KNOWLEDGE_WhenEmpty", "(empty)");
 		}
 		return string.Join(", ", list.Where((string x) => !string.IsNullOrWhiteSpace(x)));
 	}

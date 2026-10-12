@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Celtigar",
+  "Keywords": [
+    "Celtigar",
+    "House Celtigar"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Celtigar family is based on Crab Island. It is a royal family in the Narrow Sea that retains ancient Valyrian blood. The family emblem uses a red crab on a white background as its symbol. Compared to the Targaryen and Velaryon, Celtigar's reputation is less tied to dragons or the Great Voyage and more to island lands, fishing grounds, taxes, ships, and long-term proximity to Dragonstone's seat of power. A Valyrian steel battle ax passed down through the family tradition still carries ancient weight in the politics of the court and the coast. Crab Island is not big, but it is located between the Blackwater Bay and the Narrow Sea. For Cetiga, wealth not only comes from the sea, but it must also be guarded by guard, port and prudent marriage alliance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The royal nobles regard Celtigar as an ancient Valyrian family that does not live in the shadow of the dragon. The Red Crab is more low-key than the Three-Headed Dragon, but Crab Island's taxes and sea routes are enough to give the family a position every time Dragonstone power changes. Living long sometimes depends not on breathing fire, but on carapace."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crab Island residents know Cetiga from its tidal flats, fishing, port taxes and cruise ships. The Valyrian battle ax belongs to hall legends, and the lives of ordinary people are more determined by wind, waves and harvests. If the lord can keep the pirates away and the weights fair, the red crab will be like a hard shell protecting the soft flesh."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Celtigar Entry Celtigar The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Celtigar Entry Celtigar Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Celtigar Entry Celtigar The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Celtigar Entry Celtigar They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Celtigar: Entry Celtigar"
+  ]
+}

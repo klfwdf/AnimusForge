@@ -30,14 +30,15 @@ internal static class CoupTroopSelection
     internal static PartyScreenLogicInitializationData CreateInitializationData(PartyBase mainParty, TroopRoster available,
         int limit, string title, Action<TroopRoster> completed, Action cancelled, int minimum = 1)
     {
-        if (mainParty == null || mainParty.ItemRoster == null) throw new ArgumentException("选兵需要有效的玩家部队。", nameof(mainParty));
+        if (mainParty == null || mainParty.ItemRoster == null) throw new ArgumentException(CoupUiText.SelectionPartyRequired, nameof(mainParty));
         if (available == null || ReferenceEquals(available, mainParty.MemberRoster) || ReferenceEquals(available, mainParty.PrisonRoster))
-            throw new ArgumentException("选兵必须使用独立临时名册。", nameof(available));
+            throw new ArgumentException(CoupUiText.SelectionDetachedRosterRequired, nameof(available));
         if (limit < 1) throw new ArgumentOutOfRangeException(nameof(limit));
         if (minimum < 1 || minimum > limit) throw new ArgumentOutOfRangeException(nameof(minimum));
         if (completed == null) throw new ArgumentNullException(nameof(completed));
         if (cancelled == null) throw new ArgumentNullException(nameof(cancelled));
         var selected = TroopRoster.CreateDummyTroopRoster();
+        TextObject selectionCountHint = CoupUiText.SelectionCountHint(minimum, limit);
         return new PartyScreenLogicInitializationData
         {
             LeftOwnerParty = null,
@@ -54,14 +55,14 @@ internal static class CoupTroopSelection
             RightPartyMembersSizeLimit = limit,
             LeftPartyPrisonersSizeLimit = 0,
             RightPartyPrisonersSizeLimit = 0,
-            LeftPartyName = new TextObject("可选士兵"),
-            RightPartyName = new TextObject(title + "（" + minimum + " 至 " + limit + " 人）"),
+            LeftPartyName = CoupUiText.AvailableSoldiers,
+            RightPartyName = CoupUiText.SelectionPartyName(title, minimum, limit),
             Header = new TextObject(title),
             TroopTransferableDelegate = (character, type, side, owner) => character != null && !character.IsHero,
             PartyPresentationDoneButtonDelegate = (left, lp, right, rp, taken, released, forced, leftParty, rightParty) => true,
             PartyPresentationDoneButtonConditionDelegate = (left, lp, right, rp, ll, rl) =>
                 Tuple.Create(right.TotalManCount >= minimum && right.TotalManCount <= limit,
-                    new TextObject("请选择 " + minimum + " 至 " + limit + " 名士兵。")),
+                    selectionCountHint),
             PartyScreenClosedDelegate = (leftParty, left, lp, rightParty, right, rp, fromCancel) =>
             {
                 if (fromCancel) cancelled();

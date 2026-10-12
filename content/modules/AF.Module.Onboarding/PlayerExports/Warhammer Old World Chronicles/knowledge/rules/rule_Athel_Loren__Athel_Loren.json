@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Athel_Loren",
+  "Keywords": [
+    "Athel Loren (Athel Loren)",
+    "forest soul",
+    "Time flow nesting",
+    "Four major areas",
+    "verdant woodland",
+    "magic vortex",
+    "wild woodland",
+    "twilight glade"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Athel Loren is a living, sentient magical forest located between Bretonnia and the Imperial borders. Trees move, roads disappear behind pedestrians, and time passes at completely different speeds in different areas of the forest. The Wood Elves' woodland court lies deep within this forest, with its majestic halls of living trees and eternal twilight illuminated by magic. Anyone who enters Athel Loren feels the intense unease of being stared at by countless eyes, as if the entire forest is peering into your soul."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Athel Loren is no ordinary forest—it's a mother, a home, a god, and a weapon. Every Asrai has been connected to the soul of this forest since birth. We can hear the warning of the forest in the whisper of tree roots and smell the scent of intruders in the wind. The Royal Palace in the Forest - our core holy place - is a majestic palace naturally grown from thousand-year-old trees. It is more magnificent than any dwarf stone hall or human castle because it is a living building. The flow of time in Athel Loren is not linear: a hundred years deep in the forest may be equivalent to only one year outside, or vice versa. This weirdness of time makes it impossible for outsiders to truly understand our rhythms. There are also forest spirits - those spirit entities that dwell in ancient trees, streams and stone formations - they are older than our species, primordial consciousnesses that have been in this land before the elves or even before the arrival of the ancient sages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Athel Loren is the Old World's most formidable natural stronghold. From a military perspective, the forest provides an almost perfect defensive barrier: the dense forest blocks sight and long-range firepower, the rugged terrain severely hinders large-scale troop movement, and the magical time-warp effect can trap an army in the forest for months while supplies are depleted in days. The recorded cases of military forces trying to penetrate deep into Athel Loren all ended in disaster - the most famous one was that a certain Bretonnian king led his army into the forest and was not heard from again. His descendants found the bones of those knights at the edge of the forest hundreds of years later. Their armor was as new as ever, as if they had only been dead for a few days. Any trade or military routes through Athel Loren must strictly follow the outer reaches of the forest—the elves occasionally allow designated passages to remain open, but these privileges may be withdrawn at any time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The magical geography of Athel Loren is one of the most complex supernatural phenomena in the Old World. The forest is one of several ancient magical vortexes - similar to the Great Vortex of Ulthuan but on a smaller scale - natural confluences of magic. This concentration of magic sustains the 'consciousness field' of the forest, allowing trees, rocks, and even the air itself to possess some degree of sentience and intention. The time distortion effect of the forest is theoretically called 'time flow nesting', and it is speculated that it is due to the formation of an unstable resonance area between the extremely high concentration of style Helan, the life style, and Urgu, the shadow wind. The different regions of Athel Loren display vastly different microclimates and ecosystems, most notably divided into four realms: the Verdant Glades (a gentle and relatively safe center), the Wild Glades (a primitive and dangerous outskirts), the Twilight Glades (mysterious areas shrouded in semi-permanent twilight), and the Shadowglade, the darkest and most sinister region of the forest, said to be tainted by some ancient corruption that even the wood elves themselves shun."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Athel Loren is an unmistakable presence to those women who hear her voice. Our mother forest is not a silent background—she communicates with us with the weight of her pollen, the sweetness of her sap, the tightness of her vines, and the tones produced by the nightly wind as it moves through a particular canopy. I have guarded the edge of Shadowglade for four hundred years, an area tainted by ancient corruption that smells not only of death but of something even more disturbing - the trauma of memory. The forest replays the final moments of a tragedy thousands of years ago: if you enter the area at a certain moonlight angle, you'll see translucent dryads screaming silently, their bodies twisted but their voices muffled by an ancient curse. Ariel forbids anyone from going deep into the Shadowglade, not because she is afraid that we will be corrupted, but because she does not want more Asrai to see the harm our Forest Mother has suffered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As one of the Twelve Chiefs of the Woodland Council, one of my important responsibilities is to maintain the stability of Athel Loren's inner territorial boundaries. Outsiders think that the forest is a unified area, but in fact there are deep tensions between the four areas that need to be constantly reconciled. The spirits of the Verdant Glades are gentle but fragile—the aftermath of a single Chaos invasion can cause the entire Verdant Zone to wither and turn discolored. The spirits of the Wildwood are warlike and hungry, constantly seeking to expand their territory, sometimes even consuming the edges of the verdant woodlands. The Council must hold a 'Boundary Tree Tour' every century - all twelve clan chiefs, accompanied by their respective spirits, walk along the borders of the four realms, reaffirming and strengthening each border with roots and spells. If a realm tree tour is interrupted—such as by an external war—the forest may undergo unpredictable territorial shifts on its own over hundreds of years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I've traveled through many dangerous wildernesses across the Old World, but nowhere is as eerie as Athel Loren. Once I was hunting on the Empire side at the foot of the Gray Mountains. Chasing a wounded deer, I unexpectedly entered the outskirts of the forest - only a few hundred steps away - and when I turned back, the hunting trail I came from had disappeared. It's not covered by vegetation, but it doesn't exist at all, as if there has never been that road. I was stuck on the edge of the forest for two full days, surviving on wild mushrooms, until a stone-faced Wood Elf Glade Guard appeared ten paces away—he didn't speak, just pointed in one direction with his bow, and disappeared when I blinked. I walked in that direction for less than half an hour and returned to Imperial Avenue. I haven't hunted near Athel Loren since."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a mining and resource exploration perspective, Athel Loren is the largest unexplored resource forbidden land in the Old World. Geological surveys have shown that beneath this forest there is a high probability that there are Geromir veins extending from the Dwarven Mountains and a large number of gemstone deposits, but any attempt to apply for exploration rights is tantamount to a suicide statement. The Imperial Mining Guild has an unofficial blacklist - the 'Untouchable Zones' - and Athel Loren is at the top of the list. I know that a steel tycoon in Nunn once tried to bribe the Bretonnian border lord to obtain a piece of forest land that was not in the forest but close to it for secret drilling. As a result, not only was the drilling equipment all swallowed up by vines on the first night, but his own manor was surrounded by dense thorns after three nights, and it took a month to be cleared. This was taken as a very gentle warning - the wood elf was clearly in a good mood."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Athel Loren - the enchanted forest between Bretonnia and the Empire, home of the wood elves",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Athel Loren forest soul time stream nesting"
+  ]
+}

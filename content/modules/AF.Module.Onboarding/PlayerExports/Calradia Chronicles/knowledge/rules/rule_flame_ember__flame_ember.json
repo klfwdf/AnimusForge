@@ -1,0 +1,119 @@
+{
+  "Id": "rule_flame_ember",
+  "Keywords": [
+    "Fire embers"
+  ],
+  "RagShortTexts": [
+    "The Embers of Fire are the extra-legal order of the Empire, controlling usury and mediating disputes."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Embers of fire? When we collect protection fees, we call them Flame Embers. When we don't collect protection fees, we meet the neighbors in the street next door. The old cripple who sells clay pots in the North District belongs to them. He usually looks pitiful when he is limping on crutches. After closing the stall, he squatted in the alley and his legs stopped lame. He took apart the crutches and took out a dagger inside. There are two types of money we collect from Flame Ember: merchants pay monthly, which is called incense money; farmers pay quarterly, which is called tribute grain. If you pay, no one will open your stall. If you don't, drunks will come and cause trouble every now and then. It's useless to report it to the official. There are also their people on the official mission. They will come around and say they didn't see it and then leave. But then again, they're not the same as the Secret Hands. The hands of secrets are ruthless, killing people with sap and burying them casually. After all, Flame Ember is reasonable. It won't bother you after you pay the money, and it will give you grace in bad years. Moreover, they worshiped Darusus for real. Some people have seen them worshiping the stars and the moon under the city foundation, mumbling some unintelligible words, saying that Darusus would come back. Who knows, anyway, after each encirclement and suppression campaign, two years later they emerged from the cracks in the ground. Maybe the person they were worshiping was indeed not dead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The embers of fire are a scabies disease of the empire, not of the intimate. The Senate discusses once every few years whether to completely eradicate it, but every time it fails to make a decision - it's not that it can't be eradicated, it's that the gray space left after the eradication is more troublesome. The Embers control loan sharking, sell stolen goods, and mediate disputes in the town, forming an extra-legal order. Without this set of order, public security in Xiacheng District collapsed in three days. Moreover, they also took on jobs that were inconvenient for the court - suppressing heretical missionaries and plundering competitors' trade routes. Let the flames and embers do these things, which is cleaner than dispatching the regular army. They themselves probably knew why the imperial court was always unable to exterminate them. It was not because they knew how to hide, but because someone needed them alive. The governor of the border province privately said that their field combat capabilities were not worth mentioning and they could only be used as cannon fodder in positional battles, but they did have a way of controlling the troops at the township level. As for the faith of Darusus, it is just a layer of gold foil they put on their faces. If they peel off the gold foil, they are still gangsters. But this layer of gold foil makes the Flame Embers different from the Secret Hands - they have sutras to recite and a master to wait for, which means they have a bottom line. The secret hand has no bottom line. It is easy to use but can easily backfire. Flame Embers has a bottom line and is an extra-legal method that can be used."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "embers_of_flame"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "They say we collect protection money in the towns, extort money in the countryside, and serve as cannon fodder in the fields. They said we were gangsters. We are not a gang, we are a union of the forgotten. If you set up a stall on the street and the urban management doesn't care about you, we will. When your son dies, no one will collect your body for you. We will collect it for you. We can do what the Secret Hands can do, and we can do what they can't. What we kneel down under the stars and moon is not the ledger, but Darusus - we only bring back our emperor to heaven. When the golden age arrives, it will not belong to us, but to the next generation. We are the generation waiting for dawn. But to be honest, I followed my father to join the party when I was seven years old. My temples are now white and the sun has not come yet. The sutra was still being recited, and the machete became heavier every time it was recited. Some of today's young people no longer believe in it. They join meetings just to make a living, and their mouths are distracted when they recite sutras. The elder said that Darussus is testing us. It has been testing us for a century. Is it time to finish the test?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Embers of Fire are the parasitic species in the cracks of Imperial society: the Secret Hand plus the Millennium Cult. No other organization on the continent mixes robbery and eschatology like they do - extorting merchants while reciting the Darusus. Their military value is not high and they can only be used as consumables in positional battles, but the street fighting capabilities of town gangs are worth noting. When hiring them to fight, they must be placed in the right position. If placed on the front line of the field, they will melt quickly. However, they can come in handy during the street fighting stage after attacking the city. From a geographical perspective, their network of villages and towns in the southern part of the empire has intelligence and value for selling stolen goods. When we are operating on the borders of the empire, we occasionally use them to transfer contraband - called incense channels. They take a lot of money but don't leak the secrets. The Secret Hands also do this business but are not as reliable as they are because the Secret Hands have no scriptures governing them. This sentence can probably sum up the entirety of Ember of Fire: The self-positioning of the Millennium Sect is their only credit guarantee in this gray industry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Embers of fire? The gangs in the empire were mentioned by businessmen. They worshiped an emperor who had been dead for many years. The emperor did not bury him after his death, but waited for his return. The person who collects protection fees and waits for the emperor sounds like he made it up after drinking too much. He said that they were not good at fighting on the battlefield, but they were good at fighting in the city. It's far away anyway. There was a sailor running a boat next door who said that they came to recruit people and promised to allocate fields if they joined the association. The empire allotted the fields and then took them back. They are still waiting for the emperor to come back to allocate the fields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "hidden_hand"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The embers of the flame are an old acquaintance of ours. Colleagues, but not peers. We do things for profit, while they do things half for profit and half for waiting for the emperor. He was obviously worshiping the emperor, but he stabbed him with a knife while reciting sutras. After reciting the sutra, he knelt down and begged the emperor for forgiveness. Schizophrenia. We don't do business with ostentation. We just beat people to death and leave as soon as we get the money. They follow the rules when accepting jobs: merchants will not rob them if they pay protection fees, farmers will not burn them if they pay tribute grains, and they will give grace on debts during disaster years. These rules won't make big business happen, but they will make their people more stable than us - when the government is encircling and suppressing us, where can we hide? Hidden in the cave at the top of the mountain. Where are they hiding? It was hidden in the cellar in the backyard of the old lame man's house next door, which the government could not imagine. Their foundation is not money, but neighbors. We are not as good at this. But they are not as good as us on the battlefield. Last year, their boss led people to charge into the arrow array in the field and wiped out all the people - street fighting is not field fighting. The rules of the business are different, everyone has his own meal. We don’t chant, but we live longer."
+    }
+  ],
+  "TextMappings": []
+}

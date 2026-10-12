@@ -110,21 +110,21 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		List<EventMaterialReference> winners = list2.Where((EventMaterialReference x) => GetWeeklyPromptBattleMaterialWon(x) == true).ToList();
 		List<EventMaterialReference> losers = list2.Where((EventMaterialReference x) => GetWeeklyPromptBattleMaterialWon(x) == false).ToList();
 		List<string> fields = new List<string>();
-		fields.Add("事件=战场交锋");
+		fields.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0000"));
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			fields.Add("地点=" + text2);
+			fields.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0001") + text2);
 		}
 		if (winners.Count > 0 || losers.Count > 0)
 		{
-			fields.Add("结果=" + BuildWeeklyPromptBattleOutcomeField(winners, losers));
+			fields.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0002") + BuildWeeklyPromptBattleOutcomeField(winners, losers));
 		}
-		string text3 = BuildWeeklyPromptBattleSideField("胜方", winners, losers);
+		string text3 = BuildWeeklyPromptBattleSideField(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0003"), winners, losers);
 		if (!string.IsNullOrWhiteSpace(text3))
 		{
 			fields.Add(text3);
 		}
-		string text4 = BuildWeeklyPromptBattleSideField("败方", losers, winners);
+		string text4 = BuildWeeklyPromptBattleSideField(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0004"), losers, winners);
 		if (!string.IsNullOrWhiteSpace(text4))
 		{
 			fields.Add(text4);
@@ -156,11 +156,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text = (material.SnapshotText ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			if (text.IndexOf("败给了", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("失利", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("遭遇了失利", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0005"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0006"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0007"), StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				return false;
 			}
-			if (text.IndexOf("击败了", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("获胜", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("击退了", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("得手", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0008"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0009"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0010"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0011"), StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				return true;
 			}
@@ -174,17 +174,17 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text2 = BuildWeeklyPromptBattleSideShortName(losers, winners);
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text + "击败" + text2;
+			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0012") + text2;
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text + "取得胜利";
+			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0013");
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			return text2 + "遭遇失利";
+			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0014");
 		}
-		return "胜负已分";
+		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0015");
 	}
 
 	private string BuildWeeklyPromptBattleSideShortName(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
@@ -214,22 +214,22 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		List<string> list2 = BuildWeeklyPromptBattleSideKingdomNames(ownMaterials, oppositeMaterials);
 		if (list2.Count > 0)
 		{
-			list.Add("王国=" + string.Join("、", list2));
+			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0016") + string.Join("、", list2));
 		}
 		List<string> list3 = BuildWeeklyPromptBattleSideClanNames(ownMaterials, oppositeMaterials);
 		if (list3.Count > 0)
 		{
-			list.Add("家族=" + string.Join("、", list3));
+			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0017") + string.Join("、", list3));
 		}
 		List<string> list4 = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
 		if (list4.Count > 0)
 		{
-			list.Add("人物=" + string.Join("、", list4.Take(8)));
+			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0018") + string.Join("、", list4.Take(8)));
 		}
 		List<string> list5 = BuildWeeklyPromptBattleSidePartyNames(ownMaterials, oppositeMaterials);
 		if (list5.Count > 0)
 		{
-			list.Add("非领主部队=" + string.Join("、", list5.Take(8)));
+			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0019") + string.Join("、", list5.Take(8)));
 		}
 		if (list.Count == 0)
 		{
@@ -241,22 +241,22 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private string BuildWeeklyPromptBattleStandoutField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
 	{
 		List<string> list = new List<string>();
-		AppendWeeklyPromptBattleStandouts(list, "胜方", winners);
-		AppendWeeklyPromptBattleStandouts(list, "败方", losers);
+		AppendWeeklyPromptBattleStandouts(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0020"), winners);
+		AppendWeeklyPromptBattleStandouts(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0021"), losers);
 		if (list.Count == 0)
 		{
-			string text = BuildWeeklyPromptBattleFallbackStandoutText("胜方", winners, losers);
+			string text = BuildWeeklyPromptBattleFallbackStandoutText(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0022"), winners, losers);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
-				WeeklyMaterialAggregationOwner.AddUniqueId(list, "胜方：" + text);
+				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0023") + text);
 			}
-			text = BuildWeeklyPromptBattleFallbackStandoutText("败方", losers, winners);
+			text = BuildWeeklyPromptBattleFallbackStandoutText(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0024"), losers, winners);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
-				WeeklyMaterialAggregationOwner.AddUniqueId(list, "败方：" + text);
+				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0025") + text);
 			}
 		}
-		return (list.Count > 0) ? ("亮眼表现=" + string.Join("；", list)) : "";
+		return (list.Count > 0) ? (WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0026") + string.Join("；", list)) : "";
 	}
 
 	private void AppendWeeklyPromptBattleStandouts(List<string> output, string sideLabel, List<EventMaterialReference> materials)
@@ -328,7 +328,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		text3 = Regex.Replace(text3, "\\s+", " ").Trim();
 		if (!string.IsNullOrWhiteSpace(sideLabel))
 		{
-			text3 = text3.Replace("我方", sideLabel.Trim());
+			text3 = text3.Replace(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0027"), sideLabel.Trim());
 		}
 		return text3;
 	}
@@ -352,28 +352,28 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		List<string> list2 = new List<string>();
 		if (flag3 && flag4 && ownTroops > 0 && oppositeTroops > 0)
 		{
-			list2.Add("投入兵力" + ownTroops + "人对" + oppositeTroops + "人");
+			list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0028") + ownTroops + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0029") + oppositeTroops + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0030"));
 		}
 		else if (flag3 && ownTroops > 0)
 		{
-			list2.Add("投入兵力" + ownTroops + "人");
+			list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0031") + ownTroops + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0032"));
 		}
 		if (flag && flag2)
 		{
-			if (string.Equals((sideLabel ?? "").Trim(), "胜方", StringComparison.OrdinalIgnoreCase))
+			if (string.Equals((sideLabel ?? "").Trim(), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0033"), StringComparison.OrdinalIgnoreCase))
 			{
 				if (ownCasualtyTotal <= 0 && oppositeCasualtyTotal > 0)
 				{
-					list2.Add("未承受可确认伤亡，造成败方" + oppositeCasualtyTotal + "人伤亡");
+					list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0034") + oppositeCasualtyTotal + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0035"));
 				}
 				else
 				{
-					list2.Add("以" + ownCasualtyTotal + "人损失造成败方" + oppositeCasualtyTotal + "人伤亡");
+					list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0036") + ownCasualtyTotal + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0037") + oppositeCasualtyTotal + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0038"));
 				}
 			}
 			else if (oppositeCasualtyTotal > 0)
 			{
-				list2.Add("虽遭失利，仍造成胜方" + oppositeCasualtyTotal + "人伤亡");
+				list2.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0039") + oppositeCasualtyTotal + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0040"));
 			}
 		}
 		if (list2.Count == 0)
@@ -386,14 +386,14 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private string BuildWeeklyPromptBattleStandoutActorText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials, string fallbackLabel)
 	{
 		List<string> list = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
-		string text = list.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x) && x.IndexOf("（统帅）", StringComparison.OrdinalIgnoreCase) >= 0);
+		string text = list.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x) && x.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0041"), StringComparison.OrdinalIgnoreCase) >= 0);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			text = list.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text.Trim() + "部队";
+			return text.Trim() + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0042");
 		}
 		List<string> list2 = BuildWeeklyPromptBattleSidePartyNames(ownMaterials, oppositeMaterials);
 		text = list2.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
@@ -404,9 +404,9 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		text = BuildWeeklyPromptBattleSideShortName(ownMaterials, oppositeMaterials);
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text.Trim() + "部队";
+			return text.Trim() + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0043");
 		}
-		return string.IsNullOrWhiteSpace(fallbackLabel) ? "该方部队" : (fallbackLabel.Trim() + "部队");
+		return string.IsNullOrWhiteSpace(fallbackLabel) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0044") : (fallbackLabel.Trim() + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0045"));
 	}
 
 	private string BuildWeeklyPromptBattleSideTroopText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
@@ -436,14 +436,14 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private bool TryParseWeeklyPromptBattleTroopTotal(string text, out int total)
 	{
 		total = 0;
-		Match match = Regex.Match(text ?? "", "(?<value>\\d+)\\s*人", RegexOptions.IgnoreCase);
+		Match match = Regex.Match(text ?? "", WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0046"), RegexOptions.IgnoreCase);
 		return match.Success && int.TryParse(match.Groups["value"]?.Value ?? "", out total);
 	}
 
 	private bool TryParseWeeklyPromptBattleCasualtyTotal(string text, out int total)
 	{
 		total = 0;
-		Match match = Regex.Match(text ?? "", "阵亡\\s*(?<dead>\\d+)\\s*[、,，]\\s*负伤\\s*(?<wounded>\\d+)", RegexOptions.IgnoreCase);
+		Match match = Regex.Match(text ?? "", WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0047"), RegexOptions.IgnoreCase);
 		if (!match.Success || !int.TryParse(match.Groups["dead"]?.Value ?? "", out var dead) || !int.TryParse(match.Groups["wounded"]?.Value ?? "", out var wounded))
 		{
 			return false;
@@ -479,7 +479,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			WeeklyMaterialAggregationOwner.AddUniqueId(list, item);
 		}
-		foreach (string item2 in ExtractWeeklyPromptBattleHeroNames(ownMaterials, "我方领主"))
+		foreach (string item2 in ExtractWeeklyPromptBattleHeroNames(ownMaterials, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0048")))
 		{
 			WeeklyMaterialAggregationOwner.AddUniqueId(list, item2);
 		}
@@ -487,7 +487,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return list;
 		}
-		foreach (string item3 in ResolveHeroNames(CollectMaterialIds(oppositeMaterials, (EventMaterialReference x) => new string[1] { x.TargetHeroId }, null)).Concat(ExtractWeeklyPromptBattleHeroNames(oppositeMaterials, "敌方领主")))
+		foreach (string item3 in ResolveHeroNames(CollectMaterialIds(oppositeMaterials, (EventMaterialReference x) => new string[1] { x.TargetHeroId }, null)).Concat(ExtractWeeklyPromptBattleHeroNames(oppositeMaterials, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0049"))))
 		{
 			WeeklyMaterialAggregationOwner.AddUniqueId(list, item3);
 		}
@@ -497,7 +497,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private List<string> BuildWeeklyPromptBattleSidePartyNames(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
 	{
 		List<string> list = new List<string>();
-		foreach (string item in ExtractWeeklyPromptBattlePartyNames(ownMaterials, "我方非领主部队"))
+		foreach (string item in ExtractWeeklyPromptBattlePartyNames(ownMaterials, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0050")))
 		{
 			WeeklyMaterialAggregationOwner.AddUniqueId(list, item);
 		}
@@ -505,7 +505,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return list;
 		}
-		foreach (string item2 in ExtractWeeklyPromptBattlePartyNames(oppositeMaterials, "敌方非领主部队"))
+		foreach (string item2 in ExtractWeeklyPromptBattlePartyNames(oppositeMaterials, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0051")))
 		{
 			WeeklyMaterialAggregationOwner.AddUniqueId(list, item2);
 		}
@@ -572,7 +572,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		return "战前投入兵力=胜方" + (string.IsNullOrWhiteSpace(text) ? "不详" : text) + "；败方" + (string.IsNullOrWhiteSpace(text2) ? "不详" : text2);
+		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0052") + (string.IsNullOrWhiteSpace(text) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0053") : text) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0054") + (string.IsNullOrWhiteSpace(text2) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0055") : text2);
 	}
 
 	private string BuildWeeklyPromptBattleCasualtyField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
@@ -591,7 +591,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		return "伤亡=胜方" + (string.IsNullOrWhiteSpace(text) ? "不详" : text) + "；败方" + (string.IsNullOrWhiteSpace(text2) ? "不详" : text2);
+		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0056") + (string.IsNullOrWhiteSpace(text) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0057") : text) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0058") + (string.IsNullOrWhiteSpace(text2) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0059") : text2);
 	}
 
 	private string ExtractWeeklyPromptBattleTroopText(List<EventMaterialReference> materials, bool ownSide)
@@ -614,7 +614,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		Match match = Regex.Match(text2, "战前投入兵力：我方(?<own>[^；。]+)；敌方(?<enemy>[^。；]+)", RegexOptions.IgnoreCase);
+		Match match = Regex.Match(text2, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0060"), RegexOptions.IgnoreCase);
 		if (!match.Success)
 		{
 			return "";
@@ -625,7 +625,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 
 	private string ExtractWeeklyPromptBattleCasualtyText(List<EventMaterialReference> materials, bool ownSide)
 	{
-		string marker = ownSide ? "我方死伤" : "敌方死伤";
+		string marker = ownSide ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0061") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0062");
 		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
 		{
 			string text = ExtractWeeklyPromptBattleMarkedText(item?.SnapshotText, marker);
@@ -679,21 +679,21 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			return "";
 		}
 		List<string> list = new List<string>();
-		AppendWeeklyPromptAggregateField(list, "人物归属", BuildWeeklyPromptAggregateHeroAffiliationValues(materials));
-		list.Add("事件=" + BuildWeeklyPromptAggregateActionLabel(materials));
-		AppendWeeklyPromptAggregateField(list, "人物", ResolveHeroNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[3] { x.ActorHeroId, x.TargetHeroId, x.HeroId }, delegate(EventMaterialReference x)
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0063"), BuildWeeklyPromptAggregateHeroAffiliationValues(materials));
+		list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0064") + BuildWeeklyPromptAggregateActionLabel(materials));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0065"), ResolveHeroNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[3] { x.ActorHeroId, x.TargetHeroId, x.HeroId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedHeroIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, "家族", ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[4] { x.ActorClanId, x.TargetClanId, x.SettlementOwnerClanId, x.PreviousSettlementOwnerClanId }, delegate(EventMaterialReference x)
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0066"), ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[4] { x.ActorClanId, x.TargetClanId, x.SettlementOwnerClanId, x.PreviousSettlementOwnerClanId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedClanIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, "王国", ResolveKingdomNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[5] { x.ActorKingdomId, x.TargetKingdomId, x.KingdomId, x.SettlementOwnerKingdomId, x.PreviousSettlementOwnerKingdomId }, delegate(EventMaterialReference x)
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0067"), ResolveKingdomNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[5] { x.ActorKingdomId, x.TargetKingdomId, x.KingdomId, x.SettlementOwnerKingdomId, x.PreviousSettlementOwnerKingdomId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedKingdomIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, "地点", ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0068"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
 		return string.Join("|", list);
 	}
 
@@ -750,15 +750,15 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			string text5 = BuildWeeklyPromptAggregateDeathSubjectText(text2, text3, text4);
 			if (string.IsNullOrWhiteSpace(text5))
 			{
-				text5 = "某家族成员";
+				text5 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0069");
 			}
 			string text6 = BuildWeeklyPromptAggregateDeathRelationText(text2, ResolveWeeklyPromptAggregateDeathRelationHeroId(value2, text2));
 			string text7 = value2.Select((EventMaterialReference x) => ParseWeeklyPromptHeroDeathReason(x?.ActionStableKey)).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
 			if (string.IsNullOrWhiteSpace(text7))
 			{
-				text7 = "不明原因";
+				text7 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0070");
 			}
-			string text8 = string.IsNullOrWhiteSpace(text6) ? (text5 + "，因为" + text7 + "去世了。") : (text5 + "，" + text6 + "，因为" + text7 + "去世了。");
+			string text8 = string.IsNullOrWhiteSpace(text6) ? (text5 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0071") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0072")) : (text5 + "，" + text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0073") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0074"));
 			if (!list2.Contains(text8))
 			{
 				list2.Add(text8);
@@ -768,7 +768,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return BuildWeeklyPromptAggregateGenericLine(materials);
 		}
-		return "事件=人物死亡：" + string.Join("；", list2);
+		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0075") + string.Join("；", list2);
 	}
 
 	private string BuildWeeklyPromptAggregateArmyLine(List<EventMaterialReference> materials)
@@ -789,24 +789,24 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			switch (text2)
 			{
 			case "army_disperse":
-				text4 = text3 + "解散了军团";
+				text4 = text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0076");
 				break;
 			case "army_create":
-				text4 = text3 + "组建了新的军团";
+				text4 = text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0077");
 				break;
 			case "army_gather":
-				text4 = text3 + "开始集结军团";
+				text4 = text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0078");
 				break;
 			case "army_join":
-				text4 = ((list3.Count == 1) ? (text3 + "加入了" + list3[0] + "的军团") : (text3 + "加入了军团"));
+				text4 = ((list3.Count == 1) ? (text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0079") + list3[0] + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0080")) : (text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0081")));
 				break;
 			case "army_leave":
-				text4 = ((list3.Count == 1) ? (text3 + "离开了" + list3[0] + "的军团") : (text3 + "离开了军团"));
+				text4 = ((list3.Count == 1) ? (text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0082") + list3[0] + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0083")) : (text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0084")));
 				break;
 			}
 			if (!string.IsNullOrWhiteSpace(text4))
 			{
-				return "事件=" + text + "：" + text4;
+				return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0085") + text + "：" + text4;
 			}
 		}
 		List<string> list5 = new List<string>();
@@ -817,25 +817,25 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			string text7 = ResolveHeroDisplay(item.TargetHeroId);
 			if (string.IsNullOrWhiteSpace(text6))
 			{
-				text6 = "某领主";
+				text6 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0086");
 			}
 			string text8 = "";
 			switch (text5)
 			{
 			case "army_disperse":
-				text8 = text6 + "解散了他的军团";
+				text8 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0087");
 				break;
 			case "army_create":
-				text8 = text6 + "组建了新的军团";
+				text8 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0088");
 				break;
 			case "army_gather":
-				text8 = text6 + "开始集结军团";
+				text8 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0089");
 				break;
 			case "army_join":
-				text8 = string.IsNullOrWhiteSpace(text7) ? (text6 + "加入了军团") : (text6 + "加入了" + text7 + "的军团");
+				text8 = string.IsNullOrWhiteSpace(text7) ? (text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0090")) : (text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0091") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0092"));
 				break;
 			case "army_leave":
-				text8 = string.IsNullOrWhiteSpace(text7) ? (text6 + "离开了军团") : (text6 + "离开了" + text7 + "的军团");
+				text8 = string.IsNullOrWhiteSpace(text7) ? (text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0093")) : (text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0094") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0095"));
 				break;
 			}
 			if (string.IsNullOrWhiteSpace(text8))
@@ -855,7 +855,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return BuildWeeklyPromptAggregateGenericLine(materials);
 		}
-		return "事件=" + text + "：" + string.Join("；", list5);
+		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0096") + text + "：" + string.Join("；", list5);
 	}
 
 	private string ResolveWeeklyPromptAggregateDeathVictimHeroId(EventMaterialReference item)
@@ -893,15 +893,15 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text3 = ResolveKingdomDisplay(kingdomId);
 		if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text))
 		{
-			return text3 + "的" + text2 + "家族的" + text;
+			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0097") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0098") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text))
 		{
-			return text2 + "家族的" + text;
+			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0099") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text))
 		{
-			return text3 + "的" + text;
+			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0100") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
@@ -909,15 +909,15 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text3 + "的" + text2 + "家族成员";
+			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0101") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0102");
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			return text2 + "家族成员";
+			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0103");
 		}
 		if (!string.IsNullOrWhiteSpace(text3))
 		{
-			return text3 + "的成员";
+			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0104");
 		}
 		return "";
 	}
@@ -929,11 +929,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		if (victim == null || other == null || string.Equals(victim.Id, other.Id, StringComparison.OrdinalIgnoreCase)) return "";
 		string name = ResolveHeroDisplay(other.Id);
 		if (string.IsNullOrWhiteSpace(name)) return "";
-		if (SameId(victim.SpouseId, other.Id) || SameId(other.SpouseId, victim.Id)) return name + "的" + (victim.IsFemale ? "妻子" : "丈夫");
-		if (SameId(victim.FatherId, other.Id) || SameId(victim.MotherId, other.Id)) return name + "的" + (victim.IsFemale ? "女儿" : "儿子");
-		if (SameId(other.FatherId, victim.Id) || SameId(other.MotherId, victim.Id)) return name + "的" + (victim.IsFemale ? "母亲" : "父亲");
-		if (SameId(victim.FatherId, other.FatherId) || SameId(victim.MotherId, other.MotherId)) return name + "的" + (victim.IsFemale ? "姐妹" : "兄弟");
-		if (SameId(victim.ClanId, other.ClanId)) return name + "的家族成员";
+		if (SameId(victim.SpouseId, other.Id) || SameId(other.SpouseId, victim.Id)) return name + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0105") + (victim.IsFemale ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0106") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0107"));
+		if (SameId(victim.FatherId, other.Id) || SameId(victim.MotherId, other.Id)) return name + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0108") + (victim.IsFemale ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0109") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0110"));
+		if (SameId(other.FatherId, victim.Id) || SameId(other.MotherId, victim.Id)) return name + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0111") + (victim.IsFemale ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0112") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0113"));
+		if (SameId(victim.FatherId, other.FatherId) || SameId(victim.MotherId, other.MotherId)) return name + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0114") + (victim.IsFemale ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0115") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0116"));
+		if (SameId(victim.ClanId, other.ClanId)) return name + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0117");
 		return "";
 	}
 
@@ -967,18 +967,18 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		switch ((detail ?? "").Trim())
 		{
 		case "Murdered":
-			return "遭遇谋杀";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0118");
 		case "DiedInLabor":
-			return "分娩事故";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0119");
 		case "DiedOfOldAge":
-			return "寿终正寝";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0120");
 		case "DiedInBattle":
-			return "战死沙场";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0121");
 		case "WoundedInBattle":
-			return "重伤不治";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0122");
 		case "Executed":
 		case "ExecutionAfterMapEvent":
-			return "被处决";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0123");
 		default:
 			return string.IsNullOrWhiteSpace(detail) ? "" : detail;
 		}
@@ -987,27 +987,27 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private string BuildWeeklyPromptAggregateMovementLine(List<EventMaterialReference> materials)
 	{
 		List<string> list = new List<string>();
-		list.Add("事件=近期行军动向");
-		AppendWeeklyPromptAggregateField(list, "动向明细", BuildWeeklyPromptAggregateMovementDetailValues(materials));
-		AppendWeeklyPromptAggregateField(list, "涉及地点", ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
+		list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0124"));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0125"), BuildWeeklyPromptAggregateMovementDetailValues(materials));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0126"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
 		return string.Join("|", list);
 	}
 
 	private string BuildWeeklyPromptAggregateDecisionLine(List<EventMaterialReference> materials)
 	{
 		List<string> list = new List<string>();
-		list.Add("事件=王国决议");
-		AppendWeeklyPromptAggregateField(list, "议题明细", BuildWeeklyPromptAggregateDetailValues(materials));
-		AppendWeeklyPromptAggregateField(list, "相关人物归属", BuildWeeklyPromptAggregateHeroAffiliationValues(materials));
-		AppendWeeklyPromptAggregateField(list, "相关家族", ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[3] { x.ActorClanId, x.TargetClanId, x.SettlementOwnerClanId }, delegate(EventMaterialReference x)
+		list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0127"));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0128"), BuildWeeklyPromptAggregateDetailValues(materials));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0129"), BuildWeeklyPromptAggregateHeroAffiliationValues(materials));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0130"), ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[3] { x.ActorClanId, x.TargetClanId, x.SettlementOwnerClanId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedClanIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, "相关王国", ResolveKingdomNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[4] { x.ActorKingdomId, x.TargetKingdomId, x.KingdomId, x.SettlementOwnerKingdomId }, delegate(EventMaterialReference x)
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0131"), ResolveKingdomNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[4] { x.ActorKingdomId, x.TargetKingdomId, x.KingdomId, x.SettlementOwnerKingdomId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedKingdomIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, "涉及地点", ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0132"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
 		return string.Join("|", list);
 	}
 
@@ -1023,29 +1023,29 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text3 = BuildWeeklyPromptAggregateSiegeParticipantsText(list);
 		string text4 = BuildWeeklyPromptAggregateSiegeTargetKingdomText(list);
 		string text5 = BuildWeeklyPromptAggregateSiegeSettlementText(list);
-		string text6 = string.IsNullOrWhiteSpace(text3) ? "相关部队" : text3;
-		string text7 = string.IsNullOrWhiteSpace(text5) ? "目标定居点" : text5;
-		string text8 = string.IsNullOrWhiteSpace(text4) ? text7 : (text4 + "的" + text7);
+		string text6 = string.IsNullOrWhiteSpace(text3) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0133") : text3;
+		string text7 = string.IsNullOrWhiteSpace(text5) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0134") : text5;
+		string text8 = string.IsNullOrWhiteSpace(text4) ? text7 : (text4 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0135") + text7);
 		string text9;
 		switch (text2)
 		{
 		case "siege_join":
-			text9 = text6 + "加入了对" + text8 + "的围攻";
+			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0136") + text8 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0137");
 			break;
 		case "siege_leave":
-			text9 = text6 + "结束了对" + text8 + "的围攻";
+			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0138") + text8 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0139");
 			break;
 		case "siege_start_attack":
-			text9 = text6 + "对" + text8 + "发起了围攻";
+			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0140") + text8 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0141");
 			break;
 		case "siege_start_defend":
-			text9 = text6 + "加入了" + text7 + "的守城";
+			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0142") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0143");
 			break;
 		case "siege_end_attack":
-			text9 = text6 + "结束了对" + text8 + "的围攻";
+			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0144") + text8 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0145");
 			break;
 		case "siege_end_defend":
-			text9 = text6 + "结束了在" + text7 + "的守城";
+			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0146") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0147");
 			break;
 		default:
 		{
@@ -1053,26 +1053,26 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			{
 				if (!string.IsNullOrWhiteSpace(x.SnapshotText))
 				{
-					if (x.SnapshotText.IndexOf("获胜", StringComparison.OrdinalIgnoreCase) >= 0)
+					if (x.SnapshotText.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0148"), StringComparison.OrdinalIgnoreCase) >= 0)
 					{
-						return "获胜";
+						return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0149");
 					}
-					if (x.SnapshotText.IndexOf("失利", StringComparison.OrdinalIgnoreCase) >= 0)
+					if (x.SnapshotText.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0150"), StringComparison.OrdinalIgnoreCase) >= 0)
 					{
-						return "失利";
+						return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0151");
 					}
 				}
 				return "";
 			}).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			text9 = text6 + "围绕" + text7 + "进行了围城行动";
+			text9 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0152") + text7 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0153");
 			if (list2.Count > 0)
 			{
-				text9 += "，结果为" + string.Join("、", list2);
+				text9 += WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0154") + string.Join("、", list2);
 			}
 			break;
 		}
 		}
-		return "事件=" + text + "：" + text9;
+		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0155") + text + "：" + text9;
 	}
 
 	private string BuildWeeklyPromptAggregateSiegeParticipantsText(List<EventMaterialReference> materials)
@@ -1125,7 +1125,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 				string text4 = ResolveClanDisplay(item3);
 				if (!string.IsNullOrWhiteSpace(text4))
 				{
-					list5.Add(text4 + "家族的" + string.Join("、", list6));
+					list5.Add(text4 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0156") + string.Join("、", list6));
 				}
 				else
 				{
@@ -1139,7 +1139,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			string text5 = ResolveKingdomDisplay(item2);
 			if (!string.IsNullOrWhiteSpace(text5))
 			{
-				list3.Add(text5 + "所属的" + JoinWithYiJi(list5));
+				list3.Add(text5 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0157") + JoinWithYiJi(list5));
 			}
 			else
 			{
@@ -1178,11 +1178,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (list.Count == 2)
 		{
-			return list[0] + "和" + list[1];
+			return list[0] + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0158") + list[1];
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.Append(string.Join("、", list.Take(list.Count - 1)));
-		stringBuilder.Append("，还有");
+		stringBuilder.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0159"));
 		stringBuilder.Append(list[list.Count - 1]);
 		return stringBuilder.ToString();
 	}
@@ -1191,7 +1191,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private string BuildWeeklyPromptAggregatePrisonerLine(List<EventMaterialReference> materials, bool released)
 	{
 		List<string> list = new List<string>();
-		list.Add("事件=" + (released ? "人物获释" : "人物被俘"));
+		list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0160") + (released ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0161") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0162")));
 		List<string> pairOrder = new List<string>();
 		Dictionary<string, string> captorHeroByPair = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, string> prisonerHeroByPair = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -1316,20 +1316,20 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			string text7 = prisonerHeroByPair.ContainsKey(item2) ? prisonerHeroByPair[item2] : "";
 			string text8 = BuildWeeklyPromptAggregateHumanAffiliationText(text6, captorClanByPair.ContainsKey(item2) ? captorClanByPair[item2] : "", captorKingdomByPair.ContainsKey(item2) ? captorKingdomByPair[item2] : "");
 			string text9 = BuildWeeklyPromptAggregateHumanAffiliationText(text7, prisonerClanByPair.ContainsKey(item2) ? prisonerClanByPair[item2] : "", prisonerKingdomByPair.ContainsKey(item2) ? prisonerKingdomByPair[item2] : "");
-			string text10 = string.IsNullOrWhiteSpace(text8) ? "未知势力" : text8;
-			string text11 = string.IsNullOrWhiteSpace(text9) ? "目标人物" : text9;
+			string text10 = string.IsNullOrWhiteSpace(text8) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0163") : text8;
+			string text11 = string.IsNullOrWhiteSpace(text9) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0164") : text9;
 			List<string> list3 = ResolveSettlementNames(settlementIdsByPair.ContainsKey(item2) ? settlementIdsByPair[item2] : new List<string>());
 			List<string> list4 = released ? releaseDetailsByPair[item2].Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>();
 			List<string> list5 = new List<string>();
 			if (list3.Count > 0)
 			{
-				list5.Add("地点：" + string.Join("、", list3));
+				list5.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0165") + string.Join("、", list3));
 			}
 			if (released && list4.Count > 0)
 			{
-				list5.Add("方式：" + string.Join("、", list4));
+				list5.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0166") + string.Join("、", list4));
 			}
-			string text12 = (!released) ? (text11 + "被" + text10 + "俘虏") : (text11 + "被" + text10 + "从俘虏状态中释放");
+			string text12 = (!released) ? (text11 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0167") + text10 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0168")) : (text11 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0169") + text10 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0170"));
 			if (list5.Count > 0)
 			{
 				text12 += "（" + string.Join("；", list5) + "）";
@@ -1338,11 +1338,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (list2.Count > 0)
 		{
-			return "事件=" + (released ? "人物获释" : "人物被俘") + "：" + string.Join("；", list2);
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0171") + (released ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0172") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0173")) + "：" + string.Join("；", list2);
 		}
 		else
 		{
-			AppendWeeklyPromptAggregateField(list, "地点", ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
+			AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0174"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
 		}
 		return string.Join("|", list);
 	}
@@ -1372,15 +1372,15 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text3 = ResolveKingdomDisplay(kingdomId);
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
 		{
-			return text3 + "所属的" + text2 + "家族的" + text;
+			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0175") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0176") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text2 + "家族的" + text;
+			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0177") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text3))
 		{
-			return text3 + "所属的" + text;
+			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0178") + text;
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
@@ -1388,11 +1388,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
 		{
-			return text3 + "所属的" + text2 + "家族";
+			return text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0179") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0180");
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			return text2 + "家族";
+			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0181");
 		}
 		if (!string.IsNullOrWhiteSpace(text3))
 		{
@@ -1404,8 +1404,8 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	private string BuildWeeklyPromptAggregateSettlementOwnerChangeLine(List<EventMaterialReference> materials)
 	{
 		List<string> list = new List<string>();
-		list.Add("事件=定居点易主");
-		AppendWeeklyPromptAggregateField(list, "定居点", ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
+		list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0182"));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0183"), ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
 		List<string> list2 = new List<string>();
 		List<string> list3 = new List<string>();
 		List<string> list4 = new List<string>();
@@ -1433,15 +1433,15 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 				WeeklyMaterialAggregationOwner.AddUniqueId(list4, item.ActorHeroId);
 			}
 		}
-		AppendWeeklyPromptAggregateField(list, "新所有者", ResolveHeroNames(list2));
-		AppendWeeklyPromptAggregateField(list, "失去者", ResolveHeroNames(list3));
-		AppendWeeklyPromptAggregateField(list, "促成者", ResolveHeroNames(list4));
-		AppendWeeklyPromptAggregateField(list, "新所有者王国", ResolveKingdomNames(list5));
-		AppendWeeklyPromptAggregateField(list, "失去者王国", ResolveKingdomNames(list6));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0184"), ResolveHeroNames(list2));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0185"), ResolveHeroNames(list3));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0186"), ResolveHeroNames(list4));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0187"), ResolveKingdomNames(list5));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0188"), ResolveKingdomNames(list6));
 		List<string> list7 = materials.Select((EventMaterialReference x) => ParseWeeklyPromptSettlementChangeDetail(x?.ActionStableKey)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		AppendWeeklyPromptAggregateField(list, "方式", list7);
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0189"), list7);
 		List<string> list8 = BuildWeeklyPromptSettlementOwnerChangeNatureLabels(list7);
-		AppendWeeklyPromptAggregateField(list, "事实约束", list8);
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0190"), list8);
 		return string.Join("|", list);
 	}
 
@@ -1455,14 +1455,14 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			{
 				continue;
 			}
-			if (text.IndexOf("交易", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("买卖", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("易物", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("非攻城", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0191"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0192"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0193"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0194"), StringComparison.OrdinalIgnoreCase) >= 0)
 			{
-				WeeklyMaterialAggregationOwner.AddUniqueId(list, "这是交易/买卖导致的和平移交，不是攻城夺取");
+				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0195"));
 				continue;
 			}
-			if (text.IndexOf("围城", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0196"), StringComparison.OrdinalIgnoreCase) >= 0)
 			{
-				WeeklyMaterialAggregationOwner.AddUniqueId(list, "这是围城或攻城导致的军事易主");
+				WeeklyMaterialAggregationOwner.AddUniqueId(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0197"));
 			}
 		}
 		return list;
@@ -1472,24 +1472,24 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	{
 		List<string> list = new List<string>();
 		bool flag = (materials ?? new List<EventMaterialReference>()).Any((EventMaterialReference x) => string.Equals((x?.ActionKind ?? "").Trim(), "clan_rebellion", StringComparison.OrdinalIgnoreCase) || (x?.SourceActionKinds ?? new List<string>()).Any((string y) => string.Equals((y ?? "").Trim(), "clan_rebellion", StringComparison.OrdinalIgnoreCase)));
-		list.Add(flag ? "事件=家族叛乱" : "事件=家族归属变更");
-		AppendWeeklyPromptAggregateField(list, "家族", ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.ActorClanId }, delegate(EventMaterialReference x)
+		list.Add(flag ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0198") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0199"));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0200"), ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.ActorClanId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedClanIds;
 		})));
-		AppendWeeklyPromptAggregateField(list, "成员", ResolveHeroNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[2] { x.ActorHeroId, x.HeroId }, delegate(EventMaterialReference x)
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0201"), ResolveHeroNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[2] { x.ActorHeroId, x.HeroId }, delegate(EventMaterialReference x)
 		{
 			return x.RelatedHeroIds;
 		})));
 		List<string> list2 = materials.Select((EventMaterialReference x) => WeeklyPromptMaterialOwner.ParseWeeklyPromptClanChangeDetail(x?.ActionStableKey)?.oldKingdomId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		List<string> list3 = materials.Select((EventMaterialReference x) => WeeklyPromptMaterialOwner.ParseWeeklyPromptClanChangeDetail(x?.ActionStableKey)?.newKingdomId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		List<string> list4 = materials.Select((EventMaterialReference x) => WeeklyPromptMaterialOwner.ParseWeeklyPromptClanChangeDetail(x?.ActionStableKey)?.detailLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		AppendWeeklyPromptAggregateField(list, "原王国", ResolveKingdomNames(list2));
-		AppendWeeklyPromptAggregateField(list, "新王国", ResolveKingdomNames(list3));
-		AppendWeeklyPromptAggregateField(list, "方式", list4);
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0202"), ResolveKingdomNames(list2));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0203"), ResolveKingdomNames(list3));
+		AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0204"), list4);
 		if (flag)
 		{
-			AppendWeeklyPromptAggregateField(list, "事实约束", new List<string> { "这是NPC家族主动脱离旧王国并发动叛乱，不是普通换阵营" });
+			AppendWeeklyPromptAggregateField(list, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0205"), new List<string> { WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0206") });
 		}
 		return string.Join("|", list);
 	}
@@ -1502,7 +1502,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			return string.Join("、", list);
 		}
 		string text = (materials?.FirstOrDefault()?.ActionKind ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "未分类行动" : text;
+		return string.IsNullOrWhiteSpace(text) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0207") : text;
 	}
 
 	private void AppendWeeklyPromptAggregateField(List<string> fields, string name, List<string> values)
@@ -1576,11 +1576,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			List<string> list4 = new List<string>();
 			if (list2.Count > 0)
 			{
-				list4.Add("家族=" + string.Join("、", list2));
+				list4.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0208") + string.Join("、", list2));
 			}
 			if (list3.Count > 0)
 			{
-				list4.Add("王国=" + string.Join("、", list3));
+				list4.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0209") + string.Join("、", list3));
 			}
 			return (list4.Count == 0) ? text : (text + "(" + string.Join(";", list4) + ")");
 		}).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
@@ -1623,22 +1623,22 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			string text = BuildWeeklyPromptAggregateSiegeParticipantsText(item2);
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "守军";
+				text = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0210");
 			}
 			string text2 = BuildWeeklyPromptAggregateSettlementOwnerFactionText(eventMaterialReference);
 			string text3 = BuildWeeklyPromptAggregateSettlementNameWithType(eventMaterialReference.SettlementId);
 			string text4 = "";
 			if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
 			{
-				text4 = text + "正在守备" + text2 + "的" + text3 + "。";
+				text4 = text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0211") + text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0212") + text3 + "。";
 			}
 			else if (!string.IsNullOrWhiteSpace(text3))
 			{
-				text4 = text + "正在守备" + text3 + "。";
+				text4 = text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0213") + text3 + "。";
 			}
 			else
 			{
-				text4 = text + "正在守备当地要地。";
+				text4 = text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0214");
 			}
 			if (!list.Contains(text4))
 			{
@@ -1693,17 +1693,17 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			{
 				continue;
 			}
-			string text8 = BuildWeeklyPromptAggregateSiegeParticipantsText(item7).Replace("所属的", "的");
+			string text8 = BuildWeeklyPromptAggregateSiegeParticipantsText(item7).Replace(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0215"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0216"));
 			if (string.IsNullOrWhiteSpace(text8))
 			{
 				text8 = BuildWeeklyPromptAggregateActorAffiliationText(eventMaterialReference2);
 			}
 			if (string.IsNullOrWhiteSpace(text8))
 			{
-				text8 = "某势力";
+				text8 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0217");
 			}
 			string text9 = BuildWeeklyPromptAggregateRaidTargetText(eventMaterialReference2);
-			string text10 = text8 + "最近在袭扰" + (string.IsNullOrWhiteSpace(text9) ? "某地" : text9) + "。";
+			string text10 = text8 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0218") + (string.IsNullOrWhiteSpace(text9) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0219") : text9) + "。";
 			if (!list.Contains(text10))
 			{
 				list.Add(text10);
@@ -1732,8 +1732,8 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			{
 				string text12 = BuildWeeklyPromptAggregateActorAffiliationText(item9);
 				string text13 = BuildWeeklyPromptAggregateRaidTargetText(item9);
-				string text14 = string.IsNullOrWhiteSpace(text12) ? "某势力" : text12;
-				string text15 = text14 + "最近在袭扰" + (string.IsNullOrWhiteSpace(text13) ? "某地" : text13) + "。";
+				string text14 = string.IsNullOrWhiteSpace(text12) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0220") : text12;
+				string text15 = text14 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0221") + (string.IsNullOrWhiteSpace(text13) ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0222") : text13) + "。";
 				if (!list.Contains(text15))
 				{
 					list.Add(text15);
@@ -1748,7 +1748,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			}
 			if (IsMovementArmyLeaderMaterial(item9))
 			{
-				string text18 = string.IsNullOrWhiteSpace(text16) ? text17 : (text16.Replace("所属的", "的") + text17);
+				string text18 = string.IsNullOrWhiteSpace(text16) ? text17 : (text16.Replace(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0223"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0224")) + text17);
 				if (!list.Contains(text18))
 				{
 					list.Add(text18);
@@ -1772,7 +1772,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			return true;
 		}
 		string text2 = (item?.SnapshotText ?? item?.Label ?? "").Trim();
-		return text2.IndexOf("守备", StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf("保卫", StringComparison.OrdinalIgnoreCase) >= 0;
+		return text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0225"), StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0226"), StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	private bool IsMovementRaidMaterial(EventMaterialReference item)
@@ -1791,7 +1791,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			return false;
 		}
 		string text2 = (item.SnapshotText ?? item.Label ?? "").Trim();
-		return text2.IndexOf("袭扰", StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf("劫掠", StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf("掠夺", StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf("掠", StringComparison.OrdinalIgnoreCase) >= 0;
+		return text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0227"), StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0228"), StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0229"), StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0230"), StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	private string BuildWeeklyPromptAggregateMovementRaidGroupKey(EventMaterialReference item)
@@ -1817,7 +1817,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		string text2 = (item.ActionStableKey ?? "").Trim();
 		string text3 = (item.SnapshotText ?? item.Label ?? "").Trim();
-		bool flag = text2.IndexOf("daily_behavior:army:", StringComparison.OrdinalIgnoreCase) >= 0 || text3.IndexOf("军团", StringComparison.OrdinalIgnoreCase) >= 0;
+		bool flag = text2.IndexOf("daily_behavior:army:", StringComparison.OrdinalIgnoreCase) >= 0 || text3.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0231"), StringComparison.OrdinalIgnoreCase) >= 0;
 		if (!flag)
 		{
 			return false;
@@ -1826,7 +1826,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return true;
 		}
-		return text3.IndexOf("围攻", StringComparison.OrdinalIgnoreCase) >= 0 || text3.IndexOf("强攻", StringComparison.OrdinalIgnoreCase) >= 0;
+		return text3.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0232"), StringComparison.OrdinalIgnoreCase) >= 0 || text3.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0233"), StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	private string BuildWeeklyPromptAggregateMovementArmySiegeGroupKey(EventMaterialReference item)
@@ -1863,41 +1863,41 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text4 = ExtractMovementArmyNameFromActionText(text2);
 		if (string.IsNullOrWhiteSpace(text4))
 		{
-			text4 = "军团";
+			text4 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0234");
 		}
 		string text5 = BuildWeeklyPromptAggregateMovementArmyTargetText(eventMaterialReference);
 		if (string.IsNullOrWhiteSpace(text5))
 		{
-			text5 = "目标据点";
+			text5 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0235");
 		}
 		if (flag)
 		{
 			string text6 = BuildWeeklyPromptAggregateActorAffiliationText(eventMaterialReference);
 			if (string.IsNullOrWhiteSpace(text6))
 			{
-				text6 = "某领主";
+				text6 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0236");
 			}
-			string text7 = text6 + "最近正率领" + text4 + text3 + text5 + "。";
+			string text7 = text6 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0237") + text4 + text3 + text5 + "。";
 			List<EventMaterialReference> list2 = list.Where((EventMaterialReference x) => x != eventMaterialReference).ToList();
 			string text8 = BuildWeeklyPromptAggregateSiegeParticipantsText(list2);
 			if (!string.IsNullOrWhiteSpace(text8))
 			{
-				text7 = TrimTrailingSentencePunctuation(text7) + "，军团的成员有" + text8 + "。";
+				text7 = TrimTrailingSentencePunctuation(text7) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0238") + text8 + "。";
 			}
 			return text7;
 		}
 		string text9 = BuildWeeklyPromptAggregateSiegeParticipantsText(list);
 		if (string.IsNullOrWhiteSpace(text9))
 		{
-			text9 = "相关部队";
+			text9 = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0239");
 		}
-		return text9 + "最近正随" + text4 + text3 + text5 + "。";
+		return text9 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0240") + text4 + text3 + text5 + "。";
 	}
 
 	private bool IsMovementArmyLeaderMaterial(EventMaterialReference item)
 	{
 		string text = BuildWeeklyPromptAggregateMovementActionText(item, (item?.SnapshotText ?? item?.Label ?? "").Trim());
-		return text.IndexOf("率领", StringComparison.OrdinalIgnoreCase) >= 0;
+		return text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0241"), StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	private string ResolveMovementArmySiegeActionVerb(EventMaterialReference item, string actionText)
@@ -1905,20 +1905,20 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text = (item?.ActionStableKey ?? "").Trim();
 		if (text.IndexOf("BesiegeSettlement", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "围攻";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0242");
 		}
 		if (text.IndexOf("AssaultSettlement", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "强攻";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0243");
 		}
 		string text2 = (actionText ?? "").Trim();
-		if (text2.IndexOf("围攻", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0244"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "围攻";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0245");
 		}
-		if (text2.IndexOf("强攻", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text2.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0246"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "强攻";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0247");
 		}
 		return "";
 	}
@@ -1930,11 +1930,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		int num = text.IndexOf("率领", StringComparison.OrdinalIgnoreCase);
+		int num = text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0248"), StringComparison.OrdinalIgnoreCase);
 		int num2 = 2;
 		if (num < 0)
 		{
-			num = text.IndexOf("随", StringComparison.OrdinalIgnoreCase);
+			num = text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0249"), StringComparison.OrdinalIgnoreCase);
 			num2 = 1;
 		}
 		if (num < 0)
@@ -1947,7 +1947,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 			return "";
 		}
 		int num4 = int.MaxValue;
-		foreach (string item in new string[5] { "围攻", "强攻", "守备", "前往", "在" })
+		foreach (string item in new string[5] { WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0250"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0251"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0252"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0253"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0254") })
 		{
 			int num5 = text.IndexOf(item, num3, StringComparison.OrdinalIgnoreCase);
 			if (num5 > num3 && num5 < num4)
@@ -1964,11 +1964,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 
 	private string BuildWeeklyPromptAggregateMovementArmyTargetText(EventMaterialReference item)
 	{
-		string text = BuildWeeklyPromptAggregateSettlementOwnerFactionText(item).Replace("所属的", "的");
+		string text = BuildWeeklyPromptAggregateSettlementOwnerFactionText(item).Replace(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0255"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0256"));
 		string text2 = ResolveSettlementDisplay(item?.SettlementId);
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text + "的" + text2;
+			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0257") + text2;
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
@@ -1976,7 +1976,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text + "的据点";
+			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0258");
 		}
 		return "";
 	}
@@ -2009,7 +2009,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		{
 			return "";
 		}
-		int num = text.IndexOf("；其所属家族是", StringComparison.OrdinalIgnoreCase);
+		int num = text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0259"), StringComparison.OrdinalIgnoreCase);
 		if (num >= 0)
 		{
 			text = text.Substring(0, num).Trim();
@@ -2029,7 +2029,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			string text3 = ResolveSettlementDisplay(item?.SettlementId);
-			text = (!string.IsNullOrWhiteSpace(text3)) ? ("在" + text3 + "一带行动。") : "在前线行动。";
+			text = (!string.IsNullOrWhiteSpace(text3)) ? (WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0260") + text3 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0261")) : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0262");
 		}
 		if (!(text.EndsWith("。") || text.EndsWith("！") || text.EndsWith("？")))
 		{
@@ -2046,11 +2046,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		List<string> list = new List<string>();
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			list.Add("家族=" + text2);
+			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0263") + text2);
 		}
 		if (!string.IsNullOrWhiteSpace(text3))
 		{
-			list.Add("王国=" + text3);
+			list.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0264") + text3);
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
@@ -2058,7 +2058,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			return string.IsNullOrWhiteSpace(text3) ? text2 : (text2 + "(王国=" + text3 + ")");
+			return string.IsNullOrWhiteSpace(text3) ? text2 : (text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0265") + text3 + ")");
 		}
 		return "";
 	}
@@ -2069,7 +2069,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text2 = BuildWeeklyPromptAggregateSettlementNameWithType(item?.SettlementId);
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text + "的" + text2;
+			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0266") + text2;
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
@@ -2077,7 +2077,7 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text + "的领地";
+			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0267");
 		}
 		return "";
 	}
@@ -2088,11 +2088,11 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		string text2 = ResolveKingdomDisplay(item?.SettlementOwnerKingdomId);
 		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
 		{
-			return text2 + "所属的" + text + "家族";
+			return text2 + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0268") + text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0269");
 		}
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text + "家族";
+			return text + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0270");
 		}
 		return text2;
 	}
@@ -2122,16 +2122,16 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 	{
 		if (item?.Won.HasValue == true)
 		{
-			return item.Won.Value ? "取得了胜利" : "遭遇了失利";
+			return item.Won.Value ? WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0271") : WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0272");
 		}
 		string text = (item?.SnapshotText ?? item?.Label ?? "").Trim();
-		if (text.IndexOf("获胜", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("击败", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("战胜", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0273"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0274"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0275"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "取得了胜利";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0276");
 		}
-		if (text.IndexOf("失利", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("战败", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("败给", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0277"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0278"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0279"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "遭遇了失利";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0280");
 		}
 		return "";
 	}
@@ -2203,79 +2203,79 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		switch ((actionKind ?? "").Trim().ToLowerInvariant())
 		{
 		case "army_create":
-			return "组建军团的行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0281");
 		case "army_gather":
-			return "军团集结行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0282");
 		case "army_disperse":
-			return "军团解散行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0283");
 		case "army_join":
-			return "加入军团的行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0284");
 		case "army_leave":
-			return "离开军团的行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0285");
 		case "siege_start_attack":
-			return "参与围攻的行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0286");
 		case "siege_start_defend":
-			return "参与守城的行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0287");
 		case "siege_end_attack":
-			return "围城结束后的攻方行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0288");
 		case "siege_end_defend":
-			return "围城结束后的守方行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0289");
 		case "siege_join":
-			return "加入围城的行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0290");
 		case "siege_leave":
-			return "离开围城的行动";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0291");
 		case "siege_complete":
-			return "围城结果事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0292");
 		case "daily_behavior":
-			return "近期行军动向";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0293");
 		case "map_event":
-			return "战场交锋";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0294");
 		case "map_event_aftermath":
-			return "战后余波";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0295");
 		case "tournament_finished":
-			return "竞技大会胜出事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0296");
 		case "duel_result":
-			return "正式决斗结果";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0297");
 		case "marriage":
-			return "联姻事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0298");
 		case "clan_changed_kingdom":
-			return "家族更换效忠对象的事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0299");
 		case "clan_defected":
-			return "家族叛逃事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0300");
 		case "clan_rebellion":
-			return "家族叛乱事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0301");
 		case "kingdom_decision_concluded":
-			return "王国决议事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0302");
 		case "bilateral_diplomacy_pending":
-			return "双边外交复议进展";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0303");
 		case "bilateral_diplomacy_outcome":
-			return "双边外交最终结果";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0304");
 		case "ruling_clan_changed":
-			return "执政家族变更事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0305");
 		case "settlement_owner_changed_gain":
-			return "定居点归属增加事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0306");
 		case "settlement_owner_changed_loss":
-			return "定居点归属失去事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0307");
 		case "settlement_owner_changed_capture":
-			return "定居点易主事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0308");
 		case "hero_killed":
-			return "英雄死亡事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0309");
 		case "hero_executed_victim":
-			return "被处决事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0310");
 		case "clan_member_killed":
-			return "家族成员死亡事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0311");
 		case "prisoner_taken_captor":
-			return "俘获领主事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0312");
 		case "prisoner_taken_prisoner":
-			return "被俘事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0313");
 		case "prisoner_released_captor":
-			return "囚犯获释事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0314");
 		case "prisoner_released_prisoner":
-			return "结束囚禁事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0315");
 		case "birth":
-			return "家族新生事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0316");
 		case "clan_leader_changed":
-			return "家族族长更替事件";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0317");
 		default:
 			return "";
 		}
@@ -2291,19 +2291,19 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		switch ((array[array.Length - 1] ?? "").Trim())
 		{
 		case "BySiege":
-			return "围城";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0318");
 		case "ByBarter":
-			return "交易/买卖移交（非攻城）";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0319");
 		case "ByLeaveFaction":
-			return "脱离王国";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0320");
 		case "ByKingDecision":
-			return "王国决议";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0321");
 		case "ByGift":
-			return "赠与";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0322");
 		case "ByRebellion":
-			return "叛乱";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0323");
 		case "ByClanDestruction":
-			return "家族覆灭";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0324");
 		default:
 			return (array[array.Length - 1] ?? "").Trim();
 		}
@@ -2333,19 +2333,19 @@ internal static List<string> ResolveNames(IEnumerable<string> ids, Func<string,s
 		switch ((array[num] ?? "").Trim())
 		{
 		case "Ransom":
-			return "通过赎金获释";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0325");
 		case "ReleasedByChoice":
-			return "被主动释放";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0326");
 		case "ReleasedAfterPeace":
-			return "因议和获释";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0327");
 		case "ReleasedAfterEscape":
-			return "成功逃脱";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0328");
 		case "ReleasedAfterBattle":
-			return "战后获释";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0329");
 		case "ReleasedByCompensation":
-			return "补偿后获释";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0330");
 		case "Death":
-			return "囚禁中死亡";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0331");
 		default:
 			return (array[num] ?? "").Trim();
 		}

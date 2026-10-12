@@ -6,6 +6,7 @@ internal static class NativeDiplomacyFallbackReplay
     {
         internal bool Formal;
         internal bool ThrowFormal;
+        internal string Result = "";
         internal readonly List<string> Calls = new();
     }
     private readonly struct Source : IDiplomacyOralTagSource, IDiplomacyCommitmentTagSource
@@ -17,7 +18,7 @@ internal static class NativeDiplomacyFallbackReplay
         public string SpeakerHeroId => "ruler";
         public string SpeakerKingdomId => "npc";
         public bool UseFormalCommitments => _state.Formal;
-        private string Call(string action,string payload){_state.Calls.Add(action+":"+payload);return "";}
+        private string Call(string action,string payload){_state.Calls.Add(action+":"+payload);return _state.Result;}
         public string SubmitCommitment(string payload){if(_state.ThrowFormal)throw new InvalidOperationException();return Call("formal",payload);}
         public string ControlCommitment(string payload)=>Call("control",payload);
         public string SubmitLegacyCommitment(string action,string payload)=>Call("legacy-"+action,payload);
@@ -33,6 +34,27 @@ internal static class NativeDiplomacyFallbackReplay
     internal static void Run()
     {
         var state=new State(); var source=new Source(state);
+        state.Result = "literal {NAME} {0} $1";
+        string body = "same literal {NAME} {0} $1\n[ACTION:DIPLOMACY:MAKE_PEACE:one]\n[ACTION:DIPLOMACY:MAKE_TRADE:two]";
+        var receipts = new List<string>();
+        DiplomacyOralTagApplication.Process(source, ref body, receipts);
+        Test.True(body == "same literal {NAME} {0} $1", "receipt collection never rewrites same-text model body");
+        Test.True(receipts.SequenceEqual(new[] { state.Result, state.Result }), "package receipts preserve order and literal placeholders");
+        string originalBody = body;
+        string packageText = DiplomacyOralTagApplication.ComposeReceiptText(body, receipts);
+        var projected = new List<string>();
+        string uiText = DiplomacyOralTagApplication.ComposeReceiptText(body, receipts, status => { projected.Add(status); return "UI:" + status; });
+        Test.True(packageText == originalBody + "\n" + state.Result + "\n" + state.Result, "history composition preserves complete package receipts");
+        Test.True(uiText == originalBody + "\nUI:" + state.Result + "\nUI:" + state.Result && projected.SequenceEqual(receipts), "only owned receipts reach UI projector; same-text model body remains unchanged");
+        Test.True(body == originalBody && receipts.All(status => status == state.Result), "presentation never mutates body or receipts");
+
+        Test.True(state.Calls.SequenceEqual(new[] { "peace:one", "trade:two" }), "receipt collection executes each action exactly once");
+        body = "before [ACTION:DIPLOMACY:MAKE_PEACE:middle] after";
+        receipts.Clear(); state.Calls.Clear();
+        DiplomacyOralTagApplication.Process(source, ref body, receipts);
+        Test.True(body == "before  after" && receipts.SequenceEqual(new[] { state.Result }), "system shout embedded tag becomes separate receipt without dropping body");
+        state.Result = ""; state.Calls.Clear();
+
         string Run(string tag){string text="答应了 [ACTION:DIPLOMACY:"+tag+"]";DiplomacyOralTagApplication.Process(source,ref text);Test.True(!text.Contains("[ACTION:"),"native/formal routing hides internal tag");return text;}
         var tags=new[]{("DECLARE_WAR:npc:third","war:npc:third"),("MAKE_PEACE:npc:player:10:21","peace:npc:player:10:21"),("FORM_ALLIANCE:npc:player:21","alliance:npc:player:21"),("BREAK_ALLIANCE:npc:player","break:npc:player"),("MAKE_TRADE:npc:player:84","trade:npc:player:84"),("CANCEL_TRADE:npc:player","cancel:npc:player")};
         foreach(var(tag,expected) in tags){state.Calls.Clear();Run(tag);Test.True(state.Calls.SequenceEqual(new[]{expected}),"disabled AI diplomacy routes legacy tag only to existing native executor");}
@@ -41,7 +63,7 @@ internal static class NativeDiplomacyFallbackReplay
         state.Calls.Clear();Run("COMMIT:action=Peace;move=NewMatter;target=player;payer=player;receiver=npc;tribute=12;days=84");
         Test.True(state.Calls.SequenceEqual(new[]{"peace:player:npc:12:84"}),"native fallback preserves exact reversed payment direction and agreed duration");
         foreach(string payload in new[]{"action=Peace;move=AcceptProposal;target=player;source_document=old","action=Peace;move=RejectProposal;target=player;source_document=old","action=Peace;move=NewMatter;target=player;supersedes=old;version=1;reason=changed","action=Peace;move=NewMatter;target=player;tribute=12","action=Peace;move=NewMatter;target=player;cession_from=npc;cession_to=player;settlement=town","action=Peace;move=NewMatter;target=player;payer=other;receiver=player;tribute=12;days=84","action=Trade;move=NewMatter;target=player;tribute=12;days=21","action=DeclareWar;move=NewMatter;target=player;days=21","action=Annexation;move=NewMatter;target=player;receiving=npc;joining=player","broken"})
-        {state.Calls.Clear();string result=Run("COMMIT:"+payload);Test.True(state.Calls.Count==0&&(result.Contains("未执行")||result.Contains("已关闭")),"complex, malformed or old-proposal payload cannot silently become native action");}
+        {state.Calls.Clear();string result=Run("COMMIT:"+payload);Test.True(state.Calls.Count==0&&result == "答应了","complex, malformed or old-proposal payload cannot silently become native action");}
         state.Calls.Clear();Run("COMMITMENT:arrangement=old;state=cancelled");Test.True(state.Calls.Count==0,"disabled mode does not mutate persisted formal arrangements");
         state.Formal=true;
         foreach(var(tag,_) in tags){state.Calls.Clear();Run(tag);Test.True(state.Calls.Count==1&&state.Calls[0].StartsWith("legacy-"),"enabled AI diplomacy keeps NPC legacy actions on formal path");}

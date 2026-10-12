@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Aksha_Hongfeng",
+  "Keywords": [
+    "Aksha Red Wind",
+    "wind of fire",
+    "Flame Academy",
+    "red magic",
+    "LoreOfFire",
+    "fire of destruction",
+    "Pyromancer",
+    "Battle Mage Firewind",
+    "fiery passion",
+    "fire magic"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Aksha - the red wind - is the wind of destruction, heat and courage. It blows in from the north as a searing wave, gathering over volcanic craters, burning forests and scorching deserts. Akshay is the most dangerous of all winds—its power comes fastest and its cost is the most irreversible. The mages of the School of Fire—also known as blazing warlocks—carry a constant smell of sulfur and uncontrollable restlessness. Their magic is pure destruction: fireballs, flaming swords, area-wide burning storms. Excessive use of Aksha will leave a permanent tattoo of flames on the caster's face, inject lingering fire into the veins, and ultimately cause the user to burn into handfuls of windblown ashes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Red Wind of Aksha is the most direct magical destructive power of the Imperial Army - no other wind can turn the enemy's line into a wall of flames in an instant like the Red Wind. Our flame battle mage is the most popular and feared presence among ordinary soldiers on the battlefield: when a fire mage stands behind you, summons a rolling fireball with a diameter of three feet and pushes it into the enemy formation, you will pray to any god to let him come a few more times; but when the flames on his hands begin to uncontrollably return to himself from the fingertips, all friendly soldiers within thirty feet around him are mentally calculating their distance to the nearest water source. The students of the Flame Academy have the highest death rate among all the academies - not because of the temptation of Chaos (although this is no less), but because there is a final test that cannot be bypassed in the apprenticeship stage: the 'Trial of the Flame Robe' - the apprentice must walk from the first floor of the academy to the third floor of the Burning Sacrifice Hall while his whole body is wrapped in a thin layer of flame. Any trembling of fear will cause the flame to burn out of control and burn inward. It is said that more than 20% of candidate apprentices die in the Flame Robe Trial every year, but the Flame Academy never announces this number. Another little-known but extremely fatal weakness of the Red Wind Mages is the extreme cold - Aksha mages fighting in the snow need twice as much energy to unleash the same amount of fire, and in the arctic cold zone of Kislev the effectiveness of their spells may be reduced to a quarter of normal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Aksha Red Wind's core value in military tactics - causing maximum damage to the army with the smallest number of personnel - makes the flame battle mage almost irreplaceable in siege warfare and anti-large monster operations. A city gate can be burned through by the focused fire beams of two Aksha mages in ten minutes; a Chaos Troll can be blown to pieces by a full volley of red wind fireballs in thirty seconds without the need for any traditional siege machinery or massive archers. But Akshay mages are also the most difficult to discipline among all the imperial magic forces - their naturally flammable character makes their response to the command chain half a step slower than other schools, and being half a step slower on the battlefield means that a fireball may fall on one's own lines rather than on the enemy's head. Any commander who is assigned more than three Aksha mages in a battle sequence should personally give these mages a brief private lecture before the battle - not to issue tactical instructions, but to give each of them a specific reason why they must come out of the battlefield alive. Too many fire mages died by fire, because when the battle was too fierce, they would instinctively draw the red wind that exceeded the safety threshold, and the only thing that could stop them before the backlash was not the academy's dogma - it was a person who was still alive and owed him a debt or a promise."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The psychic physics of Aksha Red Wind are the most intuitive of all the winds but also the most prone to misjudgment. Akshay's energy is not fire - fire is just the lowest manifestation of red wind in the material world. The deep essence of Akshay is 'kinetic energy in transition' - the explosive overflow released in the moment of transition from one energy form to another. This explains why Akshay exists not only in fire, but also in extremes of rage, peaks of sexual desire, outbursts of collective frenzy and any form of violent emotional excretion. The ancient pyromancers - long before the existence of the Imperial Academy system - referred to Aksha as 'leapfire' rather than 'flame', because in their understanding, Aksha's primary attribute was not combustion but rate of change. A mage who is proficient in Aksha can instantly raise the temperature of a steel sword to red without igniting anything, turn a basin of water into a basin of steam, or heat an enemy knight in full plate armor to such extreme temperatures that he will roast him alive - all without the need for visible fire, only the precise control of energy transitions. The terrifying thing about this ability is that it bypasses most of the physical protections in the empire's standard tactical doctrine. Therefore, the empire's military law clearly stipulates that any Flame Academy disciple is prohibited from casting more than level 2 thermal energy jumps in a closed space without obtaining the signature of the War Supervisor Tower."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Akshay Red Wind affects women differently than men—a fact I have read about in family records since childhood and confirmed after meeting three female fire mages myself. The flame temperature of female Aksha mages is statistically slightly lower than that of men (about eight to twelve percent on average), but their flame control accuracy exceeds that of men on average. This means that female Red Wind Mages are more suitable for precision strikes against enemy commanders rather than large-area killing missions - and the reality on the battlefield is that most commanders never require accuracy, they only require more fire coverage, so the battlefield effectiveness of female Fire Mages is structurally underestimated. Another overlooked issue is the potential impact of Akshay's red wind on the female reproductive system - Flame Academy requires female apprentices to sign a non-public health exemption document when enrolling, regarding the irreversible impact of Akshay's energy on female fertility. No one in the Imperial military is willing to discuss this issue publicly, but every female mage who has served in the Flame Academy for more than ten years - as far as I know - without exception has been medically proven to be permanently infertile after retirement. This is not something dogma or discipline can fix - this is the essence of Akshay: the first thing that the red wind burns within you is not the flesh and blood of your enemies, but your own future."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is an active natural sulfur spring on our family's territory - it is the natural accumulation point of Aksha's red wind in the earth's veins - I sealed a private agreement signed by my ancestors in the family secret room: the other party to the agreement is the former grand instructor of the Flame Academy, Ghra Branz. In return for providing him with perpetual access and use, the Flame Academy agrees to accept no more than three trainee apprentices recommended by our family at any time—without having to pass the Altdorf Imperial Ministry of Magic examinations—directly into the Flame Academy for Red Wind training. This is the only reason why the family has maintained a small but stable internal battle mage for two hundred years, and this has never been recorded in any official document of the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When you travel with a truly high-level Akshay mage—an experience I only had once—you notice something you will never forget: His eyes do not reflect light. It wasn't pupil dilation or some medical mutation, it was his irises themselves that seemed to be actively absorbing all surrounding light sources rather than reflecting anything - because there was enough fire burning inside his body. He told me Akshay’s great secret is: it doesn’t teach you how to make a fire, but it teaches you how to stop being afraid of being burned to death. When he said this, we were walking past the ruins of an unknown village that he himself had burned down in his last out-of-control situation. On the edge of the ruins sat an old woman who had lost everything. She did not cry, she just stared at the ashes in a daze. He looked at the old woman and said: 'I told her I was sorry and she said she didn't hear me. I think she heard it. 'He never said a second word to me on this road again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Aksha Red Wind holds a very special position in the Empire's armament supply chain - the Flame Academy is the sole production license holder of the only legal military flamethrowers within the Empire, including but not limited to Imperial-style fire bombs (actually a clay pot grenade infused with low-purity Aksha energy), fire mines (ground fire traps triggered by pre-charged Red Wind crystals in the enemy's march), and the ceremonial flame blades of the Knights of the Sun. The Fire Academy's armaments department is run by an independent affiliated chamber - it does not duplicate operations with the Royal Ordnance Office of Altdorf, but is comparable in sales to the established giants of the Imperial metallurgical industry. Purchasing the Fire Academy's Red Wind armaments requires no magical permission—just gold—and is a decades-old gray compromise between the Imperial Ministry of Magic and the military: the military can purchase any charged Red Wind weapon from the Fire Academy as long as no direct caster is involved. This created one of the most lucrative and least regulated pipelines in the empire's military supply chain."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Aksha Red Wind - one of the eight winds of fire, heat and courage, the most destructive and dangerous",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The magical properties and energy sources of Aksha Red Wind"
+  ]
+}

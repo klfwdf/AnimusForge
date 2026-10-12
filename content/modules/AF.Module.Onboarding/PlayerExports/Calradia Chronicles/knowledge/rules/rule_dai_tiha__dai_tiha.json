@@ -1,0 +1,176 @@
+{
+  "Id": "rule_dai_tiha",
+  "Keywords": [
+    "Dai Tiha"
+  ],
+  "RagShortTexts": [
+    "Tiha, the ancestor of Dai Tiha, was the youngest son of Osric and was awarded the title of Palawind"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dai Tiha’s house? The great lord of Palabund. Who among our farmers doesn’t know their family? As the old saying goes, wherever the water of the Telang River flows, the tax of Palawind will be collected. Their home is on the north bank, the king is on the south bank, and we are sandwiched in between. The ancestor of their family, Tiha, was said to be the biological son of the founding king. He occupied the old capital of the empire when he was entrusting the land. With such a big background, do you think their family can obey the current king? My grandfather said that the Tiha family never looked at Sargoth City seriously, thinking that the place was for the nouveau riche and that Palawind was the real royal capital. The current head of the family is called Aldric, and I heard he is a ruthless man. He would have kicked his feet under the table when he was drinking with King Detel in honor of him. But to be honest, we ordinary people don't care who is the king, what we care about is how to collect taxes. The Tiha family collects a lot of taxes, but they protect the trade routes in the north very well. There are few bandits and goods can move around, so their life is barely passable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dai Tiha family is the one who should least exist among us, but it happens to be the hardest to exist. I say this not to hate them, but to tell the truth. When Osric, the founding king of the country, gave the old capital of the empire Palawind to his youngest son Tiha, this made everyone feel uncomfortable at the time. It was the largest city on the west coast of the empire, with the thickest walls and the richest trade routes. You gave your son, and we, the small sect, helped you fight the war, and all we got was a few pieces of rotten land and a swamp. But there is no way, they are from the royal family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dai Tiha family is the topic we least want to face. Our Dai Aromanke family supports King Detel. This is an open position, not speculation. We believe Vlandia needs a king willing to replace the sword with arbitration, not another round of warlord wars. But Aldric Day Tiha made our position extremely awkward. He won't start a war, won't force a palace, and won't give you any excuse to depose him. He just sat in Palawind and looked at you quietly, and then you discovered at the Royal Council that there were fewer and fewer barons supporting the king, not because Aldric had won over them, but because they were afraid. He was afraid that the trade route to the north would be blocked, he was afraid of Palawinde's soldiers, and he was afraid that he would be the first target to be targeted by the Dai Tiha family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aldric is the person we admire most and the person we annoy the most. I admire him because he has blood, territory, and brains. He is the only one who can make Detel's weakling sit on the throne and still have trouble sleeping. Annoying because he is too slow. He is not like us. I scold Detel directly when I bother him. I scold him for being a coward and scolding him for failing Vlandia. I pound the table at the Imperial Council. Aldric didn't bang the table, he smiled, he toasted, and he said, \"His Majesty the King's considerations are reasonable.\" After leaving the meeting place, he had more soldiers than us, his land was wider than ours, and his words were ten times more effective than ours. We Dai Kortan have always been a small clan and need the support of the Dai Tiha family. Therefore, we Dai Kortan and Dai Tiha are from the same family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The current patriarch of Dai Tihar is Aldric. His ancestor Tihar was Osric's favorite youngest son and conquered Palawind. This credit and this preference are passed down from generation to generation and become the way Aldrick looks at us. He is not a traitor and has never raised an army to rebel. But every time he comes to Sargot from the north coast for a meeting, he has more entourage than our Royal Guards; he said at the royal meeting, \"His Majesty the King's considerations are reasonable,\" and all the barons nodded along with him. This is not a vassal, this is another king."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dai Tiha family is the most analytically valuable family sample in the feudal pattern of Vlandia. From a geographical perspective, they control Palawind and its surrounding towns on the north bank of the Trang River, forming an economic and military network independent of the royal city of Sargoth. The lineage of the founding royal family gave them the legal basis for their claims - their ancestor Tihar was the son of Osric, and they were equivalent to the Dai Merok family in blood. The current patriarch, Aldric, is a formidable political opponent: he does not challenge the royal power in public, but uses his economic influence and vassal network to erode the royal authority within the system."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The lord over Palawinde, whose surname is Dai Tiha, is said to have a very powerful background. The businessman said that their ancestor was the youngest son of the founding king, and he took away the old capital of the empire when he created the land. Later, their family was in the north for generations, and the king had no control over them in the south. Is the current head of the family an old man or a semi-old man? Anyway, he is quite capable and doesn't show much publicity, but the trade routes to the north are all covered by his family. I have heard a joke that if you ask who is your king in the north of Vlandia, the people will say Aldric; if you ask who is your king in the south, the people will say Detel. So who is the king? It all hurts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the descendants of Tiha. Say this sentence in Palawind without adding a single word. The golden crown of the Merok family was given by the emperor, and the Prabund of the Tiha family was given by the sword. Our ancestor was Osric's youngest son and his most daring son. Palavinos, the old capital of the empire, was the center of rule in the hands of the empire, and it is still the center of rule in our hands. From Tihar to Aldric, every generation of us has to do one thing: guard this city and prevent it from being reduced to anyone’s vassal. Detel is the king we recognize. We recognize him, not obey him. We recognize Vlandia. This kingdom was built by Osric, and Tihar was the second brick in its founding. The first piece is the throne and the second piece is Palawind. Without the second piece, the first piece cannot stand. The current head of the family, Aldrick, knows this, so he is not in a hurry. He has plenty of time and patience. He smiled at the king in the royal council, not because of flattery, but because of decency. Our Dai Tiha family always maintains dignity. This is the biggest difference between us and the Ingatel family. But being decent doesn't mean having no temper. Our youngest daughter is the only exception - she is not as good as the Tiha family, and maybe she can make this family live in a different way. But right now, the Tiha family's sword is still hanging on the wall, unsheathed."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Aldric",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_vlandia_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

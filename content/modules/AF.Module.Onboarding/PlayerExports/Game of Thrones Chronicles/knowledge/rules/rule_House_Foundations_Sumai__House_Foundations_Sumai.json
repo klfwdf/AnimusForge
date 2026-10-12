@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Sumai",
+  "Keywords": [
+    "Sumai",
+    "House Sumai",
+    "Sarne River Basin"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sumai is a noble family of Salol. The Sarn River and its tributaries nourished farmland and urban communities, but also exposed settlements to the risks of marching along the river, collecting taxes, and fighting for crossings; the sea of ​​grass further away preserved the long shadow of the Dothraki conquests. The foundation of Sumai is not a legend that will never fall, but whether the riverside residents, riders, boatmen and city craftsmen can be organized into the same set of defense and exchange. Marriage and allegiance can change with the situation, but local people will still evaluate it according to the same criteria: whether to protect the common water source and granary first when crisis strikes, and whether to let the benefits of restoration fall into only a few courtyards in peacetime."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The local lords regarded Sumai as a link in river defense and Caohai security. It does not have to be the loudest door, but it must allow the ferry guards, beacons and neighboring towns to make agreements to truly connect in times of danger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The farmers and boatmen on the riverbank only asked Sumai if he had dredged the silt, built embankments, and restrained the patrols. When the river rises, aristocratic blood cannot plug the breach; a basket of stones and a team of willing men can."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people in the city hope that Su Mai can maintain a balance between his old glory and his new livelihood. Turning every ruin into an altar will not feed the inhabitants, and tearing down all the stones for profit will make a nation forget itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sumai The local aristocratic family in Salol is based on the land on the river bank, the relationship between the city and society, and the common memory of the threat to Caohai. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sumai The local aristocratic family in Salol is based on the land on the river bank, the relationship between the city and society, and the common memory of the threat to Caohai. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sumai The local aristocratic family in Salol is based on the land on the river bank, the relationship between the city and society, and the common memory of the threat to Caohai. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sumai The local aristocratic family in Salol is based on the land on the river bank, the relationship between the city and society, and the common memory of the threat to Caohai. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sumai: The local aristocratic family in Salol is based on the land on the river bank, the relationship between the city and society, and the common memory of the threat to Caohai."
+  ]
+}

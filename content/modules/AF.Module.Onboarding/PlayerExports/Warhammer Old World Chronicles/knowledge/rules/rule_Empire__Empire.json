@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Empire",
+  "Keywords": [
+    "empire",
+    "empire of man",
+    "Sigmar Empire",
+    "Reikland",
+    "Empire Altdorf",
+    "Empire Elector Count",
+    "Karl Franz (Empire)",
+    "Imperial Gail Malaz",
+    "imperial parliament",
+    "warhammer (Empire)",
+    "bastion of humanity"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Imperium is the most powerful human nation in the Old World. Founded by the God-Emperor Sigmar two thousand five hundred years ago, the Empire spans the vast lands from the Gray Mountains to the World's Edge Mountains. The imperial capital is centered on Altdorf in Reikland. The emperor elected by the Elector Count rules over thirteen provinces. It is the last bastion of human civilization against the chaos tide and greenskin raids in the north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Empire is our home, an anointed place blessed by the gods. Since Sigmar's coronation in Reichdorf, through the dark days of the Age of the Three Emperors and the glorious revival of Emperor Magnus, the banner of the Empire has never truly fallen. Altdorf is the greatest city in the world. The Imperial School of Artillery and the School of Magic guard the last foundation of human civilization. Although the Elector Count system seems bloated and internally depleted in peacetime, in the face of a real crisis, the thirteen provinces will eventually unite under the emperor's Griffin banner. We despise the Chaos Barbarians in the north and are wary of the self-righteous knight lords of Bretonnia, but we have sincere respect for the dwarves - without the superb forging skills of the dwarves, the cannons and muskets of the Empire would be impossible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The true power of the empire lay not in the brilliance of any one emperor, but in the delicate and fragile political balance between its provinces. The Elector Counts are nominally loyal to Altdorf, but in reality they have their own agendas - the white wolf Elector Count of Middenland has never truly surrendered to the emperor of Reikland, and the feud between Talabek Territory and Steele Territory has never subsided. Any ruler who wants to truly control the empire must understand that the empire's military is raised by the provinces, and the only direct troops under the emperor are the Reik Guards and the Altdorf Garrison. In times of war, you must use diplomacy to persuade the Elector Counts to contribute troops and legitimize your military operations with votes from the Imperial Senate. Whoever controls Reikland controls the financial lifeline of the empire; whoever wins the blessings of the Church of Sigmar wins the souls of the people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Far from being a mere military conquest, the creation of an empire was a profound political and cultural integration. Sigmar unified twelve tribes that were fighting against each other and established the earliest feudal electoral system based on the Rickdorff Covenant - this system was far more advanced than the absolute kingship of Bretonnia because it based the legitimacy of power on the consensus of the nobles. The empire's legal system is based on the \"Sigmar Code\" and has been supplemented and revised by successive emperors to form the most complete statutory legal system in the old world. The Academy of Magic was founded with the help of Tyger Lys during the Magnus era. It is based on the Eight Winds of Magic and incorporates dangerous forces originally considered witchcraft into the empire's system. The birth of the Imperial Academy of Engineering was also of far-reaching significance - it combined the dwarven rune-forging technology with the scientific spirit of mankind, giving birth to cannons, Hellstorm rocket launchers, and legendary steam tanks. The true greatness of the empire is that it always finds the subtle middle way between reason and faith, tradition and change."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female noble who has gained a foothold in the imperial political arena, you must be more aware than any man of the deep undercurrents surging under the golden dome of this palace. The laws of the Empire never prohibited women from inheriting titles or ruling provinces—there was even a special provision in the Code of Sigmar protecting the regency of noble widows—but every stare in the Elector Count's chamber was a silent reminder that you were an interloper. I learned to collect information without traces of silence at men's drinking tables, to capture family secrets inadvertently revealed by their wives in the whispers at balls, and to build my own intelligence network in the name of the Sisters of Charity. The imperial power game is not harder for women, but requires different pieces - and the mask of kindness often makes people less vigilant than the gauntlet, which is our greatest advantage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The empire is not just a country, it is first of all a family - every great imperial noble family is the flesh and blood cells of this thousand-year-old country. Our family has been rooted in Reikland since the time of Magnus. The genealogy can be traced back to no less than thirty generations of Imperial Knights. Among our ancestors, there are two Elector Counts and at least five battle priests. In the final analysis, governing an imperial province is about governing a family: you need to invest in the training of war and military command in your eldest son, invest in theological education in your second son to make him a bishop in the Sigmar Church, and invest in marriages in your daughters to draw neighboring noble families into your blood alliance. The Empire's Elector Count system seems to be a political election, but in fact it is a non-stop bloodline competition - when your family has no allies in the Imperial Parliament, your best strategy is not to canvass votes, but to have children. The history of the empire is not the history of the emperor. It is the cycle of continuous reproduction, marriage, overthrow and rebirth of the major families over two thousand and five hundred years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I've walked every major road in the Empire - from the Wolf Gate in Middenheim to the Reikbridge in Altdorf, from the gunpowder workshops in Nuln to the swamp outposts of Ostermark. From the eyes of the mercenaries wandering the streets, the Empire is not some glorious bastion of humanity, but a vast machine that runs on the bones and sweat of the poor. The Elector Counts quarreled for a whole year in the palace over who had the right to levy an additional three percent trade tax, during which time the border villages were burned to ashes by the beastmen and the garrisons refused to go out because they were in arrears with their pay. The truest face of the Empire is not in the Imperial Council Hall, but in the cheap taverns on the roadside - there are deserters evading military service, landless peasants expelled by their lords, and mercenaries like me who are willing to sell their knives to any party for a few gold coins. But I have seen the face of the Empire in times of crisis. On the night when the Chaos Horde broke through the northern defenses, the White Wolf Knights of Middenheim and the Reik Guards of Altdorf stood side by side in the same trench. The greatness of the Empire does not lie in its system, but in its instinct for unity that is only exposed in desperate situations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The true master of the Empire is not the Elector Count, nor the Emperor - it's Reikri. The river connects Altdorf to the dwarven kingdoms of the World's Edge Mountains, carrying the cannons of Nuln to the ports of Nordland and the timber of Talabek to the markets of Middenheim. As a merchant guild leader who has been operating the river trade in Altdorf for thirty years, I can responsibly say: everything debated in the Imperial Parliament - troop movements, diplomatic treaties, and even the election of the emperor - is ultimately determined by gold, and 70% of the empire's gold comes from trade taxes on the Reik River. The merchants of the Empire run an invisible empire from their own guild halls - we have our own unwritten rules, our own arbiters, and an unofficial army of hired bodyguards and chamber militia. The Elector Counts look down on us 'counting coins', but whenever they need to raise military funds, they will knock on the door of the Chamber of Commerce with the most humble expression on their faces."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Reikland - the richest core province of the empire, the emperor's direct territory, the seat of Altdorf",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Empire Human Empire Sigmar Empire"
+  ]
+}

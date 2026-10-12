@@ -10,17 +10,22 @@ public sealed partial class WorldDiplomacyBehavior
         Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>()?._orchestration.SubmitLegacyOralCommitment(
             npc?.StringId, npc?.Clan?.Kingdom?.StringId, action, payload, DiplomacyDialogueSourceScope.Current) ?? "";
     public static string SubmitOralDiplomaticCommitment(Hero npc, string payload)
+        => SubmitOralDiplomaticCommitment(npc, payload, out _);
+
+    public static string SubmitOralDiplomaticCommitment(Hero npc, string payload, out bool registered)
     {
+        registered = false;
         var owner = Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();
-        if (owner == null) return "外交约定暂未提交：世界外交系统尚未准备好。";
+        if (owner == null) return DiplomacyMiscPromptTexts.Get("OralDiplomacy_NotReady", "Diplomatic commitment not submitted: world diplomacy system is not ready.");
         if (!owner.IsLiveCampaign) return owner.UnavailableReason;
-        return owner?._orchestration.SubmitOralDiplomaticCommitment(npc?.StringId, npc?.Clan?.Kingdom?.StringId,
-            payload, DiplomacyDialogueSourceScope.Current) ?? "外交约定暂未提交：世界外交系统未启用。";
+        if (owner._orchestration == null) return DiplomacyMiscPromptTexts.Get("OralDiplomacy_Uncommitted", "Diplomatic commitment not submitted: world diplomacy system is not enabled.");
+        return owner._orchestration.SubmitOralDiplomaticCommitment(npc?.StringId, npc?.Clan?.Kingdom?.StringId,
+            payload, DiplomacyDialogueSourceScope.Current, out registered);
     }
     public static string ControlOralDiplomaticCommitment(Hero npc, string payload)
     {
         return Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>()?._orchestration
-            .ControlOralDiplomaticCommitment(npc?.StringId, npc?.Clan?.Kingdom?.StringId, payload) ?? "";
+            .ControlOralDiplomaticCommitment(npc?.StringId, npc?.Clan?.Kingdom?.StringId, payload, DiplomacyDialogueSourceScope.Current) ?? "";
     }
     public static string BuildOralArrangementContext(Hero npc)
     {

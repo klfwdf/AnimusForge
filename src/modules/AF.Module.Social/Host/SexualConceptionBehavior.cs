@@ -111,7 +111,7 @@ public static class SexualConceptionBehavior
 		}
 
 		string npcName = targetHero.Name?.ToString() ?? "NPC";
-		InformationManager.DisplayMessage(new InformationMessage("你与" + npcName + "发生了亲密行为。", Colors.Magenta));
+		InformationManager.DisplayMessage(new InformationMessage(SocialUiLocalization.Format("AF_SOCIAL_UI_IntimacyCompleted", "You and {NAME} shared an intimate encounter.", ("NAME", npcName)), Colors.Magenta));
 
 		bool becamePregnant = false;
 		float pregnancyChance = ResolvePregnancyChance();
@@ -130,12 +130,12 @@ public static class SexualConceptionBehavior
 			}
 		}
 
-		string fact = "[AFEF玩家行为补充] 玩家与" + npcName + "发生了亲密关系。";
+		string fact = SocialSourceTexts.Get("S215") + npcName + SocialSourceTexts.Get("S216");
 		if (becamePregnant)
 		{
 			fact += (mother == Hero.MainHero)
-				? ("系统已确认玩家怀孕，父亲是" + npcName + "。")
-				: ("系统已确认" + npcName + "怀孕，父亲是玩家。");
+				? (SocialSourceTexts.Get("S217") + npcName + "。")
+				: (SocialSourceTexts.Get("S218") + npcName + SocialSourceTexts.Get("S219"));
 		}
 		MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, fact);
 		Logger.Log("SexualConception", "intimacy applied target=" + (targetHero.StringId ?? "") + " mother=" + (mother.StringId ?? "") + " father=" + (father.StringId ?? "") + " chance=" + pregnancyChance.ToString("0.00") + " roll=" + ((pregnancyRoll < 0f) ? "not_rolled" : pregnancyRoll.ToString("0.0000")) + " pregnancy=" + becamePregnant + " result=" + skipReason + " patch=" + _pregnancyFatherPatchStatus);

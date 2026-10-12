@@ -68,7 +68,7 @@ internal static class NativeHistoryIdentityProjectionOwner
         if (isPlayerLine && string.IsNullOrWhiteSpace(storedTargetName)) storedTargetName = (npcName ?? "").Trim();
         return new AnimusForgeDialogueHistoryEntry {
             EventSequence = sequence, GameDayIndex = day, GameDate = date, GameHour = hour, Scene = scene,
-            Speaker = string.IsNullOrWhiteSpace(speaker) ? "记录" : speaker.Trim(),
+            Speaker = string.IsNullOrWhiteSpace(speaker) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0294") : speaker.Trim(),
             TargetAgentIndex = storedTargetAgentIndex, TargetName = storedTargetName, Text = text, Kind = kind ?? ""
         };
     }

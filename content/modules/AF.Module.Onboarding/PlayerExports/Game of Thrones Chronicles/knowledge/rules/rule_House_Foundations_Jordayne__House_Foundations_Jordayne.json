@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Jordayne",
+  "Keywords": [
+    "House Jordayne",
+    "Golden Quill"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Jordan family is based in the city of Tor and is a Dornish noble under the command of Martell. The family emblem has a golden quill on a dark and light green square as the core. They participated as land vassals in eastern Dorne in marriages, magistrates and princely orders. The golden quill can easily make people at the banquet talk about writing and wit, but the people of Tor City know Qiao Dain from wells, roads, taxes and the protection of lords. Ordinary people far away from Dorne have little reason to know this family name, which also makes Jordain's reputation more firmly rooted in his own land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish nobles recognized the golden quill of Jordan of Tor, but they would not call the whole family scholars based on just one pen. To Martell, Jordain's value lies in guarding his lands, participating in marriage alliances, adjudicating local disputes, and fulfilling vassal duties when summons comes. Heraldry may elicit witty words, but responsibility is written on a heavier account."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People around the city of Thor knew Jodain from its water sources, roads, marketplaces, and tax collectors. The quill is a symbol of nobility on the flag, but in the accounting room it may determine how much a family owes and whether a business traveler can pass. The people hope that the pen will be used to remember promises, not just to write down new levies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Jordayne The Dornish vassals of Tor have a golden quill on a green square as their family crest; the locals know them from their water sources, roads, judges, taxes and protection. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Jordayne The Dornish vassals of Tor have a golden quill on a green square as their family crest; the locals know them from their water sources, roads, judges, taxes and protection. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Jordayne The Dornish vassals of Tor have a golden quill on a green square as their family crest; the locals know them from their water sources, roads, judges, taxes and protection. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Jordayne The Dornish vassals of Tor have a golden quill on a green square as their family crest; the locals know them from their water sources, roads, judges, taxes and protection. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Jordayne: The Dornish vassals of Tor have a golden quill on a green square as their family crest; the locals know them from their water sources, roads, judges, taxes and protection."
+  ]
+}

@@ -27,11 +27,11 @@ internal sealed class SoldierTroopXpPerDayEffectModule
 			PolicyEffectTargetKind.Hero,
 		},
 		targetKinds: new[] { PolicyEffectTargetKind.Clan },
-		cueTerms: new[] { "内部家族士兵每日经验" },
-		retrievalText: "内部运行模块：政策有效期间每日为目标家族领主队伍与封地驻军的普通士兵发放兵种经验。",
-		catalogSummary: "内部：家族士兵每日兵种经验",
-		mainInstruction: "内部模块，不向模型暴露。",
-		postprocessRule: "内部模块，不得直接输出。",
+		cueTerms: new[] { PolicyCompatibilityTexts.Get("Module_soldierTroopXpPerDay_Original_21") },
+		retrievalText: PolicyGenerationPromptTexts.Get("Module_soldierTroopXpPerDay_retrievalText", "Internal runtime module: grant ordinary soldiers in the target clan's lord parties and fief garrisons daily troop experience while the policy is active."),
+		catalogSummary: PolicyGenerationPromptTexts.Get("Module_soldierTroopXpPerDay_catalogSummary", "Internal: daily troop experience for clan soldiers"),
+		mainInstruction: PolicyGenerationPromptTexts.Get("Module_soldierTroopXpPerDay_mainInstruction", "Internal module; not exposed to the model."),
+		postprocessRule: PolicyGenerationPromptTexts.Get("Module_soldierTroopXpPerDay_postprocessRule", "Internal module; do not output it directly."),
 		payloadPromptSchema: PolicyEffectPayloadSchemas.CreateIntegerValueSchema(),
 		family: PolicyEffectFamily.Military,
 		executionKind: PolicyEffectExecutionKind.DailyMutation,
@@ -45,7 +45,7 @@ internal sealed class SoldierTroopXpPerDayEffectModule
 		supportsIdempotency: true,
 		promptVisible: false,
 		displayGroup: "soldierTroopXp",
-		playerDisplayName: "士兵精锐化",
+		playerDisplayName: PolicyCompatibilityTexts.Get("Module_soldierTroopXpOnce_Original_20"),
 		targetProjection: PolicyEffectTargetProjectionKind.None,
 		targetRefresh: PolicyEffectTargetRefreshKind.FrozenCanonicalIds,
 		allowIndependentClanTargets: true,
@@ -58,7 +58,7 @@ internal sealed class SoldierTroopXpPerDayEffectModule
 		JToken value = rawPayload?["value"];
 		if (value?.Type != JTokenType.Integer)
 		{
-			error = "soldierTroopXpPerDay 的 value 必须是整数";
+			error = "soldierTroopXpPerDay value must be an integer";
 			return false;
 		}
 		try
@@ -66,13 +66,13 @@ internal sealed class SoldierTroopXpPerDayEffectModule
 			long parsed = value.Value<long>();
 			if (parsed <= 0 || parsed > SoldierTroopXpEffectModule.MaximumDailyXpPerTroop)
 			{
-				error = "soldierTroopXpPerDay 的 value 必须在 1～100 之间";
+				error = "soldierTroopXpPerDay value must be between 1 and 100";
 				return false;
 			}
 		}
 		catch
 		{
-			error = "soldierTroopXpPerDay 的 value 超出整数范围";
+			error = "soldierTroopXpPerDay value exceeds the integer range";
 			return false;
 		}
 		error = string.Empty;
@@ -93,7 +93,7 @@ internal sealed class SoldierTroopXpPerDayEffectModule
 		}
 		if (payload.Value <= 0 || payload.Value > SoldierTroopXpEffectModule.MaximumDailyXpPerTroop)
 		{
-			error = "soldierTroopXpPerDay 的 value 必须在 1～100 之间";
+			error = "soldierTroopXpPerDay value must be between 1 and 100";
 			return false;
 		}
 		error = string.Empty;
@@ -108,7 +108,7 @@ internal sealed class SoldierTroopXpPerDayEffectModule
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("soldierTroopXpPerDay 缺少 game bridge", false);
+			return Failed("soldierTroopXpPerDay requires a game bridge", false);
 		}
 		if (!context.GameBridge.TryPrepareClanTroopXp(new[] { clanId }, payload.Value, out JToken plan, out string prepareError))
 		{
@@ -207,7 +207,7 @@ internal sealed class SoldierTroopXpPerDayEffectModule
 		JObject applied = existing?.AppliedPayload as JObject;
 		if (context.GameBridge == null || existing == null || applied == null)
 		{
-			return Failed("soldierTroopXpPerDay compensation 缺少 game bridge 或回执", false);
+			return Failed("soldierTroopXpPerDay compensation requires game bridge and receipt", false);
 		}
 		if (existing.Status != PolicyEffectExecutionStatus.Applied
 			|| !string.Equals(existing.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal)
@@ -216,7 +216,7 @@ internal sealed class SoldierTroopXpPerDayEffectModule
 			|| applied.Value<int?>("xpPerTroop") != payload.Value
 			|| applied["journal"] == null)
 		{
-			return Failed("soldierTroopXpPerDay compensation 回执身份或 payload 不匹配", false);
+			return Failed("soldierTroopXpPerDay compensation receipt identity or payload does not match", false);
 		}
 
 		JToken journal = applied["journal"];
@@ -278,12 +278,12 @@ internal sealed class SoldierTroopXpPerDayEffectModule
 		clanId = (context?.TargetId ?? string.Empty).Trim();
 		if (instance == null || string.IsNullOrWhiteSpace(context.PreparedInstance.IdempotencyKey))
 		{
-			error = "soldierTroopXpPerDay 缺少执行上下文或幂等键";
+			error = "soldierTroopXpPerDay requires an execution context and idempotency key";
 			return false;
 		}
 		if (!string.Equals(instance.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal) || payload == null)
 		{
-			error = "soldierTroopXpPerDay payload 与模块不匹配";
+			error = "soldierTroopXpPerDay payload does not match the module";
 			return false;
 		}
 		string normalizedClanId = clanId;
@@ -291,7 +291,7 @@ internal sealed class SoldierTroopXpPerDayEffectModule
 			|| clanId.Length == 0
 			|| instance.TargetSet?.ClanIds?.Exists(id => string.Equals(id, normalizedClanId, StringComparison.OrdinalIgnoreCase)) != true)
 		{
-			error = "soldierTroopXpPerDay 缺少有效且已冻结的家族目标";
+			error = "soldierTroopXpPerDay requires valid frozen clan targets";
 			return false;
 		}
 		error = string.Empty;

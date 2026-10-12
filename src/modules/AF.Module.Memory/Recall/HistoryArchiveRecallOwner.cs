@@ -453,7 +453,7 @@ internal static bool ContainsStructuredSignal(string line)
 			return false;
 		}
 		string text2 = text.ToLowerInvariant();
-		if (text2.Contains("债务id") || text2.Contains("欠款") || text2.Contains("还款") || text2.Contains("赊账") || text2.Contains("借款") || text2.Contains("第纳尔") || text2.Contains("价格") || text2.Contains("交易") || text2.Contains("决斗") || text2.Contains("赌注") || text2.Contains("[action:") || text2.Contains("guideprice=") || text2.Contains("|") || text2.Contains("id:"))
+		if (text2.Contains(MemoryTextResources.Raw("MEM_Raw_008")) || text2.Contains(MemoryTextResources.Raw("MEM_Raw_009")) || text2.Contains(MemoryTextResources.Raw("MEM_Raw_010")) || text2.Contains(MemoryTextResources.Raw("MEM_Raw_011")) || text2.Contains(MemoryTextResources.Raw("MEM_Raw_012")) || text2.Contains(MemoryTextResources.Raw("MEM_Raw_013")) || text2.Contains(MemoryTextResources.Raw("MEM_Raw_014")) || text2.Contains(MemoryTextResources.Raw("MEM_Raw_015")) || text2.Contains(MemoryTextResources.Raw("MEM_Raw_016")) || text2.Contains(MemoryTextResources.Raw("MEM_Raw_017")) || text2.Contains("[action:") || text2.Contains("guideprice=") || text2.Contains("|") || text2.Contains("id:"))
 		{
 			return true;
 		}
@@ -471,7 +471,7 @@ internal static bool IsSystemFactLine(string line)
 	{
 		string text = (line ?? "").TrimStart();
 		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
-		return text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
+		return text.StartsWith(MemoryTextResources.Raw("MEM_Raw_018"), StringComparison.Ordinal) || text.StartsWith(MemoryTextResources.Raw("MEM_Raw_006"), StringComparison.Ordinal);
 	}
 
 internal static int ClampHistoryReturnCap(int value)

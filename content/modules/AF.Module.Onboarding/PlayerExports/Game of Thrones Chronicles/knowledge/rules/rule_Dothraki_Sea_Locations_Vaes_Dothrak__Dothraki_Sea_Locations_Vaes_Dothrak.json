@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Dothraki_Sea_Locations_Vaes_Dothrak",
+  "Keywords": [
+    "Sacred Vaes Dothrak",
+    "Mother of Mountains",
+    "Dosh Khaleen"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vaes Dothraki, located at the foot of Mother Mountain, is the most sacred and important settlement in the Dothraki Sea. Various khalasas can make truce, trade, sacrifice, exchange news and pay tribute to Doshkarin here; outsiders must observe strict etiquette when entering. It is not the permanent capital of a certain Kaa, but a sacred place recognized by many horseback tribes. The two giant horse statues on the mother mountain and the market at the foot of the mountain remind visitors that the authority here does not come from the city walls or account books, but from tribal memory, horse herds, reputation and sacred taboos. The strength of tribes can change, but the significance of Vaes Dothraki as a place of meeting, truce, and reputation evaluation remains unchanged."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dothraki don't treat it like a normal town just because there's a market there. Vaes Dothraki allowed the hostile khalasar to temporarily lay down his sword, granting the widow sacred status and letting the young warrior know that his fame would be heard by those who rode farther than he. A khal can have his own Weiss, but it is difficult for a person to claim that the mother mountain belongs only to himself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "wanderer",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What the caravans saw here was rare security and rare buyers: horses, leather, cheese, weapons, slaves, and luxury goods from the West could all change hands. But smart foreigners know that money cannot replace etiquette. Anyone who treats the Holy Land as a marketplace where bargains can be freely discovered will find that the Dothraki remember insults longer than silver coins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Westerners often misjudge the power of the Ves Dothraki due to their lack of high walls and stone thrones. To those who are accustomed to cities, it is like a camp that can disperse at any time; to those who know the grasslands, the place where many khalasars can voluntarily stop fighting is more difficult to offend than many stone cities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sacred Vaes Dothrak Dothraki shrine at the foot of Mother Mountain. The khalasas made truces, traded, worshiped, and visited Doshkarin here; it was not the capital of any single khal, but the center of the common memory and ritual of the steppe. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sacred Vaes Dothrak Dothraki shrine at the foot of Mother Mountain. The khalasas made truces, traded, worshiped, and visited Doshkarin here; it was not the capital of any single khal, but the center of the common memory and ritual of the steppe. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sacred Vaes Dothrak Dothraki shrine at the foot of Mother Mountain. The khalasas made truces, traded, worshiped, and visited Doshkarin here; it was not the capital of any single khal, but the center of the common memory and ritual of the steppe. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sacred Vaes Dothrak Dothraki shrine at the foot of Mother Mountain. The khalasas made truces, traded, worshiped, and visited Doshkarin here; it was not the capital of any single khal, but the center of the common memory and ritual of the steppe. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sacred Vaes Dothrak: Dothraki shrine at the foot of Mother Mountain. The khalasas made truces, traded, worshiped, and visited Doshkarin here; it was not the capital of any single khal, but the center of the common memory and ritual of the steppe."
+  ]
+}

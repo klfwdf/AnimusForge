@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Rus_Principalities_under_Mongol_Vassalage",
+  "Keywords": [
+    "Rus Principalities",
+    "Tatar Yoke",
+    "Golden Horde",
+    "Yarlik",
+    "Alexander Nevsky",
+    "Vladimir-Suzdal"
+  ],
+  "RagShortTexts": [
+    "The Rus lands endured the 'Tatar Yoke', governed by Rurikid princes who traveled to Sarai for yarlik patents and collected Mongol tribute."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following the cataclysmic Mongol invasion of 1237–1240, the principalities of Kievan Rus were absorbed into the tributary system of the Golden Horde (the Kipchak Khanate). Under this system of indirect rule, known as the 'Tatar Yoke,' the Rurikid princes retained local administrative, legal, and religious authority, but were forced to make grueling journeys to the Mongol capital at Sarai on the lower Volga to receive their investiture charters (yarliks).\n\nIn 1259, Grand Prince Alexander Nevsky of Vladimir functioned as the chief tax collector and intermediary between Rus and Sarai. To avert punitive Mongol raids that had annihilated Ryazan and Kiev, Alexander crushed domestic anti-tax rebellions in Novgorod, preserving Orthodox religious life and Slavic continuity at the cost of political subordination."
+    }
+  ],
+  "TextMappings": []
+}

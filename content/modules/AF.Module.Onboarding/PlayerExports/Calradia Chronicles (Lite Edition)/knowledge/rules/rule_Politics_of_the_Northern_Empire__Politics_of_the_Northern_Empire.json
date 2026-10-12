@@ -1,0 +1,57 @@
+{
+  "Id": "rule_Politics_of_the_Northern_Empire",
+  "Keywords": [
+    "Politics of the Northern Empire",
+    "Aristocratic republic",
+    "Republic",
+    "Elder system"
+  ],
+  "RagShortTexts": [
+    "The politics of the Northern Empire was an aristocratic-senator republic."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Northern Empire? They seem to be a republic, but they are just a game played by aristocratic gentlemen. What does their republic have to do with us, the common people? ?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We in the Northern Empire follow tradition and still implement the republican system of the Senate to protect the interests of us senators and their families. We speak freely in the Senate and we formulate policies. There is no autocratic monarch. Our emperor is elected by us and is naturally a servant of the Senate. We believe that this system allows us to brainstorm and formulate national policies that are in line with our vital interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The republic of elders in the Northern Empire is a joke. The so-called republic is just a cover for them to pursue their own interests. Their emperor says they have no power, but which of their policies is not decided by their emperor? Even if it is an election, it is a manipulated election. Either the rich or the powerful are elected. Anyway, no one is elected because of their own good conduct."
+    }
+  ],
+  "TextMappings": []
+}

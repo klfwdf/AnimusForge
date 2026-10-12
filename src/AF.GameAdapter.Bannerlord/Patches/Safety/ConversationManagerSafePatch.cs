@@ -26,13 +26,13 @@ public static class ConversationManagerSafePatch
 					HarmonyMethod finalizer = new HarmonyMethod(typeof(ConversationManagerSafePatch).GetMethod("Finalizer", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, null, null, null, finalizer);
 					_patched = true;
-					Logger.LogTrace("System", "✅ ConversationManagerSafePatch 已对 ConversationManager.UpdateSpeakerAndListenerAgents 打补丁（含 Finalizer）。");
+					Logger.LogTrace("System", "✅ ConversationManagerSafePatch Patched ConversationManager.UpdateSpeakerAndListenerAgents (including Finalizer).");
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ ConversationManagerSafePatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ ConversationManagerSafePatch patch failed: " + ex.Message);
 		}
 	}
 

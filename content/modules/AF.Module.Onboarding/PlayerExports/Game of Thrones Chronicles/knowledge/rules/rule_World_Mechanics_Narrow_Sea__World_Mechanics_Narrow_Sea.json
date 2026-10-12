@@ -1,0 +1,161 @@
+{
+  "Id": "rule_World_Mechanics_Narrow_Sea",
+  "Keywords": [
+    "Narrow Sea",
+    "Westeros and Essos",
+    "Free Cities Sea Lanes",
+    "Exiles' Sea Route"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Narrow Sea lies between the eastern coast of Westeros and the Free Cities of Essos, its narrowest crossings far shorter than an ocean voyage. King's Landing, Dragonstone, the Vale, and Dorne are bound through it in dense trade and political dealings with Braavos, Pentos, Myr, Tyrosh, and Lys. Grain, wine, timber, wool, spices, weapons, and slave ships ply different lanes, while sellswords and exiled nobles cross the strait to change their fortunes. Though the crossing is relatively short, storms, pirates, blockades, and the season still kill; the Narrow Sea has never been an empty gulf shutting the world out, but a highway constantly hauling wealth, war, and rumor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "dragonstone",
+          "vale",
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Folk of the eastern ports treat the Narrow Sea as their livelihood, often learning what has happened in the Free Cities before inland lords do. To them the sea is no foreign border, but a street whose prices rise and whose gates can be barred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "pentoshi",
+          "myrish",
+          "tyroshi",
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants of the Free Cities look upon Westeros as market, employer, or refuge. In their eyes, a dispute over the throne quickly turns into grain prices, charter rates, and sellsword contracts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rulers see fleets and landing beaches, warriors see a road to earn their bread abroad, and priests see faith carried across the water. The Narrow Sea is narrow indeed—so narrow that neither shore can long pretend the other does not exist."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Narrow Sea The busy waters dividing and linking Westeros and western Essos, across which merchantmen, sellswords, exiles, and political tidings pass back and forth. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Narrow Sea The busy waters dividing and linking Westeros and western Essos, across which merchantmen, sellswords, exiles, and political tidings pass back and forth. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Narrow Sea The busy waters dividing and linking Westeros and western Essos, across which merchantmen, sellswords, exiles, and political tidings pass back and forth. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Narrow Sea The busy waters dividing and linking Westeros and western Essos, across which merchantmen, sellswords, exiles, and political tidings pass back and forth. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Narrow Sea: The busy waters dividing and linking Westeros and western Essos, across which merchantmen, sellswords, exiles, and political tidings pass back and forth."
+  ]
+}

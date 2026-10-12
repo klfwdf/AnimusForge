@@ -1,0 +1,22 @@
+{
+  "Id": "rule_The_World_in_AD_1259",
+  "Keywords": [
+    "The World in AD 1259",
+    "AD 1259",
+    "Thirteenth Century",
+    "Medieval Geopolitics",
+    "Triple Crisis"
+  ],
+  "RagShortTexts": [
+    "In Anno Domini 1259, the medieval world endures a simultaneous collapse of three universal orders: the Abbasid Caliphate, the Holy Roman Empire, and the Crusader Levant."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Anno Domini 1259 represents one of the profound structural turning points of the global Middle Ages. The geopolitical landscape is defined by the concurrent disintegration of three ancient pillars of authority: the extinction of the Abbasid Caliphate in Baghdad following the Mongol sack of 1258, which deprived the Islamic world of its universal spiritual figurehead; the chaotic Great Interregnum of the Holy Roman Empire following the collapse of the Hohenstaufen dynasty, leaving Central Europe without a recognized Emperor; and the terminal exhaustion of the Crusader States in Outremer, reduced to isolated coastal enclaves.\n\nInto these vacuums surged aggressive regional powers: Hulagu Khan’s Ilkhanate in Persia, the militarized Mamluk Sultanate of Cairo, the resurgent Roman Empire of Nicaea, the ascendant Kingdom of Bohemia under Ottokar II, and the moral and legal hegemony of Capetian France under Saint Louis IX. From the Atlantic shores to the Eurasian steppes, the balance of power in 1259 is intensely multipolar, fluid, and fiercely contested."
+    }
+  ],
+  "TextMappings": []
+}

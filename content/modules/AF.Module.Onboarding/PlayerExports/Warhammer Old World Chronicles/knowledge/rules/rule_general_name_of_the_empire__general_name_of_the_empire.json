@@ -1,0 +1,208 @@
+{
+  "Id": "rule_general_name_of_the_empire",
+  "Keywords": [
+    "Imperial title",
+    "Rick Dynasty",
+    "Elector Count Federation",
+    "old world human civilization",
+    "Altdorf Royal Court",
+    "Thirteen Provinces Federation",
+    "Sigmar imperial title"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Empire - formally known as \"The Empire\" or \"The Empire of Sigmar\" - is the most powerful human nation in the Old World, founded by Sigmar himself two thousand five hundred years ago. It is not a single nation-state, but an Elector Count federation of thirteen provinces with a high degree of autonomy, ruled by an elected emperor in Altdorf."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are the empire. No fancy modifiers needed - the entire Old World of human civilization found shelter and meaning in this name. Sigmar founded it, Magnus rebuilt it after the Chaos Invasion, and Karl Franz now sits on its golden throne. Thirteen provinces stretching from the Norsca Coast to the Black Mountains, from the Gray Mountains to the World's Edge Mountains - every Imperial peasant and citizen knows they belong to something greater than any single kingdom. The Empire is not a tyranny - the Emperor must be elected by the Elector Count, and the provinces retain their own laws and armies. But when we face a common enemy—whether from the north, south, or underground—we have only one name: Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The title of empire has precise legal definitions in diplomacy and international relations. The \"Empire\" refers to a federal political entity composed of thirteen provinces (including the territories represented by the fifteen Elector Counts and free cities), whose sovereignty is exercised jointly by the elected Emperor, the Council of Elector Counts, and the Church of Sigmar. The territory of the empire is divided by the Imperial Highway system and the Reik River system, including Reikland and Wesenland in the west, Midenland and Nordland in the north, Stirland, Osterland and Ostermark in the east, and Tarabek Land and Wesenland in the south. The empire's legal system was based on the Imperial Code, and each province retained a high degree of autonomy within the imperial legal framework."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The empire's position as a political entity is unique among Old World state systems - it is a federal state with an elective monarchy at its core, and its structural complexity far exceeds the feudal monarchy of Bretonnia or the castle alliance of the dwarves. The official name of the Empire has evolved through three stages over history: the \"Empire of Man\" in the Sigmar era emphasized racial unity; the \"Electoral Confederacy\" after Magnus' reform emphasized the balance of provincial autonomy and imperial power; and the most common contemporary \"Empire\" or \"Sigmar Empire\" combines the legacies of the first two stages into a unified title. The official signature format of the empire in international treaties is \"Sigmar Holy Imperial Emperor XX, Prince of Reikland, Guardian of Altdorf\" - this series of titles itself is a compressed expression of the political structure of the empire: Imperial Power (Emperor) + Province (Reikland) + Capital (Altdorf)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The name of the empire had a meaning for the female nobles within the empire that men rarely noticed. In the official narrative of the Empire, the Empire is always told from the perspective of male Emperors, male Elector Counts, and male Generals—but the actual functioning of the Empire relied on the networks of order that women maintained in grassroots communities, family farms, and local churches. While men bickered over provincial borders in the Imperial Diet, it was women who made sure that in the villages along those borders children still went to school, the sick were still cared for, and cemeteries were still consecrated. The true foundation of the Empire is not the Imperial Road—it is the Imperial Woman."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The title of Empire has direct legal implications for our family's diplomatic status. As an Imperial Elector Count family, we are not allowed to sign the name of the \"Imperial\" in treaties with Bretonnia, Dwarves, and other powers - that can only be signed by the Emperor himself. But we can sign the treaty in the name of \"Reikland Family X\" or \"Middenland Family Y\". Understanding this titular hierarchy is crucial to maintaining the family's international standing - families that misuse the name \"Imperial\" will be publicly demoted by the Emperor in the Imperial Council."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When wandering around the old world, you will find a strange phenomenon - although the Imperial people themselves call their country the \"Empire\", the Bretonnia knights privately call it the \"Merchant Republic\", and the dwarves retain the oldest title of \"Human Realms\". The different nicknames reflect the different understandings of the nature of the empire by different races: the Bretonnia people see the commercial wealth of the empire, while the dwarves remember the history of the division of human tribes before the establishment of the empire. The people of Kislev, on the other hand, have only one word to address the Empire: \"Brothers of the South.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Imperial titles have clear economic value in international trade contracts. Trade charters issued in the name of the \"Imperial\" enjoy the highest level of trust in all imperial provinces and most dwarven strongholds - this means that merchants holding a trade charter signed by the emperor himself can be exempted from paying local duties at any imperial port on the Reik River. But the price of the \"Imperial\" charter itself—the cost of bribing imperial court officials to speed up the charter's approval—had risen to six times the market value of a standard charter on Altdorf's black market."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Empire - the official full name is \"Sigmar Holy Empire\", the largest political entity of mankind in the old world.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The official title and political status of the empire"
+  ]
+}

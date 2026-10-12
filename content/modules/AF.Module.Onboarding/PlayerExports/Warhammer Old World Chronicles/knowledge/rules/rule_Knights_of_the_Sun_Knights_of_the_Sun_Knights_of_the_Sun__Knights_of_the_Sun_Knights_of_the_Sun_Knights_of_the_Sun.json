@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Knights_of_the_Sun_Knights_of_the_Sun_Knights_of_the_Sun",
+  "Keywords": [
+    "Knights of the Sun",
+    "goddess of war",
+    "Dazzling Shield Array",
+    "Maria Worship",
+    "Imperial Knight",
+    "burning faith",
+    "Fire Knight",
+    "goddess knight",
+    "Mirror Shield",
+    "sun oath",
+    "holy impact",
+    "Religious Order"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Knights of the Sun are a religious group of knights in the Imperial Order dedicated to worshiping the goddess of war, Maria. They are world-famous for their famous mirror-polished shields - when charging, they reflect the midday sun to form a dazzling flash of light that can blind the enemy, and then launch a devastating lance charge with burning fanaticism. Their knights' armor and shields were engraved with sun symbols and fire emblems, representing the sacred fire of the goddess Mary that burns all uncleanness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Knights of the Sun - the empire's most dazzling heavy cavalry, the sun's war incarnation on earth! The Church of Sigmar is the spiritual backbone of most Imperials, but in the world of the Knights, the goddess Maria is the spirit of battle herself. The standard attire of the Sun Knight is a pair of gold-plated and copper-plated full-body plate armor - not to show off wealth, but to cast sunlight on the enemy with a mirror-like armor in actual combat. Their shields are weapons that have been personally blessed by the clergy: each Sun Shield is a specially made convex mirror shield. At the same moment when the Sun Knights launch a general charge, the entire row of knights tilt their shields toward the sun at the same time. The concentrated light reflected can temporarily blind the soldiers and horses on the local front line in an instant - and then while the enemy is still rubbing their eyes, more than twenty lances have penetrated their shield wall. The Knights of the Sun have branches all over the southern territories of the empire - because the goddess Mary they worship also has a broad belief base in Tyrell in the south, they built the most spectacular Sun Temple on the plateau of the Talabek Territory. The feelings of ordinary people in the empire towards the Knights of the Sun are admiration mixed with some unspeakable inferiority - they are too gorgeous, too pious, and too dazzling, making you feel that you are not worthy of that light even if you just stand in their horse hoof prints. But anyone who says that the Knights of the Sun are just good-looking but have no fighting power should ask those goblins who disappeared from the battlefield after a flash of light during the Battle of Nordland - oh, they couldn't answer, because they never left that battlefield again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The application of the Knights of the Sun in frontal combat is an art that requires subtle calculations rather than crude mechanics. The actual effect of their mirror shield array on the battlefield depends on three variables: sun angle, formation spacing, and charge timing. On sunny days from morning to afternoon, the Knights of the Sun can exert their greatest military effectiveness - placing the sun diagonally behind the direction of attack, the mirror shield can project light to the enemy's front line at an angle close to perpendicular to the ground; but on cloudy or rainy days, the mirror shield degrades into an ordinary shield, and the Knights can only fight with ordinary lance impact. An experienced commander would never deploy the Knights of the Sun in the first charge of a battle - the best effect of mirror shield reflection requires that the enemy has already expended a lot of physical strength and concentration in previous infantry engagements. When their shields are no longer perfectly aligned, the Knights of the Sun's optical impact can achieve maximum psychological damage. In addition, the religious attributes of the Knights of the Sun mean that their dispatch conditions are also different from ordinary knights - the priests of the Knights usually need to conduct a blessing ceremony of Mary that takes more than half an hour before the war begins, during which all members of the Knights cannot move. In a defensive battle this is an advantage - the ritual itself is the burning agent of faith on the defensive line; in a surprise battle this is a fatal time debt - the enemy will not stop and wait for you until your divine prayer is completed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The theological foundation of the Knights of the Sun lies in the belief in Mary - Mary is one of the rare beings in the early lineage of gods in the Old World who was elevated from a mortal woman to a war deity. It has structural symmetry with Sigmar's narrative of the ascension of humans to gods but developed almost independently geographically and culturally. Maria was originally a female general during the Tyrell city-state alliance. In the Battle of Vespertilus in about 200 BC, she defeated the northern orc army with a force that was less than one-third of the enemy's number. Before the battle, she used a whole-night arrangement to lure the enemy into a pass with direct sunlight. When her soldiers defeated the enemy, it was the blinding effect of the rising sun reflected on the shield. The tactical blueprint of this battle was rediscovered by the Knights of the Sun two thousand years later and systematized into the mirror shield impact tactic. After the war, Maria continued to promote a series of military reforms in the Tyrell Alliance aimed at weakening the privileges of the nobility and expanding the promotion channels for civilian soldiers, which earned her the folk title of 'Goddess of War' during her lifetime. Her deification did not occur immediately after her death—it went through a special transitional period called \"actinic delay\": for about three centuries after her natural death from old age, soldiers continued to claim that they saw a female knight in golden armor appearing on the battlefield in the direction of the sun, destroying the enemy's morale in the enemy formation and then disappearing. By about 100 AD, Marian faith had been generally accepted throughout the southern part of the empire. The Knights of the Sun were officially established even later - around 1780 in the Imperial Era, a group of Imperial knights who survived a battle with the greenskin army on the south bank of the Talabek River discovered an ancient mirror shield in the ruins of the Temple of Maria, and reorganized the Knights' tactical system and religious beliefs accordingly. Theological relations between the Knights of the Sun and the Church of Sigmar have always been in a delicate state of non-conflict - they believe that Mary met Sigmar during his lifetime and paid tribute to each other, a narrative that does not exist in the official version of the Church of Sigmar but is not officially denied."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The goddess Mary is not a mainstream belief in the empire itself - the official state religion of the empire is Sigmar - but in the eyes of female nobles like me, Mary symbolizes a tradition that has been obscured in the empire's faith landscape but has special significance for women. Maria was born into a family of diplomats from the city-state of Tyrell, and her life consisted almost entirely of military command on the battlefield—her entire Canon of Mary contains not a single mention of marriage, motherhood, or family obligations. The Knights of the Sun are at least theologically based on the military genius of a woman as their spiritual core - a fact that is extremely rare among the Imperial Knights. Of course, the actual composition of the Knights of the Sun is still monopolized by men - but at least in my private little prayer room of Mary, every time I kneel in front of the statue of this goddess, what I pray for is not forgiveness or mercy, but the light of the Sun Mirror Shield that can burn away lies and hypocrisy. Sigmar protects the Empire, Mary protects those women who still need to protect themselves in the Empire - this is my belief and is not subject to church approval."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family's alliance with the Knights of the Sun was sealed through a carefully executed interfaith marriage - the choice of a second son to join the Knights of the Sun as a clerical placement for non-heirs, thus creating a blood bridge between the family and the Order's Temple of the Sun. This kind of marriage is politically delicate: because the Sigmar Church's tolerance of non-Sigmar faiths is only on paper, and your de facto act of having your son swear allegiance to the goddess Mary falls somewhere between 'respectable pluralism' and 'dangerous religious impurity' in the eyes of some Sigmar inquisitors. However, the presence of the Knights of the Sun in the Talabek Territory makes their religious power objectively overlap with the territory defense of the Elector Count family - the Elector Count family of Talabek Territory themselves are also happy to see a group of fanatical knights in mirror armor guarding the greenskin plundering route on the east side of the territory without having to bear the expense from their state army establishment. A true alliance between families is never the intersection of two coats of arms - it is the intersection of two needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I first met the Knights of the Sun in the Iverland border barracks in the southeastern part of the empire. When they passed by our row of tattered mercenary tents, the sun burst on those mirror shields. For a moment, I really felt that God was telling me: Most of the things you see in this world now are not worthy of the first breath of effort you spent when you were born. Every detail of the Knights of the Sun tells you that they do not belong to the kind of empire you are in - every copper buckle on their steel boots is polished like a small mirror, the hanging cloth on the chest of their horse is embroidered with the entire epic verse of Maria's conquest, and even the metal edge of the horse's bit is engraved with ancient southern letters that you cannot decipher. But when they actually charged - the sunlight reflected uniformly by the mirror shield was so strong that even us mercenaries watching from the flanks had to turn our heads - the crackle of their lances piercing the orc array was the most beautiful war music I have ever heard. Their magnificence is not decoration - magnificence is weaponry. The only time a tramp like me could share their light was when the dust kicked up by the horses' hooves fell on my hair after they charged, making me look like I was fighting for that light for a few minutes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The equipment of the Knights of the Sun is the most premium luxury category in the imperial arms market. The production process of a standard Sun Knight mirror shield requires four forgings and at least nine polishings of increasing fineness - the last polishing uses volcanic ash imported from Tyrell, which is monopolized by the Imperial Iron Forge Guild and priced at twelve gold coins per pound. The gold-plated interlayer of a complete set of Sun Knight plate armor uses a special dwarven alloy called 'solar gold' - it can maintain a mirror effect for more than twenty years without oxidizing or losing color, while ordinary steel armor of the same thickness will lose its luster within two years. The problem this caused was that the Knights of the Sun did not accept military procurement funds from the empire because they were worried that the budget review of the Imperial Parliament would reveal the total cost of their equipment. Once this number spreads to the ears of civilians in the form of 'the cost of a knight's plate armor is equal to the entire tax of a village', it will trigger unpredictable social emotions. Therefore, almost all of the funds of the Knights of the Sun come from the personal family donations of the members of the Knights and the real estate income of the Southern Maria Temple - they are a financially independent elite club, and the profit margin of the volcano polishing and sun gold repainting services specially provided by our Chamber of Commerce for them is enough to support our entire guild branch."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Goddess Maria - the goddess of war promoted from the Tyrell female general, the core of worship of the Knights of the Sun",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Creates a dazzling flash of light that can blind the enemy."
+  ]
+}

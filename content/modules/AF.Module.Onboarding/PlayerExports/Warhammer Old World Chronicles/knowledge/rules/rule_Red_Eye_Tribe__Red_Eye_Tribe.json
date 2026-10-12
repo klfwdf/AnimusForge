@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Red_Eye_Tribe",
+  "Keywords": [
+    "Red Eye Tribe_RE",
+    "Scar-Eyed Black Hat_RE",
+    "Night Goblin Red Eyes_RE",
+    "RedEye_RE"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Red Eyes are a night goblin warband active from the northern Badlands to the eastern foothills of the Gray Mountains, named for their members' eyes that glow dark red in the dark. Unlike ordinary goblins, the pupils of red-eyed night goblins will dilate to almost fill the entire iris in low-light environments, and they have visual abilities that far exceed those of humans at night. Their leader, Scar-Eye Blackhat, was struck in the right eye by the side of a dwarf ax during a bloody encounter with a dwarf tunnel patrol - the scar across his right eye became the pattern on every battle flag he ever wore."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are red-eyed! During the day, we can find any hole and crawl in. At night, the land is all ours! Those humans and dwarfs are like blind men at night, bumping into each other and unable to even hold a knife - but we can see clearly! Although the scar-eyed boss's eye that was smashed by the dwarf was a bit dull during the day, it was sharper than before at night - he said that the dwarf's ax smashed his eye open! Our favorite game is to sneak into the human outpost on a moonless night, push the pyre they piled during the day to their own door - and then watch them look confused in the morning!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The red-eyed horde is the most difficult nighttime adversary of all border defenses to eradicate. The core of their tactics is to use the absolute advantage of night vision to infiltrate, spread chaos and disrupt logistics rather than defeat the defense line head-on. Standard defenses against the Red-Eyed Tribe include multiple small campfire rings around the perimeter of the camp to disrupt the night goblins' dark-adapted vision, and laying shards of broken glass at the bottom of all critical supply warehouses - night goblins don't wear shoes. Hounds are irreplaceable in night patrols - they are dozens of times more sensitive than human sentinels in scent perception and are not fooled by visual illusions. However, even if all the above measures are adopted, experienced border commanders admit that the penetration success rate of the Red-Eye Tribe has never been less than 30%."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The red-eyed night goblins' night vision ability is due to an adaptive structural variation of the eyes that is rare among the green-skinned subspecies. Research by the Imperial Academy of Natural Sciences on a captured and dissected red-eyed goblin sample showed that there was an abnormally thickened layer of reflective cells behind the retina - a structure similar to the \"illumination\" of nocturnal animals, but whose thickness and reflective efficiency far exceeded any known natural species. What's more noteworthy is that the pupillary sphincter of the red-eyed goblin seems to be partially replaced by a structural fibrosis process, allowing its pupils to reach more than twice the diameter of the normal human pupil dilation limit in low-light environments, allowing more photons to enter the eyeball. The biological cost of this adaptive variation is that they are almost completely blind in strong sunlight - which is why the red-eyed tribe only operates at night or in extremely dark caves. In the history of greenskin biology, the night vision of red-eyed goblins is widely believed to be related to their long-term coexistence with dark underground creatures in deep caves - they may have developed a symbiotic light-sensitive adaptation with certain phosphorescent cave fungi during that evolutionary history."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The tactics used by the Red Eye tribe in dealing with single female lords are almost deliberately targeted - they don't attack cities, they don't kill people, they destroy things. A whole winter's worth of dry herbs on my property were soaked in water one night - it wasn't an attack, it was someone who came in in the dark, opened the wooden lid on top of the herb storehouse and let in a heavy downpour. The rain was a natural disaster, but the hand that opened the wooden cover was from the red-eyed tribe. The quota of winter herbs required for spring war horses was reduced by half after that incident, and that year the cavalry readiness attendance in my territory was the lowest it had been in the past ten years. The red-eyed tribe doesn't need to kill you with a knife - they just have to turn your winter reserves into a mound of moldy wet grass at the most inopportune time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The age of Scar-Eye and Black Hat is a long-standing mystery in my family's intelligence files. His first appearance in our family's frontier reports dates back to my grandfather's prime - meaning he had been active in the badlands for at least fifty years, a time span well beyond the natural lifespan of an average goblin, who typically does not survive twenty to twenty-five years under natural conditions. My family analyst proposed three possible explanations: First, Scar-Eye may not be a single individual but a name that is constantly being inherited; second, he may have accidentally received certain mutations during the blow from the dwarf's axe, thus gaining an unnatural life extension; third - and this is the most disturbing hypothesis - he may not be an ordinary goblin at all, but a rare individual of some green-skinned subspecies with a longer lifespan. Whatever the truth, the length of time he has been a threat in the northern Badlands alone deserves a chapter of his own in our family's history."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the ruins of an abandoned outpost on the northern edge of the Badlands, I once saw pairs of dark red light spots appearing on the distant hillside late at night - only two or three pairs at first, and later increased to dozens of pairs, all moving slowly in the darkness, as if collectively seeping out from the underground of the hillside. I crouched behind a broken window on the third floor of the ruins and saw it - those light spots did not move in my direction, but they formed a long, irregular moving line on the dark hillside, like a snake made of eyes slowly swimming on the sand. That night I waited behind the broken window until dawn - as the dawn light emerged, those red light spots disappeared one by one, not retracting into the hole - their red light became invisible in the skylight. Red eyes are not sleeping during the day, they are just invisible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic impact of the Red Eye Tribe on the Night Transport Industry on the Badlands Frontier is grossly underestimated. Caravans operating in red-eye active areas must set up camp three hours before dusk each day - this means that the actual daylight hours available for transportation are about 25% shorter than in other green-skin active areas, directly leading to the extension of a single transportation cycle and the increase in escort costs. To make matters worse, most of the types of losses caused by the Red-Eye Tribe's nighttime infiltration are storage damage rather than direct plunder - soaked grains, released pack animals, blocked water sources - these losses are often classified as 'non-violent asset destruction' in the Imperial Chamber of Commerce's standard insurance clauses and are excluded from regular claims. This implicit loss structure makes the actual cost of the red-eye tribe to the border economy far higher than the numbers shown in any official financial report."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Red-Eye Tribe—a night goblin warband in the northern Badlands known for its night infiltration and dark red night vision.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Red Eyes Tribe Night Goblin Scar Eyes Black Hat Dark Red Night Vision"
+  ]
+}

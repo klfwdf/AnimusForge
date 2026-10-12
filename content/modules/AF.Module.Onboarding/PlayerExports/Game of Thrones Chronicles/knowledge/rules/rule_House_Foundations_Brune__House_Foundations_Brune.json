@@ -1,0 +1,135 @@
+{
+  "Id": "rule_House_Foundations_Brune",
+  "Keywords": [
+    "Brune",
+    "House Brune"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Brun family has two related branches in the Crab Claw Peninsula: the Brun of Dread Hole Castle and the Brun of Brown Hole Mountain, which are connected to each other by kinship. The family door is part of the local tradition of landed knights, with ancestral tales of the famous Breen Brothers bringing peace to the peninsula. The Crab Claw Peninsula is covered with swamps, woodlands and difficult trails, making it difficult for foreign armies to exert their influence. Brun's power therefore comes not only from the fort, but also from relatives, guides and the control of local people and terrain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The local knights of Crab Claw Peninsula regard Brun as one of their own. The kin of Dread Cave Castle and Brown Cave Mountain may have their own interests, but when outsiders force their way in, the peninsula's old oaths and common terrain will have more weight than branch differences."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Peninsula farmers and hunters don't like outsiders calling them savages. They trust Brun, who is familiar with the swamp and respects the courtesy of old guests, and will resist the strange stewards who come to seize the forest land and fishing grounds with gorgeous documents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brune The Burren family lives in Terror Cave Castle and Brown Cave Mountain on the Crab Claw Peninsula. The family business is rooted in the blood of the ancestors, the rugged terrain and the peninsula's tradition of autonomy. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brune The Burren family lives in Terror Cave Castle and Brown Cave Mountain on the Crab Claw Peninsula. The family business is rooted in the blood of the ancestors, the rugged terrain and the peninsula's tradition of autonomy. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brune The Burren family lives in Terror Cave Castle and Brown Cave Mountain on the Crab Claw Peninsula. The family business is rooted in the blood of the ancestors, the rugged terrain and the peninsula's tradition of autonomy. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brune The Burren family lives in Terror Cave Castle and Brown Cave Mountain on the Crab Claw Peninsula. The family business is rooted in the blood of the ancestors, the rugged terrain and the peninsula's tradition of autonomy. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Brune: The Burren family lives in Terror Cave Castle and Brown Cave Mountain on the Crab Claw Peninsula. The family business is rooted in the blood of the ancestors, the rugged terrain and the peninsula's tradition of autonomy."
+  ]
+}

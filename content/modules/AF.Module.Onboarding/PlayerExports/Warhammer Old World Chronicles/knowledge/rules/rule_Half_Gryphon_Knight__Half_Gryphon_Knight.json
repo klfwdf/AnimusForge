@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Half_Gryphon_Knight",
+  "Keywords": [
+    "Demi-Gryphon Knight",
+    "demi-gryphon",
+    "Imperial Elite Cavalry",
+    "Raptor War Ride",
+    "tearing charge",
+    "monster cavalry",
+    "inner ring knight",
+    "Gryphon",
+    "imperial raptor"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Demi-Gryphon Knight is the ultimate elite of the Imperial Knights - only the most senior \"Inner Circle Knights\" among the major knights can be qualified to control the Demi-Gryphon. The demi-gryphon is a terrifying raptor beast that combines the ferocity of a lion with the speed of an eagle. Its sharp claws can tear through plate armor, and its beak is strong enough to crush the skull of a war horse. When a whole team of demi-gryphon knights charge, all that is left on the ground are broken bones and stumps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Demi-Gryphon is one of the highest honors an Imperial Knight can achieve - not every knight can ride them, in fact, only about one in ten Inner Circle knights can successfully form a riding bond with a Demi-Gryphon. This creature is not a tamed horse; you must earn its respect. The temperament of a demi-gryphon is between the most violent lions and the shrewdest falcons: when it is docile to you, it will nuzzle your face like a giant cat, but when you are injured and fall to the ground, it will not stand still and wait for you like a war horse. Instead, it will pounce on the enemy who knocks you off the saddle, and then come back to check your injuries. This is just our speculation, because few knights have personally seen the reaction of a demi-gryphon after falling. These raptor war beasts are captured in the eastern mountains of the Reik Forest - but they can only be captured at a young age, and adult half-gryphons cannot be tamed in any case - and then the rider starts to partner with the half-gryphon when it turns one year old, and it takes three years to establish an emotional bond that transcends the master and the beast. The four major knights of the empire - the Rick Guards, the White Wolf Knights, the Flame Knights and the Black Rose Knights - all have their own inner ring demi-gryphon cavalry, but the total number does not exceed eighty, making the death of each demi-gryphon an irreparable loss for the empire. Demi-Gryphons are famous for their jumping charges on the battlefield: they will not sprint in a straight line like war horses, but will suddenly rise into the air and dive from above when approaching the enemy. This change in attack angle makes it impossible for the enemy spearmen to adjust the direction of the thrust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Demi-Gryphon Knights occupy a unique ecological niche in terms of tactical mobility: they combine the impact of heavy cavalry with the speed of light cavalry, and are far superior to regular cavalry in traversing rough terrain - the demi-Gryphon's claws enable them to climb steep slopes and shuttle through dense forests. The correct way to use the Demi-Griffin Cavalry is to position it as a \"monster hunting unit\": when there are enemy giant monsters on the battlefield - trolls, giants, Chaos Scorpions or Undead Behemoths - launch the Demi-Griffin Cavalry to attack the flanks or rear of these targets. The demi-Griffin's beak and claws can do far more damage to the flesh of large creatures than the spear can penetrate. But avoid using demi-gryphon cavalry against regular heavy cavalry - although they can crush ordinary infantry, their absolute disadvantage in numbers means that once they are dragged into a war of attrition, the entire army will be annihilated. Another fatal weakness of demi-gryphons is their extreme sensitivity to artillery fire and explosions: the wild perception of these creatures makes them more likely to be frightened and lose control in the face of artillery bombardment than war horses. A soft-hearted or inexperienced demi-gryphon commander will bring the entire cavalry into the firing line of one's own artillery - and you yourself are the target of that bombardment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The history of biology and military use of the demi-gryphon is a rare research field at the intersection of imperial natural philosophy and military science. From a taxonomic perspective, demi-gryphons are classified by the Imperial Natural Society as a \"mixed raptor genus, subfamily Griffonidae\" - belonging to the same family lineage as true griffons but with significant differences in size and behavior. An adult male demi-griffon is about five to six feet tall at the shoulder and weighs up to half a ton. The talons on its forelimbs can shatter a two-inch-thick steel plate. Its skull bite force has been determined to be about fifteen hundred pounds by mechanical simulations at the Altdorf School of Engineering. The half-gryphon training system of the inner ring knights is a set of undisclosed oral traditions - no one has ever written the complete taming method into a book - but scholars have pieced together the general process through the archival records of each knighthood: After the young half-gryphons are captured, the future riders need to interact with them every day for the first three months. It stays together for at least eight hours, during which time no other person is allowed to approach, thereby establishing a one-way social bond; the second stage of training involves the riding itself. The rider needs to sit quietly in the saddle for two to three hours every day to let the half-gryphon get used to the weight on its back. This training usually lasts for six months to a year. The first record of large-scale use of demi-gryphons in the imperial military history occurred in the Battle of Talabek Forest Purification in 2420 of the Imperial History. At that time, three inner ring demi-gryphon cavalry with a total of fourteen cavalry were deployed to attack a beastman war tribe. They achieved an astonishing record of annihilating the enemy behemoths and only one of their own cavalry was killed. At present, there are no more than eighty active half-gryphons in the Imperial Knights, of which about fifty are concentrated in the four major knights, and the rest are distributed among the inner-ring cavalry units of local nobles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the eyes of the noble women of our empire, the half-griffon knights are the most charming group of knights and the most dangerous lovers. An inner ring knight riding a half-griffon has social charm beyond that of ordinary knights in the court - a man who can establish a bond with a beast is naturally outstanding - but his professional risk is also the greatest: if a half-gryphon is killed in battle, unlike a war horse, its knight will almost certainly die at the same time. Marrying him means you have a half chance of becoming a widow in the next war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Having a family member become a half-Gryphon knight is the highest honor pursued by all imperial noble families. This title means your family is at the top of the Imperial Knight hierarchy - not every noble can produce someone recognized by the Knights of the Inner Circle. Ancestors with the title of \"Half-Griffin Master\" on the family tree can bring a halo effect to their descendants in the knight circle for generations, because this is regarded as a proof of superior bloodline: Half-Gryphon will not grant the right to ride to the weak."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a traveling mercenary, I have seen the fighting methods of most armies of the empire - you don't need to know how to fight to understand how the halberdiers operate and how the knights charge - but the demi-gryphon is not something you can learn through observation. I once saw a group of demi-Griffin knights jumping down from the hillside from a distance on the border of Talabek. To be honest, I was not even sure whether it was a group of cavalry or a group of things flying out of hell. If you happen to be an enemy infantryman and there's a Demi-Griffin on the other side - run into the nearest woods and hope it's not a patient Demi-Gryphon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The semi-Griffin equipment supply chain is the most profitable and highest-threshold market segment in the empire's arms and leather industry. The cost of making a leather saddle for an adult demi-gryphon is much higher than that of a pair of knight's plate armor, because its body shape is not fixed - the width of the shoulder blades and the curvature of the back of each demi-gryphon are different, which requires craftsmen to tailor-make the saddle for each individual demi-gryphon, which cannot be mass-produced. Moreover, the claws of the demi-gryphon need to be polished and embedded with steel regularly by specialized personnel - a skill possessed by less than ten craftsmen in the country."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Demi-Gryphon Classification - The Imperial Natural Society places it in the genus Hybrid Raptor, having characteristics of both a lion and an eagle.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Demi-Gryphon Knight is the ultimate elite of the Imperial Knights - only the most senior among the major knights."
+  ]
+}

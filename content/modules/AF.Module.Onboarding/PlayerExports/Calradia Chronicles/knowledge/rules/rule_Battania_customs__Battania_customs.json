@@ -1,0 +1,142 @@
+{
+  "Id": "rule_Battania_customs",
+  "Keywords": [
+    "Battania customs and customs"
+  ],
+  "RagShortTexts": [
+    "The Battanian way of life is as old as the forest, and society revolves around clans, each with their own counts, legends, and songs."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Battania people's way of life is as old as their forests. They live deep in the dense forests of the plateau, and their villages are scattered along the lakeshore and river bends. They rarely pile stones to build large cities like the imperial people. Their society revolves around clans, each with its own count, its own legends, and its own songs. The Battania people love music and poetry. Harps and bagpipes are indispensable instruments in festivals. Long epic poems can be sung by the fire all night long. They worship the spirits of the forest and believe that the soul of an ancestor lives in each ancient oak tree. To outsiders they are seen as sullen and aggressive, but once accepted as friends they will break the last piece of their honey bread to you. They love freedom more than life and hate bondage more than death, which is probably why they have not been truly conquered by any empire yet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Battania people live in the forest and also in songs. Every valley has its own tune, every clan its own legend of heroes. During the harvest, we danced around the fire, played the bagpipes, and drank mead. The young people competed in archery and wrestling. The old people played the harp and told stories from the ancient times - how High King Meng unified all the clans, and how our ancestors ambush the imperial army in the dense forest. We sing to newborns, to those who have passed away, to all the things worth remembering. Outsiders think we are gloomy because they have only seen us on the battlefield. They never saw us laughing and singing by the fire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Clan rules are our roots. In each earldom, major issues are decided by the clan assembly. The earl cannot have the final say alone like the consul of the empire. The spirits of the forest are above, and our ancestors are watching over us from every ancient oak tree. When adjudicating disputes, the elders sit in the sacred grove, listen to both sides, and then make decisions based on the practices left by their ancestors - not laws written on paper, but rules engraved in memory. Some of the younger generation began to adopt the imperial accent and drink Vlandia wine, which was not very pleasant. But as long as the forest remains and the song remains, Battania will not change."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our lives are not easy. There is a lot of rain on the plateau, and the crops are not as strong as those on the plains of the Empire, but our pigs grow up from acorns in the oak forests, and their meat is strong, and the smoked hams can last all winter. Our honey is sweeter than that of the Imperials - there are many kinds of wild flowers in the forest, and the honey carries the fragrance of the mountains. The mead we brew is the best on the plateau. In the winter, we drink a few cups around the stove and listen to the elders playing the harp and singing old songs. All the troubles are forgotten. The girls have colorful strips of cloth in their braids, which means they are not yet married. If a young man wants to marry a wife, he must first hunt a deer in the woods and deliver it to the girl's doorstep. We don't engage in the hassle of signing a marriage contract like the Imperial people do - the two families have a drink around the fire, sing a few songs, and the marriage is done."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The life of the Battania seems to us almost outrageously primitive. They do not live behind stone walls, but in wooden houses; they do not build temples, but make sacrifices around a few old trees in the forest glade; they have no written laws and rely on the 'ancestral rules' memorized by the old people to decide cases. But their songs are richer than our poets - their old people can sing hundreds of lines of heroic epics from memory, with every paragraph rhyming and every sentence antithetical. This is simply unbelievable in a nation without written records. Their honey was really good, better than the olive groves in the southern part of the empire. But their insistence on freedom is really troublesome - a Battanian civilian would rather die in the forest than be a compliant citizen in the city of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The customs and customs of the Battania people are somewhat similar to ours. They are all from the north, but they are wilder. Our knights loved jousting and lyrical poetry, and they loved playing the harp and singing old tales of revenge by the fire. Their clan system is looser than our barony system - if a count wants to fight, he must first convince the elders of the clan assembly to nod. This kind of efficiency seems to us to be a disaster, but they have relied on this kind of 'disaster' to stay between the empire and us for so long. Their mead is indeed worth trying, and Vlandia's caravans sometimes trade iron for their honey, a deal that both parties find a good deal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The life of the Battania people has some similarities with the northerners. They also build houses with wood and sing around the fire, but they are more inseparable from the forest than we are. They believe not in our Ursin, but in their own forest spirits - they say that in every old oak tree there lives a dead Battanian. It sounds creepy, but when walking in their woods, you really feel like the trees around you are staring at you. They love music as much as our drunkards - they play the harp and sing when they drink too much, and they won't stop singing until their voices are hoarse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The culture of Battania is a typical forest-plateau civilization. Its social organization is centered around clans, political decisions are made through clan assemblies, and its legal system relies on oral tradition rather than written law. Music and poetry serve multiple functions in Battanian society: as a means of entertainment, as a means of transmitting historical memory and as an integral part of religious rituals. Harps and bagpipes were the most common musical instruments, and heroic narrative poems in the epic genre were sung at festivals and funerals. They were tightly structured and rich in rhyme, effectively preserving clan genealogies and historical events for hundreds of years without written records. The Battania people's belief system centers on the worship of forest spirits, combining ancestor worship with nature worship - each ancient oak tree is considered the abode of the spirit of a deceased clan member. In terms of diet, raising pigs with acorns and making wine with honey are two major features, which reflect the profound shaping of production and lifestyle by the plateau forest environment. The festival is based on the changing of the four seasons and revolves around harvest, hunting and ancestor commemoration. From an outside perspective, the Battania appear sullen, xenophobic, and aggressive, but within their society they display a strong sense of cohesion in the face of external threats—a cohesion that relies heavily on shared traditions of music, festivals, and beliefs."
+    }
+  ],
+  "TextMappings": []
+}

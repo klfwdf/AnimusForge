@@ -1,0 +1,213 @@
+{
+  "Id": "rule_vampire_politics",
+  "Keywords": [
+    "Vampire Politics",
+    "Vampire Politics Bloodlines",
+    "Vampire Politics Midnight Aristocracy",
+    "Vampire Houses",
+    "Phenotypic Differentiation of the Curse",
+    "Blood Dragon Knights",
+    "Necrarch",
+    "Vampire Politics Lahmia",
+    "Strigoi",
+    "Court of Night",
+    "Bloodline Intrigue",
+    "Games of the Immortals"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Vampires are far from a monolith internally—they are fractured into multiple ancient bloodlines whose mutual hatred and intrigue are no less fierce than their hostility toward the living. The von Carstein family is renowned for political ambition and lust for conquest; they are the instigators of the Vampire Wars. Beyond them are the Blood Dragon knights who pursue the pinnacle of swordsmanship, the Necrarchs obsessed with forbidden necromantic experiments, and branches such as the Strigoi, who have degenerated until they have nearly lost their reason."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The power games of the five great bloodlines run through our entire history. We von Carsteins are the strongest and most orthodox—yet we are not the only ones coveting the Midnight Crown. Though the Blood Dragon knights ostensibly focus on martial cultivation, the points of their blades could turn toward us at any moment, so long as they deem it a battle to prove their supreme martial might. Those Necrarch scholars dwelling deep in their crypts never participate in open court politics, yet underground they weave dark networks that even we find difficult to penetrate. The Strigoi have degenerated into monsters—they are unworthy of being regarded as Midnight Aristocracy. As for the Lahmians, those elegant vipers are polite to us on the surface, yet behind every smile they offer may lie a hidden dagger. Never trust another vampire, especially one of your own bloodline."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The political fragmentation of the vampires is their greatest military weakness. Unlike the human Empire, which can forge alliances, vampire bloodlines can almost never truly trust one another—their coalitions are always built upon temporary alignment of interests, and once a common enemy is defeated, infighting inevitably erupts. A shrewd commander can exploit this: divide and court secondary bloodlines against the dominant one, for instance by offering Blood Dragons the chance for an honorable duel to draw them away from the main battlefield. Although the von Carstein family nominally rules Sylvania, its binding authority over other bloodlines is far weaker than that of a human king over his vassals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The study of vampire bloodlines reveals the astonishing plasticity of the undeath curse. The five great bloodlines originate from the same curse yet diverge into radically different manifestations, a phenomenon known in magical biology as 'phenotypic differentiation of the curse.' The von Carstein bloodline exhibits the strongest aptitude in beguilement and shadow manipulation, and its vampires can mimic the appearance of the living to a certain degree—which explains their success in political infiltration. The Blood Dragon bloodline channels the energy of the curse into the enhancement of physical prowess and combat reflexes, at the cost of relatively weaker magical ability and an almost pathological obsession with martial honor. The Necrarchs have gone to the opposite extreme—their bodies rapidly rot and decay, yet their necromantic power is the most terrifying of all bloodlines. The degeneration of the Strigoi is likely the combined result of prolonged inbreeding of blood-feeding and the magical environment of their habitats. As the oldest bloodline, the Lahmians exhibit the most balanced manifestation of the curse and remain closest to Neferata's original form."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Within the political system of the vampires lies a dimension almost entirely overlooked by human military scholars—the Lahmian Sisterhood. Founded by Neferata herself and composed exclusively of female vampires, this secret organization operates the most sophisticated infiltration network across the great courts of the Old World. Whereas male vampires excel at direct martial conquest and overt deterrence, the female vampires of Lahmia have chosen a far more covert yet equally lethal path: they enter centers of power under the guise of widows of fallen noble houses, mysterious heiresses from foreign lands, or charitable noblewomen funding convents, inextricably weaving the bloodlines of target families into the vampires' web of interests over the course of decades. As a female ruler on the borders of the Empire, I noticed something far earlier than my male peers—those 'distant cousins' who appear in every generation during a family succession crisis to offer crucial assistance always seem to possess overly impeccable timing and overly exquisite pale complexions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "To our family's strategy, the five vampire bloodlines are not five slightly different enemies, but five completely distinct threats requiring five completely distinct defense plans. The von Carstein mode of attack is the one we know best—frontal military threat and direct political infiltration, against which we defend with military mutual-protection alliances and bloodline vetting. The threat of the Blood Dragons is subtler—they may not invade your domain directly, but the finest swordsman and heir in your family might 'happen to meet' a Blood Dragon knight on the road to a border tournament, and then lose his birthright or worse in a seemingly voluntary duel. The Necrarchs are the threat hardest for us to gauge—they never proactively contact us, yet we have no idea whether the experiments they conduct in subterranean crypts might accidentally summon forth some uncontrollable horror on any given night. And the Strigoi—they have degenerated into wilderness predators; for a noble house they are the simplest threat: requiring neither diplomacy nor analysis, only maintaining sufficient armed patrols along the domain's borders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Infighting among vampires is the cruelest and least known political struggle in the Old World—not because it is bloodless, but because most witnesses are dead. I was once briefly stationed at an abandoned outpost on the edge of the Ostermark marshes, near which lay a forest clearing burned to scorched earth. A passing old hunter told me that fifty years ago, three vampires of different bloodlines had fought a miniature civil war there—not over land or castles, but over a fragmentary forbidden scroll said to have been written by Nagash's own hand. The battle lasted an entire night, and after dawn broke, every blade of grass on the scorched earth lay flattened in the exact same direction—not blown by the wind, but marked by the force of necromantic magic radiating outward from the center of the battle. What is most terrifying about vampire politics is that they never die—so hatreds between them can lie dormant for one or two hundred years before erupting anew over an ancient point of contention of which the living Empire retains no memory whatsoever. Their politics is not measured in years, but in centuries of vengeance and calculation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Competition among the five vampire bloodlines has created some peculiar and highly speculative opportunities in the commercial market. The Blood Dragon bloodline's demand for weapons constitutes the most specialized luxury market in the Old World—they have no need for ordinary fine-steel longswords; what they require are custom-forged weapons made from specific ores under specific phases of the moon, capable of withstanding a vampire's preternatural strength. The manufacture of such weapons can only be accomplished by Dwarf Runesmiths and a tiny handful of secret Imperial master weaponsmiths, and every transaction is worth a king's ransom and conducted entirely within the black zones of Imperial law. The von Carstein family's consumption of dark magical reagents forms the single largest demand side in the Old World's underground magical market—from soil taken from specific graveyards to organs from corpses that died in specific ways, traded among vampires in Sylvanian marketplaces at prices incomprehensible to the living. My fundamental assessment of the vampire economy is this: the continued existence of the five bloodlines is in itself a massive underground economic niche, and the more the Empire ostensibly bans all trade with Sylvania on the surface, the higher the excess profits of this niche become."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Five Bloodlines — the cursed branches of von Carstein, Blood Dragon, Necrarch, Strigoi, and Lahmia",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Power structures and decision-making mechanisms of the vampires"
+  ]
+}

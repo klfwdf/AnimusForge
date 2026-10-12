@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Order_of_the_Crown_Small_Council",
+  "Keywords": [
+    "Small Council",
+    "The Small Council",
+    "Realm Governance"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Royal Council is the core institution for handling state affairs in Iron Throne. It is convened by the king and is responsible for military, judicial, financial, intelligence, naval and religious affairs. It was not a collective cabinet in the modern sense: seats came from royal appointments, aristocratic influence, personal Minutes, secret conversations, and public orders may differ from one another; a minister's institutional responsibilities may also be distorted by his family interests and the king's level of trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Small Council"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Small Council"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Small Council"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Small Council The Royal Council is the core institution for handling state affairs in Iron Throne. It is convened by the king and is responsible for military, judicial, financial, intelligence, naval and religious affairs. It was not a collective cabinet in the modern sense: seats came from royal appointments, aristocratic influence, personal They start by asking who is obligated, who is protected, and who will seek justice after a breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Small Council The Royal Council is the core institution for handling state affairs in Iron Throne. It is convened by the king and is responsible for military, judicial, financial, intelligence, naval and religious affairs. It was not a collective cabinet in the modern sense: seats came from royal appointments, aristocratic influence, personal For them, what really matters is whether the orders can arrive, whether the roads are safe, and whether the food and pay can be received on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Small Council The Royal Council is the core institution for handling state affairs in Iron Throne. It is convened by the king and is responsible for military, judicial, financial, intelligence, naval and religious affairs. It was not a collective cabinet in the modern sense: seats came from royal appointments, aristocratic influence, personal Beautiful oaths that are not backed up by land, military strength, or sacred tradition can quickly be reinterpreted by the next crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Small Council The Royal Council is the core institution for handling state affairs in Iron Throne. It is convened by the king and is responsible for military, judicial, financial, intelligence, naval and religious affairs. It was not a collective cabinet in the modern sense: seats came from royal appointments, aristocratic influence, personal What is remembered is not who spoke the loudest in the hall, but which rule saved the family from starvation, conscription, or endless fighting."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Small Council: The Royal Council is the core institution for handling state affairs in Iron Throne. It is convened by the king and is responsible for military, judicial, financial, intelligence, naval and religious affairs. It was not a collective cabinet in the modern sense: seats came from royal appointments, aristocratic influence, personal"
+  ]
+}

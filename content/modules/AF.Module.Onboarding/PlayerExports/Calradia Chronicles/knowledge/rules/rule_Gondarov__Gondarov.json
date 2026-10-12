@@ -1,0 +1,143 @@
+{
+  "Id": "rule_Gondarov",
+  "Keywords": [
+    "Gondarov"
+  ],
+  "RagShortTexts": [
+    "Grand Duke Langward was a member of the Gondarov family and sought centralization of power in Sturgia"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the descendants of Gondal. Our ancestors distributed weapons and armor to the local people, not by conquest, but by fairness in exchange for the right to rule. But fairness can only last one generation. The boyars knelt down to my grandfather and begged him to save his life, and he did. Then what? Their heirs fell on deaf ears. Langward was right - these people liked to quarrel, did whatever they wanted, and had no regard for the country. Our Gondarov family does not want to be tyrants, we want to be princes. What the Archduke meant was that the entire Sturgia must listen to one person's voice, not a dozen boyars each speaking their own voice. Outsiders think Langward is harsh, but that's because they haven't sat in this seat. You try to manage a stubborn person like Olek, a smiling tiger like Gordon, and a bunch of families who are always ready to settle old scores. See if you can survive the first winter without being harsh. Our mother's people, the Brotherhood of the Shield, were our last card. Langward is reluctant to use it easily, but when the day comes, he will use it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Gondarovs are our grand ducal family - in name only. Our family has never really recognized this since \"older\" Olek. What we recognize is the land, the forest, the territory that the gods gave to the Kulov family from the creation of the world. Langward's grandfather had saved the Boyers, that was his grandfather's business. Now Langward wants to extend the power of the Grand Duke into our territory, which is crossing the line. Olek has made it very clear: It is okay to fight under your command, paying taxes hurts more than being hit by arrows, and we have the final say in our land. Will Langvald use the Shield Brotherhood to scare people? The Kulov family is not afraid of mercenaries. We have been fighting in the forests of the north for many generations, and we have never seen any kind of enemy. What's more, the matter between us and Gondarov is not only a matter of power, but also a matter of blood. How was Varla's head delivered? Langward used my sister's blood to pour the fire of the Achitites, and we will remember this. We will not openly oppose it, but we will not bend our knees either."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Gondarovs are our nominal masters, and we recognize this. We paid taxes readily, responded quickly to recruitment, and were always polite and courteous. Grand Duke Langward does not trust us - he feels that our family must be making small calculations. To be honest, he wasn't entirely wrong. Our Vajirov family is an emerging family, not as old-school as Kulov, nor does it have as heavy a burden as Gondarov. We value trade, we value towns, we value being able to do business with Imperials, Nords, and Khuzait. Langward wants to centralize power, and we cooperate - anyway, centralization is not bad for our business. There will be fewer bandit Boyers on the road, and the caravan will be safer. But we cooperate because it’s a good deal, not because of loyalty. When the Gondarov family falls, we will not be buried alive. When A fails, we will not be the first to stab him. We only do one thing: wait. Wait until the situation is clear before placing your bet. Others think this is naughty, but we think it is clever."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Gondarovs are the royal family of Sturgia, but their position is never secure. We outsiders can see clearly: a century ago Sturgia was just a tribal alliance, and a prince was elected only after the empire was under great pressure. Now that the pressure is less, the Boyers are not happy again. Langward is tough, we all admit that. He has the Shield Brotherhood as backup, and he's very ruthless. But Sturgia's problems are not something that can be solved by hand-the place is too scattered, the Boyer is too powerful, and the Crown is too new. Olek dared to tell him face to face, \"On your land we have the final say.\" But in our place, his head would fall to the ground after saying this. Langward didn't touch him, not because he didn't want to, but because he couldn't. If he touches the Kulov family, half of Boye will fall out on the spot. Langward had only two options in front of him: either completely conquer all the Boyers, which would require a civil war; or maintain the status quo and continue to be the titular Grand Duke. He chose the third path - slowly tightening the rope. The problem is to take your time, the enemy is also waiting. Emerging families like the Vajirovs appear to be cooperating, but are actually waiting for the wind to blow. Old families like the Kulovs don't hide their hostility. As long as Langward reveals a flaw, vultures from both inside and outside will fly over."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Archduke Langward? The people of the Kulov family in the north frowned when they mentioned him, and the people of the Vajirov family in the east laughed when they mentioned him. We ordinary people don’t care so much. It doesn't matter who sits in the royal city. What matters is whether taxes are heavy or whether wars are fought. The years that the Gondarov family has been the Grand Duke cannot be said to be good or bad. Langward has a tough temper and is never lenient in collecting taxes. We blame him for this. But he mainly focused on Boyer's head and did not find trouble with the common people. Moreover, his mother's tribe has troops on the Nord side. If Sturgia is really invaded by foreign enemies, he should be able to withstand it. We also heard about the Shield Brotherhood. Some people say that they are Langward's private soldiers, and they will be released when the boyars disobey. We feel scared when we think about it - when mercenaries enter the village, it doesn't matter which Boye serf you are, the fire will be the same. Therefore, the common people have only one expectation: when you Boye fights with the Grand Duke, don’t let us take the backseat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord",
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "skolderbrotva"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Gondarov family has an old relationship with us - Langward's mother is a Nord princess, and our Shield Brotherhood has been dealing with Nord for several generations. So we don't help Langwald to support the scene in vain. But then again, if Langward really wants us to drive into the hinterland of Sturgia to suppress Boyer, the price will be different. We have learned about the boyars: the Oleks' soldiers are like ghosts in the woods, and Vajirov's gang has money and trade routes. They may not be able to fight, but they will definitely be able to hire people to fight for them. Langward wants to use us as the last card, okay. The cards are good, but you have to think clearly before playing them: Once our Shield Brotherhood enters Sturgia, whether we will leave after the fight is not decided by Langward alone. We respect the Gondarov lineage, but we are mercenaries. The rules of mercenaries are based on contract, not bloodline."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The royal family of Sturgia is called Gondarov, and that name is always on your tongue. Their side is different from ours - the king here has the final say, but the prince there has the final say and Boyer refuses to accept it. I heard that the Grand Duke Langward was very vicious and said that he would let the knife fall on Boyer. I asked my dad what Boye was, and he said he was probably the little king over there. Isn't that just the king fighting the little king? Very messy. There is also some kind of Shield Brotherhood, they say they are soldiers who are paid to do things, people from the Grand Duke's mother's side. Tsk, after all, it’s the relatives who are involved in politics. This kind of thing happened in our village before. The master's mother-in-law's family was too powerful, and the master himself was not strong-willed in his words. But this is Sturgia, a place with heavy wind and snow, which is none of our business."
+    }
+  ],
+  "TextMappings": []
+}

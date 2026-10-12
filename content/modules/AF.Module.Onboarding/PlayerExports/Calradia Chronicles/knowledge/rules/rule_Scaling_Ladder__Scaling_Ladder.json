@@ -1,0 +1,45 @@
+{
+  "Id": "rule_Scaling_Ladder",
+  "Keywords": [
+    "Scaling Ladder"
+  ],
+  "RagShortTexts": [
+    "Scaling ladders are large ladders used for sieges."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A scaling ladder is a big ladder used for storming walls—I don't know the exact details."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "engineering": 50
+        }
+      },
+      "Content": "The main body of a scaling ladder uses a fixed mechanism that simplifies and shortens the process of raising it, while its hinged upper section greatly reduces the ladder's profile before engaging the enemy. During a siege, attackers need only position the main ladder at the base of the wall and then extend the upper ladder atop it to bridge onto the battlements, reducing the danger and difficulty of raising ladders under fire while keeping the ladder away from the parapet until the final assault so defenders cannot destroy it prematurely. Defenders, in turn, use hooked poles to push scaling ladders away and keep attackers from climbing the walls."
+    }
+  ],
+  "TextMappings": []
+}

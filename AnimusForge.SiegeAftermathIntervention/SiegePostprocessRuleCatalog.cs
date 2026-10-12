@@ -10,7 +10,7 @@ public static class SiegePostprocessRuleCatalog
 {
     public const string RuleId = "siege_intervention_aftermath";
 
-    public const string InjectedRuleBlockMarker = "\u3010\u9644\u52a0\u89c4\u5219:siege_intervention_aftermath\u3011";
+    public static readonly string InjectedRuleBlockMarker = SiegeAftermathCompatibilityTexts.Raw("compat_siege_postprocess_rule_catalog_ba497f502860");
 
     private static readonly SiegePostprocessRuleDefinition[] FallbackRules =
     {

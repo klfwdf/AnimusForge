@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Karak_Exferaz",
+  "Keywords": [
+    "Karak Axfilaz_KE",
+    "Fortress of Aixferaz_KE",
+    "Redbeard Fortress_KE",
+    "Aixferaz Mine_KE",
+    "Exferaz Dwarf Territory_KE",
+    "King Exferaz_KE"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Exferaz is a dwarven stronghold named after the Redbeard clan deep in the Gray Mountains, ruled by King Scarf Redbeard. The dwarves here are famous for their iconic red beards. It is said that this comes from the powder of a special red ore in the local mines that has long dyed the beards and hair of the miners red. Aixferaz is famous for its gold and copper mining."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Exferaz - the home of the Redbeard King! Our red beards are not born, they are dyed in this mine over thousands of years. King Scarf's red beard was the brightest of all, and was said to have traces of pure gold in it. The miners of Aixferaz hammer the rock walls in the depths day and night, and every time they hammer, they may knock out gold coins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Exferaz is the main source of precious metals among the dwarves of the Gray Mountains. Copper mines are used to cast projectiles and alloy accessories for dwarf cannons, while gold mines provide an important source of precious metals for the Dwarf Citadel Alliance's currency system. King Scarf Redbeard's financial resources give him disproportionate influence in dwarven politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The gold-copper composite veins of Karak Exferaz have extremely high economic value. According to the dwarven geological records, the Exferaz vein group includes three independent gold veins and two copper veins. The thickness and grade of the mineral deposits are among the best in the Gray Mountains. The annual gold production is about four hundred pounds, and the copper production is about thirty tons. The metallurgical workshop of the fortress uses the dwarves' unique graded smelting method, which can separate gold and silver impurities in the ore to an accuracy of five ten thousandths. Products were exported via imperial caravans in the form of gold bars, coins and copper ingots to major financial centers such as Marienburg, Altdorf and Tarabeckheim."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In Xferaz, female dwarves manage the weighing and accounting of gold mines. Accuracy requirements were extremely stringent—the weight of a gold leaf could not vary by more than one-tenth of a grain. The gold bars stacked in the fortress's vaults are our lifeline, and there is no room for error. This job makes me spend every day among numbers and scales, but the family’s reputation is built on this meticulousness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family manages the copper veins on the easternmost side of Aix-Ferraz. Although the grade of this vein is not as good as the main vein, the ore layer is extremely stable and has been mined continuously for more than four hundred years without any signs of depletion. King Scarf relies on our steady output to supply the castle's copper foundry. In dwarven strongholds, continued stability is sometimes more respected than intermittent profiteering."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dwarves of Exferaz all have beards of varying shades of red—from orange to deep ocher. Walking into their ale hall is like walking into a red bush. I saw the miners changing shifts at the entrance of the mine. They walked out of the darkness one after another. The red dust on each face shone in the light of the torch, which was strange and spectacular."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Doing gold business with the dwarves of Exferaz requires nerves of iron. The price of gold fluctuates wildly with the political situation in the old world - the price of gold often surges by 30% during the change of the Imperial Elector Count. But the dwarves disdain speculation, and they sell gold at a fixed price. Savvy merchants will stock up on Xfilaz gold bars before the Elector Count changes to earn the price difference on the Imperial market."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Karak Exferaz is a dwarven stronghold in the Gray Mountains famous for its Redbeard clan and precious metal mines. It is ruled by King Scarf Redbeard.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Kharak Exferaz Gray Mountains Dwarf Gold and Copper Mine Red Beard"
+  ]
+}

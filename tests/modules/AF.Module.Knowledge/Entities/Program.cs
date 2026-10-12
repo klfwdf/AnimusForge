@@ -46,6 +46,10 @@ internal static class Program
         Check(EntityNameMatcher.Score("Vlandia", "vlandia") == 1f && EntityNameMatcher.Score("", "x") == 0f, "identical → 1, blank → 0");
         float contain = EntityNameMatcher.Score("Vland", "Vlandia");
         Check(Math.Abs(contain - (0.86f + 0.12f * 5f / 7f)) < 1e-5, "containment score: " + contain);
+        Check(EntityNameMatcher.RequiresExactDisplayName("lords") && EntityNameMatcher.RequiresExactDisplayName("LORD") && EntityNameMatcher.RequiresExactDisplayName("LoRdS"), "bare English lord titles require an actual display name");
+        foreach (string name in new[] { "Dakhila", "Lord Dakhila", "lord_S9_m", "领主达基拉", "lords9m" })
+            Check(!EntityNameMatcher.RequiresExactDisplayName(name), "qualified name or explicit ID retains existing matching: " + name);
+        Check(Math.Abs(EntityNameMatcher.Score("lords", "lord_S9_m") - 0.9457143f) < 1e-5, "the observed ID containment score is reproduced; consumer must reject this generic mention");
         Check(EntityNameMatcher.Score("Vlandio", "Vlandia") >= 1f - 1f / 7f - 1e-5, "levenshtein floor");
         Check(EntityNameMatcher.LevenshteinDistance("kitten", "sitting") == 3 && EntityNameMatcher.LevenshteinDistance("", "ab") == 2, "levenshtein");
         Check(EntityNameMatcher.ShortCjkNearNameScore("阿塞莱", "阿赛莱", 1) == 0.82f && EntityNameMatcher.ShortCjkNearNameScore("阿塞莱城", "阿赛莱城", 1) == 0.86f && EntityNameMatcher.ShortCjkNearNameScore("阿塞莱", "阿塞莱城", 1) == 0.80f && EntityNameMatcher.ShortCjkNearNameScore("abc", "abd", 1) == 0f && EntityNameMatcher.ShortCjkNearNameScore("阿塞莱", "阿赛莱", 2) == 0f, "short cjk near-name tiers");
@@ -95,7 +99,7 @@ internal static class Program
         };
         Check(EntityInjectionAllocator.FindAmbiguousPersonNamePriorities(amb).SetEquals(new[] { 0 }), "ambiguous person-name mention detected");
         sel = EntityInjectionAllocator.Select(amb, 3, 2, out summary);
-        Check(sel[0].Key == "hero:h2" && sel[0].HeroScopeScore == 1000 + 99 && sel[0].HeroScopeEvidence == "王国:Vlandia" && summary.Contains("scopeBoostedHeroes=1"), "kingdom scope boosts the matching hero: " + summary);
+        Check(sel[0].Key == "hero:h2" && sel[0].HeroScopeScore == 1000 + 99 && sel[0].HeroScopeEvidence == "kingdom:Vlandia" && summary.Contains("scopeBoostedHeroes=1"), "kingdom scope boosts the matching hero: " + summary);
         var ambClan = new List<GlobalEntityCandidate>
         {
             C("hero", "h1", "A", "A", 0, 1f, true, heroClan: "c1", heroKingdom: "k9"),

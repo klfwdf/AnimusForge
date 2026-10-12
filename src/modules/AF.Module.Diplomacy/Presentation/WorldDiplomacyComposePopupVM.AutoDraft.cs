@@ -13,7 +13,7 @@ public sealed partial class WorldDiplomacyComposePopupVM
     private bool _isDrafting;
     private bool _draftFinalized;
     private bool _canAutoDraft;
-    private string _autoDraftText = "书记官代笔";
+    private string _autoDraftText = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_AutoDraft", "Ask scribe to draft");
     private CancellationTokenSource _draftCancellation;
     private DraftCompletion _draftCompletion;
 
@@ -64,7 +64,7 @@ public sealed partial class WorldDiplomacyComposePopupVM
     public void ExecuteAutoDraft()
     {
         if (!IsCurrentDraftWindow || _isDrafting) return;
-        if (string.IsNullOrWhiteSpace(BodyText)) { HintText = "请先写下标题或拟文要点。"; return; }
+        if (string.IsNullOrWhiteSpace(BodyText)) { HintText = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_HintEmpty", "Write a title or outline first."); return; }
         try
         {
             if (!WorldDiplomacyPlayerDraftApplication.TryPrepare(BodyText, _draftGeneration,
@@ -76,8 +76,8 @@ public sealed partial class WorldDiplomacyComposePopupVM
             CancellationToken token = cancellation.Token;
             _draftCancellation = cancellation;
             _isDrafting = true;
-            AutoDraftText = "书记官拟稿中…";
-            HintText = "书记官正在拟稿，请稍候。";
+            AutoDraftText = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_AutoDrafting", "Scribe is drafting...");
+            HintText = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_AutoDraftingHint", "The scribe is drafting. Please wait.");
             RefreshDraftAvailability();
             // One bounded mailbox per live window, drained by its existing UI tick.
             Task.Run(async () =>
@@ -85,11 +85,11 @@ public sealed partial class WorldDiplomacyComposePopupVM
                 WorldDiplomacyPlayerDraftResult result;
                 try { result = await run(token).ConfigureAwait(false); }
                 catch (OperationCanceledException)
-                { result = WorldDiplomacyPlayerDraftResult.Failed("拟稿已取消，原文已保留。"); }
+                { result = WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftCancelled", "Drafting was cancelled; the original text was kept.")); }
                 catch (Exception ex)
                 {
                     Logger.Log("WorldDiplomacyPlayerDraft", "request failed type=" + ex.GetType().Name);
-                    result = WorldDiplomacyPlayerDraftResult.Failed("书记官拟稿失败，原文已保留。请重试。");
+                    result = WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftFailed", "The scribe could not draft the document; the original text was kept. Try again."));
                 }
                 finally { cancellation.Dispose(); }
                 Interlocked.Exchange(ref _draftCompletion, new DraftCompletion(id, revision, input, result));
@@ -100,8 +100,8 @@ public sealed partial class WorldDiplomacyComposePopupVM
             Logger.Log("WorldDiplomacyPlayerDraft", "start failed type=" + ex.GetType().Name);
             CancelDraftRequest();
             _isDrafting = false;
-            AutoDraftText = "书记官代笔";
-            HintText = "书记官暂时无法拟稿，原文已保留。请重试。";
+            AutoDraftText = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_AutoDraft", "Ask scribe to draft");
+            HintText = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftUnavailable", "The scribe is temporarily unavailable; the original text was kept. Try again.");
             RefreshDraftAvailability();
         }
     }
@@ -114,15 +114,15 @@ public sealed partial class WorldDiplomacyComposePopupVM
             || completion.Input.Generation != _draftGeneration) return;
         _draftCancellation = null; // The worker disposes its source after completion.
         _isDrafting = false;
-        AutoDraftText = "书记官代笔";
+        AutoDraftText = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_AutoDraft", "Ask scribe to draft");
         if (completion.Revision != _bodyRevision || !string.Equals(BodyText, completion.Input.OriginalBody, StringComparison.Ordinal))
-            HintText = "拟稿期间内容已修改，保留您当前的文字。";
+            HintText = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftEdited", "The text changed while drafting; your current text was kept.");
         else if (completion.Result?.Success != true)
-            HintText = completion.Result?.Error ?? "书记官拟稿失败，原文已保留。请重试。";
+            HintText = completion.Result?.Error ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftFailed", "The scribe could not draft the document; the original text was kept. Try again.");
         else
         {
             BodyText = completion.Result.Body;
-            HintText = "稿件已回填，可修改后发布；再次代笔将重新拟稿。";
+            HintText = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftReady", "The draft has been inserted. Edit it before publishing; drafting again will replace it.");
         }
         RefreshDraftAvailability();
     }

@@ -1,0 +1,86 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Xml.Linq;
+using AnimusForge;
+
+internal static class Program
+{
+    internal static string PackageRoot;
+    internal static Dictionary<string, string> Ui;
+    private static int assertions;
+    private static void Check(bool value, string name)
+    { assertions++; if (!value) throw new InvalidOperationException(name); }
+    private sealed class State
+    {
+        internal readonly List<string> Calls = new();
+        internal string Result;
+    }
+    private readonly struct Source : IDiplomacyOralTagSource
+    {
+        private readonly State state;
+        internal Source(State state) => this.state = state;
+        public bool HasSpeaker => true;
+        public bool IsAvailable => true;
+        public string SpeakerHeroId => "speaker";
+        private string Apply(string action, string payload)
+        { state.Calls.Add(action + ":" + payload); return state.Result; }
+        public string DeclareWar(string payload) => Apply("war", payload);
+        public string MakePeace(string payload) => Apply("peace", payload);
+        public string IndependentClanPeace(string payload) => Apply("independent", payload);
+        public string FormAlliance(string payload) => Apply("alliance", payload);
+        public string BreakAlliance(string payload) => Apply("break", payload);
+        public string MakeTrade(string payload) => Apply("trade", payload);
+        public string CancelTrade(string payload) => Apply("cancel", payload);
+        public void Log(string message) { }
+    }
+    internal static void Main(string[] args)
+    {
+        PackageRoot = args[0];
+        foreach (string locale in new[] { "en", "cn" })
+        {
+            Ui = XDocument.Load(args[locale == "en" ? 1 : 2]).Descendants("string")
+                .ToDictionary(node => (string)node.Attribute("id"), node => (string)node.Attribute("text"));
+            foreach (string channel in new[] { "courier", "native", "scene", "system_scene" })
+            {
+                var state = new State(); var source = new Source(state);
+                string reason = "literal {NAME} {0} $1";
+                state.Result = string.Format(DiplomacyMiscPromptTexts.Get("OralDiplomacy_SubmissionRejected", ""), reason);
+                string body = "player/model same-text: " + state.Result + " [ACTION:DIPLOMACY:MAKE_PEACE:first] end\n[ACTION:DIPLOMACY:MAKE_TRADE:second]";
+                var receipts = new List<string>();
+                DiplomacyOralTagApplication.Process(source, ref body, receipts);
+                string expectedBody = "player/model same-text: " + state.Result + "  end";
+                Check(body == expectedBody, channel + ": same-text model body preserved");
+                Check(state.Calls.SequenceEqual(new[] { "peace:first", "trade:second" }), channel + ": once-only ordered execution");
+                Check(receipts.SequenceEqual(new[] { state.Result, state.Result }), channel + ": package receipts ordered");
+                string raw = DiplomacyOralTagApplication.ComposeReceiptText(body, receipts);
+                string visible = DiplomacyOralTagApplication.ComposeReceiptText(body, receipts, DiplomacyDialogueStatusUi.Project);
+                string translated = string.Format(Ui["AF_DIP_STATUS_OralDiplomacy_SubmissionRejected"], reason);
+                Check(raw == expectedBody + "\n" + state.Result + "\n" + state.Result, channel + ": raw history/package composition");
+                Check(visible == expectedBody + "\n" + translated + "\n" + translated, channel + ": only owned receipts project");
+                Check(body == expectedBody && receipts.All(value => value == state.Result), channel + ": display never mutates source");
+                Check(state.Calls.Count == 2, channel + ": rendering never repeats actions");
+                foreach (string key in new[] { "OralDiplomacy_DeferredPrefix", "OralDiplomacy_CancelledPrefix", "OralDiplomacy_Published", "OralDiplomacy_Executed" })
+                {
+                    string status = DiplomacyMiscPromptTexts.Get(key, "") + (key.EndsWith("Prefix") ? reason : "");
+                    string projected = DiplomacyDialogueStatusUi.Project(status);
+                    Check(projected == Ui["AF_DIP_STATUS_" + key] + (key.EndsWith("Prefix") ? reason : ""), channel + ": status/causal detail " + key);
+                }
+                string unknown = "user unchanged {NAME} {0} $1";
+                Check(DiplomacyDialogueStatusUi.Project(unknown) == unknown, channel + ": unknown/user text remains original");
+            }
+        }
+        Console.WriteLine("PASS production diplomacy parser/composer/status projector: " + assertions + " assertions; real package reader and XML assets; action and Bannerlord UI leaves synthetic.");
+    }
+}
+
+namespace AnimusForge
+{
+    // Package paths and the game-language TextObject leaf are test-owned boundaries.
+    // The production JSON reader, tag parser, composer and status projector are compiled unchanged.
+    internal static class AnimusForgeModulePaths
+    { internal static string GetModuleDataFilePath(string name) => Path.Combine(Program.PackageRoot, name); }
+    internal static class DiplomacyUiLocalization
+    { internal static string Text(string key, string englishFallback) => Program.Ui.TryGetValue(key, out string text) ? text : englishFallback; }
+}

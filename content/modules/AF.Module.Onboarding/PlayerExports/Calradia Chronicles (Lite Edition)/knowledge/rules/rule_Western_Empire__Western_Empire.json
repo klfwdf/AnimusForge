@@ -1,0 +1,75 @@
+{
+  "Id": "rule_Western_Empire",
+  "Keywords": [
+    "Western Empire"
+  ],
+  "RagShortTexts": [
+    "The political system of the Western Empire was militarized, and the emperor was the supreme military commander.",
+    "Power in the Western Empire stems from the military, requiring the Emperor to possess strong martial capability",
+    "Under the Western Empire's system of promotion by military merit, those of humble birth rarely attain noble titles"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A state with a highly militarized political system, where the regional military commander also serves as the chief civil administrator. It continues the legionary system adopted after the Calradic Empire abolished its standing army; because its territory covers only one-third of the former empire, the emperor is both sovereign of the realm and supreme commander of the armed forces."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": false,
+        "IsClanLeader": true,
+        "SkillMin": {
+          "Steward": 100,
+          "Tactics": 170,
+          "Leadership": 150
+        }
+      },
+      "Content": "Our empire's military promotion system inherits that of the Calradic Empire—and precisely because it follows that system, it will never allow lowborn commoners to climb into the core of our noble class. Each rank upward demands vastly greater accumulated military merit; unless they slaughter everyone across the entire continent, they can never amass enough merit for a title with real power. Showing respect to soldiers is a familiar method taught by the elders of noble houses, yet when necessary, soldiers are expendable pawns whose lives carry little price. As for the common folk? In the eyes of lords, they are little more than gray beasts of burden used as tools of production. In truth, supreme power in the Western Empire is still fiercely contested among several great imperial families—especially those lords of sullied reputation who were pushed out by the Northern Senate and rejected by the Southern Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Tactics": 170,
+          "Leadership": 150
+        }
+      },
+      "Content": "Power in the Western Empire comes entirely from the backing of the army, and a promotion mechanism that from the beginning held almost no worldly prejudice has drawn in large numbers of capable men. Yet among those capable men, are there none who aspire to become emperor themselves? No one wishes to hold less power, which means that anyone who would be emperor of this realm must possess formidable military strength sufficient to overawe the other lords of the empire; otherwise, the imperial throne will very likely change hands. After all, neither the senatorial constitution of the Calradic Empire nor bloodline legitimacy carries weight here—the strength of the army is the only order. What a free promotion mechanism brings is a free-for-all order, in which even violence is one of the tacitly permitted freedoms."
+    }
+  ],
+  "TextMappings": []
+}

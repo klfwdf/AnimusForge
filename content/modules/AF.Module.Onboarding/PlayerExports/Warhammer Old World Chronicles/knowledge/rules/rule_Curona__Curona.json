@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Curona",
+  "Keywords": [
+    "Principality of Curona_CO",
+    "Duchy of Curona_CO",
+    "Kurona Territory_CO",
+    "Curona Royal Domain_CO",
+    "Duke of Curona_CO",
+    "Province of Curona_CO"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Curona is the most important duchy of the Kingdom of Bretonnia, ruled directly by the King himself. This territory is located on the northern coast of Bretonnia. The Cologne River runs through the entire territory. The land is fertile and the port is prosperous. It is the political and military heart of the Kingdom of Knights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Principality of Kurona—the royal territory directly under the king’s jurisdiction! Every knight here regards serving the emperor as the highest honor. The Holy Grail Cathedral in the city of Curona is the residence of the goddess in the mortal world. The clear waves of the Cologne River reflect the white tower of the tournament arena. As a Bretonnian, stepping onto the soil of Curona is stepping into the holy land of chivalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Principality of Curona is a territory directly under the king's jurisdiction, and the position of duke is equivalent to the throne itself. Controlling Kurona means controlling the loyalty of knights across the country. The quality of the soldiers here is the best in the whole country - the King's Guard Knights are selected from the noble children of Kurona. Each knight of Kurona is equipped with the best plate armor and war horses in the kingdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The Duchy of Curona ranks first in Bretonnia in terms of economic income. The royal territory covers the most fertile alluvial plain in the lower reaches of the Cologne River. Agricultural production adopts a three-field rotation system, and the grain output far exceeds that of other principalities. The port of Curona is the only deep-water port in northern Bretonnia, and trade tariffs and commercial taxes during tourneys form the two pillars of the royal finances. The principality also has the Royal Mint and the Royal Armory, which monopolizes the country's currency issuance and the production of sophisticated weapons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As a female noble of the Principality of Corona, my position in the court is delicate. The Lady of the Lake bestowed divine religious authority on women, but secular power remained in the hands of male knights. The court of Curona is more open than other principalities, and female nobles can expand their influence by sponsoring tourneys and funding the Holy Grail Church."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family has been loyal to the royal family of Kurona for generations. Each generation of patriarch personally sends their eldest son to the King's Guards Knights for training - this is both an honor and an obligation. The court of Curona never lacks envoys from various principalities. As the patriarch, I must ensure that the family has a firm foothold in this whirlpool of power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The countryside and the city in the Principality of Curona are completely different. The serfs in the farmland have been working for generations and have never seen the true face of the king. But as soon as you enter the city of Curona, the white marble castle and church are dazzling. For me, the Duke's Tourney in Curona was a good opportunity to make a living - winning the tournament would earn me money for the next leg of my journey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have been involved in the trading circles of the Principality of Corona for many years. Although the business tax in the royal territory is high, the market capacity is also the largest. Shipping at the Port of Curona connects Marienburg and the imperial cities. During the tournament, tens of thousands of nobles and tourists flood into the entire principality. Smart businessmen can make a whole year's profits in just one week."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Principality of Curona is a royal territory directly under the jurisdiction of Bretonnia. It is ruled by the king himself and is famous for its knightly elite and the belief in the Holy Grail.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Crown territory of the Principality of Corona"
+  ]
+}

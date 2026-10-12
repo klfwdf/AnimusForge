@@ -1,0 +1,23 @@
+{
+  "Id": "rule_The_Papacy_and_Pope_Alexander_IV",
+  "Keywords": [
+    "The Papacy",
+    "Pope Alexander IV",
+    "Guelf and Ghibelline",
+    "Hohenstaufen Conflict",
+    "Papal States",
+    "Anagni"
+  ],
+  "RagShortTexts": [
+    "Pope Alexander IV directed spiritual and diplomatic power to crush the Hohenstaufen line in southern Italy, entangling the Church in secular factionalism."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Papacy under Pope Alexander IV (pontificate 1254–1261) was consumed by its existential struggle against the imperial House of Hohenstaufen. Following the excommunication of Frederick II and the death of Conrad IV, the Holy See was determined to prevent any single dynasty from controlling both the German Reich and the Kingdom of Sicily (the so-called unio regni ad imperium).\n\nOperating from Anagni and Viterbo due to Roman urban revolts, Alexander IV waged ideological warfare against King Manfred of Sicily. The pontiff deployed papal legates, levied crusade tithes upon the churches of France and England, and hawked the crown of Sicily to foreign princes. This relentless temporal campaign deepened the bitter Guelf-Ghibelline divide across northern and central Italy."
+    }
+  ],
+  "TextMappings": []
+}

@@ -47,6 +47,12 @@ internal sealed class CivilWarActionResult
 	public CivilWarActionStatus Status;
 	public string Message = "";
 	public string FactionId = "";
+	// Transient display projection for the result notification. Set only where the concrete outcome is
+	// known, so the UI never has to guess from Status. Never persisted: the saved receipt keeps Message,
+	// which history, AFEF and weekly material continue to consume unchanged.
+	public string MessageProjectionKey = "";
+	public string MessageProjectionArg = "";
+	public string MessageProjectionArg2 = "";
 }
 internal sealed class CivilWarFoundingOption
 {
@@ -114,6 +120,9 @@ internal sealed class CivilWarPanelFaction
 	public string RefusalUnit = "";
 	// Right-hand deadline block of the dossier header.
 	public string DeadlineLabel = "";
+	// Stable display state for the ultimatum deadline label. The UI must not compare DeadlineLabel,
+	// which is a localized string; this flag carries the same fact independently of language.
+	public bool DeadlineIsUltimatum;
 	public string DeadlineValue = "";
 	public string DeadlineUnit = "";
 	public string DeadlineNote = "";
@@ -141,6 +150,9 @@ internal sealed class CivilWarPanelKingdom
 	public string EmptyText = "";
 	public string Name = "";
 	public string StageText = "";
+	// Stable display state for the no-faction ledger title. The UI must not compare StageText, which is
+	// a localized string; this flag carries the same fact independently of language.
+	public bool NoFactionFormed;
 	public int Stability;
 	public string StabilityTier = "";
 	public CivilWarPanelRole Role;
@@ -203,6 +215,8 @@ internal interface ICivilWarModulePort
 	// True while a clan of a settled civil war is shielded from vanilla discontinuation of landless independent clans.
 	bool IsClanProtected(Clan clan);
 	bool TryApplyTag(Hero speaker, string tag, out string message);
+	// One execution produces the unchanged fact and an independent player-facing projection.
+	bool TryApplyTag(Hero speaker, string tag, out string message, out string displayMessage);
 	void NotifyRebelKingdomCreated(string factionId, Kingdom rebelKingdom, int week);
 	// Host asks before naming/executing a queued civil-war rebellion; false means the faction moved on.
 	bool IsRebellionRequestActive(string factionId);

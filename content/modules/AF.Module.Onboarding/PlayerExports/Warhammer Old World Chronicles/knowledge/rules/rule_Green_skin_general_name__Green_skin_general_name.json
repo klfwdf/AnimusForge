@@ -1,0 +1,207 @@
+{
+  "Id": "rule_Green_skin_general_name",
+  "Keywords": [
+    "Badlands Tribe",
+    "Greenskin Waaagh",
+    "Orc Warband",
+    "goblin tribe",
+    "Official name of green country",
+    "Fuck the field"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Greenskins have no nation - they only have tribes and Waaagh!. In the badlands of the Old World, the abandoned dwarven mines of the World's Edge Mountains, the glens of the Black Mountains, and the high slopes of the Gray Mountains, hundreds of greenskin tribes compete against each other in the purest form of power. When a powerful enough warlord unites multiple tribes by defeating all challengers, this collective power is called a Waaagh! - and the Waaagh! itself becomes the temporary state of the Greenskins at that moment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "nation? We don’t need a country! The state is a fake thing used by weak humans and dwarfs to pretend that they do not belong to the same fighting circle! Our greenskin territory is anywhere we can go and defeat the local boss! The Badland is our largest territory - it has the strongest sun, the driest wind and the toughest enemies! But who says badlands have boundaries? Yesterday we beat up a whole brood of dwarves on the Gray Mountains, and that mountain is now the greenskin's mountain - until another more fierce greenskin boss comes and takes it away! Waaagh! This is our country - when Grimgor or any of the strongest warlords in the badlands say \"Fight this way\", all the greenskins in the badlands follow! This is crisper than any Elector Count vote!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Greenskin political entity - if it can be called that - is the purest temporary phenomenon of the Old World. Every Waaagh! is a collection of instantaneous forces with the personal combat power of the warrior as the only binding agent. Its life cycle is extremely simple: a strong enough war general unifies multiple tribes → the assembled greenskins launch a large-scale invasion in a certain direction → the war general may be defeated during the invasion, or distracted by more attractive targets in another direction → the tribe splits into internal strife → returns to the starting point. This means that the most effective strategy against the Greenskins is not military defense - but rather accelerating the Waaagh!'s natural life cycle, leading the Waaagh! to divide internally by baiting enemies, decapitating them, or creating new directions for fighting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The territorial organization of greenskins is classified in comparative politics as a hierarchy of transient violence - a political order that does not have any institutionalized power transfer mechanism and relies entirely on the violent capabilities of the currently strongest individuals to maintain it. The boundaries of a greenskin tribe's territory are dynamic - \"tribe's territory\" actually means \"the area that the tribe currently controls\", and this area can change dozens of miles in a month depending on the outcome of a duel between tribes. The Greenskin Gathering Area - the Badlands - is an arid plateau region in the southern part of the Old World. Its geological structure is characterized by exposed red sandstone and narrow alluvial valleys. The water springs in these valleys have become core resources that the Greenskin tribes compete for."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The greenskin's territorial expansion model has one advantage for the female manor owners on the southern border of the empire - the direction of Waaagh! is determined by the personal whims of the war generals and the divine inspiration of the shamans, and there is no long-term territorial strategy based on political rational calculations. This means that there is no causal relationship between the Green Tide spreading north from the Badlands in the past hundred years and the Green Tide spreading westward from the Badlands in the next hundred years - they are just the personal choices of two different warriors. This randomness made long-term defense planning difficult but also meant that the Greenskins never posed a consistent strategic threat to the Imperium like Chaos did."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The changes in the greenskin territory have a cyclical impact on my family's territory. Each generation requires maintaining a major military buffer expansion in the direction of the Badlands - pushing forward outposts into areas of less greenskin activity and praying that the new outposts will last at least thirty years. Our family has repeated this cycle nine times in the past twelve generations—each time pushing first, then holding on, and ultimately being forced to retreat closer to where the previous generation started."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One of the first things you learn when traveling to the edge of the badlands is this: don't plan your route using a human concept of time. What was a relatively safe path yesterday may have become the middle of a battle between two tribes today. I have been a guide in the north of the Badland for three years. The route I recommend to my clients is never the safest one - because the concept of safety does not exist in the Badland - but the fastest exit: make sure you have enough alternative escape routes so that you can evacuate the greenskin activity area within half a day if the situation suddenly changes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The unpredictability of Greenskin territory had a decisive impact on the planning of long-distance trade routes in the Old World. Any trade route from the southern Empire to the World's Edge Mountains must anticipate at least two weeks of extra travel around the Badlands—and the cost of these extra trips continues to climb during each Green Wave. But the uncontrollability of the greenskin areas also creates extremely profitable speculation opportunities: after the green tide recedes, the first businessman to enter the abandoned towns around the Badlands to collect the loot left by the greenskins can earn an incredible rate of return."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Waaagh! Regime - a transient violent political collective formed when a war general unites multiple tribes",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Greenskins' official title and political status"
+  ]
+}

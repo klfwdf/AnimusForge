@@ -259,7 +259,7 @@ def boundaries():
  conv_decl=declaration(read('Refactor/Contracts/DiplomacyModulePorts.cs'),'internal interface IDiplomacyConversationPort')
  assert set(re.findall(r'\b([A-Za-z_]\w+)\s*\(',conv_decl))=={'BuildPrompt','CanInjectDiplomacyRule','CanUseDiplomacyActionPostprocess',
    'CanUseFullDiplomacyActionPostprocess','CanUseNpcSovereignDeclareWarPostprocess','CanUseIndependentClanPeace',
-   'IsIndependentClanPeacePostprocessTag','BuildDiplomacyPostprocessContext','ProcessDiplomacyTags',
+   'IsIndependentClanPeacePostprocessTag','BuildDiplomacyPostprocessContext','ProcessDiplomacyTags','ComposeDialogueReply',
    'TryBuildTributePowerContext','ApplyVassalageRewardTags','ApplyKingdomAnnexationRewardTags'},'Conversation port surface drift'
  # Module adapter may bind only narrow snapshot/leaves, never a whole use-case Behavior method.
  allowed_wdb={'TryCaptureMemory','Instance','TickSource','CampaignSource','LifecycleSource','TryGetTimelineRevisionSnapshot','TryGetTimelineState',

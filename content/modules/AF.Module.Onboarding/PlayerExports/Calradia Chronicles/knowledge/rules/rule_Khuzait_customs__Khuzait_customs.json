@@ -1,0 +1,127 @@
+{
+  "Id": "rule_Khuzait_customs",
+  "Keywords": [
+    "Khuzait customs"
+  ],
+  "RagShortTexts": [
+    "Nomadic Khuzait people live in black woolen tents and are skilled in horseback riding and archery.",
+    "The Karakujit tribe refused the Khan’s reward and insisted on a purely nomadic life"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k3",
+          "town_k5",
+          "village_k3_1",
+          "village_k3_2",
+          "village_k3_3",
+          "village_k5_2",
+          "village_k5_3",
+          "village_k5_4"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We live on the western coast, by Lake Tanesis, farming, fishing, and doing business. Our compatriots on the grassland say that we have lost our traditions, live in adobe houses, and sleep under roofs, just like imperialists. They said our children couldn't ride horses. This is not pleasant to hear, but it is not entirely wrong - our children are indeed not like the children on the prairie who climbed onto the back of a horse as soon as they learned to walk. But they can grow wheat, repair ships, and bargain with imperial merchants in four languages ​​at the market. In winter, our relatives on the grasslands came to us with their flocks and exchanged horse skins for our food. We gave them wheat and they gave us horses. No one owed us anything. We disliked each other a little, but we never turned against each other. The Khan's tax collectors come every autumn, we load the grain into the cart and they take it away. When the Yan people on the grassland led their troops to fight, our horses carried their baggage. Some say that the inhabitants are Khuzait's granaries, not Khuzait's knives. We think this is true, but the granary is also part of Khuzait. Changshengtian is watching from above. He gave us the grass on the grassland and the fields by the lake."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are true Khuzait people. Our home is in the black wool tent, our walls are the sea of ​​grass and the wind. A horse, a bow, and a pot of arrows are home anywhere and can live anywhere. For those relatives living in adobe houses in the west, we passed through their villages every winter and exchanged horse hides and cheese for their wheat. They live warmer lives than we do, but they don't know how to ride horses and shoot arrows. Is a Khuzait who cannot ride a horse and shoot an arrow a Khuzait? We have been arguing about this issue in the tent since we were children, and we still have no conclusion until we get old. But we admit that without their food the winter would be difficult; they also admit that without our horses the trade routes would be unprotected. We respect Khan, but Khan’s decree turned into a suggestion after walking on the grassland for three days and reaching the third tent. We listen to Na Yan, and Na Yan listens to Khan - in theory. In fact, we only listened to Na Yan. When Na Yan said fighting, we mounted our horses; when Na Yan talked about migrating, we dismantled the tents. Khan is too far away, and that face is too close. The rules on the grassland have always been like this."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Khuzait nobles are the rope tied between two lives. One is the nomadic tradition on the steppes, where our roots lie - our ancestors were born in black tents, grew up on horseback, and died under the watchful eye of the Immortal Sky. On the other side is the political reality of the Khanate. After the Great Khan Wuerhun conquered the imperial city, we can't just be herders, we must also be rulers. We wore imperial-style brocade robes at the Khan Court Conference, and immediately changed back into leather jackets when we returned to the tribe. We use honorifics when talking to the Khan, and patois when talking to the herders. Both words are true, and both identities are true. The Karakulgits laughed at us being trapped in a cage. We were indeed trapped, but we chose the trap ourselves. Stabilizing the khanate requires someone to stand in the middle and tie the nomadic blades and the settled granaries together. This is how our generation lives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The customs and customs of Khuzait are a binary puzzle of nomadic and settled. The settled agricultural areas on the western coast were the economic backbone of the Khanate, providing stable food output and handicrafts; the nomads on the southern grasslands were the backbone of the military, contributing the best mounted archers on the continent. The symbiotic relationship between the two kept the khanate functioning. The Karakulgit tribe is an anomaly outside this system - they refuse to accept any reward from the Khan and maintain the purest nomadic life, which is the soft boundary of the Khan's authority at the cultural level. The Khuzait's martial hospitality and direct pragmatism were in stark contrast to the Empire. Imperial merchants on the Khuzait trade route often complain that they don't know how to bargain, but admit that dealing with them requires no guesswork. This character translates into an unsettling candor on the battlefield: both their hostility and kindness are unabashed, expressed in arrows for the former and wine for the latter. Empire needs to learn to distinguish between these two expressions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "karakhuzaits"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are Karakulgit. Not the settled residents, nor the nomads who followed the Khan. We never follow the Khans. The Khan gives us money, but we don’t want it. Send us slaves and we will free them. When they gave us a fiefdom, we said that the land belongs to the heaven and no one can fief it. We are still walking, following the grass and the monsoon. The tent is home, the horse is life, and the grassland is law. The Khan controls the settlers in the city and the people on the grasslands, but not us. We don't want to be controlled by him either."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Khuzait people? Those on horseback to the east. Business people say they are divided into two types: those who live in tents and those who live in adobe houses. They are great at living in tents. They ride horses as soon as they can walk, eat raw meat and drink mare's milk. When fighting, they can shoot arrows far and accurately. Businessmen here have to pay tolls when passing through their territory. If you pay, they won't rob you. They are more trustworthy than bandits in some places. Those who live in adobe houses are farmers and do not fight, just like the people in the Empire. There is also a tribe called Kalakujit over there, who are still nomadic like the savages and don't want any rewards, just pasture. If our side doesn't even give us a fiefdom, the king will be moved to tears. But their khan found this troublesome."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Order_of_War_Siegecraft_and_Castle_Defense",
+  "Keywords": [
+    "Siege",
+    "Castle Defense",
+    "Siege Engines",
+    "Starvation Warfare",
+    "Holding a Castle",
+    "Siegecraft and Castle Defense"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The value of a castle in Westeros lies not only in high walls, but in wells, granaries, stables, artisans, bows and crossbows, gates, and the roads by which relief forces might arrive. Besiegers may use trebuchets, scaling ladders, siege towers, boiling oil, mines, blockades, and terms of surrender; defenders rely on high walls, stored grain, troop rotation, morale, and waiting for outside relief. To lords, a siege is a contest of legal right and supply; to common folk inside the walls, fortifications mean shelter, and may also mean a long wait crowded together in hunger and disease."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Siegecraft and Castle Defense"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Siegecraft and Castle Defense"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Siegecraft and Castle Defense"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Siege Siegecraft and Castle Defense: The value of a castle in Westeros lies not only in high walls, but in wells, granaries, stables, artisans, bows and crossbows, gates, and the roads by which relief forces might arrive. Besiegers may use trebuchets, scaling ladders, siege towers, boiling oil, mines, blockades, and terms of surrender; defenders rely on Victory or defeat on the battlefield is important, but who can keep the army with horse supplies and silver coins in the second month often determines the length of the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Siege Siegecraft and Castle Defense: The value of a castle in Westeros lies not only in high walls, but in wells, granaries, stables, artisans, bows and crossbows, gates, and the roads by which relief forces might arrive. Besiegers may use trebuchets, scaling ladders, siege towers, boiling oil, mines, blockades, and terms of surrender; defenders rely on They look at whether the flag is at the front, whether the order is clear, and whether the wounded are recovered; a beautiful strategy is not worth singing if it does not allow people to return to the camp alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Siege Siegecraft and Castle Defense: The value of a castle in Westeros lies not only in high walls, but in wells, granaries, stables, artisans, bows and crossbows, gates, and the roads by which relief forces might arrive. Besiegers may use trebuchets, scaling ladders, siege towers, boiling oil, mines, blockades, and terms of surrender; defenders rely on Blacksmiths re-heat broken swords red, priests keep vigil for the dead; the war continues long after it has left the battlefield, on anvils, in graveyards, and on empty seats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Siege Siegecraft and Castle Defense: The value of a castle in Westeros lies not only in high walls, but in wells, granaries, stables, artisans, bows and crossbows, gates, and the roads by which relief forces might arrive. Besiegers may use trebuchets, scaling ladders, siege towers, boiling oil, mines, blockades, and terms of surrender; defenders rely on The expedition took away horses, grain, and sons. The flags were changed several times, but they still had to repair houses, bury people, and wait for the next winter; they judged victory or defeat only by whether the village was still there."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Siegecraft and Castle Defense: The value of a castle in Westeros lies not only in high walls, but in wells, granaries, stables, artisans, bows and crossbows, gates, and the roads by which relief forces might arrive. Besiegers may use trebuchets, scaling ladders, siege towers, boiling oil, mines, blockades, and terms of surrender; defenders rely on"
+  ]
+}

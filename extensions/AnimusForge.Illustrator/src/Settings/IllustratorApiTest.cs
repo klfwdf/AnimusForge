@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
+using AnimusForge.Illustrator.UI;
 using TaleWorlds.Library;
 
 namespace AnimusForge.Illustrator
@@ -31,13 +32,13 @@ namespace AnimusForge.Illustrator
             if (_active != null)
             {
                 _active.Cancel();
-                Show("正在取消测试…");
+                Show(IllustratorUiText.ApiTestCanceling);
                 return;
             }
-            if (!settings.EnableImageGeneration) { Show("请先开启生图总开关。"); return; }
+            if (!settings.EnableImageGeneration) { Show(IllustratorUiText.ApiTestEnable); return; }
             if (!Uri.TryCreate((settings.ApiBaseUrl ?? "").Trim(), UriKind.Absolute, out var endpoint)
                 || (endpoint.Scheme != Uri.UriSchemeHttp && endpoint.Scheme != Uri.UriSchemeHttps))
-            { Show("请先填写有效的 HTTP/HTTPS 生图 API 地址。"); return; }
+            { Show(IllustratorUiText.ApiTestEndpoint); return; }
 
 
             // Capture this MCM editor object, including unsaved fields, on the UI
@@ -52,27 +53,27 @@ namespace AnimusForge.Illustrator
                 bool cancelled = cancellation.IsCancellationRequested;
                 cancellation.Dispose();
                 if (!IllustratorRuntime.IsHostRunning) return;
-                string result = cancelled ? "测试已取消。" : error == null ? message
-                    : "测试失败：" + SensitiveLogText.Redact(error.Message, options.ApiKey);
+                string result = cancelled ? IllustratorUiText.ApiTestCancelled : error == null ? message
+                    : IllustratorUiText.ApiTestFailure(IllustratorUiText.ApiTestPrefix, "?", SensitiveLogText.Redact(error.Message, options.ApiKey));
                 Show(result?.Length > 420 ? result.Substring(0, 420) : result);
             });
             if (!started)
             {
                 _active = null;
                 cancellation.Dispose();
-                Show("生图任务正在忙，请稍后重试。");
+                Show(IllustratorUiText.ApiTestBusy);
                 return;
             }
-            Show("开始测试，使用当前配置请求一张图片；再次点击可取消。");
+            Show(IllustratorUiText.ApiTestStarted);
         }
 
         private static async Task<string> RunAsync(IllustrationOptions options, Uri endpoint, CancellationToken token)
         {
             var watch = Stopwatch.StartNew();
             options = await options.ResolvePlayer2Async(token).ConfigureAwait(false);
-            if (!options.UsePlayer2ImageApi && string.IsNullOrWhiteSpace(options.ModelName)) return "请先填写生图模型名称。";
+            if (!options.UsePlayer2ImageApi && string.IsNullOrWhiteSpace(options.ModelName)) return IllustratorUiText.ApiTestModel;
             string channel = options.UsePlayer2ImageApi
-                ? (options.EnableReferenceImageForGeneration ? "Player2 /image/edit" : "Player2 /image/generate") : "生图接口";
+                ? (options.EnableReferenceImageForGeneration ? IllustratorUiText.ApiTestModePlayer2Edit : IllustratorUiText.ApiTestModePlayer2Generate) : IllustratorUiText.ApiTestModeImageApi;
             var directory = IllustratorStoragePaths.EnsureDirectory(IllustratorStoragePaths.ApiTestDirectory);
             IllustrationReferenceImage[] references = null;
             // Edits requires an image. Generate a local neutral reference instead
@@ -86,7 +87,7 @@ namespace AnimusForge.Illustrator
                     graphics.Clear(System.Drawing.Color.Beige);
                     bitmap.Save(output, ImageFormat.Png);
                     references = new[] { new IllustrationReferenceImage(Convert.ToBase64String(output.ToArray()),
-                        "API测试用空白画布，请在画布上绘制一只苹果。", IllustrationReferenceKind.Scene) };
+                        IllustratorUiText.ApiTestCanvas, IllustrationReferenceKind.Scene) };
                 }
             }
             var result = await UniversalOpenAiImageClient.GenerateImageAsync(
@@ -95,7 +96,7 @@ namespace AnimusForge.Illustrator
             token.ThrowIfCancellationRequested();
             string elapsed = (watch.ElapsedMilliseconds / 1000.0).ToString("0.0");
             if (!result.Success || result.ImageBytes == null || result.ImageBytes.Length == 0)
-                return channel + " 测试失败（" + elapsed + "秒）：" + SensitiveLogText.Redact(result.ErrorMessage, options.ApiKey);
+                return IllustratorUiText.ApiTestFailure(channel, elapsed, SensitiveLogText.Redact(result.ErrorMessage, options.ApiKey));
             var bytes = ImagePayload.Normalize(result.ImageBytes);
             var destination = Path.Combine(directory, "last-result.png");
             var pending = destination + "." + Guid.NewGuid().ToString("N") + ".tmp";
@@ -107,10 +108,10 @@ namespace AnimusForge.Illustrator
                 else File.Move(pending, destination);
             }
             finally { if (File.Exists(pending)) File.Delete(pending); }
-            return channel + " 测试成功（" + elapsed + "秒），图片已保存至模组 Cache/Illustrator/ApiTest/last-result.png。";
+            return IllustratorUiText.ApiTestSuccess(elapsed);
         }
 
         private static void Show(string text)
-            => InformationManager.DisplayMessage(new InformationMessage("[生图 API 测试] " + text));
+            => InformationManager.DisplayMessage(new InformationMessage("[" + IllustratorUiText.ApiTestPrefix + "] " + text));
     }
 }

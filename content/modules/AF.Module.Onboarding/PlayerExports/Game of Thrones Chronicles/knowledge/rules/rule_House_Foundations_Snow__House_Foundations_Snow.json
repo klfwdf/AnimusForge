@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_Snow",
+  "Keywords": [
+    "Snow Surname"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Jon Snow came to the Wall bearing the bastard surname of the North, looking more like a Stark than any of Ned Stark's trueborn children: his long face, grey eyes, brown hair, and quiet demeanor both fill him with pride and constantly remind him of his awkward place at Winterfell. He prizes the honor his father taught him, yet is not bound by rigid notions of honor; years of being forced to watch every glance at the feast table have made him skilled at concealing his intentions, weighing men's hearts, and speaking incomplete truths when necessary. His foundation is the black vows, his northern upbringing, the companionship of Ghost, and his responsibility for the fate of the living on both sides of the Wall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The brothers of the Night's Watch judge Jon differently: some see the arrogance of a lord's son, while others see a comrade willing to eat and train alongside raw recruits. Those who have truly ridden out on ranging missions with him know better that while he takes risks, he rarely takes them without a plan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northmen often recognize Ned Stark in Jon's face at first glance. That resemblance can awaken trust, and it can also stir whispers about his mother and his station; whatever the answer, he cannot step out from under the Stark shadow like an ordinary bastard."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The free folk do not care whether 'Snow' is legitimate; they care only whether he keeps his word and treats them as human beings. Jon understands the discipline of the Night's Watch and can also grasp the pride of those who do not kneel, giving him the chance to become a bridge while making it possible for both sides to suspect him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Snow Surname The Snow faction forms around Jon Snow's position in the Night's Watch, as he brings his Stark upbringing, bastard station, shrewdness, and duty to the Wall into every choice. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Snow Surname The Snow faction forms around Jon Snow's position in the Night's Watch, as he brings his Stark upbringing, bastard station, shrewdness, and duty to the Wall into every choice. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Snow Surname The Snow faction forms around Jon Snow's position in the Night's Watch, as he brings his Stark upbringing, bastard station, shrewdness, and duty to the Wall into every choice. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Snow Surname The Snow faction forms around Jon Snow's position in the Night's Watch, as he brings his Stark upbringing, bastard station, shrewdness, and duty to the Wall into every choice. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Snow Surname: The Snow faction forms around Jon Snow's position in the Night's Watch, as he brings his Stark upbringing, bastard station, shrewdness, and duty to the Wall into every choice."
+  ]
+}

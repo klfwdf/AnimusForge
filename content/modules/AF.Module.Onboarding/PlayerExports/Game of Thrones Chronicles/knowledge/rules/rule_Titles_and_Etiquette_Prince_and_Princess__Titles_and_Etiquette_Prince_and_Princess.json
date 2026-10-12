@@ -1,0 +1,132 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Prince_and_Princess",
+  "Keywords": [
+    "Prince and Princess"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Princes and princesses in Westeros often belong to the royal bloodline, and the \"princes\" of Dorne also carry a unique tradition of regional rule. The court regards titles as the order of succession and the value of marriage alliances. Ordinary people often only judge whether a royal is a member of the royal family based on his entourage, clothing and rumors"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prince and Princess"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prince and Princess"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prince and Princess"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prince and Princess Princes and princesses in Westeros often belong to the royal bloodline, and the \"princes\" of Dorne also carry a unique tradition of regional rule. The court regards titles as the order of succession and the value of marriage alliances. Ordinary people often only judge whether a royal is a member of the royal family based on his entourage, clothing and rumors. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prince and Princess Princes and princesses in Westeros often belong to the royal bloodline, and the \"princes\" of Dorne also carry a unique tradition of regional rule. The court regards titles as the order of succession and the value of marriage alliances. Ordinary people often only judge whether a royal is a member of the royal family based on his entourage, clothing and rumors. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prince and Princess Princes and princesses in Westeros often belong to the royal bloodline, and the \"princes\" of Dorne also carry a unique tradition of regional rule. The court regards titles as the order of succession and the value of marriage alliances. Ordinary people often only judge whether a royal is a member of the royal family based on his entourage, clothing and rumors. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Prince and Princess: Princes and princesses in Westeros often belong to the royal bloodline, and the \"princes\" of Dorne also carry a unique tradition of regional rule. The court regards titles as the order of succession and the value of marriage alliances. Ordinary people often only judge whether a royal is a member of the royal family based on his entourage, clothing and rumors."
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Karak_Kafkamaz",
+  "Keywords": [
+    "Karak Kaf Kamaz_KK",
+    "Kafkamaz Fortress_KK",
+    "Granite Eyebrow Fortress_KK",
+    "Kafkamaz granite_KK",
+    "Kafkamaz Dwarf Territory_KK",
+    "King Kafkamaz_KK"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Kafkamaz is a small dwarven fortress on the western slopes of the Gray Mountains, famous for its granite quarrying and stone carving craftsmanship. It is ruled by King Durak Granitebrow. The granite here is dense and uniform in color, and is considered the best building and sculpture stone in the Old World. The fortress itself is a masterpiece of stone sculpture."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Kafkamaz—the stone garden of our people! King Durak's eyebrows were indeed like two fragments of granite, hard and expressionless. Our stonemasons can carve out the complete faces of our ancestors from a piece of rough granite. Human castles are made of limestone and sandstone blocks and can be shattered by a siege; but the granite walls of Kafkamaz are not immune to earthquakes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Although Karak Kafkamaz is small, its granite stone is indispensable in military engineering. High-quality construction materials are required for the outer city walls, large fort bases, and key fortress towers. King Durak's stone exports were modest but extremely profitable - the empire's wealthy Elector Counts were willing to pay astonishing prices for a family mausoleum built from Kafkamaz granite."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "Quality-driven yield management is achieved in the granite quarrying industry in Karak Kafkamaz. The annual mining capacity of the quarry is only about five thousand cubic feet of granite, which is much lower than the output of ordinary quarries. This is because Kafkamaz only mines the \"core material\" layer with the best texture. This kind of stone sells for up to twenty times the price of ordinary stone per cubic foot in the imperial construction market. The stone carving workshop in the fortress also undertakes high-end orders for customized commemorative sculptures, hero statues, and stone materials for noble mausoleums. The profit margin for such orders reaches five times that of quarrying raw materials. The main buyers are monumental construction projects for the Imperial Court, the Great Temple of Sigmar, and various dwarven strongholds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The female dwarves of Kafkamaz are the ultimate gatekeepers of stone. I have mastered the skill of knocking on stones and listening to the sound to determine whether there are cracks inside - this was passed down from my great-grandmother to my mother and my mother to me. If a stone was finally delivered with internal cracks and fell apart in transit, the reputation of King Durak and the entire Kafkamaz would be tarnished."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family operates the largest single granite quarry in Kafkamaz. King Durak calls us \"anatomists of the heart of the mountain\" because our skill lies in understanding and following the natural grain of each stone. This skill cannot be explained in words and can only be learned slowly over the course of decades as an apprentice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "On both sides of the city gate of Kafkamaz stand two forty-foot-tall stone sculptures of dwarf ancestors, guarding the stone city. The beard pattern of the stone carving is so clear that every hair strand can be counted. It is said that these two statues were not carved in the quarry and then transported, but were carved on-site by dwarf stonemasons directly on the mountains on both sides of the city gate over a period of three hundred years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The granite trade in Kafkamaz is a typical model of low output and high profit. Only a few shipments are sold a year, but the value of each ship is astonishingly high. The biggest problem was transportation - the entire stone was extremely heavy and had to be transported by water, via the streams of the Gray Mountains to the Imperial river network. The snowmelt period in summer is the only transportation window. If you miss it, you will have to wait another year."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Karak Kafkamaz is a small dwarven stronghold in the Gray Mountains known for its granite quarrying and stone carving. It is ruled by King Durak Granitebrow",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Dwarven stone carvings and granite fortress in the gray mountains of Karak Kaf Kamaz"
+  ]
+}

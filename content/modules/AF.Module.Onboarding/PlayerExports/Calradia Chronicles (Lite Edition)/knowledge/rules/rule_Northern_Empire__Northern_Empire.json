@@ -1,0 +1,132 @@
+{
+  "Id": "rule_Northern_Empire",
+  "Keywords": [
+    "Northern Empire",
+    "Northern Karad Empire",
+    "Northern part of the empire",
+    "The Senate and the People of Karad"
+  ],
+  "RagShortTexts": [
+    "The Northern Empire was a collection of the Senate and the people of Karad."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Northern Empire is the empire in the north. In fact, it should be called a republic. Their emperor is more like the supreme consul, with only executive power and no decision-making power. All power is in the hands of the Senate. The current emperor is A. B, C"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our Northern Empire is an orthodox empire, a collection of the Senate and the people of Karad. Our emperor is elected by the Senate. We all have a place in the Senate. The emperor is just a public servant of the Senate. Our Emperor A is very wise and never deprives us of our rights and never shirks his responsibilities. Although most of us are civilian officials, we can still use troops. The so-called soldier emperor of the Western Empire was just a brave man. And Rhagaea? She was just a speculator who rose to power by relying on her kinship with the late emperor. Only we can restore the Empire. B, C"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Northern Empire was established by the usurper Lucon. He did not obey our Queen's orders and returned to the north without permission to convene a meeting of senators to elect himself emperor. Those old antiques in the Northern Empire are still emphasizing some outdated republican system? How ridiculous. Everyone's private property is inviolable and can be legitimately passed on to the next generation. Our Queen Rhagaea is the widow of the late Emperor Arenicos and should inherit the throne. Which turn will we get Lucon? Even if the ranking is based on seniority, Lucon is just a partial general. Where will he be the one? They just agreed to the conditions of the senators and continued to maintain their ridiculous republic. Sooner or later, we will return to the imperial capital of Saniopa and drive out all those usurpers! B, C"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northern Empire? What is it? We destroyed them in minutes. Our Western Empire is the strongest. No matter what the orthodoxy is, the emperor is the one who has strong soldiers and horses. Why should we give the throne to that old stubborn as soon as the Senate votes? This is totally unreasonable. We soldiers don't have the right to vote. We can never let our beloved marshal succeed to the throne. That's the problem. Emperors throughout the history have not respected us, so how can we respect them? We will crush the Senate and hang all the senators who are in name only! B, C"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Northern Empire is the first choice target for our attack. They have been our enemies for generations. Moreover, the Senate did not pay our commission at all in the Battle of Pandrak. We will always attack the Northern Empire. We don't care whether they are a republic, autocracy, or an oligarchy. We are going to attack the Northern Empire anyway and seize the fertile land in the north for grazing. B, C"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "status|kingdom|is_eliminated",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "But this is all in the past, the Northern Empire has been destroyed",
+      "FalseText": "The Northern Empire is such a country"
+    }
+  ]
+}

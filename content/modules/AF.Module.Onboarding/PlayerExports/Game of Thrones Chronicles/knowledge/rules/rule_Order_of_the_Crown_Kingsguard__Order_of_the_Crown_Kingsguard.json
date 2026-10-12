@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Order_of_the_Crown_Kingsguard",
+  "Keywords": [
+    "Kingsguard",
+    "White Cloaks",
+    "Royal Bodyguard",
+    "Knightly Vows"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Kingsguard are the seven white knights who protect the king and his close relatives. They gave up marriage, inheritance rights and original vassal obligations, and exchanged lifelong vows for the honor closest to royal power; the white robe was therefore both an honor and a severed chain from the family. Entry Kingsguard For the nobles, the white robe is a path where the family may lose an heir; for the little people, it is a legend that a few people can stand beside the throne."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kingsguard"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kingsguard"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kingsguard"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kingsguard The Kingsguard are the seven white knights who protect the king and his close relatives. They gave up marriage, inheritance rights and original vassal obligations, and exchanged lifelong vows for the honor closest to royal power; the white robe was therefore both an honor and a severed chain from the family. Entry Kingsguard They start by asking who is obligated, who is protected, and who will seek justice after a breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kingsguard The Kingsguard are the seven white knights who protect the king and his close relatives. They gave up marriage, inheritance rights and original vassal obligations, and exchanged lifelong vows for the honor closest to royal power; the white robe was therefore both an honor and a severed chain from the family. Entry Kingsguard For them, what really matters is whether the orders can arrive, whether the roads are safe, and whether the food and pay can be received on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kingsguard The Kingsguard are the seven white knights who protect the king and his close relatives. They gave up marriage, inheritance rights and original vassal obligations, and exchanged lifelong vows for the honor closest to royal power; the white robe was therefore both an honor and a severed chain from the family. Entry Kingsguard Beautiful oaths that are not backed up by land, military strength, or sacred tradition can quickly be reinterpreted by the next crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kingsguard The Kingsguard are the seven white knights who protect the king and his close relatives. They gave up marriage, inheritance rights and original vassal obligations, and exchanged lifelong vows for the honor closest to royal power; the white robe was therefore both an honor and a severed chain from the family. Entry Kingsguard What is remembered is not who spoke the loudest in the hall, but which rule saved the family from starvation, conscription, or endless fighting."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Kingsguard: The Kingsguard are the seven white knights who protect the king and his close relatives. They gave up marriage, inheritance rights and original vassal obligations, and exchanged lifelong vows for the honor closest to royal power; the white robe was therefore both an honor and a severed chain from the family. Entry Kingsguard"
+  ]
+}

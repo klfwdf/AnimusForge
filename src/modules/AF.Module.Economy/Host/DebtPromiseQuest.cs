@@ -30,7 +30,7 @@ public sealed class DebtPromiseQuest : QuestBase
 	[SaveableField(6)]
 	private string _debtNote;
 
-	// Version 7 rebuilds saved active promise journals once, removing unsafe non-hero troop hyperlinks from pre-existing entries.
+	// Version 8 rebuilds saved active journals once to apply localized default remarks.
 	[SaveableField(7)]
 	private int _journalFormatVersion;
 
@@ -45,7 +45,7 @@ public sealed class DebtPromiseQuest : QuestBase
 	[SaveableField(10)]
 	private bool _isExpired;
 
-	private const int CurrentJournalFormatVersion = 7;
+	private const int CurrentJournalFormatVersion = 8;
 
 	public string DebtId => (_debtId ?? string.Empty).Trim();
 
@@ -56,8 +56,8 @@ public sealed class DebtPromiseQuest : QuestBase
 		get
 		{
 			// Keep the counterparty as a compact list identity without exposing ledger terminology.
-			TextObject text = new TextObject(_isExpired ? "{=AF_DEBT_PROMISE_EXPIRED_TITLE}承诺已过期：{DEBTOR}" : "{=AF_DEBT_PROMISE_TITLE}承诺：{DEBTOR}");
-			text.SetTextVariable("DEBTOR", GetDisplayText(_debtorName, "对方"));
+			TextObject text = new TextObject(_isExpired ? "{=AF_DEBT_PROMISE_EXPIRED_TITLE}Expired promise: {DEBTOR}" : "{=AF_DEBT_PROMISE_TITLE}Promise: {DEBTOR}");
+			text.SetTextVariable("DEBTOR", GetDisplayText(EconomyUiTexts.DebtPromiseCounterpartyForDisplay(_debtorName), string.Empty));
 			return text;
 		}
 	}
@@ -74,10 +74,10 @@ public sealed class DebtPromiseQuest : QuestBase
 	{
 		_debtId = (debtId ?? string.Empty).Trim();
 		_ownerKey = (ownerKey ?? string.Empty).Trim();
-		_debtorName = GetDisplayText(debtorName, "对方");
-		_debtSummary = GetDisplayText(debtSummary, "未说明");
-		_deadlineText = GetDisplayText(deadlineText, "未设期限");
-		_debtNote = GetDisplayText(debtNote, "无");
+		_debtorName = GetDisplayText(debtorName, EconomySourceTexts.Get("S066"));
+		_debtSummary = GetDisplayText(debtSummary, EconomySourceTexts.Get("S026"));
+		_deadlineText = GetDisplayText(deadlineText, EconomySourceTexts.Get("S067"));
+		_debtNote = GetDisplayText(debtNote, EconomySourceTexts.Get("S013"));
 		_journalFormatVersion = CurrentJournalFormatVersion;
 		_dueDay = NormalizeDueDay(dueDay, isDueUnlimited);
 		_isDueUnlimited = isDueUnlimited;
@@ -166,9 +166,10 @@ public sealed class DebtPromiseQuest : QuestBase
 		Hero player = ResolvePlayerHero();
 		bool hasCounterpartyLink = counterparty?.CharacterObject != null;
 		bool hasPlayerLink = player?.CharacterObject != null;
-		string note = GetDisplayText(_debtNote, "无");
+		string note = GetDisplayText(EconomyUiTexts.DebtPromiseNoteForDisplay(_debtNote), string.Empty);
 		// This is the sole task-completion instruction: the agreement must be released through a conversation with the counterpart.
-		note += "\n\n与NPC聊天完成或解除该承诺即可结束此任务。";
+		TextObject completionInstruction = new TextObject("{=AF_ECO_DebtPromise_Instruction}Talk with the counterparty to complete or release this promise.");
+		note += "\n\n" + completionInstruction.ToString();
 		if (hasCounterpartyLink)
 		{
 			note = note.Replace("NPC", "{NPC.LINK}");
@@ -176,19 +177,20 @@ public sealed class DebtPromiseQuest : QuestBase
 		else
 		{
 			// Merchant promises have no individual hero target, so retain a truthful non-clickable counterpart name.
-			note = note.Replace("NPC", GetDisplayText(_debtorName, "NPC"));
+			note = note.Replace("NPC", GetDisplayText(EconomyUiTexts.DebtPromiseCounterpartyForDisplay(_debtorName), "NPC"));
 		}
 		if (hasPlayerLink)
 		{
-			note = note.Replace("玩家", "{PLAYER.LINK}");
+			note = note.Replace(EconomySourceTexts.Get("S068"), "{PLAYER.LINK}");
 		}
 		else
 		{
-			note = note.Replace("玩家", GetDisplayText(player?.Name?.ToString(), "玩家"));
+			note = note.Replace(EconomySourceTexts.Get("S068"), GetDisplayText(player?.Name?.ToString(), EconomyUiTexts.DebtPromisePlayer));
 		}
 		// Entity matching runs only while a task log is created or migrated, never in a campaign tick.
 		List<KeyValuePair<string, TextObject>> entityLinks = ReplaceKnownEntityNamesWithLinkTags(ref note);
-		TextObject text = new TextObject("{=AF_DEBT_PROMISE_START}" + note);
+		TextObject text = new TextObject("{=AF_DEBT_PROMISE_START}{NOTE}");
+		text.SetTextVariable("NOTE", note);
 		if (hasCounterpartyLink)
 		{
 			StringHelpers.SetCharacterProperties("NPC", counterparty.CharacterObject, text, includeDetails: false);
@@ -207,13 +209,13 @@ public sealed class DebtPromiseQuest : QuestBase
 	private TextObject BuildCompletionLog()
 	{
 		// Completed tasks retain a neutral outcome line and never reintroduce the removed debt label.
-		return new TextObject("{=AF_DEBT_PROMISE_COMPLETE}此承诺已完成或解除。");
+		return new TextObject("{=AF_DEBT_PROMISE_COMPLETE}This promise has been completed or released.");
 	}
 
 	private TextObject BuildExpiredLog()
 	{
 		// Expiry is a visible next stage rather than a task failure, so the agreement may still be fulfilled later.
-		return new TextObject("{=AF_DEBT_PROMISE_EXPIRED}承诺已过期，但仍可在之后解除或完成。");
+		return new TextObject("{=AF_DEBT_PROMISE_EXPIRED}This promise has expired, but it can still be released or completed later.");
 	}
 
 	private void UpgradeJournalPresentationIfNeeded()

@@ -1,0 +1,94 @@
+{
+  "Id": "rule_Tarlyville",
+  "Keywords": [
+    "Tarlyville",
+    "Tran Valley"
+  ],
+  "RagShortTexts": [
+    "Tarly olive oil has a mild taste and is loved by Vlandia nobles."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tarlyville is a village near the castle of Tarlyville, located in the middle of the Tron Valley in the heart of Vlandia. The villagers here take advantage of the warm climate of the valley to grow olives on the hillsides, and olive oil is their main output."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Tarlyville is located in the Tran Valley, surrounded by mountains on all sides. The wind cannot blow in and the winter is not very cold. The olive trees on the hillside have been growing for decades, and the oil extracted is yellow and clear, with a mild taste. Tarly The garrison of Vilburg was tired of the butter shipped from the north, and came down the mountain to change the oil when the olive harvest season came."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Tarlyville's olive oil has a special mild taste, which is cultivated in the good soil and water of the Tran Valley. The nobles in the hinterland of Vlandia like this oil that does not irritate the nose and is good for cooking and mixing with salads. Tarly Although Vilburg is not big, the village at the foot of the mountain is very wealthy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Tarly Well is nestled in the Tran Valley, and there is a strong wind outside and you can't hear it inside. There are rows of olive trees on the hillside, all green. When I was there, it was time to harvest the olives. The whole village was busy working under the trees. The children picked up the fruits that fell on the ground. No one was idle."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Tarlyville",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Tarly Vilburg",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

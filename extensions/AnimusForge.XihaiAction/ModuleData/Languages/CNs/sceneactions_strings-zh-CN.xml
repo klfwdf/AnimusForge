@@ -126,5 +126,17 @@
     <string id="SAX_MCM_AdvanceDelay_Hint" text="发令动作完成后等待多久再向玩家直属编队下达 Advance；只在上方开关开启时生效。" />
     <string id="SAX_MCM_Notifications_Hint" text="显示演讲开始、取消和结束等状态提示；关闭只影响 UI，不影响演讲执行。" />
     <string id="SAX_MCM_Diagnostics_Hint" text="写入自然语言动作和阵前演讲的诊断日志；关闭可减少日志 I/O，不改变功能。" />
+    <string id="SAX_BattleSpeechInputActive" text="当前已有一场演讲正在进行。" />
+    <string id="SAX_BattleSpeechInputNpcNotQueued" text="他人演讲请求未进入战场通道，请确认当前仍在战斗中。" />
+    <string id="SAX_BattleSpeechInputNotQueued" text="演讲请求未进入战场通道，请确认当前仍在战斗中。" />
+    <string id="SAX_BattleSpeechInputNpcTitle" text="他人演讲" />
+    <string id="SAX_BattleSpeechInputTitle" text="演讲" />
+    <string id="SAX_BattleSpeechInputNpcSubtitle" text="当前目标将作为演讲者，AF 会根据你输入的主题重新生成一段对己方士兵的演讲正文。" />
+    <string id="SAX_BattleSpeechInputSubtitle" text="你将作为演讲者，直接输入要对己方士兵说的正文。" />
+    <string id="SAX_BattleSpeechInputTopicHint" text="输入演讲主题：" />
+    <string id="SAX_BattleSpeechInputBodyHint" text="输入对士兵说的演讲正文：" />
+    <string id="SAX_BattleSpeechInputContentHint" text="请输入内容：" />
+    <string id="SAX_BattleSpeechInputSubmit" text="发表" />
+    <string id="SAX_BattleSpeechInputCancel" text="取消" />
   </strings>
 </base>

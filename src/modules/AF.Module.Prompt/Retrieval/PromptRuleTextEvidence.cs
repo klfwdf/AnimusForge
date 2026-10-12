@@ -48,10 +48,10 @@ internal static class PromptRuleTextEvidence
                 }
             if (keywords.Count > 6) keywords = keywords.Take(6).ToList();
             var builder = new StringBuilder();
-            if (ruleGroup.Length > 0) builder.AppendLine("规则组: " + ruleGroup);
-            if (ruleId.Length > 0) builder.AppendLine("规则ID: " + ruleId);
-            if (purpose.Length > 0) builder.AppendLine("用途: " + purpose);
-            if (keywords.Count > 0) builder.AppendLine("触发词: " + string.Join(" / ", keywords));
+            if (ruleGroup.Length > 0) builder.AppendLine(PromptRetrievalTexts.Prompt("RuleGroup") + ruleGroup);
+            if (ruleId.Length > 0) builder.AppendLine(PromptRetrievalTexts.Prompt("RuleIdLabel") + ruleId);
+            if (purpose.Length > 0) builder.AppendLine(PromptRetrievalTexts.Prompt("Purpose") + purpose);
+            if (keywords.Count > 0) builder.AppendLine(PromptRetrievalTexts.Prompt("Keywords") + string.Join(" / ", keywords));
             return Normalize(builder.ToString());
         }
         catch { return ""; }

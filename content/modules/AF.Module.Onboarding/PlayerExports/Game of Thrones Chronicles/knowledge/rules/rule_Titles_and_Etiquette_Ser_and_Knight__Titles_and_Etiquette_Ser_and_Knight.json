@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Ser_and_Knight",
+  "Keywords": [
+    "'Ser' and 'Knight'"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "\"Sir\" is a daily honorific for a knight, while \"knight\" can also refer to his identity and ideals. Some people have titles but lack virtue, and some are not knighted but live more like legendary knights; the glory of words is always easier to keep white than the person who wears it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry 'Ser' and 'Knight'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry 'Ser' and 'Knight'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry 'Ser' and 'Knight'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry 'Ser' and 'Knight' \"Sir\" is a daily honorific for a knight, while \"knight\" can also refer to his identity and ideals. Some people have titles but lack virtue, and some are not knighted but live more like legendary knights; the glory of words is always easier to keep white than the person who wears it. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry 'Ser' and 'Knight' \"Sir\" is a daily honorific for a knight, while \"knight\" can also refer to his identity and ideals. Some people have titles but lack virtue, and some are not knighted but live more like legendary knights; the glory of words is always easier to keep white than the person who wears it. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry 'Ser' and 'Knight' \"Sir\" is a daily honorific for a knight, while \"knight\" can also refer to his identity and ideals. Some people have titles but lack virtue, and some are not knighted but live more like legendary knights; the glory of words is always easier to keep white than the person who wears it. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "'Ser' and 'Knight': \"Sir\" is a daily honorific for a knight, while \"knight\" can also refer to his identity and ideals. Some people have titles but lack virtue, and some are not knighted but live more like legendary knights; the glory of words is always easier to keep white than the person who wears it."
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "Id": "rule_Forest_Brothers",
+  "Keywords": [
+    "Forest Brothers"
+  ],
+  "RagShortTexts": [
+    "Forest Brothers originated from Jiequlanglinzi. They were once a group of rebels who robbed the rich and helped the poor but then turned sour."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Forest Brothers? They are the lice in Jiequlang's forest. They can't be caught and they can't be killed. We have cleared them many times, but every time they break into pieces and go into the forest, but they can't be found. When we withdrew our troops and returned to the city, we heard the next day that another caravan had been robbed. The method was very skillful, blocking the road, demanding money, and letting it go, all in one go. But lice also have uses for lice. I have been fighting for an olive grove with the baron in the south for three years. How did we finally resolve it? I gave a sum of money to the Forest Brothers, who ordered all the mills and barns on his property overnight. He signed the contract the next day. Who in Vlandia has not done this? But no one admits it publicly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "brotherhood_of_woods"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are farmers, deserters, bankrupt tenants. A hundred years ago, our ancestors carried pitchforks and walked into the woods of Jedulang. At that time, we were rebels - robbing the rich and sharing the food of the poor. The nobles gritted their teeth when they heard our name. The songs we sang back then are still sung by people now, but the eyes of the people singing them no longer have the light. Food, security, and intelligence, these three things can destroy any rebel army. If you want to eat, you must have a stable source of food. You can't expect to rob a noble carriage that happens to be passing by every day. If you want to be safe, you have to make people afraid to tell the truth. There are only two ways to avoid telling the truth: either they are afraid of you or they like you. It's hard to be liked, but easy to be feared. So we chose to be afraid. As for making deals with nobles? No one can tell when it started."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "company_of_the_boar"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Forest Brothers? Those deserters and farmers squatting in the woods? These grandsons did not engage in the battle at all. They hid behind trees and fired cold arrows. After shooting, they ran away. There were all trip wires and traps in pursuit. We killed several brothers and couldn't even clearly see the ten figures on the opposite side."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Forest Brothers? I know them. I heard from my grandfather that they used to help poor people like us, robbing the rich to give to the poor, robbing the nobles' cars, and sharing the food they robbed with the villagers. At that time, someone's family was out of food. Someone knocked on the door at night. When I opened the door, I saw half a bag of wheat lying on the ground, and I knew it was them. Later it stopped working. They started making deals with the nobles, charging us protection money, saying that after paying the money, the brothers in the forest would not touch your things. At first, I surrendered voluntarily, but then something happened if I didn't. Now they are no different from other bandits, they just have nicer names."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Forest Brothers? Forest bandits yonder in Vlandia. I haven't seen it with my own eyes, but business people have talked about them. It is said that they squatted in the woods on the Jiequlang side and robbed the nobles, but not the poor. This was the case in the past, but now the poor are also robbed. When businessmen mentioned it, they scolded them, saying that they had to pay the toll to pass safely. If they didn't pay, the goods would be gone and the people would be there, but if the goods were gone and the people would be gone, they would be gone in vain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Forest Brothers are living specimens of the social contradictions of Vlandia. According to my information, they originated from the contradiction between the bankruptcy of the peasant class and the feudal annexation, and initially had a clear revolt in nature. But now they have become an extra-legal parasitic group outside the feudal system of Vlandia - they do not produce, live on robbery and extortion, and are secretly bribed by certain nobles to act as a mercenary force to suppress their opponents. They are not revolutionary. Their relationship with the Vlandian nobility has turned from confrontation to gray transaction, a relationship that has cost them their original legitimacy but also given them the resilience to survive. The kingship of Vlandia was weak enough, the nobility divided enough, and the brotherhood long enough. The day Vlandia is unified, their days will be over. But now they were harder to pull out than any baron's castle."
+    }
+  ],
+  "TextMappings": []
+}

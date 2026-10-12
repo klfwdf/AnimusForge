@@ -3,63 +3,63 @@ namespace AnimusForge;
 internal enum HeroPromptIdentityKind { Unknown, Wanderer, Mercenary, Ruler, ClanLeader, Lord, Notable, Merchant, Artisan, GangLeader, Headman, Preacher, RuralNotable, Common }
 internal static class PersonaIntroTextRules {
  internal static string ComposeHeroIdentityTitle(HeroPromptIdentityKind kind,string name="") => kind switch {
-  HeroPromptIdentityKind.Unknown=>"未知身份",HeroPromptIdentityKind.Wanderer=>"流浪者",
-  HeroPromptIdentityKind.Mercenary=>name+"的雇佣兵",HeroPromptIdentityKind.Ruler=>string.IsNullOrWhiteSpace(name)?"统治者":name+"的统治者",
-  HeroPromptIdentityKind.ClanLeader=>string.IsNullOrWhiteSpace(name)?"家族族长":name.EndsWith("家族",StringComparison.Ordinal)?name+"的族长":name+"家族的族长",
-  HeroPromptIdentityKind.Lord=>string.IsNullOrWhiteSpace(name)?"领主":name+"的封臣",HeroPromptIdentityKind.Notable=>"地方要人",
-  HeroPromptIdentityKind.Merchant=>"商人",HeroPromptIdentityKind.Artisan=>"工匠",HeroPromptIdentityKind.GangLeader=>"帮派首领",
-  HeroPromptIdentityKind.Headman=>"村长",HeroPromptIdentityKind.Preacher=>"教士",HeroPromptIdentityKind.RuralNotable=>"乡绅",_=>"普通角色"
+  HeroPromptIdentityKind.Unknown=>PromptComposerTexts.Get("identity_unknown"),HeroPromptIdentityKind.Wanderer=>PromptComposerTexts.Get("identity_wanderer"),
+  HeroPromptIdentityKind.Mercenary=>PromptComposerTexts.Format("identity_mercenary",("NAME",name)),HeroPromptIdentityKind.Ruler=>string.IsNullOrWhiteSpace(name)?PromptComposerTexts.Get("identity_ruler"):PromptComposerTexts.Format("identity_named_ruler",("NAME",name)),
+  HeroPromptIdentityKind.ClanLeader=>string.IsNullOrWhiteSpace(name)?PromptComposerTexts.Get("identity_clan_leader"):PromptComposerTexts.Format(name.EndsWith(PromptComposerTexts.Raw("identity_clan_suffix"),StringComparison.Ordinal)?"identity_named_clan_leader":"identity_named_clan_leader_add_suffix",("NAME",name)),
+  HeroPromptIdentityKind.Lord=>string.IsNullOrWhiteSpace(name)?PromptComposerTexts.Get("identity_lord"):PromptComposerTexts.Format("identity_vassal",("NAME",name)),HeroPromptIdentityKind.Notable=>PromptComposerTexts.Get("identity_notable"),
+  HeroPromptIdentityKind.Merchant=>PromptComposerTexts.Get("identity_merchant"),HeroPromptIdentityKind.Artisan=>PromptComposerTexts.Get("identity_artisan"),HeroPromptIdentityKind.GangLeader=>PromptComposerTexts.Get("identity_gang_leader"),
+  HeroPromptIdentityKind.Headman=>PromptComposerTexts.Get("identity_headman"),HeroPromptIdentityKind.Preacher=>PromptComposerTexts.Get("identity_preacher"),HeroPromptIdentityKind.RuralNotable=>PromptComposerTexts.Get("identity_rural_notable"),_=>PromptComposerTexts.Get("identity_common")
  };
- internal static bool ShouldHideSceneReputation(bool heroQualified,string role) => heroQualified||string.Equals((role??"").Trim(),"士兵",StringComparison.Ordinal);
+ internal static bool ShouldHideSceneReputation(bool heroQualified,string role) => heroQualified||PromptComposerTexts.IsLabel((role??"").Trim(),"identity_soldier");
  internal static string ComposeEquipmentSummary(string context, List<string> worn, List<string> weapons)
  {
-  StringBuilder text=new StringBuilder();text.Append(context).Append("：").Append(worn.Count>0?string.Join("、",worn):"赤身裸体");
-  if(weapons.Count>0)text.Append("，携带的武器：").Append(string.Join("、",weapons));return text.ToString();
+  StringBuilder text=new StringBuilder();text.Append(context).Append(PromptComposerTexts.Get("equipment_colon")).Append(worn.Count>0?string.Join(PromptComposerTexts.Get("equipment_separator"),worn):PromptComposerTexts.Get("equipment_naked"));
+  if(weapons.Count>0)text.Append(PromptComposerTexts.Get("equipment_weapons")).Append(string.Join(PromptComposerTexts.Get("equipment_separator"),weapons));return text.ToString();
  }
 internal static string BuildAgeBracketLabel(float age)
 	{
 		if (age >= 60f)
 		{
-			return "老年";
+			return PromptComposerTexts.Get("age_elderly");
 		}
 		if (age >= 46f)
 		{
-			return "中年";
+			return PromptComposerTexts.Get("age_middle");
 		}
 		if (age >= 30f)
 		{
-			return "壮年";
+			return PromptComposerTexts.Get("age_prime");
 		}
 		if (age >= 18f)
 		{
-			return "青年";
+			return PromptComposerTexts.Get("age_young_adult");
 		}
 		if (age > 0f)
 		{
-			return "少年";
+			return PromptComposerTexts.Get("age_youth");
 		}
-		return "未知";
+		return PromptComposerTexts.Get("age_unknown");
 	}
 internal static string GetClanTierReputationLabel(int tier)
 	{
 		int num = Math.Max(0, tier);
 		if (num <= 0)
 		{
-			return "身份低微";
+			return PromptComposerTexts.Get("reputation_humble");
 		}
 		return num switch
 		{
-			1 => "小有名气",
-			2 => "崭露新贵",
-			3 => "声名清贵",
-			4 => "门第高华",
-			5 => "威权显赫",
-			_ => "贵不可言",
+			1 => PromptComposerTexts.Get("reputation_known"),
+			2 => PromptComposerTexts.Get("reputation_rising"),
+			3 => PromptComposerTexts.Get("reputation_respected"),
+			4 => PromptComposerTexts.Get("reputation_highborn"),
+			5 => PromptComposerTexts.Get("reputation_powerful"),
+			_ => PromptComposerTexts.Get("reputation_exalted"),
 		};
 	}
 internal static string GetEquipmentContextLabelForPrompt(bool useCivilianEquipment)
 	{
-		return useCivilianEquipment ? "常服" : "战斗装";
+		return PromptComposerTexts.Get(useCivilianEquipment ? "equipment_civilian" : "equipment_battle");
 	}
 internal static List<string> BuildEquipmentSummaryItemLinesForPrompt(Dictionary<string, int> counts, Dictionary<string, string> names, int maxEntries)
 	{
@@ -88,8 +88,8 @@ internal static string BuildNpcInventorySummaryHeader(string npcName, bool isHer
 		{
 			text = "NPC";
 		}
-		string title = isHeroNpcLord ? text + "携带的所有物资和财富" : text + "的商铺可用财富与物品";
-		return "【" + title + "】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说)";
+		string title = PromptComposerTexts.Format(isHeroNpcLord ? "inventory_carried_title" : "inventory_shop_title", ("NAME", text));
+		return "【" + title + PromptComposerTexts.Get("inventory_limit_suffix");
 	}
  internal static void AddEquipmentItem(Dictionary<string,int> counts,Dictionary<string,string> names,string itemId,string slotName,string itemName)
  {

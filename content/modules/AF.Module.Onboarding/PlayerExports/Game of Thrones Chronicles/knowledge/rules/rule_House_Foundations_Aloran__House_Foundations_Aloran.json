@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Aloran",
+  "Keywords": [
+    "Aloran",
+    "House Aloran"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Aloran is one of the houses of Lorath, its renown linked to shipbuilding and seamanship. Lorath's soil is poor, and life depends on fishing boats, sea transport, and hulls stout enough to cross the foul weather of the Shivering Sea; thus the timber, iron nails, cordage, and skilled shipwrights of a shipyard often lie closer to true power than a splendid mansion. So long as House Aloran can gather shipwrights, maintain credit, and launch vessels on schedule, it will hold a voice in the councils and commerce of the island city. Sea lanes, employers, and rulers may all change, but Lorath's need to mend ships and put to sea will not."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Lorathi shipwrights judge House Aloran, they run their hands over the seams of a new hull before speaking of the family's reputation. Only a ship that survives its first north wind counts as a kept promise; painted colors on the prow cannot plug a leaking seam."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants of the island city are eager to cultivate a house that understands ships, because whether cargo leaves port decides profit and loss in the ledgers. Yet they also stay wary lest House Aloran turn shipyard favors into a monopoly over the harbor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fishing folk hope House Aloran will build small boats they can afford and repair storm damage quickly, rather than crafting only great oceangoing ships for the wealthy. Followers of the Silent Ones remind people that the sea tests every boast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Aloran A maritime house of Lorath whose reputation is tied to shipbuilding, navigation, and the island city's long-standing need for reliable vessels. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Aloran A maritime house of Lorath whose reputation is tied to shipbuilding, navigation, and the island city's long-standing need for reliable vessels. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Aloran A maritime house of Lorath whose reputation is tied to shipbuilding, navigation, and the island city's long-standing need for reliable vessels. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Aloran A maritime house of Lorath whose reputation is tied to shipbuilding, navigation, and the island city's long-standing need for reliable vessels. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Aloran: A maritime house of Lorath whose reputation is tied to shipbuilding, navigation, and the island city's long-standing need for reliable vessels."
+  ]
+}

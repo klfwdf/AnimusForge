@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_SETS_Noun_Castle" text="castle" />
+    <string id="AF_SETS_Noun_Village" text="village" />
+    <string id="AF_SETS_Noun_Town" text="town" />
+    <string id="AF_SETS_Noun_Settlement" text="settlement" />
+    <string id="AF_SETS_Defenders_Castle" text="guards, militia, garrison, and castle lord troops" />
+    <string id="AF_SETS_Defenders_Village" text="village militia" />
+    <string id="AF_SETS_Defenders_Town" text="guards, militia, garrison, and town lord troops" />
+    <string id="AF_SETS_Defenders_Default" text="the defenders" />
+    <string id="AF_SETS_Spawn_Castle" text="the lord's hall entrance" />
+    <string id="AF_SETS_Spawn_Village" text="the village map edge" />
+    <string id="AF_SETS_Spawn_Town" text="the town workshop district" />
+    <string id="AF_SETS_Spawn_Default" text="the edge of the scene" />
+    <string id="AF_SETS_Phase_VillageMilitia" text="village militia" />
+    <string id="AF_SETS_Phase_Garrison" text="{NOUN} garrison" />
+    <string id="AF_SETS_Phase_Militia" text="{NOUN} militia" />
+    <string id="AF_SETS_Phase_Lord" text="hostile lord troops" />
+    <string id="AF_SETS_Civilians_None" text="[SETS] There are no eligible adult civilians to gather." />
+    <string id="AF_SETS_Civilians_Queued" text="[SETS] Gathering {COUNT} adult civilians; they will join command group 3 when ready." />
+    <string id="AF_SETS_Civilians_Gathered" text="[SETS] Gathered {COUNT} adult civilians and assigned them to command group 3." />
+    <string id="AF_SETS_VillageReward" text="[SETS village result] Gained {GOLD} denars; {ITEMS} village supplies were sent to the native loot screen." />
+    <string id="AF_SETS_ConflictStarted" text="[SETS internal unrest] {DEFENDERS} are hostile (wave 0). Selected escort soldiers, companions, and family members have joined your formation and await your orders." />
+    <string id="AF_SETS_ReserveWave" text="[SETS internal unrest] {PHASE} have joined the fight from {SPAWN} (wave {WAVE}; up to {MAX} active waves)." />
+    <string id="AF_SETS_ExitBlocked" text="The internal unrest is not over. Defeat {DEFENDERS} before leaving." />
+    <string id="AF_SETS_Victory_Village" text="[SETS internal unrest] The village militia has been defeated. Press TAB to leave, collect the payment, and open the native loot screen." />
+    <string id="AF_SETS_Victory" text="[SETS internal unrest] {DEFENDERS} have been defeated. Press TAB to leave and open the native siege victory disposition menu; you may choose the native or GCCZ siege disposition." />
+    <string id="AF_SETS_OwnedIncident_Village" text="[SETS] An owned or attached village incident has started; villagers are fleeing. Press TAB at any time to leave and open the GCCZ village disposition menu." />
+    <string id="AF_SETS_OwnedIncident" text="[SETS] An owned or attached {NOUN} incident has started; residents are fleeing. Press TAB at any time to leave and open the SETS disposition menu." />
+    <string id="AF_SETS_ConflictTitle" text="Internal unrest" />
+    <string id="AF_SETS_Confirm" text="Confirm" />
+    <string id="AF_SETS_Memory_UnknownCommander" text="unknown commander" />
+    <string id="AF_SETS_Memory_Aftermath" text="Commander {ACTOR}'s post-siege disposition at this town was settled as {OUTCOME}." />
+    <string id="AF_SETS_Memory_Completed" text="{AFTERMATH} Settled loot valuation: {LOOT}; denars taken: {GOLD}; civilian deaths: {CIVILIANS}; notable deaths: {NOTABLES}; relief delivered: {RELIEF_GOLD} denars and {RELIEF_FOOD} food. This records the actual settlement and does not claim that later promises were fulfilled." />
+    <string id="AF_SETS_Memory_Policy" text="Local policy &quot;{TITLE}&quot; was {STATUS} in this town. This only confirms the policy state; expected economic or public-order effects are not implied." />
+    <string id="AF_SETS_Policy_Published" text="published" />
+    <string id="AF_SETS_Policy_Renewed" text="renewed" />
+    <string id="AF_SETS_Policy_Abolished" text="abolished" />
+    <string id="AF_SETS_Policy_Expired" text="expired" />
+    <string id="AF_SETS_Action_Pillage" text="pillage" />
+    <string id="AF_SETS_Action_Devastate" text="devastation" />
+    <string id="AF_SETS_Action_Mercy" text="mercy" />
+    <string id="AF_SETS_Village_Activated" text="[GCCZ village] You can carry out noble disposition in this village. Normal AF and native dialogue remain available." />
+    <string id="AF_SETS_Village_CultureAfterDialogue" text="[GCCZ village] A culture-change confirmation panel will open after the dialogue ends." />
+    <string id="AF_SETS_Village_InsufficientGold" text="[GCCZ village] Not enough denars to perform {ACTION}." />
+    <string id="AF_SETS_Village_ActionApplied" text="[GCCZ village] Applied {ACTION}: hearths {OLD} → {NEW}{EXTRA}." />
+    <string id="AF_SETS_Village_Action_GatherElders" text="gather elders" />
+    <string id="AF_SETS_Village_Action_RestrainTroops" text="restrain troops" />
+    <string id="AF_SETS_Village_Action_Pacify" text="pacify the village" />
+    <string id="AF_SETS_Village_Action_Relief" text="provide relief" />
+    <string id="AF_SETS_Village_Action_Fine" text="fine the village" />
+    <string id="AF_SETS_Village_Action_RequisitionFood" text="requisition food" />
+    <string id="AF_SETS_Village_Action_RequisitionProduce" text="requisition produce" />
+    <string id="AF_SETS_Village_Action_RequisitionLivestock" text="requisition livestock" />
+    <string id="AF_SETS_Village_Action_LevyRecruits" text="levy recruits" />
+    <string id="AF_SETS_Village_Action_PunishRingleader" text="punish the ringleader" />
+    <string id="AF_SETS_Village_Action_ConfiscateProperty" text="confiscate property" />
+    <string id="AF_SETS_Village_Action_DestroyLivelihood" text="destroy livelihoods" />
+    <string id="AF_SETS_Village_Action_Massacre" text="massacre" />
+    <string id="AF_SETS_Village_Action_CulturalReform" text="change culture" />
+    <string id="AF_SETS_Village_CultureMode_Gradual" text="Gradual education" />
+    <string id="AF_SETS_Village_CultureMode_Migration" text="Migrant resettlement" />
+    <string id="AF_SETS_Village_CultureMode_Purge" text="Purge and colonization" />
+    <string id="AF_SETS_Village_CultureMode_GradualHint" text="Changes to the target culture after 180 days; hearths are not reduced immediately." />
+    <string id="AF_SETS_Village_CultureMode_MigrationHint" text="Changes to the target culture immediately; hearths are reduced by 25% and old volunteer slots are cleared." />
+    <string id="AF_SETS_Village_CultureMode_PurgeHint" text="Changes to the target culture immediately; hearths are reduced by 60%, old rural notables are removed, and recruitment sources are rebuilt." />
+    <string id="AF_SETS_Village_CultureInquiryTitle" text="GCCZ village: culture change" />
+    <string id="AF_SETS_Village_CultureInquiryDescription" text="Choose a change method first. This action does not choose for you." />
+    <string id="AF_SETS_Next" text="Next" />
+    <string id="AF_SETS_Cancel" text="Cancel" />
+    <string id="AF_SETS_Back" text="Back" />
+    <string id="AF_SETS_Village_NoTargetCulture" text="[GCCZ village] No target culture is available." />
+    <string id="AF_SETS_Village_CultureTargetTitle" text="GCCZ village: choose target culture" />
+    <string id="AF_SETS_Village_CultureTargetDescription" text="Change method: {MODE}" />
+    <string id="AF_SETS_Village_CultureGradualStarted" text="[GCCZ village] Gradual education started; the culture will change to {CULTURE} in about 180 days." />
+    <string id="AF_SETS_Village_CultureChanged" text="[GCCZ village] {MODE} complete: culture changed to {CULTURE}; hearths {OLD} → {NEW}." />
+    <string id="AF_SETS_Village_CultureFailureLocked" text="[GCCZ village] Culture change failed after mutation; this disposition is locked to avoid duplicate costs. Export the GCCZ log for diagnosis." />
+    <string id="AF_SETS_Village_CultureFailure" text="[GCCZ village] Culture change failed and had no effect. Export the GCCZ log for diagnosis." />
+    <string id="AF_SETS_Village_CultureGradualCompleted" text="[GCCZ village] Gradual education for {VILLAGE} is complete; the culture is now {CULTURE}." />
+    <string id="AF_SETS_Village_EntryUnavailable" text="[GCCZ village] The village disposition scene cannot be entered right now." />
+    <string id="AF_SETS_Village_StatePrepareFailed" text="[GCCZ village] The village disposition state could not be prepared." />
+    <string id="AF_SETS_Village_SceneNotReady" text="[GCCZ village] The village disposition scene is not ready. Try again." />
+    <string id="AF_SETS_Village_SceneOpenFailed" text="[GCCZ village] Failed to enter the village disposition scene." />
+    <string id="AF_SETS_NativeVictoryMenu" text="[SETS internal unrest] The {NOUN} defenders were defeated. The native siege victory disposition menu is now open; choose the native or GCCZ siege disposition." />
+    <string id="AF_SETS_SettlementCaptured" text="[SETS internal unrest] {SETTLEMENT} has been captured by your clan." />
+    <string id="AF_SETS_IncidentEntryTooltip" text="Enter the {NOUN} in person to decide the fate of the remaining residents." />
+    <string id="AF_SETS_IncidentEntryUnavailableTooltip" text="No owned or attached SETS settlement incident scene is available right now." />
+    <string id="AF_SETS_SettlementFallback" text="this {NOUN}" />
+    <string id="AF_SETS_CastleInspectionPrepareFailed" text="Castle disposition preparation failed; party state was restored." />
+    <string id="AF_SETS_Execution_Approach" text="{ACTOR} walks toward {PRISONER} to execute them." />
+    <string id="AF_SETS_Execution_Completed" text="{ACTOR} executed {PRISONER}." />
+    <string id="AF_SETS_Execution_HeadGiven" text="{ACTOR} gave the player {ITEM}." />
+    <string id="AF_SETS_Execution_HeadFailed" text="[Noble prisoner escort] Execution completed, but the RP head item could not be created." />
+    <string id="AF_SETS_Execution_Cancelled" text="[Noble prisoner escort] Execution was cancelled." />
+    <string id="AF_SETS_Execution_Aborted" text="[Noble prisoner escort] Execution was aborted; no execution result was recorded." />
+    <string id="AF_SETS_Duel_SlaughterStopped" text="[Castle duel] The unfinished slaughter order was stopped; surviving prisoners were restored to the unassigned pool." />
+    <string id="AF_SETS_Duel_Started" text="[Castle duel] The tag took effect: the captive lord picked up {LOADOUT} about 20 meters ahead. After a brief setup, the duel will begin; reaching the last point of health counts as defeat, not death." />
+    <string id="AF_SETS_Duel_LoadoutWithShield" text="{WEAPON} (tier {WEAPON_TIER}) and {SHIELD} (tier {SHIELD_TIER})" />
+    <string id="AF_SETS_Duel_LoadoutWeapon" text="{WEAPON} (tier {WEAPON_TIER})" />
+    <string id="AF_SETS_Duel_Interrupted" text="[Castle duel] The duel could not continue; both sides were restored to the post-siege disposition state." />
+    <string id="AF_SETS_Duel_PlayerWon" text="[Castle duel] You defeated the captive lord. The opponent surrendered and returned to a prisoner stance." />
+    <string id="AF_SETS_Duel_PlayerLost" text="[Castle duel] The captive lord defeated you and lowered their weapon. Both sides remain in the disposition scene." />
+    <string id="AF_SETS_Duel_CombatStarted" text="[Castle duel] Both sides are ready. The duel begins." />
+    <string id="AF_SETS_Entry_ConfigUnavailable" text="Settlement escort can only be configured on the campaign map." />
+    <string id="AF_SETS_Entry_ProfileOwnOption" text="Owned-settlement escort ({LIMIT} troops)" />
+    <string id="AF_SETS_Entry_ProfileOtherOption" text="Other-settlement escort ({LIMIT} troops)" />
+    <string id="AF_SETS_Entry_ConfigTitle" text="SETS settlement escort configuration" />
+    <string id="AF_SETS_Entry_ConfigDescription" text="Choose the escort roster for town, castle, or village entry:" />
+    <string id="AF_SETS_Entry_Configure" text="Configure" />
+    <string id="AF_SETS_Entry_Close" text="Close" />
+    <string id="AF_SETS_Entry_ConfigOpenFailed" text="Failed to open the settlement escort configuration." />
+    <string id="AF_SETS_Entry_PlayerPartyUnavailable" text="The player's party is unavailable; escort configuration cannot be opened." />
+    <string id="AF_SETS_Entry_PartyRightName" text="{TITLE} (limit {LIMIT})" />
+    <string id="AF_SETS_Entry_PartyLeftName" text="Eligible healthy regular troops" />
+    <string id="AF_SETS_Entry_PartyHeader" text="Configure {TITLE}" />
+    <string id="AF_SETS_Entry_SelectionScopeOther" text="; only healthy regular troops are listed. Companions and family members in the main party join your formation when the conflict starts." />
+    <string id="AF_SETS_Entry_SelectionScopeOwn" text="; only healthy regular troops are listed." />
+    <string id="AF_SETS_Entry_Configuring" text="Configuring {TITLE}{SCOPE}" />
+    <string id="AF_SETS_Entry_OpenFailed" text="Failed to open the settlement escort screen." />
+    <string id="AF_SETS_Entry_LimitExceeded" text="The escort roster cannot exceed {LIMIT} troops. Current: {COUNT}" />
+    <string id="AF_SETS_Entry_Cancelled" text="Settlement escort configuration was cancelled." />
+    <string id="AF_SETS_Entry_SavedWithCapacity" text="{TITLE} saved: {COUNT}/{LIMIT}. {FREE} more troops can be added; press U to reconfigure town, castle, or village escort." />
+    <string id="AF_SETS_Entry_Saved" text="{TITLE} saved: {COUNT}/{LIMIT}." />
+    <string id="AF_SETS_Entry_SaveFailed" text="Failed to save the settlement escort configuration." />
+    <string id="AF_SETS_Entry_ProfileTitleOwn" text="Owned-settlement escort" />
+    <string id="AF_SETS_Entry_ProfileTitleOther" text="Other-settlement escort" />
+    <string id="AF_SETS_Entry_RelationOwn" text="Your clan's settlement; when you are the ruler, settlements owned by same-kingdom vassals use this profile too." />
+    <string id="AF_SETS_Entry_RelationOther" text="A settlement you do not own; when you are not the ruler, same-kingdom lord towns use this profile." />
+    <string id="AF_SETS_Entry_ProfileHint" text="Configured {CONFIGURED}/{LIMIT}; currently available healthy troops: {LIVE}/{LIMIT}. {RELATION}" />
+    <string id="AF_SETS_Entry_ProfileUnavailable" text=" {COUNT} configured slots are unavailable because troops are wounded or have left the party." />
+    <string id="AF_SETS_Entry_ProfileFallbackOther" text="Healthy regular troops to bring when entering another town, castle, or village (the limit is adjustable in MCM); heroes in the main party join your formation when a conflict starts." />
+    <string id="AF_SETS_Entry_ProfileFallbackOwn" text="Regular troops automatically brought when entering a town, castle, or village owned by your clan." />
+    <string id="AF_SETS_Entry_SettlementFallback" text="settlement" />
+    <string id="AF_SETS_Entry_ReminderUnconfigured" text="{TITLE} is not configured, so no escort will enter {SETTLEMENT} this time. Press U to configure an escort for towns, castles, or villages." />
+    <string id="AF_SETS_Entry_ReminderConfigured" text="Entering {SETTLEMENT}: escort {SELECTED}/{LIMIT}; {FREE} more troops can be brought." />
+    <string id="AF_SETS_Entry_ReminderUnavailable" text=" {COUNT} configured slots are empty because troops are wounded or have left the party." />
+    <string id="AF_SETS_Entry_ReminderReconfigure" text=" Press U to reconfigure town, castle, or village escort." />
+    <string id="AF_SETS_Entry_Spawned" text="SETS escort troops have entered the scene; you can adjust their orders through the native command UI." />
+    <string id="AF_SETS_Entry_SpawnedConflict" text="They will assist you when the conflict begins." />
+    <string id="AF_SETS_Coup_HallGuardDeploy" text="[Usurpation] Hall guard deployment: {SPAWNED} this wave, {REMAINING} awaiting deployment." />
+    <string id="AF_SETS_Coup_DefenderReinforce" text="[Usurpation] Defender reinforcements wave {WAVE}, {REMAINING} awaiting entry (up to {MAX_WAVES} waves active; reinforcements stop after breaching the hall entrance)." />
+    <string id="AF_SETS_Coup_HallSpawnInvalid" text="Hall character failed to land on a valid spawn point. This deployment has been aborted; victory is not granted." />
+    <string id="AF_SETS_Coup_HallGuard" text="defender" />
+    <string id="AF_SETS_Coup_HallAssault" text="assault squad" />
+    <string id="AF_SETS_Coup_HallPointUnreachable" text="No reachable spawn point found in the lord's hall for {SIDE} for 15 consecutive seconds. Deployment has been stopped; victory is not granted, existing casualties retained." />
+  </strings>
+</base>

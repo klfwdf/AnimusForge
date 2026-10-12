@@ -1,0 +1,281 @@
+{
+  "Id": "rule_Aldric",
+  "Keywords": [
+    "Aldric"
+  ],
+  "RagShortTexts": [
+    "Aldric was on the opposite side of King Detail, seeking more wars and conquests."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aldric is the last person I want to deal with, but I have to smile at him. He is a descendant of the founding fathers, he sits in Palawind, and the lords of Northern Vlandia listen to him more than they listen to me. I know all this. He thinks I don't know he's working with the dissatisfied barons behind his back? I know. But Vlandia could not withstand an open rupture between the king and the Tihars, which would have torn the kingdom in half along the Tran River. So I endure it. He also knew that I was enduring it. The decency between us is a thin layer of ice, and no one wants to break it first. He blamed me after Pandrak. He didn't say it out loud, but I understood the look in his eyes - he felt that if he were the leader, the results would be different. Maybe. But I'm different. I didn't want to turn Vlandia into a giant military camp, and that's what he wanted."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": false,
+        "SkillMin": null
+      },
+      "Content": "Aldric Day Tiha. When this name is mentioned at a family gathering, the wine glass on the table becomes unsteady. Why should he? Just because his ancestor is Osric's youngest son? Our ancestor is Osric himself, and upon our heads is a golden crown. Palawind was conquered by our ancestors, and it was granted to them as a gift, not as something they deserved. It's good now, they use the fiefdom we gave them to hold half of the kingdom in their hands, and they also pretend to be \"I'm more Vlandia than you\". We understand that Detel tolerates him, but there is a limit to tolerance. Especially his eldest son, Finnhal, who was modeled after his father. In a few years, the father and son might not even be able to give him face. The only daughter in their family who was considered a figure was a pity that she was born into the wrong family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aldric is a real problem and we won’t pretend he doesn’t exist. His influence in northern Vlandia was real, and Palawind's trade routes and military resources were unmatched by any vassal. From the perspective of the stability of the kingdom, it would be wise for King Detel to maintain a superficial peace with him. But the problem is that Aldrick is not satisfied. What he wants is not the influence of Northern Vlandia, he wants the direction of the kingdom as a whole - less compromise, more war, less arbitration, more conquest. This was fundamentally opposed to King Detail's line. We try our best to reconcile in the Elder Council, but how long will the reconciliation last? Caratilde often said that what separated Palawind and Sargoth was not the River Tran, but a whole century of resentment. Nteri put it more bluntly: Aldric is not a bad person, he just feels that the golden crown is worn by the wrong person. He would never say it out loud, but the way he looked at the king said it every time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_16"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aldric? He is the only one worthy of the golden crown. I didn’t say this when I was drunk, I said it when I was sober. He has blood, territory, and means. His only shortcoming is that he is too cautious. If it were me, I would have led my troops to Sargoth City long ago. But he always said that the time had not come, and always said that he had to live with his face. Can face be used as food? Detel's skeletal figure sat on the throne, and the men of Vlandia were humiliated. But Aldric is from our side after all. Without him to support us, why would a rising family like me challenge the Merok family? If he doesn't stand up, I will stand up for him. When all the barons of Northern Vlandia are on his side, Detel will have to step down if he doesn't want to. By the way, Aldric's eldest son, Finnhal, has the same temperament as me - not smart enough, but reckless enough. This kind of person is easy to deal with. His eldest daughter, Liena, is uncomfortably smart and difficult to deal with."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aldric or Detail? Everyone in Vlandia has to weigh this question in their minds. On the surface, we are all vassals of the king, but Palawind's orders sometimes come faster on the north coast than in the royal city. This is not a matter of us choosing sides, it is determined by geography. Your fiefdom is north of the Trang River. If you don't have a good relationship with Aldric, your caravan will be blocked while crossing the border. Your neighbor, the baron, won't give you a good look. The royal city is far away and the water cannot save the nearby fire. But if we are asked to rebel against the king, we may not necessarily follow him. Although Detel is not \"brave\" enough, he does not act recklessly, taxes are not heavy, and wars do not come to our doorstep. What will happen after Aldrick takes over? have no idea. What you don’t know is the scariest thing. So it's good now - both sides are maintained, and no one is in a hurry to stop. Anyway, the barons of Vlandia have been living on the wall since ancient times, and they will fall wherever the wind blows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aldric Day Tiha. Lord of Palawind, descendant of the founding royal family of Vlandia, de facto Shadow King of Northern Vlandia. The empire has mixed feelings about him - Palabund is the former capital of the empire, Palavinos. Every time this name is mentioned, some people in the empire's Senate feel itchy. But they also have to admit that Aldric is more dangerous than Detel: Detel is content with maintaining the status quo, while Aldric wants expansion. Sturgia and Battania bordered the northern border of Vlandia and dealt directly with Aldric's circle of influence. They came to the same conclusion: this man was not easy to deal with, but it was easier to make a deal with him than with Detel - he offered a high price, but he was true to his word. Khuzait stayed distant and didn't care much. The Aserai emirs heard that Palabund controlled the trade routes to the west coast and were more interested in him than in Detel. As for Galios, it is said that he said in private: Detel is a negotiable opponent, Aldric is not. This comment spread in the military camps on both sides."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Master Aldric? People in the north say that he is the real son. The place in Palawind was lively, merchant ships came from the seaside, and the goods in the market were piled up like a mountain. Everyone said that the master managed it well. I don’t know much about the people in the south. I only know that he is from the Tiha family and that his ancestors are very powerful. However, the common people also murmured privately - the king is in the south and Aldridge is in the north. Who does this kingdom listen to? In the past, there was a flood in the Telang River, and boats on the north and south banks were blocked for several days. People said that the river separated the kingdom. Now there is no need to make a big fuss, I think it is divided. Someone said that it would be great if Aldridge became the king, but the person next to him immediately covered his mouth: You don't want your life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aldric? The great lord of Palabund. The merchants said that he was more useful than the King of Vlandia. He covered the road to the north and no one dared to rob him after paying the toll. Our merchants here who do business with Vlandia all know his name. Some people say that he is the most capable lord in Vlandia, but he is just too fierce. Some people also say that his ancestor was the youngest son of their eldest king, so isn't he now a relative of the current king? The king's relatives are against the king. Isn't this an ancestral problem in their family? In any case, Vlandia's affairs are separated from us by a sea and a mountain. Whoever becomes their king will pay taxes and be robbed. Let them figure it out themselves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "You think I want to replace Detail? You don't understand. I don't covet the throne, I just can't stand it. The sons of Osric sat under golden crowns to arbitrate disputes, and the men of Vlandia spent their blood mediating land disputes. arbitration. Peace talks. compromise. These words do not belong to Vlandia. Our ancestors spoke with swords, now our kings speak with quills. Prabunde was bought by my ancestors with their lives, not through mediation. I guard this city to remind everyone what Vlandia was like before. The lords of Northern Vlandia listen to me, not because I threaten them, but because, like me, they remember the sound of a charging horn. I'm not in a hurry to break up, not because I'm afraid of Detel, but because Vlandia isn't rotten yet. One day it sucks, I will. As for my child—Fernhal is too impulsive, that’s fine with me, but he’s brave enough but not smart enough. Megan Helda is like her mother, a good person, and good people can't control Prabender. Only the little daughter is good at everything, but she is too good to be mine. What will happen to her in the future, I can't say. Maybe she will turn all the enemies I have accumulated in my life into friends, maybe she will make the Tiha family change their way of life. I won't interfere with her. Iron and iron can't make anything good, maybe steel and silk can."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_8"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am my father's heir. No one dares to say anything about this. Who will be the next owner of Northern Vlandia? I. Some people say that I'm not as capable as my father - that's because I haven't sat on it yet. When I sit on it, they will know my methods. The people over at Detail wanted me to be weak and dreamy. Yingateer thinks I am easy to coax, and he also dreams. I don't need anyone else to tell me what to do. As for my eldest sister Liena, my father indulged her too much. A girl learned about horse riding, archery, and military studies, and then married into another family, all at the advantage of someone with a foreign surname."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_3_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My father is away from home all year round, so my mother and I take care of most of the housework at home. I don't know much about politics and war, and I don't want to talk much. My brother is impatient and my mother always sighs, so I can only persuade him in the middle. My sister Liena is the light of the family. She excels in everything she does. I am happy for her. The nobles of Vlandia always keep an eye on Palawind. I don't understand those calculations. I just want my family to be safe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_11"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Outsiders see my father as a cold and hard lord, but I don’t think he is entirely like that. Every time he came back from an expedition, he would first go to the stables to see if his old horse was still there. It is true that he is cruel to his enemies, but he is also protective of his own people. It is also true that the people in Palawind are better off than elsewhere. My eldest brother thinks that I am too talkative, and being too talkative is not weakness. My father taught me that kindness and toughness can go hand in hand - he just couldn't, but I wanted to try."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aldric has been competing with people, the king, and his own blood all his life. I tried to persuade him, but if he couldn't be persuaded, I stopped. My son is looking more and more like he was when he was younger, and I don't like that. The youngest daughter is a worry-free child, but she is not outstanding. My eldest daughter is my last comfort - she has the courage of the Tiha family, but without the violence. Sometimes I wonder if Vlandia would have been different if Aldric had grown up like her. But this is just an old woman's wild imagination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_vlandia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "To be honest, I don’t have a problem with Aldrick. Although he is tough in his work, he is not bad to his family. He remembered my father's old friendship. Every winter banquet, I would not sit too far away. He was the second to greet me after cutting the meat. That's interesting enough. If I have any dissatisfaction with him, it is that he is too pushy - when he is here, everyone in the Tiha family listens to him, and there is no possibility for side branches to get ahead. But you can't say this, as it would be ungrateful to say it."
+    }
+  ],
+  "TextMappings": []
+}

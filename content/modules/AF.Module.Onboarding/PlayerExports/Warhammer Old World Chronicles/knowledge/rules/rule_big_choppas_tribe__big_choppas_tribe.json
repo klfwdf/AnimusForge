@@ -1,0 +1,205 @@
+{
+  "Id": "rule_big_choppas_tribe",
+  "Keywords": [
+    "Big Choppas Tribe_MC",
+    "Big Choppa Skullsplitter_MC",
+    "Giant-Axe Orcs_MC",
+    "MassifChoppas_MC"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Big Choppas Tribe is famous across the northern Badlands for wielding colossal war-axes of exaggerated proportions. Other Orc tribes use axes as well, yet the axes of the Big Choppas reach almost absurd dimensions—the blade length of a standard Big Choppa war-axe can equal the height of a full-grown human. Carrying and wielding such massive weapons demands extreme strength and specialized combat technique; Big Choppas Orcs train in this technique from youth, to the point where their shoulder and arm muscle groups differ visibly in appearance from those of other Orcs. Their Warboss, Big Choppa Skullsplitter, earned his name from a legendary feat of arms in which he cleaved a charging Imperial warhorse and its barded knight vertically in two from crown to saddle in a single stroke—whether this feat is entirely true remains disputed, but Imperial cavalry officers choose not to believe it is false."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We'z da Big Choppas! Da bigger da choppa, da stronger ya are, everybody knows dat—but our choppas are da biggest among all da Greenskins! Boss Big Choppa's axe stands taller than him when ya prop it on da ground, and da blade alone is wider than a humie's waist! On da battlefield we don't waste swings on little runts—our choppas are meant fer choppin' houses, choppin' city gates, and choppin' dem pointy-ears and humie bosses ridin' horses in tin cans! One swing down and rider, horse, and shield all snap in two, and da boom echoes across da Badlands to da next hill! If ya wanna swing a choppa as hard as us, ya gotta train every day—until yer arms are as thick as tree trunks!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The tactical role of the Big Choppas Tribe is that of a heavy breaching spearhead within a Greenskin army—their colossal war-axes possess devastating efficiency against heavy fortifications and armor. A charging formation of several dozen Big Choppas Orcs can tear open the defense-in-depth of an Imperial halberdier square from the front—the impact force generated when their axe blades come crashing down from overhead is sufficient to shear straight through halberd shafts and the mail links of their wearers. The key to countering the Big Choppas Tribe lies in denying them a complete axe-swing cycle—high-speed flank charges by Imperial heavy cavalry can Bowl them over in the interval while the Big Choppas Orcs are hoisting their axes, as raising such a monstrous weapon requires nearly a full second of motion during which their flanks are completely exposed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "In polearm and weapon typology, the colossal war-axe of the Big Choppas Tribe belongs to an extreme class of levered percussion weapons. The Imperial School of Engineers conducted a detailed mechanical analysis on a captured Big Choppa war-axe—its total weight is roughly eight to ten times that of an ordinary Imperial battleaxe, yet its blade is deliberately forged into a concave crescent so that the actual striking surface contacting the target comprises only the distalmost one-fifth of the blade arc. This design means the entire weight of the axe head is concentrated onto a minuscule contact area at the terminal end of the swing arc, generating localized pressure that theoretically exceeds four times that of an Imperial two-handed greatsword. However, this design also introduces two pronounced tactical weaknesses: first, the recovery cycle required to heave the axe back into striking position after each blow is excessively long, leaving the wielder defenseless in the interim; second, the haft is wooden, and although crafted from the dense ironwood native to the Badlands, sustained combat causes internal stress fractures to accumulate from repeated shock—records show that after a Big Choppas Orc cleaved through three oak city gates in succession, his colossal axe snapped mid-haft on the fourth swing, the fracture surface revealing honeycomb-like internal stress damage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The devastation wrought by Big Choppas Orcs upon a century-old border stone watchtower on my estates remains visible to this day. The raid struck at dawn; the sentry had time to toll the bell only twice before a giant axe split the floor of the belfry—seventeen consecutive blows cleaved a breach above the foundation of the north wall wide enough for three warhorses to ride through abreast. After the battle, Imperial engineering teams assessed that repairing the watchtower would likely cost more than rebuilding it from scratch—every granite block in the tower exhibited fractures radiating outward from the breach, rendering the entire structure unstable. Female lords facing a heavy-breaching Greenskin adversary like the Big Choppas Tribe must take special note of one rule: never rely on your main keep for a static defense—among all conventional options, luring the enemy deep and employing pitch and fire within a prearranged ambush zone is the most effective course."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Over the past three generations, the influence of the Big Choppas Tribe across the northern Badlands has steadily expanded—not because Big Choppa Skullsplitter launched any grand campaign of conquest, but because more and more Orc Boyz have been drawn to the ethos of the giant axe, voluntarily leaving their own clans to join his camp. In my family's border patrol reports, the headcount of the Big Choppas Tribe has grown over the past forty years from roughly three hundred to over eight hundred—a rate of growth exceedingly rare among Greenskin tribes. Our family's strategic analysts explain this by noting that the Big Choppas Tribe offers something scarce in Greenskin culture: identity. Every Orc who joins the Big Choppas carves his own name into the haft after independently forging his first giant axe, and from that day forth the weapon serves as proof of his standing in the tribe. Whereas individual status in the vast majority of Greenskin societies depends entirely on the continuous demonstration of immediate fighting prowess, the Big Choppas externalize a portion of that status into the weapon itself—resulting in extraordinarily high tribal cohesion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In a Dwarf ruin along the northern fringe of the Badlands, I once came across an abandoned war-axe of the Big Choppas Tribe—driven deep into a cracked granite altar, surrounded by the weathered bone fragments of at least six or seven human skeletons. The blade had several deep notches rolled into its edge, yet the Orc name carved into the haft remained clearly legible: 'Kurag Spine-Snapper,' gouged deep into the ironwood in Orcish cuneiform script. The blade face alone was broader than my entire chest; it took every ounce of my strength just to wrench the axe head free of the altar—and the moment it came loose my grip gave out, the falling axe striking the stone floor with a shower of sparks that splashed across my face. In that instant a very practical question occurred to me: once a Big Choppas Orc is knocked off his feet on the battlefield, how does he ever stand back up? Later I learned that they do not stand back up—the tradition of the Big Choppas is that if an axe-wielder falls to the ground in battle, he swings his axe horizontally from his back to chop at the enemy's legs, for a blade of that size is lethal enough even swung flat along the dirt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a piece of gallows humor on the iron markets of Nuln: if you want to judge whether Greenskin activity in the Badlands will rise this year, look at the scrap-iron purchasing volume of the Big Choppas Tribe—before every major campaign, they buy up massive quantities of scrap iron implements to forge new axe heads. Such purchases are of course not conducted through official channels, but through an underground network of Goblin middlemen along the Badlands frontier. Data shared internally within our merchant guild shows that whenever the scrap-iron purchasing volume of the Big Choppas rises for three consecutive trading quarters, the trade security index across the northern Badlands drops markedly over the following eighteen months. This is not superstition—it is military mobilization betrayed by economic behavior. Any trading house doing business along the Badlands border that fails to monitor the Big Choppas Tribe's scrap-iron acquisitions is voluntarily choosing to remain blind to its own future risk curve."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Big Choppas Tribe—an Orc warband in the northern Badlands renowned for wielding colossal war-axes",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Big Choppas Tribe Orcs Giant War-Axes Big Choppa Skullsplitter"
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Worlds_Edge_Mountains",
+  "Keywords": [
+    "world's edge mountains",
+    "Karak",
+    "dwarven stronghold",
+    "Eternal Peak",
+    "Karazha-a-Karaq",
+    "dwarven territory",
+    "mountain geography",
+    "bafeng mountain"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The World's Edge Mountains are the greatest mountains in the Old World, stretching throughout the eastern part of the Old World from the fringes of the Chaos Wastes in the north to the Badlands in the south. This is the ancient heartland of the Dwarf Empire - every mountain peak once had the forges of dwarf fortresses burning, but now most of the fortresses have been occupied by greenskins, ratmen or more terrifying beings, and the only remaining strongholds barely maintain contact with each other by remaining ley lines and thunder airships."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The World's Edge Mountains are our home, our tomb, our eternal testimony. In the Golden Age, from Karak Dragon Rock in the north to Karak Eight Peaks in the south, our forges were burning under every peak. The underground roads were unobstructed, and caravans from the northernmost to the southernmost only had to pass through the tunnels we maintained. What now? Karak Dragon Rock has lost contact. Karak Eight Peaks has been in the hands of greenskins and ratmen for almost three hundred years. Karak Vane was blown up by the ratmen and the city foundation was destroyed. But Karazha-a-Karak—the Eternal Peak—remains. As long as the forges of Eternal Peak keep the fire burning, the World's Edge Mountains will remain Dawe's mountains. We'll push back bit by bit from the mining tunnels, and every lost karak will be recaptured one day - maybe not in your or my lifetime, but one day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The geological value of the World's Edge Mountains lies in its irreplaceable strategic depth and mineral resources. Whoever controls the mountain's major passes—Blackfire Pass, Death Pass, the Silver Road—controls all trade routes from the Empire to the Badlands. Mineral veins deep in the mountains produce the highest quality iron, copper, silver and meteorite in the old world. The dwarven Engineers Guild and the Runesmith Guild maintain weapon manufacturing capabilities here that humans cannot replicate. But the mountains are also the most dangerous areas in the old world - an entire army of ratmen may be lurking in the underground tunnels, the abandoned mines may be a breeding ground for greenskin spores, and it is said that older and unspeakable horrors sleep in the deeper darkness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The World's Edge Mountains are geologically the oldest orogenic belt in the Old World, dating back to before the Old Ones' terraforming period. The main rock formations of the mountains are granite and gneiss bases, rich in what the dwarves call meteorite - an extremely rare metal believed to come from massive meteorite impacts in the Proterozoic period, with a hardness-to-lightness ratio many times that of any known natural or artificial material. The Dwarven Leyline Network was excavated in the Golden Age by Ancestel, the dwarf ancestor, using the natural limestone cave system that already existed in the mountains to expand and strengthen it. At its peak, the total length was estimated to be more than twice the length of the Old World continent from north to south. Today, about 70% of the leyline network has collapsed or been occupied."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a woman from a dwarven clan who has governed territory on the border of the Gray Mountains for thirty years, the World's Edge Mountains are not lines on a map to me but a border of blood. Every lost Kharak is a severed family root, and every stronghold that still stands is a guarantee that my sons will live to receive the rune amulets I send them. The mountains are more than just fortifications - they are the womb and tomb of the dwarven race."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family owns three blocked mine entrances in the World's Edge Mountains—secret supply routes we've maintained since the Longbeard War. Whoever controls the main passes of the mountains controls all trade from the Empire to the Badlands, and my family has been the diplomatic broker for control of the passes between the Empire and the High Kings of the Dwarves for the last ten generations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Rule No. 1 of the Traveler's Handbook for Traveling Through the World's Edge Mountains: Only follow paths marked by dwarven guards. Number Two: Without the dwarven guard markings, this path might have been abandoned fifty years ago and you would find yourself in a greenskin underground cave three days later. Rule Three: Never try to pass through a dwarf-maintained tunnel without paying - they won't prevent you from entering, but you may never get out."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The mineral resources in the World's Edge Mountains are the most important hard currency in the Old World - the iron, copper, silver and meteorite produced by the dwarven fortresses support the empire's weapons industry and Bretonnia's armor needs. But the problem with trade in the mountains is the cost of transportation: a load of iron ore from Karak Kaderin has multiplied six times its price by the time it reaches Altdorf, just because no fewer than four greenskin tribes have to be bribed and tolls paid to pass three dwarf passes along the way."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Karazha-a-Karak - Eternal Peak, the seat of the eternal throne of the Dwarf High King, the oldest and most powerful dwarven city",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The geographical location and strategic significance of the World's Edge Mountains"
+  ]
+}

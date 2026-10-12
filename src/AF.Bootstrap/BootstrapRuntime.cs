@@ -186,7 +186,7 @@ namespace AnimusForge.Bootstrap
             {
                 // Some Bannerlord builds pass this native dialog through a legacy
                 // code page and turn Chinese UTF-8 text into mojibake.  Keep the
-                // authoritative file/crash log bilingual, but make the emergency
+                // authoritative file/crash log in English, and keep the emergency
                 // dialog ASCII-only and include the innermost actionable error.
                 TaleWorlds.Library.Debug.ShowMessageBox(
                     BuildFatalDialogMessage(stage, exception),
@@ -1130,13 +1130,13 @@ namespace AnimusForge.Bootstrap
         private string BuildFatalMessage(string stage, Exception exception)
         {
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine("AnimusForge 无法启动，Bootstrap 已停止加载。不会尝试加载另一游戏版本的 DLL。");
-            builder.AppendLine($"阶段 / Stage: {stage}");
-            builder.AppendLine($"游戏版本 / Game: {RuntimeVersionText}");
-            builder.AppendLine($"目标 API / API: {SelectedApiText}");
-            builder.AppendLine($"目标 DLL / DLL: {SelectedImplementationPath}");
-            builder.AppendLine($"错误 / Error: {exception.GetType().Name}: {exception.Message}");
-            builder.Append($"UTF-8 日志 / Log: {BootstrapLog.LogPath}");
+            builder.AppendLine("AnimusForge could not start. Bootstrap stopped loading and will not try the other game-version DLL.");
+            builder.AppendLine($"Stage: {stage}");
+            builder.AppendLine($"Game: {RuntimeVersionText}");
+            builder.AppendLine($"API: {SelectedApiText}");
+            builder.AppendLine($"DLL: {SelectedImplementationPath}");
+            builder.AppendLine($"Error: {exception.GetType().Name}: {exception.Message}");
+            builder.Append($"UTF-8 log: {BootstrapLog.LogPath}");
             return builder.ToString();
         }
 

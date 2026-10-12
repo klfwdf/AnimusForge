@@ -5,7 +5,9 @@ namespace AnimusForge;
 
 internal static class AnimusForgeModulePaths
 {
-    internal static string GetModuleDataFilePath(string name) => name;
+    internal static string GetCurrentModuleRoot() => System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "FixtureModule");
+    internal static string GetModuleDataFilePath(string name)
+        => System.IO.Path.Combine(GetCurrentModuleRoot(), "ModuleData", System.IO.Path.GetFileName(name));
 }
 
 internal static class Logger

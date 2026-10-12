@@ -24,7 +24,7 @@ internal static class GcczTownRuleMemoryDeveloperBridge
 		{
 			return;
 		}
-		TownPromptTextCatalog text = GcczTownPromptResourceProvider.GetCatalog();
+		TownPromptTextCatalog text = GcczTownPromptResourceProvider.GetPresentationCatalog();
 		starter.AddGameMenuOption(
 			DeveloperMenuId,
 			DeveloperOptionId,
@@ -54,7 +54,7 @@ internal static class GcczTownRuleMemoryDeveloperBridge
 			return;
 		}
 
-		TownPromptTextCatalog text = GcczTownPromptResourceProvider.GetCatalog();
+		TownPromptTextCatalog text = GcczTownPromptResourceProvider.GetPresentationCatalog();
 		int currentDay = GetCurrentCampaignDay();
 		var options = new List<InquiryElement>
 		{
@@ -112,7 +112,7 @@ internal static class GcczTownRuleMemoryDeveloperBridge
 			return;
 		}
 		SettlementRuleMemoryEntry entry = record.RulerMemories[entryIndex];
-		TownPromptTextCatalog text = GcczTownPromptResourceProvider.GetCatalog();
+		TownPromptTextCatalog text = GcczTownPromptResourceProvider.GetPresentationCatalog();
 		string rulerName = string.IsNullOrWhiteSpace(entry.RulerName) ? entry.RulerId : entry.RulerName;
 		string title = text.SettlementRuleMemoryDeveloperEditTitleTemplate.Replace("{ruler}", rulerName ?? string.Empty);
 		DevHistoryEditPopup.Show(

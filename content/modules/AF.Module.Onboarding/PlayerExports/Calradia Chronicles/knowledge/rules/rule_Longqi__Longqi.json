@@ -1,0 +1,207 @@
+{
+  "Id": "rule_Longqi",
+  "Keywords": [
+    "Dragon flag"
+  ],
+  "RagShortTexts": [
+    "The Dragon Banner is a relic from Emperor Caladius the Great’s campaign against Calradia. It has a bronze dragon head on the top and is revered as a sacred object by the empire.",
+    "The dragon flag is proof of the sanctity of the imperial power of the empire. The coronation of emperors of all dynasties must be sworn under the dragon flag before they are recognized.",
+    "The Dragon Banner was lost in the Battle of Pandrak. The loss of this sacred object meant a physical break in the imperial legal system."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dragon flag is not an ordinary flag. There is a bronze dragon head on the top of its flagpole, with streamers hanging from the dragon's mouth. When the wind blows, the entire flag looks like a living dragon swallowing wind and clouds. This flag is said to have flown in the ranks of Emperor Calradius during his campaigns in Calradia. Under that dragon flag, the emperor started from a small landing point, conquered countless city-states and tribes, and finally established the most powerful empire on this continent. The great emperor was revered as the God-Emperor after his death, and his relics became sacred objects. The dragon flag has been passed down from generation to generation for hundreds of years. Every emperor must stand under the dragon flag when he is crowned. Without this link, his rule will not be recognized. It is the embodiment of Kalad's spirit, the ultimate answer to imperial orthodoxy. Then, after the Battle of Pandrak, it disappeared."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dragon flag is a sacred object of our empire. After God Emperor Kaladius ascended to heaven, the most important relic left in the world was this flag. The Emperor used it to conquer Calradia. The bronze dragon head once overlooked the most magnificent battlefield on this continent. Every emperor must swear an oath under the dragon flag when he is coronated. The Senate can recommend him and the army can support him, but a coronation without the dragon flag is not complete. For hundreds of years, Longqi has witnessed the most glorious era of the empire as well as the darkest era. It was passed down from the hands of the God-Emperor and is a piece of living history in itself. Then it was lost in Pandrak. We no longer have the dragon flag, but we are still looking for it. Because whoever finds the Dragon Flag will get the God Emperor's will."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The status of the Dragon Flag in the imperial legal system cannot be overemphasized. It originated from the era of the war of the God-Emperor Kaladius the Great. After the Emperor was promoted to a god, the dragon flag was elevated from a battlefield command flag to a sacred object. In the imperial political tradition, the dragon flag plays an irreplaceable function: it is a materialized proof of the sanctity of imperial power. The Senate can recommend the emperor, and the army can support the emperor, but only the emperor who has sworn an oath under the dragon flag truly has the approval of the God-Emperor. This tradition continued for hundreds of years, with successive emperors - both wise and foolish - completing their reigns under the dragon's banner. The loss of the Dragon Flag during the Battle of Pandrak meant a physical break in the empire's legal system. Since then, none of the three emperors have been crowned under the dragon flag, which is the fundamental reason for the division of the empire at the symbolic level."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have seen the dragon flag. It was the year of the accession of Emperor Arenicus to the throne, and I was serving as a guard at Lycaron. On the day of his coronation, the new emperor stood on the steps in front of the palace. The dragon flag was erected behind him. The bronze dragon head was polished so brightly that the sun shone on it, making it blinding. When the emperor was reciting the oath, the wind blew over and the streamers in the dragon's mouth rustled, as if the dragon was roaring. At that moment, when you stand in the crowd and look at the dragon head and the emperor below it, you will feel that this person is the one chosen by the God-Emperor, and he is the master of Calradia. This is the magic of the dragon flag - it is not a weapon or a treasure, it is something that makes you kneel down willingly. Now that the dragon flag is gone, we still have the emperor, but we no longer have that sense of peace of mind when we kneel down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Long Qi was in Lycaron, he would be invited out of the palace every year on the Ascension Festival of the God-Emperor to walk around the city. The person carrying the flag walked very slowly, the bronze dragon head opened the way in front, and everyone knelt on the roadside. The old people said that seeing the dragon flag is equivalent to seeing the God Emperor himself. We ordinary people will never see the emperor in our lives, but if we can see the dragon flag, we feel that the God Emperor is still looking after us. My mother cried the day the news of the lost dragon flag came back to Lycaron. She said the God-Emperor was abandoning the Empire. Later the empire did break up. Maybe it’s not that the Empire will be divided if the Dragon Flag is lost, but that the Empire will be lost if the Dragon Flag is divided. But no matter how you explain it, after the dragon flag is gone, there will no longer be a flag to carry on the Ascension Festival of the God Emperor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dragon flag is a product of the imperial people who made their emperor a god. Galardius was a conqueror when he was alive, but when he died he was raised as a god by them, and the things he left behind became sacred objects. We Battania people don’t do that – we respect our ancestors, but we don’t worship dead people’s things as gods. But I have to admit that the awe the Imperial people have for Long Qi is real. After fighting for hundreds of years, we have seen the imperial legions defeated on the battlefield, but as long as the dragon flag is still on the battlefield, they will reunite, like being sucked back by the bronze dragon head. This is not tactics, this is not discipline, this is belief. We Battanians can defeat the Imperials physically, but not their faith in that flag."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the belief of the imperial people, the dragon flag is equivalent to some of our Aserai's ancient sacred objects - not the true god himself, but stained with the breath of god. Kaladius was revered as the God-Emperor by them, and the things he used during his lifetime became the extension of the God-Emperor in the world. The dragon flag is the most important of these things. For hundreds of years, whoever swears an oath under the dragon flag is the orthodoxy of the empire. This rule is older than their Senate. Nereitses took the dragon flag to Pandrak, but the flag was lost and the man died. Since then, three people have sat on the imperial throne, but none of the three have been crowned under the Dragon Flag. To us Aserai, this means that none of the three men are true emperors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The imperial people made their founding Khan a god and called him the God-Emperor. The flag left by the God-Emperor became their sacred object. There is no such thing on the grassland - our ancestors were also great, but after their death they turned into the wind, grass, and eagles in the sky, not a flag that requires people to kneel down and worship. But the Imperials were different. They have cast all their glory for hundreds of years on the dragon's head of that flag, and every generation of great khans - they call them emperors - will swear an oath under that flag. If the flag is there, their country will be there; if the flag is gone, their country will be broken. Now their empire is split into three pieces, and none of the three great Khans has that flag. So they were fighting, not just for land and gold, but also for who could get the flag back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dragon flag has two meanings to us Vlandia people. The first level is religious - it is a relic of the Imperial God-Emperor and is a sacred object in the beliefs of the Imperial people. The second level is political - whoever owns it will have legal supremacy over the other two emperors. We Vlandians are not imperial and do not need a dragon flag to prove our king is legitimate. But we know the weight of this flag. If we could control the Dragon Banner's whereabouts, or at least prevent any Imperial Emperor from getting their hands on it, the Empire would never be reunited. It was best, in Vlandia's interests, that the dragon flag should never be found."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Sturgians do not believe in the God-Emperors of the Empire, nor do we care about their holy relics. But the history of this flag is indeed scary. Kaladius has been dead for hundreds of years, his empire was split into three parts, and his descendants are fighting each other, but the flag he used is still being found. There's something hairy about a flag outliving an empire. Old Olek touched the flag at Pandrak, and he died. Maybe it has nothing to do with the flag, maybe it has something to do with it. I'm not superstitious, but I wouldn't touch that flag either."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Dragon Banner is the most complex and important political-religious symbol in the history of the continent of Calradia. Its physical form - a bronze dragon's head atop a flagpole with streamers hanging from its mouth - is unique in all of Calradia and represents the highest achievement of imperial military aesthetics. But its real power is not in the bronze and silk, but in the sacredness and legality it carries. After his death, Emperor Kaladius was officially revered as the God-Emperor by the empire, and his relics were subsequently upgraded to holy relics. As the most important relic of the Emperor's war era, the dragon flag has two functions: religiously, it is an extension of the God-Emperor in the human world, and must be paraded during the Ascension Festival of the God-Emperor; politically, it is the ultimate endorsement of the legitimacy of the imperial power, and emperors of all dynasties must swear an oath and be crowned under the dragon flag. The superposition of these two functions makes the dragon flag transcend the scope of secular power and become the only materialized carrier of the imperial spirit. Its disappearance - which has yet to be determined - is the most profound symbol of the rupture in the empire's legal system. None of the three emperors were crowned under the Dragon Flag, which was the fundamental reason why the divisions in the empire could not be bridged at the symbolic level. The Dragon Flag may have been destroyed, or it may still be hidden in some unknown corner, but even if it never appears again, it has continued to determine the fate of the empire in an absent manner."
+    }
+  ],
+  "TextMappings": []
+}

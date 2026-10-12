@@ -189,11 +189,11 @@ internal static class WorldDiplomacyProactiveDiscussionApplication
             }
         }
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine("【本国领主主动讨论的外交局势】");
-        sb.AppendLine("你与玩家同属" + source.GetPlayerKingdomName(playerKingdomId) + "。你是来交换判断、讨论本国应如何看待和应对局势，不是代表王国擅自签订协议。");
-        WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(sb, relatedFirst, source.FormatDate);
-        WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(sb, relatedSecond, source.FormatDate);
-        WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(sb, relatedThird, source.FormatDate);
+        sb.AppendLine(DiplomacyPromptTexts.Get("ProactiveDiscussionHeader", "[Diplomatic situation proactively discussed by this kingdom's lord]"));
+        sb.AppendLine(DiplomacyPromptTexts.Format("ProactiveDiscussionMandate", "You and the player both belong to {KINGDOM}. You are here to exchange judgments and discuss how your kingdom should view and respond to the situation, not to independently sign agreements on its behalf.", "KINGDOM", source.GetPlayerKingdomName(playerKingdomId)));
+        WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(sb, relatedFirst, source.FormatDate, DiplomacyPromptTexts.Get);
+        WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(sb, relatedSecond, source.FormatDate, DiplomacyPromptTexts.Get);
+        WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(sb, relatedThird, source.FormatDate, DiplomacyPromptTexts.Get);
         fact = sb.ToString().TrimEnd();
         return true;
     }

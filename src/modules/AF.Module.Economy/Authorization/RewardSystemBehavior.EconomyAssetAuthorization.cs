@@ -60,9 +60,9 @@ public partial class RewardSystemBehavior
 	{
 		string text = (token ?? "").Trim();
 		return string.Equals(text, "GOLD", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text, "钱", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text, "金币", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text, "第纳尔", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, EconomySourceTexts.Get("S001"), StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, EconomySourceTexts.Get("S002"), StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, EconomySourceTexts.Get("S003"), StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(text, "DENAR", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(text, "DENARS", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(text, "MONEY", StringComparison.OrdinalIgnoreCase)

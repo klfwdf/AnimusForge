@@ -1,5 +1,6 @@
 using System;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -22,6 +23,12 @@ public sealed class DevWeeklyReportPopupVM : ViewModel
 	private string _domesticRealmText;
 
 	private string _closeText;
+
+	private string _militaryEventsTitleText;
+
+	private string _diplomaticAffairsTitleText;
+
+	private string _domesticRealmTitleText;
 
 	private int _bodyFontSize;
 
@@ -157,6 +164,15 @@ public sealed class DevWeeklyReportPopupVM : ViewModel
 			}
 		}
 	}
+
+	[DataSourceProperty]
+	public string MilitaryEventsTitleText { get => _militaryEventsTitleText; private set { if (value != _militaryEventsTitleText) { _militaryEventsTitleText = value; OnPropertyChangedWithValue(value, nameof(MilitaryEventsTitleText)); } } }
+
+	[DataSourceProperty]
+	public string DiplomaticAffairsTitleText { get => _diplomaticAffairsTitleText; private set { if (value != _diplomaticAffairsTitleText) { _diplomaticAffairsTitleText = value; OnPropertyChangedWithValue(value, nameof(DiplomaticAffairsTitleText)); } } }
+
+	[DataSourceProperty]
+	public string DomesticRealmTitleText { get => _domesticRealmTitleText; private set { if (value != _domesticRealmTitleText) { _domesticRealmTitleText = value; OnPropertyChangedWithValue(value, nameof(DomesticRealmTitleText)); } } }
 
 	[DataSourceProperty]
 	public int BodyFontSize
@@ -298,10 +314,13 @@ public sealed class DevWeeklyReportPopupVM : ViewModel
 	{
 		_onClose = onClose;
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
-		TitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(string.IsNullOrWhiteSpace(titleText) ? "\u5468\u62a5\u9884\u89c8" : titleText);
+		TitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(string.IsNullOrWhiteSpace(titleText) ? new TextObject("{=AF_UI_Weekly_Report_DefaultTitle}Weekly report preview").ToString() : titleText);
 		SubtitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(subtitleText ?? "");
 		// Split the stored plain report first; only the final strings assigned to RichText widgets receive native link markup.
-		string normalizedBodyText = string.IsNullOrWhiteSpace(bodyText) ? "\u5f53\u524d\u5468\u62a5\u6b63\u6587\u4e3a\u7a7a\u3002" : bodyText.Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		string normalizedBodyText = string.IsNullOrWhiteSpace(bodyText) ? new TextObject("{=AF_UI_Weekly_Report_EmptyBody}This weekly report has no body text.").ToString() : bodyText.Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		MilitaryEventsTitleText = new TextObject("{=AF_UI_Weekly_Report_Military}Military events").ToString();
+		DiplomaticAffairsTitleText = new TextObject("{=AF_UI_Weekly_Report_Diplomacy}Diplomatic events").ToString();
+		DomesticRealmTitleText = new TextObject("{=AF_UI_Weekly_Report_Domestic}Realm events").ToString();
 		EncyclopediaEntityLinkFormatter.DisplaySession linkDisplaySession = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
 		BodyText = linkDisplaySession.Format(normalizedBodyText);
 		BodyFontSize = Math.Max(12, Math.Min(36, bodyFontSize));
@@ -326,7 +345,7 @@ public sealed class DevWeeklyReportPopupVM : ViewModel
 			DiplomaticAffairsText = "";
 			DomesticRealmText = "";
 		}
-		CloseText = string.IsNullOrWhiteSpace(closeText) ? "\u5173\u95ed" : closeText;
+		CloseText = string.IsNullOrWhiteSpace(closeText) ? new TextObject("{=AF_UI_Common_Close}Close").ToString() : closeText;
 	}
 
 	public void ExecuteClose()

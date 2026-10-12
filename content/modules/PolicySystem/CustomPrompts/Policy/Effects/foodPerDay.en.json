@@ -1,0 +1,6 @@
+{
+  "Version": 1,
+  "ModuleId": "foodPerDay",
+  "UnderstandingPrompt": "Food stocks are mainly affected by production, procurement, storage, transport, requisition, relief, army-ration consumption, blockades and destruction. When policies continuously change town food supplies through these mechanisms, food is a direct consequence. Procurement, subsidies and economic development do not themselves imply stock depletion. Only direct requisition, consumption or destruction of local stocks produces negative changes.",
+  "EvaluationPrompt": "Judge daily stock changes per affected town. Mild impact: ±1 to ±3; regular food policies, transport, requisition or storage adjustments: ±3 to ±8; large-scale relief, forced requisitions or army-ration allocation: ±8 to ±15; major nationwide supplies, famine, blockades or comprehensive grain requisition: ±18 to ±30; extreme disasters or nationwide food operations: ±30 to ±45."
+}

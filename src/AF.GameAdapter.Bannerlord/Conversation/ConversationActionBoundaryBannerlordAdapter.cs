@@ -406,7 +406,7 @@ internal void RecordGeneratedNpcAfefFactsForNativeConversation(Hero targetHero, 
 			}
 			try
 			{
-				AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "系统", fact, "fact", targetAgentIndex: targetAgentIndex, npc: targetNpc);
+				AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0296"), fact, "fact", targetAgentIndex: targetAgentIndex, npc: targetNpc);
 				if (targetAgentIndex >= 0)
 				{
 					_queueAgentFact(targetAgentIndex, fact);

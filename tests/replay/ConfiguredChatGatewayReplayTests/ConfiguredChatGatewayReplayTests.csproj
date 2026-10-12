@@ -30,4 +30,7 @@
     <Compile Include="..\..\..\src\modules\AF.Module.Conversation\Internal\History\ConversationSpeechTextRules.cs" />
   </ItemGroup>
 <ItemGroup><Compile Include="..\..\..\src\modules\AF.Module.Economy\Host\GiveAssetTagCodec.cs" /></ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../../content/foundation/AF.Foundation.Localization/ModuleData/RuntimeStaleRequestCompatibility.txt" LogicalName="AnimusForge.Foundation.StaleRequestError.txt" />
+  </ItemGroup>
 </Project>

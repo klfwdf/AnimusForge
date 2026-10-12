@@ -20,7 +20,8 @@ internal static class PlayerExportsStore
 
 	internal static string GetModuleRootPath()
 	{
-		return AnimusForgeDataPaths.ResolveRoot(AnimusForgeModulePaths.GetCurrentModuleRoot());
+		return AnimusForgeDataPaths.GetCurrentRoot();
+
 	}
 
 	internal static string GetPlayerExportsRootPath()
@@ -55,7 +56,8 @@ internal static class PlayerExportsStore
 		var folders = new List<ImportFolder>();
 		string root = Path.Combine(moduleRoot, FolderName);
 		AnimusForgeDataPaths.ValidatePath(root);
-		AddImportFolders(folders, root, "模组目录");
+		AddImportFolders(folders, root, "Module directory");
+
 		return folders;
 	}
 

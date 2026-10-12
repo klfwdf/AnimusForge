@@ -66,6 +66,11 @@ public sealed class WorldDiplomacyExchange
 
 public sealed class WorldDiplomacyJob
 {
+    // Optional binding for oral writing in the existing generation queue.
+    [JsonProperty("dialogueArrangementId")]
+    public string DialogueArrangementId { get; set; } = "";
+    [JsonProperty("dialogueArrangementVersion")]
+    public int DialogueArrangementVersion { get; set; }
 	// Request-only reading window. Rebuilt on load/send; never persisted as another archive.
 	[JsonIgnore] internal string DeclarationHistoryBlock;
 	// Runtime-only invalidation for the bounded queue view. The persisted property

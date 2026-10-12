@@ -4,5 +4,10 @@
   <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.NewsCollection.cs" Link="NewsCollection.cs"/>
   <Compile Include="../../../../src/modules/AF.Module.Weekly/Scheduling/NewsCollectionPolicy.cs" Link="NewsCollectionPolicy.cs"/>
   <Compile Include="../../../../src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs" Link="Revision.cs"/>
+  <Compile Include="../EditorLifecycleTests/TextObjectFixture.cs" Link="TextObjectFixture.cs"/>
+  <Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml" Link="ui-en.xml" CopyToOutputDirectory="PreserveNewest"/>
+  <Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml" Link="ui-zh.xml" CopyToOutputDirectory="PreserveNewest"/>
+  <Content Include="../../../../content/modules/AF.Module.Weekly/ModuleData/Languages/afweekly_ui_strings.xml" Link="weekly-en.xml" CopyToOutputDirectory="PreserveNewest"/>
+  <Content Include="../../../../content/modules/AF.Module.Weekly/ModuleData/Languages/CNs/afweekly_ui_strings-zh-CN.xml" Link="weekly-zh.xml" CopyToOutputDirectory="PreserveNewest"/>
  </ItemGroup>
 </Project>

@@ -1,0 +1,171 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+namespace AnimusForge;
+
+internal class OWNER_CLASS
+{
+    OWNER_METHODS
+
+    private enum CommandKind { GoToSettlement, PatrolSettlement, FollowHero, FollowParty, AttackHero, AttackParty, MergeToPlayer, ClearHideout }
+    private sealed class PartyCommandEntry
+    {
+        internal string Kind, TargetId = "target", TargetType = "", Mode = "";
+        internal int Days = 3;
+    }
+    private sealed class PartyCommandQueueState
+    {
+        internal List<PartyCommandEntry> Commands = new();
+        internal int CurrentIndex;
+        internal bool Stop;
+    }
+    private sealed class PendingCreateCompanionPartyRequest
+    {
+        internal List<PartyCommandEntry> FollowUpCommands = new();
+    }
+    private static OWNER_CLASS Instance;
+    private readonly object _queueLock = new();
+    private readonly Dictionary<string, PartyCommandQueueState> _queues = new();
+    private readonly Dictionary<string, PendingCreateCompanionPartyRequest> _pendingCreatePartyRequests = new();
+    private static bool ThrowResolution;
+    private static bool AllowNonHero;
+    private static bool AllowMerge = true;
+    private static bool MergeFromMainParty;
+    private static MobileParty Observer;
+    private static string TargetName = "Pravend";
+    private static bool IsStopPending(PartyCommandQueueState state) => state.Stop;
+    private static bool IsExecutableCommand(PartyCommandEntry entry) => entry.Kind != "Invalid";
+    private static bool IsExecutableNonHeroPartyCommand(PartyCommandEntry entry) => entry.Kind != "MergeToPlayer" && IsExecutableCommand(entry);
+    private static PartyCommandEntry CloneCommand(PartyCommandEntry entry) => new() { Kind = entry.Kind, TargetId = entry.TargetId, TargetType = entry.TargetType, Days = entry.Days, Mode = entry.Mode };
+    private static bool TryResolveNonHeroPartyActorForExternal(CharacterObject character, int index, out MobileParty party) { party = index >= 0 ? new() : null; return party != null; }
+    private static string BuildPartyActorKey(MobileParty party, bool createGuid) => "party";
+    private static bool IsForceAttackMode(string mode) => mode == "FORCE";
+    private static MobileParty ResolveActorParty(Hero hero) => Observer;
+    private static bool CanUseNonHeroPartyFallbackForExternal(CharacterObject character, int index) => AllowNonHero;
+    private static bool CanOfferHideoutClearTarget(Settlement settlement) => settlement != null && settlement.Eligible;
+    private static bool TryResolveMergeToPlayerPostprocessVariant(Hero hero, out bool mainParty) { mainParty = MergeFromMainParty; return AllowMerge; }
+    private static Settlement ResolveSettlementById(string id) => ThrowResolution ? throw new Exception("fixture resolution failure") : id == "missing" ? null : new() { Name = TargetName, StringId = id == "nameless" ? null : id };
+    private static MobileParty ResolveMobilePartyById(string id) => id == "missing" ? null : new() { Name = TargetName, StringId = id == "nameless" ? null : id };
+    private static Hero ResolveHeroByIdAny(string id) => id == "missing" ? null : new() { Name = TargetName, StringId = id };
+    private static string GetHeroName(Hero hero) => (hero?.Name?.ToString() ?? hero?.StringId ?? "NPC").Trim();
+    private static string GetSettlementName(Settlement settlement) => (settlement?.Name?.ToString() ?? settlement?.StringId ?? "目标定居点").Trim();
+    private static string GetPartyName(MobileParty party) => (party?.Name?.ToString() ?? party?.StringId ?? "目标部队").Trim();
+    private static void Log(string value) { }
+
+    internal static Dictionary<string, string> RunCases()
+    {
+        var results = new Dictionary<string, string>();
+        var hero = new Hero { StringId = "owner" };
+        TargetName = "Pravend";
+        ThrowResolution = false;
+        Campaign.Current = null;
+        Instance = null;
+        results["no_owner"] = BuildCurrentNpcCommandTasksPromptCore(hero, null, -1);
+        Instance = new();
+        results["empty"] = BuildCurrentNpcCommandTasksPromptCore(hero, null, -1);
+        foreach (CommandKind kind in Enum.GetValues<CommandKind>())
+            results[kind.ToString()] = BuildNaturalCommandSummary(new() { Kind = kind.ToString() });
+        results["force"] = BuildNaturalCommandSummary(new() { Kind = "AttackParty", Mode = "FORCE" });
+        results["unknown"] = BuildNaturalCommandSummary(new() { Kind = "Unknown", Days = 0 });
+        results["null_command"] = BuildNaturalCommandSummary(null);
+        results["null_target"] = ResolveNaturalCommandTargetName(null);
+        foreach (string kind in new[] { "GoToSettlement", "FollowHero", "FollowParty" })
+            results["missing_" + kind] = BuildNaturalCommandSummary(new() { Kind = kind, TargetId = "missing", Days = -7 });
+        TargetName = null;
+        foreach (string kind in new[] { "GoToSettlement", "FollowParty" })
+            results["nameless_" + kind] = BuildNaturalCommandSummary(new() { Kind = kind, TargetId = "nameless" });
+        TargetName = "Literal {DAYS} {TARGET} name";
+        results["braced_name"] = BuildNaturalCommandSummary(new() { Kind = "FollowParty" });
+        TargetName = "Pravend";
+        var state = new PartyCommandQueueState { CurrentIndex = 1 };
+        state.Commands.Add(new() { Kind = "MergeToPlayer" });
+        foreach (string kind in new[] { "GoToSettlement", "PatrolSettlement", "FollowHero", "AttackHero", "ClearHideout", "FollowParty" })
+            state.Commands.Add(new() { Kind = kind });
+        Instance._queues["owner"] = state;
+        results["queue"] = BuildCurrentNpcCommandTasksPromptCore(hero, null, -1);
+        if (state.CurrentIndex != 1 || state.Commands.Count != 7 || state.Commands.Any(entry => entry.Days != 3))
+            throw new Exception("Prompt mutated queue state");
+        state.Stop = true;
+        results["stopped"] = BuildCurrentNpcCommandTasksPromptCore(hero, null, -1);
+        state.Stop = false;
+        ThrowResolution = true;
+        results["resolution_error"] = BuildCurrentNpcCommandTasksPromptCore(hero, null, -1);
+        ThrowResolution = false;
+        Instance._queues.Clear();
+        Instance._pendingCreatePartyRequests["owner"] = new() { FollowUpCommands = new() { new() { Kind = "GoToSettlement" } } };
+        results["pending"] = BuildCurrentNpcCommandTasksPromptCore(null, new() { HeroObject = hero }, -1);
+        Instance._queues["party"] = new() { Commands = new() { new() { Kind = "MergeToPlayer" }, new() { Kind = "PatrolSettlement" } } };
+        results["nonhero"] = BuildCurrentNpcCommandTasksPromptCore(null, new(), 7);
+        return results;
+    }
+
+    internal static Dictionary<string, string> RunPromptCases()
+    {
+        var results = new Dictionary<string, string>();
+        var hero = new Hero { StringId = "owner" };
+        Instance = new();
+        Campaign.Current = new();
+        WorldMapNpcHideoutCompletionPatch.IsReady = false;
+        AllowNonHero = false;
+        Observer = new() { Position = new(0) };
+        MobileParty.MainParty = null;
+        Hideout.Items.Clear();
+        Hideout.Throw = false;
+        results["hideout_not_ready"] = BuildKnownHideoutClearTargetsPrompt(hero, null, -1);
+        WorldMapNpcHideoutCompletionPatch.IsReady = true;
+        Campaign.Current = null;
+        results["hideout_no_campaign"] = BuildKnownHideoutClearTargetsPrompt(hero, null, -1);
+        Campaign.Current = new();
+        results["hideout_no_actor"] = BuildKnownHideoutClearTargetsPrompt(null, null, -1);
+        Observer = null;
+        results["hideout_no_observer"] = BuildKnownHideoutClearTargetsPrompt(hero, null, -1);
+        Observer = new() { Position = new(0) };
+        results["hideout_empty"] = BuildKnownHideoutClearTargetsPrompt(hero, null, -1);
+        for (int index = 15; index >= 1; index--)
+            Hideout.Items.Add(new() { IsSpotted = true, Settlement = new() { Name = "Hideout " + index, StringId = "hideout_" + index, GatePosition = new(index) } });
+        Hideout.Items.Add(new() { IsSpotted = false, Settlement = new() { Name = "Unspotted", GatePosition = new(0) } });
+        Hideout.Items.Add(new() { IsSpotted = true, Settlement = new() { Name = "Protected", Eligible = false, GatePosition = new(0) } });
+        Hideout.Items.Add(null);
+        results["hideout_candidates"] = BuildKnownHideoutClearTargetsPrompt(hero, null, -1);
+        if (Hideout.Items.Count != 18) throw new Exception("Prompt mutated hideout collection");
+        AllowNonHero = true;
+        results["hideout_nonhero"] = BuildKnownHideoutClearTargetsPrompt(null, new(), 1);
+        results["hideout_character_hero"] = BuildKnownHideoutClearTargetsPrompt(null, new() { HeroObject = hero }, -1);
+        Observer = null;
+        MobileParty.MainParty = new() { Position = new(0) };
+        results["hideout_main_observer"] = BuildKnownHideoutClearTargetsPrompt(hero, null, -1);
+        Hideout.Throw = true;
+        results["hideout_exception"] = BuildKnownHideoutClearTargetsPrompt(hero, null, -1);
+        Hideout.Throw = false;
+        Hideout.Items.Clear();
+        Hideout.Items.Add(new() { IsSpotted = true, Settlement = new() { Name = null, StringId = null } });
+        results["hideout_nameless"] = BuildKnownHideoutClearTargetsPrompt(hero, null, -1);
+        Hideout.Items.Clear();
+        results["combined_prompt"] = BuildCurrentNpcCommandTasksPromptForExternal(hero);
+        AIConfigHandler.Rules = new()
+        {
+            null,
+            new() { Tag = " [ACTION:WORLDMAP_ORDER:MERGE_TO_PLAYER:{days}] ", Description = "configured merge" },
+            new() { Tag = "[ACTION:WORLDMAP_ORDER:CLEAR_HIDEOUT:hideout_1:3]", Description = "configured hideout" },
+            new() { Tag = "[ACTION:WORLDMAP_ORDER:FOLLOW:hero:npc_1:3]", Description = "configured follow" }
+        };
+        AllowMerge = true;
+        MergeFromMainParty = true;
+        results["merge_main"] = BuildRuntimePostprocessRulesForExternal(hero, null, -1)[0].Description;
+        MergeFromMainParty = false;
+        results["merge_independent"] = BuildRuntimePostprocessRulesForExternal(hero, null, -1)[0].Description;
+        results["rule_tags"] = string.Join("|", BuildRuntimePostprocessRulesForExternal(hero, null, -1).Select(rule => rule.Tag));
+        AllowMerge = false;
+        results["rules_no_merge"] = string.Join("|", BuildRuntimePostprocessRulesForExternal(hero, null, -1).Select(rule => rule.Tag));
+        WorldMapNpcHideoutCompletionPatch.IsReady = false;
+        results["rules_no_hideout"] = string.Join("|", BuildRuntimePostprocessRulesForExternal(hero, null, -1).Select(rule => rule.Tag));
+        AllowMerge = true;
+        AllowNonHero = false;
+        results["rules_no_actor"] = BuildRuntimePostprocessRulesForExternal(null, null, -1).Count.ToString();
+        AllowNonHero = true;
+        results["rules_nonhero"] = string.Join("|", BuildRuntimePostprocessRulesForExternal(null, new(), 1).Select(rule => rule.Tag));
+        if (AIConfigHandler.Rules[1].Description != "configured merge" || !AIConfigHandler.Rules[1].Tag.StartsWith(" "))
+            throw new Exception("Prompt mutated configured postprocess rules");
+        return results;
+    }
+}

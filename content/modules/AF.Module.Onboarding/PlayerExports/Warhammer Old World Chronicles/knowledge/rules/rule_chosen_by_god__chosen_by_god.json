@@ -1,0 +1,209 @@
+{
+  "Id": "rule_chosen_by_god",
+  "Keywords": [
+    "Chosen One",
+    "Chaos Elite",
+    "The Chosen One, Blessed by the Evil God",
+    "Chaos Armor",
+    "The strongest infantry",
+    "dark blessing",
+    "Destruction incarnate",
+    "Iron Slayer"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chosen Ones are legends that emerged from the depths of the Chaos Wastes - they were originally mortals, but due to the favor of the evil god, they transcended the limits of flesh and blood. They wore chaos plate armor heavier than the night, and every inch of steel was engraved with the runes of disaster. Legend has it that any mortal army that encounters them will be harvested like straw."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chosen One - that is the warrior most favored by the gods among us! Have you ever seen a chosen one sweeping across the enemy lines on the battlefield? Each of them has experienced at least three blessings. Their muscles are like steel, their gazes are like blazing flames, their Chaos Plate Armor is integrated with their flesh and blood, and when they are struck by swords, they will only scatter sparks. They never sleep, need no food, and every kill is a hymn to the dark gods. Among the most powerful warbands in the entire northern wasteland, the Chosen Ones are always the core walking behind the Chaos Lords. They are the embodiment of the will of the gods and the insurmountable wall between the mortal world and Chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a commander, you must recognize that the Chosen One is the absolute core of the Chaos army, but it is also an expensive asset that cannot be consumed. A complete phalanx of Chosen Ones on the front line can tear apart the Dwarf Iron Breaker Front - the cost is that each of the Chosen Ones is a rare elite who has gone through decades of battles and endured multiple blessings to reach this point. They are best suited to serve as breakthrough hammers, crushing enemy defenses from the flanks, rather than being placed in the center to withstand the unnecessary consumption of long-range firepower. But be careful: the more blessings they receive, the further away their minds will be from mortal logic. What is needed to command them is not orders, but the response to the will of the gods themselves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origins of the Chosen can be traced back to the early Chaos invasions of the Age of Sigmar. Around AD -50, the first mortal warriors to receive the multiple blessings of the Dark Gods appeared in the Chaos Wastes. According to the fragments of the \"Book of Chaos\" preserved in the Forbidden Library of Nunn University, the promotion of the Chosen One is divided into four levels: first-level warriors receive ordinary blessings (muscle enhancement or skin hardening), second-level warriors receive a Chaos Artifact, and third-level warriors are the Chosen Ones - they hold at least three independent blessings and their souls are bound to the evil god. Noteworthy cases include Harkon the Black Talon (who single-handedly killed seven White Wolf Knight Leaders during the siege of Middenheim in 1802 AD) and Valkia the Bloodweeper (one of the few female Chosen, promoted by Khorne himself). The core issue of recent controversy among scholars is: Is the black crystal structure found in the bones of the Chosen One the precipitation of chaotic energy or the invasion of subspace matter? There was a paper in the Burnt Archives of Myrdinburg that called it the 'soul diamond'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once saw a Chosen One tear open the city gate in the Border Counties - that is an existence that cannot be described as a 'warrior'. As a woman who rules a fiefdom, what I fear most is not their force, but the blessing that dehumanizes them. Mortal armies will rebel and flee, but the Chosen Ones will not; their entire purpose in living is to fulfill the evil god's desires. This brings me to a scary question: What if one of the costs of our fight against chaos is that we ourselves might become them?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My brother has walked that road - he led his tribe south to plunder, and accepted the blessing of the Blood God for strength. Now he is the chosen one of a war gang in the north. The last time I saw him on the battlefield, he was no longer the same man I knew, his voice like a roar from an iron coffin, and his sword taking the lives of an entire platoon of soldiers with every blow of his sword. The truth about God’s Chosen Ones is: once your heirs, your brothers, and your people step onto this path of glory, they no longer belong to your family, they belong to the gods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "While on the Kislev border, I ran into a Norsca raiding party. Although the Norsca group was fierce, they couldn't even break through the spear array. Then the north wind picked up, and a lone Chosen One walked out of the snow - just one. The entire Kislev garrison was crushed to pieces by him alone. I'm not kidding, his ax chops people like wood. From then on I only took jobs in the south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Speaking of the Chosen Ones, I do have a business to do - as long as there are warbands going south, the Blacksmith Guild will have to prepare twice as much refined magic steel to repair their black armors. Guess what? Chaos plate armor looks rough, but the actual forging process is ridiculously complicated. Each piece is embedded with the blessing runes of the evil god. Ordinary blacksmiths will go crazy if they touch it, let alone repair it. However, Altdorf's imperial engineers offered a bounty for a complete set of Chosen Armor, saying they wanted to 'research countermeasures'. The offer was enough for me to buy three shops in Nuln."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Chaos Plate Armor: The black full-cover heavy armor worn by the Chosen One. Each piece is forged by Chaos Dwarves and inlaid with evil god runes. It is astonishingly heavy but can move with the wearer's will.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Chosen are legends from the depths of the Chaos Wastes - mortals by nature."
+  ]
+}

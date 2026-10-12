@@ -1,0 +1,88 @@
+{
+  "Id": "rule_Votios",
+  "Keywords": [
+    "Votios",
+    "Emperor Votios"
+  ],
+  "RagShortTexts": [
+    "Emperor Votios set a precedent by redeeming himself with a noble title after being captured"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Emperor Votios? When this name is mentioned in the Senate, the old guys will be silent for a moment, and then someone will say \"the kidnapped emperor\" with a tone somewhere between embarrassment and disdain. But he got off to a bad start. Before that, the empire conferred titles on barbarian warlords. It was appeasement after conquest and a gift from the victor. Votios made an opening--if he was caught, he would not give a ransom or a title. The warlords on the border were all watching, thinking that kidnapping the emperor would be more effective than fighting. This sets a dangerous precedent. But putting aside these prejudices, he is a stable and established leader. He had no great achievements, no major mistakes, his throne was secure, his taxes were acceptable, and he lived a life that was not embarrassing. When he was captured, he exchanged a piece of paper for his life, and also tied the Aromanc family to the imperial system. You have seen what happened to the Aromanke family later on. They were docile, enlightened, and pro-Empire. Judging from the results, Votios may be smarter than we thought."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Emperor Votios is the benefactor of our family. This sentence was written in the family motto, engraved on the stone slab in the main hall of the manor, and passed down from generation to generation. Two hundred years ago, our ancestors were still frontier warlords in the eyes of the empire. They had soldiers and ships, but no name or status. After Emperor Votios was captured, our ancestors did not ask for ransom, but for titles. From then on, the ancestors of the Karatilde family were no longer the warlord leaders who nodded when they were called up and were usually wary of, but were real imperial nobles. Votios could have gone back on his word later, returned to the imperial capital, turned his back and sent legions to suppress him, but he didn't. He kept his promise. We have kept this promise for two hundred years. Some people say that our Aromanke family is the most unlike Vlandia family in Vlandia because we are too civilized, too gentle, and too disciplined. The source of these rules is what Votios taught us with a piece of paper - nobles are not snatched with swords, but recognized by the empire. Therefore, generations of our family have supported the king’s arbitration in governing the country, not because of speculation, but because they believe in order from the bottom of their hearts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Aromanke family’s noble title was picked up. When their ancestors were warlords, they could run privateers faster than anyone else. As a result, they kidnapped an emperor and did not ask for a ransom, but in exchange for a piece of paper. This paper has been hanging for two hundred years, and the Aromanke family relies on this paper to pretend to be civilized people. In the Imperial Council, they are always the most disciplined and moderate group, and they follow imperial traditions at every turn. What imperial tradition? The only tradition their family has with the empire is to bargain over the price even if they are caught. But having said that, the territory now managed by the Aromanke family is considered peaceful. Their people don't like to fight, but like to engage in business and diplomacy. It's different from the Dai Tiha family - the one in the north is gentle on the surface but hides a knife in his heart, while the Aromanke family is really soft at heart. But being soft also has the advantage of being soft. Talking to them about things is effortless and you don’t have to guard against being stabbed in the back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Votios? Who is this? Don't recognize it. Oh, the old emperor from the empire? Who can remember clearly what happened two hundred years ago?"
+    }
+  ],
+  "TextMappings": []
+}

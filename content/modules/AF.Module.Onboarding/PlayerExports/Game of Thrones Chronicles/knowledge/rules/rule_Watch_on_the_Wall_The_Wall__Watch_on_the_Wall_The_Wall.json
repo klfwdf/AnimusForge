@@ -1,0 +1,143 @@
+{
+  "Id": "rule_Watch_on_the_Wall_The_Wall",
+  "Keywords": [
+    "The Wall",
+    "Great Wall of the North"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Wall traverses the northern end of Westeros, extending from the west canyon to the east coast of Seawatch. It is a huge ice wall about three hundred leagues long and about seven hundred feet at its highest point. Night's Watch built nineteen castles on the south side of the Great Wall, maintaining the defense line with lift cages, ice tunnels, tunnels, beacons, patrols, and land grants. Most of the castles have been vacant, and Black Castle, Shadow Tower, and Eastwatch serve as the main garrison. The Wall separates the Seven Kingdoms from the Beyond, and is where the oaths of the Night's Watch, ancient magical legends, the survival of the freedmen, and the fears of the South converge; its grandeur never meant that defense could be separated from food, men, and vigilance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The brothers in black would not describe the Great Wall as a wonder. Winds at the top of walls can cut faces, ice steps can eat away feet, and lift ropes can get knotted at the worst possible times. But they also knew that this wall gave the patrol a starting point and gave the lonely castle a line to echo each other. For them, the Great Wall is not a legend, but a place they must climb every day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Freemen would not call the Wall the shield of the kingdom. It was the line drawn in ice and stone by the kings of the South, cutting in half hunting grounds, migration routes, and the kinship of many. Some people hate it, some just want to get around it, and some admit that the men in black under the wall know the cold of the north better than most of the lords in the south. The wall itself is not biased, the people on both sides of the wall are."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "On the ledgers of southern lords, the Wall was often just a distant expense: a few carts of lumber, a few sacks of grain, a few convicted young men. Only those who have actually been to the base of the wall will understand that seven hundred feet of ice does not mean seven hundred feet of safety; the castle needs people, the horses need oats, and the raven needs weather that allows it to fly. A kingdom's reverence for the Great Wall is often greater than its patience with its defenders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When ordinary travelers see the Great Wall for the first time, most of them will be silent at first. It covered the northern sky, and even the sound of the wind seemed to be falling from a higher place. Soldiers will subconsciously estimate the crenellations and ramps, merchants will figure out which castle can be used to exchange horses, and farmers in the north will only think: Where is the wall, and you should hit it first in winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Wall The ice wall defense line of about three hundred miles consists of patrol roads, ice gates, nineteen castles, land grants and supply networks; black brothers, free people, southern lords and ordinary travelers have completely different understandings of it. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Wall The ice wall defense line of about three hundred miles consists of patrol roads, ice gates, nineteen castles, land grants and supply networks; black brothers, free people, southern lords and ordinary travelers have completely different understandings of it. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Wall The ice wall defense line of about three hundred miles consists of patrol roads, ice gates, nineteen castles, land grants and supply networks; black brothers, free people, southern lords and ordinary travelers have completely different understandings of it. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Wall: The Wall traverses the northern end of Westeros, extending from the west canyon to the east coast of Seawatch. It is a huge ice wall about three hundred leagues long and about seven hundred feet at its highest point. Night's Watch built nineteen castles on the south side of the Great Wall, maintaining the defense line with lift cages, ice tunnels, tunnels, beacons, patrols, and land grants. Most of the castles have been vacant, and Black Castle, Shadow Tower, and Eastwatch serve as the main garrison. The Wall separates the Seven Kingdoms from the Beyond, and is where the oaths of the Night's Watch, ancient magical legends, the survival of the freedmen, and the fears of the South converge; its grandeur never meant that defense could be separated from food, men, and vigilance."
+  ]
+}

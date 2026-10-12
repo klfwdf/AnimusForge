@@ -1,0 +1,210 @@
+{
+  "Id": "rule_OLean",
+  "Keywords": [
+    "Orion",
+    "king of oaks",
+    "Lord of the Wild Hunt",
+    "Elf King",
+    "Incarnation of Kunos",
+    "king oak",
+    "cycle of rebirth",
+    "Hunting God",
+    "Rebirth in midsummer"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Orion is the Hunting King of the Wood Elves and Lord of the Wild Hunt in Athel Loren. Legend has it that he is reborn from a huge oak tree every year on the hottest day of summer, leading the Asrai warriors to gallop and kill in the forest as the king of beasts. Orion carries a huge hunting spear and wears a huge antlered helmet. His roar can strike fear into the hearts of the bravest warriors - he is the embodiment of the fury of the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Orion is our king, our hunter, our sacred beast. He is the mortal incarnation of Kurnos, the elven god of hunting. Although his body is woven of oak and flesh, his soul is pure divine wildness. Every midsummer, he is reborn in the trunk of the 'King Oak'. When he tears the bark and comes out, his body is stained with the sap of the forest and the blood of the old year. The first thing he did after his resurrection was blow the horn of the wild hunt - a sound that could penetrate all of Athel Loren and turn even the docile woodland creatures into predators. Orion does not belong to any season, he only belongs to summer, to killing, to endless pursuit. But we also know that midsummer will eventually pass - when the first dead leaves of autumn fall, Orion's strength will begin to decline, and he will re-walk into the oak tree at a cold dawn in winter to 'die' until the next midsummer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Orion's seasonal appearances define the Wood Elves' cycles of military activity. Summer is the most dangerous time for wood elves - during the wild hunt, not only is the level of vigilance within Athel Loren at its peak, Orion is likely to lead a hunting party out of the forest boundaries, treating any non-elven creatures encountered as legitimate prey targets. Any military operations that approach or require passage near Athel Loren during the summer months must factor in the risk of wild hunting. Winter is relatively safe - Orion is 'dormant', Ariel dominates the court, and the wood elves tend to retreat deeper into the forest. Don't let this take you lightly, though - Elven scouts won't stop patrolling just because Orion takes a break."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Orion's theological status as an avatar of Kurnoth is a complex subject in elven religion. Different from the orthodox Kadai pantheon of the high elves, the wood elves' kingship theology places Orion and Ariel - corresponding to Kurnos and Isa respectively - at the core of the universe. Orion's cycle of rebirth and death reflects a cosmology of 'eternal return': the elven-hunting king must reaffirm the forest's control of the boundary between chaos and order through violent killing every summer, followed by self-sacrifice in winter so that the forest can rest. This cycle is not only a religious ritual, but also functions on a magical level to periodically release the excess life energy accumulated within Athel Loren - without Orion consuming these wild energies each summer, the forest may fall into catastrophic spontaneous combustion or mutation due to internal magical pressure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female elf noble who serves Ariel, my feelings for Orion are complicated—a strange mixture of awe, fear, and a hint of pity. Orion's rebirth in mid-summer is spectacular, but those of us who have lived through multiple seasons know that every new Orion is not exactly the same. Each rebirth brings with it subtle character deviations - sometimes he's more irritable, sometimes more melancholy, sometimes even a little tired. This makes people wonder: Does every death and rebirth really bring Orion back completely, or is his soul slowly being consumed in countless reincarnations of the oak tree? Ariel never talks about this topic, but when a hunter king still lets out a winter sigh in the middle of summer, every female elf present will exchange a silent look."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As one of the patriarchs of the Twelve Families, my attitude towards Orion is not entirely the respect of the ruled for the king - it is a kind of pragmatic cooperation. During the wild hunting, my family warband needs to cooperate with Orion's direct hunting team, but this cooperation is never simply obeying orders: Orion is a hunter, not a general, and he does not understand strategic considerations. The clan elders must embed rational tactical goals in the Woodland Council - such as which specific Imperial logging expedition to eliminate, which area to clear of Chaos-tainted beasts - into his hunting path before he is completely consumed by bloodlust, and then step back and let him accomplish it in his own way - which is to say, with endless violence and blood. This is an extremely subtle manipulation: it cannot be detected by Orion, nor can it be denied by the fanaticism of hunting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One summer when I was spending the night at a border inn in Bretonia, the whole village suddenly became extremely uneasy at sunset - not because of anything they saw, but because a distant low roar, as if from the bottom of the world, continued to vibrate in the air. The shopkeeper's grandmother knelt down and began to pray to the Lady of the Lake. She said the sound was the 'Green Man' - the hunting horn of the Wood Elf King. None of us dared light a lamp that night, for the walls of the inn were made of wood—no one wanted any wooden structure to stand out on a night when the Wood Elf King was hunting. By early morning, there were seventeen more corpses of imperial poachers at the edge of the forest. Each corpse had only one arrow stuck in it, and the arrow feathers were the emerald green color of the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a resource manager's perspective, the impact of Orion's Wild Hunt on the frontier economy was cyclical but extremely dramatic. Every summer months, the price of timber imports into the Bretonian city-state of Quenel plummets—not because supply increases, but because all logging contractors don’t take orders for the season. Smart businessmen stock up on construction lumber and firewood needed for a whole year in advance in the spring, and then sell it to retail investors who have no reserves at triple the price in the summer and autumn. On the Imperial side, the trade tax station east of Athel Loren sees a significant drop in customs revenue every summer, as all convoys would rather take a detour south through the passes of the Gray Mountains rather than risk getting closer to the forest—this causes the Imperial Treasurer to be particularly grumpy during the summer months when preparing budget drafts."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Orion - King of the Wood Elf Hunting Gods, the mortal incarnation of Kunos",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Lord of the Oaks of Orion Lord of the Wild Hunt"
+  ]
+}

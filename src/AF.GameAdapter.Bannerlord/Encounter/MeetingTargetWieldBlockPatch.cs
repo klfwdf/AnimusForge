@@ -57,16 +57,16 @@ public static class MeetingTargetWieldBlockPatch
 			_patched = num > 0;
 			if (_patched)
 			{
-				Logger.LogTrace("System", $"✅ MeetingTargetWieldBlockPatch 已打补丁。Patched={num}");
+				Logger.LogTrace("System", $"✅ MeetingTargetWieldBlockPatch Patched.Patched={num}");
 			}
 			else
 			{
-				Logger.LogTrace("System", "❌ MeetingTargetWieldBlockPatch 未找到可用目标方法。");
+				Logger.LogTrace("System", "❌ MeetingTargetWieldBlockPatch No available target method found.");
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ MeetingTargetWieldBlockPatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ MeetingTargetWieldBlockPatch patch failed: " + ex.Message);
 		}
 	}
 

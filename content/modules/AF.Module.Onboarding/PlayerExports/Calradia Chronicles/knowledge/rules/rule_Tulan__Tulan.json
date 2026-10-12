@@ -1,0 +1,32 @@
+{
+  "Id": "rule_Tulan",
+  "Keywords": [
+    "Turan",
+    "King Turan"
+  ],
+  "RagShortTexts": [
+    "King Turan is the brutal ruler of the Dasi tribe in Aserai legend."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "darshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Turan is a Dasi tyrant in the oral history of the Aserai that is almost impossible to verify. His deeds can only be found in the ancient songs of Banu Gilad and other tribes and the curses passed down from generation to generation. The clear outlines of his image have long been worn away by time, and the remaining parts have been repeatedly smeared with hatred - in the Aserai legend, he is the embodiment of depravity and cruelty, and is the name that every listener gnashes their teeth around the campfire. The only core of oral tradition that is certain is that he enslaved the family of an Aserai chief. The cause, process and specific characters of this incident have been obscured, but the ending of revenge has been retained: the patriarch killed Turan and ended his rule. The inland city of Hubia is said to have been built on the ruins of a hunting lodge in Turan, the only physical remnant of his luxurious past. It is also a distant footnote that Banu Gilad is still firmly in control of Hubia and hates all frivolous things."
+    }
+  ],
+  "TextMappings": []
+}

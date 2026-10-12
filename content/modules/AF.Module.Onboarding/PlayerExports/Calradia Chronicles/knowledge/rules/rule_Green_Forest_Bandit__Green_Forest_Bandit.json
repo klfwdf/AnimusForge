@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Green_Forest_Bandit",
+  "Keywords": [
+    "Greenwood Robbers"
+  ],
+  "RagShortTexts": [
+    "Green forest bandits hide in the forest to poach and rob villagers, and are good at sneak attacks with longbows"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Green forest bandits are bandits who hide in the woods. They make a living by poaching and occasionally rob passing villagers. They are good at sneak attacks in the dark with longbows."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_KINGDOM_CW_Target" text="目标" />
+    <string id="AF_KINGDOM_CW_Role_King" text="国王" />
+    <string id="AF_KINGDOM_CW_Role_Crown" text="王室阵营" />
+    <string id="AF_KINGDOM_CW_Role_Middle" text="未表态" />
+    <string id="AF_KINGDOM_CW_World_UnknownKingdom" text="某王国" />
+    <string id="AF_KINGDOM_CW_Panel_TargetCurrentPolicy" text="现行政策" />
+    <string id="AF_KINGDOM_CW_Panel_FactionName" text="{LEADER}为首的{TAG}" />
+    <string id="AF_KINGDOM_CW_CampCrown" text="王室阵营" />
+    <string id="AF_KINGDOM_CW_Notice_AlreadyInCamp" text="已在当前阵营，无需重复加入。" />
+    <string id="AF_KINGDOM_CW_Notice_Joined" text="{A}加入{B}。" />
+    <string id="AF_KINGDOM_CW_Notice_LeftCamp" text="{A}退出阵营，七天内保持中立。" />
+    <string id="AF_KINGDOM_CW_Notice_Founded" text="{A}建立派系，诉求：{B}。" />
+    <string id="AF_KINGDOM_CW_Notice_DissolvedOwn" text="你解散了自己的派系，与其他成员家族关系−10；不满与已有王国冷却保留。" />
+    <string id="AF_KINGDOM_CW_Notice_LeaderRefusedRising" text="领袖拒绝起兵建议，七天后可再提议。" />
+    <string id="AF_KINGDOM_CW_Notice_RisingAccepted" text="起兵命令已受理，等待叛军建国。" />
+    <string id="AF_KINGDOM_CW_Notice_Suppressed" text="王室对{A}实施政治压制。" />
+    <string id="AF_KINGDOM_CW_Notice_RulingClanReplaced" text="统治家族已更换，原提议失效。" />
+    <string id="AF_KINGDOM_CW_Notice_DissolveSentToPlayer" text="解散命令已送达，等待玩家三日内回应。" />
+    <string id="AF_KINGDOM_CW_Notice_OfferSentToPlayer" text="补偿提议已送达，等待玩家三日内回应。" />
+    <string id="AF_KINGDOM_CW_Notice_Conceded" text="国王完整兑现{A}的诉求：{B}" />
+    <string id="AF_KINGDOM_CW_Notice_WarEligibilityChanged" text="战争资格已变化，原解散命令失效，派系保留。" />
+    <string id="AF_KINGDOM_CW_Notice_DissolveOrderExpired" text="解散令超时，派系保留；玩家领袖须手动决定起兵。" />
+    <string id="AF_KINGDOM_CW_Notice_FactionDefied" text="派系抗命，进入起兵流程。" />
+    <string id="AF_KINGDOM_CW_Notice_OfferRefused" text="派系拒绝补偿，未扣除资源。" />
+    <string id="AF_KINGDOM_CW_Notice_PayerCannotPay" text="补偿方已无法支付，协议失效。" />
+    <string id="AF_KINGDOM_CW_Notice_ObeyedDissolve" text="派系服从解散命令，不满仍然保留。" />
+    <string id="AF_KINGDOM_CW_Notice_AcceptedOffer" text="派系接受补偿并撤回诉求，组织解散。" />
+    <string id="AF_KINGDOM_CW_Notice_ConcessionPending" text="妥协尚未兑现，派系保留：{A}" />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptNoIdentity" text="操作缺少身份。" />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptIdentityConflict" text="操作身份冲突。" />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptInterrupted" text="先前操作中断，保留状态待核查，不能重复执行。" />
+    <string id="AF_KINGDOM_CW_Notice_RetrySafeSteps" text="协议尚未完成，将重试已确认安全的步骤：{A}" />
+    <string id="AF_KINGDOM_CW_Notice_IncompleteReview" text="操作未完整确认，保留派系等待核查：{A}" />
+    <string id="AF_KINGDOM_UI_Interior_Stability" text="王国稳定度" />
+    <string id="AF_KINGDOM_UI_Interior_PowerSplit" text="王国军力分布" />
+    <string id="AF_KINGDOM_UI_Interior_Title" text="内政事务" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaSection" text="王国议程" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaEmpty" text="暂无进行中的议程" />
+    <string id="AF_KINGDOM_UI_Interior_FactionSection" text="派系与阵营" />
+    <string id="AF_KINGDOM_UI_Interior_SelectHint" text="选择左侧条目查看详情" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaNoDetail" text="此议程暂无投票详情" />
+    <string id="AF_KINGDOM_UI_Interior_Leading" text="领先" />
+    <string id="AF_KINGDOM_UI_Interior_FigureGrievance" text="派系不满" />
+    <string id="AF_KINGDOM_UI_Interior_FigurePower" text="派系军事实力" />
+    <string id="AF_KINGDOM_UI_Interior_FigureRefusals" text="国王已拒绝" />
+    <string id="AF_KINGDOM_UI_Interior_RecentChronicle" text="近期纪事" />
+    <string id="AF_KINGDOM_UI_Interior_FormationConditions" text="成派条件" />
+    <string id="AF_KINGDOM_UI_Interior_PrevPage" text="上一页" />
+    <string id="AF_KINGDOM_UI_Interior_NextPage" text="下一页" />
+    <string id="AF_KINGDOM_UI_Interior_TableClan" text="家族" />
+    <string id="AF_KINGDOM_UI_Interior_TableStance" text="立场" />
+    <string id="AF_KINGDOM_UI_Interior_TableReason" text="主要不满来源" />
+    <string id="AF_KINGDOM_UI_Interior_TablePower" text="军力" />
+    <string id="AF_KINGDOM_UI_Interior_TableRelation" text="与国王" />
+    <string id="AF_KINGDOM_UI_Rebellion_ClanMissing" text="家族为空。" />
+    <string id="AF_KINGDOM_UI_Rebellion_KingdomMissing" text="王国不存在或已灭亡。" />
+    <string id="AF_KINGDOM_UI_Rebellion_PlayerClan" text="玩家家族不参与该系统的自动叛乱。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NotInKingdom" text="该家族当前不隶属于此王国。" />
+    <string id="AF_KINGDOM_UI_Rebellion_RulingClan" text="执政家族不会作为叛乱候选。" />
+    <string id="AF_KINGDOM_UI_Rebellion_ClanEliminated" text="该家族已灭亡。" />
+    <string id="AF_KINGDOM_UI_Rebellion_FactionType" text="该家族派系类型不适合纳入该叛乱逻辑。" />
+    <string id="AF_KINGDOM_UI_Rebellion_Mercenary" text="佣兵家族不会作为叛乱候选。" />
+    <string id="AF_KINGDOM_UI_Rebellion_LeaderInvalid" text="族长状态无效。" />
+    <string id="AF_KINGDOM_UI_Rebellion_LeaderPrisoner" text="族长当前被囚，暂不触发带城反出。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NoFortification" text="该家族没有城镇或城堡，不能带城反出。" />
+    <string id="AF_KINGDOM_UI_Rebellion_RelationTooHigh" text="与国王关系未低于 {THRESHOLD}，暂不列入自动叛乱候选。" />
+    <string id="AF_KINGDOM_UI_Rebellion_LeadingClan" text="主导家族不作为跟随候选。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingTimeout" text="叛乱命名请求超时（{SECONDS} 秒）。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingNameInvalid" text="模型返回的国名为空、无效或与现有王国重名。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingParseFailed" text="模型返回无法按 [NAME]/[SHORT]/[LORE] 格式解析。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingFailed" text="叛乱命名失败。" />
+    <string id="AF_KINGDOM_CW_World_UnknownClan" text="某家族" />
+    <string id="AF_KINGDOM_CW_Notice_DemandChanged" text="你将派系诉求更改为{A}；{B} 个其他家族继续参与。派系不会自动起兵。" />
+    <string id="AF_KINGDOM_CW_Failure_UnknownEffect" text="当前版本无法识别该效果：{A}" />
+    <string id="AF_KINGDOM_CW_Failure_PeaceTargetNotAtWar" text="议和对象已不在交战中" />
+    <string id="AF_KINGDOM_CW_Failure_WarTargetGone" text="作战对象已不存在" />
+    <string id="AF_KINGDOM_CW_Failure_PolicyNotInEffect" text="该政策已不再生效" />
+    <string id="AF_KINGDOM_CW_Failure_RedressPartiesGone" text="赔偿双方不存在" />
+    <string id="AF_KINGDOM_CW_Failure_KingGone" text="国王不存在" />
+    <string id="AF_KINGDOM_CW_Failure_HeirNotInKingdom" text="继位者不在本国" />
+    <string id="AF_KINGDOM_CW_Failure_RebelLeaderGone" text="叛军领袖已不在" />
+    <string id="AF_KINGDOM_CW_Failure_RebelKingdomGone" text="叛军王国已不存在" />
+    <string id="AF_KINGDOM_CW_Failure_KingdomGone" text="王国已灭亡" />
+    <string id="AF_KINGDOM_CW_Failure_HomeKingdomGone" text="原王国已不存在，无法归国" />
+    <string id="AF_KINGDOM_CW_Failure_RebelClansNotHome" text="部分叛军家族尚未确认归国" />
+    <string id="AF_KINGDOM_CW_Failure_RebelKingdomNotDissolved" text="叛军王国尚未解散" />
+    <string id="AF_KINGDOM_CW_Failure_RebelKingdomDissolveUnconfirmed" text="叛军王国解散尚未确认" />
+    <string id="AF_KINGDOM_CW_Failure_PeaceNotInEffect" text="议和尚未生效" />
+    <string id="AF_KINGDOM_CW_Failure_ThroneTransferNotInEffect" text="王位转移尚未生效" />
+    <string id="AF_KINGDOM_CW_Failure_RebelLeaderNotHome" text="叛军领袖未能回到本国，夺位尚未完成" />
+    <string id="AF_KINGDOM_CW_Failure_RebelLeaderNotExiled" text="叛军领袖尚未被逐出王国" />
+    <string id="AF_KINGDOM_CW_Failure_RestorationNotAuthorized" text="复位尚未获得叛军胜利结果授权。" />
+    <string id="AF_KINGDOM_CW_Failure_RestorationRecordsUnavailable" text="原王朝、旧王记录或原国名不可用。" />
+    <string id="AF_KINGDOM_CW_Failure_RestorationDynastyElsewhere" text="旧王家族已离开双方，不能替其他王国更换统治者。" />
+    <string id="AF_KINGDOM_CW_Failure_RestorationClaimantInvalid" text="复位人选必须存活、成年且未被俘；旧王存活时必须仍是本家族族长。" />
+    <string id="AF_KINGDOM_CW_Failure_RestorationDynastyNotHome" text="旧王家族尚未归国，不能复位。" />
+    <string id="AF_KINGDOM_CW_Failure_RestorationNotConfirmed" text="旧王朝复位尚未确认。" />
+    <string id="AF_KINGDOM_CW_Failure_RestorationNameNotConfirmed" text="原国名恢复尚未确认。" />
+    <string id="AF_KINGDOM_CW_NoteSeparator" text="；" />
+    <string id="AF_KINGDOM_CW_Note_RebelKingdomDissolved" text="{A}随叛军归国而解散" />
+    <string id="AF_KINGDOM_CW_Note_PeaceMade" text="{A}与{B}议和" />
+    <string id="AF_KINGDOM_CW_Note_PledgeNoPeace" text="国王承诺 {A} 周内不与{B}议和" />
+    <string id="AF_KINGDOM_CW_Note_PolicyRevoked" text="废除政策{A}" />
+    <string id="AF_KINGDOM_CW_Note_RedressPaid" text="国王向{A}赔偿 {B} 第纳尔" />
+    <string id="AF_KINGDOM_CW_Note_PrivilegesGranted" text="国王承认{A}等家族的封地特权" />
+    <string id="AF_KINGDOM_CW_Note_Abdicated" text="国王退位，{A}继位" />
+    <string id="AF_KINGDOM_CW_Note_ThroneSeized" text="{A}夺取王位" />
+    <string id="AF_KINGDOM_CW_Note_Seceded" text="{A}获得承认，脱离{B}" />
+    <string id="AF_KINGDOM_CW_Note_WarAlreadyEnded" text="原诉求的战争已经结束" />
+    <string id="AF_KINGDOM_CW_Note_PolicyAlreadyRevoked" text="原诉求的政策已经废除" />
+    <string id="AF_KINGDOM_CW_Note_LeaderExiled" text="{A}被逐出王国，封地收归王室" />
+    <string id="AF_KINGDOM_CW_Note_CrownSuppressed" text="王室平定叛乱" />
+    <string id="AF_KINGDOM_CW_Note_RestorationKingdomRestored" text="叛军战胜，{A}恢复王位，国名恢复为“{B}”；旧王复位" />
+    <string id="AF_KINGDOM_CW_Note_RestorationKingdomHeir" text="叛军战胜，{A}恢复王位，国名恢复为“{B}”；旧王已故，由家族现任族长继位" />
+    <string id="AF_UI_KingdomRebellion_FollowerEligible" text="满足联合叛乱跟随条件：对叛乱领袖关系减去对国王关系 = {DIFF}（>= 15）。" />
+    <string id="AF_UI_KingdomRebellion_FollowerIneligible" text="不满足联合叛乱跟随条件：对叛乱领袖关系减去对国王关系 = {DIFF}（需 >= 15）。" />
+    <string id="AF_UI_KingdomRebellion_ForceEligible" text="满足强制触发条件。" />
+    <string id="AF_UI_KingdomRebellion_AutoEligible" text="满足自动叛乱条件。" />
+    <string id="AF_UI_KingdomRebellion_OriginalKingdom" text="原王国" />
+</strings>
+</base>

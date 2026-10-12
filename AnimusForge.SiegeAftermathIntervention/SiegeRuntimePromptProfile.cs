@@ -6,7 +6,8 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeRuntimePromptProfile
 {
-    public const string DefaultSettlementName = "这座刚被攻下的定居点";
+    public static string DefaultSettlementName => TownPromptCatalogResources.Get(false).GetRuntimeText("DefaultSettlementName");
+    public const string DefaultSettlementNameEn = "this newly captured settlement";
 
     public static string Build(SiegeRuntimePromptFacts facts)
     {
@@ -21,32 +22,29 @@ public static class SiegeRuntimePromptProfile
     }
 
     public static string BuildPlayerCommanderContext(string playerName, bool alliedSoldier, bool civilian)
+        => BuildPlayerCommanderContext(playerName, alliedSoldier, civilian, false);
+
+    public static string BuildPlayerCommanderContext(string playerName, bool alliedSoldier, bool civilian, bool isEnglish)
+        => BuildPlayerCommanderContext(playerName, alliedSoldier, civilian, TownPromptCatalogResources.Get(isEnglish));
+
+    public static string BuildPlayerCommanderContext(string playerName, bool alliedSoldier, bool civilian, TownPromptTextCatalog textCatalog)
     {
-        string normalizedPlayerName = NormalizePlayerName(playerName);
-        if (alliedSoldier)
-        {
-            return "【玩家统帅身份】当前玩家角色“" + normalizedPlayerName + "”就是率领你进入城镇的指挥官/统帅，也是你当前队伍的直接命令来源。你应把玩家当成我方统帅、长官或大人，不要把玩家当成本地平民、陌生路人、俘虏、敌方守军或无权处置者。";
-        }
-        if (civilian)
-        {
-            return "【玩家身份】当前玩家角色“" + normalizedPlayerName + "”是本场军事处置者；是攻城后的胜利方首领还是自有/附属城镇的统治者，以运行时场景来源为准。居民知道玩家掌握现场武力，但可以愤怒、斥责、求饶或口头服软，认清权力不等于爱戴。";
-        }
-        return "【玩家身份】当前玩家角色“" + normalizedPlayerName + "”是本场城镇处置的玩家本人和现场军事处置者；具体场景来源以运行时事实为准。";
+        TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
+        string template = alliedSoldier ? text.CommanderContextTemplate : (civilian ? text.MilitaryDisposerContextTemplate : text.GeneralDisposerContextTemplate);
+        return TownPromptTextCatalog.FormatTemplate(template, ("player", NormalizePlayerName(playerName, text)));
     }
 
     public static string BuildImmediateReactionIdentityOverride(string playerName, bool alliedSoldier, bool civilian)
-    {
-        string normalizedPlayerName = NormalizePlayerName(playerName);
-        string speakerIdentity = alliedSoldier
-            ? "当前说话者按玩家己方入城士兵处理：玩家就是你的统帅、长官和直接命令来源；你随玩家进入城内执行战后处置，不得说玩家军队在城外、玩家独自进城或玩家无权指挥你。"
-            : (civilian
-                ? "当前说话者按城内平民/商人/工匠/头人/要人处理：根据性格与亲见伤亡，可以怒斥、咒骂、质问、求饶或口头服软；这些只是台词，不执行攻击、跪地或臣服。玩家不是和平城镇里的普通路人。"
-                : "当前说话者必须依据运行时场景来源理解玩家的身份：攻城胜利者或自有/附属城镇统治者；己方士兵服从合法军令，民众不必假装爱戴玩家。");
+        => BuildImmediateReactionIdentityOverride(playerName, alliedSoldier, civilian, false);
 
-        return "【GCCZ即时/环境短句最高优先级身份覆写】当前是攻城后入城处置现场，不是和平城镇日常、巡逻执法、深夜路人问话或单人潜入。玩家角色“" + normalizedPlayerName + "”不是“库赛特人”“陌生人”“路人”“本地人”或无权处置者，而是现场军事处置者和入城部队的命令来源；是否刚攻下此地，以运行时场景来源为准。"
-            + "平民称呼可随性格与情绪变化，允许当面骂玩家，不强制每句尊称；己方士兵仍认清玩家的统帅身份。"
-            + "禁止称玩家为“库赛特人”“陌生人”“路人”“本地人”“外乡人”，禁止说玩家的军队在城外、玩家独自进城、玩家没有处置权，除非后续运行时明确说明这已不是GCCZ处置现场。"
-            + speakerIdentity;
+    public static string BuildImmediateReactionIdentityOverride(string playerName, bool alliedSoldier, bool civilian, bool isEnglish)
+        => BuildImmediateReactionIdentityOverride(playerName, alliedSoldier, civilian, TownPromptCatalogResources.Get(isEnglish));
+
+    public static string BuildImmediateReactionIdentityOverride(string playerName, bool alliedSoldier, bool civilian, TownPromptTextCatalog textCatalog)
+    {
+        TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
+        string role = alliedSoldier ? text.ImmediateReactionRoleAlliedSoldier : (civilian ? text.ImmediateReactionRoleCivilian : text.ImmediateReactionRoleDefault);
+        return TownPromptTextCatalog.FormatTemplate(text.ImmediateReactionOverrideTemplate, ("player", NormalizePlayerName(playerName, text)), ("speaker_identity", role));
     }
 
     public static string BuildCompactImmediateReactionIdentityOverride(
@@ -55,24 +53,21 @@ public static class SiegeRuntimePromptProfile
         bool civilian,
         TownPromptTextCatalog textCatalog)
     {
-        TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
-        string normalizedPlayerName = NormalizePlayerName(playerName);
+        TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
+        string normalizedPlayerName = NormalizePlayerName(playerName, text);
         string speakerIdentity = alliedSoldier
             ? text.CompactAmbientAlliedSoldierIdentity
             : (civilian
                 ? text.CompactAmbientCivilianIdentity
                 : text.CompactAmbientOtherIdentity);
-        return (text.CompactAmbientIdentityTemplate ?? string.Empty)
-            .Replace("{player}", normalizedPlayerName)
-            .Replace("{speaker_identity}", speakerIdentity ?? string.Empty)
+        return TownPromptTextCatalog.FormatTemplate(text.CompactAmbientIdentityTemplate, ("player", normalizedPlayerName), ("speaker_identity", speakerIdentity ?? string.Empty))
             .Trim();
     }
 
-    private static string NormalizePlayerName(string playerName)
+    private static string NormalizePlayerName(string playerName, TownPromptTextCatalog text)
     {
-        return string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName.Trim();
+        return string.IsNullOrWhiteSpace(playerName) ? text.GetRuntimeText("DefaultPlayerName") : playerName.Trim();
     }
-
 }
 
 public sealed class SiegeRuntimePromptFacts

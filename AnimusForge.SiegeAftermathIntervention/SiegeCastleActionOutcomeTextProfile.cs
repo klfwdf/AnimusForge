@@ -10,91 +10,204 @@ public static class SiegeCastleActionOutcomeTextProfile
     public const uint DangerColor = 0xFFFF7A7Au;
 
     public static string BuildCareMessage(int affected, int trustDelta)
-        => "【城堡处置】已按兵种等级向 " + Count(affected)
-            + " 名普通战俘发放物资并禁止虐待；俘虏信任 " + Signed(trustDelta) + "。";
+        => BuildCareMessage(affected, trustDelta, false);
+
+    public static string BuildCareMessage(int affected, int trustDelta, bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Supplies distributed to " + Count(affected)
+                + " regular prisoners by troop tier; mistreatment forbidden; prisoner trust " + Signed(trustDelta) + "."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_care_prefix") + Count(affected)
+                + CastleAftermathCompatibilityTexts.Raw("outcome_care_middle") + Signed(trustDelta) + CastleAftermathCompatibilityTexts.Raw("outcome_care_suffix");
 
     public static string BuildCareInsufficientMessage()
-        => "【城堡处置】随军食物不足，善待俘虏流程未结算，也未扣除物资。";
+        => BuildCareInsufficientMessage(false);
+
+    public static string BuildCareInsufficientMessage(bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Insufficient food in party; prisoner care was not settled and no supplies deducted."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_care_insufficient");
 
     public static string BuildArmamentMessage(int affected, int items, int kinds, int gold, bool lord)
-        => "【城堡处置】已收缴" + (lord ? "该领主" : Count(affected) + " 名普通战俘")
-            + "的军械与随身财物，直接送入背包：物品 " + Count(items)
-            + " 件 / " + Count(kinds) + " 类，金币 " + Count(gold) + "；不打开战利品界面。";
+        => BuildArmamentMessage(affected, items, kinds, gold, lord, false);
+
+    public static string BuildArmamentMessage(int affected, int items, int kinds, int gold, bool lord, bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Confiscated arms and belongings from " + (lord ? "the lord" : Count(affected) + " regular prisoners")
+                + " sent directly to inventory: " + Count(items)
+                + " items / " + Count(kinds) + " types, gold " + Count(gold) + "; loot screen not opened."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_armaments_prefix") + (lord ? CastleAftermathCompatibilityTexts.Raw("outcome_lord_single") : Count(affected) + CastleAftermathCompatibilityTexts.Raw("outcome_regular_count"))
+                + CastleAftermathCompatibilityTexts.Raw("outcome_armaments_middle") + Count(items)
+                + CastleAftermathCompatibilityTexts.Raw("outcome_items_unit") + Count(kinds)
+                + CastleAftermathCompatibilityTexts.Raw("outcome_kinds_unit") + Count(gold) + CastleAftermathCompatibilityTexts.Raw("outcome_armaments_suffix");
 
     public static string BuildSlaughterKillMessage(int killedTotal, int remaining)
-        => "【城堡处置】普通战俘实际死亡累计 " + Count(killedTotal)
-            + " 人；仍有 " + Count(remaining) + " 人待实际击杀。";
+        => BuildSlaughterKillMessage(killedTotal, remaining, false);
+
+    public static string BuildSlaughterKillMessage(int killedTotal, int remaining, bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Regular prisoner confirmed deaths: " + Count(killedTotal)
+                + "; " + Count(remaining) + " remain to be killed."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_slaughter_prefix") + Count(killedTotal) + CastleAftermathCompatibilityTexts.Raw("outcome_slaughter_middle") + Count(remaining) + CastleAftermathCompatibilityTexts.Raw("outcome_slaughter_suffix");
 
     public static string BuildLordProcessMessage(SiegeCastleActionKind action, string lordName, int items = 0)
-        => action == SiegeCastleActionKind.ReceiveArmaments
-            ? "【城堡处置】已收缴 " + Name(lordName) + " 的武器与盔甲，共 " + Count(items) + " 件，直接送入背包。"
-            : "【城堡处置】已向 " + Name(lordName) + " 提供物资并禁止虐待；该流程只针对这名领主。";
+        => BuildLordProcessMessage(action, lordName, items, false);
+
+    public static string BuildLordProcessMessage(SiegeCastleActionKind action, string lordName, int items, bool isEnglish)
+    {
+        if (action == SiegeCastleActionKind.ReceiveArmaments)
+        {
+            return isEnglish
+                ? "[Castle aftermath] Confiscated weapons and armor from " + Name(lordName, true) + ", total " + Count(items) + " items sent to inventory."
+                : CastleAftermathCompatibilityTexts.Raw("outcome_lord_armaments_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_lord_armaments_middle") + Count(items) + CastleAftermathCompatibilityTexts.Raw("outcome_lord_armaments_suffix");
+        }
+        return isEnglish
+            ? "[Castle aftermath] Provided supplies to " + Name(lordName, true) + " and mistreatment forbidden; process applies only to this lord."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_lord_care_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_lord_care_suffix");
+    }
 
     public static string BuildLordRecruitmentMessage(
         SiegeCastleLordRecruitmentBranch branch,
         string lordName,
         string statusText)
-        => "【城堡处置】" + Name(lordName) + "："
-            + SiegeCastleLordRecruitmentBranchProfile.Describe(branch)
-            + (string.IsNullOrWhiteSpace(statusText) ? "。" : "；" + statusText.Trim());
+        => BuildLordRecruitmentMessage(branch, lordName, statusText, false);
+
+    public static string BuildLordRecruitmentMessage(
+        SiegeCastleLordRecruitmentBranch branch,
+        string lordName,
+        string statusText,
+        bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] " + Name(lordName, true) + ": "
+                + SiegeCastleLordRecruitmentBranchProfile.Describe(branch, true)
+                + (string.IsNullOrWhiteSpace(statusText) ? "." : "; " + statusText.Trim())
+            : CastleAftermathCompatibilityTexts.Raw("outcome_lord_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_lord_middle")
+                + SiegeCastleLordRecruitmentBranchProfile.Describe(branch, false)
+                + (string.IsNullOrWhiteSpace(statusText) ? "。" : "；" + statusText.Trim());
 
     public static string BuildLordSaleMessage(string lordName, int gold)
-        => "【城堡处置】已将 " + Name(lordName)
-            + " 交给赎金经纪人，严格按原版酒馆实时赎卖价获得 " + Count(gold)
-            + " 金币；该领主已解除俘虏并离开现场。";
+        => BuildLordSaleMessage(lordName, gold, false);
+
+    public static string BuildLordSaleMessage(string lordName, int gold, bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Handed " + Name(lordName, true)
+                + " to ransom broker, strictly obtaining " + Count(gold)
+                + " gold at native tavern ransom value; the lord is released from captivity and left."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_sale_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_sale_middle") + Count(gold) + CastleAftermathCompatibilityTexts.Raw("outcome_sale_suffix");
 
     public static string BuildLordSaleFailedMessage(string lordName, string reasonCode)
-        => "【城堡处置】未能贩卖 " + Name(lordName)
-            + "；未结算金币或最终处置。" + DescribeLordSaleFailure(reasonCode);
+        => BuildLordSaleFailedMessage(lordName, reasonCode, false);
+
+    public static string BuildLordSaleFailedMessage(string lordName, string reasonCode, bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Could not ransom " + Name(lordName, true)
+                + "; gold or final disposition not settled. " + DescribeLordSaleFailure(reasonCode, true)
+            : CastleAftermathCompatibilityTexts.Raw("outcome_sale_failed_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_sale_failed_suffix") + DescribeLordSaleFailure(reasonCode, false);
 
     public static string BuildLordExecutionQueuedMessage(string lordName)
-        => "【城堡处置】已对 " + Name(lordName)
-            + " 下达处刑命令，正在打开原版处刑确认；取消不会改变其生死或俘虏状态。";
+        => BuildLordExecutionQueuedMessage(lordName, false);
+
+    public static string BuildLordExecutionQueuedMessage(string lordName, bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Ordered execution of " + Name(lordName, true)
+                + "; opening native execution confirmation; cancelling will not alter life or captive state."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_exec_queued_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_exec_queued_suffix");
 
     public static string BuildLordExecutionCancelledMessage(string lordName)
-        => "【城堡处置】已取消对 " + Name(lordName)
-            + " 的处刑；该领主仍存活并保持俘虏身份，可重新交涉。";
+        => BuildLordExecutionCancelledMessage(lordName, false);
+
+    public static string BuildLordExecutionCancelledMessage(string lordName, bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Cancelled execution of " + Name(lordName, true)
+                + "; the lord remains alive and captive, negotiations may resume."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_exec_cancelled_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_exec_cancelled_suffix");
 
     public static string BuildLordExecutionFailedMessage(string lordName)
-        => "【城堡处置】未能打开 " + Name(lordName)
-            + " 的原版处刑确认，未结算死亡；可稍后重试，详情已写入日志。";
+        => BuildLordExecutionFailedMessage(lordName, false);
+
+    public static string BuildLordExecutionFailedMessage(string lordName, bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Failed to open native execution confirmation for " + Name(lordName, true)
+                + "; death not settled; retry later, details logged."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_exec_failed_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_exec_failed_suffix");
 
     public static string BuildLordExecutionPersistenceFailedMessage(string lordName)
-        => "【城堡处置】" + Name(lordName)
-            + " 的原版处刑确认已经结束，但原版没有登记角色死亡；本次处置未生效，可稍后重试。";
+        => BuildLordExecutionPersistenceFailedMessage(lordName, false);
+
+    public static string BuildLordExecutionPersistenceFailedMessage(string lordName, bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Native execution confirmation for " + Name(lordName, true)
+                + " finished, but native game did not record death; disposition had no effect, retry later."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_exec_persist_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_exec_persist_suffix");
 
     public static string BuildLordExecutionFinalizationPendingMessage(string lordName)
-        => "【城堡处置】" + Name(lordName)
-            + " 的处刑死亡标记已经登记，但原版角色状态尚未完成；本次场景内不能继续处置或正常离开。";
+        => BuildLordExecutionFinalizationPendingMessage(lordName, false);
+
+    public static string BuildLordExecutionFinalizationPendingMessage(string lordName, bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Execution death mark for " + Name(lordName, true)
+                + " recorded, but native character finalization pending; cannot continue disposition or leave normally."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_exec_final_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_exec_final_suffix");
 
     public static string BuildLordExecutionConfirmationPendingMessage(string lordName)
-        => "【城堡处置】" + Name(lordName)
-            + " 的原版处刑确认尚未结束，请先确认或取消。";
+        => BuildLordExecutionConfirmationPendingMessage(lordName, false);
+
+    public static string BuildLordExecutionConfirmationPendingMessage(string lordName, bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Native execution confirmation for " + Name(lordName, true)
+                + " is still open; please confirm or cancel first."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_exec_confirm_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_exec_confirm_suffix");
 
     public static string BuildLordExecutionCompletedMessage(
         string lordName,
         bool sceneDeathApplied)
-        => "【城堡处置】" + Name(lordName)
-            + " 已由玩家确认处刑"
-            + (sceneDeathApplied ? "，并在城堡场景内当场倒地" : "；场景倒地表现未成功，死亡结算仍已登记")
-            + "；原版角色死亡已经持久化，关系与家族后果由原版战役系统结算。";
+        => BuildLordExecutionCompletedMessage(lordName, sceneDeathApplied, false);
+
+    public static string BuildLordExecutionCompletedMessage(
+        string lordName,
+        bool sceneDeathApplied,
+        bool isEnglish)
+        => isEnglish
+            ? "[Castle aftermath] Execution of " + Name(lordName, true)
+                + " confirmed by player"
+                + (sceneDeathApplied ? ", fell on-site in castle scene" : "; on-site fall animation failed, death recorded")
+                + "; native character death persisted, relationship and clan consequences handled by native campaign system."
+            : CastleAftermathCompatibilityTexts.Raw("outcome_exec_completed_prefix") + Name(lordName, false) + CastleAftermathCompatibilityTexts.Raw("outcome_exec_completed_middle") + (sceneDeathApplied ? CastleAftermathCompatibilityTexts.Raw("outcome_exec_scene_true") : CastleAftermathCompatibilityTexts.Raw("outcome_exec_scene_false")) + CastleAftermathCompatibilityTexts.Raw("outcome_exec_completed_suffix");
 
     private static string Signed(int value) => value > 0 ? "+" + value : value.ToString();
     private static int Count(int value) => Math.Max(0, value);
-    private static string Name(string value) => string.IsNullOrWhiteSpace(value) ? "该被俘领主" : value.Trim();
+    private static string Name(string value) => Name(value, false);
+    private static string Name(string value, bool isEnglish) => string.IsNullOrWhiteSpace(value) ? (isEnglish ? "the captive lord" : CastleAftermathCompatibilityTexts.Raw("captured_lord")) : value.Trim();
 
     private static string DescribeLordSaleFailure(string reasonCode)
+        => DescribeLordSaleFailure(reasonCode, false);
+
+    private static string DescribeLordSaleFailure(string reasonCode, bool isEnglish)
     {
-        return (reasonCode ?? string.Empty).Trim() switch
+        string normalized = (reasonCode ?? string.Empty).Trim();
+        if (isEnglish)
         {
-            "lord_sale_roster_unavailable" => "主队俘虏名册当前不可用。",
-            "lord_sale_target_invalid" => "目标已死亡或不具备可赎卖身份。",
-            "lord_not_selected_main_party_prisoner" => "目标不再是本次带入且由玩家主队扣押的领主。",
-            "lord_prisoner_locked_from_ransom" => "该领主被原版任务或名册锁定，酒馆同样不能赎卖。",
-            "ransom_value_model_unavailable" => "原版赎金计价模型当前不可用。",
-            "vanilla_lord_sale_did_not_release_target" => "原版赎卖动作未能解除该领主的俘虏状态。",
-            "" => "目标当前不可赎卖。",
-            _ => "原版赎卖动作失败，详情已写入日志。"
+            return normalized switch
+            {
+                "lord_sale_roster_unavailable" => "Main party prisoner roster currently unavailable.",
+                "lord_sale_target_invalid" => "Target is dead or lacks ransomable status.",
+                "lord_not_selected_main_party_prisoner" => "Target is no longer a selected lord held by main party.",
+                "lord_prisoner_locked_from_ransom" => "Lord is locked by native quest or roster; cannot be ransomed.",
+                "ransom_value_model_unavailable" => "Native ransom valuation model currently unavailable.",
+                "vanilla_lord_sale_did_not_release_target" => "Native ransom action failed to release captive lord.",
+                "" => "Target is currently not ransomable.",
+                _ => "Native ransom action failed, details written to log."
+            };
+        }
+        return normalized switch
+        {
+            "lord_sale_roster_unavailable" => CastleAftermathCompatibilityTexts.Raw("sale_reason_roster"),
+            "lord_sale_target_invalid" => CastleAftermathCompatibilityTexts.Raw("sale_reason_invalid"),
+            "lord_not_selected_main_party_prisoner" => CastleAftermathCompatibilityTexts.Raw("sale_reason_not_selected"),
+            "lord_prisoner_locked_from_ransom" => CastleAftermathCompatibilityTexts.Raw("sale_reason_locked"),
+            "ransom_value_model_unavailable" => CastleAftermathCompatibilityTexts.Raw("sale_reason_model"),
+            "vanilla_lord_sale_did_not_release_target" => CastleAftermathCompatibilityTexts.Raw("sale_reason_not_released"),
+            "" => CastleAftermathCompatibilityTexts.Raw("sale_reason_unavailable"),
+            _ => CastleAftermathCompatibilityTexts.Raw("sale_reason_other")
         };
     }
 }

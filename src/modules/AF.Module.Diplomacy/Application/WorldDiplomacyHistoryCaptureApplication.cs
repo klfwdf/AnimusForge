@@ -165,22 +165,28 @@ internal static class WorldDiplomacyHistoryCaptureApplication
             sameDay.Add(document);
         }
         StringBuilder snapshot = new StringBuilder();
-        snapshot.Append("外交回合").Append(roundKey).Append("在本日出现以下公开进展：");
+        string introTemplate = DiplomacyMiscPromptTexts.Get("HistoryCapture_RoundIntro", "Diplomatic round {ROUND} had the following public developments today:");
+        snapshot.Append(introTemplate.Replace("{ROUND}", roundKey));
+        string pubPrefix = DiplomacyMiscPromptTexts.Get("HistoryCapture_PublishedPrefix", " published \"");
+        string pubSuffix = DiplomacyMiscPromptTexts.Get("HistoryCapture_PublishedSuffix", "\"");
+        string coreProposalPrefix = DiplomacyMiscPromptTexts.Get("HistoryCapture_CoreProposal", ", core proposal: ");
+        string executedTag = DiplomacyMiscPromptTexts.Get("HistoryCapture_ExecutedTag", "; [Game executed] ");
+        string entryPeriod = DiplomacyMiscPromptTexts.Get("HistoryCapture_EntryPeriod", ".");
         foreach (WorldDiplomacyDocument item in sameDay.Take(6))
         {
-            snapshot.Append(" ").Append(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(item.AuthorRulerName, item.AuthorKingdomName)).Append("发布《")
-                .Append(WorldDiplomacyTextRules.Limit(item.Title, 80)).Append("》");
+            snapshot.Append(" ").Append(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(item.AuthorRulerName, item.AuthorKingdomName))
+                .Append(pubPrefix).Append(WorldDiplomacyTextRules.Limit(item.Title, 80)).Append(pubSuffix);
             if (!string.IsNullOrWhiteSpace(item.Body))
             {
-                snapshot.Append("，核心主张：").Append(WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.NormalizeBody(item.Body), 180));
+                snapshot.Append(coreProposalPrefix).Append(WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.NormalizeBody(item.Body), 180));
             }
             if (item.ChangedDiplomaticState && !string.IsNullOrWhiteSpace(item.MechanicalResult))
             {
-                snapshot.Append("；[游戏已执行] ").Append(WorldDiplomacyTextRules.Limit(item.MechanicalResult, 120));
+                snapshot.Append(executedTag).Append(WorldDiplomacyTextRules.Limit(item.MechanicalResult, 120));
             }
-            snapshot.Append("。");
+            snapshot.Append(entryPeriod);
         }
-        snapshot.Append("尚未标注[游戏已执行]的内容只是公开主张、提案、接受或拒绝，不得写成已经完成的外交结果。");
+        snapshot.Append(DiplomacyMiscPromptTexts.Get("HistoryCapture_Disclaimer", "Content not marked [Game executed] is only public advocacy, proposal, acceptance, or rejection, and must not be described as a completed diplomatic outcome."));
 
         List<string> relatedKingdomIds = WorldDiplomacyRoundLifecycleRules.NormalizeTrimmedIdListPreserveOrder(sameDay
             .SelectMany(item => new[] { item.AuthorKingdomId, item.TargetKingdomId }
@@ -189,7 +195,7 @@ internal static class WorldDiplomacyHistoryCaptureApplication
         string authorKingdomId = (document.AuthorKingdomId ?? "").Trim();
         recordMaterial(
             stableBase + ":world",
-            "外交宣言进展 - " + WorldDiplomacyTextRules.Limit(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.Title, document.AuthorKingdomName), 80),
+            DiplomacyMiscPromptTexts.Get("HistoryCapture_MaterialTitlePrefix", "Diplomatic declaration progress - ") + WorldDiplomacyTextRules.Limit(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.Title, document.AuthorKingdomName), 80),
             snapshot.ToString(),
             authorKingdomId,
             document.AuthorRulerId ?? "",
@@ -201,7 +207,7 @@ internal static class WorldDiplomacyHistoryCaptureApplication
         {
             recordMaterial(
                 stableBase + ":kingdom:" + kingdomId,
-                "与本国有关的外交宣言进展",
+                DiplomacyMiscPromptTexts.Get("HistoryCapture_RelatedTitle", "Diplomatic declaration progress concerning this kingdom"),
                 snapshot.ToString(),
                 kingdomId,
                 document.AuthorRulerId ?? "",

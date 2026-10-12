@@ -1,0 +1,148 @@
+{
+  "Id": "rule_Crownlands_Gazetteer_Kings_Landing",
+  "Keywords": [
+    "King's Landing",
+    "City of King's Landing",
+    "Flea Bottom"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nestled between three hills on the northern shore of Blackwater Bay, King's Landing is the capital of the Iron Throne and the largest and most crowded city in the Seven Kingdoms. The Red Keep resides in Aegon's High Hills; the Great Sept of Baelor once stood in Visenya Hills; the ruins of the dragon's lair lie in Rhaenys Hills. The port, the Flea Bottom, the Silk Street, the Iron Street, the Flour Street, the Temple, the Guilds and the Alleys were squeezed between the hills and the city walls. It does not have enough hinterland to feed itself, and must rely on grain, meat, firewood, and ships from the Crown, the Riverlands, and the Reach; the tax revenue, fish catch, foreign goods, and rumors brought by the port are also indispensable. The banners, lords, and courts of King's Landing may change, but the city itself always traps kingship, faith, money, and hungry people in the same narrow patch of land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For lords and courtiers, the King's Landing was first and foremost a talking seat: whoever could enter and leave the Red Keep, who could make the Golden Robe open the door, and whose ship could dock in the harbor, was closer to the throne than the vassals in distant lands. But they also understand the dangers of this city. Hungry, religious fervor and crowded crowds will not be quieted by an edict; conspiracies within the palace gate often rely on the price of food outside the palace gate to end."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants and craftsmen didn't think of King's Landing just as the king's city. Here are the densest number of buyers, the most willful tax collectors and the fastest news in the seven countries. As soon as the ship docks, spices, wool, Myr lenses, and river grain will be repriced; a court engagement, a rumor of war, or an army without food are enough to make bread and nails more valuable than gold in a day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Newcomers to King's Landing are greeted by the smell: the smell of Blackwater Bay, mixed with horse manure, ashes, fish oil, sweat and toast. People in the North thought it was noisy and dirty, people in the West thought it was unseemly, and Dornish merchants thought it had too many tariffs; but for many landless people, King's Landing was still a place where they could find work, scraps and anonymity. It will swallow people up and make people think that they are finally very close to the center of the world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry King's Landing The Iron Throne capital between the Three Hills on the northern shore of Blackwater Bay. The Red Keep, the port, the market, the temple, the guilds and the Flea Bottom were crowded into a huge city that relied on external food and trade; the courtiers saw power, the merchants saw the market, and the common people saw survival and hunger. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry King's Landing The Iron Throne capital between the Three Hills on the northern shore of Blackwater Bay. The Red Keep, the port, the market, the temple, the guilds and the Flea Bottom were crowded into a huge city that relied on external food and trade; the courtiers saw power, the merchants saw the market, and the common people saw survival and hunger. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry King's Landing The Iron Throne capital between the Three Hills on the northern shore of Blackwater Bay. The Red Keep, the port, the market, the temple, the guilds and the Flea Bottom were crowded into a huge city that relied on external food and trade; the courtiers saw power, the merchants saw the market, and the common people saw survival and hunger. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry King's Landing The Iron Throne capital between the Three Hills on the northern shore of Blackwater Bay. The Red Keep, the port, the market, the temple, the guilds and the Flea Bottom were crowded into a huge city that relied on external food and trade; the courtiers saw power, the merchants saw the market, and the common people saw survival and hunger. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "King's Landing: The Iron Throne capital between the Three Hills on the northern shore of Blackwater Bay. The Red Keep, the port, the market, the temple, the guilds and the Flea Bottom were crowded into a huge city that relied on external food and trade; the courtiers saw power, the merchants saw the market, and the common people saw survival and hunger."
+  ]
+}

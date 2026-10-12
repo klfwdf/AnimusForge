@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Chaos_Mark",
+  "Keywords": [
+    "Mark of Chaos",
+    "Mark of the Evil God",
+    "Mark of Khorne",
+    "Mark of Nurgle",
+    "Mark of Xin Liezhi",
+    "Mark of Slaanesh",
+    "Exclusive blessing",
+    "God's Mark"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Mark of Chaos is the exclusive mark that the Dark Gods imprint on the souls of their most loyal warriors - each evil god's mark brings a completely different power: the Mark of Khorne grants rage and force, the Mark of Nurgle grants immortal decay, the Mark of Sinljj opens the eye of destiny, and the Mark of Slaanesh grants supernatural grace and speed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mark of Chaos - This is your oath to devote yourself completely to a specific evil god. It's not the general prayers of those weak people, but you cut your own chest and let the evil god imprint on your heart with his own hands! The Mark of Khorne makes you enter an eternal bloodthirsty rage on the battlefield, and the more blood you drink, the sharper the blade of your ax becomes; the Mark of Nurgle makes you no longer feel pain, your body swells into a moving garden of plague, and what flows out of your intestines is not blood but poisonous bile that can kill an entire village; the Mark of Xinliji allows you to predict See your enemy's sword moves after three breaths, but the price is that you can never trust your own memory - because it changes every day; Slaanesh's mark makes you too fast to be caught by mortal eyes, and every kill is like a dance, but if you cannot maintain your beauty, Slaanesh will take back the mark and torture you to madness in your dreams. Choose your mark - it's not just a decision, it's the final destination of your soul after death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From an organizational perspective, the decision to assign a Chaos Mark to an army directly determines the tactical character of the army. Mark of Khorne's infantry are best suited for frontal breakthroughs, but they will attack any moving target indiscriminately - including your allies - if there aren't enough enemies to kill. The troops of the Mark of Nurgle advance the slowest but have amazing survivability. They are suitable for defending key terrain or serving as the second wave of attrition offensive. Mark of Xinliezhi is most useful against marksmen and priceless mage units, but its effects are inconsistent and can fail dramatically at the most critical moments. The Mark of Slaanesh is the most underrated of the Marks - giving the heavy cavalry incredible blast speed and initiative advantage, but distracting Slaanesh's troops when they encounter scenes of blood and filth. Never mix the Marks of Khorne and the Marks of Sinléj in the same warband: the former requires blood, the latter requires intrigue, and the internal conflict created by the mutual exclusion of the two is enough to destroy your army before a battle begins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The academic classification of Chaos Marks was first proposed by Bishop Alfred Horner (1950-2012 AD) of the Imperial Academy of Religion in his controversial book \"A Systematic Comparison of the Marks of the Evil God\". Horner divided the Mark of Chaos into four independent schools: the School of Blood Rage (Mark of Khorne, numbered M.A.KH-001 to 017, covering multiple subcategories such as rage enhancement, blood thirst, iron skin, etc.); the School of Decay (Mark of Nurgle, numbered M.A.NG-001 to 012, including pain blockage, corruption, etc.) Aura transformation, rebirth, etc.); the school of transformation (the Mark of Xin Liezhi, numbered M.A.TZ-001 to 019, including prophetic perception, causal distortion, shape transformation, etc.); the school of ecstasy (the Mark of Slaanesh, numbered M.A.SL-001 to 015, including extraordinary reactions, charming aura, enjoyment of pain, etc.). It is worth noting that Bishop Horner was accused by the Inquisition of \"reading too many forbidden books\" and burned at the stake in the second year after the book was published (2014 AD), but his classification system is still secretly circulated in the Imperial Academy of Magic. Special marks—such as the Chaos Integration Mark (containing the symbols of four evil gods at the same time, present on the legendary exclusive armor of the Eternal God)—are the highest secret."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female lord who has studied the enemies in the north, I think the most terrifying thing about the Mark of Chaos is not the power it brings, but the absolute sense of belonging it creates. A branded Chaos Warrior no longer belongs to any house or tribe—he belongs only to his god. This 'dehumanized' sense of belonging is a spiritual weapon that the Imperial Army can never replicate among its soldiers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The legacy of imprints is much longer than you think. My family possesses an ancient ax engraved with the mark of Nurgle. It is recorded that an ancestor received the 'Embrace of Nurgle' six generations ago - since then, male descendants of the family will be born with a small rotten green birthmark on their skin. The mark is not just engraved on you, it is engraved in your blood and in the thread of destiny of your children and grandchildren."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In a Norsca village on the coast of the Sea of ​​Claws I met a warrior of the Mark of Sinlj - he sat by a campfire and stared at it all night, and the next morning he said to the chieftain: 'Tomorrow a southerner's ship will hit the rocks, and the gold on board will be mine. 'A Bretonnia merchant ship actually ran aground and sank the next day. He didn't kill anyone or save anyone. He just stood by the rocks and waited for the gold to float up. That look made me understand that what Xin Liezhi's mark gave was not wisdom - it was premeditation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Empire's certified swordmasters and weaponsmiths have always been interested in the power of the Marks of Chaos - especially the increased speed provided by the Marks of Slaanesh. It is said that there is an underground arena in Marienburg that allows marked Chaos prisoners to fight against each other for the nobles to watch, and the tickets are as high as fifty gold crowns each. Of course, this is legally forbidden, and anyone who admits it will be thrown from the castle spire by the Church of Sigmar. But you know Marienburg - in that city the word 'forbidden' means 'needs to add money'."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Mark of Khorne: The exclusive brand of the blood god Khorne, which gives the warrior endless rage, bloodthirsty enhancement and iron skin, but the holder may not be able to distinguish between friend and foe and attack all living creatures.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Mark of Chaos Mark of the Evil God Mark of Khorne"
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "Id": "rule_black_sun_tribe",
+  "Keywords": [
+    "Black Sun Tribe_BS",
+    "Black Sun Orcs_BS",
+    "Gorak of the Black Sun_BS",
+    "Gorak's Warband_BS"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Black Sun Tribe is notorious across the central Badlands for its extreme violence and eerie veneration of fire. Their warlord, Gorak of the Black Sun, is said to be one of the mightiest Black Orcs in the Badlands—his skin is so dark it seems to drink in the light itself, looking like a walking shadow beneath the blazing sun. The warband totem of the Black Sun Tribe is a sun emblem painted pitch-black and rimmed with bone shards from conquered tribes. They specialize in launching their charges at high noon—for at that hour, the eyes of their foes are blinded by the glaring sun, while the black war-paint of the Black Sun Tribe turns into a terrifying psychological weapon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We're da Black Sun boyz! See dat big fireball up in da sky? Dat's our banner! Other Orcs are scared of getting roasted by da sun, but we charge right into da enemy's faces when da sun is blazing hottest—'cause dat's when dapink-skins across from us can't even open their eyes, while we smear black mud over our faces and see dead clear! Boss Gorak sez da fiercer da sun, da 'arder we fight, 'cause Gork and Mork are watching from up top, and whoever chops da most heads under da blazing sun gets to sit closest to da throne!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The tactical preferences of the Black Sun Tribe pose an anomalous timetable threat to defenders. Whereas the vast majority of Greenskin tribes prefer to launch attacks at dusk or night—their night vision being superior to that of humans—the Black Sun Tribe deliberately chooses to attack at high noon, because the blinding glare of the sun cuts the archery accuracy of human garrisons by at least half. This means defending against the Black Sun Tribe cannot rely on conventional rampart defense doctrines; sun-shades and crossbow emplacements covering solar blind spots must be erected along the battlements in advance. Furthermore, the black war-paint of the Black Sun Tribe contains a viscous substance extracted from Badlands pitch pits that gives off a suffocating, acrid stench under high heat, strong enough at close quarters to spook untrained horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Within the social structure of the Black Sun Tribe exists a rare phenomenon of 'Black Orc purity'—the proportion of Black Orcs in their warband is abnormally high, far exceeding the natural probability of Black Orcs emerging in Greenskin reproduction. This suggests that the Black Sun Tribe may be practicing an active form of 'warband selective breeding': rather than executing captured Black Orcs from rival tribes, they absorb them, while subjecting exceptionally burly individuals among ordinary Orc boyz to sustained nutritional provisioning and combat drilling until they develop a physique akin to that of Black Orcs. In Greenskin biology, Black Orcs are the most direct design of Gork and Mork—stronger, smarter, and more disciplined than ordinary Orcs—which means the ceiling of combat effectiveness for the Black Sun Tribe is far higher than that of an ordinary Orc tribe. Gorak's own level of intelligence is equally rare among Greenskin warlords: records indicate that he once established a temporary 'breeding camp' inside an abandoned human keep in the northern Badlands, dedicated specifically to transforming captured ordinary Orcs into elite warriors obedient to his command. In Greenskin politics, this behavior carries profound significance—elevating the Black Sun Tribe from a mere geographic warband into an ideological military organization."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On my estate, whenever the high-noon harvest season arrives at the height of summer, the shadow of the Black Sun Tribe presses down upon the back of every peasant. At a harvest mobilization meeting, I once tried to explain to an Imperial inspector sent from Altdorf why I needed an extra budget for midday archers—this gentleman, raised in the marble palaces of Altdorf, smiled politely and replied that his report could hardly list 'a midday fear of a specific Greenskin tribe' as a legitimate defensive requirement. The following summer, the Black Sun Tribe launched a raid at high noon against a village on the southern edge of my estate; after retiring, that inspector became a travel writer and in his memoirs described the raid as 'the single hour that overturned every military theory of my entire life.' His book sold well; not all of my peasants came back. That is the eternal temperature gap between Imperial bureaucracy and frontier reality."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family's entanglement with Gorak of the Black Sun Tribe began with an ill-considered transaction. Forty-five years ago, my grandfather sold a shipment of pig iron to the Black Sun Tribe through a third-party middleman—intending thereby to buy immunity from attack for our merchant caravans—yet in the very second month after receiving the pig iron, Gorak personally led a warband to smash the largest transport convoy we had at the time. On his deathbed, my grandfather handed me the reply Gorak had sent back via a Goblin messenger: the letter was drawn in charcoal upon a scrap of cloth torn from an Imperial battle standard, bearing only three things—a sun, a hammer, and an arrow pointing from the sun to the hammer. It took me six years, with the help of a Badlands mercenary, to decipher the meaning of that drawing: 'As long as the sun shines—I—have the right to smash you—whenever and wherever I please.' The Black Sun Tribe does not sign contracts; they sign threats. And the most expensive lesson our family ever learned was this: if you attempt to bribe an Orc Warboss, what you buy is not right of passage, but your inclusion on his list of lords he ought to attack—because you have confirmed yourself as 'having wealth worth looting.' Since then, our house has never made another diplomatic overture to any Greenskin tribe, turning our full strength instead to building up our border fortifications."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "After trekking on foot for a full month beneath the scorching sun of the central Badlands, I came across a banner of the Black Sun Tribe planted in the bed of a dried-up river—its flagpole was the rib bone of a colossal beast, its banner-cloth was human leather baked brittle by the sun, and the black sun emblem upon it had been painted with a mixture of black mineral powder and blood. Standing beside that banner and looking back, I realized that the high crests of at least six hills across the central Badlands all bore similar markers—the Black Sun Tribe used them to proclaim the boundaries of their territory. Among the unwritten rules of wandering the Badlands, the supreme law is simple: if you spot a Black Sun banner atop a hill, turn around and walk the other way. That banner is more than a marker; it is a wall that needs no masonry—because enough wanderers and Orcs alike know that crossing the Black Sun banner means entering Gorak's direct territory, and within three hundred miles of the central Badlands, the warband of a thousand Black Orcs under his banner has no rival capable of matching its strength."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In theory, the trade route along the Old Dwarf Road from Nuln to Karak Eight Peaks cuts across the central Badlands—in practice, it cuts straight through the core territory of the Black Sun Tribe. Over the past forty years, our merchant guild has evaluated thirteen alternative routes bypassing Black Sun territory, including detouring south of the Badlands along the Blood River and crossing north through Death Pass—every single alternative route entails an extra three to six weeks of transit time and two to three times the escort costs. The eventual compromise was to pay the 'Badlands Underground Transit Toll'—a bribe in goods paid indirectly to the Black Sun Tribe through a subterranean Badlands middleman in exchange for their refraining from actively intercepting caravans bearing specific markings. On the accounting ledgers, this expense is booked as 'Special Logistics Insurance'; ethically, it is doing business with an Orc tribe; yet in reality, it is a dark choice that any Karak or guild wishing to maintain commercial traffic across the central Badlands is forced to make."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Black Sun Tribe—an ultra-violent warband in the central Badlands composed chiefly of Black Orcs, worshiping the Black Sun totem",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Black Sun Tribe Orcs Gorak Badlands Black Orcs"
+  ]
+}

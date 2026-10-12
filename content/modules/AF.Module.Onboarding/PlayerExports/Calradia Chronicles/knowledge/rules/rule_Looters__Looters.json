@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Looters",
+  "Keywords": [
+    "Looters"
+  ],
+  "RagShortTexts": [
+    "Looters band together to rob honest villagers."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Looters are detestable. They band together in threes and fives specifically to rob honest folk. They're like flies—everywhere you look, impossible to shoo away or wipe out completely, so all you can do is hunt them down regularly so villagers can travel to town in safety. Looters can't beat any real fighters; all they can do is bully villagers. They're the most wretched lot of all."
+    }
+  ],
+  "TextMappings": []
+}

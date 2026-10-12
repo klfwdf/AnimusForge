@@ -78,7 +78,7 @@ namespace AnimusForge.Illustrator.Engine
 }
 namespace TaleWorlds.Core
 {
-    public class ItemObject { public string StringId; public ObjectId Id = new ObjectId(); }
+    public class ItemObject { public string StringId; public ObjectId Id = new ObjectId(); public TaleWorlds.Localization.TextObject Name; }
     public class ObjectId { public uint InternalValue = 1; }
     public class EquipmentElement { public ItemObject Item; }
     public class ItemEntry { public int Amount; public EquipmentElement EquipmentElement; }
@@ -106,7 +106,7 @@ namespace AnimusForge
         public static bool FailCreate, FailDescription, FailAdd;
         public static int AddCalls, CreateCalls;
         public static Dictionary<string,string> Descriptions = new Dictionary<string,string>();
-        public static bool TryCreateGeneratedInventoryItemForExternal(string name, string id, out ItemObject item, string templateItemId = null, string logSource = null)
+        public static bool TryCreateGeneratedInventoryItemForExternal(string name, string id, out ItemObject item, string templateItemId = null, string logSource = null, bool preserveExistingDisplayName = false)
         { CreateCalls++; item = new ItemObject { StringId = id }; return !FailCreate; }
         public static bool TrySetGeneratedRpItemIntroductionForExternal(string id, string value, out string error)
         { error = "fixture"; if (FailDescription) return false; Descriptions[id] = value; return true; }

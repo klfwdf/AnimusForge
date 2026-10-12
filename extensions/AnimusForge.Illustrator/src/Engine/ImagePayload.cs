@@ -14,10 +14,10 @@ namespace AnimusForge.Illustrator.Engine
         internal const int MaxResponseBytes = 36 * 1024 * 1024;
         internal static byte[] Normalize(byte[] bytes)
         {
-            if (bytes == null || bytes.Length < 24 || bytes.Length > MaxBytes) throw new InvalidDataException("图片为空或超过24 MiB限制。");
+            if (bytes == null || bytes.Length < 24 || bytes.Length > MaxBytes) throw new InvalidDataException("The image is empty or exceeds the 24 MiB limit.");
             bool png = bytes[0] == 137 && bytes[1] == 80 && bytes[2] == 78 && bytes[3] == 71;
             bool jpeg = bytes[0] == 255 && bytes[1] == 216 && bytes[2] == 255;
-            if (!png && !jpeg) throw new InvalidDataException("仅接受可解码的PNG或JPEG图片。");
+            if (!png && !jpeg) throw new InvalidDataException("Only decodable PNG or JPEG images are accepted.");
             if (png)
             {
                 long width = ((long)bytes[16] << 24) | ((long)bytes[17] << 16) | ((long)bytes[18] << 8) | bytes[19];
@@ -47,7 +47,7 @@ namespace AnimusForge.Illustrator.Engine
                     var pixels = new Rectangle(0, 0, image.Width, image.Height);
                     graphics.DrawImage(image, pixels, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel);
                     bitmap.Save(output, ImageFormat.Png);
-                    if (output.Length > MaxBytes) throw new InvalidDataException("规范化图片超过24 MiB限制。");
+                    if (output.Length > MaxBytes) throw new InvalidDataException("The normalized image exceeds the 24 MiB limit.");
                     return output.ToArray();
                 }
             }
@@ -78,7 +78,7 @@ namespace AnimusForge.Illustrator.Engine
                     graphics.DrawImage(b, new Rectangle(a.Width + gap, header, b.Width, b.Height), 0, 0, b.Width, b.Height, GraphicsUnit.Pixel);
                     token.ThrowIfCancellationRequested();
                     canvas.Save(output, ImageFormat.Png);
-                    if (output.Length > MaxBytes) throw new InvalidDataException("双视角参考图超过上传图片大小限制；未丢弃参考图。");
+                    if (output.Length > MaxBytes) throw new InvalidDataException("The two-view reference image exceeds the upload size limit. No reference images were discarded.");
                     return output.ToArray();
                 }
             }
@@ -172,7 +172,7 @@ namespace AnimusForge.Illustrator.Engine
             token.ThrowIfCancellationRequested();
             using (var input = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                if (input.Length > MaxBytes) throw new InvalidDataException("缓存图片超过大小限制。");
+                if (input.Length > MaxBytes) throw new InvalidDataException("The cached image exceeds the size limit.");
                 byte[] bytes = new byte[(int)input.Length];
                 int offset = 0;
                 while (offset < bytes.Length)
@@ -190,12 +190,12 @@ namespace AnimusForge.Illustrator.Engine
         private static void ValidateDimensions(long width, long height)
         {
             if (width <= 0 || height <= 0 || width > 8192 || height > 8192 || width * height > 16777216)
-                throw new InvalidDataException("图片尺寸超过8192边长或1600万像素限制。");
+                throw new InvalidDataException("The image exceeds the 8192-pixel edge or 16-million-pixel limit.");
         }
 
         internal static async Task<byte[]> ReadBoundedAsync(HttpContent content, int limit, CancellationToken token)
         {
-            if (content.Headers.ContentLength > limit) throw new InvalidDataException("服务端响应超过大小限制。");
+            if (content.Headers.ContentLength > limit) throw new InvalidDataException("The server response exceeds the size limit.");
             using (var stream = await content.ReadAsStreamAsync().ConfigureAwait(false))
             using (var output = new MemoryStream())
             {
@@ -203,7 +203,7 @@ namespace AnimusForge.Illustrator.Engine
                 int count;
                 while ((count = await stream.ReadAsync(buffer, 0, buffer.Length, token).ConfigureAwait(false)) != 0)
                 {
-                    if (output.Length + count > limit) throw new InvalidDataException("服务端响应超过大小限制。");
+                    if (output.Length + count > limit) throw new InvalidDataException("The server response exceeds the size limit.");
                     output.Write(buffer, 0, count);
                 }
                 token.ThrowIfCancellationRequested();

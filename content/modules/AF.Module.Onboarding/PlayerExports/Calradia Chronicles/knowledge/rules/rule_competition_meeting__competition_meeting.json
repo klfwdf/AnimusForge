@@ -1,0 +1,387 @@
+{
+  "Id": "rule_competition_meeting",
+  "Keywords": [
+    "Arena",
+    "Tournament",
+    "Championship"
+  ],
+  "RagShortTexts": [
+    "Weapons, armors and horses can be won in competitive competitions"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Athletic Conference is a grand competition held from time to time in major towns in Calradia. When enough lords and nobles gather in a city, the arena becomes lively. No matter you are from a famous family or a nobody, as long as you dare to play, you will have the opportunity to win precious weapons, armor, and even fine horses. Of course, you can bet on yourself in every round. The more you bet, the more you win - provided you survive to win."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The imperial competition is the most disciplined. Sword, shield, short spear, standard configuration, not too many fancy things. Imperial people pay attention to discipline and skills, rather than the barbaric tricks of the barbarians. Winning here depends on solid basic skills, not luck. Moreover, the empire's arena has many people and lords, so the prizes are usually not too bad."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Games were not only a show of force but also part of imperial politics. A person who wins many battles in the arena will naturally accumulate reputation and impress others. The aristocratic children of the empire often regard athletic competitions as a step to promotion - winning a few beautiful competitions is more effective than speaking a hundred words in the Senate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the empire holds athletic competitions, the whole city is as lively as a festival. The inn was full and the goods in the market were selling well. I go to see it every time and place a few bets on the way - of course I don’t dare to bet too much, it’s just a small bet that makes me happy. Watching those nobles and mercenaries fighting on the field was more enjoyable than watching a show."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers of the Imperial Legion occasionally participate in tournaments. If you win, you can earn some extra money and get the superiors to notice you. But to be honest, the weapon distribution in the Imperial Arena is sometimes quite confusing - you are given a short sword and a broken shield, and you are faced with a knight in full plate armor. How do you fight?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia’s tournament is the embodiment of chivalry! The most exciting event here is jousting - riding a competitive horse, holding a lance, charging past, and deciding the outcome with one blow. Nothing proves a knight's worth more than outsmarting his opponents in the arena. Of course, Vlandia's prizes aren't bad either, and you can occasionally see nice armor and horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In Vlandia, tournaments are where young knights make a name for themselves. If a baron's son performed well in the arena, the king might remember his name. We Vlandians value individual prowess, and athletic competitions are the best stage for this. But then again, those crossbowmen items can be a real pain in the ass sometimes - knights shouldn't be hiding from a distance firing cold arrows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia’s tournament is great! Especially the horseback confrontation. In that scene, two knights rushed together with their spears raised. With a bang, one of them always fell off the horse. I would bet a few dinars every time, of course, only on the knights who looked best in armor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The games at Battania are the most dangerous. Two-handed greatswords, longbows, battle axes - every duel here can be deadly. We in Battania believe that a person’s true courage is only seen on the edge of life or death. Competitive competitions in other places are nothing but showy tricks. Only here can you see real warriors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In Battania, tournaments are also places where clans compete secretly. If a count can defeat the warriors of other clans in the arena, the whole clan will be proud of it. Of course, we will also keep an eye out for young people who perform well - maybe they are the future clan warriors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Battania's tournament is no joke. He swung his sword with both hands, but unfortunately he fell down on the spot. But if you can survive and win the title in the arena of Battania, you won't be afraid of the entire arena of Calradia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sturgia's athletic meet is a tough battle. With axes, spears, and heavy armor, the lords went to battle personally, cutting to the flesh. There aren’t too many fancy tricks here, it’s just about seeing who is harder and more ruthless. Winning a Sturgia tournament will give you bragging rights for a whole year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Sturgia boyars love the Athletic Conference best of all. It was an opportunity to demonstrate force and win over young warriors. A warrior who excels in the arena can easily be recruited by a certain Boyer. Of course, Sturgia's competition prizes usually focus on weapons and armor, and occasionally there are good horses, but they are not as expensive as those in Vlandia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai's competitive tournament is the easiest. The grounds are open and there are often opportunities for horseback riding, with javelin and one-handed sword being the protagonists. We Aserai don't like those barbaric projects that kill everyone with one move. We value skill and flexibility more. Here, an agile lightly-armored warrior has every chance of defeating those cumbersome heavily armored opponents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai's athletic conventions are also business events. Emirs would take the opportunity to gather, and merchants would display their best goods. After a competitive meeting, not only the soldiers won honors, but the businessmen also made a lot of money. As for placing bets - we Aserai are probably the best at it in all of Calradia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai's competitive tournament is the best for making money. The venue is large, the projects are not that dangerous, and there are many opportunities for betting. I know a businessman who follows competitive competitions and bets on his favorite players every time. It is said that he is more profitable than doing the spice business. Of course, he never played, saying it was \"a head-in-the-belt business.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Khuzait's tournament is dominated by horse archers. Yanyue Sword, Riding Bow, Spear - the winner is decided on horseback. If you don't know how to ride a horse, or if you're not a good rider, you won't survive even one round in Khuzait's arena. But if you are good at riding and shooting, this is your paradise to gain fame and wealth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Khuzait Games were the traditional way to select warriors. The Khan keeps an eye out for young men who excel in the arena, and they may be recruited into the Khan's personal bodyguards. For us prairie people, athletic competitions are not just for prizes, but also a way to prove ourselves and gain a higher status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Let me give you a piece of advice: When playing in a competitive tournament, the first thing to do is to see clearly what the prize is. If the reward is a good horse or a good piece of armor, it's worth the effort; if it's just a broken helmet, it's better to save some effort. Also, bet yourself every round and bet the maximum amount. If you lose, you lose a few dinars; if you win, you get several times the reward. Athletic conferences are a good opportunity for people like us to make a comeback. There is no lord title or family background, but as long as you have skills, you can win dinars and equipment in the arena. I have seen many mercenaries who saved enough money by playing competitive games, recruited soldiers, and finally became mercenary captains. Of course, the premise is that you have to keep winning - if you lose, you have nothing. The difficulty of competitive competitions in different places varies greatly. It is best for beginners to start with Aserai or Empire, where the space is large and the projects are gentle. When you have accumulated enough equipment and confidence, you can challenge the two-handed sword hell of Battania or the riding and shooting paradise of Khuzait. Don't go for Sturgia right off the bat - those Northern Boyer's axes don't have eyesight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "leadership": 120
+        }
+      },
+      "Content": "The competitive competition is not only a display of personal martial arts, but also a shortcut to accumulate reputation. A victory will make your name known in the tavern. Reputation is something that is usually invisible and intangible, but it becomes valuable when you need to recruit people, persuade nobles, or compete for territory. Many self-made mercenary captains accumulated their initial reputation step by step through competitive competitions one after another."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Athletic Conference",
+      "Kind": "bound_event_name",
+      "TargetId": "__bound_event__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

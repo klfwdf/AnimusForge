@@ -14,15 +14,6 @@ using HarmonyLib;
 namespace AnimusForge
 {
     internal static class Logger { public static void Log(string area,string text) { throw new Exception(area+": "+text); } }
-    internal static class AnimusForgeModulePaths { public static string GetCurrentModuleRoot()=>AnimusForgeDataPaths.GetCurrentRoot(); }
-    internal static class AnimusForgeDataPaths
-    {
-        public static string GetCurrentRoot()=>Path.Combine(Environment.CurrentDirectory,"AnimusForge");
-        public static string GetLogsDirectory(string root)=>Path.Combine(root,"Logs");
-        public static void ValidatePath(string path) {}
-        public static string GetCacheDirectory(string root)=>GetLogsDirectory(root);
-        public static void EnsureWritableRoot(string root)=>Directory.CreateDirectory(root);
-    }
 }
 static class Program
 {
@@ -60,6 +51,10 @@ static class Program
     }
     static int Main()
     {
+        string module = Path.Combine(Environment.CurrentDirectory, "module-fixture", "AnimusForge");
+        Directory.CreateDirectory(Path.Combine(module, "ModuleData"));
+        File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
+        Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", module);
         Cache(false);var s=new DuelSettings();
         // Main getter hydrates all five fields before AuxiliaryModelName is loaded.
         _=s.MainModelDropdown;
@@ -81,6 +76,16 @@ static class Program
         }
         var manual=Load(Save(s));
         foreach(var n in Names)Check(D(manual,n).SelectedIndex==0&&N(manual,n)=="manual-"+n,n+" manual text and sentinel roundtrip");
+        foreach(var n in Names)
+        {
+            Check(D(manual,n)[0]=="{=AF_MCM_Option_ModelManual}*manual entry*",n+" manual option has native localization marker");
+            Select(manual,n,"chosen-"+n);
+            var property=new PropertyRef(Drop(n),manual);
+            object legacy=new Dropdown<string>(new[]{"*手动填写*","legacy-model"},0);
+            int count=D(manual,n).Count;
+            McmDropdownRuntimeRefresh.ModelPresetIndexPrefix(property,ref legacy);
+            Check(((Dropdown<string>)legacy).SelectedIndex==0&&D(manual,n).Count==count,n+" legacy manual preset maps to existing localized sentinel");
+        }
         foreach(var n in Names)
         {
             Select(restored,n,"chosen-"+n);

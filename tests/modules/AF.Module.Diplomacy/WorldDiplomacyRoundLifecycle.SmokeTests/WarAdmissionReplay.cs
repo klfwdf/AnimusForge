@@ -103,9 +103,9 @@ internal static class WarAdmissionReplay
             && capacityReason.Contains("3/2") && capacityReason.Contains("被动战争") && capacity.Scans == 1,
             "capacity explains all active wars using one scan");
         Test.True(WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic(
-            "final_live_legal_action_guard:declare_war_not_legal:" + cooldownReason) == "宣战未执行：" + cooldownReason,
+            "final_live_legal_action_guard:declare_war_not_legal:" + cooldownReason) == (SmokeLocalizationEnvironment.EnglishUi ? "Declaration of war not executed: " : "宣战未执行：") + cooldownReason,
             "nested legal guard exposes the concrete war reason");
-        Test.True(WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic("final_live_legal_action_guard").Contains("可执行"),
+        Test.True(WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic("final_live_legal_action_guard").Contains(SmokeLocalizationEnvironment.EnglishUi ? "can currently execute" : "可执行"),
             "context-only guard retains fallback");
         foreach (string blocker in new[] { "none", "invalid", "authority", "war", "alliance", "peace", "civil-war", "pending", "cooldown", "capacity" })
         {

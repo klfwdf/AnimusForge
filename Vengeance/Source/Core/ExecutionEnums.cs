@@ -1,4 +1,4 @@
-﻿namespace RichExecutions.Core;
+namespace RichExecutions.Core;
 
 public enum ExecutionTone
 {

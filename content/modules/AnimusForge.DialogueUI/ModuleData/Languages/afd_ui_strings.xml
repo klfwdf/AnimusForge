@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AFD_MCM_DisplayName" text="AnimusForge - Dialogue UI" />
+    <string id="AFD_MCM_InterfaceStyle" text="Interface style" />
+    <string id="AFD_MCM_InterfaceStyle_Hint" text="Original uses native conversation; scene shouts keep the paused scroll input. New UI uses parchment conversation, map conversation, and history/give panels. New UI is the default and applies when the interface is opened again; no restart is required." />
+    <string id="AFD_MCM_InterfaceGroup" text="1. Interface" />
+    <string id="AFD_MCM_Interface_Original" text="Original" />
+    <string id="AFD_MCM_Interface_New" text="New UI" />
+    <string id="AFD_MCM_BodyFontSize" text="Body font size" />
+    <string id="AFD_MCM_BodyFontSize_Hint" text="Font size for New UI conversation text, options, history, and input. Default: 24. Applies when the interface is opened again; buttons, names, and the native interface are unchanged." />
+    <string id="AFD_MCM_ShoutStyle" text="Scene shout panel style" />
+    <string id="AFD_MCM_ShoutStyle_Hint" text="Paused scroll reuses the bottom scroll input, pauses the game, hides the audience docket, and is also the fallback. Scroll keeps the input at the bottom with an audience docket on the right. Side folio uses a vertical conversation folio. The latter two use a persistent multi-person session in peaceful scenes; during battles, the shout key opens paused input directly. All three panels provide a manual illustration button when image generation is enabled." />
+    <string id="AFD_MCM_ShoutStyle_PausedScroll" text="Paused scroll" />
+    <string id="AFD_MCM_ShoutStyle_Scroll" text="Scroll" />
+    <string id="AFD_MCM_ShoutStyle_SideFolio" text="Side folio" />
+    <string id="AFD_MCM_AutoAi" text="Enter AI mode automatically" />
+    <string id="AFD_MCM_AutoAi_Hint" text="When enabled, scene or map conversations enter AI input mode automatically. Pair with Only Hero enters AI mode automatically to limit the targets. When disabled, ordinary conversation options appear first and AI can still be selected manually. Applies when the next conversation opens." />
+    <string id="AFD_MCM_AutoAiHeroOnly" text="Only Hero enters AI mode automatically" />
+    <string id="AFD_MCM_AutoAiHeroOnly_Hint" text="Applies only when automatic AI mode is enabled. When enabled, only Heroes (lords, companions, notable characters, and other individually identified people) enter AI mode automatically; ordinary bandits, deserters, and soldiers stay in ordinary mode. Disable it to restore automatic switching for all targets. Manual switching remains available." />
+    <string id="AFD_MCM_HistoryDelete" text="Show delete buttons in conversation history" />
+    <string id="AFD_MCM_HistoryDelete_Hint" text="Show a delete button beside each persistent conversation-history line. Deleting removes the visible line and that day's uncompressed memory draft; content already compressed into memory blocks is unaffected." />
+    <string id="AFD_UI_Aux_AllDates" text="All dates" />
+    <string id="AFD_UI_Aux_CurrentTarget" text="Current conversation target" />
+    <string id="AFD_UI_Aux_Day" text="Day {DAY}" />
+    <string id="AFD_UI_Aux_HistoryDay" text="{DATE} · {COUNT} entries" />
+    <string id="AFD_UI_Aux_HistoryLoadFailed" text="History is temporarily unavailable. Close and try again." />
+    <string id="AFD_UI_Aux_NoResources" text="No resources are available for this category or target." />
+    <string id="AFD_UI_Aux_OperationFailed" text="The operation did not complete. Select the resources again." />
+    <string id="AFD_UI_Aux_OperationQueued" text="The game is handling this operation; check the game notice and conversation history for the result." />
+    <string id="AFD_UI_Aux_ResourceLoadFailed" text="Resources could not be loaded. Close and try again." />
+    <string id="AFD_UI_Aux_Title_History" text="Conversation history" />
+    <string id="AFD_UI_Aux_Title_Trade" text="Give / show" />
+    <string id="AFD_UI_Aux_TradeUnsupported" text="This host does not support inline trading." />
+    <string id="AFD_UI_Aux_WaitForConversation" text="Wait for the current conversation to finish before managing resources." />
+    <string id="AFD_UI_Trade_Available" text="Available {COUNT}" />
+    <string id="AFD_UI_Trade_Confirm_Give" text="Confirm gift · {COUNT} items" />
+    <string id="AFD_UI_Trade_Confirm_Show" text="Confirm show · {COUNT} items" />
+    <string id="AFD_UI_Trade_Note_Give" text="Confirm to transfer; closing cancels it. The action is recorded." />
+    <string id="AFD_UI_Trade_Note_Show" text="Show only; no resources are transferred. The action is recorded." />
+    <string id="AFD_UI_Trade_Page" text="{PAGE} / {TOTAL} · {COUNT} items" />
+    <string id="AFD_UI_Trade_ResourceCount" text="Available resources  {COUNT}" />
+    <string id="AFD_UI_Trade_Select" text="Select" />
+    <string id="AFD_UI_Trade_Selected" text="Selected" />
+    <string id="AFD_UI_Trade_Selection_Give" text="Current gift" />
+    <string id="AFD_UI_Trade_Selection_Show" text="Current show" />
+    <string id="AFD_UI_Trade_SelectionCount" text="{COUNT} items" />
+    <string id="AFD_UI_Trade_TotalValue" text="{VALUE} denars" />
+    <string id="AFD_UI_Illustration_Busy" text="Capturing…" />
+    <string id="AFD_UI_Illustration_Button" text="Illustrate" />
+    <string id="AFD_UI_Scene_Address" text="To {NAME}:" />
+    <string id="AFD_UI_Scene_AudienceStats" text="{PARTICIPATING} participating · {EXCLUDED} hidden" />
+    <string id="AFD_UI_Scene_AudienceTitle" text="Scene audience docket · {COUNT} people" />
+    <string id="AFD_UI_Scene_Collapsed" text="Expand scene conversation (T)" />
+    <string id="AFD_UI_Scene_CollapsedTarget" text=" · {NAME}{MORE}" />
+    <string id="AFD_UI_Scene_CurrentTarget" text="Current target" />
+    <string id="AFD_UI_Scene_Docket" text="Expand audience docket · {COUNT} people" />
+    <string id="AFD_UI_Scene_Interrupted" text="Interrupted. You can send the next line." />
+    <string id="AFD_UI_Scene_LeftArea" text="Out of range" />
+    <string id="AFD_UI_Scene_MorePeople" text=" and {COUNT} others" />
+    <string id="AFD_UI_Scene_NoEncyclopedia" text="The current conversation target has no encyclopedia entry." />
+    <string id="AFD_UI_Scene_Send" text="Send (Enter)" />
+    <string id="AFD_UI_Scene_StagedTrade" text="Staged · {TRADE} (delivered with the next line)" />
+    <string id="AFD_UI_Scene_StateHidden" text="Hidden" />
+    <string id="AFD_UI_Scene_StateLocked" text="Locked" />
+    <string id="AFD_UI_Scene_StateParticipating" text="Participating" />
+    <string id="AFD_UI_Scene_TargetOutOfRange" text="This person has left the area and cannot be addressed." />
+    <string id="AFD_UI_Scene_TradeCancelled" text="The staged gift was cancelled." />
+    <string id="AFD_UI_Scene_TradeNeedsText" text="The gift will be delivered with your line. Write something to say first." />
+    <string id="AFD_UI_Scene_Waiting" text="Waiting for response…" />
+    <string id="AFD_UI_Trade_Note" text="After confirmation, return to the conversation; gifts are delivered with your next line. Closing cancels." />
+    <string id="AFD_UI_Trade_Prepare_Give" text="Prepare gift · {COUNT} items" />
+    <string id="AFD_UI_Trade_Prepare_Show" text="Prepare show · {COUNT} items" />
+    <string id="AFD_UI_Trade_Staged" text="Ready: delivered with your next line." />
+    <string id="AFD_UI_Trade_Title" text="Give / show" />
+    <string id="AFD_UI_Trade_Title_Show" text="Show items" />
+    <string id="AFD_UI_Wheel_Actions" text="ACTIONS" />
+    <string id="AFD_UI_Wheel_CloseActions" text="Close actions" />
+    <string id="AFD_UI_Wheel_DrawerHeader" text="Action branches · {COUNT} items" />
+    <string id="AFD_UI_Wheel_GiveItems" text="Give items" />
+    <string id="AFD_UI_Wheel_GivePrisoners" text="Give prisoners" />
+    <string id="AFD_UI_Wheel_GiveTroops" text="Give troops" />
+    <string id="AFD_UI_Wheel_Nearby" text="Nearby person" />
+    <string id="AFD_UI_Wheel_NpcSpeech" text="Other speech" />
+    <string id="AFD_UI_Wheel_PlayerSpeech" text="Public speech" />
+    <string id="AFD_UI_Wheel_ShowItems" text="Show items" />
+    <string id="AFD_UI_Wheel_TagTest" text="Developer test · tags" />
+    <string id="AFD_UI_Wheel_TransferAssets" text="Transfer assets" />
+    <string id="AFD_UI_Shout_HideHistory" text="Hide history" />
+    <string id="AFD_UI_Shout_Hint" text="Enter send · Shift+Enter new line · Esc close" />
+    <string id="AFD_UI_Shout_History" text="History" />
+    <string id="AFD_UI_Shout_HistoryUnavailable" text="History is temporarily unavailable." />
+    <string id="AFD_UI_Shout_NoHistory" text="No visible conversation history in this scene." />
+    <string id="AFD_UI_Shout_TargetInvalid" text="The current target is no longer available. Close and select again." />
+    <string id="AFD_UI_Shout_TargetInvalidHistory" text="The current target is no longer available; history cannot be read." />
+    <string id="AFD_UI_Native_InputPlaceholder" text="Type what you want to say…" />
+    <string id="AFD_UI_Native_InputHint" text="Enter send · Shift+Enter new line" />
+    <string id="AFD_UI_Native_ConversationHistory" text="Conversation history" />
+    <string id="AFD_UI_Native_GiveShow" text="Give / show" />
+    <string id="AFD_UI_Native_Illustration" text="Scene illustration" />
+    <string id="AFD_UI_Native_Leave" text="Leave" />
+    <string id="AFD_UI_Aux_HistoryTab" text="Conversation history" />
+    <string id="AFD_UI_Aux_TradeTab" text="Give / show" />
+    <string id="AFD_UI_Aux_Close" text="Close panel" />
+    <string id="AFD_UI_Aux_FilterAll" text="All" />
+    <string id="AFD_UI_Aux_FilterDialogue" text="Dialogue" />
+    <string id="AFD_UI_Aux_FilterAction" text="Actions" />
+    <string id="AFD_UI_Aux_SearchHistoryHint" text="Search this person&#x27;s records" />
+    <string id="AFD_UI_Aux_LoadOlder" text="Earlier records" />
+    <string id="AFD_UI_Aux_LoadNewer" text="Refresh records" />
+    <string id="AFD_UI_Aux_Latest" text="Back to latest" />
+    <string id="AFD_UI_Aux_DateFilter" text="View by date" />
+    <string id="AFD_UI_Aux_ItemsFilter" text="Items / denars" />
+    <string id="AFD_UI_Aux_TroopsFilter" text="Troops" />
+    <string id="AFD_UI_Aux_PrisonersFilter" text="Prisoners" />
+    <string id="AFD_UI_Aux_AssetsFilter" text="Fixed assets" />
+    <string id="AFD_UI_Aux_Give" text="Give" />
+    <string id="AFD_UI_Aux_Show" text="Show" />
+    <string id="AFD_UI_Aux_SearchResourcesHint" text="Search items or denars…" />
+    <string id="AFD_UI_Aux_ResourcesHeader" text="Resources" />
+    <string id="AFD_UI_Aux_AvailableHeader" text="Available" />
+    <string id="AFD_UI_Aux_ValueHeader" text="Value" />
+    <string id="AFD_UI_Aux_NoResourcesText" text="No matching resources" />
+    <string id="AFD_UI_Aux_Clear" text="Clear" />
+    <string id="AFD_UI_Aux_NoSelection" text="Select a resource from the left" />
+    <string id="AFD_UI_Aux_TotalValue" text="Total value" />
+    <string id="AFD_UI_Aux_PreviousPage" text="Previous page" />
+    <string id="AFD_UI_Aux_NextPage" text="Next page" />
+    <string id="AFD_UI_Trade_SelectAll" text="All" />
+    <string id="AFD_UI_Scene_SessionTitle" text="Scene conversation folio" />
+    <string id="AFD_UI_Scene_Collapse" text="Collapse interface" />
+    <string id="AFD_UI_Scene_IncludeAll" text="Include all" />
+    <string id="AFD_UI_Scene_KeepLocked" text="Keep locked only" />
+    <string id="AFD_UI_Scene_HistorySeparator" text="—— Scene conversation record ——" />
+    <string id="AFD_UI_Scene_CancelGift" text="Cancel gift" />
+    <string id="AFD_UI_Scene_InputPlaceholder" text="Tell the people around you something…" />
+    <string id="AFD_UI_Scene_InputHint" text="[Enter] send · [Shift+Enter] new line · distribute to the audience" />
+    <string id="AFD_UI_Scene_History" text="History" />
+    <string id="AFD_UI_Scene_Gift" text="Gift" />
+    <string id="AFD_UI_Scene_Gallery" text="Gallery" />
+    <string id="AFD_UI_Scene_Encyclopedia" text="Encyclopedia" />
+    <string id="AFD_UI_Scene_Leave" text="Leave" />
+    <string id="AFD_UI_Scene_Interrupt" text="Interrupt · interject" />
+    <string id="AFD_UI_Scene_HistoryTitle" text="Scene conversation record" />
+    <string id="AFD_UI_Scene_Close" text="Close" />
+    <string id="AFD_UI_Scene_Return" text="Back to conversation" />
+    <string id="AFD_UI_Scene_ExpandFolio" text="Expand\nconversation folio" />
+    <string id="AFD_UI_Scene_ExpandFolioHint" text="(Press T)" />
+    <string id="AFD_UI_Scene_DocketInstructions" text="Click a nameplate = address that person · click a seal = participate / hide / lock" />
+    <string id="AFD_UI_Scene_MoreHistory" text="Scroll for more" />
+    <string id="AFD_UI_Scene_RollUpDocket" text="Roll up docket" />
+    <string id="AFD_UI_Trade_Return" text="Back to conversation" />
+    <string id="AFD_UI_Trade_ItemsFilter" text="Items / denars" />
+    <string id="AFD_UI_Trade_TroopsFilter" text="Troops" />
+    <string id="AFD_UI_Trade_PrisonersFilter" text="Prisoners" />
+    <string id="AFD_UI_Trade_AssetsFilter" text="Fixed assets" />
+    <string id="AFD_UI_Trade_Give" text="Give" />
+    <string id="AFD_UI_Trade_Show" text="Show" />
+    <string id="AFD_UI_Trade_SearchHint" text="Search items or denars…" />
+    <string id="AFD_UI_Trade_ResourcesHeader" text="Resources" />
+    <string id="AFD_UI_Trade_AvailableHeader" text="Available" />
+    <string id="AFD_UI_Trade_ValueHeader" text="Value" />
+    <string id="AFD_UI_Trade_NoResources" text="No matching resources" />
+    <string id="AFD_UI_Trade_Clear" text="Clear" />
+    <string id="AFD_UI_Trade_NoSelection" text="Select a resource from the left" />
+    <string id="AFD_UI_Trade_TotalValueLabel" text="Total value" />
+    <string id="AFD_UI_Trade_PreviousPage" text="Previous page" />
+    <string id="AFD_UI_Trade_NextPage" text="Next page" />
+    <string id="AFD_UI_Wheel_Talk" text="Talk" />
+    <string id="AFD_UI_Wheel_Leave" text="Leave" />
+    <string id="AFD_UI_Wheel_Give" text="Give" />
+    <string id="AFD_UI_Shout_Title" text="Visible scene records for the current target" />
+    <string id="AFD_UI_Shout_Gallery" text="Gallery" />
+    <string id="AFD_UI_Shout_Encyclopedia" text="Encyclopedia" />
+    <string id="AFD_UI_Shout_Close" text="Close" />
+    <string id="AFD_UI_Shout_Send" text="Send" />
+    <string id="AFD_UI_Trade_Category_Currency" text="Currency" />
+    <string id="AFD_UI_Trade_Category_Item" text="Item" />
+    <string id="AFD_UI_Trade_Category_Troops" text="Troops" />
+    <string id="AFD_UI_Trade_Category_Prisoners" text="Prisoners" />
+    <string id="AFD_UI_Trade_GiveListExpired" text="The give list is no longer valid. Reopen it." />
+    <string id="AFD_UI_Trade_ResourcesUpdated" text="The resource list has been updated. Reopen it." />
+    <string id="AFD_UI_Trade_SelectionExpired" text="The resource or amount is no longer valid. Select again." />
+    <string id="AFD_SubModule_Name" text="AnimusForge - Parchment Dialogue UI" />
+  </strings>
+</base>

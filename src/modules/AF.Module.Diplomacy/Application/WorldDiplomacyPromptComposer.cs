@@ -13,48 +13,48 @@ namespace AnimusForge;
 // this port; nothing here retains a Campaign object or dispatches background work.
 internal static class WorldDiplomacyPromptComposer
 {
-    private static void AppendPlayerContext(StringBuilder sb, IWorldDiplomacyOrchestration orchestration,
+    private static void AppendPlayerContext(StringBuilder sb, IWorldDiplomacyPromptWorld world, IWorldDiplomacyOrchestration orchestration,
         string author, string target, WorldDiplomacyRound round, WorldDiplomacyDocument source = null)
     {
         if (source?.IsPlayerAuthored == true || (orchestration is WorldDiplomacyOrchestration owner
             && owner.IsPlayerDiplomacyContext(author, target, round, source)))
-            sb.AppendLine("player_diplomacy=true；玩家相关外交：自主AI的冷却、战争数量、内战、回合轮次、动作数量、单对象单动作与强制先答某案限制不适用。保留全部明确动作及其先后，不得因这些限制拒绝发文或改变诉求。真实目标与原案来源仍须准确。");
+            sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_000", "player_diplomacy=true; Player-related diplomacy: autonomous AI limits on cooldowns, war count, civil war, round turns, action count, one action per target, and mandatory priority responses do not apply. Preserve all explicit actions and their order; do not refuse publication or alter demands because of these limits. Actual targets and source offers must still be accurate."));
     }
 
     internal static string BilateralStateLabel(IWorldDiplomacyPromptWorld world, string authorId, string targetId)
     {
-        if (world.ResolveKingdom(authorId) == null || world.ResolveKingdom(targetId) == null) return "未知";
+        if (world.ResolveKingdom(authorId) == null || world.ResolveKingdom(targetId) == null) return world.LocalizePrompt("AF_DIP_Prompt_Composer_001", "Unknown");
         return WorldDiplomacyTextRules.BuildBilateralStateLabel(
             world.IsAtWar(authorId, targetId),
             world.IsAlly(authorId, targetId),
-            world.HasTradeAgreement(authorId, targetId));
+            world.HasTradeAgreement(authorId, targetId), world.LocalizePrompt);
     }
 
 	internal static string BuildRoundPlanSystemPrompt(IWorldDiplomacyPromptWorld world, WorldDiplomacyRound round)
 	{
 		StringBuilder sb = WorldDiplomacyPromptContractRules.CreateSystemPromptBuilder(world.GetCommonDiplomacyContract(round));
-	sb.AppendLine(WorldDiplomacyPromptContractRules.RoundPlanTaskMarker + "最后一条消息的 MODE=ROUND_PLAN 决定本次任务和输出结构。");
-		return sb.ToString().TrimEnd();
+	sb.AppendLine(WorldDiplomacyPromptContractRules.RoundPlanTaskMarker + world.LocalizePrompt("AF_DIP_Prompt_Composer_002", "MODE=ROUND_PLAN in the final message determines the task and output structure."));
+		return PromptComposerTexts.ApplyOutputLanguage(sb.ToString().TrimEnd());
 	}
 
 	internal static string BuildRoundPlanPrompt(IWorldDiplomacyPromptWorld world,
 		IWorldDiplomacyOrchestration orchestration, WorldDiplomacyDocument root, List<string> candidateIds)
 	{
 		StringBuilder sb = new StringBuilder();
-        AppendPlayerContext(sb, orchestration, root.AuthorKingdomId, root.TargetKingdomId, world.ResolveRound(root.RoundId), root);
+        AppendPlayerContext(sb, world, orchestration, root.AuthorKingdomId, root.TargetKingdomId, world.ResolveRound(root.RoundId), root);
 		string vassalageSnapshot = world.BuildWorldDiplomacyVassalageSnapshot();
 		if (!string.IsNullOrWhiteSpace(vassalageSnapshot))
 		{
 			sb.AppendLine(vassalageSnapshot);
 		}
-	sb.AppendLine("【开场宣言】");
-	sb.AppendLine("发起国=" + root.AuthorKingdomId + "=" + root.AuthorKingdomName);
-	sb.AppendLine("标题=" + root.Title);
-	sb.AppendLine("正文=" + WorldDiplomacyTextRules.Limit(root.Body, 2200));
-	sb.AppendLine("明确指向=" + string.Join(",", root.AddressedKingdomIds ?? new List<string>()));
-	sb.AppendLine("提及=" + string.Join(",", root.MentionedKingdomIds ?? new List<string>()));
-	sb.AppendLine("本次参与国总数上限（包括发起国）=" + world.GetRoundParticipantLimit().ToString(CultureInfo.InvariantCulture));
-	sb.AppendLine("候选国：");
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_003", "[Opening declaration]"));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_004", "Initiating kingdom=") + root.AuthorKingdomId + "=" + root.AuthorKingdomName);
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_005", "Title=") + root.Title);
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_006", "Body=") + WorldDiplomacyTextRules.Limit(root.Body, 2200));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_007", "Explicitly addressed=") + string.Join(",", root.AddressedKingdomIds ?? new List<string>()));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_008", "Mentioned=") + string.Join(",", root.MentionedKingdomIds ?? new List<string>()));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_009", "Maximum total participants, including the initiator=") + world.GetRoundParticipantLimit().ToString(CultureInfo.InvariantCulture));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_010", "Candidate kingdoms:"));
 		foreach (string id in candidateIds ?? new List<string>())
 		{
 			string kingdom = world.ResolveKingdom(id);
@@ -65,13 +65,13 @@ internal static class WorldDiplomacyPromptComposer
 					? orchestration.BuildPotentialDiplomaticActionIntents(world.ResolveKingdom(root.AuthorKingdomId), kingdom)
 					: orchestration.BuildLegalDiplomaticActionIntents(rootRound, world.ResolveKingdom(root.AuthorKingdomId), kingdom)));
 			string policy = world.BuildPolicySnapshot(id);
-		if (!string.IsNullOrWhiteSpace(policy)) sb.AppendLine("  政策=" + WorldDiplomacyTextRules.Limit(policy, 500));
+		if (!string.IsNullOrWhiteSpace(policy)) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_011", "  Policies=") + WorldDiplomacyTextRules.Limit(policy, 500));
 		}
 	sb.AppendLine("【MODE=ROUND_PLAN】");
-	sb.AppendLine("根据开场外交宣言和候选国现实利益，一次选定本次事件参与者；后续不会反复评估观察国。");
-	sb.AppendLine("若宣言明确指向某国，该国必须参与。只选确实会介入本次交涉者，不选只会旁观评论者。参与国总数是上限，不必凑满；只可使用候选ID。");
-	sb.AppendLine("事件由头不预定结果。参与国应能推动当前合法的结盟、解盟、贸易、断贸、宣战、议和，或提出、接受、拒绝、反提条件。");
-	sb.AppendLine("只输出JSON：{\"topic\":\"简短外交议题\",\"selected_kingdom_ids\":[\"ID\"],\"reason\":\"简短理由\"}");
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_012", "Select participants for this event once, based on the opening diplomatic declaration and the candidates' actual interests. Observer kingdoms will not be repeatedly reassessed later."));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_013", "Any kingdom explicitly addressed by the declaration must participate. Select only kingdoms that will actually intervene in these negotiations, not mere observers or commentators. The participant count is a ceiling, not a quota; use only candidate IDs."));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_014", "The event's cause does not predetermine its outcome. Participants should be able to advance currently legal alliances, alliance termination, trade, trade termination, war declarations or peace, or propose, accept, reject or counter terms."));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_015", "Output only JSON: {\"topic\":\"brief diplomatic issue\",\"selected_kingdom_ids\":[\"ID\"],\"reason\":\"brief reason\"}"));
 		return sb.ToString().TrimEnd();
 	}
 
@@ -85,7 +85,7 @@ internal static class WorldDiplomacyPromptComposer
 	{
 		orchestration.PruneInvalidOffers(round);
 		StringBuilder sb = new StringBuilder();
-        AppendPlayerContext(sb, orchestration, author, previous, round, prioritySource);
+        AppendPlayerContext(sb, world, orchestration, author, previous, round, prioritySource);
 		List<string> legalTargetIds = round?.ResultSettlementPending == true
 			? orchestration.GetResultSettlementActionableTargetIds(round, author)
 			: (round?.RelayRouteKingdomIds ?? new List<string>())
@@ -104,26 +104,26 @@ internal static class WorldDiplomacyPromptComposer
 			.Select(x => x.Key)
 			.OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
 			.ToList();
-	sb.AppendLine("【本次外交公文动态状态】");
-	sb.AppendLine("长期档案中的宣言是已颁布公文，不是君主即时聊天。为当前王国另行起草一份可独立传阅的正式公文；可以进行有意义的谈判往来，但不得重述历史发言或无条件重复立场。机械外交行为才计入回合行动进展，谈判发言不会无限延长回合。");
-	sb.AppendLine("议题=" + (round.RoundTopic ?? ""));
-	sb.AppendLine("公文送达与发布顺序=" + string.Join(">", round.RelayRouteKingdomIds ?? new List<string>()));
-	sb.AppendLine("本篇发布者=" + author + "=" + world.KingdomName(author) + "，授权统治者=" + world.RulerName(author));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_016", "[Current state for this diplomatic document]"));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_017", "Declarations in the long-term archive are published official documents, not live ruler chat. Draft a separate formal document for the current kingdom that can circulate independently. Meaningful negotiations are allowed, but do not repeat historical statements or reiterate positions without substance. Only mechanical diplomatic acts count as round action progress; negotiation statements do not extend the round indefinitely."));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_018", "Topic=") + (round.RoundTopic ?? ""));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_019", "Document delivery and publication order=") + string.Join(">", round.RelayRouteKingdomIds ?? new List<string>()));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_020", "Publisher of this document=") + author + "=" + world.KingdomName(author) + world.LocalizePrompt("AF_DIP_Prompt_Composer_021", ", authorizing ruler=") + world.RulerName(author));
 		if (priorityResponseOnly && prioritySource != null)
 		{
-			string priorityActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(prioritySource, author);
-		sb.AppendLine("【本篇优先任务：回应玩家王国宣言】");
-		sb.AppendLine("玩家王国的下列宣言已经送达本国王庭并直接指向本国，本篇必须正面回应它，而不是沿原定公文次序改谈其他国家：来源="
-			+ prioritySource.DocumentId + "|发文国=" + prioritySource.AuthorKingdomId + "|标题=" + prioritySource.Title
-			+ (string.IsNullOrWhiteSpace(priorityActionFact) ? "" : "|与本国相关动作=" + priorityActionFact));
-		sb.AppendLine("必须选择当前可选动作。若玩家发出谴责或最后通牒，只有无条件退让才使用comply_ultimatum；任何其他实际动作都按不退让结算且威慑来源字段留空。");
+			string priorityActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(prioritySource, author, world.LocalizePrompt);
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_022", "[Priority task: respond to the player kingdom's declaration]"));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_023", "The following declaration from the player kingdom has reached this court and directly addresses this kingdom. This document must respond to it directly instead of following the original document sequence to discuss other kingdoms: source=")
+			+ prioritySource.DocumentId + world.LocalizePrompt("AF_DIP_Prompt_Composer_024", "|issuing kingdom=") + prioritySource.AuthorKingdomId + world.LocalizePrompt("AF_DIP_Prompt_Composer_025", "|title=") + prioritySource.Title
+			+ (string.IsNullOrWhiteSpace(priorityActionFact) ? "" : world.LocalizePrompt("AF_DIP_Prompt_Composer_026", "|actions relevant to this kingdom=") + priorityActionFact));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_027", "Choose a currently available action. If the player issued a condemnation or ultimatum, use comply_ultimatum only for unconditional submission. Any other actual action is settled as non-compliance, and the threat source fields must remain empty."));
 		}
 		AppendDiplomaticAuthorDecisionContext(sb, world, author, round.RoundId);
 		AppendOtherKingdomRelationshipContext(sb, world, author, legalTargetIds);
-	sb.AppendLine("最近送抵本国王庭的公文来源=" + (previous ?? "") + "=" + world.KingdomName(previous));
-	sb.AppendLine("送件国只是最近来文来源，不是程序指定对象；本国必须从下方允许动作对象中选择。");
-	sb.AppendLine("允许动作对象=" + string.Join(",", legalTargetIds));
-		sb.AppendLine(WorldDiplomacyPromptContractRules.BuildCurrentLegalDiplomaticOptions(legalActionsByTarget));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_028", "Most recent document delivered to this court came from=") + (previous ?? "") + "=" + world.KingdomName(previous));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_029", "The sender is merely the source of the latest document, not a program-selected target. This kingdom must choose from the allowed action targets below."));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_030", "Allowed action targets=") + string.Join(",", legalTargetIds));
+		sb.AppendLine(WorldDiplomacyPromptContractRules.BuildCurrentLegalDiplomaticOptions(legalActionsByTarget, world.LocalizePrompt));
 		WorldDiplomacyRoundOffer requiredPeaceOffer = world.FindRequiredPeaceOfferResponse(
 			round,
 			author,
@@ -133,21 +133,21 @@ internal static class WorldDiplomacyPromptComposer
 			requireAnyOpenPeaceOffer: true);
 		if (exclusivePeaceResponseTargetIds.Count > 0)
 		{
-		sb.AppendLine("和平原案答复：对象=" + string.Join(",", exclusivePeaceResponseTargetIds)
-			+ "；只能选择accept_peace原样接受，或reject_peace明确拒绝；不得附加、修改条款或另提和平方案。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_031", "Response to an original peace offer: target=") + string.Join(",", exclusivePeaceResponseTargetIds)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_032", "; choose only accept_peace to accept unchanged or reject_peace to explicitly reject. Do not add or modify terms or propose another peace plan."));
 		}
 		if (orchestration.HasCessionBoundMultiplePeaceAcceptanceOptions(round, author, legalActionsByTarget))
 		{
-		sb.AppendLine("多份和平原案中含割地：本篇最多接受一份；其他原案可拒绝或留待下一篇。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_033", "Multiple original peace offers include territorial cessions: accept at most one in this document; reject the others or leave them for the next document."));
 		}
 		if (requiredPeaceOffer != null)
 		{
-		sb.AppendLine("本篇必须答复和平原案：来源=" + requiredPeaceOffer.SourceDocumentId
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_034", "This document must answer an original peace offer: source=") + requiredPeaceOffer.SourceDocumentId
 				+ "|action=" + (requiredPeaceOffer.SourceActionId ?? "")
-			+ "|提出国=" + requiredPeaceOffer.ProposerKingdomId + "。");
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_035", "|proposing kingdom=") + requiredPeaceOffer.ProposerKingdomId + "。");
 		}
-	sb.AppendLine("若当前可选动作含statement，它表示一项结构化谈判动作而非机械外交行为，必须填写negotiation_move并在正文中实际完成该动作；公文仍会沿原路线送交下一国。不得用空泛立场冒充新进展。");
-	sb.AppendLine("吞并/朝贡/驻军/完全臣属使用 annexation/tributary/garrison/vassal 的 propose_/accept_/reject_ 动作。新提案附 treaty_terms={receiving_kingdom_id:接收国或宗主国ID,joining_kingdom_id:并入国或臣属国ID}，正文同样明确角色。接受原案必须绑定 responding_to_offer_document_id 和 responding_to_offer_action_id，采用全部原条款。withdraw_offer 仅能单独撤回本国尚未被接受的明确原案，不能撤销已发生效果。");
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_036", "If statement is currently available, it represents a structured negotiation move, not a mechanical diplomatic act. Fill in negotiation_move and actually perform that move in the body; the document will still be delivered to the next kingdom on the original route. Do not pass vague positions off as new progress."));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_037", "For annexation, tribute, garrison or full vassalage, use the propose_/accept_/reject_ actions for annexation/tributary/garrison/vassal. New offers include treaty_terms={receiving_kingdom_id:receiving or overlord kingdom ID,joining_kingdom_id:joining or subject kingdom ID}; make these roles explicit in the body too. Accepting an original offer must bind responding_to_offer_document_id and responding_to_offer_action_id and adopt all original terms. withdraw_offer may only stand alone to withdraw a specific, unaccepted offer made by this kingdom; it cannot reverse effects that already occurred."));
 		AppendRelayResponseSourceContext(
 			sb,
 			world,
@@ -158,29 +158,29 @@ internal static class WorldDiplomacyPromptComposer
 		foreach (WorldDiplomacyRoundOffer offer in (round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>()).Where(x => WorldDiplomacyRoundLifecycleRules.IsOfferOfStatus(x, "open")))
 		{
 			bool canAnswer = string.Equals(offer.TargetKingdomId, author, StringComparison.OrdinalIgnoreCase);
-		sb.AppendLine("待回应提议=" + offer.Intent + "|提出国=" + offer.ProposerKingdomId + "|对象国=" + offer.TargetKingdomId + "|来源=" + offer.SourceDocumentId
-			+ (canAnswer ? "|答复资格=本国可以接受或拒绝" : "|答复资格=本国不是对象国，不得接受或拒绝；只能另提新案或改选其他合法动作"));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_038", "Offer awaiting response=") + offer.Intent + world.LocalizePrompt("AF_DIP_Prompt_Composer_035", "|proposing kingdom=") + offer.ProposerKingdomId + world.LocalizePrompt("AF_DIP_Prompt_Composer_040", "|target kingdom=") + offer.TargetKingdomId + world.LocalizePrompt("AF_DIP_Prompt_Composer_041", "|source=") + offer.SourceDocumentId
+			+ (canAnswer ? world.LocalizePrompt("AF_DIP_Prompt_Composer_042", "|response eligibility=this kingdom may accept or reject") : world.LocalizePrompt("AF_DIP_Prompt_Composer_043", "|response eligibility=this kingdom is not the target and may not accept or reject; it may only make a new offer or choose another legal action")));
 		}
 		int age = Math.Max(0, world.CurrentDay() - round.StartedDay);
 		int targetDays = Math.Max(1, round.SoftEndDay - round.StartedDay);
 		int remainingDays = Math.Max(0, targetDays - age);
-	sb.AppendLine("本次交涉已经进行=" + age.ToString(CultureInfo.InvariantCulture) + "天；预计时长=" + targetDays.ToString(CultureInfo.InvariantCulture)
-		+ "天；距预计收束=" + remainingDays.ToString(CultureInfo.InvariantCulture) + "天；当前公文往来阶段=" + round.RelayPassNumber.ToString(CultureInfo.InvariantCulture));
-		WorldDiplomacyPromptContractRules.AppendRoundSubstantiveProgressRequirement(sb, round, age, targetDays);
-		WorldDiplomacyPromptContractRules.AppendOpenOfferAnswerRequirement(sb, round, author);
-	if (age * 100 >= targetDays * 85) sb.AppendLine("当前已进入最后阶段：必须选择能够收束局面的当前可选动作。");
-	else if (age * 100 >= targetDays * 70) sb.AppendLine("当前已进入回合后段：优先收束分歧并形成明确结果。");
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_044", "These negotiations have lasted=") + age.ToString(CultureInfo.InvariantCulture) + world.LocalizePrompt("AF_DIP_Prompt_Composer_045", " days; expected duration=") + targetDays.ToString(CultureInfo.InvariantCulture)
+		+ world.LocalizePrompt("AF_DIP_Prompt_Composer_046", " days; time until expected closure=") + remainingDays.ToString(CultureInfo.InvariantCulture) + world.LocalizePrompt("AF_DIP_Prompt_Composer_047", " days; current document exchange stage=") + round.RelayPassNumber.ToString(CultureInfo.InvariantCulture));
+		WorldDiplomacyPromptContractRules.AppendRoundSubstantiveProgressRequirement(sb, round, age, targetDays, world.LocalizePrompt);
+		WorldDiplomacyPromptContractRules.AppendOpenOfferAnswerRequirement(sb, round, author, world.LocalizePrompt);
+	if (age * 100 >= targetDays * 85) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_048", "The final stage has begun: choose a currently available action that can bring the situation to a conclusion."));
+	else if (age * 100 >= targetDays * 70) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_049", "The round is in its later stages: prioritize resolving differences and reaching a definite outcome."));
 		if (!string.IsNullOrWhiteSpace(round.ExternalOpeningContext))
 		{
-		sb.AppendLine("【本次外交事件已知的外部动向】");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_050", "[Known external developments in this diplomatic event]"));
 			sb.AppendLine(WorldDiplomacyTextRules.Limit(round.ExternalOpeningContext, 1800));
 		}
 		string gatheringContext = world.BuildGatheringSnapshot(round.RelayRouteKingdomIds, 3);
 		if (!string.IsNullOrWhiteSpace(gatheringContext))
 		{
-		sb.AppendLine("【近期相关宴会】");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_051", "[Recent relevant feasts]"));
 			sb.AppendLine(WorldDiplomacyTextRules.Limit(gatheringContext, 900));
-		sb.AppendLine("宴会只是当前可利用或评论的公开动向，不预设赞扬、嘲讽或敌意，也不自动产生外交结果。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_052", "Feasts are merely public developments that can be used or commented upon. They do not predetermine praise, mockery or hostility, nor do they automatically produce diplomatic outcomes."));
 		}
 		List<string> peaceProposalTargetIds = new List<string>();
 		foreach (string id in legalTargetIds)
@@ -207,7 +207,7 @@ internal static class WorldDiplomacyPromptComposer
 		}
 		if (peaceProposalTargetIds.Count > 0)
 		{
-		sb.AppendLine("当前可提出和平方案的对象="
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_053", "Targets to whom peace may currently be proposed=")
 			+ string.Join(",", peaceProposalTargetIds) + "。");
 		}
 		return sb.ToString().TrimEnd();
@@ -220,17 +220,17 @@ internal static class WorldDiplomacyPromptComposer
 		StringBuilder sb = new StringBuilder();
 		AppendDiplomaticAuthorDecisionContext(sb, world, author, roundId);
 		WorldDiplomacyRound round = world.ResolveRound(roundId);
-        AppendPlayerContext(sb, orchestration, author, null, round);
+        AppendPlayerContext(sb, world, orchestration, author, null, round);
 		if (!string.IsNullOrWhiteSpace(round?.ExternalOpeningContext))
 		{
-		sb.AppendLine("【已经发生的外部外交事件】");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_054", "[External diplomatic events that have already occurred]"));
 			sb.AppendLine(WorldDiplomacyTextRules.Limit(round.ExternalOpeningContext, 1800));
-		sb.AppendLine("这是可供本国利用或回应的真实事件，但不预定本国的对象、立场或行动。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_055", "This is a real event that this kingdom may use or respond to; it does not predetermine this kingdom's target, position or action."));
 		}
-	sb.AppendLine("【同次确定本次外交事件参与国】");
-	sb.AppendLine("依据发文国国家卡和当前真实局势，自主决定一个或多个对象、动作与参与国；每个对象只能使用候选ID及其当前可选动作。");
-	sb.AppendLine("在同一个JSON中填写round_plan。本次参与国总数上限（包括发起国）=" + world.GetRoundParticipantLimit().ToString(CultureInfo.InvariantCulture) + "。直接指向的国家必须列入selected_kingdom_ids；只选择确实需要进入本次连续公文的国家，不要凑满。");
-	sb.AppendLine("【可选择的外交对象与即时硬事实】");
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_056", "[Determine participants for this diplomatic event in the same response]"));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_057", "Based on the issuing kingdom's national profile and the actual current situation, independently choose one or more targets, actions and participating kingdoms. Use only candidate IDs and currently available actions for each target."));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_058", "Include round_plan in the same JSON. Maximum total participants, including the initiator=") + world.GetRoundParticipantLimit().ToString(CultureInfo.InvariantCulture) + world.LocalizePrompt("AF_DIP_Prompt_Composer_059", ". Directly addressed kingdoms must appear in selected_kingdom_ids. Select only kingdoms that actually need to join this ongoing document exchange; do not fill the quota."));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_060", "[Available diplomatic targets and immediate hard facts]"));
 		foreach (string id in candidateIds ?? new List<string>())
 		{
 			string candidate = world.ResolveKingdom(id);
@@ -241,16 +241,16 @@ internal static class WorldDiplomacyPromptComposer
 					: orchestration.BuildLegalDiplomaticActionIntents(round, author, candidate)));
 			if (world.IsAtWar(author, candidate))
 			{
-			sb.AppendLine("  战争判断=" + WorldDiplomacyTextRules.CompactPromptFact(BuildWarDecisionContext(world, author, candidate, true), 900));
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_061", "  War assessment=") + WorldDiplomacyTextRules.CompactPromptFact(BuildWarDecisionContext(world, author, candidate, true), 900));
 			}
 		}
 		int activity = world.GetActivityLevel();
 		sb.AppendLine(activity switch
 		{
-		0 => "外交活跃程度为低：优先选择代价较低的提案或答复，但仍必须采取至少一项实际动作。",
-		2 => "外交活跃程度为高：更积极寻找推进国家目标的外交机会，但不得无理由发动战争。",
+		0 => world.LocalizePrompt("AF_DIP_Prompt_Composer_062", "Diplomatic activity is low: prefer lower-cost offers or responses, but still take at least one actual action."),
+		2 => world.LocalizePrompt("AF_DIP_Prompt_Composer_063", "Diplomatic activity is high: seek opportunities to advance national goals more actively, but do not start wars without cause."),
 
-		_ => "外交活跃程度为正常：平衡推进国家目标与回应代价。"
+		_ => world.LocalizePrompt("AF_DIP_Prompt_Composer_064", "Diplomatic activity is normal: balance national goals against the cost of responding.")
 
 		});
 		return sb.ToString();
@@ -283,10 +283,10 @@ internal static class WorldDiplomacyPromptComposer
 		if (activeRound?.RelayRouteKingdomIds != null) relevantKingdomIds.AddRange(activeRound.RelayRouteKingdomIds);
 		string gatheringSnapshot = world.BuildGatheringSnapshot(relevantKingdomIds, 3);
 		StringBuilder sb = new StringBuilder();
-        AppendPlayerContext(sb, orchestration, author, target, activeRound, sourceDocument);
+        AppendPlayerContext(sb, world, orchestration, author, target, activeRound, sourceDocument);
 		AppendDiplomaticAuthorDecisionContext(sb, world, author, resolvedRoundId);
-	sb.AppendLine("【本篇对象与合法动作】");
-	sb.AppendLine("主要对象国：" + world.KingdomName(target) + "（ID=" + targetId + "），统治者：" + world.RulerName(target));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_065", "[Targets and legal actions for this document]"));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_066", "Primary target kingdom:") + world.KingdomName(target) + "（ID=" + targetId + world.LocalizePrompt("AF_DIP_Prompt_Composer_067", "); ruler:") + world.RulerName(target));
 		List<string> legalActions = orchestration.BuildLegalDiplomaticDeclarationIntents(
 			activeRound,
 			author,
@@ -301,10 +301,10 @@ internal static class WorldDiplomacyPromptComposer
 			WorldDiplomacyIntentVocabulary.NormalizeIntent(x),
 			"propose_peace",
 			StringComparison.OrdinalIgnoreCase));
-	sb.AppendLine("本篇合法动作=" + string.Join("、", legalActions) + "。必须选择其中一项。");
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_068", "Legal actions for this document=") + string.Join("、", legalActions) + world.LocalizePrompt("AF_DIP_Prompt_Composer_069", ". Choose one of them."));
 		if (exclusivePeaceResponse)
 		{
-		sb.AppendLine("和平原案只能选择accept_peace原样接受，或reject_peace明确拒绝；不得附加、修改条款或另提和平方案。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_070", "For the original peace offer, choose only accept_peace to accept unchanged or reject_peace to explicitly reject. Do not add or modify terms or propose another peace plan."));
 		}
 		WorldDiplomacyRoundOffer requiredPeaceOffer = world.FindRequiredPeaceOfferResponse(
 			activeRound,
@@ -315,24 +315,24 @@ internal static class WorldDiplomacyPromptComposer
 			requireAnyOpenPeaceOffer: false);
 		if (requiredPeaceOffer != null)
 		{
-		sb.AppendLine("本篇必须答复和平原案：来源=" + requiredPeaceOffer.SourceDocumentId
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_034", "This document must answer an original peace offer: source=") + requiredPeaceOffer.SourceDocumentId
 				+ "|action=" + (requiredPeaceOffer.SourceActionId ?? "")
-			+ "|提出国=" + requiredPeaceOffer.ProposerKingdomId + "。");
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_035", "|proposing kingdom=") + requiredPeaceOffer.ProposerKingdomId + "。");
 		}
 		if (allowUntargeted)
 		{
-		sb.AppendLine("程序没有预先锁定对象；可从合法候选中选择一个或多个对象，各执行一项动作。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_073", "The program has not locked in a target. Choose one or more legal candidates and perform one action per target."));
 		}
 		if (!string.IsNullOrWhiteSpace(activeRound?.ExternalOpeningContext))
 		{
-		sb.AppendLine("【本次外交事件的外部起因】");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_074", "[External cause of this diplomatic event]"));
 			sb.AppendLine(WorldDiplomacyTextRules.Limit(activeRound.ExternalOpeningContext, 1800));
 		}
 		if (!string.IsNullOrWhiteSpace(gatheringSnapshot))
 		{
-		sb.AppendLine("【近期相关宴会】");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_051", "[Recent relevant feasts]"));
 			sb.AppendLine(WorldDiplomacyTextRules.Limit(gatheringSnapshot, 900));
-		sb.AppendLine("宴会只是可供统治者利用、评价或回应的公开动向，不预设其态度，也不自动产生任何外交结果。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_076", "Feasts are merely public developments that rulers may use, assess or respond to. They do not predetermine a ruler's attitude or automatically produce diplomatic outcomes."));
 		}
 		AppendDiplomaticTargetDecisionContext(
 			sb,
@@ -349,8 +349,8 @@ internal static class WorldDiplomacyPromptComposer
 		}
 		if (roundPlanCandidateIds != null && roundPlanCandidateIds.Count > 0)
 		{
-		sb.AppendLine("【同次确定本次外交事件参与国】");
-		sb.AppendLine("在起草开场宣言的同时填写round_plan。本次参与国总数上限（包括发起国）=" + world.GetRoundParticipantLimit().ToString(CultureInfo.InvariantCulture) + "。宣言明确指向的王国必须优先入选；其余只选确有战争、同盟、贸易、安全或政治利益且能够采取外交行为者，不要为了热闹选满。候选简表：");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_056", "[Determine participants for this diplomatic event in the same response]"));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_078", "Fill in round_plan while drafting the opening declaration. Maximum total participants, including the initiator=") + world.GetRoundParticipantLimit().ToString(CultureInfo.InvariantCulture) + world.LocalizePrompt("AF_DIP_Prompt_Composer_079", ". Kingdoms explicitly addressed by the declaration must be selected first. Select others only if they have real war, alliance, trade, security or political interests and can take diplomatic action; do not fill the roster merely for spectacle. Candidate summary:"));
 			foreach (string candidateId in roundPlanCandidateIds)
 			{
 				string candidate = world.ResolveKingdom(candidateId);
@@ -364,38 +364,38 @@ internal static class WorldDiplomacyPromptComposer
 		if (activeRound != null)
 		{
 			int age = Math.Max(0, world.CurrentDay() - activeRound.StartedDay);
-		sb.AppendLine("当前外交事件已经持续" + age.ToString(CultureInfo.InvariantCulture) + "天，软时间尺度为" + Math.Max(1, activeRound.SoftEndDay - activeRound.StartedDay).ToString(CultureInfo.InvariantCulture) + "天。"
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_080", "The current diplomatic event has lasted ") + age.ToString(CultureInfo.InvariantCulture) + world.LocalizePrompt("AF_DIP_Prompt_Composer_081", " days; the soft time scale is ") + Math.Max(1, activeRound.SoftEndDay - activeRound.StartedDay).ToString(CultureInfo.InvariantCulture) + world.LocalizePrompt("AF_DIP_Prompt_Composer_082", " days.")
 				+ (statementAllowed
-				? "若当前列出statement，可以完成一项结构化谈判动作；必须填写negotiation_move并提出新内容，不能只换一种说法重复立场。"
-				: "接近或超过软尺度时，必须选择能够收束交涉的当前合法动作；不得用最终立场式空话拖延。"));
+				? world.LocalizePrompt("AF_DIP_Prompt_Composer_083", "If statement is currently listed, you may perform a structured negotiation move. Fill in negotiation_move and introduce new substance; do not merely rephrase a position.")
+				: world.LocalizePrompt("AF_DIP_Prompt_Composer_084", "When approaching or exceeding the soft time scale, choose a currently legal action that can conclude negotiations. Do not delay with empty declarations of a final position.")));
 		}
 		if (isResponse && sourceDocument != null)
 		{
-		sb.AppendLine("下列公开外交宣言已经送达；必须从本篇当前合法动作中选择回应。");
-			string sourceActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(sourceDocument, author);
-			string sourcePeaceTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(sourceDocument, author);
-		sb.AppendLine("来源公文ID：" + sourceDocument.DocumentId + "；提出国=" + sourceDocument.AuthorKingdomId
-			+ (string.IsNullOrWhiteSpace(sourceActionFact) ? "" : "；与本国相关动作=" + sourceActionFact));
-		if (!string.IsNullOrWhiteSpace(sourcePeaceTerms)) sb.AppendLine("和平原案条款=" + sourcePeaceTerms);
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_085", "The following public diplomatic declaration has been delivered. Respond using a currently legal action for this document."));
+			string sourceActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(sourceDocument, author, world.LocalizePrompt);
+			string sourcePeaceTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(sourceDocument, author, world.LocalizePrompt);
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_086", "Source document ID:") + sourceDocument.DocumentId + world.LocalizePrompt("AF_DIP_Prompt_Composer_087", "; proposing kingdom=") + sourceDocument.AuthorKingdomId
+			+ (string.IsNullOrWhiteSpace(sourceActionFact) ? "" : world.LocalizePrompt("AF_DIP_Prompt_Composer_088", "; actions relevant to this kingdom=") + sourceActionFact));
+		if (!string.IsNullOrWhiteSpace(sourcePeaceTerms)) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_089", "Original peace offer terms=") + sourcePeaceTerms);
 		if (requiredPeaceOffer != null)
 		{
-		sb.AppendLine("原案：来源=" + requiredPeaceOffer.SourceDocumentId
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_090", "Original offer: source=") + requiredPeaceOffer.SourceDocumentId
 				+ "|action=" + (requiredPeaceOffer.SourceActionId ?? "")
-			+ "；只能选择accept_peace原样接受，或reject_peace明确拒绝；不得附加、修改条款或另提和平方案。");
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_032", "; choose only accept_peace to accept unchanged or reject_peace to explicitly reject. Do not add or modify terms or propose another peace plan."));
 		}
-		sb.AppendLine("标题=" + sourceDocument.Title);
-		sb.AppendLine("正文=" + WorldDiplomacyTextRules.Limit(sourceDocument.Body, 2200));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_005", "Title=") + sourceDocument.Title);
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_006", "Body=") + WorldDiplomacyTextRules.Limit(sourceDocument.Body, 2200));
 		}
 		if (isReminder)
 		{
-		sb.AppendLine("对象国迟迟没有回应。本篇仍必须采取一项实际动作，不得只催促、抱怨或假定对方已经接受。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_094", "The target kingdom has not responded for some time. This document must still take an actual action; do not merely urge a response, complain or assume acceptance."));
 		}
 		int activity = world.GetActivityLevel();
 		sb.AppendLine(activity switch
 		{
-		0 => "外交活跃程度为低：优先克制、审慎和现实利益，但严重矛盾仍可升级。",
-		2 => "外交活跃程度为高：应更积极提出可回应的主张、合作或冲突方案，但不得无理由发动战争。",
-		_ => "外交活跃程度为标准：按当前利益与约束行动。"
+		0 => world.LocalizePrompt("AF_DIP_Prompt_Composer_095", "Diplomatic activity is low: prefer restraint, caution and practical interests, but serious conflicts may still escalate."),
+		2 => world.LocalizePrompt("AF_DIP_Prompt_Composer_096", "Diplomatic activity is high: more actively propose claims, cooperation or conflict plans that others can answer, but do not start wars without cause."),
+		_ => world.LocalizePrompt("AF_DIP_Prompt_Composer_097", "Diplomatic activity is standard: act according to current interests and constraints.")
 
 		});
 		return sb.ToString();
@@ -405,8 +405,8 @@ internal static class WorldDiplomacyPromptComposer
 		IWorldDiplomacyOrchestration orchestration, WorldDiplomacyDocument document)
 	{
 		StringBuilder sb = new StringBuilder();
-	sb.AppendLine("发文国：" + document.AuthorKingdomName + "（ID=" + document.AuthorKingdomId + "）");
-	sb.AppendLine("吞并/朝贡/驻军/完全臣属分别用 annexation/tributary/garrison/vassal 的 propose_/accept_/reject_ 动作，新提案必须附 treaty_terms={receiving_kingdom_id:接收国或宗主国ID,joining_kingdom_id:并入国或臣属国ID}。接受/拒绝/撤回须准确绑定 responding_to_offer_document_id 及 responding_to_offer_action_id；撤回用 withdraw_offer，仅撤回本国未接受原案。玩家正文已公开，任何歧义或动作不成立都不能拦截宣言。");
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_098", "Issuing kingdom:") + document.AuthorKingdomName + "（ID=" + document.AuthorKingdomId + "）");
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_099", "For annexation, tribute, garrison and full vassalage, use the propose_/accept_/reject_ actions for annexation/tributary/garrison/vassal respectively. New offers must include treaty_terms={receiving_kingdom_id:receiving or overlord kingdom ID,joining_kingdom_id:joining or subject kingdom ID}. Acceptance, rejection or withdrawal must accurately bind responding_to_offer_document_id and responding_to_offer_action_id. Use withdraw_offer only to withdraw this kingdom's own unaccepted original offer. The player's text is already public; ambiguity or an invalid action must not block the declaration."));
 		string documentAuthor = world.ResolveKingdom(document.AuthorKingdomId);
 		WorldDiplomacyRound analysisRound = world.ResolveRound(document.RoundId);
 		if (document.IsPlayerAuthored) orchestration.PruneInvalidOffers(analysisRound);
@@ -414,15 +414,15 @@ internal static class WorldDiplomacyPromptComposer
 		string vassalageSnapshot = world.BuildWorldDiplomacyVassalageSnapshot();
 		if (!string.IsNullOrWhiteSpace(vassalageSnapshot)) sb.AppendLine(vassalageSnapshot);
 	if (document.IsPlayerAuthored && document.SubjectReleaseTokens?.Count > 0)
-            sb.AppendLine("本宣言提交时的直属臣属国ID（明确释放用release_subject）：" + string.Join(",", document.SubjectReleaseTokens.Keys));
-        sb.AppendLine("候选对象国：");
+            sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_100", "Direct subject kingdom IDs when this declaration was submitted (use release_subject for explicit release):") + string.Join(",", document.SubjectReleaseTokens.Keys));
+        sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_101", "Candidate target kingdoms:"));
 		foreach (string kingdom in world.KingdomIds().Where(x => x != null && !world.IsEliminated(x) && !string.Equals(x, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)).OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
 		{
 			sb.AppendLine("- " + kingdom + " = " + world.KingdomName(kingdom));
 		}
 		if (!string.IsNullOrWhiteSpace(document.TargetKingdomId))
 		{
-		sb.AppendLine("系统当前候选主要对象：" + document.TargetKingdomId + " = " + document.TargetKingdomName);
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_102", "Current system candidate for primary target:") + document.TargetKingdomId + " = " + document.TargetKingdomName);
 			string author = world.ResolveKingdom(document.AuthorKingdomId);
 			string candidateTarget = world.ResolveKingdom(document.TargetKingdomId);
 			if (author != null && candidateTarget != null && world.IsAtWar(author, candidateTarget))
@@ -454,7 +454,7 @@ internal static class WorldDiplomacyPromptComposer
 				.ToList();
 			if (openOffers.Count > 0)
 			{
-			sb.AppendLine("本国已知的未决原案：本国提出的可撤回，外国提出的可接受或拒绝；修改条件是新提案。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_103", "Unresolved original offers known to this kingdom: its own may be withdrawn; foreign offers may be accepted or rejected. Changed terms constitute a new offer."));
 				foreach (WorldDiplomacyRoundOffer offer in openOffers.Take(12))
 				{
 					WorldDiplomacyDocument source = world.ResolveDocument(offer.SourceDocumentId);
@@ -463,37 +463,37 @@ internal static class WorldDiplomacyPromptComposer
 						WorldDiplomacyIntentVocabulary.NormalizeIntent(offer.Intent),
 						"propose_peace",
 						StringComparison.OrdinalIgnoreCase);
-			sb.AppendLine("- 来源=" + offer.SourceDocumentId + "|动作=" + offer.SourceActionId + "|类型=" + offer.Intent
-				+ "|提出国=" + offer.ProposerKingdomId + "=" + world.KingdomName(world.ResolveKingdom(offer.ProposerKingdomId))
-                + "|接收国=" + offer.TargetKingdomId
-                + "|条约角色=" + treaty?.ReceivingKingdomId + "/" + treaty?.JoiningKingdomId
-				+ "|标题=" + WorldDiplomacyTextRules.Limit(source?.Title, 80) + "|要点=" + WorldDiplomacyTextRules.Limit(source?.Body, 240)
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_104", "- Source=") + offer.SourceDocumentId + world.LocalizePrompt("AF_DIP_Prompt_Composer_105", "|action=") + offer.SourceActionId + world.LocalizePrompt("AF_DIP_Prompt_Composer_106", "|type=") + offer.Intent
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_035", "|proposing kingdom=") + offer.ProposerKingdomId + "=" + world.KingdomName(world.ResolveKingdom(offer.ProposerKingdomId))
+                + world.LocalizePrompt("AF_DIP_Prompt_Composer_108", "|receiving kingdom=") + offer.TargetKingdomId
+                + world.LocalizePrompt("AF_DIP_Prompt_Composer_109", "|treaty roles=") + treaty?.ReceivingKingdomId + "/" + treaty?.JoiningKingdomId
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_025", "|title=") + WorldDiplomacyTextRules.Limit(source?.Title, 80) + world.LocalizePrompt("AF_DIP_Prompt_Composer_111", "|summary=") + WorldDiplomacyTextRules.Limit(source?.Body, 240)
 						+ (isPeaceOffer
-					? "|原案条款=" + WorldDiplomacyOfferContractRules.FormatPeaceTermsForPrompt(WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offer.SourceActionId))
-						+ "|答复=原样接受或明确拒绝"
+					? world.LocalizePrompt("AF_DIP_Prompt_Composer_112", "|original terms=") + WorldDiplomacyOfferContractRules.FormatPeaceTermsForPrompt(WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offer.SourceActionId), world.LocalizePrompt)
+						+ world.LocalizePrompt("AF_DIP_Prompt_Composer_113", "|response=accept unchanged or explicitly reject")
 							: ""));
 				}
-                if (openOffers.Count > 12) sb.AppendLine("还有未列出的原案；不能推定唯一或猜测来源ID。");
-			sb.AppendLine("接受、拒绝或撤回必须绑定来源公文及动作ID；接受继承原条款，修改条件提取为新提案。这里只提取玩家语义，不用回合轮次限制裁判玩家表达。只有评论且没有实际动作时返回statement或condemn。");
+                if (openOffers.Count > 12) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_114", "Other original offers are not listed; do not assume uniqueness or guess source IDs."));
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_115", "Acceptance, rejection or withdrawal must bind the source document and action IDs. Acceptance inherits the original terms; changed terms are extracted as a new offer. Extract only the player's meaning here; do not judge the player's expression using round-turn limits. If there is only commentary and no actual action, return statement or condemn."));
 			}
 		}
 		WorldDiplomacyDocument sourceDocument = world.ResolveDocument(document.SourceDocumentId);
 		if (sourceDocument != null)
 		{
 			sb.AppendLine(document.IsPlayerAuthored
-                ? "玩家从以下公文打开了撰写入口（仅作背景，是否回应、回应对象与动作均以玩家正文为准；不因入口恢复旧提案或强制加入原交涉）："
-                : "该公文正在回应：");
-			sb.AppendLine("背景公文ID：" + sourceDocument.DocumentId);
-			string sourceActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(sourceDocument, document.AuthorKingdomId);
-			string sourcePeaceTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(sourceDocument, document.AuthorKingdomId);
-		if (!string.IsNullOrWhiteSpace(sourceActionFact)) sb.AppendLine("与本国相关动作=" + sourceActionFact);
-		if (!string.IsNullOrWhiteSpace(sourcePeaceTerms)) sb.AppendLine("和平原案条款=" + sourcePeaceTerms);
+                ? world.LocalizePrompt("PlayerReply_AdvisoryContext", "The player opened drafting from the following document, which provides background only. Whether to respond, whom to respond to and what action to take are determined by the player's text. This entry does not revive an old proposal or force participation in the original negotiations:")
+                : world.LocalizePrompt("AF_DIP_Prompt_Composer_116", "This document responds to:"));
+            sb.AppendLine(world.LocalizePrompt("PlayerReply_ContextDocumentId", "Background document ID: ") + sourceDocument.DocumentId);
+			string sourceActionFact = WorldDiplomacyDocumentFactRules.BuildSourceActionFactForTarget(sourceDocument, document.AuthorKingdomId, world.LocalizePrompt);
+			string sourcePeaceTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(sourceDocument, document.AuthorKingdomId, world.LocalizePrompt);
+		if (!string.IsNullOrWhiteSpace(sourceActionFact)) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_117", "Actions relevant to this kingdom=") + sourceActionFact);
+		if (!string.IsNullOrWhiteSpace(sourcePeaceTerms)) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_089", "Original peace offer terms=") + sourcePeaceTerms);
 		sb.AppendLine(sourceDocument.AuthorKingdomName + "《" + sourceDocument.Title + "》：" + WorldDiplomacyTextRules.Limit(sourceDocument.Body, 1400));
 		}
-	sb.AppendLine("公文标题：" + document.Title);
-	sb.AppendLine("公文正文：" + document.Body);
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_119", "Document title:") + document.Title);
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_120", "Document body:") + document.Body);
 	sb.AppendLine("【MODE=ANALYZE】");
-		sb.AppendLine(WorldDiplomacyPromptContractRules.BuildAnalysisModeContract());
+		sb.AppendLine(WorldDiplomacyPromptContractRules.BuildAnalysisModeContract(world.LocalizePrompt));
 		return sb.ToString().TrimEnd();
 	}
 	internal static string BuildFallbackAnalysisJson(WorldDiplomacyDocument document, string targetKingdomId)
@@ -501,7 +501,7 @@ internal static class WorldDiplomacyPromptComposer
 		return new JObject
 		{
 			["status"] = "fallback",
-			["title_summary"] = WorldDiplomacyTextRules.BuildFallbackDocumentTitle(document, "statement"),
+			["title_summary"] = WorldDiplomacyTextRules.BuildFallbackDocumentTitle(document, "statement", DiplomacyPromptTexts.Get),
 			["responding_to_offer_document_id"] = "",
 			["responding_to_threat_document_id"] = "",
 			["primary_target_kingdom_id"] = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document?.TargetKingdomId, targetKingdomId),
@@ -513,7 +513,7 @@ internal static class WorldDiplomacyPromptComposer
 			["tone"] = "neutral",
 			["confidence"] = 0.0,
 			["international_reputation_delta"] = 0,
-		["international_reputation_reason"] = "语义分析服务未完成评估，交由本地结构化规则给出非零评价。"
+		["international_reputation_reason"] = DiplomacyMiscPromptTexts.Get("PromptComposer_SemanticEvalFallback", "Semantic analysis service did not complete evaluation; assigned non-zero score by local structured rules.")
 		}.ToString(Formatting.None);
 	}
 
@@ -525,25 +525,25 @@ internal static class WorldDiplomacyPromptComposer
 		IReadOnlyList<WorldDiplomacyThreat> threats = world.DiplomaticThreats() ?? (IReadOnlyList<WorldDiplomacyThreat>)new List<WorldDiplomacyThreat>();
 		int prestige = world.NationalPrestige(authorId);
 		int reputation = world.InternationalReputation(authorId);
-		sb.AppendLine("【本国国家威望、国际声誉趋势与未结威慑；内部动态事实，不得在公文中公开数值】");
-		sb.AppendLine("本国当前国家威望=" + prestige.ToString(CultureInfo.InvariantCulture)
-			+ "/100：" + WorldDiplomacyReputationRules.DescribeNationalPrestige(prestige) + "）");
-		sb.AppendLine("国家威望衡量本国威慑与承诺是否兑现：威望低会削弱威胁可信度，并按档位动态降低正式封臣家族领袖对国王的关系；恢复威望会撤回这部分动态关系惩罚。");
-		sb.AppendLine("本国当前国际声誉=" + reputation.ToString(CultureInfo.InvariantCulture)
-			+ "/100（外国公开评价档位=" + WorldDiplomacyReputationRules.DescribeInternationalReputation(reputation)
-			+ "）；当前自然趋势=" + WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(reputation)
-			+ "。精确值、档位与趋势用于规划如何维护、修复或为核心利益消耗这项战略资本；现实局势允许时可主动发表有实际内容的宣言维护声誉，但不得为了声誉而沉默、回避合法立场、机械改选动作或发布空话。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_122", "[This kingdom's national prestige, international reputation trends and unresolved threats; internal dynamic facts: do not publish the numbers in the document]"));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_123", "Current national prestige=") + prestige.ToString(CultureInfo.InvariantCulture)
+			+ "/100：" + WorldDiplomacyReputationRules.DescribeNationalPrestige(prestige, world.LocalizePrompt) + "）");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_124", "National prestige measures whether this kingdom follows through on threats and commitments. Low prestige undermines the credibility of threats and dynamically reduces formal vassal clan leaders' relations with the ruler according to the prestige tier. Restored prestige removes this dynamic relation penalty."));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_125", "Current international reputation=") + reputation.ToString(CultureInfo.InvariantCulture)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_126", "/100 (foreign public assessment tier=") + WorldDiplomacyReputationRules.DescribeInternationalReputation(reputation, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_127", "); current natural trend=") + WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(reputation, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_128", ". Use the exact value, tier and trend to plan how to maintain, repair or spend this strategic capital for core interests. When the actual situation allows it, you may proactively issue substantive declarations to maintain reputation. Do not stay silent, avoid legitimate positions, mechanically switch actions or publish empty rhetoric just for reputation."));
 		List<string> recentReputationReasons = WorldDiplomacyTextRules.GetRecentOwnInternationalReputationReasons(
-				world.Documents(), authorId, world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate);
+				world.Documents(), authorId, world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate, world.LocalizePrompt);
 		if (recentReputationReasons.Count == 0)
 		{
-			sb.AppendLine("本国近期没有可供复盘的已结算国际声誉事件；不得编造得失原因。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_129", "There are no recent settled international reputation events for this kingdom to review; do not invent reasons for gains or losses."));
 		}
 		else
 		{
 			foreach (string recentReason in recentReputationReasons)
 			{
-				sb.AppendLine("本国近期国际声誉事实=" + recentReason + "。");
+				sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_130", "Recent international reputation facts=") + recentReason + "。");
 			}
 		}
 		List<WorldDiplomacyStandingChange> recentChanges = WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency((world.Documents() ?? (IReadOnlyList<WorldDiplomacyDocument>)new List<WorldDiplomacyDocument>())
@@ -556,7 +556,7 @@ internal static class WorldDiplomacyPromptComposer
 			.ToList();
 		foreach (WorldDiplomacyStandingChange change in recentChanges)
 		{
-			sb.AppendLine("近期国家威望结算=" + WorldDiplomacyReputationRules.FormatSignedDelta(change.Delta) + "；原因=" + change.Reason + "。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_131", "Recent national prestige settlement=") + WorldDiplomacyReputationRules.FormatSignedDelta(change.Delta) + world.LocalizePrompt("AF_DIP_Prompt_Composer_132", "; reason=") + change.Reason + "。");
 		}
 
 		WorldDiplomacyThreat outbound = threats.FirstOrDefault(x => WorldDiplomacyRoundLifecycleRules.IsOpenDiplomaticThreatStatus(x?.Status)
@@ -566,53 +566,53 @@ internal static class WorldDiplomacyPromptComposer
 			WorldDiplomacyDocument source = world.ResolveDocument(outbound.StageDocumentId);
 			if (WorldDiplomacyRoundLifecycleRules.IsThreatAtStage(outbound, "warning"))
 			{
-				sb.AppendLine("强制后果提示：" + world.KingdomName(outbound.TargetKingdomId) + "（ID=" + outbound.TargetKingdomId
-					+ "）已对本国谴责作出不退让决定。本篇就是本国谴责后的下一份宣言，最好对该国升级为战争最后通牒（intent=ultimatum），否则本篇发布后立即扣除20点国家威望。最后通牒必须延续同一军事争端与核心要求，不得更换事项。原谴责标题="
-					+ WorldDiplomacyTextRules.Limit(source?.Title, 80) + "；原谴责要点=" + WorldDiplomacyTextRules.Limit(source?.Body, 260) + "。");
+				sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_133", "Mandatory consequence notice:") + world.KingdomName(outbound.TargetKingdomId) + "（ID=" + outbound.TargetKingdomId
+					+ world.LocalizePrompt("AF_DIP_Prompt_Composer_134", ") has decided not to comply with this kingdom's condemnation. This is this kingdom's next declaration after that condemnation. Prefer escalating to a war ultimatum against that kingdom (intent=ultimatum); otherwise 20 national prestige will be deducted immediately after publication. The ultimatum must continue the same military dispute and core demand, not switch issues. Original condemnation title=")
+					+ WorldDiplomacyTextRules.Limit(source?.Title, 80) + world.LocalizePrompt("AF_DIP_Prompt_Composer_135", "; original condemnation summary=") + WorldDiplomacyTextRules.Limit(source?.Body, 260) + "。");
 			}
 			else
 			{
-				sb.AppendLine("强制后果提示：" + world.KingdomName(outbound.TargetKingdomId) + "（ID=" + outbound.TargetKingdomId
-					+ "）已对本国最后通牒作出不退让决定。本篇就是本国通牒后的下一份宣言，最好对该国宣战（intent=declare_war），否则本篇发布后立即扣除15点国家威望，但也要考虑战争的后果。");
+				sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_133", "Mandatory consequence notice:") + world.KingdomName(outbound.TargetKingdomId) + "（ID=" + outbound.TargetKingdomId
+					+ world.LocalizePrompt("AF_DIP_Prompt_Composer_137", ") has decided not to comply with this kingdom's ultimatum. This is this kingdom's next declaration after that ultimatum. Prefer declaring war on that kingdom (intent=declare_war); otherwise 15 national prestige will be deducted immediately after publication. Still consider the consequences of war."));
 			}
 		}
 		else if (outbound != null)
 		{
-			sb.AppendLine("本国已有等待对象国一次性决定的"
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_138", "This kingdom already has a pending ")
 				+ WorldDiplomacyRoundLifecycleRules.DescribeThreatStageFormal(outbound.Stage)
-				+ "：对象=" + outbound.TargetKingdomId + "=" + world.KingdomName(outbound.TargetKingdomId)
-				+ "，来源=" + outbound.StageDocumentId + "。对象国尚未发布决定；在其决定前不得重复或提前升级该威慑。");
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_139", ": target=") + outbound.TargetKingdomId + "=" + world.KingdomName(outbound.TargetKingdomId)
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_140", ", source=") + outbound.StageDocumentId + world.LocalizePrompt("AF_DIP_Prompt_Composer_141", ". The target kingdom has not yet published its one-time decision; do not repeat or escalate this threat before it does."));
 		}
 
 		foreach (WorldDiplomacyThreat incoming in WorldDiplomacyRoundLifecycleRules.SelectPendingIncomingThreats(
 			threats, authorId))
 		{
 			WorldDiplomacyDocument source = world.ResolveDocument(incoming.StageDocumentId);
-			sb.AppendLine("本国收到的未决威慑："
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_142", "Unresolved threat received by this kingdom:")
 				+ WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(
 					WorldDiplomacyRoundLifecycleRules.NormalizeThreatEventStage(incoming.Stage))
-				+ "：发出国=" + incoming.IssuerKingdomId + "=" + world.KingdomName(incoming.IssuerKingdomId)
-				+ "；来源=" + incoming.StageDocumentId
-				+ "；标题=" + WorldDiplomacyTextRules.Limit(source?.Title, 80)
-				+ "；要点=" + WorldDiplomacyTextRules.Limit(source?.Body, 260)
-				+ "。选择intent=comply_ultimatum即为无条件退让；任何其他intent即不退让，后续不能反悔。退让会降低本国国家威望，并使本国每个正式封臣家族与当前王族关系下降20点，最后可能导致内战发生，请根据形势、战事、国家性格与长期战略权衡利弊。");
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_143", ": issuing kingdom=") + incoming.IssuerKingdomId + "=" + world.KingdomName(incoming.IssuerKingdomId)
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_144", "; source=") + incoming.StageDocumentId
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_145", "; title=") + WorldDiplomacyTextRules.Limit(source?.Title, 80)
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_146", "; summary=") + WorldDiplomacyTextRules.Limit(source?.Body, 260)
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_147", ". Choosing intent=comply_ultimatum means unconditional submission. Any other intent means non-compliance, and the decision cannot later be reversed. Submission reduces this kingdom's national prestige and lowers every formal vassal clan's relation with the current ruling clan by 20, potentially leading to civil war. Weigh the costs and benefits against the situation, war, national character and long-term strategy."));
 			if (!string.IsNullOrWhiteSpace(incoming.PolicyConditionPolicyId))
 			{
-				sb.AppendLine("附带政策条件：若本国选择comply_ultimatum，"
+				sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_148", "Attached policy condition: if this kingdom chooses comply_ultimatum, ")
 					+ WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(incoming.PolicyConditionPolicyName, incoming.PolicyConditionPolicyId)
-					+ "》将由机制取消。");
+					+ world.LocalizePrompt("AF_DIP_Prompt_Composer_149", " will be canceled by the game mechanism."));
 			}
 		}
 
 		foreach (WorldDiplomacyThreat notice in WorldDiplomacyRoundLifecycleRules.SelectIssuerResolutionNotices(
 			threats, authorId, null, 4))
 		{
-			sb.AppendLine("已确认：" + world.KingdomName(notice.TargetKingdomId) + "已明确服从本国此前的"
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_150", "Confirmed: ") + world.KingdomName(notice.TargetKingdomId) + world.LocalizePrompt("AF_DIP_Prompt_Composer_151", " has explicitly complied with this kingdom's previous ")
 				+ WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(
 					WorldDiplomacyRoundLifecycleRules.NormalizeThreatEventStage(notice.Stage))
-				+ "，后续宣言无需为该威慑宣战或继续升级，也不会因此扣除国家威望。"
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_152", ". Subsequent declarations need not declare war or escalate that threat further, and no national prestige will be deducted for it.")
 				+ (WorldDiplomacyRoundLifecycleRules.IsThreatCancellationStatusCancelled(notice.PolicyConditionCancellationStatus)
-					? "附带政策《" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(notice.PolicyConditionPolicyName, notice.PolicyConditionPolicyId) + "》已经取消。"
+					? world.LocalizePrompt("AF_DIP_Prompt_Composer_153", "The attached policy '") + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(notice.PolicyConditionPolicyName, notice.PolicyConditionPolicyId) + world.LocalizePrompt("AF_DIP_Prompt_Composer_154", "' has been canceled.")
 					: ""));
 		}
 	}
@@ -622,15 +622,15 @@ internal static class WorldDiplomacyPromptComposer
 		List<WorldDiplomacyThreat> incoming = WorldDiplomacyRoundLifecycleRules.SelectPendingIncomingThreats(
 			world.DiplomaticThreats(), authorId);
 		if (incoming.Count == 0) return;
-		sb.AppendLine("当前可供语义裁定绑定的未决威慑：");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_155", "Unresolved threats currently available for semantic adjudication to bind:"));
 		foreach (WorldDiplomacyThreat threat in incoming)
 		{
 			WorldDiplomacyDocument source = world.ResolveDocument(threat.StageDocumentId);
-			sb.AppendLine("- 来源=" + threat.StageDocumentId + "|类型=" + threat.Stage
-				+ "|发出国=" + threat.IssuerKingdomId + "=" + world.KingdomName(threat.IssuerKingdomId)
-				+ "|标题=" + WorldDiplomacyTextRules.Limit(source?.Title, 80) + "|要点=" + WorldDiplomacyTextRules.Limit(source?.Body, 260));
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_104", "- Source=") + threat.StageDocumentId + world.LocalizePrompt("AF_DIP_Prompt_Composer_106", "|type=") + threat.Stage
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_158", "|issuing kingdom=") + threat.IssuerKingdomId + "=" + world.KingdomName(threat.IssuerKingdomId)
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_025", "|title=") + WorldDiplomacyTextRules.Limit(source?.Title, 80) + world.LocalizePrompt("AF_DIP_Prompt_Composer_111", "|summary=") + WorldDiplomacyTextRules.Limit(source?.Body, 260));
 		}
-		sb.AppendLine("只有玩家正文以本国为主语，明确、完整、无条件服从其中一项威慑时才裁定comply_ultimatum并绑定该来源；这是一次性决定，部分接受、原则接受、附带要求、反条件、沉默、第三国叙述或任何其他意图都立即算不退让。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_161", "Adjudicate comply_ultimatum and bind that source only when the player's body text explicitly, fully and unconditionally submits to one of these threats on behalf of this kingdom. This is a one-time decision: partial or in-principle acceptance, added demands, counterconditions, silence, third-country narration or any other intent immediately counts as non-compliance."));
 	}
 	private static void AppendDiplomaticAuthorDecisionContext(
 		StringBuilder sb,
@@ -639,32 +639,32 @@ internal static class WorldDiplomacyPromptComposer
 		string roundId)
 	{
 		if (sb == null || string.IsNullOrWhiteSpace(authorId)) return;
-		sb.AppendLine("【发文者稳定档案】");
-		sb.AppendLine("发文国：" + world.KingdomName(authorId) + "（ID=" + authorId + "），统治者：" + world.RulerName(authorId));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_162", "[Stable profile of the issuing party]"));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_098", "Issuing kingdom:") + world.KingdomName(authorId) + "（ID=" + authorId + world.LocalizePrompt("AF_DIP_Prompt_Composer_067", "); ruler:") + world.RulerName(authorId));
 		string vassalageSnapshot = world.BuildWorldDiplomacyVassalageSnapshot();
 		if (!string.IsNullOrWhiteSpace(vassalageSnapshot)) sb.AppendLine(vassalageSnapshot);
 		List<string> currentWars = (world.CurrentWarKingdomIds(authorId) ?? (IReadOnlyList<string>)new List<string>())
 			.OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
 			.Select(x => x + "=" + world.KingdomName(x))
 			.ToList();
-		sb.AppendLine("本国当前交战=" + (currentWars.Count == 0 ? "[]" : "[" + string.Join(",", currentWars) + "]") + "。此项只陈述战争状态，不授予名单外外交动作。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_165", "This kingdom is currently at war with=") + (currentWars.Count == 0 ? "[]" : "[" + string.Join(",", currentWars) + "]") + world.LocalizePrompt("AF_DIP_Prompt_Composer_166", ". This states only the war status; it does not authorize diplomatic actions outside the listed options."));
 		AppendRulerCaptivityDecisionContext(sb, world, authorId, null);
 		AppendDiplomaticThreatDynamicContext(sb, world, authorId, roundId);
-		sb.AppendLine("【发文者人格与声音】");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_167", "[Issuing ruler's personality and voice]"));
 		sb.AppendLine(world.RulerVoiceContext(authorId));
-		sb.AppendLine("按这位统治者的真实取舍起草国家公文；人格体现于利益、信任、代价与行动分寸，国家立场仍以王国、王庭、贵族和臣民表达。");
-		sb.AppendLine("【发文国制度、合法性与礼制声音】");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_168", "Draft the national document according to this ruler's actual priorities. Express personality through interests, trust, costs and restraint in action; express the national position in terms of the kingdom, court, nobility and subjects."));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_169", "[Institutional, legitimacy and ceremonial voice of the issuing kingdom]"));
 		sb.AppendLine(world.RealmInstitutionalVoiceContext(authorId));
-		sb.AppendLine("当前游戏身份与政体硬事实高于检索背景；背景只能补充语气，不得改写统治者头衔、政体或发明机构。");
-		sb.AppendLine("【权威人物与亲属关系】");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_170", "Hard facts about current in-game identities and government take precedence over retrieved background. Background may supplement tone, but must not alter ruler titles or government or invent institutions."));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_171", "[Authoritative people and family relationships]"));
 		sb.AppendLine(world.AuthorRulerFamilyContext(authorId));
-		sb.AppendLine("只有本段列出的直接亲属关系才是事实；仅在本次外交确实涉及王朝、联姻、人质或王室安全时使用。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_172", "Only the direct family relationships listed in this section are facts. Use them only when this diplomacy actually concerns dynasties, marriage alliances, hostages or royal security."));
 		string policySnapshot = world.BuildPolicySnapshot(authorId);
 		if (!string.IsNullOrWhiteSpace(policySnapshot))
 		{
-			sb.AppendLine("【发文国政策快照】");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_173", "[Issuing kingdom's policy snapshot]"));
 			sb.AppendLine(policySnapshot);
-			sb.AppendLine("政策只用于判断当前目标、利益与压力，不证明未明确提供的外交或军事结果。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_174", "Policies inform current goals, interests and pressures; they do not prove diplomatic or military outcomes that have not been explicitly supplied."));
 		}
 	}
 	private static void AppendDiplomaticTargetDecisionContext(
@@ -692,49 +692,49 @@ internal static class WorldDiplomacyPromptComposer
 			&& !WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(round, round?.ResultSettlementCurrentSlotId,
 				authorId, targetId, world.ResolveDocument);
 
-		sb.AppendLine("【对象决策硬事实】" + targetId + "】");
-		sb.AppendLine("对象国=" + world.KingdomName(targetId) + "（ID=" + targetId + "），统治者=" + world.RulerName(targetId));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_175", "[Hard facts for decisions about the target]") + targetId + "】");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_176", "Target kingdom=") + world.KingdomName(targetId) + "（ID=" + targetId + world.LocalizePrompt("AF_DIP_Prompt_Composer_177", "); ruler=") + world.RulerName(targetId));
 		int targetPrestige = world.NationalPrestige(targetId);
 		int targetReputation = world.InternationalReputation(targetId);
-		sb.AppendLine("对象国国家威望=" + targetPrestige.ToString(CultureInfo.InvariantCulture)
-			+ "/100：" + WorldDiplomacyReputationRules.DescribeNationalPrestige(targetPrestige) + "）；外国对该国的公开国际声誉档位="
-			+ WorldDiplomacyReputationRules.DescribeInternationalReputation(targetReputation)
-			+ "。国家威望低意味着其威胁较不可信，但也可能迫使其为避免进一步失威而采取更冒险的兑现行动；国际声誉只用于判断其承诺可信度、合作条件与外交风险，不代表友好、和平倾向或不可宣战。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_178", "Target kingdom's national prestige=") + targetPrestige.ToString(CultureInfo.InvariantCulture)
+			+ "/100：" + WorldDiplomacyReputationRules.DescribeNationalPrestige(targetPrestige, world.LocalizePrompt) + world.LocalizePrompt("AF_DIP_Prompt_Composer_179", "); foreign public international reputation tier for this kingdom=")
+			+ WorldDiplomacyReputationRules.DescribeInternationalReputation(targetReputation, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_180", ". Low national prestige makes its threats less credible, but may also drive it to riskier follow-through to avoid losing more prestige. International reputation informs the credibility of commitments, terms of cooperation and diplomatic risk; it does not imply friendliness, a preference for peace or immunity from war declarations."));
 		string reputationConflictOpportunity = WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(
 				targetReputation, legalActions, world.Documents(), targetId,
-				world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate);
+				world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate, world.LocalizePrompt);
 		if (!string.IsNullOrWhiteSpace(reputationConflictOpportunity))
 		{
 			sb.AppendLine(reputationConflictOpportunity);
 		}
 		if (!string.IsNullOrWhiteSpace(bilateralFamily)) sb.AppendLine(bilateralFamily);
-		sb.AppendLine("当前关系=" + BilateralStateLabel(world, authorId, targetId)
-			+ "；两国贵族整体关系=" + WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile)
-			+ "；统治者私人关系=" + WorldDiplomacyTextRules.DescribeRulerRelation(relation)
-			+ "；地理关系=" + (border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border) : "不接壤")
-			+ "；总体军力=" + WorldDiplomacyTextRules.DescribeStrengthBalance(situation.AuthorStrength, situation.TargetStrength) + "。");
-		sb.AppendLine("对象国占有的发文国文化城镇城堡数量=" + culturalFiefs.ToString(CultureInfo.InvariantCulture)
-			+ "；边境与政治压力=" + WorldDiplomacyTextRules.DescribeWarPressure(pressure) + "。这些只供王庭判断，不得写成分数或门槛。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_181", "Current relations=") + BilateralStateLabel(world, authorId, targetId)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_182", "; overall relations between the two kingdoms' nobles=") + WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_183", "; rulers' personal relations=") + WorldDiplomacyTextRules.DescribeRulerRelation(relation, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_184", "; geography=") + (border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border, world.LocalizePrompt) : world.LocalizePrompt("AF_DIP_Prompt_Composer_185", "No shared border"))
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_186", "; overall military strength=") + WorldDiplomacyTextRules.DescribeStrengthBalance(situation.AuthorStrength, situation.TargetStrength, world.LocalizePrompt) + "。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_187", "Number of the issuing kingdom's culturally affiliated towns and castles held by the target=") + culturalFiefs.ToString(CultureInfo.InvariantCulture)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_188", "; border and political pressure=") + WorldDiplomacyTextRules.DescribeWarPressure(pressure, world.LocalizePrompt) + world.LocalizePrompt("AF_DIP_Prompt_Composer_189", ". These are for the court's judgment only; do not express them as scores or thresholds."));
 		if (!string.IsNullOrWhiteSpace(targetPolicy))
 		{
-			sb.AppendLine("对象国政策=" + WorldDiplomacyTextRules.Limit(targetPolicy, 700));
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_190", "Target kingdom's policies=") + WorldDiplomacyTextRules.Limit(targetPolicy, 700));
 		}
 		if (!string.IsNullOrWhiteSpace(nativeReasons))
 		{
-			sb.AppendLine("近期原版外交动机素材】");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_191", "Recent native diplomatic motivation material]"));
 			sb.AppendLine(WorldDiplomacyTextRules.Limit(nativeReasons, 800));
 		}
-		sb.AppendLine("近期双边战斗事实。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_192", "Recent bilateral battle facts."));
 		sb.AppendLine(WorldDiplomacyTextRules.Limit(recentBattles, 1500));
-		sb.AppendLine("具体战斗只可引用上列硬事实；未列出的战役、战果、兵力、伤亡或俘虏不得补写。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_193", "Refer to specific battles only using the hard facts above. Do not invent unlisted battles, outcomes, troop counts, casualties or prisoners."));
 		if (situation?.IsAtWar == true)
 		{
-			sb.AppendLine("战争硬性状态：双方已经交战，不得再次宣战。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_194", "Hard war status: the parties are already at war; do not declare war again."));
 			sb.AppendLine(BuildWarDecisionContext(world, authorId, targetId, peaceTermsVisible));
 		}
 		else
 		{
-			sb.AppendLine("战争硬性状态：双方当前没有战争；历史敌意、统一诉求或边境摩擦不等于已经交战。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_195", "Hard war status: the parties are not currently at war. Historical hostility, unification claims or border friction do not mean war already exists."));
 		}
 	}
 	private static void AppendRelayResponseSourceContext(
@@ -748,7 +748,7 @@ internal static class WorldDiplomacyPromptComposer
 		if (string.IsNullOrWhiteSpace(authorId)) return;
 		WorldDiplomacyRoundLifecycleRules.AppendRelayResponseSourceContext(
 			sb, round, authorId, responseSource, requiredSourceDocumentId,
-			world.Documents());
+			world.Documents(), world.LocalizePrompt);
 	}
 	private static string BuildCompactRoundPlanCandidateLine(
 		IWorldDiplomacyPromptWorld world,
@@ -759,12 +759,12 @@ internal static class WorldDiplomacyPromptComposer
 	{
 		List<string> actions = legalActions as List<string> ?? legalActions?.ToList() ?? new List<string>();
 		string line = BuildCompactDiplomaticRelationshipLine(world, authorId, candidateId)
-			+ "；可选动作=" + WorldDiplomacyPromptContractRules.DescribePotentialDiplomaticActions(actions);
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_196", "; available actions=") + WorldDiplomacyPromptContractRules.DescribePotentialDiplomaticActions(actions, world.LocalizePrompt);
 		string captivityHint = BuildRulerCaptivityTargetHint(world, authorId, candidateId);
 		if (!string.IsNullOrWhiteSpace(captivityHint)) line += "\n  " + captivityHint;
 		string reputationConflictOpportunity = string.IsNullOrWhiteSpace(candidateId) ? "" : WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(
 				world.InternationalReputation(candidateId), actions, world.Documents(), candidateId,
-				world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate);
+				world.CurrentDay(), world.NegativeReputationFactRetentionDays(), world.FormatCampaignDate, world.LocalizePrompt);
 		return string.IsNullOrWhiteSpace(reputationConflictOpportunity)
 			? line
 			: line + "\n  " + reputationConflictOpportunity;
@@ -788,14 +788,14 @@ internal static class WorldDiplomacyPromptComposer
 			.ToList();
 		if (otherKingdomIds.Count == 0) return;
 
-		sb.AppendLine("【本国与其他王国的关系快照】");
-		sb.AppendLine("下列信息只供全局判断，不授予额外动作；动作对象仍以本篇当前可选对象为准。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_197", "[Relations between this kingdom and other kingdoms]"));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_198", "The following information is for overall judgment only and grants no extra actions. Action targets are still limited to those currently available for this document."));
 		foreach (string otherId in otherKingdomIds)
 		{
 			sb.AppendLine(BuildCompactDiplomaticRelationshipLine(world, authorId, otherId));
 			if (world.IsAtWar(authorId, otherId))
 			{
-				sb.AppendLine("  战争态势=" + WorldDiplomacyTextRules.CompactPromptFact(BuildWarDecisionContext(world, authorId, otherId, false), 650));
+				sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_199", "  War situation=") + WorldDiplomacyTextRules.CompactPromptFact(BuildWarDecisionContext(world, authorId, otherId, false), 650));
 			}
 		}
 	}
@@ -809,14 +809,14 @@ internal static class WorldDiplomacyPromptComposer
 		WarSituationSnapshot strengthSituation = world.WarSituation(authorId, candidateId);
 		int candidateReputation = world.InternationalReputation(candidateId);
 		sb.Append("- ").Append(candidateId).Append('=').Append(world.KingdomName(candidateId))
-			.Append("；与本国=").Append(BilateralStateLabel(world, authorId, candidateId))
-			.Append("；两国贵族整体关系=").Append(WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile))
-			.Append("；统治者私人关系=").Append(WorldDiplomacyTextRules.DescribeRulerRelation(world.RulerRelation(authorId, candidateId)))
-			.Append("；地理关系=").Append(border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border) : "不接壤")
-			.Append("；总体军力=").Append(WorldDiplomacyTextRules.DescribeStrengthBalance(strengthSituation.AuthorStrength, strengthSituation.TargetStrength))
-			.Append("；国家威望=").Append(world.NationalPrestige(candidateId).ToString(CultureInfo.InvariantCulture))
-			.Append("；外国对其公开国际声誉档位=").Append(WorldDiplomacyReputationRules.DescribeInternationalReputation(candidateReputation));
-		if (!string.IsNullOrWhiteSpace(policy)) sb.Append("；政策倾向=").Append(policy);
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_200", "; with this kingdom=")).Append(BilateralStateLabel(world, authorId, candidateId))
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_182", "; overall relations between the two kingdoms' nobles=")).Append(WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile, world.LocalizePrompt))
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_183", "; rulers' personal relations=")).Append(WorldDiplomacyTextRules.DescribeRulerRelation(world.RulerRelation(authorId, candidateId), world.LocalizePrompt))
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_184", "; geography=")).Append(border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border, world.LocalizePrompt) : world.LocalizePrompt("AF_DIP_Prompt_Composer_185", "No shared border"))
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_186", "; overall military strength=")).Append(WorldDiplomacyTextRules.DescribeStrengthBalance(strengthSituation.AuthorStrength, strengthSituation.TargetStrength, world.LocalizePrompt))
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_206", "; national prestige=")).Append(world.NationalPrestige(candidateId).ToString(CultureInfo.InvariantCulture))
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_207", "; foreign public international reputation tier=")).Append(WorldDiplomacyReputationRules.DescribeInternationalReputation(candidateReputation, world.LocalizePrompt));
+		if (!string.IsNullOrWhiteSpace(policy)) sb.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_208", "; policy leanings=")).Append(policy);
 		return sb.ToString();
 	}
 	private static string BuildWarDecisionContext(
@@ -828,19 +828,19 @@ internal static class WorldDiplomacyPromptComposer
 		WarSituationSnapshot snapshot = world.WarSituation(authorId, targetId);
 		if (snapshot?.IsAtWar != true) return "";
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("【仅供统治者判断的战争态势】战争已" + WorldDiplomacyTextRules.DescribeWarDuration(snapshot.WarDays, world.DaysPerYear()) + "。");
-		sb.AppendLine("双方总体军力=" + WorldDiplomacyTextRules.DescribeStrengthBalance(snapshot.AuthorStrength, snapshot.TargetStrength)
-			+ "；近期战局=" + WorldDiplomacyTextRules.DescribeWarProgress(snapshot.AuthorProgress, snapshot.TargetProgress)
-			+ "；发文国=" + WorldDiplomacyTextRules.DescribeOtherWarBurden(snapshot.AuthorOtherWars)
-			+ "；对象国=" + WorldDiplomacyTextRules.DescribeOtherWarBurden(snapshot.TargetOtherWars) + "。这些是综合判断，只能转写成世界内措辞，不得公开任何评分、分差、开放度或战力数值。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_209", "[War situation for the ruler's judgment only] The war has ") + WorldDiplomacyTextRules.DescribeWarDuration(snapshot.WarDays, world.DaysPerYear(), world.LocalizePrompt) + "。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_210", "Overall military strength of both sides=") + WorldDiplomacyTextRules.DescribeStrengthBalance(snapshot.AuthorStrength, snapshot.TargetStrength, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_211", "; recent course of the war=") + WorldDiplomacyTextRules.DescribeWarProgress(snapshot.AuthorProgress, snapshot.TargetProgress, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_212", "; issuing kingdom=") + WorldDiplomacyTextRules.DescribeOtherWarBurden(snapshot.AuthorOtherWars, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_213", "; target kingdom=") + WorldDiplomacyTextRules.DescribeOtherWarBurden(snapshot.TargetOtherWars, world.LocalizePrompt) + world.LocalizePrompt("AF_DIP_Prompt_Composer_214", ". These are overall assessments. Render them only in in-world language; do not disclose scores, score differences, openness values or military strength numbers."));
 		if (includePeaceNegotiationTerms)
 		{
 			IReadOnlyList<string> targetCanCede = world.CessionCandidates(targetId, authorId, snapshot.TargetCessionScore);
 			IReadOnlyList<string> authorCanCede = world.CessionCandidates(authorId, targetId, snapshot.AuthorCessionScore);
-			sb.AppendLine("【仅在本篇可选和平动作时使用的议和条件】发文国所受议和压力=" + WorldDiplomacyTextRules.DescribePeacePressure(snapshot.AuthorPeacePressure)
-				+ "；对象国所受议和压力=" + WorldDiplomacyTextRules.DescribePeacePressure(snapshot.TargetPeacePressure) + "。");
-		sb.AppendLine("贡金可与割地并存。参考每日贡金：若发文国付款约" + snapshot.AuthorSuggestedTribute + "，若对象国付款约" + snapshot.TargetSuggestedTribute + "；可以谈判但不得超出任务给出的合法上限。");
-		sb.AppendLine("对象国当前可合法提出割让给发文国的领地=" + WorldDiplomacyTextRules.FormatCessionCandidates(targetCanCede) + "；发文国当前可合法提出割让给对象国的领地=" + WorldDiplomacyTextRules.FormatCessionCandidates(authorCanCede) + "。清单为空时不得提出或同意割地，也不得编造城名；优先考虑战争中尚未收复的失地。城镇只有在战局严重不利时才会进入清单。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_215", "[Peace terms: use only when peace actions are available for this document] Peace pressure on the issuing kingdom=") + WorldDiplomacyTextRules.DescribePeacePressure(snapshot.AuthorPeacePressure, world.LocalizePrompt)
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_216", "; peace pressure on the target kingdom=") + WorldDiplomacyTextRules.DescribePeacePressure(snapshot.TargetPeacePressure, world.LocalizePrompt) + "。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_217", "Tribute and territorial cessions may coexist. Indicative daily tribute: if the issuing kingdom pays, approximately ") + snapshot.AuthorSuggestedTribute + world.LocalizePrompt("AF_DIP_Prompt_Composer_218", "; if the target kingdom pays, approximately ") + snapshot.TargetSuggestedTribute + world.LocalizePrompt("AF_DIP_Prompt_Composer_219", ". Negotiation is allowed, but do not exceed the legal ceilings supplied by the task."));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_220", "Fiefs the target kingdom may currently legally offer to cede to the issuing kingdom=") + WorldDiplomacyTextRules.FormatCessionCandidates(targetCanCede) + world.LocalizePrompt("AF_DIP_Prompt_Composer_221", "; fiefs the issuing kingdom may currently legally offer to cede to the target kingdom=") + WorldDiplomacyTextRules.FormatCessionCandidates(authorCanCede) + world.LocalizePrompt("AF_DIP_Prompt_Composer_222", ". If the list is empty, do not propose or agree to territorial cessions or invent settlement names. Prioritize lost territory not yet recovered in this war. Towns appear in the list only when the war situation is severely unfavorable."));
 		}
 		return sb.ToString().TrimEnd();
 	}
@@ -850,10 +850,10 @@ internal static class WorldDiplomacyPromptComposer
 		if (captivity == null || !captivity.IsPrisoner) return "";
 		bool holderKnown = !string.IsNullOrWhiteSpace(captivity.HolderKingdomId);
 		if (holderKnown && string.Equals(captivity.HolderKingdomId, targetId, StringComparison.OrdinalIgnoreCase))
-			return "君主被当前对象国关押或控制：本国应更重视停战、和平和可执行的让步，但仍不得绕过当前合法动作。";
+			return world.LocalizePrompt("AF_DIP_Prompt_Composer_223", "The ruler is imprisoned or controlled by the current target kingdom: prioritize a truce, peace and executable concessions more strongly, but do not bypass currently legal actions.");
 		if (holderKnown)
-			return "君主被其他王国关押或控制：本国整体处境恶化，应更重视稳定与谈判，不得把当前对象误认作关押方。";
-		return "君主被俘但关押或控制方未知：本国处境恶化，应更重视稳定与谈判，不得猜测关押方。";
+			return world.LocalizePrompt("AF_DIP_Prompt_Composer_224", "The ruler is imprisoned or controlled by another kingdom: this kingdom's overall position has worsened. Give stability and negotiation greater weight; do not mistake the current target for the captor.");
+		return world.LocalizePrompt("AF_DIP_Prompt_Composer_225", "The ruler is a prisoner, but the imprisoning or controlling party is unknown: this kingdom's position has worsened. Give stability and negotiation greater weight; do not guess the captor.");
 	}
 	private static void AppendRulerCaptivityDecisionContext(StringBuilder sb, IWorldDiplomacyPromptWorld world, string authorId, string targetId)
 	{
@@ -864,27 +864,27 @@ internal static class WorldDiplomacyPromptComposer
 		bool currentTargetIsHolder = holderKnown && !string.IsNullOrWhiteSpace(targetId)
 			&& string.Equals(captivity.HolderKingdomId, targetId, StringComparison.OrdinalIgnoreCase);
 		string pressure = string.IsNullOrWhiteSpace(targetId)
-			? "需结合具体外交对象判断"
-			: currentTargetIsHolder ? "是" : holderKnown ? "否" : "未知";
-		sb.AppendLine("【本国君主当前处境】");
-		sb.AppendLine("本国统治者被俘：是；当前关押/控制方="
-			+ (holderKnown ? captivity.HolderKingdomName + "（ID=" + captivity.HolderKingdomId + "）" : "未知")
-			+ "；针对本篇外交对象的被俘压力=" + pressure + "。");
+			? world.LocalizePrompt("AF_DIP_Prompt_Composer_226", "Assess in relation to the specific diplomatic target")
+			: currentTargetIsHolder ? world.LocalizePrompt("AF_DIP_Prompt_Composer_227", "Yes") : holderKnown ? world.LocalizePrompt("AF_DIP_Prompt_Composer_228", "No") : world.LocalizePrompt("AF_DIP_Prompt_Composer_001", "Unknown");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_230", "[Current circumstances of this kingdom's ruler]"));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_231", "This kingdom's ruler is a prisoner: yes; current imprisoning/controlling party=")
+			+ (holderKnown ? captivity.HolderKingdomName + "（ID=" + captivity.HolderKingdomId + "）" : world.LocalizePrompt("AF_DIP_Prompt_Composer_001", "Unknown"))
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_233", "; captivity pressure concerning this document's target=") + pressure + "。");
 		if (string.IsNullOrWhiteSpace(targetId))
 		{
-			sb.AppendLine("君主被俘会提高本国对稳定、停战与谈判的重视程度；若本篇对象正是当前关押或控制方，则进一步提高对让步和妥协的重视。不得猜测未知关押方，也不得绕过当前合法动作。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_234", "The ruler's captivity increases this kingdom's concern for stability, truces and negotiations. If this document's target is the actual imprisoning or controlling party, give concessions and compromise even greater weight. Do not guess an unknown captor or bypass currently legal actions."));
 		}
 		else if (currentTargetIsHolder)
 		{
-			sb.AppendLine("君主被当前外交对象关押或控制。本国处于明显不利处境，应更重视停战、和平、让步和避免战争扩大；可以接受比平时更不利但仍可执行的条件。不得因此无条件接受不存在的提议、非法条款或绕过当前合法动作。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_235", "The ruler is imprisoned or controlled by the current diplomatic target. This kingdom is at a clear disadvantage; give greater weight to a truce, peace, concessions and avoiding a wider war. Terms less favorable than usual may be accepted if executable. This does not authorize unconditional acceptance of nonexistent offers or illegal terms, or bypassing currently legal actions."));
 		}
 		else if (holderKnown)
 		{
-			sb.AppendLine("本国君主被其他王国关押或控制。本国整体处境恶化，应减少无意义的外交升级，更重视稳定与谈判；不得因此自动接受当前对象的条件，也不得把当前对象自动认定为关押方。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_236", "This kingdom's ruler is imprisoned or controlled by another kingdom. Its overall position has worsened; reduce pointless diplomatic escalation and give stability and negotiation greater weight. Do not automatically accept the current target's terms or assume that target is the captor."));
 		}
 		else
 		{
-			sb.AppendLine("本国君主被俘但当前关押/控制方无法可靠确认。本国处境恶化，应更重视稳定与谈判；不得猜测关押方，也不得把当前对象自动认定为关押方。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_237", "This kingdom's ruler is a prisoner, but the current imprisoning/controlling party cannot be reliably confirmed. Its position has worsened; give stability and negotiation greater weight. Do not guess the captor or automatically assume the current target is the captor."));
 		}
 	}
 }

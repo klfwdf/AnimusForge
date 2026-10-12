@@ -1,0 +1,50 @@
+{
+  "Id": "rule_underground_sea",
+  "Keywords": [
+    "Underground sea",
+    "legend",
+    "Rumors"
+  ],
+  "RagShortTexts": [
+    "Imperial rumors: The souls of the dead go to the underground sea, and the living can go there to seek advice from wise men; the salt springs of the Laartussus Salt Mine in the Southern Empire are regarded as the entrance to the underground sea, but no one claims to have ever gone back and forth."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is a rumor widely circulated in the empire. After the dead are buried in the earth, their souls will sink into the ground and continue their lives in the underground sea. But the living can also go to the underground sea through some means and get the opportunity to seek wise answers from the dead wise men, but no one can tell where."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is a rumor widely circulated in the empire. After the dead are buried in the earth, their souls will sink into the ground and continue their lives in the underground sea. But the living can also go to the underground sea through some means and get the opportunity to seek wise answers from the dead wise men. In the salt mine of Laartusius, a village in the Southern Empire, there are salt springs that occasionally emerge from the water. People in the Southern Empire firmly believe that this is the entrance to the Underground Sea, but no one dares to claim that they went to the Underground Sea to see the dead and returned safely."
+    }
+  ],
+  "TextMappings": []
+}

@@ -67,7 +67,7 @@ Every function under `一键编译覆盖推送` (the `.bat` entry points) and `s
 - Build: build Bootstrap plus both implementation variants, then assemble one staged `AnimusForge` module.
 - Deploy/overwrite: assemble and validate the project-local Stage against current build artifacts, then replace only Stage-listed files in `Modules/AnimusForge` through same-volume per-file candidates. Keep verified backups in `Modules/.AnimusForge.Recovery/deploy`; rollback restores bytes and timestamps, and an interrupted transaction blocks another deploy. Preserve existing `CustomPrompts` and `ModuleData/TerminalSettings.json`, installing only missing files. Merge `PlayerExports` by modification time (newer wins; installed files win ties). Unlisted installed files are never mirrored or deleted.
 - Build and overwrite: run the unified build, deploy the one module, and retain the existing optional launch behavior.
-- Package: package the one staged module into one ZIP containing both implementation DLLs.
+- Package: project the one staged module into CN and EN ZIPs, each containing both implementation DLLs.
 - Push: publish the same unified source/output contract; no step may recreate or publish the legacy two modules.
 - Validation: verify the module id, Bootstrap declaration, both implementation paths, and absence of conflicting implementation declarations before deployment or packaging.
 
@@ -92,13 +92,16 @@ Because the launcher module id changes from a retired versioned id to `AnimusFor
 
 ## Package Rules
 
-One-click packaging creates one client package, for example:
+One-click packaging creates two client packages from the same Stage and runtime DLLs, for example:
 
 ```text
-AnimusForge_<version>_bannerlord_1.3.x-1.4.x_<timestamp>.zip
+AnimusForge_v1.X.X_CN_MMdd_HHmm.zip
+AnimusForge_v1.X.X_EN_MMdd_HHmm.zip
 ```
 
-Its root folder must be `AnimusForge`. The package must contain:
+The version prefix is always `v`; `MMdd_HHmm` is the local month/day and hour/minute captured once for the pair. For example: `AnimusForge_v1.5.8_CN_1007_0802.zip` and `AnimusForge_v1.5.8_EN_1007_0802.zip`. If either filename already exists, both new archives receive the same next `_1`, `_2`, etc. suffix after the time. Existing files are preserved. `-PackageLabel` is rejected before version selection/build, since release names must follow this contract. Explicit four-part versions retain their micro component.
+
+Each root folder must be `AnimusForge`. Each package must contain:
 
 - `AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll`
 - `AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll`
@@ -110,7 +113,13 @@ The one-click entry passes `-Build` to `package_mod.ps1`: select the next versio
 
 Successful packaging retains that version in both the source and project-local staged XML for the next increment. `-NoBump` keeps the current version; explicit `-Version` overrides it; explicit `-BumpMicro` remains available but neither one-click entry enables it by default. Captured build/ZIP failures restore version sources byte-for-byte without consuming a release number; concurrent source edits are preserved and reported instead of overwritten. A direct package-only invocation requires already-built DLLs matching the requested version; it cannot just relabel old DLLs through XML. Interrupted processes or system failures still require inspecting version sources and rebuilding before retrying.
 
-The ZIP is first written to a temporary file in the package directory. It becomes the final ZIP only after validating the Bootstrap-only XML, strict DLL allowlist, both implementation markers, and marker-to-DLL hashes; failed temporary archives are removed.
+`package_localization.ps1` projects localized content only into ZIP streams. The CN archive retains the clean Stage contents; the EN archive selects sibling `.en.json` / `.en-US.json` bodies under the original package filenames. Both archives retain the registered English and Chinese UI resources, so interface language switching remains available in either edition. Source Chinese assets and the clean Stage are never rewritten by localization. JSON field/type/array contracts, stable identities, variables and protocol examples must survive translation. The English prose check permits stable identity fields and preserved protocol tags; surrounding natural-language text must still be English. Missing English or invalid XML/JSON fails closed.
+
+Worldbook selection first uses `PlayerExports/english-worldbook-identity-map.json` for the four mapped Chinese/English editions. Package directories and filenames retain the Chinese source paths. When an English knowledge asset has a mapped translated `Id`, projection verifies both mapped identities and writes the original Chinese source `Id` into the package bytes; the source English file is unchanged. Without an explicit mapping, the legacy Calradia index matches personality files by hero prefix, knowledge rules by `Id`, and shared files by relative path. Every selected body still passes the JSON and English-prose contracts; a mapping alone does not prove translation quality or runtime acceptance.
+
+Both temporary archives must pass the Bootstrap-only XML, strict DLL allowlist, both implementation markers, marker-to-DLL hashes, and locked projection hashes before either final archive is published. Failure cleans up both candidates and follows the existing version rollback contract. Runtime readiness is checked before selecting a release version or building, then actual Bootstrap and both implementation DLLs are checked for managed user strings and embedded Chinese text. The source scan is a conservative release gate, stops after twelve failures, and is not a complete inventory. There is no language detection or runtime protocol rewrite in this packaging step.
+
+The isolated `LocalizedPackageContractTests.ps1` covers both real ZIP writers, canonical pair names, minute collisions, source/Stage preservation, missing English, escaped Chinese, JSON/protocol/variable drift, actual tiny managed DLL strings, and second-archive failure cleanup. `PackageVersionContractTests.ps1` separately verifies the existing release version rollback behavior. These tests do not build the mod, assemble a production Stage, deploy, create release packages, or establish game acceptance. Release readiness still requires the actual source/DLL gates and complete CN/EN projection against current inputs.
 
 The client ZIP must not include the `ONNX` folder. Package validation must fail if any ONNX entry appears, if either implementation is missing, if more than one module root exists, or if `SubModule.xml` declares an implementation DLL directly.
 

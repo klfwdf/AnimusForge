@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 
 namespace AnimusForge.CoupSystem;
 
@@ -13,7 +12,7 @@ internal static class CoupOutcomeReport
     internal static string BuildPlayerVictory(CoupSession session, string kingdom, string ruler,
         string town, string ownerClan, string king, bool kingStillHeld)
     {
-        if (session?.HasConfirmedVictory != true) throw new InvalidOperationException("政变结算尚未全部确认，不能展示登基成功战报。");
+        if (session?.HasConfirmedVictory != true) throw new InvalidOperationException("Coup settlement is not fully confirmed; the coronation report cannot be shown.");
         int alliedKilled = 0, alliedWounded = 0, defenderKilled = 0, defenderWounded = 0;
         foreach (CoupTroopRecord troop in session.Troops)
         {
@@ -28,14 +27,11 @@ internal static class CoupOutcomeReport
                 if (troop.Wounded) defenderWounded++;
             }
         }
-        return "政变夺位已经完成。\n\n王国：" + kingdom + "\n当前统治者：" + ruler
-            + "\n接管城镇：" + town + "\n城镇当前归属：" + ownerClan
-            + "\n旧王处置：" + king + (session.Disposition == CoupKingDisposition.Capture
-                ? (kingStillHeld ? "已被扣押，当前仍由你的部队保管。" : "已执行扣押；目前已不在你的部队保管。")
-                : "已被迫退位，本次选择不扣押。")
-            + "\n\n已记录伤亡：\n突击队：阵亡 " + alliedKilled + "，负伤 " + alliedWounded
-            + "\n守军：阵亡 " + defenderKilled + "，负伤 " + defenderWounded
-            + "\n\n后续局势：已完成本次政变的叛乱资格评估与请求登记；是否实际起兵以之后的战役结果为准。";
+        string custody = session.Disposition == CoupKingDisposition.Capture
+            ? (kingStillHeld ? CoupUiText.FormerRulerHeld : CoupUiText.FormerRulerNoLongerHeld)
+            : CoupUiText.FormerRulerReleased;
+        return CoupUiText.VictoryReport(kingdom, ruler, town, ownerClan, king, custody,
+            alliedKilled, alliedWounded, defenderKilled, defenderWounded);
     }
 
     internal static string Build(CoupSession session, string player, string king, string town, string kingdom,
@@ -58,33 +54,23 @@ internal static class CoupOutcomeReport
                 if (troop.Wounded) defenderWounded++;
             }
         }
-        var text = new StringBuilder();
-        text.Append(player).Append("在").Append(kingdom).Append("的").Append(town)
-            .Append("针对国王").Append(king).Append("发动武装政变，突击队共").Append(allies).Append("人。");
+        string process;
         bool hallReached = session.HallEntered || session.KingSubdued;
         bool gateReached = session.GateBreached || hallReached;
-        text.Append("过程：");
-        if (!session.SceneEntered && !gateReached) text.Append("已集结突击队，未记录到实际进场。");
+        if (!session.SceneEntered && !gateReached) process = CoupSourceTexts.Get("ReportNoEntry");
         else
         {
-            text.Append("进入城镇街道");
-            if (gateReached) text.Append("，突破大厅入口");
-            if (hallReached) text.Append("，率").Append(hallAllies).Append("名突击队员攻入领主大厅");
-            if (session.KingSubdued) text.Append("，制服国王");
-            text.Append("。");
+            var parts = new System.Collections.Generic.List<string> { CoupSourceTexts.Get("ReportStreet") };
+            if (gateReached) parts.Add(CoupSourceTexts.Get("ReportGate"));
+            if (hallReached) parts.Add(CoupSourceTexts.Format("ReportHall", hallAllies));
+            if (session.KingSubdued) parts.Add(CoupSourceTexts.Get("ReportSubdued"));
+            process = string.Join(CoupSourceTexts.Get("ReportListSeparator"), parts) + CoupSourceTexts.Get("ReportSentenceEnd");
         }
-        text.Append("结果：");
-        if (success)
-            text.Append("政变成功，").Append(player).Append("取得").Append(kingdom).Append("王位并接管").Append(town)
-                .Append(captured ? "，旧王被扣押。" : "，选择不扣押旧王。");
-        else
-        {
-            text.Append("政变失败，未夺取王位，家族带原有领地脱离原王国");
-            if (atWarWithOriginalKingdom) text.Append("并与之开战");
-            text.Append("。");
-        }
-        text.Append("已记录伤亡：突击队阵亡").Append(alliedKilled).Append("、负伤").Append(alliedWounded)
-            .Append("；守军阵亡").Append(defenderKilled).Append("、负伤").Append(defenderWounded).Append("。");
-        return text.ToString();
+        string result = success ? CoupSourceTexts.Format(captured ? "ReportSuccessCaptured" : "ReportSuccessReleased", player, kingdom, town)
+            : CoupSourceTexts.Get(atWarWithOriginalKingdom ? "ReportFailureWar" : "ReportFailureNoWar");
+        return CoupSourceTexts.Format("ReportIntro", player, kingdom, town, king, allies) + "\n"
+            + CoupSourceTexts.Get("ReportProcessLabel") + process + "\n"
+            + CoupSourceTexts.Get("ReportResultLabel") + result + "\n"
+            + CoupSourceTexts.Format("ReportCasualties", alliedKilled, alliedWounded, defenderKilled, defenderWounded);
     }
 }

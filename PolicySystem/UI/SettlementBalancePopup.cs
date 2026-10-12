@@ -28,7 +28,7 @@ internal sealed class SettlementBalancePopup
 			_active?.Close();
 			SettlementBalanceSettings.Initialize();
 			var screen = ScreenManager.TopScreen;
-			if (screen == null) throw new InvalidOperationException("没有可用的设置页面。");
+			if (screen == null) throw new InvalidOperationException("No settings screen is available.");
 			_active = new SettlementBalancePopup(screen);
 			_active._layer.LoadMovie("SettlementBalancePopup", _active._vm);
 			_active._layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
@@ -42,7 +42,10 @@ internal sealed class SettlementBalancePopup
 		{
 			_active?.Close();
 			PolicySystemLog.Failure("Balance", "popup-open-failed", ex.Message, ex.ToString());
-			InformationManager.DisplayMessage(new InformationMessage("无法打开总量上限设置：" + ex.Message));
+			string displayError = ex.Message == "No settings screen is available."
+				? PolicyUiTexts.Get("AFPOL_UI_NoSettingsScreen", ex.Message)
+				: ex.Message;
+			InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Format("AFPOL_UI_BalanceOpenFailed", "Unable to open settlement balance limits: {ERROR}", "ERROR", displayError)));
 		}
 	}
 	private void Request(int action) { if (!_closed && _pending == 0) _pending = action; }
@@ -62,7 +65,7 @@ internal sealed class SettlementBalancePopup
 			return;
 		}
 		popup.Close();
-		InformationManager.DisplayMessage(new InformationMessage("总量上限已保存；旧存量不会被削减。"));
+		InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_BalanceSaved", "Settlement balance limits saved; existing stock is not reduced.")));
 	}
 	private void Close()
 	{

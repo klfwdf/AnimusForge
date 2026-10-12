@@ -90,7 +90,7 @@ __MISSION__
    Check(!can&&m.Ends==0&&o._session.Phase==CoupPhase.AwaitingResolution,"Tab immediately after last guard is blocked and establishes victory");
    Check(o._session.Disposition==CoupKingDisposition.Undecided&&o.Commits==0,"no implicit choice or political effect");
    Check(MBInformationManager.Selections==1&&MBInformationManager.Paused,"hall choice uses pause-enabled native single selection");
-   var old=MBInformationManager.Last;Check(old.Min==1&&old.Max==1&&old.AffirmativeText=="确认处置并离场","explicit single confirm");
+   var old=MBInformationManager.Last;Check(old.Min==1&&old.Max==1&&old.AffirmativeText=="Confirm Disposition and Leave","explicit single confirm");
    Tick(o);Check(o.Commits==0,"map tick cannot commit while hall dialog open");
    Cancel(old);Check(o._session.Disposition==CoupKingDisposition.Undecided&&m.Ends==0&&!o._dispositionOpen,"Escape/cancel never chooses capture or leaves");
    m.Logic.OnEndMissionRequest(out can);var current=MBInformationManager.Last;
@@ -103,7 +103,7 @@ __MISSION__
    Tick(o);Check(MBInformationManager.Scenes==1&&InformationManager.Reports==0,"no duplicate enqueue or report over scene");
    CloseScene();Check(!o._coronationOpen&&InformationManager.Reports==0,"close queues report for safe next map tick");
    Tick(o);Check(InformationManager.Reports==1&&o._reportOpen&&!InformationManager.Last.NegativeShown,"single modal report after animation");
-   var report=InformationManager.Last;Check(report.Text.Contains("当前统治者：新王")&&report.Button=="确认并返回城镇","authoritative result and return button");
+   var report=InformationManager.Last;Check(report.Text.Contains("Current ruler: 新王")&&report.Button=="Confirm and Return to Town","authoritative result and return button");
    InformationManager.Active=false;report.Yes();Check(o._session.VictoryReportAcknowledged==true&&GameMenu.Switches==1,"confirm acknowledged once and returns town");
    report.Yes();Tick(o);Check(GameMenu.Switches==1&&o.Commits==1&&MBInformationManager.Scenes==1&&InformationManager.Reports==1,"settled confirmed flow idle and no repeat");
    o=Setup();m=o._mission;m.Logic.OnEndMissionRequest(out can);Select(MBInformationManager.Last,1);Check(o._session.Disposition==CoupKingDisposition.Capture&&m.Ends==1,"capture uses explicit confirm");
@@ -127,7 +127,7 @@ __MISSION__
    o=Setup(true);InformationManager.Active=true;Tick(o);Check(MBInformationManager.Scenes==0,"result waits for competing inquiry");InformationManager.Active=false;MBInformationManager.SceneActive=true;Tick(o);Check(MBInformationManager.Scenes==0,"result waits for other cutscene");MBInformationManager.SceneActive=false;Tick(o);Check(MBInformationManager.Scenes==1,"result resumes after competing UI");
    o=Setup(true);MBInformationManager.ThrowScene=true;Tick(o);Check(MBInformationManager.Scenes==1&&InformationManager.Reports==1&&!o._coronationOpen&&o._session.CoronationRequested==true,"animation failure falls back to report without political rollback");
    o=Setup(true);MBInformationManager.SceneActive=null;Tick(o);Check(MBInformationManager.Scenes==0&&InformationManager.Reports==1,"missing scene UI falls back to report");
-   o=Setup(true);Kingdom.All[0].Leader=new Hero{Name="later ruler"};Tick(o);Check(MBInformationManager.Scenes==0&&InformationManager.Last.Text.Contains("当前统治者：later ruler"),"changed ruler not crowned as player");
+   o=Setup(true);Kingdom.All[0].Leader=new Hero{Name="later ruler"};Tick(o);Check(MBInformationManager.Scenes==0&&InformationManager.Last.Text.Contains("Current ruler: later ruler"),"changed ruler not crowned as player");
    o=Setup(true);o._session.CoronationRequested=true;Tick(o);Check(MBInformationManager.Scenes==0&&InformationManager.Reports==1,"loaded submitted animation does not resubmit and still reports");
    o=Setup(true);o._session.CoronationRequested=o._session.VictoryReportAcknowledged=null;o._session.AftermathPending=true;Tick(o);Check(MBInformationManager.Scenes==0&&InformationManager.Reports==0,"legacy completed aftermath state never opens UI");
    o=Setup(true);Tick(o);var notification=MBInformationManager.Scene;o._runtimeToken++;notification.OnCloseAction();Check(o._coronationOpen,"stale cutscene callback cannot mutate new runtime");

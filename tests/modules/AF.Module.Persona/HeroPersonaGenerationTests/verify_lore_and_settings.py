@@ -6,6 +6,7 @@ read/write declarations are compiled. All synthetic disk writes stay in a new ru
 from pathlib import Path
 import argparse
 import importlib.util
+import re
 import subprocess
 import sys
 
@@ -16,6 +17,7 @@ from output_isolation import new_run_root, resolve_dotnet, minimal_test_environm
 
 p = argparse.ArgumentParser()
 p.add_argument("--settings-only", action="store_true")
+p.add_argument("--prompt-language", choices=["zh-CN", "en"], default="zh-CN")
 p.add_argument("--mutate", choices=["empty-resets-default", "take-last", "ignore-variant-conditions"])
 p.add_argument("--run-root", type=Path)
 p.add_argument("--framework", choices=["net8.0", "net10.0"], default="net8.0")
@@ -31,18 +33,22 @@ methods = "\n".join(extract.declaration(settings, marker) for marker in (
     "private static void PersistCustomPromptTextFileUnlocked(",
     "private static void WriteCustomPromptTextJsonFileUnlocked(",
     "private static bool TryReadCustomPromptTextJsonFile(",
-    "private static bool TryReadCustomPromptTextJsonFileFromDirectory(",
+    "private static bool TryReadLayeredCustomPromptTextJsonFile(",
+    "private static Dictionary<string, HashSet<string>> LoadKnownPackagedCustomPromptHashes(",
+    "internal static bool IsKnownPackagedCustomPromptFile(",
+    "internal static string GetCustomPromptUserReadPath(",
 ))
+for start,end in [("private static readonly Lazy<Dictionary<string, HashSet<string>>> KnownPackagedCustomPromptHashes","private static Dictionary<string, HashSet<string>> LoadKnownPackagedCustomPromptHashes"),("private static readonly object KnownPackagedPromptHashGate","internal static bool IsKnownPackagedCustomPromptFile")]:
+    methods += "\n" + settings[settings.index(start):settings.index(end)]
 if args.mutate == "empty-resets-default":
     clause = "WriteCustomPromptTextJsonFileUnlocked(path, text);"
     assert methods.count(clause) == 1
     methods = methods.replace(clause, 'if (string.IsNullOrWhiteSpace(text)) text = "MUTATED_DEFAULT"; ' + clause, 1)
-methods += "} internal static class AnimusForgeModulePaths {" + extract.declaration(
-    (ROOT / "src/AF.Persistence/AnimusForgeModulePaths.cs").read_text(encoding="utf-8-sig"),
-    "internal static void ValidateCustomPromptPath(")
 fixture = (HERE / "LoreAndSettings.cs.txt").read_text(encoding="utf-8")
 fixture = fixture.replace("@@SETTINGS@@", methods)
-files = ["Program.cs"]
+files = ["Program.cs", "DataPaths.cs"]
+(out/"DataPaths.cs").write_bytes((ROOT/"src/AF.Persistence/AnimusForgeDataPaths.cs").read_bytes())
+resources = ""
 if not args.settings_only:
     source = (ROOT / "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
     markers = (
@@ -79,17 +85,21 @@ if not args.settings_only:
     (out / "Leaves.cs").write_text(leaf, encoding="utf-8")
     for name, relative in (("Index.cs", "Index/KnowledgeRuleIndex.cs"), ("Retriever.cs", "Lore/LoreCandidateRetriever.cs")):
         (out / name).write_bytes((ROOT / "src/modules/AF.Module.Knowledge" / relative).read_bytes())
-    files += ["Knowledge.cs", "Leaves.cs", "Index.cs", "Retriever.cs"]
-fixture = fixture.replace("@@RUN_LORE@@", "" if args.settings_only else "LoreCases();")
+    (out / "KnowledgePromptTexts.cs").write_bytes((ROOT / "src/modules/AF.Module.Knowledge/Host/KnowledgePromptTexts.cs").read_bytes())
+    prompt_file = "KnowledgeRagPromptTexts.en.json" if args.prompt_language == "en" else "KnowledgeRagPromptTexts.json"
+    (out / "KnowledgeRagPromptTexts.json").write_bytes((ROOT / "content/modules/AF.Module.Knowledge/ModuleData" / prompt_file).read_bytes())
+    resources = '<None Include="KnowledgeRagPromptTexts.json" CopyToOutputDirectory="PreserveNewest"/>'
+    files += ["Knowledge.cs", "Leaves.cs", "Index.cs", "Retriever.cs", "KnowledgePromptTexts.cs"]
+fixture = fixture.replace("@@RUN_LORE@@", "" if args.settings_only else "LoreCases(args[2]);")
 (out / "Program.cs").write_text(fixture, encoding="utf-8")
 newtonsoft = dotnet.parent / "sdk/8.0.425/Newtonsoft.Json.dll"
 if not newtonsoft.is_file():
     newtonsoft = next(iter(sorted((dotnet.parent / "sdk").glob("*/Newtonsoft.Json.dll"))), ROOT / "_deps_auto/Newtonsoft.Json.dll")
 defines = "" if args.settings_only else "<DefineConstants>PERSONA_LORE</DefineConstants>"
-items = "".join(f'<Compile Include="{f}"/>' for f in files)
+items = "".join(f'<Compile Include="{f}"/>' for f in files) + resources
 (out / "Proof.csproj").write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>{args.framework}</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit>{defines}</PropertyGroup><ItemGroup>{items}<Reference Include="Newtonsoft.Json"><HintPath>{newtonsoft.as_posix()}</HintPath></Reference></ItemGroup></Project>', encoding="utf-8")
 (out / "NuGet.Config").write_text("<configuration><packageSources><clear/></packageSources></configuration>", encoding="utf-8")
-result = subprocess.run([str(dotnet), "run", "--project", str(out / "Proof.csproj"), "-c", "Release", "-p:RestoreConfigFile=" + str(out / "NuGet.Config"), "--", str(out), str(ROOT / "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json")], cwd=out, env=minimal_test_environment(dotnet, out), capture_output=True, text=True, encoding="utf-8", errors="replace")
+result = subprocess.run([str(dotnet), "run", "--project", str(out / "Proof.csproj"), "-c", "Release", "-p:RestoreConfigFile=" + str(out / "NuGet.Config"), "--", str(out), str(ROOT / "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json"), args.prompt_language], cwd=out, env=minimal_test_environment(dotnet, out), capture_output=True, text=True, encoding="utf-8", errors="replace")
 (out / "run.log").write_text(result.stdout + result.stderr, encoding="utf-8")
 print(result.stdout + result.stderr, end="")
 raise SystemExit(result.returncode)

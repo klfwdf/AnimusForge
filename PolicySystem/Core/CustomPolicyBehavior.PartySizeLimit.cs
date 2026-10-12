@@ -188,11 +188,11 @@ public sealed partial class CustomPolicyBehavior
 		}
 		if (result.ResultNumber < 1f)
 		{
-			result.Add(1f - result.ResultNumber, new TextObject("自定义政策部队上限最低值"));
+			result.Add(1f - result.ResultNumber, new TextObject("{=AF_POL_EFFECT_PartySizeMinimum}Minimum custom policy party size"));
 		}
 		else if (result.ResultNumber > int.MaxValue)
 		{
-			result.Add(int.MaxValue - result.ResultNumber, new TextObject("自定义政策部队上限安全值"));
+			result.Add(int.MaxValue - result.ResultNumber, new TextObject("{=AF_POL_EFFECT_PartySizeMaximum}Maximum custom policy party size"));
 		}
 	}
 
@@ -243,7 +243,11 @@ public sealed partial class CustomPolicyBehavior
 		{
 			policyName = policyName.Substring(0, 47).TrimEnd() + "…";
 		}
-		return new TextObject("【" + (policyName.Length == 0 ? "未命名政策" : policyName) + "】");
+		TextObject text = new TextObject("{=AF_POL_EFFECT_PartySizeLimit}[{POLICY}]");
+		text.SetTextVariable("POLICY", policyName.Length == 0
+			? new TextObject("{=AFPOL_UI_UnnamedPolicy}Unnamed Policy").ToString()
+			: policyName);
+		return text;
 	}
 
 	private static bool TryGetEligiblePolicyLordParty(

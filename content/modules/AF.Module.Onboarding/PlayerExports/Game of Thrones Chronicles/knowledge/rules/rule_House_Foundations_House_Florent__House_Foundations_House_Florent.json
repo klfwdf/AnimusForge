@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_House_Florent",
+  "Keywords": [
+    "House Florent",
+    "Fox and Flowers",
+    "Blood of the Gardener Kings",
+    "Claim to Highgarden"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Florent family is based in Brightwater City, and their family emblem is a blue fox in a wreath. They claim to have blood closer to the Gardener King than Tyrell. Once the Conqueror granted Highgarden to Tyrell, this blood claim became an undercurrent in Reach politics that never quite disappeared: Florent could swear to the rose without forgetting his perceived superior claim to the throne. Many people in the family are characterized by conspicuous big ears, but the agility of the blue fox is more a result of heraldry and other people's comments, rather than a temperament that is inevitably passed on in the blood. The nobles of the River Bend valued Florentine blood in marriage contracts and inheritance disputes, while the people of Brightwater City were more concerned about how the lord managed the land and rivers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Riverbend nobles knew that Florent valued the Gardener King's bloodline very seriously, and they also knew that the more bloodline was mentioned repeatedly, the more unsatisfactory the current seat was. The blue fox coat of arms symbolizes intelligence. In the eyes of supporters, Florentine is an undervalued ancient family. In the eyes of Tyrell's friends, they are always counting on a crown that has already fallen on someone else's head."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people around Liangshui City do not have to choose a side in the Gardener King’s genealogy. Their concerns were the rivers, the mills, the harvests, and the seigneurial courts. If Florentine governs well, the ancient bloodline will become a proud story; if the fox only stares at Highgarden, the people in the field will say that no matter how noble the grandmother is, she will not harvest wheat for others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Florent The Blue Fox family in Brightwater City is proud of the Gardener King bloodline; they are loyal to Highgarden and always remember their claim to Highgarden's inheritance. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Florent The Blue Fox family in Brightwater City is proud of the Gardener King bloodline; they are loyal to Highgarden and always remember their claim to Highgarden's inheritance. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Florent The Blue Fox family in Brightwater City is proud of the Gardener King bloodline; they are loyal to Highgarden and always remember their claim to Highgarden's inheritance. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Florent The Blue Fox family in Brightwater City is proud of the Gardener King bloodline; they are loyal to Highgarden and always remember their claim to Highgarden's inheritance. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Florent: The Blue Fox family in Brightwater City is proud of the Gardener King bloodline; they are loyal to Highgarden and always remember their claim to Highgarden's inheritance."
+  ]
+}

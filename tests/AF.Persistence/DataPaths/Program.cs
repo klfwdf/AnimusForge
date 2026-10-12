@@ -30,32 +30,46 @@ internal static class Program
     private static void Main()
     {
         string previous = Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable);
-        string isolated = Path.Combine(isolatedRoot(), "AnimusForge");
-        Directory.CreateDirectory(Path.Combine(isolated, "ModuleData"));
-        File.WriteAllText(Path.Combine(isolated, "SubModule.xml"), "<Module />");
-        AnimusForgeModulePaths.TestModuleRoot = isolated;
         try
         {
-            Reject(() => AnimusForgeDataPaths.ResolveRoot(), "missing explicit module fails closed");
-            Check(AnimusForgeDataPaths.ResolveRoot(isolated) == isolated, "explicit validated module root");
-            Check(AnimusForgeDataPaths.GetPlayerExportsDirectory(isolated) == Path.Combine(isolated, "PlayerExports"), "module PlayerExports ownership");
-            Check(AnimusForgeDataPaths.GetSettingsDirectory(isolated) == Path.Combine(isolated, "ModuleData"), "module settings ownership");
-            Check(AnimusForgeDataPaths.GetCacheDirectory(isolated) == Path.Combine(isolated, "Logs"), "module cache ownership");
+            Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, null);
+            bool unavailableRejected = false;
+            try { AnimusForgeDataPaths.ResolveRoot(); }
+            catch (InvalidOperationException ex)
+            {
+                unavailableRejected = ex.Message == "The active AnimusForge module directory is unavailable; select an installed module explicitly.";
+            }
+            Check(unavailableRejected, "missing installed module fails closed without CWD, AppData or TEMP fallback");
+
+            string isolated = isolatedRoot();
+            Check(AnimusForgeDataPaths.ResolveRoot(isolated) == isolated, "explicit absolute root");
+            Check(AnimusForgeDataPaths.GetPlayerExportsDirectory(isolated) == Path.Combine(isolated, "PlayerExports"), "PlayerExports ownership");
+            Check(AnimusForgeDataPaths.GetOverridePath(isolated, "CustomPrompts/Policy/Effects/_Common.json")
+                == Path.Combine(isolated, "CustomPrompts", "Policy", "Effects", "_Common.json"), "override path");
+            Check(AnimusForgeDataPaths.GetCacheDirectory(isolated) == Path.Combine(isolated, "Cache"), "cache ownership");
             Check(AnimusForgeDataPaths.GetLogsDirectory(isolated) == Path.Combine(isolated, "Logs"), "logs ownership");
-            Check(AnimusForgeDataPaths.GetRecoveryDirectory(isolated) == Path.Combine(isolated, "Recovery"), "module recovery ownership");
-            Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, "relative-invalid-root");
-            Check(PlayerExportsStore.GetPlayerExportsRootPath() == Path.Combine(isolated, "PlayerExports"), "game exports ignore old override");
-            Check(AnimusForgeDataPaths.FindModuleRoot(Path.Combine(isolated, "bin", "editor")) == isolated, "editor shares module locator");
+            Check(AnimusForgeDataPaths.GetRecoveryDirectory(isolated) == Path.Combine(isolated, "Recovery"), "recovery ownership");
+
+            Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, isolated);
+            Check(AnimusForgeDataPaths.ResolveRoot() == isolated, "environment override");
+            Check(PlayerExportsStore.GetPlayerExportsRootPath() == Path.Combine(isolated, "PlayerExports"), "game export root uses shared active-module contract");
             Reject(() => AnimusForgeDataPaths.ResolveRoot("relative-path"), "relative root rejected");
-            Reject(() => AnimusForgeDataPaths.ResolveRoot(Path.Combine(Path.GetDirectoryName(isolated), "user-data")), "old user-data root rejected");
-            Reject(() => AnimusForgeDataPaths.ResolveRoot(Path.Combine(isolated, "PlayerExports")), "subdirectory cannot impersonate module");
-            Reject(() => AnimusForgeDataPaths.ResolveRoot(Path.Combine(Path.GetDirectoryName(isolated), "missing", "AnimusForge")), "missing module rejected");
+            Reject(() => AnimusForgeDataPaths.ResolveRoot(Path.Combine(Directory.GetCurrentDirectory(), "artifacts", "user-data")), "repository root rejected");
+            Reject(() => AnimusForgeDataPaths.ResolveRoot(Path.Combine(Directory.GetCurrentDirectory(), "AnimusForge", "PlayerExports")), "non-module or nested data root rejected");
+            Reject(() => AnimusForgeDataPaths.ResolveRoot(Path.Combine(Path.GetTempPath(), "single_module_stage", "AnimusForge", "data")), "stage root rejected");
             Reject(() => AnimusForgeDataPaths.ResolveRoot(Path.Combine(Directory.GetCurrentDirectory(), "AnimusForge.csproj")), "file root rejected");
-            Reject(() => AnimusForgeDataPaths.ValidatePath(Path.Combine(isolated, "prompt.json:stream")), "alternate stream rejected");
-            Reject(() => AnimusForgeDataPaths.ResolveRoot("C:drive-relative"), "drive-relative root rejected");
-            Reject(() => AnimusForgeDataPaths.ResolveRoot(@"\\server\AnimusForge"), "UNC root rejected");
+            Reject(() => AnimusForgeDataPaths.GetOverridePath(isolated, "../PlayerExports/secrets.json"), "override traversal rejected");
+            Reject(() => AnimusForgeDataPaths.GetOverridePath(isolated, "C:/absolute.json"), "absolute override rejected");
+            Reject(() => AnimusForgeDataPaths.GetOverridePath(isolated, "prompt.json:stream"), "alternate stream rejected");
+            Reject(() => AnimusForgeDataPaths.ValidatePath(Path.Combine(isolated, "prompt.json:stream")), "incoming direct alternate-stream guard retained");
+            Reject(() => AnimusForgeDataPaths.ResolveRoot("C:drive-relative"), "incoming drive-relative root rejected");
+            Reject(() => AnimusForgeDataPaths.ResolveRoot(@"\\server\AnimusForge"), "incoming UNC root rejected");
+            Reject(() => AnimusForgeDataPaths.ResolveRoot(Path.Combine(Path.GetDirectoryName(isolated), "missing", "AnimusForge")), "incoming missing module rejected");
         }
-        finally { Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, previous); }
+        finally
+        {
+            Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, previous);
+        }
 
         string workspace = Directory.GetCurrentDirectory();
         Check(File.Exists(Path.Combine(workspace, "AnimusForge.csproj")), "test writes only inside workspace");
@@ -136,7 +150,8 @@ internal static class Program
         Check(!Directory.Exists(pendingExports) && File.ReadAllText(legacyFile) == "{\"old\":true}", "reading legacy data does not migrate or modify it");
 
         string settingsPath = Path.Combine(workspace, "artifacts", "tests", "af2-terminal-settings", Guid.NewGuid().ToString("N"), "TerminalSettings.json");
-        Check(AnimusForgeTerminalSettings.GetSettingsPath() == Path.Combine(isolated, "ModuleData", "TerminalSettings.json"), "TerminalSettings uses module path");
+        AnimusForgeModulePaths.TestModuleRoot = isolatedRoot();
+        Check(AnimusForgeTerminalSettings.GetSettingsPath() == Path.Combine(isolatedRoot(), "Configs", "TerminalSettings.json"), "TerminalSettings uses typed user path");
         Check(!AnimusForgeTerminalSettings.TryLoadSettingsFile(settingsPath, out _), "missing TerminalSettings uses built-in defaults");
         AnimusForgeTerminalSettings.TrySaveSettingsFile(settingsPath, new AnimusForgeTerminalSettingsData { IsHotkeyEnabled = false, IsMapIconEnabled = true });
         Check(AnimusForgeTerminalSettings.TryLoadSettingsFile(settingsPath, out var terminal) && !terminal.IsHotkeyEnabled && terminal.IsMapIconEnabled, "TerminalSettings user file round trip");
@@ -238,14 +253,20 @@ internal static class Program
         Console.WriteLine("PASS data-path checks=" + _checks);
     }
 
+    private static string _moduleFixture;
     private static string isolatedRoot()
     {
+        if (_moduleFixture != null) return _moduleFixture;
         string root = Environment.GetEnvironmentVariable("AF_DATA_PATHS_TEST_ROOT");
-        if (string.IsNullOrWhiteSpace(root)) return Path.Combine(Path.GetTempPath(), "af-f1-isolated-root");
+        if (string.IsNullOrWhiteSpace(root)) root = Path.Combine(Path.GetTempPath(), "af-f1-isolated-root-" + Guid.NewGuid().ToString("N"));
         if (!Path.IsPathRooted(root) || Directory.Exists(root) || File.Exists(root))
-            throw new InvalidOperationException("AF_DATA_PATHS_TEST_ROOT must be an unused absolute path.");
-        return Path.GetFullPath(root);
+            throw new InvalidOperationException("AF_DATA_PATHS_TEST_ROOT must be an unused absolute fixture path.");
+        _moduleFixture = Path.Combine(Path.GetFullPath(root), "AnimusForge");
+        Directory.CreateDirectory(Path.Combine(_moduleFixture, "ModuleData"));
+        File.WriteAllText(Path.Combine(_moduleFixture, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
+        return _moduleFixture;
     }
+
 }
 
 namespace AnimusForge

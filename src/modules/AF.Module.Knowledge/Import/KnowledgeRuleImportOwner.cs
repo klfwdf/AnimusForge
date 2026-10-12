@@ -63,11 +63,11 @@ internal static class KnowledgeRuleImportOwner
 			string text = (rule?.Id ?? "").Trim();
 			if (rule == null)
 			{
-				return "规则为空。";
+				return KnowledgeUiTexts.ImportRuleEmpty;
 			}
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				return "RuleId 为空。";
+				return KnowledgeUiTexts.ImportRuleIdEmpty;
 			}
 			if (rule.RagShortTexts != null)
 			{
@@ -76,7 +76,7 @@ internal static class KnowledgeRuleImportOwner
 					string text2 = (rule.RagShortTexts[i] ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 					if (!string.IsNullOrWhiteSpace(text2) && text2.Length > KnowledgeLibraryBehavior.RagShortTextMaxLength)
 					{
-						return "RAG专用短句超过 " + KnowledgeLibraryBehavior.RagShortTextMaxLength + " 字符限制。";
+						return KnowledgeUiTexts.ImportRagTooLong(KnowledgeLibraryBehavior.RagShortTextMaxLength);
 					}
 				}
 			}
@@ -86,13 +86,13 @@ internal static class KnowledgeRuleImportOwner
 			}
 			if (KnowledgeImportSupport.TryFindDuplicateKnowledgeVariantCondition(rule, out var firstIndex, out var secondIndex))
 			{
-				return "规则内部存在重复条件的提示词：第 " + (firstIndex + 1) + " 条与第 " + (secondIndex + 1) + " 条条件完全相同。";
+				return KnowledgeUiTexts.ImportDuplicateCondition(firstIndex + 1, secondIndex + 1);
 			}
-			return "规则写入失败，可能是规则结构未通过校验。";
+			return KnowledgeUiTexts.ImportWriteFailed;
 		}
 		catch (Exception ex)
 		{
-			return "规则校验异常：" + ex.Message;
+			return KnowledgeUiTexts.ImportValidationFailed(ex.Message);
 		}
 	}
 

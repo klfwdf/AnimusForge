@@ -52,7 +52,7 @@ public class DynamicPatcher
 			return;
 		}
 		HasHooked = true;
-		Logger.LogTrace("System", "\ud83d\ude08 [万能拦截器] 启动！【动作监控】已改为按 F10 触发...");
+		Logger.LogTrace("System", "\ud83d\ude08 [Dynamic interceptor] Started; action monitoring is now triggered by F10.");
 		Type type = AccessTools.TypeByName("TaleWorlds.MountAndBlade.View.MissionViews.MissionMainAgentInteractionComponent");
 		if (type != null)
 		{
@@ -161,10 +161,10 @@ public class DynamicPatcher
 			_methodLogTimers[key] = applicationTime;
 			if (!(name == ".ctor"))
 			{
-				string text6 = "\ud83d\udd75 [逻辑截获] (BUILD_2026-01-21_x64_v1) " + text5 + "." + name + "()";
+				string text6 = "\ud83d\udd75 [Logic interception] (BUILD_2026-01-21_x64_v1) " + text5 + "." + name + "()";
 				if (!string.IsNullOrEmpty(text3))
 				{
-					text6 = text6 + " | 参数: " + text3;
+					text6 = text6 + " | Arguments: " + text3;
 				}
 				Logger.LogTrace("DeepCode", text6);
 			}

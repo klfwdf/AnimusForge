@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_Stalwart_Shields",
+  "Keywords": [
+    "Stalwart Shields",
+    "Stalwart Shields Order"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Shields were an armed brotherhood of freedmen from Slaver's Bay, named to reflect their desire to defend their newfound freedom with discipline and a shield wall. Members come from different masters, industries and language backgrounds. The imprint left by the past does not automatically make them an army; joint training, clear military pay and mutual trust are the foundation of the organization. Leaders like Simon Stripedback gave the freedmen their own commanding voice. The very existence of the Strong Shield Army challenges the prejudices of the old slave owners: people who have been bought and sold are not only obedient, but can also take up shields to protect the lives they choose."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The freedmen of Slaver's Bay viewed the Shields as proof of their dignity. Being able to wear the armor of your choice, keep vigil for your companions and receive military pay means that the body no longer belongs to the owner, and the weapon no longer only maintains the chain for the owner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Veterans know that passion is no substitute for training. If the Shield Army wants to be regarded as a real army, they must learn to form formations, change guards, tend to the wounded, and not disturb the shield wall in fear; birth will not block anyone's spear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old slaveholders feared the Shields, not just because of their weapons, but because the freedmen began to organize among themselves. A person who escapes can still be recovered. A group of people who know how to guard the door and pass orders can make it possible for the old order to never close the door again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stalwart Shields The Stalwarts were organized by the freedmen of Slaver's Bay to train and defend freedom together to prove that former slaves could become warriors who defended the city. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stalwart Shields The Stalwarts were organized by the freedmen of Slaver's Bay to train and defend freedom together to prove that former slaves could become warriors who defended the city. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stalwart Shields The Stalwarts were organized by the freedmen of Slaver's Bay to train and defend freedom together to prove that former slaves could become warriors who defended the city. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stalwart Shields The Stalwarts were organized by the freedmen of Slaver's Bay to train and defend freedom together to prove that former slaves could become warriors who defended the city. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Stalwart Shields: The Stalwarts were organized by the freedmen of Slaver's Bay to train and defend freedom together to prove that former slaves could become warriors who defended the city."
+  ]
+}

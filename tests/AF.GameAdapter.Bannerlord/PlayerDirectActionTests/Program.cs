@@ -71,10 +71,31 @@ Integration.Run(Check);
 var root=new DirectoryInfo(AppContext.BaseDirectory);
 while(root!=null && !File.Exists(Path.Combine(root.FullName,"AnimusForge.csproj")))root=root.Parent;
 Check(root!=null,"repository root");
+var languageRoot = Path.Combine(root.FullName, "content/modules/AF.Module.Conversation/ModuleData/Languages");
+Dictionary<string,string> ReadLanguage(string name) => System.Xml.Linq.XDocument.Load(Path.Combine(languageRoot, name))
+ .Descendants("string").ToDictionary(x=>(string)x.Attribute("id"),x=>(string)x.Attribute("text"));
+TaleWorlds.Localization.TextObject.English=ReadLanguage("afconv_ui_strings.xml");
+TaleWorlds.Localization.TextObject.Chinese=ReadLanguage("CNs/afconv_ui_strings-zh-CN.xml");
+foreach(var pair in TaleWorlds.Localization.TextObject.English.Where(x=>x.Key.StartsWith("AF_CONV_UI_Direct_"))) {
+ Check(TaleWorlds.Localization.TextObject.Chinese.ContainsKey(pair.Key),"matching Chinese direct-action key "+pair.Key);
+ foreach(var language in new[]{"English","简体中文"}) {
+  TaleWorlds.Localization.TextObject.Language=language;
+  Check(ConversationUiLocalization.Text(pair.Key,pair.Value)==(language=="English"?pair.Value:TaleWorlds.Localization.TextObject.Chinese[pair.Key]),"actual reader resolves "+language+" "+pair.Key);
+ }
+}
+foreach(var language in new[]{"English","简体中文"}) {
+ TaleWorlds.Localization.TextObject.Language=language;
+ Open(); var localizedMenu=(MultiSelectionInquiryData)InformationManager.Popup;
+ Check(localizedMenu.Title.EndsWith("NPC") && localizedMenu.Elements.Count==14,"localized action inquiry retains target and count");
+ Check(localizedMenu.Elements[0].Name==(language=="English"?"NPC gives me gold":"NPC 给我钱"),"actual controller uses current UI language");
+ localizedMenu.NegativeAction(null);
+}
+TaleWorlds.Localization.TextObject.Language="English";
 var xml=System.Xml.Linq.XDocument.Load(Path.Combine(root.FullName,"content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml"));
 var button=xml.Descendants("ButtonWidget").Single(x=>(string)x.Attribute("Command.Click")=="OpenDirectActions");
 Check((string)button.Attribute("MarginTop")=="30" && (string)button.Attribute("IsEnabled")=="@CanOpenDirectActions","native top-right binding");
 Check((string)button.Descendants("TextWidget").Single().Attribute("DoNotAcceptEvents")=="true","label does not steal clicks");
+Check((string)button.Descendants("TextWidget").Single().Attribute("Text")=="@DirectActionsButtonText","native direct-action button binds localized datasource");
 Check(xml.Descendants("ButtonWidget").Count()==7,"all six original buttons retained");
 var scene=File.ReadAllText(Path.Combine(root.FullName,"src/AF.GameAdapter.Bannerlord/Scene/SceneShoutInputController.cs"));
 var menuStart=scene.IndexOf("internal void TriggerShout()",StringComparison.Ordinal);

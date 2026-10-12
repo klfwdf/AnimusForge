@@ -1,0 +1,155 @@
+{
+  "Id": "rule_Social_Order_Weddings_Funerals_and_Vigils",
+  "Keywords": [
+    "Weddings",
+    "Funerals (Social Order Weddings Funerals and Vigils)",
+    "Funeral Rites",
+    "Weddings, Funerals, and Vigils"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Weddings and funerals allow family ties to be confirmed in public. Weddings in the Seven Gods region often involve exchanging vows in a church or in front of a heart tree. Nobles will use dowries, seats and guests to write politics into the ceremony; the funerals of the old gods in the North place more emphasis on tombs, fire and ancestors. Dorne, Dorne, The vigil is both a prayer for the dead and a time for the living to rearrange inheritances, debts, and kinship. Rituals can be sincerely believed or used dispassionately;"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Weddings, Funerals, and Vigils"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Weddings, Funerals, and Vigils"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Weddings, Funerals, and Vigils"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Weddings Weddings, Funerals, and Vigils: Weddings and funerals allow family ties to be confirmed in public. Weddings in the Seven Gods region often involve exchanging vows in a church or in front of a heart tree. Nobles will use dowries, seats and guests to write politics into the ceremony; the funerals of the old gods in the North place more emphasis on tombs, fire and ancestors. Dorne, Dorne, Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Weddings Weddings, Funerals, and Vigils: Weddings and funerals allow family ties to be confirmed in public. Weddings in the Seven Gods region often involve exchanging vows in a church or in front of a heart tree. Nobles will use dowries, seats and guests to write politics into the ceremony; the funerals of the old gods in the North place more emphasis on tombs, fire and ancestors. Dorne, Dorne, The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Weddings Weddings, Funerals, and Vigils: Weddings and funerals allow family ties to be confirmed in public. Weddings in the Seven Gods region often involve exchanging vows in a church or in front of a heart tree. Nobles will use dowries, seats and guests to write politics into the ceremony; the funerals of the old gods in the North place more emphasis on tombs, fire and ancestors. Dorne, Dorne, If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Weddings Weddings, Funerals, and Vigils: Weddings and funerals allow family ties to be confirmed in public. Weddings in the Seven Gods region often involve exchanging vows in a church or in front of a heart tree. Nobles will use dowries, seats and guests to write politics into the ceremony; the funerals of the old gods in the North place more emphasis on tombs, fire and ancestors. Dorne, Dorne, They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Weddings, Funerals, and Vigils: Weddings and funerals allow family ties to be confirmed in public. Weddings in the Seven Gods region often involve exchanging vows in a church or in front of a heart tree. Nobles will use dowries, seats and guests to write politics into the ceremony; the funerals of the old gods in the North place more emphasis on tombs, fire and ancestors. Dorne, Dorne,"
+  ]
+}

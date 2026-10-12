@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Regional_Politics_and_Customs_Crisis_Response_of_Dorne",
+  "Keywords": [
+    "Crisis Response of Dorne"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry When Dorne faces a crisis, the most reliable thing is not the legendary hero, but the long-term way of survival. In a crisis, dispersed terrain and resilient kinship networks can provide resilience, but water and supplies will always determine how far resistance can go; this also determines what local people will do for"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of Dorne"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of Dorne"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of Dorne"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of Dorne When Dorne faces a crisis, the most reliable thing is not the legendary hero, but the long-term way of survival. In a crisis, dispersed terrain and resilient kinship networks can provide resilience, but water and supplies will always determine how far resistance can go; this also determines what local people will do for Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of Dorne When Dorne faces a crisis, the most reliable thing is not the legendary hero, but the long-term way of survival. In a crisis, dispersed terrain and resilient kinship networks can provide resilience, but water and supplies will always determine how far resistance can go; this also determines what local people will do for The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of Dorne When Dorne faces a crisis, the most reliable thing is not the legendary hero, but the long-term way of survival. In a crisis, dispersed terrain and resilient kinship networks can provide resilience, but water and supplies will always determine how far resistance can go; this also determines what local people will do for If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Crisis Response of Dorne When Dorne faces a crisis, the most reliable thing is not the legendary hero, but the long-term way of survival. In a crisis, dispersed terrain and resilient kinship networks can provide resilience, but water and supplies will always determine how far resistance can go; this also determines what local people will do for They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Crisis Response of Dorne: When Dorne faces a crisis, the most reliable thing is not the legendary hero, but the long-term way of survival. In a crisis, dispersed terrain and resilient kinship networks can provide resilience, but water and supplies will always determine how far resistance can go; this also determines what local people will do for"
+  ]
+}

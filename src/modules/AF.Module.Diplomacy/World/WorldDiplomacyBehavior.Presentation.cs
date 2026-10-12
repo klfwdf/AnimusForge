@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Domain;
@@ -28,8 +29,12 @@ public sealed partial class WorldDiplomacyBehavior
             if (notice.ShowOnMap)
                 MBInformationManager.AddNotice(new WorldDiplomacyMapNotification(notice.DocumentId, notice.Title, notice.Description));
             else
+            {
+                var text = new TaleWorlds.Localization.TextObject("{=AF_DIP_UI_Notice_ThirdPartyReceived}Third-party diplomacy: {TITLE}. The news has reached your kingdom; read the full text in the kingdom bulletin.");
+                text.SetTextVariable("TITLE", notice.Title ?? "");
                 InformationManager.DisplayMessage(new InformationMessage(
-                    "【第三方外交消息】" + notice.Title + "。消息已传至本国，可在王国公告中查看全文。", Colors.Yellow));
+                    text.ToString(), Colors.Yellow));
+            }
         }
         public void Log(string text) => WorldDiplomacyBehavior.Log(text);
     }
@@ -75,13 +80,13 @@ public sealed partial class WorldDiplomacyBehavior
         public string RetryAnalysis(string id, long generation)
         {
             if (!_owner.IsLiveCampaign) return _owner.UnavailableReason;
-            if (generation != _owner._runtimeGeneration) return "该公文页面已失效，请重新打开。";
+            if (generation != _owner._runtimeGeneration) return DiplomacyMiscPromptTexts.Get("Presentation_DocumentPageExpired", "This document page has expired; please reopen it.");
             var document = _owner.ResolveDocument(id);
-            if (!WorldDiplomacyPlayerApplication.CanRetryAnalysis(document, Player)) return "该公文当前不能重新解析。";
+            if (!WorldDiplomacyPlayerApplication.CanRetryAnalysis(document, Player)) return DiplomacyMiscPromptTexts.Get("Presentation_CannotReparse", "This document cannot be reparsed currently.");
             document.AnalysisStatus = "pending_analysis";
-            document.MechanicalResult = "宣言已公开；正在重新解析原文，尚未执行外交动作。";
+            document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Presentation_ReparsingPending", "Declaration published; reparsing original text, diplomatic action not yet executed.");
             _owner._orchestration.EnqueueAnalysisJob(document, 100);
-            return "已重新提交原文解析；不会再次发布宣言。";
+            return DiplomacyMiscPromptTexts.Get("Presentation_ReparsedResubmitted", "Original text resubmitted for parsing; declaration will not be published again.");
         }
         public bool CanOpenReply(string documentId, string roundId, long generation)
         {

@@ -23,7 +23,7 @@ internal sealed class KnowledgeImportExportAdapter
   }
   catch (Exception ex)
   {
-   error = "导入失败：关键词校验异常：" + ex.Message;
+   error = ImportExportUiText.KeywordValidationDetail(ex.Message);
    return false;
   }
  }
@@ -39,17 +39,17 @@ internal sealed class KnowledgeImportExportAdapter
 			string text = export.CandidatePath;
 			if (!TryExportKnowledgeToDir(text, out var exportedCount, out var error))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导出失败：" + error));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(error)));
 			}
 			else
 			{
 				export.Publish();
-				InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath + "（Knowledge " + exportedCount + " 条）"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.KnowledgeExportCount(export.FinalPath, exportedCount)));
 			}
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 
@@ -67,7 +67,7 @@ internal sealed class KnowledgeImportExportAdapter
 			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
 			if (knowledgeLibraryBehavior == null)
 			{
-				error = "KnowledgeLibraryBehavior 未初始化。";
+				error = ImportExportUiText.KnowledgeBehaviorDetail();
 				return false;
 			}
 			if (!knowledgeLibraryBehavior.TryValidateKnowledgeExport(out error))
@@ -78,7 +78,7 @@ internal sealed class KnowledgeImportExportAdapter
 			KnowledgeLibraryBehavior.KnowledgeFile knowledgeFile = (string.IsNullOrWhiteSpace(value) ? null : JsonConvert.DeserializeObject<KnowledgeLibraryBehavior.KnowledgeFile>(value));
 			if (knowledgeFile?.Rules == null || knowledgeFile.Rules.Count <= 0)
 			{
-				error = "当前没有可导出的知识条目。";
+				error = ImportExportUiText.KnowledgeNoEntriesDetail();
 				return false;
 			}
 			string text = Path.Combine(exportDir, "knowledge", "rules");
@@ -152,7 +152,7 @@ internal sealed class KnowledgeImportExportAdapter
 			}
 			if (exportedCount <= 0)
 			{
-				error = "没有成功写出任何知识文件。";
+				error = ImportExportUiText.KnowledgeNoFilesDetail();
 				return false;
 			}
 			return true;
@@ -171,24 +171,24 @@ internal sealed class KnowledgeImportExportAdapter
 			string text = (ruleId ?? "").Trim();
 			if (string.IsNullOrEmpty(text))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导出失败：RuleId 为空。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.IdEmpty()));
 				return;
 			}
 			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
 			if (knowledgeLibraryBehavior == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导出失败：KnowledgeLibraryBehavior 未初始化。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ImportExportUiText.KnowledgeBehaviorDetail())));
 				return;
 			}
 			if (!knowledgeLibraryBehavior.TryValidateSingleRuleExport(text, out var error))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导出失败：" + error));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(error)));
 				return;
 			}
 			string text2 = knowledgeLibraryBehavior.ExportSingleRuleJson(text, pretty: true);
 			if (string.IsNullOrWhiteSpace(text2))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导出失败：找不到该知识条目：" + text));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.EntryNotFound(text)));
 				return;
 			}
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
@@ -250,11 +250,11 @@ internal sealed class KnowledgeImportExportAdapter
 			string path2 = Path.Combine(text4, text8 + ".json");
 			File.WriteAllText(path2, text2, Encoding.UTF8);
 			export.Publish();
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportCompleted(export.FinalPath)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 
@@ -265,19 +265,19 @@ internal sealed class KnowledgeImportExportAdapter
 			string id = (ruleId ?? "").Trim();
 			if (string.IsNullOrEmpty(id))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：RuleId 为空。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.IdEmpty()));
 				return;
 			}
 			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 				return;
 			}
 			KnowledgeLibraryBehavior kb = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
 			if (kb == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：KnowledgeLibraryBehavior 未初始化。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.BehaviorNotInitialized("KnowledgeLibraryBehavior")));
 				return;
 			}
 			string dir = Path.Combine(importDir, "knowledge", "rules");
@@ -294,13 +294,13 @@ internal sealed class KnowledgeImportExportAdapter
 			}
 			if (string.IsNullOrEmpty(text) || !File.Exists(text))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到该知识条目的导出文件：" + id));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingFile(id)));
 				return;
 			}
 			string value = File.ReadAllText(text, Encoding.UTF8);
 			if (string.IsNullOrWhiteSpace(value))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：文件为空。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.EmptyFile("the file")));
 				return;
 			}
 			KnowledgeLibraryBehavior.LoreRule rule = null;
@@ -314,13 +314,13 @@ internal sealed class KnowledgeImportExportAdapter
 			}
 			if (rule == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：JSON 解析失败。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.JsonParseFailed()));
 				return;
 			}
 			string text2 = (rule.Id ?? "").Trim();
 			if (!string.IsNullOrEmpty(text2) && !string.Equals(text2, id, StringComparison.OrdinalIgnoreCase))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：文件中的 Id 不匹配（文件Id=" + text2 + "）。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.IdMismatch(text2)));
 				return;
 			}
 			if (string.IsNullOrEmpty(text2))
@@ -344,27 +344,27 @@ internal sealed class KnowledgeImportExportAdapter
 				}
 				else if (!kb.ImportSingleRuleJson(JsonConvert.SerializeObject(rule, Formatting.None)))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入失败：写入规则失败。"));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.WriteFailed()));
 				}
 				else
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(importDir)));
 				}
 			};
 			Action onSkipDuplicates = delegate
 			{
 				if (!kb.ImportSingleRuleJson(JsonConvert.SerializeObject(rule, Formatting.None), overwrite: false))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("已跳过重复条目：" + id));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.DuplicateSkipped(id)));
 				}
 				else
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(importDir)));
 				}
 			};
 			if (flag)
 			{
-				_showDuplicate("检测到重复 - Knowledge", "检测到相同 RuleId：" + id + "\n请选择处理方式：", action, onSkipDuplicates, delegate
+				_showDuplicate(ImportExportUiText.KnowledgeDuplicateTitle(), ImportExportUiText.KnowledgeDuplicateBody(id), action, onSkipDuplicates, delegate
 				{
 				});
 			}
@@ -375,7 +375,7 @@ internal sealed class KnowledgeImportExportAdapter
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 
@@ -476,7 +476,7 @@ internal sealed class KnowledgeImportExportAdapter
 			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 				completion?.Finish(OnboardingImportResult.Failed);
 				return;
 			}
@@ -543,7 +543,7 @@ internal sealed class KnowledgeImportExportAdapter
 				else if (!ImportKnowledgeFromDir(importDir, overwriteExisting: true, out var detailMessage))
 				{
 					completion?.Finish(OnboardingImportResult.Failed);
-                    InformationManager.DisplayMessage(new InformationMessage("导入失败：" + (string.IsNullOrWhiteSpace(detailMessage) ? "找不到 knowledge\\AIConfig.json 或 knowledge\\rules(\\*.json) 或 knowledge\\KnowledgeRules.json" : detailMessage)));
+                    InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(string.IsNullOrWhiteSpace(detailMessage) ? ImportExportUiText.KnowledgeRulesMissingDetail() : detailMessage)));
 				}
 				else
 				{
@@ -551,7 +551,7 @@ internal sealed class KnowledgeImportExportAdapter
 					{
 						InformationManager.DisplayMessage(new InformationMessage(detailMessage));
 					}
-					InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(importDir)));
 				completion?.Finish(OnboardingImportResult.Completed);
 				}
 };
@@ -565,7 +565,7 @@ internal sealed class KnowledgeImportExportAdapter
 				else if (!ImportKnowledgeFromDir(importDir, overwriteExisting: false, out var detailMessage))
 				{
 					completion?.Finish(OnboardingImportResult.Failed);
-                    InformationManager.DisplayMessage(new InformationMessage("导入失败：" + (string.IsNullOrWhiteSpace(detailMessage) ? "找不到 knowledge\\AIConfig.json 或 knowledge\\rules(\\*.json) 或 knowledge\\KnowledgeRules.json" : detailMessage)));
+                    InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(string.IsNullOrWhiteSpace(detailMessage) ? ImportExportUiText.KnowledgeRulesMissingDetail() : detailMessage)));
 				}
 				else
 				{
@@ -573,7 +573,7 @@ internal sealed class KnowledgeImportExportAdapter
 					{
 						InformationManager.DisplayMessage(new InformationMessage(detailMessage));
 					}
-					InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + importDir));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompletedDuplicates(importDir)));
 				completion?.Finish(OnboardingImportResult.Completed);
 				}
 };
@@ -581,7 +581,7 @@ internal sealed class KnowledgeImportExportAdapter
 			if (num > 0)
 			{
 				completion?.Pending();
-				_showDuplicate("检测到重复 - Knowledge", "导入的 Knowledge 规则与当前游戏存在重复 RuleId。\n重复：" + num + " / 总计：" + num2 + "\n请选择处理方式：", action, onSkipDuplicates, delegate
+				_showDuplicate(ImportExportUiText.KnowledgeDuplicateTitle(), ImportExportUiText.KnowledgeDuplicateMany(num, num2), action, onSkipDuplicates, delegate
 				{
                     if (completion != null && !completion.CanApply()) return;
                     completion?.Finish(OnboardingImportResult.Cancelled);
@@ -595,7 +595,7 @@ internal sealed class KnowledgeImportExportAdapter
 		catch (Exception ex)
 		{
             completion?.Finish(OnboardingImportResult.Failed);
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 
@@ -664,12 +664,12 @@ internal sealed class KnowledgeImportExportAdapter
 							result = true;
 							if (failedCount > 0)
 							{
-								detailMessage = "Knowledge 全量导入已改为逐条回退导入；成功 " + importedCount + " 条，失败 " + failedCount + " 条。首个失败 RuleId=" + firstFailedRuleId + (string.IsNullOrWhiteSpace(firstFailedReason) ? "" : "；原因：" + firstFailedReason);
+								detailMessage = ImportExportUiText.KnowledgeImportFallbackSummary(importedCount, failedCount, firstFailedRuleId, string.IsNullOrWhiteSpace(firstFailedReason) ? "" : "; reason: " + firstFailedReason);
 							}
 						}
 						else
 						{
-							detailMessage = (failedCount > 0) ? ("知识规则全部导入失败。失败 " + failedCount + " 条。首个失败 RuleId=" + firstFailedRuleId + (string.IsNullOrWhiteSpace(firstFailedReason) ? "" : "；原因：" + firstFailedReason)) : "知识规则写入失败。";
+							detailMessage = (failedCount > 0) ? ImportExportUiText.KnowledgeRulesAllFailed(failedCount, firstFailedRuleId, string.IsNullOrWhiteSpace(firstFailedReason) ? "" : "; reason: " + firstFailedReason) : ImportExportUiText.KnowledgeWriteFailedDetail();
 						}
 					}
 					else
@@ -684,28 +684,28 @@ internal sealed class KnowledgeImportExportAdapter
 								result = true;
 								if (failedCount2 > 0)
 								{
-									detailMessage = "Knowledge 全量导入已改为逐条回退导入；成功 " + importedCount2 + " 条，失败 " + failedCount2 + " 条。首个失败 RuleId=" + firstFailedRuleId2 + (string.IsNullOrWhiteSpace(firstFailedReason2) ? "" : "；原因：" + firstFailedReason2);
+									detailMessage = ImportExportUiText.KnowledgeImportFallbackSummary(importedCount2, failedCount2, firstFailedRuleId2, string.IsNullOrWhiteSpace(firstFailedReason2) ? "" : "; reason: " + firstFailedReason2);
 								}
 							}
 							else
 							{
-								detailMessage = (failedCount2 > 0) ? ("知识规则全部导入失败。失败 " + failedCount2 + " 条。首个失败 RuleId=" + firstFailedRuleId2 + (string.IsNullOrWhiteSpace(firstFailedReason2) ? "" : "；原因：" + firstFailedReason2)) : "知识规则写入失败。";
+								detailMessage = (failedCount2 > 0) ? ImportExportUiText.KnowledgeRulesAllFailed(failedCount2, firstFailedRuleId2, string.IsNullOrWhiteSpace(firstFailedReason2) ? "" : "; reason: " + firstFailedReason2) : ImportExportUiText.KnowledgeWriteFailedDetail();
 							}
 						}
 						else if (!File.Exists(text))
 						{
-							detailMessage = "找不到 knowledge\\AIConfig.json、knowledge\\rules\\*.json 或 knowledge\\KnowledgeRules.json。";
+							detailMessage = ImportExportUiText.KnowledgeRulesMissingDetail();
 						}
 					}
 				}
 				else
 				{
-					detailMessage = "KnowledgeLibraryBehavior 未初始化。";
+					detailMessage = ImportExportUiText.KnowledgeBehaviorDetail();
 				}
 			}
 			catch
 			{
-				detailMessage = "知识导入过程发生异常。";
+				detailMessage = ImportExportUiText.KnowledgeImportExceptionDetail();
 			}
 			return result;
 		}

@@ -1,0 +1,28 @@
+{
+  "baseline": "c8b6c652e",
+  "newKeys": [
+    { "id": "AF_ILL_UI_STATUS_CHRONICLE", "en": "Chronicle illustration", "zh": "纪事画卷" },
+    { "id": "AF_ILL_UI_STATUS_THEME", "en": "Theme: {THEME}", "zh": "主题：{THEME}" },
+    { "id": "AF_ILL_UI_STATUS_STYLE_CHANGED", "en": "The style settings have changed. Click Redraw to apply the new style.", "zh": "画风设置已更改；点击重新绘制后应用新画风。" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_DISABLED", "en": "The director is disabled", "zh": "导演已关闭" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_UNCONFIGURED", "en": "The director API is not configured", "zh": "导演接口未配置" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_CONSTRAINT", "en": "The director output violated character or equipment constraints", "zh": "导演正文违反人物或装备约束" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_NARRATIVE", "en": "The director output was not converted into a visual description", "zh": "导演正文未转成画面描述" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_STRUCTURE", "en": "The director output did not meet structure or composition requirements", "zh": "导演正文结构或构图不合要求" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_EMPTY", "en": "The director output lacked a visual description", "zh": "导演正文缺少画面描述" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_UNAVAILABLE", "en": "The director output was unavailable", "zh": "导演正文不可用" },
+    { "id": "AF_ILL_UI_STATUS_VISION_PREFIX", "en": "The director does not support image input; ", "zh": "导演不支持识图；" },
+    { "id": "AF_ILL_UI_STATUS_LOCAL_FALLBACK", "en": "{REASON}; local composition was used", "zh": "{REASON}，已使用本地构图" },
+    { "id": "AF_ILL_UI_STATUS_SCENE_TERRAIN", "en": "Field conversation: composing from terrain facts without a screenshot", "zh": "野外对话：按地形事实构图（不截图）" },
+    { "id": "AF_ILL_UI_STATUS_SCENE_DISABLED_SCREENSHOT", "en": "Scene panorama is disabled; using the current scene screenshot", "zh": "场景全景已关闭：使用当前画面截图" },
+    { "id": "AF_ILL_UI_STATUS_SCENE_DISABLED_FACTS", "en": "Scene panorama is disabled; composing from text facts", "zh": "场景全景已关闭：按文字事实构图" },
+    { "id": "AF_ILL_UI_STATUS_SCENE_PANORAMA", "en": "Mission scene: panorama references within 30 meters are available", "zh": "任务场景：附近30米全景参考可用" },
+    { "id": "AF_ILL_UI_STATUS_SCENE_PANORAMA_NO_SCREENSHOT", "en": "Mission scene: panorama references within 30 meters are available; the current-position screenshot was unavailable", "zh": "任务场景：附近30米全景参考可用；当前位置截图未取得" },
+    { "id": "AF_ILL_UI_STATUS_SCENE_BUDGET", "en": "The environment exceeded the {LIMIT}-object budget. Environment capture was skipped; drawing continues.", "zh": "环境物件超过{LIMIT}个预算，已跳过环境采集，继续绘制" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_FAILED", "en": "{REASON}; image generation stopped", "zh": "{REASON}，已停止生图" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_TRUNCATED", "en": "The director output was truncated; image generation stopped", "zh": "导演输出截断，已停止生图" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_TEXT_ONLY", "en": "The director does not support image input; text-only planning was used", "zh": "导演不支持识图，已使用文字构思" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_VALIDATED", "en": "The director output was validated; the API did not return a finish marker", "zh": "导演正文已校验（接口未返回结束标记）" },
+    { "id": "AF_ILL_UI_STATUS_DIRECTOR_COMPLETE", "en": "The director finished planning", "zh": "导演构思完成" }
+  ]
+}

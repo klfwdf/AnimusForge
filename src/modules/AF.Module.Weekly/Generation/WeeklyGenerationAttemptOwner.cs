@@ -14,8 +14,8 @@ internal async Task<WeeklyReportRequestResult> GenerateWeeklyReportGroupWithRetr
 			if (port.IsCurrent?.Invoke() == false) return weeklyReportRequestResult;
             ApiCallResult apiCallResult = await port.CallGroup(text, text2);
             if (port.IsCurrent?.Invoke() == false) return weeklyReportRequestResult;
-			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult.ErrorMessage ?? "未知错误"));
-			port.LogExchange(text4 + " [尝试 " + i + "/" + maxAttempts + "]", text3, text5);
+			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("Error: " + (apiCallResult.ErrorMessage ?? "Unknown error"));
+			port.LogExchange(text4 + " [Attempt " + i + "/" + maxAttempts + "]", text3, text5);
 			if (!apiCallResult.Success)
 			{
 				weeklyReportRequestResult.FailureReason = WeeklyGenerationRules.BuildWeeklyReportFailureReason(apiCallResult.ErrorMessage, parseFailed: false);
@@ -42,7 +42,7 @@ internal async Task<WeeklyReportRequestResult> GenerateWeeklyReportGroupWithRetr
 			}
 			if (i < maxAttempts)
 			{
-				port.Log("EventWeeklyReport", text4 + " 第" + i + "次请求失败，准备自动重试。原因：" + weeklyReportRequestResult.FailureReason);
+				port.Log("EventWeeklyReport", text4 + " request " + i + " failed; preparing automatic retry. Reason: " + weeklyReportRequestResult.FailureReason);
 				int num = 1200;
 				if (weeklyReportRequestResult.IsRateLimit)
 				{
@@ -88,9 +88,9 @@ internal async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWit
 				weeklyReportBatchRequestResult.MissingReportIds = WeeklyGenerationRules.BuildWeeklyBatchExpectedReportIds(batch);
 				return weeklyReportBatchRequestResult;
 			}
-			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : (apiCallResult.ErrorMessage ?? "未知错误");
+			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : (apiCallResult.ErrorMessage ?? "Unknown error");
 			weeklyReportBatchRequestResult.RawResponse = text5;
-			port.LogExchange(text4 + " [灏濊瘯 " + i + "/" + maxAttempts + "]", text3, text5);
+			port.LogExchange(text4 + " [Attempt " + i + "/" + maxAttempts + "]", text3, text5);
 			weeklyReportBatchRequestResult.AttemptsUsed = i;
 			WeeklyGenerationRules.CaptureWeeklyReportBatchAttemptFailureMetadata(weeklyReportBatchRequestResult, apiCallResult);
 			if (!apiCallResult.Success)
@@ -122,10 +122,7 @@ internal async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWit
 			}
 			if (i < maxAttempts)
 			{
-#if false
-				port.Log("EventWeeklyReport", text4 + " 绗? + i + "娆℃壒閲忚姹傚け璐ワ紝鍑嗗鑷姩閲嶈瘯銆傚師鍥狅細" + weeklyReportBatchRequestResult.FailureReason);
-#endif
-				port.Log("EventWeeklyReport", text4 + " 第 " + i + " 次批量请求失败，准备自动重试。原因：" + weeklyReportBatchRequestResult.FailureReason);
+				port.Log("EventWeeklyReport", text4 + " batch request " + i + " failed; preparing automatic retry. Reason: " + weeklyReportBatchRequestResult.FailureReason);
 				int num = 1200;
 				if (weeklyReportBatchRequestResult.IsRateLimit)
 				{

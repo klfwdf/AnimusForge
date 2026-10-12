@@ -1,0 +1,80 @@
+{
+  "Id": "rule_Ortela",
+  "Keywords": [
+    "Ortela"
+  ],
+  "RagShortTexts": [
+    "Ortela was named by an Imperial general and supplies horses for the cavalry."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 120
+        }
+      },
+      "Content": "Ortela is a relatively young settlement named by an Imperial general who looked east from this spot at daybreak and, struck by the beauty of the Myzead valley, gave the name to what would become a mountain village in the eastern Empire. It serves as an Imperial horse-breeding ground, bringing in fodder from the eastern steppes to supply mounts for the Empire's cavalry units."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "village_en5_2"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ortela is a relatively young settlement named by an Imperial general who looked east from this spot at daybreak and, struck by the beauty of the Myzead valley, gave the name to what would become a mountain village in the eastern Empire. It serves as an Imperial horse-breeding ground, bringing in fodder from the eastern steppes to supply mounts for the Empire's cavalry units."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "What's that? Never heard of it—is it a place name?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That's a small village under the jurisdiction of our town of Myzea! They have a large horse pasture there, currently governed by A."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_clan_name",
+      "TargetId": "town_EN5",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

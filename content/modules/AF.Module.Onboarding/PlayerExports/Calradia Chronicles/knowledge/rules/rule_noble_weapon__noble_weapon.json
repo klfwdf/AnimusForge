@@ -1,0 +1,29 @@
+{
+  "Id": "rule_noble_weapon",
+  "Keywords": [
+    "Noble weapons",
+    "Top weapons"
+  ],
+  "RagShortTexts": [
+    "Noble weapons are expensive"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Noble weapons are another name for top weapons, the most powerful weapons - of course, the price is also very high"
+    }
+  ],
+  "TextMappings": []
+}

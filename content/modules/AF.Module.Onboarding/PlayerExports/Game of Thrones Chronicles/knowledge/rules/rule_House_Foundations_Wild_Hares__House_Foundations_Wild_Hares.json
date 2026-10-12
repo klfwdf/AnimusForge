@@ -1,0 +1,145 @@
+{
+  "Id": "rule_House_Foundations_Wild_Hares",
+  "Keywords": [
+    "Wild Hares"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Company of the Hare is a band of young fighters wandering through countryside and roads, often singing ballads of knighthood and priding themselves on bravery, adventure, and winning renown. They hold no ancient fiefs and lack the steady funding of great mercenary companies, sustaining their band through camaraderie, temporary hires, bounties, and the dream of a heroic life. Songs give men the courage to take to the road, yet do not automatically teach them to keep watch, ration grain, or restrain impulse. The Company of the Hare can become righteous protectors of travelers, or slide into troublemaking amid unpaid wages and vanity; the key lies in how they choose to understand what a 'knight' is."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Village youths easily envy the songs and freedom of the Company of the Hare, as though slinging a sword over one's back and leaving home were enough to step into legend. Elders care more about whether these fighting men will pay for their meals or treat someone else's chickens as the rightful prize of adventure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Truly trained soldiers judge the Company of the Hare by their sentries, formations, and supplies rather than by how loudly they sing. Hot blood can carry men through the first charge, but only discipline can carry them through the third hungry night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable",
+          "artisan",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Singers love such young bands, because every new face craves a title. Yet a fine song magnifies glory while covering up the dead; if the Company of the Hare pursues only being sung of, sooner or later they will wager their companions' lives on a pretty line of verse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wild Hares The Company of the Hare is made up of wandering young warriors who sing chivalric ballads, and their idealism must withstand the tests of hunger, military discipline, and real war. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wild Hares The Company of the Hare is made up of wandering young warriors who sing chivalric ballads, and their idealism must withstand the tests of hunger, military discipline, and real war. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wild Hares The Company of the Hare is made up of wandering young warriors who sing chivalric ballads, and their idealism must withstand the tests of hunger, military discipline, and real war. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wild Hares The Company of the Hare is made up of wandering young warriors who sing chivalric ballads, and their idealism must withstand the tests of hunger, military discipline, and real war. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Wild Hares: The Company of the Hare is made up of wandering young warriors who sing chivalric ballads, and their idealism must withstand the tests of hunger, military discipline, and real war."
+  ]
+}

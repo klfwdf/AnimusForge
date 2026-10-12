@@ -11,6 +11,8 @@ var port=new WeeklyEditorPort {
  PromptProfileLabel=()=>"standard",ResolveKingdomDisplay=id=>"Kingdom "+id,ResolveHeroDisplay=id=>id,ResolveSettlementDisplay=id=>id,
  BuildDevSummaryPreview=(text,max)=>text??"",TranslateEventMaterialTypeForDev=kind=>kind,
  AppendDevNpcActionField=(sb,label,value)=>sb.AppendLine(label+":"+value),GetEventAndRebellionApiMaxTokens=()=>100,
+ GetDevNpcActionKindDisplay=kind=>kind,ResolveHeroNames=ids=>ids?.ToList()??new(),
+ ResolveClanNames=ids=>ids?.ToList()??new(),ResolveKingdomNames=ids=>ids?.ToList()??new(),
  BuildWeeklyReportGroupReportId=g=>g.GroupKind,
  EventRecords=()=>records,WorldOpeningSummary=()=>"opening",EnsureWeekZeroOpeningSummaryEvents=sanitize=>{},SanitizeEventRecordEntries=x=>x,
  GetDevEditableKingdoms=()=>new(),BuildWeeklyEventMaterialPreviewGroups=()=>new(){group},OrderWeeklyReportGenerationGroups=groups=>groups,
@@ -21,6 +23,13 @@ var port=new WeeklyEditorPort {
  BuildBulletinPanel=(entry,id)=>failBuild?throw new Exception("bad panel"):new(){EventId=id},AwardReadingXp=id=>awarded++
 };
 var ui=new WeeklyReportEditorController(port);ui.SynchronizeGeneration(1);
+var gatheringMaterial=new EventMaterialReference{MaterialType="raw_text",ActionStableKey="noble_gathering:1:started",Label="gathering label",SnapshotText="gathering snapshot"};
+string gatheringDetail=ui.BuildDevEventMaterialDetailText(gatheringMaterial);
+Check(gatheringDetail.Contains("ui:gathering label")&&gatheringDetail.Contains("ui:gathering snapshot"),"gathering detail projects label and snapshot only at display");
+Check(WeeklyEditorProjection.BuildWeeklyPreviewMaterialLabel(port,gatheringMaterial).Contains("ui:gathering label"),"gathering preview projects label at display");
+Check(gatheringMaterial.Label=="gathering label"&&gatheringMaterial.SnapshotText=="gathering snapshot","gathering display leaves source material unchanged");
+var ordinaryMaterial=new EventMaterialReference{MaterialType="raw_text",ActionStableKey="other:1",Label="ordinary label",SnapshotText="ordinary snapshot"};
+Check(!ui.BuildDevEventMaterialDetailText(ordinaryMaterial).Contains("ui:"),"unrelated detail bypasses gathering projector");
 var countries=ui.GetTerminalWeeklyReportBrowserCountries();Check(countries[0].IsWorld&&countries[0].CountryId=="world","world comes first");Check(countries.Count==2&&countries[1].CountryId=="k","orphan record kingdom remains browseable");Check(countries[0].Reports[0].EventId=="world-new","descending week order");Check(countries[0].Reports.Single(e=>e.EventId=="world-old").BodyText=="short"&&!countries[0].Reports.Single(e=>e.EventId=="world-old").HasFullReport&&countries[0].Reports.Single(e=>e.EventId=="world-old").CreatedDay==0,"short fallback and clamp");Check(countries[0].Reports[0].BodyText=="full"&&countries[0].Reports[0].HasFullReport,"full report projection");
 ui.OpenDevWeeklyEventMaterialPreviewGroupDetail(group,100);Check(ui.MaterialPage==2&&ReferenceEquals(ui.MaterialSelection,group),"material page clamp and source identity");var late=TaleWorlds.Core.MBInformationManager.Last.Confirm;SaveRuntimeGuard.Generation++;late(new(){new(group.Materials[0],"",null)});Check(ui.MaterialDetail==null,"late material navigation rejected");
 ui.SynchronizeGeneration(2);Check(ui.MaterialSelection==null&&ui.MaterialPage==0,"load retires selections");
@@ -29,7 +38,16 @@ ui.ConfirmGenerateDevWeeklyReports();inquiry=TaleWorlds.Library.InformationManag
 ui.ConfirmGenerateDevWeeklyReports();inquiry=TaleWorlds.Library.InformationManager.Inquiry;SaveRuntimeGuard.Generation++;inquiry.Confirm();Check(generated==1,"load retires generation confirmation");
 Check(ui.TryShowWorldBulletinPanel(records[0],"issue"),"bulletin renderer consumed");var reading=DevWeeklyReportPopup.Reading;SaveRuntimeGuard.Generation++;reading();Check(awarded==0,"late reading callback does not award new save");
 Check(ui.TryShowWorldBulletinPanel(records[0],"issue"),"bulletin second open");DevWeeklyReportPopup.Reading();Check(awarded==1,"reading award uses current capability");failBuild=true;Check(!ui.TryShowWorldBulletinPanel(records[0],"bad"),"bad panel preserves legacy fallback");
-var preview=WeeklyEditorProjection.BuildWeeklyReportPromptPreviewText(port,group,"system","user");Check(preview.Contains("system")&&preview.Contains("user")&&preview.Contains("standard"),"prompt display source text retained");
+var preview=WeeklyEditorProjection.BuildWeeklyReportPromptPreviewText(port,group,"system","user");Check(preview.Contains("system")&&preview.Contains("user")&&preview.Contains("standard"),"diagnostic source text retained");
+foreach(bool chinese in new[]{false,true}) {
+ TaleWorlds.Localization.TextObject.UseLanguage(chinese);
+ string display=WeeklyEditorProjection.BuildWeeklyReportPromptPreviewTextForDisplay(port,group,"system","user");
+ Check(display.Contains(chinese?"【System Prompt】":"[System Prompt]")&&display.Contains("system")&&display.Contains("user")&&display.Contains("standard"),"controlled EN/CN display preserves raw prompt and profile value");
+ Check(WeeklyEditorProjection.MaterialTypeForDisplay("npc_recent_action")== (chinese?"NPC近期行动":"Recent NPC action"),"controlled EN/CN material type");
+ Check(WeeklyEditorProjection.ProfileForDisplay(2)==(chinese?"第二档（200-800字）":"Tier 2 (200-800 characters)"),"controlled EN/CN profile");
+ Check(WeeklyEditorProjection.BuildWeeklyReportPromptPreviewText(port,group,"system","user")==preview,"language selection does not change diagnostic preview");
+}
+TaleWorlds.Localization.TextObject.UseLanguage(false);
 
 int retries=0, fresh=0, exits=0, persisted=0, markedWeek=0, repair=0;
 var settings=new DuelSettings { WeeklyReportRequestsPerMinute=8 };

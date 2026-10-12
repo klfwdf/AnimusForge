@@ -1,0 +1,18 @@
+using System;using System.IO;using AnimusForge;
+internal static class Program {internal static string Root;static int checks;static void C(bool b,string m){checks++;if(!b)throw new Exception(m);}
+static void Main(string[] a){Root=a[0];bool en=a[1]=="en";string actor="你自己的{Name} $1";string name="目标{FIRST} $1";
+(string Kind,string Text)[] inputs={
+("companion_join","你加入了玩家队伍，成为玩家的同伴。"),
+("companion_leave","你离开了玩家队伍。原因：被遣散。"),
+("governor_removed","你卸任了"+name+"总督。"),
+("governor_appointed","你被任命为"+name+"总督。"),
+("duel_result","你在一场正式决斗中击败了"+name+"。"),
+("duel_result","你在一场正式决斗中败给了"+name+"。"),
+("quest_success","你交给玩家的任务“"+name+"”已有结果："+AdapterRecordTexts.Raw("AF_REC_Character_0001")+"。"),
+("vote_deal_fulfilled","你履行了与玩家达成的投票交易，在“"+name+"”中按承诺投票。"),
+("vote_deal_fulfilled","你履行了与玩家达成的投票交易，在“"+name+"”中按承诺投票，支持“选项”。"),
+("prison_break_rescue","你被"+name+"越狱营救，成功脱离囚禁。"),
+("prison_break_rescue","你在城堡的地牢中被"+name+"越狱营救，成功脱离囚禁。")};
+foreach(var item in inputs){string original=item.Text;string value=MemoryActionFactProjection.Project(item.Kind,item.Text,actor);C(value!=null,"known complete template");C(value.Contains(actor),"literal actor preserved");if(item.Text.Contains(name))C(value.Contains(name),"literal dynamic target never substituted");C(item.Text==original,"raw saved record never modified");C(!en||!value.Contains("你被任命为"),"English actual template reader");}
+C(MemoryActionFactProjection.Project("unknown",inputs[0].Text,actor)==null,"action kind required");C(MemoryActionFactProjection.Project("companion_join",inputs[0].Text+"用户正文",actor)==null,"unknown suffix preserved by caller");C(MemoryActionFactProjection.Project("quest_success","你交给玩家的任务“引用”已有结果：歧义”已有结果：结果。",actor)==null,"ambiguous field preserved");C(MemoryActionFactProjection.Project("companion_leave","自由说明",actor)==null,"free form unchanged");Console.WriteLine("PASS MemoryActionFactProjection "+a[1]+" "+checks+" assertions; real production reader and helper");}}
+namespace AnimusForge {internal static class AnimusForgeModulePaths {internal static string GetModuleDataFilePath(string name)=>Path.Combine(Program.Root,name);}}

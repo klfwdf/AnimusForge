@@ -1,0 +1,263 @@
+{
+  "Id": "rule_Sturgia_customs",
+  "Keywords": [
+    "Sturgia customs"
+  ],
+  "RagShortTexts": [
+    "Sturgia has a severe cold winter, and residents drink kvass and spirits in wooden houses. Weddings and funerals are accompanied by singing.",
+    "Sturgia women have an independent status, have the right to inherit family property and autonomy in marriage, and can run the household and participate in discussions."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In our winter in Sturgia, the Imperials didn’t even dare to go out when they came. The snow was piled higher than a person's height, and the wind was blowing on my face like a knife. But this is our home. In the winter we stayed in the wooden house, burning the birch wood stove, drinking kvass and spirits, and telling old stories passed down from our ancestors. Spring is here, the ice has melted, the river is roaring, and everyone rushes to the streets like bears waking up from hibernation, repairing boats, mending nets, and plowing the ground. Our days are bitter, but the bitterness is delicious. Our weddings and funerals are inseparable from strong wine and singing - three days of singing for a married daughter, and a whole night for mourning a deceased person. Outsiders think we are rude because they don’t understand: In the north, survival itself is the greatest civilization."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The customs and customs of Sturgia can be summed up in one word - endure. Survive the winter that lasts for half a year, survive the cold nights that can freeze the wood to crack, and survive the famine years when the food harvest is poor. Those who can survive on this land have stronger bones than those elsewhere. Most of their towns were built along rivers, which were both water sources and trade routes. In winter, the rivers froze and became natural carriage roads. Their markets are not open every day like those in the south, but follow the seasons - fishing and drying nets in summer, harvesting grain to make wine in autumn, and cats doing handicrafts in the house in winter. Sturgia people are straightforward in their dealings with others and don't engage in the fussy etiquette of the south, but if you become their friend, they will break the last piece of black bread to you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "sturgia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In my territory, there are not many rules, but every one of them is hard. The free people pay their taxes on time, and I lead the troops to guard the territory on time. During the festival, everyone gathered in my hall. I served wine and meat, the young people competed in wrestling and axe-throwing, and the old people sat in the hall and talked about the war with old Vadinslav. Sturgia does not raise idle people. If a Boyer cannot prove himself on the battlefield and provide food relief to the people in the famine years, his position will not be stable. Our power is not written on paper, but struck out with an axe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The markets in Sturgia are not as fancy as those in the south, but they are real. Dried fish and furs are sold in summer, grain and honey are sold in autumn, and wood carvings and ironware are sold in winter. We don't do credit here, a verbal agreement is a contract, and a handshake is a signature. When the imperial merchants first came here, they always took out long contracts for us to sign. We thought it was ridiculous - if you don't trust someone, it's useless to sign a hundred pieces of parchment. Our bathhouse is also a place for business discussions. When the heat comes, everyone is naked, so no one can be deceived."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The women of Sturgia are not the cowardly flowers kept at home in the South. Men go off to fight for months at a time, while women have to manage accounts, farm, take care of children, and if necessary, pick up an ax to guard the house. Widows here can inherit the family property, and girls can choose their own husbands. While the noble wives of the empire were wrapped in silk and dared not go out, we Sturgia women were chopping firewood in the snow. Why can't a woman who can support an entire family by herself sit in the council hall and talk when the door is closed due to heavy snow?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have chased more elk in the boreal woods than I have drunk in my life. The woods in Sturgia are deep and dense. When it snows, it is so quiet that you can even hear your own heartbeat. Hunters must respect Ersin before going hunting. Those who do not respect him will not even touch a rabbit. Winter is the most brutal season. When wolves are hungry and crazy, they will enter the village to drag sheep. When people are hungry and crazy, they will enter the woods to look for bears. The people here are as hard-tempered as the weather, but also as warm as the stove - if you knock on the door of any house in the wind and snow, they will give you a bowl of hot soup and a seat by the stove."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sturgia people live in crude houses made of logs, wear animal skins, and drink home-brewed wine that can burn their throats. Their grand duke did not wear a purple robe and a laurel crown like our emperor. Instead, he sat in the log hall wearing animal skins and exchanged bowls for wine with the hunters at the bottom. But you have to admit that their vitality is as tenacious as weeds. Their steam baths seemed primitive and rude to the Imperial people. Men and women steamed together and jumped into the glacier after steaming - just thinking about it makes people's scalp numb. But that's how they survived."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The customs and customs of the Sturgia people are similar to those of us Westerners, but they are wilder and rougher. Our knights loved jousting and lyric poetry, their boyers loved wrestling and axe-throwing contests. Their winters are so long, it is said that it can snow heavily for several months, and humans and cats can do nothing in the cabin except drink and tell stories. However, their carpenter skills are good, and the long boats they built can run very fast on the North Sea, but they are not as beautiful as our sailboats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The land of the Sturgians is cold and hard, not as open as the steppes. But they respect strength as much as we do. Although their horses cannot run fast, they can carry themselves better in the snow than our prairie horses. Their steam room is a good thing. If you go in and steam in winter, you will feel warm all over when you come out. But we prairie people can't stand the kind of strong liquor they drink. One drink will make you dizzy. They can drink it all night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sturgians occupied the land to the west of us, but in our eyes they were always a group of outsiders who did not understand the forest. They cut down trees to build wooden houses, destroyed sacred groves to grow wheat, and used axes to chop stone formations left by our ancestors as wall foundations. Their winters are long and ours are short, but we Battanias never shut ourselves up in cabins—the forest is our home and the tree canopy is our roof. They drank strong wine to keep warm, and we passed the cold nights with mead and songs. But to be honest, their tenacity is really admirable. Not everyone can survive in that kind of ice and snow and still live happily. Their women also have more backbone than those delicate ladies in the empire, and we recognize this."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The bones of our ancestors are still buried in the land that the Sturgians stole. They built wooden houses, built bathhouses, and grew rye on it, as if the land was inherently theirs. But they will never learn to listen to the forest the way we do. Their hunters worshiped Ersin, we worshiped the spirit of the forest—they prayed to one god, we prayed to the whole forest. But I also admit that the Sturgia people are indeed capable of surviving in that white wasteland. Their steam baths were a great thing, much more practical than the cold marble palaces of the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Aserai merchants went to Sturgia that damn place the first time and didn’t want to go there a second time. It was freezing cold, and the wind blew on my face like a sandstorm, except that the sand was replaced by ice particles. But I have to admit that their furs are the best in the whole of Calradia - fox skins, mink skins, bear skins, which can be sold for sky-high prices in the market of Sanara. Their merchants don't use fancy contracts when doing business, and verbal promises count. It's a bit like the rules in our desert. However, their liquor was so strong that once you took a sip, you felt like your throat was being pinched. What we drank in the desert was light wine made from dates. We couldn't stand the way they drank it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sturgians and us Nords have the same ancestor. No one can deny this. We can understand most of what they say, and no one collects taxes when our longships are docked in their harbor. Their spirits are strong enough, their axes are heavy enough, and their women are fierce enough. But they had been on the shore for so long that they had forgotten how to live on the waves. Our warriors can keep their footing on the bumpy longship, but they are a bit clumsy on board. But the steam bath they built is a good thing. We Nords also have similar ones--heating stones in the longhouse, pouring water on them, and jumping into the ice sea after steaming is so satisfying."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those Sturgia guys are distant relatives to us, and it shows by the way they drink. The Imperials drank from goblets, and they drank from large bowls. We Nords are like that too. Their war cry is somewhat similar to ours, they both shout their family's name. The difference is that our battlefields are waves and coastlines, while theirs are snow and forests. But now more and more Nords are running to the towns of Sturgia, serving as soldiers under Boyer, working as sailors in the port, or marrying Sturgian women and settling down. At the end of the day, we are the same kind of people - people who can swim in icy water."
+    }
+  ],
+  "TextMappings": []
+}

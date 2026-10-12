@@ -14,7 +14,7 @@ namespace AnimusForge.SceneActions.Core
     public static class NpcReplyDirectiveTagV1
     {
         public const string TagPrefix = "[ACTION:SCENE_ACT:";
-        public const string RuleTemplateTag = "[ACTION:SCENE_ACT:动作程序]";
+        public static readonly string RuleTemplateTag = SceneActionVocabulary.Text("NpcReplyDirectiveTagV1.RuleTemplateTag");
         public const string NoneValue = "NONE";
         public const string CatalogPlaceholder = "{scene_action_catalog}";
 
@@ -128,6 +128,9 @@ namespace AnimusForge.SceneActions.Core
         /// the judging rules live in ActionPostprocessPrompts.json.
         /// </summary>
         public static string BuildCatalogText(IEnumerable<string> allowedIntentKeys)
+            => BuildCatalogText(allowedIntentKeys, true);
+
+        public static string BuildCatalogText(IEnumerable<string> allowedIntentKeys, bool useChinese)
         {
             HashSet<string> allowed = new HashSet<string>(
                 allowedIntentKeys ?? Enumerable.Empty<string>(),
@@ -139,9 +142,7 @@ namespace AnimusForge.SceneActions.Core
                 {
                     continue;
                 }
-                builder.Append(entry.IntentKey)
-                    .Append('（').Append(entry.DisplayNameZhCn).Append("）：")
-                    .Append(entry.SemanticDescriptionZhCn)
+                builder.Append(SceneActionCatalogText.FormatEntry(entry.IntentKey, useChinese, false))
                     .Append('\n');
             }
             return builder.ToString().TrimEnd('\n');

@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Order_of_the_Crown_Marriage_Alliances_Hostages_and_Wardship",
+  "Keywords": [
+    "Political Marriages",
+    "Upbringing and Fostering",
+    "Marriage Alliances, Hostages, and Wardship"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Marriage alliances, hostages, and guardianships are common tools used by Westeros nobles to maintain peace, exchange trust, and limit hostility. The marriage contract tied the inheritance of land, military support and family prestige to the next generation; the children were sent to another castle to be raised, with the possibility of gaining division commanders Etiquette calls these arrangements honor, kinship, or education, but participants often feel responsibilities, opportunities, and being used at the same time. Whether any marriage is completed or whether any hostage is safe is a variable future; the system itself's role in shaping the politics of the seven countries remains unchanged."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Marriage Alliances, Hostages, and Wardship"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Marriage Alliances, Hostages, and Wardship"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Marriage Alliances, Hostages, and Wardship"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Political Marriages Marriage Alliances, Hostages, and Wardship: Marriage alliances, hostages, and guardianships are common tools used by Westeros nobles to maintain peace, exchange trust, and limit hostility. The marriage contract tied the inheritance of land, military support and family prestige to the next generation; the children were sent to another castle to be raised, with the possibility of gaining division commanders. They start by asking who is obligated, who is protected, and who will seek justice after a breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Political Marriages Marriage Alliances, Hostages, and Wardship: Marriage alliances, hostages, and guardianships are common tools used by Westeros nobles to maintain peace, exchange trust, and limit hostility. The marriage contract tied the inheritance of land, military support and family prestige to the next generation; the children were sent to another castle to be raised, with the possibility of gaining division commanders. For them, what really matters is whether the orders can arrive, whether the roads are safe, and whether the food and pay can be received on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Political Marriages Marriage Alliances, Hostages, and Wardship: Marriage alliances, hostages, and guardianships are common tools used by Westeros nobles to maintain peace, exchange trust, and limit hostility. The marriage contract tied the inheritance of land, military support and family prestige to the next generation; the children were sent to another castle to be raised, with the possibility of gaining division commanders Beautiful oaths that are not backed up by land, military strength, or sacred tradition can quickly be reinterpreted by the next crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Political Marriages Marriage Alliances, Hostages, and Wardship: Marriage alliances, hostages, and guardianships are common tools used by Westeros nobles to maintain peace, exchange trust, and limit hostility. The marriage contract tied the inheritance of land, military support and family prestige to the next generation; the children were sent to another castle to be raised, with the possibility of gaining division commanders. What is remembered is not who spoke the loudest in the hall, but which rule saved the family from starvation, conscription, or endless fighting."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Marriage Alliances, Hostages, and Wardship: Marriage alliances, hostages, and guardianships are common tools used by Westeros nobles to maintain peace, exchange trust, and limit hostility. The marriage contract tied the inheritance of land, military support and family prestige to the next generation; the children were sent to another castle to be raised, with the possibility of gaining division commanders."
+  ]
+}

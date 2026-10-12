@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Prisoners",
+  "Keywords": [
+    "Prisoners"
+  ],
+  "RagShortTexts": [
+    "Calradian custom for handling prisoners: generally, they are not executed."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Prisoners are soldiers and lords captured by hostile factions. By the customary rules of Calradia, captives are generally not executed—unless they are guilty of heinous crimes—and are instead exchanged for ransom and favors."
+    }
+  ],
+  "TextMappings": []
+}

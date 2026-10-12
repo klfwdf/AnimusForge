@@ -29,17 +29,34 @@ public static class VillageCultureChangeProfile
     }
 
     public static string GetDisplayName(VillageCultureChangeMode mode)
+        => GetDisplayName(mode, false);
+
+    public static string GetDisplayName(VillageCultureChangeMode mode, bool isEnglish)
     {
+        if (isEnglish)
+        {
+            switch (mode)
+            {
+                case VillageCultureChangeMode.GradualEducation:
+                    return "Gradual education";
+                case VillageCultureChangeMode.MigrantResettlement:
+                    return "Migrant resettlement";
+                case VillageCultureChangeMode.PurgeColonization:
+                    return "Purge and colonization";
+                default:
+                    return "No change";
+            }
+        }
         switch (mode)
         {
             case VillageCultureChangeMode.GradualEducation:
-                return "教化改俗";
+                return SiegeAftermathCompatibilityTexts.Raw("village_culture_gradual");
             case VillageCultureChangeMode.MigrantResettlement:
-                return "迁民改俗";
+                return SiegeAftermathCompatibilityTexts.Raw("village_culture_migration");
             case VillageCultureChangeMode.PurgeColonization:
-                return "屠村迁殖";
+                return SiegeAftermathCompatibilityTexts.Raw("village_culture_purge");
             default:
-                return "不改变";
+                return SiegeAftermathCompatibilityTexts.Raw("village_culture_none");
         }
     }
 }

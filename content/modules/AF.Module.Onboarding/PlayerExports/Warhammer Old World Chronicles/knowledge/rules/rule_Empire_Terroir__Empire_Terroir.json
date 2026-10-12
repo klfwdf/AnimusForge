@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Empire_Terroir",
+  "Keywords": [
+    "Imperial Terroir",
+    "imperial customs",
+    "imperial society",
+    "imperial favor",
+    "imperial festival",
+    "Sigmar Faith",
+    "Ulric Faith",
+    "imperial cuisine",
+    "imperial town",
+    "Empire Manor",
+    "imperial class",
+    "daily life in empire"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The imperial society is a hierarchical but dynamic complex - the aristocracy holds political and military power, the merchant class controls the flow of wealth in the towns, the craftsmen's guild guards the skills passed down from generation to generation, and the peasants make up the empire's huge population base. The people of the Empire believe in many gods, but Sigmar always comes first - he is not only a god, but the reason for the existence of the Empire itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The way of life of our Imperial people is the most orderly in the old world - although this is somewhat self-praising when it comes from our mouths. A typical Imperial city is awakened at dawn by the tolling of temple bells: the hammer of Sigmar's church, the howl of the wolf of Ulric's temple, and the death knell of Morrgarden all converge over the city at the same moment. At the market, lute players sang the legend of Charlemagne, bakers cursed the rising price of flour at the oven, and alchemists peddled fake cure-all medicines on street corners. A Yankee from Middenheim and a Southern craftsman from Nunn would argue all afternoon over the price of a piece of bacon. Our festivals range from the Celebration of Sigmar's Birthday on Midsummer Eve to the Ulric Hunting Festival in late winter, and each province has its own unique way of celebrating it. The people of Reikland consider themselves civilized and educated, the people of Middenland think that people from the south are weak vases, and the people of Steeleland live on horseback and look down upon those who cannot ride a horse. But our common bottom line is this: whether you believe in Sigmar or Ulric, whether you are a noble or a commoner, when the horns of Chaos sound in the northern wind, we all stand under the same banner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Governing an empire isn't just about taxes and conscription - you're governing a complex society with 2,500 years of cultural traditions, multiple religions, and different provinces that don't like each other. The imperial nobility is divided into several levels: the highest is the Elector Count family, below are the great nobles with hereditary fiefs, and the next is the knight class who hold imperial official positions or military command. The influence of the merchants' guilds cannot be ignored in the towns of the empire - the merchants' alliance in Altdorf can easily buy out the navigation rights of the Reik River for an entire year, while the military industry guild in Nuln even has the right to make direct representations before the emperor. Peasants accounted for eight out of ten of the empire's population. They grew wheat and barley in the fields, donned leather armor and picked up spears when their lords recruited troops. The Church of Sigmar is more than just a religious authority - they have their own lands, courts, and even armies, and the Sigmar Battle Priests are capable of causing real miracles on the battlefield. To govern well in the imperial provinces, you must know how to avoid sensitive topics at banquets with nobles, how to display appropriate piety during morning prayers in the temple, and how to listen to the complaints of the bakers' union while patrolling the marketplaces."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The social structure of the empire can be understood using the 'five-pillar model'. The first pillar is the nobility - topped by the House of the Elector Count, which includes earls, barons and imperial knights, who hold land ownership and hereditary military obligations. The second pillar is the clergy - the Church of Sigmar is at the top, but the Church of Ulric (in the north), the Church of Mor (funeral and death taboos), the Church of Verena (justice and knowledge), the Church of Sharya (medicine and mercy), the Church of Mannan (ocean and navigation) and the Church of Tal (wilderness and hunting) have irreplaceable authority in their respective fields. The third pillar is the burgher class - the guild masters, merchants, bankers and free craftsmen in the towns. They are the economic engine of the empire, and their wealth can in some cases surpass even the minor nobles. The fourth pillar was the peasant class - free farmers and tenant farmers formed the food base of the empire, and despite their humble status, imperial law gave them far more rights than the Bretonnian serfs. The fifth pillar is Gentiles and fringe groups - dwarf craftsmen have their own quarters in imperial towns, halfling innkeepers are known for their food, and elven traders have their own market area in Altdorf. Social mobility in the empire was slow but not impossible - a civilian soldier with outstanding military exploits could be knighted, a wealthy businessman could enter the aristocratic circle by purchasing real estate, and a devout nun could be promoted to abbess and gain a seat in the imperial parliament. The existence of this fluidity is the core of the long-term stability of imperial society-it gives every imperialist a hope of climbing up."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Imperial society has a sophisticated system of expectations for female nobles - you must show appropriate piety in public, be appropriately funny at banquets, and exude reassuring stability in estate management, and all of this must be maintained within the delicate boundaries of not threatening male authority. When I was young, I tried to imitate the tough style of male aristocrats - I gave orders to my subordinates in the castle hall in an almost identical way to my late husband - and soon discovered that the Murakami proverb became 'a widow's gauntlet is harder on the hand than a dead husband's'. Later, I learned another kind of governance: I would not rebuke my subordinates in public, but I would tactfully mention some of their mistakes to their wives in private; I would not personally judge disputes in the manor court, but I would ask the butler in advance to convey the message of 'the mistress' preference' to all parties in the form of 'by the way'; I would not interfere with military deployment, but I would exert influence on the appointment of chaplains, because chaplains control the ears and souls of soldiers. It’s not that women in the empire have no power, but power must take a more tortuous route than men."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a family perspective, the social order of the empire was a web of obligations and prestige passed down from generation to generation. Our family maintains a continuous cycle in the territory: every midsummer, we hold a 'Bread and Ale Day' in the castle hall, open to all free farming families in the territory - this is not only a charity, but also a closed census and public opinion collection. The legal status of Imperial peasants is much higher than that of Bretonnia's serfs, meaning they can move freely - the core skill in managing Imperial territory is not coercion, but making the families in your territory feel more promising about staying than leaving. The first thing each generation of our family’s patriarch did after taking office was not to go on a foreign expedition, but to patrol the territory on foot for three months—staying one night in each village, listening to the complaints of the elders, and memorizing the names of every miller and blacksmith. The empire's manorial society was not based on a sacred caste belief, as in Bretonnia, but on something more fragile but also more practical - a semi-contractual relationship between the lord's protective obligation to the subjects and the subject's tax obligation to the lord. It is not a sword that holds the relationship together, but an invisible web of memory, reciprocity, and habit—one that only generations of family business can weave, and that can be torn apart by a single outrage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What the imperial society sees through the eyes of the wanderer is the endless gray between the two poles. I met the Elector Count in a tavern in the wealthy district of Altdorf Three days later, in a border village in Ostermark, a pair of old farmers exchanged all their belongings - two bags of rye and three hens - for a rusty short spear that could deal with orcs. The man who sold the spear starved to death on the roadside after eating the wheat and chickens, because the lord of his village gave up his protection obligations during the greenskin raids in winter and moved into a safe house in the city. The people of the Empire pride themselves on being civilized, but the social order of the Empire may fall from law to violence, from civilization to primitive struggle for survival a hundred miles away. I have slept in woodcutter's cabins in Middenland Forest - they painted the doorframes with Ulric's wolf head symbol to ward off evil spirits, but I have never heard a complete sermon in the temple. Their understanding of theology relies solely on fragments of oral traditions passed down by their ancestors. I also slept in the trackers' shed on the Talabek River - the men who pulled the tow came from all the provinces of the empire. They were debt evaders, deserters, marriage evaders and people running for their lives. No one on the river cared about your past. They only cared about whether you could let go before the tow rope broke. The Empire is a majestic building, but its foundations are crawling with people who never appear in the Empire's statistical reports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The society of the empire was a fluid market in the eyes of merchants - each class had its needs and outputs, and profits existed in the gaps between the two. The consumer aesthetics of the imperial aristocracy is the most profitable market segment in the old world: the griffon feather ornaments imported from Tyrell by the white wolf Elector Count of Middenland can support the operating expenses of a medium-sized caravan for half a year; the military industry guild of Nunn never lowers the price when purchasing iron ore - what they press is the terms of delivery time, because they know that although the dwarf mines are reliable, the transportation time is always half a year later than promised. The daily consumption of farmers and citizens in the empire was the real bottom line of the economy—salt, iron nails, coarse cloth, candles, wooden handles for farm tools, and funeral shrouds. The daily circulation of these low-priced but huge-volume commodities in the empire formed the largest internal market in the old world. I firmly believe that the true social glue of the Empire is not the faith of the Sigmar nor loyalty to the Emperor - but the daily habit of Imperial people using Imperial Silver Marks to purchase Imperial Bread. Economic interdependence bound the empire's thirteen provinces more firmly than any ideology, for war disrupted trade and disruption of trade left everyone - from the Elector Count to the baker - simultaneously suffering losses that could not be passed on."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Sigmar's Birthday Celebration - Midsummer Eve The most important festival throughout the Empire, a collective remembrance of the divinity of Sigmar",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Social customs and cultural traditions of the empire"
+  ]
+}

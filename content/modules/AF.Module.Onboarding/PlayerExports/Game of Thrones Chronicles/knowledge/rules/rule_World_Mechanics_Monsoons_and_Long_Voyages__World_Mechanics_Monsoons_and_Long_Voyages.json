@@ -1,0 +1,150 @@
+{
+  "Id": "rule_World_Mechanics_Monsoons_and_Long_Voyages",
+  "Keywords": [
+    "Monsoons",
+    "Long Voyages",
+    "Pilotage",
+    "Watering Ports",
+    "Sailing Seasons"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A long ocean voyage is no mere extension of short coastal hops. A captain must judge seasonal winds, ocean currents, storm belts, and ports fit for taking on water, while reckoning hull draft, wear on sails and rigging, spoiling stores, and sickness among the crew. A fair wind can shorten a voyage of weeks, while a foul wind may force a ship to winter on a strange coast; if a single port refuses provisions, the entire plan changes. Stars, compass, sounding lead, and sea lore handed down by word of mouth work together, and no single instrument can replace experience. Merchants reckon profit by the date of arrival, while sailors know the sea never keeps time for a ledger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Old sailors would rather miss a high market than leave port into a foul wind at someone's urging. Folk ashore call waiting cowardice; men who have seen snapped masts and fouled water call it staying alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Backers calculate cargo prices, interest, and losses from delay, yet must leave the final judgment to the captain. If debt is used to force a ship to hazard every voyage, sooner or later one gets an account from which no one returns to pay."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who stitch sails, cooper casks, salt provisions, and haul water rarely appear in tales of great voyages, yet they decide how long a ship can endure. Those forced aboard know best of all that what is called exploration may simply be a danger chosen for them by others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Monsoons Monsoons and Long Voyages: Ocean-going vessels must answer to seasonal winds, currents, and watering places; every voyage is bound alike by nature, the state of the ship, and the hearts of men. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Monsoons Monsoons and Long Voyages: Ocean-going vessels must answer to seasonal winds, currents, and watering places; every voyage is bound alike by nature, the state of the ship, and the hearts of men. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Monsoons Monsoons and Long Voyages: Ocean-going vessels must answer to seasonal winds, currents, and watering places; every voyage is bound alike by nature, the state of the ship, and the hearts of men. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Monsoons Monsoons and Long Voyages: Ocean-going vessels must answer to seasonal winds, currents, and watering places; every voyage is bound alike by nature, the state of the ship, and the hearts of men. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Monsoons and Long Voyages: Ocean-going vessels must answer to seasonal winds, currents, and watering places; every voyage is bound alike by nature, the state of the ship, and the hearts of men."
+  ]
+}

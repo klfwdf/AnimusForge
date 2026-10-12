@@ -21,11 +21,15 @@ internal static bool IsNpcInventorySummaryHeader(string text)
 		{
 			return false;
 		}
-		if (!text2.EndsWith("】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说)", StringComparison.Ordinal))
+		if (!text2.EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0235"), StringComparison.Ordinal)
+			&& !text2.EndsWith(PromptComposerTexts.Get("inventory_limit_suffix"), StringComparison.Ordinal))
 		{
 			return false;
 		}
-		return text2.IndexOf("商铺可用财富与物品", StringComparison.Ordinal) > 1 || text2.IndexOf("当前可用财富与物品", StringComparison.Ordinal) > 1 || text2.IndexOf("携带的所有物资和财富", StringComparison.Ordinal) > 1;
+		return text2.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0236"), StringComparison.Ordinal) > 1 || text2.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0237"), StringComparison.Ordinal) > 1 || text2.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0238"), StringComparison.Ordinal) > 1
+			|| text2.IndexOf(PromptComposerTexts.Get("inventory_shop_phrase"), StringComparison.OrdinalIgnoreCase) > 1
+			|| text2.IndexOf(PromptComposerTexts.Get("inventory_current_phrase"), StringComparison.OrdinalIgnoreCase) > 1
+			|| text2.IndexOf(PromptComposerTexts.Get("inventory_carried_phrase"), StringComparison.OrdinalIgnoreCase) > 1;
 	}
 
 internal static bool IsLeakedPromptLineForShout(string line)
@@ -35,91 +39,91 @@ internal static bool IsLeakedPromptLineForShout(string line)
 		{
 			return false;
 		}
-		if (text.StartsWith("必须遵守【", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0239"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("必须严格遵守", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0240"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【对话历史】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0241"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【历史对话记录】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0242"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【近期对话窗口】", StringComparison.Ordinal) || text.StartsWith("【最近对话历史】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0243"), StringComparison.Ordinal) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0244"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【玩家与", StringComparison.Ordinal) && text.EndsWith("的近期对话】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0245"), StringComparison.Ordinal) && text.EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0246"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【当前场景公共对话与互动】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0247"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【长期记忆摘要】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0248"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【当前对话】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0249"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【回复要求】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0250"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【输出要求】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0251"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【指令】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0252"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【请严格按照格式输出】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0253"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【常驻发言格式】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0254"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【群体对话规则】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0255"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("你的回复格式必须严格按照以下执行", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0256"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("（你的内心思考内容", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0257"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (string.Equals(text, "*你的动作内容*", StringComparison.Ordinal))
+		if (string.Equals(text, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0258"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【附加规则", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0259"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("现在，请根据以上所有信息", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0260"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("请根据以上所有信息", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0261"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (Regex.IsMatch(text, "^\\d+\\.\\s*必须", RegexOptions.CultureInvariant))
+		if (Regex.IsMatch(text, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0262"), RegexOptions.CultureInvariant))
 		{
 			return true;
 		}
@@ -127,7 +131,7 @@ internal static bool IsLeakedPromptLineForShout(string line)
 		{
 			return true;
 		}
-		if (text.StartsWith("Gold:", StringComparison.OrdinalIgnoreCase) || text.StartsWith("第纳尔:", StringComparison.Ordinal))
+		if (text.StartsWith("Gold:", StringComparison.OrdinalIgnoreCase) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0263"), StringComparison.Ordinal))
 		{
 			return true;
 		}
@@ -135,7 +139,7 @@ internal static bool IsLeakedPromptLineForShout(string line)
 		{
 			return true;
 		}
-		if (text.StartsWith("库存物品：", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0264"), StringComparison.Ordinal))
 		{
 			return true;
 		}
@@ -143,7 +147,7 @@ internal static bool IsLeakedPromptLineForShout(string line)
 		{
 			return true;
 		}
-		if (text.IndexOf("的私人战斗装备:", StringComparison.Ordinal) >= 0)
+		if (text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0265"), StringComparison.Ordinal) >= 0)
 		{
 			return true;
 		}
@@ -155,19 +159,19 @@ internal static bool IsLeakedPromptLineForShout(string line)
 		{
 			return true;
 		}
-		if (text.StartsWith("【玩家触发了（", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0266"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【以下是关于（", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0267"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【触发相关话题/背景】", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0268"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("[RELAY:接力编号]", StringComparison.Ordinal) || text.StartsWith("这是一场多人聊天", StringComparison.Ordinal) || text.StartsWith("其他人也要说话", StringComparison.Ordinal) || text.StartsWith("如果你觉得下一位还必须接话", StringComparison.Ordinal) || text.StartsWith("若你觉得在你这句之后", StringComparison.Ordinal) || text.StartsWith("如果你觉得这句之后还值得继续聊下去", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0269"), StringComparison.Ordinal) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0270"), StringComparison.Ordinal) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0271"), StringComparison.Ordinal) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0272"), StringComparison.Ordinal) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0273"), StringComparison.Ordinal) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0274"), StringComparison.Ordinal))
 		{
 			return true;
 		}
@@ -183,16 +187,16 @@ internal static string StripLeakedPromptFragmentsForShout(string text)
 		}
 		string[] array = new string[10]
 		{
-			"这是一场多人聊天",
-			"其他人也要说话",
-			"如果你觉得下一位还必须接话",
-			"若你觉得在你这句之后",
-			"如果你觉得这句之后还值得继续聊下去",
-			"[RELAY:接力编号]",
-			"接力编号必须从【站在你旁边的人】",
-			"id 必须从【站在你旁边的人】",
-			"你不能选你自己",
-			"才能让其他人发言"
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0275"),
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0276"),
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0277"),
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0278"),
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0279"),
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0280"),
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0281"),
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0282"),
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0283"),
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0284")
 		};
 		string[] array2 = text2.Split('\n');
 		StringBuilder stringBuilder = new StringBuilder(text2.Length);
@@ -320,10 +324,20 @@ internal static string StripAfefPromptScopeLabel(string text)
 		do
 		{
 			changed = false;
-			string[] prefixes = new string[4] { "【当下行为】", "【过往行为】", "[当下行为]", "[过往行为]" };
+			string[] prefixes = new string[8]
+			{
+				ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0285"),
+				ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0286"),
+				ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0287"),
+				ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0288"),
+				"[Current action]",
+				"[Past action]",
+				"【Current action】",
+				"【Past action】"
+			};
 			foreach (string prefix in prefixes)
 			{
-				if (value.StartsWith(prefix, StringComparison.Ordinal))
+				if (value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
 				{
 					value = value.Substring(prefix.Length).Trim();
 					changed = true;
@@ -341,16 +355,16 @@ internal static string NormalizeNativeConversationFactLineForPrompt(string text,
 		{
 			return "";
 		}
-		if (text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0289"), StringComparison.Ordinal) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0290"), StringComparison.Ordinal))
 		{
 			return text;
 		}
 		string speakerText = (speaker ?? "").Trim();
 		if (speakerText.IndexOf("NPC", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "[AFEF NPC行为补充] " + text;
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0291") + text;
 		}
-		return "[AFEF玩家行为补充] " + text;
+		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0292") + text;
 	}
 
 internal static string NormalizeNativeConversationVisibleTextKey(string text, ConversationSpeechTextOptions options)
@@ -423,7 +437,7 @@ internal static string StripTtsNarrationLines(string text)
 			{
 				continue;
 			}
-			if (Regex.IsMatch(text2, "^(?:内心|心声|心想|思考|动作|神态|表情|旁白|叙述|舞台指示|场景描写|心理活动)\\s*[：:]"))
+			if (Regex.IsMatch(text2, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0293")))
 			{
 				continue;
 			}

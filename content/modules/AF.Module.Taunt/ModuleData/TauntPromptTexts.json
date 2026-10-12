@@ -1,0 +1,15 @@
+{
+  "AF_TAUNT_PROMPT_PlayerFallback": "玩家",
+  "AF_TAUNT_PROMPT_ChildTarget": "他是未成年。禁止输出[ACTION:SCENE_TAUNT_WARN]或[ACTION:SCENE_TAUNT_FIGHT]；只能害怕、求救或躲开。",
+  "AF_TAUNT_PROMPT_CriminalConflict": "【AFEF与匪徒冲突规则】你是匪徒/帮派成员，这一类冲突不走普通场景口角的警告-升级流程，也不要输出[ACTION:SCENE_TAUNT_WARN]。{PLAYER}若只是嘴硬、试探、骂你几句，你可以继续放狠话、威胁、索要买路钱或逼他滚开；只有当你明确决定和他短暂对峙后翻脸开打时，才在句末输出[ACTION:SCENE_TAUNT_FIGHT]。输出后会先维持对话约10秒，然后自动退出对话并进入原版匪徒冲突流程。",
+  "AF_TAUNT_PROMPT_AlreadyWarnedLord": "你已警告过{PLAYER}。若还忍不了，就在句末输出[ACTION:SCENE_TAUNT_FIGHT]；输出后会先维持对话约10秒，然后自动退出对话并爆发冲突，场上己方士兵和领主会来帮你砍他。",
+  "AF_TAUNT_PROMPT_AlreadyWarnedOther": "你已警告过{PLAYER}。若还忍不了，就在句末输出[ACTION:SCENE_TAUNT_FIGHT]，短暂对峙后用拳头教训他。输出后会先维持对话约10秒，然后自动退出对话并爆发冲突。",
+  "AF_TAUNT_PROMPT_NotWarnedLord": "若{PLAYER}辱骂，贬低或者招惹你你可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]。输出后会先维持对话约10秒，然后自动退出对话并爆发冲突，场上己方士兵和领主会来帮你砍他。",
+  "AF_TAUNT_PROMPT_NotWarnedOther": "若{PLAYER}辱骂，贬低或者招惹你可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]，短暂对峙后用拳头教训他。输出后会先维持对话约10秒，然后自动退出对话并爆发冲突。",
+  "AF_TAUNT_PROMPT_MeetingContext": "hero会面场景",
+  "AF_TAUNT_PROMPT_MeetingFightEffect": "这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。",
+  "AF_TAUNT_PROMPT_LordContext": "非会面场景中的领主互动",
+  "AF_TAUNT_PROMPT_LordFightEffect": "这会在约10秒对峙后自动退出对话，并把当前场景升级为持械冲突；该领主和场上士兵会拿武器围攻玩家；并且会按玩家公开敌对该领主所属势力来处理，必要时会先强制让玩家脱离原势力再宣战。",
+  "AF_TAUNT_PROMPT_NpcContext": "普通NPC的场景互动",
+  "AF_TAUNT_PROMPT_NpcFightEffect": "这会在约10秒对峙后自动退出对话，并把当前场景升级为冲突。"
+}

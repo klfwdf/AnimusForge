@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_CONV_UI_Courier_Cancel" text="取消" />
+    <string id="AF_CONV_UI_Courier_Send" text="发送" />
+    <string id="AF_CONV_UI_Courier_WriteTitle" text="写给 {TARGET} 的信" />
+    <string id="AF_CONV_UI_Shout_Gallery" text="画廊" />
+    <string id="AF_CONV_UI_Shout_Encyclopedia" text="图鉴" />
+    <string id="AF_CONV_UI_Shout_Send" text="发送" />
+    <string id="AF_CONV_UI_Shout_Close" text="关闭" />
+    <string id="AF_CONV_UI_Shout_InputHint" text="请输入你想说的话：" />
+    <string id="AF_CONV_UI_Shout_TagInputHint" text="输入正文和标签：" />
+    <string id="AF_CONV_UI_Shout_Execute" text="执行" />
+    <string id="AF_CONV_UI_TagTest_Title" text="标签输入 - {NAME}" />
+    <string id="AF_CONV_UI_TagTest_Subtitle" text="当前目标：{NAME}\n输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前 NPC 立即执行。" />
+    <string id="AF_CONV_UI_TagTest_NotExecuted" text="标签测试未执行。" />
+    <string id="AF_CONV_UI_TagTest_DataDisabled" text="数据管理未开启，或当前没有可测试的对话目标。" />
+    <string id="AF_CONV_UI_TagTest_NoConversationTarget" text="当前没有可接入的对话对象。" />
+    <string id="AF_CONV_UI_TagTest_EmptyInput" text="输入为空。" />
+    <string id="AF_CONV_UI_TagTest_Executed" text="标签测试已执行。目标：{NAME}；标签数：{COUNT}{SCENE}{VISIBLE}" />
+    <string id="AF_CONV_UI_TagTest_SceneMove" text="；SCENE_MOVE 将在退出对话框后执行" />
+    <string id="AF_CONV_UI_TagTest_NoVisible" text="；无可见正文" />
+    <string id="AF_CONV_UI_TagTest_Visible" text="；已显示正文" />
+    <string id="AF_CONV_UI_TagTest_Failed" text="标签测试失败：{ERROR}" />
+    <string id="AF_CONV_UI_TagTest_Prefix" text="[标签测试] " />
+    <string id="AF_CONV_UI_TagTest_EnableData" text="[标签测试] 请先在 MCM 开启数据管理。" />
+    <string id="AF_CONV_UI_TagTest_NoSceneTarget" text="[标签测试] 没有找到当前场景目标。" />
+    <string id="AF_CONV_UI_TagTest_NoNpc" text="[标签测试] 没有找到可执行标签的 NPC。" />
+    <string id="AF_CONV_UI_TagTest_Submitted" text="[标签测试] 已提交给 {NAME}，标签数：{COUNT}" />
+    <string id="AF_CONV_UI_TagTest_ExecutionFailed" text="[标签测试] 执行失败：{ERROR}" />
+    <string id="AF_CONV_UI_Shout_BattleScene" text="战斗现场" />
+    <string id="AF_CONV_UI_Native_Illustration" text="场景插画" />
+    <string id="AF_CONV_UI_Courier_NotReady" text="信使系统尚未初始化，暂时不能回信。" />
+    <string id="AF_CONV_UI_Courier_Character" text="该角色" />
+    <string id="AF_CONV_UI_Courier_NoRecipient" text="找不到可通信的收件人。" />
+    <string id="AF_CONV_UI_Courier_InPlayerParty" text="该角色正在你的队伍中，不能通过信使写信。" />
+    <string id="AF_CONV_UI_Courier_RecipientDead" text="该角色已经死亡，不能通过信使写信。" />
+    <string id="AF_CONV_UI_Courier_RecipientUnknown" text="你尚未掌握此人的信息，不能寄信。" />
+    <string id="AF_CONV_UI_Courier_AlreadyActive" text="已经有一支信使队正在处理发往此人的信件。" />
+    <string id="AF_CONV_UI_Courier_NoPlayerParty" text="当前找不到玩家部队。" />
+    <string id="AF_CONV_UI_Courier_NoCrew" text="你当前没有可派出的信使成员。" />
+    <string id="AF_CONV_UI_Courier_MinCrew" text="信使部队必须至少 1 人。" />
+    <string id="AF_CONV_UI_Courier_Recipient" text="收件人" />
+    <string id="AF_CONV_UI_Courier_TroopRecipientIneligible" text="只有领主才能谈部队转移。" />
+    <string id="AF_CONV_UI_Courier_PrisonerRecipientIneligible" text="只有领主才能谈俘虏转移。" />
+    <string id="AF_CONV_UI_Courier_AssetRecipientIneligible" text="当前收件人没有可接收或可谈的固定资产。" />
+    <string id="AF_CONV_UI_Courier_InvalidAmount" text="请输入合法的数量。" />
+    <string id="AF_CONV_UI_Courier_DraftExpired" text="信使草稿已失效，请重新选择成员和附件。" />
+    <string id="AF_CONV_UI_Courier_OpenFailed" text="信使与邮递打开失败：{ERROR}" />
+    <string id="AF_CONV_UI_Courier_ReplyTargetMissing" text="找不到{NAME}，暂时不能回信。" />
+    <string id="AF_CONV_UI_Courier_OpenReplyFailed" text="回信打开失败：{ERROR}" />
+    <string id="AF_CONV_UI_Courier_CrewSelectionFailed" text="信使部队选择失败：{ERROR}" />
+    <string id="AF_CONV_UI_Courier_ModeTitle" text="信使与邮递 - {TARGET}" />
+    <string id="AF_CONV_UI_Courier_ModeDescription" text="当前收件人：{TARGET}&#10;请选择寄送方式：" />
+    <string id="AF_CONV_UI_Courier_DispatchFailed" text="信使出发失败：{ERROR}" />
+    <string id="AF_CONV_UI_Courier_Dispatched" text="信使队已出发，正在前往 {TARGET}。" />
+    <string id="AF_CONV_UI_Courier_SelectableCrew" text="可选信使成员" />
+    <string id="AF_CONV_UI_Courier_CrewParty" text="信使部队" />
+    <string id="AF_CONV_UI_Courier_PartyBaseName" text="AnimusForge 信使队" />
+    <string id="AF_CONV_UI_Courier_NpcPartyBaseName" text="AnimusForge NPC Courier" />
+    <string id="AF_CONV_UI_Courier_ModeNormal" text="单纯写信" />
+    <string id="AF_CONV_UI_Courier_ModeGive" text="发送物品并写信" />
+    <string id="AF_CONV_UI_Courier_ModeShow" text="展示物品并写信" />
+    <string id="AF_CONV_UI_Courier_ModeTroops" text="转移部队并写信" />
+    <string id="AF_CONV_UI_Courier_ModePrisoners" text="转移俘虏并写信" />
+    <string id="AF_CONV_UI_Courier_ModeAssets" text="转移固定资产并写信" />
+    <string id="AF_CONV_UI_Courier_Confirm" text="确定" />
+    <string id="AF_CONV_UI_Courier_Back" text="返回" />
+    <string id="AF_CONV_UI_Courier_ShowAmount" text="展示数量" />
+    <string id="AF_CONV_UI_Courier_SendAmount" text="发送数量" />
+    <string id="AF_CONV_UI_Courier_TransferAmount" text="转移数量" />
+    <string id="AF_CONV_UI_Courier_PartyName" text="信使队 - {NAME}" />
+    <string id="AF_CONV_UI_Courier_AvailableAmount" text="可用数量: {AMOUNT}" />
+    <string id="AF_CONV_UI_Courier_TroopHint" text="可用数量: {AMOUNT} | 日薪: {WAGE}第纳尔/天 | 雇佣价: {PRICE}第纳尔/人" />
+    <string id="AF_CONV_UI_Courier_PrisonerHint" text="可用数量: {AMOUNT} | 购买价: {PRICE}第纳尔/人" />
+    <string id="AF_CONV_UI_Courier_SourceHint" text=" | 来源: {SOURCE}" />
+    <string id="AF_CONV_UI_Courier_AssetHint" text="类型: {TYPE} | 每日收益: {INCOME} 第纳尔 | 一次结清指导价: {PRICE} 第纳尔" />
+    <string id="AF_CONV_UI_Courier_FixedAssets" text="固定资产" />
+    <string id="AF_CONV_UI_Courier_SourceSuffix" text="（来源：{SOURCE}）" />
+    <string id="AF_CONV_UI_Courier_AmountDescription" text="[{INDEX}/{COUNT}] {ITEM} 最多可填 {MAX}。&#10;请输入 1 到 {MAX} 的整数：" />
+    <string id="AF_CONV_UI_Courier_NoTransferTroops" text="你当前没有可转移给对方的部队。" />
+    <string id="AF_CONV_UI_Courier_NoTransferPrisoners" text="你当前没有可转移给对方的俘虏。" />
+    <string id="AF_CONV_UI_Courier_NoTransferAssets" text="你当前没有可转移给对方的固定资产。" />
+    <string id="AF_CONV_UI_Courier_NoTransferItems" text="你没有可用的物品或第纳尔。" />
+    <string id="AF_CONV_UI_Courier_SelectTroops" text="当前收件人：{TARGET}&#10;选择要随信转入对方麾下的部队（可多选）：" />
+    <string id="AF_CONV_UI_Courier_SelectPrisoners" text="当前收件人：{TARGET}&#10;选择要随信交给对方的俘虏（可多选）：" />
+    <string id="AF_CONV_UI_Courier_SelectAssets" text="当前收件人：{TARGET}&#10;选择要随信转给对方的固定资产（可多选）：" />
+    <string id="AF_CONV_UI_Courier_SelectShowItems" text="当前收件人：{TARGET}&#10;选择要展示的物品或第纳尔（可多选）：" />
+    <string id="AF_CONV_UI_Courier_SelectSendItems" text="当前收件人：{TARGET}&#10;选择要发送的物品或第纳尔（可多选）：" />
+    <string id="AF_CONV_UI_Companion_DefaultDescription" text="一名队内 Hero 想与你交谈。" />
+    <string id="AF_CONV_UI_Companion_DefaultTitle" text="队内 Hero 想与你交谈" />
+    <string id="AF_CONV_UI_Companion_ChatDelayed" text="当前不便交谈；通知会暂时保留。" />
+    <string id="AF_CONV_UI_Companion_OpenFailed" text="打开交谈失败，通知会保留。" />
+    <string id="AF_CONV_UI_Companion_Hero" text="这名队内成员" />
+    <string id="AF_CONV_UI_Companion_Title" text="{HERO}想与你交谈" />
+    <string id="AF_CONV_UI_Companion_Description" text="{HERO}就在你的队伍中，想在你方便时与你谈谈。" />
+    <string id="AF_CONV_UI_Courier_Npc" text="NPC" />
+    <string id="AF_CONV_UI_Courier_ReturnedUndelivered" text="信使队已返回，未交付的信件与物资已退还。" />
+    <string id="AF_CONV_UI_Courier_ReturnedDisbanded" text="信使队已返回并解散。" />
+    <string id="AF_CONV_UI_Courier_ReplyTitle" text="信使带回了回信" />
+    <string id="AF_CONV_UI_Courier_Wrote" text="{NAME}写道：" />
+    <string id="AF_CONV_UI_Courier_ReplyButton" text="回信" />
+    <string id="AF_CONV_UI_Courier_Close" text="关闭" />
+    <string id="AF_CONV_UI_Courier_ReplyNotice" text="信使带回了{NAME}的回信。" />
+    <string id="AF_CONV_UI_Courier_EmptyReply" text="（无回信正文）" />
+    <string id="AF_CONV_UI_Courier_EmptyInbound" text="（无来信正文）" />
+    <string id="AF_CONV_UI_Courier_Destroyed" text="信使部队已被歼灭。{RECIPIENT}{DETAIL}" />
+    <string id="AF_CONV_UI_Courier_RecipientSuffix" text=" 收件人：{NAME}。" />
+    <string id="AF_CONV_UI_Courier_ReturnDetail" text=" {DETAIL}" />
+    <string id="AF_CONV_UI_Courier_DestroyerDetail" text=" 歼灭者：{NAME}" />
+    <string id="AF_CONV_UI_Courier_LostDetail" text=" 信使队伍已从大地图消失。" />
+    <string id="AF_CONV_UI_Courier_UnknownFaction" text="未知势力" />
+    <string id="AF_CONV_UI_Courier_RestoredLetters" text="已恢复库存中的信件物品 x{COUNT}。" />
+    <string id="AF_CONV_UI_Courier_LetterInventoryMissing" text="信件物品未加入库存：找不到玩家库存。" />
+    <string id="AF_CONV_UI_Courier_LetterCreateFailed" text="信件物品生成失败，未加入库存。" />
+    <string id="AF_CONV_UI_Courier_LetterWriteFailed" text="信件物品生成了，但未能写入玩家库存。" />
+    <string id="AF_CONV_UI_Courier_LetterAdded" text="信件已放入玩家库存。" />
+    <string id="AF_CONV_UI_Courier_LetterAddFailed" text="信件物品加入库存失败：{ERROR}" />
+    <string id="AF_CONV_UI_Courier_WaitInboundTitle" text="等待信使来信生成" />
+    <string id="AF_CONV_UI_Courier_WaitInboundDescription" text="信使已经抵达你的队伍，正在等待{NAME}写完信件正文。&#10;&#10;游戏时间已暂停，信件生成完成后会自动送达。" />
+    <string id="AF_CONV_UI_Courier_WaitOutboundTitle" text="等待信使回信生成" />
+    <string id="AF_CONV_UI_Courier_WaitOutboundDescription" text="信使已经抵达 {NAME} 的位置，正在等待对方读信并写下回信。&#10;&#10;游戏时间已暂停，回信生成完成后会自动继续并执行后处理标签。" />
+    <string id="AF_CONV_UI_Courier_WaitInboundNotice" text="信使已抵达，正在等待来信生成。游戏时间已暂停。" />
+    <string id="AF_CONV_UI_Courier_WaitOutboundNotice" text="信使已抵达，正在等待回信生成。游戏时间已暂停。" />
+    <string id="AF_CONV_UI_Courier_TargetEscaping" text="信使目标正在逃亡，信使正前往最近定居点等待。" />
+    <string id="AF_CONV_UI_Courier_TargetCaptive" text="信使目标处于俘虏状态，信使正前往最近定居点等待。" />
+    <string id="AF_CONV_UI_Courier_TargetReturned" text="信使目标重新出现，信使正在路上。" />
+    <string id="AF_CONV_UI_Courier_InboundTitle" text="信使送来{KIND}" />
+    <string id="AF_CONV_UI_Courier_InboundLetter" text="来信" />
+    <string id="AF_CONV_UI_Courier_InboundWrote" text="{NAME}写道：" />
+    <string id="AF_CONV_UI_Courier_Acknowledge" text="知道了" />
+    <string id="AF_CONV_UI_Shout_SelfTalk" text="你正在自言自语..." />
+    <string id="AF_CONV_UI_Shout_PrimaryGone" text="[场景喊话] 异色主对象已经离场，请重新框选。" />
+    <string id="AF_CONV_UI_Shout_PrimaryMissing" text="[场景喊话] 没有找到异色主对象，请重新框选。" />
+    <string id="AF_CONV_UI_Shout_AudienceStale" text="[场景喊话] 在场人物快照已失效，请重新框选。" />
+    <string id="AF_CONV_UI_Shout_PrimaryThinking" text="{NAME} 正在思考..." />
+    <string id="AF_CONV_UI_Shout_HighlightedTarget" text="异色主对象" />
+    <string id="AF_CONV_UI_Shout_PrimaryReadFailed" text="[场景喊话] 无法读取异色主对象，请重新框选。" />
+    <string id="AF_CONV_UI_Shout_IllustrationUnavailable" text="[AI画卷] 截图生图功能尚未加载。" />
+    <string id="AF_CONV_UI_Shout_IllustrationPending" text="喊话回复尚未完成；当前面板仅提供截图生图。" />
+    <string id="AF_CONV_UI_Shout_IllustrationNoTarget" text="当前没有有效喊话目标，可以点击生图；发送喊话仍需框选有效目标。" />
+    <string id="AF_CONV_UI_Shout_IllustrationBattleHint" text="战斗中可手动生成当前现场插画。" />
+    <string id="AF_CONV_UI_Shout_IllustrationDraftHint" text="生图不使用未发送的输入草稿。" />
+    <string id="AF_CONV_UI_Shout_NoSendTarget" text="[场景喊话] 当前没有可发送喊话的目标。" />
+    <string id="AF_CONV_UI_Shout_TargetInvalid" text="[场景喊话] 目标或交流资格已失效，请重新框选。" />
+    <string id="AF_CONV_UI_Shout_InputOpenFailed" text="[场景喊话] 输入面板打开失败。" />
+    <string id="AF_CONV_UI_Shout_PassiveFailed" text="[被动回应失败] {OUTPUT}" />
+    <string id="AF_CONV_UI_Shout_ErrorPrefix" text="[场景喊话] {OUTPUT}" />
+    <string id="AF_CONV_UI_Shout_PreprocessFailed" text="AnimusForge 前处理失败" />
+    <string id="AF_CONV_UI_Shout_RelayTargetUnavailable" text="异色主对象当前无法回应" />
+    <string id="AF_CONV_UI_Shout_RelayEndedSpeakerUnavailable" text="本轮接力已结束：当前接话者已离场或无法回应" />
+    <string id="AF_CONV_UI_Shout_RoundStoppedBeforeActions" text="本轮回应已停止，本轮尚未进入动作处理。" />
+    <string id="AF_CONV_UI_Shout_RoundErrorStoppedActions" text="本轮回应发生错误，系统已停止后续动作处理。" />
+    <string id="AF_CONV_UI_Shout_RelaySpeakerUnavailable" text="本轮接力已结束：当前发言者已无法继续回应" />
+    <string id="AF_CONV_UI_Shout_RelayInterrupted" text="本轮接力已中断：行为处理失败或超时" />
+    <string id="AF_CONV_UI_Shout_RelayNoSpeaker" text="本轮未选出有效的接话者" />
+    <string id="AF_CONV_UI_Shout_RelayEnded" text="本轮接力已结束" />
+    <string id="AF_CONV_UI_Shout_RelaySelectedUnavailable" text="本轮接力已结束：选中的接话者已离场或无法回应" />
+    <string id="AF_CONV_UI_Shout_BudgetLimit" text="本轮接力已结束：已达到场景回应人数预算" />
+    <string id="AF_CONV_UI_Shout_BudgetDenied" text="本轮接力已结束：场景回应预算未允许继续接话" />
+    <string id="AF_CONV_UI_Shout_RelayEndedTurnLimit" text="本轮接力已结束：已达到发言次数上限" />
+    <string id="AF_CONV_UI_Shout_RelayNoNextSpeaker" text="本轮接力已结束：当前无人可接话" />
+    <string id="AF_CONV_UI_Shout_RelayThinking" text="{NAME}正在思考该说什么。" />
+    <string id="AF_CONV_UI_Native_Exited" text="已退出当前对话。" />
+    <string id="AF_CONV_UI_Native_LongWaitEscape" text="NPC回复等待较久，现在可以按 ESC 结束本次对话；处理完成前不能切回普通模式。" />
+    <string id="AF_CONV_UI_Native_Postprocess" text="正在处理NPC（{NAME}）的行为" />
+    <string id="AF_CONV_UI_Native_InputReady" text="你现在可以回复了！" />
+    <string id="AF_CONV_UI_Native_PreprocessTimeoutTitle" text="原生对话前处理超时" />
+    <string id="AF_CONV_UI_Native_PreprocessTimeoutDescription" text="ONNX/知识检索前处理超过等待上限，或上一轮前处理仍在后台运行。&#10;&#10;是否重试刚才这句话？" />
+    <string id="AF_CONV_UI_Native_NpcOpeningTimeoutTitle" text="NPC开口前处理超时" />
+    <string id="AF_CONV_UI_Native_NpcOpeningTimeoutDescription" text="ONNX/知识检索前处理超过等待上限，或上一轮前处理仍在后台运行。&#10;&#10;是否让NPC重新尝试开口？" />
+    <string id="AF_CONV_UI_Native_Retry" text="重试" />
+    <string id="AF_CONV_UI_Native_Cancel" text="取消" />
+    <string id="AF_CONV_UI_Native_MemoryUnconfirmed" text="AnimusForge 记忆记录未确认" />
+    <string id="AF_CONV_UI_Native_ActionIncomplete" text="AnimusForge 动作处理未完成" />
+    <string id="AF_CONV_UI_Native_NpcOpeningFailed" text="AnimusForge NPC主动开口失败" />
+    <string id="AF_CONV_UI_Native_FreeConversationFailed" text="AnimusForge 自由对话提交失败" />
+    <string id="AF_CONV_UI_Trade_TargetFallback" text="对方" />
+    <string id="AF_CONV_UI_Trade_GiveItems" text="给予物品" />
+    <string id="AF_CONV_UI_Trade_ShowItems" text="展示物品" />
+    <string id="AF_CONV_UI_Trade_GiveTroops" text="给予部队" />
+    <string id="AF_CONV_UI_Trade_GivePrisoners" text="给予俘虏" />
+    <string id="AF_CONV_UI_Trade_GiveAssets" text="转移固定资产" />
+    <string id="AF_CONV_UI_Trade_MenuTitle" text="给予/展示 - {TARGET}" />
+    <string id="AF_CONV_UI_Trade_MenuDescription" text="当前目标：{TARGET}&#10;只执行给予或展示动作，不触发 AI 回复。动作会写入 AnimusForge 对话历史，供后续 AI 交流读取。" />
+    <string id="AF_CONV_UI_Trade_AvailableAmount" text="可用数量：{AMOUNT}" />
+    <string id="AF_CONV_UI_Trade_TroopHint" text="可用数量：{AMOUNT} | 日薪：{WAGE} 第纳尔/天 | 雇佣价：{PRICE} 第纳尔/人" />
+    <string id="AF_CONV_UI_Trade_PrisonerHint" text="可用数量：{AMOUNT} | 购买价：{PRICE} 第纳尔/人" />
+    <string id="AF_CONV_UI_Trade_SourceHint" text=" | 来源：{SOURCE}" />
+    <string id="AF_CONV_UI_Trade_SourceSuffix" text="（来源：{SOURCE}）" />
+    <string id="AF_CONV_UI_Trade_AssetHint" text="每日收益：{INCOME} 第纳尔 | 一次结清指导价：{PRICE} 第纳尔 | 类型：{TYPE}" />
+    <string id="AF_CONV_UI_Trade_Town" text="城市" />
+    <string id="AF_CONV_UI_Trade_Castle" text="城堡" />
+    <string id="AF_CONV_UI_Trade_Denars" text="第纳尔" />
+    <string id="AF_CONV_UI_Trade_Currency" text="货币" />
+    <string id="AF_CONV_UI_Trade_Item" text="物品" />
+    <string id="AF_CONV_UI_Trade_Troops" text="部队" />
+    <string id="AF_CONV_UI_Trade_Prisoners" text="俘虏" />
+    <string id="AF_CONV_UI_Trade_TargetTitle" text="{MODE}{SUFFIX} - {TARGET}" />
+    <string id="AF_CONV_UI_Trade_ActionOnlyNote" text="&#10;该动作只记录到对话历史，不触发 AI 回复。" />
+    <string id="AF_CONV_UI_Trade_CurrentTarget" text="当前目标：{TARGET}" />
+    <string id="AF_CONV_UI_Trade_SelectTroops" text="选择要转入对方麾下的部队（可多选）：" />
+    <string id="AF_CONV_UI_Trade_SelectPrisoners" text="选择要交给对方的俘虏（可多选）：" />
+    <string id="AF_CONV_UI_Trade_SelectAssets" text="选择要转给对方的固定资产（可多选）：" />
+    <string id="AF_CONV_UI_Trade_SelectItems" text="选择要使用的物品或第纳尔（可多选）：" />
+    <string id="AF_CONV_UI_Trade_PrepareTroops" text="你准备将以下部队转入对方麾下：&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PreparePrisoners" text="你准备将以下俘虏交给对方：&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareAssets" text="你准备将以下固定资产转给对方：&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareGive" text="你准备给予对方以下物品：&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareShow" text="你准备向对方展示以下物品：&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_TransferTroopLine" text="  · 转入 {AMOUNT} 名 {ITEM}" />
+    <string id="AF_CONV_UI_Trade_DeliverPrisonerHeroLine" text="  · 交付俘虏 {ITEM}" />
+    <string id="AF_CONV_UI_Trade_DeliverPrisonerLine" text="  · 交付 {AMOUNT} 名 {ITEM} 俘虏" />
+    <string id="AF_CONV_UI_Trade_TransferAssetLine" text="  · 转移 {TYPE} {ITEM}" />
+    <string id="AF_CONV_UI_Trade_GiveGoldLine" text="  · 给予 {AMOUNT} 第纳尔" />
+    <string id="AF_CONV_UI_Trade_ShowGoldLine" text="  · 展示 {AMOUNT} 第纳尔" />
+    <string id="AF_CONV_UI_Trade_GiveItemLine" text="  · 给予 {AMOUNT} 个 {ITEM}" />
+    <string id="AF_CONV_UI_Trade_ShowItemLine" text="  · 展示 {AMOUNT} 个 {ITEM}" />
+    <string id="AF_CONV_UI_Trade_AmountTitleGive" text="给予数量" />
+    <string id="AF_CONV_UI_Trade_AmountTitleShow" text="展示数量" />
+    <string id="AF_CONV_UI_Trade_AmountTitleTransfer" text="转移数量" />
+    <string id="AF_CONV_UI_Trade_AmountDescription" text="[{INDEX}/{COUNT}] {ITEM} 最多可填 {MAX}。&#10;请输入 1 到 {MAX} 的整数：" />
+    <string id="AF_CONV_UI_Trade_InvalidAmount" text="请输入合法的数量。" />
+    <string id="AF_CONV_UI_Trade_Interrupted" text="给予/展示流程执行中断，资源与目标结果未确认；本次确认已消费，不应重复执行。" />
+    <string id="AF_CONV_UI_Trade_Recorded" text="已记录给予/展示动作，NPC 会在后续 AI 交流中知道这件事。" />
+    <string id="AF_CONV_UI_Trade_CommitInterrupted" text="给予/展示执行中断，结果未确认；请勿重复交付。" />
+    <string id="AF_CONV_UI_Trade_TargetInvalid" text="交易目标已经离场或失效，本次给予/展示没有执行。" />
+    <string id="AF_CONV_UI_Trade_ListExpired" text="给予列表已失效，请重新打开。" />
+    <string id="AF_CONV_UI_Trade_SelectResource" text="请先选择要给予的资源。" />
+    <string id="AF_CONV_UI_Trade_AmountOutOfRange" text="数量超出可用范围：{RESOURCE}" />
+    <string id="AF_CONV_UI_Trade_NoDelivery" text="给予对象已离开或给予已失效，本次没有交付，话也没有发出。" />
+    <string id="AF_CONV_UI_Trade_ResourcesChanged" text="资源或数量已变化，本次没有交付。" />
+    <string id="AF_CONV_UI_Trade_DisplayValue" text="【展示估值】你向 {TARGET} 展示了总值为 {VALUE} 第纳尔的财物。" />
+    <string id="AF_CONV_UI_Trade_AssetDelivered" text="已将 {ITEM} 转交给 {TARGET}。" />
+    <string id="AF_CONV_UI_Trade_GoldDeliveredToParty" text="已将 {AMOUNT} 第纳尔交给 {TARGET} 所在部队。" />
+    <string id="AF_CONV_UI_Trade_TroopsDelivered" text="已将 {AMOUNT} 名 {ITEM} 转入 {TARGET} 的麾下。" />
+    <string id="AF_CONV_UI_Trade_HeroPrisonerDelivered" text="已将俘虏 {ITEM} 交给 {TARGET}。" />
+    <string id="AF_CONV_UI_Trade_PrisonersDelivered" text="已将 {AMOUNT} 名 {ITEM} 俘虏交给 {TARGET}。" />
+    <string id="AF_CONV_UI_Trade_IneligibleSelf" text="不能把资源给予自己。" />
+    <string id="AF_CONV_UI_Trade_IneligibleLord" text="只有领主才能谈部队与俘虏转移。" />
+    <string id="AF_CONV_UI_Trade_NoCounterpartyParty" text="当前目标没有可接收部队或俘虏的队伍。" />
+    <string id="AF_CONV_UI_Trade_NoTargetAssets" text="当前目标没有可转移的固定资产。" />
+    <string id="AF_CONV_UI_Trade_NoTroops" text="你当前没有可转移给对方的部队。" />
+    <string id="AF_CONV_UI_Trade_NoPrisoners" text="你当前没有可转移给对方的俘虏。" />
+    <string id="AF_CONV_UI_Trade_NoAssets" text="你当前没有可转移给对方的固定资产。" />
+    <string id="AF_CONV_UI_Trade_NoItems" text="你没有可用的物品或第纳尔。" />
+    <string id="AF_CONV_UI_Trade_SessionEnded" text="场景会话已结束。" />
+    <string id="AF_CONV_UI_Trade_OtherFlow" text="另一个给予流程正在进行，请先完成它。" />
+    <string id="AF_CONV_UI_Trade_NoConversationTarget" text="当前没有可以给予的对话对象。" />
+    <string id="AF_CONV_UI_Shout_TargetFallback" text="附近的人" />
+    <string id="AF_CONV_UI_Shout_ModeNormal" text="交流" />
+    <string id="AF_CONV_UI_Shout_ModeGive" text="给予其物品并交流" />
+    <string id="AF_CONV_UI_Shout_ModeShow" text="向其展示物品并交流" />
+    <string id="AF_CONV_UI_Shout_ModeTroops" text="给予部队并交流" />
+    <string id="AF_CONV_UI_Shout_ModePrisoners" text="给予俘虏并交流" />
+    <string id="AF_CONV_UI_Shout_ModeAssets" text="转移固定资产并交流" />
+    <string id="AF_CONV_UI_Shout_TagTest" text="标签测试" />
+    <string id="AF_CONV_UI_Shout_TagTestDescription" text="输入 NPC 可见正文和后处理标签，不调用 API，按当前目标立即执行。" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechPlayer" text="演讲" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechPlayerDescription" text="你亲自面向己方士兵发表演讲。" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechNpc" text="他人演讲" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechNpcDescription" text="让当前框选的己方主目标发表演讲。" />
+    <string id="AF_CONV_UI_Shout_ModeDescription" text="当前目标：{TARGET}&#10;此菜单用于边交流边给予或展示物品，也可转移部队、俘虏或固定资产。&#10;请选择交流方式：" />
+    <string id="AF_CONV_UI_Shout_SpeechInputFailed" text="演讲输入框无法打开，已返回普通场景状态。" />
+    <string id="AF_CONV_UI_Shout_Processing" text="正在处理中..." />
+    <string id="AF_CONV_UI_Shout_TagTitle" text="标签输入 - {TARGET}" />
+    <string id="AF_CONV_UI_Shout_TagSubtitle" text="当前目标：{TARGET}&#10;输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前目标立即执行。" />
+    <string id="AF_CONV_UI_Shout_OpenFailed" text="[场景喊话] 打开喊话界面失败，已重置状态。" />
+    <string id="AF_CONV_UI_Scene_RoleLord" text="领主" />
+    <string id="AF_CONV_UI_Scene_RoleNotable" text="显要" />
+    <string id="AF_CONV_UI_Scene_RoleWanderer" text="流浪者" />
+    <string id="AF_CONV_UI_Scene_Attacked" text="[场景会话] 你受到了攻击，会话面板已收起（按 T 展开）。" />
+    <string id="AF_CONV_UI_Scene_NoParticipants" text="[场景会话] 周围已经没有可交谈的人，会话结束。" />
+    <string id="AF_CONV_UI_Scene_SessionEnded" text="场景会话已结束。" />
+    <string id="AF_CONV_UI_Scene_RoundActive" text="上一轮回应还没结束；想插话请点「打断」。" />
+    <string id="AF_CONV_UI_Scene_Processing" text="上一句还在处理中，请稍候。" />
+    <string id="AF_CONV_UI_Scene_PlayerSpeaker" text="你" />
+    <string id="AF_CONV_UI_Scene_FactSpeaker" text="记录" />
+    <string id="AF_CONV_UI_Native_SceneMoveReady" text="SCENE_MOVE已准备。请手动退出对话框，退出后将执行NPC场景动作。{SUFFIX}" />
+    <string id="AF_CONV_UI_Native_PendingActionsSuffix" text=" 当前待执行 {COUNT} 个。" />
+    <string id="AF_CONV_UI_Native_TauntFightTriggered" text="SCENE_TAUNT_FIGHT已触发：10秒后将自动退出对话并爆发冲突。" />
+    <string id="AF_CONV_UI_Native_ConflictStarted" text="冲突爆发！" />
+    <string id="AF_CONV_UI_Native_ConflictUnavailable" text="冲突未能爆发：当前场景目标不可用。" />
+    <string id="AF_CONV_UI_Scene_SummonGroupArrived" text="{SPEAKER} 带着{TARGET}过来了。" />
+    <string id="AF_CONV_UI_Scene_SummonTargetArrived" text="{TARGET} 被叫过来了。" />
+    <string id="AF_CONV_UI_Ambient_AiReplyFailedUsage" text="[环境 AI] 本次请求未能生成接话，但已计入约 {INPUT} 输入 + {OUTPUT} 输出 Token。" />
+    <string id="AF_CONV_UI_Ambient_AiUsage" text="[环境 AI] {SOURCE}；本次启动累计约 {TOTAL} Token，已请求 {REQUESTS} 次。" />
+    <string id="AF_CONV_UI_Ambient_CacheSource" text="缓存（0 Token）" />
+    <string id="AF_CONV_UI_Ambient_TokenSource" text="输入 {INPUT} + 输出 {OUTPUT} Token" />
+    <string id="AF_CONV_UI_Native_TtsQueueFailed" text="[TTS] 自由对话语音未入队，请检查 TTS 设置或队列。" />
+    <string id="AF_CONV_UI_Native_TtsSynthesisFallback" text="语音合成失败，已切换为文字气泡。" />
+    <string id="AF_CONV_UI_Native_TtsError" text="[TTS错误] {ERROR}" />
+    <string id="AF_CONV_UI_Shout_KeyHint" text="按住 {KEY} 键预览喊话范围，松开后说话；按住 {SPECIAL} 键打开复杂交流。" />
+    <string id="AF_CONV_UI_Scene_PostprocessStatus" text="正在处理 NPC 行为……" />
+    <string id="AF_CONV_UI_Scene_PostprocessWaiting" text="正在等待上一轮 NPC 行为处理完成……" />
+    <string id="AF_CONV_UI_Scene_PostprocessTimeout" text="[场景喊话] 上一轮 NPC 行为处理超时，已自动重置。" />
+    <string id="AF_CONV_UI_Issue_NoOfferable" text="当前没有可接取的原版任务。" />
+    <string id="AF_CONV_UI_Issue_PreconditionsNotMet" text="当前不满足该任务的接取条件。" />
+    <string id="AF_CONV_UI_Issue_CannotAcceptReason" text="当前还不能接这项任务：{REASON}" />
+    <string id="AF_CONV_UI_Issue_ManagerUnavailable" text="IssueManager 不可用，无法启动任务。" />
+    <string id="AF_CONV_UI_Issue_StartFailed" text="原版任务启动失败。" />
+    <string id="AF_CONV_UI_Issue_FinalizeFailed" text="任务已生成，但未能完成原版接受收尾。" />
+    <string id="AF_CONV_UI_Issue_AcceptedSelf" text="已接取任务：{TITLE}" />
+    <string id="AF_CONV_UI_Issue_AcceptException" text="接取任务时出现异常。" />
+    <string id="AF_CONV_UI_Issue_AltDispatchPending" text="当前已有一个待确认的同伴代办派兵界面。" />
+    <string id="AF_CONV_UI_Issue_NoAltSolution" text="当前不能通过同伴代办这项任务。" />
+    <string id="AF_CONV_UI_Issue_CannotAltReason" text="当前不能同伴代办：{REASON}" />
+    <string id="AF_CONV_UI_Issue_CompanionNotAllowed" text="LLM 选择的同伴不在当前允许列表中。" />
+    <string id="AF_CONV_UI_Issue_CompanionUnavailable" text="该同伴当前不可用。" />
+    <string id="AF_CONV_UI_Issue_CompanionConfirmedSelectTroops" text="已确认由 {HERO} 带队，接下来请选择随行士兵。" />
+    <string id="AF_CONV_UI_Issue_AltStartException" text="启动同伴代办流程时出现异常。" />
+    <string id="AF_CONV_UI_Issue_AltAccepted" text="已由 {HERO} 接手任务：{TITLE}" />
+    <string id="AF_CONV_UI_Issue_AltConfirmException" text="确认同伴代办时出现异常。" />
+    <string id="AF_CONV_UI_Issue_CompanionNotFound" text="未找到同伴。" />
+    <string id="AF_CONV_UI_Issue_CompanionNotInParty" text="该同伴当前不在主队。" />
+    <string id="AF_CONV_UI_Issue_CompanionWounded" text="该同伴当前负伤。" />
+    <string id="AF_CONV_UI_Issue_CompanionPregnant" text="该同伴当前怀孕。" />
+    <string id="AF_CONV_UI_Issue_PartyUnavailable" text="当前玩家队伍不可用。" />
+    <string id="AF_CONV_UI_Issue_NoEligibleCompanion" text="玩家队伍里当前没有符合条件的可用同伴。" />
+    <string id="AF_CONV_UI_Issue_NoTurnInQuest" text="当前没有可通过原版 discuss 流交付的任务。" />
+    <string id="AF_CONV_UI_Issue_TurnInFailed" text="原版任务交付执行失败。" />
+    <string id="AF_CONV_UI_Issue_TurnedIn" text="已交付任务：{TITLE}" />
+    <string id="AF_CONV_UI_Issue_DispatchCancelled" text="已取消同伴代办派兵。" />
+    <string id="AF_CONV_UI_Issue_TroopsNotSatisfied" text="当前派兵结果不满足任务要求。" />
+    <string id="AF_CONV_UI_Issue_TroopsNotSatisfiedReason" text="当前派兵结果不满足任务要求：{REASON}" />
+    <string id="AF_CONV_UI_Issue_NoQuestOrGiver" text="未找到任务或发放者。" />
+    <string id="AF_CONV_UI_Issue_QuestNotCreated" text="任务对象未创建。" />
+    <string id="AF_CONV_UI_Issue_AcceptBranchEnded" text="原版接取分支已立即结束或移除了任务，未能进入普通进行中状态。" />
+    <string id="AF_CONV_UI_Issue_QuestNotOngoing" text="任务没有进入进行中状态。" />
+    <string id="AF_CONV_UI_Issue_AcceptFinalizeException" text="原版任务接受收尾异常。" />
+    <string id="AF_CONV_UI_Issue_NoOngoingVanillaQuest" text="当前没有进行中的原版任务。" />
+    <string id="AF_CONV_UI_Issue_NoDiscussFlow" text="当前任务没有可用的原版 discuss 流。" />
+    <string id="AF_CONV_UI_Issue_DiscussAgentMissing" text="当前场景中找不到原版 discuss 探测所需的 Agent。" />
+    <string id="AF_CONV_UI_Issue_ConversationManagerUnavailable" text="当前原版 ConversationManager 不可用于静默任务交付。" />
+    <string id="AF_CONV_UI_Issue_NoClearTurnInOption" text="当前原版 discuss 流里没有足够明确的可交付成功选项。" />
+    <string id="AF_CONV_UI_Issue_TurnInProbeException" text="原版任务交付异常：{REASON}" />
+    <string id="AF_CONV_UI_Issue_TurnInMissingArgs" text="缺少原版任务交付执行参数。" />
+    <string id="AF_CONV_UI_Issue_TurnInAmbiguousBranch" text="原版交付链在中途出现多条分支，且无法高置信度自动选择。" />
+    <string id="AF_CONV_UI_Issue_TurnInNotCompleted" text="原版交付链已运行，但任务仍未完成。" />
+    <string id="AF_CONV_UI_Issue_UnknownCompanion" text="一位身份不明的同伴" />
+      <string id="AF_CONV_UI_Runtime_0062" text="这位领主" />
+    <string id="AF_CONV_UI_Runtime_0063" text="NPC主动接触" />
+    <string id="AF_CONV_UI_Runtime_0064" text="的队伍主动追上了你。他似乎有事想找你谈谈。" />
+    <string id="AF_CONV_UI_Runtime_0498" text="，许久未曾好好问候。愿你近来一切安好；得空时，也请回信告诉我你的近况。" />
+    <string id="AF_CONV_UI_Runtime_0501" text="，我写信只是想报个平安，也想知道你近来身在何处。若方便，请给我回信。" />
+    <string id="AF_CONV_UI_Runtime_0504" text="，想到我们过去的交往，我觉得有些话还是写下来更合适。愿你平安，也愿我们的信任不被辜负。" />
+    <string id="AF_CONV_UI_Runtime_0508" text="，近来发生了一件我想让你知道的事：" />
+    <string id="AF_CONV_UI_Runtime_0509" text="，我当前正面临“" />
+    <string id="AF_CONV_UI_Runtime_0510" text="一项具体困难" />
+    <string id="AF_CONV_UI_Runtime_0511" text="”，希望与你商量。若你愿意，请回信。" />
+    <string id="AF_CONV_UI_Runtime_0512" text="，我希望通过这封信与你讨论一项当前真实存在的外交事务。若你愿意，请回信说明看法。" />
+    <string id="AF_CONV_UI_Runtime_0621" text="失败" />
+      <string id="AF_CONV_UI_Runtime_0750" text="统一 LLM Gateway 请求失败：" />
+      <string id="AF_CONV_UI_Runtime_0751" text="模型回复为空，无法生成人设。" />
+      <string id="AF_CONV_UI_Runtime_0756" text="模型回复无法解析为人设 JSON。" />
+      <string id="AF_CONV_UI_Runtime_0419" text="无" />
+    <string id="AF_CONV_UI_Runtime_0420" text="未知" />
+    <string id="AF_CONV_UI_Runtime_0430" text="玩家" />
+    <string id="AF_CONV_UI_Runtime_0431" text="致" />
+    <string id="AF_CONV_UI_Runtime_0432" text="：&#10;&#10;我有一项确切的困难，希望与你商量。若你愿意，请回信。" />
+    <string id="AF_CONV_UI_Runtime_0434" text="：&#10;&#10;愿你近来安好。得空时，请回信告诉我你的近况。" />
+    <string id="AF_CONV_UI_Runtime_0436" text="：&#10;&#10;我希望以正式信件与你讨论当前事务。若你愿意，请回信说明你的看法。" />
+    <string id="AF_CONV_UI_Runtime_0596" text="信使成员：" />
+    <string id="AF_CONV_UI_Runtime_0597" text="随信内容：仅信件。" />
+    <string id="AF_CONV_UI_Runtime_0598" text="随信内容：" />
+    <string id="AF_CONV_UI_Runtime_0599" text="发送 " />
+    <string id="AF_CONV_UI_Runtime_0600" text=" 第纳尔" />
+    <string id="AF_CONV_UI_Runtime_0601" text="展示 " />
+    <string id="AF_CONV_UI_Runtime_0604" text=" 个 " />
+    <string id="AF_CONV_UI_Runtime_0607" text="转移 " />
+    <string id="AF_CONV_UI_Runtime_0608" text=" 名 " />
+    <string id="AF_CONV_UI_Runtime_0609" text="转移俘虏 " />
+    <string id="AF_CONV_UI_Runtime_0612" text=" 俘虏" />
+    <string id="AF_CONV_UI_Runtime_0613" text="转移固定资产 " />
+    <string id="AF_CONV_UI_Runtime_0670" text="少废话，既然你想找打，那就来吧。" />
+    <string id="AF_CONV_UI_Runtime_0671" text="嘴巴放干净点，别逼我动手。" />
+    <string id="AF_CONV_UI_Direct_001" text="NPC 给我钱" />
+    <string id="AF_CONV_UI_Direct_002" text="NPC 给我物品" />
+    <string id="AF_CONV_UI_Direct_003" text="NPC 转交固定资产" />
+    <string id="AF_CONV_UI_Direct_004" text="NPC 交给我部队" />
+    <string id="AF_CONV_UI_Direct_005" text="NPC 交给我俘虏" />
+    <string id="AF_CONV_UI_Direct_006" text="记录玩家欠款／承诺" />
+    <string id="AF_CONV_UI_Direct_007" text="解除债务" />
+    <string id="AF_CONV_UI_Direct_008" text="当前英雄成为同伴" />
+    <string id="AF_CONV_UI_Direct_009" text="当前英雄成为家族成员" />
+    <string id="AF_CONV_UI_Direct_010" text="跟随我" />
+    <string id="AF_CONV_UI_Direct_011" text="停止跟随" />
+    <string id="AF_CONV_UI_Direct_012" text="进入领主大厅" />
+    <string id="AF_CONV_UI_Direct_013" text="接取任务" />
+    <string id="AF_CONV_UI_Direct_014" text="交付任务" />
+    <string id="AF_CONV_UI_Direct_015" text="直接动作 — " />
+    <string id="AF_CONV_UI_Direct_016" text="当前目标或会话已过期，请重新打开直接动作。" />
+    <string id="AF_CONV_UI_Direct_017" text="按现有标签规则执行，不调用 AI。" />
+    <string id="AF_CONV_UI_Direct_018" text="仅对当前目标执行。资格、数量、费用与副作用沿用原机制。" />
+    <string id="AF_CONV_UI_Direct_019" text="确定" />
+    <string id="AF_CONV_UI_Direct_020" text="取消" />
+    <string id="AF_CONV_UI_Direct_021" text="当前目标或会话已过期，未执行动作。" />
+    <string id="AF_CONV_UI_Direct_022" text="读取动作参数或提交时出现异常，已关闭直接动作；不会自动重试。请检查原机制状态。" />
+    <string id="AF_CONV_UI_Direct_023" text="确认执行" />
+    <string id="AF_CONV_UI_Direct_024" text="输入 NPC 给你的金额（正整数）。不足时仍按原标签补足规则执行。" />
+    <string id="AF_CONV_UI_Direct_025" text="输入玩家欠款／承诺价值（正整数）：" />
+    <string id="AF_CONV_UI_Direct_026" text="输入期限天数（0 保留原有无期限语义）：" />
+    <string id="AF_CONV_UI_Direct_027" text="期限必须是非负整数。" />
+    <string id="AF_CONV_UI_Direct_028" text="输入备注（不能包含方括号或换行）：" />
+    <string id="AF_CONV_UI_Direct_029" text="目标：" />
+    <string id="AF_CONV_UI_Direct_030" text="&#10;将按原标签转入玩家家族，身份为" />
+    <string id="AF_CONV_UI_Direct_031" text="同伴。" />
+    <string id="AF_CONV_UI_Direct_032" text="家族成员／领主。" />
+    <string id="AF_CONV_UI_Direct_033" text="原有身份、部队和归属副作用全部保留。" />
+    <string id="AF_CONV_UI_Direct_034" text="当前目标没有符合原机制的可选物品、资产、部队、俘虏或未解除债务。" />
+    <string id="AF_CONV_UI_Direct_035" text="按原机制执行；执行前复核当前候选。" />
+    <string id="AF_CONV_UI_Direct_036" text="请选择：" />
+    <string id="AF_CONV_UI_Direct_037" text="&#10;转交资产：" />
+    <string id="AF_CONV_UI_Direct_038" text="&#10;归属将转给玩家，沿用原标签所有检查与后果。" />
+    <string id="AF_CONV_UI_Direct_039" text="输入数量" />
+    <string id="AF_CONV_UI_Direct_040" text="输入正整数；补足或实际转移数量仍按原标签规则。" />
+    <string id="AF_CONV_UI_Direct_041" text="该项全部" />
+    <string id="AF_CONV_UI_Direct_042" text="只对已选单项输出 ALL，保留原语义。" />
+    <string id="AF_CONV_UI_Direct_043" text="已选：" />
+    <string id="AF_CONV_UI_Direct_044" text="&#10;输入正整数数量：" />
+    <string id="AF_CONV_UI_Direct_045" text="参数无效，未执行动作。请重新选择并输入正整数数量／金额或允许的 ALL。" />
+    <string id="AF_CONV_UI_Direct_046" text="目标、场景或候选已经变化，未执行动作。请重新打开直接动作。" />
+    <string id="AF_CONV_UI_Direct_047" text="会话已过期，未执行动作。" />
+    <string id="AF_CONV_UI_Direct_048" text="原机制只支持英雄、定居点商人或有实际来源的野外部队。" />
+    <string id="AF_CONV_UI_Direct_049" text="固定资产需要已有英雄及其原机制可转交资产。" />
+    <string id="AF_CONV_UI_Direct_050" text="原机制只支持领主、可招募志愿兵的显贵或有效野外部队来源。" />
+    <string id="AF_CONV_UI_Direct_051" text="当前目标没有原机制支持的个人／市场债务账本。" />
+    <string id="AF_CONV_UI_Direct_052" text="需要已有英雄、玩家家族及玩家队伍；普通 NPC 晋升不在本次范围。" />
+    <string id="AF_CONV_UI_Direct_053" text="需要当前场景中的有效 NPC Agent；原移动标签限制仍适用。" />
+    <string id="AF_CONV_UI_Direct_054" text="原机制仅支持有领主大厅入口的城镇中心场景。" />
+    <string id="AF_CONV_UI_Direct_055" text="不支持的直接动作。" />
+    <string id="AF_CONV_UI_Direct_056" text="当前目标或候选已过期，未执行动作。" />
+    <string id="AF_CONV_UI_Direct_057" text="当前场景动作无法提交。" />
+    <string id="AF_CONV_UI_Direct_058" text="直接动作已提交；实际结果以原机制提示和状态为准。" />
+    <string id="AF_CONV_UI_Direct_059" text="动作提交出现异常，请检查原机制状态；不会自动重试。" />
+    <string id="AF_CONV_UI_Direct_060" text="（私人装备）" />
+    <string id="AF_CONV_UI_Direct_061" text="全部普通物品（逐项执行原 :ALL，不含固定资产／私人装备）" />
+    <string id="AF_CONV_UI_Direct_062" text="全部俘虏（原 ATP:ALL:ALL）" />
+    <string id="AF_CONV_UI_Direct_063" text="全部部队（原 ATT:ALL:ALL）" />
+    <string id="AF_CONV_UI_Direct_064" text="（剩余 " />
+    <string id="AF_CONV_UI_Direct_065" text=" 第纳尔" />
+    <string id="AF_CONV_UI_Direct_066" text="，无期限）" />
+    <string id="AF_CONV_UI_Direct_Button" text="直接动作" />
+    <string id="AF_CONV_UI_Direct_Description" text="仅对当前主目标执行现有标签，不调用 AI。" />
+    <string id="AF_CONV_UI_Direct_IssueHero" text="原版任务需要当前目标是已有英雄。" />
+    <string id="AF_CONV_UI_Direct_IssueProgress" text="当前英雄没有进行中的原版任务；交付条件仍由原执行入口检查。" />
+    <string id="AF_CONV_UI_Direct_IssueOffer" text="当前英雄没有可接取的原版任务。" />
+  </strings>
+</base>

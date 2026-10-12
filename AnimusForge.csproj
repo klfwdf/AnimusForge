@@ -80,18 +80,134 @@
     <TaleWorldsMountAndBladeViewPath Condition="'$(TaleWorldsMountAndBladeViewPath)' == '' and Exists('$(VersionedDepsDir)\TaleWorlds.MountAndBlade.View.dll')">$(VersionedDepsDir)\TaleWorlds.MountAndBlade.View.dll</TaleWorldsMountAndBladeViewPath>
     <TaleWorldsMountAndBladeViewPath Condition="'$(TaleWorldsMountAndBladeViewPath)' == ''">$(NativeBinDir)\TaleWorlds.MountAndBlade.View.dll</TaleWorldsMountAndBladeViewPath>
   </PropertyGroup>
-  <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="content\modules\AF.Module.Prompt\ModuleData\RuleBehaviorPrompts.json">
-      <LogicalName>AnimusForge.Defaults.ExecutionRulePrompts.json</LogicalName>
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownPrompt.en.json">
+      <LogicalName>AnimusForge.Defaults.GcczTownPrompt.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownEntryPresentation.en.json">
+      <LogicalName>AnimusForge.Defaults.GcczTownEntryPresentation.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownActionPresentation.en.json">
+      <LogicalName>AnimusForge.Defaults.GcczTownActionPresentation.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownHiddenResidents.en.json">
+      <LogicalName>AnimusForge.Defaults.GcczTownHiddenResidents.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownManual.en.json">
+      <LogicalName>AnimusForge.Defaults.GcczTownManual.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\CastleAftermathCompatibility.json">
+      <LogicalName>AnimusForge.Defaults.CastleAftermathCompatibility.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\SiegeAftermathCompatibility.json">
+      <LogicalName>AnimusForge.Defaults.SiegeAftermathCompatibility.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Weekly\ModuleData\WorldBulletinCompatibility.json">
+      <LogicalName>AnimusForge.Weekly.WorldBulletinCompatibility.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Llm\ModuleData\LlmSourceTexts.json">
+      <LogicalName>AnimusForge.Llm.RuntimeSources.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Taunt\ModuleData\TauntSourceTexts.json">
+      <LogicalName>AnimusForge.Taunt.RuntimeSources.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\foundation\AF.Foundation.Localization\ModuleData\McmPromptSourceCompatibility.json">
+      <LogicalName>AnimusForge.Mcm.PromptSourceCompatibility.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\foundation\AF.Foundation.Localization\ModuleData\RuntimeStaleRequestCompatibility.txt">
+      <LogicalName>AnimusForge.Foundation.StaleRequestError.txt</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Issue\ModuleData\IssueDisplayMatchSources.xml">
+      <LogicalName>AnimusForge.Issue.DisplayMatchSources.xml</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Memory\ModuleData\MemorySourceTexts.json">
+      <LogicalName>AnimusForge.Memory.SourceTexts.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Prompt\ModuleData\PromptCompatibility.json">
+      <LogicalName>AnimusForge.Prompt.Compatibility.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Prompt\ModuleData\PromptRetrievalCompatibility.json">
+      <LogicalName>AnimusForge.Prompt.RetrievalCompatibility.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Knowledge\ModuleData\KnowledgeSourceTexts.json">
+      <LogicalName>AnimusForge.Knowledge.SourceTexts.json</LogicalName>
+      <WithCulture>false</WithCulture>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="content\modules\AF.Module.Prompt\ModuleData\PreprocessPrompts.json">
-      <LogicalName>AnimusForge.Defaults.PreprocessPrompts.json</LogicalName>
+    <EmbeddedResource Include="content\foundation\AF.Foundation.Localization\ModuleData\AdapterRecordCompatibility.json">
+      <LogicalName>AnimusForge.Adapter.RecordCompatibility.json</LogicalName>
+      <WithCulture>false</WithCulture>
     </EmbeddedResource>
-    <EmbeddedResource Include="content\modules\AF.Module.Economy\ModuleData\RpItemIntroductionPrompts.json">
-      <LogicalName>AnimusForge.Defaults.RpItemIntroductionPrompts.json</LogicalName>
+    <EmbeddedResource Include="content\modules\AF.Module.Conversation\ModuleData\ConversationRuntimeCompatibility.json">
+      <LogicalName>AnimusForge.Conversation.RuntimeCompatibility.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Economy\ModuleData\EconomySourceTexts.json">
+      <LogicalName>AnimusForge.Defaults.EconomySourceTexts.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\foundation\AF.Foundation.Localization\ModuleData\AdapterSceneCompatibility.json">
+      <LogicalName>AnimusForge.Adapter.SceneCompatibility.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\foundation\AF.Foundation.Localization\ModuleData\AdapterPromptCaptureCompatibility.json">
+      <LogicalName>AnimusForge.AdapterPromptCapture.Compatibility.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="content\modules\AnimusForge.XihaiAction\ModuleData\SceneActionVocabulary.xml">
+      <LogicalName>AnimusForge.Defaults.SceneActionVocabulary.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\foundation\AF.Foundation.Localization\ModuleData\LegacySettingsPrompts.json">
+      <LogicalName>AnimusForge.Defaults.LegacySettingsPrompts.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\foundation\AF.Foundation.Localization\ModuleData\TerminalCategories.json">
+      <LogicalName>AnimusForge.Defaults.TerminalCategories.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.XihaiAction\ModuleData\Languages\afscene_catalog_strings.xml">
+      <LogicalName>AnimusForge.SceneActions.Catalog.en.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.XihaiAction\ModuleData\Languages\afscene_speech_strings.xml">
+      <LogicalName>AnimusForge.SceneActions.Speech.en.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.XihaiAction\ModuleData\Languages\CNs\afscene_speech_strings-zh-CN.xml">
+      <LogicalName>AnimusForge.SceneActions.Speech.zh-CN.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.XihaiAction\ModuleData\Languages\CNs\afscene_catalog_strings-zh-CN.xml">
+      <LogicalName>AnimusForge.SceneActions.Catalog.zh-CN.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Social\ModuleData\SocialSourceTexts.json">
+      <LogicalName>AnimusForge.Defaults.SocialSourceTexts.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Weekly\ModuleData\WeeklyMaterialCompatibility.json">
+      <LogicalName>AnimusForge.Weekly.MaterialCompatibility.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Diplomacy\ModuleData\DiplomacyPromptCompatibility.json">
+      <LogicalName>AnimusForge.Diplomacy.PromptCompatibility.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Economy\ModuleData\EconomyDisplaySources.json">
+      <LogicalName>AnimusForge.Defaults.EconomyDisplaySources.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Economy\ModuleData\GeneratedRpVocabulary.json">
+      <LogicalName>AnimusForge.Defaults.GeneratedRpVocabulary.json</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownPrompt.zh-CN.json">
       <LogicalName>AnimusForge.Defaults.GcczTownPrompt.zh-CN.json</LogicalName>

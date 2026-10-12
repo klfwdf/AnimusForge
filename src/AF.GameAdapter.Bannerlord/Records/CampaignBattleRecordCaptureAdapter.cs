@@ -1,4 +1,4 @@
-using TaleWorlds.CampaignSystem.Map;
+﻿using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.Actions;
 using NpcActionFacts=AnimusForge.MyBehavior.NpcActionFacts;
 using System.Text;
@@ -19,12 +19,12 @@ internal static string StripBattlePlayerMarker(string text)
 internal static bool ContainsRoutineBanditText(string text)
 	{
 		string value = (text ?? "").Trim();
-		return value.IndexOf("强盗", StringComparison.OrdinalIgnoreCase) >= 0
-			|| value.IndexOf("劫匪", StringComparison.OrdinalIgnoreCase) >= 0
-			|| value.IndexOf("土匪", StringComparison.OrdinalIgnoreCase) >= 0
-			|| value.IndexOf("山贼", StringComparison.OrdinalIgnoreCase) >= 0
-			|| value.IndexOf("海寇", StringComparison.OrdinalIgnoreCase) >= 0
-			|| value.IndexOf("响马", StringComparison.OrdinalIgnoreCase) >= 0
+		return value.IndexOf(AdapterRecordTexts.Raw("AF_REC_Battle_0001"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf(AdapterRecordTexts.Raw("AF_REC_Battle_0002"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf(AdapterRecordTexts.Raw("AF_REC_Battle_0003"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf(AdapterRecordTexts.Raw("AF_REC_Battle_0004"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf(AdapterRecordTexts.Raw("AF_REC_Battle_0005"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf(AdapterRecordTexts.Raw("AF_REC_Battle_0006"), StringComparison.OrdinalIgnoreCase) >= 0
 			|| value.IndexOf("looter", StringComparison.OrdinalIgnoreCase) >= 0
 			|| value.IndexOf("bandit", StringComparison.OrdinalIgnoreCase) >= 0
 			|| value.IndexOf("raider", StringComparison.OrdinalIgnoreCase) >= 0
@@ -79,7 +79,7 @@ internal static string BuildBattleHeroDisplayName(Hero hero, bool isHighlighted,
 		string text = hero?.Name?.ToString()?.Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = (hero == Hero.MainHero) ? "玩家" : "";
+			text = (hero == Hero.MainHero) ? AdapterRecordTexts.Raw("AF_REC_Battle_0007") : "";
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -118,7 +118,7 @@ internal static string BuildTrackedHeroListText(IEnumerable<Hero> heroes, Hero h
 		{
 			return string.Join("、", list);
 		}
-		return string.Join("、", list.Take(maxCount)) + "等" + list.Count + "人";
+		return string.Join("、", list.Take(maxCount)) + AdapterRecordTexts.Raw("AF_REC_Battle_0008") + list.Count + AdapterRecordTexts.Raw("AF_REC_Battle_0009");
 	}
 
 internal static string BuildTrackedHeroListText(IEnumerable<Hero> heroes, int maxCount = 5)
@@ -132,13 +132,13 @@ internal static string BuildTrackedHeroListText(MapEventSide side, int maxCount 
 		{
 			return "";
 		}
-		return BuildTrackedHeroListText(side.Parties.Select((MapEventParty x) => x?.Party?.LeaderHero), side.LeaderParty?.LeaderHero, "统帅", maxCount);
+		return BuildTrackedHeroListText(side.Parties.Select((MapEventParty x) => x?.Party?.LeaderHero), side.LeaderParty?.LeaderHero, AdapterRecordTexts.Raw("AF_REC_Battle_0010"), maxCount);
 	}
 
 internal static string BuildTrackedHeroListText(SiegeEvent siegeEvent, BattleSideEnum side, int maxCount = 5)
 	{
 		Hero highlightedHero = ((side == BattleSideEnum.Attacker) ? (siegeEvent?.BesiegerCamp?.LeaderParty?.LeaderHero) : (siegeEvent?.BesiegedSettlement?.OwnerClan?.Leader));
-		return BuildTrackedHeroListText(GetHeroesFromSiegeEventSide(siegeEvent, side), highlightedHero, "统帅", maxCount);
+		return BuildTrackedHeroListText(GetHeroesFromSiegeEventSide(siegeEvent, side), highlightedHero, AdapterRecordTexts.Raw("AF_REC_Battle_0011"), maxCount);
 	}
 
 internal static string GetNearestSettlementNameForParty(MobileParty party)
@@ -174,7 +174,7 @@ internal static string GetNearestSettlementNameForParty(MobileParty party)
 			return text.Trim();
 		}
 		text = party?.BesiegedSettlement?.Name?.ToString();
-		return string.IsNullOrWhiteSpace(text) ? "附近一带" : text.Trim();
+		return string.IsNullOrWhiteSpace(text) ? AdapterRecordTexts.Raw("AF_REC_Battle_0012") : text.Trim();
 	}
 internal static Settlement ResolveSiegeSettlement(SiegeEvent siegeEvent)
 	{
@@ -202,7 +202,7 @@ internal static Settlement ResolveSiegeSettlement(SiegeEvent siegeEvent)
 internal static string GetMapEventLocationLabel(MapEvent mapEvent)
 	{
 		string text = mapEvent?.MapEventSettlement?.Name?.ToString();
-		return string.IsNullOrWhiteSpace(text) ? "野外" : text.Trim();
+		return string.IsNullOrWhiteSpace(text) ? AdapterRecordTexts.Raw("AF_REC_Battle_0013") : text.Trim();
 	}
 
 internal static string GetPrimaryOtherSideLabel(MapEventSide side)
@@ -223,7 +223,7 @@ internal static string GetPrimaryOtherSideLabel(MapEventSide side)
 			return text.Trim();
 		}
 		text = side?.MapFaction?.Name?.ToString();
-		return string.IsNullOrWhiteSpace(text) ? "敌军" : text.Trim();
+		return string.IsNullOrWhiteSpace(text) ? AdapterRecordTexts.Raw("AF_REC_Battle_0014") : text.Trim();
 	}
 
 internal static int GetMapEventTroopCount(MapEvent mapEvent)
@@ -262,7 +262,7 @@ internal static string BuildMapEventCasualtyText(MapEventSide side)
 		catch
 		{
 		}
-		return "阵亡" + num + "、负伤" + num2;
+		return AdapterRecordTexts.Raw("AF_REC_Battle_0015") + num + AdapterRecordTexts.Raw("AF_REC_Battle_0016") + num2;
 	}
 
 internal static string BuildMapEventStableKey(MapEvent mapEvent, string locationLabel)
@@ -409,7 +409,7 @@ internal static string BuildMapEventNonLordPartyListText(MapEventSide side, int 
 		{
 			return string.Join("、", list);
 		}
-		return string.Join("、", list.Take(count)) + "等" + list.Count + "支";
+		return string.Join("、", list.Take(count)) + AdapterRecordTexts.Raw("AF_REC_Battle_0017") + list.Count + AdapterRecordTexts.Raw("AF_REC_Battle_0018");
 	}
 
 internal static string BuildMapEventNonLordPartyDisplayText(PartyBase partyBase, MapEventParty party, bool includeCounts)
@@ -422,7 +422,7 @@ internal static string BuildMapEventNonLordPartyDisplayText(PartyBase partyBase,
 		string text2 = GetMapEventNonLordPartyTypeLabel(partyBase);
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = string.IsNullOrWhiteSpace(text2) ? "非领主部队" : text2;
+			text = string.IsNullOrWhiteSpace(text2) ? AdapterRecordTexts.Raw("AF_REC_Battle_0019") : text2;
 			text2 = "";
 		}
 		List<string> list = new List<string>();
@@ -435,7 +435,7 @@ internal static string BuildMapEventNonLordPartyDisplayText(PartyBase partyBase,
 			int mapEventPartyCommittedTroopCount = GetMapEventPartyCommittedTroopCount(party);
 			if (mapEventPartyCommittedTroopCount > 0)
 			{
-				list.Add("约" + mapEventPartyCommittedTroopCount + "人");
+				list.Add(AdapterRecordTexts.Raw("AF_REC_Battle_0020") + mapEventPartyCommittedTroopCount + AdapterRecordTexts.Raw("AF_REC_Battle_0021"));
 			}
 		}
 		return list.Count > 0 ? (text.Trim() + "（" + string.Join("，", list) + "）") : text.Trim();
@@ -452,37 +452,37 @@ internal static string GetMapEventNonLordPartyTypeLabel(PartyBase partyBase)
 			}
 			if (mobileParty.IsVillager || mobileParty.PartyComponent is VillagerPartyComponent)
 			{
-				return "村民队";
+				return AdapterRecordTexts.Raw("AF_REC_Battle_0022");
 			}
 			if (mobileParty.IsCaravan || mobileParty.PartyComponent is CaravanPartyComponent)
 			{
-				return "商队";
+				return AdapterRecordTexts.Raw("AF_REC_Battle_0023");
 			}
 			if (mobileParty.IsPatrolParty || mobileParty.PartyComponent is PatrolPartyComponent)
 			{
-				return "巡逻队";
+				return AdapterRecordTexts.Raw("AF_REC_Battle_0024");
 			}
 			if (mobileParty.IsMilitia || mobileParty.PartyComponent is MilitiaPartyComponent)
 			{
-				return "民兵队";
+				return AdapterRecordTexts.Raw("AF_REC_Battle_0025");
 			}
 			if (mobileParty.IsGarrison || mobileParty.PartyComponent is GarrisonPartyComponent)
 			{
-				return "驻军";
+				return AdapterRecordTexts.Raw("AF_REC_Battle_0026");
 			}
 			if (IsBanditOrOutlawPartyBase(partyBase) || mobileParty.PartyComponent is BanditPartyComponent)
 			{
-				return "匪帮";
+				return AdapterRecordTexts.Raw("AF_REC_Battle_0027");
 			}
 			if (mobileParty.PartyComponent is CustomPartyComponent)
 			{
-				return "自定义部队";
+				return AdapterRecordTexts.Raw("AF_REC_Battle_0028");
 			}
 		}
 		catch
 		{
 		}
-		return "非领主部队";
+		return AdapterRecordTexts.Raw("AF_REC_Battle_0029");
 	}
 
 internal static bool IsBanditOrOutlawPartyBase(PartyBase party)
@@ -509,7 +509,7 @@ internal static bool IsBanditOrOutlawPartyBase(PartyBase party)
 internal static string BuildMapEventCommittedTroopText(MapEventSide side)
 	{
 		int mapEventSideCommittedTroopCount = GetMapEventSideCommittedTroopCount(side);
-		return (mapEventSideCommittedTroopCount > 0) ? (mapEventSideCommittedTroopCount + "人") : "";
+		return (mapEventSideCommittedTroopCount > 0) ? (mapEventSideCommittedTroopCount + AdapterRecordTexts.Raw("AF_REC_Battle_0030")) : "";
 	}
 
 internal static int GetTroopRosterTotalManCount(TroopRoster roster)
@@ -560,7 +560,7 @@ internal static string BuildArmyCommandClause(MapEventSide side, Hero actorHero)
 		{
 			return "";
 		}
-		return text + "统帅的军团";
+		return text + AdapterRecordTexts.Raw("AF_REC_Battle_0031");
 	}
 
 internal static int CountTrackedLordParties(MapEventSide side)
@@ -632,24 +632,24 @@ internal static string BuildPlayerDefeatedHeroDialogueFact(MapEvent mapEvent, Ma
 		string playerName = Hero.MainHero?.Name?.ToString()?.Trim();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = "玩家";
+			playerName = AdapterRecordTexts.Raw("AF_REC_Battle_0032");
 		}
-		string place = string.IsNullOrWhiteSpace(locationLabel) ? "野外" : locationLabel.Trim();
-		string battleKind = "战斗";
+		string place = string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0033") : locationLabel.Trim();
+		string battleKind = AdapterRecordTexts.Raw("AF_REC_Battle_0034");
 		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
 		{
-			battleKind = "攻守战";
+			battleKind = AdapterRecordTexts.Raw("AF_REC_Battle_0035");
 		}
 		else if (mapEvent?.IsRaid == true)
 		{
-			battleKind = "袭掠战";
+			battleKind = AdapterRecordTexts.Raw("AF_REC_Battle_0036");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("[AFEF玩家行为补充] 你刚在").Append(place).Append("的").Append(battleKind).Append("中被").Append(playerName).Append("一方击败；这场战败已经发生。");
+		stringBuilder.Append(DialogueHistoryLedger.AfefPlayerPrefix).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0037")).Append(place).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0038")).Append(battleKind).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0039")).Append(playerName).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0040"));
 		string winningLords = BuildTrackedHeroListText(defeatedSide?.OtherSide, 4);
 		if (!string.IsNullOrWhiteSpace(winningLords))
 		{
-			stringBuilder.Append(" 胜方主要领主：").Append(winningLords).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0041")).Append(winningLords).Append('。');
 		}
 		return stringBuilder.ToString();
 	}
@@ -659,22 +659,22 @@ internal static string BuildNpcDefeatedByPlayerRecentActionText(MapEvent mapEven
 		string playerName = Hero.MainHero?.Name?.ToString()?.Trim();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = "玩家";
+			playerName = AdapterRecordTexts.Raw("AF_REC_Battle_0032");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
 		{
-			stringBuilder.Append("你在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处要塞" : locationLabel.Trim()).Append("的攻守战中被").Append(playerName).Append("一方击败。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0043")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0044") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0045")).Append(playerName).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0046"));
 		}
 		else if (mapEvent?.IsRaid == true)
 		{
-			stringBuilder.Append("你在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处村庄" : locationLabel.Trim()).Append("的袭掠战中被").Append(playerName).Append("一方击败。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0047")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0048") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0049")).Append(playerName).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0050"));
 		}
 		else
 		{
-			stringBuilder.Append("你在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "野外" : locationLabel.Trim()).Append("的战斗中被").Append(playerName).Append("一方击败。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0051")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0052") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0053")).Append(playerName).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0054"));
 		}
-		AppendBattleOpponentDetails(stringBuilder, defeatedSide?.OtherSide, "胜方");
+		AppendBattleOpponentDetails(stringBuilder, defeatedSide?.OtherSide, AdapterRecordTexts.Raw("AF_REC_Battle_0055"));
 		AppendBattleCasualtyDetails(stringBuilder, defeatedSide, defeatedSide?.OtherSide);
 		return stringBuilder.ToString();
 	}
@@ -684,22 +684,22 @@ internal static string BuildPlayerBattleDefeatRecentActionText(MapEvent mapEvent
 		string opponentLabel = BuildMapEventSideNarrativeLabel(playerSide?.OtherSide);
 		if (string.IsNullOrWhiteSpace(opponentLabel))
 		{
-			opponentLabel = "敌军";
+			opponentLabel = AdapterRecordTexts.Raw("AF_REC_Battle_0056");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
 		{
-			stringBuilder.Append("玩家在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处要塞" : locationLabel.Trim()).Append("的攻守战中败给了").Append(opponentLabel).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0057")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0058") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0059")).Append(opponentLabel).Append("。");
 		}
 		else if (mapEvent?.IsRaid == true)
 		{
-			stringBuilder.Append("玩家在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处村庄" : locationLabel.Trim()).Append("的袭掠战中败给了").Append(opponentLabel).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0060")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0061") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0062")).Append(opponentLabel).Append("。");
 		}
 		else
 		{
-			stringBuilder.Append("玩家在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "野外" : locationLabel.Trim()).Append("的战斗中败给了").Append(opponentLabel).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0063")).Append(string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0064") : locationLabel.Trim()).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0065")).Append(opponentLabel).Append("。");
 		}
-		AppendBattleOpponentDetails(stringBuilder, playerSide?.OtherSide, "胜方");
+		AppendBattleOpponentDetails(stringBuilder, playerSide?.OtherSide, AdapterRecordTexts.Raw("AF_REC_Battle_0066"));
 		AppendBattleCasualtyDetails(stringBuilder, playerSide, playerSide?.OtherSide);
 		return stringBuilder.ToString();
 	}
@@ -710,16 +710,16 @@ internal static void AppendBattleOpponentDetails(StringBuilder stringBuilder, Ma
 		{
 			return;
 		}
-		string sideLabel = string.IsNullOrWhiteSpace(label) ? "对方" : label.Trim();
+		string sideLabel = string.IsNullOrWhiteSpace(label) ? AdapterRecordTexts.Raw("AF_REC_Battle_0067") : label.Trim();
 		string lords = BuildTrackedHeroListText(opponentSide, 6);
 		if (!string.IsNullOrWhiteSpace(lords))
 		{
-			stringBuilder.Append(' ').Append(sideLabel).Append("领主：").Append(lords).Append('。');
+			stringBuilder.Append(' ').Append(sideLabel).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0068")).Append(lords).Append('。');
 		}
 		string nonLordParties = BuildMapEventNonLordPartyListText(opponentSide, 5);
 		if (!string.IsNullOrWhiteSpace(nonLordParties))
 		{
-			stringBuilder.Append(' ').Append(sideLabel).Append("非领主部队：").Append(nonLordParties).Append('。');
+			stringBuilder.Append(' ').Append(sideLabel).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0069")).Append(nonLordParties).Append('。');
 		}
 	}
 
@@ -733,8 +733,8 @@ internal static void AppendBattleCasualtyDetails(StringBuilder stringBuilder, Ma
 		string winningCasualties = BuildMapEventCasualtyText(winningSide);
 		if (!string.IsNullOrWhiteSpace(defeatedCasualties) || !string.IsNullOrWhiteSpace(winningCasualties))
 		{
-			stringBuilder.Append(" 败方死伤：").Append(string.IsNullOrWhiteSpace(defeatedCasualties) ? "不详" : defeatedCasualties);
-			stringBuilder.Append("；胜方死伤：").Append(string.IsNullOrWhiteSpace(winningCasualties) ? "不详" : winningCasualties).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0070")).Append(string.IsNullOrWhiteSpace(defeatedCasualties) ? AdapterRecordTexts.Raw("AF_REC_Battle_0071") : defeatedCasualties);
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0072")).Append(string.IsNullOrWhiteSpace(winningCasualties) ? AdapterRecordTexts.Raw("AF_REC_Battle_0073") : winningCasualties).Append('。');
 		}
 	}
 
@@ -891,28 +891,28 @@ internal static string BuildMapEventNarrative(MapEvent mapEvent, MapEventSide si
 				text5 = locationLabel;
 			}
 			string text6 = MemoryEntityIdentityBannerlordAdapter.GetFactionDisplayName(side.OtherSide?.MapFaction, text2);
-			text4 = ((side.MissionSide == BattleSideEnum.Attacker) ? (won ? (text + "，在" + (string.IsNullOrWhiteSpace(text3) ? "对" : (text3 + "对")) + text6 + "的领土" + text5.Trim() + "的围城战中获胜。") : (text + "，在" + (string.IsNullOrWhiteSpace(text3) ? "对" : (text3 + "对")) + text6 + "的领土" + text5.Trim() + "的围攻中失利。")) : (won ? (text + "，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "参与的")) + text5.Trim() + "保卫战中击退了" + text6 + "。") : (text + "，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "参与的")) + text5.Trim() + "保卫战中败给了" + text6 + "。")));
+			text4 = ((side.MissionSide == BattleSideEnum.Attacker) ? (won ? (text + AdapterRecordTexts.Raw("AF_REC_Battle_0074") + (string.IsNullOrWhiteSpace(text3) ? AdapterRecordTexts.Raw("AF_REC_Battle_0075") : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0076"))) + text6 + AdapterRecordTexts.Raw("AF_REC_Battle_0077") + text5.Trim() + AdapterRecordTexts.Raw("AF_REC_Battle_0078")) : (text + AdapterRecordTexts.Raw("AF_REC_Battle_0079") + (string.IsNullOrWhiteSpace(text3) ? AdapterRecordTexts.Raw("AF_REC_Battle_0080") : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0081"))) + text6 + AdapterRecordTexts.Raw("AF_REC_Battle_0082") + text5.Trim() + AdapterRecordTexts.Raw("AF_REC_Battle_0083"))) : (won ? (text + AdapterRecordTexts.Raw("AF_REC_Battle_0084") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0085"))) + text5.Trim() + AdapterRecordTexts.Raw("AF_REC_Battle_0086") + text6 + "。") : (text + AdapterRecordTexts.Raw("AF_REC_Battle_0087") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0088"))) + text5.Trim() + AdapterRecordTexts.Raw("AF_REC_Battle_0089") + text6 + "。")));
 		}
 		else if (mapEvent.IsRaid)
 		{
-			string raidLocation = string.IsNullOrWhiteSpace(locationLabel) ? "某处村庄" : locationLabel.Trim();
-			string raidCommandPrefix = string.IsNullOrWhiteSpace(text3) ? "在" : ("随" + text3 + "在");
+			string raidLocation = string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0090") : locationLabel.Trim();
+			string raidCommandPrefix = string.IsNullOrWhiteSpace(text3) ? AdapterRecordTexts.Raw("AF_REC_Battle_0091") : (AdapterRecordTexts.Raw("AF_REC_Battle_0092") + text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0093"));
 			if (side.MissionSide == BattleSideEnum.Attacker)
 			{
-				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + "对" + text2 + "发动的袭掠中得手。") : (text + "，" + raidCommandPrefix + raidLocation + "对" + text2 + "发动的袭掠中失利。");
+				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0094") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0095")) : (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0096") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0097"));
 			}
 			else if (side.MissionSide == BattleSideEnum.Defender)
 			{
-				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + "保卫村庄，击退了" + text2 + "的袭掠。") : (text + "，" + raidCommandPrefix + raidLocation + "保卫村庄时失利，未能阻止" + text2 + "的袭掠。");
+				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0098") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0099")) : (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0100") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0101"));
 			}
 			else
 			{
-				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + "的村庄袭掠冲突中获胜。") : (text + "，" + raidCommandPrefix + raidLocation + "的村庄袭掠冲突中失利。");
+				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0102")) : (text + "，" + raidCommandPrefix + raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0103"));
 			}
 		}
 		else
 		{
-			text4 = (won ? (text + "，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "于")) + locationLabel + "击败了" + text2 + "。") : (text + "，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "于")) + locationLabel + "败给了" + text2 + "。"));
+			text4 = (won ? (text + AdapterRecordTexts.Raw("AF_REC_Battle_0104") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0105"))) + locationLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0106") + text2 + "。") : (text + AdapterRecordTexts.Raw("AF_REC_Battle_0107") + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + AdapterRecordTexts.Raw("AF_REC_Battle_0108"))) + locationLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0109") + text2 + "。"));
 		}
 		StringBuilder stringBuilder = new StringBuilder(text4);
 		string text7 = BuildTrackedHeroListText(side, 5);
@@ -921,32 +921,32 @@ internal static string BuildMapEventNarrative(MapEvent mapEvent, MapEventSide si
 		string text10 = BuildMapEventNonLordPartyListText(side.OtherSide, 5);
 		if (!string.IsNullOrWhiteSpace(text7))
 		{
-			stringBuilder.Append(" 我方领主：").Append(text7).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0110")).Append(text7).Append('。');
 		}
 		if (!string.IsNullOrWhiteSpace(text8))
 		{
-			stringBuilder.Append(" 敌方领主：").Append(text8).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0111")).Append(text8).Append('。');
 		}
 		if (!string.IsNullOrWhiteSpace(text9))
 		{
-			stringBuilder.Append(" 我方非领主部队：").Append(text9).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0112")).Append(text9).Append('。');
 		}
 		if (!string.IsNullOrWhiteSpace(text10))
 		{
-			stringBuilder.Append(" 敌方非领主部队：").Append(text10).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0113")).Append(text10).Append('。');
 		}
 		string text11 = BuildMapEventCommittedTroopText(side);
 		string text12 = BuildMapEventCommittedTroopText(side.OtherSide);
 		if (!string.IsNullOrWhiteSpace(text11) || !string.IsNullOrWhiteSpace(text12))
 		{
-			stringBuilder.Append(" 战前投入兵力：我方").Append(string.IsNullOrWhiteSpace(text11) ? "不详" : text11);
-			stringBuilder.Append("；敌方").Append(string.IsNullOrWhiteSpace(text12) ? "不详" : text12).Append('。');
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0114")).Append(string.IsNullOrWhiteSpace(text11) ? AdapterRecordTexts.Raw("AF_REC_Battle_0115") : text11);
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0116")).Append(string.IsNullOrWhiteSpace(text12) ? AdapterRecordTexts.Raw("AF_REC_Battle_0117") : text12).Append('。');
 		}
 		string text13 = BuildMapEventStandoutText(side, side.OtherSide);
 		string text14 = BuildMapEventCasualtyText(side);
 		string text15 = BuildMapEventCasualtyText(side.OtherSide);
-		stringBuilder.Append(" 我方死伤：").Append(text14);
-		stringBuilder.Append("；敌方死伤：").Append(text15).Append('。');
+		stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0118")).Append(text14);
+		stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0119")).Append(text15).Append('。');
 		if (!string.IsNullOrWhiteSpace(text13))
 		{
 			stringBuilder.Append(" ：").Append(text13);
@@ -976,34 +976,34 @@ internal static string BuildMapEventStandoutText(MapEventSide side, MapEventSide
 		}
 		int num = list.Sum((MapEventParty x) => Math.Max(0, x.ContributionToBattle));
 		Hero leaderHero = mapEventParty.Party?.LeaderHero;
-		string text = BuildBattleHeroDisplayName(leaderHero, side.LeaderParty?.LeaderHero == leaderHero, "统帅");
+		string text = BuildBattleHeroDisplayName(leaderHero, side.LeaderParty?.LeaderHero == leaderHero, AdapterRecordTexts.Raw("AF_REC_Battle_0120"));
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return "";
 		}
 		if (num <= 0)
 		{
-			return text + "战场贡献最突出。";
+			return text + AdapterRecordTexts.Raw("AF_REC_Battle_0121");
 		}
 		int num2 = (int)Math.Round((double)(100 * mapEventParty.ContributionToBattle) / (double)num);
 		if (num2 < 30)
 		{
 			return "";
 		}
-		string text2 = MemoryEntityIdentityBannerlordAdapter.GetFactionDisplayName(leaderHero?.MapFaction ?? side.MapFaction, "某势力");
+		string text2 = MemoryEntityIdentityBannerlordAdapter.GetFactionDisplayName(leaderHero?.MapFaction ?? side.MapFaction, AdapterRecordTexts.Raw("AF_REC_Battle_0122"));
 		if (num2 > 90)
 		{
-			return "万军辟易！这根本不是一场战争，而是" + text2 + "的" + text + "与他部队的专属杀戮秀！敌人在他面前如同草芥一般不堪一击！";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0123") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0124") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0125");
 		}
 		if (num2 > 75)
 		{
-			return text2 + "的" + text + "几乎包揽了绝大多数的战果！他的大军如同利刃般撕裂敌阵，所向披靡！";
+			return text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0126") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0127");
 		}
 		if (num2 > 50)
 		{
-			return text2 + "的" + text + "与他的部队在战场上战无不胜！他是" + text2 + "的英雄！";
+			return text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0128") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0129") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0130");
 		}
-		return text2 + "的" + text + "与他的部队是我方的中流砥柱！他拥有最高的贡献！";
+		return text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0131") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0132");
 	}
 
 internal static string BuildMapEventAftermathText(MapEvent mapEvent, MapEventSide side, bool won, string locationLabel)
@@ -1018,18 +1018,18 @@ internal static string BuildMapEventAftermathText(MapEvent mapEvent, MapEventSid
 		}
 		if (mapEvent.IsRaid)
 		{
-			string raidLocation = string.IsNullOrWhiteSpace(locationLabel) ? "某处村庄" : locationLabel.Trim();
+			string raidLocation = string.IsNullOrWhiteSpace(locationLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0090") : locationLabel.Trim();
 			if (side.MissionSide == BattleSideEnum.Attacker)
 			{
-				return won ? (raidLocation + "的袭掠已经结束，你正在清点缴获并整顿部队。") : (raidLocation + "的袭掠已经结束，你的袭掠未能得手，正在收拢部队并处理残局。");
+				return won ? (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0134")) : (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0135"));
 			}
 			if (side.MissionSide == BattleSideEnum.Defender)
 			{
-				return won ? (raidLocation + "的袭掠已经结束，你协助守军击退了袭掠者，正在整顿部队。") : (raidLocation + "的袭掠已经结束，袭掠者已经得手；你正在收拢部队并处理残局。");
+				return won ? (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0136")) : (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0137"));
 			}
-			return won ? (raidLocation + "的村庄袭掠冲突已经结束，你正在整顿部队。") : (raidLocation + "的村庄袭掠冲突已经结束，你正在收拢部队并处理残局。");
+			return won ? (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0138")) : (raidLocation + AdapterRecordTexts.Raw("AF_REC_Battle_0139"));
 		}
-		return won ? ("这场发生在" + locationLabel + "的战斗已经结束，你正在整顿部队并清点战果。") : ("这场发生在" + locationLabel + "的战斗已经结束，你正在收拢残部并处理败战残局。");
+		return won ? (AdapterRecordTexts.Raw("AF_REC_Battle_0140") + locationLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0141")) : (AdapterRecordTexts.Raw("AF_REC_Battle_0142") + locationLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0143"));
 	}
 
 internal static string BuildMapEventActorRoleClause(Hero actorHero, MapEventSide side)
@@ -1037,20 +1037,20 @@ internal static string BuildMapEventActorRoleClause(Hero actorHero, MapEventSide
 		string text = MemoryEntityIdentityBannerlordAdapter.GetHeroFactionDisplayName(actorHero, side?.MapFaction);
 		if (actorHero?.IsLord == true)
 		{
-			return "你作为" + text + "的领主";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0144") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0145");
 		}
-		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, "某势力", StringComparison.OrdinalIgnoreCase))
+		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, AdapterRecordTexts.Raw("AF_REC_Battle_0146"), StringComparison.OrdinalIgnoreCase))
 		{
-			return "你作为" + text + "的一员";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0147") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0148");
 		}
-		return "你作为参战者";
+		return AdapterRecordTexts.Raw("AF_REC_Battle_0149");
 	}
 
 internal static string BuildMapEventSideNarrativeLabel(MapEventSide side)
 	{
 		if (side == null)
 		{
-			return "敌军";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0150");
 		}
 		if (CountTrackedLordParties(side) > 0)
 		{
@@ -1175,7 +1175,7 @@ internal void RecordPlayerDefeatedHeroBattleFact(MapEvent mapEvent, MapEventSide
 			return;
 		}
 		RecentlyDefeatedByPlayer.Add(defeatedHero.StringId);
-		Logger.Log("BattleStatus", "玩家击败领主事实写入 reason=" + (reason ?? "") + " hero=" + defeatedHero.StringId + " name=" + (defeatedHero.Name?.ToString() ?? ""));
+		Logger.Log("BattleStatus", "Player defeat of lord fact recorded reason=" + (reason ?? "") + " hero=" + defeatedHero.StringId + " name=" + (defeatedHero.Name?.ToString() ?? ""));
 		_appendHistory(defeatedHero, null, null, BuildPlayerDefeatedHeroDialogueFact(mapEvent, defeatedSide, locationLabel));
 		RecordNpcDefeatedByPlayerRecentAction(mapEvent, defeatedSide, defeatedHero);
 	}
@@ -1234,27 +1234,27 @@ internal void RecordPlayerRoutineBanditDefeatRecentAction(MapEvent mapEvent)
 		}
 		string locationLabel = GetMapEventLocationLabel(mapEvent);
 		string enemyLabel = GetPrimaryOtherSideLabel(defeatedSide);
-		if (string.IsNullOrWhiteSpace(enemyLabel) || string.Equals(enemyLabel, "敌军", StringComparison.OrdinalIgnoreCase))
+		if (string.IsNullOrWhiteSpace(enemyLabel) || string.Equals(enemyLabel, AdapterRecordTexts.Raw("AF_REC_Battle_0151"), StringComparison.OrdinalIgnoreCase))
 		{
-			enemyLabel = "一支野外匪帮";
+			enemyLabel = AdapterRecordTexts.Raw("AF_REC_Battle_0152");
 		}
 		int enemyCount = GetMapEventSideCommittedTroopCount(defeatedSide);
 		StringBuilder stringBuilder = new StringBuilder();
-		if (string.Equals(locationLabel, "野外", StringComparison.Ordinal))
+		if (string.Equals(locationLabel, AdapterRecordTexts.Raw("AF_REC_Battle_0153"), StringComparison.Ordinal))
 		{
-			stringBuilder.Append("你在野外击败了").Append(enemyLabel).Append("，取得了一场小规模遭遇战胜利。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0154")).Append(enemyLabel).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0155"));
 		}
 		else
 		{
-			stringBuilder.Append("你在").Append(locationLabel).Append("附近击败了").Append(enemyLabel).Append("，取得了一场小规模遭遇战胜利。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0156")).Append(locationLabel).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0157")).Append(enemyLabel).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0158"));
 		}
 		if (enemyCount > 0)
 		{
-			stringBuilder.Append(" 敌方投入约").Append(enemyCount).Append("人。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0159")).Append(enemyCount).Append(AdapterRecordTexts.Raw("AF_REC_Battle_0160"));
 		}
 		if (GetMapEventSideCasualtyCount(defeatedSide) > 0)
 		{
-			stringBuilder.Append(" 敌方").Append(BuildMapEventCasualtyText(defeatedSide)).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Battle_0161")).Append(BuildMapEventCasualtyText(defeatedSide)).Append("。");
 		}
 		string stableKey = BuildRoutineBanditDefeatStableKey(mapEvent, defeatedSide, locationLabel);
 		_record().RecordExternalPlayerAction(stringBuilder.ToString(), stableKey, "wild_party_defeated", isMajor: false, targetHero: null, settlement: mapEvent.MapEventSettlement, locationText: locationLabel, won: true);
@@ -1270,9 +1270,9 @@ internal void RecordPlayerHideoutClearRecentAction(MapEvent mapEvent)
 		string settlementName = MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement);
 		if (string.IsNullOrWhiteSpace(settlementName))
 		{
-			settlementName = "一处藏身处";
+			settlementName = AdapterRecordTexts.Raw("AF_REC_Battle_0162");
 		}
-		string text = "你清剿了" + settlementName + "，击败了盘踞其中的匪帮。";
+		string text = AdapterRecordTexts.Raw("AF_REC_Battle_0163") + settlementName + AdapterRecordTexts.Raw("AF_REC_Battle_0164");
 		string stableKey = "hideout_cleared:" + (MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement) ?? "") + ":" + MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe();
 		_record().RecordExternalPlayerAction(text, stableKey, "hideout_cleared", isMajor: false, targetHero: null, settlement: settlement, locationText: settlementName, won: true);
 	}
@@ -1372,7 +1372,7 @@ internal void OnHeroPrisonerTaken(PartyBase capturer, Hero prisoner)
 				{
 					CampaignCharacterRecordCaptureAdapter.AddRelatedFactionFacts(npcActionFacts, prisoner.MapFaction);
 				}
-				string text3 = "你俘虏了" + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + "。";
+				string text3 = AdapterRecordTexts.Raw("AF_REC_Battle_0165") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + "。";
 				_record().RecordNpcMajorAction(hero, text3, text2 + ":captor", npcActionFacts);
 				_record().RecordNpcRecentAction(hero, text3, text2 + ":captor", facts: npcActionFacts);
 			}
@@ -1389,14 +1389,14 @@ internal void OnHeroPrisonerTaken(PartyBase capturer, Hero prisoner)
 				{
 					CampaignCharacterRecordCaptureAdapter.AddRelatedFactionFacts(npcActionFacts2, capturer.MobileParty.MapFaction);
 				}
-				string text4 = ((hero != null) ? ("你被" + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(hero) + "俘虏了。") : "你被敌方俘虏了。");
+				string text4 = ((hero != null) ? (AdapterRecordTexts.Raw("AF_REC_Battle_0166") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(hero) + AdapterRecordTexts.Raw("AF_REC_Battle_0167")) : AdapterRecordTexts.Raw("AF_REC_Battle_0168"));
 				_record().RecordNpcMajorAction(prisoner, text4, text2 + ":prisoner", npcActionFacts2);
 				_record().RecordNpcRecentAction(prisoner, text4, text2 + ":prisoner", facts: npcActionFacts2);
 			}
 			if (prisoner != null && prisoner != Hero.MainHero && prisoner.IsLord && (capturer?.LeaderHero == Hero.MainHero || capturer?.MobileParty?.ActualClan == Clan.PlayerClan))
 			{
-				Logger.Log("BattleStatus", $"NPC {prisoner.Name} 被玩家俘虏");
-				_appendHistory(prisoner, null, null, $"你被 {Hero.MainHero.Name} 俘虏了，你现在是他的囚犯。");
+				Logger.Log("BattleStatus", $"NPC {prisoner.Name} captured by player");
+				_appendHistory(prisoner, null, null, AdapterRecordTexts.Raw("AF_REC_Battle_0169") + Hero.MainHero.Name + AdapterRecordTexts.Raw("AF_REC_Battle_0170"));
 			}
 		}
 		catch (Exception ex)
@@ -1427,7 +1427,7 @@ internal void OnHeroPrisonerReleased(Hero prisoner, PartyBase party, IFaction ca
 				{
 					CampaignCharacterRecordCaptureAdapter.AddRelatedFactionFacts(npcActionFacts, capturerFaction);
 				}
-				string text3 = string.IsNullOrWhiteSpace(endCaptivityDetailLabel) ? "你结束了囚禁状态。" : ("你" + endCaptivityDetailLabel + "并恢复了自由。");
+				string text3 = string.IsNullOrWhiteSpace(endCaptivityDetailLabel) ? AdapterRecordTexts.Raw("AF_REC_Battle_0171") : (AdapterRecordTexts.Raw("AF_REC_Battle_0172") + endCaptivityDetailLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0173"));
 				_record().RecordNpcMajorAction(prisoner, text3, text2 + ":prisoner", npcActionFacts);
 				_record().RecordNpcRecentAction(prisoner, text3, text2 + ":prisoner", facts: npcActionFacts);
 			}
@@ -1437,7 +1437,7 @@ internal void OnHeroPrisonerReleased(Hero prisoner, PartyBase party, IFaction ca
 				npcActionFacts2.LocationText = text;
 				CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts2, settlement, locationText: text);
 				CampaignCharacterRecordCaptureAdapter.ApplyTargetFacts(npcActionFacts2, prisoner);
-				string text4 = string.IsNullOrWhiteSpace(endCaptivityDetailLabel) ? ("你失去了对" + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + "的控制。") : (MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + endCaptivityDetailLabel + "，不再是你的囚犯。");
+				string text4 = string.IsNullOrWhiteSpace(endCaptivityDetailLabel) ? (AdapterRecordTexts.Raw("AF_REC_Battle_0174") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + AdapterRecordTexts.Raw("AF_REC_Battle_0175")) : (MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(prisoner) + endCaptivityDetailLabel + AdapterRecordTexts.Raw("AF_REC_Battle_0176"));
 				_record().RecordNpcMajorAction(hero, text4, text2 + ":captor", npcActionFacts2);
 				_record().RecordNpcRecentAction(hero, text4, text2 + ":captor", facts: npcActionFacts2);
 			}
@@ -1446,14 +1446,14 @@ internal void OnHeroPrisonerReleased(Hero prisoner, PartyBase party, IFaction ca
 				_record().RecentlyReleasedPrisoners.Add(prisoner.StringId);
 				string text5 = detail switch
 				{
-					EndCaptivityDetail.Ransom => "通过支付赎金",
-					EndCaptivityDetail.ReleasedByChoice => "被主动释放",
-					EndCaptivityDetail.ReleasedAfterPeace => "因和平协议",
-					EndCaptivityDetail.ReleasedAfterEscape => "成功逃脱",
+					EndCaptivityDetail.Ransom => AdapterRecordTexts.Raw("AF_REC_Battle_0177"),
+					EndCaptivityDetail.ReleasedByChoice => AdapterRecordTexts.Raw("AF_REC_Battle_0178"),
+					EndCaptivityDetail.ReleasedAfterPeace => AdapterRecordTexts.Raw("AF_REC_Battle_0179"),
+					EndCaptivityDetail.ReleasedAfterEscape => AdapterRecordTexts.Raw("AF_REC_Battle_0180"),
 					_ => "",
 				};
-				Logger.Log("BattleStatus", $"NPC {prisoner.Name} {text5}获得自由 (detail={detail})");
-				_appendHistory(prisoner, null, null, $"你{text5}从 {Hero.MainHero.Name} 的囚禁中获得了自由。");
+				Logger.Log("BattleStatus", $"NPC {prisoner.Name} {text5}regained freedom (detail={detail})");
+				_appendHistory(prisoner, null, null, AdapterRecordTexts.Raw("AF_REC_Battle_0181") + text5 + AdapterRecordTexts.Raw("AF_REC_Battle_0182") + Hero.MainHero.Name + AdapterRecordTexts.Raw("AF_REC_Battle_0183"));
 			}
 		}
 		catch (Exception ex)
@@ -1477,21 +1477,21 @@ internal static string GetEndCaptivityDetailLabel(EndCaptivityDetail detail)
 		switch (detail)
 		{
 		case EndCaptivityDetail.Ransom:
-			return "通过赎金获释";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0184");
 		case EndCaptivityDetail.ReleasedByChoice:
-			return "被主动释放";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0185");
 		case EndCaptivityDetail.ReleasedAfterPeace:
-			return "因议和获释";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0186");
 		case EndCaptivityDetail.ReleasedAfterEscape:
-			return "成功逃脱";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0187");
 		case EndCaptivityDetail.ReleasedAfterBattle:
-			return "在战后获释";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0188");
 		case EndCaptivityDetail.ReleasedByCompensation:
-			return "在补偿后获释";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0189");
 		case EndCaptivityDetail.Death:
-			return "在囚禁中死亡";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0190");
 		default:
-			return "脱离囚禁";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0191");
 		}
 	}
 
@@ -1529,8 +1529,8 @@ internal void OnPartyJoinedArmy(MobileParty party)
 			string text = MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army);
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("army_join", leaderHero);
 			npcActionFacts.LocationText = GetNearestSettlementNameForParty(party);
-			_record().RecordNpcMajorAction(leaderHero, "你加入了" + text + "。", "army_join:" + text, npcActionFacts);
-			_record().RecordNpcRecentAction(leaderHero, "你加入了" + text + "。", "army_join:" + text, facts: npcActionFacts);
+			_record().RecordNpcMajorAction(leaderHero, AdapterRecordTexts.Raw("AF_REC_Battle_0192") + text + "。", "army_join:" + text, npcActionFacts);
+			_record().RecordNpcRecentAction(leaderHero, AdapterRecordTexts.Raw("AF_REC_Battle_0193") + text + "。", "army_join:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1550,7 +1550,7 @@ internal void OnPartyLeftArmy(MobileParty party, Army army)
 			string text = MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army);
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("army_leave", leaderHero);
 			npcActionFacts.LocationText = GetNearestSettlementNameForParty(party);
-			_record().RecordNpcRecentAction(leaderHero, "你离开了" + text + "。", "army_leave:" + text, facts: npcActionFacts);
+			_record().RecordNpcRecentAction(leaderHero, AdapterRecordTexts.Raw("AF_REC_Battle_0194") + text + "。", "army_leave:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1568,10 +1568,10 @@ internal void OnMobilePartyJoinedSiege(MobileParty party)
 				return;
 			}
 			Settlement settlement = party.BesiegedSettlement ?? ResolveSiegeSettlement(party.SiegeEvent);
-			string text = settlement?.Name?.ToString() ?? "某处要塞";
+			string text = settlement?.Name?.ToString() ?? AdapterRecordTexts.Raw("AF_REC_Battle_0195");
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_join", leaderHero);
 			CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement);
-			_record().RecordNpcRecentAction(leaderHero, "你加入了对" + text + "的围城。", "siege_join:" + text, facts: npcActionFacts);
+			_record().RecordNpcRecentAction(leaderHero, AdapterRecordTexts.Raw("AF_REC_Battle_0196") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0197"), "siege_join:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1589,9 +1589,9 @@ internal void OnMobilePartyLeftSiege(MobileParty party)
 				return;
 			}
 			Settlement settlement = party.BesiegedSettlement ?? ResolveSiegeSettlement(party.SiegeEvent);
-			string text = settlement?.Name?.ToString() ?? "某处要塞";
+			string text = settlement?.Name?.ToString() ?? AdapterRecordTexts.Raw("AF_REC_Battle_0195");
 			bool flag = settlement != null && party?.MapFaction != null && settlement.MapFaction == party.MapFaction;
-			string text2 = (flag ? (text + "结清了战利品和战俘") : (text + "处理完了围城中产生的战利品以及战俘。"));
+			string text2 = (flag ? (text + AdapterRecordTexts.Raw("AF_REC_Battle_0199")) : (text + AdapterRecordTexts.Raw("AF_REC_Battle_0200")));
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_leave", leaderHero);
 			CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement);
 			_record().RecordNpcRecentAction(leaderHero, text2, "siege_leave:" + text + ":" + flag, facts: npcActionFacts);
@@ -1640,7 +1640,7 @@ internal void OnDailyTickParty(MobileParty party)
 		}
 	}
 
-internal static string BuildRecentPartyBehaviorText(MobileParty party)
+internal static string BuildRecentPartyBehaviorText(MobileParty party, bool forPrompt = false)
 	{
 		if (party == null)
 		{
@@ -1648,65 +1648,67 @@ internal static string BuildRecentPartyBehaviorText(MobileParty party)
 		}
 		string locationText = GetNearestSettlementNameForParty(party);
 		string armyDisplayName = party.Army != null ? MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(party.Army) : "";
-		return BuildRecentPartyBehaviorText(party, locationText, armyDisplayName);
+		return BuildRecentPartyBehaviorText(party, locationText, armyDisplayName, forPrompt);
 	}
 
-internal static string BuildRecentPartyBehaviorText(MobileParty party, string locationText, string armyDisplayName)
+internal static string BuildRecentPartyBehaviorText(MobileParty party, string locationText, string armyDisplayName, bool forPrompt = false)
 	{
 		if (party == null)
 		{
 			return "";
 		}
+		string BehaviorText(string key) => forPrompt ? AdapterRecordTexts.Prompt(key) : AdapterRecordTexts.Raw(key);
+		string period = forPrompt ? AdapterRecordTexts.Prompt("Period") : "。";
 		MobileParty mobileParty = party.Army?.LeaderParty ?? party;
-		string text = string.IsNullOrWhiteSpace(locationText) ? "附近一带" : locationText.Trim();
+		string text = string.IsNullOrWhiteSpace(locationText) ? BehaviorText("AF_REC_Battle_0201") : locationText.Trim();
 		if (party.Army != null)
 		{
-			string text2 = (party.Army.LeaderParty == party) ? "你最近正率领" : "你最近正随";
+			string text2 = (party.Army.LeaderParty == party) ? BehaviorText("AF_REC_Battle_0202") : BehaviorText("AF_REC_Battle_0203");
 			string text3 = string.IsNullOrWhiteSpace(armyDisplayName) ? MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(party.Army) : armyDisplayName;
 			switch (mobileParty?.DefaultBehavior)
 			{
 			case TaleWorlds.CampaignSystem.Party.AiBehavior.BesiegeSettlement:
-				return text2 + text3 + "围攻" + text + "。";
+				return text2 + text3 + BehaviorText("AF_REC_Battle_0204") + text + period;
 			case TaleWorlds.CampaignSystem.Party.AiBehavior.AssaultSettlement:
-				return text2 + text3 + "强攻" + text + "。";
+				return text2 + text3 + BehaviorText("AF_REC_Battle_0205") + text + period;
 			case TaleWorlds.CampaignSystem.Party.AiBehavior.DefendSettlement:
-				return text2 + text3 + "守备" + text + "。";
+				return text2 + text3 + BehaviorText("AF_REC_Battle_0206") + text + period;
 			case TaleWorlds.CampaignSystem.Party.AiBehavior.GoToSettlement:
-				return text2 + text3 + "前往" + text + "。";
+				return text2 + text3 + BehaviorText("AF_REC_Battle_0207") + text + period;
 			case TaleWorlds.CampaignSystem.Party.AiBehavior.PatrolAroundPoint:
-				return text2 + text3 + "在" + text + "附近巡逻。";
+				return text2 + text3 + BehaviorText("AF_REC_Battle_0208") + text + BehaviorText("AF_REC_Battle_0209");
 			case TaleWorlds.CampaignSystem.Party.AiBehavior.EngageParty:
 				{
 					string text4 = mobileParty?.TargetParty?.LeaderHero?.Name?.ToString() ?? mobileParty?.TargetParty?.Name?.ToString();
-					return string.IsNullOrWhiteSpace(text4) ? (text2 + text3 + "追击一支部队。") : (text2 + text3 + "追击" + text4.Trim() + "。");
+					return string.IsNullOrWhiteSpace(text4) ? (text2 + text3 + BehaviorText("AF_REC_Battle_0210")) : (text2 + text3 + BehaviorText("AF_REC_Battle_0211") + text4.Trim() + period);
 				}
 			default:
-				return text2 + text3 + "在" + text + "一带行动。";
+				return text2 + text3 + BehaviorText("AF_REC_Battle_0212") + text + BehaviorText("AF_REC_Battle_0213");
 			}
 		}
 		switch (party.DefaultBehavior)
 		{
 		case TaleWorlds.CampaignSystem.Party.AiBehavior.BesiegeSettlement:
-			return "你最近在围攻" + text + "。";
+			return BehaviorText("AF_REC_Battle_0214") + text + period;
 		case TaleWorlds.CampaignSystem.Party.AiBehavior.AssaultSettlement:
-			return "你最近在强攻" + text + "。";
+			return BehaviorText("AF_REC_Battle_0215") + text + period;
 		case TaleWorlds.CampaignSystem.Party.AiBehavior.DefendSettlement:
-			return "你最近在守备" + text + "。";
+			return BehaviorText("AF_REC_Battle_0216") + text + period;
 		case TaleWorlds.CampaignSystem.Party.AiBehavior.RaidSettlement:
-			return "你最近在袭扰" + text + "。";
+			return BehaviorText("AF_REC_Battle_0217") + text + period;
 		case TaleWorlds.CampaignSystem.Party.AiBehavior.PatrolAroundPoint:
-			return "你最近在" + text + "附近巡逻。";
+			return BehaviorText("AF_REC_Battle_0218") + text + BehaviorText("AF_REC_Battle_0219");
 		case TaleWorlds.CampaignSystem.Party.AiBehavior.GoToSettlement:
-			return "你最近正前往" + text + "。";
+			return BehaviorText("AF_REC_Battle_0220") + text + period;
 		case TaleWorlds.CampaignSystem.Party.AiBehavior.EngageParty:
 			{
 				string text2 = party.TargetParty?.LeaderHero?.Name?.ToString() ?? party.TargetParty?.Name?.ToString();
-				return string.IsNullOrWhiteSpace(text2) ? "你最近在追击一支部队。" : ("你最近在追击" + text2.Trim() + "。");
+				return string.IsNullOrWhiteSpace(text2) ? BehaviorText("AF_REC_Battle_0221") : (BehaviorText("AF_REC_Battle_0222") + text2.Trim() + period);
 			}
 		case TaleWorlds.CampaignSystem.Party.AiBehavior.EscortParty:
 			{
 				string text3 = party.TargetParty?.LeaderHero?.Name?.ToString() ?? party.TargetParty?.Name?.ToString();
-				return string.IsNullOrWhiteSpace(text3) ? "你最近在护送一支部队。" : ("你最近在护送" + text3.Trim() + "。");
+				return string.IsNullOrWhiteSpace(text3) ? BehaviorText("AF_REC_Battle_0223") : (BehaviorText("AF_REC_Battle_0224") + text3.Trim() + period);
 			}
 		default:
 			return "";
@@ -1731,7 +1733,7 @@ internal static string BuildRecentPartyBehaviorStableKey(MobileParty party, stri
 			return "";
 		}
 		MobileParty mobileParty = party.Army?.LeaderParty ?? party;
-		string text = string.IsNullOrWhiteSpace(locationText) ? "附近一带" : locationText.Trim();
+		string text = string.IsNullOrWhiteSpace(locationText) ? AdapterRecordTexts.Raw("AF_REC_Battle_0201") : locationText.Trim();
 		string text2 = mobileParty?.TargetParty?.StringId ?? mobileParty?.TargetParty?.Name?.ToString() ?? "";
 		string text3 = (party.Army != null) ? (string.IsNullOrWhiteSpace(armyDisplayName) ? MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(party.Army) : armyDisplayName) : "";
 		if (party.Army != null)
@@ -1863,8 +1865,8 @@ internal void OnArmyCreated(Army army)
 			Settlement settlement = ResolveGatheringPointSettlement(army?.LeaderParty, army?.LeaderParty);
 			npcActionFacts.LocationText = GetNearestSettlementNameForParty(army?.LeaderParty);
 			CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement, locationText: npcActionFacts.LocationText);
-			_record().RecordNpcMajorAction(hero, "你组建并统领了" + text + "。", "army_create:" + text, npcActionFacts);
-			_record().RecordNpcRecentAction(hero, "你组建并统领了" + text + "。", "army_create:" + text, facts: npcActionFacts);
+			_record().RecordNpcMajorAction(hero, AdapterRecordTexts.Raw("AF_REC_Battle_0226") + text + "。", "army_create:" + text, npcActionFacts);
+			_record().RecordNpcRecentAction(hero, AdapterRecordTexts.Raw("AF_REC_Battle_0227") + text + "。", "army_create:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1886,7 +1888,7 @@ internal void OnArmyGathered(Army army, IMapPoint gatheringPoint)
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("army_gather", hero);
 			npcActionFacts.LocationText = text;
 			CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement, locationText: text);
-			_record().RecordNpcRecentAction(hero, "你率领" + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + "在" + text + "集结。", "army_gather:" + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + ":" + text, facts: npcActionFacts);
+			_record().RecordNpcRecentAction(hero, AdapterRecordTexts.Raw("AF_REC_Battle_0228") + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + AdapterRecordTexts.Raw("AF_REC_Battle_0229") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0230"), "army_gather:" + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + ":" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1905,7 +1907,7 @@ internal void OnArmyDispersed(Army army, Army.ArmyDispersionReason reason, bool 
 			}
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("army_disperse", hero);
 			npcActionFacts.LocationText = GetNearestSettlementNameForParty(army?.LeaderParty);
-			_record().RecordNpcRecentAction(hero, "你统领的" + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + "已解散。", "army_disperse:" + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army), facts: npcActionFacts);
+			_record().RecordNpcRecentAction(hero, AdapterRecordTexts.Raw("AF_REC_Battle_0231") + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army) + AdapterRecordTexts.Raw("AF_REC_Battle_0232"), "army_disperse:" + MemoryEntityIdentityBannerlordAdapter.GetArmyDisplayName(army), facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -1922,7 +1924,7 @@ internal void OnSiegeEventStarted(SiegeEvent siegeEvent)
 			foreach (Hero item in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Attacker))
 			{
 				string text = AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.BuildSiegeStartNarrative(settlement, isAttacker: true, siegeEvent);
-				string text2 = settlement?.Name?.ToString() ?? "某处要塞";
+				string text2 = settlement?.Name?.ToString() ?? AdapterRecordTexts.Raw("AF_REC_Battle_0233");
 				NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_start_attack", item);
 				CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement);
 				npcActionFacts.TargetKingdomId = MemoryEntityIdentityBannerlordAdapter.GetKingdomId(settlement?.MapFaction);
@@ -1935,7 +1937,7 @@ internal void OnSiegeEventStarted(SiegeEvent siegeEvent)
 			foreach (Hero item2 in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Defender))
 			{
 				string text3 = AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.BuildSiegeStartNarrative(settlement, isAttacker: false, siegeEvent);
-				string text4 = settlement?.Name?.ToString() ?? "某处要塞";
+				string text4 = settlement?.Name?.ToString() ?? AdapterRecordTexts.Raw("AF_REC_Battle_0234");
 				NpcActionFacts npcActionFacts2 = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_start_defend", item2);
 				CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts2, settlement);
 				npcActionFacts2.TargetKingdomId = MemoryEntityIdentityBannerlordAdapter.GetKingdomId(siegeEvent?.BesiegerCamp?.LeaderParty?.MapFaction);
@@ -1957,18 +1959,18 @@ internal void OnSiegeEventEnded(SiegeEvent siegeEvent)
 		try
 		{
 			Settlement settlement = ResolveSiegeSettlement(siegeEvent);
-			string text = settlement?.Name?.ToString() ?? "某处要塞";
+			string text = settlement?.Name?.ToString() ?? AdapterRecordTexts.Raw("AF_REC_Battle_0195");
 			foreach (Hero item in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Attacker))
 			{
 				NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_end_attack", item);
 				CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement);
-				_record().RecordNpcRecentAction(item, "你结束了对" + text + "的围城。", "siege_end:" + text, facts: npcActionFacts);
+				_record().RecordNpcRecentAction(item, AdapterRecordTexts.Raw("AF_REC_Battle_0236") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0237"), "siege_end:" + text, facts: npcActionFacts);
 			}
 			foreach (Hero item2 in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Defender))
 			{
 				NpcActionFacts npcActionFacts2 = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_end_defend", item2);
 				CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts2, settlement);
-				_record().RecordNpcRecentAction(item2, text + "的守城战已经结束。", "siege_end_defend:" + text, facts: npcActionFacts2);
+				_record().RecordNpcRecentAction(item2, text + AdapterRecordTexts.Raw("AF_REC_Battle_0238"), "siege_end_defend:" + text, facts: npcActionFacts2);
 			}
 		}
 		catch (Exception ex)
@@ -1986,8 +1988,8 @@ internal void OnSiegeCompleted(Settlement settlement, MobileParty party, bool si
 			{
 				return;
 			}
-			string text = settlement?.Name?.ToString() ?? "某处要塞";
-			string text2 = (siegeSuccess ? ("你在" + text + "的围城中获胜。") : ("你在" + text + "的围城中失利。"));
+			string text = settlement?.Name?.ToString() ?? AdapterRecordTexts.Raw("AF_REC_Battle_0195");
+			string text2 = (siegeSuccess ? (AdapterRecordTexts.Raw("AF_REC_Battle_0240") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0241")) : (AdapterRecordTexts.Raw("AF_REC_Battle_0242") + text + AdapterRecordTexts.Raw("AF_REC_Battle_0243")));
 			NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("siege_complete", leaderHero);
 			CampaignCharacterRecordCaptureAdapter.ApplySettlementFacts(npcActionFacts, settlement);
 			npcActionFacts.Won = siegeSuccess;
@@ -2045,12 +2047,12 @@ internal static string ResolveGatheringPointLabel(IMapPoint gatheringPoint, Mobi
 			return text;
 		}
 		text = (gatheringPoint?.Name?.ToString() ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, "集结地", StringComparison.OrdinalIgnoreCase) && !string.Equals(text, "Gathering Point", StringComparison.OrdinalIgnoreCase))
+		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, AdapterRecordTexts.Raw("AF_REC_Battle_0244"), StringComparison.OrdinalIgnoreCase) && !string.Equals(text, "Gathering Point", StringComparison.OrdinalIgnoreCase))
 		{
 			return text;
 		}
 		text = GetNearestSettlementNameForParty(fallbackParty);
-		return string.IsNullOrWhiteSpace(text) ? "集结地" : text;
+		return string.IsNullOrWhiteSpace(text) ? AdapterRecordTexts.Raw("AF_REC_Battle_0245") : text;
 	}
 
 internal static int GetSiegeEventTroopCount(SiegeEvent siegeEvent)
@@ -2083,14 +2085,14 @@ internal void OnVillageBeingRaided(Village village)
 		{
 			Settlement settlement = village?.Settlement;
 			string settlementDisplayName = MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement);
-			string text = settlementDisplayName + "村庄正在遭到掠夺，结果尚未确定，不能视为掠夺成功。";
+			string text = settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0246");
 			string clanDisplayName = MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(settlement?.OwnerClan);
-			string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(settlement?.MapFaction as Kingdom, "所属王国");
+			string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(settlement?.MapFaction as Kingdom, AdapterRecordTexts.Raw("AF_REC_Battle_0247"));
 			if (!string.IsNullOrWhiteSpace(clanDisplayName) && !string.IsNullOrWhiteSpace(kingdomDisplayName))
 			{
-				text += " 该地由" + clanDisplayName + "掌控，隶属于" + kingdomDisplayName + "。";
+				text += AdapterRecordTexts.Raw("AF_REC_Battle_0248") + clanDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0249") + kingdomDisplayName + "。";
 			}
-			_record().RecordEventSourceMaterial("village_raid_started", "掠夺开始 - " + settlementDisplayName + "村庄", text, "village_raid_started:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(settlement?.MapFaction), MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true);
+			_record().RecordEventSourceMaterial("village_raid_started", AdapterRecordTexts.Raw("AF_REC_Battle_0250") + settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0251"), text, "village_raid_started:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(settlement?.MapFaction), MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true);
 		}
 		catch (Exception ex)
 		{
@@ -2105,21 +2107,21 @@ internal void OnRaidCompleted(BattleSideEnum winnerSide, RaidEventComponent raid
 			Settlement settlement = raidEvent?.MapEventSettlement;
 			string settlementDisplayName = MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement);
 			string raidOutcomeLabel = GetRaidOutcomeLabel(winnerSide);
-			string text = settlementDisplayName + "村庄的掠夺结果是：" + raidOutcomeLabel + "。";
+			string text = settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0252") + raidOutcomeLabel + "。";
 			if (winnerSide == BattleSideEnum.Attacker)
 			{
-				text += " 该村庄确已被成功掠夺。";
+				text += AdapterRecordTexts.Raw("AF_REC_Battle_0253");
 			}
 			else
 			{
-				text += " 入侵者未能成功掠夺该村庄。";
+				text += AdapterRecordTexts.Raw("AF_REC_Battle_0254");
 			}
 			Hero hero = raidEvent?.AttackerSide?.LeaderParty?.LeaderHero;
 			if (hero != null)
 			{
-				text = text + " 发起掠夺的一方领袖是" + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(hero) + "。";
+				text = text + AdapterRecordTexts.Raw("AF_REC_Battle_0255") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(hero) + "。";
 			}
-			_record().RecordEventSourceMaterial("raid_completed", "掠夺结果 - " + settlementDisplayName + "村庄", text, "raid_completed:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement) + ":" + winnerSide, MemoryEntityIdentityBannerlordAdapter.GetKingdomId(settlement?.MapFaction), MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true, MemoryEntityIdentityBannerlordAdapter.GetHeroId(hero), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(hero?.MapFaction));
+			_record().RecordEventSourceMaterial("raid_completed", AdapterRecordTexts.Raw("AF_REC_Battle_0256") + settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0257"), text, "raid_completed:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement) + ":" + winnerSide, MemoryEntityIdentityBannerlordAdapter.GetKingdomId(settlement?.MapFaction), MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true, MemoryEntityIdentityBannerlordAdapter.GetHeroId(hero), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(hero?.MapFaction));
 		}
 		catch (Exception ex)
 		{
@@ -2131,9 +2133,9 @@ internal static string GetRaidOutcomeLabel(BattleSideEnum side)
 	{
 		return side switch
 		{
-			BattleSideEnum.Attacker => "掠夺成功",
-			BattleSideEnum.Defender => "掠夺被击退",
-			_ => "掠夺中止"
+			BattleSideEnum.Attacker => AdapterRecordTexts.Raw("AF_REC_Battle_0258"),
+			BattleSideEnum.Defender => AdapterRecordTexts.Raw("AF_REC_Battle_0259"),
+			_ => AdapterRecordTexts.Raw("AF_REC_Battle_0260")
 		};
 	}
 
@@ -2144,14 +2146,14 @@ internal void OnSiegeAftermathApplied(MobileParty attackerParty, Settlement sett
 			string settlementDisplayName = MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement);
 			string siegeAftermathLabel = GetSiegeAftermathLabel(aftermathType);
 			string kingdomId = MemoryEntityIdentityBannerlordAdapter.GetKingdomId(attackerParty?.MapFaction);
-			string text = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(attackerParty?.LeaderHero) + "在攻取" + settlementDisplayName + "后选择了" + siegeAftermathLabel + "。";
+			string text = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(attackerParty?.LeaderHero) + AdapterRecordTexts.Raw("AF_REC_Battle_0261") + settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Battle_0262") + siegeAftermathLabel + "。";
 			string text2 = MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(previousSettlementOwner);
-			string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(previousSettlementOwner?.Kingdom, "原所属王国");
+			string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(previousSettlementOwner?.Kingdom, AdapterRecordTexts.Raw("AF_REC_Battle_0263"));
 			if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(kingdomDisplayName))
 			{
-				text += " 该地此前由" + text2 + "掌控，隶属于" + kingdomDisplayName + "。";
+				text += AdapterRecordTexts.Raw("AF_REC_Battle_0264") + text2 + AdapterRecordTexts.Raw("AF_REC_Battle_0265") + kingdomDisplayName + "。";
 			}
-			_record().RecordEventSourceMaterial("siege_aftermath", "围城后处理 - " + settlementDisplayName, text, "siege_aftermath:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement) + ":" + aftermathType + ":" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(attackerParty?.LeaderHero), kingdomId, MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: settlement?.IsTown == true && aftermathType != SiegeAftermathAction.SiegeAftermath.ShowMercy, includeInKingdom: true);
+			_record().RecordEventSourceMaterial("siege_aftermath", AdapterRecordTexts.Raw("AF_REC_Battle_0266") + settlementDisplayName, text, "siege_aftermath:" + MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement) + ":" + aftermathType + ":" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(attackerParty?.LeaderHero), kingdomId, MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement), includeInWorld: settlement?.IsTown == true && aftermathType != SiegeAftermathAction.SiegeAftermath.ShowMercy, includeInKingdom: true);
 		}
 		catch (Exception ex)
 		{
@@ -2164,11 +2166,11 @@ internal static string GetSiegeAftermathLabel(SiegeAftermathAction.SiegeAftermat
 		switch (aftermathType)
 		{
 		case SiegeAftermathAction.SiegeAftermath.Devastate:
-			return "毁灭";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0267");
 		case SiegeAftermathAction.SiegeAftermath.Pillage:
-			return "劫掠";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0268");
 		case SiegeAftermathAction.SiegeAftermath.ShowMercy:
-			return "宽恕";
+			return AdapterRecordTexts.Raw("AF_REC_Battle_0269");
 		default:
 			return aftermathType.ToString();
 		}

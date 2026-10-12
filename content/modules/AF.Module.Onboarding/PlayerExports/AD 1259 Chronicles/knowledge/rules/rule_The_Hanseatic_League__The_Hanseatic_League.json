@@ -1,0 +1,23 @@
+{
+  "Id": "rule_The_Hanseatic_League",
+  "Keywords": [
+    "Hanseatic League",
+    "Hansa",
+    "Lubeck",
+    "Baltic Trade",
+    "Kontor",
+    "Maritime Law"
+  ],
+  "RagShortTexts": [
+    "The Hanseatic League formed a cooperative mercantile commonwealth of North German cities that dominated Baltic and North Sea trade."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Hanseatic League (Hanse) was emerging in 1259 as Europe’s most formidable mercantile confederation. Sparked by the 1241 mutual defense pact between Lübeck on the Baltic and Hamburg on the North Sea, the League grew to link dozens of German commercial cities into a cooperative trading network that operated independently of feudal princes.\n\nGoverned by merchant councils adhering to Lübeck Law (Lübisches Recht), the Hansa established fortified overseas trading stations (Kontore) in London (the Steelyard), Bruges, Bergen (Bryggen), and Novgorod (Peterhof). Hanseatic cogs transported bulk goods—grain, timber, pitch, furs, wax, and salted herring—securing customs exemptions and naval dominance across northern European waters."
+    }
+  ],
+  "TextMappings": []
+}

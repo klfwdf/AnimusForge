@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_DEBT_PROMISE_TITLE" text="Promise: {DEBTOR}" />
+    <string id="AF_DEBT_PROMISE_EXPIRED_TITLE" text="Expired promise: {DEBTOR}" />
+    <string id="AF_DEBT_PROMISE_START" text="{NOTE}" />
+    <string id="AF_DEBT_PROMISE_COMPLETE" text="This promise has been completed or released." />
+    <string id="AF_DEBT_PROMISE_EXPIRED" text="This promise has expired, but it can still be released or completed later." />
+    <string id="AF_ECO_DebtPromise_Instruction" text="Talk with the counterparty to complete or release this promise." />
+    <string id="AF_ECO_UI_DebtPromiseCounterparty" text="the counterparty" />
+    <string id="AF_ECO_UI_DebtPromiseNoNote" text="None" />
+    <string id="AF_ECO_UI_DebtPromisePlayer" text="the player" />
+    <string id="AF_ECO_UI_DebtSeasonSpring" text="Spring" />
+    <string id="AF_ECO_UI_DebtSeasonSummer" text="Summer" />
+    <string id="AF_ECO_UI_DebtSeasonAutumn" text="Autumn" />
+    <string id="AF_ECO_UI_DebtSeasonWinter" text="Winter" />
+    <string id="AF_ECO_UI_DebtCalendarDate" text="Year {YEAR}, {SEASON}, day {DAY}" />
+    <string id="AF_ECO_UI_CompanionReturnedClan" text="[Companion departed] {HERO} returned to {CLAN}." />
+    <string id="AF_ECO_UI_CompanionReturnedSettlement" text="[Companion departed] {HERO} returned to {SETTLEMENT}." />
+    <string id="AF_ECO_UI_CompanionWanderer" text="[Companion departed] {REASON}{HERO} became a wanderer." />
+    <string id="AF_ECO_UI_CompanionWandererClanReason" text="{CLAN} has fallen; " />
+    <string id="AF_ECO_UI_CompanionWandererUnknownReason" text="The original affiliation is unavailable; " />
+    <string id="AF_ECO_UI_SpecialRpItemMarketBlocked" text="This special RP item cannot be traded on the market." />
+    <string id="AF_ECO_UI_ItemGiven" text="{SOURCE} gave you {ITEM}." />
+    <string id="AF_ECO_UI_PromiseRecorded" text="[Promise or debt recorded] {NOTE}; promise value: {VALUE}" />
+    <string id="AF_ECO_UI_DebtReleased" text="[Debt released] {STATUS}" />
+    <string id="AF_ECO_UI_DebtReleaseFailed" text="[Debt release failed] {STATUS}" />
+    <string id="AF_ECO_UI_DebtStatusInvalidNpc" text="Invalid debt request: the NPC or debt ID is missing." />
+    <string id="AF_ECO_UI_DebtStatusNpcRecordMissing" text="No debt record was found for this NPC." />
+    <string id="AF_ECO_UI_DebtStatusNpcNoDebt" text="This NPC has no debt that can currently be repaid." />
+    <string id="AF_ECO_UI_DebtStatusInvalidMarket" text="Invalid market debt request: the market creditor or debt ID is missing." />
+    <string id="AF_ECO_UI_DebtStatusMarketRecordMissing" text="No debt record was found for this market." />
+    <string id="AF_ECO_UI_DebtStatusLineMissing" text="No unsettled debt line with that ID was found." />
+    <string id="AF_ECO_UI_DebtStatusReleased" text="Debt ID {ID} was released by agreement ({AMOUNT})." />
+    <string id="AF_ECO_UI_AllDebtCleared" text="[Debt cleared] All of your debt to {GIVER} has been repaid!" />
+    <string id="AF_ECO_UI_MarketDebtReleased" text="[Market debt released] {STATUS}" />
+    <string id="AF_ECO_UI_MarketDebtReleaseFailed" text="[Market debt release failed] {STATUS}" />
+    <string id="AF_ECO_UI_MarketDebtCleared" text="[Market debt] All current market debt has been cleared." />
+    <string id="AF_ECO_UI_DenarsReceived" text="{GIVER} gave you {AMOUNT} denars." />
+    <string id="AF_ECO_UI_DenarsGiven" text="You gave {RECEIVER} {AMOUNT} denars." />
+    <string id="AF_ECO_UI_ItemsReceived" text="{GIVER} gave you {ITEMS}." />
+    <string id="AF_ECO_UI_ItemsGiven" text="You gave {RECEIVER} {ITEMS}." />
+    <string id="AF_ECO_UI_PartyItemsReceived" text="{GIVER} gave you {ITEMS}." />
+    <string id="AF_ECO_UI_PartyItemsGiven" text="You gave the other party {ITEMS}." />
+    <string id="AF_ECO_UI_CivilWarFaction" text="[Civil war faction] {STATUS}" />
+    <string id="AF_ECO_UI_JoinFailed" text="[Join failed] {STATUS}" />
+    <string id="AF_ECO_UI_JoinParty" text="[Join party] {STATUS}" />
+    <string id="AF_ECO_UI_BecomeCompanion" text="[Become companion] {STATUS}" />
+    <string id="AF_ECO_UI_JoinClan" text="[Join clan] {STATUS}" />
+    <string id="AF_ECO_UI_KingdomTransfer" text="[Kingdom transfer] {STATUS}" />
+    <string id="AF_ECO_UI_KingdomTransferFailed" text="[Kingdom transfer failed] {STATUS}" />
+    <string id="AF_ECO_UI_FactionIdentity" text="[Faction identity] {STATUS}" />
+    <string id="AF_ECO_UI_FactionIdentityFailed" text="[Faction identity failed] {STATUS}" />
+    <string id="AF_ECO_UI_FixedAssetTransfer" text="[Fixed asset transfer] {STATUS}" />
+    <string id="AF_ECO_UI_FixedAssetTransferFailed" text="[Fixed asset transfer failed] {STATUS}" />
+    <string id="AF_ECO_UI_UnknownPerson" text="someone" />
+    <string id="AF_ECO_UI_OtherParty" text="the other party" />
+    <string id="AF_ECO_UI_OriginalSettlement" text="the original settlement" />
+    <string id="AF_ECO_UI_MerchantAt" text="the {MARKET} merchant" />
+    <string id="AF_ECO_UI_MarketVillage" text="village" />
+    <string id="AF_ECO_UI_MarketTown" text="town" />
+    <string id="AF_ECO_UI_RecruitmentIntercepted" text="[Join intercepted] The native conversation had already handled this action; the stale action was blocked." />
+    <string id="AF_ECO_UI_TrustChanged" text="[Trust change] {GIVER} increased your personal trust by {PERSONAL}{PUBLIC}" />
+    <string id="AF_ECO_UI_PublicTrustGain" text=", public trust +{VALUE}" />
+    <string id="AF_ECO_UI_MarketTrustChanged" text="[Market trust change] {MARKET} increased your market trust by {PERSONAL}{PUBLIC}" />
+    <string id="AF_ECO_UI_QuestTrustChanged" text="[Trust change] Completing {GIVER}'s quest increased personal trust by {PERSONAL}{PUBLIC}" />
+    <string id="AF_ECO_UI_SettlementTrustBattleLost" text="[Settlement trust settlement] The battle was not won; no settlement trust was gained." />
+    <string id="AF_ECO_UI_SettlementTrustNoNearby" text="[Settlement trust settlement] No affected settlement was found near this battle." />
+    <string id="AF_ECO_UI_SettlementTrustDetails" text="[Settlement trust settlement]\n{DETAILS}" />
+    <string id="AF_ECO_UI_SettlementTrustNoDefeatedHostile" text="[Settlement trust settlement] No hostile force near a settlement was defeated, so no settlement trust was gained." />
+    <string id="AF_ECO_UI_DebtSummaryNoDebt" text="No outstanding debt." />
+    <string id="AF_ECO_UI_DebtSummaryGold" text="Total gold debt: {AMOUNT}" />
+    <string id="AF_ECO_UI_DebtSummaryItems" text="Total item debt: {ITEMS}" />
+    <string id="AF_ECO_UI_DebtSummaryLines" text="Unsettled lines: {COUNT}" />
+    <string id="AF_ECO_UI_DebtSummaryLine" text="- [{ID}] {TYPE}; remaining {REMAINING}{DUE}{UNAVAILABLE}" />
+    <string id="AF_ECO_UI_DebtSummaryUnavailableSuffix" text="; original item unavailable" />
+    <string id="AF_ECO_UI_DebtSummaryMore" text="... {COUNT} more line(s) hidden." />
+    <string id="AF_ECO_UI_DebtSummaryReadFailed" text="Failed to read the debt summary." />
+    <string id="AF_ECO_UI_DebtDueUnlimited" text="repayment deadline: unlimited (debt remains active)" />
+    <string id="AF_ECO_UI_DebtDueDays" text="repayment deadline: about {DAYS} day(s) (due {DATE})" />
+    <string id="AF_ECO_UI_DebtDueToday" text="repayment deadline: due today ({DATE})" />
+    <string id="AF_ECO_UI_DebtOverdue" text="repayment deadline: {DAYS} day(s) overdue (due {DATE})" />
+    <string id="AF_ECO_UI_DebtNoDeadline" text="no deadline" />
+    <string id="AF_ECO_UI_RpForgeConfirmInput" text="Validating input and preparing safe templates... (Esc to cancel)" />
+    <string id="AF_ECO_UI_RpForgePreparingCandidates" text="Preparing the top 50 safe templates... (Esc to cancel)" />
+    <string id="AF_ECO_UI_RpForgeOutcomeGood" text="Good" />
+    <string id="AF_ECO_UI_RpForgeOutcomeNormal" text="Normal" />
+    <string id="AF_ECO_UI_RpForgeOutcomeBad" text="Degraded" />
+    <string id="AF_ECO_UI_RpForgeOutcomeJunk" text="Junk item" />
+    <string id="AF_ECO_UI_RpForgeOutcomeSuccess" text="Success" />
+    <string id="AF_ECO_UI_RpForgeLabelItemName" text="Item name" />
+    <string id="AF_ECO_UI_RpForgeLabelMatchingTemplate" text="Matching template" />
+    <string id="AF_ECO_UI_RpForgeLabelTemplateType" text="Template type" />
+    <string id="AF_ECO_UI_RpForgeLabelBasePrice" text="Base price" />
+    <string id="AF_ECO_UI_RpForgeLabelInvestment" text="Investment" />
+    <string id="AF_ECO_UI_RpForgeLabelCraftedValue" text="Crafted value" />
+    <string id="AF_ECO_UI_RpForgeConfirmationLine" text="{LABEL}: {VALUE}" />
+    <string id="AF_ECO_UI_RpForgeConfirmationPrice" text="{LABEL}: {AMOUNT} denars" />
+    <string id="AF_ECO_UI_RpForgeConfirmationPlayerChoice" text="Template selection: player choice ({COUNT} candidates)" />
+    <string id="AF_ECO_UI_RpForgeConfirmationExactMatch" text="Template selection: exact game-data match" />
+    <string id="AF_ECO_UI_RpForgeConfirmationGuaranteed" text="Craft success chance: 100%\nResult: the item will be crafted successfully." />
+    <string id="AF_ECO_UI_RpForgeConfirmationChance" text="Craft success chance: {CHANCE}\nOn a miss: a junk item (the investment is still consumed)." />
+    <string id="AF_ECO_UI_RpForgeConfirmationQuestion" text="\n\nConfirm crafting?" />
+    <string id="AF_ECO_UI_RpForgeEquipmentWarning" text="\n\nWarning: degradation is more likely than 33.33%; consider raising smithing from {CURRENT} to {RECOMMENDED} (one level per {PRICE} denars of template value)." />
+    <string id="AF_ECO_UI_RpForgeEquipmentEffectRetained" text="{OUTCOME} {PROBABILITY}: positive attributes retained {RETAINED}; weight +{WEIGHT}" />
+    <string id="AF_ECO_UI_RpForgeEquipmentEffectBonus" text="{OUTCOME} {PROBABILITY}: each positive attribute +{VALUE}; weight -{WEIGHT}" />
+    <string id="AF_ECO_UI_RpForgeEquipmentEffectStable" text="{OUTCOME} {PROBABILITY}: positive attributes and weight unchanged" />
+    <string id="AF_ECO_UI_RpForgeCompleted" text="Crafted: {NAME}\nOutcome: {OUTCOME}\nItem value: {VALUE} denars\nCrafting stamina: -{STAMINA}; base crafting XP: +{EXPERIENCE}{ATTRIBUTES}" />
+    <string id="AF_ECO_UI_RpForgeXpInterrupted" text="\nBase crafting XP notification was interrupted by another mod; the item and costs were still settled to prevent duplicate rewards." />
+    <string id="AF_ECO_UI_PartyTransferVolunteerReceived" text="Recruited {AMOUNT} {NAME}" />
+    <string id="AF_ECO_UI_PartyTransferTroopReceived" text="Received {AMOUNT} {NAME}" />
+    <string id="AF_ECO_UI_PartyTransferHeroPrisonerReceived" text="Received prisoner {NAME}" />
+    <string id="AF_ECO_UI_PartyTransferPrisonerReceived" text="Received {AMOUNT} {NAME} prisoners" />
+    <string id="AF_ECO_UI_PartyTransferBatchSummary" text="Party and prisoner transfer: attempted {ATTEMPTED}, succeeded {SUCCEEDED}, failed or partial {FAILED}; transferred {UNITS} units; estimated value {VALUE} denars." />
+    <string id="AF_ECO_UI_TaskGiverFallback" text="quest giver" />
+    <string id="AF_ECO_UI_EstimatedHits" text="estimated hits" />
+    <string id="AF_ECO_UI_ActualHits" text="actual hits" />
+    <string id="AF_ECO_UI_SettlementTrustGain" text="{SETTLEMENT}: settlement trust +{LOCAL}{SHARED}\n{HIT} {DIRECT}, share {SHARE}, total {TOTAL}" />
+    <string id="AF_ECO_UI_SettlementTrustCarry" text="{SETTLEMENT}: settlement trust accumulated +{TOTAL}{SHARED}\n{HIT} {DIRECT}, share {SHARE}; less than 1 point" />
+    <string id="AF_ECO_UI_LetterDefaultTitle" text="Letter" />
+    <string id="AF_ECO_UI_ViewLetterTitle" text="View Letter" />
+    <string id="AF_ECO_UI_PopupCloseButton" text="Close" />
+    <string id="AF_ECO_UI_RpItemDefaultTitle" text="RP Item" />
+    <string id="AF_ECO_UI_ViewRpItemIntroductionTitle" text="View Item Description" />
+    <string id="AF_ECO_UI_RpItemIntroductionPending" text="Item description is generating, please check back later." />
+    <string id="AF_ECO_UI_RpItemIntroductionEmpty" text="This RP item has no description yet." />
+    <string id="AF_ECO_UI_RpForgeFailed" text="Crafting failed." />
+    <string id="AF_ECO_UI_RpForgeFailedException" text="Crafting failed: {ERROR}" />
+    <string id="AF_ECO_UI_RpForgeRollbackIncomplete" text="Item rollback was not fully completed: {ISSUES}" />
+    <string id="AF_ECO_UI_RpForgeRollbackCleaned" text="Cleaned up the generated item, records, and runtime caches." />
+    <string id="AF_ECO_UI_RpForgeRefundNoCharge" text="No denars were deducted; no refund needed." />
+    <string id="AF_ECO_UI_RpForgeRefundFull" text="Fully refunded {AMOUNT} denars." />
+    <string id="AF_ECO_UI_FixedAssetQtyMustBeOne" text="Execution failed: fixed asset quantity must be 1." />
+    <string id="AF_ECO_UI_FixedAssetTransferGiverPlayer" text="You cannot transfer a fixed asset from the player." />
+    <string id="AF_ECO_UI_FixedAssetReceiverMustBePlayer" text="Execution failed: the fixed asset receiver must be the player." />
+    <string id="AF_ECO_UI_FixedAssetEmptyToken" text="Execution failed: fixed asset identifier is empty." />
+    <string id="AF_ECO_UI_FixedAssetNotFound" text="Execution failed: target fixed asset was not found: {TOKEN}" />
+    <string id="AF_ECO_UI_FixedAssetUnresolved" text="Execution failed: unrecognized fixed asset identifier: {TOKEN}" />
+    <string id="AF_ECO_UI_FixedAssetActionUnsupported" text="Execution failed: unsupported fixed asset transfer action: {ACTION}" />
+    <string id="AF_ECO_UI_FixedAssetCastleNotAllowed" text="Castle transfer is not allowed in conversation." />
+    <string id="AF_ECO_UI_FixedAssetTownNotAllowed" text="Town transfer is not allowed in conversation." />
+    <string id="AF_ECO_UI_FixedAssetSettlementNotAllowed" text="Settlement transfer is not allowed in conversation." />
+    <string id="AF_ECO_UI_FixedAssetGiverDead" text="Execution failed: transferor {GIVER} is no longer alive." />
+    <string id="AF_ECO_UI_FixedAssetGiverNoClan" text="Execution failed: transferor {GIVER} has no clan." />
+    <string id="AF_ECO_UI_FixedAssetPlayerNoClan" text="Execution failed: player has no clan." />
+    <string id="AF_ECO_UI_FixedAssetPlayerAlreadyOwns" text="You already own {SETTLEMENT}." />
+    <string id="AF_ECO_UI_FixedAssetGiverNotOwner" text="Transferor {GIVER} does not own {SETTLEMENT} (current owner: {OWNER})." />
+    <string id="AF_ECO_UI_FixedAssetGiverNotLeader" text="Transferor {GIVER} is not the leader of clan {CLAN} and cannot transfer settlement ownership." />
+    <string id="AF_ECO_UI_FixedAssetKingdomAtWar" text="Transferor kingdom {GIVER_KINGDOM} is at war with player kingdom {PLAYER_KINGDOM}." />
+    <string id="AF_ECO_UI_FixedAssetClanAtWar" text="Transferor clan {CLAN} is at war with player kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FixedAssetPlayerClanAtWar" text="Transferor kingdom {KINGDOM} is at war with player clan {CLAN}." />
+    <string id="AF_ECO_UI_FixedAssetAtWarDirect" text="Transferor clan {GIVER_CLAN} is at war with player clan {PLAYER_CLAN}." />
+    <string id="AF_ECO_UI_FixedAssetTransferException" text="Failed to transfer settlement: {ERROR}" />
+    <string id="AF_ECO_UI_FixedAssetTransferSuccess" text="{GIVER} has transferred {SETTLEMENT} to you." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopAlreadyOwns" text="You already own the workshop at {SETTLEMENT}: {WORKSHOP}." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopGiverNotOwner" text="Transferor {GIVER} does not own the workshop at {SETTLEMENT}: {WORKSHOP} (current owner: {OWNER})." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopLimit" text="Your workshop capacity is full (maximum {LIMIT})." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopTownAtWar" text="{TOWN} belongs to hostile faction {FACTION}." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopFailed" text="Workshop transfer failed: cannot change owner in game data." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopSuccess" text="{GIVER} has transferred the workshop at {SETTLEMENT} ({WORKSHOP}) to you." />
+    <string id="AF_ECO_UI_FixedAssetAlleyGiverPlayer" text="Cannot transfer an alley from the player." />
+    <string id="AF_ECO_UI_FixedAssetAlleyAlreadyOwns" text="You already control the alley at {SETTLEMENT}." />
+    <string id="AF_ECO_UI_FixedAssetAlleyGiverNotOwner" text="Transferor {GIVER} does not control the alley at {SETTLEMENT} (current controller: {OWNER})." />
+    <string id="AF_ECO_UI_FixedAssetAlleyTownAtWar" text="{TOWN} belongs to hostile faction {FACTION}; you cannot take over the alley." />
+    <string id="AF_ECO_UI_FixedAssetAlleyNoTroops" text="You have no suitable companion or troop to take over the alley at {SETTLEMENT}." />
+    <string id="AF_ECO_UI_FixedAssetAlleyFailed" text="Failed to transfer alley: game system could not complete takeover." />
+    <string id="AF_ECO_UI_FixedAssetAlleySuccess" text="{GIVER} has transferred control of the alley at {SETTLEMENT} to you." />
+    <string id="AF_ECO_UI_KingdomTransferGiverDead" text="Execution failed: abdicator {GIVER} is no longer alive." />
+    <string id="AF_ECO_UI_KingdomTransferGiverNoKingdom" text="Execution failed: abdicator {GIVER} has no kingdom." />
+    <string id="AF_ECO_UI_KingdomTransferPlayerNoClan" text="Execution failed: player has no clan." />
+    <string id="AF_ECO_UI_KingdomTransferPlayerAlreadyRuling" text="Execution failed: player already rules kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_KingdomTransferGiverNotRuler" text="Execution failed: {GIVER} is not the ruler of kingdom {KINGDOM} (current ruler: {RULER})." />
+    <string id="AF_ECO_UI_KingdomTransferPlayerDifferentKingdom" text="Execution failed: player currently belongs to another kingdom {KINGDOM}; leave your kingdom first." />
+    <string id="AF_ECO_UI_KingdomTransferClanAtWar" text="Execution failed: player clan is currently at war with kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_KingdomTransferException" text="Failed to abdicate royal authority: {ERROR}" />
+    <string id="AF_ECO_UI_KingdomTransferRulerMismatch" text="Royal abdication failed: kingdom ruler was not updated to player." />
+    <string id="AF_ECO_UI_KingdomTransferSuccess" text="{GIVER} has abdicated the throne; you are now the ruler of {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdGiverDead" text="Execution failed: target character {GIVER} is no longer alive." />
+    <string id="AF_ECO_UI_FactionIdGiverNoClan" text="Execution failed: target character {GIVER} has no clan." />
+    <string id="AF_ECO_UI_FactionIdGiverNotLeader" text="Execution failed: target character {GIVER} is not the leader of clan {CLAN} and cannot represent the clan." />
+    <string id="AF_ECO_UI_FactionIdUnknownAction" text="Execution failed: unrecognized faction action {ACTION}." />
+    <string id="AF_ECO_UI_FactionIdPlayerNoKingdom" text="Execution failed: player has no kingdom." />
+    <string id="AF_ECO_UI_FactionIdTargetKingdomNotFound" text="Execution failed: target kingdom {KINGDOM} was not found." />
+    <string id="AF_ECO_UI_FactionIdPlayerAtWar" text="Execution failed: clan {CLAN} is currently at war with player kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdAlreadyInPlayerKingdom" text="Clan {CLAN} already belongs to player kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdClanJoinPlayerKingdomSuccess" text="{CLAN} has formally joined player kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdTargetKingdomAtWar" text="Execution failed: clan {CLAN} is currently at war with target kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdAlreadyInTargetKingdom" text="Clan {CLAN} already belongs to kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdClanJoinKingdomSuccess" text="{CLAN} has formally joined kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdAlreadyMercenary" text="Clan {CLAN} is already a mercenary clan for kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdMercenarySuccess" text="{CLAN} has formally entered mercenary service for kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdAlreadyVassal" text="Clan {CLAN} is already a vassal of kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdVassalSuccess" text="{CLAN} has formally become a vassal clan of kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdAlreadyIndependent" text="Clan {CLAN} does not belong to any kingdom and is already independent." />
+    <string id="AF_ECO_UI_FactionIdIndependentSuccess" text="{CLAN} has formally declared independence and left former kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdClanRebelGiverDead" text="Execution failed: rebel leader {GIVER} is no longer alive." />
+    <string id="AF_ECO_UI_FactionIdClanRebelGiverNoClan" text="Execution failed: rebel leader {GIVER} has no clan." />
+    <string id="AF_ECO_UI_FactionIdClanRebelGiverNotLeader" text="Execution failed: rebel leader {GIVER} is not the leader of clan {CLAN} and cannot lead a rebellion." />
+    <string id="AF_ECO_UI_FactionIdClanRebelSuccess" text="{CLAN} has formally broken away from kingdom {KINGDOM} and raised the banner of civil war." />
+    <string id="AF_ECO_UI_FixedAssetMissingParties" text="Missing transfer counterparties." />
+    <string id="AF_ECO_UI_FixedAssetNpcOnly" text="Postprocess only allows NPCs to transfer fixed assets to the player." />
+    <string id="AF_ECO_UI_FixedAssetClanMemberBlocked" text="Clan members or companions cannot be transferred via fixed assets." />
+    <string id="AF_ECO_UI_FixedAssetMissingAsset" text="Missing transferable fixed asset." />
+    <string id="AF_ECO_UI_FixedAssetUnknownType" text="Unknown fixed asset type." />
+    <string id="AF_ECO_UI_FixedAssetQuantityMustBeOne" text="Fixed asset quantity must be 1." />
+    <string id="AF_ECO_UI_FixedAssetTargetNoClan" text="Target recipient does not have a valid clan." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopMissingRecipient" text="Missing workshop recipient." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopRecipientInvalid" text="Workshop recipient is not a valid living hero." />
+    <string id="AF_ECO_UI_FixedAssetCaravanMissingRecipient" text="Missing caravan recipient." />
+    <string id="AF_ECO_UI_FixedAssetUnknownDirection" text="Unknown fixed asset transfer direction ({DIRECTION})." />
+    <string id="AF_ECO_UI_FixedAssetException" text="Transfer failed with an error: {ERROR}" />
+    <string id="AF_ECO_UI_FixedAssetSettlementToPlayer" text="{ASSET} was transferred to the player's clan (payment not automatically deducted)." />
+    <string id="AF_ECO_UI_FixedAssetSettlementToNpc" text="Player transferred {ASSET} to {GIVER}'s clan (payment not automatically deducted)." />
+    <string id="AF_ECO_UI_FixedAssetAssetToPlayer" text="{ASSET} was transferred to the player (payment not automatically deducted)." />
+    <string id="AF_ECO_UI_FixedAssetAssetToNpc" text="Player transferred {ASSET} to {GIVER} (payment not automatically deducted)." />
+    <string id="AF_ECO_UI_FixedAssetAlreadyTargetClan" text="{ASSET} already belongs to the target clan." />
+    <string id="AF_ECO_UI_FixedAssetAlreadyTargetPerson" text="{ASSET} already belongs to the target character." />
+    <string id="AF_ECO_UI_FixedAssetNotFortification" text="{ASSET} is not a transferable town or castle." />
+    <string id="AF_ECO_UI_FixedAssetNoValidOwner" text="{ASSET} has no recognized valid owner." />
+    <string id="AF_ECO_UI_FixedAssetUnderSiege" text="{ASSET} is currently in battle or under siege and cannot be transferred." />
+    <string id="AF_ECO_UI_FixedAssetNotGiverClan" text="{ASSET} does not belong to {GIVER}'s clan and cannot be transferred to the player." />
+    <string id="AF_ECO_UI_FixedAssetNotPlayerClan" text="{ASSET} currently does not belong to the player's clan." />
+    <string id="AF_ECO_UI_FixedAssetNotWorkshop" text="{ASSET} is not a workshop that can be safely transferred." />
+    <string id="AF_ECO_UI_FixedAssetNoWorkshopOwner" text="{ASSET} currently has no recognized workshop owner." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopOwnerDead" text="{ASSET}'s current workshop owner is invalid or deceased." />
+    <string id="AF_ECO_UI_FixedAssetNotGiver" text="{ASSET} does not belong to {GIVER} and cannot be transferred to the player." />
+    <string id="AF_ECO_UI_FixedAssetNotPlayer" text="{ASSET} currently does not belong to the player." />
+    <string id="AF_ECO_UI_FixedAssetNotCaravan" text="{ASSET} is not a transferable caravan." />
+    <string id="AF_ECO_UI_FixedAssetCaravanInEvent" text="{ASSET} is currently in an event or battle and cannot be transferred." />
+    <string id="AF_ECO_UI_FixedAssetCaravanOwnerDead" text="{ASSET}'s current caravan owner is invalid or deceased." />
+    <string id="AF_ECO_UI_FixedAssetCaravanNoHomeSettlement" text="{ASSET} lacks an available home settlement for the caravan." />
+    <string id="AF_ECO_UI_KingdomTransferPlayerClanNotFound" text="Player clan was not found." />
+    <string id="AF_ECO_UI_KingdomTransferNotKing" text="The conversation partner is not a reigning king who can abdicate." />
+    <string id="AF_ECO_UI_KingdomTransferNoKingdom" text="The conversation partner has no valid kingdom." />
+    <string id="AF_ECO_UI_KingdomTransferAlreadyKing" text="The player's clan cannot reacquire the crown through abdication." />
+    <string id="AF_ECO_UI_KingdomTransferAlreadyRuling" text="{CLAN} is already the ruling clan of {KINGDOM}." />
+    <string id="AF_ECO_UI_KingdomTransferPartnerNotKing" text="{GIVER} is not the king of {KINGDOM} and cannot abdicate." />
+    <string id="AF_ECO_UI_KingdomTransferJoinFailed" text="The player's clan failed to join {KINGDOM}; the crown was not transferred." />
+    <string id="AF_ECO_UI_FactionOnlyLeaderCanPledge" text="Only the active clan leader can pledge the entire clan." />
+    <string id="AF_ECO_UI_FactionNoKingdomToAccept" text="The player currently has no valid kingdom to accept the clan." />
+    <string id="AF_ECO_UI_FactionPlayerNotRuler" text="The player is not the ruler of the kingdom and cannot approve clan allegiance directly." />
+    <string id="AF_ECO_UI_FactionTargetKingdomInvalid" text="The target kingdom is invalid or has been eliminated." />
+    <string id="AF_ECO_UI_FactionNpcClanNotFound" text="The NPC's clan could not be found." />
+    <string id="AF_ECO_UI_FactionCannotRePledgePlayerClan" text="The player's clan cannot re-pledge allegiance through this NPC." />
+    <string id="AF_ECO_UI_FactionOnlyClanLeaderCanChoose" text="Only the clan leader can pledge the clan's allegiance to a kingdom." />
+    <string id="AF_ECO_UI_FactionPlayerNotInKingdom" text="The player is not currently part of any faction." />
+    <string id="AF_ECO_UI_FactionNoKingdomForTarget" text="The player currently has no kingdom for the target clan to join." />
+    <string id="AF_ECO_UI_FactionPartnerNotVassal" text="The conversation partner is not a vassal of this faction and cannot sign a mercenary contract." />
+    <string id="AF_ECO_UI_FactionPlayerAlreadyVassal" text="The player is already a vassal of a kingdom and cannot join as a mercenary." />
+    <string id="AF_ECO_UI_FactionOnlyKingGrantsVassalage" text="Only the king of the target kingdom can grant official vassalage." />
+    <string id="AF_ECO_UI_FactionAlreadyServesKingdom" text="{CLAN} already serves {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionClanEliminated" text="{CLAN} has been eliminated or is unavailable." />
+    <string id="AF_ECO_UI_FactionClanJoinFailed" text="{CLAN} failed to join {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionMercToLordSuccess" text="{CLAN} ended its mercenary contract and joined {KINGDOM} as a lord." />
+    <string id="AF_ECO_UI_FactionDefectToLordSuccess" text="{CLAN} defected from {OLD_KINGDOM} and joined {KINGDOM} as a lord." />
+    <string id="AF_ECO_UI_FactionJoinAsLordSuccess" text="{CLAN} joined {KINGDOM} as a lord." />
+    <string id="AF_ECO_UI_FactionPlayerEndMercSuccess" text="The player ended their mercenary contract with {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionPlayerLeaveVassalSuccess" text="The player left {KINGDOM} and is no longer an official vassal." />
+    <string id="AF_ECO_UI_FactionPlayerJoinMercSuccess" text="The player joined {KINGDOM} as a mercenary." />
+    <string id="AF_ECO_UI_FactionPlayerAlreadyVassalSkip" text="The player is already an official vassal of {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionPlayerFailVassal" text="The player failed to become an official vassal of {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionPlayerJoinVassalSuccess" text="The player joined {KINGDOM} as an official vassal." />
+    <string id="AF_ECO_UI_FactionException" text="Faction action failed with an error: {ERROR}" />
+    <string id="AF_ECO_UI_RecruitmentCarriedFiefs" text="; its fiefs {SETTLEMENTS} joined the player's kingdom with the clan" />
+    <string id="AF_ECO_UI_RecruitmentTransitionNotes" text=" ({NOTES})" />
+    <string id="AF_ECO_UI_RecruitmentOldKingdomWillBeCleaned" text="{KINGDOM} has no successor ruling clan left and will be cleared after the target clan departs" />
+    <string id="AF_ECO_UI_RecruitmentRulingClanSucceeded" text="{CLAN} has taken over as the ruling clan of {KINGDOM}" />
+    <string id="AF_ECO_UI_RecruitmentOldKingdomDissolvedNoSuccessor" text="{KINGDOM} has no successor ruling clan left and was dissolved following the native flow" />
+    <string id="AF_ECO_UI_RecruitmentOldKingdomDissolved" text="{KINGDOM} was dissolved following the native flow" />
+    <string id="AF_ECO_UI_RecruitmentRulerElectionTriggered" text="{KINGDOM} triggered a new ruler election because its king departed" />
+    <string id="AF_ECO_UI_RecruitmentRulingClanTookOverDirectly" text="{CLAN} took over as the ruling clan of {KINGDOM} directly" />
+    <string id="AF_ECO_UI_RecruitmentRulingClanRepairFailed" text="Repairing the old kingdom's ruling clan failed: {ERROR}" />
+    <string id="AF_ECO_UI_RecruitmentOldKingdomDissolveFailed" text="Dissolving the old kingdom failed: {ERROR}" />
+    <string id="AF_ECO_UI_RecruitmentCaptivityReleased" text="their prisoner status was lifted" />
+    <string id="AF_ECO_UI_FactionPlayerClanNotFound" text="The player's clan could not be found." />
+    <string id="AF_ECO_UI_FactionLeavePartyMismatch" text="The conversation partner belongs to {PARTY} and cannot approve on behalf of {KINGDOM} the player's departure from the current service." />
+    <string id="AF_ECO_UI_FactionTargetKingdomIdInvalid" text="The target kingdom id is invalid ({TOKEN})." />
+    <string id="AF_ECO_UI_FactionTargetFactionInvalid" text="The target faction is invalid ({TOKEN})." />
+    <string id="AF_ECO_UI_FactionUnknownServiceType" text="Unknown faction service type {SERVICE_TYPE}." />
+    <string id="AF_ECO_UI_FactionClanLeaderException" text="Clan leader allegiance failed with an error: {ERROR}" />
+    <string id="AF_ECO_UI_RpForgeErrMainPartyUnavailable" text="The player's main party is currently unavailable." />
+    <string id="AF_ECO_UI_RpForgeErrNoCrafterInParty" text="No available clan member or companion is in the main party." />
+    <string id="AF_ECO_UI_RpForgeErrCrafterNotSelected" text="No crafter has been selected yet." />
+    <string id="AF_ECO_UI_RpForgeErrCrafterUnavailableReselect" text="The selected crafter is no longer available; please choose again." />
+    <string id="AF_ECO_UI_RpForgeErrCrafterLeftParty" text="The selected crafter has left the player's main party; please choose again." />
+    <string id="AF_ECO_UI_RpForgeErrCrafterPartyUnverified" text="Could not confirm that the crafter is still in the player's main party." />
+    <string id="AF_ECO_UI_RpForgeErrCrafterCurrentlyUnavailable" text="The selected crafter is currently unavailable." />
+    <string id="AF_ECO_UI_RpForgeErrCrafterNoCraftingXp" text="The selected crafter cannot gain crafting experience right now." />
+    <string id="AF_ECO_UI_RpForgeErrPlayerNotReady" text="The player or the player's inventory is not ready yet." />
+    <string id="AF_ECO_UI_RpForgeErrPlayerRosterUnavailable" text="The player's inventory is unavailable." />
+    <string id="AF_ECO_UI_RpForgeErrStaminaSystemUnavailable" text="The native crafting stamina system is currently unavailable." />
+    <string id="AF_ECO_UI_RpForgeErrStaminaUnreadable" text="Could not read the selected crafter's crafting stamina." />
+    <string id="AF_ECO_UI_RpForgeErrMaxStaminaUnavailable" text="The selected crafter's maximum crafting stamina is unavailable." />
+    <string id="AF_ECO_UI_RpForgeErrStaminaInsufficient" text="{CRAFTER} does not have enough crafting stamina: {COST} required, {HAVE} available." />
+    <string id="AF_ECO_UI_RpForgeErrStaminaChangedDuringCraft" text="Crafting stamina changed while the item was being crafted; please confirm again." />
+    <string id="AF_ECO_UI_RpForgeErrMaxStaminaChanged" text="The maximum crafting stamina or the stamina cost has changed; please confirm again." />
+    <string id="AF_ECO_UI_RpForgeErrStaminaDeductionFailed" text="The crafting stamina deduction could not be completed." />
+    <string id="AF_ECO_UI_RpForgeErrStaminaRestoreFailed" text="The crafting stamina could not be restored: {ERROR}." />
+    <string id="AF_ECO_UI_RpForgeErrTemplateCandidatesExpired" text="The template candidates are no longer valid." />
+    <string id="AF_ECO_UI_RpForgeErrTemplateCandidatesEmpty" text="The template candidate list is empty." />
+    <string id="AF_ECO_UI_RpForgeErrTemplateNotInTop50" text="The selected template is not in the current Top 50 safe candidates." />
+    <string id="AF_ECO_UI_RpForgeErrNoSafeJunkTemplate" text="No safe junk-item template was found." />
+    <string id="AF_ECO_UI_RpForgeErrMatchedTemplateUnavailable" text="The matched template is no longer available." />
+    <string id="AF_ECO_UI_RpForgeErrTemplateIdEmpty" text="The selected template ID is empty." />
+    <string id="AF_ECO_UI_RpForgeErrTemplateUnavailable" text="The selected template is no longer available." />
+    <string id="AF_ECO_UI_RpForgeErrTemplatePriceChanged" text="The selected template's price has changed; please rebuild the candidate list." />
+    <string id="AF_ECO_UI_RpForgeErrTemplateOrPriceChanged" text="The template or price has changed; please confirm again." />
+    <string id="AF_ECO_UI_RpForgeErrTemplateCloneDetail" text="The equipment template could not be copied safely: {DETAIL}" />
+    <string id="AF_ECO_UI_RpForgeErrTemplateComponentUnsafe" text="The matched equipment template is missing a safe model or complete components." />
+    <string id="AF_ECO_UI_RpForgeErrTemplateEquipmentKindChanged" text="The selected template no longer belongs to the safe equipment category for this name." />
+    <string id="AF_ECO_UI_RpForgeErrTemplateFoodKindChanged" text="The selected template no longer belongs to the current food, drink, water, or medicine category." />
+    <string id="AF_ECO_UI_RpForgeErrTemplateGoodsUnsafe" text="The selected template is no longer a safe goods or document template." />
+    <string id="AF_ECO_UI_RpForgeErrNoTemplateInKind" text="No template is available for that equipment category." />
+    <string id="AF_ECO_UI_RpForgeErrNoSafeEquipmentTemplate" text="No safe, copyable weapon or equipment template exists in that category." />
+    <string id="AF_ECO_UI_RpForgeErrNoSafeFoodOrGoodsTemplate" text="There is no safe food or goods template." />
+    <string id="AF_ECO_UI_RpForgeErrExactSnapshotFailed" text="A safe crafting snapshot could not be built for the exactly matched item." />
+    <string id="AF_ECO_UI_RpForgeErrExactMatchChanged" text="The exactly matched item in the game data has changed; please confirm again." />
+    <string id="AF_ECO_UI_RpForgeErrExactKindChanged" text="The exactly matched template no longer belongs to the current safe crafting category." />
+    <string id="AF_ECO_UI_RpForgeErrExactMatchComponentUnsafe" text="The name exactly matches a game item, but that template lacks components or a model that can be copied safely." />
+    <string id="AF_ECO_UI_RpForgeErrExactMatchIsGoods" text="The name exactly matches an ordinary game item; please untick FORGE AS WEAPON/EQUIPMENT?." />
+    <string id="AF_ECO_UI_RpForgeErrExactMatchIsEquipment" text="The name exactly matches a game weapon or equipment item; please tick FORGE AS WEAPON/EQUIPMENT?." />
+    <string id="AF_ECO_UI_RpForgeErrNameIsEquipment" text="The name belongs to a weapon or equipment item; please tick FORGE AS WEAPON/EQUIPMENT? first." />
+    <string id="AF_ECO_UI_RpForgeErrAmbiguousExactMatch" text="Several game items share that name; please enter one of their template StringIds instead: {IDS}" />
+    <string id="AF_ECO_UI_RpForgeErrReservedMarker" text="The item name cannot contain the system-reserved marker {MARKER}." />
+    <string id="AF_ECO_UI_RpForgeErrEquipmentSuffixRequired" text="An equipment name must end with an explicit Chinese or English equipment suffix, or exactly match a loaded template name/ID." />
+    <string id="AF_ECO_UI_RpForgeErrNameMustMatchTemplate" text="Without an equipment suffix, the item name must exactly match the selected template's name or ID." />
+    <string id="AF_ECO_UI_RpForgeErrInvalidItemName" text="Please enter a valid item name." />
+    <string id="AF_ECO_UI_RpForgeErrHorseCraftUnsupported" text="Player RP crafting cannot craft horses directly; horse armour, barding, and harness remain supported." />
+    <string id="AF_ECO_UI_RpForgeErrBannerCraftUnsupported" text="Player RP crafting does not support banner templates yet." />
+    <string id="AF_ECO_UI_RpForgeErrInvestmentNotPositive" text="The invested amount must be greater than 0." />
+    <string id="AF_ECO_UI_RpForgeErrNotEnoughDenars" text="Not enough denars." />
+    <string id="AF_ECO_UI_RpForgeErrCrafterResourcesChanged" text="The crafter's resources or the crafted item's value have changed; please confirm again." />
+    <string id="AF_ECO_UI_RpForgeErrSmithingTierChanged" text="The smithing tier or the three outcome weights have changed; please confirm again." />
+    <string id="AF_ECO_UI_RpForgeErrCraftInProgress" text="The previous craft is still being processed; please do not click again." />
+    <string id="AF_ECO_UI_RpForgeErrRequestExpired" text="The crafting request is no longer valid." />
+    <string id="AF_ECO_UI_RpForgeErrChargeFailed" text="Payment failed; no item was crafted." />
+    <string id="AF_ECO_UI_RpForgeErrItemCreationFailed" text="The item could not be created or added to the inventory." />
+    <string id="AF_ECO_UI_RpForgeErrRecordCreationFailed" text="The crafting record could not be created." />
+    <string id="AF_ECO_UI_RpForgeErrItemStateWriteFailed" text="The item's attributes or price could not be written." />
+    <string id="AF_ECO_UI_RpForgeErrItemPriceWriteFailed" text="The item's price could not be written." />
+    <string id="AF_ECO_UI_RpForgeErrRefundShortfall" text="Refund failed: {EXPECTED} denars should be refunded but only {ACTUAL} denars were returned." />
+    <string id="AF_ECO_UI_RpForgeErrRefundShortfallWithError" text="Refund failed: {EXPECTED} denars should be refunded but only {ACTUAL} denars were returned ({ERROR})." />
+    <string id="AF_ECO_UI_RpForgeErrRefundPayerMissingAmount" text="Refund failed: the paying player could not be located; {AMOUNT} denars should be refunded." />
+    <string id="AF_ECO_UI_RpForgeErrRefundBalanceUnreadable" text="Refund failed: the pre-refund balance could not be read ({ERROR}); {AMOUNT} denars should be refunded." />
+    <string id="AF_ECO_UI_RpForgeErrRefundBalanceUnverified" text="Refund failed: the post-refund balance could not be verified ({ERROR}); {AMOUNT} denars should be refunded." />
+    <string id="AF_ECO_UI_RpForgeErrRollbackThrew" text="Refund failed: the transaction rollback threw {ERROR}; please check the player's denars and inventory." />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueForeignKey" text="the generation key does not belong to this player-crafting namespace, so no object was unregistered" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueRosterUnavailable" text="the player's inventory is unavailable, so it could not be verified that the generated item was removed" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueRosterResidual" text="the generated item is still left in the player's inventory" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueObjectManagerUnavailable" text="the object manager is unavailable, so the generated item could not be unregistered" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueStringIndexResidual" text="the generated object is still present in the string index" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueObjectIdIndexResidual" text="the generated object is still present in the object-ID index" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueObjectIdCacheKept" text="the object-ID manifest cache holds other items, so that cache was kept" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueDetachedCacheKept" text="the detached object-ID cache holds other items, so that cache was kept" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssuePendingCacheKept" text="the pending object-ID cache holds other items, so that cache was kept" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueDuplicateRegistration" text="one player-crafting key maps to several registered objects, so the unsafe unregistration was refused" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueObjectIdTaken" text="the player-crafting object ID is taken by another object, so the unsafe unregistration was refused" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueRosterCleanupFailed" text="cleaning the player's inventory failed with {ERROR}" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueRecordCleanupFailed" text="cleaning the records or caches failed with {ERROR}" />
+    <string id="AF_ECO_UI_RpForgeRollbackIssueUnregisterFailed" text="unregistering the generated object failed with {ERROR}" />
+    <string id="AF_ECO_UI_RpForgeLabelUnknownType" text="Unknown" />
+    <string id="AF_ECO_UI_ItemType_S285" text="whip" />
+    <string id="AF_ECO_UI_ItemType_S286" text="dagger" />
+    <string id="AF_ECO_UI_ItemType_S287" text="sword" />
+    <string id="AF_ECO_UI_ItemType_S288" text="axe" />
+    <string id="AF_ECO_UI_ItemType_S289" text="mace" />
+    <string id="AF_ECO_UI_ItemType_S290" text="pick" />
+    <string id="AF_ECO_UI_ItemType_S291" text="polearm" />
+    <string id="AF_ECO_UI_ItemType_S292" text="arrows" />
+    <string id="AF_ECO_UI_ItemType_S293" text="bolts" />
+    <string id="AF_ECO_UI_ItemType_S294" text="sling stones" />
+    <string id="AF_ECO_UI_ItemType_S295" text="ammunition" />
+    <string id="AF_ECO_UI_ItemType_S296" text="bow" />
+    <string id="AF_ECO_UI_ItemType_S297" text="crossbow" />
+    <string id="AF_ECO_UI_ItemType_S298" text="sling" />
+    <string id="AF_ECO_UI_ItemType_S299" text="throwing axe" />
+    <string id="AF_ECO_UI_ItemType_S300" text="throwing knives" />
+    <string id="AF_ECO_UI_ItemType_S301" text="javelins" />
+    <string id="AF_ECO_UI_ItemType_S302" text="firearm" />
+    <string id="AF_ECO_UI_ItemType_S303" text="shield" />
+    <string id="AF_ECO_UI_ItemType_S304" text="banner" />
+    <string id="AF_ECO_UI_ItemType_S305" text="alcohol" />
+    <string id="AF_ECO_UI_ItemType_S306" text="food" />
+    <string id="AF_ECO_UI_ItemType_S307" text="pack animal" />
+    <string id="AF_ECO_UI_ItemType_S308" text="livestock" />
+    <string id="AF_ECO_UI_ItemType_S309" text="timber" />
+    <string id="AF_ECO_UI_ItemType_S310" text="iron" />
+    <string id="AF_ECO_UI_ItemType_S311" text="salt" />
+    <string id="AF_ECO_UI_ItemType_S312" text="tools" />
+    <string id="AF_ECO_UI_ItemType_S313" text="pottery" />
+    <string id="AF_ECO_UI_ItemType_S314" text="cloth" />
+    <string id="AF_ECO_UI_ItemType_S315" text="raw materials" />
+    <string id="AF_ECO_UI_ItemType_S316" text="oil" />
+    <string id="AF_ECO_UI_ItemType_S317" text="valuables" />
+    <string id="AF_ECO_UI_ItemType_S318" text="goods" />
+    <string id="AF_ECO_UI_ItemType_S319" text="horse" />
+    <string id="AF_ECO_UI_ItemType_S320" text="one-handed weapon" />
+    <string id="AF_ECO_UI_ItemType_S321" text="two-handed weapon" />
+    <string id="AF_ECO_UI_ItemType_S322" text="polearm" />
+    <string id="AF_ECO_UI_ItemType_S323" text="thrown weapon" />
+    <string id="AF_ECO_UI_ItemType_S324" text="helmet" />
+    <string id="AF_ECO_UI_ItemType_S325" text="body armor" />
+    <string id="AF_ECO_UI_ItemType_S326" text="leg armor" />
+    <string id="AF_ECO_UI_ItemType_S327" text="hand armor" />
+    <string id="AF_ECO_UI_ItemType_S328" text="book" />
+    <string id="AF_ECO_UI_ItemType_S329" text="cape" />
+    <string id="AF_ECO_UI_ItemType_S330" text="harness" />
+    <string id="AF_ECO_UI_ItemType_S028" text="item" />
+      <string id="AF_ECO_UI_PartyAsset_Other" text="the other party" />
+    <string id="AF_ECO_UI_PartyAsset_Unknown" text="unknown" />
+    <string id="AF_ECO_UI_PartyAsset_UnknownAsset" text="unknown asset" />
+    <string id="AF_ECO_UI_PartyAsset_UnknownSettlement" text="unknown settlement" />
+    <string id="AF_ECO_UI_PartyAsset_Workshop" text="workshop" />
+    <string id="AF_ECO_UI_PartyAsset_Caravan" text="caravan" />
+  </strings>
+</base>

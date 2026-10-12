@@ -1,0 +1,211 @@
+{
+  "Id": "rule_magnus_the_pious",
+  "Keywords": [
+    "Complete Imperial Chronicle of Emperor Magnus",
+    "Historical Study of Emperor Magnus the Pious",
+    "Biography of Magnus Savior of the Empire",
+    "Magnus Ends the Age of Three Emperors",
+    "Magnus Founds the Colleges of Magic",
+    "Magnus Noble of Nuln",
+    "Heroic Chronicle of Magnus in the Great War Against Chaos",
+    "Record of Magnus Unifier of the Empire",
+    "Alliance of Magnus and Teclis",
+    "Study on Magnus's State Troop System"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Magnus—known to posterity as Magnus the Pious—stands second only to Sigmar among the Emperors in the history of the Empire. In the darkest hour of the Age of Three Emperors, when the Empire was fractured internally into rival claimants to the throne while the Chaos hordes of Asavar Kul were grinding everything in the north to dust, this nobleman from Nuln relied upon his profound pious faith, pragmatic political statecraft, and rare personal courage to travel on foot to the court of every single Elector Count, persuading them to lay aside generational hatreds and weld the Empire back together into a shield capable of withstanding Chaos. Not only did he save the flesh of the Empire, he reshaped its very bones by founding the Colleges of Magic and promulgating the State Troop reforms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Magnus was our Empire's second Sigmar—he saved everything. What was the Age of Three Emperors? It was the longest, mostidiotic process of slow suicide in the Empire's history—a span of over nine hundred years during which the Empire simultaneously had two, and at times even three mutually unrecognized Emperors, each with his own bloc of Elector Counts, his own coinage, and his own armies. Throughout that era, hatreds between the provinces were piled up, baked, and hardened over and over until every castle became a museum of hatred directed at the castle next door. When the Chaos legions of Asavar Kul crushed Kislev beneath their heels and surged toward our northern borders, not one of the so-called three Emperors possessed sufficient strength to face the invasion alone—yet none of them was willing to be the first to bow to the other two. It was Magnus—a nobleman of Nuln without an Imperial title to his name—who set out alone upon the muddy winter roads, crossing one mutually hostile Electoral province after another and repeating the exact same speech in every court: Chaos does not care which of you wears the crown; Chaos wants to stack your skulls together to make a chair that will make the Dark Gods laugh. His persuasive power came from his piety rather than his intellect—Magnus himself had received no higher education, yet he was a true believer in Sigmar, his faith so pure that it made the Elector Counts who spoke with him feel a sense of shame that transcended political calculation. After he fought shoulder to shoulder before the walls of Kislev alongside the united Imperial army, the surviving remnants of Kislev, and Dwarf relief forces to finally drive Chaos back, the Elector Counts unanimously elected him sole Emperor. Yet Magnus's greatest legacy was not his military victory—it was the two things he did after the war: inviting Teclis to establish the eight Colleges of Magic, and promulgating the Magnus Reforms to institute the Imperial State Troop system. The former transformed the Empire from a primitive nation that could only fear and burn magic at the stake into a modern power fielding systematic magical forces; the latter transformed the armies of the Empire from the private retinues of individual provinces into a standardized force under central Imperial standards. Without Magnus there would be no Empire as we know it today—that phrase may be overused in our time, yet it describes the fact with utter precision."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For any ruler, Magnus is the most practical textbook on statecraft ever written. He proved four things that are routinely underestimated. First, faith can serve as a political instrument—but it works only when the faith itself is genuine. Magnus did not persuade the Elector Counts through threats or bribery, but by making them feel a collective shame before the holy icon of Sigmar that transcended political calculation—a shame that can only be transmitted when the persuader himself is a true believer. Second, institutional reforms enacted in the immediate aftermath of a war determine how long victory endures. Most Emperors in Imperial history merely celebrated and crowned themselves after winning a great war, whereas Magnus immediately planted two seeds in the wake of victory that would continue bearing fruit for centuries to come—the Colleges of Magic and the State Troop system. Third, inviting outside experts is far more effective than fumbling about out of pride. Magnus was no wizard; he could have chosen to fear or ignore magic, yet he chose to invite an Elf—a high-risk political gambit from the perspective of Imperial nationalism—to build a magical system operated entirely by humans. Fourth, the hallmark of unification lies not in abolishing a few crowns, but in establishing a shared institution that no single party has the power to unilaterally destroy. The reason the Age of Three Emperors lasted nine hundred years was not that the Elector Counts did not wish for unity, but that no institutional mechanism existed to prevent someone from proclaiming himself Emperor—Magnus did not solve that theoretical problem, yet he used the political capital won during the war to create a single-Emperor order that, while still theoretically vulnerable to future fracture, no one dared rashly overturn in practice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The complete life of Magnus von Nuln is a case study in political philosophy on transforming pious faith into systematic institutions. Born into an upper-middle noble family in the city of Nuln, his early education was limited to classical military tactics and Sigmarite theology—he displayed some talent in small-unit tactics without standing out, whereas his interest in theology far exceeded what was typical for young Imperial nobles of his day. Official records of his life during the forty years preceding the Chaos incursion are sparse, yet from scattered historical sources it can be inferred that he spent most of his adult years traveling between the provinces as a free nobleman without territorial rule—an experience that allowed him to accumulate firsthand knowledge of the actual conditions in each Electoral province, directly explaining why his nationwide appeals later possessed such pinpoint local relevance. Once the Chaos invasion erupted, Magnus set out on foot northward from Nuln, delivering an open-air, mass-like public address at every Electoral court he reached—choosing to speak in town squares rather than conduct private negotiations in palace chambers because the core of his persuasive strategy lay not in directly bribing or threatening the Elector Count himself, but in arousing a collective dread of the Chaos threat among both the Electoral court and the townsfolk, thereby generating political pressure in the court of public opinion whereby 'failing to support Magnus equals betraying the public safety of the Empire.' This strategy proved most dramatic in Talabecland and Ostland—the Elector Counts of those two provinces were the last in the Empire to accept unification, yet spontaneous petition movements erupted among their burgher classes following Magnus's public speeches, forcing the Elector Counts to yield under the pressure of popular will. The texts of the two most critical institutional reforms promulgated by Magnus after the war—the 'Magnus Edict of Unification' and the 'State Army Organization Act'—survive to this day. The 'Magnus Edict of Unification' proclaimed the formal end of the Age of Three Emperors, stipulating that the Empire possesses only a single Emperor crowned by the Cult of Sigmar and that all Elector Counts must swear fealty at the coronation ceremony. The 'State Army Organization Act' fundamentally reorganized the military forces of the Empire into a State Troop system based in the provinces yet unified under central Imperial standards of training, equipment specifications, and military pay, while establishing centralized military educational institutions such as the Imperial Gunnery School and Imperial Cavalry Training Camps. The founding of the Colleges of Magic was even more complex: after the war, Magnus guided the 'Altdorf Edict of Magic' through the Imperial Diet, legalizing the eight Colleges of Magic—each corresponding to one of the eight Winds of Magic—and establishing them within the city walls of Altdorf, while simultaneously imposing exceedingly strict regulatory clauses: all magical apprentices had to complete their education and swear oaths within the Colleges before being released back into society, and any spellcaster not registered with a College would be deemed an illicit renegade wizard to be hunted down by Witch Hunters. Teclis served in an advisory role during the initial construction of the Colleges—providing a simplified version of Elven magical theory as the foundation for the teaching curriculum, while deliberately keeping all dangerously deep arcane knowledge beyond human reach. Magnus died of natural causes in 2369 IC, and his body was interred in the Imperial Vaults beneath the Great Cathedral of Altdorf, adjacent to the symbolic sarcophagus of Sigmar. His reign lasted only sixty-five years—a mere blink of an eye against the span of Imperial history—yet his institutional legacy continued to shape the Empire for the next two hundred and fifty years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The radiant image of Magnus in male-authored historiography requires a necessary supplementary examination from the perspective of a female ruler. He was indeed one of the greatest Emperors of the Empire—yet much of the actual administrative work that ended the Age of Three Emperors was carried out by his female relatives and stewards on the home front, none of whom were ever mentioned in any official document. At the political climax in Altdorf when all three rival claimants were persuaded to renounce their crowns, Magnus's mother—a pragmatic woman who had run textile workshops in Nuln for over forty years—was still handling civil litigation in the city of Nuln every single day, and that unassuming stability in the rear allowed Magnus to focus his entire attention on the military crisis in the north without worrying about his home base. Within Magnus's Colleges of Magic system lies a widely overlooked detail: when drafting the College statutes, he deliberately added a clause prohibiting the rejection of magically gifted women from admission on the grounds of gender—which was revolutionary at the time. That clause stemmed not from modern ideals of gender equality, but from a far colder calculus of war: Magnus had witnessed firsthand on the Kislev front the devastating combat effectiveness of Kislevite Ice Witches, and he rationally calculated that excluding the magically gifted portion of human women from the military system would cost the Empire at least one-third of its potential magical fighting strength during the next Chaos incursion. Pragmatism sometimes advances institutional reform far more effectively than idealism—in my experience as a female ruler, that is practically an iron law."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The historical significance of Magnus for ruling houses lies not in his specific policies, but in his creation of a theoretically replicable political model—that an individual can pull the Empire back from structural fragmentation into unity through sheer moral authority and public action, without relying on an inherited throne or a conquering army. The core lesson our family draws from the age of Magnus is this: in the Empire, the most important source of political power is not always the sword or the gold coin—sometimes, the most important source is standing in the right town square at the right moment and speaking aloud the very sentence that everyone fears yet no one dares admit in public. Magnus's second lesson is darker yet equally true: he was able to end the Age of Three Emperors not because he was stronger than the three Emperors, but because the Chaos incursion exerted sufficient external pressure from the north at the exact moment he stood astride the Empire's fault lines—without an external threat, internal unity is forever nothing more than hollow rhetoric in an election speech. In our family's long-term strategy, we never actively weaken the Imperial noble houses that compete with us—instead, whenever anomalous activity periodically stirs in the Chaos Wastes, we remind the Imperial Diet: unity is not a virtue; unity is the sole survival strategy in the face of an external threat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the vegetable markets along the streets of Altdorf, I have heard another legend of Magnus—not the saintly narrative of the official chronicles, but the grey version passed down orally by retired veterans and market mutes gathered around kerosene lamps after the stalls close. It is said that when Magnus went to persuade the Elector Count of Talabecland, he was beaten by the guards—not merely turned away, but thrown straight into the castle dungeon and hung up by his wrists for two days, until the Elector Count's wife heard that the man locked in the dungeon was the 'mad preacher' calling for unity across the entire northern Empire and privately ordered his release. It is said that on the final night of the defense of Kislev, he was not standing atop a high platform rallying morale—he was standing in the very front rank of the shield wall, holding an ordinary soldier's shield, his beard soaked with the blood of the men falling beside him, while a young soldier next to him recognized who he was and was so terrified he dropped his sword. It is said that during the first three years after the founding of the Colleges of Magic, six magical accidents occurred—not accidents at all, but deliberate secret executions, in which Teclis identified the handful among the first batch of human students who carried an extremely high risk of corruption and erased them from existence under the guise of teaching mishaps, and Magnus knew of it yet asked no questions. The wanderer's version of history is not necessarily truer—but it is more complete, because it contains the failures, the dirty details, and the fragments that officialdom deliberately chose to forget."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic legacy of the Magnus Reforms is the most successful case of military Keynesianism in the modern history of the Old World. The establishment of the State Troop system created a massive, continuous, standardized demand for military consumption—armor, handguns, artillery, horses, rations, and uniforms—a demand that over the past two hundred years has de facto served as the most stable underlying driver of Imperial manufacturing. The reason the gun-foundries of Nuln were able to grow from regional workshops prior to the age of Magnus into the largest artillery manufacturing base in the Old World today is directly attributable to Magnus specifying for the first time in written statute the standard ranges, calibers, and acceptance criteria for Imperial artillery in his reform edicts—meaning the foundries of Nuln gained a baseline order guaranteed by the Empire at the legal level that could not be arbitrarily canceled by local provinces. Meanwhile, the founding of the Colleges of Magic spawned an entirely new market—the magical materials market. The spellcasting materials required annually by the Colleges of Magic—including enchanted metals, arcane herbs, distilled water gathered under specific phases of the moon, and energy-storage crystals—created a high-value-added supply chain that had never existed before, and our merchant house's profits from this supply chain over the past fifty years have grown at an average annual rate surpassing any traditional trade route. Magnus may have been a complete layman in economics—yet his institutional design inadvertently created a self-sustaining Imperial military-economic complex that remains to this day the most stable socioeconomic engine in the Old World."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Magnus the Noble of Nuln—the free noble class of Wissenland from which Magnus hailed, outside the Electoral dynasties",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Complete Imperial Chronicle of Emperor Magnus Historical Study of Emperor Magnus the Pious Biography of Magnus Savior of the Empire"
+  ]
+}

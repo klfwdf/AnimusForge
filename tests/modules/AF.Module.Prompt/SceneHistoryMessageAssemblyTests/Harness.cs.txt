@@ -48,6 +48,11 @@ internal static class Program
         input.SceneHistory = new[] { self }; input.PersistentHistory = null;
         Check(SceneHistoryMessageAssemblyOwner.Build(input).Count == 2, "retry builder does not mutate history");
         Check(self.Content == "Ada: hello" && fact.Content.StartsWith("[AFEF"), "source snapshots unchanged");
+        const string systemBody="你第一次与玩家见面；除可见外貌与装备外，你不了解他的姓名、背景和来历。";
+        var sameWordsPlayer=Message(0,"user",systemBody,-1);
+        Check(SceneHistoryMessageAssemblyOwner.TryConvertSceneMessageToStrictChatMessage(sameWordsPlayer,context,out object playerWords) && Field(playerWords,"role")=="user" && Field(playerWords,"content").Contains(systemBody),"same-word player prose is not projected to system fact");
+        var stockFact=SceneHistoryMessageAssemblyOwner.BuildScopedAfefFactLineForPrompt("[AFEF NPC行为补充] "+systemBody,true);
+        Check(stockFact.StartsWith("【当下行为】[AFEF NPC行为补充]") && stockFact.Contains(PromptComposerTexts.Get("memory_fact_first_unknown")),"exact NPC stock fact projects while protocol scope stays stable");
         var detached = SceneHistoryProjectionOwner.CapturePromptMessages(new[] { self });
         self.Content = "changed after capture";
         Check(detached[0].Content == "Ada: hello" && !ReferenceEquals(detached[0], self)

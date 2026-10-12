@@ -1,0 +1,277 @@
+{
+  "Id": "rule_Modern_Legion",
+  "Keywords": [
+    "Modern Legion",
+    "Arenicus Reform",
+    "Praetorian private soldiers",
+    "Noble private army",
+    "New Army"
+  ],
+  "RagShortTexts": [
+    "Arenicos' reforms abolished the standing army and replaced it with the consul's private army to reduce military expenditures."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The modern legion refers to the imperial army after Emperor Arenicos reformed the military system. After the disastrous defeat at the Battle of Pandrak, the emperor abolished the original imperial standing army and replaced it with private armies formed by the consuls and nobles themselves, which were cheaper and more suitable for controlling the territory. This reform drastically reduced military expenditures, but shifted the army from the hands of the state to the hands of local lords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The reforms of Emperor Arenicos pulled the empire out of the bottomless pit of military spending. In the past, those standing corps could drain the national treasury just from military pay. Now the consuls are allowed to raise their own troops, and whoever owns the territory is responsible for it. The cost is much smaller, and it is more suitable for controlling the corners of the territory. Of course, the veterans who were dismissed were certainly not satisfied, but the empire's finances did breathe a sigh of relief."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Modern legions are, to put it bluntly, our private soldiers. The emperor has passed on the responsibility of raising troops to us. We provide money and men, and the troops will naturally listen to us. This saves money for the emperor, but gives us more real power. In the past, the generals of the empire relied on the state for pay, but now they rely on us, the consuls, to support them. Whoever has soldiers in his hands will be tough in his words."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "After the reforms of Arenicos, those of us who serve as soldiers depend on our luck. If you follow the right consul, you will receive military pay and good treatment; if your employer becomes poor or unlucky, you will have to find another job. Unlike before, everyone was an imperial soldier, and above them were the emperor and the Senate. Now, you have to look at the face of the big boss who is above you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The modern army is, to put it bluntly, about letting wealthy men raise their own thugs. The good thing is that the empire no longer has to levy such high taxes to support a standing army. The bad thing is that the knives in the hands of these gentlemen are getting faster and faster. In the past, the empire had only one army, but now each consul has his own army, and the civil war is more fierce than before."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Arenicos's military reform was essentially a shift from centralization to decentralization of the empire's military power. He abolished the last standing legions and instead used the consuls' personal financial resources to form private armies. This alleviated the empire's financial crisis in the short term, but in the long term it paved the way for the subsequent civil war - when each consul had an army that only obeyed his own orders, the imperial power became an empty shell."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I know several old legionnaires who hated Arenicos' so-called reforms. They said that in the past, soldiers were soldiers for the sake of the empire, but now they are soldiers for the pocket of some big boss. Some of the demobilized veterans became bandits, while others formed an army of outcasts and made a living by working for others. The money saved by the reforms ended up being used as military expenses for the civil war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A modern legion of Imperials? Huh, it was their emperor who sold the army to the nobles. It sounds similar to the baron's private army in Vlandia, but at least the baron raises the army and the king gives the order. The empire was not doing well. The consuls raised their own troops, and the three emperors fought against each other without even a unified order."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The imperial people in the south created some kind of modern legion, allowing the great lords to raise their own troops. In our Sturgia, the boyars already have their own soldiers. When the Grand Duke gives an order, all the boyars have to bring their troops. The reforms carried out by the Imperials were just another name for something that was already rotten."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The imperial people's modern legion is to let the wealthy nobles recruit their own troops. This is similar to our clan soldiers in Battania, each count has his own warrior. But our counts are elected by the gens, and their consuls are appointed by the emperor. The emperor personally assigned military power to the people he appointed, and then couldn't control them. This is the most ridiculous part."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Arenicos's reforms, in the eyes of us Aserai, are self-destruction of martial arts. The emirs had their own tribesmen, but the sultan's orders were absolute. It would be better for the emperor to lay off the country's army and let the consuls raise their own troops, and then expect these consuls to still listen to him?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The emperor of the empire laid off the army and asked the lords below to raise their own troops. In our grasslands, the khan's authority comes from the allegiance of all tribes. Each tribe has its own warriors, but they all obey the khan when fighting. The emperor of the empire divided the military power, but failed to make the consuls continue to listen to him. What kind of reform is this?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Modern legions have made life much easier for mercenaries. In the past, when the imperial standing army was there, we could only make scraps. Now the consuls are at war with each other, and everyone needs manpower. As long as you have soldiers, you don't have to worry about having no employers. Some of the old army soldiers who were demobilized fared better than us. After all, they were from the regular army and were more trusted by their employers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Arenicos’s military reform was a key turning point in the empire’s transition from centralization to feudal separatism. The abolition of the standing army and its replacement by the consuls' private armies were ostensibly motivated by financial considerations, but in reality they dispersed military power from the emperor to the hands of local nobles. This reform relieved the empire's financial pressure in the short term, but in the long term it destroyed the empire's direct control of the military, making the subsequent civil war between the Three Emperors possible."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Modern Legion",
+      "Kind": "bound_troop_name",
+      "TargetId": "__bound_troop__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Arenicos",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

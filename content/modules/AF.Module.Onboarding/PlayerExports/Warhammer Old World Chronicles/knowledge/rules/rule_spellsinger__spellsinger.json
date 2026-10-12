@@ -1,0 +1,211 @@
+{
+  "Id": "rule_spellsinger",
+  "Keywords": [
+    "Spellsinger",
+    "Wood Elf Mage",
+    "Spell-Singing",
+    "Forest Magic",
+    "Ghyran",
+    "Ulgu",
+    "Athel Loren Spellcaster",
+    "Song of Magic",
+    "Mastery of Nature",
+    "Singer of the Winds"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Spellsingers are the magic users of the Wood Elves; they manipulate the Winds of Magic through singing rather than incantation, primarily mastering Ghyran, the Wind of Life and growth, and Ulgu, the Wind of Shadow and mystery, guiding the power of the forest to their purpose through melody."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our magic is unlike any other. Human wizards drive the Winds of Magic with harsh shouts and gestures, whereas we invite them with song. The Wind of Ghyran—the magic of life—makes flowers bloom in our footprints and wounds heal between one breath and the next. The Wind of Ulgu—the magic of shadow—lets us shift into fleeting forest shades and plunges the minds of our enemies into boundless darkness. Every Spellsinger's song is unique: some accompany themselves on the harp, some harmonize with birdsong, and for others their own voice alone suffices. In Athel Loren, magic is not a tool—it is the language in which we converse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Spellsingers are the most versatile units in your army. On the battlefield, choose the Wind of Magic according to the situation: draw upon Ghyran when healing and buffs are needed, and use Ulgu when control and assassination are required. Protect your Spellsingers well—they are extremely fragile in melee combat. Position them behind Dryads or Glade Guard to cast their spells. An accomplished Spellsinger can turn the tide of an entire battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "\"Song of Magic\" is the core textbook for spell casters, written by the first elf archmage \"Celestial Sound\" Serafini. The book subdivides the auspicious wind into seven scales, each corresponding to a different life magic effect: the first level \"Sprouting\" can accelerate the growth of plants, the fourth level \"Prosperity\" can heal wounds on a large scale, and the seventh level \"Eternal Life\" is said to allow the elf soul to be permanently embedded in the tree - this is the principle behind the birth of the tree spirit. The Wind of Ugathering has five shadow levels, the most dangerous of which is the fifth level \"Eternal Night\", which is said to be able to swallow the caster himself. In the history of the Spellcaster, there are only three masters who have fully mastered the seventh-level Jiyang and the fifth-level Wuju. The last one is the legendary \"double voice\" Villanora, who can sing Jiyang and Wuju at the same time with two tones."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female lord who is proficient in magic, I deeply understand the value of the spellcaster. Magic is the most precious gift that Athel Loren has given us. Use it wisely and you will be invincible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The inheritance of the spell caster is the most important treasure of the clan. Young tribesmen who are found to have magical talents are sent to the \"Singing Temple\" for training as soon as possible. Only a clan with a powerful caster has a say in the politics of Athel Loren."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You hear singing - not in any language you are familiar with, but it changes the rhythm of your heart. A caster was sitting on a stone by the stream, playing the harp with his fingers, and the water flow changed direction according to the melody."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The training of a spell caster begins at an early age and requires hundreds of years of study. They must be proficient in at least three musical instruments and must learn to use their talent to sense the flow of magical winds throughout the forest. The dual cultivation of Jiyang and Wuju is the most difficult part of the spell caster."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Spellsinger — Wood Elf mages who manipulate the Winds of Magic through song.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Spellsinger Wood Elf Mage Spell-Singing"
+  ]
+}

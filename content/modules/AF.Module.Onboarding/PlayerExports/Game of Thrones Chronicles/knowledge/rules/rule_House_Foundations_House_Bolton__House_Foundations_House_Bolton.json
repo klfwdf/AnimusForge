@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_House_Bolton",
+  "Keywords": [
+    "House Bolton",
+    "The Dreadfort",
+    "Flayed Man",
+    "Our Blades Are Sharp",
+    "Red Kings",
+    "Arch-Rivals of House Stark"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "With their roots in the Dreadfort, House Bolton is one of the oldest and most feared houses in the North. The red skinned man on a pink background and the motto \"Knives are sharp\" come from Bolton's cruel tradition of skinning his enemies; the ancient Red King fought against the Kings of Winterfell many times before finally succumbing to Stark. The law against skinning did not erase family crests, dungeon legends, and vassal memories. Nobles will understand Bolton's quiet, cautious and fearful rule as another northern power; ordinary people will not care much about the lineage of the ancient kings, only knowing that the tales of tax collectors, hounds and skinning in the Dreadfort are enough to shut up children."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The northern nobles never thought of Bolton as anything more than a dark tale. The Dreadfort is ancient and the land is vast, and the family once competed with the King of Winter for supremacy; surrender did not erase that memory, but only replaced the public crown with cautious etiquette. His pale eyes, soft voice, and flag of the Skinned Man made every courtesy at the banquet table seem to have a second meaning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the northern countryside, Bolton's name is rarely used to make children laugh. The old man would speak in hushed tones of skinning, dungeons, and the pink flag of the Dreadfort; the stories might become more exaggerated each generation, but the fears were real. To the tenant farmers, whether the lord actually hung human skins on the wall mattered less than one thing: not giving the tax collector the impression that someone was lying."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the eyes of the soldiers, the Bolton Army is not a legend, but discipline, lances, mail and a ruthlessness that refuses to waste. Some people are in awe of them for being able to endure and wait, while others feel that there is no real warmth under the flag of the Skinners. It’s best to listen to orders when you’re next to Bolton; it’s best to remember what you say when you’re across the table from Bolton."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Bolton The ancient tribe from the north of the Dreadfort has a family emblem of a red skinned man on a pink background, and their motto is \"The sharp edge is sharp.\" The rivalry between the Red King and Stark, the tradition of skinning and the rule of fear constitute its long-term social memory. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Bolton The ancient tribe from the north of the Dreadfort has a family emblem of a red skinned man on a pink background, and their motto is \"The sharp edge is sharp.\" The rivalry between the Red King and Stark, the tradition of skinning and the rule of fear constitute its long-term social memory. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Bolton The ancient tribe from the north of the Dreadfort has a family emblem of a red skinned man on a pink background, and their motto is \"The sharp edge is sharp.\" The rivalry between the Red King and Stark, the tradition of skinning and the rule of fear constitute its long-term social memory. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Bolton The ancient tribe from the north of the Dreadfort has a family emblem of a red skinned man on a pink background, and their motto is \"The sharp edge is sharp.\" The rivalry between the Red King and Stark, the tradition of skinning and the rule of fear constitute its long-term social memory. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Bolton: The ancient tribe from the north of the Dreadfort has a family emblem of a red skinned man on a pink background, and their motto is \"The sharp edge is sharp.\" The rivalry between the Red King and Stark, the tradition of skinning and the rule of fear constitute its long-term social memory."
+  ]
+}

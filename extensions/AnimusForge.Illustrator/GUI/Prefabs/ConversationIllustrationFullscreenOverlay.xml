@@ -17,39 +17,39 @@
             <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="24" MarginLeft="80" MarginRight="80" Brush="Popup.Title.Text" Brush.FontSize="24" Brush.TextHorizontalAlignment="Center" Text="@TitleText" DoNotAcceptEvents="true" />
             <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="44" HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="24" MarginRight="28" Brush="Popup.Done.Button" Command.Click="ExecuteClose" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
               <Children>
-                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="18" Text="关闭" DoNotAcceptEvents="true" />
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="18" Text="@CloseText" DoNotAcceptEvents="true" />
               </Children>
             </ButtonWidget>
             <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="46" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="14" LayoutImp.LayoutMethod="HorizontalLeftToRight" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
               <Children>
                 <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="108" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteRegenerate" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="重新绘制" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="@RedrawText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
                 <ButtonWidget IsEnabled="@CanRegenerateWithPrompt" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="136" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteRegenerateWithPrompt" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="重绘（带提示词）" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="@RedrawWithPromptText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
                         <ButtonWidget IsEnabled="@CanRegenerateBasedOnImage" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="136" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteRegenerateBasedOnImage" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="重绘（基于本图）" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="@RedrawBasedOnImageText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
                 <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="74" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteCopyPrompt" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="复制" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="@CopyText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
                 <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="78" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteOpenGallery" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="纪事画廊" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="@GalleryText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
                 <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="70" SuggestedHeight="38" Brush="Popup.Done.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="关闭" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="@CloseText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
               </Children>

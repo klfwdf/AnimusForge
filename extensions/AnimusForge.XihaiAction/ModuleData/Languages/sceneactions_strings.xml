@@ -126,5 +126,17 @@
     <string id="SAX_MCM_AdvanceDelay_Hint" text="Delay between the command gesture and Advance orders to the player's formations. Used only while post-speech Advance is enabled." />
     <string id="SAX_MCM_Notifications_Hint" text="Shows battle-speech start, cancellation, and completion notices. Disabling affects UI only, not execution." />
     <string id="SAX_MCM_Diagnostics_Hint" text="Writes detailed natural-action and battle-speech diagnostics. Disabling reduces log I/O without changing behavior." />
+    <string id="SAX_BattleSpeechInputActive" text="A battle speech is already in progress." />
+    <string id="SAX_BattleSpeechInputNpcNotQueued" text="The other-speaker speech request did not enter the battle channel. Check that the battle is still in progress." />
+    <string id="SAX_BattleSpeechInputNotQueued" text="The speech request did not enter the battle channel. Check that the battle is still in progress." />
+    <string id="SAX_BattleSpeechInputNpcTitle" text="Other-speaker speech" />
+    <string id="SAX_BattleSpeechInputTitle" text="Speech" />
+    <string id="SAX_BattleSpeechInputNpcSubtitle" text="The selected target will speak. AF will generate a fresh speech for allied soldiers from the topic you enter." />
+    <string id="SAX_BattleSpeechInputSubtitle" text="You will speak. Enter the speech you want to give to allied soldiers." />
+    <string id="SAX_BattleSpeechInputTopicHint" text="Enter a speech topic:" />
+    <string id="SAX_BattleSpeechInputBodyHint" text="Enter your speech to the soldiers:" />
+    <string id="SAX_BattleSpeechInputContentHint" text="Enter text:" />
+    <string id="SAX_BattleSpeechInputSubmit" text="Deliver speech" />
+    <string id="SAX_BattleSpeechInputCancel" text="Cancel" />
   </strings>
 </base>

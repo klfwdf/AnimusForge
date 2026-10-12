@@ -1,0 +1,210 @@
+{
+  "Id": "rule_serf_trebuchet",
+  "Keywords": [
+    "Serf trebuchet",
+    "Bretonnia siege weapon",
+    "rough instruments",
+    "long range bombardment",
+    "serf craftsman",
+    "Trebuchet",
+    "Field trebuchet",
+    "boulder projectile",
+    "Serfs siege city"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Bretonnia trebuchet was the crudest and most straightforward large-scale siege weapon in the entire Old World - it was built entirely from unfinished country oak and thick rope, without any sophisticated metal pulleys or forged steel components, and was dragged, released, and recycled by a team of barefoot serfs on the rope. However, the moment its throwing arm is thrown violently, a rough stone weighing hundreds of pounds will streak across the sky and fall onto the city wall. Its destructive power is enough to make any castle defender fall into despair after the first few bombardments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The serf trebuchets painted the picture of war in Bretonnia to illustrate what we all know but rarely talk about publicly - the courage of knights can conquer any city wall, provided that there is a gap in the wall that has been opened by a trebuchet. The knights disdain to talk about it, and they like to attribute the conquest of the castle to their spears and swords in their bards - but the real siege force is the barefoot, sweaty serfs and the huge wooden frames they spent weeks on the battlefield cutting down trees with axes to assemble. Bretonnia's army does not have a dedicated \"engineering force\" - that is too imperial, too... gunpowder-minded - but the manor steward of the dukedom selects the strongest serfs from each village in advance to form a \"slinging company\", commanded by a monk trained by the Sisters of the Holy Grail - the monk's duty is not to shoot, but to ensure that the pile of wood will not kill one of his own people the first time it is fired. The role of trebuchets in siege warfare is irreplaceable - Bretonnia has no gunpowder weapons, and the only available means of remotely damaging the city walls is this crawling pile of rough wood and stone. But the fate of the trebuchets was also ignominious: after the siege, the knights rode into the city with their heads high - the trebuchet serfs stayed outside the walls to dismantle their shabby wooden frames - and no one ever wrote a poem to them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The serf trebuchet has an irreplaceable role in siege planning but requires a lord who is patient with it. Building a working trebuchet takes at least four weeks, provided there are adequate stocks of rough oak and string. During a siege, three or four trebuchets are usually deployed alternately outside the city wall for non-stop bombardment to achieve the effect of continuous destruction. The first target of attack is the arrow tower at the crenellation of the city wall, then the stone rows above the city gate, and finally the center of the wall. But the accuracy of the trebuchet is unknown: even on a calm day, the point of impact of the stone pellets can be randomly deflected within dozens of feet around the target - which means you can't hit a small target with precision, but you can physically wear away the enemy defenders with a continuous bombardment of large stone pellets. Compared to Imperial artillery, which could fire accurately from a distance of two miles, the Serf Trebuchets had a maximum range of about four hundred yards, which meant that during the bombardment the entire trebuchet crew was almost within striking range of the enemy defenders' bows. Therefore, a protective wall must be built with wooden rafts in front of the trebuchet to reduce the casualties of the serfs - but the wooden rafts also need to be built by the serfs themselves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The history of the technical principles of the Bretonnia trebuchet provides the history of Old World mechanical engineering with a classic case study of the phenomenon of \"counter-industrialization\" - that is, an empirical field in which a technology does not evolve but degrades over centuries. Unlike modern Imperial artillery, whose range, accuracy, and safety were enhanced with each iteration from the sixteenth century onwards, the Bretonnia trebuchet underwent almost no principle-level improvements for at least ten centuries. Its basic configuration is a single-arm drag trebuchet - which uses dozens of serfs to pull down the lower end of the throwing arm at the same time to throw the stone projectile in a high arc from the stone pocket at the upper end of the throwing arm - this mechanism is far less mechanically efficient than the empire's gear winch trebuchet or the catapult blessed by dwarf runes. According to data included in the \"Atlas of Siege Cones\" of the Imperial Engineering School in Nuremberg, the maximum stone projectile weight of the Bretonnia standard trebuchet under ten-man drag conditions is about three hundred and fifty pounds, and the firing rate is about once every fifteen minutes - which means that a continuous bombardment for a whole day can only fire no more than a hundred stones at most. But the current explanation for this \"technological stagnation\" in Bretonnian academia is not a purely engineering issue: in Bretonnian culture, war machinery is operated by serfs other than knights, which determines that it is not given systematic R&D investment - because improving the efficiency of serfs is not a virtue of any knight. Attempts by a few dukes to introduce imperial bronze cannons to replace trebuchets within their domains resulted in resistance at the church level - on the grounds that the explosive gunpowder would stain the land and might frighten the goddess's war horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When a siege broke out near our territory, the serfs who were responsible for bringing us daily supplies disappeared and went to the battlefield to drag the ropes of the trebuchets. The mistress of the manor looked at the barren wheat fields—not burned by the invaders, but because all the men had been conscripted to pull trebuchets. We gave chocolates wrapped in silk handkerchiefs to our husbands on horseback, and to the men pulling the trebuchets we could only silently hope that they had not been struck by splinters from the thick rope when the throwing arm was accidentally released."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The recruitment of manpower for serf trebuchets was an unpopular necessary evil in the management of the Bretonnian noble families' lands. Taking fifty of the strongest serfs from your domain to man the trebuchets means they won't be engaged in any agricultural production for at least the next three months - and war usually begins before the autumn harvest. How to deceive your neighbor the Duke into having his serfs draw twice as much as you to do this deceptive job is a secret trick circulated in the Bretonnian noble councils."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In my years of traveling around the Old World, I've seen Imperial cannons, Dwarf fireworks cannons, and even Greenskin trebuchets - the one thing they all have in common is that you at least know roughly where the stone is going to land. The Bretonnia trebuchet is the only exception - you wait until it fires and at least count \"one, two, three, four, five\" before deciding whether you should run left or right. I happened to camp near a trebuchet during a siege - in the middle of the night they tested the third experimental bomb, and the stone climbed over the wall and landed in the inner city and rolled for a mile."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The supply of grope for trebuchets was an obscure but huge commercial market in rural Bretonnia. A trebuchet required four strands of main rope—each braided from at least forty braided ropes—a total length of over five hundred feet of thick rope. Making rope of this size requires a specific type of hemp, and the best ones come from the remote swampy areas of the Bretonnia riverlands - where several villages whose only output of the entire economy is siege rope, don't even grow food, rely on selling rope to the duke to import food."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Drag trebuchet - the basic configuration of the Bretonnia trebuchet, relying on dozens of serfs to pull down the throwing arm to generate projectile force",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Serf Trebuchet Bretonnia Siege Weapon Crude Equipment"
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "Id": "rule_darusos",
+  "Keywords": [
+    "Darusos"
+  ],
+  "RagShortTexts": [
+    "After Darusos was deposed, his whereabouts became unknown, and folk legends claim he will return."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 60
+        }
+      },
+      "Content": "Darusos was a young Emperor of the Empire nearly a century ago whose reputation in later ages can be summed up in a single phrase: saintly but incompetent. Pious and gentle by nature, irreproachable in private virtue, he nevertheless lacked the political statecraft and military resolve required to steer the Empire. Failing to keep a firm grip on the army, he was ultimately overthrown in a coup launched by one of his own generals.\n\nAfter his deposition, Darusos's whereabouts became unknown, though official records state that he died in exile. Yet the murkier his end, the richer the legends grew. Among the common folk, a belief gradually took hold that Darusos had not truly died, and that he would return at a destined hour to usher in a golden age for the Empire. This conviction gave birth to the rebel movement known as the 'Embers of the Flame'—an organization claiming to prepare the way for Heaven to bring Darusos back and welcome the coming golden age. Like many other rebel movements, the Embers of the Flame were eventually forced to subsist through extortion and racketeering, yet the name of Darusos is still upheld as their banner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darusos? We generally do not bring up that name of our own accord. It is too embarrassing.\n\nTo speak well of him is to admit that the Senate misjudged its man back then. To speak ill of him is beneath our dignity—after all, he committed no evil; he was simply incompetent. A pious, gentle young man of irreproachable private virtue, seated upon a throne that demanded an iron fist. Some in the Senate supported him at the time, figuring that an obedient Emperor would be easier to control than a capable one. And the result? Not only could you not control him, you could not control the general who overthrew him either. On the day of the coup, the Senate guards stood at the gates and watched the general's soldiers march into the palace without lifting a finger. Even now, we prefer not to talk much about that episode.\n\nAfter his death—or rather, his disappearance—we are of course aware of the rumors among the populace. All that talk of a golden age and his return. Absurd. Yet taking absurdities too seriously only makes us look guilty. So the best policy is not to mention him at all. When Darusos comes up, we simply say 'that unfortunate young Emperor' and change the subject."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_1",
+          "hero:lord_1_14",
+          "hero:lord_1_7"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darusos is a mirror that no Emperor wishes to look into.\n\nOnly after sitting upon this throne myself did I truly understand him. Outsiders imagine an Emperor can do anything. In reality, there is very little you can do. You must keep the army satisfied, keep the Senate satisfied, keep the populace satisfied, keep the gods satisfied—and all of those demands contradict one another. Show the slightest softness, and those beneath you begin making decisions on your behalf. Darusos was not a bad Emperor; he was swallowed alive by this throne.\n\nYet he was too soft. Weakness in an Emperor is not a personal character flaw; it is a disaster of governance. Under his rule, generals grew overmighty, a coup broke out, and the Empire nearly split apart. Those things are not wiped away simply because he was a good man. I acknowledge his saintliness, but saintliness is not statecraft.\n\nAs for that lot in the Embers of the Flame—they are no true followers of Darusos at all. They are a pack of bandits borrowing his name to make a living. I have hunted them down, not out of hatred for Darusos, but because the Empire cannot tolerate anyone stopping travelers on country roads to demand coin while shouting the name of a former Emperor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darusos? That Emperor who was too scared even to ride a horse. I heard about him from my father, who served in the Palace Guard back then and saw Darusos with his own eyes at a military review—white-faced, clutching the reins as if he were holding a venomous snake. How long can an Emperor who dares not ride a horse stay seated in this Empire? Everyone knows the answer.\n\nHe was too deep into religion. My father said he spent half his time praying and the other half listening to senators bicker. The army? Military affairs he handed over entirely to his generals. And the general who finally overthrew him was the very one he trusted most. What does that tell you? It tells you that you can leave prayers to the gods and debates to the senators, but you must never hand your blade to someone else.\n\nThey say he was a saint. Fine, let the saint sit in Heaven. Leave the affairs of this world to men who know how to ride."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darusos? That was back in my great-great-grandfather's time, wasn't it? Who remembers clearly anymore?\n\nThe old folk say he was a good man. Good in what way? He did not start wars, did not kill people, prayed diligently to the gods, and could not stop his underlings when they quarreled. A good man he was, just too soft to keep people in line. Sure enough, one of his own generals toppled him in the end. My grandmother used to mutter that if you want to be a good man, do not be Emperor, and if you become Emperor, do not try to be a good man. No idea whether she made that up herself or heard it somewhere.\n\nAs for what happened to him after he was toppled, there are stories aplenty. Some say he died in a dungeon, some say he fled into the mountains to hide, and others say he never died at all—that a good man should not die like that, and sooner or later he will come back. Most people prefer the story that he will return, probably because everyone wants to believe it. A good man wronged by villains, coming back one day to settle scores with the bad guys—it just sounds satisfying."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darusos was an Emperor of the Empire a long time ago who was later killed in a coup"
+    }
+  ],
+  "TextMappings": []
+}

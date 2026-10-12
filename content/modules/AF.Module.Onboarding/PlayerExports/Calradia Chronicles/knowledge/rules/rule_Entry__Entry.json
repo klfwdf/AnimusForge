@@ -1,0 +1,68 @@
+{
+  "Id": "rule_Entry",
+  "Keywords": [
+    "Grand Duke"
+  ],
+  "RagShortTexts": [
+    "The Grand Duke of Sturgia was elected by the nobility and was not hereditary. He nominally rules a vast territory, but his real power is subject to family balance. It is necessary to deal with the pressure from Vlandia and Kuset and mediate in the parliament. The lord is brave but stubborn, which has troubled all the princes in the past."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "sturgia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Grand Duke of Sturgia is the supreme ruler of the Kingdom of Sturgia. The title is jointly elected by multiple noble lords rather than purely hereditary. The Grand Duke nominally rules over a vast territory from the frozen coast to the forests of the East, but his actual power is limited by the balance of power among the major families. Sturgia has long been under pressure from two fronts: the western front against Vlandian expansion, and the eastern front against the Cusite raids. The Grand Duke needed to mediate in the Council of Nobles to maintain the military tradition with hoplites and buckler warriors at its core. The lords of Sturgia are known for their bravery and prowess in battle, but they are also known for their stubbornness, which has troubled all the Grand Dukes in the past. The current Archduke of Sturgia is a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "battania",
+          "darshi",
+          "empire",
+          "khuzait",
+          "nord",
+          "sturgia",
+          "vakken",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Archduke is the title given to the ruler of Sturgia. The current Grand Duke is a"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "sturgia",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -57,7 +57,7 @@ internal static class Dpl090PresentationReplay
         Equal("目标国", full[1].ActionTargets[0].CountryName, "nested timeline targets detached");
         Test.True(!full[1].IsRead, "timeline read marker is a snapshot");
         var detail = WorldDiplomacyPresentationQueries.Detail(second, 42, true, day => "日期" + day);
-        Equal("作者国 · 统治者 · 日期2 · 外交公告", detail.Subtitle, "detail subtitle and localized type preserved");
+        Equal((SmokeLocalizationEnvironment.EnglishUi ? "作者国 · 统治者 · 日期2 · Diplomatic announcement" : "作者国 · 统治者 · 日期2 · 外交公告"), detail.Subtitle, "detail subtitle and localized type preserved");
         Equal(42L, detail.Generation, "detail carries lifecycle value only");
         Test.True(detail.CanReply && !second.IsRead, "query does not mark read");
         Test.True(WorldDiplomacyTimelineApplication.MarkRead(storage, second.DocumentId) && second.IsRead, "read command marks canonical record");
@@ -86,7 +86,7 @@ internal static class Dpl090PresentationReplay
         Equal(4, archive.Count, "archive includes published documents and both summary types");
         Equal("second", archive[0].EventId, "archive includes undelivered published declaration");
         Equal("diplomacy_summary:2", archive[2].EventId, "annual summary identity unchanged");
-        Equal("第3年外交纪要", archive[2].TitleText, "annual title unchanged");
+        Equal((SmokeLocalizationEnvironment.EnglishUi ? "Year 3 diplomatic record" : "第3年外交纪要"), archive[2].TitleText, "annual title unchanged");
         Equal("diplomacy_summary:batch", archive[3].EventId, "compression identity unchanged");
         storage.AnnualSummaries[0].MajorEvents.Clear();
         Equal("事件", archive[2].ImpactText, "archive summary does not retain mutable event list");
@@ -94,7 +94,7 @@ internal static class Dpl090PresentationReplay
         for (int i = 0; i < 500; i++) storage.Documents.Add(Document(i.ToString(), i));
         Equal(420, WorldDiplomacyPresentationQueries.Timeline(storage, 900).Documents.Count, "timeline hard cap");
         Equal(242, WorldDiplomacyPresentationQueries.Archive(storage, _ => "日期", _ => null!, _ => null!).Count, "archive retains 240-document cap plus summaries");
-        Test.True(WorldDiplomacyPresentationQueries.Standing(storage, "author").StartsWith("【国家威望与国际声誉】"), "encyclopedia heading preserved");
+        Test.True(WorldDiplomacyPresentationQueries.Standing(storage, "author").StartsWith(SmokeLocalizationEnvironment.EnglishUi ? "【National prestige and international reputation】" : "【国家威望与国际声誉】"), "encyclopedia heading preserved");
         Equal("", WorldDiplomacyPresentationQueries.Standing(storage, null!), "no faction yields empty encyclopedia block");
         storage.Documents = null!;
         var empty = WorldDiplomacyPresentationQueries.Timeline(storage, 40);
@@ -347,16 +347,16 @@ internal static class Dpl090PresentationReplay
         var orch = new PlayerOrch(world);
         string Execute(string text, long generation = 42) => WorldDiplomacyPlayerApplication.Execute(world, new(text, generation), orch);
         Equal("", Execute("正文", 41), "old generation ignored");
-        Equal("外交宣言正文不能为空。", Execute("  "), "blank declaration rejected before effects");
+        Equal((SmokeLocalizationEnvironment.EnglishUi ? "The diplomatic declaration body cannot be empty." : "外交宣言正文不能为空。"), Execute("  "), "blank declaration rejected before effects");
         world.Player = new(42, "player", false, true, "宗主国");
-        Test.True(Execute("正文").Contains("不再是王国统治者"), "authority revalidated at submission");
+        Test.True(Execute("正文").Contains((SmokeLocalizationEnvironment.EnglishUi ? "no longer the ruler of your kingdom" : "不再是王国统治者")), "authority revalidated at submission");
         world.Player = new(42, "player", true, false, "宗主国");
-        Test.True(Execute("正文").StartsWith("外交宣言已经公开发布") && world.Added.Count == 1,
+        Test.True(Execute("正文").StartsWith((SmokeLocalizationEnvironment.EnglishUi ? "The diplomatic declaration has been published" : "外交宣言已经公开发布")) && world.Added.Count == 1,
             "player ruler publication bypasses AI independence policy");
         Equal("add,publish,analysis", string.Join(",", world.Effects), "dependent ruler still publishes before analysis");
         world.Added.Clear(); world.Effects.Clear();
         world.Player = new(42, "player", true, true, "宗主国");
-        Test.True(Execute("  正文  ").StartsWith("外交宣言已经公开发布"), "declaration accepted");
+        Test.True(Execute("  正文  ").StartsWith((SmokeLocalizationEnvironment.EnglishUi ? "The diplomatic declaration has been published" : "外交宣言已经公开发布")), "declaration accepted");
         Equal("add,publish,analysis", string.Join(",", world.Effects), "publication precedes analysis");
         Equal("正文", world.Added[0].Body, "body normalized");
         Equal(world.Added[0].DocumentId, world.ComposeRound.RootDocumentId, "root document set");
@@ -364,7 +364,7 @@ internal static class Dpl090PresentationReplay
         world.Effects.Clear();
         world.Round.Participants.Add(new() { KingdomId = "player", MandatoryReplyPending = true });
         var reply = new WorldDiplomacyPlayerDocumentCommand("回应", 42, "source", "round");
-        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply, orch).StartsWith("外交宣言已经公开发布"), "shortcut uses declaration submission");
+        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply, orch).StartsWith((SmokeLocalizationEnvironment.EnglishUi ? "The diplomatic declaration has been published" : "外交宣言已经公开发布")), "shortcut uses declaration submission");
         var response = world.Added.Last();
         Equal("source", response.SourceDocumentId, "reply bound to exact source");
         Equal(world.ComposeRound.RoundId, response.RoundId, "shortcut uses the same provisional routing as archive compose");
@@ -376,11 +376,11 @@ internal static class Dpl090PresentationReplay
             "clicking compose does not settle the original reply obligation");
         int count = world.Added.Count;
         world.Source!.RoundId = "new-round";
-        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply, orch).StartsWith("外交宣言已经公开发布"),
+        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply, orch).StartsWith(SmokeLocalizationEnvironment.EnglishUi ? "The diplomatic declaration has been published" : "外交宣言已经公开发布"),
             "source round changes do not invalidate advisory compose context");
         count++;
         world.Source = null;
-        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply, orch).Contains("原公文已不可用"), "removed source reports missing context");
+        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply, orch).Contains(SmokeLocalizationEnvironment.EnglishUi ? "original document is no longer available" : "原公文已不可用"), "removed source reports missing context");
         Equal(count, world.Added.Count, "stale reply produces no side effects");
     }
 

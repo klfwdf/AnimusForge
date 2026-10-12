@@ -1,0 +1,79 @@
+{
+  "Id": "rule_Iltan_Supply_Line",
+  "Keywords": [
+    "Iltan Supply Line"
+  ],
+  "RagShortTexts": [
+    "The Iltan Supply Line is the grain lifeline for the Empire's northern defenses."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Do I look like someone who would know about that sort of thing...?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This is the lifeline of our Empire; half the grain for our northern defenses passes along this route. Because it is so vital, we have Eleftheroi troops guard it—they don't demand pay since they're basically bandits themselves. We also stationed large garrisons at Amprela and Lochana Castle under A's command to keep the grain route secure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This supply line was set up specifically to defend against us. We raid it often to put supply pressure on the Empire and clear the way for our southward marches."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_EN6",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

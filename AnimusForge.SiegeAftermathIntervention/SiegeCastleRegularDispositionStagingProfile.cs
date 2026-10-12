@@ -13,21 +13,42 @@ public static class SiegeCastleRegularDispositionStagingProfile
         => IsStagedAction(action) && action != SiegeCastleActionKind.SlaughterPrisoners;
 
     public static string Describe(SiegeCastleActionKind action)
+        => Describe( action, false);
+
+    public static string Describe(SiegeCastleActionKind action, bool isEnglish)
     {
+        if (isEnglish)
+        {
+            return action switch
+            {
+                SiegeCastleActionKind.ReleasePrisoners => "Release regular prisoners",
+                SiegeCastleActionKind.SellPrisoners => "Sell regular prisoners at native tavern prices",
+                SiegeCastleActionKind.RecruitPrisonersVoluntary => "Voluntarily recruit regular prisoners",
+                SiegeCastleActionKind.RecruitPrisonersForced => "Forcibly recruit regular prisoners",
+                SiegeCastleActionKind.LaborPrisonersVoluntary => "Voluntary penal labor",
+                SiegeCastleActionKind.LaborPrisonersForced => "Forced penal labor",
+                SiegeCastleActionKind.RepairCastleLaborVoluntary => "Voluntary castle repair labor",
+                SiegeCastleActionKind.RepairCastleLaborForced => "Forced castle repair labor",
+                SiegeCastleActionKind.InstructorPrisonersVoluntary => "Voluntary instructor service",
+                SiegeCastleActionKind.InstructorPrisonersForced => "Forced instructor service",
+                SiegeCastleActionKind.SlaughterPrisoners => "Slaughter regular prisoners in the scene",
+                _ => "No disposition specified"
+            };
+        }
         return action switch
         {
-            SiegeCastleActionKind.ReleasePrisoners => "释放普通战俘",
-            SiegeCastleActionKind.SellPrisoners => "按原版酒馆价格贩卖普通战俘",
-            SiegeCastleActionKind.RecruitPrisonersVoluntary => "自愿收编普通战俘",
-            SiegeCastleActionKind.RecruitPrisonersForced => "强制收编普通战俘",
-            SiegeCastleActionKind.LaborPrisonersVoluntary => "自愿劳役服刑",
-            SiegeCastleActionKind.LaborPrisonersForced => "强制劳役服刑",
-            SiegeCastleActionKind.RepairCastleLaborVoluntary => "自愿劳役修缮城堡",
-            SiegeCastleActionKind.RepairCastleLaborForced => "强制劳役修缮城堡",
-            SiegeCastleActionKind.InstructorPrisonersVoluntary => "自愿担任教官",
-            SiegeCastleActionKind.InstructorPrisonersForced => "强制担任教官",
-            SiegeCastleActionKind.SlaughterPrisoners => "现场屠戮普通战俘",
-            _ => "未指定处置"
+            SiegeCastleActionKind.ReleasePrisoners => CastleAftermathCompatibilityTexts.Raw("staging_release"),
+            SiegeCastleActionKind.SellPrisoners => CastleAftermathCompatibilityTexts.Raw("staging_sell"),
+            SiegeCastleActionKind.RecruitPrisonersVoluntary => CastleAftermathCompatibilityTexts.Raw("staging_recruit_voluntary"),
+            SiegeCastleActionKind.RecruitPrisonersForced => CastleAftermathCompatibilityTexts.Raw("staging_recruit_forced"),
+            SiegeCastleActionKind.LaborPrisonersVoluntary => CastleAftermathCompatibilityTexts.Raw("staging_labor_voluntary"),
+            SiegeCastleActionKind.LaborPrisonersForced => CastleAftermathCompatibilityTexts.Raw("staging_labor_forced"),
+            SiegeCastleActionKind.RepairCastleLaborVoluntary => CastleAftermathCompatibilityTexts.Raw("staging_repair_voluntary"),
+            SiegeCastleActionKind.RepairCastleLaborForced => CastleAftermathCompatibilityTexts.Raw("staging_repair_forced"),
+            SiegeCastleActionKind.InstructorPrisonersVoluntary => CastleAftermathCompatibilityTexts.Raw("staging_instructor_voluntary"),
+            SiegeCastleActionKind.InstructorPrisonersForced => CastleAftermathCompatibilityTexts.Raw("staging_instructor_forced"),
+            SiegeCastleActionKind.SlaughterPrisoners => CastleAftermathCompatibilityTexts.Raw("staging_slaughter"),
+            _ => CastleAftermathCompatibilityTexts.Raw("staging_none")
         };
     }
 

@@ -1,0 +1,145 @@
+{
+  "Id": "rule_Faith_and_Myth_The_Stranger_and_Death",
+  "Keywords": [
+    "The Stranger and Death"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Stranger is the most disturbing aspect of the Seven, representing death, loss, foreign lands, and all that cannot be tamed. The noble will eventually bow to him, and the poor are often familiar with his footsteps earlier; for this reason, many funerals leave the last prayer to strangers guest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Stranger and Death"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Stranger and Death"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Stranger and Death"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Stranger and Death The Stranger is the most disturbing aspect of the Seven, representing death, loss, foreign lands, and all that cannot be tamed. The noble will eventually bow to him, and the poor are often familiar with his footsteps earlier; for this reason, many funerals leave the last prayer to strangers. Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Stranger and Death The Stranger is the most disturbing aspect of the Seven, representing death, loss, foreign lands, and all that cannot be tamed. The noble will eventually bow to him, and the poor are often familiar with his footsteps earlier; for this reason, many funerals leave the last prayer to strangers. Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Stranger and Death The Stranger is the most disturbing aspect of the Seven, representing death, loss, foreign lands, and all that cannot be tamed. The noble will eventually bow to him, and the poor are often familiar with his footsteps earlier; for this reason, many funerals leave the last prayer to strangers. Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Stranger and Death The Stranger is the most disturbing aspect of the Seven, representing death, loss, foreign lands, and all that cannot be tamed. The noble will eventually bow to him, and the poor are often familiar with his footsteps earlier; for this reason, many funerals leave the last prayer to strangers. They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Stranger and Death: The Stranger is the most disturbing aspect of the Seven, representing death, loss, foreign lands, and all that cannot be tamed. The noble will eventually bow to him, and the poor are often familiar with his footsteps earlier; for this reason, many funerals leave the last prayer to strangers."
+  ]
+}

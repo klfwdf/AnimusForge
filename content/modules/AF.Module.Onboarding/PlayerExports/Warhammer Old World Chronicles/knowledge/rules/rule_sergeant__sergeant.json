@@ -1,0 +1,213 @@
+{
+  "Id": "rule_sergeant",
+  "Keywords": [
+    "sergeant",
+    "serf infantry",
+    "Bretonnia Infantry Backbone",
+    "Rudimentary Armor",
+    "Position defense",
+    "Spear Peasant",
+    "infantry",
+    "defensive front",
+    "Peasants and soldiers",
+    "spear wall",
+    "hold fast",
+    "cheap infantry"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The sergeants were Bretonnia's serf infantry, crudely equipped with spears and wooden shields, and formed the defensive cornerstone of the kingdom's armies. They were recruited by the lords to stabilize the front and create opportunities for the knights to charge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our Bretonnia sergeants - these simple serfs may not have dazzling armor and horses, but it is their flesh and blood that build the iron wall on the battlefield. Each Bretonnian village must provide a certain number of strong men to serve as sergeants by decree of the lord. They received basic spear training during their off-farm days, using old ancestral spears and wooden shields that were barely enough to cover their bodies. On the position, the sergeants stood side by side, with spears like hedgehogs, using the most primitive phalanx to resist the fierce charge of the orcs and the surprise attack of the northern predators. When the knight's horn sounded, the sergeants moved out of the way and watched the nobles riding tall war horses charge towards the enemy camp - this was the oldest and glorious collaboration in the Bretonnian war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The sergeant is the cornerstone of the army, not the sword. Their real value lies in their resilience rather than their lethality - a well-trained phalanx of sergeants can hold back an enemy force several times their own, buying time for the cavalry to flank them. However, it must be noted that the morale of the sergeants depends on whether the lord is present to supervise the battle. Once they see the knights fleeing, they will collapse quickly. The correct deployment is to place them in the center, with the flanks protected by terrain or elite troops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia's sergeant system is rooted in the \"forty days' service\" clause in feudal law - each serf family is obliged to provide an adult man to serve for forty days every year, and the lord is responsible for his rations and equipment. The standard equipment of a sergeant is: an eight-foot spear, a willow-leather buckler, an iron pot-top helmet, and a leather armor lined with rough linen. The training focuses on the basics of spear skills, shield wall formation and obedience to military bugle instructions. The total training time does not exceed three weeks per year. The main combat formations are \"hedgehog formation\" and \"shield wall formation\". It is worth noting that Bretonnian law strictly prohibits sergeants from riding horses in combat - horses are exclusive to the knight class, and offenders will be whipped. This provision ensures that the social stratification of military forces is not broken down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female lord, I know how to cherish the lives of these soldiers better than men. Behind every spear-wielding serf was a family and a field that needed to be cultivated. Recruiting too many people will lead to famine in the coming year; recruiting too few will make it impossible to defend the border. This is the cruelest balance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Although our clan's territory is small, our sergeants are surprisingly loyal. Because they know that the patriarch of our tribe has eaten and lived with the serfs for generations and never deducted military rations. Other lords laughed at me for \"lowering my status\", but when it came to war, my sergeants never backed down from battle. This is the bond of the clan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Sergeants are the most pitiful and respectable people on the battlefield. Their faces were haggard, their armor was in tatters, and they were holding shiny old spears in their hands, with a mixture of fear and stubbornness in their eyes. I listened to the songs they sang in the military camp - about the wheat fields in my hometown, the waiting wives and the spring that will never come back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The sergeant's equipment business is based on small profits but quick turnover. A mass-produced spear, a willow-wooden shield—the cost was minimal but the demand was huge. However, most of the lords were in arrears with the payment and would not settle the payment until after the autumn harvest. To make money from sergeant equipment, either control costs to the extreme, or hook up with a generous duke."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Sergeants are Bretonnia's serf infantry, equipped with spears and wooden shields, and are responsible for stabilizing the battle line.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Sergeant Serf Infantry Bretonnia Infantry Backbone"
+  ]
+}

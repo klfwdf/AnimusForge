@@ -12,7 +12,13 @@ var port=new EventEditorPort {
 };
 var ui=new EventEditorController(port);
 Check(EventEditorProjection.BuildDevSummaryPreview("  a\n b\t c  ",40)=="a b c","preview whitespace projection");Check(EventEditorProjection.BuildDevSummaryPreview("abcdef",3)=="abc...","preview truncation preserved");
-Check(EventEditorProjection.BuildDevEventRecordMenuLabel(port,records[0])=="世界周报","world label unchanged");Check(EventEditorProjection.BuildDevEventMaterialItemLabel(port,new(){MaterialType="type",SnapshotText="fallback"})=="[type] fallback","material snapshot fallback");
+foreach(bool chinese in new[]{false,true}) {
+ TaleWorlds.Localization.TextObject.UseLanguage(chinese);
+ Check(EventEditorProjection.BuildDevEventRecordMenuLabel(port,records[0])==(chinese?"世界周报":"World weekly report"),"world label follows selected display language");
+ Check(records[0].EventKind=="world"&&records[0].Title=="title0","display language leaves source record identity and text intact");
+}
+TaleWorlds.Localization.TextObject.UseLanguage(false);
+Check(EventEditorProjection.BuildDevEventMaterialItemLabel(port,new(){MaterialType="type",SnapshotText="fallback"})=="[type] fallback","material snapshot fallback");
 ui.OpenDevEventViewerMenu(99);var page=MBInformationManager.Last;Check(ui.RecordPage==2&&page.Options.Count(o=>o.Identifier is EventRecordEntry)==2,"14 record page clamp");page.Confirm(new(){new(records[29],"",null)});Check(ReferenceEquals(ui.RecordSelection,records[29]),"selection remains original record identity");
 ui.SynchronizeGeneration(1);ui.RecordSelection=records[0];ui.RecordPage=2;ui.MaterialPage=1;ui.SynchronizeGeneration(2);Check(ui.RecordSelection==null&&ui.RecordPage==0&&ui.MaterialPage==0,"load resets UI selection/pages");
 ui.OpenDevEventEditorMenu();var oldSelection=MBInformationManager.Last;generation++;oldSelection.Confirm(new(){new("kingdom_stability_lab","",null)});Check(returns==0,"late menu callback rejected");
@@ -30,10 +36,13 @@ var lp=new KingdomStabilityLabPort {
  ResolveKingdomRebellion=(k,w,executeAction,forceTrigger)=>{resolutions++;executeFlag=executeAction;forceFlag=forceTrigger;return new(){Kingdom=k,SelectedClan=clan,Candidates=new(){candidate}};},StartDevForcedKingdomRebellionAsync=(k,c,w,r,t,castle,followers)=>forced++
 };
 var lab=new KingdomStabilityLabController(lp);
+Check(lab.BuildDevKingdomStabilityDetailText(kingdom).Contains("Average")&&!lab.BuildDevKingdomStabilityDetailText(kingdom).Contains("(tier)"),"display projects numeric stability without consuming raw tier");
+foreach(var tierCase in new[]{(0,"Extremely poor"),(9,"Extremely poor"),(10,"Very poor"),(24,"Very poor"),(25,"Poor"),(39,"Poor"),(40,"Average"),(59,"Average"),(60,"Fairly high"),(74,"Fairly high"),(75,"High"),(89,"High"),(90,"Extremely high"),(100,"Extremely high")})
+ Check(KingdomStabilityUiText.Tier(tierCase.Item1)==tierCase.Item2,"production display tier boundary "+tierCase.Item1);
 lab.OpenDevEditKingdomStability(kingdom);InformationManager.Text.Confirm("bad");Check(stabilityWrites==0,"invalid stability text does not mutate");InformationManager.Text.Confirm("999");Check(stabilityWrites==1&&lastStability==100,"stability clamp retains core policy");
 lab.OpenDevEditKingdomStability(kingdom);var oldStability=InformationManager.Text.Confirm;generation++;oldStability("20");Check(stabilityWrites==1,"late stability text rejected");
 lab.RunDevKingdomRebellionTest(kingdom);Check(resolutions==1&&!executeFlag&&!forceFlag&&forced==0,"test remains nonexecuting normal probability mode");
 lab.ConfirmForceDevKingdomRebellion(kingdom);confirm=InformationManager.Inquiry;Check(forced==0,"forced action requires explicit confirmation");confirm.Cancel();confirm.Confirm();Check(forced==0&&resolutions==1,"forced cancel retires ticket without evaluation");
 lab.ConfirmForceDevKingdomRebellion(kingdom);confirm=InformationManager.Inquiry;generation++;confirm.Confirm();Check(forced==0,"load retires forced action ticket");lab.ConfirmForceDevKingdomRebellion(kingdom);confirm=InformationManager.Inquiry;confirm.Confirm();confirm.Confirm();Check(forced==1&&resolutions==2&&!executeFlag&&forceFlag,"forced dispatch once via true domain with original flags");
-PlayerKingdomRebellionImmunity.Protected=true;evaluations=0;Check(lab.BuildDevKingdomStabilityDetailText(kingdom).Contains("免疫")&&evaluations==0,"immune display does not evaluate candidates");
+PlayerKingdomRebellionImmunity.Protected=true;evaluations=0;Check(lab.BuildDevKingdomStabilityDetailText(kingdom).Contains("immunity")&&evaluations==0,"immune display does not evaluate candidates");
 Console.WriteLine($"PASS: {assertions} actual Event / Stability Lab UI lifecycle assertions (stubbed game and domain capabilities, no live data writes).");

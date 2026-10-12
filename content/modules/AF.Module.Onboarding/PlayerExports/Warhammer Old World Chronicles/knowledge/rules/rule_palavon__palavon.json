@@ -1,0 +1,159 @@
+{
+  "Id": "rule_palavon",
+  "Keywords": [
+    "Principality of Palavon_PA",
+    "Duchy of Palavon_PA",
+    "Palavon Territory_PA",
+    "Parawong Tianma_PA",
+    "Duke of Palavon_PA",
+    "Palawong Mountain City_PA"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Palavon is located on the steep ridges of the Gray Mountains in eastern Bretonnia and is ruled by Duke Cassion de Palavon. This place is famous for its Pegasus knights - Palaon is the only principality in Bretonnia that domesticates Pegasus on a large scale, and the headquarters of the Royal Pegasus Knights is located here. Between the cliff and the clouds, the Pegasus knight overlooks the earth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Palavon - the duchy above the clouds! Duke Cassion's castle was built on top of the Eagle's Nest, easily accessible only by Pegasus. Boys in Palavon learn to get along with Pegasus foals from an early age. If they can tame a Pegasus as an adult, they will automatically become a member of the Pegasus Knights. Standing on the high tower of Palavon, you have a panoramic view of the entire fields of Bretonnia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Palaon controls the skies of Bretonnia. The strategic value of the Pegasus Knights is immeasurable - with their ability to provide battlefield reconnaissance, decapitation of enemy generals and raids on key locations, they are the eyes in the sky for Bretonnia's armies. Duke Cassion also controls important passes in the Gray Mountains, guarding the overland trade routes with the Empire and the Dwarf Kingdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The special economic advantage of the Principality of Palavon lies in the Pegasus trade. A well-trained purebred Pegasus is worth three thousand to five thousand gold crowns, and nobles from all principalities flock to it. The principality has a monopoly on the domestication and export of Pegasus, forming a professional industrial chain from horse herding, horse training to sales. Pegasus Ranch is located in more than ten alpine meadows in Palavon, and each ranch is managed by a knight. In addition, the passes controlled by Palavon are the safest trade routes in the Gray Mountains. A large number of caravans pass through them every year between the empire and Bretonnia, and transit taxes become the second largest source of revenue for the duchy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The noblewomen of Palavon needed to adapt to life in the mountains - the cold, loneliness and thin air. But it also gives us a unique resilience. The wife of Duke Cassion manages half of the Pegasus Ranch in the principality alone, which is unthinkable in other principalities. Above the clouds, traditional gender concepts seem to become less burdensome."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family has been raising Pegasus for Duke Palavon for generations. This skill has been passed down orally within the family for hundreds of years - the breeding, taming, and feeding of Pegasus all have secrets that are not passed down. Duke Cassion's trust in our family is based on this unique skill. Other principalities have tried to tame Pegasus, but none have succeeded."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The mountain passes of Palavon are the most treacherous in Bretonnia. If you are not careful in the clouds and mist, you will fall into the abyss. I have seen Pegasus knights practicing under the Eagle's Nest Peak - the way they swooped down from the clouds made me unable to tell whether they were looking at humans or dragons. The Paraon people are obsessed with the sky almost to the point of madness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Although Palavon's trade is not as good as that of the Port Principality, the mountain pass tax is a stable revenue. Dwarven traders from the Gray Mountains regularly shipped ore and weapons through the Pass of Palaon, while imperial caravans traded gold, silver, and furs for Bretonnia's wines and textiles. Controlling the pass is a sure-profit business."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Principality of Palaon is located on the Gray Mountains in eastern Bretonnia and is famous for its domestication of Pegasus and Pegasus riders.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Pegasus Knight of the Gray Mountains of the Principality of Palavon"
+  ]
+}

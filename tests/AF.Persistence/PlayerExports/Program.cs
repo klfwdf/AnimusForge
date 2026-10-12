@@ -14,9 +14,6 @@ internal static class Program
 
     private static void Main()
     {
-        AnimusForgeModulePaths.Root = Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"), "runtime", "AnimusForge");
-        Directory.CreateDirectory(Path.Combine(AnimusForgeModulePaths.Root, "ModuleData"));
-        File.WriteAllText(Path.Combine(AnimusForgeModulePaths.Root, "SubModule.xml"), "<Module />");
         NpcFileNames();
         ImportSources();
         InstalledWorldbooks();
@@ -31,7 +28,7 @@ internal static class Program
         heroes.Clear();
         heroes.Add(new TaleWorlds.CampaignSystem.Hero { StringId="h1", Name="Alice" });
         heroes.Add(new TaleWorlds.CampaignSystem.Hero { StringId="h2", Name="Bob" });
-        string dir = Path.Combine(PlayerExportsStore.GetPlayerExportsRootPath(), "persona-format");
+        string dir = Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"), "persona-format");
         Directory.CreateDirectory(dir);
         string personas = Path.Combine(dir, "personality_background");
         Directory.CreateDirectory(personas);
@@ -90,7 +87,7 @@ internal static class Program
 
     private static void OnboardingTerminal()
     {
-        string dir=Path.Combine(PlayerExportsStore.GetPlayerExportsRootPath(), "onboarding-baseline");
+        string dir=Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"),"onboarding-baseline");
         var profiles=new PersonaProfileStateOwner(); var old=new MyBehavior.NpcPersonaProfile{Personality="old"};profiles.Profiles["h1"]=old;
         bool current=true;Action overwrite=null,skip=null,cancel=null;int unlocked=0,rejected=0,tail=0;
         var adapter=new PersonaProfileImportExportAdapter(profiles,()=>1,_=>current,(t,m,o,s,c)=>{overwrite=o;skip=s;cancel=c;});
@@ -111,7 +108,7 @@ internal static class Program
 
     private static void OnboardingFiveDomainTerminal()
     {
-        string dir=Path.Combine(PlayerExportsStore.GetPlayerExportsRootPath(), "onboarding-baseline");
+        string dir=Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"),"onboarding-baseline");
         Directory.CreateDirectory(Path.Combine(dir,"knowledge"));
         File.WriteAllText(Path.Combine(dir,"knowledge","KnowledgeRules.json"),"{\"Rules\":[{\"Id\":\"rule\",\"Keywords\":[\"key\"]}]}");
         File.WriteAllText(Path.Combine(dir,"voice_mapping","VoiceMapping.json"),"{\"male_young\":[\"voice-new\"],\"fallback\":\"fallback-new\"}");
@@ -158,7 +155,7 @@ internal static class Program
 
     private static void OnboardingBaseline()
     {
-        string dir=Path.Combine(PlayerExportsStore.GetPlayerExportsRootPath(), "onboarding-baseline");
+        string dir=Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"),"onboarding-baseline");
         foreach(string name in new[]{"personality_background","unnamed_persona","knowledge/rules","voice_mapping","event_data","kingdom_profiles"}) Directory.CreateDirectory(Path.Combine(dir,name));
         PlayerExportsStore.WriteJson(Path.Combine(dir,"personality_background","h1__Alice.json"),new MyBehavior.NpcPersonaProfile{Personality="new"});
         PlayerExportsStore.WriteJson(Path.Combine(dir,"unnamed_persona","villager.json"),new MyBehavior.UnnamedPersonaSingleJson{Key="villager",Personality="new"});
@@ -183,7 +180,7 @@ internal static class Program
 
     private static void MemoryFormats()
     {
-        string dir=Path.Combine(PlayerExportsStore.GetPlayerExportsRootPath(), "memory-format");
+        string dir=Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"),"memory-format");
         string compressed=Path.Combine(dir,"compressed_memory");Directory.CreateDirectory(compressed);
         var memory=new MemoryBusinessStateOwner();
         long generation=1;Action overwrite=null,skip=null,cancel=null;int dirty=0;
@@ -290,15 +287,24 @@ internal static class Program
         ui.PendingDevReady=true;ui.PendingDevContext=context;ui.DevForcedInProgress=true;DuelSettings.Enabled=false;ui.ProcessPendingDevForcedKingdomRebellionResult();
         Check(!ui.PendingDevReady&&ui.PendingDevContext==null&&!ui.DevForcedInProgress&&runtime.Executions==0,"actual Rebellion UI consumes pending state before feature-disabled cancellation, no execution");DuelSettings.Enabled=true;
         ui.PendingDevReady=true;ui.PendingDevContext=context;ui.ProcessPendingDevForcedKingdomRebellionResult();
-        Check(TaleWorlds.Library.InformationManager.Inquiry.Title=="叛乱建国命名失败"&&runtime.Executions==0&&NonBlockingErrorReport.Errors.Contains("synthetic failure"),"actual naming failure opens repair UI and reports once without game execution");
+        Check(TaleWorlds.Library.InformationManager.Inquiry.Title=="Rebel kingdom naming failed"&&runtime.Executions==0&&NonBlockingErrorReport.Errors.Contains("synthetic failure"),"actual naming failure opens repair UI and reports once without game execution");
         TaleWorlds.Library.InformationManager.Inquiry.Confirm();Check(ReferenceEquals(ui.BlockedDevContext,context)&&ui.ReopenAfterApiConfig&&ModOnboardingBehavior.Repairs==1,"actual failure confirmation queues API repair and retains same blocked context");
         ui.ReopenAfterApiConfigUtcTicks=0;ui.ProcessKingdomRebellionApiRepairResume();Check(ui.ReopenAfterApiConfig,"active inquiry prevents premature API repair resume");TaleWorlds.Library.InformationManager.HideInquiry();ui.ReopenAfterApiConfigUtcTicks=long.MaxValue;ui.ProcessKingdomRebellionApiRepairResume();Check(ui.ReopenAfterApiConfig,"original 300ms gate blocks premature resume");
-        ui.ReopenAfterApiConfigUtcTicks=0;ui.ProcessKingdomRebellionApiRepairResume();Check(!ui.ReopenAfterApiConfig&&TaleWorlds.Library.InformationManager.Inquiry.Title=="重试叛乱建国命名","repair resumes original blocked-context UI after gate");
+        ui.ReopenAfterApiConfigUtcTicks=0;ui.ProcessKingdomRebellionApiRepairResume();Check(!ui.ReopenAfterApiConfig&&TaleWorlds.Library.InformationManager.Inquiry.Title=="Retry rebel kingdom naming","repair resumes original blocked-context UI after gate");
         var oldCancel=TaleWorlds.Library.InformationManager.Inquiry.Cancel;var replacement=new MyBehavior.PendingDevForcedKingdomRebellionContext();ui.BlockedDevContext=replacement;oldCancel();Check(ReferenceEquals(ui.BlockedDevContext,replacement)&&details==1,"old context cancel cannot clear replacement blocked state, returns actual detail capability");
         var autoContext=new MyBehavior.PendingAutomaticKingdomRebellionContext{KingdomId="k",ClanId="c",NamingResult=failed};ui.BlockedAutomaticContext=autoContext;ui.ShowAutomaticKingdomRebellionNamingFailurePopup(autoContext,k,c,new(),false);TaleWorlds.Library.InformationManager.Inquiry.Cancel();Check(ui.BlockedAutomaticContext==null&&runtime.Continues==1&&KingdomRebellionRuntimeController.CivilWarFailures==1,"automatic skip clears only same context and dispatches original failed-notify then continue capabilities");
         ui.ShowAutomaticKingdomRebellionNamingFailurePopup(autoContext,k,c,new(),true);TaleWorlds.Library.InformationManager.Inquiry.Confirm();Check(runtime.Retries==1,"automatic post-repair affirmative dispatches retry capability not create effect");
-        var naming=new MyBehavior.RebelKingdomNamingResult{Success=true,FormalName="Name",ShortName="Short",EncyclopediaText="Text"};context.NamingResult=naming;ui.PendingDevReady=true;ui.PendingDevContext=context;ui.ProcessPendingDevForcedKingdomRebellionResult();Check(runtime.Executions==1&&TaleWorlds.Library.InformationManager.Inquiry.Title=="强制叛乱执行完成","actual UI source-extracted success predicate dispatches controlled game capability once");
-        var text=new System.Text.StringBuilder();KingdomRebellionEditorController.AppendRebelKingdomNamingResultLines(text,failed);Check(text.ToString().Contains("RPM")&&text.ToString().Contains("8 秒")&&!text.ToString().Contains("synthetic failure"),"actual naming failure popup compact detail retains RPM/wait and omits full response");
+        var naming=new MyBehavior.RebelKingdomNamingResult{Success=true,FormalName="Name",ShortName="Short",EncyclopediaText="Text"};context.NamingResult=naming;ui.PendingDevReady=true;ui.PendingDevContext=context;ui.ProcessPendingDevForcedKingdomRebellionResult();Check(runtime.Executions==1&&TaleWorlds.Library.InformationManager.Inquiry.Title=="Forced rebellion completed","actual UI source-extracted success predicate dispatches controlled game capability once");
+        var text=new System.Text.StringBuilder();KingdomRebellionEditorController.AppendRebelKingdomNamingResultLines(text,failed);Check(text.ToString().Contains("RPM")&&text.ToString().Contains("8 seconds")&&!text.ToString().Contains("synthetic failure"),"actual naming failure popup compact detail retains RPM/wait and omits full response");
+        string tail="HTTP 500\n"+new string('x',8192)+" provider detail";
+        foreach(var failure in new[]{(KingdomRebellionRuntimeController.ForcedNamingFailurePrefix,"Background forced-rebellion kingdom naming task failed: "),(KingdomRebellionRuntimeController.AutomaticNamingFailurePrefix,"Background rebel kingdom naming task failed: "),(KingdomRebellionRuntimeController.NamingRetryFailurePrefix,"Background rebel kingdom naming retry failed: ")})
+        {
+            string raw=failure.Item1+tail;
+            var projected=new MyBehavior.RebelKingdomNamingResult{FailureReason=raw};
+            KingdomRebellionEditorController.ReportRebelKingdomNamingFailure(projected);
+            Check(projected.FailureReason==raw&&NonBlockingErrorReport.Errors[^1]==raw&&NonBlockingErrorReport.LastDisplay==failure.Item2+tail,"main-thread naming projection retains raw/full diagnostic tail");
+        }
+        Check(KingdomRebellionEditorController.NamingFailureDisplay("unknown stored error")=="unknown stored error","unknown naming errors keep real detail");
         MemoryEntityIdentityBannerlordAdapter.CurrentClan=null;ui.BlockedDevContext=context;ui.RetryBlockedDevForcedKingdomRebellionNaming();Check(runtime.Executions==1&&!ui.DevForcedInProgress,"retry resolves current target and refuses removed clan before task");
         DuelSettings.Enabled=false;ui.StartDevForcedKingdomRebellionAsync(k,c,0,0,0,0,new());Check(!ui.DevForcedInProgress,"disabled start returns before detached request/background task");DuelSettings.Enabled=true;
     }
@@ -313,18 +319,31 @@ internal static class Program
         Directory.CreateDirectory(builtin);
         File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module />");
         File.WriteAllText(Path.Combine(builtin, "rule.json"), "{\"source\":\"installed\"}");
-        string previousModule = AnimusForgeModulePaths.Root;
-        Directory.CreateDirectory(Path.Combine(module, "ModuleData"));
-        AnimusForgeModulePaths.Root = module;
-        Check(PlayerExportsStore.GetPlayerExportsRootPath() == installed, "production exports belong to module");
-        var menuFolders = PlayerExportsStore.GetImportFolders();
-        Check(menuFolders.Count == 1 && menuFolders[0].FullPath == builtin, "production menu reads only module");
-        AnimusForgeModulePaths.Root = previousModule;
+        string exportRoot = PlayerExportsStore.GetPlayerExportsRootPath();
+        string activeBuiltin = Path.Combine(exportRoot, "same-name");
+        Directory.CreateDirectory(activeBuiltin);
+        File.WriteAllText(Path.Combine(activeBuiltin, "rule.json"), "{\"source\":\"active-module\"}");
+        string cwd = Directory.GetCurrentDirectory();
+        string configuredRoot = Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable);
+        try
+        {
+            Directory.SetCurrentDirectory(module);
+            // Clear the override after resolving the path-only root to exercise the former gate.
+            Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, null);
+            Check(PlayerExportsStore.GetPlayerExportsRootPath() == exportRoot, "installed data never gates the user export destination on a migration receipt");
+            var menuFolders = PlayerExportsStore.GetImportFolders();
+            Check(menuFolders.Count == 1 && menuFolders[0].FullPath == activeBuiltin, "production menu discovery uses active module identity, never changed CWD or migration credentials");
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(cwd);
+            Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, configuredRoot);
+        }
         var folders = PlayerExportsStore.GetImportFolders(module, user);
         Check(folders.Count == 1 && folders[0].FullPath == builtin, "fresh install works with missing user root and no migration receipt");
         Check(!Directory.Exists(user), "listing builtins never creates or migrates user data");
         Check(PlayerExportsStore.ResolveImportFolderPath("same-name", module, user) == builtin, "named import reads installed worldbook first");
-        Check(PlayerExportsStore.ResolveImportFolderPath("", module, user) == builtin, "blank import uses latest module package");
+        Check(PlayerExportsStore.ResolveImportFolderPath("", module, user) == builtin, "incoming blank import selects latest module package");
         string player = Path.Combine(user, "same-name");
         string newest = Path.Combine(user, "newest");
         Directory.CreateDirectory(player);
@@ -334,19 +353,17 @@ internal static class Program
         Directory.SetLastWriteTimeUtc(player, new DateTime(2020, 1, 1));
         Directory.SetLastWriteTimeUtc(newest, new DateTime(2021, 1, 1));
         folders = PlayerExportsStore.GetImportFolders(module, user);
-        Check(folders.Count == 1, "only module root listed; user and hidden candidates excluded");
-        Check(folders[0].SourceLabel == "模组目录", "module source label retained");
-        bool userRejected = false;
-        try { PlayerExportsStore.ResolveImportFolderPath(player, module, user); } catch (ArgumentException) { userRejected = true; }
-        Check(userRejected, "selected user-data package cannot enter module import");
+        Check(folders.Count == 1 && folders[0].FullPath == builtin, "incoming module-only menu excludes old user roots and hidden candidates");
+        Check(folders[0].SourceLabel == "Module directory" && Directory.Exists(player), "module source identity remains stable and old user data is retained");
+        bool outsideRejected=false; try { PlayerExportsStore.ResolveImportFolderPath(player, module, user); } catch (ArgumentException) { outsideRejected=true; }
+        Check(outsideRejected && Directory.Exists(player), "incoming absolute import refuses old user root without deleting it");
         Check(PlayerExportsStore.ResolveImportFolderPath("same-name", module, user) == builtin, "installed source has priority over same-name user export");
-        Check(PlayerExportsStore.ResolveImportFolderPath("newest", module, user) == Path.Combine(installed, "newest"), "user-only name cannot resolve to user-data package");
-        Check(PlayerExportsStore.ResolveImportFolderPath(null, module, user) == builtin, "blank input ignores newer user package");
+        Check(PlayerExportsStore.ResolveImportFolderPath("newest", module, user) == Path.Combine(installed,"newest"), "incoming name remains under module even when same name exists in old user root");
+        Check(PlayerExportsStore.ResolveImportFolderPath(null, module, user) == builtin, "incoming blank input selects newest module package only");
         Check(PlayerExportsStore.GetImportFolders(module, installed).Count == 1, "identical roots are not listed twice");
         string missing = Path.Combine(fixture, "does-not-exist");
-        bool outsideRejected = false;
-        try { PlayerExportsStore.ResolveImportFolderPath(missing, module, user); } catch (ArgumentException) { outsideRejected = true; }
-        Check(outsideRejected, "outside-module absolute source rejected");
+        bool missingRejected=false; try { PlayerExportsStore.ResolveImportFolderPath(missing, module, user); } catch (ArgumentException) { missingRejected=true; }
+        Check(missingRejected && !Directory.Exists(missing), "incoming outside missing absolute path is rejected without side effects");
         bool rejected = false;
         try { PlayerExportsStore.ResolveImportFolderPath("..", module, user); }
         catch (ArgumentException) { rejected = true; }
@@ -360,7 +377,7 @@ internal static class Program
     private static void InstalledWorldbooks()
     {
         // The runner starts at the repository root; use the actual reviewed shipped files.
-        string module = Path.Combine(Directory.GetCurrentDirectory(), "content", "modules", "AF.Module.Onboarding");
+        string module = Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_WORLD_BOOK_MODULE") ?? throw new InvalidOperationException("The runner must provide the real selected content-map worldbooks.");
         string missingUser = Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"), "absent-user-exports");
         var folders = PlayerExportsStore.GetImportFolders(module, missingUser);
         Check(folders.Count == 4, "fresh install lists all four complete real worldbooks");
@@ -400,7 +417,7 @@ internal static class Program
         Check(Path.IsPathRooted(root) && root.EndsWith(Path.DirectorySeparatorChar + PlayerExportsStore.FolderName) && PlayerExportsStore.GetModuleRootPath().Length > 0, "root path shape: " + root);
 
         string tempRoot = Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP") ?? Path.GetTempPath();
-        string temp = Path.Combine(tempRoot, "af-player-exports-" + Guid.NewGuid().ToString("N"), "PlayerExports");
+        string temp = Path.Combine(root, "af-player-exports-" + Guid.NewGuid().ToString("N"));
         try
         {
             Check(PlayerExportsStore.FindLatestExportFolder(temp) == null, "missing root → null");
@@ -409,7 +426,7 @@ internal static class Program
             Directory.CreateDirectory(Path.Combine(temp, "new"));
             Directory.SetLastWriteTimeUtc(Path.Combine(temp, "new"), new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc));
             Check(Path.GetFileName(PlayerExportsStore.FindLatestExportFolder(temp)) == "new", "latest export = most recently written");
-            Check(PlayerExportsStore.ResolveImportFolderPath(Path.Combine(temp, "old"), Path.GetDirectoryName(temp), null) == Path.GetFullPath(Path.Combine(temp, "old")), "rooted existing path wins");
+            Check(PlayerExportsStore.ResolveImportFolderPath(Path.Combine(temp, "old")) == Path.GetFullPath(Path.Combine(temp, "old")), "rooted existing path wins");
             Check(PlayerExportsStore.ResolveImportFolderPath("some name") == Path.Combine(root, "some name"), "relative name under PlayerExports");
 
             string file = Path.Combine(temp, "sub", "row.json");
@@ -537,7 +554,7 @@ namespace AnimusForge
  internal static class DuelSettings{internal static bool Enabled=true;internal static bool IsKingdomStabilityAndRebellionEnabled()=>Enabled;}
  internal static class PlayerKingdomRebellionImmunity{internal static bool Protected;internal static bool ShouldProtectKingdom(TaleWorlds.CampaignSystem.Kingdom k)=>Protected;}
  internal static class ModOnboardingBehavior{internal static int Repairs;internal static bool OpenEventAndRebellionApiRepairFlow(){Repairs++;return true;}}
- internal static class NonBlockingErrorReport{internal static readonly List<string> Errors=new();internal static void Show(string title,string message)=>Errors.Add(message);}
+ internal static class NonBlockingErrorReport{internal static readonly List<string> Errors=new();internal static string LastDisplay;internal static void Show(string title,string message,bool rememberForAnalysis=true,string displayDetail=null){Errors.Add(message);LastDisplay=displayDetail??message;}}
  internal sealed class AutomaticKingdomRebellionOwner<T>{internal int PendingCount;}
  internal sealed partial class KingdomRebellionRuntimeController
  {
@@ -731,5 +748,3 @@ using System; using System.IO; using System.Reflection; using TaleWorlds.Campaig
 		return PlayerExportsStore.ResolveImportFolderPath(folderName);
 	}internal bool Unlocked; private void OpenImportFolderPicker(Action returned) { } private void CompleteOnboardingAndOpenPlayerPersonaSetup(Action returned,bool importedDatabase) { Unlocked=true; }}
 AF_ONBOARDING_BASELINE_SOURCE_END */
-
-namespace AnimusForge { internal static class AnimusForgeModulePaths { internal static string Root; public static string GetCurrentModuleRoot() => Root; } }

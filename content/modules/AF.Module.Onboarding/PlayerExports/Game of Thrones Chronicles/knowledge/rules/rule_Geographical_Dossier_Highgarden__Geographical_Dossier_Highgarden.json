@@ -1,0 +1,129 @@
+{
+  "Id": "rule_Geographical_Dossier_Highgarden",
+  "Keywords": [
+    "Highgarden",
+    "Tyrell",
+    "Gardener Kings",
+    "The Reach"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Highgarden is located on the banks of the Mander River in the Reach. It is the old capital of the Gardener Dynasty, the main city after the Tyrell family was granted the title, and it is also the nominal political center of the princes of the Reach. The river network, orchards, flower fields, vineyards and vast grain fields around the castle constitute the most fertile hinterland of Westeros. The Mander River shipping and Rose Avenue connect Oldtown, King's Landing and various vassal territories. Highgarden displays prosperity through gardens, rituals, poetry, and knightly competitions, but it must also deal with the tension between the Gardener King's lineage, the ancient family lineage, and Tyrell's qualifications to rule."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Reach learn to speak in flowers, seats, betrothals, and jousts in Highgarden. Some people truly love its generosity and prosperity, while others remember that the blood of the Gardener King has been cut off, and no exquisite dining table can suppress the old talk of inheritance. The power of Highgarden is that it enables many people to benefit from prosperity, but also that each beneficiary wants to know how close he or she should sit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The impression farmers get from Highgarden is not the fountain, but the price of grain, harvests and grain levies; merchants see the ships and warehouses on the Mander River; soldiers know that the Reach is rich, so longer grain roads and more people are needed to protect it. To them, the beauty of Highgarden, if it does not become stable scales, bread and roads, is only the color of a distant lord's garden."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Highgarden Entry The Reach Gardener Kings Tyrell Entry The Reach They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Highgarden Entry The Reach Gardener Kings Tyrell Entry The Reach The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Highgarden Entry The Reach Gardener Kings Tyrell Entry The Reach Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Highgarden Entry The Reach Gardener Kings Tyrell Entry The Reach They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Highgarden: Highgarden is located on the banks of the Mander River in the Reach. It is the old capital of the Gardener Dynasty, the main city after the Tyrell family was granted the title, and it is also the nominal political center of the princes of the Reach. The river network, orchards, flower fields, vineyards and vast grain fields around the castle constitute the most fertile hinterland of Westeros. The Mander River shipping and Rose Avenue connect Oldtown, King's Landing and various vassal territories. Highgarden displays prosperity through gardens, rituals, poetry, and knightly competitions, but it must also deal with the tension between the Gardener King's lineage, the ancient family lineage, and Tyrell's qualifications to rule."
+  ]
+}

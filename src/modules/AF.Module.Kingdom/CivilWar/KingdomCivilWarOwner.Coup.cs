@@ -13,7 +13,7 @@ internal sealed partial class KingdomCivilWarOwner
     // Adopt the already-created rebel kingdom. Registration never repeats kingdom creation.
     internal bool TryRegisterCoupWar(CoupCivilWarRegistration request, out string message)
     {
-        message = "政变内战登记条件不满足。";
+        message = CivilWarUiText.T("AF_KINGDOM_CW_Coup_ConditionsUnmet", "Coup civil war registration requirements are not met.");
         if (request == null || string.IsNullOrWhiteSpace(request.CoupId)) return false;
         Kingdom home = CivilWarWorld.FindKingdom(request.KingdomId), rebel = CivilWarWorld.FindKingdom(request.RebelKingdomId);
         Clan leader = CivilWarWorld.FindClan(request.LeaderClanId);
@@ -22,7 +22,9 @@ internal sealed partial class KingdomCivilWarOwner
         if (existing != null)
         {
             bool same = existingState.KingdomId == request.KingdomId && existing.RebelKingdomId == request.RebelKingdomId;
-            message = same ? "政变内战已经登记。" : "政变内战身份冲突，保留原记录。";
+            message = same
+                ? CivilWarUiText.T("AF_KINGDOM_CW_Coup_AlreadyRegistered", "The coup civil war is already registered.")
+                : CivilWarUiText.T("AF_KINGDOM_CW_Coup_IdentityConflict", "Coup civil war identity conflict; the existing record is kept.");
             return same;
         }
         // A resolved receipt prevents registration replay after the faction is removed.
@@ -33,14 +35,17 @@ internal sealed partial class KingdomCivilWarOwner
         if (request.RestoreDynasty && (dynasty == null || dynasty.IsEliminated || dynasty.Kingdom != rebel
             || string.IsNullOrWhiteSpace(request.FormerKingId) || string.IsNullOrWhiteSpace(request.OriginalName)
             || string.IsNullOrWhiteSpace(request.OriginalShortName)))
-        { message = "旧王家族尚未加入叛军或复位身份/原国名缺失，暂不登记。"; return false; }
+        { message = CivilWarUiText.T("AF_KINGDOM_CW_Coup_RestorationIdentityMissing", "The former royal clan has not joined the rebels, or the restoration identity/original kingdom name is missing; registration is postponed."); return false; }
         int week = CivilWarWorld.CurrentWeek(), day = CivilWarWorld.CurrentDay();
         var state = GetOrCreate(home, week);
         var faction = new KingdomCivilWarFactionState
         {
             Id = id, CoupId = request.CoupId, Stage = KingdomCivilWarStage.OpenWar,
             DemandId = CivilWarCatalog.UsurpDemandId, WarGoal = (int)CivilWarWarGoal.Usurp,
-            LeaderClanId = leader.StringId, TargetName = request.RestoreDynasty ? "旧王朝复位" : "王位",
+            // Display-only field: the match value is TargetId. Left hardcoded because the coup demand is always
+            // `usurp`, whose catalog text has no {target} placeholder, and the same literal is written by
+            // KingdomCivilWarOwner.cs:422 for the non-coup path (cross-file decision, reported).
+            LeaderClanId = leader.StringId, TargetName = request.RestoreDynasty ? KingdomCivilWarTexts.Raw("KW_Raw_109") : KingdomCivilWarTexts.Raw("KW_Raw_110"),
             CreatedWeek = week, StageWeek = week, WarRequestWeek = week, WarStartWeek = week,
             WarRequestDay = day, WarStartDay = day, WarEvaluationDay = day,
             RebelKingdomId = rebel.StringId,
@@ -58,10 +63,16 @@ internal sealed partial class KingdomCivilWarOwner
         }
         _openWarKingdoms.Add(home.StringId); IndexOppositionSettlements(state, faction);
         faction.RebelFortShareAtStart = CivilWarWorld.FortificationCount(rebel) / (float)Math.Max(1, CivilWarWorld.FortificationCount(home));
-        message = request.RestoreDynasty ? "复位内战已登记：仅叛军战胜才恢复旧王朝与原国名，和平谈判不会复位。" : "政变后内战已登记：被扣押旧王及其家族不加入本次叛军。";
+        // `message` must stay a stable rule string: it is the saved receipt replayed on load (line 32) and the
+        // LLM/AFEF material published below. `display` is its panel-only projection, so the saved receipt and
+        // the published facts keep the raw value while the chronicle entry renders English.
+        message = request.RestoreDynasty ? KingdomCivilWarTexts.Raw("KW_Raw_111") : KingdomCivilWarTexts.Raw("KW_Raw_112");
+        string display = request.RestoreDynasty
+            ? CivilWarUiText.T("AF_KINGDOM_CW_Coup_ChronicleRestoration", "Restoration civil war registered: only a rebel victory restores the old dynasty and the original kingdom name; a negotiated peace will not restore them.")
+            : CivilWarUiText.T("AF_KINGDOM_CW_Coup_ChronicleCoup", "Civil war registered after the coup: the deposed king and his clan do not join this rebellion.");
         _storage.Operations[id] = new CivilWarOperation { Fingerprint = home.StringId + "|" + rebel.StringId, FactionId = id, Status = (int)CivilWarActionStatus.Applied, Message = message };
-        AddHistory(state, week, message); SaveSummary(state); Revision++;
-        PublishPoliticalResult(home, state, faction, leader, id + ":war:outbreak", message);
+        AddHistory(state, week, display); SaveSummary(state); Revision++;
+        PublishPoliticalResult(home, state, faction, leader, id + ":war:outbreak", message, displayText: display);
         NotifyPoliticalChange(home, "coup_war_registered");
         return true;
     }

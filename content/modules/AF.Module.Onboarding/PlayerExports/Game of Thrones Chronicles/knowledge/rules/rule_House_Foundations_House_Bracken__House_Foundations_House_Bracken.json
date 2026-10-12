@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_House_Bracken",
+  "Keywords": [
+    "House Bracken",
+    "Red Stallion",
+    "Feud with House Blackwood"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Bracken family is based on Shili City. The family emblem has a red war horse on a gold background as the center. After claiming to be the kings of the ancient rivers, they later accepted the belief in the Seven Gods. The family's feud with Blackwood spans lands, borders, betrothals, religions, and conflicting histories: Bracken says Blackwood took the throne and the lands, Blackwood accuses him to the contrary, and the maester is unable to make a clean start in the family lore. The Brecon's equestrian tradition and open territory made it impossible to ignore in river politics; ordinary tenants knew that the ancient glory would not plow the fields for the stolen cattle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The river lords recognized that Bracken was ancient and rich in horses, and they also knew that almost every piece of family history in Stonehedge could be found in Blackwood's mouth to the contrary. The red war horse symbolizes the strength and royal pride they cherish; in the eyes of their friends, it means being forthright and martial, while in the eyes of their enemies, it means being irritable and never giving up."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People around Stonehedge were familiar with stables, pastures, and horsemen, as well as the levies brought about by border disputes. The nobles are talking about ancestral land, the herdsmen are thinking about whether the cattle can cross the river, and the soldiers are thinking about which old feud they have to keep vigil for. Bracken’s horse ran very fast, but a feud had no end."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People who worship the Seven Gods tend to regard Bracken as the orthodox nobles of the river, especially when they argue with Blackwood who still worships the old gods. But prudent monks know that changing the way of praying will not automatically make one party more just; the church can hear the vows of both parties, but it can rarely silence the ancestral graves of the two families."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Bracken The ancient Hejian tribe in Shili City has a red war horse with a gold background as its family emblem, and they believe in seven gods. Feud with Blackwood contains opposing origin narratives that cannot be independently verified and should present both familial glory and civilian cost. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Bracken The ancient Hejian tribe in Shili City has a red war horse with a gold background as its family emblem, and they believe in seven gods. Feud with Blackwood contains opposing origin narratives that cannot be independently verified and should present both familial glory and civilian cost. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Bracken The ancient Hejian tribe in Shili City has a red war horse with a gold background as its family emblem, and they believe in seven gods. Feud with Blackwood contains opposing origin narratives that cannot be independently verified and should present both familial glory and civilian cost. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Bracken The ancient Hejian tribe in Shili City has a red war horse with a gold background as its family emblem, and they believe in seven gods. Feud with Blackwood contains opposing origin narratives that cannot be independently verified and should present both familial glory and civilian cost. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Bracken: The ancient Hejian tribe in Shili City has a red war horse with a gold background as its family emblem, and they believe in seven gods. Feud with Blackwood contains opposing origin narratives that cannot be independently verified and should present both familial glory and civilian cost."
+  ]
+}

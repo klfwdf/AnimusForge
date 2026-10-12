@@ -20,7 +20,7 @@ namespace AnimusForge;
 // Thin campaign host. Rules stay in KingdomCivilWarOwner; other domains are not edited.
 internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 {
-	private static readonly TextObject LoyaltyText = new TextObject("内战反对派领地");
+	private static readonly TextObject LoyaltyText = new TextObject("{=AF_DIP_CivilWar_LoyaltyText}Civil-war opposition fief");
 	private bool _loyaltyPatched;
 
 	public override void RegisterEvents()
@@ -58,17 +58,17 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		if (InformationManager.IsAnyInquiryActive()) return;
 		if (TeamModuleServices.CivilWar.TryTakePoliticalResponse(out CivilWarActionRequest response, out string responseText))
 		{
-			InformationManager.ShowInquiry(new InquiryData("王室交涉", responseText, true, true, "接受／服从", "拒绝／抗命", () => AnswerPolitical(response, true), () => AnswerPolitical(response, false)), true);
+			InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_DIP_CivilWar_RoyalNegotiationTitle}Royal negotiation").ToString(), responseText, true, true, new TextObject("{=AF_DIP_CivilWar_RoyalNegotiationAccept}Accept / obey").ToString(), new TextObject("{=AF_DIP_CivilWar_RoyalNegotiationRefuse}Refuse / defy").ToString(), () => AnswerPolitical(response, true), () => AnswerPolitical(response, false)), true);
 			return;
 		}
 		if (TeamModuleServices.CivilWar.HasPendingFollowPrompt && TeamModuleServices.CivilWar.TryTakeFollowPrompt(out string followId, out string followText))
 		{
-			InformationManager.ShowInquiry(new InquiryData("追随叛军", followText, true, true, "追随叛军", "留在王国", () => AnswerFollow(followId, true), () => AnswerFollow(followId, false)), true);
+			InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_DIP_CivilWar_FollowRebelsTitle}Follow the rebels").ToString(), followText, true, true, new TextObject("{=AF_DIP_CivilWar_FollowRebelsAccept}Follow the rebels").ToString(), new TextObject("{=AF_DIP_CivilWar_FollowRebelsRefuse}Stay in the kingdom").ToString(), () => AnswerFollow(followId, true), () => AnswerFollow(followId, false)), true);
 			return;
 		}
 		if (!TeamModuleServices.CivilWar.HasPendingPlayerUltimatumPrompt) return;
 		if (!TeamModuleServices.CivilWar.TryTakePlayerUltimatumPrompt(out string factionId, out string text)) return;
-		InformationManager.ShowInquiry(new InquiryData("反对派最后通牒", text, true, true, "接受诉求", "拒绝", () => Answer(factionId, true), () => Answer(factionId, false)), true);
+		InformationManager.ShowInquiry(new InquiryData(new TextObject("{=AF_DIP_CivilWar_UltimatumTitle}Opposition ultimatum").ToString(), text, true, true, new TextObject("{=AF_DIP_CivilWar_UltimatumAccept}Accept the demand").ToString(), new TextObject("{=AF_DIP_CivilWar_UltimatumRefuse}Refuse").ToString(), () => Answer(factionId, true), () => Answer(factionId, false)), true);
 	}
 
 	private static void AnswerFollow(string factionId, bool follow)
@@ -80,7 +80,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	{
 		request.Accept = accept;
 		var result = TeamModuleServices.CivilWar.Execute(request);
-		InformationManager.DisplayMessage(new InformationMessage(result.Message));
+		InformationManager.DisplayMessage(new InformationMessage(CivilWarUiText.ResultNotice(result)));
 	}
 
 	private static void Answer(string factionId, bool accept)
@@ -122,7 +122,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		if (kingdom == null || victim.Clan == kingdom.RulingClan || (detail != KillCharacterAction.KillCharacterActionDetail.Executed && detail != KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent)) return;
 		// Only the crown's own executions are a royal grievance; enemies executing a vassal are not.
 		if (killer == null || killer.Clan != kingdom.RulingClan) return;
-		Add(kingdom, "royal_execution", new[] { victim.Clan }, 25f, "王室处决了" + CivilWarWorld.ClanName(victim.Clan) + "的成员");
+		Add(kingdom, "royal_execution", new[] { victim.Clan }, 25f, CivilWarUiText.T("AF_KINGDOM_CW_Behavior_RoyalExecution", "The crown executed a member of {CLAN}", ("CLAN", CivilWarWorld.ClanName(victim.Clan))));
 	}
 
 	// Only wars the crown chose; rebellions, kingdom creation and crime-driven wars are not imposed on the vassals.
@@ -131,7 +131,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
         // The war event is raised before the election publishes its final support status.
         // Decision wars are qualified once at conclusion; keep non-vote crown orders unchanged.
 		if (detail != DeclareWarAction.DeclareWarDetail.Default) return;
-		if (first is Kingdom kingdom && second is Kingdom && !IsCivilWarPair(kingdom, second)) Add(kingdom, "war_imposed", Vassals(kingdom), 8f, "王国被迫开战");
+		if (first is Kingdom kingdom && second is Kingdom && !IsCivilWarPair(kingdom, second)) Add(kingdom, "war_imposed", Vassals(kingdom), 8f, CivilWarUiText.T("AF_KINGDOM_CW_Behavior_WarImposed", "The kingdom was forced into war"));
 	}
 
 	private void OnMakePeace(IFaction first, IFaction second, MakePeaceAction.MakePeaceDetail detail)
@@ -140,8 +140,8 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		TeamModuleServices.CivilWar.NotifyPoliticalChange(second as Kingdom, "peace");
 		if (detail != MakePeaceAction.MakePeaceDetail.ByKingdomDecision && !MyBehavior.QuietPeaceActive && first is Kingdom k1 && second is Kingdom k2 && !IsCivilWarPair(k1, k2))
 		{
-			Add(k1, "peace_imposed", Vassals(k1), 7f, "王国被迫议和");
-			Add(k2, "peace_imposed", Vassals(k2), 7f, "王国被迫议和");
+			Add(k1, "peace_imposed", Vassals(k1), 7f, CivilWarUiText.T("AF_KINGDOM_CW_Behavior_PeaceImposed", "The kingdom was forced to make peace"));
+			Add(k2, "peace_imposed", Vassals(k2), 7f, CivilWarUiText.T("AF_KINGDOM_CW_Behavior_PeaceImposed", "The kingdom was forced to make peace"));
 		}
 		if (first is Kingdom a) TeamModuleServices.CivilWar.RecordPeace(a, second, Week());
 		if (second is Kingdom b) TeamModuleServices.CivilWar.RecordPeace(b, first, Week());
@@ -154,7 +154,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		if (kingdom == null || owner == null) return;
 		// Damage done by the kingdom's own civil war is not blamed on the king.
 		if (IsCivilWarPair(kingdom, village.Settlement.LastAttackerParty?.MapFaction)) return;
-		Add(kingdom, "lands_raided", new[] { owner }, 20f, CivilWarWorld.ClanName(owner) + "的领地遭到劫掠");
+		Add(kingdom, "lands_raided", new[] { owner }, 20f, CivilWarUiText.T("AF_KINGDOM_CW_Behavior_LandsRaided", "The lands of {CLAN} were raided", ("CLAN", CivilWarWorld.ClanName(owner))));
 	}
 
 	private void OnSettlementOwnerChanged(Settlement settlement, bool openNewOwner, Hero newOwner, Hero oldOwner, Hero capturer, ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail detail)
@@ -167,7 +167,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 			|| detail == ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByClanDestruction) return;
 		// Fiefs lost to (or returned from) the kingdom's own rebels are part of the civil war, not a crown failure.
 		if (IsCivilWarPair(kingdom, newOwner?.Clan?.Kingdom) || IsCivilWarPair(kingdom, capturer?.MapFaction)) return;
-		Add(kingdom, "fief_lost", new[] { oldClan }, 20f, CivilWarWorld.ClanName(oldClan) + "失去封地");
+		Add(kingdom, "fief_lost", new[] { oldClan }, 20f, CivilWarUiText.T("AF_KINGDOM_CW_Behavior_FiefLost", "{CLAN} lost its fief", ("CLAN", CivilWarWorld.ClanName(oldClan))));
 	}
 
 	private static bool IsCivilWarPair(Kingdom kingdom, IFaction other)
@@ -182,7 +182,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		TeamModuleServices.CivilWar.NotifyPoliticalChange(oldKingdom, "membership");
 		TeamModuleServices.CivilWar.NotifyPoliticalChange(newKingdom, "membership");
 		if (detail != ChangeKingdomAction.ChangeKingdomActionDetail.LeaveByClanDestruction || oldKingdom == null || clan == oldKingdom.RulingClan) return;
-		Add(oldKingdom, "fief_lost", Vassals(oldKingdom), 10f, CivilWarWorld.ClanName(clan) + "被消灭");
+		Add(oldKingdom, "fief_lost", Vassals(oldKingdom), 10f, CivilWarUiText.T("AF_KINGDOM_CW_Behavior_ClanDestroyed", "{CLAN} was destroyed", ("CLAN", CivilWarWorld.ClanName(clan))));
 	}
 
 	private void OnKingdomDecisionConcluded(KingdomDecision decision, DecisionOutcome outcome, bool isPlayerInvolved)
@@ -203,14 +203,14 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
         {
             if (war.Kingdom == kingdom && war.ShouldWarBeDeclared && war.FactionToDeclareWarOn is Kingdom target
                 && kingdom.IsAtWarWith(target) && !IsCivilWarPair(kingdom, target))
-                Add(kingdom, "war_imposed", Vassals(kingdom), 8f, "国王逆议会多数意见强行开战");
+                Add(kingdom, "war_imposed", Vassals(kingdom), 8f, CivilWarUiText.T("AF_KINGDOM_CW_Behavior_WarImposedByKing", "The king overrode the council majority and forced a war"));
             return;
         }
         if (decision is MakePeaceKingdomDecision && outcome is MakePeaceKingdomDecision.MakePeaceDecisionOutcome peace)
         {
             if (peace.Kingdom == kingdom && peace.ShouldPeaceBeDeclared && peace.FactionToMakePeaceWith is Kingdom target
                 && !kingdom.IsAtWarWith(target) && !IsCivilWarPair(kingdom, target))
-                Add(kingdom, "peace_imposed", Vassals(kingdom), 7f, "国王逆议会多数意见强行议和");
+                Add(kingdom, "peace_imposed", Vassals(kingdom), 7f, CivilWarUiText.T("AF_KINGDOM_CW_Behavior_PeaceImposedByKing", "The king overrode the council majority and forced a peace"));
             return;
         }
 		// Conclusion runs after ApplyChosenOutcome. Approved repeal also sets ShouldDecisionBeEnforced;
@@ -218,7 +218,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;
 		if (policyDecision == null || !(outcome is KingdomPolicyDecision.PolicyDecisionOutcome policyOutcome) || !policyOutcome.ShouldDecisionBeEnforced
 			|| policyDecision.Policy == null || !kingdom.ActivePolicies.Contains(policyDecision.Policy)) return;
-		TeamModuleServices.CivilWar.RecordPolicyImposed(kingdom, policyDecision.Policy?.StringId ?? "", Week(), "王国强推政策：" + (policyDecision.Policy?.Name?.ToString() ?? "现行政策"));
+		TeamModuleServices.CivilWar.RecordPolicyImposed(kingdom, policyDecision.Policy?.StringId ?? "", Week(), CivilWarUiText.T("AF_KINGDOM_CW_Behavior_PolicyImposed", "The kingdom imposed a policy: {POLICY}", ("POLICY", policyDecision.Policy?.Name?.ToString() ?? CivilWarUiText.T("AF_KINGDOM_CW_Behavior_CurrentPolicy", "the current policy"))));
 	}
 
 	// Losing claimants who actually backed themselves; neutral voters are not denied anything.
@@ -234,7 +234,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 			if (clan.Settlements.Count(x => x.IsTown || x.IsCastle) > 1) continue;
 			denied.Add(clan);
 		}
-		if (denied.Count > 0) Add(kingdom, "fief_denied", denied, 12f, decision.Settlement.Name + "封给了" + CivilWarWorld.ClanName(winner.Clan));
+		if (denied.Count > 0) Add(kingdom, "fief_denied", denied, 12f, CivilWarUiText.T("AF_KINGDOM_CW_Behavior_FiefGranted", "{SETTLEMENT} was granted to {CLAN}", ("SETTLEMENT", decision.Settlement.Name?.ToString() ?? ""), ("CLAN", CivilWarWorld.ClanName(winner.Clan))));
 	}
 
 	private static void LoyaltyPostfix(Town town, ref ExplainedNumber __result)
@@ -248,6 +248,6 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		if (kingdom == null || string.IsNullOrWhiteSpace(text)) return;
 		string hash;
 		using (var sha = SHA256.Create()) hash = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(text))).Replace("-", "");
-		MyBehavior.RecordEventSourceMaterialForExternal("civil_war", "内战 - " + (kingdom.Name?.ToString() ?? "王国"), text, "civil_war:" + (kingdom.StringId ?? "") + ":" + Math.Max(0, weekIndex) + ":" + hash, kingdom.StringId ?? "", true, true);
+		MyBehavior.RecordEventSourceMaterialForExternal("civil_war", KingdomCivilWarTexts.Raw("KW_Raw_033") + (kingdom.Name?.ToString() ?? KingdomCivilWarTexts.Raw("KW_Raw_034")), text, "civil_war:" + (kingdom.StringId ?? "") + ":" + Math.Max(0, weekIndex) + ":" + hash, kingdom.StringId ?? "", true, true);
 	}
 }

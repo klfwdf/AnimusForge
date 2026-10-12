@@ -49,6 +49,7 @@ public sealed partial class CourierDeliveryBehavior
 			return false;
 		}
 		string text = session.ReplyPostprocessedText ?? session.ReplyText ?? "";
+        var diplomacyReceipts = new List<string>();
 		using var diplomacySource = DiplomacyDialogueSourceScope.Begin(text, "courier", session.Id,
 			session.LetterText, session.ReplyText, session.Id);
 		if (recipient == null || recipient.IsDead)
@@ -79,7 +80,7 @@ public sealed partial class CourierDeliveryBehavior
 		try
 		{
 			VoteDealBehavior.ProcessAgendaTagsDispatch(recipient, ref text);
-			DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(recipient, ref text);
+			DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(recipient, ref text, diplomacyReceipts);
 		}
 		catch (Exception ex)
 		{
@@ -142,7 +143,7 @@ public sealed partial class CourierDeliveryBehavior
 			bool rewardBeforeHasKingdomAnnex = ContainsKingdomAnnexActionTag(text);
 			Log("ApplyRewardTags start chain=courier session=" + session.Id + " containsVASSALAGE=" + rewardBeforeHasVassalage + " containsKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex);
 			RewardSystemBehavior.RpItemIntroductionContext rpItemIntroductionContext = MayContainGeneratedRpItemReward(text)
-				? CreateCourierRpItemIntroductionContext(session, recipient, text)
+				? CreateCourierRpItemIntroductionContext(session, recipient, DiplomacyConversationBridge.ComposeReply(text, diplomacyReceipts))
 				: null;
 			RewardSystemBehavior.Instance?.ApplyRewardTags(recipient, Hero.MainHero, ref text, rpItemIntroductionContext);
 			Log("ApplyRewardTags done chain=courier session=" + session.Id + " beforeVASSALAGE=" + rewardBeforeHasVassalage + " afterVASSALAGE=" + ContainsVassalageActionTag(text) + " beforeKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex + " afterKINGDOM_ANNEX=" + ContainsKingdomAnnexActionTag(text));
@@ -175,10 +176,12 @@ public sealed partial class CourierDeliveryBehavior
 		text = Regex.Replace(text ?? "", "\\[ACTION:MOOD:[^\\]\\r\\n]*\\]", "", RegexOptions.IgnoreCase).Trim();
 		LegacyChannelActionCommitResult remaining = new LegacyChannelActionCommitter().Prepare(text);
 		actionsAccepted &= !remaining.HasActions && remaining.Execution.Status == InteractionStatus.Succeeded;
-		session.ReplyPostprocessedText = text;
+		session.DiplomacyReplyBody = diplomacyReceipts.Count == 0 ? null : text;
+        session.DiplomacyReplyReceipts = diplomacyReceipts.Count == 0 ? null : diplomacyReceipts;
+        session.ReplyPostprocessedText = DiplomacyConversationBridge.ComposeReply(text, diplomacyReceipts);
 		if (persistHistory)
 		{
-			historyAccepted &= PersistCourierReplyToHistories(session, recipient, text);
+			historyAccepted &= PersistCourierReplyToHistories(session, recipient, session.ReplyPostprocessedText);
 		}
 		if (actionsAccepted) RecordModuleCourierStep(session, CoreCourierAcceptedSteps.Actions);
 		if (persistHistory && historyAccepted) RecordModuleCourierStep(session, CoreCourierAcceptedSteps.ReplyHistory);
@@ -335,13 +338,13 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				return false;
 			}
-			string historyLine = "【回信】" + reply;
+			string historyLine = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0462") + reply;
 			string npcName = (recipient.Name?.ToString() ?? "NPC").Trim();
 			if (string.IsNullOrWhiteSpace(npcName))
 			{
 				npcName = "NPC";
 			}
-			bool accepted = CommitCourierDialogueHistory(recipient, null, historyLine, "[AFEF NPC行为补充] " + npcName + "已通过信使写下回信，信使正在把回信带给玩家。");
+			bool accepted = CommitCourierDialogueHistory(recipient, null, historyLine, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0463") + npcName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0464"));
 			ShoutBehavior.RecordNativeConversationNpcLineForExternal(recipient, recipient.CharacterObject, npcName, historyLine);
 			PlayerNotorietyBehavior.NoteCourierReplyForExternal(recipient);
 			Log("reply history persisted session=" + session.Id + " recipient=" + SafeHeroId(recipient));

@@ -204,7 +204,7 @@ namespace AnimusForge.Illustrator.Engine
             byte[] front = DecodeNativeFace(nativeViews[0], size);
             byte[] back = DecodeNativeFace(nativeViews[1], size);
             if (NearlyIdentical(front, back))
-                throw new InvalidDataException("前后两张环境图近乎相同，未确认取得不同方向，已停止生成。");
+                throw new InvalidDataException("The front and rear environment images are nearly identical. Different directions were not confirmed. Generation stopped.");
             int width = size * 2, height = size + FrontBackHeaderHeight;
             using (var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb))
             {

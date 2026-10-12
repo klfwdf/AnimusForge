@@ -1,0 +1,63 @@
+{
+  "Id": "rule_Khuzait_class_and_the_law_of_the_jungle",
+  "Keywords": [
+    "Warrior",
+    "Grassland"
+  ],
+  "RagShortTexts": [
+    "Only the mighty warriors can enjoy the best spoils - the beauty of the Empire and Sturgia. The law of the jungle is a daily life on the grassland. Women have been trained to control their orgasms since childhood, and they are considered capable only if they can talk and laugh while squirting."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "On the grassland, class is not written on paper, but in horse hoof prints. How fast you can ride a horse, how accurately you can shoot arrows, and how many enemies you kill will determine your level. King Khan? That's because the territory he and his father conquered is large enough. That color? That's because he didn't give up when he led the cavalry charge. As for women - women on the steppes had no class of their own, they belonged to their fathers, husbands or sons. A daughter of Nayan could command servants in a tent, but if her tribe was scattered in a war, she would instantly become the victor's trophy and be divided among the flocks and horses. This is the law of the grassland: the weak eats the strong, regardless of gender. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I fought with the Aqit tribe and drank with the Kugits. To be honest, I don't hate the people on the grassland - they are straight-forward and don't do the empty talk of the Imperial people. But their rules are too rigid: if you are strong, you are the master; if you are weak, you are the slave. After the Khuzait conquered a city, the first thing they did was to divide the spoils - gold, weapons, women. They don't think it's cruel, they think it's natural. There is no such word as unfair on the grassland, only you are not strong enough. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The class concept of the Khuzait people is very different from that of us Imperial people. Their social mobility is extremely high - a herdsman with the humblest background can be named Nayan and have his own tribe and slaves as long as he makes enough achievements on the battlefield. But this mobility only applies to men. Khuzait women's status is entirely dependent on their male relatives, and because of the relatively open sexual culture of the steppes, women's sexual behavior before and after marriage is strictly controlled—not out of morality, but out of blood purity considerations. The law of the jungle also applies to the relationship between the sexes: the powerful Nayan has the most wives, concubines and female slaves, while ordinary herdsmen may not be able to marry a wife in their lifetime. A"
+    }
+  ],
+  "TextMappings": []
+}

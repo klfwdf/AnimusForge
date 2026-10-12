@@ -1,0 +1,24 @@
+{
+  "baseline": "488957016f7765b7fcf3f4da7f69b4f3d546c21f",
+  "newKeys": [
+    { "id": "AF_ILL_UI_GALLERY_PREVIEW_UNAVAILABLE", "en": "The image is missing or cannot be decoded. Refresh the gallery.", "zh": "图片不存在或无法解码，请刷新画廊。" },
+    { "id": "AF_ILL_UI_GALLERY_REDRAW_LOADING", "en": "Redrawing from the selected illustration. You may close the gallery while you wait.", "zh": "正在基于所选画卷重绘，可关闭画廊等待。" },
+    { "id": "AF_ILL_UI_GALLERY_REDRAW_COMPLETE", "en": "Redraw complete; saved as a new illustration.", "zh": "重绘完成，已保存新画卷。" },
+    { "id": "AF_ILL_UI_GALLERY_CONVERSION_UNAVAILABLE", "en": "The illustration or current campaign is no longer available. Reopen the gallery.", "zh": "画卷或当前战役已失效，请重新打开画廊。" },
+    { "id": "AF_ILL_UI_GALLERY_CONVERSION_SOURCE_MISSING", "en": "The original image file no longer exists. No item was created.", "zh": "原画文件已不存在，未创建物品。" },
+    { "id": "AF_ILL_UI_GALLERY_CONVERSION_DESCRIPTION_REQUIRED", "en": "Enter an illustration description for NPCs to read when you show them the item.", "zh": "请填写画卷介绍，NPC 展示时需要读取这段内容。" },
+    { "id": "AF_ILL_UI_GALLERY_CONVERSION_CREATE_FAILED", "en": "The illustration item could not be created. Nothing was added to the inventory.", "zh": "未能创建画卷物品，背包未增加物品。" },
+    { "id": "AF_ILL_UI_GALLERY_CONVERSION_DESCRIPTION_FAILED", "en": "The illustration description could not be saved: {ERROR}", "zh": "画卷介绍保存失败：{ERROR}" },
+    { "id": "AF_ILL_UI_GALLERY_CONVERSION_ALREADY_OWNED", "en": "{ITEM} is already in your inventory. Its description was updated; no duplicate was added.", "zh": "背包中已有{ITEM}，已更新介绍，未重复添加。" },
+    { "id": "AF_ILL_UI_GALLERY_CONVERSION_DELIVERED", "en": "{ITEM} was added to your inventory. You can show it to NPCs using Show Item during a conversation.", "zh": "已将{ITEM}放入背包；可通过对话中的“展示物品”向 NPC 展示。" },
+    { "id": "AF_ILL_UI_GALLERY_CONVERSION_DELIVERY_FAILED", "en": "The illustration could not be added to your inventory. Check your inventory and try again.", "zh": "画卷未能放入背包，请检查背包后再试。" },
+    { "id": "AF_ILL_UI_GALLERY_CONVERSION_DEFAULT_TITLE", "en": "Calradia Chronicles", "zh": "卡拉迪亚纪事" },
+    { "id": "AF_ILL_UI_GALLERY_CONVERSION_ITEM_NAME", "en": "{TITLE} illustration scroll", "zh": "《{TITLE}》画卷" },
+    { "id": "AF_ILL_UI_PHOTO_AIM", "en": "Enter: capture image {COUNT} - Esc: cancel", "zh": "Enter 回车截取第 {COUNT} 张 · Esc 取消" },
+    { "id": "AF_ILL_UI_PHOTO_DECISION", "en": "Captured {COUNT} images. Start generation?", "zh": "已截取 {COUNT} 张，是否开始生成？" },
+    { "id": "AF_ILL_UI_PHOTO_STOPPED", "en": "This framing session was stopped", "zh": "已中止本次取景" },
+    { "id": "AF_ILL_UI_PHOTO_GENERATE", "en": "Generate", "zh": "生成" },
+    { "id": "AF_ILL_UI_PHOTO_CONTINUE", "en": "Capture another", "zh": "继续截取" },
+    { "id": "AF_ILL_UI_PHOTO_RESTART", "en": "Capture again", "zh": "重新截取" }
+  ]
+}

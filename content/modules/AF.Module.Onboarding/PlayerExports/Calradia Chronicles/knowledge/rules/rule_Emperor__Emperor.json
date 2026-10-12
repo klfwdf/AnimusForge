@@ -1,0 +1,212 @@
+{
+  "Id": "rule_emperor",
+  "Keywords": [
+    "Emperor",
+    "Throne (emperor)",
+    "Co-owner",
+    "purple robe"
+  ],
+  "RagShortTexts": [
+    "The people of the empire regard the emperor as the pinnacle of order and civilization and the owner of the purple robe."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Emperor is the title of the supreme ruler of the Calradia Empire. In the past, a true emperor was the undisputed master of the entire continent. But since the assassination of Emperor Arenicos, this title has lost its weight. Today we have three self-proclaimed emperors at the same time - Lucon in the north, Rhagaea in the south, and Galios in the west. They all say they are orthodox, but who can make the eagle flag truly fly?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For us Imperial people, ‘Emperor’ is not just a title, it is the pinnacle of order and civilization, the highest expression of the will of the Senate and the people, and the only person who can wear the purple robe. Whether it is Lucon, Rhagaea or Galios, they are not only competing for power, but also for the supreme legal system. Who can truly unify the empire can be recognized by history as the true emperor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Emperor? In the past, when the late Emperor Arenicos was here, the word 'emperor' could still scare those barbarians and bandits, and ensure that our caravans were safe within the empire. It's good now, three emperors suddenly appeared, each one wanted to collect taxes, and each one said they would protect us. But in reality? The war was chaotic and the days were far different than when the late emperor was still alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "‘Emperor’ is a thing of the imperial people. We in Vlandia have our own king who rules over us from the throne of Palavund. Those Imperial people are always obsessed with various titles and bloodlines. Their emperor may have been great once, but now he is just a joke. What we, the barons of Vlandia, value more is whether the king can lead us to win the war and the land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Emperor? Huh, that's a soft-spoken term for a Southerner. In the north we have our own Grand Duke, a war leader elected by the boyars. The emperor of the Imperial people pays attention to the Senate and the purple robe, but our Archduke of Sturgia, his power comes from his battle ax and his personal soldiers. This is the real ruler."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ‘Emperor’ of the Empire is a code name for our number one enemy to us Battanians. Their emperor, whoever he was, wanted to cut down our forests and trample our sacred places. We have our own High King. Although he is only the nominal co-owner of each clan, when we unite to fight against the empire, their emperor may not be able to take advantage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Imperial people’s ‘Emperor’ does not work in the desert. We Aserai have our own Sultan, who is elected by the Emirs, the most powerful tribal chiefs in the desert. The title of Emperor may sound resounding, but in our opinion, the name of a ruler who cannot allow his people to survive in the desert is meaningless."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "‘Emperor’ is just a word used by the imperial people to flatter themselves. On our grasslands, the real ruler is the Khan, who is the most powerful warrior and wisest leader jointly elected by all tribes at the Naadam Conference. The Emperor of the Imperials is all about blood, but our Khuzait Khans are all about strength and merit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Emperor? Whoever gives more money will be the emperor to whom I am loyal. I traveled throughout Calradia and met the great men of the empire, as well as the king of Vlandia and the grand duke of Sturgia. To be honest, the title is not important at all. What is important is how many dinars they have and how many soldiers they have. A pauper, no one is willing to sacrifice his life for him even if he wears the title of 'Emperor'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The devaluation of the title \"Emperor\" is a direct reflection of the decline of the empire. In the time of Arenicus, it represented the administrative center and supreme arbiter of the entire continent. But now, the emergence of three emperors has eliminated the 'exclusivity' of this title, seriously weakening the empire's cultural and legal cohesion. Behind this, there is actually a struggle for the highest power between three political forces: military strongmen, Senate nobles and royal blood. The title of 'Emperor' is nothing more than a trophy in this struggle."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Emperor",
+      "Kind": "bound_settlement_owner_leader_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

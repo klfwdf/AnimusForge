@@ -21,7 +21,7 @@ public partial class RewardSystemBehavior
 {
 	// Player RP crafting is split from the large reward behavior so the UI, save overlay,
 	// and three-channel AFEF entry points share one small, reviewable implementation.
-	private const string PlayerRpCraftedAfefMarker = "*你的智识分辨出来了该物品由玩家亲手制造*";
+	private static readonly string PlayerRpCraftedAfefMarker = EconomySourceTexts.Get("S540");
 
 	private const string PlayerRpGeneratedItemPrefix = "af_generated_reward_pc_";
 
@@ -81,7 +81,7 @@ public partial class RewardSystemBehavior
 		Hero mainHero = Hero.MainHero;
 		if (mainHero == null || PartyBase.MainParty?.MemberRoster == null)
 		{
-			error = "玩家主队伍当前不可用。";
+			error = EconomySourceTexts.Get("S541");
 			return false;
 		}
 		ICraftingCampaignBehavior craftingBehavior =
@@ -113,7 +113,7 @@ public partial class RewardSystemBehavior
 		}
 		if (crafters.Count == 0)
 		{
-			error = "当前主队伍中没有可用的家族成员或同伴。";
+			error = EconomySourceTexts.Get("S542");
 			return false;
 		}
 		return true;
@@ -174,7 +174,7 @@ public partial class RewardSystemBehavior
 		string heroId = (crafterHeroId ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(heroId))
 		{
-			error = "尚未选择制造者。";
+			error = EconomySourceTexts.Get("S543");
 			return false;
 		}
 		try
@@ -198,7 +198,7 @@ public partial class RewardSystemBehavior
 				&& !AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(
 					crafter)))
 		{
-			error = "所选制造者已经不可用，请重新选择。";
+			error = EconomySourceTexts.Get("S544");
 			return false;
 		}
 		if (crafter != Hero.MainHero)
@@ -213,14 +213,14 @@ public partial class RewardSystemBehavior
 						&& element.Character?.HeroObject == selectedCrafter) == true;
 				if (!inMainParty)
 				{
-					error = "所选制造者已经离开玩家主队伍，请重新选择。";
+					error = EconomySourceTexts.Get("S545");
 					crafter = null;
 					return false;
 				}
 			}
 			catch
 			{
-				error = "无法确认制造者仍在玩家主队伍中。";
+				error = EconomySourceTexts.Get("S546");
 				crafter = null;
 				return false;
 			}
@@ -243,12 +243,12 @@ public partial class RewardSystemBehavior
 		error = "";
 		if (crafter == null)
 		{
-			error = "所选制造者当前不可用。";
+			error = EconomySourceTexts.Get("S547");
 			return false;
 		}
 		if (crafter.HeroDeveloper == null)
 		{
-			error = "所选制造者当前无法获得锻造经验。";
+			error = EconomySourceTexts.Get("S548");
 			return false;
 		}
 		try
@@ -257,7 +257,7 @@ public partial class RewardSystemBehavior
 				Campaign.Current?.GetCampaignBehavior<ICraftingCampaignBehavior>();
 			if (behavior == null)
 			{
-				error = "原版锻造体力系统当前不可用。";
+				error = EconomySourceTexts.Get("S549");
 				return false;
 			}
 			return TryReadPlayerRpCrafterCraftingResources(
@@ -270,7 +270,7 @@ public partial class RewardSystemBehavior
 		}
 		catch (Exception ex)
 		{
-			error = "无法读取所选制造者的锻造体力。";
+			error = EconomySourceTexts.Get("S550");
 			try
 			{
 				Logger.Log(
@@ -304,7 +304,7 @@ public partial class RewardSystemBehavior
 			|| crafter.HeroDeveloper == null
 			|| behavior == null)
 		{
-			error = "原版锻造体力系统当前不可用。";
+			error = EconomySourceTexts.Get("S549");
 			return false;
 		}
 		try
@@ -315,7 +315,7 @@ public partial class RewardSystemBehavior
 			maxStamina = behavior.GetMaxHeroCraftingStamina(crafter);
 			if (maxStamina <= 0)
 			{
-				error = "所选制造者的最大锻造体力不可用。";
+				error = EconomySourceTexts.Get("S551");
 				stamina = 0;
 				maxStamina = 0;
 				return false;
@@ -325,7 +325,7 @@ public partial class RewardSystemBehavior
 		}
 		catch
 		{
-			error = "无法读取所选制造者的锻造体力。";
+			error = EconomySourceTexts.Get("S550");
 			stamina = 0;
 			maxStamina = 0;
 			staminaCost = 0;
@@ -459,7 +459,7 @@ public partial class RewardSystemBehavior
 		if (request == null)
 		{
 			preview = null;
-			error = "模板候选已经失效。";
+			error = EconomySourceTexts.Get("S552");
 			return false;
 		}
 		return TryPreviewPlayerRpCraftCore(
@@ -505,7 +505,7 @@ public partial class RewardSystemBehavior
 		}
 		else if (candidates.Count == 0)
 		{
-			error = "模板候选为空。";
+			error = EconomySourceTexts.Get("S553");
 			return false;
 		}
 		string selectedId = (selectedTemplateStringId ?? "").Trim();
@@ -518,7 +518,7 @@ public partial class RewardSystemBehavior
 					StringComparison.OrdinalIgnoreCase));
 		if (selected == null)
 		{
-			error = "所选模板不在当前 Top 50 安全候选中。";
+			error = EconomySourceTexts.Get("S554");
 			return false;
 		}
 		if (!TryValidatePlayerRpSelectedTemplateForCurrentRequest(
@@ -559,10 +559,10 @@ public partial class RewardSystemBehavior
 		}
 		if (crafterStamina < craftingStaminaCost)
 		{
-			error = (crafter.Name?.ToString() ?? "所选制造者")
-				+ "的锻造体力不足：需要 "
+			error = (crafter.Name?.ToString() ?? EconomySourceTexts.Get("S555"))
+				+ EconomySourceTexts.Get("S556")
 				+ craftingStaminaCost.ToString(CultureInfo.InvariantCulture)
-				+ "，当前 "
+				+ EconomySourceTexts.Get("S557")
 				+ crafterStamina.ToString(CultureInfo.InvariantCulture)
 				+ "。";
 			return false;
@@ -590,39 +590,38 @@ public partial class RewardSystemBehavior
 		}
 		else
 		{
-			confirmation.Append("物品名称：").Append(name)
-				.Append("\n匹配模板：").Append(template.Name?.ToString() ?? template.StringId ?? "")
-				.Append(" (").Append(template.StringId ?? "").Append(')')
-				.Append("\n模板类型：").Append(selected.TypeLabel ?? GetPlayerRpTemplateTypeLabel(template))
-				.Append("\n标准价格：").Append(templateBaseValue.ToString(CultureInfo.InvariantCulture))
-				.Append(" 第纳尔\n投入金额：").Append(investedDenars.ToString(CultureInfo.InvariantCulture))
-				.Append(" 第纳尔\n成品价值：").Append(craftedItemValue.ToString(CultureInfo.InvariantCulture))
-				.Append(" 第纳尔");
+			confirmation.Append(EconomyUiTexts.PlayerRpConfirmationLine(EconomyUiTexts.PlayerRpLabelItemName, name))
+				.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationLine(
+					EconomyUiTexts.PlayerRpLabelMatchingTemplate,
+					(template.Name?.ToString() ?? template.StringId ?? "") + " (" + (template.StringId ?? "") + ")"))
+				.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationLine(
+					EconomyUiTexts.PlayerRpLabelTemplateType,
+					EconomyItemTypeDisplayTexts.ForDisplay(selected.TypeLabel ?? GetPlayerRpTemplateTypeLabel(template))))
+				.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationPriceLine(EconomyUiTexts.PlayerRpLabelBasePrice, templateBaseValue))
+				.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationPriceLine(EconomyUiTexts.PlayerRpLabelInvestment, investedDenars))
+				.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationPriceLine(EconomyUiTexts.PlayerRpLabelCraftedValue, craftedItemValue));
 			if (string.Equals(selectionSource, "player_choice", StringComparison.Ordinal))
 			{
-				confirmation.Append("\n模板选择：玩家手动选择（Top ")
-					.Append(candidates.Count.ToString(CultureInfo.InvariantCulture))
-					.Append(" 候选）");
+				confirmation.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationPlayerChoice(candidates.Count));
 			}
 			else if (string.Equals(
 				selectionSource,
 				"exact_game_item",
 				StringComparison.Ordinal))
 			{
-				confirmation.Append("\n模板选择：游戏数据精确匹配");
+				confirmation.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationExactMatch);
 			}
 
 			if (investedDenars >= templateBaseValue)
 			{
-				confirmation.Append("\n制造成功率：100%\n结果：成功制造该物品。");
+				confirmation.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationGuaranteed);
 			}
 			else
 			{
-				confirmation.Append("\n制造成功率：")
-					.Append(FormatPlayerRpProbability(investedDenars, templateBaseValue))
-					.Append("\n未命中时：垃圾物品（投入仍会消耗）。");
+				confirmation.Append('\n').Append(EconomyUiTexts.PlayerRpConfirmationChance(
+					FormatPlayerRpProbability(investedDenars, templateBaseValue)));
 			}
-			confirmation.Append("\n\n确认制造？");
+			confirmation.Append(EconomyUiTexts.PlayerRpConfirmationQuestion);
 		}
 
 		preview = new PlayerRpCraftPreview
@@ -662,12 +661,12 @@ public partial class RewardSystemBehavior
 		error = "";
 		if (preview == null)
 		{
-			error = "制造请求已经失效。";
+			error = EconomySourceTexts.Get("S558");
 			return false;
 		}
 		if (Interlocked.CompareExchange(ref PlayerRpCraftCommitGate, 1, 0) != 0)
 		{
-			error = "正在处理上一项制造，请勿重复点击。";
+			error = EconomySourceTexts.Get("S559");
 			return false;
 		}
 
@@ -713,7 +712,7 @@ public partial class RewardSystemBehavior
 			if (!string.Equals(current.TemplateStringId, preview.TemplateStringId, StringComparison.OrdinalIgnoreCase)
 				|| current.TemplateBaseValue != preview.TemplateBaseValue)
 			{
-				error = "模板或价格已经变化，请重新确认。";
+				error = EconomySourceTexts.Get("S560");
 				return false;
 			}
 			if (!string.Equals(
@@ -729,7 +728,7 @@ public partial class RewardSystemBehavior
 				|| current.CraftingExperienceBaseAmount
 					!= preview.CraftingExperienceBaseAmount)
 			{
-				error = "制造者资源或成品价值已经变化，请重新确认。";
+				error = EconomySourceTexts.Get("S561");
 				return false;
 			}
 			if (current.IsEquipment
@@ -738,7 +737,7 @@ public partial class RewardSystemBehavior
 					|| current.NormalWeight != preview.NormalWeight
 					|| current.BadWeight != preview.BadWeight))
 			{
-				error = "锻造等级或三档概率已经变化，请重新确认。";
+				error = EconomySourceTexts.Get("S562");
 				return false;
 			}
 			if (!TryResolveAvailablePlayerRpCrafter(
@@ -759,15 +758,15 @@ public partial class RewardSystemBehavior
 					!= current.CrafterMaxCraftingStamina
 				|| staminaCost != current.CraftingStaminaCost)
 			{
-				error = "最大锻造体力或体力消耗已经变化，请重新确认。";
+				error = EconomySourceTexts.Get("S563");
 				return false;
 			}
 			if (staminaBeforeDeduction < staminaCost)
 			{
-				error = (staminaCrafter.Name?.ToString() ?? "所选制造者")
-					+ "的锻造体力不足：需要 "
+				error = (staminaCrafter.Name?.ToString() ?? EconomySourceTexts.Get("S555"))
+					+ EconomySourceTexts.Get("S556")
 					+ staminaCost.ToString(CultureInfo.InvariantCulture)
-					+ "，当前 "
+					+ EconomySourceTexts.Get("S557")
 					+ staminaBeforeDeduction.ToString(CultureInfo.InvariantCulture)
 					+ "。";
 				return false;
@@ -776,7 +775,7 @@ public partial class RewardSystemBehavior
 			ItemObject originalTemplate = ResolveItemById(current.TemplateStringId);
 			if (originalTemplate == null)
 			{
-				error = "匹配模板已经不可用。";
+				error = EconomySourceTexts.Get("S564");
 				return false;
 			}
 
@@ -825,7 +824,7 @@ public partial class RewardSystemBehavior
 					out statsSnapshot,
 					out string snapshotError))
 				{
-					error = "无法安全复制该装备模板：" + snapshotError;
+					error = EconomySourceTexts.Get("S565") + snapshotError;
 					return false;
 				}
 			}
@@ -846,23 +845,23 @@ public partial class RewardSystemBehavior
 					craftKind = "junk";
 					if (!TryResolvePlayerRpJunkTemplate(null, null, out effectiveTemplate))
 					{
-						error = "没有找到安全的垃圾物品模板。";
+						error = EconomySourceTexts.Get("S566");
 						return false;
 					}
-					displayName = effectiveTemplate.Name?.ToString() ?? "垃圾物品";
+					displayName = effectiveTemplate.Name?.ToString() ?? EconomySourceTexts.Get("S567");
 				}
 			}
 
 			Hero player = Hero.MainHero;
 			if (player == null || player.Gold < current.InvestedDenars)
 			{
-				error = "第纳尔不足。";
+				error = EconomySourceTexts.Get("S568");
 				return false;
 			}
 			playerRoster = GetPlayerMainItemRoster();
 			if (playerRoster == null)
 			{
-				error = "玩家背包不可用。";
+				error = EconomySourceTexts.Get("S569");
 				return false;
 			}
 
@@ -873,7 +872,7 @@ public partial class RewardSystemBehavior
 			chargedAmount = Math.Max(0, goldBeforeCharge - player.Gold);
 			if (chargedAmount != current.InvestedDenars)
 			{
-				error = "扣款失败，未制造物品。";
+				error = EconomySourceTexts.Get("S570");
 				return false;
 			}
 
@@ -895,14 +894,14 @@ public partial class RewardSystemBehavior
 				|| !TryResolveGeneratedRewardItemForStringId(generatedStringId, out generatedItem, "player_rp_craft_resolve")
 				|| !IsExactPlayerRpGeneratedItemForKey(generatedItem, generatedIdentity))
 			{
-				error = "物品创建或加入背包失败。";
+				error = EconomySourceTexts.Get("S571");
 				return false;
 			}
 
 			GeneratedRewardItemRecord record = Instance?.GetGeneratedRewardItemRecord(generatedStringId);
 			if (record == null)
 			{
-				error = "制造记录创建失败。";
+				error = EconomySourceTexts.Get("S572");
 				return false;
 			}
 			int playerIntelligence = Math.Max(0, player.GetAttributeValue(DefaultCharacterAttributes.Intelligence));
@@ -953,14 +952,14 @@ public partial class RewardSystemBehavior
 				effectiveTemplate,
 				displayName))
 			{
-				error = "物品属性或价格写入失败。";
+				error = EconomySourceTexts.Get("S573");
 				return false;
 			}
 			generatedItem.Initialize();
 			generatedItem.IsReady = true;
 			if (generatedItem.Value != current.CraftedItemValue)
 			{
-				error = "物品价格写入失败。";
+				error = EconomySourceTexts.Get("S574");
 				return false;
 			}
 			Instance.RememberGeneratedRewardItemRecord(record.GeneratedStringId, displayName, effectiveTemplate, generatedItem);
@@ -973,15 +972,13 @@ public partial class RewardSystemBehavior
 				GeneratedStringId = record.GeneratedStringId,
 				DisplayName = generatedDisplayName ?? displayName,
 				Outcome = outcome,
-				Message = "制造完成：" + displayName + "\n结果：" + GetPlayerRpOutcomeLabel(outcome)
-					+ "\n成品价值："
-					+ current.CraftedItemValue.ToString(CultureInfo.InvariantCulture)
-					+ " 第纳尔"
-					+ "\n锻造体力：-"
-					+ staminaCost.ToString(CultureInfo.InvariantCulture)
-					+ "　基础锻造经验：+"
-					+ current.CraftingExperienceBaseAmount.ToString(CultureInfo.InvariantCulture)
-					+ (string.IsNullOrWhiteSpace(statText) ? "" : "\n" + statText)
+				Message = EconomyUiTexts.PlayerRpCraftCompleted(
+					displayName,
+					GetPlayerRpOutcomeLabel(outcome),
+					current.CraftedItemValue,
+					staminaCost,
+					current.CraftingExperienceBaseAmount,
+					string.IsNullOrWhiteSpace(statText) ? "" : "\n" + statText)
 			};
 			if (!TryReadPlayerRpCrafterCraftingResources(
 					staminaCrafter,
@@ -997,7 +994,7 @@ public partial class RewardSystemBehavior
 				|| finalMaxStamina != maxStaminaBeforeDeduction
 				|| finalStaminaCost != staminaCost)
 			{
-				error = "锻造体力在制造期间发生变化，请重新确认。";
+				error = EconomySourceTexts.Get("S575");
 				return false;
 			}
 			staminaBehavior = finalStaminaBehavior;
@@ -1012,7 +1009,7 @@ public partial class RewardSystemBehavior
 				staminaBehavior.GetHeroCraftingStamina(staminaCrafter));
 			if (appliedStamina != staminaAfterDeduction)
 			{
-				error = "锻造体力扣除未能完成。";
+				error = EconomySourceTexts.Get("S576");
 				return false;
 			}
 			transactionCommitted = true;
@@ -1024,8 +1021,7 @@ public partial class RewardSystemBehavior
 			}
 			catch (Exception experienceException)
 			{
-				result.Message +=
-					"\n基础锻造经验通知被其他 Mod 中断；为防止重复经验，本次物品与消耗仍已结算。";
+				result.Message += EconomyUiTexts.PlayerRpCraftXpInterrupted;
 				try
 				{
 					Logger.Log(
@@ -1078,7 +1074,7 @@ public partial class RewardSystemBehavior
 		}
 		catch (Exception ex)
 		{
-			error = "制造失败：" + ex.GetType().Name + ": " + ex.Message;
+			error = EconomyUiTexts.PlayerRpCraftFailedWithException(ex.GetType().Name + ": " + ex.Message);
 			try
 			{
 				Logger.Log("Logic", "[PlayerRpCraft] commit_failed error=" + ex);
@@ -1120,7 +1116,7 @@ public partial class RewardSystemBehavior
 				{
 					error = AppendPlayerRpCraftFailureStatus(
 						error,
-						"锻造体力未能恢复："
+						EconomySourceTexts.Get("S577")
 							+ staminaRollbackException.GetType().Name
 							+ "。");
 				}
@@ -1145,9 +1141,9 @@ public partial class RewardSystemBehavior
 				{
 					error = AppendPlayerRpCraftFailureStatus(
 						error,
-						"退款失败：事务回滚发生 "
+						EconomySourceTexts.Get("S578")
 							+ rollbackException.GetType().Name
-							+ "，请检查玩家第纳尔和背包。");
+							+ EconomySourceTexts.Get("S579"));
 				}
 			}
 			RevokePlayerRpCraftGenerationKey(generatedStringIdForRollback);
@@ -1179,17 +1175,17 @@ public partial class RewardSystemBehavior
 		}
 		else if (hasGeneratedKey)
 		{
-			AddPlayerRpRollbackIssue(issues, "生成标识不属于本次玩家制造命名空间，未反注册对象");
+			AddPlayerRpRollbackIssue(issues, EconomySourceTexts.Get("S580"));
 		}
 
 		string refundStatus = RefundPlayerRpCraftCharge(chargedPlayer, chargedAmount);
 		if (issues.Count > 0)
 		{
-			refundStatus += "\n物品回滚未完全完成：" + string.Join("；", issues);
+			refundStatus += "\n" + EconomyUiTexts.PlayerRpCraftRollbackIncomplete(string.Join("；", issues));
 		}
 		else if (hasExactGeneratedKey)
 		{
-			refundStatus += "\n已清理本次生成物品、记录和运行时缓存。";
+			refundStatus += "\n" + EconomyUiTexts.PlayerRpCraftRollbackCleaned;
 		}
 		try
 		{
@@ -1209,7 +1205,7 @@ public partial class RewardSystemBehavior
 		string normalizedStatus = (status ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(message))
 		{
-			message = "制造失败。";
+			message = EconomyUiTexts.PlayerRpCraftFailedFallback;
 		}
 		return string.IsNullOrWhiteSpace(normalizedStatus)
 			? message
@@ -1221,13 +1217,13 @@ public partial class RewardSystemBehavior
 		int expected = Math.Max(0, chargedAmount);
 		if (expected <= 0)
 		{
-			return "未扣除第纳尔，无需退款。";
+			return EconomyUiTexts.PlayerRpCraftRefundNoCharge;
 		}
 		if (chargedPlayer == null)
 		{
-			return "退款失败：无法定位付款玩家，应退 "
+			return EconomySourceTexts.Get("S581")
 				+ expected.ToString(CultureInfo.InvariantCulture)
-				+ " 第纳尔。";
+				+ EconomySourceTexts.Get("S030");
 		}
 
 		int before;
@@ -1237,11 +1233,11 @@ public partial class RewardSystemBehavior
 		}
 		catch (Exception ex)
 		{
-			return "退款失败：无法读取退款前余额（"
+			return EconomySourceTexts.Get("S582")
 				+ ex.GetType().Name
-				+ "），应退 "
+				+ EconomySourceTexts.Get("S583")
 				+ expected.ToString(CultureInfo.InvariantCulture)
-				+ " 第纳尔。";
+				+ EconomySourceTexts.Get("S030");
 		}
 
 		Exception refundException = null;
@@ -1261,26 +1257,26 @@ public partial class RewardSystemBehavior
 		}
 		catch (Exception ex)
 		{
-			return "退款失败：无法验证退款后余额（"
+			return EconomySourceTexts.Get("S584")
 				+ ex.GetType().Name
-				+ "），应退 "
+				+ EconomySourceTexts.Get("S583")
 				+ expected.ToString(CultureInfo.InvariantCulture)
-				+ " 第纳尔。";
+				+ EconomySourceTexts.Get("S030");
 		}
 		int actual = (int)Math.Max(
 			0L,
 			Math.Min(int.MaxValue, (long)after - before));
 		if (actual == expected)
 		{
-			return "已全额退款 "
-				+ expected.ToString(CultureInfo.InvariantCulture)
-				+ " 第纳尔。";
+			return EconomyUiTexts.PlayerRpCraftRefundFull(expected);
+
+
 		}
-		return "退款失败：应退 "
+		return EconomySourceTexts.Get("S585")
 			+ expected.ToString(CultureInfo.InvariantCulture)
-			+ " 第纳尔，实际退回 "
+			+ EconomySourceTexts.Get("S586")
 			+ actual.ToString(CultureInfo.InvariantCulture)
-			+ " 第纳尔"
+			+ EconomySourceTexts.Get("S027")
 			+ (refundException == null
 				? "。"
 				: "（" + refundException.GetType().Name + "）。");
@@ -1476,7 +1472,7 @@ public partial class RewardSystemBehavior
 	{
 		if (playerRoster == null)
 		{
-			AddPlayerRpRollbackIssue(issues, "玩家背包不可用，无法验证生成物品是否已移除");
+			AddPlayerRpRollbackIssue(issues, EconomySourceTexts.Get("S587"));
 			return;
 		}
 		try
@@ -1501,7 +1497,7 @@ public partial class RewardSystemBehavior
 						element.EquipmentElement.Item,
 						generatedStringId))
 				{
-					AddPlayerRpRollbackIssue(issues, "玩家背包仍残留本次生成物品");
+					AddPlayerRpRollbackIssue(issues, EconomySourceTexts.Get("S588"));
 					break;
 				}
 			}
@@ -1510,7 +1506,7 @@ public partial class RewardSystemBehavior
 		{
 			AddPlayerRpRollbackIssue(
 				issues,
-				"玩家背包清理失败（" + ex.GetType().Name + "）");
+				EconomySourceTexts.Get("S589") + ex.GetType().Name + "）");
 		}
 	}
 
@@ -1600,7 +1596,7 @@ public partial class RewardSystemBehavior
 							{
 								AddPlayerRpRollbackIssue(
 									issues,
-									"对象ID清单缓存存在其他物品，已保留该缓存");
+									EconomySourceTexts.Get("S590"));
 							}
 						}
 						if (GeneratedRewardDetachedItemsByObjectId.TryGetValue(
@@ -1618,7 +1614,7 @@ public partial class RewardSystemBehavior
 							{
 								AddPlayerRpRollbackIssue(
 									issues,
-									"Detached 对象ID缓存存在其他物品，已保留该缓存");
+									EconomySourceTexts.Get("S591"));
 							}
 						}
 						if (GeneratedRewardPendingItemsByObjectId.TryGetValue(
@@ -1637,7 +1633,7 @@ public partial class RewardSystemBehavior
 							{
 								AddPlayerRpRollbackIssue(
 									issues,
-									"Pending 对象ID缓存存在其他物品，已保留该缓存");
+									EconomySourceTexts.Get("S592"));
 							}
 						}
 					}
@@ -1648,7 +1644,7 @@ public partial class RewardSystemBehavior
 		{
 			AddPlayerRpRollbackIssue(
 				issues,
-				"记录或缓存清理失败（" + ex.GetType().Name + "）");
+				EconomySourceTexts.Get("S593") + ex.GetType().Name + "）");
 		}
 	}
 
@@ -1664,7 +1660,7 @@ public partial class RewardSystemBehavior
 		MBObjectManager manager = MBObjectManager.Instance ?? Game.Current?.ObjectManager;
 		if (manager == null)
 		{
-			AddPlayerRpRollbackIssue(issues, "对象管理器不可用，无法反注册生成物品");
+			AddPlayerRpRollbackIssue(issues, EconomySourceTexts.Get("S594"));
 			return;
 		}
 
@@ -1699,7 +1695,7 @@ public partial class RewardSystemBehavior
 			{
 				AddPlayerRpRollbackIssue(
 					issues,
-					"同一玩家制造标识对应多个注册对象，已拒绝不安全反注册");
+					EconomySourceTexts.Get("S595"));
 				return;
 			}
 			if (registeredCandidates.Count == 1)
@@ -1714,7 +1710,7 @@ public partial class RewardSystemBehavior
 					{
 						AddPlayerRpRollbackIssue(
 							issues,
-							"玩家制造对象ID已被其他对象占用，已拒绝不安全反注册");
+							EconomySourceTexts.Get("S596"));
 						return;
 					}
 				}
@@ -1724,7 +1720,7 @@ public partial class RewardSystemBehavior
 			ItemObject remainingByString = manager.GetObject<ItemObject>(generatedStringId);
 			if (IsExactPlayerRpGeneratedItemForKey(remainingByString, generatedStringId))
 			{
-				AddPlayerRpRollbackIssue(issues, "本次生成对象仍存在于字符串索引");
+				AddPlayerRpRollbackIssue(issues, EconomySourceTexts.Get("S597"));
 				return;
 			}
 			if (objectIds == null)
@@ -1743,7 +1739,7 @@ public partial class RewardSystemBehavior
 					remainingByObjectId,
 					generatedStringId))
 				{
-					AddPlayerRpRollbackIssue(issues, "本次生成对象仍存在于对象ID索引");
+					AddPlayerRpRollbackIssue(issues, EconomySourceTexts.Get("S598"));
 					return;
 				}
 			}
@@ -1752,7 +1748,7 @@ public partial class RewardSystemBehavior
 		{
 			AddPlayerRpRollbackIssue(
 				issues,
-				"反注册生成对象失败（" + ex.GetType().Name + "）");
+				EconomySourceTexts.Get("S599") + ex.GetType().Name + "）");
 		}
 		finally
 		{
@@ -1981,10 +1977,10 @@ public partial class RewardSystemBehavior
 		}
 		if (stamina < staminaCost)
 		{
-			error = (crafter.Name?.ToString() ?? "所选制造者")
-				+ "的锻造体力不足：需要 "
+			error = (crafter.Name?.ToString() ?? EconomySourceTexts.Get("S555"))
+				+ EconomySourceTexts.Get("S556")
 				+ staminaCost.ToString(CultureInfo.InvariantCulture)
-				+ "，当前 "
+				+ EconomySourceTexts.Get("S557")
 				+ stamina.ToString(CultureInfo.InvariantCulture)
 				+ "。";
 			return false;
@@ -2073,15 +2069,15 @@ public partial class RewardSystemBehavior
 		{
 			if (isEquipment && hasSafeMisc)
 			{
-				error = "名称精确匹配到游戏中的普通物品；请取消勾选 FORGE AS WEAPON/EQUIPMENT?。";
+				error = EconomySourceTexts.Get("S600");
 			}
 			else if (!isEquipment && hasSafeEquipment)
 			{
-				error = "名称精确匹配到游戏中的武器装备；请勾选 FORGE AS WEAPON/EQUIPMENT?。";
+				error = EconomySourceTexts.Get("S601");
 			}
 			else
 			{
-				error = "名称精确匹配到游戏物品，但该模板缺少可安全复制的组件或模型。";
+				error = EconomySourceTexts.Get("S602");
 			}
 			return false;
 		}
@@ -2092,7 +2088,7 @@ public partial class RewardSystemBehavior
 				eligible
 					.Take(8)
 					.Select(item => item.StringId));
-			error = "游戏中存在多个同名物品；请改为输入其中一个模板 StringId："
+			error = EconomySourceTexts.Get("S603")
 				+ ids
 				+ (eligible.Count > 8 ? "……" : "");
 			return false;
@@ -2115,7 +2111,7 @@ public partial class RewardSystemBehavior
 		candidate = exactCandidates.FirstOrDefault();
 		if (candidate == null)
 		{
-			error = "精确匹配物品无法建立安全制造快照。";
+			error = EconomySourceTexts.Get("S604");
 			return false;
 		}
 		candidate.Rank = 1;
@@ -2310,30 +2306,30 @@ public partial class RewardSystemBehavior
 		string name = (requestedName ?? "").Trim();
 		if (name.IndexOf(PlayerRpCraftedAfefMarker, StringComparison.Ordinal) >= 0)
 		{
-			error = "物品名称不能包含系统保留标记 "
+			error = EconomySourceTexts.Get("S605")
 				+ PlayerRpCraftedAfefMarker
 				+ "。";
 			return false;
 		}
 		if (!IsValidGeneratedRpAssetNameForExternal(name))
 		{
-			error = "请输入有效的物品名称。";
+			error = EconomySourceTexts.Get("S606");
 			return false;
 		}
 		if (investedDenars <= 0)
 		{
-			error = "投入金额必须大于 0。";
+			error = EconomySourceTexts.Get("S607");
 			return false;
 		}
 		Hero player = Hero.MainHero;
 		if (player == null || MobileParty.MainParty?.ItemRoster == null)
 		{
-			error = "玩家或玩家背包尚未就绪。";
+			error = EconomySourceTexts.Get("S608");
 			return false;
 		}
 		if (player.Gold < investedDenars)
 		{
-			error = "第纳尔不足。";
+			error = EconomySourceTexts.Get("S568");
 			return false;
 		}
 
@@ -2352,8 +2348,8 @@ public partial class RewardSystemBehavior
 					|| kind == GeneratedRpEquipmentKind.Banner))
 			{
 				error = kind == GeneratedRpEquipmentKind.Horse
-					? "玩家RP制造暂不支持直接制造马匹；马甲、马铠和马具仍受支持。"
-					: "玩家RP制造暂不支持旗帜模板。";
+					? EconomySourceTexts.Get("S609")
+					: EconomySourceTexts.Get("S610");
 				return false;
 			}
 			cache.TryGetValue(
@@ -2391,7 +2387,7 @@ public partial class RewardSystemBehavior
 			}
 			if (!hasSuffix && candidates.Count == 0)
 			{
-				error = "装备名称需要以明确的中英文装备后缀结尾，或与已加载模板名称/ID完全一致。";
+				error = EconomySourceTexts.Get("S611");
 				return false;
 			}
 		}
@@ -2399,7 +2395,7 @@ public partial class RewardSystemBehavior
 		{
 			if (TryResolveGeneratedRpEquipmentSuffix(name, out _, out _))
 			{
-				error = "名称属于武器装备；请先勾选 FORGE AS WEAPON/EQUIPMENT?。";
+				error = EconomySourceTexts.Get("S612");
 				return false;
 			}
 			if (TryResolveGeneratedRpFoodSuffix(
@@ -2461,8 +2457,8 @@ public partial class RewardSystemBehavior
 		if (candidates.Count == 0)
 		{
 			error = isEquipment
-				? "该类别没有安全且可复制的武器装备模板。"
-				: "没有安全的食物或杂物模板。";
+				? EconomySourceTexts.Get("S613")
+				: EconomySourceTexts.Get("S614");
 			return false;
 		}
 		candidates.Sort(ComparePlayerRpTemplateCandidates);
@@ -2494,43 +2490,43 @@ public partial class RewardSystemBehavior
 		string name = (requestedName ?? "").Trim();
 		if (name.IndexOf(PlayerRpCraftedAfefMarker, StringComparison.Ordinal) >= 0)
 		{
-			error = "物品名称不能包含系统保留标记 "
+			error = EconomySourceTexts.Get("S605")
 				+ PlayerRpCraftedAfefMarker
 				+ "。";
 			return false;
 		}
 		if (!IsValidGeneratedRpAssetNameForExternal(name))
 		{
-			error = "请输入有效的物品名称。";
+			error = EconomySourceTexts.Get("S606");
 			return false;
 		}
 		if (investedDenars <= 0)
 		{
-			error = "投入金额必须大于 0。";
+			error = EconomySourceTexts.Get("S607");
 			return false;
 		}
 		Hero player = Hero.MainHero;
 		if (player == null || MobileParty.MainParty?.ItemRoster == null)
 		{
-			error = "玩家或玩家背包尚未就绪。";
+			error = EconomySourceTexts.Get("S608");
 			return false;
 		}
 		if (player.Gold < investedDenars)
 		{
-			error = "第纳尔不足。";
+			error = EconomySourceTexts.Get("S568");
 			return false;
 		}
 		string selectedId = (selected?.TemplateStringId ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(selectedId))
 		{
-			error = "所选模板ID为空。";
+			error = EconomySourceTexts.Get("S615");
 			return false;
 		}
 		template = ResolveItemById(selectedId);
 		if (template == null
 			|| IsGeneratedRewardItemStringId(template.StringId))
 		{
-			error = "所选模板已经不可用。";
+			error = EconomySourceTexts.Get("S616");
 			template = null;
 			return false;
 		}
@@ -2551,7 +2547,7 @@ public partial class RewardSystemBehavior
 					StringComparison.OrdinalIgnoreCase))
 			{
 				error = string.IsNullOrWhiteSpace(exactError)
-					? "游戏数据中的精确匹配物品已经变化，请重新确认。"
+					? EconomySourceTexts.Get("S617")
 					: exactError;
 				template = null;
 				return false;
@@ -2560,7 +2556,7 @@ public partial class RewardSystemBehavior
 				? !IsPlayerRpSafeExactEquipmentTemplate(template)
 				: !IsPlayerRpSafeExactMiscTemplate(template))
 			{
-				error = "精确匹配模板已经不再属于当前安全制造类别。";
+				error = EconomySourceTexts.Get("S618");
 				template = null;
 				return false;
 			}
@@ -2576,8 +2572,8 @@ public partial class RewardSystemBehavior
 					|| kind == GeneratedRpEquipmentKind.Banner))
 			{
 				error = kind == GeneratedRpEquipmentKind.Horse
-					? "玩家RP制造暂不支持直接制造马匹；马甲、马铠和马具仍受支持。"
-					: "玩家RP制造暂不支持旗帜模板。";
+					? EconomySourceTexts.Get("S609")
+					: EconomySourceTexts.Get("S610");
 				template = null;
 				return false;
 			}
@@ -2587,7 +2583,7 @@ public partial class RewardSystemBehavior
 				|| (hasSuffix
 					&& !DoesGeneratedRpEquipmentTemplateMatchKind(template, kind)))
 			{
-				error = "所选模板不再属于当前名称对应的安全武器装备类别。";
+				error = EconomySourceTexts.Get("S619");
 				template = null;
 				return false;
 			}
@@ -2603,7 +2599,7 @@ public partial class RewardSystemBehavior
 						exactLookup,
 						StringComparison.Ordinal))
 				{
-					error = "无装备后缀时，物品名称必须与所选模板名称或ID完全一致。";
+					error = EconomySourceTexts.Get("S620");
 					template = null;
 					return false;
 				}
@@ -2613,7 +2609,7 @@ public partial class RewardSystemBehavior
 		{
 			if (TryResolveGeneratedRpEquipmentSuffix(name, out _, out _))
 			{
-				error = "名称属于武器装备；请先勾选 FORGE AS WEAPON/EQUIPMENT?。";
+				error = EconomySourceTexts.Get("S612");
 				template = null;
 				return false;
 			}
@@ -2625,14 +2621,14 @@ public partial class RewardSystemBehavior
 				if (!IsCloneSafeGeneratedRpFoodTemplateItem(template)
 					|| !DoesGeneratedRpFoodTemplateMatchKind(template, foodKind))
 				{
-					error = "所选模板不再属于当前食物、饮料、水或药物类别。";
+					error = EconomySourceTexts.Get("S621");
 					template = null;
 					return false;
 				}
 			}
 			else if (!IsPlayerRpSafeGoodsTemplate(template))
 			{
-				error = "所选模板不再是安全的杂物或文书模板。";
+				error = EconomySourceTexts.Get("S622");
 				template = null;
 				return false;
 			}
@@ -2641,7 +2637,7 @@ public partial class RewardSystemBehavior
 		currentStandardPrice = GetPlayerRpSafeTemplateBaseValue(template);
 		if (selected.StandardPrice != currentStandardPrice)
 		{
-			error = "所选模板价格已经变化，请重新建立候选榜单。";
+			error = EconomySourceTexts.Get("S623");
 			template = null;
 			currentStandardPrice = 0;
 			return false;
@@ -2732,11 +2728,11 @@ public partial class RewardSystemBehavior
 	{
 		if (item == null)
 		{
-			return "未知";
+			return EconomySourceTexts.Get("S624");
 		}
 		if (IsGeneratedRpWhipWeaponTemplateItem(item))
 		{
-			return "鞭/Whip";
+			return EconomySourceTexts.Get("S772");
 		}
 		string localized = GetItemPromptTypeLabel(item);
 		string technical = item.Type.ToString();
@@ -2789,13 +2785,13 @@ public partial class RewardSystemBehavior
 				.ToList();
 			if (candidates.Count == 0)
 			{
-				error = "装备名称需要以明确的中英文装备后缀结尾，或与已加载模板名称/ID完全一致。";
+				error = EconomySourceTexts.Get("S611");
 				return false;
 			}
 		}
 		if (candidates == null || candidates.Count == 0)
 		{
-			error = "该装备类别没有可用模板。";
+			error = EconomySourceTexts.Get("S626");
 			return false;
 		}
 
@@ -2837,7 +2833,7 @@ public partial class RewardSystemBehavior
 		}
 		if (template == null)
 		{
-			error = "匹配到的装备模板缺少安全模型或完整组件。";
+			error = EconomySourceTexts.Get("S627");
 			return false;
 		}
 		return true;
@@ -3533,13 +3529,10 @@ public partial class RewardSystemBehavior
 			int recommendedSmithing =
 				GetPlayerRpEquipmentRecommendedSmithingLevel(
 					templateBaseValue);
-			builder.Append("\n\n【警告】劣化概率高于 33.33%；建议将锻造从 ")
-				.Append(Math.Max(0, smithing).ToString(CultureInfo.InvariantCulture))
-				.Append(" 提高至 ")
-				.Append(recommendedSmithing.ToString(CultureInfo.InvariantCulture))
-				.Append(" 级（模板每 ")
-				.Append(PlayerRpTemplatePricePerSmithingLevel.ToString(CultureInfo.InvariantCulture))
-				.Append(" 第纳尔对应 1 级）。");
+			builder.Append(EconomyUiTexts.PlayerRpEquipmentWarning(
+				Math.Max(0, smithing),
+				recommendedSmithing,
+				PlayerRpTemplatePricePerSmithingLevel));
 		}
 	}
 
@@ -3564,33 +3557,33 @@ public partial class RewardSystemBehavior
 		{
 			builder.Append('\n');
 		}
-		builder.Append(GetPlayerRpOutcomeLabel(outcome))
-			.Append(' ')
-			.Append(FormatPlayerRpProbability(probabilityWeight, 30000))
-			.Append("：");
+		string outcomeLabel = GetPlayerRpOutcomeLabel(outcome);
+		string probability = FormatPlayerRpProbability(probabilityWeight, 30000);
 		if (underfunded)
 		{
 			double retainedPercent = Math.Max(0d, multiplier) * 100d;
 			double weightIncreasePercent = Math.Max(
 				0d,
 				(1d / Math.Sqrt(Math.Max(double.Epsilon, multiplier)) - 1d) * 100d);
-			builder.Append("有效正属性保留 ")
-				.Append(FormatPlayerRpEffectPercent(retainedPercent))
-				.Append("；重量增加 ")
-				.Append(FormatPlayerRpEffectPercent(weightIncreasePercent));
+			builder.Append(EconomyUiTexts.PlayerRpEquipmentEffectRetained(
+				outcomeLabel,
+				probability,
+				FormatPlayerRpEffectPercent(retainedPercent),
+				FormatPlayerRpEffectPercent(weightIncreasePercent)));
 		}
 		else if (bonus > 0)
 		{
 			double weightReductionPercent =
 				(1d - Math.Pow(0.98d, bonus)) * 100d;
-			builder.Append("每项有效正属性 +")
-				.Append(bonus.ToString(CultureInfo.InvariantCulture))
-				.Append("；重量降低 ")
-				.Append(FormatPlayerRpEffectPercent(weightReductionPercent));
+			builder.Append(EconomyUiTexts.PlayerRpEquipmentEffectBonus(
+				outcomeLabel,
+				probability,
+				bonus,
+				FormatPlayerRpEffectPercent(weightReductionPercent)));
 		}
 		else
 		{
-			builder.Append("有效正属性与重量不变");
+			builder.Append(EconomyUiTexts.PlayerRpEquipmentEffectStable(outcomeLabel, probability));
 		}
 	}
 
@@ -3612,15 +3605,15 @@ public partial class RewardSystemBehavior
 		switch ((outcome ?? "").Trim().ToLowerInvariant())
 		{
 		case "good":
-			return "优良";
+			return EconomyUiTexts.PlayerRpOutcomeLabel("good");
 		case "normal":
-			return "正常";
+			return EconomyUiTexts.PlayerRpOutcomeLabel("normal");
 		case "bad":
-			return "劣化";
+			return EconomyUiTexts.PlayerRpOutcomeLabel("bad");
 		case "junk":
-			return "垃圾物品";
+			return EconomyUiTexts.PlayerRpOutcomeLabel("junk");
 		default:
-			return "成功";
+			return EconomyUiTexts.PlayerRpOutcomeLabel("success");
 		}
 	}
 

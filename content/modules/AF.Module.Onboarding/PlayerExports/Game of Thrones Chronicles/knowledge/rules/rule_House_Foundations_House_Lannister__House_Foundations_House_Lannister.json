@@ -1,0 +1,155 @@
+{
+  "Id": "rule_House_Foundations_House_Lannister",
+  "Keywords": [
+    "House Lannister",
+    "Golden Lion",
+    "Hear Me Roar",
+    "A Lannister Always Pays His Debts"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Lannister family is based on Casterly Rock and Lannisport. It claims to have originated from the legend that the resourceful Lann obtained the giant rock from the Casterly family. The red lion on a gold background and \"Hear my roar\" are the official coat of arms and motto; \"Lannister must pay his debts\" is not a family motto, but it is more widely known than the motto because of its reputation for wealth, credibility and revenge. The Westerlands' network of mines, ports, knights, and vassals taught Lannister early on to treat money as a language of power: rewards can buy loyalty, debts can prolong influence, and respectability can cover rifts. Outsiders often simplify them into gold and arrogance, but people in the West understand that a lion should not only be feared, but also make many people rely on its account book to make a living."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the princes of the West looked up to Casterly Rock, they saw not only gold mines and lion flags, but also a way of ruling that rewards loyalty, collects debts, and maintains dignity. Lannister can make vassals rich and noble, and can also make a disgraced family find that roads, engagements, and purses are all closed to him at the same time. The lion's grace and wrath rarely stop at one sentence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Miners, coiners, and merchants of Lannisport know that gold does not flow from songs. It comes from dark mine tunnels, strict ledgers, ship cabins and countless pairs of hands stained with dust. Lannister must pay his debts. He is a guarantee to his creditors and like an iron door that slowly closes to his debtors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When outsiders talk about Lannister, they often mention gold first and revenge second. They admire Casterly Rock's wealth and wonder if there is a price behind every gift. The strongest thing about the Golden Lion is not that everyone loves it, but that even if many people hate it, they have to calculate what it takes to offend it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lannister Casterly Rock and the golden lion family of Lannisport originate from the witty Lannis legend. The official motto is \"Hear my roar\", while \"Lannister pays his debts\" sums up his social reputation for wealth, credibility, respectability and revenge. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lannister Casterly Rock and the golden lion family of Lannisport originate from the witty Lannis legend. The official motto is \"Hear my roar\", while \"Lannister pays his debts\" sums up his social reputation for wealth, credibility, respectability and revenge. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lannister Casterly Rock and the golden lion family of Lannisport originate from the witty Lannis legend. The official motto is \"Hear my roar\", while \"Lannister pays his debts\" sums up his social reputation for wealth, credibility, respectability and revenge. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lannister Casterly Rock and the golden lion family of Lannisport originate from the witty Lannis legend. The official motto is \"Hear my roar\", while \"Lannister pays his debts\" sums up his social reputation for wealth, credibility, respectability and revenge. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Lannister: Casterly Rock and the golden lion family of Lannisport originate from the witty Lannis legend. The official motto is \"Hear my roar\", while \"Lannister pays his debts\" sums up his social reputation for wealth, credibility, respectability and revenge."
+  ]
+}

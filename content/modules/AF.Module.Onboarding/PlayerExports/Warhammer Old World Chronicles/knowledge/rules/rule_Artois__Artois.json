@@ -1,0 +1,158 @@
+{
+  "Id": "rule_Artois",
+  "Keywords": [
+    "Duchy of Artois_AR",
+    "Territory of Artois_AR",
+    "Artois Vineyard_AR",
+    "Duke of Artois_AR",
+    "Artois_AR"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Artois is located in north-central Bretonnia and is ruled by Duke Hilfroy de Artois. This land is famous for its fertile plains and vast vineyards, and the wine it produces is famous in the Old World. Under the rule of the irascible and martial Duke of Hilfroy, Artois was both a wine country and a military camp."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Artois - the land of wine and spears! The Duke of Hilfroy was as famous for his fiery temper as for his martial prowess. Every year during the Harvest Festival, the knights of Artois would compete on the battlefield among the vineyards, exchanging a hearty victory for a barrel of new wine of the year. Bretonnia's finest red wines are as purple as gems and are only produced on the southern slopes of Artois."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Artois is Bretonnia's strategic wine reserve. Controlling Artois means controlling the bargaining chip at the banquets of nobles across the country - without Artois red wine, no duke's banquet can be called decent. The knights of Hilfroy were known for their offensive nature, adept at launching devastating charges across the open plains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economic lifeline of the Principality of Artois is the wine industry. There are more than 200 registered wineries in the principality, with an annual output of more than one million barrels of wine. The vineyards on the south slope have the best quality due to abundant sunshine. The price of vintage wine produced by the Grand Cru winery can reach 50 gold crowns per bottle. The wine trade brings hundreds of thousands of gold crowns in cash to the duchy each year, making Artois the wealthiest inland duchy in Bretonnia after Bordero. The Duke of Hilfroy invested a lot of the wine tax revenue into the military and maintained a standing elite of more than 500 heavily armored knights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The aristocratic banquets in Artois are famous for their heavy drinking, but I am not a fan of strong drinks, which makes me more trustworthy in the circle of ladies. The Duke of Hilfroy's wife held the keys to the palace's wine cellars—in Artois, those who held fine wines had as much power as those who held military power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family owns three wineries in Artois and supplies more than half of the wine for banquets at the ducal court. The Duke of Hilfroy is very picky about wine quality - if the quality of the wine fails to meet the standard, he may lose the royal purchase qualification, which makes every generation of our winemakers tremble."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The vineyards of Artois are as beautiful as a painting in autumn. But don't be fooled by the smell of wine - the Duke of Hilfroy's patrol knights are never kind to wanderers. I worked as a picker in a country tavern in Artois for a season, and the smell of aged barrels in the cellar is still unforgettable. A barrel of good wine for a good story, this is the rule of Artois Tavern."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Artois wine export business is very profitable. A bottle of vintage wine can be sold in the Empire for more than ten times the price of the place of origin. But the Duke of Hilfroy strictly controlled wine export quotas - he believed that the country's nobles should enjoy the best wine first. Savvy businessmen will establish direct personal relationships with winery owners, bypassing official trade barriers."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Principality of Artois is located in north-central Bretonnia and is famous for its wine industry and martial spirit.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bretonnia, Duchy of Artois, wine-producing land"
+  ]
+}

@@ -1,0 +1,1261 @@
+{
+  "scope": "Exact approved EN documentation literal replacements only; use alongside full immutable source oracle. No gameplay defaults, routing, getter, setter, binding or authorization changes allowed.",
+  "file": "src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs",
+  "beforeSha256": "21f564ab0e05fdd3a65ec8dfc2f3d296c88905ab8d0d3e71a05f7063771bda72",
+  "literalChanges": [
+    {
+      "setting": "MainApiStreamingEnabled",
+      "part": "Hint",
+      "before": "\"When enabled, main API responses use SSE streaming. Interfaces that support chunks can display text progressively; other channels display it after completion. Postprocessing receives the complete response. This affects only the main response, not preprocessing, postprocessing, or weekly-report APIs. Off by default; applies to the next response request.\"",
+      "after": "\"When enabled, main API responses use SSE streaming. Interfaces that support chunks can display text progressively; other channels display it after completion. Postprocessing receives the complete response. When disabled, waits for the full reply. This affects only the main response, not preprocessing, postprocessing, or weekly-report APIs. Off by default; applies to the next response request.\""
+    },
+    {
+      "setting": "AuxiliaryApiUrl",
+      "part": "Hint",
+      "before": "\"Configure Auxiliary API URL.\"",
+      "after": "\"Low-cost endpoint for rule retrieval, rule routing, and simple scene dialogue, for example https://api.openai.com/v1. An address ending in /v1 is automatically completed to /v1/chat/completions.\""
+    },
+    {
+      "setting": "AuxiliaryApiKey",
+      "part": "Hint",
+      "before": "\"Configure Auxiliary API Key.\"",
+      "after": "\"Enter the auxiliary API key.\""
+    },
+    {
+      "setting": "AuxiliaryModelName",
+      "part": "Hint",
+      "before": "\"Configure Auxiliary Model Name.\"",
+      "after": "\"Low-cost model name for rule retrieval, rule routing, and simple scene dialogue.\""
+    },
+    {
+      "setting": "AuxiliaryApiTemperature",
+      "part": "Hint",
+      "before": "\"Configure Auxiliary API Temperature.\"",
+      "after": "\"Controls randomness in preprocessing, rule routing, and simple dialogue. 0 is more stable and 2 is more varied. Default: 0.00.\""
+    },
+    {
+      "setting": "AuxiliaryApiMaxTokens",
+      "part": "Hint",
+      "before": "\"Configure Auxiliary API Maximum Tokens.\"",
+      "after": "\"The max_tokens value for preprocessing API rule retrieval, rule routing, and simple dialogue. Default: 12000; endpoints that do not support a high limit may reject the request.\""
+    },
+    {
+      "setting": "ActionPostprocessApiUrl",
+      "part": "Hint",
+      "before": "\"Configure Action Postprocess API URL.\"",
+      "after": "\"Separate endpoint for tag postprocessing, for example https://api.openai.com/v1. An address ending in /v1 is automatically completed to /v1/chat/completions. If blank, it continues to fall back to the main API.\""
+    },
+    {
+      "setting": "ActionPostprocessApiKey",
+      "part": "Hint",
+      "before": "\"Configure Action Postprocess API Key.\"",
+      "after": "\"Enter the postprocessing API key. If blank, it continues to fall back to the main API.\""
+    },
+    {
+      "setting": "ActionPostprocessModelName",
+      "part": "Hint",
+      "before": "\"Configure Action Postprocess Model Name.\"",
+      "after": "\"Model name for tag postprocessing. If blank, it continues to fall back to the main API. Prefer a model with thinking/reasoning capabilities, such as an OpenAI reasoning model, or a more advanced model to improve tag-classification stability.\""
+    },
+    {
+      "setting": "ActionPostprocessApiTemperature",
+      "part": "Hint",
+      "before": "\"Configure Action Postprocess API Temperature.\"",
+      "after": "\"Controls randomness in action-tag and emotion-tag classification. A low value is recommended. Default: 0.00.\""
+    },
+    {
+      "setting": "ActionPostprocessApiMaxTokens",
+      "part": "Hint",
+      "before": "\"Configure Action Postprocess API Maximum Tokens.\"",
+      "after": "\"The max_tokens value for postprocessing API action-tag and emotion-tag classification. Default: 12000; endpoints that do not support a high limit may reject the request.\""
+    },
+    {
+      "setting": "ActionPostprocessHistoryEntryLimit",
+      "part": "Hint",
+      "before": "\"Configure Action Postprocess History Entry Limit.\"",
+      "after": "\"Maximum history entries included in action postprocessing <history>. The current <latest_reply> is retained separately and does not count toward this limit. Default: 100; minimum 1, maximum 100. Higher values usually increase tokens and waiting time per request.\""
+    },
+    {
+      "setting": "EventAndRebellionApiUrl",
+      "part": "Hint",
+      "before": "\"Configure Event And Rebellion API URL.\"",
+      "after": "\"Separate endpoint for event-system weekly reports and kingdom-rebellion naming, for example https://api.openai.com/v1. An address ending in /v1 is automatically completed to /v1/chat/completions. If blank, it continues to fall back to the main API.\""
+    },
+    {
+      "setting": "EventAndRebellionApiKey",
+      "part": "Hint",
+      "before": "\"Configure Event And Rebellion API Key.\"",
+      "after": "\"Enter the dedicated event/rebellion API key. If blank, it continues to fall back to the main API.\""
+    },
+    {
+      "setting": "EventAndRebellionModelName",
+      "part": "Hint",
+      "before": "\"Configure Event And Rebellion Model Name.\"",
+      "after": "\"Model name for event-system weekly reports and kingdom-rebellion naming. If blank, it continues to fall back to the main API.\""
+    },
+    {
+      "setting": "EventAndRebellionApiThinkingEnabled",
+      "part": "Hint",
+      "before": "\"Configure Event And Rebellion API Thinking Enabled.\"",
+      "after": "\"Disabled by default. Event weekly reports and kingdom-rebellion naming require strict formats; enable only after confirming that the endpoint reliably writes the final answer to content. When enabled, OpenAI-compatible thinking endpoints receive thinking.type=enabled and reasoning_effort; Anthropic/Claude endpoints receive thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent.\""
+    },
+    {
+      "setting": "EventAndRebellionApiTemperature",
+      "part": "Hint",
+      "before": "\"Configure Event And Rebellion API Temperature.\"",
+      "after": "\"Controls randomness in event weekly reports and kingdom-rebellion naming. 0 is more stable and 2 is more varied. Default: 0.80.\""
+    },
+    {
+      "setting": "EventAndRebellionApiMaxTokens",
+      "part": "Hint",
+      "before": "\"Configure Event And Rebellion API Maximum Tokens.\"",
+      "after": "\"The max_tokens value for event weekly reports, naming kingdoms founded by rebellion, and ruler-policy generation. Default: 12000; endpoints that do not support a high limit may reject the request.\""
+    },
+    {
+      "setting": "KnowledgeDirectTopN",
+      "part": "Group",
+      "before": "\"Terminal settings\"",
+      "after": "\"5. Knowledge retrieval (returned)\""
+    },
+    {
+      "setting": "KnowledgeDirectTopN",
+      "part": "Hint",
+      "before": "\"Maximum related knowledge entries supplied to AI per conversation. Terms are assigned independent slots by importance; later results fill unused slots. Default: 4.\"",
+      "after": "\"Maximum related knowledge entries supplied to AI per conversation. Takes at most this many terms in importance order, with one independent knowledge slot per term. If the highest-scoring knowledge is already occupied by an earlier term, uses the first unoccupied entry instead. Only when the limit exceeds the term count are later results for those terms added. Default: 4.\""
+    },
+    {
+      "setting": "RerankerDeviceDropdown",
+      "part": "Group",
+      "before": "\"Terminal settings\"",
+      "after": "\"5. Knowledge retrieval (returned)\""
+    },
+    {
+      "setting": "WorldEntityInjectMaxCount",
+      "part": "Group",
+      "before": "\"Terminal settings\"",
+      "after": "\"5. Knowledge retrieval (returned)\""
+    },
+    {
+      "setting": "WorldEntityInjectMaxCount",
+      "part": "Hint",
+      "before": "\"Maximum people, places, clans, and kingdoms injected into each AI request. Terms receive distinct entity slots by preprocessing importance; unused slots are filled only when the limit exceeds the term count. Default: 6.\"",
+      "after": "\"Maximum people, places, clans, and kingdoms injected into each AI request. In preprocessing importance order, each term first occupies one highest-scoring entity slot. For people with the same name, a clan explicitly specified by another term takes priority, followed by a kingdom. Their actual campaign-map distance from the current NPC then adds a small bonus of up to 0.15; the final score may exceed 1.00. If scope or position is unavailable, the original score is used. If the highest-scoring entity is already occupied by an earlier term, the first unoccupied entity is used instead. Secondary results are added only when the limit exceeds the term count: first up to 3 for the earliest term, then for subsequent terms in order. Default: 6.\""
+    },
+    {
+      "setting": "PromptListCandidateMaxCount",
+      "part": "Group",
+      "before": "\"Terminal settings\"",
+      "after": "\"5. Knowledge retrieval (returned)\""
+    },
+    {
+      "setting": "PromptListCandidateMaxCount",
+      "part": "Hint",
+      "before": "\"Number of item, equipment, party, prisoner, asset, and policy candidates injected into AI. Fills to the limit when available; otherwise shows all. Default: 10.\"",
+      "after": "\"Number of candidates per category of items, equipment, troops, prisoners, fixed assets, and policies injected into AI. Fills to the limit when enough candidates exist; otherwise shows all. Default: 10. Does not affect entity injection limits for people, places, clans, or kingdoms.\""
+    },
+    {
+      "setting": "DailyConversationHistoryLineLimit",
+      "part": "Hint",
+      "before": "\"Maximum ordinary chat-history lines carried directly in courier, free-conversation, and scene-shout requests before daily compression. AFEF facts do not count. Default: 100; range 10-500.\"",
+      "after": "\"Maximum ordinary chat-history lines carried directly in courier, free-conversation, and scene-shout requests before daily compression. AFEF facts do not count. Does not limit continued player chat or delete daily raw memories. Higher values usually increase tokens and waiting time per request. Default: 100; minimum 10, maximum 500.\""
+    },
+    {
+      "setting": "MemorySummaryRequestsPerMinute",
+      "part": "Hint",
+      "before": "\"Maximum NPC/day-memory summaries per minute after a day changes. Default: 3; maximum 20.\"",
+      "after": "\"Maximum concurrent NPC/day-memory summaries per minute after a day changes. Default: 3; maximum 20.\""
+    },
+    {
+      "setting": "MemoryPreprocessMode",
+      "part": "Hint",
+      "before": "\"Configure Memory Preprocess Mode.\"",
+      "after": "\"1 = combined mode: rule Codes and memory IDs share one preprocessing JSON request. 2 = concurrent mode: rule selection and memory selection are requested simultaneously; the main chain starts only after all results parse successfully. Default: 1.\""
+    },
+    {
+      "setting": "MemoryOverviewStartBlockCount",
+      "part": "Hint",
+      "before": "\"Configure Memory Overview Start Block Count.\"",
+      "after": "\"Once a Hero NPC has this many compressed-memory blocks, the background process generates and continually updates an overview of past memories. Default: 5.\""
+    },
+    {
+      "setting": "MemoryOverviewTargetChars",
+      "part": "Hint",
+      "before": "\"Configure Memory Overview Target Chars.\"",
+      "after": "\"Target character count for the overview of past memories. Default: 200; shorter text saves tokens, while longer text retains more detail.\""
+    },
+    {
+      "setting": "EnableTtsSpeech",
+      "part": "Hint",
+      "before": "\"Configure Enable TTS Speech.\"",
+      "after": "\"Master switch. When disabled, NPC TTS playback stops and falls back to text-only speech bubbles.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedEnabled",
+      "part": "Hint",
+      "before": "\"Configure TTS Volc Dedicated Enabled.\"",
+      "after": "\"When enabled, TTS requests use the native Volcengine V1 HTTP non-streaming protocol (Authorization: Bearer;token and the app/user/audio/request structure).\""
+    },
+    {
+      "setting": "TtsVolcDedicatedApiUrl",
+      "part": "Hint",
+      "before": "\"Configure TTS Volc Dedicated API URL.\"",
+      "after": "\"V1 non-streaming endpoint: https://openspeech.bytedance.com/api/v1/tts\""
+    },
+    {
+      "setting": "TtsVolcDedicatedApiKey",
+      "part": "Hint",
+      "before": "\"Configure TTS Volc Dedicated API Key. The documented request header uses Authorization: Bearer {token}.\"",
+      "after": "\"The documented request header is: Authorization: Bearer;{token}\""
+    },
+    {
+      "setting": "TtsVolcDedicatedAppKey",
+      "part": "Hint",
+      "before": "\"Configure TTS Volc Dedicated App Key.\"",
+      "after": "\"The app.appid field in the V1 request body.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedResourceId",
+      "part": "Hint",
+      "before": "\"Configure TTS Volc Dedicated Resource ID.\"",
+      "after": "\"Written to the X-Api-Resource-Id request header. Supported entries: seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0\""
+    },
+    {
+      "setting": "TtsVolcDedicatedSpeaker",
+      "part": "Hint",
+      "before": "\"Configure TTS Volc Dedicated Speaker.\"",
+      "after": "\"Example: zh_male_M392_conversation_wvae_bigtts\""
+    },
+    {
+      "setting": "TtsVolcDedicatedAudioFormat",
+      "part": "Hint",
+      "before": "\"Configure TTS Volc Dedicated Audio Format.\"",
+      "after": "\"V1 encoding. The current player supports only wav or pcm.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedSampleRate",
+      "part": "Hint",
+      "before": "\"Configure TTS Volc Dedicated Sample Rate.\"",
+      "after": "\"Recommended V1 rate values: 8000 / 16000 / 24000.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedVolume",
+      "part": "Hint",
+      "before": "\"Configure TTS Volc Dedicated Volume.\"",
+      "after": "\"Used only by the main playback chain for ordinary dialogue/test speech (agentIndex<0). For the scene-shout lip-sync chain, adjust Lip-sync chain volume.\""
+    },
+    {
+      "setting": "TtsVolcDedicatedSpeed",
+      "part": "Hint",
+      "before": "\"Configure TTS Volc Dedicated Speed.\"",
+      "after": "\"V1 speed_ratio; range [0.1, 2.0].\""
+    },
+    {
+      "setting": "TtsSceneUseWinmmAudible",
+      "part": "Hint",
+      "before": "\"Configure TTS Scene Use Winmm Audible.\"",
+      "after": "\"When enabled, scene NPC audio uses winmm, while the lip-sync chain drives mouth movements silently. When disabled, scene NPC audio uses the lip-sync chain and can be adjusted with Lip-sync chain volume.\""
+    },
+    {
+      "setting": "TtsLipSyncSoundEventVolume",
+      "part": "Hint",
+      "before": "\"Configure TTS Lip Sync Sound Event Volume.\"",
+      "after": "\"SoundEvent volume for Rhubarb lip-sync. Controls audible scene volume only when Scene audio through winmm (prevent echo) is disabled.\""
+    },
+    {
+      "setting": "TestTtsVolcDedicatedVoice",
+      "part": "Hint",
+      "before": "\"Configure Test TTS Volc Dedicated Voice.\"",
+      "after": "\"Uses native Volcengine V1 parameters to test the fixed text “At your service, traveler!”\""
+    },
+    {
+      "setting": "EnableDeepTrace",
+      "part": "Hint",
+      "before": "\"⚠️ Advanced debugging feature! When enabled, intercepts all UI clicks, state transitions, and low-level code stacks (Trace). Produces a very large log and is intended for developers only.\"",
+      "after": "\"⚠️ Advanced debugging feature! When enabled, intercepts all UI clicks, state transitions, and low-level code stacks (Trace). Produces a very large log and is intended for developers investigating issues only. Ordinary players should not enable it.\""
+    },
+    {
+      "setting": "EnableDevEditHistory",
+      "part": "Hint",
+      "before": "\"Adds a Developer data-management entry to the town menu for NPC histories, debts, and persona data; the character screen also exposes player history editing.\"",
+      "after": "\"Adds a Developer data-management entry to the town main menu for viewing and editing any NPC dialogue history, credit/debts, persona, and background. The player notoriety/history popup on the character screen (C) also enables player history editing.\""
+    },
+    {
+      "setting": "EnablePerformanceMonitor",
+      "part": "Hint",
+      "before": "\"Every 30 seconds writes FPS, slow frames, and total frame time to Mod_Logic.txt. Tick/Scope timings are collected only with verbose logs enabled. Off by default.\"",
+      "after": "\"Every 30 seconds writes FPS, slow frames, and total frame time to Mod_Logic.txt. Tick/Scope timings are collected only with verbose debug logs also enabled; ordinary play does not incur per-Scope statistics costs. Off by default.\""
+    },
+    {
+      "setting": "DailyMaintenanceFrameBudgetMs",
+      "part": "Hint",
+      "before": "\"When deferred maintenance is enabled, work advances within this per-frame budget only when jobs are pending. Higher values finish faster but can create frame spikes. Default: 3.\"",
+      "after": "\"When deferred maintenance is enabled, work advances within this per-frame budget only when jobs are pending; player travel does not pause it. Default: 3. Higher values finish background work faster but are more likely to cause frame spikes.\""
+    },
+    {
+      "setting": "ShoutMinTokens",
+      "part": "Hint",
+      "before": "\"Minimum length of a scene-shout reply. Default: 40.\"",
+      "after": "\"Minimum character count of a scene-shout reply. Default: 40.\""
+    },
+    {
+      "setting": "ShoutMaxTokens",
+      "part": "Hint",
+      "before": "\"Maximum length of a scene-shout reply. Default: 200; values below the minimum are corrected at runtime.\"",
+      "after": "\"Maximum character count of a scene-shout reply. Default: 200; values below the minimum are treated as the minimum at runtime.\""
+    },
+    {
+      "setting": "ShoutThoughtMinTokens",
+      "part": "Hint",
+      "before": "\"Minimum length of the parenthesized inner-thought section in scene-shout replies. Minimum 40; default 200.\"",
+      "after": "\"Minimum character count of the parenthesized inner-thought section in the scene-shout reply format. Minimum: 40; default: 200.\""
+    },
+    {
+      "setting": "SceneConversationTimeoutSecondsPerVisibleCharacter",
+      "part": "Hint",
+      "before": "\"Extends the idle dismissal time for scene conversations based on visible player and NPC words in the current exchange. Default: 1 second per character.\"",
+      "after": "\"Dynamically extends the idle dismissal time for scene conversations based on the visible player and NPC character count in the current exchange. Default: 1 second per character.\""
+    },
+    {
+      "setting": "EnableDuelLoserClanRenownPenalty",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"After a formal duel is settled, the winning clan gains exactly the renown actually deducted from the losing clan. No settlement occurs if both participants belong to the same clan or either has no clan. Losing renown never falls below 0, and already attained clan tiers are not forcibly reduced.\""
+    },
+    {
+      "setting": "DuelLoserClanRenownPenaltyMinimum",
+      "part": "Hint",
+      "before": "\"Configure Duel Loser Clan Renown Penalty Minimum.\"",
+      "after": "\"Minimum clan renown deducted from the loser each time. Default: 20; if the clan has insufficient renown, the deduction stops at 0.\""
+    },
+    {
+      "setting": "DuelLoserClanRenownPenaltyPercent",
+      "part": "Hint",
+      "before": "\"Configure Duel Loser Clan Renown Penalty Percent.\"",
+      "after": "\"Percentage deduction based on the losing clan's current renown before settlement; the larger of this amount and the minimum deduction is used. Default: 3%.\""
+    },
+    {
+      "setting": "DuelLoserClanRenownPenaltyMaximum",
+      "part": "Hint",
+      "before": "\"Configure Duel Loser Clan Renown Penalty Maximum.\"",
+      "after": "\"Maximum clan renown deducted for one duel. Default: 150; 0 means no cap.\""
+    },
+    {
+      "setting": "EnableNpcBattleEquipmentRestore",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, equipped items that NPCs lose through gifts, trades, or post-battle capture return to their original slots after 3 full days. Other equipment already in those slots is never overwritten. When disabled, NPCs can still hand over equipment, but no new restoration tasks are registered and existing tasks are not executed. Existing tasks resume when re-enabled. Enabled by default.\""
+    },
+    {
+      "setting": "EnableProactiveNpcRequests",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, NPC parties with explicit needs can proactively catch up with the player on the campaign map and initiate dialogue.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestTestMode",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, Tier 0 players can trigger proactive contact. Use high probabilities and short cooldowns to test contact. Disabled by default for normal play.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestMinClanTier",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Minimum Clan Tier.\"",
+      "after": "\"Applies when test mode is disabled. NPC proactive contact does not trigger if the player clan tier is below this value.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestChancePercent",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Chance Percent.\"",
+      "after": "\"Scaling value for candidate NPC trigger probability. Normal-play default: 35; can be raised to 100 for testing.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestScanIntervalHours",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Scan Interval Hours.\"",
+      "after": "\"In-game hours between scans of nearby NPC parties with needs. Normal-play default: 6 hours.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestGlobalCooldownHours",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Global Cooldown Hours.\"",
+      "after": "\"Hours before the next proactive contact can start after any proactive contact starts. Normal-play default: 24 hours.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestHeroCooldownDays",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Hero Cooldown Days.\"",
+      "after": "\"Days before the same NPC can approach the player again with the same type of need after proactive contact. Normal-play default: 14 days.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestDistanceMultiplier",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Distance Multiplier.\"",
+      "after": "\"Maximum distance between a candidate NPC and the player is the player vision range multiplied by this value. Normal-play default: 1.0.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestFoodDaysThreshold",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Food Days Threshold.\"",
+      "after": "\"Food-shortage contact can trigger when an NPC party has at most this many days of food left or is already starving. Normal-play default: 2 days.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestMoneyGoldThreshold",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Money Gold Threshold.\"",
+      "after": "\"Money-shortage contact can trigger when the NPC lord available cash is below this value. At runtime, it never falls below the native party cash floor. Default: 5000.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestMoneyWageDaysThreshold",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Money Wage Days Threshold.\"",
+      "after": "\"Money-shortage contact can trigger when an NPC lord cash can pay at most this many days of wages. 0 checks only the cash threshold and unpaid wages. Normal-play default: 2 days.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestTroopRatioThresholdPercent",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Troop Ratio Threshold Percent.\"",
+      "after": "\"Troop-shortage contact can trigger when the NPC lord current party size is below this percentage of the party-size limit. Normal-play default: 45; can be raised to 90 or 100 for testing.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestPrisonerRatioThresholdPercent",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Prisoner Ratio Threshold Percent.\"",
+      "after": "\"An NPC lord can initiate prisoner overload or ransom contact when the current prisoner count reaches this percentage of prisoner capacity. The normal-play default is 90; 100 means nearly full capacity, and values above 100 trigger only when over capacity.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestLowMoraleThreshold",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Low Morale Threshold.\"",
+      "after": "\"Low-morale contact can trigger when an NPC lord party morale is at or below this value. 0 disables this need. Normal-play default: 35.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestMountRatioThresholdPercent",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Mount Ratio Threshold Percent.\"",
+      "after": "\"Mount-shortage/low-mobility contact can trigger when mounts in the NPC lord party are below this percentage of party members. 0 disables this need. Normal-play default: 25.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestOverburdenRatioThresholdPercent",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Overburden Ratio Threshold Percent.\"",
+      "after": "\"Overburden-pressure contact can trigger when the NPC lord party total load reaches this percentage of inventory capacity. Normal-play default: 92.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestClanGoldThreshold",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Clan Gold Threshold.\"",
+      "after": "\"Clan financial-pressure contact can trigger when the NPC clan treasury is below this value. 0 ignores the treasury. Normal-play default: 15000.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestClanDebtThreshold",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Clan Debt Threshold.\"",
+      "after": "\"Clan financial-pressure contact can trigger when the NPC clan debt to the kingdom exceeds this value. 0 ignores debt. Normal-play default: 5000.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestMarriageAdultClanThreshold",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Marriage Adult Clan Threshold.\"",
+      "after": "\"Succession/marriage-pressure contact can trigger when the number of adult core members of the NPC clan is at or below this value and an adult unmarried clan member exists. Normal-play default: 3.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestFiefLoyaltyThreshold",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Fief Loyalty Threshold.\"",
+      "after": "\"Fief-governance-anxiety contact can trigger when loyalty in an NPC clan fief is at or below this value. 0 ignores loyalty. Normal-play default: 35.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestFiefSecurityThreshold",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Fief Security Threshold.\"",
+      "after": "\"Fief-governance-anxiety contact can trigger when security in an NPC clan fief is at or below this value. 0 ignores security. Normal-play default: 35.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestFiefGarrisonThreshold",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Fief Garrison Threshold.\"",
+      "after": "\"Fief-governance-anxiety contact can trigger when the garrison in an NPC clan fief is at or below this value. 0 ignores garrisons. Normal-play default: 80.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestIsolationInfluenceThreshold",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Isolation Influence Threshold.\"",
+      "after": "\"Combined with ally count, lack-of-allies contact can trigger when NPC clan influence is at or below this value. 0 ignores influence. Normal-play default: 40.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestIsolationMaxFriendlyClans",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Isolation Maximum Friendly Clans.\"",
+      "after": "\"Combined with low influence or hostile relations, lack-of-allies contact can trigger when the number of friendly clans in the same kingdom with an NPC clan relation of at least 20 is at or below this value. Normal-play default: 1.\""
+    },
+    {
+      "setting": "ProactiveNpcKnownMajorMultiplier",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Known Major Multiplier.\"",
+      "after": "\"Multiplier for need-driven proactive-contact probability when the NPC already knows the player major history. Default: 2.0.\""
+    },
+    {
+      "setting": "ProactiveNpcNotorietyChanceMultiplier",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Notoriety Chance Multiplier.\"",
+      "after": "\"Multiplier converting effective player notoriety into additional NPC proactive-contact probability. Normal-play default: 0.35.\""
+    },
+    {
+      "setting": "ProactiveNpcMinNeedUrgency",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Minimum Need Urgency.\"",
+      "after": "\"Minimum need urgency required for NPC proactive contact; treated as 0 at runtime in test mode. Normal-play default: 60.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestTypeFatigueDays",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Type Fatigue Days.\"",
+      "after": "\"In-game days of greatly reduced trigger probability for a request type after the player receives it. 0 disables type fatigue. Default: 10 days.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestTypeFatigueMultiplier",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Type Fatigue Multiplier.\"",
+      "after": "\"During type fatigue, multiplies both need-driven and notoriety-driven probabilities by this value and lowers the need priority among candidates. Default: 0.20.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestMountShortageWeight",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Mount Shortage Weight.\"",
+      "after": "\"Candidate-weight and trigger-probability multiplier for mount-shortage/purchase requests in map proactive contact and proactive letters. Default: 0.35; 0 retains the need check but prevents proactive initiation. Map pursuit still uses 1.00 in test mode.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestRomanticInteractionGlobalCooldownDays",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Romantic Interaction Global Cooldown Days.\"",
+      "after": "\"Shared hard cooldown for intimate interactions with an opposite-sex NPC whose private relation is above 30, across map pursuit, proactive letters, and companion chats within the party. Default: 21 days.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestGreetingGlobalCooldownDays",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Greeting Global Cooldown Days.\"",
+      "after": "\"Shared hard cooldown after an NPC with a private relation above 20 proactively catches up with the player or sends a greeting letter. Default: 42 days.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Territorial Interrogation Settlement Range Multiplier.\"",
+      "after": "\"When the player is within the player vision range multiplied by this value of a kingdom settlement, its lords of a different culture who do not know the player history can proactively question the player origin and purpose. Default: 3.0.\""
+    },
+    {
+      "setting": "ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays",
+      "part": "Hint",
+      "before": "\"Configure Proactive NPC Request Territorial Interrogation Global Cooldown Days.\"",
+      "after": "\"Shared hard cooldown after a territorial interrogation successfully starts. Default: 42 days.\""
+    },
+    {
+      "setting": "EnableNpcInitiatedLetters",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Allows NPCs who already know the player and have a sufficient combined intimacy score to send real couriers proactively.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterTestMode",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Raises the trigger probability to 100% and removes proactive-letter cooldowns. Still requires the NPC to know the player, have a valid location, and have a real motive.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterMinBondScore",
+      "part": "Hint",
+      "before": "\"Configure NPC Initiated Letter Minimum Bond Score.\"",
+      "after": "\"Minimum candidate score after averaging private relation and the trust value used for letters. Default: 10.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterScanIntervalHours",
+      "part": "Hint",
+      "before": "\"Configure NPC Initiated Letter Scan Interval Hours.\"",
+      "after": "\"In-game hours between scans of proactive-letter candidates. Default: 24 hours.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterChanceMultiplier",
+      "part": "Hint",
+      "before": "\"Configure NPC Initiated Letter Chance Multiplier.\"",
+      "after": "\"Probability per scan equals the combined intimacy score multiplied by this value. Default: 0.25, so a score of 100 gives a 25% chance.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterGlobalCooldownDays",
+      "part": "Hint",
+      "before": "\"Configure NPC Initiated Letter Global Cooldown Days.\"",
+      "after": "\"In-game days before another proactive letter can start after any NPC proactively sends one. Default: 5 days.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterLowScoreCooldownDays",
+      "part": "Hint",
+      "before": "\"Configure NPC Initiated Letter Low Score Cooldown Days.\"",
+      "after": "\"Sender cooldown for an NPC with the lowest combined score. Default: 45 days.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterHighScoreCooldownDays",
+      "part": "Hint",
+      "before": "\"Configure NPC Initiated Letter High Score Cooldown Days.\"",
+      "after": "\"Sender cooldown for an NPC with a combined score of 100. Default: 14 days.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterQuietDays",
+      "part": "Hint",
+      "before": "\"Configure NPC Initiated Letter Quiet Days.\"",
+      "after": "\"Minimum in-game days after communicating with this NPC through any channel before a proactive letter is allowed. Default: 3 days.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterPublicTrustCap",
+      "part": "Hint",
+      "before": "\"Configure NPC Initiated Letter Public Trust Cap.\"",
+      "after": "\"Maximum positive or negative contribution of public trust to the trust value used for letters. Default: ±20.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterMotiveFatigueDays",
+      "part": "Hint",
+      "before": "\"Configure NPC Initiated Letter Motive Fatigue Days.\"",
+      "after": "\"Duration of reduced weight when the same NPC repeats the same type of letter-writing motive. Default: 30 days.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterMotiveFatigueMultiplier",
+      "part": "Hint",
+      "before": "\"Configure NPC Initiated Letter Motive Fatigue Multiplier.\"",
+      "after": "\"Weight multiplier during the fatigue period for greeting, recent-news, event, emotional, request, or diplomacy motives. Default: 0.25.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterTargetChars",
+      "part": "Hint",
+      "before": "\"Configure NPC Initiated Letter Target Chars.\"",
+      "after": "\"Target character count of an NPC proactive letter body. Default: 220 characters.\""
+    },
+    {
+      "setting": "NpcInitiatedLetterDebugLog",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Records candidate scores, probabilities, motives, cooldowns, and reasons for skipping in Mod_Logic.txt.\""
+    },
+    {
+      "setting": "EnableCompanionProactiveChat",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Allows companions, family members, and other Heroes in the player main party to proactively request conversations through map notifications.\""
+    },
+    {
+      "setting": "CompanionProactiveChatTestMode",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Scans every in-game hour with a 100% trigger probability and ignores cooldowns. Still requires an eligible Hero, a safe player state, and a valid motive.\""
+    },
+    {
+      "setting": "CompanionProactiveChatScanIntervalHours",
+      "part": "Hint",
+      "before": "\"Configure Companion Proactive Chat Scan Interval Hours.\"",
+      "after": "\"In-game hours between scans of Heroes in the player party. Default: 24 hours.\""
+    },
+    {
+      "setting": "CompanionProactiveChatGlobalCooldownDays",
+      "part": "Hint",
+      "before": "\"Configure Companion Proactive Chat Global Cooldown Days.\"",
+      "after": "\"In-game days before another proactive party-chat notification can be generated after one is generated. Default: 21 days.\""
+    },
+    {
+      "setting": "CompanionProactiveChatHeroCooldownDays",
+      "part": "Hint",
+      "before": "\"Configure Companion Proactive Chat Hero Cooldown Days.\"",
+      "after": "\"In-game days before the same Hero can proactively request another conversation. Default: 48 days.\""
+    },
+    {
+      "setting": "CompanionProactiveChatInteractionQuietDays",
+      "part": "Hint",
+      "before": "\"Configure Companion Proactive Chat Interaction Quiet Days.\"",
+      "after": "\"Minimum in-game days after interacting with this Hero through any channel before proactive party chat is allowed. Default: 21 days.\""
+    },
+    {
+      "setting": "CompanionProactiveChatNoticeLifetimeDays",
+      "part": "Hint",
+      "before": "\"Configure Companion Proactive Chat Notice Lifetime Days.\"",
+      "after": "\"In-game days a proactive party-chat notification remains available; expiry counts as a polite refusal. Default: 3 days.\""
+    },
+    {
+      "setting": "CompanionProactiveChatChanceMultiplier",
+      "part": "Hint",
+      "before": "\"Configure Companion Proactive Chat Chance Multiplier.\"",
+      "after": "\"Overall multiplier for the daily probability of proactive chats within the player party. Default: 1.00.\""
+    },
+    {
+      "setting": "CompanionProactiveChatMotiveFatigueDays",
+      "part": "Hint",
+      "before": "\"Configure Companion Proactive Chat Motive Fatigue Days.\"",
+      "after": "\"Duration of reduced weight for a type of proactive party-chat motive after it is selected. Default: 30 days.\""
+    },
+    {
+      "setting": "CompanionProactiveChatMotiveFatigueMultiplier",
+      "part": "Hint",
+      "before": "\"Configure Companion Proactive Chat Motive Fatigue Multiplier.\"",
+      "after": "\"Weight multiplier for motive candidates during their fatigue period. Default: 0.25.\""
+    },
+    {
+      "setting": "CompanionProactiveChatRecentEventWindowDays",
+      "part": "Hint",
+      "before": "\"Configure Companion Proactive Chat Recent Event Window Days.\"",
+      "after": "\"Time window in which real recent events involving the Hero or player can serve as chat motives. Default: 10 days.\""
+    },
+    {
+      "setting": "CompanionProactiveChatDebugLog",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Records candidates, probabilities, motives, cooldowns, and notification states in Mod_Logic.txt.\""
+    },
+    {
+      "setting": "PlayerNotorietySummaryIntervalDays",
+      "part": "Hint",
+      "before": "\"Configure Player Notoriety Summary Interval Days.\"",
+      "after": "\"In-game days between attempts to update the rolling summary of the player public history material. Default: 3 days.\""
+    },
+    {
+      "setting": "PlayerNotorietyMajorPromptChars",
+      "part": "Hint",
+      "before": "\"Configure Player Notoriety Major Prompt Chars.\"",
+      "after": "\"Target character count and hard limit for the summary of the player public major history; also caps the history injected into the main chain when an NPC knows that history. AI rewrites the entire old summary instead of appending to its end. Unsummarized raw material is not injected directly into the main chain. Default: 300.\""
+    },
+    {
+      "setting": "PlayerNotorietyCourierRecentDistanceMultiplier",
+      "part": "Hint",
+      "before": "\"Configure Player Notoriety Courier Recent Distance Multiplier.\"",
+      "after": "\"When the player sends a letter, the courier chain can let the target NPC know about recent player actions if the distance is less than the player vision range multiplied by this value. Default: 3.0.\""
+    },
+    {
+      "setting": "PlayerNotorietyDebugLogs",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, writes logs about player notoriety records, awareness checks, summaries, and injection to Mod_Logic.txt.\""
+    },
+    {
+      "setting": "MarriageCandidateMaxAge",
+      "part": "Hint",
+      "before": "\"Configure Marriage Candidate Maximum Age.\"",
+      "after": "\"Used to filter the clan list of marriage candidates. Default: 55.\""
+    },
+    {
+      "setting": "MarriageCandidateMaxAgeGap",
+      "part": "Hint",
+      "before": "\"Configure Marriage Candidate Maximum Age Gap.\"",
+      "after": "\"Used to filter the clan list of marriage candidates. Default: 25.\""
+    },
+    {
+      "setting": "MarriageRequireOppositeGender",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Retained for compatibility with old configurations; the current marriage system allows same-sex marriages. Disabled by default.\""
+    },
+    {
+      "setting": "EditPlayerCustomPromptRule",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Use the large-text editor to save the complete rule text.\""
+    },
+    {
+      "setting": "EditKingdomRebellionSystemPrompt",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Use the large-text editor to save the full system prompt for naming kingdoms founded by rebellion. The default is the current built-in system prompt; trim or rewrite it as needed.\""
+    },
+    {
+      "setting": "EditWeeklyReportWritingRequirements",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Use the large-text editor to edit weekly-report writing requirements. The default is the built-in writing requirements. Saving a blank value injects no writing requirements.\""
+    },
+    {
+      "setting": "EditNpcPersonaGenerationRequirements",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Edits the full writing requirements shared by ordinary Heroes and promoted companions. The default comes from mod content and is replaced by your text after saving. Saving a blank value injects no writing requirements and retains only the JSON protocol and fact constraints.\""
+    },
+    {
+      "setting": "EditDailyMemoryCompressionWritingRequirements",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Edits the style and selection of information for daily compression. Output tags, publicity checks, AFEF rules, and identity-fact rules cannot be overridden.\""
+    },
+    {
+      "setting": "EditMemoryOverviewCompressionWritingRequirements",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Edits the style and organization of memory overviews. Output tags, fact boundaries, and length ranges cannot be overridden.\""
+    },
+    {
+      "setting": "EditMajorActionCompressionWritingRequirements",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Edits the style and selection of information for rolling summaries of NPC major history. Output tags, fact boundaries, and length ranges cannot be overridden.\""
+    },
+    {
+      "setting": "EditPolicyPrompts",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Edits the requirements for player AI drafting, player policy review, NPC ruler policies, and understanding and evaluating currently available policy effects in one place.\""
+    },
+    {
+      "setting": "ManagePolicyEffectModules",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Separately configures retrievable effect modules for player, local, NPC ruler, and vassal-state policies. Affects only policies initiated after saving.\""
+    },
+    {
+      "setting": "PolicyRecentActiveCount",
+      "part": "Hint",
+      "before": "\"Configure Policy Recent Active Count.\"",
+      "after": "\"Maximum recent active policies from the current kingdom read by player review and NPC generation. Default: 2; 0 disables this. Missing entries are not filled from elsewhere, and dialogue is unaffected.\""
+    },
+    {
+      "setting": "PolicyRelatedActiveCount",
+      "part": "Hint",
+      "before": "\"Configure Policy Related Active Count.\"",
+      "after": "\"Reads the remaining active policies from all kingdoms by relevance. Default: 3. Deduplicates without a similarity threshold; 0 disables this, and dialogue is unaffected.\""
+    },
+    {
+      "setting": "OpenCustomPromptTextStoreFolderAction",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Opens the CustomPrompts folder, where each set of prompt JSON files can be edited directly.\""
+    },
+    {
+      "setting": "UseDetailedSceneSpeechPrompt",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When disabled, detailed action/inner-thought text is still used, but action descriptions and inner thoughts are filtered from the output. When enabled, action descriptions and inner thoughts are retained.\""
+    },
+    {
+      "setting": "PreserveSceneAsteriskActions",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, action content enclosed in **...** or *...* is not removed even if Preserve scene-shout action/inner-thought descriptions is disabled.\""
+    },
+    {
+      "setting": "DisableBuiltInSceneReplyFormatPrompt",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, the single-person conversation identity restrictions and the default reply-format/action/inner-thought/length requirements are no longer injected. Provide a complete format in Player custom rule text yourself. Disabled by default.\""
+    },
+    {
+      "setting": "UseAiEvaluatedCustomPolicyCost",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, AI evaluates the required denars from policy scale and implementation difficulty. If denars are insufficient, all policy effects are reduced in proportion to the actual contribution. When disabled, the fixed denar cost below is used.\""
+    },
+    {
+      "setting": "PlayerPolicyApiSourceDropdown",
+      "part": "Hint",
+      "before": "\"Choose a value from the list.\"",
+      "after": "\"Reuses the selected chain URL, key, model, and address-parsing rules. Incomplete selected configurations automatically fall back to the main API. Explicitly selecting preprocessing is unaffected by the ordinary preprocessing API switch.\""
+    },
+    {
+      "setting": "PlayerPolicyAutoDraftApiSourceDropdown",
+      "part": "Hint",
+      "before": "\"Choose a value from the list.\"",
+      "after": "\"Selects only whether AI drafting uses the main chain, preprocessing, or postprocessing. Default: preprocessing. Incomplete selected configurations automatically fall back to the main endpoint; the policy-review endpoint is unaffected.\""
+    },
+    {
+      "setting": "CustomPolicyGoldCost",
+      "part": "Hint",
+      "before": "\"Configure Custom Policy Gold Cost.\"",
+      "after": "\"Used only when AI-evaluated policy cost is disabled. The specified denars are deducted when a player policy is successfully published. Default: 50000; 0 means free.\""
+    },
+    {
+      "setting": "CustomPolicyPublicFeedbackTargetChars",
+      "part": "Hint",
+      "before": "\"Configure Custom Policy Public Feedback Target Chars.\"",
+      "after": "\"Target length of public feedback after a player policy is published. Default: about 900 characters; adjustable from 100 to 1800 characters. Actual length may vary slightly with model output.\""
+    },
+    {
+      "setting": "PlayerPolicyFollowSelectedApiTokens",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, uses the maximum output tokens of the API source actually in effect. If it falls back to the main API, the main API token limit is used instead. When disabled, always uses the custom policy value below.\""
+    },
+    {
+      "setting": "PlayerPolicyCustomMaxTokens",
+      "part": "Hint",
+      "before": "\"Configure Player Policy Custom Maximum Tokens.\"",
+      "after": "\"Used only when Follow selected API tokens is disabled. Affects only player policies; allows 1000–100000 and does not change global limits for other APIs.\""
+    },
+    {
+      "setting": "PlayerPolicyEffectPostprocessMaxTokens",
+      "part": "Hint",
+      "before": "\"Configure Player Policy Effect Postprocess Maximum Tokens.\"",
+      "after": "\"Maximum output tokens for the player policy stage-two effects JSON. Default: 5000; the actual value never exceeds the player policy token limit currently in effect above.\""
+    },
+    {
+      "setting": "PlayerPolicyEffectModuleDetailCount",
+      "part": "Hint",
+      "before": "\"Configure Player Policy Effect Module Detail Count.\"",
+      "after": "\"Retains old-configuration compatibility: saved values can still be 1–30, with a default of 6. At most 8 detailed rules are ultimately injected into stage two; values above 8 are treated as 8. This does not limit the internal ONNX candidate pool. Higher values consume more prompt text and tokens.\""
+    },
+    {
+      "setting": "EnableNpcRulerPolicy",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, NPC kingdoms formulate and publish policies at the configured intervals. Disabling this stops new policy generation; policies already in force and their records are unaffected.\""
+    },
+    {
+      "setting": "NpcRulerPolicyApiSourceDropdown",
+      "part": "Hint",
+      "before": "\"Choose a value from the list.\"",
+      "after": "\"Reuses the selected chain URL, key, model, and address-parsing rules. Incomplete selected configurations automatically fall back to the main API. Explicitly selecting preprocessing is unaffected by the ordinary preprocessing API switch.\""
+    },
+    {
+      "setting": "NpcRulerPolicyCheckIntervalDays",
+      "part": "Hint",
+      "before": "\"Configure NPC Ruler Policy Check Interval Days.\"",
+      "after": "\"In-game days between checks for whether a new NPC policy is needed. Default: 7 days; adjustable from 1 to 30 days. No policy is generated this round if no kingdom is eligible.\""
+    },
+    {
+      "setting": "NpcRulerPolicyIntervalDays",
+      "part": "Hint",
+      "before": "\"Configure NPC Ruler Policy Interval Days.\"",
+      "after": "\"Minimum in-game days between two policy drafts in the same NPC kingdom. Default: 7 days; adjustable from 1 to 30 days. Normal drafts that are pending, approved, or rejected all count toward the cooldown. Player publication or renewal of a vassal-state policy is exempt, but suppresses NPC ruler policies in that target vassal state for this many days from that day onward.\""
+    },
+    {
+      "setting": "NpcRulerPolicyFollowSelectedApiTokens",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, uses the maximum output tokens of the API source actually in effect. If it falls back to the main API, the main API token limit is used instead. When disabled, always uses the custom policy value below.\""
+    },
+    {
+      "setting": "NpcRulerPolicyCustomMaxTokens",
+      "part": "Hint",
+      "before": "\"Configure NPC Ruler Policy Custom Maximum Tokens.\"",
+      "after": "\"Used only when Follow selected API tokens is disabled. Affects only NPC ruler policies; allows 1000–100000 and does not change global limits for other APIs.\""
+    },
+    {
+      "setting": "EnableWorldDiplomacy",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, kingdoms publish diplomatic declarations, negotiate, and take diplomatic actions on their own. Diplomacy and scribe drafting reuse the event and kingdom-rebellion API, falling back to the main API if the configuration is incomplete. When disabled, native kingdom diplomatic decisions resume.\""
+    },
+    {
+      "setting": "WorldDiplomacyStartNewGameAtPeace",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Applies only to newly created saves, ending kingdom wars already present at the start. Disabled by default; toggling this does not reset wars in the current save.\""
+    },
+    {
+      "setting": "EnableWorldDiplomacyMapNotifications",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Delivered diplomatic declarations appear as text messages at the bottom left, instead of right-side notifications. Disabling this does not affect negotiations, distribution, bulletin material, or kingdom notices.\""
+    },
+    {
+      "setting": "WorldDiplomacyMaxConcurrentOrdinaryRounds",
+      "part": "Hint",
+      "before": "\"Configure World Diplomacy Maximum Concurrent Ordinary Rounds.\"",
+      "after": "\"Shared by ordinary automatic diplomacy and policy triggers; default: 3 events. When full, policy work remains pending while existing talks continue replying and finish. Lowering the limit does not cancel existing events. At most 1 additional event opens per day; player diplomacy and verbal-promise events do not use these slots.\""
+    },
+    {
+      "setting": "WorldDiplomacyActivityDropdown",
+      "part": "Hint",
+      "before": "\"Choose a value from the list.\"",
+      "after": "\"Low: at most 2 kingdoms; moderate: at most 3; high: at most 5, all including the initiating kingdom. Selects only kingdoms with actual diplomatic matters and does not fill the count artificially. Default: moderate. This is the participant count for one event, not the number of concurrent events.\""
+    },
+    {
+      "setting": "WorldDiplomacyRoundLengthDropdown",
+      "part": "Hint",
+      "before": "\"Choose a value from the list.\"",
+      "after": "\"Typical end time for new events: compact about 15 days, standard about 21 days, relaxed about 28 days. Events may finish early on reaching an outcome or extend briefly to conclude. Default: standard; affects only new events.\""
+    },
+    {
+      "setting": "WorldDiplomacyCourtMaxDeliveryDays",
+      "part": "Hint",
+      "before": "\"Configure World Diplomacy Court Maximum Delivery Days.\"",
+      "after": "\"Allocates court delivery times by distance. Controls delivery to the farthest court and the relay pace for one round of a new event; not every kingdom waits this fixed number of days. Default: 7 days; lower values produce more frequent replies.\""
+    },
+    {
+      "setting": "WorldDiplomacyContinentSpreadDays",
+      "part": "Hint",
+      "before": "\"Configure World Diplomacy Continent Spread Days.\"",
+      "after": "\"Schedules when local nobles and civilians learn of diplomatic declarations according to distance. Default: 21 days. Does not control how often events automatically start or replace court delivery times.\""
+    },
+    {
+      "setting": "WorldDiplomacyDeclarationMinCharacters",
+      "part": "Hint",
+      "before": "\"Configure World Diplomacy Declaration Minimum Characters.\"",
+      "after": "\"Shared length range for AI-generated diplomatic declarations, responses, and scribe drafts, including punctuation. Default minimum: 100 characters; adjustable from 1 to 1000. Does not limit player-written edits.\""
+    },
+    {
+      "setting": "WorldDiplomacyDeclarationMaxCharacters",
+      "part": "Hint",
+      "before": "\"Configure World Diplomacy Declaration Maximum Characters.\"",
+      "after": "\"Shared length range for AI-generated diplomatic declarations, responses, and scribe drafts, including punctuation. Default maximum: 500 characters; adjustable from 1 to 1000. Values below the minimum length are treated as the minimum. Does not limit player-written edits.\""
+    },
+    {
+      "setting": "EditWorldDiplomacyPrompt",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Edits diplomatic judgment and style preferences. Scribe drafting uses the style requirements to expand the existing player text faithfully without adding substantive terms on its own. A blank value adds no preferences; fixed fact boundaries and output rules remain in force.\""
+    },
+    {
+      "setting": "RestoreDefaultWorldDiplomacyPrompt",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Restores the mod default preference text after confirmation. Restores only text preferences; does not reset this page event limits, distribution, length, or protection-period settings.\""
+    },
+    {
+      "setting": "WorldDiplomacyOffensiveWarCooldownDays",
+      "part": "Hint",
+      "before": "\"Configure World Diplomacy Offensive War Cooldown Days.\"",
+      "after": "\"Minimum days after a kingdom starts a war before it can initiate another new war. Default: 42 days. Does not limit publication frequency for other diplomatic declarations.\""
+    },
+    {
+      "setting": "WorldDiplomacyPeaceProtectionDays",
+      "part": "Hint",
+      "before": "\"Configure World Diplomacy Peace Protection Days.\"",
+      "after": "\"After two kingdoms make peace, ordinary diplomatic disputes cannot restart war during this period. Default: 21 days; 0 disables this protection. Other war-declaration eligibility restrictions are unaffected.\""
+    },
+    {
+      "setting": "WorldDiplomacyTradeAllianceFailedProposalCooldownDays",
+      "part": "Hint",
+      "before": "\"Configure World Diplomacy Trade Alliance Failed Proposal Cooldown Days.\"",
+      "after": "\"After a trade or alliance proposal fails, the same proposing kingdom temporarily cannot make the same type of proposal to the same target. Reverse-direction proposals and the other proposal type are tracked separately. Default: 168 days; 0 disables this.\""
+    },
+    {
+      "setting": "WorldDiplomacyThreatComplianceIssuerRelationReward",
+      "part": "Hint",
+      "before": "\"Configure World Diplomacy Threat Compliance Issuer Relation Reward.\"",
+      "after": "\"After the target kingdom explicitly complies with a condemnation or ultimatum, leaders of the issuing kingdom formal, non-mercenary vassal clans gain this relation with the current king. Settled only once per threat. Default: 10; 0 disables the reward.\""
+    },
+    {
+      "setting": "WorldDiplomacyHistoryCompressionTriggerThousands",
+      "part": "Hint",
+      "before": "\"Configure World Diplomacy History Compression Trigger Thousands.\"",
+      "after": "\"Start batched compression when the long-term diplomacy archive reaches this estimated size. Default: 800 (about 800k tokens); controls backlog and frequency, not history carried by each declaration. Total declaration input has a separate 32k estimated-token cap, and each compression batch has a separate 128k input cap.\""
+    },
+    {
+      "setting": "WorldDiplomacyHistoryCompressionTargetThousands",
+      "part": "Hint",
+      "before": "\"Configure World Diplomacy History Compression Target Thousands.\"",
+      "after": "\"Combined target for the long-term snapshot and protected facts after each compression batch. Default: 48, about 48k tokens; cap: 60k. Declarations take only relevant material, not the whole snapshot. Actual summaries are also limited by the selected API maximum output tokens.\""
+    },
+    {
+      "setting": "EnableNobleGathering",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Master gathering-system switch. Disabling it stops new gatherings; ongoing gatherings are settled as cancelled at the next safe campaign hour, and hosts and guests are scheduled to return home. No game restart is required.\""
+    },
+    {
+      "setting": "EnableNpcAutomaticNobleGatherings",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, eligible NPCs automatically host gatherings by kingdom. Disabling it stops automatic creation of NPC gatherings; the player can still host gatherings.\""
+    },
+    {
+      "setting": "AllowNpcNobleGatheringPlayerInvitations",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, NPC gatherings can invite the player and send a courier. Disabling this blocks only new invitations; invitations already sent to the player remain valid.\""
+    },
+    {
+      "setting": "ShowNobleGatheringGuestArrivalMessages",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Controls colored messages at the bottom left when guests arrive at a player-hosted gathering. Disabling it hides only the messages; arrival checks, gathering state, and rewards are unaffected.\""
+    },
+    {
+      "setting": "NpcNobleGatheringIntervalDays",
+      "part": "Hint",
+      "before": "\"Configure NPC Noble Gathering Interval Days.\"",
+      "after": "\"In-game days between scheduling two automatic gatherings in the same kingdom. Default: 21 days. Calculated separately per kingdom; changes are used the next time a gathering is rescheduled.\""
+    },
+    {
+      "setting": "AllowNpcNobleGatheringGovernorInvitations",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Affects only automatically generated NPC guest lists. When disabled, NPCs do not invite governors currently governing settlements; players hosting gatherings can still invite governors freely.\""
+    },
+    {
+      "setting": "NobleGatheringDurationDays",
+      "part": "Hint",
+      "before": "\"Configure Noble Gathering Duration Days.\"",
+      "after": "\"Shared by player and NPC gatherings. Default: 5 days. Changes affect only gatherings created afterward; gatherings already underway keep their original end date.\""
+    },
+    {
+      "setting": "NobleGatheringCost",
+      "part": "Hint",
+      "before": "\"Configure Noble Gathering Cost.\"",
+      "after": "\"Shared by player and NPC hosts; the actual host pays the cost. Default: 50000 denars; 0 means free.\""
+    },
+    {
+      "setting": "NobleGatheringInvitedClanRelationReward",
+      "part": "Hint",
+      "before": "\"Configure Noble Gathering Invited Clan Relation Reward.\"",
+      "after": "\"Shared by player and NPC gatherings; settled only once per gathering for the host and each invited clan leader. Default: 5; 0 means no relation increase. Changes affect only gatherings created afterward.\""
+    },
+    {
+      "setting": "NewsMode",
+      "part": "Hint",
+      "before": "\"Choose a value from the list.\"",
+      "after": "\"Choose weekly reports or bulletins; the two modes are mutually exclusive. Switching modes preserves historical archives.\""
+    },
+    {
+      "setting": "AutoGenerateWorldBulletins",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Disabling this stops new bulletin generation, while recent events are still recorded for NPC awareness. Independent of automatic weekly-report generation.\""
+    },
+    {
+      "setting": "EditWorldBulletinWritingRequirements",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Edits immediate-bulletin writing requirements separately; applies to the next request. Clearing them retains the built-in format and fact constraints.\""
+    },
+    {
+      "setting": "WeeklyReportLengthPreset",
+      "part": "Hint",
+      "before": "\"Configure Weekly Report Length Preset.\"",
+      "after": "\"1 = 200–400 characters; 2 = 200–800 characters; 3 = 200–1200 characters; 4 = 200–1500 characters. Shared by world and kingdom weekly reports. Default: 2.\""
+    },
+    {
+      "setting": "WeeklyReportRequestsPerMinute",
+      "part": "Hint",
+      "before": "\"Configure Weekly Report Requests Per Minute.\"",
+      "after": "\"Limits the weekly-report generation request rate during development. Default: 5; maximum 20. Helps accommodate RPM or concurrency limits of some API channels.\""
+    },
+    {
+      "setting": "AutoGenerateWeeklyReports",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, the system automatically settles the previous week at the start of each new week and generates world and kingdom weekly reports. On day 0, the opening overview is automatically recorded as a week 0 event.\""
+    },
+    {
+      "setting": "WeeklyReportPopupBodyFontSize",
+      "part": "Hint",
+      "before": "\"Configure Weekly Report Popup Body Font Size.\"",
+      "after": "\"Affects only the body of the large popup for the latest kingdom weekly report, not other interfaces. Default: 18.\""
+    },
+    {
+      "setting": "EnableWeeklyReportMapNotifications",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, a clickable message appears at the bottom right of the campaign map when a weekly report is generated. When disabled, no message appears, and reports generated while disabled are not queued for later notification. Enabled by default.\""
+    },
+    {
+      "setting": "EnableWeeklyReportReadingXpReward",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When enabled, opening a weekly report from a map notification and staying for 10 full seconds accumulates experience from the character counts of its three columns. After every 20 reports studied, Charm, Leadership, and Steward experience is awarded to the player in one batch.\""
+    },
+    {
+      "setting": "WeeklyReportReadingXpPerHundredChars",
+      "part": "Hint",
+      "before": "\"Configure Weekly Report Reading XP Per Hundred Chars.\"",
+      "after": "\"Length multiplier for weekly-report reading rewards. Default: 20, meaning 20 experience in the corresponding skill per 100 valid characters/words in each column.\""
+    },
+    {
+      "setting": "WeeklyReportReadingXpSkillCap",
+      "part": "Hint",
+      "before": "\"Configure Weekly Report Reading XP Skill Cap.\"",
+      "after": "\"Maximum experience per skill from one weekly report. Default: 100; 0 disables weekly-report reading experience.\""
+    },
+    {
+      "setting": "EnableKingdomStabilityAndRebellion",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When disabled, this mod no longer triggers kingdom rebellions. Kingdom stability no longer affects loyalty in settlements directly ruled by the king or applies stability-based relation modifiers.\""
+    },
+    {
+      "setting": "EnablePlayerKingdomRebellionImmunity",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"When the player clan rules a kingdom or the player is its leader, enabling this stops this mod kingdom stability from applying relation modifiers, loyalty modifiers to settlements directly ruled by the king, or kingdom-rebellion checks to that kingdom. Native low-loyalty town rebellions still follow native rules.\""
+    },
+    {
+      "setting": "GcczNpcResponseUnlimited",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Removes the configured numeric cap in active GCCZ town scenes while retaining event deduplication and queue safety.\""
+    },
+    {
+      "setting": "GcczNpcResponseLimit",
+      "part": "Hint",
+      "before": "\"Configure GCCZ NPC Response Limit.\"",
+      "after": "\"Limits ambient NPC replies per player utterance, semantic action, or player attack event in an active GCCZ town scene.\""
+    },
+    {
+      "setting": "EnableGcczDiagnosticLog",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Writes the separate GCCZ_Debug.log. Disabling this stops new log entries, while existing logs can still be exported or cleared.\""
+    },
+    {
+      "setting": "EnableGcczVerboseDiagnosticLog",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Records frequent diagnostics such as NPC response caps. Enable while investigating an issue; disabling this retains key logs for stage changes, disposition results, and exceptions.\""
+    },
+    {
+      "setting": "GcczDiagnosticLogMaxSizeMegabytes",
+      "part": "Hint",
+      "before": "\"Configure GCCZ Diagnostic Log Maximum Size Megabytes.\"",
+      "after": "\"GCCZ_Debug.log rotates automatically at this limit; the previous file is retained as GCCZ_Debug.previous.log. Default: 16 MB.\""
+    },
+    {
+      "setting": "ExportGcczDebugLog",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Copies GCCZ_Debug.log from the current module Logs folder to the desktop as a separate file with a timestamp in its name.\""
+    },
+    {
+      "setting": "ClearGcczDebugLog",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Clears only the current GCCZ_Debug.log; the previous rotated log is not deleted.\""
+    },
+    {
+      "setting": "EnableSetsDiagnosticLog",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Writes the separate SETS.log for settlement-entry companions and internal unrest diagnostics. Disabling this stops new log entries, while existing logs can still be exported or cleared.\""
+    },
+    {
+      "setting": "EnableSetsVerboseDiagnosticLog",
+      "part": "Hint",
+      "before": "\"Enable or disable this feature.\"",
+      "after": "\"Records frequent diagnostics such as per-frame protection, command refreshes, and troop-spawn progress. Enable while investigating stalls; disabling this retains key logs for conflict starts, waves, victories, and exceptions.\""
+    },
+    {
+      "setting": "SetsDiagnosticLogMaxSizeMegabytes",
+      "part": "Hint",
+      "before": "\"Configure SETS Diagnostic Log Maximum Size Megabytes.\"",
+      "after": "\"SETS.log rotates automatically at this limit; the previous file is retained as SETS.previous.log. Default: 16 MB.\""
+    },
+    {
+      "setting": "ExportSetsDiagnosticLog",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Copies SETS.log from the current module Logs folder to the desktop as a separate file with a timestamp in its name.\""
+    },
+    {
+      "setting": "ClearSetsDiagnosticLog",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Clears only the current SETS.log; the previous rotated log is not deleted.\""
+    },
+    {
+      "setting": "ExportNoblePrisonerEscortLog",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Copies NoblePrisonerEscort.log to the desktop as a separate file for investigating prisoner spawning, scene executions, and retreats from wilderness meetings.\""
+    },
+    {
+      "setting": "ClearNoblePrisonerEscortLog",
+      "part": "Hint",
+      "before": "\"Open the editor or run this action.\"",
+      "after": "\"Clears only the current NoblePrisonerEscort.log; the previous rotated log is not deleted.\""
+    },
+    {
+      "setting": "IntimacyPregnancyChancePercent",
+      "part": "Hint",
+      "before": "\"Configure Intimacy Pregnancy Chance Percent.\"",
+      "after": "\"Probability that the woman becomes pregnant after the intimacy tag confirms that intercourse and internal ejaculation occurred this exchange. 0 means never, and 100 means always. Default: 50%.\""
+    }
+  ]
+}

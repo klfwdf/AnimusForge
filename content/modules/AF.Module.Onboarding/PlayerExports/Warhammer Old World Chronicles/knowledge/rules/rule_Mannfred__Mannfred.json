@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Mannfred",
+  "Keywords": [
+    "Mannfred",
+    "Mannfred von Carstein",
+    "Count Vampire",
+    "night lord",
+    "midnight strategist",
+    "Undead war starter",
+    "Mannfred Scroll of Nagash",
+    "Night Messenger",
+    "Vampire Scholar",
+    "Lord of Sylvania",
+    "Undead Warlord",
+    "Third Party Undead War"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mannfred von Carstein is currently the most powerful vampire count in Sylvania, and the most cunning and ambitious successor to the von Carstein family. He has repeatedly launched undead wars to invade the empire, and is known for his cunning and ability to survive in defeat. Mannfred is said to be both a fearsome necromancer and a calm political player - one who would never initiate a war without adequate preparation, and would never give up on a comeback in the face of defeat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Lord Mannfred is the closest thing we have to a reincarnation of Vlad - though some of the Ancients whisper that he will never reach the heights of the First. His patience is like a coiled serpent, his wisdom is like a thousand-year-old library, and his desire for revenge is like that of a trampled tomb-demon. Lord Mannfred did not indulge in the ecstasy of carnage like Conrad. He was a true midnight strategist: every defeat paved the way for the next more complete victory. He had nearly conquered the entire Southern Empire in the Third Undead War, if it weren't for those damn dwarves and their rune magic... Now he rules Sylvania, uniting the powers of the vampires, and he never openly shows his anger, but that means you never know when he's hammered the nail in your coffin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mannfred von Carstein was one of the most dangerous enemy commanders in the Old World. Unlike many Dark Lords who rely on brute force or terror tactics, Mannfred is a true military scholar - he studies his opponent's history, weaknesses, political differences and logistical chains before devising complex, multi-layered campaign plans. He specializes in feints, attacks, and dispersions, often forcing the Empire to deal with the undead threat on multiple fronts simultaneously. Against Mannfred one needs to be wary of any seemingly easy victory - that could be a piece he intentionally gives away. His retreat in defeat is also noteworthy: Mannfred always maintained a secret escape route, disappearing for a hundred years and then returning just when you thought he had become a legend."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Mannfred von Carstein's biography is full of calculating foreshadowings. He left Sylvania for a time after Vlad's fall, traveling the Old World to delve deeper into necromancy - giving him the strongest academic magical attainments of all the von Carsteins. Mannfred is also known for his amazing intelligence network. He is said to have a network of vampire bat spies called 'Night Messengers' in every important city in the empire, which allows him to grasp political changes more accurately than any human intelligence agency. His search for the Tomes of Nagash never gave up - he is known to have obtained at least two of the nine tomes, and continues to send out necromancer agents to search the ruins of Nehekhara and the Imperial Hidden Library for the rest. Perhaps Mannfred's most dangerous trait is his rationalism: when necessary, he can make truces with the Empire or even covertly cooperate against common enemies, such as during the Chaos Invasion - but he will quietly complete the layout of the next invasion in cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The danger of Mannfred von Carstein from the perspective of a female ruler had a dimension generally ignored by male military strategists—he was not just a military threat, he was a politically corrupting agent. The biggest difference between Mannfred and Vlad is: Vlad tried to seize the throne of the Empire through frontal military conquest, while Mannfred was more inclined to political infiltration among the Elector Counts of the Empire - by placing blood servants and corruption agents in the Elector Count's court, every military buildup of the Empire in the direction of Sylvania was exposed in advance through internal information leaks. My ability to maintain counter-infiltration operations against Mannfred in my realm - rather than being infiltrated - is partly due to my female status making my own court less naturally attractive to male vampire infiltrators, and partly to my counter-infiltration training of the women of the court. Mannfred would never personally enter the castle of a female lord - he considered a female lord unworthy of his personal presence - and this arrogance has been the main flaw in his unsuccessful infiltration of my realm to this day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The biggest difference between Mannfred von Carstein and other vampire lords is his rationalism - a trait that makes him more dangerous than any other dark lord, but also makes him the only vampire who can be 'negotiated'. One of the core lessons our family has learned from hundreds of years of fighting Sylvania is this: Mannfred does not attack out of anger or bloodlust—he only attacks after a cost-benefit calculation. This means that you can stop an undead invasion through intimidation rather than actual combat if you can covertly send a signal to his intelligence network that is enough for his costing model to show 'the expected losses from this attack are greater than the expected gains'. Over three generations our family has developed an art of 'covert display of countermeasures' - not an overt display of military power to anger him, but a subtle way of demonstrating in the direction he wishes to probe that we have some kind of counterweapon that he doesn't yet fully understand, in a subtle way that he just happens to be able to detect. Mannfred is an academic whose Achilles' heel is his intellectual curiosity - when he feels a piece of information is beyond his control, he delays action by overanalyzing it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mannfred von Carstein is a force in the mercenary market whose bounty you don't accept, but no one dares to refuse openly. I worked as a freelance scout on the border between Ostermark and Sylvania for five years. During that period, I received three 'anonymous commissions' from the direction of Sylvania - the price was outrageously high, and the task content was not complicated: I just needed not to patrol a specific swamp road section at a specific time of night. I refused for the first time, but two colleagues I knew accepted - they were invited for an 'interview' by a group of men in black on the road outside the outpost on the third night after acceptance. Three days later, their bodies were returned to the gate of the outpost, with no trauma on their necks but not a drop of blood anywhere on their bodies. Mannfred doesn't shock with violence like Conrad, he uses a higher level of terror - he makes you spend every night after rejection repeatedly imagining whether you can open your eyes again the next time you close them. My biggest fear about Mannfred is not the undead army he possesses, but the mental pollution that makes you believe that resisting him is futile - many mercenaries on the border are not killed, but give up resistance after being exhausted by this mental pollution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mannfred von Carstein's rationalism manifests itself on the economic battlefield through his 'selective supply disruption' tactics - he will not completely block trade between the Empire and Sylvania, as the vampires themselves also rely on supplies from certain living worlds. But his strategy was to foster specific suppliers in the smuggling trade network between the Empire and Sylvania, and then establish systematic control of that trade network by intermittently cutting off competitors' supply channels. The reason why our Chamber of Commerce has been able to maintain safe trade in the surrounding areas of Sylvania to this day is not because our armed guards are stronger, but because we actively control the supply of several magic materials that Mannfred needs most, and maintain an informal balance with him of 'stable supply in exchange for stable passage'. Mannfred's economic rationality can be used to predict his military behavior - when he increases the purchase of specific magical materials in a certain quarter, it means that he is preparing to launch a military operation that requires a large amount of magical support. By tracking these purchasing trends we have become one of the most effective yet unacknowledged sources of intelligence in the Eastern Reich."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Night Messenger - Mannfred's inter-imperial intelligence network of vampire bats",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Mannfred Mannfred · von Carstein Count Vampire"
+  ]
+}

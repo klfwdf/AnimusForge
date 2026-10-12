@@ -1,0 +1,94 @@
+{
+  "Id": "rule_Feiton",
+  "Keywords": [
+    "Feton",
+    "Biscayne Hills"
+  ],
+  "RagShortTexts": [
+    "Phaidon Olive Garden is on the banks of the Tran River, near the pass of the Biscayne Hills."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Feton is a village near Fort Ongar, located at a corner of the winding Trang River, not far from the mountain pass that leads to the Biscayne Hills. Villagers grow olives on the warm, dry side of the hillside, and olive oil is their main output."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Feidun is nestled at the corner of the Trang River. The mountains block the wind and the sun is abundant, which is perfect for growing olives. On the other side of the river are wheat fields, and on this slope are olive groves. The two villages face each other across the river, each going about their own business. The defenders of Fort Ongar protected both sides. After all, food and oil were indispensable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The olives of Feton grow on a sunny slope, where there is sufficient sunlight, and the oil squeezed from the fruits is fragrant. There are several olive groves in the bend of the Trung River, and Feton has a high oil yield rate. The mountain pass of Biscayne Hills is close, making it easy for merchants to enter and exit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Feidun is on a big bend of the Trang River, and the sun is very warm on this side of the river bank. There are rows of olive trees on the slopes, and the wind blows from the Biscayne Hills, carrying the fragrance of grass. Not far across the river is the pass leading into the mountains. This road was once an old trade route of the empire."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Feton",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Ongar Castle",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "Id": "rule_Cachar_peninsula",
+  "Keywords": [
+    "Cachar Peninsula"
+  ],
+  "RagShortTexts": [
+    "The Cachar Peninsula is a narrow strip of land extending into the sea east of Sturgia, with a terrain of rocky cliffs.",
+    "The Cachar Peninsula guards the Birri Sea and the Battania Sea and has an important strategic position.",
+    "The Cachar Peninsula was historically occupied by the Battania, Nords and Sturgia people."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cachar Peninsula is a narrow strip of land east of Sturgia that extends from the Ikara Wasteland, like a curved finger into the sea. Its terrain is rugged and rocky, and the sea cliffs are steep. There are not many places suitable for building a port, but once it is occupied, it can control both the Nords' Birle Sea in the north and the Battania people's sea in the south. This land has changed hands many times - first it was the territory of the Battanians, then the Nords came, and then the Sturgians came again. Each group of people who came left their own traces, but the peninsula itself has always been the same: strong winds, rough waves, many rocks, and little land. It can't grow any decent crops, but it has raised the bones of generations of people who rely on the sea to eat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cachar Peninsula is our eastern gateway to Sturgia. Going west from the Ikara Wasteland, the terrain becomes narrower and narrower, and finally turns into that long strip of jagged rocks, thrust into the sea. The north is the territory of the Nords, and the south is the homeland of the Battania people. We are stuck in the middle, guarding the two sea routes. In the case of Valcheg, our ancestors were involved in the bad debt between the Nords and the Battanians - they bit each other and finally put the meat in our mouths. The towns on the peninsula are ours now, but the history buried under the stones is not. Walking on those sea cliffs, you can still smell the Nord longships and Battanian campfires in the wind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Every inch of the Cachar Peninsula was purchased with an axe. When the Nords took root in Walchegg, they thought this peninsula was just a transit point for their northward march. The Battania thought this was an extension of their territory. They are all wrong. This peninsula belongs to no one but those who can hold it. My great-grandfather crossed the sea with the Sturgian army, drove away the Nords, and built an outpost on the cliffs of the peninsula. He said, standing at the narrowest part of the peninsula and looking to both sides, there was the sea of ​​the Nords on one side, the sea of ​​the Battania people on the other, and the stone of Sturgia in the middle. This is Cachar - a tough guy in the cracks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cachar Peninsula is of no value to us Imperials. The land there is barren, windy all year round, and is full of rocks and sea cliffs, making it impossible to station legions. The Battania once controlled it, the Nords had a hand in it, and now it belongs to the Sturgians. Let them be - whoever wants the rotten bones left by the sea breeze can take it. However, the commanders in the northern part of the empire kept a careful eye on it: starting from that peninsula, they could enter the territory of the Nords in the north and press the coast of Battania in the south. By holding it, the Sturgians held a key to the northern seas."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cachar Peninsula is where our ancestors walked. We captured Walceg from the Battania people back then. Our Yar took root there and wanted to open up trade with the interior. The result? The Battanians played a trick and hired Sturgia's ax to drive us away. The Sturgians drove us away and took the land for themselves. They renamed the town Walceg, which means \"man's companion\" - a mockery of us and the Battania biting each other and giving away the fat to a third party. This joke is not funny at all. The peninsula is theirs now, but the Nords' longships still wander around the Bierli Sea in the north from time to time, looking at the sea cliffs that were once ours from a distance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cachar Peninsula was once our land of Battania. Our High King Dainmar accepted the allegiance of the Nords there, but the Yankees were dishonest and cheated. Dainma hired the Sturgians to clear the country, but the Sturgians refused to leave after the war and swallowed up the entire peninsula. This incident teaches us a lesson: Don’t hire someone more greedy than you to fight for you. There are still remnants of our ancestors' stone formations on the peninsula. When the sea breeze blows from the south, you can still smell the smoke of our bonfires. The land can be taken away, but the wind will never forget it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We don’t know much about the Cachar Peninsula, it’s in the north and too far away from us. But I heard from the merchants that it was a long, thin piece of stone land east of Sturgia, which separated the Nordic sea from the Battanian sea. I heard that there are not many ports up there, but the strategic location is very important. Whoever occupies that peninsula can monitor both sea routes at the same time. We Aserai value strategic locations and can understand why so much blood was shed there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cachar Peninsula was not suitable for cavalry. The ground was full of rocks and sea cliffs, making it impossible for horses to run. We Khuzait have little interest in this terrain, but it does have strategic importance as it controls access to two seas. I heard that the history of that peninsula is all about betrayal and robbery - the Nords, the Battanians, the Sturgians, no one completely won, and no one completely lost. Grads and grudges on the grassland are usually settled once and for all with bows and horses, but over there a bad debt can be passed down for generations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cachar Peninsula is a strategic point east of Sturgia, controlling access to the seas of Nord and Battania. It is said that the Nords occupied it first, and the Battania hired the Sturgians to drive them away, but the Sturgians themselves stayed. This peninsula has changed its owners three times in history, and each owner snatched it from the previous one with a sword. This history is very similar to ours in Vlandia - our ancestors also took land from the Empire. However, the peninsula was too desolate, with many rocks and narrow land. It had no other use except as a port and outpost."
+    }
+  ],
+  "TextMappings": []
+}

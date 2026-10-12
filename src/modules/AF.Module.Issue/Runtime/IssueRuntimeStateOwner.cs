@@ -98,11 +98,11 @@ internal static partial class VanillaIssueOfferBridge
 				if (journalLog.Range > 0 && journalLog.CurrentProgress >= journalLog.Range)
 				{
 					string arg = string.IsNullOrWhiteSpace(text) ? text2 : text;
-					summary = string.IsNullOrWhiteSpace(arg) ? ("任务进度已满足：" + journalLog.CurrentProgress + "/" + journalLog.Range) : (arg + "（当前进度 " + journalLog.CurrentProgress + "/" + journalLog.Range + "，已满足）");
+					summary = string.IsNullOrWhiteSpace(arg) ? (IssuePromptTexts.Get("AF_ISSUE_PROMPT_Progress_0") + journalLog.CurrentProgress + "/" + journalLog.Range) : (arg + IssuePromptTexts.Get("AF_ISSUE_PROMPT_Progress_1") + journalLog.CurrentProgress + "/" + journalLog.Range + IssuePromptTexts.Get("AF_ISSUE_PROMPT_Progress_3"));
 					return true;
 				}
 				string text3 = (text + " " + text2).Trim().ToLowerInvariant();
-				if (ContainsAny(text3, "you have enough", "return back to", "return to", "go back to", "report back", "speak to", "回去找", "回到", "回去向", "你有足够", "已满足", "返回"))
+				if (ContainsAny(text3, "you have enough", "return back to", "return to", "go back to", "report back", "speak to", IssueDisplayMatchCatalog.Get("Raw_049"), IssueDisplayMatchCatalog.Get("Raw_050"), IssueDisplayMatchCatalog.Get("Raw_051"), IssueDisplayMatchCatalog.Get("Raw_052"), IssueDisplayMatchCatalog.Get("Raw_053"), IssueDisplayMatchCatalog.Get("Raw_054")))
 				{
 					summary = string.IsNullOrWhiteSpace(text2) ? text : text2;
 					return true;

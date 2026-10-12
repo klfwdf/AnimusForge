@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Imperial_Gods",
+  "Keywords": [
+    "imperial gods",
+    "old world pantheon",
+    "Tar and Leia",
+    "Mannan Poseidon",
+    "verena goddess of justice",
+    "Saraya goddess of healing",
+    "mary goddess of war",
+    "Ranald the God of Trickery",
+    "old world pantheism",
+    "holy family tree"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Old World human belief was not in a single god - but in a complex system of divine families. The Earth Mother is the original point of origin, and she gave birth to Tal (god of nature and forests) and Ulric (god of war and winter). Tal and his wife Leia (goddess of fertility and rivers) ruled over domesticated nature, and their child Mannan ruled over ocean storms. The union of Verena (goddess of justice and wisdom) and Maul (god of death and dreams) produced Maria (goddess of war strategy) and Shalaya (goddess of healing). There are also ancient powers that are not part of this bloodline but are equally widely worshiped: Ranald (the god of trickery and luck) and Khaine (the god of murder and violence). The people of the Empire prayed to different gods at different times—Laya when farming, Mannan before going to sea, Verena before going to court, and Maul before dying."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Gods of the Empire are like one big family - not figuratively, but they really are a family! The Earth Mother was our first mother, but we do not worship her directly today, just as most people in the Empire do not worship their great-great-grandmother directly. Her two sons divided her inheritance in two ways: Tar inherited the forests, fields, and all nature that could be reasonably used by humans - his wife Laiya looked after every field and every stream, while their son Mannan lived in the salt hall under the sea. Before you go to sea, you'd better not forget to throw a silver coin into the sea to buy peace from him. Ulric is not married and has no children - he doesn't need to. He is a white wolf wandering alone in the northern wilderness. The White Wolf Church under him does not accept female members to this day, which is very consistent with his temperament. Verena is by far the wisest one - her laws and books are the mythical roots of the Empire's legal system, she is married to Maul, some feel that the God of Death is not worthy of the Lady of Justice, but I think it is because Verena sees through all the lies of the living that she chooses a husband who will never lie to her - Maul never speaks. Their children: Maria, the goddess of military genius and honor code, and Shalaya, the goddess of mercy and healing—one inherited her mother's cold intellect plus her father's ultimate perspective, and the other inherited her mother's kindness and compassion for her father's death. And Ranald - he didn't belong to anyone, he wasn't a god you'd publicly pray to in a temple, but everyone who rolled the dice secretly asked for his blessing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The political use of the gods of the Empire is a sophisticated art - each Elector Count holds different tax exemption rights for the churches of the gods within his jurisdiction, different levels of requesting power for troop movements, and different levels of approval for land grants. The ruler must know how to distribute favors among the gods to maintain balance: favoring the Church of Sigmar too much will trigger open hostility from the Church of Ulric and may lead to confrontation in the north; neglecting the Moorish Church too much will mean that your armies will face a funeral crisis; over-suppressing the worship of Ranald will force the thieves' guild underground and shut down your intelligence network completely - for Ranald is not only the god of thieves, he is also the protector of all secret communications. A high-ranking ruler would never publicly declare 'I don't believe in any god' - atheism is equivalent to rebellion under imperial law - but you can strategically use checks and balances between churches to ensure that no one church's power expands enough to threaten the secular kingship. The most effective check and balance is the tripod legislation: maintain a rough balance of power among the three churches of Sigmar, Ulric, and Verena in your territory, and let their doctrinal conflicts consume any one's energy to challenge your authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The sacred genealogy of the imperial gods is the most systematic but also the most controversial area of ​​Old World comparative religion. The Earth Mother Goddess - the ancient name of 'Korbel' or 'Elf' has more than a dozen names in oral traditions in different regions - represents the primitive reproductive worship of the land by humans in the Paleolithic Age. Her similarity to the elf goddess Elsa has long been a subject that cannot be ignored in academic circles but is also inconvenient for public discussion: both goddesses are the 'mother of all life', both have two sons, four grandchildren, and even the sacred animals of both are doves and snakes. The old faith - the nameless worship that existed before all named gods were named and centered on souls and natural spirits - still exists in the remote countryside of the empire: old women in some villages will kneel to the 'unnamed earth' before sowing seeds instead of reciting prayers to Leia or Tal. The Moorish church usually chooses to remain silent when facing this phenomenon, because crusade against the 'old faith' means crusade against the Mother Earth, who is the mother of Tal and Ulric. Imperial pantheism works because there are enough gods - when you have more than a dozen official gods, villagers kowtowing one more time to a nameless goblin in the fields isn't going to attract anyone's attention."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a deep rift between the image of the female deities in the Imperial pantheon—Laya, Verena, Shalayah, Maria—in official theology and in the private interactions of female nobles. In the official version, Leia is a vague-faced fertility goddess in the style of a good wife and mother; Verena is an androgynous cold mother holding a scale and a sword; Saraya is depicted as an eternal weeping maiden; and Maria, as the goddess of war, is deliberately overlapped with Sigmar - her independent worship is almost completely absorbed and digested by the Sigmar church. But among noble women, the oral tradition of these goddesses is closer to this version: Leia is not a submissive vase, it is she who used river irrigation to nourish the entire earth alone while sleeping in Taal - her husband only rules in his name. Everything she created; Verena than all The human judges are smarter together. Her laws are not for order but to prevent the strong from bullying the weak in the name of order; Saraiya's tears are not fragile but weapons - her teardrops turn into a holy spring that can cure all poisoning when they fall to the ground; and Maria's combat strategy ability is Sigmar was the Goddess of War for humanity before she came into existence, and the Church of Sigmar only later downgraded her to a 'war-wisdom spirituality' to eliminate potential sexual competition. Any woman who grew up in an imperial aristocratic family would sooner or later discover that the goddesses marginalized by official doctrine were precisely the most powerful ones."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family has established an extremely sophisticated rotation calendar for polytheistic worship over the past seven centuries - the shrines in the family chapel rotate according to the seasons, with Ulric as the chief around the winter solstice, Leia as the chief before and after the spring equinox, and Moore as the chief before and after the autumnal equinox. Verena's shrine will never be moved - she represents contract and justice, and as a business family we cannot live without her gaze in any season. Every important decision in the family—buying or selling large parcels of land, marrying, declaring war—is recorded in a special family oracle notebook, with the decision itself recorded on the right page and the prayers to the god corresponding to the decision and the omens given by that god on the left page. Over seven centuries, we can collect extremely regular data from this banknote: During the heyday of our family, the frequency of joint worship of Verena and Moore was dominant; while during the period of decline of the family, the frequency of prayers to Ranald (the god of gambling and speculation) significantly increased."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When you reach the fifth year across the empire, you will realize that each god is distributed on the map in a color. Ulric is white - you can walk into any tavern north of Nordland and Middenheim and see the white wolf's holy symbol nailed to the wall, and it becomes sparser as you go south. Sigmar is golden – Comet stelae can be seen in every field in the heart of Reikland. Mannan was blue—he rarely went more than thirty miles inland, but the people in the harbor towns along the Reik and Talabek rivers awed him more than they did their own mother. Leia is green - she was abandoned in the city church and was silently supported by the old peasant women in the crop fields according to ancient methods. Maul is purple - graveyards litter all human settlements but no one takes the initiative to speak of him. Verena's icon appears most frequently in courtrooms and bar guild halls. As for Ranald - you can't find his icon in any public place, but you can see his smiling silver face in every underground casino in a small shrine in a secret room under the gaming table, and his sacrifice is usually a pair of lead-filled dice and a stolen gold coin. Wanderers understand the God of each place—no need to study theology, you just need to live there for three months."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The division of the imperial gods produced eight non-overlapping indirect revenue streams for the imperial economy. Sigmar Church—Pilgrimage Inn, Relic Trade, and Battle Priest Employment Market. The Church of Ulric - collection of furs and oak wood, equipment supply chain for northern mercenary regiments. Mannan Church - Inland navigation insurance, port lighthouse maintenance fees, sea salt concession. Church of Verena - Monopoly of law schools and notarization services, ecclesiastical chartered production of ink and parchment. The Church of Saraiya - Charitable fundraising system for hospitals and sanatoriums, monastic management of herbal plantations. Moorish Church - Funeral services, cemetery management, alchemical export of black rose powder. Maria - Professional Military Academy and testing and certification services for mercenary officers. And Ranald - the ultimate gray free market: the divine tax levied on every illegal gamble, the one-coin offering thrown into the river on every smuggling deal, the 'lucky share' deducted from every secret society's entrance fee. The total size of the economic circle of the gods is roughly estimated to be close to a quarter of the empire's annual revenue."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Mother Earth—the oldest deity in the Old World, mother of Tal and Ulric, the origin of all life",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Theological attributes and belief systems of the imperial gods"
+  ]
+}

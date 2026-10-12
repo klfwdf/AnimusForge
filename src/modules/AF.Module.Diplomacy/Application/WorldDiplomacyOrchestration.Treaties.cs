@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Linq;
 using AnimusForge.DiplomacyDialogue;
@@ -79,13 +80,16 @@ internal sealed partial class WorldDiplomacyOrchestration
     {
         reason = "";
         if (NormalizeIntent(intent) == "accept_trade")
+        {
+            if (HasConfirmedOralPlayerAgreement(document)) return ValidateFormalTreatyTerms(intent, terms?.ToTerms(), author, target, out reason);
             return WorldDiplomacyOfferActionApplication.TryResolveTradeAcceptanceTerms(
                 ResolveDocument(sourceId), sourceActionId, terms, out _, out reason);
+        }
         if (!IsFormalTreatyIntent(intent)) return true;
         if (NormalizeIntent(intent).StartsWith("reject_")) return true;
         if (terms != null && (terms.DailyTribute != 0 || terms.DurationDays != 0 || !string.IsNullOrEmpty(terms.CessionSettlementId)))
         { reason = "unsupported_extra_treaty_clause"; return false; }
-        if (NormalizeIntent(intent).StartsWith("accept_"))
+        if (NormalizeIntent(intent).StartsWith("accept_") && !HasConfirmedOralPlayerAgreement(document))
         {
             var original = ResolveDialogueTerms(ResolveDocument(sourceId), sourceActionId);
             if (terms != null && !terms.ToTerms().Equals(original))
@@ -97,8 +101,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         // above is authoritative; a second lexical classifier must not veto synonyms.
         if (document.IsPlayerAuthored) return true;
         var receiving = ResolveDialogueParty(terms.ReceivingKingdomId); var joining = ResolveDialogueParty(terms.JoiningKingdomId);
-        string pattern = NormalizeIntent(intent).EndsWith("annexation") ? "并入|归入|加入|吞并"
-            : "臣服|臣属|附庸|宗主|朝贡|驻军|卫戍";
+        string pattern = NormalizeIntent(intent).EndsWith("annexation") ? DiplomacyCompatibilityTexts.Get("Regex_AnnexationKeywords")
+            : DiplomacyCompatibilityTexts.Get("Regex_VassalageKeywords");
         if (!ContainsDirectedPeaceTerm(document.Body, _host.PartyNameOrEmpty(joining), joining == author, joining == target,
             _host.PartyNameOrEmpty(receiving), receiving == author, receiving == target, pattern))
         { reason = "treaty_roles_not_disclosed_in_public_body"; return false; }
@@ -110,13 +114,13 @@ internal sealed partial class WorldDiplomacyOrchestration
     {
         var terms = ResolveDialogueTerms(source, offer.SourceActionId);
         if (!ValidateFormalTreatyTerms(offer.Intent, terms, proposer, responder, out string reason))
-        { response.MechanicalResult = "条约未执行：" + reason; return WorldDiplomacyOfferOutcome.Invalidated; }
+        { response.MechanicalResult = DiplomacyMiscPromptTexts.Get("Orch_TreatyNotExecutedPrefix", "Treaty not executed: ") + reason; return WorldDiplomacyOfferOutcome.Invalidated; }
         response.TreatyTerms = WorldDiplomacyDialogueTerms.From(terms);
         var receipt = DialogueHost?.ExecuteTreaty(NormalizeIntent(offer.Intent), terms.ReceivingKingdomId, terms.JoiningKingdomId)
             ?? (success: false, changed: false, reason: "treaty_runtime_unavailable");
         response.ChangedDiplomaticState = receipt.changed;
         response.MechanicalResult = !receipt.success && receipt.changed
-            ? "并入交割失败，已发生的部分转移不重复执行：" + receipt.reason : receipt.reason;
+            ? DiplomacyMiscPromptTexts.Get("Treaties_AnnexationFailedRemainderRetained", "Annexation transfer failed; partial transfers already completed will not repeat: ") + receipt.reason : receipt.reason;
         return !receipt.changed ? WorldDiplomacyOfferOutcome.Failed : receipt.success ? WorldDiplomacyOfferOutcome.Applied : WorldDiplomacyOfferOutcome.Partial;
     }
     internal WorldDiplomacyOfferOutcome ExecuteFormalTreatyOffer(string intent, WorldDiplomacyRoundOffer offer,

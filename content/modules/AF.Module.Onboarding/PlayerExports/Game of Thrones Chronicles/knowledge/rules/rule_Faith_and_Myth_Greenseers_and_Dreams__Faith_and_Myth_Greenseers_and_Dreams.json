@@ -1,0 +1,145 @@
+{
+  "Id": "rule_Faith_and_Myth_Greenseers_and_Dreams",
+  "Keywords": [
+    "Greenseers and Dreams"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The legend of the Green Seer connects dreams, trees, the past and distant visions. Some people regard dreams as divine messages, while others regard them as illness or lies. For those who are truly chased by dreams, the most terrifying thing is not necessarily seeing the future, but not knowing what to believe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenseers and Dreams"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenseers and Dreams"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenseers and Dreams"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenseers and Dreams The legend of the Green Seer connects dreams, trees, the past and distant visions. Some people regard dreams as divine messages, while others regard them as illness or lies. For those who are truly chased by dreams, the most terrifying thing is not necessarily seeing the future, but not knowing what to believe. Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenseers and Dreams The legend of the Green Seer connects dreams, trees, the past and distant visions. Some people regard dreams as divine messages, while others regard them as illness or lies. For those who are truly chased by dreams, the most terrifying thing is not necessarily seeing the future, but not knowing what to believe. Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenseers and Dreams The legend of the Green Seer connects dreams, trees, the past and distant visions. Some people regard dreams as divine messages, while others regard them as illness or lies. For those who are truly chased by dreams, the most terrifying thing is not necessarily seeing the future, but not knowing what to believe. Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenseers and Dreams The legend of the Green Seer connects dreams, trees, the past and distant visions. Some people regard dreams as divine messages, while others regard them as illness or lies. For those who are truly chased by dreams, the most terrifying thing is not necessarily seeing the future, but not knowing what to believe. They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Greenseers and Dreams: The legend of the Green Seer connects dreams, trees, the past and distant visions. Some people regard dreams as divine messages, while others regard them as illness or lies. For those who are truly chased by dreams, the most terrifying thing is not necessarily seeing the future, but not knowing what to believe."
+  ]
+}

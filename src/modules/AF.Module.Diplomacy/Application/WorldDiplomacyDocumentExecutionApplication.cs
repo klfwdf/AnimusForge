@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -241,7 +242,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
             {
                 orchestration.SuppressInvalidDocumentBeforePropagation(document, legacy ? "non_actionable_diplomatic_intent" : "multi_action_is_not_executable");
                 if (legacy && command.IsPlayerAuthored && !command.WasReadyForPublication)
-                    port.Notify("外交宣言没有发布：正文必须明确包含一项可执行的外交动作。");
+                    port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_MustContainAction", "The diplomatic declaration was not published: the text must clearly include an actionable diplomatic action."));
                 return;
             }
             if (publicStatement) { targets.Add(target); continue; }
@@ -259,7 +260,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 orchestration.SuppressInvalidDocumentBeforePropagation(document, legacy
                     ? "final_live_state_guard:diplomatic_action_has_no_live_target" : "multi_action_has_invalid_or_duplicate_target");
                 if (legacy && command.IsPlayerAuthored && !command.WasReadyForPublication)
-                    port.Notify("外交宣言没有发布：正文中的外交动作与当前真实状态不相容。");
+                    port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_IncompatibleAction", "The diplomatic declaration was not published: the diplomatic action in the text is incompatible with the current realm state."));
                 return;
             }
 			List<string> finalLiveIntents = playerDiplomacy ? null : command.IsPlayerAuthored
@@ -296,7 +297,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 				{
 					orchestration.SuppressInvalidDocumentBeforePropagation(document, "result_settlement_target_capacity_reached");
                     if (legacy && command.IsPlayerAuthored && !command.WasReadyForPublication)
-                        port.Notify("外交宣言没有发布：本次外交事件已无法再加入新的处理国。");
+                        port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_CapacityReached", "The diplomatic declaration was not published: no more kingdoms can be added to this diplomatic round."));
 					return;
 				}
 				newSettlementTargets.Add(target);
@@ -310,7 +311,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			{
 				orchestration.SuppressInvalidDocumentBeforePropagation(document, "final_live_state_guard:" + liveStateReason);
                 if (legacy && command.IsPlayerAuthored && !command.WasReadyForPublication)
-                    port.Notify("外交宣言没有发布：正文中的外交动作与当前真实状态不相容。");
+                    port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_IncompatibleAction", "The diplomatic declaration was not published: the diplomatic action in the text is incompatible with the current realm state."));
 				return;
 			}
 			if (!playerDiplomacy && intent == "propose_peace"
@@ -325,11 +326,12 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 && orchestration.TryGetPlayerWorldStateIntentViolation(document, intent, input.Commitment, author, target, out string playerActionBlockReason))
             {
                 orchestration.SuppressInvalidDocumentBeforePropagation(document, "player_action_not_executable:" + playerActionBlockReason);
-                if (!command.WasReadyForPublication) port.Notify("外交宣言没有发布：正文中的外交动作与当前真实状态不相容。");
+                if (!command.WasReadyForPublication) port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_IncompatibleAction", "The diplomatic declaration was not published: the diplomatic action in the text is incompatible with the current realm state."));
                 return;
             }
 			string proposalIntent = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent);
 			if (!command.IsPlayerAuthored && !string.IsNullOrWhiteSpace(proposalIntent)
+				&& !(orchestration is WorldDiplomacyOrchestration oralOwner && oralOwner.HasConfirmedOralPlayerAgreement(document))
 				&& !WorldDiplomacyRoundLifecycleRules.HasOpenProposalForDocument(document, author, target, proposalIntent, port.ResolveRound))
 			{
 				orchestration.SuppressInvalidDocumentBeforePropagation(document, "offer_ownership_guard");
@@ -364,7 +366,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			orchestration.SuppressInvalidDocumentBeforePropagation(document, "required_peace_offer_response_missing");
 			if (command.IsPlayerAuthored && (!legacy || !command.WasReadyForPublication))
 			{
-				port.Notify("外交宣言没有发布：本篇必须先接受或拒绝当前和平原案。");
+				port.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_DocExec_MustRespondPeace", "The diplomatic declaration was not published: this document must first accept or reject the pending peace proposal."));
 			}
 			return;
 		}
@@ -421,7 +423,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 if (!legacy && !noAction && TryGetExecutionStateViolation(orchestration, document,
                     command.IsPlayerAuthored, playerDiplomacy, input.Intent, input.Commitment, author, target, out string executionBlockReason))
 				{
-					document.MechanicalResult = "外交动作未执行："
+					document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Analysis_MechanicNotExecutedPrefix", "Diplomatic action not executed: ")
                         + WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic(executionBlockReason);
 					port.Log("multi-target diplomatic action became invalid during batch execution document="
 						+ command.DocumentId + " action=" + input.ActionId + " reason=" + executionBlockReason);
@@ -449,7 +451,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 				outcomeKnown = false;
 				if (!legacyPublic && string.IsNullOrWhiteSpace(document.MechanicalResult))
 				{
-					document.MechanicalResult = "外交机制未执行：" + WorldDiplomacyTextRules.Limit(ex.Message, 180);
+					document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Analysis_MechanismNotExecutedPrefix", "Diplomatic mechanism not executed: ") + WorldDiplomacyTextRules.Limit(ex.Message, 180);
 				}
 				port.Log("multi-target diplomatic action failed without discarding declaration document=" + command.DocumentId
 					+ " action=" + input.ActionId + " intent=" + input.Intent + " error=" + ex.Message);

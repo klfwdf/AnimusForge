@@ -1,4 +1,4 @@
-﻿using System;using System.Collections.Generic;using System.Linq;
+using System;using System.Collections.Generic;using System.Linq;
 namespace AnimusForge;
 // Detached request-frequency values only; this is not an authoritative memory store.
 internal sealed class UncompressedMemoryPromptSnapshot {
@@ -11,6 +11,8 @@ internal sealed class UncompressedMemoryDraftSnapshot {
  internal List<DailyMemoryLine> Lines;
 }
 internal static class UncompressedMemoryMessageAssemblyOwner {
+ private static readonly string[] EnglishPlayerHeaders = { "Player", "The player", "You" };
+ private static readonly string[] EnglishAddressVerbs = { " to ", " said to ", " shouted to " };
  internal static List<ConversationMessage> Assemble(UncompressedMemoryPromptSnapshot snapshot,out int rawMessageCount) {
  var result=new List<ConversationMessage>();
  foreach(var draft in snapshot.Drafts.Where(x=>x!=null).OrderBy(x=>x.GameDayIndex)) {
@@ -31,7 +33,7 @@ internal static class UncompressedMemoryMessageAssemblyOwner {
  string scene=(line?.Scene??"").Trim();
  if(!IsUnknownMemorySceneLabel(scene))return scene;
  if(line!=null&&line.GameDayIndex==currentDay&&!IsUnknownMemorySceneLabel(currentScene))return currentScene.Trim();
- return "未知场景";
+ return PromptComposerTexts.Get("residual_unknown_scene");
  }
 internal static List<ConversationMessage> KeepUncompressedFactsAndRecentConversationMessages(List<ConversationMessage> messages, int maxConversationMessages, int minimum, int maximum)
 	{
@@ -75,7 +77,7 @@ internal static ConversationMessage BuildUncompressedMemoryConversationMessage(D
 			return null;
 		}
 		string text = (line.Text ?? "").Replace("\r", "").Trim();
-		string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : "记录") : line.Speaker.Trim();
+		string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : PromptComposerTexts.Get("residual_record")) : line.Speaker.Trim();
 		string npcName = string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim();
 		string role = "user";
 		int speakerAgentIndex = -1;
@@ -92,7 +94,7 @@ internal static ConversationMessage BuildUncompressedMemoryConversationMessage(D
 		else if (TryParseDailyMemorySceneShoutLine(text, out var heardSpeaker, out var heardContent))
 		{
 			role = "assistant";
-			speaker = string.IsNullOrWhiteSpace(heardSpeaker) ? "某NPC" : heardSpeaker.Trim();
+			speaker = string.IsNullOrWhiteSpace(heardSpeaker) ? PromptComposerTexts.Get("residual_other_npc") : heardSpeaker.Trim();
 			text = string.IsNullOrWhiteSpace(heardContent) ? text : heardContent.Trim();
 			speakerAgentIndex = -1;
 			targetIndex = -1;
@@ -157,22 +159,41 @@ internal static bool IsDailyMemoryLinePlayerSpeech(DailyMemoryLine line, string 
 		}
 		string text = (line.Text ?? "").Trim();
 		string name = (npcName ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(name) && (text.Contains("对" + name + "说") || text.Contains("对" + name + "喊") || text.Contains("向" + name + "说") || text.Contains("向" + name + "喊")))
+if (!string.IsNullOrWhiteSpace(name) && ((text.Contains(PromptComposerTexts.Raw("History_SpeechAddressedInfix") + name + PromptComposerTexts.Raw("History_SpeechAddressedSuffix")) || text.Contains(PromptComposerTexts.Raw("History_SpeechAddressedInfix") + name + PromptComposerTexts.Raw("Speech_Shout")) || text.Contains(PromptComposerTexts.Raw("Speech_Towards") + name + PromptComposerTexts.Raw("History_SpeechAddressedSuffix")) || text.Contains(PromptComposerTexts.Raw("Speech_Towards") + name + PromptComposerTexts.Raw("Speech_Shout")))))
 		{
 			return true;
 		}
-		return text.StartsWith("玩家", StringComparison.Ordinal);
+		int delimiter = ConversationRoleClassificationOwner.FindDialogueHistorySpeakerDelimiter(text);
+		if (delimiter >= 0)
+		{
+			string header = text.Substring(0, delimiter).Trim();
+			if (ConversationRoleClassificationOwner.IsLikelyPlayerHistorySpeaker(header)) return true;
+			if (!string.IsNullOrWhiteSpace(name))
+				foreach (string player in EnglishPlayerHeaders)
+					foreach (string verb in EnglishAddressVerbs)
+						if (string.Equals(header, player + verb + name, StringComparison.OrdinalIgnoreCase)) return true;
+		}
+return PromptComposerTexts.Raw("History_PlayerNames_Cn").Split(',').Any(p => text.StartsWith(p, StringComparison.Ordinal));
 	}
 internal static bool TryParseDailyMemorySceneShoutLine(string rawText, out string speaker, out string content)
 	{
 		speaker = "";
 		content = "";
 		string text = (rawText ?? "").Trim();
-		if (!text.StartsWith("[场景喊话]", StringComparison.Ordinal))
+		int prefixLen = 0;
+if (text.StartsWith(PromptComposerTexts.Raw("Scene_OverheardShoutPrefix"), StringComparison.Ordinal))
+		{
+prefixLen = PromptComposerTexts.Raw("Scene_OverheardShoutPrefix").Length;
+		}
+		else if (text.StartsWith("[Scene shout]", StringComparison.OrdinalIgnoreCase))
+		{
+			prefixLen = "[Scene shout]".Length;
+		}
+		else
 		{
 			return false;
 		}
-		string body = text.Substring("[场景喊话]".Length).Trim();
+		string body = text.Substring(prefixLen).Trim();
 		if (string.IsNullOrWhiteSpace(body))
 		{
 			return true;
@@ -210,8 +231,11 @@ internal static bool IsUnknownMemorySceneLabel(string scene)
 		{
 			return true;
 		}
-		return string.Equals(text, "未知场景", StringComparison.Ordinal)
-			|| string.Equals(text, "大地图或未知场景", StringComparison.Ordinal)
-			|| string.Equals(text, "某个地方", StringComparison.Ordinal);
+return string.Equals(text, PromptComposerTexts.Raw("Scene_LocationUnknown"), StringComparison.Ordinal)
+|| string.Equals(text, PromptComposerTexts.Raw("Scene_LocationWorldOrUnknown"), StringComparison.Ordinal)
+|| string.Equals(text, PromptComposerTexts.Raw("Scene_LocationSomewhere"), StringComparison.Ordinal)
+			|| string.Equals(text, "unknown scene", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, "world map or unknown scene", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, "somewhere", StringComparison.OrdinalIgnoreCase);
 	}
 }

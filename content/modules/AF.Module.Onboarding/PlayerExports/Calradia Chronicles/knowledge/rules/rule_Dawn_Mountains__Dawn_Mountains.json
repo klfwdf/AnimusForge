@@ -1,0 +1,48 @@
+{
+  "Id": "rule_Dawn_Mountains",
+  "Keywords": [
+    "Dawn Mountains",
+    "Koshi Rohini"
+  ],
+  "RagShortTexts": [
+    "The Kohi Rohini Dawn Mountains are located on the eastern edge of the Devsagar Plateau."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 60
+        }
+      },
+      "Content": "Dawn Mountains, the full name of the Kohi Rohini-Dawn Mountains, is located on the eastern edge of the Devsagar Plateau and is one of the farthest barriers extending outwards from the plateau. The main body of the mountain range runs north-south, gradually rising from the hinterland of the plateau to the east. The main peak is covered with snow all year round, and the foothills are covered with dense coniferous forests and alpine meadows. This place is famous for its close connection with the legend of the mythical tyrant Akhak. According to legend, there were vipers on Ah Haq's shoulders, and his palace was built deep in the mountains. Even today, when the age of mythology has long ended, local and surrounding tribes still firmly believe that the hinterland of the Dawn Mountains is the source of black magic and occult arts, and that ancient rituals and taboo powers unknown to outsiders are hidden in the mountain valleys. Based on this understanding, the core area of ​​​​the mountain range has always been closed to outsiders. Any unauthorized entry is regarded as a serious blasphemy to the mountain spirits and ancestors. After the Khuzait Khanate's western expedition, the Dawn Mountains area was placed under the jurisdiction of the Horbit tribe. The Heerbit tribe did not forcibly assimilate the local mountain people, but adopted the strategy of intermarriage and common customs, gradually integrating into the local blood and belief system. Not only do they participate in religious rituals that have been passed down by the mountain people for generations, they also regard themselves as guardians and assume the responsibility of providing a barrier for the hidden traditions in the mountains. This historical process has allowed the mystery of the Dawn Mountains to be completely preserved, and added a more complex layer to the interweaving of grassland culture and mountain culture. To this day, the Dawn Mountains still have the dual attributes of an actual geographical boundary and a conceptual restricted area on the Devsagar Plateau. On the one hand, its mountain course clearly demarcates the eastern edge of the plateau; on the other hand, based on long-standing legends and local belief practices, outsiders are prohibited from setting foot in the depths of the mountains, and local tribes continue to maintain this isolation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k6"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dawn Mountains, the full name of the Kohi Rohini-Dawn Mountains, is located on the eastern edge of the Devsagar Plateau and is one of the farthest barriers extending outwards from the plateau. The main body of the mountain range runs north-south, gradually rising from the hinterland of the plateau to the east. The main peak is covered with snow all year round, and the foothills are covered with dense coniferous forests and alpine meadows. This place is famous for its close connection with the legend of the mythical tyrant Akhak. According to legend, there were vipers on Ah Haq's shoulders, and his palace was built deep in the mountains. Even today, when the age of mythology has long ended, local and surrounding tribes still firmly believe that the hinterland of the Dawn Mountains is the source of black magic and occult arts, and that ancient rituals and taboo powers unknown to outsiders are hidden in the mountain valleys. Based on this understanding, the core area of ​​​​the mountain range has always been closed to outsiders. Any unauthorized entry is regarded as a serious blasphemy to the mountain spirits and ancestors. After the Khuzait Khanate's western expedition, the Dawn Mountains area was placed under the jurisdiction of the Horbit tribe. The Heerbit tribe did not forcibly assimilate the local mountain people, but adopted the strategy of intermarriage and common customs, gradually integrating into the local blood and belief system. Not only do they participate in religious rituals that have been passed down by the mountain people for generations, they also regard themselves as guardians and assume the responsibility of providing a barrier for the hidden traditions in the mountains. This historical process has allowed the mystery of the Dawn Mountains to be completely preserved, and added a more complex layer to the interweaving of grassland culture and mountain culture. To this day, the Dawn Mountains still have the dual attributes of an actual geographical boundary and a conceptual restricted area on the Devsagar Plateau. On the one hand, its mountain course clearly demarcates the eastern edge of the plateau; on the other hand, based on long-standing legends and local belief practices, outsiders are prohibited from setting foot in the depths of the mountains, and local tribes continue to maintain this isolation."
+    }
+  ],
+  "TextMappings": []
+}

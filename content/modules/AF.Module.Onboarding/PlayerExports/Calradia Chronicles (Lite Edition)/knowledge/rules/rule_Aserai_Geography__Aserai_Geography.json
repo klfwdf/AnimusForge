@@ -1,0 +1,157 @@
+{
+  "Id": "rule_aserai_geography",
+  "Keywords": [
+    "Aserai Geography"
+  ],
+  "RagShortTexts": [
+    "The Nahasa Desert and the Jemjarai Cliffs serve as the natural defensive barriers of the Aserai."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai geography? Then you have to start with Sanala. Truth be told, I have never been to Sanala—it is too far, many days' march even for a caravan. Still, I have heard tales of it: water so plentiful it can irrigate the fields, date palms standing row upon row, and goods piled higher than camels in the markets. Where we live it is a different story: water is precious as gold, and if a single date palm dies the whole family aches over it. The desert is no place for human beings, yet we Aserai have lived here for generations untold and know how to survive. The Jemjarai Cliffs I have seen with my own eyes, right up north—look up at them and they stand like a sheer wall no one can climb over. The elders say that wall was raised by the gods to protect us and keep northerners from barging in as they please. I think they are right. The Imperials used to try coming across all the time, only to bog down in the sand. The desert is our city wall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_a6"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our Sanala is the richest city in all Calradia—and those are not my words, they are what the ship captains say when they make port. Stand by the harbor and look out: the ship masts are packed as thick as reeds, and the wind blowing in off the Perassian Sea carries the tang of salt and spices. The soil of the Damar River delta is so black it practically drips oil; whatever you plant grows, and the greens laid out in the morning market still glisten with dew. The city has everything—Imperial silk, Khuzait furs, Vlandian crossbows, and the Aserai's own dates and bronze ware. Outsiders who come here never want to leave, saying our city feels less like a desert and more like paradise. Yet we also know that one step outside the walls, it is all sand. Sanala is a pearl set in a sea of sand; let the sand bury it, and it is nothing at all. So we give thanks to the Damar River, thanks to the sea, and thanks for every shipload of cargo that berths at our quays. Rich we may be, but we must never forget our roots."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai’s geography determines everything about us. The Nahasa Desert is a natural barrier, and any foreign army that wants to cross it will have to pay a heavy price. This was the reason why the empire would rather support agents than send legions in. The Jemjarai cliff is a stone wall, which makes transportation from north to south inconvenient, but it also makes Aserai easy to defend and difficult to attack. Our ancestors have guarded this place for hundreds of years, not because of the large number of people, but because of the terrain. The two cities of Sanara and Askel, one sits on the river mouth delta, and the other guards the oasis trade route. Whoever controls them will control Aserai's wealth lifeline. Banu Hulayan was able to grow up in Sanara not by fighting, but by geography - the food in the Damal River, the merchant ships in the Perlas Sea, and the camel caravans between the oases in the desert. The three lines intersected at one point, which was Sanara."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sannara is ours. No one in the desert dared to refute this statement. Our Hulayan family sits on the delta of the Damar River. The river is our water and the sea is our road. Caravans come to pay taxes, ships pay berthing fees when entering the port, and stall fees in the market are counted every day. It’s not that we are greedy, it’s the city itself that brings wealth to our doorsteps. Sultan Winged often said that Sanara was a gift from Aserai, not Hulayan’s private property. That being said, someone has to take care of the gifts. We have managed people for generations, keeping trade routes open, springs drying up, and imperialists on the other side of the cliff afraid to come. Sanara is rich because we make it rich. The Jemjarai cliffs block enemies in the north, the Damar River supports the fields of the delta, and the Perlas Sea opens the door to the south - without one of these three things, Aserai would not be what it is today. It's not all luck that we're in this position."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai? It's over there in the desert. Someone here has been to Sanara once. He came back and boasted to us, saying that the city was richer than Lycaron, the streets were full of gold and spices, and the ships in the port were crowded like a busy city. But he said that after getting off the boat and walking inland, you will soon see sand, endless yellow sand, and people will die of thirst after walking in it for a few days. He said that such a wealthy city was surrounded by dead people, which was quite scary to think about. He also said that there was a large stone wall on the Aserai side, called Jemjarai Cliff, that blocked the road to the north. I asked why I didn't go around it, and he said I couldn't go around it because it was too high and too long. We won’t go there anyway, it’s too far and it’ll be too hot."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The location of Aserai was an old topic of discussion in the Senate. The Perlas Sea separated us from their homeland, preventing us from applying direct military pressure as we could with the Sturgias or Battanias. The Nahasa Desert itself is a huge defensive depth, and any legion crossing it will face the risk of being cut off from supplies - the expedition to Aserai was discussed in the era of Neretses, and the conclusion was that one-third of the soldiers would die on the road, and the other third would be blocked by the Jemjarai cliffs. The cliffs run through the Aserai from north to south. It gives the Aserai unparalleled defensive depth, but also creates great internal transportation difficulties. The loose connections between their tribes are directly related to their geographical isolation. The city of Sanara is the richest city in Calradia, we have to admit this. The agricultural output of the Damar River Delta and the maritime hub status of Sanara Port made it the throat of the east-west trade route. Banu Hulayan relied on this position to obtain the position of sultan in the Aserai tribal alliance. This was not entirely luck - controlling Sanara was tantamount to cutting off the Aserai's economic lifeline. Now that the empire is split into three pieces, no one can bother with the cross-sea expedition for the time being, but any future emperor who unifies the empire must face a problem: how to keep Aserai's trade routes open to the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Where is Aserai? On the other side of the sea. I've never been there, it's too far. I heard it was full of sand and extremely hot. A relative who runs a boat said that there is a river there. Both sides of the river are green, but the rest of the river is all yellow. There is also a large cliff, higher than the city wall. The richest city on their side was called Sanarat, and its port was full of goods. But whether we are rich or not has nothing to do with us, and we don’t want to go."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai's geographical makeup provides it with natural capital for isolationism. The Nahasa Desert and the Jemjarai Cliffs form a double defensive barrier, protecting it from the wars on the Calradia continent - this is not the result of the level of civilization, but the objective protection of geographical conditions. But that same geography also limits the scale at which the Aserai can project power outward. There are limited passes through the cliffs, and although Sanara's sea transportation is developed, the cost of sea expeditions is high. Coupled with the loose political structure of the tribal alliance, the Aserai's threat to the Calradia continent is more reflected in the control of trade routes and the export of mercenaries rather than direct territorial expansion. The Western Empire faces us across the sea. Currently, our caravans travel regularly to Sanara Port. The tariffs are acceptable and the waterway is safe. What we are most concerned about is not whether the Sudan is not Sudan, but the trade route from Garonto Bay to the Perlas Sea. As long as Sanara is still there, the trade route will not be cut off."
+    }
+  ],
+  "TextMappings": []
+}

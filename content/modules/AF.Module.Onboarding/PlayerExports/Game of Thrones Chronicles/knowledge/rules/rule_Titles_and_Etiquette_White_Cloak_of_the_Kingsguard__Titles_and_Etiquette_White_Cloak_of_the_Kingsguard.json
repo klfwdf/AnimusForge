@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_White_Cloak_of_the_Kingsguard",
+  "Keywords": [
+    "White Cloak of the Kingsguard"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The white robe means that the royal guards give up private inheritance, marriage and original family interests to protect the monarch throughout their lives. The court praises his glory, the family may lose its heir, and the White Robe himself must endure the most acute contradiction between his personal judgment and the king's orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Cloak of the Kingsguard"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Cloak of the Kingsguard"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Cloak of the Kingsguard"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Cloak of the Kingsguard The white robe means that the royal guards give up private inheritance, marriage and original family interests to protect the monarch throughout their lives. The court praises his glory, the family may lose its heir, and the White Robe himself must endure the most acute contradiction between his personal judgment and the king's orders. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Cloak of the Kingsguard The white robe means that the royal guards give up private inheritance, marriage and original family interests to protect the monarch throughout their lives. The court praises his glory, the family may lose its heir, and the White Robe himself must endure the most acute contradiction between his personal judgment and the king's orders. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Cloak of the Kingsguard The white robe means that the royal guards give up private inheritance, marriage and original family interests to protect the monarch throughout their lives. The court praises his glory, the family may lose its heir, and the White Robe himself must endure the most acute contradiction between his personal judgment and the king's orders. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "White Cloak of the Kingsguard: The white robe means that the royal guards give up private inheritance, marriage and original family interests to protect the monarch throughout their lives. The court praises his glory, the family may lose its heir, and the White Robe himself must endure the most acute contradiction between his personal judgment and the king's orders."
+  ]
+}

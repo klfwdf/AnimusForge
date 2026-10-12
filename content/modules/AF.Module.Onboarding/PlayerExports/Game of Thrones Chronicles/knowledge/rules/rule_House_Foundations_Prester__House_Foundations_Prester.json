@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Prester",
+  "Keywords": [
+    "Prester",
+    "House Prester"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Prestan family is a wealthy family in Braavos, connected to the city's commercial and financial circles. Braavos' wealth comes from shipping, workshops, insurance, long-distance trade, and the credit system formed by the Iron Bank; no prominent family is completely immune to these forces. Prestan's family name is not a castle in the fields, but a string of promises repeatedly confirmed by captains, creditors, partners and officials. Family figures may enter politics or focus on business, but at every step they must accept the city's eye on bookkeeping."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those involved in Iron Bank are not going to ignore the risks just because Prestan’s last name is loud. Mortgage, cash flow and guarantees are more reliable than banquet friendship; Braavos' calmest power often sits in the counting room without a crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Braavos Small merchants are envious of Prestan’s capital, but they are also afraid that big families will use their connections to squeeze out docks and workshops. If rules protect only big creditors, the freedoms of the republic will appear to be the preserve of the rich."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prester Prestan is a wealthy family in Braavos, active among the business and financial elites, and the family name must be maintained by accounts, guarantees and city credit. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prester Prestan is a wealthy family in Braavos, active among the business and financial elites, and the family name must be maintained by accounts, guarantees and city credit. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prester Prestan is a wealthy family in Braavos, active among the business and financial elites, and the family name must be maintained by accounts, guarantees and city credit. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prester Prestan is a wealthy family in Braavos, active among the business and financial elites, and the family name must be maintained by accounts, guarantees and city credit. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Prester: Prestan is a wealthy family in Braavos, active among the business and financial elites, and the family name must be maintained by accounts, guarantees and city credit."
+  ]
+}

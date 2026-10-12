@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
+using AnimusForge.Illustrator.UI;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
@@ -14,8 +15,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
     {
         internal static string ItemName(CachedIllustrationItem item)
         {
-            string title = AnimusForgeTextInputSanitizer.SanitizeSingleLine(item?.Title ?? "", 100).Trim();
-            return "《" + (title.Length == 0 ? "卡拉迪亚纪事" : title) + "》画卷";
+            return DisplayItemName(item);
         }
 
         internal static string Identity(CachedIllustrationItem item)
@@ -25,14 +25,14 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
         internal static string BuildIntroduction(CachedIllustrationItem item)
         {
-            var text = new StringBuilder("这是一幅名为" + ItemName(item) + "的画作。\n");
-            string theme = Clean(item?.Theme, 600);
+            var text = new StringBuilder(IllustratorRemainingUiText.GalleryIntroductionName(DisplayItemName(item))).Append('\n');
+            string theme = Clean(IllustrationStatusUiText.DisplayTheme(item?.Theme), 600);
             string action = Clean(item?.ActionSummary, 900);
-            if (theme.Length > 0) text.Append("画面主题：").Append(theme).Append('\n');
-            if (action.Length > 0) text.Append("画面描绘：").Append(action).Append('\n');
+            if (theme.Length > 0) text.Append(IllustratorRemainingUiText.GalleryIntroductionTheme(theme)).Append('\n');
+            if (action.Length > 0) text.Append(IllustratorRemainingUiText.GalleryIntroductionAction(action)).Append('\n');
             if (theme.Length == 0 && action.Length == 0)
-                text.Append("画面内容尚未注明。\n");
-            text.Append("画中的内容属于艺术描绘，不代表其中的事件已经真实发生。");
+                text.Append(IllustratorRemainingUiText.GalleryIntroductionUnannotated).Append('\n');
+            text.Append(IllustratorRemainingUiText.GalleryIntroductionFiction);
             return text.ToString();
         }
 
@@ -46,30 +46,32 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 Campaign.Current == null || Hero.MainHero == null || RewardSystemBehavior.Instance == null ||
                 MobileParty.MainParty?.ItemRoster == null)
             {
-                message = "画卷或当前战役已失效，请重新打开画廊。";
+                message = IllustratorRemainingUiText.GalleryConversionUnavailable;
                 return false;
             }
             if (!File.Exists(image.FilePath))
             {
-                message = "原画文件已不存在，未创建物品。";
+                message = IllustratorRemainingUiText.GalleryConversionSourceMissing;
                 return false;
             }
             string description = Clean(introduction, AnimusForgeTextInputSanitizer.MaxCourierLetterChars);
             if (description.Length == 0)
             {
-                message = "请填写画卷介绍，NPC 展示时需要读取这段内容。";
+                message = IllustratorRemainingUiText.GalleryConversionDescriptionRequired;
                 return false;
             }
             string name = ItemName(image);
-            if (!RewardSystemBehavior.TryCreateGeneratedInventoryItemForExternal(name, Identity(image), out ItemObject item, logSource: "gallery_rp"))
+            if (!RewardSystemBehavior.TryCreateGeneratedInventoryItemForExternal(name, Identity(image), out ItemObject item, logSource: "gallery_rp", preserveExistingDisplayName: true))
             {
-                message = "未能创建画卷物品，背包未增加物品。";
+                message = IllustratorRemainingUiText.GalleryConversionCreateFailed;
                 return false;
             }
+            // A previous conversion owns its stored name. Do not overwrite it when the UI language changes.
+            name = item.Name?.ToString() ?? name;
             // Store the description before delivery: never hand out an item that NPCs cannot describe.
             if (!RewardSystemBehavior.TrySetGeneratedRpItemIntroductionForExternal(item.StringId, description, out string error))
             {
-                message = "画卷介绍保存失败：" + error;
+                message = IllustratorRemainingUiText.GalleryConversionDescriptionFailed(error);
                 return false;
             }
             var roster = MobileParty.MainParty.ItemRoster;
@@ -86,15 +88,21 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }
             if (alreadyOwned)
             {
-                message = "背包中已有" + name + "，已更新介绍，未重复添加。";
+                message = IllustratorRemainingUiText.GalleryConversionAlreadyOwned(name);
                 return true;
             }
             int added = RewardSystemBehavior.GenerateKnownInventoryItemToRosterForExternal(roster,
                 item.StringId, name, null, item.Id.InternalValue, 1, out _, out _, out _, out _, "gallery_rp");
             message = added > 0
-                ? "已将" + name + "放入背包；可通过对话中的“展示物品”向 NPC 展示。"
-                : "画卷未能放入背包，请检查背包后再试。";
+                ? IllustratorRemainingUiText.GalleryConversionDelivered(name)
+                : IllustratorRemainingUiText.GalleryConversionDeliveryFailed;
             return added > 0;
+        }
+
+        internal static string DisplayItemName(CachedIllustrationItem item)
+        {
+            string title = AnimusForgeTextInputSanitizer.SanitizeSingleLine(item?.Title ?? "", 100).Trim();
+            return IllustratorRemainingUiText.GalleryConversionItemName(title.Length == 0 ? IllustratorRemainingUiText.GalleryConversionDefaultTitle : title);
         }
 
         private static string Clean(string value, int maxChars)

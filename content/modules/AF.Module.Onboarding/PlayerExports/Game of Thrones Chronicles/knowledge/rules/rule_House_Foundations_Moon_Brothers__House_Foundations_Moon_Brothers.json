@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Moon_Brothers",
+  "Keywords": [
+    "Moon Brothers"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Moon Tribe lives in the Mingyue Mountains and is one of the tribes collectively referred to as the Mountain Clan by the valley nobles. They survive by relying on kin, chiefdom, flocks, hunting, and control of hidden mountain passes, and do not recognize the Eyrie's natural rights to the mountains. The residents of Stonefort call them bandits, while the Moonmen remember the old grudge of having their land taken by the Andals and their ancestors being driven into the barren highlands. Weapons, food and marriage alliances can change the strength of the tribe, but they will not easily eliminate their hostility towards the Valley Knights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hilltribesmen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The members of the Lunar Tribe do not see themselves as ownerless bandits, but as free relatives forced into the mountains. A leader who can distribute food, avenge the dead, and lead people on patrol around the valley is more qualified to give orders than any sealed lord under the mountain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The farmers in the valley are afraid of raids by the Lunar tribe on livestock and mountain roads, but they also know that the long-term vendetta is not caused by only one side. Every time the noble punishment team burns down the highland camp, the next generation has a new reason for revenge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vale knights often despise the mountain folk for their lack of armor, until the team is cut off in a narrow pass by rolling stones and a hail of arrows. The Moonmen do not fight according to the rules of the tournament, and the terrain is their thickest armor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Moon Brothers The Moon tribe is a mountain clan in the Mingyue Mountains. It maintains itself with kin leaders, knowledge of mountain passes, and resistance to the rule of valley castles. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Moon Brothers The Moon tribe is a mountain clan in the Mingyue Mountains. It maintains itself with kin leaders, knowledge of mountain passes, and resistance to the rule of valley castles. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Moon Brothers The Moon tribe is a mountain clan in the Mingyue Mountains. It maintains itself with kin leaders, knowledge of mountain passes, and resistance to the rule of valley castles. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Moon Brothers The Moon tribe is a mountain clan in the Mingyue Mountains. It maintains itself with kin leaders, knowledge of mountain passes, and resistance to the rule of valley castles. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Moon Brothers: The Moon tribe is a mountain clan in the Mingyue Mountains. It maintains itself with kin leaders, knowledge of mountain passes, and resistance to the rule of valley castles."
+  ]
+}

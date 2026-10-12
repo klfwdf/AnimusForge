@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Karak_Angazar",
+  "Keywords": [
+    "Karak Angazar_KA",
+    "Angazar Fortress_KA",
+    "Angazar Iron Ore_KA",
+    "Ungazar Dwarf Territory_KA",
+    "King Angazar_KA",
+    "Gray Mountain Fortress_KA"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Ungazar is a dwarven stronghold in the western foothills of the Gray Mountains, ruled by King Bragarik. This place is famous for its rich iron ore veins. It was once an important western town in the golden age of the dwarves. It was later captured by the greenskins and was recovered after several generations of dwarves fought bloody battles. Iron and blood are the most profound memories of this city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Ungazar—the home our people took back with a hammer from the greenskins! King Blagarik's great-grandfather witnessed the moment when the fortress was recovered. It was said that the poisonous spore exhaust gas pouring out of the mine tunnels killed three entire companies of goblins. The melee axes forged by our blacksmiths here are unparalleled. The lowlanders of Fasha Pass call it \"The Anvil of Ash Mountain.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Ungazar controls the most important iron ore region on the west side of the Gray Mountains. The iron ore here is of extremely high grade, with an impurity content of less than five percent, making it ideal for forging weapons-grade steel. Although King Blagaric's army is small in size, it is well-equipped and has an absolute advantage in the guerrilla warfare between the mountain and green-skin tribes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economic structure of Karak Angazar is dominated by the mining industry. The Angazar iron ore vein stretches for seventeen miles, with a stable thickness of between five and eight feet, and an annual iron ore output of over 10,000 tons. The fortress is equipped with four large smelting furnaces and a hydraulic hammer forging workshop. The melted snowwater from the Gray Mountains provides abundant hydraulic energy. Refined iron ingots are mainly exported to the Imperial Nuln Arsenal and the Bretonnia Monfort Armory. In recent years, Angazar has begun to develop deep processing of iron tools - including the mass production of iron plowshares, rail fasteners and construction nails - to cope with the economic risks caused by fluctuations in military demand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dwarf women of Ungazar manage the city's storage warehouses and distribution of supplies. Mining disasters and greenskin raids have caused the number of widows here to far exceed that of other dwarf strongholds. I am responsible for registering the list of lost miners and distributing relief supplies - this is a heavy job that no one is willing to take over, but it can maintain the operation of the city better than a hammer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our clan is in charge of the deepest iron ore vein in Angazar - our mine tunnel has advanced three hundred miles, and it is the deepest and most dangerous mine in the city. King Bragarik trusts us not only because of the iron mines, but also because our family has guarded the entrance to the mines during every greenskin invasion. Iron and brazen greenskins - the history of Ungazar is the intersection of the two."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The air in Angazar is always filled with the smell of rust and coke. The dwarves in the smelting area below the fortress spent their lives surrounded by the sound of never-ending hammering, and many of them never left the ground. I stayed in the guard dormitory at the entrance of the mine, and in the middle of the night I heard rumblings coming from the depths of the mine in the distance - it was said to be giant underground insects drilling in deeper strata."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ungazar iron ingots are the best metallurgical raw material west of the Gray Mountains. The empire's arsenal is the largest buyer, and the long swords and spearheads they make from Angazal iron have never broken in close combat. There is an iron rule to remember when doing business with the Angazar dwarves: deliver the goods on time, otherwise your name will disappear forever from the supply list next time."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Karak Ungazar is a dwarven iron ore fortress at the western foot of the Gray Mountains. It was ruled by King Bragarik and was once recovered from the Greenskins.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Dwarven Iron Ore Citadel in the Gray Mountains of Karak Ungazar"
+  ]
+}

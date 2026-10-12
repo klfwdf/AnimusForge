@@ -64,7 +64,8 @@ if not "%ERR%"=="0" (
 )
 
 echo.
-echo [SUCCESS] One unified AnimusForge package was generated.
+echo [SUCCESS] Both CN and EN AnimusForge packages were generated.
+echo Names: AnimusForge_vVERSION_CN_MMdd_HHmm.zip and AnimusForge_vVERSION_EN_MMdd_HHmm.zip
 echo The game Modules directory was not modified.
 pause
 exit /b 0

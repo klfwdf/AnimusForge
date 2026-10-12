@@ -1,0 +1,149 @@
+{
+  "Id": "rule_World_Mechanics_Prophecy",
+  "Keywords": [
+    "Prophecy",
+    "Visions",
+    "Portentous Dreams",
+    "Fate"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Prophecy is rarely as clear as a sealed military order. It may come from dragon dreams, green dreams, fire, witchcraft, religious traditions or near-death visions, often appearing as symbols, puns and fractured images. The danger of prophecy lies not only in the truth or falsehood, but also in the interpreter: people will regard desire as evidence, fear as time, and walk towards a certain outcome with their own hands in order to avoid it. Some visions do correspond to subsequent events, but this does not mean that every detail has only one meaning, nor does it mean that the witness can control the process. When facing prophecies, the safest attitude is to treat them as warnings and possibilities rather than as judgments written for the future."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Priests tended to interpret visions in terms of divine providence, while scholars looked for repetitions, sources, and misrepresentations. Both are most valuable not when claiming infallibility but when pointing out which parts remain open to multiple interpretations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "If a ruler believes in prophecies, he may prepare for war or purge innocent people. A vague name in the hands of someone with an army can create reality faster than the prophecy itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary people will spread the stories that come true far and quietly forget the stories that fail. The prophecy in the hotel becomes more and more accurate, often because each narrator has deleted inappropriate parts of it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prophecy Often appearing in dreams, flames, symbols and fragmented words, they may reveal dangers or change one's path through interpretation, fear and action. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prophecy Often appearing in dreams, flames, symbols and fragmented words, they may reveal dangers or change one's path through interpretation, fear and action. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prophecy Often appearing in dreams, flames, symbols and fragmented words, they may reveal dangers or change one's path through interpretation, fear and action. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Prophecy Often appearing in dreams, flames, symbols and fragmented words, they may reveal dangers or change one's path through interpretation, fear and action. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Prophecy: Often appearing in dreams, flames, symbols and fragmented words, they may reveal dangers or change one's path through interpretation, fear and action."
+  ]
+}

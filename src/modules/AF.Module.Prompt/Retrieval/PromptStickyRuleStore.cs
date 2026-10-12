@@ -30,8 +30,8 @@ internal sealed class PromptStickyRuleStore
 
     private static readonly string[] FollowUpPhrases =
     {
-        "然后", "然后呢", "接着呢", "接下来呢", "那然后呢", "那接下来呢", "那我该怎么办", "我该怎么办", "下一步呢", "下一步怎么做",
-        "具体怎么做", "具体呢", "细说", "继续说", "继续", "展开说说", "后面呢"
+        PromptRetrievalTexts.Raw("Raw_ca4f5ee82e28"), PromptRetrievalTexts.Raw("Raw_f380896d20be"), PromptRetrievalTexts.Raw("Raw_5f972d69adb2"), PromptRetrievalTexts.Raw("Raw_84520cde4785"), PromptRetrievalTexts.Raw("Raw_cb5494af9dc4"), PromptRetrievalTexts.Raw("Raw_6ee3d825971d"), PromptRetrievalTexts.Raw("Raw_71f8e7e1ad42"), PromptRetrievalTexts.Raw("Raw_967110d7b87f"), PromptRetrievalTexts.Raw("Raw_10771e138290"), PromptRetrievalTexts.Raw("Raw_8027aee5db4f"),
+        PromptRetrievalTexts.Raw("Raw_120a56f96a10"), PromptRetrievalTexts.Raw("Raw_65262f312e50"), PromptRetrievalTexts.Raw("Raw_8aba4499bcae"), PromptRetrievalTexts.Raw("Raw_4f0b2024e72e"), PromptRetrievalTexts.Raw("Raw_7c9691192f1b"), PromptRetrievalTexts.Raw("Raw_bf90c6656677"), PromptRetrievalTexts.Raw("Raw_03f986e511b5")
     };
     private readonly object _gate = new object();
     private readonly Dictionary<string, List<State>> _byTarget = new Dictionary<string, List<State>>(StringComparer.OrdinalIgnoreCase);

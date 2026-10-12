@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Karak_Gantuk",
+  "Keywords": [
+    "Karak Gantuk_KT",
+    "Gantuk Fortress_KT",
+    "Hammerfist Fortress_KT",
+    "Gantuk Blacksmith City_KT",
+    "Gantuk Dwarf Territory_KT",
+    "King of Gantuk_KT"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Gantuk is a dwarven stronghold in the central Gray Mountains known for its Warhammer Forge, ruled by King Skag Hammerfist. The blacksmith craftsmanship here is unparalleled in the Gray Mountains, and the dwarf warhammers produced are used by the armies of various countries in the old world. The symbol of the fortress is a giant stone war hammer that stands above the city gate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Gantuk - Temple of the Hammer! The \"Land Breaker\" forged by King Skag himself weighs ninety pounds and once smashed through the three-layered skull of a troll. The secret method of making our war hammer has been passed down for thousands of years: folding it seven times, quenching it thirteen times, and striking it one last time on the night of the full moon. Once the Gantuk Warhammer is launched, it never looks back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The military value of Karak Gantuk lies in the quality and output of the warhammer. Both Imperial infantry and Bretonnian knights favor the Gantuk Warhammer - its center of gravity design and quenching process make it 40% more penetrating than ordinary warhammers. King Skag Hammerfist's armory keeps thousands of warhammers in stock to supply his allies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "Karak Gantuk's forging industry chain has achieved a high degree of intensification. The fortress has the most complete forging hammer workshop in the Gray Mountains - ten large water-driven forging hammers operate day and night, with an annual output of up to 20,000 warhammers of various types. The production process involves a total of seventeen processes from iron ore sorting, rough refining, fine forging, quenching to sharpening. Each process is handled by a dedicated family of craftsmen and passed down from generation to generation. In addition to warhammers, Gantuk also produces anvils and blacksmith tools - these are essential basic equipment for blacksmiths in the old world, and the demand is stable and large."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The female dwarves of Gantuk are responsible for the leather wrapping and pattern carving of the warhammer's handle. This is not only a technical job, but also includes a runic blessing - I engraved the family's forging crest on each handle, which is a symbol that the Gantuk war hammer cannot be counterfeited. There must be twelve carved horizontal lines on the handle of a genuine Gantuk war hammer. If one is missing, it is a fake."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family’s history of forging weapons for Gantuk City predates the founding of the Blacksmiths’ Guild by two thousand years. Each clan leader is named \"The Hammer\" after his last name - this is a permanent honorary title given to our family by King Skag's ancestors. Blacksmithing skills can only be taught orally within the family and are never passed on to outsiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The forging noise at Gantuk Citadel was the most deafening sound I have ever heard. Even a few miles outside the fortress, the ground shook slightly with the impact of the hydraulic forging hammer. The dwarf blacksmiths worked methodically amidst the hellish noise, as if the loud noises were just an ancient forging song. A dwarf blacksmith told me that forging is more efficient after being deaf."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Gantuk Warhammer is the most stable military investment product in the old world. The Imperial State Army’s annual purchase quota is around 3,000, and Bretonnia Knight’s orders have tripled in the past ten years. The only limit is production capacity - Gantuk dwarves are unwilling to sacrifice quality in pursuit of volume, so orders usually need to be made a year in advance."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Karak Gantuk is a dwarven stronghold in the Gray Mountains famous for its warhammer forging craftsmanship. It is ruled by King Skag Hammerfist.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Karak Gantuk Gray Mountains Dwarf Warhammer Forge Citadel"
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Alesiu",
+  "Keywords": [
+    "Alesiu",
+    "House Alesiu",
+    "River City Houses"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Alekshu is one of the noble houses of Sarnor. This surname exists in a world shaped at once by splendor and ruin: both banks of the River Sarne can still tell of the kings of the Tall Men and magnificent city-states, and can still see the empty lands left by conquest and abandonment. If House Alekshu is to maintain its standing, it cannot treat an old name merely as a privilege, but must shoulder the duties of mustering guards, maintaining irrigation, mediating kin debts, and taking in scattered folk. Its leaders, seat, and political choices may change, yet whether the house is worth following always depends on whether it can make a stretch of land grow grain again and make a community believe they can remain for another year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the old families of Sarnor look upon House Alekshu, they ask both where its bloodline comes from and what burdens it bears today. Ancestral titles can open the doors of the council hall, but they cannot complete a levy or a judgment on behalf of descendants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers and artisans record the honor and disgrace of House Alekshu in irrigation canals, mills, and unpaid wages. A house willing to repair a public work comes closer to revival than one that holds ten feasts atop the ruins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Guards and traveling merchants hope House Alekshu knows when to stand firm and when to yield. The Sarnori respect unyielding courage, yet they have seen too many cities hold out for the sake of pride until nothing remained but gravestones."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alesiu A local house of Sarnor whose strength comes from kin, civic duty, and the ability to sustain production and defense in the ancient river valleys. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alesiu A local house of Sarnor whose strength comes from kin, civic duty, and the ability to sustain production and defense in the ancient river valleys. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alesiu A local house of Sarnor whose strength comes from kin, civic duty, and the ability to sustain production and defense in the ancient river valleys. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alesiu A local house of Sarnor whose strength comes from kin, civic duty, and the ability to sustain production and defense in the ancient river valleys. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Alesiu: A local house of Sarnor whose strength comes from kin, civic duty, and the ability to sustain production and defense in the ancient river valleys."
+  ]
+}

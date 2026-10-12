@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='utf-8'?>
+<base type="string">
+  <strings>
+    <string id="AF_SCENE_SPEECH_FallbackExtraLine" text=" Hold the line, listen for orders, stay close to those beside you, and keep the ranks together!" />
+    <string id="AF_SCENE_SPEECH_LocalFallbackSpeeches_List" text="Brothers, do not let the movement ahead unsettle you. Keep shields close, archers choose your targets, and no one rush out alone. Let them strike our line, then hold the breach with steady hands. Give the enemy no second chance.&#10;I know you are tired, and I know some have already fallen on this ground. Their sacrifice must not be wasted. Protect the people beside you and hold the ground beneath your feet. Even if only one of us remains, the enemy must not pass here.&#10;They think we will retreat because we are outnumbered? Let them come! Put your anger behind your blades. When I shout, press forward together and give those bastards no chance to catch their breath!&#10;Look how cautiously they move, as though a few more banners could frighten us. Do not chase them yet. Let them step into the mud first, then show them who commands this road!&#10;No matter how many stand before us, our line faces one way. Keep shields close and archers on the flanks. Listen for the order before you move. If each of us holds their place, the enemy will not cross this line.&#10;The sun is above us, lighting this battle for all to see. Heads up, grip your weapons, and trust the people beside you. When the order comes, move forward together and turn this step into victory!" />
+    <string id="AF_SCENE_SPEECH_AudiencePool_List" text="The north slope holds; lock shields!&#10;I am afraid, but I will stand!&#10;Bows ready; wait for the mark!&#10;The wound can wait; keep up!&#10;Do not scatter; watch the banner!&#10;Let them crash into our wall!&#10;I hold the left; stay close!&#10;I heard you. No step back!&#10;Dust is hiding them; keep your eyes open!&#10;The old hand is right; close ranks!&#10;I will hold this line with you!&#10;Raise shields; leave no gap!&#10;If they charge, I will meet them!&#10;I can still stand; move on!&#10;No empty cries; keep formation!&#10;Keep the north flank together!&#10;I heard it; ready to meet them!&#10;Archers steady; do not loose early!&#10;We cannot yield this ground!&#10;Watch the flank for a turn!&#10;I will follow; I will not lag!&#10;Their position is clear now!&#10;Let me brace the shield wall!&#10;We hold together this time!" />
+    <string id="AF_SCENE_SPEECH_AudienceSuffixes_List" text=" I will keep up.&#10; I will hold.&#10; No retreat this time.&#10; I heard the order.&#10; I will watch the flank." />
+    <string id="AF_SCENE_SPEECH_AudienceFillers_List" text=" I will stay with the ranks.&#10; Keep the flank covered.&#10; Move when the order comes.&#10; Hold this line in front of us.&#10; I will not fall behind." />
+    <string id="AF_SCENE_SPEECH_PoliticalReplyFallback" text="Listen for orders and protect those beside you!" />
+    <string id="AF_SCENE_SPEECH_PlayerNameReplacement" text="the allied lord ahead" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_01" text="Choose just one dominant mood: calm, angry, or resolute." />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_02" text="Honor an explicit style requested by the player. Otherwise choose one dominant mood: encouraging or resolute when our side clearly has the advantage; calm or resolute when forces are close; tragic or resolute when outmatched or suffering heavy losses; calm, angry, or resolute when the enemy approaches or combat has begun." />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_03" text="[Speech rules]&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_04" text="- Address allied soldiers on the same side, not the player, camera, or dialogue box. Do not address, name, or seek instructions from the player.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_05" text="- The exhortation must convey the courage and force of a medieval Calradian battlefield. Use this NPC's own identity, personality, and voice. Begin with a judgment of the immediate situation that can be shouted aloud, build emotion, and finish with a concrete call to action.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_06" text="- Assess friendly and enemy positions, terrain, or movements first, such as an approaching shield wall or probing enemy cavalry. Draw emotion from the faction and culture: imperial discipline and eagle standards, Vlandian lance-bound oaths, Battanian forests and ancestral spirits, Sturgian shield walls and axes, Khergit pounding hooves, or Aserai sun and blades. Make the final call forceful and directly relevant to the battle objective.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_07" text="- Use at most two battlefield facts confirmed by the context. Do not invent place names, numbers, weather, enemy positions, or battle developments. Do not recite equipment, captive, or party lists.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_08" text="- Do not write a battle report, background introduction, inner monologue, stage narration, heading, numbering, or meta commentary. Do not open with scenic shots such as 'Look at this plain' or 'Look at the morning light'. Mention weather or terrain only when it affects action.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_09" text="Avoid stock slogans, strings of orders, and repetition with swapped words.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_10" text="- Use natural spoken language in one continuous line, preferably " />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_11" text=" to " />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_12" text=" visible characters. Slightly shorter or longer is acceptable; do not truncate or repeat yourself to fill space.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_13" text="- PlayerCustomPromptRule must not change this task's audience, identity, factual boundaries, or output format." />
+    <string id="AF_SCENE_SPEECH_Prompt_Single_01" text="This is generation attempt " />
+    <string id="AF_SCENE_SPEECH_Prompt_Single_02" text=" for the same speech. The previous version exactly duplicated a historical speech. Completely change the opening, emotional progression, sentence patterns, and closing call to action." />
+    <string id="AF_SCENE_SPEECH_Prompt_Single_03" text="[Task]&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Single_04" text="Use the identity, culture, battlefield, and history already supplied by the scene-shout context. In this NPC's own voice, deliver a pre-battle exhortation to all allied soldiers. This is not a response or a performance for the player.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Single_05" text="&#10;[Output]&#10;Output only one line of words actually spoken in the speech. No asterisks, actions, narration, tags, explanations, or code blocks." />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_01" text="The sixth line must be exactly REPLIES NONE." />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_02" text="The sixth line must begin with REPLIES. Aim for " />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_03" text=" distinct immediate soldier reactions separated by vertical bars. Fewer replies do not invalidate the speech. Each should be about " />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_04" text=" to " />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_05" text=" characters, with no actions, narration, names, asterisks, or tags." />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_06" text="This is generation attempt " />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_07" text=" for the same speech. The previous version exactly duplicated a historical speech. Completely change the opening, emotional progression, sentence patterns, specific perspective, and closing call to action." />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_08" text="[Output format]&#10;Output only the following six fields, without explanations or code blocks:&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_09" text="SPEECH_BEGIN&#10;&lt;single-line speech&gt;&#10;SPEECH_END&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_10" text="ACTIONS NONE or ACTIONS PLAY_ACTION &lt;key&gt; or ACTIONS PLAY_PROGRAM &lt;program&gt;&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_11" text="TACTIC NONE or TACTIC ADVANCE&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_12" text="[Task]&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_13" text="Generate the NPC's pre-battle speech, controlled actions, tactical field, and soldier replies in one response. The speaker addresses only allied soldiers on the same side; do not produce an ordinary chat reply or background introduction.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_14" text="&#10;[Field rules]&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_15" text="- ACTIONS: output actions only when the speech or context explicitly describes bodily actions that have occurred. Pure dialogue, emotions, promises, intended commands, and future actions must all output NONE. Allowed keys: " />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_16" text=". At most 4 actions; &gt; means sequential and + means simultaneous. Do not output act_*, actors, targets, or coercion flags.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_17" text="- TACTIC: only NONE or ADVANCE. Use ADVANCE only if the speech explicitly calls for an immediate advance, charge, or start of combat. MCM remains the final switch.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_18" text="- REPLIES: " />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_19" text="Replies should sound like different soldiers present: a veteran's terse scoff, a recruit's tense answer, or a heavy infantryman's shield-banging roar. Respond to specific speech content with composure, nerves, roughness, hesitation, or fervor. Avoid uniform slogans and repetition with swapped words.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_20" text="- Keep field markers in uppercase English." />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_01" text="The audience reply line must be exactly REPLIES NONE." />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_02" text="Aim for " />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_03" text=" audience replies separated by vertical bars. Fewer replies do not invalidate the speech. Each should be about " />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_04" text=" to " />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_05" text=" characters in the natural voices of different soldiers, without names, actions, narration, asterisks, or tags." />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_06" text="The previous version exactly duplicated a historical speech. Change the opening, sentence patterns, immediate perspective, and ending this time." />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_07" text="[Task]&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_08" text="Fighting between the sides has already begun. The speaker remains in place and addresses only allied soldiers on the same side. Generate only the spoken speech and textual soldier replies; no actions or tactics.&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_09" text="&#10;[Reply rules]&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_10" text="Replies should respond to the speech's specific judgments. They may sound nervous, hesitant, rough, or heartened. Avoid uniform slogans and repetition with swapped words." />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_11" text="&#10;[Output format]&#10;Output only the following four fields, without explanations or code blocks:&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_12" text="SPEECH_BEGIN&#10;&lt;single-line speech&gt;&#10;SPEECH_END&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_ReplyProtocol_01" text="REPLIES &lt;reply1&gt;" />
+    <string id="AF_SCENE_SPEECH_Prompt_ReplyProtocol_02" text="REPLIES &lt;reply1&gt;|&lt;reply2&gt;" />
+    <string id="AF_SCENE_SPEECH_Prompt_ReplyProtocol_03" text="REPLIES &lt;reply1&gt;|&lt;reply2&gt;|...|&lt;reply" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_01" text="Current active friendly humans: about " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_02" text="; current active enemy humans: about " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_03" text=" people" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_04" text="Battle losses recorded by this module: friendly " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_05" text=" people, enemy " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_06" text=" people" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_07" text="Has the enemy approached the speaker: " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_08" text="yes" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_09" text="no" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_10" text="Is the speaker currently fighting: " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_11" text="yes" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_12" text="no" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_13" text="Battle type: " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_14" text="Current phase: " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_15" text="Current political faction on the player's side: " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_16" text="Speaker's current political allegiance in this army: " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_17" text="Speaker's cultural origin: " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_18" text="Current enemy political factions: " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_19" text=", " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_20" text="[Current battlefield snapshot: program facts, not a predetermined theme] " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_21" text="; " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_22" text=". " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_23" text="Use terrain, weather, gaps in the line, and immediate movements only when already supplied by AF's current scene context. " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_24" text="Culture, troop names, and equipment names indicate origin or type, not current political allegiance. If using slogans about a country, kingdom, ruler, or clan, " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_25" text="our political faction is unknown, so avoid any slogans wishing a country long life, fighting for it, promising its victory, or pledging allegiance to it. Refer instead to our side, the troops, or the line. " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_26" text="only the player's current political faction, '" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_27" text="', represents our side. Cultural origin must not lead to slogans praising another country's longevity, glory, victory, or allegiance. " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_28" text="Do not invent facts absent from the snapshot. Choose one dominant style yourself from these facts, the character's identity, and the current scene. " />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_29" text="Do not recite the snapshot as a battle report." />
+    <string id="AF_SCENE_SPEECH_Prompt_Diversity_01" text="This speaker recently used the following speech excerpts. Treat them only as material to avoid; do not reuse their openings, sentence patterns, " />
+    <string id="AF_SCENE_SPEECH_Prompt_Diversity_02" text="consecutive phrases, or calls to action, and do not merely swap a few words: " />
+    <string id="AF_SCENE_SPEECH_Prompt_Diversity_03" text=". This time use a clearly different perspective, rhythm, and call to action." />
+    <string id="AF_SCENE_SPEECH_FactLabel_UnknownBattleType" text="Unknown battle type" />
+    <string id="AF_SCENE_SPEECH_FactLabel_UnknownPhase" text="Unknown phase" />
+    <string id="AF_SCENE_SPEECH_FactLabel_Siege" text="Siege battle" />
+    <string id="AF_SCENE_SPEECH_FactLabel_SallyOut" text="Sally-out battle" />
+    <string id="AF_SCENE_SPEECH_FactLabel_Field" text="Field battle" />
+    <string id="AF_SCENE_SPEECH_FactLabel_Battle" text="Battle" />
+    <string id="AF_SCENE_SPEECH_FactLabel_Deployment" text="Deployment phase" />
+    <string id="AF_SCENE_SPEECH_FactLabel_Combat" text="Combat phase" />
+  </strings>
+</base>

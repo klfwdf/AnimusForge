@@ -1,0 +1,19 @@
+{
+  "baseline": "14ac606ed",
+  "newKeys": [
+    { "id": "AF_ILL_UI_CONVERSATION_SESSION_CHANGED", "en": "The previous conversation illustration was archived; the current conversation has changed.", "zh": "原会话画卷已存入画廊，当前会话已变化。" },
+    { "id": "AF_ILL_UI_CONVERSATION_FIRST_IMAGE_REQUIRED", "en": "Click Redraw to create the first scene illustration for this conversation.", "zh": "请点击“重新绘制”生成本次对话的第一张场景插画。" },
+    { "id": "AF_ILL_UI_CONVERSATION_PREPARING", "en": "The AI artist is analyzing the conversation and body language...", "zh": "AI画师正在分析现场交谈与肢体姿势..." },
+    { "id": "AF_ILL_UI_CONVERSATION_EQUIPMENT_UNAVAILABLE", "en": "The complete equipment snapshot for both characters was unavailable. Generation stopped without substituting a troop template or another outfit.", "zh": "未能取得双方完整装备快照，已停止生成；不会用兵种模板或另一套服装替代。" },
+    { "id": "AF_ILL_UI_CONVERSATION_REFERENCE_REUSE", "en": "Reusing the environment and character references captured at the start of this conversation", "zh": "复用本次会话首次环境与人物参考" },
+    { "id": "AF_ILL_UI_PORTRAIT_EQUIPMENT_UNAVAILABLE", "en": "The encyclopedia's current displayed equipment could not be read. Generation stopped without guessing civilian or battle clothing.", "zh": "无法读取百科当前展示装备，已停止生成；不会改用猜测的便服或战斗服。" },
+    { "id": "AF_ILL_UI_CARD_DRAW_FAILED", "en": "Drawing failed: {ERROR}", "zh": "绘制失败: {ERROR}" },
+    { "id": "AF_ILL_UI_CARD_GENERATION_EXCEPTION", "en": "Generation error: {ERROR}", "zh": "生成异常: {ERROR}" },
+    { "id": "AF_ILL_UI_CARD_NOT_SAVED_OR_DISPLAYED", "en": "The image could not be saved or displayed.", "zh": "未能保存或显示图片" },
+    { "id": "AF_ILL_UI_SCENE_PROBE_LOADING", "en": "Rebuilding the nearby environment and capturing a complete panorama...", "zh": "正在重建附近环境并采集完整全景..." },
+    { "id": "AF_ILL_UI_SCENE_PROBE_DISPLAY_FAILED", "en": "The exported preview could not be displayed.", "zh": "未能显示导出的预览" }
+  ],
+  "reusedMethods": [
+    "GalleryLoading", "WeeklyBackground", "WeeklyRedrawLoading", "WeeklyRedrawSuccess", "WeeklyRedrawFailed", "WeeklyDefaultChanged", "CardPrepareFailed", "CardProbeFailed", "PortraitPreparing", "WeeklyNotSaved"
+  ]
+}

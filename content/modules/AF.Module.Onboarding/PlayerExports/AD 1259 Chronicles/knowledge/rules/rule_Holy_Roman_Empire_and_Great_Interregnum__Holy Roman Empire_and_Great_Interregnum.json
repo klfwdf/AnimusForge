@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Holy_Roman_Empire_and_Great_Interregnum",
+  "Keywords": [
+    "Holy Roman Empire",
+    "Great Interregnum",
+    "King of the Romans",
+    "Hohenstaufen",
+    "Imperial Electors",
+    "Richard of Cornwall"
+  ],
+  "RagShortTexts": [
+    "The Great Interregnum (1254–1273) left the Holy Roman Empire without an undisputed crowned emperor, spurring territorial fragmentation and urban leagues."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Great Interregnum (1254–1273) followed the death of King Conrad IV and the final downfall of the imperial House of Hohenstaufen. With no undisputed sovereign upon the throne of Charlemagne, the Holy Roman Empire fragmented into an assemblage of autonomous duchies, bishoprics, and imperial free cities. In 1257, a split election among the prince-electors produced two competing foreign titular Kings of the Romans: Richard, Earl of Cornwall (brother to Henry III of England) and King Alfonso X of Castile.\n\nNeither titular monarch possessed the military might or German territorial base to enforce central authority. In response, German princes expanded their private territorial states (Landesherrschaft), while autonomous cities organized mutual defense confederations such as the Rhenish League (Rheinischer Städtebund) to uphold public peace (Landfrieden) against robber barons."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,46 @@
+{
+  "Id": "rule_Entry_3",
+  "Keywords": [
+    "Western Ocean",
+    "Biscayne Sea"
+  ],
+  "RagShortTexts": [
+    "The Western Ocean, also known as the Biscayne Sea, is located on the west coast of the Calradia continent"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Western Ocean is the ocean to the west of the mainland. It’s nothing special. It’s just that you can’t see the end at a glance. I heard it’s boundless."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 40
+        }
+      },
+      "Content": "The Western Sea, also known as the Biscayne Sea, is a vast body of water located on the west coast of the Calradia continent. It is rich in fish, especially whales. The coast makes a living from fishery, whale industry, and salt industry. The Western Ocean is also the birthplace of the Vlandia people and the Kalad people. First, the Kalad people landed on the west coast of the continent 1,000 years ago and established the great Kalad Empire. Eight hundred years later, the Vlandians also landed on the west coast, and then established the Kingdom of Vlandia."
+    }
+  ],
+  "TextMappings": []
+}

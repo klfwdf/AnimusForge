@@ -1,0 +1,213 @@
+{
+  "Id": "rule_bretonnia",
+  "Keywords": [
+    "Bretonnia",
+    "Kingdom of Knights",
+    "Realm of the Lady of the Lake",
+    "Kingdom of the Grail",
+    "Bretonnia Couronne",
+    "Gilles",
+    "Chivalry",
+    "Feudal System",
+    "Blessing of the Lady",
+    "Western Old World",
+    "Grail Companions",
+    "Bretonnian Warhorse"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia is a mighty kingdom in the western Old World, renowned for its peerless chivalric traditions and devout faith in the Lady of the Lake. Divided into fourteen dukedoms and ruled by the Royarch, its knights take the field bound by a strict Code of Chivalry—and holiest among them are the Grail Knights who have supped from the Grail, the incarnate will of the Lady of the Lake in the mortal world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia—this is no realm of mere mortals; this is the anointed domain of the Lady of the Lake upon the earth. Our forefather Gilles le Breton was granted a draught from the Grail at the Lady's first manifestation, thereby founding an immortal dynasty of chivalry. Every Bretonnian boy dreams of becoming a knight: serving as a page from the age of seven, shedding sweat with blunted blades on the lists, kneeling in a Grail chapel through the dark night to pray for the Lady's guidance, until the day the King or a Duke lays the flat of a longsword upon your shoulder and you are mortal no more. Tracing our line of kings back from Louen Leoncoeur, every single monarch has endured the ordeal of the Grail—only one who has drunk from the Grail may wear the crown, a sacred legitimacy that those Imperial Elector Counts who buy votes with coin can never comprehend. The peasants till our soil and pay their tithes not out of exploitation, but in exchange for protection—on nights when Chaos hordes smash through the northern defenses of the Empire, it is the silver-armored wall of Bretonnian knights that shields these helpless commoners. We are proud, yet not arrogant; we are warlike, yet never wage war for its own sake—this is Chivalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The art of ruling Bretonnia could not be more different from ruling the Empire—here there are no convoluted Diet ballots or electoral coalitions, only the oaths of knights and the chain of feudal obligation. The King is the supreme liege lord, the fourteen Dukes are vassals to the King, and the Barons beneath each Duke are in turn vassals to their Duke. This pyramid appears simple, yet its stability rests entirely upon one core conviction: that a knight must honor the Code of Chivalry. Once knights begin to question the sanctity of their oaths, the entire feudal edifice crumbles from the roots. Bretonnia's diplomatic strategy is likewise threaded with the logic of chivalry: maintaining a dignified distance toward the Empire, according the ancient pacts with the Dwarfs their due respect, and preserving a cautious courtesy toward the Elves—it is whispered that some ancient connection exists between the Lady of the Lake and the Elven pantheon, a topic no Bretonnian Duke would ever dare discuss in public. The true peril comes from the south: raiders from Estalia and Araby and Greenskin tribes along the marches are forever probing our southern borders. Yet Bretonnia's greatest enemy is not any foreign foe, but hubris—more than one King in history has lost half the realm by underestimating the destructive force of a peasant uprising."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The politico-theological foundation of Bretonnia is a phenomenon unique in the Old World—the Cult of the Lady of the Lake grounds the legitimacy of royal authority entirely upon divine grace rather than secular power. The first manifestation of the Grail witnessed by Gilles le Breton in Year 1 of the Bretonnian Calendar did not merely found a kingdom; it created an entire political philosophy uniting spiritual and temporal sovereignty. The 'Chronicles of Bretonnia' record that Gilles united the fourteen tribes not through army size or wealth—at the time he was a penniless knight errant—but through a succession of miracles: in every decisive battle, the Lady of the Lake descended upon the field in person, her majesty causing the Greenskin hordes to rout in terror. The twelve original Grail Companions (including Gilles himself) each swore fealty to the Lady and were invested as Dukes, and those twelve original dukedoms—expanded to fourteen—remain the fundamental administrative units of Bretonnia to this day. Intriguingly, Bretonnian scholars privately acknowledge certain parallels between the Cult of the Lady of the Lake and Elven culture—yet no one dares argue this openly, as doing so might shake the core dogma that 'the Lady is Bretonnia's deity alone.' The legal foundation of the feudal order is the 'Code of Gilles,' which codifies the obligations between knight and liege, the status of peasants, and the rules of the tournament—the original manuscript of this code is still guarded by the Grail Damsels within the Grail Cathedral of the Lady."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Noblewomen in Bretonnia live within a curious paradox—by law we have no right to inherit a dukedom, no right to speak in the Council of Dukes, and not even the right to sign any official document without the accompaniment of a husband or male guardian; yet in reality, when the men ride forth on Errantry Wars, it is the women who govern and defend the castles of Bretonnia. My grandmother once single-handedly organized the defense of our keep at Bordeleaux Pass for three full months—while her husband and two eldest sons were across the Grey Mountains fighting in the Crusades against Araby, she directed the peasants in hauling boiling oil, stones, and crossbow bolts up to every tower. The women of Bretonnia are not knights, yet they are the mothers, wives, and widows of knights, preserving for their houses the most vital thing of all while the men pursue glory with the lance: survival. The reason the Lady of the Lake is uniquely understood by the women of Bretonnia is that our divine patroness is herself a woman—she has no need to prove her strength through lance and warhorse; she rules the world through grace rather than conquest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The ducal houses of Bretonnia are not mere rulers—they are living chapters of the Bretonnian Chronicles. Our family's roots in the Dukedom of Parravon stretch all the way back to the sixth Grail Companion of Gilles's age—Calard or Caraduc de Parravon. Every stone wall of our family keep is hung with the battle standards and battered shields of our fathers, grandfathers, and more distant forebears, the Greenskin arrowheads and Chaos axe-scars embedded in those shields serving as our house's heraldic archive. Family honor in Bretonnia is not the sum of individual honors—it is a continuum; your deeds bring glory or shame not merely to yourself, but to the ten generations above you and the five generations yet unborn below you. For that reason, whenever our family representative rises to speak in the Council of Dukes, he does not speak in a personal capacity—he speaks with the accumulated voice of every charge, every siege endured, and every refusal to compromise made by the House of Parravon over two hundred years. In theory, a Bretonnian family owes its loyalty to the King and the Lady, but in practice that loyalty is filtered through layers: a Baron's devotion to his Duke is often less real than his reverence for the honor of his own house."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During the years I wandered across Bretonnia, I saw the true face of the knights—not the silver-armored heroes chanting lyric poetry on the tournament lists, but the grey-cloaked tithe-reeves riding into peasant villages with a file of expressionless men-at-arms behind them, going door to door along muddy manor lanes after the autumn harvest to announce the year's tax assessment. On a spiritual plane, the knights of Bretonnia are the noblest warriors in the Old World; on a material plane, they are the most efficient extraction machine in the Old World. Every peasant hayloft I ever slept in across Bretonnia was steeped in the same low-grade, unrelenting scent of despair—a resignation inherited from their forefathers and woven into the rhythm of daily life. Yet I also saw a Grail Knight in Bretonnia—and that was a being of an altogether different order. One stormy night when I had lost my way on a mountain trail in Bordeleaux, a lone Grail Knight appeared before me out of the darkness; without uttering a single word, he simply pointed his lance toward the true path and rode on into the rain. In his silence dwelt a tranquility that did not belong to mortals—that was not a man bearing arms, that was a fragment of the Lady's own will clad in armor. Bretonnia is an operating system that sustains hell through the promise of heaven."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economy of Bretonnia is the riddle most misunderstood by merchants across the Old World. On the surface, it looks like a 'backward' feudal realm resting on self-sufficient manorial estates—yet once you engage deeply in its trade, you discover that Bretonnian exports of wine, wool, and fine horses form the most stable, politically insulated transnational trade flow in the western Old World. Wines from Aquitaine fetch nearly three times their manorial export price in the markets of Altdorf and the Tilean city-states—and the margin in between sustains the entire smuggling caravan network linking southern Bretonnia and the Empire. Bretonnian warhorses are the finest steeds in the world—Imperial cavalry commanders are privately willing to pay any price for purebred Bretonnian destriers, though they never admit this in public so as to avoid the political embarrassment of 'bowing to the knightly lords.' While merchant guilds in Bretonnia hold a lower social standing than their Imperial counterparts, they are far from nonexistent—in the port cities of Brionne and Bordeleaux, merchants pay hefty charter fees to the Dukes in exchange for trading licenses under feudal law, quietly amassing considerable hidden wealth in the process. My economic verdict on Bretonnia is this: its outward poverty is an institutionalized frugality—that knights disdain ostentatious displays of wealth is a moral virtue of their code, not a shortage of coin."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Gilles le Breton—the founding King of Bretonnia and the first knight to drink from the Grail",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bretonnia Kingdom of Knights Realm of the Lady of the Lake"
+  ]
+}

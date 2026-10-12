@@ -117,7 +117,7 @@ public static void AppendCanonicalDocumentEvents(
             string resultSourceKey = "document:" + document.DocumentId + ":action:" + action.ActionId + ":result";
             bool appended = AppendCanonicalHistoryEntry(storage, sourceKeys, compressionTriggerTokens, ensureInitialized, newId, formatCampaignDate, estimateTokens, invalidateRenderCache, "diplomatic_result", resultSourceKey, document.DocumentId,
                 document.Day, document.GameDate, document.AuthorKingdomId, new[] { action.TargetKingdomId },
-                action.Intent, action.Commitment, "经游戏机制确认：" + action.MechanicalResult,
+                action.Intent, action.Commitment, DiplomacyCompatibilityTexts.Get("Render_Prefix_Confirmed") + action.MechanicalResult,
                 verified: true, respondingToOfferDocumentId: action.RespondingToOfferDocumentId,
                 respondingToThreatDocumentId: action.RespondingToThreatDocumentId,
                 actionFacts: new[] { (action.ActionId ?? "") + "@" + (action.TargetKingdomId ?? "") + "=" + WorldDiplomacyIntentVocabulary.NormalizeIntent(action.Intent) });
@@ -129,7 +129,7 @@ public static void AppendCanonicalDocumentEvents(
     }
     if (!document.HistoryResultRecorded && (document.ChangedDiplomaticState || externalResolvedFact) && !string.IsNullOrWhiteSpace(document.MechanicalResult))
     {
-        string resultText = "经游戏机制确认：" + document.MechanicalResult;
+        string resultText = DiplomacyCompatibilityTexts.Get("Render_Prefix_Confirmed") + document.MechanicalResult;
         string resultSourceKey = "document:" + document.DocumentId + ":result";
         bool appended = AppendCanonicalHistoryEntry(storage, sourceKeys, compressionTriggerTokens, ensureInitialized, newId, formatCampaignDate, estimateTokens, invalidateRenderCache, "diplomatic_result", resultSourceKey, document.DocumentId,
             document.Day, document.GameDate, document.AuthorKingdomId, targets, document.Intent, document.Commitment, resultText,
@@ -174,7 +174,7 @@ public static void AppendPublishedWorldWeeklyArtifact(
         sourceKey = "weekly:" + sourceId + ":r" + revision.ToString(CultureInfo.InvariantCulture);
     }
     bool correction = !string.IsNullOrWhiteSpace(previousHash);
-    string heading = correction ? "世界周报成品更正版" : "世界周报成品";
+    string heading = correction ? DiplomacyCompatibilityTexts.Get("Render_Prefix_WeeklyCorrection") : DiplomacyCompatibilityTexts.Get("Render_Prefix_Weekly");
     string text = heading + (string.IsNullOrWhiteSpace(publishedTitle) ? "：\n" : "《" + publishedTitle + "》：\n") + publishedBody;
     if (AppendCanonicalHistoryEntry(storage, sourceKeys, compressionTriggerTokens, ensureInitialized, newId, formatCampaignDate, estimateTokens, invalidateRenderCache, "world_weekly", sourceKey, sourceId,
         createdDay, createdDate, "", Enumerable.Empty<string>(), "", "", text, verified: true))
@@ -321,12 +321,12 @@ internal static bool AppendPublishedPolicyArtifact(
         return true;
     }
     StringBuilder text = new StringBuilder();
-    text.Append("政策《").Append(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(policy.PolicyName, "未命名政策")).Append("》");
+    text.Append(DiplomacyCompatibilityTexts.Get("Render_PolicyOpening")).Append(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(policy.PolicyName, DiplomacyMiscPromptTexts.Get("History_UnnamedPolicy", "Unnamed policy"))).Append("》");
     if (!string.IsNullOrWhiteSpace(policy.KingdomName) || !string.IsNullOrWhiteSpace(policy.KingdomId))
     {
-        text.Append("；发布国=").Append(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(policy.KingdomName, policy.KingdomId));
+        text.Append(DiplomacyCompatibilityTexts.Get("Render_IssuerLabel")).Append(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(policy.KingdomName, policy.KingdomId));
     }
-    if (!string.IsNullOrWhiteSpace(policy.ScopeKind)) text.Append("；范围=").Append(policy.ScopeKind.Trim());
+    if (!string.IsNullOrWhiteSpace(policy.ScopeKind)) text.Append(DiplomacyCompatibilityTexts.Get("Render_ScopeLabel")).Append(policy.ScopeKind.Trim());
     text.AppendLine().Append(policy.PublishedText.Trim());
     bool isChange = previousRevision > 0L;
     bool appended = AppendCanonicalHistoryEntry(storage, sourceKeys, compressionTriggerTokens, ensureInitialized, newId, formatCampaignDate, estimateTokens, invalidateRenderCache, isChange ? "policy_snapshot" : eventKind, sourceKey, policy.PolicyId,
@@ -361,9 +361,10 @@ public static void TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
             threat.DomesticPenaltySkippedClanIds);
 
         string sourceKey = "threat:" + threat.ThreatId + ":domestic_penalty";
-        string result = "经游戏机制确认：" + kingdomNameIncludingEliminated(threat.TargetKingdomId) + "明确退让后，已按每个正式封臣家族与退让时王族关系降低20点（最低为-100）的规则完成国内关系结算；已结算"
-            + appliedCount.ToString(CultureInfo.InvariantCulture) + "个家族"
-            + (skippedCount > 0 ? "，另有" + skippedCount.ToString(CultureInfo.InvariantCulture) + "个已无有效关系对象的家族未执行" : "") + "。";
+        string result = string.Format(DiplomacyMiscPromptTexts.Get("ThreatFact_ConcessionRelationPenalty", "Confirmed by game mechanics: After {0} explicitly conceded, domestic relations were settled reducing relations by 20 points (min -100) between each formal vassal clan and the royal clan at concession; {1} clans settled{2}."),
+            kingdomNameIncludingEliminated(threat.TargetKingdomId),
+            appliedCount.ToString(CultureInfo.InvariantCulture),
+            (skippedCount > 0 ? string.Format(DiplomacyMiscPromptTexts.Get("ThreatFact_UnexecutedClansSuffix", ", with {0} clans having no valid relation targets unexecuted"), skippedCount.ToString(CultureInfo.InvariantCulture)) : ""));
         bool appended = appendEntry("diplomatic_result", sourceKey,
             WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.ComplianceDocumentId, threat.ThreatId), threat.UpdatedDay,
             formatCampaignDate(threat.UpdatedDay), threat.TargetKingdomId, new[] { threat.IssuerKingdomId },
@@ -403,8 +404,10 @@ public static void TryAppendDiplomaticThreatNonComplianceHistoryResult(
 
         string stageLabel = WorldDiplomacyRoundLifecycleRules.DescribeThreatStageFormal(decision.Stage);
         string sourceKey = "threat:" + threat.ThreatId + ":target_noncompliance:" + decision.StageDocumentId;
-        string result = "经游戏机制确认：" + kingdomName(threat.TargetKingdomId) + "在收到" + kingdomName(threat.IssuerKingdomId) + "的" + stageLabel
-            + "后，其第一份已发布公文没有使用comply_ultimatum明确退让，因此已作出不退让决定。";
+        string result = string.Format(DiplomacyMiscPromptTexts.Get("ThreatFact_NoConcessionDecision", "Confirmed by game mechanics: After {0} received the {2} from {1}, its first published document did not explicitly concede using comply_ultimatum, thus making a decision not to concede."),
+            kingdomName(threat.TargetKingdomId),
+            kingdomName(threat.IssuerKingdomId),
+            stageLabel);
         bool appended = appendEntry("diplomatic_result", sourceKey,
             decision.DecisionDocumentId, decision.DecisionDay,
             formatCampaignDate(decision.DecisionDay), threat.TargetKingdomId,
@@ -449,9 +452,12 @@ public static void TryAppendDiplomaticThreatHistoryResult(
             WorldDiplomacyRoundLifecycleRules.NormalizeThreatEventStage(threat.Stage));
         string expected = WorldDiplomacyRoundLifecycleRules.DescribeThreatExpectedFollowThrough(threat.Stage);
         string sourceKey = "threat:" + threat.ThreatId + ":reputation_penalty";
-        string result = "经游戏机制确认：" + kingdomName(threat.IssuerKingdomId) + "未在其下一份已发布公文中对"
-            + kingdomName(threat.TargetKingdomId) + expected + "，此前" + stageLabel + "未获兑现，国家威望降低"
-            + threat.ReputationPenaltyAmount.ToString(CultureInfo.InvariantCulture) + "点。";
+        string result = string.Format(DiplomacyMiscPromptTexts.Get("ThreatFact_UnfulfilledThreatPrestigeLoss", "Confirmed by game mechanics: {0} did not {2} against {1} in its next published document; the earlier {3} was unfulfilled, kingdom prestige reduced by {4} points."),
+            kingdomName(threat.IssuerKingdomId),
+            kingdomName(threat.TargetKingdomId),
+            expected,
+            stageLabel,
+            threat.ReputationPenaltyAmount.ToString(CultureInfo.InvariantCulture));
         bool appended = appendEntry("diplomatic_result", sourceKey,
             WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.ResolutionDocumentId, threat.StageDocumentId, threat.ThreatId),
             threat.UpdatedDay, formatCampaignDate(threat.UpdatedDay), threat.IssuerKingdomId,
@@ -498,10 +504,11 @@ public static void TryAppendDiplomaticThreatIssuerRewardHistoryResult(
             threat.IssuerRewardSkippedClanIds);
 
         string sourceKey = "threat:" + threat.ThreatId + ":issuer_relation_reward";
-        string result = "经游戏机制确认：" + kingdomNameIncludingEliminated(threat.IssuerKingdomId) + "迫使对方明确退让后，已按每个正式封臣家族与退让时王族关系增加"
-            + rewardAmount.ToString(CultureInfo.InvariantCulture) + "点（最高为100）的规则完成国内关系奖励；已结算"
-            + appliedCount.ToString(CultureInfo.InvariantCulture) + "个家族"
-            + (skippedCount > 0 ? "，另有" + skippedCount.ToString(CultureInfo.InvariantCulture) + "个已无有效关系对象的家族未执行" : "") + "。";
+        string result = string.Format(DiplomacyMiscPromptTexts.Get("ThreatFact_ForcedConcessionReward", "Confirmed by game mechanics: After {0} forced the opponent to concede, domestic relation rewards were settled adding {1} points (max 100) between each formal vassal clan and the royal clan at concession; {2} clans settled{3}."),
+            kingdomNameIncludingEliminated(threat.IssuerKingdomId),
+            rewardAmount.ToString(CultureInfo.InvariantCulture),
+            appliedCount.ToString(CultureInfo.InvariantCulture),
+            (skippedCount > 0 ? string.Format(DiplomacyMiscPromptTexts.Get("ThreatFact_UnexecutedClansSuffix", ", with {0} clans having no valid relation targets unexecuted"), skippedCount.ToString(CultureInfo.InvariantCulture)) : ""));
         bool appended = appendEntry("diplomatic_result", sourceKey,
             WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.ComplianceDocumentId, threat.ThreatId), threat.UpdatedDay,
             formatCampaignDate(threat.UpdatedDay), threat.IssuerKingdomId, new[] { threat.TargetKingdomId },

@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_WM_ActionRaid" text="烧掠" />
+    <string id="AF_WM_ActionBesiege" text="围攻" />
+    <string id="AF_WM_GoToSettlementUntil" text="{ACTOR}开始前往{SETTLEMENT}，抵达后停留至指定期限。" />
+    <string id="AF_WM_GoToSettlement" text="{ACTOR}开始前往{SETTLEMENT}，抵达后停留{DAYS}天。" />
+    <string id="AF_WM_Patrol" text="{ACTOR}开始前往{SETTLEMENT}附近，抵达后巡逻{DAYS}天。" />
+    <string id="AF_WM_SettlementAttack" text="{ACTOR}开始向{SETTLEMENT}机动，准备{ACTION}，时限{DAYS}天（{MODE}）。" />
+    <string id="AF_WM_WaitForHero" text="{ACTOR}开始前往{SETTLEMENT}外侧，等待{HERO}离开定居点以执行攻击命令。" />
+    <string id="AF_WM_TrackHero" text="{ACTOR}开始追踪{HERO}的部队，准备攻击，时限{DAYS}天（{MODE}）。" />
+    <string id="AF_WM_TrackParty" text="{ACTOR}开始追踪{PARTY}，准备攻击，时限{DAYS}天（{MODE}）。" />
+    <string id="AF_WM_MergeForeign" text="{HERO}开始率部前往玩家主队，准备在保留原家族身份的情况下以客军形式整队并入。" />
+    <string id="AF_WM_Merge" text="{HERO}开始返回玩家部队，准备会合并转入兵力。" />
+    <string id="AF_WM_FollowStart" text="{ACTOR}开始前往并跟随{TARGET}，持续{DAYS}天。" />
+    <string id="AF_WM_HideoutTravel" text="{ACTOR}开始前往{SETTLEMENT}，准备清剿藏身处。" />
+    <string id="AF_WM_HideoutEngage" text="{ACTOR}开始在{SETTLEMENT}清剿藏身处，胜败与伤亡由原版战斗结算。" />
+    <string id="AF_WM_ForeignGuestDepart" text="{HERO}所属势力已与玩家开战，该外族客军 Hero 已离开玩家主队。" />
+    <string id="AF_WM_ForeignGuestDetachmentReleased" text="{HERO}所属势力已与玩家开战，其外族客军分队已脱离玩家指挥。" />
+    <string id="AF_WM_PartyName" text="{HERO}的队伍" />
+    <string id="AF_WM_Target" text="目标" />
+    <string id="AF_WM_TrackRisk" text="{ACTOR}已经接近{TARGET}，但战力评估认为当前风险过高，正在等待更好的进攻窗口。" />
+    <string id="AF_WM_TrackBlocked" text="{ACTOR}已经接近{TARGET}，但攻击硬条件暂不满足，正在继续跟踪目标。" />
+    <string id="AF_WM_TrackLost" text="{ACTOR}与{TARGET}的接战条件暂时丢失，正在重新追击。" />
+    <string id="AF_WM_Tracking" text="{ACTOR}正在追踪{TARGET}，准备执行攻击命令。" />
+    <string id="AF_WM_ResultActorPartyDestroyed" text="执行者部队已被消灭。" />
+    <string id="AF_WM_ResultTargetDefeated" text="目标部队已被击溃。" />
+    <string id="AF_WM_ResultTargetDestroyed" text="目标部队已经被消灭或解散。" />
+    <string id="AF_WM_ResultNoWinner" text="战斗已经结束，但原版事件没有明确胜负。" />
+    <string id="AF_WM_ResultActorCaptured" text="执行者已经被俘，攻击命令失败。" />
+    <string id="AF_WM_ResultTargetCaptured" text="{TARGET}已被俘，目标部队被击败。" />
+    <string id="AF_WM_ResultActorKilled" text="执行者已经死亡，攻击命令失败。" />
+    <string id="AF_WM_ResultSettlementCaptured" text="{SETTLEMENT}已经被攻下。" />
+    <string id="AF_WM_ResultSiegeFailed" text="攻城方未能攻下目标。" />
+    <string id="AF_WM_ResultSettlementOwnerChanged" text="{SETTLEMENT}已经被攻下并易主。" />
+    <string id="AF_WM_ResultVillageRaided" text="村庄已被洗劫。" />
+    <string id="AF_WM_ResultRaidRepelled" text="守军击退了袭掠，村庄没有被洗劫。" />
+    <string id="AF_WM_ResultVillageLooted" text="村庄已进入被洗劫状态。" />
+    <string id="AF_WM_Admission_StopOrder" text="大地图命令顺序错误：STOP 只能位于本轮首个有效世界地图标签，已忽略该 STOP。" />
+    <string id="AF_WM_Admission_HideoutUnavailable" text="清剿命令未接取：藏身处未发现、已清空、被任务占用、正在战斗，或安全接口未就绪。" />
+    <string id="AF_WM_Admission_NotReady" text="大地图命令系统未初始化。" />
+    <string id="AF_WM_Admission_NoParty" text="大地图命令失败：当前非英雄说话对象没有可接管的野外部队。" />
+    <string id="AF_WM_Admission_QueueCleared" text="{ACTOR}已清空旧的大地图命令清单。" />
+    <string id="AF_WM_Admission_NonHeroLimit" text="大地图命令失败：当前非英雄部队只能执行移动、巡逻、跟随、攻击等队伍级命令。" />
+    <string id="AF_WM_Admission_NoTarget" text="大地图命令失败：没有可执行的有效目标 ID。" />
+    <string id="AF_WM_Admission_CompanionOrder" text="大地图命令顺序错误：建队前的归队命令无法执行，已从首个有效任务命令开始处理。" />
+    <string id="AF_WM_Admission_GovernorNoTask" text="大地图命令失败：驻城总督需要至少一道移动、巡逻、跟随或攻击任务才能组建远征队。" />
+    <string id="AF_WM_Admission_GovernorOrder" text="大地图命令顺序错误：总督建队前的归队命令无法执行，已从首个有效任务命令开始处理。" />
+    <string id="AF_WM_Admission_ProcessingFailed" text="大地图命令处理失败：{ERROR}" />
+    <string id="AF_WM_CommandMissingSource" text="大地图命令失败：缺少外部命令来源。" />
+    <string id="AF_WM_CommandInvalidHeroSettlement" text="大地图命令失败：找不到有效的英雄或定居点。" />
+    <string id="AF_WM_CommandExisting" text="{HERO}已有其它大地图命令，暂不能改派参加宴会。" />
+    <string id="AF_WM_StopMissingHeroSource" text="大地图命令停止失败：缺少英雄或命令来源。" />
+    <string id="AF_WM_StopWrongSource" text="{HERO}当前命令不属于该宴会来源，未停止。" />
+    <string id="AF_WM_CannotControlPlayerParty" text="大地图命令失败：不能这样指挥玩家本人的部队。" />
+    <string id="AF_WM_NoControllableParty" text="大地图命令失败：{HERO}当前没有独立可控制部队。" />
+    <string id="AF_WM_NoValidCommands" text="大地图命令失败：没有通过 ID 校验的命令。" />
+    <string id="AF_WM_WaitingBattleReplace" text="{ACTOR}正在等待当前战斗安全结算，暂不能替换大地图命令。" />
+    <string id="AF_WM_WaitingBattleAppend" text="{ACTOR}正在等待当前战斗安全结算，暂不能追加新的大地图命令。" />
+    <string id="AF_WM_IsolatedSource" text="{ACTOR}当前执行的是隔离来源命令，聊天命令未改动该清单。" />
+    <string id="AF_WM_QueueStarted" text="{ACTOR}{ACTION}{COUNT}道大地图命令。" />
+    <string id="AF_WM_QueueAppended" text="{ACTOR}{ACTION}{COUNT}道大地图命令。" />
+    <string id="AF_WM_QueueStartedAction" text="已开始执行" />
+    <string id="AF_WM_QueueAppendedAction" text="已追加" />
+    <string id="AF_WM_NonHeroNoParty" text="大地图命令失败：当前非英雄说话对象没有可接管的野外部队。" />
+    <string id="AF_WM_NonHeroQueueUnavailable" text="大地图命令失败：无法建立稳定的非英雄部队命令清单。" />
+    <string id="AF_WM_AcceptedQueue" text="{ACTOR}已接受大地图命令队列（{COUNT}道{CONVERSION}）。" />
+    <string id="AF_WM_NativeBattleReplaceBlocked" text="{ACTOR}正在参与原版战斗，结算前不能替换当前大地图命令。" />
+    <string id="AF_WM_GovernorInvalidState" text="该总督当前死亡、被俘、失能或不在可出征状态。" />
+    <string id="AF_WM_GovernorNotCurrent" text="该人物已不是城市或城堡的有效现任总督。" />
+    <string id="AF_WM_GovernorAway" text="该总督当前不在其管辖地内。" />
+    <string id="AF_WM_GovernorClanMismatch" text="管辖地归属与总督家族不一致。" />
+    <string id="AF_WM_GovernorAlreadyAttached" text="该总督已经属于其他独立部队或俘虏队伍。" />
+    <string id="AF_WM_GovernorCannotLead" text="该总督当前因任务或游戏规则不能带领部队。" />
+    <string id="AF_WM_GovernorSettlementBusy" text="{SETTLEMENT}正在被围攻或进行战斗，不能抽调驻军。" />
+    <string id="AF_WM_GovernorGarrisonUnavailable" text="{SETTLEMENT}当前没有可安全抽调的驻军部队。" />
+    <string id="AF_WM_GovernorValidationFailed" text="总督远征资格检查失败：{ERROR}" />
+    <string id="AF_WM_GovernorGarrisonUnavailableGeneric" text="驻军部队不可用。" />
+    <string id="AF_WM_GovernorTroopsInsufficient" text="可抽调健康驻军不足{MINIMUM}人；必须保留至少{RESERVE}名普通驻军并遵守总督队伍上限。" />
+    <string id="AF_WM_GovernorPlanIncomplete" text="驻军抽调计划未能形成完整兵员清单。" />
+    <string id="AF_WM_GovernorNoTask" text="没有可用于远征的有效任务命令。" />
+    <string id="AF_WM_GovernorRequestChanged" text="总督的管辖地或家族在请求等待期间已经变化。" />
+    <string id="AF_WM_GovernorIdentityChanged" text="总督身份或管辖地归属在建队前已经变化。" />
+    <string id="AF_WM_GovernorStarted" text="{HERO}已从{SETTLEMENT}驻军抽调{TROOPS}人并开始远征。" />
+    <string id="AF_WM_GovernorCreationFailed" text="组建总督远征队失败：{ERROR}" />
+    <string id="AF_WM_MergeNotPlayerMember" text="大地图命令失败：{ACTOR}不是玩家的家族成员、同伴或本模组登记的临时分队，不能执行回队合并。" />
+    <string id="AF_WM_MergeMissingForeignClan" text="大地图命令失败：{ACTOR}既不是玩家成员，也没有可保留的外族家族身份。" />
+    <string id="AF_WM_MergeInactiveOrCaptive" text="大地图命令失败：{ACTOR}当前死亡、失效或被俘，不能作为外族客军并入玩家队伍。" />
+    <string id="AF_WM_MergeNotOwnParty" text="大地图命令失败：{ACTOR}当前率领的不是自己家族的领主野外部队，不能整队并入。" />
+    <string id="AF_WM_MergeGovernor" text="大地图命令失败：{ACTOR}仍担任总督；为避免原版自动解除职位，不能作为外族客军并入。" />
+    <string id="AF_WM_MergeInArmy" text="大地图命令失败：{ACTOR}当前正在军团中，必须先退出军团才能整队并入玩家。" />
+    <string id="AF_WM_MergeAtWar" text="大地图命令失败：{ACTOR}所属势力正与玩家交战，不能以保留原家族身份的客军形式并入。" />
+    <string id="AF_WM_MergeNoIndependentParty" text="大地图命令失败：{ACTOR}当前没有可归并的独立野外队伍。" />
+    <string id="AF_WM_MergePartyMismatch" text="大地图命令失败：{ACTOR}已经不是该野外队伍的实际领队，已停止回队合并。" />
+    <string id="AF_WM_MergeHeroMissing" text="大地图命令失败：{ACTOR}不在该野外队伍名册中，已停止回队合并。" />
+    <string id="AF_WM_MergeMainPartyInvalid" text="大地图命令失败：玩家主队当前不可用，无法执行回队合并。" />
+    <string id="AF_WM_MergeEligibilityUnknown" text="大地图命令失败：{ACTOR}当前不满足回队合并条件（{REASON}）。" />
+    <string id="AF_WM_ConversionBoth" text="，敌对定居点按AI攻击、被围攻定居点改攻敌对围城部队" />
+    <string id="AF_WM_ConversionBesieged" text="，被围攻定居点改攻敌对围城部队" />
+    <string id="AF_WM_ConversionHostile" text="，敌对定居点按AI攻击" />
+    <string id="AF_WM_GovernorRequestQueued" text="已记录{HERO}的总督远征请求；{REASON}。退出阻塞界面或对话后将抽调驻军并组建远征队。" />
+    <string id="AF_WM_GovernorBlockedCampaign" text="战役系统尚未就绪" />
+    <string id="AF_WM_GovernorBlockedScene" text="玩家仍在场景中" />
+    <string id="AF_WM_GovernorBlockedConversation" text="当前对话尚未退出" />
+    <string id="AF_WM_GovernorBlockedPartyScreen" text="当前已有部队界面打开" />
+    <string id="AF_WM_GovernorRequestMissingIdentity" text="总督远征请求缺少必要身份信息。" />
+    <string id="AF_WM_GovernorRequestTicketExpired" text="已有总督远征请求的运行时票据已经失效。" />
+    <string id="AF_WM_GovernorRequestStateChanged" text="已有待处理的总督远征请求，但管辖地或家族已经变化。" />
+    <string id="AF_WM_GovernorRequestTicketFailed" text="无法建立总督远征请求票据。" />
+    <string id="AF_WM_CompanionHeroMissing" text="只有玩家主队成员名册中确实存在的非玩家 Hero 才能隐式创建任务队伍。" />
+    <string id="AF_WM_CompanionRequestQueued" text="已记录{HERO}的创建同伴部队请求；{REASON}。返回大地图后将自动打开原版分兵界面。" />
+    <string id="AF_WM_CompanionScreenOpenFailed" text="打开原版创建同伴部队界面失败：{ERROR}" />
+    <string id="AF_WM_CompanionBlockedMission" text="当前仍在场景或阅兵中" />
+    <string id="AF_WM_CompanionBlockedConversation" text="当前对话尚未退出" />
+    <string id="AF_WM_CompanionBlockedPartyScreen" text="当前已有部队界面打开" />
+    <string id="AF_WM_CompanionBlockedGameState" text="当前游戏界面状态尚未就绪" />
+    <string id="AF_WM_CompanionBlockedMainParty" text="玩家主队当前不可用" />
+    <string id="AF_WM_CompanionScreenPending" text="当前已有同伴部队创建界面等待完成。" />
+    <string id="AF_WM_CompanionScreenOpened" text="已打开{HERO}的分兵界面。" />
+    <string id="AF_WM_StatusGoToSettlement" text="{ACTOR}正在前往{SETTLEMENT}；若原版 AI 打断，将重新下达前往命令。" />
+    <string id="AF_WM_StatusPatrolSettlement" text="{ACTOR}正在{SETTLEMENT}附近巡逻；若原版 AI 打断，将重新下达巡逻命令。" />
+    <string id="AF_WM_StatusFollowSiegeWaitExit" text="{ACTOR}正在完成当前战斗；结算后将退出攻城并恢复跟随。" />
+    <string id="AF_WM_StatusFollowing" text="{ACTOR}正在跟随{TARGET}；若原版 AI 打断，将重新下达跟随命令。" />
+    <string id="AF_WM_StatusFollowSiegeTravel" text="{ACTOR}正在跟随{TARGET}加入玩家对{SETTLEMENT}的围攻。" />
+    <string id="AF_WM_StatusFollowSiegeActive" text="{ACTOR}已经加入对{SETTLEMENT}的围攻。" />
+    <string id="AF_WM_StatusRaidInterrupted" text="{ACTOR}的烧村行动被原版事件提前中断，正在重新保持对{SETTLEMENT}的烧掠命令。" />
+    <string id="AF_WM_StatusReengageParty" text="{ACTOR}重新追上{TARGET}，继续执行攻击命令。" />
+    <string id="AF_WM_StatusReengageHero" text="{ACTOR}重新追上{TARGET}的部队，继续执行攻击命令。" />
+    <string id="AF_WM_StatusMergeForeign" text="{HERO}正率客军前往玩家主队；若原版 AI 打断，将重新下达客军并队命令。" />
+    <string id="AF_WM_StatusMerge" text="{HERO}正在返回玩家部队；若原版 AI 打断，将重新下达回队命令。" />
+    <string id="AF_WM_StatusMergeDestroyStopped" text="{HERO}的临时部队无法安全销毁，自动合并已停止，以免重复转移资产。" />
+    <string id="AF_WM_StatusMergeTransferStopped" text="{HERO}的兵员转入连续失败，自动合并已停止，以免重复回滚损坏资产。" />
+    <string id="AF_WM_StatusMergeTransferRetry" text="{HERO}已经抵达玩家部队，但兵员转入失败；资产已回滚，将在 6 个游戏小时后重试。" />
+    <string id="AF_WM_StatusGoToBesiegedConverted" text="{ACTOR}原本要前往的{SETTLEMENT}正在被敌对的{BESIEGER}围攻，已改为攻击围城部队。" />
+    <string id="AF_WM_StatusGoToHostileConverted" text="{ACTOR}原本要前往的{SETTLEMENT}已是敌对定居点，改按原版攻击行为执行。" />
+    <string id="AF_WM_StatusPreemptMapEvent" text="{ACTOR}正在参与{REASON}，将在原版战斗结算后执行新的大地图命令。" />
+    <string id="AF_WM_StatusPreemptSiege" text="{ACTOR}正在参与当前攻城事件，结算后将退出围城并执行新的大地图命令。" />
+    <string id="AF_WM_StatusPreemptChanged" text="{ACTOR}放弃{REASON}，改为执行新的大地图命令。" />
+    <string id="AF_WM_PreemptNativeEvent" text="当前原版事件" />
+    <string id="AF_WM_PreemptRaid" text="当前烧掠" />
+    <string id="AF_WM_PreemptSupplies" text="当前强征补给" />
+    <string id="AF_WM_PreemptVolunteers" text="当前强征兵员" />
+    <string id="AF_WM_PreemptSiege" text="当前攻城" />
+    <string id="AF_WM_PreemptStrategicAction" text="当前战略行动" />
+    <string id="AF_WM_PreemptNativeAction" text="当前原版行动" />
+    <string id="AF_WM_DisplayCompanionCreateFailed" text="{HERO}无法创建同伴部队：{DETAIL}" />
+    <string id="AF_WM_DisplayCompanionFollowUpFailed" text="{HERO}创建同伴部队后无法接续后续大地图命令：{DETAIL}" />
+    <string id="AF_WM_DisplayCompanionCreateException" text="{HERO}创建同伴部队失败：{DETAIL}" />
+    <string id="AF_WM_DisplayGovernorExpeditionFailed" text="{HERO}无法组建总督远征队：{DETAIL}" />
+    <string id="AF_WM_DisplayFollowUpCommandsFailed" text="建队后无法接续命令：{DETAIL}" />
+    <string id="AF_WM_DisplayGovernorExpeditionDeparted" text="{HERO}已卸任{SETTLEMENT}总督并从驻军抽调{COUNT}名健康士兵，临时远征队开始执行命令。" />
+    <string id="AF_WM_DisplayQueueEnded" text="{ACTOR}的大地图命令队列已经结束（{REASON}）。" />
+    <string id="AF_WM_DisplayQueueEndedWithTail" text="{ACTOR}的大地图命令队列已经结束（{REASON}），{TAIL}" />
+    <string id="AF_WM_DisplayHideoutOutcome" text="{ACTOR}清剿{TARGET}{OUTCOME}：{DETAIL}" />
+    <string id="AF_WM_DisplayOutcomeSucceeded" text="成功" />
+    <string id="AF_WM_DisplayOutcomeFailed" text="失败" />
+    <string id="AF_WM_DisplayOutcomeIncomplete" text="未完成" />
+    <string id="AF_WM_DisplayRaidSuccess" text="{ACTOR}成功烧掠{TARGET}：{DETAIL}" />
+    <string id="AF_WM_DisplayRaidFailed" text="{ACTOR}烧掠{TARGET}失败：{DETAIL}" />
+    <string id="AF_WM_DisplayRaidIncomplete" text="{ACTOR}对{TARGET}的烧掠未能完成：{DETAIL}" />
+    <string id="AF_WM_DisplaySiegeSuccess" text="{ACTOR}围攻{TARGET}成功：{DETAIL}" />
+    <string id="AF_WM_DisplaySiegeFailed" text="{ACTOR}围攻{TARGET}失败：{DETAIL}" />
+    <string id="AF_WM_DisplaySiegeIncomplete" text="{ACTOR}对{TARGET}的围攻未能完成：{DETAIL}" />
+    <string id="AF_WM_DisplayAttackSuccess" text="{ACTOR}对{TARGET}的攻击成功：{DETAIL}" />
+    <string id="AF_WM_DisplayAttackFailed" text="{ACTOR}对{TARGET}的攻击失败：{DETAIL}" />
+    <string id="AF_WM_DisplayAttackIncomplete" text="{ACTOR}对{TARGET}的攻击未能完成：{DETAIL}" />
+    <string id="AF_WM_DisplayWaitingHeroShelter" text="{HERO}当前躲在{SHELTER}内，{ACTOR}正在城外等待其离开，以继续攻击命令。" />
+    <string id="AF_WM_DisplayWaitingPartyShelter" text="{PARTY}当前在{SHELTER}内，{ACTOR}正在外侧等待其离开，以继续攻击命令。" />
+    <string id="AF_WM_DisplayRaidStartedUnderway" text="{ACTOR}已经开始烧掠{SETTLEMENT}，结果尚未分出。" />
+    <string id="AF_WM_DisplaySiegeStartedUnderway" text="{ACTOR}已经开始围攻{SETTLEMENT}，结果尚未分出。" />
+    <string id="AF_WM_DisplayAttackHeroStartedUnderway" text="{ACTOR}已经对{TARGET}的部队发起攻击，结果尚未分出。" />
+    <string id="AF_WM_DisplayAttackPartyStartedUnderway" text="{ACTOR}已经对{TARGET}发起攻击，结果尚未分出。" />
+    <string id="AF_WM_DisplayArrivedSettlementHolding" text="{ACTOR}已经抵达{SETTLEMENT}并开始停留。" />
+    <string id="AF_WM_DisplayArrivedSettlementPatrolling" text="{ACTOR}已经抵达{SETTLEMENT}附近并开始巡逻。" />
+    <string id="AF_WM_DisplayFollowStartedUnderway" text="{ACTOR}已经追上并开始跟随{TARGET}。" />
+    <string id="AF_WM_DisplayFollowJoinedSiege" text="{ACTOR}已经随{TARGET}加入对{SETTLEMENT}的围攻。" />
+    <string id="AF_WM_DisplayAbandonedForNewCommand" text="{ACTOR}放弃{REASON}，改为执行新的大地图命令。" />
+    <string id="AF_WM_DisplaySettlementAttackFinished" text="{HERO}已结束对{SETTLEMENT}的攻击。" />
+    <string id="AF_WM_RebellionNoPlayerClan" text="玩家家族不存在，无法执行叛乱攻击。" />
+    <string id="AF_WM_RebellionOnlyPlayerCompanion" text="只有玩家家族的同伴独立部队可以代表玩家执行叛乱攻击。" />
+    <string id="AF_WM_RebellionNoControllableParty" text="执行者当前没有可控制的独立同伴部队，无法执行叛乱攻击。" />
+    <string id="AF_WM_RebellionNotPlayerClanParty" text="执行者部队不属于玩家家族，无法触发玩家家族叛乱。" />
+    <string id="AF_WM_RebellionPlayerNotInKingdom" text="玩家家族当前不属于任何王国，不需要也无法执行带城叛乱。" />
+    <string id="AF_WM_RebellionTargetNotSameKingdom" text="目标不属于玩家当前王国，不能作为带城叛乱攻击的触发目标。" />
+    <string id="AF_WM_RebellionKingdomEliminated" text="玩家当前王国已经灭亡，无法执行带城叛乱。" />
+    <string id="AF_WM_RebellionMercenaryCannotRebel" text="玩家家族当前是雇佣兵关系，不能执行带城叛乱。" />
+    <string id="AF_WM_RebellionRulingClanCannotRebel" text="玩家家族是当前王国统治家族，不能对自己的王国执行带城叛乱。" />
+    <string id="AF_WM_RebellionTargetIsPlayerClanHero" text="目标属于玩家家族，不能通过叛乱攻击自己的家族部队。" />
+    <string id="AF_WM_RebellionTargetIsPlayerClanParty" text="目标部队属于玩家家族，不能通过叛乱攻击自己的家族部队。" />
+    <string id="AF_WM_RebellionTargetIsPlayerSettlement" text="目标定居点属于玩家家族，不能通过叛乱攻击自己的封地。" />
+    <string id="AF_WM_AttackTargetSameParty" text="目标和执行者位于同一支部队，无法发起攻击。" />
+    <string id="AF_WM_AttackPartySameParty" text="目标部队和执行者是同一支部队，无法发起攻击。" />
+    <string id="AF_WM_AttackTargetDefeatedDeadOrCaptured" text="目标已经被击败、死亡或被俘。" />
+    <string id="AF_WM_AttackTargetDeadCapturedOrInvalid" text="目标已经死亡、被俘或失效。" />
+    <string id="AF_WM_AttackTargetPartyDefeatedOrDisbanded" text="目标部队已经被击溃或解散。" />
+    <string id="AF_WM_AttackTargetNoAttackableParty" text="目标当前没有可攻击的部队。" />
+    <string id="AF_WM_AttackTargetPartyInvalidOrMissing" text="目标部队已经失效或不在大地图上。" />
+    <string id="AF_WM_AttackBesiegerNoLongerHostile" text="围城部队已经不再与执行者敌对，未继续攻击，也未重新宣战。" />
+    <string id="AF_WM_AttackSettlementInvalid" text="目标定居点已经失效或不是可攻击目标。" />
+    <string id="AF_WM_AttackTargetUnavailable" text="目标已经不可攻击。" />
+    <string id="AF_WM_AttackActorLostPartyOrCaptured" text="执行者已经失去可控制部队或被俘，命令失败。" />
+    <string id="AF_WM_ResultTargetAchieved" text="目标已被达成。" />
+    <string id="AF_WM_ResultNativeFailed" text="原版事件判定为失败。" />
+    <string id="AF_WM_ResultNoClearOutcome" text="没有取得明确结果。" />
+    <string id="AF_WM_TimeoutTargetInShelter" text="{TARGET}仍在{SHELTER}内，命令时限已到，未能接战。" />
+    <string id="AF_WM_TimeoutTrackExpired" text="追踪目标未能接战，命令时限已到。" />
+    <string id="AF_WM_TimeoutAttackExpired" text="攻击未能接战，命令时限已到。" />
+    <string id="AF_WM_ReasonQueueDone" text="所有命令执行完毕" />
+    <string id="AF_WM_ReasonMergeInvalid" text="回队合并条件已失效" />
+    <string id="AF_WM_ReasonMergeTransferFailed" text="回队资产转入失败" />
+    <string id="AF_WM_ReasonMergeDestroyFailed" text="原独立部队无法安全解散" />
+    <string id="AF_WM_ReasonTimeout" text="命令时限已到" />
+    <string id="AF_WM_ReasonActorInvalid" text="执行者失效" />
+    <string id="AF_WM_ReasonTargetInvalid" text="目标失效或不可执行" />
+    <string id="AF_WM_ReasonCommandInvalid" text="命令无效" />
+    <string id="AF_WM_TailGovernorReturning" text="临时总督远征队开始返驻地交还兵员。" />
+    <string id="AF_WM_TailGovernorEnded" text="临时总督远征已按当前游戏状态结束或交还原版 AI。" />
+    <string id="AF_WM_TailNativeResumed" text="回归原版行动状态。" />
+    <string id="AF_WM_Review_HoldUntilCompleted" text="{ACTOR}已经完成在{SETTLEMENT}停留至指定期限的命令。" />
+    <string id="AF_WM_Review_HoldDaysCompleted" text="{ACTOR}已经完成在{SETTLEMENT}停留{DAYS}天的命令。" />
+    <string id="AF_WM_Review_PatrolCompleted" text="{ACTOR}已经完成在{SETTLEMENT}附近巡逻{DAYS}天的命令。" />
+    <string id="AF_WM_Review_FollowCompleted" text="{ACTOR}已经完成跟随{TARGET}{DAYS}天的命令。" />
+    <string id="AF_WM_Review_PartyCreationCancelled" text="{HERO}的同伴部队创建已取消，后续大地图命令未执行。" />
+    <string id="AF_WM_Review_PartyCreated" text="{HERO}已经创建同伴部队，并接收了{TROOPS}名士兵、{PRISONERS}名俘虏。" />
+    <string id="AF_WM_Review_QueueSafeExit" text="{ACTOR}的大地图命令队列已经结束；当前原版战斗结算后将安全退出攻城并回归原版行动状态。" />
+    <string id="AF_WM_Review_TimeoutCommand" text="{ACTOR}的大地图命令时限已到，已跳过当前命令。" />
+    <string id="AF_WM_Review_TimeoutTravel" text="{ACTOR}未能在时限内抵达{SETTLEMENT}，已跳过当前前往命令。" />
+    <string id="AF_WM_Review_TimeoutPatrol" text="{ACTOR}未能在时限内抵达{SETTLEMENT}附近，已跳过当前巡逻命令。" />
+    <string id="AF_WM_Review_TimeoutFollow" text="{ACTOR}未能在时限内追上{TARGET}，已跳过当前跟随命令。" />
+    <string id="AF_WM_Review_TimeoutMerge" text="{ACTOR}未能在时限内与玩家部队会合，已跳过当前回队命令。" />
+    <string id="AF_WM_Review_RaidCompleted" text="{HERO}已经完成对{SETTLEMENT}的烧掠。" />
+    <string id="AF_WM_Review_PartyDefeated" text="{PARTY}的部队被击败。" />
+    <string id="AF_WM_Review_PartyRepelled" text="{PARTY}的部队被击退。" />
+    <string id="AF_WM_Review_SettlementCaptured" text="{SETTLEMENT}已经被攻下。" />
+    <string id="AF_WM_Review_GovernorNoReturnTarget" text="{HERO}的总督远征队没有可安全返还的本家族城市或城堡，已保留当前部队并交还原版 AI 管理。" />
+    <string id="AF_WM_Review_GovernorReturnUnsafe" text="{HERO}的总督远征队当前无法安全完成返城资产安置，已保留当前部队并交还原版 AI 管理。" />
+    <string id="AF_WM_Review_HideoutMissingResult" text="原版战斗已结束，但没有可确认的清剿结算；未重复发动攻击。" />
+    <string id="AF_WM_Review_HideoutQuestBusy" text="目标被剧情或任务占用，未发动清剿。" />
+    <string id="AF_WM_Review_HideoutUnavailable" text="目标不可用或安全结算接口未就绪，未发动清剿。" />
+    <string id="AF_WM_Review_HideoutAlreadyEmpty" text="目标已经没有驻扎土匪，未将他人清剿记为本次成功。" />
+    <string id="AF_WM_Review_HideoutActorIneligible" text="执行部队不能与目标土匪交战，未宣战或强制删除目标。" />
+    <string id="AF_WM_Review_HideoutBattleNotCreated" text="原版清剿战斗未能建立。" />
+    <string id="AF_WM_Review_HideoutCleared" text="原版战斗获胜，驻扎土匪已被清除。" />
+    <string id="AF_WM_Review_HideoutDefeated" text="原版战斗判定清剿部队战败。" />
+    <string id="AF_WM_Review_HideoutIncomplete" text="未取得明确清除结果，或目标仍有驻扎土匪。" />
+    <string id="AF_WM_Review_TimeoutNoResult" text="命令时限已到，未能取得明确结果。" />
+    <string id="AF_WM_Review_PartyCreationInvalid" text="新任务队伍未能正确建立。" />
+    <string id="AF_WM_Review_GovernorResignFailed" text="未能安全卸任现任总督。" />
+    <string id="AF_WM_Review_GovernorPartyInvalid" text="原版领主队未能以该总督和家族正确建立。" />
+    <string id="AF_WM_Review_GovernorRosterMissing" text="新领主队名册不可用。" />
+    <string id="AF_WM_Review_GovernorUnexpectedHero" text="新领主队出现了意外 Hero，已停止建队。" />
+    <string id="AF_WM_Review_GovernorTemplateRemaining" text="原版模板兵、俘虏或模板船只未能完全清除。" />
+    <string id="AF_WM_Review_GovernorTemplateShips" text="原版领主队模板船只清理失败。" />
+    <string id="AF_WM_Review_GovernorTransferInputs" text="驻军、远征队或抽调计划不可用。" />
+    <string id="AF_WM_Review_GovernorTransferTroop" text="驻军抽调计划包含无效兵种。" />
+    <string id="AF_WM_Review_GovernorTroopChanged" text="驻军兵种状态在转移前已经变化：{TROOP}" />
+    <string id="AF_WM_Review_GovernorTroopDeduction" text="驻军健康兵员扣除校验失败：{TROOP}" />
+    <string id="AF_WM_Review_GovernorXpDeduction" text="驻军 XP 扣除结果异常：{TROOP}" />
+    <string id="AF_WM_Review_GovernorTroopWrite" text="远征队兵员写入校验失败：{TROOP}" />
+    <string id="AF_WM_Review_GovernorConservation" text="驻军与远征队兵员或 XP 守恒校验失败：{TROOP}" />
+    <string id="AF_WM_Review_GovernorTransferFailure" text="总督远征队兵员转移失败 troop={TROOP} step={STEP}" />
+    <string id="AF_WM_Review_ArmyMaintained" text="{ACTOR}消耗{COST}影响力强行维持军团，继续{ACTION}{SETTLEMENT}（军团长影响力现为{INFLUENCE}）。" />
+    <string id="AF_WM_Review_MergeCompleted" text="{HERO}已经与玩家部队会合，并转入{TROOPS}名成员、{PRISONERS}名俘虏及全部随队物资；临时远征记录已清除。" />
+    <string id="AF_WM_Review_GuestMergeCompleted" text="{HERO}已经与玩家部队会合，并转入{TROOPS}名成员、{PRISONERS}名俘虏及全部随队物资；原独立部队已解散。{GUEST}保留原家族、职业和同伴身份，以外族客军身份随玩家主队行动。" />
+    <string id="AF_WM_Review_GovernorReturned" text="{HERO}的远征队已返抵{SETTLEMENT}，普通兵、俘虏与物资已经完成安置，临时部队已回收。{SHIPS}{RESTORATION}" />
+    <string id="AF_WM_Review_ForeignGuestWarDeparture" text="{HERO}所属势力已与玩家开战，因此结束外族客军随队状态并离开玩家主队，返回{DESTINATION}；此前已并入玩家主队的普通兵员和物资不自动撤回。" />
+    <string id="AF_WM_Review_ForeignGuestPartyReleased" text="{HERO}所属势力已与玩家开战，因此其外族客军分队已脱离玩家指挥并回归原家族的原版AI；该分队现有兵员和物资不自动转回玩家主队。" />
+    <string id="AF_WM_Review_Raiding" text="烧掠" />
+    <string id="AF_WM_Review_Besieging" text="围攻" />
+    <string id="AF_WM_Review_ClanTerritory" text="原家族势力范围" />
+    <string id="AF_WM_Review_GovernorRestored" text="该人物已恢复原总督职务。" />
+    <string id="AF_WM_Review_GovernorRetained" text="未驱逐现任总督。" />
+    <string id="AF_WM_Review_ShipsReturned" text="{COUNT}艘随队船只已转交该定居点。" />
+    <string id="AF_WM_Review_Casualties" text=" 战斗损失：己方{ACTOR}人，敌方{TARGET}人。" />
+    <string id="AF_WM_Review_RebellionNoFiefs" text="玩家家族没有封地，不能执行带城叛乱。" />
+    <string id="AF_WM_Review_RebellionWarMissing" text="玩家家族叛乱动作未能建立与旧王国的战争状态。" />
+    <string id="AF_WM_Review_RebellionException" text="玩家家族叛乱动作执行失败：{DETAIL}" />
+    <string id="AF_WM_Review_RebellionStarted" text="玩家家族已带领封地脱离{KINGDOM}并发动叛乱，{HERO}随后继续执行{ACTION}{TARGET}的命令。" />
+    <string id="AF_WM_Review_TroopXpInputs" text="兵种 XP 调整参数无效：{TROOP}" />
+    <string id="AF_WM_Review_TroopXpWrite" text="兵种 XP 写入校验失败：{TROOP} context={CONTEXT}" />
+    <string id="AF_WM_Review_Attacking" text="攻击" />
+
+    <!-- Command Task Prompt UI (BuildCurrentNpcCommandTasksPromptCore) -->
+    <string id="AF_WM_CurrentNpcCommandTasksHeader" text="【当前NPC命令任务】" />
+    <string id="AF_WM_NoTasks" text="无" />
+    <string id="AF_WM_TaskStatusCurrent" text="进行:" />
+    <string id="AF_WM_TaskStatusThen" text="随后:" />
+    <string id="AF_WM_TasksRemaining" text="另{COUNT}项" />
+
+    <!-- Command Summary UI (BuildNaturalCommandSummary) -->
+    <string id="AF_WM_CmdMergeToPlayer" text="归队{DAYS}天" />
+    <string id="AF_WM_CmdGoToSettlement" text="前往{TARGET}{DAYS}天" />
+    <string id="AF_WM_CmdClearHideout" text="清剿{TARGET}（时限{DAYS}天）" />
+    <string id="AF_WM_CmdPatrolSettlement" text="巡逻{TARGET}{DAYS}天" />
+    <string id="AF_WM_CmdFollow" text="跟随{TARGET}{DAYS}天" />
+    <string id="AF_WM_CmdAttack" text="攻击{TARGET}{DAYS}天" />
+    <string id="AF_WM_CmdForceAttack" text="强攻{TARGET}{DAYS}天" />
+    <string id="AF_WM_CmdUnknown" text="未知任务{DAYS}天" />
+
+    <!-- LLM Prompt Rule (pure prompt text) -->
+    <string id="AF_WM_PromptReturnToPartyRule" text="你在输出了其他ACTION:WORLDMAP时，如果玩家没有主动提到无需回归队伍，那么你必须输出此标签在最下方,严禁不输出该标签" />
+    <!-- 附加内部错误显示字符串 -->
+    <string id="AF_WM_Review_MergeSourceHasRemainingAssets" text="并入主队后源部队仍有未转移资产。" />
+    <string id="AF_WM_Review_GovernorRecordMissingIdentity" text="总督远征记录缺少必要身份信息。" />
+    <string id="AF_WM_Review_GovernorRollbackMissingTroop" text="总督远征名册回滚缺少兵种或名册。" />
+    <string id="AF_WM_Review_GovernorRollbackTroopFailed" text="总督远征名册精确回滚失败：{TROOP}" />
+    <string id="AF_WM_Review_GarrisonRollbackMissingSnapshot" text="驻军回滚缺少有效事务快照。" />
+    <string id="AF_WM_Review_GarrisonRollbackFailed" text="驻军事务快照回滚校验失败：{TROOP}" />
+    <string id="AF_WM_Review_GarrisonRosterSnapshotMismatch" text="驻军完整名册与建队前快照不一致。" />
+    <string id="AF_WM_Review_GovernorLeaderNotInRoster" text="远征队领队 Hero 已不在成员名册中。" />
+    <string id="AF_WM_Review_MergeChangedHeroIdentity" text="并队改变了随队 Hero 的家族、职业或同伴身份：{HERO}" />
+    <string id="AF_WM_Review_MergeCountConservationFailed" text="名册人数或伤员守恒校验失败：{TROOP}" />
+    <string id="AF_WM_Review_MergeXpBoundaryFailed" text="名册经验值边界校验失败：{TROOP}" />
+    <string id="AF_WM_Review_MergeTransferFailed" text="名册转移失败 troop={TROOP} step={STEP}" />
+    <string id="AF_WM_Review_MergePartiesUnavailable" text="并队时源部队或目标部队不可用。" />
+    <string id="AF_WM_Review_MergeHeroPartyChanged" text="随队 Hero 的所属部队已变化：{HERO}" />
+    <string id="AF_WM_Review_MergeHeroNotMerged" text="随队 Hero 未能并入玩家主队：{HERO}" />
+    <string id="AF_WM_Review_MergeRollbackShipsFailed" text="并队回滚未能恢复源队船只所有权。" />
+    <string id="AF_WM_Review_MergeRollbackAssetsMismatch" text="并队回滚后的源队资产与事务快照不一致。" />
+    <string id="AF_WM_Review_MergeRollbackMissingRecords" text="并队名册回滚缺少事务记录。" />
+    <string id="AF_WM_Review_MergeRollbackTroopFailed" text="并队名册事务快照回滚失败：{TROOP}" />
+    <string id="AF_WM_Review_MergeRollbackPrisonerFailed" text="Hero 俘虏并队回滚失败：{HERO}" />
+    <string id="AF_WM_Review_MergeRollbackItemsMissing" text="并队物资回滚缺少源、目标或快照。" />
+    <string id="AF_WM_Review_MergeRollbackItemsDiff" text="并队物资回滚差额异常。" />
+    <string id="AF_WM_Review_MergeRollbackItemsFailed" text="并队物资回滚校验失败。" />
+    <string id="AF_WM_Review_MergeItemsConservationFailed" text="物资守恒校验失败。" />
+    <string id="AF_WM_Review_MergeShipsInvalidSourceTarget" text="船只转移的来源或目标无效。" />
+    <string id="AF_WM_Review_MergeShipsOwnershipChanged" text="船只所有权在转移前已经变化。" />
+    <string id="AF_WM_Review_MergeShipsTransferFailed" text="船只所有权转移校验失败。" />
+    <string id="AF_WM_Review_MergeShipsTransferFailedRollbackFailed" text="船只转移失败且未能完整回滚。" />
+    <string id="AF_WM_Review_MergeShipsTransferFailedRollbackDone" text="船只转移失败，所有权已回滚。" />
+  </strings>
+</base>

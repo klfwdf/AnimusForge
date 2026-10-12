@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Dalt",
+  "Keywords": [
+    "Dalt",
+    "House Dalt"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Dalt rules Lemonwood, with its seat and holdings along the banks of the Greenblood. Here, lemon groves, irrigation canals, and riverboats turn the Dornish sun into edible, tradable wealth. Fruit trees require years of tending and canals need constant dredging, so the stability of House Dalt depends more on patient stewardship than on a single feat of arms. Marriage alliances, river transport, and judgments over orchard water rights together determine this house's place among the lords of Dorne."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Dornish merchants and lords speak of Dalt, they think of lemons, riverboats, and irrigation canals. If the harvest in Lemonwood is good, taverns, kitchens, and distant fleets all profit from it; if disputes over the river channels spiral out of control, even the most fertile orchards will wither."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Orchard growers know that lemon trees will not bear fruit any faster just because a lord is in a hurry to collect taxes. They respect those who mend the canals and judge disputes according to water flow, and they hold grudges for many years against stewards who seize water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dalt The Dart family is based on lemon groves and operates orchards, water canals and river transportation along the Greenblood River. It is part of the life in the Dorne oasis. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dalt The Dart family is based on lemon groves and operates orchards, water canals and river transportation along the Greenblood River. It is part of the life in the Dorne oasis. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dalt The Dart family is based on lemon groves and operates orchards, water canals and river transportation along the Greenblood River. It is part of the life in the Dorne oasis. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dalt The Dart family is based on lemon groves and operates orchards, water canals and river transportation along the Greenblood River. It is part of the life in the Dorne oasis. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dalt: The Dart family is based on lemon groves and operates orchards, water canals and river transportation along the Greenblood River. It is part of the life in the Dorne oasis."
+  ]
+}

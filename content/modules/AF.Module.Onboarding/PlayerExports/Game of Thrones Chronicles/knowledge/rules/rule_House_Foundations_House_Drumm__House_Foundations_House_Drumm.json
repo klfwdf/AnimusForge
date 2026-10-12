@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_House_Drumm",
+  "Keywords": [
+    "House Drumm",
+    "Nagga"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Drum Drum family is based on Old Wyk Island, and the family name is connected to the Nagga Hills, the legend of the Drowned God and the ancient maritime memories of the Ironborn. Old Wyk is regarded as one of the oldest sacred places in the Iron Islands, and Drogrum therefore holds the weight of religious symbolism, island territory, and longship politics. The bones of Nagaga belong to legend. Today, islanders still have to contend with tides, fishing grounds, timber and relatives. What can really keep the ancient name alive is not repeating the stories of ancestors, but the willingness of the islanders to rebuild the pier after the storm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ironborn priests and nobles view Drums and often associate them with the sacred lands of Old Wyk. If such a family speaks in king selection and sacrifice, their voice will be louder than that of ordinary island owners; but holiness will not protect them from food shortages, enemy ships, and kinship disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Islanders of Old Wyk knew the story of Nagaga and knew that stories could not mend their boats. Sailors hope for the direction of the wind, farmers hope for the soil, and young people hope to win their names on the longship. If Zhuogu can make the ancient glory serve the living day, the bone mound will not be just an echo of the dead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Drumm The Drogu family is connected to the legends of Old Wyk Island and Nagaga Hills. Ancient religion, maritime plundering traditions and island clan politics shape their reputation. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Drumm The Drogu family is connected to the legends of Old Wyk Island and Nagaga Hills. Ancient religion, maritime plundering traditions and island clan politics shape their reputation. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Drumm The Drogu family is connected to the legends of Old Wyk Island and Nagaga Hills. Ancient religion, maritime plundering traditions and island clan politics shape their reputation. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Drumm The Drogu family is connected to the legends of Old Wyk Island and Nagaga Hills. Ancient religion, maritime plundering traditions and island clan politics shape their reputation. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Drumm: The Drogu family is connected to the legends of Old Wyk Island and Nagaga Hills. Ancient religion, maritime plundering traditions and island clan politics shape their reputation."
+  ]
+}

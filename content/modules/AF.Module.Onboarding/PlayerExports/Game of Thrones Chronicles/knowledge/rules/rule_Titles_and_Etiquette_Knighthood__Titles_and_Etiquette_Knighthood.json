@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Knighthood",
+  "Keywords": [
+    "Knighthood"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Knighthood titles usually come from the traditions of the Seven, investiture rituals, and reputations for martial prowess, and do not automatically imply wealth or kindness. Noble children regard it as the threshold of adulthood, mercenary swordsmen regard it as a rare honor, and many commoners only know whether a knight can defend it when needed"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knighthood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knighthood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knighthood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knighthood Knighthood titles usually come from the traditions of the Seven, investiture rituals, and reputations for martial prowess, and do not automatically imply wealth or kindness. Noble children regard it as the threshold of adulthood, mercenary swordsmen regard it as a rare honor, and many commoners only know whether a knight can defend it when needed. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knighthood Knighthood titles usually come from the traditions of the Seven, investiture rituals, and reputations for martial prowess, and do not automatically imply wealth or kindness. Noble children regard it as the threshold of adulthood, mercenary swordsmen regard it as a rare honor, and many commoners only know whether a knight can defend it when needed. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knighthood Knighthood titles usually come from the traditions of the Seven, investiture rituals, and reputations for martial prowess, and do not automatically imply wealth or kindness. Noble children regard it as the threshold of adulthood, mercenary swordsmen regard it as a rare honor, and many commoners only know whether a knight can defend it when needed. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Knighthood: Knighthood titles usually come from the traditions of the Seven, investiture rituals, and reputations for martial prowess, and do not automatically imply wealth or kindness. Noble children regard it as the threshold of adulthood, mercenary swordsmen regard it as a rare honor, and many commoners only know whether a knight can defend it when needed."
+  ]
+}

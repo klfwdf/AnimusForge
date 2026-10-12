@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Sun_and_Shadow_of_Dorne_Wyl_Castle",
+  "Keywords": [
+    "Wyl Castle",
+    "Boneway"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Weir City is the seat of the Weir family in the Dorne Mountains, close to the border of the Bone Road and the Stormlands. The \"road\" here is not equivalent to a flat avenue, but a passage through the Red Mountains that can be ambushed and interrupted by heavy rain or falling rocks. The Weir family was closely connected to the history of the frontier disputes, and local society therefore valued the memory of riding, scouting, water storage and revenge more than Sunspear's court. The bone road allows caravans and messengers to travel through, and it also allows war to suddenly cross the mountains. The geographical significance of the city of Vail lies in guarding this narrow and stubborn passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wyl Castle Local families also rely on wells, irrigation canals, orchards, drought-tolerant livestock, and travel to avoid the hot sun; if any road, well, or dock fails, the cost falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wyl Castle Entry Wyl Castle"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wyl Castle They also recognize Dornish accents, laws and credentials; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wyl Castle Entry Wyl Castle"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wyl Castle If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wyl Castle A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wyl Castle They care about wells and springs, irrigation canals, orchards, drought-tolerant livestock, and routes to avoid the scorching sun. They also look at whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Wyl Castle: Weir City is the seat of the Weir family in the Dorne Mountains, close to the border of the Bone Road and the Stormlands. The \"road\" here is not equivalent to a flat avenue, but a passage through the Red Mountains that can be ambushed and interrupted by heavy rain or falling rocks. The Weir family was closely connected to the history of the frontier disputes, and local society therefore valued the memory of riding, scouting, water storage and revenge more than Sunspear's court. The bone road allows caravans and messengers to travel through, and it also allows war to suddenly cross the mountains. The geographical significance of the city of Vail lies in guarding this narrow and stubborn passage."
+  ]
+}

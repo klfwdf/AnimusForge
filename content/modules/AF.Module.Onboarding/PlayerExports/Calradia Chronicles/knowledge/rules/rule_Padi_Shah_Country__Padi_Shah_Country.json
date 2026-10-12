@@ -1,0 +1,33 @@
+{
+  "Id": "rule_Padi_Shah_Country",
+  "Keywords": [
+    "Padishah Kingdom",
+    "Padishah"
+  ],
+  "RagShortTexts": [
+    "The people of Padishah call themselves Dasi people and are rich in spices."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai",
+          "empire_s",
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Padishah Kingdom is located in the southern and far eastern region of Calradia, to be precise, it is a country east of Hussen Fulege, bordering Quset and Aserai. It is rich in spices and often trades with countries such as Aserai. The people there call themselves Dasi people, and those camel cavalry named Ghilman are from the Padishah country."
+    }
+  ],
+  "TextMappings": []
+}

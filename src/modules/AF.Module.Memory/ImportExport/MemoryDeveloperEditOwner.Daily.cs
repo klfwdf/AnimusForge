@@ -348,7 +348,7 @@ internal static void NormalizeDevDailyMemoryDraftForSave(string heroId, string h
 			}
 			if (string.IsNullOrWhiteSpace(line.Speaker))
 			{
-				line.Speaker = line.IsAfef ? "AFEF" : "手动";
+				line.Speaker = line.IsAfef ? "AFEF" : MemoryTextResources.Raw("MEM_Raw_007");
 			}
 		}
 		draft.HasLlmDialogue = draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsLlmDialogue && !x.IsAfef && !string.IsNullOrWhiteSpace(x.Text));

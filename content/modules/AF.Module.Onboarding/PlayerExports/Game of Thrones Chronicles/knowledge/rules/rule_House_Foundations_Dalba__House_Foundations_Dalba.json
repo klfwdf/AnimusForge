@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Dalba",
+  "Keywords": [
+    "Dalba"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The leader of the free people, Dim Darba, is supported by his relatives, warriors and followers, and is one of the leaders who can represent his tribe in discussions. His authority comes from personal prestige, ability to distribute, and the continued recognition of his tribe. Free folk did not regard the hereditary rights on parchment as sacred; if a chief could not lead people to food, resolve disputes, or avoid common disasters, his family name was not enough to force anyone to stay."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darba tribesmen judge leaders very directly: how the prey is divided, whether the injured are brought back, and whether there is favoritism in the dispute. Diem was able to sit in the chief's discussion circle because people were willing to listen to him, not because a certain king had sealed his position."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Other free people looked at Darbar first and foremost by how much risk they were willing to take on a mutual decision. There are many leaders outside the Great Wall. What is really rare is not convincing one's own people, but getting different tribes to walk the same path without kneeling."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When faced with tribes like Darba, it is often difficult for the Great Wall defenders to judge the number of people and succession based on their flags. Killing a leader does not necessarily disband the team, and negotiating an agreement must convince his relatives and warriors that it is profitable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dalba The Dalba forces were formed around the leader of the free people, Dim Darba, and were maintained through kinship, warrior and tribal negotiation rather than feudal inheritance in the south. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dalba The Dalba forces were formed around the leader of the free people, Dim Darba, and were maintained through kinship, warrior and tribal negotiation rather than feudal inheritance in the south. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dalba The Dalba forces were formed around the leader of the free people, Dim Darba, and were maintained through kinship, warrior and tribal negotiation rather than feudal inheritance in the south. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dalba The Dalba forces were formed around the leader of the free people, Dim Darba, and were maintained through kinship, warrior and tribal negotiation rather than feudal inheritance in the south. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dalba: The Dalba forces were formed around the leader of the free people, Dim Darba, and were maintained through kinship, warrior and tribal negotiation rather than feudal inheritance in the south."
+  ]
+}

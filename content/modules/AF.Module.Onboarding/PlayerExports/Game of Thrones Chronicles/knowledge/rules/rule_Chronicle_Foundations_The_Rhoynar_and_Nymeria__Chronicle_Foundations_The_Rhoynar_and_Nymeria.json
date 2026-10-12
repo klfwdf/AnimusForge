@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Chronicle_Foundations_The_Rhoynar_and_Nymeria",
+  "Keywords": [
+    "Rhoynar People",
+    "Nymeria",
+    "The Rhoynar and Nymeria"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry After the Rhoynar were defeated by Valyrian expansion, the warrior queen Nymeria led thousands of ships across the Summer Sea and arrived in Dorne after many years of wandering. She formed an alliance with Morse Martell, and the Rhoynar language, customs, and river memories merged with the native Dornish people to form the Martell The primogeniture, women's more public rights, and the less stigmatized Shad surname are all related to this syncretic tradition. The Dornish people regard Nymeria as their ancestor and liberator, while outsiders sometimes just regard her as a foreign legend; her migration explains why Dorne has never been like the other Seven Kingdoms regions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Rhoynar and Nymeria"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Rhoynar and Nymeria"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Rhoynar and Nymeria"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rhoynar People The Rhoynar and Nymeria: After the Rhoynar were defeated by Valyrian expansion, the warrior queen Nymeria led thousands of ships across the Summer Sea and arrived in Dorne after many years of wandering. She formed an alliance with Morse Martell, and the Rhoynar language, customs, and river memories merged with the native Dornish people to form the Martell. A past war or a dynastic change will determine today's tax rates, covenants, roads and who has the right to speak first in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rhoynar People The Rhoynar and Nymeria: After the Rhoynar were defeated by Valyrian expansion, the warrior queen Nymeria led thousands of ships across the Summer Sea and arrived in Dorne after many years of wandering. She formed an alliance with Morse Martell, and the Rhoynar language, customs, and river memories merged with the native Dornish people to form the Martell. They remember which flag fell, which bridge was burned, and who shared the last sip of water in the snow; for them, history is first and foremost the memory left by the body."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rhoynar People The Rhoynar and Nymeria: After the Rhoynar were defeated by Valyrian expansion, the warrior queen Nymeria led thousands of ships across the Summer Sea and arrived in Dorne after many years of wandering. She formed an alliance with Morse Martell, and the Rhoynar language, customs, and river memories merged with the native Dornish people to form the Martell. The winner will write it as a proof of order, the loser will keep it as a warning, and ordinary people will only remember how much the price of food and cemeteries increased that year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rhoynar People The Rhoynar and Nymeria: After the Rhoynar were defeated by Valyrian expansion, the warrior queen Nymeria led thousands of ships across the Summer Sea and arrived in Dorne after many years of wandering. She formed an alliance with Morse Martell, and the Rhoynar language, customs, and river memories merged with the native Dornish people to form the Martell. They learn about the past through old houses, family trees, tombstones, and taboos spoken by old men; as long as an event affects taxes, conscription, or marriage, it is not truly over."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Rhoynar and Nymeria: After the Rhoynar were defeated by Valyrian expansion, the warrior queen Nymeria led thousands of ships across the Summer Sea and arrived in Dorne after many years of wandering. She formed an alliance with Morse Martell, and the Rhoynar language, customs, and river memories merged with the native Dornish people to form the Martell."
+  ]
+}

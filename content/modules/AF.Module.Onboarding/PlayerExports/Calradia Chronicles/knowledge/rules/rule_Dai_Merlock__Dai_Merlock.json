@@ -1,0 +1,250 @@
+{
+  "Id": "rule_Dai_Merlock",
+  "Keywords": [
+    "Dai Merlock"
+  ],
+  "RagShortTexts": [
+    "Detel de Merok relied on arbitration to maintain peace in Vlandia"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Detel de Merok, King of Vlandia. When I was young, I also wanted to fight on horseback, but later I discovered that the real battle is not on the battlefield, but on the table of the Royal Council. Ingartel called me a coward, Aldric laughed at me for being unqualified, and the barons treated me like an arbitration machine, and they had to curse me a few times when I was done. I know it all. But what does Vlandia do if it doesn’t rely on arbitration? By knife? My great-grandfather conquered the world with his sword. By my generation, the royal family's direct territory could not even hold down the Sharas of the Kortan family. I choose to endure, not because of weakness, but because I don't want the golden crown to shatter into slag in my hands. My son will also face these wild dogs in the future. What I leave him is not peace, but a delayed civil war. Life is unpredictable, and peace is nothing more than a dry tent, good wine, and a soft bed. I don't have high requirements, just live."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the royal family of Vlandia, bearers of the golden crown. The ancestor is Osric the \"Iron Arm\", an invincible fighter on the west coast. Passed down to my father Detel's generation, force was basically used for words - mediation, arbitration, and balance. Some people outside are laughing at the fact that our Melok family has become worse with each generation, from conquerors to peacemakers. But we know very well that Vlandia's plate is made of broken porcelain pieces, and it will break completely if we touch it head-on. Detel endured his whole life, so that the kingdom did not collapse in the civil war. We side branches and retainers do not cause trouble and are not afraid of trouble. The Kortan family in the south has money and soldiers, and the Tiha family in the north has blood and ambition. We are caught in the middle. It is the battle of our generation to keep Sargot and the golden crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_5",
+          "hero:lord_4_6"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King Deterre is a monarch we would like to follow. It's not because he can fight, it's because he doesn't fight randomly. Nteri fought against Pandrak, and after he came back, he said that we suffered heavy losses in that battle. The barons did not listen to the plan and charged too hard. The king's plan was good, but no one carried it out. After the king came back, he didn't hold anyone accountable. He took the responsibility himself and continued to sit at the arbitration seat to mediate the people who scolded him. We ask ourselves that we cannot achieve this kind of endurance. Cara Tilde often said that the Merlock family is like the hand that holds broken pieces of porcelain together. If the hands don't break, the pieces of porcelain will stay together. Our Aromanke family is a moderate. We support the king not because of speculation, but because we believe in order. But we're also worried about Detail's health. He was so tired that he regarded messing up as a philosophy. We don’t know how long he can hold on, let alone who can hold on after him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We have a personal attachment to the Dai Merlock family that spans two hundred years. Back then, our ancestors kidnapped the emperor Votios and asked for a noble title instead of ransom. Votios kept his promise, and from then on we became nobles and were deeply influenced by the imperial culture. This friendship has been passed down to this day. We support King Detel, not because he is strong, but because he follows the rules. In this kingdom where wild dogs compete for bones, fewer and fewer people follow the rules. Detail follows the rules, and so do we. This is the foundation of the Aromanke family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_16"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Detel de Meroc is the weakest king I have ever seen, but he has a golden crown on his head. His greatest skill in life is to get a group of people who dislike each other to sit down and chat, and then go back to their respective homes to continue to dislike each other. He was on the mountain when I was charging Pandrak. I scolded him in the council and he poured me wine. What kind of king is this? This is the king of bad things. Vlandia wants a knife, not a teapot. I don't deny that he has his difficulties - the vassals are too strong, the royal family is too weak, and the golden crown is too heavy. But difficulties are no excuse. Osric also came from nothing back then. Can't Detel learn from his ancestors? But at least he doesn't take the initiative to stir up trouble, which is better than Langvald. Langward took the initiative to stir up trouble, which was stupid. Detel was beaten passively, but he still managed to hold on. I scolded him, but he endured it. I didn't understand this endurance, but I couldn't help but admire it. If I were sitting in his seat, the first person to be cut would be myself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the Dai Kortan family, the masters of Sharas, the vanguard of the Vlandia expansionists. King Detel is the most tolerant man we have ever met. When the Cathar patriarch slapped the table and scolded him at the imperial meeting, he poured tea; the barons turned a deaf ear to his plans, so he changed his plan; the empire scolded him as a coward, and he directly led troops to join the opponent and cripple the empire - this is the Cathar-style revenge: silent, but it will definitely come. We recognize his patience, but we do not agree with his line. Vlandia needs to expand and eat up all the old parts of the empire. Detel just wants to maintain the status quo, and in the end, he will be replaced by Aldric or our Kortan family. But we won’t flip the table just yet. Detel lives, Vlandia stays alive. Let’s wait until his son comes on stage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Detail is someone I have to respect and someone I have been waiting for. During his reign, the Tiha family did not move, not because they didn't want to, but because the time was not right. He used arbitration to seal the cracks in Vlandia for decades. I admit that this is a good skill. But he couldn't live forever. My father said that the bloodline of the Tihar family is no worse than that of the Merok family. Palawind is the old capital of the empire, so why should the Sargoth family always sit under the golden crown? Xiao Zong replaces Dazong, I don’t say this on my lips, but I always have it in my heart. Detel knows what I'm thinking, and if he doesn't tell me, I won't tell either. The game between us is very delicate - he takes a step back, and I take a step forward. After he dies, if his heir cannot suppress me, then we will have to renegotiate who will wear this golden crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dai Merlock family is the suzerain of our Tiha family and is also our competitor. Our ancestor is Tiha, the youngest son of Osric. When the country was founded, he was sealed in Palawind, the old capital of the empire, which was even more grand than Sargoth. In terms of blood, we are no worse than the Merlock family. But the golden crown has been on their heads for hundreds of years, and we have always been in second place. Chief Aldrick has been waiting for the day when the Merok family can no longer hold on, and the Tiha family can justifiably take over. For now, Detail is still here, so we maintain our decency and don't be the first to flip the table. But being decent doesn’t mean having no ideas. Actual control of Northern Vlandia is in our hands, a capital accumulated over generations. The Merlock family should be lucky that the Tiha family is not as reckless as the Kortan family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The golden crown of the Dai Merlock family is becoming increasingly unstable. Detel's reign was a buffer period for Vlandia - he used arbitration to stall the civil war, but what about after his death? The Kortan family has money, the Tiha family has blood, and the Aromanke family has reputation. Each of the three families has its own agenda. We, a small family, cannot control the overall situation, we can only look at the direction of the wind. Detel is a good king, at least he doesn't torture us, doesn't tax us too much, and doesn't fight many wars. But he's so good that he won't give his son any points when the crown changes hands. We have quietly given gifts to both the Tiha family and the Kortan family. This is not betrayal, but insurance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King Deterre? We call him \"the good old man\". He doesn't like fighting, he likes to break up fights. Our village used to be involved in fights between barons. He called those barons who liked to burn the village to Sargot to scold them, and then they stopped when he came back. If he doesn't raise taxes and doesn't serve too frequently, we farmers can survive. Outsiders say he is weak, but we think it is good to be weak. The golden crown on his head was given by the empire a long time ago. He used this golden crown as a metaphor-the empire threw a bone into a group of dogs, and the dogs would bite endlessly. We think he knew better than anyone that that hat was not a good thing, but he wore it anyway. Let's make it a bad thing. As long as we continue to make a fool of ourselves, we will have food to eat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dai Merok family is the ruling family of Vlandia and is currently in a period of relative weakness in royal power. King Deter's ruling model centered on arbitration and was a typical example of soft centralization in the feudal system. He succeeded in delaying open civil war among vassals, but failed to fundamentally weaken the foundations of local powerful factions. The Tiha family and the Kortan family are the biggest variables in the future succession pattern of the throne. Whether Detel's successor can maintain the rule of the Merok family depends on whether he has enough political wisdom to inherit this arbitration system, or whether he has enough force to suppress the vassals. At present, the stability of the Golden Crown will face a severe test after Detel's death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dai Merlock? The Wang family over there in Vlandia. I heard from the merchants that their current king is a good old man who doesn't like fighting and spends all his time trying to break up fights. The great nobles there are more tyrannical than the king, and the king is like a doormat. The funniest thing is what the king himself said - the empire gave their ancestors a golden crown, which was like throwing a bone into a pack of dogs, and dogs have been biting dogs ever since. A king said that all his relatives were wild dogs. This was an outrageous attitude. But this kind of king should be good to the people. I heard that Vlandia does not fight big wars and taxes are not high. The king here is quite majestic and powerful, but we would rather be in ruins."
+    }
+  ],
+  "TextMappings": []
+}

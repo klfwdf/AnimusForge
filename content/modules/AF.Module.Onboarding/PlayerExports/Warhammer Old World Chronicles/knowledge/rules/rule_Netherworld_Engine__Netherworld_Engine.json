@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Netherworld_Engine",
+  "Keywords": [
+    "Nether Engine",
+    "suspended altar",
+    "ancient lich",
+    "Undead Restoration",
+    "The living are weak",
+    "death energy",
+    "Undead Engine",
+    "floating altar",
+    "Necromantic Restoration",
+    "health weakened",
+    "Lich Altar",
+    "death aura"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Nether Engine is a dark altar suspended in death energy, controlled by an ancient lich. It radiates a powerful aura of death on the battlefield - repairing the surrounding undead creatures while draining the vitality and fighting will of all living people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nether Engine - the holy artifact left to us by Nagash! Each Nether Engine is a masterpiece of necromancy from ancient times, guarded by a lich with thousands of years of experience. The suspended altar uses dark magic to draw energy from the underworld, and then turns it into green light waves to radiate around. For the dead, this light is an oasis of rebirth - the miracles of broken bones and rotten flesh regenerating continue to occur under the light; for the living, this light is the most vicious curse - soldiers feel their vitality being sucked out of their bone marrow, and even the strongest veterans will slowly squat down and take a deep breath. Not only are Nether Engines powerful on the battlefield, they are also extremely deadly in sieges: just place an engine within range of a city wall for three days, and the defenders will be so weak from the loss of life force that they can no longer draw a bow or hold a spear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Nether Engine is an enemy unit that you need to destroy as quickly as possible at all costs - the longer it remains on the battlefield, the worse the exchange ratio will be for you. The engine is constantly repairing enemy undead, meaning every kill you make can be reversed. The most effective way to deal with the Nether Engine is to deploy highly mobile long-range units or flying cavalry for precision strikes, and use superior force to paralyze it in the shortest time. Don't use infantry to siege - the halo of death around the engine will weaken your soldiers before they reach their destination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Nether Engine's history dates back to the time when the great wizard Nagash first came to rule Nehekhara. It was originally designed as a mobile \"immortal repair station\" to maintain the huge skeleton army from disintegrating during long-distance expeditions. At the center of each engine is a soul stone \"retrieved\" from the underworld of the dead. Its energy output is controlled by a lich who has made an immortal oath through continuous incantations. The intensity of the engine's death aura can be adjusted by the Lich, with seven levels ranging from slight debility to full blast. At the highest level, the engine can form an \"absolute death zone\" within a hundred steps - any living creature that enters will be drained of its vitality within minutes. The engine itself also has weaknesses: the suspension system relies on the necromantic energy density of the ground, and may fail and be forced to land on a fully purified holy land; once the Lich's concentration is interrupted by some great spell or sacred power, it may cause the engine to lose control and backfire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The green light of the Nether Engine reminded me of the hospital bed when puerperal fever took away my mother's life - the same coldness, the same despair. The lich on that altar was once a living being, willingly accepting eternal damnation in pursuit of eternal knowledge. They exchanged their souls for power, which is very similar to how some human nobles exchanged their conscience for power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Nether Engine once crossed our borders - we could not fight it, we had to retreat. When we returned to the village a few days later, we found that all the crops had withered, the well water had turned black, and even the earthworms in the soil were dead. The engine didn't touch any of us, but it took a full year for the earth to return to production after it was eroded. That year my clan almost starved to death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have seen traces of the Nether Engine on the border of Sylvania - not the engine itself, but the \"dead road\" left by it after it passed: all the trees within a hundred steps on both sides of the road were dead, there were no more birds singing, and even flies were unwilling to fly over. Local hunters say that anyone struck by the engine's light more than three times will die from internal decay within a year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The maintenance materials required for the Nether Engine are the most incredible: the Lich needs to regularly replace the antiseptic spices that preserve its remains, the rune stones on the altar will shatter due to energy overload and need to be replaced, and even the necromantic energy that maintains its suspension needs to be replenished with \"death dust\" collected from ancient battlefields. Supplying these materials is a shady business but the profits are ridiculously high."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Nether Engine is a suspended dark altar controlled by an ancient lich that radiates death energy.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Nether Engine Suspended Altar Ancient Lich"
+  ]
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <!-- SaveCodec error messages -->
+    <string id="AFPOL_MISC_SaveCodec_Msg_001" text="Legacy DynamicPolicy save must not contain $type metadata" />
+    <string id="AFPOL_MISC_SaveCodec_Msg_002" text="Legacy LocalPolicy save must not contain $type metadata" />
+
+    <!-- SaveCodec UI display -->
+    <string id="AFPOL_MISC_SaveCodec_UnknownModule" text="Unknown module effect" />
+    <string id="AFPOL_MISC_SaveCodec_InertModule" text="Inert module effect in current version" />
+    <string id="AFPOL_MISC_SaveCodec_GenericEffect" text="Module effect" />
+
+    <!-- Generation failure reasons -->
+    <string id="AFPOL_MISC_Generation_SessionNotReady" text="Campaign session is not yet ready." />
+    <string id="AFPOL_MISC_Generation_FeatureDisabled" text="Non-player ruler policy feature is currently disabled." />
+    <string id="AFPOL_MISC_Generation_ApiNotConfigured" text="Ruler policy AI service is not configured. Please check mod settings." />
+    <string id="AFPOL_MISC_Generation_InvalidTarget" text="Policy proposal target is not a valid non-player ruler." />
+    <string id="AFPOL_MISC_Generation_TargetNoLongerRuler" text="Policy proposal target is no longer the current kingdom ruler." />
+    <string id="AFPOL_MISC_Generation_EmptyProposal" text="Player policy proposal content is empty." />
+    <string id="AFPOL_MISC_Generation_Busy" text="Another ruler policy is being generated, please try again later." />
+    <string id="AFPOL_MISC_Generation_DuplicateInFlight" text="This ruler policy proposal is already being processed." />
+    <string id="AFPOL_MISC_Generation_ScheduleFailed" text="Unable to schedule ruler policy generation. Technical details have been written to logs." />
+    <string id="AFPOL_MISC_Generation_UnknownError" text="Unknown error" />
+
+    <!-- Catalog validation errors -->
+    <string id="AFPOL_MISC_Catalog_EmptyModuleSet" text="Contract test module set cannot be empty." />
+    <string id="AFPOL_MISC_Catalog_DuplicateModuleId" text="Duplicate policy effect module ID" />
+    <string id="AFPOL_MISC_Catalog_DuplicateOrder" text="Duplicate policy effect module Order" />
+    <string id="AFPOL_MISC_Catalog_LegacyIdConflict" text="Policy effect module LegacyId conflicts with existing ID" />
+    <string id="AFPOL_MISC_Catalog_NoModulesFound" text="No policy effect modules discovered." />
+  </strings>
+</base>

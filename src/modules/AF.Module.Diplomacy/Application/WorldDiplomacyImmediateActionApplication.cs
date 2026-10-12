@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using AnimusForge.Refactor.Domain;
 
@@ -38,7 +39,7 @@ internal static class WorldDiplomacyImmediateActionApplication
     {
         if (document != null && !document.IsPlayerAuthored && !port.IsPlayerDiplomacy(document) && !port.CanAiAuthor(authorId, out string reason))
         {
-            document.MechanicalResult = "外交行动未执行：发文者当前没有有效的自主发文权限。";
+            document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Immediate_NoAutonomousAuthority", "Diplomatic action not executed: the author currently lacks valid autonomous authority.");
             port.Log("AI diplomatic action blocked author=" + (authorId ?? "") + " document=" + (document.DocumentId ?? "") + " reason=" + reason);
             return new WorldDiplomacyImmediateActionReceipt(false, document.MechanicalResult);
         }

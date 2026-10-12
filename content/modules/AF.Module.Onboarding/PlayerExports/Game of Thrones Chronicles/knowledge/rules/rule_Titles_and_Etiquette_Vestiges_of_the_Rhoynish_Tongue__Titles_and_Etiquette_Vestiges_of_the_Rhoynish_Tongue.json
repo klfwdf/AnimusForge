@@ -1,0 +1,132 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Vestiges_of_the_Rhoynish_Tongue",
+  "Keywords": [
+    "Vestiges of the Rhoynish Tongue"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Although the Rhoynar language declined with the rivers and migrations, it still left its shadow in Dornish names, customs, and local terms. It is a unique origin for the Dornish people, and to outsiders it is often just an incomprehensible accent; the few words that have been preserved are sometimes more stubborn than the entire history book"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vestiges of the Rhoynish Tongue"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vestiges of the Rhoynish Tongue"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vestiges of the Rhoynish Tongue"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vestiges of the Rhoynish Tongue Although the Rhoynar language declined with the rivers and migrations, it still left its shadow in Dornish names, customs, and local terms. It is a unique origin for the Dornish people, and to outsiders it is often just an incomprehensible accent; the few words that have been preserved are sometimes more stubborn than the entire history book. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vestiges of the Rhoynish Tongue Although the Rhoynar language declined with the rivers and migrations, it still left its shadow in Dornish names, customs, and local terms. It is a unique origin for the Dornish people, and to outsiders it is often just an incomprehensible accent; the few words that have been preserved are sometimes more stubborn than the entire history book. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vestiges of the Rhoynish Tongue Although the Rhoynar language declined with the rivers and migrations, it still left its shadow in Dornish names, customs, and local terms. It is a unique origin for the Dornish people, and to outsiders it is often just an incomprehensible accent; the few words that have been preserved are sometimes more stubborn than the entire history book. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Vestiges of the Rhoynish Tongue: Although the Rhoynar language declined with the rivers and migrations, it still left its shadow in Dornish names, customs, and local terms. It is a unique origin for the Dornish people, and to outsiders it is often just an incomprehensible accent; the few words that have been preserved are sometimes more stubborn than the entire history book."
+  ]
+}

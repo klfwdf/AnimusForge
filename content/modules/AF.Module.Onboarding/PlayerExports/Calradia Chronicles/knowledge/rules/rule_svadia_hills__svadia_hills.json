@@ -1,0 +1,31 @@
+{
+  "Id": "rule_svadia_hills",
+  "Keywords": [
+    "Swadia Hills",
+    "Wazhong Hills"
+  ],
+  "RagShortTexts": [
+    "What strongholds do the Swadia Hills contain?"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 120
+        }
+      },
+      "Content": "Swadia Hills: South of the Omanfad Corridor is the Swadia Hills. The strongholds in the area are: Palawind, Oaks Hall, Fort Drapon, Fort Ongar, Fort Vereksand, and Fort Carius. The area is divided into several small plains by several small mountains. The terrain is gently undulating. The center is an excellent grain-producing area, and the west is Vlandia's main horse farm: Wallumby. The Wallumby horses it breeds are the standard equipment of Vlandia cavalry. The east is a cash crop production area (Oakes Lake area). Marin's grapes and Maraven's walnuts are extremely important cash crops. The economic center of the region is Oaks Hall, a region rich in grain and beer, while Palawind, the northern political center, is rich in wine, pottery, and wooden shields. As an important thoroughfare connecting the north and south of Vlandia, this region has developed entrepot trade. As a transit station in the middle, Palawind is an indispensable economic hub for Vlandia. The economy of this region is generally not very developed, not even as good as the Roval region in the north. The siphon effect is obvious. The main population is concentrated in Oaks Hall. The rest of the region has a smaller population and sparse villages. However, the residents here are martial and have excellent riding skills, making it an indispensable place for soldiers."
+    }
+  ],
+  "TextMappings": []
+}

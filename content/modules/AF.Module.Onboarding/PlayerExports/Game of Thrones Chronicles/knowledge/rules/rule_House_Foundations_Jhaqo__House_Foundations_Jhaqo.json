@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Jhaqo",
+  "Keywords": [
+    "Jhaqo",
+    "Khal Jhaqo",
+    "Jhaqo Khalasar"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Jaco commanded the khalasar who traveled with the tents and horses. Caohai has no canonization status to defend Kao's position, and his followers are observing his choices every day: whether he dares to fight, whether he knows when to avoid depleted water sources, and whether he can distribute the captured horses, metals and prisoners to the deserving people. Bravery can win the first riders, and judgment can keep them alive through the dry season; blood ties and old relationships have weight, but they are never more convincing than hunger. Giaco can expand or divide due to victory or defeat. The character's future is not written in the horse's mane, but the power structure in which he lives always requires him to constantly prove himself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The young rider looked at Jaco and loved counting the bells in his braid; the old rider was more concerned with whether he could remember which wells were already bitter and which roads would starve the horses to death in late summer. Reputation can spur people on, but experience can bring them back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "soldier",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ghiscari merchants were willing to use silk, wine, and promises in exchange for Jaco's detour, but the city defenders did not believe that a gift could constrain the next migration. To those within its walls, khalasar's friendliness and hostility must be calculated on a daily basis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who remained in the camp to care for the children, the wounded, and the livestock measured the khal in a more practical way than a war song. If he only remembers the loudest warrior but forgets the sick horse, the widow and the water bag, the awe around the campfire will gradually turn into silence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jhaqo The leader's name and khalasar banner in Caohai are supported by battle, judgment, kinship relations and distribution of war profits. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jhaqo The leader's name and khalasar banner in Caohai are supported by battle, judgment, kinship relations and distribution of war profits. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jhaqo The leader's name and khalasar banner in Caohai are supported by battle, judgment, kinship relations and distribution of war profits. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jhaqo The leader's name and khalasar banner in Caohai are supported by battle, judgment, kinship relations and distribution of war profits. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Jhaqo: The leader's name and khalasar banner in Caohai are supported by battle, judgment, kinship relations and distribution of war profits."
+  ]
+}

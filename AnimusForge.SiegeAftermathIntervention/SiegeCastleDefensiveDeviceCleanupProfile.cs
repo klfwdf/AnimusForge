@@ -13,10 +13,22 @@ public static class SiegeCastleDefensiveDeviceCleanupProfile
 
     public static string BuildSummary(int gatesRemoved, int siegeWeaponsRemoved, int failures)
     {
-        return "城堡战后防御设施已移除：城门=" + Clamp(gatesRemoved)
-            + "，攻防器械=" + Clamp(siegeWeaponsRemoved)
-            + "，失败=" + Clamp(failures)
-            + "；城墙段未纳入清理，继续采用围城结算保存的破坏比例。";
+        return BuildSummary(gatesRemoved, siegeWeaponsRemoved, failures, isEnglish: true);
+    }
+
+    public static string BuildSummary(int gatesRemoved, int siegeWeaponsRemoved, int failures, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            return "Castle aftermath defensive devices removed: gates=" + Clamp(gatesRemoved)
+                + ", siege weapons=" + Clamp(siegeWeaponsRemoved)
+                + ", failures=" + Clamp(failures)
+                + "; wall sections excluded from cleanup, preserving siege resolution damage ratio.";
+        }
+        return "Castle aftermath defensive devices removed: gates=" + Clamp(gatesRemoved)
+            + ", siege weapons=" + Clamp(siegeWeaponsRemoved)
+            + ", failures=" + Clamp(failures)
+            + "; wall sections excluded from cleanup, preserving siege resolution damage ratio.";
     }
 
     private static int Clamp(int value) => value < 0 ? 0 : value;

@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_House_Grafton",
+  "Keywords": [
+    "House Grafton",
+    "Gulltown",
+    "Burning Tower",
+    "Port of the Vale"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Grafson family is based in Gulltown and is the most important port noble in the valley. The family emblem is a tower in flames. The ancestors captured Seagull Town during the war between the Andals entering the valley. Unlike vassals who lived in mountain castles, Grafson's power was inseparable from docks, customs, shipowners, craftsmen, and news from the Narrow Sea. Knights of the Vale will weigh their vassal obligations, while merchants care more about whether the scale is fair and whether the port is safe. Gulltown's commercial and strategic location is sufficient to explain its long-term impact."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the inland valley cannot live without Seagull Town, but they are often wary of the wealth of the port family. What Grafson masters is not mountains and cliffs, but docks, customs duties, warehouses and news from the narrow sea; they hear price changes often earlier than the Eyrie hears them. The flame tower is both a family emblem and a portrayal of the power of the port."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the merchants and craftsmen of Seagull Town evaluated Grafson, they first looked at whether the port regulations were stable, whether the tax rate was sustainable, and whether foreign ships dared to dock. If the port owner only pretends to be aristocratic, the ship will go elsewhere; if the weight can be trusted and the night patrol can be diligent, foreign merchants will also put in good words for his name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Valley farmers send wool, grain and wood to Seagull Town, and then exchange for salt, ironware and coins. They may not have met Grafson himself, but they will judge the lord from how long he waited at the city gate and whether anyone cheated on the scales in the market. When port politics reaches the countryside, it always turns into how much a truckload of goods can be sold for."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Grafton The Vale Port Nobility of Seagull Town, whose family emblem is the Burning Tower. Its power comes from docks, customs, shipowners and narrow sea trade. It is an important family in the valley connecting to the outside world; the proverb is unknown. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Grafton The Vale Port Nobility of Seagull Town, whose family emblem is the Burning Tower. Its power comes from docks, customs, shipowners and narrow sea trade. It is an important family in the valley connecting to the outside world; the proverb is unknown. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Grafton The Vale Port Nobility of Seagull Town, whose family emblem is the Burning Tower. Its power comes from docks, customs, shipowners and narrow sea trade. It is an important family in the valley connecting to the outside world; the proverb is unknown. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Grafton The Vale Port Nobility of Seagull Town, whose family emblem is the Burning Tower. Its power comes from docks, customs, shipowners and narrow sea trade. It is an important family in the valley connecting to the outside world; the proverb is unknown. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Grafton: The Vale Port Nobility of Seagull Town, whose family emblem is the Burning Tower. Its power comes from docks, customs, shipowners and narrow sea trade. It is an important family in the valley connecting to the outside world; the proverb is unknown."
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "Id": "rule_gromril",
+  "Keywords": [
+    "Gromril",
+    "Meteoric Iron",
+    "Dwarf Exclusive",
+    "Hardest Metal",
+    "Rune Medium",
+    "Heaven-Fallen Divine Iron",
+    "Steel of the Dwarfs"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gromril is sacred metal that truly fell from the stars—every piece of natural gromril is the remnant of a meteor that hurtled from the abyss of the sky to smash into the earth. The Dwarfs were the earliest and remain the sole race to master the metallurgy of gromril; armor forged from it is almost impossibly light yet harder than any mortal steel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gromril! We call it gromril—in Khazalid the word means roughly 'bones left behind in the mountains by the sky.' Humans call it meteoric iron, a name far too thin, nothing like speaking of the greatest metal in the world. Do you know, when a gromril meteorite falls from the heavens and strikes the earth, it rings with a pitch that only a Runesmith can hear—that is the metal singing. The purity of gromril determines how hard it is: of the highest 'star-grade' gromril, only three pieces have ever been found in the history of my race, and one of them was used to forge the divine hammer of the Ancestor God Grungni. Ordinary human blacksmiths cannot even reach the temperature needed to heat it red—our furnaces use the magma heat of subterranean rivers of fire to melt it. Another incredible property of gromril is that it 'remembers' runes. You can carve a rune into steel, but the rune will fade over time. Gromril never does—once inscribed, it absorbs that rune into its own crystalline structure like soaking up water, and it will not fade in ten thousand years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The strategic significance of gromril goes far beyond the military—it virtually dictates the geopolitical balance of military power in the Old World. The defensive superiority of Dwarf Karaks owes much to the full gromril panoply of the Ironbreakers, which makes the defensive strength of a single Dwarf garrison formation equal to three times its number in Imperial heavy infantry. Yet the fatal scarcity of gromril dictates that its use must be calculated with extreme precision: there are no more than six known gromril ore sources, and all of them lie under the absolute control of the Dwarf realms. The Empire has made numerous attempts to acquire gromril through diplomatic channels, but the Dwarfs' attitude toward exporting gromril is like a human's attitude toward their own offspring—never sold, never lent, never traded. The sole exception in history was 'Ghal Maraz,' gifted during the age of Sigmar by High King Kurgan Ironbeard to the Empire's founding Emperor Sigmar—the only non-Dwarf weapon in the world forged from gromril, though this is regarded as an ancient gift sealing a ten-thousand-year alliance between Dwarfs and Men, never a commercial transaction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "In mineralogy, gromril (meteoric iron) carries the formal classification code GRM-000 (Imperial Bureau of Mines, 'Catalogue of Rare Metals,' 2000 IC edition), defined as 'an interstellar fallen metal of non-terrestrial origin, possessing hardness, tenacity, and magical affinity surpassing any known surface mineral.' When magnified to the runic scale (approximately one hundred-thousandth of an inch), the internal structure of gromril exhibits a unique six-pointed star crystal lattice—a structure that should not exist in nature, which a hypothesis of the Imperial Alchemists' Guild attributes to 'an accidental product formed under extreme conditions of temperature and gravity during interstellar travel.' Currently known sources of gromril include: the Barak Varr crater cluster (fallen circa -5000 IC, yielding roughly twelve hundred stone of raw gromril), the Karaz-a-Karak meteor shower (-1500 IC, when five gromril meteorites fell simultaneously—one of which was used on the spot to forge 'Ghal Maraz'), and the shallow gromril vein newly discovered in the Grey Mountains (discovered in 2388 IC, minuscule in yield but approaching star-grade in quality). The magical retention mechanism of gromril is termed the 'Runic Absorption Effect'—the hexagrammic structures within the gromril crystal lattice naturally form closed energy circuits, so any rune inscribed into it is 'remembered' by the lattice and continuously radiates its magical effect, with a theoretical duration of infinity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Legends of gromril remind me of my dowry—a gromril brooch passed down through my family for seven generations. It is not a weapon, merely an oval ornament the size of a finger, yet it shines brighter than any diamond and never tarnishes. My grandmother told me that this piece of gromril fell from the sky before the Empire was even founded. What I mean to say is that to the Dwarfs, gromril is more than a strategic material—it is a religion, an art, a memory older than kings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Among Dwarf clans, the ownership of gromril is a permanent entry carved into the Book of Grudges. Thirty years ago, my clan and the Ironfist clan argued for twenty years over the priority mining rights to a meteor crater—until finally the High King's Runic Court ruled that we would mine it jointly and share the yield, though the two clans still do not see eye to eye to this day. Gromril is not merely a lump of metal: it represents honor, the approval of the Ancestors, and the assurance that your clan's name will still be remembered a thousand years hence. Whoever controls gromril holds the right to speak for the future of the Dwarfs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "While lost on the eastern slopes of the Worlds Edge Mountains, I witnessed a gromril fall with my own eyes—at midnight the sky was torn open by a white scar, followed by a sonic boom loud enough to make your innards tremble, startling every bird into flight for miles around. The next morning, following the directions of an old Dwarf veteran, I found the crater, but two Dwarfs were already standing there, their beards longer than my entire body, crouching by the rim of the pit and tapping the meteorite lightly with small hammers to listen to its tone. The moment they saw me, they pointed their axes in the opposite direction, so I walked away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Inside the Nuln Metal Exchange there is a secret chamber dedicated specifically to listing gromril—listing it, not trading it. Not a single transaction has been concluded in hundreds of years, because the Dwarfs hold the absolute right to define ownership over all gromril. A bold Imperial mine owner once discovered a small gromril vein in the Grey Mountains and mined it in secret for a month—when a Dwarf patrol discovered him, they did not draw blades, but instead produced the original copy of a 'Grey Mountains Mineral Rights Treaty' signed thirty thousand years ago, on whose yellowed parchment it was clearly written that all gromril in that entire mountain range belonged to Karak Norn."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Gromril: the Khazalid name for meteoric iron, meaning roughly 'bones left behind in the mountains by the sky,' the most sacred substance in Dwarf civilization.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Gromril Meteoric Iron Dwarf Exclusive"
+  ]
+}

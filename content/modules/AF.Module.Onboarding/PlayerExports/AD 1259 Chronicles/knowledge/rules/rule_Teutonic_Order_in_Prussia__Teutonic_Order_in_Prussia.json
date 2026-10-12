@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Teutonic_Order_in_Prussia",
+  "Keywords": [
+    "Teutonic Order",
+    "Teutonic Knights (Teutonic Order in Prussia)",
+    "Prussia",
+    "Northern Crusades",
+    "Ordensburg",
+    "Anno von Sangershausen"
+  ],
+  "RagShortTexts": [
+    "The State of the Teutonic Order transformed pagan Prussia into a monastic crusader territory anchored by brick fortresses and German settlers."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The State of the Teutonic Order (Deutschordensstaat) was an independent monastic crusading power along the southeastern Baltic. Invited in 1226 by Duke Konrad I of Mazovia to defend against pagan Prussian raids, the Order was invested with imperial and papal sovereignty (the Golden Bull of Rimini) to conquer and convert the Baltic littoral.\n\nUnder Grand Master Anno von Sangershausen in 1259, the Knights converted military subjugation into permanent territorial lordship. They constructed brick commandery castles (Ordensburgen) such as Marienburg, Kulm, and Königsberg, while settling German and Polish free peasants and burghers under Kulm Law (Culmer Handfeste). This militarized state fought ongoing campaigns against the pagan Prussians and the rising Grand Duchy of Lithuania."
+    }
+  ],
+  "TextMappings": []
+}

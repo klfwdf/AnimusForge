@@ -20,7 +20,7 @@ public static class MissionScreenSafePatch
 			Type type = AccessTools.TypeByName("TaleWorlds.MountAndBlade.View.Screens.MissionScreen");
 			if (type == null)
 			{
-				Logger.LogTrace("System", "❌ MissionScreenSafePatch: 找不到 MissionScreen 类型。");
+				Logger.LogTrace("System", "❌ MissionScreenSafePatch: MissionScreen type not found.");
 				return;
 			}
 			MethodInfo methodInfo = null;
@@ -46,18 +46,18 @@ public static class MissionScreenSafePatch
 			}
 			if (methodInfo == null)
 			{
-				Logger.LogTrace("System", "❌ MissionScreenSafePatch: 未能找到 BeforeMissionTick 目标方法。");
+				Logger.LogTrace("System", "❌ MissionScreenSafePatch: BeforeMissionTick target method not found.");
 				return;
 			}
 			Harmony harmony = new Harmony("AnimusForge.missionscreen.safety");
 			HarmonyMethod prefix = new HarmonyMethod(typeof(MissionScreenSafePatch).GetMethod("Prefix", BindingFlags.Static | BindingFlags.Public));
 			harmony.Patch(methodInfo, prefix);
 			_patched = true;
-			Logger.LogTrace("System", "✅ MissionScreenSafePatch 已对 " + methodInfo.DeclaringType.FullName + "." + methodInfo.Name + " 打补丁。");
+			Logger.LogTrace("System", "✅ MissionScreenSafePatch Patched " + methodInfo.DeclaringType.FullName + "." + methodInfo.Name + " successfully.");
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ MissionScreenSafePatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ MissionScreenSafePatch patch failed: " + ex.Message);
 		}
 	}
 

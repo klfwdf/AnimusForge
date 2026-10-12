@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,11 +26,11 @@ internal sealed partial class WorldDiplomacyOrchestration
         var receipt = item.MemoryReceipts.FirstOrDefault(x => x.SourceId == source);
         if (receipt == null)
         {
-            string npcName = "统治者";
+            string npcName = DiplomacyMiscPromptTexts.Get("Prompt_RulerFallback", "Ruler");
             npcName = DialogueHost?.RulerName(item.RulerId) ?? npcName;
             receipt = new WorldDiplomacyDialogueMemoryReceipt { SourceId = source, RulerId = item.RulerId,
                 Fact = fact, Day = _host.CurrentDay(), Hour = _host.CurrentHour(),
-                GameDate = _host.FormatCampaignDate(_host.CurrentDay()), NpcName = npcName, LocationId = "口头外交",
+                GameDate = _host.FormatCampaignDate(_host.CurrentDay()), NpcName = npcName, LocationId = DiplomacyMiscPromptTexts.Get("Dialogue_OralDiplomacyTag", "Oral Diplomacy"),
                 SourceInteractionId = item.SourceInteractionId,
                 SourceChannel = item.SourceChannel,
                 SourceSessionId = item.SourceSessionId };

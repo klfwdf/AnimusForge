@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Nunn",
+  "Keywords": [
+    "Nuln",
+    "imperial industrial center",
+    "Gunnery Academy",
+    "arsenal",
+    "musket casting",
+    "Capital of Wissenland",
+    "Imperial Military Industries",
+    "Imperial Gunnery School",
+    "cast iron area",
+    "Nuln Ironsides",
+    "Gunpowder storage",
+    "Reik River Industrial Belt"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nuln is the military-industrial heart of the Empire and the capital of Wissenland, situated along the middle reaches of the River Reik. The entire city is famed for the thick smoke of its iron-smelting blast furnaces and the ringing hammers of its cannon foundries—nearly every cannon, handgun, and round of shot in the Empire comes from Nuln's arsenals and casting shops, while the Imperial Gunnery School stands as the Old World's most prestigious institution for firearms and ballistics research."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nuln—the Empire's city of iron and fire! If you ask what the finest thing in the Empire is, Altdorf will tell you they have a golden crown, and Nuln will tell you that every rivet beneath that crown was hammered right here. Nuln's foundry quarter works day and night, turning ore barged down from the upper Wissen into the barrels of Helstorm Rocket Batteries, into every steel plate on a Reiksguard breastplate, and into Great Cannons that can thunder from one end of the Empire to the other. The Imperial Gunnery School trains the most rigorous military minds in the Empire—those old scholars who spend their lives hunched over ballistic calculation tables in black leather aprons can deduce the exact position of an enemy battery from the impact point of a single cannonball. Imperials should count themselves fortunate: without the chimneys of Nuln, the Empire would have only clubs in its hands when facing the Warriors of Chaos in the north. That said, Nuln's river water runs brown with rust, Nuln's air hangs heavy with sulfur and coal-coke grit, and Nuln's children wake with a layer of black soot in their nostrils every day—that is the price of industrial glory, and we have the pride to admit it, because we have earned that glory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For Imperial military commanders, Nuln is both an irreplaceable strategic resource and an unavoidable military vulnerability. Eighty percent of the Empire's artillery and ninety percent of its gunpowder supply depend on Nuln's foundry quarter and powder magazines, meaning that any enemy who successfully strikes Nuln simultaneously cripples artillery batteries across the entire Empire. The key to defending Nuln lies in controlling the Reik waterway upstream and the Wissenland grain routes downstream: Nuln itself grows almost no grain, and its entire workforce—including tens of thousands of smiths, foundrymen, and apprentices—lives on grain shipped along the Reik. The 'Cast-Iron Wall' ringing the Gunnery School is the most distinctive fortification in the Empire: built not of quarried stone, but of tens of thousands of decommissioned cast-iron cannon barrels riveted together, it absorbs artillery fire with surprising effectiveness. Every commander stationed in Nuln must remember that within the city walls, the foundry guilds carry no less weight than the burgomeisters—during war preparations, you must first reach consensus with the masters of the ironworkers' guild, because a walkout by the city's 30,000 smiths is enough to turn your campaign plan into waste paper in a single day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Nuln's Imperial Gunnery School is the oldest surviving institution for systematic firearms research in the Old World, founded in 1955 IC by Elector Count Friedrich von Nuln of Wissenland—not originally for war, but to meet the growing demand for blasting engineering in Wissenland's iron mines. The school's first milestone came in 1991 IC, when Chief Ballistician Eberhard Schwarz published a landmark treatise introducing parabolic calculation into artillery firing tables for the first time—a manuscript still preserved in the fireproof vault of the school library. By around 2100 IC, the Gunnery School had completed its full transition from civil blasting to military ordnance, marked by the completion of the 'Long-Barrel Cannon Standardization' project: previously, every cannon in the Empire was a bespoke piece with incompatible bore sizes, powder charges, and shot calibers that made battlefield logistics a nightmare; after standardization, the combat efficiency of Imperial artillery rose at least threefold. Another little-known facility of the school is the 'Acoustic Ranging Chamber' beneath the foundry quarter, where ballisticians use an intricate network of brass speaking-tubes connected to listening posts on the hills across the river from Nuln to calculate trajectory parameters from the acoustic delay of passing cannonballs—a system of irreplaceable military value when fog makes visual spotting impossible. All maintenance and overhaul of the Empire's Steam Tanks is likewise handled by a dedicated steam-engineering group within the Gunnery School, which maintains individual 'service ledgers' for all twelve tanks recording every breakdown, repair, and part replacement from 2023 IC to the present, totaling more than two million words."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The city of Nuln regards noblewomen differently than the rest of the Empire—because the foundation of wealth here is not land, but the forge-hammer. Among the nobility of Wissenland, I have seen more than one widow who inherited her family's ordnance works show the elders—who urged her to 'hand the business over to a reliable man'—out the front gates of her foundry, and within a week sign a three-year contract with Dwarf master-smiths for high-grade meteoric iron that left her rivals green with envy. Though Nuln's air is choking, its social atmosphere is freer than that of other Imperial cities: on the ballistic proving grounds of the Gunnery School, the accuracy of data cares nothing for gender, and whether a cannon hits its mark depends on calculation rather than whether you wear a skirt. That does not mean Nuln is an egalitarian paradise—when I first walked into the council hall of the Ironfounders' Guild as a lord, more than half the men in the seats let out a nearly synchronized dry cough. Yet it took me only eight months to cure more than half of them of that cough—not with speeches, but by using the ironworks my father left me to win three consecutive Imperial Ordnance Board supply contracts over their heads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our house's destiny is inseparably bound to Nuln—in our family's underground vaults lies the 'Pact of Iron and Blood' signed with the Nuln Ironfounders' Guild in 2150 IC, granting our house right of first refusal on ore veins along the upper Reik. That pact was earned across four consecutive generations of our family investing in Nuln foundries, funding research at the Gunnery School, and committing our household knights to escort Nuln merchant convoys. Every far-sighted noble house of the Empire ought to plant a piece in Nuln: not as a conqueror, but as a patron—the smiths' guilds here will never bow to a drawn sword, yet they show surprising warmth toward a newly cast bronze bell or a free barge-load of coking coal. A house that holds shares in Nuln's foundries speaks with an altogether different confidence in the Imperial Diet—because when you know that the supply chain for eighty percent of the Empire's artillery sits on the ledger behind you, no one rises lightly to interrupt your speech."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I spent six years as a foundry apprentice in Nuln's Cast-Iron Quarter—and make no mistake, not the respectable kind of apprentice who gets taught the craft right away, but a true floor-apprentice whose daily work was hauling hundred-catty (roughly hundred-pound) blocks of pig iron from the furnace mouth to the pouring stage, day after day until your shoulders and wrists no longer felt like your own. Nuln's master smiths are the proudest breed on earth: an old ironsmith who has stood before a blast furnace for forty years until the glare has left him half-blind may not read a single letter, yet with one glance at the color of molten iron he can judge the furnace temperature to the degree—a skill he will never teach you until you have poured his tea for ten years. The true power of Nuln does not lie where ribboned nobles tour the Gunnery School above ground, but three levels below the Cast-Iron Quarter in the riveting vaults—where Dwarf engineers teach human journeymen how to blend meteoric iron powder into molten steel in exact proportions, techniques never written in any book and passed down only by blood and sworn apprenticeship. The military hegemony of the Empire rests upon the soot and sweat of Nuln—anyone who has ever sweated beside a real furnace knows the weight of those words."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nuln's commercial ecosystem turns upon a clear golden chain: the artillery procurement budget of the Imperial War Council sets the annual order volume for Nuln's foundry quarter, and the rise and fall of those orders ripples backward to shape employment and grain prices across all of Wissenland and the middle Reik. The gunpowder raw-material import business I run sits at the upstream head of that chain—saltpeter from Estalia, sulfur from Tilea, and the finest charcoal from the hard oak of Talabecland. The merchant guilds that command these supply lines hold far greater bargaining leverage in Nuln than outsiders realize: if a sulfur barge is delayed for two weeks on the Reik over 'customs formalities', powder trials at the Gunnery School grind to a halt, the War Council's shell delivery schedule collapses, quartermasters write letters in their most frantic hand, and those letters ultimately land upon our guild's table. Nuln is the beating heart of the Empire's armed forces—and a heart cannot do without blood or air, which is why we always sit in the front row."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Imperial Gunnery Academy—Nuln’s firearms and ballistics research institution, the most authoritative artillery research institution in the old world",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Nuln Imperial Industrial Center Gunnery Academy"
+  ]
+}

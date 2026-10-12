@@ -107,7 +107,7 @@ public sealed partial class CustomPolicyBehavior
 
 	private bool CanAttemptPolicyRenewal(LocalPolicyRecordSaveData record, out string error)
 	{
-		error = "政策仍有待完成事务，或记录不可用，暂时不能续期。";
+		error = PolicyUiTexts.Get("AFPOL_UI_CannotRenewPendingTransaction", "The policy still has pending transactions, or the record is unavailable; it cannot be extended right now.");
 		if (!ReferenceEquals(this, Instance)) return false;
 		InvalidatePolicyRecordPresentation();
 		if (record == null || IsPolicyHistoryDeleted(LocalPolicyHistorySource(record), record.RecordId)
@@ -124,13 +124,13 @@ public sealed partial class CustomPolicyBehavior
 	private bool CanDeletePolicyHistoryRecord(string historyKey, out string error)
 	{
 		try { return CanDeletePolicyHistoryRecordCore(historyKey, out error); }
-		catch { error = "政策记录状态无法确认，暂时不能删除。"; return false; }
+		catch { error = PolicyUiTexts.Get("AFPOL_UI_PolicyRecordStateUnconfirmedDeleteBlocked", "The policy record state cannot be confirmed; it cannot be deleted right now."); return false; }
 	}
 
 	private bool CanDeletePolicyHistoryRecordCore(string historyKey, out string error)
 	{
 		EnsurePolicyHistoryGuardIndex();
-		error = "只能删除已经废除、自然到期、全部失地或臣属关系终止，且没有待完成事务的政策记录。";
+		error = PolicyUiTexts.Get("AFPOL_UI_PolicyRecordDeleteNotAllowed", "Only policy records that have been abolished, expired naturally, lost all fiefs, or had their vassalage ended, and that have no pending transactions, can be deleted.");
 		if (string.IsNullOrWhiteSpace(historyKey) || _deletedPolicyHistory.ContainsKey(historyKey)) return false;
 		int separator = historyKey.IndexOf(':');
 		if (separator <= 0 || separator == historyKey.Length - 1) return false;
@@ -177,7 +177,7 @@ public sealed partial class CustomPolicyBehavior
 		}
 		catch (Exception ex)
 		{
-			error = "政策记录状态无法确认，未删除。";
+			error = PolicyUiTexts.Get("AFPOL_UI_PolicyRecordStateUnconfirmedNotDeleted", "The policy record state cannot be confirmed; nothing was deleted.");
 			PolicySystemLog.Failure("History", "record-delete-failed", error, ex.ToString());
 			return false;
 		}
@@ -190,7 +190,7 @@ public sealed partial class CustomPolicyBehavior
 		}
 		catch (Exception ex)
 		{
-			PolicySystemLog.Failure("History", "record-delete-notification-failed", "政策记录已删除，通知刷新失败。", ex.ToString());
+			PolicySystemLog.Failure("History", "record-delete-notification-failed", "The policy record was deleted, but notification refresh failed.", ex.ToString());
 		}
 		return true;
 	}
@@ -199,20 +199,20 @@ public sealed partial class CustomPolicyBehavior
 	{
 		CustomPolicyBehavior owner = Instance;
 		InvalidatePolicyRecordPresentation();
-		string error = "政策系统未初始化。";
+		string error = PolicyUiTexts.Get("AFPOL_UI_NotInitialized", "Custom policy feature is not initialized.");
 		if (owner == null || !owner.CanDeletePolicyHistoryRecord(historyKey, out error))
 		{
 			InformationManager.DisplayMessage(new InformationMessage(error, Colors.Yellow));
 			onReturn?.Invoke();
 			return;
 		}
-		InformationManager.ShowInquiry(new InquiryData("删除政策记录",
-			"删除后，该记录不再出现在政策记录、传闻或政策检索中，也不能从记录续期或重新评议。不会回滚历史效果或删除已有对话记忆。是否删除？",
-			true, true, "删除记录", "取消", () =>
+		InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_DeletePolicyRecordTitle", "Delete Policy Record"),
+			PolicyUiTexts.Get("AFPOL_UI_DeletePolicyRecordConfirm", "After deletion, this record will no longer appear in policy records, rumors, or policy retrieval, and it can no longer be extended or re-reviewed from the record. Historical effects will not be rolled back, and existing dialogue memories will not be deleted. Delete it?"),
+			true, true, PolicyUiTexts.Get("AFPOL_UI_DeleteRecord", "Delete Record"), PolicyUiTexts.Get("AFPOL_UI_Cancel", "Cancel"), () =>
 			{
 				if (!ReferenceEquals(owner, Instance))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("存档已切换，未删除政策记录。", Colors.Yellow));
+					InformationManager.DisplayMessage(new InformationMessage(PolicyUiTexts.Get("AFPOL_UI_SaveSwitchedRecordNotDeleted", "The save was switched; the policy record was not deleted."), Colors.Yellow));
 					return;
 				}
 				if (!owner.TryDeletePolicyHistoryRecord(historyKey, out string failure))
@@ -294,7 +294,7 @@ public sealed partial class CustomPolicyBehavior
 				HistoryKey = row.HistoryKey, RecordId = row.RecordId, SourceKind = LocalPolicyHistorySource(record), ScopeKind = row.ScopeKind,
 				KingdomId = FirstNonEmpty(record.TargetKingdomId, record.IssuerKingdomId, sourceEffect?.TargetKingdomId),
 				KingdomName = FirstNonEmpty(record.TargetKingdomName, record.IssuerKingdomName, sourceEffect?.TargetKingdomName),
-				TitleText = "《" + row.PolicyNameText + "》", DateText = row.DateText, StatusText = row.StatusText,
+				TitleText = PolicyUiTexts.Format("AFPOL_UI_PolicyNameWrappedFormat", "\"{NAME}\"", "NAME", row.PolicyNameText), DateText = row.DateText, StatusText = row.StatusText,
 				Day = record.SubmittedDay, CreatedUtcTicks = record.CreatedUtcTicks,
 				BodyText = BuildPolicyPresentationBody(row.StatusText, row.TargetText, row.CostText, row.ContentText, row.FeedbackText),
 				ImpactText = row.EffectText + "\n" + row.RemainingText + "\n" + row.CycleText + "\n" + row.RenewalText,
@@ -310,10 +310,10 @@ public sealed partial class CustomPolicyBehavior
 			{
 				HistoryKey = key, RecordId = record.PolicyId, SourceKind = "npc", ScopeKind = PolicyScopeKingdom,
 				KingdomId = record.KingdomId, KingdomName = record.KingdomName,
-				TitleText = "《" + record.PolicyName + "》", DateText = FirstNonEmpty(record.GameDate, "旧存档日期未记录"),
+				TitleText = PolicyUiTexts.Format("AFPOL_UI_PolicyNameWrappedFormat", "\"{NAME}\"", "NAME", record.PolicyName), DateText = FirstNonEmpty(record.GameDate, PolicyUiTexts.Get("AFPOL_UI_LegacySaveDateNotRecorded", "Legacy save date not recorded")),
 				StatusText = state, Day = record.Day, CreatedUtcTicks = record.CreatedUtcTicks,
 				BodyText = BuildPolicyPresentationBody(state, record.KingdomName, string.Empty,
-					FirstNonEmpty(record.PolicyContent, record.PolicyDigest), FirstNonEmpty(record.PublicFeedback, "民众反馈未记录。")),
+					FirstNonEmpty(record.PolicyContent, record.PolicyDigest), FirstNonEmpty(record.PublicFeedback, PolicyUiTexts.Get("AFPOL_UI_FeedbackNotRecorded", "Public feedback not recorded."))),
 				ImpactText = NpcRulerPolicyBehavior.BuildPolicyEffectSummaryForPresentation(record), CanDelete = CanDeletePolicyHistoryRecord(key, out _)
 			});
 		}
@@ -324,21 +324,22 @@ public sealed partial class CustomPolicyBehavior
 	{
 		switch ((status ?? string.Empty).Trim().ToLowerInvariant())
 		{
-			case "expiry_vote_pending": return "到期废除表决中";
-			case "abolished": return "已废除";
-			case "pending": return "待表决";
-			case "approved_pending_commit": return "政策提交中";
-			case "approved_renewal_pending_commit": return "续期提交中";
-			case "commit_suspended": return "事务待处理";
-			case "rejected": return "未通过";
+			case "expiry_vote_pending": return PolicyUiTexts.Get("AFPOL_UI_HistoryStatusExpiryVotePending", "Expiry-abolition vote in progress");
+			case "abolished": return PolicyUiTexts.Get("AFPOL_UI_HistoryStatusAbolished", "Abolished");
+			case "pending": return PolicyUiTexts.Get("AFPOL_UI_HistoryStatusPendingVote", "Awaiting vote");
+			case "approved_pending_commit": return PolicyUiTexts.Get("AFPOL_UI_HistoryStatusSubmitting", "Submitting policy");
+			case "approved_renewal_pending_commit": return PolicyUiTexts.Get("AFPOL_UI_HistoryStatusRenewalSubmitting", "Submitting renewal");
+			case "commit_suspended": return PolicyUiTexts.Get("AFPOL_UI_HistoryStatusCommitSuspended", "Transaction pending");
+			case "rejected": return PolicyUiTexts.Get("AFPOL_UI_HistoryStatusRejected", "Not passed");
 			case "active": case "expired": case "targets_lost": case "relationship_ended":
 				return GetLocalPolicyStatusText(status);
-			default: return "状态未确认";
+			default: return PolicyUiTexts.Get("AFPOL_UI_HistoryStatusUnconfirmed", "Status unconfirmed");
 		}
 	}
 
 	private static string BuildPolicyPresentationBody(string status, string target, string cost, string content, string feedback)
-		=> "政策状态：" + status + (string.IsNullOrWhiteSpace(target) ? "" : "\n" + target)
+		=> PolicyUiTexts.Get("AFPOL_UI_LocalPolicyStatusPrefix", "Policy status: ") + status + (string.IsNullOrWhiteSpace(target) ? "" : "\n" + target)
 			+ (string.IsNullOrWhiteSpace(cost) ? "" : "\n" + cost)
-			+ "\n\n【政策正文】\n" + content + "\n\n【民众反馈】\n" + feedback;
+			+ "\n\n" + PolicyUiTexts.Get("AFPOL_UI_PolicyFullTextSectionTitle", "[Policy Full Text]") + "\n" + content
+			+ "\n\n" + PolicyUiTexts.Get("AFPOL_UI_PolicyFeedbackSection", "[Public Feedback]") + "\n" + feedback;
 }

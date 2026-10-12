@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Green_Diplomacy",
+  "Keywords": [
+    "green diplomacy",
+    "Green Diplomacy Waaagh",
+    "Green tide invasion",
+    "plunder",
+    "Green skin to the outside world",
+    "non-negotiable",
+    "The strongest is king",
+    "violent hierarchical absolutism",
+    "goblin bribe",
+    "false nest tactic"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is only one word for green-skin diplomacy - fight. They do not understand the concepts of negotiations, treaties and alliances. In the Greenskin worldview, all relationships are determined by strength. When you are strong enough, other greenskins will follow you; when you are not strong enough, other greenskins will come and beat you up. For non-Greenskin races, the Greenskin's foreign policy is the periodic Green Tide invasion - you can't make peace with them, you can only fight them off by force and incinerate their spores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "diplomatic? What is that? Can you eat it? Listen, you little shrimp - the greenskins only understand one thing: whoever can fight the best is the boss. We don't sit behind a desk with a quill and pretend to be friendly like humans do - we just go over and beat the other guy's boss off, and the rest automatically become our boys. Sometimes the boss of another tribe is too good at fighting, so our boss will temporarily follow him - this is not called alliance, this is called waiting for the opportunity. When the boss is injured on the battlefield one day, we will beat him down and replace him. We don't need diplomacy with weaklings like Pointy Ears, Dumplings, and Humans - we just kill them for their shiny gadgets, and then come back ten years later for more."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Any ruler who attempts diplomacy with the greenskins will find themselves talking to stone. Greenskins do not understand the concepts of sovereignty, borders, or truces—their cognitive structure prevents them from external communication beyond a mere hierarchy of power. The few attempts in the history of the Empire to use mercenary Greenskin tribes against other Greenskin tribes have ended in disaster, because the Greenskins were unable to distinguish the difference between enemies and employers - after defeating the first enemy, they naturally moved on to the second opponent they could fight. The only effective strategy for defending against the Greenskins is military superiority and regular sweeps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The impossibility of green diplomacy has deep cognitive science roots. Greenskins do not have any neural structures in their brains that correspond to concepts of negotiation, reciprocity, or contract—they process all external interactions through an instinctive assessment of power. Academics refer to this characteristic of greenskins as violent hierarchical absolutism. Goblin obedience to orcs is based on obvious size differences rather than any form of agreement. The formation of Waaagh! requires a powerful enough warlord and an attractive enough target direction - the latter is usually provided by the shaman's divine inspiration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The impossibility of greenskin diplomacy is an odd comfort to the female lords of the frontier - for it means your enemies won't be able to divide your alliance through stratagems. Chaos may infiltrate traitors among your nobles, vampires may develop blood servants among your courtiers, but greenskins never do. If the Greenskins come, you know they are there purely to fight - this allows your defensive preparations to be focused entirely on the military level without having to think about a fifth column."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The lack of greenskin diplomacy creates a paradox on trade routes - you cannot negotiate to ensure your security at the borders of the badlands, but you can gain that security indirectly by paying dwarves for escorts. The Dwarves have been at war with the Greenskins for thousands of years, and they know their patterns better than you do. Investments in family security near the Badlands should not be spent on hiring more soldiers - they should be spent on hiring dwarven engineers to build fortifications and reinforce the outer walls of your castle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One of the first lessons you learn while wandering around the Badlands is that greenskins have their own weird reputation system. If you encounter a group of greenskins in the wilderness and you don't run away - but stand quietly and stare directly at their boss - they probably won't kill you right away. Not out of respect, but because you didn't run away the way they expected, and this unexpected pattern of behavior can temporarily confuse them. This window of confusion lasts approximately three to five breaths."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The absence of green diplomacy creates a special kind of economic marginalization. Any caravan operating on the borders of the Badlands must invest at least one-third of its profits into the cost of military escorts - an expense that can often be significantly reduced on other trade routes through diplomatic channels such as customs fees or political donations. The non-negotiable nature of greenskin territory makes the profit structure of trade around the Badlands very special - only goods with extremely high profit margins are worth the risk of crossing greenskin-controlled territory."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Waaagh! Diplomacy - the green skin's foreign relations model that replaces negotiation with violence",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Greenskin’s external relations and alliance system"
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Flint_of_Widows_Watch",
+  "Keywords": [
+    "Flint of Widow's Watch",
+    "House Flint of Widow's Watch"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Filint family of Widow's Hope is one of the many Flint branches in the North, with Widow's Hope on the east coast of the North as its foundation. Widow's Watch is close to the Shivering Sea, and local life is naturally more concerned with sea conditions, fishing, coastal roads, and winter supplies; northerners will regard this Flint as an old vassal on the east coast, but they will not attribute the stories of Mountain Flint or Flint's Finger to their names."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Philints of Widow's Hope belong to the east coast of the North and cannot be confused with the branches of the same surname in the western capes and mountains. Northern nobles would distinguish their branches in marriage certificates and summonses, because the same family name does not mean the same land, obligations or positions; the first thing Widow Hope faced was the storm of Seal Bay."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When locals talk about Felinte, they are often associated with the fire on the watchtower, the fishing boats that have not returned, and the shadow of strange sails on the sea. A lord who can warn before bad weather and control the granary during a bad harvest is worth remembering more than who his distant ancestors were. The name Widow Hope is sad enough, no one wants to add another real widow to the family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint of Widow's Watch The east coast branch of the Filint family in the north is based on Widow's Hope. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint of Widow's Watch The east coast branch of the Filint family in the north is based on Widow's Hope. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint of Widow's Watch The east coast branch of the Filint family in the north is based on Widow's Hope. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint of Widow's Watch The east coast branch of the Filint family in the north is based on Widow's Hope. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Flint of Widow's Watch: The east coast branch of the Filint family in the north is based on Widow's Hope."
+  ]
+}

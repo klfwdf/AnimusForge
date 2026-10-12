@@ -1,7 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData id="English" name="English" subtitle_extension="en-GB" supported_iso="en-GB,en-US,en,eng,en-us,en-gb,en-au,en-bz,en-ca,en-ie,en-jm,en-nz,en-za,en-tt" text_processor="TaleWorlds.Localization.TextProcessor.LanguageProcessors.EnglishTextProcessor" under_development="false">
+  <LanguageFile xml_path="gccz_town_manual_strings.xml" />
   <LanguageFile xml_path="sceneactions_strings.xml" />
   <LanguageFile xml_path="sets_hostile_meeting_strings.xml" />
+  <LanguageFile xml_path="sets_ui_strings.xml" />
+  <LanguageFile xml_path="afexercise_ui_strings.xml" />
   <LanguageFile xml_path="afwarstats_strings.xml" />
   <LanguageFile xml_path="vengeance_strings-en.xml" />
+  <LanguageFile xml_path="af_ui_strings.xml" />
+  <LanguageFile xml_path="afevent_ui_strings.xml" />
+  <LanguageFile xml_path="afd_ui_strings.xml" />
+  <LanguageFile xml_path="afpol_ui_strings.xml" />
+  <LanguageFile xml_path="coup_strings.xml" />
+  <LanguageFile xml_path="illustrator_strings.xml" />
+  <LanguageFile xml_path="afeconomy_strings.xml" />
+  <LanguageFile xml_path="afknowledge_strings.xml" />
+  <LanguageFile xml_path="afmemory_ui_strings.xml" />
+  <LanguageFile xml_path="afllm_ui_strings.xml" />
+  <LanguageFile xml_path="afworldmap_strings.xml" />
+  <LanguageFile xml_path="afdip_ui_strings.xml" />
+  <LanguageFile xml_path="afconv_ui_strings.xml" />
+  <LanguageFile xml_path="afconv_ambient_strings.xml" />
+  <LanguageFile xml_path="afsocial_ui_strings.xml" />
+  <LanguageFile xml_path="afwev_ui_strings.xml" />
+  <LanguageFile xml_path="afonboarding_ui_strings.xml" />
+  <LanguageFile xml_path="afkingdom_ui_strings.xml" />
+  <LanguageFile xml_path="afweekly_ui_strings.xml" />
+  <LanguageFile xml_path="afnpcaction_editor_strings.xml" />
+  <LanguageFile xml_path="af_runtime_strings.xml" />
+  <LanguageFile xml_path="afscene_catalog_strings.xml" />
+  <LanguageFile xml_path="afscene_speech_strings.xml" />
+  <LanguageFile xml_path="afissue_prompt_strings.xml" />
+  <LanguageFile xml_path="afadapter_records_strings.xml" />
+  <LanguageFile xml_path="afadapter_scene_strings.xml" />
+  <LanguageFile xml_path="afweekly_bulletin_strings.xml" />
+  <LanguageFile xml_path="afpol_misc_strings.xml" />
+  <LanguageFile xml_path="afdip_misc_strings.xml" />
+  <LanguageFile xml_path="afduel_strings.xml" />
+  <LanguageFile xml_path="afcoup_strings.xml" />
+  <LanguageFile xml_path="afpersona_ui_strings.xml" />
 </LanguageData>

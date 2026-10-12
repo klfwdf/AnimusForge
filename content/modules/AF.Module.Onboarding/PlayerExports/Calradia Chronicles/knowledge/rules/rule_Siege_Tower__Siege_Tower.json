@@ -1,0 +1,66 @@
+{
+  "Id": "rule_siege_tower",
+  "Keywords": [
+    "Siege Tower",
+    "On the way"
+  ],
+  "RagShortTexts": [
+    "Siege towers are afraid of fire oil, catapults and ballistae attacks."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Siege tower? It's the mountain of wood pushed to the base of the city wall. When attacking the city, the opposite side pushed the tower over, and the soldiers hid in the tower. Once the suspension bridge on the top of the tower was released, they could rush directly to the city wall. The tower was terrifyingly tall, several stories high, and the ground shook as it advanced. There were still archers standing on the top of the tower, shooting arrows at the top of the city as they walked, so that even the defenders didn't dare to poke their heads. This thing is afraid of fire. When we were defending the city, we burned fire oil at the top of the city and poured it down, especially on the tower body. Kerosene poured down from the top of the tower, and the soldiers inside had nowhere to run and screamed miserably as they burned. But if you don't stop them, once the suspension bridge hits the crenellations, groups of soldiers will surge towards the city wall, making it impossible to stop them. When my uncle was guarding the city, he saw the siege tower being pushed forward, the drawbridge slamming against the battlements, and the enemy infantry rushing up like a flood - those scenes were scary to think about."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Siege towers were battlefield stakes built of wood. It was too heavy, pushed slowly, and the axles would become crooked if there were too many potholes in the road. But if you let it be pushed to the bottom of the city, most of the battle will be won - the suspension bridge will be knocked down, and the entire regiment of infantry will rush towards the top of the city, which is equivalent to cutting a gap in the city wall. Climbing the city with cloud ladders is done piecemeal, while siege towers are built to suppress the city. Once the breach at the top of the city is torn open, it can no longer be blocked. The disadvantage is that it is easy to build but not easy to maintain. Catapults hit it, kerosene burned it, and ballista arrows stuck in the tower like hedgehogs. The siege tower was destroyed halfway, and all the soldiers inside were in vain. During the siege, I deployed a siege tower to the front line, silently calculating whether this tower was worth the casualties of a company. There are not many times when it is cost-effective, but when it comes time to climb the city, the only way to go is the siege tower."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "engineering": 50
+        }
+      },
+      "Content": "A siege tower is a mobile wooden structure siege facility. It usually has a four- to six-story frame. The bottom layer is equipped with rollers or iron hoop wheels. It is pushed by dozens of people concealed behind the tower. The tower body is made of wet cowhide or mud mixed layer for fire protection. There is an inclined ladder inside and a tiltable suspension bridge on the top floor, connected by hinges. The falling action of the suspension bridge is controlled by human power cables. The landing point must be accurately stuck between the battlements at one time, otherwise it will be a living target. Structurally, the core contradiction of siege towers is always weight. On the one hand, the tower must be self-stable, with a low center of gravity and a wide chassis. The internal cross braces must be continuously distributed from bottom to top and cannot be broken at any level. On the other hand, the resistance of pushing the tower depends entirely on the ground - frozen soil and hard flat ground can push forward slowly, while mud or gravel ground will increase the friction of the wheel axle. Once there is a pit on one side during the push, the tower body will tilt, and the internal struts will immediately overload and break. What the siege tower fears most is not arrows, but terrain obstacles. If there were trenches, deer villages or iron caltrops in front of the city, it would be impossible to push them up, so engineers had to take the lead in clearing a smooth passage. The top platform of the tower is the only output window, but it is also the target for the defenders to concentrate their attacks. The higher the tower, the better the crossbow suppression effect, but with every additional level of height, the center of gravity moves up and the propulsion stability decreases significantly. The drawbridge is the most vulnerable part of the siege tower: when it falls, it is exposed directly in front of the crenellations. The defender's long-handled weapons can stab the bridge deck before it is completely flat, preventing the bridge deck from fastening. Once the tower is ignited, the internal inclined ladder becomes a chimney, and the bottom exit is blocked by crowds pushing the tower, making it almost impossible for soldiers in the tower to escape. My conclusion is: the siege tower is only valuable when there is a gap in the city wall, clearing of obstacles is complete, and the defender has been suppressed from a distance, otherwise it is a coffin for advancement."
+    }
+  ],
+  "TextMappings": []
+}

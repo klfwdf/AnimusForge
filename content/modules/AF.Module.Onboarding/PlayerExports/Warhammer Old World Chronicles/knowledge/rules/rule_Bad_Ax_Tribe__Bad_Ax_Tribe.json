@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Bad_Ax_Tribe",
+  "Keywords": [
+    "Bad Ax Tribe_BA",
+    "Bad Ax Orc_BA",
+    "Hagranym Cavalry_BA",
+    "Bone Crushing Steel Jaw_BA"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Bad Ax Tribe is a notorious orc warband in the Gray Mountains, famous for riding a ferocious beast known as the Hagranym across the southern borders of the Old World. Hagranym is a gray predator between a giant wolf and a reptile, with bony scales and jaws strong enough to bite through plate armor. The Badaxe Orcs tamed them into warhorses, emerging from caves deep in the Ash Mountains to plunder dwarf caravans and imperial border villages. Their leader, Bonesplitter Steeljaw, is said to be able to break the handle of a dwarven hammer with his bare hands—an insult that a dwarf blacksmith would consider both ridiculous and unforgivable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are bad axes! We are the ones riding the big monsters rushing down the gray mountain! As soon as the dwarfs heard the sound of Hagranym's claws digging into the stone, they burrowed into their holes - but it was no use! Our axes can split the door open and steal all the gold! Boss Broken Bones said that all the shiny things up and down the Gray Mountain belong to us. If anyone disobeys, we will tear off his head and use it as a wine glass! The best thing was when I was riding Hagranym and jumping off the cliff - the wind was whining in my ears, and the little shrimps below were so scared that they couldn't even hold their weapons! This is called living!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Badaxe tribe in the southern reaches of the Gray Mountains is a constant strategic threat to any lord who needs to maintain trade routes through the Gray Mountain Pass. What makes them different from ordinary greenskin tribes is their mounted combat capabilities - Hagranym gives them mobility far beyond that of infantry orcs, making the traditional \"hold the pass\" strategy almost ineffective. Bad Ax Orcs can launch raids from seemingly unscalable rock faces, and Hagranym's scale armor is naturally immune to conventional bows and arrows. The most effective strategy for dealing with the Bad Ax tribe is not to intercept them head-on, but to pre-set trebuchet positions high in the Gray Mountain Pass and use falling rocks instead of arrows to block their charge path."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The military ecology of the Bad Ax tribe belongs to the typical \"mountain beast riding type\" subcategory in greenskin tribalism, which is essentially different from the common goblin wolf cavalry or wild boar cavalry. The Hagranym (Hagranym ferox) is a predatory reptile found only in specific cave systems in the middle of the Gray Mountains. Its biological classification is controversial among the Imperial Academy of Natural Sciences - some scholars classify it as a lower dragon relative, while others believe that it is a highly specialized cave monitor lizard. The way the Bad Ax Orcs tamed Hagranym is different from the usual violent taming of green skins: after the young Hagranym hatches from the egg, it is fed by the orc rider himself, forming a binding relationship similar to the \"imprinting effect\". The adult Hagranym-orc rider pairing exhibits a greater degree of synergy on the battlefield than any other greenskin cavalry, giving the Badaxe tribe a tactical mobility advantage over the vertical terrain of the Gray Mountains that no other orc tribe can match. Imperial military archives record at least four raids by the Badaxe tribe across the main passes of the Gray Mountains, each causing greater than expected losses to the lords of the Empire's southern borders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The first time I encountered the Bad Ax tribe in the Gray Mountain border territory was on a foggy morning. The visibility was so low that even the sentry on top of the watchtower could not see the foot of the mountain clearly. I lost seventeen farmers and four cartloads of ore to Nuln in that fog - they didn't even hear the Hagranym approaching, for those beasts' pads were designed to move silently over the rocks. Afterwards, the only surviving coachman repeatedly emphasized one thing: the last thing he saw in the fog was a huge black ax flying sideways through the fog, accurately splitting the axle of the carriage in front of him. Precision – This is the counter-intuitive quality that strikes me most about the Bad Ax Tribe. They weren't just killing randomly, they were hunting in the fog as if they were executing a sophisticated tactic they had passed down for countless generations in the caves of the Gray Mountains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The relationship between the Bad Ax Tribe and our family can be traced back to my great-grandfather’s generation—when the family motto that is now engraved on the stone wall of Gray Mountain Outpost first appeared in the family yearbook: “Never send a convoy of less than thirty people toward Gray Mountain on a night when the moon is waning.” This family motto came from my great-grandfather after he lost an entire gem caravan guarded by forty-two mercenaries in 2156 of the Imperial Calendar. The Bad Ax Orcs launched a charge from the gravel slopes at the eastern foot of the Gray Mountain on a moonless night. The mercenary captain mentioned \"the gray monster growing out of the darkness\" in his last brief report painted in blood on parchment. Since then, a dark tacit understanding has been formed between our family and Bad Ax: we will not cross the Gray Mountains under certain moon phase conditions, and they will not attack our patrols within a three-mile radius of the outpost in the southern section of the Gray Mountains - not because we are strong enough, but because Bonebreaker Steeljaw seems to believe that the \"obedient detour\" of our family for four consecutive generations is a form of surrender worthy of respect."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once accidentally ran into a Hagranym tied to a rock pillar in an abandoned dwarf mine tunnel deep in the Gray Mountains - it was a full circle larger than the largest warhorse I had ever seen in any imperial stable. It didn't attack me because an iron chain was pierced through the bone ring of its shoulder blade and looped three times from the rock pillar - it just stared at me with its cloudy yellow eyes, not angry, as if it was waiting for an order that it knew would come sooner or later. I didn't wait for its owner to come back. I exited the mine tunnel and walked along the original path for a whole day before exiting the Gray Mountain. From that day on, I understood one thing: the Bad Ax tribe was not a group of out-of-control beasts, they were predators with discipline, equipment, and camps, and their camps were hidden deep in the Ash Mountains in the mines that the dwarves had abandoned hundreds of years ago. The interior of the Gray Mountains may be empty - a phrase that connotes the worst fears in every village surrounding the Gray Mountains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the iron ore market in Nuln, the price of ore from the 'Ash Mountain Mining District' is two to three percent higher than that from other areas - this is not because of better quality, but because transporting the ore safely out of the Ash Mountain requires paying high costs for armed escorts, and at least half of the armed escort budget is assessed based on the threat of the Bad Ax Tribe. If you mention the Gray Mountain delivery delay to any veteran ore broker in the iron foundry area of ​​Nunn, he will respond with the same statement with a helpless smile: 'Bad Ax has smashed three more fleets this autumn, and the mine owners have to wait until it snows before they dare to send trucks again. 'The Bad Ax tribe's continued activities in the southern section of the Gray Mountains have created a stable dark economic effect: the supply of Gray Mountain ore is regularly interrupted from late autumn to early winter every year, and at least two percentage points of the seasonal price fluctuations in the Empire's ore market can be directly attributed to the seasonal active cycle of the Bad Ax orcs. Anyone running an ore futures trade in Nuln who doesn't factor the Bad Ax Tribe's raiding cycle into their risk model is doomed to go bankrupt some winter."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Badaxe Tribe - Hagranym-riding orc warband in the Gray Mountains",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bad Ax Tribe Orcs Hagranym Gray Mountains"
+  ]
+}

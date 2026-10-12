@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_ADSC_Gather_WenchName" text="Maid" />
+    <string id="AF_ADSC_Gather_EndedNormally" text="The feast has ended." />
+    <string id="AF_ADSC_Gather_EndedInvalid" text="The feast ended because the host or venue became invalid." />
+    <string id="AF_ADSC_Reason_Traveling" text="Currently traveling" />
+    <string id="AF_ADSC_Reason_TravelingTo" text="Traveling to {TARGET}" />
+    <string id="AF_ADSC_Reason_CannotMove" text="Currently unable to move to a settlement" />
+    <string id="AF_ADSC_Reason_MoveFailed" text="Movement check failed: {ERROR}" />
+    <string id="AF_ADSC_Reason_InvalidHero" text="Invalid character" />
+    <string id="AF_ADSC_Reason_NotSpawned" text="Has not yet appeared in the world" />
+    <string id="AF_ADSC_Reason_Underage" text="Under eighteen years old" />
+    <string id="AF_ADSC_Reason_NotBorn" text="Underage or not yet born" />
+    <string id="AF_ADSC_Reason_Prisoner" text="Captured" />
+    <string id="AF_ADSC_Reason_Wounded" text="Wounded" />
+    <string id="AF_ADSC_Reason_NoParty" text="No independent party" />
+    <string id="AF_ADSC_Reason_InArmy" text="In an army" />
+    <string id="AF_ADSC_Reason_InBattle" text="In battle" />
+    <string id="AF_ADSC_Reason_HasParty" text="Already has a party" />
+    <string id="AF_ADSC_Host_Disabled" text="Cannot hold feast: Feast feature is disabled in MCM." />
+    <string id="AF_ADSC_Host_NoVenue" text="Cannot hold feast: Must select a valid town or castle." />
+    <string id="AF_ADSC_Host_NotLeader" text="Cannot hold feast: Only a clan leader can host a feast." />
+    <string id="AF_ADSC_Host_NotOwned" text="Cannot hold feast: The venue must be a settlement owned by your own clan." />
+    <string id="AF_ADSC_Host_UnderSiege" text="Cannot hold feast: The settlement is under siege." />
+    <string id="AF_ADSC_Host_Cost" text="Cannot hold feast: Requires {COST} denars." />
+    <string id="AF_ADSC_Host_Cooldown" text="Cannot hold feast: Must wait {DAYS} more days." />
+    <string id="AF_ADSC_Host_ActivePlayer" text="Cannot hold feast: You already have an active feast." />
+    <string id="AF_ADSC_Host_ActiveVenue" text="Cannot hold feast: The selected venue already has an active feast." />
+    <string id="AF_ADSC_Host_GovernorInvalid" text="Cannot hold feast: The character is not your governor or companion." />
+    <string id="AF_ADSC_Tag_Uninitialized" text="Feast system is not initialized." />
+    <string id="AF_ADSC_Tag_UnparsedArgs" text="Feast tag: Unable to parse arguments." />
+    <string id="AF_ADSC_Cancel_NoGathering" text="Cancel feast failed: The specified feast does not exist or has already ended." />
+    <string id="AF_ADSC_Cancel_NotDelegate" text="Cancel feast failed: Only the player's governor or companion can execute this command." />
+    <string id="AF_ADSC_Cancel_DelegateStatus" text="{DELEGATE} has cancelled the feast at {SETTLEMENT} as you commanded." />
+    <string id="AF_ADSC_Cancel_DelegateReason" text="{DELEGATE} followed your orders and cancelled the feast at {SETTLEMENT}; guests have dispersed." />
+    <string id="AF_ADSC_Cancel_NotHost" text="Cancel feast failed: Only the feast's host can be persuaded to cancel it." />
+    <string id="AF_ADSC_Cancel_PersuadedStatus" text="{HOST} accepted your persuasion and cancelled the feast at {SETTLEMENT}." />
+    <string id="AF_ADSC_Cancel_PersuadedReason" text="{HOST} accepted the player's persuasion, cancelled their own feast at {SETTLEMENT}, and guests have dispersed." />
+    <string id="AF_ADSC_Create_NoInvitees" text="Cannot hold feast: No guests were invited." />
+    <string id="AF_ADSC_Identity_Kingdom" text="Kingdom" />
+    <string id="AF_ADSC_Identity_RulerLabel" text="{KINGDOM} current ruler" />
+    <string id="AF_ADSC_Identity_WeeklyTitle" text="{KINGDOM} event material preview" />
+    <string id="AF_ADSC_Identity_WeeklySummary" text="This week's {KINGDOM} report uses the kingdom's opening summary and related high-value actions. Routine travel is compressed; defenses, raids and foreign lords entering the realm are prioritized." />
+    <string id="AF_ADSC_Identity_OpeningLabel" text="{KINGDOM} opening summary" />
+  </strings>
+</base>

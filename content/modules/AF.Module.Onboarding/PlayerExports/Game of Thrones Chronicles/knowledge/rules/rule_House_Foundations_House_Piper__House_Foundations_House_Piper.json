@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_House_Piper",
+  "Keywords": [
+    "House Piper",
+    "Dancing Maiden"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Piper, with its roots in the Pink City, is the riverine vassal of House Tully, and their sigil is known as a pink dancing girl on a blue field. Their lands were located in the Red Fork River Basin, and the family participated in river politics as local nobles, knights, and landholders. The dancing girl's crest often caused frivolous jokes at banquets, but no knight who had actually walked through the river battlefield would underestimate the cavalry that the Pink City could muster. The local people have a more direct understanding of Piper: whether there is room for taxation, whether the roads are safe, and whether the city gates are willing to open for them when war comes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There were few people at the river banquet who could not recognize Piper's pink dancer. Just because heraldry makes people laugh does not mean that the family is insignificant; Pink City is located in a land frequently visited by wars, and the value of a vassal is still measured by riders, marriage alliances, roads and the speed of fulfilling summons. A polite person can joke, but never forget that Piper also has a sword."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People around the Pink City didn't think there was anything strange about the dancer's coat of arms. After looking at the flag for a long time, they just recognized the team's color. The villagers are concerned about whether their crops will be trampled, and the soldiers are concerned about whether those beside them will escape. The reputation of the Piper family is accumulated by recruitment, defense and harvest, rather than by the laughter of outsiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Piper The Tully vassal of the Pink City uses the pink dancing girl as her coat of arms; the actual reputation of the family comes from the land of the Red Fork River, cavalry, road defense and the judgment of the subjects. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Piper The Tully vassal of the Pink City uses the pink dancing girl as her coat of arms; the actual reputation of the family comes from the land of the Red Fork River, cavalry, road defense and the judgment of the subjects. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Piper The Tully vassal of the Pink City uses the pink dancing girl as her coat of arms; the actual reputation of the family comes from the land of the Red Fork River, cavalry, road defense and the judgment of the subjects. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Piper The Tully vassal of the Pink City uses the pink dancing girl as her coat of arms; the actual reputation of the family comes from the land of the Red Fork River, cavalry, road defense and the judgment of the subjects. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Piper: The Tully vassal of the Pink City uses the pink dancing girl as her coat of arms; the actual reputation of the family comes from the land of the Red Fork River, cavalry, road defense and the judgment of the subjects."
+  ]
+}

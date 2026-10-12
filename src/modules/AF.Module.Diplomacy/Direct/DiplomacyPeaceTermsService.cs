@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Linq;
 using AnimusForge.Refactor.Contracts;
@@ -54,11 +55,11 @@ internal static class DiplomacyPeaceTermsService
         Kingdom payer, Kingdom receiver, int requestedDailyTribute, int requestedDurationDays, string source)
     {
         if (payer == null || receiver == null || payer == receiver || payer.IsEliminated || receiver.IsEliminated)
-            return new(false, false, false, 0, 0, false, "王国目标无效");
+            return new(false, false, false, 0, 0, false, DiplomacyMiscPromptTexts.Get("WarAdmission_InvalidTarget", "Invalid kingdom target"));
         if (!FactionManager.IsAtWarAgainstFaction(payer, receiver))
-            return new(true, false, false, 0, 0, false, "双方已不处于战争状态");
+            return new(true, false, false, 0, 0, false, DiplomacyMiscPromptTexts.Get("PeaceTerms_NotAtWar", "Both sides are no longer at war"));
         if (requestedDailyTribute < 0)
-            return new(true, false, false, 0, 0, false, "每日贡金不能为负数");
+            return new(true, false, false, 0, 0, false, DiplomacyMiscPromptTexts.Get("PeaceTerms_DailyTributeNegative", "Daily tribute cannot be negative"));
         int days = ResolveDurationDays(requestedDurationDays.ToString(), requestedDailyTribute > 0);
         string diagnostic = "";
         try
@@ -76,7 +77,7 @@ internal static class DiplomacyPeaceTermsService
         bool peace;
         try { peace = payer != null && receiver != null && !FactionManager.IsAtWarAgainstFaction(payer, receiver); }
         catch (Exception ex) { return new(false, false, false, 0, 0, false, diagnostic + " | peace readback: " + ex.Message); }
-        if (!peace) return new(true, false, false, 0, 0, false, diagnostic + " 和平动作未生效");
+        if (!peace) return new(true, false, false, 0, 0, false, diagnostic + DiplomacyMiscPromptTexts.Get("PeaceTerms_ActionNotEffective", " Peace action did not take effect"));
         // Registration is an ancillary guard; its failure cannot erase confirmed peace.
         try { DiplomacyRecentPeaceBridge.RegisterPeace(payer, receiver, source ?? "diplomacy_make_peace"); }
         catch (Exception ex) { diagnostic += " | peace guard: " + ex.Message; }

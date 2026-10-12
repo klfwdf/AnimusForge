@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using AnimusForge.DiplomacyDialogue;
@@ -26,16 +27,13 @@ internal sealed partial class WorldDiplomacyOrchestration
         string player = _host.PlayerKingdomId();
         string token = SubjectReleaseHost?.PlayerSubjectReleaseToken(player, subjectId);
         if (string.IsNullOrEmpty(token)) return "";
-        return "【宗主主动释放臣属国】\n玩家是宗主国当前国王；当前NPC国家是其直属臣属国。玩家本轮明确决定释放时即可执行，无须NPC同意或臣属国独立外交权。"
-            + "询问条件、假设、否定或NPC单方面请求不构成玩家决定。释放不会自动停战、解除其他同盟或建立新条约。\n"
-            + "本轮释放标签=[ACTION:DIPLOMACY:RELEASE_SUBJECT:target=" + subjectId + ";agreement=" + token
-            + "]；target与agreement必须原样复制，不得使用COMMIT、BreakAlliance或Alliance代替。";
+        return string.Format(DiplomacyMiscPromptTexts.Get("SubjectRelease_PromptInstructionFormat", "[Suzerain Actively Releases Subject Kingdom]\nThe player is currently the ruler of the suzerain kingdom; the current NPC kingdom is its direct subject kingdom. Executable immediately when the player explicitly decides to release this round, requiring neither NPC consent nor subject independent diplomacy. Asking conditions, hypotheses, negations, or unilateral NPC requests do not constitute player decisions. Release does not automatically make peace, dissolve other alliances, or establish new treaties.\nThis round release tag=[ACTION:DIPLOMACY:RELEASE_SUBJECT:target={0};agreement={1}]; target and agreement must be copied verbatim without substituting COMMIT, BreakAlliance, or Alliance."), subjectId, token);
     }
 
     internal string SubmitPlayerSubjectRelease(string rulerId, string npcKingdomId, string payload, DialogueInteractionOrigin origin)
     {
         if (!DiplomacySubjectReleasePayload.TryParse(payload, out string target, out string token))
-            return "释放未执行：目标或条约凭证格式无效。";
+            return DiplomacyMiscPromptTexts.Get("SubjectRelease_InvalidFormat", "Release not executed: target or treaty token format is invalid.");
         string player = _host.PlayerKingdomId();
         if (origin == null || string.IsNullOrWhiteSpace(origin.PlayerText)
             || target != npcKingdomId || !DialogueRulerIsCurrent(npcKingdomId, rulerId)
@@ -43,11 +41,10 @@ internal sealed partial class WorldDiplomacyOrchestration
         {
             _host.Log("subject release rejected channel=" + origin?.Channel + " target=" + target
                 + " reason=source_authority_or_agreement_changed");
-            return "释放未执行：缺少本轮玩家指令，或国王权限、目标、直属条约已经变化。";
+            return DiplomacyMiscPromptTexts.Get("SubjectRelease_PreconditionsChanged", "Release not executed: missing player command this round, or ruler authority, target, or direct treaty has changed.");
         }
-        string declaration = _host.PartyNameOrEmpty(player) + "作为宗主国，决定终止与"
-            + _host.PartyNameOrEmpty(target) + "的臣属条约，释放该国并承认其独立。";
-        var document = CreateDocument(player, target, "宗主释放臣属国", declaration,
+        string declaration = string.Format(DiplomacyMiscPromptTexts.Get("SubjectRelease_DeclarationBodyFormat", "{0}, as the suzerain kingdom, has decided to terminate the vassalage treaty with {1}, releasing the kingdom and recognizing its independence."), _host.PartyNameOrEmpty(player), _host.PartyNameOrEmpty(target));
+        var document = CreateDocument(player, target, DiplomacyMiscPromptTexts.Get("SubjectRelease_DeclarationTitle", "Suzerain releases subject kingdom"), declaration,
             "player_subject_release", true, false, "");
         document.Intent = "release_subject"; document.Commitment = "binding";
         document.AnalysisStatus = "success"; document.RequiresResponse = false;
@@ -92,7 +89,7 @@ internal sealed partial class WorldDiplomacyOrchestration
     {
         if (!ValidatePlayerSubjectRelease(document, author, target, out string reason))
         {
-            if (document != null) document.MechanicalResult = "释放未执行：国王权限或原臣属条约已经变化。";
+            if (document != null) document.MechanicalResult = DiplomacyMiscPromptTexts.Get("SubjectRelease_AuthorityOrTreatyChanged", "Release not executed: ruler authority or original vassalage treaty has changed.");
             _host.Log("subject release blocked document=" + document?.DocumentId + " reason=" + reason);
             return new WorldDiplomacyImmediateActionReceipt(false, document?.MechanicalResult ?? reason);
         }

@@ -37,7 +37,7 @@ public partial class RewardSystemBehavior
             return null;
         }
         string displayName = string.IsNullOrWhiteSpace(giverName)
-            ? giverCharacter?.Name?.ToString() ?? giverParty.MobileParty.Name?.ToString() ?? "对方部队"
+            ? giverCharacter?.Name?.ToString() ?? giverParty.MobileParty.Name?.ToString() ?? EconomySourceTexts.Get("S063")
             : giverName.Trim();
         return new LegacyEconomyRewardDebtMainThreadPort(
             () => TWParallel.IsMainThread(),
@@ -219,7 +219,7 @@ private bool TryReplayPartyAction(
         {
             return false;
         }
-        factText = "部队已实际交付 " + actual.ToString(CultureInfo.InvariantCulture) + " 第纳尔。";
+        factText = EconomySourceTexts.Get("S064") + actual.ToString(CultureInfo.InvariantCulture) + EconomySourceTexts.Get("S030");
         return true;
     }
 
@@ -316,7 +316,7 @@ private bool TryReplayPartyAction(
         {
             return false;
         }
-        factText = "部队已实际交付物品 " + (itemName ?? lookup)
+        factText = EconomySourceTexts.Get("S065") + (itemName ?? lookup)
             + " ×" + actual.ToString(CultureInfo.InvariantCulture) + "。";
         return true;
     }

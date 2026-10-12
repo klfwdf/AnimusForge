@@ -104,42 +104,42 @@ internal static class PersonaIntroMessageComposer {
  string clanRole=s.clanRole;
 
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("你是")
+		stringBuilder.Append(PromptComposerTexts.Get("persona_system_npc_prefix"))
 			.Append(factionDisplay)
-			.Append("的")
+			.Append(PromptComposerTexts.Get("persona_system_npc_of"))
 			.Append(clanName)
-			.Append("的")
+			.Append(PromptComposerTexts.Get("persona_system_npc_of"))
 			.Append(heroName)
-			.Append("，你是家族中的")
+			.Append(PromptComposerTexts.Get("persona_system_npc_clan_role"))
 			.Append(clanRole)
-			.Append("，你的身份是")
+			.Append(PromptComposerTexts.Get("persona_system_npc_identity"))
 			.Append(identityTitle)
-			.Append("，你")
+			.Append(PromptComposerTexts.Get("persona_system_npc_reputation"))
 			.Append(reputationText)
-			.Append("，你身上穿着")
+			.Append(PromptComposerTexts.Get("persona_system_npc_equipment"))
 			.Append(equipmentText)
-			.Append("，你的个性为：")
+			.Append(PromptComposerTexts.Get("persona_system_npc_personality"))
 			.Append(personalityText)
-			.Append("，你的背景是：")
+			.Append(PromptComposerTexts.Get("persona_system_npc_background"))
 			.Append(backgroundText);
 		string npcPlayerRelationshipLine = s.relationshipLine;
 		if (!string.IsNullOrWhiteSpace(npcPlayerRelationshipLine))
 		{
-			stringBuilder.Append("。").Append(npcPlayerRelationshipLine);
+			stringBuilder.Append(PromptComposerTexts.Get("residual_period")).Append(npcPlayerRelationshipLine);
 		}
 		if (!string.IsNullOrWhiteSpace(nobleEtiquettePrompt))
 		{
-			stringBuilder.Append("。").Append(nobleEtiquettePrompt).Append("你的年纪是");
+			stringBuilder.Append(PromptComposerTexts.Get("residual_period")).Append(nobleEtiquettePrompt).Append(PromptComposerTexts.Get("persona_system_npc_age"));
 		}
 		else
 		{
-			stringBuilder.Append("，你的年纪是");
+			stringBuilder.Append(PromptComposerTexts.Get("persona_age_intro"));
 		}
 		stringBuilder
 			.Append(ageText)
-			.Append("，你是")
+			.Append(PromptComposerTexts.Get("persona_system_npc_culture"))
 			.Append(cultureText)
-			.Append("。");
+			.Append(PromptComposerTexts.Get("residual_period"));
 		return stringBuilder.ToString().Trim();
 }
 
@@ -165,47 +165,47 @@ bool hideReputation=s.hideReputation,includeInventorySummary=s.includeInventoryS
 		if (s.hasHero)
 		{
 			string pregnancySelfKnowledge = s.pregnancySelfKnowledge;
-			string clanRoleText = (clanRole == "族长") ? "族长" : (s.isFemale ? "女性成员" : "男性成员");
-			stringBuilder.Append("你名叫")
+			string clanRoleText = (PromptComposerTexts.IsLabel(clanRole, "persona_scene_npc_clan_leader")) ? PromptComposerTexts.Get("persona_scene_npc_clan_leader") : (s.isFemale ? PromptComposerTexts.Get("persona_scene_npc_female_member") : PromptComposerTexts.Get("persona_scene_npc_male_member"));
+			stringBuilder.Append(PromptComposerTexts.Get("persona_scene_npc_name"))
 				.Append(name)
-				.Append("，是")
+				.Append(PromptComposerTexts.Get("persona_scene_npc_is"))
 				.Append(faction)
-				.Append("的")
+				.Append(PromptComposerTexts.Get("persona_system_npc_of"))
 				.Append(clan)
-				.Append("的")
+				.Append(PromptComposerTexts.Get("persona_system_npc_of"))
 				.Append(clanRoleText)
-				.Append("，你的身份是")
+				.Append(PromptComposerTexts.Get("persona_system_npc_identity"))
 				.Append(identity);
 			if (!hideReputation && !string.IsNullOrWhiteSpace(reputation))
 			{
-				stringBuilder.Append("，你").Append(reputation);
+				stringBuilder.Append(PromptComposerTexts.Get("persona_system_npc_reputation")).Append(reputation);
 			}
 			string heroJoinPartyRuntimeFact = s.heroJoinPartyRuntimeFact;
 			if (!string.IsNullOrWhiteSpace(heroJoinPartyRuntimeFact))
 			{
-				stringBuilder.Append("。").Append(heroJoinPartyRuntimeFact.Trim().TrimEnd('。'));
+				stringBuilder.Append(PromptComposerTexts.Get("residual_period")).Append(heroJoinPartyRuntimeFact.Trim().TrimEnd('。'));
 			}
 			if (!string.IsNullOrWhiteSpace(pregnancySelfKnowledge))
 			{
-				stringBuilder.Append("。").Append(pregnancySelfKnowledge);
+				stringBuilder.Append(PromptComposerTexts.Get("residual_period")).Append(pregnancySelfKnowledge);
 			}
-			stringBuilder.Append("。");
+			stringBuilder.Append(PromptComposerTexts.Get("residual_period"));
 		}
 		else
 		{
-			stringBuilder.Append("你是一个")
+			stringBuilder.Append(PromptComposerTexts.Get("persona_scene_nonhero_prefix"))
 				.Append(name);
 			if (!string.IsNullOrWhiteSpace(givenName) && !string.Equals(givenName, name, StringComparison.Ordinal))
 			{
-				stringBuilder.Append("，名叫").Append(givenName);
+				stringBuilder.Append(PromptComposerTexts.Get("persona_scene_nonhero_given_name")).Append(givenName);
 			}
-			stringBuilder.Append("，你的身份是")
+			stringBuilder.Append(PromptComposerTexts.Get("persona_system_npc_identity"))
 				.Append(identity);
 			if (!hideReputation && !string.IsNullOrWhiteSpace(reputation))
 			{
-				stringBuilder.Append("，你").Append(reputation);
+				stringBuilder.Append(PromptComposerTexts.Get("persona_system_npc_reputation")).Append(reputation);
 			}
-			stringBuilder.Append("。");
+			stringBuilder.Append(PromptComposerTexts.Get("residual_period"));
 			string partyRepresentativePrompt = s.partyRepresentativePrompt;
 			if (!string.IsNullOrWhiteSpace(partyRepresentativePrompt))
 			{
@@ -218,9 +218,9 @@ stringBuilder.Append(partyRepresentativePrompt);
 				stringBuilder.Append(ceremonyRole);
 			}
 			stringBuilder.AppendLine()
-				.Append("你身上穿着")
+				.Append(PromptComposerTexts.Get("persona_scene_npc_equipment"))
 			.Append(equipment)
-			.Append("。");
+			.Append(PromptComposerTexts.Get("residual_period"));
 		string npcCurrentMountLine = s.npcCurrentMountLine;
 		if (!string.IsNullOrWhiteSpace(npcCurrentMountLine))
 		{
@@ -238,17 +238,17 @@ stringBuilder.Append(partyRepresentativePrompt);
 					string npcPrisonersLine = s.npcPrisonersLine;
 					if (!string.IsNullOrWhiteSpace(npcTroopsLine))
 					{
-						stringBuilder.Append(npcTroopsLine).Append("。");
+						stringBuilder.Append(npcTroopsLine).Append(PromptComposerTexts.Get("residual_period"));
 						hasPartyRestrictionContext = true;
 					}
 					if (!string.IsNullOrWhiteSpace(npcPrisonersLine))
 					{
-						stringBuilder.Append(npcPrisonersLine).Append("。");
+						stringBuilder.Append(npcPrisonersLine).Append(PromptComposerTexts.Get("residual_period"));
 						hasPartyRestrictionContext = true;
 					}
 					if (hasPartyRestrictionContext && !partyTransferTopicSelected)
 					{
-						stringBuilder.Append("备注：你暂时不可以转移你的俘虏和士兵。");
+						stringBuilder.Append(PromptComposerTexts.Get("persona_scene_npc_party_transfer_note"));
 					}
 				}
 			}
@@ -266,12 +266,12 @@ stringBuilder.Append(partyRepresentativePrompt);
 					string npcTroopsLine = s.npcTroopsLine;
 					if (!string.IsNullOrWhiteSpace(npcTroopsLine))
 					{
-						stringBuilder.Append(npcTroopsLine).Append("。");
+						stringBuilder.Append(npcTroopsLine).Append(PromptComposerTexts.Get("residual_period"));
 					}
 					string npcPrisonersLine = s.npcPrisonersLine;
-					if (!string.IsNullOrWhiteSpace(npcPrisonersLine) && !string.Equals(npcPrisonersLine, "你所属队伍无俘虏", StringComparison.Ordinal))
+					if (!string.IsNullOrWhiteSpace(npcPrisonersLine) && !string.Equals(npcPrisonersLine, PromptComposerTexts.Get("persona_scene_nonhero_prisoner_none"), StringComparison.Ordinal))
 					{
-						stringBuilder.Append(npcPrisonersLine).Append("。");
+						stringBuilder.Append(npcPrisonersLine).Append(PromptComposerTexts.Get("residual_period"));
 					}
 				}
 			}
@@ -283,31 +283,31 @@ stringBuilder.Append(partyRepresentativePrompt);
 		{
 			string nobleEtiquettePrompt = s.nobleEtiquettePrompt;
 			stringBuilder.AppendLine()
-				.Append("你的个性为：")
+				.Append(PromptComposerTexts.Get("persona_scene_npc_personality"))
 				.Append(personality)
-				.Append("。")
+				.Append(PromptComposerTexts.Get("residual_period"))
 				.AppendLine()
-				.Append("你的背景是：")
+				.Append(PromptComposerTexts.Get("persona_scene_npc_background"))
 				.Append(background);
 			if (!string.IsNullOrWhiteSpace(nobleEtiquettePrompt))
 			{
-				stringBuilder.Append("。").Append(nobleEtiquettePrompt);
+				stringBuilder.Append(PromptComposerTexts.Get("residual_period")).Append(nobleEtiquettePrompt);
 			}
 			else
 			{
-				stringBuilder.Append("。");
+				stringBuilder.Append(PromptComposerTexts.Get("residual_period"));
 			}
 		}
 		stringBuilder.AppendLine()
-			.Append("你的年纪是")
+			.Append(PromptComposerTexts.Get("persona_system_npc_age"))
 			.Append(age)
-			.Append("，你是")
+			.Append(PromptComposerTexts.Get("persona_system_npc_culture"))
 			.Append(culture)
-			.Append("。");
+			.Append(PromptComposerTexts.Get("residual_period"));
 		if (!string.IsNullOrWhiteSpace(currentDateText))
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.Append("现在的时间是").Append(currentDateText).Append("。");
+			stringBuilder.Append(PromptComposerTexts.Get("persona_scene_npc_current_time")).Append(currentDateText).Append(PromptComposerTexts.Get("residual_period"));
 		}
 		string sceneLocationLine = s.sceneLocationLine;
 		if (!string.IsNullOrWhiteSpace(sceneLocationLine))
@@ -318,7 +318,7 @@ stringBuilder.Append(partyRepresentativePrompt);
 		string settlementHeroNpcLine = s.settlementHeroNpcLine;
 		if (!string.IsNullOrWhiteSpace(settlementHeroNpcLine))
 		{
-			const string prefix = "当前定居点HeroNPC：";
+			string prefix = PromptComposerTexts.Get("persona_scene_settlement_heronpc_prefix_raw");
 			if (settlementHeroNpcLine.StartsWith(prefix, StringComparison.Ordinal))
 			{
 				settlementHeroNpcLine = settlementHeroNpcLine.Substring(prefix.Length).Trim();
@@ -326,7 +326,7 @@ stringBuilder.Append(partyRepresentativePrompt);
 			if (!string.IsNullOrWhiteSpace(settlementHeroNpcLine))
 			{
 				stringBuilder.AppendLine();
-				stringBuilder.Append("这个定居点有这些人物：").Append(settlementHeroNpcLine);
+				stringBuilder.Append(PromptComposerTexts.Get("persona_scene_settlement_heronpc_prefix")).Append(settlementHeroNpcLine);
 			}
 		}
 		string settlementFlavorLine = s.settlementFlavorLine;
@@ -395,44 +395,44 @@ int clanTier=s.clanTier;bool isClanLeader=s.isClanLeader,includePlayerPartyRoste
 		{
 			string playerPublicName = s.playerPublicName;
 			string reputation = s.reputation;
-			stringBuilder.Append("你面前站着一个")
+			stringBuilder.Append(PromptComposerTexts.Get("persona_player_standing_prefix"))
 				.Append(culture)
-				.Append("，你知道他叫")
-				.Append(string.IsNullOrWhiteSpace(playerPublicName) ? "这人" : playerPublicName)
-				.Append("，他")
+				.Append(PromptComposerTexts.Get("persona_player_knows_name"))
+				.Append(string.IsNullOrWhiteSpace(playerPublicName) ? PromptComposerTexts.Get("persona_player_unknown_name") : playerPublicName)
+				.Append(PromptComposerTexts.Get("persona_player_reputation"))
 				.Append(reputation)
-				.Append("，是")
+				.Append(PromptComposerTexts.Get("persona_scene_npc_is"))
 				.Append(clanName)
-				.Append("的")
-				.Append(isClanLeader ? "族长" : "成员")
-				.Append("。从面貌上来看，是一个")
+				.Append(PromptComposerTexts.Get("persona_system_npc_of"))
+				.Append(isClanLeader ? PromptComposerTexts.Get("persona_scene_npc_clan_leader") : PromptComposerTexts.Get("persona_player_clan_member"))
+				.Append(PromptComposerTexts.Get("persona_player_appearance"))
 				.Append(genderText)
 				.Append(age)
-				.Append("，穿着")
+				.Append(PromptComposerTexts.Get("persona_player_equipment"))
 				.Append(equipment)
-				.Append("。");
+				.Append(PromptComposerTexts.Get("residual_period"));
 		}
 		else if (clanTier >= 2)
 		{
-			stringBuilder.Append("你面前站着一个")
+			stringBuilder.Append(PromptComposerTexts.Get("persona_player_standing_prefix"))
 				.Append(culture)
-				.Append("，你不知道他的名字。从面貌上来看，是一个")
+				.Append(PromptComposerTexts.Get("persona_unknown_name_appearance"))
 				.Append(genderText)
 				.Append(age)
-				.Append("，穿着")
+				.Append(PromptComposerTexts.Get("persona_player_equipment"))
 				.Append(equipment)
-				.Append("。");
+				.Append(PromptComposerTexts.Get("residual_period"));
 		}
 		else
 		{
-			stringBuilder.Append("你面前站着一个")
+			stringBuilder.Append(PromptComposerTexts.Get("persona_player_standing_prefix"))
 				.Append(culture)
-				.Append("，他看起来是个普通人，总之不是贵族，从他的面貌上来看，是一个")
+				.Append(PromptComposerTexts.Get("persona_player_not_noble_hint"))
 				.Append(genderText)
 				.Append(age)
-				.Append("，穿着")
+				.Append(PromptComposerTexts.Get("persona_player_equipment"))
 				.Append(equipment)
-				.Append("。");
+				.Append(PromptComposerTexts.Get("residual_period"));
 		}
 		string playerCurrentMountLine = s.playerCurrentMountLine;
 		if (!string.IsNullOrWhiteSpace(playerCurrentMountLine))
@@ -442,13 +442,13 @@ int clanTier=s.clanTier;bool isClanLeader=s.isClanLeader,includePlayerPartyRoste
 		}
 		if (s.isCompanion)
 		{
-			stringBuilder.Append("你知道他是你的上司，而你是他的")
+			stringBuilder.Append(PromptComposerTexts.Get("persona_player_companion_prefix"))
 				.Append(s.companionRole)
-				.Append("，你要服从他的命令,并且你无法和他进行任何物品交换，因为你们的库存是共享的。");
+				.Append(PromptComposerTexts.Get("persona_player_companion_suffix"));
 		}
 		if (!string.IsNullOrWhiteSpace(equipmentValueInline))
 		{
-			stringBuilder.Append(equipmentValueInline).Append("。");
+			stringBuilder.Append(equipmentValueInline).Append(PromptComposerTexts.Get("residual_period"));
 		}
 		if (knowsPlayerIdentity && !string.IsNullOrWhiteSpace(identitySentence))
 		{
@@ -483,11 +483,11 @@ int clanTier=s.clanTier;bool isClanLeader=s.isClanLeader,includePlayerPartyRoste
 				string playerPrisonersLine = s.playerPrisonersLine;
 				if (!string.IsNullOrWhiteSpace(playerTroopsLine))
 				{
-					stringBuilder.Append(playerTroopsLine).Append("。");
+					stringBuilder.Append(playerTroopsLine).Append(PromptComposerTexts.Get("residual_period"));
 				}
 				if (!string.IsNullOrWhiteSpace(playerPrisonersLine))
 				{
-					stringBuilder.Append(playerPrisonersLine).Append("。");
+					stringBuilder.Append(playerPrisonersLine).Append(PromptComposerTexts.Get("residual_period"));
 				}
 			}
 			catch
@@ -499,7 +499,7 @@ int clanTier=s.clanTier;bool isClanLeader=s.isClanLeader,includePlayerPartyRoste
 			string townPartyStayHint = s.townPartyStayHint;
 			if (!string.IsNullOrWhiteSpace(townPartyStayHint))
 			{
-				stringBuilder.Append(townPartyStayHint).Append("。");
+				stringBuilder.Append(townPartyStayHint).Append(PromptComposerTexts.Get("residual_period"));
 			}
 		}
 		return stringBuilder.ToString().Trim();

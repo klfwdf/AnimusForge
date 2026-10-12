@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Brothels_and_Clandestine_Dealings",
+  "Keywords": [
+    "Brothels and Clandestine Dealings"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Brothels were outside official morality, but deeply embedded in the economies of cities and military camps. The nobles may condemn them during the day and visit at night, and the poor may regard them as one of the few ways to survive in exchange for money; there is both volition and calculation, and also the helplessness forced out by poverty and violence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brothels and Clandestine Dealings"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brothels and Clandestine Dealings"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brothels and Clandestine Dealings"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brothels and Clandestine Dealings Brothels were outside official morality, but deeply embedded in the economies of cities and military camps. The nobles may condemn them during the day and visit at night, and the poor may regard them as one of the few ways to survive in exchange for money; there is both volition and calculation, and also the helplessness forced out by poverty and violence. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brothels and Clandestine Dealings Brothels were outside official morality, but deeply embedded in the economies of cities and military camps. The nobles may condemn them during the day and visit at night, and the poor may regard them as one of the few ways to survive in exchange for money; there is both volition and calculation, and also the helplessness forced out by poverty and violence. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Brothels and Clandestine Dealings Brothels were outside official morality, but deeply embedded in the economies of cities and military camps. The nobles may condemn them during the day and visit at night, and the poor may regard them as one of the few ways to survive in exchange for money; there is both volition and calculation, and also the helplessness forced out by poverty and violence. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Brothels and Clandestine Dealings: Brothels were outside official morality, but deeply embedded in the economies of cities and military camps. The nobles may condemn them during the day and visit at night, and the poor may regard them as one of the few ways to survive in exchange for money; there is both volition and calculation, and also the helplessness forced out by poverty and violence."
+  ]
+}

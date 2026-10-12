@@ -1,0 +1,46 @@
+{
+  "Id": "rule_Karthus",
+  "Keywords": [
+    "Karthus",
+    "General Gilmalus"
+  ],
+  "RagShortTexts": [
+    "Coup d'état of Karthus, general of Jarmalius"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Who is Karthus? I don’t know. I heard that he was a general from the ancient empire. He seems to have staged a coup."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "Karsus was a general in the ancient empire of Gyalmalus. He launched a coup in Gyalmalus and tried to seize power, but failed. Like most people in the Central Plains, he is extremely conservative and advocates force."
+    }
+  ],
+  "TextMappings": []
+}

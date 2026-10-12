@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_KINGDOM_CW_Target" text="the target" />
+    <string id="AF_KINGDOM_CW_Role_King" text="King" />
+    <string id="AF_KINGDOM_CW_Role_Crown" text="Crown faction" />
+    <string id="AF_KINGDOM_CW_Role_Middle" text="Uncommitted" />
+    <string id="AF_KINGDOM_CW_World_UnknownKingdom" text="some kingdom" />
+    <string id="AF_KINGDOM_CW_Panel_TargetCurrentPolicy" text="the current policy" />
+    <string id="AF_KINGDOM_CW_Panel_FactionName" text="{LEADER}'s {TAG}" />
+    <string id="AF_KINGDOM_CW_CampCrown" text="the crown camp" />
+    <string id="AF_KINGDOM_CW_Notice_AlreadyInCamp" text="Already in this camp; no need to join again." />
+    <string id="AF_KINGDOM_CW_Notice_Joined" text="{A} joins {B}." />
+    <string id="AF_KINGDOM_CW_Notice_LeftCamp" text="{A} leaves the camp and stays uncommitted for seven days." />
+    <string id="AF_KINGDOM_CW_Notice_Founded" text="{A} founds a faction, demand: {B}." />
+    <string id="AF_KINGDOM_CW_Notice_DissolvedOwn" text="You dissolved your own faction: −10 relation with the other member clans. Grievance and any existing kingdom cooldown are kept." />
+    <string id="AF_KINGDOM_CW_Notice_LeaderRefusedRising" text="The leader refused the proposal to rise; it can be proposed again in seven days." />
+    <string id="AF_KINGDOM_CW_Notice_RisingAccepted" text="The order to rise was accepted; waiting for the rebels to found their kingdom." />
+    <string id="AF_KINGDOM_CW_Notice_Suppressed" text="The crown imposes political suppression on the {A}." />
+    <string id="AF_KINGDOM_CW_Notice_RulingClanReplaced" text="The ruling clan changed; the original offer is void." />
+    <string id="AF_KINGDOM_CW_Notice_DissolveSentToPlayer" text="The dissolution order has been delivered; the player has three days to respond." />
+    <string id="AF_KINGDOM_CW_Notice_OfferSentToPlayer" text="The compensation offer has been delivered; the player has three days to respond." />
+    <string id="AF_KINGDOM_CW_Notice_Conceded" text="The king honors the {A} in full: {B}" />
+    <string id="AF_KINGDOM_CW_Notice_WarEligibilityChanged" text="War eligibility changed; the original dissolution order is void and the faction is kept." />
+    <string id="AF_KINGDOM_CW_Notice_DissolveOrderExpired" text="The dissolution order expired; the faction is kept, and a player leader must decide on rebellion manually." />
+    <string id="AF_KINGDOM_CW_Notice_FactionDefied" text="The faction defied the order and enters the rebellion process." />
+    <string id="AF_KINGDOM_CW_Notice_OfferRefused" text="The faction refused the compensation; no resources were deducted." />
+    <string id="AF_KINGDOM_CW_Notice_PayerCannotPay" text="The paying side can no longer pay; the agreement is void." />
+    <string id="AF_KINGDOM_CW_Notice_ObeyedDissolve" text="The faction obeys the dissolution order; grievance is kept." />
+    <string id="AF_KINGDOM_CW_Notice_AcceptedOffer" text="The faction accepted the compensation, withdrew the demand, and dissolved." />
+    <string id="AF_KINGDOM_CW_Notice_ConcessionPending" text="The concession is not yet honored; the faction is kept: {A}" />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptNoIdentity" text="The operation is missing its identity." />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptIdentityConflict" text="Operation identity conflict." />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptInterrupted" text="A previous operation was interrupted; its state is kept for review and cannot be executed again." />
+    <string id="AF_KINGDOM_CW_Notice_RetrySafeSteps" text="The agreement is not complete; safe confirmed steps will be retried: {A}" />
+    <string id="AF_KINGDOM_CW_Notice_IncompleteReview" text="The operation was not fully confirmed; the faction is kept for review: {A}" />
+    <string id="AF_KINGDOM_UI_Interior_Stability" text="Kingdom stability" />
+    <string id="AF_KINGDOM_UI_Interior_PowerSplit" text="Kingdom power distribution" />
+    <string id="AF_KINGDOM_UI_Interior_Title" text="Interior affairs" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaSection" text="Kingdom agendas" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaEmpty" text="No agenda in progress" />
+    <string id="AF_KINGDOM_UI_Interior_FactionSection" text="Factions and alignments" />
+    <string id="AF_KINGDOM_UI_Interior_SelectHint" text="Select an entry on the left to view details" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaNoDetail" text="No voting details for this agenda yet" />
+    <string id="AF_KINGDOM_UI_Interior_Leading" text="Leading" />
+    <string id="AF_KINGDOM_UI_Interior_FigureGrievance" text="Faction grievance" />
+    <string id="AF_KINGDOM_UI_Interior_FigurePower" text="Faction military power" />
+    <string id="AF_KINGDOM_UI_Interior_FigureRefusals" text="Refused by the king" />
+    <string id="AF_KINGDOM_UI_Interior_RecentChronicle" text="Recent chronicle" />
+    <string id="AF_KINGDOM_UI_Interior_FormationConditions" text="Formation conditions" />
+    <string id="AF_KINGDOM_UI_Interior_PrevPage" text="Previous" />
+    <string id="AF_KINGDOM_UI_Interior_NextPage" text="Next" />
+    <string id="AF_KINGDOM_UI_Interior_TableClan" text="Clan" />
+    <string id="AF_KINGDOM_UI_Interior_TableStance" text="Stance" />
+    <string id="AF_KINGDOM_UI_Interior_TableReason" text="Main grievance source" />
+    <string id="AF_KINGDOM_UI_Interior_TablePower" text="Power" />
+    <string id="AF_KINGDOM_UI_Interior_TableRelation" text="With king" />
+    <string id="AF_KINGDOM_UI_Rebellion_ClanMissing" text="The clan is missing." />
+    <string id="AF_KINGDOM_UI_Rebellion_KingdomMissing" text="The kingdom does not exist or has been eliminated." />
+    <string id="AF_KINGDOM_UI_Rebellion_PlayerClan" text="The player clan does not take part in this system's automatic rebellions." />
+    <string id="AF_KINGDOM_UI_Rebellion_NotInKingdom" text="This clan is not currently part of that kingdom." />
+    <string id="AF_KINGDOM_UI_Rebellion_RulingClan" text="The ruling clan is never a rebellion candidate." />
+    <string id="AF_KINGDOM_UI_Rebellion_ClanEliminated" text="This clan has been eliminated." />
+    <string id="AF_KINGDOM_UI_Rebellion_FactionType" text="This clan's faction type is not eligible for this rebellion logic." />
+    <string id="AF_KINGDOM_UI_Rebellion_Mercenary" text="Mercenary clans are never rebellion candidates." />
+    <string id="AF_KINGDOM_UI_Rebellion_LeaderInvalid" text="The clan leader's state is invalid." />
+    <string id="AF_KINGDOM_UI_Rebellion_LeaderPrisoner" text="The clan leader is imprisoned; a rebellion with settlements cannot start yet." />
+    <string id="AF_KINGDOM_UI_Rebellion_NoFortification" text="This clan holds no town or castle and cannot rebel with settlements." />
+    <string id="AF_KINGDOM_UI_Rebellion_RelationTooHigh" text="Relation with the king is not below {THRESHOLD}; the clan is not an automatic rebellion candidate yet." />
+    <string id="AF_KINGDOM_UI_Rebellion_LeadingClan" text="The leading clan cannot be a follower candidate." />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingTimeout" text="Rebel kingdom naming request timed out ({SECONDS} seconds)." />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingNameInvalid" text="The model returned an empty or invalid kingdom name, or one that duplicates an existing kingdom." />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingParseFailed" text="The model reply could not be parsed into the [NAME]/[SHORT]/[LORE] format." />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingFailed" text="Rebel kingdom naming failed." />
+    <string id="AF_KINGDOM_CW_World_UnknownClan" text="an unknown clan" />
+    <string id="AF_KINGDOM_CW_Notice_DemandChanged" text="You changed the faction demand to {A}; {B} other clans stay involved. The faction will not rise automatically." />
+    <string id="AF_KINGDOM_CW_Failure_UnknownEffect" text="This build does not recognize the effect: {A}" />
+    <string id="AF_KINGDOM_CW_Failure_PeaceTargetNotAtWar" text="The peace target is no longer at war." />
+    <string id="AF_KINGDOM_CW_Failure_WarTargetGone" text="The war target no longer exists." />
+    <string id="AF_KINGDOM_CW_Failure_PolicyNotInEffect" text="That policy is no longer in effect." />
+    <string id="AF_KINGDOM_CW_Failure_RedressPartiesGone" text="The two sides of the compensation no longer exist." />
+    <string id="AF_KINGDOM_CW_Failure_KingGone" text="The king no longer exists." />
+    <string id="AF_KINGDOM_CW_Failure_HeirNotInKingdom" text="The heir is not in this kingdom." />
+    <string id="AF_KINGDOM_CW_Failure_RebelLeaderGone" text="The rebel leader is gone." />
+    <string id="AF_KINGDOM_CW_Failure_RebelKingdomGone" text="The rebel kingdom no longer exists." />
+    <string id="AF_KINGDOM_CW_Failure_KingdomGone" text="The kingdom has been destroyed." />
+    <string id="AF_KINGDOM_CW_Failure_HomeKingdomGone" text="The original kingdom no longer exists, so the clans cannot return home." />
+    <string id="AF_KINGDOM_CW_Failure_RebelClansNotHome" text="Some rebel clans have not yet been confirmed back home." />
+    <string id="AF_KINGDOM_CW_Failure_RebelKingdomNotDissolved" text="The rebel kingdom has not been dissolved yet." />
+    <string id="AF_KINGDOM_CW_Failure_RebelKingdomDissolveUnconfirmed" text="The dissolution of the rebel kingdom is not yet confirmed." />
+    <string id="AF_KINGDOM_CW_Failure_PeaceNotInEffect" text="The peace has not taken effect yet." />
+    <string id="AF_KINGDOM_CW_Failure_ThroneTransferNotInEffect" text="The transfer of the throne has not taken effect yet." />
+    <string id="AF_KINGDOM_CW_Failure_RebelLeaderNotHome" text="The rebel leader could not return home, so the usurpation is not complete." />
+    <string id="AF_KINGDOM_CW_Failure_RebelLeaderNotExiled" text="The rebel leader has not been exiled from the kingdom yet." />
+    <string id="AF_KINGDOM_CW_Failure_RestorationNotAuthorized" text="The restoration has not been authorized by a rebel victory outcome." />
+    <string id="AF_KINGDOM_CW_Failure_RestorationRecordsUnavailable" text="The original dynasty, the old-king record or the original kingdom name is unavailable." />
+    <string id="AF_KINGDOM_CW_Failure_RestorationDynastyElsewhere" text="The old royal clan has left both sides, so it cannot replace another kingdom's ruler." />
+    <string id="AF_KINGDOM_CW_Failure_RestorationClaimantInvalid" text="The claimant must be alive, adult and not a prisoner; if the old king is alive he must still lead the clan." />
+    <string id="AF_KINGDOM_CW_Failure_RestorationDynastyNotHome" text="The old royal clan has not returned home yet, so the restoration cannot proceed." />
+    <string id="AF_KINGDOM_CW_Failure_RestorationNotConfirmed" text="The restoration of the old dynasty is not yet confirmed." />
+    <string id="AF_KINGDOM_CW_Failure_RestorationNameNotConfirmed" text="The restoration of the original kingdom name is not yet confirmed." />
+    <string id="AF_KINGDOM_CW_NoteSeparator" text="; " />
+    <string id="AF_KINGDOM_CW_Note_RebelKingdomDissolved" text="{A} is dissolved as the rebels return home." />
+    <string id="AF_KINGDOM_CW_Note_PeaceMade" text="{A} makes peace with {B}." />
+    <string id="AF_KINGDOM_CW_Note_PledgeNoPeace" text="The king pledges not to make peace with {B} for {A} weeks." />
+    <string id="AF_KINGDOM_CW_Note_PolicyRevoked" text="Policy revoked: {A}." />
+    <string id="AF_KINGDOM_CW_Note_RedressPaid" text="The king pays {A} {B} denars in redress." />
+    <string id="AF_KINGDOM_CW_Note_PrivilegesGranted" text="The king recognizes the fief privileges of {A} and its peer clans." />
+    <string id="AF_KINGDOM_CW_Note_Abdicated" text="The king abdicates; {A} succeeds." />
+    <string id="AF_KINGDOM_CW_Note_ThroneSeized" text="{A} seizes the throne." />
+    <string id="AF_KINGDOM_CW_Note_Seceded" text="{A} is recognized and secedes from {B}." />
+    <string id="AF_KINGDOM_CW_Note_WarAlreadyEnded" text="The war of the original demand has already ended." />
+    <string id="AF_KINGDOM_CW_Note_PolicyAlreadyRevoked" text="The policy of the original demand has already been revoked." />
+    <string id="AF_KINGDOM_CW_Note_LeaderExiled" text="{A} is driven out of the kingdom and its fiefs revert to the crown." />
+    <string id="AF_KINGDOM_CW_Note_CrownSuppressed" text="The crown suppresses the rebellion." />
+    <string id="AF_KINGDOM_CW_Note_RestorationKingdomRestored" text="The rebels won: {A} regains the throne, the kingdom is renamed to {B}, and the old king resumes rule." />
+    <string id="AF_KINGDOM_CW_Note_RestorationKingdomHeir" text="The rebels won: {A} regains the throne, the kingdom is renamed to {B}, and the clan's current leader succeeds the deceased old king." />
+    <string id="AF_UI_KingdomRebellion_FollowerEligible" text="Eligible to join the rebellion coalition: relation with the rebel leader minus relation with the king = {DIFF} (&gt;= 15)." />
+    <string id="AF_UI_KingdomRebellion_FollowerIneligible" text="Not eligible to join the rebellion coalition: relation with the rebel leader minus relation with the king = {DIFF} (requires &gt;= 15)." />
+    <string id="AF_UI_KingdomRebellion_ForceEligible" text="Meets the forced-trigger conditions." />
+    <string id="AF_UI_KingdomRebellion_AutoEligible" text="Meets the automatic rebellion conditions." />
+    <string id="AF_UI_KingdomRebellion_OriginalKingdom" text="the original kingdom" />
+</strings>
+</base>

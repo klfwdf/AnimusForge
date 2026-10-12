@@ -49,37 +49,37 @@ internal static class PolicyHeroTargetSelectorResolver
 	private static readonly IReadOnlyDictionary<Occupation, string[]> OccupationTerms
 		= new Dictionary<Occupation, string[]>
 		{
-			[Occupation.Tavernkeeper] = new[] { "酒馆老板", "酒馆主" },
-			[Occupation.Mercenary] = new[] { "佣兵" },
-			[Occupation.GoodsTrader] = new[] { "货物商人", "贸易商" },
-			[Occupation.ArenaMaster] = new[] { "竞技场主管", "竞技场大师" },
-			[Occupation.Villager] = new[] { "村民" },
-			[Occupation.Soldier] = new[] { "士兵" },
-			[Occupation.Townsfolk] = new[] { "城镇居民", "市民" },
-			[Occupation.RansomBroker] = new[] { "赎金经纪人", "赎金掮客" },
-			[Occupation.Weaponsmith] = new[] { "武器匠" },
-			[Occupation.Armorer] = new[] { "护甲商", "盔甲匠" },
-			[Occupation.HorseTrader] = new[] { "马商" },
-			[Occupation.TavernWench] = new[] { "酒馆侍女", "酒馆女招待" },
-			[Occupation.TavernGameHost] = new[] { "酒馆游戏主持人", "棋局主持人" },
-			[Occupation.Bandit] = new[] { "强盗", "匪徒" },
-			[Occupation.Wanderer] = new[] { "流浪者", "游荡者" },
-			[Occupation.Artisan] = new[] { "工匠" },
-			[Occupation.Merchant] = new[] { "商人" },
-			[Occupation.Preacher] = new[] { "传教士", "牧师" },
-			[Occupation.Headman] = new[] { "头人", "村长" },
-			[Occupation.GangLeader] = new[] { "帮派首领", "帮派头目" },
-			[Occupation.RuralNotable] = new[] { "乡绅", "农村要人" },
-			[Occupation.PrisonGuard] = new[] { "监狱守卫", "狱卒" },
-			[Occupation.Guard] = new[] { "守卫", "卫兵" },
-			[Occupation.ShopWorker] = new[] { "店员", "商店雇员" },
-			[Occupation.Blacksmith] = new[] { "铁匠" },
-			[Occupation.Musician] = new[] { "乐师", "音乐家" },
-			[Occupation.Gangster] = new[] { "帮派成员", "歹徒" },
-			[Occupation.BannerBearer] = new[] { "旗手" },
-			[Occupation.CaravanGuard] = new[] { "商队护卫" },
-			[Occupation.Special] = new[] { "特殊人物" },
-			[Occupation.ShipWright] = new[] { "造船师", "船匠" }
+			[Occupation.Tavernkeeper] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_62634b5f8429"), PolicyCompatibilityTexts.Get("Targets_Compat_56895b93f64b") },
+			[Occupation.Mercenary] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_f03f3f90563f") },
+			[Occupation.GoodsTrader] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_f62095a76fe5"), PolicyCompatibilityTexts.Get("Targets_Compat_9b3b994dec9f") },
+			[Occupation.ArenaMaster] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_050c0d064eaf"), PolicyCompatibilityTexts.Get("Targets_Compat_cfb2d2cb2a3b") },
+			[Occupation.Villager] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_4781f6b2a158") },
+			[Occupation.Soldier] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_eaa8dd04fd68") },
+			[Occupation.Townsfolk] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_e7ef1d83900c"), PolicyCompatibilityTexts.Get("Targets_Compat_58a3651d5dd1") },
+			[Occupation.RansomBroker] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_73bdecb324fb"), PolicyCompatibilityTexts.Get("Targets_Compat_72e49be94073") },
+			[Occupation.Weaponsmith] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_0f29a12ac910") },
+			[Occupation.Armorer] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_dd37254ad900"), PolicyCompatibilityTexts.Get("Targets_Compat_8383d798ac75") },
+			[Occupation.HorseTrader] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_e09722db7b4b") },
+			[Occupation.TavernWench] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_908f4bf3b5ac"), PolicyCompatibilityTexts.Get("Targets_Compat_def9d6a4c82f") },
+			[Occupation.TavernGameHost] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_97888e769f84"), PolicyCompatibilityTexts.Get("Targets_Compat_9e1d2b040537") },
+			[Occupation.Bandit] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_596d489dcae6"), PolicyCompatibilityTexts.Get("Targets_Compat_b1547b6d3c61") },
+			[Occupation.Wanderer] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_51f50f3dabd7"), PolicyCompatibilityTexts.Get("Targets_Compat_81718282f669") },
+			[Occupation.Artisan] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_d8d04c518ebb") },
+			[Occupation.Merchant] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_3f1784ce8b75") },
+			[Occupation.Preacher] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_6ed922a17105"), PolicyCompatibilityTexts.Get("Targets_Compat_f2e8819849c7") },
+			[Occupation.Headman] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_7b92ddb92fc9"), PolicyCompatibilityTexts.Get("Targets_Compat_611147038c8e") },
+			[Occupation.GangLeader] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_dac627c37c95"), PolicyCompatibilityTexts.Get("Targets_Compat_6fd73d464c20") },
+			[Occupation.RuralNotable] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_a1a3082778e4"), PolicyCompatibilityTexts.Get("Targets_Compat_980ac5d86536") },
+			[Occupation.PrisonGuard] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_6ce36f5298f7"), PolicyCompatibilityTexts.Get("Targets_Compat_f27a9ebfdabd") },
+			[Occupation.Guard] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_4059fb16b1c5"), PolicyCompatibilityTexts.Get("Targets_Compat_8cc470d04fc9") },
+			[Occupation.ShopWorker] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_285a519dade1"), PolicyCompatibilityTexts.Get("Targets_Compat_b0b775a5bdd7") },
+			[Occupation.Blacksmith] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_a245622e6f94") },
+			[Occupation.Musician] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_729aca2cfff6"), PolicyCompatibilityTexts.Get("Targets_Compat_2624cbbcd3e3") },
+			[Occupation.Gangster] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_275756ee5540"), PolicyCompatibilityTexts.Get("Targets_Compat_c41b82316ace") },
+			[Occupation.BannerBearer] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_e82c1337ebbb") },
+			[Occupation.CaravanGuard] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_e10bd08c2c4f") },
+			[Occupation.Special] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_1b97d369c173") },
+			[Occupation.ShipWright] = new[] { PolicyCompatibilityTexts.Get("Targets_Compat_ca22ae47b98e"), PolicyCompatibilityTexts.Get("Targets_Compat_0346d206c41b") }
 		};
 
 	private static Campaign _campaign;
@@ -143,10 +143,10 @@ internal static class PolicyHeroTargetSelectorResolver
 
 		foreach (Kingdom kingdom in anchors)
 		{
-			AddRoleCandidate(result, text, kingdom, "ruler", new[] { "当前统治者", "统治者", "君主", "国王", "女王", "皇帝", "女皇", "可汗", "苏丹", "执政者" }, "当前统治者");
-			AddRoleCandidate(result, text, kingdom, "lords", new[] { "所有领主", "全体领主", "领主们", "领主" }, "当前所有领主");
-			AddRoleCandidate(result, text, kingdom, "clan-leaders", new[] { "所有族长", "全体族长", "家族领袖", "家族首领", "族长" }, "当前所有家族领袖");
-			AddRoleCandidate(result, text, kingdom, "notables", new[] { "所有要人", "全体要人", "地方要人", "要人" }, "当前所有要人");
+			AddRoleCandidate(result, text, kingdom, "ruler", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_137ca5f45b6f"), PolicyCompatibilityTexts.Get("Generation_RulerFallback"), PolicyCompatibilityTexts.Get("Targets_Compat_37ab35120d1a"), PolicyCompatibilityTexts.Get("Targets_Compat_38e917f02192"), PolicyCompatibilityTexts.Get("Targets_Compat_8655bf651c8c"), PolicyCompatibilityTexts.Get("Targets_Compat_3ad2039e3ec0"), PolicyCompatibilityTexts.Get("Targets_Compat_63312de22843"), PolicyCompatibilityTexts.Get("Targets_Compat_42fa36440e74"), PolicyCompatibilityTexts.Get("Targets_Compat_e4a69ce9ceac"), PolicyCompatibilityTexts.Get("Targets_Compat_9dc32e0c873d") }, PolicyGenerationPromptTexts.Get("Targets_Text_137ca5f45b6f", "current ruler"));
+			AddRoleCandidate(result, text, kingdom, "lords", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_8b032bde3294"), PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomLordTargetLabel_107"), PolicyCompatibilityTexts.Get("Targets_Compat_8c69ba6ace29"), PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54") }, PolicyGenerationPromptTexts.Get("Targets_Text_1171396f25cb", "all current lords"));
+			AddRoleCandidate(result, text, kingdom, "clan-leaders", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_4fc5566eed7e"), PolicyCompatibilityTexts.Get("Targets_Compat_fc97f7889295"), PolicyCompatibilityTexts.Get("Targets_Compat_0e57ea8634d0"), PolicyCompatibilityTexts.Get("Targets_Compat_54b4d4fc1c82"), PolicyCompatibilityTexts.Get("Targets_Compat_c646abd11391") }, PolicyGenerationPromptTexts.Get("Targets_Text_bd19c7e26e2e", "all current clan leaders"));
+			AddRoleCandidate(result, text, kingdom, "notables", new[] { PolicyCompatibilityTexts.Get("Targets_Compat_65874efb7391"), PolicyCompatibilityTexts.Get("Targets_Compat_28eb64b5045b"), PolicyCompatibilityTexts.Get("Targets_Compat_99d3071e54b8"), PolicyCompatibilityTexts.Get("Targets_Compat_277123eb2215") }, PolicyGenerationPromptTexts.Get("Targets_Text_8c48e34b8885", "all current notables"));
 
 			foreach (Occupation occupation in Enum.GetValues(typeof(Occupation)).Cast<Occupation>())
 			{
@@ -168,7 +168,7 @@ internal static class PolicyHeroTargetSelectorResolver
 				result.Add(new PolicyHeroTargetCandidate
 				{
 					SelectorId = selectorId,
-					DisplayName = GetKingdomName(kingdom) + "的当前" + GetOccupationDisplayName(occupation),
+					DisplayName = GetKingdomName(kingdom) + PolicyGenerationPromptTexts.Get("Targets_Text_51509c6effc7", "'s current ") + GetOccupationDisplayName(occupation),
 					AnchorKingdomId = kingdom.StringId,
 					CurrentHeroIds = heroIds
 				});
@@ -195,10 +195,10 @@ internal static class PolicyHeroTargetSelectorResolver
 		List<PolicyHeroTargetCandidate> result = new List<PolicyHeroTargetCandidate>();
 		foreach (Kingdom kingdom in anchors)
 		{
-			AddResolvedRoleCandidate(result, kingdom, "ruler", "当前统治者");
-			AddResolvedRoleCandidate(result, kingdom, "lords", "当前所有领主");
-			AddResolvedRoleCandidate(result, kingdom, "clan-leaders", "当前所有家族领袖");
-			AddResolvedRoleCandidate(result, kingdom, "notables", "当前所有要人");
+			AddResolvedRoleCandidate(result, kingdom, "ruler", PolicyGenerationPromptTexts.Get("Targets_Text_137ca5f45b6f", "current ruler"));
+			AddResolvedRoleCandidate(result, kingdom, "lords", PolicyGenerationPromptTexts.Get("Targets_Text_1171396f25cb", "all current lords"));
+			AddResolvedRoleCandidate(result, kingdom, "clan-leaders", PolicyGenerationPromptTexts.Get("Targets_Text_bd19c7e26e2e", "all current clan leaders"));
+			AddResolvedRoleCandidate(result, kingdom, "notables", PolicyGenerationPromptTexts.Get("Targets_Text_8c48e34b8885", "all current notables"));
 			foreach (Occupation occupation in Enum.GetValues(typeof(Occupation)).Cast<Occupation>())
 			{
 				if (occupation == Occupation.NotAssigned
@@ -232,10 +232,10 @@ internal static class PolicyHeroTargetSelectorResolver
 			.GroupBy(kingdom => kingdom.StringId, StringComparer.OrdinalIgnoreCase)
 			.Select(group => group.First()))
 		{
-			if (requestedRoles.Contains("ruler")) AddResolvedRoleCandidate(result, kingdom, "ruler", "当前统治者");
-			if (requestedRoles.Contains("lords")) AddResolvedRoleCandidate(result, kingdom, "lords", "当前所有领主");
-			if (requestedRoles.Contains("clan-leaders")) AddResolvedRoleCandidate(result, kingdom, "clan-leaders", "当前所有家族领袖");
-			if (requestedRoles.Contains("notables")) AddResolvedRoleCandidate(result, kingdom, "notables", "当前所有要人");
+			if (requestedRoles.Contains("ruler")) AddResolvedRoleCandidate(result, kingdom, "ruler", PolicyGenerationPromptTexts.Get("Targets_Text_137ca5f45b6f", "current ruler"));
+			if (requestedRoles.Contains("lords")) AddResolvedRoleCandidate(result, kingdom, "lords", PolicyGenerationPromptTexts.Get("Targets_Text_1171396f25cb", "all current lords"));
+			if (requestedRoles.Contains("clan-leaders")) AddResolvedRoleCandidate(result, kingdom, "clan-leaders", PolicyGenerationPromptTexts.Get("Targets_Text_bd19c7e26e2e", "all current clan leaders"));
+			if (requestedRoles.Contains("notables")) AddResolvedRoleCandidate(result, kingdom, "notables", PolicyGenerationPromptTexts.Get("Targets_Text_8c48e34b8885", "all current notables"));
 		}
 		return result
 			.Where(candidate => candidate != null && candidate.CurrentHeroIds.Count > 0)
@@ -432,12 +432,12 @@ internal static class PolicyHeroTargetSelectorResolver
 		if (string.Equals(kind, "role", StringComparison.Ordinal))
 		{
 			IEnumerable<string> terms = string.Equals(value, "ruler", StringComparison.Ordinal)
-				? new[] { "当前统治者", "统治者", "君主", "国王", "女王", "皇帝", "女皇", "可汗", "苏丹", "执政者" }
+				? new[] { PolicyCompatibilityTexts.Get("Targets_Compat_137ca5f45b6f"), PolicyCompatibilityTexts.Get("Generation_RulerFallback"), PolicyCompatibilityTexts.Get("Targets_Compat_37ab35120d1a"), PolicyCompatibilityTexts.Get("Targets_Compat_38e917f02192"), PolicyCompatibilityTexts.Get("Targets_Compat_8655bf651c8c"), PolicyCompatibilityTexts.Get("Targets_Compat_3ad2039e3ec0"), PolicyCompatibilityTexts.Get("Targets_Compat_63312de22843"), PolicyCompatibilityTexts.Get("Targets_Compat_42fa36440e74"), PolicyCompatibilityTexts.Get("Targets_Compat_e4a69ce9ceac"), PolicyCompatibilityTexts.Get("Targets_Compat_9dc32e0c873d") }
 				: string.Equals(value, "lords", StringComparison.Ordinal)
-					? new[] { "所有领主", "全体领主", "领主们", "领主" }
+					? new[] { PolicyCompatibilityTexts.Get("Targets_Compat_8b032bde3294"), PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyWholeKingdomLordTargetLabel_107"), PolicyCompatibilityTexts.Get("Targets_Compat_8c69ba6ace29"), PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54") }
 					: string.Equals(value, "clan-leaders", StringComparison.Ordinal)
-						? new[] { "所有族长", "全体族长", "家族领袖", "家族首领", "族长" }
-						: new[] { "所有要人", "全体要人", "地方要人", "要人" };
+						? new[] { PolicyCompatibilityTexts.Get("Targets_Compat_4fc5566eed7e"), PolicyCompatibilityTexts.Get("Targets_Compat_fc97f7889295"), PolicyCompatibilityTexts.Get("Targets_Compat_0e57ea8634d0"), PolicyCompatibilityTexts.Get("Targets_Compat_54b4d4fc1c82"), PolicyCompatibilityTexts.Get("Targets_Compat_c646abd11391") }
+						: new[] { PolicyCompatibilityTexts.Get("Targets_Compat_65874efb7391"), PolicyCompatibilityTexts.Get("Targets_Compat_28eb64b5045b"), PolicyCompatibilityTexts.Get("Targets_Compat_99d3071e54b8"), PolicyCompatibilityTexts.Get("Targets_Compat_277123eb2215") };
 			return terms.Any(term => Mentions(text, term));
 		}
 		return Enum.TryParse(value, ignoreCase: false, out Occupation occupation)
@@ -538,7 +538,7 @@ internal static class PolicyHeroTargetSelectorResolver
 		result.Add(new PolicyHeroTargetCandidate
 		{
 			SelectorId = selectorId,
-			DisplayName = GetKingdomName(kingdom) + "的" + displayName,
+			DisplayName = GetKingdomName(kingdom) + PolicyGenerationPromptTexts.Get("Targets_Text_8af2350cfd65", "'s ") + displayName,
 			AnchorKingdomId = kingdom.StringId,
 			CurrentHeroIds = ids
 		});
@@ -554,7 +554,7 @@ internal static class PolicyHeroTargetSelectorResolver
 		result.Add(new PolicyHeroTargetCandidate
 		{
 			SelectorId = selectorId,
-			DisplayName = GetKingdomName(kingdom) + "的当前" + GetOccupationDisplayName(occupation),
+			DisplayName = GetKingdomName(kingdom) + PolicyGenerationPromptTexts.Get("Targets_Text_51509c6effc7", "'s current ") + GetOccupationDisplayName(occupation),
 			AnchorKingdomId = kingdom.StringId,
 			CurrentHeroIds = heroIds
 		});
@@ -742,21 +742,21 @@ internal static class PolicyHeroTargetSelectorResolver
 
 	private static string BuildHeroDisplayName(Hero hero)
 	{
-		string clanName = hero?.Clan?.Name?.ToString() ?? "无家族";
-		return (hero?.Name?.ToString() ?? hero?.StringId ?? "未知人物")
+		string clanName = hero?.Clan?.Name?.ToString() ?? PolicyGenerationPromptTexts.Get("Targets_Text_e71c56cb896f", "no clan");
+		return (hero?.Name?.ToString() ?? hero?.StringId ?? PolicyGenerationPromptTexts.Get("Targets_Text_33c3073f535a", "unknown character"))
 			+ "（" + clanName + "，" + GetOccupationDisplayName(hero?.Occupation ?? Occupation.NotAssigned) + "）";
 	}
 
 	private static string GetOccupationDisplayName(Occupation occupation)
 	{
 		return OccupationTerms.TryGetValue(occupation, out string[] aliases) && aliases.Length > 0
-			? aliases[0]
-			: occupation == Occupation.Lord ? "领主" : occupation.ToString();
+			? PolicyGenerationPromptTexts.Get("Targets_Occupation_" + occupation, occupation.ToString())
+			: occupation == Occupation.Lord ? PolicyGenerationPromptTexts.Get("Targets_Text_90c42cbd6c54", "lord") : occupation.ToString();
 	}
 
 	private static string GetKingdomName(Kingdom kingdom)
 	{
-		return kingdom?.Name?.ToString() ?? kingdom?.StringId ?? "未知王国";
+		return kingdom?.Name?.ToString() ?? kingdom?.StringId ?? PolicyGenerationPromptTexts.Get("UnknownKingdom", "unknown kingdom");
 	}
 
 	private static int CurrentCampaignDay()

@@ -1,0 +1,93 @@
+{
+  "Id": "rule_Marin",
+  "Keywords": [
+    "Marin"
+  ],
+  "RagShortTexts": [
+    "Marin wine has a refreshing fruity aroma and is nourished by the water vapor of Lake Oaks. It is often purchased by military officers."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Marin is a village near Vereksanburg, located on a gentle slope west of Lake Oaks. The southward ocean current keeps the mist-shrouded mornings exceptionally cool, and the warm afternoons allow local grapes to thrive. The wines here are famous throughout the Lake Oaks region."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Marin’s vineyard is located on a gentle slope to the west of Lake Oaks. It is shrouded in mist from the lake in the morning and basking in the sun in the afternoon. The sweetness of the grapes grows just right. For the officers at Vereksanburg, a lot of the wine on the table was bought from Marin. The wine here is not expensive, but tastes good."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Marin's wine has a refreshing fruity aroma, which is cultivated by the water vapor of Lake Oaks. The lake is foggy in the morning, and the sun is warm in the afternoon. The grapes accumulate enough sugar in this alternation of cold and heat. The output is small and sells out quickly, so if you want it, order it early."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Marin is a great place to drink and sunbathe. Sitting by the vineyard on the gentle slope, watching the fog of Lake Oaks slowly dissipate in the morning, and the sun's warmth in the afternoon makes people sleepy. I drank a glass of local wine, which was sour and sweet, much more refreshing than the wine that had been stale in oak barrels for a long time."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Marin",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Vereksanburg",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "Id": "rule_Geographical_Dossier_The_Eyrie",
+  "Keywords": [
+    "The Eyrie",
+    "Arryn",
+    "Gates of the Moon",
+    "Bloody Gate"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Eyrie, located on the Giant's Spear in the Moon Mountains of the Vale, is the ancestral castle of House Arryn and the supreme symbol of political authority in the Vale. Visitors must first pass through the Moon Gate Fort at the foot of the mountain, and then pass through the Dangerous Rock Fort, Snow Mountain Fort and Long Sky Fort along the steep mountain road before finally reaching the white castle on the top of the mountain. The steep slopes and height differences make it difficult for the army to deploy, and also make supplies and winter accommodation particularly difficult. The Eyrie is nearly unassailable in the warm season, but the actual rule of the Arryn family is still inseparable from the Gates of the Moon, Gulltown, the farmland of the valley and the knights of the princes, rather than relying solely on the stone walls above the clouds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Knights of the Vale are proud to ascend the Eyrie: a place where family names, rituals and Andal traditions are elevated by the mountains. But those who are really responsible for supplies know that glory also depends on mules, ropes and the food stores of the Gates of the Moon. Mountains can make visitors bow their heads, but they cannot resolve winter, inheritance, or disputes within the valley for any family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hilltribesmen",
+          "battania",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The mountain clans do not see the Eyrie as a beautiful sight; they see the nobles locking the valley away with castles, roads, and oaths. Visitors from the north will think it is too high and too elaborate, while the ironborn will say that a city without sea is neither safe nor free. Everyone admits that the Eyrie itself is a long climb without the guidance of someone familiar with the journey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Eyrie Entry Arryn Gates of the Moon Entry Gates of the Moon They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Eyrie Entry Arryn Gates of the Moon Entry Gates of the Moon The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Eyrie Entry Arryn Gates of the Moon Entry Gates of the Moon Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Eyrie Entry Arryn Gates of the Moon Entry Gates of the Moon They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Eyrie: The Eyrie, located on the Giant's Spear in the Moon Mountains of the Vale, is the ancestral castle of House Arryn and the supreme symbol of political authority in the Vale. Visitors must first pass through the Moon Gate Fort at the foot of the mountain, and then pass through the Dangerous Rock Fort, Snow Mountain Fort and Long Sky Fort along the steep mountain road before finally reaching the white castle on the top of the mountain. The steep slopes and height differences make it difficult for the army to deploy, and also make supplies and winter accommodation particularly difficult. The Eyrie is nearly unassailable in the warm season, but the actual rule of the Arryn family is still inseparable from the Gates of the Moon, Gulltown, the farmland of the valley and the knights of the princes, rather than relying solely on the stone walls above the clouds."
+  ]
+}

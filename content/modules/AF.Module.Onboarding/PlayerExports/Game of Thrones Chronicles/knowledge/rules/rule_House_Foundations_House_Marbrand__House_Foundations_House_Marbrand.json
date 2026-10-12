@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_House_Marbrand",
+  "Keywords": [
+    "House Marbrand",
+    "Burning Tree",
+    "Lannister Vassals"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Marbrand has its seat at Ashemark and is a major Westerlands house sworn to House Lannister, with a burning tree on a smoke-grey field as its sigil. Those living around Ashemark know it through land, roads, levies, and their lord's judgments; the nobles of the Westerlands weigh how many men House Marbrand can bring and how reliable they are when Casterly Rock calls its banners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The lords of the Westerlands know the burning tree of Marbrand and regard them as a martial house of real weight under Casterly Rock. A fiery coat of arms easily calls fierceness to mind, yet what is truly valued is whether the family can field reliable knights at the summons, maintain the roads, and take a clear stand when the lion requires it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People living near Ashemark know that a burning tree is far less handsome in life than on a coat of arms. Farmers worry about brushfires and harvests, while soldiers care whether the banner can still be seen through the smoke. If House Marbrand maintains order through disaster and war, the burning tree stands as a warning beacon; if it knows only how to take, it looks more like a threat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Marbrand A Lannister vassal house of Ashemark, bearing a burning tree on a smoke-grey field as its sigil. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Marbrand A Lannister vassal house of Ashemark, bearing a burning tree on a smoke-grey field as its sigil. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Marbrand A Lannister vassal house of Ashemark, bearing a burning tree on a smoke-grey field as its sigil. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Marbrand A Lannister vassal house of Ashemark, bearing a burning tree on a smoke-grey field as its sigil. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Marbrand: A Lannister vassal house of Ashemark, bearing a burning tree on a smoke-grey field as its sigil."
+  ]
+}

@@ -1,5 +1,6 @@
 using System;using System.Collections.Generic;using Newtonsoft.Json;
 namespace AnimusForge.CoupSystem {
+ static class MyBehavior {public static bool SuppressWorldBulletinRulerChange;}
  class Hero {public static Hero MainHero;public string StringId;public bool IsAlive=true,IsPrisoner;public int HitPoints=60;public object PartyBelongedToAsPrisoner;}
  class Clan {public static Clan PlayerClan;public string StringId;public Hero Leader;public Kingdom Kingdom;}
  class Kingdom {public string StringId;public bool IsEliminated;public Clan RulingClan;public Hero Leader=>RulingClan?.Leader;}
@@ -13,7 +14,7 @@ namespace AnimusForge.CoupSystem {
  class CoupRebellionBridge {
   public static CoupRebellionBridge Instance;public bool RegistryAvailable;public int Facts,QueueAttempts;public List<string> QueueIds=new List<string>();
   public bool TryRecordCoupOutcome(CoupSession s,Hero h,Settlement t,bool success,bool captured,out string note){note="";Facts++;return true;}
-  public bool TryQueueCoupRebellion(CoupSession s,Kingdom k,out string note){QueueAttempts++;QueueIds.Add(s.Id);note=RegistryAvailable?"queued":"政变后叛乱登记失败：政变前后统治者身份缺失，不能判定支持关系。";return RegistryAvailable;}
+  public bool TryQueueCoupRebellion(CoupSession s,Kingdom k,out string note){QueueAttempts++;QueueIds.Add(s.Id);note=RegistryAvailable?"queued":CoupSourceTexts.Format("RegistrationFailed", CoupSourceTexts.Get("IdentityMissing"));return RegistryAvailable;}
  }
  class CoupCampaignBehavior {
   public CoupSession _session;public Hero King;public int Casualties;
@@ -34,7 +35,7 @@ __COMMIT_VICTORY__
    Settlement.Current=new Settlement{StringId="town",OwnerClan=former,MapFaction=realm};
    var session=new CoupSession{SettlementId="town",KingdomId="realm",KingId="old_king",OriginalRulingClanId="former",OriginalOwnerClanId="former",Phase=CoupPhase.AwaitingResolution,ResumePhase=CoupPhase.AwaitingResolution,Started=true,KingSubdued=true,Disposition=disposition,PlayerHealth=80,KingHealth=1};
    var bridge=CoupRebellionBridge.Instance=new CoupRebellionBridge();var owner=new CoupCampaignBehavior(session,oldKing);
-   bool failed=false;try{owner.Commit();}catch(InvalidOperationException e){failed=e.Message.Contains("统治者身份缺失");}
+   bool failed=false;try{owner.Commit();}catch(InvalidOperationException e){failed=e.Message.Contains(CoupSourceTexts.Get("IdentityMissing"));}
    Check(failed,"same registration failure stops completion");
    Check(realm.Leader==Hero.MainHero && Settlement.Current.OwnerClan==Clan.PlayerClan,"already king and town owner despite pending registration");
    Check(session.RulingClanCommitted && session.TownCommitted && session.CustodyCommitted && session.FactsCommitted && !session.RebellionQueued,"completed step flags retained");

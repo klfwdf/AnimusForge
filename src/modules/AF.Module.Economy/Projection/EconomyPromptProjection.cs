@@ -13,8 +13,8 @@ internal sealed class EconomyDebtPromptLine
     {
         DebtId = debtId ?? string.Empty;
         RemainingValue = remainingValue;
-        Deadline = string.IsNullOrWhiteSpace(deadline) ? "未设定" : deadline;
-        Note = string.IsNullOrWhiteSpace(note) ? "无" : note;
+        Deadline = string.IsNullOrWhiteSpace(deadline) ? EconomyPromptTexts.Get("S009") : deadline;
+        Note = string.IsNullOrWhiteSpace(note) ? EconomyPromptTexts.Get("S013") : note;
     }
 
     internal string DebtId { get; }
@@ -31,15 +31,15 @@ internal static class EconomyPromptProjection
 {
     internal static string BuildTrustStatus(int effectiveTrust, string levelText, int levelIndex)
     {
-        return $"综合信任 {effectiveTrust}（{levelText ?? string.Empty}，{levelIndex}/10）";
+        return string.Format(EconomyPromptTexts.Get("S633"), effectiveTrust, levelText ?? string.Empty, levelIndex);
     }
 
     internal static string BuildTrustPrompt(string behaviorText, string actionGuideText)
     {
         StringBuilder builder = new StringBuilder();
-        builder.AppendLine("本级语义：" + (behaviorText ?? string.Empty));
-        builder.AppendLine("本级信用规则：" + (actionGuideText ?? string.Empty));
-        builder.AppendLine("价值口径：总价值=第纳尔金额+物品估值（guidePrice * 数量）。");
+        builder.AppendLine(EconomyPromptTexts.Get("S634") + (behaviorText ?? string.Empty));
+        builder.AppendLine(EconomyPromptTexts.Get("S635") + (actionGuideText ?? string.Empty));
+        builder.AppendLine(EconomyPromptTexts.Get("S636"));
         return builder.ToString().TrimEnd();
     }
 
@@ -48,7 +48,7 @@ internal static class EconomyPromptProjection
         IEnumerable<EconomyDebtPromptLine> lines)
     {
         return hasDebtContent
-            ? BuildDebtHint("【系统账目提示】玩家对你有以下承诺或欠款（分笔记录）：", null, lines)
+            ? BuildDebtHint(EconomyPromptTexts.Get("S637"), null, lines)
             : string.Empty;
     }
 
@@ -59,8 +59,8 @@ internal static class EconomyPromptProjection
     {
         return hasDebtContent
             ? BuildDebtHint(
-                "【系统账目提示】玩家对你代表的" + (merchantLabel ?? string.Empty) + "有以下承诺或欠款（分笔记录）：",
-                "【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除",
+                EconomyPromptTexts.Get("S638") + (merchantLabel ?? string.Empty) + EconomyPromptTexts.Get("S639"),
+                EconomyPromptTexts.Get("S640"),
                 lines)
             : string.Empty;
     }
@@ -77,11 +77,11 @@ internal static class EconomyPromptProjection
             {
                 continue;
             }
-            details.Append("- [债务ID:").Append(line.DebtId).Append("] 玩家的承诺或欠款价值 ")
+            details.Append(EconomyPromptTexts.Get("S641")).Append(line.DebtId).Append(EconomyPromptTexts.Get("S642"))
                 .Append(line.RemainingValue)
-                .Append(" 第纳尔，达成期限为：")
+                .Append(EconomyPromptTexts.Get("S015"))
                 .Append(line.Deadline)
-                .Append("，备注：")
+                .Append(EconomyPromptTexts.Get("S016"))
                 .Append(line.Note)
                 .AppendLine();
         }

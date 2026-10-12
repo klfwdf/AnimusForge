@@ -1,0 +1,213 @@
+{
+  "Id": "rule_vampire_diplomacy",
+  "Keywords": [
+    "Vampire Diplomacy",
+    "Undead Diplomacy",
+    "Nocturnal Infiltration",
+    "Thrall Network",
+    "Bride Strategy",
+    "Skaven Secret Pact",
+    "Exploitation of Chaos",
+    "Vampire Espionage",
+    "Pact of the Dead",
+    "Phantom Advisor",
+    "Blood Oath",
+    "Dark Reciprocity"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "No true diplomatic relations exist between the Empire and Sylvania—nominally, both sides remain in a state of unending war. Yet vampires excel at infiltration: they dispatch emissaries gifted with powers of beguilement to slip into human courts, corrupting nobles with promises of immortality and power, weaving unseen nocturnal networks in the shadows. Every city within the Empire may have a vampire's shadow lurking within the penumbra of power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our 'diplomacy' with the Empire is never conducted across a negotiating table, but realized in secret chambers, beside pillows, and down dark alleys. In the court of every Elector Count of the Empire there are our eyes—sometimes an advisor standing in the shadows, sometimes the new husband of a noble widow, sometimes even an entire family bloodline secretly serving us. Humans are so easily corrupted; the temptation of eternal life, the promise of power, or merely the fear of death is enough to open the gates of the sturdiest castle. Moreover, we maintain subtle dealings with other dark powers: Chaos tribes can occasionally be steered toward our enemies, and the subterranean networks of the Skaven provide special channels of trade. Yet remain ever vigilant against the servants of Nagash—those necromancers and remnants of the Liche King bear no less hostility toward us than toward any living mortal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Vampire diplomacy is in essence intelligence warfare. No Vampire Count sends a herald to publicly deliver a declaration of war—before delivering it, he may already have turned your garrison commander into his blood thrall. Defending against such infiltration requires establishing a rigorous noble vetting system, conducting regular magical screenings of court personnel, and forbidding any unvetted foreign advisor from approaching the inner circle of decision-makers. Externally, vampires may strike temporary alliances with you—their promises cannot be trusted, yet they are not entirely worthless, provided you hold sufficiently potent countermeasures in your grasp. When a vampire smiles at you, check whether he holds your child's hair in his hand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Historical archives on vampire diplomacy record many classic paradigms of 'nocturnal infiltration.' Among the most famous patterns are: the 'Bride Strategy'—dispatching female vampires to marry target nobles and thereby control the family; the 'Creditor Strategy'—rescuing a noble on the verge of ruin and demanding a blood oath in return; and the 'Phantom Advisor'—manifesting under the guise of a deceased sage or their avatar to offer a lord precise counsel that could only be accumulated over centuries of experience. Studies of the Imperial electoral system indicate that erroneous decisions made at critical moments by at least four Elector Counts can be traced back to known vampire infiltration incidents. The relationship between vampires and the forces of Chaos is purely utilitarian—they despise the twisting of flesh wrought by Chaos, yet recognize that Chaos invasions create power vacuums. In its dealings with the Skaven, Sylvania maintains a peculiar 'dark reciprocity': the ratmen provide subterranean intelligence and information channels, while the vampires provide magical knowledge—though both sides know full well that this pact may be torn up at any moment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One of the most common methods vampires use when infiltrating Imperial noble social circles is working through female channels—because they know human male nobles naturally lower their guard when facing female vampires. The female vampires of Lahmia are masters of this art, slipping into noble society under the guise of distant relatives of fallen noble houses, mysterious widows from foreign lands, or convent patrons acting in the name of charity. As a dowager regent, I was once visited three times by an elegant lady claiming to hail from a Tilean noble house; during her third visit, she inadvertently let slip that she was 'forty-seven years old'—while her appearance, looking no more than thirty, set off alarms in my mind. I subsequently discovered that the Tilean family she claimed to belong to had died out three generations ago in a legendary great fire. Female vampire infiltration succeeds because most human noblewomen are excluded from formal military and intelligence institutions and lack the intuition and defensive training against infiltration—and that is precisely the gap I have been striving to fill. I have trained the housekeepers and chatelaines of every noble manor in my domain to serve as the first line of defense: they are taught, when receiving any noblewoman visitor claiming to come from afar, to first deliberately mention a subtle historical error at the tea table and then observe the other party's reaction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Vampire diplomatic infiltration is an ongoing survival test for a noble house—every outsider who enters our family domain could be a wolf disguised as a human. Our family's three lines of defense work as follows: First, every outsider applying to enter the castle for any post must sit quietly for at least half an hour in a waiting room whose walls are hung with holy symbols of Sigmar before being granted an audience—a true vampire will exhibit almost imperceptible restlessness in such an environment. Second, all servants in the castle are required to attend a monthly holy water rite presided over by a warrior priest in the family chapel—servants turned into blood thralls exhibit a burning reaction when holy water touches their skin. Third, and most secretive of all, our family maintains half a dozen families descended from refugees rescued from the direction of Sylvania by our ancestors during the three wars; for generations they have served as ordinary manor serfs on our lands, yet they retain an almost animalistic intuition passed down from their forebears for sensing a vampire's presence—whenever a suspicious outsider enters the domain, we always first gather feedback from these old serf households on whether they felt an unnatural chill during the night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The presence of vampires in the mercenary market runs deeper than anyone is willing to publicly admit. I do not mean they hire us directly—that rarely happens, as they have no need for men who sell their lives for coin—but rather that the commanders of many mercenary companies maintain, to varying degrees, an unspoken channel of information with Sylvania. When I served in Ostermark, our mercenary company once received a bounty we could not refuse—a whole chest of gold coins of the highest purity—for the task of 'not patrolling the narrow path east of the marsh for three consecutive days.' No one stated openly where the money came from, but everyone knew that path led toward Sylvania. Part of vampire diplomacy consists of low-level infiltration aimed at mercenaries—they do not need to corrupt generals; they only need enough gold to make a critical patrol briefly vanish on a critical night. I refused such assignments twice, and the third time I deserted outright—not out of a sudden moral awakening, but because my experience told me that after accepting a vampire's covert help three times, you owe a debt that is never written on any paper yet will one day be demanded of you in person."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic dimension of vampire diplomacy is the topic institutions like our merchant guild find hardest to discuss in public. Under formal Imperial law, any trade with Sylvania is classified as high treason. Yet in reality, three major dark trade flows maintain exchange relationships with Sylvania through extremely covert channels: unlicensed magical materials, forbidden texts banned by the Empire, and non-ferrous metals smuggled out of Dwarf mines. Vampires do not need gold coins—over their long lives they have accumulated unimaginable reserves of precious metals—what they need are supplies produced in the world of the living that cannot be manufactured natively in Sylvania. And the high premiums Imperial merchants earn from vampires for trading these goods stem entirely from the scarcity monopoly created by Imperial law—if such trade were legalized, the merchants' profit margins would shrink by eighty percent overnight. Thus no formal diplomacy exists between the Empire and Sylvania, yet there exists a far more covert, informal diplomatic channel perversely incentivized by Imperial law and driven by underground commerce."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Bride Strategy — a bloodline infiltration method in which female vampires control noble families through marriage to target nobles",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Foreign relations and alliance systems of the vampires"
+  ]
+}

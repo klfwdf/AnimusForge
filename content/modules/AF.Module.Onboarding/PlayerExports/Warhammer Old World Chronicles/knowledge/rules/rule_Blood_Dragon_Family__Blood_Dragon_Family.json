@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Blood_Dragon_Family",
+  "Keywords": [
+    "Blood Dragon Family",
+    "Ultimate martial arts",
+    "Blood Dragon Family Blood Knight",
+    "duel of honor",
+    "vampire swordsman",
+    "martial arts bloodline",
+    "blood dragon",
+    "sword master",
+    "Martial arts vampire",
+    "duelist",
+    "warrior blood",
+    "blood of honor"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Blood Dragon family is a branch of the vampire bloodline known for its ultimate martial arts. Its members have practiced swordsmanship to a level beyond that of mortals. They pursue honorary duels. Unlike the usual vampire intrigues, blood dragons are more willing to prove their strength in head-to-head confrontations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Blood Dragon Family - They are not the smartest among us, but they are definitely the sharpest! The blood of the blood dragon is inherited from the first ancestor, Ai Bolash. This crazy blood supreme lord vowed to cut off the dragon's head with the sword in his hand, and use this to refine his martial arts and enter the realm of gods. Every descendant of the Blood Dragon inherits a paranoia for martial arts: they constantly look for stronger opponents, duel with Chaos Champions, compete with Dwarf Hammer Warriors, and even try to challenge the legendary behemoths of the old world. A Blood Dragon Vampire can single-handedly slaughter an entire squad of Imperial swordsmen, then gracefully challenge the surviving captain to a one-on-one challenge with his blood-stained gauntlet. They disdain poison, betrayal or assassination - that is not the way of a warrior. But the irony is that their \"honor\" only applies to the battle itself. As for draining the blood of a village to replenish physical strength before the battle, in their opinion, it is nothing more than \"necessary preparation.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Blood Dragon Family Vampires are among the most dangerous single melee enemies you can encounter. A single blood dragon can easily defeat an entire army of elite infantry, and if the blood dragon family attacks together, even the strongest line will be torn like parchment. But they have an exploitable weakness: their obsession with honor duels. If you dare to accept their challenge, they will often let your army go for a while. This gives you the opportunity to redeploy or cast a decisive spell - but of course it also means someone has to be willing to be the \"glorious sacrifice\"."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Aborash, the ancestor of the blood dragon family, was one of the twelve original vampire ancestors who received Nagash's blood cup. Unlike other vampires, Aibolash devoted all his immortality to the pursuit of perfect martial arts - he believed that as long as he surpassed all creatures, including dragons, in swordsmanship, the curse of blood would naturally be broken. The Blood Dragon family participated in the war as the elite assault force of the von Carstein family during the Vampire Wars, but the relationship between the two families was essentially closer to \"mutual exploitation\" than a loyalty alliance. The dark armor of the Blood Dragon Knight is usually dark red, symbolizing the \"eternally flowing dragon blood\", and is engraved with the runes of a duel oath. Each blood dragon carries a roll of parchment with him to record the strongest opponent he has defeated - this \"Scroll of Honor\" is more important to them than their souls. The blood dragon vampire's first embrace ceremony is not to passively accept the blood kiss, but to actively drain the blood of the ancestor - this means that every blood dragon must be a warrior who can defeat his \"father\"."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The stories of the Blood Dragon family are all about men and swords - but in the story of Varan Bloodflame, there is a female blood dragon known as the \"Scarlet Queen\", whose swordsmanship is said to be as superb as her lover in life. She killed him and inherited his sword and his bloodline. Vampire romances are always so bloody and twisted."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We once fought against a blood dragon - to be precise, I watched three of the strongest warriors in the clan go to fight, and then witnessed them being cut into pieces within ten breaths. The vampire didn't even use magic, just pure swordsmanship and crushed our glory into dust. Our clan has never challenged the blood dragon since then."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I met a blood dragon in the ruined castle of Bretonne. He sat alone on his throne in a deserted hall, surrounded by the skeletons of dozens of challengers. I thought he was going to kill me, but he lost interest after just one look at the broken sword at my waist—said my equipment \"insulted his eyes.\" I've never been so grateful to be looked down upon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Blood dragons are the coveted top customers of arms dealers - but they are almost never traded in the market. They either take weapons from their slain opponents, or order some hapless human blacksmith to come and serve them specially. Rumor has it that a certain blood dragon once slaughtered the sword's former owner and his entire guard for an Imperial Master Sword."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Blood Dragon family is a bloodline of vampires who pursue the ultimate in martial arts and are obsessed with swordsmanship and honorary duels.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The family background and political status of the Blood Dragon family"
+  ]
+}

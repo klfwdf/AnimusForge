@@ -1,0 +1,108 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
+using System.Linq;
+
+namespace AnimusForge {
+internal static class AnimusForgeModulePaths {
+    internal static string Root;
+    internal static string GetModuleDataFilePath(string name) => Path.Combine(Root, name);
+}
+internal sealed class Hero { public float Age; public bool IsFemale; public string Occupation; public Clan Clan; public Kingdom RulerKingdom; public bool IsKingdomLeader, IsLord, IsWanderer, IsNotable; }
+internal sealed class TextObject {
+    internal string Value;
+    public override string ToString() => Value;
+}
+internal sealed class Village { public enum VillageStates { Normal, BeingRaided, ForcedForVolunteers, ForcedForSupplies, Looted } public float Hearth; public VillageStates VillageState; }
+internal sealed class Clan { public Hero Leader; }
+internal sealed class Kingdom { public TextObject EncyclopediaRulerTitle, Name; }
+internal sealed class Town { public float Security; }
+internal sealed class Settlement { public Village Village; public Town Town; public bool IsUnderSiege; }
+internal readonly struct CampaignVec2 {
+    public readonly float X, Y;
+    public CampaignVec2(float x, float y) { X = x; Y = y; }
+}
+internal static partial class WorldEntityRetrievalService {
+    private static Kingdom ResolveCurrentActiveRulerKingdom(Hero hero) => hero.RulerKingdom;
+    private static string SafeTextOrEmpty(TextObject text) => text?.ToString() ?? "";
+    private static int checks;
+    private static void Equal(string actual, string expected, string description) {
+        checks++;
+        if (actual != expected) throw new Exception(description + ": expected [" + expected + "] actual [" + actual + "]");
+    }
+    internal static int Replay(bool english) {
+        string unknown = english ? "unknown" : "未知";
+        var resources = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(AnimusForgeModulePaths.GetModuleDataFilePath("WorldEntityPromptTexts.json"), Encoding.UTF8));
+        foreach (var item in resources) Equal(WorldEntityPromptTexts.Get(item.Key, "MISSING"), item.Value, "actual packaged resource " + item.Key);
+        Equal(WorldEntityPromptTexts.Get("__missing__", "fallback"), "fallback", "missing-key fallback");
+        Equal(SafeName(null, ""), "未知", "retrieval/alias fallback retains its original value");
+        Equal(SafePromptName(null, ""), unknown, "prompt fallback uses package language");
+        Equal(SafePromptName(new TextObject { Value = "  RAW_名字_{ID}  " }, "fallback"), "RAW_名字_{ID}", "source names are not translated or templated");
+        foreach (var item in resources.Where(item => item.Key.StartsWith("Occupation_", StringComparison.Ordinal)))
+            Equal(FormatHeroOccupation(new Hero { Occupation = item.Key.Substring("Occupation_".Length) }), item.Value, "occupation package projection " + item.Key);
+        foreach (Village.VillageStates state in Enum.GetValues(typeof(Village.VillageStates))) {
+            string actual = FormatSettlementStatus(new Settlement { Village = new Village { VillageState = state } });
+            Equal(actual, state == Village.VillageStates.Normal ? resources["NoSpecialStatus"] : resources["VillageState"] + resources["VillageState_" + state], "village state preserves meaning " + state);
+        }
+        Equal(FormatHeroOccupation(new Hero { Occupation = "OtherMod_职业" }), "OtherMod_职业", "unknown external occupation remains raw data");
+        Equal(FormatAge(new Hero { Age = 31.9f }), "31", "age floor");
+        Equal(FormatAge(null), unknown, "missing age");
+        Equal(FormatGender(new Hero { IsFemale = true }), english ? "female" : "女", "female");
+        Equal(FormatGender(new Hero()), english ? "male" : "男", "male");
+        Equal(FormatGender(null), unknown, "missing gender");
+        Equal(FormatBool(true), "true", "true identity");
+        Equal(FormatBool(false), "false", "false identity");
+        Equal(FormatEliminatedStatus(true), english ? "true (eliminated)" : "true（已灭亡）", "eliminated flag preserved");
+        Equal(FormatEliminatedStatus(false), english ? "false (not eliminated)" : "false（未灭亡）", "surviving flag preserved");
+        Equal(FormatEliminatedStatus(null), unknown, "missing eliminated flag");
+        Equal(FormatFloat(12.34f), "12.3", "numeric format unchanged");
+        Equal(FormatFloat(null), unknown, "missing float");
+        Equal(FormatInt(7), "7", "integer format unchanged");
+        Equal(FormatInt(null), unknown, "missing integer");
+        Equal(FormatScore(.876f), "0.88", "score format unchanged");
+        Equal(FormatDistance(1.25f), "1.3", "distance format unchanged");
+        Equal(FormatDistance(float.NaN), unknown, "invalid distance");
+        Equal(FormatDistance(float.PositiveInfinity), unknown, "infinite distance");
+        Equal(FormatDistance(float.MaxValue), unknown, "unbounded distance");
+        Equal(FormatSettlementPopulation(new Settlement { Village = new Village { Hearth = 120.5f } }), english ? "Hearths 120.5" : "炉户 120.5", "hearths are never relabeled as people");
+        Equal(FormatSettlementPopulation(new Settlement()), english ? "no direct population field" : "无直接人口字段", "missing population field");
+        int[] bands = { -80, -40, -10, 0, 10, 40, 80 };
+        string[] bandTexts = english ? new[] { "deadly enemies", "hostile", "unfriendly", "neutral", "friendly", "close", "close friends" } : new[] { "死敌", "敌对", "反感", "中立", "友好", "亲近", "至交" };
+        for (int index = 0; index < bands.Length; index++) Equal(FormatRelationBand(bands[index]), bandTexts[index], "relation threshold " + bands[index]);
+        int[] horizontal = { 1, 1, 0, -1, -1, -1, 0, 1 };
+        int[] vertical = { 0, 1, 1, 1, 0, -1, -1, -1 };
+        string[] directions = english ? new[] { "east", "northeast", "north", "northwest", "west", "southwest", "south", "southeast" } : new[] { "东", "东北", "北", "西北", "西", "西南", "南", "东南" };
+        for (int index = 0; index < directions.Length; index++) Equal(FormatDirection(new CampaignVec2(), new CampaignVec2(horizontal[index], vertical[index])), directions[index], "direction " + index);
+        Equal(FormatDirection(new CampaignVec2(), new CampaignVec2()), english ? "current location" : "当前位置", "same-position guard");
+        Equal(BuildVisiblePartyPromptLine(2, null), english ? "2. Name: unknown; Count: 0" : "2. 名称：未知；数量：0", "null visible party");
+        var party = new VisiblePartyCandidate { Name = "RAW_{NAME}", Id = "party:unit_007", Count = 15, ShipInfo = "2 ships", Affiliation = "Clan A", RelationToContextHero = "ally", RelationToPlayer = "neutral", Direction = directions[0], Distance = 2.5f };
+        string partyLine = BuildVisiblePartyPromptLine(2, party);
+        string expectedParty = english ? "2. Name: RAW_{NAME}; Count: 15; Ships: 2 ships; Party ID: party:unit_007; Affiliation: Clan A; Relation to NPC: ally; Relation to player: neutral; Direction: east; Distance: 2.5" : "2. 名称：RAW_{NAME}；数量：15；舰船：2 ships；部队ID：party:unit_007；从属：Clan A；与NPC关系：ally；与玩家关系：neutral；方位：东；距离：2.5";
+        Equal(partyLine, expectedParty, "complete visible party facts and execution ID preserved");
+        Equal(StripEntityIdsFromMainPromptBlock(partyLine), expectedParty.Replace(english ? "; Party ID: party:unit_007" : "；部队ID：party:unit_007", ""), "main prompt removes only party ID");
+        Equal(FormatPostprocessEntityId("party:unit_007"), "unit_007", "postprocess retains usable party ID");
+        Equal(FormatPostprocessEntityId("hero:lord_1"), "lord_1", "postprocess retains usable hero ID");
+        string heroLine = english ? "1. Caladog (ID: hero:lord_1; Match score: 1.00; Mention: Caladog)" : "1. Caladog（编号：hero:lord_1；匹配分：1.00；提及：Caladog）";
+        Equal(StripEntityIdsFromMainPromptBlock(heroLine), english ? "1. Caladog (Match score: 1.00; Mention: Caladog)" : "1. Caladog（匹配分：1.00；提及：Caladog）", "main hero ID stripped without losing score or mention");
+        Equal(StripEntityIdsFromMainPromptBlock("hero:lord_1"), unknown, "bare internal ID hidden");
+        Equal(StripEntityIdsFromMainPromptBlock("（编号：hero:lord_1；）"), "", "legacy Chinese ID cleanup remains supported");
+        string path = AnimusForgeModulePaths.GetModuleDataFilePath("WorldEntityPromptTexts.json");
+        string before = File.ReadAllText(path);
+        File.WriteAllText(path, "{}");
+        Equal(WorldEntityPromptTexts.Get("Unknown", "WRONG"), unknown, "package texts loaded only once");
+        File.WriteAllText(path, before);
+        return checks;
+    }
+}
+}
+internal static class Program {
+    private static int Main(string[] args) {
+        try {
+            AnimusForge.AnimusForgeModulePaths.Root = args[0];
+            Console.WriteLine("PASS WorldEntity prompt package=" + args[1] + " checks=" + AnimusForge.WorldEntityRetrievalService.Replay(args[1] == "en"));
+            return 0;
+        } catch (Exception error) { Console.WriteLine(error); return 1; }
+    }
+}

@@ -5,6 +5,56 @@
 - 131 直接动作检查、48 债务、80574 codec 断言、原部队 owner、50 原版布局、50 真实 Harmony Y 菜单回放通过；原统一 Debug 双 API/Bootstrap/双 Coup 门禁通过，两实现各348 warning/0 error，13源码锚点双模式通过。夹具不是实机或完整战役效果验收，未测覆盖率或运行全仓测试。
 - [唯一主台账：语义纠正、证据、边界与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-direct-actions-20261012)；[已核代码范围](docs/architecture/af-framework-code-scope.md#player-direct-actions-20261012)。收据 `artifacts/tests/player-direct-final/receipt.json`；最终构建 `artifacts/tests/player-direct-build/run-e8dbdb29eee546e7b1bea8d0ee79c18c/receipt.json`。未 Stage、部署、打包、推送或触发游戏动作；后续实机另行授权。
 
+# 当前交接：双语回归修正版 EN 已部署；远端 main 融合已预审（2026-10-12）
+
+- 本轮切片 `1ffb30f620594bebfdc1955f59fe86df97e89487`：修复实际EN对话请求、控件和上下文识别，AF运行数据按用途回模组；后续双语和双包命名已写skill/AGENTS。两实现+Bootstrap/Coup、完整CN/EN投影、当前EN安装SHA与真实DLL回放通过；实机/provider/旧档和正式ZIP未验。
+- 远端 main `a9013b705` 64提交/104路径已只读审查/三方预览，口头外交双方同意、取消job请求、双语接线三缺口应先处理；未拉取融合或push，main和原暂存不变。
+- 当前有效状态见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bilingual-runtime-maintenance-20261012)、[职责图](docs/architecture/af-framework-code-scope.md#bilingual-runtime-maintenance-20261012)与[交付](docs/handoffs/2026-10-12-bilingual-runtime-maintenance.md)。下面原交接保留为已被本条接续的历史。
+
+# 当前交接：EN 版已部署（2026-10-12，DEPLOYED_EN / IN_GAME_NOT_VERIFIED）
+
+- 用户要求部署 EN 并明确“不用备份”。使用已验收 Release 双 API / Bootstrap，完整 EN 投影 3518 文件，实际更新 3353 文件；3 DLL 与全部标准文件哈希核对通过，2561 个原未列入部署文件逐字节保留。目标为 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，版本 `v1.5.7`；Prompt/世界书 EN，UI 仍双语。
+- 完整投影发现10个阻断，补1个物品名双语键并翻译9份XML的123条注释；控件非注释字节、物品ID/属性及原语言键保持，双TW各632解析PASS。十二文件均非嵌入资源，C#和3 DLL未变；源码/DLL门禁按冻结哈希复用，原完整EN内容门禁实际PASS。按用户要求使用任务内直接原子替换，未新增游戏部署备份；原一键脚本未改。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#en-deployment-20261012)；[部署验收](docs/handoffs/2026-10-12-en-deployment.md)；[代码边界](docs/architecture/af-framework-code-scope.md#en-deployment-20261012)。游戏未启动，实机/旧档/全量语义/正式ZIP仍未验。下方“未部署”是本条之前的历史；本轮源码可 focused inverse，旧安装未留新备份。
+
+# 当前交接：Policy 接手修复与全仓双语化离线验收（2026-10-12，OFFLINE_VERIFIED / NOT_RELEASE_READY）
+
+- 用户确认 Policy 外部写入停止后已接手修复：542 个解码后运行汉字位置清零，所有产品范围为 0；UI 随界面、Prompt 随包，兼容原值与动态姓名保留。修复政策目标/日期/知识过滤/legacy 请求/周报消费及英文设置说明与 fallback，新增 3 条标准资源映射。
+- 原源码与两份实际 DLL 英文发行门禁、双 API Release / Bootstrap / Coup gate、44 项静态契约均 PASS；原政策全模块双 API × 英文/中文各 1491 断言、18 模块 PASS。两实现仍各 363 警告 / 0 错误，未屏蔽警告。Jev 已按用户指令在本会话启用，一次 14 项定向复核，不能代替全仓语义/实机验收。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#policy-bilingual-closeout-20261012)；[修复与验证报告](docs/handoffs/2026-10-12-policy-bilingual-closeout.md)；[职责图](docs/architecture/af-framework-code-scope.md#policy-bilingual-closeout-20261012)；[本轮本地切片与回滚收据](artifacts/policy-bilingual-closeout-20261012/local-slice-commits.json)。未验实机、真实 provider、旧档、全部语句或正式双包；未打包、部署、镜像、推送。下方 Policy 阻断及旧交接均为历史，由本条明确接续；只回滚本轮 focused 增量，不能覆盖其他作者的 dirty 工作树。
+
+# 当前交接：全仓双语化审查修复（2026-10-12，OFFLINE_VERIFIED / POLICY_BLOCKED）
+
+- 主线与已交付GCCZ的真实缺键、UI/Prompt选版、动态slot、canonical协议、资源消费与原值损失已修；GCCZ源码解码汉字0。最终双API各0错误/363警告，Bootstrap/双Coup gate、39对UI两版各50940解析、44静态合同通过。全仓EN门禁仍被Policy542处阻断，外部施工按约定只读登记；未验实机、真实provider、旧档、逐句语义或正式双包，未部署/推送。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bilingual-full-audit-20261012)；[完整修复与证据](docs/handoffs/2026-10-12-full-bilingual-audit.md)；[代码职责图](docs/architecture/af-framework-code-scope.md#bilingual-full-audit-20261012)。仅本地分支 `codex/bilingual-audit-20261012-slices` 与focused inverse保存本轮增量，不能用其baseline覆盖全部dirty工作树。下方旧交接保留为历史，当前口径以上述主台账为准。
+
+# 当前交接：全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
+- 2026-10-11接管批已验：修资源/640旧英文键/三处编译错误；整合DuelSettings、Coup、Knowledge、WorldMap及Records，最终双API/Bootstrap/Coup门禁PASS；两份实际DLL各16政策显示+548嵌入值，语言DLL各48,384解析PASS。B世界书映射已接线，3133对契约最终通过，62项隔离ZIP投影PASS。源码快照16028中文位置、1072待消费者核查，仍非漏译完成率。[本轮主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#2026-10-11-接管与恢复active基线-97ad1ed14)，[剩余盘点](artifacts/localization-takeover-20261011/inventory/REPORT.md)。下一片为WorldEntity知识上下文与未接线Prompt目录；保留stash与B资产，全量目标ACTIVE，实机/旧档/正式双包未验，未部署/推送。
+- 当前主线`d00e33d07`：全模组中文硬编码外置/双语目标继续，B/C由用户派发外部；内战事实/显示、图库新物品名、债务/决斗已完成源码接线，27资源对和专项静态/既有双API资源解析PASS。全量20860位置/590文件（起始22357，含并行修改），不以UI清零当完成。Player默认规则语义差异、兼容词表EN门禁及大量运行时文本仍OPEN；当前产品编译/实机/正式包NOT-RUN。[主台账当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)，[切片与代码证据](docs/handoffs/2026-10-10-localization-mainline-integration.md)。下文旧进度按历史保留。
+- 主线已接收政策C `19f11c941`（20文件/621对键），raw/display及失败边界修复；raw30/模块90/失败92/oracle272项、26资源对、既有双API各2484资源解析PASS。城堡选择器/处刑显示 `b8ad0a54a`（7对键）已交付。稳定盘点confirmed UI 0/待审1250位置，不是全英文完成率；E待最终回执，当前编译/实机/正式双包NOT-RUN。[最新主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
+
+- 最新主线 `5173ec03e` / `3f8227076` 知名度与通知收口；`ecd8cca60` / `b510df4bb` 公告配图状态、图库默认介绍与试采说明，静态合同/26对资源/既有双API引用各1304次Illustrator解析PASS。稳定盘点7确认UI（Policy）/1210待审，无扫描变化。转RP真物品名和终端标签目录等仍OPEN；当前编译/实机/旧档/正式ZIP NOT-RUN。[最新切片及下一片](docs/handoffs/2026-10-10-localization-illustrator-bulletin-defaults.md)，[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
+
+- 主线失败显示 `dfae5984d`：11入口/17对键，原诊断与dispatcher保持，静态/26对资源/既有双API DLL各12628次UI解析PASS；盘点7确认UI、1220待审（含6个重新登记的原诊断）。当前编译/实机仍NOT-RUN，下一片为玩家百科知名度标签与刷新去重。[切片证据](docs/handoffs/2026-10-10-localization-llm-failure-display.md)，[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
+- 最新用户目标替代早期仅 UI 的范围：全部默认运行时文本与内容英文可用，完整保留中文原版；ZIP 名区分 `_CN` / `_EN`，包内原文件名、单模块及双 API 实现身份不变。
+- B/C 以仓库内第二轮交付报告为准；主线补 Weekly 注册 `7341afe55`。25 对资源契约通过，现有 1.3/1.4 本地化 DLL 各 39,992 次解析通过；不是当前产品编译/实机验收。
+- 最新外部分工：用户已把世界书交B；[C政策](docs/handoffs/2026-10-10-localization-package-c-policy.md)、[D外交/内战](docs/handoffs/2026-10-10-localization-package-d-diplomacy-civilwar.md)、[E经济/任务](docs/handoffs/2026-10-10-localization-package-e-economy-issue.md)等待交接。旧E世界书计划已替代；主线负责共享错误UI、Memory集成、Prompt/协议外置与双包验收，详见[总计划](docs/handoffs/2026-10-10-localization-cde-plan.md)。既有中文共享事实不得直接替换为英文。
+- EN 世界书完整性待核实；现有英文资产不能替代中文全部文件的覆盖证明。未构建、Stage、部署、push 或正式打包；不接入 C# 语言探测。
+- 最新主线累计切片：菜单 `fb4909435`、Xihai `ad623a06d`；本轮新增71对键：Illustrator通知24+弹窗11（`c4ae38a5f`、`bee33dabc`）、Courier7（`c6f3b9d14`）、城堡23+Persona标题3（`f62cc9323`）、模型说明与篡位通知3（`14ac606ed`）。`60b11f09f` 清理6个英文终端分组中文并加纯英文资源门禁。26对资源、相关静态合同通过；现有双API本地化DLL各12,320次UI解析、1,068次Illustrator解析通过；不是产品编译/实机验收。
+- `323359e05` 修正盘点：仅具备实际调用和已注册英文键的19个MCM内部值视为已投影，原诊断仍待处理。最新工作树快照HEAD `323359e05`：确认UI45处/9文件/33去重原文，消费者候选1226，扫描无变化。含并发作者修改；数字是UI下限，不是全英文发行残余总数。用户明确暂不处理J17；世界书归B。原诊断、动态状态/标题、共享事实及近况日期区间仍待英文显示/外置。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)，[B 原报告](docs/handoffs/2026-10-10-localization-wave2-b-delivery.md)，[C 原报告](docs/handoffs/2026-10-10-localization-wave2-c-delivery.md)。回滚逐项 focused inverse，不覆盖其他作者或未跟踪原始英文资产。
+
+# 历史交接：MCM 模型预设与快报战事接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
+
+<!-- Historical additions accepted from origin/main a9013b705; current task status is above. -->
+
+# 当前交接：口头外交 AI 宣言与正文回执清理（2026-10-12，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户已授权实施；`E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / `main`，检查点 `140d48924`、产品 `f8ac6c267`。共享消费层不再输出外交系统回执；承诺与撤回进入原 AI 宣言队列，使用交谈素材与锁定动作/条款，失败延期而不生成模板。玩家国王已谈妥双边协议发布兑现，第三国未同意仍按正常提案；旧记录不推定同意。
+- 口头外交专项141、完整外交回放4209、存档分块回放通过；Release 双 API / Bootstrap / 双 Coup 门禁通过，20源码锚点双模式通过。既存 civil-war 分块目录 owner 失配仍 FAIL，已保存基线证据。真实 provider、三渠道 UI/TTS、旧玩家存档未验，未部署、打包或推送。
+- [唯一主台账：证据及边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-diplomacy-declaration-20261012)；[已核源码地图](docs/architecture/af-framework-code-scope.md#oral-diplomacy-declaration-20261012)。本地总收据 `artifacts/oral-diplomacy-declaration-20261012/verification-receipt.json`；并行设计访谈及其他作者改动保留，本交接不授权其产品实施。
+- 用户后续明确授权推送，`origin/main` 已普通快进至 `46653396f`；仅追加发布记录提交，不改变已验证产品。发布详情归上述台账，最终远端核验归本地 `push-receipt.json`。这条替代上方“未推送”状态；未提交设计文档仍留本地，实机/部署/打包未执行。
+
 # 历史交接：工作区完整安全发布（2026-10-11）
 
 - 本轮用户明确授权安全合并后推送；fetch 后 `origin/main` 仍为 `14ce14ae`，无远端新增提交。原工作区 `8d521ec5` 干净、领先25提交，因此不制造额外合并，不改写历史，普通快进发布到 `origin/main`。
@@ -2128,3 +2178,7 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 
 - 产品 `b51bf5b88`：宣战最终合法性拦截保留具体原因，显示冷却/保护剩余天数及战争数量；未改变宣战规则。外交回放4007断言、双API/Bootstrap/双接缝PASS。未实机、部署、打包或推送。
 - [主台账与源码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#war-rejection-diagnostics-20261009)，证据 `artifacts/war-rejection-20261009/`；回滚 `git revert b51bf5b88`。其他会话修改保留。
+
+## UI 本地化第二轮三方接力（2026-10-10，VERIFY）
+
+旧 B/C 已审查，Memory注册/换行、外交XML加载及TTS fallback已修；主线A新增Illustrator30对。最新扫描1,352个UI候选/192文件，不是确认漏译总数。主线A 513/86，外部B 435/26，外部C 404/80；文件边界和新接力链接见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#localization-wave2-20261010)。24对契约、真实1.3/1.4本地化DLL各37,748次解析PASS；本轮未构建/实机/部署/push，待三方收敛统一验证。

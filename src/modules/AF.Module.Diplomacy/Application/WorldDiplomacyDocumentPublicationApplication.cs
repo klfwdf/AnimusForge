@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -168,7 +169,7 @@ internal static class WorldDiplomacyDocumentPublicationApplication
             clearBilateralCooldowns?.Invoke(WorldDiplomacyOfferDomain.Alliance);
         }
         WorldDiplomacyDocument fact = createDocument?.Invoke(
-            "口头外交结果",
+            DiplomacyMiscPromptTexts.Get("Document_OralResultTitle", "Oral diplomacy outcome"),
             buildFactBody?.Invoke(normalizedAction) ?? "",
             "oral_diplomacy",
             initiatorIsPlayer);
@@ -176,7 +177,7 @@ internal static class WorldDiplomacyDocumentPublicationApplication
         fact.Intent = normalizedAction;
         fact.Commitment = "binding";
         fact.AnalysisStatus = "external_fact";
-        fact.MechanicalResult = string.IsNullOrWhiteSpace(fact.Body) ? "已由口头外交执行" : fact.Body;
+        fact.MechanicalResult = string.IsNullOrWhiteSpace(fact.Body) ? DiplomacyMiscPromptTexts.Get("Document_ExecutedByOral", "Executed by oral diplomacy") : fact.Body;
         fact.ChangedDiplomaticState = true;
         fact.HistoryDeclarationRecorded = true;
         var candidates = WorldDiplomacyLiveRoundRules.Live(storage).Where(x => canFactJoinRound?.Invoke(x) == true).Take(2).ToList();

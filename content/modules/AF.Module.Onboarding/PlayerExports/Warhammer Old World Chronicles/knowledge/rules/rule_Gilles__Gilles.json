@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Gilles",
+  "Keywords": [
+    "The Complete Biography of Gilles LeBreton",
+    "Gilles Founder of Bretonnia",
+    "Gilles First Grail Knight Biography",
+    "Gilles Green Knight Real Test",
+    "Goddess Warrior of Lake Gilles",
+    "Biography of the Twelve Comrades of Gilles",
+    "Gilles Bretonnia Progenitor",
+    "Founder of the Knights of Gilles",
+    "Gilles Cruona Founder",
+    "Gilles Holy Grail inheritance source"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gilles le Breton—the founding king of Bretonnia—occupies a unique place in the history of the Old World: he was both mortal and divine, living man and legend, warrior and saint. When the Lady of the Lake first appeared in the First Bretonnia Annals and bestowed the drink of the Holy Grail upon the wandering lone knight, the greenskin plague was spreading among the human tribes of the western Old World. Gilles unified fourteen human tribes that were fighting against each other in the name of the goddess. The twelve earliest followers around him later became the ancestors of the twelve duchies of Bretonnia. In death, Gilles transformed into the Green Knight, an immortal ghostly guardian who rides out of the mists in Bretonnia's darkest hours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gilles - Our Immortal Father! When this land was just an unknown wilderness where greenskin tribes and primitive tribes were killing each other, the Lake Goddess chose him - not because of his noble birth, he was just a wandering knight who killed his master in a foreign war, a desperate soul burdened with the crime of killing his master. He rode his tired horse across the Sannei River alone, and saw her for the first time in the mist on the riverside - the goddess of the lake. She stood up from the water, holding not a sword but the Holy Grail in her hand. In the cup was a liquid more sacred than any mortal nectar. The moment he drank from the Holy Grail, Bretonnia was born - not in the sense of land, but in the sense of soul. He has since traveled the land with his twelve fellow knights who received the gift of the Holy Grail with him, clearing them from our lands one greenskin fortress after another. He was not a conqueror—he conquered no human city—he was a liberator. When he finally dies, he rides on his horse and disappears for the last time into the mist of the Sanne River, and the goddess grants him eternity - he will live forever as the Green Knight: whenever Bretonnia falls into doom, a ghostly horse stepping out of the void will reappear on the battlefield carrying a silent knight in green armor, and his appearance itself is a announcement - Bretonnia is not finished yet. There was a reported sighting of the Green Knight at the Battle of the Pass at Bastogne last year - what does that prove? This is proof that our country is once again in real danger. Gilles is our first father - every breath of air we breathe comes from the covenant he carried when he first knelt before the goddess."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gilles le Breton's military and political legacy was a complete lesson plan for the rulers of the Old World. Before his appearance, the human tribal state of Bretonnia was very similar to the tribal state of the Empire before the unification of Sigmar - a scattered group of people who hated each other and had no identity beyond tribal boundaries. Gilles achieved unification in a very different way than Sigmar - not through a decisive battle in which everyone was defeated and then imposed rule, but through a series of successive miracle displays and gifts of the Holy Grail: he was at the forefront of every battle, and each of his twelve original followers had witnessed a vision of the goddess herself coming to the scene as he fought, so their loyalty was not based on the feudal contract of vassal to vassal, but on the religious piety of a saint to the chosen one. This model fundamentally changed Bretonnia's subsequent political DNA - the legitimacy of Bretonnia's kingship did not come from conquest or election, but from the choice of the goddess. Any King of Bretonnia who cannot prove that he is \"approved by the Goddess\" - which in practice means he must somehow demonstrate a connection to the Holy Grail - will forever lack a spiritual foundation for his rule. The system of the Twelve Comrades of Gilles also permanently shaped the administrative structure of Bretonnia - twelve of the fourteen duchies were ruled by the descendants of the Twelve Comrades of Gilles, with only Curona and Aquitaine as special administrative districts directly under the royal family. This means that Bretonnia's power network is both feudal (based on oaths of superiors and subordinates), bloodline (based on the ancient genealogy of descendants of Gilles' comrades), and religious (centered on the belief in the Holy Grail) - three nested structures that must be understood by any foreign lord seeking to imitate Bretonnia's model of rule."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The complete biography of Gilles Le Breton covers two levels: his life as a mortal and his immortal existence as the Green Knight. The deeds of mortal Gilles are recorded in the Chronicles of Bretonnia, written by the Sisters of the Grail through the generations. According to this sacred text, Gilles was born about forty years before Bretonnia, in an unknown place - different versions point to different villages, mainly because each duchy wanted to claim that Gilles was born in their own duchy to boost pilgrimage revenue. As an adult he joined an expeditionary force as a knight's squire - some versions suggest that he may have participated in the Arabi expedition - but during a battle he was forced by tactical imperatives to kill his own lord to save the lives of more of his comrades, an act of patricide that was both legally and morally fatal. He was expelled from the ranks of knights and began to wander - this period of wandering is most likely a prerequisite for him to meet the goddess, because the goddess of the lake tends to choose those who have been abandoned by human society under double moral and legal pressure. In the first year of Bretonnia, he first witnessed the goddess appearing in the mist of the lake on the banks of the Sanne River (the site of the holy lake outside the city of Curona today), and the goddess gave him the drink of the Holy Grail - one of the most central sacred legitimacy conferring ceremonies in the history of the Old World. In the following years, he gathered twelve knights who had also been tested by the Holy Grail: Roldin de Briona, Caradoque de Paravon, Landuin de Monfort, Baldulf de Bastogne, Vlad Monte de Aquitaine, etc., each of whom later became the founder of a duchy. Curona, the capital founded by Gilles after unifying Bretonnia—based on the fact that the Lady of the Lake first appeared there—is still the royal city of Bretonnia and the site of the Holy Grail Cathedral. The manner of his death is not clearly stated in the Chronicles of Bretonnia - one theory is that he rode for the last time into the mist of Lake Sanne, from which time his mortal body disappeared into the mist and the Green Knight rose for the first time from his mount. The nature of the Green Knight is controversial in academic circles: some elven scholars believe that the Green Knight is similar to a regionalized clone of the hunting god Kurnos; the Church of Bretonnia insists that he is the form of Gilles himself who accepted the deification of the goddess; while the Imperial Academy tends to believe that he is a psychic projection bound to a specific geographical-belief anchor that can be summoned in times of crisis. Regardless of the truth, the Green Knight has indeed been reported to have appeared many times in Bretonnia's history over the past fifteen hundred years - each appearance occurring just when Bretonnia was on the verge of total destruction, from the first Greenskin Waaagh! to the devastating civil war that broke out among his own dukes - and his appearance has never been disconnected from Bretonnia's victory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hidden within Gilles le Breton's story is a truth that comforts me as a female ruler of Bretonnia - the Lady of the Lake chose him based on his desperation rather than his prowess, and this means that the Goddess's boons can be obtained by anyone on the edge of the Abyss, regardless of gender. Of course, I know that official doctrine requires that Grail Knights must be male - the twelve original followers were all men, and there is still not a single woman in the Grail Knight main body. But what I will not say in public is this: in the omitted ancient fragments of the Chronicles of Bretonnia - those forbidden books locked by the Sisters of the Holy Grail in the underground archives of the cathedral and not allowed to be read by non-nuns - it is recorded that before Gilles met the goddess, he met an unknown woman on the banks of the Sannei River who had been praying by the river for forty days. It was she who told Gilles that \"the goddess will choose someone in the fog, but it is not necessarily a man.\" This fragment was logically interpreted by the church as \"the woman herself failed the test, so her words were only encouragement rather than prophecy\" - but all the female rulers who read this paragraph understood one thing when they exchanged glances with each other: the Lady of the Lake is the only female supreme god among all the main gods in the old world. She chose a man as her first Grail Knight probably just because the work of taming greenskins on the battlefield at that time required physical strength more than spirituality, not because women were spiritually excluded from the Holy Grail. We are waiting - for a time when the will of the Goddess will be manifested in a different way than it was in the twelfth century."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Bretonnia family structure established by Gilles remains the basis for all political calculations between our ruling families to this day. Each of the Twelve Ducal Houses has as its bloodline anchor the name of one of Gilles's original retainers - our family's lineage can be traced directly back to Caraduc de Paravon himself - and the authenticity and purity of bloodline are the most serious and most abused weapons in Bretonnia's aristocracy. Each ducal family is theoretically equal - they are all descended from Gilles' comrades - but in practice some families are closer to Gilles himself than others. The families of the kings of Kurona and Raun - although not of direct bloodline to Gilles - have in recent history accumulated an authority that transcends blood due to their closeness to the Holy Grail phenomenon. The existence of the Green Knight itself gives all the ancient families a continuous political bargaining chip - because no one knows exactly which family's battle the Green Knight will choose to appear in, each family can gain additional moral prestige in the Duke Council when they declare to the outside world that \"our family has received direct assistance from the Green Knight twice (or three times, depending on who you believe) in the history of our family.\" Our family's investment in the genealogy of the Gilles legacy—including maintaining a complete copy of the genealogy from Gilles's time to the present day and funding three genealogists in the Sisters—consumes three percent of the annual income each year, and its rewards are immaterial but extremely real: at every vote of the Duke's Council, our family's voice receives a ritual priority that no other family can buy with money because of this \"nearest living connection to Gilles.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Among the wandering knights of Bretonnia there are fragments of the wild history of Gilles that have not been recorded in the official chronicles. Some of them have been retold around campfires for hundreds of generations - like Gilles's solo trek through an ancient site said to be guarded by undead warriors in the dry desert south of Araby before he met the goddess, and brought out something that somewhere is still waiting for him to be recaptured. Other versions are even darker: one theory is that Gilles never really died after he was first transformed by the Green Knight, he just reappeared in different forms in different eras - so every silent unknown knight you pass on the road may actually be Gilles himself observing the behavior of his descendants through the generations. There is also a taboo statement that wandering knights only dare to discuss in a low voice after they are drunk for the third time: there is no breathing sound on the Green Knight, and when you ride side by side with him, you will feel the coldness on the side, which is not the body temperature of the horse. That is a hint that Gilles lost part of his soul during the transformation process, and the Lady of the Lake may need him to return to the war as the Green Knight every few hundred years to repay the missing spiritual price. I don't know which of these statements are true - but I do know that the moment they camped out on the long muddy roads of Bretonnia and heard the rhythmic sound of some non-horse hoofbeat in the distant trees, every Bretonnian knight would have muttered Gilles' name silently and sat upright on the ground - not out of fear, but out of hope."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gilles le Breton's influence on the Old World economy was indirect through the subsequent development of Bretonnia, an entire country - but this indirect influence was extremely far-reaching. Although the feudal system established by Gilles suppressed the political status of merchants on the surface, in practice it created a market environment for Bretonnia with a high degree of internal stability and property rights strictly protected by feudal laws - because in Bretonnia, the boundaries of an estate have been locked in law since the time of Gilles. This cross-century certainty of property rights is the perfect institutional soil for wine estates and thoroughbred horse breeding industries that require long-term investment. The \"holy grail wine\" exported by Bretonnia - a noble wine from Aquitaine and Briona made from grapes grown on the manor lands claimed to have once resided in Grail Knight - circulates in the high-end markets of the Empire and Tyrell at three times the price of ordinary imperial wine, and this brand premium is entirely attached to the cultural capital of the \"knightly sanctity\" that the legend of Gilles bestows on Bretonnia's production. The Tourney is more than just a cultural event in Bretonnia - it is a massive tourism economy, with pilgrims, knights and traders from all over the Old World flocking to the tournament markets in Curona and Briona each year during tourney season, generating more than a third of the local seasonal revenue from regular annual tax revenue. Gilles would not have imagined that his Holy Grail would create a cultural-economic complex with his name at its core fifteen hundred years later - but this is the common fate of great founders."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The founding of the nation of Gilles - the process of Gilles unifying the fourteen tribes and establishing Bretonnia after the first appearance of the Lake Goddess",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Gilles Breton's Complete Biography Gilles Bretonnia Founder Gilles First Grail Knight Biography"
+  ]
+}

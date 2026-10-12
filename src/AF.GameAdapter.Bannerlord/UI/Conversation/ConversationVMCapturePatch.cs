@@ -29,7 +29,7 @@ public static class ConversationVMCapturePatch
 				{
 					continue;
 				}
-				Logger.LogTrace("System", "\ud83d\udd0d ConversationVMCapturePatch: 找到类型 " + text);
+				Logger.LogTrace("System", "\ud83d\udd0d ConversationVMCapturePatch: Found type " + text);
 				try
 				{
 					ConstructorInfo[] constructors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -41,11 +41,11 @@ public static class ConversationVMCapturePatch
 							HarmonyMethod postfix = new HarmonyMethod(typeof(ConversationVMCapturePatch).GetMethod("CtorPostfix", BindingFlags.Static | BindingFlags.Public));
 							harmony.Patch(original, null, postfix);
 							num++;
-							Logger.LogTrace("System", "✅ ConversationVMCapturePatch: 已 Patch 构造函数 " + type.FullName + ".ctor");
+							Logger.LogTrace("System", "✅ ConversationVMCapturePatch: Patched constructor " + type.FullName + ".ctor");
 						}
 						catch (Exception ex)
 						{
-							Logger.LogTrace("System", "❌ ConversationVMCapturePatch: Patch 构造函数失败: " + ex.Message);
+							Logger.LogTrace("System", "❌ ConversationVMCapturePatch: Constructor patch failed: " + ex.Message);
 						}
 					}
 				}
@@ -60,7 +60,7 @@ public static class ConversationVMCapturePatch
 						HarmonyMethod postfix2 = new HarmonyMethod(typeof(ConversationVMCapturePatch).GetMethod("RefreshPostfix", BindingFlags.Static | BindingFlags.Public));
 						harmony.Patch(methodInfo, null, postfix2);
 						num++;
-						Logger.LogTrace("System", "✅ ConversationVMCapturePatch: 已 Patch " + type.FullName + ".Refresh");
+						Logger.LogTrace("System", "✅ ConversationVMCapturePatch: Patched " + type.FullName + ".Refresh");
 					}
 				}
 				catch
@@ -77,7 +77,7 @@ public static class ConversationVMCapturePatch
 							HarmonyMethod postfix3 = new HarmonyMethod(typeof(ConversationVMCapturePatch).GetMethod("RefreshPostfix", BindingFlags.Static | BindingFlags.Public));
 							harmony.Patch(methodInfo2, null, postfix3);
 							num++;
-							Logger.LogTrace("System", "✅ ConversationVMCapturePatch: 已 Patch " + type.FullName + "." + text2);
+							Logger.LogTrace("System", "✅ ConversationVMCapturePatch: Patched " + type.FullName + "." + text2);
 						}
 					}
 					catch
@@ -87,22 +87,22 @@ public static class ConversationVMCapturePatch
 			}
 			catch (Exception ex2)
 			{
-				Logger.LogTrace("System", "❌ ConversationVMCapturePatch: 处理 VM 类型失败: " + ex2.Message);
+				Logger.LogTrace("System", "❌ ConversationVMCapturePatch: Failed to process VM type: " + ex2.Message);
 			}
 		}
 		if (num > 0)
 		{
-			Logger.LogTrace("System", $"✅ ConversationVMCapturePatch 完成，共 Patched {num} 个方法/构造函数。");
+			Logger.LogTrace("System", $"✅ ConversationVMCapturePatch completed; patched {num} methods/constructors.");
 		}
 		else
 		{
-			Logger.LogTrace("System", "❌ ConversationVMCapturePatch: 未找到任何可 Patch 的对话 VM 类型。");
+			Logger.LogTrace("System", "❌ ConversationVMCapturePatch: No patchable conversation VM types found.");
 		}
 	}
 
 	public static void CtorPostfix(object __instance)
 	{
-		Logger.LogTrace("ConversationHelper", "\ud83c\udd95 VM 构造函数被调用: " + (__instance?.GetType()?.Name ?? "null"));
+		Logger.LogTrace("ConversationHelper", "\ud83c\udd95 VM constructor called: " + (__instance?.GetType()?.Name ?? "null"));
 		ConversationHelper.SetCurrentVM(__instance);
 	}
 

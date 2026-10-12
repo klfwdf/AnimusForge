@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Cheetah_Knights",
+  "Keywords": [
+    "Cheetah Knights",
+    "secular knight",
+    "Cheetah Cape",
+    "Mutant Hunting",
+    "Imperial Knights",
+    "Ariel Panther",
+    "mutant hunter",
+    "Panther Knight",
+    "beast hunting",
+    "Knight's Oath",
+    "Imperial Secular Elite",
+    "Knights of Panther"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Knights of the Cheetah are one of the oldest secular knights in the empire. They were founded by the legendary hunter Ariel Panser in the 500th year of the empire. Its members wear cloaks made of cheetah skin and have the sacred mission of hunting down chaos mutants and harmful monsters. They are one of the few independent military forces within the Imperial Order who are not affiliated with any particular deity or Elector Count, but are loyal only to the ancient oaths of the Order and their own hunting traditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The sound of the Cheetah Knights’ hooves—that’s the imperial song I’ve been listening to since I was a kid. When you see a cheetah knight riding his horse through the city gate, the cheetah fur on his shawl blows in the wind like a battle flag that does not follow any imperial regulations. The black spots on each leopard's tail represent a chaotic aberration behemoth that he has killed with his own hands. The legend of this Knights is Ariel Panther, the greatest hunter since the founding of the Empire. In the 500th year of the Empire, he hunted alone a Chaos Two-Headed Leopard entrenched in the heart of the Empire in the Drakwald Forest. He peeled off its fur and put it on his own armor. From this symbolic moment, the Knights were born. The Cheetah Knights do not swear an oath to the gods - because in their opinion the blessings of the gods will not help you track a mutated monster hiding in the shadows in the forest; they also only express polite allegiance to the Elector Count - because any Cheetah Knight will tell you: on the seventh night when they have been chasing an eight-legged spider beast for six days, the most important thing for a person is the spear in the hand and the sound of your companion's hooves, not the certificate issued in any imperial palace. The sentiment of the Imperial people towards the Cheetah Knights is pure admiration - they represent the oldest and most basic thing in the Imperial spirit: when civilization is threatened by unnatural threats, someone will ride into the forest, not asking you whether you have money, but just asking you - Which direction is the monster?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The position of the Cheetah Knights in the imperial military system is a special and irreplaceable irregular combat force - they do not participate in frontal confrontations in large-scale battles, but perform deep reconnaissance, annihilation of mutant populations and tactical paralysis of chaos herds. In regular battles, the impact of the Cheetah Knights is not as good as that of the Rick Guards or the Knights of the Sun - because they do not practice intensive charges, but use small groups to kill precise targets. But any commander with frontline experience will tell you: on the eve of the Chaos army's departure, if a team of Cheetah Knights has penetrated deep into the water source area behind the enemy's rear and successfully poisoned two Chaos mutant bears that were used as war mounts, then what you will face on the battlefield tomorrow is an enemy mid-level army that has lost all its heavy-duty breakthrough capabilities. The Panther Knights' tactical value lies not on the battlefield - but on the eve and behind the battlefield. Their cooperation model with the Imperial Military is also unique: the Cheetah Knights never accept mandatory military transfer orders - they only respond to the 'hunting requests' you provide, and judge in their own way whether the target is worth dispatching. This independence annoys the Imperial Council's clerks in peacetime, but in wartime means that the Knights of the Panthers are never wasted in unreasonable head-to-head confrontations due to frontline politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The organizational structure of the Cheetah Knights is unique among the Imperial Knights - they do not have a grand leader, but instead make decisions jointly by three senior knights known as the 'Hunters'. This three-dimensional leadership structure originated from the early split history of the Knights: In approximately 720 years of the Empire, the Cheetah Knights were divided into three factions due to fundamental differences on hunting strategies - the 'Pure Hunting Faction' advocated hunting only Chaos mutant beasts, the 'Extended Hunting Faction' advocated extending the hunting of Chaos Cultists and mutants, and the 'Sentinel Hunter Faction' advocated that the Knights should transform into a border security force for the Empire and no longer be obsessed with hunting. The conflict between the three factions lasted for more than seventy years, until one day - the specific date is deliberately obscured in the internal archives of the Order - a lone headhunter entered the deepest depths of Drakwald, brought out the head of a huge prey that had never been recorded in any source, and then declared that from now on the three factions would always maintain their own voices but only one common hand. The system of three headhunters was thus established: each headhunter presides over a direction of action for the Knights, but all three must be unanimous on major decisions involving the survival of the Knights. This system seemed extremely inefficient to outsiders of the Empire, but it ensured that the Cheetah Knights maintained their unique diversity and internal cohesion after more than a thousand years. The helmet ritual of the Cheetah Knights is also unique among the Imperial Knights: the top of each official member's helmet has wrought iron stripes that accurately replicate the skull shape of a cheetah, and the positions corresponding to the two eye holes will be inlaid with two fragments of bone from the mutant beast he killed on his first solo hunt - this means that no two Cheetah Knights' helmets are exactly the same."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Order of the Cheetah is one of the few Imperial Orders to have formally admitted female knights throughout its history - although this only occurred in the Order's early years and was later officially 'forgotten' due to Imperial disapproval. In my family vault, there is a shield belonging to Lisette Gray Arrow, a female Cheetah Knight from around 530 AD of the Empire - her name has been changed to the male name 'Lucius Gray Arrow' in the public version of the official history of the Order, but our family ancestors have preserved some private letters and untampered heraldic records in her tomb. Lisette's facts were not unique - in the early days of the Knights of the Cheetah, if your tracking skills surpassed those of your male peers and your spear tip pierced the swaying beast's eyes faster than anyone else, your gender did not seem to matter within the Knights. The current Cheetah Knights have returned to the tradition of male monopoly, but I suspect - I secretly hope - that in some closed hunting operations away from the sight of imperial bureaucrats, there are still people in the forest who do not need to take off their armor to prove anything to continue Ariel Panther's original spirit of only caring about whether you are a hunter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Order of the Cheetah interacts with the noble families of the Empire in a completely different way than the Knights we are familiar with - they require no patronage, do not accept patronage, and do not reciprocate requests for political support. This leaves the only way to stay connected to the Cheetah Knights not through money or power, but through bloodline kill records. The reason why our family was allowed to lend the family hunting tower to the Cheetah Knights as a temporary station in the northern forest was not because of how many gold coins we donated - it was because in the hunting honor files within the empire, our family's male lineage produced at least eleven hunters who killed mutant beasts one-on-one in the past century. In the eyes of the Cheetah Knights, your family crest means nothing—your prey is everything. If you can hunt down three mutant skins alone in the Drakwald Forest, then even if you are the humblest stable boy on the streets of Altdorf, these knights will give you a seat by the fire. This kind of value is rare in the imperial aristocratic system - and because of its rarity, the noble families recognized by them will regard it as a family honor that goes far beyond ordinary merit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once saw a real cheetah knight on the outskirts of Drakwald Forest - not the kind of parade knight who neatly rides a white horse and nods to the citizens on the parade ground in Altdorf, but the kind whose whole body exudes the scent of beast blood that cannot be washed away many days ago. He was taking a break outside an abandoned hunter's cabin on the edge of the forest, and out of my damn hired instinct, I asked him if he wanted me to sharpen his spear for him - he looked at me for a moment and nodded. In the silence of sharpening the spear, he didn't ask my name, and I didn't dare to ask his, but when he got on his horse, he stuffed a fang of an unknown beast into my hand, and said the only sentence that lasted more than one word: \"There are three corpses of beastmen five miles to the north - their teeth can be sold for two copper coins each.\" 'Then he disappeared - not metaphorically, but in the blink of an eye he and his horse melted into the twilight of the forest, as if he never belonged to this world in the first place. I later walked to the location he said, found the three corpses, pulled out all the teeth, and sold them for thirty-two copper coins in Altdorf - that was the whole reason why I didn't freeze to death on the streets that winter. I don't know why a cheetah knight would help a homeless man he didn't know, but I know that every time I heard the sound of horse hooves in the forest after that, I no longer immediately took out my knife."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The presence of the Cheetah Knights in the imperial trade market is invisible but cannot be ignored. They do not buy weapons - because the spears and hunting knives of each Cheetah Knight are personal weapons forged by themselves and blessed by the previous knights in the promotion ceremony; they do not buy armor - because their armors are commemorative equipment passed down by knights from successive generations, and each piece has a name and story. But they purchase two things in large quantities: one is special hunting equipment - including forest horseshoes that will not lose their stickiness in the rain, high-quality leather oil that can hide odors, and accurately weighted throwing hunting spears; the other is animal training services - the Cheetah Knight's war horse is one of the most extreme war horse breeds in the empire, and they need a basic animal husbandry that does not have any civilian market: a horse trainer who can train horses not to retreat or neigh when they smell the smell of mutant beasts. These two demand lines form a small professional market with extremely low price elasticity - our Chamber of Commerce has been supplying horse gear and hunting gear to the Cheetah Knights for three generations. This business has never made a fortune, but it is our most valuable unwritten reputation capital among the imperial military circles."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Ariel Panther - the legendary founder of the Knights of the Panthers. He founded the Knights after hunting the two-headed panther of Chaos alone.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Order of the Cheetah is one of the oldest secular orders in the Empire"
+  ]
+}

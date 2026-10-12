@@ -1,0 +1,170 @@
+{
+  "Id": "rule_Weisenling",
+  "Keywords": [
+    "Wilsonland",
+    "Wesson Province_WS",
+    "Wesenling Elector Count _WS",
+    "Nuln Arsenal_WS",
+    "Nun Ironclad_WS",
+    "Emmanuel von Liebowitz_WS",
+    "Wesson River_WS",
+    "Solland Hometown_WS",
+    "Imperial Gunnery School_WS"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Wysenland is an industrial center in the southern part of the empire, and its capital, Nuln, is the undisputed capital of gunpowder and steel in the Old World. The Imperial Gunnery Academy is located in the Forge District of Nunn City. The roar of sledgehammers and furnaces day and night forms the background sound of this city. The Wesen Territory once annexed the collapsed Thor Territory in history, making its territory span both sides of the Wesen River. It is not only the arsenal of the empire, but also the fortress guarding the southern border. Elector Count Emmanuel von Liebwitz was a countess known for her beauty and ruthlessness. Her rule brought Nuln's industrial production to unprecedented heights in the history of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Wesenland is Nuln, and Nuln is Wesenland—this sentence applies to any province in the empire. There is no other province whose capital has such absolute control over the territory under its jurisdiction: the existence of every village, every forest, and every river in Wesenland is, in the final analysis, to serve Nunn's factories. The Nun people are the most proud of the Empire - they believe that they are the only ones with cannons and Hellstorm rocket launchers mounted on their city walls, and only their own army is equipped with the Empire's latest experimental muskets. People from other provinces - especially Reiklanders - would laugh at the Nunn who were covered in soot and the air smelled like gunpowder, but it was clear to all: without Nunn's cannons, every city in the Empire would not be able to withstand the first wave of the Chaos hordes from the north. Elector Count Emmanuel of Wesenland is a woman, but no one in the empire dares to look down upon her because of this - she abolished at least four over-expanded noble families in the province, and brought their mines and iron smelting plants under the direct control of the province. The nobles whose properties were confiscated did not even dare to publicly protest in the Imperial Parliament."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The strength of Wesenland is not cavalry or infantry - it is production capacity. As long as Nunn's production lines don't stop, the Empire's war machine will never stop. The casting cycle of cannons, the assembly speed of muskets, the inventory turnover rate of ammunition - these are the real secrets in the back room of the Elector Count in Wesenland. But taking control of the empire's arsenal also means you need to face the fact that every Elector Count is your customer and possibly your future enemy. Emmanuel's strategy in this regard was extremely shrewd: she never sold Nuln's most advanced weapons to any province, but retained a Nuln Ironclad Army under the direct command of the Imperial School of Gunnery - the best-equipped gunpowder troops in the Empire, loyal only to the Elector Count of the Wysenland himself. Anyone who wanted to invade Wesenland would have to face the sight of hundreds of cannons firing simultaneously from the city walls, and Nuln's walls were the only fortifications in the Empire designed to withstand head-on collisions from Chaos Titans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The economic model of Wesenland is the most unique case in the empire and even the entire Old World - it is essentially a city-state system with military industry as its single pillar. Nunn's iron smelting industry consumes more than 70% of the province's iron ore imports. Its factories employ more than 30,000 craftsmen and apprentices, forming a complex production network centered on the Gunnery Academy and composed of dozens of professional guilds. The core of Emmanuel's economic policy is vertical monopoly: from iron ore mining in the upper reaches of the Wesen River to artillery assembly in Nunn City, each link is controlled by enterprises directly under the province, and private nobles are only allowed to operate in non-military industries. This model ensures the consistency of arms quality and the ability to quickly mobilize wartime production capacity, but it also causes serious economic lag in the inland areas of the province - the living standard of rural Wesenland is only one-third of that of Nunn urban residents, and urban-rural contradictions are the province's most neglected hidden danger. In addition, her rule over the old land of Sol Territory nominally belongs to the Wesen Territory, but in fact the local nobles have never really accepted the fact of being annexed. Sol Territory separatism is the most sensitive topic in the politics of the Wesen Territory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Emmanuel von Liebwitz was the most formidable and feared female ruler in the empire—not because of anything earth-shattering she did, but because she did it in a way that makes you realize in retrospect that you had been utterly defeated by her. As a female noble of Wesenland, you live in the shadow of the world's only female Elector Count, who is both a role model and a shackle. Emmanuel never married and never explained any of her personal decisions, but she controlled what all the male Elector Counts in the Empire needed most - armaments. She replaced marital alliances with commercial contracts, military threats with arms embargoes, and aristocratic debates with guild decrees. Under her rule, women didn't have to marry to gain power - you could run an arsenal, manage shipping on the Wesen, be a patron of the Imperial School of Gunnery. But you have to be smarter than her, or she'll treat you like a threat before you even have a chance to become an ally."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Wesenland is the only province in the empire where family power must be built around industry rather than agriculture. This means that the traditional aristocratic game doesn't work here - you can't get an iron-smelting blast furnace through marriage, and you can't get a musket production line through inheritance. The Liebowitz family relied on three generations of unconditional funding for the Nunn Gunnery Academy to accumulate a monopoly: in history, the appointment of at least four directors of the Gunnery Academy was directly or indirectly related to donations from the Liebowitz family. As a family patriarch who wants to gain a foothold in Wesenland, you must relearn the currency of power - here, the valuable thing is not land but patents, not vassals but master craftsmen. Whichever family controls the patent for the latest breech-loading musket will have the actual say outside the Imperial Parliament beyond the Elector Count. But don’t forget: Emmanuel will show no mercy to any upstart who tries to challenge her monopoly in the military industry—the last family to do so is no longer even mentioned by name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nuln was the easiest city for a wandering mercenary to find work—and the easiest place to die. The weapons testing ground of the Gunnery Academy needs volunteers all year round to test new muskets (they say \"volunteers\", but what they actually mean is that they will pay you three times more commission if you sign a waiver). In Nunn's underground dueling ground, factory apprentices and veterans fight each other in iron cages every night. Work-related injury disputes in the factory area always require a few mediators who are not afraid of death. But Nunn's real danger comes from its rivals - the underground arms smuggling network of Wesenland spreads all over the old world. Bretonnia people, border princes and even greenskins all want to get Nunn's artillery blueprints through intermediaries. I worked as a night shift guard in a factory for three months. Every night at least one group of people came to climb over the wall - some were commercial spies sent by competitors, some were Chaos believers who wanted to steal the gunpowder formula, and another group I still haven't figured out who they were working for."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Wesenland's business is the empire's bloodiest but also most profitable industry - the arms trade. The final selling price of a standard cannon from the Nuln factory to the Altdorf armory can reach four times the casting cost, and the Hellstorm rocket launcher's gross profit is as high as ten times due to the confidentiality of the process. But if you want to enter this industry, you must first pass the \"three-level system\": the first level is the arms trade license issued by the provincial chamber of commerce (is issued in limited quantities every year, basically monopolized by established arms dealers); the second level is the technical review of the Imperial Artillery Academy (to ensure that the quality of your products will not explode and kill imperial soldiers); the third level - and the most delicate level - is the political permission of Elector Count Emmanuel himself. All arms export contracts without her approval were illegal, but the night-time smuggling boats on the lower Weizen River had never really stopped. If you can handle these three levels, Wesson will make you the richest businessman in the empire; if you can't handle it - it is recommended that you open a restaurant, which will at least give you a chance to retire safely."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Wysenland - the core industrial province of the empire, the location of Nunn City, the capital of gunpowder and steel in the old world",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Wesenland Empire Province Nuln Arsenal Arms Industry"
+  ]
+}

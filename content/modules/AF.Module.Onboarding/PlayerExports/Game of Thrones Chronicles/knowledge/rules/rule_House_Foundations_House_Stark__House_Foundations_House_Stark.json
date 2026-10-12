@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_House_Stark",
+  "Keywords": [
+    "House Stark",
+    "Warden of the North",
+    "Stark Words: Winter Is Coming"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Stark family are the ancient masters of Winterfell. They claim to be descendants of the ancestors and the builder of the city, Branden. They were once the kings of the north and became the guardians of the north after the conquest. The gray direwolf on a white background and the motto \"Winter is coming\" are not rhetoric to decorate the foyer, but a family language left behind by the northern climate, winter storage and long-term responsibilities. The Starks preserved the memory of the old sacred groves, crypts, and vassals of the North, and their reputation spread for being serious, keeping their word, and judging personally; a reputation that would bind them tightly, for the Northmen believed that the wielder of the sword should carry out the judgment with his own hand. For many people in the north, Stark may not always be right, but they should still remember those without walls when winter comes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The loyalty of the northern lords to the Starks is rarely as light as the southern ballads. It was a heavy relationship weighed down by old gods, marriage alliances, shared harsh winters, and memories of thousands of years of kingship. Vassals can complain about Winterfell and even argue with the Wolf Lord; but when outsiders try to cross the Neck and take charge of the North, many old grievances will temporarily retreat under the ice and snow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of the north judge Stark not only by the direwolf flag, but also by winter food, roads and whether the lord personally hears a grievance. \"Winter is coming\" is a motto for halls, but it is a fact that must be verified every year for farmers. If a Stark forgets that the cold winter will kill the poor first, the northerners will remember it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Southern nobles often viewed Stark as a serious, dull Northerner who was not good at court affairs, but also admitted that their commitments rarely changed with the wind like Southern politeness. Some people admire this kind of straightforwardness, and some people think they are dangerous because of this kind of straightforwardness: Northerners who refuse to forget are harder to bribe than fickle friends."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Stark The ancient ancestors of Winterfell were once the kings of the north, and now they are based on the tradition of the guardians of the north. The gray direwolf on a white background and \"winter is coming\" connect the old gods, winter storage, personal judgment and northern responsibility. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Stark The ancient ancestors of Winterfell were once the kings of the north, and now they are based on the tradition of the guardians of the north. The gray direwolf on a white background and \"winter is coming\" connect the old gods, winter storage, personal judgment and northern responsibility. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Stark The ancient ancestors of Winterfell were once the kings of the north, and now they are based on the tradition of the guardians of the north. The gray direwolf on a white background and \"winter is coming\" connect the old gods, winter storage, personal judgment and northern responsibility. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Stark The ancient ancestors of Winterfell were once the kings of the north, and now they are based on the tradition of the guardians of the north. The gray direwolf on a white background and \"winter is coming\" connect the old gods, winter storage, personal judgment and northern responsibility. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Stark: The ancient ancestors of Winterfell were once the kings of the north, and now they are based on the tradition of the guardians of the north. The gray direwolf on a white background and \"winter is coming\" connect the old gods, winter storage, personal judgment and northern responsibility."
+  ]
+}

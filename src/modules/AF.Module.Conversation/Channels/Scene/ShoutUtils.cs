@@ -172,7 +172,7 @@ public static class ShoutUtils
 		}
 		string text6 = (characterObject?.Culture?.StringId ?? "neutral").ToLower();
 		string text7 = ((characterObject != null && characterObject.IsSoldier) ? "soldier" : "commoner");
-		string text8 = agent.Name?.ToString() ?? "路人";
+		string text8 = agent.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0731");
 		string text9 = ("mix:" + text6 + ":" + text7 + ":" + text8).ToLower();
 		string text10 = (text2 ?? "").Trim().ToLower();
 		string text11 = (text3 ?? "").Trim().ToLower();
@@ -264,7 +264,7 @@ public static class ShoutUtils
 				CharacterObject characterObject = agent?.Character as CharacterObject;
 				string text4 = (characterObject?.Culture?.StringId ?? "neutral").ToLower();
 				string text5 = ((characterObject != null && characterObject.IsSoldier) ? "soldier" : "commoner");
-				string text6 = agent?.Name?.ToString() ?? "路人";
+				string text6 = agent?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0732");
 				text = ("mix:" + text4 + ":" + text5 + ":" + text6).ToLower();
 			}
 			else if (unnamedKey.StartsWith("mix:", StringComparison.OrdinalIgnoreCase))
@@ -487,7 +487,7 @@ public static class ShoutUtils
 		{
 			return result;
 		}
-		const string pattern = @"^\s*\[?\s*(?:(?:\d{1,4}年|当前日期)[^｜\|\]\r\n]{0,40})\s*\d{1,2}时\s*[｜\|]\s*[^｜\|\]\r\n]{1,120}\s*[｜\|]\s*[^]\r\n]{1,60}\]\s*";
+		string pattern = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0733");
 		for (int i = 0; i < 3; i++)
 		{
 			string stripped = Regex.Replace(result, pattern, "", RegexOptions.CultureInvariant);
@@ -513,9 +513,9 @@ public static class ShoutUtils
 		}
 		string[] array = new string[3]
 		{
-			"\u540D\u5B57:",
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0734"),
 			"Name:",
-			"\u89D2\u8272:"
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0735")
 		};
 		foreach (string text3 in array)
 		{
@@ -765,10 +765,10 @@ public static class ShoutUtils
 			{
 				r = "commoner";
 			}
-			string n = (name ?? "路人").Trim();
+			string n = (name ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0736")).Trim();
 			if (string.IsNullOrEmpty(n))
 			{
-				n = "路人";
+				n = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0737");
 			}
 			string t = (troopId ?? "").Trim().ToLower();
 			string cultureName = c;
@@ -787,11 +787,11 @@ public static class ShoutUtils
 			string roleName = r;
 			if (string.Equals(r, "soldier", StringComparison.OrdinalIgnoreCase))
 			{
-				roleName = "士兵";
+				roleName = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0738");
 			}
 			else if (string.Equals(r, "commoner", StringComparison.OrdinalIgnoreCase))
 			{
-				roleName = "平民";
+				roleName = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0739");
 			}
 			string troopName = "";
 			try
@@ -889,34 +889,34 @@ public static class ShoutUtils
 			{
 				lordId2 = "";
 			}
-			string sys = "你是《骑马与砍杀2：霸主》的无名NPC描述生成器。你只输出严格 JSON，不要输出任何额外文字，不要 Markdown，不要代码块。JSON 仅包含 1 个字段：profile。profile 是一段中文描述，请生成100字左右的描述，不换行。描述必须与提供的势力/效忠事实一致，不得让该 NPC 自称属于其他国家或效忠其他统治者。";
+			string sys = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0740");
 			StringBuilder userSb = new StringBuilder();
-			userSb.AppendLine("请生成100字左右的描述（他大概是什么人/做什么的/说话风格如何），不要分段。");
-			userSb.AppendLine("名字: " + n);
+			userSb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0741"));
+			userSb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0742") + n);
 			if (!string.IsNullOrWhiteSpace(t))
 			{
-				userSb.AppendLine("兵种ID: " + t);
+				userSb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0743") + t);
 			}
 			if (!string.IsNullOrWhiteSpace(c))
 			{
-				userSb.AppendLine("文化: " + c);
+				userSb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0744") + c);
 			}
 			if (!string.IsNullOrWhiteSpace(r))
 			{
-				userSb.AppendLine("身份: " + r);
+				userSb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0745") + r);
 			}
-			userSb.AppendLine("势力: " + kingdomName + " (StringId=" + kingdom + ")");
+			userSb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0746") + kingdomName + " (StringId=" + kingdom + ")");
 			if (!string.IsNullOrWhiteSpace(rulerName))
 			{
-				userSb.AppendLine("统治者/势力领袖: " + rulerName);
+				userSb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0747") + rulerName);
 			}
 			if (!string.IsNullOrWhiteSpace(lordName))
 			{
-				userSb.AppendLine("隶属领主: " + lordName);
+				userSb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0748") + lordName);
 			}
 			else if (!string.IsNullOrWhiteSpace(lordId2))
 			{
-				userSb.AppendLine("隶属领主Id: " + lordId2);
+				userSb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0749") + lordId2);
 			}
 			string user = userSb.ToString().Trim();
 			if (!string.IsNullOrWhiteSpace(kingdom))
@@ -956,24 +956,27 @@ public static class ShoutUtils
 				default).ConfigureAwait(false);
 			if (generated.Status != LlmResultStatus.Succeeded)
 			{
-				LlmRetryPrompt.ShowFailurePopup("无名NPC人设生成失败", "统一 LLM Gateway 请求失败：" + (generated.ErrorCode ?? "unknown"));
+				LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_UnnamedPersonaFailed}Unnamed NPC persona generation failed", "Unified LLM Gateway request failed: " + (generated.ErrorCode ?? "unknown"),
+					reasonTemplate: "{=AF_UI_Retry_GatewayFailed}LLM gateway request failed: {CODE}", reasonCode: generated.ErrorCode ?? "unknown");
 				return;
 			}
 			string rawResp = (generated.RawText ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(rawResp))
 			{
-				LlmRetryPrompt.ShowFailurePopup("无名NPC人设生成失败", LlmRetryPrompt.BuildFailureDetail("模型回复为空，无法生成人设。", ""));
+				LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_UnnamedPersonaFailed}Unnamed NPC persona generation failed", LlmRetryPrompt.BuildFailureDetail("The model response is empty; a persona cannot be generated.", ""),
+					reasonTemplate: "{=AF_UI_Retry_PersonaReplyEmpty}The model reply is empty; a persona cannot be generated.", modelReply: "");
 				return;
 			}
-			if (rawResp.Contains("错误：未配置 API Key") || rawResp.Contains("API请求失败") || rawResp.Contains("程序错误") || rawResp.Contains("API响应格式错误"))
+			if (rawResp.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0752")) || rawResp.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0753")) || rawResp.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0754")) || rawResp.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0755")))
 			{
-				LlmRetryPrompt.ShowFailurePopup("无名NPC人设生成失败", rawResp);
+				LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_UnnamedPersonaFailed}Unnamed NPC persona generation failed", rawResp);
 				return;
 			}
 			if (!TryParsePersonaJson(rawResp, out var genP, out var genB))
 			{
 				Logger.Log("UnnamedPersona", "auto_gen_parse_fail key=" + k + " resp=" + rawResp);
-				LlmRetryPrompt.ShowFailurePopup("无名NPC人设解析失败", LlmRetryPrompt.BuildFailureDetail("模型回复无法解析为人设 JSON。", rawResp));
+				LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_UnnamedPersonaParseFailed}Unnamed NPC persona parsing failed", LlmRetryPrompt.BuildFailureDetail("The model response could not be parsed as persona JSON.", rawResp),
+					reasonTemplate: "{=AF_UI_Retry_PersonaReplyInvalid}The model reply could not be parsed as persona JSON.", modelReply: rawResp);
 				return;
 			}
 			string profileText = "";
@@ -1049,7 +1052,7 @@ public static class ShoutUtils
 			{
 				string cultureId = (co.Culture?.StringId ?? "neutral").ToLower();
 				string rank = (co.IsSoldier ? "soldier" : "commoner");
-				string name = agent.Name?.ToString() ?? "路人";
+				string name = agent.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0757");
 				string troopId = (co.StringId ?? "").ToLower();
 				await EnsureUnnamedNpcPersonaGeneratedByKeyAsync(key, cultureId, rank, name, troopId);
 			}
@@ -1104,9 +1107,9 @@ public static class ShoutUtils
 			{
 				return mapLandDescriptionWithoutMission;
 			}
-			return "未知场景";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0758");
 		}
-		string text = "某个地方";
+		string text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0759");
 		string text2 = "";
 		bool flag = false;
 		bool flag2 = false;
@@ -1127,17 +1130,17 @@ public static class ShoutUtils
 						text3 = text4.Substring(num + 1).Replace("\n", " ").Trim();
 						text3 = text3.Trim('。', '.', ' ');
 					}
-					if (text5.StartsWith("你位于 ", StringComparison.Ordinal))
+					if (text5.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0760"), StringComparison.Ordinal))
 					{
-						text2 = text5.Substring("你位于 ".Length).Trim();
+						text2 = text5.Substring(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0761").Length).Trim();
 						text2 = text2.TrimEnd('。', '.', ' ');
 						flag = false;
 					}
-					else if (text5.StartsWith("你正位于", StringComparison.Ordinal))
+					else if (text5.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0762"), StringComparison.Ordinal))
 					{
-						string text6 = text5.Substring("你正位于".Length).Trim();
+						string text6 = text5.Substring(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0763").Length).Trim();
 						text6 = text6.TrimEnd('。', '.', ' ');
-						const string seaSuffix = "附近的海上";
+						string seaSuffix = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0764");
 						if (text6.EndsWith(seaSuffix, StringComparison.Ordinal))
 						{
 							text2 = text6.Substring(0, text6.Length - seaSuffix.Length).Trim();
@@ -1145,7 +1148,7 @@ public static class ShoutUtils
 							flag2 = true;
 							flag3 = true;
 						}
-						else if (string.Equals(text6, "海上", StringComparison.Ordinal))
+						else if (string.Equals(text6, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0765"), StringComparison.Ordinal))
 						{
 							text2 = "";
 							flag = false;
@@ -1153,14 +1156,14 @@ public static class ShoutUtils
 							flag3 = true;
 						}
 					}
-					else if (text5.StartsWith("你身处野外，靠近 ", StringComparison.Ordinal))
+					else if (text5.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0766"), StringComparison.Ordinal))
 					{
-						text2 = text5.Substring("你身处野外，靠近 ".Length).Trim();
+						text2 = text5.Substring(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0767").Length).Trim();
 						text2 = text2.TrimEnd('。', '.', ' ');
 						flag = true;
 						flag2 = true;
 					}
-					else if (text5 == "你身处野外。" || text5 == "你身处野外")
+					else if (text5 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0768") || text5 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0769"))
 					{
 						text2 = "";
 						flag = false;
@@ -1182,7 +1185,7 @@ public static class ShoutUtils
 		}
 		if (flag3)
 		{
-			string text6 = string.IsNullOrEmpty(text2) ? "你正位于海上" : ("你正位于" + text2 + "附近的海上");
+			string text6 = string.IsNullOrEmpty(text2) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0770") : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0771") + text2 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0772"));
 			if (!string.IsNullOrEmpty(text3))
 			{
 				return text6 + " | " + text3;
@@ -1207,7 +1210,7 @@ public static class ShoutUtils
 			text = BuildCurrentMapLandTerrainSceneSpotLabel();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "野外";
+				text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0773");
 			}
 		}
 		else
@@ -1226,13 +1229,13 @@ public static class ShoutUtils
 				switch (text6)
 				{
 				case "lordshall":
-					text = "领主大厅";
+					text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0774");
 					break;
 				case "tavern":
-					text = "酒馆";
+					text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0775");
 					break;
 				case "arena":
-					text = "竞技场";
+					text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0776");
 					break;
 				default:
 					if (!(text6 == "dungeon"))
@@ -1240,37 +1243,37 @@ public static class ShoutUtils
 						switch (text6)
 						{
 						case "alley":
-							text = "小巷";
+							text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0777");
 							break;
 						case "port":
-							text = "港口";
+							text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0778");
 							break;
 						default:
 							if (!(text6 == "village_center"))
 							{
-								text = ((!string.IsNullOrEmpty(text2)) ? "街道" : "野外");
+								text = ((!string.IsNullOrEmpty(text2)) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0779") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0780"));
 								break;
 							}
 							goto case "center";
 						case "center":
-							text = ((!string.IsNullOrEmpty(text2)) ? "街道" : "野外");
+							text = ((!string.IsNullOrEmpty(text2)) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0781") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0782"));
 							break;
 						}
 						break;
 					}
 					goto case "prison";
 				case "prison":
-					text = "地牢";
+					text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0783");
 					break;
 				}
 			}
 			else
 			{
 				string text7 = mission.SceneName?.ToLower() ?? "";
-				text = ((!text7.Contains("lordshall") && !text7.Contains("lord_hall") && !text7.Contains("lordhall") && !text7.Contains("lord") && !text7.Contains("keep")) ? (text7.Contains("tavern") ? "酒馆" : (text7.Contains("arena") ? "竞技场" : ((text7.Contains("prison") || text7.Contains("dungeon")) ? "地牢" : (string.IsNullOrEmpty(text2) ? "野外" : "街道")))) : "领主大厅");
+				text = ((!text7.Contains("lordshall") && !text7.Contains("lord_hall") && !text7.Contains("lordhall") && !text7.Contains("lord") && !text7.Contains("keep")) ? (text7.Contains("tavern") ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0784") : (text7.Contains("arena") ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0785") : ((text7.Contains("prison") || text7.Contains("dungeon")) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0786") : (string.IsNullOrEmpty(text2) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0787") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0788"))))) : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0789"));
 			}
 		}
-		string text8 = (string.IsNullOrEmpty(text2) ? text : (flag ? ("靠近 " + text2 + " 的 " + text) : ("位于 " + text2 + " 的 " + text)));
+		string text8 = (string.IsNullOrEmpty(text2) ? text : (flag ? (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0790") + text2 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0791") + text) : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0792") + text2 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0793") + text)));
 		if (!string.IsNullOrEmpty(text3))
 		{
 			return text8 + " | " + text3;
@@ -1295,11 +1298,11 @@ public static class ShoutUtils
 			string terrainLabel = BuildCurrentMapLandTerrainSceneSpotLabel();
 			if (string.IsNullOrWhiteSpace(terrainLabel))
 			{
-				terrainLabel = "野外";
+				terrainLabel = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0794");
 			}
 			Settlement settlement = MapSeaContextGuard.FindNearestSettlementForPrompt(party);
 			string settlementName = MapSeaContextGuard.FormatSettlementNameWithTypeForPrompt(settlement);
-			description = string.IsNullOrWhiteSpace(settlementName) ? terrainLabel : ("靠近 " + settlementName + " 的 " + terrainLabel);
+			description = string.IsNullOrWhiteSpace(settlementName) ? terrainLabel : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0795") + settlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0796") + terrainLabel);
 			return !string.IsNullOrWhiteSpace(description);
 		}
 		catch
@@ -1333,7 +1336,7 @@ public static class ShoutUtils
 			}
 			Settlement settlement = MapSeaContextGuard.FindNearestSettlementForPrompt(party) ?? FindNearestSettlementForCurrentScene();
 			string settlementName = MapSeaContextGuard.FormatSettlementNameWithTypeForPrompt(settlement);
-			description = string.IsNullOrWhiteSpace(settlementName) ? "你正位于海上" : ("你正位于" + settlementName + "附近的海上");
+			description = string.IsNullOrWhiteSpace(settlementName) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0797") : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0798") + settlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0799"));
 			return true;
 		}
 		catch
@@ -1443,30 +1446,30 @@ public static class ShoutUtils
 					if (ownerClan == Clan.PlayerClan)
 					{
 						stringBuilder.Append(value);
-						stringBuilder.Append("是你的封地。");
+						stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0800"));
 					}
 					else
 					{
 						stringBuilder.Append(value);
 						if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(value2))
 						{
-							stringBuilder.Append("被");
+							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0801"));
 							stringBuilder.Append(text);
-							stringBuilder.Append("的");
+							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0802"));
 							stringBuilder.Append(text2);
 							stringBuilder.Append("，");
 							stringBuilder.Append(value2);
-							stringBuilder.Append("统治着。");
+							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0803"));
 						}
 						else if (!string.IsNullOrWhiteSpace(value2))
 						{
-							stringBuilder.Append("由");
+							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0804"));
 							stringBuilder.Append(value2);
-							stringBuilder.Append("统治。");
+							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0805"));
 						}
 						else
 						{
-							stringBuilder.Append("的情况如下。");
+							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0806"));
 						}
 					}
 				}
@@ -1475,19 +1478,19 @@ public static class ShoutUtils
 					stringBuilder.Append(value);
 					if (!string.IsNullOrWhiteSpace(value2))
 					{
-						stringBuilder.Append("由");
+						stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0807"));
 						stringBuilder.Append(value2);
-						stringBuilder.Append("控制。");
+						stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0808"));
 					}
 					else
 					{
-						stringBuilder.Append("的情况如下。");
+						stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0809"));
 					}
 				}
 			}
 			if (!string.IsNullOrWhiteSpace(value3))
 			{
-				stringBuilder.Append("所属家族：");
+				stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0810"));
 				stringBuilder.Append(value3);
 				stringBuilder.Append("。 ");
 			}
@@ -1517,13 +1520,13 @@ public static class ShoutUtils
 	{
 		if (hero == null)
 		{
-			return "英雄";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0811");
 		}
 		try
 		{
 			if (hero.IsLord || hero.Occupation == Occupation.Lord)
 			{
-				return "领主";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0812");
 			}
 		}
 		catch
@@ -1533,7 +1536,7 @@ public static class ShoutUtils
 		{
 			if (hero.IsNotable || fromNotables || hero.Occupation == Occupation.Headman || hero.Occupation == Occupation.RuralNotable || hero.Occupation == Occupation.GangLeader || hero.Occupation == Occupation.Merchant || hero.Occupation == Occupation.Artisan || hero.Occupation == Occupation.Preacher)
 			{
-				return "头人";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0813");
 			}
 		}
 		catch
@@ -1543,24 +1546,24 @@ public static class ShoutUtils
 		{
 			if (hero.IsWanderer || hero.Occupation == Occupation.Wanderer)
 			{
-				return "流浪者";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0814");
 			}
 		}
 		catch
 		{
 		}
-		return "英雄";
+		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0815");
 	}
 
 	private static int GetHeroTypePriorityForPrompt(string type)
 	{
 		switch ((type ?? "").Trim())
 		{
-		case "领主":
+		case var conversationMatch816 when conversationMatch816 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0816"):
 			return 4;
-		case "头人":
+		case var conversationMatch817 when conversationMatch817 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0817"):
 			return 3;
-		case "流浪者":
+		case var conversationMatch818 when conversationMatch818 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0818"):
 			return 2;
 		default:
 			return 1;
@@ -1616,6 +1619,14 @@ public static class ShoutUtils
 		{
 			return false;
 		}
+	}
+
+	private static string ProjectSettlementHeroTypeForPrompt(string type)
+	{
+		if (type == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0812")) return ConversationRuntimeTexts.Prompt("SettlementHeroNpcRoleLord");
+		if (type == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0813")) return ConversationRuntimeTexts.Prompt("SettlementHeroNpcRoleNotable");
+		if (type == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0814")) return ConversationRuntimeTexts.Prompt("SettlementHeroNpcRoleWanderer");
+		return ConversationRuntimeTexts.Prompt("SettlementHeroNpcRoleHero");
 	}
 
 	public static string BuildCurrentSettlementHeroNpcLineForPrompt(Settlement settlement = null, int maxCount = 12, int maxLen = 320)
@@ -1719,12 +1730,12 @@ public static class ShoutUtils
 				string text4 = list[i];
 				string value = dictionary[text4];
 				string value2 = dictionary2[text4];
-				list2.Add("[" + value2 + "]" + value);
+				list2.Add("[" + ProjectSettlementHeroTypeForPrompt(value2) + "]" + value);
 			}
-			string text5 = "当前定居点HeroNPC：" + string.Join("；", list2);
+			string text5 = ConversationRuntimeTexts.Prompt("SettlementHeroNpcPrefix") + string.Join("；", list2);
 			if (count > maxCount)
 			{
-				text5 = text5 + "；等" + count + "人";
+				text5 = text5 + ConversationRuntimeTexts.Prompt("SettlementHeroNpcTotalPrefix") + count + ConversationRuntimeTexts.Prompt("SettlementHeroNpcTotalSuffix");
 			}
 			text5 = text5.Replace("\r", "").Replace("\n", " ").Trim();
 			if (text5.Length > maxLen)
@@ -1806,16 +1817,16 @@ public static class ShoutUtils
 				}
 			}
 			List<string> list = new List<string>();
-			AppendDirLine(list, "北", st, num, perspectiveHero);
-			AppendDirLine(list, "东", st2, num2, perspectiveHero);
-			AppendDirLine(list, "南", st3, num3, perspectiveHero);
-			AppendDirLine(list, "西", st4, num4, perspectiveHero);
+			AppendDirLine(list, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0822"), st, num, perspectiveHero);
+			AppendDirLine(list, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0823"), st2, num2, perspectiveHero);
+			AppendDirLine(list, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0824"), st3, num3, perspectiveHero);
+			AppendDirLine(list, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0825"), st4, num4, perspectiveHero);
 			if (list.Count == 0)
 			{
 				return "";
 			}
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("【周边定居点（地图）】");
+			stringBuilder.AppendLine(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0826"));
 			foreach (string item2 in list)
 			{
 				stringBuilder.AppendLine(item2);
@@ -1867,23 +1878,23 @@ public static class ShoutUtils
 			List<string> list = new List<string>();
 			if (!string.IsNullOrWhiteSpace(text5))
 			{
-				list.Add("该定居点属" + text5 + "文化");
+				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0827") + text5 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0828"));
 			}
 			if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
 			{
-				list.Add("由" + text2 + "所属的" + text3 + "家族统治");
+				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0829") + text2 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0830") + text3 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0831"));
 			}
 			else if (!string.IsNullOrWhiteSpace(text2))
 			{
-				list.Add("领主是" + text2);
+				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0832") + text2);
 			}
 			else if (!string.IsNullOrWhiteSpace(text3))
 			{
-				list.Add("由" + text3 + "家族统治");
+				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0833") + text3 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0834"));
 			}
 			if (!string.IsNullOrWhiteSpace(text4))
 			{
-				list.Add("隶属" + text4);
+				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0835") + text4);
 			}
 			if (!string.IsNullOrWhiteSpace(factionRelationSummary))
 			{
@@ -1891,7 +1902,7 @@ public static class ShoutUtils
 			}
 			if ((settlement.IsTown || settlement.IsCastle) && hero != null && !IsHeroInSettlementForPrompt(hero, settlement))
 			{
-				list.Add("当前统治者不在此定居点");
+				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0836"));
 			}
 			return list.Count <= 0 ? "" : ("；" + string.Join("，", list));
 		}
@@ -1939,7 +1950,7 @@ public static class ShoutUtils
 
 	private static string GetSettlementTypeText(Settlement settlement)
 	{
-		return settlement.IsTown ? "城镇" : (settlement.IsCastle ? "城堡" : (settlement.IsVillage ? "村庄" : ((!settlement.IsFortification) ? "定居点" : "要塞")));
+		return settlement.IsTown ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0837") : (settlement.IsCastle ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0838") : (settlement.IsVillage ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0839") : ((!settlement.IsFortification) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0840") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0841"))));
 	}
 
 	private static string BuildFactionRelationSummary(IFaction faction, Hero perspectiveHero)
@@ -1949,7 +1960,7 @@ public static class ShoutUtils
 			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "玩家";
+				text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0842");
 			}
 			string playerRelation = GetFactionRelationLabel(faction, Hero.MainHero?.Clan?.Kingdom ?? Hero.MainHero?.MapFaction ?? Clan.PlayerClan?.Kingdom ?? Clan.PlayerClan?.MapFaction);
 			string npcRelation = GetFactionRelationLabel(faction, perspectiveHero?.Clan?.Kingdom ?? perspectiveHero?.MapFaction);
@@ -1968,9 +1979,9 @@ public static class ShoutUtils
 			string text2 = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(text2))
 			{
-				text2 = "玩家";
+				text2 = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0843");
 			}
-			return "对你和" + text2 + "都保持中立";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0844") + text2 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0845");
 		}
 	}
 
@@ -1978,33 +1989,33 @@ public static class ShoutUtils
 	{
 		switch ((relation ?? "").Trim())
 		{
-		case "敌对":
-			return "是" + targetName + "的敌人";
-		case "友方":
-			return "是" + targetName + "的友方势力";
+		case var conversationMatch846 when conversationMatch846 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0846"):
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0847") + targetName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0848");
+		case var conversationMatch849 when conversationMatch849 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0849"):
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0850") + targetName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0851");
 		default:
-			return "与" + targetName + "保持中立";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0852") + targetName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0853");
 		}
 	}
 
 	private static string BuildSharedRelationPhrase(string relation, string playerName)
 	{
-		string text = string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName;
+		string text = string.IsNullOrWhiteSpace(playerName) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0854") : playerName;
 		switch ((relation ?? "").Trim())
 		{
-		case "敌对":
-			return "是你和" + text + "的敌人";
-		case "友方":
-			return "是你和" + text + "的友方势力";
+		case var conversationMatch855 when conversationMatch855 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0855"):
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0856") + text + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0857");
+		case var conversationMatch858 when conversationMatch858 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0858"):
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0859") + text + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0860");
 		default:
-			return "对你和" + text + "都保持中立";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0861") + text + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0862");
 		}
 	}
 
 	private static string BuildSplitRelationPhrase(string npcRelation, string playerRelation, string playerName)
 	{
-		string text = string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName;
-		return BuildSingleRelationPhrase("你", npcRelation) + "，但" + BuildSingleRelationPhrase(text, playerRelation);
+		string text = string.IsNullOrWhiteSpace(playerName) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0863") : playerName;
+		return BuildSingleRelationPhrase(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0864"), npcRelation) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0865") + BuildSingleRelationPhrase(text, playerRelation);
 	}
 
 	private static string GetFactionRelationLabel(IFaction faction, IFaction referenceFaction)
@@ -2013,27 +2024,27 @@ public static class ShoutUtils
 		{
 			if (faction == null || referenceFaction == null)
 			{
-				return "中立";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0866");
 			}
 			string text = (faction.StringId ?? "").Trim();
 			string text2 = (referenceFaction.StringId ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text) && string.Equals(text, text2, StringComparison.OrdinalIgnoreCase))
 			{
-				return "友方";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0867");
 			}
 			if (ReferenceEquals(faction, referenceFaction))
 			{
-				return "友方";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0868");
 			}
 			if (referenceFaction.IsAtWarWith(faction) || faction.IsAtWarWith(referenceFaction))
 			{
-				return "敌对";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0869");
 			}
-			return "中立";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0870");
 		}
 		catch
 		{
-			return "中立";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0871");
 		}
 	}
 
@@ -2056,7 +2067,7 @@ public static class ShoutUtils
 				float num = MathF.Sqrt(distanceSquared);
 				if (num > 0.001f)
 				{
-					text2 = $"；距离：{num:0.0} 公里";
+					text2 = string.Format(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0872"), num);
 				}
 			}
 		}
@@ -2090,19 +2101,19 @@ public static class ShoutUtils
 			list.Add(item);
 			if (!string.IsNullOrEmpty(cultureName))
 			{
-				list.Add("文化：" + cultureName);
+				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0873") + cultureName);
 			}
 			if (!string.IsNullOrEmpty(text3))
 			{
-				list.Add("领主：" + text3);
+				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0874") + text3);
 			}
 			if (!string.IsNullOrEmpty(text4))
 			{
-				list.Add("家族：" + text4);
+				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0875") + text4);
 			}
 			if (!string.IsNullOrEmpty(text2))
 			{
-				list.Add("隶属：" + text2);
+				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0876") + text2);
 			}
 			if (!string.IsNullOrEmpty(factionRelationSummary))
 			{
@@ -2427,9 +2438,9 @@ public static class ShoutUtils
 			return null;
 		}
 		NpcDataPacket npcDataPacket = new NpcDataPacket();
-		npcDataPacket.Name = agent.Name ?? "路人";
+		npcDataPacket.Name = agent.Name ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0877");
 		npcDataPacket.AgentIndex = agent.Index;
-		npcDataPacket.RoleDesc = "平民";
+		npcDataPacket.RoleDesc = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0878");
 		npcDataPacket.PersonalityDesc = "";
 		npcDataPacket.BackgroundDesc = "";
 		npcDataPacket.IsHero = false;
@@ -2487,19 +2498,19 @@ public static class ShoutUtils
 				{
 					if (hero.IsLord)
 					{
-						npcDataPacket.RoleDesc = "领主";
+						npcDataPacket.RoleDesc = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0879");
 					}
 					else if (hero.IsWanderer)
 					{
-						npcDataPacket.RoleDesc = "流浪者";
+						npcDataPacket.RoleDesc = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0880");
 					}
 					else if (hero.IsNotable)
 					{
-						npcDataPacket.RoleDesc = "要人";
+						npcDataPacket.RoleDesc = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0881");
 					}
 					else
 					{
-						npcDataPacket.RoleDesc = "英雄";
+						npcDataPacket.RoleDesc = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0882");
 					}
 					MyBehavior.GetNpcPersonaForExternal(hero, out var personality, out var background);
 					if (!string.IsNullOrWhiteSpace(personality))
@@ -2513,20 +2524,20 @@ public static class ShoutUtils
 				}
 				else if (characterObject.Occupation == Occupation.Lord)
 				{
-					npcDataPacket.RoleDesc = "领主";
+					npcDataPacket.RoleDesc = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0883");
 				}
 				else if (characterObject.Occupation == Occupation.Wanderer)
 				{
-					npcDataPacket.RoleDesc = "流浪者";
+					npcDataPacket.RoleDesc = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0884");
 				}
 				else
 				{
-					npcDataPacket.RoleDesc = "英雄";
+					npcDataPacket.RoleDesc = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0885");
 				}
 			}
 			else if (characterObject.IsSoldier)
 			{
-				npcDataPacket.RoleDesc = "士兵";
+				npcDataPacket.RoleDesc = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0886");
 			}
 			else
 			{
@@ -2575,50 +2586,50 @@ public static class ShoutUtils
 	{
 		if (characterObject == null)
 		{
-			return "平民";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0887");
 		}
 		try
 		{
 			switch (characterObject.Occupation)
 			{
 			case Occupation.Weaponsmith:
-				return "武器匠";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0888");
 			case Occupation.Blacksmith:
-				return "铁匠";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0889");
 			case Occupation.Armorer:
-				return "盔甲匠";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0890");
 			case Occupation.HorseTrader:
-				return "马商";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0891");
 			case Occupation.GoodsTrader:
 			case Occupation.Merchant:
 			case Occupation.Artisan:
 			case Occupation.ShopWorker:
-				return "商贩";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0892");
 			case Occupation.Tavernkeeper:
 			case Occupation.TavernWench:
 			case Occupation.TavernGameHost:
-				return "酒馆人员";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0893");
 			case Occupation.Musician:
-				return "乐师";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0894");
 			case Occupation.RansomBroker:
-				return "赎金经纪人";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0895");
 			case Occupation.Headman:
-				return "村长";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0896");
 			case Occupation.Preacher:
-				return "传教士";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0897");
 			case Occupation.GangLeader:
-				return "帮派头目";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0898");
 			case Occupation.RuralNotable:
-				return "乡绅";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0899");
 			case Occupation.ShipWright:
-				return "船坊工人";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0900");
 			default:
-				return "平民";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0901");
 			}
 		}
 		catch
 		{
-			return "平民";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0902");
 		}
 	}
 
@@ -2673,7 +2684,7 @@ public static class ShoutUtils
 			return text;
 		}
 		text = (npc.RoleDesc ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "未命名NPC" : text;
+		return string.IsNullOrWhiteSpace(text) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0903") : text;
 	}
 
 	public static string GetPromptListName(NpcDataPacket npc)
@@ -2736,7 +2747,7 @@ public static class ShoutUtils
 		string text2 = (givenName ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return string.IsNullOrWhiteSpace(text2) ? "未命名NPC" : text2;
+			return string.IsNullOrWhiteSpace(text2) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0904") : text2;
 		}
 		if (string.IsNullOrWhiteSpace(text2))
 		{
@@ -2759,7 +2770,7 @@ public static class ShoutUtils
 		if (promptNamePool.Count == 0)
 		{
 			string text = (npc.PromptGivenName ?? "").Trim();
-			return string.IsNullOrWhiteSpace(text) ? "路人" : text;
+			return string.IsNullOrWhiteSpace(text) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0905") : text;
 		}
 		int num = ComputeStablePromptNameHash(BuildPromptNameSeed(npc));
 		int num2 = num % promptNamePool.Count;
@@ -3099,15 +3110,15 @@ public static class ShoutUtils
 						}
 						if (!string.IsNullOrEmpty(text2))
 						{
-							list2.Add("文化=" + text2);
+							list2.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0906") + text2);
 						}
 						if (!string.IsNullOrEmpty(text3))
 						{
-							list2.Add("身份=" + text3);
+							list2.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0907") + text3);
 						}
 						if (!string.IsNullOrEmpty(text4))
 						{
-							list2.Add("称呼=" + text4);
+							list2.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0908") + text4);
 						}
 						string label = ((list2.Count > 0) ? string.Join(" | ", list2) : item.Key);
 						list.Add(new UnnamedPersonaIndexItem

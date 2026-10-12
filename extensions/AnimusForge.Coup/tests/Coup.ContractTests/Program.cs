@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.Json;
 using System.Collections.Generic;
 using AnimusForge;
@@ -6,6 +6,7 @@ using AnimusForge.CoupSystem;
 
 internal static class Program
 {
+    private static bool englishPackage;
     private static int _assertions;
     private static void Assert(bool result, string message)
     {
@@ -22,11 +23,24 @@ internal static class Program
     private static CoupTroopRecord Troop(string id, CoupTroopRole role = CoupTroopRole.Ally) => new CoupTroopRecord
     { Id = id, CharacterId = "soldier", SourcePartyId = "party", Role = role, Health = 44 };
 
-    private static void Main()
+    private static void Main(string[] args)
     {
+        englishPackage = args.Length > 0 && args[0] == "en";
+        AnimusForge.WorldBulletinPolicyTexts.EnglishMode = englishPackage;
+        System.IO.File.Copy(System.IO.Path.Combine(AppContext.BaseDirectory, englishPackage ? "EnglishFixtures" : "ChineseFixtures", "CoupPromptTexts.json"),
+            AnimusForgeModulePaths.GetModuleDataFilePath("CoupPromptTexts.json"), true);
+        var projectionSession = NewSession();
+        string stableReport = CoupOutcomeReport.Build(projectionSession, "Player {0}", "Old king", "Town", "Realm", false, false, false);
+        string projectedReport = CoupSourceTexts.ReportForPrompt(stableReport);
+        Assert(projectedReport.Contains("Player {0}"), "projection preserves literal template-like names");
+        Assert(englishPackage ? projectedReport.Contains("no actual scene entry") : projectedReport.Contains("未记录到实际进场"), "package projection preserves no-entry fact");
+        Assert(englishPackage ? projectedReport.Contains("existing land.") : projectedReport.Contains("脱离原王国。"), "no-war failure remains distinct from declaration of war");
+        Assert(stableReport.Contains("政变失败"), "package selection never rewrites stable outcome facts");
+        Assert(CoupSourceTexts.ReportForPrompt("Unknown player-authored report") == "Unknown player-authored report", "unknown history is preserved");
         BattleOptionsRegression();
         EntryRequirementsRegression();
         LoyalistRegression();
+        LocalizeReasonRegression();
         var session = NewSession();
         session.Troops.Add(Troop("1"));
         Assert(session.IsValid(), "valid mission snapshot");
@@ -122,6 +136,48 @@ internal static class Program
         Console.WriteLine("Coup contracts: " + _assertions + " PASS");
     }
 
+    private static void LocalizeReasonRegression()
+    {
+        // 1. Direct dictionary matches
+        string polReason = CoupSourceTexts.Get("PoliticalIncomplete");
+        string localizedPol = CoupUiText.LocalizeReason(polReason);
+        Assert(englishPackage
+            ? localizedPol.Contains("Coup victory status or former ruler")
+            : localizedPol.Contains("政变胜利状态或旧王处置不完整"), "PoliticalIncomplete reason localized");
+
+        string noEligible = CoupSourceTexts.Get("NoEligibleLoyalist");
+        string localizedNoEligible = CoupUiText.LocalizeReason(noEligible);
+        Assert(englishPackage
+            ? localizedNoEligible.Contains("Among the former ruler")
+            : localizedNoEligible.Contains("旧王家族及更支持旧王的家族中"), "NoEligibleLoyalist reason localized");
+
+        // 2. Nested validation failure
+        string nestedVal = CoupSourceTexts.Format("ValidationFailed", CoupSourceTexts.Get("SupportInsufficient"));
+        string localizedVal = CoupUiText.LocalizeReason(nestedVal);
+        Assert(englishPackage
+            ? localizedVal.Contains("Original candidate clan no longer meets AF rules:") && localizedVal.Contains("Support for the former ruler does not exceed")
+            : localizedVal.Contains("原候选家族不再符合 AF 规则：") && localizedVal.Contains("对旧王的支持未超过对新王的支持"), "Nested validation failure localized");
+
+        // 3. War registration pending with Chinese retry hint stripped and localized hint appended
+        string warPendingWithHint = CoupSourceTexts.Format("WarRegistrationPending", "Database connection failed") + " 可在城镇菜单选择“重试政变内战登记”；不会再次创建叛军王国。";
+        string localizedWar = CoupUiText.LocalizeReason(warPendingWithHint);
+        Assert(!localizedWar.Contains("可在城镇菜单选择“重试政变内战登记”；不会再次创建叛军王国。"), "raw Chinese retry hint stripped");
+        Assert(englishPackage
+            ? localizedWar.Contains("Rebel kingdom established; civil war registration awaiting retry: Database connection failed")
+            : localizedWar.Contains("叛军已建立，内战登记等待重试：Database connection failed"), "war registration error message preserved");
+
+        // 4. Rebellion incomplete with nested known reason
+        string rebInc = CoupSourceTexts.Format("RebellionIncomplete", CoupSourceTexts.Get("NamingEmpty"));
+        string localizedReb = CoupUiText.LocalizeReason(rebInc);
+        Assert(englishPackage
+            ? localizedReb.Contains("Rebellion not completed:") && localizedReb.Contains("AF naming result is empty")
+            : localizedReb.Contains("叛乱未完成：") && localizedReb.Contains("AF 命名结果为空"), "RebellionIncomplete with nested known reason localized");
+
+        // 5. Unknown external error preserved verbatim
+        string unknownError = "Unexpected null pointer at 0xDEADBEEF";
+        Assert(CoupUiText.LocalizeReason(unknownError) == unknownError, "unknown external reason preserved verbatim");
+    }
+
     private static void LoyalistRegression()
     {
         Assert(CoupLoyalistPolicy.Opposes(false, 80, 40), "positive relation to new king does not block stronger old allegiance");
@@ -161,11 +217,11 @@ internal static class Program
     {
         var requirements = CoupEntryRequirements.Normalize(4, 300, 60);
         Assert(requirements.IsValid(), "default admission snapshot valid");
-        Assert(!requirements.Check(3, 300, 61, 60, out var reason) && reason.Contains("3／4"), "clan tier 3 rejected with deficit");
-        Assert(!requirements.Check(4, 299, 61, 60, out reason) && reason.Contains("299／300"), "influence 299 rejected with deficit");
-        Assert(!requirements.Check(4, 300, 60, 60, out reason) && reason.Contains("61") && reason.Contains("当前60"), "60 regulars cannot supply 60 assault plus rear guard");
+        Assert(!requirements.Check(3, 300, 61, 60, out var reason) && (englishPackage ? reason.Contains("3/4") : reason.Contains("3／4")), "clan tier 3 rejected with deficit");
+        Assert(!requirements.Check(4, 299, 61, 60, out reason) && (englishPackage ? reason.Contains("299/300") : reason.Contains("299／300")), "influence 299 rejected with deficit");
+        Assert(!requirements.Check(4, 300, 60, 60, out reason) && reason.Contains("61") && (englishPackage ? reason.Contains("60 people") : reason.Contains("当前60")), "60 regulars cannot supply 60 assault plus rear guard");
         Assert(requirements.Check(4, 300, 61, 60, out reason) && reason == "", "tier4 influence300 healthy61 accepted");
-        Assert(!requirements.Check(4, 300, 121, 59, out reason) && reason.Contains("配置冲突"), "minimum above street cap reports configuration conflict");
+        Assert(!requirements.Check(4, 300, 121, 59, out reason) && (englishPackage ? reason.Contains("configuration conflict") : reason.Contains("配置冲突")), "minimum above street cap reports configuration conflict");
         Assert(!requirements.Check(4, float.NaN, 61, 60, out reason), "invalid influence does not satisfy positive requirement");
         var disabled = CoupEntryRequirements.Normalize(0, 0, 1);
         Assert(disabled.Check(0, -10, 2, 1, out reason), "zero tier and influence disable political gates");
@@ -286,12 +342,22 @@ internal static class Program
         session.Troops.Add(new CoupTroopRecord { Id = "ally_k", CharacterId = "s", SourcePartyId = "p", Role = CoupTroopRole.Ally, Killed = true, Removed = true });
         session.Troops.Add(new CoupTroopRecord { Id = "guard_w", CharacterId = "s", SourcePartyId = "p", Role = CoupTroopRole.HallGuard, Wounded = true, Removed = true });
         string report = CoupOutcomeReport.BuildPlayerVictory(session, "王国", "新王", "城镇", "玩家家族", "旧王", false);
-        Assert(report.Contains("当前统治者：新王") && report.Contains("城镇当前归属：玩家家族"), "report uses current authoritative names");
-        Assert(report.Contains("本次选择不扣押") && report.Contains("突击队：阵亡 1，负伤 0") && report.Contains("守军：阵亡 0，负伤 1"), "release and recorded casualties shown");
-        Assert(report.Contains("是否实际起兵以之后的战役结果为准") && !report.Contains("叛乱已经发生"), "queue receipt never claims actual rebellion");
+        Assert(englishPackage
+            ? report.Contains("Current ruler: 新王") && report.Contains("Town owner: 玩家家族")
+            : report.Contains("当前统治者：新王") && report.Contains("城镇当前归属：玩家家族"), "report uses current authoritative names");
+        Assert(englishPackage
+            ? report.Contains("chose not to capture") && report.Contains("Assault party: 1 killed, 0 wounded") && report.Contains("Defenders: 0 killed, 1 wounded")
+            : report.Contains("选择不扣押") && report.Contains("阵亡 1") && report.Contains("负伤 0") && report.Contains("守军：阵亡 0"), "release and recorded casualties shown");
+        Assert(englishPackage
+            ? report.Contains("whether a rebellion actually begins depends on later campaign results") && !report.Contains("rebellion has already happened")
+            : report.Contains("是否实际起兵以之后的战役结果为准") && !report.Contains("已经发生叛乱"), "queue receipt never claims actual rebellion");
         session.Disposition = CoupKingDisposition.Capture;
-        Assert(CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", true).Contains("当前仍由你的部队保管"), "actual held king shown");
-        Assert(CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", false).Contains("目前已不在你的部队保管"), "later escape does not invent continuing custody");
+        Assert(englishPackage
+            ? CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", true).Contains("still held by your party")
+            : CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", true).Contains("仍由你的部队保管"), "actual held king shown");
+        Assert(englishPackage
+            ? CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", false).Contains("no longer held by your party")
+            : CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", false).Contains("已不在你的部队保管"), "later escape does not invent continuing custody");
         session.FactsCommitted = false;
         bool refused = false;
         try { CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", true); }
@@ -328,10 +394,10 @@ internal static class Program
         Assert(unentered.Contains("未记录到实际进场") && !unentered.Contains("进入城镇街道"), "pre-scene failure does not invent a battle");
         session.SceneEntered = true;
         string street = Report(false);
-        Assert(street.Contains("瓦兰迪亚的加伦针对国王德泰尔") && street.Contains("突击队共2人"), "report names place, realm, ruler and assault size");
+        Assert(street.Contains("瓦兰迪亚") && street.Contains("加伦") && street.Contains("德泰尔") && street.Contains("突击队共2人"), "report names place, realm, ruler and assault size");
         Assert(street.Contains("进入城镇街道") && !street.Contains("突破大厅入口") && !street.Contains("攻入领主大厅"), "street-only result reports only observed progress");
-        Assert(street.Contains("政变失败") && street.Contains("脱离原王国并与之开战"), "failed result includes confirmed consequences");
-        Assert(!Report(false, false, false).Contains("与之开战"), "no war claimed when original kingdom no longer at war");
+        Assert(street.Contains("政变失败") && street.Contains("并与之开战"), "failed result includes confirmed consequences");
+        Assert(!Report(false, false, false).Contains("并与之开战"), "no war claimed when original kingdom no longer at war");
         session.GateBreached = true;
         Assert(Report(false).Contains("突破大厅入口") && !Report(false).Contains("攻入领主大厅"), "breaching gate alone does not invent hall combat");
         session.HallEntered = true;
@@ -346,7 +412,7 @@ internal static class Program
         string victory = Report(true, true);
         Assert(victory.Contains("制服国王") && victory.Contains("取得瓦兰迪亚王位并接管加伦") && victory.Contains("旧王被扣押"), "victory report includes exact outcome and custody");
         Assert(Report(true).Contains("选择不扣押旧王"), "non-capture disposition is described without inventing a release action");
-        Assert(victory.Contains("突击队阵亡1、负伤0；守军阵亡0、负伤1"), "counts come from actual session casualties, not total defender reserve");
+        Assert(victory.Contains("已记录伤亡：突击队阵亡1、负伤0；守军阵亡0、负伤1"), "counts come from actual session casualties, not total defender reserve");
         session.DefectionCommitted = true;
         Assert(!CoupOutcomeReport.CanReport(session, false), "failure before withdrawal cannot publish final outcome");
         session.WithdrawalCommitted = true;
@@ -366,9 +432,10 @@ internal static class Program
             "dedicated coup fact is selectable as headline with its full identity and narrative");
         Assert(!ReferenceEquals(selection.Major, fact) && !ReferenceEquals(selection.Major.KingdomIds, fact.KingdomIds),
             "coup headline uses the host's detached publication snapshot");
-        Assert(WorldBulletinPolicy.BuildTemplate(selection).Major.Contains(victory), "offline fallback preserves place, process and outcome");
-        Assert(WorldBulletinPolicy.BuildUserPrompt("天下", "某日", selection, null).Contains(victory), "LLM receives full untruncated coup narrative");
-        Assert(WorldBulletinPolicy.BuildNpcDetailBlock(WorldBulletinPolicy.NpcKingdomHeader, "瓦兰迪亚", "vlandia", new[] { fact }, 5).Contains(victory), "NPC bulletin knowledge receives the same full facts");
-        Assert(WorldBulletinPolicy.TitleForKind("coup_success") == "政变夺位" && WorldBulletinPolicy.TitleForKind("coup_failure") == "政变失败", "dedicated fallback titles distinguish final outcomes");
+        string projectedVictory = CoupSourceTexts.ReportForPrompt(victory);
+        Assert(WorldBulletinPolicy.BuildTemplate(selection).Major.Contains(projectedVictory.TrimEnd('.').TrimEnd('。')), "offline fallback preserves place, process and outcome");
+        Assert(WorldBulletinPolicy.BuildUserPrompt("天下", "某日", selection, null).Contains(projectedVictory), "LLM receives full untruncated coup narrative");
+        Assert(WorldBulletinPolicy.BuildNpcDetailBlock(WorldBulletinPolicy.NpcKingdomHeader, "瓦兰迪亚", "vlandia", new[] { fact }, 5).Contains(projectedVictory.TrimEnd('.').TrimEnd('。')), "NPC bulletin knowledge receives the same full facts");
+        Assert(englishPackage ? WorldBulletinPolicy.TitleForKind("coup_success") == "Coup succeeds" && WorldBulletinPolicy.TitleForKind("coup_failure") == "Coup fails" : WorldBulletinPolicy.TitleForKind("coup_success") == "政变夺位" && WorldBulletinPolicy.TitleForKind("coup_failure") == "政变失败", "dedicated fallback titles distinguish final outcomes");
     }
 }

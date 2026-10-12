@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+<tags><tag language="简体中文" /></tags>
+<strings>
+  <string id="AF_PERSONA_UI_ImportMissingDirectory" text="导入失败：找不到导出目录。" />
+  <string id="AF_PERSONA_UI_ImportDuplicateFolderKey" text="导入失败：导入文件夹中存在重复 Key（{KEY}）。" />
+  <string id="AF_PERSONA_UI_ImportExistingKeyConflict" text="导入失败：Key 冲突（{KEY}）。当前游戏已存在该 Key，禁止导入覆盖。" />
+  <string id="AF_PERSONA_UI_ImportValidationException" text="导入失败：Key 校验异常：{ERROR}" />
+  <string id="AF_PERSONA_UI_UnknownNpc" text="该NPC" />
+</strings>
+</base>

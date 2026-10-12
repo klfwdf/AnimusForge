@@ -1,0 +1,208 @@
+{
+  "Id": "rule_manic_leaping_beast",
+  "Keywords": [
+    "Manic Jumper",
+    "Bouncing Beast",
+    "sharp tooth ball",
+    "Goblin mount",
+    "cave monster",
+    "jump jump",
+    "Greedy Orb"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Manic Jumper is a spherical monster that grows in underground caves - essentially a ravenous mouth full of sharp teeth and two strong short legs, it dashes around the battlefield with unpredictable bounces, devouring anything living in its path. Night goblins use them as mounts, weapons, and pets, riding on their backs and jumping around on the battlefield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Jumping is the funniest invention of our green skins - no, it wasn't invented by us, it was raised by those little lunatics of the night goblins from the mushroom field! This thing is essentially a big mouth with legs. It eats and eats every day and has a terrible temper. Night goblins ride on their backs and rush into the battlefield. The thing can jump higher than a human when it jumps. Then it hits the enemy's face and opens its mouth to take a bite! I've personally seen a Hooper swallow a dwarf whole - along with his armor and axe, and then belch and spit out a few iron teeth. The only drawback is that you don't know which direction they will jump next - sometimes it's the enemy's side, sometimes it's your own. You have to have the courage to risk your life to ride a jumping goblin, but I won’t ride it anyway!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Tactically speaking, the Furious Legger and its rider constitute a highly unpredictable and disruptive cavalry - they do not have the discipline or control of regular cavalry, but their springing movement allows them to leap over the first line of infantry and directly attack the archers and artillery battalions in the rear. Their defense is extremely low, and almost any long-range firepower is enough to kill them, but their terrifying appearance and unpredictable bounce direction will have a strong panic effect on most soldiers. Countermeasures: Deploy highly trained troops - such as Grand Sword Masters or Knights - on the front line to deal with its frontal impact, and deploy skirmishers in the rear to buffer its ricocheting direction when it penetrates the defense line."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The taxonomic affiliation of the manic leaper has been a subject of ongoing debate at the Department of Natural History at Altdorf University. The mainstream view is based on Dr. Heinrich von Speschneider's \"Dark Land Strange\", which places the jumping beast into the class of \"cave fungi symbiotic omnivorous springing mammals-fungal hybrids\" - yes, this taxonomic name itself is a reflection of the confusion in the academic community. In fact, the core life cycle of a jumping beast is grown from the giant underground fungus 'jumping mushroom' cultivated by the night goblins - the 'embryonic stage' of a jumping beast is a sporangium attached under the mushroom cap. When it matures, it will fall off on its own and start its own foraging behavior. Zerglings have no real intestines and stomach, only a passage from the mouth to the digestive cavity in the body, and the wall membrane of this cavity secretes a digestive enzyme with a concentration high enough to dissolve iron armor within four hours. The most bizarre record comes from the \"Zombat Mass Exit\" event in 2401 of the Imperial Calendar: About six hundred jumping beasts left the Gray Mountain cave system at the same time without any warning, jumping through two imperial provinces, devouring all livestock wherever they went, and finally died collectively after about three weeks due to overload of the digestive system. Post-mortem autopsy revealed that their internal remains included cattle, sheep, gate plates, iron pots and two complete imperial road signs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The first time I saw a specimen of a manic jumper was at the Natural Curiosities Exhibition in Middenheim - it was soaked in a large jar of stinky water and alcohol. The entire spherical body was about four feet in diameter. The big mouth remained hungry and half-open even after death, and the cracks were filled with things that looked like teeth but also looked like some kind of horny hooks. The exhibition label reads 'From the Gray Mountains Cave, Mode of Death: Swallowing a stone slightly larger than its mouth, stuck in throat and suffocated'. To be honest, this may be the epitaph that best sums up the life of the Manic Jumper - died of gluttony."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once tried - or rather my chamberlain tried - to get a live Zergling to be placed in our castle menagerie. The transportation process was simply a miniature war: the jumping beast jumped in the cage for eight days and eight nights without stopping, the iron railings were bent three times by it, and two of the servants who fed the food were swallowed by it. On the morning of the eighth day we decided to end the drama by shooting it directly in the castle's ceremonial square, but that morning the cage was empty - the jumper had chewed the bottom of the cage, dug a hole in the castle foundation, and disappeared underground. Later, every full moon, the guards who kept watch at night could still hear a dull bouncing sound and some kind of chewing bone sound deep under the castle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We almost made a joke when we first encountered the Manic Leaping Beast in the Gray Mountains Tunnel - a newbie mercenary had never seen this thing before and thought it was a big rock that fell from the roof of the cave. As a result, the stone opened its mouth and grinned at him, then jumped up and bit half of his face. We were slashing at it while escaping. The jumping beast bounced back and forth between the tunnel walls like a marble, hitting the rock wall and hitting us and then back to the rock wall. Finally, it hit a musket and was blown away by us. We counted the casualties—five wounded, all from impacts rather than bites from the same jumper."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I saw a piece of Manic Jumper skin in a leather store in Carcassonne - it's called skin, but it's actually more like a hardened fungal shell plus rough collagen fibers. The businessman claimed that the leather could be used to make boots that would never be chewed through, but the size was too small for children's shoes. I bought five pairs for my niece and nephew, and three months later they all had fungal skin diseases on their feet. The doctor said that the skins of those jumping beasts contained growth-promoting bacteria used in night goblin breeding, which would corrode human skin. There was no way to return the goods because the merchant had been eaten by an escaped jumper."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A spherical cave monster, essentially a long-legged, gluttonous mouth.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Manic Jumper Bouncer Tooth Ball"
+  ]
+}

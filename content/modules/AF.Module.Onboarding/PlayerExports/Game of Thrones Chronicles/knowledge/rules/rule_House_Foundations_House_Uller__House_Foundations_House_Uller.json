@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_House_Uller",
+  "Keywords": [
+    "House Uller",
+    "Hellholt Castle",
+    "Meraxes"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Uller family is based on Hellgate Castle (Helholt) deep in the desert and is a lord of the Dorne Sands. The family emblem uses a red and yellow interlaced pattern like a flame, which is in line with the local image of hot and dry land. During the War of Conquest, the dragon queen Rhaenys and the dragon Melaxes crashed near Hellgate Keep, linking Uller's name to the memory of Dorne's resistance to dragon flames. There is a saying in Donne that \"half of Uller is crazy, and the other half is worse\", but this is an evaluation with fear and prejudice and cannot be regarded as the psychological fact of the entire race. Local people were more concerned with whether wells, shade, roads, and lords could keep the desert settlement alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dornish nobles often talk about Uller of Hellgate Castle with a kind of caution that even jokes must be measured. The sandy land is extremely hot and has few roads. Maintaining castles and vassals there requires harsh tactics. Supporters say Uler is tough, enemies say they are cruel; the two statements often come from two ends of the same thing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What desert travelers fear most is not the flag, but the bottom of the water bag. The people around Hellgate Castle looked at Uller first to see if the well, the road, and the shelter were in just hands. The red and yellow flame-like coat of arms is very suitable for this land, but what really burns people is never the color of the cloth, but the lord's decision that cannot be defended."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Uller The sand lords of Hellgate Castle in the Dorne desert, with their red and yellow fire emblems, entered the anti-dragon memory because Meraxes fell nearby. \"Half crazy, half worse\" is an external opinion, not a fact of the entire race. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Uller The sand lords of Hellgate Castle in the Dorne desert, with their red and yellow fire emblems, entered the anti-dragon memory because Meraxes fell nearby. \"Half crazy, half worse\" is an external opinion, not a fact of the entire race. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Uller The sand lords of Hellgate Castle in the Dorne desert, with their red and yellow fire emblems, entered the anti-dragon memory because Meraxes fell nearby. \"Half crazy, half worse\" is an external opinion, not a fact of the entire race. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Uller The sand lords of Hellgate Castle in the Dorne desert, with their red and yellow fire emblems, entered the anti-dragon memory because Meraxes fell nearby. \"Half crazy, half worse\" is an external opinion, not a fact of the entire race. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Uller: The sand lords of Hellgate Castle in the Dorne desert, with their red and yellow fire emblems, entered the anti-dragon memory because Meraxes fell nearby. \"Half crazy, half worse\" is an external opinion, not a fact of the entire race."
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "Id": "rule_Bianf",
+  "Keywords": [
+    "Bianfu",
+    "Water Goddess",
+    "Battania Water God"
+  ],
+  "RagShortTexts": [
+    "Bianfu is the water goddess in charge of rivers, springs and lakes in Battania belief. She lives under the water and is both the giver of life and the tempter of death.",
+    "Bienve does not protect any particular tribe or group of people, and treats all creatures who step into the water equally. People will throw bread, mead, or copper coins before crossing the river to beg her not to pay attention to them.",
+    "Bienve's belief is mainly expressed in awe rather than worship. Druids classify her as the 'Border God', guarding the boundaries between the living and the dead, land and water."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In the belief of Battania, the water goddess Bienfu is in charge of all flowing water in the world-rivers, springs, waterfalls, and the deep and bottomless dark pools under the rocks. She dwells beneath the water, both the giver of life and the seducer of death. Unlike the other gods of Battania, Bianfo does not patronize a particular tribe or group of people. She treats all people equally, whether Battanians or outsiders, they are just creatures that have stepped into the water before her. Before crossing a river, people would throw a small piece of bread, a few drops of mead, or a copper coin into the water, not to pray for her favor, but to keep her from noticing them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Bianfu is the ruler of water. Every rushing river and every deep dark pool are her eyes. The fishermen had to put a piece of bread on the shore before going into the water, and the boatmen had to drop a few drops of mead into the river before pitching their poles - not to make an offering to her, but to beg her not to accept anyone today. She never shows favoritism to anyone, whether it is a person from Battania or a person from the Empire, they will sink equally if they fall into her water. The people of Pen Cannock know this best. The city squats on the top of a high mountain, with the Trang River at its feet. The reefs and rapids along the river take away several lives every year. The old people in the city said that there was Bienve's palace under those reefs, and the people who were taken away did not drown, but were invited by her to be guests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is a dark pool among the rocks below our city. That is where Bianfo lives. When we were children, adults warned us not to get close to that pool, or even look in, because her face would rise from the bottom of the water, and her soul would be taken away by her once she looked at it. But some people say that Bianfu can not only kill people. Sometimes she would fall in love with a hero, bless him, let him cross the river safely, and help him win the battle by the river. Which heroes have won her favor? The bards have been arguing for hundreds of years without any result. Everyone said that the hero from their village was kissed by Bianfo, but no one could provide evidence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The name of the water goddess believed by the people of Battania is Bienfu. We Imperial people don't quite understand this kind of belief - throwing bread and copper coins into the river, just asking her not to harm others? This sounds more like bribery than worship. But Pen Cannock is really a strange place. The dark pool under the rock is as black as ink. If you stare at it for a long time, you will feel that something is watching you under the water. Maybe the Battanians weren't superstitious and just figured out before we did that something actually lived in those waters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Water Goddess of the Battania people is a bit like our Northern Wilderness Goddess—both are not easy to mess with, they don’t talk to you, and they both live in inaccessible places. The difference is that our Wild Goddess is in charge of the entire forest and snowfield, while their Bianfu is only in charge of water. But there is something terrible about running water. At least one corpse of a northerner froze to death, and even the corpses of those dragged down by the water were nowhere to be found. In the dark pool at the foot of Pen Cannock, I threw a stone into it when I was passing by. The stone sank without even making a bubble. I turned around and left. That's Bianfo's territory, not mine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The water goddess believed by the Battania people sounds like a water demon to us Vlandia people. Our fishermen believe something similar - something is watching you under the water, and it will come to kill you when you are unlucky. But the people of Battania made her a god with a name, called Bienve, and made up a whole love story for her. Said that she would fall in love with the hero at some point and give him a blessing. This is a bit more romantic than our tradition of simply being afraid of water monsters. But to be honest, whether you call her Bianfo or a water monster, if you take a wrong step on the slippery rocks and fall into the rapids, the result is the same."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The water god believed by the people of Battania seems strange to us. There are also water gods on the grassland, but our water god is the river itself, not a goddess who lives under the water. Their Bianfu stayed in the water, waiting for a living person to approach, and then pulled the person she liked down. When people throw things into the water, Battania is not asking her for help, but asking her not to kill anyone. There is no such tradition of fear of water in the grasslands. Our horses can swim across the fastest rivers without having to pay tolls to the water god."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Bianfo occupies a special place in the polytheistic faith of Battania. She is the water goddess of rivers, springs, and lakes, and unlike other Battanian deities, she does not patronize any particular tribe or group of people, treating all creatures who set foot in the waters equally. This 'non-exclusive' characteristic of the Godhead is very rare throughout Calradia's religious systems. At the level of religious practice, Bianfo's faith is primarily characterized by reverence rather than worship, in sharp contrast to the active prayers of the Battania people to the spirits of the forest. Battania druids classify Bianfo as the 'god of the border' - guarding the boundaries between the living and the dead, land and water, dragging those who offend into the water, and those who favor can cross the river safely. The legend about Bienve's love with the hero is particularly popular in the Pen Cannock area, which reflects a unique duality in the belief in the goddess of water: she is both the tempter of death and the giver of victory, and the transition between the two is as irregular as the rushing river itself."
+    }
+  ],
+  "TextMappings": []
+}

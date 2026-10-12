@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <!-- VassalageBehavior: UI固定文本 -->
+    <string id="AF_DIP_MISC_Vassalage_Uncommitted" text="臣属条约未执行：当前谈判结果不属于可签署的臣属条约。" />
+    <string id="AF_DIP_MISC_Vassalage_InvalidType" text="臣属条约未执行：未能识别约定的条约类型。" />
+
+    <!-- WorldDiplomacyBehavior: UI/日志文本 -->
+    <string id="AF_DIP_MISC_WorldDip_UnknownKingdom" text="未知王国" />
+    <string id="AF_DIP_MISC_WorldDip_UnknownRuler" text="未知统治者" />
+    <string id="AF_DIP_MISC_WorldDip_InvalidDirectory" text="导出目录无效。" />
+    <string id="AF_DIP_MISC_WorldDip_RaidBattle" text="袭掠战" />
+    <string id="AF_DIP_MISC_WorldDip_SiegeBattle" text="攻守战" />
+    <string id="AF_DIP_MISC_WorldDip_FieldBattle" text="野外战斗" />
+    <string id="AF_DIP_MISC_WorldDip_NoFiefs" text="无领地" />
+    <string id="AF_DIP_MISC_WorldDip_NoEnemies" text="无明确敌国" />
+    <string id="AF_DIP_MISC_WorldDip_Unknown" text="未知" />
+    <string id="AF_DIP_MISC_WorldDip_ApiNotConfigured" text="事件与叛乱 API 尚未配置。" />
+    <string id="AF_DIP_MISC_WorldDip_KingdomEliminated" text="国家已覆灭，已停止自动生成建国卡。" />
+    <string id="AF_DIP_MISC_WorldDip_KingdomObjectMissing" text="国家对象已不存在，无法生成建国卡。" />
+    <string id="AF_DIP_MISC_WorldDip_ApiRequestFailed" text="API 请求失败。" />
+    <string id="AF_DIP_MISC_WorldDip_MissingJson" text="LLM 返回内容中没有 JSON 对象。" />
+    <string id="AF_DIP_MISC_WorldDip_MissingFields" text="LLM JSON 缺少 national_personality 或 long_term_strategy。" />
+    <string id="AF_DIP_MISC_WorldDip_ParseFailed" text="LLM JSON 解析失败：{ERROR}" />
+    <string id="AF_DIP_MISC_WorldDip_ReadFailure" text="读取失败" />
+
+    <!-- VoteDealBehavior: 议程UI文本 -->
+    <string id="AF_DIP_MISC_Agenda_NoProposals" text="暂无待决议程" />
+    <string id="AF_DIP_MISC_Agenda_NoProposal" text="暂无待决议程" />
+    <string id="AF_DIP_MISC_Agenda_Effective" text="已生效" />
+    <string id="AF_DIP_MISC_Agenda_NotEffective" text="未生效" />
+    <string id="AF_DIP_MISC_Agenda_Abolish" text="废除" />
+    <string id="AF_DIP_MISC_Agenda_Adopt" text="推行" />
+    <string id="AF_DIP_MISC_Agenda_StrongSupport" text="强烈支持" />
+    <string id="AF_DIP_MISC_Agenda_Support" text="倾向支持" />
+    <string id="AF_DIP_MISC_Agenda_StrongOppose" text="强烈反对" />
+    <string id="AF_DIP_MISC_Agenda_Oppose" text="倾向反对" />
+    <string id="AF_DIP_MISC_Agenda_Neutral" text="中立" />
+    <string id="AF_DIP_MISC_Agenda_Commoner" text="平民取向" />
+    <string id="AF_DIP_MISC_Agenda_Oligarchic" text="贵族寡头取向" />
+    <string id="AF_DIP_MISC_Agenda_Authoritarian" text="王权取向" />
+    <string id="AF_DIP_MISC_Agenda_Peace" text="议和" />
+    <string id="AF_DIP_MISC_Agenda_War" text="宣战" />
+    <string id="AF_DIP_MISC_Agenda_Alliance" text="结盟" />
+    <string id="AF_DIP_MISC_Agenda_Trade" text="贸易协定" />
+    <string id="AF_DIP_MISC_Agenda_Expel" text="驱逐家族" />
+    <string id="AF_DIP_MISC_Agenda_Fief" text="重新分配封地" />
+    <string id="AF_DIP_MISC_Agenda_Policy" text="废除政策" />
+    <string id="AF_DIP_MISC_Agenda_AdoptPolicy" text="采纳政策" />
+
+    <!-- WorldDiplomacyOrchestration.Dialogue: 口头外交状态 -->
+    <string id="AF_DIP_MISC_OralDip_Uncommitted" text="外交约定暂未提交：世界外交系统未启用。" />
+    <string id="AF_DIP_MISC_OralDip_InvalidFormat" text="外交约定暂未提交：条款格式无效。" />
+    <string id="AF_DIP_MISC_OralDip_Unauthorized" text="外交约定未成立：对方没有代表国家发文的权限。" />
+    <string id="AF_DIP_MISC_OralDip_SubmitFailed" text="外交约定未提交：{REASON}。" />
+    <string id="AF_DIP_MISC_OralDip_MultipleProposals" text="有多份相关提案，请先指明要回应哪一份宣言及动作。" />
+    <string id="AF_DIP_MISC_OralDip_UnavailableProposal" text="原提案目前不可回应，请先确认提案来源及其有效性。" />
+
+    <!-- KingdomStrategicProfileBehavior: 建国卡UI文本 -->
+    <string id="AF_DIP_MISC_Profile_GenCompleted" text="已为新建国家生成并锁定国家性格与长期战略：" />
+    <string id="AF_DIP_MISC_Profile_GenCompletedSuffix" text="。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_SubmissionRejected" text="外交约定暂未提交：{REASON}。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_Uncommitted" text="外交约定暂未提交：世界外交系统未启用。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_InvalidFormat" text="外交约定暂未提交：条款格式无效。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_Unauthorized" text="外交约定未成立：对方没有代表国家发文的权限。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_SubmitFailedPrefix" text="外交约定未提交：" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_MultipleProposals" text="有多份相关提案，请先指明要回应哪一份宣言及动作。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_UnavailableProposal" text="原提案目前不可回应，请先确认提案来源及其有效性。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_Published" text="正式宣言已发布；双边条约须由对方正式回应后生效。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_Executed" text="正式宣言已发布，外交行动已生效。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_DeferredPrefix" text="约定已登记，正式发文暂缓，原因：" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_CancelledPrefix" text="约定已登记，但正式发文因局势变化取消：" />
+    <string id="AF_DIP_STATUS_DialogueControl_InvalidFormat" text="约定处置未提交：格式无效。" />
+    <string id="AF_DIP_STATUS_DialogueControl_AmbiguousSourceReason" text="约定处置未提交：来源或原因不明确。" />
+    <string id="AF_DIP_STATUS_DialogueControl_AlreadyUpdatedPrefix" text="外交约定此前已更新：" />
+    <string id="AF_DIP_STATUS_DialogueControl_CannotWithdraw" text="原案已生效、关闭或不可撤回，不能撤销已经发生的外交行动。" />
+    <string id="AF_DIP_STATUS_DialogueControl_WithdrawIncomplete" text="撤回宣言未完成，原案仍以当前实际状态为准。" />
+    <string id="AF_DIP_STATUS_DialogueControl_InvalidStatus" text="约定处置未提交：状态无效。" />
+    <string id="AF_DIP_STATUS_DialogueControl_HasFormalResult" text="该约定已有正式结果，不能通过私人谈话回滚。" />
+    <string id="AF_DIP_STATUS_DialogueControl_HistoricalCommitmentPrefix" text="此前外交约定目前为" />
+    <string id="AF_DIP_STATUS_DialogueControl_ReasonPrefix" text="，原因：" />
+    <string id="AF_DIP_STATUS_DialogueControl_UpdatedPrefix" text="外交约定已更新：" />
+    <string id="AF_DIP_STATUS_DialogueControl_WithdrawStandalone" text="撤回未执行：撤回提案必须单独声明，不能混入其他外交行动。" />
+    <string id="AF_DIP_STATUS_DialogueControl_WithdrawUnauthorized" text="撤回未执行：原提案已关闭或当前发文者没有权限。" />
+    <string id="AF_DIP_STATUS_DialogueControl_WithdrawSuccess" text="原外交提案已通过正式宣言撤回；已生效的外交行动保持其实际结果。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_NotReady" text="外交约定暂未提交：世界外交系统尚未准备好。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_DuplicatePrefix" text="此约定此前已提交正式外交，文书编号：" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_ReleaseSubjectUnavailable" text="释放未执行：臣属系统不可用。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_ReleaseSubjectInvalidFormat" text="释放未执行：目标或条约凭证格式无效。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_ReleaseSubjectStateChanged" text="释放未执行：缺少本轮玩家指令，或国王权限、目标、直属条约已经变化。" />
+    <string id="AF_DIP_STATUS_OralDiplomacy_CommitmentDisabled" text="AI外交已关闭，原有发文约定不能在当前模式下变更。" />
+    <string id="AF_DIP_STATUS_State_accepted" text="已受理，尚未发布" />
+    <string id="AF_DIP_STATUS_State_deferred" text="暂缓发布" />
+    <string id="AF_DIP_STATUS_State_cancelled" text="已取消，未执行" />
+    <string id="AF_DIP_STATUS_State_published" text="已发布，等待正式结果" />
+    <string id="AF_DIP_STATUS_State_executed" text="已生效" />
+    <string id="AF_DIP_STATUS_State_withdrawn" text="已撤回提案" />
+    <string id="AF_DIP_STATUS_State_expired" text="已过期" />
+    <string id="AF_DIP_STATUS_State_rejected" text="已拒绝" />
+    <string id="AF_DIP_STATUS_State_superseded" text="已被新约定替代" />
+  </strings>
+</base>

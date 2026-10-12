@@ -47,7 +47,7 @@ public partial class MyBehavior
             Logger.Log("NpcPersona", "[ERROR] External persona generation failed: " + error.Message);
             await owner.RunMemorySummaryCompletionAsync(generation, () =>
             {
-                LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", LlmRetryPrompt.BuildFailureDetail(error.Message, ""));
+                LlmRetryPrompt.ShowFailurePopup(PersonaFailureUiText.NpcTitle, LlmRetryPrompt.BuildFailureDetail(error.Message, ""));
                 return true;
             }).ConfigureAwait(false);
         }

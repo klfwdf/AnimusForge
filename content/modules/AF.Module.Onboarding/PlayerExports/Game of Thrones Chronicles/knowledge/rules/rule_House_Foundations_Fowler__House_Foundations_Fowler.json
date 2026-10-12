@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_Fowler",
+  "Keywords": [
+    "House Fowler",
+    "Warden of the Prince's Pass",
+    "Blue Hawk"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Fowler family is based on Tianji City in the Crimson Mountains. The family head is traditionally called the \"Guardian of Prince's Pass\", and the family emblem is a blue falcon with a hood on a silver background. The family controls the important mountain roads from Dorne to the Reach. Long-term frontier wars have made them familiar with fortresses, reconnaissance, mountain cavalry and traveling caravans. There is a blood feud between Fowler and the Reach family. However, each generation faces different marriage alliances, trade and wars. The falcon’s eyes on the mountain pass may not always only focus on revenge. When local mountain people evaluate Fowler, they first look at whether the pass is safe and whether there is sufficient water and food. Foreign troops will understand the value of the Falcon Flag on the narrow mountain road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish nobles viewed the Fowlers as the gatekeeper family to the Prince's Pass. Tianji City hangs high in the red mountains. The blue falcon represents not only pride, but also a pair of eyes that must stare at the road to the north all day long. Gatekeepers can protect Dorne and also influence merchant travel, so every time a door opens or closes, there is politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The defenders at the pass counted arrows, water bags, and dust rising on the mountain road. The merchants hope that Fowler's level will be reliable but not too greedy, and the soldiers hope that the beacon fire will arrive before the enemy. For these people, \"Keeper of Prince's Pass\" is not a long title, but a job where if you are not careful, someone will die."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When travelers and soldiers from the north look at Fowler, they often first see if Tianji City allows them to pass. The falcon high above may be the protector of the road, or the shadow of tax collectors and inventories. Yamaguchi forces both parties to get to know each other, but rarely allows each other to truly feel at ease."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Fowler The guardian of Prince's Pass in Tianji City, with the hooded blue falcon as his family crest; mountain passes, reconnaissance, trade travel and frontier wars shape his responsibilities. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Fowler The guardian of Prince's Pass in Tianji City, with the hooded blue falcon as his family crest; mountain passes, reconnaissance, trade travel and frontier wars shape his responsibilities. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Fowler The guardian of Prince's Pass in Tianji City, with the hooded blue falcon as his family crest; mountain passes, reconnaissance, trade travel and frontier wars shape his responsibilities. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Fowler The guardian of Prince's Pass in Tianji City, with the hooded blue falcon as his family crest; mountain passes, reconnaissance, trade travel and frontier wars shape his responsibilities. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Fowler: The guardian of Prince's Pass in Tianji City, with the hooded blue falcon as his family crest; mountain passes, reconnaissance, trade travel and frontier wars shape his responsibilities."
+  ]
+}

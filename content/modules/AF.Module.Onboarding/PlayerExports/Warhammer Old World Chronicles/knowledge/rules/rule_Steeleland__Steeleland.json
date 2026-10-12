@@ -1,0 +1,169 @@
+{
+  "Id": "rule_Steeleland",
+  "Keywords": [
+    "Steeleland",
+    "Stir Province_ST",
+    "Stirland Elector Count _ST",
+    "Steele River Ranger_ST",
+    "Waterbad_ST",
+    "Border of the Dead_ST",
+    "Sylvania Shadow_ST",
+    "Alberich Haupt-Andersen_ST"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Stirland is the poorest province in the eastern part of the empire, covered in gloomy forests and muddy swamps. The capital, Waterbad, is located on the banks of the Still River. It is a rustic town dominated by wooden buildings. The city walls are eroded by moisture all year round and have dark green moss marks. The Styrlanders are known for their paranoid superstition and deep hatred of the undead - their eastern border borders the cursed Sylvania, and every village hangs the Sigmar talisman on the lintel to ward off the evil that floats from the land of the dead at night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When Imperials talk about Stirland in the tavern, the topic can never avoid three things: mud, dead people, and desperate poverty. The Stirlings themselves knew what other provinces thought of them - the Reiklandians called them \"mud-legs\", the Avilanders called them \"gravekeepers\", and the Talabek leaders didn't even bother to mention them. But to be fair, the Stirland light infantry - especially the Stirr River Rangers - are the most adept troops in the Imperial Army at fighting in forest and swampy terrain. Using their short bows and traps, they can wear down an army of beastmen to collapse in the jungle. The poverty in Stirland is not their fault, it is the fault of geography: 70% of the arable land in this province is low-yield forestland, and the only pastoral areas have to be neighbors with the undead. Any Imperial officer willing to be stationed in Stirland for more than two years is either the most devout Sigmar believer or a loser who cannot survive elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Stirland's strategic position is the most embarrassing of all the Elector Counts - it is too poor to support a decent army, but it is tasked with the first line of defense against the undead threat of Sylvania in the eastern part of the empire. Alberich Haupt-Andersen was a pragmatic and almost ruthless ruler. He knew that the strength of the province was not enough to resist the undead invasion on his own, so his entire diplomatic strategy revolved around one core: making the other provinces of the empire - especially Reikland and Iverland - aware that the threat of Sylvania was not just a problem for Stirland. For this reason, he even acquiesced to the almost unfettered actions of the Sigmar witch hunters in the province, because although those fanatical witch hunters often killed innocent people, they did slow down the penetration of undead forces into the west. Anyone who wants to seek political gain in Stirland must face a basic fact: in this province, power does not come from wealth, but from how many villages you can protect from being engulfed by the undead in the dark."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The governance dilemma of Stirland is the most typical case of structural contradictions in the imperial provincial system. The province's tax base is extremely weak - acidic soil means agricultural output is only one-third that of Reikland, timber exports are limited by the shipping monopoly on the Tarabek River, and the only valuable cash crop is medicinal swamp moss in the lower Stir River - a scarce ingredient used in Witch Hunters' holy water recipes. However, the province's military expenditure is one of the highest among the empire's provinces: maintaining more than 40 outposts and watchtowers on the eastern border consumes more than 60% of the province's finances. The \"Tithe of the Dead\" implemented by Alberich - which imposed additional defense taxes on Sylvania's border villages to raise its own militia - was reasonable in theory, but in practice it led to a large-scale westward migration of borderers, further shrinking the province's tax base. The only way out of Stirland's predicament is through a financial redistribution mechanism at the imperial level, but the Imperial Parliament led by Reikland has shelved this issue for two centuries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Being a noblewoman in Stirland means you first have to learn to live with fear. The shadow of Sylvania spreads from the east every dusk, and the distant forest makes noises that do not belong to living things in the night. The women of Stirland are more mature than the noble women in other provinces - not because of etiquette education, but because the fourteen-year-old Stirland girls know how to escape into the cellar with their younger siblings during the night attacks of the undead, and how to identify safe paths in the swamp to avoid the pursuit of zombies. But this fear also shaped the unique tenacity of Stirland noble women: many of them became secret sponsors of the Witch Hunter Church, using the income from their estates to fund patrols on the border, and organizing night patrols for the villages when their husbands were away at the Imperial Council. In Steelland, a true mistress was not the one who danced at the ball, but the one who could make sure at dawn that her tenant farmers had not turned into zombies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The aristocratic families in Stirland are the least able to withstand hardships - as long as one of the three generations does not manage well, the entire family will completely slide into the abyss of bankruptcy. The land here is not as dependent on the sky as in Iveyland. The rise of the Haupt-Anderson family itself is a history of survival: they were originally just small estate owners in the suburbs of Waterbad. By serving as secular agents of the Witch Hunter Church for three consecutive generations, they gradually controlled the supply lines of the border outposts, and finally seized the title of earl in the chaos of the previous generation of Elector Count who died without an heir. Every family that wants to survive in the Stirland must learn an iron rule: don't save gold - the gold in the Stirland may be turned into scrap metal tomorrow by the undead plague. You have to spend the gold wisely: buy favors from the Witch Hunter Church, arm your manor militia, and build a stone fortress in Waterbad that can withstand the siege of the undead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The worst contracts I've ever signed were all in Stirland - not for the reward, which was fine - but because more than half of Stirland's errands involved the undead. Mercenaries are most afraid of fighting the dead, because dead people cannot fear, run away, negotiate, and stand up again after cutting down one - unless you have a silver weapon or a sword blessed by a Sigmar priest. The outposts on the Stirland border are hiring almost year-round, and the prices offered are twice the Imperial average, but your chances of being alive after a year are about half. But the taverns in this land have their own charm: the ale of the Stir River is twice as strong as that of Reikland, and the folklore of the Stirlanders is ten times more terrifying than anywhere else. Every winter night, the hunters sit around the campfire and tell the strange things from Sylvania - those stories will make you feel that greenskins and beastmen are simply kind neighbors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The business led by Steele was, to put it harshly, exchanging lives for money. There is no cattle market in Iverland, no river transportation in Reikland, and no arms orders from Nuln - Stirland's biggest \"industry\" is witch-hunting tools: silver-tipped arrows, chainmail soaked in holy water, and hemostatic ointments made from swamp moss. The market for these goods is not within the territory of Stir, but is found in the Witch Hunter Church and noble private soldiers throughout the empire. As an operator, the risk you have to face is not commercial fraud – it is undead robbery. Last year, a Silver Arrow caravan bound for Altdorf was attacked by a group of wights while passing through the Eastern Forest. All the goods sank into the swamp, and only one of the six hired guards came back alive. Doing business in Stirland requires factoring the cost of insurance into every transaction, and insurance here means hiring double the number of guards, taking the daylight route, and going to Sigmar's church to do full penitence before setting out."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Stirland - the poorest province in the eastern part of the empire, bordering Sylvania, the Land of the Dead",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Stirland Empire Province Sylvania Undead Frontier"
+  ]
+}

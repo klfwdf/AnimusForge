@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Green_Skin_History",
+  "Keywords": [
+    "Greenskin History",
+    "green skin history green tide",
+    "Green skin history and furry colossus",
+    "Origin of Greenskins",
+    "Ancient Spores",
+    "Gerbard",
+    "Fall of Karak (Green Skin History)",
+    "epic warlord"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The history of the greenskins is not recorded in words but in battle scars. No one knows exactly where the greenskins came from - some say they came to this world with the spores of the Old Saint's ship, others say they are the backlash of the earth itself after the invasion of Chaos. Regardless of their origins, greenskins have swept through the old world with green waves since ancient times - the most terrifying warriors such as Gorbad Ironclaw, the \"Wrath of Gork\", once made the entire empire tremble."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Who cares about history? History is a story told by old guys! But I know the most powerful boss - Gerbad Ironclaw, he once almost broke into the capital of the empire! There is also the \"Green Seer\" Urzag, who chats directly with Gorge Mao and can pull out a Waaagh wherever he goes! The biggest Waaagh in history! When did it come? Who remembers - wars have always been going on anyway, they have been going on since the day we were born. But what makes me most proud is that no one has ever completely defeated the greenskins - the short guys are hiding in the mountains, the pointed ears are hiding on the islands, and the humans are hiding behind the city walls - but we greenskins are everywhere!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The impact of the Greenskins on Old World history is often underestimated. The fall of the dwarf fortresses - especially the fall of Karak Eight Peaks - was driven by the green-skinned green tide. Both the Empire and Bretonnia were threatened with destruction by massive Greenskin invasions. The key to understanding the history of the Greenskins is to realize that they have never truly formed a unified \"civilization\" - they have always been temporarily united by an unrivaled warlord, and immediately divided into internal strife after the death of the warlord. This kept the Greenskins divided most of the time, but each unification could bring destructive power enough to overturn the country."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The history of greenskins goes back to ancient times. According to the most reliable academic reasoning, the Greenskins were originally brought to this world by the Old Ones before the Stargate collapsed - either as biological weapons, or perhaps their spores accidentally attached themselves to the Old Ones' ships. After the Star Gate collapsed, in the chaos of the disappearance of the ancient saints, green-skin spores took root and sprouted around the world, forming the first batch of wild green-skin. During the Long Night, when Chaos reigned, Greenskins survived due to their innate fighting instincts and natural resistance to magic. After entering the Civilization Era, each green tide will profoundly change the political structure of the old world: the end of the Golden Age of the Dwarves is partly due to the greenskins' continued pressure on the World's Edge Mountains. The empire's countless expeditions and defensive battles are related to the greenskins, and the badlands have become the de facto heartland of the greenskins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Imperial historical documents were usually written by male scribes and thus paid little attention to the fate of women and children during the Greenskin invasion. My family archives contain the notes of my great-great-grandmother who experienced the last Waaagh! The whole process of invading Iverland. She recorded that the male historians of the empire always described the greenskin invasion as a 'military hedge' - but in fact, for border women, the arrival of the greenskins first means that you must make an immediate decision: whether to flee south with your children and abandon all the winter reserves that cannot be carried, or to stay in the basement and gamble that the greenskins will be driven in the other direction by the imperial cavalry after looting the perimeter. In every line of her ink, there is something more tired than hatred - a memory of survival that has been repeated countless times across all genders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the patriarch of a noble family on the border, I am well aware of a depressing pattern in the history of Greenskin invasions: every time the Human Empire defeats a Waaagh! In the end, both political leaders and the public tend to think that the 'problem is solved' - they will cut the border guard budget and move the army back to the interior to deal with more 'civilized' political disputes. And the mycelial network beneath the Badlands won't cut into its spore production. Just twenty-seven years after the last major Greenskin invasion in which we lost half of the barony (although we eventually regained it) - less than a generation later - border sentries are once again reporting more and more green figures in the dust to the south. Family archives show that in the past eight hundred years, our territory has experienced at least eleven large-scale greenskin invasions—an average of one every seventy-three years—which is a rhythm that cannot be ignored by any defense plan. However, this rhythm will be collectively forgotten by the empire’s top brass during every post-war reconstruction phase."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "While wandering between the World's Edge Mountains and the Badlands, I gleaned some strange clues from some dwarven ruins occupied by greenskins. In the outer ruins of Karak Eight Peaks, I discovered an uncanny 'dialogue' between the dwarven wall inscriptions and the greenskin graffiti - not a friendly conversation, but a mutual insult of notches and paints spanning hundreds of years. A dwarven wall was engraved with the words 'Here lies an iron helmet and a bronze shield, who died in slaying the one hundred and third green-skinned vermin'. Someone below - it should be said to be an orc - roughly carved a response with a weapon: 'Ha! When that iron head died, we danced on his corpse for three days and three nights! 'The most astonishing thing is that these layers of writing - those of the dwarves, those of the greenskins, those written after the new dwarf expeditionary force returned, and those written after it was once again occupied by the greenskins - have been covered for hundreds of years, forming the only way to record history among non-written races."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From an economic history perspective, the long-term impact of the Greenskin invasion on Old World trade networks was disproportionate to the destructive power of the war itself. The shortest-term impact is of course the temporary disruption of grain transport routes and skyrocketing grain prices in border provinces - something we are used to seeing. But the deeper structural effect is this: Waaagh every time! By forcing caravans to detour around the western passes of the World's Edge Mountains instead of the treacherous plains to the east, towns along the new route—such as certain human strongholds at the foot of the Gray Mountains—suffered disproportionate commercial prosperity, while those along the old route permanently declined. In the Merchant Guild archives you can trace this: at least seven once-thriving trading centers on the edge of the Badlands now remain in ruins, not because they were conquered by the Greenskins, but because the trade routes were permanently moved westward. This is a stealth reshaping of the economic map by the Greenskins."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Gorbad Ironclaw - the legendary green-skinned warrior who nearly conquered the entire empire.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The history of the greenskins is not recorded in words but in battle scars."
+  ]
+}

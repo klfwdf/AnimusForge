@@ -48,15 +48,15 @@ internal static class CourierLetterThemes
 
 	public static readonly IReadOnlyList<CourierLetterTheme> All = new[]
 	{
-		new CourierLetterTheme("vlandia", "瓦兰迪亚", 1, 1, "vlandia"),
-		new CourierLetterTheme("empire", "北帝国", 2, 2, "north_empire"),
-		new CourierLetterTheme("empire_w", "西帝国", 3, 3, "west_empire"),
-		new CourierLetterTheme("empire_s", "南帝国", 4, 4, "south_empire"),
-		new CourierLetterTheme("sturgia", "斯特吉亚", 5, 5, "sturgia"),
-		new CourierLetterTheme("battania", "巴旦尼亚", 1, 3, "battania"),
-		new CourierLetterTheme("khuzait", "库塞特", 4, 2, "khuzait"),
-		new CourierLetterTheme("aserai", "阿塞莱", 3, 5, "aserai"),
-		new CourierLetterTheme("nord", "诺德", 5, 1, "nord"),
+		new CourierLetterTheme("vlandia", "{=AF_MCM_Option_StationeryVlandia}Vlandia", 1, 1, "vlandia"),
+		new CourierLetterTheme("empire", "{=AF_MCM_Option_StationeryNorthEmpire}Northern Empire", 2, 2, "north_empire"),
+		new CourierLetterTheme("empire_w", "{=AF_MCM_Option_StationeryWestEmpire}Western Empire", 3, 3, "west_empire"),
+		new CourierLetterTheme("empire_s", "{=AF_MCM_Option_StationerySouthEmpire}Southern Empire", 4, 4, "south_empire"),
+		new CourierLetterTheme("sturgia", "{=AF_MCM_Option_StationerySturgia}Sturgia", 5, 5, "sturgia"),
+		new CourierLetterTheme("battania", "{=AF_MCM_Option_StationeryBattania}Battania", 1, 3, "battania"),
+		new CourierLetterTheme("khuzait", "{=AF_MCM_Option_StationeryKhuzait}Khuzait", 4, 2, "khuzait"),
+		new CourierLetterTheme("aserai", "{=AF_MCM_Option_StationeryAserai}Aserai", 3, 5, "aserai"),
+		new CourierLetterTheme("nord", "{=AF_MCM_Option_StationeryNord}Nord", 5, 1, "nord"),
 	};
 
 	public static int PatternWidth(string side, int index)

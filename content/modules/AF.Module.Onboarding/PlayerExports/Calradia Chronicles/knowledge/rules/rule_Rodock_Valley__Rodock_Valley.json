@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Rodock_Valley",
+  "Keywords": [
+    "Rhodok Valley",
+    "Vanang Coastal Valley"
+  ],
+  "RagShortTexts": [
+    "The Rhodok Valley is the economic, political and cultural center of Vlandia"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 120
+        }
+      },
+      "Content": "Rodok Valley + Southern Coast This area is the economic center, political center, and cultural center of Vlandia. The strongholds in the area are Galen, Gytrand, Sargoth, Chalas, Usankburg, Tarly Vilburg. The region has a prosperous economy and developed agriculture, mainly horticulture and grain cultivation, and is rich in olives, flax, grapes, and other horticultural crops. The region is industrially developed. The Rodtang Iron Mine is the largest iron mine in Vlandia. Thanks to the huge iron smelting industry, Vlandia's armor and iron-clad crossbows are mainly produced in this region. Sargot is the political center and economic center of Vlandia, and is the capital of Vlandia. It has a prosperous economy, and the iron smelting and forging industries are extremely developed. It can produce iron-clad crossbows, hooks and sickles, iron-clad giant shields and other important military materials. It is also close to the food production area of ​​Etilfield, and there is no shortage of food in the city, which enhances stability. Galen is the ancestral land of Merok, and Osric the Iron Arm started his army from here. Although it later lost its status as the capital, Galen is still as hometown in the hearts of Vlandia people. Sharas is the cultural center of Vlandia and the landing place of Vlandia's ancestors. The southern village of Sawant is the only horse farm in the Rhodok region, producing limited general-purpose horses."
+    }
+  ],
+  "TextMappings": []
+}

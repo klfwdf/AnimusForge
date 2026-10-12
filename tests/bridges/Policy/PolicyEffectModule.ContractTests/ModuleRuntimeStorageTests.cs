@@ -17,8 +17,9 @@ internal static partial class Program
                 StringComparison.OrdinalIgnoreCase) && !Directory.Exists(root), "new workspace-only runtime fixture required");
         string module = Path.Combine(root, "AnimusForge");
         Directory.CreateDirectory(Path.Combine(module, "ModuleData"));
-        File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module />");
-        InvokeStatic(SutType("AnimusForge.AnimusForgeModulePaths"), "SetModuleRootOverrideForContractTests", new object[] { module }, 1);
+        File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
+        PrepareFixtureModuleAssets(module);
+        SetFixtureModuleRoot(module);
         string fakeUser = Path.Combine(root, "ignored-user-data");
         Directory.CreateDirectory(Path.Combine(fakeUser, "UserData", "Settings"));
         File.WriteAllText(Path.Combine(fakeUser, "UserData", "Settings", "TerminalSettings.json"), "{\"IsHotkeyEnabled\":false,\"IsMapIconEnabled\":true}");
@@ -26,11 +27,11 @@ internal static partial class Program
         Type settings = SutType("AnimusForge.DuelSettings");
         Type terminal = SutType("AnimusForge.AnimusForgeTerminalSettings");
         Type exports = SutType("AnimusForge.PlayerExportsStore");
-        string cache = Path.Combine(module, "Logs", "ModelDropdownCache.json");
+        string cache = Path.Combine(module, "Cache", "ModelDropdownCache.json");
         Check(string.Equals((string)InvokeStatic(settings, "GetModelDropdownCachePath", Array.Empty<object>(), 0), cache,
-            StringComparison.OrdinalIgnoreCase), "cache belongs to module Logs, not AppData Cache");
-        string terminalFile = Path.Combine(module, "ModuleData", "TerminalSettings.json");
-        Check((string)InvokeStatic(terminal, "GetSettingsPath", Array.Empty<object>(), 0) == terminalFile, "terminal belongs to module ModuleData");
+            StringComparison.OrdinalIgnoreCase), "cache belongs to user-approved module Cache");
+        string terminalFile = Path.Combine(module, "Configs", "TerminalSettings.json");
+        Check((string)InvokeStatic(terminal, "GetSettingsPath", Array.Empty<object>(), 0) == terminalFile, "terminal belongs to user-approved module Configs");
         Check((string)InvokeStatic(exports, "GetPlayerExportsRootPath", Array.Empty<object>(), 0) == Path.Combine(module, "PlayerExports"), "exports belong to module");
         Directory.CreateDirectory(Path.Combine(module, "PlayerExports", "module-package"));
         Directory.CreateDirectory(Path.Combine(fakeUser, "UserData", "PlayerExports", "USER_ONLY"));
@@ -53,7 +54,11 @@ internal static partial class Program
         File.WriteAllText(cache, "{\"MainOptions\":[\"external-model\"],\"MainSelected\":\"external-model\"}");
         File.SetLastWriteTimeUtc(cache, DateTime.UtcNow.AddMinutes(1));
         settings.GetMethod("EnsureModelDropdownCacheHydrated", All).Invoke(instance, null);
-        Check(((System.Collections.IEnumerable)settings.GetField("_mainApiModelOptions", All).GetValue(instance)).Cast<string>().Contains("external-model"), "hydrated cache must reload a newer module file");
+        Check(((System.Collections.IEnumerable)settings.GetField("_mainApiModelOptions", All).GetValue(instance)).Cast<string>().Contains("module-model"), "retained local hydration guard does not replace a live model selection");
+        object rehydrated = Activator.CreateInstance(settings);
+        settings.GetMethod("EnsureModelDropdownCacheHydrated", All).Invoke(rehydrated, null);
+        instance=rehydrated;
+        Check(((System.Collections.IEnumerable)settings.GetField("_mainApiModelOptions", All).GetValue(instance)).Cast<string>().Contains("external-model"), "fresh owner accepts externally updated valid snapshot");
         settings.GetMethod("PersistModelDropdownCacheSnapshot", All).Invoke(instance, null);
         Check(JObject.Parse(File.ReadAllText(cache))["MainOptions"].Values<string>().Contains("external-model"), "cache saves module snapshot");
         object cold = Activator.CreateInstance(settings);
@@ -116,9 +121,9 @@ internal static partial class Program
         Check(!Directory.Exists(Path.Combine(fakeUser, "Cache")) && !Directory.Exists(Path.Combine(fakeUser, "Recovery")), "operations do not materialize user cache or recovery");
 
         string sid = System.Security.Principal.WindowsIdentity.GetCurrent().User.Value;
-        foreach (string directory in new[] { Path.Combine(module, "Logs"), Path.Combine(module, "ModuleData") })
+        foreach (string directory in new[] { Path.Combine(module, "Cache"), Path.Combine(module, "Configs") })
         {
-            string original = directory.EndsWith("Logs") ? cache : terminalFile;
+            string original = directory.EndsWith("Cache") ? cache : terminalFile;
             byte[] bytes = File.ReadAllBytes(original);
             RunPromptFixtureCommand("icacls.exe", "\"" + directory + "\" /deny *" + sid + ":(OI)(CI)(WD,AD)");
             try
@@ -135,11 +140,11 @@ internal static partial class Program
             finally { RunPromptFixtureCommand("icacls.exe", "\"" + directory + "\" /remove:d *" + sid); }
         }
         string linkedModule = Path.Combine(root, "linked", "AnimusForge");
-        Directory.CreateDirectory(linkedModule);
-        File.WriteAllText(Path.Combine(linkedModule, "SubModule.xml"), "<Module />");
-        foreach (string directory in new[] { "Logs", "ModuleData", "PlayerExports" })
+        Directory.CreateDirectory(Path.Combine(linkedModule,"ModuleData"));
+        File.WriteAllText(Path.Combine(linkedModule, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
+        foreach (string directory in new[] { "Cache", "Configs", "PlayerExports" })
             RunPromptFixtureCommand("cmd.exe", "/c mklink /J \"" + Path.Combine(linkedModule, directory) + "\" \"" + Path.Combine(module, directory) + "\"");
-        InvokeStatic(SutType("AnimusForge.AnimusForgeModulePaths"), "SetModuleRootOverrideForContractTests", new object[] { linkedModule }, 1);
+        SetFixtureModuleRoot(linkedModule);
         byte[] beforeLink = File.ReadAllBytes(cache);
         object linkedInstance = Activator.CreateInstance(settings);
         settings.GetMethod("EnsureModelDropdownCacheHydrated", All).Invoke(linkedInstance, null);
@@ -149,14 +154,14 @@ internal static partial class Program
         try { InvokeStatic(exports, "GetPlayerExportsRootPath", Array.Empty<object>(), 0); }
         catch { linkedRejected = true; }
         Check(linkedRejected, "reparse exports root is rejected");
-        InvokeStatic(SutType("AnimusForge.AnimusForgeModulePaths"), "SetModuleRootOverrideForContractTests", new object[] { module }, 1);
+        SetFixtureModuleRoot(module);
         Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", "relative-invalid-root");
         Check((string)InvokeStatic(exports, "GetPlayerExportsRootPath", Array.Empty<object>(), 0) == Path.Combine(module, "PlayerExports"), "even invalid old override is ignored");
-        InvokeStatic(SutType("AnimusForge.AnimusForgeModulePaths"), "SetModuleRootOverrideForContractTests", new object[] { Path.Combine(root, "missing", "AnimusForge") }, 1);
+        SetFixtureModuleRoot(Path.Combine(root, "missing", "AnimusForge"));
         bool rejected = false;
         try { InvokeStatic(exports, "GetPlayerExportsRootPath", Array.Empty<object>(), 0); }
         catch { rejected = true; }
         Check(rejected, "missing module cannot fall back to CWD or AppData");
-        InvokeStatic(SutType("AnimusForge.AnimusForgeModulePaths"), "SetModuleRootOverrideForContractTests", new object[] { module }, 1);
+        SetFixtureModuleRoot(module);
     }
 }

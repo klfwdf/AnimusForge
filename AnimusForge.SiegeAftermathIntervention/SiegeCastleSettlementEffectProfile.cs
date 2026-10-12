@@ -82,31 +82,62 @@ public sealed class SiegeCastleSettlementEffectProfile
     public bool HasAnnualConstructionEffect => Math.Abs(ConstructionSpeedMultiplier - 1f) > 0.001f;
 
     public static SiegeCastleSettlementEffectProfile Build(SiegeCastleActionKind action)
+        => Build( action, false);
+
+    public static SiegeCastleSettlementEffectProfile Build(SiegeCastleActionKind action, bool isEnglish)
     {
+        if (isEnglish)
+        {
+            return action switch
+            {
+                SiegeCastleActionKind.TreatPrisoners => Create("treat", "Treat prisoners", 10f, 5f, 0f, 15, 10, 10, 15, 1.05f),
+                SiegeCastleActionKind.ReceiveArmaments => Create("armaments", "Receive armaments", -3f, -4f, 0f, -10, -5, -8, -8),
+                SiegeCastleActionKind.ReleasePrisoners => Create("release", "Release prisoners", 10f, -5f, 0f, 15, 10, 15, 15, 1.10f),
+                SiegeCastleActionKind.SellPrisoners => Create("sell", "Sell prisoners", -8f, -5f, -25f, -15, -10, -15, -15, 0.90f),
+                SiegeCastleActionKind.RecruitPrisonersVoluntary => Create("recruit_voluntary", "Voluntary recruitment", 8f, 6f, 0f, 10, 5, 8, 10, 1f, 1.15f, 1.10f),
+                SiegeCastleActionKind.RecruitPrisonersForced => Create("recruit_forced", "Forced recruitment", -8f, -8f, -35f, -15, -10, -15, -15, 0.90f, 1.075f, 1.05f),
+                SiegeCastleActionKind.LaborPrisonersVoluntary => Create("labor_voluntary", "Voluntary penal labor", 5f, 8f, -10f, 5, 5, 5, 5, 1.05f),
+                SiegeCastleActionKind.LaborPrisonersForced => Create("labor_forced", "Forced penal labor", -8f, 4f, -25f, -15, -8, -12, -12, 1.025f),
+                SiegeCastleActionKind.RepairCastleLaborVoluntary => Create(
+                    "repair_castle_voluntary", "Voluntary castle repair labor", 5f, 8f, -10f, 5, 5, 5, 5,
+                    prosperityGrowthMultiplier: 1.05f,
+                    constructionSpeedMultiplier: 1.50f,
+                    constructionScalingReferenceCount: RepairCastleLaborReferencePrisoners),
+                SiegeCastleActionKind.RepairCastleLaborForced => Create(
+                    "repair_castle_forced", "Forced castle repair labor", -8f, 4f, -25f, -15, -8, -12, -12,
+                    prosperityGrowthMultiplier: 1.025f,
+                    constructionSpeedMultiplier: 1.25f,
+                    constructionScalingReferenceCount: RepairCastleLaborReferencePrisoners),
+                SiegeCastleActionKind.InstructorPrisonersVoluntary => Create("instructor_voluntary", "Voluntary instructor service", 6f, 8f, 0f, 8, 5, 8, 8, 1f, 1.50f, 1.50f),
+                SiegeCastleActionKind.InstructorPrisonersForced => Create("instructor_forced", "Forced instructor service", -9f, 4f, -20f, -12, -8, -12, -12, 1f, 1.25f, 1.25f),
+                SiegeCastleActionKind.SlaughterPrisoners => Create("slaughter", "Slaughter prisoners", -30f, 8f, 0f, -25, -25, -35, -35, 0.75f, 0.50f, 0.75f, reachesNativeDevastateIntensity: true, includesArmamentReceipt: true),
+                _ => Create("none", "No castle numerical effect", 0f, 0f, 0f, 0, 0, 0, 0)
+            };
+        }
         return action switch
         {
-            SiegeCastleActionKind.TreatPrisoners => Create("treat", "善待俘虏", 10f, 5f, 0f, 15, 10, 10, 15, 1.05f),
-            SiegeCastleActionKind.ReceiveArmaments => Create("armaments", "接收军械", -3f, -4f, 0f, -10, -5, -8, -8),
-            SiegeCastleActionKind.ReleasePrisoners => Create("release", "释放战俘", 10f, -5f, 0f, 15, 10, 15, 15, 1.10f),
-            SiegeCastleActionKind.SellPrisoners => Create("sell", "贩卖战俘", -8f, -5f, -25f, -15, -10, -15, -15, 0.90f),
-            SiegeCastleActionKind.RecruitPrisonersVoluntary => Create("recruit_voluntary", "自愿收编", 8f, 6f, 0f, 10, 5, 8, 10, 1f, 1.15f, 1.10f),
-            SiegeCastleActionKind.RecruitPrisonersForced => Create("recruit_forced", "强制收编", -8f, -8f, -35f, -15, -10, -15, -15, 0.90f, 1.075f, 1.05f),
-            SiegeCastleActionKind.LaborPrisonersVoluntary => Create("labor_voluntary", "自愿劳役服刑", 5f, 8f, -10f, 5, 5, 5, 5, 1.05f),
-            SiegeCastleActionKind.LaborPrisonersForced => Create("labor_forced", "强制劳役服刑", -8f, 4f, -25f, -15, -8, -12, -12, 1.025f),
+            SiegeCastleActionKind.TreatPrisoners => Create("treat", CastleAftermathCompatibilityTexts.Raw("effect_treat"), 10f, 5f, 0f, 15, 10, 10, 15, 1.05f),
+            SiegeCastleActionKind.ReceiveArmaments => Create("receive_armaments", CastleAftermathCompatibilityTexts.Raw("effect_receive_armaments"), -3f, -4f, 0f, -10, -5, -8, -8),
+            SiegeCastleActionKind.ReleasePrisoners => Create("release", CastleAftermathCompatibilityTexts.Raw("effect_release"), 10f, -5f, 0f, 15, 10, 15, 15, 1.10f),
+            SiegeCastleActionKind.SellPrisoners => Create("sell", CastleAftermathCompatibilityTexts.Raw("effect_sell"), -8f, -5f, -25f, -15, -10, -15, -15, 0.90f),
+            SiegeCastleActionKind.RecruitPrisonersVoluntary => Create("recruit_voluntary", CastleAftermathCompatibilityTexts.Raw("effect_recruit_voluntary"), 8f, 6f, 0f, 10, 5, 8, 10, 1f, 1.15f, 1.10f),
+            SiegeCastleActionKind.RecruitPrisonersForced => Create("recruit_forced", CastleAftermathCompatibilityTexts.Raw("effect_recruit_forced"), -8f, -8f, -35f, -15, -10, -15, -15, 0.90f, 1.075f, 1.05f),
+            SiegeCastleActionKind.LaborPrisonersVoluntary => Create("labor_voluntary", CastleAftermathCompatibilityTexts.Raw("effect_labor_voluntary"), 5f, 8f, -10f, 5, 5, 5, 5, 1.05f),
+            SiegeCastleActionKind.LaborPrisonersForced => Create("labor_forced", CastleAftermathCompatibilityTexts.Raw("effect_labor_forced"), -8f, 4f, -25f, -15, -8, -12, -12, 1.025f),
             SiegeCastleActionKind.RepairCastleLaborVoluntary => Create(
-                "repair_castle_voluntary", "自愿劳役修缮城堡", 5f, 8f, -10f, 5, 5, 5, 5,
+                "repair_castle_voluntary", CastleAftermathCompatibilityTexts.Raw("effect_repair_voluntary"), 5f, 8f, -10f, 5, 5, 5, 5,
                 prosperityGrowthMultiplier: 1.05f,
                 constructionSpeedMultiplier: 1.50f,
                 constructionScalingReferenceCount: RepairCastleLaborReferencePrisoners),
             SiegeCastleActionKind.RepairCastleLaborForced => Create(
-                "repair_castle_forced", "强制劳役修缮城堡", -8f, 4f, -25f, -15, -8, -12, -12,
+                "repair_castle_forced", CastleAftermathCompatibilityTexts.Raw("effect_repair_forced"), -8f, 4f, -25f, -15, -8, -12, -12,
                 prosperityGrowthMultiplier: 1.025f,
                 constructionSpeedMultiplier: 1.25f,
                 constructionScalingReferenceCount: RepairCastleLaborReferencePrisoners),
-            SiegeCastleActionKind.InstructorPrisonersVoluntary => Create("instructor_voluntary", "自愿充当教官", 6f, 8f, 0f, 8, 5, 8, 8, 1f, 1.50f, 1.50f),
-            SiegeCastleActionKind.InstructorPrisonersForced => Create("instructor_forced", "强制充当教官", -9f, 4f, -20f, -12, -8, -12, -12, 1f, 1.25f, 1.25f),
-            SiegeCastleActionKind.SlaughterPrisoners => Create("slaughter", "屠戮战俘", -30f, 8f, 0f, -25, -25, -35, -35, 0.75f, 0.50f, 0.75f, reachesNativeDevastateIntensity: true, includesArmamentReceipt: true),
-            _ => Create("none", "无城堡数值效果", 0f, 0f, 0f, 0, 0, 0, 0)
+            SiegeCastleActionKind.InstructorPrisonersVoluntary => Create("instructor_voluntary", CastleAftermathCompatibilityTexts.Raw("effect_instructor_voluntary"), 6f, 8f, 0f, 8, 5, 8, 8, 1f, 1.50f, 1.50f),
+            SiegeCastleActionKind.InstructorPrisonersForced => Create("instructor_forced", CastleAftermathCompatibilityTexts.Raw("effect_instructor_forced"), -9f, 4f, -20f, -12, -8, -12, -12, 1f, 1.25f, 1.25f),
+            SiegeCastleActionKind.SlaughterPrisoners => Create("slaughter", CastleAftermathCompatibilityTexts.Raw("effect_slaughter"), -30f, 8f, 0f, -25, -25, -35, -35, 0.75f, 0.50f, 0.75f, reachesNativeDevastateIntensity: true, includesArmamentReceipt: true),
+            _ => Create("none", CastleAftermathCompatibilityTexts.Raw("effect_none"), 0f, 0f, 0f, 0, 0, 0, 0)
         };
     }
 

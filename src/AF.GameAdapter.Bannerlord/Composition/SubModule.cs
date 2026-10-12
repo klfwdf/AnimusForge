@@ -41,6 +41,7 @@ public class SubModule : MBSubModuleBase
 	protected override void OnSubModuleLoad()
 	{
 		base.OnSubModuleLoad();
+		McmSettingsStorage.EnsureReady();
 		if (FeatureBridgeRuntime.Initialize(out string featureBridgeReason))
 		{
 			Logger.LogTrace("SubModule", ">>> Feature bridge catalog initialized: " + featureBridgeReason);
@@ -179,7 +180,7 @@ public override void OnMissionBehaviorInitialize(Mission mission)
 			}
 			_pendingInitialApiGuideNotice = false;
 			_initialApiGuideNoticeShown = true;
-			InformationManager.ShowInquiry(new InquiryData("欢迎使用 AnimusForge", "若要配置 API 信息，你无需进入 MCM 页面；进入存档之后的首次引导会引导你填写 API 信息。", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "知道了", "", null, null), pauseGameActiveState: false, prioritize: false);
+			InformationManager.ShowInquiry(new InquiryData(OnboardingUiText.T("AF_ONBOARDING_INITIAL_GUIDE_TITLE", "Welcome to AnimusForge"), OnboardingUiText.T("AF_ONBOARDING_INITIAL_GUIDE_BODY", "You do not need to open MCM to configure the APIs. The first-use setup guide will walk you through the API settings after you enter a save."), isAffirmativeOptionShown: true, isNegativeOptionShown: false, OnboardingUiText.T("AF_COMMON_GOT_IT", "Got it"), "", null, null), pauseGameActiveState: false, prioritize: false);
 			TryWriteInitialApiGuideNoticeMarker();
 		}
 		catch

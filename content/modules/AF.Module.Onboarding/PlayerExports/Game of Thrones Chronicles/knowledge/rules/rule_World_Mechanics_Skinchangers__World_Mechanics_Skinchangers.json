@@ -1,0 +1,155 @@
+{
+  "Id": "rule_World_Mechanics_Skinchangers",
+  "Keywords": [
+    "Skinchangers",
+    "Wargs",
+    "Skinchanger",
+    "Second Life"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Skinchangers can slip their consciousness into an animal, sharing its scent, hearing, running, and hunger; those bonded with wolves are called wargs, yet hawks, bears, shadowcats, dogs, and other beasts may also become companions. The gift often shows itself first in dreams, emotion, or unconscious sharing; practice strengthens control, yet also lets human and beastly instincts bleed into one another. Free folk tradition warns of three grave abominations: seizing a human body, mating with beast in beast's skin, and eating human flesh while wearing a beast. When a skinchanger dies, a part of his consciousness may linger within his companion in a limited second life, though in the end it is gradually swallowed by the beast's nature."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "wanderer",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The free folk are more willing to acknowledge the skinchanging gift, yet do not treat every skinchanger as a saint on that account. They judge by whether a man respects his companion and the taboos, for the closer the power, the easier it is to cross bounds that ought not be crossed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northern tales often link wolf dreams to the old gods. Some feel awe, while others fear a child may be stolen by the beast; most would rather speak of it in low voices by the fire than point out a neighbor to his face."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A ruler may prize a skinchanger as an irreplaceable scout, or fear eyes borrowed from a beast that no dungeon can hold. Treating such a person as a mere tool often blinds a master to the fact that both skinchanger and beast have wills of their own."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Skinchangers Those able to project their consciousness into animals and share their senses; wargs are only one kind among them, and the gift brings intimacy, temptation, and taboo. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Skinchangers Those able to project their consciousness into animals and share their senses; wargs are only one kind among them, and the gift brings intimacy, temptation, and taboo. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Skinchangers Those able to project their consciousness into animals and share their senses; wargs are only one kind among them, and the gift brings intimacy, temptation, and taboo. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Skinchangers Those able to project their consciousness into animals and share their senses; wargs are only one kind among them, and the gift brings intimacy, temptation, and taboo. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Skinchangers: Those able to project their consciousness into animals and share their senses; wargs are only one kind among them, and the gift brings intimacy, temptation, and taboo."
+  ]
+}

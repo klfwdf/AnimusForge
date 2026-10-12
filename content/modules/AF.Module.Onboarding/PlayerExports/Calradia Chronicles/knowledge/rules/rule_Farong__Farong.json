@@ -1,0 +1,263 @@
+{
+  "Id": "rule_Farong",
+  "Keywords": [
+    "Farong"
+  ],
+  "RagShortTexts": [
+    "Faron Leonipades was the consul of the Southern Empire and had outstanding talents in domestic affairs and business."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Faron Leonipades is the most regrettable talent and the most embarrassing colleague in our Southern Empire. We, the consuls, have worked with him in the Queen's Council for many years and are convinced of his abilities - he handles internal affairs, makes clear tax reports, and never defaults on arrears; he manages commerce, and the trade routes of Poros are managed smoother than Lycaron; he talks about strategy, and he can point out the key points in a few words, and never talks nonsense. But we all try to avoid being alone with him for too long. It's not because I hate him, it's because it was so embarrassing. He had incest with his sister Maltila and was divorced on the spot by Gallius - this kind of thing spread among the noble circles faster than the battle report, and it can never be cleaned up. We, the southern princes, chatted about him privately and said that if that incident had not happened, he would have been the queen's chief minister long ago. But he didn't seem to care. He stayed in Poros all day long and would only lead troops to fight a few battles and then go home without saying a word. The Queen trusts him, and we trust his abilities, but we don't know how to face him. Almost every banquet, his seat is empty. When we toast, we will say \"I wish Lord Faron well\" and then quickly jump to the next topic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Leonipades? That scum who committed incest with his own sister. When our Northern Empire Senate mentions this surname, we usually only use this attributive. The Lucon senator had some fair comments about his governance ability, saying that he loved the people like a son and was good at governing. However, most of the senators did not care whether he could govern at all - the core values ​​of the Senate were morality and legality, and Farrong was negative in both aspects. He betrayed the sanctity of marriage, tarnished the honor of his family, and brought shame to the entire aristocracy. It was reasonable for Galios to divorce his wife, and any man with blood would do it. Faron is hiding in Poros and cannot come out. That is because he still has some self-awareness. The Southern Empire's use of him shows that the Southern Empire's moral bottom line is lower than ours; the fact that we do not use this kind of person shows that the Northern Empire still has integrity. But having said that, there was indeed no trouble in his governance in Boros, and we have to admit this in private. But admit it, admit it, we in the Northern Empire will never admit an incestuous person into the Senate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pharon Leonipades. This name cannot be mentioned in the military camp of our Western Empire. Emperor Galios will fall out if he mentions it. We old subordinates who have been with Galios for many years all know what happened back then - when Martila married Galios, we went to have a wedding banquet, and later we found out that she and her brother had never broken up. Garius was so angry that he broke the tables in the military tent. From then on, the surname Leonipades was a curse word in the Western Empire. But to be fair, Galios himself is not clean either. He and Vendelia have long been in love, and Deia is four years older than Tephilus. We all know this, but no one dares to mention it in front of the emperor. But Faron is even more disgusting - Vendelia is at least not Galios' biological sister, but Maltila is Faron's biological sister. Our Western Empire was fought in the barracks, and it talks about loyalty and loyalty. People like this who even attack their own sisters are not worthy of being nobles, let alone generals. The consuls in the south also used him as an important minister, and they were really hungry. I heard that he did a good job in handling internal affairs in Poros - who cares, no matter how good the governor is, he is still an incestuous beast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Faron Leonipades was a typical contradictory figure in the Southern Empire: first-class governance skills and devastating personal scandals coexisted. From a geographical perspective, Poros's strategic value is limited, but Faron's capabilities in domestic affairs, commerce, and strategic planning are indispensable assets for the Southern Empire. Queen Rhagaea's reuse of him reflects the consistent realism style-use his talents and tolerate his shortcomings. His scandal was a social death sentence among the old aristocratic circles of the empire, but to outside observers such private moral issues did not affect the assessment of his political abilities. It is worth noting that the common people of Poros have extremely high support for him, which is extremely rare among the entire Calradia aristocracy, indicating that his governance concepts have indeed been implemented. At present, Farrong is completely dependent on Rhagaea, and this dependence determines his political future - as soon as Rhagaea is alive, he will be useful; a hundred years after Rhagaea, Ila will succeed to the throne, and it is not yet known whether the new king will be able to accommodate others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lord Farrong? Lord of Boros. People here are not very familiar with him, but businessmen all say that the place he manages is good, the taxes are not heavy, the roads are smooth, and the tenant farmers have food to eat. It is said that farmers in several villages around Poros will spontaneously give him gifts during the Chinese New Year. This is a rare thing here - the farmers here bow their heads and take a detour when seeing the lord. Who dares to give him gifts? As for the incident between him and his sister, I have heard of it, but to be honest, we people don’t really care. Which aristocratic gentleman has not done something dirty? Didn’t Garius himself have two wives? Lord Farrong at least manages his territory well and treats the poor well. This is enough. We are not qualified to marry him, why should we interfere in other people's private affairs?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Leonipades? A nobleman in the south was divorced by Garius after he heard that he had an affair with his own sister. We people in the north have been telling this as a joke for several years. However, it is said that the people in the place he manages are living a good life, which is better than ours. The elders in our Senate are very moral, but the taxes are high and the roads are not repaired. Sometimes I think about it, which one is more affordable, an incestuous man who reduces taxes or a sanctimonious man who raises taxes? But thinking about it, if this kind of thing really happens here, we still have to scold it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farrong? It's the nobleman from the south who slept with his sister. We people in the west spit when we mention this. Emperor Gallius had done a good job by divorced his sister. This kind of person should be kicked out of the empire. I really don't understand how those people in the south treat him as a treasure. But having said that, I have a cousin who went to Poros as a businessman and said that the roads there are easy to travel, the taxes are reasonable, and the security is better than here. I replied at the time: \"He even sleeps with his sister, and the road construction is so easy to take care of.\" But I also muttered in my heart - Garios here has no moral problems, but the taxes are horribly high, and the land is divided among veterans. Those of us who are not veterans are almost losing our land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_es3"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk",
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lord Faron is our lord, so we have one sentence: Don’t scold him outside. We know everything outsiders are scolding him, but we don't listen. Lord Faron personally comes to the city every autumn to inspect the granaries, distributes firewood to the poor in winter, repairs canals in spring, and holds grain price stabilization meetings in summer. We have also met his sister Maltila. She doesn't go out often, and occasionally goes on patrol with Master Faron. The two of them stand together and don't speak, but they seem to have a good understanding. We Poros people have our own rules - we do not inquire about, discuss, or spread the private affairs of our lords. If anyone dares to criticize Lord Falon in front of us in the city of Poros, don’t blame us for being rude. Are people outside laughing at him for his incest? Laugh with them. When they were hungry, Lord Faron was distributing food to us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "village_es3_1",
+          "village_es3_2",
+          "village_es3_3"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "soldier",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lord Farrong is our benefactor. Our three villages used to be one of the poorest places in the empire. There were droughts in the summer and floods in the autumn. The previous masters only collected rents but did not build canals, and people starved to death every year. Master Farong's grandfather started to build the canal, and his father continued to build it. Master Farong built the canal to the edge of every field. He also reduced our rent - only 40% in bad years and 50% in good years, which was much lower than elsewhere. During the Chinese New Year, he sent people to the village to deliver pork and ale, and every family had a share. As for what happened between him and Maltila, we know about it, but it is none of our business. They are nobles, nobles have noble rules, and we have our rules. Our rule is: we will be nice to whoever is nice to us. Lord Faron is good to us, and we will be good to him. People outside may say whatever they like, but here, Lord Faron is the best lord. If anyone dares to speak ill of him in the village, we will drive him out without him taking action."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_south_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_16"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Maltila. When people outside mention my name, they never say who I am, only who the woman I am is - Garius's ex-wife, Pharon's sister, or to be more direct, \"the woman who committed incest with her brother.\" My name is a dirty word among the imperial aristocracy. They won't say it to my face, but I know how they talk behind their backs. I don't regret it. I said this to myself countless times, in the deepest room of Poros Manor, facing the mirror, facing the olive trees outside the window, and facing the silence of Faron when he occasionally came to see me. I don't regret falling in love with him, I only regret agreeing to marry Galios. Garius was a good commander, but not a good husband. He looked at me like he was looking at a trophy, not a person. Faron looked at me - he never dared to look at me for too long, but all he could see was me. This is love. I know this kind of love is taboo, sinful, and worthy of death. I admit it. But Galios is not qualified to stand on the moral high ground and accuse me. He has already been involved with Vendelia, who is four years older than my son Tephilos. When he divorced me, he just went with the flow, poured all the dirty water on our brothers and sisters, and married a new wife cleanly. I ruined my brother's future. This is the only sin in my life that I cannot atone for. His talent should have allowed him to dominate the court of Lycaron, but now he can only stay in Poros, guarding me, guarding the secret that is spurned by the world. I occasionally went on inspection tours with him. When walking on the streets of Poros, the local civilians would not look at me strangely. They know who I am, but they don't care. This is the only dignity I have left."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_west_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_7"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pharon Leonipades. The name came out from between my teeth, with bone-crushing residue. My marriage to Maltila was a deal from the beginning. The Leonipades family’s fiefdom is close to Zeonica, I need the support of food and grass from the south, and his father needs the protection of my army. I admit that I have been in love with Vendelia for a long time, and Tephilus was not there when Deia was born. But that didn't matter - what mattered was that I was a cuckold. My wife slept with her biological brother and had a baby. I am a veteran. I have been in the military camp for half my life. I value two things most: loyalty and face. Both of them were trampled to pieces by me. I divorced Maltila on the spot, threw all her things out of Zeonika, and then swore to my men that one day I would hang Pharon's head on the city gate. I haven't touched him all these years, not because I forgot, but because Boros is in Rhagaea's hands. I am currently busy dealing with the Battania people in the north and the remnants of the Northern and Southern Empire in the east, and I have no time to take care of that incestuous beast for the time being. But I remember this account. When the day comes when the empire is unified, he will be the first person I deal with. Rhagaea reusing him shows that the Southern Empire sucks from top to bottom. A court that relies on incels as important ministers is not worthy of ruling an empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_south_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_15"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Pharon Leonipades. My father spent a lot of money to educate me so that I would not bring down the family. The first thing I learned was this: civilians are the source of my wealth, so I must protect civilians. I learned to keep my promises, fight for my country, have compassion, and listen to the needs of the poor but not to follow their advice on how to govern. My class was taught how to rule, and should rule, but there must always be one among us who stands above the rest. This is why I support Rhagaea - the empire needs a monarch, not the endless squabbling of the Senate. As for Maltila - outsiders called me incest, a beast, and ruined the reputation of the Leonipades family. They were right. I did fall in love with someone I shouldn't have loved, did things I shouldn't have done, and paid a price I shouldn't have paid. I accept these costs. Garius wants to kill me, I understand. The Senate of the Northern Empire looks down on me, I agree. My colleagues in the Southern Empire distance themselves from me, and I don’t blame them. My reputation in society no longer matters to me. I don't care what they think of me. What I care about is whether the tenant farmers in Poros have firewood to burn in winter, whether the water canals should be repaired, and whether the trade road checkpoints collect unnecessary taxes. My circle is very small: the city of Poros, its three villages, and Maltila. In Boros, no one calls me an incest. They only know that the lord is good to them and they are good to the lord. That's enough. As for the court of Lycaron, I go to court when it is time to go to court, and I give advice when it is time to offer advice. I will answer whatever Queen Rhagaea asks me, and I will go home after answering. She needs me, not because I am a good or bad person, but because the Southern Empire needs someone to run Boros well. I guarded the fields in the south for her, and she protected me from those outside who wanted to kill me. It's a transaction and it's trust."
+    }
+  ],
+  "TextMappings": []
+}

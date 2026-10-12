@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using AnimusForge;
 
@@ -393,7 +394,14 @@ Test.True(playerRpPopup.Contains("popup._ignoreSubmitUntilUtc = DateTime.UtcNow.
     && Regex.IsMatch(terminalBehavior,
         @"InformationManager\.DisplayMessage\([\s\S]{0,500}?PlayerRpForgePopup\.TryRestoreEditing\(sessionId\);",
         RegexOptions.CultureInvariant), "failed player RP preview must debounce queued duplicate submit commands");
-Test.True(playerRpCrafting.Contains("\\n未命中时：垃圾物品（投入仍会消耗）。", StringComparison.Ordinal)
+// Pre-existing-break repair (not a Package E feature): 4f694e894 externalized this miss-warning
+// into AF_ECO_UI_RpForgeConfirmationChance without updating this assertion. The display text and
+// the wiring to it are still asserted; the rejection/safety conjuncts below are untouched.
+string economyEnRpForgeConfirm = File.ReadAllText(Path.Combine(repoRoot, "content/modules/AF.Module.Economy/ModuleData/Languages/afeconomy_strings.xml"));
+string economyCnRpForgeConfirm = File.ReadAllText(Path.Combine(repoRoot, "content/modules/AF.Module.Economy/ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml"));
+Test.True(economyCnRpForgeConfirm.Contains("\\n未命中时：垃圾物品（投入仍会消耗）。", StringComparison.Ordinal)
+    && economyEnRpForgeConfirm.Contains("On a miss: a junk item", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpConfirmationChance(", StringComparison.Ordinal)
     && !playerRpCrafting.Contains("\\n失败结果：垃圾物品", StringComparison.Ordinal)
     && terminalBehavior.Contains("SanitizePlayerRpForgeInquiryText", StringComparison.Ordinal)
     && terminalBehavior.Contains("BreakPlayerRpForgeInquiryToken", StringComparison.Ordinal)
@@ -427,14 +435,25 @@ Test.True(compactEquipmentProbabilityPreview.Success
     && !compactEquipmentProbabilityPreview.Value.Contains("TryCreateSnapshot", StringComparison.Ordinal)
     && !compactEquipmentProbabilityPreview.Value.Contains("BuildAttributeSummary", StringComparison.Ordinal),
     "equipment confirmation must show only three compact probability outcomes without building full stat snapshots");
+// Pre-existing-break repair (same cause as above): 4f694e894 externalized the equipment
+// confirmation effect summaries and the degradation warning into AF_ECO_UI_RpForgeEquipment*.
+// The warning trigger stays asserted on the producer; the display text is asserted in its
+// authoritative bilingual resource, and the wiring is asserted on the producer.
 Test.True(playerRpCrafting.Contains("if (badWeight > normalWeight)", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("【警告】劣化概率高于 33.33%", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("建议将锻造从 ", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("PlayerRpTemplatePricePerSmithingLevel.ToString", StringComparison.Ordinal)
-    && playerRpCrafting.Contains(" 第纳尔对应 1 级）。", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("有效正属性保留 ", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("每项有效正属性 +", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("有效正属性与重量不变", StringComparison.Ordinal),
+    && playerRpCrafting.Contains("PlayerRpTemplatePricePerSmithingLevel));", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("GetPlayerRpEquipmentRecommendedSmithingLevel(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpEquipmentWarning(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpEquipmentEffectRetained(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpEquipmentEffectBonus(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpEquipmentEffectStable(", StringComparison.Ordinal)
+    && economyCnRpForgeConfirm.Contains("【警告】劣化概率高于 33.33%", StringComparison.Ordinal)
+    && economyEnRpForgeConfirm.Contains("degradation is more likely than 33.33%", StringComparison.Ordinal)
+    && economyCnRpForgeConfirm.Contains("有效正属性保留 ", StringComparison.Ordinal)
+    && economyCnRpForgeConfirm.Contains("每项有效正属性 +", StringComparison.Ordinal)
+    && economyCnRpForgeConfirm.Contains("有效正属性与重量不变", StringComparison.Ordinal)
+    && economyEnRpForgeConfirm.Contains("positive attributes retained", StringComparison.Ordinal)
+    && economyEnRpForgeConfirm.Contains("each positive attribute +", StringComparison.Ordinal)
+    && economyEnRpForgeConfirm.Contains("positive attributes and weight unchanged", StringComparison.Ordinal),
     "equipment confirmation effect summaries or degradation warning are missing");
 Test.True(playerRpCrafting.Contains("GetPlayerRpEquipmentRecommendedSmithingLevel(templateBaseValue)", StringComparison.Ordinal)
     && playerRpCrafting.Contains("PlayerRpTemplatePricePerSmithingLevel = 1000", StringComparison.Ordinal)
@@ -467,10 +486,19 @@ Test.True(playerRpCrafting.Contains("PlayerRpMasterSmithingLevel = 275", StringC
     && playerRpCrafting.Contains("if (underfunded)", StringComparison.Ordinal)
     && playerRpCrafting.Contains("return;", StringComparison.Ordinal),
     "smithing 275 must remove the bad roll and add normal +3/good +6 only after the template is fully funded");
+// Pre-existing-break repair (same cause as above): the compact crafter selection was externalized
+// into the AF_TERMINAL_UI_Forge_* keys, so its Chinese literals no longer exist in the terminal
+// behavior. The compact-selection behavior stays asserted on the producer; the display text is
+// asserted in its authoritative bilingual resource, and the wiring is asserted on the producer.
+string terminalForgeEnglish = File.ReadAllText(Path.Combine(repoRoot, "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml"));
+string terminalForgeChinese = File.ReadAllText(Path.Combine(repoRoot, "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml"));
 Test.True(terminalBehavior.Contains("OpenPlayerRpCrafterSelection()", StringComparison.Ordinal)
-    && terminalBehavior.Contains("\"选择制造者\"", StringComparison.Ordinal)
-    && terminalBehavior.Contains("\"　锻造等级：\"", StringComparison.Ordinal)
-    && terminalBehavior.Contains("\"　锻造体力：\"", StringComparison.Ordinal)
+    && terminalBehavior.Contains("Ui(\"AF_TERMINAL_UI_Forge_SelectCrafter\"", StringComparison.Ordinal)
+    && terminalBehavior.Contains("UiFormat(\"AF_TERMINAL_UI_Forge_CrafterEntry\"", StringComparison.Ordinal)
+    && terminalForgeChinese.Contains("锻造等级：{SKILL}", StringComparison.Ordinal)
+    && terminalForgeChinese.Contains("锻造体力：{STAMINA}", StringComparison.Ordinal)
+    && terminalForgeEnglish.Contains("Smithing skill: {SKILL}", StringComparison.Ordinal)
+    && terminalForgeEnglish.Contains("Crafting stamina: {STAMINA}", StringComparison.Ordinal)
     && terminalBehavior.Contains("isSeachAvailable: false", StringComparison.Ordinal),
     "player RP forge must open a compact crafter selection before the parchment editor");
 Test.True(playerRpCrafting.Contains("TryGetAvailablePlayerRpCraftersForExternal", StringComparison.Ordinal)
@@ -500,14 +528,17 @@ Test.True(playerRpCrafting.Contains("current.SmithingSkill != preview.SmithingSk
     "equipment commit must reject probability changes after the confirmation preview");
 Test.True(!playerRpCrafting.Contains("\\n玩家锻造：", StringComparison.Ordinal)
     && !playerRpCrafting.Contains("\\n优良 / 正常 / 劣化：", StringComparison.Ordinal)
-    && terminalBehavior.Contains("confirmationTitle = \"制造“\" + compactItemName", StringComparison.Ordinal),
+    && terminalBehavior.Contains("UiFormat(\"AF_TERMINAL_UI_Forge_ConfirmationWeaponTitle\"", StringComparison.Ordinal)
+    && terminalBehavior.Contains("(\"NAME\", compactItemName)", StringComparison.Ordinal)
+    && terminalForgeChinese.Contains("制造“{NAME}”", StringComparison.Ordinal)
+    && terminalForgeEnglish.Contains("Craft &quot;{NAME}&quot;", StringComparison.Ordinal),
     "equipment confirmation still exposes the verbose numeric header instead of moving identity to the title");
 Test.True(!terminalBehavior.Contains("TryPreviewPlayerRpCraftExactMatchForExternal(", StringComparison.Ordinal)
     && terminalBehavior.Contains("TryBuildPlayerRpCraftTemplateSelectionForExternal(", StringComparison.Ordinal)
     && terminalBehavior.Contains("ShowPlayerRpCraftTemplateSelection(", StringComparison.Ordinal),
     "every U-key forge submission must enter the player-controlled template list instead of an automatic exact-match path");
 Test.True(playerRpCrafting.Contains("\"player_choice\"", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("模板选择：玩家手动选择（Top ", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpConfirmationPlayerChoice(candidates.Count)", StringComparison.Ordinal)
     && playerRpCrafting.Contains("requireExactGameItemMatch", StringComparison.Ordinal)
     && playerRpCrafting.Contains("TryValidatePlayerRpSelectedTemplateForCurrentRequest(", StringComparison.Ordinal),
     "manual choice must retain template safety and current-price revalidation before preview and commit");
@@ -585,20 +616,25 @@ Test.True(!myBehavior.Contains("TranslateRewardItemIndexes(", StringComparison.O
     && HasSharedRewardCodec(sharedPostprocessOwner, sharedPostprocessOwner),
     "free conversation must use the shared translator rather than retain a duplicate private implementation");
 Test.True(sharedPostprocessOwner.Contains("getItemDisplayName", StringComparison.Ordinal) && !sharedPostprocessOwner.Contains("knownItemKey.Trim()", StringComparison.Ordinal), "scene normalization must preserve direct asset names");
-Match foodSuffixBlock = Regex.Match(rewardSystem, @"private static readonly GeneratedRpFoodSuffixRule\[\] GeneratedRpFoodSuffixRules.*?(?=\r?\n\s*public class RewardItemInfo)", RegexOptions.Singleline);
-Test.True(foodSuffixBlock.Success, "generated RP food suffix pool missing");
-int foodSuffixCount = Regex.Matches(foodSuffixBlock.Value, "\"(?:[^\"\\\\]|\\\\.)*\"").Count;
+using var vocabularyDocument = JsonDocument.Parse(File.ReadAllText(Path.Combine(repoRoot, "content/modules/AF.Module.Economy/ModuleData/GeneratedRpVocabulary.json")));
+JsonElement vocabulary = vocabularyDocument.RootElement;
+Test.True(rewardSystem.Contains("GeneratedRpFoodSuffixRules = GeneratedRpVocabulary.FoodRules();", StringComparison.Ordinal), "generated RP food suffix pool is not wired to its resource");
+string[] foodSuffixValues = vocabulary.GetProperty("FoodSuffixRules").EnumerateArray()
+    .SelectMany(row => row.GetProperty("Suffixes").EnumerateArray().Select(value => value.GetString()!)).ToArray();
+int foodSuffixCount = foodSuffixValues.Length;
 Test.True(foodSuffixCount >= 500, "generated RP food suffix pool unexpectedly small: " + foodSuffixCount);
 foreach (string requiredFoodSuffix in new[] { "\"糕\"", "\"果\"", "\"梨\"", "\"菜\"", "\"肉\"", "\"牛肉\"", "\"羊肉\"", "\"猪肉\"", "\"牛排\"", "\"卜丁\"", "\"鱼青\"", "\"虾圭\"", "\"虾面盒\"", "\"焖鸡\"", "\"鸡徘\"", "\"肉元\"", "\"肉丝\"", "\"羊腿\"", "\"羊肝\"", "\"牛扒\"", "\"牛尾\"", "\"谷物\"", "\"穀物\"", "\"水\"", "\"药\"", "\"药水\"", "\"apple\"", "\"beef\"", "\"bread\"", "\"water\"", "\"medicine\"", "\"potion\"" })
 {
-    Test.True(foodSuffixBlock.Value.Contains(requiredFoodSuffix, StringComparison.Ordinal), "required food suffix missing: " + requiredFoodSuffix);
+    Test.True(foodSuffixValues.Contains(requiredFoodSuffix.Trim('"'), StringComparer.Ordinal), "required food suffix missing: " + requiredFoodSuffix);
 }
+string[] foodFalsePositives = vocabulary.GetProperty("StringLists").GetProperty("GeneratedRpFoodNonFoodEndingExceptions")
+    .EnumerateArray().Select(value => value.GetString()!).ToArray();
 Test.True(rewardSystem.Contains("GeneratedRpFoodNonFoodEndingExceptions", StringComparison.Ordinal)
-    && rewardSystem.Contains("\"结果\"", StringComparison.Ordinal)
-    && rewardSystem.Contains("\"王八蛋\"", StringComparison.Ordinal)
-    && rewardSystem.Contains("\"铁饼\"", StringComparison.Ordinal)
-    && rewardSystem.Contains("\"香水\"", StringComparison.Ordinal)
-    && rewardSystem.Contains("\"火药\"", StringComparison.Ordinal), "food false-positive guards missing");
+    && foodFalsePositives.Contains("结果", StringComparer.Ordinal)
+    && foodFalsePositives.Contains("王八蛋", StringComparer.Ordinal)
+    && foodFalsePositives.Contains("铁饼", StringComparer.Ordinal)
+    && foodFalsePositives.Contains("香水", StringComparer.Ordinal)
+    && foodFalsePositives.Contains("火药", StringComparer.Ordinal), "food false-positive guards missing");
 Test.True(rewardSystem.Contains("IsCloneSafeGeneratedRpFoodTemplateItem", StringComparison.Ordinal)
     && rewardSystem.Contains("rp_food_template", StringComparison.Ordinal)
     && rewardSystem.Contains("ClearGeneratedRpFoodTemplateCache", StringComparison.Ordinal), "food template cache integration missing");
@@ -608,6 +644,119 @@ Test.True(rewardSystem.Contains("GeneratedRpFoodKind.Water", StringComparison.Or
     && rewardSystem.Contains("item.IsFood && (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer)", StringComparison.Ordinal)
     && rewardSystem.Contains("item.IsFood && (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter)", StringComparison.Ordinal), "water and medicine templates must remain consumable");
 
+// ---------------------------------------------------------------------------
+// Package E display localisation (economy / RP crafting).
+//
+// Assertions below are appended only. They cover the *player-visible* bilingual
+// display surface added by the localization work: the economy UI projection
+// sources, the RP-forge display projector, the recruitment detail projector and
+// the afeconomy resource pair. They are source/resource contract checks, not a
+// runtime measure of "full English coverage": unrecognised legacy receipts,
+// raw exceptions and machine-facing markers legitimately stay verbatim.
+// ---------------------------------------------------------------------------
+string economyUiTexts = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Host", "EconomyUiTexts.cs"));
+string rpForgeDisplay = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Presentation", "PlayerRpForgeDisplayTexts.cs"));
+string recruitmentDetail = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Presentation", "EconomyRecruitmentDetailTexts.cs"));
+string economyEnXml = File.ReadAllText(Path.Combine(repoRoot, "content", "modules", "AF.Module.Economy", "ModuleData", "Languages", "afeconomy_strings.xml"));
+string economyCnXml = File.ReadAllText(Path.Combine(repoRoot, "content", "modules", "AF.Module.Economy", "ModuleData", "Languages", "CNs", "afeconomy_strings-zh-CN.xml"));
+
+MatchCollection economyEnMatches = Regex.Matches(economyEnXml, "<string\\s+id=\"([^\"]+)\"\\s+text=\"([^\"]*)\"\\s*/>");
+MatchCollection economyCnMatches = Regex.Matches(economyCnXml, "<string\\s+id=\"([^\"]+)\"\\s+text=\"([^\"]*)\"\\s*/>");
+var economyEnKeys = new HashSet<string>(StringComparer.Ordinal);
+var economyCnKeys = new HashSet<string>(StringComparer.Ordinal);
+var economyEnText = new Dictionary<string, string>(StringComparer.Ordinal);
+var economyCnText = new Dictionary<string, string>(StringComparer.Ordinal);
+foreach (Match m in economyEnMatches)
+{
+    economyEnKeys.Add(m.Groups[1].Value);
+    economyEnText[m.Groups[1].Value] = m.Groups[2].Value;
+}
+foreach (Match m in economyCnMatches)
+{
+    economyCnKeys.Add(m.Groups[1].Value);
+    economyCnText[m.Groups[1].Value] = m.Groups[2].Value;
+}
+Test.True(economyEnKeys.Count == economyEnMatches.Count && economyCnKeys.Count == economyCnMatches.Count,
+    "economy resource pair must not contain duplicate string ids");
+Test.Equal(economyEnKeys.Count, economyCnKeys.Count, "economy resource pair key counts must match");
+Test.True(economyEnKeys.SetEquals(economyCnKeys), "economy resource pair key sets must be identical");
+Test.True(economyEnKeys.Count >= 350, "economy resource pair unexpectedly small: " + economyEnKeys.Count);
+
+// Every id referenced by a display projector must resolve in both languages.
+var displaySourceNames = new[] { "EconomyUiTexts.cs", "PlayerRpForgeDisplayTexts.cs", "EconomyRecruitmentDetailTexts.cs" };
+var displaySourceText = new[] { economyUiTexts, rpForgeDisplay, recruitmentDetail };
+var displayKeys = new SortedSet<string>(StringComparer.Ordinal);
+for (int sourceIndex = 0; sourceIndex < displaySourceText.Length; sourceIndex++)
+{
+    foreach (Match reference in Regex.Matches(displaySourceText[sourceIndex], "\"(AF_ECO_UI_[A-Za-z0-9_]+)\""))
+    {
+        displayKeys.Add(reference.Groups[1].Value);
+    }
+}
+Test.True(displayKeys.Count >= 270, "economy display key reference set unexpectedly small: " + displayKeys.Count);
+string[] missingInEnglish = displayKeys.Where(key => !economyEnKeys.Contains(key)).ToArray();
+string[] missingInChinese = displayKeys.Where(key => !economyCnKeys.Contains(key)).ToArray();
+Test.True(missingInEnglish.Length == 0, "economy display ids missing from the English resource: " + string.Join(", ", missingInEnglish));
+Test.True(missingInChinese.Length == 0, "economy display ids missing from the Chinese resource: " + string.Join(", ", missingInChinese));
+
+// Display text must actually be bilingual: the English side carries no CJK,
+// the Chinese side is not an English passthrough, and neither side is blank.
+var cjkRanges = new Regex("[\\u3000-\\u303f\\u3400-\\u4dbf\\u4e00-\\u9fff\\uf900-\\ufaff\\uff00-\\uffef]", RegexOptions.CultureInvariant);
+string[] englishSideWithCjk = displayKeys.Where(key => cjkRanges.IsMatch(economyEnText[key])).ToArray();
+string[] chineseSideUntranslated = displayKeys.Where(key => !cjkRanges.IsMatch(economyCnText[key])).ToArray();
+string[] blankEnglishText = displayKeys.Where(key => economyEnText[key].Trim().Length == 0).ToArray();
+string[] blankChineseText = displayKeys.Where(key => economyCnText[key].Trim().Length == 0).ToArray();
+Test.True(englishSideWithCjk.Length == 0, "economy English display text still contains Chinese characters: " + string.Join(", ", englishSideWithCjk));
+Test.True(chineseSideUntranslated.Length == 0, "economy Chinese display text is missing for: " + string.Join(", ", chineseSideUntranslated));
+Test.True(blankEnglishText.Length == 0, "economy English display text is blank for: " + string.Join(", ", blankEnglishText));
+Test.True(blankChineseText.Length == 0, "economy Chinese display text is blank for: " + string.Join(", ", blankChineseText));
+
+// Placeholders are a display contract: both sides must carry the same set.
+string[] placeholderDrift = displayKeys.Where(key =>
+{
+    string[] englishSlots = Regex.Matches(economyEnText[key], "\\{([A-Za-z0-9_]+)\\}").Select(match => match.Groups[1].Value).OrderBy(name => name, StringComparer.Ordinal).ToArray();
+    string[] chineseSlots = Regex.Matches(economyCnText[key], "\\{([A-Za-z0-9_]+)\\}").Select(match => match.Groups[1].Value).OrderBy(name => name, StringComparer.Ordinal).ToArray();
+    return !englishSlots.SequenceEqual(chineseSlots, StringComparer.Ordinal);
+}).ToArray();
+Test.True(placeholderDrift.Length == 0, "economy resource pair placeholder drift: " + string.Join(", ", placeholderDrift));
+
+// Newlines inside a text attribute must stay escaped; a literal newline would
+// silently truncate the localised string in game. This is checked on the parsed
+// attribute values, not on the file, whose markup legitimately spans lines.
+for (int sourceIndex = 0; sourceIndex < displaySourceText.Length; sourceIndex++)
+{
+    Test.True(displaySourceText[sourceIndex].IndexOf("\\u", StringComparison.Ordinal) < 0,
+        "display projection source must not encode text as Unicode escapes: " + displaySourceNames[sourceIndex]);
+}
+string[] embeddedNewlineText = displayKeys.Where(key =>
+    economyEnText[key].IndexOf('\n') >= 0 || economyEnText[key].IndexOf('\r') >= 0
+    || economyCnText[key].IndexOf('\n') >= 0 || economyCnText[key].IndexOf('\r') >= 0).ToArray();
+Test.True(embeddedNewlineText.Length == 0,
+    "localised economy text must escape newlines rather than embed them: " + string.Join(", ", embeddedNewlineText));
+
+// The projectors must be total: unrecognised input is returned verbatim rather
+// than blanked, truncated or replaced with an error placeholder.
+Test.True(economyUiTexts.Contains("return status ?? string.Empty;", StringComparison.Ordinal),
+    "faction identity projection must fall back to the original status text");
+Test.True(rpForgeDisplay.Contains("internal static string ForDisplay(string", StringComparison.Ordinal),
+    "RP forge projection must expose a ForDisplay entry point");
+Test.True(rpForgeDisplay.Contains("ProjectLine(", StringComparison.Ordinal)
+    && rpForgeDisplay.Contains("ProjectKnown(", StringComparison.Ordinal)
+    && rpForgeDisplay.Contains("ProjectIssueList(", StringComparison.Ordinal),
+    "RP forge projection must keep its line, known-message and list projections");
+Test.True(recruitmentDetail.Contains("CarriedFiefPrefix", StringComparison.Ordinal)
+    && recruitmentDetail.Contains("TakeCarriedFiefBlock", StringComparison.Ordinal)
+    && recruitmentDetail.Contains("TakeTransitionNoteBlock", StringComparison.Ordinal),
+    "recruitment detail projection must preserve carried fiefs and transition notes");
+
+// The RP crafting safety gates themselves must stay byte-identical Chinese:
+// translation happens at display time, never by weakening the game rule.
+Test.True(playerRpCrafting.Contains("锻造等级或三档概率已经变化，请重新确认", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("current.SmithingSkill != preview.SmithingSkill", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("current.GoodWeight != preview.GoodWeight", StringComparison.Ordinal),
+    "RP crafting probability-change refusal must remain intact after localisation");
+Test.True(terminalBehavior.Contains("PlayerRpForgeDisplayTexts.ForDisplay(", StringComparison.Ordinal),
+    "every player-visible RP forge error/receipt must pass through the bilingual projector");
 Console.WriteLine("PASS assertions=" + Test.Assertions + " fuzz=20000 pressureTags=25000 elapsedMs=" + stopwatch.Elapsed.TotalMilliseconds.ToString("F2"));
 return 0;
 }

@@ -24,9 +24,84 @@ static class Test
 
 internal static class Program
 {
+    private static void CanonicalProjectionPreservesProse()
+    {
+        const string body = "政策《正文引用》；范围=原文\n影响：必须保留\n机械效果：用户原文";
+        var entry = new WorldDiplomacyCanonicalHistoryEntry
+        {
+            Kind = "policy_published",
+            Text = "政策《名称》；发布国=甲国；范围=kingdom\n政策状态=active\n" + body
+        };
+        var chinese = new Dictionary<string, string>
+        {
+            ["HistoryProjection_Policy"] = "政策《",
+            ["HistoryProjection_PolicyStatus"] = "政策状态=",
+            ["HistoryProjection_PolicyIssuer"] = "；发布国=",
+            ["HistoryProjection_PolicyScope"] = "；范围=",
+            ["HistoryProjection_Confirmed"] = "经游戏机制确认：",
+            ["HistoryProjection_Weekly"] = "世界周报成品",
+            ["HistoryProjection_WeeklyCorrection"] = "世界周报成品更正版"
+        };
+        string original = entry.Text;
+        string raw = WorldDiplomacyCanonicalRenderRules.RenderCanonicalHistoryEntry(entry);
+        Test.True(WorldDiplomacyCanonicalRenderRules.RenderCanonicalHistoryEntry(entry, (key, fallback) => chinese[key]) == raw,
+            "Chinese package preserves original canonical text");
+        string english = WorldDiplomacyCanonicalRenderRules.RenderCanonicalHistoryEntry(entry, (key, fallback) => fallback);
+        Test.True(english.Contains("Policy 《名称》") && english.Contains("Policy status=active") && english.Contains("; issuing kingdom=甲国; scope=kingdom") && english.EndsWith(body),
+            "English projection changes structural prefixes without rewriting body");
+        Test.True(entry.Text == original, "Canonical projection cannot rewrite stored text");
+        string packaged = WorldDiplomacyCanonicalRenderRules.RenderCanonicalHistoryEntry(entry, DiplomacyPromptTexts.Get);
+        Test.True(SmokeLocalizationEnvironment.EnglishPackage ? packaged.Contains("; issuing kingdom=甲国; scope=kingdom") : packaged == raw,
+            "actual package reader projects known issuer/scope metadata while CN retains raw text");
+        entry.Text = "政策《标题含》边界》；发布国=甲国；范围=kingdom\n" + body;
+        english = WorldDiplomacyCanonicalRenderRules.RenderCanonicalHistoryEntry(entry, (key, fallback) => fallback);
+        Test.True(english.Contains("；发布国=甲国；范围=kingdom") && english.EndsWith(body), "ambiguous title delimiters never rewrite metadata or body");
+        entry.Text = "政策《名称》；范围=custom_scope:{NAME} $1\n" + body;
+        english = WorldDiplomacyCanonicalRenderRules.RenderCanonicalHistoryEntry(entry, (key, fallback) => fallback);
+        Test.True(english.Contains("; scope=custom_scope:{NAME} $1") && english.EndsWith(body), "stable unknown scope and dynamic values remain literal");
+
+        entry.Kind = "world_weekly";
+        entry.Text = "世界周报成品更正版《题目》：\n正文引用世界周报成品更正版";
+        english = WorldDiplomacyCanonicalRenderRules.RenderCanonicalHistoryEntry(entry, (key, fallback) => fallback);
+        Test.True(english.Contains("[World Bulletin Final Edition (Correction)]《题目》") && english.EndsWith("正文引用世界周报成品更正版"),
+            "Weekly correction translates only the leading structural label");
+    }
+
+    private static void PackagedOralProtocolParity()
+    {
+        var (host, owner) = ConcurrentOralMigrationReplay.Fixture();
+        foreach (string edition in new[] { "", ".en" })
+        {
+            var corpus = JObject.Parse(File.ReadAllText(FindRepositoryFile("content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts" + edition + ".json")));
+            string commit = (string)corpus["AF_DIP_CommitInstruction"]!;
+            string tag = System.Text.RegularExpressions.Regex.Match(commit, @"\[ACTION:DIPLOMACY:COMMIT:([^\]]+)\]").Groups[1].Value;
+            tag = tag.Replace("KINGDOM_ID", "b");
+            Test.True(AnimusForge.DiplomacyDialogue.DialogueTagPayload.TryParse(tag, out var parsed)
+                && parsed.TargetKingdomId == "b" && parsed.Action == AnimusForge.DiplomacyDialogue.DialogueDiplomaticAction.Peace
+                && parsed.Move == AnimusForge.DiplomacyDialogue.DialogueDiplomaticMove.NewMatter,
+                "actual CN/EN example resolves through production payload parser without translating fields or enums");
+            string control = (string)corpus["AF_DIP_CommitmentInstruction"]!;
+            string payload = System.Text.RegularExpressions.Regex.Match(control, @"\[ACTION:DIPLOMACY:COMMITMENT:([^\]]+)\]").Groups[1].Value
+                .Replace("ARRANGEMENT_ID", "absent").Replace("deferred|cancelled|accepted", "deferred").Replace("EXPLICIT_REASON", "literal {NAME} $1");
+            string result = owner.ControlOralDiplomaticCommitment("ruler_a", "a", payload);
+            Test.True(result == DiplomacyMiscPromptTexts.Get("DialogueControl_AmbiguousSourceReason", "")
+                && owner.CurrentStorage.DialogueArrangements.Count == 0,
+                "actual CN/EN control example parses correctly but never executes an absent commitment");
+        }
+    }
+
     private static int Main(string[] args)
     {
+        SmokeLocalizationEnvironment.Initialize();
+        CanonicalProjectionPreservesProse();
+        PackagedOralProtocolParity();
         AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
+        if (args.Length == 1 && args[0] == "--oral-declaration")
+        {
+            OralDeclarationReplay.Run();
+            Console.WriteLine($"Oral AI declaration replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--propagation-closure")
         {
             PropagationLifecycleReplay.Run(); PropagationApplicationReplay.Run();
@@ -12270,10 +12345,10 @@ RunRepairCorrectionAndJobDecisionTests();
                 recorded.Add((a, b, c, d, e, f, g, h, i2)));
         Test.True(recorded.Count == 4
             && recorded[0].world && recorded[0].key == "world_diplomacy:r1:day:5:world"
-            && recorded.Skip(1).All(x => !x.world && x.label == "与本国有关的外交宣言进展")
+            && recorded.Skip(1).All(x => !x.world && x.label == (SmokeLocalizationEnvironment.EnglishPackage ? "Diplomatic declaration progress concerning this kingdom" : "与本国有关的外交宣言进展"))
             && recorded.Skip(1).Select(x => x.kingdom).SequenceEqual(new[] { "K3", "K4", "K2" })
-            && recorded[0].snapshot.Contains("外交回合")
-            && recorded[0].snapshot.Contains("[游戏已执行]")
+            && recorded[0].snapshot.Contains(SmokeLocalizationEnvironment.EnglishPackage ? "Diplomatic round r1" : "外交回合")
+            && recorded[0].snapshot.Contains(SmokeLocalizationEnvironment.EnglishPackage ? "[Game executed]" : "[游戏已执行]")
             && recorded[0].snapshot.Contains("Declaration"),
             "the weekly snapshot must publish the world entry plus every related kingdom");
 
@@ -15697,7 +15772,7 @@ RunRepairCorrectionAndJobDecisionTests();
             File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs")).Contains("WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.CloneLlmMessages(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyPromptContractRules.KingdomStrategicIntentRule", StringComparison.Ordinal)
+            && behaviorSource.Contains("DiplomacyPromptTexts.Get(\"AF_DIP_Compatibility_008\",", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildKingdomStrategicProfileMarker(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string UpsertKingdomStrategicProfilePrompt(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static int FindKingdomStrategicProfileInsertionIndex(", StringComparison.Ordinal)
@@ -15705,7 +15780,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("private const string KingdomStrategicProfileMarkerPrefix", StringComparison.Ordinal)
             && promptContractSource.Contains("public static string BuildKingdomStrategicProfileMarker(", StringComparison.Ordinal)
             && promptContractSource.Contains("public static bool GenerationJobContainsKingdomStrategicProfile(", StringComparison.Ordinal)
-            && promptContractSource.Contains("internal const string KingdomStrategicIntentRule", StringComparison.Ordinal),
+            && promptContractSource.Contains("internal static readonly string KingdomStrategicIntentRule = CompatibilityContractText.Values[\"AF_DIP_Compatibility_008\"]", StringComparison.Ordinal),
             "host must delegate strategic-profile prompt and job-message helpers to the prompt contract rules");
         Test.True(!promptContractSource.Contains("DuelSettings", StringComparison.Ordinal),
             "prompt contract rules must not read MCM settings");
@@ -15937,7 +16012,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && textRulesSource.Contains("Func<string, WorldDiplomacyRound> resolveRound", StringComparison.Ordinal)
             && textRulesSource.Contains("Func<string, WorldDiplomacyDocument> resolveDocument", StringComparison.Ordinal),
             "notification and event-meta text composition must live in the text rules behind day/resolver ports");
-        Test.True(notificationApplicationSource.Contains("WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate)", StringComparison.Ordinal)
+        Test.True(notificationApplicationSource.Contains("WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate, DiplomacyUiLocalization.Text)", StringComparison.Ordinal)
             && presentationQueriesSource.Contains("WorldDiplomacyTextRules.BuildDocumentEventMeta(document, resolveRound, resolveDocument)", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildNotificationDescription(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private string BuildDocumentEventMeta(", StringComparison.Ordinal),
@@ -15948,7 +16023,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && textRulesSource.Contains("public static string BuildRoundCompressionPrompt(", StringComparison.Ordinal)
             && textRulesSource.Contains("Func<string, string> kingdomName", StringComparison.Ordinal),
             "battle-fact and compression-prompt rendering must live in the text rules behind name/date ports");
-        Test.True(textRulesSource.Contains("FormatBattleFactForPrompt(x, kingdomName, formatDayFallback)", StringComparison.Ordinal)
+        Test.True(textRulesSource.Contains("FormatBattleFactForPrompt(x, kingdomName, formatDayFallback, localize)", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string FormatBattleKingdomNames(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string FormatBattleFactForPrompt(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private string BuildRoundCompressionPrompt(", StringComparison.Ordinal),

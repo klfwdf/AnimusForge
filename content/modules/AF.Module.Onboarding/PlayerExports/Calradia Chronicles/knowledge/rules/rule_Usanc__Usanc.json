@@ -1,0 +1,93 @@
+{
+  "Id": "rule_Usanc",
+  "Keywords": [
+    "Usanc"
+  ],
+  "RagShortTexts": [
+    "Usanc village lies by a small cove of Charas Bay and is covered with olive groves."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Usanc is a village near Usanc Castle, situated beside a small cove that opens into Charas Bay. This warm southern land is ideal for growing olive trees, and the hillsides are dotted with olive groves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The village of Usanc is tucked away beside a small cove on Charas Bay, quiet as can be. The climate there is as warm as around Charas, and it's planted full of olive trees. Most of the oil consumed by the garrison of Usanc Castle comes from this village down the hill."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Usanc doesn't produce a huge volume of olive oil, but the quality is fine. The winds and waves are gentle in that little cove, the climate is steady, and the olive trees thrive. Merchants around Charas Bay occasionally make a detour there to buy oil—it costs a bit more than in the big producing regions, but the oil is fragrant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That little cove at Usanc is a great place to rest your feet. The cove isn't big, the water is crystal clear, and a row of olive trees lines the beach where you can sit in the shade and listen to the waves lapping gently at the shore. The castle isn't far up the hill, and the garrison soldiers sometimes come down to buy oil and wine from the villagers."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Usanc",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Usanc Castle",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

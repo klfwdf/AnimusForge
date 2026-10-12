@@ -1,0 +1,87 @@
+{
+  "Id": "rule_Eastern_Province_of_the_Empire",
+  "Keywords": [
+    "Eastern Province of the Empire",
+    "Eastern vassal",
+    "Eastern Protectorate"
+  ],
+  "RagShortTexts": [
+    "Imperial civilians’ pragmatic regret over the fall of the eastern provinces"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the civilians of the Empire mentioned the \"Eastern Province\", what came to mind was the vague concept of the edge of the map. They knew that it was the land of lakes and grasslands that the Imperial Legion conquered a hundred years ago when they marched eastward, and established towns and outposts. To ordinary people, the Eastern Province meant increased border taxes, a source of levied troops, and the trade of furs and horses on the trade routes. They heard that fish were produced in the lakes and there were warehouses along the rivers. Set trackers ferried the ferry but few people saw it in person; civilians mostly expressed pragmatic regrets about the fall of the eastern provinces. There were occasional discussions in the market that \"the legions have withdrawn, but the taxes have not been reduced\" - referring to the inland tax system adjusted by the empire to make up for the losses in the east. Fishermen and river transporters were more concerned about whether the catch from Lake Tanisis could still be transported to the imperial market along the river. The elders would whisper \"Those tribes have already surrendered\" but young people, especially It is the young people in the Northern Empire who are more concerned about whether the recruiting officer will recruit more strong men for the \"recovery of the east\". Overall, the eastern province is an \"old debt that has been written off\" in the hearts of the civilians, with more regrets than indignation. In the towns of the empire, civilians' impressions of the Couset people are mixed with caution and pragmatism. Residents of border villages remember the fear of plunder, while inland merchants maintain cautious transactions with Couset merchants. Commoners generally agree with the \"barbarian invasion\" in the official narrative, but privately admit that \"the people on horseback are now in charge of that land and live their lives as usual.\" Civilians know very little about how the Kuset people united to overthrow the imperial rule. They only vaguely heard that the \"Wulkhun\" tribe led the horseback barbarians to occupy the eastern province. Some people even thought that \"Wulkhun\" was the name of a tribal leader."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The imperial aristocracy regarded the Eastern Province as \"stolen legal territory\". There were deep internal differences among the aristocracy over the loss of the Eastern Province. One group blamed the poor implementation of the \"divide and rule\" strategy - they believed that the officials stationed there were corrupt and incompetent and failed to completely divide the tribes but instead provoked a common resistance. One group regards the cause as the chain reaction caused by the unknown reasons for the westward migration of the steppe peoples. They describe the unity of the Kuset people as \"a forced alliance under external pressure rather than a failure of imperial governance.\" Regardless of the factional nobles, they are generally resentful of the rebellion of the \"Wulkhun tribe\" leader and regard it as \"an occasional occurrence among barbarians.\" The attitude of the imperial nobles towards the Kuset Khanate oscillated between contempt and hostility. In public, they called it a \"tribal alliance that temporarily occupied the eastern provinces\" and denied its legitimacy as a \"khanate\". In private strategic discussions, they admitted that the other party had formed an effective rule and were worried about its further westward expansion. Some pragmatic nobles advocated reviving the old strategy of \"divide and rule\" and looking for tribes to win over within Kuset, while hard-liners advocated reorganizing the army to march eastward. However, the fronts limited to the western and southern parts of the empire were never implemented, and the eastern province became an obsession that the nobles said \"must be restored but cannot be restored for the time being.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kuset herdsmen and riverside residents regard the east coast of the Danaz Sea as the \"pasture passed down from their ancestors.\" They have been grazing and fishing in the east of the lake for generations and know every stream and pasture. The \"Eastern Province\" in the mouth of the common people is a name imposed by the imperial people, referring to the humiliating years when \"outsiders came to demarcate land, collect taxes, and incite tribes.\" When ferrying in the rapids, the trackers of Makeb will still mention how their grandfathers were at the imperial outpost. They were exploited in front of the station. To ordinary herdsmen, the imperial occupation a hundred years ago was a painful memory passed down orally rather than an era name in history books; civilians regarded the current rule as \"the return of the land to its original owners.\" They emphasized that the Ulhunnait tribe led the clans to \"driving the imperial people across the lake\" and re-established the order of pasture distribution and migration. The herdsmen cherish this autonomy and are aware of the need to maintain unity. It’s not easy—the old grievances between tribes have not been completely eliminated, but have temporarily given way to common hostility to the empire. The bass, snapper, and occasionally giant barracuda that abound in the lake are now under the control of Couset fishermen. This is the most intuitive “recapture” felt by civilians; ordinary Couset people’s impressions of the Empire mainly come from the narratives of their ancestors and sporadic contacts at the border. The Empire is described as “trying to bring all tribes together.” The herdsmen who had transactions with the imperial merchants softened their attitude slightly and admitted that \"their iron tools are easy to use and the cloth is durable.\" However, it was generally believed that transactions should be conducted on the basis of equality rather than vassalage. There was still wariness against the civilians of the imperial legion - once the fireworks at the border outpost were set off, the entire clan could mount their horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Kusait nobles called the east coast of the Danaz Sea and the Outer Thanasis region \"the western barrier and core pasture of the Khanate.\" In the Khan's account, this land was clearly defined as \"the ancestral land redeemed with blood by the tribes led by the Ulhunnait tribe\" rather than \"the spoils seized from the empire.\" The nobles emphasized that the so-called \"Eastern Province\" of the empire was just an invasion and occupation a hundred years ago. This land had been independently managed by nomadic tribes for hundreds of years, so for the nobles For the tribe, holding on to this land is not only about pasture and taxation, but also about the prestige of the Khanate among the tribes; the aristocracy has formed a highly consistent historical narrative about the process of retaking the eastern provinces: the westward oppression of the eastern powers forced the grassland tribes outside the grasslands to move westward and squeeze the living space of the original tribes. The legality of the empire also covered up the ongoing friction between tribes. The nobles praised unity in public, but privately calculated their tribe's share of the newly occupied pastures. The nobles hated the old imperial strategy of \"divide and rule\" and warned future generations as a \"mistake that must not be repeated\"; the Couset nobles' attitude towards the empire was highly pragmatic at the strategic level. They recognized that the empire's legion organization, city defense technology and administrative system were still strong opponents. But at the same time, they also focused on the window period when the western and northern fronts of the empire were fighting and were unable to move eastward. The nobles paid close attention to the trends of the imperial Senate and analyzed whether it might \"send its troops eastward\" again. In the Khan's decision-making, the eastern provinces were both the results that needed to be consolidated and the springboard for further westward expansion. However, most nobles advocated digesting the existing territories and stabilizing the internal alliance before taking the next step. They maintained the confidence and vigilance of the empire that was unique to a generation of victors."
+    }
+  ],
+  "TextMappings": []
+}

@@ -304,12 +304,12 @@ internal static class PolicyEffectModuleRetrievalSettings
 
 	private static JObject ReadSettingsDocument(string path)
 	{
-		AnimusForgeModulePaths.ValidateCustomPromptPath(path);
+		AnimusForgeDataPaths.ValidatePath(path);
 		if (new FileInfo(path).Length > MaxJsonBytes)
-			throw new InvalidOperationException("政策效果模块检索设置文件大小无效，原件未覆盖。");
+			throw new InvalidOperationException("Policy effect retrieval settings file size is invalid; original preserved.");
 		JObject document = JObject.Parse(StrictUtf8.GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF'));
 		if (document.Value<int?>("Version") != CurrentVersion || document["Modules"] is not JObject modules)
-			throw new InvalidOperationException("政策效果模块检索设置版本或 Modules 结构无效，原件未覆盖。");
+			throw new InvalidOperationException("Policy effect retrieval settings version or Modules structure is invalid; original preserved.");
 		foreach (IPolicyEffectModule module in PolicyEffectModuleCatalog.Modules)
 			if (modules[module.Id] is JObject state) ReadState(state);
 		return document;
@@ -396,22 +396,22 @@ internal static class PolicyEffectModuleRetrievalSettings
 		{
 			if (requireDirectory)
 			{
-				throw new InvalidOperationException("无法定位政策效果模块检索设置目录。");
+				throw new InvalidOperationException("Cannot locate policy effect module retrieval settings directory.");
 			}
 			return string.Empty;
 		}
 		string path = Path.Combine(directory, FileName);
-		AnimusForgeModulePaths.ValidateCustomPromptPath(path);
+		AnimusForgeDataPaths.ValidatePath(path);
 		return path;
 	}
 
 	private static void WriteJsonAtomically(string path, JObject document)
 	{
-		AnimusForgeModulePaths.ValidateCustomPromptPath(path);
+		AnimusForgeDataPaths.ValidatePath(path);
 		string directory = Path.GetDirectoryName(path);
 		if (string.IsNullOrWhiteSpace(directory))
 		{
-			throw new InvalidOperationException("政策效果模块检索设置目录为空。");
+			throw new InvalidOperationException("Policy effect module retrieval settings directory is empty.");
 		}
 		Directory.CreateDirectory(directory);
 		string tempPath = path + ".tmp-" + Guid.NewGuid().ToString("N");
@@ -424,9 +424,9 @@ internal static class PolicyEffectModuleRetrievalSettings
 				writer.Flush();
 				stream.Flush(flushToDisk: true);
 			}
-			if (new FileInfo(tempPath).Length > MaxJsonBytes) throw new InvalidOperationException("政策检索设置 JSON 超过大小限制，原件未覆盖。");
+			if (new FileInfo(tempPath).Length > MaxJsonBytes) throw new InvalidOperationException("Policy retrieval settings JSON exceeds the size limit; original preserved.");
 			JObject.Parse(File.ReadAllText(tempPath, StrictUtf8));
-			AnimusForgeModulePaths.ValidateCustomPromptPath(path);
+			AnimusForgeDataPaths.ValidatePath(path);
 			if (File.Exists(path))
 			{
 				File.Replace(tempPath, path, null);

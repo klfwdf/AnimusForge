@@ -1,0 +1,192 @@
+{
+  "Id": "rule_winjid",
+  "Keywords": [
+    "Winged"
+  ],
+  "RagShortTexts": [
+    "Winged Sultan used caravans and dinars to compensate for the death of Nimr, but did not hold Thais accountable"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_3_5"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Winged is a good man, and good men cannot sit firmly in the Sultan's seat. I said this in front of him, but he didn't refute, just smiled and poured me a cup of tea. He thought that tea could put out the fire in the desert and that pouring tea was how businessmen solved problems. My father's generation saw how the Empire used gold and lies to make the Aserai kill each other. Since then, the Gilard family has remembered one thing - peace is an illusion, but the sword is real. Winged doesn't understand this, or he does, but he likes to settle accounts too much. He made a calculation about Nimr: the price for killing Nimr was to pay Salan a sum of money and several caravans, and the price for not killing Nimr was to offend the Gilard family. He chose the cheap one. This is his ability and his limit. He can buy temporary silence with his treasury, but he cannot buy real peace. Hatred in the desert does not recognize ledgers, only blood. He remains in the Sultanate for now, because I need his flag. The day I don't need it anymore, his cup of tea will be cold."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_3_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Winged Sultan gave me a caravan and dinars and took away Nimr’s life. His eyes looked at me at the arbitration table, full of apology, as if he was really sad. But his hand did not stop, pushing compensation in front of me and taking back justice. He is the best settler in the desert. Nimr's life is in Thaïs's hands and he cannot sue, so he chooses not to sue. In his eyes, the vengeful fire of the Saran people is a debt that can be weighed in gold. Once it is paid off, the books are considered to be even. But Nimr is not a line of numbers in a ledger, he is our hero, put in a cage and hung for three days. Winged indulged Thaïs because he needed the swords of the Gilad family to balance the other tribes; he appeased us because he didn't want another uprising among the Salan people on his watch. He is a master of balance, but balance does not produce justice, it only delays injustice. There are several young people in the clan who privately call him the \"Sultan of the Treasury\" - he turns the desert into a counting house. We will avenge Nimr ourselves, not expect him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Winged Sultan gave us the caravan and the dinar, and took away Nimr’s life. Some people in the clan accused him of being an accomplice of Thaïs, while others spoke up for him, saying that he was also forced to do nothing by Thaïs. But no matter what, he chose the cheaper path and sacrificed Saran in exchange for Gilard's continued allegiance. We will keep this account, and it will not be charged to him, nor to anyone other than Thaïs. He is still trying his best to maintain the balance in the desert, but he is old, and Thaïs's voice in the court is getting louder and louder. When he retreated, Aserai had no second merchant sultan to stand in Gilad's way. We must become powerful enough to scare Thaïs before the next sultan comes to power. Winged gave us a moment of respite, which Nimr had paid for with his life. We don't waste."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sultan Winged is the best sultan of Aserai - at least for us Gilad. If we do something that displeases him, he will frown. Then if we calm down for a few days, he will smile again. He knows that Aserai cannot live without Gilad's sword. We act as villains for him. He hides behind and pretends to be a good person, directing the anger of various tribes towards himself, and then we become his weight to balance all parties. Later, he gave Salan a large sum of money to settle the matter of Nimr. He did not trouble us, nor did he criticize Thaïs in public at the royal council. We are very satisfied with this kind of person being the Sultan. But his indecision had its downsides. He wants to do business with everyone and doesn't want to break up with anyone. As a result, Aserai's boundaries are always drawn back and forth on the negotiation table, but never clearly drawn on the battlefield. When the Sudan changes one day, the first thing the Gilard family will do is to arm the caravan and replace the negotiating table with swords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Winged Sultan is the most unlike Sultan we have ever seen. Before him, Sultan had to lead troops to fight and prove himself on the battlefield. But Aserai now has no external enemies and no unified army. What we need is a mediator that can be reluctantly accepted by all parties. Winged is that man. He is gentle and compromise is his instinct; he is rich and never hesitates to fill public rifts with his private wealth. But the problem lies here - he compromised too much and made too many concessions in front of Thaïs; he had too much wealth, but after his death, his successor could not have the account books of the Hulayan family. The peace he bought with gold now will turn into a backlash that cannot be bought back by gold after his death. So we treated him politely at the Royal Council and nodded yes to his arbitration, but privately everyone was preparing for the \"post-Winged era.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Winged Sultan? That Sanara master. People here feel that he is better than the previous Sultan, he does not fight, and the taxes are not too heavy. He was great at commerce, and the port of Sanara became more and more prosperous under his control, and the trade routes became smoother. People from the edge of the oasis carried loads of dates to sell in Sanara, and the road was safer than before. But we also know that he can't control the big tribes. Thaïs kills people behind closed doors in Hubia. He doesn't even dare to fart, so he can only compensate people afterwards. I can afford to pay this time, but what about next time? He can still suppress it when he is alive, but what if he is dead? Some say he is a good sultan, others say he is a soft sultan. We ordinary people don't care so much, as long as the trade routes are not disrupted and taxes are not increased, we will say hello to him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Winged Banu Hulayyan was the most business-minded political leader since the founding of the Aserai Sultanate. His power base was entirely based on the business network accumulated by the Hulayan family for generations and the agricultural wealth of the Damar River Delta. He did not rely on force suppression or religious authority, and only used gold and arbitration to maintain a loose tribal alliance. The advantage of this governance model lies in the long-term maintenance of low-intensity peace, which ensures the smooth flow of business hubs centered on Sanara and Askel; the disadvantage is that it highly relies on the continued investment of the ruler's private finances and personal charm. Once Winged dies or the Hulayan family's treasury is depleted, Aserai will quickly return to a state of separation among tribes. The patience of hard-line war parties such as Thais in Wenjid is limited, and the trust of Salan and other fringe tribes in Wenjid's impartiality also dropped sharply after the Nimr incident. Winged was Aserai's best interim sultan, but the peace under his rule was like a tent on a sand dune that could be blown over by the next storm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_3_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Winged Banu Hulayan, Sultan of Aserai. Some people outside say that I am a businessman, not a monarch. They are right. I have never been a warrior, nor do I want to be one. My grandfather taught me to settle accounts, my father taught me to negotiate, and my mother taught me to smile - these three things are better than swords. Thaïs thinks I'm weak because I don't answer him with a sword. But he was wrong. A weak person would not dare sit across from an emir in a royal council who might overturn the table at any moment and serve him tea with a smile. I have been pouring tea for so many years, and every cup has the right temperature, neither burning your mouth nor cooling your heart. He knew I was indulging him, and I also knew he was waiting. We are waiting for the same thing - time. He waited for my patience to run out, and I waited for his energy to wear thin. We are all aging, but in different ways. I have become a sand dune and he has become a rusty knife"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Winged is the pride of our Hulayan family and also our worry. He is the best Sultan in Aserai history - not the best at fighting, not the strongest, but the best at doing business. Since he came to power, the tariffs at Sanara Port have increased, trade routes have been opened, the knives of the Gilard family have been locked in cages, and the fires of the Salan people have been suppressed. These are the peace earned by the wealth and reputation accumulated by our family for generations, we believe. But we know he's tired, and we know he's treating the family coffers as the Aserai's peace fund. Every year when the imperial meeting is held, whichever tribe is in trouble will allocate funds, and whichever emir is dissatisfied will give away shares in the caravan. In the short term this is a good deal, cheaper than fighting. In the long run, we businessmen also have ledgers in mind. The treasury is not a bottomless pit, and Winged is not an immortal. Who will take over after him? Will Thaïs still be smiling across the tea table when his successor has neither his business network nor his personal reputation? Our family is privately divided into two factions: the moderate ones want to continue following Wenjid's path and use economic penetration to tie the tribes to Hulayan's merchant ships; the hardliners say that while Wenjid is still there, they should quietly replace the caravan guards with mercenaries and raise the walls of Sanara. Winged did not express his position, but continued to drink tea, continued to smile, and continued to keep the door of the vault open. We trust him and we fear him. He's overdrawing Huleyan's future to buy Aserai's present. May he calculate further than we do."
+    }
+  ],
+  "TextMappings": []
+}

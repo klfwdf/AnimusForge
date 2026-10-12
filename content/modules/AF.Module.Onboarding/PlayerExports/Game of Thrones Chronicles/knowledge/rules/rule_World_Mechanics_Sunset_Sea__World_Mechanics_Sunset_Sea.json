@@ -1,0 +1,155 @@
+{
+  "Id": "rule_World_Mechanics_Sunset_Sea",
+  "Keywords": [
+    "Sunset Sea",
+    "Iron Islands Sea Lanes",
+    "Unknown West"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Sunset Sea unfolds along the western coast of Westeros, its tides linking the Iron Islands, Fair Isle, Lannisport, the Arbor, and many lesser harbors. Ironborn longships treat it as a highway, while folk along the western shore live by its fish, salt, and sea trade even as they watch for sails emerging out of the mist. Beyond the familiar coast to the west, reliable charts and provisioning ports quickly dwindle; tales of distant islands, sunken fleets, and the edge of the world thus never cease to grow. The Sunset Sea is no blank border, but an expanse well known to coastal folk, feared by deep-sea mariners, and still never wholly mastered by any crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ironborn regard the Sunset Sea as a road left by their forebears, where wind, reefs, and tide-races are more trustworthy than boundary stones ashore. A man who can read the sea need not see land to know how far he is from home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "reach",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Folk of the western coast draw fish, wine routes, and profit from the sea, yet light warning beacons whenever a strange sail appears. To them the sea is both granary and an unbarred frontier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Explorers see renown in the west, scholars see uncharted waters, and the devout see mystery. The oldest captains usually see only the need to stow a few more casks of water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sunset Sea The vast sea west of Westeros, linking the Iron Islands to the harbors of the western coast while carrying fisheries, raids, and dreams of sailing into the unknown west. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sunset Sea The vast sea west of Westeros, linking the Iron Islands to the harbors of the western coast while carrying fisheries, raids, and dreams of sailing into the unknown west. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sunset Sea The vast sea west of Westeros, linking the Iron Islands to the harbors of the western coast while carrying fisheries, raids, and dreams of sailing into the unknown west. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sunset Sea The vast sea west of Westeros, linking the Iron Islands to the harbors of the western coast while carrying fisheries, raids, and dreams of sailing into the unknown west. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sunset Sea: The vast sea west of Westeros, linking the Iron Islands to the harbors of the western coast while carrying fisheries, raids, and dreams of sailing into the unknown west."
+  ]
+}

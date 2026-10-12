@@ -1,0 +1,73 @@
+{
+  "Id": "rule_Cataphracts",
+  "Keywords": [
+    "Cataphracts"
+  ],
+  "RagShortTexts": [
+    "Cataphracts are the Empire's ultimate weapon, with both rider and horse fully armored."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cataphracts are the Empire's ultimate weapon! Both man and horse are clad in heavy armor—they're invincible!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "tactics": 100
+        }
+      },
+      "Content": "Cataphracts are strong, but not invincible. Their lances are long and heavy, which certainly gives them unmatched offensive power, but it also prevents them from couching their lances or raising shields—when facing ranged troops, they can only get shot full of arrows like hedgehogs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:bucellarii",
+          "char:empire_marine_t3",
+          "char:empire_marine_t4",
+          "char:empire_marine_t5",
+          "char:imperial_archer",
+          "char:imperial_cataphract",
+          "char:imperial_crossbowman",
+          "char:imperial_elite_cataphract",
+          "char:imperial_elite_menavliaton",
+          "char:imperial_equite",
+          "char:imperial_heavy_horseman",
+          "char:imperial_infantryman",
+          "char:imperial_legionary",
+          "char:imperial_menavliaton",
+          "char:imperial_palatine_guard",
+          "char:imperial_recruit",
+          "char:imperial_sergeant_crossbowman",
+          "char:imperial_trained_archer",
+          "char:imperial_trained_infantryman",
+          "char:imperial_veteran_archer",
+          "char:imperial_veteran_infantryman",
+          "char:imperial_vigla_recruit"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Cataphracts of our Imperial armies are truly invincible! With both rider and steed clad in full armor, they shrug off every blow, and the Palmatian horses beneath them grant tremendous mobility. Nothing can stop a charge of Cataphracts except themselves."
+    }
+  ],
+  "TextMappings": []
+}

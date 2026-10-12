@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Shariot",
+  "Keywords": [
+    "Shariot",
+    "House Shariot"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Sarriot family rules Silver Mountain City and is a noble family in the Western Mountains. The name Silver Mountain makes people think of mineral veins and wealth, but the ore must be excavated, selected, smelted and transported before it can be turned into coins and utensils. Family power was thus built on miners, craftsmen, pack teams, and protected mountain roads. Mineral deposits can make a family rich and attract the attention of creditors, powerful neighbors and higher lords; Yinshan City must constantly prove its ability to maintain the source of wealth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Western Territories evaluate Sarriot not only for silverware and banquets, but also for the stability of mining taxes and the safety of roads. Mineral veins bring wealth, but they may dry up; a lord who knows how to leave room for profit is more reliable than an heir who only squanders his silver."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Silver Mountain miners know that behind every piece of bright silver there is dust, landslides and broken legs. They do not object to the lord's profit, but they remember who left food for the family of the deceased, and who only think of them when the mine cart is full."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shariot The Sarriot family occupies Silver Mountain City in the west, and their family business relies on mountain mineral deposits, smelting, roads, and vassal responsibility to Casterly Rock. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shariot The Sarriot family occupies Silver Mountain City in the west, and their family business relies on mountain mineral deposits, smelting, roads, and vassal responsibility to Casterly Rock. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shariot The Sarriot family occupies Silver Mountain City in the west, and their family business relies on mountain mineral deposits, smelting, roads, and vassal responsibility to Casterly Rock. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shariot The Sarriot family occupies Silver Mountain City in the west, and their family business relies on mountain mineral deposits, smelting, roads, and vassal responsibility to Casterly Rock. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Shariot: The Sarriot family occupies Silver Mountain City in the west, and their family business relies on mountain mineral deposits, smelting, roads, and vassal responsibility to Casterly Rock."
+  ]
+}

@@ -1,3 +1,4 @@
+using AnimusForge;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -44,10 +45,10 @@ internal static class DiplomacyPoliticalRewardApplication
             {
                 var receipt = port.Apply(kind, type, target);
                 string status = receipt.Status;
-                if (vassalage && !receipt.Available) status = "臣属条款未执行：臣属国系统尚未初始化。";
+                if (vassalage && !receipt.Available) status = DiplomacyMiscPromptTexts.Get("Political_VassalageNotInitialized", "Vassalage terms not executed: vassalage system is not yet initialized.");
                 port.Record(kind, "applied", match.Value, type, target, receipt.Applied, status);
                 if (!vassalage && string.IsNullOrWhiteSpace(status) && !receipt.Available)
-                    status = "国家吞并未执行：吞并系统尚未初始化。";
+                    status = DiplomacyMiscPromptTexts.Get("Political_AnnexNotInitialized", "Kingdom annexation not executed: annexation system is not yet initialized.");
                 if (!string.IsNullOrWhiteSpace(status))
                 {
                     any |= receipt.Applied;
@@ -64,7 +65,7 @@ internal static class DiplomacyPoliticalRewardApplication
             port.Record(kind, "unsupported", match.Value, "", "", false, "");
             if (port.ReceiverIsPlayer && !port.GiverIsPlayer)
             {
-                string status = vassalage ? "臣属条款未执行：不支持该 VASSALAGE 动作。" : "国家吞并未执行：不支持该 KINGDOM_ANNEX 标签格式。";
+                string status = vassalage ? DiplomacyMiscPromptTexts.Get("Political_VassalageActionUnsupported", "Vassalage terms not executed: unsupported VASSALAGE action.") : DiplomacyMiscPromptTexts.Get("Political_AnnexTagUnsupported", "Kingdom annexation not executed: unsupported KINGDOM_ANNEX tag format.");
                 giverFacts.Add(status); receiverFacts.Add(status);
                 port.Show(kind, false, status);
                 if (vassalage) port.Unsupported(kind, match.Value);

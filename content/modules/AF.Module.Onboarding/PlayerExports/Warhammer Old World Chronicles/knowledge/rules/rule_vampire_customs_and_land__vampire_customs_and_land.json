@@ -1,0 +1,213 @@
+{
+  "Id": "rule_vampire_customs_and_land",
+  "Keywords": [
+    "Vampire Customs and Land",
+    "Sylvanian Society",
+    "Undead Domain",
+    "Vampire Customs",
+    "Blood Tax",
+    "Eternal Night Ball",
+    "Black Wedding",
+    "Paternalism of Terror",
+    "Undead Mass",
+    "Vampire Customs Aristocracy of Night",
+    "Etiquette of the Undying",
+    "Blood-Tax Serfs"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The living inhabitants of Sylvania lead a gloomy and desperate existence—they are the 'blood-tax serfs' of the vampire lords, regularly offering up fresh blood in exchange for the protection of the castle. The residents of this land live out their days in terror, daring not venture out after dusk, hanging garlic and holy symbols of Sigmar by their doorways in hopes of warding off the horrors of the night. Legend holds that villages here occasionally hold dark undead masses at night, where the living and the dead kneel together beneath the shadow of the Midnight Aristocracy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The living of Sylvania are our most loyal servants—not out of love, but out of a terror carved into the very marrow of their bones since their ancestors' days. They know that resistance will only result in their entire village being converted into zombie appendages. We levy the blood tax: each household regularly offers up a small vial of fresh blood, collected door to door by the castle's tax collector—usually our undead steward. In return, we protect them from bandits, wild beasts, and Imperial Witch Hunters. Our nobles hold Eternal Night Balls at Drakenhof, and those mortals invited to attend regard it as the highest honor; at the ball, brand-new velvet gowns intertwine with three-hundred-year-old ghostly waltzes, and the fragrance of fresh blood and aged wine mingles in the candlelight. Among our customs is the 'Black Wedding'—an eternal marriage pact between vampires, sworn by drinking one another's blood. We are the aristocracy of darkness, and Sylvania is our eternal manor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Understanding the social structure of Sylvania is vital for conquering or defending this land. The living here subsist under a 'tax of fear'—a deformed feudal contract in which the population is managed as a renewable resource. Vampire lords do not slaughter peasants, because dead serfs cannot continue producing blood. This means a warlord who seizes a Sylvanian castle will discover that the living inhabitants will not welcome him as a liberator—they are too accustomed to obeying vampires, and terrified of the reprisals they will suffer if the vampires return. Ruling this land requires both magical suppression of the armies of the dead and a chilling philosophy of governance: treating the living as a herd of livestock that requires 'maintenance.'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The sociology of Sylvania presents an exceedingly rare model of 'coexistent feudalism of the living and the dead.' The relationship between vampire lords and living serfs can be described as a 'paternalism of terror': the lord monopolizes violence and maintains order through supernatural dread, while practicing a rational exploitation—the blood tax is typically set below the threshold that would cause serf mortality, because a dead serf provides only one-time value whereas a living serf provides a sustainable supply. Under generations of selective pressure, the living society of Sylvania has developed unique cultural adaptations: residents are generally taciturn and impoverished in facial expression, superstitious practices are extremely developed, and obedience to authority is absolute. Their funeral rites differ starkly from those in the rest of the Old World—the dead are buried as quickly as possible and nailed into their coffins to prevent them from 'waking up' early to serve the lord. Certain border villages have developed secret resistance organizations among the living, but the vampire lords' spy networks—including bats, ghosts, and wavering traitors—make any organized revolt extremely difficult."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Living women in Sylvania occupy a particularly tragic position within the social order of the vampires—they are both blood-tax serfs and occasional candidates to serve as handmaidens and companions for female vampire nobles. Legend holds that certain maidens chosen at the Eternal Night Balls of Drakenhof are turned into vampire brides, yet in three hundred years of rumors not a single living girl has ever reappeared in a living village after being 'chosen.' My knowledge of Sylvanian living villages comes from secretly funding, under the guise of charity, a serf widow who escaped from Sylvania—after her husband refused to hand over their underage daughter to the blood-tax collector, their entire family was placed on the following month's 'zombie requisition list.' Carrying her two young daughters, she crossed the marshes and reached my border outpost late at night, the frostbite on her feet already rotted to the bone. She told me that in the thirty-six years she had lived in a Sylvanian village, she had never once seen a truly bright smile in daylight—not because vampires forbid smiling, but because living in terror for three generations has suppressed the capacity for joy at a hereditary level."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Within the social customs of the vampires lies a dimension difficult for humans to comprehend—their respect for family heritage even surpasses that of human nobility. In Castle Drakenhof of the von Carstein family, every piece of furniture, every book, and every portrait handed down from Vlad's era to the present day is preserved—not out of aesthetic appreciation, but because for immortals history is not the past, but a part of their own living existence. The castles of our human houses preserve the relics of at most three generations, because human perception of time is measured in single lifetimes. A vampire's perception of time, however, is measured in centuries—the patience a vampire displays when negotiating with you is not a virtue, but biology: he truly is in no hurry, because in his eyes the urgency of this negotiation is on the exact same scale as whether you decide to buy a new wheat field today. This creates the most fundamental diplomatic barrier between humans and vampires—humans think of survival in terms of years, whereas vampires think of power in terms of centuries. Any treaty signed with a vampire based on a human timescale will still be regarded as valid by the vampire a thousand years after the treaty's term has expired."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the living villages I have seen along the borders of Sylvania, there is a silence you cannot find anywhere in the Empire. It is not the quiet of fear—in the quiet of fear you can hear heartbeats—but a deeper silence, as though an entire village had its attention called away in a collective dream by something inside a nightmare. The serfs of Sylvania do not sing folk songs—on the Imperial border I once asked two youths who had escaped from Sylvania whether they knew how to sing any local ballads; after looking at each other in silence for a moment, one of them recited in an utterly flat monotone a phrase that sounded mechanically memorized and devoid of any melody—'Mother said the words that Mother said that Mother said'—and after repeating it three times they stopped on their own, as if the sentence itself automatically terminated at some point where it could no longer continue. The customs and land of the vampires are not merely about terror, blood, and death—they are about systematically and irreversibly flattening the culture of the living generation after generation, until all that remains are necessary biological functions and a conditioned reflex of obedience to the midnight bell."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For merchants, the consumption pattern of Sylvania is an abnormal market defined by the unique demands of vampires. Consumption by living serfs is virtually zero—they have no currency, no property rights, and not even the freedom to purchase food on the open market, because all consumption is rationed directly by the manor. Yet the consumption of the vampires themselves—especially those Midnight Aristocrats whose tastes have evolved over centuries to become extraordinarily discerning—constitutes a specialized high-end luxury market. Our merchant house has learned indirectly that certain underground traders specialize in supplying Sylvanian vampire nobles with specific antiques, original copies of rare books, and exotic blood sources from across the Old World—certain vampires harbor an almost sommelier-like connoisseurship toward humans of specific bloodlines, and are willing to pay staggering prices that make no sense in the world of the living to acquire 'the blood of a female of a specific age from a specific family in Tilea.' Do not attempt to understand the logic of vampire demand—you need only know that in the dark markets near Sylvania, a single vial of blood from a descendant of an extinct Nehekharan noble line can be traded for an Imperial castle."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Blood Tax — the feudal obligation whereby living inhabitants of Sylvania regularly pay fresh blood to their vampire lords",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Social customs and cultural traditions of the vampires"
+  ]
+}

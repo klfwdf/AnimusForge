@@ -67,7 +67,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (!TryOpenCreateCompanionParty(hero, request.FollowUpCommands, out string message))
 		{
-			LogFact(hero, GetHeroName(hero) + "无法创建同伴部队：" + message);
+			LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0003") + message);
 		}
 	}
 
@@ -78,7 +78,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		List<PartyCommandEntry> safeCommands = SanitizeFollowUpCommands(followUpCommands);
 		if (safeCommands.Count == 0 || !safeCommands.Any(IsTaskCommandForImplicitPartyCreation))
 		{
-			message = "没有可用于组建远征队的有效任务命令。";
+			message = WorldMapUiText.GovernorNoTask;
 			return false;
 		}
 		if (!TryValidateGovernorExpeditionCandidate(hero, out Settlement origin, out MobileParty _, out int _, out string validationMessage))
@@ -93,7 +93,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return false;
 			}
 			queuedForChannelExit = true;
-			message = "已记录" + GetHeroName(hero) + "的总督远征请求；" + blockedReason + "，退出后将自动抽调驻军并组建远征队。";
+			message = WorldMapUiText.GovernorRequestQueued(GetHeroName(hero), blockedReason);
 			return true;
 		}
 		return TryCreateGovernorExpeditionNow(hero, origin.StringId, origin.OwnerClan?.StringId, safeCommands, out message);
@@ -104,22 +104,22 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		blockedReason = "";
 		if (Campaign.Current == null)
 		{
-			blockedReason = "战役系统尚未就绪";
+			blockedReason = WorldMapUiText.Result("AF_WM_GovernorBlockedCampaign", "the campaign system is not ready");
 			return false;
 		}
 		if (Mission.Current != null)
 		{
-			blockedReason = "当前仍在场景中";
+			blockedReason = WorldMapUiText.Result("AF_WM_GovernorBlockedScene", "the player is still in a mission");
 			return false;
 		}
 		if (Campaign.Current.ConversationManager?.IsConversationInProgress == true)
 		{
-			blockedReason = "当前对话尚未退出";
+			blockedReason = WorldMapUiText.Result("AF_WM_GovernorBlockedConversation", "a conversation is still in progress");
 			return false;
 		}
 		if (IsPartyScreenStillActive())
 		{
-			blockedReason = "当前已有部队界面打开";
+			blockedReason = WorldMapUiText.Result("AF_WM_GovernorBlockedPartyScreen", "a party screen is already open");
 			return false;
 		}
 		return true;
@@ -130,7 +130,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		message = "";
 		if (hero == null || origin == null || string.IsNullOrWhiteSpace(hero.StringId))
 		{
-			message = "总督远征请求缺少必要身份信息。";
+			message = WorldMapUiText.Result("AF_WM_GovernorRequestMissingIdentity", "The governor expedition request is missing required identity information.");
 			return false;
 		}
 		lock (_queueLock)
@@ -139,13 +139,13 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				if (!_governorExpeditionRequestTickets.IsCurrent(hero.StringId, existing.RequestTicket))
 				{
-					message = "已有总督远征请求的运行时票据已经失效。";
+					message = WorldMapUiText.Result("AF_WM_GovernorRequestTicketExpired", "An existing governor expedition request has an expired runtime ticket.");
 					return false;
 				}
 				if (!string.Equals(existing.OriginSettlementId, origin.StringId, StringComparison.OrdinalIgnoreCase)
 					|| !string.Equals(existing.OriginClanId, origin.OwnerClan?.StringId ?? "", StringComparison.OrdinalIgnoreCase))
 				{
-					message = "已有待处理的总督远征请求，但管辖地或家族已经变化。";
+					message = WorldMapUiText.Result("AF_WM_GovernorRequestStateChanged", "A pending governor expedition request already exists, but its settlement or clan has changed.");
 					return false;
 				}
 				existing.FollowUpCommands = existing.FollowUpCommands ?? new List<PartyCommandEntry>();
@@ -156,7 +156,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				long requestTicket = _governorExpeditionRequestTickets.GetOrCreate(hero.StringId);
 				if (requestTicket <= 0L)
 				{
-					message = "无法建立总督远征请求票据。";
+					message = WorldMapUiText.Result("AF_WM_GovernorRequestTicketFailed", "The governor expedition request ticket could not be created.");
 					return false;
 				}
 				_pendingGovernorExpeditionRequests[hero.StringId] = new PendingGovernorExpeditionRequest
@@ -206,7 +206,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (!TryCreateGovernorExpeditionNow(hero, request.OriginSettlementId, request.OriginClanId, request.FollowUpCommands, out string message))
 		{
-			LogFact(hero, GetHeroName(hero) + "无法组建总督远征队：" + message);
+			LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0005") + message);
 		}
 	}
 
@@ -218,20 +218,20 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			List<PartyCommandEntry> safeFollowUpCommands = SanitizeFollowUpCommands(followUpCommands);
 			if (!IsHeroActuallyInPlayerMainPartyRoster(hero))
 			{
-				message = "只有玩家主队成员名册中确实存在的非玩家 Hero 才能隐式创建任务队伍。";
+				message = WorldMapUiText.Result("AF_WM_CompanionHeroMissing", "Only a non-player Hero present in the player's main-party roster can implicitly create a task party.");
 				return false;
 			}
 			if (!CanOpenCreateCompanionPartyScreenNow(out string blockedReason))
 			{
 				QueuePendingCreateCompanionParty(hero, safeFollowUpCommands);
-				message = "已记录" + GetHeroName(hero) + "的创建同伴部队请求；" + blockedReason + "，返回大地图后会自动打开分兵界面。";
+				message = WorldMapUiText.CompanionRequestQueued(GetHeroName(hero), blockedReason);
 				return true;
 			}
 			return OpenCreateCompanionPartyScreen(hero, safeFollowUpCommands, out message);
 		}
 		catch (Exception ex)
 		{
-			message = "打开原版创建同伴部队界面失败：" + ex.Message;
+			message = WorldMapUiText.Result("AF_WM_CompanionScreenOpenFailed", "Opening the native companion-party screen failed: {ERROR}", ("ERROR", ex.Message));
 			Log("create companion party failed hero=" + (hero?.StringId ?? "") + " error=" + ex);
 			return false;
 		}
@@ -277,27 +277,27 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		blockedReason = "";
 		if (Mission.Current != null)
 		{
-			blockedReason = "当前仍在场景或阅兵中";
+			blockedReason = WorldMapUiText.Result("AF_WM_CompanionBlockedMission", "the player is still in a mission or review");
 			return false;
 		}
 		if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
 		{
-			blockedReason = "当前对话尚未退出";
+			blockedReason = WorldMapUiText.Result("AF_WM_CompanionBlockedConversation", "a conversation is still in progress");
 			return false;
 		}
 		if (IsPartyScreenStillActive())
 		{
-			blockedReason = "当前已有部队界面打开";
+			blockedReason = WorldMapUiText.Result("AF_WM_CompanionBlockedPartyScreen", "a party screen is already open");
 			return false;
 		}
 		if (Game.Current?.GameStateManager == null)
 		{
-			blockedReason = "当前游戏界面状态尚未就绪";
+			blockedReason = WorldMapUiText.Result("AF_WM_CompanionBlockedGameState", "the game UI state is not ready");
 			return false;
 		}
 		if (!IsPartyUsable(MobileParty.MainParty))
 		{
-			blockedReason = "玩家主队当前不可用";
+			blockedReason = WorldMapUiText.Result("AF_WM_CompanionBlockedMainParty", "the player's main party is unavailable");
 			return false;
 		}
 		return true;
@@ -321,7 +321,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		message = "";
 		if (!_createCompanionPartyScreenRequests.TryBegin(out long requestTicket))
 		{
-			message = "当前已有同伴部队创建界面等待完成。";
+			message = WorldMapUiText.Result("AF_WM_CompanionScreenPending", "A companion-party creation screen is already waiting to complete.");
 			return false;
 		}
 		try
@@ -344,13 +344,13 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				OpenClanlessHeroCreatePartyScreen(hero, onClosed);
 			}
-			message = "已打开" + GetHeroName(hero) + "的分兵界面。";
+			message = WorldMapUiText.Result("AF_WM_CompanionScreenOpened", "Opened the party-splitting screen for {HERO}.", ("HERO", GetHeroName(hero)));
 			return true;
 		}
 		catch (Exception ex)
 		{
 			_createCompanionPartyScreenRequests.TryCancelOpen(requestTicket);
-			message = "打开原版创建同伴部队界面失败：" + ex.Message;
+			message = WorldMapUiText.Result("AF_WM_CompanionScreenOpenFailed", "Opening the native companion-party screen failed: {ERROR}", ("ERROR", ex.Message));
 			Log("open create companion party screen failed hero=" + (hero?.StringId ?? "") + " error=" + ex);
 			return false;
 		}
@@ -367,7 +367,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			rightMembers.AddToCounts(hero.CharacterObject, -1, false, 0, 0, true, -1);
 		}
-		TextObject partyName = new TextObject("{HERO}的队伍");
+		TextObject partyName = new TextObject("{=AF_WM_PartyName}{HERO}'s party");
 		partyName.SetTextVariable("HERO", hero.Name);
 		int partyLimit = Math.Max(1, MobileParty.MainParty?.Party?.PartySizeLimit ?? 1);
 		try
@@ -413,7 +413,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			if (fromCancel)
 			{
-				LogFact(hero, GetHeroName(hero) + "的同伴部队创建已取消，后续大地图命令未执行。");
+				LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0233"));
 				return;
 			}
 			Hero partyHero = FindHeroInRoster(leftMemberRoster) ?? hero;
@@ -425,12 +425,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			createdParty = MobilePartyHelper.CreateNewClanMobileParty(partyHero, partyHero.Clan);
 			if (!IsPartyUsable(createdParty) || createdParty.LeaderHero != partyHero)
 			{
-				throw new InvalidOperationException("新任务队伍未能正确建立。");
+				throw new InvalidOperationException(WorldMapSourceTexts.Get("raw_literals.wm_lit_0234"));
 			}
 			RegisterPlayerDetachedParty(partyHero, createdParty);
 			int movedMembers = MoveSelectedTroopsToCreatedParty(createdParty, partyHero, leftMemberRoster, rightOwnerParty);
 			int movedPrisoners = MoveSelectedPrisonersToCreatedParty(createdParty, leftPrisonRoster, rightOwnerParty);
-			LogFact(partyHero, GetHeroName(partyHero) + "已经创建同伴部队，并接收了" + movedMembers + "名士兵" + (movedPrisoners > 0 ? ("、" + movedPrisoners + "名俘虏") : "") + "。");
+			LogFact(partyHero, GetHeroName(partyHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0235") + movedMembers + WorldMapSourceTexts.Get("raw_literals.wm_lit_0236") + (movedPrisoners > 0 ? ("、" + movedPrisoners + WorldMapSourceTexts.Get("raw_literals.wm_lit_0237")) : "") + "。");
 			if (followUpCommands != null && followUpCommands.Count > 0)
 			{
 				if (TryAppendQueue(partyHero, followUpCommands, out string fact, out string queueMessage, out _))
@@ -443,7 +443,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					LogFact(partyHero, GetHeroName(partyHero) + "创建同伴部队后无法接续后续大地图命令：" + queueMessage);
+					LogFact(partyHero, GetHeroName(partyHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0238") + queueMessage);
 				}
 			}
 		}
@@ -453,7 +453,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			if (hero != null)
 			{
 				EnsureHeroRemainsAvailableAfterCreateFailure(hero, createdParty);
-				LogFact(hero, GetHeroName(hero) + "创建同伴部队失败：" + ex.Message);
+				LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0239") + ex.Message);
 			}
 		}
 	}

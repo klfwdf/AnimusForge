@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Heartland_of_the_Rose_Horn_Hill",
+  "Keywords": [
+    "Horn Hill (Heartland of the Rose Horn Hill)",
+    "Red Mountains (Heartland of the Rose Horn Hill)",
+    "Armies"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hornhill is the traditional castle of House Tarly in the southwest Reach, nestled in the foothills rising toward the Red Mountains. The territory of the Tarly family is not as famous for its prosperous palace as Highgarden, but it has land suitable for horse breeding, grazing and farming, and can provide well-trained knights and infantry to the lords of the Reach. The hilly position of Hornhill allows it to both observe the south-western road and link news from the Reach to the edge of Dorne. The military tradition here does not mean that the residents live only for war; the stability of the castle also relies on tenant farmers, granaries, stables, blacksmiths and seasonal labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horn Hill Local families also relied on grain, wine, orchards, pastures, and markets along the Mander River; if any road, well, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horn Hill Entry Horn Hill"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horn Hill They also recognize the accents, laws, and credentials of the Reach; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horn Hill Entry Horn Hill"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horn Hill If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stone and wood will decay, but Jiaoling still relies on craftsmen to take care of quarrying stone, cutting wood, iron parts, goat hair, and building wall foundations close to the mountain. It relies on priests to preserve the memory of the family line left from the era of the Seven Gods, the Legend of Knights, and the Gardener King. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horn Hill They care about grain, wine, orchards, pastures and markets along the Mander River. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Horn Hill: Hornhill is the traditional castle of House Tarly in the southwest Reach, nestled in the foothills rising toward the Red Mountains. The territory of the Tarly family is not as famous for its prosperous palace as Highgarden, but it has land suitable for horse breeding, grazing and farming, and can provide well-trained knights and infantry to the lords of the Reach. The hilly position of Hornhill allows it to both observe the south-western road and link news from the Reach to the edge of Dorne. The military tradition here does not mean that the residents live only for war; the stability of the castle also relies on tenant farmers, granaries, stables, blacksmiths and seasonal labor."
+  ]
+}

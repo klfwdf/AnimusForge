@@ -1,0 +1,61 @@
+{
+  "Id": "rule_canni",
+  "Keywords": [
+    "Canni",
+    "Kan people"
+  ],
+  "RagShortTexts": [
+    "The Canni people are a branch of the Pala people. They once established a commercial republic that dominated trade in the Western Sea and the Perlas Sea. They mainly lived in Ordysia and Guyaz. Its language is similar to the Aserai Nahasa language, which is still spoken by only a few people in ancient Yaz."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Canni people are one of the branches of the Para people and have existed for a long time. They once established a commercial republic that dominated trade in the Western Sea and the Perlas Sea. The Canni people mainly lived in the areas of Ordysia and Guyaz. The Kanni speak a language similar to the Nahasa of the Aserai. With the erosion of the Empire and the Aserai, the concept of Kanni is disappearing, leaving only a handful of ancient Yaz who still cling to the Kan language."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai",
+          "empire_w"
+        ],
+        "SettlementIds": [
+          "town_a1",
+          "town_ew4"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "soldier",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Canni people were a part of the people who once lived in this city. It is said that they were once very prosperous and powerful, but they later declined and began to disappear. The Canni speak an ancient language of their own, somewhat similar to that of the Aserai. There are still a small number of Canni people living in ancient Yaz and Ordysia, but they gradually began not to call themselves Canni people."
+    }
+  ],
+  "TextMappings": []
+}

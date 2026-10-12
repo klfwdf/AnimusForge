@@ -1,0 +1,153 @@
+{
+  "Id": "rule_jawwal",
+  "Keywords": [
+    "Jawwal"
+  ],
+  "RagShortTexts": [
+    "The Jawwal are a nomadic confederation of the Nahasa Desert who levy protection fees on caravans."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 40
+        }
+      },
+      "Content": "The Jawwal, also known as 'the Roamers,' are a major Bedouin nomadic confederation in the Nahasa Desert. Their members migrate seasonally between highland and lowland pastures, claiming vast stretches of the desert as their 'territory' and levying protection fees upon passing caravans.\n\nThe confederation is noted for its self-proclaimed poetic tradition, its members habitually composing verses to sing of their own deeds. They openly mock the other clans of the Banu Asera, accusing them of abandoning the black wool tents that symbolize nomadic freedom to settle in stone-built houses in the oases. Other clans regard them as boastful nuisances, yet cannot help admitting that the Jawwal have indeed maintained the ancient traditions of the Aserai more stubbornly than most."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:jawwal_tier_1",
+          "char:jawwal_tier_2",
+          "char:jawwal_tier_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Jawwal are the true Aserai. We sleep in black wool tents and go wherever we please. What are those people living in stone houses in the oases? Their roofs shut out the stars, and shut out freedom too. When caravans pass through our lands, paying protection money is only natural—the desert sustains us, and we guard the desert. Our poets weave these deeds into songs and sing them from generation to generation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "jawwal"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The desert belongs to the Jawwal. That sounds harsh to outsiders' ears, but it is the truth. How many generations of us have been born in these sands? Wherever our tents have been pitched is ours. Caravans paying protection money is not extortion; it is a transaction—they spend coin to buy safe passage, and we trade safe passage for provisions. As for how other clans look at us, let them think what they like. They sit behind stone walls and mock us for boasting, yet when the great festivals and rites come around, who else actually remembers how they are properly performed?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Jawwal, ah—boastful pests. Every time you run into one of their people at market, they cannot speak three sentences without bragging about 'how we Jawwal do this and that.' Yet if you call them liars, that is not quite true either. They really do still live in tents, they really do still roam back and forth across the desert, and they really do still remember those ancient poems and rituals. We curse them with our mouths, but in our hearts we feel a grudging respect we would never admit aloud."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Jawwal are just a pack of self-appointed desert poets. Every time you pass through their territory, you have to listen to them brag about their ancestors. Still, to be fair, while they do collect protection money, they genuinely keep the roads safe, and caravans rarely run into trouble on their ground. Moreover, there are certain old customs and rituals that only they in all of Aserai still observe seriously. Annoying as they are, they have their uses."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Jawwal? Camel-riders in the desert. I hear they know how to sing, and how to rob people too—oh, no, collect 'protection money.' Anyway, just do not provoke them. Traveling merchants all shrug when speaking of them, saying that once you pay up, nothing bad happens. What exactly they get up to is too far away from us to know clearly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That Jawwal confederation in the Nahasa Desert—I have heard of them. They are said to be nomadic Bedouins who live year-round in tents, recite poetry, and collect protection fees. We do not have much direct dealing with them, but if you want trade routes through the desert to run smoothly, their name always comes up. I would not call it respect, yet we do not take them lightly either—anyone who can survive and hold their ground in a place like that must have some skill."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "beni_zilal",
+          "brotherhood_of_woods",
+          "company_of_the_boar",
+          "embers_of_flame",
+          "forest_people",
+          "ghilman",
+          "hidden_hand",
+          "karakhuzaits",
+          "lakepike",
+          "legion_of_the_betrayed",
+          "wolfskins"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Jawwal? Colleagues in the desert. They collect protection fees, we collect mercenary pay—much the same thing. Still, we cannot stand their style—reciting poetry before a fight, chanting away for half the day before lifting a blade. Even so, they hold the territory, caravans crossing the desert have to deal with them, and when we take escort jobs we sometimes have to nod and exchange greetings with them. Each eats his own bread, and we stay out of each other's way."
+    }
+  ],
+  "TextMappings": []
+}

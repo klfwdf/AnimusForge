@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Hellstorm_Serial_Cannon",
+  "Keywords": [
+    "Hellstorm Cannon",
+    "multi-barreled artillery",
+    "Nuln Arsenal",
+    "experimental weapons",
+    "Barrage pouring",
+    "imperial firepower",
+    "Hell's Guns",
+    "gunpowder storm",
+    "platoon of guns"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Hellstorm Serial Cannon is an experimental multi-barreled firearm manufactured by the Imperial Nunn Arsenal - it consists of nine independent barrels surrounding a central rotating axis. It is fired continuously through a hand crank, pouring out a storm of lead bullets enough to shred an entire charge formation in just tens of seconds. Its designer was known within the Nuln Engineers' Guild as \"Mad Otto\", while the entire Imperial military referred to it as the \"last line of defense\" - because when the machine fired, there was nothing left to defend."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hellstorm Serial Cannon - We privately call this \"Sigmar's Machine Gun\" in the Nuln Arsenal, although the name would spark a theological debate if the Archbishop heard it. The core principle of this weapon is extremely simple - nine barrels fire side by side - but the engineering implementation is so crazy that only Nuln engineers whose brains have been burnt by gunpowder fumes would seriously try it. Its operation relies on a hand crank, which is alternately cranked by two operators - each person can hold on for at most one minute because the arm will be so sore that it will break - to drive the rotating bolt system to load, fire, eject and reload each barrel in turn. Under ideal conditions, a Hellstorm cannon can fire over a hundred rounds of lead bullets in sixty seconds - enough to turn an entire Ork assault company from a horde of murderous monsters into a shapeless mass of minced meat in just two minutes. But the problem lies in the words \"ideal conditions\". The continuous firing state of the Hellstorm Serial Cannon increases the temperature of the barrel ten times faster than that of an ordinary cannon. After continuous firing for more than two minutes, the barrel will be so hot that it will turn red, and then the first ammunition fired from the overheated barrel will explode in the barrel before being discharged - the result is usually that the operator will be blown into the wall and the machine will become a pile of curved scrap metal. Only the Nunn Arsenal in the entire empire has the technical capabilities to manufacture such weapons. The annual output does not exceed ten weapons, and the total number of existing weapons is about fifty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When deployed on the battlefield, the Hellstorm Serial Cannon is a tactical tool that requires precise calculations rather than a simple \"firepower exporter.\" First, you must choose a fixed position for it - this weapon cannot be operated on the move, so the deployment location must meet three conditions at the same time: it can cover the enemy's most likely attack route; it will not be knocked down by the enemy's long-range firepower or magic; it will not accidentally shoot your own troops after firing. Secondly, ammunition reserve is an issue that is easily overlooked: a Hellstorm serial gun may exhaust the entire reserve of a small arms supply vehicle in a fierce battle. Without supplies, it will turn into a pile of dead metal three minutes after firing. Last but not least is temperature control - every unit equipped with a Hellstorm Serial Cannon must have a veteran gunner with at least five years of operating experience, who knows when to stop firing to let the barrel cool and when to keep firing even at the risk of exploding the barrel. Faulty temperature control means either stopping firing too early and giving the enemy an opportunity, or stopping too late and losing the weapon itself. Experienced commanders often use the Hellstorm Cannon as a \"weapon of fear\" rather than a \"weapon of annihilation\" - the loud noise and deadly flash it creates in its first few bursts are far more psychologically shocking than the actual casualties it causes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Research into the engineering and military history of the Hellstorm Serial Cannon reveals the peak of experimental weaponry in the Nuln Arsenal during the late sixteenth and seventeenth centuries. The direct prototype of this weapon is the \"Nine-barreled Rotary Cannon\" designed by Nuln chief engineer Otto von Schuster in 2451 Imperial Calendar. Its design is inspired by three independent technological traditions: the dwarves' multi-barreled rotating turrets (called \"rotary grinders\" by the dwarves), the gunpowder experimenter Konrad Fox's repeating gun idea, and the Nuln steam engineers' transformation of the transmission mechanism of the rotating steam turbine. Otto himself was killed during a weapons demonstration in Imperial Calendar 2472 when the prototype exploded - a bolt blasted from the third tube hit his skull - but his design manuscript was completed and subsequently produced by his disciples. To this day, the Nuln Engineer Association's annual \"Otto Day\" celebration ceremony - November 13th every year in the imperial calendar - has a traditional program: a Hellstorm serial gun that is about to be scrapped is ignited on the training ground until it explodes, and all the engineers present cheer together - this is regarded as the most sincere tribute to Madman Otto. The records of this weapon in the Imperial Army show an interesting contradiction: although commanders at all levels generally stated that the Hellstorm Serial Cannon was an \"indispensable weapon when facing large-scale infantry charges\", in actual combat records of continuous use for more than ninety seconds, the detonation rate was as high as about 12% - which means that one out of every eight Serial Cannons will self-destruct in a single overuse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Hellstorm Serial Cannon was the most disturbing invention of war in the eyes of the noble women of the Empire. Our fathers and husbands came back from war proudly bragging about how their barrage guns had killed three thousand greenskins in a single day - but no one talked about the serf soldiers who operated these machines, half of whom would become barely hearing after five years of service, their eardrums having survived a day's deafening barrage blasts essentially destroyed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "If the family's territory can accommodate a weapons test range of the Nunn Engineers Association, it will be an extremely high-end reputation investment among the imperial aristocracy. These test firing ranges provide families with a stable supply of gunpowder and limited rights to test weapons - when territorial disputes between families evolve into military confrontations, the three Hellstorm serial guns that arrive on the battlefield in advance often determine whose terms the subsequent negotiations will be conducted."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As an old mercenary who has made a living in various armies of the empire, I can responsibly say: You don’t want to meet this thing on the battlefield - when its mouth is facing you. My first and only close encounter with the Hellstorm Battery was during a defensive battle in Nordland. The Orks charged twenty yards in front of our trench and the Battery fired, melting the entire charge like a painting with sulfuric acid poured on it. I couldn't hear myself speak for a whole week after that."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The maintenance of the Hellstorm Serial Cannon is the most special supply chain in the Empire's metal processing industry. Each barrel must go through four quenching processes unique to the Nuln Arsenal when it is manufactured - the first time it is cast from pure steel, the second time it is mixed with carbide provided by the dwarves, the third time it is tempered in the exclusive furnace of the dwarf rune blacksmith, and the fourth time it is cooled in the sound of the holy bells of the Cathedral of Sigmar. Anyone trying to fake this process would quickly find that his replica's barrel would break from the weld shortly after firing."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Nine-barreled gun body - the core structure of the Hellstorm serial gun, with nine independent barrels arranged around the central rotation axis",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Hellstorm Serial Cannon Multi-barrel Cannon Nuln Arsenal"
+  ]
+}

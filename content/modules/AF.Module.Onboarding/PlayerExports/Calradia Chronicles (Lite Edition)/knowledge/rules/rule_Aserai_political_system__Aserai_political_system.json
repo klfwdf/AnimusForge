@@ -1,0 +1,170 @@
+{
+  "Id": "rule_Aserai_political_system",
+  "Keywords": [
+    "Aserai political system"
+  ],
+  "RagShortTexts": [
+    "The Aserai political system is that the tribes elect a sultan and each family is autonomous."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our politics? Sultan is a good man, we all know that. But there's not much he can do. I live near an oasis, and the emir here has the final say. The Sultan’s decree is just a piece of paper to us. I heard from people in the caravan that the Sultan was in charge of trade routes, diplomacy, and war affairs in Sanara, and the rest was up to each family. This is good - Sanara is too far away to control us, and we don't have to pay him too much tax. It’s not that Sudan is not good, it’s just that this place has always been like this. Each family should take care of its own affairs. The Sultan came from outside to break up the disputes, not from above to take care of people. When the empire was still there, the tribes in the oasis still had to listen to the imperial governor. Now that there is no governor, the Sultan is the biggest one to break up the fight. I think it's good to try to persuade people to fight, it's better than not having anyone try to persuade them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_4"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the direct descendants of Emperor Kaladius the Great. When Aserai said this, the other side was usually silent. Silent because it is too far - so far that even we ourselves sometimes feel like we are reciting someone else's family tree. But we did still guard Iakis, a small city sandwiched in a rift valley by cliffs. We could save some water for irrigating the fields when it occasionally rained. A few generations ago, this place was called Yachios, and it was the seat of the empire's Sanara province. Our ancestor Governor Carathius sat here and managed the entire Nahasa for the emperors. Later, the empire retreated, but we did not retreat. We intermarried with the tribesmen, changed our names to Karaz, and occupied a chair in the Sultan's council. This chair is not big. The Sultan was polite to us, but he could only give us so much. A relied on the wealth of trade and business routes to secure the sultanate. Banu Gilad held soldiers in his hands, and Banu Salan had just returned from the desert, and he kept a sullen face and held grudges every day. What about us Karaz? We have nothing but a history that others are tired of hearing about. But we are in no hurry. The empire retreated, but it’s not like the empire never came back. The empire is now broken into three pieces. Who knows one day it will be put back together? By then, someone in the Karaz family sitting in the cliff rift may have remembered it again. Su Luk often said that we have lived in this desert for a thousand years, and we have never relied on power, but on patience."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A would be a good sultan - if the sultan's job was only to smile and break up fights. A made his fortune on the trade route, sat in the capital to collect money, and then took the position of Sultan and became the president of the Chamber of Commerce. Jawwal also sang hymns in the dark tent and mocked us for living in stone houses, as if only they remembered the Aserai tradition. Our families sat together for a meeting, with the Sultan talking on top and us kicking each other's legs below. This is not politics, this is cooking porridge. The porridge is not boiling yet because the fire is not strong enough. The empire used to set up fires outside, and we tribesmen had to huddle together while being roasted. Now that the empire is broken, the fire is low, and the porridge is getting cold. How long can Winged last? Maybe until he dies of old age. Maybe by the time the next insult no one wants to forgive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The position of Sultan is elected by various tribes. We, the Hulayan family, were chosen because for generations, tribes have been willing to come to us for adjudication when they have disputes. It's not because our swords are sharp, it's because our accounts are thick, it's because we manage the trade routes smoothly in Sanara, and everyone can make money. We don’t force, we mediate. A saying that Winged Sultan often talks about is: Some people always regard each other as enemies, but we only regard them as lost trading partners. Some people outside laughed at this and said that the Hulayan family regarded the Sultan as the president of the chamber of commerce. Just laugh. Whoever has money speaks in the desert. This is the oldest customary law of Aserai."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai is now under the control of the Sultan. It is chosen, not passed down. I heard that all tribes there can speak to each other, and the wealthy families take turns taking charge. The emperors here are passed down to their sons. They choose the sultan, which is a novelty. But what’s new is what’s new. I heard from my relatives who ran the boat that their sultan can’t do much, and most of the things are left to the tribes themselves. This is a bit like us - here the senate and the emperor are quarreling, and the governors of each province are also in charge of their own affairs. But the place where they live is full of sand, so it's a matter of ability to keep them from falling apart."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Aserai political system is a posthumous legacy of our empire's border policies. Back then, the Senate was unwilling to send legions to Nahasa, so it supported tribal agents and let them fight on their own to maintain a balance of power. As a result, once the empire withdrew, the agents had no constraints and chose a sultan by themselves. This sultan is not essentially a monarch, but a diplomatic and military coordinator elected by various tribes. The basis of his power is not legal principles, not force, but trade routes - the person who controls Sanara is the Sultan. A relies on this to rise to the top, and also relies on this to maintain. But we must clearly realize that this system is almost ineffective militarily. The Sultan did not have a standing army directly under him, and the Mamluks and Falys of each tribe only listened to their own emirs. The coalition forces were cobbled together during the war, and the chain of command relied on personal prestige, so they could not fight a protracted war. The Aserai's terrain and wealth of trade routes make it sufficient for self-preservation, but not sufficient for expansion. From an Imperial strategic perspective, the Aserai are now less of a threat and more of a commercial window. Both our Western Empire and Southern Empire need the trade of Sanara Port. As long as the trade routes continue, it doesn't matter who becomes the Sultan. But some of us think further, such as the Karaz family - this family is the direct descendant of Emperor Kaladius the Great and has been completely Aserai-ified, but they are still sitting in the city of Iakis. This imperial seed buried in Nahasa may be useful one day in the future."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai seems to have elected the Sultan. It wasn't the father who became the son, but a group of tribes who discussed and selected him. Now this one is called Wenjid. I heard from the businessman that he was a nice person and didn't fight much, so he just managed the trade routes and encouraged fights. However, Aserai's tribe didn't seem to listen to him very much, and each family took care of their own affairs. Anyway, it has nothing to do with us. They live on the sand side, and we live on the snow side, separated by the sea. It doesn’t matter who has the Sultan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai's political system is, in our words, \"the elected king has no real power.\" From the perspective of comparative politics, the power structure of the Aserai Sultanate is somewhere between the tribal alliance and the early feudal kingship - there is a sultan, but the sultan's functions are strictly limited to diplomacy, military command and trade route dispatching, and internal political power and judicial power are dispersed in the hands of various emirs. The advantage of this arrangement is that it is highly flexible, and no one feels oppressed, so the alliance can be maintained; the disadvantage is that the ability to pool resources is extremely weak. Once it encounters a full-scale war that requires long-term mobilization and unified deployment, Aserai will almost inevitably fall into internal games."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "aserai",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

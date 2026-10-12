@@ -26,10 +26,10 @@ internal sealed class AnimusForgeAgendaMapNotification : InformationData
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public AnimusForgeAgendaMapNotification(KingdomDecision decision, string title, string description)
-		: base(new TextObject(string.IsNullOrWhiteSpace(description) ? "点击查看这项王国议程。" : description))
+		: base(new TextObject(string.IsNullOrWhiteSpace(description) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_AgendaDescription", "Click to view this kingdom agenda.") : description))
 	{
 		Decision = decision;
-		_titleText = new TextObject(string.IsNullOrWhiteSpace(title) ? "新的王国议程" : title);
+		_titleText = new TextObject(string.IsNullOrWhiteSpace(title) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_AgendaTitle", "New kingdom agenda") : title);
 	}
 
 	public override bool IsValid()
@@ -62,7 +62,7 @@ internal sealed class AnimusForgeAgendaMapNotificationItemVM : MapNotificationIt
 	{
 		if (!VoteDealBehavior.IsAgendaMapNoticeDecisionValidForExternal(_decision))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("这项王国议程已经失效。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_Invalidated", "This kingdom agenda is no longer valid.")));
 			ExecuteRemove();
 			return;
 		}
@@ -70,13 +70,13 @@ internal sealed class AnimusForgeAgendaMapNotificationItemVM : MapNotificationIt
 		if (!CampaignUIHelper.GetMapScreenActionIsEnabledWithReason(out TextObject disabledReason))
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				disabledReason?.ToString() ?? "当前无法查看王国议程。"));
+				disabledReason?.ToString() ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_CannotView", "The kingdom agenda cannot be viewed right now.")));
 			return;
 		}
 
 		if (!VoteDealBehavior.PrepareAgendaMapNoticeOpenForExternal(_decision))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前无法打开这项王国议程。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_CannotOpen", "The kingdom agenda cannot be opened right now.")));
 			return;
 		}
 
@@ -89,7 +89,7 @@ internal sealed class AnimusForgeAgendaMapNotificationItemVM : MapNotificationIt
 		{
 			VoteDealBehavior.CancelPreparedAgendaMapNoticeOpenForExternal(_decision);
 			Logger.Log("VoteDeal", "[AgendaNotice] Navigation failed: " + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage("打开王国议程失败，请稍后重试。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_OpenFailed", "The kingdom agenda could not be opened. Try again later.")));
 		}
 	}
 
@@ -225,9 +225,11 @@ public partial class VoteDealBehavior
 				continue;
 			}
 
+			TextObject agendaTitle = new TextObject("{=AF_DIP_UI_Vote_AgendaTitleWithName}Kingdom agenda: {TITLE}");
+			agendaTitle.SetTextVariable("TITLE", GetSafeDecisionTitle(decision));
 			MBInformationManager.AddNotice(new AnimusForgeAgendaMapNotification(
 				decision,
-				"王国议程：" + GetSafeDecisionTitle(decision),
+				agendaTitle.ToString(),
 				BuildAgendaMapNoticeDescription(decision)));
 			_publishedAgendaMapNotices.Add(decision);
 			_pendingAgendaMapNotices.Remove(decision);
@@ -312,13 +314,15 @@ public partial class VoteDealBehavior
 			if (decision.TriggerTime.IsFuture)
 			{
 				float days = Math.Max(0f, decision.TriggerTime.RemainingDaysFromNow);
-				return $"你可以参与这项议程，约 {days:F1} 天后进入投票。点击查看议程详情。";
+				TextObject text = new TextObject("{=AF_DIP_UI_Vote_AgendaFuture}You can participate in this agenda. Voting begins in about {DAYS} days. Click to view the details.");
+				text.SetTextVariable("DAYS", days.ToString("F1"));
+				return text.ToString();
 			}
-			return "这项议程已经进入投票阶段。点击前往投票界面。";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_AgendaVoting", "This agenda has entered the voting phase. Click to open the voting screen.");
 		}
 		catch
 		{
-			return "你可以参与这项王国议程。点击查看详情。";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_AgendaDetails", "You can participate in this kingdom agenda. Click to view the details.");
 		}
 	}
 }

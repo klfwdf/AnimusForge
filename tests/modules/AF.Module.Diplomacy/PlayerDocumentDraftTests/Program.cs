@@ -75,12 +75,19 @@ internal static class Program
     {
         var input = new WorldDiplomacyPlayerDraftInput("与瓦兰迪亚议和", 40, 200, 1);
         var messages = WorldDiplomacyPlayerDraftRules.BuildMessages(input, "简明冷峻");
-        Test.That(messages.Count == 2 && (string)messages[1]["content"] == "MODE=PLAYER_DRAFT\n【当前纸面内容】\n与瓦兰迪亚议和", "Only current player material");
+        bool english = Environment.GetEnvironmentVariable("AF_TEST_PROMPT_LANGUAGE") == "en";
+        string userHeader = english ? "MODE=PLAYER_DRAFT\n[Current paper content]\n" : "MODE=PLAYER_DRAFT\n【当前纸面内容】\n";
+        string preferenceHeader = english ? "[Applying diplomacy MCM writing preferences, valid only when faithful to player intent]\n" : "【沿用外交MCM写作偏好，仅在忠实于玩家原意时适用】\n";
+        Test.That(messages.Count == 2 && (string)messages[1]["content"] == userHeader + "与瓦兰迪亚议和", "Only current player material");
         string system = (string)messages[0]["content"];
-        Test.That(system.Contains("【沿用外交MCM写作偏好，仅在忠实于玩家原意时适用】\n简明冷峻"), "Shared preference verbatim");
-        Test.That(system.Contains("约120字") && system.Contains("须扩写") && system.Contains("篇幅要求优先")
-            && system.IndexOf("【本次篇幅要求】", StringComparison.Ordinal) > system.IndexOf("简明冷峻", StringComparison.Ordinal), "Target and expansion take precedence over brevity preference");
-        Test.That(messages[0]["content"].ToString().Contains("40—200") && messages[0]["content"].ToString().Contains("禁止自行添加"), "Length and authorship guard");
+        Test.That(system.Contains(preferenceHeader + "简明冷峻"), "Shared preference verbatim");
+        Test.That(system.Contains(english ? "about 120" : "约120字") && system.Contains(english ? "Expand a title" : "须扩写")
+            && system.Contains(english ? "take precedence" : "篇幅要求优先")
+            && system.IndexOf(english ? "[Length requirements for this draft]" : "【本次篇幅要求】", StringComparison.Ordinal)
+                > system.IndexOf("简明冷峻", StringComparison.Ordinal), "Target and expansion take precedence over brevity preference");
+        Test.That(messages[0]["content"].ToString().Contains(english ? "40 to 200" : "40—200") && messages[0]["content"].ToString().Contains(english ? "forbidden from adding" : "禁止自行添加"), "Length and authorship guard");
+        if (english)
+            Test.That(!System.Text.RegularExpressions.Regex.IsMatch(system.Replace("简明冷峻", ""), "[\\u3400-\\u9fff]"), "English package fixed system prose has no Chinese text; captured player preference is opaque");
         Test.That(WorldDiplomacyPlayerDraftRules.BuildMessages(input, "").Count == 2, "Blank preference not replaced by autonomous contract");
         Test.That(WorldDiplomacyPlayerDraftRules.Parse(Json(Draft)).Body == Draft, "Valid draft preserved");
         foreach (var invalid in new[] { "", "{}", "null", "[]", "{\"body\":null}", "{\"body\":42}", "{\"body\":\"甲\",\"actions\":[]}", "{\"body\":\"甲\",\"body\":\"乙\"}", "```json\n" + Json(Draft) + "\n```", Json(Draft) + " trailing", Json(" \t\n"), Json("\u0001\u0002") })
@@ -136,7 +143,8 @@ internal static class Program
         vm.ExecuteAutoDraft(); Test.Until(() => handler.Get(0) != null, "large draft request");
         Test.That((int)handler.Get(0).Body["max_tokens"] == 4256, "Long drafts are not capped at the old fixed 1800-token request");
         string system = (string)handler.Get(0).Body["messages"][0]["content"];
-        Test.That(system.Contains("300—1000") && system.Contains("约650字"), "MCM range and midpoint reach actual HTTP request before writing");
+        bool english = Environment.GetEnvironmentVariable("AF_TEST_PROMPT_LANGUAGE") == "en";
+        Test.That(system.Contains(english ? "300 to 1000" : "300—1000") && system.Contains(english ? "about 650" : "约650字"), "MCM range and midpoint reach actual HTTP request before writing");
         handler.Finish(0, Json(Draft)); Drain(vm);
         Test.That(vm.BodyText == Draft && vm.CanPublish && !vm.HintText.Contains("字数") && handler.Get(1) == null, "Below-range draft fills without length warning or retry");
 
@@ -152,7 +160,7 @@ internal static class Program
         DuelSettings.Current.MaxChars = 40;
         DuelSettings.Current.EventAndRebellionApiMaxTokens = 512;
         vm.ExecuteAutoDraft(); Test.Until(() => handler.Get(2) != null, "configured API cap");
-        Test.That((int)handler.Get(2).Body["max_tokens"] == 512 && handler.Get(2).Body["messages"].ToString().Contains("1000—1000"), "Explicit API configuration cap and normalized MCM range remain effective");
+        Test.That((int)handler.Get(2).Body["max_tokens"] == 512 && handler.Get(2).Body["messages"].ToString().Contains(english ? "1000 to 1000" : "1000—1000"), "Explicit API configuration cap and normalized MCM range remain effective");
         handler.Finish(2, Json(Draft)); Drain(vm); vm.OnFinalize();
     }
 

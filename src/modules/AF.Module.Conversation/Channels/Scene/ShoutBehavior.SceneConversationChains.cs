@@ -157,7 +157,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			string singleReplyPlayerName = GetPlayerDisplayNameForShout();
 			if (string.IsNullOrWhiteSpace(singleReplyPlayerName))
 			{
-				singleReplyPlayerName = "玩家";
+				singleReplyPlayerName = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0678");
 			}
 			string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(speakerNpc), multiNpcScene, minTokens, maxTokens, singleReplyPlayerName);
 			string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, sceneMechanismPromptSection);
@@ -180,7 +180,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			text = LlmVisibleReplyNormalizer.NormalizeComplete(text);
 			apiSw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_api_done agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " outputLen=" + ((text ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));
-			if (string.IsNullOrWhiteSpace(text) || text.StartsWith("（错误") || text.StartsWith("（程序错误") || text.StartsWith("（API请求失败") || text.StartsWith("（API响应格式错误"))
+			if (string.IsNullOrWhiteSpace(text) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0679")) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0680")) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0681")) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0682")))
 			{
 				return "";
 			}
@@ -205,7 +205,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		{
 			if (data == null)
 			{
-				return "（没说话）";
+				return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0683");
 			}
 			ApplySceneLocalDisambiguatedNames(allNpcData);
 			Hero hero = null;
@@ -253,7 +253,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				bool passiveMultiNpcScene = allNpcData != null && allNpcData.Count((NpcDataPacket npc) => npc != null) > 1;
 				if (!string.IsNullOrWhiteSpace(inputActionText))
 				{
-					sysPrompt.AppendLine("[玩家动作] " + inputActionText);
+					sysPrompt.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0684") + inputActionText);
 				}
 				string scenePatienceInstruction = "";
 				if (passiveMultiNpcScene)
@@ -261,7 +261,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					string playerNameForPrompt = GetPlayerDisplayNameForShout();
 					if (string.IsNullOrWhiteSpace(playerNameForPrompt))
 					{
-						playerNameForPrompt = "玩家";
+						playerNameForPrompt = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0685");
 					}
 
 				}
@@ -276,15 +276,15 @@ internal sealed partial class SceneConversationSessionRuntime
 				string playerNameForLength = GetPlayerDisplayNameForShout();
 				if (string.IsNullOrWhiteSpace(playerNameForLength))
 				{
-					playerNameForLength = "玩家";
+					playerNameForLength = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0686");
 				}
 				string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(npcName, passiveMultiNpcScene, minTokens, maxTokens, playerNameForLength);
 				string playerNameForTask = GetPlayerDisplayNameForShout();
 				if (string.IsNullOrWhiteSpace(playerNameForTask))
 				{
-					playerNameForTask = "玩家";
+					playerNameForTask = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0687");
 				}
-				string taskPreamble = "你是【站在你旁边的人】中的NPC角色,可能是多个人。你们的唯一任务是：根据下方提供的角色信息、场景信息和对话历史，以NPC身份直接回复" + playerNameForTask + "的对话。\n禁止生成任何【】章节标题或格式说明。";
+				string taskPreamble = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0688") + playerNameForTask + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0689");
 				string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, null);
 				if (HasPreprocessRuleHit(ctx?.PreprocessRuleIds, "worldmap_party_command") || HasInjectedRuleBlockForPostprocess(BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock), "worldmap_party_command"))
 				{
@@ -296,7 +296,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				int fixedChars = 0;
 				int deltaChars = CountPromptChars(layeredPrompt);
 				int totalChars = CountPromptChars(layeredPrompt);
-				Logger.Log("ShoutBehavior(被动)", $"[PromptLayer] fixedChars={fixedChars} deltaChars={deltaChars} totalChars={totalChars}");
+				Logger.Log("ShoutBehavior(Passive)", $"[PromptLayer] fixedChars={fixedChars} deltaChars={deltaChars} totalChars={totalChars}");
 				Logger.Obs("Prompt", "compose", new Dictionary<string, object>
 				{
 					["mode"] = "shout_passive",
@@ -320,24 +320,24 @@ internal sealed partial class SceneConversationSessionRuntime
 
 				if (historyDump != null)
 				{
-					Logger.Log("ShoutBehavior(被动)", historyDump.ToString());
+					Logger.Log("ShoutBehavior(Passive)", historyDump.ToString());
 				}
 				string persistedHeroHistory = _ports.BuildPersistedHeroHistoryContext(data.AgentIndex, inputActionText, resolvedHeroes);
 				if (!string.IsNullOrWhiteSpace(persistedHeroHistory))
 				{
-					Logger.Log("ShoutBehavior(被动)", $"[HistoryBridge] heroAgentIndex={data.AgentIndex} chars={persistedHeroHistory.Length}");
+					Logger.Log("ShoutBehavior(Passive)", $"[HistoryBridge] heroAgentIndex={data.AgentIndex} chars={persistedHeroHistory.Length}");
 				}
 				string privateRecentWindowSection = "";
 				string persistedWithoutRecentWindow = "";
 				SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
 				List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(data.AgentIndex, resolvedHeroes);
-				List<object> messages = _ports.BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.Passive, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), "", trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : ("【当前触发】\n" + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+				List<object> messages = _ports.BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.Passive, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), "", trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : (ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0693") + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 				Stopwatch swApi = Stopwatch.StartNew();
 				string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
                 if (!IsSceneRequestSourceCurrent(promptGeneration, promptSession, promptEpoch)) return "";
 				output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
 				swApi.Stop();
-				bool ok = !string.IsNullOrWhiteSpace(output) && !output.StartsWith("（错误") && !output.StartsWith("（程序错误") && !output.StartsWith("（API请求失败") && !output.StartsWith("（API响应格式错误");
+				bool ok = !string.IsNullOrWhiteSpace(output) && !output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0694")) && !output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0695")) && !output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0696")) && !output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0697"));
 				Logger.Obs("API", "complete", new Dictionary<string, object>
 				{
 					["mode"] = "shout_passive",
@@ -351,9 +351,9 @@ internal sealed partial class SceneConversationSessionRuntime
 				{
 					_ports.PostMainThread(delegate
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[被动回应失败] " + output, new Color(1f, 0.3f, 0.3f)));
+						InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_PassiveFailed", "[Passive response failed] {OUTPUT}", "OUTPUT", output), new Color(1f, 0.3f, 0.3f)));
 					});
-					return "（没说话）";
+					return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0698");
 				}
 
 				return output;
@@ -361,9 +361,9 @@ internal sealed partial class SceneConversationSessionRuntime
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("ShoutBehavior", "[ERROR] GetPassiveNpcResponse 异常: " + ex.Message);
+			Logger.Log("ShoutBehavior", "[ERROR] GetPassiveNpcResponse exception: " + ex.Message);
 			Logger.Metric("api.shout_passive", ok: false);
-			return "（没说话）";
+			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0700");
 		}
 	}
 
@@ -403,19 +403,19 @@ internal sealed partial class SceneConversationSessionRuntime
 	{
 		if (currentSpeaker == null) return "";
 		StringBuilder context = new StringBuilder();
-		context.AppendLine("【本轮接力话题】（仅对话调度上下文，不是新增玩家指令或成交事实）");
-		context.AppendLine("玩家本轮原话: " + (playerText ?? "").Trim());
-		context.AppendLine("当前发言轮次: " + Math.Max(1, turnNumber));
-		context.AppendLine("首位应答者: " + (primaryNpc == null ? "（无）" : GetSceneNpcHistoryNameForPrompt(primaryNpc) + " | 接力编号: " + primaryNpc.AgentIndex));
-		context.AppendLine("当前接话者: " + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " | 接力编号: " + currentSpeaker.AgentIndex);
+		context.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0701"));
+		context.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0702") + (playerText ?? "").Trim());
+		context.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0703") + Math.Max(1, turnNumber));
+		context.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0704") + (primaryNpc == null ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0705") : GetSceneNpcHistoryNameForPrompt(primaryNpc) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0706") + primaryNpc.AgentIndex));
+		context.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0707") + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0708") + currentSpeaker.AgentIndex);
 		string spoken = string.Join(", ", (spokenAgentIndices ?? Enumerable.Empty<int>()).OrderBy(id => id));
-		context.AppendLine("本轮已发言编号: " + (string.IsNullOrWhiteSpace(spoken) ? "（无）" : spoken) + "；已经发言者仍可再次接话。");
+		context.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0709") + (string.IsNullOrWhiteSpace(spoken) ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0710") : spoken) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0711"));
 		if (previousSpeaker == null)
-			context.AppendLine("上一位发言者: （无；当前为首位应答）");
+			context.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0712"));
 		else
 		{
-			context.AppendLine("上一位发言者: " + GetSceneNpcHistoryNameForPrompt(previousSpeaker) + " | 接力编号: " + previousSpeaker.AgentIndex);
-			context.AppendLine("上一位已经说过: " + (previousReply ?? "").Trim());
+			context.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0713") + GetSceneNpcHistoryNameForPrompt(previousSpeaker) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0714") + previousSpeaker.AgentIndex);
+			context.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0715") + (previousReply ?? "").Trim());
 		}
 		return context.ToString().Trim();
 	}
@@ -472,10 +472,21 @@ internal sealed partial class SceneConversationSessionRuntime
 			string sceneSummonClosureInstruction = _sceneMovement.BuildSceneSummonClosurePromptInstruction(actionPromptParticipants);
 			string sceneMechanismPromptSectionBase = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, null, primaryNpc);
 			bool multiNpcScene = speakableCandidates.Count > 1;
+			bool explicitGroupAddress = IsExplicitSceneGroupAddress(playerText, speakableCandidates.Count);
 			bool relaySingleFramedNpc = framedNpcData != null && framedNpcData.Count == 1;
 			int primaryTargetAgentIndex = primaryNpc?.AgentIndex ?? (-1);
 			NpcDataPacket currentSpeaker = await _dispatcher.RunAsync("scene_primary_first_validate", primaryNpc?.Name, primaryTargetAgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, primaryTargetAgentIndex), (NpcDataPacket)null);
 			if (!IsCurrentModuleGroup()) return;
+			if (currentSpeaker == null && explicitGroupAddress)
+			{
+				for (int i = 0; i < speakableCandidates.Count && currentSpeaker == null; i++)
+				{
+					NpcDataPacket fallbackCandidate = speakableCandidates[i];
+					if (fallbackCandidate == null || fallbackCandidate.AgentIndex == primaryTargetAgentIndex) continue;
+					currentSpeaker = await _dispatcher.RunAsync("scene_group_fallback_first_validate", fallbackCandidate.Name, fallbackCandidate.AgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, fallbackCandidate.AgentIndex), (NpcDataPacket)null);
+				}
+				if (currentSpeaker != null) Logger.Log("ShoutBehavior", "[SceneRelay] plural request used fallback first speaker agent=" + currentSpeaker.AgentIndex);
+			}
 			if (currentSpeaker == null)
 			{
 				receipt?.Fail("scene.primary_unavailable");
@@ -488,11 +499,12 @@ internal sealed partial class SceneConversationSessionRuntime
 					_ports.ReleaseSceneConversationConstraints(failedPrimaryParticipants, primaryTargetAgentIndex, stopAutoGroupSession: true, clearQueuedSpeech: true, forceFullAutonomyRelease: true);
 					return true;
 				}, fallback: false);
-				_ports.QueueSceneInfoMessage("异色主对象当前无法回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+				_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayTargetUnavailable", "The primary highlighted target cannot respond right now."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 				return;
 			}
 			engagedAgentIndices.Add(currentSpeaker.AgentIndex);
 			HashSet<int> personaPreparedAgentIndices = new HashSet<int>();
+			HashSet<int> groupAnsweredAgentIndices = new HashSet<int>();
 			bool firstTurn = true;
 			NpcDataPacket previousSpeaker = null;
 			string previousSpeakerReply = "";
@@ -529,7 +541,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				if (validatedCurrentSpeaker == null)
 				{
 					receipt?.Fail("scene.target_unavailable");
-					_ports.QueueSceneInfoMessage("本轮接力已结束：当前接话者已离场或无法回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+					_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayEndedSpeakerUnavailable", "This relay round ended: the current speaker left or cannot respond."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 					break;
 				}
 				currentSpeaker = validatedCurrentSpeaker;
@@ -546,8 +558,8 @@ internal sealed partial class SceneConversationSessionRuntime
 					{
 						Logger.Log("ShoutBehavior", "[SceneRelay] budget_rejected agent=" + currentSpeaker.AgentIndex + " reason=" + responseBudgetDecision.Reason);
 						string budgetStopMessage = responseBudgetDecision.Reason == SiegeNpcResponseDecisionReason.EventLimitReached
-							? "本轮接力已结束：已达到场景回应人数预算"
-							: "本轮接力已结束：场景回应预算未允许继续接话";
+							? ConversationUiLocalization.Text("AF_CONV_UI_Shout_BudgetLimit", "This relay round ended: the scene response participant budget was reached.")
+							: ConversationUiLocalization.Text("AF_CONV_UI_Shout_BudgetDenied", "This relay round ended: the scene response budget did not allow another speaker.");
 						_ports.QueueSceneInfoMessage(budgetStopMessage, new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 						break;
 					}
@@ -679,7 +691,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					string singleReplyPlayerName = GetPlayerDisplayNameForShout();
 					if (string.IsNullOrWhiteSpace(singleReplyPlayerName))
 					{
-						singleReplyPlayerName = "玩家";
+						singleReplyPlayerName = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0716");
 					}
 					bool includeInventorySummary = ctx != null && (ctx.UseRewardContext || ctx.IsLoanContext);
 					bool includeTradePricing = includeInventorySummary;
@@ -757,7 +769,7 @@ internal sealed partial class SceneConversationSessionRuntime
 							AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
 							AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
 						}
-						Logger.Log("ShoutBehavior", "[KingdomServicePostprocess] foreground_rules=" + ((kingdomServicePostprocessRules.Count == 0) ? "（无）" : string.Join(",", kingdomServicePostprocessRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+						Logger.Log("ShoutBehavior", "[KingdomServicePostprocess] foreground_rules=" + ((kingdomServicePostprocessRules.Count == 0) ? "(none)" : string.Join(",", kingdomServicePostprocessRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 					}
 					if (sceneMechanismRuleInjected)
 					{
@@ -839,7 +851,7 @@ internal sealed partial class SceneConversationSessionRuntime
 									{
 										receipt?.Fail("scene.main_reply_failed");
 										Logger.Log("ShoutBehavior", "[SceneRefactor] terminal reply stopped error=" + (hostResult?.ErrorCode ?? "missing_host_result"));
-										_ports.QueueSceneInfoMessage("本轮回应已停止，本轮尚未进入动作处理。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
+										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RoundStoppedBeforeActions", "This response round stopped before action processing began."), new Color(1f, 0.3f, 0.3f), conversationEpoch);
 										break;
 									}
 									output = hostResult.VisibleReply ?? "";
@@ -852,7 +864,7 @@ internal sealed partial class SceneConversationSessionRuntime
 							if (sceneShoutDetachedSubmitted)
 							{
 								receipt?.Fail("scene.main_reply_failed");
-								_ports.QueueSceneInfoMessage("本轮回应发生错误，系统已停止后续动作处理。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
+								_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RoundErrorStoppedActions", "This response round encountered an error; subsequent action processing was stopped."), new Color(1f, 0.3f, 0.3f), conversationEpoch);
 								break;
 							}
 						}
@@ -870,13 +882,13 @@ internal sealed partial class SceneConversationSessionRuntime
 						receipt?.Fail("scene.stale_context");
 						return;
 					}
-					if (!string.IsNullOrWhiteSpace(output) && (output.StartsWith("（错误") || output.StartsWith("（程序错误") || output.StartsWith("（API请求失败") || output.StartsWith("（API响应格式错误")))
+					if (!string.IsNullOrWhiteSpace(output) && (output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0718")) || output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0719")) || output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0720")) || output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0721"))))
 					{
 						receipt?.Fail("scene.main_reply_failed");
-						Logger.Log("ShoutBehavior(主动)", "<<< API错误: " + output);
+						Logger.Log("ShoutBehavior(Active)", "<<< API error: " + output);
 						_ports.PostMainThread(delegate
 						{
-							InformationManager.DisplayMessage(new InformationMessage("[场景喊话] " + output, new Color(1f, 0.3f, 0.3f)));
+							InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_ErrorPrefix", "[Scene shout] {OUTPUT}", "OUTPUT", output), new Color(1f, 0.3f, 0.3f)));
 						});
 						break;
 					}
@@ -1045,26 +1057,26 @@ internal sealed partial class SceneConversationSessionRuntime
 							if (postprocessOutcome?.Status == ScenePostprocessStatus.TargetUnavailable)
 							{
 								Logger.Log("ShoutBehavior", "[SceneRelay] stopped because the current postprocess target became unavailable agent=" + currentSpeaker.AgentIndex);
-								_ports.QueueSceneInfoMessage("本轮接力已结束：当前发言者已无法继续回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelaySpeakerUnavailable", "This relay round ended: the current speaker can no longer respond."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else if (postprocessOutcome?.Succeeded != true)
 							{
 								receipt?.Fail("scene.postprocess_unconfirmed");
 								Logger.Log("ShoutBehavior", "[SceneRelay] postprocess did not complete status=" + postprocessOutcome?.Status);
-								_ports.QueueSceneInfoMessage("本轮接力已中断：行为处理失败或超时", new Color(1f, 0.8f, 0.2f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayInterrupted", "This relay round was interrupted: behavior processing failed or timed out."), new Color(1f, 0.8f, 0.2f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else if (relayTargetAgentIndex < 0)
 							{
 								Logger.Log("ShoutBehavior", "[SceneRelay] no valid relay selection agent=" + currentSpeaker.AgentIndex + " candidates=" + relayCandidatesForNextTurn.Count);
-								_ports.QueueSceneInfoMessage("本轮未选出有效的接话者", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayNoSpeaker", "No valid next speaker was selected for this round."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else if (relayTargetAgentIndex == currentSpeaker.AgentIndex)
 							{
 								Logger.Log("ShoutBehavior", "[SceneRelay] current speaker selected itself; relay stopped agent=" + currentSpeaker.AgentIndex);
-								_ports.QueueSceneInfoMessage("本轮接力已结束", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayEnded", "This relay round ended."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else
@@ -1078,6 +1090,17 @@ internal sealed partial class SceneConversationSessionRuntime
 				{
 					lastSpeakerOutputText = "";
 				}
+				if (!string.IsNullOrWhiteSpace(cleaned))
+				{
+					groupAnsweredAgentIndices.Add(currentSpeaker.AgentIndex);
+				}
+				if (explicitGroupAddress && relayTargetAgentIndex == currentSpeaker.AgentIndex
+					&& TrySelectUnansweredSceneGroupRelayTarget(relayCandidatesForNextTurn, groupAnsweredAgentIndices, out int forcedRelayTargetAgentIndex))
+				{
+					Logger.Log("ShoutBehavior", "[SceneRelay] self-stop overridden for unanswered plural audience current=" + currentSpeaker.AgentIndex + " next=" + forcedRelayTargetAgentIndex);
+					relayTargetAgentIndex = forcedRelayTargetAgentIndex;
+					relayRequested = true;
+				}
 				if (!string.IsNullOrWhiteSpace(cleaned) && relayRequested)
 				{
 					nextSpeaker = await _dispatcher.RunAsync("scene_relay_next_validate", currentSpeaker.Name, relayTargetAgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, relayTargetAgentIndex), (NpcDataPacket)null);
@@ -1085,14 +1108,14 @@ internal sealed partial class SceneConversationSessionRuntime
 					resolvedRelayTargetAgentIndex = nextSpeaker?.AgentIndex ?? (-1);
 					if (nextSpeaker == null)
 					{
-						_ports.QueueSceneInfoMessage("本轮接力已结束：选中的接话者已离场或无法回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+						_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelaySelectedUnavailable", "This relay round ended: the selected next speaker left or cannot respond."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 					}
 				}
 				if (!relayPostprocessSelected && !suppressBattleSpeechFollowups && !string.IsNullOrWhiteSpace(cleaned))
 				{
-					string stopMessage = endRequested ? "本轮接力已结束"
-						: remainingTurns <= 0 ? "本轮接力已结束：已达到发言次数上限"
-						: "本轮接力已结束：当前无人可接话";
+					string stopMessage = endRequested ? ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayEnded", "This relay round ended.")
+						: remainingTurns <= 0 ? ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayEndedTurnLimit", "This relay round ended: the speaking turn limit was reached.")
+						: ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayNoNextSpeaker", "This relay round ended: no one else can take the next turn.");
 					_ports.QueueSceneInfoMessage(stopMessage, new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 				}
 			if (relayPostprocessSelected && !string.IsNullOrWhiteSpace(cleaned))
@@ -1507,7 +1530,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				out request);
 		}
 		string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
-		MyBehavior.ShoutPromptContext shoutPromptContext = MyBehavior.BuildShoutPromptContextForExternal(contextHero, "请直接根据刚刚发生的公开互动做出即时反应。", null, targetNpc.CultureId ?? "neutral", hasAnyHero: targetNpc.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: targetNpc.AgentIndex, suppressDynamicRuleAndLore: true);
+		MyBehavior.ShoutPromptContext shoutPromptContext = MyBehavior.BuildShoutPromptContextForExternal(contextHero, ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0724"), null, targetNpc.CultureId ?? "neutral", hasAnyHero: targetNpc.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: targetNpc.AgentIndex, suppressDynamicRuleAndLore: true);
 		StringBuilder stringBuilder = new StringBuilder();
 		string presentNpcListBlock = _ports.BuildScenePresentNpcListBlockForPrompt(allNpcData, targetNpc);
 		if (!string.IsNullOrWhiteSpace(presentNpcListBlock))
@@ -1536,7 +1559,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
 		layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneReactionSystemPrompt(gcczIdentityOverrideBlock, systemRuleBlock, layeredPrompt);
 		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, npcCharacter, targetNpc, targetNpc.AgentIndex);
-		List<object> messages = _ports.BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.ImmediateReaction, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), factText, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+		List<object> messages = _ports.BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.ImmediateReaction, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), factText, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0725") + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0726") }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 		request = new ImmediateSceneReactionRequest
 		{
 			RequestId = requestId,
@@ -1872,7 +1895,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		Agent npcAgent = (targetNpc.AgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetNpc.AgentIndex) : null;
 		CharacterObject npcCharacter = (npcAgent?.Character as CharacterObject) ?? contextHero?.CharacterObject;
 		string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
-		MyBehavior.ShoutPromptContext shoutPromptContext = MyBehavior.BuildShoutPromptContextForExternal(contextHero, "请直接根据刚刚发生的公开互动做出即时反应。", null, targetNpc.CultureId ?? "neutral", hasAnyHero: targetNpc.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: targetNpc.AgentIndex, suppressDynamicRuleAndLore: true);
+		MyBehavior.ShoutPromptContext shoutPromptContext = MyBehavior.BuildShoutPromptContextForExternal(contextHero, ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0727"), null, targetNpc.CultureId ?? "neutral", hasAnyHero: targetNpc.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: targetNpc.AgentIndex, suppressDynamicRuleAndLore: true);
 		StringBuilder stringBuilder = new StringBuilder();
 		string presentNpcListBlock = _ports.BuildScenePresentNpcListBlockForPrompt(allNpcData, targetNpc);
 		if (!string.IsNullOrWhiteSpace(presentNpcListBlock))
@@ -1915,4 +1938,25 @@ internal sealed partial class SceneConversationSessionRuntime
         => RunSceneReplyOnGameThreadAsync(() => GenerateGroupConversationTurnLineCoreAsync(speakerNpc, allNpcData, resolvedHeroes, precomputedContexts, playerText, extraFact, commonCandidatesPrompt, sceneSummonTargets, sceneGuideTargets, sceneMechanismPromptSectionBase, patienceStatusLines, multiNpcScene, minTokens, maxTokens, isCurrent), "scene_fallback_capture", speakerNpc?.AgentIndex ?? -1);
     internal Task<string> GetPassiveNpcResponse(NpcDataPacket data, string sceneDesc, string inputActionText, string precalculatedLore, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes)
         => RunSceneReplyOnGameThreadAsync(() => GetPassiveNpcResponseCoreAsync(data, sceneDesc, inputActionText, precalculatedLore, allNpcData, resolvedHeroes), "scene_passive_capture", data?.AgentIndex ?? -1);
+
+	private static bool IsExplicitSceneGroupAddress(string playerText, int candidateCount)
+	{
+		if (candidateCount < 2 || string.IsNullOrWhiteSpace(playerText)) return false;
+		return Regex.IsMatch(playerText.Trim(), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0728"), RegexOptions.CultureInvariant)
+            || Regex.IsMatch(playerText.Trim(), @"\b(?:you all|all of you|everyone|everybody|folks|brothers|sisters|ladies and gentlemen)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)
+            || Regex.IsMatch(playerText.Trim(), @"\b(?:you all|all of you|everyone|everybody|folks|brothers|sisters|ladies and gentlemen)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+	}
+
+	private static bool TrySelectUnansweredSceneGroupRelayTarget(IEnumerable<NpcDataPacket> candidates, HashSet<int> answeredAgentIndices, out int targetAgentIndex)
+	{
+		targetAgentIndex = -1;
+		List<NpcDataPacket> valid = (candidates ?? Enumerable.Empty<NpcDataPacket>())
+			.Where(candidate => candidate != null && candidate.AgentIndex >= 0)
+			.ToList();
+		NpcDataPacket next = valid.FirstOrDefault(candidate => answeredAgentIndices == null || !answeredAgentIndices.Contains(candidate.AgentIndex))
+			?? valid.FirstOrDefault();
+		if (next == null) return false;
+		targetAgentIndex = next.AgentIndex;
+		return true;
+	}
 }

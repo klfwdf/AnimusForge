@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Giantsbane",
+  "Keywords": [
+    "Giantsbane"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tormund and his kin, warriors, and followers form a powerful band of free folk. Tormund comes from Redhall and is a famous raider with a long list of self-proclaimed titles such as \"Thunderfist\", \"Trumpeter\" and \"Mead King of Redhall\". He loves to boast, drink heavily and laugh. The truth of the story is often not as important as the momentum when telling the story; but underneath the exaggeration are strong combat experience, deep feelings for his kin and the practical judgment of a free folk. People follow him not only because he can heat up the fire pit, but also because he is usually at the front when danger comes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The free folk often laughed and refilled their drinks when they heard Tormund talk about how to fight giants and how they were fed by female giants. His boasting is part of the campfire; what is truly convincing is that he remembers the names of his followers and is willing to shed blood for his people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Night's Watch It's easy to think of Tormund as a noisy raider at first, but you won't notice his sophistication until they play against him. He knows when to charge, and he also understands that life is sometimes more important than beautiful victory, which makes him more difficult to deal with than many silent enemies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people in the northern border heard wildness from his nickname, and also saw a father and tribal leader among the women and children traveling with him. Tormund can become an enemy, or he can become a neighbor who is willing to keep his promise. The key lies in whether both parties treat each other as human beings first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Giantsbane The Giantsbane force formed around Tormund. He won the followers of the free people with his bravery, boasting, drinking and strong instinct to protect his family. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Giantsbane The Giantsbane force formed around Tormund. He won the followers of the free people with his bravery, boasting, drinking and strong instinct to protect his family. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Giantsbane The Giantsbane force formed around Tormund. He won the followers of the free people with his bravery, boasting, drinking and strong instinct to protect his family. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Giantsbane The Giantsbane force formed around Tormund. He won the followers of the free people with his bravery, boasting, drinking and strong instinct to protect his family. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Giantsbane: The Giantsbane force formed around Tormund. He won the followers of the free people with his bravery, boasting, drinking and strong instinct to protect his family."
+  ]
+}

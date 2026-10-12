@@ -1,0 +1,553 @@
+{
+  "Id": "rule_Vlandia_split_between_north_and_south",
+  "Keywords": [
+    "North-South division",
+    "Vlandia Split",
+    "North South",
+    "pure blood",
+    "Kaladization",
+    "Knight collar",
+    "Urban autonomy",
+    "Conflict between North and South",
+    "Civil War between the North and the South"
+  ],
+  "RagShortTexts": [
+    "Vlandia Conflict between North and South: Northern Knights and Southern Merchants"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vlandia appears to be unified, but in reality the rift between north and south has a long history. The north, centered around the Port of Osti, is the bastion of Vlandia's own culture. The nobles value the pure-blood tradition and maintain ancient navigation and knightly customs. The south is centered on Shalas, where the Kalad people first landed. Hundreds of years of imperial rule and intermarriage left a deep mark. The southerners speak a mixed dialect and follow the Kalad-style tradition of law and urban autonomy. While they are ridiculed by the northerners as being \"polluted by Kalad\", they also pride themselves on being more civilized than the northern barbarians. Both sides belong to the same country, but they are like two worlds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia is never a whole. The north is the root of Vlandia. The people in the Port of Osti speak the ancient Vlandian language and practice knightly rituals. That is the orthodoxy. What about those people in the south? They have been hanging out with the Kalad people in Shalas for hundreds of years. They speak in Kalad terms, act like the empire, and even engage in urban autonomy. Northerners think the South has dirty blood, while Southerners think the North is vulgar. In recent years, the taxes paid by the south have been 70% of the kingdom's, and I have long been dissatisfied. The northern nobles think that is natural - there are many good ports in the south, if you don't pay, who will?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_V7"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The North is our Vlandia roots. In the Port of Osti, where our ancestors came ashore, we retain the purest ancient Vlandia language and practice authentic knightly rituals. Who are those people in the south? They have been mixed with the Kalad people for hundreds of years, and their bloodline has long been unclean. Nowadays, they are still imitating the Imperial people’s consultative councils and urban self-governance, and they have almost forgotten their own surname."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_EN5"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those guys in the north always regard themselves as orthodox and say that we have dirty blood. But they forgot that Sharas was the place where the Kalad people first landed on this coast. We have inherited Kalad's laws, systems, and business traditions, which are the foundation of civilization. What do those knights in the north do besides charge on horseback and fight each other? Our city manages itself, and citizens have the right to elect city officials, which is something that people in the north don't even dare to think about. They call it chaos, we call it freedom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The rift between north and south of Vlandia is much deeper than you see. The northern lords relied on cavalry and the feudal fiefdom system to make a living. Land and military service were tightly tied. Farmers were tied to the land and could not even move their homes. The southern side has been influenced by the Kalad people for hundreds of years. The citizens have money, and some cities even bought autonomy with money. This seems like a joke to us northerners - a group of businessmen look after themselves, and they even imitate the Imperial people in holding a consultative council. But you have to know that the south is responsible for 70% of the kingdom's taxes. They feel that they support the entire Vlandia, so they naturally want more say. This is a tinderbox that must be lit sooner or later."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Southern merchants fared better than their northern counterparts. In the ports of Galen and Salas, merchant ships traveled all over the west coast, doing spice trade with the Aserai and silk trade with the Empire. Part of the money earned was given to the city and part to the king. But the taxes imposed by the northern lords were too heavy. Seventy percent of the taxes went out from the south, but what they got in return was the arrogance of the northern cavalry. Why? Just because their ancestors were the guards of Osric the Iron Arm? The gentlemen in the north made a living by raising horses and selling furs, while their farmers were tied to the land. We are different - olives, wheat, grapes, and port trade, we earn our own money. But what about the money earned? Northern gentlemen say this is a matter of course, but we don’t think so."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_V7"
+        ],
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Life in the north is difficult. The land is thin, and it is impossible to grow any valuable crops. They can only raise horses and sell furs. The lord tied the farmers so tightly that they couldn't even move to another place to work. Businessmen in the south are making a lot of money, but we here can't even eat a few meals of meat in the winter. But northerners have backbone, and we don’t live by the rules left by the Kalad people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The fighting styles of the North and South armies were completely inconsistent. What the Northern Knights want is to charge decisively, line up in a line, clamp their spears, and run them over. Southern infantry talks about formations - crossbowmen in front, spearmen in the rear, and sword and shieldmen at the end. Together, these two approaches could have been complementary, but both sides looked down upon each other. The knight said that the crossbow was a coward's weapon, and the crossbowman said that the knight would die if he charged. Who listens to whom on the battlefield? How will the credit be divided after the battle? It's noisy every time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_V7"
+        ],
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People in the north have a hard life, but their bones are strong. The lords controlled the land very tightly, and the farmers were tied to the land for their entire lives, with heavy rents and little freedom. Near the Port of Osti, you can see thin, silent people with stubborn eyes - worn out by the cold wind and hard days. They look at southerners just like foreigners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_EN5"
+        ],
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Walking around the streets of Sharas, you can hear the mixed accent of Vlandia, mixed with Karad words. Merchants marked their prices with imperial weights and measures, and alderman's notices were plastered in public squares—something unthinkable in the north. Southerners have money and dare to speak. They feel that they are more civilized than the northerners and always talk about \"those barbarians in the north\"."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have stayed in both the north and south of Vlandia, and the differences between the two sides are huge. Northerners are tough-spoken and quick to draw their swords at the wine table; Southerners are soft-spoken but very good at calculating accounts. The northern lords can hold your life in their hands, and in the south, as long as you have money, you can bargain with the alderman. Where is the line between north and south? No one has ever drawn a map, but everyone who lives here knows it. An invisible line runs from the southern edge of the Ebo Peninsula through the Tran Valley. The ancient Vlandian language is spoken north of the line, and the mixed dialect is spoken south of the line; the honor of knights is believed in the north of the line, and the terms of contract are believed in the south. After all, this country is made of two pieces, and the seams are bleeding all the time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The divisions within the Vlandia people are both a good thing and a lesson for the Empire. The conflict between the knights in the north and the Kaladized remnants in the south is similar to the civil war in our empire. But the Vlandians are even more stupid - they don't even have a unified culture. The ancient Vlandian language spoken by the northerners and the mixed dialect of the southerners are almost two languages. If a country doesn't even speak in unison, big trouble will happen sooner or later. If Vlandia does break up, the Empire may be able to take back Shalas, the port that was once ours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sharas was one of the earliest imperial colonies. Although we lost it to the Vlandians, the traces of Kalad have not been erased. The people in the south of Vlandia have the blood of Kalad in their blood, and they also know that their ancestors were once subjects of the empire. If the empire wants to be unified in the future, perhaps we should not fight first, but win over those southern lords who are already dissatisfied with the tyranny of the north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The roots of Vlandia's north-south division can be traced back to the historical disconnect between colonies and barbarian immigrants in the days of Emperor Caladius. As the earliest colonial settlement, Sharath has been under the rule of the empire for hundreds of years and has formed a deep cultural soil of Karad. The arrival of the Vlandians as mercenaries and invaders failed to completely erase these influences, but instead formed a culturally dual-identified mixed society in the south. The north, centered on the Port of Osti, maintains a relatively pure immigrant culture. From an imperial perspective, this original difference was never truly bridged within the framework of a unified kingdom - they were building the same house on two different foundations. The people of Vlandia are repeating the mistakes of our civil war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of Vlandia fight among themselves, which is what we in Battania want. Some of the cities to their south did business with us during the rule of the Kalads. We don't have much contact with the cavalry in the north. They are too wild and their only relationship with us is fighting. Let them quarrel, the louder the better - the Vlandians are too busy fighting among themselves to burn our forests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The rift in Vlandia was not formed in a day. Their northerners resembled the conquerors, and their southerners resembled the conquered. If the conquerors and the conquered live together, problems will arise sooner or later. Whether they fight or divide in the future, Battania must be prepared - at any moment the cavalry from the north may come to burn our woods. But for now, Forest Spirit gives us some breathing space."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Aserai merchants see the contradiction between the north and the south of Vlandia most clearly. The northern lords were rigid and stubborn. They relied on verbal agreements to do business and drew swords at every turn. Southern businessmen are shrewd, clearly write down contract terms, and pay quickly. Sooner or later the internal disputes between the two sides will boil into open flames. We just need to be flexible - do business with whichever side wins, and raise prices with whichever side is weak. A united Vlandia is more difficult to deal with."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "To do business with the Vlandians, you have to know the north and the south. The southern port is a real center of commerce, and dealing with merchants from Shalas and Gallon is as smooth as dealing with merchants from Aserai. It was different in the north. The fur and horse business was controlled by the lords and did not follow market rules. The trade routes of Sharas and Gallenhaven were the lifeblood of Vlandia, and both cities were in southern hands. If one day the South decides not to pay the North anymore, they can live very well relying on their own ports and commercial strength. By then, who needs whom more?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The internal strife between the Vlandia people between the north and the south is nothing new in the eyes of us northerners. The Vlandia people in the north are a bit like us Sturgia people - they rely on cavalry and swords to speak, and the lords hold the power. But those people in the south were raised as traders and citizens by the Karad people. The urban autonomy they practiced was based on the empire, not the old rules of Vlandia. Grand Duke Langward has been paying attention to the internal strife in Vlandia. If one day they are really divided, our longships will not miss the opportunity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia North and we Sturgia are kindred spirits in a way - we both believe in swords and blood. But those Kaladized people to their south are as cunning as the Imperials. Once the north and the south are completely separated, the north will lose the ports and trade routes in the south, and the cavalry will be short of money no matter how capable they are of fighting. By then our longships can push us across from the sea. How about a knight of Vlandia fighting alongside Boyer of Sturgia? But the premise is that they stop claiming to be pure blood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The internal strife between the north and south of Vlandia is considered by us Khuzait people as a matter between tribes. The knights in the north are like the old nobles who rely on the reputation of their ancestors, and the crossbowmen and merchants in the south are like the new talents who rely on their ability to make a difference. The old aristocrats look down on the new ones, and the new ones disobey the old aristocrats. This is also common on the grasslands. The difference is - we will decide the outcome through the Naadam Conference, but they will only quarrel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "To be a mercenary in Vlandia, you have to know north and south. The price offered by the northern employer was not high, but the battle was enjoyable, so just follow the charge. Employers in the South pay readily, but they require a lot, including formation, discipline, and cooperation. If anything is missing, the money will be deducted. Some people say let them fight each other - Northern cavalry versus Southern infantry, who will win? I bet on the South. The South has money, and in the end the war is about dinars, not blood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "seafarer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People who run boats know best the differences between the north and the south of Vlandia. Most of the ports in the north are small fishing ports with strong winds and waves that cannot accommodate large ships. What about the South? Gallon, Shalas, natural harbors, trade routes to the empire, shipping routes to the Aserai. Most of the kingdom's maritime power relies on the south. If the northern men want to fight a war, they must first ask the southern ship boss if he is willing to transport troops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The difference between north and south can be seen from the side of a blacksmith's stove. The northern lords ordered spears and cavalry plate armor, while the southern lords ordered crossbows and infantry chain mail. The North wants guys who can fight alone, while the South wants equipment for battle. The two sides even have different ideas about fighting. How do you let them fight side by side in the same army?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia’s North-South conflict has another meaning for women. The north is a man's world where blood and force are the key. Women have no place in inheritance. The South was a little better - at least in those cities with self-government, property-owning widows and property-owning female merchants were not uncommon. This is the legacy of the Kalad system, which northerners resent. It was no accident that Baroness Caratilde gained a foothold in the South."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The north-south division of Vlandia is a typical case of compound internal conflicts. At the economic level, the South bears about 70% of the kingdom's tax burden but feels that its wealth is used for expenses in the North. Unfair tax burden is the most direct trigger point of conflict. At the political level, the north implemented a strict feudal fiefdom system, with judicial and taxation rights concentrated in the lords, and farmers had strong dependency relationships; in the south, under the influence of Kalad's legacy, the citizen class was active, and some cities obtained autonomy through redemption, forming a consultative tradition, and the degree of feudal dependence was significantly weaker than in the north. At the cultural level, the North regards itself as \"pure blood\" and the South considers itself as \"civilized\". The fundamental differences in language, customs and national identity make the two regions lack a unified cultural bond. At the military level, the tactics of the northern heavy cavalry and the southern infantry-crossbow phalanx were incompatible, exacerbating mutual distrust between the two sides. The superposition of these four points makes Vlandia's unity extremely fragile."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "leadership": 150
+        }
+      },
+      "Content": "The most fatal problem of the North-South division of Vlandia is military incompatibility. With heavy cavalry as the core, the north implemented a knightly collar system - each knightly collar supported a heavy cavalry and auxiliary troops. The tactics revolved around charging, emphasizing personal bravery and knightly honor. The south inherited the tradition of the Kalad Legion, relying on infantry phalanxes composed of crossbowmen and spearmen, emphasizing discipline and cooperation. The two tactical systems should have complemented each other on the battlefield, but the nobles of the north and the south despised each other - the north ridiculed the crossbow as a \"coward's weapon\", and the south ridiculed the knight's charge as \"sending death\" - resulting in poor coordination and constant disputes over military achievements. If civil war breaks out in Vlandia, this will be a key factor in determining victory: whoever can better integrate cavalry and infantry will have the upper hand. But ironically, that's the last thing the people of Vlandia can do."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Vlandia",
+      "Kind": "bound_kingdom_name",
+      "TargetId": "__bound_kingdom__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Ostican",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Salas",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "gallons",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

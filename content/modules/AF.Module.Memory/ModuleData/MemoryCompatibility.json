@@ -1,0 +1,26 @@
+{
+  "EmptyMarkers": ["无", "none", "null", "n/a"],
+  "ParseErrorPrefixes": [
+    "未找到包含必需字段的 JSON 对象：",
+    "SUMMARY 为空。",
+    "TITLE 或 SUMMARY 为空。",
+    "JSON 解析失败。",
+    "找不到 JSON 对象。"
+  ],
+  "LoreInjectionPatterns": [
+    "【玩家触发了（",
+    "【以下是关于（",
+    "【玩家外貌信息（常驻）】",
+    "【触发相关话题/背景】",
+    "参与互动让你的脑海里浮现了这些知识",
+    "应当知晓以下信息"
+  ],
+  "ConfirmationPatterns": [
+    "是否", "要不要", "你要", "你是要", "确认", "同意", "愿意", "还是",
+    "雇佣兵", "封臣", "成交吗", "继续吗", "要这样吗"
+  ],
+  "ArmyCommanderPatterns": ["率领"],
+  "RaidPatterns": ["袭扰"],
+  "DefendPatterns": ["守备", "保卫"],
+  "WeekOrdinals": ["第一", "第二", "第三", "第四", "第五", "第六", "第七", "第八", "第九", "第十"]
+}
