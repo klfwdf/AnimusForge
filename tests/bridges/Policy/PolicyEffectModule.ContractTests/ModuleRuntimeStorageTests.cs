@@ -52,6 +52,7 @@ internal static partial class Program
             == Path.Combine(module, "PlayerExports", "module-package"), "latest module import ignores reparse package");
 
         object instance = Activator.CreateInstance(settings);
+        TestSceneActionLegacySettings(instance);
         TestModuleMcmRouting(instance, module, fakeUser);
         TestRetainedPromptLayers(settings, module);
         Directory.CreateDirectory(Path.GetDirectoryName(cache));
@@ -170,6 +171,43 @@ internal static partial class Program
         catch { rejected = true; }
         Check(rejected, "missing module cannot fall back to CWD or AppData");
         SetFixtureModuleRoot(module);
+    }
+
+    private static void TestSceneActionLegacySettings(object settings)
+    {
+        string repository = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+        string source = File.ReadAllText(Path.Combine(repository, "extensions", "AnimusForge.XihaiAction", "src", "Runtime", "SceneActionsMcmSettings.cs"));
+        // Fail before invoking an old bridge: a red replay must never query live Documents.
+        Check(!source.Contains("Environment.GetFolderPath") && !source.Contains("File.ReadAllText"),
+            "scene action bridge never queries or imports old Documents settings");
+        InvokeStatic(SutType("AnimusForge.McmSettingsStorage"), "EnsureReady", Array.Empty<object>(), 0);
+        Type bridge = SutType("AnimusForge.XihaiAction.SceneActionsMcmSettings");
+        var properties = (System.Collections.Generic.Dictionary<string, System.Reflection.PropertyInfo>)bridge.GetField("Properties", All).GetValue(null);
+        var previous = properties.ToArray();
+        properties.Clear();
+        foreach (var property in settings.GetType().GetProperties(All)) properties[property.Name] = property;
+        try
+        {
+            var version = properties["SceneActionsMcmMigrationVersion"];
+            var natural = properties["NaturalLanguageReplyActionsEnabled"];
+            version.SetValue(settings, 0);
+            natural.SetValue(settings, false);
+            bridge.GetMethod("EnsureLegacyMigration", All).Invoke(null, new[] { settings });
+            Check(!(bool)natural.GetValue(settings), "scene action bridge retains existing module user switches");
+            Check((int)version.GetValue(settings) == 2, "scene action bridge preserves its existing settings version identity");
+            properties["ReplyMinimumChars"].SetValue(settings, 30);
+            properties["ReplyMaximumChars"].SetValue(settings, 80);
+            version.SetValue(settings, 0);
+            bridge.GetMethod("EnsureLegacyMigration", All).Invoke(null, new[] { settings });
+            Check((int)properties["ReplyMinimumChars"].GetValue(settings) == 60
+                && (int)properties["ReplyMaximumChars"].GetValue(settings) == 160,
+                "scene action module-local battle speech defaults upgrade remains active");
+        }
+        finally
+        {
+            properties.Clear();
+            foreach (var pair in previous) properties[pair.Key] = pair.Value;
+        }
     }
 
     private static void TestModuleMcmRouting(object settings, string module, string fakeUser)

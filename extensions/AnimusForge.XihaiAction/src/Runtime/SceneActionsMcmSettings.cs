@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using AnimusForge.SceneActions.Core;
-using Newtonsoft.Json.Linq;
 
 namespace AnimusForge.XihaiAction
 {
@@ -26,30 +24,10 @@ namespace AnimusForge.XihaiAction
         // version could leave the legacy 30/80 speech-length profile active.
         private const int IntegratedMigrationVersion = 2;
         private const string DuelSettingsTypeName = "AnimusForge.DuelSettings";
-        private const string LegacySettingsFileName = "AnimusForge_XihaiAction.json";
         private const int MaximumAudienceVoiceCount = 24;
         private const int MaximumAudienceVoiceWaveSize = 8;
 
         private static readonly object AccessorSync = new object();
-        private static readonly string[] MigratedPropertyNames =
-        {
-            "NaturalLanguageReplyActionsEnabled", "BattleSpeechEnabled", "TKeyBattleSpeechEnabled",
-            "ReplyMinimumChars", "ReplyMaximumChars", "NpcPositioningEnabled", "FrontDistanceMeters",
-            "ArrivalRadiusMeters", "MovementTimeoutSeconds", "IncludeAlliedAudience", "MaximumVisualResponders",
-            "VisualWaveSize", "MaximumVisualSubmissionsPerTick", "AudienceVoicesEnabled", "AudienceVoiceCount",
-            "AudienceVoiceWaveSize", "AudienceVoiceWaveIntervalSeconds", "AudienceRepliesEnabled", "AudienceReplyCount",
-            "AudienceReplyWaveSize", "MaximumAudienceReplySubmissionsPerTick", "AudienceReplyMinimumChars",
-            "AudienceReplyMaximumChars", "AudienceReplyMinimumIntervalSeconds", "AudienceReplyMaximumIntervalSeconds",
-            "AudienceReplyIntervalSeconds", "TacticalAdvanceEnabled", "TacticalAdvanceDelaySeconds",
-            "EnemyInterruptRadiusMeters", "ScreenNotifications", "DiagnosticsEnabled", "PacingEnabled",
-            "MountedPacingEnabled", "InfantryPacingEnabled", "PacingHalfWidthMeters", "PacingMinimumIntervalSeconds",
-            "PacingMaximumIntervalSeconds", "DualChannelEnabled", "AfClassifierEnabled", "NaturalSpeechTriggerEnabled",
-            "SpeechTriggerClassifierEnabled", "SpeechSemanticClassifierEnabled", "Kneel", "StandUp", "Xihai", "Cheer",
-            "Applaud", "Respect", "Threat", "Surrender", "Laugh", "Point", "Rage", "Fear", "Disappointed",
-            "Challenge", "Search", "Dance", "Greet", "Agree", "Disagree", "Unsure", "Explain", "Promise",
-            "CrossArms", "DeepBow", "Command", "FollowMe", "CutThroat"
-        };
-
         private static bool _accessorSearched;
         private static int _accessorAssemblyCount = -1;
         private static MethodInfo _getSettingsMethod;
@@ -358,52 +336,10 @@ namespace AnimusForge.XihaiAction
             {
                 return;
             }
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "Mount and Blade II Bannerlord", "Configs", "ModSettings", "Global",
-                "AnimusForge_XihaiAction", LegacySettingsFileName);
-            bool imported = false;
-            if (File.Exists(path) && IsSceneActionsDefaultProfile(settings))
-            {
-                try
-                {
-                    JObject legacy = JObject.Parse(File.ReadAllText(path));
-                    foreach (string name in MigratedPropertyNames)
-                    {
-                        if (!Properties.TryGetValue(name, out PropertyInfo property) ||
-                            !legacy.TryGetValue(name, StringComparison.OrdinalIgnoreCase, out JToken token))
-                        {
-                            continue;
-                        }
-                        property.SetValue(settings, token.ToObject(property.PropertyType), null);
-                        imported = true;
-                    }
-                    SceneActionsLog.Info("MCM", "Migrated legacy AnimusForge_XihaiAction MCM values into AF DuelSettings.");
-                }
-                catch (Exception ex)
-                {
-                    SceneActionsLog.Warning("MCM", "Legacy XihaiAction MCM migration failed: " + ex.GetBaseException().Message);
-                }
-            }
+            // Only upgrade settings already loaded from the module; never import Documents.
             MigrateLegacyBattleSpeechDefaults(settings);
             Write(settings, "SceneActionsMcmMigrationVersion", IntegratedMigrationVersion);
             TryPersistSettings(settings);
-            if (!imported && !File.Exists(path))
-            {
-                SceneActionsLog.Info("MCM", "No legacy XihaiAction MCM file found; AF defaults retained.");
-            }
-        }
-
-        private static bool IsSceneActionsDefaultProfile(object settings)
-        {
-            return Read(settings, "NaturalLanguageReplyActionsEnabled", true) &&
-                Read(settings, "BattleSpeechEnabled", true) &&
-                Read(settings, "ReplyMinimumChars", 60) == 60 &&
-                Read(settings, "ReplyMaximumChars", 160) == 160 &&
-                Math.Abs(Read(settings, "FrontDistanceMeters", 10f) - 10f) < 0.0001f &&
-                Read(settings, "AudienceReplyCount", 24) == 24 &&
-                Read(settings, "MaximumVisualResponders", 60) == 60 &&
-                Math.Abs(Read(settings, "TacticalAdvanceDelaySeconds", 1.8f) - 1.8f) < 0.0001f &&
-                Math.Abs(Read(settings, "EnemyInterruptRadiusMeters", 10f) - 10f) < 0.0001f;
         }
 
         private static void MigrateLegacyBattleSpeechDefaults(object settings)
