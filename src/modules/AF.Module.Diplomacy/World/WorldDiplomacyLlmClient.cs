@@ -72,6 +72,7 @@ internal static class WorldDiplomacyLlmClient
 		int effectiveTokens = Math.Min(Math.Max(1, maxTokens), configuredLimit);
 		JArray frozenMessages = messages == null ? new JArray() : (JArray)messages.DeepClone();
 		if (frozenMessages.Count == 0) { error = "messages are empty"; return false; }
+		PromptLanguageAudit.Log("world_diplomacy", frozenMessages);
 		JObject body = BuildRequestBody(model, frozenMessages, effectiveTokens, ResolveTemperature(settings, route));
 		DuelSettings.ApplyThinkingControls(body, url, model, thinkingEnabled: false,
 			DuelSettings.ReasoningEffortHigh, out string thinking);
