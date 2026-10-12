@@ -1,4 +1,12 @@
-# 当前交接：关闭旧 AF 数据入口，恢复缓存时间刷新（2026-10-12，LOCAL_ONLY / OFFLINE_VERIFIED）
+# 当前交接：手动触发标签接入大地图指令（2026-10-13，LOCAL_ONLY / OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 检查点 `eec88483d`，产品/回归 `4a982ec42`。保留现有按钮/原参数弹窗；共用跟随按钮按普通scene与地图/已有meeting分流（meeting有Agent也走地图），战斗/演习不降级地图命令。增加前往、巡逻、目标跟随/攻击、藏身点清剿、原资格归队，场景合格领主/同伴/总督也可下地图任务。
+- 真实对象与名称搜索、同名类型/ID、正整数与原默认天数、原AI/FORCE；追加默认，替换完整预检后一次原STOP＋任务。失效/战斗/安全退出/外部保护拒绝时保留旧队列，明确清空/外交/归队副作用。真实owner回执区分接受与行动完成，必要原退出机制防过期交流；51对中英接通真实reader，无AI/新Tick/公开API/存档键。
+- 955直接动作/真实owner算法、34原地图pure子集、24地点驻留、29藏身点、两版TW各171双语检查PASS；原双API各363 warning/0 error、Bootstrap/probe0/0、双Coup PASS，26锚点双模式核验。旧J12全套仍因已迁移外交源码路径CS2001失败，不代表全仓或真实移动通过。
+- [唯一主台账与失败/未验](docs/animusforge-refactoring-and-repository-reorganization-plan.md#manual-worldmap-tags-20261012)；[真实代码与消费者](docs/architecture/af-framework-code-scope.md#manual-worldmap-tags-20261012)。总证据 `artifacts/tests/manual-worldmap-tags-20261012/verification-receipt.json`，源码/DLL/hash与实际测试绑定。
+- **仅本地提交，未Stage、部署、打包、push或启动游戏；安装目录不含本次地图任务和前序旧数据退役修复。** 实机搜索/点击/Agent或队伍移动、组队出征界面及旧档/外MOD仍未验；下一步双上下文同按钮、替换保护和必要退出需另行实机授权。源码只focused inverse本产品切片，不reset/rewrite。下方部署记录为前序历史，不授权发布本候选。
+
+# 前序交接：关闭旧 AF 数据入口，恢复缓存时间刷新（2026-10-12，LOCAL_ONLY / OFFLINE_VERIFIED）
 
 - 检查点 `5b980de90`，产品/回归 `460881249` + 补闭场景动作旧导入 `8f4c5a80c`。包括场景动作旧 MCM 导入在内，旧 C 盘 AF 数据不读、不迁移、不删除；以后缺失文件不再从旧 AppData/Documents 补齐。模组内已存在的 `LegacyImported` 等文件保持使用，不识别或清理来源。
 - 保留后续双语化、用户/包默认提示词分层及 `Configs/Cache/PlayerExports/Recovery`。模型缓存恢复同实例按严格较新mtime重读；相同/更旧时间跳过，原合并与原子保存、安全保护保留，无新增Tick IO。
