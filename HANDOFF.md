@@ -1,4 +1,12 @@
-# 当前交接：手动触发标签接入大地图指令（2026-10-13，LOCAL_ONLY / OFFLINE_VERIFIED / LIVE_PENDING）
+# 当前交接：安全合并远端并安装 D 盘（2026-10-13，DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
+
+- 检查点 `21bcf5844`，合并 `6ca84557e` 纳入远端 `41c22a952` 的1提交/4路径，预览/实际无冲突。远端输入租约修复保留scene渲染；本地地图标签、旧数据退役、缓存时间刷新与其他作者历史逐字保留。
+- 原Release双API各363 warning/0 error、Bootstrap/probe0/0、双Coup与3519文件干净Stage通过；85原编辑器输入/渲染模型专项、955完整直接动作再次PASS。原地图/地点/藏身点/双语专项按17文件SHA复用，旧J12总套件失效外交引用仍未通过；32锚点双模式PASS，不代表实机。
+- 已安装 `D:/steam/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，`v1.5.8` 未递增，Bootstrap唯一入口与双实现分目录。3519 Stage落盘SHA一致，实际更新11受管文件、11份旧备份已核；3654文件集合不变，3643未动，3268受保护/未列入Stage文件字节及mtime不变，PlayerExports0更新。
+- [唯一主台账与授权/保护/未验](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remote-merge-install-20261013)；[真实代码与原消费者](docs/architecture/af-framework-code-scope.md#remote-merge-install-20261013)。总收据 `artifacts/tests/remote-merge-install-20261013/run-18f290f62d4d47ffa47fbf35def73db6/verification-receipt.json`；恢复 `D:/steam/steamapps/common/Mount & Blade II Bannerlord/Modules/.AnimusForge.Recovery/deploy/deploy-e21f19bbe97241f4a8c4e4be1262dbf5`，55旧生成产物与首个3519 Stage保留于工作区证据目录。
+- **未push、ZIP或启动游戏，不动旧C盘AF数据/存档。** 本候选落盘包括此前两项“尚未安装”修复，但人物编辑器/地图任务真实点击与移动、组队出征/退出、双版实机与旧档仍未验。源码只first-parent focused inverse；安装恢复需新授权和当前hash复核，不能覆盖后来编辑。下方为前序历史。
+
+# 前序交接：手动触发标签接入大地图指令（2026-10-13，LOCAL_ONLY / OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 检查点 `eec88483d`，产品/回归 `4a982ec42`。保留现有按钮/原参数弹窗；共用跟随按钮按普通scene与地图/已有meeting分流（meeting有Agent也走地图），战斗/演习不降级地图命令。增加前往、巡逻、目标跟随/攻击、藏身点清剿、原资格归队，场景合格领主/同伴/总督也可下地图任务。
 - 真实对象与名称搜索、同名类型/ID、正整数与原默认天数、原AI/FORCE；追加默认，替换完整预检后一次原STOP＋任务。失效/战斗/安全退出/外部保护拒绝时保留旧队列，明确清空/外交/归队副作用。真实owner回执区分接受与行动完成，必要原退出机制防过期交流；51对中英接通真实reader，无AI/新Tick/公开API/存档键。

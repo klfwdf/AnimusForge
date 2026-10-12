@@ -1,3 +1,24 @@
+<a id="remote-merge-install-20261013"></a>
+## 2026-10-13 安全合并远端并安装指定 D 盘（DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
+
+- 用户明确授权“安全合并远端然后安装到游戏目录” `D:/steam/steamapps/common/Mount & Blade II Bannerlord`，实际目标为唯一 `Modules/AnimusForge`。未授权push、ZIP、版本递增、启动游戏或存档操作，本轮未执行这些动作。工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`，干净基线 `082893867`，意图检查点 `21bcf5844`，fetch远端 `41c22a952c61d1c3c5c4bcf061fcbdb272bc084e`；共同基线 `59dc32bf3`，双方16/1提交分叉。
+- 远端仅1提交/4路径，修 DevPopupInputLease 的scene parent只释放输入、不暂停渲染，Gauntlet parent仍沿原suspend/恢复。与本地变化路径没有重叠，merge-tree预览exit0，真实merge `6ca84557e4cc354222a2f4bc3b43f73804c7a051` 无冲突，父提交为检查点与远端。已核remote祖先关系、所有远端改变文件与remote逐字相同、本地改变且未被remote触及的文件与原HEAD逐字相同；本地地图标签、旧数据退役、缓存时间刷新及其他作者历史均保留，没有重置/改写。
+- 用户另明确批准保留并重建三条精确Release生成目录：`bin/Release/single_module_artifacts`、`obj/single_module/Release`、`bin/Release/single_module_stage/AnimusForge`。操作前绝对路径/工作区边界/祖先与子项reparse核对，旧9产物＋46中间文件移入本轮证据的preserved-old目录，全部字节/mtime/文件集合相同；旧Release Stage原不存在。后续首次验证的3519文件Stage也原样移到 `validated-stage/AnimusForge` 留证，原安装入口重新生成默认Stage；无删除旧产物、不改Debug输出或源码/用户数据，未改构建/覆盖脚本。
+
+### 验证、产物及安装保护
+
+- 合并后原 `TextEditorInputHandoffTests/run.py` 完整生产helper/popup/VM/lease回放 **85 PASS**，真实prefab焦点/鼠标/保存取消按钮契约PASS；涵盖Gauntlet父层、Map SceneLayer自动开关两模式、保存/取消/加载失败/外部暂停及一次恢复。原本net8测试仅隔离生成工程用本机SDK10适配，未改runner、断言或生产TFM。native dispatch/渲染排序是model叶子，不是GPU/实机。`text-editor/run.log`、`prefab-check.json`保留。
+- 完整本地直接动作回归再次运行 **955 PASS**，日志 `direct-after-merge.log`，仍1个fixture CS0649警告；命令与现有绝对python属性沿前轮。前轮17个产品/测试文件SHA全部保持，原地图协议34、地点驻留24、藏身点29和两版真实TW本地化各171/51对键证据按未变源码复用（`reuse-source-check.json`），不是本轮重复执行或新实际DLL/实机验收。遗留J12整套的失效外交路径CS2001见[前轮失败](#manual-worldmap-tags-20261012)，相关工程和路径未变；不写全套/全仓通过，未为安装修改无关外交。
+- 原 `scripts/build/build_single_module.ps1 -Configuration Release -Stage` 整体 **exit0**：实际参考 `v1.3.15.110062` / `v1.4.6.115628`，两实现各 **363 warning/0 error**，Bootstrap/probe **0/0**，双Coup gate PASS。使用前序已诊断的进程main-project `EnableDefaultNoneItems=false` wrapper排除ignored artifact候选，不改工程或脚本；命令/最小无凭据进程环境保留于 `build/invocation.json`。8314个源码/资源/脚本输入SHA从构建至安装验收均不变，三DLL与marker/Coup候选SHA一致，未递增 `v1.5.8`。
+- 干净Stage **3519文件**，3503条content-map来源哈希逐项匹配，Bootstrap唯一声明、单模块身份、双实现marker/PDB/私有依赖通过，无TaleWorlds DLL、ONNX或运行日志/缓存/Recovery。安装前后重新生成Stage的全文件SHA相同，3519 Stage文件与实际安装SHA全部相同；两个本轮CN/EN UI资源与源码/Stage/安装一致。未切换既有提示词/世界书内容版别，未生成CN/EN ZIP。
+- 原 `scripts/build/deploy_module.ps1` **exit0**，进入安装调用前再次确认无Bannerlord/TaleWorlds/launcher进程；只更新Stage受管文件。实际 **11文件**（两语言UI XML、Bootstrap/双实现各DLL/PDB/marker），安装前后文件集合均 **3654**，其余 **3643** 内容与mtime不变；**3268** 个严格运行数据/全部PlayerExports/未列入Stage文件并集逐项字节与mtime不变，PlayerExports本轮更新0。配置、用户提示词、日志、缓存、Recovery、ONNX和未知文件保持，原PlayerExports较新覆盖/相同时间安装优先规则未改；原版游戏DLL/Native XML抽核SHA保持，原部署代码仅写AF目标及私有恢复资料。
+- 私有事务恢复 `D:/steam/steamapps/common/Mount & Blade II Bannerlord/Modules/.AnimusForge.Recovery/deploy/deploy-e21f19bbe97241f4a8c4e4be1262dbf5`：complete标记存在，manifest的11条旧新SHA/原时间与快照一致，**11份旧文件备份SHA**核实；没有遗留 `.af2-deploy/.af2-replaced/.af2-restore` 临时文件，前3个恢复事务保持。源码merge、安装与备份是独立证据，不把复制成功写成地图任务已移动。
+- 总收据 `artifacts/tests/remote-merge-install-20261013/run-18f290f62d4d47ffa47fbf35def73db6/verification-receipt.json` 绑定基线/双父merge、预合并/逐字保留、55旧生成文件、两完整回归、复用边界、原构建/marker/Stage/安装前后快照/11备份及未验项。32锚点 `code-map.json` 记录提交/working-tree均PASS；[本轮实际职责及原消费者](architecture/af-framework-code-scope.md#remote-merge-install-20261013)。本条明确替代[地图标签](#manual-worldmap-tags-20261012)和[旧数据退役](#no-legacy-data-cache-refresh-20261012)当时“尚未安装”的状态，保留当时离线证据与失败原文。
+
+### 未验与回滚
+
+未启动游戏，未验真实人物编辑器/地图渲染与点击、NPC/队伍实际移动、同伴组队/总督实体出征及退出、两版战役/旧档/外MOD/真实provider/全仓/覆盖率；安装落盘不是实机验收。下一步重启游戏后复核入口、地图任务与必要退出，实机/存档动作另行授权。源码只对本merge的first-parent增量做focused inverse，保留原本地地图/数据修复，禁止reset/rewrite；安装恢复按本次Recovery manifest、新授权和当前SHA核对执行，不覆盖后来修改。未push、打包、版本事务或外仓镜像。
+
 <a id="manual-worldmap-tags-20261012"></a>
 ## 2026-10-12～13 手动触发标签接入既有大地图指令（LOCAL_ONLY / OFFLINE_VERIFIED / LIVE_PENDING）
 

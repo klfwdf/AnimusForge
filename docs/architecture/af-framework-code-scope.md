@@ -1,3 +1,19 @@
+<a id="remote-merge-install-20261013"></a>
+### 远端输入租约合并与 D 盘安装：6ca84557e
+
+实际源码merge `6ca84557e4cc354222a2f4bc3b43f73804c7a051`，32个锚点在本地 `artifacts/tests/remote-merge-install-20261013/run-18f290f62d4d47ffa47fbf35def73db6/code-map.json` 记录提交/working-tree均PASS；[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#remote-merge-install-20261013)记录授权、原统一入口/Stage、落盘保护、备份及未验层级。原手动标签/路径退役职责不改；其“未安装”状态由本轮接续，不改写旧证据。
+
+| 一基范围 / 符号 | 真实消费者、覆盖与保留边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/UI/Common/DevPopupInputLease.cs:20–47,49–64`；ctor / _suspendParent / Dispose | 远端新UI修复：Gauntlet父层suspend/恢复保持；scene parent只释放input/focus，保留渲染；外部暂停不强制激活。真实helper/popup/VM/lease85＋prefab契约，native渲染排序是model、GPU未验 |
+| 原 `PlayerDirectActionController.cs:49–57,63–112,267–376` 与 `ShoutBehavior.PlayerDirectActions.cs:22–40,78–233` | 本地地图标签源码与4a982ec42逐字保持，同跟随按钮/捕获上下文、候选/天数/队列/真实owner回执和过期退出；完整955再次PASS。生产路径分别位于AF.GameAdapter.Bannerlord/Conversation和AF.Module.Conversation/Channels/Scene |
+| `src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.PlayerDirectActions.cs:38–84,88–136,144–196` | 原内部只读资格、全请求替换预检、真实候选和定点复核保持；原Admission/队列/战争/组队/总督/归队owner不改。原34/24/29专项按源码Hash复用，不作为实机移动证明 |
+| `scripts/build/build_single_module.ps1:545–550`；Stage分支与原双API/Bootstrap/Coup流程 | 未修改入口；Release整体exit0，8314来源SHA保持，两实现363/0、Bootstrap/probe0/0，双gate通过。用户批准的精确生成目录旧内容与首个完整Stage均留证，不恢复双模块或改默认交互 |
+| `scripts/build/deploy_module.ps1:104–128,536–699`；Reset-ProjectStageDirectory / Invoke-ManagedStageDeployment | 原干净Stage及受管按文件同卷替换、完整私有备份/中断拒绝/rollback协议保持；安装更新11文件，3654集合不变/3643未动/3268保护并集不变。PlayerExports本轮0更新，未知/ONNX/配置不删除 |
+| `content/modules/AF.Module.Conversation/ModuleData/Languages/[CNs/]afconv_ui_strings[-zh-CN].xml:450–500`、原ConversationUiLocalization/language_data/content-map | 51对地图UI键及真实reader保持，两版TW各171按未变源码/依赖复用；3519全Stage和3503mapped来源到D盘全部SHA相同，版本v1.5.8，唯一Bootstrap与双DLL路径合法 |
+
+本轮除了无冲突合并远端4文件未额外改产品源码、公开API、存档/协议或构建脚本。实际DLL包含本地地图标签/数据修复与远端输入渲染修复；旧J12失效外交路径仍未通过，不声称全仓、双版实机、旧档或provider验收。安装私有备份与未验/恢复见主台账。
+
 <a id="manual-worldmap-tags-20261012"></a>
 ### 手动标签大地图接线：4a982ec42
 
