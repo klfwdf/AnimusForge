@@ -1,3 +1,12 @@
+<a id="main-push-20261013"></a>
+## 2026-10-13 授权交付远端 main（AUTHORIZED_MAIN_DELIVERY / OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 最新用户明确要求“推送远端main”，本条接续并取代下方各历史条目当时的未授权push/LOCAL_ONLY状态；不扩大为打包、再安装、启动游戏、存档或外仓写入。实际工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`，发布前干净HEAD `cfc42dc8de1d9fb03a4b21776370bc6171f4cf53`。
+- `git fetch origin` 后远端main仍为 `41c22a952c61d1c3c5c4bcf061fcbdb272bc084e`，是本地祖先，双方差额0/19；54个路径的源码、测试、资源及工程文档随原历史完整交付。远端编辑器输入/场景渲染修复已由前轮安全合并保留；不force-push、reset、rebase或改写历史，不再次合并未知远端变化。
+- 检查每个待推送提交的文件树及107个新增blob（28,864,817字节），没有新增指定本地Native简明交接、ignored本地证据/Stage/运行数据或构建产物；private-key、GitHub/provider/AWS凭据模式无命中。属于有界筛查，不宣称通用隐私证明；本地专用资料、日志、玩家数据和完整验证收据仍不上传。
+- 本轮仅更新根HANDOFF及本台账，源码/测试/资源/工程/构建脚本与已验安装候选逐字保持。复用[前轮双API/Bootstrap、955直接动作、85编辑器、3519 Stage/安装哈希及未验边界](#remote-merge-install-20261013)，不因推送宣称重新构建、全仓通过或实机验收；[实际代码与消费者](architecture/af-framework-code-scope.md#remote-merge-install-20261013)不变。
+- 发布前再次核对远端基线及祖先关系，使用正常 `git push origin HEAD:refs/heads/main`；实际结果以 `git ls-remote origin refs/heads/main` 与最终提交完全相同为准，dry-run不算发布成功。检查、命令结果及实际ref回执保存在ignored `artifacts/tests/main-push-20261013/`，不引入本地专用文档的必需依赖。回退仍采用本次产品的focused inverse与另行获准的正常提交，不重写远端历史。
+
 <a id="remote-merge-install-20261013"></a>
 ## 2026-10-13 安全合并远端并安装指定 D 盘（DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
 
