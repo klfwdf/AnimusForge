@@ -1,4 +1,11 @@
-# 当前交接：工作区完整安全发布（2026-10-11）
+# 当前交接：玩家直接动作（2026-10-12，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 检查点 `4b184f61`，产品/回归 `4b9901a4`；原版对话右上角、场景 Y 菜单共用 14 项直接动作及原版参数弹窗，正常标签 owner 执行，不调用 AI/TTS，不要求 API 配置，不改原给予、开发测试、存档或公开 API。
+- 给钱/物保留原补足路径，部队/俘虏保留编号、数量与 ALL，债务保留零天期限。源码复核纠正方案误差：原机制拒绝 `GIVE_ASSET:ALL:ALL`，所以“全部普通物品”批量提交既有逐项 `:ALL` 标签，排除私人装备/固定资产，不改标签规则。过期目标/候选、取消、重复确认与参数读取异常拒绝执行；原版跟随先排队再自动结束对话。
+- 131 直接动作检查、48 债务、80574 codec 断言、原部队 owner、50 原版布局、50 真实 Harmony Y 菜单回放通过；原统一 Debug 双 API/Bootstrap/双 Coup 门禁通过，两实现各348 warning/0 error，13源码锚点双模式通过。夹具不是实机或完整战役效果验收，未测覆盖率或运行全仓测试。
+- [唯一主台账：语义纠正、证据、边界与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-direct-actions-20261012)；[已核代码范围](docs/architecture/af-framework-code-scope.md#player-direct-actions-20261012)。收据 `artifacts/tests/player-direct-final/receipt.json`；最终构建 `artifacts/tests/player-direct-build/run-e8dbdb29eee546e7b1bea8d0ee79c18c/receipt.json`。未 Stage、部署、打包、推送或触发游戏动作；后续实机另行授权。
+
+# 历史交接：工作区完整安全发布（2026-10-11）
 
 - 本轮用户明确授权安全合并后推送；fetch 后 `origin/main` 仍为 `14ce14ae`，无远端新增提交。原工作区 `8d521ec5` 干净、领先25提交，因此不制造额外合并，不改写历史，普通快进发布到 `origin/main`。
 - 纳入工作区全部已提交变化，包括其他对话的会面护卫、模组内提示词、缓存/导出/终端设置/恢复备份；已撤销的两项外交重试保持撤销，不重加。未触碰其他工作树或分支。
