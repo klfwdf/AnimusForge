@@ -1,3 +1,22 @@
+<a id="manual-tags-ui-20261012"></a>
+### 实际场景/头人对话手动标签入口：f2bb30685
+
+源码 `f2bb30685de2916109af5a77d101d4c67843183f`，18个一基锚点在本地 `artifacts/tests/manual-tags-ui-20261012/code-map.json` 记录提交/working-tree均PASS；[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#manual-tags-ui-20261012)集中授权、实际DLL/部署/原失败和回滚。此前native host/Y表保留为前序职责，不再代表实际替换UI已全接通。
+
+| 一基范围 / 符号 | 真实消费者、覆盖与保留边界 |
+| --- | --- |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PlayerDirectActions.cs:40–55,57–154`；OpenScenePresentationPlayerDirectActionsForExternal / OpenPlayerDirectActions | 读取Presentation实际所选Member/Agent/Character；回调复核同Member与主目标/范围/会话。沿现有原效果owner，场景跟随先释放原移动hold，native退出queue不改；非Api.V1能力扩展 |
+| `extensions/AnimusForge.DialogueUI/src/Scene/SceneSessionVM.cs:25–26,95,121–124`；CanOpenDirectActions / ctor / ExecuteDirectActions | 实际队列命令由SessionLayer构造时绑定；连点沿单pending槽合并，busy/trade拒绝。没有另起LLM/TTS、存档状态或Tick扫描 |
+| `extensions/AnimusForge.DialogueUI/src/Scene/SceneSessionPanel.cs:95–122`；OpenDirectActions | 900层隐藏及焦点释放发生在原询问打开前；取消/异常只恢复原Mission、下一既有Tick取焦点；旧目标会话过期拒绝，不切旁人 |
+| `extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs:56–57,106`；DirectActionsButtonText / CanOpenDirectActions / OpenDirectActions | 原版替换UI普通/AI两模式转发原host；notable/headman不按Hero/dev/illustration隐藏。原host busy与API独立直触入口保留 |
+| `extensions/AnimusForge.DialogueUI/src/Native/NativeUiAdapter.cs:408–409`、`extensions/AnimusForge.DialogueUI/src/PresentationRouter.cs:184–185` | 新AFDialogueDirectActions纳入实际缓存hit-protection和样式；文字不抢按钮事件，原继续/答案/scroll规则由两版排序回归覆盖，GPU未验 |
+| `src/AF.GameAdapter.Bannerlord/Conversation/PlayerDirectActionController.cs:38–51,110–150,175–201,239–264`；TagTemplate / Open / Begin / Commit | 14既有标签模板、选择后参数界面、once/current/revalidate及正常执行提交；原数量/补足/ALL/day0、事实/收费/信任owner不重写 |
+| 实际prefab `extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFSceneSessionScroll.xml:52–56`、`extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFSceneSessionFolio.xml:140,150–154`、`extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml:33–37` | 场景发送下方、Folio输入底部、native原工具栏上方；Folio状态与输入hint/按钮分离。绑定真实VM属性/command；XML矩形与事件替身检查不是实机渲染 |
+| `content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml:444–445`、`content/modules/AnimusForge.DialogueUI/ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml:185–186`及EN同键；现有language_data / content-map | 手动标签/模板/不可用提示真实reader→registered资源→Stage→安装；7外部资源源码/Stage/安装SHA一致，未改资源映射或双语包契约 |
+| `AnimusForge.csproj:285`；DialogueUI Compile | 实际VM/SceneLayer编进两个主AnimusForge.dll，实际DLL反射形状与Harmony回放已验；无需独立DialogueUI模块。Folio最后是非嵌入外部资源，只复用未变的已验编译输入 |
+
+原14动作业务owner及前序事实边界继续有效；当前仅补入口、模板说明及焦点/目标保护。双编译和离线回归、最终D盘落盘哈希已验；实际Gauntlet点击、完整Campaign/旧档/两版实机未验，不以坐标或DLL形状代替实机成功。
+
 <a id="remote-merge-deploy-20261012"></a>
 ### 远端双语合并、直接动作与实际部署：a09faa91d
 

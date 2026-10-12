@@ -1,9 +1,27 @@
 <a id="manual-tags-ui-20261012"></a>
-## 2026-10-12 手动触发标签：补齐实际场景/头人对话面板（ACTIVE）
+## 2026-10-12 手动触发标签：实际场景/头人对话按钮（DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
 
-- 当前用户要求在实际显示的场景面板与头人对话中提供按钮，玩家选标签后填参数，不经 AI 判断。基线 `da48680ce`，工作树干净；旧部署只接入 host 原版 overlay 和 Y 菜单，未接入替换 prefab/VM，截图并非玩家漏看。
-- 本包补齐 Scroll/Folio 持续场景按钮及 NativeOverlayVM/替换 prefab 转接；统一改称手动触发标签，保留现有14项和原执行语义，不扩大复杂标签、AI流程、存档或版本化 Api.V1。
-- 退出门：先写可复现缺入口的回归，再验证真实 VM/prefab/命中保护、当前场景主目标、取消/重复/换目标/失效会话、标签选择→参数→正常执行器及CN/EN文案；原统一1.3/1.4/Bootstrap构建通过。点击按需读取，不新增Tick扫描/IO。游戏部署、实机及push不在本轮授权内。
+- 当前用户反馈截图的场景卷轴与头人对话找不到入口，确认为此前漏接替换 prefab/VM，不是玩家漏看。实际工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`，干净基线 `da48680ce`，意图检查点 `3c009cf4c`，产品/回归 `f2bb30685de2916109af5a77d101d4c67843183f`。本条替代前序入口完整性与部署状态，不改写当时的测试证据。
+- 开工仅有代码修正授权；随后用户对指定 `D:/steam/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge` 的部署询问明确答复“退出游戏后部署”。已在两次部署前确认相关游戏/启动器进程不存在。未启动游戏、push、打包、递增版本、操作存档或其他工作树；历史远端合并保留，不重复合并或推送。
+- Scroll/Folio 持续场景面板新增常驻“手动触发标签”：截图卷轴位于发送下方、画廊左侧；Folio 在输入区底部。原版替换对话面板在右侧原工具栏上方新增同名一整行，NativeOverlayVM 转发到原 host callback，普通对话/AI对话都可见，不按 Hero、开发模式、图鉴或 API 配置隐藏。原 Y 菜单及 host fallback 同步改名，其既有默认入口不变。
+- 共用原14项协调器，菜单显示动作与标签模板，选择后打开现有金额、候选/数量、债务参数或后果确认；无参数项确认后提交。保留 NPC→玩家、单项 ALL/普通物品逐项批量、补足、零天期限和原资格/费用/信任/事实 owner，不增加任意标签编辑器、RP物品生成、复杂AI动作或新收费规则。不调用 LLM/TTS/开发 TAG 测试，不伪造 NPC 发言；结果仍只说已提交，真正结果由原执行模块提示。
+- 持续场景入口捕获已选名牌 Member/Agent/Character，不替换成附近人物；同一 Member 身份、主目标、范围、busy、Mission/Campaign/token/epoch/save generation 在入场和确认复核。场景命令沿既有单项队列合并连点。打开原版询问前立即隐藏900层面板并释放键鼠焦点，取消/异常恢复只针对原 Mission，下一既有 Tick 再收回焦点；任务或离场不会串目标。跟随/停止先释放原移动抑制，再交原 SceneMovement；Native 原等待退出队列保持。
+- 频率：点击、进入参数与确认按需读原候选，未增加 Tick 全量扫描/IO/反射、存档字段或 Api.V1。DialogueUI 已由主工程 Compile 进入两版 AnimusForge.dll，不另部署独立模块。CN/EN同键、真实reader、现有language_data/content-map、三个实际prefab及native命中/样式缓存接通；Folio 状态文字挪到按钮与画廊间的空位，避免同时覆盖按钮或输入提示。
+
+### 验证、失败与产物绑定
+
+- 首先缺按钮 RED（实际 AFSceneSessionScroll.xml 唯一入口断言）；最终 **438 PASS**，覆盖14标签、模板/参数、原gold owner source-linked补足边界、原选择/取消/重复回调、场景头人+旁人绑定及主目标/Member更换/离场/范围/busy/代次失效、真实XML按钮与文字边界。**142 PASS**：实际Native VM转发、source-derived场景排队/焦点/隐藏/恢复、原生命周期及真实CN/EN reader。引擎与场景对象是替身，不等于完整战役效果验收。
+- 原版反编译 EventManager 1.3.x / 1.4.5 命中排序、生产 NativeUiAdapter.HitTest / Continue guard 与实际 prefab 各 **172 PASS /0 FAIL**，新增按钮普通模式点击/禁用/文字不抢事件，保留原答案和scroll。实际1.3/1.4 DLL契约与真实Harmony.Install/场景producer回放均PASS，额外核对两套VM的label/enabled/command及选中名牌入口真实类型签名；GPU/游戏世界叶子仍为替身。
+- 夹具失败保留：生命周期最初缺真实本地化依赖后补reader/边界；hit离线net8包缺失NU1100，仅生成测试工程改为本机net10，不动生产/runner断言；新按钮最初在布局替身被放到父框外，修正替身坐标后两版通过。旧host契约假设目标准备只有一参数，改为检查现有packet+默认true的setup参数。Folio 状态/输入提示重叠先RED，修外部XML后438通过；不是放宽断言。
+- 原统一 `build_single_module.ps1`，Debug，参考 `v1.3.15.110062` / `v1.4.6.115628`：两实现各 **363 warning/0 error**，Bootstrap/probe **0/0**，双Coup门禁PASS。首次System.Core误从无关artifacts的net8包取到，出现2048编译错误；ResolveReferences证实CandidateAssemblyFiles污染，仅本次调用加 `EnableDefaultNoneItems=false` 排除默认None候选，重新解析到Framework v4.7.2。不改工程/构建脚本、不删他人产物。第二次封装漏脚本路径的调用失败亦保留。
+- 编译完成的带Stage统一入口最终整体exit1：旧Stage与当前prefab源hash不符，原保护正确拒绝，**不能把此整体命令写成exit0**。已将单个已核旧生成Stage在工作区内移位保留，原 `deploy_module.ps1 -StageOnlyOutputDir` 后续exit0；两次完整原部署均exit0，含最终干净Stage/布局/产物校验。Folio最后仅非嵌入外部prefab布局修正，所有C#/嵌入/工程/脚本与三DLL SHA未变，故复用已验编译，重新Stage和部署该资源；没有用旧DLL替代新C#。
+
+### 部署、保护与保留边界
+
+- 当前单模块 `v1.5.8`，XML仅Bootstrap；两实现不同SHA且均与当前构建marker/Coup候选一致。第一事务更新16个文件（7资源、双实现/Bootstrap及marker/PDB），第二事务只修正Folio一文件；最终 **3519 Stage文件**与安装字节一致，7个本轮UI资源逐一与当前源码/Stage/安装三方SHA一致。安装前后3654文件集合相同，其余3638字节/mtime不变；**3219受保护文件（含PlayerExports/配置/模型/日志等）字节与mtime均不变**，无未知文件变化，不碰TaleWorlds原版DLL。
+- 两事务complete标记与 **17份旧文件备份SHA**（Folio两代链）已复核：`Modules/.AnimusForge.Recovery/deploy/deploy-8c23a43addea444096cd8e5f515632f3`、`deploy-4d5efe8d99c54e8ca2eae53b89e5271b`。两份旧Stage保留于本地证据目录的 `preserved-old-stage/AnimusForge`、`preserved-before-folio-fix/AnimusForge`，移位前后3519文件SHA/mtime一致，不自动清理。
+- 本地 `artifacts/tests/manual-tags-ui-20261012/verification-receipt.json` 集中源码/构建/两事务/保护结果；`run-294d7a40/build.log`、source hashes、初次失败、两版hit、actual-dll-contract、direct/lifecycle、Stage/deploy日志与清单保留。18锚点code-map记录提交和working-tree均PASS；[已核实职责与真实消费者](architecture/af-framework-code-scope.md#manual-tags-ui-20261012)。不称全仓测试、覆盖率、原历史综合codec失败或所有游戏版本通过。
+- **NOT-RUN**：实际Gauntlet渲染/点击/文本焦点、完整Campaign财物/身份/任务副作用、跟随实际Agent移动、双版实机和旧sav/provider；本轮没有启动游戏，不能声称头人场景已经实机验收。下一步玩家重启后查看两个同名入口并做实机操作；授权启动/存档另行确认。源码回滚用 `f2bb30685` 的focused inverse保留远端与他人历史；安装恢复按两Recovery逆序、当前hash复核及新授权，不覆盖后来编辑。
 
 <a id="remote-merge-deploy-20261012"></a>
 ## 2026-10-12 合并远端并部署 D 盘：保留直接动作与双语（DEPLOYED / LIVE_PENDING）
