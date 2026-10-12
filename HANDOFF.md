@@ -1,4 +1,13 @@
-# 当前交接：远端合并与 D 盘部署（2026-10-12，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
+# 当前交接：场景/头人对话“手动触发标签”（2026-10-12，DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
+
+- 修复真正漏接的持续场景Scroll/Folio与原版替换Native面板，不是玩家漏看。产品/回归 `f2bb30685`；按钮统一“手动触发标签”，两入口复用原14动作与参数/确认弹窗，无AI判断/API配置要求，原标签/补足/ALL/债务零天及业务owner保持。
+- 截图卷轴：发送下方、画廊左侧；头人对话：右侧原工具栏上方一整行。绑定当前选中名牌，不对旁人群发；busy/取消/连点/失效会话/焦点和移动释放有专项证据。
+- 438直接动作、142生命周期、原版命中排序两版各172、实际双DLL VM/入口契约和Harmony回放PASS。双API各363 warning/0 error、Bootstrap0/0、双CoupPASS；首次整体Stage命令exit1和环境/夹具失败如实保留，随后原Stage与两次原部署exit0，未改构建脚本。
+- 用户明确答复“退出游戏后部署”；当前已落盘指定D盘Modules/AnimusForge v1.5.8。3519 Stage文件/7本轮资源/3DLL哈希核实，16不同文件更新、17份旧备份与两代Folio链核实；3219受保护文件与其余未改安装文件字节/mtime不变，不改存档、不启动游戏、push或打包。
+- [唯一主台账：完整收据/备份/失败/未验边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#manual-tags-ui-20261012)；[真实代码范围](docs/architecture/af-framework-code-scope.md#manual-tags-ui-20261012)。本地证据 `artifacts/tests/manual-tags-ui-20261012/`，18锚点双模式PASS。
+- 实机渲染、真正点击和完整战役效果仍NOT-RUN；请重启游戏复核入口。源码用产品focused inverse，安装恢复依两Recovery逆序且需新授权/当前hash复核。下方是前序历史交接，不再代表入口完整性或当前安装候选。
+
+## 前序交接：远端合并与 D 盘部署（2026-10-12，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
 - 本轮明确授权拉取、合并、部署；远端 `59dc32bf3`（333新增提交）已纳入本地合并 `a09faa91d`，前置检查点 `40b8474cd`。保留远端双语/外交及本地14项直接动作，新增文案71个中英键接通原reader/prefab；未推送、打包或启动游戏。
 - 原统一 Debug 双API/Bootstrap/双Coup及干净Stage通过，两实现各363 warning/0 error；349直接动作、50真实Harmony轮盘、48债务、50原版布局通过，14源码锚点双模式通过。综合codec回归的竞技大会旧中文源码断言失败；失败相关测试及生产owner与远端一致，未削弱断言或修改无关机制。
