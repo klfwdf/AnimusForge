@@ -1,3 +1,30 @@
+<a id="player-direct-actions-20261012"></a>
+## 2026-10-12 玩家直接动作：14 项，正常标签 owner，无 AI（OFFLINE_VERIFIED / LIVE_PENDING）
+
+工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`，开工 `47432248`，检查点 `4b184f61`，产品/回归 `4b9901a40a0e3c8c886a938ef2cf009afcc504be`。本轮用户从历史只读方案明确授权实现；不继承历史发布/部署授权，不动其他工作树或 GCCZ 业务。
+
+### 批准范围、实际接线与语义纠正
+
+- 两个入口：原版对话右上角“直接动作”（保持六个原按钮及鼠标事件/焦点样式），场景 Y 菜单追加“直接动作”（保留首项“交流”及原默认入口）。共用原版单选/文本/确认询问，不增加大型面板。直接分支绕过 onboarding/API 配置；所有原场景分支仍执行原设置检查。
+- 14 项：NPC→玩家金钱、物品、固定资产、部队、俘虏；玩家欠款/承诺、解除真实债务；已有 Hero 成为同伴/家族成员；跟随、停止跟随、领主大厅、接任务、交任务。输入只收金额/数量/期限/备注或原 owner 候选。固定资产和英雄身份转换有一次明确后果确认。不做玩家→NPC新入口、自由生成 RP 物品、普通 NPC 晋升、AD:N、额外授权/外交/政策/表演/带路传唤 AI 生命周期。
+- 标签构造复用 GIVE_ASSET codec、TransferQuantitySpec 与现有语法；执行原 `NativeConversationGameEffectsRuntime.ApplyNativeConversationActionTags`，移动使用原 SceneMovement/NativeSceneMechanism owner；不走开发 TAG 测试、EconomyReplay 子集，不添加 MOOD、NPC 发言或聊天/语音请求。数量不按库存截断，原普通有限 GIVE_ASSET 的补足/费用/信任/副作用和 AD 零天期限不变。现有 reward/action/movement/codec 主 owner 的规范化 UTF-8 源码与检查点一致，事实与结果提示仅由原模块处理；本入口只说“已提交”，不把标签消费宣称成功。
+- **纠正原方案的一处事实误差**：当前后处理和正常 reward owner 明确拒绝 `GIVE_ASSET:ALL:ALL`，并不存在可复用的单条全物品标签。因此“全部普通物品”按钮基于当前普通候选构造一批 `[ACTION:GIVE_ASSET:具体标识:ALL]`，一次确认、一次正常 owner 批量提交；不改任何标签格式/解析规则，不含私人装备/固定资产。单项“该项全部”与此批量按钮分开，部队/俘虏的 `ATT/ATP:ALL:ALL` 仍是原有真实语义。
+- 主线程绑定实际 owner、Campaign、Mission、Settlement、ConversationManager/ActiveToken、场景 epoch、save generation、Hero/Character、原 Agent 引用；Y 父菜单先捕获 Agent，防编号复用后换目标。执行前重验候选的物品身份、固定资产归属、部队编号/来源和债务ID；全部部队/俘虏也不能换源队伍/地牢。候选授权由原 owner 生成并按原键发布，不依赖此前 AI 聊天。库存不足不另加上限，但已不在原候选中的物品拒绝，避免原自由 RP fallback。
+- 每一询问回调只消费一次；取消、过期、候选读异常都清理焦点/暂停/移动抑制，不重试。只恢复原 Campaign/Mission 的控制。原版跟随/停止先进入原待退出队列并结束对话，原 queue 等原版清理后执行；场景入口先释放弹窗/移动控制再调用原执行入口。
+- 频率/性能：入口/参数询问/确认时按需生成候选；无新增 Tick 扫描、轮询、反射、存档键或公开 API。Native Tick 只增加既有 busy stamp 的 bool 读取；物品候选去重用 HashSet，批量普通物品复核用键索引。已有原版移动队列的 tick/原业务执行成本保留；不为性能削掉原规则，也不虚称批量游戏效果无成本。
+
+### 验证和失败信号
+
+- 新 `PlayerDirectActionTests`：先缺源 RED，再实现；候选异常夹具先抛 `candidate read failed` RED，随后补关闭清理。最终 **131 PASS**：14 标签及弹窗分支、正数/int 范围、AD 零天、注入拒绝、取消/重复/旧回调、Campaign/Mission/token/save/epoch/owner/目标/Agent复用/主线程、候选过期、资产归属、部队来源、真实债务ID、单项 ALL/普通物品批量排除私人装备、正常执行接线、Native 排队退出与 Scene 先释放控制。完整原 `TransferGold` 方法 source-linked，在边界替身中覆盖充足/不足/零库存和补足方向；给物超过库存仍原样提交的接线通过，不等于完整引擎物品转移验收。
+- 复用回归：原债务 schema/normalize/期限 **48 PASS**；GiveAsset codec **80574 assertions / 20000 fuzz / 25000 pressure tags PASS**；实际 PartyTransfer authorization/execution/roster 边界夹具覆盖编号、ALL、数量、志愿兵/俘虏、费用、部分/未知结果 PASS；原版 answer layout **50 PASS**；实际生产 TriggerShout/ownership/真实 Harmony prefix/wheel factory **50 PASS**（新增未配置直接分支和原交流设置拦截，GPU未运行）。纯夹具用本机 net10 引用包；轮盘仍用 net472，生成的工作区测试项目补完整现有 MonoMod/Mono.Cecil 引用，不改原生产轮盘或断言。
+- 失败保留：隔离 PATH 缺 PATHEXT、漏 Core.MissionMode using、旧资产框架目标需强制 restore、原轮盘测试生成 XML 的 `&` 路径未转义、替身缺新签名/static引用、Harmony依赖缺失；net10轮盘又命中 BinaryFormatter 不支持，最终回 net472+完整依赖闭包通过。未以“0退出码但异常输出”当 PASS。原 owner 首次 raw-byte 对比因工作区CRLF/Git LF失败，规范化源码相同；不是产品算法变化。细节见本地收据，未修改一键构建脚本。
+- 最终原脚本 `scripts/build/build_single_module.ps1`，Debug、不带 Stage/Deploy，引用 `v1.3.15.110062` / `v1.4.6.115628`；两实现各 **348 warning/0 error**，Bootstrap/probe **0 warning/0 error**，两版 Coup 门禁 PASS，构建期间产品输入 SHA **无变化**。实际产物/marker SHA见 `artifacts/tests/player-direct-build/run-e8dbdb29eee546e7b1bea8d0ee79c18c/receipt.json`；与产品提交源码绑定已复核，非历史 DLL 替代。
+- `artifacts/tests/player-direct-final/receipt.json` 为专项总收据；`code-map.json` 记录 **13** 锚点，recorded-revision/working-tree均 PASS。[代码范围及实际消费者](architecture/af-framework-code-scope.md#player-direct-actions-20261012)。没有运行全仓套件/测量覆盖率，不称所有测试通过。
+
+### 未覆盖、下一步与回滚
+
+没有 Stage/部署/打包/推送、收费请求或实机游戏动作。Gauntlet 真实点击/文本焦点、原版清理后移动、完整 Campaign 的给物补足/资产归属/债务/身份和任务效果、双版实机以及存档回读尚未验收；需后续明确实机授权。现有其他模块和历史 HOLD 不在本包。若回滚，用产品 `4b9901a4` 的 focused inverse，再按需 inverse 本条文档切片；不 reset/rewrite，不回滚其他作者。
+
 <a id="workspace-safe-publication-20261011"></a>
 ## 2026-10-11 工作区完整安全发布（用户明确授权）
 

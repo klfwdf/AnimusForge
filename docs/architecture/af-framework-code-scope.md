@@ -1,3 +1,20 @@
+<a id="player-direct-actions-20261012"></a>
+### 玩家直接动作：两个 UI 入口、14 标签动作、原 owner 执行
+
+产品 `4b9901a40a0e3c8c886a938ef2cf009afcc504be`，检查点 `4b184f61`。13锚点 `artifacts/tests/player-direct-final/code-map.json` 在记录提交/working-tree均通过；详细验收、全物品语义纠正、失败与回滚集中于[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#player-direct-actions-20261012)。本包是点击入口与参数协调，不声称改写标签 owner、存档、公开 API 或新增 AI 渠道。
+
+| 一基范围 / 符号 | 实际 owner、消费者、覆盖与保留边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Conversation/PlayerDirectActionController.cs:39–79,99–123,225–250`；TryBuild / Open / Commit | 14动作白名单、原版询问、单回调消费、取消/候选异常清理、后果确认与标签构造；两个入口共用。GiveAsset codec和数量语法不变；“全部普通物品”是既有逐项 :ALL 的一批，不发送被原 owner 拒绝的 GIVE_ASSET:ALL:ALL |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PlayerDirectActions.cs:21–37,39–135,137–229`；OpenNativePlayerDirectActions / OpenScenePlayerDirectActions / OpenPlayerDirectActions / BuildPlayerDirectCandidates | 同DLL内部装配与主线程 Campaign/Mission/目标/会话代次/候选绑定；执行现有 NativeGameEffects / SceneMovement / NativeSceneMechanism。无开发 TAG 测试、AI/TTS、伪造NPC话语或情绪。金额/数量/零天期限原样进正常 owner；事实、信任、收费、副作用和真实成功提示仍属于原业务 |
+| `src/AF.GameAdapter.Bannerlord/Composition/PartyAssetTransferBannerlordAdapter.cs:1537–1548`；CapturePlayerDirectTransferCandidates | 按需复用 PartyTransferAuthorizationOwner.Build 及原显示编号，发布 Indexed/All Troops、Prisoners 四份原候选快照；MyBehavior原执行消费者不改，无新存档/公开 API |
+| `src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtLedger.cs:1124–1137`；GetPlayerDirectDebtCandidates | 当前 Hero或市场账本的真实未清债务ID/余额/备注；复用原规范化，不运行 ExportDebtEntries 全战役扫描；原 AD/ADP、债务Quest和保存结构保留 |
+| `src/modules/AF.Module.Issue/Host/VanillaIssueOfferBridge.cs:206–212`；GetPlayerDirectIssueUnavailableReason | UI只读原Issue资格提示，真实接取/交付及事实仍走 ApplyIssueOfferTags / IssueActionOwner；不另起任务AI流程，不提前运行昂贵交付反射探测 |
+| `src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs:742–758`；HandleDirectActionsRequested；`content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml:5–9`；OpenDirectActions按钮 | 原Native overlay焦点释放/恢复，顶部新增按钮与鼠标命中区域；保留六个原按钮及VM构造兼容可选参数，Tick只读原busy stamp。原版/皮肤 answer layout边界已测，GPU实机点击未测 |
+| `src/AF.GameAdapter.Bannerlord/Scene/SceneShoutInputController.cs:1443–1575`；TriggerShout | 追加Y菜单项，保留原默认“交流”；父菜单捕获主Agent引用，只直触分支绕过API设置，原其余选择继续原gate；既有DialogueUI轮盘自动显示新标题，子参数仍原版询问。真实Harmony/一次消费回放通过，真实Mission/Gauntlet/存档仍待验 |
+
+新增代码只在玩家打开/选择/确认时运行；原执行主 owner 的规范化源码与检查点相同。专项131、原债务/codec/部队/原版布局/轮盘及双API/Bootstrap/双Coup验证，不替代实机或全仓验收。
+
 <a id="module-runtime-storage-20261011"></a>
 ### 缓存、导出、终端设置与恢复备份：恢复模组/Modules 目录
 
