@@ -6,7 +6,7 @@ for k,v in [('OutputType','Exe'),('TargetFramework','net8.0'),('LangVersion','la
 items=ET.SubElement(project,'ItemGroup')
 for f in [H/'Stubs.cs',H/'Program.cs',H/'LocalizationFixture.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Common/DevPopupInputLease.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Common/DevTextEditorHelper.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopup.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopupVM.cs']:ET.SubElement(items,'Compile',Include=str(f))
 ET.ElementTree(project).write(out/'Tests.csproj',encoding='utf-8')
-dotnet=R/'local/dotnet/8.0.425/dotnet.exe'
+dotnet=Path(sys.argv[2]).resolve() if len(sys.argv)>2 else R/'local/dotnet/8.0.425/dotnet.exe'
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Tests.csproj'),'-c','Release'],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
 (out/'run.log').write_text(r.stdout+r.stderr,encoding='utf-8');print(r.stdout+r.stderr,end='')
 if r.returncode:raise SystemExit(r.returncode)

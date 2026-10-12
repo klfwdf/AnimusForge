@@ -6,8 +6,8 @@ using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
 static class Program {
  static int checks;static void C(bool value,string msg){checks++;if(!value)throw new Exception(msg);}
- static (ScreenBase Screen,ScreenLayer Parent) Host(string name,int order,bool mouse=true){var screen=new ScreenBase();ScreenManager.TopScreen=screen;var layer=new ScreenLayer(name,order){IsFocusLayer=true};screen.AddLayer(layer);layer.InputRestrictions.SetInputRestrictions(mouse,InputUsageMask.All);ScreenManager.FocusedLayer=layer;ScreenManager.FirstHitLayer=layer;return(screen,layer);}
- static GauntletLayer Editor(ScreenBase s)=>s.Layers.OfType<GauntletLayer>().Single(x=>!x.IsFinalized);
+ static (ScreenBase Screen,ScreenLayer Parent) Host(string name,int order,bool mouse=true){var screen=new ScreenBase();ScreenManager.TopScreen=screen;var layer=new GauntletLayer(name,order,false){IsFocusLayer=true};screen.AddLayer(layer);layer.InputRestrictions.SetInputRestrictions(mouse,InputUsageMask.All);ScreenManager.FocusedLayer=layer;ScreenManager.FirstHitLayer=layer;return(screen,layer);}
+ static GauntletLayer Editor(ScreenBase s)=>s.Layers.OfType<GauntletLayer>().Single(x=>!x.IsFinalized&&x.MovieViewModel is DevHistoryEditPopupVM);
  static DevHistoryEditPopupVM Vm(GauntletLayer l)=>(DevHistoryEditPopupVM)l.MovieViewModel;
  static void Main(){
   foreach(var spec in new[]{("EncyclopediaBar",310),("AnimusForgeTerminalPopup",309),("MCM",4000),("WeeklyReport",4000),("History",1200)}){
@@ -49,6 +49,27 @@ static class Program {
    var dispatch=ScreenManager.Dispatch();C(dispatch.Mouse==child&&dispatch.Keyboard==child,"native CloseQuery delivers dispatch to new editor, including MCM tie order");
    Vm(child).ExecuteSave();C(saves==1&&ScreenManager.FocusedLayer==h.Parent,"native menu editor save returns to original screen focus");
   }
-  Console.WriteLine("PASS TextEditorInputHandoff assertions="+checks+" production helper/popup/VM/lease; native dispatch modeled; live=NOT_RUN");
+  foreach(bool autoToggle in new[]{false,true})foreach(bool save in new[]{false,true}){
+   var screen=new ScreenBase();ScreenManager.TopScreen=screen;
+   var scene=new TaleWorlds.Engine.Screens.SceneLayer(autoToggle);screen.AddLayer(scene);scene.InputRestrictions.SetInputRestrictions(false,InputUsageMask.All);
+   var hud=new GauntletLayer("map HUD",100,false);screen.AddLayer(hud);hud.InputRestrictions.SetInputRestrictions();
+   ScreenManager.FirstHitLayer=ScreenManager.FocusedLayer=scene;int callbacks=0;
+   DevTextEditorHelper.ShowLongTextEditor("appearance","","hint","",_=>callbacks++,()=>callbacks++);var child=Editor(screen);
+   C(scene.IsActive&&scene.LastActiveState&&scene.Deactivations==0,"scene stays active when appearance editor opens");
+   C(scene.IsRendering&&ScreenManager.IsVisible(child)&&ScreenManager.IsVisible(hud),"map remains behind editor and HUD, including auto-toggle scenes");
+   C(scene.InputUsageMask==InputUsageMask.Invalid&&!scene.IsFocusLayer,"scene releases input without changing rendering");
+   var dispatch=ScreenManager.Dispatch();C(dispatch.Mouse==child&&dispatch.Keyboard==child,"map editor owns mouse and keyboard");
+   if(save)Vm(child).ExecuteSave();else Vm(child).ExecuteCancel();
+   C(callbacks==1&&scene.IsActive&&scene.IsRendering&&scene.Deactivations==0,"map save/cancel keeps rendering and invokes callback once");
+   C(scene.InputUsageMask==InputUsageMask.All&&!scene.InputRestrictions.MouseVisibility&&scene.IsFocusLayer&&ScreenManager.FocusedLayer==scene,"map input and focus restored exactly");
+  }
+  {
+   var screen=new ScreenBase();ScreenManager.TopScreen=screen;var scene=new TaleWorlds.Engine.Screens.SceneLayer(false);screen.AddLayer(scene);scene.InputRestrictions.SetInputRestrictions(false,InputUsageMask.All);ScreenManager.FirstHitLayer=ScreenManager.FocusedLayer=scene;
+   GauntletLayer.FailLoad=true;bool opened=DevHistoryEditPopup.Show("appearance","","","",_=>{},()=>{});GauntletLayer.FailLoad=false;
+   C(!opened&&scene.IsActive&&scene.IsRendering&&scene.Deactivations==0&&scene.InputUsageMask==InputUsageMask.All&&ScreenManager.FocusedLayer==scene,"map editor load failure restores input without scene suspension");
+   DevHistoryEditPopup.Show("appearance","","","",_=>{},()=>{});var child=Editor(screen);ScreenManager.SetSuspendLayer(scene,true);Vm(child).ExecuteCancel();
+   C(!scene.IsActive&&!scene.LastActiveState&&scene.Deactivations==1,"map externally suspended during editor is not reactivated on close");
+  }
+  Console.WriteLine("PASS TextEditorInputHandoff assertions="+checks+" production helper/popup/VM/lease; native dispatch and scene render ordering modeled; live=NOT_RUN");
  }
 }
