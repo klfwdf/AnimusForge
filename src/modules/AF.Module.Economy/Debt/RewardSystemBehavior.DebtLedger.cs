@@ -1120,6 +1120,22 @@ public partial class RewardSystemBehavior
 		return true;
 	}
 
+    // Current counterparty only; never ExportDebtEntries' campaign-wide scan from a UI inquiry.
+    internal List<DebtLineExportEntry> GetPlayerDirectDebtCandidates(Hero npc, CharacterObject character)
+    {
+        DebtRecord record = npc != null ? GetDebtRecord(npc) :
+            (TryGetSettlementMerchantKind(character, out var kind) ? GetSettlementMerchantDebtRecord(Settlement.CurrentSettlement, kind) : null);
+        var result = new List<DebtLineExportEntry>();
+        if (record == null) return result;
+        NormalizeDebtRecord(record);
+        foreach (var line in record.DebtLines ?? new List<DebtRecord.DebtLine>())
+            if (line != null && line.RemainingAmount > 0 && !string.IsNullOrWhiteSpace(line.DebtId))
+                result.Add(new DebtLineExportEntry { DebtId = line.DebtId, IsGold = line.IsGold, ItemId = line.ItemId,
+                    RemainingAmount = line.RemainingAmount, IsDueUnlimited = line.IsDueUnlimited,
+                    DueDay = line.DueDay, DebtNote = line.DebtNote });
+        return result;
+    }
+
 	public bool ResolveDebtByIdByAgreement(Hero npc, string debtId, out string statusText)
 	{
 		statusText = "";

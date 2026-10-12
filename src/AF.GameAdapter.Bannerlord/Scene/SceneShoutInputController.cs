@@ -1444,11 +1444,12 @@ internal sealed class SceneShoutInputController
 	{
         long menuRevision = ++_modeInquiryRevision;
         _modeInquiry = null;
-		if (!TryPrepareShoutTarget(out var primaryDataPacket))
+		if (!TryPrepareShoutTarget(out var primaryDataPacket, requireSetupReady: false))
 		{
 			return;
 		}
 		string text = primaryDataPacket?.Name ?? "附近的人";
+        Agent directActionTarget = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == primaryDataPacket.AgentIndex);
 		bool battleSpeechMenu = BattleSpeechRuntimeHost.CanOpenSpeechMenu(Mission.Current);
 		List<Agent> battleSpeechFramedTargets = null;
 		Agent battleSpeechPrimaryTarget = null;
@@ -1471,7 +1472,8 @@ internal sealed class SceneShoutInputController
 			new InquiryElement("show", "向其展示物品并交流", null, isEnabled: true, ""),
 			new InquiryElement("give_troops", "给予部队并交流", null, isEnabled: true, ""),
 			new InquiryElement("give_prisoners", "给予俘虏并交流", null, isEnabled: true, ""),
-			new InquiryElement("give_settlements", "转移固定资产并交流", null, isEnabled: true, "")
+			new InquiryElement("give_settlements", "转移固定资产并交流", null, isEnabled: true, ""),
+            new InquiryElement("direct_actions", "直接动作", null, isEnabled: true, "仅对当前主目标执行现有标签，不调用 AI。")
 		};
 		if (MyBehavior.IsDevDataManagementEnabledForExternal())
 		{
@@ -1506,6 +1508,13 @@ internal sealed class SceneShoutInputController
 			else
 			{
 				string text2 = (selected[0]?.Identifier ?? "").ToString();
+                if (text2 == "direct_actions")
+                {
+                    if (CurrentInstance?.OpenScenePlayerDirectActions(primaryDataPacket, directActionTarget, OnShoutCancelled) != true) OnShoutCancelled();
+                    return;
+                }
+                // Only the direct menu bypasses onboarding; all original choices retain their gate.
+                if (!ModOnboardingBehavior.EnsureSetupReady()) { OnShoutCancelled(); return; }
 				if (text2 == "battle_speech_player" || text2 == "battle_speech_npc")
 				{
 					OpenBattleSpeechFromShoutMenu(
@@ -1625,10 +1634,10 @@ internal sealed class SceneShoutInputController
 		OpenShoutTextInput(primaryDataPacket, null, null);
 	}
 
-	internal bool TryPrepareShoutTarget(out NpcDataPacket primaryDataPacket)
+	internal bool TryPrepareShoutTarget(out NpcDataPacket primaryDataPacket, bool requireSetupReady = true)
 	{
 		primaryDataPacket = null;
-		if (!ModOnboardingBehavior.EnsureSetupReady())
+		if (requireSetupReady && !ModOnboardingBehavior.EnsureSetupReady())
 		{
 			EndShoutProcessing("setup_not_ready");
 			return false;

@@ -11,9 +11,10 @@ using TaleWorlds.MountAndBlade;
 using AnimusForge;
 using AnimusForge.DialogueUI.Scene;
 using AnimusForge.Refactor.Runtime;
+using static AnimusForge.ShoutBehavior;
 static class Program {
  static int n;static void Check(bool x,string s){n++;if(!x)throw new Exception(s);}
- static SceneShoutInputController Fresh(){SceneWheel.Shutdown();Campaign.Current=new();Mission.Current=new();Agent.Main=new();SceneSessionPanel.IsAvailable=true;DialogueUiSprites.Ready=true;SceneWheel.Install(H);return Campaign.Current.Behavior._j17SceneShoutInputController;}
+ static SceneShoutInputController Fresh(){SceneWheel.Shutdown();Campaign.Current=new();Mission.Current=new();Agent.Main=new();ModOnboardingBehavior.Ready=true;ModOnboardingBehavior.Calls=0;SceneSessionPanel.IsAvailable=true;DialogueUiSprites.Ready=true;SceneWheel.Install(H);return Campaign.Current.Behavior._j17SceneShoutInputController;}
  static readonly Harmony H=new("DialogueUI.SceneWheel.ProductionMenuReplay");
  static void Main(){try{Run();}catch(Exception error){Console.Error.WriteLine(error.GetType().FullName+": "+error.Message);Environment.ExitCode=1;}}
  static void Run(){
@@ -25,6 +26,8 @@ static class Program {
   owner=Fresh();Campaign.Current.Behavior.TriggerShout();Check(SceneWheel.IsOpen&&owner.Menu!=null,"still-live legacy facade forwards into the same current controller menu");
   owner=Fresh();owner.TriggerShout();menu=owner.Menu;WheelLayer.Last.Cancel();menu.NegativeAction(new());Check(owner.Cancels==1,"cancel executes original host exactly once");
   foreach(string mode in new[]{"give","show","give_troops","give_prisoners","give_settlements"}){owner=Fresh();owner.TriggerShout();WheelLayer.Last.Choose(mode);Check(owner.Trades==1&&owner.LastMode==mode&&owner.FallbackTrades==0,"wheel choice enters session trade "+mode);}
+  owner=Fresh();ModOnboardingBehavior.Ready=false;owner.TriggerShout();Check((string)owner.Menu.InquiryElements[0].Identifier=="normal","original default menu entry retained");WheelLayer.Last.Choose("direct_actions");Check(owner.DirectActions==1&&ModOnboardingBehavior.Calls==0,"direct action wheel bypasses setup gate");
+  owner=Fresh();ModOnboardingBehavior.Ready=false;owner.TriggerShout();WheelLayer.Last.Choose("normal");Check(owner.Sessions==0&&owner.Inputs==0&&owner.Cancels==1&&ModOnboardingBehavior.Calls==1,"original AI choice still requires setup");
   owner=Fresh();int factories=WheelLayer.Factories;var third=new MultiSelectionInquiryData("third","",new(){new("normal","normal",null,true,""),new("give","give",null,true,"")},true,1,1,"","",_=>{},_=>{});MBInformationManager.ShowMultiSelectionInquiry(third,true);
   Check(MBInformationManager.Last==third&&WheelLayer.Factories==factories,"same structure third-party menu remains native");
   var legacy=Campaign.Current.Behavior.LegacyLookalike();MBInformationManager.ShowMultiSelectionInquiry(legacy,true);Check(MBInformationManager.Last==legacy,"legacy lookalike without live producer ownership is not hijacked");
@@ -60,7 +63,7 @@ namespace TaleWorlds.Core {
  public static class MBInformationManager {public static MultiSelectionInquiryData Last;[MethodImpl(MethodImplOptions.NoInlining)]public static void ShowMultiSelectionInquiry(MultiSelectionInquiryData data,bool pauseGameActiveState=true){Last=data;}}
 }
 namespace TaleWorlds.CampaignSystem {public sealed class Campaign{public static Campaign Current;public ShoutBehavior Behavior=new();public ConversationManager ConversationManager=new();public T GetCampaignBehavior<T>()where T:class=>Behavior as T;}public sealed class ConversationManager{public bool IsConversationInProgress;}}
-namespace TaleWorlds.MountAndBlade {public enum MissionMode{StartUp,Conversation}public sealed class Mission{public static Mission Current;public bool IsMissionEnding;public MissionMode Mode;}public sealed class Agent{public static Agent Main;public bool IsActive()=>true;}}
+namespace TaleWorlds.MountAndBlade {public enum MissionMode{StartUp,Conversation}public sealed class Mission{public static Mission Current;public bool IsMissionEnding;public MissionMode Mode;public List<Agent> Agents=new(){new()};}public sealed class Agent{public static Agent Main;public int Index;public bool IsActive()=>true;}}
 namespace AnimusForge.Refactor.Runtime {public static class SaveRuntimeGuard{public static long Generation=1;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long g)=>g==Generation;}}
 namespace AnimusForge {
  public enum InputKey{Invalid,T,Y}
@@ -71,9 +74,10 @@ namespace AnimusForge {
  internal readonly struct Color{internal Color(float a,float b,float c){}}
  internal sealed class InformationMessage{internal InformationMessage(string a,Color b){}}
  internal static class InformationManager{internal static void DisplayMessage(InformationMessage a){}}
- public sealed class NpcDataPacket{public string Name="NPC";}public sealed class ShoutTargetingContext{public List<int> CandidateAgentIndices=new();}
+ public sealed class NpcDataPacket{public string Name="NPC";public int AgentIndex;}public sealed class ShoutTargetingContext{public List<int> CandidateAgentIndices=new();}
  public enum ShoutChatMode{Normal,Give,Show,GiveTroops,GivePrisoners,GiveSettlements}
- public sealed class ShoutBehavior{internal readonly SceneShoutInputController _j17SceneShoutInputController=new();__LEGACY_ENTRY__ internal void TickInput()=>UpdateShoutHotkeyCharge(InputKey.T,InputKey.Y);internal MultiSelectionInquiryData LegacyLookalike()=>new("old","",new(){new("normal","",null,true,""),new("give","",null,true,"")},true,1,1,"","",_=>{},_=>{});}
+ public sealed class ShoutBehavior{internal static ShoutBehavior CurrentInstance=>Campaign.Current.Behavior;internal bool OpenScenePlayerDirectActions(NpcDataPacket npc,Agent agent,Action finished){_j17SceneShoutInputController.DirectActions++;return true;}internal readonly SceneShoutInputController _j17SceneShoutInputController=new();__LEGACY_ENTRY__ internal void TickInput()=>UpdateShoutHotkeyCharge(InputKey.T,InputKey.Y);internal MultiSelectionInquiryData LegacyLookalike()=>new("old","",new(){new("normal","",null,true,""),new("give","",null,true,"")},true,1,1,"","",_=>{},_=>{});}
+ internal static class ModOnboardingBehavior{internal static bool Ready=true;internal static int Calls;internal static bool EnsureSetupReady(){Calls++;return Ready;}}
  internal static class MyBehavior{internal static bool IsDevDataManagementEnabledForExternal()=>false;}
  internal static class BattleSpeechRuntimeHost{internal static bool CanOpenSpeechMenu(Mission m)=>false;}
  internal sealed class SceneShoutInputController {
@@ -82,7 +86,8 @@ namespace AnimusForge {
   internal InputKey _shoutHotkeyChargeKey;internal float _shoutHotkeyChargeStartedAt;internal ShoutTargetingContext _lastRenderedShoutTargetingContext,Next=new();internal int Preview,ClearPreview,BattleInputs,DirectInputs;
   private bool UpdatePresentationHotkey(InputKey a,InputKey b)=>false;private bool ShouldSuppressShoutHotkeyAfterFocusChange()=>SuppressFocus;private bool IsScenePresentationSessionEnabled()=>SceneSessionPanel.IsAvailable;private float GetApplicationTimeSafe()=>1;private void ResetPassiveStareTracking(){}private ShoutTargetingContext BuildCurrentShoutTargetingContext()=>Next;private void DrawShoutRangePreview(ShoutTargetingContext c){Preview++;_lastRenderedShoutTargetingContext=c;}private void ClearShoutRangePreviewEntities(){ClearPreview++;}private void ClearShoutPreviewAgentHighlights(){}private void TryShowShoutProcessingBusyMessage(){}private void LogShoutTargetingContextSnapshot(bool a,ShoutTargetingContext b){}private void BeginShoutProcessing(string a){_isProcessingShout=true;}private void OpenBattleShoutInput(bool imageOnly=false){BattleInputs++;}private void TriggerShoutDirectInput(){DirectInputs++;}
   internal MultiSelectionInquiryData Menu=>_modeInquiry;internal ShoutTargetingContext _activeShoutTargetingContext=new();internal int Epoch,Sessions,Cancels,Inputs,Trades,FallbackTrades;internal string LastMode;private int _sceneConversationEpoch=>Epoch;
-  private bool TryPrepareShoutTarget(out NpcDataPacket data){data=new();return true;}
+  internal int DirectActions;
+  private bool TryPrepareShoutTarget(out NpcDataPacket data,bool requireSetupReady=true){data=new();return true;}
   private List<Agent> GetAgentsForShoutTargetingContext(ShoutTargetingContext c)=>new();private Agent ResolvePrimaryAgentForShoutTargetingContext(ShoutTargetingContext c,List<Agent>a)=>null;private bool IsPlayerSideBattleSpeechTarget(Mission m,Agent main,Agent target)=>false;
   private void ResumeGame(){}private bool TryOpenPresentationSessionFromWheel(){if(!SceneSessionPanel.IsAvailable)return false;Sessions++;return true;}
   private bool TryOpenPresentationTradeFromWheel(string mode){if(!SceneSessionPanel.IsAvailable)return false;LastMode=mode;Trades++;return true;}

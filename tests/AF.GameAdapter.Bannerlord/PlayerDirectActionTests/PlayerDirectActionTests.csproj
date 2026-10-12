@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><DirectPythonExe Condition="'$(DirectPythonExe)' == ''">python</DirectPythonExe></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../src/AF.GameAdapter.Bannerlord/Conversation/PlayerDirectActionController.cs" Link="PlayerDirectActionController.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PlayerDirectActions.cs" Link="ShoutBehavior.PlayerDirectActions.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Economy/Host/GiveAssetTagCodec.cs" Link="GiveAssetTagCodec.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Economy/Host/TransferQuantitySpec.cs" Link="TransferQuantitySpec.cs" />
+  </ItemGroup>
+  <Target Name="LinkNormalGoldOwner" BeforeTargets="BeforeBuild">
+    <PropertyGroup><NormalGoldSource>$(IntermediateOutputPath)normal-gold/NormalGold.cs</NormalGoldSource></PropertyGroup>
+    <Exec Command="&quot;$(DirectPythonExe)&quot; -B &quot;$(MSBuildProjectDirectory)/extract_normal_gold.py&quot; &quot;$(MSBuildProjectDirectory)/$(NormalGoldSource)&quot;" />
+    <ItemGroup><Compile Include="$(NormalGoldSource)" Link="NormalGold.cs" /></ItemGroup>
+  </Target>
+</Project>

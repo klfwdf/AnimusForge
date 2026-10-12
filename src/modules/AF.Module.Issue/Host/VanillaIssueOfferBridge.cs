@@ -203,6 +203,14 @@ internal static partial class VanillaIssueOfferBridge
 		return IssueRuntimePromptOwner.BuildRuntimePostprocessRules(targetHero);
 	}
 
+    internal static string GetPlayerDirectIssueUnavailableReason(Hero speaker, bool turnIn)
+    {
+        if (speaker == null) return "原版任务需要当前目标是已有英雄。";
+        if (turnIn)
+            return IssueRuntimeStateOwner.TryGetInProgressIssue(speaker, out _) ? null : "当前英雄没有进行中的原版任务；交付条件仍由原执行入口检查。";
+        return IssueRuntimeStateOwner.TryGetOfferableIssue(speaker, out _) ? null : "当前英雄没有可接取的原版任务。";
+    }
+
 	public static void ApplyIssueOfferTags(Hero speaker, ref string responseText)
 	{
 		if (speaker == null || string.IsNullOrWhiteSpace(responseText))
