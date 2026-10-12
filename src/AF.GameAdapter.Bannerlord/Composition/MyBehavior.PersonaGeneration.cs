@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
@@ -23,6 +24,9 @@ public partial class MyBehavior
     {
         internal NpcPersonaGenerationOwner.Lease Reservation;
         internal string Id, OriginalPersonality, OriginalBackground, Failure;
+        internal List<NpcPersonaTrait> OriginalTraits;
+        internal List<string> OriginalMotivations, OriginalValues, OriginalFears;
+        internal string OriginalSpeechStyle;
         internal string Facts, Requirements;
         internal MentionedWorldEntities Mentions;
         internal PromptLoreSettings LoreSettings;

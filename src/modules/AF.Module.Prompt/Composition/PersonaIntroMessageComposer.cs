@@ -12,6 +12,7 @@ internal sealed class SystemNpcIntroSnapshot {
  internal string cultureText="";
  internal string personalityText="";
  internal string backgroundText="";
+ internal string personaContext="";
  internal string nobleEtiquettePrompt="";
  internal string clanRole="";
  internal string relationshipLine="";
@@ -25,6 +26,7 @@ internal sealed class SceneNpcIntroSnapshot {
  internal string identity="";
  internal string personality="";
  internal string background="";
+ internal string personaContext="";
  internal string faction="";
  internal string clan="";
  internal string clanRole="";
@@ -100,6 +102,7 @@ internal static class PersonaIntroMessageComposer {
  string cultureText=s.cultureText;
  string personalityText=s.personalityText;
  string backgroundText=s.backgroundText;
+ string personaContext=s.personaContext;
  string nobleEtiquettePrompt=s.nobleEtiquettePrompt;
  string clanRole=s.clanRole;
 
@@ -122,6 +125,7 @@ internal static class PersonaIntroMessageComposer {
 			.Append(personalityText)
 			.Append(PromptComposerTexts.Get("persona_system_npc_background"))
 			.Append(backgroundText);
+		if (!string.IsNullOrWhiteSpace(personaContext)) stringBuilder.Append(PromptComposerTexts.Get("residual_period")).Append(personaContext);
 		string npcPlayerRelationshipLine = s.relationshipLine;
 		if (!string.IsNullOrWhiteSpace(npcPlayerRelationshipLine))
 		{
@@ -150,6 +154,7 @@ internal static class PersonaIntroMessageComposer {
  string identity=s.identity;
  string personality=s.personality;
  string background=s.background;
+ string personaContext=s.personaContext;
  string faction=s.faction;
  string clan=s.clan;
  string clanRole=s.clanRole;
@@ -289,6 +294,7 @@ stringBuilder.Append(partyRepresentativePrompt);
 				.AppendLine()
 				.Append(PromptComposerTexts.Get("persona_scene_npc_background"))
 				.Append(background);
+			if (!string.IsNullOrWhiteSpace(personaContext)) stringBuilder.Append(PromptComposerTexts.Get("residual_period")).Append(personaContext);
 			if (!string.IsNullOrWhiteSpace(nobleEtiquettePrompt))
 			{
 				stringBuilder.Append(PromptComposerTexts.Get("residual_period")).Append(nobleEtiquettePrompt);

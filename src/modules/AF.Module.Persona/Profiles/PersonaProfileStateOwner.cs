@@ -3,6 +3,23 @@ using System.Collections.Generic;
 
 namespace AnimusForge;
 
+internal sealed class NpcPersonaTrait
+{
+    public string Id;
+    public int Strength;
+}
+
+internal sealed class NpcPersonaGeneratedData
+{
+    internal string Personality = "";
+    internal string Background = "";
+    internal List<NpcPersonaTrait> Traits = new List<NpcPersonaTrait>();
+    internal List<string> Motivations = new List<string>();
+    internal List<string> Values = new List<string>();
+    internal List<string> Fears = new List<string>();
+    internal string SpeechStyle = "";
+}
+
 // Keeps the legacy DTO and live profile references; callers capture Hero identity on the campaign thread.
 internal sealed class PersonaProfileStateOwner
 {
@@ -52,7 +69,12 @@ internal sealed class PersonaProfileStateOwner
 		string text = (profile?.Personality ?? "").Trim();
 		string text2 = (profile?.Background ?? "").Trim();
 		string text3 = (profile?.VoiceId ?? "").Trim();
-		if (string.IsNullOrEmpty(text) && string.IsNullOrEmpty(text2) && string.IsNullOrEmpty(text3))
+		if (string.IsNullOrEmpty(text) && string.IsNullOrEmpty(text2) && string.IsNullOrEmpty(text3)
+			&& (profile?.Traits == null || profile.Traits.Count == 0)
+			&& (profile?.Motivations == null || profile.Motivations.Count == 0)
+			&& (profile?.Values == null || profile.Values.Count == 0)
+			&& (profile?.Fears == null || profile.Fears.Count == 0)
+			&& string.IsNullOrEmpty((profile?.SpeechStyle ?? "").Trim()))
 		{
 			Profiles.Remove(stringId);
 			return;
@@ -65,6 +87,7 @@ internal sealed class PersonaProfileStateOwner
 		profile.Personality = text;
 		profile.Background = text2;
 		profile.VoiceId = text3;
+		profile.SpeechStyle = (profile.SpeechStyle ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		Profiles[stringId] = profile;
 	}
 

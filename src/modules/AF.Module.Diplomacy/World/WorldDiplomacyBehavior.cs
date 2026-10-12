@@ -1094,6 +1094,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		MyBehavior.GetNpcPersonaForExternal(ruler, out string personality, out string background);
 		string compactPersonality = WorldDiplomacyTextRules.CompactPromptFact(personality, 280);
 		string compactBackground = WorldDiplomacyTextRules.CompactPromptFact(background, 420);
+		string compactExpandedPersona = WorldDiplomacyTextRules.CompactPromptFact(MyBehavior.GetNpcPersonaContextForExternal(ruler), 520);
 		string title = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
 			kingdom?.EncyclopediaRulerTitle?.ToString(),
 			ruler.Clan?.Name?.ToString(),
@@ -1106,6 +1107,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ ",traits=" + BuildRulerVoiceTraitSummary(ruler)
 			+ ",personality=" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(compactPersonality, DiplomacyPromptTexts.Get("RulerVoicePrompt_004", "No dedicated personality profile supplied"))
 			+ ",background=" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(compactBackground, DiplomacyPromptTexts.Get("RulerVoicePrompt_005", "No dedicated background profile supplied; do not invent experiences"))
+			+ (string.IsNullOrWhiteSpace(compactExpandedPersona) ? "" : ",expanded_persona=" + compactExpandedPersona)
 			+ "}";
 	}
 	private string BuildRealmInstitutionalVoiceContext(Kingdom kingdom)

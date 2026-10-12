@@ -7094,7 +7094,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (hero != null)
 			{
 				MyBehavior.GetNpcPersonaForExternal(hero, out string personality, out string background);
-				return JoinPersonaText(personality, background);
+				return JoinPersonaText(personality, background, MyBehavior.GetNpcPersonaContextForExternal(hero));
 			}
 			if (ShoutUtils.TryGetUnnamedNpcPersona(soldier, out string unnamedPersonality, out string unnamedBackground))
 			{
@@ -7108,10 +7108,10 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return "";
 	}
 
-	private static string JoinPersonaText(string personality, string background)
+	private static string JoinPersonaText(string personality, string background, string expanded = "")
 	{
 		string p = (personality ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		string b = (background ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		string b = ((background ?? "") + (string.IsNullOrWhiteSpace(expanded) ? "" : " " + expanded)).Replace("\r", " ").Replace("\n", " ").Trim();
 		if (string.IsNullOrWhiteSpace(p))
 		{
 			return b;

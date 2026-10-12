@@ -10,7 +10,8 @@ public partial class MyBehavior {
             GetClanTierReputationLabel = GetClanTierReputationLabel,
             GetHeroCultureNameForPrompt = GetHeroCultureNameForPrompt,
             GetHeroFactionAndLiegeForPrompt = GetHeroFactionAndLiegeForPrompt,
-            GetNpcPersonaStrings = GetNpcPersonaStrings
+            GetNpcPersonaStrings = GetNpcPersonaStrings,
+            GetNpcPersonaContext = GetNpcPersonaContext
  }, null);
  private static HeroEquipmentPromptLivePort CreateHeroEquipmentPromptLivePort() => new() {ResolveContext=AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.TryResolveEquipmentContextForPrompt,GetItem=AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.TryGetHeroEquipmentItemForPrompt};
  private static HeroIdentityPromptLivePort CreateHeroIdentityPromptLivePort() => new() {ResolveRuledKingdom=TryResolveActiveKingdomRuledByHeroForPrompt};

@@ -41,6 +41,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
         { personality=profile.Personality ?? ""; background=profile.Background ?? ""; }
     }
     internal NpcPersonaProfile GetNpcPersonaProfile(Hero hero,bool createIfMissing) => hero==null ? null : _profiles.Get(hero.StringId,createIfMissing);
+    internal string GetNpcPersonaContext(Hero hero) => hero == null ? "" : NpcPersonaTextRules.BuildPersonaContext(_profiles.Get(hero.StringId, createIfMissing: false));
     internal void SaveNpcPersonaProfile(Hero hero,NpcPersonaProfile profile) => _profiles.Save(hero?.StringId,profile,_stampProfile);
     internal NpcPersonaGenerationWork CaptureNpcPersonaGeneration(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)
     {
@@ -55,10 +56,16 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
             ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_RecentFailure", "This NPC's last generation request just failed. Please try again later.") : AdapterRecordTexts.T("AF_UI_PersonaGeneration_AlreadyGenerating", "This NPC's personality and background are being generated. Wait for the current request to finish before trying again.") };
         try
         {
+			NpcPersonaProfile existingProfile = GetNpcPersonaProfile(hero, createIfMissing: false);
             var work = new NpcPersonaGenerationWork
             {
                 Id = id, OriginalPersonality = personality, OriginalBackground = background, Reservation = lease,
-                Facts = PersonaGenerationFactCaptureAdapter.BuildHeroFactsForPersonaGeneration(hero), Requirements = DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements
+				OriginalTraits = CloneTraits(existingProfile?.Traits),
+				OriginalMotivations = CloneStrings(existingProfile?.Motivations),
+				OriginalValues = CloneStrings(existingProfile?.Values),
+				OriginalFears = CloneStrings(existingProfile?.Fears),
+				OriginalSpeechStyle = existingProfile?.SpeechStyle ?? "",
+				Facts = PersonaGenerationFactCaptureAdapter.BuildHeroFactsForPersonaGeneration(hero), Requirements = DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements
             };
             try
             {
@@ -138,13 +145,13 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
             if (work.Response == null) return work.Failure ?? "";
             ApiCallResult response = await work.Response.ConfigureAwait(false);
             if (!_ownerCurrent() || !SaveRuntimeGuard.IsCurrentGeneration(generation)) return "";
-            string resp = response.Content ?? "";
-            string genP = "", genB = "";
-            bool parsed = await Task.Run(() => response.Success && !string.IsNullOrWhiteSpace(resp)
-                && NpcPersonaTextRules.TryParsePersonaJson(resp, out genP, out genB)).ConfigureAwait(false);
-            genP = NpcPersonaProfilePolicy.NormalizeGenerated(genP);
-            genB = NpcPersonaProfilePolicy.NormalizeGenerated(genB);
-            NpcPersonaProfilePolicy.CompleteGeneratedFields(ref genP, ref genB);
+			string resp = response.Content ?? "";
+			NpcPersonaGeneratedData generated = null;
+			bool parsed = await Task.Run(() => response.Success && !string.IsNullOrWhiteSpace(resp)
+				&& NpcPersonaTextRules.TryParsePersonaJson(resp, out generated)).ConfigureAwait(false);
+			string genP = NpcPersonaProfilePolicy.NormalizeGenerated(generated?.Personality);
+			string genB = NpcPersonaProfilePolicy.NormalizeGenerated(generated?.Background);
+			NpcPersonaProfilePolicy.CompleteGeneratedFields(ref genP, ref genB);
             string failure = null;
             bool accepted = await _dispatch(generation, () =>
             {
@@ -153,19 +160,30 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
                 if (parsed)
                 {
                     GetNpcPersonaStrings(hero, out string curP, out string curB);
-                    if (!NpcPersonaProfilePolicy.TryMerge(overwriteExisting, work.OriginalPersonality, work.OriginalBackground,
+					if (!NpcPersonaProfilePolicy.TryMerge(overwriteExisting, work.OriginalPersonality, work.OriginalBackground,
                         curP, curB, genP, genB, out string nextPersonality, out string nextBackground))
                     {
                         retired = true;
                         failure = AdapterRecordTexts.T("AF_UI_PersonaGeneration_ChangedDuringGeneration", "The persona changed during generation; the latest personality and historical background were not overwritten. Review the changes before regenerating.");
                         return true;
                     }
-                    NpcPersonaProfile current = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
-                    NpcPersonaProfile profile = overwriteExisting ? new NpcPersonaProfile { VoiceId = (current.VoiceId ?? "").Trim() } : current;
+					NpcPersonaProfile current = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
+					if (overwriteExisting && !ProfileExtrasStillCurrent(current, work))
+					{
+						retired = true;
+						failure = AdapterRecordTexts.T("AF_UI_PersonaGeneration_ChangedDuringGeneration", "The persona changed during generation; the latest personality and historical background were not overwritten. Review the changes before regenerating.");
+						return true;
+					}
+					NpcPersonaProfile profile = overwriteExisting ? new NpcPersonaProfile { VoiceId = (current.VoiceId ?? "").Trim() } : current;
                     profile.Personality = nextPersonality;
                     profile.Background = nextBackground;
+					ApplyGeneratedExtras(profile, current, generated, overwriteExisting);
+					profile.SchemaVersion = Math.Max(profile.SchemaVersion, 2);
                     SaveNpcPersonaProfile(hero, profile);
-                    saved = !string.IsNullOrWhiteSpace(profile.Personality) || !string.IsNullOrWhiteSpace(profile.Background);
+					saved = !string.IsNullOrWhiteSpace(profile.Personality) || !string.IsNullOrWhiteSpace(profile.Background)
+						|| (profile.Traits?.Count ?? 0) > 0 || (profile.Motivations?.Count ?? 0) > 0
+						|| (profile.Values?.Count ?? 0) > 0 || (profile.Fears?.Count ?? 0) > 0
+						|| !string.IsNullOrWhiteSpace(profile.SpeechStyle);
                     if (saved && overwriteExisting) Logger.Log("NpcPersona", "[REROLL] Replaced personality and background for " + work.Id + "; voiceId preserved=" + !string.IsNullOrWhiteSpace(profile.VoiceId) + ".");
                 }
                 if (!saved)
@@ -207,6 +225,50 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
     internal void GetNpcPersonaGenerationRuntimeState(Hero hero, out bool active, out bool coolingDown)
     {
         _reservations.GetState((hero?.StringId ?? "").Trim(), out active, out coolingDown);
+    }
+
+    private static List<NpcPersonaTrait> CloneTraits(IEnumerable<NpcPersonaTrait> source)
+    {
+        List<NpcPersonaTrait> result = new List<NpcPersonaTrait>();
+        foreach (NpcPersonaTrait item in source ?? Enumerable.Empty<NpcPersonaTrait>())
+            if (item != null && !string.IsNullOrWhiteSpace(item.Id)) result.Add(new NpcPersonaTrait { Id = item.Id, Strength = item.Strength });
+        return result;
+    }
+
+    private static List<string> CloneStrings(IEnumerable<string> source)
+        => (source ?? Enumerable.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).ToList();
+
+    private static bool SameStrings(IEnumerable<string> left, IEnumerable<string> right)
+        => string.Equals(string.Join("\u001f", CloneStrings(left)), string.Join("\u001f", CloneStrings(right)), StringComparison.Ordinal);
+
+    private static bool SameTraits(IEnumerable<NpcPersonaTrait> left, IEnumerable<NpcPersonaTrait> right)
+        => string.Equals(string.Join("\u001f", CloneTraits(left).Select(x => (x.Id ?? "") + ":" + x.Strength)), string.Join("\u001f", CloneTraits(right).Select(x => (x.Id ?? "") + ":" + x.Strength)), StringComparison.Ordinal);
+
+    private static bool ProfileExtrasStillCurrent(NpcPersonaProfile current, NpcPersonaGenerationWork work)
+        => SameTraits(current?.Traits, work?.OriginalTraits)
+            && SameStrings(current?.Motivations, work?.OriginalMotivations)
+            && SameStrings(current?.Values, work?.OriginalValues)
+            && SameStrings(current?.Fears, work?.OriginalFears)
+            && string.Equals((current?.SpeechStyle ?? "").Trim(), (work?.OriginalSpeechStyle ?? "").Trim(), StringComparison.Ordinal);
+
+    internal static void ApplyGeneratedExtras(NpcPersonaProfile target, NpcPersonaProfile current, NpcPersonaGeneratedData generated, bool overwriteExisting)
+    {
+        if (target == null) return;
+        bool hasTraits = generated?.Traits?.Count > 0;
+        bool hasMotivations = generated?.Motivations?.Count > 0;
+        bool hasValues = generated?.Values?.Count > 0;
+        bool hasFears = generated?.Fears?.Count > 0;
+        bool hasSpeech = !string.IsNullOrWhiteSpace(generated?.SpeechStyle);
+        target.Traits = (overwriteExisting && hasTraits) || (!overwriteExisting && (current?.Traits?.Count ?? 0) == 0)
+            ? CloneTraits(generated?.Traits) : CloneTraits(current?.Traits);
+        target.Motivations = (overwriteExisting && hasMotivations) || (!overwriteExisting && (current?.Motivations?.Count ?? 0) == 0)
+            ? CloneStrings(generated?.Motivations) : CloneStrings(current?.Motivations);
+        target.Values = (overwriteExisting && hasValues) || (!overwriteExisting && (current?.Values?.Count ?? 0) == 0)
+            ? CloneStrings(generated?.Values) : CloneStrings(current?.Values);
+        target.Fears = (overwriteExisting && hasFears) || (!overwriteExisting && (current?.Fears?.Count ?? 0) == 0)
+            ? CloneStrings(generated?.Fears) : CloneStrings(current?.Fears);
+        target.SpeechStyle = (overwriteExisting && hasSpeech) || (!overwriteExisting && string.IsNullOrWhiteSpace(current?.SpeechStyle))
+            ? NpcPersonaProfilePolicy.NormalizeGenerated(generated?.SpeechStyle) : (current?.SpeechStyle ?? "").Trim();
     }
 
 

@@ -1288,7 +1288,7 @@ public static class EncyclopediaHeroPersonaPatch
 
 		MyBehavior.GetNpcPersonaForExternal(hero, out var personality, out var background);
 
-		string text = BuildPersonaInformationText(personality, background);
+		string text = BuildPersonaInformationText(personality, background, MyBehavior.GetNpcPersonaContextForExternal(hero));
 
 		if (!string.IsNullOrWhiteSpace(text))
 
@@ -1650,7 +1650,7 @@ public static class EncyclopediaHeroPersonaPatch
 
 
 
-	private static string BuildPersonaInformationText(string personality, string background)
+	private static string BuildPersonaInformationText(string personality, string background, string personaContext)
 
 	{
 
@@ -1682,6 +1682,11 @@ public static class EncyclopediaHeroPersonaPatch
 
 			parts.Add(new TextObject("{=AF_UI_Persona_BackgroundSection}History background").ToString() + "\n" + text2);
 
+		}
+
+		if (!string.IsNullOrWhiteSpace(personaContext))
+		{
+			parts.Add(new TextObject("{=AF_UI_Persona_ExpandedSection}Expanded persona").ToString() + "\n" + personaContext);
 		}
 
 		return string.Join("\n\n", parts).Trim();

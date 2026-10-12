@@ -2521,6 +2521,7 @@ public static class ShoutUtils
 					{
 						npcDataPacket.BackgroundDesc = background.Trim();
 					}
+					npcDataPacket.PersonaContext = MyBehavior.GetNpcPersonaContextForExternal(hero);
 				}
 				else if (characterObject.Occupation == Occupation.Lord)
 				{

@@ -10,6 +10,8 @@ public class NpcDataPacket
 
 	public string BackgroundDesc;
 
+	public string PersonaContext;
+
 	public int AgentIndex;
 
 	public bool IsHero;

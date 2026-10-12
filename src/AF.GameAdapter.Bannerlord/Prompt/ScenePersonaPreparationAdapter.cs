@@ -183,6 +183,7 @@ internal sealed class ScenePersonaPreparationAdapter
                 }
                 if (!string.IsNullOrWhiteSpace(p)) npc.PersonalityDesc = p.Trim();
                 if (!string.IsNullOrWhiteSpace(b)) npc.BackgroundDesc = b.Trim();
+                npc.PersonaContext = MyBehavior.GetNpcPersonaContextForExternal(current);
                 return true;
             }, false).ConfigureAwait(false);
         }

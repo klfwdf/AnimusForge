@@ -196,11 +196,30 @@ public sealed class LoreTextMapping
     public string? FalseText { get; set; }
 }
 
+public sealed class NpcPersonaTrait
+{
+    public string? Id { get; set; }
+
+    public int Strength { get; set; }
+}
+
 public sealed class NpcPersonaProfile
 {
     public string? Personality { get; set; }
 
     public string? Background { get; set; }
+
+    public List<NpcPersonaTrait>? Traits { get; set; }
+
+    public List<string>? Motivations { get; set; }
+
+    public List<string>? Values { get; set; }
+
+    public List<string>? Fears { get; set; }
+
+    public string? SpeechStyle { get; set; }
+
+    public int SchemaVersion { get; set; }
 
     public string? VoiceId { get; set; }
 }
