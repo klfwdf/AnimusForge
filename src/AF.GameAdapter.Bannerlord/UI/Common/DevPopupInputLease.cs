@@ -1,16 +1,18 @@
 using System;
+using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
 
-// UI transition only: suspend a named parent, never scan or reprioritize all game layers.
+// UI transition only: suspend a named UI parent; scene parents release input but keep rendering.
 public sealed class DevPopupInputLease : IDisposable
 {
     private readonly ScreenBase _screen;
     private readonly ScreenLayer _layer;
     private readonly Func<bool> _isOwnerAlive;
+    private readonly bool _suspendParent;
     private readonly InputUsageMask _mask;
     private readonly bool _wasActive, _lastActiveState, _wasFocusLayer, _wasFocused, _mouseVisible;
     private bool _disposed, _acquired, _externallyChanged;
@@ -28,12 +30,14 @@ public sealed class DevPopupInputLease : IDisposable
         _lastActiveState = layer.LastActiveState;
         _wasFocusLayer = layer.IsFocusLayer;
         _wasFocused = ReferenceEquals(ScreenManager.FocusedLayer, layer);
+        _suspendParent = layer is GauntletLayer;
         try
         {
             layer.InputRestrictions.ResetInputRestrictions();
             layer.IsFocusLayer = false;
             ScreenManager.TryLoseFocus(layer);
-            if (_wasActive) ScreenManager.SetSuspendLayer(layer, isSuspended: true);
+            // Map SceneViews can keep rendering while inactive, moving above every active UI layer.
+            if (_wasActive && _suspendParent) ScreenManager.SetSuspendLayer(layer, isSuspended: true);
             ScreenLayer.OnLayerActiveStateChanged += OnParentActiveStateChanged;
         }
         catch { Dispose(); throw; }
@@ -54,7 +58,7 @@ public sealed class DevPopupInputLease : IDisposable
         // whose screen lifecycle changed outside this lease.
         _layer.InputRestrictions.SetInputRestrictions(_mouseVisible, _mask);
         _layer.IsFocusLayer = _wasFocusLayer;
-        if (!_externallyChanged && _wasActive && !_layer.IsActive && ReferenceEquals(ScreenManager.TopScreen, _screen))
+        if (_suspendParent && !_externallyChanged && _wasActive && !_layer.IsActive && ReferenceEquals(ScreenManager.TopScreen, _screen))
             ScreenManager.SetSuspendLayer(_layer, isSuspended: false);
         if (!_externallyChanged) _layer.LastActiveState = _lastActiveState;
         if (!_externallyChanged && _wasFocused && _layer.IsActive && ReferenceEquals(ScreenManager.TopScreen, _screen))
