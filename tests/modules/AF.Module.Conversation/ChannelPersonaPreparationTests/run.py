@@ -5,12 +5,13 @@ ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 import sys
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
-p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--dotnet', default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['native_skip_admission','native_accept_failure','courier_drop_session','courier_reject_fallback','scene_generate_partial','scene_skip_scope','scene_accept_replaced','invalid_target_cleanup','waiter_ignore_deadline','waiter_ignore_scope']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--dotnet', default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));p.add_argument('--target-framework',default='net8.0');p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['native_skip_admission','native_accept_failure','courier_drop_session','courier_reject_fallback','scene_generate_partial','scene_skip_scope','scene_accept_replaced','invalid_target_cleanup','waiter_ignore_deadline','waiter_ignore_scope']);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 spec=importlib.util.spec_from_file_location('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 def read(p):return (current_source_path(ROOT, p)).read_text(encoding='utf-8-sig')
 def old(p):return subprocess.check_output(['git','show','4140bd04:'+p],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 code=read('tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/Harness.cs.txt')
+if a.original: code=subprocess.check_output(['git','show','bbfb98242:tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/Harness.cs.txt'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 code=code.replace('@@COURIER_SCOPE@@',ex.declaration(read('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs'),'private bool IsCourierHistoryOwnerCurrent('))
 if a.original:
  s=old('ShoutBehavior.cs');c=old('CourierDeliveryBehavior.cs')
@@ -37,7 +38,7 @@ else:
  mutations={
   'native_skip_admission':('if (!_nativeAdmission.IsNativeConversationAdmissionCurrent(admission, out _)) return null;','if (false) return null;'),
   'native_accept_failure':('if (state.CoolingDown && !state.Active) break;','if (state.CoolingDown && !state.Active) return true;'),
-  'scene_generate_partial':('string.IsNullOrWhiteSpace(state.Personality) && string.IsNullOrWhiteSpace(state.Background)','string.IsNullOrWhiteSpace(state.Personality) || string.IsNullOrWhiteSpace(state.Background)'),
+  'scene_generate_partial':('string.IsNullOrWhiteSpace(state.Description)','true'),
   'scene_skip_scope':(ex.declaration(owner,'internal bool IsScenePersonaScopeCurrent('),'internal bool IsScenePersonaScopeCurrent(ScenePersonaPreparationScope scope) { return scope != null; }'),
   'scene_accept_replaced':('!ReferenceEquals(current, prepared.Hero)','false')}
  body='\n'.join(declarations)
@@ -63,7 +64,7 @@ namespace AnimusForge.Refactor.Adapters {
   internal bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission a,out string reason)=>owner.IsNativeConversationAdmissionCurrent(a,out reason);
  }
  internal sealed class NpcPersonaGenerationApplicationAdapter {
-  internal void GetNpcPersonaStrings(Hero h,out string p,out string b){Probe.Read();p=h.P;b=h.B;}
+  internal string GetNpcPersonaDescription(Hero h){Probe.Read();return NpcPersonaProfilePolicy.MergeLegacy(h.P,h.B);}
   internal void GetNpcPersonaGenerationRuntimeState(Hero h,out bool a,out bool c){Probe.Read();a=h.Active;c=h.Cooling;}
  }
  internal sealed class ScenePersonaPreparationAdapter {
@@ -96,5 +97,6 @@ if not a.original:
   dest=out/Path(path).name;dest.write_text(text,encoding='utf-8');files.append(dest)
 if not a.original: (out/'current-capture-inputs.json').write_text(json.dumps(capture_inputs,indent=2),encoding='utf-8')
 project=util.project(out,'ChannelPersona',files,executable=True)
+project.write_text(project.read_text(encoding='utf-8').replace('net8.0',a.target_framework),encoding='utf-8')
 code,log=util.run_dotnet(a.dotnet,['run','--project',str(project),'-c','Release'],out)
 (out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)

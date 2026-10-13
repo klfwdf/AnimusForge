@@ -4,6 +4,7 @@ No player data, cleanup, registry changes or substituted package acceptance algo
 """
 from pathlib import Path
 import argparse
+import os
 import ast
 import hashlib
 import json
@@ -18,6 +19,7 @@ from output_isolation import new_run_root, resolve_dotnet, minimal_test_environm
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--out", type=Path, help="new isolated output; default creates a fresh workspace artifact child")
+parser.add_argument("--target-framework",default="net8.0")
 parser.add_argument("--prepare-only", action="store_true")
 args = parser.parse_args()
 out = new_run_root(ROOT, "package-import", args.out)
@@ -41,6 +43,7 @@ prefix = "tests/modules/AF.Module.Persona/PackageImportLifecycleTests/"
 read(prefix + "run.py")
 read(prefix + "PackageImportLifecycleTests.csproj")
 program = read(prefix + "Program.cs")
+program=program.replace('int n=0;','TaleWorlds.Localization.TextObject.UseLanguage(true);int n=0;')
 original_checks = re.findall(r"Check\((.*?)\);", program, re.S)
 old_ctor = "new DeveloperPackageImportController(port,execution)"
 assert program.count(old_ctor) == 1
@@ -50,7 +53,9 @@ assert program.count(old_root) == 1
 program = program.replace(old_root, json.dumps(str(out / "fixtures")))
 assert re.findall(r"Check\((.*?)\);", program, re.S) == original_checks
 (out / "Program.cs").write_text(program, encoding="utf-8")
-(out / "Stubs.cs").write_text(read(prefix + "Stubs.cs"), encoding="utf-8")
+dto=declaration(read("src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs"),"internal class NpcPersonaProfile")
+stubs=read(prefix+"Stubs.cs").replace("internal class NpcPersonaProfile {public string HeroId,HeroName,Personality;}",dto)
+(out / "Stubs.cs").write_text(stubs, encoding="utf-8")
 
 # These are read-only domain/game capabilities of the original fixture, not new stores.
 # Every directory enumeration, tolerant decode and prepared-data merge below is production.
@@ -79,6 +84,7 @@ header = "using System;using System.Collections.Generic;using System.Linq;using 
 (out / "ActualFormats.cs").write_text(header + "\n".join(formats), encoding="utf-8")
 
 leaves = r'''
+internal static class AnimusForgeModulePaths { internal static string GetModuleDataFilePath(string file)=>throw new InvalidOperationException("Prompt resource not used in import replay: "+file); }
 internal static class FixtureFormats {
  internal static DeveloperPackageImportPort Port;
  internal static DeveloperPackageImportController Create(DeveloperPackageImportPort p,DeveloperImportController execution){
@@ -107,7 +113,14 @@ public partial class MyBehavior {
 '''
 (out / "FixtureCapabilities.cs").write_text(header + leaves, encoding="utf-8")
 # Full coordination/controller and the actual debt mutation policy, not a surrogate.
-links = ["src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperPackageImportController.cs",
+links = ["src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperUiText.cs",
+         "src/AF.GameAdapter.Bannerlord/ImportExport/ImportExportUiText.cs",
+         "src/modules/AF.Module.Memory/Runtime/MemoryTextResources.cs",
+         "src/modules/AF.Module.Memory/Summary/MemoryFailureUiText.cs",
+         "tests/modules/AF.Module.Weekly/EditorLifecycleTests/TextObjectFixture.cs",
+         "src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs",
+         "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs",
+         "src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperPackageImportController.cs",
          "src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperImportController.cs",
          "src/modules/AF.Module.Economy/Debt/DebtImportMergePolicy.cs",
          "src/modules/AF.Module.Memory/ImportExport/CompressedMemoryExportBundleReader.cs"]
@@ -123,13 +136,16 @@ manifest = {"physicalInputs": sources, "assertionsPreserved": len(original_check
 if args.prepare_only:
     print("PREPARED", out)
     raise SystemExit(0)
-newtonsoft = dotnet.parent / "sdk/8.0.425/Containers/tasks/net8.0/Newtonsoft.Json.dll"
+newtonsoft = Path(os.environ["AF_NEWTONSOFT"]) if os.environ.get("AF_NEWTONSOFT") else dotnet.parent / "sdk/8.0.425/Containers/tasks/net8.0/Newtonsoft.Json.dll"
 assert newtonsoft.is_file(), "Newtonsoft dependency missing"
-(out / "Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>' + str(newtonsoft) + '</HintPath></Reference></ItemGroup></Project>', encoding="utf-8")
+resource_items='<EmbeddedResource Include="'+str(ROOT/'content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.json')+'" LogicalName="AnimusForge.Memory.SourceTexts.json" />'
+resource_items+='<Content Include="'+str(ROOT/'content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml')+'" Link="ui-zh.xml" CopyToOutputDirectory="PreserveNewest" />'
+(out / "CoreNamespace.cs").write_text('namespace TaleWorlds.Core {}',encoding='utf-8')
+(out / "Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>' + args.target_framework + '</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>' + str(newtonsoft) + '</HintPath></Reference>' + resource_items + '</ItemGroup></Project>', encoding="utf-8")
 (out / "NuGet.Config").write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding="utf-8")
 env = minimal_test_environment(dotnet, out)
 for cmd, log in [([str(dotnet), "build", str(out / "Proof.csproj"), "--nologo", "-p:RestoreConfigFile=" + str(out / "NuGet.Config")], "build.log"),
-                 ([str(dotnet), str(out / "bin/Debug/net8.0/Proof.dll")], "run.log")]:
+                 ([str(dotnet), str(out / ("bin/Debug/"+args.target_framework+"/Proof.dll"))], "run.log")]:
     result = subprocess.run(cmd, cwd=out, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180)
     (out / log).write_text(result.stdout + result.stderr, encoding="utf-8")
     print(result.stdout + result.stderr)

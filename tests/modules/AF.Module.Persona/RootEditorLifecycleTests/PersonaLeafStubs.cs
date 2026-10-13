@@ -2,7 +2,7 @@ using System;using System.Collections.Generic;
 namespace AnimusForge.Refactor.Runtime {internal sealed class PersonaEditorFixtureNamespace {}}
 namespace TaleWorlds.CampaignSystem {internal sealed class Campaign {internal static Campaign Current;internal T GetCampaignBehavior<T>() where T:class=>null;}}
 namespace AnimusForge {
-internal static partial class MyBehavior {internal sealed class NpcPersonaProfile {public string Personality="",Background="",VoiceId="";}}
+internal static partial class MyBehavior {internal sealed class NpcPersonaProfile {public string Personality="",Background="",VoiceId="",Description="",SpeechStyle="";public int SchemaVersion;public List<NpcPersonaTrait> Traits=new();public List<string> Motivations=new(),Values=new(),Fears=new();internal void NormalizeDescription(){Description=Refactor.Runtime.NpcPersonaProfilePolicy.ResolveDescription(Description,SchemaVersion,Personality,Background);SchemaVersion=Math.Max(SchemaVersion,3);}}}
 internal static class LlmRetryPrompt {internal static string BuildFailureDetail(string a,string b)=>a;}
 internal static class DevTextEditorHelper {internal static Action<string> Confirm;internal static void ShowLongTextEditor(string title,string current,string prompt,string initial,Action<string> confirm,Action cancel){Confirm=confirm;}}
 internal sealed class KnowledgeLibraryBehavior {internal static KnowledgeLibraryBehavior Instance;internal sealed class RuleIndexItem {internal string Id,Name,Preview,Label;}internal void OpenEditorMenu(Action close){}internal List<RuleIndexItem> GetRuleIndexItemsForDev(int max)=>new();}

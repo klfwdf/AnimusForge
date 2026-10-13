@@ -23,6 +23,8 @@ spans=[ex.declaration(retry,'public static string BuildFailureDetail('),ex.decla
 # Controlled settings leaf only; generation and notice state remain the real owners.
 with (out/'Guards.cs').open('a',encoding='utf-8') as settings:
  settings.write('namespace AnimusForge { internal sealed class DuelSettings { internal bool UseWorldBulletin=true,AutoGenerateWeeklyReports=true,AutoGenerateWorldBulletins=true; internal static DuelSettings Current=new(); internal static DuelSettings GetSettings()=>Current; }}')
+paths.append('src/modules/AF.Module.Weekly/Bulletin/WorldBulletinContextPolicy.cs')
+paths.extend(['src/modules/AF.Module.Prompt/Runtime/PromptLanguageAudit.cs', 'src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs', 'src/modules/AF.Module.Llm/Application/LlmPromptTexts.cs'])
 linked_paths=[ROOT/path for path in paths]
 if args.mutate:
  original=ROOT/'src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs'

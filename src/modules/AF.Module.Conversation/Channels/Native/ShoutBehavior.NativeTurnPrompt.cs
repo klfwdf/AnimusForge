@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -25,6 +25,7 @@ namespace AnimusForge;
         private string baseExtras;
         private string trustBlock;
         private string persistedHeroHistory;
+        private MyBehavior.HistoryPromptSnapshot nativeMemorySnapshot;
         private string playerName;
         private long nativePendingPlayerHistoryEventSequence;
         private string nativePendingAfefKey;
@@ -74,7 +75,7 @@ namespace AnimusForge;
             Func<string> nativeHistoryWork = await _ports.RunNativeConversationMainThreadFuncAsync(
                 "persisted_history_capture", nativeTargetLog, nativeTargetAgentIndex,
                 () => _ports.IsNativeConversationAdmissionCurrent(admission, out _)
-                    ? CaptureNativeConversationPersistedHistoryWork(targetHero, targetCharacter, shouldRecordPlayerInput ? promptPlayerText : "", currentNativeDialogText, includeCurrentSceneSessionInPersistedHistory, admission.Generation)
+                    ? CaptureNativeConversationPersistedHistoryWork(targetHero, targetCharacter, shouldRecordPlayerInput ? promptPlayerText : "", currentNativeDialogText, includeCurrentSceneSessionInPersistedHistory, admission.Generation, snapshot => nativeMemorySnapshot = snapshot)
                     : null, (Func<string>)null).ConfigureAwait(false);
             if (nativeHistoryWork == null) return NativeConversationTurnStep.Stop("");
             Task<string> persistedHeroHistoryTask = Task.Run(nativeHistoryWork);
@@ -112,7 +113,8 @@ namespace AnimusForge;
             FreezeWatchdog.Mark("NativeConversation.history_join_start", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
             persistedHeroHistory = ((await persistedHeroHistoryTask) ?? "").Trim();
             if (!await _ports.RunNativeConversationMainThreadFuncAsync("persisted_history_accept", nativeTargetLog, nativeTargetAgentIndex,
-                () => _ports.IsNativeConversationAdmissionCurrent(admission, out _), false).ConfigureAwait(false)) return NativeConversationTurnStep.Stop("");
+                () => _ports.IsNativeConversationAdmissionCurrent(admission, out _)
+                    && (nativeMemorySnapshot == null || nativeMemorySnapshot.IsCurrent()), false).ConfigureAwait(false)) return NativeConversationTurnStep.Stop("");
             nativeHistoryJoinSw.Stop();
             Logger.Log("Logic", "[MemoryPerf] parallel_history_join reason=native_conversation target=" + nativeTargetLog + " agent=" + nativeTargetAgentIndex + " chars=" + persistedHeroHistory.Length + " hasValue=" + !string.IsNullOrWhiteSpace(persistedHeroHistory) + " waitMs=" + Math.Round(nativeHistoryJoinSw.Elapsed.TotalMilliseconds, 2));
             FreezeWatchdog.Mark("NativeConversation.history_join_done", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " chars=" + persistedHeroHistory.Length + " ms=" + Math.Round(nativeHistoryJoinSw.Elapsed.TotalMilliseconds, 2), immediate: true);
@@ -140,6 +142,7 @@ namespace AnimusForge;
             bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
             roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
             roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
+            roleRuntimeContext = (roleRuntimeContext + "\n" + PlayerCaptivityConversation.BuildRuntimeContext(targetHero)).Trim();
             string nativeSceneSummonClosureInstruction = _ports.BuildSceneSummonClosurePromptInstruction(presentNpcs);
             string nativeSceneFollowControlInstruction = _ports.BuildSceneFollowControlPromptInstruction(npc);
             string nativeSceneMechanismPromptSection = BuildSceneMechanismPromptSection(nativeSceneSummonTargets, nativeSceneGuideTargets, nativeSceneSummonClosureInstruction, nativeSceneFollowControlInstruction, npc);
@@ -193,11 +196,9 @@ namespace AnimusForge;
         {
             bool useSharedDailyMemoryForNpcOpening = npcInitiatedOpening;
             // Native tails are transient and may cover only conversations since the last load.
-            // Capture current-session raw too; exact request overlap, rather than session-wide suppression,
+            // The earlier snapshot includes current-session raw too; exact request overlap, rather than session-wide suppression,
             // decides what this request already contains. Scene/Courier keep their existing capture defaults.
-            List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(
-                targetHero ?? targetCharacter?.HeroObject, targetCharacter, npc, nativeTargetAgentIndex,
-                includeCurrentActiveSession: true);
+            List<ConversationMessage> persistentMemoryRoleMessages = nativeMemorySnapshot?.UncompressedMessages;
             StampNativePendingPromptMemorySession(nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, nativeHistoryMessages);
             string currentPromptMemorySessionKey = MyBehavior.CaptureCurrentPromptMemorySessionKey();
             foreach (var fact in pendingNativeCurrentAfefFacts)

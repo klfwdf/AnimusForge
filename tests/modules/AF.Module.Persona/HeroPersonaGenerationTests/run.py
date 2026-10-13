@@ -10,11 +10,12 @@ from output_isolation import current_source_path
 import os
 import argparse,importlib.util,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--dotnet', default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['worker_capture','worker_commit','ignore_edit','stale_lease','release_new','drop_voice','false_queued_success','promoted_worker_commit']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--dotnet', default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));p.add_argument('--target-framework',default='net8.0');p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['worker_capture','worker_commit','ignore_edit','stale_lease','release_new','drop_voice','false_queued_success','promoted_worker_commit']);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 spec=importlib.util.spec_from_file_location('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 s=subprocess.check_output(['git','show','10defeb4:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig')
+if a.original: code=subprocess.check_output(['git','show','bbfb98242:tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/Harness.cs.txt'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 if a.original:
  code=code.replace('@@GENERATOR@@','\n'.join(ex.declaration(s,sig) for sig in ['private async Task<string> GenerateNpcPersonaAsync(','private async Task EnsureNpcPersonaGeneratedAsync(','public static async Task EnsureNpcPersonaGeneratedForExternalAsync('])).replace('@@RESET@@','_npcPersonaAutoGenInFlight.Clear();_npcPersonaAutoGenRetryAfterUtcTicks.Clear()').replace('@@ACTIVE@@','return _npcPersonaAutoGenInFlight.Contains(id);').replace('@@COOLING@@','return _npcPersonaAutoGenRetryAfterUtcTicks.ContainsKey(id);')
 else:
@@ -30,6 +31,11 @@ code=code.replace('@@LORE_TESTS@@','' if a.original else (HERE/'LoreTests.cs.txt
 out=util.new_run_root(ROOT,'HeroPersonaGenerationTests',a.run_root)
 if not a.original:
  # Keep the original behavioral oracle; seed the current sole profiles owner and real applications.
+ dto=ex.declaration((ROOT/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_text(encoding='utf-8-sig'), 'internal class NpcPersonaProfile')
+ code=code.replace('private sealed class NpcPersonaProfile {public string Personality="",Background="",VoiceId="";}', dto)
+ code=code.replace('profile=new(){Personality=p,Background=b,VoiceId=voice};','profile=new(){Personality=p,Background=b,VoiceId=voice};profile.NormalizeDescription();')
+ code=code.replace('new[]{profile.Personality,profile.Background,profile.VoiceId}', 'new[]{profile.Description,"",profile.VoiceId}')
+
  code=code.replace('private sealed class ApiCallResult','internal sealed class ApiCallResult').replace('private sealed class NpcPersonaProfile','internal sealed class NpcPersonaProfile')
  code=code.replace('private NpcPersonaProfile profile=new();','private readonly PersonaProfileStateOwner _personaProfiles=new(); private NpcPersonaProfile profile {get=>_personaProfiles.Get("hero",true);set=>_personaProfiles.Profiles["hero"]=value;}')
  code=code.replace('private Task<ApiCallResult> CallAuxiliaryGatewayDetailed(', 'internal Task<ApiCallResult> CallAuxiliaryGatewayDetailed(')
@@ -44,6 +50,7 @@ if not a.original:
  glue='private void StampNpcPersonaProfile(string id,NpcPersonaProfile p){Probe.Read();Saves++;}'
  code=code.replace('@@CURRENT_GLUE@@',glue) if '@@CURRENT_GLUE@@' in code else code.replace('internal void Tick()=>dispatcher.Tick();',glue+' internal void Tick()=>dispatcher.Tick();')
  code+='namespace TaleWorlds.CampaignSystem.Settlements {} namespace AnimusForge {internal static class MemoryEntityIdentityBannerlordAdapter {internal static TaleWorlds.CampaignSystem.Hero FindHeroById(string id)=>MyBehavior.FindHeroById(id);} internal static class CampaignCharacterRecordCaptureAdapter {internal static string BuildPromotedHeroSkillSummary(TaleWorlds.CampaignSystem.Hero hero)=>MyBehavior.Instance.BuildPromotedHeroSkillSummary(hero);internal static bool TryApplyPromotedHeroSkillJson(TaleWorlds.CampaignSystem.Hero hero,string json)=>MyBehavior.Instance.TryApplyPromotedHeroSkillJson(hero,json);}} namespace AnimusForge.Refactor.Adapters {internal static class ConfiguredChatApplicationAdapter {internal static Task<MyBehavior.ApiCallResult> CallAuxiliaryGatewayDetailed(string sys,string user,string source,int n,bool forceThinkingDisabled)=>MyBehavior.Instance.CallAuxiliaryGatewayDetailed(sys,user,source,n,forceThinkingDisabled);} internal static class PersonaGenerationFactCaptureAdapter {internal static string BuildHeroFactsForPersonaGeneration(TaleWorlds.CampaignSystem.Hero h)=>MyBehavior.BuildHeroFactsForPersonaGeneration(h);internal static string BuildPromotedNonHeroCompanionFactsForPersonaGeneration(TaleWorlds.CampaignSystem.Hero h,string n,string f,string t,string id,string c,string s,string j,string e)=>MyBehavior.BuildPromotedNonHeroCompanionFactsForPersonaGeneration(h,n,f,t,id,c,s,j,e);}}'
+code=code.replace('@@PROMPT_DIR@@',str(ROOT/'content/modules/AF.Module.Persona/ModuleData').replace('\\','/'))
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 files=[out/'Program.cs',ROOT/'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',ROOT/'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs']
 if not a.original:
@@ -56,7 +63,9 @@ if not a.original:
   begin=application.index(part);old='_dispatch(generation, () =>';assert old in application[begin:];application=application[:begin]+application[begin:].replace(old,'UnsafeDirect(() =>',1)
   application=application.replace('internal sealed class NpcPersonaGenerationApplicationAdapter\n{','internal sealed class NpcPersonaGenerationApplicationAdapter\n{\nprivate static Task<bool> UnsafeDirect(Func<bool> action)=>Task.FromResult(action());',1)
  policy=(ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs').read_text(encoding='utf-8-sig')
- if a.mutate=='ignore_edit':policy=policy.replace('if (overwriteExisting && (!string.Equals(currentPersonality','if (false && (!string.Equals(currentPersonality',1)
+ if a.mutate=='ignore_edit':
+  anchor='if (!string.Equals(currentDescription, originalDescription, StringComparison.Ordinal))'
+  assert anchor in policy;policy=policy.replace(anchor,'if (false)',1)
  if a.mutate=='stale_lease':application=application.replace('!_reservations.IsCurrent(work.Reservation)','false',1)
  if a.mutate=='release_new':owner=owner.replace('|| !ReferenceEquals(current, lease)) return;','|| false) return;',1)
  if a.mutate=='false_queued_success':application=application.replace('return overwriteExisting ? "请求已失效，未保存新的人设。" : "";', 'return "";',1).replace('return accepted ? failure ?? "" : overwriteExisting ? "请求已失效，未保存新的人设。" : "";', 'return accepted ? failure ?? "" : "";',1)
@@ -68,11 +77,11 @@ if not a.original:
  if a.mutate=='promoted_worker_commit':
   begin=promoted_application.index('bool committed');old='_dispatch(runtimeGeneration, () =>';assert old in promoted_application[begin:];promoted_application=promoted_application[:begin]+promoted_application[begin:].replace(old,'UnsafeDirect(() =>',1)
   promoted_application=promoted_application.replace('internal sealed class PromotedPersonaGenerationApplicationAdapter\n{','internal sealed class PromotedPersonaGenerationApplicationAdapter\n{\nprivate static Task<bool> UnsafeDirect(Func<bool> action)=>Task.FromResult(action());',1)
- (out/'PromotedApplication.cs').write_text(promoted_application,encoding='utf-8');files += [out/'PromotedApplication.cs',ROOT/'src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs']
+ (out/'PromotedApplication.cs').write_text(promoted_application,encoding='utf-8');files += [out/'PromotedApplication.cs',ROOT/'src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs',ROOT/'src/modules/AF.Module.Persona/Import/PersonaImportOwner.cs']
  (out/'Promoted.cs').write_text(promoted,encoding='utf-8');files.append(out/'Promoted.cs')
 if not a.original:
  (out/'Policy.cs').write_text(policy,encoding='utf-8');files.append(out/'Policy.cs')
- files += [ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs',ROOT/'src/modules/AF.Module.Llm/Protocol/JsonResponseTextCodec.cs',ROOT/'src/AF.GameAdapter.Bannerlord/UI/Errors/PersonaFailureUiText.cs',HERE/'LocalizationBoundary.cs.txt']
+ files += [ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs',ROOT/'src/modules/AF.Module.Llm/Protocol/JsonResponseTextCodec.cs',ROOT/'src/AF.GameAdapter.Bannerlord/UI/Errors/PersonaFailureUiText.cs',HERE/'LocalizationBoundary.cs.txt', ROOT/'src/modules/AF.Module.Persona/Generation/PersonaPromptTexts.cs']
 # Bind exact whole application classes, scalar game/network fixtures, and generated mutation bytes.
 import json,hashlib
 physical=['src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs','src/AF.GameAdapter.Bannerlord/Prompt/PromotedPersonaGenerationApplicationAdapter.cs','src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromotedPersonaGeneration.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs']
@@ -80,6 +89,7 @@ physical += [str(path.relative_to(ROOT)).replace('\\','/') for path in HERE.iter
 physical.append('src/AF.GameAdapter.Bannerlord/UI/Errors/PersonaFailureUiText.cs')
 (out/'source-manifest.json').write_text(json.dumps({'mutation':a.mutate,'actualCurrent':{path:hashlib.sha256((ROOT/path).read_bytes()).hexdigest() for path in physical},'compiled':{str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in files},'scope':'whole two Persona applications + soleProfile/Reservation/realDispatcher; only game/provider/skills boundaries controlled; sibling Kingdom naming excluded'},indent=2),encoding='utf-8')
 project=util.project(out,'HeroPersonaProof',files,executable=True)
+project.write_text(project.read_text(encoding='utf-8').replace('net8.0',a.target_framework),encoding='utf-8')
 if not a.original:
  newtonsoft=Path(os.environ.get('AF_NEWTONSOFT') or str(Path(a.dotnet).parent/'sdk/8.0.425/Newtonsoft.Json.dll'))
  if not newtonsoft.is_file(): raise SystemExit('Missing existing Newtonsoft.Json.dll: '+str(newtonsoft))

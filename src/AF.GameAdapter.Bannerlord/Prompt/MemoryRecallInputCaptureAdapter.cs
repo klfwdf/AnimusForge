@@ -247,6 +247,8 @@ internal static MemoryRecallRequest CaptureMemoryRecallRequest(CapturePorts port
         {
 
             Generation = snapshot?.Generation ?? SaveRuntimeGuard.CaptureGeneration(),
+            Cancellation = LlmNonStreamingTransport.CurrentOwnerCancellation,
+            IsCurrentOwner = snapshot?.IsCurrentOwner,
 
             GameDay = snapshot?.GameDay ?? MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe(), Scene = scene,
 
@@ -272,7 +274,7 @@ internal static void PublishMemoryRecallFailure(CapturePorts ports, MemoryRecall
 
     {
 
-        if (!string.IsNullOrWhiteSpace(request.BlockingTitle))
+        if (request.IsCurrent() && !string.IsNullOrWhiteSpace(request.BlockingTitle))
 
             ports.ShowBlockingFailure(request.BlockingTitle, request.BlockingMessage, request.Generation, request.BlockingDisplay);
 

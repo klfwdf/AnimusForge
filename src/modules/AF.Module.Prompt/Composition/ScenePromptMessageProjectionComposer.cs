@@ -143,7 +143,7 @@ internal static string BuildProactiveSceneOpeningFactText(string extraFact, stri
 internal static string BuildNpcInitiatedOpeningUserText(string extraFact, string promptText)
 	{
 		List<string> sections = new List<string>();
-		string factBody = StripAfefPrefixForPromptSection(extraFact);
+		string factBody = MemorySystemFactProjection.ProjectBody(StripAfefPrefixForPromptSection(extraFact));
 		if (!string.IsNullOrWhiteSpace(factBody))
 		{
 			sections.Add(PromptComposerTexts.Get("scene_live_017") + factBody);

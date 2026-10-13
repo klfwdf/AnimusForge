@@ -26,6 +26,7 @@ internal sealed class PersonaProfileImportExportAdapter
  internal static bool TryPrepareNpcPersonaProfileForWrite(string heroId, NpcPersonaProfile profile)
  {
   if (string.IsNullOrWhiteSpace(heroId) || profile == null) return false;
+  profile.NormalizeDescription();
   StampNpcPersonaProfile(heroId, profile);
   return true;
  }

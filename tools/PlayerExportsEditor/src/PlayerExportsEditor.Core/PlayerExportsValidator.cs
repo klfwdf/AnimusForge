@@ -247,14 +247,14 @@ public sealed class PlayerExportsValidator
                 continue;
             }
 
-            if (string.IsNullOrWhiteSpace(profile.Personality) && string.IsNullOrWhiteSpace(profile.Background)
+            if (string.IsNullOrWhiteSpace(profile.Description)
                 && (profile.Traits == null || profile.Traits.Count == 0)
                 && (profile.Motivations == null || profile.Motivations.Count == 0)
                 && (profile.Values == null || profile.Values.Count == 0)
                 && (profile.Fears == null || profile.Fears.Count == 0)
                 && string.IsNullOrWhiteSpace(profile.SpeechStyle))
             {
-                issues.Add(Warning("Persona", doc.FilePath, "Both Personality and Background are empty."));
+                issues.Add(Warning("Persona", doc.FilePath, "Persona description is empty."));
             }
         }
     }

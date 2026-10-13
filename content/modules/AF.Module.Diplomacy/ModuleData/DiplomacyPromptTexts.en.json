@@ -579,7 +579,7 @@
   "RulerVoicePrompt_001": ",note=No usable character profile; do not invent personal experiences}",
   "RulerVoicePrompt_002": "Unknown",
   "RulerVoicePrompt_003": "Unknown ruler",
-  "RulerVoicePrompt_004": "No dedicated personality profile supplied",
+  "RulerVoicePrompt_004": "No dedicated persona supplied; do not invent experiences",
   "RulerVoicePrompt_005": "No dedicated background profile supplied; do not invent experiences",
   "RulerVoicePrompt_006": "Empress",
   "RulerVoicePrompt_007": "Emperor",

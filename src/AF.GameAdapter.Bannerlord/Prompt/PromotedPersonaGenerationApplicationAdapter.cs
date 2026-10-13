@@ -34,9 +34,13 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
                 var lease = _reservations.TryBegin(heroId, true, out _);
                 if (lease == null) return false;
                 work = new NpcPersonaGenerationWork { Id = heroId, Reservation = lease };
-                _persona.GetNpcPersonaStrings(hero, out string originalPersonality, out string originalBackground);
-                work.OriginalPersonality = originalPersonality;
-                work.OriginalBackground = originalBackground;
+                work.OriginalDescription = _persona.GetNpcPersonaDescription(hero);
+                var original = _persona.GetNpcPersonaProfile(hero, false);
+                work.OriginalTraits = NpcPersonaGenerationApplicationAdapter.CloneTraits(original?.Traits);
+                work.OriginalMotivations = NpcPersonaGenerationApplicationAdapter.CloneStrings(original?.Motivations);
+                work.OriginalValues = NpcPersonaGenerationApplicationAdapter.CloneStrings(original?.Values);
+                work.OriginalFears = NpcPersonaGenerationApplicationAdapter.CloneStrings(original?.Fears);
+                work.OriginalSpeechStyle = original?.SpeechStyle ?? "";
 		name = string.IsNullOrWhiteSpace(personalName) ? (hero.Name?.ToString() ?? AdapterPromptCaptureTexts.PcapText("persona_generation_48")) : personalName.Trim();
 		fullName = string.IsNullOrWhiteSpace(originalFullName) ? name : originalFullName.Trim();
 		troopName = string.IsNullOrWhiteSpace(originalTroopName) ? AdapterPromptCaptureTexts.PcapText("persona_generation_49") : originalTroopName.Trim();
@@ -56,9 +60,8 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
             bool committed = await _dispatch(runtimeGeneration, () =>
             {
                 if (!_reservations.IsCurrent(work.Reservation) || !ReferenceEquals(_findHero(work.Id), hero)) return false;
-                _persona.GetNpcPersonaStrings(hero, out string currentPersonality, out string currentBackground);
-                if (!string.Equals(currentPersonality, work.OriginalPersonality, StringComparison.Ordinal)
-                    || !string.Equals(currentBackground, work.OriginalBackground, StringComparison.Ordinal))
+                if (!string.Equals(_persona.GetNpcPersonaDescription(hero), work.OriginalDescription, StringComparison.Ordinal)
+                    || !NpcPersonaGenerationApplicationAdapter.ProfileExtrasStillCurrent(_persona.GetNpcPersonaProfile(hero, false), work))
                 {
                     Logger.Log("NpcPersona", "Promoted companion persona skipped after edit hero=" + work.Id);
                     return false;
@@ -69,26 +72,12 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
 				NpcPersonaGeneratedData generated = null;
 				if (apiCallResult.Success && !string.IsNullOrWhiteSpace(resp) && NpcPersonaTextRules.TryParsePersonaJson(resp, out generated))
 			{
-					string genP = NpcPersonaProfilePolicy.NormalizeGenerated(generated?.Personality);
-					string genB = NpcPersonaProfilePolicy.NormalizeGenerated(generated?.Background);
-				if (string.IsNullOrWhiteSpace(genP) && !string.IsNullOrWhiteSpace(genB))
-				{
-					genP = genB;
-				}
-				if (string.IsNullOrWhiteSpace(genB) && !string.IsNullOrWhiteSpace(genP))
-				{
-					genB = genP;
-				}
-					NpcPersonaProfile prof = _persona.GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
-				prof.Personality = genP.Trim();
-				prof.Background = genB.Trim();
+                    NpcPersonaProfile prof = _persona.GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
+                    prof.Description = NpcPersonaProfilePolicy.NormalizeGenerated(generated.Description);
 					NpcPersonaGenerationApplicationAdapter.ApplyGeneratedExtras(prof, prof, generated, overwriteExisting: false);
-					prof.SchemaVersion = Math.Max(prof.SchemaVersion, 2);
+					prof.SchemaVersion = Math.Max(prof.SchemaVersion, 3);
 				_persona.SaveNpcPersonaProfile(hero, prof);
-				personaSaved = !string.IsNullOrWhiteSpace(prof.Personality) || !string.IsNullOrWhiteSpace(prof.Background)
-					|| (prof.Traits?.Count ?? 0) > 0 || (prof.Motivations?.Count ?? 0) > 0
-					|| (prof.Values?.Count ?? 0) > 0 || (prof.Fears?.Count ?? 0) > 0
-					|| !string.IsNullOrWhiteSpace(prof.SpeechStyle);
+                personaSaved = !string.IsNullOrWhiteSpace(prof.Description);
 				Logger.Log("NpcPersona", "Promoted companion persona generated hero=" + heroId + " name=" + name);
 			}
 			if (!personaSaved)
@@ -108,14 +97,11 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
 		if (!personaSaved)
 		{
 			NpcPersonaProfile prof = _persona.GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
-			if (string.IsNullOrWhiteSpace(prof.Personality))
-			{
-				prof.Personality = NpcPersonaTextRules.BuildFallbackPersonality(name,troopName,joinFact,fullName,scene,history);
-			}
-			if (string.IsNullOrWhiteSpace(prof.Background))
-			{
-				prof.Background = NpcPersonaTextRules.BuildFallbackBackground(name,troopName,joinFact,fullName,scene,history);
-			}
+            if (string.IsNullOrWhiteSpace(prof.Description))
+                prof.Description = NpcPersonaProfilePolicy.MergeLegacy(
+                    NpcPersonaTextRules.BuildFallbackPersonality(name,troopName,joinFact,fullName,scene,history),
+                    NpcPersonaTextRules.BuildFallbackBackground(name,troopName,joinFact,fullName,scene,history));
+            prof.SchemaVersion = Math.Max(prof.SchemaVersion, 3);
 			_persona.SaveNpcPersonaProfile(hero, prof);
 		}
                 skillsTask = GeneratePromotedNonHeroCompanionSkillsAsync(hero, name, troopName, culture, equipment, work.Reservation, runtimeGeneration);
@@ -147,15 +133,15 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
 	internal async Task GeneratePromotedNonHeroCompanionSkillsAsync(Hero hero, string personalName, string originalTroopName, string cultureName, string equipmentSummary, NpcPersonaGenerationOwner.Lease lease, long runtimeGeneration)
     {
         Task<ApiCallResult> request = null;
-        string skillSource = null, personality = null, background = null;
+        string skillSource = null, description = null;
         try
         {
             bool captured = await _dispatch(runtimeGeneration, () =>
             {
                 if (!_reservations.IsCurrent(lease) || !ReferenceEquals(_findHero(lease.Id), hero)) return false;
                 skillSource = _captureSkills(hero);
-			_persona.GetNpcPersonaStrings(hero, out personality, out background);
-			NpcPersonaPrompt skillPrompt = NpcPersonaTextRules.BuildSkills(personalName,originalTroopName,cultureName,equipmentSummary,skillSource,personality,background);
+			description = _persona.GetNpcPersonaDescription(hero);
+			NpcPersonaPrompt skillPrompt = NpcPersonaTextRules.BuildSkills(personalName,originalTroopName,cultureName,equipmentSummary,skillSource,description);
                 request = ConfiguredChatApplicationAdapter.CallAuxiliaryGatewayDetailed(skillPrompt.System, skillPrompt.User, "PromotedCompanionSkills", 0, forceThinkingDisabled: false);
                 return true;
             }).ConfigureAwait(false);
@@ -164,10 +150,9 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
             await _dispatch(runtimeGeneration, () =>
             {
                 if (!_reservations.IsCurrent(lease) || !ReferenceEquals(_findHero(lease.Id), hero)) return false;
-                _persona.GetNpcPersonaStrings(hero, out string currentPersonality, out string currentBackground);
+                string currentDescription = _persona.GetNpcPersonaDescription(hero);
                 if (!string.Equals(skillSource, _captureSkills(hero), StringComparison.Ordinal)
-                    || !string.Equals(personality, currentPersonality, StringComparison.Ordinal)
-                    || !string.Equals(background, currentBackground, StringComparison.Ordinal)) return false;
+                    || !string.Equals(description, currentDescription, StringComparison.Ordinal)) return false;
 			string resp = apiCallResult.Content ?? "";
 			if (!apiCallResult.Success || !_applySkills(hero, resp))
 			{

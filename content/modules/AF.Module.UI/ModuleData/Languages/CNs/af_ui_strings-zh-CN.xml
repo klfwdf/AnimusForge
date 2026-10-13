@@ -31,15 +31,15 @@
   <string id="AF_UI_PersonaGeneration_MissingNpc" text="找不到要重新生成人设的 NPC。" />
   <string id="AF_UI_PersonaGeneration_MissingHeroId" text="该 NPC 没有有效的 HeroId，无法重新生成人设。" />
   <string id="AF_UI_PersonaGeneration_RecentFailure" text="该 NPC 的上次生成请求刚刚失败，请稍后再试。" />
-  <string id="AF_UI_PersonaGeneration_AlreadyGenerating" text="该 NPC 的个性与背景正在生成，请等待当前请求完成后再试。" />
+  <string id="AF_UI_PersonaGeneration_AlreadyGenerating" text="该 NPC 的人物设定正在生成，请等待当前请求完成后再试。" />
   <string id="AF_UI_PersonaGeneration_InvalidatedNotSaved" text="请求已失效，未保存新的人设。" />
   <string id="AF_UI_PersonaGeneration_InvalidatedNotGenerated" text="请求已因数据清理或人物变更失效，未生成新的人设。" />
-  <string id="AF_UI_PersonaGeneration_ChangedDuringGeneration" text="生成期间人设已被修改，未覆盖最新的个性与历史背景。请确认后重新生成。" />
+  <string id="AF_UI_PersonaGeneration_ChangedDuringGeneration" text="生成期间人设已被修改，未覆盖最新的人物设定。请确认后重新生成。" />
   <string id="AF_UI_PersonaGeneration_CleanupInvalidatedNotSaved" text="请求已因数据清理或人物变更失效，未保存新的人设。" />
-  <string id="AF_UI_PersonaGeneration_Progress" text="正在生成{NAME}的个性与背景，请稍等。生成完成后会继续回复你的上一句话。" />
-  <string id="AF_UI_PersonaGeneration_ReadinessFailed" text="{NAME}的个性与背景暂时生成失败，请稍后再试。" />
-  <string id="AF_UI_PersonaFailure_NpcParse" text="NPC 个性与背景模型回复解析失败，未保存人设。" />
-  <string id="AF_UI_PersonaFailure_NpcGenerate" text="NPC 个性与背景生成失败。" />
+  <string id="AF_UI_PersonaGeneration_Progress" text="正在生成{NAME}的人物设定，请稍等。生成完成后会继续回复你的上一句话。" />
+  <string id="AF_UI_PersonaGeneration_ReadinessFailed" text="{NAME}的人物设定暂时生成失败，请稍后再试。" />
+  <string id="AF_UI_PersonaFailure_NpcParse" text="NPC 人物设定模型回复解析失败，未保存人设。" />
+  <string id="AF_UI_PersonaFailure_NpcGenerate" text="NPC 人物设定生成失败。" />
   <string id="AF_UI_PersonaFailure_PromotedParse" text="升格同伴人设模型回复解析失败，将使用本地后备人设。" />
   <string id="AF_UI_PersonaFailure_PromotedGenerate" text="升格同伴人设生成失败，将使用本地后备人设。" />
   <string id="AF_UI_PersonaFailure_SkillsParse" text="升格同伴技能模型回复解析失败，将保留兵种模板技能。" />
@@ -479,9 +479,9 @@
   <string id="AF_MCM_Dev_Trace" text="【开发者】开启全代码截获" />
   <string id="AF_MCM_Dev_Trace_Hint" text="⚠️ 极其硬核的调试功能！\n开启后将截获所有 UI 点击、状态切换和底层代码堆栈(Trace)。\n日志量极大，仅供开发者排查问题使用。普通玩家请勿开启！" />
   <string id="AF_MCM_Dev_Data" text="【开发者】启用数据管理（对话历史/赊账/个性/玩家履历）" />
-  <string id="AF_MCM_Dev_Data_Hint" text="开启后，城镇主菜单中会出现【开发】数据管理入口，用于查看和修改任意 NPC 的历史对话记录、赊账/欠款、个性背景等数据；角色(C)中的玩家知名度/履历弹窗也会开放玩家履历编辑。" />
-  <string id="AF_MCM_Dev_AdultPersona" text="新成年人物自动生成个性与背景" />
-  <string id="AF_MCM_Dev_AdultPersona_Hint" text="开启后，当英雄子女成年时，自动使用前处理API为其生成个性与历史背景。已有个性或背景不会被覆盖。" />
+  <string id="AF_MCM_Dev_Data_Hint" text="开启后，城镇主菜单中会出现【开发】数据管理入口，用于查看和修改任意 NPC 的历史对话记录、赊账/欠款、人物设定等数据；角色(C)中的玩家知名度/履历弹窗也会开放玩家履历编辑。" />
+  <string id="AF_MCM_Dev_AdultPersona" text="新成年人物自动生成人物设定" />
+  <string id="AF_MCM_Dev_AdultPersona_Hint" text="开启后，当英雄子女成年时，自动使用前处理 API 生成其人物设定。已有正文不会被覆盖。" />
   <string id="AF_MCM_Dev_ModLogic" text="【日志】写入 Mod_Logic.txt" />
   <string id="AF_MCM_Dev_ModLogic_Hint" text="总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。" />
   <string id="AF_MCM_Dev_Verbose" text="【日志】写入详细调试日志" />
@@ -1060,10 +1060,10 @@
 日志量极大，仅供开发者排查问题使用。普通玩家请勿开启！" />
   <string id="AF_TERMINAL_UI_EnableDeepTrace_Group" text="4. 开发者选项" />
   <string id="AF_TERMINAL_UI_EnableDevEditHistory_Title" text="【开发者】启用数据管理（对话历史/赊账/个性/玩家履历）" />
-  <string id="AF_TERMINAL_UI_EnableDevEditHistory_Hint" text="开启后，城镇主菜单中会出现【开发】数据管理入口，用于查看和修改任意 NPC 的历史对话记录、赊账/欠款、个性背景等数据；角色(C)中的玩家知名度/履历弹窗也会开放玩家履历编辑。" />
+  <string id="AF_TERMINAL_UI_EnableDevEditHistory_Hint" text="开启后，城镇主菜单中会出现【开发】数据管理入口，用于查看和修改任意 NPC 的历史对话记录、赊账/欠款、人物设定等数据；角色(C)中的玩家知名度/履历弹窗也会开放玩家履历编辑。" />
   <string id="AF_TERMINAL_UI_EnableDevEditHistory_Group" text="4. 开发者选项" />
-  <string id="AF_TERMINAL_UI_EnableAdultHeroPersonaAutoGeneration_Title" text="新成年人物自动生成个性与背景" />
-  <string id="AF_TERMINAL_UI_EnableAdultHeroPersonaAutoGeneration_Hint" text="开启后，当英雄子女成年时，自动使用前处理API为其生成个性与历史背景。已有个性或背景不会被覆盖。" />
+  <string id="AF_TERMINAL_UI_EnableAdultHeroPersonaAutoGeneration_Title" text="新成年人物自动生成人物设定" />
+  <string id="AF_TERMINAL_UI_EnableAdultHeroPersonaAutoGeneration_Hint" text="开启后，当英雄子女成年时，自动使用前处理 API 生成其人物设定。已有正文不会被覆盖。" />
   <string id="AF_TERMINAL_UI_EnableAdultHeroPersonaAutoGeneration_Group" text="4. 开发者选项" />
   <string id="AF_TERMINAL_UI_EnableModLogicLog_Title" text="【日志】写入 Mod_Logic.txt" />
   <string id="AF_TERMINAL_UI_EnableModLogicLog_Hint" text="总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。" />
@@ -1165,6 +1165,9 @@
   <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Title" text="自动发布快报" />
   <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Hint" text="关闭后停止新的快报生成，仍记录近期事件供 NPC 知情。与周报自动生成独立。" />
   <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Group" text="周报／快报//快报" />
+  <string id="AF_TERMINAL_UI_WorldBulletinReadPlayerHistory_Title" text="快报读取玩家对话历史" />
+  <string id="AF_TERMINAL_UI_WorldBulletinReadPlayerHistory_Hint" text="默认关闭。开启后，快报可读取玩家对话记忆中的公开摘要候选；有候选时会增加一次公开性审核请求。关闭后不读取对话历史、不发起该审核；世界书和游戏事件不受影响。下次生成生效，已发出的请求不撤回。" />
+  <string id="AF_TERMINAL_UI_WorldBulletinReadPlayerHistory_Group" text="周报／快报//快报" />
   <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Title" text="清空 GCCZ_Debug.log" />
   <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Hint" text="只清空当前 GCCZ_Debug.log，不删除上一份轮转日志。" />
   <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Group" text="战后与围城限制 (Siege &amp; NPC Limits)" />
@@ -1237,7 +1240,7 @@
   <string id="AF_TERMINAL_UI_EditMemoryOverviewCompressionWritingRequirements_Title" text="记忆大压缩写作要求" />
   <string id="AF_TERMINAL_UI_EditMemoryOverviewCompressionWritingRequirements_Hint" text="修改记忆大总结的文风和组织方式。输出标签、事实边界和长度范围不可覆盖。" />
   <string id="AF_TERMINAL_UI_EditMemoryOverviewCompressionWritingRequirements_Group" text="9. 提示词扩展" />
-  <string id="AF_TERMINAL_UI_EditNpcPersonaGenerationRequirements_Title" text="NPC个性背景生成要求文案" />
+  <string id="AF_TERMINAL_UI_EditNpcPersonaGenerationRequirements_Title" text="NPC人物设定生成要求文案" />
   <string id="AF_TERMINAL_UI_EditNpcPersonaGenerationRequirements_Hint" text="编辑普通 Hero 与升格同伴共用的完整写作要求。默认文案来自模组内容，保存后使用你的文案替换；留空保存表示不注入写作要求，仅保留 JSON 协议与事实约束。" />
   <string id="AF_TERMINAL_UI_EditNpcPersonaGenerationRequirements_Group" text="9. 提示词扩展" />
   <string id="AF_TERMINAL_UI_EditPlayerCustomPromptRule_Title" text="玩家自定义规则文案" />
@@ -1760,38 +1763,38 @@
   <string id="AF_UI_KingdomStability_Cancel" text="取消" />
   <string id="AF_UI_KingdomStability_ForceResultTitle" text="强制叛乱结果 - {KINGDOM}" />
   <string id="AF_UI_Persona_MenuPrompt" text="请选择操作：" />
-  <string id="AF_UI_Persona_PersonalityLabel" text="个性：" />
+  <string id="AF_UI_Persona_PersonalityLabel" text="人物设定：" />
   <string id="AF_UI_Persona_Set" text="已设置" />
   <string id="AF_UI_Persona_Unset" text="未设置" />
-  <string id="AF_UI_Persona_BackgroundLabel" text="历史背景：" />
+  <string id="AF_UI_Persona_BackgroundLabel" text="人物设定：" />
   <string id="AF_UI_Persona_VoiceCurrent" text="当前音色 ID：" />
   <string id="AF_UI_Persona_VoiceUnsetAuto" text="未设置（由 VoiceMapping 自动分配）" />
-  <string id="AF_UI_Persona_SetPersonality" text="设置/修改个性" />
-  <string id="AF_UI_Persona_SetBackground" text="设置/修改历史背景" />
-  <string id="AF_UI_Persona_RerollPersona" text="重新生成个性与背景（LLM）" />
+  <string id="AF_UI_Persona_SetPersonality" text="设置/修改人物设定" />
+  <string id="AF_UI_Persona_SetBackground" text="设置/修改人物设定" />
+  <string id="AF_UI_Persona_RerollPersona" text="重新生成人物设定（LLM）" />
   <string id="AF_UI_Persona_SetVoice" text="设置/修改音色 ID" />
-  <string id="AF_UI_Persona_ClearPersona" text="清空个性、历史背景和音色 ID" />
+  <string id="AF_UI_Persona_ClearPersona" text="清除人物设定、结构化信息和声音 ID" />
   <string id="AF_UI_Persona_Back" text="返回" />
-  <string id="AF_UI_Persona_MenuTitle" text="编辑个性/历史背景 - {NAME}" />
+  <string id="AF_UI_Persona_MenuTitle" text="编辑人物设定 - {NAME}" />
   <string id="AF_UI_Persona_Execute" text="执行" />
-  <string id="AF_UI_Persona_Cleared" text="已清空该 NPC 的个性、历史背景和音色 ID。" />
-  <string id="AF_UI_Persona_RerollConfirmBody" text="辅助 API 将为该 Hero 生成新的个性和历史背景。" />
+  <string id="AF_UI_Persona_Cleared" text="已清除该 NPC 的人物设定、结构化信息和声音 ID。" />
+  <string id="AF_UI_Persona_RerollConfirmBody" text="辅助 API 将为该 Hero 生成新的人物设定。" />
   <string id="AF_UI_Persona_SetWillOverwrite" text="已设置，将被覆盖" />
   <string id="AF_UI_Persona_RerollVoiceKept" text="音色 ID 不会改变。生成失败时将保留现有数据。" />
-  <string id="AF_UI_Persona_RerollConfirmTitle" text="确认重新生成个性/背景 - {NAME}" />
+  <string id="AF_UI_Persona_RerollConfirmTitle" text="确认重新生成人物设定 - {NAME}" />
   <string id="AF_UI_Persona_ConfirmGenerate" text="生成" />
   <string id="AF_UI_Persona_Cancel" text="取消" />
-  <string id="AF_UI_Persona_RerollingTitle" text="正在重新生成个性与背景" />
+  <string id="AF_UI_Persona_RerollingTitle" text="正在重新生成人物设定" />
   <string id="AF_UI_Persona_RerollingBody" text="正在为 {NAME} 生成人设。\n\n请稍候；只有生成并解析成功后才会覆盖现有数据。" />
-  <string id="AF_UI_Persona_RerollSucceededSuffix" text="的个性与历史背景已重新生成；音色 ID 保持不变。" />
-  <string id="AF_UI_Persona_RerollFailedTitle" text="重新生成个性与背景失败" />
-  <string id="AF_UI_Persona_RerollFailedBody" text="本次生成结果未保存；现有个性、历史背景和音色 ID 已保留。\n\n{DETAIL}" />
+  <string id="AF_UI_Persona_RerollSucceededSuffix" text="的人物设定已重新生成；音色 ID 保持不变。" />
+  <string id="AF_UI_Persona_RerollFailedTitle" text="重新生成人物设定失败" />
+  <string id="AF_UI_Persona_RerollFailedBody" text="本次生成结果未保存；现有人物设定、结构化信息和音色 ID 已保留。\n\n{DETAIL}" />
   <string id="AF_UI_Persona_Close" text="关闭" />
   <string id="AF_UI_Persona_ReturnEditor" text="返回编辑器" />
-  <string id="AF_UI_Persona_EditPersonalityTitle" text="设置个性 - {NAME}" />
-  <string id="AF_UI_Persona_PersonalityLoaded" text="当前个性已载入下方输入框。" />
-  <string id="AF_UI_Persona_PersonalityHint" text="请输入新的个性描述（留空则清空）。" />
-  <string id="AF_UI_Persona_PersonalityUpdated" text="个性已更新。" />
+  <string id="AF_UI_Persona_EditPersonalityTitle" text="设置人物设定 - {NAME}" />
+  <string id="AF_UI_Persona_PersonalityLoaded" text="当前人物设定已载入下方输入框。" />
+  <string id="AF_UI_Persona_PersonalityHint" text="请输入新的人物设定描述（留空则清空）。" />
+  <string id="AF_UI_Persona_PersonalityUpdated" text="人物设定已更新。" />
   <string id="AF_UI_Persona_VoiceUnsetAutoParens" text="（未设置 - 由 VoiceMapping 自动分配）" />
   <string id="AF_UI_Persona_VoiceInputHint" text="请输入新的音色 ID（留空则清空，并使用 VoiceMapping 自动分配）：" />
   <string id="AF_UI_Persona_VoicePlatformHint" text="提示：音色 ID 取决于所使用的 TTS 平台。" />
@@ -1801,10 +1804,10 @@
   <string id="AF_UI_Persona_Save" text="保存" />
   <string id="AF_UI_Persona_VoiceCleared" text="音色 ID 已清空（将使用 VoiceMapping 自动分配）。" />
   <string id="AF_UI_Persona_VoiceUpdatedPrefix" text="音色 ID 已更新为：" />
-  <string id="AF_UI_Persona_EditBackgroundTitle" text="设置历史背景 - {NAME}" />
-  <string id="AF_UI_Persona_BackgroundLoaded" text="当前历史背景已载入下方输入框。" />
-  <string id="AF_UI_Persona_BackgroundHint" text="请输入新的历史背景描述（留空则清空）。" />
-  <string id="AF_UI_Persona_BackgroundUpdated" text="历史背景已更新。" />
+  <string id="AF_UI_Persona_EditBackgroundTitle" text="设置人物设定 - {NAME}" />
+  <string id="AF_UI_Persona_BackgroundLoaded" text="当前人物设定已载入下方输入框。" />
+  <string id="AF_UI_Persona_BackgroundHint" text="请输入新的人物设定描述（留空则清空）。" />
+  <string id="AF_UI_Persona_BackgroundUpdated" text="人物设定已更新。" />
   <string id="AF_UI_Persona_KnowledgeExportSingle" text="导出（单个知识条目，从列表选择）" />
   <string id="AF_UI_Persona_KnowledgeImportSingle" text="导入（单个知识条目，从文件夹选择）" />
   <string id="AF_UI_Persona_KnowledgeExportAll" text="全量导出（Knowledge，选择文件夹）" />
@@ -1869,8 +1872,8 @@
   <string id="AF_UI_Persona_ManualHeroIdBody" text="请输入 HeroId（例如：lord_... / wanderer_...）。\n\n说明：这里不会创建新的游戏角色，只会把导入/导出数据写入该 HeroId 对应的存档数据；只有当游戏中存在或将来出现同 ID 的 Hero 时，这些数据才会被使用。" />
   <string id="AF_UI_Persona_Confirm" text="确定" />
   <string id="AF_UI_Persona_NpcMissingId" text="该 NPC 缺少编号，无法导入导出。" />
-  <string id="AF_UI_Persona_SingleExportPersona" text="导出（个性/背景，选择文件夹）" />
-  <string id="AF_UI_Persona_SingleImportPersona" text="导入（个性/背景，选择文件夹）" />
+  <string id="AF_UI_Persona_SingleExportPersona" text="导出（人物设定，选择文件夹）" />
+  <string id="AF_UI_Persona_SingleImportPersona" text="导入（人物设定，选择文件夹）" />
   <string id="AF_UI_Persona_SingleExportHistory" text="导出（压缩记忆，选择文件夹）" />
   <string id="AF_UI_Persona_SingleImportHistory" text="导入（压缩记忆，选择文件夹）" />
   <string id="AF_UI_Persona_SingleExportDebt" text="导出（欠款，选择文件夹）" />
@@ -1878,8 +1881,8 @@
   <string id="AF_UI_Persona_SwitchNpc" text="切换 NPC" />
   <string id="AF_UI_Persona_SingleNpcOpsTitle" text="单个 HeroNPC 导入/导出 - {NAME} (ID={ID})" />
   <string id="AF_UI_Persona_SingleNpcPrefix" text="单个 HeroNPC - {NAME}" />
-  <string id="AF_UI_Persona_ExportPersonaSuffix" text="导出（个性/背景）" />
-  <string id="AF_UI_Persona_ImportPersonaSuffix" text="导入（个性/背景）" />
+  <string id="AF_UI_Persona_ExportPersonaSuffix" text="导出（人物设定）" />
+  <string id="AF_UI_Persona_ImportPersonaSuffix" text="导入（人物设定）" />
   <string id="AF_UI_Persona_ExportHistorySuffix" text="导出（压缩记忆）" />
   <string id="AF_UI_Persona_ImportHistorySuffix" text="导入（压缩记忆）" />
   <string id="AF_UI_Persona_ExportDebtSuffix" text="导出（欠款）" />
@@ -2222,7 +2225,7 @@
   <string id="AF_UI_Developer_Action_records" text="行动记录 - " />
   <string id="AF_UI_Developer_Action_records_are_stored_per_NPC" text=" - 行动记录已按单个 NPC 存储" />
   <string id="AF_UI_Developer_AllImportDuplicates" text="导入数据与当前游戏存在重复。
-个性/背景：{PERSONA}
+人物设定：{PERSONA}
 对话历史：{HISTORY}
 欠款：{DEBT}
 未命名 NPC：{UNNAMED}
@@ -2252,7 +2255,7 @@ Knowledge：{KNOWLEDGE}
   <string id="AF_UI_Developer_Clear" text="清理" />
   <string id="AF_UI_Developer_ClearCompleted" text="已清理当前存档中的 AnimusForge 可清理数据；国家战略与性格已恢复默认基线。" />
   <string id="AF_UI_Developer_ClearConfirm_Body" text="这会清空当前存档中的 AnimusForge 数据，包括：
-HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命名 NPC 个性、Knowledge、事件记录、王国稳定度、国家战略/性格玩家覆盖、声音映射、耐心状态等。
+HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命名 NPC 个性、Knowledge、事件记录、王国稳定度、国家战略/性格玩家覆盖、声音映射、耐心状态等。
 
 不会删除 PlayerExports 下已经导出的备份文件，也不会回滚已经真实发生的原版世界状态变化。
 
@@ -2284,11 +2287,11 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_Duplicates_detected_import_all_data" text="检测到重复 - 全部导入" />
   <string id="AF_UI_Developer_Edit_HeroNPC_Title" text="编辑 HeroNPC - {NPC}" />
   <string id="AF_UI_Developer_Edit_HeroNPC_choose_an_NPC" text="编辑 HeroNPC - 选择 NPC" />
-  <string id="AF_UI_Developer_Edit_HeroNPC_compressed_memory_debt_personality_" text="编辑 HeroNPC（压缩记忆/赊账/个性背景）…" />
+  <string id="AF_UI_Developer_Edit_HeroNPC_compressed_memory_debt_personality_" text="编辑 HeroNPC（压缩记忆/赊账/人物设定）…" />
   <string id="AF_UI_Developer_Edit_debt" text="编辑赊账/欠款" />
   <string id="AF_UI_Developer_Edit_debt_title" text="Edit debt - {NPC}" />
-  <string id="AF_UI_Developer_Edit_persona" text="编辑角色个性/历史背景" />
-  <string id="AF_UI_Developer_Edit_personality_background" text="编辑角色个性/历史背景" />
+  <string id="AF_UI_Developer_Edit_persona" text="编辑人物设定" />
+  <string id="AF_UI_Developer_Edit_personality_background" text="编辑人物设定" />
   <string id="AF_UI_Developer_Enter" text="进入" />
   <string id="AF_UI_Developer_Enter_a_folder_name_manually" text="输入 a 文件夹 name manually..." />
   <string id="AF_UI_Developer_Enter_a_folder_name_or_path_manually" text="输入 a 文件夹 name or 路径 manually..." />
@@ -2300,7 +2303,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_Enter_package_folder_path" text="输入 资料包 文件夹/路径" />
   <string id="AF_UI_Developer_Enter_the_complete_read_only_package_folder_path" text="输入 the complete read-only 资料包 文件夹 路径." />
   <string id="AF_UI_Developer_Export_all_HeroNPC_data_choose_a_folder" text="导出 all HeroNPC 数据 - 选择文件夹" />
-  <string id="AF_UI_Developer_Export_all_HeroNPC_data_compressed_memory_debt_p" text="导出 all HeroNPC 数据 (compressed memory, debt, 个性/背景)" />
+  <string id="AF_UI_Developer_Export_all_HeroNPC_data_compressed_memory_debt_p" text="导出所有 HeroNPC 数据（压缩记忆、赊账、人物设定）" />
   <string id="AF_UI_Developer_Export_all_data_choose_a_folder" text="导出全部数据 - 选择文件夹" />
   <string id="AF_UI_Developer_Export_completed" text="导出完成：" />
   <string id="AF_UI_Developer_Export_failed" text="导出失败：" />
@@ -2310,7 +2313,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
 是否覆盖导出？" />
   <string id="AF_UI_Developer_Gold_debt_updated" text="已更新金币欠款为 {GOLD}。" />
   <string id="AF_UI_Developer_HeroImportDuplicates" text="导入数据与当前游戏存在重复。
-个性/背景：{PERSONA}
+人物设定：{PERSONA}
 压缩记忆：{MEMORY}
 欠款：{DEBT}
 请选择处理方式：" />
@@ -2319,7 +2322,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_HeroSelection_Empty" text="没有匹配结果，可以重新搜索。" />
   <string id="AF_UI_Developer_HeroSelection_Query" text="搜索关键词：{QUERY}" />
   <string id="AF_UI_Developer_Import_all_HeroNPC_data_choose_a_folder" text="导入 all HeroNPC 数据 - 选择文件夹" />
-  <string id="AF_UI_Developer_Import_all_HeroNPC_data_compressed_memory_debt_p" text="导入 all HeroNPC 数据 (compressed memory, debt, 个性/背景)" />
+  <string id="AF_UI_Developer_Import_all_HeroNPC_data_compressed_memory_debt_p" text="导入所有 HeroNPC 数据（压缩记忆、赊账、人物设定）" />
   <string id="AF_UI_Developer_Import_all_data_choose_a_folder" text="导入全部数据 - 选择文件夹" />
   <string id="AF_UI_Developer_Import_completed" text="导入 完成: " />
   <string id="AF_UI_Developer_Import_completed_duplicates_path" text="导入完成（已跳过重复）：{PATH}" />
@@ -2350,7 +2353,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_Reload_DefaultKingdoms" text="• 未出现在资料包的当前王国 {COUNT} 个，将恢复为其当前默认资料（不会因此自动请求王国 LLM）" />
   <string id="AF_UI_Developer_Reload_DuplicateKeywords" text="• 其中 {COUNT} 个重复触发词只保留在原条目，避免拆分后的知识争抢同一关键词" />
   <string id="AF_UI_Developer_Reload_DuplicateKnowledgeIds" text="• 资料包内 {COUNT} 个同 ID 知识条目将按文件名生成稳定 ID（不修改资料包文件）" />
-  <string id="AF_UI_Developer_Reload_KeepNpc" text="• NPC 个性、背景、记忆和外貌" />
+  <string id="AF_UI_Developer_Reload_KeepNpc" text="• NPC 人物设定、记忆和外貌" />
   <string id="AF_UI_Developer_Reload_KeepPlayer" text="• 主角外貌、背景、主角专用知识和直接声音 ID" />
   <string id="AF_UI_Developer_Reload_KeepSettings" text="• 动态事件记录、API 配置、LLM 提示词及其他设置" />
   <string id="AF_UI_Developer_Reload_KingdomProfiles" text="• 王国性格与长期战略 {COUNT} 个王国" />
@@ -2367,7 +2370,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_Summary_Debt" text="Debt: {COUNT} 人" />
   <string id="AF_UI_Developer_Summary_Dialogue" text="Old dialogue history: {COUNT} 人" />
   <string id="AF_UI_Developer_Summary_Events" text="Event 记录: {COUNT}" />
-  <string id="AF_UI_Developer_Summary_HeroPersona" text="Hero 个性/背景: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_HeroPersona" text="Hero 人物设定: {COUNT}" />
   <string id="AF_UI_Developer_Summary_KingdomProfiles" text="Kingdom strategy/personality: {COUNT} ({OVERRIDES} player overrides)" />
   <string id="AF_UI_Developer_Summary_Knowledge" text="Knowledge: {COUNT}" />
   <string id="AF_UI_Developer_Summary_Memory" text="Compressed memory: {COUNT} 人" />
@@ -2472,7 +2475,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_ImportExport_KeyEmpty" text="导出失败：Key 为空。" />
   <string id="AF_UI_ImportExport_EntryNotFound" text="导出失败：找不到该条目：{VALUE}" />
   <string id="AF_UI_ImportExport_NpcExportMissing" text="导入失败：该 NPC 没有对应的导出文件。" />
-  <string id="AF_UI_ImportExport_NpcFileMismatch" text="导入失败：个性/背景文件与当前 NPC 不匹配。" />
+  <string id="AF_UI_ImportExport_NpcFileMismatch" text="导入失败：人物设定文件与当前 NPC 不匹配。" />
   <string id="AF_UI_ImportExport_JsonParseFailed" text="导入失败：JSON 解析失败。" />
   <string id="AF_UI_ImportExport_WriteFailed" text="导入失败：写入规则失败。" />
   <string id="AF_UI_ImportExport_IdMismatch" text="导入失败：文件中的 Id 不匹配（文件 Id={ID}）。" />
@@ -2510,8 +2513,8 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_ImportExport_KnowledgeDuplicateTitle" text="检测到重复 - Knowledge" />
   <string id="AF_UI_ImportExport_KnowledgeDuplicateBody" text="检测到相同 RuleId：{ID}\n请选择处理方式：" />
   <string id="AF_UI_ImportExport_KnowledgeDuplicateMany" text="导入的 Knowledge 规则与当前游戏存在重复 RuleId。\n重复：{COUNT} / 总计：{TOTAL}\n请选择处理方式：" />
-  <string id="AF_UI_ImportExport_PersonaDuplicateTitle" text="检测到重复 - 个性/背景" />
-  <string id="AF_UI_ImportExport_PersonaDuplicateBody" text="检测到该 NPC 已存在个性/背景：{ID}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateTitle" text="检测到重复 - 人物设定" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateBody" text="检测到该 NPC 已存在人物设定：{ID}\n请选择处理方式：" />
   <string id="AF_UI_ImportExport_PersonaDuplicateMany" text="导入数据与当前游戏存在重复 HeroId。\n重复：{COUNT} / 总计：{TOTAL}\n请选择处理方式：" />
   <string id="AF_UI_ImportExport_DebtDuplicateTitle" text="检测到重复 - 欠款" />
   <string id="AF_UI_ImportExport_DebtDuplicateBody" text="检测到该 NPC 已存在欠款记录：{ID}\n请选择处理方式：" />
@@ -2536,7 +2539,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Editor_Weekly_Title" text="编辑周报写作要求" />
   <string id="AF_MCM_Editor_Weekly_Description" text="这里编辑周报 system prompt 中完整的写作要求段。" />
   <string id="AF_MCM_Editor_Weekly_Hint" text="默认文本内置于代码中，可修改或清空。输出格式、REPORT_BLOCK、TAGS 和稳定度标签仍由内置规则控制。" />
-  <string id="AF_MCM_Editor_Persona_Title" text="编辑 NPC 个性背景生成要求" />
+  <string id="AF_MCM_Editor_Persona_Title" text="编辑 NPC 人物设定生成要求" />
   <string id="AF_MCM_Editor_Persona_Description" text="普通 Hero 与升格同伴共用此处的完整写作要求；内置文本只保留生成任务、JSON 协议和事实约束。" />
   <string id="AF_MCM_Editor_Persona_Hint" text="可修改篇幅、文风、素材取舍和重生去重要求；留空保存会移除额外要求。" />
   <string id="AF_MCM_Editor_DailyMemory_Title" text="编辑日结记忆压缩要求" />
@@ -2655,17 +2658,17 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_News_Saved" text="快报写作要求已保存，下次请求生效。" />
   <string id="AF_UI_Developer_NoData" text="（无数据）" />
   <string id="AF_UI_Developer_ChooseOperation" text="请选择要执行的操作。" />
-  <string id="AF_UI_Persona_PersonalitySection" text="个性" />
-  <string id="AF_UI_Persona_BackgroundSection" text="历史背景" />
+  <string id="AF_UI_Persona_PersonalitySection" text="人物设定" />
+  <string id="AF_UI_Persona_BackgroundSection" text="人物设定" />
   <string id="AF_UI_Persona_ExpandedSection" text="扩展人设" />
   <string id="AF_UI_Persona_EditNpcButton" text="编辑NPC" />
-  <string id="AF_UI_Persona_RerollButton" text="重生个性背景" />
+  <string id="AF_UI_Persona_RerollButton" text="重生人物设定" />
   <string id="AF_UI_Courier_DirectContactBlocked" text="该角色正在与你交谈、与你同处当前场景或同一定居点，无需通过信使写信。" />
   <string id="AF_UI_Courier_AlreadyActive" text="已经有一支信使队正在处理发往此人的信件。" />
-  <string id="AF_UI_Persona_RerollUnavailable" text="当前无法为该 Hero 重新生成个性与背景。" />
-  <string id="AF_UI_Persona_RerollOpenFailed" text="打开重生个性背景功能失败。" />
+  <string id="AF_UI_Persona_RerollUnavailable" text="当前无法为该 Hero 重新生成人物设定。" />
+  <string id="AF_UI_Persona_RerollOpenFailed" text="打开重生人物设定功能失败。" />
   <string id="AF_UI_Persona_NpcFallback" text="该NPC" />
-  <string id="AF_UI_Persona_GeneratingHint" text="正在生成{NAME}的个性与背景，请稍等......" />
+  <string id="AF_UI_Persona_GeneratingHint" text="正在生成{NAME}的人物设定，请稍等......" />
   <string id="AF_UI_Courier_Button" text="信使与邮递" />
   <string id="AF_UI_MemoryFailure_Acknowledge" text="知道了" />
   <string id="AF_MCM_Editor_PlayerPrompt_Saved" text="[提示词扩展] 玩家自定义规则文案已保存。" />
@@ -2677,9 +2680,9 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Editor_WeeklyRequirements_Saved" text="[提示词扩展] 周报写作要求文案已保存。" />
   <string id="AF_MCM_Editor_WeeklyRequirements_SessionOnly" text="[提示词扩展] 周报写作要求文案已写入本局设置，但本地持久化文件写入失败，请查看日志。" />
   <string id="AF_MCM_Editor_WeeklyRequirements_SaveFailed" text="[提示词扩展] 保存周报写作要求失败，请在 MCM 中再点一次保存：" />
-  <string id="AF_MCM_Editor_PersonaRequirements_Saved" text="[提示词扩展] NPC个性背景生成要求已保存。" />
-  <string id="AF_MCM_Editor_PersonaRequirements_SessionOnly" text="[提示词扩展] NPC个性背景生成要求已写入本局设置，但本地持久化文件写入失败，请查看日志。" />
-  <string id="AF_MCM_Editor_PersonaRequirements_SaveFailed" text="[提示词扩展] 保存NPC个性背景生成要求失败，请在 MCM 中再点一次保存：" />
+  <string id="AF_MCM_Editor_PersonaRequirements_Saved" text="[提示词扩展] NPC人物设定生成要求已保存。" />
+  <string id="AF_MCM_Editor_PersonaRequirements_SessionOnly" text="[提示词扩展] NPC人物设定生成要求已写入本局设置，但本地持久化文件写入失败，请查看日志。" />
+  <string id="AF_MCM_Editor_PersonaRequirements_SaveFailed" text="[提示词扩展] 保存NPC人物设定生成要求失败，请在 MCM 中再点一次保存：" />
   <string id="AF_MCM_Editor_DailyCompression_Name" text="日结压缩写作要求" />
   <string id="AF_MCM_Editor_MemoryOverviewCompression_Name" text="记忆大压缩写作要求" />
   <string id="AF_MCM_Editor_MajorActionCompression_Name" text="重大履历压缩写作要求" />
@@ -3180,7 +3183,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_CONV_UI_Courier_ReplyFailedDetail" text="信使回信正文生成失败：&#10;&#10;{DETAIL}" />
   <string id="AF_CONV_UI_Courier_LetterFailedDetail" text="信使来信正文生成失败：&#10;&#10;{DETAIL}" />
   <string id="AF_UI_Loyalty_KingdomStability" text="王国稳定度与王室直辖地" />
-  <string id="AF_UI_Persona_GenerationFailedTitle" text="NPC 个性与背景生成失败" />
+  <string id="AF_UI_Persona_GenerationFailedTitle" text="NPC 人物设定生成失败" />
   <string id="AF_UI_Persona_PromotedGenerationFailedTitle" text="升格同伴人设生成失败" />
   <string id="AF_UI_Persona_PromotedSkillsFailedTitle" text="升格同伴技能生成失败" />
   <string id="AF_UI_Castle_RepairLabor" text="战俘修缮城堡" />
@@ -3423,5 +3426,20 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_TERMINAL_GROUP_DIRECTOR_RULES" text="生图导演规则" />
   <string id="AF_TERMINAL_GROUP_DIPLOMACY_SETTINGS" text="AI 外交设置" />
   <string id="AF_TERMINAL_GROUP_DIPLOMACY_PROMPTS" text="AI 外交提示词" />
+  <string id="AF_ENC_UI_CaptivityTalk" text="与看押你的领主交谈" />
+  <string id="AF_ENC_UI_CaptivityUnavailable" text="当前没有可以交谈且有处置权限的领主。" />
+  <string id="AF_ENC_UI_CaptivityOpening" text="你要求见我。有什么事？" />
+  <string id="AF_ENC_UI_CaptivityAutoOpening" text="……" />
+  <string id="AF_ENC_UI_CaptivityContinue" text="我有些事想和你谈。" />
+  <string id="AF_ENC_UI_CaptivityListen" text="我听着。" />
+  <string id="AF_ENC_UI_CaptivityLeave" text="暂时就说这些。" />
+  <string id="AF_ENC_UI_CaptivityChoose" text="你想与谁交谈？" />
+  <string id="AF_ENC_UI_CaptivitySelect" text="交谈" />
+  <string id="AF_ENC_UI_CaptivityCancel" text="取消" />
+  <string id="AF_ENC_UI_CaptivityOpenFailed" text="未能开启交谈，你的被俘状态未作更改。" />
+  <string id="AF_ENC_UI_CaptivityReleaseScheduled" text="对方同意释放你，10 秒后将结束对话并尝试办理释放。" />
+  <string id="AF_ENC_UI_CaptivityReleaseFailed" text="未能确认释放成功，请检查当前被俘状态。" />
+  <string id="AF_ENC_UI_CaptivityReleased" text="你已获释，恢复自由。" />
+  <string id="AF_ENC_UI_CaptivityActionBlocked" text="被俘期间无法执行此项行动。" />
 </strings>
 </base>

@@ -1318,7 +1318,7 @@ internal static string BuildSceneNonHeroNamingNoteForPrompt(IEnumerable<NpcDataP
 
 
 
-    internal delegate void PersonaReader(Hero hero, out string personality, out string background);
+    internal delegate string PersonaReader(Hero hero);
 
     private readonly PersonaReader _readPersona;
 
@@ -1510,7 +1510,7 @@ internal static string BuildSceneNonHeroNamingNoteForPrompt(IEnumerable<NpcDataP
 
 			{
 
-				_readPersona(targetHero, out personality, out background);
+				personality = _readPersona(targetHero);
 
 			}
 
@@ -1561,6 +1561,7 @@ internal static string BuildSceneNonHeroNamingNoteForPrompt(IEnumerable<NpcDataP
 		}
 
 		float age = npcHero?.Age ?? (isNonHero ? ResolveNativeConversationNonHeroAge(targetCharacter) : 0f);
+        string description = AnimusForge.Refactor.Runtime.NpcPersonaProfilePolicy.MergeLegacy(personality, background);
 
 		return new NpcDataPacket
 
@@ -1570,9 +1571,11 @@ internal static string BuildSceneNonHeroNamingNoteForPrompt(IEnumerable<NpcDataP
 
 			RoleDesc = string.IsNullOrWhiteSpace(role) ? AdapterPromptCaptureTexts.PcapCompat("Project_RosterNativeTarget") : role,
 
-			PersonalityDesc = (personality ?? "").Trim(),
+			PersonaDescription = description,
 
-			BackgroundDesc = (background ?? "").Trim(),
+            PersonalityDesc = description,
+
+			BackgroundDesc = "",
 
 			PersonaContext = targetHero == null ? "" : MyBehavior.GetNpcPersonaContextForExternal(targetHero),
 
@@ -4804,29 +4807,11 @@ internal static string BuildHeroStableRoleContextForExternal(RoleIntroCapturePor
 
 		npc.AgentIndex = -1;
 
-		if (string.IsNullOrWhiteSpace(npc.PersonalityDesc) || string.IsNullOrWhiteSpace(npc.BackgroundDesc))
-
-		{
-
-			ScenePersonaPreparationAdapter.BuildHeroPersonaFallback(hero, out var fallbackPersonality, out var fallbackBackground);
-
-			if (string.IsNullOrWhiteSpace(npc.PersonalityDesc))
-
-			{
-
-				npc.PersonalityDesc = fallbackPersonality ?? "";
-
-			}
-
-			if (string.IsNullOrWhiteSpace(npc.BackgroundDesc))
-
-			{
-
-				npc.BackgroundDesc = fallbackBackground ?? "";
-
-			}
-
-		}
+        if (string.IsNullOrWhiteSpace(npc.GetPersonaDescription()))
+        {
+            ScenePersonaPreparationAdapter.BuildHeroPersonaFallback(hero, out var fp, out var fb);
+            npc.SetPersonaDescription(AnimusForge.Refactor.Runtime.NpcPersonaProfilePolicy.MergeLegacy(fp, fb));
+        }
 
 		return BuildSceneSystemTopPromptIntroForSingle(ports, npc, hero, new List<NpcDataPacket> { npc });
 

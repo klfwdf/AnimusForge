@@ -16,10 +16,11 @@ assert 'epoch != Volatile.Read(ref _sceneConversationEpoch)' in consumer
 harness=(base_path:=Path(__file__).parent/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@METHOD@@',method)
 if '--mutate' in sys.argv:
  harness=harness.replace('if (!Current()) return false;', 'if (false) return false;')
+framework=sys.argv[sys.argv.index('--target-framework')+1] if '--target-framework' in sys.argv else 'net8.0'
 out=new_run_root(ROOT,'scene-compact-persona',None);dotnet=resolve_dotnet(ROOT)
 (out/'Program.cs').write_text(harness,encoding='utf-8')
 waiter=ROOT/'src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs'
-(out/'Test.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup><ItemGroup><Compile Include="'+str(waiter)+'" Link="PersonaGenerationWaiter.cs" /></ItemGroup></Project>',encoding='utf-8')
+(out/'Test.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>'+framework+'</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup><ItemGroup><Compile Include="'+str(waiter)+'" Link="PersonaGenerationWaiter.cs" /></ItemGroup></Project>',encoding='utf-8')
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Test.csproj')],cwd=out,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding='utf-8',errors='replace')
 (out/'run.log').write_text(r.stdout+r.stderr,encoding='utf-8');(out/'receipt.json').write_text(json.dumps({'source_sha256':hashlib.sha256(method.encode()).hexdigest(),'exit':r.returncode,'game_objects':'fixtures; getters assert actual game-thread ownership','production':'unchanged helper and PersonaGenerationWaiter'},indent=2),encoding='utf-8')
 print(r.stdout+r.stderr);print(out);sys.exit(r.returncode)

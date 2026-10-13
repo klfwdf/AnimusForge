@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../src/modules/AF.Module.Conversation/Proactive/NpcInitiatedOpeningRouter.cs" Link="Production/NpcInitiatedOpeningRouter.cs" />
+    <Compile Include="../../../src/AF.GameAdapter.Bannerlord/Encounter/PlayerCaptivityConversation.cs" Link="Production/PlayerCaptivityConversation.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Encounter/EncounterReleaseOwner.cs" Link="Production/EncounterReleaseOwner.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Encounter/Escort/EncounterPromptTexts.cs" Link="Production/EncounterPromptTexts.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" Link="Production/PromptComposerTexts.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Prompt/Composition/MemorySystemFactProjection.cs" Link="Production/MemorySystemFactProjection.cs" />
+    <EmbeddedResource Include="../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json" LogicalName="AnimusForge.Prompt.Compatibility.json" />
+    <Compile Include="$(CaptivityContractSource)" />
+  </ItemGroup>
+</Project>

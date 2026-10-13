@@ -1091,9 +1091,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return DiplomacyPromptTexts.Get("RulerVoicePrompt_000", "RulerPersona{name=Unknown ruler,culture=") + (kingdom?.Culture?.Name?.ToString() ?? DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown")) + DiplomacyPromptTexts.Get("RulerVoicePrompt_001", ",note=No usable character profile; do not invent personal experiences}");
 		}
-		MyBehavior.GetNpcPersonaForExternal(ruler, out string personality, out string background);
-		string compactPersonality = WorldDiplomacyTextRules.CompactPromptFact(personality, 280);
-		string compactBackground = WorldDiplomacyTextRules.CompactPromptFact(background, 420);
+		string compactPersona = WorldDiplomacyTextRules.CompactPromptFact(MyBehavior.GetNpcPersonaDescriptionForExternal(ruler), 700);
 		string compactExpandedPersona = WorldDiplomacyTextRules.CompactPromptFact(MyBehavior.GetNpcPersonaContextForExternal(ruler), 520);
 		string title = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
 			kingdom?.EncyclopediaRulerTitle?.ToString(),
@@ -1105,8 +1103,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ ",culture=" + (kingdom?.Culture?.Name?.ToString() ?? ruler.Culture?.Name?.ToString() ?? DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown"))
 			+ ",title=" + WorldDiplomacyTextRules.CompactPromptFact(title, 80)
 			+ ",traits=" + BuildRulerVoiceTraitSummary(ruler)
-			+ ",personality=" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(compactPersonality, DiplomacyPromptTexts.Get("RulerVoicePrompt_004", "No dedicated personality profile supplied"))
-			+ ",background=" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(compactBackground, DiplomacyPromptTexts.Get("RulerVoicePrompt_005", "No dedicated background profile supplied; do not invent experiences"))
+			+ ",persona=" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(compactPersona, DiplomacyPromptTexts.Get("RulerVoicePrompt_004", "No dedicated persona supplied; do not invent experiences"))
 			+ (string.IsNullOrWhiteSpace(compactExpandedPersona) ? "" : ",expanded_persona=" + compactExpandedPersona)
 			+ "}";
 	}

@@ -32,7 +32,7 @@ public partial class ShoutBehavior
             GetPlayerDisplayNameForShout = GetPlayerDisplayNameForShout,
             BuildSceneActionPostprocessUserPrompt = BuildSceneActionPostprocessUserPrompt,
             BuildStrictSceneMessagesSystemPrompt = BuildStrictSceneMessagesSystemPrompt,
-            BuildPersistedHeroHistoryContext = BuildPersistedHeroHistoryContext,
+            BuildPersistedHeroHistoryContext = (agent, input, heroes) => BuildPersistedHeroHistoryContext(agent, input, heroes)?.Context ?? "",
             CaptureVisibleSceneHistoryLinesForPrompt = CaptureVisibleSceneHistoryLinesForPrompt,
             SummonTargets = _sceneMovement.BuildSceneSummonPromptTargets,
             GuideTargets = _sceneMovement.BuildSceneGuidePromptTargets,

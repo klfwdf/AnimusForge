@@ -11,6 +11,7 @@ internal static class PersonaImportOwner
  internal static void StampProfileMetadata(string heroId, MyBehavior.NpcPersonaProfile profile, Func<string,string> resolveHeroName)
  {
   if (profile == null) return;
+  profile.NormalizeDescription();
   string id = (heroId ?? "").Trim();
   profile.HeroId = id;
   try { profile.HeroName = resolveHeroName(id) ?? ""; }
@@ -60,7 +61,9 @@ internal static class PersonaImportOwner
 				num++;
 			}
 			value.VoiceId = "";
-			if (string.IsNullOrWhiteSpace(value.Personality) && string.IsNullOrWhiteSpace(value.Background))
+			if (value.SchemaVersion < 3 && string.IsNullOrWhiteSpace(value.Description) && (value.Traits?.Count ?? 0) == 0
+                && (value.Motivations?.Count ?? 0) == 0 && (value.Values?.Count ?? 0) == 0
+                && (value.Fears?.Count ?? 0) == 0 && string.IsNullOrWhiteSpace(value.SpeechStyle))
 			{
 				authority.Remove(text2);
 				continue;
@@ -96,8 +99,8 @@ internal static class PersonaImportOwner
 	}
 
 
- internal static void ApplyDeveloperText(MyBehavior.NpcPersonaProfile profile,string personality,string background,Action<MyBehavior.NpcPersonaProfile> save)
- { profile.Personality=personality;profile.Background=background;save(profile); }
+ internal static void ApplyDeveloperText(MyBehavior.NpcPersonaProfile profile,string description,Action<MyBehavior.NpcPersonaProfile> save)
+ { profile.Description=AnimusForge.Refactor.Runtime.NpcPersonaProfilePolicy.NormalizeGenerated(description);profile.SchemaVersion=Math.Max(profile.SchemaVersion,3);save(profile); }
  internal static void ApplyDeveloperVoice(MyBehavior.NpcPersonaProfile profile,string voice,Action<MyBehavior.NpcPersonaProfile> save)
  { profile.VoiceId=voice;save(profile); }
 }

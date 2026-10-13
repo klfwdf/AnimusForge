@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs" Link="NpcPersonaProfilePolicy.cs" />
     <Compile Include="../../../../src/AF.Persistence/AnimusForgeDataPaths.cs" Link="AnimusForgeDataPaths.cs" />
   </ItemGroup>
 

@@ -46,6 +46,11 @@ public partial class DuelSettings
         set => _autoGenerateWorldBulletins = value;
     }
 
+    [SettingPropertyBool("{=AF_TERMINAL_UI_WorldBulletinReadPlayerHistory_Title}Read Player Dialogue History for Bulletins", Order = 1, RequireRestart = false,
+        HintText = "{=AF_TERMINAL_UI_WorldBulletinReadPlayerHistory_Hint}Default: off. When enabled, bulletins may read public-summary candidates from player dialogue memory; candidates trigger one additional privacy-review request. When disabled, neither dialogue history nor that review is used. Worldbook and game events are unaffected. Applies to the next generation; requests already sent are not recalled.")]
+    [SettingPropertyGroup(NewsSettingsGroup + "/{=AF_MCM_News_Bulletin}Bulletin", GroupOrder = 1)]
+    public bool WorldBulletinReadPlayerHistory { get; set; } = false;
+
     public override void OnPropertyChanged(string propertyName = null)
     {
         if (propertyName == "LOADING_COMPLETE")

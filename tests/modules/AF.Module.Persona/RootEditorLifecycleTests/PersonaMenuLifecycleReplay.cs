@@ -24,10 +24,10 @@ internal static class PersonaMenuLifecycleReplay
             SetSelectedHero = h => selected = h,
             GetEditableHeroes = () => editable,
             SetEditableHeroes = heroes => editable = heroes,
-            GetNpcPersonaStrings = (Hero h, out string personality, out string background) => profiles.GetNpcPersonaStrings(h.StringId, out personality, out background),
+            GetNpcPersonaDescription = h => profiles.GetDescription(h.StringId),
             GetNpcVoiceId = h => profiles.GetNpcVoiceId(h.StringId),
             ClearPersona = h => { saveCalls++; profiles.Save(h.StringId, new(), (_, _) => { }); },
-            SavePersonaText = (h, personality, background) => { saveCalls++; profiles.Save(h.StringId, new() { Personality = personality, Background = background, VoiceId = profiles.GetNpcVoiceId(h.StringId) }, (_, _) => { }); },
+            SavePersonaText = (h, description) => { saveCalls++; profiles.Save(h.StringId, new() { Description = description, SchemaVersion = 3, VoiceId = profiles.GetNpcVoiceId(h.StringId) }, (_, _) => { }); },
             SaveVoice = (h, voice) => { saveCalls++; var value = profiles.Get(h.StringId, true); value.VoiceId = voice; profiles.Save(h.StringId, value, (_, _) => { }); },
             ShowDevEditInquiry = _ => { }
         };
@@ -38,10 +38,11 @@ internal static class PersonaMenuLifecycleReplay
             TaleWorlds.Localization.TextObject.UseLanguage(chinese);
             editor.OpenDevPersonaMenuFromExternal(a, () => closesA++);
             check(MBInformationManager.Selection.Options.Single(o => Equals(o.Identifier, "set_personality")).Title
-                == (chinese ? "设置/修改个性" : "Set or edit personality"), "actual Persona menu follows selected XML display language");
+                == (chinese ? "设置/修改人物设定" : "Set or edit persona"), "actual Persona menu follows selected XML display language");
             check(profiles.Get(a.StringId, false).Personality == "A personality" && saveCalls == 0 && closesA == 0,
                 "Persona language switch preserves authoritative profile and completion callback");
         }
+        check(!MBInformationManager.Selection.Options.Any(o => Equals(o.Identifier, "set_background")), "unified editor has no second body entry");
         TaleWorlds.Localization.TextObject.UseLanguage(false);
         editor.OpenDevPersonaMenuFromExternal(a, () => closesA++);
         var old = MBInformationManager.Selection;
@@ -54,7 +55,7 @@ internal static class PersonaMenuLifecycleReplay
         var currentText = DevTextEditorHelper.Confirm;
         currentText("  edited B  ");
         profiles.GetNpcPersonaStrings(b.StringId, out string personality, out string background);
-        check(saveCalls == 1 && personality == "edited B" && background == "B background" && profiles.GetNpcVoiceId(b.StringId) == "voice-b", "actual current B text callback writes the sole profile owner and preserves background/voice");
+        check(saveCalls == 1 && personality == "edited B" && background == "" && profiles.GetNpcVoiceId(b.StringId) == "voice-b", "actual current B text callback writes the sole profile owner and preserves voice with no second body");
         editor.OpenDevSetVoiceId(b);
         InformationManager.Text.Confirm("  voice-new  ");
         check(profiles.GetNpcVoiceId(b.StringId) == "voice-new", "actual voice callback trims and reads back current sole owner");

@@ -75,9 +75,8 @@ internal sealed class ExecutionAddressFacts
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_ClanTier", "Clan tier: ") + Safe(() => MyBehavior.GetClanTierReputationLabelForExternal(victim.Clan?.Tier ?? 0)));
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Identity", "Identity: ") + Safe(() => MyBehavior.BuildHeroIdentityTitleForExternal(victim)));
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Noble", "Noble: ") + (request.VictimIsNoble ? LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Yes", "yes") : LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_No", "no")));
-        MyBehavior.GetNpcPersonaForExternal(victim, out var personality, out var background);
-        if (!string.IsNullOrWhiteSpace(personality)) builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Personality", "Personality: ") + ExecutionAddressContextPolicy.Bound(personality.Trim(), 400));
-        if (!string.IsNullOrWhiteSpace(background)) builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Background", "Background: ") + ExecutionAddressContextPolicy.Bound(background.Trim(), 600));
+        string persona = MyBehavior.GetNpcPersonaDescriptionForExternal(victim);
+        if (!string.IsNullOrWhiteSpace(persona)) builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Personality", "Persona: ") + ExecutionAddressContextPolicy.Bound(persona.Trim(), 1000));
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Valor", "Valor: ") + TraitLabel(victim, DefaultTraits.Valor));
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Honor", "Honor: ") + TraitLabel(victim, DefaultTraits.Honor));
         builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Relation", "Relation with the player: ") + RelationLabel(victim, request.Executor));

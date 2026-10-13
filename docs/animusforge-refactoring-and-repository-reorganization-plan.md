@@ -1,3 +1,131 @@
+<a id="bulletin-history-toggle-20261013"></a>
+## 2026-10-13 快报读取玩家历史终端开关（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 请求范围：仅在AF终端加入“快报是否读取玩家对话历史”，不替换原隐私筛选算法、不新增审核层、不改世界书或游戏事件。工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`；checkpoint `1c17be9ab`，生产/测试切片 `93cf9b48a05032093f06c497eb8bad2fcfeb8058`，9文件67增/2删。共享树被俘开场工作保留，未提交他人修改。
+- 行为与成本：`DuelSettings.WorldBulletinReadPlayerHistory=false`，旧配置缺字段同样关闭。在每次快报生成的主线程capture读取一次布尔值，关闭/设置不可用则在 `LoadBlocks` 前返回，仅带世界书和事件；没有新Tick IO/反射/扫描。开启复用原上限4位相关人物、每人至多检查64块/接收2条、总6候选及原公开性审核；有候选才多一次审核请求。不是允许读取全部原文，也没有自动清空历史或已生成快报。切换对下次生成有效，已捕获/发送请求不撤回。
+- 配置/双语：沿原MCM属性作为唯一配置与持久化owner，保留bool元数据供保存/preset；现有MCM前端白名单仍隐藏新闻组，不增加MCM界面入口。终端手工注册直接getter/setter，复用原保存入口、布尔VM及prefab；按Diplomacy分类归入“周报与快报”。CN/EN标题、说明、组名与helper/属性元数据同步；既有language_data和content-map映射有效。
+- RED→GREEN：新增capture测试先在 `disabled history never reads the memory cache` 失败；设置测试在新属性不存在的CS1061/CS0117失败，随后实现。`python tests/modules/AF.Module.Weekly/BulletinContextTests/run.py --target-framework net10.0` → CN/EN各102通过，证据 `artifacts/tests/bulletin-context/run-940524f7c6a14abe92e9706d203a5a6e/`。覆盖关/开/再关、设置null、历史不删除、世界书保留及关闭时只有撰稿请求。
+- 设置专项：`NewsSettingsTests.csproj` 在隔离 `artifacts/tests/bulletin-history-toggle/settings-green/{obj,bin}` 构建原net8目标，再 `dotnet --roll-forward Major .../NewsSettingsTests.dll` → 19项通过（新增7项：默认、旧缺字段、true/false JSON往返/与模式自动发布独立、真实MCM属性元数据）。这是实际settings partial＋真实MCM属性/JSON库，host路径为替身，不声称完整MCM provider落盘或实机重启验收。先尝试用TargetFramework覆写到net10时restore仍为net8，发生NETSDK1005；诊断后保留原目标并用运行时roll-forward，无修改项目/构建流程。
+- UI验证：`artifacts/tests/bulletin-history-toggle/terminal-targeted-checks.json` 记录25项定点静态检查：单定义、原getter/setter、分类/分组、双语fallback/metadata、布尔VM/prefab绑定、保存owner、语言注册与映射。原 `TerminalSettingsFallbackContractTests.py` 全量失败于 `AF_TERMINAL_UI_EnableAdultHeroPersonaAutoGeneration_Hint fallback drift`，已在本次checkpoint复现，未改无关文案或降低门禁，不能称全量终端契约通过。
+- 构建：经本轮用户明确授权，仅重置 `bin/Debug/single_module_artifacts` 与 `obj/single_module/Debug`，预先核实最终路径与祖先/子项无reparse；使用原 `scripts/build/build_single_module.ps1`，未传Stage/Deploy。1.3.15.110062/1.4.6.115628各363警告/0错误，Bootstrap/接缝探针0/0，双Coup和registration PASS。保留原入口，过程内 `DefaultItemExcludes=**/artifacts/**;**/tests/**` 避免测试产物误入候选程序集；日志 `artifacts/bulletin-history-toggle-build-20261013.log`，source/DLL/log hash收据 `artifacts/tests/bulletin-history-toggle/receipt.json`。
+- [源码范围图](architecture/af-framework-code-scope.md#bulletin-history-toggle-20261013)有13个定位锚点，记录提交与工作树分别验证通过；后者两份共享UI XML含其他作者后续开场key，两个manifest分别记录，不假称整文件同hash。未做真实provider/游戏UI点击、旧档、完整Stage/发行双包/部署/push；用户批准的清理只用于本轮构建。本条替代[前序接线](#bulletin-lore-private-history-20261013)“历史默认参与”，不替代[虚构私事与真实私聊区分](#bulletin-fiction-privacy-clarified-20261013)。回滚只对 `93cf9b48a` 做focused inverse，保留他人工作。
+
+<a id="captivity-free-opening-20261013"></a>
+## 2026-10-13 被俘后领主自由开场（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 按用户批准的最小计划，在现有被俘会话内接入新被俘一次性自动开场；不选主题、动机、报价或剧情，不另建聊天/需求系统，不改普通退出、给予和释放机制。手动入口继续使用原版两类被俘等待菜单。
+- 起点 `0c55c7d6c`，工作区 `E:/AnimusForge-klfwdf`、分支 `delivery/policy-bounded-retrieval-20261010`。已有 Weekly/BulletinContextTests 的两处他人修改不纳入本任务。
+- 本地 checkpoint `9259a8495`，生产/资源/测试切片 `75c7efe60`。同树快报开关由其他会话提交，未回滚/混入本切片。本条补充既有 [玩家被俘交谈与释放](#player-captivity-dialogue-release-20261013)，不改变其标签/扣款/退出语义，也不改变历史安装状态。
+- 真实接线：LordEncounter 原事件 owner 登记玩家 HeroPrisonerTaken → 现有 PlayerCaptivityConversation 延迟到稳定等待菜单 → 原地图对话/AF overlay → NpcInitiatedOpeningRouter → 原 Native admission/retry/完整主链路。仅追加“玩家被你方俘虏、由你先开口”的成对事实，不加入 needs/定价/forced topic。自动入口显示中性占位，手动入口原文及两目标选择保留。
+- 身份/性能：内部 CaptureOpening 保存 campaign/generation/原版 CaptivityStartTime/holder/owner，不增加持久化键、公开 API、配置或模块。一次事件只排队；普通会话退休保留已观察身份，读档基线不补弹，人工先交谈也消耗待自动机会。空闲O(1)返回，待处理沿原0.25秒节流，只检查当前看押对象、最多族长/总督两候选；战后/战斗/弹窗暂缓，无合格对象或打开失败消耗机会。释放/转押/换主/切档/原名单缺失取消；旧会话还核对本次被俘起始身份，防同领主重新俘虏误放人。
+- CN/EN：原 EncounterPromptTexts reader/既有content-map读取新开场事实，15个被俘UI key均有中英并保持原语言注册。开场历史保存 canonical `Template_captivity_opening`，现有共享 MemorySystemFactProjection 在请求边界投影；NPC opening user composer也投影已知事实，persistent composer不改原值。不伪造玩家发言、不将排队/开场登记成付款或释放。
+- TDD：新增生产源码专项先因缺少OnPlayerTakenPrisoner产生CS0117；当前 `python -X utf8 -B tests/AF.GameAdapter.Bannerlord/PlayerCaptivityConversationTests/run.py` → CN/EN各197 PASS。覆盖自动/手动对话节点、菜单去重、延迟/一次性、载入/重新被俘/转押/失效、真实router消费及逐字提取开场message/history composer、既有释放/标签/名单回归和资源映射；game/provider/scope-label剥离是夹具，完整HTTP请求和实机未跑。
+- 原开场回归 `NativeOpeningRetryTests/run.py --harmony <实际Harmony路径> --run-root artifacts/player-captivity-opening-20261013/opening-retry-final` → 153 PASS，包含当前overlay生产入口、admission/retry及普通领主/同伴开场。旧夹具先缺新captivity leaf及既有本地化reader（CS0103），再暴露中文菜单断言与英文fallback不符；补普通非被俘leaf及从真实CN资源生成文字leaf，未删改行为断言。各次失败保留于opening-retry-red/green。
+- 其他回归：EncounterLifecycleBoundary183、ReleaseSurrenderBoundary34、NativeDialogueBattleContinuation67 PASS。旧release runner固定SDK路径不存在，encounter隔离环境缺net8.0.30离线ref；保留生成源码/失败日志，用系统dotnet运行相同生成项目通过，不改原构建流程。`git -c core.whitespace=cr-at-eol diff --check`通过（保留既有CRLF文本约定）。
+- 最终原 `scripts/build/build_single_module.ps1` Debug build-only → `build-02.log` PASS：API1.3.15.110062与1.4.6.115628各363warning/0error，Bootstrap/probe0/0，双Coup/registration PASS。执行前复核用户已批准的两个Debug输出绝对路径及reparse边界；沿用调用级EnableDefaultNoneItems=false避免旧artifacts引用干扰，不改脚本、不Stage/部署。
+- [核实源码范围图](architecture/af-framework-code-scope.md#captivity-free-opening-20261013)；完整命令日志、失败、source/DLL哈希与切片位于 `artifacts/player-captivity-opening-20261013/`，不提交生成产物。实机两类自动入口、菜单/时间/离开和真实模型自由表达、请求中退出/转押/读档，以及给予后释放仍LIVE_PENDING；未部署、打包、推送。回滚仅对上述切片做focused inverse，不重写历史或改动其他作者工作。
+
+<a id="npc-unified-persona-20261013"></a>
+## 2026-10-13 NPC 人物设定统一（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 本轮按用户批准的统一计划执行；工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`。实施前 checkpoint `bbfb98242`；游戏主体/双语/回归切片 `5bbac0786`，独立编辑器切片 `7e13e2760`。同树其他作者的被俘、快报、记忆工作保留，只定点暂存本任务差异。以下是本地候选，不改变已安装/发行版本；历史部署授权不适用本轮。
+- 有意变化：Hero/成年/升格同伴用 `profile` 生成一份约400–600字符的正文，长度仅为提示词目标，不截断生成结果；结构化特质、动机、价值观、弱点和说话风格与正文互补。无名NPC仍沿原单正文生成和原长度。正文为空或仅结构化信息不算生成成功；解析继续接受旧 `personality/background`，非字符串/仅嵌套 `profile` 不当正文。
+- 兼容：保留 `MyBehavior.NpcPersonaProfile` 类型、`_npcPersonaProfiles_v1`、旧JSON字段和 `personality_background` 目录；新增 `Description`，规范化至SchemaVersion≥3。旧个性在前、背景在后，以空行连接；仅规范换行/首尾空白和完全相同文本去重，单字段直接用，不翻译/压缩/调用模型。已有正文优先，v3空正文不恢复旧字段，正常保存保留明确清空状态；旧字段只作兼容数据，不参与就绪/上下文。兼容方向仅新版读取旧档/旧资料。
+- 真实边界：Newtonsoft DTO反序列化回调覆盖存档、单人/批量导入及数据库恢复；既有stamp/save规范化写入，独立编辑器STJ回调复用同一纯策略。读取不会回写原资料包，不操作离线 `.sav`。结构化数据、voice和身份在迁移/回放保持；清空整份资料的原入口仍可清除。分块owner、现有键和失败契约不变。
+- 主线程捕获/提交、owner/generation/目标/请求租约/冷却保留；普通生成、重生和升格响应提交前核对统一正文和结构化字段，逐值精确比较（含空白/分隔符），期间编辑拒绝迟到覆盖，最新voice继续保留。保存/导入时做一次线性文本规范化，读取是原字典O(1)查询；结构化快照只在请求边界复制，没有新Tick扫描、反射、磁盘IO或额外模型调用。
+- 同DLL快照/port统一单正文；三渠道及场景接力、紧凑反应只注入一次，不再缺一段就复制另一段。政策预算260、外交700、处刑1000沿旧总预算，GCCZ AF桥及升格技能引用新正文。旧公开 `GetNpcPersonaForExternal` 签名保持，第一个输出统一正文、第二个空，不新增子MOD API。没有修改GCCZ独立业务库或其他副本。
+- UI/内容：游戏编辑器、百科、相关终端/错误/导入导出说明和独立编辑器改为人物设定/Persona；声音、结构化信息、取消、重复导入确认及备份保留。CN/EN实际Prompt reader、UI注册、资源映射一起核对；新旧资源key身份保持。默认要求清册追加当前双语/行尾字节哈希并保留历史哈希，只识别确切已知发布默认；玩家自定义未改。没有语言强制回复规则。
+
+### 回归与构建证据
+
+| 检查 | 实际结果 / 本地日志 |
+| --- | --- |
+| 新回归先失败再实现 | `persona-hero-strict-red.log` 449检查/5失败（正文类型、结构化编辑）；`persona-clear-red.log` 457/1失败（明确清空保存）。修复后下列当前生成460/0；负向 `ignore_edit` 变异449/5失败，证明保护断言确会拒绝破坏版本 |
+| HeroPersonaGenerationTests | `artifacts/persona-hero-tests.log` 460/0；生产生成/升格应用、dispatcher、解析、策略、profile/import owner和逐字提取DTO。新旧协议、无正文、单字段就绪、重生voice、生成中编辑、换owner/换档/目标/lease、冷却/迟到回包及长文迁移回放 |
+| ChannelPersonaPreparationTests / SceneCompactPersonaBoundaryTests | `persona-channel-tests.log` 169/0；`persona-compact.log` 23通过。实际消费者/compact helper，主线程/引擎叶子为夹具，已有Hero正文不补背景或再生 |
+| UnifiedPersonaTests | `persona-unified-policy.log` CN/EN各28/0；旧双/单字段、相同段落、空值、80K混合长文、幂等、v3清空；实际资源reader和两类生产composer验证正文/结构化各一次且无旧背景标题 |
+| 游戏编辑/导入生命周期 | `persona-editor-tests.log` 47断言；`persona-import-tests.log` 22断言，通过取消、过期callback、重复导入确认/部分成功和旧资料新DTO读取。游戏对象/权限叶子为夹具，没有实机操作 |
+| 独立编辑器 | `persona-standalone-smoke.log` 原9步isolated full smoke PASS：旧JSON只读不改字节、编辑后3轮保存/读取、v3清空不复活、结构化/voice/身份/旧字段保持、备份原字节和隔离root保护；`persona-standalone-build.log` WinForms App 0警告/0错误。未打开真实玩家包，未做WinForms交互验收 |
+| 持久化 | `persona-persistence-tests.log` PersistenceChunkReplayTests与CivilWarChunkRegression PASS；`persona-chunk-contract.log` `validate_persistence_profile_config.py --chunk-contract-only` PASS（20 chunked keys/47 flattened keys/12000 UTF-8 bytes）。目录仍登记1项既有open direct-JSON risk，不声称全仓或旧坏档修复 |
+| 双语/默认接线 | `persona-resources.log` 26有效Prompt keys、32 UI keys/注册/实际消费者预算及历史+当前哈希静态PASS；`persona-defaults.log` 41默认读取/映射静态检查PASS。语义、接线和源链接回放与真实模型质量分开 |
+| 原统一入口 | `persona-unified-build.log` 最终 `Build Result : success (dual coup seam gates passed)`；1.3/1.4各363警告/0错误，Bootstrap/probe各0/0，双Coup与registration smoke PASS。实际引用1.3.15.110062和1.4.6.115628；未伪称1.4.5实测 |
+
+- 复现入口：Hero/Channel/PackageImport/SceneCompact既有 `run.py` 使用系统 `C:/Program Files/dotnet/dotnet.exe`、`--target-framework net10.0`（本机缺离线net8引用包）；RootEditor/Persistence项目显式restore/build `-p:TargetFramework=net10.0` 后运行相同测试DLL，UnifiedPersonaTests/独立编辑器沿项目net10。没有以测试框架下载失败冒充业务失败或通过。
+- 原统一脚本未改：`scripts/build/build_single_module.ps1 -ProjectRoot E:/AnimusForge-klfwdf -BannerlordRoot "D:/steam/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug`，使用 `C:/Program Files/PowerShell/7-preview/pwsh.exe`。用户明确允许清理 `bin/Debug/single_module_artifacts` 和 `obj/single_module/Debug` 及其非交付产物，仅在此范围运行原清理；没有Stage/Deploy/Package。
+- 实际失败保留：首次候选引用误选忽略目录中旧net8 `System.dll/System.Core.dll`，CS0731/CS1069；`persona-refs.log`定位 `{CandidateAssemblyFiles}`。仅本次子进程 `DirectoryBuildTargetsPath=E:/AnimusForge-klfwdf/artifacts/persona-build.targets` 将AssemblySearchPaths设为 `{HintPathFromItem};{TargetFrameworkDirectory};{RawFileName}`，不改一键脚本/项目入口、不删旧测试输出。中间政策诊断旧双变量导致编译错误已改为单正文计数并经最终完整构建验证。
+- 源码/产物绑定：`artifacts/persona-unified-receipt.json`记录77个本次输入、三游戏DLL与编辑器DLL、日志SHA256；是验证后收据，不伪称隔离的纯本切片整树构建，统一构建含当时其他作者工作区改动。[代码范围图](architecture/af-framework-code-scope.md#npc-unified-persona-20261013)记录22锚点/一基行/符号，`verify_code_map.py --map artifacts/persona-unified-code-map.json`及`--working-tree`均PASS。完整日志/收据/产物只留本地artifacts，不入Git。
+- **NOT-RUN / LIVE_PENDING**：实机旧档加载、Gauntlet/百科和独立编辑器真实交互、真实provider正文长度/质量及下游游戏效果；单独runner的引擎/网络/路径定位叶子夹具不能证明这些。没有全仓测试/覆盖率结论，未正式打包、部署、push、修复离线sav或写其他副本。后续仅按新授权实机验收，不主动升级成发布。
+- 回滚：以 `bbfb98242` 作意图参照，针对 `7e13e2760`、`5bbac0786` 做focused inverse并重跑关联门禁；不得整树reset/rewrite或撤销其他作者提交。旧版读取已保存的新格式不在兼容承诺内，回退前保留原档/资料备份。
+
+<a id="memory-injection-minimal-fix-20261013"></a>
+## 2026-10-13 记忆注入最小修复（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户明确授权实施既定最小方案。工作区 `E:/AnimusForge-klfwdf`、分支 `delivery/policy-bounded-retrieval-20261010`；intent checkpoint `16a70e5d2`，源码/测试切片 `3370066fd`。初始共享树存在大量人设/快报/遭遇等他人修改，保留其后续提交，仅暂存本任务19个文件；未修改安装目录、构建脚本、公开API或存档字段。
+- 根因一：`BuildCompressedMemoryContextById` 在向量/选择失败时，原先早于追加最新块就返回空；格式错误还会被外层历史构造吞为空。现在正常检索策略不变，失败改用本地快照中最近块、按稳定ID去重、始终保留最新块、受原 `FinalCount` 上限约束，最终按时间顺序渲染。选择调用复用已有 `TryCallAuxiliarySimpleDialogueOnceForExternal`，失败直接本地兜底，不进入旧的交互式重试循环；没有新增模型调用或自动重试。
+- 根因二：原请求先捕获压缩块/总览，异步检索后才重新读取草稿；中间每日压缩提交会清掉草稿，造成摘要与原文同时缺失。扩展原 `HistoryPromptSnapshot`，同一次主线程处理中获取总览、复制压缩块/AFEF、投影未压缩 `ConversationMessage`，后台仅解析脱离游戏对象的输入。压缩在快照之后完成时，本轮仍保有原文，下一轮看到新摘要。
+- 自由对话保留 `includeCurrentRawSession:true` 和原 Native overlap 合并；场景五处最终消息消费者使用同一任务/session绑定的快照，提交receipt后的分支继续跳过旧预计算缓存；信使来信/回信及同步legacy envelope携带配对消息。场景任务绑定复用原有CWT，不新增全局缓存。切档、取消、owner失效仍由generation/owner/token/原渠道admission与session门禁丢弃，不发布旧失败提示或将旧记忆作为兜底。
+- 性能/边界：只在请求期捕获一次原本就要构造的未压缩消息；失败时对该NPC本地块排序/去重，成功时保留原候选与选择逻辑。不新增Tick扫描、后台游戏对象读取、存档写入、记忆层；压缩比例、注入数量、总览更新策略、人格/关系系统均未改。
+- 双语：新增 `AF_MEMORY_UI_RecallFallbackTitle` / `AF_MEMORY_UI_RecallFallback`，修正ONNX不可用的旧“不回退”提示。实际 `MemoryFailureUiText` 在本轮兜底后发布“已使用最近本地记忆”的CN/EN提示；技术日志仅增加原因类型/数量。资源仍沿 `content/content-map.json:17008-17024` 与两套 Foundation.Localization `language_data.xml:18` 接线。
+
+### 已核实源码范围图（`3370066fd`，一基行）
+
+| 路径 / 符号 | 覆盖责任 |
+| --- | --- |
+| `src/modules/AF.Module.Memory/Recall/MemoryRecallContextOwner.cs:228,257,298-433,543-568` — `TrySelectMemoryIdsWithPreprocess` / `BuildCompressedMemoryContextById` / `MemoryRecallRequest` | 一次选择、失败有界兜底、最新块、去重/时序、请求有效性 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.HistoryPromptSnapshot.cs:13-64`；`src/AF.GameAdapter.Bannerlord/Prompt/SharedPromptCaptureBannerlordAdapter.cs:961-1095` | 原内部快照、实际raw投影绑定、同一主线程捕获与后台owner重验 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/MemoryRecallInputCaptureAdapter.cs:244-280` | token/owner传入纯召回owner；过期失败通知不发布 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs:521-606,3245-3656` | Native英雄/非英雄捕获、场景request stamp与异步接受配对结果 |
+| `src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs:28,75-80,113-117,195-209` | 请求快照接收/重验、raw消费、继续原重叠去重 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:149-174,328-337,655-793,1556-1565,1947-1957` | 群聊/被动回复/即时反应/到场短回复消费配对text/raw；相关内部ports/host签名同步 |
+| `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs:13-128`；`CourierDeliveryBehavior.PromptPreparation.cs:255,298` | 来信/回信与legacy envelope冻结raw、接受门禁、真实消息组装输入 |
+
+### 验证与未验证
+
+- `python -X utf8 -B tests/modules/AF.Module.Memory/MemoryRecallContextTests/run.py --language CN/EN --run-root <task artifact>`：两包各 **71 PASS**。真实召回owner、资源reader/UI描述、源码提取的完整共享捕获/Native捕获/场景任务接受方法；游戏、ONNX、API和raw投影叶子受控替身。覆盖正常最新块/数量、向量不可用、两种选择模式超时、格式错误、去重/时序、无记忆、取消/换档/owner失效、压缩提交竞态、快照块/AFEF隔离、缓存text/raw配对；另外逐字验证Native1处/Scene5处/Courier2处实际消费者不再晚读草稿。不是实机、全仓测试或真实模型最终请求回放。
+- `python -X utf8 -B tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/run.py --run-root <task artifact>`：**130断言 / 30场景 PASS**；真实owner-phase和history helper、物理主线程队列，来信/回信及legacy边界，捕获后模拟压缩、替换参与者/会话/owner/存档、超时。测试runner复用已安装SDK；修复本机不存在的硬编码SDK8路径，不安装系统软件。
+- TDD红态：原召回owner在 `red/run.log` 明确失败 `FAIL embedding failure injects recent blocks including latest within cap`；修复后回放通过。初始SDK8缺失/fixture缺少资源依赖，以及构建期旧artifacts的net8 facade污染、命令行列表转义失败日志均保留，没有靠改生产规则放行。
+- 最终 `final-build/build.log`：复用 `scripts/build/build_single_module.ps1` 的实际引用验证和 `Invoke-DotNetBuild` 函数，输出到全新的本任务目录，**API1.3与1.4各363 warning/0 error，Bootstrap 0/0**；引用分别 `v1.3.15.110062` / `v1.4.6.115628`。调用级隔离Reference解析，避免误选其他测试产物中的System DLL；未更改原脚本/默认流程，未清理已有构建目录。`final-build/receipt.json` 绑定14个任务产品输入与三DLL SHA，构建前后任务输入一致；不代表并发共享树的全仓原子快照。
+- 本地证据 `artifacts/memory-injection-fix-20261013/`；`git -c core.whitespace=cr-at-eol diff --check` 通过。产物/日志不提交。实机压缩时序、长对话性格表现、真实provider、旧玩家存档、完整Stage/打包/部署/push均 **NOT-RUN**，没有声称“所有失忆来源已根治”。回滚使用 `3370066fd` 的focused inverse，不hard reset或回滚其他作者工作。
+
+<a id="player-captivity-dialogue-release-20261013"></a>
+## 2026-10-13 AF 玩家被俘交谈与释放（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 本轮按用户实施计划执行；实际工作区 `E:/AnimusForge-klfwdf`、分支 `delivery/policy-bounded-retrieval-20261010`。本地 intent checkpoint `8b2bf53c1`，功能切片 `0c68224d0`，本条所在修订补齐旧场景移动别名防线及交接。其他会话的人设、公告、记忆改动保留；仅分块暂存本任务改动，不据历史发行记录取得新部署/push许可。
+- 复用原版 `prisoner_wait` / `settlement_wait` 菜单、地图 ConversationManager、AF 输入/三段请求/给予金币/延迟释放 owner/历史入口。地牢仅列实际在当地的所属家族族长或同家族总督，至多两人、去重并使用原版选择弹窗。随军仅当前看押部队的有效领主；无目标、战斗、战后结算、围城、死亡/不活跃/被俘目标不开放。
+- 独立内部会话绑定 campaign、manager、generation、captor、target、ownerClan；仅限定节点、Default 对话 context，不创建 PlayerEncounter、不接攻击/投降/原版战斗续接。请求捕获/提交/动作执行均走既有主线程边界，并补资格验证；正常结束保留囚禁，返回当前等待菜单并恢复时间。转押/换主/目标失效/换档/对话结束撤销旧请求；原有 native admission epoch 继续拒绝迟到结果。
+- 话题 `player_captivity_release` / `CAPTIVITY_RELEASE` / 唯一编号35，实施前基线最大34。CN/EN主规则只说明自然意图；`[ACTION:RELEASE_PLAYER_CAPTIVITY]` 仅在 PostprocessRules 描述格式，按实际命中/会话/渠道授权合并，复用现有精确白名单 release normalizer 接 RAW→FINAL，再进入 native executor。信使显式排除、普通喊话/无关对话无权限；原 `LET_PLAYER_GO` 的遭遇放行语义保持。
+- 标签不带金额、不扣款；只接受明确立即同意，条件/报价/未来承诺不得输出，钱物条件依赖既有给予产生的已确认 AFEF。被俘会话排除战斗、决斗、场景移动、部队/入队等需自由活动机制；执行前清理相应标签，包含旧 `ASS/GUI/FOL/STP/END` 别名。给予/债务/资产仍用旧执行器，不新增赎金系统、停战或奖励。
+- 独立 `EncounterReleaseOwner` 请求沿用10秒提示，等待原版对话和地图外壳安全退出，再次验证后消费一次。调用 `EndCaptivityAction.ApplyByReleasedByChoice(Hero.MainHero)` 不传facilitator；预先拒绝主队已有玩家成员的异常数据。实际被俘状态与原看押名单共同确认结果；异常记录真实状态、提示失败、不重试/不宣称恢复。native callback 换档不写旧事实，旧close回调不清除新会话。
+- 释放成功才经 `AppendExternalDialogueHistory` 写入一条 canonical AFEF，`MemorySystemFactProjection` 以稳定模板身份在共用读取边界投影CN/EN；没有另记重大事件或新增save key。原版release event仍负责原事件记录。UI14key按游戏界面语言，固定上下文按内容包，包含看押方/关押位置/当前领主权限；动态姓名使用单次模板插槽，不递归替换。
+- 性能：菜单只检查相关captor和最多两位候选；空闲Tick立即退出、活动会话每250ms一次轻量状态检查；请求/动作边界另做即时验证。不全图扫描、不反射、不增加Tick磁盘IO（事实在排队时捕获），没有新模块/公开API/配置开关/独立存档。
+- 源码范围图（一基行，`0c68224d0`加本条修订）：`src/AF.GameAdapter.Bannerlord/Encounter/PlayerCaptivityConversation.cs:58-183`入口/资格/会话、`185-253`上下文/资格/排队、`256-350`关闭/重验/原版释放/事实/收尾；`LordEncounterBehavior.cs:429,3636`生命周期挂接；三个 `Patch_Conversation*` 仅添加专用打开期间的窄放行。`SceneMechanismPromptCaptureAdapter.cs:677-678`话题资格，`ConversationActionContextBannerlordAdapter.cs:129-133`迟到结果门禁，`SceneShoutInputController.cs:1253`输入资格。
+- 接线范围：`ConversationActionPostprocessOwner.cs:500,569-571,884,914-915,1031,1100-1102,1375,1396-1397`两路径规则捕获/归一化/FINAL；`NativeConversationGameEffectsRuntime.cs:164,454`限制和新标签执行；`ShoutBehavior.NativePromptBuild.cs:38`前处理上下文、`ShoutBehavior.NativeTurnPrompt.cs`的 `CapturePromptRules` 主请求事实；`MemorySystemFactProjection.cs:34`已执行事实投影。既有 `content/content-map.json`、PromptCompatibility嵌入逻辑名和两套language_data注册继续使用，无新资源映射体系。
+- 定向 `python -B tests/AF.GameAdapter.Bannerlord/PlayerCaptivityConversationTests/run.py`：CN/EN各119检查PASS；真实生产session/release owner/readers/memory projection和逐字提取normalizer，原生对象/JSON/path/history是替身。覆盖两类入口资格、总督、普通结束、10秒/手动结束、重复/无金额/无话题/错误渠道、转押/换主/死亡/战斗/读档、原生异常和回调重入，及14UIkeys/35号/内容映射。报价负例是无标签fixture，不作为真实LLM语义通过证据。
+- 回归PASS：ReleaseSurrenderBoundary 34、EncounterLifecycleBoundary 183、NativeDialogueBattleContinuation 67。旧runner硬编码本机不存在的 `local/dotnet/8.0.425`，隔离SDK又缺离线net8ref包；保留其生成源码，使用现有系统dotnet运行相同生成项目通过，未改测试/构建入口。原俘虏ghost安全patch保持未改；重复成员门禁由新production-source夹具覆盖，实机原版roster恢复未验。
+- 原统一 `scripts/build/build_single_module.ps1` Debug build-only 最终 `build-06.log` PASS：API1.3.15.110062/1.4.6.115628各363warning/0error，Bootstrap/probe0/0，双Coup和registration smoke PASS。当前机器实际游戏引用D盘；旧F路径不存在的失败保留。旧artifacts中的net8 facade被默认None搜索误选，沿仓库既有调用级 `/p:EnableDefaultNoneItems=false` 绕开，不改构建脚本/流程。另一会话人物字段过渡期造成的2个编译错误已由其后续改动消失，未纳入本任务修改。用户明确批准原脚本清理两处项目编译产物路径，未清理其他数据。
+- 本地证据 `artifacts/player-captivity-20261013/` 含build01–06、原失败、source/DLL hash receipt、CN/EN与回归日志、准确切片patch；不提交生成产物。完整Stage/打包/部署/push均NOT-RUN；实机/API两版本菜单与总督选择、UI语言、返回/时间、真实provider报价与已付款释放、释放后主队恢复且无重复玩家、转押/读档时迟到请求取消仍LIVE_PENDING。不能把离线fixture或编译当实机验收。
+- 回滚仅对本功能提交做focused inverse并重建，保留其他作者差异；不hard reset/重写历史、不自动改游戏安装。下方其他工作包和旧发行记录继续仅在各自范围有效，本条不更改安装状态。
+
+<a id="bulletin-lore-private-history-20261013"></a>
+## 2026-10-13 快报世界书与玩家历史隐私接线（OFFLINE_VERIFIED / LIVE_PENDING）
+
+<a id="bulletin-fiction-privacy-clarified-20261013"></a>
+### 用户澄清：允许独立虚构，不得泄露真实私聊（3ee9c90d9）
+
+- 最新要求明确区分虚构私事与玩家真实私密对话。文案/测试提交 `3ee9c90d9255e0db9008a30dbb62a3285c830965` 仅修改CN/EN `content/modules/AF.Module.Weekly/ModuleData/WorldBulletinPromptTexts[.en].json:3,6` 的 `AF_WBLT_Prompt_ContextSafety` / `AF_WBLT_Prompt_NoPublicHistory`：允许符合本期事件/世界书的私下谈话、人物私事和暗中插曲；禁止将真实或疑似私密对话复述、影射、换名改写或包装成虚构/传闻/匿名爆料。无获准公开历史不再意味着禁用虚构；重大结果/机制事实边界保持。
+- `13df58684` 的public白名单、只取公开摘要、二次审核、严格ID批准及不明即拒绝完全未变；未把原始私聊发送给writer，未新添存档字段或运行频率。实际消费者仍是代码范围图中的 `WorldBulletinPolicy.BuildSystemPrompt:832` 与 `WorldBulletinContextPolicy.BuildWriterContext:77–79`，reader和content-map不变。
+- 新断言先RED复现旧Prompt没有虚构许可，修正后CN95/EN95通过，含原91项保密/失败/异步/实际接线检查；本地收据 `artifacts/tests/bulletin-context/run-a1aa1c2554d94645ad008d866e611a01/`。仅非嵌入资源修改，本轮未重跑双API、未调用provider、未Stage/部署/打包/push；下方双构建证据仍属于上一切片。离线断言验证规则/输入边界，不保证真实模型不会误判或偶然编出相似细节。回滚本次文案采用focused inverse，不退掉原隐私入口过滤。
+- 本节明确替代下方历史记录中全面禁止“虚构私人经历、对话、匿名来源”的措辞；下方保留为 `13df58684` 当时实现/验收历史，不再作为禁止独立虚构的要求。
+
+- 用户范围：不读最近快报，接世界书与玩家对话历史；私密或判定不明不得编入快报，不能靠猜测泄露编故事。工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`；checkpoint `e66933496`，产品/回归切片 `13df586846a2c1f07e076c7bc0ac6d57fd71f6bc`。保留其他作者人设/俘虏等dirty，不修改政策、三渠道历史写入、存档、默认交互、API路由或构建脚本。
+- 旧缺口：快报writer只有事件/国家背景；世界书变体是带受众的NPC观点，不能假装记者拥有某个NPC的私有知识；旧日记publicity可能把低信任猜测归为`leaked_public`，不能当公开证据。新链只增强当前已选新闻的背景，不让旧对话独立触发快报，也不把历史承诺变成游戏事实。
+- 世界书：真实Knowledge owner读取当前已发布规则快照，每期一次词法匹配本期实体/事件，排除人物/身份/技能/性别/族长限制及玩家/当前NPC映射；最多4段、每规则2个公开受众变体，单段4000/总8000字符。主线程解析已有动态映射，无法解析/超预算整段跳过；文化/地区/角色受众标签随原文送writer，观点、传闻、旧背景不能覆盖当期确证事件。沿用现有检索开关，不新增Tick IO或ONNX请求。
+- 玩家：只查本期参与者最多4名NPC的已有压缩记忆缓存，每人逆序最多64块、最多2候选，总6候选。严格只接受`public`及非空公开材料/依据；`private`、`unclear`、`leaked_public`、缺字段、未来日期和超长整体排除，不导出Summary、AFEF或原始私聊。仅有候选时增加一次同原API的保密/相关性复核；只接受严格JSON中的最多3个已知唯一ID，复制原公开摘要，不接受模型改写事实。无证据、混合私密、格式异常、未知ID、请求失败均零批准；诊断不记录候选/复核原文或异常正文。旧public仍非公开证明，真实模型误判风险不能由离线测试消除。
+- 请求生命周期：主线程capture脱离游戏对象；复核前/后检查save generation，复核后另验collection epoch，过期不发writer并回主线程取消插画。writer固定规则即使有自定义风格也必须保留：已批准内容若仍涉及私密/许可不明必须整段弃用，不得捏造匿名来源、泄密、私人经历、直接引语或因果。无历史明确告知AI不能编；复核失败仍继续事实/世界书快报。固定system审计包含review和writer。CN/EN新增7对资源键及变量、两个实际reader、原content-map映射与EN文件选择规则均核对，未增加输出语言锁。
+- 验证：`python tests/modules/AF.Module.Weekly/BulletinContextTests/run.py --target-framework net10.0` CN91/EN91；涵盖真实capture、writer请求串联、异常降级、异步yield、save/epoch变化、泄密哨兵、映射、限额和实际资源reader。先RED复现“已过期仍发送复核”，修补后GREEN。最终收据 `artifacts/tests/bulletin-context/run-54c315fc5c1442afbda96ec4d42d0c53/` 包含源码哈希、7锚点map和DLL收据。`F4GenerationOwnerTests` 124/0（`run-ff16230927e94b9cb95e207145031874`）、`BulletinArchiveTests` 205（`bulletin-archive-context-20261013-final`）通过；只补真实新增依赖及原缺失的PromptLanguageAudit依赖，不削弱原断言。引擎/provider为叶子替身，不等于实机/真实生成质量验收。
+- 最终原 `scripts/build/build_single_module.ps1` Debug双实现、Bootstrap、双Coup/registration gate exit0，API1.3/1.4各363 warning/0 error、Bootstrap/probe0/0；参考1.3.15.110062及1.4.6.115628，日志 `artifacts/bulletin-context-build-accepted-20261013.log`。用户单独批准仅清理 `bin/Debug/single_module_artifacts` 与 `obj/single_module/Debug`；未Stage/部署/打包。首次构建误选其他测试产物内.NET8 System/Core，后续仅对当前进程设置`DefaultItemExcludes=**/artifacts/**;**/tests/**`纠正引用，不删测试输出、不改项目/脚本。中间政策未定义变量、百科变量竞态失败均留原日志；待其他作者自行修改后最终重新构建通过，没有越界修补。构建包含当时共享工作区其他改动，不声称是隔离的纯本切片产品。
+- [代码范围图](architecture/af-framework-code-scope.md#bulletin-lore-private-history-20261013)记录一基行号/符号/消费者；本轮map记录提交与working-tree均PASS，受影响diff按仓库CRLF风格检查通过。真实provider隐私判断、实机性能/呈现、旧存档和完整CN/EN Stage NOT-RUN；未推送或安装。回滚使用本切片focused inverse，不整树reset、不还原其他作者文件；下方发行/安装历史保持。
+
 <a id="release-160-cn-terminal-worldbook-20261013"></a>
 ## 2026-10-13 1.6.0 整合发行、终端整理与世界书修复（PACKAGED / CN_DEPLOYED_HASH_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 

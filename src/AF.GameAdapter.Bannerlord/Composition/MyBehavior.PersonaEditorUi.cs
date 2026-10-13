@@ -87,7 +87,7 @@ public partial class MyBehavior
   OpenDevHeroNpcMenu = OpenDevHeroNpcMenu,
   CaptureGeneration = SaveRuntimeGuard.CaptureGeneration, IsCurrent = IsMemorySourceEditorCurrent,
   GetSelectedHero = () => _devEditingHero, SetSelectedHero = hero => _devEditingHero = hero,
-  GetNpcPersonaStrings = GetNpcPersonaStrings, GetNpcVoiceId = GetNpcVoiceId,
+  GetNpcPersonaDescription = hero => _personaProfiles.GetDescription(hero?.StringId), GetNpcVoiceId = GetNpcVoiceId,
   ShowDevEditInquiry = ShowDevEditInquiry,
   ClearPersona = hero => SaveNpcPersonaProfile(hero, new NpcPersonaProfile()),
   SavePersonaText = SaveDevPersonaEditorText, SaveVoice = SaveDevPersonaEditorVoice,
@@ -103,10 +103,10 @@ public partial class MyBehavior
    return owner;
   }
  }
- private void SaveDevPersonaEditorText(Hero hero, string personality, string background)
+ private void SaveDevPersonaEditorText(Hero hero, string description)
  {
   NpcPersonaProfile profile = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
-  PersonaImportOwner.ApplyDeveloperText(profile, personality, background, p => SaveNpcPersonaProfile(hero,p));
+  PersonaImportOwner.ApplyDeveloperText(profile, description, p => SaveNpcPersonaProfile(hero,p));
  }
  private void SaveDevPersonaEditorVoice(Hero hero, string voice)
  {

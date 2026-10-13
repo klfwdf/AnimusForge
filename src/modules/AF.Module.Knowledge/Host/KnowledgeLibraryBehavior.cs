@@ -671,6 +671,35 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return KnowledgePromptTexts.Format("PersonaLoreHeader", "[Worldbook reference: {TITLE}]\n", ("TITLE", title)) + content;
 	}
 
+    // Game thread, once per issue. Read only the active library; render mappings before detaching text.
+    internal string BuildBulletinLoreSource(IEnumerable<string> entities, string eventFacts)
+    {
+        if (!ReferenceEquals(Instance, this) || !KnowledgeRetrievalEnabledSafe()) return "";
+        PublishPromptRules();
+        var rules = (_publishedRules ?? Array.Empty<LoreRule>()).Where(r => r != null
+            && CanInjectKnowledgeRule(r, includePlayerPersona: false)
+            && !(r.TextMappings ?? new List<LoreTextMapping>()).Any(m => m != null
+                && ((m.Kind ?? "").StartsWith("current_npc_", StringComparison.Ordinal)
+                    || (m.Kind ?? "").StartsWith("player_", StringComparison.Ordinal)
+                    || m.TargetId == TextMappingTargetCurrentNpc || m.TargetId == TextMappingTargetPlayer)));
+        var excerpts = BulletinLoreSelectionPolicy.Select(rules, entities, eventFacts, 4);
+        var result = new StringBuilder();
+        foreach (var excerpt in excerpts)
+        {
+            // Fail closed on unresolved mappings instead of publishing raw placeholder text.
+            if ((excerpt.Rule.TextMappings ?? new List<LoreTextMapping>()).Any(m => m != null
+                && !string.IsNullOrEmpty(m.SourceText) && excerpt.Variant.Content.Contains(m.SourceText)
+                && string.IsNullOrWhiteSpace(ResolveTextMappingValueOrFallback(m, excerpt.Rule, null, null)))) continue;
+            string content = ApplyRuleTextMappings(excerpt.Rule, excerpt.Variant.Content, null, null).Trim();
+            if (content.Length == 0 || content.Length > 4000) continue;
+            string line = KnowledgePromptTexts.Format("BulletinLoreEntry", "Worldbook: {TOPIC}; audience conditions: {AUDIENCE}\n{TEXT}",
+                ("TOPIC", excerpt.Rule.Keywords?.FirstOrDefault() ?? excerpt.Rule.Id),
+                ("AUDIENCE", excerpt.Audience), ("TEXT", content));
+            if (result.Length + line.Length + Environment.NewLine.Length > 8000) continue;
+            result.AppendLine(line);
+        }
+        return result.ToString().TrimEnd();
+    }
 	private static string TrimPreview(string s, int maxChars)
 	{
 		s = (s ?? "").Replace("\r", "").Replace("\n", " ").Trim();

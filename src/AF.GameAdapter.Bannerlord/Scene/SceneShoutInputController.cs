@@ -1250,7 +1250,7 @@ internal sealed class SceneShoutInputController
 	{
 		try
 		{
-			return CurrentInstance != null && Campaign.Current?.ConversationManager?.IsConversationInProgress == true && !PlayerEncounterCompat.IsInPostBattleResultFlow() && TryResolveNativeConversationTarget(out var _, out var _, out var _);
+			return CurrentInstance != null && Campaign.Current?.ConversationManager?.IsConversationInProgress == true && !PlayerEncounterCompat.IsInPostBattleResultFlow() && TryResolveNativeConversationTarget(out var captiveTarget, out var _, out var _) && PlayerCaptivityConversation.AllowsInteraction(captiveTarget);
 		}
 		catch
 		{

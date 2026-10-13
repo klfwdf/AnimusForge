@@ -11,7 +11,7 @@ internal sealed class PersonaEquipmentPromptCaptureAdapter {
  private string GetClanTierReputationLabel(int tier) => _my.GetClanTierReputationLabel(tier);
  private string GetHeroCultureNameForPrompt(Hero hero) => _my.GetHeroCultureNameForPrompt(hero);
  private void GetHeroFactionAndLiegeForPrompt(Hero hero, out string factionName, out string liegeName) => _my.GetHeroFactionAndLiegeForPrompt(hero, out factionName, out liegeName);
- private void GetNpcPersonaStrings(Hero hero, out string personality, out string background) => _my.GetNpcPersonaStrings(hero, out personality, out background);
+ private string GetNpcPersonaDescription(Hero hero) => _my.GetNpcPersonaDescription(hero);
  private string GetNpcPersonaContext(Hero hero) => _my.GetNpcPersonaContext?.Invoke(hero) ?? "";
  private string BuildCeremonyRoleFactForPrompt(int agentIndex) => _scene.BuildCeremonyRoleFactForPrompt(agentIndex);
  private string BuildHeroPartyPrisonersLineForPrompt(Hero hero, bool secondPerson, bool includeDetails = true) => _scene.BuildHeroPartyPrisonersLineForPrompt(hero, secondPerson, includeDetails);
@@ -96,10 +96,9 @@ internal sealed class PersonaEquipmentPromptCaptureAdapter {
 		{
 			cultureText += cultureSuffix;
 		}
-		GetNpcPersonaStrings(npcHero, out var personality, out var background);
+		string personaDescription = GetNpcPersonaDescription(npcHero);
 		string personaContext = GetNpcPersonaContext(npcHero);
-		string personalityText = string.IsNullOrWhiteSpace(personality) ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_4") : personality.Trim();
-		string backgroundText = string.IsNullOrWhiteSpace(background) ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_4") : background.Trim();
+		string description = string.IsNullOrWhiteSpace(personaDescription) ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_4") : personaDescription;
 		string nobleEtiquettePrompt = BuildNobleEtiquettePromptForHero(npcHero);
 		string clanRole = npcHero.IsFemale ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_5") : AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_6");
 		try
@@ -138,8 +137,7 @@ internal sealed class PersonaEquipmentPromptCaptureAdapter {
             equipmentText = equipmentText,
             ageText = ageText,
             cultureText = AdapterPromptCaptureTexts.PcapProjectKnown(cultureText),
-            personalityText = AdapterPromptCaptureTexts.PcapProjectKnown(personalityText),
-            backgroundText = AdapterPromptCaptureTexts.PcapProjectKnown(backgroundText),
+            description = description,
             personaContext = AdapterPromptCaptureTexts.PcapProjectKnown(personaContext),
             nobleEtiquettePrompt = nobleEtiquettePrompt,
             clanRole = AdapterPromptCaptureTexts.PcapProjectKnown(clanRole),
@@ -166,8 +164,8 @@ internal string BuildNpcSystemIntro(Hero npcHero, bool includeTradePricing) => C
 		{
 			identity = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_8");
 		}
-		string personality = string.IsNullOrWhiteSpace(npc.PersonalityDesc) ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_4") : npc.PersonalityDesc.Trim();
-		string background = string.IsNullOrWhiteSpace(npc.BackgroundDesc) ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_4") : npc.BackgroundDesc.Trim();
+		string description = npc.GetPersonaDescription();
+        if (string.IsNullOrWhiteSpace(description)) description = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_4");
 		string personaContext = npc.PersonaContext ?? "";
 		string faction = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_2");
 		string clan = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_1");
@@ -332,8 +330,7 @@ internal string BuildNpcSystemIntro(Hero npcHero, bool includeTradePricing) => C
             name = name,
             givenName = givenName,
             identity = AdapterPromptCaptureTexts.PcapProjectKnown(identity),
-            personality = AdapterPromptCaptureTexts.PcapProjectKnown(personality),
-            background = AdapterPromptCaptureTexts.PcapProjectKnown(background),
+            description = description,
             personaContext = AdapterPromptCaptureTexts.PcapProjectKnown(personaContext),
             faction = AdapterPromptCaptureTexts.PcapProjectKnown(faction),
             clan = AdapterPromptCaptureTexts.PcapProjectKnown(clan),

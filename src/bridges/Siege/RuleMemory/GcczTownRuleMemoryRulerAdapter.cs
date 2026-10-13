@@ -48,7 +48,7 @@ internal static class GcczTownRuleMemoryRulerAdapter
 		string personality = string.Empty;
 		if (ruler != Hero.MainHero)
 		{
-			MyBehavior.GetNpcPersonaForExternal(ruler, out personality, out _);
+			personality = MyBehavior.GetNpcPersonaDescriptionForExternal(ruler);
 		}
 		string traits = string.Join(
 			", ",

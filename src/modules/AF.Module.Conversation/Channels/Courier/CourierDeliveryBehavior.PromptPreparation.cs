@@ -252,7 +252,7 @@ public partial class CourierDeliveryBehavior
 			string commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(recipient, recipient.CharacterObject, -1);
 			extras = string.IsNullOrWhiteSpace(extras) ? commandTasks : (extras.TrimEnd() + "\n" + commandTasks);
 		}
-		List<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(recipient, -1, includeCurrentActiveSceneSession: false);
+		List<ConversationMessage> persistentMemoryRoleMessages = input.History.Messages;
 		string npcRoleContext = ShoutBehavior.BuildHeroStableRoleContextForExternal(recipient);
 		List<object> messages = BuildCourierReplyMessages(recipient, session, extras, extraFact, historyText, persistentMemoryRoleMessages, npcRoleContext, ctx?.PreprocessExcludedRuleBlock);
 		LogCourierContextAlignment("reply", session.Id, recipient, npcRoleContext, extras, ctx?.EntityPostprocessContext, historyText, persistentMemoryRoleMessages);
@@ -295,7 +295,7 @@ public partial class CourierDeliveryBehavior
 			string commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(sender, sender.CharacterObject, -1);
 			extras = string.IsNullOrWhiteSpace(extras) ? commandTasks : (extras.TrimEnd() + "\n" + commandTasks);
 		}
-		List<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(sender, -1, includeCurrentActiveSceneSession: false);
+		List<ConversationMessage> persistentMemoryRoleMessages = input.History.Messages;
 		string npcRoleContext = ShoutBehavior.BuildHeroStableRoleContextForExternal(sender);
 		List<object> messages = BuildInboundNpcLetterMessages(sender, session, seed, extras, extraFact, historyText, persistentMemoryRoleMessages, npcRoleContext, ctx?.PreprocessExcludedRuleBlock);
 		LogCourierContextAlignment("inbound", session.Id, sender, npcRoleContext, extras, ctx?.EntityPostprocessContext, historyText, persistentMemoryRoleMessages);

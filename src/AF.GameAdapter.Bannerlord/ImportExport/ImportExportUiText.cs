@@ -35,7 +35,7 @@ internal static class ImportExportUiText
     internal static string KeyEmpty() => T("AF_UI_ImportExport_KeyEmpty", "Export failed: key is empty.");
     internal static string EntryNotFound(string value) => T("AF_UI_ImportExport_EntryNotFound", "Export failed: the entry was not found: {VALUE}", ("VALUE", value));
     internal static string NpcExportMissing() => T("AF_UI_ImportExport_NpcExportMissing", "Import failed: this NPC has no corresponding export file.");
-    internal static string NpcFileMismatch() => T("AF_UI_ImportExport_NpcFileMismatch", "Import failed: the personality/background file does not match the current NPC.");
+    internal static string NpcFileMismatch() => T("AF_UI_ImportExport_NpcFileMismatch", "Import failed: the persona file does not match the current NPC.");
     internal static string JsonParseFailed() => T("AF_UI_ImportExport_JsonParseFailed", "Import failed: JSON parsing failed.");
     internal static string WriteFailed() => T("AF_UI_ImportExport_WriteFailed", "Import failed: writing the rule failed.");
     internal static string IdMismatch(string id) => T("AF_UI_ImportExport_IdMismatch", "Import failed: the file Id does not match (file Id={ID}).", ("ID", id));
@@ -71,8 +71,8 @@ internal static class ImportExportUiText
     internal static string KnowledgeDuplicateTitle() => T("AF_UI_ImportExport_KnowledgeDuplicateTitle", "Duplicates detected - Knowledge");
     internal static string KnowledgeDuplicateBody(string id) => T("AF_UI_ImportExport_KnowledgeDuplicateBody", "A Knowledge rule with the same RuleId already exists: {ID}\nChoose how to proceed:", ("ID", id));
     internal static string KnowledgeDuplicateMany(int count, int total) => T("AF_UI_ImportExport_KnowledgeDuplicateMany", "Imported Knowledge rules contain duplicate RuleIds.\nDuplicates: {COUNT} / total: {TOTAL}\nChoose how to proceed:", ("COUNT", count.ToString()), ("TOTAL", total.ToString()));
-    internal static string PersonaDuplicateTitle() => T("AF_UI_ImportExport_PersonaDuplicateTitle", "Duplicates detected - personality/background");
-    internal static string PersonaDuplicateBody(string id) => T("AF_UI_ImportExport_PersonaDuplicateBody", "This NPC already has personality/background data: {ID}\nChoose how to proceed:", ("ID", id));
+    internal static string PersonaDuplicateTitle() => T("AF_UI_ImportExport_PersonaDuplicateTitle", "Duplicates detected - persona");
+    internal static string PersonaDuplicateBody(string id) => T("AF_UI_ImportExport_PersonaDuplicateBody", "This NPC already has persona data: {ID}\nChoose how to proceed:", ("ID", id));
     internal static string PersonaDuplicateMany(int count, int total) => T("AF_UI_ImportExport_PersonaDuplicateMany", "Imported data contains duplicate HeroIds.\nDuplicates: {COUNT} / total: {TOTAL}\nChoose how to proceed:", ("COUNT", count.ToString()), ("TOTAL", total.ToString()));
     internal static string DebtDuplicateTitle() => T("AF_UI_ImportExport_DebtDuplicateTitle", "Duplicates detected - debt");
     internal static string DebtDuplicateBody(string id) => T("AF_UI_ImportExport_DebtDuplicateBody", "This NPC already has debt records: {ID}\nChoose how to proceed:", ("ID", id));

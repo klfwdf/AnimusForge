@@ -160,8 +160,7 @@ public sealed class PlayerExportsService
 
         ValidateEditableFile(packageRoot, filePath);
 
-        profile.Personality = (profile.Personality ?? "").Trim();
-        profile.Background = (profile.Background ?? "").Trim();
+        profile.NormalizeDescription();
         profile.VoiceId = (profile.VoiceId ?? "").Trim();
         return _json.SaveUtf8WithBackup(filePath, _json.ToIndentedJson(profile), packageRoot);
     }

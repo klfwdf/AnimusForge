@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
 using MCM.Common;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using AnimusForge;
 
@@ -51,6 +53,29 @@ internal static class Program
         modern.NewsMode = new Dropdown<string>(new[] { "bad" }, 99);
         Check(modern.NewsMode.SelectedIndex == 1 && modern.NewsMode.Count == 2, "invalid persisted dropdown index repaired");
         Check(new DuelSettings().UseWorldBulletin && new DuelSettings().AutoGenerateWorldBulletins, "fresh defaults remain bulletin enabled");
+        Check(!new DuelSettings().WorldBulletinReadPlayerHistory, "bulletin player history is opt-in by default");
+        var history = new DuelSettings();
+        JsonConvert.PopulateObject("{\"AutoGenerateWorldBulletins\":true}", history);
+        history.OnPropertyChanged("LOADING_COMPLETE");
+        Check(!history.WorldBulletinReadPlayerHistory, "old settings without the history key remain opted out");
+        foreach (bool enabled in new[] { true, false })
+        {
+            history.WorldBulletinReadPlayerHistory = enabled;
+            var restored = new DuelSettings();
+            JsonConvert.PopulateObject(JObject.FromObject(history).ToString(), restored);
+            restored.OnPropertyChanged("LOADING_COMPLETE");
+            Check(restored.WorldBulletinReadPlayerHistory == enabled, "history JSON round trip: " + enabled);
+            restored.UseWorldBulletin = !restored.UseWorldBulletin;
+            restored.AutoGenerateWorldBulletins = !restored.AutoGenerateWorldBulletins;
+            restored.AutoGenerateWeeklyReports = !restored.AutoGenerateWeeklyReports;
+            Check(restored.WorldBulletinReadPlayerHistory == enabled, "news mode and publishing do not mutate history opt-in: " + enabled);
+        }
+        var metadata = typeof(DuelSettings).GetProperty(nameof(DuelSettings.WorldBulletinReadPlayerHistory)).GetCustomAttributesData();
+        var toggle = metadata.Single(a => a.AttributeType.Name == "SettingPropertyBoolAttribute");
+        Check(toggle.NamedArguments.Any(a => a.MemberName == "RequireRestart" && Equals(a.TypedValue.Value, false)) &&
+            metadata.Any(a => a.AttributeType.Name == "SettingPropertyGroupAttribute") &&
+            !metadata.Any(a => a.AttributeType.Name == "JsonIgnoreAttribute"),
+            "history setting retains MCM persistence metadata without requiring restart");
         string folder = Path.Combine("artifacts", "bulletin-settings-news-20261007", "settings-files-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(folder);
         TaleWorlds.Library.PlatformFilePath.TestPath = Path.Combine(folder, "test.json");

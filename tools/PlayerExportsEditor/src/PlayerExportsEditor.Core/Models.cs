@@ -203,8 +203,20 @@ public sealed class NpcPersonaTrait
     public int Strength { get; set; }
 }
 
-public sealed class NpcPersonaProfile
+public sealed class NpcPersonaProfile : System.Text.Json.Serialization.IJsonOnDeserialized
 {
+    public string? HeroId { get; set; }
+    public string? HeroName { get; set; }
+    public string? Description { get; set; }
+
+    public void NormalizeDescription()
+    {
+        Description = AnimusForge.Refactor.Runtime.NpcPersonaProfilePolicy.ResolveDescription(Description, SchemaVersion, Personality, Background);
+        SchemaVersion = Math.Max(SchemaVersion, 3);
+    }
+
+    void System.Text.Json.Serialization.IJsonOnDeserialized.OnDeserialized() => NormalizeDescription();
+
     public string? Personality { get; set; }
 
     public string? Background { get; set; }

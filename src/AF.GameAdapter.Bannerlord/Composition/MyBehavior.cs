@@ -348,6 +348,17 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string Background;
 
+		public string Description;
+
+		internal void NormalizeDescription()
+		{
+			Description = AnimusForge.Refactor.Runtime.NpcPersonaProfilePolicy.ResolveDescription(Description, SchemaVersion, Personality, Background);
+			SchemaVersion = Math.Max(SchemaVersion, 3);
+		}
+
+		[System.Runtime.Serialization.OnDeserialized]
+		internal void OnPersonaDeserialized(System.Runtime.Serialization.StreamingContext context) => NormalizeDescription();
+
 		public List<NpcPersonaTrait> Traits = new List<NpcPersonaTrait>();
 
 		public List<string> Motivations = new List<string>();
@@ -5575,6 +5586,12 @@ private void OpenKingdomRebellionApiRepairFlow()
 		}
 	}
 
+	internal static string GetNpcPersonaDescriptionForExternal(Hero hero)
+	{
+		try { return hero == null ? "" : Campaign.Current?.GetCampaignBehavior<MyBehavior>()?._personaProfiles.GetDescription(hero.StringId) ?? ""; }
+		catch { return ""; }
+	}
+
 	internal static string GetNpcPersonaContextForExternal(Hero hero) => GetNpcPersonaContextForExternal(hero, false);
 
 	internal static string GetNpcPersonaContextForExternal(Hero hero, bool forUi)
@@ -5677,7 +5694,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			if (myBehavior == null || hero == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Persona_RerollUnavailable", "This Hero cannot regenerate personality and background right now.")));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Persona_RerollUnavailable", "This Hero cannot regenerate persona right now.")));
 				return;
 			}
 			_ = myBehavior.RunHeroPersonaRerollAsync(hero, null);
@@ -5685,7 +5702,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 		catch (Exception ex)
 		{
 			Logger.Log("EncyclopediaPersona", "[WARN] Failed to open Hero personality/background regeneration: " + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Persona_RerollOpenFailed", "Could not open personality and background regeneration.")));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Persona_RerollOpenFailed", "Could not open persona regeneration.")));
 		}
 	}
 
@@ -5785,7 +5802,7 @@ private void OpenKingdomRebellionApiRepairFlow()
 		{
 			text = DeveloperUiText.T("AF_UI_Persona_NpcFallback", "this NPC");
 		}
-		return DeveloperUiText.F("AF_UI_Persona_GeneratingHint", "Generating personality and background for {NAME}; please wait...", "NAME", text);
+		return DeveloperUiText.F("AF_UI_Persona_GeneratingHint", "Generating persona for {NAME}; please wait...", "NAME", text);
 	}
 
 	public static string BuildCurrentDateFactForExternal()

@@ -37,7 +37,7 @@
   "AF_LLM_PROMPT_Execution_Noble": "Noble: ",
   "AF_LLM_PROMPT_Execution_Yes": "yes",
   "AF_LLM_PROMPT_Execution_No": "no",
-  "AF_LLM_PROMPT_Execution_Personality": "Personality: ",
+  "AF_LLM_PROMPT_Execution_Personality": "Persona: ",
   "AF_LLM_PROMPT_Execution_Background": "Background: ",
   "AF_LLM_PROMPT_Execution_Valor": "Valor: ",
   "AF_LLM_PROMPT_Execution_Honor": "Honor: ",

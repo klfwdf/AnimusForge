@@ -4,8 +4,8 @@ namespace PlayerExportsEditor.App;
 
 public sealed class PersonaEditorForm : Form
 {
-    private readonly TextBox _personality = new();
-    private readonly TextBox _background = new();
+    private readonly TextBox _description = new();
+    private readonly NpcPersonaProfile _original;
     private readonly TextBox _traits = new();
     private readonly TextBox _motivations = new();
     private readonly TextBox _values = new();
@@ -20,9 +20,10 @@ public sealed class PersonaEditorForm : Form
         Height = 700;
         MinimumSize = new Size(760, 560);
         StartPosition = FormStartPosition.CenterParent;
+        _original = profile ?? new NpcPersonaProfile();
+        _original.NormalizeDescription();
         BuildLayout(entityId, displayName);
-        _personality.Text = profile?.Personality ?? "";
-        _background.Text = profile?.Background ?? "";
+        _description.Text = _original.Description ?? "";
         _traits.Text = string.Join(Environment.NewLine, profile?.Traits?.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Id)).Select(x => (x.Id ?? "").Trim() + ":" + Math.Max(1, Math.Min(3, x.Strength))) ?? Array.Empty<string>());
         _motivations.Text = string.Join(Environment.NewLine, profile?.Motivations ?? new List<string>());
         _values.Text = string.Join(Environment.NewLine, profile?.Values ?? new List<string>());
@@ -33,27 +34,29 @@ public sealed class PersonaEditorForm : Form
 
     public NpcPersonaProfile Profile => new()
     {
-        Personality = _personality.Text.Trim(),
-        Background = _background.Text.Trim(),
+        HeroId = _original.HeroId,
+        HeroName = _original.HeroName,
+        Personality = _original.Personality,
+        Background = _original.Background,
+        Description = _description.Text.Trim(),
         Traits = ParseTraits(_traits.Text),
         Motivations = SplitLines(_motivations.Text),
         Values = SplitLines(_values.Text),
         Fears = SplitLines(_fears.Text),
         SpeechStyle = _speechStyle.Text.Trim(),
-        SchemaVersion = 2,
+        SchemaVersion = Math.Max(_original.SchemaVersion, 3),
         VoiceId = _voiceId.Text.Trim()
     };
 
     private void BuildLayout(string entityId, string displayName)
     {
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 10, ColumnCount = 2, Padding = new Padding(10) };
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 9, ColumnCount = 2, Padding = new Padding(10) };
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 20));
-        root.RowStyles.Add(new RowStyle(SizeType.Percent, 25));
-        root.RowStyles.Add(new RowStyle(SizeType.Percent, 30));
+        root.RowStyles.Add(new RowStyle(SizeType.Percent, 55));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 20));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 20));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 20));
@@ -71,36 +74,32 @@ public sealed class PersonaEditorForm : Form
         ConfigureLongText(_traits);
         root.Controls.Add(_traits, 1, 2);
 
-        root.Controls.Add(Label(PersonaEditorText.Get("Personality")), 0, 3);
-        ConfigureLongText(_personality);
-        root.Controls.Add(_personality, 1, 3);
+        root.Controls.Add(Label(PersonaEditorText.Get("Description")), 0, 3);
+        ConfigureLongText(_description);
+        root.Controls.Add(_description, 1, 3);
 
-        root.Controls.Add(Label(PersonaEditorText.Get("Background")), 0, 4);
-        ConfigureLongText(_background);
-        root.Controls.Add(_background, 1, 4);
-
-        root.Controls.Add(Label(PersonaEditorText.Get("Motivations")), 0, 5);
+        root.Controls.Add(Label(PersonaEditorText.Get("Motivations")), 0, 4);
         ConfigureLongText(_motivations);
-        root.Controls.Add(_motivations, 1, 5);
+        root.Controls.Add(_motivations, 1, 4);
 
-        root.Controls.Add(Label(PersonaEditorText.Get("Values")), 0, 6);
+        root.Controls.Add(Label(PersonaEditorText.Get("Values")), 0, 5);
         ConfigureLongText(_values);
-        root.Controls.Add(_values, 1, 6);
+        root.Controls.Add(_values, 1, 5);
 
-        root.Controls.Add(Label(PersonaEditorText.Get("Fears")), 0, 7);
+        root.Controls.Add(Label(PersonaEditorText.Get("Fears")), 0, 6);
         ConfigureLongText(_fears);
-        root.Controls.Add(_fears, 1, 7);
+        root.Controls.Add(_fears, 1, 6);
 
-        root.Controls.Add(Label(PersonaEditorText.Get("SpeechStyle")), 0, 8);
+        root.Controls.Add(Label(PersonaEditorText.Get("SpeechStyle")), 0, 7);
         ConfigureLongText(_speechStyle);
-        root.Controls.Add(_speechStyle, 1, 8);
+        root.Controls.Add(_speechStyle, 1, 7);
 
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(0, 7, 0, 0) };
         var ok = new Button { Text = PersonaEditorText.Get("Save"), Width = 100, DialogResult = DialogResult.OK };
         var cancel = new Button { Text = PersonaEditorText.Get("Cancel"), Width = 100, DialogResult = DialogResult.Cancel };
         buttons.Controls.Add(ok);
         buttons.Controls.Add(cancel);
-        root.Controls.Add(buttons, 0, 9);
+        root.Controls.Add(buttons, 0, 8);
         root.SetColumnSpan(buttons, 2);
         AcceptButton = ok;
         CancelButton = cancel;

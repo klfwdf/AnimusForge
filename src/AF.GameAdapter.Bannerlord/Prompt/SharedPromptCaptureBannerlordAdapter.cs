@@ -970,6 +970,8 @@ internal static List<string> RunCourierRulePreprocessRetrieval(MyBehavior.Courie
 
         internal Func<string,string> Overview;
 
+        internal Func<string,string,int,bool,List<ConversationMessage>> Uncompressed;
+
         internal Func<string,string,int,string,string,bool,MyBehavior.HistoryPromptSnapshot,string> BuildContext;
 
     }
@@ -978,7 +980,8 @@ internal static List<string> RunCourierRulePreprocessRetrieval(MyBehavior.Courie
 
 internal static Func<string> CaptureHistoryContextWorkForHero(Func<HistoryWorkCapturePorts> readOwner, Hero hero, string currentInput,
 
-        string secondaryInput, bool includeCurrentActiveSceneSession, long generation)
+        string secondaryInput, bool includeCurrentActiveSceneSession, long generation,
+        Action<HistoryPromptSnapshot> captured = null, int targetAgentIndex = -1, bool? includeCurrentRawSession = null)
 
     {
 
@@ -986,13 +989,14 @@ internal static Func<string> CaptureHistoryContextWorkForHero(Func<HistoryWorkCa
 
         return CaptureHistoryContextWorkById(readOwner, CampaignCharacterRecordCaptureAdapter.GetMemoryHeroId(hero), hero?.Name?.ToString() ?? "NPC",
 
-            currentInput, secondaryInput, includeCurrentActiveSceneSession, generation);
+            currentInput, secondaryInput, includeCurrentActiveSceneSession, generation, captured, targetAgentIndex, includeCurrentRawSession);
 
     }
 
 internal static Func<string> CaptureHistoryContextWorkById(Func<HistoryWorkCapturePorts> readOwner, string memoryId, string memoryName,
 
-        string currentInput, string secondaryInput, bool includeCurrentActiveSceneSession, long generation)
+        string currentInput, string secondaryInput, bool includeCurrentActiveSceneSession, long generation,
+        Action<HistoryPromptSnapshot> captured = null, int targetAgentIndex = -1, bool? includeCurrentRawSession = null)
 
     {
 
@@ -1034,6 +1038,10 @@ internal static Func<string> CaptureHistoryContextWorkById(Func<HistoryWorkCaptu
 
             Generation = generation,
 
+            IsCurrentOwner = owner.IsCurrentOwner,
+
+            Cancellation = LlmNonStreamingTransport.CurrentOwnerCancellation,
+
             GameDay = MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe(),
 
             Scene = scene,
@@ -1056,21 +1064,31 @@ internal static Func<string> CaptureHistoryContextWorkById(Func<HistoryWorkCaptu
 
                 ? MemoryRecallInputCaptureAdapter.BuildMemoryRecallQueryText(null, currentInput, secondaryInput, drafts, scene) : "",
 
-            Blocks = blocks.Select(CopyHistoryRecallBlock).ToList()
+            Blocks = blocks.Select(CopyHistoryRecallBlock).ToList(),
+
+            // Compression commits on this same game thread. Capture projected raw messages
+            // before returning work, so a later commit cannot remove this request's history.
+            UncompressedMessages = captured == null ? null : owner.Uncompressed(id, memoryName, targetAgentIndex,
+                includeCurrentRawSession ?? includeCurrentActiveSceneSession)
 
         };
 
         if (!SaveRuntimeGuard.IsCurrentGeneration(generation)) return null;
 
+        captured?.Invoke(snapshot);
+
         return () =>
 
         {
 
-            if (!owner.IsCurrentOwner() || !SaveRuntimeGuard.IsCurrentGeneration(generation)) return "";
+            if (!snapshot.IsCurrent()) return "";
 
-            return owner.BuildContext(id, memoryName, 0, currentInput, secondaryInput,
+            string context = owner.BuildContext(id, memoryName, 0, currentInput, secondaryInput,
 
                 includeCurrentActiveSceneSession, snapshot);
+            if (!snapshot.IsCurrent() || LlmNonStreamingTransport.CurrentOwnerCancellation.IsCancellationRequested) return "";
+            snapshot.Context = context;
+            return context;
 
         };
 

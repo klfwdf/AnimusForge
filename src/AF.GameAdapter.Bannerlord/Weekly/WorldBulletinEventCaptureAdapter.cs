@@ -236,7 +236,29 @@ internal List<string> BuildWorldBulletinKingdomContext(WorldBulletinSelection se
 		return lines;
 	}
 
-internal WorldBulletinPromptFacts CaptureWorldBulletinPromptFacts(WorldBulletinSelection selection,WorldBulletinFocus focus) { Kingdom home=FindKingdomById(focus.PlayerKingdomId);return new WorldBulletinPromptFacts {ScopeLine=WeeklyMaterialTexts.Prompt("AF_REC_BulletinScopeLine").Replace("{AREA}",home!=null?GetKingdomDisplayName(home):WeeklyMaterialTexts.Prompt("AF_REC_BulletinScopeFallbackArea")),Date=GetCurrentGameDateTextSafe(),KingdomContext=BuildWorldBulletinKingdomContext(selection)}; }
+internal WorldBulletinPromptFacts CaptureWorldBulletinPromptFacts(WorldBulletinSelection selection,WorldBulletinFocus focus)
+    {
+        Kingdom home = FindKingdomById(focus.PlayerKingdomId);
+        var facts = new WorldBulletinPromptFacts
+        {
+            ScopeLine = WeeklyMaterialTexts.Prompt("AF_REC_BulletinScopeLine").Replace("{AREA}", home != null ? GetKingdomDisplayName(home) : WeeklyMaterialTexts.Prompt("AF_REC_BulletinScopeFallbackArea")),
+            Date = GetCurrentGameDateTextSafe(), KingdomContext = BuildWorldBulletinKingdomContext(selection)
+        };
+        var selected = selection.MajorFacts.Concat(selection.Minors.SelectMany(m => m.Events)).ToList();
+        facts.EventFacts = string.Join("\n", selected.Select(f => f.Sentence + " " + f.Detail));
+        facts.HistoryHeroIds = selected.SelectMany(f => f.Participants ?? new List<WorldBulletinParticipant>())
+            .Select(p => p.HeroId).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.OrdinalIgnoreCase)
+            .Take(WorldBulletinContextPolicy.MaxHistoryHeroes).ToList();
+        try
+        {
+            var entities = selected.SelectMany(f => f.Participants ?? new List<WorldBulletinParticipant>()).Select(p => p.Name)
+                .Concat(selected.SelectMany(f => f.KingdomIds).Distinct(StringComparer.OrdinalIgnoreCase)
+                    .Select(id => FindKingdomById(id)).Where(k => k != null).Select(GetKingdomDisplayName));
+            facts.Lore = KnowledgeLibraryBehavior.Instance?.BuildBulletinLoreSource(entities, facts.EventFacts) ?? "";
+        }
+        catch (Exception ex) { Logger.Log("WorldBulletin", "[Context] lore unavailable: " + ex.GetType().Name); }
+        return facts;
+    }
 
 internal void OnWorldBulletinWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
 	{

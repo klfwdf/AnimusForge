@@ -1,0 +1,151 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+using System.Diagnostics;
+using TaleWorlds.Library;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.MountAndBlade;
+using HistoryPromptSnapshot = AnimusForge.MyBehavior.HistoryPromptSnapshot;
+using AnimusForge.Refactor.Adapters;
+
+namespace TaleWorlds.CampaignSystem {
+    internal sealed class Hero { internal string Id="ada", Name="Ada"; }
+    internal sealed class CharacterObject { internal Hero HeroObject; }
+}
+namespace TaleWorlds.MountAndBlade {
+    internal sealed class Agent { internal int Index; internal object Character; internal bool IsActive()=>true; }
+    internal sealed class Mission { internal static Mission Current=new(); internal List<Agent> Agents=new(); }
+}
+namespace AnimusForge {
+    internal static class LlmNonStreamingTransport { internal static CancellationToken CurrentOwnerCancellation; }
+    internal sealed class NpcDataPacket { internal int AgentIndex; }
+    internal sealed class NativeConversationSessionOwner { }
+    internal sealed class ConversationSpeechTextOptions { internal ConversationSpeechTextOptions(bool a,bool b){} }
+    internal static class ConversationSpeechTextRules { internal static string NormalizeNativeConversationVisibleTextKey(string s,ConversationSpeechTextOptions o)=>s; }
+    internal static class ShoutUtils { internal static NpcDataPacket ExtractNpcData(Agent agent)=>new(); }
+    internal static class AfGcczShoutBridge { internal static bool ShouldUsePersistentPersonalMemory(Hero h,CharacterObject c,int i)=>true; }
+    internal static class SceneConversationHistoryOwner { internal static int SessionId=1; }
+    internal static class MemoryBusinessStateOwner {
+        internal static int GetMemoryFinalInjectCountFromSettings()=>2;
+        internal static int GetMemoryCandidateLimitFromSettings()=>3;
+        internal static int GetMemoryPreprocessModeFromSettings()=>1;
+    }
+    internal static partial class MyBehavior {
+        @@SNAPSHOT@@
+        internal static SharedPromptCaptureBannerlordAdapter.HistoryWorkCapturePorts Ports;
+        internal static Func<string> CaptureHistoryContextWorkById(string id,string name,string input,string secondary,bool include,long generation,Action<HistoryPromptSnapshot> captured=null,int agent=-1,bool? includeCurrentRawSession=null)
+            => SharedPromptCaptureBannerlordAdapter.CaptureHistoryContextWorkById(()=>Ports,id,name,input,secondary,include,generation,captured,agent,includeCurrentRawSession);
+        internal static Func<string> CaptureHistoryContextWorkForHero(Hero hero,string input,string secondary,bool include,long generation,Action<HistoryPromptSnapshot> captured=null,int agent=-1,bool? includeCurrentRawSession=null)
+            => SharedPromptCaptureBannerlordAdapter.CaptureHistoryContextWorkForHero(()=>Ports,hero,input,secondary,include,generation,captured,agent,includeCurrentRawSession);
+    }
+    internal sealed class ShoutBehavior {
+        internal static bool IsBannerlordMainThreadForNativeActions()=>TWParallel.IsMainThread();
+        internal sealed class PrecomputedShoutRagContext {
+            internal bool HasPersistedHistoryContext;
+            internal string PersistedHistoryContext;
+            internal Task<string> PersistedHistoryContextTask;
+        }
+    }
+    internal static class SnapshotChecks {
+        static void Check(bool ok,string name) { if(!ok)throw new Exception("FAIL "+name); Console.WriteLine("PASS "+name); }
+        internal static void Run() {
+            TWParallel.MainThread=Environment.CurrentManagedThreadId;
+            SaveRuntimeGuard.Current=1;
+            bool ownerCurrent=true; int rawCaptures=0; bool rawIncludesCurrent=false;
+            var hero=new Hero(); var heroes=new Dictionary<int,Hero>{{7,hero}};
+            var blocks=new List<CompressedMemoryBlock>();
+            var raw=new List<ConversationMessage>{new(){Role="assistant",Content="I remember our promise."}};
+            string overview="overview before";
+            var ports=new SharedPromptCaptureBannerlordAdapter.HistoryWorkCapturePorts {
+                IsCurrentOwner=()=>ownerCurrent,
+                LoadBlocks=id=> {Check(TWParallel.IsMainThread(),"blocks captured on main thread");return blocks;},
+                LoadDrafts=id=>new(), Overview=id=>overview,
+                Uncompressed=(id,name,agent,include)=> {
+                    Check(TWParallel.IsMainThread(),"raw projected on same main thread"); rawCaptures++; rawIncludesCurrent=include;
+                    return raw.Select(x=>new ConversationMessage{Role=x.Role,Content=x.Content}).ToList();
+                },
+                BuildContext=(id,name,max,input,secondary,include,snapshot)=>snapshot.Overview+" "+string.Join(" ",snapshot.Blocks.Select(b=>b.Summary))
+            };
+            // The request captures BEFORE compression commits. Simulate ApplyDaily's publish+draft removal.
+            HistoryPromptSnapshot before=null;
+            var work=SharedPromptCaptureBannerlordAdapter.CaptureHistoryContextWorkForHero(()=>ports,hero,"hi","",false,1,s=>before=s,7);
+            blocks.Add(new(){Id="day-1",GameDayIndex=1,Summary="summary of our promise",AfefLines=new(){"fact"}});
+            raw[0].Content="mutated"; raw.Clear(); overview="overview after";
+            Task.Run(work).GetAwaiter().GetResult();
+            Check(before.UncompressedMessages.Single().Content=="I remember our promise." && !before.Context.Contains("summary of"),"compression after capture retains original even without new summary");
+            Check(before.Context.Contains("overview before"),"overview frozen with blocks and raw");
+            HistoryPromptSnapshot after=null;
+            work=SharedPromptCaptureBannerlordAdapter.CaptureHistoryContextWorkForHero(()=>ports,hero,"hi","",false,1,s=>after=s,7);
+            Task.Run(work).GetAwaiter().GetResult();
+            Check(after.UncompressedMessages.Count==0 && after.Context.Contains("summary of our promise"),"next request uses committed summary");
+            blocks[0].Summary="changed"; blocks[0].AfefLines.Clear();
+            Check(after.Blocks[0].Summary=="summary of our promise" && after.Blocks[0].AfefLines.Count==1,"snapshot block and AFEF detached");
+            SaveRuntimeGuard.Current=2; Check(work()=="","captured work discarded after save change");
+            SaveRuntimeGuard.Current=1; ownerCurrent=false; Check(work()=="","captured work discarded after owner change"); ownerCurrent=true;
+
+            MyBehavior.Ports=ports;
+            foreach(bool nonHero in new[]{false,true}) {
+                HistoryPromptSnapshot native=null; blocks.Clear();raw.Add(new(){Role="assistant",Content="native original"});
+                work=SceneHistoryPromptCaptureAdapter.CaptureNativeConversationPersistedHistoryWork(new(),new(),nonHero?null:hero,null,"hi","previous",false,1,s=>native=s);
+                raw.Clear();blocks.Add(new(){Id="native",Summary="new summary"});Task.Run(work).GetAwaiter().GetResult();
+                Check(rawIncludesCurrent && native.UncompressedMessages.Single().Content=="native original" && !native.Context.Contains("new summary"),"native hero/nonhero capture retains active raw during compression "+nonHero);
+            }
+            var scene=new SceneHistoryPromptCaptureAdapter(new(new(),()=>ownerCurrent,()=>1,()=>ports));
+            var cache=new Dictionary<int,ShoutBehavior.PrecomputedShoutRagContext>();
+            raw.Add(new(){Role="assistant",Content="scene original"}); blocks.Clear();
+            var task=scene.StartPrecomputedPersistedHistoryContextTask(7,"hi",heroes,cache,"fixture");
+            raw.Clear(); blocks.Add(new(){Id="scene",Summary="scene compressed"});
+            var result=scene.AwaitPrecomputedPersistedHistoryContextAsync(7,"hi",heroes,cache,task,"fixture").GetAwaiter().GetResult();
+            Check(result.UncompressedMessages.Single().Content=="scene original" && !result.Context.Contains("scene compressed"),"scene task accepts paired original snapshot after compression");
+            int count=rawCaptures;
+            task=scene.StartPrecomputedPersistedHistoryContextTask(7,"hi",heroes,cache,"fixture");
+            result=scene.AwaitPrecomputedPersistedHistoryContextAsync(7,"hi",heroes,cache,task,"fixture").GetAwaiter().GetResult();
+            Check(rawCaptures==count && result.UncompressedMessages.Single().Content=="scene original","scene cached text and raw remain paired");
+            task=scene.StartPrecomputedPersistedHistoryContextTask(7,"next",heroes,cache,"fixture");
+            SaveRuntimeGuard.Current=2;
+            Check(scene.AwaitPrecomputedPersistedHistoryContextAsync(7,"next",heroes,cache,task,"fixture").GetAwaiter().GetResult()==null,"scene stale task discards raw and summary together");
+            SaveRuntimeGuard.Current=1;
+            task=scene.StartPrecomputedPersistedHistoryContextTask(7,"retire",heroes,cache,"fixture"); ownerCurrent=false;
+            Check(scene.AwaitPrecomputedPersistedHistoryContextAsync(7,"retire",heroes,cache,task,"fixture").GetAwaiter().GetResult()==null,"scene owner replacement discards snapshot"); ownerCurrent=true;
+            blocks.Clear(); raw.Clear(); overview="";
+            result=scene.BuildPersistedHeroHistoryContext(7,"empty",heroes);
+            Check(string.IsNullOrWhiteSpace(result.Context) && result.UncompressedMessages.Count==0,"scene genuinely empty paired snapshot");
+        }
+    }
+}
+namespace AnimusForge.Refactor.Adapters {
+    internal static class CampaignCharacterRecordCaptureAdapter { internal static string GetMemoryHeroId(Hero hero)=>hero?.Id; }
+    internal static class MemoryEntityIdentityBannerlordAdapter {
+        internal static bool IsMemoryEntityEligibleForCompressedMemory(string id)=>!string.IsNullOrEmpty(id);
+        internal static int GetCurrentGameDayIndexSafe()=>10;
+    }
+    internal static class SceneLocationPromptCaptureAdapter { internal static string ResolveCurrentMemorySceneLabel()=>"square"; }
+    internal static class MemoryRecallInputCaptureAdapter {
+        internal static string BuildMemoryRecallQueryText(Hero hero,string a,string b,IEnumerable<DailyMemoryDraft> drafts,string scene)=>MemoryRecallContextOwner.BuildMemoryRecallQueryText(a,b,drafts,scene);
+    }
+    internal sealed class SceneAgentIdentityPromptCaptureAdapter {
+        internal static int TryResolveNativeConversationAgentIndex(Hero h,CharacterObject c)=>7;
+        internal NpcDataPacket BuildNativeConversationNpcData(Hero h,CharacterObject c)=>new();
+        internal static void LogNonHeroMemoryTrace(string s){}
+        internal static bool TryResolveWildernessNonHeroMemory(NpcDataPacket npc,Hero hero,CharacterObject c,int agent,out string id,out string name){id="af_nonhero:test";name="Guard";return true;}
+    }
+    internal sealed class ConversationGameThreadDispatcher {
+        internal Task<T> RunAsync<T>(string label,string name,int index,Func<T> capture,T fallback) {
+            if(!TWParallel.IsMainThread())throw new Exception("off-thread capture");return Task.FromResult(capture());
+        }
+    }
+    internal static class SharedPromptCaptureBannerlordAdapter { @@SHARED@@ }
+    internal sealed class SceneHistoryPromptCaptureAdapter {
+        internal sealed class HistoryStub { internal string LatestNpcUtterance(int agent)=>"previous"; }
+        private Func<HistoryStub> _history=()=>new();
+        internal SceneHistoryPromptCaptureAdapter(PersistedHistoryCapturePorts ports){_persisted=ports;}
+        private static bool IsDetailedSceneSpeechPromptEnabled()=>false;
+        private static bool ShouldPreserveSceneAsteriskActions()=>false;
+        private static string GetLatestNativeConversationNpcUtteranceForExternal(NativeConversationSessionOwner n,Hero h,CharacterObject c,int a)=>"previous";
+        @@NATIVE@@
+        @@SCENE@@
+    }
+}

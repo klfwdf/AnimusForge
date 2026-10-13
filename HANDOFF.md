@@ -1,3 +1,40 @@
+# 当前交接：被俘后领主自由开场（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 本地checkpoint `9259a8495`、生产/双语/专项 `75c7efe60`：新被俘稳定后直接进入原地图对话，AI先开口；不指定主题、动机或赎金。每次被俘一次，退出/转押不重弹，读档不补弹；原等待菜单手动入口、普通离开、给予与释放机制保留，无新配置/API/存档键。
+- CN/EN各197、原开场重试153、遭遇183、放行34、战斗续接67通过；原双API各363warning/0error、Bootstrap/双Coup通过。实机UI/时间/退出/释放与真实provider自由表达待验，未Stage、部署、打包、push；其他作者改动保留。
+- [唯一主台账、失败/证据/回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#captivity-free-opening-20261013)；[核实源码范围图](docs/architecture/af-framework-code-scope.md#captivity-free-opening-20261013)。证据 `artifacts/player-captivity-opening-20261013/`。本条补充既有被俘交谈与释放，不改变历史安装/发行状态。
+
+# 当前交接：快报玩家历史终端开关（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 本地切片 `93cf9b48a`（checkpoint `1c17be9ab`）：AF终端“周报与快报”新增“快报读取玩家对话历史”，默认关闭。关闭在读取记忆前退出，不发起历史审核；世界书/事件仍参与。开启沿用原公开摘要候选与审核流程，不是无过滤原文读取；下次生成生效，不撤回已发请求、不删除历史。
+- CN/EN快报专项各102、设置19、终端资源/绑定静态25项通过；原入口双API各363警告/0错误、Bootstrap/双Coup通过。全量终端fallback检查仍在既有人设说明处失败，基线已复现；实机UI/真实provider未验，未Stage、部署、打包或push。
+- [唯一主台账与证据/边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-history-toggle-20261013)；[核实源码范围图](docs/architecture/af-framework-code-scope.md#bulletin-history-toggle-20261013)。本条替代此前快报历史默认读取的状态，其余既有机制保留；共享树其他作者新增被俘开场内容未回滚或混入提交。
+
+# 当前交接：NPC 人物设定统一（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 本地checkpoint `bbfb98242`；主体/双语/回归 `5bbac0786`，独立编辑器 `7e13e2760`。Hero生成、编辑、展示及下游统一Description；旧档按原文个性＋空行＋背景幂等迁移，单字段可用，v3明确清空不复活；旧字段/声音/结构化/身份与旧公开签名兼容，无名NPC长度不变。
+- Hero460、渠道169、紧凑23、CN/EN纯策略与composer各28、游戏编辑47/导入22、独立编辑器9步、分块与双语/默认契约通过；原统一入口1.3/1.4各363警告/0错误，Bootstrap/双Coup通过。构建只清理用户批准的两个Debug输出目录，一键脚本未改；共享树其他作者改动保留。
+- [唯一主台账：完整证据、失败和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#npc-unified-persona-20261013)；[代码范围图：22锚点](docs/architecture/af-framework-code-scope.md#npc-unified-persona-20261013)。本地收据 `artifacts/persona-unified-receipt.json`；实机旧档/UI、真实模型质量仍待验，未Stage、正式打包、部署、push或写其他副本，不更新历史安装状态。
+
+# 当前交接：记忆注入最小修复（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 本地代码/测试 `3370066fd`（checkpoint `16a70e5d2`）：检索失败注入有界的本地最近块并保留最新块；三渠道将总览、压缩块和已投影raw在同一次主线程处理中冻结，消除压缩交接漏读。切档/取消/owner门禁保留，失败提示CN/EN同步，不新增模型调用/自动重试/记忆层。
+- CN/EN记忆回放各71、信使130断言/30场景PASS；双API各363warning/0error、Bootstrap0/0。真实provider、游戏性格表现与旧档未验；未Stage/部署/打包/push，原一键流程未改。
+- [唯一主台账、核实源码范围图、失败/构建证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#memory-injection-minimal-fix-20261013)。本地证据 `artifacts/memory-injection-fix-20261013/`；保留其他作者改动，本条不改变历史安装/发行状态。
+
+# 当前交接：玩家被俘交谈与释放（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 本地checkpoint `8b2bf53c1`、功能 `0c68224d0`；随军/地牢复用原版地图对话与AF输入，地牢仅当地所属家族族长/总督。话题35和 `[ACTION:RELEASE_PLAYER_CAPTIVITY]` 接通规则→RAW/FINAL→延迟主线程执行→已确认AFEF；不改LET_PLAYER_GO、不自动扣款、不造PlayerEncounter。
+- CN/EN各119检查，旧放行34/遭遇183/战斗续接67，原统一双API/Bootstrap/双Coup构建PASS。模型语义、实机两入口、返回时间、主队/名单恢复、读档与转押迟到回复仍待验。无Stage/部署/打包/push；其他会话dirty保留且未混入提交。
+- [唯一主台账与源码范围/失败证据/回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-captivity-dialogue-release-20261013)。完整本地证据 `artifacts/player-captivity-20261013/`；本条不更新历史安装/发行状态。
+
+# 当前交接：快报世界书与玩家历史隐私接线（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 最新用户澄清已落地 `3ee9c90d9`：允许独立虚构私下谈话/人物私事，禁止复用、影射或换名改写玩家真实私聊；不放宽public候选和二次审核。CN/EN专项各95通过。本轮仅改非嵌入Prompt资源和测试，没有重跑双版本或部署；本条替代下面原版本“禁止虚构私密情节”的过严含义。详见[文案澄清](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-fiction-privacy-clarified-20261013)。共享文档另有其他作者正在编辑的交接，保留其内容。
+- 本地源码 `13df58684`，checkpoint `e66933496`。不接最近快报；世界书按本期实体/事实有界检索并保留观点条件，玩家仅取公开摘要候选，经独立保密/相关性复核后才送撰稿。私密、不明、推测泄露默认排除；失败只跳过历史，禁止虚构泄密和把承诺写成已执行事实。
+- CN/EN专项各91、生成124、归档205通过；最终原统一入口双API各363警告/0错误、Bootstrap及双Coup通过。只清理用户授权的两个Debug构建输出目录，未部署、Stage、打包、push或调用provider；共享树其他作者改动未回滚/提交。真实模型判断和游戏效果仍待验。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-lore-private-history-20261013)记录边界/失败/证据；[核实代码范围](docs/architecture/af-framework-code-scope.md#bulletin-lore-private-history-20261013)。本条是新增本地候选，不改写下方1.6.0既有安装/发行历史。
+
 # 当前交接：1.6.0 成对包与 CN 安装（2026-10-13，PACKAGED / CN_DEPLOYED_HASH_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
 - 本条替代下方旧安装/待部署状态。按用户最新要求生成1.6.0 CN/EN双包，并部署F盘CN1.6.0；纳入插画会话完成后的共享改动。双API/Bootstrap/Coup/Stage、两包3519项、实际DLL消息/终端/语言回放通过；386受管hash一致、3341玩家文件内容/mtime保持、无Recovery。

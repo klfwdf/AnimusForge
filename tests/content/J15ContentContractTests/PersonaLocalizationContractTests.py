@@ -24,8 +24,7 @@ PROMPT_KEYS = {
     "AF_PERSONA_PROMPT_NativeUserIntro",
     "AF_PERSONA_PROMPT_TraitCatalog",
     "AF_PERSONA_PROMPT_RegenerateTask",
-    "AF_PERSONA_PROMPT_OldPersonality",
-    "AF_PERSONA_PROMPT_OldBackground",
+    "AF_PERSONA_PROMPT_OldDescription",
     "AF_PERSONA_PROMPT_EmptyValue",
     "AF_PERSONA_PROMPT_PromotedSystem",
     "AF_PERSONA_PROMPT_PromotedUserIntro",
@@ -170,8 +169,9 @@ for key in PROMPT_KEYS:
     assert prompt_en[key] in prompt_code_literals, key
 assert "AppendNpcPersonaGenerationRequirementsToSystemPrompt" in prompt_rules
 assert "TryParsePersonaJson" in prompt_rules and "TryParseSkills" in prompt_rules
-assert "personality" in prompt_en["AF_PERSONA_PROMPT_NativeSystem"]
-assert "background" in prompt_en["AF_PERSONA_PROMPT_NativeSystem"]
+assert "profile" in prompt_en["AF_PERSONA_PROMPT_NativeSystem"]
+assert "personality, background" not in prompt_en["AF_PERSONA_PROMPT_NativeSystem"]
+assert {"AF_PERSONA_PROMPT_OldPersonality", "AF_PERSONA_PROMPT_OldBackground"} <= set(prompt_en) # retained compatibility keys
 assert '"skills"' in prompt_en["AF_PERSONA_PROMPT_SkillSystem"]
 skill_ids = ["OneHanded", "TwoHanded", "Polearm", "Bow", "Crossbow", "Throwing", "Riding", "Athletics", "Crafting", "Scouting", "Tactics", "Roguery", "Charm", "Leadership", "Trade", "Steward", "Medicine", "Engineering"]
 for skill in skill_ids:
@@ -268,3 +268,22 @@ lang_zh_wired = 'xml_path="CNs/afpersona_ui_strings-zh-CN.xml"' in lang_zh
 registration = "WIRED" if all((prompt_wired, ui_en_wired, ui_zh_wired, lang_en_wired, lang_zh_wired)) else "NOT-WIRED"
 assert registration == "WIRED", "Persona UI and Prompt resources must reach the native/package loaders"
 print(f"PASS Persona localization: source baseline Han literals=39 (33 prompt, 5 import UI, 1 fallback UI); package keys={len(PROMPT_KEYS)}; UI keys={len(UI_KEYS)}; registration={registration}; CSharp/runtime/replay=NOT-RUN")
+
+import hashlib
+manifest_path = "content/foundation/AF.Foundation.Localization/ModuleData/McmKnownPromptDefaults.json"
+known = json.loads(read(manifest_path))["files"]["NpcPersonaGenerationRequirements.json"]
+previous = json.loads(subprocess.check_output(["git", "show", "bbfb98242:" + manifest_path], cwd=ROOT))["files"]["NpcPersonaGenerationRequirements.json"]
+assert set(previous) <= set(known)
+for suffix in ("", ".en"):
+    asset = ROOT / ("content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements" + suffix + ".json")
+    raw = asset.read_bytes()
+    assert hashlib.sha256(raw).hexdigest().upper() in known
+    assert hashlib.sha256(raw + b"player custom edit").hexdigest().upper() not in known
+    assert "400" in json.loads(raw)["Text"] and "600" in json.loads(raw)["Text"]
+assert 'GetNpcPersonaDescriptionForExternal(ruler)' in read('PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs')
+assert 'CompressCompleteText(description, 260, 260)' in read('PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs')
+assert 'GetNpcPersonaDescriptionForExternal(ruler), 700)' in read('src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs')
+assert 'GetNpcPersonaDescriptionForExternal(victim)' in read('src/bridges/Vengeance/Host/ExecutionAddressLlm.cs')
+assert 'Bound(persona.Trim(), 1000)' in read('src/bridges/Vengeance/Host/ExecutionAddressLlm.cs')
+assert 'GetNpcPersonaDescriptionForExternal(ruler)' in read('src/bridges/Siege/RuleMemory/GcczTownRuleMemoryRulerAdapter.cs')
+print("PASS unified persona consumer budgets / current getter wiring / historical and CN/EN default hashes retained")

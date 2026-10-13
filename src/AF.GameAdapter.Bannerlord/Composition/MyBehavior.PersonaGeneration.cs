@@ -23,7 +23,7 @@ public partial class MyBehavior
     internal sealed class NpcPersonaGenerationWork
     {
         internal NpcPersonaGenerationOwner.Lease Reservation;
-        internal string Id, OriginalPersonality, OriginalBackground, Failure;
+        internal string Id, OriginalDescription, Failure;
         internal List<NpcPersonaTrait> OriginalTraits;
         internal List<string> OriginalMotivations, OriginalValues, OriginalFears;
         internal string OriginalSpeechStyle;

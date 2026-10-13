@@ -6,6 +6,8 @@ internal static class NpcInitiatedOpeningRouter
 {
 	public static bool HasPendingNativeOpeningForCurrentConversation()
 	{
+		if (PlayerCaptivityConversation.HasSession)
+			return PlayerCaptivityConversation.HasPendingNativeOpeningForCurrentConversation();
 		return CompanionProactiveChatBehavior.HasPendingNativeOpeningForCurrentConversation()
 			|| ProactiveNpcRequestBehavior.HasPendingNativeOpeningForCurrentConversation();
 	}
@@ -15,6 +17,12 @@ internal static class NpcInitiatedOpeningRouter
 		extraFact = "";
 		promptText = "";
 		source = "";
+		if (PlayerCaptivityConversation.HasSession)
+		{
+			if (!PlayerCaptivityConversation.TryConsumePendingNativeOpening(hero, out extraFact, out promptText)) return false;
+			source = "PlayerCaptivity";
+			return true;
+		}
 		if (CompanionProactiveChatBehavior.TryConsumePendingNativeOpening(hero, out extraFact, out promptText))
 		{
 			source = "CompanionProactiveChat";

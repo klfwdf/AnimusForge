@@ -54,9 +54,9 @@ internal sealed class SceneConversationSessionPorts
     internal AbsorbPresentationAudienceCapability AbsorbPresentationAudience;
     internal delegate void ActivateMultiSceneMovementSuppressionCapability(IEnumerable<int> participantAgentIndices);
     internal ActivateMultiSceneMovementSuppressionCapability ActivateMultiSceneMovementSuppression;
-    internal delegate Task<string> AwaitPrecomputedPersistedHistoryContextAsyncCapability(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Task<string> startedTask, string reason);
+    internal delegate Task<MyBehavior.HistoryPromptSnapshot> AwaitPrecomputedPersistedHistoryContextAsyncCapability(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Task<string> startedTask, string reason);
     internal AwaitPrecomputedPersistedHistoryContextAsyncCapability AwaitPrecomputedPersistedHistoryContextAsync;
-    internal delegate string BuildPersistedHeroHistoryContextCapability(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes);
+    internal delegate MyBehavior.HistoryPromptSnapshot BuildPersistedHeroHistoryContextCapability(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes);
     internal BuildPersistedHeroHistoryContextCapability BuildPersistedHeroHistoryContext;
     internal delegate List<string> BuildPreprocessExcludedRuleIdsForCurrentInteractionCapability(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, bool hasAnyHero, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, NpcDataPacket sceneSpeakerNpc = null, List<NpcDataPacket> sceneCandidates = null, string currentPlayerText = null);
     internal BuildPreprocessExcludedRuleIdsForCurrentInteractionCapability BuildPreprocessExcludedRuleIdsForCurrentInteraction;

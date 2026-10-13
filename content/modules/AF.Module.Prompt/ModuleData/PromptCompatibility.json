@@ -589,5 +589,7 @@
   "campaign_kill_clan_tail_1100_source": "其在{0}由{1}公开处决。",
   "campaign_kill_clan_tail_1101_source": "其在{0}由{1}公开处决，罪名为{2}。",
   "campaign_kill_clan_tail_1110_source": "其在{0}由{1}以{2}公开处决。",
-  "campaign_kill_clan_tail_1111_source": "其在{0}由{1}以{2}公开处决，罪名为{3}。"
+  "campaign_kill_clan_tail_1111_source": "其在{0}由{1}以{2}公开处决，罪名为{3}。",
+  "Template_captivity_released": "The speaking lord agreed to and actually released the player; this captivity has ended.",
+  "Template_captivity_opening": "The captor initiated a conversation with the captive player."
 }

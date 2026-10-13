@@ -3287,9 +3287,9 @@ public static void SyncNativeConversationSessionHistoryForDailyMemoryEditExterna
         return SceneHistoryPromptCaptureAdapter.GetNativeConversationAuxiliaryHistoryLinesForExternal(_nativeSessionOwner, CurrentSceneHistoryPromptCapture, maxLines);
     }
 
-	internal static Func<string> CaptureNativeConversationPersistedHistoryWork(Hero targetHero, CharacterObject targetCharacter, string playerText, string currentNativeDialogText, bool includeCurrentActiveSceneSession, long generation)
+	internal static Func<string> CaptureNativeConversationPersistedHistoryWork(Hero targetHero, CharacterObject targetCharacter, string playerText, string currentNativeDialogText, bool includeCurrentActiveSceneSession, long generation, Action<MyBehavior.HistoryPromptSnapshot> snapshotCaptured = null)
     {
-        return SceneHistoryPromptCaptureAdapter.CaptureNativeConversationPersistedHistoryWork(_nativeSessionOwner, NativePromptIdentityCapture, targetHero, targetCharacter, playerText, currentNativeDialogText, includeCurrentActiveSceneSession, generation);
+        return SceneHistoryPromptCaptureAdapter.CaptureNativeConversationPersistedHistoryWork(_nativeSessionOwner, NativePromptIdentityCapture, targetHero, targetCharacter, playerText, currentNativeDialogText, includeCurrentActiveSceneSession, generation, snapshotCaptured);
     }
 
 	private static bool IsWildernessNonHeroMemoryScope(int agentIndex)
@@ -5649,7 +5649,7 @@ private void ExtendStaringHoldForPlayerDrivenSceneRound(int participantCount) =>
 		return SceneHistoryPromptCaptureAdapter.BuildPlayerMarriageFactForNpcListLine(npcHero);
 	}
 
-	private string BuildPersistedHeroHistoryContext(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes)
+	private MyBehavior.HistoryPromptSnapshot BuildPersistedHeroHistoryContext(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes)
     { return SceneHistoryPromptCapture.BuildPersistedHeroHistoryContext(agentIndex, currentInput, resolvedHeroes); }
 
 	private string GetOrBuildPrecomputedPersistedHistoryContext(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts)
@@ -5658,7 +5658,7 @@ private void ExtendStaringHoldForPlayerDrivenSceneRound(int participantCount) =>
 	private Task<string> StartPrecomputedPersistedHistoryContextTask(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, string reason)
     { return SceneHistoryPromptCapture.StartPrecomputedPersistedHistoryContextTask(agentIndex, currentInput, resolvedHeroes, precomputedContexts, reason); }
 
-	private Task<string> AwaitPrecomputedPersistedHistoryContextAsync(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Task<string> startedTask, string reason)
+	private Task<MyBehavior.HistoryPromptSnapshot> AwaitPrecomputedPersistedHistoryContextAsync(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Task<string> startedTask, string reason)
     { return SceneHistoryPromptCapture.AwaitPrecomputedPersistedHistoryContextAsync(agentIndex, currentInput, resolvedHeroes, precomputedContexts, startedTask, reason); }
 
 	private bool PersistPlayerMessageToNamedHeroes(string text, List<NpcDataPacket> nearbyData, int primaryTargetAgentIndex, string primaryTargetName, Dictionary<int, Agent> audienceAgentsByIndex, bool requireMemoryReceipt = false)

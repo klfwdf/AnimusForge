@@ -161,6 +161,7 @@ internal sealed partial class NativeConversationGameEffectsRuntime
 		}
 
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
+		PlayerCaptivityConversation.StripRestrictedTags(ref content);
 
 		int resolvedTargetAgentIndex = targetAgentIndexOverride >= 0 ? targetAgentIndexOverride : TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
 
@@ -450,6 +451,7 @@ internal sealed partial class NativeConversationGameEffectsRuntime
 
 				LordEncounterBehavior.TryProcessMeetingTauntAction(targetHero, ref content, out var escalatedToBattle);
 
+				PlayerCaptivityConversation.ConsumeReleaseTag(targetHero, ref content);
 				LordEncounterBehavior.TryConsumeMeetingPlayerReleaseTag(targetHero, ref content, out var meetingReleaseTriggered);
 
 				if (meetingReleaseTriggered)

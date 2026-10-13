@@ -689,7 +689,7 @@
       "owner": "AF.Module.Persona",
       "source": "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json",
       "target": "ModuleData/Defaults/CustomPrompts/NpcPersonaGenerationRequirements.json",
-      "sha256": "30F17A9A2BBC0DF708798E35DF02AEC58DE2551890D3FC1B4CB0DC13713F8EA9"
+      "sha256": "044F9952B9A26CA7FDEE5ACF37AC142C5B87786D58AD552A0A1FC7727EA363CD"
     },
     {
       "owner": "AF.Module.Prompt",

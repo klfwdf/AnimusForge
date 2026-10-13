@@ -1,3 +1,73 @@
+<a id="captivity-free-opening-20261013"></a>
+### 被俘后领主自由开场：75c7efe60
+
+源码切片 `75c7efe60`；[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#captivity-free-opening-20261013)记录状态、构建、失败、回滚和未验边界。下表一基范围基于该切片核实；产物/source哈希在 `artifacts/player-captivity-opening-20261013/receipt.json`。
+
+| 一基范围 / 符号 | 实际责任、消费者与证据边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:407–430,3635–3638`；RegisterEvents/OnSessionLaunched/OnEngineTick | 原行为owner仅多注册HeroPrisonerTaken，菜单注册和引擎tick复用；双API编译及静态接线，不代表游戏事件时序已验 |
+| `src/AF.GameAdapter.Bannerlord/Encounter/PlayerCaptivityConversation.cs:49–165`；CaptureOpening/Register/OnPlayerTakenPrisoner/TryOpenPendingCapture/TryConsumePendingNativeOpening | 内部每次被俘身份/排队/去重/读档基线，稳定菜单直接打开；自动/手动节点分离；CN/EN生产源码197项（原生对象为fixture） |
+| 同文件`:231–289,343–445`；TryOpen/IsSessionValid/Tick/Reset/ClearSession/Retire | 现有地图外壳/原退出路径/主线程0.25秒门禁；普通退休保留去重身份，旧会话不得作用于同看押方的新囚禁。实际原版地图UI/时间与名单恢复未验 |
+| `src/modules/AF.Module.Conversation/Proactive/NpcInitiatedOpeningRouter.cs:7–36` | 只在被俘会话内消费对应开场，不窃取普通领主/同伴待开场。旧渠道153项producer/admission/retry回归及新真实router夹具 |
+| `src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs:993–1043`；`src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs:213–234`；`ShoutBehavior.NativeTurn.cs:128–140`（同目录） | 未改现有overlay自动提交、NativeOpeningRetry重试、shouldRecordPlayerInput=false；新入口进入现有完整三段式，不新建请求链。全HTTP/provider未跑 |
+| `src/modules/AF.Module.Prompt/Composition/ScenePromptMessageProjectionComposer.cs:21–25,143–162`；`MemorySystemFactProjection.cs:32–45`（同目录） | 开场user区投影已知canonical事实；persistent区保原身份。共享历史reader供三渠道，原消息/记忆capture不变；逐字提取composer＋生产reader CN/EN通过 |
+| `content/modules/AF.Module.Encounter/ModuleData/EncounterPromptTexts.json:6`（及`.zh-CN`/`.en`同key）；`content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json:594`；`PromptComposerTexts.zh-CN.json:819`/`.en.json:819`（同目录） | 唯一新开场正文只交代被俘及先开口，非主题/报价规则；canonical开场事实与对应包投影，已有reader/映射复用 |
+| `content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml:3398`；`CNs/af_ui_strings-zh-CN.xml:3432`（同目录） | `AF_ENC_UI_CaptivityAutoOpening`中性占位，UI仍随游戏语言；两套language_data注册不变。Gauntlet实机未验 |
+
+<a id="bulletin-history-toggle-20261013"></a>
+### 快报玩家历史终端开关：93cf9b48a
+
+源码 `93cf9b48a05032093f06c497eb8bad2fcfeb8058`；[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-history-toggle-20261013)记录行为、构建/测试、失败、授权与未验边界。13锚点分别在 `artifacts/tests/bulletin-history-toggle/code-map.json`（记录提交）与 `code-map-working.json`（共享工作树）PASS；后续其他作者只在两UI XML增加被俘开场key，不回滚该变化。
+
+| 一基范围 / 符号 | 真实消费者、覆盖与未覆盖 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.News.cs:49–52`；WorldBulletinReadPlayerHistory | 默认false、旧缺key不启用，原MCM配置owner/属性元数据；19项settings partial回放，非真实provider重启验收 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WorldBulletin.cs:62–86`；CaptureWorldBulletinPromptFacts | 原世界书/事件capture之后、记忆LoadBlocks之前读取开关；关闭零历史读取。CN/EN真实方法回放各102；不撤回已捕获/发送请求 |
+| `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs:376,132–137`；WorldBulletinReadPlayerHistory定义 / SaveSettings | 原DuelSettings直接getter/setter与保存owner；无新配置文件/入口/存档键，运行时UI未验 |
+| `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsLocalization.cs:119,385,651,917`；LocalizedIds / EnglishTitles / EnglishHints / EnglishGroups | 现有TextObject reader读取游戏UI语言；CN/EN资源分别 `content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml:1154–1156` 与 `CNs/af_ui_strings-zh-CN.xml:1168–1170`，原注册/映射不变 |
+| `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsCoverage.cs:49–77,87–112`；CategoryFor / ViewGroup；`src/AF.GameAdapter.Bannerlord/Configuration/Mcm/AnimusForgeMcmVisibility.cs:147–155`；IsVisibleProperty | 未改的实际终端归组与MCM前端隐藏；metadata仍供保存，终端一次缓存/语言变更刷新不变；25项定点静态接线检查不是Gauntlet实机 |
+| `src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs:190–247`；RunWorldBulletinRequestAsync | 未改的候选为空跳过审核分支，由新capture门禁真实驱动；关时世界书进入唯一撰稿请求，开时保留既有公开摘要/独立审核，不扩大为原始私聊输入 |
+
+<a id="npc-unified-persona-20261013"></a>
+### NPC 单正文、旧档迁移与实际消费边界：5bbac0786 / 7e13e2760
+
+产品切片如标题；下表以包含它们的共享树源码 `3370066fd90f2a283f26217ff5f0f9b3ff5d1836` 核对（不是本任务提交其他作者后续变更）。22锚点记录提交/working-tree均PASS：`artifacts/persona-unified-code-map.json`。详细回归、原构建失败/成功、产物绑定、性能和LIVE_PENDING见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#npc-unified-persona-20261013)。仅下列符号职责完成，不把混合大文件整体标为重写。
+
+| 一基范围 / 符号 | 实际消费者、覆盖与保留边界 |
+| --- | --- |
+| `src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs:18–29`；ResolveDescription / MergeLegacy | 纯策略合并/精确去重/v3清空，无生成/翻译/截断；游戏与编辑器复用 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:341–376`；NpcPersonaProfile / OnPersonaDeserialized；`src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs:53–107`；Save / GetDescription | 保留类型/旧字段；读边界一次规范化，保存保留清空；热读O(1)。不是新增数据owner |
+| `src/modules/AF.Module.Persona/Import/PersonaImportOwner.cs:11–19`；StampProfileMetadata；`src/AF.GameAdapter.Bannerlord/Persistence/CampaignPersonaPersistenceAdapter.cs:38–67`；Load | 导入/恢复/写入stamp与旧Newtonsoft读取接通；既有分块adapter源码保持，_npcPersonaProfiles_v1不变 |
+| `src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs:61–122`；TryParsePersonaJson / ReadBody / PopulateGeneratedData | 实际新旧协议解析，非字符串或仅结构化失败；兼容旧畸形响应容错，不缩短正文 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs:86–198`；GenerateNpcPersonaAsync；`src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs:219–242`；CloneTraits / ProfileExtrasStillCurrent | 普通/重生的主线程capture/提交和精确编辑保护；owner/generation/目标/lease/voice保持；网络和游戏为回放叶子替身 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/PromotedPersonaGenerationApplicationAdapter.cs:20–131`；GeneratePromotedNonHeroCompanionProfileAsync | 升格同伴单正文与同一编辑保护，技能请求读取统一正文；不改无名NPC生成长度/玩法 |
+| `src/AF.GameAdapter.Bannerlord/Prompt/ScenePersonaPreparationAdapter.cs:110–258`；EnsurePersonaForCandidatesAsync / EnsureNativeConversationPersonaReadyAsync / CaptureNpcPersonaReadiness | 场景/自由对话就绪按单正文；不再补缺失旧字段，现有scope与目标重验保持 |
+| `src/modules/AF.Module.Prompt/Composition/PersonaIntroMessageComposer.cs:91–375`；ComposeSystemNpc / ComposeSceneNpc；`src/modules/AF.Module.Conversation/Channels/Scene/NpcDataPacket.cs:15–24`；Get/SetPersonaDescription | 三渠道/场景接力实际单正文快照与composer；紧凑反应同packet。正文/结构化各一次；历史检索和动作业务不归本包 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:5572–5593`；GetNpcPersonaForExternal / GetNpcPersonaDescriptionForExternal | public旧签名输出Description/空串，内部消费者用当前campaign单getter；没有版本化外部API扩张 |
+| `PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs:2390–2418`；compactPersona；`src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs:1094–1107`；compactPersona | 政策260/外交700合并预算并读取当前正文；不改政策检索/外交决策业务 |
+| `src/bridges/Vengeance/Host/ExecutionAddressLlm.cs:78–79`；BuildBody；`src/bridges/Siege/RuleMemory/GcczTownRuleMemoryRulerAdapter.cs:41–65`；ResolvePersonality | 处刑1000预算/GCCZ桥读取新正文；未触碰外部GCCZ副本或处刑动作规则 |
+| `src/AF.GameAdapter.Bannerlord/UI/Editors/PersonaEditorController.cs:135–164`；OpenDevPersonaMenuInternal；`src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs:1653–1679`；BuildPersonaInformationText | 统一菜单/百科展示，原取消/voice/结构化/重生可用；UI与Prompt资源同步，但真实Gauntlet输入/呈现实机待验 |
+| `tools/PlayerExportsEditor/src/PlayerExportsEditor.Core/Models.cs:206–218`；IJsonOnDeserialized；`tools/PlayerExportsEditor/src/PlayerExportsEditor.Core/PlayerExportsService.cs:154–166`；SavePersonaProfile；`tools/PlayerExportsEditor/src/PlayerExportsEditor.App/PersonaEditorForm.cs:16–111`；PersonaEditorForm / Profile | STJ读取/共享纯策略/单正文窗体与保存，保留身份/旧字段/结构化/voice；隔离实际JSON往返与备份PASS，WinForms交互未验 |
+
+CN/EN资源与旧key、固定默认哈希、真实reader和content-map同步；未改构建入口、存档类型/键或目录身份。旧公开双输出仅兼容壳，第二输出为空；内部port已单正文。测试依赖替身/实际生产链接的分界及无实机/真实模型结论见主台账。
+
+<a id="bulletin-lore-private-history-20261013"></a>
+### 快报世界书与公开历史请求边界：13df58684
+
+源码 `13df586846a2c1f07e076c7bc0ac6d57fd71f6bc`；7个一基锚点的记录提交/working-tree核验均PASS，收据 `artifacts/tests/bulletin-context/run-54c315fc5c1442afbda96ec4d42d0c53/code-map.json`。[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-lore-private-history-20261013)记录失败/构建/回归和未验边界；下表仅本请求新增职责，不标整文件重写。
+
+| 一基范围 / 符号 | 实际消费者、覆盖与保留边界 |
+| --- | --- |
+| `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinContextPolicy.cs:17–82`；CreateHistoryCandidate / BuildReviewUserPrompt / BuildApprovedHistory / BuildWriterContext | public候选白名单、超长/缺依据/未来拒绝、严格已知ID批准与原摘要复制；真实review和writer消费。不是原对话/每日记忆生成器，不更改存档或公开状态 |
+| `src/modules/AF.Module.Knowledge/Lore/BulletinLoreSelectionPolicy.cs:19–75`；IsPublicVariant / Mentions / Select | 本期实体/事件词法匹配、英文词边界、限制变体排除、受众元数据和段数上限；不复用NPC身份猜测、不扫描全部玩家历史 |
+| `src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs:675–702`；BuildBulletinLoreSource | 当前owner/检索开关/versioned rules→安全映射→有界背景文本；主线程调用，后台没有Hero读取；原NPC RAG与人设知识规则不改 |
+| `src/AF.GameAdapter.Bannerlord/Weekly/WorldBulletinEventCaptureAdapter.cs:239–261`；CaptureWorldBulletinPromptFacts | 本期已选主要/次要事件→相关人物/国家→实际世界书owner；不读最近快报，不更改民间新闻触发白名单 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WorldBulletin.cs:62–85`；CaptureWorldBulletinPromptFacts | 同原快报port捕获NPC缓存公开摘要，每人64块/2候选，总4人/6候选；Summary和原始私聊不入请求，三渠道写历史语义不变 |
+| `src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs:190–247`；RunWorldBulletinRequestAsync | 审查→ID白名单→writer，失败跳过历史，review前后generation/epoch重验、主线程回写/插画取消；旧事实选择/发布/归档继续原owner；真实provider未调用 |
+| `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:819–844`；BuildSystemPrompt | 固定保密/来源规则与自定义风格同时存在，协议不改；Weekly资源2–7行六对key及Knowledge资源2行`BulletinLoreEntry`通过现有reader/content-map/EN包选择接线，无输出语言锁 |
+
+CN/EN各91项源链接回放、旧生成124/归档205、双API/Bootstrap/双Coup均通过；游戏对象/模型为叶子替身，真实模型误判、游戏性能和展示不在离线证据覆盖内。无新增公开API、持久化字段、设置、Tick任务或默认入口变更。
+
 <a id="remote-merge-install-20261013"></a>
 ### 远端输入租约合并与 D 盘安装：6ca84557e
 

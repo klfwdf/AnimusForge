@@ -50,6 +50,7 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 		try
 		{
 			Logger.LogTrace("Conversation_Intercept", ">>> SetupAndStartMapConversation Prefix executing <<<");
+			if (PlayerCaptivityConversation.IsOpening) return true;
 			if (LordEncounterBehavior.HasPendingNativeEncounterAttackForExternal())
 			{
 				Logger.LogTrace("Conversation_Intercept", "Native encounter attack is pending; suppress SetupAndStartMapConversation.");

@@ -35,7 +35,7 @@ internal sealed partial class NativeConversationTurnRuntime : INativeConversatio
 		// Step 1: game thread.
 		SharedPromptRoutingWork routingWork = await _ports.PromptDispatcher.RunAsync("prompt_build_begin", target, targetAgentIndex,
 			() => _ports.IsNativeConversationAdmissionCurrent(admission, out _)
-                ? _ports.CapturePromptRoutingWork(new NativePromptCaptureRequest(targetHero, targetCharacter, routingInput, extraFact, cultureId, hasAnyHero, targetAgentIndex, preprocessExcludedRuleIds))
+                ? _ports.CapturePromptRoutingWork(new NativePromptCaptureRequest(targetHero, targetCharacter, routingInput, (extraFact + "\n" + PlayerCaptivityConversation.BuildRuntimeContext(targetHero)).Trim(), cultureId, hasAnyHero, targetAgentIndex, preprocessExcludedRuleIds))
                 : null,
             (SharedPromptRoutingWork)null).ConfigureAwait(false);
 		if (routingWork == null)
