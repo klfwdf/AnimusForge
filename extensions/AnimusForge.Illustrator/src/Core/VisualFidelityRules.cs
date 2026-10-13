@@ -30,12 +30,30 @@
         {
             if (string.IsNullOrEmpty(facts)) return facts;
             var shared = new System.Text.StringBuilder();
-            string[] keys = { "Hero_458", "Hero_461", "Hero_471", "Hero_472", "Hero_428", "Hero_429" };
-            string[] fields = { IllustratorText.Get("Hero_304"), IllustratorText.Get("Hero_309").Split('{')[0], IllustratorText.Get("Hero_311") };
+            string[] keys = { "Hero_458", "Hero_461", "Hero_471", "Hero_472", "Hero_428", "Hero_429", "Hero_457",
+                "Hero_323", "Conversation_15", "Hero_425", "Hero_426", "Hero_447" };
+            string[] fields = { IllustratorText.Get("Hero_304"), IllustratorText.Get("Hero_309").Split('{')[0], IllustratorText.Get("Hero_311"),
+                IllustratorText.Get("Hero_307"), IllustratorText.Get("Hero_312"), IllustratorText.Get("Hero_313") };
             var lines = facts.Split(new[] { '\n' });
+            string faceHeading = IllustratorText.Get("Hero_309").Split('{')[0];
+            string nestedFaceHeading = IllustratorText.Get("Hero_454");
+            for (int i = 0; i < lines.Length; i++)
+                if (lines[i].StartsWith(faceHeading + nestedFaceHeading, System.StringComparison.Ordinal))
+                    lines[i] = faceHeading + lines[i].Substring(faceHeading.Length + nestedFaceHeading.Length);
+            var seenRules = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
             foreach (string key in keys)
             {
                 string rule = IllustratorText.Get(key);
+                // Templates keep all bound values in place; only their fixed trailing
+                // instruction is shared. Never parse names or equipment as instructions.
+                int parameterEnd = rule.LastIndexOf('}');
+                if (parameterEnd >= 0)
+                {
+                    int separator = rule.IndexOf(';', parameterEnd + 1);
+                    if (separator < 0) separator = rule.IndexOf('；', parameterEnd + 1);
+                    if (separator < 0) continue;
+                    rule = rule.Substring(separator);
+                }
                 if (string.IsNullOrEmpty(rule)) continue;
                 bool found = false;
                 for (int i = 0; i < lines.Length; i++)
@@ -47,7 +65,7 @@
                     lines[i] = lines[i].Replace(rule, string.Empty);
                     found = true;
                 }
-                if (found) shared.AppendLine(rule);
+                if (found && seenRules.Add(rule)) shared.AppendLine(rule.TrimStart(';', '；', ' '));
             }
             return shared.Length == 0 ? facts : string.Join("\n", lines) + "\n" +
                 IllustratorText.Get("SharedProfileRules") + "\n" + shared.ToString().TrimEnd();
