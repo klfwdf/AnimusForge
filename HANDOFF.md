@@ -2,7 +2,7 @@
 
 - 修复实际NativeOverlayVM漏接开发者可见性；终端状态为已开启/已关闭，隐藏生图完整请求URL选项并保留配置。双API/Bootstrap/Coup与实际DLL回放通过；干净Stage及两DLL/Bootstrap哈希、CN状态资源核验PASS。
 - [唯一主台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-manual-tags-20261014)。checkpoint `f9759d1`；日志与保留旧Stage在 `artifacts/terminal-manual-tags-20261014/`。
-- 本次未部署、未打包、未push，实机NOT-RUN；下方1.6.0安装记录仍是安装状态，不代表本修改已进入游戏。
+- 用户随后授权推送；修复提交 `7a63475a9` 已推送且远端ref一致。本次未部署、未打包，实机NOT-RUN；下方1.6.0安装记录仍是安装状态，不代表本修改已进入游戏。
 
 # 当前交接：被俘后领主自由开场（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
 
