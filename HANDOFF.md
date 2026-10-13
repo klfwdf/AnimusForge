@@ -1,3 +1,9 @@
+# 当前交接：赎金后由玩家点离开释放（2026-10-14，限定场景 LIVE_VERIFIED；原生退出 HOLD）
+
+- 产品 `e8b45bf2d`：真实付款→AI确认释放→提示获准→玩家Leave→回大地图实际释放；取消10秒自动关闭及阅读超时，保留身份/转押/唯一动作保护。配套修复被俘个人金币列表及对话销毁引用。
+- CN/EN各204、金币8、回答区61、失焦70、包装146、双API/Bootstrap/Coup均PASS。最终交付1.4真实AI场景PASS；31份正式存档与正式配置/DLL不变，仅授权测试副本更新。原生退出设备引用错误仍HOLD；1.3/EN实机、地牢/旧档/全冲突矩阵未验。
+- [唯一主台账、源码范围与验收边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#captivity-player-leave-20261014)。用户授权源码push，采用最新远端干净交付分支，不上传本地测试桥/运行收据/私有历史；正式部署和打包未执行。推送状态以远端ref核验为准。
+
 # 当前交接：终端状态与手动标签入口（2026-10-14，OFFLINE_VERIFIED / STAGE_VERIFIED / LIVE_PENDING）
 
 - 修复实际NativeOverlayVM漏接开发者可见性；终端状态为已开启/已关闭，隐藏生图完整请求URL选项并保留配置。双API/Bootstrap/Coup与实际DLL回放通过；干净Stage及两DLL/Bootstrap哈希、CN状态资源核验PASS。

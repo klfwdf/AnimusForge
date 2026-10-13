@@ -10073,3 +10073,21 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 范围：被俘会话、无所属队伍时个人金币列表、原生对话卸载引用清理及对应回归；不改模型回复、API、存档或一键构建/部署流程。测试证据留本地，不发布测试桥/运行配置/收据。
 - 交付基线：最新远端 main `0cf8d77c5`，新建干净交付分支；保留终端状态和手动标签入口的远端修复，不合入含本地专用记录的工作历史。用户授权源码推送，正式游戏部署/打包未授权。
 - 退出门：受影响行为与双语回归、双 API/Bootstrap 构建、测试副本真实 AI→付款→释放标签→真实 Leave 命令→原生状态及唯一事实；报告未验项和原生退出异常，不把平台退出失败当通过。
+
+- 已验产品 `e8b45bf2d`（意图 checkpoint `4732f0558`）。移除10秒自动关闭及120秒阅读过期；同一有效会话等待玩家 Leave，实际 ConversationEnd + 地图 UI 卸载后才调用原生释放/提交成功事实。无标签普通离开仍被俘；重复标签、转押/失效目标、campaign/manager/generation 变化仍拒绝。
+- 同时交付已定位的必要配套修复：无所属队伍仍可给予个人金币，绝不借用俘虏方库存；movie ReleaseMovie / 整层 ClearContext 前精确移除已销毁回答区引用，不改活界面恢复。项目仅排除本地 artifacts 的默认构建扫描，一键脚本和部署行为不变。会话保持原4Hz上限、空闲零工作；UI解绑仅生命周期事件遍历已登记的少量roots，无新Tick IO/反射/全仓扫描。
+- 离线验证：生产源码联编 CN/EN 各204检查（含等待11秒/141秒、无end事件拒绝、地图UI卸载前不释放）；金币原样reader8、回答区61、失焦70、保留远端实际包装/手动标签的UI生命周期146均PASS。原统一脚本1.3/1.4两实现各363 warnings/0 errors，Bootstrap与双Coup/注册门禁PASS。首个行为负控明确在 `tag never auto-closes after ten seconds` 失败，不以编译失败代替。
+- 限定实机：最终交付实现1.4 SHA256 `5557a4818e8e361702797a378f806ed77f7e993a03772431e3055cca1f59817f`，独立新战役真实领主开场/议价→给予菜单实际5000→自然语言确认→模型后处理释放标签→双通知→真实界面 Leave 命令。10次真实HTTP全部成功；玩家6000→1000、领主100000→105000，付款/释放/AFEF各一次。标签后12.176秒仍处于对话和被俘状态；Leave后0.0289秒原生释放，主队与俘虏名册恢复、关闭残留root与恢复错误均0。不是手动输入标签，也不是直接调用原生释放来造结果；通过真实VM命令而非全局鼠标注入。此前本地同机制另一次成功，不混作最终二进制证据。
+- 两个失败样本保留：一次人物设定HTTP SendFailure，另一次测试阻止无关后台HTTP后出现可选错误分析确认，旧测试控制器拒绝继续。未改生产逻辑掩盖这两次失败；最终一次场景PASS。正式31份sav的SHA/mtime、正式配置/DLL均不变，测试进程已退出。测试桥和逐轮文本/完整收据只留本地，不纳入本次源码历史。
+- 保留HOLD：原生EndGame→主菜单→quit仍有 `Non-Zero Device Reference Count! (ERC2220)` / exit `0xFFFFFFFF`；场景与数据保护PASS，但含干净退出的整轮总门仍FAIL。未验1.3/EN实机、地牢/总督、旧档/跨读档及全Mod冲突矩阵，不称全功能通过；未覆盖正式游戏/配置/存档，不打包或Stage。回滚仅对本产品做focused inverse，不重写共享历史。
+
+### 本切片已核实代码范围（产品 `e8b45bf2d`）
+
+| 路径（仓库根相对） | 符号 / 一基行号 | 责任与覆盖边界 |
+| --- | --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Encounter/PlayerCaptivityConversation.cs` | `ConsumeReleaseTag`322–332；`Tick`343–386；`ExecuteRelease`388–409 | 只改获准提示与玩家离开时序；原生动作/唯一事实和失效保护保留，CN/EN替身及1.4真战役覆盖 |
+| `src/AF.GameAdapter.Bannerlord/Scene/SceneTradeBannerlordAdapter.cs` | `BuildShoutTradeOptions`472–689，实际改动540–585 | 个人金币与队伍库存分离；真实给钱执行算法未改 |
+| `src/AF.GameAdapter.Bannerlord/UI/Conversation/NativeConversationAnswerAreaController.cs` | patch43–44；`ReleaseMoviePrefix`80–88；`ClearContextPrefix`90–103；`RootState`223–238 | 卸载前精确解绑；不吞异常、不恢复已销毁树；离线与实机关闭验证 |
+| `content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml` / `CNs/af_ui_strings-zh-CN.xml` | `AF_ENC_UI_CaptivityReleaseScheduled`3406 / 3440 | TextObject真实consumer322–331；中英成对、UI随游戏语言，CN通知实机观察 |
+| `extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs` | `LeaveConversation`90–100；prefab `AFDialogueNativeOverlay.xml`60 | 既有真实按钮入口未改，实机调用该VM命令，非鼠标命中/画面验收 |
+
