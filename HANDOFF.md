@@ -1,4 +1,9 @@
-﻿# 当前交接：MCM模型拉取刷新与环境AI开关（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+﻿# 当前交接：MCM与无名人设修复已推送（2026-10-14，PUSH_VERIFIED / LIVE_PENDING）
+
+- 用户授权推送；合并远端 `033a0b9f3`，仅HANDOFF冲突，双方内容完整保留。功能合并提交 `8fe553f9c` 已推送，远端main完整ref一致；无强推，未上传工具缓存或本地验证产物。
+- 合并后双API/Bootstrap/双Coup与注册冒烟PASS；MCM10、被俘CN/EN各204、交易8、回答区61项PASS。详细证据与限制见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-merge-20261014)。本条替代下方MCM/无名人设“未push”状态；未部署、打包或新增实机验收。
+
+# 当前交接：MCM模型拉取刷新与环境AI开关（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 刷新先构造后提交、隔离选择写回、跳过未变化列表；主/环境/生图API保持各自选中。按用户明确要求显示环境AI MCM开关，仍用原配置/default与CN/EN资源。
 - 双API/Bootstrap/Coup构建及双DLL真selector回放PASS；新MCM selector/action/显示过滤10项、原预设72项PASS；旧修订同写回断言FAIL，证据差异保留。
