@@ -1,4 +1,4 @@
-# 当前交接：MCM模型拉取刷新与环境AI开关（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+﻿# 当前交接：MCM模型拉取刷新与环境AI开关（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 刷新先构造后提交、隔离选择写回、跳过未变化列表；主/环境/生图API保持各自选中。按用户明确要求显示环境AI MCM开关，仍用原配置/default与CN/EN资源。
 - 双API/Bootstrap/Coup构建及双DLL真selector回放PASS；新MCM selector/action/显示过滤10项、原预设72项PASS；旧修订同写回断言FAIL，证据差异保留。
@@ -9,6 +9,11 @@
 - 空/缺失unnamed_persona可选通过；空Profiles不再造unnamednpcprofiles，开局重复Key自动跳过并保原值，坏数据仍失败。双API/Bootstrap/Coup通过，源码接线导入回放各86项、整包22项PASS。
 - 同时核实最低正向关系/私人好感增幅：原生/场景Hero正MOOD有效；neutral/无标签/无名不加，信使剥离MOOD不执行。最低5的8例Application回放通过；没有改关系机制。
 - [唯一主台账、源码坐标、限制与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#unnamed-import-20261014)，checkpoint `c10388b`。未部署/打包/push，实机与原玩家存档NOT-RUN。
+# 当前交接：赎金后由玩家点离开释放（2026-10-14，限定场景 LIVE_VERIFIED；原生退出 HOLD）
+
+- 产品 `e8b45bf2d`：真实付款→AI确认释放→提示获准→玩家Leave→回大地图实际释放；取消10秒自动关闭及阅读超时，保留身份/转押/唯一动作保护。配套修复被俘个人金币列表及对话销毁引用。
+- CN/EN各204、金币8、回答区61、失焦70、包装146、双API/Bootstrap/Coup均PASS。最终交付1.4真实AI场景PASS；31份正式存档与正式配置/DLL不变，仅授权测试副本更新。原生退出设备引用错误仍HOLD；1.3/EN实机、地牢/旧档/全冲突矩阵未验。
+- [唯一主台账、源码范围与验收边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#captivity-player-leave-20261014)。用户授权源码push，采用最新远端干净交付分支，不上传本地测试桥/运行收据/私有历史；正式部署和打包未执行。推送状态以远端ref核验为准。
 
 # 当前交接：终端状态与手动标签入口（2026-10-14，OFFLINE_VERIFIED / STAGE_VERIFIED / LIVE_PENDING）
 

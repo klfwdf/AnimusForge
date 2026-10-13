@@ -326,7 +326,7 @@ internal static class PlayerCaptivityConversation
         if (!CanRelease(target)) { Logger.Log("PlayerCaptivity", "release_rejected invalid_context"); return false; }
         Releases.Schedule(new ReleaseRequest { Session = _session, RequestedAt = Time.ApplicationTime,
             Fact = AdapterPromptCaptureTexts.PcapCompat("Host_AfefNpcPrefix") + PromptComposerTexts.Raw("Template_captivity_released") });
-        Notify("ReleaseScheduled", "Your captor agreed to release you. This conversation will end in 10 seconds.");
+        Notify("ReleaseScheduled", "You have been granted release. Select Leave to return to the world map and end your captivity.");
         Logger.Log("PlayerCaptivity", "release_scheduled target=" + target.StringId);
         return true;
     }
@@ -357,13 +357,8 @@ internal static class PlayerCaptivityConversation
             }
             if (!OwnsCampaign(session)) { Retire(session); return; }
             ReleaseRequest pending = Releases.Pending;
-            if (pending != null && Time.ApplicationTime - pending.RequestedAt > 120f)
-            {
-                Releases.ClearPending(); pending = null;
-                Notify("ReleaseFailed", "Release could not be confirmed. Please check your current captivity status.");
-            }
-            if (pending != null && (session.Ended || Time.ApplicationTime - pending.RequestedAt >= 10f)) RequestClose(session);
-            if (!OwnsCampaign(session)) { Retire(session); return; }
+            // Authorization lasts for this valid conversation, not a reading-time deadline.
+            // The player's normal Leave command ends it; never auto-close after an AI tag.
             if (session.Manager.IsConversationInProgress)
             {
                 if (ReferenceEquals(Hero.OneToOneConversationHero, session.Target)) Campaign.Current.TimeControlMode = CampaignTimeControlMode.Stop;
@@ -371,7 +366,7 @@ internal static class PlayerCaptivityConversation
                 return;
             }
             if (!(Game.Current?.GameStateManager?.ActiveState is MapState map) || map.MapConversationActive) return;
-            if (pending != null && valid && Releases.ConsumeAuthorization(r => ReferenceEquals(r.Session, session) && IsSessionValid(session), Time.ApplicationTime, 120f))
+            if (pending != null && session.Ended && valid && Releases.ConsumeAuthorization(r => ReferenceEquals(r.Session, session) && IsSessionValid(session), Time.ApplicationTime, float.PositiveInfinity))
             {
                 Releases.ClearPending(); // Retire before entering native callbacks; never retry a partially applied action.
                 ExecuteRelease(pending);

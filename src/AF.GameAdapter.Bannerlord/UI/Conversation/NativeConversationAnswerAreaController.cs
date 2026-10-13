@@ -36,6 +36,12 @@ public static class NativeConversationAnswerAreaController
 				harmony.Patch(method, postfix: postfix);
 				Logger.LogTrace("NativeConversationUI", "Native conversation answer area capture patch applied.");
 			}
+			var release = AccessTools.Method(typeof(GauntletLayer), nameof(GauntletLayer.ReleaseMovie), new[] { typeof(GauntletMovieIdentifier) });
+			var clear = AccessTools.Method(typeof(GauntletLayer), "ClearContext");
+			if (release == null || clear == null)
+				throw new MissingMethodException("Native conversation movie lifecycle methods were not found.");
+			harmony.Patch(release, prefix: new HarmonyMethod(typeof(NativeConversationAnswerAreaController), nameof(ReleaseMoviePrefix)));
+			harmony.Patch(clear, prefix: new HarmonyMethod(typeof(NativeConversationAnswerAreaController), nameof(ClearContextPrefix)));
 		}
 		catch (Exception ex)
 		{
@@ -60,7 +66,7 @@ public static class NativeConversationAnswerAreaController
 			{
 				if (!Roots.Exists(r => ReferenceEquals(r.Root, root)))
 				{
-					Roots.Add(new RootState(root));
+					Roots.Add(new RootState(root, __result));
 				}
 			}
 			ApplySuppressionToAll();
@@ -68,6 +74,29 @@ public static class NativeConversationAnswerAreaController
 		catch (Exception ex)
 		{
 			Logger.Log("NativeConversationUI", "[WARN] Failed to capture native conversation root: " + ex.Message);
+		}
+	}
+
+	public static void ReleaseMoviePrefix(GauntletMovieIdentifier identifier)
+	{
+		if (identifier == null) return;
+		lock (Sync)
+		{
+			for (int i = Roots.Count - 1; i >= 0; i--)
+				if (ReferenceEquals(Roots[i].Movie, identifier)) Roots.RemoveAt(i);
+		}
+	}
+
+	public static void ClearContextPrefix(GauntletLayer __instance)
+	{
+		// Layer finalization releases movies directly, bypassing ReleaseMovie. Retire
+		// references before EventManager.OnFinalize; restoring dead widgets is unsafe.
+		UIContext context = __instance?.UIContext;
+		if (context == null) return;
+		lock (Sync)
+		{
+			for (int i = Roots.Count - 1; i >= 0; i--)
+				if (ReferenceEquals(Roots[i].Context, context)) Roots.RemoveAt(i);
 		}
 	}
 
@@ -191,15 +220,19 @@ public static class NativeConversationAnswerAreaController
 
         private readonly bool _preserveNativeAnswerSlot;
 
-		public RootState(Widget root)
+		public RootState(Widget root, GauntletMovieIdentifier movie)
 		{
 			Root = root;
+			Movie = movie;
+			Context = root.Context;
             // Router keeps the logical movie name unchanged. Identify the real tree once,
             // not the SPConversation/MapConversation name or the mutable MCM switch.
             _preserveNativeAnswerSlot = root?.FindChild("AFDialogueConsoleFrame", includeAllChildren: true) == null;
 		}
 
 		public Widget Root { get; }
+		public GauntletMovieIdentifier Movie { get; }
+		public UIContext Context { get; }
 
 		public void Apply(bool suppressed)
 		{

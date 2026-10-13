@@ -3403,7 +3403,7 @@ Choose how to proceed:" />
   <string id="AF_ENC_UI_CaptivitySelect" text="Speak" />
   <string id="AF_ENC_UI_CaptivityCancel" text="Cancel" />
   <string id="AF_ENC_UI_CaptivityOpenFailed" text="The conversation could not be opened. Your captivity has not been changed." />
-  <string id="AF_ENC_UI_CaptivityReleaseScheduled" text="Your captor agreed to release you. This conversation will end in 10 seconds." />
+  <string id="AF_ENC_UI_CaptivityReleaseScheduled" text="You have been granted release. Select Leave to return to the world map and end your captivity." />
   <string id="AF_ENC_UI_CaptivityReleaseFailed" text="Release could not be confirmed. Please check your current captivity status." />
   <string id="AF_ENC_UI_CaptivityReleased" text="You have been released from captivity." />
   <string id="AF_ENC_UI_CaptivityActionBlocked" text="This action is unavailable while you are in captivity." />
