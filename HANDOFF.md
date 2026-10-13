@@ -1,3 +1,9 @@
+# 当前交接：MCM模型拉取刷新与环境AI开关（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 刷新先构造后提交、隔离选择写回、跳过未变化列表；主/环境/生图API保持各自选中。按用户明确要求显示环境AI MCM开关，仍用原配置/default与CN/EN资源。
+- 双API/Bootstrap/Coup构建及双DLL真selector回放PASS；新MCM selector/action/显示过滤10项、原预设72项PASS；旧修订同写回断言FAIL，证据差异保留。
+- [唯一主台账、源码坐标及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#mcm-fetch-20261014)，checkpoint `7848fa8`，证据 `artifacts/mcm-fetch-20261014/`。未部署/打包/push，实机/provider/UndoRedo未验；游戏安装仍旧版本。
+
 # 当前交接：开局空无名人设导入修复（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 空/缺失unnamed_persona可选通过；空Profiles不再造unnamednpcprofiles，开局重复Key自动跳过并保原值，坏数据仍失败。双API/Bootstrap/Coup通过，源码接线导入回放各86项、整包22项PASS。
