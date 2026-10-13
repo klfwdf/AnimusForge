@@ -79,7 +79,8 @@ internal static class TerminalSettingsCoverage
     internal static bool IsVisible(string id)
     {
         if (id == "TownAmbientAiShowUsageNotifications" || id == "ScreenNotifications"
-            || id == "EnemyInterruptRadiusMeters" || id == "DiagnosticsEnabled") return false;
+            || id == "EnemyInterruptRadiusMeters" || id == "DiagnosticsEnabled"
+            || id == "Illustrator.UseExactEndpointUrl") return false;
         if (id.StartsWith("Illustrator.Director", StringComparison.Ordinal) || id == "Illustrator.FetchDirectorModelList") return false;
         return true;
     }

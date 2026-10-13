@@ -54,7 +54,8 @@ public sealed class NativeOverlayVM : ViewModel
     [DataSourceProperty] public string AIChatHistoryButtonText => Original.AIChatHistoryButtonText;
     [DataSourceProperty] public string GiveShowButtonText => Original.GiveShowButtonText;
     [DataSourceProperty] public string DirectActionsButtonText => Original.DirectActionsButtonText;
-    [DataSourceProperty] public bool CanOpenDirectActions => IsInteractionEnabled && Original.CanOpenDirectActions;
+    [DataSourceProperty] public bool IsDirectActionsVisible => Original.IsDirectActionsVisible;
+    [DataSourceProperty] public bool CanOpenDirectActions => IsDirectActionsVisible && IsInteractionEnabled && Original.CanOpenDirectActions;
     [DataSourceProperty] public string PersonaEditButtonText => Original.PersonaEditButtonText;
     [DataSourceProperty] public string TagTestButtonText => Original.TagTestButtonText;
     [DataSourceProperty] public bool IsCustomAnswerVisible => Original.IsCustomAnswerVisible && !Auxiliary.IsOpen;
@@ -146,6 +147,7 @@ public sealed class NativeOverlayVM : ViewModel
             return;
         }
         OnPropertyChanged(name);
+        if (name == nameof(IsDirectActionsVisible)) OnPropertyChanged(nameof(CanOpenDirectActions));
         if (name == nameof(IsInputEnabled) || name == nameof(IsCustomAnswerVisible))
             OnPropertyChanged(nameof(IsReplyPending));
         if (name == nameof(IsInputEnabled)) Auxiliary.RefreshInteraction();

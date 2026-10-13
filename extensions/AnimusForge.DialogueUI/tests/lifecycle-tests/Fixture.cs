@@ -95,6 +95,12 @@ namespace HarmonyLib
 }
 namespace AnimusForge
 {
+    public sealed class DuelSettings
+    {
+        private static readonly DuelSettings Settings = new();
+        public static DuelSettings GetSettings() => Settings;
+        public bool EnableDevEditHistory { get; set; }
+    }
     internal static class LlmRetryPrompt { internal static string ProjectKnownErrorForUi(string value) => value; }
     public class NpcDataPacket { public int AgentIndex; }
     public class ShoutBehavior
