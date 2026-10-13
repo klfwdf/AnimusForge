@@ -152,6 +152,8 @@ internal sealed class WorldBulletinFocus
 
 internal static class WorldBulletinPolicy
 {
+	internal const int IllustrationParticipantLimit = 2;
+
 	public static WorldBulletinIllustrationPlan BuildIllustrationPlan(WorldBulletinSelection selection, string identity, string dateText)
 	{
 		if (selection?.Major == null) return null;
@@ -168,10 +170,11 @@ internal static class WorldBulletinPolicy
 				!string.IsNullOrWhiteSpace(lead.Group) && fact.Group == lead.Group && !facts.Any(x => x.Key == fact.Key)) facts.Add(fact);
 		var plan = new WorldBulletinIllustrationPlan { Identity = identity ?? "", Title = TitleForKind(lead.Kind), DateText = dateText ?? "" };
 		plan.Facts = string.Join("\n", facts.Select(f => BuildNpcFactSentence(f) + (string.IsNullOrWhiteSpace(f.Detail) ? "" : "\n" + WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_AdditionalFact", "Additional fact: ") + BuildCoupDetailForPrompt(f))));
-		foreach (var fact in facts)
-			foreach (var person in fact.Participants ?? new List<WorldBulletinParticipant>())
-				if (person != null && !string.IsNullOrWhiteSpace(person.HeroId) && plan.Participants.Count < 4 && !plan.Participants.Any(x => x.HeroId == person.HeroId))
-					plan.Participants.Add(new WorldBulletinParticipant { HeroId = person.HeroId, Name = person.Name, Role = person.Role });
+		// Only the selected event's first two participants become portrait subjects;
+		// supporting facts remain factual context and do not add more references.
+		foreach (var person in lead?.Participants ?? new List<WorldBulletinParticipant>())
+			if (person != null && !string.IsNullOrWhiteSpace(person.HeroId) && plan.Participants.Count < IllustrationParticipantLimit && !plan.Participants.Any(x => x.HeroId == person.HeroId))
+				plan.Participants.Add(new WorldBulletinParticipant { HeroId = person.HeroId, Name = person.Name, Role = person.Role });
 		return plan;
 	}
 

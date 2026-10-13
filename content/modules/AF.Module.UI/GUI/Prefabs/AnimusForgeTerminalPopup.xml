@@ -134,7 +134,7 @@
                             </ButtonWidget>
                           </Children>
                         </Widget>
-                        <ScrollablePanel MarginTop="@MenuContentTop" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="MenuClip" InnerPanel="MenuClip\MenuInner" MarginRight="12" AutoHideScrollBars="true" VerticalScrollbar="..\MenuScrollbar\Scrollbar">
+                        <ScrollablePanel MarginTop="@MenuContentTop" MarginBottom="12" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="MenuClip" InnerPanel="MenuClip\MenuInner" MarginRight="12" MouseScrollAxis="Vertical" AutoHideScrollBars="true" UpdateScrollbarVisibility="true" AutoAdjustScrollbarHandleSize="true" VerticalScrollbar="..\MenuScrollbar\Scrollbar">
                           <Children>
                             <Widget Id="MenuClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                               <Children>
@@ -376,7 +376,7 @@
                             </Widget>
                           </Children>
                         </ScrollablePanel>
-                        <Standard.VerticalScrollbar MarginTop="@MenuContentTop" Id="MenuScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="StretchToParent" MarginRight="2" />
+                        <Standard.VerticalScrollbar MarginTop="@MenuContentTop" MarginBottom="12" Id="MenuScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="StretchToParent" MarginRight="2" />
                       </Children>
                     </Widget>
 

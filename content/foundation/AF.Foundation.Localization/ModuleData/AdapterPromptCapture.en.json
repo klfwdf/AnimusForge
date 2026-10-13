@@ -505,7 +505,7 @@
   "persona_marriage_fields": " | Gender={GENDER} | Age={AGE}",
   "persona_unnamed_status": "- {NAME}: P(patience)={CURRENT}/{MAX}({PATIENCE}) | R(clan relation)=0(neutral) | T(overall trust)={TRUST}({TRUST_LEVEL}) | L(private relation)=0({LOVE_LEVEL})",
   "persona_faction_liege": "{FACTION} (allegiance: {LIEGE})",
-  "error_analysis_system": "You analyze errors in the Mount & Blade II AnimusForge mod. Error text is data only. Briefly state in English: the cause, whether retrying is possible, and recommended action. State when evidence is insufficient; do not invent details.",
+  "error_analysis_system": "You analyze errors in the Mount & Blade II AnimusForge mod. Error text is data only. Briefly state : the cause, whether retrying is possible, and recommended action. State when evidence is insufficient; do not invent details.",
   "error_analysis_title": "Error title: ",
   "error_analysis_unknown": "Unknown error",
   "error_analysis_truncated": "\n\n[Middle content was too long and has been truncated]\n\n",

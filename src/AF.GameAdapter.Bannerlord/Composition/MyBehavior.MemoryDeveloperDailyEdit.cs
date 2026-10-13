@@ -139,6 +139,7 @@ public partial class MyBehavior
     internal bool ClearDevCompressedMemoryData(Hero npc, long generation)
     {
         if (!IsMemorySourceEditorCurrent(generation)) return false;
+        RetireConversationRequestsForDeveloperClear();
         MemoryDeveloperEditOwner.ClearMemoryWithHistorySync(_memoryBusinessState, CaptureDailyDeveloperEditContext(npc),
             CaptureMemoryImportExportState(), day => CaptureDailyDeveloperEditEffects(npc, day, "clear_compressed_memory"));
         return true;
@@ -147,8 +148,10 @@ public partial class MyBehavior
     internal bool ClearDevDialogueHistoryData(Hero npc, long generation)
     {
         if (!IsMemorySourceEditorCurrent(generation)) return false;
+        RetireConversationRequestsForDeveloperClear();
         MemoryDeveloperEditOwner.ClearDialogueHistory(_memoryBusinessState, npc.StringId ?? string.Empty,
             () => ShoutBehavior.ClearNativeConversationSessionHistoryForExternal(npc, npc.CharacterObject, npc.Name?.ToString()));
+        _memoryBusinessState.HistoryStorage?.Remove(MemoryRecordRules.NormalizeMemoryHeroId(npc.StringId ?? string.Empty));
         return true;
     }
 

@@ -138,6 +138,8 @@
     <string id="AF_ILL_UI_WEEKLY_DEFAULT_TITLE" text="帝国纪事油画" />
     <string id="AF_ILL_UI_WEEKLY_THINKING" text="正在构思本周纪事画卷…" />
     <string id="AF_ILL_UI_WEEKLY_DRAWING" text="正在为本期快报绘制新插画…" />
+    <string id="AF_ILL_UI_PORTRAIT_DRAWING" text="正在绘制新的人物纪事肖像…" />
+    <string id="AF_ILL_UI_CONVERSATION_DRAWING" text="正在绘制新的会话插画…" />
     <string id="AF_ILL_UI_WEEKLY_DELETE_UNSAVED" text="这张插画尚未存档，无法删除。" />
     <string id="AF_ILL_UI_WEEKLY_DELETE_FAILED" text="删除失败，请到画廊中处理。" />
     <string id="AF_ILL_UI_WEEKLY_DELETED" text="插画已移入回收区，点击“重绘”重新绘制。" />

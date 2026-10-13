@@ -21,7 +21,7 @@
   "AssessmentRulesHeader": "[General assessment rules]\n",
   "ParametersHeader": "[Current parameters]\n",
   "FeedbackLengthPrefix": " Write publicFeedback in the third person, approximately ",
-  "FeedbackLengthSuffix": " English characters, without inventing events that have already occurred.",
+  "FeedbackLengthSuffix": " characters, without inventing events that have already occurred.",
   "VassalCostSchema": "- requiredGoldCost:number, a finite nonnegative number.\n",
   "CostSchema": "- startupGoldCost:number, a finite nonnegative number.\n- dailyMaintenanceGoldCost:number, a finite nonnegative number.\n",
   "FrozenWorldHeader": "[World context (frozen snapshot)]\n",

@@ -1218,7 +1218,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
                 string detailedPrompt = direction.Prompt;
 
-                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = IllustrationStatusUiText.Direction(direction) + " · " + IllustratorUiText.WeeklyDrawing; });
+                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = IllustrationStatusUiText.Direction(direction) + " · " + (_category == "encyclopedia" ? IllustratorUiText.PortraitDrawing : IllustratorUiText.ConversationDrawing); });
 
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefsList;
 
@@ -1959,7 +1959,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
                     IllustrationReferenceRouting.AddSceneReferences(genRefs, sceneCapture?.References ?? session?.SceneReferences, direction, token);
 
-                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = (session != null ? IllustratorUiText.ConversationReferenceReuse : IllustrationStatusUiText.Scene(sceneStatus) + " · " + IllustratorUiText.PortraitPreparing) + " · " + IllustrationStatusUiText.Direction(direction) + " · " + IllustratorUiText.WeeklyDrawing; });
+                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = (session != null ? IllustratorUiText.ConversationReferenceReuse : IllustrationStatusUiText.Scene(sceneStatus) + " · " + IllustratorUiText.PortraitPreparing) + " · " + IllustrationStatusUiText.Direction(direction) + " · " + IllustratorUiText.ConversationDrawing; });
 
                 var finalGenRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefs;
 

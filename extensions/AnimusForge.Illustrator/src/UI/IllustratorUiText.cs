@@ -108,6 +108,8 @@ namespace AnimusForge.Illustrator.UI
         internal static string WeeklyDefaultTitle => Resolve("AF_ILL_UI_WEEKLY_DEFAULT_TITLE", "Imperial Chronicle Illustration");
         internal static string WeeklyThinking => Resolve("AF_ILL_UI_WEEKLY_THINKING", "Preparing this week's chronicle illustration…");
         internal static string WeeklyDrawing => Resolve("AF_ILL_UI_WEEKLY_DRAWING", "Drawing a new illustration for this bulletin…");
+        internal static string PortraitDrawing => Resolve("AF_ILL_UI_PORTRAIT_DRAWING", "Drawing a new chronicle portrait…");
+        internal static string ConversationDrawing => Resolve("AF_ILL_UI_CONVERSATION_DRAWING", "Drawing a new conversation illustration…");
         internal static string WeeklyDeleteUnsaved => Resolve("AF_ILL_UI_WEEKLY_DELETE_UNSAVED", "This illustration has not been archived and cannot be deleted.");
         internal static string WeeklyDeleteFailed => Resolve("AF_ILL_UI_WEEKLY_DELETE_FAILED", "Delete failed. Manage this image in the gallery.");
         internal static string WeeklyDeleted => Resolve("AF_ILL_UI_WEEKLY_DELETED", "Illustration moved to the recycle area. Click Redraw to create another.");
@@ -216,7 +218,7 @@ namespace AnimusForge.Illustrator.UI
         internal static string StatusDirectorEmpty => Resolve("AF_ILL_UI_STATUS_DIRECTOR_EMPTY", "The director output lacked a visual description");
         internal static string StatusDirectorUnavailable => Resolve("AF_ILL_UI_STATUS_DIRECTOR_UNAVAILABLE", "The director output was unavailable");
         internal static string StatusVisionPrefix => Resolve("AF_ILL_UI_STATUS_VISION_PREFIX", "The director does not support image input; ");
-        internal static string StatusLocalFallback(string reason) => Format("AF_ILL_UI_STATUS_LOCAL_FALLBACK", "{REASON}; local composition was used", "REASON", reason);
+        internal static string StatusLocalFallback(string reason) => Format("AF_ILL_UI_STATUS_LOCAL_FALLBACK", "{REASON}. A local composition was used", "REASON", reason);
         internal static string StatusSceneTerrain => Resolve("AF_ILL_UI_STATUS_SCENE_TERRAIN", "Field conversation: composing from terrain facts without a screenshot");
         internal static string StatusSceneDisabledScreenshot => Resolve("AF_ILL_UI_STATUS_SCENE_DISABLED_SCREENSHOT", "Scene panorama is disabled; using the current scene screenshot");
         internal static string StatusSceneDisabledFacts => Resolve("AF_ILL_UI_STATUS_SCENE_DISABLED_FACTS", "Scene panorama is disabled; composing from text facts");

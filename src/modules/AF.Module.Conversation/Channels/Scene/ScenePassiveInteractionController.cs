@@ -154,6 +154,11 @@ internal sealed class ScenePassiveInteractionController
 
 	internal void UpdatePassiveStareLogic(float dt)
 	{
+		if (GetPassiveStareTriggerTime() <= 0f)
+		{
+			ResetPassiveStareTracking();
+			return;
+		}
 		if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive() || _isProcessingShout)
 		{
 			return;
@@ -221,8 +226,10 @@ internal sealed class ScenePassiveInteractionController
 	{
 		try
 		{
-			int seconds = DuelSettings.GetSettings()?.PassiveStareTriggerSeconds ?? (int)DEFAULT_STARE_TRIGGER_TIME;
-			return Math.Max(1f, Math.Min(120f, seconds));
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null || !settings.EnablePassiveStareReaction) return 0f;
+			int seconds = settings.PassiveStareTriggerSeconds;
+			return seconds <= 0 ? 0f : Math.Max(1f, Math.Min(120f, seconds));
 		}
 		catch
 		{
@@ -454,7 +461,6 @@ internal sealed class ScenePassiveInteractionController
 			allNpcData.Add(npcData);
 		}
 		ApplyInteractionGraceAndGroupCooldown(PASSIVE_INTERACTION_GRACE, PASSIVE_STARE_COOLDOWN, source, targetAgent, allNpcData);
-		InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Scene_PassiveStare}You have been staring at {NPC} for a while...").SetTextVariable("NPC", npcData.Name).ToString(), new Color(0.7f, 0.7f, 0.7f)));
 		string factText = BuildPassiveReactionFactText(targetAgent);
 		try
 		{

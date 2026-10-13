@@ -1,6 +1,7 @@
 using AnimusForge;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using AnimusForge.Refactor.Contracts;
 
 using AnimusForge.Refactor.Domain;
@@ -48,7 +49,11 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (!string.IsNullOrWhiteSpace(document.Body))
         {
             string template = author ? DiplomacyMiscPromptTexts.Get("PersonalMemory_DocumentPublished", "I have officially published a diplomatic document, source={0}, date={1}, publishing kingdom={2}, title={3}. Original text: {4}. This entry only confirms the document was published or received; it does not prove the proposal was accepted or diplomatic actions executed.") : DiplomacyMiscPromptTexts.Get("PersonalMemory_DocumentReceived", "The court where I reside has officially received a diplomatic document, source={0}, date={1}, publishing kingdom={2}, title={3}. Original text: {4}. This entry only confirms the document was published or received; it does not prove the proposal was accepted or diplomatic actions executed.");
-            string fact = string.Format(template, document.DocumentId ?? "", document.GameDate ?? "", document.AuthorKingdomName ?? "", document.Title ?? "", Limit(document.Body, 4000));
+            string displayDate = template.StartsWith("I have officially", StringComparison.Ordinal)
+                || template.StartsWith("The court where I reside", StringComparison.Ordinal)
+                ? "game day " + document.Day.ToString(CultureInfo.InvariantCulture)
+                : document.GameDate ?? "";
+            string fact = string.Format(template, document.DocumentId ?? "", displayDate, document.AuthorKingdomName ?? "", document.Title ?? "", Limit(document.Body, 4000));
             committed &= CommitDiplomaticDocumentMemoryOnce(ruler, document, author ? "publication" : "receipt", fact, memoryDay);
         }
         if (document.Actions?.Count > 0)

@@ -57,7 +57,7 @@ namespace AnimusForge.Illustrator.Core
         public IllustrationPromptPlan(string mode, string hardFacts, string artDirection, string directorOnlyFacts, string playerRedrawPrompt)
         {
             Mode = (mode ?? string.Empty).Trim();
-            HardFacts = (hardFacts ?? string.Empty).Trim();
+            HardFacts = VisualFidelityRules.ShareProfileRules((hardFacts ?? string.Empty).Trim());
             ArtDirection = (artDirection ?? string.Empty).Trim();
             DirectorOnlyFacts = (directorOnlyFacts ?? string.Empty).Trim();
             PlayerRedrawPrompt = (playerRedrawPrompt ?? string.Empty).Trim();

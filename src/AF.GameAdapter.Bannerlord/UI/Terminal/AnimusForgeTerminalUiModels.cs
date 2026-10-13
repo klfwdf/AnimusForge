@@ -500,7 +500,11 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 
 
-	private const int MenuPageSize = 50;
+	// The terminal's central viewport already owns a bounded scroll panel. Keep
+	// one content category/group on one logical page so expanding a group never
+	// strands its children on a second page; the list remains virtual only at
+	// the game UI level and is populated once when the view changes.
+	private const int MenuPageSize = 1000;
 
 	private string _searchText = "";
 
@@ -1266,7 +1270,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 
 
-			var definitions = _selectedTab == TerminalCategories.All ? TerminalSettingsRegistry.AllDefinitions : TerminalSettingsRegistry.GetByCategory(_selectedTab);
+			var definitions = _selectedTab == TerminalCategories.All ? TerminalSettingsRegistry.VisibleDefinitions : TerminalSettingsRegistry.GetByCategory(_selectedTab);
 
 			foreach (var group in definitions.Where(def => query.Length == 0 || SettingMatchesQuery(def, query)).GroupBy(def => def.GroupName))
 
@@ -1286,7 +1290,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 				if (!collapsed)
 
-					foreach (var def in group) rootItems.Add(new AnimusForgeTerminalItemVM(def, MarkModified));
+					foreach (var def in group.OrderBy(item => TerminalSettingsCoverage.ViewOrder(item.Id))) rootItems.Add(new AnimusForgeTerminalItemVM(def, MarkModified));
 
 			}
 

@@ -119,10 +119,10 @@ internal static class ActualMessageAssemblyChecks
             sceneInputType.GetField("Context", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(sceneInput, Activator.CreateInstance(sceneContextType, true));
             var sceneMessages = (IList)Call(sceneOwner, "Build", sceneInput);
             Check(sceneMessages.Count == 1 && Field(sceneMessages[0], "role") == "system", "actual Native/Scene shared builder keeps the system role");
-            Check(Field(sceneMessages[0], "content") == "role and custom rules\n\n" + Text("conversation_reply_language"), "actual Native/Scene shared builder appends the package language outside optional reply-format rules");
+            Check(Field(sceneMessages[0], "content") == "role and custom rules", "actual Native/Scene shared builder does not append a package response-language rule");
             Check(Field(reply[0], "role") == "system" && Field(reply[0], "content").StartsWith("custom\n"), "Courier system/custom rule order");
-            Check(Field(reply[0], "content") == "custom\n" + Text("main_courier_reply_system").Replace("{NPC}", "Alda").Replace("{PLAYER}", "Player") + "\npersona\nexclude\n\n" + Text("conversation_reply_language"), "reply system retains all rules and adds selected package language");
-            Check(Field(inbound[0], "content") == "custom\n" + Text("main_courier_inbound_system").Replace("{NPC}", "Alda").Replace("{PLAYER}", "Player").Replace("{KIND}", "private letter").Replace("{CHARS}", "220") + "\npersona\nexclude\n\n" + Text("conversation_reply_language"), "inbound system retains all rules and adds selected package language");
+            Check(Field(reply[0], "content") == "custom\n" + Text("main_courier_reply_system").Replace("{NPC}", "Alda").Replace("{PLAYER}", "Player") + "\npersona\nexclude", "reply system retains all rules and retains player-selected reply language");
+            Check(Field(inbound[0], "content") == "custom\n" + Text("main_courier_inbound_system").Replace("{NPC}", "Alda").Replace("{PLAYER}", "Player").Replace("{KIND}", "private letter").Replace("{CHARS}", "220") + "\npersona\nexclude", "inbound system retains all rules and retains player-selected reply language");
             foreach (string key in new[] { "main_courier_000", "main_courier_001", "main_courier_002" })
                 Check(Field(reply[1], "content").Contains(Text(key)), "reply package heading " + key);
             foreach (string key in new[] { "main_courier_008", "main_courier_009", "main_courier_010" })

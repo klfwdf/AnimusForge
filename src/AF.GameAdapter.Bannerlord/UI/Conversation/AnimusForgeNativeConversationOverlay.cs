@@ -256,7 +256,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		// The existing UI Tick reads only the admission identity stamp, not agents.
 		_dataSource.CanSwitchTalk = !_dataSource.IsCustomAnswerVisible ||
 			(!_isSubmitting && !ShoutBehavior.IsNativeConversationBackendBusyForUi());
-        _dataSource.CanOpenDirectActions = !_isSubmitting && !ShoutBehavior.IsNativeConversationBackendBusyForUi();
+        _dataSource.RefreshDirectActionsVisibility();
+        _dataSource.CanOpenDirectActions = DuelSettings.GetSettings()?.EnableDevEditHistory == true && !_isSubmitting && !ShoutBehavior.IsNativeConversationBackendBusyForUi();
 		bool personaEditVisible;
 		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.ResolvePersonaVisibility"))
 		{
@@ -741,7 +742,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 
     private void HandleDirectActionsRequested()
     {
-        if (_isClosed || _isSubmitting || ShoutBehavior.IsNativeConversationBackendBusyForUi()) return;
+        if (DuelSettings.GetSettings()?.EnableDevEditHistory != true || _isClosed || _isSubmitting || ShoutBehavior.IsNativeConversationBackendBusyForUi()) return;
         try
         {
             HideOverlayRoot();

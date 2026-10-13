@@ -1,6 +1,7 @@
 using System;
 
 using System.Collections;
+using System.Collections.Concurrent;
 
 using System.Collections.Generic;
 
@@ -36,6 +37,9 @@ public static class McmDropdownRuntimeRefresh
 
 	private static readonly List<WeakReference> LiveModOptionsVms = new List<WeakReference>();
 
+	private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
+	private static int MainThreadActionCount;
+
 
 
 	private static int _refreshPendingTicks;
@@ -51,6 +55,8 @@ public static class McmDropdownRuntimeRefresh
 
 
 	private static bool _selectorVmCompatibilityWarned;
+
+	private static bool _selectorVmFallbackLogged;
 
 
 
@@ -167,6 +173,10 @@ public static class McmDropdownRuntimeRefresh
 	public static void RequestRefresh()
 
 	{
+		if (Volatile.Read(ref _selectorVmDirectRefreshDisabled))
+		{
+			return;
+		}
 
 		while (true)
 
@@ -246,9 +256,32 @@ public static class McmDropdownRuntimeRefresh
 
 
 
+    internal static bool PostToMainThread(Action action)
+    {
+        if (action == null || Interlocked.Increment(ref MainThreadActionCount) > 32)
+        {
+            if (action != null) Interlocked.Decrement(ref MainThreadActionCount);
+            Logger.Log("MCM", "[WARN] Dropped model-list UI callback because the main-thread queue is full.");
+            return false;
+        }
+        MainThreadActions.Enqueue(action);
+        return true;
+    }
+
+    private static void DrainMainThreadActions()
+    {
+        for (int i = 0; i < 8 && MainThreadActions.TryDequeue(out Action action); i++)
+        {
+            Interlocked.Decrement(ref MainThreadActionCount);
+            try { action(); }
+            catch (Exception ex) { Logger.Log("MCM", "[WARN] Model-list UI callback failed: " + ex); }
+        }
+    }
+
 	public static void OnApplicationTick()
 
 	{
+        DrainMainThreadActions();
 
 		while (true)
 
@@ -480,22 +513,6 @@ public static class McmDropdownRuntimeRefresh
 
 		}
 
-		foreach (object modOptionsTarget in modOptionsTargets)
-
-		{
-
-			TryRebuildCurrentSettingsPage(modOptionsTarget);
-
-		}
-
-		if (_selectorVmDirectRefreshDisabled)
-
-		{
-
-			return;
-
-		}
-
 		foreach (object target in targets)
 
 		{
@@ -520,7 +537,7 @@ public static class McmDropdownRuntimeRefresh
 
 					_selectorVmCompatibilityWarned = true;
 
-					Logger.Log("MCM", "[WARN] Detected an MCM dropdown constructor compatibility difference; direct reflection refresh is disabled, falling back to page reconstruction.");
+					Logger.Log("MCM", "[WARN] Detected an MCM dropdown constructor compatibility difference; live refresh is unavailable; reopen the settings view to load the fetched model list.");
 
 				}
 
@@ -529,6 +546,21 @@ public static class McmDropdownRuntimeRefresh
 			}
 
 		}
+
+		// Some MCM 5.11 builds cannot construct the selector item type used by
+		// direct Refresh. Rebuilding the entire settings page on the game thread
+		// can stall the page after an async model request completes. Keep the new
+		// values in DuelSettings/cache and let the next MCM open construct them.
+		if (_selectorVmDirectRefreshDisabled)
+		{
+			if (!_selectorVmFallbackLogged)
+			{
+				_selectorVmFallbackLogged = true;
+				Logger.Log("MCM", "[INFO] Dropdown live refresh is unavailable on this MCM build; current page was left intact. Reopen MCM to load the fetched model list.");
+			}
+			return;
+		}
+
 
 	}
 
@@ -664,6 +696,11 @@ public static class McmDropdownRuntimeRefresh
 
 		}
 
+        // MCM constructs property VMs for every installed mod. Refresh only AF
+        // owners; constructor notifications must not mutate another mod's UI.
+        if (!(propertyReference is PropertyRef afReference) || !IsAnimusForgeOwner(afReference.Instance?.GetType()))
+            return;
+
 		PropertyInfo valueProperty = AccessTools.Property(propertyReference.GetType(), "Value");
 
 		object dropdownValue = valueProperty?.GetValue(propertyReference);
@@ -692,15 +729,15 @@ public static class McmDropdownRuntimeRefresh
 
 		}
 
-		MethodInfo refreshMethod = AccessTools.Method(selectorVm.GetType(), "Refresh", new Type[]
-
-		{
-
-			typeof(IEnumerable<object>),
-
-			typeof(int)
-
-		});
+        // Use the selector's actual value type. MCM 5.11 wraps display values
+        // in TextObject; invoking its covariant IEnumerable overload with strings
+        // clears ItemList and then throws while constructing the first item VM.
+        MethodInfo refreshMethod = selectorVm.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            .FirstOrDefault(method => method.Name == "Refresh" && method.GetParameters().Length == 2
+                && method.GetParameters()[1].ParameterType == typeof(int)
+                && (method.GetParameters()[0].ParameterType == typeof(IEnumerable<TextObject>)
+                    || method.GetParameters()[0].ParameterType == typeof(IEnumerable<string>)
+                    || method.GetParameters()[0].ParameterType == typeof(IEnumerable<object>)));
 
 		if (refreshMethod == null)
 
@@ -744,7 +781,13 @@ public static class McmDropdownRuntimeRefresh
 
 		}
 
-		refreshMethod.Invoke(selectorVm, new object[] { optionList, selectedIndex });
+        Type listType = refreshMethod.GetParameters()[0].ParameterType;
+        object displayOptions = listType == typeof(IEnumerable<TextObject>)
+            ? (object)optionList.Select(value => value as TextObject ?? new TextObject(value?.ToString() ?? string.Empty)).ToList()
+            : listType == typeof(IEnumerable<string>)
+                ? (object)optionList.Select(value => value?.ToString() ?? string.Empty).ToList()
+                : optionList;
+        refreshMethod.Invoke(selectorVm, new object[] { displayOptions, selectedIndex });
 
 		MethodInfo selectorRefreshValues = AccessTools.Method(selectorVm.GetType(), "RefreshValues", Type.EmptyTypes);
 
@@ -773,6 +816,15 @@ public static class McmDropdownRuntimeRefresh
 	}
 
 
+
+    private static bool IsAnimusForgeOwner(Type type)
+    {
+        string name = type?.FullName ?? string.Empty;
+        return name == "AnimusForge.DuelSettings"
+            || name == "AnimusForge.DialogueUI.DialogueUiSettings"
+            || name == "AnimusForge.Illustrator.IllustratorSettings"
+            || name == "AnimusForge.CoupSystem.CoupSettings";
+    }
 
     internal static object LocalizeOptionForDisplay(string settingsType, string propertyName, int index, object value)
     {

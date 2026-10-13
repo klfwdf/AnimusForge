@@ -4325,7 +4325,8 @@ internal static class Program
         True(combinedPrompt.Contains("【字段规则】"));
         True(combinedPrompt.Contains("TACTIC：只能是NONE或ADVANCE"));
         True(combinedPrompt.Contains("像不同现场士兵"));
-        True(combinedPrompt.Contains("必须使用简体中文"));
+        True(combinedPrompt.Contains("字段标记保持英文大写"));
+        True(!combinedPrompt.Contains("必须使用简体中文"));
         True(combinedPrompt.Contains("双方接近用冷静或坚定"));
         True(combinedPrompt.Contains("数量不足不会使正文失效"));
         True(combinedPrompt.Contains("只输出以下六个字段"));

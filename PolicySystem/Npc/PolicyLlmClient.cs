@@ -22,8 +22,9 @@ namespace AnimusForge;
 
 internal static class PolicyLlmClient
 {
-	private const int DefaultMaxAttempts = 3;	internal static JArray FreezePolicyMessages(JArray messages)	{		JArray frozen = messages == null ? new JArray() : (JArray)messages.DeepClone();		for (int index = frozen.Count - 1; index >= 0; index--)		{			if (frozen[index] is JObject message && (string)message["role"] == "system"				&& message["content"]?.Type == JTokenType.String)			{				message["content"] = PromptComposerTexts.ApplyOutputLanguage((string)message["content"]);				return frozen;			}		}		frozen.Insert(0, new JObject { ["role"] = "system", ["content"] = PromptComposerTexts.Get("conversation_reply_language") });		return frozen;	}
-
+	private const int DefaultMaxAttempts = 3;	internal static JArray FreezePolicyMessages(JArray messages)
+        => messages == null ? new JArray() : (JArray)messages.DeepClone();
+
 	private const int MaxRetryAfterDelaySeconds = 180;
 
 	private const int MaxCapabilityCacheEntries = 32;

@@ -308,7 +308,7 @@ public static class LlmRetryPrompt
 		return string.IsNullOrWhiteSpace(text) ? (fallback ?? "") : text;
 	}
 
-	private static void PostToMainThread(Action action)
+	public static void PostToMainThread(Action action)
 	{
 		if (action == null)
 		{

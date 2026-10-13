@@ -1,8 +1,37 @@
+# 当前交接：1.6.0 成对包与 CN 安装（2026-10-13，PACKAGED / CN_DEPLOYED_HASH_VERIFIED / PUSH_PENDING / LIVE_PENDING）
+
+- 本条替代下方旧安装/待部署状态。按用户最新要求生成1.6.0 CN/EN双包，并部署F盘CN1.6.0；纳入插画会话完成后的共享改动。双API/Bootstrap/Coup/Stage、两包3519项、实际DLL消息/终端/语言回放通过；386受管hash一致、3341玩家文件内容/mtime保持、无Recovery。
+- 终端条目集中、隐藏投影、手动标签开发者开关、去固定输出语言锁与世界书重复数字修复已纳入。公告从1.5.7正式`4ed61998b`累计；本轮推送基线`22b525863`，提交/推送仍待ref核验。
+- [唯一主台账及源码范围/回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-160-cn-terminal-worldbook-20261013)。包在`一键编译覆盖推送/packages/`，收据本地`artifacts/no-forced-output-language-20261013/`；实机/provider/旧档NOT-RUN。两项旧新闻链接源测试缺文本reader依赖未通过，未作为发行通过证据。ZIP、工具缓存和本地收据不入库。
+
+# 当前交接：核心事实压缩（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 双语事实模板紧凑化，公共染色/装备/武器规则移至共享段，导演输入与最终生图共同使用。双API/Bootstrap/接缝及CN/EN专项PASS；未部署、未实测新版完整请求长度。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-facts-compact-20261013)，checkpoint `67e277d9f`。
+
+# 当前交接：生图提示词去重（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 最终生图人物通用规则共享、参考图按编号共享类型规则，CN/EN同步；预算支持EN四段协议。两人物自身事实保留。双API/Bootstrap/接缝构建及CN/EN纯文本专项PASS；实际失败日志预算32149→31692。未部署或调用provider，原安装状态未更新。
+- 详细代码范围、失败/验证和回滚：[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-prompt-dedup-20261013)。checkpoint `06ec535b9`，保留其他dirty。
+
 # 当前交接：审查修复已部署 EN（2026-10-13，DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
 
 - 源码 `39ab887b1`（checkpoint `97fbbb98f`），上条P1场景线程/P2百科UI语言混用和终端夹具已修；双API/Bootstrap/Coup/Stage、两包真实语言/终端/消息reader、异步guard回放PASS。详细修补与失败边界见后条。
 - 已按前序授权覆盖F盘EN模块：14managed文件更新、386managed hash验证，3312玩家文件内容/mtime保持，Recovery目录absent；没有push/正式ZIP/启动游戏/provider。收据 `artifacts/review-fixes-20261013/deployment.json`。
 - [唯一主台账与验收/回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#review-findings-en-deployed-20261013)。Supersedes下方EN_DEPLOY_PENDING，实机真正点击/场景行为/字体渲染仍LIVE_PENDING；源码focused inverse，安装无自动恢复，旧Stage保留。
+
+# 当前交接：审查发现修复（2026-10-13，OFFLINE_VERIFIED / EN_DEPLOY_PENDING）
+
+- checkpoint `97fbbb98f`，产品/回归 `39ab887b1`。紧凑人设由主线程capture启动、后台等待、owner/mission/session/epoch/generation重验后主线程接受/刷新；百科字段随UI，Prompt仍包语言；编辑器人设页中英资源；终端精确新增项契约及斜杠空格保留。原签名/其他作者改动保持。
+- 双API各363/0、Bootstrap/probe0/0、双Coup/干净StagePASS；通道人设169、紧凑23+guardmutation、终端48、Persona32UIkeys；实际双DLL各CN/EN包和nativeUI切换（225/4310/232/169 checks）PASS；独立editorbuild0/0、4culture实际resourcePASS。实机/provider NOT-RUN。
+- EN部署沿前序授权进行中，runtime目录跳过，完成后追加收据；现在不能视作新候选已安装。AD1259仍既有unpaired范围；没有push/正式ZIP。旧审查P1/P2由本条源码修复 supersede。
+- [唯一主台账与代码证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#review-findings-fixed-20261013)。本地完整收据/report/sourcehash/失败日志 `artifacts/review-fixes-20261013/`；focused inverse产品commit，旧Stage保留，不全树reset。
+
+# 当前交接：EN 导演/MCM修补与未推送审查（2026-10-13，OFFLINE_VERIFIED / REVIEW_FINDINGS_OPEN）
+
+- 导演两次真实EN四段输出被中文段名校验误拒；已补CN/EN协议parser。MCM5.11.4字符串刷新清空列表后构造异常已真DLL复现，改TextObject真实签名/AF owner限制/不重建整页；模型结果接有界ApplicationTick队列。PS5.1协议样例编码失败已修；人设默认哈希清册补新值并保旧值。
+- 最终双API各363/0、Bootstrap0/0、双CoupPASS、干净StagePASS、CN/EN各3519投影PASS；真DLL两正文/缺段/空段/CN/黑底/MCMselector/外mod隔离/8+2主线程回放PASS，ModelPreset72/72。未部署新候选、未push、未实机/provider。
+- 审查仍有P1紧凑场景人设在工作线程读Mission.Agent，P2百科扩展人设复用Prompt包语言显示固定UI；终端259定义旧夹具FAIL，旧DirectorStatusAudit缺合法离线module root未跑通。AD1259源72文件未Stage，既有map已标unpairedEnglish-only；本轮不当作新回归。
+- [唯一主台账与真实代码证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#director-mcm-unpushed-review-20261013)。日志/完整报告 `artifacts/review-unpushed-20261013/`；旧Stage保留两个副本；源码focused inverse，不回滚其他作者。
 
 # 当前范围收敛：本地 CN/EN 双语（2026-10-13）
 
@@ -10,7 +39,21 @@
 - UI 仍跟随游戏界面语言；Prompt、世界书、事实模板和插画导演文本跟随安装的 CN/EN 内容包。稳定协议、ID、存档键和动态原值保持不变。
 - 后续施工优先级：固定 Prompt 双语资源 → 已知事实按 ID/类型投影 → 最终请求审计 → CN/EN 双包投影与实机验收。未知动态旧文本保留原文并记录，不做全局翻译。
 
+# 当前交接：场景被动交流关闭、终端关系增益、记忆清除与场景历史字号（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 自动盯视交流新增终端唯一开关 `EnablePassiveStareReaction`，默认关闭；`PassiveStareTriggerSeconds` 仍作为启用后的计时值。盯视提示气泡已移除。新增 `MinimumPositiveNpcRelationGain` 终端项，默认 1，仅对正向 NPC 情绪结果同时约束原版关系与私人关系的最小正增量；设为 0 保留原始增量。
+- 场景无名 NPC 个性生成已接入场景接力回合、被动反应和紧凑反应路径；场景历史行正文绑定普通对话 UI 的 `DialogueUiOptions.BodyFontSize`。
+- 清除 NPC 对话历史后同步移除 `HistoryStorage` 序列化缓存，避免重新加载时旧剧情复活；压缩记忆清除的现有块/草稿/概览路径保持。
+- 双 API Debug 统一构建通过：1.3/1.4 各 363 warning / 0 error，Bootstrap 0/0，双 Coup gate PASS。中英资源 XML 各 3345 条、无重复 ID；新增设置只出现在终端资源，未新增 MCM key。DialogueUI 独立脚本因当前游戏 UI 引用程序集合同不完整未通过；未启动游戏、未验真实 provider/旧档/实机。
+- 本条工作树仍含并行人物个性上下文改动，未回滚；本任务变更未部署、未打包、未 push。回滚按本任务文件的 focused inverse，保留其他作者改动。
+
 # 当前交接：场景接力、MCM 模型拉取与 EN Prompt 固定文本修复（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
+
+# 当前交接：EN 已部署、部署 Recovery 机制已移除（2026-10-13，DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
+
+- EN Stage `artifacts/en-deploy-20261013/en-module/AnimusForge` 共 3519 个文件，安装目标 `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge` 逐文件哈希一致；本次检查无新增文件需要写入。游戏未启动。
+- `scripts/build/deploy_module.ps1` 已移除部署 Recovery 目录、备份、manifest、marker 和自动回滚；现有安装目录 `.AnimusForge.Recovery` 已按用户要求删除。失败只报告现场并停止，玩家目录保护、Stage 校验和同卷临时文件替换保留。
+- 验证：PowerShell AST 解析通过；无 Recovery 部署函数执行通过；3519/3519 EN 哈希通过；Recovery 目录不存在。未启动游戏、未验实机/旧档。
 
 - 修复 `DuelSettings` 构造时五个模型列表按钮未绑定委托；点击现在按当前 MCM 编辑值调用既有 `StartFetchModelList`，保留原解析、缓存和主线程 UI 刷新。模型列表回归 `72/72` 通过。
 - 修复 EN `scene_auto_group_relay` 标签模板被过滤后退回短兜底规则；规则筛选兼容 `[RELAY:relay number]`，真实线协议仍为 `[RELAY:n]`。场景接力回归 `51` 项通过；实机日志此前确有“current speaker selected itself”停止证据，需游戏内复测真实模型选择。

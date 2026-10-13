@@ -23,7 +23,9 @@ public sealed class SceneSessionVM : ViewModel
     private bool _released;
     private readonly Action _openDirectActions;
     [DataSourceProperty] public string DirectActionsButtonText => DialogueUiLocalization.Text("AFD_UI_ManualTags", "Trigger tags manually");
-    [DataSourceProperty] public bool CanOpenDirectActions => !_released && !_isBusy && !Trade.IsOpen;
+    [DataSourceProperty] public bool IsDirectActionsVisible => DuelSettings.GetSettings()?.EnableDevEditHistory == true;
+    private bool _directActionsVisible;
+    [DataSourceProperty] public bool CanOpenDirectActions => IsDirectActionsVisible && !_released && !_isBusy && !Trade.IsOpen;
     private int _illustrationVersion = -1;
     [DataSourceProperty] public bool IsIllustrationVisible => ShoutBehavior.IsSceneIllustrationAvailableForExternal;
     [DataSourceProperty] public bool CanIllustrate => IsIllustrationVisible && !ShoutBehavior.IsSceneIllustrationBusyForExternal;
@@ -54,6 +56,8 @@ public sealed class SceneSessionVM : ViewModel
     public void ExecuteOpenGallery() => Queue(() => { if (!_released && IsIllustrationVisible) ShoutBehavior.OpenSceneIllustrationGalleryForUi(); });
     internal void RefreshIllustration()
     {
+        bool visible = IsDirectActionsVisible;
+        if (visible != _directActionsVisible) { _directActionsVisible = visible; OnPropertyChanged(nameof(IsDirectActionsVisible)); OnPropertyChanged(nameof(CanOpenDirectActions)); }
         int version = ShoutBehavior.SceneIllustrationVersionForExternal;
         if (version == _illustrationVersion) return;
         _illustrationVersion = version;
@@ -384,4 +388,5 @@ public sealed class SceneHistoryLineVM : ViewModel
     [DataSourceProperty] public bool IsPlayer { get; }
     [DataSourceProperty] public bool IsNpc { get; }
     [DataSourceProperty] public bool IsFact { get; }
+    [DataSourceProperty] public int FontSize => DialogueUiOptions.BodyFontSize;
 }

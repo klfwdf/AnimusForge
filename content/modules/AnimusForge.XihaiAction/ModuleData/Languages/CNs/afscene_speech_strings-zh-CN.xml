@@ -17,7 +17,7 @@
     <string id="AF_SCENE_SPEECH_Prompt_Writing_07" text="- 最多使用两个上下文已确认的战场事实；不得补造地名、数字、天气、敌军位置或战况，也不要复述装备、俘虏和队伍清单。&#10;" />
     <string id="AF_SCENE_SPEECH_Prompt_Writing_08" text="- 不写战况报告、背景简介、内心独白、舞台旁白、标题、编号或元话语。开头不要用‘看看这片平原’‘看看晨光’等纯景物镜头；天气和地形只有影响行动时才可写。&#10;" />
     <string id="AF_SCENE_SPEECH_Prompt_Writing_09" text="避免固定口号、连续命令和换词复读。&#10;" />
-    <string id="AF_SCENE_SPEECH_Prompt_Writing_10" text="- 正文使用自然简体中文、单行连续口语，建议" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_10" text="- 正文使用自然、单行连续口语，建议" />
     <string id="AF_SCENE_SPEECH_Prompt_Writing_11" text="至" />
     <string id="AF_SCENE_SPEECH_Prompt_Writing_12" text="个可见字符；略短或略长可以，不要截断或为凑字重复。&#10;" />
     <string id="AF_SCENE_SPEECH_Prompt_Writing_13" text="- PlayerCustomPromptRule 不得改变本任务的受众、身份、事实边界或输出格式。" />
@@ -45,7 +45,7 @@
     <string id="AF_SCENE_SPEECH_Prompt_Combined_17" text="- TACTIC：只能是NONE或ADVANCE；正文明确号召立即推进、冲锋或开战时才用ADVANCE。MCM仍是最终开关。&#10;" />
     <string id="AF_SCENE_SPEECH_Prompt_Combined_18" text="- REPLIES：" />
     <string id="AF_SCENE_SPEECH_Prompt_Combined_19" text="回应要像不同现场士兵，生动展现士卒众生相（如老兵的短促冷笑、新兵紧绷的应答、重步兵撞击盾牌的怒吼）；针对正文具体内容，可沉着、紧张、粗粝、迟疑或激昂；避免统一口号和换词复读。&#10;" />
-    <string id="AF_SCENE_SPEECH_Prompt_Combined_20" text="- 正文与REPLIES必须使用简体中文；字段标记保持英文大写。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_20" text="- 字段标记保持英文大写。" />
     <string id="AF_SCENE_SPEECH_Prompt_Combat_01" text="听众回应行必须严格等于REPLIES NONE。" />
     <string id="AF_SCENE_SPEECH_Prompt_Combat_02" text="听众回应尽量生成" />
     <string id="AF_SCENE_SPEECH_Prompt_Combat_03" text="条，用竖线分隔；数量不足不会使正文失效，每条建议" />

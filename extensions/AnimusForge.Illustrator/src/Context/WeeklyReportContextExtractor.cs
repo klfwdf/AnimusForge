@@ -156,7 +156,7 @@ namespace AnimusForge.Illustrator.Context
             return Extract(snapshot, plan);
         }
 
-        // Called once on the game thread at selection/open. One hero enumeration, bounded four portraits.
+        // Called once on the game thread at selection/open. One hero enumeration, bounded two portraits.
         private static WeeklyReportVisualContext Extract(WeeklyReportIllustrationSnapshot snapshot, global::AnimusForge.WorldBulletinIllustrationPlan plan)
         {
             var context = new WeeklyReportVisualContext
@@ -167,7 +167,7 @@ namespace AnimusForge.Illustrator.Context
                 SceneThemeDirective = GenerateSceneDirective(snapshot.Theme, snapshot.EventSettlement, snapshot.Headline)
             };
             var heroes = EnumerateHeroes().Where(h => h != null).GroupBy(h => h.StringId).Select(g => g.First()).ToList();
-            var requested = plan?.Participants?.Where(p => p != null && !string.IsNullOrWhiteSpace(p.HeroId)).Take(4).ToList();
+            var requested = plan?.Participants?.Where(p => p != null && !string.IsNullOrWhiteSpace(p.HeroId)).Take(WorldBulletinPolicy.IllustrationParticipantLimit).ToList();
             if (requested != null && requested.Count > 0)
             {
                 var byId = heroes.ToDictionary(h => h.StringId, StringComparer.Ordinal);
@@ -182,7 +182,7 @@ namespace AnimusForge.Illustrator.Context
                 // Old saves have no IDs. Match only the major text, never add people from minor news.
                 foreach (var hero in heroes.Where(h => !string.IsNullOrWhiteSpace(h.Name?.ToString()) && h.Name.ToString().Length >= 2)
                     .Select(h => new { Hero = h, Index = snapshot.EventFacts.IndexOf(h.Name.ToString(), StringComparison.Ordinal) })
-                    .Where(h => h.Index >= 0).OrderBy(h => h.Index).ThenByDescending(h => h.Hero.IsFactionLeader).Take(4))
+                    .Where(h => h.Index >= 0).OrderBy(h => h.Index).ThenByDescending(h => h.Hero.IsFactionLeader).Take(WorldBulletinPolicy.IllustrationParticipantLimit))
                     AddCharacter(context, hero.Hero, hero.Hero.StringId, hero.Hero.Name.ToString(), IllustratorText.Get("Weekly_599"));
             }
             var first = context.Characters.FirstOrDefault(c => c.Hero != null);

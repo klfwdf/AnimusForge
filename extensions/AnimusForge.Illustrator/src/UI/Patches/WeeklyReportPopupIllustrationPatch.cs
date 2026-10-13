@@ -634,7 +634,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             string campaignKey = generationScope.CampaignKey;
 
             // All names, roles, banners and appearance snapshots were captured on the game thread.
-            var people = context.Characters.Take(4).ToArray();
+            var people = context.Characters.Take(global::AnimusForge.WorldBulletinPolicy.IllustrationParticipantLimit).ToArray();
 
             return generationScope.RunGeneration(eventKey, null, async token =>
             {
@@ -692,7 +692,10 @@ namespace AnimusForge.Illustrator.UI.Patches
                 if (result.Success && result.ImageBytes != null)
                 {
                     token.ThrowIfCancellationRequested();
-                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? context.Title : direction.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary, diagnosticId: result.DiagnosticId, directorStatus: direction.DirectionStatus, directorStatusText: direction.StatusText, directorFallbackReason: direction.FallbackReason, styleFingerprint: options?.StyleFingerprint);
+                    string title = string.IsNullOrWhiteSpace(direction.Title)
+                        ? context.Title
+                        : direction.Title;
+                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary, diagnosticId: result.DiagnosticId, directorStatus: direction.DirectionStatus, directorStatusText: direction.StatusText, directorFallbackReason: direction.FallbackReason, styleFingerprint: options?.StyleFingerprint);
                     if (saved != null) DiskImageCacheManager.PromoteDefaultIfNewest(saved, campaignKey);
                 }
                 return new GenerationResult { Result = result, Saved = saved, Prompt = effectivePrompt };

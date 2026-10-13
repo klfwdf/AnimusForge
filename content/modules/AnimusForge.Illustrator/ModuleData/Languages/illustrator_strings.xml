@@ -138,6 +138,8 @@
     <string id="AF_ILL_UI_WEEKLY_DEFAULT_TITLE" text="Imperial Chronicle Illustration" />
     <string id="AF_ILL_UI_WEEKLY_THINKING" text="Preparing this week's chronicle illustration…" />
     <string id="AF_ILL_UI_WEEKLY_DRAWING" text="Drawing a new illustration for this bulletin…" />
+    <string id="AF_ILL_UI_PORTRAIT_DRAWING" text="Drawing a new chronicle portrait…" />
+    <string id="AF_ILL_UI_CONVERSATION_DRAWING" text="Drawing a new conversation illustration…" />
     <string id="AF_ILL_UI_WEEKLY_DELETE_UNSAVED" text="This illustration has not been archived and cannot be deleted." />
     <string id="AF_ILL_UI_WEEKLY_DELETE_FAILED" text="Delete failed. Manage this image in the gallery." />
     <string id="AF_ILL_UI_WEEKLY_DELETED" text="Illustration moved to the recycle area. Click Redraw to create another." />

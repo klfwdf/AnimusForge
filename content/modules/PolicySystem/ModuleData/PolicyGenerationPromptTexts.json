@@ -21,7 +21,7 @@
   "AssessmentRulesHeader": "【通用评议规则】\n",
   "ParametersHeader": "【本次参数】\n",
   "FeedbackLengthPrefix": " publicFeedback 使用第三人称，约 ",
-  "FeedbackLengthSuffix": " 个中文字符，不得伪造已经发生的事实。",
+  "FeedbackLengthSuffix": " 个字符，不得伪造已经发生的事实。",
   "VassalCostSchema": "- requiredGoldCost:number，有限非负数字。\n",
   "CostSchema": "- startupGoldCost:number，有限非负数字。\n- dailyMaintenanceGoldCost:number，有限非负数字。\n",
   "FrozenWorldHeader": "【世界上下文（冻结快照）】\n",

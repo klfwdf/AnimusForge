@@ -124,11 +124,23 @@ internal static class RuntimeLanguageChecks
     }
     internal static void Writers(Assembly product)
     {
+        Type audit = product.GetType("AnimusForge.PromptLanguageAudit", true);
+        var han = (System.Text.RegularExpressions.Regex)audit.GetField("Han", AllStatic).GetValue(null);
+        for (int code = 0; code <= char.MaxValue; code++)
+        {
+            bool expected = (code >= 0x3400 && code <= 0x4DBF) || (code >= 0x4E00 && code <= 0x9FFF) || (code >= 0xF900 && code <= 0xFAFF);
+            if (han.IsMatch(((char)code).ToString()) != expected) throw new Exception("Han audit range drift " + code);
+        }
+        Check(true, "actual audit Unicode blocks preserve all 65536 BMP code-point decisions");
+        var protocol = (System.Text.RegularExpressions.Regex)audit.GetField("StableProtocol", AllStatic).GetValue(null);
+        Check(protocol.Replace("【AFEF玩家行为补充】 [AFEF NPC行为补充]", "").Trim() == "", "audit preserves ASCII and fullwidth stable protocol recognition");
         string guard = Prompt(product, "Get", "conversation_reply_language");
-        void Guard(string value, string name) => Check(value.EndsWith(guard, StringComparison.Ordinal), "actual writer output-language tail " + name);
+        Check(guard == string.Empty, "content edition has no fixed response-language rule");
+        void Guard(string value, string name) => Check(!value.Contains("Write all newly generated natural-language content in English")
+            && !value.Contains("所有新生成的自然语言内容均使用中文"), "actual writer has no fixed output-language tail " + name);
         string literal = "literal {NAME} $1 ID=lord_S9_m; days=14; gold=-200";
-        Check(Prompt(product, "ApplyOutputLanguage", literal) == literal + "\n\n" + guard, "language guard preserves complete original system");
-        Check(Prompt(product, "ApplyOutputLanguage", literal + "\n\n" + guard) == literal + "\n\n" + guard, "language guard is idempotent");
+        Check(Prompt(product, "ApplyOutputLanguage", literal) == literal, "composer preserves complete original system without language rule");
+        Check(Prompt(product, "ApplyOutputLanguage", literal + "  ") == literal + "  ", "player prompt trailing whitespace and requested language survive unchanged");
         Type memory = product.GetType("AnimusForge.Refactor.Runtime.MemorySummaryRules", true);
         Guard((string)Call(memory, "DailySystemPrompt", 999, 3, literal, literal), "daily memory");
         Guard((string)Call(memory, "MajorSystemPrompt", 280, literal), "major memory");
@@ -171,7 +183,7 @@ internal static class RuntimeLanguageChecks
         Check(JToken.DeepEquals(frozen, (JArray)Call(policy, "FreezePolicyMessages", frozen)), "policy retries do not duplicate guard");
         var userOnly = new JArray(new JObject { ["role"]="user", ["content"]=literal });
         var guarded = (JArray)Call(policy, "FreezePolicyMessages", userOnly);
-        Check((string)guarded[0]["role"] == "system" && (string)guarded[0]["content"] == guard && JToken.DeepEquals(guarded[1], userOnly[0]), "policy missing-system fallback preserves player body");
+        Check(guarded.Count == 1 && JToken.DeepEquals(guarded[0], userOnly[0]), "policy does not inject a language system message into user-only requests");
         Type weekly = product.GetType("AnimusForge.WeeklyPromptMaterialOwner", true);
         object profile = Call(weekly, "GetWeeklyReportPromptProfile", 200);
         Guard((string)Call(weekly, "BuildWeeklyReportSystemPrompt", null, profile, literal), "single weekly report");
@@ -187,6 +199,14 @@ internal static class RuntimeLanguageChecks
         Guard((string)Call(capture, "BuildWeeklyReportFullOnDemandSystemPrompt", ports, null), "on-demand full weekly report");
         Guard((string)Call(capture, "BuildWeeklyBatchReportSystemPrompt", ports, null), "batch weekly report");
         Type illustratorText = product.GetType("AnimusForge.Illustrator.IllustratorText", true);
+        Type directionType = product.GetType("AnimusForge.Illustrator.Core.IllustrationDirection", true);
+        foreach (string title in new[] { "灯下裁决", "Lamp Verdict", "Mixed 中文 title" })
+        {
+            object direction = Call(directionType, "SplitMetadata", "[[AFI_PROTOCOL_TITLE]]" + title
+                + "\n[[AFI_PROTOCOL_THEME]]主题 theme\n[[AFI_PROTOCOL_ACTION]]action\n[[AFI_PROTOCOL_SUBJECT]]body");
+            Check((string)directionType.GetProperty("Title").GetValue(direction) == title, "director retains original generated title regardless of language");
+            Check((string)directionType.GetProperty("Theme").GetValue(direction) == "主题 theme", "director retains original mixed-language theme");
+        }
         Type planType = product.GetType("AnimusForge.Illustrator.Core.IllustrationPromptPlan", true);
         Type optionsType = product.GetType("AnimusForge.Illustrator.Core.IllustrationOptions", true);
         object optionsValue = FormatterServices.GetUninitializedObject(optionsType);
