@@ -1,3 +1,13 @@
+<a id="terminal-manual-tags-20261014"></a>
+## 2026-10-14 终端状态与手动标签入口修复（OFFLINE_VERIFIED / STAGE_VERIFIED / LIVE_PENDING）
+
+- 用户范围：终端布尔状态显示“已开启 / 已关闭”；修复开发者数据管理开启后手动输入标签入口不显示；隐藏生图完整请求 URL 选项。基线 `7f4ae2e58`，意图 checkpoint `f9759d1`；未授权本次部署、打包、push。
+- 根因：`AFDialogueNativeOverlay.xml:33` 绑定 `IsDirectActionsVisible`，实际 datasource 为 `NativeOverlayVM`，此前仅原始 host 提供该属性。`extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs:57-58,150` 补真实包装属性、开发者命令资格与派生属性通知；沿既有 host 刷新/事件转发，不新增 Tick 扫描、反射或 IO。场景 Scroll/Folio 的绑定保持，原始执行入口权限保持。
+- `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsCoverage.cs:79-86` 隐藏 `Illustrator.UseExactEndpointUrl`，真实定义/属性/default/setter/持久化保留，不修改 URL 请求行为。CN UI `af_ui_strings-zh-CN.xml:408-409` 改为“✔ 已开启 / ✕ 已关闭”；EN `af_ui_strings.xml:408-409` 保持对应 Enabled/Disabled；初始化、点击切换、重读仍共用原资源键，UI 跟随游戏语言，包选择规则保持。
+- 生命周期回放146项PASS，检查开发者开/关、包装通知、命令拒绝与三prefab绑定。新1.3/1.4 DLL各CN/EN内容包和两种UI回放PASS：4409终端检查、241语言/UI/实体、170消息/历史；含真实终端布尔文案、隐藏定义保值与真实包装getter。首次综合回放因远端人设 `BuildNative` 已改四参数而旧夹具仍传五参数失败；只校正 `RuntimeLanguageChecks.cs` 调用，未删除原断言，修正后PASS。
+- 原统一构建：1.3.15.110062 / 1.4.6.115628 各363 warnings/0 errors；Bootstrap和probe0/0，双Coup/注册冒烟PASS。原Stage因合并前 `DiplomacyPromptTexts.json` 与当前锁定源不一致被门禁拒绝；旧Stage已保留于 `artifacts/terminal-manual-tags-20261014/previous-stage/AnimusForge`，原脚本重新生成干净Stage PASS；两实现和Bootstrap逐文件哈希、单Bootstrap XML及CN状态资源复核PASS。
+- 日志 `artifacts/terminal-manual-tags-20261014/`；本次未启动游戏、未实机验证按钮位置/焦点/点击、未部署/打包/push，安装仍为此前版本。回滚对本切片使用focused inverse commit；不得hard reset，工具缓存Microsoft/NuGet未动。
+
 <a id="bulletin-history-toggle-20261013"></a>
 ## 2026-10-13 快报读取玩家历史终端开关（OFFLINE_VERIFIED / LIVE_PENDING）
 

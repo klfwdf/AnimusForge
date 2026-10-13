@@ -147,7 +147,7 @@ internal static class RuntimeLanguageChecks
         Guard((string)Call(memory, "OverviewSystemPrompt", 280, literal), "overview memory");
         Type persona = product.GetType("AnimusForge.NpcPersonaTextRules", true);
         foreach (object value in new[] {
-            Call(persona, "BuildNative", literal, literal, literal, true, literal),
+            Call(persona, "BuildNative", literal, literal, true, literal),
             Call(persona, "BuildPromoted", literal, literal, literal, "lord_S9_m", literal, literal, literal, literal, literal, literal, literal)
         }) {
             Guard((string)value.GetType().GetProperty("System", AllInstance).GetValue(value), "persona");

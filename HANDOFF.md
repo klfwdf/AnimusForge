@@ -1,3 +1,9 @@
+# 当前交接：终端状态与手动标签入口（2026-10-14，OFFLINE_VERIFIED / STAGE_VERIFIED / LIVE_PENDING）
+
+- 修复实际NativeOverlayVM漏接开发者可见性；终端状态为已开启/已关闭，隐藏生图完整请求URL选项并保留配置。双API/Bootstrap/Coup与实际DLL回放通过；干净Stage及两DLL/Bootstrap哈希、CN状态资源核验PASS。
+- [唯一主台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-manual-tags-20261014)。checkpoint `f9759d1`；日志与保留旧Stage在 `artifacts/terminal-manual-tags-20261014/`。
+- 本次未部署、未打包、未push，实机NOT-RUN；下方1.6.0安装记录仍是安装状态，不代表本修改已进入游戏。
+
 # 当前交接：被俘后领主自由开场（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 本地checkpoint `9259a8495`、生产/双语/专项 `75c7efe60`：新被俘稳定后直接进入原地图对话，AI先开口；不指定主题、动机或赎金。每次被俘一次，退出/转押不重弹，读档不补弹；原等待菜单手动入口、普通离开、给予与释放机制保留，无新配置/API/存档键。

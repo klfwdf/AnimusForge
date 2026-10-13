@@ -140,7 +140,7 @@ internal static class TerminalSettingsChecks
                     Check(diplomacy.Contains(id) && !ui.Contains(id), "complete weekly settings stay on Diplomacy " + id);
                 Type textObject = Assembly.Load("TaleWorlds.Localization").GetType("TaleWorlds.Localization.TextObject", true);
                 var visible = ((IEnumerable)registry.GetProperty("VisibleDefinitions").GetValue(null)).Cast<object>().ToDictionary(def => (string)Property(def, "Id"));
-                foreach (string id in new[] { "TownAmbientAiShowUsageNotifications", "ScreenNotifications", "DiagnosticsEnabled", "EnemyInterruptRadiusMeters", "Illustrator.DirectorApiBaseUrl", "Illustrator.DirectorApiKey", "Illustrator.DirectorModelName", "Illustrator.FetchDirectorModelList" })
+                foreach (string id in new[] { "TownAmbientAiShowUsageNotifications", "ScreenNotifications", "DiagnosticsEnabled", "EnemyInterruptRadiusMeters", "Illustrator.UseExactEndpointUrl", "Illustrator.DirectorApiBaseUrl", "Illustrator.DirectorApiKey", "Illustrator.DirectorModelName", "Illustrator.FetchDirectorModelList" })
                     Check(defs.ContainsKey(id) && !visible.ContainsKey(id), "hidden UI setting still exists for persistence " + id);
                 foreach (string id in new[] { "Illustrator.ApiBaseUrl", "Illustrator.ApiKey", "Illustrator.ModelName", "Illustrator.FetchModelList" })
                 {
@@ -163,6 +163,17 @@ internal static class TerminalSettingsChecks
                 Type categories = product.GetType("AnimusForge.TerminalCategories", true);
                 string text = (string)Call(categories, "DisplayText", "UI");
                 Check(Activator.CreateInstance(textObject, new object[] { text, null }).ToString() == expected, "native UI page label " + language);
+                PropertyInfo devStatus = duel.GetType().GetProperty("EnableDevEditHistory");
+                object originalStatus = devStatus.GetValue(duel);
+                Type itemVm = product.GetType("AnimusForge.AnimusForgeTerminalItemVM", true);
+                foreach (bool enabled in new[] { false, true })
+                {
+                    devStatus.SetValue(duel, enabled);
+                    object item = Activator.CreateInstance(itemVm, new object[] { defs["EnableDevEditHistory"], null });
+                    string status = language == "English" ? (enabled ? "✔ Enabled" : "✕ Disabled") : (enabled ? "✔ 已开启" : "✕ 已关闭");
+                    Check((string)Property(item, "BoolStatusText") == status, "actual terminal boolean state label " + language);
+                }
+                devStatus.SetValue(duel, originalStatus);
                 Console.WriteLine("Terminal actual metadata: " + defs.Count + " definitions, " + ui.Length + " UI settings, language=" + language);
             }
             PropertyInfo developer = duel.GetType().GetProperty("EnableDevEditHistory");
@@ -175,11 +186,15 @@ internal static class TerminalSettingsChecks
             object nativeModel = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(nativeVm);
             nativeVm.GetField("_onDirectActions", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(nativeModel, callback);
             nativeVm.GetProperty("CanOpenDirectActions").SetValue(nativeModel, true);
+            Type wrapperVm = product.GetType("AnimusForge.DialogueUI.Native.NativeOverlayVM", true);
+            object wrapperModel = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(wrapperVm);
+            wrapperVm.GetField("<Original>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(wrapperModel, nativeModel);
             foreach (bool enabled in new[] { false, true, false })
             {
                 developer.SetValue(duel, enabled);
                 Check((bool)sceneVm.GetProperty("IsDirectActionsVisible").GetValue(sceneModel) == enabled, "scene manual tags developer visibility");
                 Check((bool)nativeVm.GetProperty("IsDirectActionsVisible").GetValue(nativeModel) == enabled, "native manual tags developer visibility");
+                Check((bool)wrapperVm.GetProperty("IsDirectActionsVisible").GetValue(wrapperModel) == enabled, "displayed native wrapper manual tags developer visibility");
                 int previous = clicks;
                 nativeVm.GetMethod("OpenDirectActions").Invoke(nativeModel, null);
                 Check(clicks == previous + (enabled ? 1 : 0), "native manual tags developer execution guard");

@@ -405,8 +405,8 @@
   <string id="AF_UI_Terminal_Hotkey" text="按键" />
   <string id="AF_UI_Terminal_Text" text="文本" />
   <string id="AF_UI_Terminal_ExecuteBadge" text="执行" />
-  <string id="AF_UI_Terminal_Enabled" text="✔ 开启" />
-  <string id="AF_UI_Terminal_Disabled" text="✕ 关闭" />
+  <string id="AF_UI_Terminal_Enabled" text="✔ 已开启" />
+  <string id="AF_UI_Terminal_Disabled" text="✕ 已关闭" />
   <string id="AF_UI_Terminal_TagList" text="指令标签列表" />
   <string id="AF_UI_Terminal_TagDetails" text="标签详情" />
   <string id="AF_UI_Terminal_TagInfo" text="标签索引说明" />
