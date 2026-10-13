@@ -1,3 +1,11 @@
+<a id="review-findings-en-deployed-20261013"></a>
+## 2026-10-13 审查修复 EN 覆盖确认（DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
+
+- Supersedes 本页 `review-findings-fixed-20261013` 中 EN_DEPLOY_PENDING；源码/测试范围与未验边界保持。完整共享候选源码 `39ab887b1`+已有dirty，最终双API/Bootstrap/Coup及Stage均PASS，两个包实际UI/Prompt/终端reader回放PASS。
+- EN完整投影3519项；沿原ModuleLayout/marker/seamreceipt、sourcehash和路径保护校验后复用原Invoke-ManagedStageDeployment，部署到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。14个managed文件更新、386个managed文件hash回读一致，3312个PlayerExports/CustomPrompts/Configs/Logs/Cache/Recovery/TerminalSettings受保护文件内容及mtime保持。Recovery目录absent。收据 `artifacts/review-fixes-20261013/deployment.json`。
+- 本地投影验证脚本第一次漏载runtime whitelist/Flavor常量/Coup receipt函数失败，失败均在覆盖之前；最后部署调用加载完整依赖，通过模块与manifesthash校验后才写入，未跳过门禁。所有失败日志保留 `artifacts/review-fixes-20261013/`。实机/provider/真正点击仍NOT-RUN；未push/正式ZIP，不恢复Recovery机制。
+- 回滚源码focused inverse `39ab887b1`；安装没有Recovery备份/自动回滚，需手工核对旧Stage `artifacts/review-fixes-20261013/stage-before-fixes/` 与当前目标后重新生成指定EN候选。详细证据继续使用本页前条和该artifact收据，不另建台账。
+
 <a id="en-runtime-text-projection-20261013"></a>
 ## 2026-10-13 EN 运行时文本投影补全与 EN 安装（OFFLINE_VERIFIED / DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
 
