@@ -1288,7 +1288,7 @@ public static class EncyclopediaHeroPersonaPatch
 
 		MyBehavior.GetNpcPersonaForExternal(hero, out var personality, out var background);
 
-		string text = BuildPersonaInformationText(personality, background, MyBehavior.GetNpcPersonaContextForExternal(hero));
+		string text = BuildPersonaInformationText(personality, background, MyBehavior.GetNpcPersonaContextForExternal(hero, forUi: true));
 
 		if (!string.IsNullOrWhiteSpace(text))
 

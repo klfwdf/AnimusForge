@@ -35,6 +35,18 @@ prefix = 'src/AF.GameAdapter.Bannerlord/UI/Terminal/'
 def normalized_literals(text):
     return LEX.sub(lambda m: json.dumps(decode(m[0]), ensure_ascii=False) if m.lastgroup == 'string' else m[0], text)
 
+def restore_reviewed_scene_settings(source):
+    """Verify the two new terminal delegates/ranges and retain the 259-control oracle."""
+    fixture = json.loads((ROOT / 'tests/content/J15ContentContractTests/Fixtures/TerminalSceneReviewInverse.json').read_text(encoding='utf-8'))
+    check(set(fixture['added']) == {'EnablePassiveStareReaction', 'MinimumPositiveNpcRelationGain'}, 'only two reviewed new setting IDs')
+    for setting, line in fixture['added'].items():
+        check(source.count(line) == 1, setting + ' exact terminal getter/setter/range')
+        source = source.replace(line, '', 1)
+    for setting, row in fixture['changed'].items():
+        check(source.count(row['after']) == 1, setting + ' exact reviewed disable-at-zero metadata')
+        source = source.replace(row['after'], row['before'], 1)
+    return source
+
 def restore_reviewed_terminal_description_literals(source):
     """Invert only approved Hint/Group literals; every other source token still has its old oracle."""
     fixture = json.loads((ROOT / 'tests/content/J15ContentContractTests/Fixtures/TerminalHintTranslationInverse.json').read_text('utf-8'))
@@ -63,7 +75,7 @@ def code_tokens(text):
     parts, cursor = [], 0
     for token in LEX.finditer(text):
         parts.append(re.sub(r'\s+', '', text[cursor:token.start()]))
-        parts.append(json.dumps(decode(token[0]), ensure_ascii=False) if token.lastgroup == 'string' else token[0])
+        parts.append(json.dumps(decode(token[0]), ensure_ascii=False) if token.lastgroup == 'string' else '' if token.lastgroup == 'comment' else token[0])
         cursor = token.end()
     parts.append(re.sub(r'\s+', '', text[cursor:]))
     return ''.join(parts)
@@ -125,8 +137,11 @@ for name in ('TerminalSettingsRegistry.cs', 'AnimusForgeTerminalUiModels.cs'):
         for row in fusion['literalChanges']:
             check(current.count(row['after']) == 1, row['setting'] + ' exact reviewed TTS display')
             current = current.replace(row['after'], row['before'], 1)
+        current = restore_reviewed_scene_settings(current)
         current = restore_reviewed_terminal_description_literals(current)
     if name == 'AnimusForgeTerminalUiModels.cs':
+        check('private const int MenuPageSize = 1000;' in current, 'reviewed expanded group page size')
+        current = current.replace('private const int MenuPageSize = 1000;', 'private const int MenuPageSize = 50;')
         current = current.replace(', TerminalCategories.Ui };', ' };')
         # These eight labels now belong to the actual nested report datasource,
         # where RuntimeLanguageChecks exercises them through both native languages.
@@ -148,7 +163,7 @@ for name in ('TerminalSettingsRegistry.cs', 'AnimusForgeTerminalUiModels.cs'):
     check(restored_tokens == code_tokens(original), name + ' inverse preserves all other logic')
 registry = (ROOT / prefix / 'TerminalSettingsRegistry.cs').read_text(encoding='utf-8-sig')
 check(not any(HAN.search(decode(m[0])) for m in LEX.finditer(registry) if m.lastgroup == 'string'), 'registry has no remaining Chinese runtime string literals')
-check(len(re.findall(r'new TerminalSettingDef\("[^"]+", TerminalCategories\.\w+,', registry)) == 259, 'all definitions routed through preserved categories')
+check(len(re.findall(r'new TerminalSettingDef\("[^"]+", TerminalCategories\.\w+,', registry)) == 261, '259 preserved definitions plus two reviewed scene settings')
 helper = (ROOT / prefix / 'TerminalCategories.cs').read_text(encoding='utf-8')
 check('private static class Cache' in helper and 'Data = Load();' in helper and 'StringComparer.Ordinal' in helper, 'one-time cache with ordinal routing')
 check('File.' not in helper and 'TextObject' not in helper and 'Task.' not in helper, 'no disk or language reads in matching path')
@@ -167,4 +182,4 @@ check('Lazy<Binding[]>' in coverage and 'Expression.Lambda' in coverage and 'Sav
       'cached metadata and delegates; save original owner')
 check('CourierLetterThemeDropdown' in coverage and 'binding.Set(owner, dropdown)' in coverage,
       'letter style is in UI and writes through the original setter')
-print(f'PASS terminal categories: {checks} checks, 259 original delegates preserved + four-owner completion + UI page; compiled UI separately verified')
+print(f'PASS terminal categories: {checks} checks, 259 original delegates preserved + two reviewed additions + four-owner completion + UI page; compiled UI separately verified')

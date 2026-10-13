@@ -41,7 +41,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
         { personality=profile.Personality ?? ""; background=profile.Background ?? ""; }
     }
     internal NpcPersonaProfile GetNpcPersonaProfile(Hero hero,bool createIfMissing) => hero==null ? null : _profiles.Get(hero.StringId,createIfMissing);
-    internal string GetNpcPersonaContext(Hero hero) => hero == null ? "" : NpcPersonaTextRules.BuildPersonaContext(_profiles.Get(hero.StringId, createIfMissing: false));
+    internal string GetNpcPersonaContext(Hero hero, bool forUi = false) => hero == null ? "" : NpcPersonaTextRules.BuildPersonaContext(_profiles.Get(hero.StringId, createIfMissing: false), forUi);
     internal void SaveNpcPersonaProfile(Hero hero,NpcPersonaProfile profile) => _profiles.Save(hero?.StringId,profile,_stampProfile);
     internal NpcPersonaGenerationWork CaptureNpcPersonaGeneration(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)
     {

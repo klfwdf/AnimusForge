@@ -7,5 +7,32 @@
   <string id="AF_PERSONA_UI_ImportExistingKeyConflict" text="Import failed: Key conflict ({KEY}). The current game already contains this Key; import cannot overwrite it." />
   <string id="AF_PERSONA_UI_ImportValidationException" text="Import failed: Key validation exception: {ERROR}" />
   <string id="AF_PERSONA_UI_UnknownNpc" text="Unknown NPC" />
-</strings>
+    <string id="AF_PERSONA_UI_CONTEXT_Traits" text="Core traits: " />
+    <string id="AF_PERSONA_UI_CONTEXT_Motivations" text="Current motivations: " />
+    <string id="AF_PERSONA_UI_CONTEXT_Values" text="Values and boundaries: " />
+    <string id="AF_PERSONA_UI_CONTEXT_Fears" text="Vulnerabilities and fears: " />
+    <string id="AF_PERSONA_UI_CONTEXT_SpeechStyle" text="Speech style: " />
+    <string id="AF_PERSONA_UI_TRAIT_cautious" text="Cautious" />
+    <string id="AF_PERSONA_UI_TRAIT_bold" text="Bold" />
+    <string id="AF_PERSONA_UI_TRAIT_merciful" text="Merciful" />
+    <string id="AF_PERSONA_UI_TRAIT_ruthless" text="Ruthless" />
+    <string id="AF_PERSONA_UI_TRAIT_honorable" text="Honorable" />
+    <string id="AF_PERSONA_UI_TRAIT_pragmatic" text="Pragmatic" />
+    <string id="AF_PERSONA_UI_TRAIT_generous" text="Generous" />
+    <string id="AF_PERSONA_UI_TRAIT_frugal" text="Frugal" />
+    <string id="AF_PERSONA_UI_TRAIT_calculating" text="Calculating" />
+    <string id="AF_PERSONA_UI_TRAIT_impulsive" text="Impulsive" />
+    <string id="AF_PERSONA_UI_TRAIT_loyal" text="Loyal" />
+    <string id="AF_PERSONA_UI_TRAIT_suspicious" text="Suspicious" />
+    <string id="AF_PERSONA_UI_TRAIT_ambitious" text="Ambitious" />
+    <string id="AF_PERSONA_UI_TRAIT_dutiful" text="Dutiful" />
+    <string id="AF_PERSONA_UI_TRAIT_curious" text="Curious" />
+    <string id="AF_PERSONA_UI_TRAIT_proud" text="Proud" />
+    <string id="AF_PERSONA_UI_TRAIT_patient" text="Patient" />
+    <string id="AF_PERSONA_UI_TRAIT_vengeful" text="Vengeful" />
+    <string id="AF_PERSONA_UI_TRAIT_sociable" text="Sociable" />
+    <string id="AF_PERSONA_UI_TRAIT_reserved" text="Reserved" />
+    <string id="AF_PERSONA_UI_TRAIT_disciplined" text="Disciplined" />
+    <string id="AF_PERSONA_UI_TRAIT_opportunistic" text="Opportunistic" />
+  </strings>
 </base>

@@ -24,6 +24,8 @@ namespace TaleWorlds.CampaignSystem {
  internal sealed class Campaign {internal static AnimusForge.MyBehavior Owner;internal static Campaign Current {get{Probe.Read();return new();}}internal T GetCampaignBehavior<T>() where T:class {Probe.Read();return Owner as T;}}
 }
 namespace AnimusForge {
+ internal static class PersonaUiTexts {internal static string Text(string key,string fallback){Probe.Read();return fallback;}}
+ internal static class ConversationUiLocalization {internal static string Text(string key,string fallback,params string[] vars){Probe.Read();for(int i=0;i+1<vars.Length;i+=2)fallback=fallback.Replace("{"+vars[i]+"}",vars[i+1]);return fallback;}}
  internal static class AfGcczShoutBridge { internal static void CaptureOrdinarySpeakerPerception(ShoutBehavior.NpcDataPacket npc) { Probe.Read(); } }
  internal static class SaveRuntimeGuard {internal static long Generation=1;internal static long CaptureGeneration()=>Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;internal static bool IsStale(long g,string s=null)=>g!=Generation;}
  internal static class Logger {internal static void Log(string c,string m){} }
@@ -36,6 +38,7 @@ namespace AnimusForge {
   internal static void GetNpcPersonaForExternal(Hero h,out string p,out string b){Probe.Read();p=h.P;b=h.B;}
   internal static bool TryGetNpcPersonaGenerationStatusForExternal(Hero h,out bool needsGeneration,out bool inFlight){Probe.Read();Probe.StateReads++;needsGeneration=h!=null&&(string.IsNullOrWhiteSpace(h.P)||string.IsNullOrWhiteSpace(h.B));inFlight=h!=null&&(h.Active||h.Cooling);return Instance!=null&&h!=null;}
   internal static bool TryGetNpcPersonaGenerationRuntimeStateForExternal(Hero h,out bool active,out bool coolingDown){Probe.Read();active=h.Active;coolingDown=h.Cooling;return Instance!=null;}
+  internal static string GetNpcPersonaContextForExternal(Hero h){Probe.Read();return "context";}
   internal static string BuildNpcPersonaGenerationHintForExternal(Hero h){Probe.Read();return "hint "+h.Name;}
   internal static async Task EnsureNpcPersonaGeneratedForExternalAsync(Hero h,bool ignoreRetryCooldown=false){Probe.Generations++;await Task.Yield();await Probe.Run(()=>{Probe.DuringGenerate?.Invoke();if(Probe.Mode=="success"){h.P=string.IsNullOrWhiteSpace(h.P)?"generatedP":h.P;h.B=string.IsNullOrWhiteSpace(h.B)?"generatedB":h.B;h.Active=false;}else if(Probe.Mode=="failed"){h.Active=false;h.Cooling=true;}return true;});if(Probe.Mode=="hung")await Probe.GenerationHold.Task;}
  }
@@ -44,7 +47,7 @@ namespace AnimusForge {
   private AnimusForge.Refactor.Adapters.NativeAdmissionApplicationAdapter NativeAdmissions=>new(this);
   internal static ShoutBehavior CurrentInstance;private static int _sceneHistorySessionId=1;private int _sceneConversationEpoch=1;private const int NativeConversationPersonaGenerationWaitTimeoutMs=40;
   internal sealed class NativeConversationAdmission {internal Hero Hero;internal string NpcName="NPC";internal int AgentIndex=1;internal long Generation=1;internal bool Valid=true;}
-  internal sealed class NpcDataPacket {internal int AgentIndex=1;internal string Name="NPC",UnnamedKey="key";internal bool IsHero=true;private string p="",b="";internal string PersonalityDesc{get=>p;set{Probe.Read();p=value;}}internal string BackgroundDesc{get=>b;set{Probe.Read();b=value;}} }
+  internal sealed class NpcDataPacket {internal int AgentIndex=1;internal string Name="NPC",UnnamedKey="key";internal bool IsHero=true;internal string PersonaContext;private string p="",b="";internal string PersonalityDesc{get=>p;set{Probe.Read();p=value;}}internal string BackgroundDesc{get=>b;set{Probe.Read();b=value;}} }
   internal bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission a,out string reason){Probe.Read();reason="";return ReferenceEquals(CurrentInstance,this)&&a.Valid&&SaveRuntimeGuard.IsCurrentGeneration(a.Generation);}
   private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string name,string target,int index,Func<T> f,T fallback)=>Probe.Run(()=>{Probe.BeforeOperation?.Invoke(name);return f();});
   private static void BuildHeroPersonaFallback(Hero h,out string p,out string b){Probe.Read();p="fallbackP";b="fallbackB";}

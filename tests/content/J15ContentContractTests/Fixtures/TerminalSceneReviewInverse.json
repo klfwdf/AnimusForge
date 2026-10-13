@@ -1,0 +1,12 @@
+{
+  "added": {
+    "EnablePassiveStareReaction": "\t\t_allDefinitions.Add(new TerminalSettingDef(\"EnablePassiveStareReaction\", TerminalCategories.Scene, \"3. Scene shout\", \"Enable Automatic Stare Reaction\", \"When enabled, staring at one NPC for the configured time can start a passive scene exchange. Disabled by default.\", TerminalSettingType.Bool, 0f, 1f, 1f, \"\", s => s.EnablePassiveStareReaction, (s, v) => s.EnablePassiveStareReaction = Convert.ToBoolean(v)));",
+    "MinimumPositiveNpcRelationGain": "\t\t_allDefinitions.Add(new TerminalSettingDef(\"MinimumPositiveNpcRelationGain\", TerminalCategories.Scene, \"3. Scene shout\", \"Minimum Positive NPC Relation/Private Gain\", \"Minimum points applied to native relation and private relation when an NPC mood outcome is positive. 0 keeps the original mood delta. Default: 1.\", TerminalSettingType.Integer, 0f, 20f, 1f, \"0\", s => s.MinimumPositiveNpcRelationGain, (s, v) => s.MinimumPositiveNpcRelationGain = Convert.ToInt32(v)));"
+  },
+  "changed": {
+    "PassiveStareTriggerSeconds": {
+      "before": "\t\t_allDefinitions.Add(new TerminalSettingDef(\"PassiveStareTriggerSeconds\", TerminalCategories.Scene, \"3. Scene shout\", \"Passive Stare Trigger Seconds\", \"How long the player must stare at one NPC before a passive reaction triggers. Default: 15 seconds.\", TerminalSettingType.Integer, 1f, 120f, 1f, \"0\", s => s.PassiveStareTriggerSeconds, (s, v) => s.PassiveStareTriggerSeconds = Convert.ToInt32(v)));",
+      "after": "\t\t_allDefinitions.Add(new TerminalSettingDef(\"PassiveStareTriggerSeconds\", TerminalCategories.Scene, \"3. Scene shout\", \"Passive Stare Trigger Seconds\", \"How long the player must stare at one NPC before a passive reaction triggers. Set to 0 to disable it. Default: 15 seconds when enabled.\", TerminalSettingType.Integer, 0f, 120f, 1f, \"0\", s => s.PassiveStareTriggerSeconds, (s, v) => s.PassiveStareTriggerSeconds = Convert.ToInt32(v)));"
+    }
+  }
+}

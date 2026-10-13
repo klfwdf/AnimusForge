@@ -1,0 +1,42 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using AnimusForge.Refactor.Runtime;
+
+static class Probe {
+ internal static int Main, Started, Refreshed;
+ internal static long Generation=1;
+ internal static bool Publish=true, Generate=true;
+ internal static Mission Mission;
+ internal static readonly ConcurrentQueue<Action> Queue=new();
+ internal static TaskCompletionSource<bool> Network;
+ internal static void Read(){if(Environment.CurrentManagedThreadId!=Main)throw new Exception("game read on worker");}
+ internal static Task<T> Dispatch<T>(Func<T> action){if(Environment.CurrentManagedThreadId==Main)return Task.FromResult(action());var t=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);Queue.Enqueue(()=>{try{t.SetResult(action());}catch(Exception e){t.SetException(e);}});return t.Task;}
+ internal static void Reset(){Main=Environment.CurrentManagedThreadId;Started=Refreshed=0;Generation=1;Publish=Generate=true;Network=new(TaskCreationOptions.RunContinuationsAsynchronously);Mission=new();while(Queue.TryDequeue(out _)){} }
+ internal static T Pump<T>(Task<T> task,Action change){var sw=Stopwatch.StartNew();bool changed=false;while(!task.IsCompleted){while(Queue.TryDequeue(out var a))a();if(Started>0&&!changed){changed=true;change?.Invoke();Network.TrySetResult(true);}if(sw.ElapsedMilliseconds>5000)throw new Exception("test stalled");Thread.Sleep(1);}return task.GetAwaiter().GetResult();}
+}
+sealed class Agent {internal int Index=2;internal bool Active=true;internal bool IsActive(){Probe.Read();return Active;}}
+sealed class Mission {internal Agent Agent=new();internal IEnumerable<Agent> Agents{get{Probe.Read();return new[]{Agent};}} internal static Mission Current{get{Probe.Read();return Probe.Mission;}}}
+sealed class NpcDataPacket {internal int AgentIndex=2;internal string Name="NPC",PersonalityDesc="old";internal bool IsHero;}
+static class SaveRuntimeGuard {internal static bool IsCurrentGeneration(long generation)=>generation==Probe.Generation;}
+static class DuelSettings {internal const int LlmRequestTimeoutMilliseconds=2000;}
+static class ShoutUtils {internal static async Task EnsureUnnamedNpcPersonaGeneratedAsync(Agent agent){Probe.Read();if(!agent.IsActive())throw new Exception("inactive captured");Probe.Started++;await Task.Yield();await Probe.Network.Task.ConfigureAwait(false);if(!Probe.Generate)throw new Exception("producer failed");}}
+sealed class Dispatcher {internal Task<T> RunAsync<T>(string phase,string name,int index,Func<T> action,T fallback)=>Probe.Dispatch(action);}
+sealed class Ports {internal bool IsOwnerCurrent(){Probe.Read();return Probe.Publish;}internal int Session=1;internal int SceneSessionId()=>Session;}
+sealed class Runtime {
+ private readonly Dispatcher _dispatcher=new();private readonly Ports _ports=new();private int _sceneConversationEpoch=1;
+ private bool CanPublishImmediateSceneReaction(Func<bool> current){Probe.Read();return Probe.Publish&&(current==null||current());}
+ private void PopulateImmediateSceneReactionPersonaOnMainThread(NpcDataPacket npc,object hero){Probe.Read();Probe.Refreshed++;npc.PersonalityDesc="new";}
+ internal void Session(){_ports.Session++;}internal void Epoch(){_sceneConversationEpoch++;}
+ internal Task<bool> Start(NpcDataPacket npc,Mission mission)=>EnsureCompactReactionUnnamedPersonaAsync(npc,mission,1,1,1,()=>true);
+@@METHOD@@
+}
+static class Program {
+ static int checks;static void Check(bool ok,string name){checks++;if(!ok)throw new Exception("FAIL "+name);Console.WriteLine("PASS "+name);}
+ static void Run(string change){Probe.Reset();var r=new Runtime();var npc=new NpcDataPacket();var mission=Probe.Mission;var task=Task.Run(()=>r.Start(npc,mission));var accepted=Probe.Pump(task,()=>{switch(change){case "generation":Probe.Generation++;break;case "session":r.Session();break;case "epoch":r.Epoch();break;case "mission":Probe.Mission=new();break;case "owner":Probe.Publish=false;break;case "removed":mission.Agent.Active=false;break;case "failure":Probe.Generate=false;break;}});Check(accepted==(change=="normal"),change+" admission");Check(Probe.Refreshed==(change=="normal"?1:0),change+" publication");Check(npc.PersonalityDesc==(change=="normal"?"new":"old"),change+" snapshot");}
+ static int Main(){try{foreach(var scenario in new[]{"normal","generation","session","epoch","mission","owner","removed"})Run(scenario);Probe.Reset();var runtime=new Runtime();var mission=Probe.Mission;var npc=new NpcDataPacket{IsHero=true};Check(Probe.Pump(Task.Run(()=>runtime.Start(npc,mission)),null),"named Hero retains prepared profile");Check(Probe.Started==0&&Probe.Refreshed==0,"named Hero no duplicate generation or unnamed overwrite");Console.WriteLine(checks+" checks passed; actual production helper, detached asynchronous producer fixture.");return 0;}catch(Exception e){Console.WriteLine(e);return 1;}}
+}

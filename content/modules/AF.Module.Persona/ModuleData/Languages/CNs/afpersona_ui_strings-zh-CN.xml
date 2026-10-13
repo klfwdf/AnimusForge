@@ -7,5 +7,32 @@
   <string id="AF_PERSONA_UI_ImportExistingKeyConflict" text="导入失败：Key 冲突（{KEY}）。当前游戏已存在该 Key，禁止导入覆盖。" />
   <string id="AF_PERSONA_UI_ImportValidationException" text="导入失败：Key 校验异常：{ERROR}" />
   <string id="AF_PERSONA_UI_UnknownNpc" text="该NPC" />
-</strings>
+    <string id="AF_PERSONA_UI_CONTEXT_Traits" text="核心特质：" />
+    <string id="AF_PERSONA_UI_CONTEXT_Motivations" text="当前动机：" />
+    <string id="AF_PERSONA_UI_CONTEXT_Values" text="重视原则：" />
+    <string id="AF_PERSONA_UI_CONTEXT_Fears" text="弱点与忌讳：" />
+    <string id="AF_PERSONA_UI_CONTEXT_SpeechStyle" text="说话风格：" />
+    <string id="AF_PERSONA_UI_TRAIT_cautious" text="谨慎" />
+    <string id="AF_PERSONA_UI_TRAIT_bold" text="大胆" />
+    <string id="AF_PERSONA_UI_TRAIT_merciful" text="仁慈" />
+    <string id="AF_PERSONA_UI_TRAIT_ruthless" text="冷酷" />
+    <string id="AF_PERSONA_UI_TRAIT_honorable" text="重荣誉" />
+    <string id="AF_PERSONA_UI_TRAIT_pragmatic" text="务实" />
+    <string id="AF_PERSONA_UI_TRAIT_generous" text="慷慨" />
+    <string id="AF_PERSONA_UI_TRAIT_frugal" text="节俭" />
+    <string id="AF_PERSONA_UI_TRAIT_calculating" text="精于算计" />
+    <string id="AF_PERSONA_UI_TRAIT_impulsive" text="冲动" />
+    <string id="AF_PERSONA_UI_TRAIT_loyal" text="忠诚" />
+    <string id="AF_PERSONA_UI_TRAIT_suspicious" text="多疑" />
+    <string id="AF_PERSONA_UI_TRAIT_ambitious" text="有野心" />
+    <string id="AF_PERSONA_UI_TRAIT_dutiful" text="尽责" />
+    <string id="AF_PERSONA_UI_TRAIT_curious" text="好奇" />
+    <string id="AF_PERSONA_UI_TRAIT_proud" text="自尊" />
+    <string id="AF_PERSONA_UI_TRAIT_patient" text="耐心" />
+    <string id="AF_PERSONA_UI_TRAIT_vengeful" text="记仇" />
+    <string id="AF_PERSONA_UI_TRAIT_sociable" text="善交际" />
+    <string id="AF_PERSONA_UI_TRAIT_reserved" text="寡言" />
+    <string id="AF_PERSONA_UI_TRAIT_disciplined" text="自律" />
+    <string id="AF_PERSONA_UI_TRAIT_opportunistic" text="机会主义" />
+  </strings>
 </base>
