@@ -729,23 +729,16 @@ public static class McmDropdownRuntimeRefresh
 
 		}
 
-        // Use the selector's actual value type. MCM 5.11 wraps display values
-        // in TextObject; invoking its covariant IEnumerable overload with strings
-        // clears ItemList and then throws while constructing the first item VM.
-        MethodInfo refreshMethod = selectorVm.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
-            .FirstOrDefault(method => method.Name == "Refresh" && method.GetParameters().Length == 2
-                && method.GetParameters()[1].ParameterType == typeof(int)
-                && (method.GetParameters()[0].ParameterType == typeof(IEnumerable<TextObject>)
-                    || method.GetParameters()[0].ParameterType == typeof(IEnumerable<string>)
-                    || method.GetParameters()[0].ParameterType == typeof(IEnumerable<object>)));
-
-		if (refreshMethod == null)
-
-		{
-
-			return;
-
-		}
+        // Build a detached selector first. MCM's Refresh clears ItemList before constructing
+        // items, and its live selection callbacks record UI refreshes as configuration edits.
+        ConstructorInfo selectorConstructor = selectorVm.GetType().GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            .Where(ctor => ctor.GetParameters().Length == 2 && ctor.GetParameters()[1].ParameterType == typeof(int))
+            .OrderBy(ctor => ctor.GetParameters()[0].ParameterType == typeof(IEnumerable<TextObject>) ? 0
+                : ctor.GetParameters()[0].ParameterType == typeof(IEnumerable<string>) ? 1 : 2)
+            .FirstOrDefault(ctor => ctor.GetParameters()[0].ParameterType == typeof(IEnumerable<TextObject>)
+                || ctor.GetParameters()[0].ParameterType == typeof(IEnumerable<string>)
+                || ctor.GetParameters()[0].ParameterType == typeof(IEnumerable<object>));
+        if (selectorConstructor == null) return;
 
 		List<object> optionList = options.ToList();
 
@@ -781,22 +774,49 @@ public static class McmDropdownRuntimeRefresh
 
 		}
 
-        Type listType = refreshMethod.GetParameters()[0].ParameterType;
+        Type listType = selectorConstructor.GetParameters()[0].ParameterType;
         object displayOptions = listType == typeof(IEnumerable<TextObject>)
             ? (object)optionList.Select(value => value as TextObject ?? new TextObject(value?.ToString() ?? string.Empty)).ToList()
             : listType == typeof(IEnumerable<string>)
                 ? (object)optionList.Select(value => value?.ToString() ?? string.Empty).ToList()
                 : optionList;
-        refreshMethod.Invoke(selectorVm, new object[] { displayOptions, selectedIndex });
-
-		MethodInfo selectorRefreshValues = AccessTools.Method(selectorVm.GetType(), "RefreshValues", Type.EmptyTypes);
-
-		selectorRefreshValues?.Invoke(selectorVm, null);
-
-		MethodInfo propertyRefreshValues = AccessTools.Method(vmType, "RefreshValues", Type.EmptyTypes);
-
-		propertyRefreshValues?.Invoke(settingsPropertyVm, null);
-
+        var liveItems = AccessTools.Property(selectorVm.GetType(), "ItemList")?.GetValue(selectorVm) as IList;
+        if (liveItems == null) return;
+        if (ReadSelectedIndex(selectorVm) == selectedIndex && liveItems.Count == optionList.Count
+            && liveItems.Cast<object>().Select(item => item?.ToString() ?? string.Empty)
+                .SequenceEqual(optionList.Select(item => item?.ToString() ?? string.Empty))) return;
+        object stagedSelector = selectorConstructor.Invoke(new object[] { displayOptions, selectedIndex });
+        var stagedItems = AccessTools.Property(stagedSelector.GetType(), "ItemList")?.GetValue(stagedSelector) as IList;
+        if (stagedItems == null || stagedItems.Count != optionList.Count) return;
+        FieldInfo indexField = AccessTools.Field(selectorVm.GetType(), "_selectedIndex");
+        PropertyInfo indexProperty = AccessTools.Property(selectorVm.GetType(), "SelectedIndex");
+        PropertyInfo singleProperty = AccessTools.Property(selectorVm.GetType(), "HasSingleItem");
+        if (indexField == null || indexProperty?.CanWrite != true || singleProperty?.CanWrite != true) return;
+        object[] preparedItems = stagedItems.Cast<object>().ToArray();
+        object[] previousItems = liveItems.Cast<object>().ToArray();
+        int previousIndex = ReadSelectedIndex(selectorVm);
+        var detached = new List<Tuple<EventInfo, Delegate>>();
+        try
+        {
+            foreach (var handler in new[] { Tuple.Create("PropertyChanged", "DropdownValue_PropertyChanged"),
+                Tuple.Create("PropertyChangedWithValue", "DropdownValue_PropertyChangedWithValue") })
+            {
+                EventInfo changeEvent = selectorVm.GetType().GetEvent(handler.Item1);
+                MethodInfo callback = AccessTools.Method(vmType, handler.Item2);
+                if (changeEvent == null || callback == null) continue;
+                Delegate listener = Delegate.CreateDelegate(changeEvent.EventHandlerType, settingsPropertyVm, callback);
+                changeEvent.RemoveEventHandler(selectorVm, listener);
+                detached.Add(Tuple.Create(changeEvent, listener));
+            }
+            // If the real MCM changed its event contract, preserve the live selector unchanged.
+            if (vmType.FullName == "MCM.UI.GUI.ViewModels.SettingsPropertyVM" && detached.Count != 2) return;
+            try
+            {
+                liveItems.Clear();
+                foreach (object item in preparedItems) liveItems.Add(item);
+                indexField.SetValue(selectorVm, -1);
+                singleProperty.SetValue(selectorVm, liveItems.Count <= 1);
+                indexProperty.SetValue(selectorVm, selectedIndex);
 		MethodInfo onPropertyChanged = AccessTools.Method(typeof(TaleWorlds.Library.ViewModel), "OnPropertyChanged", new Type[] { typeof(string) });
 
 		onPropertyChanged?.Invoke(selectorVm, new object[] { "ItemList" });
@@ -812,6 +832,24 @@ public static class McmDropdownRuntimeRefresh
 		onPropertyChanged?.Invoke(settingsPropertyVm, new object[] { "IsDropdown" });
 
 		onPropertyChanged?.Invoke(settingsPropertyVm, new object[] { "IsDropdownDefault" });
+
+            }
+            catch
+            {
+                liveItems.Clear();
+                foreach (object item in previousItems) liveItems.Add(item);
+                indexField.SetValue(selectorVm, -1);
+                singleProperty.SetValue(selectorVm, liveItems.Count <= 1);
+                indexProperty.SetValue(selectorVm, previousIndex);
+                throw;
+            }
+        }
+        finally
+        {
+            foreach (var handler in detached) handler.Item1.AddEventHandler(selectorVm, handler.Item2);
+            stagedItems.Clear();
+            (stagedSelector as TaleWorlds.Library.ViewModel)?.OnFinalize();
+        }
 
 	}
 

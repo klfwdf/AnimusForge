@@ -26,6 +26,7 @@ internal static class AnimusForgeMcmVisibility
     private static readonly string[] IllustratorGroups = { "{=AF_ILL_GROUP_IMAGE_API}" };
     private static readonly HashSet<string> AmbientApiProperties = new HashSet<string>(StringComparer.Ordinal)
     {
+        "EnableTownAmbientAi",
         "TownAmbientAiApiUrl", "TownAmbientAiApiKey", "TownAmbientAiModelName", "FetchTownAmbientAiModelList",
         "TownAmbientAiModelDropdown", "TestTownAmbientAiConnection", "TownAmbientAiMaxOutputTokens"
     };

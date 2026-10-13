@@ -1,3 +1,14 @@
+<a id="mcm-fetch-20261014"></a>
+## 2026-10-14 MCM 拉取下拉框清空/跨API写回与环境AI开关（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户报告：模型拉取后后处理/环境/生图下拉框为空，拉取其他API会更改主API选择；随后明确要求环境AI开关在MCM显示。基线 `a2db514fb`，checkpoint `7848fa8`；本次请求允许该特定MCM入口，不恢复其余玩法控件，不自动开启功能。
+- 真MCM 5.11.4旧调用回放证实 `Refresh(IEnumerable<object>,int)` 在错误item参数下先Clear再抛MissingMethodException；新增同一MCM selector/action监听回放对旧修订触发自动配置写回断言失败。原测试只验证裸selector而未接选择写回监听，不能覆盖此风险。日志显示近期/models拉取有成功结果；未用玩家凭据调用服务。
+- `src/AF.GameAdapter.Bannerlord/UI/Common/McmDropdownRuntimeRefresh.cs:732-852` 先按实际selector类型构造脱离UI的新列表，完整成功才提交；内容/选中位置相同即跳过，防止无关API重复刷新。提交时仅暂卸本propertyVM两条MCM选择写回监听，finally恢复；保留其他UI订阅及用户后续选择，失败恢复旧列表/索引。未调用会再次读写整个属性的RefreshValues，不重建整页。保留AF owner限制、原预设映射、32队列/每Tick8动作和按请求3Tick刷新；无闲置扫描、Tick磁盘IO或新网络请求。
+- `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/AnimusForgeMcmVisibility.cs:29` 增加EnableTownAmbientAi白名单，仍限定真实Ambient AI group；复用TownAmbientSettings原属性/default=false、metadata与保存owner。原AF_MCM_TownAmbient_Ai/Hint的CN/EN资源均核验存在，其他玩法控件继续走终端。只读检查当前安装global/preset保存值为false；本任务未改变玩家配置。
+- 新 `tests/AF.GameAdapter.Bannerlord/McmDropdownRefreshTests/` 编译实际刷新器/过滤器，加载安装MCM真实selector与SetSelectedIndexAction，property host/config owner为double。10项PASS：刷新零自动写回、主/环境/生图独立、重复3轮保值、非空列表、用户选择监听恢复、失败构造保旧列表、开关显示及其他开关保持隐藏。旧7848fa8同断言FAIL，修后PASS；源码/MCM hash收据独立保存。旧模型预设/缓存72/72PASS。
+- 原build-only统一脚本：1.3.15.110062/1.4.6.115628各363 warnings/0 errors，Bootstrap/probe0/0、双Coup/注册冒烟PASS。用户追加开关后中止仅本轮已核实PID/parent/项目的编译进程，重启完整双API构建，最终见build-with-switch.log；不将中止日志当产品失败。新双DLL分别在真实MCM selector上回放3选项/index1 PASS（依赖使用当前1.4 UI），不替代1.3/1.4真实游戏验收。首个测试SDK编译OOM，缩小编译依赖并显式指定本机C:/Program Files/dotnet后PASS；不修改构建脚本或全局运行环境。
+- 全部证据 `artifacts/mcm-fetch-20261014/`。未部署/打包/push，未实机验证MCM渲染、实际/provider拉取、真实Undo/Redo及用户编辑过程；当前游戏仍旧DLL。此前已被错误写回的模型值不能凭猜测恢复，本任务不改凭据/配置。回滚focused inverse本修复切片，保留其他提交与未跟踪工具缓存。
+
 <a id="unnamed-import-20261014"></a>
 ## 2026-10-14 开局无名人设可选导入与最低关系增幅核实（OFFLINE_VERIFIED / LIVE_PENDING）
 
