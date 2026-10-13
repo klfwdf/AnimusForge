@@ -1062,7 +1062,30 @@ internal static class TerminalSettingsLocalization
 
     public static string Title(string id, string fallback) => Resolve(id, "Title", fallback, EnglishTitles.TryGetValue(id, out var value) ? value : id);
     public static string Hint(string id, string fallback) => string.IsNullOrEmpty(fallback) ? "" : Resolve(id, "Hint", fallback, EnglishHints.TryGetValue(id, out var value) ? value : "Configure this setting.");
-    public static string Group(string id, string fallback) => Resolve(id, "Group", fallback, EnglishGroups.TryGetValue(id, out var value) ? value : "Terminal settings");
+    public static string Group(string id, string fallback) => NormalizeGroupDisplay(Resolve(id, "Group", fallback, EnglishGroups.TryGetValue(id, out var value) ? value : "Terminal settings"));
+
+    internal static string NormalizeGroupDisplay(string value)
+    {
+        string[] parts = (value ?? string.Empty).Split('/');
+        for (int i = 0; i < parts.Length; i++)
+        {
+            string part = (parts[i] ?? string.Empty).TrimStart();
+            bool stripped = false;
+            int cursor = 0;
+            while (cursor < part.Length && char.IsDigit(part[cursor])) cursor++;
+            if (cursor > 0 && cursor < part.Length && part[cursor] == '.')
+            {
+                cursor++;
+                while (cursor < part.Length && char.IsWhiteSpace(part[cursor])) cursor++;
+                part = part.Substring(cursor);
+                stripped = true;
+            }
+            // A plain localized slash is content, not a numbered subgroup.
+            // Preserve its whitespace unless a numeric prefix was removed.
+            if (stripped) parts[i] = part;
+        }
+        return string.Join("/", parts);
+    }
 
     private static string Resolve(string id, string part, string fallback, string englishFallback)
     {

@@ -61,6 +61,35 @@ internal static class RuntimeLanguageChecks
                 Check((string)property.GetValue(model) == rows[key], "actual control text " + language + "/" + name);
             }
         }
+        // UI language changes must not select a different Prompt package.
+        Type profileType = product.GetType("AnimusForge.MyBehavior+NpcPersonaProfile", true);
+        object profile = Activator.CreateInstance(profileType, true);
+        Type traitType = product.GetType("AnimusForge.NpcPersonaTrait", true);
+        object trait = Activator.CreateInstance(traitType, true);
+        traitType.GetField("Id", AllInstance).SetValue(trait, "cautious");
+        traitType.GetField("Strength", AllInstance).SetValue(trait, 2);
+        object traits = profileType.GetField("Traits", AllInstance).GetValue(profile);
+        traits.GetType().GetMethod("Add").Invoke(traits, new[] { trait });
+        string dynamicValue = "user {NAME} 中文 EN $1";
+        foreach (string name in new[] { "Motivations", "Values", "Fears" })
+        {
+            object list = profileType.GetField(name, AllInstance).GetValue(profile);
+            list.GetType().GetMethod("Add").Invoke(list, new object[] { dynamicValue });
+        }
+        profileType.GetField("SpeechStyle", AllInstance).SetValue(profile, dynamicValue);
+        Type personaRules = product.GetType("AnimusForge.NpcPersonaTextRules", true);
+        string displayed = (string)Call(personaRules, "BuildPersonaContext", profile, true);
+        string prompted = (string)Call(personaRules, "BuildPersonaContext", profile, false);
+        JObject personaPackage = JObject.Parse(File.ReadAllText(Path.Combine(root, "ModuleData", "PersonaPromptTexts.json")));
+        Check(displayed.Contains(rows["AF_PERSONA_UI_TRAIT_cautious"] + "(2)"), "persona trait follows native UI " + language);
+        Check(prompted.Contains((string)personaPackage["AF_PERSONA_TRAIT_cautious"] + "(2)"), "persona trait prompt retains package " + language);
+        foreach (string field in new[] { "Traits", "Motivations", "Values", "Fears", "SpeechStyle" })
+        {
+            Check(displayed.Contains(rows["AF_PERSONA_UI_CONTEXT_" + field]), "persona field follows UI " + language + "/" + field);
+            Check(prompted.Contains((string)personaPackage["AF_PERSONA_CONTEXT_" + field]), "persona field retains package " + language + "/" + field);
+        }
+        Check(displayed.Contains(dynamicValue) && prompted.Contains(dynamicValue), "persona original dynamic text and placeholders preserved " + language);
+
         Type item = product.GetType("AnimusForge.AnimusForgeConversationHistoryLogItemVM", true);
         foreach (var fact in new[] {
             new { Raw="weekly_memory_compat_d26ab0225ce9", Kind="afef_player", Key="AF_UI_ConversationHistory_PlayerAction" },

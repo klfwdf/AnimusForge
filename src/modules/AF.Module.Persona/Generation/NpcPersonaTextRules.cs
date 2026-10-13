@@ -269,31 +269,36 @@ internal static string NormalizePromotedSkillKey(string key)
         => TrimToMaxChars(PersonaPromptTexts.Format("AF_PERSONA_PROMPT_FallbackBackground", "{JOIN_FACT}He was previously active in {SCENE} as \"{FULL_NAME}\"; after joining, he goes by the personal name \"{NAME}\". The available experiences from earlier conversations become part of his reason for following the player: {HISTORY}",
             ("JOIN_FACT", joinFact), ("FULL_NAME", fullName), ("SCENE", scene), ("NAME", name), ("HISTORY", TrimToMaxChars(history, 240))), 520);
 
-    internal static string BuildPersonaContext(MyBehavior.NpcPersonaProfile profile)
+    internal static string BuildPersonaContext(MyBehavior.NpcPersonaProfile profile) => BuildPersonaContext(profile, false);
+
+    internal static string BuildPersonaContext(MyBehavior.NpcPersonaProfile profile, bool forUi)
     {
         if (profile == null) return "";
+        string Resolve(string key, string fallback) => forUi
+            ? PersonaUiTexts.Text(key.Replace("AF_PERSONA_", "AF_PERSONA_UI_"), fallback)
+            : PersonaPromptTexts.Get(key, fallback);
         StringBuilder sb = new StringBuilder();
         List<string> traits = new List<string>();
         foreach (NpcPersonaTrait trait in profile.Traits ?? new List<NpcPersonaTrait>())
         {
             string id = NormalizeTraitId(trait?.Id);
             if (!AllowedTraitIds.Contains(id)) continue;
-            string label = PersonaPromptTexts.Get("AF_PERSONA_TRAIT_" + id, id);
+            string label = Resolve("AF_PERSONA_TRAIT_" + id, char.ToUpperInvariant(id[0]) + id.Substring(1));
             traits.Add(label + "(" + Math.Max(1, Math.Min(3, trait.Strength)) + ")");
         }
-        AppendPersonaContextLine(sb, "AF_PERSONA_CONTEXT_Traits", traits, 5);
-        AppendPersonaContextLine(sb, "AF_PERSONA_CONTEXT_Motivations", profile.Motivations, 3);
-        AppendPersonaContextLine(sb, "AF_PERSONA_CONTEXT_Values", profile.Values, 3);
-        AppendPersonaContextLine(sb, "AF_PERSONA_CONTEXT_Fears", profile.Fears, 2);
+        AppendPersonaContextLine(sb, "AF_PERSONA_CONTEXT_Traits", "Core traits: ", traits, 5, Resolve);
+        AppendPersonaContextLine(sb, "AF_PERSONA_CONTEXT_Motivations", "Current motivations: ", profile.Motivations, 3, Resolve);
+        AppendPersonaContextLine(sb, "AF_PERSONA_CONTEXT_Values", "Values and boundaries: ", profile.Values, 3, Resolve);
+        AppendPersonaContextLine(sb, "AF_PERSONA_CONTEXT_Fears", "Vulnerabilities and fears: ", profile.Fears, 2, Resolve);
         string speech = NormalizePersonaPromptSourceText(profile.SpeechStyle, 240);
-        if (!string.IsNullOrWhiteSpace(speech)) sb.AppendLine(PersonaPromptTexts.Get("AF_PERSONA_CONTEXT_SpeechStyle", "Speech style: ") + speech);
+        if (!string.IsNullOrWhiteSpace(speech)) sb.AppendLine(Resolve("AF_PERSONA_CONTEXT_SpeechStyle", "Speech style: ") + speech);
         return sb.ToString().Trim();
     }
 
-    private static void AppendPersonaContextLine(StringBuilder sb, string key, IEnumerable<string> values, int maxCount)
+    private static void AppendPersonaContextLine(StringBuilder sb, string key, string englishFallback, IEnumerable<string> values, int maxCount, Func<string, string, string> resolve)
     {
         List<string> items = (values ?? Enumerable.Empty<string>()).Select(x => NormalizePersonaPromptSourceText(x, 180)).Where(x => !string.IsNullOrWhiteSpace(x)).Take(maxCount).ToList();
-        if (items.Count > 0) sb.AppendLine(PersonaPromptTexts.Get(key, key + ": ") + string.Join(", ", items));
+        if (items.Count > 0) sb.AppendLine(resolve(key, englishFallback) + string.Join(", ", items));
     }
     internal static bool TryParseSkills(string raw, IReadOnlyCollection<string> knownKeys, out IReadOnlyList<KeyValuePair<string,int>> values)
     {

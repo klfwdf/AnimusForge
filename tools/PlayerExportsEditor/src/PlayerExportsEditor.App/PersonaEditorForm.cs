@@ -15,7 +15,7 @@ public sealed class PersonaEditorForm : Form
 
     public PersonaEditorForm(string entityId, string displayName, NpcPersonaProfile? profile)
     {
-        Text = "\u4eba\u7269\u8d44\u6599\u7f16\u8f91 - " + (string.IsNullOrWhiteSpace(displayName) ? entityId : displayName);
+        Text = PersonaEditorText.Format("Title", string.IsNullOrWhiteSpace(displayName) ? entityId : displayName);
         Width = 980;
         Height = 700;
         MinimumSize = new Size(760, 560);
@@ -61,43 +61,43 @@ public sealed class PersonaEditorForm : Form
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
         Controls.Add(root);
 
-        root.Controls.Add(Label("\u5bf9\u8c61"), 0, 0);
+        root.Controls.Add(Label(PersonaEditorText.Get("Object")), 0, 0);
         root.Controls.Add(Label(entityId + (string.IsNullOrWhiteSpace(displayName) ? "" : " / " + displayName)), 1, 0);
-        root.Controls.Add(Label("VoiceId"), 0, 1);
+        root.Controls.Add(Label(PersonaEditorText.Get("Voice")), 0, 1);
         _voiceId.Dock = DockStyle.Fill;
         root.Controls.Add(_voiceId, 1, 1);
 
-        root.Controls.Add(Label("Traits (id:strength)"), 0, 2);
+        root.Controls.Add(Label(PersonaEditorText.Get("Traits")), 0, 2);
         ConfigureLongText(_traits);
         root.Controls.Add(_traits, 1, 2);
 
-        root.Controls.Add(Label("\u4e2a\u6027"), 0, 3);
+        root.Controls.Add(Label(PersonaEditorText.Get("Personality")), 0, 3);
         ConfigureLongText(_personality);
         root.Controls.Add(_personality, 1, 3);
 
-        root.Controls.Add(Label("\u80cc\u666f"), 0, 4);
+        root.Controls.Add(Label(PersonaEditorText.Get("Background")), 0, 4);
         ConfigureLongText(_background);
         root.Controls.Add(_background, 1, 4);
 
-        root.Controls.Add(Label("Motivations"), 0, 5);
+        root.Controls.Add(Label(PersonaEditorText.Get("Motivations")), 0, 5);
         ConfigureLongText(_motivations);
         root.Controls.Add(_motivations, 1, 5);
 
-        root.Controls.Add(Label("Values"), 0, 6);
+        root.Controls.Add(Label(PersonaEditorText.Get("Values")), 0, 6);
         ConfigureLongText(_values);
         root.Controls.Add(_values, 1, 6);
 
-        root.Controls.Add(Label("Fears"), 0, 7);
+        root.Controls.Add(Label(PersonaEditorText.Get("Fears")), 0, 7);
         ConfigureLongText(_fears);
         root.Controls.Add(_fears, 1, 7);
 
-        root.Controls.Add(Label("Speech style"), 0, 8);
+        root.Controls.Add(Label(PersonaEditorText.Get("SpeechStyle")), 0, 8);
         ConfigureLongText(_speechStyle);
         root.Controls.Add(_speechStyle, 1, 8);
 
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(0, 7, 0, 0) };
-        var ok = new Button { Text = "\u4fdd\u5b58", Width = 100, DialogResult = DialogResult.OK };
-        var cancel = new Button { Text = "\u53d6\u6d88", Width = 100, DialogResult = DialogResult.Cancel };
+        var ok = new Button { Text = PersonaEditorText.Get("Save"), Width = 100, DialogResult = DialogResult.OK };
+        var cancel = new Button { Text = PersonaEditorText.Get("Cancel"), Width = 100, DialogResult = DialogResult.Cancel };
         buttons.Controls.Add(ok);
         buttons.Controls.Add(cancel);
         root.Controls.Add(buttons, 0, 9);

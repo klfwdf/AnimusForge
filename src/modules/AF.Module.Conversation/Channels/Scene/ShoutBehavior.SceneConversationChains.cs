@@ -1851,6 +1851,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				{
 					npc.BackgroundDesc = background.Trim();
 				}
+                npc.PersonaContext = MyBehavior.GetNpcPersonaContextForExternal(hero);
 				return;
 			}
 			string key = (npc.UnnamedKey ?? "").Trim().ToLowerInvariant();
@@ -1871,6 +1872,36 @@ internal sealed partial class SceneConversationSessionRuntime
 			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] persona snapshot failed agent=" + npc.AgentIndex + " error=" + ex.Message);
 		}
 	}
+    private async Task<bool> EnsureCompactReactionUnnamedPersonaAsync(NpcDataPacket targetNpc,
+        Mission sourceMission, long generation, int session, int epoch, Func<bool> isCurrent)
+    {
+        bool Current() => _ports.IsOwnerCurrent() && CanPublishImmediateSceneReaction(isCurrent)
+            && SaveRuntimeGuard.IsCurrentGeneration(generation)
+            && session == _ports.SceneSessionId() && epoch == Volatile.Read(ref _sceneConversationEpoch)
+            && ReferenceEquals(sourceMission, Mission.Current);
+        Task generationTask = await _dispatcher.RunAsync("compact_persona_capture", targetNpc.Name, targetNpc.AgentIndex, () =>
+        {
+            if (!Current()) return null;
+            if (targetNpc.IsHero) return Task.CompletedTask;
+            Agent agent = sourceMission.Agents?.FirstOrDefault(candidate => candidate != null && candidate.Index == targetNpc.AgentIndex);
+            if (agent == null || !agent.IsActive()) return null;
+            return ShoutUtils.EnsureUnnamedNpcPersonaGeneratedAsync(agent);
+        }, (Task)null).ConfigureAwait(false);
+        if (generationTask == null) return false;
+        Stopwatch wait = Stopwatch.StartNew();
+        if (!await PersonaGenerationWaiter.WaitAsync(generationTask,
+            () => _dispatcher.RunAsync("compact_persona_wait", targetNpc.Name, targetNpc.AgentIndex, Current, false),
+            () => wait.ElapsedMilliseconds < DuelSettings.LlmRequestTimeoutMilliseconds).ConfigureAwait(false)) return false;
+        return await _dispatcher.RunAsync("compact_persona_accept", targetNpc.Name, targetNpc.AgentIndex, () =>
+        {
+            if (!Current()) return false;
+            Agent agent = sourceMission.Agents?.FirstOrDefault(candidate => candidate != null && candidate.Index == targetNpc.AgentIndex);
+            if (agent == null || !agent.IsActive()) return false;
+            if (!targetNpc.IsHero) PopulateImmediateSceneReactionPersonaOnMainThread(targetNpc, null);
+            return true;
+        }, false).ConfigureAwait(false);
+    }
+
 	internal async Task<SceneCompactReactionInput> CaptureCompactSceneReactionInputAsync(NpcDataPacket targetNpc, Hero contextHero, List<NpcDataPacket> allNpcData, string extraFactLine, string singleReplyUserContent, Func<bool> isCurrent)
 	{
 		if (targetNpc == null || allNpcData == null || allNpcData.Count == 0)
@@ -1886,12 +1917,15 @@ internal sealed partial class SceneConversationSessionRuntime
 		}
         long generation = SaveRuntimeGuard.CaptureGeneration();
         int session = _ports.SceneSessionId();
+        int epoch = Volatile.Read(ref _sceneConversationEpoch);
         Mission sourceMission = await _dispatcher.RunAsync("compact_reaction_scope", targetNpc.Name, targetNpc.AgentIndex, () => CanPublishImmediateSceneReaction(isCurrent) ? Mission.Current : null, (Mission)null).ConfigureAwait(false);
         if (sourceMission == null) return null;
 		await _ports.EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { targetNpc }, contextHero != null ? new Dictionary<int, Hero> { [targetNpc.AgentIndex] = contextHero } : new Dictionary<int, Hero>());
+        if (!await EnsureCompactReactionUnnamedPersonaAsync(targetNpc, sourceMission, generation, session, epoch, isCurrent).ConfigureAwait(false)) return null;
         return await _dispatcher.RunAsync("compact_reaction_messages", targetNpc.Name, targetNpc.AgentIndex, () =>
         {
-            if (!CanPublishImmediateSceneReaction(isCurrent) || !SaveRuntimeGuard.IsCurrentGeneration(generation) || session != _ports.SceneSessionId() || !ReferenceEquals(sourceMission, Mission.Current)) return null;
+            if (!CanPublishImmediateSceneReaction(isCurrent) || !SaveRuntimeGuard.IsCurrentGeneration(generation) || session != _ports.SceneSessionId()
+                || epoch != Volatile.Read(ref _sceneConversationEpoch) || !ReferenceEquals(sourceMission, Mission.Current)) return null;
 		Agent npcAgent = (targetNpc.AgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetNpc.AgentIndex) : null;
 		CharacterObject npcCharacter = (npcAgent?.Character as CharacterObject) ?? contextHero?.CharacterObject;
 		string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);

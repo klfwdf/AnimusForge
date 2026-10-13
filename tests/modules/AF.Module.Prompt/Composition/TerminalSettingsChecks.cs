@@ -112,10 +112,32 @@ internal static class TerminalSettingsChecks
                         }
                     }
                 }
-                Check(defs.Count == attributed, "no missing or duplicate metadata definitions");
+                var terminalOnly = new Dictionary<string, object> {
+                    ["EnablePassiveStareReaction"] = false,
+                    ["PassiveStareTriggerSeconds"] = 0,
+                    ["MinimumPositiveNpcRelationGain"] = 1
+                };
+                Check(defs.Count == attributed + terminalOnly.Count, "no missing or duplicate attributed or terminal-only definitions");
+                foreach (var setting in terminalOnly)
+                {
+                    Check(defs.ContainsKey(setting.Key), "terminal-only definition exists " + setting.Key);
+                    object def = defs[setting.Key];
+                    PropertyInfo property = duel.GetType().GetProperty(setting.Key);
+                    Check(property.GetCustomAttributes(metadata, true).Length == 0, "terminal-only setting adds no MCM frontend " + setting.Key);
+                    object raw = property.GetValue(duel);
+                    Check(Equals(raw, ((Delegate)Property(def, "Getter")).DynamicInvoke(duel)), "terminal-only getter retains owner " + setting.Key);
+                    object next = raw is bool value ? (object)!value : ((int)raw == 0 ? 1 : 0);
+                    var setter = (Delegate)Property(def, "Setter");
+                    setter.DynamicInvoke(duel, next);
+                    Check(Equals(property.GetValue(duel), next), "terminal-only setter retains owner " + setting.Key);
+                    setter.DynamicInvoke(duel, raw);
+                }
                 var ui = ((IEnumerable)Call(registry, "GetByCategory", "UI")).Cast<object>().Select(d => (string)Property(d, "Id")).ToArray();
-                foreach (string id in new[] { "CourierLetterThemeDropdown", "DialogueUi.InterfaceStyleDropdown", "DialogueUi.BodyFontSize", "DialogueUi.ShoutPanelStyleDropdown", "DialogueUi.ShowHistoryDelete", "BubbleFontSize", "WeeklyReportPopupBodyFontSize" })
+                foreach (string id in new[] { "CourierLetterThemeDropdown", "DialogueUi.InterfaceStyleDropdown", "DialogueUi.BodyFontSize", "DialogueUi.ShoutPanelStyleDropdown", "DialogueUi.ShowHistoryDelete", "BubbleFontSize" })
                     Check(ui.Contains(id), "UI page contains " + id);
+                var diplomacy = ((IEnumerable)Call(registry, "GetByCategory", (string)product.GetType("AnimusForge.TerminalCategories", true).GetField("Diplomacy", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic).GetValue(null))).Cast<object>().Select(d => (string)Property(d, "Id")).ToArray();
+                foreach (string id in new[] { "WeeklyReportPopupBodyFontSize", "EnableWeeklyReportMapNotifications" })
+                    Check(diplomacy.Contains(id) && !ui.Contains(id), "complete weekly settings stay on Diplomacy " + id);
                 Type textObject = Assembly.Load("TaleWorlds.Localization").GetType("TaleWorlds.Localization.TextObject", true);
                 string courierGroup = "{=AF_MCM_Group_CourierStationery}NPC contact / courier stationery";
                 Check((string)Property(defs["CourierLetterThemeDropdown"], "GroupName") == Activator.CreateInstance(textObject, new object[] { courierGroup, null }).ToString(), "slashes inside a localized group fallback do not leak untranslated suffixes");

@@ -48,12 +48,13 @@ PROMPT_KEYS = {
     "AF_PERSONA_PROMPT_FallbackBackground",
 }
 UI_KEYS = {
+    "AF_PERSONA_UI_CONTEXT_Fears", "AF_PERSONA_UI_CONTEXT_Motivations", "AF_PERSONA_UI_CONTEXT_SpeechStyle", "AF_PERSONA_UI_CONTEXT_Traits", "AF_PERSONA_UI_CONTEXT_Values",
     "AF_PERSONA_UI_ImportMissingDirectory",
     "AF_PERSONA_UI_ImportDuplicateFolderKey",
     "AF_PERSONA_UI_ImportExistingKeyConflict",
     "AF_PERSONA_UI_ImportValidationException",
     "AF_PERSONA_UI_UnknownNpc",
-}
+} | {"AF_PERSONA_UI_TRAIT_" + key[len("AF_PERSONA_TRAIT_"):] for key in json.loads(PROMPT_EN.read_text(encoding="utf-8")).keys() if key.startswith("AF_PERSONA_TRAIT_")}
 NAMED = re.compile(r"\{([A-Z][A-Z0-9_]*)\}")
 NUMERIC = re.compile(r"\{\d+\}")
 
@@ -227,10 +228,16 @@ assert "Directory.Exists" in import_owner and "hashSet.Add" in import_owner and 
 assert "ex.Message" in import_owner
 ui_source = snapshot + import_owner
 called_ui_keys = {key for key in UI_KEYS if any(f'PersonaUiTexts.{method}("{key}"' in ui_source for method in ("Text", "Format"))}
-assert called_ui_keys == UI_KEYS
+assert called_ui_keys == {key for key in UI_KEYS if not key.startswith(("AF_PERSONA_UI_CONTEXT_", "AF_PERSONA_UI_TRAIT_"))}
 ui_code_literals = csharp_literals(ui_source)
-for key in UI_KEYS:
+for key in called_ui_keys:
     assert ui_en[key] in ui_code_literals, key
+assert 'bool forUi)' in prompt_rules
+assert 'PersonaUiTexts.Text(key.Replace("AF_PERSONA_", "AF_PERSONA_UI_"), fallback)' in prompt_rules
+assert 'GetNpcPersonaContextForExternal(hero, forUi: true)' in read('src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs')
+for key in UI_KEYS - called_ui_keys:
+    assert ui_en[key] == prompt_en[key.replace("AF_PERSONA_UI_", "AF_PERSONA_")]
+    assert ui_zh[key] == prompt_zh[key.replace("AF_PERSONA_UI_", "AF_PERSONA_")]
 
 adapter = read("src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs")
 assert "NpcPersonaTextRules.BuildNative" in adapter and "CallAuxiliaryGatewayDetailed" in adapter

@@ -4041,6 +4041,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private void GetNpcPersonaStrings(Hero hero, out string personality, out string background) => _personaProfiles.GetNpcPersonaStrings(hero?.StringId, out personality, out background);
 
+	private string GetNpcPersonaContext(Hero hero) => GetNpcPersonaContext(hero, false);
+
+	private string GetNpcPersonaContext(Hero hero, bool forUi) => NpcPersonaGenerationApplication.GetNpcPersonaContext(hero, forUi);
+
+
 	private bool NeedsNpcPersonaGeneration(Hero hero)
 	{
 		return NpcPersonaGenerationApplication.NeedsNpcPersonaGeneration(hero);
@@ -5556,6 +5561,21 @@ private void OpenKingdomRebellionApiRepairFlow()
 		}
 		catch
 		{
+		}
+	}
+
+	internal static string GetNpcPersonaContextForExternal(Hero hero) => GetNpcPersonaContextForExternal(hero, false);
+
+	internal static string GetNpcPersonaContextForExternal(Hero hero, bool forUi)
+	{
+		try
+		{
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return myBehavior == null || hero == null ? "" : myBehavior.GetNpcPersonaContext(hero, forUi);
+		}
+		catch
+		{
+			return "";
 		}
 	}
 
