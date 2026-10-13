@@ -109,6 +109,9 @@ public partial class ShoutBehavior
         }
         string Unavailable(PlayerDirectActionKind kind)
         {
+            if (PlayerCaptivityConversation.HasSession && kind != PlayerDirectActionKind.Gold && kind != PlayerDirectActionKind.Item
+                && kind != PlayerDirectActionKind.Debt && kind != PlayerDirectActionKind.ResolveDebt && kind != PlayerDirectActionKind.FixedAsset)
+                return new TaleWorlds.Localization.TextObject("{=AF_ENC_UI_CaptivityActionBlocked}This action is unavailable while you are in captivity.").ToString();
             if (PlayerDirectActionProtocol.IsWorldMap(kind, context))
             {
                 if (context == PlayerDirectActionContext.Restricted)

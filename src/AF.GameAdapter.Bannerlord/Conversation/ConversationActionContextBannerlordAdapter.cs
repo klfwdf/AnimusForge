@@ -126,6 +126,11 @@ internal static bool IsSceneResponseTargetAvailableForActionDispatch(int targetA
 	}
 internal static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int targetAgentIndex, Hero expectedHero, CharacterObject expectedCharacter, out string unavailableReason)
 	{
+		if (!PlayerCaptivityConversation.AllowsInteraction(expectedHero ?? expectedCharacter?.HeroObject))
+		{
+			unavailableReason = "captivity_context_changed";
+			return false;
+		}
 		// A negative index means this conversation adapter did not capture a concrete
 		// scene Agent; it does not prove that a target that was once present despawned.
 		// The shared guard still fails closed for every captured Agent index, covering

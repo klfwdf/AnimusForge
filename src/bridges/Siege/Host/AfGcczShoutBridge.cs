@@ -1914,11 +1914,11 @@ internal static class AfGcczShoutBridge
 
 
 
-			npc.PersonalityDesc,
+			npc.GetPersonaDescription(),
 
 
 
-			npc.BackgroundDesc);
+			"");
 
 
 

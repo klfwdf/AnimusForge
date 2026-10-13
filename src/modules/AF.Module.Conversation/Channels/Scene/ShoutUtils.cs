@@ -2512,15 +2512,7 @@ public static class ShoutUtils
 					{
 						npcDataPacket.RoleDesc = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0882");
 					}
-					MyBehavior.GetNpcPersonaForExternal(hero, out var personality, out var background);
-					if (!string.IsNullOrWhiteSpace(personality))
-					{
-						npcDataPacket.PersonalityDesc = personality.Trim();
-					}
-					if (!string.IsNullOrWhiteSpace(background))
-					{
-						npcDataPacket.BackgroundDesc = background.Trim();
-					}
+                    npcDataPacket.SetPersonaDescription(MyBehavior.GetNpcPersonaDescriptionForExternal(hero));
 					npcDataPacket.PersonaContext = MyBehavior.GetNpcPersonaContextForExternal(hero);
 				}
 				else if (characterObject.Occupation == Occupation.Lord)
@@ -2567,14 +2559,7 @@ public static class ShoutUtils
 				npcDataPacket.UnnamedRank = (characterObject.IsSoldier ? "soldier" : "commoner");
 				if (TryGetUnnamedNpcPersona(agent, out var personality2, out var background2))
 				{
-					if (!string.IsNullOrWhiteSpace(personality2))
-					{
-						npcDataPacket.PersonalityDesc = personality2.Trim();
-					}
-					if (!string.IsNullOrWhiteSpace(background2))
-					{
-						npcDataPacket.BackgroundDesc = background2.Trim();
-					}
+                    npcDataPacket.SetPersonaDescription(AnimusForge.Refactor.Runtime.NpcPersonaProfilePolicy.MergeLegacy(personality2, background2));
 				}
 			}
 		}

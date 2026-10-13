@@ -15,6 +15,7 @@ public partial class MyBehavior
         IsCurrentOwner = () => ReferenceEquals(Instance, this),
         LoadBlocks = _memoryBusinessState.LoadBlocks,
         LoadDrafts = _memoryBusinessState.LoadDrafts,
+        Uncompressed = _memoryHistoryCommit.BuildUncompressedMemoryRoleMessagesById,
         Overview = id => MemorySummaryApplicationAdapter.BuildMemoryOverviewContextById(MemoryQueueState, id, MemoryEntityIdentityBannerlordAdapter.IsMemoryEntityEligibleForCompressedMemory, LlmRequestConfigurationCaptureAdapter.GetMemoryOverviewStartBlockCountFromSettings),
         BuildContext = (id, name, max, input, secondary, include, snapshot) => _memoryBusinessState.BuildHistoryContextById(_memoryHistoryContext, id, name, max, input, secondary, include, snapshot)
     };
@@ -28,6 +29,10 @@ public partial class MyBehavior
     internal sealed class HistoryPromptSnapshot
     {
         internal long Generation;
+        internal Func<bool> IsCurrentOwner;
+        internal System.Threading.CancellationToken Cancellation;
+        internal bool IsCurrent() => !Cancellation.IsCancellationRequested && SaveRuntimeGuard.IsCurrentGeneration(Generation)
+            && (IsCurrentOwner == null || IsCurrentOwner());
         internal int GameDay;
         internal string Scene;
         internal int FinalCount;
@@ -38,18 +43,22 @@ public partial class MyBehavior
         internal string Overview;
         internal string RecallQuery;
         internal List<CompressedMemoryBlock> Blocks;
+        internal List<ConversationMessage> UncompressedMessages;
+        internal string Context;
     }
 
     internal static Func<string> CaptureHistoryContextWorkForHero(Hero hero, string currentInput,
-        string secondaryInput, bool includeCurrentActiveSceneSession, long generation)
+        string secondaryInput, bool includeCurrentActiveSceneSession, long generation,
+        Action<HistoryPromptSnapshot> captured = null, int targetAgentIndex = -1, bool? includeCurrentRawSession = null)
     {
-        return SharedPromptCaptureBannerlordAdapter.CaptureHistoryContextWorkForHero(ResolveHistoryWorkCapturePorts, hero, currentInput, secondaryInput, includeCurrentActiveSceneSession, generation);
+        return SharedPromptCaptureBannerlordAdapter.CaptureHistoryContextWorkForHero(ResolveHistoryWorkCapturePorts, hero, currentInput, secondaryInput, includeCurrentActiveSceneSession, generation, captured, targetAgentIndex, includeCurrentRawSession);
     }
 
     internal static Func<string> CaptureHistoryContextWorkById(string memoryId, string memoryName,
-        string currentInput, string secondaryInput, bool includeCurrentActiveSceneSession, long generation)
+        string currentInput, string secondaryInput, bool includeCurrentActiveSceneSession, long generation,
+        Action<HistoryPromptSnapshot> captured = null, int targetAgentIndex = -1, bool? includeCurrentRawSession = null)
     {
-        return SharedPromptCaptureBannerlordAdapter.CaptureHistoryContextWorkById(ResolveHistoryWorkCapturePorts, memoryId, memoryName, currentInput, secondaryInput, includeCurrentActiveSceneSession, generation);
+        return SharedPromptCaptureBannerlordAdapter.CaptureHistoryContextWorkById(ResolveHistoryWorkCapturePorts, memoryId, memoryName, currentInput, secondaryInput, includeCurrentActiveSceneSession, generation, captured, targetAgentIndex, includeCurrentRawSession);
     }
 
     private static CompressedMemoryBlock CopyHistoryRecallBlock(CompressedMemoryBlock block)

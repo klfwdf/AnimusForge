@@ -13,7 +13,6 @@ using TaleWorlds.Library;
 namespace AnimusForge;
 
 
-internal delegate void PersonaEditorReadStrings(Hero hero, out string personality, out string background);
 internal sealed class PersonaEditorPort
 {
  internal Func<List<Hero>> GetEditableHeroes; internal Action<List<Hero>> SetEditableHeroes;
@@ -45,10 +44,10 @@ internal sealed class PersonaEditorPort
  internal Func<long> CaptureGeneration; internal Func<long, bool> IsCurrent;
  internal Func<Hero> GetSelectedHero; internal Action<Hero> SetSelectedHero;
  internal Hero SelectedHero { get => GetSelectedHero(); set => SetSelectedHero(value); }
- internal PersonaEditorReadStrings GetNpcPersonaStrings;
+ internal Func<Hero, string> GetNpcPersonaDescription;
  internal Func<Hero, string> GetNpcVoiceId;
  internal Action<Hero> ShowDevEditInquiry, ClearPersona;
- internal Action<Hero, string, string> SavePersonaText;
+ internal Action<Hero, string> SavePersonaText;
  internal Action<Hero, string> SaveVoice;
  internal Func<Hero, Task<string>> GeneratePersona;
  internal Func<long, Func<bool>, Task<bool>> CompleteOnMainThread;
@@ -141,24 +140,21 @@ internal sealed class PersonaEditorController
 		{
 			_port.SelectedHero = npc;
 			string text = npc.Name?.ToString() ?? "NPC";
-			_port.GetNpcPersonaStrings(npc, out var personality, out var background);
+			string personality = _port.GetNpcPersonaDescription(npc);
 			bool flag = !string.IsNullOrWhiteSpace(personality);
-			bool flag2 = !string.IsNullOrWhiteSpace(background);
 			string npcVoiceId = _port.GetNpcVoiceId(npc);
 			bool flag3 = !string.IsNullOrWhiteSpace(npcVoiceId);
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.AppendLine(Localize("AF_UI_Persona_MenuPrompt", "Choose an action:"));
-			stringBuilder.AppendLine(Localize("AF_UI_Persona_PersonalityLabel", "Personality: ") + (flag ? Localize("AF_UI_Persona_Set", "set") : Localize("AF_UI_Persona_Unset", "not set")));
-			stringBuilder.AppendLine(Localize("AF_UI_Persona_BackgroundLabel", "History background: ") + (flag2 ? Localize("AF_UI_Persona_Set", "set") : Localize("AF_UI_Persona_Unset", "not set")));
+			stringBuilder.AppendLine(Localize("AF_UI_Persona_PersonalityLabel", "Persona: ") + (flag ? Localize("AF_UI_Persona_Set", "set") : Localize("AF_UI_Persona_Unset", "not set")));
 			stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceCurrent", "Current voice ID:") + (flag3 ? npcVoiceId : Localize("AF_UI_Persona_VoiceUnsetAuto", "not set (assigned automatically by VoiceMapping)")));
 			List<InquiryElement> list = new List<InquiryElement>();
-			list.Add(new InquiryElement("set_personality", Localize("AF_UI_Persona_SetPersonality", "Set or edit personality"), null));
-			list.Add(new InquiryElement("set_background", Localize("AF_UI_Persona_SetBackground", "Set or edit history background"), null));
-			list.Add(new InquiryElement("reroll_persona", Localize("AF_UI_Persona_RerollPersona", "Regenerate personality and background (LLM)"), null));
+			list.Add(new InquiryElement("set_personality", Localize("AF_UI_Persona_SetPersonality", "Set or edit persona"), null));
+			list.Add(new InquiryElement("reroll_persona", Localize("AF_UI_Persona_RerollPersona", "Regenerate persona (LLM)"), null));
 			list.Add(new InquiryElement("set_voice", Localize("AF_UI_Persona_SetVoice", "Set or edit voice ID"), null));
-			list.Add(new InquiryElement("clear_persona", Localize("AF_UI_Persona_ClearPersona", "Clear personality, history background, and voice ID"), null));
+			list.Add(new InquiryElement("clear_persona", Localize("AF_UI_Persona_ClearPersona", "Clear persona, structured information, and voice ID"), null));
 			list.Add(new InquiryElement("back", Localize("AF_UI_Persona_Back", "Back"), null));
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_MenuTitle", "Edit personality/history - {NAME}", ("NAME", text)), stringBuilder.ToString(), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Execute", "Execute"), Localize("AF_UI_Persona_Back", "Back"), selected => { if (IsEditorCurrent(npc, editorGeneration)) OnDevPersonaMenuSelected(selected); }, delegate
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(Localize("AF_UI_Persona_MenuTitle", "Edit persona - {NAME}", ("NAME", text)), stringBuilder.ToString(), list, isExitShown: true, 0, 1, Localize("AF_UI_Persona_Execute", "Execute"), Localize("AF_UI_Persona_Back", "Back"), selected => { if (IsEditorCurrent(npc, editorGeneration)) OnDevPersonaMenuSelected(selected); }, delegate
 			{
 				if (!IsEditorCurrent(npc, editorGeneration)) return;
 				ReturnFromDevPersonaMenu(npc);
@@ -217,7 +213,7 @@ internal sealed class PersonaEditorController
 			break;
 		case "clear_persona":
 			_port.ClearPersona(devEditingHero);
-			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_Cleared", "Cleared this NPC's personality, history background, and voice ID.")));
+			InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_Cleared", "Cleared this NPC's persona, structured information, and voice ID.")));
 			OpenDevPersonaMenu(devEditingHero);
 			break;
 		default:
@@ -250,15 +246,14 @@ internal sealed class PersonaEditorController
 		{
 			return;
 		}
-		_port.GetNpcPersonaStrings(npc, out var personality, out var background);
+		string personality = _port.GetNpcPersonaDescription(npc);
 		string name = npc.Name?.ToString() ?? "NPC";
 		StringBuilder description = new StringBuilder();
-		description.AppendLine(Localize("AF_UI_Persona_RerollConfirmBody", "The auxiliary API will generate a new personality and history background for this Hero."));
+		description.AppendLine(Localize("AF_UI_Persona_RerollConfirmBody", "The auxiliary API will generate a new persona for this Hero."));
 		description.AppendLine();
-		description.AppendLine(Localize("AF_UI_Persona_PersonalityLabel", "Personality: ") + (string.IsNullOrWhiteSpace(personality) ? Localize("AF_UI_Persona_Unset", "not set") : Localize("AF_UI_Persona_SetWillOverwrite", "set; it will be overwritten")));
-		description.AppendLine(Localize("AF_UI_Persona_BackgroundLabel", "History background: ") + (string.IsNullOrWhiteSpace(background) ? Localize("AF_UI_Persona_Unset", "not set") : Localize("AF_UI_Persona_SetWillOverwrite", "set; it will be overwritten")));
+		description.AppendLine(Localize("AF_UI_Persona_PersonalityLabel", "Persona: ") + (string.IsNullOrWhiteSpace(personality) ? Localize("AF_UI_Persona_Unset", "not set") : Localize("AF_UI_Persona_SetWillOverwrite", "set; it will be overwritten")));
 		description.AppendLine(Localize("AF_UI_Persona_RerollVoiceKept", "The voice ID will not change. Existing data is kept if generation fails."));
-		InformationManager.ShowInquiry(new InquiryData(Localize("AF_UI_Persona_RerollConfirmTitle", "Confirm personality/background regeneration - {NAME}", ("NAME", name)), description.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, Localize("AF_UI_Persona_ConfirmGenerate", "Generate"), Localize("AF_UI_Persona_Cancel", "Cancel"), delegate
+		InformationManager.ShowInquiry(new InquiryData(Localize("AF_UI_Persona_RerollConfirmTitle", "Confirm persona regeneration - {NAME}", ("NAME", name)), description.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, Localize("AF_UI_Persona_ConfirmGenerate", "Generate"), Localize("AF_UI_Persona_Cancel", "Cancel"), delegate
 		{
 			if (!_port.IsCurrent(editorGeneration)) return;
 			_ = RunHeroPersonaRerollAsync(npc, onClosed);
@@ -277,7 +272,7 @@ internal sealed class PersonaEditorController
 		}
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		string name = npc.Name?.ToString() ?? "NPC";
-		InformationManager.ShowInquiry(new InquiryData(Localize("AF_UI_Persona_RerollingTitle", "Regenerating personality and background"), Localize("AF_UI_Persona_RerollingBody", "Generating a new persona for {NAME}.\n\nPlease wait; existing data is overwritten only after generation and parsing succeed.", ("NAME", name)), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData(Localize("AF_UI_Persona_RerollingTitle", "Regenerating persona"), Localize("AF_UI_Persona_RerollingBody", "Generating a new persona for {NAME}.\n\nPlease wait; existing data is overwritten only after generation and parsing succeed.", ("NAME", name)), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		Logger.Log("NpcPersona", "[REROLL] Request started for " + (npc.StringId ?? "") + ".");
 		string failureDetail;
 		try
@@ -298,12 +293,12 @@ internal sealed class PersonaEditorController
 			if (string.IsNullOrWhiteSpace(failureDetail))
 			{
 				EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
-				InformationManager.DisplayMessage(new InformationMessage(name + Localize("AF_UI_Persona_RerollSucceededSuffix", "'s personality and history background were regenerated; the voice ID is unchanged.")));
+				InformationManager.DisplayMessage(new InformationMessage(name + Localize("AF_UI_Persona_RerollSucceededSuffix", "'s persona was regenerated; the voice ID is unchanged.")));
 				InvokePersonaRerollClosed(onClosed);
 				return true;
 			}
 			Logger.Log("NpcPersona", "[REROLL][WARN] Request failed for " + (npc.StringId ?? "") + ": " + failureDetail);
-				InformationManager.ShowInquiry(new InquiryData(Localize("AF_UI_Persona_RerollFailedTitle", "Personality and background regeneration failed"), Localize("AF_UI_Persona_RerollFailedBody", "The generated result was not saved; the existing personality, history background, and voice ID were kept.\n\n{DETAIL}", ("DETAIL", failureDetail.Trim())), isAffirmativeOptionShown: true, isNegativeOptionShown: false, onClosed == null ? Localize("AF_UI_Persona_Close", "Close") : Localize("AF_UI_Persona_ReturnEditor", "Return to editor"), "", delegate
+				InformationManager.ShowInquiry(new InquiryData(Localize("AF_UI_Persona_RerollFailedTitle", "Persona regeneration failed"), Localize("AF_UI_Persona_RerollFailedBody", "The generated result was not saved; the existing persona and structured information, and voice ID were kept.\n\n{DETAIL}", ("DETAIL", failureDetail.Trim())), isAffirmativeOptionShown: true, isNegativeOptionShown: false, onClosed == null ? Localize("AF_UI_Persona_Close", "Close") : Localize("AF_UI_Persona_ReturnEditor", "Return to editor"), "", delegate
 			{
 				InvokePersonaRerollClosed(onClosed);
 			}, null), pauseGameActiveState: true);
@@ -330,13 +325,13 @@ internal sealed class PersonaEditorController
 			long generation = _port.CaptureGeneration();
 			if (!_port.IsCurrent(generation)) return;
 			_port.SelectedHero = npc;
-			_port.GetNpcPersonaStrings(npc, out var personality, out var background);
+			string personality = _port.GetNpcPersonaDescription(npc);
 			string text = npc.Name?.ToString() ?? "NPC";
-			DevTextEditorHelper.ShowLongTextEditor(Localize("AF_UI_Persona_EditPersonalityTitle", "Edit personality - {NAME}", ("NAME", text)), Localize("AF_UI_Persona_PersonalityLoaded", "The current personality is loaded in the input box below."), Localize("AF_UI_Persona_PersonalityHint", "Enter a new personality description (leave blank to clear)."), personality ?? "", delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Localize("AF_UI_Persona_EditPersonalityTitle", "Edit persona - {NAME}", ("NAME", text)), Localize("AF_UI_Persona_PersonalityLoaded", "The current persona is loaded in the input box below."), Localize("AF_UI_Persona_PersonalityHint", "Enter a new persona description (leave blank to clear)."), personality ?? "", delegate(string input)
 			{
 				if (!IsEditorCurrent(npc, generation)) return;
-				_port.SavePersonaText(npc, (input ?? "").Trim(), (background ?? "").Trim());
-				InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_PersonalityUpdated", "Personality updated.")));
+				_port.SavePersonaText(npc, (input ?? "").Trim());
+				InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_PersonalityUpdated", "Persona updated.")));
 				OpenDevPersonaMenu(npc);
 			}, delegate
 			{
@@ -378,28 +373,7 @@ internal sealed class PersonaEditorController
 		}
 	}
 
-	internal void OpenDevSetBackground(Hero npc)
-	{
-		if (npc != null)
-		{
-			long generation = _port.CaptureGeneration();
-			if (!_port.IsCurrent(generation)) return;
-			_port.SelectedHero = npc;
-			_port.GetNpcPersonaStrings(npc, out var personality, out var background);
-			string text = npc.Name?.ToString() ?? "NPC";
-			DevTextEditorHelper.ShowLongTextEditor(Localize("AF_UI_Persona_EditBackgroundTitle", "Edit history background - {NAME}", ("NAME", text)), Localize("AF_UI_Persona_BackgroundLoaded", "The current history background is loaded in the input box below."), Localize("AF_UI_Persona_BackgroundHint", "Enter a new history background description (leave blank to clear)."), background ?? "", delegate(string input)
-			{
-				if (!IsEditorCurrent(npc, generation)) return;
-				_port.SavePersonaText(npc, (personality ?? "").Trim(), (input ?? "").Trim());
-				InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_BackgroundUpdated", "History background updated.")));
-				OpenDevPersonaMenu(npc);
-			}, delegate
-			{
-				if (!IsEditorCurrent(npc, generation)) return;
-				OpenDevPersonaMenu(npc);
-			});
-		}
-	}
+	internal void OpenDevSetBackground(Hero npc) => OpenDevSetPersonality(npc);
 
 	internal void OpenDevKnowledgeMenu()
 	{
@@ -1225,8 +1199,8 @@ internal sealed class PersonaEditorController
 		}
 		string text2 = (string.IsNullOrEmpty(OpsHeroName) ? "NPC" : OpsHeroName);
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("export_persona", Localize("AF_UI_Persona_SingleExportPersona", "Export personality/background (choose a folder)"), null));
-		list.Add(new InquiryElement("import_persona", Localize("AF_UI_Persona_SingleImportPersona", "Import personality/background (choose a folder)"), null));
+		list.Add(new InquiryElement("export_persona", Localize("AF_UI_Persona_SingleExportPersona", "Export persona (choose a folder)"), null));
+		list.Add(new InquiryElement("import_persona", Localize("AF_UI_Persona_SingleImportPersona", "Import persona (choose a folder)"), null));
 		list.Add(new InquiryElement("export_history", Localize("AF_UI_Persona_SingleExportHistory", "Export compressed memory (choose a folder)"), null));
 		list.Add(new InquiryElement("import_history", Localize("AF_UI_Persona_SingleImportHistory", "Import compressed memory (choose a folder)"), null));
 		list.Add(new InquiryElement("export_debt", Localize("AF_UI_Persona_SingleExportDebt", "Export debt (choose a folder)"), null));
@@ -1272,10 +1246,10 @@ internal sealed class PersonaEditorController
 			OpenDevSingleNpcHeroSelection();
 			break;
 		case "export_persona":
-			_port.OpenFolderPicker(text3 + " - " + Localize("AF_UI_Persona_ExportPersonaSuffix", "Export personality/background"), isExport: true, ExportImportScope.PersonalityBackground, OpenDevSingleNpcOpsMenu, text2);
+			_port.OpenFolderPicker(text3 + " - " + Localize("AF_UI_Persona_ExportPersonaSuffix", "Export persona"), isExport: true, ExportImportScope.PersonalityBackground, OpenDevSingleNpcOpsMenu, text2);
 			break;
 		case "import_persona":
-			_port.OpenFolderPicker(text3 + " - " + Localize("AF_UI_Persona_ImportPersonaSuffix", "Import personality/background"), isExport: false, ExportImportScope.PersonalityBackground, OpenDevSingleNpcOpsMenu, text2);
+			_port.OpenFolderPicker(text3 + " - " + Localize("AF_UI_Persona_ImportPersonaSuffix", "Import persona"), isExport: false, ExportImportScope.PersonalityBackground, OpenDevSingleNpcOpsMenu, text2);
 			break;
 		case "export_history":
 			_port.OpenFolderPicker(text3 + " - " + Localize("AF_UI_Persona_ExportHistorySuffix", "Export compressed memory"), isExport: true, ExportImportScope.DialogueHistory, OpenDevSingleNpcOpsMenu, text2);

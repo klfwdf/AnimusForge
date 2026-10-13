@@ -366,12 +366,27 @@ static int RunIsolatedFullSmoke(PlayerExportsService service, PlayerExportsValid
 
     // 4. Persona create + edit.
     var personaPath = Path.Combine(pkg, "personality_background", "lord_synthetic__Smoke.json");
-    service.SavePersonaProfile(pkg, personaPath, new NpcPersonaProfile { Personality = " calm ", Background = "Synthetic background." });
+    Directory.CreateDirectory(Path.GetDirectoryName(personaPath)!);
+    File.WriteAllText(personaPath, "{\"HeroId\":\"lord_synthetic\",\"HeroName\":\"原名\",\"Personality\":\" calm \",\"Background\":\"Old 中英 background.\",\"VoiceId\":\"voice-old\",\"Traits\":[{\"Id\":\"bold\",\"Strength\":2}],\"Motivations\":[\"motive\"],\"Values\":[\"value\"],\"Fears\":[\"fear\"],\"SpeechStyle\":\"style\"}");
     var personaBefore = File.ReadAllText(personaPath);
-    var personaBackup = service.SavePersonaProfile(pkg, personaPath, new NpcPersonaProfile { Personality = "bold", Background = "Edited." });
+    var profile = service.LoadPackage(pkg).Personas.Single().Profile!;
+    Check(profile.Description == "calm\n\nOld 中英 background." && profile.SchemaVersion == 3, "old editor profile did not migrate");
+    Check(File.ReadAllText(personaPath) == personaBefore, "read silently rewrote old package");
+    profile.Description = "Edited 人物设定";
+    var personaBackup = service.SavePersonaProfile(pkg, personaPath, profile);
     Check(File.ReadAllText(personaBackup) == personaBefore, "persona edit backup does not hold previous bytes");
-    Check(service.LoadPackage(pkg).Personas.Single().Profile?.Personality == "bold", "persona edit not persisted");
-    Console.WriteLine("step persona: created=1 edited=1 backup=1");
+    for (int cycle = 0; cycle < 3; cycle++)
+    {
+        profile = service.LoadPackage(pkg).Personas.Single().Profile!;
+        Check(profile.Description == "Edited 人物设定" && profile.SchemaVersion == 3, "unified persona edit not persisted");
+        Check(profile.Personality == " calm " && profile.Background == "Old 中英 background." && profile.HeroId == "lord_synthetic" && profile.HeroName == "原名" && profile.VoiceId == "voice-old", "editor dropped identity voice or raw legacy fields");
+        Check(profile.Traits![0].Id == "bold" && profile.Motivations![0] == "motive" && profile.Values![0] == "value" && profile.Fears![0] == "fear" && profile.SpeechStyle == "style", "editor dropped structured data");
+        service.SavePersonaProfile(pkg, personaPath, profile);
+    }
+    profile.Description = "";
+    service.SavePersonaProfile(pkg, personaPath, profile);
+    Check(service.LoadPackage(pkg).Personas.Single().Profile!.Description == "", "cleared v3 body resurrected legacy content");
+    Console.WriteLine("step persona: old-read=1 unchanged=1 v3-roundtrips=3 explicit-clear=1 backup=1");
 
     // 5. Raw JSON edit, invalid edit rejection, and restore from backup.
     var summaryPath = Path.Combine(pkg, "event_data", "WorldOpeningSummary.json");

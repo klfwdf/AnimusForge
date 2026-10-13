@@ -9,7 +9,7 @@ using TaleWorlds.MountAndBlade;
 namespace AnimusForge;
 public partial class ShoutBehavior
 {
-    private static readonly AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter NativePromptIdentityCapture = new AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter(MyBehavior.GetNpcPersonaForExternal);
+    private static readonly AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter NativePromptIdentityCapture = new AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter(MyBehavior.GetNpcPersonaDescriptionForExternal);
     private static readonly AnimusForge.Refactor.Adapters.SceneAgentIdentityPromptCaptureAdapter.RoleIntroCapturePorts SceneRoleIntroCapture = new(NativePromptIdentityCapture, CreateScenePersonaEquipmentPromptCaptureAdapter, CaptureSceneActionReadPorts);
     private AnimusForge.Refactor.Adapters.SceneMechanismPromptCaptureAdapter _sceneMechanismPromptCapture;
     private AnimusForge.Refactor.Adapters.SceneMechanismPromptCaptureAdapter SceneMechanismPromptCapture => _sceneMechanismPromptCapture ??= new AnimusForge.Refactor.Adapters.SceneMechanismPromptCaptureAdapter(

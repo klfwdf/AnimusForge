@@ -77,7 +77,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	private const int NpcInitiatedLetterScanTargetTicks = 45;
 	private const int NpcInitiatedLetterScanMaxHeroesPerTick = 16;
 	private const double NpcInitiatedLetterScanFrameBudgetMilliseconds = 1.0;
-	private static readonly string[] CourierExcludedRuleIds = new[] { "public_execution_start", "duel", "meeting_taunt", "lords_hall_access", "scene_mechanism_actions", "encounter_release_player", "noble_deference" };
+	private static readonly string[] CourierExcludedRuleIds = new[] { "public_execution_start", "duel", "meeting_taunt", "lords_hall_access", "scene_mechanism_actions", "encounter_release_player", "player_captivity_release", "noble_deference" };
 
 	private enum CourierStage
 	{
@@ -2439,16 +2439,15 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		string role = npcRoleContext ?? "";
 		string extra = extras ?? "";
-		bool hasPersonality = role.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0441"), StringComparison.Ordinal) >= 0;
-		bool hasBackground = role.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0442"), StringComparison.Ordinal) >= 0;
+		bool hasPersona = role.IndexOf(PromptComposerTexts.Get("persona_scene_npc_personality"), StringComparison.Ordinal) >= 0
+            || role.IndexOf(PromptComposerTexts.Get("persona_system_npc_personality"), StringComparison.Ordinal) >= 0;
 		bool hasKnowledge = extra.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0443"), StringComparison.Ordinal) >= 0
 			|| extra.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0444"), StringComparison.Ordinal) >= 0;
 		int persistentMemoryCount = persistentMemoryRoleMessages?.Count() ?? 0;
 		Log("[ContextAlignment] chain=courier_" + (chain ?? "unknown")
 			+ " session=" + (sessionId ?? "")
 			+ " hero=" + SafeHeroId(hero)
-			+ " personality=" + hasPersonality
-			+ " background=" + hasBackground
+			+ " persona=" + hasPersona
 			+ " knowledge=" + hasKnowledge
 			+ " entityPostprocess=" + !string.IsNullOrWhiteSpace(entityPostprocessContext)
 			+ " history=" + !string.IsNullOrWhiteSpace(historyText)

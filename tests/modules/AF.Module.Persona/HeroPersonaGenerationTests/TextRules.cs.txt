@@ -2,18 +2,27 @@ static void TextRuleCases()
  {
   Check(AnimusForge.NpcPersonaTextRules.NormalizePersonaPromptSourceText("  A\r\n B   C ",4)=="A B", "text source whitespace and bound");
   Check(AnimusForge.NpcPersonaTextRules.NormalizePersonaPromptSourceText(" abc ",0)=="abc", "text source zero unbounded");
-  Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("```json\n{\"PERSONALITY\":\"稳重\",\"Background\":\"经历\"}\n```",out var p,out var b)&&p=="稳重"&&b=="经历", "real persona fenced case-insensitive JSON");
+  Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("```json\n{\"PERSONALITY\":\"稳重\",\"Background\":\"经历\"}\n```",out var p,out var b)&&p=="稳重\n\n经历"&&b=="", "real persona fenced case-insensitive JSON");
   Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("prefix {\"profile\":\"备用\"} suffix",out p,out b)&&p=="备用"&&b=="", "real persona aliases and partial field");
   Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"personality\":\"unterminated",out p,out b)&&p=="unterminated", "real persona truncated loose fallback");
   Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("unusable",out p,out b)&&p==""&&b=="", "real persona malformed rejects");
-  var native=AnimusForge.NpcPersonaTextRules.BuildNative("detached-facts", "old\r\nP", "oldB",true," 长篇\r\n要求 ");
-  Check(native.System.EndsWith("【玩家自定义生成要求】\n长篇\n要求")&&native.User.Contains("detached-facts")&&native.User.Contains("old P")&&native.User.Contains("旧背景（旧版参考）：oldB"),"real native prompt detached and reroll requirements");
-  var normal=AnimusForge.NpcPersonaTextRules.BuildNative("facts","old","oldB",false,"");
+  Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"traits\":[{\"id\":\"bold\",\"strength\":2}],\"speech_style\":\"brief\"}",out p,out b), "structured data alone is not success");
+  Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"profile\":\"Unified 中英\",\"personality\":\"old\",\"background\":\"ignored\"}",out p,out b)&&p=="Unified 中英"&&b=="", "new protocol wins");
+  foreach(var invalid in new[]{"{\"profile\":42}","{\"profile\":{\"x\":\"wrong\"}}","{\"traits\":[{\"profile\":\"nested-only\"}]}"})
+   Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson(invalid,out p,out b),"body must be a root-level string: "+invalid);
+  var edited=new AnimusForge.MyBehavior.NpcPersonaProfile {Motivations=new(){"a\u001fb"}};
+  var work=new AnimusForge.MyBehavior.NpcPersonaGenerationWork {OriginalMotivations=new(){"a","b"},OriginalSpeechStyle=""};
+  Check(!AnimusForge.Refactor.Adapters.NpcPersonaGenerationApplicationAdapter.ProfileExtrasStillCurrent(edited,work),"structured field separator collision cannot bypass edit protection");
+  edited.Motivations=new(){"a "};work.OriginalMotivations=new(){"a"};
+  Check(!AnimusForge.Refactor.Adapters.NpcPersonaGenerationApplicationAdapter.ProfileExtrasStillCurrent(edited,work),"structured text edits use exact comparison");
+  var native=AnimusForge.NpcPersonaTextRules.BuildNative("detached-facts", "old\r\nP\n\noldB",true," 长篇\r\n要求 ");
+  Check(native.System.EndsWith("【玩家自定义生成要求】\n长篇\n要求")&&native.User.Contains("detached-facts")&&native.User.Contains("old P")&&native.User.Contains("oldB")&&!native.User.Contains("旧背景"),"real native prompt detached and reroll requirements");
+  var normal=AnimusForge.NpcPersonaTextRules.BuildNative("facts","old\n\noldB",false,"");
   Check(!normal.User.Contains("旧个性")&&!normal.System.Contains("【玩家自定义生成要求】"),"real native ordinary prompt unchanged");
   var promoted=AnimusForge.NpcPersonaTextRules.BuildPromoted("name","full","troop","id","culture","scene","join","history","equipment","facts","custom");
   Check(promoted.System.EndsWith("custom")&&promoted.User.Contains("history")&&promoted.User.Contains("facts")&&promoted.User.Contains("不要把玩家家族身份写成原生出身"),"real promoted facts and requirements");
   var barePromoted=AnimusForge.NpcPersonaTextRules.BuildPromoted("n","f","t","id","c","s","join","history","eq","facts","");
-  foreach(var bare in new[]{normal,barePromoted,AnimusForge.NpcPersonaTextRules.BuildNative("facts","oldP","oldB",true,"")})
+  foreach(var bare in new[]{normal,barePromoted,AnimusForge.NpcPersonaTextRules.BuildNative("facts","oldP\n\noldB",true,"")})
   {
    foreach(var hidden in new[]{"300","完整句子","必须综合","不要复制","文风","写作风格","不要照搬","不同但","谨慎而合理的动机","背景必须解释"})
     Check(!(bare.System+bare.User).Contains(hidden),"no hidden writing requirement: "+hidden);
@@ -27,4 +36,31 @@ static void TextRuleCases()
   Check(AnimusForge.NpcPersonaTextRules.TryParseSkills("{\"OneHanded\":10,\"One-Handed\":20}",known,out skills)&&skills.Count==2&&skills[0].Value==10&&skills[1].Value==20,"real skill alias execution order preserved");
   Check(!AnimusForge.NpcPersonaTextRules.TryParseSkills("{\"skills\":{\"Bow\":1.5,\"Unknown\":1}}",known,out skills)&&skills.Count==0,"real skills reject fraction and unknown");
   Check(!AnimusForge.NpcPersonaTextRules.TryParseSkills("not JSON",known,out skills)&&skills.Count==0,"real skills parse failure keeps empty effects");
+
+  foreach(var pair in new[]{("P", "B", "P\n\nB"), ("P", "", "P"), ("", "B", "B"), (" A\r\n中 ", "A\n中", "A\n中"), ("", "", ""), (new string('中',40000), new string('x',40000),new string('中',40000)+"\n\n"+new string('x',40000))})
+  {
+   string json=Newtonsoft.Json.JsonConvert.SerializeObject(new {HeroId="hero",HeroName="原名",Personality=pair.Item1,Background=pair.Item2,VoiceId="voice",Traits=new[]{new {Id="bold",Strength=2}},Motivations=new[]{"原文"},Values=new[]{"value"},Fears=new[]{"fear"},SpeechStyle="style"});
+   var value=Newtonsoft.Json.JsonConvert.DeserializeObject<AnimusForge.MyBehavior.NpcPersonaProfile>(json);
+   Check(value.Description==pair.Item3&&value.SchemaVersion==3,"actual Newtonsoft old profile migration "+pair.Item3.Length);
+   for(int cycle=0;cycle<3;cycle++)value=Newtonsoft.Json.JsonConvert.DeserializeObject<AnimusForge.MyBehavior.NpcPersonaProfile>(Newtonsoft.Json.JsonConvert.SerializeObject(value));
+   Check(value.Description==pair.Item3&&value.Personality==pair.Item1&&value.Background==pair.Item2,"lossless idempotent reload preserves compatibility fields");
+   Check(value.VoiceId=="voice"&&value.HeroId=="hero"&&value.HeroName=="原名"&&value.Traits[0].Id=="bold"&&value.Motivations[0]=="原文"&&value.Values[0]=="value"&&value.Fears[0]=="fear"&&value.SpeechStyle=="style","roundtrip identity voice structured fields");
+   value.Description="";value.NormalizeDescription();
+   value=Newtonsoft.Json.JsonConvert.DeserializeObject<AnimusForge.MyBehavior.NpcPersonaProfile>(Newtonsoft.Json.JsonConvert.SerializeObject(value));
+   Check(value.Description=="","version 3 clear cannot revive old fields");
+  }
+  var profiles = new AnimusForge.PersonaProfileStateOwner();
+  profiles.Save("hero", new(){SchemaVersion=3,Description="",Personality="legacy",HeroName="identity"},(_,_)=>{});
+  Check(profiles.Get("hero",false)?.Description==""&&profiles.Get("hero",false)?.Personality=="legacy", "normal save retains explicit v3 empty profile and compatibility data");
+  profiles.Save("hero",new(),(_,_)=>{});
+  Check(profiles.Get("hero",false)==null,"explicit clear-all still removes the whole entry");
+  var clearProfile = new AnimusForge.MyBehavior.NpcPersonaProfile {Description="",SchemaVersion=3,Personality="old",VoiceId="voice"};
+  var importedProfiles = new System.Collections.Generic.Dictionary<string,AnimusForge.MyBehavior.NpcPersonaProfile>{{"hero",clearProfile}};
+  AnimusForge.PersonaImportOwner.ReplaceVoiceAssignments(ref importedProfiles,null,"player",(_,_)=>{},out _);
+  Check(importedProfiles["hero"].Description==""&&importedProfiles["hero"].Personality=="old", "voice import retains explicit clear and legacy payload");
+  AnimusForge.PersonaImportOwner.ApplyDeveloperText(clearProfile,"edited",p=>profiles.Save("hero",p,(_,_)=>{}));
+  Check(profiles.GetDescription("hero")=="edited"&&clearProfile.Personality=="old", "editor writes canonical body without rewriting legacy data");
+  var restoredProfiles = new System.Collections.Generic.Dictionary<string,AnimusForge.MyBehavior.NpcPersonaProfile>();
+  AnimusForge.PersonaImportOwner.RestoreProfileSnapshot(ref restoredProfiles,importedProfiles);
+  Check(object.ReferenceEquals(restoredProfiles,importedProfiles)&&restoredProfiles["hero"].Description=="edited", "database restoration keeps the normalized authoritative snapshot");
  }

@@ -1,5 +1,5 @@
   Probe.Reset();var hero=new Hero("snapshot"){P="oldP",B="oldB"};var state=AnimusForge.MyBehavior.CaptureNpcPersonaReadiness(hero,AnimusForge.MyBehavior.Instance);hero.P="newP";
-  Check(state.Personality=="oldP"&&state.Background=="oldB","readiness snapshot is detached text");
+  Check(state.Description=="oldP\n\noldB","readiness snapshot is detached text");
   var wrong=Task.Run(()=>{try{AnimusForge.MyBehavior.CaptureNpcPersonaReadiness(hero,AnimusForge.MyBehavior.Instance);return false;}catch(InvalidOperationException){return true;}});Check(wrong.GetAwaiter().GetResult(),"capture rejects worker callers");
   foreach(bool inbound in new[]{false,true})foreach(string kind in new[]{"valid","dead","null","terminal","wrong_direction","replace_session","replace_target","replace_owner","expire_generation"}){
    Probe.Reset();var h=new Hero("admission"){Dead=kind!="valid"&&kind!="terminal"&&kind!="wrong_direction"};

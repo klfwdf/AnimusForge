@@ -31,6 +31,8 @@ internal static class MemorySystemFactProjection
     }
     private static readonly Template[] Templates =
     {
+        new Template("memory_fact_captivity_released", PromptComposerTexts.Raw("Template_captivity_released")),
+        new Template("memory_fact_captivity_opening", PromptComposerTexts.Raw("Template_captivity_opening")),
         new Template("memory_fact_first_known", PromptComposerTexts.Raw("Template_first_known").Split('|')),
         new Template("memory_fact_first_appearance", PromptComposerTexts.Raw("Template_first_appearance").Split('|')),
         new Template("memory_fact_first_unknown", PromptComposerTexts.Raw("Template_first_unknown").Split('|')),

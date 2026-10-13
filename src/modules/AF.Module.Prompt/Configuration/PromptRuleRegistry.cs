@@ -103,6 +103,7 @@ internal static class PromptRuleRegistry
 				"vanilla_issue" => "ISSUE",
 				"npc_major_actions" => "NPC_MAJOR",
 				"encounter_release_player" => "MEETING_RELEASE",
+				"player_captivity_release" => "CAPTIVITY_RELEASE",
 				"noble_deference" => "NOBLE_PRESSURE",
 				"kingdom_agenda" => "KINGDOM_AGENDA",
 				"diplomacy" => "DIPLOMACY",

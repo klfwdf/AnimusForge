@@ -179,8 +179,7 @@ public sealed class MainForm : Form
         ConfigureGrid(_personaGrid);
         _personaGrid.Columns.Add(Column("EntityId", "ID", 190));
         _personaGrid.Columns.Add(Column("DisplayName", "\u540d\u79f0", 160));
-        _personaGrid.Columns.Add(Column("HasPersonality", "\u4e2a\u6027", 86));
-        _personaGrid.Columns.Add(Column("HasBackground", "\u80cc\u666f", 88));
+        _personaGrid.Columns.Add(Column("HasDescription", PersonaEditorText.Get("Description"), 110));
         _personaGrid.Columns.Add(Column("VoiceId", "VoiceId", 230));
         _personaGrid.Columns.Add(Column("FileName", "\u6587\u4ef6", 300));
 
@@ -879,9 +878,7 @@ public sealed class MainForm : Form
 
         public string DisplayName => Document.DisplayName;
 
-        public string HasPersonality => string.IsNullOrWhiteSpace(Document.Profile?.Personality) ? "" : "Yes";
-
-        public string HasBackground => string.IsNullOrWhiteSpace(Document.Profile?.Background) ? "" : "Yes";
+        public string HasDescription => string.IsNullOrWhiteSpace(Document.Profile?.Description) ? "" : "Yes";
 
         public string VoiceId => Document.Profile?.VoiceId ?? "";
 

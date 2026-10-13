@@ -110,11 +110,7 @@ internal static NpcDataPacket BuildSceneNpcDataFromLocationCharacter(LocationCha
 
 			}
 
-			MyBehavior.GetNpcPersonaForExternal(hero, out var personality, out var background);
-
-			npcDataPacket.PersonalityDesc = (personality ?? "").Trim();
-
-			npcDataPacket.BackgroundDesc = (background ?? "").Trim();
+            npcDataPacket.SetPersonaDescription(MyBehavior.GetNpcPersonaDescriptionForExternal(hero));
 			npcDataPacket.PersonaContext = MyBehavior.GetNpcPersonaContextForExternal(hero);
 
 		}
@@ -229,9 +225,11 @@ internal static NpcDataPacket BuildSceneNpcDataFromLocationCharacter(LocationCha
 
 			RoleDesc = npc.RoleDesc,
 
-			PersonalityDesc = npc.PersonalityDesc,
+			PersonaDescription = npc.GetPersonaDescription(),
 
-			BackgroundDesc = npc.BackgroundDesc,
+            PersonalityDesc = npc.GetPersonaDescription(),
+
+			BackgroundDesc = "",
 
 			PersonaContext = npc.PersonaContext,
 

@@ -1,5 +1,6 @@
 from pathlib import Path
-import argparse, importlib.util, subprocess, sys, hashlib, json
+import argparse, importlib.util, subprocess, sys, hashlib, json, re
+import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[4]; HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
@@ -44,10 +45,29 @@ reset=ex.declaration(read('src/modules/AF.Module.Conversation/Channels/Scene/Sho
 assert 'NativeAdmissions.EndConversation();' in reset
 assert '@@' not in code
 (out/'Program.cs').write_text(code,encoding='utf8')
+# Current localized diagnostic leaves; keep actual resource values instead of
+# weakening the production admission/opening assertions to synthetic messages.
+text_sources = {
+    'Raw': 'content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimeCompatibility.json',
+    'Prompt': 'content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimePrompts.json',
+}
+all_code = code + '\n' + '\n'.join(read(path) for path in paths)
+text_leaves = []
+for method, path in text_sources.items():
+    values = json.loads(read(path))
+    keys = sorted(set(re.findall(r'ConversationRuntimeTexts\.' + method + r'\("([^"]+)"\)', all_code)))
+    cases = ''.join('case ' + json.dumps(key) + ': return ' + json.dumps(values[key], ensure_ascii=True) + ';' for key in keys)
+    text_leaves.append('internal static string ' + method + '(string key) { switch(key) {' + cases + 'default: throw new System.InvalidOperationException(key);}}')
+ui_path = 'content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml'
+ui = {n.get('id'):n.get('text') for n in ET.fromstring(read(ui_path)).iter('string')}
+ui_keys = sorted(set(re.findall(r'ConversationUiLocalization\.Text\("([^"]+)"', all_code)))
+ui_cases = ''.join('case ' + json.dumps(key) + ': return ' + json.dumps(ui[key], ensure_ascii=True) + ';' for key in ui_keys)
+ui_leaf = 'internal static class ConversationUiLocalization {internal static string Text(string key,string fallback){switch(key){' + ui_cases + 'default: throw new System.InvalidOperationException(key);}} internal static string Text(string key,string fallback,string name,string value)=>Text(key,fallback).Replace("{"+name+"}",value);}'
+(out/'TextLeaves.cs').write_text('namespace AnimusForge { internal static class ConversationRuntimeTexts {' + ''.join(text_leaves) + '}' + ui_leaf + '}',encoding='utf8')
 from xml.sax.saxutils import escape
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn><AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages><FrameworkPathOverride>'+escape(str(args.framework_ref.resolve()))+'</FrameworkPathOverride></PropertyGroup><ItemGroup><Reference Include="0Harmony"><HintPath>'+escape(str(args.harmony.resolve()))+'</HintPath></Reference></ItemGroup></Project>',encoding='utf8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf8')
-manifest={path:hashlib.sha256((ROOT/path).read_bytes()).hexdigest() for path in paths+[shape,facade,lord,companion,illustrator,overlay]};manifest['Harmony']=hashlib.sha256(args.harmony.read_bytes()).hexdigest();(out/'sources.json').write_text(json.dumps(manifest,indent=2),encoding='utf8')
+manifest={path:hashlib.sha256((ROOT/path).read_bytes()).hexdigest() for path in paths+[shape,facade,lord,companion,illustrator,overlay,ui_path]+list(text_sources.values())};manifest['Harmony']=hashlib.sha256(args.harmony.read_bytes()).hexdigest();(out/'sources.json').write_text(json.dumps(manifest,indent=2),encoding='utf8')
 dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
 p=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf8',errors='replace',timeout=120)
 (out/'build.log').write_text(p.stdout+p.stderr,encoding='utf8')

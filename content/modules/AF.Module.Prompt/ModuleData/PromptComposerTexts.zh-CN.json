@@ -6,7 +6,7 @@
   "persona_system_npc_identity": "，你的身份是",
   "persona_system_npc_reputation": "，你",
   "persona_system_npc_equipment": "，你身上穿着",
-  "persona_system_npc_personality": "，你的个性为：",
+  "persona_system_npc_personality": "。人物设定：",
   "persona_system_npc_background": "，你的背景是：",
   "persona_system_npc_relationship_sep": "。",
   "persona_system_npc_etiquette_sep": "。",
@@ -32,7 +32,7 @@
   "persona_scene_npc_equipment_end": "。",
   "persona_scene_npc_party_transfer_note": "备注：你暂时不可以转移你的俘虏和士兵。",
   "persona_scene_nonhero_prisoner_none": "你所属队伍无俘虏",
-  "persona_scene_npc_personality": "你的个性为：",
+  "persona_scene_npc_personality": "人物设定：",
   "persona_scene_npc_personality_end": "。",
   "persona_scene_npc_background": "你的背景是：",
   "persona_scene_npc_age": "你的年纪是",
@@ -814,5 +814,7 @@
   "campaign_kill_clan_tail_1100": "其在{1}由{2}公开处决。",
   "campaign_kill_clan_tail_1101": "其在{1}由{2}公开处决，罪名为{3}。",
   "campaign_kill_clan_tail_1110": "其在{1}由{2}以{3}公开处决。",
-  "campaign_kill_clan_tail_1111": "其在{1}由{2}以{3}公开处决，罪名为{4}。"
+  "campaign_kill_clan_tail_1111": "其在{1}由{2}以{3}公开处决，罪名为{4}。",
+  "memory_fact_captivity_released": "本次交谈的领主已同意并实际释放玩家；玩家的本次囚禁已结束。",
+  "memory_fact_captivity_opening": "看押领主主动与仍被拘押的玩家开始交谈。"
 }

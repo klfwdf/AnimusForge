@@ -185,14 +185,41 @@ internal void AdvanceWorldBulletinScope(WorldBulletinSaveState state, double now
 			}
 		}
 		catch (Exception ex) { _port.Log("WorldBulletin", "[Illustration] selected-event preparation failed: " + ex.Message); }
-		_ = RunWorldBulletinRequestAsync(scope.WindowEndHour, generation, selection, template, systemPrompt, userPrompt, illustrationPlan);
+		_ = RunWorldBulletinRequestAsync(scope.WindowEndHour, generation, selection, template, systemPrompt, userPrompt, illustrationPlan, facts);
 	}
-internal async Task RunWorldBulletinRequestAsync(double windowEndHour, long generation, WorldBulletinSelection selection, WorldBulletinText template, string systemPrompt, string userPrompt, WorldBulletinIllustrationPlan illustrationPlan)
+internal async Task RunWorldBulletinRequestAsync(double windowEndHour, long generation, WorldBulletinSelection selection, WorldBulletinText template, string systemPrompt, string userPrompt, WorldBulletinIllustrationPlan illustrationPlan, WorldBulletinPromptFacts context = null)
 	{
         int epoch = _collectionEpoch;
 		WorldBulletinText result = null;
 		try
 		{
+            if (!SaveRuntimeGuard.IsCurrentGeneration(generation))
+            {
+                MainThreadActions.Enqueue(() => _port.CancelIllustration(illustrationPlan));
+                return;
+            }
+            string publicHistory = "";
+            if (context?.PlayerHistory?.Count > 0)
+            {
+                try
+                {
+                    string reviewSystem = WorldBulletinContextPolicy.BuildReviewSystemPrompt();
+                    string reviewUser = WorldBulletinContextPolicy.BuildReviewUserPrompt(context.EventFacts, context.PlayerHistory);
+                    PromptLanguageAudit.LogPair("world_bulletin_privacy", reviewSystem, reviewUser);
+                    ApiCallResult review = await _port.CallApi(reviewSystem, reviewUser).ConfigureAwait(false);
+                    if (review?.Success == true)
+                        publicHistory = WorldBulletinContextPolicy.BuildApprovedHistory(review.Content, context.PlayerHistory);
+                }
+                catch (Exception ex) { _port.Log("WorldBulletin", "[Context] privacy review unavailable: " + ex.GetType().Name); }
+                // Review failure never exposes candidates to the writer or blocks factual news.
+                _port.Log("WorldBulletin", "[Context] privacy candidates=" + context.PlayerHistory.Count + " approved=" + (publicHistory.Length > 0));
+            }
+            if (epoch != _collectionEpoch || !SaveRuntimeGuard.IsCurrentGeneration(generation))
+            {
+                MainThreadActions.Enqueue(() => _port.CancelIllustration(illustrationPlan));
+                return;
+            }
+            userPrompt += "\n\n" + WorldBulletinContextPolicy.BuildWriterContext(context?.Lore, publicHistory);
 			PromptLanguageAudit.LogPair("world_bulletin", systemPrompt, userPrompt);
 			ApiCallResult api = await _port.CallApi(systemPrompt, userPrompt).ConfigureAwait(false);
 			if (api != null && api.Success)
@@ -470,7 +497,13 @@ internal static bool IsWorldBulletinPublishingEnabled()
 		}
 	}
 }
-internal sealed class WorldBulletinPromptFacts {internal string ScopeLine,Date;internal List<string> KingdomContext;}
+internal sealed class WorldBulletinPromptFacts
+{
+    internal string ScopeLine, Date, EventFacts, Lore;
+    internal List<string> KingdomContext;
+    internal List<string> HistoryHeroIds = new();
+    internal List<WorldBulletinHistoryCandidate> PlayerHistory = new();
+}
 internal sealed class WorldBulletinPort {
  internal Func<string> WritingRequirements;
  internal Func<string,string> ResolveKingdom;internal Func<EventRecordEntry,string> NoticeTitle,PopupSubtitle,PopupBody;

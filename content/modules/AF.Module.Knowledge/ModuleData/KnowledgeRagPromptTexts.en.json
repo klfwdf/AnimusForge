@@ -1,4 +1,5 @@
 {
+  "BulletinLoreEntry": "Worldbook entry: {TOPIC}; original audience conditions (stable IDs): {AUDIENCE}\n{TEXT}",
   "System": "You are a retrieval short-text generator for a local RAG knowledge base.\nYour output is used directly for knowledge retrieval and reranking, not as dialogue for NPCs.\nFollow these rules strictly:\n1) Generate only from the supplied knowledge material; do not invent facts;\n2) Every entry must explicitly retain entity names, topic words, or key concepts to support semantic retrieval;\n3) Use concise descriptions or questions suitable for programmatic RAG retrieval;\n4) Do not use first-person narration, lyrical prose, explanations, prompt instructions, system terminology, or ACTION tags;\n5) Do not copy long passages from the source prompt; keep only searchable core facts;\n6) Each entry must contain at most {MAX} characters;\n7) Output only a JSON array of strings, such as [\"...\",\"...\"]; no Markdown code blocks, headings, numbering, or extra explanation.",
   "RuleIdLabel": "Rule ID: ",
   "Keywords": "Keywords: ",

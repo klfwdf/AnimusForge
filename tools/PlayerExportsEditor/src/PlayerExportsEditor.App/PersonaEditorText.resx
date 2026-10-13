@@ -51,4 +51,5 @@
   <data name="Object" xml:space="preserve">
     <value>NPC</value>
   </data>
+  <data name="Description" xml:space="preserve"><value>Persona</value></data>
 </root>

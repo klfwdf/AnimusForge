@@ -53,10 +53,10 @@ internal sealed class DeveloperRootEditorController
 		long generation = _port.CaptureGeneration();
 		if (!_port.IsCurrent(generation)) return;
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("edit_hero", DeveloperUiText.T("AF_UI_Developer_Edit_HeroNPC_compressed_memory_debt_personality_","Edit HeroNPC (compressed memory/debt/personality and background)..."), null));
+		list.Add(new InquiryElement("edit_hero", DeveloperUiText.T("AF_UI_Developer_Edit_HeroNPC_compressed_memory_debt_personality_","Edit HeroNPC (compressed memory/debt/persona)..."), null));
 		list.Add(new InquiryElement("single_ie", DeveloperUiText.T("AF_UI_Developer_Single_HeroNPC_import_export","Single HeroNPC import/export..."), null));
-		list.Add(new InquiryElement("export_hero_all", DeveloperUiText.T("AF_UI_Developer_Export_all_HeroNPC_data_compressed_memory_debt_p","Export all HeroNPC data (compressed memory, debt, personality/background)"), null));
-		list.Add(new InquiryElement("import_hero_all", DeveloperUiText.T("AF_UI_Developer_Import_all_HeroNPC_data_compressed_memory_debt_p","Import all HeroNPC data (compressed memory, debt, personality/background)"), null));
+		list.Add(new InquiryElement("export_hero_all", DeveloperUiText.T("AF_UI_Developer_Export_all_HeroNPC_data_compressed_memory_debt_p","Export all HeroNPC data (compressed memory, debt, persona)"), null));
+		list.Add(new InquiryElement("import_hero_all", DeveloperUiText.T("AF_UI_Developer_Import_all_HeroNPC_data_compressed_memory_debt_p","Import all HeroNPC data (compressed memory, debt, persona)"), null));
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(DeveloperUiText.T("AF_UI_Developer_HeroNPC_edit_import_export","HeroNPC edit/import/export"), DeveloperUiText.T("AF_UI_Developer_Choose_an_operation","Choose an operation:"), list, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_Enter","Enter"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), selected => { if (_port.IsCurrent(generation)) OnDevHeroNpcMenuSelected(selected); }, delegate
 		{
     if (!_port.IsCurrent(generation)) return;
@@ -387,12 +387,12 @@ internal sealed class DeveloperRootEditorController
 			stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Choose_operation","Choose an operation:"));
 			stringBuilder.AppendLine(" - " + DeveloperUiText.T("AF_UI_Developer_Manage_memory","Manage compressed memory"));
 			stringBuilder.AppendLine(" - " + DeveloperUiText.T("AF_UI_Developer_Edit_debt","Edit debt"));
-			stringBuilder.AppendLine(" - " + DeveloperUiText.T("AF_UI_Developer_Edit_persona","Edit personality/background"));
+			stringBuilder.AppendLine(" - " + DeveloperUiText.T("AF_UI_Developer_Edit_persona","Edit persona"));
 			stringBuilder.AppendLine(" - " + DeveloperUiText.T("AF_UI_Developer_View_actions","View structured action records"));
 			List<InquiryElement> list = new List<InquiryElement>();
 			list.Add(new InquiryElement("edit_history", DeveloperUiText.T("AF_UI_Developer_Compressed_memory_management","Compressed memory management"), null));
 			list.Add(new InquiryElement("edit_debt", DeveloperUiText.T("AF_UI_Developer_Edit_debt","Edit debt"), null));
-			list.Add(new InquiryElement("edit_persona", DeveloperUiText.T("AF_UI_Developer_Edit_personality_background","Edit personality/background"), null));
+			list.Add(new InquiryElement("edit_persona", DeveloperUiText.T("AF_UI_Developer_Edit_personality_background","Edit persona"), null));
 			list.Add(new InquiryElement("view_actions", DeveloperUiText.T("AF_UI_Developer_View_structured_action_records","View structured action records"), null));
 			if (NpcEditorReturnAction == null)
 			{

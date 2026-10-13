@@ -259,7 +259,7 @@
     <string id="AF_MEMORY_UI_MajorFailureLine" text="{NAME}, major history: {ERROR}" />
     <string id="AF_MEMORY_UI_OverviewFailureLine" text="{NAME}, memory overview: {ERROR}" />
     <string id="AF_MEMORY_UI_RecallBlockedTitle" text="Compressed memory recall blocked" />
-    <string id="AF_MEMORY_UI_RecallEmbeddingUnavailable" text="Local ONNX embedding is unavailable; rich-title RAG cannot select compressed memories above the candidate limit.&#10;&#10;Fix the embedding model or reduce the number of memory blocks, then retry. The system will not silently fall back to dates or full text." />
+    <string id="AF_MEMORY_UI_RecallEmbeddingUnavailable" text="Local ONNX embedding is unavailable; rich-title RAG cannot select compressed memories above the candidate limit. Check the embedding model. The request may use recent local memory blocks instead." />
     <string id="AF_MEMORY_UI_RecallTitleEmbeddingFailed" text="Embedding failed for every compressed memory rich title.&#10;&#10;Fix the embedding model, then retry." />
     <string id="AF_MEMORY_UI_RecallExceptionTitle" text="Compressed memory recall exception" />
     <string id="AF_MEMORY_UI_PreprocessFailedTitle" text="Compressed memory preprocessing failed" />
@@ -316,5 +316,7 @@
     <string id="AF_MEMORY_UI_HistoryEditDoneCompressed" text="The record was edited. That day was already compressed; compressed memory is unchanged." />
     <string id="AF_MEMORY_UI_HistoryDeleteMainThread" text="Records can only be deleted on the game main thread." />
     <string id="AF_MEMORY_UI_HistoryDeleteFailed" text="Deletion failed; the record was not changed." />
+    <string id="AF_MEMORY_UI_RecallFallbackTitle" text="Using recent memories" />
+    <string id="AF_MEMORY_UI_RecallFallback" text="Memory selection failed. This request uses recent local memory blocks, including the latest block. No additional model request was made." />
   </strings>
 </base>

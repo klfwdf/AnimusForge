@@ -51,4 +51,5 @@
   <data name="Object" xml:space="preserve">
     <value>对象</value>
   </data>
+  <data name="Description" xml:space="preserve"><value>人物设定</value></data>
 </root>

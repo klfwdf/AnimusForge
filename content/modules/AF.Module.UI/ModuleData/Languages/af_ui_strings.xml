@@ -31,15 +31,15 @@
   <string id="AF_UI_PersonaGeneration_MissingNpc" text="The NPC whose persona should be regenerated could not be found." />
   <string id="AF_UI_PersonaGeneration_MissingHeroId" text="This NPC has no valid HeroId; their persona cannot be regenerated." />
   <string id="AF_UI_PersonaGeneration_RecentFailure" text="This NPC's last generation request just failed. Please try again later." />
-  <string id="AF_UI_PersonaGeneration_AlreadyGenerating" text="This NPC's personality and background are being generated. Wait for the current request to finish before trying again." />
+  <string id="AF_UI_PersonaGeneration_AlreadyGenerating" text="This NPC's persona is being generated. Wait for the current request to finish before trying again." />
   <string id="AF_UI_PersonaGeneration_InvalidatedNotSaved" text="The request was invalidated; the new persona was not saved." />
   <string id="AF_UI_PersonaGeneration_InvalidatedNotGenerated" text="The request was invalidated by data cleanup or a character change; no new persona was generated." />
-  <string id="AF_UI_PersonaGeneration_ChangedDuringGeneration" text="The persona changed during generation; the latest personality and historical background were not overwritten. Review the changes before regenerating." />
+  <string id="AF_UI_PersonaGeneration_ChangedDuringGeneration" text="The persona changed during generation; the latest persona was not overwritten. Review the changes before regenerating." />
   <string id="AF_UI_PersonaGeneration_CleanupInvalidatedNotSaved" text="The request was invalidated by data cleanup or a character change; the new persona was not saved." />
-  <string id="AF_UI_PersonaGeneration_Progress" text="Generating {NAME}’s personality and background. Please wait. Your last message will receive a reply when generation finishes." />
-  <string id="AF_UI_PersonaGeneration_ReadinessFailed" text="Generation of {NAME}’s personality and background temporarily failed. Please try again later." />
-  <string id="AF_UI_PersonaFailure_NpcParse" text="NPC personality and background response parsing failed; the persona was not saved." />
-  <string id="AF_UI_PersonaFailure_NpcGenerate" text="NPC personality and background generation failed." />
+  <string id="AF_UI_PersonaGeneration_Progress" text="Generating {NAME}’s persona. Please wait. Your last message will receive a reply when generation finishes." />
+  <string id="AF_UI_PersonaGeneration_ReadinessFailed" text="Generation of {NAME}’s persona temporarily failed. Please try again later." />
+  <string id="AF_UI_PersonaFailure_NpcParse" text="NPC persona response parsing failed; the persona was not saved." />
+  <string id="AF_UI_PersonaFailure_NpcGenerate" text="NPC persona generation failed." />
   <string id="AF_UI_PersonaFailure_PromotedParse" text="Promoted companion persona response parsing failed; a local fallback persona will be used." />
   <string id="AF_UI_PersonaFailure_PromotedGenerate" text="Promoted companion persona generation failed; a local fallback persona will be used." />
   <string id="AF_UI_PersonaFailure_SkillsParse" text="Promoted companion skill response parsing failed; troop template skills will be kept." />
@@ -482,8 +482,8 @@ When enabled, intercepts all UI clicks, state transitions, and low-level code st
 Produces a very large log and is intended for developers only." />
   <string id="AF_MCM_Dev_Data" text="Enable data management (history/debt/persona/player history)" />
   <string id="AF_MCM_Dev_Data_Hint" text="Adds a Developer data-management entry to the town menu for NPC histories, debts, and persona data; the character screen also exposes player history editing." />
-  <string id="AF_MCM_Dev_AdultPersona" text="Generate persona and background for new adults" />
-  <string id="AF_MCM_Dev_AdultPersona_Hint" text="When enabled, the preprocessing API generates persona and history for hero children when they become adults. Existing persona or background is never overwritten." />
+  <string id="AF_MCM_Dev_AdultPersona" text="Generate persona for new adults" />
+  <string id="AF_MCM_Dev_AdultPersona_Hint" text="When enabled, the preprocessing API generates a persona for hero children when they become adults. Existing persona text is never overwritten." />
   <string id="AF_MCM_Dev_ModLogic" text="Write Mod_Logic.txt" />
   <string id="AF_MCM_Dev_ModLogic_Hint" text="Master logic-log switch. When disabled, Mod_Logic.txt is no longer written." />
   <string id="AF_MCM_Dev_Verbose" text="Write verbose debug log" />
@@ -1049,7 +1049,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_EnableDevEditHistory_Hint" text="Adds a Developer data-management entry to the town main menu for viewing and editing any NPC dialogue history, credit/debts, persona, and background. The player notoriety/history popup on the character screen (C) also enables player history editing." />
   <string id="AF_TERMINAL_UI_EnableDevEditHistory_Group" text="4. Developer options" />
   <string id="AF_TERMINAL_UI_EnableAdultHeroPersonaAutoGeneration_Title" text="Enable Adult Hero Persona Auto Generation" />
-  <string id="AF_TERMINAL_UI_EnableAdultHeroPersonaAutoGeneration_Hint" text="When enabled, the preprocessing API generates persona and history for hero children when they become adults. Existing persona or background is never overwritten." />
+  <string id="AF_TERMINAL_UI_EnableAdultHeroPersonaAutoGeneration_Hint" text="When enabled, the preprocessing API generates a persona for hero children when they become adults. Existing persona text is never overwritten." />
   <string id="AF_TERMINAL_UI_EnableAdultHeroPersonaAutoGeneration_Group" text="4. Developer options" />
   <string id="AF_TERMINAL_UI_EnableModLogicLog_Title" text="Enable Mod Logic Log" />
   <string id="AF_TERMINAL_UI_EnableModLogicLog_Hint" text="Master logic-log switch. When disabled, Mod_Logic.txt is no longer written." />
@@ -1151,6 +1151,9 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Title" text="Auto Generate World Bulletins" />
   <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Hint" text="Disabling this stops new bulletin generation, while recent events are still recorded for NPC awareness. Independent of automatic weekly-report generation." />
   <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Group" text="Weekly reports / bulletins/Bulletin" />
+  <string id="AF_TERMINAL_UI_WorldBulletinReadPlayerHistory_Title" text="Read Player Dialogue History for Bulletins" />
+  <string id="AF_TERMINAL_UI_WorldBulletinReadPlayerHistory_Hint" text="Default: off. When enabled, bulletins may read public-summary candidates from player dialogue memory; candidates trigger one additional privacy-review request. When disabled, neither dialogue history nor that review is used. Worldbook and game events are unaffected. Applies to the next generation; requests already sent are not recalled." />
+  <string id="AF_TERMINAL_UI_WorldBulletinReadPlayerHistory_Group" text="Weekly reports / bulletins/Bulletin" />
   <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Title" text="Clear GCCZ Debug Log" />
   <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Hint" text="Clears only the current GCCZ_Debug.log; the previous rotated log is not deleted." />
   <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
@@ -1746,38 +1749,38 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_KingdomStability_Cancel" text="Cancel" />
   <string id="AF_UI_KingdomStability_ForceResultTitle" text="Forced rebellion result - {KINGDOM}" />
   <string id="AF_UI_Persona_MenuPrompt" text="Choose an action:" />
-  <string id="AF_UI_Persona_PersonalityLabel" text="Personality: " />
+  <string id="AF_UI_Persona_PersonalityLabel" text="Persona: " />
   <string id="AF_UI_Persona_Set" text="set" />
   <string id="AF_UI_Persona_Unset" text="not set" />
-  <string id="AF_UI_Persona_BackgroundLabel" text="History background: " />
+  <string id="AF_UI_Persona_BackgroundLabel" text="Persona: " />
   <string id="AF_UI_Persona_VoiceCurrent" text="Current voice ID:" />
   <string id="AF_UI_Persona_VoiceUnsetAuto" text="not set (assigned automatically by VoiceMapping)" />
-  <string id="AF_UI_Persona_SetPersonality" text="Set or edit personality" />
-  <string id="AF_UI_Persona_SetBackground" text="Set or edit history background" />
-  <string id="AF_UI_Persona_RerollPersona" text="Regenerate personality and background (LLM)" />
+  <string id="AF_UI_Persona_SetPersonality" text="Set or edit persona" />
+  <string id="AF_UI_Persona_SetBackground" text="Set or edit persona" />
+  <string id="AF_UI_Persona_RerollPersona" text="Regenerate persona (LLM)" />
   <string id="AF_UI_Persona_SetVoice" text="Set or edit voice ID" />
-  <string id="AF_UI_Persona_ClearPersona" text="Clear personality, history background, and voice ID" />
+  <string id="AF_UI_Persona_ClearPersona" text="Clear persona, structured information, and voice ID" />
   <string id="AF_UI_Persona_Back" text="Back" />
-  <string id="AF_UI_Persona_MenuTitle" text="Edit personality/history - {NAME}" />
+  <string id="AF_UI_Persona_MenuTitle" text="Edit persona - {NAME}" />
   <string id="AF_UI_Persona_Execute" text="Execute" />
-  <string id="AF_UI_Persona_Cleared" text="Cleared this NPC&#x27;s personality, history background, and voice ID." />
-  <string id="AF_UI_Persona_RerollConfirmBody" text="The auxiliary API will generate a new personality and history background for this Hero." />
+  <string id="AF_UI_Persona_Cleared" text="Cleared this NPC's persona, structured information, and voice ID." />
+  <string id="AF_UI_Persona_RerollConfirmBody" text="The auxiliary API will generate a new persona for this Hero." />
   <string id="AF_UI_Persona_SetWillOverwrite" text="set; it will be overwritten" />
   <string id="AF_UI_Persona_RerollVoiceKept" text="The voice ID will not change. Existing data is kept if generation fails." />
-  <string id="AF_UI_Persona_RerollConfirmTitle" text="Confirm personality/background regeneration - {NAME}" />
+  <string id="AF_UI_Persona_RerollConfirmTitle" text="Confirm persona regeneration - {NAME}" />
   <string id="AF_UI_Persona_ConfirmGenerate" text="Generate" />
   <string id="AF_UI_Persona_Cancel" text="Cancel" />
-  <string id="AF_UI_Persona_RerollingTitle" text="Regenerating personality and background" />
+  <string id="AF_UI_Persona_RerollingTitle" text="Regenerating persona" />
   <string id="AF_UI_Persona_RerollingBody" text="Generating a new persona for {NAME}.\n\nPlease wait; existing data is overwritten only after generation and parsing succeed." />
-  <string id="AF_UI_Persona_RerollSucceededSuffix" text="&#x27;s personality and history background were regenerated; the voice ID is unchanged." />
-  <string id="AF_UI_Persona_RerollFailedTitle" text="Personality and background regeneration failed" />
-  <string id="AF_UI_Persona_RerollFailedBody" text="The generated result was not saved; the existing personality, history background, and voice ID were kept.\n\n{DETAIL}" />
+  <string id="AF_UI_Persona_RerollSucceededSuffix" text="'s persona was regenerated; the voice ID is unchanged." />
+  <string id="AF_UI_Persona_RerollFailedTitle" text="Persona regeneration failed" />
+  <string id="AF_UI_Persona_RerollFailedBody" text="The generated result was not saved; the existing persona and structured information, and voice ID were kept.\n\n{DETAIL}" />
   <string id="AF_UI_Persona_Close" text="Close" />
   <string id="AF_UI_Persona_ReturnEditor" text="Return to editor" />
-  <string id="AF_UI_Persona_EditPersonalityTitle" text="Edit personality - {NAME}" />
-  <string id="AF_UI_Persona_PersonalityLoaded" text="The current personality is loaded in the input box below." />
-  <string id="AF_UI_Persona_PersonalityHint" text="Enter a new personality description (leave blank to clear)." />
-  <string id="AF_UI_Persona_PersonalityUpdated" text="Personality updated." />
+  <string id="AF_UI_Persona_EditPersonalityTitle" text="Edit persona - {NAME}" />
+  <string id="AF_UI_Persona_PersonalityLoaded" text="The current persona is loaded in the input box below." />
+  <string id="AF_UI_Persona_PersonalityHint" text="Enter a new persona description (leave blank to clear)." />
+  <string id="AF_UI_Persona_PersonalityUpdated" text="Persona updated." />
   <string id="AF_UI_Persona_VoiceUnsetAutoParens" text="(not set - assigned automatically by VoiceMapping)" />
   <string id="AF_UI_Persona_VoiceInputHint" text="Enter a new voice ID (leave blank to clear and use VoiceMapping assignment):" />
   <string id="AF_UI_Persona_VoicePlatformHint" text="Hint: the voice ID depends on your TTS platform." />
@@ -1787,10 +1790,10 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_Persona_Save" text="Save" />
   <string id="AF_UI_Persona_VoiceCleared" text="Voice ID cleared (VoiceMapping assignment will be used)." />
   <string id="AF_UI_Persona_VoiceUpdatedPrefix" text="Voice ID updated to: " />
-  <string id="AF_UI_Persona_EditBackgroundTitle" text="Edit history background - {NAME}" />
-  <string id="AF_UI_Persona_BackgroundLoaded" text="The current history background is loaded in the input box below." />
-  <string id="AF_UI_Persona_BackgroundHint" text="Enter a new history background description (leave blank to clear)." />
-  <string id="AF_UI_Persona_BackgroundUpdated" text="History background updated." />
+  <string id="AF_UI_Persona_EditBackgroundTitle" text="Edit persona - {NAME}" />
+  <string id="AF_UI_Persona_BackgroundLoaded" text="The current persona is loaded in the input box below." />
+  <string id="AF_UI_Persona_BackgroundHint" text="Enter a new persona description (leave blank to clear)." />
+  <string id="AF_UI_Persona_BackgroundUpdated" text="Persona updated." />
   <string id="AF_UI_Persona_KnowledgeExportSingle" text="Export one knowledge entry (choose from list)" />
   <string id="AF_UI_Persona_KnowledgeImportSingle" text="Import one knowledge entry (choose a folder)" />
   <string id="AF_UI_Persona_KnowledgeExportAll" text="Export all Knowledge entries (choose a folder)" />
@@ -1855,8 +1858,8 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_Persona_ManualHeroIdBody" text="Enter a HeroId (for example: lord_... / wanderer_...).\n\nThis does not create a new character; it writes import/export data to the save data for that HeroId. The data is used only when a Hero with the same ID exists or appears later in the game." />
   <string id="AF_UI_Persona_Confirm" text="Confirm" />
   <string id="AF_UI_Persona_NpcMissingId" text="This NPC has no ID and cannot be imported or exported." />
-  <string id="AF_UI_Persona_SingleExportPersona" text="Export personality/background (choose a folder)" />
-  <string id="AF_UI_Persona_SingleImportPersona" text="Import personality/background (choose a folder)" />
+  <string id="AF_UI_Persona_SingleExportPersona" text="Export persona (choose a folder)" />
+  <string id="AF_UI_Persona_SingleImportPersona" text="Import persona (choose a folder)" />
   <string id="AF_UI_Persona_SingleExportHistory" text="Export compressed memory (choose a folder)" />
   <string id="AF_UI_Persona_SingleImportHistory" text="Import compressed memory (choose a folder)" />
   <string id="AF_UI_Persona_SingleExportDebt" text="Export debt (choose a folder)" />
@@ -1864,8 +1867,8 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_Persona_SwitchNpc" text="Switch NPC" />
   <string id="AF_UI_Persona_SingleNpcOpsTitle" text="Single HeroNPC import/export - {NAME} (ID={ID})" />
   <string id="AF_UI_Persona_SingleNpcPrefix" text="Single HeroNPC - {NAME}" />
-  <string id="AF_UI_Persona_ExportPersonaSuffix" text="Export personality/background" />
-  <string id="AF_UI_Persona_ImportPersonaSuffix" text="Import personality/background" />
+  <string id="AF_UI_Persona_ExportPersonaSuffix" text="Export persona" />
+  <string id="AF_UI_Persona_ImportPersonaSuffix" text="Import persona" />
   <string id="AF_UI_Persona_ExportHistorySuffix" text="Export compressed memory" />
   <string id="AF_UI_Persona_ImportHistorySuffix" text="Import compressed memory" />
   <string id="AF_UI_Persona_ExportDebtSuffix" text="Export debt" />
@@ -2214,7 +2217,7 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Action_details" text="Action details - " />
   <string id="AF_UI_Developer_Action_records" text="Action records - " />
   <string id="AF_UI_Developer_Action_records_are_stored_per_NPC" text=" - Action records are stored per NPC" />
-  <string id="AF_UI_Developer_AllImportDuplicates" text="Imported data overlaps the current game.\nPersonality/background: {PERSONA}\nDialogue history: {HISTORY}\nDebt: {DEBT}\nUnnamed NPCs: {UNNAMED}\nKnowledge: {KNOWLEDGE}\nVoice mapping: {VOICE}\nWorld opening summary: {WORLD}\nKingdom opening summaries: {KINGDOM}\nEvent records: {EVENTS}\nKingdom strategy/personality: {PROFILES} (unmatched {UNMATCHED})\nChoose how to proceed:" />
+  <string id="AF_UI_Developer_AllImportDuplicates" text="Imported data overlaps the current game.\nPersona: {PERSONA}\nDialogue history: {HISTORY}\nDebt: {DEBT}\nUnnamed NPCs: {UNNAMED}\nKnowledge: {KNOWLEDGE}\nVoice mapping: {VOICE}\nWorld opening summary: {WORLD}\nKingdom opening summaries: {KINGDOM}\nEvent records: {EVENTS}\nKingdom strategy/personality: {PROFILES} (unmatched {UNMATCHED})\nChoose how to proceed:" />
   <string id="AF_UI_Developer_All_data_management" text="All data management" />
   <string id="AF_UI_Developer_All_debt_for_this_NPC_was_cleared" text="All debt for this NPC was cleared." />
   <string id="AF_UI_Developer_Apply" text="Apply" />
@@ -2232,7 +2235,7 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Choose_the_export_target_folder_existing_contents_may_be" text="Choose the export target folder (existing contents may be overwritten)." />
   <string id="AF_UI_Developer_Clear" text="Clear" />
   <string id="AF_UI_Developer_ClearCompleted" text="Cleared AnimusForge data from the current save; kingdom strategy and personality were restored to the default baseline." />
-  <string id="AF_UI_Developer_ClearConfirm_Body" text="This clears AnimusForge data in the current save, including:\nHeroNPC personality/background, old dialogue history, compressed memory, debt, unnamed NPC persona, Knowledge, event records, kingdom stability, player kingdom strategy/personality overrides, voice mappings, patience state, and more.\n\nExported backups under PlayerExports are kept, and native world changes that already happened are not rolled back.\n\nThis action cannot be undone. Export all data first if you need a backup. Continue?" />
+  <string id="AF_UI_Developer_ClearConfirm_Body" text="This clears AnimusForge data in the current save, including:\nHeroNPC persona, old dialogue history, compressed memory, debt, unnamed NPC persona, Knowledge, event records, kingdom stability, player kingdom strategy/personality overrides, voice mappings, patience state, and more.\n\nExported backups under PlayerExports are kept, and native world changes that already happened are not rolled back.\n\nThis action cannot be undone. Export all data first if you need a backup. Continue?" />
   <string id="AF_UI_Developer_Clear_all_data_current_save_exported_backups_are" text="Clear all data (current save; exported backups are kept)" />
   <string id="AF_UI_Developer_Clear_all_debt" text="Clear all debt" />
   <string id="AF_UI_Developer_Clear_search" text="Clear search" />
@@ -2257,11 +2260,11 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Duplicates_detected_import_all_data" text="Duplicates detected - import all data" />
   <string id="AF_UI_Developer_Edit_HeroNPC_Title" text="Edit HeroNPC - {NPC}" />
   <string id="AF_UI_Developer_Edit_HeroNPC_choose_an_NPC" text="Edit HeroNPC - choose an NPC" />
-  <string id="AF_UI_Developer_Edit_HeroNPC_compressed_memory_debt_personality_" text="Edit HeroNPC (compressed memory/debt/personality and background)..." />
+  <string id="AF_UI_Developer_Edit_HeroNPC_compressed_memory_debt_personality_" text="Edit HeroNPC (compressed memory/debt/persona)..." />
   <string id="AF_UI_Developer_Edit_debt" text="Edit debt" />
   <string id="AF_UI_Developer_Edit_debt_title" text="Edit debt - {NPC}" />
-  <string id="AF_UI_Developer_Edit_persona" text="Edit personality/background" />
-  <string id="AF_UI_Developer_Edit_personality_background" text="Edit personality/background" />
+  <string id="AF_UI_Developer_Edit_persona" text="Edit persona" />
+  <string id="AF_UI_Developer_Edit_personality_background" text="Edit persona" />
   <string id="AF_UI_Developer_Enter" text="Enter" />
   <string id="AF_UI_Developer_Enter_a_folder_name_manually" text="Enter a folder name manually..." />
   <string id="AF_UI_Developer_Enter_a_folder_name_or_path_manually" text="Enter a folder name or path manually..." />
@@ -2273,20 +2276,20 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Enter_package_folder_path" text="Enter package folder/path" />
   <string id="AF_UI_Developer_Enter_the_complete_read_only_package_folder_path" text="Enter the complete read-only package folder path." />
   <string id="AF_UI_Developer_Export_all_HeroNPC_data_choose_a_folder" text="Export all HeroNPC data - choose a folder" />
-  <string id="AF_UI_Developer_Export_all_HeroNPC_data_compressed_memory_debt_p" text="Export all HeroNPC data (compressed memory, debt, personality/background)" />
+  <string id="AF_UI_Developer_Export_all_HeroNPC_data_compressed_memory_debt_p" text="Export all HeroNPC data (compressed memory, debt, persona)" />
   <string id="AF_UI_Developer_Export_all_data_choose_a_folder" text="Export all data - choose a folder" />
   <string id="AF_UI_Developer_Export_completed" text="Export completed: " />
   <string id="AF_UI_Developer_Export_failed" text="Export failed: " />
   <string id="AF_UI_Developer_Export_folder_already_exists" text="Export folder already exists" />
   <string id="AF_UI_Developer_Export_folder_exists_body" text="The target folder already exists and contains:\n{PATH}\nOverwrite this export?" />
   <string id="AF_UI_Developer_Gold_debt_updated" text="Gold debt updated to {GOLD}." />
-  <string id="AF_UI_Developer_HeroImportDuplicates" text="Imported data overlaps the current game.\nPersonality/background: {PERSONA}\nCompressed memory: {MEMORY}\nDebt: {DEBT}\nChoose how to proceed:" />
+  <string id="AF_UI_Developer_HeroImportDuplicates" text="Imported data overlaps the current game.\nPersona: {PERSONA}\nCompressed memory: {MEMORY}\nDebt: {DEBT}\nChoose how to proceed:" />
   <string id="AF_UI_Developer_HeroNPC_edit_import_export" text="HeroNPC edit/import/export" />
   <string id="AF_UI_Developer_HeroSelection_Body" text="All NPCs: {TOTAL}; current results: {RESULTS}; page {PAGE}/{PAGES}." />
   <string id="AF_UI_Developer_HeroSelection_Empty" text="No matches; you can search again." />
   <string id="AF_UI_Developer_HeroSelection_Query" text="Search keyword: {QUERY}" />
   <string id="AF_UI_Developer_Import_all_HeroNPC_data_choose_a_folder" text="Import all HeroNPC data - choose a folder" />
-  <string id="AF_UI_Developer_Import_all_HeroNPC_data_compressed_memory_debt_p" text="Import all HeroNPC data (compressed memory, debt, personality/background)" />
+  <string id="AF_UI_Developer_Import_all_HeroNPC_data_compressed_memory_debt_p" text="Import all HeroNPC data (compressed memory, debt, persona)" />
   <string id="AF_UI_Developer_Import_all_data_choose_a_folder" text="Import all data - choose a folder" />
   <string id="AF_UI_Developer_Import_completed" text="Import completed: " />
   <string id="AF_UI_Developer_Import_completed_duplicates_path" text="Import completed (duplicates skipped): {PATH}" />
@@ -2317,7 +2320,7 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Reload_DefaultKingdoms" text="• {COUNT} current kingdoms absent from the package will be restored to their current defaults (this does not automatically request a kingdom LLM)" />
   <string id="AF_UI_Developer_Reload_DuplicateKeywords" text="• {COUNT} duplicate trigger words stay on the original entry so split Knowledge entries do not compete for the same keyword" />
   <string id="AF_UI_Developer_Reload_DuplicateKnowledgeIds" text="• {COUNT} package entries with duplicate IDs will receive stable file-name-based IDs (package files are not modified)" />
-  <string id="AF_UI_Developer_Reload_KeepNpc" text="• NPC personality, background, memory, and appearance" />
+  <string id="AF_UI_Developer_Reload_KeepNpc" text="• NPC persona, memory, and appearance" />
   <string id="AF_UI_Developer_Reload_KeepPlayer" text="• Player appearance, background, player-only Knowledge, and direct voice ID" />
   <string id="AF_UI_Developer_Reload_KeepSettings" text="• Dynamic event records, API configuration, LLM Prompts, and other settings" />
   <string id="AF_UI_Developer_Reload_KingdomProfiles" text="• Kingdom personality and long-term strategy for {COUNT} kingdoms" />
@@ -2334,7 +2337,7 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Summary_Debt" text="Debt: {COUNT} people" />
   <string id="AF_UI_Developer_Summary_Dialogue" text="Old dialogue history: {COUNT} people" />
   <string id="AF_UI_Developer_Summary_Events" text="Event records: {COUNT}" />
-  <string id="AF_UI_Developer_Summary_HeroPersona" text="Hero personality/background: {COUNT}" />
+  <string id="AF_UI_Developer_Summary_HeroPersona" text="Hero persona: {COUNT}" />
   <string id="AF_UI_Developer_Summary_KingdomProfiles" text="Kingdom strategy/personality: {COUNT} ({OVERRIDES} player overrides)" />
   <string id="AF_UI_Developer_Summary_Knowledge" text="Knowledge: {COUNT}" />
   <string id="AF_UI_Developer_Summary_Memory" text="Compressed memory: {COUNT} people" />
@@ -2439,7 +2442,7 @@ Estimated requests: " />
   <string id="AF_UI_ImportExport_KeyEmpty" text="Export failed: key is empty." />
   <string id="AF_UI_ImportExport_EntryNotFound" text="Export failed: the entry was not found: {VALUE}" />
   <string id="AF_UI_ImportExport_NpcExportMissing" text="Import failed: this NPC has no corresponding export file." />
-  <string id="AF_UI_ImportExport_NpcFileMismatch" text="Import failed: the personality/background file does not match the current NPC." />
+  <string id="AF_UI_ImportExport_NpcFileMismatch" text="Import failed: the persona file does not match the current NPC." />
   <string id="AF_UI_ImportExport_JsonParseFailed" text="Import failed: JSON parsing failed." />
   <string id="AF_UI_ImportExport_WriteFailed" text="Import failed: writing the rule failed." />
   <string id="AF_UI_ImportExport_IdMismatch" text="Import failed: the file Id does not match (file Id={ID})." />
@@ -2477,8 +2480,8 @@ Choose how to proceed:" />
   <string id="AF_UI_ImportExport_KnowledgeDuplicateTitle" text="Duplicates detected - Knowledge" />
   <string id="AF_UI_ImportExport_KnowledgeDuplicateBody" text="A Knowledge rule with the same RuleId already exists: {ID}\nChoose how to proceed:" />
   <string id="AF_UI_ImportExport_KnowledgeDuplicateMany" text="Imported Knowledge rules contain duplicate RuleIds.\nDuplicates: {COUNT} / total: {TOTAL}\nChoose how to proceed:" />
-  <string id="AF_UI_ImportExport_PersonaDuplicateTitle" text="Duplicates detected - personality/background" />
-  <string id="AF_UI_ImportExport_PersonaDuplicateBody" text="This NPC already has personality/background data: {ID}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateTitle" text="Duplicates detected - persona" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateBody" text="This NPC already has persona data: {ID}\nChoose how to proceed:" />
   <string id="AF_UI_ImportExport_PersonaDuplicateMany" text="Imported data contains duplicate HeroIds.\nDuplicates: {COUNT} / total: {TOTAL}\nChoose how to proceed:" />
   <string id="AF_UI_ImportExport_DebtDuplicateTitle" text="Duplicates detected - debt" />
   <string id="AF_UI_ImportExport_DebtDuplicateBody" text="This NPC already has debt records: {ID}\nChoose how to proceed:" />
@@ -2503,7 +2506,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_Editor_Weekly_Title" text="Edit weekly-report writing requirements" />
   <string id="AF_MCM_Editor_Weekly_Description" text="This edits the complete writing-requirements section in the weekly-report system prompt." />
   <string id="AF_MCM_Editor_Weekly_Hint" text="The default text is built into the code; you can edit or clear it. Output format, REPORT_BLOCK, TAGS, and stability tags remain controlled by built-in rules." />
-  <string id="AF_MCM_Editor_Persona_Title" text="Edit NPC personality/background requirements" />
+  <string id="AF_MCM_Editor_Persona_Title" text="Edit NPC persona requirements" />
   <string id="AF_MCM_Editor_Persona_Description" text="Regular heroes and promoted companions share these complete writing requirements; built-in text keeps only the generation task, JSON protocol, and fact constraints." />
   <string id="AF_MCM_Editor_Persona_Hint" text="You can change length, style, source selection, and regeneration de-duplication. Saving blank removes the extra requirements." />
   <string id="AF_MCM_Editor_DailyMemory_Title" text="Edit daily-memory compression requirements" />
@@ -2622,17 +2625,17 @@ Choose how to proceed:" />
   <string id="AF_MCM_News_Saved" text="Bulletin writing requirements saved; they apply to the next request." />
   <string id="AF_UI_Developer_NoData" text="(No data)" />
   <string id="AF_UI_Developer_ChooseOperation" text="Choose an operation." />
-  <string id="AF_UI_Persona_PersonalitySection" text="Personality" />
-  <string id="AF_UI_Persona_BackgroundSection" text="History background" />
+  <string id="AF_UI_Persona_PersonalitySection" text="Persona" />
+  <string id="AF_UI_Persona_BackgroundSection" text="Persona" />
   <string id="AF_UI_Persona_ExpandedSection" text="Expanded persona" />
   <string id="AF_UI_Persona_EditNpcButton" text="Edit NPC" />
   <string id="AF_UI_Persona_RerollButton" text="Regenerate persona" />
   <string id="AF_UI_Courier_DirectContactBlocked" text="This character is already talking with you, is in the current scene, or is in the same settlement; no courier letter is needed." />
   <string id="AF_UI_Courier_AlreadyActive" text="A courier party is already delivering a letter to this character." />
-  <string id="AF_UI_Persona_RerollUnavailable" text="This Hero cannot regenerate personality and background right now." />
-  <string id="AF_UI_Persona_RerollOpenFailed" text="Could not open personality and background regeneration." />
+  <string id="AF_UI_Persona_RerollUnavailable" text="This Hero cannot regenerate persona right now." />
+  <string id="AF_UI_Persona_RerollOpenFailed" text="Could not open persona regeneration." />
   <string id="AF_UI_Persona_NpcFallback" text="this NPC" />
-  <string id="AF_UI_Persona_GeneratingHint" text="Generating personality and background for {NAME}; please wait..." />
+  <string id="AF_UI_Persona_GeneratingHint" text="Generating persona for {NAME}; please wait..." />
   <string id="AF_UI_Courier_Button" text="Courier and letters" />
   <string id="AF_UI_MemoryFailure_Acknowledge" text="Acknowledge" />
   <string id="AF_MCM_Editor_PlayerPrompt_Saved" text="[Prompt extension] Player custom rule text saved." />
@@ -2644,9 +2647,9 @@ Choose how to proceed:" />
   <string id="AF_MCM_Editor_WeeklyRequirements_Saved" text="[Prompt extension] Weekly report writing requirements saved." />
   <string id="AF_MCM_Editor_WeeklyRequirements_SessionOnly" text="[Prompt extension] Weekly report writing requirements are active for this session, but local persistence failed. Check the log." />
   <string id="AF_MCM_Editor_WeeklyRequirements_SaveFailed" text="[Prompt extension] Saving the weekly report writing requirements failed; click Save again in MCM: " />
-  <string id="AF_MCM_Editor_PersonaRequirements_Saved" text="[Prompt extension] NPC personality and background generation requirements saved." />
-  <string id="AF_MCM_Editor_PersonaRequirements_SessionOnly" text="[Prompt extension] NPC personality and background generation requirements are active for this session, but local persistence failed. Check the log." />
-  <string id="AF_MCM_Editor_PersonaRequirements_SaveFailed" text="[Prompt extension] Saving the NPC personality and background generation requirements failed; click Save again in MCM: " />
+  <string id="AF_MCM_Editor_PersonaRequirements_Saved" text="[Prompt extension] NPC persona generation requirements saved." />
+  <string id="AF_MCM_Editor_PersonaRequirements_SessionOnly" text="[Prompt extension] NPC persona generation requirements are active for this session, but local persistence failed. Check the log." />
+  <string id="AF_MCM_Editor_PersonaRequirements_SaveFailed" text="[Prompt extension] Saving the NPC persona generation requirements failed; click Save again in MCM: " />
   <string id="AF_MCM_Editor_DailyCompression_Name" text="daily memory compression writing requirements" />
   <string id="AF_MCM_Editor_MemoryOverviewCompression_Name" text="memory overview compression writing requirements" />
   <string id="AF_MCM_Editor_MajorActionCompression_Name" text="major-action compression writing requirements" />
@@ -3146,7 +3149,7 @@ Choose how to proceed:" />
   <string id="AF_CONV_UI_Courier_ReplyFailedDetail" text="Courier reply generation failed:&#10;&#10;{DETAIL}" />
   <string id="AF_CONV_UI_Courier_LetterFailedDetail" text="Courier letter generation failed:&#10;&#10;{DETAIL}" />
   <string id="AF_UI_Loyalty_KingdomStability" text="Kingdom stability and royal domains" />
-  <string id="AF_UI_Persona_GenerationFailedTitle" text="NPC personality and background generation failed" />
+  <string id="AF_UI_Persona_GenerationFailedTitle" text="NPC persona generation failed" />
   <string id="AF_UI_Persona_PromotedGenerationFailedTitle" text="Promoted companion persona generation failed" />
   <string id="AF_UI_Persona_PromotedSkillsFailedTitle" text="Promoted companion skill generation failed" />
   <string id="AF_UI_Castle_RepairLabor" text="Prisoner castle repairs" />
@@ -3389,5 +3392,20 @@ Choose how to proceed:" />
   <string id="AF_TERMINAL_GROUP_DIRECTOR_RULES" text="Illustration director rules" />
   <string id="AF_TERMINAL_GROUP_DIPLOMACY_SETTINGS" text="AI diplomacy settings" />
   <string id="AF_TERMINAL_GROUP_DIPLOMACY_PROMPTS" text="AI diplomacy prompts" />
+  <string id="AF_ENC_UI_CaptivityTalk" text="Speak with your captor" />
+  <string id="AF_ENC_UI_CaptivityUnavailable" text="No captor with authority is available to speak right now." />
+  <string id="AF_ENC_UI_CaptivityOpening" text="You asked to speak to me. What is it?" />
+  <string id="AF_ENC_UI_CaptivityAutoOpening" text="..." />
+  <string id="AF_ENC_UI_CaptivityContinue" text="There is something I want to discuss." />
+  <string id="AF_ENC_UI_CaptivityListen" text="I am listening." />
+  <string id="AF_ENC_UI_CaptivityLeave" text="That is all for now." />
+  <string id="AF_ENC_UI_CaptivityChoose" text="Who would you like to speak with?" />
+  <string id="AF_ENC_UI_CaptivitySelect" text="Speak" />
+  <string id="AF_ENC_UI_CaptivityCancel" text="Cancel" />
+  <string id="AF_ENC_UI_CaptivityOpenFailed" text="The conversation could not be opened. Your captivity has not been changed." />
+  <string id="AF_ENC_UI_CaptivityReleaseScheduled" text="Your captor agreed to release you. This conversation will end in 10 seconds." />
+  <string id="AF_ENC_UI_CaptivityReleaseFailed" text="Release could not be confirmed. Please check your current captivity status." />
+  <string id="AF_ENC_UI_CaptivityReleased" text="You have been released from captivity." />
+  <string id="AF_ENC_UI_CaptivityActionBlocked" text="This action is unavailable while you are in captivity." />
 </strings>
 </base>

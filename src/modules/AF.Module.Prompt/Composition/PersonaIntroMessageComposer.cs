@@ -10,8 +10,7 @@ internal sealed class SystemNpcIntroSnapshot {
  internal string equipmentText="";
  internal string ageText="";
  internal string cultureText="";
- internal string personalityText="";
- internal string backgroundText="";
+ internal string description="";
  internal string personaContext="";
  internal string nobleEtiquettePrompt="";
  internal string clanRole="";
@@ -24,8 +23,7 @@ internal sealed class SceneNpcIntroSnapshot {
  internal string name="";
  internal string givenName="";
  internal string identity="";
- internal string personality="";
- internal string background="";
+ internal string description="";
  internal string personaContext="";
  internal string faction="";
  internal string clan="";
@@ -100,8 +98,7 @@ internal static class PersonaIntroMessageComposer {
  string equipmentText=s.equipmentText;
  string ageText=s.ageText;
  string cultureText=s.cultureText;
- string personalityText=s.personalityText;
- string backgroundText=s.backgroundText;
+ string description=s.description;
  string personaContext=s.personaContext;
  string nobleEtiquettePrompt=s.nobleEtiquettePrompt;
  string clanRole=s.clanRole;
@@ -122,9 +119,7 @@ internal static class PersonaIntroMessageComposer {
 			.Append(PromptComposerTexts.Get("persona_system_npc_equipment"))
 			.Append(equipmentText)
 			.Append(PromptComposerTexts.Get("persona_system_npc_personality"))
-			.Append(personalityText)
-			.Append(PromptComposerTexts.Get("persona_system_npc_background"))
-			.Append(backgroundText);
+			.Append(description);
 		if (!string.IsNullOrWhiteSpace(personaContext)) stringBuilder.Append(PromptComposerTexts.Get("residual_period")).Append(personaContext);
 		string npcPlayerRelationshipLine = s.relationshipLine;
 		if (!string.IsNullOrWhiteSpace(npcPlayerRelationshipLine))
@@ -152,8 +147,7 @@ internal static class PersonaIntroMessageComposer {
  string name=s.name;
  string givenName=s.givenName;
  string identity=s.identity;
- string personality=s.personality;
- string background=s.background;
+ string description=s.description;
  string personaContext=s.personaContext;
  string faction=s.faction;
  string clan=s.clan;
@@ -289,11 +283,7 @@ stringBuilder.Append(partyRepresentativePrompt);
 			string nobleEtiquettePrompt = s.nobleEtiquettePrompt;
 			stringBuilder.AppendLine()
 				.Append(PromptComposerTexts.Get("persona_scene_npc_personality"))
-				.Append(personality)
-				.Append(PromptComposerTexts.Get("residual_period"))
-				.AppendLine()
-				.Append(PromptComposerTexts.Get("persona_scene_npc_background"))
-				.Append(background);
+				.Append(description);
 			if (!string.IsNullOrWhiteSpace(personaContext)) stringBuilder.Append(PromptComposerTexts.Get("residual_period")).Append(personaContext);
 			if (!string.IsNullOrWhiteSpace(nobleEtiquettePrompt))
 			{

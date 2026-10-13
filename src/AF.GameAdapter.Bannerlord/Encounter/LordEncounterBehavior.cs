@@ -411,6 +411,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, OnMissionEnded);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 		CampaignEvents.GameMenuOpened.AddNonSerializedListener(this, OnGameMenuOpened);
+		CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, PlayerCaptivityConversation.OnPlayerTakenPrisoner);
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -426,6 +427,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		PlayerCaptivityGhostSafePatch.RepairMainHeroRosters("session_launched");
 		ClearCustomEncounterMenuHardSuppression("session_launched");
 		ClearNativeSettlementRequestMeetingContext("session_launched");
+		PlayerCaptivityConversation.Register(starter);
 		AddGameMenus(starter);
 		AddConversationOptions(starter);
 	}
@@ -3632,6 +3634,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static void OnEngineTick()
 	{
+        PlayerCaptivityConversation.Tick();
         NativeDialogueBattleContinuation.Tick();
         if (_pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit)
         {

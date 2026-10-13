@@ -10,6 +10,19 @@ public class NpcDataPacket
 
 	public string BackgroundDesc;
 
+	public string PersonaDescription;
+
+	internal string GetPersonaDescription() => PersonaDescription
+		?? AnimusForge.Refactor.Runtime.NpcPersonaProfilePolicy.MergeLegacy(PersonalityDesc, BackgroundDesc);
+
+	internal void SetPersonaDescription(string description)
+	{
+		PersonaDescription = description ?? "";
+		// Preserve the legacy packet surface without injecting the body twice.
+		PersonalityDesc = PersonaDescription;
+		BackgroundDesc = "";
+	}
+
 	public string PersonaContext;
 
 	public int AgentIndex;

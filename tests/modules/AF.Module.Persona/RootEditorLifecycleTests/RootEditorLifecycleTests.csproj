@@ -7,7 +7,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Memory/Runtime/MemoryTextResources.cs" Link="Production/MemoryTextResources.cs" />
     <Compile Include="../../../../src/AF.Persistence/AnimusForgeModulePaths.cs" Link="Production/AnimusForgeModulePaths.cs" />
     <Compile Include="../../AF.Module.Weekly/EditorLifecycleTests/TextObjectFixture.cs" Link="Fixture/TextObjectFixture.cs" />
-    <Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath Condition="'$(AF_NEWTONSOFT)' != ''">$(AF_NEWTONSOFT)</HintPath><HintPath Condition="'$(AF_NEWTONSOFT)' == ''">../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
     <EmbeddedResource Include="../../../../content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordCompatibility.json" LogicalName="AnimusForge.Adapter.RecordCompatibility.json" />
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.json" LogicalName="AnimusForge.Memory.SourceTexts.json" />
     <Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml" Link="ui-en.xml" CopyToOutputDirectory="PreserveNewest" />
@@ -17,4 +17,4 @@
     <Content Include="../../../../content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordPromptTexts.en.json" Link="Modules/AnimusForge/ModuleData/AdapterRecordPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../../content/modules/AF.Module.Memory/ModuleData/MemoryPromptTexts.json" Link="Modules/AnimusForge/ModuleData/MemoryPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-</Project>
+<ItemGroup><Compile Include="../../../../src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs" Link="Production/NpcPersonaProfilePolicy.cs" /></ItemGroup><ItemGroup><Compile Include="../../../../src/AF.Persistence/AnimusForgeDataPaths.cs" Link="Production/AnimusForgeDataPaths.cs" /></ItemGroup></Project>

@@ -7093,8 +7093,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Hero hero = character?.HeroObject;
 			if (hero != null)
 			{
-				MyBehavior.GetNpcPersonaForExternal(hero, out string personality, out string background);
-				return JoinPersonaText(personality, background, MyBehavior.GetNpcPersonaContextForExternal(hero));
+				return JoinPersonaText(MyBehavior.GetNpcPersonaDescriptionForExternal(hero), "", MyBehavior.GetNpcPersonaContextForExternal(hero));
 			}
 			if (ShoutUtils.TryGetUnnamedNpcPersona(soldier, out string unnamedPersonality, out string unnamedBackground))
 			{

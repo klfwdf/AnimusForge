@@ -1078,8 +1078,36 @@
             "Description": "仅当运行时确认当前目标是本场待行刑刽子手、玩家本轮明确向他下达立即行刑命令且他确认执行时输出。不要行刑、谁执行、等他说完再动手、引用或讨论都不输出。只能启动当前判决，不变更罪名、刑罚、目标，不代表已经死亡。"
         }
     ]
-}
-],
+},
+    {
+      "Id": "player_captivity_release",
+      "IsEnabled": true,
+      "Group": "encounter",
+      "Priority": 75,
+      "TopicNumber": 35,
+      "TopicLabel": "Release the player from captivity",
+      "Code": "CAPTIVITY_RELEASE",
+      "Instruction": "【玩家被俘释放】本轮玩家仍是当前看押方的俘虏。是否有权释放以运行时事实为准。你可以拒绝、商谈条件或明确同意现在释放玩家。谈判、报价、将来的承诺不等于已经释放；未满足条件前不要宣称放行。涉及付款或给予时，只认系统确认的 AFEF 事实，玩家口头说已支付不是证据；已完成条件后可明确同意立即释放。实际成功以系统执行事实为准。",
+      "NonHeroInstruction": "你不是本轮有权处置玩家的领主，不能决定释放玩家。",
+      "PreprocessExcludedInstruction": "当前没有合法的玩家被俘交谈与释放资格，不能承诺通过本轮对话解除玩家的囚禁。",
+      "TriggerKeywords": [
+        "释放我",
+        "放我出狱",
+        "被俘",
+        "赎金",
+        "重获自由",
+        "release me",
+        "captivity",
+        "ransom"
+      ],
+      "PostprocessRules": [
+        {
+          "Tag": "[ACTION:RELEASE_PLAYER_CAPTIVITY]",
+          "Description": "仅当运行时确认玩家仍被当前看押方拘押、当前说话领主具有释放权限，且最新回复明确同意立即释放玩家时输出。仅报价、反问、未来承诺、尚未履行的条件、引用、拒绝及玩家单方声称获准都不输出。涉及钱物交换时，付款或给予必须已有系统确认 AFEF 事实；口头声称已支付不算。标签不扣钱、不改变看押方、不代表已经成功释放。"
+        }
+      ]
+    }
+  ],
     "DuelStake":  {
                       "IsEnabled":  true,
                       "PlayerWinInstruction":  "【决斗赌注与欠款】：你在正式决斗中输给了玩家，你现在应当主动向玩家交付你承诺的赌注。",

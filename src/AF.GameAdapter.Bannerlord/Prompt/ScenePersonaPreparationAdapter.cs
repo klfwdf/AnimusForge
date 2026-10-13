@@ -138,8 +138,7 @@ internal sealed class ScenePersonaPreparationAdapter
                     string key = (npc.UnnamedKey ?? "").Trim().ToLower();
                     if (!string.IsNullOrEmpty(key) && ShoutUtils.TryGetUnnamedPersonaByKey(key, out string up, out string ub))
                     {
-                        if (!string.IsNullOrWhiteSpace(up)) npc.PersonalityDesc = up.Trim();
-                        if (!string.IsNullOrWhiteSpace(ub)) npc.BackgroundDesc = ub.Trim();
+                        npc.SetPersonaDescription(NpcPersonaProfilePolicy.MergeLegacy(up, ub));
                     }
                     return null;
                 }
@@ -148,7 +147,7 @@ internal sealed class ScenePersonaPreparationAdapter
                 if (hero == null) return null;
                 NpcPersonaReadinessSnapshot state = MyBehavior.CaptureNpcPersonaReadiness(hero, scope.PersonaOwner);
                 if (state == null) return null;
-                bool generate = string.IsNullOrWhiteSpace(state.Personality) && string.IsNullOrWhiteSpace(state.Background);
+                bool generate = string.IsNullOrWhiteSpace(state.Description);
                 if (generate && (string.IsNullOrWhiteSpace(state.HeroId) || notified.Add(state.HeroId))
                     && (!state.Available || (state.NeedsGeneration && !state.Active && !state.CoolingDown)))
                     InformationManager.DisplayMessage(new InformationMessage(MyBehavior.BuildNpcPersonaGenerationHintForExternal(hero), new Color(1f, 0.85f, 0.3f)));
@@ -174,15 +173,13 @@ internal sealed class ScenePersonaPreparationAdapter
                     || !resolvedHeroes.TryGetValue(npc.AgentIndex, out Hero current) || !ReferenceEquals(current, prepared.Hero)) return false;
                 NpcPersonaReadinessSnapshot state = MyBehavior.CaptureNpcPersonaReadiness(current, scope.PersonaOwner);
                 if (state == null) return false;
-                string p = state.Personality, b = state.Background;
-                if (string.IsNullOrWhiteSpace(p) || string.IsNullOrWhiteSpace(b))
+                string description = state.Description;
+                if (string.IsNullOrWhiteSpace(description))
                 {
                     BuildHeroPersonaFallback(current, out string fp, out string fb);
-                    if (string.IsNullOrWhiteSpace(p)) p = fp;
-                    if (string.IsNullOrWhiteSpace(b)) b = fb;
+                    description = NpcPersonaProfilePolicy.MergeLegacy(fp, fb);
                 }
-                if (!string.IsNullOrWhiteSpace(p)) npc.PersonalityDesc = p.Trim();
-                if (!string.IsNullOrWhiteSpace(b)) npc.BackgroundDesc = b.Trim();
+                npc.SetPersonaDescription(description);
                 npc.PersonaContext = MyBehavior.GetNpcPersonaContextForExternal(current);
                 return true;
             }, false).ConfigureAwait(false);
@@ -200,9 +197,9 @@ internal sealed class ScenePersonaPreparationAdapter
                 try
                 {
                     if (showHint && state.Available && state.NeedsGeneration)
-                        onStreamText?.Invoke(ConversationUiLocalization.Text("AF_UI_PersonaGeneration_Progress", "Generating {NAME}’s personality and background. Please wait. Your last message will receive a reply when generation finishes.", "NAME", state.Name));
+                        onStreamText?.Invoke(ConversationUiLocalization.Text("AF_UI_PersonaGeneration_Progress", "Generating {NAME}’s persona. Please wait. Your last message will receive a reply when generation finishes.", "NAME", state.Name));
                     if (showFailure)
-                        onStreamText?.Invoke(ConversationUiLocalization.Text("AF_UI_PersonaGeneration_ReadinessFailed", "Generation of {NAME}’s personality and background temporarily failed. Please try again later.", "NAME", state.Name));
+                        onStreamText?.Invoke(ConversationUiLocalization.Text("AF_UI_PersonaGeneration_ReadinessFailed", "Generation of {NAME}’s persona temporarily failed. Please try again later.", "NAME", state.Name));
                 }
                 catch { } // Presentation failure must not replace the readiness decision.
                 return state;
@@ -251,11 +248,11 @@ internal sealed class ScenePersonaPreparationAdapter
         string id = (hero?.StringId ?? "").Trim();
         string name = hero?.Name?.ToString();
         if (owner == null || hero == null)
-            return new NpcPersonaReadinessSnapshot(id, name, "", "", false, false, false, false);
+            return new NpcPersonaReadinessSnapshot(id, name, "", false, false, false, false);
         var persona = application(owner);
-        persona.GetNpcPersonaStrings(hero, out string personality, out string background);
+        string description = persona.GetNpcPersonaDescription(hero);
         persona.GetNpcPersonaGenerationRuntimeState(hero, out bool active, out bool coolingDown);
-        bool needsGeneration = NpcPersonaProfilePolicy.NeedsGeneration(id, personality, background);
-        return new NpcPersonaReadinessSnapshot(id, name, personality, background, true, needsGeneration, active, coolingDown);
+        bool needsGeneration = NpcPersonaProfilePolicy.NeedsGeneration(id, description);
+        return new NpcPersonaReadinessSnapshot(id, name, description, true, needsGeneration, active, coolingDown);
     }
 }

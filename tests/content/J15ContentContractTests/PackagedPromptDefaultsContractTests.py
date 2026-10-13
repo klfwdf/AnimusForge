@@ -29,7 +29,7 @@ for name,module in specs.items():
     cn=json.loads((ROOT/asset).read_text(encoding='utf-8-sig'))
     en=json.loads((ROOT/asset.replace('.json','.en.json')).read_text(encoding='utf-8-sig'))
     check(calls[name]==en['Text'] and not HAN.search(calls[name]),name+' complete English fallback matches asset')
-    check(any(e['source']==asset and e['target']=='CustomPrompts/'+name+'.json' for e in mapping),name+' canonical package target')
+    check(any(e['source']==asset and e['target']=='ModuleData/Defaults/CustomPrompts/'+name+'.json' for e in mapping),name+' canonical package target')
     for token in re.findall(r'\[(?:REPORT|SHORT)\]|\bSUMMARY\b',cn['Text']):
         check(token in calls[name],name+' output protocol '+token)
 check(defaults.count('LazyThreadSafetyMode.ExecutionAndPublication')==5,'thread-safe one-time caches')
@@ -41,7 +41,7 @@ check('GetPackagedCustomPromptTextStoreDirectory()' in defaults and 'GetCustomPr
 start=settings.index('private static bool TryReadLayeredCustomPromptTextJsonFile(')
 end=settings.index('private static bool IsCustomPromptTextFileTooLarge',start)
 layer=settings[start:end]
-check(layer.index('TryReadCustomPromptTextJsonFile(overridePath')<layer.index('TryReadCustomPromptTextJsonFile(packagedPath'),
+check(layer.index('TryReadCustomPromptTextJsonFile(GetCustomPromptUserReadPath(overridePath)')<layer.index('TryReadCustomPromptTextJsonFile(packagedPath'),
       'user overrides still have priority')
 check('File.Write' not in defaults and 'ChangeLanguage' not in defaults and 'GetLanguage' not in defaults,
       'no implicit migration/write/language detection')

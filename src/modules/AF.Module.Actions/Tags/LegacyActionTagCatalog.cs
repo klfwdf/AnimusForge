@@ -34,6 +34,7 @@ public static class LegacyActionTagCatalog
         "ACTION:KING_ABDICATE_TO_PLAYER",
         "ACTION:KINGDOM_*",
         "ACTION:LET_PLAYER_GO",
+        "ACTION:RELEASE_PLAYER_CAPTIVITY",
         "ACTION:LORDS_HALL_BRIBE_PRICE",
         "ACTION:LOVE_DELTA",
         "ACTION:MARRIAGE_*",

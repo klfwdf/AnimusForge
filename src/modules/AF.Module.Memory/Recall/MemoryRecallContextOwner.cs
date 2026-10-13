@@ -56,7 +56,7 @@ internal static bool TryBuildMemoryRecallCandidates(List<CompressedMemoryBlock> 
 		Stopwatch sw = Stopwatch.StartNew();
 		candidates = new List<MemoryRecallCandidate>();
 		error = "";
-        if (!SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration)) { error = "memory_recall_stale_generation"; return false; }
+        if (!SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration) || (snapshot != null && !snapshot.IsCurrent())) { error = "memory_recall_stale_generation"; return false; }
 		List<CompressedMemoryBlock> list = (blocks ?? new List<CompressedMemoryBlock>()).Where((CompressedMemoryBlock x) => x != null && (!string.IsNullOrWhiteSpace(x.RichTitle) || !string.IsNullOrWhiteSpace(x.Summary))).ToList();
 		string debugHeroId = MemoryRecordRules.NormalizeMemoryHeroId(list.Select((CompressedMemoryBlock x) => x?.HeroId).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)));
 		Logger.Log("Logic", "[MemoryPerf] recall_candidates_start hero=" + (debugHeroId ?? "") + " blocks=" + ((blocks ?? new List<CompressedMemoryBlock>()).Count) + " eligible=" + list.Count + " candidateLimit=" + candidateLimit + " currentLen=" + ((currentInput ?? "").Length) + " secondaryLen=" + ((secondaryInput ?? "").Length) + " drafts=" + (snapshot?.DraftCount ?? ((drafts ?? new List<DailyMemoryDraft>()).Count)));
@@ -89,9 +89,9 @@ internal static bool TryBuildMemoryRecallCandidates(List<CompressedMemoryBlock> 
 				error = "Local ONNX embedding is unavailable; rich-title RAG cannot select compressed memories above the candidate limit.";
 				sw.Stop();
 				Logger.Log("Logic", "[MemoryPerf] recall_candidates_failed hero=" + (debugHeroId ?? "") + " reason=query_embedding_unavailable queryLen=" + ((text ?? "").Length) + " queryMs=" + Math.Round(querySw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
-				snapshot.RecordBlockingFailure("Compressed memory recall blocked", error + "\n\nFix the embedding model or reduce the memory block count, then retry. No silent date or full-text fallback will be used.", runtimeGeneration);
+				snapshot.RecordBlockingFailure("Compressed memory recall blocked", error + "\n\nCheck the embedding model. The request may use recent local memory blocks instead.", runtimeGeneration);
                 snapshot.SetBlockingDisplay("AF_MEMORY_UI_RecallBlockedTitle", "Compressed memory recall blocked",
-                    MemoryFailureUiText.T("AF_MEMORY_UI_RecallEmbeddingUnavailable", "Local ONNX embedding is unavailable; rich-title RAG cannot select compressed memories above the candidate limit.\n\nFix the embedding model or reduce the number of memory blocks, then retry. The system will not silently fall back to dates or full text."), runtimeGeneration);
+                    MemoryFailureUiText.T("AF_MEMORY_UI_RecallEmbeddingUnavailable", "Local ONNX embedding is unavailable; rich-title RAG cannot select compressed memories above the candidate limit.\n\nCheck the embedding model. The request may use recent local memory blocks instead."), runtimeGeneration);
 				return false;
 			}
 			querySw.Stop();
@@ -101,7 +101,7 @@ internal static bool TryBuildMemoryRecallCandidates(List<CompressedMemoryBlock> 
 			int titleEmbeddingFailed = 0;
 			foreach (CompressedMemoryBlock block in list)
 			{
-                if (!SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration)) { error = "memory_recall_stale_generation"; return false; }
+                if (!SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration) || (snapshot != null && !snapshot.IsCurrent())) { error = "memory_recall_stale_generation"; return false; }
 				scanned++;
 				string text2 = (block.RichTitle ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
@@ -174,7 +174,7 @@ internal static bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate
 		Stopwatch sw = Stopwatch.StartNew();
 		selectedIds = new List<int>();
 		error = "";
-        if (!SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration)) { error = "memory_recall_stale_generation"; return false; }
+        if (!SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration) || (snapshot != null && !snapshot.IsCurrent())) { error = "memory_recall_stale_generation"; return false; }
 		List<MemoryRecallCandidate> list = (candidates ?? new List<MemoryRecallCandidate>()).Where((MemoryRecallCandidate x) => x?.Block != null && x.DisplayId > 0).ToList();
 		string debugHeroId = MemoryRecordRules.NormalizeMemoryHeroId(list.Select((MemoryRecallCandidate x) => x?.Block?.HeroId).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)));
 		if (list.Count <= 0 || finalCount <= 0)
@@ -225,7 +225,7 @@ internal static bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate
 			bool memoryOk = false;
 			Task memoryTask = Task.Run(delegate
 			{
-				memoryOk = AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 800, 0f, out content, out memoryError);
+				memoryOk = AIConfigHandler.TryCallAuxiliarySimpleDialogueOnceForExternal(messages, 800, 0f, out content, out memoryError);
 			});
 			try
 			{
@@ -254,7 +254,7 @@ internal static bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate
 				return false;
 			}
 		}
-		else if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 800, 0f, out content, out error))
+		else if (!AIConfigHandler.TryCallAuxiliarySimpleDialogueOnceForExternal(messages, 800, 0f, out content, out error))
 		{
 			apiSw.Stop();
 			sw.Stop();
@@ -268,7 +268,7 @@ internal static bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate
 		{
 			apiSw.Stop();
 		}
-        if (!SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration)) { error = "memory_recall_stale_generation"; return false; }
+        if (!SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration) || (snapshot != null && !snapshot.IsCurrent())) { error = "memory_recall_stale_generation"; return false; }
 		if (!TryParseMemoryPreprocessIds(content, list.Select((MemoryRecallCandidate x) => x.DisplayId), finalCount, out selectedIds, out var parseError))
 		{
 			error = BuildMemoryPreprocessFormatError(snapshot, parseError, content);
@@ -298,10 +298,10 @@ internal static bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate
 internal static string BuildCompressedMemoryContextById(string memoryId, string currentInput, string secondaryInput, MemoryRecallRequest snapshot)
 	{
 		long runtimeGeneration = snapshot?.Generation ?? SaveRuntimeGuard.CaptureGeneration();
-        if (!SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration)) return "";
+        if (snapshot == null || !snapshot.IsCurrent()) return "";
 		Stopwatch sw = Stopwatch.StartNew();
 		string heroId = MemoryRecordRules.NormalizeMemoryHeroId(memoryId);
-		List<CompressedMemoryBlock> list = snapshot.Blocks;
+		List<CompressedMemoryBlock> list = snapshot.Blocks?.Where(x => x != null).ToList();
 		if (list == null || list.Count <= 0)
 		{
 			sw.Stop();
@@ -309,6 +309,7 @@ internal static string BuildCompressedMemoryContextById(string memoryId, string 
 			return "";
 		}
 		int finalCount = snapshot.FinalCount;
+        if (finalCount <= 0) return "";
 		int candidateLimit = snapshot.CandidateLimit;
 		List<MemoryRecallCandidate> candidates;
 		Logger.Log("Logic", "[MemoryPerf] compressed_context_start hero=" + heroId + " blocks=" + list.Count + " finalCount=" + finalCount + " candidateLimit=" + candidateLimit + " currentLen=" + ((currentInput ?? "").Length) + " secondaryLen=" + ((secondaryInput ?? "").Length));
@@ -330,28 +331,45 @@ internal static string BuildCompressedMemoryContextById(string memoryId, string 
 			List<CompressedMemoryBlock> selectableBlocks = list.Where((CompressedMemoryBlock x) => x != null && (latestBlock == null || !string.Equals((x.Id ?? "").Trim(), latestBlockId, StringComparison.OrdinalIgnoreCase))).ToList();
 			candidates = new List<MemoryRecallCandidate>();
 			List<DailyMemoryDraft> drafts = snapshot.Drafts;
-			if (selectableFinalCount > 0 && selectableBlocks.Count > 0)
-			{
-				if (!TryBuildMemoryRecallCandidates( selectableBlocks, currentInput, secondaryInput, drafts, selectableCandidateLimit, out candidates, out var error, runtimeGeneration, snapshot))
-				{
-					Logger.Log("CompressedMemory", "[ERROR] recall failed hero=" + heroId + " error=" + error);
-					sw.Stop();
-					Logger.Log("Logic", "[MemoryPerf] compressed_context_failed hero=" + heroId + " reason=recall_failed blocks=" + list.Count + " selectable=" + selectableBlocks.Count + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
-					return "";
-				}
-				if (candidates.Count > selectableFinalCount)
-				{
-					if (!TrySelectMemoryIdsWithPreprocess(candidates, selectableFinalCount, currentInput, secondaryInput, out var selectedIds, out var error2, runtimeGeneration, snapshot))
-					{
-						Logger.Log("CompressedMemory", "[ERROR] preprocess failed hero=" + heroId + " error=" + error2);
-						sw.Stop();
-						Logger.Log("Logic", "[MemoryPerf] compressed_context_failed hero=" + heroId + " reason=preprocess_failed blocks=" + list.Count + " candidates=" + candidates.Count + " selectableFinal=" + selectableFinalCount + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
-						return "";
-					}
-					HashSet<int> selected = new HashSet<int>(selectedIds);
-					candidates = candidates.Where((MemoryRecallCandidate x) => selected.Contains(x.DisplayId)).OrderBy((MemoryRecallCandidate x) => x.Block.GameDayIndex).ThenBy((MemoryRecallCandidate x) => x.Block.StartHour).ToList();
-				}
-			}
+            bool selectedNormally = true;
+            try
+            {
+                if (selectableFinalCount > 0 && selectableBlocks.Count > 0)
+                {
+                    selectedNormally = TryBuildMemoryRecallCandidates(selectableBlocks, currentInput, secondaryInput, drafts,
+                        selectableCandidateLimit, out candidates, out _, runtimeGeneration, snapshot);
+                    if (selectedNormally && candidates.Count > selectableFinalCount)
+                    {
+                        selectedNormally = TrySelectMemoryIdsWithPreprocess(candidates, selectableFinalCount, currentInput,
+                            secondaryInput, out var selectedIds, out _, runtimeGeneration, snapshot);
+                        if (selectedNormally)
+                        {
+                            var selected = new HashSet<int>(selectedIds);
+                            candidates = candidates.Where(x => selected.Contains(x.DisplayId)).ToList();
+                        }
+                    }
+                }
+            }
+            catch (OperationCanceledException) { return ""; }
+            catch (Exception ex)
+            {
+                selectedNormally = false;
+                Logger.Log("CompressedMemory", "[WARN] selection failed hero=" + heroId + " type=" + ex.GetType().Name);
+            }
+            if (!snapshot.IsCurrent()) return "";
+            if (!selectedNormally)
+            {
+                // Local request snapshot only: no extra provider call, retry, or live draft read.
+                candidates = selectableBlocks.OrderByDescending(x => x.GameDayIndex).ThenByDescending(x => x.EndHour)
+                    .ThenByDescending(x => x.StartHour).ThenByDescending(x => x.CreatedUtcTicks)
+                    .GroupBy(x => (x.Id ?? "").Trim(), StringComparer.OrdinalIgnoreCase).Select(x => x.First())
+                    .Take(selectableFinalCount).Select(x => new MemoryRecallCandidate { Block = x, Score = 1.0 }).ToList();
+                snapshot.RecordBlockingFailure("Compressed memory recall fallback", "Selection failed; recent local memory blocks are retained for this request.", runtimeGeneration);
+                snapshot.SetBlockingDisplay("AF_MEMORY_UI_RecallFallbackTitle", "Using recent memories",
+                    MemoryFailureUiText.T("AF_MEMORY_UI_RecallFallback", "Memory selection failed. This request uses recent local memory blocks, including the latest block. No additional model request was made."), runtimeGeneration);
+                Logger.Log("CompressedMemory", "[MemoryFallback] hero=" + heroId + " blocks=" + (candidates.Count + 1));
+            }
+
 			if (latestBlock != null)
 			{
 				candidates.Add(new MemoryRecallCandidate
@@ -361,8 +379,11 @@ internal static string BuildCompressedMemoryContextById(string memoryId, string 
 				});
 			}
 		}
-		if (candidates.Count <= 0)
-		{
+		candidates = candidates.OrderByDescending(x => x.Block.GameDayIndex).ThenByDescending(x => x.Block.EndHour)
+            .ThenByDescending(x => x.Block.StartHour).ThenByDescending(x => x.Block.CreatedUtcTicks)
+            .GroupBy(x => (x.Block.Id ?? "").Trim(), StringComparer.OrdinalIgnoreCase).Select(x => x.First()).Take(finalCount).ToList();
+        if (candidates.Count <= 0)
+        {
 			sw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] compressed_context_done hero=" + heroId + " blocks=" + list.Count + " candidates=0 final=0 chars=0 ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return "";
@@ -404,7 +425,7 @@ internal static string BuildCompressedMemoryContextById(string memoryId, string 
 			stringBuilder.AppendLine();
 			num++;
 		}
-        if (!SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration)) return "";
+        if (snapshot == null || !snapshot.IsCurrent()) return "";
 		string result = stringBuilder.ToString().TrimEnd();
 		sw.Stop();
 		Logger.Log("Logic", "[MemoryPerf] compressed_context_done hero=" + heroId + " blocks=" + list.Count + " candidates=" + candidates.Count + " final=" + (num - 1) + " chars=" + result.Length + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
@@ -522,6 +543,10 @@ internal static string BuildMemoryPreprocessFormatError(MemoryRecallRequest requ
 internal sealed class MemoryRecallRequest
 {
     internal long Generation;
+    internal System.Threading.CancellationToken Cancellation;
+    internal Func<bool> IsCurrentOwner;
+    internal bool IsCurrent() => !Cancellation.IsCancellationRequested && SaveRuntimeGuard.IsCurrentGeneration(Generation)
+        && (IsCurrentOwner == null || IsCurrentOwner());
     internal int GameDay, FinalCount, CandidateLimit, PreprocessMode, BlockCount, DraftCount;
     internal string Scene, Overview, RecallQuery;
     internal List<CompressedMemoryBlock> Blocks;

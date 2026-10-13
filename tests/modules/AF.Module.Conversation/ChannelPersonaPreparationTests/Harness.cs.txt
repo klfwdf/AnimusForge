@@ -36,7 +36,7 @@ namespace AnimusForge {
   private void GetNpcPersonaStrings(Hero h,out string p,out string b){Probe.Read();p=h.P;b=h.B;}
   private void GetNpcPersonaGenerationRuntimeState(Hero h,out bool a,out bool c){Probe.Read();a=h.Active;c=h.Cooling;}
   internal static void GetNpcPersonaForExternal(Hero h,out string p,out string b){Probe.Read();p=h.P;b=h.B;}
-  internal static bool TryGetNpcPersonaGenerationStatusForExternal(Hero h,out bool needsGeneration,out bool inFlight){Probe.Read();Probe.StateReads++;needsGeneration=h!=null&&(string.IsNullOrWhiteSpace(h.P)||string.IsNullOrWhiteSpace(h.B));inFlight=h!=null&&(h.Active||h.Cooling);return Instance!=null&&h!=null;}
+  internal static bool TryGetNpcPersonaGenerationStatusForExternal(Hero h,out bool needsGeneration,out bool inFlight){Probe.Read();Probe.StateReads++;needsGeneration=h!=null&&(string.IsNullOrWhiteSpace(h.P)&&string.IsNullOrWhiteSpace(h.B));inFlight=h!=null&&(h.Active||h.Cooling);return Instance!=null&&h!=null;}
   internal static bool TryGetNpcPersonaGenerationRuntimeStateForExternal(Hero h,out bool active,out bool coolingDown){Probe.Read();active=h.Active;coolingDown=h.Cooling;return Instance!=null;}
   internal static string GetNpcPersonaContextForExternal(Hero h){Probe.Read();return "context";}
   internal static string BuildNpcPersonaGenerationHintForExternal(Hero h){Probe.Read();return "hint "+h.Name;}
@@ -47,7 +47,7 @@ namespace AnimusForge {
   private AnimusForge.Refactor.Adapters.NativeAdmissionApplicationAdapter NativeAdmissions=>new(this);
   internal static ShoutBehavior CurrentInstance;private static int _sceneHistorySessionId=1;private int _sceneConversationEpoch=1;private const int NativeConversationPersonaGenerationWaitTimeoutMs=40;
   internal sealed class NativeConversationAdmission {internal Hero Hero;internal string NpcName="NPC";internal int AgentIndex=1;internal long Generation=1;internal bool Valid=true;}
-  internal sealed class NpcDataPacket {internal int AgentIndex=1;internal string Name="NPC",UnnamedKey="key";internal bool IsHero=true;internal string PersonaContext;private string p="",b="";internal string PersonalityDesc{get=>p;set{Probe.Read();p=value;}}internal string BackgroundDesc{get=>b;set{Probe.Read();b=value;}} }
+  internal sealed class NpcDataPacket {internal int AgentIndex=1;internal string Name="NPC",UnnamedKey="key";internal bool IsHero=true;internal string PersonaContext;private string p="",b="";internal string PersonalityDesc{get=>p;set{Probe.Read();p=value;}}internal string BackgroundDesc{get=>b;set{Probe.Read();b=value;}} internal string GetPersonaDescription()=>p;internal void SetPersonaDescription(string value){Probe.Read();p=value;b="";} }
   internal bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission a,out string reason){Probe.Read();reason="";return ReferenceEquals(CurrentInstance,this)&&a.Valid&&SaveRuntimeGuard.IsCurrentGeneration(a.Generation);}
   private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string name,string target,int index,Func<T> f,T fallback)=>Probe.Run(()=>{Probe.BeforeOperation?.Invoke(name);return f();});
   private static void BuildHeroPersonaFallback(Hero h,out string p,out string b){Probe.Read();p="fallbackP";b="fallbackB";}
@@ -86,7 +86,7 @@ internal static class Program {
  static void Native(string kind){Probe.Reset();var h=new Hero("h");if(kind=="ready")h.P=h.B="ready";if(kind=="partial")h.P="keepP";if(kind=="failed")Probe.Mode="failed";if(kind=="timeout"){Probe.Mode="active";h.Active=true;}
   var o=new AnimusForge.ShoutBehavior();AnimusForge.ShoutBehavior.CurrentInstance=o;var a=new AnimusForge.ShoutBehavior.NativeConversationAdmission{Hero=h};bool stale=kind is "generation" or "owner" or "memory" or "target";
   if(stale)Probe.DuringGenerate=()=>{if(kind=="target")a.Valid=false;else o.Expire(kind);};
-  var task=Task.Run(()=>o.Native(a));bool result=Wait(task);Check(Probe.OffThread==0,"native "+kind+" owner-thread reads/UI");Check(result==(!stale&&kind!="failed"&&kind!="timeout"),"native "+kind+" readiness result");if(kind=="ready")Check(Probe.Generations==0,"ready native avoids generation");if(kind=="partial")Check(h.P=="keepP","native existing field preserved");
+  var task=Task.Run(()=>o.Native(a));bool result=Wait(task);Check(Probe.OffThread==0,"native "+kind+" owner-thread reads/UI");Check(result==(!stale&&kind!="failed"&&kind!="timeout"),"native "+kind+" readiness result");if(kind=="ready")Check(Probe.Generations==0,"ready native avoids generation");if(kind=="partial")Check(h.P=="keepP"&&Probe.Generations==0,"native existing field preserved");
  }
  static void Courier(bool inbound,string kind){Probe.Reset();var h=new Hero("h");if(kind=="ready")h.P=h.B="ready";if(kind=="failed")Probe.Mode="failed";if(kind=="timeout"){Probe.Mode="active";h.Active=true;}
   var o=new AnimusForge.CourierDeliveryBehavior{Session=new(){Participant=h,Inbound=inbound}};AnimusForge.CourierDeliveryBehavior.Instance=o;
@@ -101,7 +101,7 @@ internal static class Program {
   if(kind=="late_target")Probe.BeforeOperation=operation=>{if(operation=="scene_persona_accept")heroes[1]=new Hero("late_other");};
   var task=Task.Run(()=>o.Scene(list,heroes));Probe.Pump(()=>task.IsCompleted);task.GetAwaiter().GetResult();Check(Probe.OffThread==0,"scene "+kind+" all reads/writes/UI main");
   if(stale)Check(npc.PersonalityDesc==""&&npc.BackgroundDesc=="","scene "+kind+" rejects stale packet mutation");
-  else {Check(npc.PersonalityDesc==(kind=="ready"?"ready":kind=="partial"?"keepP":kind=="failed"?"fallbackP":kind=="unnamed"?"unnamedP":"generatedP"),"scene "+kind+" personality");Check(npc.BackgroundDesc==(kind=="ready"?"ready":kind=="partial"||kind=="failed"?"fallbackB":kind=="unnamed"?"unnamedB":"generatedB"),"scene "+kind+" background");}
+  else {Check(npc.PersonalityDesc==(kind=="ready"?"ready":kind=="partial"?"keepP":kind=="failed"?"fallbackP\n\nfallbackB":kind=="unnamed"?"unnamedP\n\nunnamedB":"generatedP\n\ngeneratedB"),"scene "+kind+" personality");Check(npc.BackgroundDesc=="","scene "+kind+" background");}
   if(kind is "partial" or "ready" or "unnamed")Check(Probe.Generations==0,"scene preserves both-empty-only generation rule");if(kind=="duplicate")Check(Probe.Hints==1&&Probe.Generations==1,"scene duplicate Hero processed once after success");
  }
  static void Extras(){

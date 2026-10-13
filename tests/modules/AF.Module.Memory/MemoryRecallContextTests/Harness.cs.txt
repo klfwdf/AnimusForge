@@ -3,12 +3,14 @@ using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using AnimusForge.Refactor.Runtime;
-namespace TaleWorlds.Library { internal static class MBMath { internal static int ClampInt(int value,int min,int max)=>Math.Max(min,Math.Min(max,value)); } internal static class TWParallel { internal static bool IsMainThread()=>false; } }
+namespace TaleWorlds.Library { internal static class MBMath { internal static int ClampInt(int value,int min,int max)=>Math.Max(min,Math.Min(max,value)); } internal static class TWParallel { internal static int MainThread; internal static bool IsMainThread()=>Environment.CurrentManagedThreadId==MainThread; } }
 namespace AnimusForge { internal static class SaveRuntimeGuard { internal static long Current=1; internal static long CaptureGeneration()=>Current; internal static bool IsCurrentGeneration(long g)=>g==Current; } }
 namespace AnimusForge
 {
+    internal static class AnimusForgeModulePaths { internal static string GetModuleDataFilePath(string name) => System.IO.Path.Combine(Environment.CurrentDirectory,name); }
+    internal static class MemorySystemFactProjection { internal static string ProjectRecordedFactForPrompt(string text) => text; }
     internal static class MemoryRecoveryStateOwner { @@INITIAL_GUARD@@ }
-    internal static class MyBehavior
+    internal static partial class MyBehavior
     {
         internal static bool IsMemoryRecoveryHexDigest(string value) => value != null && value.Length == 64 && value.All(c => (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
         internal static bool IsValidMemoryCommitMarker(string id,string part,string hash) => IsMemoryRecoveryHexDigest(id) && IsMemoryRecoveryHexDigest(hash) && (part == "user" || part == "fact" || part == "assistant");
@@ -27,12 +29,13 @@ namespace AnimusForge
     }
     internal static class AIConfigHandler
     {
+        internal static bool Success=true; internal static int Calls; internal static Action OnCall;
         internal static string Response="{\"rule_codes\":[],\"memory_ids\":[]}";
         internal static string StrictPreprocessJsonSystemPrompt=>"system";
         internal static string BuildMemoryPreprocessFallbackGameDateForExternal(int day)=>"day "+day;
         internal static string BuildMemoryPreprocessCandidateLineForExternal(int id,string date,string age,string hours,string title)=>id+" "+date+age+hours+title;
         internal static string BuildMemoryPreprocessUserPromptForExternal(int mode,int count,string current,string secondary,string scene,string candidates)=>current+secondary+scene+candidates;
-        internal static bool TryCallAuxiliarySimpleDialogue(object[] messages,int tokens,float temperature,out string content,out string error) { content=Response; error=""; return true; }
+        internal static bool TryCallAuxiliarySimpleDialogueOnceForExternal(object[] messages,int tokens,float temperature,out string content,out string error) { Calls++; OnCall?.Invoke(); content=Response; error=Success ? "" : "timeout"; return Success; }
         internal static bool TryValidateStrictPreprocessJsonEnvelope(string content,bool requireMemoryIds,bool requireMentionedEntities,out JObject obj,out string error)
         { try { obj=JObject.Parse(content); error=""; return obj["rule_codes"] is JArray && obj["memory_ids"] is JArray; } catch { obj=null;error="invalid_json";return false; } }
     }
@@ -51,24 +54,64 @@ namespace AnimusForge
             var missing=new List<CompressedMemoryBlock>{Block("missing",1,""),Block("good",2),Block("latest",3)};
             Check(MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(missing,"query","",null,1,out var nonempty,out _,1,request)&&nonempty[0].Block.Id=="latest","missing rich title skipped not summary embedding fallback");
             engine.IsAvailable=false;
-            Check(!MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,1,out _,out _,1,request)&&request.BlockingMessage.Contains("不会静默"),"unavailable embedding blocks above cap");
-            Check(request.BlockingDisplay.Message.Resolve().Contains("will not silently") && request.BlockingDisplay.Title.Resolve() == "Compressed memory recall blocked", "embedding failure has separate English display and unchanged diagnostic");
+            Check(!MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,1,out _,out _,1,request)&&request.BlockingMessage.Contains("unavailable"),"unavailable embedding blocks above cap");
+            Check(request.BlockingDisplay.Message.Resolve().Contains("recent local memory blocks") && request.BlockingDisplay.Title.Resolve() == "Compressed memory recall blocked", "embedding failure has separate English display and unchanged diagnostic");
             engine.IsAvailable=true;engine.Compute=text=>text=="query"?new float[]{1,0}:null;
-            Check(!MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,1,out _,out _,1,request)&&request.BlockingMessage.Contains("修复"),"all title embedding failures block");
+            Check(!MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,1,out _,out _,1,request)&&request.BlockingMessage.Contains("Fix"),"all title embedding failures block");
             Check(request.BlockingDisplay.Message.Resolve().Contains("Fix the embedding model"), "title embedding display remediation");
             engine.Compute=text=>new float[]{1,0}; request.BlockingTitle=null;
             var candidates=blocks.Select((b,i)=>new MemoryRecallCandidate{Block=b,DisplayId=i+1,Score=i}).ToList();
             AIConfigHandler.Response="{\"rule_codes\":[],\"memory_ids\":[999,\"#2\",2]}";
             Check(MemoryRecallContextOwner.TrySelectMemoryIdsWithPreprocess(candidates,2,"query","",out var ids,out _,1,request)&&ids.SequenceEqual(new[]{2,3}),"invalid preselected ID ignored dedup fill score order");
             string context=MemoryRecallContextOwner.BuildCompressedMemoryContextById("ada","query","",request);
-            Check(context.Contains("summary new")&&context.Contains("[AFEF NPC行为补充] fact new")&&context.Contains("时")&&context.Contains("天前"),"full context latest summary AFEF age hour preserved");
+            Check(context.Contains("summary new")&&context.Contains("[AFEF NPC行为补充] fact new")&&context.Contains(MemoryRecallContextOwner.FormatMemoryHourRange(3,4))&&context.Contains(MemoryRecallContextOwner.FormatCompressedMemoryAgeSuffix(blocks[1],10)),"full context latest summary AFEF age hour preserved");
             Check(context.Contains("summary middle")&&!context.Contains("summary old"),"preprocess limit plus mandatory latest block");
+            var unavailableRequest=Request(blocks); unavailableRequest.CandidateLimit=1; engine.IsAvailable=false;
+            int apiBefore=AIConfigHandler.Calls;
+            string fallback=MemoryRecallContextOwner.BuildCompressedMemoryContextById("ada","query","",unavailableRequest);
+            Check(fallback.Contains("summary middle") && fallback.Contains("summary new") && !fallback.Contains("summary old"),"embedding failure injects recent blocks including latest within cap");
+            Check(AIConfigHandler.Calls==apiBefore,"embedding fallback does not call selection API");
+            Check(unavailableRequest.BlockingDisplay.Message.Resolve().Contains("recent local memory blocks"),"fallback UI reports retained memory");
+            foreach(string language in new[]{"CN","EN"}) {
+                TaleWorlds.Localization.TextObject.Translations.Clear();
+                foreach(var entry in System.Xml.Linq.XDocument.Load("UI-"+language+".xml").Descendants("string"))
+                    TaleWorlds.Localization.TextObject.Translations[(string)entry.Attribute("id")]=(string)entry.Attribute("text");
+                string display=unavailableRequest.BlockingDisplay.Message.Resolve();
+                Check(display.Contains(language=="CN"?"最新块":"latest block") && !display.Contains("will not silently"),"actual fallback display CN/EN resource "+language);
+            }
+            TaleWorlds.Localization.TextObject.Translations.Clear();
+            engine.IsAvailable=true; AIConfigHandler.Success=false;
+            foreach(int selectionMode in new[]{1,2}) {
+                var failed=Request(blocks); failed.PreprocessMode=selectionMode; apiBefore=AIConfigHandler.Calls;
+                fallback=MemoryRecallContextOwner.BuildCompressedMemoryContextById("ada","query","",failed);
+                Check(fallback.Contains("summary middle") && fallback.Contains("summary new") && AIConfigHandler.Calls==apiBefore+1,"selection timeout falls back without retry mode "+selectionMode);
+            }
+            AIConfigHandler.Success=true; AIConfigHandler.Response="not json";
+            fallback=MemoryRecallContextOwner.BuildCompressedMemoryContextById("ada","query","",Request(blocks));
+            Check(fallback.Contains("summary middle") && fallback.IndexOf("summary middle")<fallback.IndexOf("summary new"),"invalid selection keeps recent blocks in time order");
+            var duplicate=Request(new(){Block("old",1),Block("middle",2),Block("new",3),Block(" NEW ",3)}); duplicate.CandidateLimit=1; engine.IsAvailable=false;
+            fallback=MemoryRecallContextOwner.BuildCompressedMemoryContextById("ada","query","",duplicate);
+            Check(fallback.Contains("summary middle") && System.Text.RegularExpressions.Regex.Matches(fallback,"summary ").Count==2,"fallback deduplicates stable IDs before cap");
+            Check(MemoryRecallContextOwner.BuildCompressedMemoryContextById("ada","query","",Request(new()))=="","genuinely empty memory stays empty");
+            engine.IsAvailable=true; AIConfigHandler.Success=false; AIConfigHandler.OnCall=()=>SaveRuntimeGuard.Current=2;
+            Check(MemoryRecallContextOwner.BuildCompressedMemoryContextById("ada","query","",Request(blocks))=="","save changed during failed selection never falls back");
+            AIConfigHandler.OnCall=null; AIConfigHandler.Success=true; SaveRuntimeGuard.Current=1;
             var queries=HistoryArchiveRecallOwner.BuildHistoryRecallQueryInputs(null,"trade horses; debt payment","duel stake");
             Check(queries.Count>1&&queries.Count<=4&&queries.All(x=>x.Weight==1&&x.Terms.Count>0),"multi intent query both speakers bounded");
             var older=Enumerable.Range(0,300).Select(i=>new HistoryLineEntry{Index=i,Line="trade debt "+i}).ToList();
             var hits=HistoryArchiveRecallOwner.FindRelevantArchiveHits(older,queries,4,out var used,out var mode,out var rerank,out var recall);
             Check(hits.Select(x=>x.Entry.Index).SequenceEqual(new[]{299,297})&&mode=="semantic_multi"&&rerank==4&&recall==10,"archive per-intent rerank four then adjacent suppression yields two");
             Check(hits.Select(x=>x.Entry.Index).Zip(hits.Select(x=>x.Entry.Index).Skip(1),(a,b)=>Math.Abs(a-b)>1).All(x=>x),"archive adjacent suppression");
+            using (var cancellation=new System.Threading.CancellationTokenSource()) {
+                var cancelled=Request(blocks); cancelled.Cancellation=cancellation.Token;
+                AIConfigHandler.Success=false; AIConfigHandler.OnCall=()=>cancellation.Cancel();
+                Check(MemoryRecallContextOwner.BuildCompressedMemoryContextById("ada","query","",cancelled)=="","owner cancellation during failure never falls back");
+            }
+            bool ownerCurrent=true; var retired=Request(blocks); retired.IsCurrentOwner=()=>ownerCurrent;
+            AIConfigHandler.OnCall=()=>ownerCurrent=false;
+            Check(MemoryRecallContextOwner.BuildCompressedMemoryContextById("ada","query","",retired)=="","owner retired during failure never falls back");
+            AIConfigHandler.Success=true; AIConfigHandler.OnCall=null;
+            SnapshotChecks.Run();
             SaveRuntimeGuard.Current=2;
             int before=engine.Calls;
             Check(!MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,1,out _,out var stale,1,request)&&stale=="memory_recall_stale_generation"&&engine.Calls==before,"cancel stale generation before embedding");

@@ -6,7 +6,7 @@
   "persona_system_npc_identity": " in the clan, your identity is ",
   "persona_system_npc_reputation": ", you ",
   "persona_system_npc_equipment": ", you are wearing ",
-  "persona_system_npc_personality": ", your personality is: ",
+  "persona_system_npc_personality": ". Persona: ",
   "persona_system_npc_background": ", your background is: ",
   "persona_system_npc_relationship_sep": ". ",
   "persona_system_npc_etiquette_sep": ". ",
@@ -32,7 +32,7 @@
   "persona_scene_npc_equipment_end": ".",
   "persona_scene_npc_party_transfer_note": "Note: You cannot transfer your prisoners and troops at this time.",
   "persona_scene_nonhero_prisoner_none": "Your party has no prisoners",
-  "persona_scene_npc_personality": "Your personality is: ",
+  "persona_scene_npc_personality": "Persona: ",
   "persona_scene_npc_personality_end": ".",
   "persona_scene_npc_background": "Your background is: ",
   "persona_scene_npc_age": "Your age is ",
@@ -814,5 +814,7 @@
   "campaign_kill_clan_tail_1100": "The deceased was publicly executed at {1} at the hands of {2}.",
   "campaign_kill_clan_tail_1101": "The deceased was publicly executed at {1} at the hands of {2}, on the charge of {3}.",
   "campaign_kill_clan_tail_1110": "The deceased was publicly executed by {3} at {1} at the hands of {2}.",
-  "campaign_kill_clan_tail_1111": "The deceased was publicly executed by {3} at {1} at the hands of {2}, on the charge of {4}."
+  "campaign_kill_clan_tail_1111": "The deceased was publicly executed by {3} at {1} at the hands of {2}, on the charge of {4}.",
+  "memory_fact_captivity_released": "The speaking lord agreed to and actually released the player; this captivity has ended.",
+  "memory_fact_captivity_opening": "The captor initiated a conversation with the captive player."
 }

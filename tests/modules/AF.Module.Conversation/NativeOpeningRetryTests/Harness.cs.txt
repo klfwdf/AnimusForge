@@ -20,6 +20,13 @@ namespace TaleWorlds.CampaignSystem.Conversation { public sealed class Conversat
 namespace TaleWorlds.MountAndBlade { public sealed class Mission { public static Mission Current = new(); } }
 namespace AnimusForge.Refactor.Modules { }
 namespace AnimusForge {
+ // This regression exercises ordinary lord/companion sources. The real captivity
+ // adapter and router together are covered by PlayerCaptivityConversationTests.
+ internal static class PlayerCaptivityConversation {
+  internal static bool HasSession=>false;
+  internal static bool HasPendingNativeOpeningForCurrentConversation()=>false;
+  internal static bool TryConsumePendingNativeOpening(Hero hero,out string fact,out string prompt){fact=prompt="";return false;}
+ }
  internal sealed class DuelSettings {internal bool EnableProactiveNpcRequests=true;private static readonly DuelSettings Value=new();internal static DuelSettings GetSettings()=>Value;}
  internal static class Logger {internal static readonly List<string> Entries=new();internal static void Log(string area,string message){Entries.Add(message);}}
  internal static class SaveRuntimeGuard { internal static long Generation=1; internal static long CaptureGeneration()=>Generation; internal static bool IsCurrentGeneration(long generation)=>generation==Generation; }

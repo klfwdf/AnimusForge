@@ -107,6 +107,7 @@ public static class Patch_Conversation_Start_Intercept
 	{
 		try
 		{
+			if (PlayerCaptivityConversation.IsOpening) return true;
 			if (LordEncounterBehavior.HasPendingNativeEncounterAttackForExternal())
 			{
 				Logger.LogTrace("Patch_Conversation_Start_Intercept", "Native encounter attack is pending; suppress native " + __originalMethod?.Name + ".");

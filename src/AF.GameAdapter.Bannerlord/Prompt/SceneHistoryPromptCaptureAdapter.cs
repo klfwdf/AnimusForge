@@ -518,7 +518,7 @@ internal static void TryRecordNativeConversationCurrentDialogLine(NativeConversa
 
 	}
 
-internal static Func<string> CaptureNativeConversationPersistedHistoryWork(NativeConversationSessionOwner nativeSessions, SceneAgentIdentityPromptCaptureAdapter identity, Hero targetHero, CharacterObject targetCharacter, string playerText, string currentNativeDialogText, bool includeCurrentActiveSceneSession, long generation)
+internal static Func<string> CaptureNativeConversationPersistedHistoryWork(NativeConversationSessionOwner nativeSessions, SceneAgentIdentityPromptCaptureAdapter identity, Hero targetHero, CharacterObject targetCharacter, string playerText, string currentNativeDialogText, bool includeCurrentActiveSceneSession, long generation, Action<MyBehavior.HistoryPromptSnapshot> snapshotCaptured = null)
 
     {
 
@@ -529,6 +529,10 @@ internal static Func<string> CaptureNativeConversationPersistedHistoryWork(Nativ
         {
 
             Hero hero = targetHero ?? targetCharacter?.HeroObject;
+            int memoryAgentIndex = SceneAgentIdentityPromptCaptureAdapter.TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+            // Preserve the existing GCCZ personal-memory exclusion for raw history.
+            Action<MyBehavior.HistoryPromptSnapshot> capture = AfGcczShoutBridge.ShouldUsePersistentPersonalMemory(hero, targetCharacter, memoryAgentIndex)
+                ? snapshotCaptured : null;
 
             Func<string> work;
 
@@ -558,7 +562,7 @@ internal static Func<string> CaptureNativeConversationPersistedHistoryWork(Nativ
 
                 }
 
-                Func<string> captured = MyBehavior.CaptureHistoryContextWorkById(memoryId, memoryName, playerText, secondaryInput, includeCurrentActiveSceneSession, generation);
+                Func<string> captured = MyBehavior.CaptureHistoryContextWorkById(memoryId, memoryName, playerText, secondaryInput, includeCurrentActiveSceneSession, generation, capture, memoryAgentIndex, includeCurrentRawSession: true);
 
                 if (captured == null) return null;
 
@@ -586,7 +590,7 @@ internal static Func<string> CaptureNativeConversationPersistedHistoryWork(Nativ
 
                     secondaryInput = GetLatestNativeConversationNpcUtteranceForExternal(nativeSessions, targetHero, targetCharacter, SceneAgentIdentityPromptCaptureAdapter.TryResolveNativeConversationAgentIndex(targetHero, targetCharacter));
 
-                work = MyBehavior.CaptureHistoryContextWorkForHero(hero, playerText, secondaryInput, includeCurrentActiveSceneSession, generation);
+                work = MyBehavior.CaptureHistoryContextWorkForHero(hero, playerText, secondaryInput, includeCurrentActiveSceneSession, generation, capture, memoryAgentIndex, includeCurrentRawSession: true);
 
             }
 
@@ -3222,7 +3226,7 @@ internal static string BuildSceneFirstMeetingNpcFactSection(int agentIndex, Dict
 
     private readonly PersistedHistoryCapturePorts _persisted;
 
-    // Metadata only: the original request DTO remains the sole text/task cache.
+    // Request-local stamps bind captured memory to the original task/session; no live draft reread.
 
     private readonly ConditionalWeakTable<ShoutBehavior.PrecomputedShoutRagContext, PersistedHistoryBinding> _historyBindings = new();
 
@@ -3249,6 +3253,8 @@ internal static string BuildSceneFirstMeetingNpcFactSection(int agentIndex, Dict
         internal string Input;
 
         internal Hero Hero;
+
+        internal MyBehavior.HistoryPromptSnapshot Snapshot;
 
     }
 
@@ -3314,7 +3320,7 @@ internal static string BuildSceneFirstMeetingNpcFactSection(int agentIndex, Dict
 
         if(hero!=null) return SharedPromptCaptureBannerlordAdapter.CaptureHistoryContextWorkForHero(
 
-            _persisted.Memory,hero,stamp.Input,secondary,false,stamp.Generation);
+            _persisted.Memory,hero,stamp.Input,secondary,false,stamp.Generation, snapshot => stamp.Snapshot = snapshot, agentIndex);
 
         NpcDataPacket npc=ShoutUtils.ExtractNpcData(agent);
 
@@ -3322,7 +3328,7 @@ internal static string BuildSceneFirstMeetingNpcFactSection(int agentIndex, Dict
 
         return SharedPromptCaptureBannerlordAdapter.CaptureHistoryContextWorkById(_persisted.Memory,id,name,
 
-            stamp.Input,secondary,false,stamp.Generation);
+            stamp.Input,secondary,false,stamp.Generation, snapshot => stamp.Snapshot = snapshot, agentIndex);
 
     }
 
@@ -3346,16 +3352,16 @@ internal static string BuildSceneFirstMeetingNpcFactSection(int agentIndex, Dict
 
     }
 
-    internal string BuildPersistedHeroHistoryContext(int agentIndex, string currentInput, Dictionary<int,Hero> resolvedHeroes)
-
+    internal MyBehavior.HistoryPromptSnapshot BuildPersistedHeroHistoryContext(int agentIndex, string currentInput, Dictionary<int,Hero> resolvedHeroes)
     {
-
-        try { return RunPersistedHistoryWorkAsync(agentIndex,CapturePersistedHistoryStamp(currentInput,agentIndex,resolvedHeroes)).GetAwaiter().GetResult(); }
-
-        catch { return ""; }
-
+        var stamp = CapturePersistedHistoryStamp(currentInput,agentIndex,resolvedHeroes);
+        try
+        {
+            RunPersistedHistoryWorkAsync(agentIndex,stamp).GetAwaiter().GetResult();
+            return IsPersistedHistoryCurrent(stamp) && stamp.Snapshot?.IsCurrent() == true ? stamp.Snapshot : null;
+        }
+        catch { return null; }
     }
-
 
 
 internal string GetOrBuildPrecomputedPersistedHistoryContext(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, ShoutBehavior.PrecomputedShoutRagContext> precomputedContexts)
@@ -3428,7 +3434,7 @@ internal string GetOrBuildPrecomputedPersistedHistoryContext(int agentIndex, str
 
 }
 
-			string direct = BuildPersistedHeroHistoryContext(agentIndex, currentInput, resolvedHeroes);
+			string direct = BuildPersistedHeroHistoryContext(agentIndex, currentInput, resolvedHeroes)?.Context ?? "";
 
 			sw.Stop();
 
@@ -3538,7 +3544,7 @@ internal Task<string> StartPrecomputedPersistedHistoryContextTask(int agentIndex
 
 	}
 
-internal async Task<string> AwaitPrecomputedPersistedHistoryContextAsync(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, ShoutBehavior.PrecomputedShoutRagContext> precomputedContexts, Task<string> startedTask, string reason)
+internal async Task<MyBehavior.HistoryPromptSnapshot> AwaitPrecomputedPersistedHistoryContextAsync(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, ShoutBehavior.PrecomputedShoutRagContext> precomputedContexts, Task<string> startedTask, string reason)
 
 	{
 
@@ -3546,7 +3552,7 @@ internal async Task<string> AwaitPrecomputedPersistedHistoryContextAsync(int age
 
 		{
 
-			return GetOrBuildPrecomputedPersistedHistoryContext(agentIndex, currentInput, resolvedHeroes, precomputedContexts);
+			startedTask = StartPrecomputedPersistedHistoryContextTask(agentIndex, currentInput, resolvedHeroes, precomputedContexts, reason);
 
 		}
 
@@ -3558,7 +3564,7 @@ internal async Task<string> AwaitPrecomputedPersistedHistoryContextAsync(int age
 
 			string built = ((await startedTask) ?? "").Trim();
 
-            if (!_historyTaskBindings.TryGetValue(startedTask, out var taskStamp) || !IsPersistedHistoryCurrent(taskStamp)) return "";
+            if (!_historyTaskBindings.TryGetValue(startedTask, out var taskStamp) || !IsPersistedHistoryCurrent(taskStamp)) return null;
 
 			if (precomputedContexts != null && agentIndex >= 0)
 
@@ -3568,7 +3574,7 @@ internal async Task<string> AwaitPrecomputedPersistedHistoryContextAsync(int age
 
 				{
 
-					if (!precomputedContexts.TryGetValue(agentIndex, out var value) || value == null) return "";
+					if (!precomputedContexts.TryGetValue(agentIndex, out var value) || value == null) return null;
 
                     PersistedHistoryStamp stamp = ReadPersistedHistoryBinding(value);
 
@@ -3578,7 +3584,7 @@ internal async Task<string> AwaitPrecomputedPersistedHistoryContextAsync(int age
 
                         || !ReferenceEquals(stamp.Hero,hero)
 
-                        || (value.PersistedHistoryContextTask != null && !ReferenceEquals(value.PersistedHistoryContextTask,startedTask))) return "";
+                        || (value.PersistedHistoryContextTask != null && !ReferenceEquals(value.PersistedHistoryContextTask,startedTask))) return null;
 
                     value.PersistedHistoryContext = built;
 
@@ -3600,7 +3606,7 @@ internal async Task<string> AwaitPrecomputedPersistedHistoryContextAsync(int age
 
 			Logger.Log("Logic", "[MemoryPerf] parallel_history_join reason=" + (reason ?? "") + " agent=" + agentIndex + " chars=" + built.Length + " hasValue=" + !string.IsNullOrWhiteSpace(built) + " waitMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 
-			return built;
+			return taskStamp.Snapshot?.IsCurrent() == true ? taskStamp.Snapshot : null;
 
 		}
 
@@ -3644,7 +3650,7 @@ internal async Task<string> AwaitPrecomputedPersistedHistoryContextAsync(int age
 
 			Logger.Log("Logic", "[MemoryPerf] parallel_history_join_failed reason=" + (reason ?? "") + " agent=" + agentIndex + " waitMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " error=" + ex.Message);
 
-			return "";
+			return null;
 
 		}
 

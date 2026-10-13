@@ -1286,9 +1286,9 @@ public static class EncyclopediaHeroPersonaPatch
 
 		}
 
-		MyBehavior.GetNpcPersonaForExternal(hero, out var personality, out var background);
+		string description = MyBehavior.GetNpcPersonaDescriptionForExternal(hero);
 
-		string text = BuildPersonaInformationText(personality, background, MyBehavior.GetNpcPersonaContextForExternal(hero, forUi: true));
+		string text = BuildPersonaInformationText(description, MyBehavior.GetNpcPersonaContextForExternal(hero, forUi: true));
 
 		if (!string.IsNullOrWhiteSpace(text))
 
@@ -1650,15 +1650,13 @@ public static class EncyclopediaHeroPersonaPatch
 
 
 
-	private static string BuildPersonaInformationText(string personality, string background, string personaContext)
+	private static string BuildPersonaInformationText(string description, string personaContext)
 
 	{
 
-		string text = (personality ?? "").Trim();
+		string text = (description ?? "").Trim();
 
-		string text2 = (background ?? "").Trim();
-
-		if (string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(text2))
+		if (string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(personaContext))
 
 		{
 
@@ -1666,23 +1664,9 @@ public static class EncyclopediaHeroPersonaPatch
 
 		}
 
-		List<string> parts = new List<string>();
-
-		if (!string.IsNullOrWhiteSpace(text))
-
-		{
-
-			parts.Add(new TextObject("{=AF_UI_Persona_PersonalitySection}Personality").ToString() + "\n" + text);
-
-		}
-
-		if (!string.IsNullOrWhiteSpace(text2))
-
-		{
-
-			parts.Add(new TextObject("{=AF_UI_Persona_BackgroundSection}History background").ToString() + "\n" + text2);
-
-		}
+        List<string> parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(text))
+            parts.Add(new TextObject("{=AF_UI_Persona_PersonalitySection}Persona").ToString() + "\n" + text);
 
 		if (!string.IsNullOrWhiteSpace(personaContext))
 		{

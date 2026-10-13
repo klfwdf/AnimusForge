@@ -47,6 +47,7 @@ public static class Patch_ConversationManager_OpenMapConversation
 		try
 		{
 			Logger.LogTrace("Conversation_Intercept", ">>> OpenMapConversation Prefix executing (" + __originalMethod?.Name + ") <<<");
+			if (PlayerCaptivityConversation.IsOpening) return true;
 			if (LordEncounterBehavior.HasPendingNativeEncounterAttackForExternal())
 			{
 				Logger.LogTrace("Conversation_Intercept", "Native encounter attack is pending; suppress OpenMapConversation and skip custom encounter menu redirect.");

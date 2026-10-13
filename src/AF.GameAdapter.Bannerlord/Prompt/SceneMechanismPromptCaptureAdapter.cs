@@ -672,6 +672,8 @@ internal bool CanInjectRuleTopicIntoPreprocessForCurrentInteraction(string ruleI
 
 		}
 
+		if (PlayerCaptivityConversation.ExcludesRule(id)) return false;
+		if (id == PlayerCaptivityConversation.RuleId) return targetAgentIndex < 0 && PlayerCaptivityConversation.CanRelease(hero);
 		if (NoblePrisonerEscortBehavior.IsEscortedAgent(targetAgentIndex))
 
 		{

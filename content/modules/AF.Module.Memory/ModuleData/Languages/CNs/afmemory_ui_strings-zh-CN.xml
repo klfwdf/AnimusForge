@@ -259,7 +259,7 @@
     <string id="AF_MEMORY_UI_MajorFailureLine" text="{NAME} 重大履历：{ERROR}" />
     <string id="AF_MEMORY_UI_OverviewFailureLine" text="{NAME} 记忆总览：{ERROR}" />
     <string id="AF_MEMORY_UI_RecallBlockedTitle" text="压缩记忆召回被阻塞" />
-    <string id="AF_MEMORY_UI_RecallEmbeddingUnavailable" text="本地 ONNX embedding 不可用，无法对超过候选上限的压缩记忆执行富标题 RAG。&#10;&#10;请修复 embedding 模型或降低记忆块数量后重试。系统不会静默改用日期或全文兜底。" />
+    <string id="AF_MEMORY_UI_RecallEmbeddingUnavailable" text="本地 ONNX embedding 不可用，无法按富标题检索压缩记忆。请检查 embedding 模型；本轮可改用本地最近的记忆块。" />
     <string id="AF_MEMORY_UI_RecallTitleEmbeddingFailed" text="压缩记忆富标题 embedding 全部失败。&#10;&#10;请修复 embedding 模型后重试。" />
     <string id="AF_MEMORY_UI_RecallExceptionTitle" text="压缩记忆召回异常" />
     <string id="AF_MEMORY_UI_PreprocessFailedTitle" text="压缩记忆前处理失败" />
@@ -316,5 +316,7 @@
     <string id="AF_MEMORY_UI_HistoryEditDoneCompressed" text="已修改该条记录（该日记忆已压缩，压缩内容不受影响）。" />
     <string id="AF_MEMORY_UI_HistoryDeleteMainThread" text="只能在游戏主线程删除记录。" />
     <string id="AF_MEMORY_UI_HistoryDeleteFailed" text="删除失败，记录未改动。" />
+    <string id="AF_MEMORY_UI_RecallFallbackTitle" text="使用最近记忆" />
+    <string id="AF_MEMORY_UI_RecallFallback" text="记忆选择失败，本轮已使用本地最近的记忆块，并保留最新块；未增加模型请求。" />
   </strings>
 </base>

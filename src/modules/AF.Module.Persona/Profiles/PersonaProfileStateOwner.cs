@@ -11,8 +11,7 @@ internal sealed class NpcPersonaTrait
 
 internal sealed class NpcPersonaGeneratedData
 {
-    internal string Personality = "";
-    internal string Background = "";
+    internal string Description = "";
     internal List<NpcPersonaTrait> Traits = new List<NpcPersonaTrait>();
     internal List<string> Motivations = new List<string>();
     internal List<string> Values = new List<string>();
@@ -47,7 +46,7 @@ internal sealed class PersonaProfileStateOwner
 		{
 			return null;
 		}
-		value = new MyBehavior.NpcPersonaProfile();
+		value = new MyBehavior.NpcPersonaProfile { Description = "", SchemaVersion = 3 };
 		Profiles[stringId] = value;
 		return value;
 	}
@@ -66,10 +65,11 @@ internal sealed class PersonaProfileStateOwner
 		{
 			Profiles = new Dictionary<string, MyBehavior.NpcPersonaProfile>();
 		}
-		string text = (profile?.Personality ?? "").Trim();
-		string text2 = (profile?.Background ?? "").Trim();
+		bool retainExplicitClear = profile?.SchemaVersion >= 3;
+		profile?.NormalizeDescription();
+		string text = profile?.Description ?? "";
 		string text3 = (profile?.VoiceId ?? "").Trim();
-		if (string.IsNullOrEmpty(text) && string.IsNullOrEmpty(text2) && string.IsNullOrEmpty(text3)
+		if (!retainExplicitClear && string.IsNullOrEmpty(text) && string.IsNullOrEmpty(text3)
 			&& (profile?.Traits == null || profile.Traits.Count == 0)
 			&& (profile?.Motivations == null || profile.Motivations.Count == 0)
 			&& (profile?.Values == null || profile.Values.Count == 0)
@@ -84,8 +84,7 @@ internal sealed class PersonaProfileStateOwner
 			profile = new MyBehavior.NpcPersonaProfile();
 		}
 		stamp(stringId, profile);
-		profile.Personality = text;
-		profile.Background = text2;
+		profile.Description = text;
 		profile.VoiceId = text3;
 		profile.SpeechStyle = (profile.SpeechStyle ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		Profiles[stringId] = profile;
@@ -98,9 +97,13 @@ internal void GetNpcPersonaStrings(string heroId, out string personality, out st
  background = "";
  if (!string.IsNullOrEmpty(heroId) && Profiles != null && Profiles.TryGetValue(heroId, out var value) && value != null)
  {
-  personality = value.Personality ?? "";
-  background = value.Background ?? "";
+  personality = value.Description ?? "";
  }
+}
+internal string GetDescription(string heroId)
+{
+ return !string.IsNullOrEmpty(heroId) && Profiles != null && Profiles.TryGetValue(heroId, out var value)
+  ? value?.Description ?? "" : "";
 }
 internal string GetNpcVoiceId(string heroId)
 {

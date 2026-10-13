@@ -1085,7 +1085,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableDevEditHistory { get; set; } = false;
 
-	[SettingPropertyBool("{=AF_MCM_Dev_AdultPersona}Generate persona and background for new adults", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Dev_AdultPersona_Hint}When enabled, the preprocessing API generates persona and history for hero children when they become adults. Existing persona or background is never overwritten.")]
+	[SettingPropertyBool("{=AF_MCM_Dev_AdultPersona}Generate persona for new adults", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Dev_AdultPersona_Hint}When enabled, the preprocessing API generates a persona for hero children when they become adults. Existing persona text is never overwritten.")]
 	[SettingPropertyGroup("{=AF_MCM_Dev_Group}4. Developer options")]
 	public bool EnableAdultHeroPersonaAutoGeneration { get; set; } = false;
 
@@ -1829,7 +1829,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		set => _npcPersonaGenerationRequirements = NormalizeNpcPersonaGenerationRequirementsText(value);
 	}
 
-	[SettingPropertyButton("{=AF_MCM_Editor_Persona_Title}Edit NPC personality/background requirements", -1, true, "", Content = "{=AF_MCM_Common_OpenEditor}Open editor", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Editor_Persona_Hint}You can change length, style, source selection, and regeneration de-duplication. Saving blank removes the extra requirements.")]
+	[SettingPropertyButton("{=AF_MCM_Editor_Persona_Title}Edit NPC persona requirements", -1, true, "", Content = "{=AF_MCM_Common_OpenEditor}Open editor", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Editor_Persona_Hint}You can change length, style, source selection, and regeneration de-duplication. Saving blank removes the extra requirements.")]
 	[SettingPropertyGroup("{=AF_MCM_Prompt_Group}9. Prompt extensions")]
 	public Action EditNpcPersonaGenerationRequirements { get; set; }
 
@@ -3144,7 +3144,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		try
 		{
 			string initialText = NpcPersonaGenerationRequirements ?? "";
-			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_Persona_Title", "Edit NPC personality/background requirements"), Ui("AF_MCM_Editor_Persona_Description", "Regular heroes and promoted companions share these complete writing requirements; built-in text keeps only the generation task, JSON protocol, and fact constraints."), Ui("AF_MCM_Editor_Persona_Hint", "You can change length, style, source selection, and regeneration de-duplication. Saving blank removes the extra requirements."), initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_Persona_Title", "Edit NPC persona requirements"), Ui("AF_MCM_Editor_Persona_Description", "Regular heroes and promoted companions share these complete writing requirements; built-in text keeps only the generation task, JSON protocol, and fact constraints."), Ui("AF_MCM_Editor_Persona_Hint", "You can change length, style, source selection, and regeneration de-duplication. Saving blank removes the extra requirements."), initialText, delegate(string input)
 			{
 				SaveNpcPersonaGenerationRequirementsFromEditor(input);
 			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
@@ -3530,12 +3530,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
 			InformationManager.DisplayMessage(new InformationMessage(persistedToFile
-				? Ui("AF_MCM_Editor_PersonaRequirements_Saved", "[Prompt extension] NPC personality and background generation requirements saved.")
-				: Ui("AF_MCM_Editor_PersonaRequirements_SessionOnly", "[Prompt extension] NPC personality and background generation requirements are active for this session, but local persistence failed. Check the log."), persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+				? Ui("AF_MCM_Editor_PersonaRequirements_Saved", "[Prompt extension] NPC persona generation requirements saved.")
+				: Ui("AF_MCM_Editor_PersonaRequirements_SessionOnly", "[Prompt extension] NPC persona generation requirements are active for this session, but local persistence failed. Check the log."), persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_PersonaRequirements_SaveFailed", "[Prompt extension] Saving the NPC personality and background generation requirements failed; click Save again in MCM: ") + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Editor_PersonaRequirements_SaveFailed", "[Prompt extension] Saving the NPC persona generation requirements failed; click Save again in MCM: ") + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 

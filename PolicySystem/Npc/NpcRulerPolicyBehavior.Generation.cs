@@ -2387,15 +2387,13 @@ public sealed partial class NpcRulerPolicyBehavior
 		string policies = SafeReadVanillaPolicies(kingdom);
 		string recentWorldPhenomenon = BuildRecentWorldPhenomenonContext(kingdomId);
 		List<string> foreignDirectPressures = BuildForeignDirectPressureContexts(kingdomId);
-		MyBehavior.GetNpcPersonaForExternal(ruler, out string personality, out string background);
+		string description = MyBehavior.GetNpcPersonaDescriptionForExternal(ruler);
 		string clanContext = BuildClanSnapshot(kingdom);
 		string diplomacyContext = BuildDiplomacyNeighborSummary(kingdom);
 		string policyGrounding = BuildNpcPolicyKnowledgeContext(kingdom, ruler, clanContext, diplomacyContext);
-		string compactPersonality = CompressCompleteText(personality, 120, 120);
-		string compactBackground = CompressCompleteText(background, 140, 140);
+		string compactPersona = CompressCompleteText(description, 260, 260);
 		string knowledgeGrounding = "RulerPersona{name=" + (ruler?.Name?.ToString() ?? PolicyGenerationPromptTexts.Get("Unknown", "unknown"))
-			+ ",personality=" + compactPersonality
-			+ ",background=" + compactBackground + "}"
+			+ ",persona=" + compactPersona + "}"
 			+ (string.IsNullOrWhiteSpace(policyGrounding) ? "" : "\nPolicyGrounding{" + policyGrounding + "}");
 		string currentWorldFacts = "Target{kingdomId=" + kingdomId
 			+ ",name=" + kingdomName
@@ -2416,8 +2414,8 @@ public sealed partial class NpcRulerPolicyBehavior
 			RulerName = ruler?.Name?.ToString() ?? "",
 			KnowledgeGrounding = knowledgeGrounding,
 			PolicyGroundingChars = policyGrounding.Length,
-			PersonalityChars = compactPersonality.Length,
-			BackgroundChars = compactBackground.Length,
+			PersonalityChars = compactPersona.Length,
+			BackgroundChars = 0,
 			CurrentWorldFacts = currentWorldFacts,
 			KingdomStrategicProfile = kingdomStrategicProfile,
 			RecentWorldPhenomenon = recentWorldPhenomenon ?? "",

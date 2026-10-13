@@ -879,6 +879,32 @@
           "Description": "Output only when runtime confirms the current target is this scene's standing executioner, the player explicitly orders them this turn to carry out the execution immediately, and they confirm execution. Never output for 'do not execute', 'who is executing', 'wait until they finish speaking', quotes, or discussions. This only starts the current sentence without altering charges, punishment, or target, and does not mean the prisoner is already dead."
         }
       ]
+    },
+    {
+      "Id": "player_captivity_release",
+      "IsEnabled": true,
+      "Group": "encounter",
+      "Priority": 75,
+      "TopicNumber": 35,
+      "TopicLabel": "Release the player from captivity",
+      "Code": "CAPTIVITY_RELEASE",
+      "Instruction": "[Release from captivity] The player remains a prisoner of the current captor. Authority to release is determined by runtime facts. You may refuse, negotiate terms, or explicitly agree to release the player now. Negotiations, quotes and future promises do not mean release has occurred; do not grant release while conditions remain unmet. For payment or gifts, rely only on system-confirmed AFEF facts, not the player claiming to have paid. Once conditions are fulfilled, you may explicitly agree to immediate release. Only a confirmed execution fact establishes successful release.",
+      "NonHeroInstruction": "You are not the authorized captor in this conversation and cannot decide to release the player.",
+      "PreprocessExcludedInstruction": "This interaction has no valid player-captivity release authority. Do not promise that this conversation can end the player's imprisonment.",
+      "TriggerKeywords": [
+        "release me",
+        "free me",
+        "captivity",
+        "ransom",
+        "let me out",
+        "prisoner"
+      ],
+      "PostprocessRules": [
+        {
+          "Tag": "[ACTION:RELEASE_PLAYER_CAPTIVITY]",
+          "Description": "Output only when runtime facts confirm the player is still held by the current captor, the speaking noble has release authority, and the latest reply explicitly agrees to release the player immediately. Do not output for quotes, questions, future promises, unfulfilled conditions, quotations, refusals or a claim made solely by the player. If money or goods are required, payment or delivery must already be confirmed by system AFEF facts; a verbal claim is insufficient. This tag does not deduct money, transfer custody or prove release succeeded."
+        }
+      ]
     }
   ],
   "DuelStake": {

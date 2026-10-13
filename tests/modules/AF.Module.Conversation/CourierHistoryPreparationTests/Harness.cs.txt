@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
@@ -15,32 +16,36 @@ namespace AnimusForge
 {
     internal static class SaveRuntimeGuard
     {
-        internal static long Generation=1;
+        internal static long Generation=1; internal static long CaptureGeneration()=>Generation;
         internal static bool IsCurrentGeneration(long generation) => generation==Generation;
     }
     internal static class HistoryProbe
     {
         internal static int Captures, Resolves, WrongThread;
         internal static string Input, Fact, SourceText="history";
-        internal static bool ThrowCapture, ThrowResolve, IncludeScene;
+        internal static bool ThrowCapture, ThrowResolve, IncludeScene, Legacy;
+        internal static string RawText="raw original";
         internal static ManualResetEventSlim ResolveEntered=new(), ResolveRelease=new(true);
         internal static void MainOnly() { if(!TaleWorlds.Library.TWParallel.IsMainThread()){Interlocked.Increment(ref WrongThread);throw new Exception("fixture game read on worker");} }
-        internal static void Reset() { Captures=Resolves=WrongThread=0;Input=Fact=null;SourceText="history";ThrowCapture=ThrowResolve=IncludeScene=false;ResolveEntered.Reset();ResolveRelease.Set();SaveRuntimeGuard.Generation=1; }
+        internal static void Reset() { Captures=Resolves=WrongThread=0;Input=Fact=null;SourceText="history";ThrowCapture=ThrowResolve=IncludeScene=Legacy=false;RawText="raw original";ResolveEntered.Reset();ResolveRelease.Set();SaveRuntimeGuard.Generation=1; }
     }
+    internal sealed class ConversationMessage { internal string Content; }
     internal static class DuelSettings { internal static int GetDailyConversationHistoryLineLimitForExternal() => 20; }
     public partial class MyBehavior
     {
+        internal sealed class HistoryPromptSnapshot { internal List<ConversationMessage> UncompressedMessages; internal bool IsCurrent()=>SaveRuntimeGuard.Generation==1; }
         internal static string BuildHistoryContextForExternal(Hero hero,int maxLines,string currentInput,string secondaryInput)
         { HistoryProbe.MainOnly();HistoryProbe.Input=currentInput;HistoryProbe.Fact=secondaryInput;return HistoryProbe.SourceText; }
         // The unchanged real capture/render owner is separately exercised by NativeHistorySnapshotTests.
-        internal static Func<string> CaptureHistoryContextWorkForHero(Hero hero,string currentInput,string secondaryInput,bool includeCurrentActiveSceneSession,long generation)
+        internal static Func<string> CaptureHistoryContextWorkForHero(Hero hero,string currentInput,string secondaryInput,bool includeCurrentActiveSceneSession,long generation, Action<HistoryPromptSnapshot> captured=null)
         {
             HistoryProbe.MainOnly();HistoryProbe.Captures++;HistoryProbe.Input=currentInput;HistoryProbe.Fact=secondaryInput;HistoryProbe.IncludeScene=includeCurrentActiveSceneSession;
             if(HistoryProbe.ThrowCapture)throw new Exception("optional capture failure");
             string frozen=HistoryProbe.SourceText;
+            captured?.Invoke(new(){UncompressedMessages=new(){new(){Content=HistoryProbe.RawText}}});
             return () => {
                 Interlocked.Increment(ref HistoryProbe.Resolves);
-                if(TaleWorlds.Library.TWParallel.IsMainThread()){Interlocked.Increment(ref HistoryProbe.WrongThread);throw new Exception("history retrieval blocks main thread");}
+                if(TaleWorlds.Library.TWParallel.IsMainThread() && !HistoryProbe.Legacy){Interlocked.Increment(ref HistoryProbe.WrongThread);throw new Exception("history retrieval blocks main thread");}
                 HistoryProbe.ResolveEntered.Set();
                 if(!HistoryProbe.ResolveRelease.Wait(TimeSpan.FromSeconds(5)))throw new Exception("fixture release timed out");
                 if(HistoryProbe.ThrowResolve)throw new Exception("optional retrieval failure");
@@ -66,10 +71,10 @@ namespace AnimusForge
         internal async Task<string[]> Start(CourierSession session,Hero participant,bool inbound)
         {
             var result=await PrepareCourierHistoryAsync("session",session,participant,inbound,1).ConfigureAwait(false);
-            return result==null?null:new[]{result.ExtraFact,result.Text};
+            return result==null?null:new[]{result.ExtraFact,result.Text,result.Messages?[0].Content};
         }
         internal static string[] Legacy(CourierSession session,bool inbound)
-        {var result=CaptureCourierHistoryForLegacyEnvelope(session,session.Participant,inbound);return new[]{result.ExtraFact,result.Text};}
+        {var result=CaptureCourierHistoryForLegacyEnvelope(session,session.Participant,inbound);return new[]{result.ExtraFact,result.Text,result.Messages?[0].Content};}
         @@OWNER_PHASE@@
     }
 }
@@ -105,7 +110,7 @@ internal static class Program
         }
         if(hold){
             PumpUntil(()=>AnimusForge.HistoryProbe.ResolveEntered.IsSet);
-            if(scenario=="snapshot"){session.Fact="new-fact";AnimusForge.HistoryProbe.SourceText="new-history";}
+            if(scenario=="snapshot"){session.Fact="new-fact";AnimusForge.HistoryProbe.SourceText="new-history";AnimusForge.HistoryProbe.RawText="compressed/removed";}
             if(scenario=="replace_after")owner.Session=new(){Inbound=inbound};
             if(scenario=="participant_after")session.Participant=new();
             if(scenario=="generation_after")AnimusForge.SaveRuntimeGuard.Generation++;
@@ -127,6 +132,7 @@ internal static class Program
         string fact="original-fact:"+(inbound?"inbound:False":"reply:True");
         Check(result[0]==fact && AnimusForge.HistoryProbe.Fact==fact,"frozen delivery fact direction");
         Check(AnimusForge.HistoryProbe.Input==(inbound?null:"letter") && !AnimusForge.HistoryProbe.IncludeScene,"history inputs/scene exclusion unchanged");
+        if(scenario!="capture_error")Check(result[2]=="raw original","raw snapshot survives compression during selection");
         Check(result[1]==(scenario is "empty" or "capture_error" or "resolve_error"?"":"history"),scenario+" frozen/empty history text");
         Check(AnimusForge.HistoryProbe.Captures==1 && AnimusForge.HistoryProbe.Resolves==(scenario=="capture_error"?0:1),"exactly one capture/resolve, empty does not recapture");
     }
@@ -136,7 +142,7 @@ internal static class Program
         try {
             foreach(bool inbound in new[]{false,true})foreach(string scenario in new[]{"normal","empty","snapshot","capture_error","resolve_error","replace_before","generation_before","owner_before","terminal_before","replace_after","participant_after","generation_after","owner_after","terminal_after","timeout"})Case(inbound,scenario);
             foreach(bool inbound in new[]{false,true}) {
-                AnimusForge.HistoryProbe.Reset();var session=new AnimusForge.CourierDeliveryBehavior.CourierSession{Inbound=inbound};
+                AnimusForge.HistoryProbe.Reset();AnimusForge.HistoryProbe.Legacy=true;var session=new AnimusForge.CourierDeliveryBehavior.CourierSession{Inbound=inbound};
                 var result=AnimusForge.CourierDeliveryBehavior.Legacy(session,inbound);
                 Check(result[1]=="history" && AnimusForge.HistoryProbe.Input==(inbound?null:"letter"),"legacy synchronous capture compatibility");
                 Check(AnimusForge.HistoryProbe.Fact=="original-fact:"+(inbound?"inbound:False":"reply:True"),"legacy delivery fact parity");

@@ -726,7 +726,7 @@ internal sealed class DeveloperImportUiController
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Kept_and_not_imported_from_the_package","Kept and not imported from the package:"));
 		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_KeepPlayer","• Player appearance, background, player-only Knowledge, and direct voice ID"));
-		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_KeepNpc","• NPC personality, background, memory, and appearance"));
+		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_KeepNpc","• NPC persona, memory, and appearance"));
 		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_KeepSettings","• Dynamic event records, API configuration, LLM Prompts, and other settings"));
 		stringBuilder.AppendLine();
 		stringBuilder.Append(DeveloperUiText.T("AF_UI_Developer_This_overwrites_the_database_data_listed_above_in_the_cu","This overwrites the database data listed above in the current save. Continue?"));
