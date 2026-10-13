@@ -10090,3 +10090,4 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 | `content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml` / `CNs/af_ui_strings-zh-CN.xml` | `AF_ENC_UI_CaptivityReleaseScheduled`3406 / 3440 | TextObject真实consumer322–331；中英成对、UI随游戏语言，CN通知实机观察 |
 | `extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs` | `LeaveConversation`90–100；prefab `AFDialogueNativeOverlay.xml`60 | 既有真实按钮入口未改，实机调用该VM命令，非鼠标命中/画面验收 |
 
+- 发布边界复核：交付分支仅包含本切片产品、对应离线回归和本节交接；新提交历史无本地测试桥、运行收据或配置，远端终端修复保持。按用户授权普通快进推送，不强推；最终成功由远端 ref 对账。
