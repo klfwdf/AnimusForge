@@ -30,7 +30,7 @@
                 </Widget>
               </Children>
             </Widget>
-            <ButtonWidget Id="AFDialogueDirectActions" WidthSizePolicy="Fixed" SuggestedWidth="345" HeightSizePolicy="Fixed" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1240" MarginTop="3" Command.Click="OpenDirectActions" IsEnabled="@CanOpenDirectActions" IsVisible="@IsToolbarVisible" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+            <ButtonWidget Id="AFDialogueDirectActions" WidthSizePolicy="Fixed" SuggestedWidth="345" HeightSizePolicy="Fixed" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1240" MarginTop="3" Command.Click="OpenDirectActions" IsVisible="@IsDirectActionsVisible" IsEnabled="@CanOpenDirectActions" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
               <Children>
                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@DirectActionsButtonText" Brush="Popup.Button.Text" Brush.FontSize="16" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
               </Children>

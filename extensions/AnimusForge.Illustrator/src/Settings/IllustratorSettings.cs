@@ -951,18 +951,20 @@ namespace AnimusForge.Illustrator
                 ReplaceModelDropdown(new Dropdown<string>(_modelOptions, selectedIdx >= 0 ? selectedIdx : 0));
             }
 
-            SaveCurrentSettings();
+            SaveCurrentSettings(this);
             RequestMcmRefresh();
             InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format2("AF_ILL_UI_SETTINGS_IMAGE_FETCH_SUCCESS", "[AI Image] Fetched {COUNT} available models. Current model retained: {MODEL}. The dropdown has been refreshed.", "COUNT", result.Models.Count, "MODEL", ModelName), Color.FromUint(4278255360u)));
         }
 
-        public static void SaveCurrentSettings()
+        public static void SaveCurrentSettings() => SaveCurrentSettings(null);
+
+        private static void SaveCurrentSettings(IllustratorSettings preferred)
         {
             try
             {
                 if (BaseSettingsProvider.Instance != null)
                 {
-                    var target = Instance ?? (BaseSettingsProvider.Instance.GetSettings("AnimusForge_Illustrator_v1") as IllustratorSettings);
+                    var target = preferred ?? Instance ?? (BaseSettingsProvider.Instance.GetSettings("AnimusForge_Illustrator_v1") as IllustratorSettings);
                     if (target != null)
                     {
                         BaseSettingsProvider.Instance.SaveSettings(target);
@@ -1163,7 +1165,7 @@ namespace AnimusForge.Illustrator
                 ReplaceDirectorModelDropdown(new Dropdown<string>(_directorModelOptions, selectedIdx));
             }
 
-            SaveCurrentSettings();
+            SaveCurrentSettings(this);
             RequestMcmRefresh();
             InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_SUCCESS", "[Visual Director] Fetched {COUNT} available models. The dropdown has been refreshed.", "COUNT", result.Models.Count), Color.FromUint(4278255360u)));
         }

@@ -11,9 +11,9 @@ namespace AnimusForge;
 /// </summary>
 internal static class PromptLanguageAudit
 {
-    private static readonly Regex Han = new Regex(@"[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]", RegexOptions.Compiled);
+    private static readonly Regex Han = new Regex(@"[\p{IsCJKUnifiedIdeographsExtensionA}\p{IsCJKUnifiedIdeographs}\p{IsCJKCompatibilityIdeographs}]", RegexOptions.Compiled);
     private static readonly Regex StableProtocol = new Regex(
-        @"(?:\[AFEF[^\]]*\]|【AFEF[^】]*】|\[(?:ACTION|A|AD|ADP|ASS|GUI|ATT|ATP|RELAY|FOL|STP|END):[^\]]*\]|\[\[(?:AFI_PROTOCOL_[A-Z_]+)\]\])",
+        @"(?:\[AFEF[^\]]*\]|\u3010AFEF[^\u3011]*\u3011|\[(?:ACTION|A|AD|ADP|ASS|GUI|ATT|ATP|RELAY|FOL|STP|END):[^\]]*\]|\[\[(?:AFI_PROTOCOL_[A-Z_]+)\]\])",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     internal static PromptLanguageAuditResult Inspect(IEnumerable<object> messages)

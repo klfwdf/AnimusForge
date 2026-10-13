@@ -62,7 +62,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private readonly CampaignMaterialPersistenceAdapter _materialPersistence;
 	private readonly CampaignVoicePersonaPersistenceAdapter _voicePersonaPersistence = new CampaignVoicePersonaPersistenceAdapter();
 	private readonly PoliticalDecisionRecordCaptureAdapter _politicalDecisionCapture;
-	private PatienceResponseBannerlordAdapter _patienceResponseRuntime; private PatienceResponseBannerlordAdapter PatienceResponses => _patienceResponseRuntime ??= new PatienceResponseBannerlordAdapter(_patienceOwner.Snapshot, GetNowCampaignDay, GetRelationLevelText, SyncTownRebelliousStateFromCurrentLoyalty, new PatienceResponseApplication(_patienceOwner.Apply, _patienceOwner.OverrideNeutral));
+	private PatienceResponseBannerlordAdapter _patienceResponseRuntime; private PatienceResponseBannerlordAdapter PatienceResponses => _patienceResponseRuntime ??= new PatienceResponseBannerlordAdapter(_patienceOwner.Snapshot, GetNowCampaignDay, GetRelationLevelText, SyncTownRebelliousStateFromCurrentLoyalty, new PatienceResponseApplication(_patienceOwner.Apply, _patienceOwner.OverrideNeutral, () => Math.Max(0, DuelSettings.GetSettings()?.MinimumPositiveNpcRelationGain ?? 1)));
     private PersonaIdentityPromptCaptureAdapter.PatiencePromptCapturePorts _personaPatiencePromptCapture;
     private PersonaIdentityPromptCaptureAdapter.PatiencePromptCapturePorts PersonaPatiencePromptCapture => _personaPatiencePromptCapture ??= new PersonaIdentityPromptCaptureAdapter.PatiencePromptCapturePorts(hero => PatienceResponses.GetHeroSnapshot(hero), (key, name, display) => PatienceResponses.GetUnnamedSnapshot(key, name, display), GetRelationLevelText);
 	public static MyBehavior Instance { get; private set; }
@@ -347,6 +347,18 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string Personality;
 
 		public string Background;
+
+		public List<NpcPersonaTrait> Traits = new List<NpcPersonaTrait>();
+
+		public List<string> Motivations = new List<string>();
+
+		public List<string> Values = new List<string>();
+
+		public List<string> Fears = new List<string>();
+
+		public string SpeechStyle;
+
+		public int SchemaVersion;
 
 		public string VoiceId;
 	}
@@ -4044,7 +4056,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	private string GetNpcPersonaContext(Hero hero) => GetNpcPersonaContext(hero, false);
 
 	private string GetNpcPersonaContext(Hero hero, bool forUi) => NpcPersonaGenerationApplication.GetNpcPersonaContext(hero, forUi);
-
 
 	private bool NeedsNpcPersonaGeneration(Hero hero)
 	{

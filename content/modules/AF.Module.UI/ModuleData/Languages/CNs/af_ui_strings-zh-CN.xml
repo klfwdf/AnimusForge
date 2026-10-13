@@ -473,7 +473,7 @@
   <string id="AF_MCM_Shout_DisableThought_Hint" text="开启后，场景喊话请求体中不再要求输出“你的内心思考内容...”，只保留动作与实际发言格式。" />
   <string id="AF_MCM_Shout_BubbleFont_Hint" text="设置场景喊话气泡中文字的字体大小" />
   <string id="AF_MCM_Shout_Timeout_Hint" text="场景对话空闲解散时间按本轮玩家与 NPC 可见发言字数动态延长。默认每个字增加 1 秒。" />
-  <string id="AF_MCM_Shout_StareSeconds_Hint" text="玩家持续盯着同一个 NPC 多久后触发被动反应。默认 15 秒。" />
+  <string id="AF_MCM_Shout_StareSeconds_Hint" text="玩家持续盯着同一个 NPC 多久后触发被动反应。设为 0 可关闭自动盯视反应。默认关闭。" />
   <string id="AF_MCM_Shout_DirectAttack_Hint" text="开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。" />
   <string id="AF_MCM_Shout_InputBackground_Hint" text="只影响喊话输入框。默认黑色透明；也可选白色透明或粉色透明。" />
   <string id="AF_MCM_Dev_Trace" text="【开发者】开启全代码截获" />
@@ -1138,8 +1138,14 @@
   <string id="AF_TERMINAL_UI_SceneConversationTimeoutSecondsPerVisibleCharacter_Hint" text="场景对话空闲解散时间按本轮玩家与 NPC 可见发言字数动态延长。默认每个字增加 1 秒。" />
   <string id="AF_TERMINAL_UI_SceneConversationTimeoutSecondsPerVisibleCharacter_Group" text="3. 场景喊话" />
   <string id="AF_TERMINAL_UI_PassiveStareTriggerSeconds_Title" text="盯着看触发时间(秒)" />
-  <string id="AF_TERMINAL_UI_PassiveStareTriggerSeconds_Hint" text="玩家持续盯着同一个 NPC 多久后触发被动反应。默认 15 秒。" />
+  <string id="AF_TERMINAL_UI_PassiveStareTriggerSeconds_Hint" text="玩家持续盯着同一个 NPC 多久后触发被动反应。设为 0 可关闭。默认关闭。" />
+  <string id="AF_TERMINAL_UI_EnablePassiveStareReaction_Title" text="启用自动盯视反应" />
+  <string id="AF_TERMINAL_UI_EnablePassiveStareReaction_Hint" text="启用后，持续盯着同一个 NPC 达到设定时间会开始场景被动交流。默认关闭。" />
+  <string id="AF_TERMINAL_UI_EnablePassiveStareReaction_Group" text="3. 场景喊话" />
   <string id="AF_TERMINAL_UI_PassiveStareTriggerSeconds_Group" text="3. 场景喊话" />
+  <string id="AF_TERMINAL_UI_MinimumPositiveNpcRelationGain_Title" text="NPC 正向关系/私人关系最少增幅" />
+  <string id="AF_TERMINAL_UI_MinimumPositiveNpcRelationGain_Hint" text="NPC 情绪为正时，原版关系和私人关系至少增加此数值。设为 0 保持原情绪增量。默认 1。" />
+  <string id="AF_TERMINAL_UI_MinimumPositiveNpcRelationGain_Group" text="3. 场景喊话" />
   <string id="AF_TERMINAL_UI_EnablePeaceSceneConflict_Title" text="允许玩家直接攻击触发场景冲突" />
   <string id="AF_TERMINAL_UI_EnablePeaceSceneConflict_Hint" text="开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。" />
   <string id="AF_TERMINAL_UI_EnablePeaceSceneConflict_Group" text="3. 场景喊话" />
@@ -2651,6 +2657,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_ChooseOperation" text="请选择要执行的操作。" />
   <string id="AF_UI_Persona_PersonalitySection" text="个性" />
   <string id="AF_UI_Persona_BackgroundSection" text="历史背景" />
+  <string id="AF_UI_Persona_ExpandedSection" text="扩展人设" />
   <string id="AF_UI_Persona_EditNpcButton" text="编辑NPC" />
   <string id="AF_UI_Persona_RerollButton" text="重生个性背景" />
   <string id="AF_UI_Courier_DirectContactBlocked" text="该角色正在与你交谈、与你同处当前场景或同一定居点，无需通过信使写信。" />
@@ -3409,5 +3416,12 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Weekly_CurrentDraft" text="本周周报草案" />
   <string id="AF_UI_NativeHistory_QueuedExpired" text="对话历史操作尚未开始，已停止等待；此排队操作不会随后补做。请检查游戏状态后再继续。" />
   <string id="AF_UI_Terminal_TrustDisplay" text="({TRUST}，{LEVEL}，{INDEX}/10)" />
+  <string id="AF_TERMINAL_GROUP_COUP" text="武装政变" />
+  <string id="AF_TERMINAL_GROUP_NEWS" text="周报与快报" />
+  <string id="AF_TERMINAL_GROUP_NATURAL" text="自然语言动作与战场喊话" />
+  <string id="AF_TERMINAL_GROUP_IMAGE_API" text="生图 API" />
+  <string id="AF_TERMINAL_GROUP_DIRECTOR_RULES" text="生图导演规则" />
+  <string id="AF_TERMINAL_GROUP_DIPLOMACY_SETTINGS" text="AI 外交设置" />
+  <string id="AF_TERMINAL_GROUP_DIPLOMACY_PROMPTS" text="AI 外交提示词" />
 </strings>
 </base>

@@ -170,7 +170,7 @@
   "AF_CONV_Prompt_0538": "You are currently in ",
   "AF_CONV_Prompt_0539": "You are currently near ",
   "AF_CONV_Prompt_0540": ", in ",
-  "AF_CONV_Prompt_0740": "You generate descriptions of unnamed NPCs in Mount & Blade 2: Bannerlord. Output strict JSON only, with no extra text, Markdown or code blocks. The JSON contains exactly 1 field: profile. profile is an English description of around 100 characters, without line breaks. It must agree with the supplied faction and allegiance facts; the NPC must not claim to belong to another kingdom or serve another ruler.",
+  "AF_CONV_Prompt_0740": "You generate descriptions of unnamed NPCs in Mount & Blade 2: Bannerlord. Output strict JSON only, with no extra text, Markdown or code blocks. The JSON contains exactly 1 field: profile. profile is a description of around 100 characters, without line breaks. It must agree with the supplied faction and allegiance facts; the NPC must not claim to belong to another kingdom or serve another ruler.",
   "AF_CONV_Prompt_0741": "Generate a description of around 100 characters: roughly who this person is, what they do and how they speak. Do not divide it into paragraphs.",
   "AF_CONV_Prompt_0742": "Name: ",
   "AF_CONV_Prompt_0743": "Troop ID: ",

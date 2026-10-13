@@ -128,8 +128,12 @@ for name in ('TerminalSettingsRegistry.cs', 'AnimusForgeTerminalUiModels.cs'):
     if name == 'TerminalSettingsRegistry.cs':
         # The authorized consolidation changes only routing, metadata completion
         # and per-owner saves. Preserve the original 259 controls and delegates.
+        current = current.replace('GroupName = TerminalSettingsCoverage.ViewGroup(Id, TerminalSettingsLocalization.Group(Id, groupName ?? ""));', 'GroupName = TerminalSettingsLocalization.Group(Id, groupName ?? "");')
         current = current.replace('TabCategory = TerminalSettingsCoverage.CategoryFor(nameof(DuelSettings), Id, tabCategory ?? "");', 'TabCategory = tabCategory ?? "";')
         current = current.replace('TerminalSettingsCoverage.AddMissing(_allDefinitions);', '')
+        current = current.replace('public static IReadOnlyList<TerminalSettingDef> VisibleDefinitions => AllDefinitions.Where(def => TerminalSettingsCoverage.IsVisible(def.Id)).ToList();', '')
+        current = current.replace('return VisibleDefinitions.ToList();', 'return _allDefinitions.ToList();')
+        current = current.replace('list.Where(def => TerminalSettingsCoverage.IsVisible(def.Id)).ToList()', 'list.ToList()')
         current = current.replace('bool mainSaved = DuelSettings.SaveCurrentSettings();\n\t\tbool ownersSaved = TerminalSettingsCoverage.SaveDirtyOwners();\n\t\treturn mainSaved && ownersSaved;', 'return DuelSettings.SaveCurrentSettings();')
         current = current.replace('using TaleWorlds.Localization;', '')
         # Exact fourteen display-only V3 TTS descriptions adopted with main.
@@ -142,6 +146,8 @@ for name in ('TerminalSettingsRegistry.cs', 'AnimusForgeTerminalUiModels.cs'):
     if name == 'AnimusForgeTerminalUiModels.cs':
         check('private const int MenuPageSize = 1000;' in current, 'reviewed expanded group page size')
         current = current.replace('private const int MenuPageSize = 1000;', 'private const int MenuPageSize = 50;')
+        current = current.replace('TerminalSettingsRegistry.VisibleDefinitions', 'TerminalSettingsRegistry.AllDefinitions')
+        current = current.replace('foreach (var def in group.OrderBy(item => TerminalSettingsCoverage.ViewOrder(item.Id)))', 'foreach (var def in group)')
         current = current.replace(', TerminalCategories.Ui };', ' };')
         # These eight labels now belong to the actual nested report datasource,
         # where RuntimeLanguageChecks exercises them through both native languages.

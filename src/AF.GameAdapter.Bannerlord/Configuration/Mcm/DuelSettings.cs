@@ -633,6 +633,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public const int LlmRequestTimeoutMilliseconds = 480000;
 
+	private const int ModelCatalogRequestTimeoutMilliseconds = 20000;
+
 	public static readonly HttpClient GlobalClient = new HttpClient
 	{
 		Timeout = TimeSpan.FromMilliseconds(LlmRequestTimeoutMilliseconds)
@@ -824,9 +826,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public float SceneConversationTimeoutSecondsPerVisibleCharacter { get; set; } = 1f;
 
-	[SettingPropertyInteger("{=AF_MCM_Shout_StareSeconds}Stare trigger time (seconds)", 1, 120, "0", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Shout_StareSeconds_Hint}How long the player must stare at one NPC before a passive reaction triggers. Default: 15 seconds.")]
-	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
-	public int PassiveStareTriggerSeconds { get; set; } = 15;
+	public bool EnablePassiveStareReaction { get; set; } = false;
+
+	public int PassiveStareTriggerSeconds { get; set; } = 0;
+
+	public int MinimumPositiveNpcRelationGain { get; set; } = 1;
 
 	[SettingPropertyBool("{=AF_MCM_Shout_DirectAttack}Allow direct player attacks to trigger scene conflict", Order = 13, RequireRestart = false, HintText = "{=AF_MCM_Shout_DirectAttack_Hint}When enabled, direct attacks on NPCs in peaceful scenes can trigger this mod scene conflict. When disabled, direct attacks return fully to native damage handling; dialogue arguments and taunts can still escalate conflict.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
@@ -6139,7 +6143,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				modelListFetchResult.ErrorMessage = ModelCatalogErrorFormatter.Format(modelListFetchResult.ErrorCode, modelListFetchResult.ErrorArguments);
 				return modelListFetchResult;
 			}
-			ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().FetchModelsAsync(rawApiUrl, apiKey, CancellationToken.None);
+			using (CancellationTokenSource timeout = new CancellationTokenSource(TimeSpan.FromMilliseconds(ModelCatalogRequestTimeoutMilliseconds)))
+			{
+				ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().FetchModelsAsync(rawApiUrl, apiKey, timeout.Token);
 			modelListFetchResult.RequestUrl = exchange.RequestUrl;
 			modelListFetchResult.ResponseBody = exchange.ResponseBody;
 			if (exchange.Cancelled)
@@ -6172,6 +6178,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			}
 			modelListFetchResult.Success = true;
 			return modelListFetchResult;
+			}
 		}
 		catch (Exception ex)
 		{
@@ -6390,7 +6397,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					ShowLlmFailurePopup(UiFormat("AF_MCM_Api_ModelListFailureTitle", "{CHANNEL} model list fetch failed", ("CHANNEL", channelDisplayName)), Ui("AF_MCM_Api_KeyMissing", "The API key is empty, so the model list cannot be fetched."));
 					return;
 				}
-				InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Api_ModelListFetching", "[System] Fetching the {CHANNEL} model list...", ("CHANNEL", channelDisplayName)), Color.FromUint(4294967040u)));
+				McmDropdownRuntimeRefresh.PostToMainThread(delegate
+				{
+					InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Api_ModelListFetching", "[System] Fetching the {CHANNEL} model list...", ("CHANNEL", channelDisplayName)), Color.FromUint(4294967040u)));
+				});
 				ModelListFetchResult modelListFetchResult = await FetchModelListAsync(text2, text3);
 				if (!modelListFetchResult.Success)
 				{
@@ -6403,10 +6413,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 							text4 = text4 + "；" + text5;
 						}
 					}
-					ShowLlmFailurePopup(UiFormat("AF_MCM_Api_ModelListFailureTitle", "{CHANNEL} model list fetch failed", ("CHANNEL", channelDisplayName)), text4, "", modelListFetchResult.ResponseBody);
-					Logger.Log("DuelSettings", "[" + text + "] Failed to fetch the model list: " + text4 + " | url=" + (modelListFetchResult.RequestUrl ?? ""));
+					McmDropdownRuntimeRefresh.PostToMainThread(delegate
+					{
+						ShowLlmFailurePopup(UiFormat("AF_MCM_Api_ModelListFailureTitle", "{CHANNEL} model list fetch failed", ("CHANNEL", channelDisplayName)), text4, "", modelListFetchResult.ResponseBody);
+						Logger.Log("DuelSettings", "[" + text + "] Failed to fetch the model list: " + text4 + " | url=" + (modelListFetchResult.RequestUrl ?? ""));
+					});
 					return;
 				}
+				McmDropdownRuntimeRefresh.PostToMainThread(delegate
+				{
 				applyModels?.Invoke(modelListFetchResult.Models);
 				ModelDropdownsDirty = true;
 				OnModelListRefreshed?.Invoke();
@@ -6455,6 +6470,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				}
 				InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Api_ModelListFetched", "[System] {CHANNEL} model list fetched: {COUNT} models; selected: {SELECTED}", ("CHANNEL", channelDisplayName), ("COUNT", modelListFetchResult.Models.Count), ("SELECTED", string.IsNullOrWhiteSpace(text6) ? Ui("AF_MCM_Api_EmptySelection", "empty") : text6)), Color.FromUint(4278255360u)));
 				Logger.Log("DuelSettings", "[" + text + "] Model list fetched successfully: count=" + modelListFetchResult.Models.Count + " url=" + (modelListFetchResult.RequestUrl ?? ""));
+				});
 			}
 			catch (Exception ex)
 			{

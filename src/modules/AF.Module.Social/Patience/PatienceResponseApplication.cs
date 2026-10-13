@@ -25,9 +25,17 @@ internal readonly struct PatienceResponseResult
 internal sealed class PatienceResponseApplication
 {
     private readonly Func<string, int, float, PatienceMood, PatienceChange> _apply, _correct;
+    private readonly Func<int> _minimumPositiveGain;
     internal PatienceResponseApplication(Func<string, int, float, PatienceMood, PatienceChange> apply,
-        Func<string, int, float, PatienceMood, PatienceChange> correct)
-    { _apply = apply ?? throw new ArgumentNullException(nameof(apply)); _correct = correct ?? throw new ArgumentNullException(nameof(correct)); }
+        Func<string, int, float, PatienceMood, PatienceChange> correct, Func<int> minimumPositiveGain = null)
+    { _apply = apply ?? throw new ArgumentNullException(nameof(apply)); _correct = correct ?? throw new ArgumentNullException(nameof(correct)); _minimumPositiveGain = minimumPositiveGain; }
+
+    private int NormalizePositiveGain(int delta)
+    {
+        if (delta <= 0) return delta;
+        int minimum = Math.Max(0, _minimumPositiveGain?.Invoke() ?? 0);
+        return Math.Max(delta, minimum);
+    }
 
     internal PatienceResponseResult Apply(PatienceResponseInput input, ref string text, float day, bool correction,
         Action<PatienceMood> royalLoyalty, Action<int, bool> relation, Action<int, bool> privateLove)
@@ -40,8 +48,8 @@ internal sealed class PatienceResponseApplication
         if (!input.HasHero && string.IsNullOrWhiteSpace(input.Key))
             return new PatienceResponseResult(mood, default, 0, 0, false, correction);
         PatienceChange change = (correction ? _correct : _apply)(input.Key, input.Maximum, day, mood);
-        int relationDelta = input.HasHero ? PatienceRules.HeroRelationEffect(mood, input.Relation, change.Before, correction) : 0;
-        int loveDelta = input.HasHero ? PatienceRules.ComputePrivateLoveDelta(mood) : 0;
+        int relationDelta = input.HasHero ? NormalizePositiveGain(PatienceRules.HeroRelationEffect(mood, input.Relation, change.Before, correction)) : 0;
+        int loveDelta = input.HasHero ? NormalizePositiveGain(PatienceRules.ComputePrivateLoveDelta(mood)) : 0;
         if (relationDelta != 0) relation?.Invoke(relationDelta, correction);
         // Deliberately not caught: legacy private-love failure must not masquerade as observed success.
         if (loveDelta != 0) privateLove?.Invoke(loveDelta, correction);

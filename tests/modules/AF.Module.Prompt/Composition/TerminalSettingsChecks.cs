@@ -139,6 +139,23 @@ internal static class TerminalSettingsChecks
                 foreach (string id in new[] { "WeeklyReportPopupBodyFontSize", "EnableWeeklyReportMapNotifications" })
                     Check(diplomacy.Contains(id) && !ui.Contains(id), "complete weekly settings stay on Diplomacy " + id);
                 Type textObject = Assembly.Load("TaleWorlds.Localization").GetType("TaleWorlds.Localization.TextObject", true);
+                var visible = ((IEnumerable)registry.GetProperty("VisibleDefinitions").GetValue(null)).Cast<object>().ToDictionary(def => (string)Property(def, "Id"));
+                foreach (string id in new[] { "TownAmbientAiShowUsageNotifications", "ScreenNotifications", "DiagnosticsEnabled", "EnemyInterruptRadiusMeters", "Illustrator.DirectorApiBaseUrl", "Illustrator.DirectorApiKey", "Illustrator.DirectorModelName", "Illustrator.FetchDirectorModelList" })
+                    Check(defs.ContainsKey(id) && !visible.ContainsKey(id), "hidden UI setting still exists for persistence " + id);
+                foreach (string id in new[] { "Illustrator.ApiBaseUrl", "Illustrator.ApiKey", "Illustrator.ModelName", "Illustrator.FetchModelList" })
+                {
+                    Check(visible.ContainsKey(id), "image API visible " + id);
+                    string ai = (string)product.GetType("AnimusForge.TerminalCategories", true).GetField("Ai", S).GetValue(null);
+                    Check((string)Property(visible[id], "TabCategory") == ai, "image API on AI core " + id);
+                }
+                string directorId = "Illustrator.EditCustomDirectorPrompt";
+                Check(visible.ContainsKey(directorId) && (string)Property(visible[directorId], "TabCategory") ==
+                    (string)product.GetType("AnimusForge.TerminalCategories", true).GetField("Prompt", S).GetValue(null), "director rule editor on Prompt page");
+                Check(visible.Where(pair => pair.Key.StartsWith("Coup.")).Select(pair => Property(pair.Value, "GroupName")).Distinct().Count() == 1, "one armed coup item");
+                Check(visible.Where(pair => pair.Key.Contains("WeeklyReport") || pair.Key.Contains("WorldBulletin")).Select(pair => Property(pair.Value, "GroupName")).Distinct().Count() == 1, "one weekly and bulletin item");
+                Check(visible.Where(pair => pair.Key.StartsWith("WorldDiplomacy") || pair.Key.StartsWith("EnableWorldDiplomacy") || pair.Key.StartsWith("EditWorldDiplomacy")).Select(pair => Property(pair.Value, "GroupName")).Distinct().Count() == 2, "two AI diplomacy items");
+                Check((string)Property(visible["NaturalLanguageReplyActionsEnabled"], "GroupName") == (string)Property(visible["BattleSpeechEnabled"], "GroupName")
+                    && (string)Property(visible["AudienceRepliesEnabled"], "GroupName") == (string)Property(visible["BattleSpeechEnabled"], "GroupName"), "natural actions share one root item");
                 string courierGroup = "{=AF_MCM_Group_CourierStationery}NPC contact / courier stationery";
                 Check((string)Property(defs["CourierLetterThemeDropdown"], "GroupName") == Activator.CreateInstance(textObject, new object[] { courierGroup, null }).ToString(), "slashes inside a localized group fallback do not leak untranslated suffixes");
                 string path = System.IO.Path.Combine(moduleRoot, "ModuleData/Languages", language == "English" ? "af_ui_strings.xml" : "CNs/af_ui_strings-zh-CN.xml");
@@ -148,6 +165,29 @@ internal static class TerminalSettingsChecks
                 Check(Activator.CreateInstance(textObject, new object[] { text, null }).ToString() == expected, "native UI page label " + language);
                 Console.WriteLine("Terminal actual metadata: " + defs.Count + " definitions, " + ui.Length + " UI settings, language=" + language);
             }
+            PropertyInfo developer = duel.GetType().GetProperty("EnableDevEditHistory");
+            bool oldDeveloper = (bool)developer.GetValue(duel);
+            int clicks = 0;
+            var callback = (Action)(() => clicks++);
+            Type sceneVm = product.GetType("AnimusForge.DialogueUI.Scene.SceneSessionVM", true);
+            object sceneModel = Activator.CreateInstance(sceneVm, new object[] { callback });
+            Type nativeVm = product.GetType("AnimusForge.AnimusForgeNativeConversationOverlayVM", true);
+            object nativeModel = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(nativeVm);
+            nativeVm.GetField("_onDirectActions", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(nativeModel, callback);
+            nativeVm.GetProperty("CanOpenDirectActions").SetValue(nativeModel, true);
+            foreach (bool enabled in new[] { false, true, false })
+            {
+                developer.SetValue(duel, enabled);
+                Check((bool)sceneVm.GetProperty("IsDirectActionsVisible").GetValue(sceneModel) == enabled, "scene manual tags developer visibility");
+                Check((bool)nativeVm.GetProperty("IsDirectActionsVisible").GetValue(nativeModel) == enabled, "native manual tags developer visibility");
+                int previous = clicks;
+                nativeVm.GetMethod("OpenDirectActions").Invoke(nativeModel, null);
+                Check(clicks == previous + (enabled ? 1 : 0), "native manual tags developer execution guard");
+                sceneVm.GetMethod("ExecuteDirectActions").Invoke(sceneModel, null);
+                ((Action)sceneVm.GetMethod("TakePending", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(sceneModel, null))?.Invoke();
+                Check(clicks == previous + (enabled ? 2 : 0), "scene manual tags developer execution guard");
+            }
+            developer.SetValue(duel, oldDeveloper);
             TerminalProviderProbe.Saved.Clear();
             TerminalProviderProbe.FailId = "AnimusForge_DialogueUI_v1";
             Check(!(bool)Call(registry, "SaveSettings"), "partial owner save failure is reported");

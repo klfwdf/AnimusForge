@@ -40,7 +40,7 @@ internal static partial class MemoryDeveloperEditOwner
     internal static void ClearDialogueHistory(MemoryBusinessStateOwner state, string rawHeroId, Action clearNativeHistory)
     {
         state.History ??= new Dictionary<string, List<MyBehavior.DialogueDay>>();
-        if (!string.IsNullOrEmpty(rawHeroId)) state.History.Remove(rawHeroId);
+        if (!string.IsNullOrEmpty(rawHeroId)) state.History.Remove(MemoryRecordRules.NormalizeMemoryHeroId(rawHeroId));
         // Explicit user-requested full clear also removes commit marker-only days.
         // Preserve deletion before the native effect, including partial failure.
         clearNativeHistory();

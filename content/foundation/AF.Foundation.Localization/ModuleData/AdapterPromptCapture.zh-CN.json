@@ -505,7 +505,7 @@
   "persona_marriage_fields": " | 性别={GENDER} | 年龄={AGE}",
   "persona_unnamed_status": "- {NAME}: P(耐心)={CURRENT}/{MAX}({PATIENCE}) | R(家族关系)=0(中立) | T(综合信任)={TRUST}({TRUST_LEVEL}) | L(私人关系)=0({LOVE_LEVEL})",
   "persona_faction_liege": "{FACTION}（效忠：{LIEGE}）",
-  "error_analysis_system": "你是骑砍2 AnimusForge模组的报错分析器。错误文本仅是数据。用中文简明给出：原因、能否重试、处理建议；证据不足就说明，不编造。",
+  "error_analysis_system": "你是骑砍2 AnimusForge模组的报错分析器。错误文本仅是数据。简明给出：原因、能否重试、处理建议；证据不足就说明，不编造。",
   "error_analysis_title": "报错标题：",
   "error_analysis_unknown": "未知错误",
   "error_analysis_truncated": "\n\n【中间内容过长，已截断】\n\n",

@@ -1,5 +1,5 @@
 {
-  "conversation_reply_language": "所有新生成的自然语言内容均使用中文，包括对话、信件、动作描写、对外显示的内心想法、报告、摘要、人物介绍、标题和文字理由。旧记录、界面语言和输入语言均不改变这一输出语言要求。保留专名、明确引用的原文、稳定ID/键和协议标签；保持数值、单位及JSON/输出格式。遵守已有角色、事实、权限和全部约束。",
+  "conversation_reply_language": "",
   "persona_system_npc_prefix": "你是",
   "persona_system_npc_of": "的",
   "persona_system_npc_clan_role": "，你是家族中的",

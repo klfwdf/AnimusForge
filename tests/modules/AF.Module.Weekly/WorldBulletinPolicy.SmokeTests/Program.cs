@@ -73,7 +73,7 @@ internal static class Program
 		s.WindowFacts.Single(f => f.Key == events[6].Key).Participants.Add(new WorldBulletinParticipant { HeroId = "unrelated", Name = "外部君主", Role = "另一战事君主" });
 		var art = Enumerable.Range(0, 64).Select(i => WorldBulletinPolicy.BuildIllustrationPlan(s, "selection:" + i, "1084年夏季8日"))
 			.First(p => p.Facts.Contains("甲被玩家处决"));
-		Check(art.Participants.Select(p => p.HeroId).SequenceEqual(new[] { "a", "player", "b" }), "art preserves all core participants but excludes unrelated headline");
+		Check(art.Participants.Select(p => p.HeroId).SequenceEqual(new[] { "a", "player" }), "art keeps only the lead event participants");
 		Check(art.Facts.Contains("甲被玩家处决") && art.Facts.Contains("乙被玩家处决") && !art.Facts.Contains("宣战") && !art.Facts.Contains("村一"), "art freezes only same-story facts");
 		s.Major.Participants[0].Role = "已改写";
 		Check(art.Participants[0].Role == "死者", "plan clones event-time role independently of source mutations");

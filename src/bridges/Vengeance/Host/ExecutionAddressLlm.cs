@@ -23,7 +23,6 @@ internal sealed class ExecutionAddressFacts
 {
     internal Guid SessionId { get; private set; }
     internal string VictimName { get; private set; } = string.Empty;
-    internal string Language { get; private set; } = "English";
     private string _body = string.Empty;
 
     internal static ExecutionAddressFacts Capture(ExecutionRequest request)
@@ -31,12 +30,10 @@ internal sealed class ExecutionAddressFacts
         var facts = new ExecutionAddressFacts
         {
             SessionId = request.SessionId,
-            VictimName = Safe(request.Victim?.Name?.ToString()),
-            Language = LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Language", "English")
+            VictimName = Safe(request.Victim?.Name?.ToString())
         };
-        if (string.IsNullOrWhiteSpace(facts.Language)) facts.Language = "English";
         facts._body = BuildBody(request, facts.VictimName);
-        facts._systemPrompt = AIConfigHandler.ExecutionCeremonySystemPrompt.Replace("{language}", facts.Language);
+        facts._systemPrompt = AIConfigHandler.ExecutionCeremonySystemPrompt;
         if (string.IsNullOrWhiteSpace(facts._systemPrompt)) throw new InvalidOperationException("Execution prompt missing");
         try
         {

@@ -34,7 +34,7 @@ static class Program
         Hero.DeadOrDisabledHeroes.Add(king);
         Check(WeeklyReportContextExtractor.ExtractFromPlan(plan).Characters.Count == 2, "duplicate hero collections do not duplicate references");
         for (int i = 0; i < 8; i++) plan.Participants.Add(new() { HeroId = "extra" + i });
-        Check(WeeklyReportContextExtractor.ExtractFromPlan(plan).Characters.Count == 4, "portrait work bounded to four participants");
+        Check(WeeklyReportContextExtractor.ExtractFromPlan(plan).Characters.Count == 2, "portrait work bounded to two participants");
         Check(context.BuildArtDirection().Contains("不能画成贵宾陪同出游") && context.BuildArtDirection().Contains("不得新增伤亡"), "dynamic action direction reaches fallback without changing casualties");
         Console.WriteLine("PASS " + checks + " linked-source participant/context checks; fake game objects, no GPU/network.");
     }

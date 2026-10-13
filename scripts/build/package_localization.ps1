@@ -95,7 +95,12 @@ function Get-AnimusForgeEnglishAsset {
 }
 
 function Assert-AnimusForgeEnglishJsonContract {
-    param([Parameter(Mandatory = $true)][string]$OriginalPath, [Parameter(Mandatory = $true)][string]$EnglishPath, $EnglishValue = $null)
+    param(
+        [Parameter(Mandatory = $true)][string]$OriginalPath,
+        [Parameter(Mandatory = $true)][string]$EnglishPath,
+        $EnglishValue = $null,
+        [switch]$AllowWorldbookRuleIdentityTranslation
+    )
     $originalText = Get-Content -LiteralPath $OriginalPath -Raw -Encoding UTF8
     $englishText = Get-Content -LiteralPath $EnglishPath -Raw -Encoding UTF8
     if ($originalText.TrimStart().StartsWith('[') -ne $englishText.TrimStart().StartsWith('[')) {
@@ -118,7 +123,9 @@ function Assert-AnimusForgeEnglishJsonContract {
             $rightNames = @($right.PSObject.Properties.Name | Sort-Object)
             if (($leftNames -join "`n") -cne ($rightNames -join "`n")) { throw "JSON field set changed: $($node.Path) in $EnglishPath" }
             foreach ($key in $leftNames) {
-                $queue.Enqueue([pscustomobject]@{ Original=$left.$key; English=$right.$key; Path=($node.Path + '.' + $key); Stable=($key -match '^(Id|TopicId|RuleId|ActionId|Version|SchemaVersion)$') })
+                $stable = $key -match '^(Id|TopicId|RuleId|ActionId|Version|SchemaVersion)$'
+                if ($AllowWorldbookRuleIdentityTranslation -and $key -eq 'Id' -and $OriginalPath -match '[\\/]PlayerExports[\\/]([^\\/]+)[\\/]knowledge[\\/]rules[\\/]') { $stable = $false }
+                $queue.Enqueue([pscustomobject]@{ Original=$left.$key; English=$right.$key; Path=($node.Path + '.' + $key); Stable=$stable })
             }
         }
         elseif ($left -is [array]) {
@@ -145,6 +152,9 @@ function Assert-AnimusForgeEnglishJsonContract {
 
 function ConvertTo-AnimusForgeProtocolContractToken {
     param([string]$Token, [string]$JsonPath, [string]$OriginalPath)
+    if ([string]::Equals($Token, ([regex]::Unescape('[RELAY:\u63a5\u529b\u7f16\u53f7]')), [StringComparison]::Ordinal)) { return '[RELAY:relay number]' }
+    if ($Token -in @(([regex]::Unescape('[AFEF\u73a9\u5bb6\u884c\u4e3a\u8865\u5145]')), ([regex]::Unescape('\u3010AFEF\u73a9\u5bb6\u884c\u4e3a\u8865\u5145\u3011')))) { return '[AFEF player action supplement]' }
+    if ($Token -in @(([regex]::Unescape('[AFEF NPC\u884c\u4e3a\u8865\u5145]')), ([regex]::Unescape('\u3010AFEF NPC\u884c\u4e3a\u8865\u5145\u3011')))) { return '[AFEF NPC action supplement]' }
     if ([IO.Path]::GetFileName($OriginalPath) -cne 'RuleBehaviorPrompts.json') { return $Token }
     if ($null -eq $script:AnimusForgeReviewedProtocolExamples) {
         # Only exact documented parameter specimens at reviewed paths may translate.
@@ -282,13 +292,13 @@ function Get-AnimusForgePackageProjection {
             try {
                 $null = Get-Content -LiteralPath $source -Raw -Encoding UTF8 | ConvertFrom-Json
                 if ($english -and $worldbook.RuleMappings.ContainsKey($relative)) {
+                    # CN and EN worldbook packages are independent identities. Keep the
+                    # English rule Id from the EN source; no legacy-save alias is required.
                     $identity = $worldbook.RuleMappings[$relative]
                     $original = Get-Content -LiteralPath $byTarget[$relative].SourcePath -Raw -Encoding UTF8 | ConvertFrom-Json
                     $translated = Get-Content -LiteralPath $english -Raw -Encoding UTF8 | ConvertFrom-Json
                     if ($original.Id -cne $identity.zh_id -or $translated.Id -cne $identity.en_id) { throw "Worldbook rule identity mapping is stale: $relative" }
-                    $translated.Id = $original.Id
-                    Assert-AnimusForgeEnglishJsonContract -OriginalPath $byTarget[$relative].SourcePath -EnglishPath $english -EnglishValue $translated
-                    $bytes = [Text.Encoding]::UTF8.GetBytes(($translated | ConvertTo-Json -Depth 100))
+                    Assert-AnimusForgeEnglishJsonContract -OriginalPath $byTarget[$relative].SourcePath -EnglishPath $english -EnglishValue $translated -AllowWorldbookRuleIdentityTranslation
                 }
                 elseif ($english) { Assert-AnimusForgeEnglishJsonContract -OriginalPath $byTarget[$relative].SourcePath -EnglishPath $english }
             }

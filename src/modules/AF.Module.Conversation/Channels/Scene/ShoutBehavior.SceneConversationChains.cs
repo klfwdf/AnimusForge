@@ -110,6 +110,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			{
 				return "";
 			}
+			await ShoutUtils.EnsureUnnamedNpcPersonaGeneratedAsync(agent);
 			CharacterObject characterObject = agent.Character as CharacterObject;
 			Hero hero = null;
 			if (speakerNpc.IsHero && resolvedHeroes != null)
@@ -227,6 +228,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				string fullExtra = (string.IsNullOrWhiteSpace(loreContext) ? null : loreContext);
 				Agent passiveAgent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == data.AgentIndex);
 				CharacterObject passiveCharacter = passiveAgent?.Character as CharacterObject;
+				await ShoutUtils.EnsureUnnamedNpcPersonaGeneratedAsync(passiveAgent);
 				string passiveKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(passiveAgent);
 				List<string> preprocessExcludedRuleIds = _ports.BuildPreprocessExcludedRuleIdsForCurrentInteraction(hero, passiveCharacter, data.AgentIndex, data.IsHero, sceneSpeakerNpc: data, sceneCandidates: allNpcData, currentPlayerText: inputActionText);
 				MyBehavior.ShoutPromptContext ctx = await BuildModuleScenePromptContextAsync(hero, passiveCharacter, inputActionText, fullExtra, cultureId, passiveKingdomIdOverride, data.AgentIndex, data.IsHero, !string.IsNullOrWhiteSpace(loreContext), loreContext, preprocessExcludedRuleIds, promptGeneration, promptSession, promptEpoch);
@@ -1872,6 +1874,9 @@ internal sealed partial class SceneConversationSessionRuntime
 			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] persona snapshot failed agent=" + npc.AgentIndex + " error=" + ex.Message);
 		}
 	}
+    // Start on the game thread: EnsureUnnamed... captures all Agent/object facts
+    // before its first await. Waiting is detached and publication rechecks the same
+    // scene owner, mission, session and epoch. No Agent escapes to this worker.
     private async Task<bool> EnsureCompactReactionUnnamedPersonaAsync(NpcDataPacket targetNpc,
         Mission sourceMission, long generation, int session, int epoch, Func<bool> isCurrent)
     {

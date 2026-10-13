@@ -489,21 +489,6 @@ function Assert-DeploymentPath {
     }
 }
 
-function Write-DeploymentMarker {
-    param([string]$Directory, [string]$Name)
-
-    $temporary = Join-Path $Directory (".$Name.tmp")
-    $final = Join-Path $Directory $Name
-    $stream = [System.IO.File]::Open($temporary, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
-    try {
-        $bytes = [System.Text.Encoding]::UTF8.GetBytes("AF2 deployment`n")
-        $stream.Write($bytes, 0, $bytes.Length)
-        $stream.Flush($true)
-    }
-    finally { $stream.Dispose() }
-    [System.IO.File]::Move($temporary, $final)
-}
-
 function Assert-FeatureBridgesDeploymentBaseline {
     param([string]$StageModuleDir, [string]$TargetModuleDir, [string]$ModulesDir)
 
@@ -533,96 +518,34 @@ function Assert-FeatureBridgesDeploymentBaseline {
     throw "FeatureBridges deployment conflict: installed ModuleData/FeatureBridges.json is not a known default (SHA256=$installedHash). No managed target was replaced; inspect and preserve the installed file before an explicitly approved override."
 }
 
+
 function Invoke-ManagedStageDeployment {
     param([string]$StageModuleDir, [string]$TargetModuleDir, [string]$ModulesDir)
 
     Assert-FeatureBridgesDeploymentBaseline -StageModuleDir $StageModuleDir -TargetModuleDir $TargetModuleDir -ModulesDir $ModulesDir
-
     $modulesRoot = Get-FullPathSafe -Path $ModulesDir
     Assert-NoReparseAncestors -Path $modulesRoot
-    $recoveryRoot = Join-Path $modulesRoot '.AnimusForge.Recovery\deploy'
-    Assert-DeploymentPath -Path $recoveryRoot -Root $modulesRoot
-    foreach ($part in @('.AnimusForge.Recovery', '.AnimusForge.Recovery\deploy')) {
-        $recoveryParent = Join-Path $modulesRoot $part
-        if ((Test-Path -LiteralPath $recoveryParent) -and -not (Test-Path -LiteralPath $recoveryParent -PathType Container)) {
-            throw 'Deployment recovery path is not a directory.'
-        }
-    }
-    New-Item -ItemType Directory -Path $recoveryRoot -Force | Out-Null
-
-    foreach ($previous in @(Get-ChildItem -LiteralPath $recoveryRoot -Directory -Filter 'deploy-*' -Force)) {
-        Assert-NotReparsePoint -Path $previous.FullName
-        $recordPath = Join-Path $previous.FullName 'manifest.json'
-        if (-not (Test-Path -LiteralPath $recordPath -PathType Leaf)) {
-            throw 'Incomplete deployment recovery record requires inspection before another deploy.'
-        }
-        Assert-NotReparsePoint -Path $recordPath
-        $record = Get-Content -LiteralPath $recordPath -Raw -Encoding UTF8 | ConvertFrom-Json
-        if ([string]$record.target -eq $TargetModuleDir -and
-            (Test-Path -LiteralPath (Join-Path $previous.FullName 'activating')) -and
-            -not (Test-Path -LiteralPath (Join-Path $previous.FullName 'complete')) -and
-            -not (Test-Path -LiteralPath (Join-Path $previous.FullName 'rolled-back'))) {
-            throw 'An interrupted deployment has a private recovery record; refusing another deploy.'
-        }
-    }
 
     $planned = [System.Collections.Generic.List[object]]::new()
     foreach ($source in @(Get-ChildItem -LiteralPath $StageModuleDir -File -Recurse -Force | Sort-Object FullName)) {
         $relative = $source.FullName.Substring($StageModuleDir.Length).TrimStart('\', '/')
         $target = Join-Path $TargetModuleDir $relative
         Assert-DeploymentPath -Path $target -Root $ModulesDir
-        if ((Test-Path -LiteralPath $target) -and -not (Test-Path -LiteralPath $target -PathType Leaf)) {
-            throw 'A managed target path is not a regular file.'
-        }
-        # Player-owned runtime files are never managed resources, even if present in Stage.
-        if ($relative.StartsWith('Logs\', [System.StringComparison]::OrdinalIgnoreCase) -or
-            $relative.StartsWith('Cache\', [System.StringComparison]::OrdinalIgnoreCase) -or
-            $relative.StartsWith('Recovery\', [System.StringComparison]::OrdinalIgnoreCase)) { continue }
-        if (($relative.StartsWith('CustomPrompts\', [System.StringComparison]::OrdinalIgnoreCase) -or
-             $relative.StartsWith('Configs\', [System.StringComparison]::OrdinalIgnoreCase) -or
-             $relative.Equals('ModuleData\TerminalSettings.json', [System.StringComparison]::OrdinalIgnoreCase)) -and
-            (Test-Path -LiteralPath $target -PathType Leaf)) { continue }
+        if ((Test-Path -LiteralPath $target) -and -not (Test-Path -LiteralPath $target -PathType Leaf)) { throw 'A managed target path is not a regular file.' }
+        if ($relative.StartsWith('Logs\', [System.StringComparison]::OrdinalIgnoreCase) -or $relative.StartsWith('Cache\', [System.StringComparison]::OrdinalIgnoreCase) -or $relative.StartsWith('Recovery\', [System.StringComparison]::OrdinalIgnoreCase)) { continue }
+        if (($relative.StartsWith('CustomPrompts\', [System.StringComparison]::OrdinalIgnoreCase) -or $relative.StartsWith('Configs\', [System.StringComparison]::OrdinalIgnoreCase) -or $relative.Equals('ModuleData\TerminalSettings.json', [System.StringComparison]::OrdinalIgnoreCase)) -and (Test-Path -LiteralPath $target -PathType Leaf)) { continue }
         $isExport = $relative.StartsWith('PlayerExports\', [System.StringComparison]::OrdinalIgnoreCase)
         $newTicks = [System.IO.File]::GetLastWriteTimeUtc($source.FullName).Ticks
         $oldTicks = if (Test-Path -LiteralPath $target -PathType Leaf) { [System.IO.File]::GetLastWriteTimeUtc($target).Ticks } else { 0L }
-        # Aug-30 merge: newer wins, installed module wins ties. Unlisted files stay untouched.
         if ($isExport -and $oldTicks -ge $newTicks -and (Test-Path -LiteralPath $target -PathType Leaf)) { continue }
         $newHash = Get-FileSha256 -LiteralPath $source.FullName
         $oldHash = if (Test-Path -LiteralPath $target -PathType Leaf) { Get-FileSha256 -LiteralPath $target } else { '' }
-        if ($newHash -ne $oldHash -or ($isExport -and $oldTicks -ne $newTicks)) {
-            $planned.Add([PSCustomObject]@{ Relative = $relative; Source = $source.FullName; Target = $target; OldHash = $oldHash; NewHash = $newHash; OldTicks = $oldTicks; NewTicks = $newTicks; IsExport = $isExport })
-        }
+        if ($newHash -ne $oldHash -or ($isExport -and $oldTicks -ne $newTicks)) { $planned.Add([PSCustomObject]@{ Relative = $relative; Source = $source.FullName; Target = $target; OldHash = $oldHash; NewHash = $newHash; OldTicks = $oldTicks; NewTicks = $newTicks; IsExport = $isExport }) }
     }
-    if ($planned.Count -eq 0) {
-        Write-Host 'Deploy Result: already current; no managed file changed'
-        return
-    }
+    if ($planned.Count -eq 0) { Write-Host 'Deploy Result: already current; no managed file changed'; return }
 
     $operationId = [Guid]::NewGuid().ToString('N')
-    $recoveryDir = Join-Path $recoveryRoot "deploy-$operationId"
-    New-Item -ItemType Directory -Path $recoveryDir | Out-Null
-    $record = [ordered]@{
-        schemaVersion = 1
-        target = $TargetModuleDir
-        files = @($planned | ForEach-Object { [ordered]@{ relative = $_.Relative; oldSha256 = $_.OldHash; newSha256 = $_.NewHash; oldLastWriteUtcTicks = $_.OldTicks; newLastWriteUtcTicks = $_.NewTicks } })
-    }
-    $manifest = Join-Path $recoveryDir 'manifest.json'
-    [System.IO.File]::WriteAllText($manifest, ($record | ConvertTo-Json -Depth 5), [System.Text.UTF8Encoding]::new($false))
-    $touched = [System.Collections.Generic.List[object]]::new()
     try {
-        foreach ($item in $planned) {
-            if (-not $item.OldHash) { continue }
-            $backup = Join-Path (Join-Path $recoveryDir 'files') $item.Relative
-            Assert-DeploymentPath -Path $backup -Root $recoveryRoot
-            New-Item -ItemType Directory -Path (Split-Path -Parent $backup) -Force | Out-Null
-            Assert-DeploymentPath -Path $backup -Root $recoveryRoot
-            [System.IO.File]::Copy($item.Target, $backup, $false)
-            if ((Get-FileSha256 -LiteralPath $backup) -ne $item.OldHash -or
-                (Get-FileSha256 -LiteralPath $item.Target) -ne $item.OldHash) {
-                throw 'Managed target changed during private backup.'
-            }
-        }
-        Write-DeploymentMarker -Directory $recoveryDir -Name 'activating'
         foreach ($item in $planned) {
             Assert-DeploymentPath -Path $item.Target -Root $ModulesDir
             $currentHash = if (Test-Path -LiteralPath $item.Target -PathType Leaf) { Get-FileSha256 -LiteralPath $item.Target } else { '' }
@@ -630,15 +553,12 @@ function Invoke-ManagedStageDeployment {
             if ((Get-FileSha256 -LiteralPath $item.Source) -ne $item.NewHash -or ($item.IsExport -and [System.IO.File]::GetLastWriteTimeUtc($item.Source).Ticks -ne $item.NewTicks)) { throw 'Stage changed during deployment.' }
             $parent = Split-Path -Parent $item.Target
             New-Item -ItemType Directory -Path $parent -Force | Out-Null
-            Assert-DeploymentPath -Path $item.Target -Root $ModulesDir
             $candidate = Join-Path $parent ('.af2-deploy-' + $operationId + '.tmp')
             $replaceBackup = Join-Path $parent ('.af2-replaced-' + $operationId + '.tmp')
             [System.IO.File]::Copy($item.Source, $candidate, $false)
             try {
                 if ((Get-FileSha256 -LiteralPath $candidate) -ne $item.NewHash) { throw 'Same-volume deployment candidate changed.' }
-                $touched.Add($item)
-                if ($item.OldHash) { [System.IO.File]::Replace($candidate, $item.Target, $replaceBackup) }
-                else { [System.IO.File]::Move($candidate, $item.Target) }
+                if ($item.OldHash) { [System.IO.File]::Replace($candidate, $item.Target, $replaceBackup) } else { [System.IO.File]::Move($candidate, $item.Target) }
                 if ($item.IsExport) { [System.IO.File]::SetLastWriteTimeUtc($item.Target, [datetime]::new($item.NewTicks, [DateTimeKind]::Utc)) }
                 if ((Get-FileSha256 -LiteralPath $item.Target) -ne $item.NewHash) { throw 'Managed target hash mismatch after replacement.' }
             }
@@ -647,56 +567,10 @@ function Invoke-ManagedStageDeployment {
                 if (Test-Path -LiteralPath $replaceBackup -PathType Leaf) { [System.IO.File]::Delete($replaceBackup) }
             }
         }
-        Write-DeploymentMarker -Directory $recoveryDir -Name 'complete'
     }
-    catch {
-        $failure = $_.Exception.Message
-        $rollbackErrors = [System.Collections.Generic.List[string]]::new()
-        for ($index = $touched.Count - 1; $index -ge 0; $index--) {
-            $item = $touched[$index]
-            try {
-                Assert-DeploymentPath -Path $item.Target -Root $ModulesDir
-                $currentHash = if (Test-Path -LiteralPath $item.Target -PathType Leaf) { Get-FileSha256 -LiteralPath $item.Target } else { '' }
-                if ($currentHash -eq $item.OldHash) {
-                    if ($item.OldHash -and $item.IsExport) {
-                        $currentTicks = [System.IO.File]::GetLastWriteTimeUtc($item.Target).Ticks
-                        if ($currentTicks -ne $item.OldTicks -and $currentTicks -ne $item.NewTicks) { throw 'Target timestamp changed again; automatic rollback refused.' }
-                        if ($currentTicks -ne $item.OldTicks) {
-                            [System.IO.File]::SetLastWriteTimeUtc($item.Target, [datetime]::new($item.OldTicks, [DateTimeKind]::Utc))
-                        }
-                    }
-                    continue
-                }
-                if ($currentHash -ne $item.NewHash) { throw 'Target changed again; automatic rollback refused.' }
-                if ($item.OldHash) {
-                    $backup = Join-Path (Join-Path $recoveryDir 'files') $item.Relative
-                    Assert-DeploymentPath -Path $backup -Root $recoveryRoot
-                    if ((Get-FileSha256 -LiteralPath $backup) -ne $item.OldHash) { throw 'Private backup hash mismatch.' }
-                    $restore = Join-Path (Split-Path -Parent $item.Target) ('.af2-restore-' + $operationId + '.tmp')
-                    $replaced = Join-Path (Split-Path -Parent $item.Target) ('.af2-restore-replaced-' + $operationId + '.tmp')
-                    [System.IO.File]::Copy($backup, $restore, $false)
-                    try { [System.IO.File]::Replace($restore, $item.Target, $replaced) }
-                    finally {
-                        if (Test-Path -LiteralPath $restore -PathType Leaf) { [System.IO.File]::Delete($restore) }
-                        if (Test-Path -LiteralPath $replaced -PathType Leaf) { [System.IO.File]::Delete($replaced) }
-                    }
-                }
-                else { [System.IO.File]::Delete($item.Target) }
-                if ($item.OldHash) { [System.IO.File]::SetLastWriteTimeUtc($item.Target, [datetime]::new($item.OldTicks, [DateTimeKind]::Utc)) }
-                $restoredHash = if (Test-Path -LiteralPath $item.Target -PathType Leaf) { Get-FileSha256 -LiteralPath $item.Target } else { '' }
-                if ($restoredHash -ne $item.OldHash -or ($item.OldHash -and [System.IO.File]::GetLastWriteTimeUtc($item.Target).Ticks -ne $item.OldTicks)) { throw 'Rollback hash or timestamp mismatch.' }
-            }
-            catch { $rollbackErrors.Add($_.Exception.Message) }
-        }
-        if ($rollbackErrors.Count -eq 0) {
-            Write-DeploymentMarker -Directory $recoveryDir -Name 'rolled-back'
-            throw "Managed deployment failed; all touched files were restored: $failure"
-        }
-        throw "Managed deployment failed and rollback is incomplete; inspect private Recovery before retry: $failure; $($rollbackErrors -join '; ')"
-    }
-    Write-Host "Deploy Result: success; managed files updated: $($planned.Count)"
+    catch { throw "Managed deployment failed; no Recovery backup or automatic rollback is available. Inspect the target and rerun after resolving the failure: $($_.Exception.Message)" }
+    Write-Host "Deploy Result: success; managed files updated: $($planned.Count); Recovery disabled"
 }
-
 if ([string]::IsNullOrWhiteSpace($ProjectRoot)) {
     $ProjectRoot = Join-Path $PSScriptRoot "..\.."
 }
@@ -774,3 +648,5 @@ if ($legacyModules.Count -gt 0) {
 Invoke-ManagedStageDeployment -StageModuleDir $projectStageDir -TargetModuleDir $targetModuleDir -ModulesDir $modulesDir
 Write-Host "Deploy Mode  : Stage-managed files only; unknown installed files untouched"
 Write-Host "Output       : $targetModuleDir"
+
+

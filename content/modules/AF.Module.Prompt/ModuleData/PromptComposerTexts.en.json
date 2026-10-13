@@ -1,5 +1,5 @@
 {
-  "conversation_reply_language": "Write all newly generated natural-language content in English, including dialogue, letters, narration, publicly displayed thoughts, reports, summaries, biographies, titles, and textual reasons. Previous records, interface language, and input language do not change this output-language requirement. Preserve proper names, explicitly quoted original text, stable IDs/keys, and protocol tags. Keep numerical values, units, JSON/output structure, and all existing role, fact, authority, and other constraints unchanged.",
+  "conversation_reply_language": "",
   "persona_system_npc_prefix": "You are ",
   "persona_system_npc_of": " of ",
   "persona_system_npc_clan_role": ", you are the ",

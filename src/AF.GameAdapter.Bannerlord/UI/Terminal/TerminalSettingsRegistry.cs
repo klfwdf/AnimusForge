@@ -54,7 +54,7 @@ public sealed class TerminalSettingDef
 	{
 		Id = id ?? "";
 		TabCategory = TerminalSettingsCoverage.CategoryFor(nameof(DuelSettings), Id, tabCategory ?? "");
-		GroupName = TerminalSettingsLocalization.Group(Id, groupName ?? "");
+		GroupName = TerminalSettingsCoverage.ViewGroup(Id, TerminalSettingsLocalization.Group(Id, groupName ?? ""));
 		DisplayName = TerminalSettingsLocalization.Title(Id, displayName ?? "");
 		HintText = TerminalSettingsLocalization.Hint(Id, hintText ?? "");
 		SettingType = settingType;
@@ -114,11 +114,13 @@ public static class TerminalSettingsRegistry
 		}
 	}
 
+	public static IReadOnlyList<TerminalSettingDef> VisibleDefinitions => AllDefinitions.Where(def => TerminalSettingsCoverage.IsVisible(def.Id)).ToList();
+
 	public static List<TerminalSettingDef> GetByCategory(string category)
 	{
 		EnsureInitialized();
-		if (string.IsNullOrEmpty(category) || category == TerminalCategories.All) return _allDefinitions.ToList();
-		return _byCategory.TryGetValue(category, out var list) ? list.ToList() : new List<TerminalSettingDef>();
+		if (string.IsNullOrEmpty(category) || category == TerminalCategories.All) return VisibleDefinitions.ToList();
+		return _byCategory.TryGetValue(category, out var list) ? list.Where(def => TerminalSettingsCoverage.IsVisible(def.Id)).ToList() : new List<TerminalSettingDef>();
 	}
 
 	public static TerminalSettingDef GetById(string id)
@@ -233,7 +235,9 @@ public static class TerminalSettingsRegistry
 		_allDefinitions.Add(new TerminalSettingDef("DisableShoutInnerThoughtPrompt", TerminalCategories.Scene, "3. Scene shout", "Disable Shout Inner Thought Prompt", "When enabled, scene-shout requests no longer require inner-thought output and keep only the action and spoken-line format.", TerminalSettingType.Bool, 0f, 1f, 1f, "", s => s.DisableShoutInnerThoughtPrompt, (s, v) => s.DisableShoutInnerThoughtPrompt = Convert.ToBoolean(v)));
 		_allDefinitions.Add(new TerminalSettingDef("BubbleFontSize", TerminalCategories.Scene, "3. Scene shout", "Bubble Font Size", "Sets the font size of text in scene-shout bubbles.", TerminalSettingType.Integer, 10f, 40f, 1f, "0", s => s.BubbleFontSize, (s, v) => s.BubbleFontSize = Convert.ToInt32(v)));
 		_allDefinitions.Add(new TerminalSettingDef("SceneConversationTimeoutSecondsPerVisibleCharacter", TerminalCategories.Scene, "3. Scene shout", "Scene Conversation Timeout Seconds Per Visible Character", "Dynamically extends the idle dismissal time for scene conversations based on the visible player and NPC character count in the current exchange. Default: 1 second per character.", TerminalSettingType.FloatingInteger, 0.5f, 3f, 0.05f, "0.0", s => s.SceneConversationTimeoutSecondsPerVisibleCharacter, (s, v) => s.SceneConversationTimeoutSecondsPerVisibleCharacter = Convert.ToSingle(v)));
-		_allDefinitions.Add(new TerminalSettingDef("PassiveStareTriggerSeconds", TerminalCategories.Scene, "3. Scene shout", "Passive Stare Trigger Seconds", "How long the player must stare at one NPC before a passive reaction triggers. Default: 15 seconds.", TerminalSettingType.Integer, 1f, 120f, 1f, "0", s => s.PassiveStareTriggerSeconds, (s, v) => s.PassiveStareTriggerSeconds = Convert.ToInt32(v)));
+		_allDefinitions.Add(new TerminalSettingDef("EnablePassiveStareReaction", TerminalCategories.Scene, "3. Scene shout", "Enable Automatic Stare Reaction", "When enabled, staring at one NPC for the configured time can start a passive scene exchange. Disabled by default.", TerminalSettingType.Bool, 0f, 1f, 1f, "", s => s.EnablePassiveStareReaction, (s, v) => s.EnablePassiveStareReaction = Convert.ToBoolean(v)));
+		_allDefinitions.Add(new TerminalSettingDef("PassiveStareTriggerSeconds", TerminalCategories.Scene, "3. Scene shout", "Passive Stare Trigger Seconds", "How long the player must stare at one NPC before a passive reaction triggers. Set to 0 to disable it. Default: 15 seconds when enabled.", TerminalSettingType.Integer, 0f, 120f, 1f, "0", s => s.PassiveStareTriggerSeconds, (s, v) => s.PassiveStareTriggerSeconds = Convert.ToInt32(v)));
+		_allDefinitions.Add(new TerminalSettingDef("MinimumPositiveNpcRelationGain", TerminalCategories.Scene, "3. Scene shout", "Minimum Positive NPC Relation/Private Gain", "Minimum points applied to native relation and private relation when an NPC mood outcome is positive. 0 keeps the original mood delta. Default: 1.", TerminalSettingType.Integer, 0f, 20f, 1f, "0", s => s.MinimumPositiveNpcRelationGain, (s, v) => s.MinimumPositiveNpcRelationGain = Convert.ToInt32(v)));
 		_allDefinitions.Add(new TerminalSettingDef("EnablePeaceSceneConflict", TerminalCategories.Scene, "3. Scene shout", "Enable Peace Scene Conflict", "When enabled, direct attacks on NPCs in peaceful scenes can trigger this mod scene conflict. When disabled, direct attacks return fully to native damage handling; dialogue arguments and taunts can still escalate conflict.", TerminalSettingType.Bool, 0f, 1f, 1f, "", s => s.EnablePeaceSceneConflict, (s, v) => s.EnablePeaceSceneConflict = Convert.ToBoolean(v)));
 		_allDefinitions.Add(new TerminalSettingDef("ShoutInputUiBackgroundDropdown", TerminalCategories.Scene, "3. Scene shout", "Shout Input UI Background Dropdown", "Affects only the shout input box. Default is transparent black; transparent white or pink are also available.", TerminalSettingType.Dropdown, 0f, 0f, 1f, "", s => s.ShoutInputUiBackgroundDropdown?.SelectedValue ?? "", (s, v) => { if (s.ShoutInputUiBackgroundDropdown != null && v is int idx && idx >= 0 && idx < s.ShoutInputUiBackgroundDropdown.Count) { var dd = s.ShoutInputUiBackgroundDropdown; dd.SelectedIndex = idx; s.ShoutInputUiBackgroundDropdown = dd; } }, null, s => s.ShoutInputUiBackgroundDropdown));
 		_allDefinitions.Add(new TerminalSettingDef("MinimumClanTier", TerminalCategories.Duel, "2. Duel rules", "Minimum Clan Tier", "", TerminalSettingType.Integer, 0f, 6f, 1f, "0", s => s.MinimumClanTier, (s, v) => s.MinimumClanTier = Convert.ToInt32(v)));

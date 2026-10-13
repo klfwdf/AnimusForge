@@ -105,7 +105,7 @@
                                                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@Speaker" IsVisible="@IsFact" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#2F5E78FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
                                               </Children>
                                             </Widget>
-                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Text="@Text" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Text="@Text" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="@FontSize" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
                                           </Children>
                                         </ListPanel>
                                       </ItemTemplate>
@@ -147,7 +147,7 @@
                         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="79" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#9E7A46FF" DoNotAcceptEvents="true" />
                       </Children>
                     </Widget>
-                    <ButtonWidget Id="AFPlateDirectActions" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="186" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="39" MarginTop="957" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteDirectActions" IsEnabled="@CanOpenDirectActions">
+                    <ButtonWidget Id="AFPlateDirectActions" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="186" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="39" MarginTop="957" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteDirectActions" IsVisible="@IsDirectActionsVisible" IsEnabled="@CanOpenDirectActions">
                       <Children>
                         <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@DirectActionsButtonText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#FFF4D6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                       </Children>
@@ -282,7 +282,7 @@
                                             <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@Speaker" IsVisible="@IsFact" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#2F5E78FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
                                           </Children>
                                         </Widget>
-                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Text="@Text" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Text="@Text" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="@FontSize" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
                                       </Children>
                                     </ListPanel>
                                   </ItemTemplate>

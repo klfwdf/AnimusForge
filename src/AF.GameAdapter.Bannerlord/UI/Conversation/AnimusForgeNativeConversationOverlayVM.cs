@@ -23,10 +23,19 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 
 	private readonly Action _onTagTest;
 	private readonly Action _onDirectActions;
-	[DataSourceProperty] public bool CanOpenDirectActions { get => _canOpenDirectActions; set { if (_canOpenDirectActions != value) { _canOpenDirectActions = value; OnPropertyChangedWithValue(value, nameof(CanOpenDirectActions)); } } }
+	[DataSourceProperty] public bool IsDirectActionsVisible => DuelSettings.GetSettings()?.EnableDevEditHistory == true;
+	[DataSourceProperty] public bool CanOpenDirectActions { get => _canOpenDirectActions; set { if (_canOpenDirectActions != value) { _canOpenDirectActions = value; OnPropertyChanged(nameof(IsDirectActionsVisible)); OnPropertyChangedWithValue(value, nameof(CanOpenDirectActions)); } } }
 	private bool _canOpenDirectActions = true;
+    private bool _lastDirectActionsVisibility;
+    internal void RefreshDirectActionsVisibility()
+    {
+        bool visible = IsDirectActionsVisible;
+        if (visible == _lastDirectActionsVisibility) return;
+        _lastDirectActionsVisibility = visible;
+        OnPropertyChanged(nameof(IsDirectActionsVisible));
+    }
     [DataSourceProperty] public string DirectActionsButtonText => ConversationUiLocalization.Text("AF_CONV_UI_Direct_Button", "Trigger tags manually");
-	public void OpenDirectActions() { if (CanOpenDirectActions) _onDirectActions?.Invoke(); }
+	public void OpenDirectActions() { if (IsDirectActionsVisible && CanOpenDirectActions) _onDirectActions?.Invoke(); }
 
 	private string _inputText;
 

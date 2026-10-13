@@ -22,12 +22,9 @@ internal static class PromptComposerTexts
     private static readonly Regex Placeholder = new Regex(@"\{([A-Za-z_]+)\}", RegexOptions.Compiled);
 
     internal static string Get(string key) => Values.Value[key];
-    internal static string ApplyOutputLanguage(string system)
-    {
-        string instruction = Get("conversation_reply_language");
-        string text = (system ?? "").TrimEnd();
-        return text.EndsWith(instruction, StringComparison.Ordinal) ? text : text + "\n\n" + instruction;
-    }
+    // Kept as a compatibility seam for existing composers. Content edition
+    // selects fixed Prompt resources, never the model's response language.
+    internal static string ApplyOutputLanguage(string system) => system ?? string.Empty;
     internal static string Raw(string key) => Compatibility.Value[key];
     internal static string Format(string key, params (string Name, object Value)[] variables)
         => FormatTemplate(Get(key), variables);

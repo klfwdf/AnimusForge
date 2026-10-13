@@ -34,23 +34,33 @@ internal static class TerminalSettingsCoverage
     }
 
     private static readonly Lazy<Binding[]> Bindings = new Lazy<Binding[]>(Discover);
+    private static readonly Lazy<Dictionary<string, Binding>> BindingById = new Lazy<Dictionary<string, Binding>>(
+        () => Bindings.Value.ToDictionary(binding => binding.Id, StringComparer.Ordinal));
     private static readonly HashSet<BaseSettings> DirtyOwners = new HashSet<BaseSettings>();
     private static readonly HashSet<string> UiProperties = new HashSet<string>(StringComparer.Ordinal)
     {
-        "CourierLetterThemeDropdown", "BubbleFontSize", "WeeklyReportPopupBodyFontSize",
+        "CourierLetterThemeDropdown", "BubbleFontSize",
         "ShoutInputUiBackgroundDropdown", "EnableDevEditHistory", "ShoutKey",
-        "ShoutSpecialMenuKey", "TerminalKey", "EnableWeeklyReportMapNotifications",
+        "ShoutSpecialMenuKey", "TerminalKey",
         "EnableWorldDiplomacyMapNotifications", "ScreenNotifications",
         "TownAmbientAiShowUsageNotifications"
     };
 
     internal static string CategoryFor(string owner, string property, string fallback, string group = "")
     {
+        if (property.IndexOf("WeeklyReport", StringComparison.Ordinal) >= 0 || property.IndexOf("WorldBulletin", StringComparison.Ordinal) >= 0)
+            return TerminalCategories.Diplomacy;
+        if (property == "EditCustomDirectorPrompt" || property == "Illustrator.EditCustomDirectorPrompt") return TerminalCategories.Prompt;
+        if (property.StartsWith("WorldDiplomacy", StringComparison.Ordinal) || property.StartsWith("EditWorldDiplomacy", StringComparison.Ordinal)
+            || property.StartsWith("EnableWorldDiplomacy", StringComparison.Ordinal)) return TerminalCategories.Diplomacy;
+        if (group.IndexOf("AF_MCM_Diplomacy_", StringComparison.Ordinal) >= 0) return TerminalCategories.Diplomacy;
+        if (group.IndexOf("AF_MCM_Group_News", StringComparison.Ordinal) >= 0) return TerminalCategories.Diplomacy;
         if (owner == nameof(DialogueUiSettings) || (owner == nameof(DuelSettings) && UiProperties.Contains(property)))
             return TerminalCategories.Ui;
         if (owner == nameof(CoupSettings)) return TerminalCategories.Diplomacy;
         if (owner == nameof(IllustratorSettings))
-            return group.IndexOf("AF_ILL_GROUP_DIRECTOR_API", StringComparison.Ordinal) >= 0 ||
+            return group.IndexOf("AF_ILL_GROUP_IMAGE_API", StringComparison.Ordinal) >= 0 ||
+                   group.IndexOf("AF_ILL_GROUP_DIRECTOR_API", StringComparison.Ordinal) >= 0 ||
                    property == "ApiBaseUrl" || property == "ApiKey" || property == "UseExactEndpointUrl" ||
                    property == "ModelName" || property == "ModelDropdown" || property == "FetchModelList" ||
                    property == "TestImageApi" || property == "ImageGenerationTimeoutSeconds"
@@ -65,6 +75,59 @@ internal static class TerminalSettingsCoverage
             property == "AutoExcludeUnframedShoutParticipants") return TerminalCategories.Scene;
         return fallback;
     }
+
+    internal static bool IsVisible(string id)
+    {
+        if (id == "TownAmbientAiShowUsageNotifications" || id == "ScreenNotifications"
+            || id == "EnemyInterruptRadiusMeters" || id == "DiagnosticsEnabled") return false;
+        if (id.StartsWith("Illustrator.Director", StringComparison.Ordinal) || id == "Illustrator.FetchDirectorModelList") return false;
+        return true;
+    }
+
+    internal static string ViewGroup(string id, string fallback)
+    {
+        if (id.StartsWith("Coup.", StringComparison.Ordinal)) return Label("AF_TERMINAL_GROUP_COUP", "Armed coup");
+        if (id == "Illustrator.EditCustomDirectorPrompt") return Label("AF_TERMINAL_GROUP_DIRECTOR_RULES", "Illustration director rules");
+        if (id.StartsWith("WorldDiplomacy", StringComparison.Ordinal) || id.StartsWith("EnableWorldDiplomacy", StringComparison.Ordinal)
+            || id.StartsWith("EditWorldDiplomacy", StringComparison.Ordinal))
+            return id.StartsWith("Edit", StringComparison.Ordinal) || id.EndsWith("Prompt", StringComparison.Ordinal)
+                ? Label("AF_TERMINAL_GROUP_DIPLOMACY_PROMPTS", "AI diplomacy prompts")
+                : Label("AF_TERMINAL_GROUP_DIPLOMACY_SETTINGS", "AI diplomacy settings");
+        if (id.Contains("WeeklyReport") || id.Contains("WorldBulletin")) return Label("AF_TERMINAL_GROUP_NEWS", "Weekly reports and bulletins");
+        BindingById.Value.TryGetValue(id, out Binding binding);
+        if (binding != null)
+        {
+            if (binding.Group.IndexOf("AF_MCM_Diplomacy_", StringComparison.Ordinal) >= 0)
+                return binding.Property.StartsWith("Edit", StringComparison.Ordinal)
+                    ? Label("AF_TERMINAL_GROUP_DIPLOMACY_PROMPTS", "AI diplomacy prompts")
+                    : Label("AF_TERMINAL_GROUP_DIPLOMACY_SETTINGS", "AI diplomacy settings");
+            if (binding.Group.IndexOf("SAX_MCM_Group", StringComparison.Ordinal) >= 0)
+                return Label("AF_TERMINAL_GROUP_NATURAL", "Natural-language actions and battle speech");
+            if (binding.Owner == nameof(IllustratorSettings) && binding.Group.IndexOf("AF_ILL_GROUP_IMAGE_API", StringComparison.Ordinal) >= 0)
+                return Label("AF_TERMINAL_GROUP_IMAGE_API", "Image generation API");
+            if (binding.Group.IndexOf("AF_MCM_Group_News", StringComparison.Ordinal) >= 0)
+                return Label("AF_TERMINAL_GROUP_NEWS", "Weekly reports and bulletins");
+        }
+        return fallback;
+    }
+
+    internal static int ViewOrder(string id)
+    {
+        if (id == "Coup.Enabled" || id == "EnableWorldDiplomacy" || id == "EnableWorldBulletin") return 0;
+        if (id == "Coup.MinimumClanTier") return 10;
+        if (id == "Coup.MinimumInfluence") return 11;
+        if (id == "Coup.MinimumTroops") return 12;
+        if (!BindingById.Value.TryGetValue(id, out Binding binding)) return 100;
+        if (id.StartsWith("Coup.", StringComparison.Ordinal))
+        {
+            int section = binding.Group.IndexOf("AF_COUP_GROUP_ASSAULT", StringComparison.Ordinal) >= 0 ? 20
+                : binding.Group.IndexOf("AF_COUP_GROUP_GUARDS", StringComparison.Ordinal) >= 0 ? 30 : 40;
+            return section + binding.Attribute.Order;
+        }
+        return 100 + binding.GroupOrder * 100 + binding.Attribute.Order;
+    }
+
+    private static string Label(string key, string fallback) => new TextObject("{=" + key + "}" + fallback).ToString();
 
     internal static void AddMissing(List<TerminalSettingDef> definitions)
     {
@@ -202,6 +265,6 @@ internal static class TerminalSettingsCoverage
         string[] parts = (text ?? string.Empty).Split(new[] { "/{=" }, StringSplitOptions.None);
         for (int index = 0; index < parts.Length; index++)
             parts[index] = Localize(index == 0 ? parts[index] : "{=" + parts[index]);
-        return string.Join("/", parts);
+        return TerminalSettingsLocalization.NormalizeGroupDisplay(string.Join("/", parts));
     }
 }

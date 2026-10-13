@@ -23,7 +23,7 @@ internal static class AnimusForgeMcmVisibility
         "{=AF_MCM_Support_Group}", "{=AF_MCM_MainApi_Group}", "{=AF_MCM_AuxApi_Group}",
         "{=AF_MCM_PostprocessApi_Group}", "{=AF_MCM_EventRebellionApi_Group}", "{=AF_MCM_Tts_Group}"
     };
-    private static readonly string[] IllustratorGroups = { "{=AF_ILL_GROUP_IMAGE_API}", "{=AF_ILL_GROUP_DIRECTOR_API}" };
+    private static readonly string[] IllustratorGroups = { "{=AF_ILL_GROUP_IMAGE_API}" };
     private static readonly HashSet<string> AmbientApiProperties = new HashSet<string>(StringComparer.Ordinal)
     {
         "TownAmbientAiApiUrl", "TownAmbientAiApiKey", "TownAmbientAiModelName", "FetchTownAmbientAiModelList",

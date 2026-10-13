@@ -689,7 +689,7 @@
       "owner": "AF.Module.Persona",
       "source": "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json",
       "target": "ModuleData/Defaults/CustomPrompts/NpcPersonaGenerationRequirements.json",
-      "sha256": "6600DC9CCAFAC0DF7EDBC92CFE66A4A0FE34DC0D57C29BFCBEC63B013AEC470F"
+      "sha256": "30F17A9A2BBC0DF708798E35DF02AEC58DE2551890D3FC1B4CB0DC13713F8EA9"
     },
     {
       "owner": "AF.Module.Prompt",
@@ -821,7 +821,7 @@
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
       "target": "ModuleData/Defaults/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
-      "sha256": "9DEECA538F12E9F5A861D1A50554A9A2814FD2FBCF1179CC59B12E0AB28237C1"
+      "sha256": "892650F9D81342FA3FC9600682663472A40AC6A42BD0EE056D2CEC699D2F235B"
     },
     {
       "owner": "PolicySystem",
@@ -833,7 +833,7 @@
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json",
       "target": "ModuleData/Defaults/CustomPrompts/WorldBulletinWritingRequirements.json",
-      "sha256": "EDA9E5F2578CB0B026622145854E4F1DD4B8D5453DBDA13D90130DA05C294368"
+      "sha256": "A6E587A4D204C9A2C4ED35769CEFF9D7EC0337969EB97EE923DBF709E0321D1B"
     },
     {
       "owner": "AF.Module.Weekly",

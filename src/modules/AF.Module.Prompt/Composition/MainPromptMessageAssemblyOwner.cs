@@ -363,8 +363,7 @@ internal static class MainPromptMessageAssemblyOwner
         return new AnimusForge.Refactor.Contracts.DetachedInteractionPromptSections(main, postprocess);
     }
 
-    // The content edition owns reply language, including narrated actions and thoughts.
-    // This runs once per main request after custom rules; UI language and history never select it.
+    // Preserve the composed system; package edition does not lock reply language.
     internal static string BuildConversationSystemPrompt(string system)
         => PromptComposerTexts.ApplyOutputLanguage(system);
 
