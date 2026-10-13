@@ -754,6 +754,8 @@ namespace AnimusForge.Illustrator.Core
                     var labels = new StringBuilder();
                     if (!imageEdit && !missionScreenshot) labels.AppendLine().AppendLine().AppendLine((playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedRedrawRepaint : VisualFidelityRules.ReferenceRepaint);
                     if (playerRedraw && !imageEdit) labels.AppendLine(VisualFidelityRules.PlayerRedrawReferenceException);
+                    if (!imageEdit && !missionScreenshot && !playerRedraw && preserveEquipment)
+                        labels.AppendLine(VisualFidelityRules.SharedReferenceInstructions(referenceImages));
                     if (!string.IsNullOrWhiteSpace(quality)) form.Add(new StringContent(quality, Encoding.UTF8), "quality");
                     if (!string.IsNullOrWhiteSpace(size)) form.Add(new StringContent(size, Encoding.UTF8), "size");
                     form.Add(new StringContent("1"), "n");
@@ -766,7 +768,7 @@ namespace AnimusForge.Illustrator.Core
                         labels.Append(IllustratorText.Get("ImageClient_901")).Append(sent + 1);
                         if (grokJson) labels.Append("（<IMAGE_").Append(sent).Append(">）：");
                         else labels.Append("（reference_").Append(sent).Append(".png）：");
-                        labels.Append(imageEdit ? IllustratorText.Get("ImageClient_902") : missionScreenshot ? reference.Label + " " + MissionScreenshotRules.SpatialContract : (playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedReferenceLabel(reference) : VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + " " + reference.Label);
+                        labels.AppendLine(imageEdit ? IllustratorText.Get("ImageClient_902") : missionScreenshot ? reference.Label + " " + MissionScreenshotRules.SpatialContract : (playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedReferenceLabel(reference) : reference.Label);
                         if (player2) jsonImages.Add("data:image/png;base64," + reference.Base64Image);
                         else if (grokJson)
                             jsonImages.Add(new JObject { ["url"] = "data:image/png;base64," + reference.Base64Image });
@@ -916,6 +918,8 @@ namespace AnimusForge.Illustrator.Core
 
                     // 2. 将视觉参考图放在最前（多模态视觉模型优先感知）
                     int heroIndex = 0;
+                    if (!missionScreenshot && !playerRedraw && preserveEquipment)
+                        content.Add(new JObject { ["type"] = "text", ["text"] = VisualFidelityRules.SharedReferenceInstructions(referenceImages) });
                     foreach (var reference in referenceImages)
                     {
                         if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
@@ -955,7 +959,7 @@ namespace AnimusForge.Illustrator.Core
                             content.Add(new JObject
                             {
                                 ["type"] = "text",
-                                ["text"] = IllustratorText.Get("ImageClient_905") + VisualFidelityRules.ReferenceRoleInstruction(reference.Kind)
+                                ["text"] = IllustratorText.Get("ImageClient_905")
                             });
                         }
                         else if (isHero)
@@ -964,7 +968,7 @@ namespace AnimusForge.Illustrator.Core
                             string roleHint = isDetail ? IllustratorText.Get("ImageClient_906") : (heroCount > 1)
                                 ? IllustratorText.Format("ImageClient_907", heroIndex) : IllustratorText.Get("ImageClient_908");
 
-                            string fidelityMandate = roleHint + "：" + VisualFidelityRules.CharacterAppearancePriority + IllustratorText.Get("ImageClient_909");
+                            string fidelityMandate = roleHint + "：" + IllustratorText.Get("ImageClient_909");
                             content.Add(new JObject
                             {
                                 ["type"] = "text",
@@ -987,7 +991,7 @@ namespace AnimusForge.Illustrator.Core
                                 ["text"] = (reference.Kind == IllustrationReferenceKind.MapConversationScene ? IllustratorText.Get("ImageClient_911") :
                                     reference.Kind == IllustrationReferenceKind.ScenePerspective ? IllustratorText.Get("ImageClient_912") :
                                     reference.Kind == IllustrationReferenceKind.SceneViews ? IllustratorText.Get("ImageClient_913") : reference.Kind == IllustrationReferenceKind.ScenePanorama ? IllustratorText.Get("ImageClient_914") : IllustratorText.Get("ImageClient_915")) +
-                                    VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + IllustratorText.Get("ImageClient_916")
+                                    IllustratorText.Get("ImageClient_916")
                             });
                         }
                         actualRefImages++;

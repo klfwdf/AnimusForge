@@ -11,7 +11,7 @@ namespace AnimusForge.Illustrator.Core
     internal static class ImagePromptBudget
     {
         internal const int MaximumCharacters = 32000;
-        private static readonly Regex Headers = new Regex(@"【([^】\r\n]{1,100})】|(?m:^\[[^\]\r\n]{1,100}\])",
+        private static readonly Regex Headers = new Regex(@"(?m:^\[\[(?<protocol>AFI_PROTOCOL_(?:SUBJECT|SCENE|LIGHT|SPATIAL))\]\])|【(?<name>[^】\r\n]{1,100})】|(?m:^\[[^\]\r\n]{1,100}\])",
             RegexOptions.CultureInvariant);
         private static readonly HashSet<string> DirectorSections = new HashSet<string>(StringComparer.Ordinal)
         {
@@ -86,11 +86,11 @@ namespace AnimusForge.Illustrator.Core
                 if (header.Index > position)
                     result.Add(new Part { Text = text.Substring(position, header.Index - position) });
                 result.Add(new Part { Text = header.Value });
-                string name = header.Groups[1].Value;
+                string name = header.Groups["name"].Value;
                 if (name == IllustratorText.Raw("Residual_ImagePromptBudget_5960cf16ee62") || name == IllustratorText.Raw("Residual_ImagePromptBudget_780da068d119")) authoritative = true;
                 int end = index + 1 < matches.Count ? matches[index + 1].Index : text.Length;
                 result.Add(new Part { Text = text.Substring(header.Index + header.Length, end - header.Index - header.Length),
-                    Flexible = !authoritative && DirectorSections.Contains(name) });
+                    Flexible = !authoritative && (header.Groups["protocol"].Success || DirectorSections.Contains(name)) });
                 position = end;
             }
             if (position < text.Length) result.Add(new Part { Text = text.Substring(position) });
