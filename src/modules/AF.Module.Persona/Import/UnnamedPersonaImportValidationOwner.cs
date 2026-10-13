@@ -2,11 +2,53 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace AnimusForge;
 
 internal static class UnnamedPersonaImportValidationOwner
 {
+    // Disk work is limited to the explicit import boundary. Empty catalog files contain no NPC.
+    internal static Dictionary<string, JObject> ReadProfiles(string importDir)
+    {
+        if (!Directory.Exists(importDir)) throw new DirectoryNotFoundException(importDir);
+        string child = Path.Combine(importDir, "unnamed_persona");
+        string directory = Directory.Exists(child) ? child : importDir;
+        var profiles = new Dictionary<string, JObject>(StringComparer.OrdinalIgnoreCase);
+        foreach (string file in Directory.GetFiles(directory, "*.json"))
+        {
+            string json = File.ReadAllText(file);
+            if (string.IsNullOrWhiteSpace(json)) continue;
+            JObject record = JObject.Parse(json);
+            JToken catalog = record["Profiles"] ?? record["profiles"];
+            if (catalog != null)
+            {
+                if (!(catalog is JObject entries)) throw new InvalidDataException("Invalid unnamed persona Profiles object: " + Path.GetFileName(file));
+                foreach (JProperty entry in entries.Properties())
+                {
+                    if (!(entry.Value is JObject profile)) throw new InvalidDataException("Invalid unnamed persona profile: " + entry.Name);
+                    AddProfile(profiles, entry.Name, profile);
+                }
+            }
+            else
+            {
+                string key = TryGetUnnamedPersonaKeyFromImportFile(file, _ => (record["Key"] ?? record["key"])?.ToString());
+                AddProfile(profiles, key, record);
+            }
+        }
+        return profiles;
+    }
+
+    private static void AddProfile(Dictionary<string, JObject> profiles, string key, JObject profile)
+    {
+        bool hasContent = new[] { "Description", "description", "Personality", "personality", "Background", "background" }
+            .Any(field => !string.IsNullOrWhiteSpace(profile[field]?.ToString()));
+        if (!hasContent) return;
+        key = (key ?? "").Trim().ToLowerInvariant();
+        if (key.Length == 0) throw new InvalidDataException("Unnamed persona profile has no key.");
+        if (profiles.ContainsKey(key)) throw new InvalidDataException("Duplicate unnamed persona key: " + key);
+        profiles.Add(key, profile);
+    }
 	internal static string TryGetUnnamedPersonaKeyFromImportFile(string file, Func<string, string> readKey)
 	{
 		string text = null;
@@ -48,50 +90,14 @@ internal static class UnnamedPersonaImportValidationOwner
 				error = PersonaUiTexts.Text("AF_PERSONA_UI_ImportMissingDirectory", "Import failed: the export directory could not be found.");
 				return false;
 			}
-			List<string> source = new List<string>
-			{
-				Path.Combine(importDir, "unnamed_persona"),
-				importDir
-			};
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (string item in source.Where((string d) => !string.IsNullOrEmpty(d)).Distinct(StringComparer.OrdinalIgnoreCase))
-			{
-				if (!Directory.Exists(item))
-				{
-					continue;
-				}
-				string[] array = null;
-				try
-				{
-					array = Directory.GetFiles(item, "*.json");
-				}
-				catch
-				{
-					array = null;
-				}
-				if (array == null)
-				{
-					continue;
-				}
-				string[] array2 = array;
-				foreach (string file in array2)
-				{
-					string text = TryGetUnnamedPersonaKeyFromImportFile(file, readKey);
-					if (!string.IsNullOrEmpty(text))
-					{
-						if (!hashSet.Add(text))
-						{
-							error = PersonaUiTexts.Format("AF_PERSONA_UI_ImportDuplicateFolderKey", "Import failed: the import folder contains a duplicate Key ({KEY}).", ("KEY", text));
-							return false;
-						}
-						if (hasExistingKey(text))
-						{
-							error = PersonaUiTexts.Format("AF_PERSONA_UI_ImportExistingKeyConflict", "Import failed: Key conflict ({KEY}). The current game already contains this Key; import cannot overwrite it.", ("KEY", text));
-							return false;
-						}
-					}
-				}
-			}
+            foreach (string key in ReadProfiles(importDir).Keys)
+            {
+                if (hasExistingKey(key))
+                {
+                    error = PersonaUiTexts.Format("AF_PERSONA_UI_ImportExistingKeyConflict", "Import failed: Key conflict ({KEY}). The current game already contains this Key; import cannot overwrite it.", ("KEY", key));
+                    return false;
+                }
+            }
 			return true;
 		}
 		catch (Exception ex)

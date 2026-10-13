@@ -74,13 +74,6 @@ internal sealed class OnboardingDatabaseImportController
 				onReturn();
 				return;
 			}
-			string path2 = Path.Combine(text, "unnamed_persona");
-			if (!Directory.Exists(path2) || Directory.GetFiles(path2, "*.json").Length == 0)
-			{
-				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Missing_unnamed_persona","Import failed: unnamed_persona\\*.json is missing.")));
-				onReturn();
-				return;
-			}
 			bool flag = false;
 			try
 			{
