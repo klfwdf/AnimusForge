@@ -27,6 +27,8 @@ public static class AnimusForgeConversationHistoryLogPopup { public static bool 
 public static class NativeConversationAnswerAreaController { public static void SetSuppressed(bool v) {} public static void ForceRestoreAll() {} }
 public static class FreezeWatchdog { public static void Mark(string s,string d="",bool immediate=false) {} public static IDisposable Scope(string s)=>new ScopeStub(); private sealed class ScopeStub:IDisposable {public void Dispose() {}} }
 public static class Logger { public static void Log(string c,string s) {} public static void LogTrace(string c,string s) {} }
+// This harness covers pause/lifecycle routing, not localization (RetryProjectionTests owns that).
+public static class LlmRetryPrompt { public static int Calls; public static string ProjectKnownErrorForUi(string value) { Calls++; return value; } }
 public static class ShoutBehavior {
  public static bool CanSubmitNativeConversationForExternal()=>true;
  public static void OpenNativeConversationInputSilentlyForExternal() {} public static void CloseNativeConversationInputForExternal() {}
@@ -88,9 +90,11 @@ public sealed partial class AnimusForgeNativeConversationOverlay {
      resumed._screen.Temporary=true;OnApplicationTick();resumed._layer.Deactivate();resumed.Resume();
      Check(resumed._layer.IsActive&&resumed._screen.ActivationCalls==2,"repeated editor visits reactivate only when needed");
    }
+   int projectionCalls=LlmRetryPrompt.Calls;
    var o=New();o.PostReply("completed while unfocused",true);
    Check(o._mainThreadActions.Count==1&&o._isSubmitting,"background completion only enqueues, no game/UI write on worker");
    OnApplicationTick();ConversationHelper.Tick();
+   Check(LlmRetryPrompt.Calls==projectionCalls+1,"production reply path calls the UI projection boundary once");
    Check(!o._isSubmitting&&!o._dataSource.Busy&&!o._waitingDotsActive,"paused application tick completes reply and clears busy/dots");
    Check(ConversationHelper.GetCurrentDialogText()=="completed while unfocused","completed reply delivered while pause layer owns input");
    Check(ScreenManager.FocusClaims==0&&o._dataSource.Focuses==0,"no focus or ready interaction through native pause");

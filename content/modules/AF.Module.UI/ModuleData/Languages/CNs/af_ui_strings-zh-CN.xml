@@ -3437,7 +3437,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_ENC_UI_CaptivitySelect" text="交谈" />
   <string id="AF_ENC_UI_CaptivityCancel" text="取消" />
   <string id="AF_ENC_UI_CaptivityOpenFailed" text="未能开启交谈，你的被俘状态未作更改。" />
-  <string id="AF_ENC_UI_CaptivityReleaseScheduled" text="对方同意释放你，10 秒后将结束对话并尝试办理释放。" />
+  <string id="AF_ENC_UI_CaptivityReleaseScheduled" text="你已获准释放。点击“离开”返回大地图，结束被俘状态。" />
   <string id="AF_ENC_UI_CaptivityReleaseFailed" text="未能确认释放成功，请检查当前被俘状态。" />
   <string id="AF_ENC_UI_CaptivityReleased" text="你已获释，恢复自由。" />
   <string id="AF_ENC_UI_CaptivityActionBlocked" text="被俘期间无法执行此项行动。" />

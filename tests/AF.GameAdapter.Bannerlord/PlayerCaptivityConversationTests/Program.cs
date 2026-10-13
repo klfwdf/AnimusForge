@@ -70,8 +70,11 @@ foreach (bool dungeon in new[] { false, true })
     pair = Setup(dungeon); Check(PlayerCaptivityConversation.TryOpen(pair.lord), "open before release");
     Release(pair.lord); string duplicate = PlayerCaptivityConversation.ReleaseTag;
     Check(!PlayerCaptivityConversation.ConsumeReleaseTag(pair.lord, ref duplicate), "duplicate not scheduled");
-    Tick(9); Check(EndCaptivityAction.Calls == 0 && MyBehavior.Facts.Count == 0, "no early release or success fact");
-    Tick(1.1f); Check(EndCaptivityAction.Calls == 0, "wait for map UI teardown");
+    Tick(11); Check(Campaign.Current.ConversationManager.IsConversationInProgress && EndCaptivityAction.Calls == 0 && MyBehavior.Facts.Count == 0, "tag never auto-closes after ten seconds");
+    Check(InformationManager.Messages.Last().Contains("Leave"), "authorization notice explains player-controlled leave");
+    Tick(130); Check(Campaign.Current.ConversationManager.IsConversationInProgress && PlayerCaptivity.IsCaptive && MyBehavior.Facts.Count == 0, "reading longer than two minutes preserves authorization without releasing");
+    Campaign.Current.ConversationManager.EndConversation(); Tick();
+    Check(EndCaptivityAction.Calls == 0, "player leave still waits for map UI teardown");
     ((MapState)Game.Current.GameStateManager.ActiveState).MapConversationActive = false; Tick();
     Check(EndCaptivityAction.Calls == 1 && !PlayerCaptivity.IsCaptive && !Hero.MainHero.IsPrisoner, "native release");
     Check(!pair.holder.PrisonRoster.Contains(Hero.MainHero.CharacterObject), "removed from old prison roster");
@@ -79,6 +82,12 @@ foreach (bool dungeon in new[] { false, true })
     Check(MyBehavior.Facts.Count == 1 && EndCaptivityAction.Facilitator == null, "one fact and no fake ransom facilitator");
     Tick(20); Check(EndCaptivityAction.Calls == 1, "exactly once");
 }
+
+pair = Setup(); PlayerCaptivityConversation.TryOpen(pair.lord); Release(pair.lord);
+Campaign.Current.ConversationManager.IsConversationInProgress = false;
+((MapState)Game.Current.GameStateManager.ActiveState).MapConversationActive = false;
+Tick(); Check(EndCaptivityAction.Calls == 0 && MyBehavior.Facts.Count == 0 && PlayerCaptivity.IsCaptive,
+    "lost conversation flags without end event never authorize release");
 
 foreach (string change in new[] { "transfer", "owner", "dead", "inactive", "target_battle", "prisoner", "generation", "campaign", "manager", "battle", "already_free" })
 {
@@ -157,7 +166,7 @@ Campaign.Current.ConversationManager.ConversationEnd += () => {
     Setup(true); PlayerCaptivityConversation.TryOpen(PlayerCaptivity.CaptorParty.LeaderHero);
     ((MapState)Game.Current.GameStateManager.ActiveState).MapConversationActive = false;
 };
-Tick(11);
+End(); Tick();
 Check(PlayerCaptivityConversation.HasSession && PlayerCaptivityConversation.CanRelease(PlayerCaptivity.CaptorParty.LeaderHero), "old close callback cannot clear replacement session");
 // New captures queue, never open from the event callback. Old/loaded captivity does not auto-open.
 pair = Setup(); PlayerCaptivity.CaptorParty = null;

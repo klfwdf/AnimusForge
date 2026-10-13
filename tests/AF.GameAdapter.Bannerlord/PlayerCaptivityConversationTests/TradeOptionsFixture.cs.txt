@@ -1,0 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+// Boundary-only game inventories/localization. Options enumeration is extracted verbatim.
+class Hero { public static Hero MainHero; public int Gold; public MobileParty PartyBelongedTo; }
+class MobileParty { public ItemRoster ItemRoster = new(); }
+class ItemObject { public string StringId, Name; }
+class EquipmentElement { public ItemObject Item; }
+class ItemRosterElement { public EquipmentElement EquipmentElement; public int Amount; }
+class ItemRoster : List<ItemRosterElement> { public ItemRosterElement GetElementCopyAtIndex(int i) => this[i]; }
+class ShoutTradeResourceOption { public bool IsGold; public string ItemId, Name; public int AvailableAmount, InventoryUnitValue; public long InventoryTotalValue; public ItemObject Item; public MyBehavior.PartyTransferPromptEntry PartyEntry; public MyBehavior.SettlementTransferPromptEntry SettlementEntry; }
+static class ConversationUiLocalization { public static string Text(string key, string fallback) => fallback; }
+static class EconomyUiTexts { public static string ProjectPartyAssetNameForUi(string text) => text; }
+class RewardSystemBehavior { public static RewardSystemBehavior Instance = new(); public int GetInventoryActualItemUnitValueForExternal(EquipmentElement e) => 5; }
+static class MyBehavior {
+ public enum PartyTransferEntrySection { PlayerTroops, PlayerPrisoners }
+ public enum SettlementTransferEntrySection { PlayerFiefs }
+ public class PartyTransferPromptEntry { public PartyTransferEntrySection Section; public string DisplayName; public int Count; }
+ public class SettlementTransferPromptEntry { public SettlementTransferEntrySection Section; }
+ public static List<PartyTransferPromptEntry> BuildPartyTransferPromptEntriesForExternal(Hero hero, object character, int index) => new() { new() {Section=PartyTransferEntrySection.PlayerTroops,DisplayName="troop",Count=2} };
+ public static List<SettlementTransferPromptEntry> BuildSettlementTransferPromptEntriesForExternal(Hero hero, object character) => new() { new() };
+ public static bool IsSettlementTransferEntryValidForExternal(SettlementTransferPromptEntry entry) => true;
+ public static string GetSettlementTransferAssetDisplayNameForExternal(SettlementTransferPromptEntry entry) => "fief";
+ public static int GetRemainingShowableGoldForExternal(Hero hero, string key, int amount) => Math.Max(0, amount-2);
+ public static int GetRemainingShowableItemCountForExternal(Hero hero, string key, string item, int amount) => Math.Max(0, amount-1);
+}
+class OptionsOwner {
+ public string _shoutTradeMode = "give"; private object _shoutTradeTargetNpc = new();
+ private void ResolveShoutTradeRuntimeTarget(out Hero hero, out object character, out object agent) { hero=new(); character=null; agent=null; }
+ private int GetShoutTradeTargetAgentIndex() => -1;
+ private static bool IsShoutPartyTransferMode(string mode) => mode=="troops" || mode=="prisoners";
+ private static bool IsShoutTroopTransferMode(string mode) => mode=="troops";
+ private static bool IsShoutSettlementTransferMode(string mode) => mode=="fiefs";
+ private static bool IsShoutTradeShowMode(string mode) => mode=="show";
+ private string ResolveShownTradeTargetKey(object npc, out Hero hero) { hero=new(); return "npc"; }
+ /* PRODUCTION_OPTIONS */
+}
+static class Program {
+ static int assertions;
+ static void Check(bool ok,string name) { if(!ok) throw new Exception("FAIL "+name); assertions++; }
+ static void Main() {
+  var owner=new OptionsOwner(); Hero.MainHero=new Hero { Gold=5000 };
+  var options=owner.BuildShoutTradeOptions();
+  Check(options.Count==1 && options[0].IsGold && options[0].AvailableAmount==5000,"partyless captive retains personal gold");
+  Hero.MainHero.Gold=0; Check(owner.BuildShoutTradeOptions().Count==0,"no gold does not fabricate inventory");
+  Hero.MainHero=null; Check(owner.BuildShoutTradeOptions().Count==0,"missing main hero is empty");
+  Hero.MainHero=new Hero { Gold=10 }; owner._shoutTradeMode="show";
+  Check(owner.BuildShoutTradeOptions().Single().AvailableAmount==8,"show allowance preserved without party");
+  owner._shoutTradeMode="give"; Hero.MainHero.PartyBelongedTo=new();
+  var item=new ItemObject {StringId="grain",Name="grain"};
+  Hero.MainHero.PartyBelongedTo.ItemRoster.Add(new() {EquipmentElement=new() {Item=item},Amount=2});
+  Hero.MainHero.PartyBelongedTo.ItemRoster.Add(new() {EquipmentElement=new() {Item=item},Amount=3});
+  options=owner.BuildShoutTradeOptions();
+  Check(options.Count==2 && options[1].AvailableAmount==5 && options[1].InventoryUnitValue==5,"owned items still aggregate and value");
+  owner._shoutTradeMode="show";Check(owner.BuildShoutTradeOptions()[1].AvailableAmount==4,"show item allowance preserved");
+  owner._shoutTradeMode="troops";Check(owner.BuildShoutTradeOptions().Single().PartyEntry!=null,"troop mode keeps separate port");
+  owner._shoutTradeMode="fiefs";Check(owner.BuildShoutTradeOptions().Single().SettlementEntry!=null,"fief mode keeps separate port");
+  Console.WriteLine("PASS "+assertions+" production trade options assertions; liveGame=false");
+ }
+}

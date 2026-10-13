@@ -539,13 +539,8 @@ internal sealed class SceneTradeBannerlordAdapter
 
 		MobileParty mobileParty = Hero.MainHero?.PartyBelongedTo;
 
-		if (mobileParty == null)
-
-		{
-
-			return list;
-
-		}
+		// Captivity removes the owned party, not the hero's personal gold.
+		// Inventory remains scoped to that owned party; never fall back to the captor.
 
 		if (IsShoutTradeShowMode(_shoutTradeMode))
 
@@ -587,7 +582,7 @@ internal sealed class SceneTradeBannerlordAdapter
 
 		}
 
-		ItemRoster itemRoster = mobileParty.ItemRoster;
+		ItemRoster itemRoster = mobileParty?.ItemRoster;
 
 		if (itemRoster != null)
 

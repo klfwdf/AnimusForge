@@ -23,11 +23,17 @@ admission wiring, player-input suppression and the topic-free opening resource;
 they are not a full provider request or end-to-end UI simulation.
 
 Coverage: mobile lord; local owning-clan leader/governor and deduplication;
-foreign/remote/inactive/busy targets; ordinary exit; time pause; ten-second exit;
-early manual exit; duplicate tags; exact no-amount tag; unselected and non-native
+foreign/remote/inactive/busy targets; ordinary exit; time pause; player-controlled
+release on leaving (no ten-second auto-close or two-minute reading expiry);
+duplicate tags; exact no-amount tag; unselected and non-native
 channels; transfer/ownership/save/campaign/manager changes; native exceptions;
 post-close reentry; no stale history; confirmed AFEF projection in both editions;
 UI/resource registration and canonical saved fact identity.
+
+`python -B tests/AF.GameAdapter.Bannerlord/PlayerCaptivityConversationTests/run_trade_options.py`
+also checks the verbatim production resource reader: a partyless captive can give
+personal gold without accessing the captor's inventory. Owned inventory, show
+allowances and troop/fief modes retain their existing behavior (game ports are fixtures).
 
 Still requires live acceptance on both game APIs: both menu entries and governor
 selection, UI language, normal return/time restoration, LLM conditional quote vs
