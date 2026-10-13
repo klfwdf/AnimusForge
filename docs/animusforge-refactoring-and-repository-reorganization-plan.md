@@ -1,3 +1,11 @@
+﻿<a id="push-merge-20261014"></a>
+## 2026-10-14 MCM/无名人设修复合并推送（PUSH_VERIFIED / LIVE_PENDING）
+
+- 最新用户明确要求推送。工作区 `F:/AnimusForge-main`、`main`；本地功能 `a2db514fb`、`006e6c899` 及各自意图checkpoint与远端4个新增提交正常合并。远端基线 `033a0b9f3`；源码无冲突，仅HANDOFF同位置新增摘要冲突，完整保留双方内容。无rebase、强推、reset或其他作者改动回滚。
+- 功能合并提交 `8fe553f9c489b23c5e18d1e0c3cad1125fca7cd7` 已普通推送至origin/main；实际 `git ls-remote origin refs/heads/main` 返回相同完整SHA。本条明确替代下方 `mcm-fetch-20261014` 和 `unnamed-import-20261014` 的未push状态；详细功能、源码坐标与原验证仍按各条，不改历史验收结论。
+- 合并后原统一build-only：1.3.15.110062/1.4.6.115628、Bootstrap、双Coup及注册冒烟PASS。MCM真selector/action10项PASS，被俘CN/EN各204项及双语接线PASS，真实交易reader8项PASS，回答区完整生产控制器61项PASS。`git -c core.whitespace=cr-at-eol diff --cached --check` PASS，无残留冲突。证据 `artifacts/push-merge-20261014/`（build/mcm/captivity/trade/layout日志及publication收据），不上传产物、工具缓存或玩家数据。
+- 未部署/打包/本轮实机验证，玩家安装仍沿此前状态；MCM实际provider/UndoRedo、无名人设实际旧档及远端原生退出HOLD未被离线门禁豁免。回滚以 `a2db514fb`、`006e6c899` 作focused inverse并重验，不整树回滚或重写main；合并前本地参照 `006e6c899`，远端参照 `033a0b9f3`。
+
 <a id="mcm-fetch-20261014"></a>
 ## 2026-10-14 MCM 拉取下拉框清空/跨API写回与环境AI开关（OFFLINE_VERIFIED / LIVE_PENDING）
 
