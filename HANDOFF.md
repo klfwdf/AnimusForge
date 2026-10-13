@@ -1,3 +1,9 @@
+# 当前交接：审查修复已部署 EN（2026-10-13，DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
+
+- 源码 `39ab887b1`（checkpoint `97fbbb98f`），上条P1场景线程/P2百科UI语言混用和终端夹具已修；双API/Bootstrap/Coup/Stage、两包真实语言/终端/消息reader、异步guard回放PASS。详细修补与失败边界见后条。
+- 已按前序授权覆盖F盘EN模块：14managed文件更新、386managed hash验证，3312玩家文件内容/mtime保持，Recovery目录absent；没有push/正式ZIP/启动游戏/provider。收据 `artifacts/review-fixes-20261013/deployment.json`。
+- [唯一主台账与验收/回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#review-findings-en-deployed-20261013)。Supersedes下方EN_DEPLOY_PENDING，实机真正点击/场景行为/字体渲染仍LIVE_PENDING；源码focused inverse，安装无自动恢复，旧Stage保留。
+
 # 当前范围收敛：本地 CN/EN 双语（2026-10-13）
 
 - 本任务只维护中文与英文两套内容包；不扩展日文、韩文或其他语言，不做运行时第三语言切换，不新增多语言包矩阵。
