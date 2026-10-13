@@ -10064,3 +10064,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 后续用户明确授权“覆盖吧，并且把这个修复推送到远端”，替代上方等待启动器关闭及未授权发布状态。本轮开始工作区干净、HEAD `b7544c461`，未发现游戏/启动器进程；清理与旧Bootstrap SHA一致的第二次失败临时文件后，以同一组已验产物运行原部署脚本，日志 `deploy-authorized.log`。fetch后 `origin/main` 仍为 `bd443eb2c`，待发布仅本会话4个本地提交：前次覆盖记录、TTS检查点/产品/验证；8文件中唯一产品变化为本修复，不含其他产品改动或本地artifacts/私密数据。后续普通推送 `origin/main`，不强推、不改写历史；安装与远端成功仍须各自收据核验。
 - 最终覆盖exit0，原脚本更新9个受管文件，目标 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；独立核对3381项Stage/安装SHA、双实现候选SHA及9份旧备份均通过。本次Recovery `deploy-778e7620bb94410f888a3578fb2e365b` complete通过，详见 `artifacts/tts-agent-plan-20261011/receipt.json`、`deploy-verification.log`。本条明确替代上方待安装状态；先前失败记录保留，不代表当前仍未部署。未知清单外文件由原部署策略保留，没有另行全目录前后快照验收。
 - 发布边界：本会话本地提交加本次覆盖/发布核验说明普通推送到 `https://github.com/klfwdf/AnimusForge.git` 的 `refs/heads/main`；以 `git ls-remote` 返回完整HEAD一致为成功判据，本地 `publication-receipt.json` 保存推送日志、期望/实际ref及修复产品修订。未推送其他产品变化、本地artifacts或密钥；实机声音/口型、真实账号额度与音色授权仍NOT-RUN，用户可保存Agent Plan配置后测试。
+
+
+<a id="captivity-player-leave-20261014"></a>
+## 被俘赎金与玩家主动离开（2026-10-14）
+
+- 意图：按用户确认的流程，真实付款后由 AI 确认释放，通知获准释放但不自动关闭；玩家选择“离开”后在地图安全边界执行原生释放。保持对话身份、转押、存档 generation、唯一动作/事实校验；同步 CN/EN。
+- 范围：被俘会话、无所属队伍时个人金币列表、原生对话卸载引用清理及对应回归；不改模型回复、API、存档或一键构建/部署流程。测试证据留本地，不发布测试桥/运行配置/收据。
+- 交付基线：最新远端 main `0cf8d77c5`，新建干净交付分支；保留终端状态和手动标签入口的远端修复，不合入含本地专用记录的工作历史。用户授权源码推送，正式游戏部署/打包未授权。
+- 退出门：受影响行为与双语回归、双 API/Bootstrap 构建、测试副本真实 AI→付款→释放标签→真实 Leave 命令→原生状态及唯一事实；报告未验项和原生退出异常，不把平台退出失败当通过。
