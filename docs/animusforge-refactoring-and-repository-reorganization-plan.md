@@ -1,5 +1,5 @@
 <a id="release-160-cn-terminal-worldbook-20261013"></a>
-## 2026-10-13 1.6.0 整合发行、终端整理与世界书修复（PACKAGED / CN_DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
+## 2026-10-13 1.6.0 整合发行、终端整理与世界书修复（PACKAGED / CN_DEPLOYED_HASH_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
 - 用户授权包含其他会话已完成改动统一构建、CN安装、提交推送与1.6.0双包；公告明确从1.5.7正式版`4ed61998b`累计，远端推送对照起点`22b52586331eae566b319618a63350615f421d47`。插画会话运行期间中止本轮构建，完成后统一纳入；没有停止另一会话进程。
 - 移除内容包锁定模型回复语言的system追加、policy额外system注入、处刑language选择/替换及活动默认资源中的语言要求。固定CN/EN Prompt仍由内容包选择，玩家语言要求/动态原文/协议/事实/权限保留；旧默认精确匹配清册保原文。AGENTS及双语skill同步。`PromptComposerTexts.cs:25-27`、`PolicyLlmClient.FreezePolicyMessages`、`ExecutionAddressLlm.cs:26-37`负责真实消费；`PromptLanguageAudit.cs:14-17`用等价Unicode块和转义表示审计正则，实际DLL穷举65536个BMP字符判定相同，审计不阻断请求。
@@ -10,7 +10,7 @@
 - 原流程输出`一键编译覆盖推送/packages/AnimusForge_v1.6.0_CN_1013_1009.zip`、EN同名成对包；每份3519条目，CRC/唯一AnimusForge目录/Bootstrap-only XML/两实现marker和DLL哈希/不含ONNX复核PASS。CN SHA256 `7e2522fdad577a41ebbba5435ffceb9746eb54267118781f7bcf0e4c4b7808d1`；EN `79e30ce99710a6aa7befc1294dd833229b20376e08b3276c1ff0c26a1da7aba5`。
 - 实际1.6.0 DLL两API各CN/EN包回放：169消息/历史，4385终端metadata/原setter/保存失败重试/分组/开发者按钮，234语言/UI writer+241总实体检查PASS；SceneActions94/94，TerminalCategory48，Persona32UIkey静态PASS；真实旧导演两回复/缺段/空段/CN协议/黑底guard/MCMselector及8+2主线程队列回放PASS。相关日志在`artifacts/no-forced-output-language-20261013/`。补跑的旧WeeklyParticipantTests、WorldBulletinPolicy.SmokeTests因缺PromptComposerTexts/WeeklyMaterialTexts等依赖编译失败，未算通过；实际DLL/发行构建不依赖这两旧夹具。
 - CN1.6.0安装`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`：8项更新、386managed哈希、3341玩家文件内容/mtime保持、Recovery absent，收据`deployment-cn-v160.json`。此前CN1.5.8整合覆盖更新90项，本记录1.6.0最终安装明确替代。未启动游戏，live Gauntlet滚动/所有旧档/外部provider/TTS与最终图片质量NOT-RUN，不以离线通过替代实机。
-- 玩家公告`docs/releases/AnimusForge_1.6.0_累计更新公告_20261013.md`及txt。本地证据、工具缓存Microsoft/NuGet、ZIP不提交Git。回滚用针对发行切片的focused inverse、重建旧候选并人工覆盖；部署没有自动Recovery，禁止hard reset或覆盖其他作者改动。推送是否成功以后续远端ref收据为准。
+- 玩家公告`docs/releases/AnimusForge_1.6.0_累计更新公告_20261013.md`及txt。本地证据、工具缓存Microsoft/NuGet、ZIP不提交Git。回滚用针对发行切片的focused inverse、重建旧候选并人工覆盖；部署没有自动Recovery，禁止hard reset或覆盖其他作者改动。发行提交 `737907825b89e3736d59825e68aa2791375fb4d2` 已推送；2026-10-13 接续核验远端 main 同值，CN/EN ZIP SHA256/CRC 及安装 386 个受管文件哈希再次 PASS。原部署时 3341 个玩家文件保护沿用原收据，本轮未重新部署或声称复测其历史时间戳。
 
 <a id="illustrator-facts-compact-20261013"></a>
 ## 2026-10-13 核心事实继续压缩（OFFLINE_VERIFIED / LIVE_PENDING）

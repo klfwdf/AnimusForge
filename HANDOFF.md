@@ -1,7 +1,7 @@
-# 当前交接：1.6.0 成对包与 CN 安装（2026-10-13，PACKAGED / CN_DEPLOYED_HASH_VERIFIED / PUSH_PENDING / LIVE_PENDING）
+# 当前交接：1.6.0 成对包与 CN 安装（2026-10-13，PACKAGED / CN_DEPLOYED_HASH_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
 - 本条替代下方旧安装/待部署状态。按用户最新要求生成1.6.0 CN/EN双包，并部署F盘CN1.6.0；纳入插画会话完成后的共享改动。双API/Bootstrap/Coup/Stage、两包3519项、实际DLL消息/终端/语言回放通过；386受管hash一致、3341玩家文件内容/mtime保持、无Recovery。
-- 终端条目集中、隐藏投影、手动标签开发者开关、去固定输出语言锁与世界书重复数字修复已纳入。公告从1.5.7正式`4ed61998b`累计；本轮推送基线`22b525863`，提交/推送仍待ref核验。
+- 终端条目集中、隐藏投影、手动标签开发者开关、去固定输出语言锁与世界书重复数字修复已纳入。公告从1.5.7正式`4ed61998b`累计；本轮推送基线`22b525863`，发行提交 `737907825b89e3736d59825e68aa2791375fb4d2` 已推送；本轮 `git ls-remote origin refs/heads/main` 确认远端同值。两包 SHA256/CRC 与安装 386 个受管文件哈希再次通过。
 - [唯一主台账及源码范围/回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-160-cn-terminal-worldbook-20261013)。包在`一键编译覆盖推送/packages/`，收据本地`artifacts/no-forced-output-language-20261013/`；实机/provider/旧档NOT-RUN。两项旧新闻链接源测试缺文本reader依赖未通过，未作为发行通过证据。ZIP、工具缓存和本地收据不入库。
 
 # 当前交接：核心事实压缩（2026-10-13，OFFLINE_VERIFIED / LIVE_PENDING）
