@@ -4,12 +4,65 @@ using AnimusForge;
 using TaleWorlds.GauntletUI;
 using TaleWorlds.GauntletUI.BaseTypes;
 using TaleWorlds.Library;
+using TaleWorlds.Engine.GauntletUI;
 
 internal static class Program
 {
     private static int checks;
     private static void Check(bool ok, string label) { if (!ok) throw new Exception("FAIL " + label); checks++; }
     private static Widget Node(string id, bool button = false) => button ? new ButtonWidget { Id = id } : new Widget { Id = id };
+    private static void NotifyRelease(GauntletMovieIdentifier movie)
+    {
+        // The Harmony seam is explicit in this managed harness; a missing hook preserves the old failing behavior.
+        typeof(NativeConversationAnswerAreaController).GetMethod("ReleaseMoviePrefix")?.Invoke(null, new object[] { movie });
+    }
+    private static int TrackedRoots() => ((System.Collections.ICollection)typeof(NativeConversationAnswerAreaController)
+        .GetField("Roots", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null)).Count;
+    private static void LifecycleCase()
+    {
+        int baseline = TrackedRoots();
+        var oldRoot = Node("OldRoot"); var oldAnswers = Node("AnswerListContainer"); oldRoot.Children.Add(oldAnswers);
+        var liveRoot = Node("LiveRoot"); var liveAnswers = Node("AnswerListContainer"); liveRoot.Children.Add(liveAnswers);
+        var oldMovie = new GauntletMovieIdentifier { Movie = new Movie { RootWidget = oldRoot } };
+        var liveMovie = new GauntletMovieIdentifier { Movie = new Movie { RootWidget = liveRoot } };
+        NativeConversationAnswerAreaController.LoadMoviePostfix("MapConversation", oldMovie);
+        NativeConversationAnswerAreaController.LoadMoviePostfix("SPConversation", liveMovie);
+        Check(TrackedRoots() == baseline + 2, "lifecycle.two-live-movies");
+        NativeConversationAnswerAreaController.SetSuppressed(true);
+        NotifyRelease(new GauntletMovieIdentifier { Movie = oldMovie.Movie });
+        NotifyRelease(null);
+        Check(TrackedRoots() == baseline + 2, "lifecycle.foreign-identifier-is-not-owner");
+        NotifyRelease(oldMovie);
+        oldRoot.Disposed = true; oldMovie.Movie = null;
+        Check(!liveAnswers.IsEnabled, "lifecycle.unload-does-not-release-other-movie");
+        Logger.Warnings.Clear();
+        NativeConversationAnswerAreaController.ForceRestoreAll();
+        Check(Logger.Warnings.Count == 0 && oldRoot.DisposedAccesses == 0, "lifecycle.never-restore-unloaded-tree");
+        Check(TrackedRoots() == baseline + 1, "lifecycle.unloaded-root-unregistered");
+        Check(liveAnswers.IsVisible && liveAnswers.IsEnabled, "lifecycle.live-movie-restored");
+        NotifyRelease(oldMovie);
+        Check(TrackedRoots() == baseline + 1, "lifecycle.duplicate-release-is-inert");
+        NotifyRelease(liveMovie); liveRoot.Disposed = true; liveMovie.Movie = null;
+        NativeConversationAnswerAreaController.SetSuppressed(true);
+        NativeConversationAnswerAreaController.OnApplicationTick();
+        NativeConversationAnswerAreaController.SetSuppressed(false);
+        NativeConversationAnswerAreaController.ForceRestoreAll();
+        Check(TrackedRoots() == baseline && oldRoot.DisposedAccesses == 0 && liveRoot.DisposedAccesses == 0,
+            "lifecycle.closed-movies-not-retained-or-ticked");
+        var context = new UIContext();
+        var first = Node("First"); first.Context = context;
+        var second = Node("Second"); second.Context = context;
+        NativeConversationAnswerAreaController.LoadMoviePostfix("MapConversation", new GauntletMovieIdentifier { Movie = new Movie { RootWidget = first } });
+        NativeConversationAnswerAreaController.LoadMoviePostfix("SPConversation", new GauntletMovieIdentifier { Movie = new Movie { RootWidget = second } });
+        typeof(NativeConversationAnswerAreaController).GetMethod("ClearContextPrefix")?.Invoke(null, new object[] { new GauntletLayer { UIContext = new UIContext() } });
+        Check(TrackedRoots() == baseline + 2, "lifecycle.foreign-context-kept");
+        typeof(NativeConversationAnswerAreaController).GetMethod("ClearContextPrefix")?.Invoke(null, new object[] { new GauntletLayer { UIContext = context } });
+        first.Disposed = second.Disposed = true;
+        NativeConversationAnswerAreaController.ForceRestoreAll();
+        Check(Logger.Warnings.Count == 0 && first.DisposedAccesses == 0 && second.DisposedAccesses == 0,
+            "lifecycle.context-finalize-bypasses-release-movie");
+        Check(TrackedRoots() == baseline, "lifecycle.whole-context-roots-retired");
+    }
     private static void Case(string movie, bool skin)
     {
         var root = Node("Root");
@@ -66,6 +119,7 @@ internal static class Program
         {
             if (!args.Contains("--new-ui-only")) { Case("SPConversation", false); Case("MapConversation", false); }
             Case("SPConversation", true); Case("MapConversation", true);
+            LifecycleCase();
             Console.WriteLine($"PASS layout-state checks={checks}; real production controller with synthetic widgets; not native rendering");
             return 0;
         }
@@ -84,6 +138,9 @@ namespace TaleWorlds.GauntletUI.BaseTypes
     public class Widget
     {
         public static int FindCalls;
+        public bool Disposed;
+        public int DisposedAccesses;
+        public UIContext Context { get; set; } = new();
         public string Id { get; set; }
         public bool IsVisible { get; set; } = true;
         public bool IsEnabled { get; set; } = true;
@@ -98,6 +155,7 @@ namespace TaleWorlds.GauntletUI.BaseTypes
         public Widget GetChild(int i) => Children[i];
         public Widget FindChild(string id, bool includeAllChildren)
         {
+            if (Disposed) { DisposedAccesses++; throw new NullReferenceException("Synthetic disposed native UI context"); }
             FindCalls++;
             foreach (var c in Children)
             {
@@ -111,21 +169,28 @@ namespace TaleWorlds.GauntletUI.BaseTypes
 }
 namespace TaleWorlds.GauntletUI
 {
+    public class UIContext { }
     public class Movie { public Widget RootWidget { get; set; } }
-    public class GauntletMovieIdentifier { public Movie Movie { get; set; } }
 }
 namespace TaleWorlds.Engine.GauntletUI
 {
-    public class GauntletLayer { public GauntletMovieIdentifier LoadMovie(string name, ViewModel vm) => null; }
+    public class GauntletMovieIdentifier { public Movie Movie { get; set; } }
+    public class GauntletLayer
+    {
+        public UIContext UIContext { get; set; }
+        public GauntletMovieIdentifier LoadMovie(string name, ViewModel vm) => null;
+        public void ReleaseMovie(GauntletMovieIdentifier identifier) { }
+        private void ClearContext() { UIContext = null; }
+    }
 }
 namespace HarmonyLib
 {
     public static class AccessTools { public static MethodInfo Method(Type t, string name, Type[] args = null) => null; }
     public class HarmonyMethod { public HarmonyMethod(Type t, string name) { } }
-    public class Harmony { public Harmony(string id) { } public void Patch(MethodInfo method, HarmonyMethod postfix = null) { } }
+    public class Harmony { public Harmony(string id) { } public void Patch(MethodInfo method, HarmonyMethod prefix = null, HarmonyMethod postfix = null) { } }
 }
 namespace AnimusForge
 {
-    public static class Logger { public static void Log(string scope, string text) { } public static void LogTrace(string scope, string text) { } }
+    public static class Logger { public static readonly List<string> Warnings = new(); public static void Log(string scope, string text) { Warnings.Add(text); } public static void LogTrace(string scope, string text) { } }
     public static class FreezeWatchdog { public static IDisposable Scope(string name) => new Noop(); private sealed class Noop : IDisposable { public void Dispose() { } } }
 }
