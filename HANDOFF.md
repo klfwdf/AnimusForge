@@ -1,3 +1,9 @@
+# 当前交接：开局空无名人设导入修复（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 空/缺失unnamed_persona可选通过；空Profiles不再造unnamednpcprofiles，开局重复Key自动跳过并保原值，坏数据仍失败。双API/Bootstrap/Coup通过，源码接线导入回放各86项、整包22项PASS。
+- 同时核实最低正向关系/私人好感增幅：原生/场景Hero正MOOD有效；neutral/无标签/无名不加，信使剥离MOOD不执行。最低5的8例Application回放通过；没有改关系机制。
+- [唯一主台账、源码坐标、限制与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#unnamed-import-20261014)，checkpoint `c10388b`。未部署/打包/push，实机与原玩家存档NOT-RUN。
+
 # 当前交接：终端状态与手动标签入口（2026-10-14，OFFLINE_VERIFIED / STAGE_VERIFIED / LIVE_PENDING）
 
 - 修复实际NativeOverlayVM漏接开发者可见性；终端状态为已开启/已关闭，隐藏生图完整请求URL选项并保留配置。双API/Bootstrap/Coup与实际DLL回放通过；干净Stage及两DLL/Bootstrap哈希、CN状态资源核验PASS。

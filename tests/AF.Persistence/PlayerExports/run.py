@@ -140,6 +140,7 @@ links = ["src/AF.GameAdapter.Bannerlord/UI/Onboarding/OnboardingDatabaseImportCo
          "src/AF.GameAdapter.Bannerlord/ImportExport/NpcDataIdentityFileAdapter.cs",
          "src/AF.GameAdapter.Bannerlord/ImportExport/PersonaProfileImportExportAdapter.cs",
          "src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs",
+         "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs",
          "src/modules/AF.Module.Persona/Import/PersonaImportOwner.cs",
          "src/modules/AF.Module.Persona/Import/UnnamedPersonaImportValidationOwner.cs",
          "src/modules/AF.Module.Memory/ImportExport/MemoryImportExportOwner.cs",

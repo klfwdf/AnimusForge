@@ -18,8 +18,43 @@ internal static class Program
         ImportSources();
         InstalledWorldbooks();
         Store();
+        UnnamedImportFormats();
         if (Environment.GetEnvironmentVariable("AF_H7_PERSONA_FORMATS")=="1") { PersonaFormats(); MemoryFormats(); OnboardingBaseline(); PackageExportFormats(); PackageImportFormats(); RebellionEditorUi(); OnboardingTerminal(); OnboardingFiveDomainTerminal(); }
         Console.WriteLine("PASS player-exports checks=" + _checks);
+    }
+
+    private static void UnnamedImportFormats()
+    {
+        string dir=Path.Combine(PlayerExportsStore.GetPlayerExportsRootPath(),"unnamed-import");
+        foreach(string name in new[]{"personality_background","knowledge/rules","voice_mapping","event_data","kingdom_profiles"}) Directory.CreateDirectory(Path.Combine(dir,name));
+        foreach(string file in new[]{"personality_background/one.json","knowledge/rules/rule.json","voice_mapping/VoiceMapping.json","event_data/WorldOpeningSummary.json","event_data/KingdomOpeningSummaries.json","kingdom_profiles/KingdomProfiles.json"}) File.WriteAllText(Path.Combine(dir,file),"{}");
+        var state=new PersonaProfileStateOwner();
+        var adapter=new PersonaProfileImportExportAdapter(state,()=>1,_=>true,null);
+        var controller=new OnboardingDatabaseImportController();int unlocked=0,rejected=0;
+        Action begin=()=>controller.Begin(dir,()=>true,_=>new(){Available=true,Valid=true,Total=1,Import=()=>true},folder=>new Action<OnboardingImportStep>[] {step=>adapter.ImportUnnamedPersonaDataScoped(folder,step)},()=>true,()=>unlocked++,()=>rejected++);
+        begin();Check(unlocked==1&&rejected==0,"whole onboarding allows absent optional unnamed persona directory");
+        string child=Path.Combine(dir,"unnamed_persona");Directory.CreateDirectory(child);
+        string catalog=Path.Combine(child,"UnnamedNpcProfiles.json");
+        File.WriteAllText(catalog,"{\"Version\":1,\"Profiles\":{}}");
+        ShoutUtils.ExistingKeys.Add("unnamednpcprofiles");begin();
+        Check(unlocked==2&&rejected==0,"empty catalog bypasses existing legacy phantom key during onboarding");
+        File.WriteAllText(catalog,"{\"Version\":1,\"Profiles\":{\"Villager\":{\"Description\":\"original\"}}}");
+        Check(!UnnamedPersonaImportValidationOwner.ValidateUnnamedPersonaKeysForImport(dir,_=>null,_=>true,out string conflict),"standalone validation still refuses actual existing profile keys");
+        Check(ShoutUtils.TryImportUnnamedPersonaFromDir(dir,false),"actual runtime accepts nonempty catalog");
+        var field=typeof(ShoutUtils).GetField("_unnamedProfiles",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Static);
+        var records=(System.Collections.IDictionary)field.GetValue(null);object old=records["villager"];
+        File.WriteAllText(catalog,"{\"Version\":1,\"Profiles\":{\"Villager\":{\"Description\":\"changed\"},\"Guard\":{\"Personality\":\"new\"}}}");
+        ShoutUtils.ExistingKeys.Add("villager");begin();
+        Check(unlocked==3&&rejected==0&&ReferenceEquals(records["villager"],old)&&records.Contains("guard"),"onboarding skips existing actual record and imports missing record");
+        Check((string)old.GetType().GetField("Description").GetValue(old)=="original","unified Description survives unnamed catalog import");
+        Check(!records.Contains("unnamednpcprofiles"),"reader never invents filename identity for catalog");
+        string duplicate=Path.Combine(child,"duplicate.json");File.WriteAllText(duplicate,"{\"Key\":\"VILLAGER\",\"Description\":\"duplicate\"}");
+        Check(!ShoutUtils.TryImportUnnamedPersonaFromDir(dir,false)&&ReferenceEquals(records["villager"],old),"duplicate normalized import keys reject whole batch before commit");File.Delete(duplicate);
+        File.WriteAllText(catalog,"{\"Profiles\":[]}");begin();
+        Check(unlocked==3&&rejected==1&&ReferenceEquals(records["villager"],old),"malformed optional data blocks completion without partial overwrite");
+        File.WriteAllText(catalog,"{\"Profiles\":{}}");
+        File.WriteAllText(Path.Combine(child,"legacy__hash.json"),"{\"Personality\":\"legacy\"}");
+        Check(ShoutUtils.TryImportUnnamedPersonaFromDir(dir,false)&&records.Contains("legacy"),"legacy single file retains filename key compatibility");
     }
 
     private static void PersonaFormats()

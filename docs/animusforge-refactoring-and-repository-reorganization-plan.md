@@ -1,3 +1,14 @@
+<a id="unnamed-import-20261014"></a>
+## 2026-10-14 开局无名人设可选导入与最低关系增幅核实（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 最新用户报告：空 `unnamed_persona/UnnamedNpcProfiles.json` 被开局列为必需，并与已有 `unnamednpcprofiles` Key 冲突；要求空内容不阻塞开局。基线 `0cf8d77c5`，checkpoint `c10388b`。随后用户要求核实最低正向关系/私人好感增幅，本轮只核实该选项，不改其原效果。
+- 根因与实现：`OnboardingDatabaseImportController.Begin` 移除无名人设目录必需检查，其余必需域和实际完成回调保持；`PersonaProfileImportExportAdapter.ImportUnnamedPersonaDataScoped:694` 对缺失目录完成可选步骤，有内容时 `overwriteExisting:false` 跳过现有Key。独立手动导入的真实重复Key校验仍保留。
+- `UnnamedPersonaImportValidationOwner.ReadProfiles:12-51` 统一消费单个人设与Version/Profiles汇总；空Profiles不造文件名NPC，正常汇总按内部键读取，旧单文件继续支持Key及文件名后缀兼容，包内规范化重复Key或坏Profiles类型拒绝。校验和 `PrepareUnnamedPersonaCounts:372` 共用此reader；选择真正unnamed子目录，存在时不混入整包根JSON。
+- `ShoutUtils.TryImportUnnamedPersonaFromDir:3318` 使用相同reader并在完整解析后才合并，保留Description和原Personality/Background及其他身份字段；空批次不初始化/保存，全部重复不保存，新增/显式覆盖才在原锁内调用原owner保存。旧误造 `unnamednpcprofiles` 条目保留，不自动删除存档数据。每显式导入一次目录读/解析；无Tick扫描、后台游戏读取或新保存键，`_unnamed_persona_v1`和分块格式保持。
+- 双API原统一build-only：参考1.3.15.110062/1.4.6.115628各363 warnings/0 errors，Bootstrap/probe0/0，双Coup/注册冒烟PASS。PlayerExports 1.3/1.4各86项源码接线回放PASS，含整个开局Begin+真实无名导入体的目录缺失、空汇总、旧假Key、重复保值、补入新条目、Description、损坏及重复批次不提交；整包原22项PASS。夹具缺当前NpcPersonaProfilePolicy依赖已补真实源；整包Newtonsoft原硬编码SDK路径不存在，显式传实际SDK依赖后PASS。旧综合ImportValidationTests缺多项当前reader/model依赖，尝试编译失败，未作为通过证据且未扩展修该无关夹具。
+- 用户追加核实：`MyBehavior.cs:65` 的设置getter于每次回复读取MinimumPositiveNpcRelationGain，`PatienceResponseApplication.cs:35-55` 只提高已有正delta，`PatienceResponseBannerlordAdapter.cs:241-274` 在真实Hero上提交。最低5回放：joy原版0/私人5，delighted原版5/私人5，neutral或无标签0/0，annoyed原版-1/私人-2，无名0/0；设0回到joy私人1、delighted原版1/私人2。原生与场景后处理分别通过 `NativeConversationGameEffectsRuntime.cs:1071` / `ConversationActionBoundaryBannerlordAdapter.cs:127` 接通。信使 `CourierDeliveryBehavior.DomainCommit.cs:174-176` 明确只剥离MOOD，不执行该增幅；不能声称三渠道此项已对齐。伴侣/家属的原版关系叶可能路由同一私人好感store，原双叶提交保留。相关旧PatienceOwnerTests缺双语reader依赖编译失败，本次用真实Application/Rules源码与脱离游戏的回调复测8种结果，未把旧项目说成通过。
+- 证据在 `artifacts/unnamed-import-20261014/`；本轮未部署、未打包、未push、未改玩家导出或实际sav，未启动游戏、未验玩家所报存档实际导入/显示。UI资源键仍使用既有CN/EN投影，新增英文文本仅技术诊断。回滚使用本切片focused inverse，禁止hard reset；原工具缓存与其他作者改动保留。
+
 <a id="terminal-manual-tags-20261014"></a>
 ## 2026-10-14 终端状态与手动标签入口修复（OFFLINE_VERIFIED / STAGE_VERIFIED / LIVE_PENDING）
 

@@ -369,74 +369,15 @@ internal sealed class PersonaProfileImportExportAdapter
 		return pbNew;
 	}
 
- internal void PrepareUnnamedPersonaCounts(string importDir, out int num7, out int num8)
+ internal void PrepareUnnamedPersonaCounts(string importDir, out int duplicates, out int total)
  {
- num7=0; num8=0;
-			try
-			{
-				List<string> source = new List<string>
-				{
-					Path.Combine(importDir, "unnamed_persona"),
-					importDir
-				};
-				HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-				foreach (string item in source.Distinct(StringComparer.OrdinalIgnoreCase))
-				{
-					if (!Directory.Exists(item))
-					{
-						continue;
-					}
-					string[] array4 = null;
-					try
-					{
-						array4 = Directory.GetFiles(item, "*.json");
-					}
-					catch
-					{
-						array4 = null;
-					}
-					if (array4 == null)
-					{
-						continue;
-					}
-					string[] array5 = array4;
-					foreach (string path4 in array5)
-					{
-						string text7 = null;
-						try
-						{
-							text7 = (ReadUnnamedPersonaImportKey(path4) ?? "").Trim().ToLower();
-						}
-						catch
-						{
-							text7 = null;
-						}
-						if (string.IsNullOrWhiteSpace(text7))
-						{
-							string text8 = Path.GetFileNameWithoutExtension(path4) ?? "";
-							int num13 = text8.LastIndexOf("__", StringComparison.Ordinal);
-							if (num13 > 0)
-							{
-								text8 = text8.Substring(0, num13);
-							}
-							text7 = (text8 ?? "").Trim().ToLower();
-						}
-						if (!string.IsNullOrEmpty(text7) && hashSet.Add(text7))
-						{
-							num8++;
-							if (ShoutUtils.HasUnnamedPersonaKey(text7))
-							{
-								num7++;
-							}
-						}
-					}
-				}
-			}
-			catch
-			{
-				num7 = 0;
-				num8 = 0;
-			}
+     duplicates = 0;
+     total = 0;
+     foreach (string key in UnnamedPersonaImportValidationOwner.ReadProfiles(importDir).Keys)
+     {
+         total++;
+         if (ShoutUtils.HasUnnamedPersonaKey(key)) duplicates++;
+     }
  }
 
 internal void ExportUnnamedPersonaData(string folderName)
@@ -762,14 +703,19 @@ internal void ImportUnnamedPersonaData(string folderName) => ImportUnnamedPerson
 				completion?.Finish(OnboardingImportResult.Failed);
 				return;
 			}
-			if (!ValidateUnnamedPersonaKeysForImport(text, out var error))
+            if (completion != null && !Directory.Exists(Path.Combine(text, "unnamed_persona")))
+            {
+                completion.Finish(OnboardingImportResult.Completed);
+                return;
+            }
+            if (completion == null && !ValidateUnnamedPersonaKeysForImport(text, out var error))
 			{
 				InformationManager.DisplayMessage(new InformationMessage(error));
 				completion?.Finish(OnboardingImportResult.Failed);
 				return;
 			}
 			if (completion == null) ShoutUtils.ImportUnnamedPersonaFromDir(text);
-            else if (!ShoutUtils.TryImportUnnamedPersonaFromDir(text)) { completion.Finish(OnboardingImportResult.Failed); return; }
+            else if (!ShoutUtils.TryImportUnnamedPersonaFromDir(text, overwriteExisting: false)) { completion.Finish(OnboardingImportResult.Failed); return; }
 			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportCompleted(text)));
             completion?.Finish(OnboardingImportResult.Completed);
 		}

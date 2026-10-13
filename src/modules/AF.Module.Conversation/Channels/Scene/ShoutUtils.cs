@@ -3319,202 +3319,51 @@ public static class ShoutUtils
 
 	public static void ImportUnnamedPersonaFromDir(string importRootDir) => TryImportUnnamedPersonaFromDir(importRootDir);
 
-	internal static bool TryImportUnnamedPersonaFromDir(string importRootDir)
-	{
-		try
-		{
-			if (string.IsNullOrWhiteSpace(importRootDir))
-			{
-				return false;
-			}
-			string text = importRootDir;
-			if (!Directory.Exists(text))
-			{
-				return false;
-			}
-			string text2 = System.IO.Path.Combine(text, "unnamed_persona");
-			if (Directory.Exists(text2))
-			{
-				text = text2;
-			}
-			string[] files = Directory.GetFiles(text, "*.json");
-			Dictionary<string, UnnamedNpcPersonaProfile> dictionary = new Dictionary<string, UnnamedNpcPersonaProfile>();
-			string[] array = files;
-			foreach (string path in array)
-			{
-				try
-				{
-					string text3 = File.ReadAllText(path);
-					if (string.IsNullOrWhiteSpace(text3))
-					{
-						continue;
-					}
-					JObject jObject = null;
-					try
-					{
-						jObject = JObject.Parse(text3);
-					}
-					catch
-					{
-						jObject = null;
-					}
-					if (jObject == null)
-					{
-						continue;
-					}
-					string text4 = (jObject["Key"] ?? jObject["key"])?.ToString();
-					if (string.IsNullOrWhiteSpace(text4))
-					{
-						string text5 = System.IO.Path.GetFileNameWithoutExtension(path);
-						int num = text5.LastIndexOf("__", StringComparison.Ordinal);
-						if (num > 0)
-						{
-							text5 = text5.Substring(0, num);
-						}
-						text4 = text5;
-					}
-					UnnamedNpcPersonaProfile unnamedNpcPersonaProfile = new UnnamedNpcPersonaProfile();
-					unnamedNpcPersonaProfile.Personality = (jObject["Personality"] ?? jObject["personality"])?.ToString();
-					unnamedNpcPersonaProfile.Background = (jObject["Background"] ?? jObject["background"])?.ToString();
-					unnamedNpcPersonaProfile.CultureId = (jObject["CultureId"] ?? jObject["cultureId"] ?? jObject["culture_id"])?.ToString();
-					unnamedNpcPersonaProfile.Rank = (jObject["Rank"] ?? jObject["rank"])?.ToString();
-					unnamedNpcPersonaProfile.Name = (jObject["Name"] ?? jObject["name"])?.ToString();
-					unnamedNpcPersonaProfile.TroopId = (jObject["TroopId"] ?? jObject["troopId"] ?? jObject["troop_id"])?.ToString();
-					text4 = (text4 ?? "").Trim().ToLower();
-					if (!string.IsNullOrEmpty(text4))
-					{
-						dictionary[text4] = unnamedNpcPersonaProfile;
-					}
-				}
-				catch
-				{
-				}
-			}
-			LoadUnnamedProfilesIfNeeded();
-			lock (_unnamedProfilesLock)
-			{
-				if (_unnamedProfiles == null)
-				{
-					_unnamedProfiles = new Dictionary<string, UnnamedNpcPersonaProfile>();
-				}
-				foreach (KeyValuePair<string, UnnamedNpcPersonaProfile> item in dictionary)
-				{
-					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
-					{
-						_unnamedProfiles.Remove(item.Key);
-						_unnamedProfiles[item.Key] = item.Value;
-					}
-				}
-				SaveUnnamedProfilesUnsafe();
-			}
+    internal static bool TryImportUnnamedPersonaFromDir(string importRootDir, bool overwriteExisting = true)
+    {
+        try
+        {
+            var records = UnnamedPersonaImportValidationOwner.ReadProfiles(importRootDir);
+            var prepared = new Dictionary<string, UnnamedNpcPersonaProfile>();
+            foreach (var entry in records)
+            {
+                JObject profile = entry.Value;
+                prepared.Add(entry.Key, new UnnamedNpcPersonaProfile
+                {
+                    Description = (profile["Description"] ?? profile["description"])?.ToString(),
+                    Personality = (profile["Personality"] ?? profile["personality"])?.ToString(),
+                    Background = (profile["Background"] ?? profile["background"])?.ToString(),
+                    CultureId = (profile["CultureId"] ?? profile["cultureId"] ?? profile["culture_id"])?.ToString(),
+                    Rank = (profile["Rank"] ?? profile["rank"])?.ToString(),
+                    Name = (profile["Name"] ?? profile["name"])?.ToString(),
+                    TroopId = (profile["TroopId"] ?? profile["troopId"] ?? profile["troop_id"])?.ToString()
+                });
+            }
+            if (prepared.Count == 0) return true;
+            LoadUnnamedProfilesIfNeeded();
+            lock (_unnamedProfilesLock)
+            {
+                if (_unnamedProfiles == null) _unnamedProfiles = new Dictionary<string, UnnamedNpcPersonaProfile>();
+                bool changed = false;
+                foreach (var entry in prepared)
+                {
+                    if (!overwriteExisting && _unnamedProfiles.ContainsKey(entry.Key)) continue;
+                    _unnamedProfiles[entry.Key] = entry.Value;
+                    changed = true;
+                }
+                if (changed) SaveUnnamedProfilesUnsafe();
+            }
             return true;
-		}
-		catch
-		{
+        }
+        catch (Exception ex)
+        {
+            Logger.Log("NpcPersona", "[WARN] Unnamed persona import failed: " + ex.Message);
             return false;
-		}
-	}
+        }
+    }
 
-	public static void ImportUnnamedPersonaFromDir(string importRootDir, bool overwriteExisting)
-	{
-		try
-		{
-			if (overwriteExisting)
-			{
-				ImportUnnamedPersonaFromDir(importRootDir);
-			}
-			else
-			{
-				if (string.IsNullOrWhiteSpace(importRootDir))
-				{
-					return;
-				}
-				string text = importRootDir;
-				if (!Directory.Exists(text))
-				{
-					return;
-				}
-				string text2 = System.IO.Path.Combine(text, "unnamed_persona");
-				if (Directory.Exists(text2))
-				{
-					text = text2;
-				}
-				string[] files = Directory.GetFiles(text, "*.json");
-				Dictionary<string, UnnamedNpcPersonaProfile> dictionary = new Dictionary<string, UnnamedNpcPersonaProfile>();
-				string[] array = files;
-				foreach (string path in array)
-				{
-					try
-					{
-						string text3 = File.ReadAllText(path);
-						if (string.IsNullOrWhiteSpace(text3))
-						{
-							continue;
-						}
-						JObject jObject = null;
-						try
-						{
-							jObject = JObject.Parse(text3);
-						}
-						catch
-						{
-							jObject = null;
-						}
-						if (jObject == null)
-						{
-							continue;
-						}
-						string text4 = (jObject["Key"] ?? jObject["key"])?.ToString();
-						if (string.IsNullOrWhiteSpace(text4))
-						{
-							string text5 = System.IO.Path.GetFileNameWithoutExtension(path);
-							int num = text5.LastIndexOf("__", StringComparison.Ordinal);
-							if (num > 0)
-							{
-								text5 = text5.Substring(0, num);
-							}
-							text4 = text5;
-						}
-						UnnamedNpcPersonaProfile unnamedNpcPersonaProfile = new UnnamedNpcPersonaProfile();
-						unnamedNpcPersonaProfile.Personality = (jObject["Personality"] ?? jObject["personality"])?.ToString();
-						unnamedNpcPersonaProfile.Background = (jObject["Background"] ?? jObject["background"])?.ToString();
-						unnamedNpcPersonaProfile.CultureId = (jObject["CultureId"] ?? jObject["cultureId"] ?? jObject["culture_id"])?.ToString();
-						unnamedNpcPersonaProfile.Rank = (jObject["Rank"] ?? jObject["rank"])?.ToString();
-						unnamedNpcPersonaProfile.Name = (jObject["Name"] ?? jObject["name"])?.ToString();
-						unnamedNpcPersonaProfile.TroopId = (jObject["TroopId"] ?? jObject["troopId"] ?? jObject["troop_id"])?.ToString();
-						text4 = (text4 ?? "").Trim().ToLower();
-						if (!string.IsNullOrEmpty(text4))
-						{
-							dictionary[text4] = unnamedNpcPersonaProfile;
-						}
-					}
-					catch
-					{
-					}
-				}
-				LoadUnnamedProfilesIfNeeded();
-				lock (_unnamedProfilesLock)
-				{
-					if (_unnamedProfiles == null)
-					{
-						_unnamedProfiles = new Dictionary<string, UnnamedNpcPersonaProfile>();
-					}
-					foreach (KeyValuePair<string, UnnamedNpcPersonaProfile> item in dictionary)
-					{
-						if (!string.IsNullOrEmpty(item.Key) && item.Value != null && !_unnamedProfiles.ContainsKey(item.Key))
-						{
-							_unnamedProfiles[item.Key] = item.Value;
-						}
-					}
-					SaveUnnamedProfilesUnsafe();
-					return;
-				}
-			}
-		}
-		catch
-		{
-		}
-	}
+    public static void ImportUnnamedPersonaFromDir(string importRootDir, bool overwriteExisting)
+        => TryImportUnnamedPersonaFromDir(importRootDir, overwriteExisting);
 
 	public static string ExportUnnamedPersonaStateJson(bool pretty = false)
 	{

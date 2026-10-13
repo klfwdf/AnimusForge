@@ -114,6 +114,8 @@ public partial class MyBehavior {
 (out / "FixtureCapabilities.cs").write_text(header + leaves, encoding="utf-8")
 # Full coordination/controller and the actual debt mutation policy, not a surrogate.
 links = ["src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperUiText.cs",
+         "src/modules/AF.Module.Persona/Import/UnnamedPersonaImportValidationOwner.cs",
+         "src/modules/AF.Module.Persona/Import/PersonaUiTexts.cs",
          "src/AF.GameAdapter.Bannerlord/ImportExport/ImportExportUiText.cs",
          "src/modules/AF.Module.Memory/Runtime/MemoryTextResources.cs",
          "src/modules/AF.Module.Memory/Summary/MemoryFailureUiText.cs",
