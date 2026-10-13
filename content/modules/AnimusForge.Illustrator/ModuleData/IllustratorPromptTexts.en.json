@@ -1,4 +1,6 @@
 {
+  "SharedProfileRules": "[Shared character rules] Apply these rules separately to each character above, using that character's own identity, equipment and references:",
+  "SharedReferenceRules": "[Shared reference rules: {0}] Apply these rules separately to the listed references; each image retains the identity, purpose and differences stated in its own label:",
   "Hero_286": "[Character background identity]",
   "Hero_287": "[Original cultural background]",
   "Hero_288": "[Original faction background]",

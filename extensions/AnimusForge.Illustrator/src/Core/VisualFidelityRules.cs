@@ -2,6 +2,57 @@
 {
     internal static class VisualFidelityRules
     {
+        internal static string SharedReferenceInstructions(System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> references)
+        {
+            var groups = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int>>(System.StringComparer.Ordinal);
+            var order = new System.Collections.Generic.List<string>();
+            for (int i = 0; i < references.Count; i++)
+            {
+                string rule = ReferenceRoleInstruction(references[i].Kind);
+                if (!groups.TryGetValue(rule, out var indices))
+                {
+                    indices = new System.Collections.Generic.List<int>();
+                    groups.Add(rule, indices);
+                    order.Add(rule);
+                }
+                indices.Add(i + 1);
+            }
+            var result = new System.Text.StringBuilder();
+            foreach (string rule in order)
+                result.AppendLine(IllustratorText.Format("SharedReferenceRules", string.Join(", ", groups[rule])))
+                    .AppendLine(rule);
+            return result.ToString();
+        }
+
+        // Only known, non-parameterized rules from generated profile fields are shared.
+        // Never deduplicate whole facts, user prose, names, or director output.
+        internal static string ShareProfileRules(string facts)
+        {
+            if (string.IsNullOrEmpty(facts)) return facts;
+            var shared = new System.Text.StringBuilder();
+            string[] keys = { "Hero_458", "Hero_461", "Hero_471", "Hero_472", "Hero_428", "Hero_429" };
+            string[] fields = { IllustratorText.Get("Hero_304"), IllustratorText.Get("Hero_309").Split('{')[0], IllustratorText.Get("Hero_311") };
+            var lines = facts.Split(new[] { '\n' });
+            foreach (string key in keys)
+            {
+                string rule = IllustratorText.Get(key);
+                if (string.IsNullOrEmpty(rule)) continue;
+                bool found = false;
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    bool profileField = false;
+                    foreach (string field in fields)
+                        if (!string.IsNullOrEmpty(field) && lines[i].StartsWith(field, System.StringComparison.Ordinal)) profileField = true;
+                    if (!profileField || lines[i].IndexOf(rule, System.StringComparison.Ordinal) < 0) continue;
+                    lines[i] = lines[i].Replace(rule, string.Empty);
+                    found = true;
+                }
+                if (found) shared.AppendLine(rule);
+            }
+            return shared.Length == 0 ? facts : string.Join("\n", lines) + "\n" +
+                IllustratorText.Get("SharedProfileRules") + "\n" + shared.ToString().TrimEnd();
+        }
+
         internal static readonly string PlayerRedrawDirectorPriority =
             IllustratorText.Get("Fidelity_0") +
             IllustratorText.Get("Fidelity_1") +

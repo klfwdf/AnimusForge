@@ -340,7 +340,7 @@ namespace AnimusForge.Illustrator.Core
             if (!string.IsNullOrWhiteSpace(hardFacts))
             {
                 sb.AppendLine().AppendLine(IllustratorText.Raw("Director_995"));
-                sb.Append(hardFacts.Trim());
+                sb.Append(VisualFidelityRules.ShareProfileRules(hardFacts.Trim()));
             }
             string contract = VisualFidelityRules.GetEssentialContract(isSinglePortrait, isConversation, isWeeklyReport);
             sb.AppendLine().Append(preserveEquipment ? contract : VisualFidelityRules.WithoutEquipmentRules(contract));
