@@ -21,7 +21,7 @@ internal static class Program {
          DuelSettings.Current=null;
          Check(WorldBulletinStateOwner.IsWorldBulletinEnabled()&&WorldBulletinStateOwner.IsWorldBulletinPublishingEnabled(),"missing settings retain enabled fallback");
          DuelSettings.Current=new(){AutoGenerateWorldBulletins=false,AutoGenerateWeeklyReports=true};
-         double hour=100;int calls=0,notices=0,auto=0;
+         double hour=100;int calls=0,notices=0,auto=0,prepared=0;
          var records=new List<EventRecordEntry>{new(){EventId="weekly_report:world:bulletin:previous",Summary="historical issue"}};
          var owner=new WorldBulletinStateOwner();
          owner.Bind(new WorldBulletinPort {
@@ -29,7 +29,7 @@ internal static class Program {
              CurrentDay=()=>(int)(hour/24),CurrentHour=()=>hour,CurrentDate=()=>"controlled date",Render=x=>x,Focus=()=>new(),
              AutoWeek=()=>auto,SetAutoWeek=value=>auto=value,CapturePromptFacts=(selection,focus)=>new(){ScopeLine="world",Date="controlled date",KingdomContext=new()},
              Records=()=>records,FindRecord=id=>records.FirstOrDefault(r=>r.EventId==id),ProductState=r=>r?.Summary??"",
-             NotifyProductChanged=(before,after)=>{},NotifyTimeline=()=>{},ResolveKingdom=id=>id,QueueNotice=id=>notices++,PrepareIssue=id=>{},PrepareSelection=plan=>{},
+             NotifyProductChanged=(before,after)=>{},NotifyTimeline=()=>{},ResolveKingdom=id=>id,QueueNotice=id=>notices++,PrepareIssue=id=>{},PrepareSelection=plan=>{prepared++;Check(records.Count==2&&plan.ReportBody==records.Last().Summary,"director starts with the published body after publication");},
              CallApi=(system,user)=>{calls++;return Task.FromResult(new ApiCallResult{Success=false,ErrorMessage="controlled fallback"});},Log=(area,text)=>{}
          });
          Check(owner.CaptureWorldBulletinEvent("war_declared","lead",70,"confirmed war",false,"lead",""),"publishing off still captures NPC facts");
@@ -38,7 +38,10 @@ internal static class Program {
          hour=124;owner.OnWorldBulletinHourlyTick();owner.ProcessWorldBulletinMainThreadActions();
          Check(calls==0&&!owner.InFlight&&owner.State.Events.Count==3&&records.Count==1,"bulletin off blocks requests without dropping facts or archives");
          DuelSettings.Current.AutoGenerateWorldBulletins=true;DuelSettings.Current.AutoGenerateWeeklyReports=false;
-         owner.OnWorldBulletinHourlyTick();owner.ProcessWorldBulletinMainThreadActions();
+         owner.OnWorldBulletinHourlyTick();
+         Check(prepared==0,"no fact-only image starts before writer completion is committed");
+         owner.ProcessWorldBulletinMainThreadActions();
+         Check(prepared==1,"published bulletin starts exactly one illustration");
          Check(calls==1&&notices==1&&records.Count==2&&!owner.InFlight,"bulletin on publishes while weekly toggle is off");
          Check(records[0].Summary=="historical issue","independent publication preserves historical archive");
      }
@@ -95,9 +98,9 @@ internal static class Program {
          }
          if(mode=="battle-rejected") {
              var issue=records.Single(r=>WeeklyReportArchivePolicy.IsBulletin(r.EventId));
-             Check(!issue.Summary.Contains("八十")&&!issue.Summary.Contains("三百")&&issue.Summary.Contains("确定发生的事实"),"battle numeric response falls back at actual publication boundary");
-             Check(string.IsNullOrEmpty(issue.BulletinAnecdote),"rejected response does not enter NPC anecdote");
-             Check(notices==1&&issue.Materials.Any(m=>m.SourceStableKeys.Contains("confirmed-fact")),"fallback keeps publication notice and confirmed source graph");
+             Check(issue.Summary.Contains("八十")&&issue.Summary.Contains("三百"),"current numeric-prose policy preserves the writer body at publication");
+             Check(issue.BulletinAnecdote.Contains("八十"),"accepted response retains its anecdote");
+             Check(notices==1&&issue.Materials.Any(m=>m.SourceStableKeys.Contains("confirmed-fact"))&&!issue.ShortSummary.Contains("八十"),"narrative publication keeps confirmed source graph and factual summary separate");
          }
          DuelSettings.Current=previousSettings;
      }

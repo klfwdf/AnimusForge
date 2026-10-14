@@ -143,9 +143,11 @@ namespace AnimusForge.Illustrator.Context
 
     public static class WeeklyReportContextExtractor
     {
-        public static WeeklyReportVisualContext ExtractFromWeeklyReport(string title, string subtitle, string body)
+        public static WeeklyReportVisualContext ExtractFromWeeklyReport(string title, string subtitle, string body, bool includeFullBody = false)
         {
-            return Extract(BuildSnapshot(title, subtitle, body), null);
+            var context = Extract(BuildSnapshot(title, subtitle, body), null);
+            if (includeFullBody) context.HeadlineSummary = CleanText(body);
+            return context;
         }
 
         internal static WeeklyReportVisualContext ExtractFromPlan(global::AnimusForge.WorldBulletinIllustrationPlan plan)
@@ -153,7 +155,9 @@ namespace AnimusForge.Illustrator.Context
             if (plan == null) return null;
             var snapshot = BuildSnapshot(plan.Title, "", plan.Facts);
             snapshot.ReportDateLabel = plan.DateText ?? "";
-            return Extract(snapshot, plan);
+            var context = Extract(snapshot, plan);
+            if (!string.IsNullOrWhiteSpace(plan.ReportBody)) context.HeadlineSummary = CleanText(plan.ReportBody);
+            return context;
         }
 
         // Called once on the game thread at selection/open. One hero enumeration, bounded two portraits.

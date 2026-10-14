@@ -230,11 +230,12 @@ var newsSelection = new WorldBulletinSelection { Major=fact, MajorFacts=new(){fa
 var published = new List<EventRecordEntry>();
 var news = new WorldBulletinStateOwner { State=new() };
 news.State.Events.Add(fact);news.State.World.WindowEndHour=120;
-int requests=0,publishNotifications=0;
+int requests=0,publishNotifications=0,illustrationsPrepared=0;
 string response="[TITLE] 掉牙战报\n[MAJOR] 甲军在城外获胜。甲打掉了乙的牙，乙怒骂着退场。\n[SHORT] 甲打掉了乙的牙，乙怒骂着退场。";
 news._port=new() { CurrentHour=()=>120,CurrentDay=()=>5,CurrentDate=()=>"第5日",PublishingEnabled=()=>true,
  Records=()=>published,FindRecord=id=>published.FirstOrDefault(x=>x.EventId==id),ProductState=e=>e?.Summary??"",
  Log=(a,b)=>{},PrepareIssue=id=>{},CancelIllustration=p=>{},QueueNotice=id=>{},NotifyTimeline=()=>{},
+ PrepareSelection=p=>{illustrationsPrepared++;Check(p.ReportBody==published.Last().Summary && p.ReportBody.Contains("打掉了乙的牙") && !p.Facts.Contains("牙"),"director gets final prose with frozen facts kept separate");},
  NotifyProductChanged=(p,e)=>{publishNotifications++;Check(e.ShortSummary.Contains("击败")&&!e.ShortSummary.Contains("牙"),"facts are ready before product notification");},
  CallApi=(s,u)=>{requests++;return Task.FromResult(new ApiCallResult {Success=true,Content=response});} };
 var templateNews=WorldBulletinPolicy.BuildTemplate(newsSelection);
@@ -245,6 +246,7 @@ news.ProcessWorldBulletinMainThreadActions();
 var issue=published.Single();
 Check(issue.Summary.Contains("打掉了乙的牙")&&issue.BulletinAnecdote.Contains("牙")&&!issue.ShortSummary.Contains("牙"),"model body and anecdote retained while local summary contains raw event facts only");
 Check(requests==1&&publishNotifications==1,"one request and one canonical publication, no additional digest request");
+Check(illustrationsPrepared==1,"one illustration starts after the body is published");
 Check(issue.Materials.Single().SnapshotText.Contains("击败")&&!issue.Materials.Single().SnapshotText.Contains("牙")&&fact.Sentence=="甲军在城外击败乙军。","frozen reported material and source event remain factual");
 var diplomaticHost=new MyBehavior {_eventRecordEntries=published};
 var factualHistory=diplomaticHost.ReplayDiplomacyHistory().Single();

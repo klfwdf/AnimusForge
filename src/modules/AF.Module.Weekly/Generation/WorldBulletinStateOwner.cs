@@ -177,15 +177,6 @@ internal void AdvanceWorldBulletinScope(WorldBulletinSaveState state, double now
 		_port.Log("WorldBulletin", "[Select] home=" + focus.PlayerKingdomId + " majorFacts=" + selection.MajorFacts.Count + " minors=" + selection.Minors.Count + " minorEvents=" + selection.Minors.Sum(x => x.Events.Count));
 		// Set last: if anything above throws, the flag stays clear and the next tick retries instead of blocking forever.
 		InFlight = true;
-		try
-		{
-			if (WorldBulletinPanelIllustrationBridge.ShouldPreloadSelection == null ||
-				WorldBulletinPanelIllustrationBridge.ShouldPreloadSelection())
-			{
-				_port.PrepareSelection(illustrationPlan);
-			}
-		}
-		catch (Exception ex) { _port.Log("WorldBulletin", "[Illustration] selected-event preparation failed: " + ex.Message); }
 		_ = RunWorldBulletinRequestAsync(scope.WindowEndHour, generation, selection, template, systemPrompt, userPrompt, illustrationPlan, facts);
 	}
 internal async Task RunWorldBulletinRequestAsync(double windowEndHour, long generation, WorldBulletinSelection selection, WorldBulletinText template, string systemPrompt, string userPrompt, WorldBulletinIllustrationPlan illustrationPlan, WorldBulletinPromptFacts context = null)
@@ -336,7 +327,17 @@ internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinS
 		RecordWorldBulletinLayout(eventId, selection);
 		WorldBulletinLayout publishedLayout = FindWorldBulletinLayout(eventId);
 		if (publishedLayout != null) publishedLayout.IllustrationPlan = illustrationPlan;
-        try { if (illustrationPlan == null) _port.PrepareIssue(eventId); }
+        try
+        {
+            if (illustrationPlan == null) _port.PrepareIssue(eventId);
+            else
+            {
+                illustrationPlan.ReportBody = body;
+                if (WorldBulletinPanelIllustrationBridge.ShouldPreloadSelection == null ||
+                    WorldBulletinPanelIllustrationBridge.ShouldPreloadSelection())
+                    _port.PrepareSelection?.Invoke(illustrationPlan);
+            }
+        }
         catch (Exception ex) { _port.Log("WorldBulletin", "[Illustration] preparation failed: " + ex.Message); }
 		QueueNoticeAfterIllustration(eventId, illustrationPlan);
 		_port.NotifyProductChanged("", issue);

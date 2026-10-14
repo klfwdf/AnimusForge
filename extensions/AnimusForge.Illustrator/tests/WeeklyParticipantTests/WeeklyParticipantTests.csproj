@@ -8,6 +8,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Compile Include="Program.cs" />
     <Compile Include="PackagePaths.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" Link="PromptComposerTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/CampaignSystemFactProjection.cs" Link="CampaignSystemFactProjection.cs" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json" LogicalName="AnimusForge.Prompt.Compatibility.json" />
+    <Content Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.zh-CN.json" Link="ModuleData/PromptComposerTexts.json" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="../../src/Core/IllustratorText.cs" Link="IllustratorText.cs" />
     <Compile Include="../../src/Context/WeeklyReportContextExtractor.cs" Link="WeeklyReportContextExtractor.cs" />
     <Compile Include="../../src/Context/NarrativeFactRouter.cs" Link="NarrativeFactRouter.cs" />
