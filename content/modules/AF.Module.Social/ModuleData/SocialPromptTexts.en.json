@@ -117,5 +117,8 @@
   "AF_SOCIAL_UI_ProactiveNeed_28": "Kingdom political agenda",
   "AF_SOCIAL_UI_ProactiveNeed_29": "Support for a policy",
   "AF_SOCIAL_UI_ProactiveNeed_30": "Discussion of diplomacy",
-  "AF_SOCIAL_UI_ProactiveNeed_31": "A specific request"
+  "AF_SOCIAL_UI_ProactiveNeed_31": "A specific request",
+  "experience_recent": "[Known player recent action — context for the NPC-initiated conversation; not a new action]",
+  "experience_history": "[Known player history — context for the NPC-initiated conversation; not a new action]",
+  "experience_letter_fallback": "I would like to hear your thoughts about this account:"
 }

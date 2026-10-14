@@ -415,7 +415,15 @@ public sealed partial class CourierDeliveryBehavior
 				FallbackLetter = ConversationRuntimeTexts.FormatPrompt("letter_fallback_event", ("PLAYER", playerName), ("EVENT", eventText))
 			});
 		}
-		List<ProactiveNpcRequestBehavior.LetterNeedSnapshot> needs = ProactiveNpcRequestBehavior.GetLetterNeedSnapshotsForExternal(sender);
+		foreach (var experience in PlayerNotorietyBehavior.CaptureExperience(sender, true, false))
+        {
+            AddNpcLetterMotive(candidate, settings, nowDays, new NpcInitiatedLetterMotive {
+                MotiveType = experience.Kind, LetterKind = InboundLetterKindPersonal, Experience = experience,
+                IntentText = AIConfigHandler.GetProactiveNpcRequestLetterIntent(experience.Kind),
+                FactText = ProactiveNpcRequestBehavior.ExperienceFact(experience),
+                FallbackLetter = SocialPromptTexts.Get("experience_letter_fallback") + "\n" + experience.Evidence });
+        }
+        List<ProactiveNpcRequestBehavior.LetterNeedSnapshot> needs = ProactiveNpcRequestBehavior.GetLetterNeedSnapshotsForExternal(sender);
 		ProactiveNpcRequestBehavior.LetterNeedSnapshot selectedNeed = PickWeightedLetterNeed((needs ?? new List<ProactiveNpcRequestBehavior.LetterNeedSnapshot>())
 			.Where(x => !string.Equals(x?.NeedType, "Diplomacy", StringComparison.OrdinalIgnoreCase))
 			.ToList());
@@ -522,6 +530,11 @@ public sealed partial class CourierDeliveryBehavior
 	private static NpcInitiatedLetterMotive PickWeightedNpcLetterMotive(List<NpcInitiatedLetterMotive> motives)
 	{
 		List<NpcInitiatedLetterMotive> valid = (motives ?? new List<NpcInitiatedLetterMotive>()).Where(x => x != null && x.Weight > 0f).ToList();
+        if (valid.Any(x => x.Experience != null) && valid.Any(x => x.Experience == null))
+        {
+            bool chooseExperience = MBRandom.RandomFloat < .5f;
+            valid = valid.Where(x => (x.Experience != null) == chooseExperience).ToList();
+        }
 		float total = valid.Sum(x => x.Weight);
 		float roll = MBRandom.RandomFloat * total;
 		foreach (NpcInitiatedLetterMotive motive in valid)
@@ -535,7 +548,14 @@ public sealed partial class CourierDeliveryBehavior
 		return valid.LastOrDefault();
 	}
 
-	private static int CalculateNpcInitiatedSenderCooldownDays(int bondScore, DuelSettings settings)
+	internal static bool HasExperienceSession(string id)
+    {
+        var owner = Instance;
+        if (owner == null) return false;
+        lock (owner._sessionLock) return owner._sessions.ContainsKey(id);
+    }
+
+    private static int CalculateNpcInitiatedSenderCooldownDays(int bondScore, DuelSettings settings)
 	{
 		int minScore = ClampInt(settings.NpcInitiatedLetterMinBondScore, 0, 100);
 		int lowCooldown = ClampInt(settings.NpcInitiatedLetterLowScoreCooldownDays, 1, 120);

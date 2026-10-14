@@ -101,8 +101,12 @@ internal sealed class ScenePassiveInteractionController
 			{
 				return;
 			}
-			string factText = BuildProactiveSceneOpeningFactText(extraFact, promptText);
-			if (TriggerImmediateSceneBehaviorReaction(factText, targetAgent.Index, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: 3f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false))
+			var experienceTicket = ProactiveNpcRequestBehavior.FindExperienceOpening(targetHero, extraFact);
+            long experienceGeneration = SaveRuntimeGuard.CurrentGeneration;
+            string factText = BuildProactiveSceneOpeningFactText(extraFact, promptText);
+			if (TriggerImmediateSceneBehaviorReaction(factText, targetAgent.Index, persistHeroPrivateHistory: experienceTicket == null, suppressStare: false, postSpeechLeaveSeconds: 3f, skipSceneFactRecord: experienceTicket != null, returnSceneSummonOnTimeout: false,
+                canStillPublish: () => experienceTicket == null || PlayerNotorietyBehavior.CanStillDiscussExperience(targetHero, experienceTicket.Motive, false, false),
+                onCompleted: shown => { if (SaveRuntimeGuard.IsCurrentGeneration(experienceGeneration)) ProactiveNpcRequestBehavior.FinishExperienceOpening(experienceTicket, shown); }))
 			{
 				ProactiveNpcRequestBehavior.TryConsumePendingSceneOpeningForHero(targetHero, out var _, out var _);
 				Logger.Log("ProactiveNpcRequest", "scene opening triggered hero=" + (targetHero?.StringId ?? "") + " agentIndex=" + targetAgent.Index);

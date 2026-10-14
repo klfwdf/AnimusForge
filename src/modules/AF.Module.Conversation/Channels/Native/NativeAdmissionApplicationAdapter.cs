@@ -48,6 +48,7 @@ internal sealed class NativeAdmissionApplicationAdapter
         internal readonly int Token;
         internal readonly Mission Mission;
         internal readonly string Fact, Prompt, Source;
+        internal readonly PlayerExperienceReservation ExperienceTicket;
         internal NativeOpeningRetry(NativeConversationAdmission admission)
         {
             Generation = admission.Generation; Epoch = admission.ConversationEpoch;
@@ -55,6 +56,7 @@ internal sealed class NativeAdmissionApplicationAdapter
             Manager = admission.ConversationManager; Token = admission.ConversationToken;
             Mission = admission.Mission;
             Fact = admission.OpeningExtraFact; Prompt = admission.OpeningPrompt; Source = admission.OpeningSource;
+            ExperienceTicket = admission.ExperienceTicket;
         }
         internal bool Matches(NativeConversationAdmission admission) => admission != null
             && Generation == admission.Generation && Epoch == admission.ConversationEpoch
@@ -62,14 +64,15 @@ internal sealed class NativeAdmissionApplicationAdapter
             && ReferenceEquals(Manager, admission.ConversationManager) && Token == admission.ConversationToken
             && ReferenceEquals(Mission, admission.Mission);
         internal void Bind(NativeConversationAdmission admission)
-        { admission.OpeningExtraFact = Fact; admission.OpeningPrompt = Prompt; admission.OpeningSource = Source; }
+        { admission.OpeningExtraFact = Fact; admission.OpeningPrompt = Prompt; admission.OpeningSource = Source; admission.ExperienceTicket = ExperienceTicket; }
     }
     private NativeOpeningRetry ReadOpeningRetry(NativeConversationAdmission admission, bool retireStale = false)
     {
         NativeOpeningRetry retry = Volatile.Read(ref _openingRetry);
         if (retry != null && !retry.Matches(admission))
         {
-            if (retireStale) Interlocked.CompareExchange(ref _openingRetry, null, retry);
+            if (retireStale && ReferenceEquals(Interlocked.CompareExchange(ref _openingRetry, null, retry), retry))
+                ProactiveNpcRequestBehavior.ReleaseExperience(retry.ExperienceTicket?.Id);
             return null;
         }
         return retry;
@@ -89,7 +92,15 @@ internal sealed class NativeAdmissionApplicationAdapter
     internal bool IsBusy() => IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current,out _);
     internal bool IsBusyForUi()
     { var a=_nativeAdmissionOwner.Current;return a!=null&&a.Lifetime?.Token.IsCancellationRequested!=true&&_nativeAdmissionOwner.Owns(a)&&IsNativeConversationContextStampCurrent(a); }
-    internal void EndConversation() { _meetingElapsed.Clear(); Interlocked.Exchange(ref _openingRetry, null);_nativeAdmissionOwner.Current?.Lifetime?.Retire();_nativeAdmissionOwner.EndConversation(); }
+    internal void EndConversation()
+    {
+        _meetingElapsed.Clear();
+        var retry = Interlocked.Exchange(ref _openingRetry, null);
+        ProactiveNpcRequestBehavior.ReleaseExperience(retry?.ExperienceTicket?.Id);
+        ProactiveNpcRequestBehavior.ReleaseExperience(_nativeAdmissionOwner.Current?.ExperienceTicket?.Id);
+        _nativeAdmissionOwner.Current?.Lifetime?.Retire();
+        _nativeAdmissionOwner.EndConversation();
+    }
     internal PresentationLease CapturePresentation()
     {
         if(!_isMainThread()||!_canSubmit()||!_isCurrentOwner()) return null;
@@ -156,6 +167,10 @@ internal async Task<string> SubmitNativeConversationAdmittedAsync(string playerT
             // 旧请求晚完成只能释放自己的票据，不能清除换会话后新请求的 busy。
             admission.Lifetime.Retire();
             _nativeAdmissionOwner.Release(admission);
+            // A retained retry owns its reservation until retry or conversation close.
+            if (admission.ExperienceTicket != null && ReadOpeningRetry(admission) == null)
+                _post(() => { if (SaveRuntimeGuard.IsCurrentGeneration(admission.Generation))
+                    ProactiveNpcRequestBehavior.ReleaseExperience(admission.ExperienceTicket.Id); });
         }
     }
 internal Task<NativeConversationAdmission> CaptureNativeConversationAdmissionAsync(long generation, long conversationEpoch, bool npcInitiatedOpening)
@@ -227,8 +242,18 @@ internal NativeConversationAdmission CaptureNativeConversationAdmissionOnMainThr
                         _nativeAdmissionOwner.Release(admission);
                         return null;
                     }
+                    admission.ExperienceTicket = ProactiveNpcRequestBehavior.FindExperienceOpening(admission.Hero, admission.OpeningExtraFact);
                     Volatile.Write(ref _openingRetry, new NativeOpeningRetry(admission));
                 }
+            }
+            if (admission.ExperienceTicket != null && !PlayerNotorietyBehavior.CanStillDiscussExperience(admission.Hero,
+                admission.ExperienceTicket.Motive, false, admission.ExperienceTicket.Channel == "companion"))
+            {
+                ProactiveNpcRequestBehavior.ReleaseExperience(admission.ExperienceTicket.Id);
+                Interlocked.Exchange(ref _openingRetry, null);
+                admission.Lifetime.Retire();
+                _nativeAdmissionOwner.Release(admission);
+                return null;
             }
             admission.PresentationRevision = _nativeAdmissionOwner.BeginPresentation();
             return admission;

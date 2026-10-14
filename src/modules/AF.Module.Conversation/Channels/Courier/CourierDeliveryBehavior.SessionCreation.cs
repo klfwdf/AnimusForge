@@ -829,11 +829,14 @@ public sealed partial class CourierDeliveryBehavior
 				InboundIntentFact = motive.FactText ?? "",
 				InboundIntentText = motive.IntentText ?? "",
 				InboundEventKey = motive.EventKey ?? "",
+                Experience = motive.Experience,
 				IsNpcInitiated = true,
 				NpcInitiatedBondScore = candidate.BondScore,
 				CrewEntries = BuildCargoEntriesFromRoster(members, "crew")
 			};
-			EnsureCourierCampaignIdentity(courier, session, "create_npc_initiated_session");
+			if (motive.Experience != null && ProactiveNpcRequestBehavior.ReserveExperience(session.Id, sender, "courier", motive.Experience) == null)
+            { CompleteAndDestroyCourier(session, courier); status = "experience_unavailable"; return false; }
+            EnsureCourierCampaignIdentity(courier, session, "create_npc_initiated_session");
 			session.DeliveryFactText = BuildInboundDeliveryFactText(session, delivered: false, sender);
 			lock (_sessionLock)
 			{

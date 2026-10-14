@@ -107,6 +107,7 @@ namespace AnimusForge;
             FreezeWatchdog.Mark("NativeConversation.preprocess_done", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativePreprocessSw.Elapsed.TotalMilliseconds, 2) + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)), immediate: true);
             GetSceneReplyLengthLimits(DuelSettings.GetSettings(), out minTokens, out maxTokens);
             baseExtras = StripScenePersonaBlocks((ctx?.Extras ?? "").Trim());
+            if (npcInitiatedOpening) baseExtras = PlayerExperiencePrompt.RemoveRepeatedEvidence(baseExtras, admission.OpeningExtraFact);
             trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
             SplitSceneExtraSections(baseExtrasWithoutTrust, out miscExtrasSection, out ruleExtrasSection, out knowledgeExtrasSection);
             Stopwatch nativeHistoryJoinSw = Stopwatch.StartNew();

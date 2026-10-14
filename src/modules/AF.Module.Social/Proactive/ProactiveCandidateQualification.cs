@@ -53,6 +53,10 @@ public sealed partial class ProactiveNpcRequestBehavior
 				continue;
 			}
 			stats.InRange++;
+            ProactiveCandidate experienceCandidate = BuildExperienceCandidate(candidate, settings);
+            var currentScan = _candidateScanOwner.Current;
+            if (currentScan != null && ProactiveCandidateScanOwner.IsCandidateBetter(experienceCandidate, currentScan.BestExperienceCandidate))
+                currentScan.BestExperienceCandidate = experienceCandidate;
 			List<ProactiveCandidate> needCandidates = new List<ProactiveCandidate>();
 			if (!candidate.AtWarWithPlayer)
 			{
