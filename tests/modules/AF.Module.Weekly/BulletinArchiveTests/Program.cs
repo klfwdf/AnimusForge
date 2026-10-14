@@ -271,6 +271,24 @@ news.State.World.WindowEndHour=120;
 news._port.CallApi=(s,u)=>{requests++;throw new InvalidOperationException("fixture exception");};
 await news.RunWorldBulletinRequestAsync(120,SaveRuntimeGuard.CaptureGeneration(),newsSelection,templateNews,"system","user",null);news.ProcessWorldBulletinMainThreadActions();
 Check(published.Count==4&&published.Last().BulletinAnecdote==""&&requests==4,"thrown request still publishes one factual fallback and closes the window");
+// Numeric battle prose is retained through the real request, parse and publication path.
+newsSelection.Minors.Add(new WorldBulletinMinor {Events=new(){fact},Sentence=fact.Sentence});
+foreach(var section in new[]{"TITLE","MAJOR","M1","SHORT"}) {
+ news.State.World.WindowEndHour=120;
+ string numeral="双方约120人参战。";
+ string numericResponse="[TITLE] "+(section=="TITLE"?numeral:"数值成稿")+"\n[MAJOR] "+(section=="MAJOR"?numeral:"甲军获胜，旗手收旗。")+"\n[M1] "+(section=="M1"?numeral:"乙军退场。")+"\n[SHORT] "+(section=="SHORT"?numeral:"旗手收旗。");
+ news._port.CallApi=(s,u)=>Task.FromResult(new ApiCallResult {Success=true,Content=numericResponse});
+ await news.RunWorldBulletinRequestAsync(120,SaveRuntimeGuard.CaptureGeneration(),newsSelection,WorldBulletinPolicy.BuildTemplate(newsSelection),"system","user",null);
+ news.ProcessWorldBulletinMainThreadActions();
+ var numericIssue=published.Last();
+ Check((section=="TITLE"?numericIssue.Title:section=="SHORT"?numericIssue.BulletinAnecdote:numericIssue.Summary).Contains(numeral),"numeric "+section+" survives actual publication without whole-issue fallback");
+ Check(!numericIssue.ShortSummary.Contains("120"),"numeric narrative is not promoted to canonical facts: "+section);
+}
+news.State.World.WindowEndHour=120;
+news._port.CallApi=(s,u)=>Task.FromResult(new ApiCallResult {Success=true,Content="[TITLE] 没有正文"});
+await news.RunWorldBulletinRequestAsync(120,SaveRuntimeGuard.CaptureGeneration(),newsSelection,WorldBulletinPolicy.BuildTemplate(newsSelection),"system","user",null);
+news.ProcessWorldBulletinMainThreadActions();
+Check(published.Last().Summary.Contains("甲军在城外击败乙军")&&published.Last().BulletinAnecdote=="","unparsable response retains factual fallback after numeric rejection removal");
 issue.Summary+=new string('文',5000);
 var anecdoteStore=new Dictionary<string,object>();string anecdoteJson="";
 CampaignWeeklyRecordPersistenceAdapter.SaveRecords(new MemoryStore(anecdoteStore),published,ref anecdoteJson,Normalize);
