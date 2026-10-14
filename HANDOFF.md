@@ -1,3 +1,8 @@
+# 当前交接：市场逐帧清理已部署（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- main/4eed05dd9 原 Release 双 API/Bootstrap/Coup/registration 通过，干净 Stage 后原部署脚本 exit 0，F盘游戏单模块更新11个受管文件；包含市场 db3e1ae68 及已合入扩展人设 7b113afbe。
+- 安装三DLL SHA256与本轮构建一致；旧Stage因语言资产变化被门禁拒绝，已保留并重新生成，未改部署流程。本条替代上述两产品未部署状态；实机入夜/最大市场/旧档未验，未打包或push。
+- [主台账、完整证据与回退边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-market-world-pass-20261015)。证据 artifacts/deploy-market-20261015-013154/；无游戏部署备份或自动回滚。
 # 当前交接：NPC扩展人设可编辑（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品7b113afbe：原人设菜单新增“编辑扩展人设”，支持核心特质/强度与动机、原则、弱点、说话风格，保存到原profile并刷新百科；保留正文和声音，CN/EN同步。
