@@ -12,99 +12,42 @@ public sealed class AnimusForgeTerminalSettingsData
 
 public static class AnimusForgeTerminalSettings
 {
-	private static readonly object _lock = new object();
-	private static bool _loaded = false;
-	private static bool _isHotkeyEnabled = true;
-	private static bool _isMapIconEnabled = true;
+    public static bool IsHotkeyEnabled
+    {
+        get
+        {
+            var settings = DuelSettings.GetSettings();
+            return settings == null || settings.TerminalHotkeyEnabled || !settings.TerminalMapIconEnabled;
+        }
+        set => SetEntry(value, true);
+    }
 
-	private const string SettingsFileName = "TerminalSettings.json";
+    public static bool IsMapIconEnabled
+    {
+        get => DuelSettings.GetSettings()?.TerminalMapIconEnabled ?? true;
+        set => SetEntry(value, false);
+    }
 
-	public static bool IsHotkeyEnabled
-	{
-		get
-		{
-			EnsureLoaded();
-			return _isHotkeyEnabled;
-		}
-		set
-		{
-			EnsureLoaded();
-			if (_isHotkeyEnabled == value)
-			{
-				return;
-			}
-			bool previous = _isHotkeyEnabled;
-			_isHotkeyEnabled = value;
-			if (!Save()) _isHotkeyEnabled = previous;
-		}
-	}
+    private static void SetEntry(bool value, bool hotkey)
+    {
+        var settings = DuelSettings.GetSettings();
+        if (settings == null) return;
+        bool previous = hotkey ? settings.TerminalHotkeyEnabled : settings.TerminalMapIconEnabled;
+        if (previous == value) return;
+        if (!value && !(hotkey ? settings.TerminalMapIconEnabled : settings.TerminalHotkeyEnabled)) return;
+        if (hotkey) settings.TerminalHotkeyEnabled = value;
+        else settings.TerminalMapIconEnabled = value;
+        if (!DuelSettings.SaveCurrentSettings())
+        {
+            if (hotkey) settings.TerminalHotkeyEnabled = previous;
+            else settings.TerminalMapIconEnabled = previous;
+        }
+    }
 
-	public static bool IsMapIconEnabled
-	{
-		get
-		{
-			EnsureLoaded();
-			return _isMapIconEnabled;
-		}
-		set
-		{
-			EnsureLoaded();
-			if (_isMapIconEnabled == value)
-			{
-				return;
-			}
-			bool previous = _isMapIconEnabled;
-			_isMapIconEnabled = value;
-			if (!Save()) _isMapIconEnabled = previous;
-		}
-	}
+    internal static string GetSettingsPath() => McmSettingsStorage.GetSharedSettingsFilePath();
 
-	private static void EnsureLoaded()
-	{
-		if (_loaded)
-		{
-			return;
-		}
-		lock (_lock)
-		{
-			if (_loaded)
-			{
-				return;
-			}
-			LoadInternal();
-			_loaded = true;
-		}
-	}
-
-	private static void LoadInternal()
-	{
-		try
-		{
-			if (TryLoadSettingsFile(GetSettingsPath(), out AnimusForgeTerminalSettingsData data))
-			{
-				_isHotkeyEnabled = data.IsHotkeyEnabled;
-				_isMapIconEnabled = data.IsMapIconEnabled;
-				// 防死锁规则：如果被外部文件修改导致两个都被关闭，强制恢复按键开启
-				if (!_isHotkeyEnabled && !_isMapIconEnabled)
-				{
-					_isHotkeyEnabled = true;
-				}
-				return;
-			}
-		}
-		catch (Exception)
-		{
-			Logger.Log("TerminalSettings", "[WARN] Failed to load module TerminalSettings; using built-in defaults.");
-		}
-		_isHotkeyEnabled = true;
-		_isMapIconEnabled = true;
-	}
-
-	internal static string GetSettingsPath()
-	{
-		return Path.Combine(AnimusForgeDataPaths.GetSettingsDirectory(AnimusForgeModulePaths.GetCurrentModuleRoot()), SettingsFileName);
-	}
-
+    // Retained only for reading/validating the old module entry file and its
+    // atomic compatibility fixtures. Active entries save via the MCM owner.
 	internal static bool TryLoadSettingsFile(string path, out AnimusForgeTerminalSettingsData data)
 	{
 		data = null;
@@ -162,25 +105,4 @@ public static class AnimusForgeTerminalSettings
 		}
 	}
 
-	private static bool Save()
-	{
-		lock (_lock)
-		{
-			try
-			{
-				AnimusForgeTerminalSettingsData data = new AnimusForgeTerminalSettingsData
-				{
-					IsHotkeyEnabled = _isHotkeyEnabled,
-					IsMapIconEnabled = _isMapIconEnabled
-				};
-				TrySaveSettingsFile(GetSettingsPath(), data);
-				return true;
-			}
-			catch (Exception)
-			{
-				Logger.Log("TerminalSettings", "[WARN] Failed to save module TerminalSettings; existing file was preserved.");
-				return false;
-			}
-		}
-	}
 }

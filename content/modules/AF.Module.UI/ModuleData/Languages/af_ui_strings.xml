@@ -3412,5 +3412,10 @@ Choose how to proceed:" />
   <string id="AF_MCM_Api_AmbientFailureUsage" text="&#xA;&#xA;Estimated usage for this failed test: {INPUT} input + {OUTPUT} output tokens." />
   <string id="AF_MCM_Api_AmbientTestFailed" text="Ambient AI connection test failed" />
   <string id="AF_MCM_Api_AmbientTestException" text="Ambient AI connection test error" />
+  <string id="AF_TERMINAL_UI_TerminalHotkeyEnabled_Title" text="Enable terminal shortcut" />
+  <string id="AF_TERMINAL_UI_TerminalHotkeyEnabled_Hint" text="Allows opening the terminal with its configured key. At least one terminal entry remains available." />
+  <string id="AF_TERMINAL_UI_TerminalMapIconEnabled_Title" text="Show terminal navigation icon" />
+  <string id="AF_TERMINAL_UI_TerminalMapIconEnabled_Hint" text="Shows the terminal entry on the campaign map navigation bar. At least one terminal entry remains available." />
+  <string id="AF_TERMINAL_UI_Entry_Group" text="Terminal entry" />
 </strings>
 </base>

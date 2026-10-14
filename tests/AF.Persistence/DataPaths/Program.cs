@@ -29,6 +29,21 @@ internal static class Program
 
     private static void Main()
     {
+        if (Environment.GetEnvironmentVariable("AF_DATA_PATHS_TEST_SCOPE") == "terminal-entry")
+        {
+            AnimusForgeModulePaths.TestModuleRoot = isolatedRoot();
+            string path = Path.Combine(isolatedRoot(), "Configs", "TerminalSettings.json");
+            Check(AnimusForgeTerminalSettings.GetSettingsPath() == Path.Combine(isolatedRoot(), "SharedMCM", "AnimusForge_global_settings.json"), "active entry uses shared owner resolver");
+            Check(!AnimusForgeTerminalSettings.TryLoadSettingsFile(path, out _), "missing legacy entry");
+            AnimusForgeTerminalSettings.TrySaveSettingsFile(path, new AnimusForgeTerminalSettingsData { IsHotkeyEnabled = false, IsMapIconEnabled = true });
+            Check(AnimusForgeTerminalSettings.TryLoadSettingsFile(path, out var data) && !data.IsHotkeyEnabled && data.IsMapIconEnabled, "legacy entry primitive roundtrip");
+            Check(Directory.GetFiles(Path.GetDirectoryName(path), ".afp-*").Length == 0, "atomic legacy candidate published");
+            File.WriteAllText(path, "{broken");
+            Reject(() => AnimusForgeTerminalSettings.TrySaveSettingsFile(path, new AnimusForgeTerminalSettingsData()), "bad legacy file cannot be overwritten");
+            Check(File.ReadAllText(path) == "{broken", "bad legacy bytes retained");
+            Console.WriteLine("PASS terminal legacy entry checks=" + _checks + "; other legacy data-root cases not run");
+            return;
+        }
         string previous = Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable);
         try
         {
@@ -151,7 +166,7 @@ internal static class Program
 
         string settingsPath = Path.Combine(workspace, "artifacts", "tests", "af2-terminal-settings", Guid.NewGuid().ToString("N"), "TerminalSettings.json");
         AnimusForgeModulePaths.TestModuleRoot = isolatedRoot();
-        Check(AnimusForgeTerminalSettings.GetSettingsPath() == Path.Combine(isolatedRoot(), "Configs", "TerminalSettings.json"), "TerminalSettings uses typed user path");
+        Check(AnimusForgeTerminalSettings.GetSettingsPath() == Path.Combine(isolatedRoot(), "SharedMCM", "AnimusForge_global_settings.json"), "TerminalSettings shares MCM owner path via its resolver");
         Check(!AnimusForgeTerminalSettings.TryLoadSettingsFile(settingsPath, out _), "missing TerminalSettings uses built-in defaults");
         AnimusForgeTerminalSettings.TrySaveSettingsFile(settingsPath, new AnimusForgeTerminalSettingsData { IsHotkeyEnabled = false, IsMapIconEnabled = true });
         Check(AnimusForgeTerminalSettings.TryLoadSettingsFile(settingsPath, out var terminal) && !terminal.IsHotkeyEnabled && terminal.IsMapIconEnabled, "TerminalSettings user file round trip");
@@ -271,6 +286,20 @@ internal static class Program
 
 namespace AnimusForge
 {
+    // This suite tests module data boundaries and legacy entry-file primitives.
+    // Actual MCM User-directory/save/reload is covered by SharedMcmChecks.
+    internal sealed class DuelSettings
+    {
+        private static readonly DuelSettings Settings = new DuelSettings();
+        public bool TerminalHotkeyEnabled { get; set; } = true;
+        public bool TerminalMapIconEnabled { get; set; } = true;
+        public static DuelSettings GetSettings() => Settings;
+        public static bool SaveCurrentSettings() => true;
+    }
+    internal static class McmSettingsStorage
+    {
+        internal static string GetSharedSettingsFilePath() => Path.Combine(AnimusForgeModulePaths.TestModuleRoot, "SharedMCM", "AnimusForge_global_settings.json");
+    }
     internal static class AnimusForgeModulePaths
     {
         internal static string TestModuleRoot;

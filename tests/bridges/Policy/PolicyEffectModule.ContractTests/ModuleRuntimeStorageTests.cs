@@ -36,7 +36,7 @@ internal static partial class Program
         Check(string.Equals((string)InvokeStatic(settings, "GetModelDropdownCachePath", Array.Empty<object>(), 0), cache,
             StringComparison.OrdinalIgnoreCase), "cache belongs to user-approved module Cache");
         string terminalFile = Path.Combine(module, "Configs", "TerminalSettings.json");
-        Check((string)InvokeStatic(terminal, "GetSettingsPath", Array.Empty<object>(), 0) == terminalFile, "terminal belongs to user-approved module Configs");
+        Check(terminal.GetField("_loaded", All) == null, "terminal has no second file-backed settings cache; shared MCM save/reload is covered by SharedMcmChecks");
         Check((string)InvokeStatic(exports, "GetPlayerExportsRootPath", Array.Empty<object>(), 0) == Path.Combine(module, "PlayerExports"), "exports belong to module");
         Directory.CreateDirectory(Path.Combine(module, "PlayerExports", "module-package"));
         Directory.CreateDirectory(Path.Combine(fakeUser, "UserData", "PlayerExports", "USER_ONLY"));
@@ -93,31 +93,24 @@ internal static partial class Program
         }
         finally { File.SetAttributes(cache, FileAttributes.Normal); }
 
-        terminal.GetField("_loaded", All).SetValue(null, false);
-        Check((bool)terminal.GetProperty("IsHotkeyEnabled").GetValue(null), "missing module settings use defaults, not user settings");
-        terminal.GetProperty("IsHotkeyEnabled").SetValue(null, false);
-        Check(File.Exists(terminalFile) && !(bool)JObject.Parse(File.ReadAllText(terminalFile))["IsHotkeyEnabled"], "terminal save is module-local");
-        terminal.GetField("_loaded", All).SetValue(null, false);
-        Check(!(bool)terminal.GetProperty("IsHotkeyEnabled").GetValue(null), "terminal cold reload");
-        File.WriteAllText(terminalFile, "{\"IsHotkeyEnabled\":false,\"IsMapIconEnabled\":false}");
-        terminal.GetField("_loaded", All).SetValue(null, false);
-        Check((bool)terminal.GetProperty("IsHotkeyEnabled").GetValue(null), "both-disabled settings retain escape hotkey");
-
+        InvokeStatic(terminal, "TrySaveSettingsFile", new object[] { terminalFile, Activator.CreateInstance(SutType("AnimusForge.AnimusForgeTerminalSettingsData")) }, 2);
+        Check(File.Exists(terminalFile), "legacy entry compatibility primitive remains module-bound");
         foreach (byte[] invalid in new[] { Encoding.UTF8.GetBytes("{broken"), new byte[] { 0xff, 0x80 } })
         {
             File.WriteAllBytes(terminalFile, invalid);
-            terminal.GetField("_loaded", All).SetValue(null, false);
-            Check((bool)terminal.GetProperty("IsHotkeyEnabled").GetValue(null), "bad settings use safe defaults");
-            terminal.GetProperty("IsHotkeyEnabled").SetValue(null, false);
-            Check(invalid.SequenceEqual(File.ReadAllBytes(terminalFile)) && (bool)terminal.GetProperty("IsHotkeyEnabled").GetValue(null), "bad settings preserve bytes and rollback memory");
+            bool badEntryRejected = false;
+            try { InvokeStatic(terminal, "TrySaveSettingsFile", new object[] { terminalFile, Activator.CreateInstance(SutType("AnimusForge.AnimusForgeTerminalSettingsData")) }, 2); }
+            catch { badEntryRejected = true; }
+            Check(badEntryRejected && invalid.SequenceEqual(File.ReadAllBytes(terminalFile)), "bad legacy entry bytes are protected");
         }
         File.WriteAllText(terminalFile, "{\"IsHotkeyEnabled\":true,\"IsMapIconEnabled\":true}");
         File.SetAttributes(terminalFile, FileAttributes.ReadOnly);
         try
         {
-            terminal.GetField("_loaded", All).SetValue(null, false);
-            terminal.GetProperty("IsHotkeyEnabled").SetValue(null, false);
-            Check((bool)terminal.GetProperty("IsHotkeyEnabled").GetValue(null) && (bool)JObject.Parse(File.ReadAllText(terminalFile))["IsHotkeyEnabled"], "readonly settings fail without false success");
+            bool readonlyEntryRejected = false;
+            try { InvokeStatic(terminal, "TrySaveSettingsFile", new object[] { terminalFile, Activator.CreateInstance(SutType("AnimusForge.AnimusForgeTerminalSettingsData")) }, 2); }
+            catch { readonlyEntryRejected = true; }
+            Check(readonlyEntryRejected && (bool)JObject.Parse(File.ReadAllText(terminalFile))["IsHotkeyEnabled"], "readonly legacy entry is protected");
         }
         finally { File.SetAttributes(terminalFile, FileAttributes.Normal); }
         string package = Path.Combine(module, "PlayerExports", "existing");
@@ -139,9 +132,10 @@ internal static partial class Program
                 if (original == cache) settings.GetMethod("PersistModelDropdownCacheSnapshot", All).Invoke(instance, null);
                 else
                 {
-                    terminal.GetField("_loaded", All).SetValue(null, false);
-                    terminal.GetProperty("IsHotkeyEnabled").SetValue(null, false);
-                    Check((bool)terminal.GetProperty("IsHotkeyEnabled").GetValue(null), "unwritable terminal directory rolls memory back");
+                    bool unwritableEntryRejected = false;
+                    try { InvokeStatic(terminal, "TrySaveSettingsFile", new object[] { terminalFile, Activator.CreateInstance(SutType("AnimusForge.AnimusForgeTerminalSettingsData")) }, 2); }
+                    catch { unwritableEntryRejected = true; }
+                    Check(unwritableEntryRejected, "unwritable legacy entry directory rejects compatibility write");
                 }
                 Check(bytes.SequenceEqual(File.ReadAllBytes(original)), "unwritable directory preserves original");
             }
@@ -213,35 +207,18 @@ internal static partial class Program
     private static void TestModuleMcmRouting(object settings, string module, string fakeUser)
     {
         Type routing = SutType("AnimusForge.McmSettingsStorage");
-        var route = routing.GetMethod("RouteJson", All);
-        Type directoryType = route.GetParameters()[1].ParameterType.GetElementType();
-        var constructor = directoryType.GetConstructors().Single(c => c.GetParameters().Length == 2
-            && c.GetParameters()[0].ParameterType.IsEnum && c.GetParameters()[1].ParameterType == typeof(string));
-        object application = Enum.Parse(constructor.GetParameters()[0].ParameterType, "Application");
-        string oldDirectory = Path.Combine(fakeUser, "ModSettings", "Global", "AnimusForge");
-        Directory.CreateDirectory(oldDirectory);
-        string oldFile = Path.Combine(oldDirectory, "legacy.json");
-        File.WriteAllText(oldFile, "{\"legacySetting\":true}");
-        DateTime oldStamp = File.GetLastWriteTimeUtc(oldFile);
-        object[] args = { settings, constructor.Invoke(new object[] { application, oldDirectory }), "legacy" };
-        route.Invoke(null, args);
-        string target = Path.Combine(module, "Configs", "ModSettings", "Global", "AnimusForge");
-        Check(((string)directoryType.GetProperty("Path").GetValue(args[1])).TrimEnd('\\', '/') == target,
-            "MCM global serializer routes into current module Configs");
-        Check(!File.Exists(Path.Combine(target, "legacy.json")), "MCM route does not import an old absolute profile file");
-        Check(File.ReadAllText(oldFile) == "{\"legacySetting\":true}" && File.GetLastWriteTimeUtc(oldFile) == oldStamp,
-            "MCM old profile bytes and timestamp remain unchanged");
-        string oldPresets = Path.Combine(fakeUser, "ModSettings", "Presets");
-        string id = "AnimusForge_global_settings";
-        Directory.CreateDirectory(Path.Combine(oldPresets, id));
-        File.WriteAllText(Path.Combine(oldPresets, id, "old.json"), "{}");
-        object[] presetArgs = { constructor.Invoke(new object[] { application, oldPresets }), id, null };
-        Check(!(bool)routing.GetMethod("RoutePresetDirectory", All).Invoke(null, presetArgs), "owned MCM preset route remains active");
-        Check(!File.Exists(Path.Combine(module, "Configs", "ModSettings", "Presets", id, "old.json")),
-            "MCM presets do not import old profile files");
-        object[] foreignArgs = { presetArgs[0], "OtherMod_settings", null };
-        Check((bool)routing.GetMethod("RoutePresetDirectory", All).Invoke(null, foreignArgs) && foreignArgs[2] == null,
-            "MCM preset route leaves other mod IDs untouched");
+        Check(routing.GetMethod("RouteJson", All) == null && routing.GetMethod("RoutePresetDirectory", All) == null,
+            "module MCM directory overrides are retired; shared persistence replay is in SharedMcmChecks");
+        Type files = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType("MCM.Internal.GameFeatures.FileSystemProvider")).First(t => t != null);
+        object provider = Activator.CreateInstance(files, true);
+        object root = files.GetMethod("GetModSettingsDirectory").Invoke(provider, null);
+        object global = files.GetMethod("GetDirectory").Invoke(provider, new[] { root, (object)"Global" });
+        object owner = files.GetMethod("GetDirectory").Invoke(provider, new[] { global, (object)"AnimusForge" });
+        Type directory = owner.GetType();
+        Check(directory.GetProperty("Type").GetValue(owner).ToString() == "User", "native MCM User directory is retained");
+        Check(((string)directory.GetProperty("Path").GetValue(owner)).Replace('\\', '/').TrimEnd('/').EndsWith("Configs/ModSettings/Global/AnimusForge"), "shared AF folder keeps native relative identity");
+        object foreign = files.GetMethod("GetDirectory").Invoke(provider, new[] { global, (object)"OtherMod" });
+        Check(((string)directory.GetProperty("Path").GetValue(foreign)).TrimEnd('\\', '/').EndsWith("OtherMod"), "native directory helpers leave foreign IDs unchanged");
     }
 
     private static void TestRetainedPromptLayers(Type settings, string module)
