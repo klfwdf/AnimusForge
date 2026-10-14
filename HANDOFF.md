@@ -1,3 +1,9 @@
+# 当前交接：10游戏小时人设演变已部署（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户部署过程中将等待改为10游戏小时；产品bca95f14f，66回放和原Release双API/Bootstrap/Coup/注册通过，原部署脚本最终更新9受管文件。游戏单模块v1.6.0三DLL/完整Stage/玩家资料哈希核对PASS。
+- 近况驱动：相关新事件汇集至少10游戏小时后排队评估，不是每10小时强制更新；原终端开关默认关闭。未改玩家配置，无push/打包/自动回滚，实机与真实provider待验。
+- [主台账、覆盖证据、保护范围与回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#persona-evolution-deploy-10h-20261015)。本条替代此前1小时及未部署状态；证据artifacts/deploy-persona-20261015-025920/，旧项目Stage已保留。
+
 # 当前交接：事件驱动人设演变与知情链路（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品fffcfed22：终端“外交与国家→周报与快报”新增人设演变开关，默认关闭；真实易主/死亡事件及直接关联者合并评估，仅改扩展字段，显示一句最新原因。无自主行动/独立目标，保存到原分块profile；关闭保留已形成变化。

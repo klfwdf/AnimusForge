@@ -1,3 +1,15 @@
+<a id="persona-evolution-deploy-10h-20261015"></a>
+## 2026-10-15 人设演变改为10游戏小时并部署（DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户明确授权部署，并在覆盖期间要求“等游戏时间10小时”。最终产品bca95f14f：PersonaEvolutionPolicy.MergeDelayHours=10.0，从当前NPC最早待处理事件起汇集至少10游戏小时；不是定时强制变化。其余合并/单并发/现实30秒启动间隔不变，AI允许不变。没有新事件不评估。
+- 新边界66项回放PASS：9.99小时不启动、10小时准入，非零事件时点50→60同样成立；两语言各25万次空队列0分配/0设置读取/0API。原统一Release双API/Bootstrap/Coup/registration通过，构建日志build-10h.log；原终端526/536等证据仅复用于未改变的设置接线，不冒充新DLL回放。
+- 初始1小时候选原部署脚本更新19文件；随后按最新要求重新构建并用原脚本部署10小时候选，更新9文件，最终安装以本条为准。版本v1.6.0，目标F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge。未修改构建/覆盖脚本、未版本递增或打包/push。
+- 最终完整Stage 3520项按原覆盖策略核验PASS，清单外304项SHA/mtime保持；Configs5、CustomPrompts4、PlayerExports3133、ONNX10、文档MCM35文件哈希保持，原版3 DLL抽检保持。安装三DLL匹配10小时receipt候选与Bootstrap唯一入口，errors=[]。部署前无游戏进程。
+- 证据artifacts/deploy-persona-20261015-025920/：before.json、deploy.log、verification-initial.json、build-10h.log、deploy-10h.log、verification.json、verify-10h.log。源码/候选绑定artifacts/persona-evolution-10h-receipt.json。旧项目Stage保存在同目录previous-project-stage；未创建游戏部署Recovery备份、manifest或自动回滚。
+- 人设演变开关默认关闭，未改玩家配置。实机时间推进/大量事件主线程开销、旧档重载及真实provider变化质量仍NOT-RUN。事件采集时枚举当事人及近亲仍在主线程，未承诺极端集中死亡场景不卡。
+- 回退源码可git revert bca95f14f（仅恢复1小时），完整功能回退另revert fffcfed22；安装回退须独立重建选定旧修订并明确部署。历史安装参考4eed05dd9，不能用git revert声称已恢复游戏文件或已改变的NPC人设。
+- 本条替代下方1小时及“未部署”状态。知情链路调查仍有效：快报+自动出版开启时普通攻城最早下一次上下文可读到，但受筛选限制；这与10小时后的人设评估是两个时点。代码坐标：src/modules/AF.Module.Persona/Profiles/PersonaEvolutionPolicy.cs:12–29 MergeDelayHours/TakeBatch；其余责任表沿用下方fffcfed22记录。
+
 <a id="persona-evolution-20261015"></a>
 ## 2026-10-15 事件驱动NPC人设演变及知情链路定位（OFFLINE_VERIFIED / LIVE_PENDING）
 
