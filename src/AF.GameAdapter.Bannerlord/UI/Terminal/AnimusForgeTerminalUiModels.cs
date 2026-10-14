@@ -1034,33 +1034,33 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 
 
-	public void MarkModified()
+	private bool _saveErrorShown;
 
+	public void MarkTextModified()
 	{
-
 		_hasUnsavedChanges = true;
-
 		OnPropertyChanged(nameof(HasUnsavedChanges));
-
-		DuelSettings settings = DuelSettings.GetSettings();
-
-		if (settings != null && Items != null)
-
-		{
-
-			foreach (var item in Items)
-
-			{
-
-				item.UpdateFromSettings(settings);
-
-			}
-
-		}
-
 	}
 
-
+	public void MarkModified()
+	{
+		MarkTextModified();
+		// Completed UI edits only: no tick IO, and no disk write for each text keystroke.
+		if (TerminalSettingsRegistry.SaveSettings())
+		{
+			_hasUnsavedChanges = false;
+			_saveErrorShown = false;
+			OnPropertyChanged(nameof(HasUnsavedChanges));
+		}
+		else if (!_saveErrorShown)
+		{
+			_saveErrorShown = true;
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_SaveError}Settings could not be saved. Check the log.").ToString(), Colors.Red));
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings != null && Items != null)
+			foreach (var item in Items) item.UpdateFromSettings(settings);
+	}
 
 	private AnimusForgeTerminalItemVM _activeListeningItem;
 
@@ -1290,7 +1290,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 				if (!collapsed)
 
-					foreach (var def in group.OrderBy(item => TerminalSettingsCoverage.ViewOrder(item.Id))) rootItems.Add(new AnimusForgeTerminalItemVM(def, MarkModified));
+					foreach (var def in group.OrderBy(item => TerminalSettingsCoverage.ViewOrder(item.Id))) rootItems.Add(new AnimusForgeTerminalItemVM(def, MarkModified, MarkTextModified));
 
 			}
 
@@ -2235,6 +2235,8 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 	private readonly Action<AnimusForgeTerminalNode> _onOpenNode;
 
 	private readonly Action _onModified;
+	private readonly Action _onTextModified;
+	private bool _textEditPending;
 
 
 
@@ -2492,6 +2494,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 
 				{
 
+					if (string.Equals(SettingDef.Getter(s)?.ToString() ?? "", value, StringComparison.Ordinal)) return;
 					SettingDef.Setter(s, value);
 
 					DisplayValue = string.IsNullOrWhiteSpace(value) ? new TextObject("{=AF_UI_Terminal_EditValue}Click to enter ✎").ToString() : (value.Length > 24 ? value.Substring(0, 24) + "..." : value);
@@ -2500,7 +2503,8 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 
 					OnPropertyChanged(nameof(DisplayValue));
 
-					_onModified?.Invoke();
+					_textEditPending = true;
+					_onTextModified?.Invoke();
 
 				}
 
@@ -2511,6 +2515,13 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 	}
 
 
+
+	public void ExecuteCommitText()
+	{
+		if (!_textEditPending) return;
+		_textEditPending = false;
+		_onModified?.Invoke();
+	}
 
 	[DataSourceProperty]
 
@@ -2635,12 +2646,16 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 	// 构造：MCM 设置项
 
 	public AnimusForgeTerminalItemVM(TerminalSettingDef def, Action onModified)
+		: this(def, onModified, onModified) { }
+
+	public AnimusForgeTerminalItemVM(TerminalSettingDef def, Action onModified, Action onTextModified)
 
 	{
 
 		SettingDef = def;
 
 		_onModified = onModified;
+		_onTextModified = onTextModified ?? onModified;
 
 		Id = def?.Id ?? "";
 

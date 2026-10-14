@@ -117,13 +117,13 @@ internal static class TerminalSettingsChecks
                     ["PassiveStareTriggerSeconds"] = 0,
                     ["MinimumPositiveNpcRelationGain"] = 1
                 };
-                Check(defs.Count == attributed + terminalOnly.Count, "no missing or duplicate attributed or terminal-only definitions");
+                Check(defs.Count == attributed, "no missing or duplicate attributed or terminal-only definitions");
                 foreach (var setting in terminalOnly)
                 {
                     Check(defs.ContainsKey(setting.Key), "terminal-only definition exists " + setting.Key);
                     object def = defs[setting.Key];
                     PropertyInfo property = duel.GetType().GetProperty(setting.Key);
-                    Check(property.GetCustomAttributes(metadata, true).Length == 0, "terminal-only setting adds no MCM frontend " + setting.Key);
+                    Check(property.GetCustomAttributes(metadata, true).Length == 1, "terminal control has persistence metadata " + setting.Key);
                     object raw = property.GetValue(duel);
                     Check(Equals(raw, ((Delegate)Property(def, "Getter")).DynamicInvoke(duel)), "terminal-only getter retains owner " + setting.Key);
                     object next = raw is bool value ? (object)!value : ((int)raw == 0 ? 1 : 0);

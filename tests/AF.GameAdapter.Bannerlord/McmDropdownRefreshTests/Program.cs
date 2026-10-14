@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,13 +44,24 @@ public static class Program {
   var owner=new DuelSettings();var image=new AnimusForge.Illustrator.IllustratorSettings();
   var main=Vm(owner,"MainModelDropdown");var ambient=Vm(owner,"TownAmbientAiModelDropdown");var photo=Vm(image,"ModelDropdown");
   // Actual selector + actual MCM edit action reproduce the write-back omitted by old fake-VM tests.
+  int emptyBoundLists=0;
+  var boundList=(IList)main.DropdownValue.GetType().GetProperty("ItemList").GetValue(main.DropdownValue);
+  TaleWorlds.Library.ListChangedEventHandler observer=(sender,e)=> { if(((IList)sender).Count==0) emptyBoundLists++; };
+  boundList.GetType().GetEvent("ListChanged").AddEventHandler(boundList,observer);
   main.Attach();Refresh.Invoke(null,new object[]{main});
+  Check(emptyBoundLists==0,"refresh never exposes an empty list to an attached UI binding");
   Check(main.Edits==0&&owner.MainModelDropdown.SelectedIndex==1,"refresh is display-only with actual MCM action listener");
   ambient.Attach();photo.Attach();
   for(int tick=0;tick<3;tick++){Refresh.Invoke(null,new object[]{main});Refresh.Invoke(null,new object[]{ambient});Refresh.Invoke(null,new object[]{photo});}
   Check(main.Edits==0&&ambient.Edits==0&&photo.Edits==0,"all API refreshes produce zero automatic configuration edits");
   Check(owner.MainModelDropdown[owner.MainModelDropdown.SelectedIndex]=="main-chosen"&&image.ModelDropdown[image.ModelDropdown.SelectedIndex]=="image-chosen","cross API selections survive");
   foreach(var vm in new[]{main,ambient,photo})Check(((IList)vm.DropdownValue.GetType().GetProperty("ItemList").GetValue(vm.DropdownValue)).Count>=2,"actual MCM list not empty");
+  foreach(var vm in new[]{main,ambient,photo}) {
+   var selector=vm.DropdownValue;var selected=selector.GetType().GetProperty("SelectedItem").GetValue(selector);
+   var label=(string)selected.GetType().GetProperty("StringItem").GetValue(selected);
+   Check(!string.IsNullOrWhiteSpace(label) && label.EndsWith("chosen"),"rendered selected label survives refresh");
+   Check(((IList)selector.GetType().GetProperty("ItemList").GetValue(selector)).Cast<object>().All(i=>!string.IsNullOrWhiteSpace((string)i.GetType().GetProperty("StringItem").GetValue(i))),"all rendered item labels remain populated");
+  }
   main.DropdownValue.GetType().GetProperty("SelectedIndex").SetValue(main.DropdownValue,2);
   Check(main.Edits>0&&owner.MainModelDropdown.SelectedIndex==2&&owner.TownAmbientAiModelDropdown.SelectedIndex==1,"user selection works after refresh listeners restored");
   var broken=(BrokenSelector)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(BrokenSelector));broken.ItemList=new ArrayList{"retained"};broken.SelectedIndex=0;

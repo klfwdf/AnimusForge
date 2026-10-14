@@ -788,14 +788,13 @@ public static class McmDropdownRuntimeRefresh
         object stagedSelector = selectorConstructor.Invoke(new object[] { displayOptions, selectedIndex });
         var stagedItems = AccessTools.Property(stagedSelector.GetType(), "ItemList")?.GetValue(stagedSelector) as IList;
         if (stagedItems == null || stagedItems.Count != optionList.Count) return;
-        FieldInfo indexField = AccessTools.Field(selectorVm.GetType(), "_selectedIndex");
-        PropertyInfo indexProperty = AccessTools.Property(selectorVm.GetType(), "SelectedIndex");
-        PropertyInfo singleProperty = AccessTools.Property(selectorVm.GetType(), "HasSingleItem");
-        if (indexField == null || indexProperty?.CanWrite != true || singleProperty?.CanWrite != true) return;
-        object[] preparedItems = stagedItems.Cast<object>().ToArray();
-        object[] previousItems = liveItems.Cast<object>().ToArray();
-        int previousIndex = ReadSelectedIndex(selectorVm);
+        // Replace the selector as one datasource change. Clearing a list already bound
+        // to Gauntlet exposes an empty intermediate state and stale SelectedItem bindings.
+        FieldInfo selectorField = AccessTools.Field(vmType, "_selectorVMWrapper");
+        bool canAssign = selectorField != null && selectorField.FieldType.IsInstanceOfType(stagedSelector);
+        if (!canAssign && selectorProperty.CanWrite != true) return;
         var detached = new List<Tuple<EventInfo, Delegate>>();
+        bool committed = false;
         try
         {
             foreach (var handler in new[] { Tuple.Create("PropertyChanged", "DropdownValue_PropertyChanged"),
@@ -808,47 +807,32 @@ public static class McmDropdownRuntimeRefresh
                 changeEvent.RemoveEventHandler(selectorVm, listener);
                 detached.Add(Tuple.Create(changeEvent, listener));
             }
-            // If the real MCM changed its event contract, preserve the live selector unchanged.
             if (vmType.FullName == "MCM.UI.GUI.ViewModels.SettingsPropertyVM" && detached.Count != 2) return;
-            try
+            if (canAssign) selectorField.SetValue(settingsPropertyVm, stagedSelector);
+            else selectorProperty.SetValue(settingsPropertyVm, stagedSelector);
+            committed = true;
+            // The new selector already has its index, SelectedItem and labels. Its
+            // constructor ran without configuration listeners; refresh is display-only.
+            MethodInfo notify = AccessTools.Method(typeof(TaleWorlds.Library.ViewModel), "OnPropertyChanged", new[] { typeof(string) });
+            notify?.Invoke(settingsPropertyVm, new object[] { "DropdownValue" });
+        }
+        catch
+        {
+            if (committed)
             {
-                liveItems.Clear();
-                foreach (object item in preparedItems) liveItems.Add(item);
-                indexField.SetValue(selectorVm, -1);
-                singleProperty.SetValue(selectorVm, liveItems.Count <= 1);
-                indexProperty.SetValue(selectorVm, selectedIndex);
-		MethodInfo onPropertyChanged = AccessTools.Method(typeof(TaleWorlds.Library.ViewModel), "OnPropertyChanged", new Type[] { typeof(string) });
-
-		onPropertyChanged?.Invoke(selectorVm, new object[] { "ItemList" });
-
-		onPropertyChanged?.Invoke(selectorVm, new object[] { "SelectedIndex" });
-
-		onPropertyChanged?.Invoke(selectorVm, new object[] { "SelectedItem" });
-
-		onPropertyChanged?.Invoke(selectorVm, new object[] { "HasSingleItem" });
-
-		onPropertyChanged?.Invoke(settingsPropertyVm, new object[] { "DropdownValue" });
-
-		onPropertyChanged?.Invoke(settingsPropertyVm, new object[] { "IsDropdown" });
-
-		onPropertyChanged?.Invoke(settingsPropertyVm, new object[] { "IsDropdownDefault" });
-
+                if (canAssign) selectorField.SetValue(settingsPropertyVm, selectorVm);
+                else selectorProperty.SetValue(settingsPropertyVm, selectorVm);
+                committed = false;
             }
-            catch
-            {
-                liveItems.Clear();
-                foreach (object item in previousItems) liveItems.Add(item);
-                indexField.SetValue(selectorVm, -1);
-                singleProperty.SetValue(selectorVm, liveItems.Count <= 1);
-                indexProperty.SetValue(selectorVm, previousIndex);
-                throw;
-            }
+            throw;
         }
         finally
         {
-            foreach (var handler in detached) handler.Item1.AddEventHandler(selectorVm, handler.Item2);
-            stagedItems.Clear();
-            (stagedSelector as TaleWorlds.Library.ViewModel)?.OnFinalize();
+            object listenerTarget = committed ? stagedSelector : selectorVm;
+            foreach (var handler in detached) handler.Item1.AddEventHandler(listenerTarget, handler.Item2);
+            // The live selector owns prepared items after commit. Keep the old list
+            // intact for UI bindings being detached; it becomes collectible normally.
+            if (!committed) (stagedSelector as TaleWorlds.Library.ViewModel)?.OnFinalize();
         }
 
 	}
