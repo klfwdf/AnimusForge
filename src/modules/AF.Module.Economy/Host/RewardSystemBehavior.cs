@@ -1535,7 +1535,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		RestoreGeneratedRewardItemDefinitions("game_load_finished");
 		RestoreGeneratedRewardPlayerRosterItems("game_load_finished");
 		RepairGeneratedRewardItemCategories("game_load_finished");
-		RemoveGeneratedRewardItemsFromMarketRosters("game_load_finished");
+		QueueGeneratedRewardWorldMarketCleanup("game_load_finished");
 		CourierDeliveryBehavior.Instance?.RestoreCourierLetterInventoryItemsAfterGeneratedRewardRestore("reward_game_load_finished");
 		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
 		RepairPlayerHeroMemberPrisonerDuplicates("game_load_finished");
@@ -1549,6 +1549,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	public void OnEngineTick()
 	{
 		TryClosePendingHeroJoinConversation();
+		ProcessGeneratedRewardMarketCleanup();
 	}
 
 	private void OnCampaignTick(float dt)
@@ -9500,6 +9501,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool TrySetGeneratedRewardItemCategory(ItemObject item, ItemCategory category)
 	{
+		InvalidateGeneratedRewardMarketRules();
 		if (item == null || category == null)
 		{
 			return false;
@@ -10150,6 +10152,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				GeneratedRewardManifestByStringId.Clear();
 				GeneratedRewardManifestLoaded = true;
 			}
+			Instance?._marketCleanup?.Reset();
+			InvalidateGeneratedRewardMarketRules();
 			ClearGeneratedRpEquipmentTemplateCache();
 			ClearGeneratedRpFoodTemplateCache();
 			ClearPlayerRpCraftTemplateCaches();
@@ -10260,6 +10264,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static void RegisterGeneratedRewardManifestRecordNoLock(GeneratedRewardItemRecord record)
 	{
+		InvalidateGeneratedRewardMarketRules();
 		record = NormalizeGeneratedRewardItemRecord(record?.GeneratedStringId, record);
 		if (record == null)
 		{
@@ -11044,6 +11049,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool ApplyGeneratedRewardItemTemplateState(ItemObject target, ItemObject templateItem, string displayName)
 	{
+		InvalidateGeneratedRewardMarketRules();
 		if (target == null || templateItem == null)
 		{
 			return false;
@@ -11477,6 +11483,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		record.NpcGiftMarketTradeAllowed = string.Equals(record.RpItemIntroductionSource, "npc", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(record.GeneratedStringId,
 				BuildGeneratedRewardItemStringId(record.DisplayName, record.TemplateStringId), StringComparison.OrdinalIgnoreCase);
+		if (record.NpcGiftMarketTradeAllowed) InvalidateGeneratedRewardMarketRules();
 	}
 
 	private static void CampaignAllItemsGetterPostfix(ref MBReadOnlyList<ItemObject> __result)
@@ -11715,8 +11722,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			RemoveGeneratedRewardItemsFromSettlementMarket(settlementComponent?.Settlement, "trade_open");
-			RemoveGeneratedRewardItemsFromRoster(leftRoster, BuildGeneratedRewardMarketRosterLabel(settlementComponent?.Settlement, "trade_roster"), "trade_open_roster");
+			CleanGeneratedRewardTradeMarkets(leftRoster, settlementComponent?.Settlement, "trade_open");
 			Action originalDone = doneLogicExtrasDelegate;
 			doneLogicExtrasDelegate = delegate
 			{
@@ -11726,8 +11732,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				finally
 				{
-					RemoveGeneratedRewardItemsFromSettlementMarket(settlementComponent?.Settlement, "trade_close");
-					RemoveGeneratedRewardItemsFromRoster(leftRoster, BuildGeneratedRewardMarketRosterLabel(settlementComponent?.Settlement, "trade_roster"), "trade_close_roster");
+					CleanGeneratedRewardTradeMarkets(leftRoster, settlementComponent?.Settlement, "trade_close");
 				}
 			};
 		}
@@ -11746,7 +11751,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	private void OnDailyTickSettlement(Settlement settlement)
 	{
 		using var dailyScope = FreezeWatchdog.Scope("RewardSystem.DailyTickSettlement.MarketCleanup");
-		RemoveGeneratedRewardItemsFromSettlementMarket(settlement, "daily_tick_settlement");
+		QueueGeneratedRewardSettlementMarketCleanup(settlement, "daily_tick_settlement");
 	}
 
 	private static bool InventoryLogicAddTransferCommandPrefix(InventoryLogic __instance, TransferCommand command)
@@ -11937,79 +11942,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static int RemoveGeneratedRewardItemsFromRoster(ItemRoster roster, string ownerLabel, string reason)
 	{
-		if (roster == null)
-		{
-			return 0;
-		}
-		int removed = 0;
-		List<ItemRosterElement> toRemove = null;
-		try
-		{
-			for (int i = 0; i < roster.Count; i++)
-			{
-				ItemRosterElement element = roster.GetElementCopyAtIndex(i);
-				if (element.Amount > 0 && IsGeneratedRewardMarketTransferBlockedItem(element.EquipmentElement.Item))
-				{
-					(toRemove ??= new List<ItemRosterElement>()).Add(element);
-				}
-			}
-			if (toRemove == null) return 0;
-			foreach (ItemRosterElement element in toRemove)
-			{
-				int amount = Math.Max(0, element.Amount);
-				if (amount <= 0)
-				{
-					continue;
-				}
-				roster.AddToCounts(element.EquipmentElement, -amount);
-				removed += amount;
-			}
-			if (removed > 0)
-			{
-				Logger.Log("Logic", "[RewardItemMarketGuard] removed_market_generated_items reason=" + (reason ?? "") + " owner=" + (ownerLabel ?? "") + " count=" + removed.ToString(CultureInfo.InvariantCulture) + " slots=" + toRemove.Count.ToString(CultureInfo.InvariantCulture));
-			}
-		}
-		catch (Exception ex)
-		{
-			try
-			{
-				Logger.Log("Logic", "[RewardItemMarketGuard] cleanup_failed reason=" + (reason ?? "") + " owner=" + (ownerLabel ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
-			}
-			catch
-			{
-			}
-		}
-		return removed;
-	}
-
-	private static int RemoveGeneratedRewardItemsFromSettlementMarket(Settlement settlement, string reason)
-	{
-		try
-		{
-			return RemoveGeneratedRewardItemsFromRoster(settlement?.ItemRoster, BuildGeneratedRewardMarketRosterLabel(settlement, "settlement_market"), reason);
-		}
-		catch
-		{
-			return 0;
-		}
-	}
-
-	private static int RemoveGeneratedRewardItemsFromMarketRosters(string reason)
-	{
-		int removed = 0;
-		IEnumerable<Settlement> settlements = null;
-		try
-		{
-			settlements = Campaign.Current?.Settlements;
-		}
-		catch
-		{
-		}
-		foreach (Settlement settlement in settlements ?? Enumerable.Empty<Settlement>())
-		{
-			removed += RemoveGeneratedRewardItemsFromSettlementMarket(settlement, reason);
-		}
-		return removed;
+		GeneratedRewardMarketCleanupOwner cleanup = Instance?.MarketCleanup ?? CreateMarketCleanup(null);
+		return cleanup.CleanNow(roster, ownerLabel, reason);
 	}
 
 	private GeneratedRewardItemRecord GetGeneratedRewardItemRecord(string generatedStringId)

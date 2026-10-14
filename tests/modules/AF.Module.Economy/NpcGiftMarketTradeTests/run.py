@@ -39,10 +39,9 @@ SIGNATURES = [
     "private static void RestoreGeneratedRewardItemsToRoster(",
     "private static int RemoveGeneratedRewardItemsFromRoster(",
     "private static string BuildGeneratedRewardMarketRosterLabel(",
-    "private static int RemoveGeneratedRewardItemsFromSettlementMarket(",
-    "private static int RemoveGeneratedRewardItemsFromMarketRosters(",
     "private static void InventoryScreenHelperOpenScreenAsTradePrefix(",
     "private void OnDailyTickSettlement(",
+    "public void OnEngineTick(",
     "private static MBReadOnlyList<ItemObject> GetGeneratedRewardFilteredEconomicPool(",
     "private static bool IsEligibleNormalWorkshopOutput(",
     "private static bool IsStableGeneratedRewardTemplateIdentity(",
@@ -59,10 +58,13 @@ def main():
     parser.add_argument("--run-root", type=Path)
     parser.add_argument("--dotnet")
     parser.add_argument("--daily-source-ref", help="Replay the daily entry prefix from a reviewed Git revision")
-    parser.add_argument("--mutate", choices=["old-guard", "old-cleanup"])
+    parser.add_argument("--mutate", choices=["old-guard", "old-cleanup", "unbounded-slots", "ignore-deadline", "ignore-generation", "cache-mutable-gifts"])
     args = parser.parse_args()
     source = (ROOT / "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs").read_text(encoding="utf-8-sig")
     methods = {signature: extractor.declaration(source, signature) for signature in SIGNATURES}
+    load_entry = extractor.declaration(source, "private void OnGameLoadFinished(")
+    assert load_entry.count('QueueGeneratedRewardWorldMarketCleanup("game_load_finished");') == 1
+    assert methods["public void OnEngineTick("].count("ProcessGeneratedRewardMarketCleanup();") == 1
     daily_path = "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs"
     daily_source = (subprocess.check_output(["git", "show", args.daily_source_ref + ":" + daily_path], cwd=ROOT).decode("utf-8-sig")
                     if args.daily_source_ref else (ROOT / daily_path).read_text(encoding="utf-8-sig"))
@@ -70,6 +72,10 @@ def main():
     entry = extractor.declaration(daily_source, "private void OnDailyTick(")
     entry = entry[:entry.index("if (_debts == null")]
     methods["daily_entry_prefix"] = entry.replace("OnDailyTick()", "RunDailyEntryPrefix()") + "} catch { throw; } }"
+    if "RemoveGeneratedRewardItemsFromMarketRosters" in entry:
+        old_host = subprocess.check_output(["git", "show", args.daily_source_ref + ":src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs"], cwd=ROOT).decode("utf-8-sig")
+        for signature in ["private static int RemoveGeneratedRewardItemsFromSettlementMarket(", "private static int RemoveGeneratedRewardItemsFromMarketRosters("]:
+            methods[signature] = extractor.declaration(old_host, signature)
     gift = extractor.declaration(source, "private int GenerateRpAssetToPlayer(")
     assert gift.index("giftRecord.NpcGiftMarketTradeAllowed = true;") < gift.index("QueueNpcRpItemIntroductionForExternal(")
     assert "NpcGiftMarketTradeAllowed |= existing.NpcGiftMarketTradeAllowed" in source
@@ -79,14 +85,29 @@ def main():
         methods["private static bool IsGeneratedRewardMarketTransferBlockedItem("] = (
             "private static bool IsGeneratedRewardMarketTransferBlockedItem(ItemObject item) "
             "{ return IsGeneratedRewardMarketExcludedItem(item); }")
+    cleanup_host = (ROOT / "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.MarketCleanup.cs").read_text(encoding="utf-8-sig")
     if args.mutate == "old-cleanup":
-        signature = "private static int RemoveGeneratedRewardItemsFromRoster("
-        methods[signature] = methods[signature].replace(
-            "IsGeneratedRewardMarketTransferBlockedItem(element.EquipmentElement.Item)",
-            "IsGeneratedRewardMarketExcludedItem(element.EquipmentElement.Item)")
+        cleanup_host = cleanup_host.replace("IsGeneratedRewardMarketExcludedItem, IsGeneratedRewardMarketTransferBlockedItem,",
+                                            "IsGeneratedRewardMarketExcludedItem, IsGeneratedRewardMarketExcludedItem,")
     output = new_run_root(ROOT, "npc-gift-market", args.run_root)
     fixture = (HERE / "Fixture.cs.in").read_text(encoding="utf-8-sig")
     (output / "Program.cs").write_text(fixture.replace("__PRODUCTION__", "\n\n".join(methods.values())), encoding="utf-8")
+    (output / "MarketCleanupHost.cs").write_text(cleanup_host, encoding="utf-8")
+    cleanup_owner = (ROOT / "src/modules/AF.Module.Economy/Execution/GeneratedRewardMarketCleanupOwner.cs").read_text(encoding="utf-8-sig")
+    mutations = {
+        "unbounded-slots": [("units < maxUnits", "units < int.MaxValue")],
+        "ignore-deadline": [("< budgetMs; units++", "< double.MaxValue; units++")],
+        "ignore-generation": [("if (_boundGeneration != _generation()) Reset();", "/* fault: generation admission omitted */"),
+                              ("if (_boundGeneration != _generation()) { Reset(); return; }", "/* fault: generation drain omitted */")],
+        "cache-mutable-gifts": [("scan.Complete && !scan.HasTradableGeneratedItems", "scan.Complete")],
+    }
+    for old, new in mutations.get(args.mutate, []):
+        assert cleanup_owner.count(old) == 1, old
+        cleanup_owner = cleanup_owner.replace(old, new)
+    (output / "MarketCleanupOwner.cs").write_text(cleanup_owner, encoding="utf-8")
+    (output / "SaveRuntimeGuard.cs").write_bytes((ROOT / "src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs").read_bytes())
+    (output / "MarketCleanupCases.cs").write_bytes((HERE / "MarketCleanupCases.cs.in").read_bytes())
+    (output / "EngineNamespaces.cs").write_text("namespace AnimusForge.Refactor.Runtime {} namespace TaleWorlds.CampaignSystem.Roster {} namespace TaleWorlds.CampaignSystem.Settlements {} namespace TaleWorlds.Core {} namespace TaleWorlds.Library {}", encoding="utf-8")
     dotnet = resolve_dotnet(ROOT, args.dotnet)
     json_dll = ROOT / "local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll"
     if not json_dll.is_file():

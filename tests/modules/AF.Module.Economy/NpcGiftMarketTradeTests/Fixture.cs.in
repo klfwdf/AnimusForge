@@ -1,8 +1,10 @@
 using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AnimusForge.Refactor.Runtime;
+namespace AnimusForge;
 
-public class RewardSystemBehavior
+public partial class RewardSystemBehavior
 {
     __PRODUCTION__
 
@@ -23,6 +25,7 @@ public class RewardSystemBehavior
     static int GetCampaignDayIndex() => 7;
     static int EquipmentRestoreCalls;
     void RestoreDueNpcBattleEquipment(string reason) => EquipmentRestoreCalls++;
+    void TryClosePendingHeroJoinConversation() { }
     GeneratedRewardItemRecord GetGeneratedRewardItemRecord(string id) => _generatedRewardItemRecords.GetValueOrDefault(id);
     static bool TryPrimeGeneratedInventoryItemForExternal(string id, string name, string template, uint objectId,
         out string normalizedId, out string normalizedTemplate, out uint normalizedObjectId, string source)
@@ -37,6 +40,7 @@ public class RewardSystemBehavior
     static void Case(string name, Action test)
     {
         Instance = new(); GeneratedRewardManifestByStringId.Clear(); GeneratedRewardManifestByObjectId.Clear();
+        Campaign.Current = new(); TWParallel.MainThread = true; ItemRoster.BeforeRead = ItemRoster.AfterUpdate = null;
         InformationManager.Messages.Clear(); GeneratedCount = 0;
         try { test(); passed++; Console.WriteLine("PASS " + name); }
         catch (Exception ex) { failed++; Console.WriteLine("FAIL " + name + ": " + ex.Message); }
@@ -131,7 +135,7 @@ public class RewardSystemBehavior
             int done = 0; Action callback = () => done++;
             InventoryScreenHelperOpenScreenAsTradePrefix(roster, new SettlementComponent { Settlement = settlement }, ref callback);
             Check(roster.Amount(gift) == 3 && roster.Amount(special) == 0, "open deletes gift or keeps special");
-            callback(); Instance.OnDailyTickSettlement(settlement); RemoveGeneratedRewardItemsFromMarketRosters("game_load_finished");
+            callback(); Instance.OnDailyTickSettlement(settlement); Instance.QueueGeneratedRewardWorldMarketCleanup("game_load_finished"); DrainMarkets();
             Check(roster.Amount(gift) == 3 && done == 1, "later cleanup deletes gift or duplicates callback"); });
         Case("daily_entry_does_not_scan_world_but_native_settlement_cleanup_still_runs", () => {
             const int towns = 2000, slots = 300;
@@ -146,11 +150,12 @@ public class RewardSystemBehavior
             Check(ItemRoster.Reads == 0, "global daily entry still scans every market");
             Check(EquipmentRestoreCalls == 1, "equipment restoration lost");
             Instance.OnDailyTickSettlement(target);
+            Check(ItemRoster.Reads == 0, "daily admission scans instead of enqueueing"); DrainMarkets();
             Check(ItemRoster.Reads == slots + 1 && target.ItemRoster.Amount(special) == 0, "distributed event failed to clean the selected market");
             Check(settlements[0].ItemRoster.Elements.Count == slots, "unrelated market mutated");
             // The once-per-load reconciliation still cleans another market without deleting permitted gifts.
             var gift = Gift(); settlements[0].ItemRoster.AddToCounts(new(special), 1); settlements[0].ItemRoster.AddToCounts(new(gift), 3);
-            RemoveGeneratedRewardItemsFromMarketRosters("game_load_finished");
+            Instance.QueueGeneratedRewardWorldMarketCleanup("game_load_finished"); DrainMarkets();
             Check(settlements[0].ItemRoster.Amount(special) == 0 && settlements[0].ItemRoster.Amount(gift) == 3, "load protection changed"); });
         Case("caravan_villager_hide_only_special_and_restore_exact_stack", () => {
             var gift = Gift(); var special = Gift(identity: "courier_letter|session|body"); var roster = new ItemRoster();
@@ -176,6 +181,7 @@ public class RewardSystemBehavior
                     JsonConvert.SerializeObject(Instance._generatedRewardPlayerRosterRecords));
                 Instance.RestoreGeneratedRewardPlayerRosterItems("game_load_finished");
                 Check(GeneratedCount == 0 && roster.Amount(gift) == remaining, "sold gift regenerated"); });
+        RunMarketCleanupCases();
         Console.WriteLine($"npcGiftMarketTrade passed={passed} failed={failed}");
         return failed == 0 ? 0 : 1;
     }
@@ -194,22 +200,31 @@ public record struct ItemRosterElement(EquipmentElement EquipmentElement, int Am
 public class ItemRoster
 {
     public static int Reads;
+    public static Action<ItemRoster> BeforeRead;
+    public static Action<ItemRoster> AfterUpdate;
+    public int VersionNo { get; private set; }
+    public bool SkipRemovals;
     public List<ItemRosterElement> Elements = new(); public int Count => Elements.Count;
-    public ItemRosterElement GetElementCopyAtIndex(int i) { Reads++; return Elements[i]; }
+    public ItemRosterElement GetElementCopyAtIndex(int i) { BeforeRead?.Invoke(this); Reads++; return Elements[i]; }
     public int Amount(ItemObject item) => Elements.Where(x => x.EquipmentElement.Item == item).Sum(x => x.Amount);
     public void AddToCounts(EquipmentElement element, int amount)
     {
+        if (SkipRemovals && amount < 0) return;
         int i = Elements.FindIndex(x => x.EquipmentElement == element);
-        if (i < 0) { if (amount > 0) Elements.Add(new(element, amount)); return; }
+        if (i < 0) { if (amount > 0) { Elements.Add(new(element, amount)); VersionNo++; AfterUpdate?.Invoke(this); } return; }
         int count = Elements[i].Amount + amount;
-        if (count <= 0) Elements.RemoveAt(i); else Elements[i] = new(element, count);
+        if (count <= 0) { Elements[i] = Elements[^1]; Elements.RemoveAt(Elements.Count - 1); } else Elements[i] = new(element, count);
+        VersionNo++;
+        AfterUpdate?.Invoke(this);
     }
 }
 public class PartyBase { public static PartyBase MainParty; public bool IsSettlement; public string Name = "party"; public ItemRoster ItemRoster; }
 public class MobileParty { public static MobileParty MainParty; public ItemRoster ItemRoster; }
-public class Settlement { public string StringId; public ItemRoster ItemRoster; }
+public class Settlement { public string StringId; public bool FailRosterRead; private ItemRoster _roster; public ItemRoster ItemRoster { get { if (FailRosterRead) throw new InvalidOperationException("scripted market getter failure"); return _roster; } set => _roster = value; } }
 public class SettlementComponent { public Settlement Settlement; }
-public class Campaign { public static Campaign Current = new(); public IEnumerable<Settlement> Settlements = Array.Empty<Settlement>(); }
+public class Campaign { public static Campaign Current = new(); public IEnumerable<Settlement> Settlements = Array.Empty<Settlement>(); public SaveHandler SaveHandler = new(); }
+public class SaveHandler { public bool IsSaving; }
+public static class TWParallel { public static bool MainThread = true; public static bool IsMainThread() => MainThread; }
 public class TransferCommand { public int Amount; public ItemRosterElement ElementToTransfer; public InventoryLogic.InventorySide FromSide, ToSide; }
 public class InventoryLogic
 {
