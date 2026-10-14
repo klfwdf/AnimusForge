@@ -1,3 +1,9 @@
+# 当前交接：NPC扩展人设可编辑（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品7b113afbe：原人设菜单新增“编辑扩展人设”，支持核心特质/强度与动机、原则、弱点、说话风格，保存到原profile并刷新百科；保留正文和声音，CN/EN同步。
+- 实际控制器回放111项、中英资源接线、原Release双API/Bootstrap/Coup/registration PASS；实机点击/存档重载/LLM消费未验。没有部署、Stage、打包或push，游戏安装状态仍以前次部署记录为准。
+- [唯一主台账、源码坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#expanded-persona-editor-20261015)。检查点fc09c9060；只回滚产品git revert 7b113afbe，并行Economy保持。
+
 # 当前交接：每日全图检查改为逐市场分帧（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品db3e1ae68：每日/读档申请全图一轮，每应用帧完整检查一座市场，重复请求合并为下一轮；删除规则epoch、库存缓存、逐槽位游标和定居点重复listener。交易去重/原禁售及赠品可售保持，后台在保存/InventoryState暂停。
