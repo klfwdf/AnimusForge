@@ -172,7 +172,8 @@
   <string id="AF_MCM_Support_Group" text="0. Support" />
   <string id="AF_MCM_Support_Button" text="Support the AnimusForge team" />
   <string id="AF_MCM_Support_Content" text="Open Afdian" />
-  <string id="AF_MCM_MainApi_Group" text="1. AI core configuration/1. Main API (response generation)" />
+  <string id="AF_MCM_AiCore_Group" text="1. AI core configuration" />
+  <string id="AF_MCM_MainApi_Group" text="1. Main API (response generation)" />
   <string id="AF_MCM_MainApi_Url" text="API address (Base URL supported)" />
   <string id="AF_MCM_MainApi_Key" text="API key" />
   <string id="AF_MCM_MainApi_Model" text="Model name" />
@@ -1644,7 +1645,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_KingdomRebellion_ForcedFailed" text="Forced rebellion failed" />
   <string id="AF_UI_KingdomRebellion_ForcedNamingFailedBody" text="The forced rebellion was ready, but the rebel kingdom name was not generated. The system will not continue with a local fallback name." />
   <string id="AF_UI_KingdomRebellion_FormalName" text="- Formal name:" />
-  <string id="AF_UI_KingdomRebellion_GeneratingBody" text="The system is requesting a new kingdom name and encyclopedia description from the LLM in the background.\n\nThe clan departure and kingdom founding will run only after this step finishes.\nPlease wait; the result will open automatically." />
+  <string id="AF_UI_KingdomRebellion_GeneratingBody" text="The system is requesting a new kingdom name and encyclopedia description from the LLM in the background.&#10;&#10;The clan departure and kingdom founding will run only after this step finishes.&#10;Please wait; the result will open automatically." />
   <string id="AF_UI_KingdomRebellion_GeneratingTitle" text="Generating rebel kingdom name" />
   <string id="AF_UI_KingdomRebellion_KingdomLabel" text="Kingdom:" />
   <string id="AF_UI_KingdomRebellion_LeadClanLabel" text="Lead clan:" />
@@ -1736,7 +1737,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_KingdomStability_BackToList" text="Back to kingdom list" />
   <string id="AF_UI_KingdomStability_DetailTitle" text="Kingdom stability details - {KINGDOM}" />
   <string id="AF_UI_KingdomStability_Execute" text="Execute" />
-  <string id="AF_UI_KingdomStability_EditPrompt" text="Enter a stability value from 0 to 100.\n\nCurrent value: {VALUE} ({TIER})\nDefault: 50 (Average)\n\nTiers:\n90-100 Extremely high\n75-89 High\n60-74 Fairly high\n40-59 Average\n25-39 Poor\n10-24 Very poor\n0-9 Extremely poor" />
+  <string id="AF_UI_KingdomStability_EditPrompt" text="Enter a stability value from 0 to 100.&#10;&#10;Current value: {VALUE} ({TIER})&#10;Default: 50 (Average)&#10;&#10;Tiers:&#10;90-100 Extremely high&#10;75-89 High&#10;60-74 Fairly high&#10;40-59 Average&#10;25-39 Poor&#10;10-24 Very poor&#10;0-9 Extremely poor" />
   <string id="AF_UI_KingdomStability_EditTitle" text="Adjust stability - {KINGDOM}" />
   <string id="AF_UI_KingdomStability_Save" text="Save" />
   <string id="AF_UI_KingdomStability_InvalidValue" text="Enter an integer from 0 to 100." />
@@ -1744,7 +1745,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_KingdomStability_TestResultTitle" text="Rebellion test result - {KINGDOM}" />
   <string id="AF_UI_KingdomStability_BackToDetails" text="Back to details" />
   <string id="AF_UI_KingdomStability_ForceTitle" text="Force kingdom rebellion" />
-  <string id="AF_UI_KingdomStability_ForceBody" text="This skips the stability probability check but does not relax relation requirements. The system will still choose the best town-holding clan from those that currently meet the automatic rebellion requirements.\n\nIf no clan meets the relation requirements, no rebellion will occur.\n\nThis action will permanently change the kingdom structure in the save. Continue?" />
+  <string id="AF_UI_KingdomStability_ForceBody" text="This skips the stability probability check but does not relax relation requirements. The system will still choose the best town-holding clan from those that currently meet the automatic rebellion requirements.&#10;&#10;If no clan meets the relation requirements, no rebellion will occur.&#10;&#10;This action will permanently change the kingdom structure in the save. Continue?" />
   <string id="AF_UI_KingdomStability_ForceExecute" text="Force execution" />
   <string id="AF_UI_KingdomStability_Cancel" text="Cancel" />
   <string id="AF_UI_KingdomStability_ForceResultTitle" text="Forced rebellion result - {KINGDOM}" />
@@ -1771,10 +1772,10 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_Persona_ConfirmGenerate" text="Generate" />
   <string id="AF_UI_Persona_Cancel" text="Cancel" />
   <string id="AF_UI_Persona_RerollingTitle" text="Regenerating persona" />
-  <string id="AF_UI_Persona_RerollingBody" text="Generating a new persona for {NAME}.\n\nPlease wait; existing data is overwritten only after generation and parsing succeed." />
+  <string id="AF_UI_Persona_RerollingBody" text="Generating a new persona for {NAME}.&#10;&#10;Please wait; existing data is overwritten only after generation and parsing succeed." />
   <string id="AF_UI_Persona_RerollSucceededSuffix" text="'s persona was regenerated; the voice ID is unchanged." />
   <string id="AF_UI_Persona_RerollFailedTitle" text="Persona regeneration failed" />
-  <string id="AF_UI_Persona_RerollFailedBody" text="The generated result was not saved; the existing persona and structured information, and voice ID were kept.\n\n{DETAIL}" />
+  <string id="AF_UI_Persona_RerollFailedBody" text="The generated result was not saved; the existing persona and structured information, and voice ID were kept.&#10;&#10;{DETAIL}" />
   <string id="AF_UI_Persona_Close" text="Close" />
   <string id="AF_UI_Persona_ReturnEditor" text="Return to editor" />
   <string id="AF_UI_Persona_EditPersonalityTitle" text="Edit persona - {NAME}" />
@@ -1843,19 +1844,19 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_Persona_ClearSearch" text="Clear search" />
   <string id="AF_UI_Persona_PrevPage" text="Previous page" />
   <string id="AF_UI_Persona_NextPage" text="Next page" />
-  <string id="AF_UI_Persona_HeroSelectionBody" text="Choose from all NPCs in the current save or read JSON from an old export folder.\nAll NPCs: {TOTAL}; current results: {RESULTS}; page {PAGE}/{PAGES}." />
+  <string id="AF_UI_Persona_HeroSelectionBody" text="Choose from all NPCs in the current save or read JSON from an old export folder.&#10;All NPCs: {TOTAL}; current results: {RESULTS}; page {PAGE}/{PAGES}." />
   <string id="AF_UI_Persona_SearchKeyword" text="Search keyword: {QUERY}" />
   <string id="AF_UI_Persona_NoSearchResults" text="No matches; you can search again." />
   <string id="AF_UI_Persona_HeroSelectionTitle" text="Single HeroNPC import/export - choose NPC" />
   <string id="AF_UI_Persona_ExportFolderMissing" text="The export folder could not be found." />
   <string id="AF_UI_Persona_NoNpcJson" text="This export folder contains no recognizable NPC JSON files." />
   <string id="AF_UI_Persona_PickNpcTitle" text="Choose NPC from export folder" />
-  <string id="AF_UI_Persona_PickNpcBody" text="Folder:\n{FOLDER}\n\nChoose an NPC to import or export:" />
+  <string id="AF_UI_Persona_PickNpcBody" text="Folder:&#10;{FOLDER}&#10;&#10;Choose an NPC to import or export:" />
   <string id="AF_UI_Persona_SearchNpcBody" text="Enter an NPC name or HeroId to search all NPCs." />
   <string id="AF_UI_Persona_Search" text="Search" />
   <string id="AF_UI_Persona_SingleNpcImportFolder" text="Single HeroNPC - choose an import folder" />
   <string id="AF_UI_Persona_ManualHeroIdTitle" text="Enter HeroId manually" />
-  <string id="AF_UI_Persona_ManualHeroIdBody" text="Enter a HeroId (for example: lord_... / wanderer_...).\n\nThis does not create a new character; it writes import/export data to the save data for that HeroId. The data is used only when a Hero with the same ID exists or appears later in the game." />
+  <string id="AF_UI_Persona_ManualHeroIdBody" text="Enter a HeroId (for example: lord_... / wanderer_...).&#10;&#10;This does not create a new character; it writes import/export data to the save data for that HeroId. The data is used only when a Hero with the same ID exists or appears later in the game." />
   <string id="AF_UI_Persona_Confirm" text="Confirm" />
   <string id="AF_UI_Persona_NpcMissingId" text="This NPC has no ID and cannot be imported or exported." />
   <string id="AF_UI_Persona_SingleExportPersona" text="Export persona (choose a folder)" />
@@ -1907,7 +1908,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_Persona_VoiceGroupEmpty" text="[{GROUP}] has no voice IDs to remove." />
   <string id="AF_UI_Persona_VoiceClearAll" text="⚠ Clear all voices in this group" />
   <string id="AF_UI_Persona_VoiceRemoveTitle" text="Remove voice ID - {GROUP}" />
-  <string id="AF_UI_Persona_VoiceRemoveBody" text="Group: {GROUP}\nThere are {COUNT} voice IDs.\nChoose a voice to remove:" />
+  <string id="AF_UI_Persona_VoiceRemoveBody" text="Group: {GROUP}&#10;There are {COUNT} voice IDs.&#10;Choose a voice to remove:" />
   <string id="AF_UI_Persona_Delete" text="Delete" />
   <string id="AF_UI_Persona_VoiceRemoved" text="Removed voice \&quot;{VOICE}\&quot; from [{GROUP}]" />
   <string id="AF_UI_Persona_VoiceFallbackBody" text="Global fallback voice: used when a group has no configured voice ID." />
@@ -1918,8 +1919,8 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_Persona_VoiceFallbackSetPrefix" text="Fallback voice set to: " />
 
   <string id="AF_UI_Weekly_Editor_001" text="Generating full weekly report" />
-  <string id="AF_UI_Weekly_Editor_002" text="Using the saved materials for this issue to write the full weekly report.\n\nReport: " />
-  <string id="AF_UI_Weekly_Editor_003" text="\n\nPlease wait; this window stays open until generation succeeds or fails." />
+  <string id="AF_UI_Weekly_Editor_002" text="Using the saved materials for this issue to write the full weekly report.&#10;&#10;Report: " />
+  <string id="AF_UI_Weekly_Editor_003" text="&#10;&#10;Please wait; this window stays open until generation succeeds or fails." />
   <string id="AF_UI_Weekly_Editor_004" text="Full weekly report generation failed" />
   <string id="AF_UI_Weekly_Editor_005" text="Full weekly report generation failed." />
   <string id="AF_UI_Weekly_Editor_007" text="Date unknown" />
@@ -2001,14 +2002,14 @@ Produces a very large log and is intended for developers only." />
 - Priority: nearest kingdoms &gt; world events &gt; other kingdoms by distance
 
 Estimated requests: " />
-  <string id="AF_UI_Weekly_Editor_087" text="\nLength profile: " />
-  <string id="AF_UI_Weekly_Editor_088" text="\nRequests per minute: " />
-  <string id="AF_UI_Weekly_Editor_089" text="\nKingdoms ordered by distance: " />
-  <string id="AF_UI_Weekly_Editor_090" text="\n\nStart now?" />
+  <string id="AF_UI_Weekly_Editor_087" text="&#10;Length profile: " />
+  <string id="AF_UI_Weekly_Editor_088" text="&#10;Requests per minute: " />
+  <string id="AF_UI_Weekly_Editor_089" text="&#10;Kingdoms ordered by distance: " />
+  <string id="AF_UI_Weekly_Editor_090" text="&#10;&#10;Start now?" />
   <string id="AF_UI_Weekly_Editor_091" text="Generate this week&#x27;s report draft" />
   <string id="AF_UI_Weekly_Editor_092" text="Start generation" />
   <string id="AF_UI_Weekly_Editor_094" text="Automatic weekly report" />
-  <string id="AF_UI_Weekly_Editor_096" text=" target records or saved materials changed; the old request and material retry were cancelled.\n\nA fresh collection will rebuild failed groups from the current game state and may replace unfinished manual edits in those groups. Completed groups will not be rerun.\n\nChoose whether to recollect and generate, or save and exit; edits are never overwritten automatically." />
+  <string id="AF_UI_Weekly_Editor_096" text=" target records or saved materials changed; the old request and material retry were cancelled.&#10;&#10;A fresh collection will rebuild failed groups from the current game state and may replace unfinished manual edits in those groups. Completed groups will not be rerun.&#10;&#10;Choose whether to recollect and generate, or save and exit; edits are never overwritten automatically." />
   <string id="AF_UI_Weekly_Editor_097" text="Weekly report target changed" />
   <string id="AF_UI_Weekly_Editor_098" text="Recollect and generate" />
   <string id="AF_UI_Weekly_Editor_100" text="An API/model error occurred during generation and could not be recovered automatically." />
@@ -2031,17 +2032,17 @@ Estimated requests: " />
   <string id="AF_UI_Weekly_Editor_117" text="Adjust API settings" />
   <string id="AF_UI_Weekly_Editor_118" text="MCM settings could not be read; the RPM limit cannot be changed right now." />
   <string id="AF_UI_Weekly_Editor_119" text="Change weekly report RPM limit" />
-  <string id="AF_UI_Weekly_Editor_120" text="This failure appears to have hit the RPM limit.\n\nEnter a new [maximum weekly reports per minute] (1-20).\nCurrent value: " />
-  <string id="AF_UI_Weekly_Editor_121" text="\nSuggested value: " />
-  <string id="AF_UI_Weekly_Editor_122" text="\n\nThe current weekly report will retry immediately at the new rate." />
+  <string id="AF_UI_Weekly_Editor_120" text="This failure appears to have hit the RPM limit.&#10;&#10;Enter a new [maximum weekly reports per minute] (1-20).&#10;Current value: " />
+  <string id="AF_UI_Weekly_Editor_121" text="&#10;Suggested value: " />
+  <string id="AF_UI_Weekly_Editor_122" text="&#10;&#10;The current weekly report will retry immediately at the new rate." />
   <string id="AF_UI_Weekly_Editor_123" text="Save and retry" />
   <string id="AF_UI_Weekly_Editor_124" text="Enter an integer RPM from 1 to 20." />
   <string id="AF_UI_Weekly_Editor_125" text="Weekly report RPM limit updated to " />
   <string id="AF_UI_Weekly_Editor_126" text="; retrying now." />
   <string id="AF_UI_Weekly_Editor_127" text="Failed to open the RPM input:" />
   <string id="AF_UI_Weekly_Editor_128" text="Retrying generation of " />
-  <string id="AF_UI_Weekly_Editor_129" text=" for this event. Please wait...\n\n- Current failed group: " />
-  <string id="AF_UI_Weekly_Editor_130" text="\n- The background will retry each group up to three times\n- If you do not want to wait, you can exit the current save\n- You can also return to the previous screen and decide later whether to retry" />
+  <string id="AF_UI_Weekly_Editor_129" text=" for this event. Please wait...&#10;&#10;- Current failed group: " />
+  <string id="AF_UI_Weekly_Editor_130" text="&#10;- The background will retry each group up to three times&#10;- If you do not want to wait, you can exit the current save&#10;- You can also return to the previous screen and decide later whether to retry" />
   <string id="AF_UI_Weekly_Editor_131" text="Retrying this event" />
   <string id="AF_UI_Weekly_Editor_132" text="Back to previous screen" />
   <string id="AF_UI_Weekly_Editor_133" text="API setup guidance was not found. Check the Base URL, API key, and model name in MCM." />
@@ -2115,7 +2116,7 @@ Estimated requests: " />
   <string id="AF_TERMINAL_UI_Root_TrustQuery" text="Trust query" />
   <string id="AF_TERMINAL_UI_Root_TrustQuery_Hint" text="Query trust sources for heroes, settlements, and merchants." />
   <string id="AF_TERMINAL_UI_DiagnosticsOnline" text="Sentinel status: online" />
-  <string id="AF_TERMINAL_UI_DiagnosticsLatestError" text="Latest error: {TITLE}\n{DETAIL}" />
+  <string id="AF_TERMINAL_UI_DiagnosticsLatestError" text="Latest error: {TITLE}&#10;{DETAIL}" />
   <string id="AF_TERMINAL_UI_DiagnosticsNoError" text="No fatal error stack has been recorded in this campaign." />
   <string id="AF_TERMINAL_UI_DiplomaticComposeFailed" text="Failed to open the diplomatic declaration editor." />
   <string id="AF_TERMINAL_UI_ReloadDatabaseFailed" text="Unable to open the database reload flow." />
@@ -2126,7 +2127,7 @@ Estimated requests: " />
   <string id="AF_TERMINAL_UI_Forge_SelectCrafter" text="Select crafter" />
   <string id="AF_TERMINAL_UI_Forge_NoCrafters" text="No clan member or companion is currently available." />
   <string id="AF_TERMINAL_UI_Forge_Back" text="Back" />
-  <string id="AF_TERMINAL_UI_Forge_CrafterEntry" text="{NAME}\nSmithing skill: {SKILL}\nCrafting stamina: {STAMINA} ({COST} cost)" />
+  <string id="AF_TERMINAL_UI_Forge_CrafterEntry" text="{NAME}&#10;Smithing skill: {SKILL}&#10;Crafting stamina: {STAMINA} ({COST} cost)" />
   <string id="AF_TERMINAL_UI_Forge_Unavailable" text="unavailable" />
   <string id="AF_TERMINAL_UI_Forge_StaminaReadFailed" text="Unable to read this crafter&apos;s crafting stamina." />
   <string id="AF_TERMINAL_UI_Forge_StaminaInsufficient" text="Crafting stamina is insufficient; at least {COST} points are required." />
@@ -2137,8 +2138,8 @@ Estimated requests: " />
   <string id="AF_TERMINAL_UI_Forge_NoSelectableTemplates" text="No safe templates are available for selection." />
   <string id="AF_TERMINAL_UI_Forge_NoDisplayableTemplates" text="No safe templates can be displayed." />
   <string id="AF_TERMINAL_UI_Forge_UnknownType" text="Unknown type" />
-  <string id="AF_TERMINAL_UI_Forge_TemplateEntryTitle" text="#{RANK} {NAME}\n{TYPE}\n{PRICE} denars" />
-  <string id="AF_TERMINAL_UI_Forge_TemplateEntryHint" text="Template ID: {ID}\nType: {TYPE}\nStandard price: {PRICE} denars" />
+  <string id="AF_TERMINAL_UI_Forge_TemplateEntryTitle" text="#{RANK} {NAME}&#10;{TYPE}&#10;{PRICE} denars" />
+  <string id="AF_TERMINAL_UI_Forge_TemplateEntryHint" text="Template ID: {ID}&#10;Type: {TYPE}&#10;Standard price: {PRICE} denars" />
   <string id="AF_TERMINAL_UI_Forge_SelectTemplateTitle" text="Select RP item template" />
   <string id="AF_TERMINAL_UI_Forge_SelectTemplateDescription" text="Choose one of {COUNT} safe candidates (up to 50). Search is available; each entry shows the native item icon, type, and standard price." />
   <string id="AF_TERMINAL_UI_Forge_SelectTemplate" text="Select template" />
@@ -2152,7 +2153,7 @@ Estimated requests: " />
   <string id="AF_TERMINAL_UI_Forge_CompletedFallback" text="RP item crafted successfully." />
   <string id="AF_TERMINAL_UI_Forge_CompletionTitle" text="Crafting complete" />
   <string id="AF_TERMINAL_UI_Forge_ReturnToTerminal" text="Return to terminal" />
-  <string id="AF_TERMINAL_UI_Forge_ConfirmationText" text="Name: {NAME}\nInvestment: {INVESTMENT} denars\nMode: {MODE}\n\nDenars will be deducted and the item crafted only after confirmation." />
+  <string id="AF_TERMINAL_UI_Forge_ConfirmationText" text="Name: {NAME}&#10;Investment: {INVESTMENT} denars&#10;Mode: {MODE}&#10;&#10;Denars will be deducted and the item crafted only after confirmation." />
   <string id="AF_TERMINAL_UI_Forge_ModeEquipment" text="Weapon and equipment" />
   <string id="AF_TERMINAL_UI_Forge_ModeItem" text="Regular RP item" />
   <string id="AF_TERMINAL_UI_Forge_ConfirmationTitle" text="Confirm crafting" />
@@ -2217,7 +2218,7 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Action_details" text="Action details - " />
   <string id="AF_UI_Developer_Action_records" text="Action records - " />
   <string id="AF_UI_Developer_Action_records_are_stored_per_NPC" text=" - Action records are stored per NPC" />
-  <string id="AF_UI_Developer_AllImportDuplicates" text="Imported data overlaps the current game.\nPersona: {PERSONA}\nDialogue history: {HISTORY}\nDebt: {DEBT}\nUnnamed NPCs: {UNNAMED}\nKnowledge: {KNOWLEDGE}\nVoice mapping: {VOICE}\nWorld opening summary: {WORLD}\nKingdom opening summaries: {KINGDOM}\nEvent records: {EVENTS}\nKingdom strategy/personality: {PROFILES} (unmatched {UNMATCHED})\nChoose how to proceed:" />
+  <string id="AF_UI_Developer_AllImportDuplicates" text="Imported data overlaps the current game.&#10;Persona: {PERSONA}&#10;Dialogue history: {HISTORY}&#10;Debt: {DEBT}&#10;Unnamed NPCs: {UNNAMED}&#10;Knowledge: {KNOWLEDGE}&#10;Voice mapping: {VOICE}&#10;World opening summary: {WORLD}&#10;Kingdom opening summaries: {KINGDOM}&#10;Event records: {EVENTS}&#10;Kingdom strategy/personality: {PROFILES} (unmatched {UNMATCHED})&#10;Choose how to proceed:" />
   <string id="AF_UI_Developer_All_data_management" text="All data management" />
   <string id="AF_UI_Developer_All_debt_for_this_NPC_was_cleared" text="All debt for this NPC was cleared." />
   <string id="AF_UI_Developer_Apply" text="Apply" />
@@ -2231,11 +2232,11 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Choose_again" text="Choose again" />
   <string id="AF_UI_Developer_Choose_an_operation" text="Choose an operation:" />
   <string id="AF_UI_Developer_Choose_operation" text="Choose an operation:" />
-  <string id="AF_UI_Developer_Choose_operation_summary" text="Choose an operation:\n" />
+  <string id="AF_UI_Developer_Choose_operation_summary" text="Choose an operation:&#10;" />
   <string id="AF_UI_Developer_Choose_the_export_target_folder_existing_contents_may_be" text="Choose the export target folder (existing contents may be overwritten)." />
   <string id="AF_UI_Developer_Clear" text="Clear" />
   <string id="AF_UI_Developer_ClearCompleted" text="Cleared AnimusForge data from the current save; kingdom strategy and personality were restored to the default baseline." />
-  <string id="AF_UI_Developer_ClearConfirm_Body" text="This clears AnimusForge data in the current save, including:\nHeroNPC persona, old dialogue history, compressed memory, debt, unnamed NPC persona, Knowledge, event records, kingdom stability, player kingdom strategy/personality overrides, voice mappings, patience state, and more.\n\nExported backups under PlayerExports are kept, and native world changes that already happened are not rolled back.\n\nThis action cannot be undone. Export all data first if you need a backup. Continue?" />
+  <string id="AF_UI_Developer_ClearConfirm_Body" text="This clears AnimusForge data in the current save, including:&#10;HeroNPC persona, old dialogue history, compressed memory, debt, unnamed NPC persona, Knowledge, event records, kingdom stability, player kingdom strategy/personality overrides, voice mappings, patience state, and more.&#10;&#10;Exported backups under PlayerExports are kept, and native world changes that already happened are not rolled back.&#10;&#10;This action cannot be undone. Export all data first if you need a backup. Continue?" />
   <string id="AF_UI_Developer_Clear_all_data_current_save_exported_backups_are" text="Clear all data (current save; exported backups are kept)" />
   <string id="AF_UI_Developer_Clear_all_debt" text="Clear all debt" />
   <string id="AF_UI_Developer_Clear_search" text="Clear search" />
@@ -2247,11 +2248,11 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Confirm_reload" text="Confirm reload" />
   <string id="AF_UI_Developer_Continue" text="Continue" />
   <string id="AF_UI_Developer_Current_data_statistics_failed_but_clearing_is_s" text="Current data statistics failed, but clearing is still available." />
-  <string id="AF_UI_Developer_Database_package_validation_body" text="This reload has not modified the save.\n\n{ERROR}" />
+  <string id="AF_UI_Developer_Database_package_validation_body" text="This reload has not modified the save.&#10;&#10;{ERROR}" />
   <string id="AF_UI_Developer_Database_package_validation_failed" text="Database package validation failed" />
   <string id="AF_UI_Developer_Database_reload_completed" text="Database reload completed:" />
   <string id="AF_UI_Developer_Database_reload_failed" text="Database reload failed:" />
-  <string id="AF_UI_Developer_DebtPrompt" text="Current gold debt: {GOLD}.\nEnter a new gold debt value (0 allowed):" />
+  <string id="AF_UI_Developer_DebtPrompt" text="Current gold debt: {GOLD}.&#10;Enter a new gold debt value (0 allowed):" />
   <string id="AF_UI_Developer_DebtTitle" text="Set gold debt - {NPC}" />
   <string id="AF_UI_Developer_Details_show_structured_fields_such_as_time_plac" text=" - Details show structured fields such as time, place, people, clan, kingdom, and settlement ownership" />
   <string id="AF_UI_Developer_Developer_data_management_is_disabled_enable_it_" text="Developer data management is disabled (enable it in MCM)." />
@@ -2281,9 +2282,9 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Export_completed" text="Export completed: " />
   <string id="AF_UI_Developer_Export_failed" text="Export failed: " />
   <string id="AF_UI_Developer_Export_folder_already_exists" text="Export folder already exists" />
-  <string id="AF_UI_Developer_Export_folder_exists_body" text="The target folder already exists and contains:\n{PATH}\nOverwrite this export?" />
+  <string id="AF_UI_Developer_Export_folder_exists_body" text="The target folder already exists and contains:&#10;{PATH}&#10;Overwrite this export?" />
   <string id="AF_UI_Developer_Gold_debt_updated" text="Gold debt updated to {GOLD}." />
-  <string id="AF_UI_Developer_HeroImportDuplicates" text="Imported data overlaps the current game.\nPersona: {PERSONA}\nCompressed memory: {MEMORY}\nDebt: {DEBT}\nChoose how to proceed:" />
+  <string id="AF_UI_Developer_HeroImportDuplicates" text="Imported data overlaps the current game.&#10;Persona: {PERSONA}&#10;Compressed memory: {MEMORY}&#10;Debt: {DEBT}&#10;Choose how to proceed:" />
   <string id="AF_UI_Developer_HeroNPC_edit_import_export" text="HeroNPC edit/import/export" />
   <string id="AF_UI_Developer_HeroSelection_Body" text="All NPCs: {TOTAL}; current results: {RESULTS}; page {PAGE}/{PAGES}." />
   <string id="AF_UI_Developer_HeroSelection_Empty" text="No matches; you can search again." />
@@ -2416,13 +2417,13 @@ Estimated requests: " />
   <string id="AF_TAUNT_UI_Npc" text="NPC" />
   <string id="AF_TAUNT_UI_GoldPickedUp" text="You picked up {AMOUNT} denars." />
     <string id="AF_UI_KingdomRebellion_PlayerNamingTitle" text="Name the new kingdom" />
-  <string id="AF_UI_KingdomRebellion_PlayerNamingBody" text="Your faction is about to leave {OLD_KINGDOM} and establish a new kingdom led by the {CLAN} clan.\n\nEnter a new kingdom name (2–24 characters; it must be unique). Cancel uses “{FALLBACK}”." />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingBody" text="Your faction is about to leave {OLD_KINGDOM} and establish a new kingdom led by the {CLAN} clan.&#10;&#10;Enter a new kingdom name (2–24 characters; it must be unique). Cancel uses “{FALLBACK}”." />
   <string id="AF_UI_KingdomRebellion_PlayerNamingConfirm" text="Found kingdom" />
   <string id="AF_UI_KingdomRebellion_PlayerNamingDefault" text="Use default name" />
   <string id="AF_UI_KingdomRebellion_PlayerNamingTooShort" text="The name must contain at least 2 characters." />
   <string id="AF_UI_KingdomRebellion_PlayerNamingDuplicate" text="A kingdom with that name already exists." />
   <string id="AF_UI_KingdomRebellion_RegeneratingTitle" text="Regenerating rebel kingdom name" />
-  <string id="AF_UI_KingdomRebellion_RegeneratingBody" text="The system is requesting a new kingdom name and encyclopedia description again using the corrected event/rebellion API settings.\n\nThis round of automatic rebellion and the weekly report flow will remain paused until it finishes." />
+  <string id="AF_UI_KingdomRebellion_RegeneratingBody" text="The system is requesting a new kingdom name and encyclopedia description again using the corrected event/rebellion API settings.&#10;&#10;This round of automatic rebellion and the weekly report flow will remain paused until it finishes." />
 
   <string id="AF_UI_ImportExport_ExportCompleted" text="Export completed: {PATH}" />
   <string id="AF_UI_ImportExport_ExportFailed" text="Export failed: {ERROR}" />
@@ -2469,7 +2470,7 @@ Choose how to proceed:" />
   <string id="AF_UI_ImportExport_VoiceMappingInvalid" text="Import failed: VoiceMapping JSON is invalid." />
   <string id="AF_UI_ImportExport_VoiceMappingWarningSkipped" text="Warning: VoiceMapping import failed and was skipped." />
   <string id="AF_UI_ImportExport_VoiceMappingDuplicateTitle" text="Duplicates detected - VoiceMapping" />
-  <string id="AF_UI_ImportExport_VoiceMappingDuplicateBody" text="Voice mappings already exist.\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_VoiceMappingDuplicateBody" text="Voice mappings already exist.&#10;Choose how to proceed:" />
   <string id="AF_UI_ImportExport_KnowledgeExportCount" text="Export completed: {PATH} (Knowledge entries: {COUNT})" />
   <string id="AF_UI_ImportExport_KnowledgeNoEntries" text="There are no Knowledge entries to export." />
   <string id="AF_UI_ImportExport_KnowledgeNoFilesWritten" text="No Knowledge files were written successfully." />
@@ -2478,16 +2479,16 @@ Choose how to proceed:" />
   <string id="AF_UI_ImportExport_KnowledgeRulesAllFailed" text="All Knowledge rules failed to import. Failed: {FAILED}. First failed RuleId={RULEID}{REASON}" />
   <string id="AF_UI_ImportExport_KnowledgeImportException" text="An exception occurred during Knowledge import." />
   <string id="AF_UI_ImportExport_KnowledgeDuplicateTitle" text="Duplicates detected - Knowledge" />
-  <string id="AF_UI_ImportExport_KnowledgeDuplicateBody" text="A Knowledge rule with the same RuleId already exists: {ID}\nChoose how to proceed:" />
-  <string id="AF_UI_ImportExport_KnowledgeDuplicateMany" text="Imported Knowledge rules contain duplicate RuleIds.\nDuplicates: {COUNT} / total: {TOTAL}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_KnowledgeDuplicateBody" text="A Knowledge rule with the same RuleId already exists: {ID}&#10;Choose how to proceed:" />
+  <string id="AF_UI_ImportExport_KnowledgeDuplicateMany" text="Imported Knowledge rules contain duplicate RuleIds.&#10;Duplicates: {COUNT} / total: {TOTAL}&#10;Choose how to proceed:" />
   <string id="AF_UI_ImportExport_PersonaDuplicateTitle" text="Duplicates detected - persona" />
-  <string id="AF_UI_ImportExport_PersonaDuplicateBody" text="This NPC already has persona data: {ID}\nChoose how to proceed:" />
-  <string id="AF_UI_ImportExport_PersonaDuplicateMany" text="Imported data contains duplicate HeroIds.\nDuplicates: {COUNT} / total: {TOTAL}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateBody" text="This NPC already has persona data: {ID}&#10;Choose how to proceed:" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateMany" text="Imported data contains duplicate HeroIds.&#10;Duplicates: {COUNT} / total: {TOTAL}&#10;Choose how to proceed:" />
   <string id="AF_UI_ImportExport_DebtDuplicateTitle" text="Duplicates detected - debt" />
-  <string id="AF_UI_ImportExport_DebtDuplicateBody" text="This NPC already has debt records: {ID}\nChoose how to proceed:" />
-  <string id="AF_UI_ImportExport_DebtDuplicateMany" text="Imported debt data contains duplicate HeroIds.\nDuplicates: {COUNT} / total: {TOTAL}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_DebtDuplicateBody" text="This NPC already has debt records: {ID}&#10;Choose how to proceed:" />
+  <string id="AF_UI_ImportExport_DebtDuplicateMany" text="Imported debt data contains duplicate HeroIds.&#10;Duplicates: {COUNT} / total: {TOTAL}&#10;Choose how to proceed:" />
   <string id="AF_UI_ImportExport_WeeklyEventDuplicateTitle" text="Duplicates detected - event editor" />
-  <string id="AF_UI_ImportExport_WeeklyEventDuplicateBody" text="Imported data overlaps the current game.\nWorld opening summaries: {WORLD}/{WORLD_TOTAL}\nKingdom opening summaries: {KINGDOM}/{KINGDOM_TOTAL}\nEvent records: {EVENT}/{EVENT_TOTAL}\nChoose how to proceed:" />
+  <string id="AF_UI_ImportExport_WeeklyEventDuplicateBody" text="Imported data overlaps the current game.&#10;World opening summaries: {WORLD}/{WORLD_TOTAL}&#10;Kingdom opening summaries: {KINGDOM}/{KINGDOM_TOTAL}&#10;Event records: {EVENT}/{EVENT_TOTAL}&#10;Choose how to proceed:" />
   <string id="AF_UI_ImportExport_FilenameFormatMissing" text="The file name is missing the heroId__name format." />
   <string id="AF_UI_ImportExport_FilenameNameMismatch" text="The file name character name &quot;{FILE}&quot; does not match the current character with the same ID &quot;{CURRENT}&quot;." />
   <string id="AF_UI_ImportExport_FilenameIdUnreliable" text="Auto-numbered ID {ID} cannot be matched reliably in the current save, and the file name cannot uniquely identify the character." />
@@ -2934,7 +2935,7 @@ Choose how to proceed:" />
   <string id="AF_WEEKLY_TargetChangedDuringRequest" text="Weekly-report target or source materials changed during request; stale response skipped: {ID}" />
   <string id="AF_WEEKLY_TargetChangedDuringCommit" text="Weekly-report target or source materials changed during commit; stale response skipped: {ID}" />
 
-  <string id="AF_MCM_AuxApi_Group" text="1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)" />
+  <string id="AF_MCM_AuxApi_Group" text="2. Preprocessing API (rule retrieval and lightweight conversation)" />
   <string id="AF_MCM_AuxApi_Url" text="Auxiliary API address (Base URL supported)" />
   <string id="AF_MCM_AuxApi_Url_Hint" text="Low-cost endpoint for rule retrieval, rule routing, and lightweight scene conversations; for example, https://api.openai.com/v1. Entering /v1 automatically appends /v1/chat/completions." />
   <string id="AF_MCM_AuxApi_Key" text="Auxiliary API key" />
@@ -2945,7 +2946,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_AuxApi_Test" text="Test auxiliary API connection" />
   <string id="AF_MCM_AuxApi_Temperature_Hint" text="Controls randomness for preprocessing, rule routing, and lightweight conversations. 0 is more stable and 2 is more varied. Default: 0.00." />
   <string id="AF_MCM_AuxApi_MaxTokens_Hint" text="The max_tokens value for preprocessing rule retrieval, rule routing, and lightweight conversation calls. Default: 12000; endpoints that do not support a high limit may reject the request." />
-  <string id="AF_MCM_PostprocessApi_Group" text="1. AI core configuration/3. Postprocessing API (action and emotion tags)" />
+  <string id="AF_MCM_PostprocessApi_Group" text="3. Postprocessing API (action and emotion tags)" />
   <string id="AF_MCM_PostprocessApi_Url" text="Action postprocess API address (Base URL supported)" />
   <string id="AF_MCM_PostprocessApi_Url_Hint" text="Dedicated endpoint for action and emotion tag postprocessing; for example, https://api.openai.com/v1. Entering /v1 automatically appends /v1/chat/completions. Leave blank to fall back to the main API." />
   <string id="AF_MCM_PostprocessApi_Key" text="Action postprocess API key" />
@@ -2958,7 +2959,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_PostprocessApi_MaxTokens_Hint" text="The max_tokens value for action and emotion tag decisions. Default: 12000; endpoints that do not support a high limit may reject the request." />
   <string id="AF_MCM_PostprocessApi_HistoryLimit" text="Postprocess history entry limit" />
   <string id="AF_MCM_PostprocessApi_HistoryLimit_Hint" text="Maximum history entries carried in action postprocessing &lt;history&gt;. The current &lt;latest_reply&gt; is retained separately and does not count against this limit. Default: 100; minimum 1, maximum 100. Higher values usually increase request tokens and wait time." />
-  <string id="AF_MCM_EventRebellionApi_Group" text="1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)" />
+  <string id="AF_MCM_EventRebellionApi_Group" text="4. Event and kingdom-rebellion API (weekly reports and naming)" />
   <string id="AF_MCM_EventRebellionApi_Url" text="Event and rebellion API address (Base URL supported)" />
   <string id="AF_MCM_EventRebellionApi_Url_Hint" text="Dedicated endpoint for event-system weekly reports and kingdom-rebellion naming; for example, https://api.openai.com/v1. Entering /v1 automatically appends /v1/chat/completions. Leave blank to fall back to the main API." />
   <string id="AF_MCM_EventRebellionApi_Key" text="Event and rebellion API key" />
@@ -3018,7 +3019,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_Policy_ManageEffects_Hint" text="Choose which effect modules can be retrieved for player, local, NPC ruler, and vassal policies. Changes apply only to policies started after saving." />
   <string id="AF_MCM_Policy_SettlementBalance_Title" text="Policy-related settlement caps" />
   <string id="AF_MCM_Policy_AdjustLimits" text="Adjust caps and capacity" />
-  <string id="AF_MCM_Policy_SettlementBalance_Hint" text="Open a separate window to set town/castle prosperity, village hearths, town/castle/village militia, and shared town/castle granary capacity. Applies to all player and NPC settlements; no policy publication is required.\nThese are total caps, not daily gains. Each day uses the native plus policy net change: positive growth stops at the cap, while zero or negative change is unrestricted. Example: with a cap of 10000, 9999 plus 100 reaches 10000; an existing 12000 is not reduced, positive growth pauses, and negative change proceeds normally.\nOnly granary capacity is enabled by default; town and castle final capacity is 1000, without castle or building bonuses. The other six options are disabled by default. Prosperity food consumption is controlled separately by the Disable prosperity food consumption switch and remains native by default.\nEach option can be toggled independently and supports integer sliders and numeric input. Changes apply after saving; Cancel or Esc discards edits; restoring defaults still requires saving." />
+  <string id="AF_MCM_Policy_SettlementBalance_Hint" text="Open a separate window to set town/castle prosperity, village hearths, town/castle/village militia, and shared town/castle granary capacity. Applies to all player and NPC settlements; no policy publication is required.&#10;These are total caps, not daily gains. Each day uses the native plus policy net change: positive growth stops at the cap, while zero or negative change is unrestricted. Example: with a cap of 10000, 9999 plus 100 reaches 10000; an existing 12000 is not reduced, positive growth pauses, and negative change proceeds normally.&#10;Only granary capacity is enabled by default; town and castle final capacity is 1000, without castle or building bonuses. The other six options are disabled by default. Prosperity food consumption is controlled separately by the Disable prosperity food consumption switch and remains native by default.&#10;Each option can be toggled independently and supports integer sliders and numeric input. Changes apply after saving; Cancel or Esc discards edits; restoring defaults still requires saving." />
   <string id="AF_MCM_Policy_RecentActive_Title" text="Recent active domestic policies referenced by AI" />
   <string id="AF_MCM_Policy_RecentActive_Hint" text="When evaluating player policies or generating NPC policies, the maximum number of the kingdom's latest active policies AI may reference. Reads newest to oldest regardless of publisher; default: 2. Used to detect duplicates, conflicts, and continuation; it is not a cap on policies that can take effect and does not change existing effects. 0 disables this reference set; fewer policies are not padded; ordinary dialogue is unaffected." />
   <string id="AF_MCM_Policy_RelatedActive_Title" text="Related active world policies referenced by AI" />

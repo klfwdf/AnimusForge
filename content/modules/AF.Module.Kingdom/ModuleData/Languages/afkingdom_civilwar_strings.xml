@@ -56,7 +56,7 @@
     <string id="AF_KINGDOM_CW_Core_PledgeBroken" text="The king broke his pledge and made peace with {OTHER}" />
     <string id="AF_KINGDOM_CW_Core_EnemyKingdom" text="an enemy kingdom" />
     <string id="AF_KINGDOM_CW_Core_UltimatumDelivered" text="{FACTION} has delivered an ultimatum: {DEMAND}" />
-    <string id="AF_KINGDOM_CW_Core_UltimatumStatus" text="\n\nRefused {COUNT} times. Without an answer it will be decided automatically on day {DAY}. A refusal may lead to civil war." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumStatus" text="&#10;&#10;Refused {COUNT} times. Without an answer it will be decided automatically on day {DAY}. A refusal may lead to civil war." />
     <string id="AF_KINGDOM_CW_Chronicle_SupportWithdrawn" text="{CLANS} grow discontent over {SOURCE} and withdraw their support for the crown, turning neutral" />
   </strings>
 </base>

@@ -32,9 +32,9 @@
     <string id="AF_COUPX_RebellionIncomplete" text="叛乱未完成：{MESSAGE}" />
     <string id="AF_COUPX_SettlementException" text="叛乱结算异常，已发生变化保留且不会重复建国：{ERROR}" />
     <string id="AF_COUPX_SeamException" text="政变后叛乱接缝异常，本次结束：{ERROR}" />
-    <string id="AF_COUPX_NamingContext" text="\n本次起兵背景：玩家刚通过武装政变夺位，起兵家族属于旧王家族或更支持旧王的家族；这是反对篡位的起兵，不要求与新王关系为负。请以此为建国命名与简介的背景。" />
-    <string id="AF_COUPX_RestorationContext" text="\n旧王已获释，本次战争目标为旧王朝复位；仅叛军胜利可复位，和平谈判不复位。" />
-    <string id="AF_COUPX_CapturedContext" text="\n旧王被扣押，旧王及其家族不参与本次内战，不要宣称旧王亲自起兵。" />
+    <string id="AF_COUPX_NamingContext" text="&#10;本次起兵背景：玩家刚通过武装政变夺位，起兵家族属于旧王家族或更支持旧王的家族；这是反对篡位的起兵，不要求与新王关系为负。请以此为建国命名与简介的背景。" />
+    <string id="AF_COUPX_RestorationContext" text="&#10;旧王已获释，本次战争目标为旧王朝复位；仅叛军胜利可复位，和平谈判不复位。" />
+    <string id="AF_COUPX_CapturedContext" text="&#10;旧王被扣押，旧王及其家族不参与本次内战，不要宣称旧王亲自起兵。" />
     <string id="AF_COUPX_NamingLogTarget" text="政变后叛乱建国命名 - {CLAN}" />
 
     <!-- CoupRebellionBridge 结果事实消息 -->

@@ -172,7 +172,8 @@
   <string id="AF_MCM_Support_Group" text="0. 支持" />
   <string id="AF_MCM_Support_Button" text="支持Animusforge制作组" />
   <string id="AF_MCM_Support_Content" text="打开爱发电" />
-  <string id="AF_MCM_MainApi_Group" text="1. AI 核心配置/1. 主API（正文生成）" />
+  <string id="AF_MCM_AiCore_Group" text="1. AI 核心配置" />
+  <string id="AF_MCM_MainApi_Group" text="1. 主API（正文生成）" />
   <string id="AF_MCM_MainApi_Url" text="API 地址（支持填写 Base URL）" />
   <string id="AF_MCM_MainApi_Key" text="API 密钥 (Key)" />
   <string id="AF_MCM_MainApi_Model" text="模型名称" />
@@ -187,7 +188,7 @@
   <string id="AF_MCM_MainApi_MaxTokens" text="最大输出Tokens" />
   <string id="AF_MCM_MainApi_Streaming" text="开启流式传输" />
   <string id="AF_MCM_Support_Hint" text="点击后会用系统默认浏览器打开爱发电页面。" />
-  <string id="AF_MCM_MainApi_Url_Hint" text="请填写你的接口地址，例如: https://api.openai.com/v1 或 https://api.openai.com/v1/chat/completions\n当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。" />
+  <string id="AF_MCM_MainApi_Url_Hint" text="请填写你的接口地址，例如: https://api.openai.com/v1 或 https://api.openai.com/v1/chat/completions&#10;当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。" />
   <string id="AF_MCM_MainApi_Key_Hint" text="填入你的 API 密钥" />
   <string id="AF_MCM_MainApi_Model_Hint" text="例如: gpt-4o-mini。请填写你当前接口实际支持的模型名。" />
   <string id="AF_MCM_MainApi_Dropdown_Hint" text="请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。" />
@@ -477,7 +478,7 @@
   <string id="AF_MCM_Shout_DirectAttack_Hint" text="开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。" />
   <string id="AF_MCM_Shout_InputBackground_Hint" text="只影响喊话输入框。默认黑色透明；也可选白色透明或粉色透明。" />
   <string id="AF_MCM_Dev_Trace" text="【开发者】开启全代码截获" />
-  <string id="AF_MCM_Dev_Trace_Hint" text="⚠️ 极其硬核的调试功能！\n开启后将截获所有 UI 点击、状态切换和底层代码堆栈(Trace)。\n日志量极大，仅供开发者排查问题使用。普通玩家请勿开启！" />
+  <string id="AF_MCM_Dev_Trace_Hint" text="⚠️ 极其硬核的调试功能！&#10;开启后将截获所有 UI 点击、状态切换和底层代码堆栈(Trace)。&#10;日志量极大，仅供开发者排查问题使用。普通玩家请勿开启！" />
   <string id="AF_MCM_Dev_Data" text="【开发者】启用数据管理（对话历史/赊账/个性/玩家履历）" />
   <string id="AF_MCM_Dev_Data_Hint" text="开启后，城镇主菜单中会出现【开发】数据管理入口，用于查看和修改任意 NPC 的历史对话记录、赊账/欠款、人物设定等数据；角色(C)中的玩家知名度/履历弹窗也会开放玩家履历编辑。" />
   <string id="AF_MCM_Dev_AdultPersona" text="新成年人物自动生成人物设定" />
@@ -1658,7 +1659,7 @@
   <string id="AF_UI_KingdomRebellion_ForcedFailed" text="强制叛乱执行失败" />
   <string id="AF_UI_KingdomRebellion_ForcedNamingFailedBody" text="强制叛乱已准备执行，但叛乱建国命名没有成功。系统不会使用本地国名继续建国。" />
   <string id="AF_UI_KingdomRebellion_FormalName" text="- 正式名：" />
-  <string id="AF_UI_KingdomRebellion_GeneratingBody" text="系统正在后台请求 LLM 为这次叛乱生成新王国的名称与百科简介。\n\n这一步完成后，才会真正执行家族反出与建国。\n请稍候，结果完成后会自动弹出。" />
+  <string id="AF_UI_KingdomRebellion_GeneratingBody" text="系统正在后台请求 LLM 为这次叛乱生成新王国的名称与百科简介。&#10;&#10;这一步完成后，才会真正执行家族反出与建国。&#10;请稍候，结果完成后会自动弹出。" />
   <string id="AF_UI_KingdomRebellion_GeneratingTitle" text="正在生成叛乱建国命名" />
   <string id="AF_UI_KingdomRebellion_KingdomLabel" text="王国：" />
   <string id="AF_UI_KingdomRebellion_LeadClanLabel" text="主导家族：" />
@@ -1750,7 +1751,7 @@
   <string id="AF_UI_KingdomStability_BackToList" text="返回王国列表" />
   <string id="AF_UI_KingdomStability_DetailTitle" text="王国稳定度详情 - {KINGDOM}" />
   <string id="AF_UI_KingdomStability_Execute" text="执行" />
-  <string id="AF_UI_KingdomStability_EditPrompt" text="请输入 0-100 之间的稳定度数值。\n\n当前值：{VALUE}（{TIER}）\n默认值：50（一般）\n\n档位：\n90-100 极高\n75-89 高\n60-74 较高\n40-59 一般\n25-39 较差\n10-24 很差\n0-9 极差" />
+  <string id="AF_UI_KingdomStability_EditPrompt" text="请输入 0-100 之间的稳定度数值。&#10;&#10;当前值：{VALUE}（{TIER}）&#10;默认值：50（一般）&#10;&#10;档位：&#10;90-100 极高&#10;75-89 高&#10;60-74 较高&#10;40-59 一般&#10;25-39 较差&#10;10-24 很差&#10;0-9 极差" />
   <string id="AF_UI_KingdomStability_EditTitle" text="调整稳定度 - {KINGDOM}" />
   <string id="AF_UI_KingdomStability_Save" text="保存" />
   <string id="AF_UI_KingdomStability_InvalidValue" text="请输入 0-100 的整数。" />
@@ -1758,7 +1759,7 @@
   <string id="AF_UI_KingdomStability_TestResultTitle" text="叛乱测试结果 - {KINGDOM}" />
   <string id="AF_UI_KingdomStability_BackToDetails" text="返回详情" />
   <string id="AF_UI_KingdomStability_ForceTitle" text="强制触发王国叛乱" />
-  <string id="AF_UI_KingdomStability_ForceBody" text="这会跳过稳定度概率，但不会放宽关系条件；系统仍只会从当前满足自动叛乱条件的家族中，选择一个最适合带城反出的家族执行。\n\n如果当前没有满足关系条件的候选家族，本次将不会发生叛乱。\n\n该操作会真实改动存档中的王国格局，是否继续？" />
+  <string id="AF_UI_KingdomStability_ForceBody" text="这会跳过稳定度概率，但不会放宽关系条件；系统仍只会从当前满足自动叛乱条件的家族中，选择一个最适合带城反出的家族执行。&#10;&#10;如果当前没有满足关系条件的候选家族，本次将不会发生叛乱。&#10;&#10;该操作会真实改动存档中的王国格局，是否继续？" />
   <string id="AF_UI_KingdomStability_ForceExecute" text="强制执行" />
   <string id="AF_UI_KingdomStability_Cancel" text="取消" />
   <string id="AF_UI_KingdomStability_ForceResultTitle" text="强制叛乱结果 - {KINGDOM}" />
@@ -1785,10 +1786,10 @@
   <string id="AF_UI_Persona_ConfirmGenerate" text="生成" />
   <string id="AF_UI_Persona_Cancel" text="取消" />
   <string id="AF_UI_Persona_RerollingTitle" text="正在重新生成人物设定" />
-  <string id="AF_UI_Persona_RerollingBody" text="正在为 {NAME} 生成人设。\n\n请稍候；只有生成并解析成功后才会覆盖现有数据。" />
+  <string id="AF_UI_Persona_RerollingBody" text="正在为 {NAME} 生成人设。&#10;&#10;请稍候；只有生成并解析成功后才会覆盖现有数据。" />
   <string id="AF_UI_Persona_RerollSucceededSuffix" text="的人物设定已重新生成；音色 ID 保持不变。" />
   <string id="AF_UI_Persona_RerollFailedTitle" text="重新生成人物设定失败" />
-  <string id="AF_UI_Persona_RerollFailedBody" text="本次生成结果未保存；现有人物设定、结构化信息和音色 ID 已保留。\n\n{DETAIL}" />
+  <string id="AF_UI_Persona_RerollFailedBody" text="本次生成结果未保存；现有人物设定、结构化信息和音色 ID 已保留。&#10;&#10;{DETAIL}" />
   <string id="AF_UI_Persona_Close" text="关闭" />
   <string id="AF_UI_Persona_ReturnEditor" text="返回编辑器" />
   <string id="AF_UI_Persona_EditPersonalityTitle" text="设置人物设定 - {NAME}" />
@@ -1857,19 +1858,19 @@
   <string id="AF_UI_Persona_ClearSearch" text="清空搜索" />
   <string id="AF_UI_Persona_PrevPage" text="上一页" />
   <string id="AF_UI_Persona_NextPage" text="下一页" />
-  <string id="AF_UI_Persona_HeroSelectionBody" text="可从当前存档的全部 NPC 中选择，也可从旧导出文件夹读取 JSON。\n全部 NPC：{TOTAL}；当前结果：{RESULTS}；第 {PAGE}/{PAGES} 页。" />
+  <string id="AF_UI_Persona_HeroSelectionBody" text="可从当前存档的全部 NPC 中选择，也可从旧导出文件夹读取 JSON。&#10;全部 NPC：{TOTAL}；当前结果：{RESULTS}；第 {PAGE}/{PAGES} 页。" />
   <string id="AF_UI_Persona_SearchKeyword" text="搜索关键词：{QUERY}" />
   <string id="AF_UI_Persona_NoSearchResults" text="没有匹配结果，可以重新搜索。" />
   <string id="AF_UI_Persona_HeroSelectionTitle" text="单个 HeroNPC 导入/导出 - 选择 NPC" />
   <string id="AF_UI_Persona_ExportFolderMissing" text="找不到导出目录。" />
   <string id="AF_UI_Persona_NoNpcJson" text="该导出文件夹中没有可识别的 NPC JSON。" />
   <string id="AF_UI_Persona_PickNpcTitle" text="从导出文件夹选择 NPC" />
-  <string id="AF_UI_Persona_PickNpcBody" text="目录：\n{FOLDER}\n\n请选择要导入/导出的 NPC：" />
+  <string id="AF_UI_Persona_PickNpcBody" text="目录：&#10;{FOLDER}&#10;&#10;请选择要导入/导出的 NPC：" />
   <string id="AF_UI_Persona_SearchNpcBody" text="输入 NPC 名称或 HeroId，可查询全部 NPC。" />
   <string id="AF_UI_Persona_Search" text="搜索" />
   <string id="AF_UI_Persona_SingleNpcImportFolder" text="单个 HeroNPC - 选择导入文件夹" />
   <string id="AF_UI_Persona_ManualHeroIdTitle" text="手动输入 HeroId" />
-  <string id="AF_UI_Persona_ManualHeroIdBody" text="请输入 HeroId（例如：lord_... / wanderer_...）。\n\n说明：这里不会创建新的游戏角色，只会把导入/导出数据写入该 HeroId 对应的存档数据；只有当游戏中存在或将来出现同 ID 的 Hero 时，这些数据才会被使用。" />
+  <string id="AF_UI_Persona_ManualHeroIdBody" text="请输入 HeroId（例如：lord_... / wanderer_...）。&#10;&#10;说明：这里不会创建新的游戏角色，只会把导入/导出数据写入该 HeroId 对应的存档数据；只有当游戏中存在或将来出现同 ID 的 Hero 时，这些数据才会被使用。" />
   <string id="AF_UI_Persona_Confirm" text="确定" />
   <string id="AF_UI_Persona_NpcMissingId" text="该 NPC 缺少编号，无法导入导出。" />
   <string id="AF_UI_Persona_SingleExportPersona" text="导出（人物设定，选择文件夹）" />
@@ -1921,7 +1922,7 @@
   <string id="AF_UI_Persona_VoiceGroupEmpty" text="[{GROUP}] 分组没有声音 ID 可删除。" />
   <string id="AF_UI_Persona_VoiceClearAll" text="⚠ 清空该分组所有声音" />
   <string id="AF_UI_Persona_VoiceRemoveTitle" text="删除声音 ID - {GROUP}" />
-  <string id="AF_UI_Persona_VoiceRemoveBody" text="分组：{GROUP}\n当前有 {COUNT} 个声音 ID。\n请选择要删除的声音：" />
+  <string id="AF_UI_Persona_VoiceRemoveBody" text="分组：{GROUP}&#10;当前有 {COUNT} 个声音 ID。&#10;请选择要删除的声音：" />
   <string id="AF_UI_Persona_Delete" text="删除" />
   <string id="AF_UI_Persona_VoiceRemoved" text="已从 [{GROUP}] 删除声音“{VOICE}”" />
   <string id="AF_UI_Persona_VoiceFallbackBody" text="全局兜底声音：当某个分组没有配置声音 ID 时使用。" />
@@ -1932,8 +1933,8 @@
   <string id="AF_UI_Persona_VoiceFallbackSetPrefix" text="fallback 已设置为：" />
 
   <string id="AF_UI_Weekly_Editor_001" text="正在生成完整周报" />
-  <string id="AF_UI_Weekly_Editor_002" text="正在使用该期保存的完整素材补写完整周报正文。\n\n周报：" />
-  <string id="AF_UI_Weekly_Editor_003" text="\n\n请稍候，生成完成或失败前此窗口不会关闭。" />
+  <string id="AF_UI_Weekly_Editor_002" text="正在使用该期保存的完整素材补写完整周报正文。&#10;&#10;周报：" />
+  <string id="AF_UI_Weekly_Editor_003" text="&#10;&#10;请稍候，生成完成或失败前此窗口不会关闭。" />
   <string id="AF_UI_Weekly_Editor_004" text="完整周报生成失败" />
   <string id="AF_UI_Weekly_Editor_005" text="完整周报生成失败。" />
   <string id="AF_UI_Weekly_Editor_007" text="日期未知" />
@@ -2007,15 +2008,15 @@
   <string id="AF_UI_Weekly_Editor_083" text="Batch Prompt/Response 详情" />
   <string id="AF_UI_Weekly_Editor_084" text="返回 Batch 列表" />
   <string id="AF_UI_Weekly_Editor_085" text="无" />
-  <string id="AF_UI_Weekly_Editor_086" text="即将按当前周素材生成开发态周报草案。\n\n- 生成对象：世界周报 + 各王国周报\n- 生成结果：写入事件编辑中的事件记录\n- NPC 会常驻读取近期三个王国短周报；命中特定规则时读取完整周报\n- 生成优先级：最近王国 &gt; 世界事件 &gt; 其他王国按距离依次生成\n\n本次预计请求数：" />
-  <string id="AF_UI_Weekly_Editor_087" text="\n篇幅档位：" />
-  <string id="AF_UI_Weekly_Editor_088" text="\n每分钟生成上限：" />
-  <string id="AF_UI_Weekly_Editor_089" text="\n按距离排序的王国：" />
-  <string id="AF_UI_Weekly_Editor_090" text="\n\n是否开始？" />
+  <string id="AF_UI_Weekly_Editor_086" text="即将按当前周素材生成开发态周报草案。&#10;&#10;- 生成对象：世界周报 + 各王国周报&#10;- 生成结果：写入事件编辑中的事件记录&#10;- NPC 会常驻读取近期三个王国短周报；命中特定规则时读取完整周报&#10;- 生成优先级：最近王国 &gt; 世界事件 &gt; 其他王国按距离依次生成&#10;&#10;本次预计请求数：" />
+  <string id="AF_UI_Weekly_Editor_087" text="&#10;篇幅档位：" />
+  <string id="AF_UI_Weekly_Editor_088" text="&#10;每分钟生成上限：" />
+  <string id="AF_UI_Weekly_Editor_089" text="&#10;按距离排序的王国：" />
+  <string id="AF_UI_Weekly_Editor_090" text="&#10;&#10;是否开始？" />
   <string id="AF_UI_Weekly_Editor_091" text="生成本周周报草案" />
   <string id="AF_UI_Weekly_Editor_092" text="开始生成" />
   <string id="AF_UI_Weekly_Editor_094" text="自动周报" />
-  <string id="AF_UI_Weekly_Editor_096" text="的目标记录或保存素材已变更，旧请求和旧素材重试均已取消。\n\n重新采集会按当前游戏状态重新构建失败分组，并可能替换这些分组尚未完成的手工编辑。其他已完成分组不会重跑。\n\n你可以明确选择重新采集并生成，或保存并退出；不会自动覆盖编辑。" />
+  <string id="AF_UI_Weekly_Editor_096" text="的目标记录或保存素材已变更，旧请求和旧素材重试均已取消。&#10;&#10;重新采集会按当前游戏状态重新构建失败分组，并可能替换这些分组尚未完成的手工编辑。其他已完成分组不会重跑。&#10;&#10;你可以明确选择重新采集并生成，或保存并退出；不会自动覆盖编辑。" />
   <string id="AF_UI_Weekly_Editor_097" text="周报目标已变更" />
   <string id="AF_UI_Weekly_Editor_098" text="重新采集并生成" />
   <string id="AF_UI_Weekly_Editor_100" text="在生成过程中遇到了无法自动恢复的 API/模型错误。" />
@@ -2038,17 +2039,17 @@
   <string id="AF_UI_Weekly_Editor_117" text="调整API信息" />
   <string id="AF_UI_Weekly_Editor_118" text="无法读取 MCM 设置，暂时不能修改 RPM 限制。" />
   <string id="AF_UI_Weekly_Editor_119" text="修改周报RPM限制" />
-  <string id="AF_UI_Weekly_Editor_120" text="检测到本次失败疑似触发 RPM 限流。\n\n请输入新的【每分钟最多生成周报数】（范围 1-20）。\n当前值：" />
-  <string id="AF_UI_Weekly_Editor_121" text="\n建议先改为：" />
-  <string id="AF_UI_Weekly_Editor_122" text="\n\n保存后会立即按新速率继续补跑当前周报。" />
+  <string id="AF_UI_Weekly_Editor_120" text="检测到本次失败疑似触发 RPM 限流。&#10;&#10;请输入新的【每分钟最多生成周报数】（范围 1-20）。&#10;当前值：" />
+  <string id="AF_UI_Weekly_Editor_121" text="&#10;建议先改为：" />
+  <string id="AF_UI_Weekly_Editor_122" text="&#10;&#10;保存后会立即按新速率继续补跑当前周报。" />
   <string id="AF_UI_Weekly_Editor_123" text="保存并重试" />
   <string id="AF_UI_Weekly_Editor_124" text="请输入 1-20 之间的整数 RPM。" />
   <string id="AF_UI_Weekly_Editor_125" text="已将周报 RPM 上限更新为 " />
   <string id="AF_UI_Weekly_Editor_126" text="，现在开始重试。" />
   <string id="AF_UI_Weekly_Editor_127" text="打开 RPM 输入框失败：" />
   <string id="AF_UI_Weekly_Editor_128" text="正在重试生成" />
-  <string id="AF_UI_Weekly_Editor_129" text="中的这个事件，请稍候……\n\n- 当前失败分组：" />
-  <string id="AF_UI_Weekly_Editor_130" text="\n- 后台会再次按每条分组三次重试的规则执行\n- 如果你不想继续等待，可以直接退出当前存档\n- 也可以返回上一界面，稍后再决定是否继续重试" />
+  <string id="AF_UI_Weekly_Editor_129" text="中的这个事件，请稍候……&#10;&#10;- 当前失败分组：" />
+  <string id="AF_UI_Weekly_Editor_130" text="&#10;- 后台会再次按每条分组三次重试的规则执行&#10;- 如果你不想继续等待，可以直接退出当前存档&#10;- 也可以返回上一界面，稍后再决定是否继续重试" />
   <string id="AF_UI_Weekly_Editor_131" text="正在重试生成此事件" />
   <string id="AF_UI_Weekly_Editor_132" text="返回上一界面" />
   <string id="AF_UI_Weekly_Editor_133" text="未找到 API 配置引导，请先检查 MCM 中的 Base URL、API Key 与模型名。" />
@@ -2122,7 +2123,7 @@
   <string id="AF_TERMINAL_UI_Root_TrustQuery" text="信任度查询" />
   <string id="AF_TERMINAL_UI_Root_TrustQuery_Hint" text="查询英雄、定居点与商人信任来源。" />
   <string id="AF_TERMINAL_UI_DiagnosticsOnline" text="捕获哨兵状态：正常在线" />
-  <string id="AF_TERMINAL_UI_DiagnosticsLatestError" text="最近报错：{TITLE}\n{DETAIL}" />
+  <string id="AF_TERMINAL_UI_DiagnosticsLatestError" text="最近报错：{TITLE}&#10;{DETAIL}" />
   <string id="AF_TERMINAL_UI_DiagnosticsNoError" text="本局当前未记录到任何致命报错堆栈。" />
   <string id="AF_TERMINAL_UI_DiplomaticComposeFailed" text="打开外交宣言撰写界面失败。" />
   <string id="AF_TERMINAL_UI_ReloadDatabaseFailed" text="无法打开数据库重载流程。" />
@@ -2133,7 +2134,7 @@
   <string id="AF_TERMINAL_UI_Forge_SelectCrafter" text="选择制造者" />
   <string id="AF_TERMINAL_UI_Forge_NoCrafters" text="当前没有可用的家族成员或同伴。" />
   <string id="AF_TERMINAL_UI_Forge_Back" text="返回" />
-  <string id="AF_TERMINAL_UI_Forge_CrafterEntry" text="{NAME}\n锻造等级：{SKILL}\n锻造体力：{STAMINA}（消耗 {COST}）" />
+  <string id="AF_TERMINAL_UI_Forge_CrafterEntry" text="{NAME}&#10;锻造等级：{SKILL}&#10;锻造体力：{STAMINA}（消耗 {COST}）" />
   <string id="AF_TERMINAL_UI_Forge_Unavailable" text="不可用" />
   <string id="AF_TERMINAL_UI_Forge_StaminaReadFailed" text="无法读取该制造者的锻造体力。" />
   <string id="AF_TERMINAL_UI_Forge_StaminaInsufficient" text="锻造体力不足，至少需要 {COST} 点。" />
@@ -2144,8 +2145,8 @@
   <string id="AF_TERMINAL_UI_Forge_NoSelectableTemplates" text="当前没有可选择的安全模板。" />
   <string id="AF_TERMINAL_UI_Forge_NoDisplayableTemplates" text="当前没有可显示的安全模板。" />
   <string id="AF_TERMINAL_UI_Forge_UnknownType" text="未知类型" />
-  <string id="AF_TERMINAL_UI_Forge_TemplateEntryTitle" text="第 {RANK} 项 {NAME}\n{TYPE}\n{PRICE} 第纳尔" />
-  <string id="AF_TERMINAL_UI_Forge_TemplateEntryHint" text="模板 ID：{ID}\n类型：{TYPE}\n标准价格：{PRICE} 第纳尔" />
+  <string id="AF_TERMINAL_UI_Forge_TemplateEntryTitle" text="第 {RANK} 项 {NAME}&#10;{TYPE}&#10;{PRICE} 第纳尔" />
+  <string id="AF_TERMINAL_UI_Forge_TemplateEntryHint" text="模板 ID：{ID}&#10;类型：{TYPE}&#10;标准价格：{PRICE} 第纳尔" />
   <string id="AF_TERMINAL_UI_Forge_SelectTemplateTitle" text="选择 RP 物品模板" />
   <string id="AF_TERMINAL_UI_Forge_SelectTemplateDescription" text="请从 {COUNT} 个安全候选（最多 50）中手动选择。可搜索；每项显示原版物品图标、类型和标准价格。" />
   <string id="AF_TERMINAL_UI_Forge_SelectTemplate" text="选择模板" />
@@ -2159,7 +2160,7 @@
   <string id="AF_TERMINAL_UI_Forge_CompletedFallback" text="已成功制造 RP 物品。" />
   <string id="AF_TERMINAL_UI_Forge_CompletionTitle" text="制造完成" />
   <string id="AF_TERMINAL_UI_Forge_ReturnToTerminal" text="返回终端" />
-  <string id="AF_TERMINAL_UI_Forge_ConfirmationText" text="名称：{NAME}\n投入：{INVESTMENT} 第纳尔\n模式：{MODE}\n\n确认后才会扣除第纳尔并制造物品。" />
+  <string id="AF_TERMINAL_UI_Forge_ConfirmationText" text="名称：{NAME}&#10;投入：{INVESTMENT} 第纳尔&#10;模式：{MODE}&#10;&#10;确认后才会扣除第纳尔并制造物品。" />
   <string id="AF_TERMINAL_UI_Forge_ModeEquipment" text="武器与装备" />
   <string id="AF_TERMINAL_UI_Forge_ModeItem" text="普通 RP 物品" />
   <string id="AF_TERMINAL_UI_Forge_ConfirmationTitle" text="确认制造" />
@@ -2449,13 +2450,13 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_TAUNT_UI_Npc" text="NPC" />
   <string id="AF_TAUNT_UI_GoldPickedUp" text="你拾取了 {AMOUNT} 第纳尔。" />
     <string id="AF_UI_KingdomRebellion_PlayerNamingTitle" text="为新王国命名" />
-  <string id="AF_UI_KingdomRebellion_PlayerNamingBody" text="你的派系即将脱离 {OLD_KINGDOM}，以 {CLAN} 家族为首建立新王国。\n\n请输入新王国的名称（2~24 个字，不能与现有王国重名）。取消则使用“{FALLBACK}”。" />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingBody" text="你的派系即将脱离 {OLD_KINGDOM}，以 {CLAN} 家族为首建立新王国。&#10;&#10;请输入新王国的名称（2~24 个字，不能与现有王国重名）。取消则使用“{FALLBACK}”。" />
   <string id="AF_UI_KingdomRebellion_PlayerNamingConfirm" text="建立王国" />
   <string id="AF_UI_KingdomRebellion_PlayerNamingDefault" text="使用默认名" />
   <string id="AF_UI_KingdomRebellion_PlayerNamingTooShort" text="名称至少 2 个字。" />
   <string id="AF_UI_KingdomRebellion_PlayerNamingDuplicate" text="已有同名王国。" />
   <string id="AF_UI_KingdomRebellion_RegeneratingTitle" text="正在重新生成叛乱建国命名" />
-  <string id="AF_UI_KingdomRebellion_RegeneratingBody" text="系统正在按修正后的事件/叛乱 API 配置重新请求新王国名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。" />
+  <string id="AF_UI_KingdomRebellion_RegeneratingBody" text="系统正在按修正后的事件/叛乱 API 配置重新请求新王国名称与百科简介。&#10;&#10;这一步完成前不会继续本轮自动叛乱与周报流程。" />
 
   <string id="AF_UI_ImportExport_ExportCompleted" text="导出完成：{PATH}" />
   <string id="AF_UI_ImportExport_ExportFailed" text="导出失败：{ERROR}" />
@@ -2502,7 +2503,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_ImportExport_VoiceMappingInvalid" text="导入失败：VoiceMapping JSON 无效。" />
   <string id="AF_UI_ImportExport_VoiceMappingWarningSkipped" text="警告：VoiceMapping 导入失败，已跳过。" />
   <string id="AF_UI_ImportExport_VoiceMappingDuplicateTitle" text="检测到重复 - VoiceMapping" />
-  <string id="AF_UI_ImportExport_VoiceMappingDuplicateBody" text="当前已存在声音映射。\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_VoiceMappingDuplicateBody" text="当前已存在声音映射。&#10;请选择处理方式：" />
   <string id="AF_UI_ImportExport_KnowledgeExportCount" text="导出完成：{PATH}（Knowledge {COUNT} 条）" />
   <string id="AF_UI_ImportExport_KnowledgeNoEntries" text="当前没有可导出的知识条目。" />
   <string id="AF_UI_ImportExport_KnowledgeNoFilesWritten" text="没有成功写出任何知识文件。" />
@@ -2511,16 +2512,16 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_ImportExport_KnowledgeRulesAllFailed" text="知识规则全部导入失败。失败 {FAILED} 条。首个失败 RuleId={RULEID}{REASON}" />
   <string id="AF_UI_ImportExport_KnowledgeImportException" text="知识导入过程发生异常。" />
   <string id="AF_UI_ImportExport_KnowledgeDuplicateTitle" text="检测到重复 - Knowledge" />
-  <string id="AF_UI_ImportExport_KnowledgeDuplicateBody" text="检测到相同 RuleId：{ID}\n请选择处理方式：" />
-  <string id="AF_UI_ImportExport_KnowledgeDuplicateMany" text="导入的 Knowledge 规则与当前游戏存在重复 RuleId。\n重复：{COUNT} / 总计：{TOTAL}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_KnowledgeDuplicateBody" text="检测到相同 RuleId：{ID}&#10;请选择处理方式：" />
+  <string id="AF_UI_ImportExport_KnowledgeDuplicateMany" text="导入的 Knowledge 规则与当前游戏存在重复 RuleId。&#10;重复：{COUNT} / 总计：{TOTAL}&#10;请选择处理方式：" />
   <string id="AF_UI_ImportExport_PersonaDuplicateTitle" text="检测到重复 - 人物设定" />
-  <string id="AF_UI_ImportExport_PersonaDuplicateBody" text="检测到该 NPC 已存在人物设定：{ID}\n请选择处理方式：" />
-  <string id="AF_UI_ImportExport_PersonaDuplicateMany" text="导入数据与当前游戏存在重复 HeroId。\n重复：{COUNT} / 总计：{TOTAL}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateBody" text="检测到该 NPC 已存在人物设定：{ID}&#10;请选择处理方式：" />
+  <string id="AF_UI_ImportExport_PersonaDuplicateMany" text="导入数据与当前游戏存在重复 HeroId。&#10;重复：{COUNT} / 总计：{TOTAL}&#10;请选择处理方式：" />
   <string id="AF_UI_ImportExport_DebtDuplicateTitle" text="检测到重复 - 欠款" />
-  <string id="AF_UI_ImportExport_DebtDuplicateBody" text="检测到该 NPC 已存在欠款记录：{ID}\n请选择处理方式：" />
-  <string id="AF_UI_ImportExport_DebtDuplicateMany" text="导入数据与当前游戏存在重复 HeroId。\n重复：{COUNT} / 总计：{TOTAL}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_DebtDuplicateBody" text="检测到该 NPC 已存在欠款记录：{ID}&#10;请选择处理方式：" />
+  <string id="AF_UI_ImportExport_DebtDuplicateMany" text="导入数据与当前游戏存在重复 HeroId。&#10;重复：{COUNT} / 总计：{TOTAL}&#10;请选择处理方式：" />
   <string id="AF_UI_ImportExport_WeeklyEventDuplicateTitle" text="检测到重复 - 事件编辑" />
-  <string id="AF_UI_ImportExport_WeeklyEventDuplicateBody" text="导入数据与当前游戏存在重复。\n世界开局概要：{WORLD}/{WORLD_TOTAL}\n王国开局概要：{KINGDOM}/{KINGDOM_TOTAL}\n事件记录：{EVENT}/{EVENT_TOTAL}\n请选择处理方式：" />
+  <string id="AF_UI_ImportExport_WeeklyEventDuplicateBody" text="导入数据与当前游戏存在重复。&#10;世界开局概要：{WORLD}/{WORLD_TOTAL}&#10;王国开局概要：{KINGDOM}/{KINGDOM_TOTAL}&#10;事件记录：{EVENT}/{EVENT_TOTAL}&#10;请选择处理方式：" />
   <string id="AF_UI_ImportExport_FilenameFormatMissing" text="文件名缺少 heroId__名字 格式。" />
   <string id="AF_UI_ImportExport_FilenameNameMismatch" text="文件名人物名“{FILE}”与当前同 ID 人物“{CURRENT}”不一致。" />
   <string id="AF_UI_ImportExport_FilenameIdUnreliable" text="自动编号 {ID} 在当前存档中不可可靠匹配，且文件名人物名不能唯一匹配。" />
@@ -2967,7 +2968,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_WEEKLY_TargetChangedDuringRequest" text="周报目标或同周源素材在请求期间已变更，旧回包未覆盖：{ID}" />
   <string id="AF_WEEKLY_TargetChangedDuringCommit" text="周报目标或同周源素材在提交期间已变更，旧回包未覆盖：{ID}" />
 
-  <string id="AF_MCM_AuxApi_Group" text="1. AI 核心配置/2. 前处理 API（规则检索与简易对话链路）" />
+  <string id="AF_MCM_AuxApi_Group" text="2. 前处理 API（规则检索与简易对话链路）" />
   <string id="AF_MCM_AuxApi_Url" text="辅助 API 地址（支持填写 Base URL）" />
   <string id="AF_MCM_AuxApi_Url_Hint" text="用于规则检索、规则路由与简易场景对话链路的低成本接口地址，例如：https://api.openai.com/v1。填写 /v1 时会自动补全为 /v1/chat/completions。" />
   <string id="AF_MCM_AuxApi_Key" text="辅助 API 密钥" />
@@ -2978,7 +2979,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_AuxApi_Test" text="测试辅助 API 连接" />
   <string id="AF_MCM_AuxApi_Temperature_Hint" text="控制前处理、规则路由和简易对话链路的随机性。0 更稳定，2 更发散。默认：0.00。" />
   <string id="AF_MCM_AuxApi_MaxTokens_Hint" text="前处理 API 规则检索、规则路由与简易对话链路调用的 max_tokens。默认：12000；如果接口不支持过高上限，可能会拒绝请求。" />
-  <string id="AF_MCM_PostprocessApi_Group" text="1. AI 核心配置/3. 后处理 API（动作标签与情绪标签判定）" />
+  <string id="AF_MCM_PostprocessApi_Group" text="3. 后处理 API（动作标签与情绪标签判定）" />
   <string id="AF_MCM_PostprocessApi_Url" text="后处理 API 地址（支持填写 Base URL）" />
   <string id="AF_MCM_PostprocessApi_Url_Hint" text="用于标签后处理的独立接口地址，例如：https://api.openai.com/v1。填写 /v1 时会自动补全为 /v1/chat/completions。留空时回退使用主 API。" />
   <string id="AF_MCM_PostprocessApi_Key" text="后处理 API 密钥" />
@@ -2991,7 +2992,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_PostprocessApi_MaxTokens_Hint" text="后处理 API 动作标签与情绪标签判定调用的 max_tokens。默认：12000；如果接口不支持过高上限，可能会拒绝请求。" />
   <string id="AF_MCM_PostprocessApi_HistoryLimit" text="后处理历史条数上限" />
   <string id="AF_MCM_PostprocessApi_HistoryLimit_Hint" text="控制动作后处理 &lt;history&gt; 最多携带的历史条数。本轮 &lt;latest_reply&gt; 独立保留，不占此额度。默认：100；最低 1，最高 100。数值越高，单次请求 token 与等待时间通常越高。" />
-  <string id="AF_MCM_EventRebellionApi_Group" text="1. AI 核心配置/4. 事件与王国叛乱 API（周报生成与叛乱命名）" />
+  <string id="AF_MCM_EventRebellionApi_Group" text="4. 事件与王国叛乱 API（周报生成与叛乱命名）" />
   <string id="AF_MCM_EventRebellionApi_Url" text="事件/叛乱 API 地址（支持填写 Base URL）" />
   <string id="AF_MCM_EventRebellionApi_Url_Hint" text="用于事件系统周报与王国叛乱命名的独立接口地址，例如：https://api.openai.com/v1。填写 /v1 时会自动补全为 /v1/chat/completions。留空时回退使用主 API。" />
   <string id="AF_MCM_EventRebellionApi_Key" text="事件/叛乱 API 密钥" />
@@ -3052,7 +3053,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Policy_ManageEffects_Hint" text="分别设置玩家政策、地方政策、NPC 统治者政策和附庸国政策可检索的效果模块。只影响保存后新发起的政策。" />
   <string id="AF_MCM_Policy_SettlementBalance_Title" text="政策相关定居点上限调整" />
   <string id="AF_MCM_Policy_AdjustLimits" text="调整上限与容量" />
-  <string id="AF_MCM_Policy_SettlementBalance_Hint" text="打开独立窗口，分别设置城市／城堡繁荣度、村庄户数、城市／城堡／村庄民兵人数，以及城市／城堡共用粮仓容量。适用于玩家和 NPC 的所有定居点，不要求先发布政策。\n限制的是总量，不是每日增益。每日按原版＋政策的净变化结算：正数最多加到上限，零或负数不受限制。例：上限 10000，9999＋100 只到 10000；已有 12000 不削减，正增长暂停，负增长正常。\n默认仅粮仓容量开启，城市和城堡最终容量均为 1000，不叠加城堡或建筑加成；其余六项默认关闭。繁荣度耗粮由“取消繁荣度耗粮”独立开关控制，默认保留原版。\n各项可单独开关，支持整数滑条和数值输入。保存后生效；取消或 Esc 丢弃修改；恢复默认后需保存。" />
+  <string id="AF_MCM_Policy_SettlementBalance_Hint" text="打开独立窗口，分别设置城市／城堡繁荣度、村庄户数、城市／城堡／村庄民兵人数，以及城市／城堡共用粮仓容量。适用于玩家和 NPC 的所有定居点，不要求先发布政策。&#10;限制的是总量，不是每日增益。每日按原版＋政策的净变化结算：正数最多加到上限，零或负数不受限制。例：上限 10000，9999＋100 只到 10000；已有 12000 不削减，正增长暂停，负增长正常。&#10;默认仅粮仓容量开启，城市和城堡最终容量均为 1000，不叠加城堡或建筑加成；其余六项默认关闭。繁荣度耗粮由“取消繁荣度耗粮”独立开关控制，默认保留原版。&#10;各项可单独开关，支持整数滑条和数值输入。保存后生效；取消或 Esc 丢弃修改；恢复默认后需保存。" />
   <string id="AF_MCM_Policy_RecentActive_Title" text="AI 参考本国最近生效政策条数" />
   <string id="AF_MCM_Policy_RecentActive_Hint" text="玩家政策评议和 NPC 新政策生成时，AI 最多参考多少条本国最新的现行政策。按新到旧读取，不区分玩家或 NPC 发布，默认 2 条。用于判断重复、冲突和延续，不是可生效政策的数量上限，也不改变已有政策效果。0 只关闭这组参考，政策不足不补位；不影响普通对话。" />
   <string id="AF_MCM_Policy_RelatedActive_Title" text="AI 参考世界相关生效政策条数" />

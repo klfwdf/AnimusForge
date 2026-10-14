@@ -713,8 +713,8 @@
     <string id="AF_KNOWLEDGE_UI_RelationPersonal" text="Personal relation value: {VALUE} ({BAND})" />
     <string id="AF_KNOWLEDGE_UI_Unknown" text="unknown" />
     <string id="AF_KNOWLEDGE_UI_NoTraits" text="no notable traits" />
-    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryHeader" text="[NPC current family and clan status]\nCharacter: {NAME}\n{CONTENT}" />
-    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryFooter" text="\nThe above reflects current game state; if old personality, background, or historical conversations conflict with life/death status here, this takes precedence. Deceased individuals can only be mentioned as past events, not described as still active or scheduled for meetings; unlisted does not mean deceased, and no fabrication of cause, time, or perpetrator of death is permitted." />
+    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryHeader" text="[NPC current family and clan status]&#10;Character: {NAME}&#10;{CONTENT}" />
+    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryFooter" text="&#10;The above reflects current game state; if old personality, background, or historical conversations conflict with life/death status here, this takes precedence. Deceased individuals can only be mentioned as past events, not described as still active or scheduled for meetings; unlisted does not mean deceased, and no fabrication of cause, time, or perpetrator of death is permitted." />
     <string id="AF_KNOWLEDGE_UI_NotRecorded" text="not recorded" />
     <string id="AF_KNOWLEDGE_UI_HeroAlive" text="(alive)" />
     <string id="AF_KNOWLEDGE_UI_HeroDead" text="(deceased)" />

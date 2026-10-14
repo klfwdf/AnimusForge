@@ -39,7 +39,7 @@
     <string id="AF_UI_Event_EditWorld_Updated" text="World opening summary updated." />
     <string id="AF_UI_Event_Kingdom_None" text="There are no editable kingdoms." />
     <string id="AF_UI_Event_Kingdom_Fallback" text="kingdom" />
-    <string id="AF_UI_Event_Kingdom_ChooseBody" text="Choose a kingdom opening summary to edit.\nThese texts provide the background for that kingdom's future weekly events." />
+    <string id="AF_UI_Event_Kingdom_ChooseBody" text="Choose a kingdom opening summary to edit.&#10;These texts provide the background for that kingdom's future weekly events." />
     <string id="AF_UI_Event_Kingdom_Title" text="Edit kingdom opening summary" />
     <string id="AF_UI_Event_Kingdom_NotFound" text="The selected kingdom could not be found." />
     <string id="AF_UI_Event_Kingdom_EditTitle" text="Edit kingdom opening summary - {KINGDOM}" />
@@ -48,14 +48,14 @@
     <string id="AF_UI_Event_Kingdom_Cleared" text="{KINGDOM}'s opening summary was cleared." />
     <string id="AF_UI_Event_Kingdom_Updated" text="{KINGDOM}'s opening summary was updated." />
     <string id="AF_UI_Event_Clear_Title" text="Confirm clearing event summaries" />
-    <string id="AF_UI_Event_Clear_Body" text="This clears the world opening summary and all kingdom opening summaries.\nThis action cannot be undone. Continue?" />
+    <string id="AF_UI_Event_Clear_Body" text="This clears the world opening summary and all kingdom opening summaries.&#10;This action cannot be undone. Continue?" />
     <string id="AF_UI_Event_Clear_Confirm" text="Clear" />
     <string id="AF_UI_Event_Clear_Cancel" text="Cancel" />
     <string id="AF_UI_Event_Clear_Done" text="All event summaries cleared." />
     <string id="AF_UI_Event_Kingdom_Invalid" text="Invalid kingdom" />
     <string id="AF_UI_Event_Viewer_Title" text="Event viewer" />
-    <string id="AF_UI_Event_Viewer_Body" text="Review events recorded by the event system and the materials referenced by each event.\nMaterials may include world and kingdom opening summaries, recent NPC actions, major NPC actions, and future summary sources.\n\nTotal events: {COUNT}\nPage: {PAGE}/{PAGES}{EMPTY}" />
-    <string id="AF_UI_Event_Viewer_Empty" text="\n\nThere are no event records yet.\nFuture weekly events will appear here with their referenced materials." />
+    <string id="AF_UI_Event_Viewer_Body" text="Review events recorded by the event system and the materials referenced by each event.&#10;Materials may include world and kingdom opening summaries, recent NPC actions, major NPC actions, and future summary sources.&#10;&#10;Total events: {COUNT}&#10;Page: {PAGE}/{PAGES}{EMPTY}" />
+    <string id="AF_UI_Event_Viewer_Empty" text="&#10;&#10;There are no event records yet.&#10;Future weekly events will appear here with their referenced materials." />
     <string id="AF_UI_Event_Detail_Title" text="Event details" />
     <string id="AF_UI_Event_Detail_Short" text="View short summary" />
     <string id="AF_UI_Event_Detail_Report" text="View weekly report" />

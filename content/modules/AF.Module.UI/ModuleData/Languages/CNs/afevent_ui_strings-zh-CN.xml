@@ -39,7 +39,7 @@
     <string id="AF_UI_Event_EditWorld_Updated" text="世界开局概要已更新。" />
     <string id="AF_UI_Event_Kingdom_None" text="当前没有可编辑的王国。" />
     <string id="AF_UI_Event_Kingdom_Fallback" text="王国" />
-    <string id="AF_UI_Event_Kingdom_ChooseBody" text="请选择要编辑的王国开局概要。\n这些文本会作为该王国后续每周事件生成的基础背景。" />
+    <string id="AF_UI_Event_Kingdom_ChooseBody" text="请选择要编辑的王国开局概要。&#10;这些文本会作为该王国后续每周事件生成的基础背景。" />
     <string id="AF_UI_Event_Kingdom_Title" text="编辑王国开局概要" />
     <string id="AF_UI_Event_Kingdom_NotFound" text="找不到对应的王国。" />
     <string id="AF_UI_Event_Kingdom_EditTitle" text="编辑王国开局概要 - {KINGDOM}" />
@@ -48,14 +48,14 @@
     <string id="AF_UI_Event_Kingdom_Cleared" text="已清空 {KINGDOM} 的开局概要。" />
     <string id="AF_UI_Event_Kingdom_Updated" text="{KINGDOM} 的开局概要已更新。" />
     <string id="AF_UI_Event_Clear_Title" text="确认清空事件概要" />
-    <string id="AF_UI_Event_Clear_Body" text="这会清空世界开局概要，以及所有王国的开局概要。\n此操作不可撤销，是否继续？" />
+    <string id="AF_UI_Event_Clear_Body" text="这会清空世界开局概要，以及所有王国的开局概要。&#10;此操作不可撤销，是否继续？" />
     <string id="AF_UI_Event_Clear_Confirm" text="确认清空" />
     <string id="AF_UI_Event_Clear_Cancel" text="取消" />
     <string id="AF_UI_Event_Clear_Done" text="已清空全部事件概要。" />
     <string id="AF_UI_Event_Kingdom_Invalid" text="无效王国" />
     <string id="AF_UI_Event_Viewer_Title" text="事件查看器" />
-    <string id="AF_UI_Event_Viewer_Body" text="这里用于查看事件系统已经记录下来的事件，以及每条事件引用了哪些素材。\n素材可能包括：世界开局概要、王国开局概要、NPC近期行动、NPC重大行动，以及未来接入的其他摘要。\n\n事件总数：{COUNT}\n页码：{PAGE}/{PAGES}{EMPTY}" />
-    <string id="AF_UI_Event_Viewer_Empty" text="\n\n当前还没有事件记录。\n后续周事件系统接入后，每条事件都会显示在这里，并能展开查看引用素材。" />
+    <string id="AF_UI_Event_Viewer_Body" text="这里用于查看事件系统已经记录下来的事件，以及每条事件引用了哪些素材。&#10;素材可能包括：世界开局概要、王国开局概要、NPC近期行动、NPC重大行动，以及未来接入的其他摘要。&#10;&#10;事件总数：{COUNT}&#10;页码：{PAGE}/{PAGES}{EMPTY}" />
+    <string id="AF_UI_Event_Viewer_Empty" text="&#10;&#10;当前还没有事件记录。&#10;后续周事件系统接入后，每条事件都会显示在这里，并能展开查看引用素材。" />
     <string id="AF_UI_Event_Detail_Title" text="事件详情" />
     <string id="AF_UI_Event_Detail_Short" text="查看短摘要" />
     <string id="AF_UI_Event_Detail_Report" text="查看周报正文" />

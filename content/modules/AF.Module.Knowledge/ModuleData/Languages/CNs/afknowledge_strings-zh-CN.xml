@@ -712,8 +712,8 @@
     <string id="AF_KNOWLEDGE_UI_RelationPersonal" text="原版个人关系值：{VALUE}（{BAND}）" />
     <string id="AF_KNOWLEDGE_UI_Unknown" text="未知" />
     <string id="AF_KNOWLEDGE_UI_NoTraits" text="无显著特质" />
-    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryHeader" text="【NPC当前亲属与家族状态】\n人物：{NAME}\n{CONTENT}" />
-    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryFooter" text="\n以上为本轮游戏状态；若旧个性、背景或历史对话与此处生死状态冲突，以此处为准。已故者只能作为往事提及，不能描述为仍在活动或安排与其见面；未列出不代表已故，不得编造死因、时间或凶手。" />
+    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryHeader" text="【NPC当前亲属与家族状态】&#10;人物：{NAME}&#10;{CONTENT}" />
+    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryFooter" text="&#10;以上为本轮游戏状态；若旧个性、背景或历史对话与此处生死状态冲突，以此处为准。已故者只能作为往事提及，不能描述为仍在活动或安排与其见面；未列出不代表已故，不得编造死因、时间或凶手。" />
     <string id="AF_KNOWLEDGE_UI_NotRecorded" text="未记录" />
     <string id="AF_KNOWLEDGE_UI_HeroAlive" text="（在世）" />
     <string id="AF_KNOWLEDGE_UI_HeroDead" text="（已故）" />

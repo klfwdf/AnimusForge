@@ -13,7 +13,7 @@
     <string id="AF_CONV_UI_Shout_TagInputHint" text="Enter the text and tags:" />
     <string id="AF_CONV_UI_Shout_Execute" text="Run" />
     <string id="AF_CONV_UI_TagTest_Title" text="Tag input - {NAME}" />
-    <string id="AF_CONV_UI_TagTest_Subtitle" text="Current target: {NAME}\nEnter NPC-visible text and post-processing tags. No API call is made; tags execute immediately for the current NPC." />
+    <string id="AF_CONV_UI_TagTest_Subtitle" text="Current target: {NAME}&#10;Enter NPC-visible text and post-processing tags. No API call is made; tags execute immediately for the current NPC." />
     <string id="AF_CONV_UI_TagTest_NotExecuted" text="Tag test was not run." />
     <string id="AF_CONV_UI_TagTest_DataDisabled" text="Data management is disabled, or there is no conversation target to test." />
     <string id="AF_CONV_UI_TagTest_NoConversationTarget" text="There is no conversation target available." />

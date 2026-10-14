@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using System.Xml.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -9,6 +12,7 @@ using AnimusForge;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
 using HarmonyLib;
+using MCM.Abstractions;
 
 // Separate-process managed tests. No Game/Campaign/native UI or live HTTP.
 static class SupplementalChecks
@@ -43,8 +47,62 @@ static class SupplementalChecks
     }
     static void NormalMarker() { }
     static void Tick() { }
+    static void LocalizedNewlineChecks(Action<bool, string> check, string root, string language)
+    {
+        var textObject = Assembly.Load("TaleWorlds.Localization").GetType("TaleWorlds.Localization.TextObject", true);
+        var english = new Dictionary<string, string>();
+        foreach (string path in Directory.GetFiles(Path.Combine(root, "ModuleData", "Languages"), "*.xml"))
+        foreach (var entry in XDocument.Load(path).Descendants("string"))
+            english[(string)entry.Attribute("id")] = (string)entry.Attribute("text");
+        string folder = Path.Combine(root, "ModuleData", "Languages", language == "English" ? "" : "CNs");
+        int checkedEntries = 0;
+        foreach (string path in Directory.GetFiles(folder, "*.xml"))
+        foreach (var entry in XDocument.Load(path).Descendants("string"))
+        {
+            string text = (string)entry.Attribute("text"), id = (string)entry.Attribute("id");
+            if (text == null) continue;
+            check(!text.Contains(@"\n"), "fixed UI resource has no literal newline escape: " + id);
+            if (!text.Contains("\n")) continue;
+            string rendered = Activator.CreateInstance(textObject, new object[] { "{=" + id + "}" + english[id], null }).ToString();
+            check(rendered.Count(c => c == '\n') == text.Count(c => c == '\n') && !rendered.Contains(@"\n"), "native text retains actual line breaks: " + id + " " + language);
+            checkedEntries++;
+        }
+        check(checkedEntries > 30, "native newline replay covers affected dialogs: " + language);
+        var dynamicText = Activator.CreateInstance(textObject, new object[] { "{=AF_UI_Persona_RerollFailedBody}" + english["AF_UI_Persona_RerollFailedBody"], null });
+        textObject.GetMethod("SetTextVariable", new[] { typeof(string), typeof(string) }).Invoke(dynamicText, new object[] { "DETAIL", @"C:\new\npc\rules.json" });
+        check(dynamicText.ToString().Contains(@"C:\new\npc\rules.json"), "dynamic paths are not unescaped: " + language);
+    }
+    static void McmGroupChecks(Assembly af, DuelSettings owner, Action<bool, string> check, string language)
+    {
+        var visibility = af.GetType("AnimusForge.AnimusForgeMcmVisibility", true).GetMethod("IsVisibleProperty", All);
+        var definitions = owner.GetAllSettingPropertyDefinitions().Where(d => (bool)visibility.Invoke(null, new object[] { owner.Id, d.Id, d.GroupName })).ToArray();
+        var groups = SettingsUtils.GetSettingsPropertyGroups(owner.SubGroupDelimiter, definitions).ToArray();
+        var textObject = Assembly.Load("TaleWorlds.Localization").GetType("TaleWorlds.Localization.TextObject", true);
+        string Display(SettingsPropertyGroupDefinition group) => Activator.CreateInstance(textObject, new object[] { group.GroupName, null }).ToString();
+        bool chinese = language == "简体中文";
+        string parent = chinese ? "1. AI 核心配置" : "1. AI core configuration";
+        var roots = groups.Where(g => Display(g) == parent).ToArray();
+        check(roots.Length == 1, "MCM API groups share one translated parent: " + language);
+        var names = SettingsUtils.GetAllSettingPropertyGroupDefinitions(roots[0]).Select(Display).ToArray();
+        foreach (string name in chinese
+            ? new[] { "1. 主API（正文生成）", "2. 前处理 API（规则检索与简易对话链路）", "3. 后处理 API（动作标签与情绪标签判定）", "4. 事件与王国叛乱 API（周报生成与叛乱命名）" }
+            : new[] { "1. Main API (response generation)", "2. Preprocessing API (rule retrieval and lightweight conversation)", "3. Postprocessing API (action and emotion tags)", "4. Event and kingdom-rebellion API (weekly reports and naming)" })
+            check(names.Count(n => n == name) == 1, "MCM translated API subgroup appears once: " + name);
+        check(names.All(n => !n.Contains("/") && !n.Contains("{=")), "MCM group labels contain no raw path or localization marker");
+    }
     internal static void Run(Assembly af, object owner, Action<bool, string> check, string root)
     {
+        var promptRules = af.GetType("AnimusForge.NpcPersonaTextRules", true);
+        var prompts = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(Path.Combine(root, "ModuleData", "PersonaPromptTexts.json")));
+        foreach (string kind in new[] { "Native", "Promoted" })
+        {
+            object[] input = kind == "Native" ? new object[] { "facts", "old", true, "" }
+                : new object[] { "name", "full", "troop", "id", "culture", "scene", "joined", "history", "equipment", "facts", "" };
+            object request = promptRules.GetMethod("Build" + kind, All).Invoke(null, input);
+            string system = (string)request.GetType().GetProperty("System", All).GetValue(request);
+            string expected = (string)prompts["AF_PERSONA_PROMPT_" + kind + "System"];
+            check(system.StartsWith(expected) && (expected.Contains("profile must be a non-empty string") || expected.Contains("profile 必须是非空字符串")), "actual persona request uses selected CN/EN string protocol: " + kind);
+        }
         var duel = (DuelSettings)owner;
         var patcher = af.GetType("AnimusForge.DynamicPatcher", true);
         var unsafeValue = new UnsafeObject();
@@ -112,6 +170,8 @@ static class SupplementalChecks
             foreach (string selectedLanguage in new[] { "English", "简体中文" })
             {
             language.Invoke(null, new object[] { selectedLanguage });
+            McmGroupChecks(af, duel, check, selectedLanguage);
+            LocalizedNewlineChecks(check, root, selectedLanguage);
             notices.Clear(); gatewayCalls = 0;
             var page = new DuelSettings();
             page.TownAmbientAiApiUrl = "https://offline.invalid/v1/chat/completions";

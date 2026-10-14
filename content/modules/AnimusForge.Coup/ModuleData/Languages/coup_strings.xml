@@ -78,7 +78,7 @@
     <string id="AF_COUP_UI_PENDING_CONFLICT" text="A town conflict or post-battle resolution is still pending." />
     <string id="AF_COUP_UI_LEAVE_ARMY" text="Leave the army before launching a coup with your own party." />
     <string id="AF_COUP_UI_BEGIN_TITLE" text="Armed Coup" />
-    <string id="AF_COUP_UI_BEGIN_BODY" text="Target: {RULER}\nLocation: {TOWN}\nEntry requirements: clan tier at least {TIER}; influence at least {INFLUENCE} (checked but not spent; 0 means unrestricted).\nSelect at least {MIN_TROOPS} healthy regular soldiers and leave one additional reserve.\nAssault party: up to {STREET_LIMIT} in the street and {HALL_LIMIT} in the hall (excluding the player); at least one soldier must remain as reserve.\nGuards: up to {GATE_LIMIT} at the entrance and {HALL_GUARD_LIMIT} in the hall (excluding the ruler), based on available troops.\nReinforcements: up to {WAVE_SIZE} per wave, every {WAVE_INTERVAL} seconds, with at most {MAX_WAVES} active waves.\nThese parameters are fixed for this coup. Once you enter, falling or withdrawing makes the clan defect with its land and declare war on the former kingdom." />
+    <string id="AF_COUP_UI_BEGIN_BODY" text="Target: {RULER}&#10;Location: {TOWN}&#10;Entry requirements: clan tier at least {TIER}; influence at least {INFLUENCE} (checked but not spent; 0 means unrestricted).&#10;Select at least {MIN_TROOPS} healthy regular soldiers and leave one additional reserve.&#10;Assault party: up to {STREET_LIMIT} in the street and {HALL_LIMIT} in the hall (excluding the player); at least one soldier must remain as reserve.&#10;Guards: up to {GATE_LIMIT} at the entrance and {HALL_GUARD_LIMIT} in the hall (excluding the ruler), based on available troops.&#10;Reinforcements: up to {WAVE_SIZE} per wave, every {WAVE_INTERVAL} seconds, with at most {MAX_WAVES} active waves.&#10;These parameters are fixed for this coup. Once you enter, falling or withdrawing makes the clan defect with its land and declare war on the former kingdom." />
     <string id="AF_COUP_UI_BEGIN_CONFIRM" text="Select Assault Party" />
     <string id="AF_COUP_UI_CANCEL" text="Cancel" />
     <string id="AF_COUP_UI_INSUFFICIENT_TROOPS" text="There are not enough healthy soldiers for the assault party and reserve. The coup was cancelled." />
@@ -107,7 +107,7 @@
     <string id="AF_COUP_UI_CAPTURE_UNAVAILABLE" text="Captivity protection is unavailable in this version; the former ruler can only be released." />
     <string id="AF_COUP_UI_FORMER_RULER_FALLBACK" text="former ruler" />
     <string id="AF_COUP_UI_DISPOSITION_TITLE" text="Coup Victory: Former Ruler's Disposition" />
-    <string id="AF_COUP_UI_DISPOSITION_BODY" text="Ruler {NAME} has been subdued and the hall is under control.\nChoose the former ruler's disposition; the assault will end and the throne and town will be settled afterward.\nReleasing him may allow his clan to join the rebellion; capturing him excludes that clan from this rebellion." />
+    <string id="AF_COUP_UI_DISPOSITION_BODY" text="Ruler {NAME} has been subdued and the hall is under control.&#10;Choose the former ruler's disposition; the assault will end and the throne and town will be settled afterward.&#10;Releasing him may allow his clan to join the rebellion; capturing him excludes that clan from this rebellion." />
     <string id="AF_COUP_UI_DISPOSITION_CONFIRM" text="Confirm Disposition and Leave" />
     <string id="AF_COUP_UI_DECIDE_LATER" text="Decide Later" />
     <string id="AF_COUP_UI_DISPOSITION_NOT_CONFIRMED" text="The former ruler's disposition is not confirmed; remain in the hall and choose again with the battle exit key or an exit." />
@@ -118,7 +118,7 @@
     <string id="AF_COUP_UI_VICTORY_TITLE" text="Armed Coup Successful" />
     <string id="AF_COUP_UI_CONFIRM_RETURN_TOWN" text="Confirm and Return to Town" />
     <string id="AF_COUP_UI_FAILURE_COMMITTED" text="The coup failed. The reserve party withdrew and recovered. Your clan kept its land, left the former kingdom, and is now at war with it." />
-    <string id="AF_COUP_UI_VICTORY_REPORT" text="The coup is complete.\n\nKingdom: {KINGDOM}\nCurrent ruler: {RULER}\nTown taken: {TOWN}\nTown owner: {OWNER}\nFormer ruler: {KING} {CUSTODY}\n\nRecorded casualties:\nAssault party: {ALLY_KILLED} killed, {ALLY_WOUNDED} wounded\nDefenders: {DEF_KILLED} killed, {DEF_WOUNDED} wounded\n\nAftermath: rebellion eligibility was assessed and the request was registered; whether a rebellion actually begins depends on later campaign results." />
+    <string id="AF_COUP_UI_VICTORY_REPORT" text="The coup is complete.&#10;&#10;Kingdom: {KINGDOM}&#10;Current ruler: {RULER}&#10;Town taken: {TOWN}&#10;Town owner: {OWNER}&#10;Former ruler: {KING} {CUSTODY}&#10;&#10;Recorded casualties:&#10;Assault party: {ALLY_KILLED} killed, {ALLY_WOUNDED} wounded&#10;Defenders: {DEF_KILLED} killed, {DEF_WOUNDED} wounded&#10;&#10;Aftermath: rebellion eligibility was assessed and the request was registered; whether a rebellion actually begins depends on later campaign results." />
     <string id="AF_COUP_UI_FORMER_RULER_HELD" text="is captured and still held by your party." />
     <string id="AF_COUP_UI_FORMER_RULER_NOT_HELD" text="was captured but is no longer held by your party." />
     <string id="AF_COUP_UI_FORMER_RULER_RELEASED" text="was forced to abdicate; you chose not to capture him." />
