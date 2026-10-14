@@ -34,8 +34,8 @@ foreach(string lang in new[]{"",".en"})
     MyBehavior.NotifyPersonaEvolutionSettingChanged(new DuelSettings());
     Check(host.Queued==2 && p.Evolution.Pending.Count==2,"loading a separate settings preset cannot retire runtime work");
     Check(host.Profile("outsider").Evolution==null,"unrelated hero never enqueued");
-    host.Hour=.5;host.Tick();Check(ConfiguredChatApplicationAdapter.Calls==calls,"one hour merge wait");
-    host.Tick();host.Hour=1;host.Tick();
+    host.Hour=9.99;host.Tick();Check(ConfiguredChatApplicationAdapter.Calls==calls,"no evaluation before ten game hours");
+    host.Tick();host.Hour=10;host.Tick();
     Check(ConfiguredChatApplicationAdapter.Calls==calls+1,"start one request");
     Check(JObject.Parse(ConfiguredChatApplicationAdapter.Input)["events"].Count()==2,"one NPC request merges facts");
     host.Tick(false);Check(ConfiguredChatApplicationAdapter.Calls==calls+1,"inflight limits concurrency");
@@ -85,7 +85,11 @@ Check(profile.Description.Length==3000&&((string)request["description"]).Length=
 Check(!PersonaEvolutionPolicy.IsCurrent(profile,original),"snapshot detects body edit");
 profile.SchemaVersion=3;profile.Evolution=new();
 for(int i=0;i<10;i++)PersonaEvolutionPolicy.Enqueue(profile.Evolution,new(){Key="event"+i,Hour=0,Facts=new string('中',1000),Connection="child"});
-Check(PersonaEvolutionPolicy.TakeBatch(profile.Evolution,1).Length==4,"batch cap four");
+Check(PersonaEvolutionPolicy.TakeBatch(profile.Evolution,10).Length==4,"batch cap four at ten hours");
+var laterEvent = new PersonaEvolutionState();
+PersonaEvolutionPolicy.Enqueue(laterEvent,new(){Key="later",Hour=50,Facts="new event"});
+Check(PersonaEvolutionPolicy.TakeBatch(laterEvent,59.99).Length==0,"ten hour delay anchored to event time");
+Check(PersonaEvolutionPolicy.TakeBatch(laterEvent,60).Length==1,"event becomes eligible exactly ten hours later");
 var state=new PersonaProfileStateOwner();state.Save("test",profile,(_,_)=>{});
 var persistence=new CampaignPersonaPersistenceAdapter(state);var store=new Store{IsSaving=true};
 persistence.Save(store,(_,_)=>true);
