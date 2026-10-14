@@ -145,7 +145,7 @@
     <string id="AFD_UI_Scene_HistoryTitle" text="Scene conversation record" />
     <string id="AFD_UI_Scene_Close" text="Close" />
     <string id="AFD_UI_Scene_Return" text="Back to conversation" />
-    <string id="AFD_UI_Scene_ExpandFolio" text="Expand\nconversation folio" />
+    <string id="AFD_UI_Scene_ExpandFolio" text="Expand&#10;conversation folio" />
     <string id="AFD_UI_Scene_ExpandFolioHint" text="(Press T)" />
     <string id="AFD_UI_Scene_DocketInstructions" text="Click a nameplate = address that person · click a seal = participate / hide / lock" />
     <string id="AFD_UI_Scene_MoreHistory" text="Scroll for more" />

@@ -653,15 +653,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	public Action OpenAfdianSupportLink { get; set; }
 
 	[SettingPropertyText("{=AF_MCM_MainApi_Url}API address (Base URL supported)", -1, true, "", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Url_Hint}Enter your endpoint, for example https://api.openai.com/v1 or https://api.openai.com/v1/chat/completions. When you enter /v1, the mod automatically requests /v1/chat/completions.")]
-	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public string ApiUrl { get; set; } = "https://api.openai.com/v1";
 
 	[SettingPropertyText("{=AF_MCM_MainApi_Key}API key", -1, true, "", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Key_Hint}Enter your API key.")]
-	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public string ApiKey { get; set; } = "";
 
 	[SettingPropertyText("{=AF_MCM_MainApi_Model}Model name", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Model_Hint}For example, gpt-4o-mini. Enter a model supported by your configured endpoint.")]
-	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public string ModelName
 	{
 		get => ReadModelNameForPreset(ref _mainApiModelName, _mainApiModelDropdown);
@@ -669,11 +669,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyButton("{=AF_MCM_MainApi_Fetch}Fetch model list", -1, true, "", Content = "{=AF_MCM_MainApi_FetchContent}Fetch", Order = 3)]
-	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public Action FetchMainModelList { get; set; }
 
 	[SettingPropertyDropdown("{=AF_MCM_MainApi_Dropdown}Model name (dropdown)", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
-	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public Dropdown<string> MainModelDropdown
 	{
 		get
@@ -712,17 +712,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyButton("{=AF_MCM_MainApi_Test}Test API connection", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
-	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public Action TestConnection { get; set; }
 
 	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Thinking_Hint}When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent.")]
-	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public bool MainApiThinkingEnabled { get; set; } = true;
 
 	public string MainApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
 	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
-	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public Dropdown<string> MainApiReasoningEffortDropdown
 	{
 		get
@@ -739,15 +739,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Temperature_Hint}Controls response-generation randomness. 0 is more stable and 2 is more varied. Default: 0.80.")]
-	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public float MainApiTemperature { get; set; } = 0.8f;
 
 	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_MainApi_MaxTokens_Hint}The max_tokens value for main API response generation. Default: 12000; endpoints that do not support a high limit may reject the request.")]
-	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public int MainApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
 	[SettingPropertyBool("{=AF_MCM_MainApi_Streaming}Enable streaming", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Streaming_Hint}When enabled, main API responses use SSE streaming. Interfaces that support chunks can display text progressively; other channels display it after completion. Postprocessing receives the complete response. This affects only the main response, not preprocessing, postprocessing, or weekly-report APIs. Off by default; applies to the next response request.")]
-	[SettingPropertyGroup("{=AF_MCM_MainApi_Group}1. AI core configuration/1. Main API (response generation)", GroupOrder = -300)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public bool MainApiStreamingEnabled { get; set; } = false;
 
 	[SettingPropertyInteger("{=AF_MCM_Duel_MinClanTier}Minimum clan tier", 0, 6, "0", Order = 0, RequireRestart = false)]
@@ -1479,15 +1479,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	public bool UseAuxiliaryRuleApi { get; set; } = false;
 
 	[SettingPropertyText("{=AF_MCM_AuxApi_Url}Auxiliary API address (Base URL supported)", -1, true, "", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_AuxApi_Url_Hint}Low-cost endpoint for rule retrieval, rule routing, and lightweight scene conversations; for example, https://api.openai.com/v1. Entering /v1 automatically appends /v1/chat/completions.")]
-	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_AuxApi_Group}2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
 	public string AuxiliaryApiUrl { get; set; } = "https://api.openai.com/v1";
 
 	[SettingPropertyText("{=AF_MCM_AuxApi_Key}Auxiliary API key", -1, true, "", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_AuxApi_Key_Hint}Enter the auxiliary API key.")]
-	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_AuxApi_Group}2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
 	public string AuxiliaryApiKey { get; set; } = "";
 
 	[SettingPropertyText("{=AF_MCM_AuxApi_Model}Auxiliary model name", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_AuxApi_Model_Hint}Low-cost model for rule retrieval, rule routing, and lightweight scene conversations.")]
-	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_AuxApi_Group}2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
 	public string AuxiliaryModelName
 	{
 		get => ReadModelNameForPreset(ref _auxiliaryApiModelName, _auxiliaryApiModelDropdown);
@@ -1495,11 +1495,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyButton("{=AF_MCM_MainApi_Fetch}Fetch model list", -1, true, "", Content = "{=AF_MCM_MainApi_FetchContent}Fetch", Order = 3)]
-	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_AuxApi_Group}2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
 	public Action FetchAuxiliaryModelList { get; set; }
 
 	[SettingPropertyDropdown("{=AF_MCM_AuxApi_Dropdown}Auxiliary model name (dropdown)", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
-	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_AuxApi_Group}2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
 	public Dropdown<string> AuxiliaryModelDropdown
 	{
 		get
@@ -1523,17 +1523,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyButton("{=AF_MCM_AuxApi_Test}Test auxiliary API connection", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
-	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_AuxApi_Group}2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
 	public Action TestAuxiliaryConnection { get; set; }
 
 	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Thinking_Hint}When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent.")]
-	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_AuxApi_Group}2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
 	public bool AuxiliaryApiThinkingEnabled { get; set; } = false;
 
 	public string AuxiliaryApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
 	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
-	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_AuxApi_Group}2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
 	public Dropdown<string> AuxiliaryApiReasoningEffortDropdown
 	{
 		get
@@ -1550,23 +1550,23 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_AuxApi_Temperature_Hint}Controls randomness for preprocessing, rule routing, and lightweight conversations. 0 is more stable and 2 is more varied. Default: 0.00.")]
-	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_AuxApi_Group}2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
 	public float AuxiliaryApiTemperature { get; set; } = 0f;
 
 	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_AuxApi_MaxTokens_Hint}The max_tokens value for preprocessing rule retrieval, rule routing, and lightweight conversation calls. Default: 12000; endpoints that do not support a high limit may reject the request.")]
-	[SettingPropertyGroup("{=AF_MCM_AuxApi_Group}1. AI core configuration/2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_AuxApi_Group}2. Preprocessing API (rule retrieval and lightweight conversation)", GroupOrder = -290)]
 	public int AuxiliaryApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
 	[SettingPropertyText("{=AF_MCM_PostprocessApi_Url}Action postprocess API address (Base URL supported)", -1, true, "", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_Url_Hint}Dedicated endpoint for action and emotion tag postprocessing; for example, https://api.openai.com/v1. Entering /v1 automatically appends /v1/chat/completions. Leave blank to fall back to the main API.")]
-	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public string ActionPostprocessApiUrl { get; set; } = "";
 
 	[SettingPropertyText("{=AF_MCM_PostprocessApi_Key}Action postprocess API key", -1, true, "", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_Key_Hint}Enter the action postprocess API key. Leave blank to fall back to the main API.")]
-	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public string ActionPostprocessApiKey { get; set; } = "";
 
 	[SettingPropertyText("{=AF_MCM_PostprocessApi_Model}Action postprocess model name", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_Model_Hint}Model used for tag postprocessing. Leave blank to fall back to the main API. A reasoning-capable or more advanced model is recommended for stable tag decisions.")]
-	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public string ActionPostprocessModelName
 	{
 		get => ReadModelNameForPreset(ref _actionPostprocessApiModelName, _actionPostprocessApiModelDropdown);
@@ -1574,11 +1574,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyButton("{=AF_MCM_MainApi_Fetch}Fetch model list", -1, true, "", Content = "{=AF_MCM_MainApi_FetchContent}Fetch", Order = 3)]
-	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public Action FetchActionPostprocessModelList { get; set; }
 
 	[SettingPropertyDropdown("{=AF_MCM_PostprocessApi_Dropdown}Action postprocess model name (dropdown)", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
-	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public Dropdown<string> ActionPostprocessModelDropdown
 	{
 		get
@@ -1602,17 +1602,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyButton("{=AF_MCM_PostprocessApi_Test}Test action postprocess API connection", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
-	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public Action TestActionPostprocessConnection { get; set; }
 
 	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Thinking_Hint}When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent.")]
-	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public bool ActionPostprocessApiThinkingEnabled { get; set; } = false;
 
 	public string ActionPostprocessApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
 	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
-	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public Dropdown<string> ActionPostprocessApiReasoningEffortDropdown
 	{
 		get
@@ -1629,27 +1629,27 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_Temperature_Hint}Controls randomness for action and emotion tag decisions. Keeping this low is recommended. Default: 0.00.")]
-	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public float ActionPostprocessApiTemperature { get; set; } = 0f;
 
 	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_MaxTokens_Hint}The max_tokens value for action and emotion tag decisions. Default: 12000; endpoints that do not support a high limit may reject the request.")]
-	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public int ActionPostprocessApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
 	[SettingPropertyInteger("{=AF_MCM_PostprocessApi_HistoryLimit}Postprocess history entry limit", ActionPostprocessHistoryEntryLimitMin, ActionPostprocessHistoryEntryLimitMax, "0", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_PostprocessApi_HistoryLimit_Hint}Maximum history entries carried in action postprocessing <history>. The current <latest_reply> is retained separately and does not count against this limit. Default: 100; minimum 1, maximum 100. Higher values usually increase request tokens and wait time.")]
-	[SettingPropertyGroup("{=AF_MCM_PostprocessApi_Group}1. AI core configuration/3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_PostprocessApi_Group}3. Postprocessing API (action and emotion tags)", GroupOrder = -280)]
 	public int ActionPostprocessHistoryEntryLimit { get; set; } = DefaultActionPostprocessHistoryEntryLimit;
 
 	[SettingPropertyText("{=AF_MCM_EventRebellionApi_Url}Event and rebellion API address (Base URL supported)", -1, true, "", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Url_Hint}Dedicated endpoint for event-system weekly reports and kingdom-rebellion naming; for example, https://api.openai.com/v1. Entering /v1 automatically appends /v1/chat/completions. Leave blank to fall back to the main API.")]
-	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public string EventAndRebellionApiUrl { get; set; } = "";
 
 	[SettingPropertyText("{=AF_MCM_EventRebellionApi_Key}Event and rebellion API key", -1, true, "", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Key_Hint}Enter the event and rebellion API key. Leave blank to fall back to the main API.")]
-	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public string EventAndRebellionApiKey { get; set; } = "";
 
 	[SettingPropertyText("{=AF_MCM_EventRebellionApi_Model}Event and rebellion model name", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Model_Hint}Model used for event weekly reports and kingdom-rebellion naming. Leave blank to fall back to the main API.")]
-	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public string EventAndRebellionModelName
 	{
 		get => ReadModelNameForPreset(ref _eventAndRebellionApiModelName, _eventAndRebellionApiModelDropdown);
@@ -1657,11 +1657,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyButton("{=AF_MCM_MainApi_Fetch}Fetch model list", -1, true, "", Content = "{=AF_MCM_MainApi_FetchContent}Fetch", Order = 3)]
-	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public Action FetchEventAndRebellionModelList { get; set; }
 
 	[SettingPropertyDropdown("{=AF_MCM_EventRebellionApi_Dropdown}Event and rebellion model name (dropdown)", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Dropdown_Hint}Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above.")]
-	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public Dropdown<string> EventAndRebellionModelDropdown
 	{
 		get
@@ -1685,17 +1685,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyButton("{=AF_MCM_EventRebellionApi_Test}Test event and rebellion API connection", -1, true, "", Content = "{=AF_MCM_MainApi_TestContent}Test", Order = 5)]
-	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public Action TestEventAndRebellionConnection { get; set; }
 
 	[SettingPropertyBool("{=AF_MCM_MainApi_Thinking}Enable reasoning", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Thinking_Hint}Off by default. Weekly reports and kingdom-rebellion naming require strict formats; enable this only after confirming that the endpoint reliably writes the final answer to content. OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent.")]
-	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public bool EventAndRebellionApiThinkingEnabled { get; set; } = false;
 
 	public string EventAndRebellionApiReasoningEffort { get; set; } = ReasoningEffortHigh;
 
 	[SettingPropertyDropdown("{=AF_MCM_MainApi_Reasoning}Reasoning strength", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Reasoning_Hint}Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged.")]
-	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public Dropdown<string> EventAndRebellionApiReasoningEffortDropdown
 	{
 		get
@@ -1712,11 +1712,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	}
 
 	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Temperature_Hint}Controls randomness for event weekly reports and kingdom-rebellion naming. 0 is more stable and 2 is more varied. Default: 0.80.")]
-	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public float EventAndRebellionApiTemperature { get; set; } = 0.8f;
 
 	[SettingPropertyInteger("{=AF_MCM_MainApi_MaxTokens}Maximum output tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_MaxTokens_Hint}The max_tokens value for event weekly reports, kingdom-rebellion naming, and ruler policy generation. Default: 12000; endpoints that do not support a high limit may reject the request.")]
-	[SettingPropertyGroup("{=AF_MCM_EventRebellionApi_Group}1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
+	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public int EventAndRebellionApiMaxTokens { get; set; } = DefaultEventAndRebellionApiMaxTokens;
 
 	[SettingPropertyBool("{=AF_MCM_Tts_EnableSpeech}Enable TTS speech", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Tts_EnableSpeech_Hint}Master switch. When disabled, NPCs stop playing TTS audio and fall back to text bubbles.")]

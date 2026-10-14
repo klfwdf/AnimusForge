@@ -8,8 +8,28 @@ static void TextRuleCases()
   Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("unusable",out p,out b)&&p==""&&b=="", "real persona malformed rejects");
   Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"traits\":[{\"id\":\"bold\",\"strength\":2}],\"speech_style\":\"brief\"}",out p,out b), "structured data alone is not success");
   Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"profile\":\"Unified 中英\",\"personality\":\"old\",\"background\":\"ignored\"}",out p,out b)&&p=="Unified 中英"&&b=="", "new protocol wins");
+  Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"profile\":{\"personality\":\"  节俭  \",\"background\":\"守城经历\"},\"traits\":[{\"id\":\"frugal\",\"strength\":2}],\"motivations\":[\"守住家业\"],\"values\":[\"务实\"],\"fears\":[\"失地\"],\"speech_style\":\"直接\"}",out AnimusForge.NpcPersonaGeneratedData nested)
+   &&nested.Description=="节俭\n\n守城经历"&&nested.Traits.Count==1&&nested.Traits[0].Id=="frugal"&&nested.Traits[0].Strength==2&&nested.Motivations[0]=="守住家业"&&nested.Values[0]=="务实"&&nested.Fears[0]=="失地"&&nested.SpeechStyle=="直接", "nested profile regression retains body and expanded fields");
+  foreach(var pair in new[]{
+   ("{\"PROFILE\":{\"PERSONALITY\":\"稳重\",\"Background\":\"经历\"}}", "稳重\n\n经历"),
+   ("{\"profile\":{\"background\":\"经历\"}}", "经历"),
+   ("{\"profile\":{\"personality\":\"稳重\"},\"background\":\"unrelated\"}", "稳重"),
+   ("{\"description\":\"canonical\",\"profile\":{\"personality\":\"ignored\"}}", "canonical"),
+   ("{\"profile\":{},\"personality\":\"legacy\",\"background\":\"body\"}", "legacy\n\nbody")})
+   Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson(pair.Item1,out p,out b)&&p==pair.Item2&&b=="", "nested profile precedence and compatibility: "+pair.Item1);
+  foreach(var invalid in new[]{"{\"profile\":{\"personality\":[],\"background\":42}}", "{\"profile\":{\"personality\":\" \",\"background\":null}}", "{\"profile\":[{\"personality\":\"invalid\"}]}", "{\"profile\":{\"personality\":{\"text\":\"invalid\"}}}"})
+   Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson(invalid,out p,out b), "nested profile requires known string body: "+invalid);
+  string replayDir=Environment.GetEnvironmentVariable("AF_PERSONA_RESPONSE_FIXTURES");
+  if(!string.IsNullOrEmpty(replayDir))
+   foreach(string file in System.IO.Directory.GetFiles(replayDir,"*.json"))
+   {
+    string raw=System.IO.File.ReadAllText(file);
+    var wire=Newtonsoft.Json.Linq.JObject.Parse(raw);
+    string expected=AnimusForge.Refactor.Runtime.NpcPersonaProfilePolicy.MergeLegacy((string)wire["profile"]["personality"],(string)wire["profile"]["background"]);
+    Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson(raw,out AnimusForge.NpcPersonaGeneratedData replay)&&replay.Description==expected&&replay.Traits.Count>0&&replay.Motivations.Count>0&&replay.SpeechStyle==(string)wire["speech_style"],"actual log response: "+System.IO.Path.GetFileName(file));
+   }
   foreach(var invalid in new[]{"{\"profile\":42}","{\"profile\":{\"x\":\"wrong\"}}","{\"traits\":[{\"profile\":\"nested-only\"}]}"})
-   Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson(invalid,out p,out b),"body must be a root-level string: "+invalid);
+   Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson(invalid,out p,out b),"unknown body shape rejects: "+invalid);
   var edited=new AnimusForge.MyBehavior.NpcPersonaProfile {Motivations=new(){"a\u001fb"}};
   var work=new AnimusForge.MyBehavior.NpcPersonaGenerationWork {OriginalMotivations=new(){"a","b"},OriginalSpeechStyle=""};
   Check(!AnimusForge.Refactor.Adapters.NpcPersonaGenerationApplicationAdapter.ProfileExtrasStillCurrent(edited,work),"structured field separator collision cannot bypass edit protection");
@@ -27,6 +47,7 @@ static void TextRuleCases()
    foreach(var hidden in new[]{"300","完整句子","必须综合","不要复制","文风","写作风格","不要照搬","不同但","谨慎而合理的动机","背景必须解释"})
     Check(!(bare.System+bare.User).Contains(hidden),"no hidden writing requirement: "+hidden);
    Check(bare.System.Contains("严格 JSON")&&bare.System.Contains("事实"),"protocol and facts remain built-in");
+   Check(bare.System.Contains("profile 必须是非空字符串")&&bare.System.Contains("不得是对象或数组"),"actual persona request specifies a string profile");
   }
   Check(AnimusForge.NpcPersonaTextRules.BuildFallbackPersonality(new string('n',600),"t","j","f","s","h").Length==420,"promoted personality fallback 420");
   Check(AnimusForge.NpcPersonaTextRules.BuildFallbackBackground("n","t","j","f","s",new string('h',400)).EndsWith(new string('h',240)),"promoted fallback history 240");

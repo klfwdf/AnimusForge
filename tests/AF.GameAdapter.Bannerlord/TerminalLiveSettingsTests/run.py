@@ -10,6 +10,7 @@ p = argparse.ArgumentParser()
 p.add_argument('--api', choices=['1.3', '1.4'], required=True)
 p.add_argument('--candidate', type=Path, required=True)
 p.add_argument('--baseline', action='store_true')
+p.add_argument('--content-language', choices=['zh-CN', 'en'], default='zh-CN')
 a = p.parse_args()
 candidate = a.candidate.resolve(strict=True)
 digest = hashlib.sha256(candidate.read_bytes()).hexdigest().upper()
@@ -26,7 +27,7 @@ module.mkdir()
 copy = module / 'bin/Win64_Shipping_Client/versions' / a.api / 'AnimusForge.dll'
 copy.parent.mkdir(parents=True)
 shutil.copyfile(candidate, copy)
-fixture = subprocess.run(['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(ROOT / 'tests/modules/AF.Module.Prompt/Composition/actual_module_fixture.ps1'), '-ProjectRoot', str(ROOT), '-ModuleRoot', str(module), '-Language', 'zh-CN'], capture_output=True, text=True, encoding='utf-8', errors='replace', env=env)
+fixture = subprocess.run(['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(ROOT / 'tests/modules/AF.Module.Prompt/Composition/actual_module_fixture.ps1'), '-ProjectRoot', str(ROOT), '-ModuleRoot', str(module), '-Language', a.content_language], capture_output=True, text=True, encoding='utf-8', errors='replace', env=env)
 (out / 'fixture.log').write_text(fixture.stdout + fixture.stderr, encoding='utf-8')
 assert fixture.returncode == 0, fixture.stdout + fixture.stderr
 framework = Path('C:/Users/29310/.nuget/packages/microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2')
@@ -55,6 +56,6 @@ if not code:
 else:
     print(build.stdout + build.stderr)
 assert hashlib.sha256(candidate.read_bytes()).hexdigest().upper() == digest
-(out / 'receipt.json').write_text(json.dumps({'candidate': str(candidate), 'sha256': digest, 'api': a.api, 'baseline': a.baseline, 'exit': code, 'scope': 'Workspace fixture, actual MCM JSON/product VMs; no live UI or native/HTTP'}, indent=2))
+(out / 'receipt.json').write_text(json.dumps({'candidate': str(candidate), 'sha256': digest, 'api': a.api, 'contentLanguage': a.content_language, 'baseline': a.baseline, 'exit': code, 'scope': 'Workspace fixture, actual MCM JSON/product VMs; no live UI or native/HTTP'}, indent=2))
 print(out)
 sys.exit(code)

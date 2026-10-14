@@ -67,7 +67,7 @@
     <string id="AF_ECO_UI_QuestTrustChanged" text="[Trust change] Completing {GIVER}'s quest increased personal trust by {PERSONAL}{PUBLIC}" />
     <string id="AF_ECO_UI_SettlementTrustBattleLost" text="[Settlement trust settlement] The battle was not won; no settlement trust was gained." />
     <string id="AF_ECO_UI_SettlementTrustNoNearby" text="[Settlement trust settlement] No affected settlement was found near this battle." />
-    <string id="AF_ECO_UI_SettlementTrustDetails" text="[Settlement trust settlement]\n{DETAILS}" />
+    <string id="AF_ECO_UI_SettlementTrustDetails" text="[Settlement trust settlement]&#10;{DETAILS}" />
     <string id="AF_ECO_UI_SettlementTrustNoDefeatedHostile" text="[Settlement trust settlement] No hostile force near a settlement was defeated, so no settlement trust was gained." />
     <string id="AF_ECO_UI_DebtSummaryNoDebt" text="No outstanding debt." />
     <string id="AF_ECO_UI_DebtSummaryGold" text="Total gold debt: {AMOUNT}" />
@@ -99,15 +99,15 @@
     <string id="AF_ECO_UI_RpForgeConfirmationPrice" text="{LABEL}: {AMOUNT} denars" />
     <string id="AF_ECO_UI_RpForgeConfirmationPlayerChoice" text="Template selection: player choice ({COUNT} candidates)" />
     <string id="AF_ECO_UI_RpForgeConfirmationExactMatch" text="Template selection: exact game-data match" />
-    <string id="AF_ECO_UI_RpForgeConfirmationGuaranteed" text="Craft success chance: 100%\nResult: the item will be crafted successfully." />
-    <string id="AF_ECO_UI_RpForgeConfirmationChance" text="Craft success chance: {CHANCE}\nOn a miss: a junk item (the investment is still consumed)." />
-    <string id="AF_ECO_UI_RpForgeConfirmationQuestion" text="\n\nConfirm crafting?" />
-    <string id="AF_ECO_UI_RpForgeEquipmentWarning" text="\n\nWarning: degradation is more likely than 33.33%; consider raising smithing from {CURRENT} to {RECOMMENDED} (one level per {PRICE} denars of template value)." />
+    <string id="AF_ECO_UI_RpForgeConfirmationGuaranteed" text="Craft success chance: 100%&#10;Result: the item will be crafted successfully." />
+    <string id="AF_ECO_UI_RpForgeConfirmationChance" text="Craft success chance: {CHANCE}&#10;On a miss: a junk item (the investment is still consumed)." />
+    <string id="AF_ECO_UI_RpForgeConfirmationQuestion" text="&#10;&#10;Confirm crafting?" />
+    <string id="AF_ECO_UI_RpForgeEquipmentWarning" text="&#10;&#10;Warning: degradation is more likely than 33.33%; consider raising smithing from {CURRENT} to {RECOMMENDED} (one level per {PRICE} denars of template value)." />
     <string id="AF_ECO_UI_RpForgeEquipmentEffectRetained" text="{OUTCOME} {PROBABILITY}: positive attributes retained {RETAINED}; weight +{WEIGHT}" />
     <string id="AF_ECO_UI_RpForgeEquipmentEffectBonus" text="{OUTCOME} {PROBABILITY}: each positive attribute +{VALUE}; weight -{WEIGHT}" />
     <string id="AF_ECO_UI_RpForgeEquipmentEffectStable" text="{OUTCOME} {PROBABILITY}: positive attributes and weight unchanged" />
-    <string id="AF_ECO_UI_RpForgeCompleted" text="Crafted: {NAME}\nOutcome: {OUTCOME}\nItem value: {VALUE} denars\nCrafting stamina: -{STAMINA}; base crafting XP: +{EXPERIENCE}{ATTRIBUTES}" />
-    <string id="AF_ECO_UI_RpForgeXpInterrupted" text="\nBase crafting XP notification was interrupted by another mod; the item and costs were still settled to prevent duplicate rewards." />
+    <string id="AF_ECO_UI_RpForgeCompleted" text="Crafted: {NAME}&#10;Outcome: {OUTCOME}&#10;Item value: {VALUE} denars&#10;Crafting stamina: -{STAMINA}; base crafting XP: +{EXPERIENCE}{ATTRIBUTES}" />
+    <string id="AF_ECO_UI_RpForgeXpInterrupted" text="&#10;Base crafting XP notification was interrupted by another mod; the item and costs were still settled to prevent duplicate rewards." />
     <string id="AF_ECO_UI_PartyTransferVolunteerReceived" text="Recruited {AMOUNT} {NAME}" />
     <string id="AF_ECO_UI_PartyTransferTroopReceived" text="Received {AMOUNT} {NAME}" />
     <string id="AF_ECO_UI_PartyTransferHeroPrisonerReceived" text="Received prisoner {NAME}" />
@@ -116,8 +116,8 @@
     <string id="AF_ECO_UI_TaskGiverFallback" text="quest giver" />
     <string id="AF_ECO_UI_EstimatedHits" text="estimated hits" />
     <string id="AF_ECO_UI_ActualHits" text="actual hits" />
-    <string id="AF_ECO_UI_SettlementTrustGain" text="{SETTLEMENT}: settlement trust +{LOCAL}{SHARED}\n{HIT} {DIRECT}, share {SHARE}, total {TOTAL}" />
-    <string id="AF_ECO_UI_SettlementTrustCarry" text="{SETTLEMENT}: settlement trust accumulated +{TOTAL}{SHARED}\n{HIT} {DIRECT}, share {SHARE}; less than 1 point" />
+    <string id="AF_ECO_UI_SettlementTrustGain" text="{SETTLEMENT}: settlement trust +{LOCAL}{SHARED}&#10;{HIT} {DIRECT}, share {SHARE}, total {TOTAL}" />
+    <string id="AF_ECO_UI_SettlementTrustCarry" text="{SETTLEMENT}: settlement trust accumulated +{TOTAL}{SHARED}&#10;{HIT} {DIRECT}, share {SHARE}; less than 1 point" />
     <string id="AF_ECO_UI_LetterDefaultTitle" text="Letter" />
     <string id="AF_ECO_UI_ViewLetterTitle" text="View Letter" />
     <string id="AF_ECO_UI_PopupCloseButton" text="Close" />

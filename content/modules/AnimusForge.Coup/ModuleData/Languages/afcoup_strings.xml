@@ -32,9 +32,9 @@
     <string id="AF_COUPX_RebellionIncomplete" text="Rebellion not completed: {MESSAGE}" />
     <string id="AF_COUPX_SettlementException" text="Rebellion settlement exception; changes made were retained and founding will not be repeated: {ERROR}" />
     <string id="AF_COUPX_SeamException" text="Post-coup rebellion seam exception; this session ends: {ERROR}" />
-    <string id="AF_COUPX_NamingContext" text="\nRebellion background: the player just seized the throne through armed coup; the rebelling clan is the former ruler's clan or clans more loyal to the former ruler; this is a rebellion against usurpation and does not require negative relations with the new ruler. Use this as the background for kingdom naming and description." />
-    <string id="AF_COUPX_RestorationContext" text="\nFormer ruler has been released; this war's goal is restoration of the old dynasty; only rebel victory can restore, peace negotiations do not restore." />
-    <string id="AF_COUPX_CapturedContext" text="\nFormer ruler is captured; the former ruler and their clan do not participate in this civil war; do not claim the former ruler personally raised rebellion." />
+    <string id="AF_COUPX_NamingContext" text="&#10;Rebellion background: the player just seized the throne through armed coup; the rebelling clan is the former ruler's clan or clans more loyal to the former ruler; this is a rebellion against usurpation and does not require negative relations with the new ruler. Use this as the background for kingdom naming and description." />
+    <string id="AF_COUPX_RestorationContext" text="&#10;Former ruler has been released; this war's goal is restoration of the old dynasty; only rebel victory can restore, peace negotiations do not restore." />
+    <string id="AF_COUPX_CapturedContext" text="&#10;Former ruler is captured; the former ruler and their clan do not participate in this civil war; do not claim the former ruler personally raised rebellion." />
     <string id="AF_COUPX_NamingLogTarget" text="Post-coup rebellion kingdom naming - {CLAN}" />
 
     <!-- CoupRebellionBridge outcome fact messages -->

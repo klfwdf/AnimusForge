@@ -99,15 +99,15 @@
     <string id="AF_ECO_UI_RpForgeConfirmationPrice" text="{LABEL}：{AMOUNT} 第纳尔" />
     <string id="AF_ECO_UI_RpForgeConfirmationPlayerChoice" text="模板选择：玩家手动选择（{COUNT} 候选）" />
     <string id="AF_ECO_UI_RpForgeConfirmationExactMatch" text="模板选择：游戏数据精确匹配" />
-    <string id="AF_ECO_UI_RpForgeConfirmationGuaranteed" text="制造成功率：100%\n结果：成功制造该物品。" />
-    <string id="AF_ECO_UI_RpForgeConfirmationChance" text="制造成功率：{CHANCE}\n未命中时：垃圾物品（投入仍会消耗）。" />
-    <string id="AF_ECO_UI_RpForgeConfirmationQuestion" text="\n\n确认制造？" />
-    <string id="AF_ECO_UI_RpForgeEquipmentWarning" text="\n\n【警告】劣化概率高于 33.33%；建议将锻造从 {CURRENT} 提高至 {RECOMMENDED} 级（模板每 {PRICE} 第纳尔对应 1 级）。" />
+    <string id="AF_ECO_UI_RpForgeConfirmationGuaranteed" text="制造成功率：100%&#10;结果：成功制造该物品。" />
+    <string id="AF_ECO_UI_RpForgeConfirmationChance" text="制造成功率：{CHANCE}&#10;未命中时：垃圾物品（投入仍会消耗）。" />
+    <string id="AF_ECO_UI_RpForgeConfirmationQuestion" text="&#10;&#10;确认制造？" />
+    <string id="AF_ECO_UI_RpForgeEquipmentWarning" text="&#10;&#10;【警告】劣化概率高于 33.33%；建议将锻造从 {CURRENT} 提高至 {RECOMMENDED} 级（模板每 {PRICE} 第纳尔对应 1 级）。" />
     <string id="AF_ECO_UI_RpForgeEquipmentEffectRetained" text="{OUTCOME} {PROBABILITY}：有效正属性保留 {RETAINED}；重量增加 {WEIGHT}" />
     <string id="AF_ECO_UI_RpForgeEquipmentEffectBonus" text="{OUTCOME} {PROBABILITY}：每项有效正属性 +{VALUE}；重量降低 {WEIGHT}" />
     <string id="AF_ECO_UI_RpForgeEquipmentEffectStable" text="{OUTCOME} {PROBABILITY}：有效正属性与重量不变" />
-    <string id="AF_ECO_UI_RpForgeCompleted" text="制造完成：{NAME}\n结果：{OUTCOME}\n成品价值：{VALUE} 第纳尔\n锻造体力：-{STAMINA}　基础锻造经验：+{EXPERIENCE}{ATTRIBUTES}" />
-    <string id="AF_ECO_UI_RpForgeXpInterrupted" text="\n基础锻造经验通知被其他 Mod 中断；为防止重复经验，本次物品与消耗仍已结算。" />
+    <string id="AF_ECO_UI_RpForgeCompleted" text="制造完成：{NAME}&#10;结果：{OUTCOME}&#10;成品价值：{VALUE} 第纳尔&#10;锻造体力：-{STAMINA}　基础锻造经验：+{EXPERIENCE}{ATTRIBUTES}" />
+    <string id="AF_ECO_UI_RpForgeXpInterrupted" text="&#10;基础锻造经验通知被其他 Mod 中断；为防止重复经验，本次物品与消耗仍已结算。" />
     <string id="AF_ECO_UI_PartyTransferVolunteerReceived" text="已招募 {AMOUNT} 名{NAME}" />
     <string id="AF_ECO_UI_PartyTransferTroopReceived" text="已获得 {AMOUNT} 名{NAME}" />
     <string id="AF_ECO_UI_PartyTransferHeroPrisonerReceived" text="已获得俘虏{NAME}" />
@@ -116,8 +116,8 @@
     <string id="AF_ECO_UI_TaskGiverFallback" text="委托人" />
     <string id="AF_ECO_UI_EstimatedHits" text="预估命中项" />
     <string id="AF_ECO_UI_ActualHits" text="实际命中项" />
-    <string id="AF_ECO_UI_SettlementTrustGain" text="{SETTLEMENT}：定居点信任 +{LOCAL}{SHARED}\n{HIT} {DIRECT}，分成 {SHARE}，合计 {TOTAL}" />
-    <string id="AF_ECO_UI_SettlementTrustCarry" text="{SETTLEMENT}：定居点信任累计 +{TOTAL}{SHARED}\n{HIT} {DIRECT}，分成 {SHARE}；不足1点" />
+    <string id="AF_ECO_UI_SettlementTrustGain" text="{SETTLEMENT}：定居点信任 +{LOCAL}{SHARED}&#10;{HIT} {DIRECT}，分成 {SHARE}，合计 {TOTAL}" />
+    <string id="AF_ECO_UI_SettlementTrustCarry" text="{SETTLEMENT}：定居点信任累计 +{TOTAL}{SHARED}&#10;{HIT} {DIRECT}，分成 {SHARE}；不足1点" />
     <string id="AF_ECO_UI_LetterDefaultTitle" text="信件" />
     <string id="AF_ECO_UI_ViewLetterTitle" text="查看信件" />
     <string id="AF_ECO_UI_PopupCloseButton" text="关闭" />

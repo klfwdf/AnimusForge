@@ -145,7 +145,7 @@
     <string id="AFD_UI_Scene_HistoryTitle" text="场景对话记录" />
     <string id="AFD_UI_Scene_Close" text="关闭" />
     <string id="AFD_UI_Scene_Return" text="返回对话" />
-    <string id="AFD_UI_Scene_ExpandFolio" text="展开\n对谈手札" />
+    <string id="AFD_UI_Scene_ExpandFolio" text="展开&#10;对谈手札" />
     <string id="AFD_UI_Scene_ExpandFolioHint" text="(按 T)" />
     <string id="AFD_UI_Scene_DocketInstructions" text="点名片 = 选为对话对象 · 点印章 = 参与 / 屏蔽 / 锁定" />
     <string id="AFD_UI_Scene_MoreHistory" text="滚轮查看更多" />

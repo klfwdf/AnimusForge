@@ -13,7 +13,7 @@
     <string id="AF_CONV_UI_Shout_TagInputHint" text="输入正文和标签：" />
     <string id="AF_CONV_UI_Shout_Execute" text="执行" />
     <string id="AF_CONV_UI_TagTest_Title" text="标签输入 - {NAME}" />
-    <string id="AF_CONV_UI_TagTest_Subtitle" text="当前目标：{NAME}\n输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前 NPC 立即执行。" />
+    <string id="AF_CONV_UI_TagTest_Subtitle" text="当前目标：{NAME}&#10;输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前 NPC 立即执行。" />
     <string id="AF_CONV_UI_TagTest_NotExecuted" text="标签测试未执行。" />
     <string id="AF_CONV_UI_TagTest_DataDisabled" text="数据管理未开启，或当前没有可测试的对话目标。" />
     <string id="AF_CONV_UI_TagTest_NoConversationTarget" text="当前没有可接入的对话对象。" />
