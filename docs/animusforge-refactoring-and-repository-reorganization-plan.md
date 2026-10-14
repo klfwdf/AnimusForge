@@ -1,4 +1,29 @@
-﻿<a id="deep-trace-safety-20261014"></a>
+﻿<a id="ambient-diagnostic-complete-20261014"></a>
+## 2026-10-14 环境测试与深度诊断补漏完成（OFFLINE_VERIFIED / LIVE_PENDING）
+
+本条明确替代deep-trace-safety-20261014、ambient-test-completion-20261014的IN_PROGRESS状态。main产品69f03579d，checkpoint718c44e64/c34fb70f3；此前终端/离屏追加清理5e1e354ac/064cbaf6a继续有效。没有push、部署、打包、版本递增或玩家配置/存档写入；原Microsoft、NuGet未跟踪目录保留。
+
+| 职责 | 真实源码（1-based） | 覆盖与边界 |
+| --- | --- | --- |
+| 环境测试按钮 | src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:6591、TownAmbientSettings.cs:161–194 | 原Action构造时绑定，点击捕获UI owner独立URL/key/effective model，后台仅字符串，通知回主线程；主API、环境资格/预算/缓存保持 |
+| 原环境消费者 | src/modules/AF.Module.Llm/Ambient/TownAmbientAiClient.cs:137–168、297–307 | 保留零参测试与原实际发送，新增快照重载；缺配置不请求，原传输/解析/用量保持 |
+| 双语消费者 | content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml:3410–3414、CNs/af_ui_strings-zh-CN.xml:3444–3448 | 五成对键经DuelSettings.Ui/UiFormat消费，INPUT/OUTPUT与真实换行；旧键和值保持 |
+| 诊断参数安全 | src/AF.GameAdapter.Bannerlord/Diagnostics/DynamicPatcher.cs:89–149 | 原prefix先ToString再限流；现MethodBase/TickCount并发准入后格式化，普通1秒/热方法60秒；游戏对象仅类型名，字符串512字符/最多12参数，不读取实体状态 |
+| FirstChance关闭 | src/AF.GameAdapter.Bannerlord/Diagnostics/BannerlordExceptionSentinel.cs:131–139、200–213、237–250；TraceHelper.cs:15–16 | 原应用tick一次设置读取、状态转换加/移除自有监听；回调原子开关与重入保护，关闭不读堆栈、回调不读MCM；原严重异常监听/他人Harmony保持 |
+
+TownAmbientSettings.cs同在表中Configuration/Mcm。已有动态Harmony补丁关闭后仍有入口开关检查，本次未卸载；不把减少诊断成本当完全消除拦截成本或全部卡顿根因。
+
+验证：原build_single_module.ps1 Debug双API/Bootstrap/Coup/注册PASS，两API各363既有warnings/0 errors，artifacts/terminal-live-fixes-20261014/build-ambient-trace-final.log。首次漏改旧注册调用编译失败保留在build-ambient-trace.log，已修复。
+
+TerminalLiveSettingsTests **1.3 469 / 1.4 479 PASS**：实际MCM JSON/工作区磁盘重载、自动保存、全部按钮Action/Invoker、采集帧准入与1.4实际只读property host。按钮委托检查不等于每个外部/破坏性动作实执行；本次仅环境测试执行，独立进程Harmony拦截Gateway返回虚构结果，无真实HTTP。UI页面/global不同配置、点击后改页面仍发送原快照，主模型不变、缺配置不请求，实际CN/EN通知与变量投影PASS。候选hash/API回执：artifacts/tests/terminal-live-settings/run-11107d3a88d042d192f0595a5cb4c702、run-89b742a4680c40f89df2d833186dc54b。
+
+新DLL实际prefix连续10000次不调用主动抛空引用对象的ToString；限流边界/TickCount回绕/128并发单准入、FirstChance开启/关闭/重入/关闭零堆栈读取PASS。旧安装ea6c51247 DLL独立fixture **预期FAIL**：1000次prefix全部执行危险ToString，run-05302309c197447b9a3a2cfbff4574d3；不是实际PartyBase坏对象回放或帧率测量。初版测试重复LoadFrom/Default身份、CopyLocal和baseline变量冲突均修正，失败记录保留。XML成对键/旧值/变量/换行、git whitespace检查PASS。
+
+DisableOptimizations=true正常发布没有必要，建议Release开启优化，仅调试保留关闭；原默认Debug（scripts/build/build_single_module.ps1:10）未改。既有证据本机1.6包flags263、Release候选flags2，历史1.5.7亦Debug，不能直接认定1.6退化单一根因或解释GPU深度纹理错误，见artifacts/terminal-perf-audit-20261014/REPORT.md。
+
+未验真实provider、Gauntlet交互、持续帧耗时/CPU/GPU剖析、故障GPU预算/dump；近期事实截图请求仍未知，离屏追加清理实机效果待验。此前无关成人自动人设Hint全量fallback漂移保留。回滚69f03579d聚焦inverse/revert，保留其他提交，不hard reset；本地报告artifacts/terminal-live-fixes-20261014/AMBIENT_DIAGNOSTICS_REPORT.md。
+
+<a id="deep-trace-safety-20261014"></a>
 ## 2026-10-14 深度诊断空引用补漏（IN_PROGRESS）
 
 - 用户追问此前PartyBase.ToString空引用：先前只分析未修，本轮与全项补漏一起实施。现源码先对所有参数ToString再限流，且FirstChance注册后关闭设置不会取消监听。

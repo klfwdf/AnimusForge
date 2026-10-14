@@ -1,4 +1,10 @@
-﻿# 当前交接：终端实机反馈与采集前追加清理（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+﻿# 当前交接：环境API测试与诊断空引用补漏（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品69f03579d：补环境测试Action，使用页面点击快照/主线程CN/EN通知；诊断先并发限流，游戏对象仅类型名；关闭取消自有FirstChance监听、增加重入保护。主API、原玩法/资格/预算/构建默认Debug保持。
+- 原双API/Bootstrap/Coup/注册PASS；实际MCM/终端/诊断/虚构环境Gateway回放1.3/1.4各469/479项PASS。旧DLL1000次prefix执行危险ToString，新DLL10000次零调用；未证明所有卡顿或GPU根因。
+- [唯一主台账、代码坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#ambient-diagnostic-complete-20261014)。此前5e1e354ac/064cbaf6a继续有效；近期事实请求未找到，GPU实机待验，本轮未部署/push、玩家数据未写。
+
+# 当前交接：终端实机反馈与采集前追加清理（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品5e1e354ac：终端1600x940/自动保存、补最低增幅与凝视JSON定义、隐藏周期快捷键文字保留导航；MCM原地清列表改完整selector替换。产品064cbaf6a：新采集前追加AF自有残留清理和两应用帧准入，原8结束清理函数及会话缓存消费者不动；不清当前Mission/原版池，不把两帧当GPU fence。
 - 双API/Bootstrap/Coup/注册PASS；1.3/1.4实际MCM JSON、临时磁盘重载、终端自动保存/帧准入365/375项PASS；selector17项及1.4真实只读property host通过。原DLL关系增幅JSON失败、原selector空绑定中间态失败；原无关成人自动人设Hint全量fallback漂移保留。
