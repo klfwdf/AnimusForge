@@ -20,6 +20,8 @@ internal static bool HasPartyTransferRuleContext(string extras)
 
 internal static string BuildNpcInitiatedOpeningPersistentFactText(string extraFact)
 	{
+        // Retrieved biography is knowledge, not a new AFEF action committed by this opening.
+        if (!string.IsNullOrEmpty(PlayerExperiencePrompt.Evidence(extraFact))) return "";
 		string factBody = StripAfefPrefixForPromptSection(extraFact);
 		return string.IsNullOrWhiteSpace(factBody) ? "" : (PromptComposerTexts.Raw("scene_compat_001") + factBody);
 	}

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems><ImplicitUsings>enable</ImplicitUsings>
+    <UseAppHost>false</UseAppHost>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CurrentDllProgram.cs" />
+    <Compile Include="../../../replay/PhaseEightParityReplayTests/ProactiveOpeningOwnerReplay.cs" />
+    <Compile Include="../../../replay/PhaseEightParityReplayTests/ProactiveCooldownOwnerReplay.cs" />
+    <Compile Include="../../../replay/PhaseEightParityReplayTests/ProactiveCandidateScanOwnerReplay.cs" />
+    <Compile Include="../../../replay/PhaseEightParityReplayTests/ProactiveSessionOwnerReplay.cs" />
+    <Compile Include="../../../replay/PhaseEightParityReplayTests/ProactiveQualificationReplay.cs" />
+  </ItemGroup>
+</Project>

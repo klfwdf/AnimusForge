@@ -151,6 +151,8 @@ public partial class CourierDeliveryBehavior
     {
         if (!TWParallel.IsMainThread()) throw new InvalidOperationException("Courier prompt capture requires the game thread.");
         if (history == null) throw new ArgumentNullException(nameof(history));
+        if (inbound && session.Experience != null && !PlayerNotorietyBehavior.CanStillDiscussExperience(participant, session.Experience, true, false))
+            throw new InvalidOperationException("Experience source is no longer known.");
         return new CourierPromptInput(session, participant, inbound, fallbackLetter, generation, history);
     }
 
@@ -158,6 +160,8 @@ public partial class CourierDeliveryBehavior
     {
         if (!IsCourierHistoryOwnerCurrent(input.SessionId, input.Session, input.Participant, input.Inbound)
             || input.Participant.IsDead) return false;
+        if (input.Inbound && input.Session.Experience != null
+            && !PlayerNotorietyBehavior.CanStillDiscussExperience(input.Participant, input.Session.Experience, true, false)) return false;
         // Same object/generation alone is insufficient if a live letter was edited during routing.
         return string.Equals(input.Session.LetterText, input.LetterText, StringComparison.Ordinal)
             && (!input.Inbound || (string.Equals(input.Session.InboundIntentText, input.IntentText, StringComparison.Ordinal)
@@ -290,6 +294,7 @@ public partial class CourierDeliveryBehavior
 		selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds) ?? new List<string>();
 		string extras = (ctx?.Extras ?? "").Trim();
 		extras = AppendCourierPlayerRecentActions(extras, sender);
+        if (session.Experience != null) extras = PlayerExperiencePrompt.RemoveRepeatedEvidence(extras, session.InboundIntentFact);
 		if (ShoutBehavior.HasPreprocessRuleHitForExternal(selectedRuleHits, "worldmap_party_command") || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command"))
 		{
 			string commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(sender, sender.CharacterObject, -1);

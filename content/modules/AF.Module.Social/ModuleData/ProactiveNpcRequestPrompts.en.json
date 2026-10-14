@@ -138,6 +138,16 @@
     "Diplomacy": {
       "OpeningPrompt": "Explain your reason for approaching, discussing the current diplomatic situation, impacts, and viable stances with a player of the same realm based on official declarations known to the realm. You may solicit opinions, but do not make commitments or execute actions on behalf of the monarch; output only the NPC's spoken line.",
       "LetterIntent": "Write a concise letter based on diplomatic declarations officially known to the realm, inviting a fellow faction member to discuss current affairs; do not present proposals as established facts."
+    },
+    "PlayerRecentEvent": {
+      "OpeningPrompt": "You initiated this conversation to discuss the supplied recent action of the player. Choose a natural question, congratulation, concern or disagreement consistent with your relationship and what is known. Stay with this one event. Do not turn it into a request for money or supplies, invent participation, a beneficiary, a result or a promise. Output only NPC speech.",
+      "LetterIntent": "You initiated this conversation to discuss the supplied recent action of the player. Choose a natural question, congratulation, concern or disagreement consistent with your relationship and what is known. Stay with this one event. Do not turn it into a request for money or supplies, invent participation, a beneficiary, a result or a promise. Output only NPC speech. Write a short letter instead of spoken dialogue; keep the same single subject and factual boundaries.",
+      "CompanionIntent": "You initiated this conversation to discuss the supplied recent action of the player. Choose a natural question, congratulation, concern or disagreement consistent with your relationship and what is known. Stay with this one event. Do not turn it into a request for money or supplies, invent participation, a beneficiary, a result or a promise. Output only NPC speech."
+    },
+    "PlayerHistoryDiscussion": {
+      "OpeningPrompt": "You initiated this conversation because of the supplied account of the player's past. Choose one supported experience to ask about, seek advice on or discuss from your own perspective. Treat the account as known background, not a newly executed action or proof of your own involvement. Do not turn the opening into a request for money or supplies. Output only NPC speech.",
+      "LetterIntent": "You initiated this conversation because of the supplied account of the player's past. Choose one supported experience to ask about, seek advice on or discuss from your own perspective. Treat the account as known background, not a newly executed action or proof of your own involvement. Do not turn the opening into a request for money or supplies. Output only NPC speech. Write a short letter instead of spoken dialogue; keep the same single subject and factual boundaries.",
+      "CompanionIntent": "You initiated this conversation because of the supplied account of the player's past. Choose one supported experience to ask about, seek advice on or discuss from your own perspective. Treat the account as known background, not a newly executed action or proof of your own involvement. Do not turn the opening into a request for money or supplies. Output only NPC speech."
     }
   }
 }

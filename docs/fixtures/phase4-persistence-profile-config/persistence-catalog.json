@@ -465,5 +465,22 @@
       "reason": "existing full JSON straight SyncData; report separately, not allowed for new code"
     }
   ],
-  "chunkGuardCoverage": "registered bindings + conventional Json-named SyncData arguments in selected production roots; source heuristic, not complete C# dataflow or game acceptance"
+  "chunkGuardCoverage": "registered bindings + conventional Json-named SyncData arguments in selected production roots; source heuristic, not complete C# dataflow or game acceptance",
+  "playerExperienceContactFields": {
+    "ownerKey": "_af_proactive_npc_request_state_v1",
+    "ownerSource": "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
+    "stateField": "ExperienceContacts",
+    "fields": [
+      "DiscussedUntil",
+      "SourceFatigueUntil",
+      "Pending"
+    ],
+    "sessionField": "Experience",
+    "channelSessionOwners": [
+      "ProactiveNpcRequestSession",
+      "CompanionChatSession",
+      "CourierSession"
+    ],
+    "policy": "Existing chunked wrappers and legacy keys remain. Optional detached evidence and bounded receipts; expired reservations are not successful discussions. No full biography copy or Tick serialization."
+  }
 }

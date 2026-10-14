@@ -1826,6 +1826,14 @@ internal sealed partial class SceneConversationSessionRuntime
 			_ports.RecordResponseForAllNearbySafe(request.AllNpcData, request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText);
 			_ports.PersistNpcSpeechToNamedHeroes(request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText, request.AllNpcData);
 		}
+        if (!string.IsNullOrEmpty(PlayerExperiencePrompt.Evidence(request.FactText)))
+        {
+            var presented = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _ports.EnqueueSpeechLineWithOptions(request.TargetNpc, text, request.AllNpcData, commitHistory: false,
+                suppressStare: request.SuppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: request.ConversationEpoch,
+                completionSource: presented, canStillPublish: request.CanStillPublish);
+            return await presented.Task;
+        }
 		_ports.EnqueueSpeechLine(request.TargetNpc, text, request.AllNpcData, skipHistory: true, suppressStare: request.SuppressStare, canStillPublish: request.CanStillPublish);
 		return true;
 	}

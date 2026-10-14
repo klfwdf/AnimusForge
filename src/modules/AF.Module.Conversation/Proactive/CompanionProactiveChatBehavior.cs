@@ -502,21 +502,13 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			});
 		}
 
-		if (PlayerNotorietyBehavior.TryGetLatestPlayerRecentActionForExternal(hero, recentWindow, out string playerEventKey, out string playerEventText, out int playerEventDay)
-			&& IsWithinRecentWindow(playerEventDay, currentDay, recentWindow)
-			&& !IsVanillaGrievanceTopic(playerEventKey + " " + playerEventText))
-		{
-			int age = Math.Max(0, currentDay - playerEventDay);
-			motives.Add(new CompanionChatMotive
-			{
-				Type = MotivePlayerEvent,
-				StableKey = "player_event:" + playerEventKey,
-				IsEvent = true,
-				Urgency = ClampFloat(95f - age * 3.5f, 60f, 95f),
-				FactText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0003") + LimitText(playerEventText, 320),
-				IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0004")
-			});
-		}
+        foreach (var experience in PlayerNotorietyBehavior.CaptureExperience(hero, false, true))
+        {
+            motives.Add(new CompanionChatMotive { Type = experience.Kind, StableKey = experience.SourceKey,
+                Experience = experience, Urgency = experience.Urgency,
+                FactText = ProactiveNpcRequestBehavior.ExperienceFact(experience),
+                IntentText = AIConfigHandler.GetProactiveNpcRequestCompanionIntent(experience.Kind) });
+        }
 
 		if (hero.IsWounded)
 		{
@@ -721,9 +713,12 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		}
 		string prompt = motive.IntentText + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0041");
 		int noticeDays = ClampInt(settings.CompanionProactiveChatNoticeLifetimeDays, 1, 30);
-		_storage.PendingSession = new CompanionChatSession
+		string experienceSessionId = Guid.NewGuid().ToString("N");
+        if (motive.Experience != null && ProactiveNpcRequestBehavior.ReserveExperience(experienceSessionId, hero, "companion", motive.Experience) == null) return;
+        _storage.PendingSession = new CompanionChatSession
 		{
-			Id = Guid.NewGuid().ToString("N"),
+			Id = experienceSessionId,
+            Experience = motive.Experience,
 			HeroId = HeroId(hero),
 			HeroName = heroName,
 			MotiveType = motive.Type,
@@ -792,7 +787,10 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		extraFact = (pending.ExtraFact ?? "").Trim();
+		if (pending.Experience != null && !PlayerNotorietyBehavior.CanStillDiscussExperience(hero, pending.Experience, false, true))
+        { ConsumePendingSession("experience_no_longer_known"); return false; }
+        extraFact = (pending.ExtraFact ?? "").Trim();
+        ProactiveNpcRequestBehavior.ArmExperienceOpening(hero, extraFact);
 		promptText = (pending.PromptText ?? "").Trim();
 		RecordInteraction(hero);
 		ConsumePendingSession("opening_consumed");
@@ -806,7 +804,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (pending.IsEventMotive && !string.IsNullOrWhiteSpace(pending.MotiveStableKey))
+		if (pending.Experience != null && reason != "opening_consumed") ProactiveNpcRequestBehavior.ReleaseExperience(pending.Id);
+        if (pending.IsEventMotive && !string.IsNullOrWhiteSpace(pending.MotiveStableKey))
 		{
 			int keepDays = Math.Max(30, ClampInt(DuelSettings.GetSettings()?.CompanionProactiveChatRecentEventWindowDays ?? 10, 1, 30) + 3);
 			_storage.ConsumedEventKeyUntilDays[pending.MotiveStableKey.Trim()] = NowDays() + keepDays;
@@ -1114,7 +1113,14 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		List<CompanionChatCandidate> valid = (candidates ?? new List<CompanionChatCandidate>())
 			.Where(x => x?.Hero != null && x.Motive != null && x.Weight > 0f)
 			.ToList();
-		float total = valid.Sum(x => x.Weight);
+		bool hasExperience = valid.Any(x => x.Motive.Experience != null);
+        bool hasOther = valid.Any(x => x.Motive.Experience == null);
+        if (hasExperience && hasOther)
+        {
+            bool chooseExperience = MBRandom.RandomFloat < .5f;
+            valid = valid.Where(x => (x.Motive.Experience != null) == chooseExperience).ToList();
+        }
+        float total = valid.Sum(x => x.Weight);
 		if (valid.Count == 0 || total <= 0f)
 		{
 			return null;
@@ -1339,6 +1345,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 
 	private sealed class CompanionChatSession
 	{
+        public PlayerExperienceMotive Experience { get; set; }
 		public string Id { get; set; } = "";
 		public string HeroId { get; set; } = "";
 		public string HeroName { get; set; } = "";
@@ -1358,7 +1365,9 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		public long OpeningAttemptUtcTicks { get; set; }
 	}
 
-	private sealed class CompanionChatCandidate
+	internal static bool HasExperienceSession(string id) => Instance?._storage?.PendingSession?.Id == id;
+
+    private sealed class CompanionChatCandidate
 	{
 		public Hero Hero;
 		public CompanionChatMotive Motive;
@@ -1370,6 +1379,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 
 	private sealed class CompanionChatMotive
 	{
+        public PlayerExperienceMotive Experience;
 		public string Type = "";
 		public string StableKey = "";
 		public bool IsEvent;

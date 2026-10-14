@@ -112,6 +112,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			storageJson = JsonConvert.SerializeObject(new ProactiveNpcRequestStorage
 			{
 				ActiveSession = _activeSession,
+				ExperienceContacts = _experienceContacts,
 				HeroCooldownUntilDays = _cooldownOwner.HeroCooldownUntilDays,
 				NeedTypeFatigueUntilDays = _cooldownOwner.NeedTypeFatigueUntilDays,
 				DiplomacyDiscussionKeysUntilDays = _cooldownOwner.DiplomacyDiscussionKeysUntilDays,
@@ -132,6 +133,9 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			storageJson = CampaignSaveChunkHelper.LoadChunkedString(dataStore, StorageKey, "ProactiveNpcRequest");
 			ProactiveNpcRequestStorage storage = string.IsNullOrWhiteSpace(storageJson) ? null : JsonConvert.DeserializeObject<ProactiveNpcRequestStorage>(storageJson);
 			_sessionOwner.Import(storage?.ActiveSession);
+			_experienceContacts = storage?.ExperienceContacts ?? new PlayerExperienceContactState();
+			_experienceContacts.Normalize();
+			_experienceInFlight.Clear();
 			_cooldownOwner.Import(storage?.HeroCooldownUntilDays,
 				storage?.NeedTypeFatigueUntilDays ?? storage?.NeedCooldownUntilDays,
 				storage?.DiplomacyDiscussionKeysUntilDays,
@@ -369,6 +373,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private void OnHourlyTick()
 	{
+		ReconcileExperienceContacts();
 		try
 		{
 			CleanupActiveSessionIfNeeded("hourly_tick");
@@ -541,6 +546,11 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return;
 		}
 		ProactiveCandidate candidate = scan.BestCandidate;
+        if (scan.BestExperienceCandidate != null && (candidate == null || MBRandom.RandomFloat < .5f))
+        {
+            candidate = scan.BestExperienceCandidate;
+            if (!TryEvaluateCandidateTrigger(candidate, settings, scan.Stats)) return;
+        }
 		if (candidate == null || candidate.Party == null || !candidate.Party.IsActive)
 		{
 			Logger.LogVerbose("ProactiveNpcRequest", "scan_no_candidate", () => "scan no candidate: " + scan.Stats.ToLogString(), 10.0);
@@ -569,6 +579,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		ProactiveNpcRequestSession session = new ProactiveNpcRequestSession
 		{
 			Id = Guid.NewGuid().ToString("N"),
+			Experience = candidate.Experience,
 			HeroId = GetHeroKey(hero),
 			PartyId = (party.StringId ?? "").Trim(),
 			NeedType = string.IsNullOrWhiteSpace(candidate.NeedType) ? NeedFoodShortage : candidate.NeedType,
@@ -693,7 +704,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			KingdomTargetVassalClanCount = candidate.KingdomTargetVassalClanCount,
 			IsTestFallback = candidate.IsTestFallback
 		};
-		if (!_sessionOwner.TryStart(session))
+		if (!((session.Experience == null || ReserveExperience(session.Id, hero, "map", session.Experience) != null) && _sessionOwner.TryStart(session)))
 		{
 			return;
 		}
@@ -914,7 +925,9 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
             LogOpeningState("mark", hero, nativeConversation, "no_matching_request");
 			return;
 		}
-		string fact = BuildTriggerSourceOpeningFact(hero);
+		if (_activeSession.Experience != null && !PlayerNotorietyBehavior.CanStillDiscussExperience(hero, _activeSession.Experience, false, false))
+        { CancelActiveSession("experience_no_longer_known", true); return; }
+        string fact = _activeSession.Experience == null ? BuildTriggerSourceOpeningFact(hero) : "";
 		string needFact = BuildOpeningFact(hero);
 		if (!string.IsNullOrWhiteSpace(needFact))
 		{
@@ -987,6 +1000,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return false;
 		}
         LogOpeningState("consume", hero, nativeConversation, "pending_consumed");
+        ArmExperienceOpening(hero, extraFact);
 		CompleteActiveForHeroInternal(hero, nativeConversation ? "native_opening_consumed" : "scene_opening_consumed");
 		return !string.IsNullOrWhiteSpace(extraFact);
 	}
@@ -1121,6 +1135,8 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private static string NormalizeNeedType(string needType)
 	{
 		string text = (needType ?? "").Trim();
+        if (string.Equals(text, PlayerExperienceContactState.HistoryKind, StringComparison.OrdinalIgnoreCase)) return PlayerExperienceContactState.HistoryKind;
+        if (string.Equals(text, PlayerExperienceContactState.RecentKind, StringComparison.OrdinalIgnoreCase)) return PlayerExperienceContactState.RecentKind;
 		if (string.Equals(text, NeedFoodShortage, StringComparison.OrdinalIgnoreCase))
 		{
 			return NeedFoodShortage;
@@ -1394,6 +1410,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private void CancelActiveSession(string reason, bool releaseParty)
 	{
 		ProactiveNpcRequestSession session = _activeSession;
+        if (session != null && !_experienceInFlight.Contains(session.Id)) ReleaseExperience(session.Id);
 		MobileParty party = ResolveActiveParty();
 		if (releaseParty)
 		{
@@ -1491,6 +1508,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private string BuildOpeningFact(Hero hero)
 	{
+        if (_activeSession?.Experience != null) return ExperienceFact(_activeSession.Experience);
 		MobileParty party = hero?.PartyBelongedTo ?? ResolveActiveParty();
 		string playerName = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0077")).Trim();
 		string npcName = hero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0078");
@@ -3649,6 +3667,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private sealed class ProactiveNpcRequestStorage
 	{
 		public ProactiveNpcRequestSession ActiveSession { get; set; }
+        public PlayerExperienceContactState ExperienceContacts { get; set; }
 		public Dictionary<string, float> HeroCooldownUntilDays { get; set; }
 		public Dictionary<string, float> NeedTypeFatigueUntilDays { get; set; }
 		public Dictionary<string, float> DiplomacyDiscussionKeysUntilDays { get; set; }
@@ -3660,6 +3679,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private sealed class ProactiveNpcRequestSession
 	{
+        public PlayerExperienceMotive Experience { get; set; }
 		public string Id { get; set; }
 		public string HeroId { get; set; }
 		public string PartyId { get; set; }
@@ -3799,6 +3819,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private sealed class ProactiveCandidate
 	{
+        public PlayerExperienceMotive Experience { get; set; }
 		public MobileParty Party { get; set; }
 		public Hero Hero { get; set; }
 		public float Distance { get; set; }
@@ -4177,6 +4198,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public Dictionary<string, TerritorialSettlementSnapshot> TerritorialSettlementSnapshots { get; } = new Dictionary<string, TerritorialSettlementSnapshot>(StringComparer.OrdinalIgnoreCase);
 		public CandidateScanStats Stats { get; set; } = new CandidateScanStats();
 		public ProactiveCandidate BestCandidate { get; set; }
+        public ProactiveCandidate BestExperienceCandidate { get; set; }
 		public int NextIndex { get; set; }
 		public int BatchSize { get; set; }
 		public long StartedAtUtcTicks { get; set; }

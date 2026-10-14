@@ -117,5 +117,8 @@
   "AF_SOCIAL_UI_ProactiveNeed_28": "王国政治议程",
   "AF_SOCIAL_UI_ProactiveNeed_29": "支持政策",
   "AF_SOCIAL_UI_ProactiveNeed_30": "讨论外交局势",
-  "AF_SOCIAL_UI_ProactiveNeed_31": "具体请求"
+  "AF_SOCIAL_UI_ProactiveNeed_31": "具体请求",
+  "experience_recent": "【玩家已知近况——主动交流的背景，不是本轮新发生的行动】",
+  "experience_history": "【玩家已知履历——主动交流的背景，不是本轮新发生的行动】",
+  "experience_letter_fallback": "关于这段记载，我想听听你自己的看法："
 }

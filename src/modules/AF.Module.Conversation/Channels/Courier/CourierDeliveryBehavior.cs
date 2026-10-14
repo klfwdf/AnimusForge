@@ -124,6 +124,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		public string InboundIntentText;
 		public string InboundFallbackLetter;
 		public string InboundEventKey;
+        public PlayerExperienceMotive Experience;
 		public bool IsNpcInitiated;
 		public int NpcInitiatedBondScore;
 		public string LastRouteKey;
@@ -201,6 +202,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private sealed class NpcInitiatedLetterMotive
 	{
+        public PlayerExperienceMotive Experience;
 		public string MotiveType;
 		public string LetterKind;
 		public string NeedType;

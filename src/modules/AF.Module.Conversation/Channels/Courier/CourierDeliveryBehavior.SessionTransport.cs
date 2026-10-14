@@ -225,7 +225,13 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			EndCourierReplyWaitPause(session, "inbound_letter_generated");
 		}
-		string letter = (session.LetterText ?? "").Trim();
+		if (session.Experience != null && !PlayerNotorietyBehavior.CanStillDiscussExperience(sender, session.Experience, true, false))
+        {
+            ProactiveNpcRequestBehavior.ReleaseExperience(session.Id);
+            CompleteAndDestroyCourier(session, courier);
+            return;
+        }
+        string letter = (session.LetterText ?? "").Trim();
 		string visibleLetter = CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(letter));
 		if (!session.DeliveryApplied)
 		{
@@ -242,6 +248,8 @@ public sealed partial class CourierDeliveryBehavior
 			ProcessPendingInboundDeliveredMemoryIntent(session.Id);
 			ShoutBehavior.RecordNativeConversationNpcLineForExternal(sender, sender?.CharacterObject, senderName, historyLine);
 			AddCourierLetterToPlayerInventory(session, sender, senderName, visibleLetter, isReply: false);
+            if (session.Experience != null && !string.IsNullOrWhiteSpace(visibleLetter))
+                ProactiveNpcRequestBehavior.FinishExperienceOpening(ProactiveNpcRequestBehavior.FindExperienceOpening(sender, session.InboundIntentFact), true);
 			if (session.IsNpcInitiated && !string.IsNullOrWhiteSpace(session.InboundNeedType))
 			{
 				ProactiveNpcRequestBehavior.RecordLetterNeedDeliveredForExternal(session.InboundNeedType);

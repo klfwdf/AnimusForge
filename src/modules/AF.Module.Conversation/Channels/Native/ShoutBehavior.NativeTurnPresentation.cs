@@ -25,10 +25,26 @@ namespace AnimusForge;
         private bool nativeTtsDispatchedBeforePostprocess;
         public async Task<NativeConversationTurnStep> ReceiveAndPresentAsync()
         {
-            NativeConversationMainReplyResult nativeMainReply = await NativeConversationMainReplyStage.RunAsync(
-                new NativeConversationMainReplyRuntime(_ports, admission, nativeTargetLog,
-                    nativePendingAfefKey, nativePendingPlayerHistoryEventSequence),
-                messages, onStreamText, npcName, nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw).ConfigureAwait(false);
+            Task<bool> experienceAck = null;
+            int experienceStreamClaimed = 0;
+            Action<string> showStream = onStreamText == null ? null : text =>
+            {
+                onStreamText(text);
+                if (admission.ExperienceTicket != null && !string.IsNullOrWhiteSpace(text)
+                    && System.Threading.Interlocked.CompareExchange(ref experienceStreamClaimed, 1, 0) == 0)
+                    experienceAck = _ports.RunNativeConversationMainThreadFuncAsync("experience_presented", nativeTargetLog, nativeTargetAgentIndex,
+                        () => { if (!SaveRuntimeGuard.IsCurrentGeneration(admission.Generation) || !_ports.IsNativeConversationAdmissionCurrent(admission, out _)) return false;
+                            ProactiveNpcRequestBehavior.FinishExperienceOpening(admission.ExperienceTicket, true); return true; }, false);
+            };
+            NativeConversationMainReplyResult nativeMainReply;
+            try
+            {
+                nativeMainReply = await NativeConversationMainReplyStage.RunAsync(
+                    new NativeConversationMainReplyRuntime(_ports, admission, nativeTargetLog,
+                        nativePendingAfefKey, nativePendingPlayerHistoryEventSequence),
+                    messages, showStream, npcName, nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw).ConfigureAwait(false);
+            }
+            finally { if (experienceAck != null) await experienceAck.ConfigureAwait(false); }
             if (!nativeMainReply.CanContinue) return NativeConversationTurnStep.Stop(nativeMainReply.StopText);
             postprocessReply = nativeMainReply.PostprocessReply;
             cleaned = "";
@@ -98,6 +114,10 @@ namespace AnimusForge;
             {
                 // Only the completed, normalized main reply is safe to linkify; streamed fragments remain plain text.
                 onMainReplyReady?.Invoke(nativeMainVisibleForTts, targetHero, targetCharacter);
+                if (onMainReplyReady != null && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
+                    await _ports.RunNativeConversationMainThreadFuncAsync("experience_reply_presented", nativeTargetLog, nativeTargetAgentIndex,
+                        () => { if (!SaveRuntimeGuard.IsCurrentGeneration(admission.Generation) || !_ports.IsNativeConversationAdmissionCurrent(admission, out _)) return false;
+                            ProactiveNpcRequestBehavior.FinishExperienceOpening(admission.ExperienceTicket, true); return true; }, false).ConfigureAwait(false);
                 Logger.Log("Logic", "[NativePerf] main_reply_display_ready target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " visibleLen=" + nativeMainVisibleForTts.Length + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
             }
             catch (Exception ex)
