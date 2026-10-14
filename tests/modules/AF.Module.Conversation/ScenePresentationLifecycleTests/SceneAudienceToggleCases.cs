@@ -30,9 +30,9 @@ internal static class SceneAudienceToggleCases
         GlobalSettings<DuelSettings>.ThrowOnRead = false;
         GlobalSettings<DuelSettings>.Loaded = settings;
         var property = typeof(DuelSettings).GetProperty(nameof(DuelSettings.AutoExcludeUnframedShoutParticipants));
-        Require(((SettingPropertyGroupAttribute)Attribute.GetCustomAttribute(property, typeof(SettingPropertyGroupAttribute))).Name == "3. 场景喊话", "correct MCM group");
+        Require(((SettingPropertyGroupAttribute)Attribute.GetCustomAttribute(property, typeof(SettingPropertyGroupAttribute))).Name == "{=AF_MCM_Group_SceneShout}Scene shout", "correct MCM group");
         var attribute = (SettingPropertyBoolAttribute)Attribute.GetCustomAttribute(property, typeof(SettingPropertyBoolAttribute));
-        Require(attribute.Name == "自动屏蔽未框选人物" && !attribute.RequireRestart && attribute.Order == 15, "MCM toggle metadata");
+        Require(attribute.Name == "{=AF_MCM_SceneAudience_AutoExclude}Auto-exclude unframed participants" && !attribute.RequireRestart && attribute.Order == 15, "MCM toggle metadata");
 
         Mission mission = new(); Mission.Current = mission;
         Agent.Main = new Agent { Index = 0, Mission = mission };

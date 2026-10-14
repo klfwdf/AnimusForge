@@ -1,3 +1,9 @@
+# 当前交接：场景接力打断与静默超时（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品7adf7c46f：接力期间暂停参与者空闲超时，每轮回复更新字数预算；打断作废旧计时/语音 token 并重新等待。单人/多人超时只静默释放，不再写“玩家长时间没有发言”或生成 NPC 反应。旧存档历史保留。
+- 生命周期131、speech output54、audience30及负控、原Debug双API/Bootstrap/Coup/注册PASS。未部署、Stage、打包或push；真实三人接力/TTS/读档未验。
+- [唯一主台账、源码地图、证据和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-interrupt-timeout-20261015)。证据artifacts/scene-interrupt-timeout-20261015/；回滚git revert 7adf7c46f。此条不改变前次已部署版本的记录，本次修复仍未覆盖游戏。
+
 # 当前交接：全部当前改动已统一部署（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户明确带上所有改动；main/f1ca8a4fa加全部当时未提交产品内容已由原流程构建部署到F盘游戏单模块AnimusForge，版本v1.6.0，更新31文件。8728产品输入构建至部署后不变，三DLL及3520 Stage文件核对PASS。

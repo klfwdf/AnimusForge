@@ -1,3 +1,17 @@
+<a id="scene-interrupt-timeout-20261015"></a>
+
+## 场景接力打断与静默超时（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户要求：修复 T 对话多人接力打断后的错误超时，并删除“玩家长时间没有发言”。产品提交 7adf7c46fa99c524ea1453946a4ffc4a53419f4d；意图检查点 e2ffebc75。
+- 接力参与者暂停普通空闲超时；每次已接收回复更新本轮字数预算。新 epoch / 打断重置当前接力参与者的等待起点和 token，清除其旧待启动计时及语音完成 token。正常收尾先解除旧 armed 状态，最终显示/语音后再开始等待。原短动作释放计时、距离退出、跟随/传唤/带路/会面分支保持。
+- 单人和多人超时只复用静默释放与返程，不再写该 AFEF、不请求告别/冷落反应。CN/EN 共用消费者已经移除；旧兼容资源 key 与已保存历史保留，未批量改写玩家存档。终端原每字秒数设置身份、范围与持久化不变。
+- 频率：新增参与者集合只在接力切换/收尾更新；既有超时循环仅加 HashSet 查询，无新增场景扫描、Tick IO、反射或 LLM 调用。
+- 代码地图（提交 7adf7c46f）：SceneInteractionLifecycleController.cs 75–115（HoldRelayInteractionWaits / RefreshRelayInteractionTimeout / RetireRelayInteractionWaits）；149–190（PrepareAutoGroupParticipantsForIdleTimeout）；691–804（单/多人静默释放）。均在 src/modules/AF.Module.Conversation/Channels/Scene/。同目录 ShoutBehavior.SceneSessionComposition.cs 80–82 接线；ShoutBehavior.SceneExecutionStages.cs 183–211 预算与 epoch 退休；ShoutBehavior.SceneConversationChains.cs 1030–1037 / 1177–1182 每次回复预算与异常收尾。
+- 验证：生产 owner 联编的生命周期 131、speech output 54、audience 30 项 PASS；恢复旧计时行为的负控准确失败；实际消费者源码接线 3 项 PASS；原 build_single_module.ps1 Debug 双 API（1.3.15 / 1.4.6 参考）、Bootstrap、Coup seam、注册门禁 PASS，最终退出码 0。测试补齐了已有文本/人设叶子替身并读取真实中文资源，不能据此声称完整双语/UI 实机验收。
+- 证据：artifacts/scene-interrupt-timeout-20261015/receipt.json、tests.log、negative-relay.log、source-wiring.json、build-dual-final.log、before/。构建包含共享工作区当时既有修改；本产品提交只含本任务九个文件，逐个校对修复前语义与 HEAD 一致。
+- 未验：真实玩家三人及更多 NPC/TTS/读档交互、实际模型输出与实机性能。未部署、Stage、打包、push。旧历史仍可能含此前记录，不属于新增计时事实。
+- 回滚：git revert 7adf7c46f；不重置共享目录，不删除旧档。本轮未修改游戏安装。
+
 <a id="audit-save-history-fixes-20261015"></a>
 ## 审查前四项与快报知识源修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 

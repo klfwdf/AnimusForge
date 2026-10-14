@@ -88,6 +88,8 @@ internal sealed class SceneConversationSessionPorts
     internal GetPresentationExcludedAgentIndicesCapability GetPresentationExcludedAgentIndices;
     internal delegate void HoldSceneConversationAgentsCapability(List<Agent> participants);
     internal HoldSceneConversationAgentsCapability HoldSceneConversationAgents;
+    internal Action<float> RefreshRelayInteractionTimeout;
+    internal Action RetireRelayInteractionWaits;
     internal delegate void NotePresentationRoundGroupCapability(Task groupTask);
     internal NotePresentationRoundGroupCapability NotePresentationRoundGroup;
     internal delegate bool PersistExtraFactToNamedHeroesCapability(
