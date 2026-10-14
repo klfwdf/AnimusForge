@@ -34,5 +34,6 @@
     <string id="AF_PERSONA_UI_TRAIT_reserved" text="Reserved" />
     <string id="AF_PERSONA_UI_TRAIT_disciplined" text="Disciplined" />
     <string id="AF_PERSONA_UI_TRAIT_opportunistic" text="Opportunistic" />
-  </strings>
+    <string id="AF_PERSONA_UI_CONTEXT_RecentChange" text="Recent change: " />
+</strings>
 </base>

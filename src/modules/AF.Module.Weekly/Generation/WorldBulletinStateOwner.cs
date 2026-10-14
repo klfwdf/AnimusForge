@@ -85,6 +85,7 @@ internal bool CaptureWorldBulletinEvent(string kind, string key, int score, stri
 			KingdomIds = (kingdomIds ?? Array.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
 		};
 		events.Add(e);
+		_port.EventCaptured?.Invoke(e);
 		if (events.Count > WorldBulletinPolicy.MaxEvents)
 		{
 			events.RemoveAt(0);
@@ -505,6 +506,7 @@ internal sealed class WorldBulletinPromptFacts
 internal sealed class WorldBulletinPort {
  internal Func<string> WritingRequirements;
  internal Func<string,string> ResolveKingdom;internal Func<EventRecordEntry,string> NoticeTitle,PopupSubtitle,PopupBody;
+	internal Action<WorldBulletinEvent> EventCaptured;
  internal Func<int> AutoWeek;internal Action<int> SetAutoWeek;
  internal Func<bool> Enabled,PublishingEnabled;internal Func<int> CurrentDay;internal Func<double> CurrentHour;internal Func<string> CurrentDate;internal Func<WorldBulletinFocus> Focus;internal Func<string,string> Render;
  internal Func<WorldBulletinSelection,WorldBulletinFocus,WorldBulletinPromptFacts> CapturePromptFacts;

@@ -23,6 +23,8 @@ internal static class PersonaImportOwner
  internal static void ApplySingleProfile<TProfile>(ref Dictionary<string, TProfile> authority, string heroId, TProfile imported) where TProfile : class
  {
   if (authority == null) authority = new Dictionary<string, TProfile>();
+  // Persona imports carry authored content, not another campaign's pending API work.
+  if (imported is MyBehavior.NpcPersonaProfile persona) persona.Evolution = null;
   // Single-NPC null imports intentionally delete; bulk imports still skip null entries.
   if (imported == null) authority.Remove(heroId);
   else authority[heroId] = imported;
@@ -35,6 +37,7 @@ internal static class PersonaImportOwner
   {
    if (string.IsNullOrEmpty(item.Key) || item.Value == null) continue;
    if (!overwriteExisting && authority.ContainsKey(item.Key)) continue;
+   if (item.Value is MyBehavior.NpcPersonaProfile persona) persona.Evolution = null;
    if (overwriteExisting) authority.Remove(item.Key);
    authority[item.Key] = item.Value;
   }

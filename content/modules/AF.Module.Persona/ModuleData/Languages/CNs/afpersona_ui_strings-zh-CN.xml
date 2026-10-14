@@ -34,5 +34,6 @@
     <string id="AF_PERSONA_UI_TRAIT_reserved" text="寡言" />
     <string id="AF_PERSONA_UI_TRAIT_disciplined" text="自律" />
     <string id="AF_PERSONA_UI_TRAIT_opportunistic" text="机会主义" />
-  </strings>
+    <string id="AF_PERSONA_UI_CONTEXT_RecentChange" text="最近变化：" />
+</strings>
 </base>
