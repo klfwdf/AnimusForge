@@ -1,4 +1,10 @@
-﻿# 当前交接：RP市场保护缓存与分帧补漏（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+﻿# 当前交接：全部当前改动已部署（2026-10-14，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户授权完整部署，main/c309749a9的全部运行改动已覆盖F盘游戏单模块v1.6.0：终端排版/字号/场景键、日结扫描/Watchdog、共用MCM文档配置、市场缓存及分帧清理；之前API/诊断/采集清理修复保留。
+- 原Release双API/Bootstrap/Coup/registration/Stage及部署exit0，更新13受管文件；安装520/530回放候选SHA吻合，3520 Stage项/276清单外项核验PASS，玩家资料和35个MCM文档配置哈希保持。双DLL DisableOptimizations=false。
+- [唯一主台账、证据、安装位置与人工回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-all-current-20261014)。完整证据artifacts/deploy-all-20261014-231816/；未启动实机、push、ZIP或版本递增，没有部署备份/自动回滚。此条替代下方旧未部署状态，实机性能/GPU/重启待验。
+
+# 当前交接：RP市场保护缓存与分帧补漏（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品4b406ed36：交易库存引用去重/弱版本缓存；含可售动态生成赠品继续资格重验。读档/每日补漏逐槽位分帧，应用帧128工作单元/约2ms软预算，按定居点及库存合并待办；原RP禁售、普通NPC赠品可售及经济池保护保持。
 - 52回归PASS，5种故障注入编译后均按预期FAIL；原Release双API/Bootstrap/Coup/注册PASS。覆盖源/代次/owner/保存/异常及原生swap-last替身；不是实机帧预算。大市场首次交易仍同步，单原生操作不可拆，读档残留跨帧清理。
