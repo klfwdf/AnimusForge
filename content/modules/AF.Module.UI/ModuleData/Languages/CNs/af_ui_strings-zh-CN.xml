@@ -3451,5 +3451,15 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_TERMINAL_UI_TerminalMapIconEnabled_Title" text="显示终端导航图标" />
   <string id="AF_TERMINAL_UI_TerminalMapIconEnabled_Hint" text="在大地图导航栏显示终端入口。至少保留一种终端入口。" />
   <string id="AF_TERMINAL_UI_Entry_Group" text="终端入口" />
+  <string id="AF_UI_Persona_EditExpanded" text="编辑扩展人设" />
+  <string id="AF_UI_Persona_ExpandedTitle" text="扩展人设 - {NAME}" />
+  <string id="AF_UI_Persona_ExpandedFieldTitle" text="{FIELD} - {NAME}" />
+  <string id="AF_UI_Persona_ExpandedLoaded" text="下方已载入当前内容。" />
+  <string id="AF_UI_Persona_ExpandedTextHint" text="每行填写一项；留空保存可清除此项内容。" />
+  <string id="AF_UI_Persona_TraitHint" text="选择特质后可设置强度（1–3）或移除，最多五项。" />
+  <string id="AF_UI_Persona_RemoveTrait" text="移除此特质" />
+  <string id="AF_UI_Persona_TraitStrength" text="强度 {LEVEL}" />
+  <string id="AF_UI_Persona_TraitLimit" text="已有五项特质，请先移除一项再添加。" />
+  <string id="AF_UI_Persona_ExpandedUpdated" text="扩展人设已更新。" />
 </strings>
 </base>
