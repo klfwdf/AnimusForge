@@ -10487,3 +10487,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 官方Debug build_single_module.ps1在1.3编译被并行MyBehavior.PersonaEvolution.cs:122的ConfiguredChatApplicationAdapter缺失符号阻断（363 warnings/1 error）；1.4、Bootstrap未运行。本次不改并行人设/插画功能。日志artifacts/bulletin-numeric-off-20261015/build.log、build-exit.txt。
 - 精确只暂存共享WorldBulletinStateOwner文件的两行删除；并行EventCaptured字段/调用保留在工作区，未纳入本次提交。git CRLF diff check通过。未Stage/打包/部署/push、未真实provider/实机验收。
 - 聚焦回滚：git revert e5e68cdb4；与后续同文件修改冲突时按本条删除范围反向合并，不覆盖并行改动。
+
+<a id="carried-prisoner-gifts-20261015"></a>
+## 给予俘虏仅限玩家随身（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户要求“修，只读取随身的”。工作区 F:/AnimusForge-main、main；检查点 dbda577，产品 a1317e2dc。保留并行人设演进修复及未跟踪 Microsoft/、NuGet/。
+- 玩家给予候选仅取 Hero.MainHero.PartyBelongedTo 的队伍，不再回退全局 MainParty，也不再追加玩家家族领地地牢英雄。物品本已只读玩家所在队伍库存，未改。NPC向玩家提供俘虏的地牢规则保持。
+- 真实转移对 PlayerPrisoners 再验 SourceSettlement 为空且 OwnerParty 为玩家当前队伍，拒绝旧地牢、其他队伍及换队后的旧条目。信使初始取出同样只取随身队伍，拒绝带旧 SourceSettlementId 的草稿；已托管在信使中的货物配送/返还未改。没有更改存档字段、协议、玩家文案或CN/EN资产。
+- 代码地图（产品 a1317e2dc）：src/AF.GameAdapter.Bannerlord/Composition/PartyAssetTransferBannerlordAdapter.cs:692–728 BuildPartyTransferPromptEntriesInternal；1775–1804 TransferPartyPrisonerEntry 来源校验及英雄转移；src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs:1398–1407 MoveCharacterFromPlayerPrisonerSourceToParty。对话/喊话和信使共用候选入口，无新增Tick工作；候选生成减少玩家全领地扫描，提交新增O(1)来源比较。
+- 验证：PartyTransferOwnerTests 原回归和新增随身来源回归全部PASS，提取真实候选builder、俘虏转移与信使来源准入方法；游戏对象、列表投影和原生动作使用替身，信使下游转移为记录替身，不是完整信使旅程。证据 artifacts/carried-prisoners-20261015/run.log、build.log。原 Release 统一脚本构建1.3/1.4/Bootstrap、双Coup及注册PASS，build-dual.log、build-exit-code.txt；diff检查PASS。
+- 尚未验证：实机军团中UI、原生旧档与实际完整信使旅程。未部署、Stage、打包、push。代码回滚 git revert a1317e2dc；游戏仍为此前部署状态，本条不覆盖并行任务安装记录。

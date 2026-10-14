@@ -1,3 +1,9 @@
+# 当前交接：给予仅限玩家随身俘虏（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品a1317e2dc：给予候选不再读玩家家族地牢；提交重验当前随身队伍，信使拒绝旧地牢来源。物品原随身库存、NPC向玩家提供俘虏规则保持。
+- 真实方法离线回归及原Release双API/Bootstrap/Coup/注册通过；实机军团UI/旧档/完整信使旅程未验。本轮未部署、Stage、打包或push。
+- [主台账、源码范围与证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#carried-prisoner-gifts-20261015)。回滚 git revert a1317e2dc；证据 artifacts/carried-prisoners-20261015/。
+
 # 当前交接：10游戏小时人设演变已部署（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户部署过程中将等待改为10游戏小时；产品bca95f14f，66回放和原Release双API/Bootstrap/Coup/注册通过，原部署脚本最终更新9受管文件。游戏单模块v1.6.0三DLL/完整Stage/玩家资料哈希核对PASS。
