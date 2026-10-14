@@ -17,4 +17,7 @@
     <Content Include="../../../../content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordPromptTexts.en.json" Link="Modules/AnimusForge/ModuleData/AdapterRecordPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../../content/modules/AF.Module.Memory/ModuleData/MemoryPromptTexts.json" Link="Modules/AnimusForge/ModuleData/MemoryPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-<ItemGroup><Compile Include="../../../../src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs" Link="Production/NpcPersonaProfilePolicy.cs" /></ItemGroup><ItemGroup><Compile Include="../../../../src/AF.Persistence/AnimusForgeDataPaths.cs" Link="Production/AnimusForgeDataPaths.cs" /></ItemGroup></Project>
+<ItemGroup><Compile Include="../../../../src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs" Link="Production/NpcPersonaProfilePolicy.cs" /></ItemGroup><ItemGroup><Compile Include="../../../../src/AF.Persistence/AnimusForgeDataPaths.cs" Link="Production/AnimusForgeDataPaths.cs" /></ItemGroup><ItemGroup>
+<Content Include="../../../../content/modules/AF.Module.Persona/ModuleData/Languages/afpersona_ui_strings.xml" Link="persona-en.xml" CopyToOutputDirectory="PreserveNewest" />
+<Content Include="../../../../content/modules/AF.Module.Persona/ModuleData/Languages/CNs/afpersona_ui_strings-zh-CN.xml" Link="persona-zh.xml" CopyToOutputDirectory="PreserveNewest" />
+</ItemGroup></Project>

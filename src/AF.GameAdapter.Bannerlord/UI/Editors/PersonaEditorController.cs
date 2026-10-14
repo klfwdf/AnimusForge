@@ -49,6 +49,9 @@ internal sealed class PersonaEditorPort
  internal Action<Hero> ShowDevEditInquiry, ClearPersona;
  internal Action<Hero, string> SavePersonaText;
  internal Action<Hero, string> SaveVoice;
+ internal Func<Hero, MyBehavior.NpcPersonaProfile> GetPersonaProfile;
+ internal Action<Hero, Action<MyBehavior.NpcPersonaProfile>> UpdatePersonaProfile;
+ internal IReadOnlyCollection<string> TraitIds;
  internal Func<Hero, Task<string>> GeneratePersona;
  internal Func<long, Func<bool>, Task<bool>> CompleteOnMainThread;
 }
@@ -150,6 +153,7 @@ internal sealed class PersonaEditorController
 			stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceCurrent", "Current voice ID:") + (flag3 ? npcVoiceId : Localize("AF_UI_Persona_VoiceUnsetAuto", "not set (assigned automatically by VoiceMapping)")));
 			List<InquiryElement> list = new List<InquiryElement>();
 			list.Add(new InquiryElement("set_personality", Localize("AF_UI_Persona_SetPersonality", "Set or edit persona"), null));
+			list.Add(new InquiryElement("edit_expanded", Localize("AF_UI_Persona_EditExpanded", "Edit expanded persona"), null));
 			list.Add(new InquiryElement("reroll_persona", Localize("AF_UI_Persona_RerollPersona", "Regenerate persona (LLM)"), null));
 			list.Add(new InquiryElement("set_voice", Localize("AF_UI_Persona_SetVoice", "Set or edit voice ID"), null));
 			list.Add(new InquiryElement("clear_persona", Localize("AF_UI_Persona_ClearPersona", "Clear persona, structured information, and voice ID"), null));
@@ -204,6 +208,9 @@ internal sealed class PersonaEditorController
 			break;
 		case "set_background":
 			OpenDevSetBackground(devEditingHero);
+			break;
+		case "edit_expanded":
+			OpenExpandedPersonaMenu(devEditingHero);
 			break;
 		case "reroll_persona":
 			OpenDevRerollPersonaConfirmation(devEditingHero);
@@ -339,6 +346,141 @@ internal sealed class PersonaEditorController
 				OpenDevPersonaMenu(npc);
 			});
 		}
+	}
+
+	private static string ExpandedFieldLabel(string field)
+	{
+		switch (field)
+		{
+		case "traits": return Localize("AF_PERSONA_UI_CONTEXT_Traits", "Core traits: ").TrimEnd(' ', ':', '：');
+		case "motivations": return Localize("AF_PERSONA_UI_CONTEXT_Motivations", "Current motivations: ").TrimEnd(' ', ':', '：');
+		case "values": return Localize("AF_PERSONA_UI_CONTEXT_Values", "Values and boundaries: ").TrimEnd(' ', ':', '：');
+		case "fears": return Localize("AF_PERSONA_UI_CONTEXT_Fears", "Vulnerabilities and fears: ").TrimEnd(' ', ':', '：');
+		default: return Localize("AF_PERSONA_UI_CONTEXT_SpeechStyle", "Speech style: ").TrimEnd(' ', ':', '：');
+		}
+	}
+
+	internal void OpenExpandedPersonaMenu(Hero npc)
+	{
+		long generation = _port.CaptureGeneration();
+		if (npc == null || !IsEditorCurrent(npc, generation)) return;
+		var options = new List<InquiryElement>();
+		foreach (string field in new[] { "traits", "motivations", "values", "fears", "speech_style" })
+			options.Add(new InquiryElement(field, ExpandedFieldLabel(field), null));
+		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
+			Localize("AF_UI_Persona_ExpandedTitle", "Expanded persona - {NAME}", ("NAME", npc.Name?.ToString() ?? "NPC")),
+			Localize("AF_UI_Persona_MenuPrompt", "Choose an action:"), options, true, 0, 1,
+			Localize("AF_UI_Persona_Choose", "Choose"), Localize("AF_UI_Persona_Back", "Back"), selected =>
+			{
+				if (!IsEditorCurrent(npc, generation)) return;
+				string field = selected?.FirstOrDefault()?.Identifier as string;
+				if (field == "traits") OpenExpandedTraits(npc);
+				else if (field == "motivations" || field == "values" || field == "fears" || field == "speech_style") OpenExpandedText(npc, field);
+				else OpenDevPersonaMenu(npc);
+			}, delegate { if (IsEditorCurrent(npc, generation)) OpenDevPersonaMenu(npc); }));
+	}
+
+	private void OpenExpandedText(Hero npc, string field)
+	{
+		long generation = _port.CaptureGeneration();
+		if (!IsEditorCurrent(npc, generation)) return;
+		var profile = _port.GetPersonaProfile(npc);
+		var lines = field == "motivations" ? profile?.Motivations : field == "values" ? profile?.Values : profile?.Fears;
+		string initial = field == "speech_style" ? profile?.SpeechStyle ?? "" : string.Join("\n", lines ?? new List<string>());
+		bool closed = false;
+		DevTextEditorHelper.ShowLongTextEditor(
+			Localize("AF_UI_Persona_ExpandedFieldTitle", "{FIELD} - {NAME}", ("FIELD", ExpandedFieldLabel(field)), ("NAME", npc.Name?.ToString() ?? "NPC")),
+			Localize("AF_UI_Persona_ExpandedLoaded", "The current value is loaded below."),
+			Localize("AF_UI_Persona_ExpandedTextHint", "Enter one item per line. Leave blank to clear this field."), initial, input =>
+			{
+				if (closed || !IsEditorCurrent(npc, generation)) return;
+				closed = true;
+				string text = (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+				_port.UpdatePersonaProfile(npc, current =>
+				{
+					if (field == "speech_style") current.SpeechStyle = text;
+					else
+					{
+						var items = text.Split('\n').Select(line => line.Trim()).Where(line => line.Length > 0).ToList();
+						if (field == "motivations") current.Motivations = items;
+						else if (field == "values") current.Values = items;
+						else current.Fears = items;
+					}
+				});
+				ExpandedPersonaSaved(npc);
+			}, () =>
+			{
+				if (closed || !IsEditorCurrent(npc, generation)) return;
+				closed = true;
+				OpenExpandedPersonaMenu(npc);
+			});
+	}
+
+	private void OpenExpandedTraits(Hero npc)
+	{
+		long generation = _port.CaptureGeneration();
+		if (!IsEditorCurrent(npc, generation)) return;
+		var traits = _port.GetPersonaProfile(npc)?.Traits;
+		var options = new List<InquiryElement>();
+		foreach (string id in _port.TraitIds)
+		{
+			var trait = traits?.FirstOrDefault(item => item != null && item.Id == id);
+			options.Add(new InquiryElement(id, Localize("AF_PERSONA_UI_TRAIT_" + id, char.ToUpperInvariant(id[0]) + id.Substring(1))
+				+ (trait == null ? "" : " (" + trait.Strength + ")"), null));
+		}
+		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(ExpandedFieldLabel("traits"),
+			Localize("AF_UI_Persona_TraitHint", "Choose a trait to set its strength (1-3) or remove it. Up to five traits."), options, true, 0, 1,
+			Localize("AF_UI_Persona_Choose", "Choose"), Localize("AF_UI_Persona_Back", "Back"), selected =>
+			{
+				if (!IsEditorCurrent(npc, generation)) return;
+				string id = selected?.FirstOrDefault()?.Identifier as string;
+				if (id != null && _port.TraitIds.Contains(id)) OpenExpandedTraitStrength(npc, id);
+				else OpenExpandedPersonaMenu(npc);
+			}, delegate { if (IsEditorCurrent(npc, generation)) OpenExpandedPersonaMenu(npc); }));
+	}
+
+	private void OpenExpandedTraitStrength(Hero npc, string id)
+	{
+		long generation = _port.CaptureGeneration();
+		if (!IsEditorCurrent(npc, generation)) return;
+		var options = new List<InquiryElement> { new InquiryElement(0, Localize("AF_UI_Persona_RemoveTrait", "Remove this trait"), null) };
+		for (int strength = 1; strength <= 3; strength++)
+			options.Add(new InquiryElement(strength, Localize("AF_UI_Persona_TraitStrength", "Strength {LEVEL}", ("LEVEL", strength.ToString())), null));
+		bool closed = false;
+		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
+			Localize("AF_PERSONA_UI_TRAIT_" + id, char.ToUpperInvariant(id[0]) + id.Substring(1)),
+			Localize("AF_UI_Persona_TraitHint", "Choose a trait to set its strength (1-3) or remove it. Up to five traits."), options, true, 0, 1,
+			Localize("AF_UI_Persona_Save", "Save"), Localize("AF_UI_Persona_Back", "Back"), selected =>
+			{
+				if (closed || !IsEditorCurrent(npc, generation)) return;
+				closed = true;
+				if (selected?.FirstOrDefault()?.Identifier is int strength && strength >= 0 && strength <= 3)
+				{
+					var traits = _port.GetPersonaProfile(npc)?.Traits;
+					if (strength > 0 && (traits?.Count ?? 0) >= 5 && !traits.Any(item => item != null && item.Id == id))
+						InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_TraitLimit", "Five traits are already set. Remove one before adding another.")));
+					else
+					{
+						_port.UpdatePersonaProfile(npc, current =>
+						{
+							if (current.Traits == null) current.Traits = new List<NpcPersonaTrait>();
+							var trait = current.Traits.FirstOrDefault(item => item != null && item.Id == id);
+							if (strength == 0) current.Traits.RemoveAll(item => item != null && item.Id == id);
+							else if (trait != null) trait.Strength = strength;
+							else current.Traits.Add(new NpcPersonaTrait { Id = id, Strength = strength });
+						});
+						EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
+					}
+				}
+				OpenExpandedTraits(npc);
+			}, delegate { if (!closed && IsEditorCurrent(npc, generation)) { closed = true; OpenExpandedTraits(npc); } }));
+	}
+
+	private void ExpandedPersonaSaved(Hero npc)
+	{
+		EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
+		InformationManager.DisplayMessage(new InformationMessage(Localize("AF_UI_Persona_ExpandedUpdated", "Expanded persona updated.")));
+		OpenExpandedPersonaMenu(npc);
 	}
 
 	internal void OpenDevSetVoiceId(Hero npc)

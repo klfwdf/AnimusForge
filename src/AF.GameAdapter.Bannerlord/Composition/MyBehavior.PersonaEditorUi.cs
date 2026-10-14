@@ -91,6 +91,9 @@ public partial class MyBehavior
   ShowDevEditInquiry = ShowDevEditInquiry,
   ClearPersona = hero => SaveNpcPersonaProfile(hero, new NpcPersonaProfile()),
   SavePersonaText = SaveDevPersonaEditorText, SaveVoice = SaveDevPersonaEditorVoice,
+  GetPersonaProfile = hero => GetNpcPersonaProfile(hero, createIfMissing: false),
+  UpdatePersonaProfile = UpdateDevPersonaEditorProfile,
+  TraitIds = NpcPersonaTextRules.AllowedTraitIdsForPrompt,
   GeneratePersona = hero => GenerateNpcPersonaAsync(hero, ignoreRetryCooldown: true, overwriteExisting: true),
   CompleteOnMainThread = RunMemorySummaryCompletionAsync
  });
@@ -112,6 +115,13 @@ public partial class MyBehavior
  {
   NpcPersonaProfile profile = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
   PersonaImportOwner.ApplyDeveloperVoice(profile, voice, p => SaveNpcPersonaProfile(hero,p));
+ }
+ private void UpdateDevPersonaEditorProfile(Hero hero, Action<NpcPersonaProfile> update)
+ {
+  NpcPersonaProfile profile = GetNpcPersonaProfile(hero, createIfMissing: true);
+  if (profile == null) return;
+  update(profile);
+  SaveNpcPersonaProfile(hero, profile);
  }
 
 	private Action _devPersonaReturnAction { get => PersonaEditor.PersonaReturnAction; set => PersonaEditor.PersonaReturnAction = value; }

@@ -3417,5 +3417,15 @@ Choose how to proceed:" />
   <string id="AF_TERMINAL_UI_TerminalMapIconEnabled_Title" text="Show terminal navigation icon" />
   <string id="AF_TERMINAL_UI_TerminalMapIconEnabled_Hint" text="Shows the terminal entry on the campaign map navigation bar. At least one terminal entry remains available." />
   <string id="AF_TERMINAL_UI_Entry_Group" text="Terminal entry" />
+  <string id="AF_UI_Persona_EditExpanded" text="Edit expanded persona" />
+  <string id="AF_UI_Persona_ExpandedTitle" text="Expanded persona - {NAME}" />
+  <string id="AF_UI_Persona_ExpandedFieldTitle" text="{FIELD} - {NAME}" />
+  <string id="AF_UI_Persona_ExpandedLoaded" text="The current value is loaded below." />
+  <string id="AF_UI_Persona_ExpandedTextHint" text="Enter one item per line. Leave blank to clear this field." />
+  <string id="AF_UI_Persona_TraitHint" text="Choose a trait to set its strength (1-3) or remove it. Up to five traits." />
+  <string id="AF_UI_Persona_RemoveTrait" text="Remove this trait" />
+  <string id="AF_UI_Persona_TraitStrength" text="Strength {LEVEL}" />
+  <string id="AF_UI_Persona_TraitLimit" text="Five traits are already set. Remove one before adding another." />
+  <string id="AF_UI_Persona_ExpandedUpdated" text="Expanded persona updated." />
 </strings>
 </base>
