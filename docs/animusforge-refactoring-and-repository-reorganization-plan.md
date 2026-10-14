@@ -1,3 +1,10 @@
+<a id="oral-privacy-authority-20261015"></a>
+## 口头外交保密隔离与执行资料修复（2026-10-15，ACTIVE）
+
+- 用户明确授权按方案修复并推送。远端基线 `8a3aa669800d69cf8d79353d9bdcb79da686430b`；隔离分支 `codex/oral-privacy-repair-20261015`，位于当前工作区 `.tmp/oral-privacy-repair-20261015/worktree`。主工作区43个分叉提交及未提交设计文档保持，不夹带发布。
+- 实机日志确认蒙楚格向南帝国宣战的口头约定登记成功，privacy_material 摘要丢失固定动作及原始对象 ID，三份草稿误填对象并遗漏字段，第三次挂起；本包保护固定执行资料，使AI只拟文，保密与条件一致性审查仍保留。
+- 退出门：CN/EN实际保密隔离→拟文→审查→发布执行，模拟本次丢失资料；变更条款/取消/换国王/迟到结果/重复执行拒绝；仅对具名旧挂起原因、未发布未执行且当前合法的约定恢复一次；原回归与双API/Bootstrap验证。运行在请求及既有每日有界维护，无新Tick扫描/网络链。
+- 保持存档身份与严格分块 owner；新增兼容字段须缺省安全。未知执行结果不恢复；不部署游戏、修改玩家存档、调用收费provider或打包。详细证据留本地，不提交玩家对话或请求日志。
 <a id="local-feature-publication-20261015"></a>
 ## Player diplomacy and dialogue rewrite source delivery (2026-10-15)
 
