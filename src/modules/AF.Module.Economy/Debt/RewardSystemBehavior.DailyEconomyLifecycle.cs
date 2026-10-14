@@ -13,8 +13,8 @@ public partial class RewardSystemBehavior
 		using var dailyScope = FreezeWatchdog.Scope("RewardSystem.DailyTick");
 		try
 		{
-			// Native DailyTickSettlement distributes the same cleanup across the day.
-			// Load and trade-open cleanup remain synchronous at their own boundaries.
+			// Daily/load requests coalesce; each application frame completes one market.
+			QueueGeneratedRewardWorldMarketCleanup("daily_tick");
 			RestoreDueNpcBattleEquipment("daily_tick");
 			if (_debts == null || _debts.Count <= 0)
 			{

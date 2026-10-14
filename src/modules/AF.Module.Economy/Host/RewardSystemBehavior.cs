@@ -717,7 +717,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		ClearGeneratedRewardRuntimeState("register_events");
 		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
-		CampaignEvents.DailyTickSettlementEvent.AddNonSerializedListener(this, OnDailyTickSettlement);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.OnPlayerPartyKnockedOrKilledTroopEvent.AddNonSerializedListener(this, OnPlayerPartyKnockedOrKilledTroop);
 		CampaignEvents.OnQuestCompletedEvent.AddNonSerializedListener(this, OnQuestCompleted);
@@ -9501,7 +9500,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool TrySetGeneratedRewardItemCategory(ItemObject item, ItemCategory category)
 	{
-		InvalidateGeneratedRewardMarketRules();
 		if (item == null || category == null)
 		{
 			return false;
@@ -10153,7 +10151,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				GeneratedRewardManifestLoaded = true;
 			}
 			Instance?._marketCleanup?.Reset();
-			InvalidateGeneratedRewardMarketRules();
 			ClearGeneratedRpEquipmentTemplateCache();
 			ClearGeneratedRpFoodTemplateCache();
 			ClearPlayerRpCraftTemplateCaches();
@@ -10264,7 +10261,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static void RegisterGeneratedRewardManifestRecordNoLock(GeneratedRewardItemRecord record)
 	{
-		InvalidateGeneratedRewardMarketRules();
 		record = NormalizeGeneratedRewardItemRecord(record?.GeneratedStringId, record);
 		if (record == null)
 		{
@@ -11049,7 +11045,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool ApplyGeneratedRewardItemTemplateState(ItemObject target, ItemObject templateItem, string displayName)
 	{
-		InvalidateGeneratedRewardMarketRules();
 		if (target == null || templateItem == null)
 		{
 			return false;
@@ -11483,7 +11478,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		record.NpcGiftMarketTradeAllowed = string.Equals(record.RpItemIntroductionSource, "npc", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(record.GeneratedStringId,
 				BuildGeneratedRewardItemStringId(record.DisplayName, record.TemplateStringId), StringComparison.OrdinalIgnoreCase);
-		if (record.NpcGiftMarketTradeAllowed) InvalidateGeneratedRewardMarketRules();
 	}
 
 	private static void CampaignAllItemsGetterPostfix(ref MBReadOnlyList<ItemObject> __result)
@@ -11746,12 +11740,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 			}
 		}
-	}
-
-	private void OnDailyTickSettlement(Settlement settlement)
-	{
-		using var dailyScope = FreezeWatchdog.Scope("RewardSystem.DailyTickSettlement.MarketCleanup");
-		QueueGeneratedRewardSettlementMarketCleanup(settlement, "daily_tick_settlement");
 	}
 
 	private static bool InventoryLogicAddTransferCommandPrefix(InventoryLogic __instance, TransferCommand command)
