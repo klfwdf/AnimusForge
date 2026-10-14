@@ -1,4 +1,12 @@
-﻿<a id="deploy-main-20261014"></a>
+﻿<a id="terminal-live-fixes-20261014"></a>
+## 2026-10-14 终端实机反馈修复与 GPU 调查（IN_PROGRESS）
+
+- 当前main/9668a9fc6；用户已授权扩大终端、即时保存、隐藏快捷键文字保留导航图标，反馈关系最低增幅重启恢复、MCM拉取下拉空白和近期事实缺失。新增GPU问题按调查范围核对1.5.6，不隐式部署/push。
+- 修改前checkpoint：先验证最低增幅缺少MCM属性是否导致JSON遗漏，再补持久化/自动保存消费者；原配置身份、后端owner和双语资源保持。API空白需验证实际StringItem/SelectedItem绑定，不能凭列表计数宣称修复。
+- GPU现场：13:41:33.989人物舞台启动、13:41:34.014展示场景加载、13:41:34.111深度纹理资源不足；不把相邻触发当泄漏定论。1.5.6基线fe40e43f9四份核心源码规范化一致；报告artifacts/gpu-offscreen-20261014/REPORT.md。进程已退出，GPU曲线/故障dump/旧版实机同条件对照未取得。
+- 本条后续验证完成前不替代部署条目的产品状态；旧产品回退起点9668a9fc6，focused inverse，仅回退本切片文件。
+
+<a id="deploy-main-20261014"></a>
 ## 2026-10-14 部署当前 main（DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户明确要求部署并继续；源码基线 `ea6c51247cdefea79aabc329e4c373b1fb7ea3ce`，`F:/AnimusForge-main`、`main`；既有未跟踪 `Microsoft/`、`NuGet/` 保留。部署包含已有MCM、导入、终端等修复；性能调查未修改源码，不属于本次修复成果。
