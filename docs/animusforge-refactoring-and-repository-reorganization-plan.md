@@ -1,10 +1,20 @@
 <a id="oral-privacy-authority-20261015"></a>
-## 口头外交保密隔离与执行资料修复（2026-10-15，ACTIVE）
+## 口头外交保密隔离与执行资料修复（2026-10-15，OFFLINE_VERIFIED / PUSH_PENDING）
 
-- 用户明确授权按方案修复并推送。远端基线 `8a3aa669800d69cf8d79353d9bdcb79da686430b`；隔离分支 `codex/oral-privacy-repair-20261015`，位于当前工作区 `.tmp/oral-privacy-repair-20261015/worktree`。主工作区43个分叉提交及未提交设计文档保持，不夹带发布。
-- 实机日志确认蒙楚格向南帝国宣战的口头约定登记成功，privacy_material 摘要丢失固定动作及原始对象 ID，三份草稿误填对象并遗漏字段，第三次挂起；本包保护固定执行资料，使AI只拟文，保密与条件一致性审查仍保留。
-- 退出门：CN/EN实际保密隔离→拟文→审查→发布执行，模拟本次丢失资料；变更条款/取消/换国王/迟到结果/重复执行拒绝；仅对具名旧挂起原因、未发布未执行且当前合法的约定恢复一次；原回归与双API/Bootstrap验证。运行在请求及既有每日有界维护，无新Tick扫描/网络链。
-- 保持存档身份与严格分块 owner；新增兼容字段须缺省安全。未知执行结果不恢复；不部署游戏、修改玩家存档、调用收费provider或打包。详细证据留本地，不提交玩家对话或请求日志。
+- 用户明确授权按方案修复并推送。远端基线 `8a3aa669800d69cf8d79353d9bdcb79da686430b`；检查点 `10485352f`、交付产品 `0c36af2cb57a7c13f50e947e1b1a64baefa38d6c`。隔离分支 `codex/oral-privacy-repair-20261015` 在任务工作区内；同一12文件修复以 `844630ecf` 同步本地主工作区，逐文件Git内容一致，其他43个分叉提交及未提交设计文档不夹带发布。双构建绑定交付树，未重新宣称本地主树全量构建通过。
+- 运行日志确认蒙楚格向南帝国宣战的约定登记成功，保密摘要遗漏固定动作、对象ID及完整字段，三份草稿误填对象后被拒收并挂起。修复后保密过滤仅提供公开素材；请求边界直接从权威约定恢复发布者、对象、动作及完整条款。口头拟文不再注入重新谈判合同，模型输出标题/正文和空actions，由程序绑定实际动作；旧式精确动作回显兼容，明确冲突的动作继续拒绝。
+- 复用现有保密审查同一次请求增加正文与约定一致性检查；safe及agreement_consistent均须为真实布尔值。泄密、改约、遗漏实质条款或缺少审查结论均不发布、不执行，沿原有有界重拟文处理。最终提交仍重验原约定、统治者、来源、回合及动作签名；保持玩家已谈妥协议发布兑现、第三国提案需要正常同意、取消/已发布/未知结果不重放、正文不含系统回执。
+- 旧挂起恢复仅识别旧拟文版本及精确原因oral_declaration_changes_agreed_action_or_terms；须无公文、未执行、非明确延期、现有约定/国王/条款仍合法。每日原维护入口最多检查4项并标记新合同版本，重置该次技术失败；新合同再次失败不自动重置，无无限重试。只新增工作记录可选oralDraftingContractVersion，旧JSON缺省0，存档键/类型/枚举及严格分块owner不变，无新Tick扫描/IO或第二条网络链。
+- 同任务维护CN/EN的OralGeneration_System、PublicExecution、PublicAuditExecution及ConsistencyAudit资源，实际DiplomacyPromptTexts reader与请求消费者接通；原content-map标准文件映射与包选择不变，UI随游戏语言、Prompt随包，没有增加输出语言锁。审查只接收执行资料，不混入拟文任务指令。
+
+### 验证与未覆盖项
+
+- CN/EN口头外交各329项、玩家独立外交各604项PASS：实际isolation→generation→audit→completion dispatcher→发布执行，真实请求lease及异步yield；模拟摘要丢掉全部执行字段后仍恢复准确对象和14日贸易/第三国宣战，三渠道来源、泄密/正文不一致/缺审查结论/显式改动作/取消/换国王/变更条款/版本/结案/重复及旧挂起恢复边界。Provider回复和游戏效果叶为夹具，不能称实机验收。原隔离实现编译反例命中“restores fixed IDs”断言，未用编译失败代替红例。
+- 完整中文回归仍在LifecycleRepairReplay.Submission的“normal shortcut uses archive compose routing before semantic analysis”断言失败；远端基线生产源码在相同接线的测试宿主中复现相同失败，不修改无关快捷入口、不削弱其断言。本包不能声称全量回归通过。测试工程补齐既有C#版本、真实正文清理器及其四份嵌入资源；旧Native回执断言改为已批准的无回执语义，原机械分发断言保留，贸易叶增加计数以检查恰好一次。
+- PersistenceChunkReplay及civilWarChunkRegression PASS；chunk-contract-only PASS（20字符串键、47字典键）。CN/EN JSON结构/变量门禁PASS。原统一Debug双API1.3.15.110062/1.4.6.115628、Bootstrap、双Coup记忆端口各20及注册门禁PASS；两实现各367 warning/0 error，Bootstrap2 warning/0 error，保留既有及NU1900警告，不改构建脚本。最终命令与产物SHA在本地receipt.json及dual-build-final.log，未Stage或部署。
+- 10源码锚点记录提交及working-tree两模式PASS；owner、一基坐标与未覆盖责任集中在[源码地图](architecture/af-framework-code-scope.md#oral-privacy-authority-20261015)。完整本地证据位于artifacts/oral-privacy-authority-20261015，不上传原始玩家对话或provider日志；本次临时编译/变体/内容投影缓存收尾清理，验证日志/摘要保留。
+- NOT-RUN：真实provider文稿与一致性判断、游戏UI/TTS、玩家旧sav读回、安装部署、打包。恢复逻辑在新版本装入游戏后的原每日维护生效，本轮没有直接改玩家存档。推送仅交付此修复及公开验证文档，最终远端SHA另由本地push-receipt.json记录；工作区私有/其他分叉历史不推送。如需回滚，以产品0c36af2cb创建focused inverse并重验，不reset或改写历史。
+
 <a id="local-feature-publication-20261015"></a>
 ## Player diplomacy and dialogue rewrite source delivery (2026-10-15)
 
