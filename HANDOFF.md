@@ -1,4 +1,10 @@
-﻿# 当前交接：终端战争排版、字号与场景按键（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+﻿# 当前交接：入夜卡顿调查与重复市场扫描修复（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品43d44b36b：去掉跨天奖励日结的重复全地图商品扫描，保留原版分散每日定居点、读档及交易保护；补外交/奖励/记忆每日步骤Watchdog定位。
+- 市场27项、外交专项16断言及原Release双API/Bootstrap/Coup/注册通过；旧入口600001次商品读取、新入口0次。综合外交旧代笔路由断言在旧每日源码也失败，未豁免。离线24ms扫描不足以确认玩家几秒卡顿主因，实际日结/外交步骤与改后实机待验。
+- [唯一主台账、代码坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#daily-freeze-market-scan-20261014)。无Stage/部署/打包/push，其他终端修复保持；回滚git revert 43d44b36b。
+
+# 当前交接：终端战争排版、字号与场景按键（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品b4653dbe8：战况双方等宽，表头/色线与行对齐；全终端字号+2，专用下拉与reader同步；窗口1600x1016容纳原6条分页。原按键(default U)接通战役场景，保留对话/输入/菜单/结束拦截及原弹层恢复。
 - 原Release双API/Bootstrap/Coup/注册与完整3520文件Stage PASS；相关回放493/503，XML/绑定/几何/双语消费者通过。新场景用例实际gate+CLR类型、仅属性快照替身，不代表实机按键/字体/暂停恢复通过。
