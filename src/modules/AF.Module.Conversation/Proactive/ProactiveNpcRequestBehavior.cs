@@ -148,6 +148,8 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			_sessionOwner.Clear();
+            _experienceContacts = new PlayerExperienceContactState();
+            _experienceInFlight.Clear();
 			_cooldownOwner.ResetDictionaries();
 			_openingOwner.Clear();
 			ClearActivePartyCache();
