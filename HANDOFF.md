@@ -1,3 +1,9 @@
+# 当前交接：取消快报成稿战事数字降级（2026-10-15，SOURCE_VERIFIED / BUILD_BLOCKED）
+
+- e5e68cdb4：成稿标题、正文、小消息、轶闻不再因战事数字触发整篇回退；原请求失败/异常/解析失败回退保持。
+- 实际发布链路回放227项PASS；双实现构建仍被并行人设缺失符号阻断，未部署/实机。
+- [主台账、验证证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-numeric-off-20261015)。此条替代下方旧记录的数字检查保留状态。
+
 # 当前交接：快报故事化与三条大事件（2026-10-15，SOURCE_VERIFIED / BUILD_BLOCKED）
 
 - 主报道明确要求独立创作完整插曲，CN500～800字、EN330～500词、三到五段；大事件上限3条，无关大事件仍合写。保留事实结果、自定义提示词及原降级链路。
