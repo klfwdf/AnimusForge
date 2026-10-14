@@ -287,10 +287,25 @@ var noField=oldIssueObject.ToObject<EventRecordEntry>();Normalize(new(){noField}
 Check(noField.BulletinAnecdote==""&&!noField.ShortSummary.Contains("牙"),"old JSON missing optional field reads as empty and reconstructs only recorded facts");
 Check(WeeklyReportArchivePolicy.CloneForArchive(issue).BulletinAnecdote==issue.BulletinAnecdote,"archive projection keeps optional anecdote and original full body");
 void PromptStorageCases(){
+// Three unrelated headlines still share the main report; the fourth uses the existing overflow path.
+var headlineFacts=Enumerable.Range(1,5).Select(i=>new WorldBulletinEvent {Key="headline:"+i,Kind="war_declared",Score=90-i,Hour=100+i,Sentence="Independent war "+i,Group="war:"+i,KingdomIds=new(){"K"+i}}).ToList();
+var selected=WorldBulletinPolicy.Select(headlineFacts,new WorldBulletinScopeState {WindowEndHour=130},new WorldBulletinFocus(),130);
+Check(selected.MajorFacts.Select(f=>f.Key).SequenceEqual(new[]{"headline:1","headline:2","headline:3"}),"three unrelated major facts remain merged in priority order");
+Check(selected.Minors.SelectMany(m=>m.Events).Select(f=>f.Key).SequenceEqual(new[]{"headline:4","headline:5"}),"headline overflow retains existing minor allocation");
+var mergedPrompt=WorldBulletinPolicy.BuildUserPrompt("scope","date",selected,Array.Empty<string>());
+Check(selected.MajorFacts.All(f=>mergedPrompt.Contains(f.Sentence)),"all three unrelated facts reach the writer");
+var systemPrompt=WorldBulletinPolicy.BuildSystemPrompt(3,2);
+Check(systemPrompt.Contains("500到800")&&systemPrompt.Contains("三到五段")&&systemPrompt.Contains("无须逐项寻找事实依据")&&systemPrompt.Contains("3条事实"),"actual system prompt requests developed fiction, expanded length and merged major facts");
 // Actual single-directory JSON reader and raw exact-default migration; no user directory access.
 Directory.CreateDirectory("prompt-fixtures");Directory.CreateDirectory("prompt-packaged");
 string promptFile=Path.Combine("prompt-fixtures","WorldBulletinWritingRequirements.json");
 void WritePrompt(string text)=>File.WriteAllText(promptFile,JsonConvert.SerializeObject(new {Version=1,Text=text}));
+foreach(var concise in new[]{WorldBulletinPolicy.LegacyConciseWritingRequirementsCn,WorldBulletinPolicy.LegacyConciseWritingRequirementsEn}) {
+ WritePrompt(concise);
+ Check(DuelSettings.ReplayReadPrompt(promptFile,out var advanced)&&advanced==WorldBulletinPolicy.DefaultWritingRequirements,"exact concise CN/EN default migrates through production reader");
+ WritePrompt(concise+" Custom style.");
+ Check(DuelSettings.ReplayReadPrompt(promptFile,out var customConcise)&&customConcise==concise+" Custom style.","edited concise default remains user-owned");
+}
 WritePrompt(WorldBulletinPolicy.LegacyDefaultWritingRequirements);
 Check(DuelSettings.ReplayReadPrompt(promptFile,out var oldPrompt)&&oldPrompt==WorldBulletinPolicy.DefaultWritingRequirements,"exact old default migrates at actual JSON load boundary");
 WritePrompt(WorldBulletinPolicy.LegacyNarrativeWritingRequirements);

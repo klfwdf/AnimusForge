@@ -838,7 +838,7 @@
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json",
       "target": "ModuleData/Defaults/CustomPrompts/WorldBulletinWritingRequirements.json",
-      "sha256": "A6E587A4D204C9A2C4ED35769CEFF9D7EC0337969EB97EE923DBF709E0321D1B"
+      "sha256": "7DE733F8AE9F314940C1636FCC36A437B1255856A1D6803DC12613EA7D94F197"
     },
     {
       "owner": "AF.Module.Weekly",
