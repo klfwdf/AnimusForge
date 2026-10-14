@@ -182,6 +182,11 @@
       "target": "GUI/Prefabs/AnimusForgeTerminalPopup.xml"
     },
     {
+      "owner": "AF.Module.UI",
+      "source": "content/modules/AF.Module.UI/GUI/Prefabs/AnimusForge.TerminalDropdown.xml",
+      "target": "GUI/Prefabs/AnimusForge.TerminalDropdown.xml"
+    },
+    {
       "owner": "AF.Module.WorldEvents",
       "source": "content/modules/AF.Module.WorldEvents/GUI/Prefabs/AnimusForgeWorldEventInboxPopup.xml",
       "target": "GUI/Prefabs/AnimusForgeWorldEventInboxPopup.xml"

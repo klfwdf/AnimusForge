@@ -629,7 +629,7 @@ internal static class TerminalSettingsLocalization
         ["OpenAfdianSupportLink"] = "Opens the Afdian page in the system default browser.",
         ["ShoutKey"] = "Hold this key in a scene to preview and expand shout range; release it to open the speech input. Default: T.",
         ["ShoutSpecialMenuKey"] = "Hold this key in a scene to preview and expand shout range; release it to open the complex interaction menu. Default: Y.",
-        ["TerminalKey"] = "Press this key on the campaign map to open the AnimusForge terminal. Default: U.",
+        ["TerminalKey"] = "Press this key on the campaign map or in a campaign scene to open the AnimusForge terminal. Unavailable during conversations, text input or other menus. Default: U.",
         ["SceneTauntGoldPickupKey"] = "During a scene taunt conflict, approach dropped coins after an NPC falls and press this key to collect them. Default: F.",
         ["ShoutInitialRangeMeters"] = "Base shout range used when T/Y is pressed. Default: 4 m.",
         ["ShoutMaxRangeMeters"] = "Maximum shout range while holding T/Y, capped at 150 m. Larger ranges show more preview markers.",

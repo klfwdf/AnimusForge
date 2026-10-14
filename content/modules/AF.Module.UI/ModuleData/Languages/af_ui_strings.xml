@@ -463,7 +463,7 @@
   <string id="AF_MCM_Items_Restore_Hint" text="When enabled, equipment NPCs lose through gifts, trade, or post-battle loot is restored to its original slot after 3 days; existing replacement equipment is not overwritten. Disabling stops new and existing restoration jobs; re-enabling resumes registered jobs. Enabled by default." />
   <string id="AF_MCM_Shout_Key_Hint" text="Hold this key in a scene to preview and expand shout range; release it to open the speech input. Default: T." />
   <string id="AF_MCM_Shout_SpecialKey_Hint" text="Hold this key in a scene to preview and expand shout range; release it to open the complex interaction menu. Default: Y." />
-  <string id="AF_MCM_Shout_TerminalKey_Hint" text="Press this key on the campaign map to open the AnimusForge terminal. Default: U." />
+  <string id="AF_MCM_Shout_TerminalKey_Hint" text="Press this key on the campaign map or in a campaign scene to open the AnimusForge terminal. Unavailable during conversations, text input or other menus. Default: U." />
   <string id="AF_MCM_Shout_GoldKey_Hint" text="During a scene taunt conflict, approach dropped coins after an NPC falls and press this key to collect them. Default: F." />
   <string id="AF_MCM_Shout_InitialRange_Hint" text="Base shout range used when T/Y is pressed. Default: 4 m." />
   <string id="AF_MCM_Shout_MaxRange_Hint" text="Maximum shout range while holding T/Y, capped at 150 m. Larger ranges show more preview markers." />
@@ -1094,7 +1094,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_ShoutSpecialMenuKey_Hint" text="Hold this key in a scene to preview and expand shout range; release it to open the complex interaction menu. Default: Y." />
   <string id="AF_TERMINAL_UI_ShoutSpecialMenuKey_Group" text="3. Scene shout" />
   <string id="AF_TERMINAL_UI_TerminalKey_Title" text="Terminal Key" />
-  <string id="AF_TERMINAL_UI_TerminalKey_Hint" text="Press this key on the campaign map to open the AnimusForge terminal. Default: U." />
+  <string id="AF_TERMINAL_UI_TerminalKey_Hint" text="Press this key on the campaign map or in a campaign scene to open the AnimusForge terminal. Unavailable during conversations, text input or other menus. Default: U." />
   <string id="AF_TERMINAL_UI_TerminalKey_Group" text="3. Scene shout" />
   <string id="AF_TERMINAL_UI_SceneTauntGoldPickupKey_Title" text="Scene Taunt Gold Pickup Key" />
   <string id="AF_TERMINAL_UI_SceneTauntGoldPickupKey_Hint" text="During a scene taunt conflict, approach dropped coins after an NPC falls and press this key to collect them. Default: F." />

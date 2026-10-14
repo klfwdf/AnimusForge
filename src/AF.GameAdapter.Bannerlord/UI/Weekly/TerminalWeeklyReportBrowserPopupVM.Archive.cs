@@ -36,7 +36,7 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM
     [DataSourceProperty] public string ReaderTitleText => _readerItem?.TitleText ?? "";
     [DataSourceProperty] public string ReaderMetaText => (_readerItem?.WeekText ?? "") + " · " + (_readerItem?.DateText ?? "");
     [DataSourceProperty] public string ReaderBodyText { get; private set; } = "";
-    [DataSourceProperty] public int ReaderBodyFontSize => _readerItem?.BodyFontSize ?? 18;
+    [DataSourceProperty] public int ReaderBodyFontSize => (_readerItem?.BodyFontSize ?? 18) + 2;
     [DataSourceProperty] public bool ReaderCanGenerateFull => _readerItem?.ShowViewFullReport == true && _pendingFullReport == null;
 
     public void ExecuteFilterAll() => SelectType("all");
