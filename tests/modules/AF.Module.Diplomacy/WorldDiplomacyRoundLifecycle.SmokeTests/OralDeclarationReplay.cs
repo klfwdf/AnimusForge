@@ -188,6 +188,7 @@ internal static class OralDeclarationReplay
         RunExpressiveLengthPreferences();
         RunYieldedCompletion();
         RunWithdrawal();
+        OralPrivacyAuthorityReplay.Run();
         NativeDiplomacyFallbackReplay.Run();
     }
 
