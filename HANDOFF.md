@@ -1,4 +1,10 @@
-﻿# 当前交接：入夜卡顿调查与重复市场扫描修复（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+﻿# 当前交接：终端与 MCM 共用文档配置（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品fbed672ac：四owner恢复MCM原生文档JSON/preset；终端共享原owner，两入口开关也存主JSON。已有文档配置优先，模组旧业务文件保留；缺失入口字段仅Load边界兼容，保存失败回退。其余资料不搬目录。
+- 原Release双API/Bootstrap/Coup/registration及真实MCM/终端520/530回放PASS，旧入口helper6及CN/EN资源PASS。真实Documents/重启未验；旧Policy综合runner编译通过但启动失败，完整套件不计PASS。候选含并行Economy工作，产品提交未夹带其改动。
+- [唯一主台账、源码坐标、限制与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#shared-mcm-settings-complete-20261014)。证据artifacts/shared-mcm-settings-20261014/；未部署/Stage/push/打包，游戏仍02c8095b1 Release。回滚git revert fbed672ac，仅逆转本产品，无自动数据回迁。
+
+# 当前交接：入夜卡顿调查与重复市场扫描修复（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品43d44b36b：去掉跨天奖励日结的重复全地图商品扫描，保留原版分散每日定居点、读档及交易保护；补外交/奖励/记忆每日步骤Watchdog定位。
 - 市场27项、外交专项16断言及原Release双API/Bootstrap/Coup/注册通过；旧入口600001次商品读取、新入口0次。综合外交旧代笔路由断言在旧每日源码也失败，未豁免。离线24ms扫描不足以确认玩家几秒卡顿主因，实际日结/外交步骤与改后实机待验。
