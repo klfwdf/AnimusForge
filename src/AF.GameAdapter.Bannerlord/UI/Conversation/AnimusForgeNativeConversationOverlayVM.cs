@@ -1,4 +1,5 @@
 using System;
+using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
@@ -11,6 +12,33 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
     [DataSourceProperty] public bool IsIllustrationAvailable => _illustrationAvailable?.Invoke() == true;
     [DataSourceProperty] public string IllustrationText => ConversationUiLocalization.Text("AF_CONV_UI_Native_Illustration", "Scene illustration");
     public void ShowIllustration() { if (IsIllustrationAvailable) _onIllustration?.Invoke(); }
+    private bool _canRewrite;
+    [DataSourceProperty] public string RewriteText => ConversationUiLocalization.Text("AF_CONV_UI_Rewrite_Button", "Undo and edit");
+    [DataSourceProperty] public bool CanRewrite => _canRewrite;
+
+    // Availability reads the current round stamp only; no history or agent scan on the UI tick.
+    public void RefreshRewriteAvailability()
+    {
+        bool available = IsCustomAnswerVisible && IsInputEnabled && string.IsNullOrWhiteSpace(InputText)
+            && ShoutBehavior.CanRewriteNativeConversationForExternal;
+        if (_canRewrite == available) return;
+        _canRewrite = available;
+        OnPropertyChanged(nameof(CanRewrite));
+    }
+
+    public void ExecuteRewrite()
+    {
+        RefreshRewriteAvailability();
+        if (!CanRewrite) return;
+        bool rewritten = ShoutBehavior.TryRewriteNativeConversationForExternal(out string playerText, out string status);
+        if (rewritten)
+        {
+            InputText = playerText;
+            RequestInputFocus();
+        }
+        RefreshRewriteAvailability();
+        if (!string.IsNullOrWhiteSpace(status)) InformationManager.DisplayMessage(new InformationMessage(status));
+    }
 	private readonly Action<string> _onSubmit;
 
 	private readonly Action _onSwitchTalk;
@@ -74,6 +102,7 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 			{
 				_inputText = text;
 				OnPropertyChangedWithValue(text, nameof(InputText));
+				RefreshRewriteAvailability();
 			}
 		}
 	}
@@ -159,6 +188,7 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 				_isCustomAnswerVisible = value;
 				OnPropertyChangedWithValue(value, nameof(IsCustomAnswerVisible));
 				RefreshSwitchTitle();
+				RefreshRewriteAvailability();
 			}
 		}
 	}
@@ -173,6 +203,7 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 			{
 				_isInputEnabled = value;
 				OnPropertyChangedWithValue(value, nameof(IsInputEnabled));
+				RefreshRewriteAvailability();
 			}
 		}
 	}

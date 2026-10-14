@@ -40,7 +40,7 @@ internal static class WorldDiplomacyPlayerDraftRules
         int target = input.MinimumCharacters + (input.MaximumCharacters - input.MinimumCharacters) / 2;
         string lengthRule = PromptComposerTexts.FormatTemplate(DiplomacyMiscPromptTexts.GetRequired("PlayerDraft_LengthRule"),
             ("MIN", input.MinimumCharacters.ToString(CultureInfo.InvariantCulture)), ("MAX", input.MaximumCharacters.ToString(CultureInfo.InvariantCulture)), ("TARGET", target.ToString(CultureInfo.InvariantCulture)));
-        string system = Contract;
+        string system = Contract + "\n" + DiplomacyMiscPromptTexts.GetRequired("Declaration_DefaultStyle");
         if (!string.IsNullOrWhiteSpace(preference))
         {
             string prefHeader = DiplomacyMiscPromptTexts.GetRequired("PlayerDraft_PreferenceHeader");

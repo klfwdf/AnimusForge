@@ -6,6 +6,17 @@ namespace AnimusForge;
 
 public sealed class WorldDiplomacyRound
 {
+    [JsonProperty("schedulingOwner")] public string SchedulingOwner { get; set; } = "";
+    [JsonProperty("ownershipEpoch")] public int OwnershipEpoch { get; set; } = 1;
+    [JsonProperty("playerAuthorityKingdomId")] public string PlayerAuthorityKingdomId { get; set; } = "";
+    [JsonProperty("playerAuthorityRulerId")] public string PlayerAuthorityRulerId { get; set; } = "";
+    [JsonProperty("npcInitiatedPlayerEvent")] public bool NpcInitiatedPlayerEvent { get; set; }
+    [JsonProperty("technicalHoldReason")] public string TechnicalHoldReason { get; set; } = "";
+    [JsonProperty("playerNegotiationWaits")] public List<WorldDiplomacyPlayerWait> PlayerNegotiationWaits { get; set; } = new();
+    [JsonProperty("playerCourtWork")] public List<WorldDiplomacyPlayerCourtWork> PlayerCourtWork { get; set; } = new();
+    [JsonProperty("courtKnowledgeVersions")] public Dictionary<string, int> CourtKnowledgeVersions { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    [JsonProperty("courtKnowledgeReceipts")] public List<string> CourtKnowledgeReceipts { get; set; } = new();
+    [JsonIgnore] internal HashSet<string> CourtKnowledgeReceiptIndex;
 	[JsonProperty("schemaVersion")] public int SchemaVersion { get; set; }
 	[JsonProperty("roundId")] public string RoundId { get; set; } = "";
 	[JsonProperty("initiatorKingdomId")] public string InitiatorKingdomId { get; set; } = "";
@@ -98,6 +109,8 @@ public sealed class WorldDiplomacyRoundOffer
 
 public sealed class WorldDiplomacyRoundParticipant
 {
+    [JsonProperty("refuseRepeatedUntilDay")] public int RefuseRepeatedUntilDay { get; set; }
+    [JsonProperty("withdrawalSourceDocumentId")] public string WithdrawalSourceDocumentId { get; set; } = "";
 	[JsonProperty("kingdomId")] public string KingdomId { get; set; } = "";
 	[JsonProperty("state")] public string State { get; set; } = "observer";
 	[JsonProperty("mandatoryReplyPending")] public bool MandatoryReplyPending { get; set; }

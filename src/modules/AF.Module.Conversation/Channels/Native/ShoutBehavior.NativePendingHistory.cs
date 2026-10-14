@@ -23,9 +23,9 @@ public partial class ShoutBehavior
 
     private Task<NativeConversationPendingHistory> PrepareNativeConversationPendingHistoryAsync(
         NativeConversationAdmission admission, NpcDataPacket npc, string npcName, int agentIndex,
-        string playerText, bool recordPlayerInput)
+        string playerText, bool recordPlayerInput, ConversationRewriteTurn rewriteTurn)
     {
-        return NativePendingHistoryApplication.PrepareNativeConversationPendingHistoryAsync(admission, npc, npcName, agentIndex, playerText, recordPlayerInput);
+        return NativePendingHistoryApplication.PrepareNativeConversationPendingHistoryAsync(admission, npc, npcName, agentIndex, playerText, recordPlayerInput, rewriteTurn);
     }
 
     private Task RollbackNativeConversationPendingPlayerHistoryAsync(NativeConversationAdmission admission,

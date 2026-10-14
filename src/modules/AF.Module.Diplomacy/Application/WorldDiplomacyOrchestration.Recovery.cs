@@ -51,6 +51,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         }
         InvalidateDialogueIndex();
         _diplomacyWorkNeedsReconcile = true;
+        NormalizePlayerEventState();
+        NormalizePlayerLifecycleRecovery();
     }
 
 }

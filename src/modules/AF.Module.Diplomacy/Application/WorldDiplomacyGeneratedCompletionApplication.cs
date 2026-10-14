@@ -76,7 +76,11 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
                 log?.Invoke("normalized inline response binding job=" + job.JobId + " kind=" + normalizedBindingKind);
             }
             WorldDiplomacyEnvelopeJsonRules.NormalizeGeneratedDiplomaticEnvelopeShape(job, json);
-            int removedRedundantStatements = WorldDiplomacyEnvelopeJsonRules.RemoveRedundantStatementActions(json);
+            // Condition references use canonical action ordinals. Removing a statement
+            // would renumber the exchange and could release its favorable half.
+            bool hasConditionReferences = (json["actions"] as JArray)?.OfType<JObject>().Any(x =>
+                WorldDiplomacyEnvelopeJsonRules.ReadStringList(x, "dependency_action_ids").Count > 0) == true;
+            int removedRedundantStatements = hasConditionReferences ? 0 : WorldDiplomacyEnvelopeJsonRules.RemoveRedundantStatementActions(json);
             if (removedRedundantStatements > 0)
             {
                 log?.Invoke("normalized redundant statement actions job=" + job.JobId
@@ -100,7 +104,16 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
                 WorldDiplomacyEnvelopeJsonRules.ReadString(json, "title"),
                 job.IsResponse ? DiplomacyMiscPromptTexts.Get("Document_DefaultReplyTitle", "Diplomatic Reply") : DiplomacyMiscPromptTexts.Get("Document_DefaultKingdomDeclarationTitle", "Kingdom Diplomatic Declaration"));
             title = WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(title), 100);
-            string body = WorldDiplomacyTextRules.NormalizeBody(DiplomacyReplyTextRules.CleanNpcText(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "body", "public_document", "document"))));
+            string body = DiplomacyReplyTextRules.CleanNpcText(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(
+                WorldDiplomacyEnvelopeJsonRules.ReadString(json, "body", "public_document", "document")));
+            // Reject before the storage normalizer can truncate already validated terms.
+            // The preferred writing range is soft; the document capacity is not.
+            if (body.Length > 6000)
+            {
+                rejectDraft?.Invoke(job, raw, authorId, targetId, "public_document_capacity_exceeded", json);
+                return;
+            }
+            body = WorldDiplomacyTextRules.NormalizeBody(body);
             if (string.IsNullOrWhiteSpace(body))
             {
                 rejectDraft?.Invoke(job, raw, authorId, targetId, "empty_public_document", json);
@@ -116,7 +129,7 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
                 job.IsResponse,
                 job.ExchangeId);
             document.RoundId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(job.RoundId, job.ExchangeId);
-            if (job.IsRelayTurn && job.CreatedDay >= 0)
+            if (job.IsRelayTurn && job.CreatedDay >= 0 && !DiplomacyPlayerEventRules.IsPlayer(jobRound))
             {
                 document.Day = job.CreatedDay;
                 document.GameDate = formatCampaignDate?.Invoke(job.CreatedDay);

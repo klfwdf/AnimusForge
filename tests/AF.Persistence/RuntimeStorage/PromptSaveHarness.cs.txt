@@ -1,0 +1,80 @@
+using System;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
+using AnimusForge;
+
+internal static partial class PromptSaveProbe
+{
+    private static readonly object CustomPromptTextStoreFileLock = new object();
+    private static readonly Encoding CustomPromptWriteEncoding = new UTF8Encoding(false);
+    private static readonly Encoding CustomPromptStrictUtf8Encoding = new UTF8Encoding(false, true);
+    private const long CustomPromptJsonMaxBytes = 262144;
+    private const string CustomPromptTextStoreFolderName = "CustomPrompts";
+    private const string WorldDiplomacyPromptJsonFileName = "WorldDiplomacyPrompt.json";
+    private const string WorldBulletinWritingRequirementsJsonFileName = "WorldBulletinWritingRequirements.json";
+    private const int WorldDiplomacyPromptJsonVersion = 1;
+    private static bool _customPromptTextStoreFolderHydrated;
+    private static long _customPromptTextStoreFolderFingerprint, _customPromptTextStoreNextRefreshTimestamp;
+    private static object _customPromptTextStoreCached;
+    private static string warning;
+    private static int checks;
+    private sealed class CustomPromptTextJson
+    {
+        public int Version { get; set; } = 1;
+        public string Text { get; set; }
+    }
+    private static void LogPlayerCustomPromptRuleWarning(string message) => warning = message;
+    // Non-player content normalization is outside this IO replay's coverage.
+    private static string MigrateLegacyWorldDiplomacyPromptText(string text) => throw new Exception("Non-player path");
+    private static string MigrateLegacyWorldBulletinWritingRequirements(string text) => throw new Exception("Non-player path");
+    private static void Check(bool value, string name)
+    {
+        if (!value) throw new Exception("FAIL " + name);
+        checks++;
+    }
+    private static bool Save(string value) => TryPersistCustomPromptTextFile("PlayerCustomPromptRule.json", value);
+    private static void Main(string[] args)
+    {
+        string fixture = Path.GetFullPath(args[0]);
+        string root = Path.Combine(fixture, "installed", "AnimusForge");
+        Directory.CreateDirectory(Path.Combine(root, "ModuleData"));
+        File.WriteAllText(Path.Combine(root, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
+        Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, root);
+        string retired = Path.Combine(fixture, "retired-profile.json");
+        File.WriteAllText(retired, "retired original");
+        string path = Path.Combine(root, "CustomPrompts", "PlayerCustomPromptRule.json");
+        using (new FileStream(retired, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            Check(Save("first 中文 {NAME} $1"), "new prompt saves while retired data is inaccessible");
+            Check(JsonConvert.DeserializeObject<CustomPromptTextJson>(File.ReadAllText(path)).Text == "first 中文 {NAME} $1", "text and placeholders preserved");
+            Check(Save("replacement"), "atomic replacement succeeds while retired data is inaccessible");
+            Check(JsonConvert.DeserializeObject<CustomPromptTextJson>(File.ReadAllText(path)).Text == "replacement", "replacement published");
+        }
+        Check(File.ReadAllText(retired) == "retired original", "retired source unchanged");
+        Check(!Directory.Exists(Path.Combine(root, "Recovery", "RuntimeStorage")), "save does not write migration recovery");
+        using (new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
+            Check(!Save("blocked"), "locked current prompt reports failure");
+        Check(JsonConvert.DeserializeObject<CustomPromptTextJson>(File.ReadAllText(path)).Text == "replacement", "locked file retains original");
+        Check(Save("retry"), "unlock permits retry without sticky migration failure");
+        foreach (string invalid in new[] { "{broken", "{}", "{\"Text\":null}" })
+        {
+            File.WriteAllText(path, invalid);
+            Check(!Save("must not overwrite"), "invalid current JSON reports failure");
+            Check(File.ReadAllText(path) == invalid, "invalid original preserved");
+            Check(warning.Contains("Existing custom prompt file is corrupted"), "failure identifies corrupted current file");
+        }
+        File.WriteAllBytes(path, new byte[] { 0xff, 0xfe, 0xff });
+        Check(!Save("invalid encoding"), "invalid UTF-8 original rejected");
+        Check(File.ReadAllBytes(path).Length == 3, "invalid encoding bytes preserved");
+        File.WriteAllText(path, "{\"Text\":\"valid\"}");
+        File.SetAttributes(path, FileAttributes.ReadOnly);
+        try { Check(!Save("read-only"), "read-only current file reports failure"); }
+        finally { File.SetAttributes(path, FileAttributes.Normal); }
+        Check(JsonConvert.DeserializeObject<CustomPromptTextJson>(File.ReadAllText(path)).Text == "valid", "read-only original preserved");
+        Check(Save("after permission recovery"), "permission recovery permits retry");
+        Check(Directory.GetFiles(Path.GetDirectoryName(path), ".afp-*").Length == 0, "failed and successful candidates cleaned");
+        Check(Directory.GetFiles(root, ".af-write-probe-*").Length == 0, "write probes cleaned");
+        Console.WriteLine("PASS real player-prompt IO checks=" + checks + "; game UI/MCM/session hydration not covered");
+    }
+}

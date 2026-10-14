@@ -795,6 +795,7 @@ public static class WorldDiplomacyGenerationValidationRules
                 WorldDiplomacyDocumentAction action = new WorldDiplomacyDocumentAction
                 {
                     ActionId = "action_" + (index + 1).ToString(CultureInfo.InvariantCulture),
+                    DependencyActionIds = WorldDiplomacyEnvelopeJsonRules.ReadStringList(actionEnvelope, "dependency_action_ids"),
                     TargetKingdomId = actionDocument.TargetKingdomId ?? "",
                     TargetKingdomName = actionDocument.TargetKingdomName ?? "",
                     Intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(actionDocument.Intent),
@@ -928,7 +929,7 @@ public static class WorldDiplomacyGenerationValidationRules
             document.IsWarResponseNoActionDeclaration = allowedWarResponseNoAction;
             document.Tone = WorldDiplomacyIntentVocabulary.NormalizeTone(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "tone"));
             document.Confidence = Math.Max(0f, Math.Min(1f, WorldDiplomacyEnvelopeJsonRules.ReadFloat(json, "confidence")));
-            document.RequiresResponse = allowedRoundResponseNoAction
+            document.RequiresResponse = allowedRoundResponseNoAction && !playerDiplomacy
                 ? false
                 : WorldDiplomacyIntentVocabulary.ResolveValidatedResponseObligation(document, intent, WorldDiplomacyEnvelopeJsonRules.ReadBool(json, "requires_response"), playerDiplomacy ? int.MaxValue : maxAutomaticReplyDepth);
             document.PeaceTerms = targetId == null ? document.PeaceTerms : (parsePeaceTerms(json, authorId, targetId) ?? document.PeaceTerms);

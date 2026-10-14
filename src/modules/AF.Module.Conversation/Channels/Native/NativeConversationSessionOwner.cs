@@ -42,8 +42,10 @@ internal sealed class NativeConversationSessionOwner
         lock (_gate)
         {
             if (!_history.TryGetValue(key, out var entries) || entries == null) _history[key] = entries = new List<AnimusForgeDialogueHistoryEntry>();
-            entries.Add(CloneNativeConversationHistoryEntry(entry));
+            var stored = CloneNativeConversationHistoryEntry(entry);
+            entries.Add(stored);
             TrimNativeConversationSessionHistory(entries);
+            if (ConversationRewriteTurn.IsCapturing) CaptureRewriteEntry(key, stored);
         }
     }
     internal void StampPromptSessionForEvent(string key, long sequence, string sessionKey)
@@ -66,14 +68,40 @@ internal sealed class NativeConversationSessionOwner
             if (entries.Count == 0) _history.Remove(key);
         }
     }
-    internal void MarkDialog(string key, string line) { lock (_gate) _recordedDialog[key] = line; }
+    internal void MarkDialog(string key, string line)
+    {
+        lock (_gate)
+        {
+            bool hadPrevious = _recordedDialog.TryGetValue(key, out var previous);
+            _recordedDialog[key] = line;
+            ConversationRewriteTurn.CaptureDictionaryWrite(_recordedDialog, key, hadPrevious, previous, line);
+        }
+    }
     internal bool TryMarkDialog(string key, string line)
     {
         lock (_gate)
         {
             if (_recordedDialog.TryGetValue(key, out var existing) && string.Equals(existing,line,StringComparison.Ordinal)) return false;
-            _recordedDialog[key] = line; return true;
+            bool hadPrevious = _recordedDialog.ContainsKey(key);
+            _recordedDialog[key] = line;
+            ConversationRewriteTurn.CaptureDictionaryWrite(_recordedDialog, key, hadPrevious, existing, line);
+            return true;
         }
+    }
+    private void CaptureRewriteEntry(string key, AnimusForgeDialogueHistoryEntry entry)
+    {
+        if (!ConversationRewriteTurn.IsCapturing || entry == null) return;
+        bool player = string.Equals(entry.Kind, "player", StringComparison.OrdinalIgnoreCase);
+        bool reply = string.Equals(entry.Kind, "npc", StringComparison.OrdinalIgnoreCase);
+        if (!player && !reply) return;
+        var expected = CloneNativeConversationHistoryEntry(entry);
+        ConversationRewriteTurn.CaptureListWrite(
+            () => _history.TryGetValue(key, out var current) ? current : null, entry,
+            () => entry.EventSequence == expected.EventSequence && entry.GameDayIndex == expected.GameDayIndex
+                && entry.GameHour == expected.GameHour && entry.GameDate == expected.GameDate && entry.Scene == expected.Scene
+                && entry.Kind == expected.Kind && entry.Text == expected.Text && entry.Speaker == expected.Speaker
+                && entry.TargetAgentIndex == expected.TargetAgentIndex && entry.TargetName == expected.TargetName,
+            isPlayerSpeech: player, isNpcReply: reply);
     }
     internal string LatestNpcUtterance(string key, ConversationSpeechTextOptions options = default)
     {

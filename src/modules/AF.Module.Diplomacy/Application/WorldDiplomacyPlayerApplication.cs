@@ -30,7 +30,7 @@ internal static class WorldDiplomacyPlayerApplication
             if (document.Actions != null)
                 foreach (var action in document.Actions) if (action != null && isPlayer(action.TargetKingdomId)) return true;
         }
-        if (round?.IsPlayerInsertion == true) return true;
+        if (DiplomacyPlayerEventRules.IsPlayer(round) || round?.IsPlayerInsertion == true) return true;
         if (round?.RelayRouteKingdomIds != null)
             foreach (string id in round.RelayRouteKingdomIds) if (isPlayer(id)) return true;
         return false;

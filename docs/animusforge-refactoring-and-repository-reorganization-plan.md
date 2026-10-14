@@ -1,3 +1,17 @@
+<a id="local-feature-publication-20261015"></a>
+## Player diplomacy and dialogue rewrite source delivery (2026-10-15)
+
+This delivery applies the reviewed functional delta to remote baseline `dbcc6801f19da42b526b52783c4d38a799799c2e`, preserving the previously published diplomacy receipt isolation, terminal settings, MCM ownership and bounded market maintenance. Existing save/protocol identities, single-module Bootstrap loading and the 1.3/1.4 implementations remain unchanged.
+
+- Player diplomacy: independent event ownership and request accounting; ongoing-case preservation, semantic reply routing, confidentiality isolation/audit, actual-notice response timing, and deferred execution of inseparable cross-action exchanges.
+- Dialogue: one completed native or scene turn can be undone for editing; its speech records are removed precisely, while prior memory and confirmed actions/facts remain. The rewrite icon and native/folio layouts are corrected.
+- Diplomacy presentation: full yellow declaration notices, player-realm notification priority and player-authored exclusions; natural writing preferences, advisory 100–300 defaults, retirement of six unused settings, and technical-capacity rejection instead of clause truncation.
+- Runtime storage: no legacy AppData/Documents import or sticky migration failures; current module storage and inert compatibility helpers remain. Native MCM retains its separately documented shared settings owner.
+
+Validation is bound to production-equivalent source `ad41120348b10d81860de49915f18eadb7d5aa49`: original build-only pipeline for Bannerlord 1.3.15 and 1.4.6 passed with 365 existing warnings and zero errors per implementation; Bootstrap, both coup seam gates and managed registration passed. Earlier verified slices cover CN diplomacy 3647, EN player flow 604, UI lifecycle 184, native/scene rewrite 36/20, policy-style notices 38, terminal settings 70, shared-terminal actual-DLL checks 520/530, market maintenance 52 and MCM selector/action 17. The final receipt-prose change passed 458 checks per CN/EN edition and 16 checks per actual implementation DLL. These are scoped source, actual-DLL and synthetic-boundary checks, not live acceptance.
+
+The unchanged full English diplomacy suite has Chinese-literal oracles; English affected-chain checks are separate. OS privilege prevents the storage symlink creation fixture. Actual game rendering, provider decisions, audio devices, performance and user old saves remain NOT-RUN. This is source publication only: no game installation, version bump, Stage or release ZIP. Local work logs and private history are excluded from the delivered ancestry; source, paired resources, regression tests, persistence catalog and portable design documentation are included.
+
 <a id="deploy-push-repeat-20261014"></a>
 ## 2026-10-14 当前改动再次部署并推送（DEPLOY_SCRIPT_PASS / PUSH_VERIFIED / LIVE_PENDING）
 

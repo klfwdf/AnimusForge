@@ -31,6 +31,12 @@
     <string id="AF_CONV_UI_TagTest_ExecutionFailed" text="[标签测试] 执行失败：{ERROR}" />
     <string id="AF_CONV_UI_Shout_BattleScene" text="战斗现场" />
     <string id="AF_CONV_UI_Native_Illustration" text="场景插画" />
+    <string id="AF_CONV_UI_Rewrite_Button" text="撤回重写" />
+    <string id="AF_CONV_UI_Rewrite_Unavailable" text="当前对话没有可以撤回的已完成轮次。" />
+    <string id="AF_CONV_UI_Rewrite_Changed" text="对话已经发生变化，这一轮不能再撤回。" />
+    <string id="AF_CONV_UI_Rewrite_Failed" text="这一轮未能撤回，原有记录已保留。" />
+    <string id="AF_CONV_UI_Rewrite_Busy" text="请等当前轮次完成后再撤回。" />
+    <string id="AF_CONV_UI_Rewrite_Done" text="本轮已撤回，请修改后重发；已发生的游戏结果保留。" />
     <string id="AF_CONV_UI_Courier_NotReady" text="信使系统尚未初始化，暂时不能回信。" />
     <string id="AF_CONV_UI_Courier_Character" text="该角色" />
     <string id="AF_CONV_UI_Courier_NoRecipient" text="找不到可通信的收件人。" />
@@ -498,5 +504,6 @@
     <string id="AF_CONV_UI_Direct_Map_CastleType" text="城堡" />
     <string id="AF_CONV_UI_Direct_Map_VillageType" text="村庄" />
     <string id="AF_CONV_UI_Direct_Map_HideoutType" text="藏身点" />
+    <string id="AF_CONV_UI_Rewrite_Hint" text="撤回本轮对话并修改原话，已发生的游戏结果保留。" />
   </strings>
 </base>

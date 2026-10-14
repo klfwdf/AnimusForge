@@ -1,3 +1,11 @@
+# Current delivery: player diplomacy and dialogue rewrite (2026-10-15)
+
+Player diplomacy now has independent event/request ownership, explicit continuation and reply routing, confidentiality checks, and notice-based response deadlines. The newest completed native/scene dialogue turn can be undone and edited while confirmed game actions remain recorded. Rewrite controls use the corner icon; diplomacy notices display complete yellow text, declaration length is advisory with new 100–300 defaults, and retired settings/legacy runtime imports are removed.
+
+This source delivery retains the existing terminal/MCM, bounded market maintenance, captivity dialogue and diplomacy receipt isolation fixes. Both Bannerlord implementations, Bootstrap, coup seams and registration passed on the identical production source. Focused CN/EN and lifecycle replays passed; live game, provider, rendering, audio and user saves remain unverified. No deployment or release packages are included.
+
+See [delivery evidence and scope](docs/animusforge-refactoring-and-repository-reorganization-plan.md#local-feature-publication-20261015) and [source map](docs/architecture/af-framework-code-scope.md#local-feature-publication-20261015).
+
 # 当前交接：全部改动再次部署并推送（2026-10-14，DEPLOY_SCRIPT_PASS / PUSH_VERIFIED / LIVE_PENDING）
 
 - main/44861038d运行内容原Release双API/Bootstrap/Coup/registration/Stage通过，原部署脚本exit0，F盘游戏单模块v1.6.0更新9个受管文件。

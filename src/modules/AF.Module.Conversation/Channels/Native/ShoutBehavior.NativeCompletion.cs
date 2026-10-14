@@ -73,6 +73,7 @@ internal sealed partial class NativeConversationGameEffectsRuntime
     {
         if (!IsNativeConversationCompletionCampaignCurrent(scope))
             return "";
+        using IDisposable rewriteCapture = ConversationRewriteTurn.CaptureScope(scope.Request.RewriteTurn);
         Hero hero = scope.Admission.Hero;
         var character = scope.Admission.Character;
         string cleaned = result.Content ?? "";
@@ -115,6 +116,8 @@ internal sealed partial class NativeConversationGameEffectsRuntime
         QueueNativeConversationCompletionExit(scope, result);
         string finalVisible = string.IsNullOrWhiteSpace(visible) ? SanitizeSceneSpeechText(cleaned).Trim() : visible.Trim();
         scope.Admission.ModuleOperation?.RecordOwnerCompletion(finalVisible);
+        if (!suppressHistoryWrite && !string.IsNullOrWhiteSpace(finalVisible))
+            scope.Request.RewriteTurn?.Complete();
         return finalVisible;
     }
 
@@ -159,6 +162,7 @@ public partial class ShoutBehavior
 internal sealed class NativeConversationCompletionRequest
     {
         internal string PlayerText;
+        internal ConversationRewriteTurn RewriteTurn;
         internal string OpeningFact;
         internal bool TtsAlreadyDispatched;
         internal long PendingPlayerHistorySequence;

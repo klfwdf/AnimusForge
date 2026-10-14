@@ -231,13 +231,34 @@
     "af_coup_detentions_v1"
   ],
   "optInStrictChunkedStringStorage": {
-    "keys": ["_af_world_diplomacy_v1", "_af_world_diplomacy_quarantine_v1"],
+    "keys": [
+      "_af_world_diplomacy_v1",
+      "_af_world_diplomacy_quarantine_v1"
+    ],
     "owner": "src/modules/AF.Module.Diplomacy/Adapters/BannerlordWorldDiplomacyPersistenceAdapter.cs",
     "writer": "CampaignSaveChunkHelper.SaveChunkedStringStrict",
     "reader": "CampaignSaveChunkHelper.LoadChunkedStringStrict",
     "failedDomainPolicy": "no partial or prior-campaign live state; exact primitive namespace evidence in safe UTF8 chunks, digest checked; unsafe raw keys/values remain only in envelope; incomplete read refuses save",
     "runtimeBoundary": "only world diplomacy opts in; legacy helper interfaces and other domains remain unchanged",
-    "currentReplay": "tests/modules/AF.Module.Diplomacy/WorldDiplomacyPersistenceAdapter.SmokeTests/run_strict.py"
+    "currentReplay": "tests/modules/AF.Module.Diplomacy/WorldDiplomacyPersistenceAdapter.SmokeTests/run_strict.py",
+    "additiveStateContracts": {
+      "player-diplomacy-20261012": {
+        "containerKey": "_af_world_diplomacy_v1",
+        "identity": "existing WorldDiplomacyStorage JSON; existing UTF8 strict chunks",
+        "schemaField": "playerDiplomacySchemaVersion",
+        "state": [
+          "event owner and ownership epoch",
+          "separate player request statistics",
+          "actual notice hour and per-source waits",
+          "court response work and agenda candidates",
+          "condition dependencies and deferred execution receipts",
+          "confidentiality isolation/audit work and technical holds",
+          "playerLifecycleSchemaVersion: known automatic-close recovery queue, classified public lifecycle and pending reply-attribution receipts; existing strict container, no new sav keys"
+        ],
+        "migration": "missing real display time -> one real notification before 72-hour waiting; preserved public replies suppress silence",
+        "newSyncDataKeys": []
+      }
+    }
   },
   "flattenedDictionaryStorageKeys": [
     "_afCustomPolicyActiveEffects_v1",

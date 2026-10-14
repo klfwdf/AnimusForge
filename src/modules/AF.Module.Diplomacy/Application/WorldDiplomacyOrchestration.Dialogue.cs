@@ -128,6 +128,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         InvalidateDialogueIndex();
         EnsureRoundParticipant(round, author, "active", false);
         EnsureRoundParticipant(round, target, "observer", false);
+        InitializeEventOwner(round, true);
         return round;
     }
 
@@ -209,6 +210,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         var round = source == null ? CreateIndependentDialogueRound(ResolveDialogueParty(request.ActorKingdomId),
             ResolveDialogueParty(request.TargetKingdomId), request.ArrangementId) : ResolveRound(source.RoundId);
         if (!IsLiveRound(round)) return new DialogueWorkReceipt(false, request.ArrangementId, request.Version, "", "source_round_closed");
+        TransferEvent(round, true, "oral_commitment");
         var arrangement = new WorldDiplomacyDialogueArrangement {
             ArrangementId = request.ArrangementId, Version = request.Version, SourceInteractionId = request.SourceInteractionId,
             SourceChannel = request.Origin?.Channel ?? "legacy_domain", SourceSessionId = request.Origin?.SessionId ?? "",

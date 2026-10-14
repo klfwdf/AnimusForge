@@ -45,6 +45,7 @@ internal interface IWorldDiplomacyOrchestrationHost
 {
     int CurrentDay();
     int CurrentHour();
+    double CurrentCampaignHours();
     string NewId(string prefix);
     string FormatCampaignDate(int day);
     void Log(string message);
@@ -464,6 +465,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public void EnqueueJob(WorldDiplomacyJob job)
     {
         if (!_persistenceHealthy) return;
+        DiplomacyPlayerEventRules.Bind(ResolveRound(job?.RoundId), job);
         WorldDiplomacyRoundLifecycleRules.EnqueueJob(Storage, job, _host.MaxPendingJobs());
     }
 
@@ -779,8 +781,9 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public List<string> GetActionableDiplomaticTargetIds(string authorId, WorldDiplomacyRound round)
     {
-        return new WorldDiplomacyActionSelectionApplication(_host.ActionSelection())
+        var targets = new WorldDiplomacyActionSelectionApplication(_host.ActionSelection())
             .GetActionableDiplomaticTargets(authorId, round);
+        return DiplomacyPlayerEventRules.IsPlayer(round) ? targets : targets.Where(x => !_host.IsPlayerAffiliatedParty(x)).ToList();
     }
 
     public List<string> GetRoundPlanActionableParticipantIds(string authorId, WorldDiplomacyRound round)
@@ -945,6 +948,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public void ProcessCompletedJobs()
     {
         if (!_persistenceHealthy) return;
+        RefreshPlayerAuthority();
         var source = _host.CompletionSource();
         WorldDiplomacyCompletionApplication.Run(ref source, this);
     }
@@ -955,23 +959,21 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         long now = DateTime.UtcNow.Ticks;
         if (now < _nextDiplomacyDispatchUtcTicks) return;
         _nextDiplomacyDispatchUtcTicks = now + TimeSpan.TicksPerSecond;
+        RefreshPlayerAuthority();
         int day = _host.CurrentDay();
         Storage.RequestBudget.AdvanceDay(day);
+        ProcessDuePlayerSilence();
+        MaintainPlayerEvents();
         if (_diplomacyDispatchDay != day) { _diplomacyDispatchDay = day; _diplomacyWorkNeedsReconcile = true; }
         if (_diplomacyWorkNeedsReconcile)
         {
             _diplomacyWorkNeedsReconcile = false;
-            foreach (var round in GetLiveRounds().ToList()) SchedulePlayerResponseWork(round);
+            ReconcilePlayerEventQueue();
         }
         ProcessRelayArrivals();
         var source = _host.LlmDispatchSource();
         for (int i = RequestLeases.Count; i < MaxConcurrentDiplomacyRequests; i++)
             WorldDiplomacyLlmDispatchApplication.Run(ref source, this);
-        if (Storage.Jobs.Any(IsPlayerSchedulingJob) && !Storage.RequestBudget.CanAdmit(true) && _lastPlayerPendingNoticeDay != day)
-        {
-            _lastPlayerPendingNoticeDay = day;
-            _host.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_Orch_DailyQuotaUsed", "Today's diplomatic request quota is exhausted; your declaration is published and pending responses are saved to continue next day."));
-        }
     }
 
     public void PollNotifications()
@@ -1011,6 +1013,13 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     {
         RecordDiplomaticDocumentPersonalMemory(_host.PartyRulerId(receiverId), document, false);
         _diplomacyWorkNeedsReconcile = true;
+        if (ProcessPlayerEventCourtArrival(receiverId, document))
+        {
+            _host.Log("court received document=" + document.DocumentId + " receiver=" + receiverId
+                + " direct=" + WorldDiplomacyStructureRules.GetDocumentTargetIds(document).Contains(receiverId)
+                + " day=" + _host.CurrentDay());
+            return;
+        }
         WorldDiplomacyCourtResponseApplication.Receive(
             Storage, receiverId, document,
             () => _host.IsRepresentativeForAddressedVassal(receiverId, document),
@@ -1118,6 +1127,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public bool EnsureGenerationJobHasKingdomStrategicProfile(WorldDiplomacyJob job)
     {
+        if (!string.IsNullOrEmpty(job?.PrivacyPublicContext) || IsPlayerPipelineJob(job)) return true;
         return WorldDiplomacyJobPreparationApplication.EnsureGenerationJobHasKingdomStrategicProfile(
             _host.JobPreparation(), job, _host.PromptWorld().LocalizePrompt);
     }
@@ -1157,6 +1167,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public void AbandonRejectedGeneration(WorldDiplomacyJob job, string authorId, string targetId, string reason)
     {
         if (IsOralDeclarationJob(job)) { DeferOralDeclarationJob(job, reason); return; }
+        if (DiplomacyPlayerEventRules.IsPlayer(ResolveRound(job?.RoundId))) { SuspendDiplomacyJob(job, reason); return; }
         DeferUnpublishedPlayerResponses(job);
         WorldDiplomacyGenerationTaskApplication.AbandonRejectedGeneration(
             job,
@@ -1191,9 +1202,19 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void CommitAnalysis(WorldDiplomacyJob job, string raw)
     {
+        if (job != null && _host.IsPlayerAffiliatedParty(job.AuthorKingdomId)
+            && DialogueHost?.IsPlayerRuler(_host.PartyRulerId(job.AuthorKingdomId)) != true)
+        {
+            var unauthorized = ResolveDocument(job.DocumentId);
+            if (unauthorized != null) unauthorized.AnalysisStatus = "published_action_rejected";
+            _pendingPlayerAnalysisIds.Remove(job.DocumentId);
+            return;
+        }
         WorldDiplomacyAnalysisApplication.Commit(_host.AnalysisPort(), this, job, raw);
         var document = ResolveDocument(job.DocumentId);
+        if (document?.AnalysisStatus != "pending_analysis" || document.PlayerAnalysisCommitted) _pendingPlayerAnalysisIds.Remove(job.DocumentId);
         RegisterPlayerResponseWork(document);
+        if (document?.AnalysisStatus is "success" or "published_action_rejected") QueuePlayerReplyRoutingCheck(document);
     }
 
     public void ProcessAnalyzedDocument(
@@ -1203,6 +1224,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         if (!string.IsNullOrEmpty(document?.DialogueArrangementId) && document.IsReadyForPublication) return;
         if (document?.IsPlayerAuthored == true)
         {
+            if (CurrentPlayerAuthority() != document.AuthorKingdomId)
+            { document.AnalysisStatus = "published_action_rejected"; return; }
             EnsurePlayerDocumentRound(document);
             BindPlayerDeclarationToSharedEvent(document);
         }
@@ -1226,6 +1249,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void CommitFailedJob(WorldDiplomacyJob job, string error)
     {
+        if (DiplomacyPlayerEventRules.IsPlayer(ResolveRound(job?.RoundId)) || IsPrivacyPipelineJob(job))
+        { SuspendDiplomacyJob(job, error); return; }
         if (IsOralDeclarationJob(job)) { DeferOralDeclarationJob(job, error); return; }
         WorldDiplomacyFailureApplication.Commit(
             job,
@@ -1250,7 +1275,10 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void CommitGeneratedDocument(WorldDiplomacyJob job, string raw)
     {
+        if (!string.IsNullOrEmpty(job?.DocumentId) && ResolveDocument(job.DocumentId)?.IsReadyForPublication == true) return;
+        if (DeferDraftForPrivacyCheck(job, raw)) return;
         if (IsOralDeclarationJob(job)) { CommitOralDeclaration(job, raw); return; }
+        if (DeferIncompletePlayerLifecycle(job, raw)) return;
         WorldDiplomacyGeneratedCompletionApplication.Commit(
             job,
             raw,
@@ -1272,11 +1300,34 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             PruneInvalidOffers,
             AbandonRejectedGeneration,
             RejectGeneratedDraftBeforePublication,
-            AddDocument,
+            document => { job.DocumentId = document.DocumentId; AddDocument(document); },
             (document, intent, commitment, response, tone, confidence) =>
             {
                 document.AnsweredPlayerDocumentIds = new List<string>(job.PlayerResponseSourceIds ?? new List<string>());
+                var envelope = WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(raw);
+                document.PlayerLifecycleClassified = IsPlayerDiplomacyJob(job) && HasExplicitPlayerLifecycle(envelope);
+                var participant = ResolveRound(job.RoundId)?.Participants.FirstOrDefault(x => x.KingdomId == document.AuthorKingdomId);
+                bool temporaryRefusal = envelope?["temporary_refusal"]?.Type == JTokenType.Boolean && envelope["temporary_refusal"].Value<bool>();
+                if (temporaryRefusal) document.RoundParticipation = "withdraw";
+                if (document.PlayerLifecycleClassified && (document.RoundParticipation == "withdraw" || document.RoundStatus is "resolved" or "deadlocked"))
+                {
+                    document.RequiresResponse = response = false;
+                    foreach (var action in document.Actions ?? new()) action.RequiresResponse = false;
+                }
+                if (!string.IsNullOrEmpty(job.SilenceSourceDocumentId))
+                {
+                    document.RoundParticipation = "withdraw";
+                    document.RequiresResponse = response = false;
+                    foreach (var action in document.Actions ?? new()) action.RequiresResponse = false;
+                    var wait = ResolveRound(job.RoundId)?.PlayerNegotiationWaits.FirstOrDefault(x => x.SourceDocumentId == job.SilenceSourceDocumentId);
+                    if (wait != null) wait.ClosureDocumentId = document.DocumentId;
+                }
                 ProcessAnalyzedDocument(document, intent, commitment, response, tone, confidence);
+                if (temporaryRefusal && document.IsReadyForPublication)
+                {
+                    if (participant != null) participant.RefuseRepeatedUntilDay = _host.CurrentDay() + 3;
+                    RecordDisputeRefusal(ResolveRound(job.RoundId), document);
+                }
                 CommitPlayerResponseCoverage(job, document);
             },
             _host.Log);
@@ -1298,6 +1349,10 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             reason = "diplomatic_actions_envelope_invalid";
             return true;
         }
+        if (!DiplomacyPlayerEventRules.IsPlayer(ResolveRound(job.RoundId)) && !_host.IsPlayerParty(authorId)
+            && json?["actions"] is JArray ordinaryActions && ordinaryActions.OfType<JObject>().Any(x => _host.IsPlayerAffiliatedParty(
+                ReadString(x, "target_kingdom_id", "primary_target_kingdom_id", "target"))))
+        { reason = "ordinary_player_target_requires_independent_agenda"; return true; }
         bool playerDiplomacy = IsPlayerGeneratedEnvelope(job, json);
         return WorldDiplomacyGenerationValidationRules.TryGetGeneratedIntentLegalityViolation(
             job, json, _host.MaxDiplomaticActionsPerDocument(), _host.GetRoundParticipantLimit(),
@@ -1520,7 +1575,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     {
         if (isPlayerInsertion) return CreateIndependentDialogueRound(initiatorId, targetId, "player_manual_declaration");
         InvalidateDialogueIndex();
-        return WorldDiplomacyRoundApplication.EnsureOpen(Storage, () =>
+        var opened = WorldDiplomacyRoundApplication.EnsureOpen(Storage, () =>
         {
             string roundInitiatorId = _host.ResolveRepresentativeId(initiatorId);
             string roundTargetId = _host.ResolveRepresentativeId(targetId);
@@ -1530,12 +1585,16 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
                 roundInitiatorId, roundTargetId, day, duration,
                 _host.RoundHardDurationDays(duration), _host.CourtMaxDeliveryDays(), isPlayerInsertion);
         });
+        if (string.IsNullOrEmpty(opened?.SchedulingOwner)) InitializeEventOwner(opened, false);
+        return opened;
     }
 
     public void ProcessRoundLifecycle()
     {
+        MaintainPlayerEvents();
         foreach (var round in GetLiveRounds().ToList())
         {
+            if (DiplomacyPlayerEventRules.IsPlayer(round)) continue;
             if (MaintainPlayerFollowup(round)) continue;
             if (Storage.DialogueArrangements.Any(x => x.RoundId == round.RoundId && (x.Status == "accepted" || x.Status == "deferred"))) continue;
             WorldDiplomacyRoundApplication.ProcessRoundLifecycle(Storage, _host.CurrentDay, ResolveDocument,
@@ -1552,6 +1611,12 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public void CloseRound(string reason, WorldDiplomacyRound round)
     {
         if (!IsLiveRound(round)) return;
+        if (DiplomacyPlayerEventRules.IsPlayer(round) && reason != "closed_disabled"
+            && reason != "player_declaration_attached_to_shared_event" && reason != "player_negotiation_finished"
+            && reason != "player_agenda_no_opportunity"
+            && !(reason == "dialogue_commitment_cancelled" && ResolveDocument(round.RootDocumentId)?.IsReadyForPublication != true)) return;
+        if (round.NpcInitiatedPlayerEvent && !string.IsNullOrEmpty(round.RootDocumentId))
+            Storage.NextPlayerAgendaDay = _host.CurrentDay() + 3 + (Math.Abs(round.RoundId.GetHashCode() % 3));
         PreservePendingPlayerAnalysisForClosingRound(round, reason);
         WorldDiplomacyRoundApplication.Close(Storage, reason, _host.CurrentDay,
             SettleTradeAllianceOfferCooldownsForClosedRound, ScheduleNextNormalRoundAfter,
@@ -1562,6 +1627,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void AdvanceRelay(WorldDiplomacyRound round, bool scheduleImmediately = false)
     {
+        if (DiplomacyPlayerEventRules.IsPlayer(round)) { SchedulePlayerCourtWork(round); return; }
         if (MaintainPlayerFollowup(round)) return;
         WorldDiplomacyRoundApplication.AdvanceRelay(round, scheduleImmediately, _host.CurrentDay,
             ScheduleNextResultSettlementTurn, reason => CloseRound(reason, round), ScheduleNextRelayHop);
@@ -1591,6 +1657,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void ScheduleNextRelayHop(WorldDiplomacyRound round, bool scheduleImmediately = false)
     {
+        if (DiplomacyPlayerEventRules.IsPlayer(round)) { SchedulePlayerCourtWork(round); return; }
         if (MaintainPlayerFollowup(round)) return;
         WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             round,
@@ -1617,6 +1684,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void HandleRoundDocumentProcessed(WorldDiplomacyDocument document)
     {
+        if (HandlePlayerEventPublication(document)) return;
         WorldDiplomacyRoundProgressApplication.HandleRoundDocumentProcessed(
             document, Storage, ResolveRound, ResolveDocument, _host.CurrentDay,
             BeginOrExtendRoundResultSettlement, CommitEmbeddedRoundPlan,
@@ -1681,6 +1749,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         RecoverRoundSchedulingAfterLoad();
         foreach (var round in GetLiveRounds().ToList())
         {
+            if (DiplomacyPlayerEventRules.IsPlayer(round)) continue;
             if (MaintainPlayerFollowup(round)) continue;
             if (Storage.DialogueArrangements.Any(x => x.RoundId == round.RoundId && (x.Status == "accepted" || x.Status == "deferred"))) continue;
             WorldDiplomacyRoundApplication.ReconcileActiveDiplomacyAfterLoad(Storage, _host.CurrentDay,
@@ -1839,6 +1908,12 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public void ResetRuntimeState()
     {
         RequestLeases.Reset();
+        _playerMaintenanceHour = -1; _playerAuthorityDay = -1; _playerRoundCursor = 0;
+        _observedAuthorityKingdom = _observedAuthorityRuler = "";
+        _playerDirtyRounds.Clear(); _playerDirtyRoundIds.Clear();
+        _playerAnalysisBacklog.Clear(); _pendingPlayerAnalysisIds.Clear();
+        _refusalsByKingdom.Clear();
+        _silenceDeadlines.Clear(); _silenceTicketIds.Clear(); _waitingByDocument.Clear();
         InvalidateDialogueIndex();
         RestoreDialogueMemoryRetryQueue();
         _personalMemoryRetryDocuments.Clear(); _personalMemoryRetryDocumentSet.Clear();
@@ -1933,6 +2008,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         change.CurrentKingdomId = newKingdomId ?? "";
         change.LastChangedDay = _host.CurrentDay();
         change.CaptureCount++;
+        RegisterPlayerAgendaCandidate("settlement:" + settlementId, oldKingdomId, newKingdomId);
         _host.InvalidateWarSituationCache(oldKingdomId, newKingdomId);
     }
 
@@ -1948,6 +2024,9 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             return;
         }
         storage.RecentBattles.Add(fact);
+        foreach (string attacker in fact.AttackerKingdomIds ?? new())
+            foreach (string defender in fact.DefenderKingdomIds ?? new())
+                RegisterPlayerAgendaCandidate("battle:" + fact.BattleId, attacker, defender);
         TrimRecentBattleFacts();
     }
 
@@ -1968,6 +2047,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             Value = value
         });
         TrimNativeSignals();
+        RegisterPlayerAgendaCandidate("native:" + action + ":" + sourceId + ":" + targetId, sourceId, targetId);
         if (action == "declare_war")
         {
             AddWarPressure(sourceId, targetId, value, DiplomacyMiscPromptTexts.Get("Orch_NativeWarDecisionSignalPrefix", "Native war decision signal: ") + reason, "");
@@ -2012,6 +2092,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     {
         _diplomacyWorkNeedsReconcile = true;
         WorldDiplomacyStorage storage = Storage;
+        var retiring = storage?.Jobs?.FirstOrDefault(x => WorldDiplomacyRoundLifecycleRules.HasJobId(x, jobId));
+        if (retiring?.Kind == "player_reply_routing") _pendingPlayerReplyRoutingIds.Remove(retiring.DocumentId);
         storage?.Jobs?.RemoveAll(x => WorldDiplomacyRoundLifecycleRules.HasJobId(x, jobId));
     }
 
@@ -2058,6 +2140,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     {
         if (!_persistenceHealthy) return;
         WorldDiplomacyDocumentPublicationApplication.PublishPlayerImmediately(document, _host.Publication(), this);
+        RememberPendingPlayerAnalysis(document);
+        RegisterPublishedPlayerAnswer(document);
     }
 
     public void RetryDeferredDocumentPropagation()
@@ -2571,7 +2655,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public string BuildAnalysisPrompt(WorldDiplomacyDocument document)
     {
-        return WorldDiplomacyPromptComposer.BuildAnalysisPrompt(_host.PromptWorld(), this, document) + BuildPlayerRoundRoutingContext(document);
+        return WorldDiplomacyPromptComposer.BuildAnalysisPrompt(_host.PromptWorld(), this, document) + BuildPlayerRoundRoutingContext(document)
+            + "\n" + DiplomacyPromptTexts.Get("PlayerConditionAnalysis", "Identify each condition separately. Accept only unambiguous, unconditional assent by the current author ruler to the exact source document/action. Conditional assent, hypotheticals, changed terms and partial acceptance of reciprocal terms are counteroffers. Preserve any explicit exchange prerequisite: emit dependency_action_ids on the affected actions, referencing action_1 etc. within this document or SOURCE_DOCUMENT_ID#SOURCE_ACTION_ID in an original offer. For independent terms omit dependencies. A peace proposal's cession and tribute terms form one indivisible original action; never accept only its favorable half. Modified prices or targets require a new proposal source, never reuse consent to a prior version. Output no invented acceptance or executed outcome. Add answered_npc_document_ids containing only incoming public document IDs whose particular matters this declaration actually answers; empty for unrelated speech. The drafting shortcut source is advisory and does not establish relevance. Never mark other countries' independent unanswered matters as answered merely because they share an event.");
     }
 
     public string BuildFallbackAnalysisJson(WorldDiplomacyJob job)

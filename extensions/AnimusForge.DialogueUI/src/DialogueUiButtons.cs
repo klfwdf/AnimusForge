@@ -104,6 +104,7 @@ namespace AnimusForge.DialogueUI
         // Scene prefab buttons are styled by Id prefix after the movie (or a list item) appears.
         internal static void StyleSceneButton(ButtonWidget button)
         {
+            if (button is AnimusForgeConversationRewriteButtonWidget) return;
             string id = button?.Id ?? "";
             if (id.StartsWith("AFCap")) StyleSprite(button, "afdui_capsule_topic");
             else if (id.StartsWith("AFPlaque")) StyleSprite(button, "afdui_plaque_nameplate");

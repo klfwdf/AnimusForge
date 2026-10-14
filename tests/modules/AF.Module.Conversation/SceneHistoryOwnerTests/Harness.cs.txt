@@ -10,6 +10,21 @@ internal static class Program {
  static ConversationMessage M(long seq,string role,string text,int speaker=7,string hero="ada",params int[] visible)=>new(){EventSequence=seq,Role=role,Content=text,SpeakerName=speaker==7?"Ada":"Borin",SpeakerAgentIndex=speaker,SpeakerHeroId=hero,VisibleAgentIndices=visible.ToList(),GameDayIndex=5,GameDate="today",GameHour=9,Scene="town"};
  static async Task Main(){try{await RunTests();}catch(Exception error){Console.Error.WriteLine(error);Environment.ExitCode=1;}}
  static async Task RunTests(){
+ var rewriteScene=new SceneConversationHistoryOwner(new());rewriteScene.AppendPublic(M(100,"user","repeat",-1,"",7,8));rewriteScene.AppendPublic(M(101,"assistant","repeat",7,"ada",7,8));
+ var rewrite=new ConversationRewriteTurn("repeat");
+ using(ConversationRewriteTurn.CaptureScope(rewrite)) {
+  rewriteScene.AppendPublic(M(102,"user","repeat",-1,"",7,8));rewriteScene.AppendNpc(7,M(102,"user","repeat",-1,"",7,8));rewriteScene.AppendNpc(8,M(102,"user","repeat",-1,"",7,8));
+  rewriteScene.AppendPair(7,M(103,"assistant","repeat",7,"ada",7,8),M(103,"assistant","repeat",7,"ada",7,8));rewriteScene.AppendNpc(8,M(103,"assistant","repeat",7,"ada",7,8));
+  rewriteScene.AppendPair(8,M(104,"assistant","second reply",8,"borin",7,8),M(104,"assistant","second reply",8,"borin",7,8));
+  rewriteScene.AppendPublic(M(105,"system","[AFEF NPC行为补充] retained",-1,"",7,8));rewriteScene.AppendNpc(7,M(105,"system","[AFEF NPC行为补充] retained",-1,"",7,8));
+ }
+ rewrite.Complete();C(rewrite.TryRewrite(out _),"rewrite-full-scene-round-applied");
+ C(rewriteScene.CapturePublic().Select(x=>x.EventSequence).SequenceEqual(new long[]{100,101,105}),"rewrite-scene-keeps-prior-identical-lines-and-facts");
+ C(rewriteScene.CaptureNpc(7,"",default).All(x=>x.EventSequence==105)&&rewriteScene.CaptureNpc(8,"",default).All(x=>x.EventSequence==100||x.EventSequence==101||x.EventSequence==105),"rewrite-scene-private-target-and-bystander-speech-removed");
+ var stale=new ConversationRewriteTurn("player");var edited=M(111,"assistant","reply",7,"ada",7);
+ using(ConversationRewriteTurn.CaptureScope(stale)){rewriteScene.AppendPublic(M(110,"user","player",-1,"",7));rewriteScene.AppendNpc(7,edited);}stale.Complete();edited.Content="edited";
+ C(!stale.TryRewrite(out _)&&rewriteScene.CapturePublic().Any(x=>x.EventSequence==110),"rewrite-scene-edited-source-rejects-before-any-removal");
+ if(Environment.GetEnvironmentVariable("AF_TEST_REWRITE_ONLY")=="1"){Console.WriteLine("SCENE_REWRITE_OWNER pass="+count+" fail=0 LIVE=NOT_RUN");return;}
  object gate=new();var owner=new SceneConversationHistoryOwner(gate);var pub=M(1,"system","[AFEF NPC行为补充] shared",-1,"",7);var priv=M(1,"system",pub.Content,-1,"",7);
  owner.AppendPair(7,pub,priv);C(owner.PublicCount==1&&owner.PublicFingerprint()==((1L<<16)^1),"sole owner initial count/fingerprint");
  pub.Content="same reference update";C(owner.CapturePublic()[0].Content==pub.Content,"write retains message identity");pub.Content="[AFEF NPC行为补充] shared";

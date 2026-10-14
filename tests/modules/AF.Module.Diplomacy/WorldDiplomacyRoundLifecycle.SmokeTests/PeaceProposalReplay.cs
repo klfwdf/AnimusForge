@@ -34,6 +34,7 @@ internal static class PeaceProposalReplay
         public override bool IsPlayerAffiliatedParty(string id) => id == "new_kingdom";
         public override bool IsPlayerParty(string id) => id == "new_kingdom";
         public override string PlayerKingdomId() => "new_kingdom";
+        public override string PartyRulerId(string id) => id == "new_kingdom" ? "ruler_p" : base.PartyRulerId(id);
         public override int MaxDiplomaticActionsPerDocument() => 4;
         int IWorldDiplomacyAnalysisPort.MaxAutomaticReplyDepth => 3;
         public override IWorldDiplomacyPeaceAdmissionPort PeaceAdmission() => Peace;

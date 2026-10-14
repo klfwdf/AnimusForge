@@ -119,9 +119,9 @@ internal sealed partial class WorldDiplomacyOrchestration
         var range = _host.DeclarationCharacterRange();
         job.SystemPrompt = WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt(
             _host.CommonDiplomacyContract(ResolveRound(item.RoundId)), range.minimum, range.maximum, DiplomacyPromptTexts.Get)
-            + DiplomacyPromptTexts.Get("OralGeneration_System", "\n[Oral agreement drafting] The action in this request was confirmed in conversation. Write only the formal declaration; do not renegotiate or select an action. actions must contain exactly the fixed action and preserve every field. Agreed bilateral accept_* actions come from the two rulers' oral agreement and do not require an invented original proposal document. The agreed declaration must explicitly announce fulfillment now; propose_* matters without a third kingdom's consent must remain proposals. Conversation material only informs the agreement and tone: do not publish private dialogue, secrets or unverified player claims verbatim. Public reasons require public facts. body must fully disclose the fixed terms without internal IDs, tags, program status, receipts or technical explanations.");
+            + DiplomacyPromptTexts.Get("OralGeneration_System", "\n[Oral agreement drafting] The action in this request was confirmed in conversation. Draft only the declaration using the shared writing guidance; do not renegotiate or select an action. actions must contain exactly the fixed action and preserve every field. Agreed bilateral accept_* actions come from the two rulers' oral agreement and do not require an invented original proposal document. The agreed declaration must explicitly announce fulfillment now; propose_* matters without a third kingdom's consent must remain proposals. Conversation material only informs the agreement and tone: do not publish private dialogue, secrets or unverified player claims verbatim. Public reasons require public facts. body must fully disclose the fixed terms without internal IDs, tags, program status, receipts or technical explanations.");
         job.SystemPrompt = PromptComposerTexts.ApplyOutputLanguage(job.SystemPrompt);
-        var sb = new StringBuilder(DiplomacyPromptTexts.Get("OralGeneration_UserHeader", "player_diplomacy=true\nDraft a complete, reasoned formal declaration of oral diplomacy from the following confirmed material.\n"));
+        var sb = new StringBuilder(DiplomacyPromptTexts.Get("OralGeneration_UserHeader", "player_diplomacy=true\nDraft a complete public diplomatic declaration from the confirmed agreement below.\n"));
         sb.AppendLine(DiplomacyPromptTexts.Format("OralGeneration_Author", "Publishing kingdom: {ACTOR}; ruler: {RULER}",
             "ACTOR", _host.PartyNameOrEmpty(item.ActorKingdomId), "RULER", _host.PartyRulerName(item.ActorKingdomId)));
         sb.AppendLine(DiplomacyPromptTexts.Get("OralGeneration_Target", "Target kingdom: ") + _host.PartyNameOrEmpty(item.TargetKingdomId));
@@ -157,10 +157,12 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (IsCurrentDialoguePublicationWork(item) && !RecoverDialoguePublicationReceipt(item))
         {
             item.Status = "deferred"; item.Reason = Limit(reason, 180);
-            item.GenerationRetryAfterDay = _host.CurrentDay() + 1;
+            item.GenerationFailureAttempts++;
+            item.GenerationRetryAfterDay = item.GenerationFailureAttempts < 3 ? _host.CurrentDay() + 1 : int.MaxValue;
             RecordDialogueArrangementFact(item, "technical_delay:" + item.GenerationRetryAfterDay,
                 DiplomacyCompatibilityTexts.Get("OralGeneration_DelayedFact"));
             _host.Log("oral declaration deferred id=" + item.ArrangementId + " reason=" + item.Reason);
+            if (item.GenerationFailureAttempts >= 3) { SuspendDiplomacyJob(job, reason); return; }
         }
         RemoveJob(job.JobId);
     }
@@ -178,11 +180,12 @@ internal sealed partial class WorldDiplomacyOrchestration
             || action.Properties().Any(x => expected[x.Name] == null && x.Name != "negotiation_move"))
         { DeferOralDeclarationJob(job, "oral_declaration_changes_agreed_action_or_terms"); return; }
         string title = ReadString(json, "title"), body = ReadString(json, "body");
-        var range = _host.DeclarationCharacterRange();
         string visible = title + "\n" + body;
         string reason = "oral_declaration_incomplete_or_technical_text";
-        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(body) || body.Length < range.minimum
-            || body.Length > range.maximum || visible.IndexOf("[ACTION:", StringComparison.OrdinalIgnoreCase) >= 0
+        // Configured length is a writing preference. Keep the storage capacity guard
+        // so NormalizeBody cannot silently cut agreed terms from a published draft.
+        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(body) || body.Length > 6000
+            || visible.IndexOf("[ACTION:", StringComparison.OrdinalIgnoreCase) >= 0
             || ContainsAny(visible, DiplomacyCompatibilityTexts.Get("OralGeneration_ReceiptRegistered"),
                 DiplomacyCompatibilityTexts.Get("OralGeneration_ReceiptPublished"), DiplomacyCompatibilityTexts.Get("OralGeneration_ReceiptExecuted"),
                 DiplomacyCompatibilityTexts.Get("OralGeneration_ReceiptDeferred"), DiplomacyCompatibilityTexts.Get("OralGeneration_ReceiptInvalidTerms"),

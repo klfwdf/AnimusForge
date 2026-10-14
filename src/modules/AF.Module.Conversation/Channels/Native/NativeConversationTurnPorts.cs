@@ -15,6 +15,7 @@ internal sealed class NativeConversationTurnPorts
 
     internal Action<NativeConversationAdmission> RetireOpeningForAcceptedReply;
     internal Action<NativeConversationAdmission> ConfirmMeetingElapsedBoundary;
+    internal Func<NativeConversationAdmission, string, string, ConversationRewriteTurn> BeginRewriteTurn;
     internal ConversationGameThreadDispatcher PromptDispatcher;
     internal Func<bool> IsPromptOwnerAvailable;
     internal Func<NativePromptCaptureRequest, SharedPromptRoutingWork> CapturePromptRoutingWork;
@@ -49,7 +50,7 @@ internal sealed class NativeConversationTurnPorts
 
     internal delegate Task<NativeConversationPendingHistory> PrepareNativeConversationPendingHistoryAsyncCapability(
         NativeConversationAdmission admission, NpcDataPacket npc, string npcName, int agentIndex,
-        string playerText, bool recordPlayerInput);
+        string playerText, bool recordPlayerInput, ConversationRewriteTurn rewriteTurn);
     internal PrepareNativeConversationPendingHistoryAsyncCapability PrepareNativeConversationPendingHistoryAsync;
 
     internal delegate Task RollbackNativeConversationPendingPlayerHistoryAsyncCapability(NativeConversationAdmission admission,

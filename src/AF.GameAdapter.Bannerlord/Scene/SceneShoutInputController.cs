@@ -1687,7 +1687,7 @@ internal sealed class SceneShoutInputController
 		if (!ShoutTextInputPopup.Show(titleText, text2, inputHint, "", delegate(string input)
 		{
 			OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
-        }, OnShoutCancelled, BuildShoutTargetEncyclopediaAction(primaryDataPacket), enableIllustration: true))
+        }, OnShoutCancelled, BuildShoutTargetEncyclopediaAction(primaryDataPacket), enableIllustration: true, enableRewrite: true))
 		{
 			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, (string.IsNullOrWhiteSpace(text2) ? "" : (text2 + "\n")) + inputHint, isAffirmativeOptionShown: true, isNegativeOptionShown: true, ConversationUiLocalization.Text("AF_CONV_UI_Shout_Send", "Send"), ConversationUiLocalization.Text("AF_CONV_UI_Shout_Close", "Close"), delegate(string input)
 			{
