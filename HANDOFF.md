@@ -1,3 +1,9 @@
+# 当前交接：快报长期事实与NPC RAG（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品e3ea02f49：重大快报事实长期保留，知情过滤后进行本地ONNX召回/重排，48候选→12重排→最多4条，三渠道共享。保留日期/事实与报刊轶闻边界，旧档仅接回可靠残留材料。
+- 策略29、真实本地ONNX及共享适配19、归档236、CNEN上下文各102通过；最终本任务隔离源码原双API/Bootstrap/Coup/注册通过。共享树另有并行开发，未部署/实机/打包/push。
+- [实施方案](docs/bulletin_fact_recall_plan.md)；[唯一主台账、源码范围、证据和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#world-news-recall-20261015)。回滚git revert e3ea02f49，保留并行改动。
+
 # 方案交接：NPC 主动接触动机（2026-10-15，DESIGN_ONLY）
 
 - 用户最新要求只让玩家经历与近况参与来意。方案已收窄为履历交流、近期事件反应及必要的选择/去重接线；原职业、公开服务、独立机会系统和六类动机重构已移出范围，原30类动机保留。

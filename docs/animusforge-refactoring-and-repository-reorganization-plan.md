@@ -10554,3 +10554,26 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 核对原生开场routingInput及公共ResidentRecentActions、主动来信extras消费者，确认材料存在跨阶段/重复注入成本。原150–500估算仅限一个请求的短新增材料；实际按各阶段及重试求和，不给固定费用承诺。
 - 明确取舍：新互动占用旧来意机会；重复、知情粒度、采集覆盖及自由文本筛选精度仍有限；通过原有知情、回执、冷却和实际对话/usage验收控制。方案仍只涉及玩家经历与近况。
 - 本轮只改三份方案/交接文档，文档引用和diff验证；尚未实施或测量真实token/模型/实机效果。并行快报召回源码、资源、测试与未跟踪文件保留，不纳入本次文档提交。回滚使用本轮文档提交的focused inverse commit。
+
+<a id="world-news-recall-20261015"></a>
+## 2026-10-15 快报事实长期档案与NPC RAG（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户授权“制定方案并实施”，实施方案见 docs/bulletin_fact_recall_plan.md。当前包聚焦快报真实事实长期保存和三渠道请求级检索；不重写玩家近况16条、个人对话记忆/世界书/外交传播，也不把报纸文学正文升级为事实。检查点60afe0b，产品e3ea02f49。
+- 行为：现有 _af_worldBulletin_v1 分块JSON新增可选 NewsFacts/NewsArchiveImported。重大已确认事件在采集时写入，出版时标记公开；稳定key更新/去重；不随8日窗口或摘要成功删除。读档reset先接回仍保留事件与明确冻结的报道/残余事实材料，缺日期、来源不明确、模型区域摘要/标题/正文不迁入。
+- 知情：先按亲历者、所属或所在地王国的公开事件、已出版高重要性新闻过滤；普通新闻采用公开范围政策，不模拟实体报纸送达。外交须有已知文书ID，参与者/出版/旧kind大小写都不能绕过；最终组装重验当前地域与文书权限，跨generation不注入。人物记忆与私聊不作为档案来源。
+- 检索：词项/人物/王国索引限候选48（query最多32词项、每词项最多256posting），后台复用ONNX embedding，按事件组去重后cross-encoder最多12，最终最多4；保留原游戏日期，说明旧事实不代表当前状态。未命中不强塞；模型不可用明确lexical_fallback；同步兼容入口不在主线程初始化模型。近期简讯和原报刊轶闻路径保持。
+- 性能：不新增HTTP请求、Tick IO/扫描、后台游戏对象读写；索引在加载/事件变更时维护，推理沿已有后台知识阶段。单事实显示480字符，存档原文保留；长期存档体积随已确认重要事实增长，不以删除旧事来伪装有界存储。检索预算意味着不是所有保留事实都保证每次召回。实际CPU暖模型48候选/12重排最大值一轮673ms（前轮594ms）；不是游戏帧耗时或冷启动承诺。
+- 源码地图（e3ea02f49）：
+  - src/modules/AF.Module.Weekly/Recall/WorldNewsFactArchive.cs:9–231，WorldNewsFact/WorldNewsObserver/Upsert/Visible/Capture/Terms，持久事实与索引、权限先行、脱离游戏对象的快照。
+  - src/modules/AF.Module.Weekly/Recall/WorldNewsRecallPolicy.cs:10–68，Retrieve/Cosine，48/12/4预算、语义召回/重排、可见候选内降级和事件去重。
+  - src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Knowledge.cs:9–88，EnsureNewsArchive/ArchiveNewsFact/CaptureNewsRecall/ArchivePublishedNews；WorldBulletinStateOwner.cs采集/更新/出版/ResetTransient/ExportJson调用；WorldBulletinPolicy.cs:101–103可选存档字段。保存key/程序集/已有DTO身份未改。
+  - src/AF.GameAdapter.Bannerlord/Prompt/WorldNewsRecallPromptAdapter.cs:14–105，主线程Capture、worker Retrieve、本地模型复用与Render权限复核/CNEN展示。MyBehavior.WorldBulletin.cs:62–63薄端口。
+  - src/AF.GameAdapter.Bannerlord/Prompt/SharedPromptCaptureBannerlordAdapter.cs:226–422、599–632，共享捕获/worker入参/结果回填/最终Render；PromptRetrievalCapture.cs请求与结果字段；PromptExtrasComposer.cs:98历史事实置于机制规则之前，避免规则分段误归类。
+  - content/modules/AF.Module.Weekly/ModuleData/WorldBulletinPromptTexts{,.en}.json五个Recall键，通过原reader/content-map投影；unknown动态原文保留，CNEN不锁模型输出语言。
+- 验证：策略29断言；实际生产共享方法/适配器+本机真实embedding/reranker CN/EN共19断言，包含年度旧事实、地域撤权、generation、规则行边界和48候选负载；快报实际发布/迁移/分块归档236断言（含大档多块、缺块拒绝）；现有上下文CN/EN各102项。源键/变量及映射PASS，git CRLF diff check PASS。
+- 通用分块回放与chunk-contract-only最终PASS（21 string keys/47 dictionary keys/12000 UTF8；共享树并行存档审计已修复此前旧测试/清单问题，该修复不属于本产品）。大档/损坏边界另有本次档案实际回放。
+- 构建：首次共享树双API/Bootstrap/Coup/registration通过；最终共享树遇并行 PlayerNotorietyBehavior.Experience.cs 编译错误。为不修改并行工作，使用git archive 60afe0b +仅本次12生产文件覆盖，在仓内 artifacts/world-news-recall-20261015/source 运行原build_single_module.ps1 Debug，最终exit0：1.3.15.110062/1.4.6.115628、Bootstrap、双Coup及注册门禁PASS。构建overlay逐文件SHA及规范化正文已核对e3ea02f49，receipt.json记录3DLL SHA。这个结果不宣称并行共享工作树整体完工。
+- 证据 artifacts/world-news-recall-20261015/：receipt.json、isolated-source.json、build-isolated-final.log、policy-final.log、shared-adapter-final.log、archive-chunks-final.log、context.log、chunks-final.log、chunk-contract-final.log。独立模型日志含mode=embedding+rerank和耗时，游戏对象边界为fixture，未调用远程LLM。
+- 仓库总code-map检查仍报未涉及的 ModuleFrameworkRuntime.cs source hash过期（code-map.log）；没有修改该旧全仓坐标证据或把它算通过。本条源码地图/提交SHA为本包证据。
+- 未验：真实游戏旧档与长周期运行、NPC最终回复是否自然利用材料、长期高量存档性能。未Stage/部署/打包/push；旧档早已丢失的事实无法恢复。不清理已有Microsoft/、NuGet/或并行主动接触/审计改动。
+- 回滚：git revert e3ea02f49；若后续共享文件已修改则聚焦反向合并。已保存事实新字段旧代码会忽略，源码回滚不等于游戏部署回滚。需要游戏生效另行按既有构建/部署流程执行。
