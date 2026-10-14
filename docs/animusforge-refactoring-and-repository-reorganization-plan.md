@@ -1,4 +1,11 @@
-﻿<a id="ambient-test-completion-20261014"></a>
+﻿<a id="deep-trace-safety-20261014"></a>
+## 2026-10-14 深度诊断空引用补漏（IN_PROGRESS）
+
+- 用户追问此前PartyBase.ToString空引用：先前只分析未修，本轮与全项补漏一起实施。现源码先对所有参数ToString再限流，且FirstChance注册后关闭设置不会取消监听。
+- 计划保持诊断/玩法边界：并发且按MethodBase限流后才处理参数，游戏对象仅类型名不调用危险ToString；关闭后在原应用tick取消自有FirstChance监听、回调用原子开关/重入保护，不卸载他人Harmony或修改原游戏对象。
+- 单次显式深度诊断可执行，关闭时不读堆栈/构造参数；不把它当全部帧卡顿或GPU纹理错误根因，也不修改原构建脚本默认配置。
+
+<a id="ambient-test-completion-20261014"></a>
 ## 2026-10-14 全项核对：环境API测试按钮补漏（IN_PROGRESS）
 
 - 用户要求核对上文全部完成状态，真实源码确认TestTownAmbientAiConnection仍为空；先前诊断已登记但未实施，不能把之前全部设置回放或API下拉修复当该按钮已接通。本条作为当前补漏checkpoint。
