@@ -1,3 +1,9 @@
+# 当前交接：快报故事化与三条大事件（2026-10-15，SOURCE_VERIFIED / BUILD_BLOCKED）
+
+- 主报道明确要求独立创作完整插曲，CN500～800字、EN330～500词、三到五段；大事件上限3条，无关大事件仍合写。保留事实结果、自定义提示词及原降级链路。
+- 实际归档回放213项、最终默认/选材22项、上下文CN/EN各102项及资源接线通过；官方双实现构建被并行人设未完成代码阻断，实机文稿效果未验。未部署、打包或push。
+- [唯一主台账、源码坐标、证据及聚焦回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-narrative-20261015)。产品c291b109e及并行字段纠偏95859f373；不要单独回滚产品提交误动人设字段。
+
 # 当前交接：市场逐帧清理已部署（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - main/4eed05dd9 原 Release 双 API/Bootstrap/Coup/registration 通过，干净 Stage 后原部署脚本 exit 0，F盘游戏单模块更新11个受管文件；包含市场 db3e1ae68 及已合入扩展人设 7b113afbe。
