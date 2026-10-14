@@ -80,7 +80,7 @@ internal static class TerminalSettingsCoverage
     {
         if (id == "TownAmbientAiShowUsageNotifications" || id == "ScreenNotifications"
             || id == "EnemyInterruptRadiusMeters" || id == "DiagnosticsEnabled"
-            || id == "Illustrator.UseExactEndpointUrl") return false;
+            || id == "Illustrator.UseExactEndpointUrl" || id == "TerminalHotkeyEnabled" || id == "TerminalMapIconEnabled") return false;
         if (id.StartsWith("Illustrator.Director", StringComparison.Ordinal) || id == "Illustrator.FetchDirectorModelList") return false;
         return true;
     }

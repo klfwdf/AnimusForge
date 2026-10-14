@@ -10,15 +10,18 @@ using BUTR.DependencyInjection;
 using MCM.Abstractions;
 using MCM.Abstractions.Base;
 using MCM.Abstractions.Properties;
+using MCM.Abstractions.GameFeatures;
 using Newtonsoft.Json.Linq;
 
 // Actual product setters, MCM discovery/JSON and terminal VMs. Only the provider
 // disk boundary is a workspace fixture; no native rendering or HTTP is started.
 sealed class Discovery : IGenericServiceProvider
 {
+    readonly IFileSystemProvider files;
+    public Discovery(IFileSystemProvider files = null) { this.files = files; }
     readonly ISettingsPropertyDiscoverer discoverer = (ISettingsPropertyDiscoverer)Activator.CreateInstance(
         typeof(BaseSettings).Assembly.GetType("MCM.Implementation.AttributeSettingsPropertyDiscoverer", true), true);
-    public T GetService<T>() where T : class => typeof(T) == typeof(IEnumerable<ISettingsPropertyDiscoverer>) ? new[] { discoverer } as T : null;
+    public T GetService<T>() where T : class => typeof(T) == typeof(IEnumerable<ISettingsPropertyDiscoverer>) ? new[] { discoverer } as T : typeof(T) == typeof(IFileSystemProvider) ? files as T : null;
     public IGenericServiceProviderScope CreateScope() => null;
     public void Dispose() { }
 }
@@ -69,6 +72,7 @@ class Program
 #if !AF_BASELINE
             SupplementalChecks.Run(af, duel, Check, root);
             SceneTerminalChecks.Run(af, Check);
+            SharedMcmChecks.Run(af, duel, root, Check);
 #endif
             var formatType = typeof(BaseSettings).Assembly.GetType("MCM.Implementation.JsonSettingsFormat", true);
             var loggerType = typeof(BaseSettings).Assembly.GetType("BUTR.DependencyInjection.Logger.DefaultBUTRLogger`1", true).MakeGenericType(formatType);

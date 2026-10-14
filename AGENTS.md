@@ -34,7 +34,7 @@
 - 最终 messages 的固定 system Prompt 应进行 CN/EN 语言审计；运行时审计只记录未投影固定文本和动态原文来源，不因玩家中文输入或旧历史阻断请求。发布/Stage 门禁才可阻止固定资源漏译。
 - 资源与真实 reader、消费者、内容映射/嵌入逻辑名、语言注册和包选择必须一起完成；核对 prefab 的 DataSource 文案属性与绑定。语义、实际接线、词法扫描和实机分别验收，不能用“无汉字/编译通过”替代。
 - 内容包仅选择固定 Prompt、事实模板和世界书资源的 CN/EN 版本；不得追加按包语言强制回复的 system 规则，不得因输出包含中文或英文而丢弃标题、正文或阻断请求。UI 仍随游戏界面语言；模型自然语言输出由实际上下文和玩家自定义要求决定。协议、JSON字段、数值、事实和权限约束照常保留；用户自行指定的语言要求不改写。
-- AF 运行数据按用途写入当前已安装模组：`CustomPrompts/` 用户提示词、`Logs/` 日志、`Configs/` 设置、`PlayerExports/` 导入导出、`Cache/` 缓存和临时音频、`Recovery/` 恢复资料；复用 `AnimusForgeDataPaths` 的身份/路径/ancestor reparse 校验。不得自动转写 AppData、Documents 或 TEMP；独立编辑器显式选择合法模块；旧 AF AppData/Documents 数据不读取、不迁移、不删除，已经存在模组内的数据保持。MCM 路由只覆盖 AF 自有 ID。
+- 终端与 MCM 的四个设置 owner 共用 MCM 原生骑砍文档目录 `Configs/ModSettings/Global` 的同一组 JSON/字段与 preset；终端入口开关也存主 owner，不新增终端业务配置副本。文档现有 MCM 值优先，模组旧配置保留且不自动覆盖它；仅新入口字段缺失时在加载边界兼容模组旧入口 JSON。其余 AF 数据仍按用途留在当前已安装模组：`CustomPrompts/` 用户提示词、`Logs/` 日志、`Configs/` 非 MCM 模组配置/索引、`PlayerExports/` 导入导出、`Cache/` 缓存和临时音频、`Recovery/` 恢复资料，沿用 `AnimusForgeDataPaths` 的身份/ancestor reparse 校验。此例外仅恢复 MCM 设置，不读取或迁移旧 AppData/其他 Documents 资料，不删除旧文件，不改其他模组的目录。
 - 设置维护以原 MCM 属性为配置和持久化来源；终端 `TerminalSettingsCoverage` 一次缓存四个 AF owner 的属性与编译委托，补齐未手工注册项。新增设置同步核对终端分类、范围、双语说明、原 setter 与保存 owner；不能只按属性同名判断已接线。
 - MCM 前端只保留 API 设置和“0支持制作组”；通过 `AnimusForgeMcmVisibility` 的 UI 投影隐藏其余入口，保留完整属性、默认值、JSON 字段和 preset，不把隐藏改成功能禁用，也不影响其他模组。
 - 后续新增或调整可改运行选项默认只接入终端并维护 CN/EN 终端文案；本项目语境中用户说“加 MCM 选项”时，按“加入终端设置”执行，不新增 MCM UI 控件。既有 MCM 属性仅作为兼容的配置/持久化来源保留，除非用户明确要求恢复或改动其界面。

@@ -14,8 +14,7 @@ public partial class DuelSettings
 			DuelSettings settings = GetSettings();
 			if (settings != null && BaseSettingsProvider.Instance != null)
 			{
-				BaseSettingsProvider.Instance.SaveSettings(settings);
-				return true;
+				return McmSettingsStorage.SaveSharedSettings(settings);
 			}
 		}
 		catch (Exception ex)

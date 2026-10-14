@@ -37,10 +37,10 @@
 
 ## 模组数据与固定默认
 
-- 复用 `AnimusForgeDataPaths` 定位当前安装模块；提示词在 `CustomPrompts/`，日志在 `Logs/`，设置在 `Configs/`，世界书导入导出在 `PlayerExports/`，缓存/音频在 `Cache/`，恢复资料在 `Recovery/`。按用途维护，不把全部运行资料塞进一个 Cache。路径创建和返回前后校验完整 ancestor/reparse，避免旧目标文件存在时跳过校验。
+- 终端设置与四个 AF MCM owner 共用 MCM 原生文档目录和同一组 JSON；入口开关存主 owner，文档已有值优先，仅加载边界兼容缺失的新入口字段。其他运行数据仍复用 `AnimusForgeDataPaths` 定位当前模块：`CustomPrompts/` 提示词、`Logs/` 日志、`Configs/` 非 MCM 配置/索引、`PlayerExports/` 世界书、`Cache/` 缓存/音频、`Recovery/` 恢复资料。此设置例外不允许把其余数据搬到 Documents/AppData。路径创建和返回前后沿用身份/ancestor reparse 校验。
 - 包默认文件映射到 `ModuleData/Defaults/CustomPrompts/`，用户文件不作为包默认映射。旧发布文件只按精确受信哈希清册识别；未知、编辑、空值和坏文件的处理保持已有语义，不能凭中文/英文猜测是否用户文件。
 - 用户覆盖优先；兼容导入的旧用户文本保原字节，已有模块用户编辑优先于旧位置。不静默删旧 C 盘资料。`McmKnownPromptDefaults.json` 同步记录两种默认资产的精确 SHA，切包与升级验真实 reader 的优先级和最终请求。
-- MCM 持久化仅路由 AF-owned IDs；沿用真实 formatter、preset 身份与字段。校验未知模组隔离、既有模块优先、坏 UTF8/JSON、原子写入及 junction 阻断。不得把目录改名当成数据迁移已经通过。
+- MCM 持久化沿用原生 User 目录、真实 formatter、preset 身份与字段，不装 AF 目录重定向。验证终端/原 MCM 共用保存重载、文档已有值优先、其他模组隔离及入口保存失败回退；非 MCM 的旧入口原子文件 helper 保留坏 UTF8/JSON/只读/junction 保护，不能把它当新的共用业务存储。
 
 ## 世界书
 

@@ -1,93 +1,90 @@
 using System;
 using System.IO;
+using System.Text;
+using BUTR.DependencyInjection;
 using HarmonyLib;
 using MCM.Abstractions.Base;
+using MCM.Abstractions;
 using MCM.Abstractions.GameFeatures;
+using Newtonsoft.Json.Linq;
 
 namespace AnimusForge;
 
-// Route only AF's three settings IDs. Keep MCM's serializers, fields, indices,
-// snapshot semantics and the existing Illustrator-specific route unchanged.
+// MCM owns its standard User directory, serializers and presets. Terminal
+// controls save the same settings instances; no AF directory override.
 internal static class McmSettingsStorage
 {
     private static readonly object Gate = new object();
     private static bool _installed;
+    [ThreadStatic] private static DuelSettings _savingOwner;
+    [ThreadStatic] private static bool _saveFailed;
 
     internal static void EnsureReady()
     {
         lock (Gate)
         {
             if (_installed) return;
-            string root = AnimusForgeDataPaths.GetCurrentRoot();
-            string settingsRoot = Path.Combine(root, "Configs", "ModSettings");
-            AnimusForgeDataPaths.ValidatePath(settingsRoot);
-            Directory.CreateDirectory(settingsRoot);
-            AnimusForgeDataPaths.ValidatePath(settingsRoot);
-            var assembly = typeof(BaseSettings).Assembly;
-            var provider = assembly.GetType("MCM.Internal.GameFeatures.FileSystemProvider");
-            var format = assembly.GetType("MCM.Implementation.BaseJsonSettingsFormat");
-            var directorySignature = new[] { typeof(GameDirectory), typeof(string) };
-            var jsonSignature = new[] { typeof(BaseSettings), typeof(GameDirectory), typeof(string) };
-            var create = provider == null ? null : AccessTools.Method(provider, "GetOrCreateDirectory", directorySignature);
-            var get = provider == null ? null : AccessTools.Method(provider, "GetDirectory", directorySignature);
-            var load = format == null ? null : AccessTools.Method(format, "Load", jsonSignature);
-            var save = format == null ? null : AccessTools.Method(format, "Save", jsonSignature);
-            if (create == null || get == null || load == null || save == null)
-                throw new MissingMethodException("MCM module settings storage routing is unavailable.");
-            var harmony = new Harmony("AnimusForge.ModuleSettingsStorage");
-            var directoryPrefix = new HarmonyMethod(typeof(McmSettingsStorage), nameof(RoutePresetDirectory));
-            harmony.Patch(create, prefix: directoryPrefix);
-            harmony.Patch(get, prefix: directoryPrefix);
-            var jsonPrefix = new HarmonyMethod(typeof(McmSettingsStorage), nameof(RouteJson));
-            harmony.Patch(load, prefix: jsonPrefix);
-            harmony.Patch(save, prefix: jsonPrefix);
+            var format = typeof(BaseSettings).Assembly.GetType("MCM.Implementation.BaseJsonSettingsFormat");
+            var load = format == null ? null : AccessTools.Method(format, "Load", new[] { typeof(BaseSettings), typeof(GameDirectory), typeof(string) });
+            var save = format == null ? null : AccessTools.Method(format, "Save", new[] { typeof(BaseSettings), typeof(GameDirectory), typeof(string) });
+            if (load == null || save == null) throw new MissingMethodException("MCM shared settings persistence boundary is unavailable.");
+            var harmony = new Harmony("AnimusForge.SharedMcmSettings");
+            harmony.Patch(load,
+                postfix: new HarmonyMethod(typeof(McmSettingsStorage), nameof(RestoreTerminalEntry)));
+            harmony.Patch(save, postfix: new HarmonyMethod(typeof(McmSettingsStorage), nameof(ObserveSaveResult)));
             _installed = true;
         }
     }
 
-    private static bool IsOwnedId(string id)
-        => string.Equals(id, "AnimusForge_global_settings", StringComparison.Ordinal)
-            || string.Equals(id, "AnimusForge_DialogueUI_v1", StringComparison.Ordinal)
-            || string.Equals(id, "AnimusForge_Coup_v1", StringComparison.Ordinal);
-
-    private static void RouteJson(BaseSettings settings, ref GameDirectory directory, string filename)
+    internal static bool SaveSharedSettings(DuelSettings settings)
     {
-        if (settings == null || !IsOwnedId(settings.Id)) return;
-        string root = AnimusForgeDataPaths.GetCurrentRoot();
-        string folder = settings.Id == "AnimusForge_Coup_v1" ? "AnimusForge_Coup" : "AnimusForge";
-        string target = Path.Combine(root, "Configs", "ModSettings", "Global", folder);
-        // Preset serializers may also receive BaseSettings. Keep their existing
-        // per-ID directory rather than turning every preset into global settings.
-        if (IsPresetsDirectory(directory))
-            target = Path.Combine(root, "Configs", "ModSettings", "Presets", settings.Id);
-        AnimusForgeDataPaths.ValidatePath(target);
-        Directory.CreateDirectory(target);
-        AnimusForgeDataPaths.ValidatePath(target);
-        string fileName = filename + ".json";
-        if (!string.Equals(Path.GetFileName(fileName), fileName, StringComparison.Ordinal))
-            throw new InvalidOperationException("MCM settings filename must remain inside its owned directory.");
-        string destination = Path.Combine(target, fileName);
-        AnimusForgeDataPaths.ValidatePath(destination);
-        AnimusForgeDataPaths.ValidatePath(destination);
-        directory = ModuleDirectory(target);
+        var previousOwner = _savingOwner;
+        bool previousFailure = _saveFailed;
+        _savingOwner = settings; _saveFailed = false;
+        try
+        {
+            BaseSettingsProvider.Instance.SaveSettings(settings);
+            return !_saveFailed;
+        }
+        finally { _savingOwner = previousOwner; _saveFailed = previousFailure; }
     }
 
-    private static bool RoutePresetDirectory(GameDirectory directory, string name, ref GameDirectory __result)
+    private static void ObserveSaveResult(BaseSettings settings, bool __result)
     {
-        if (!IsOwnedId(name) || directory == null
-            || !directory.Path.Replace('\u005c', '/').TrimEnd('/').EndsWith("/ModSettings/Presets", StringComparison.OrdinalIgnoreCase)) return true;
-        string root = AnimusForgeDataPaths.GetCurrentRoot();
-        string target = Path.Combine(root, "Configs", "ModSettings", "Presets", name);
-        AnimusForgeDataPaths.ValidatePath(target);
-        Directory.CreateDirectory(target);
-        AnimusForgeDataPaths.ValidatePath(target);
-        __result = ModuleDirectory(target);
-        return false;
+        // MCM's provider returns void; retain the real serializer failure signal
+        // for the synchronous main-owner save without adding another writer.
+        if (ReferenceEquals(settings, _savingOwner) && !__result) _saveFailed = true;
     }
 
-    private static bool IsPresetsDirectory(GameDirectory directory)
-        => directory != null && directory.Path.Replace('\u005c', '/').IndexOf("/ModSettings/Presets/", StringComparison.OrdinalIgnoreCase) >= 0;
+    internal static string GetSharedSettingsFilePath()
+    {
+        var files = GenericServiceProvider.GetService<IFileSystemProvider>();
+        if (files == null) throw new InvalidOperationException("MCM shared filesystem is unavailable.");
+        var global = files.GetDirectory(files.GetModSettingsDirectory(), "Global");
+        var owner = files.GetDirectory(global, "AnimusForge");
+        return files.GetSystemPath(new GameFile(owner, "AnimusForge_global_settings.json"))
+            ?? throw new InvalidOperationException("MCM shared settings path is unavailable.");
+    }
 
-    private static GameDirectory ModuleDirectory(string path)
-        => new GameDirectory(PlatformDirectoryType.Application, Path.GetFullPath(path) + Path.DirectorySeparatorChar);
+    private static void RestoreTerminalEntry(GameDirectory directory, string filename, BaseSettings __result)
+    {
+        if (!(__result is DuelSettings settings) || filename != settings.Id || directory == null
+            || !directory.Path.Replace('\\', '/').TrimEnd('/').EndsWith("/ModSettings/Global/AnimusForge", StringComparison.OrdinalIgnoreCase)) return;
+        try
+        {
+            var files = GenericServiceProvider.GetService<IFileSystemProvider>();
+            if (files == null) return;
+            var file = files.GetFile(directory, filename + ".json");
+            byte[] bytes = file == null ? null : files.ReadData(file);
+            var stored = bytes == null ? new JObject() : JObject.Parse(Encoding.UTF8.GetString(bytes).TrimStart('\uFEFF'));
+            if (stored[nameof(DuelSettings.TerminalHotkeyEnabled)] != null && stored[nameof(DuelSettings.TerminalMapIconEnabled)] != null) return;
+            string legacy = Path.Combine(AnimusForgeDataPaths.GetSettingsDirectory(AnimusForgeModulePaths.GetCurrentModuleRoot()), "TerminalSettings.json");
+            if (!AnimusForgeTerminalSettings.TryLoadSettingsFile(legacy, out var entry)) return;
+            // Only missing entry fields on load. Existing MCM values win; no
+            // business configuration is merged, overwritten or deleted.
+            if (stored[nameof(DuelSettings.TerminalHotkeyEnabled)] == null) settings.TerminalHotkeyEnabled = entry.IsHotkeyEnabled;
+            if (stored[nameof(DuelSettings.TerminalMapIconEnabled)] == null) settings.TerminalMapIconEnabled = entry.IsMapIconEnabled;
+        }
+        catch (Exception ex) { Logger.Log("TerminalSettings", "Shared entry compatibility skipped: " + ex.GetType().Name); }
+    }
 }

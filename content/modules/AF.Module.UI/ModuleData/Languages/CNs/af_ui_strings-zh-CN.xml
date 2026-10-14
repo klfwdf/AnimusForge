@@ -3446,5 +3446,10 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Api_AmbientFailureUsage" text="&#xA;&#xA;本次失败测试的估算用量：输入 {INPUT} + 输出 {OUTPUT} Token。" />
   <string id="AF_MCM_Api_AmbientTestFailed" text="环境 AI 接口测试失败" />
   <string id="AF_MCM_Api_AmbientTestException" text="环境 AI 接口测试异常" />
+  <string id="AF_TERMINAL_UI_TerminalHotkeyEnabled_Title" text="启用终端快捷键" />
+  <string id="AF_TERMINAL_UI_TerminalHotkeyEnabled_Hint" text="允许按设置的快捷键打开终端。至少保留一种终端入口。" />
+  <string id="AF_TERMINAL_UI_TerminalMapIconEnabled_Title" text="显示终端导航图标" />
+  <string id="AF_TERMINAL_UI_TerminalMapIconEnabled_Hint" text="在大地图导航栏显示终端入口。至少保留一种终端入口。" />
+  <string id="AF_TERMINAL_UI_Entry_Group" text="终端入口" />
 </strings>
 </base>
