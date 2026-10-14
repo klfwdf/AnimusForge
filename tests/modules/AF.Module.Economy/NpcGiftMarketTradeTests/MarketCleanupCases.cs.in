@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using AnimusForge.Refactor.Runtime;
 namespace AnimusForge;
 
@@ -9,201 +11,138 @@ public partial class RewardSystemBehavior
     private static ItemRoster NativeRoster(int count)
     {
         var roster = new ItemRoster(); var native = new ItemObject { StringId = "native" };
-        for (int i = 0; i < count; i++) roster.AddToCounts(new(native, "slot_" + i), 1);
+        for (int i = 0; i < count; i++) roster.Elements.Add(new(new(native, "slot_" + i), 1));
         return roster;
     }
-    private static void DrainMarkets()
+    private static int DrainMarkets()
     {
         int ticks = 0;
-        while (Instance._marketCleanup?.HasWork == true && ticks++ < 20000)
-        {
-            int before = ItemRoster.Reads;
-            Instance.OnEngineTick();
-            Check(ItemRoster.Reads - before <= 128, "one production application tick scanned over 128 slots");
-        }
-        Check(Instance._marketCleanup?.HasWork != true, "market queue did not finish");
+        while (Instance.MarketCleanup.HasWork && ticks++ < 10000) Instance.OnEngineTick();
+        Check(!Instance.MarketCleanup.HasWork, "world pass did not finish");
+        return ticks;
     }
+    private static Settlement Market(int slots, ItemObject special = null)
+    {
+        var market = new Settlement { StringId = "test", ItemRoster = NativeRoster(slots) };
+        if (special != null) market.ItemRoster.AddToCounts(new(special, "rp"), 2);
+        return market;
+    }
+    private static void Start(params Settlement[] markets)
+    { Campaign.Current.Settlements = markets; Instance.RunDailyEntryPrefix(); }
     private static void RunMarketCleanupCases()
     {
-        Case("trade_same_roster_is_checked_once_and_unchanged_close_is_cached", () => {
-            var market = NativeRoster(5); var settlement = new Settlement { StringId = "same", ItemRoster = market };
-            int done = 0; Action callback = () => done++; ItemRoster.Reads = 0;
-            InventoryScreenHelperOpenScreenAsTradePrefix(market, new SettlementComponent { Settlement = settlement }, ref callback);
-            Check(ItemRoster.Reads == 5, "same native market duplicated"); callback();
-            Check(ItemRoster.Reads == 5 && done == 1, "unchanged close rescanned or callback duplicated");
-            Instance.OnDailyTickSettlement(settlement); Check(Instance.MarketCleanup.PendingCount == 0, "clean daily cache missed"); });
-        Case("same_roster_with_mutable_gift_is_still_deduplicated", () => {
-            var gift = Gift(); var market = new ItemRoster(); market.AddToCounts(new(gift), 2);
-            var settlement = new Settlement { ItemRoster = market }; Action callback = () => { }; ItemRoster.Reads = 0;
-            InventoryScreenHelperOpenScreenAsTradePrefix(market, new SettlementComponent { Settlement = settlement }, ref callback);
-            Check(ItemRoster.Reads == 1 && market.Amount(gift) == 2, "volatile gift roster was scanned twice"); });
-        Case("distinct_trade_rosters_both_clean_without_losing_modifiers", () => {
+        Case("one_complete_market_per_frame_including_large_inventory", () => {
+            var special = Gift(identity: "courier_letter|session|body"); var a = Market(513, special); var b = Market(3, special);
+            Start(a, b); ItemRoster.Reads = 0; Instance.OnEngineTick();
+            Check(ItemRoster.Reads == 514 && a.ItemRoster.Amount(special) == 0 && b.ItemRoster.Amount(special) == 2, "frame did not process exactly one complete market");
+            Instance.OnEngineTick(); Check(!Instance.MarketCleanup.HasWork && b.ItemRoster.Amount(special) == 0, "second market lost");
+            Check(Logger.Messages.Count(x => x.Contains("market_sweep_completed")) == 1, "round summary missing/duplicated"); });
+        Case("continuous_quantity_changes_do_not_restart_world_progress", () => {
+            var special = Gift(identity: "courier_letter|session|body");
+            var markets = Enumerable.Range(0, 120).Select(_ => Market(513, special)).ToArray(); Start(markets);
+            ItemRoster.Reads = 0;
+            for (int frame = 0; frame < 120; frame++) {
+                foreach (var m in markets) m.ItemRoster.AddToCounts(m.ItemRoster.Elements[0].EquipmentElement, 1);
+                Instance.OnEngineTick();
+            }
+            Check(!Instance.MarketCleanup.HasWork && markets.All(m => m.ItemRoster.Amount(special) == 0), "changing markets starved tail cleanup");
+            Check(ItemRoster.Reads == 120 * 514, "normal quantity changes triggered duplicate scanning"); });
+        Case("repeated_daily_requests_coalesce_without_restarting_current_pass", () => {
+            var a = Market(3); var b = Market(4); var c = Market(5); Start(a, b, c);
+            ItemRoster.Reads = 0; Instance.OnEngineTick();
+            for (int i = 0; i < 1000; i++) Instance.RunDailyEntryPrefix();
+            Instance.OnEngineTick(); Check(ItemRoster.Reads == 7, "daily requests restarted first market");
+            Check(DrainMarkets() == 4 && ItemRoster.Reads == 24, "requests accumulated more than one repeat or lost a market"); });
+        Case("snapshot_uses_live_inventory_and_additions_enter_next_pass", () => {
+            var special = Gift(identity: "courier_letter|session|body"); var a = Market(1); var b = Market(1, special);
+            var world = new List<Settlement> { a, b }; Campaign.Current.Settlements = world; Instance.RunDailyEntryPrefix(); Instance.OnEngineTick();
+            var old = b.ItemRoster; b.ItemRoster = Market(2, special).ItemRoster;
+            var c = Market(1, special); world.Add(c); Instance.OnEngineTick();
+            Check(old.Amount(special) == 2 && b.ItemRoster.Amount(special) == 0 && c.ItemRoster.Amount(special) == 2, "snapshot/replacement semantics wrong");
+            Instance.RunDailyEntryPrefix(); DrainMarkets(); Check(c.ItemRoster.Amount(special) == 0, "next round omitted newly added settlement"); });
+        Case("trade_reference_dedup_and_permission_changes_are_rechecked", () => {
+            var gift = Gift(); var market = Market(3); market.ItemRoster.AddToCounts(new(gift, "fine"), 3);
+            Action close = () => { }; ItemRoster.Reads = 0;
+            InventoryScreenHelperOpenScreenAsTradePrefix(market.ItemRoster, new SettlementComponent { Settlement = market }, ref close);
+            Check(ItemRoster.Reads == 4 && market.ItemRoster.Amount(gift) == 3, "same reference duplicated or gift removed");
+            gift.NotMerchandise = true; close();
+            Check(ItemRoster.Reads == 8 && market.ItemRoster.Amount(gift) == 0, "trade close missed changed permission"); });
+        Case("distinct_trade_rosters_clean_and_preserve_modifiers", () => {
             var gift = Gift(); var special = Gift(identity: "courier_letter|session|body");
-            var left = new ItemRoster(); var market = new ItemRoster();
-            left.AddToCounts(new(special, "rusty"), 2); market.AddToCounts(new(special), 1); market.AddToCounts(new(gift, "fine"), 3);
-            Action callback = () => { };
-            InventoryScreenHelperOpenScreenAsTradePrefix(left, new SettlementComponent { Settlement = new Settlement { ItemRoster = market } }, ref callback);
-            Check(left.Amount(special) == 0 && market.Amount(special) == 0 && market.Amount(gift) == 3, "distinct markets not checked");
-            Check(market.Elements.Single().EquipmentElement.Modifier == "fine", "permitted gift modifier changed"); });
-        Case("version_change_at_same_count_invalidates_clean_cache", () => {
-            var market = NativeRoster(1); RemoveGeneratedRewardItemsFromRoster(market, "test", "before");
-            var native = market.Elements[0]; var special = Gift(identity: "courier_letter|session|body");
-            market.AddToCounts(native.EquipmentElement, -1); market.AddToCounts(new(special), 2);
-            Check(market.Count == 1, "fixture count changed"); ItemRoster.Reads = 0;
-            RemoveGeneratedRewardItemsFromRoster(market, "test", "after");
-            Check(ItemRoster.Reads == 1 && market.Count == 0, "version change did not invalidate"); });
-        Case("mutable_allowed_gift_cannot_hide_behind_unchanged_roster_version", () => {
-            var gift = Gift(); var market = new ItemRoster(); market.AddToCounts(new(gift), 2);
-            RemoveGeneratedRewardItemsFromRoster(market, "test", "before"); int version = market.VersionNo;
-            gift.NotMerchandise = true;
-            Check(market.VersionNo == version, "fixture version unexpectedly changed");
-            RemoveGeneratedRewardItemsFromRoster(market, "test", "after"); Check(market.Count == 0, "mutable gift was cached as safe"); });
-        Case("rules_epoch_invalidates_cache_without_inventory_change", () => {
-            long generation = 1, rules = 1; bool blocked = false;
-            var owner = new GeneratedRewardMarketCleanupOwner(_ => blocked, _ => blocked, () => generation, () => rules, () => true, null, null);
-            var market = NativeRoster(1); owner.CleanNow(market, "test", "before");
-            blocked = true; rules++; owner.CleanNow(market, "test", "after"); Check(market.Count == 0, "rule epoch ignored");
-            var gift = Gift(); long before = GeneratedRewardMarketRulesVersion;
-            RegisterGeneratedRewardManifestRecordNoLock(Instance._generatedRewardItemRecords[gift.StringId]);
-            Check(GeneratedRewardMarketRulesVersion > before, "production manifest mutation did not invalidate rules"); });
-        Case("daily_admissions_coalesce_and_large_market_is_bounded_by_slots", () => {
-            var market = NativeRoster(513); var settlement = new Settlement { ItemRoster = market }; ItemRoster.Reads = 0;
-            for (int i = 0; i < 1000; i++) Instance.OnDailyTickSettlement(settlement);
-            Check(ItemRoster.Reads == 0 && Instance.MarketCleanup.PendingCount == 1, "duplicate daily admissions or inline scan");
-            int ticks = 0;
-            while (Instance.MarketCleanup.HasWork)
-            {
-                int before = ItemRoster.Reads; Instance.MarketCleanup.Tick(128, 1000); ticks++;
-                Check(ItemRoster.Reads - before <= 128, "single callback scanned entire large market");
-            }
-            Check(ItemRoster.Reads == 513 && ticks == 5, "slot cursor duplicated/missed native entries"); });
-        Case("round_robin_large_market_does_not_starve_small_market", () => {
-            var large = new Settlement { ItemRoster = NativeRoster(1000) }; var small = new Settlement { ItemRoster = new() };
-            var special = Gift(identity: "courier_letter|session|body"); small.ItemRoster.AddToCounts(new(special), 1);
-            Instance.OnDailyTickSettlement(large); Instance.OnDailyTickSettlement(small);
-            ItemRoster.Reads = 0; Instance.MarketCleanup.Tick(128, 1000);
-            Check(ItemRoster.Reads <= 128 && small.ItemRoster.Count == 0 && Instance.MarketCleanup.PendingCount == 1, "small job starved"); });
-        Case("swap_last_removal_rechecks_the_moved_slot", () => {
-            var special = Gift(identity: "courier_letter|session|body"); var gift = Gift(); var market = new ItemRoster();
-            for (int i = 0; i < 50; i++) market.AddToCounts(new(special, "slot_" + i), 2);
-            market.AddToCounts(new(gift, "fine"), 3);
-            Instance.OnDailyTickSettlement(new Settlement { ItemRoster = market }); DrainMarkets();
-            Check(market.Count == 1 && market.Amount(gift) == 3 && market.Amount(special) == 0, "swapped slot skipped"); });
-        Case("structural_change_between_slices_restarts_the_cursor", () => {
-            var market = NativeRoster(20); var settlement = new Settlement { ItemRoster = market };
-            Instance.OnDailyTickSettlement(settlement); Instance.MarketCleanup.Tick(3, 1000);
-            var old = market.Elements[0]; market.AddToCounts(old.EquipmentElement, -1);
-            var special = Gift(identity: "courier_letter|session|body"); market.AddToCounts(new(special), 2);
-            DrainMarkets(); Check(market.Amount(special) == 0 && market.Count == 19, "changed source retained a stale cursor"); });
-        Case("native_update_callback_mutating_visited_slots_restarts_the_cursor", () => {
-            var special = Gift(identity: "courier_letter|session|body"); var market = NativeRoster(10);
-            market.AddToCounts(new(special, "first"), 1);
-            ItemRoster.AfterUpdate = roster => {
-                ItemRoster.AfterUpdate = null; var visited = roster.Elements[0];
-                roster.AddToCounts(visited.EquipmentElement, -visited.Amount); roster.AddToCounts(new(special, "new"), 2);
-            };
-            Instance.OnDailyTickSettlement(new Settlement { ItemRoster = market }); DrainMarkets();
-            Check(market.Amount(special) == 0 && market.Count == 9, "reentrant mutation skipped remaining RP items"); });
-        Case("replaced_settlement_roster_retires_old_inventory", () => {
-            var special = Gift(identity: "courier_letter|session|body"); var old = new ItemRoster(); old.AddToCounts(new(special), 2);
-            var settlement = new Settlement { ItemRoster = old }; Instance.OnDailyTickSettlement(settlement);
-            settlement.ItemRoster = new ItemRoster(); settlement.ItemRoster.AddToCounts(new(special), 1); DrainMarkets();
-            Check(old.Amount(special) == 2 && settlement.ItemRoster.Count == 0, "old inventory mutated or replacement missed"); });
-        Case("repeated_inventory_replacements_cannot_grow_one_settlements_queue", () => {
-            var special = Gift(identity: "courier_letter|session|body"); var settlement = new Settlement { ItemRoster = new() };
-            var first = settlement.ItemRoster; first.AddToCounts(new(special), 2); Instance.OnDailyTickSettlement(settlement);
-            for (int i = 0; i < 1000; i++)
-            {
-                settlement.ItemRoster = new(); settlement.ItemRoster.AddToCounts(new(special), 1);
-                Instance.OnDailyTickSettlement(settlement);
-            }
-            Check(Instance.MarketCleanup.PendingCount == 1, "historical rosters accumulate unbounded work");
-            DrainMarkets(); Check(first.Amount(special) == 2 && settlement.ItemRoster.Count == 0, "latest roster not resolved"); });
-        Case("load_enumeration_is_deferred_and_cache_cursor_retire_on_generation", () => {
-            var special = Gift(identity: "courier_letter|session|body"); var market = new ItemRoster(); market.AddToCounts(new(special), 2);
-            var source = new TrackedWorld(new Settlement { ItemRoster = market }); Campaign.Current.Settlements = source;
-            Instance.QueueGeneratedRewardWorldMarketCleanup("load"); Check(source.Moves == 0 && ItemRoster.Reads >= 0, "load enumerated inline");
-            Instance.MarketCleanup.Tick(1, 1000); Check(source.Moves == 1 && market.Count == 1, "first admission scanned market");
-            SaveRuntimeGuard.AdvanceGeneration("replay-load"); Instance.MarketCleanup.Tick(128, 1000);
-            Check(source.Disposed == 1 && !Instance.MarketCleanup.HasWork && market.Count == 1, "old save work accepted");
-            Instance.OnDailyTickSettlement(source.Items[0]); DrainMarkets(); Check(market.Count == 0, "new save admission failed"); });
-        Case("changed_world_collection_restarts_admission_without_losing_new_market", () => {
-            var first = new Settlement { ItemRoster = NativeRoster(1) }; var list = new List<Settlement> { first };
-            Campaign.Current.Settlements = list; Instance.QueueGeneratedRewardWorldMarketCleanup("load");
-            Instance.MarketCleanup.Tick(1, 1000);
-            var special = Gift(identity: "courier_letter|session|body"); var added = new Settlement { ItemRoster = new() };
-            added.ItemRoster.AddToCounts(new(special), 2); list.Add(added); DrainMarkets();
-            Check(added.ItemRoster.Count == 0 && first.ItemRoster.Count == 1, "changed world enumeration lost new market"); });
-        Case("throwing_enumerator_disposal_cannot_strand_generation_reset", () => {
-            var source = new TrackedWorld(new Settlement { ItemRoster = NativeRoster(1) }) { ThrowOnDispose = true };
-            Campaign.Current.Settlements = source; Instance.QueueGeneratedRewardWorldMarketCleanup("load"); Instance.MarketCleanup.Tick(1, 1000);
-            SaveRuntimeGuard.AdvanceGeneration("replay-load-dispose"); Instance.MarketCleanup.Tick(128, 1000);
-            Check(source.Disposed == 1 && !Instance.MarketCleanup.HasWork, "dispose failure stranded old generation"); });
-        Case("replaced_owner_and_worker_call_cannot_execute_pending_cleanup", () => {
-            var special = Gift(identity: "courier_letter|session|body"); var market = new ItemRoster(); market.AddToCounts(new(special), 2);
-            Instance.OnDailyTickSettlement(new Settlement { ItemRoster = market }); var old = Instance.MarketCleanup;
-            TWParallel.MainThread = false; old.Tick(); old.CleanNow(market, "test", "worker");
-            Check(market.Count == 1 && old.PendingCount == 1, "worker mutated inventory/runtime cursor");
-            TWParallel.MainThread = true; Instance = new(); old.Tick(); Check(market.Count == 1, "retired owner executed work"); old.Reset(); });
-        Case("saving_pauses_work_then_resumes", () => {
-            var special = Gift(identity: "courier_letter|session|body"); var market = new ItemRoster(); market.AddToCounts(new(special), 2);
-            Instance.OnDailyTickSettlement(new Settlement { ItemRoster = market }); Campaign.Current.SaveHandler.IsSaving = true;
-            Instance.ProcessGeneratedRewardMarketCleanup(); Check(market.Count == 1 && Instance.MarketCleanup.PendingCount == 1, "save mutated queued inventory");
-            Campaign.Current.SaveHandler.IsSaving = false; DrainMarkets(); Check(market.Count == 0, "post-save work lost"); });
-        Case("failed_scan_never_becomes_a_clean_stamp_and_daily_retries", () => {
-            var market = NativeRoster(4); var settlement = new Settlement { ItemRoster = market };
-            ItemRoster.BeforeRead = _ => throw new InvalidOperationException("scripted roster read failure");
-            Instance.OnDailyTickSettlement(settlement); Instance.MarketCleanup.Tick(128, 1000);
-            Check(!Instance.MarketCleanup.HasWork, "failed job spins immediately"); ItemRoster.BeforeRead = null; ItemRoster.Reads = 0;
-            Instance.OnDailyTickSettlement(settlement); DrainMarkets(); Check(ItemRoster.Reads == 4, "failed scan incorrectly stamped clean"); });
-        Case("failed_settlement_getter_does_not_strand_unrelated_queued_work", () => {
-            var special = Gift(identity: "courier_letter|session|body"); var bad = new Settlement { ItemRoster = new() };
-            var good = new Settlement { ItemRoster = new() }; good.ItemRoster.AddToCounts(new(special), 2);
-            Instance.OnDailyTickSettlement(bad); Instance.OnDailyTickSettlement(good); bad.FailRosterRead = true;
-            DrainMarkets(); Check(good.ItemRoster.Count == 0, "bad market stranded unrelated work");
-            Instance.OnDailyTickSettlement(bad); Check(!Instance.MarketCleanup.HasWork, "failed admission stranded queue"); });
-        Case("native_noop_removal_is_not_stamped_clean_and_can_retry", () => {
-            var special = Gift(identity: "courier_letter|session|body"); var market = new ItemRoster(); market.AddToCounts(new(special), 2);
-            market.SkipRemovals = true; RemoveGeneratedRewardItemsFromRoster(market, "test", "noop");
-            Check(market.Count == 1, "no-op removal lost business data"); market.SkipRemovals = false;
-            RemoveGeneratedRewardItemsFromRoster(market, "test", "retry"); Check(market.Count == 0, "no-op removal was cached clean"); });
-        Case("reentrant_producer_cannot_trap_trade_cleanup_in_an_endless_loop", () => {
-            var special = Gift(identity: "courier_letter|session|body"); var market = new ItemRoster(); market.AddToCounts(new(special), 1);
-            ItemRoster.AfterUpdate = roster => { ItemRoster.AfterUpdate = null; roster.AddToCounts(new(special), 1); ItemRoster.AfterUpdate = Refill; };
-            void Refill(ItemRoster roster) { ItemRoster.AfterUpdate = null; roster.AddToCounts(new(special), 1); ItemRoster.AfterUpdate = Refill; }
-            ItemRoster.Reads = 0; RemoveGeneratedRewardItemsFromRoster(market, "test", "unstable"); ItemRoster.AfterUpdate = null;
-            Check(ItemRoster.Reads <= 3 && market.Count == 1, "unstable producer caused an unbounded trade scan");
-            RemoveGeneratedRewardItemsFromRoster(market, "test", "stable"); Check(market.Count == 0, "partial scan incorrectly stamped clean"); });
-        Case("diagnostic_failure_does_not_strand_removed_work", () => {
-            long rules = 1;
-            var owner = new GeneratedRewardMarketCleanupOwner(_ => true, _ => true, () => 1, () => rules, () => true,
-                (_, _, _, _) => throw new Exception("scripted log failure"), (_, _, _) => throw new Exception("scripted log failure"));
-            var market = NativeRoster(3); owner.Enqueue(new Settlement { ItemRoster = market }, "test"); owner.Tick(128, 1000);
-            Check(market.Count == 0 && !owner.HasWork, "logging failure stranded job"); });
-        Case("large_restored_world_has_no_inline_scan_and_drains_with_global_slot_cap", () => {
-            var settlements = Enumerable.Range(0, 120).Select(_ => new Settlement { ItemRoster = NativeRoster(513) }).ToArray();
-            Campaign.Current.Settlements = settlements; ItemRoster.Reads = 0; Instance.QueueGeneratedRewardWorldMarketCleanup("load");
-            Check(ItemRoster.Reads == 0 && Instance.MarketCleanup.PendingCount == 0, "restored world scanned/enqueued wholesale");
-            DrainMarkets(); Check(ItemRoster.Reads == 120 * 513, "restored queue duplicated or omitted slots"); });
-        Case("soft_deadline_stops_after_one_slow_atomic_slot", () => {
-            var market = NativeRoster(300); Instance.OnDailyTickSettlement(new Settlement { ItemRoster = market });
-            ItemRoster.Reads = 0; ItemRoster.BeforeRead = _ => System.Threading.Thread.Sleep(5);
-            Instance.MarketCleanup.Tick(128, 2); ItemRoster.BeforeRead = null;
-            Check(ItemRoster.Reads == 1 && Instance.MarketCleanup.HasWork, "elapsed budget ignored within one large market"); });
+            var market = Market(1, special); var left = NativeRoster(2); left.AddToCounts(new(special), 2); left.AddToCounts(new(gift, "fine"), 3);
+            Action close = () => { };
+            InventoryScreenHelperOpenScreenAsTradePrefix(left, new SettlementComponent { Settlement = market }, ref close);
+            Check(left.Amount(special) == 0 && market.ItemRoster.Amount(special) == 0 && left.Amount(gift) == 3, "trade protection changed");
+            Check(left.Elements.Any(x => x.EquipmentElement.Item == gift && x.EquipmentElement.Modifier == "fine"), "modifier changed"); });
+        Case("save_and_inventory_ui_pause_only_background_pass", () => {
+            var special = Gift(identity: "courier_letter|session|body"); var market = Market(1, special); Start(market);
+            Campaign.Current.SaveHandler.IsSaving = true; Instance.OnEngineTick(); Check(market.ItemRoster.Count == 2, "saving mutated market");
+            Campaign.Current.SaveHandler.IsSaving = false; Game.Current.GameStateManager.ActiveState = new InventoryState();
+            Instance.OnEngineTick(); Check(market.ItemRoster.Count == 2 && Instance.MarketCleanup.HasWork, "inventory UI allowed background mutation");
+            RemoveGeneratedRewardItemsFromRoster(market.ItemRoster, "trade", "open"); Check(market.ItemRoster.Count == 1, "trade boundary unexpectedly paused");
+            Game.Current.GameStateManager.ActiveState = null; DrainMarkets(); });
+        Case("generation_and_owner_changes_reject_old_world_work", () => {
+            var special = Gift(identity: "courier_letter|session|body"); var market = Market(1, special); Start(market);
+            SaveRuntimeGuard.AdvanceGeneration("review"); ItemRoster.Reads = 0; Instance.OnEngineTick();
+            Check(!Instance.MarketCleanup.HasWork && market.ItemRoster.Count == 2 && ItemRoster.Reads == 0,
+                "old generation inventory was read or modified");
+            Instance.RunDailyEntryPrefix(); var old = Instance; Instance = new(); old.OnEngineTick();
+            Check(market.ItemRoster.Count == 2, "old owner accepted"); old.MarketCleanup.Reset();
+            Instance.RunDailyEntryPrefix(); DrainMarkets(); Check(market.ItemRoster.Count == 1, "new owner cannot start"); });
+        Case("worker_cannot_admit_or_drain_world_or_trade", () => {
+            var special = Gift(identity: "courier_letter|session|body"); var market = Market(1, special); Start(market);
+            TWParallel.MainThread = false; Instance.OnEngineTick(); RemoveGeneratedRewardItemsFromRoster(market.ItemRoster, "test", "worker");
+            Check(market.ItemRoster.Count == 2 && Instance.MarketCleanup.HasWork, "worker touched inventory");
+            TWParallel.MainThread = true; DrainMarkets(); });
+        Case("failed_market_is_reported_and_does_not_block_other_markets", () => {
+            var special = Gift(identity: "courier_letter|session|body"); var bad = Market(1, special); var good = Market(1, special);
+            bad.FailRosterRead = true; Start(bad, good); Check(DrainMarkets() == 2 && good.ItemRoster.Count == 1, "failure stranded other market");
+            Check(Logger.Messages.Any(x => x.Contains("failures=1")), "failed round falsely reported clean");
+            bad.FailRosterRead = false; Instance.RunDailyEntryPrefix(); DrainMarkets(); Check(bad.ItemRoster.Count == 1, "next day retry failed"); });
+        Case("empty_and_failed_world_sources_do_not_spin", () => {
+            Start(); Instance.OnEngineTick(); Check(!Instance.MarketCleanup.HasWork, "empty world spun");
+            Instance.MarketCleanup.BeginWorldScan(() => throw new InvalidOperationException("source"), "fail");
+            Instance.OnEngineTick(); Check(!Instance.MarketCleanup.HasWork, "failed source retries every frame");
+            Start(Market(1)); DrainMarkets(); });
+        Case("swap_last_deletion_and_reentrant_permission_or_amount_changes", () => {
+            var one = Gift(identity: "courier_letter|one"); var two = Gift(identity: "courier_letter|two");
+            var market = NativeRoster(2); market.AddToCounts(new(one, "a"), 1); market.AddToCounts(new(two, "b"), 7);
+            ItemRoster.AfterUpdate = roster => { ItemRoster.AfterUpdate = null; roster.AddToCounts(new(two, "b"), -5); };
+            int removed = RemoveGeneratedRewardItemsFromRoster(market, "test", "reentrant");
+            Check(removed == 3 && market.Count == 2, "stale stack amount used after callback");
+            market.AddToCounts(new(one), 1); market.AddToCounts(new(two), 1);
+            ItemRoster.AfterUpdate = roster => { ItemRoster.AfterUpdate = null; Instance._generatedRewardItemRecords[two.StringId].NpcGiftMarketTradeAllowed = true; };
+            RemoveGeneratedRewardItemsFromRoster(market, "test", "permission");
+            Check(market.Amount(two) == 1 && market.Amount(one) == 0, "permission not rechecked before removal"); });
+        Case("no_progress_and_reentrant_producer_do_not_loop", () => {
+            var special = Gift(identity: "courier_letter|session|body"); var market = Market(1, special);
+            market.ItemRoster.SkipRemovals = true; Start(market); DrainMarkets();
+            Check(market.ItemRoster.Amount(special) == 2 && Logger.Messages.Any(x => x.Contains("failures=1")), "no-op deletion reported clean");
+            market.ItemRoster.SkipRemovals = false; ItemRoster.AfterUpdate = roster => { ItemRoster.AfterUpdate = null; roster.AddToCounts(new(special, "rp"), 1); };
+            RemoveGeneratedRewardItemsFromRoster(market.ItemRoster, "test", "reentrant");
+            Check(market.ItemRoster.Amount(special) == 1, "cleanup unexpectedly loops over reentrant additions");
+            RemoveGeneratedRewardItemsFromRoster(market.ItemRoster, "test", "next"); Check(market.ItemRoster.Count == 1, "next boundary failed"); });
+        BenchmarkMarkets();
     }
-    private sealed class TrackedWorld : IEnumerable<Settlement>
+    private static void BenchmarkMarkets()
     {
-        internal readonly Settlement[] Items; internal int Moves, Disposed; internal bool ThrowOnDispose;
-        internal TrackedWorld(params Settlement[] items) { Items = items; }
-        public IEnumerator<Settlement> GetEnumerator() => new Iterator(this);
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        private sealed class Iterator : IEnumerator<Settlement>
+        // Synthetic .NET inventory; not live engine timing. Setup excluded, production owner warmed.
+        Instance = new(); Campaign.Current = new(); Game.Current = new(); TWParallel.MainThread = true;
+        ItemRoster.BeforeRead = ItemRoster.AfterUpdate = null; var special = Gift(identity: "courier_letter|benchmark");
+        for (int i = 0; i < 30; i++) RemoveGeneratedRewardItemsFromRoster(NativeRoster(300), "warm", "bench");
+        foreach (var spec in new[] { (300, 0), (5000, 0), (50000, 0), (5000, 1000) })
         {
-            private readonly TrackedWorld _owner; private int _index = -1;
-            internal Iterator(TrackedWorld owner) { _owner = owner; }
-            public Settlement Current => _owner.Items[_index]; object IEnumerator.Current => Current;
-            public bool MoveNext() { _owner.Moves++; return ++_index < _owner.Items.Length; }
-            public void Reset() => throw new NotSupportedException(); public void Dispose() { _owner.Disposed++; if (_owner.ThrowOnDispose) throw new InvalidOperationException("scripted dispose failure"); }
+            var times = new List<double>();
+            for (int run = 0; run < 7; run++) {
+                var roster = NativeRoster(spec.Item1 - spec.Item2);
+                for (int i = 0; i < spec.Item2; i++) roster.Elements.Add(new(new(special, "rp_" + i), 1));
+                long bytes = GC.GetAllocatedBytesForCurrentThread(); var watch = Stopwatch.StartNew();
+                RemoveGeneratedRewardItemsFromRoster(roster, "bench", "measure"); watch.Stop();
+                times.Add(watch.Elapsed.TotalMilliseconds);
+                if (run == 6) Console.WriteLine($"BENCH slots={spec.Item1} blocked={spec.Item2} allocBytes={GC.GetAllocatedBytesForCurrentThread()-bytes}");
+                Check(roster.Count == spec.Item1 - spec.Item2, "benchmark cleanup mismatch");
+            }
+            times.Sort(); Console.WriteLine($"BENCH slots={spec.Item1} blocked={spec.Item2} medianMs={times[3]:F3} maxMs={times[6]:F3} engine=double");
         }
     }
 }

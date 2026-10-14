@@ -40,7 +40,7 @@ public partial class RewardSystemBehavior
     static void Case(string name, Action test)
     {
         Instance = new(); GeneratedRewardManifestByStringId.Clear(); GeneratedRewardManifestByObjectId.Clear();
-        Campaign.Current = new(); TWParallel.MainThread = true; ItemRoster.BeforeRead = ItemRoster.AfterUpdate = null;
+        Campaign.Current = new(); Game.Current = new(); Logger.Messages.Clear(); TWParallel.MainThread = true; ItemRoster.BeforeRead = ItemRoster.AfterUpdate = null;
         InformationManager.Messages.Clear(); GeneratedCount = 0;
         try { test(); passed++; Console.WriteLine("PASS " + name); }
         catch (Exception ex) { failed++; Console.WriteLine("FAIL " + name + ": " + ex.Message); }
@@ -135,9 +135,9 @@ public partial class RewardSystemBehavior
             int done = 0; Action callback = () => done++;
             InventoryScreenHelperOpenScreenAsTradePrefix(roster, new SettlementComponent { Settlement = settlement }, ref callback);
             Check(roster.Amount(gift) == 3 && roster.Amount(special) == 0, "open deletes gift or keeps special");
-            callback(); Instance.OnDailyTickSettlement(settlement); Instance.QueueGeneratedRewardWorldMarketCleanup("game_load_finished"); DrainMarkets();
+            callback(); Instance.RunDailyEntryPrefix(); DrainMarkets(); Instance.QueueGeneratedRewardWorldMarketCleanup("game_load_finished"); DrainMarkets();
             Check(roster.Amount(gift) == 3 && done == 1, "later cleanup deletes gift or duplicates callback"); });
-        Case("daily_entry_does_not_scan_world_but_native_settlement_cleanup_still_runs", () => {
+        Case("daily_entry_only_requests_world_pass_each_tick_cleans_one_market", () => {
             const int towns = 2000, slots = 300;
             var normal = new ItemObject { StringId = "sword" }; var special = Gift(identity: "courier_letter|session|body");
             var settlements = Enumerable.Range(0, towns).Select(i => new Settlement { StringId = "town_" + i, ItemRoster = new() }).ToArray();
@@ -149,9 +149,8 @@ public partial class RewardSystemBehavior
             Console.WriteLine($"daily_entry towns={towns} slots={towns * slots + 1} reads={ItemRoster.Reads} elapsedMs={timer.Elapsed.TotalMilliseconds:F3}");
             Check(ItemRoster.Reads == 0, "global daily entry still scans every market");
             Check(EquipmentRestoreCalls == 1, "equipment restoration lost");
-            Instance.OnDailyTickSettlement(target);
             Check(ItemRoster.Reads == 0, "daily admission scans instead of enqueueing"); DrainMarkets();
-            Check(ItemRoster.Reads == slots + 1 && target.ItemRoster.Amount(special) == 0, "distributed event failed to clean the selected market");
+            Check(ItemRoster.Reads == towns * slots + 1 && target.ItemRoster.Amount(special) == 0, "daily world pass missed/duplicated markets");
             Check(settlements[0].ItemRoster.Elements.Count == slots, "unrelated market mutated");
             // The once-per-load reconciliation still cleans another market without deleting permitted gifts.
             var gift = Gift(); settlements[0].ItemRoster.AddToCounts(new(special), 1); settlements[0].ItemRoster.AddToCounts(new(gift), 3);
@@ -206,6 +205,8 @@ public class ItemRoster
     public bool SkipRemovals;
     public List<ItemRosterElement> Elements = new(); public int Count => Elements.Count;
     public ItemRosterElement GetElementCopyAtIndex(int i) { BeforeRead?.Invoke(this); Reads++; return Elements[i]; }
+    public int FindIndexOfElement(EquipmentElement element) => Elements.FindIndex(x => x.EquipmentElement == element);
+    public int GetElementNumber(int i) => Elements[i].Amount;
     public int Amount(ItemObject item) => Elements.Where(x => x.EquipmentElement.Item == item).Sum(x => x.Amount);
     public void AddToCounts(EquipmentElement element, int amount)
     {
@@ -235,9 +236,13 @@ public class InventoryLogic
 }
 public class MBReadOnlyList<T> : List<T> { public MBReadOnlyList() { } public MBReadOnlyList(int count) : base(count) { } }
 public class MBList<T> : MBReadOnlyList<T> { public MBList(int count) : base(count) { } }
-public static class Logger { public static void Log(string category, string message) { } }
+public static class Logger { public static readonly List<string> Messages = new(); public static void Log(string category, string message) { Messages.Add(message); } }
 public record InformationMessage(string Text);
 public static class InformationManager { public static List<string> Messages = new(); public static void DisplayMessage(InformationMessage message) => Messages.Add(message.Text); }
 public static class AnimusForgeTextInputSanitizer { public const int MaxCourierLetterChars = 10000; public static string SanitizeMultiline(string text, int max) => text; }
 public static class FreezeWatchdog { public static ScopeToken Scope(string name) => default; public readonly struct ScopeToken : IDisposable { public void Dispose() { } } }
 public static class EconomyUiTexts { public static string SpecialRpItemCannotEnterMarket => "Special RP items cannot enter the market."; }
+
+public class Game { public static Game Current = new(); public GameStateManager GameStateManager = new(); }
+public class GameStateManager { public object ActiveState; }
+public class InventoryState { }
