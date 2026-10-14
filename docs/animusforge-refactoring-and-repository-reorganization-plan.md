@@ -10401,3 +10401,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 | `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.MarketCleanup.cs` | 15–25 CreateMarketCleanup；27–43 Trade/Queue/Process | 原判定/日志叶适配、交易引用去重、主线程/owner/保存/InventoryState准入 |
 | `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs` | 1529–1552 Load/EngineTick；11715–11739 Trade prefix；11931–11935 RemoveGeneratedRewardItemsFromRoster | 真实读档/应用帧/交易消费者；原市场listener及epoch删除，其余奖励机制保持 |
 | `src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs` | 11–23 OnDailyTick | 日结只申请世界轮次，装备恢复和债务原顺序保留 |
+
+<a id="deploy-market-world-pass-20261015"></a>
+## 市场逐帧清理候选部署（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户本轮明确授权“部署吧”。实际工作区 F:/AnimusForge-main，main，部署源码 4eed05dd9e1f489fc479514bfda5ea7eaec6c451；包含市场产品 db3e1ae68 和已合入人设编辑产品 7b113afbe。源码无未提交改动，既有未跟踪 Microsoft/、NuGet/ 未动。
+- 原 scripts/build/build_single_module.ps1 -Configuration Release -Deploy：双 API、Bootstrap、双 Coup seam 和 registration smoke 通过；旧 Stage 的 ModuleData/Languages/af_ui_strings.xml 与当前锁定源码不一致，首次在目标覆盖前停止。将确切项目 Stage 保留至 artifacts/deploy-market-20261015-013154/previous-stage，未放宽门禁或改脚本。
+- 复用本轮三份构建产物调用原 scripts/build/deploy_module.ps1，生成干净 Stage 并部署成功，exit 0，更新 11 个受管文件。目标 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge；原覆盖/保留规则执行，无部署 Recovery 或自动回滚。
+- 三份已安装 DLL 与本轮构建 SHA256 一致，见 artifacts/deploy-market-20261015-013154/installed-dll-hashes.json。首次构建日志 build-deploy.log、成功部署日志 deploy-clean-stage.log、源码修订 source-revision.txt 均在同目录。未重新执行不受改动影响的市场 40 项回放；其覆盖范围仍见 [市场实现记录](#market-world-pass-20261015)。
+- 本条替代市场和扩展人设条目的“未部署”安装状态。未启动游戏；入夜/实际最大市场/旧档/Harmony 实机验收仍 NOT-RUN，部署不证明卡顿根因解决。未打包、push 或递增版本。
+- 回退：本次无游戏部署备份；源码只撤销市场产品可用 git revert db3e1ae68，之后须重新双版本构建和显式部署。previous-stage 仅为保留的旧项目输出，不是完整玩家目录备份，不自动恢复。
