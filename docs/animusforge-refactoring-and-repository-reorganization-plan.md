@@ -1,3 +1,35 @@
+<a id="persona-evolution-20261015"></a>
+## 2026-10-15 事件驱动NPC人设演变及知情链路定位（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 当前工作区F:/AnimusForge-main，main；意图检查点0a8c063，产品fffcfed22。用户已明确实施：仅更新扩展人设，不开发自主行动/独立目标系统；终端开关默认false，原DuelSettings owner/JSON与preset保存，入口在“外交与国家→周报与快报”。不新增MCM前端入口，仍受现有可见性投影隐藏。
+- 仅处理新采集的settlement_siege/settlement_transfer/fief_grant/lord_killed/ruler_killed底层事实；不读快报文学成稿/全世界书/全历史，不追溯开启前事件。候选来自事件人物、配偶、父母、子女、兄弟姐妹和家族首领，排除死亡人物与玩家，按Hero ID去重；死者近亲仍可更新。使用Hero.Find已有ID索引，不用FindFirst全人物扫描。
+- 当前人设+简短事实+关系连同原型正文摘要送辅助API；只接受五类扩展字段的严格补丁，未返回字段保留、显式空数组/字符串可消除执念，不改Description/VoiceId。AI可返回changed=false。禁止未知字段/无效特质/越界数量或长度，整个补丁合法后才原子应用；最新原因同次响应返回，只在百科/编辑器显示，不弹窗、不增加主对话原因段。现有三渠道复用的人设reader读取新值。
+- 性能与token：每NPC先合并至少1游戏小时；每批最多4事件，全局单在途，每现实30秒最多启动1次评估，输出上限1200 token且关闭思考；不变动底层provider既有语义。仅非空队列每5秒检查一个队头，空队列立即返回；不在Tick扫描全人物/反射/读写磁盘。每NPC最多64待处理事实与300去重键，溢出记录警告；失败60秒后允许一次重试，再失败保留原人设并消费该批防止无限扣费。无新事件不周期请求。
+- 关闭开关清理本运行候选待办并退休在途epoch，保留已形成变化；换存档/清数据遵循既有generation，重新生成/导入替换profile及人工编辑快照冲突均不覆盖最新值。临时preset对象不退休真实owner任务。新增RecentChangeReason/Evolution为既有_npcPersonaProfiles_v1 JSON内的可选字段；Pending/Seen/Attempts随原FlattenStringDictionary存取，无新SyncData键，读档只在边界重建队列。外部人设导入保留人设/原因，清除另一战役的待评估事件；旧JSON无新字段仍正常。
+- 验证：actual policy+host+从生产提取DTO+profile owner+原persistence adapter专项64项PASS（CN/EN两轮、近亲、合并、去重、补丁拒绝/清空、关闭/手改/换档、单并发/限速/有限重试、旧JSON、中文长状态分块保存及外部导入）；游戏对象/provider/dispatcher为替身，未发真实API。原编辑器113项PASS含双语最近原因。实际1.3/1.4 DLL MCM JSON/磁盘重载/终端回放526/536项PASS，含默认off、新开关保存、双语入口与真实BuildPersonaContext(forUi)原因显示/Prompt不加原因。PersistenceChunkReplayTests及--chunk-contract-only PASS（20字符串键/47字典键；既有knownOpenDirectJsonRisks=1，不作本次已修复声明）。空队列250000次测试分别约4.04ms/3.66ms、0托管分配、0设置读取/AI调用，仅离线替身时序。
+- 原统一Release build-only最终persona-evolution-build-verified.log exit0，API1.3.15.110062与1.4.6.115628各363既有warning/0error；Bootstrap/probe0/0，双Coup/registration PASS。仅进程EnableDefaultNoneItems=false，未改构建脚本；已包含共享树其他作者同期已提交快报/插画改动，本提交只含人设切片。初次编译缺using及回放null/空串预期误差已修正，初次日志保留。
+- 证据：artifacts/persona-evolution-receipt.json；persona-evolution-build-verified.log、persona-evolution-replay-verified.log、persona-evolution-editor-final.log、persona-evolution-chunks.log、persona-evolution-localization.log、persona-evolution-terminal-verified-13.log/14.log。实际候选bin/Release/single_module_artifacts；原Stage和游戏安装不动。
+- NOT-RUN：真实游戏点击/时间推进/存档重载、真实provider人格变化质量、三渠道实机效果、实机大规模事件帧时间。无Stage/部署/ZIP/push。回退用git revert fffcfed22；关闭开关只停止未来变化，不自动恢复已经改变的人设或旧档。
+
+### “A刚攻下B的城堡，B多久知道”的现有代码结论
+
+1. 领地易主回调同一调用链记录settlement_siege，携带A、旧领主B、新领主及双方国家；普通攻城事实没有按距离传播的几天等待，外交宣言的knownDocumentIds门禁不适用于它。
+2. 目前共享上下文入口BulletinEnabled实际绑定IsWorldBulletinPublishingEnabled（UseWorldBulletin && AutoGenerateWorldBulletins）。满足时，下一次主线程采集的对话快照即可读到新事实，不必等成稿出版；已发出的请求/已捕获快照不会自动补入新事件。自由对话每回合采集；信使经共享BuildShoutPromptContextForExternal、场景也用同一共享capture。
+3. 这是“有资格进入上下文”，不是保证B每次完整知道：仅最近7日，短层每国3条（相关3国含本国），按Score优先/时间次之/同组去重。命中npc_major_actions时注入本国详细层最多8条并排除短层重复；surroundings按所在地类似处理。高优先事件可能把新城堡事件挤出；无所属国等资格变化也可能漏入。
+4. 自动出版关闭时该入口改走既有周报上下文，尽管底层事实仍采集；因此不能承诺这一状态下B下一次就从快报上下文得知。本轮只定位、未扩权修改这个知识路由。新“人设演变”只依赖快报模式和自身开关，不依赖自动出版：至少1游戏小时合并，再等待全局队列/30秒限速/API完成后变更，人设此后持续保存。
+
+| 源码（fffcfed22） | 核实一基范围/符号 | 职责及未覆盖 |
+| --- | --- | --- |
+| src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaEvolution.cs | 14–180；OnWorldBulletinEventCaptured、TryStartPersonaEvolution、CompletePersonaEvolutionAsync、Reset/Restore | 主线程事件亲属捕获、队头调度、辅助API快照与提交；未实机 |
+| src/modules/AF.Module.Persona/Profiles/PersonaEvolutionPolicy.cs | 11–122；Enqueue/TakeBatch/TryParse/Apply/RequestPersona | 有界合并去重、严格整批验证、字段补丁与请求裁剪 |
+| src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs | 6–17 PersonaEvolutionFact/State；Save | 原profile JSON包含待办/去重/原因，复用原分块adapter |
+| src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.BulletinPrompt.cs | 10–24 EnableNpcPersonaEventEvolution | 默认false、真实设置owner变更退休工作；终端Registry:214及Localization四表 |
+| src/AF.GameAdapter.Bannerlord/Weekly/WorldBulletinEventCaptureAdapter.cs | 315–354 OnWorldBulletinSettlementOwnerChanged | 易主同步捕获事实与当事人 |
+| src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromptContextCapture.cs | 80、136；WeeklyCapturePorts/CreateContextCapturePorts | 快照开关实际为PublishingEnabled |
+| src/AF.GameAdapter.Bannerlord/Prompt/WorldBulletinNpcPromptCaptureAdapter.cs | 10–47 CaptureWorldBulletinNpcSnapshot | 当次事实与国家筛选，外交宣言单独知情门禁 |
+| src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs | 207–211、493–565；IsNpcFactVisible/RecentKingdomFacts/BuildNpcBriefBlock/BuildNpcDetailBlock | 7日、每国3/8条，普通攻城无传播等待 |
+| src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs | 83–92 weekly_prompt_snapshot | 主线程每轮请求快照，非已发送消息热更新 |
+
 <a id="encyclopedia-portrait-20261015"></a>
 ## 2026-10-15 百科肖像去现场定位与导演精简（OFFLINE_VERIFIED / LIVE_PENDING）
 
