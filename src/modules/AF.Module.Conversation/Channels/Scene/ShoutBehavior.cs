@@ -5613,7 +5613,6 @@ private void ExpireGroupedActiveInteractions(List<SceneInteractionSession> sessi
 
 private SceneInteractionSession ChooseGroupedTimeoutRepresentative(List<SceneInteractionSession> sessions) => _j17SceneInteractionLifecycleController.ChooseGroupedTimeoutRepresentative(sessions);
 
-private bool TriggerGroupedTimeoutDisperseSpeech(SceneInteractionSession representativeSession, List<SceneInteractionSession> sessions, SceneSummonConversationSession representativeSummonSession) => _j17SceneInteractionLifecycleController.TriggerGroupedTimeoutDisperseSpeech(representativeSession, sessions, representativeSummonSession);
 
 private void ExpireActiveInteractionSilently(SceneInteractionSession session, bool deferSceneSummonReturn) => _j17SceneInteractionLifecycleController.ExpireActiveInteractionSilently(session, deferSceneSummonReturn);
 

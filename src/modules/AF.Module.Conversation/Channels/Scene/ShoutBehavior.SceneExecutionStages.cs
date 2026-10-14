@@ -187,6 +187,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				// Lower bound for this reply's local natural-action resolution.
 				RecordSceneActionReplyCapture(speaker.AgentIndex);
 			}
+			_ports.RefreshRelayInteractionTimeout(interactionTimeoutSeconds);
 			_ports.EnqueueSpeechLineWithOptions(speaker, replyText, audience,
 				commitHistory: false, suppressStare: false, allowPlayerDirectedActions: true,
 				conversationEpoch, sceneSummonTargets, sceneGuideTargets,
@@ -202,6 +203,7 @@ internal sealed partial class SceneConversationSessionRuntime
 	internal int BeginNewPlayerDrivenSceneConversationEpoch()
 	{
 		InvalidateRewriteTurn();
+		_ports.RetireRelayInteractionWaits();
 		_sceneRequestLifetime.Retire();
 		_sceneRequestLifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();
 		int num = Interlocked.Increment(ref _sceneConversationEpoch);

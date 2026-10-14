@@ -73,6 +73,43 @@ internal sealed class SceneInteractionLifecycleController
 
 	internal readonly Dictionary<int, PendingInteractionTimeoutArm> _pendingInteractionTimeoutArms = new Dictionary<int, PendingInteractionTimeoutArm>();
 
+    private readonly HashSet<int> _relayInteractionAgents = new HashSet<int>();
+    private float _relayTimeoutSeconds = -1f;
+    private long _interactionTokenSequence;
+
+    // Called only at relay transitions on the game thread, never by scanning scene agents.
+    internal void HoldRelayInteractionWaits(List<Agent> participants)
+    {
+        if (participants == null) return;
+        foreach (Agent agent in participants)
+            if (agent != null && agent.Index >= 0) _relayInteractionAgents.Add(agent.Index);
+    }
+
+    internal void RefreshRelayInteractionTimeout(float timeoutSeconds)
+    {
+        if (timeoutSeconds <= 0f) return;
+        _relayTimeoutSeconds = timeoutSeconds;
+        foreach (int index in _relayInteractionAgents)
+            if (_activeInteractionSessions.TryGetValue(index, out var session) && session != null
+                && session.TimeoutSeconds > 3.5f) session.TimeoutSeconds = timeoutSeconds;
+    }
+
+    internal void RetireRelayInteractionWaits()
+    {
+        float now = Mission.Current?.CurrentTime ?? 0f;
+        foreach (int index in _relayInteractionAgents)
+        {
+            _pendingInteractionTimeoutArms.Remove(index);
+            _ports.ClearPendingSpeechCompletionTokens(index);
+            if (!_activeInteractionSessions.TryGetValue(index, out var session) || session == null) continue;
+            session.InteractionToken = ++_interactionTokenSequence;
+            session.LastActivityTime = now;
+            session.TimeoutArmed = true;
+        }
+        _relayInteractionAgents.Clear();
+        _relayTimeoutSeconds = -1f;
+    }
+
 	internal bool IsMultiNpcSceneConversationActive()
 	{
 		Mission mission = Mission.Current;
@@ -123,6 +160,8 @@ internal sealed class SceneInteractionLifecycleController
 		{
 			return;
 		}
+		_relayInteractionAgents.Clear();
+		_relayTimeoutSeconds = -1f;
 		float num = 0f;
 		string text = SanitizeSceneSpeechText(trailingSpeechText ?? "");
 		if (!string.IsNullOrWhiteSpace(text))
@@ -138,6 +177,8 @@ internal sealed class SceneInteractionLifecycleController
 			{
 				continue;
 			}
+			value.TimeoutArmed = false;
+			value.LastActivityTime = Mission.Current.CurrentTime;
 			if (num > 0f)
 			{
 				ScheduleInteractionTimeoutArm(item.AgentIndex, value.InteractionToken, num);
@@ -324,8 +365,9 @@ internal sealed class SceneInteractionLifecycleController
 			TargetName = text,
 			LastActivityTime = mission.CurrentTime,
 			TimeoutArmed = false,
-			TimeoutSeconds = ResolveActiveInteractionTimeoutSeconds(participantCount, timeoutSeconds),
-			InteractionToken = DateTime.UtcNow.Ticks,
+			TimeoutSeconds = ResolveActiveInteractionTimeoutSeconds(participantCount,
+                timeoutSeconds <= 0f && _relayInteractionAgents.Contains(primaryTarget.AgentIndex) ? _relayTimeoutSeconds : timeoutSeconds),
+			InteractionToken = ++_interactionTokenSequence,
 			ReturnSceneSummonOnTimeout = returnSceneSummonOnTimeout,
 			InitialPlayerDistanceMeters = initialPlayerDistanceMeters,
 			PlayerReleaseRangeMeters = playerReleaseRangeMeters
@@ -551,6 +593,8 @@ internal sealed class SceneInteractionLifecycleController
 				outOfRangeReleaseAgentIndices.Add(activeInteractionSession.Key);
 				continue;
 			}
+			// A participant listening to the ongoing relay is not idle. Explicit short action-release timers still run.
+            if (num > 3.5f && _relayInteractionAgents.Contains(activeInteractionSession.Key)) continue;
 			if (currentTime - value.LastActivityTime >= num)
 			{
 				if (list == null)
@@ -677,10 +721,7 @@ internal sealed class SceneInteractionLifecycleController
 			_activeInteractionSessions.Remove(item2.TargetAgentIndex);
 			_pendingInteractionTimeoutArms.Remove(item2.TargetAgentIndex);
 		}
-		if (!TriggerGroupedTimeoutDisperseSpeech(representativeSession, list, representativeSummonSession))
-		{
-			ExpireActiveInteractionSilently(representativeSession, deferSceneSummonReturn: false);
-		}
+		ExpireActiveInteractionSilently(representativeSession, deferSceneSummonReturn: false);
 		_activeInteractionSessions.Remove(representativeSession.TargetAgentIndex);
 		_pendingInteractionTimeoutArms.Remove(representativeSession.TargetAgentIndex);
 	}
@@ -718,64 +759,6 @@ internal sealed class SceneInteractionLifecycleController
 		return sceneInteractionSession ?? sessions.FirstOrDefault();
 	}
 
-	internal bool TriggerGroupedTimeoutDisperseSpeech(SceneInteractionSession representativeSession, List<SceneInteractionSession> sessions, SceneSummonConversationSession representativeSummonSession)
-	{
-		Mission mission = Mission.Current;
-		var agents = mission?.Agents;
-		if (representativeSession == null || representativeSession.TargetAgentIndex < 0 || agents == null)
-		{
-			return false;
-		}
-		Agent agent = FindTimeoutReleaseAgent(representativeSession.TargetAgentIndex);
-		if (!CanAgentParticipateInSceneSpeech(agent) || IsAgentHostileToMainAgent(agent))
-		{
-			return false;
-		}
-		NpcDataPacket npcDataPacket = ShoutUtils.ExtractNpcData(agent);
-		if (npcDataPacket == null)
-		{
-			return false;
-		}
-		List<NpcDataPacket> list = new List<NpcDataPacket>();
-		if (sessions != null)
-		{
-			foreach (SceneInteractionSession session in sessions)
-			{
-				if (session == null || session.TargetAgentIndex < 0)
-				{
-					continue;
-				}
-				Agent agent2 = FindTimeoutReleaseAgent(session.TargetAgentIndex);
-				NpcDataPacket npcDataPacket2 = ShoutUtils.ExtractNpcData(agent2);
-				if (npcDataPacket2 != null && !list.Any(x => x != null && x.AgentIndex == npcDataPacket2.AgentIndex))
-				{
-					list.Add(npcDataPacket2);
-				}
-			}
-		}
-		if (!list.Any(x => x != null && x.AgentIndex == npcDataPacket.AgentIndex))
-		{
-			list.Insert(0, npcDataPacket);
-		}
-		Action onNoSpeech = delegate
-		{
-			_sceneMovement.CancelPendingSummonReturn(npcDataPacket.AgentIndex);
-			_ports.CancelAutonomyRestore(npcDataPacket.AgentIndex);
-			ExpireActiveInteractionSilently(representativeSession, deferSceneSummonReturn: false);
-		};
-		if (representativeSummonSession != null)
-		{
-			_sceneMovement.ClearSceneSummonConversationInteractionTimers(representativeSummonSession);
-			_sceneMovement.SetPendingSummonReturn(npcDataPacket.AgentIndex, representativeSummonSession, _sceneMovement.ShouldReturnOnlySceneSummonSpeaker(representativeSummonSession, agent));
-		}
-		else
-		{
-			_ports.PrepareAutonomyRestore(npcDataPacket.AgentIndex);
-		}
-		string factText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0649");
-		TriggerImmediateSceneBehaviorReaction(factText, npcDataPacket.AgentIndex, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: 3f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false, onNoSpeech);
-		return true;
-	}
 
 	internal void ExpireActiveInteractionSilently(SceneInteractionSession session, bool deferSceneSummonReturn)
 	{
@@ -815,88 +798,9 @@ internal sealed class SceneInteractionLifecycleController
 	}
 
 	internal void ExpireActiveInteraction(SceneInteractionSession session)
-	{
-		if (session == null || session.TargetAgentIndex < 0)
-		{
-			return;
-		}
-		Agent agent = FindTimeoutReleaseAgent(session.TargetAgentIndex);
-		SceneSummonConversationSession sceneSummonConversationSession = _sceneMovement.TryGetSceneSummonConversationSessionForAgentIndex(session.TargetAgentIndex);
-		if (_sceneMovement.IsAgentBusyWithSceneSummonErrand(session.TargetAgentIndex) || _sceneMovement.IsAgentBusyWithSceneGuideErrand(session.TargetAgentIndex))
-		{
-			_pendingInteractionTimeoutArms.Remove(session.TargetAgentIndex);
-			_activeInteractionSessions.Remove(session.TargetAgentIndex);
-			return;
-		}
-		if (_sceneMovement.IsAgentFollowingPlayerBySceneCommand(agent))
-		{
-			_pendingInteractionTimeoutArms.Remove(session.TargetAgentIndex);
-			_activeInteractionSessions.Remove(session.TargetAgentIndex);
-			return;
-		}
-		if (!CanAgentParticipateInSceneSpeech(agent))
-		{
-			RemoveSceneMovementSuppressionAgents(new int[1] { session.TargetAgentIndex });
-			if (sceneSummonConversationSession != null)
-			{
-				_sceneMovement.BeginSceneSummonConversationReturn(sceneSummonConversationSession);
-			}
-			return;
-		}
-		if (IsAgentHostileToMainAgent(agent))
-		{
-			RemoveSceneMovementSuppressionAgents(new int[1] { session.TargetAgentIndex });
-			RestoreAgentAutonomy(agent);
-			if (sceneSummonConversationSession != null)
-			{
-				_sceneMovement.BeginSceneSummonConversationReturn(sceneSummonConversationSession);
-			}
-			return;
-		}
-		if (ShouldPreserveMeetingSceneAutonomy())
-		{
-			_ports.ReleaseStareAgent(session.TargetAgentIndex);
-			RemoveSceneMovementSuppressionAgents(new int[1] { session.TargetAgentIndex });
-			ReleaseAgentFromSceneConversationLocks(agent);
-			return;
-		}
-		string text = (session.TargetName ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = (agent.Name?.ToString() ?? "NPC").Trim();
-		}
-		string text2 = GetPlayerDisplayNameForShout();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			text2 = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0650");
-		}
-		string factText =  text2 +ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0651")+text+ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0652");
-		string prefixedFactText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0653") + factText;
-		if (session.TimeoutSeconds > 3.5f)
-		{
-			Action onNoSpeech = delegate
-			{
-				_sceneMovement.CancelPendingSummonReturn(session.TargetAgentIndex);
-				_ports.CancelAutonomyRestore(session.TargetAgentIndex);
-				ExpireActiveInteractionSilently(session, deferSceneSummonReturn: false);
-			};
-			if (sceneSummonConversationSession != null)
-			{
-				_sceneMovement.ClearSceneSummonConversationInteractionTimers(sceneSummonConversationSession);
-				_sceneMovement.SetPendingSummonReturn(session.TargetAgentIndex, sceneSummonConversationSession, _sceneMovement.ShouldReturnOnlySceneSummonSpeaker(sceneSummonConversationSession, agent));
-			}
-			TriggerImmediateSceneBehaviorReaction(prefixedFactText, session.TargetAgentIndex, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: 3f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false, onNoSpeech);
-			return;
-		}
-		AppendTargetedSceneNpcFact(prefixedFactText, session.TargetAgentIndex, persistHeroPrivateHistory: true);
-		_ports.ReleaseStareAgent(session.TargetAgentIndex);
-		RemoveSceneMovementSuppressionAgents(new int[1] { session.TargetAgentIndex });
-		RestoreAgentAutonomy(agent);
-		if (sceneSummonConversationSession != null)
-		{
-			_sceneMovement.BeginSceneSummonConversationReturn(sceneSummonConversationSession);
-		}
-	}
+    {
+        ExpireActiveInteractionSilently(session, deferSceneSummonReturn: false);
+    }
 
     private Agent FindTimeoutReleaseAgent(int index)
     {
@@ -967,7 +871,7 @@ internal sealed class SceneInteractionLifecycleController
     internal void CancelInteractionTimeoutArm(int index) { _pendingInteractionTimeoutArms.Remove(index); }
     internal void RemoveInteractionSession(int index) { _activeInteractionSessions.Remove(index); }
     internal void ClearInteractionTimeoutArms() { _pendingInteractionTimeoutArms.Clear(); }
-    internal void ResetInteractionsForLoadedSave() { _activeInteractionSessions.Clear(); _pendingInteractionTimeoutArms.Clear(); }
+    internal void ResetInteractionsForLoadedSave() { _activeInteractionSessions.Clear(); _pendingInteractionTimeoutArms.Clear(); _relayInteractionAgents.Clear(); _relayTimeoutSeconds = -1f; }
     internal bool TryGetInteractionSession(int index, out SceneInteractionSession session) => _activeInteractionSessions.TryGetValue(index, out session);
     internal NativeSpeechInteractionDiagnosticSnapshot CaptureInteractionDiagnostic(int index)
     {
