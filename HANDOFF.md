@@ -1,4 +1,11 @@
-﻿# 当前交接：当前 main 已部署（2026-10-14，DEPLOY_VERIFIED / LIVE_PENDING）
+﻿# 当前交接：终端实机反馈与采集前追加清理（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品5e1e354ac：终端1600x940/自动保存、补最低增幅与凝视JSON定义、隐藏周期快捷键文字保留导航；MCM原地清列表改完整selector替换。产品064cbaf6a：新采集前追加AF自有残留清理和两应用帧准入，原8结束清理函数及会话缓存消费者不动；不清当前Mission/原版池，不把两帧当GPU fence。
+- 双API/Bootstrap/Coup/注册PASS；1.3/1.4实际MCM JSON、临时磁盘重载、终端自动保存/帧准入365/375项PASS；selector17项及1.4真实只读property host通过。原DLL关系增幅JSON失败、原selector空绑定中间态失败；原无关成人自动人设Hint全量fallback漂移保留。
+- GPU现场在OffscreenCharacter开始122ms后深度纹理资源不足；1.5.6四核心文件一致。没有故障显存曲线/dump，不能宣称根因或实机修复。事实有共享注入，但截图对应请求未找到，具体遗漏/模型忽略未定。
+- [唯一主台账、代码坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-live-complete-20261014)。本轮新源码未部署/push/打包，游戏仍此前ea6c51247；只工作区fixture写盘，玩家配置/存档未写。
+
+# 当前交接：当前 main 已部署（2026-10-14，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户明确授权部署；源码 `ea6c51247`，原统一 Debug 双 API/Bootstrap/双 Coup 及注册门禁通过，游戏单模块 v1.6.0 更新24个受管文件，未启动游戏。
 - 3519个Stage文件按原覆盖/保留策略核对PASS；现有Configs5、自定义提示词4、PlayerExports3133、ONNX10与原版抽检3文件哈希不变。完整证据、旧Stage保留与人工回退边界见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-main-20261014)。此前性能调查未形成源码修复。
