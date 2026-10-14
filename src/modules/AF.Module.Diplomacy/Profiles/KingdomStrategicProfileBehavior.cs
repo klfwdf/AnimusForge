@@ -91,7 +91,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 				? new KingdomStrategicProfileStorage()
 				: JsonConvert.DeserializeObject<KingdomStrategicProfileStorage>(json) ?? new KingdomStrategicProfileStorage();
 		}
-		catch (Exception ex)
+		catch (Exception ex) when (!(ex is CampaignSaveChunkHelper.PersistenceIntegrityException))
 		{
 			_storage = new KingdomStrategicProfileStorage();
 			Log("load failed: " + ex.Message);

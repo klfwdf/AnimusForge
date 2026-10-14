@@ -176,6 +176,6 @@ internal static List<string> BuildVisibleSceneHistoryLines(List<ConversationMess
 			return null;
 		}
 		list.Reverse();
-		return list;
+		return SceneHistoryProjectionOwner.KeepAfefFactsAndRecentHistoryLines(list, historyLineLimit);
 	}
 }

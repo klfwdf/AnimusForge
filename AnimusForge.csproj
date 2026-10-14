@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>AnimusForge</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
@@ -203,10 +203,7 @@
     <EmbeddedResource Include="content\modules\AF.Module.Diplomacy\ModuleData\DiplomacyPromptCompatibility.json">
       <LogicalName>AnimusForge.Diplomacy.PromptCompatibility.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="content\modules\AF.Module.Diplomacy\ModuleData\DiplomacyMiscPromptTexts.json" LogicalName="AnimusForge.Diplomacy.ReceiptTexts.cn.json" />
-    <EmbeddedResource Include="content\modules\AF.Module.Diplomacy\ModuleData\DiplomacyMiscPromptTexts.en.json" LogicalName="AnimusForge.Diplomacy.ReceiptTexts.en.json" WithCulture="false" />
-    <EmbeddedResource Include="content\modules\AF.Module.Diplomacy\ModuleData\Languages\CNs\afdip_misc_strings-zh-CN.xml" LogicalName="AnimusForge.Diplomacy.ReceiptUi.cn.xml" WithCulture="false" />
-    <EmbeddedResource Include="content\modules\AF.Module.Diplomacy\ModuleData\Languages\afdip_misc_strings.xml" LogicalName="AnimusForge.Diplomacy.ReceiptUi.en.xml" />
+    <EmbeddedResource Include="content\modules\AF.Module.Diplomacy\ModuleData\DiplomacyReceiptCompatibility.json" LogicalName="AnimusForge.Diplomacy.ReceiptCompatibility.json" />
     <EmbeddedResource Include="content\modules\AF.Module.Economy\ModuleData\EconomyDisplaySources.json">
       <LogicalName>AnimusForge.Defaults.EconomyDisplaySources.json</LogicalName>
     </EmbeddedResource>

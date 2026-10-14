@@ -133,7 +133,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			_registeredMapNotificationView = null;
 			ClearPendingHeroCache();
 		}
-		catch (Exception ex)
+		catch (Exception ex) when (!(ex is CampaignSaveChunkHelper.PersistenceIntegrityException))
 		{
 			_storage = new CompanionChatStorage();
 			ClearPendingHeroCache();

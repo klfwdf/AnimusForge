@@ -77,7 +77,7 @@ public partial class MyBehavior
     private WeeklyPromptCaptureAdapter.CapturePorts _weeklyCapturePorts;
     private WeeklyPromptCaptureAdapter.CapturePorts WeeklyCapturePorts => _weeklyCapturePorts ??= new WeeklyPromptCaptureAdapter.CapturePorts
     {
-        BulletinEnabled = IsWorldBulletinPublishingEnabled,
+        BulletinEnabled = IsWorldBulletinEnabled,
         BulletinEvents = () => _worldBulletinOwner.State?.Events,
         LatestBulletin = () => WorldBulletinState.FindLatestWorldBulletinRecord(),
         Records = () => _weeklyEventRecords.Records,
@@ -133,7 +133,7 @@ public partial class MyBehavior
                 flags.PlayerWonLastDuel, routing.WorldMapPartyCommand.Hit, request.ExcludedRuleIds,
                 routing.AuxiliaryRuleHitIds, PromptRuleIdPolicy.IsExcluded(request.ExplicitExcludedRuleIds, "meeting_taunt"),
                 retrieval?.FallbackExtraRuleHits),
-            IsWorldBulletinEnabled = IsWorldBulletinPublishingEnabled,
+            IsWorldBulletinEnabled = IsWorldBulletinEnabled,
             CaptureWorldBulletinSnapshot = () => CaptureWorldBulletinNpcSnapshot(targetHero, targetCharacter, request.KingdomIdOverride),
             ShouldExcludeWeeklyShortReport = (rules, snapshot) => WeekZeroOpeningSummaryGenerationController.ShouldExcludeNpcShortReportFromWeeklyShortLayer(rules, targetHero, targetCharacter, request.KingdomIdOverride, snapshot),
             BuildWeeklyShortReports = (exclude, snapshot) => BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, request.KingdomIdOverride, exclude, snapshot),

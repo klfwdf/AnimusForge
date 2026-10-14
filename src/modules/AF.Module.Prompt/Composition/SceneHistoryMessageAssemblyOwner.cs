@@ -138,6 +138,15 @@ internal static string BuildScopedAfefFactLineForPrompt(string text, bool isCurr
 		return (isCurrent ? PromptComposerTexts.Raw("history_section_scope_current") : PromptComposerTexts.Raw("history_section_scope_historical")) + factLine;
 	}
 
+// Currentness is event identity, never equality of the fact's prose.
+internal static string BuildCurrentFactIdentity(ConversationMessage message)
+{
+    if (message == null || message.EventSequence <= 0) return "";
+    return message.EventSequence.ToString(System.Globalization.CultureInfo.InvariantCulture) + "|"
+        + message.GameDayIndex + "|" + message.GameHour + "|" + (message.PromptMemorySessionKey ?? "")
+        + "|" + (message.Scene ?? "") + "|" + (message.Role ?? "");
+}
+
 internal static string BuildConversationMessageDedupeKey(ConversationMessage msg, ConversationSpeechTextOptions options)
 	{
 		if (msg == null)
@@ -199,7 +208,7 @@ internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessa
 		bool isAfefPlayerFact = afefFactLine.StartsWith(PromptComposerTexts.Raw("afef_player_action"), StringComparison.Ordinal);
 		bool isCurrentAfefFact = isAfefFact && (msg.PromptFactScopeCaptured
             ? msg.PromptIsCurrentFact
-            : currentAfefFactKeys != null && currentAfefFactKeys.Contains(BuildConversationMessageDedupeKey(msg, context.SpeechTextOptions)));
+            : currentAfefFactKeys != null && currentAfefFactKeys.Contains(BuildCurrentFactIdentity(msg)));
 		if (text.Equals("assistant", StringComparison.OrdinalIgnoreCase))
 		{
 			string text3 = NormalizeStrictSceneAssistantContent(text2, msg.SpeakerName);
@@ -291,7 +300,7 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
         var messages = new List<object> { MainPromptMessageAssemblyOwner.CreateCourierChatMessage("system", MainPromptMessageAssemblyOwner.BuildConversationSystemPrompt(input.SystemPrompt)) };
         AppendSections(messages, input.PrefixUserSections);
         var pending = (input.PendingCurrentFacts ?? Enumerable.Empty<ConversationMessage>())
-            .Where(x => x != null).Select(x => BuildConversationMessageDedupeKey(x, input.Context.SpeechTextOptions));
+            .Where(x => x != null && IsAfefConversationMessage(x)).Select(BuildCurrentFactIdentity);
         var keys = new HashSet<string>(pending.Where(x => !string.IsNullOrWhiteSpace(x)), StringComparer.Ordinal);
         var scene = new List<ConversationMessage>();
         AppendConversationMessages(scene, input.SceneHistory);
@@ -300,6 +309,41 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
         var history = new List<ConversationMessage>();
         AppendConversationMessages(history, input.PersistentHistory);
         AppendConversationMessages(history, scene);
+        // Only request copies receive scope metadata; persistent history is never rewritten.
+        history = SceneHistoryProjectionOwner.CapturePromptMessages(history);
+        var present = new HashSet<string>(StringComparer.Ordinal);
+        var unsequencedCurrent = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var fact in history)
+        {
+            if (!IsAfefConversationMessage(fact)) continue;
+            string identity = BuildCurrentFactIdentity(fact);
+            if (!string.IsNullOrEmpty(identity)) present.Add(identity);
+            if (string.IsNullOrEmpty(identity) && fact.PromptFactScopeCaptured && fact.PromptIsCurrentFact)
+            {
+                string contentKey = BuildConversationMessageDedupeKey(fact, input.Context.SpeechTextOptions);
+                unsequencedCurrent.TryGetValue(contentKey, out int count);
+                unsequencedCurrent[contentKey] = count + 1;
+            }
+            if (!fact.PromptFactScopeCaptured)
+            {
+                fact.PromptFactScopeCaptured = true;
+                fact.PromptIsCurrentFact = !string.IsNullOrEmpty(identity) && keys.Contains(identity);
+            }
+        }
+        foreach (var fact in SceneHistoryProjectionOwner.CapturePromptMessages(input.PendingCurrentFacts))
+        {
+            if (!IsAfefConversationMessage(fact)) continue;
+            string identity = BuildCurrentFactIdentity(fact);
+            if (!string.IsNullOrEmpty(identity) && !present.Add(identity)) continue;
+            if (string.IsNullOrEmpty(identity))
+            {
+                string contentKey = BuildConversationMessageDedupeKey(fact, input.Context.SpeechTextOptions);
+                if (unsequencedCurrent.TryGetValue(contentKey, out int count) && count > 0)
+                { unsequencedCurrent[contentKey] = count - 1; continue; }
+            }
+            fact.PromptFactScopeCaptured = fact.PromptIsCurrentFact = true;
+            history.Add(fact);
+        }
         history = KeepAfefFactsAndRecentConversationMessages(history, input.HistoryLineLimit);
         foreach (var entry in history)
             if (TryConvertSceneMessageToStrictChatMessage(entry, input.Context, out var message, keys)) messages.Add(message);

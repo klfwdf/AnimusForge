@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -74,72 +74,65 @@ internal static List<ConversationMessage> SortConversationMessagesByEventSequenc
 			.ToList();
 	}
 
+// Request-only limits. All original facts remain in history/persistence for recall.
+internal const int MaxHistoricalPromptFacts = 64;
+internal const int MaxHistoricalPromptFactChars = 12000;
+internal static int HistoricalFactLimit(int conversationLimit) => conversationLimit > 0
+    ? Math.Min(conversationLimit, MaxHistoricalPromptFacts) : MaxHistoricalPromptFacts;
+
 internal static List<ConversationMessage> KeepAfefFactsAndRecentConversationMessages(List<ConversationMessage> messages, int maxConversationMessages)
-	{
-		if (messages == null || messages.Count == 0 || maxConversationMessages <= 0)
-		{
-			return messages ?? new List<ConversationMessage>();
-		}
-		int conversationCount = 0;
-		HashSet<int> keepIndexes = new HashSet<int>();
-		for (int i = messages.Count - 1; i >= 0; i--)
-		{
-			ConversationMessage message = messages[i];
-			if (SceneHistoryMessageAssemblyOwner.IsAfefConversationMessage(message))
-			{
-				keepIndexes.Add(i);
-				continue;
-			}
-			if (conversationCount < maxConversationMessages)
-			{
-				keepIndexes.Add(i);
-				conversationCount++;
-			}
-		}
-		List<ConversationMessage> result = new List<ConversationMessage>();
-		for (int i = 0; i < messages.Count; i++)
-		{
-			if (keepIndexes.Contains(i))
-			{
-				result.Add(messages[i]);
-			}
-		}
-		return result;
-	}
+{
+    if (messages == null) return new List<ConversationMessage>();
+    int conversationCount = 0, factCount = 0, factChars = 0;
+    int factLimit = HistoricalFactLimit(maxConversationMessages);
+    var result = new List<ConversationMessage>();
+    for (int i = messages.Count - 1; i >= 0; i--)
+    {
+        var message = messages[i];
+        if (message == null) continue;
+        if (SceneHistoryMessageAssemblyOwner.IsAfefConversationMessage(message))
+        {
+            bool current = message.PromptFactScopeCaptured && message.PromptIsCurrentFact;
+            int chars = message.Content?.Length ?? 0;
+            if (!current && (factCount >= factLimit || chars > MaxHistoricalPromptFactChars - factChars)) continue;
+            if (!current) { factCount++; factChars += chars; }
+        }
+        else
+        {
+            if (maxConversationMessages > 0 && conversationCount >= maxConversationMessages) continue;
+            conversationCount++;
+        }
+        result.Add(message);
+    }
+    result.Reverse();
+    return result;
+}
 
 internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lines, int maxConversationLines)
-	{
-		if (lines == null || lines.Count == 0)
-		{
-			return lines ?? new List<string>();
-		}
-		int limit = maxConversationLines;
-		int conversationCount = 0;
-		for (int i = 0; i < lines.Count; i++)
-		{
-			if (!SceneHistoryMessageAssemblyOwner.TryNormalizeAfefFactLineForPrompt(lines[i], out var _))
-			{
-				conversationCount++;
-			}
-		}
-		int removeCount = conversationCount - limit;
-		if (removeCount <= 0)
-		{
-			return lines;
-		}
-		List<string> result = new List<string>(lines.Count - removeCount);
-		for (int i = 0; i < lines.Count; i++)
-		{
-			string line = lines[i];
-			if (removeCount > 0 && !SceneHistoryMessageAssemblyOwner.TryNormalizeAfefFactLineForPrompt(line, out var _))
-			{
-				removeCount--;
-				continue;
-			}
-			result.Add(line);
-		}
-		return result;
-	}
+{
+    if (lines == null) return new List<string>();
+    int conversationCount = 0, factCount = 0, factChars = 0;
+    int factLimit = HistoricalFactLimit(maxConversationLines);
+    var result = new List<string>();
+    for (int i = lines.Count - 1; i >= 0; i--)
+    {
+        string line = lines[i] ?? "";
+        if (SceneHistoryMessageAssemblyOwner.TryNormalizeAfefFactLineForPrompt(line, out _))
+        {
+            bool current = line.StartsWith(PromptComposerTexts.Raw("history_section_scope_current"), StringComparison.Ordinal);
+            if (!current && (factCount >= factLimit || line.Length > MaxHistoricalPromptFactChars - factChars)) continue;
+            if (!current) { factCount++; factChars += line.Length; }
+        }
+        else
+        {
+            if (conversationCount >= Math.Max(0, maxConversationLines)) continue;
+            conversationCount++;
+        }
+        result.Add(line);
+    }
+    result.Reverse();
+    return result;
+}
 
 internal static string NormalizeSceneHeroId(string heroId)
 	{

@@ -1,3 +1,31 @@
+<a id="audit-save-history-fixes-20261015"></a>
+## 审查前四项与快报知识源修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+用户要求修复：NPC来信整JSON存档、普通字符串分块损坏处理、同文事实本轮误判、历史事实请求预算，以及快报关闭自动出版时NPC回退旧周报。
+
+- 产品候选提交 ba03764be，隔离基线0ae213edd；主目录已保留同样修复，但正在与其他任务修改同一Courier/Proactive文件，未把它们的暂存或工作区变更夹带进本候选。候选位于受管检出 C:/Users/29310/.codex/worktrees/audit-save-history-fixes/AnimusForge-main。主目录整体验证被并行主动来意代码缺字段/方法阻断，隔离原Release双API/Bootstrap/Coup/注册全部PASS。不能把隔离结果记作正在施工共享树的整体验收。
+- 来信原键 `_af_courier_npc_diplomacy_letters_v1` 改为分块读写，原JSON字段、正常旧原始键与旧分块读取保留；清单21个分块键、47个字典分块键，常规Json命名直接SyncData风险0（仅该启发式覆盖，不是全仓数据流证明）。
+- 普通SaveChunkedString每个键只写一次，遵守原生Dictionary.Add；写入返回false或异常明确传播，最后才写块数清单。新写入附加UTF-8字节数和SHA256，哈希使用固定16KB缓冲，不额外分配整份UTF-8副本。读取缺块/null/空块/非法块数/新清单不完整/字节或hash不符时抛专用PersistenceIntegrityException。已核对并修正主owner/快报/主动对话/名声/国家档案吞异常并初始化空状态的catch，使完整性错误向存取边界传播；原sav不改，不把损坏数据当成功空状态。没有修复已经在原生读字符串阶段溢出的坏sav，也无法为没有校验元数据的旧完整分块证明任意字节未被篡改。字典分块的历史容错行为本轮未改。
+- 场景当前事实按EventSequence+日期小时+会话/场景/角色匹配，正文不作为新旧判断依据；已有Native显式scope保留。pending尚未进入历史时补到请求副本；没有身份的pending不升级同文旧事实，并按出现次数避免重复追加Native已标本轮的事实。
+- 历史事实仅在请求副本中限额：不超过配置历史行数且最多64条、原文12000字符，整条选取不截断；当前事实完整保留。辅助历史文本也有事实预算，持久化历史和原始消息不删改。新增工作只在请求组装和存取边界，无新增Tick扫描。预算不是整份prompt的token硬上限。
+- 两处真实NPC知识捕获port改用UseWorldBulletin模式判定，出版开关继续只控制自动出版；NPC仍使用快报事实。没有修改并行快报Recall实现、资源和出版机制，没有新增UI文案/存档类型身份。
+- 验证：PersistenceChunkReplayTests原回归、空/缺块/同长篡改/旧格式/写false或异常/原生Add-only替身、来信真实host接线及33365字节回放通过；`validate_persistence_profile_config.py --chunk-contract-only --json` PASS；新增HistoryFactScopeBudgetTests中英各22项PASS，含同文不同事件、下一轮、无身份、Native已标本轮、未知会话、数量/字符预算、原历史不变和四种新闻开关组合。游戏对象/投影叶子为受控替身；两个port是源码接线断言，不代替实机。原双构建通过的引用为1.3.15/1.4.6。
+- 代码地图（候选ba03764be）：src/AF.Persistence/CampaignSaveChunkHelper.cs::SaveChunkedString/LoadChunkedString/ReadChunkedString/ComputeStringHash；CourierDeliveryBehavior.cs::SyncData；SceneHistoryMessageAssemblyOwner.cs::BuildCurrentFactIdentity/Build/TryConvertSceneMessageToStrictChatMessage；SceneHistoryProjectionOwner.cs::KeepAfefFactsAndRecentConversationMessages/KeepAfefFactsAndRecentHistoryLines；SceneConversationHistoryOwner.cs::BuildVisibleSceneHistoryLines；MyBehavior.PromptContextCapture.cs::WeeklyCapturePorts/CreatePromptContextCapturePorts。完整文件SHA绑定见 artifacts/audit-fixes-20261015/isolated-receipt.json。
+- 未验：玩家旧sav/真实损坏档的游戏错误界面、实机长对话与真实provider复读率、其他任务合入后的完整主树构建。本轮未部署、Stage、打包、push。回退以ba03764be作聚焦逆变更并重编，不整体覆盖共享文件；新来信分块数据降级旧DLL不能保证完整读取，若已部署需使用升级前存档。
+- 证据：artifacts/audit-fixes-20261015/ 的 chunks-final3.log、chunk-catalog.log、history-final.log、build-isolated.log、隔离收据及focused patch；首次共享构建失败单独保留build-dual.log。
+
+
+<a id="deploy-all-current-20261015"></a>
+## 全工作区当前改动统一部署（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户明确“带着所有改动”并授权“部署”。工作区 F:/AnimusForge-main，main，构建基线 f1ca8a4faf2fc6a1aebf410ac30397a8f410214b 加当时全部未提交产品改动；8728项产品输入SHA见 artifacts/deploy-all-current-20261015/before.json、predeploy.json、after.json，构建至部署后均一致。worktree-before.patch保留原未提交差异，不将其他作者修改夹带提交。
+- 包含玩家经历主动接触2968fc462/bc8407e07、快报长期事实RAG e3ea02f49、存档完整性/事实轮次预算/快报知识源并行修复及当前其余产品内容。本条替代此前这些记录的未Stage/未部署状态；功能源码责任及回退见各原台账和 docs/npc_proactive_contact_motivation_plan.md，不替代它们的实机未验边界。
+- 使用原 build_single_module.ps1 Debug -Stage：1.3/1.4、Bootstrap、双Coup及registration通过；完整CN/EN投影各3520文件通过。源码主动接触57项、实际1.4 DLL五组回放及新类型读档/AFEF分离、历史预算CN/EN各22项、PersistenceChunkReplayTests、chunk-contract-only（21字符串键/47字典键）通过。
+- 原 deploy_module.ps1 exit 0，目标 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，v1.6.0，更新31个受管文件。部署后3520文件按原覆盖/保留规则逐一核对PASS（其中3133按保留策略）；XML只加载Bootstrap，主动接触预设32类含履历/近况两类。三DLL SHA见 deployment-verification.json；1.4为7381cb3b44f4b46c8af1989dc847ae7e32992f29953e7014ed5b65362fd7b0a8。
+- 原9个配置/提示词文件SHA不变，10个ONNX文件大小/mtime不变（未作ONNX全文哈希）。部署前未检测到游戏进程；没有启动游戏、递增版本、打包或push。没有修改原构建/部署脚本，没有创建游戏Recovery、部署备份或自动回滚。
+- 完整证据 artifacts/deploy-all-current-20261015/：build-stage.log、projection.json、deploy.log/deploy-exit.txt、deployment-verification.json、before/predeploy/after.json、target-before.json和专项回放日志。旧项目Stage保留在 prior-project-stage，仅是项目输出，不是游戏备份。
+- 未验：实机/真实旧档、三渠道自然触发和回复质量、长周期性能、远程provider整轮token；离线及安装文件核验不代替实机。回退需按各产品原台账聚焦逆变更并重新双版本构建部署；本轮无一键游戏回滚点，未提交源码可按worktree-before.patch及指纹追溯，禁止整体恢复覆盖他人修改。
+
 <a id="oral-privacy-authority-20261015"></a>
 ## 口头外交保密隔离与执行资料修复（2026-10-15，OFFLINE_VERIFIED / PUSH_PENDING）
 

@@ -2,6 +2,13 @@
   "schemaVersion": 1,
   "entries": [
     {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyReceiptCompatibility.json",
+      "target": "ModuleData/DiplomacyReceiptCompatibility.json",
+      "logicalName": "AnimusForge.Diplomacy.ReceiptCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
       "owner": "AF.Module.Social",
       "source": "content/modules/AF.Module.Social/ModuleData/Languages/CNs/afsocial_ui_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afsocial_ui_strings-zh-CN.xml"

@@ -11,6 +11,7 @@ p.add_argument('--api', choices=['1.3', '1.4'], required=True)
 p.add_argument('--candidate', type=Path, required=True)
 p.add_argument('--baseline', action='store_true')
 p.add_argument('--content-language', choices=['zh-CN', 'en'], default='zh-CN')
+p.add_argument('--run-root', type=Path)
 a = p.parse_args()
 candidate = a.candidate.resolve(strict=True)
 digest = hashlib.sha256(candidate.read_bytes()).hexdigest().upper()
@@ -18,7 +19,7 @@ refs = ROOT / ('_deps_auto' if a.api == '1.3' else '.tmp/build_check/1.4')
 if not a.baseline:
     marker = json.loads(candidate.with_suffix('.build.json').read_text(encoding='utf-8-sig'))
     assert marker['Sha256'] == digest and marker['BannerlordApi'] == a.api
-out = new_run_root(ROOT, 'terminal-live-settings', None)
+out = new_run_root(ROOT, 'terminal-live-settings', a.run_root)
 dotnet = resolve_dotnet(ROOT)
 env = minimal_test_environment(dotnet, out)
 module = out / 'AnimusForge'

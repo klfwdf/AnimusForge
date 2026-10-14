@@ -951,7 +951,10 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 				PendingInboundDeliveredMemoryIntents = CapturePendingInboundDeliveredMemoryIntents()
 			});
 		}
-		dataStore.SyncData(NpcDiplomacyLetterStorageKey, ref npcLetterStorageJson);
+        if (dataStore.IsSaving)
+            CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_af_courier_npc_diplomacy_letters_v1", npcLetterStorageJson, "CourierDelivery");
+        else if (dataStore.IsLoading)
+            npcLetterStorageJson = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_af_courier_npc_diplomacy_letters_v1", "CourierDelivery");
 		if (dataStore.IsLoading)
 		{
 			try

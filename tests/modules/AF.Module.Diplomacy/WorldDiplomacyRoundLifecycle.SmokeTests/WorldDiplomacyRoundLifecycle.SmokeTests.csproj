@@ -170,10 +170,9 @@
   <ItemGroup>
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyPromptTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyReplyTextRules.cs" />
-    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.json" LogicalName="AnimusForge.Diplomacy.ReceiptTexts.cn.json" />
-    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.en.json" LogicalName="AnimusForge.Diplomacy.ReceiptTexts.en.json" WithCulture="false" />
-    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_misc_strings-zh-CN.xml" LogicalName="AnimusForge.Diplomacy.ReceiptUi.cn.xml" WithCulture="false" />
-    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_misc_strings.xml" LogicalName="AnimusForge.Diplomacy.ReceiptUi.en.xml" />
+    <Compile Include="../../../../src/modules/AF.Module.Conversation/Internal/ConversationRuntimeTexts.cs" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimeCompatibility.json" LogicalName="AnimusForge.Conversation.RuntimeCompatibility.json" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyReceiptCompatibility.json" LogicalName="AnimusForge.Diplomacy.ReceiptCompatibility.json" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyMiscPromptTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyCompatibilityTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyUiLocalization.cs" />
