@@ -1,4 +1,15 @@
-﻿<a id="push-merge-20261014"></a>
+﻿<a id="deploy-main-20261014"></a>
+## 2026-10-14 部署当前 main（DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户明确要求部署并继续；源码基线 `ea6c51247cdefea79aabc329e4c373b1fb7ea3ce`，`F:/AnimusForge-main`、`main`；既有未跟踪 `Microsoft/`、`NuGet/` 保留。部署包含已有MCM、导入、终端等修复；性能调查未修改源码，不属于本次修复成果。
+- 原 `scripts/build/build_single_module.ps1 -Configuration Debug -Deploy`：API1.3参考v1.3.15.110062、API1.4参考v1.4.6.115628各363警告/0错误；Bootstrap和probe均0警告/0错误，双Coup/registration smoke PASS。沿用既有调用级EnableDefaultNoneItems=false避免旧artifacts被SDK None枚举，不修改构建/部署脚本。原日志 `artifacts/deploy-main-20261014/build-deploy.log`。
+- 第一次在旧Stage锁定源校验处失败（ModuleData/Languages/af_ui_strings.xml不再匹配当前源），失败发生在目标覆盖前，核对目标XML及三DLL与部署前哈希一致。保留旧项目输出 `bin/Debug/single_module_stage.stale-20261014-123032/`，使用同一次新构建的三个受标记产物运行原deploy_module入口，生成干净Stage；不删未知输出、不改锁、不绕过门禁。
+- 第二次部署PASS：目标 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，单模块v1.6.0，更新24个Stage受管文件。验证3519个Stage文件在覆盖/保留策略下全部匹配；Module Id=AnimusForge，仅Bootstrap声明，没有根目录直载AnimusForge.dll。原版抽检CampaignSystem/Core DLL与Native XML三份哈希不变。
+- 玩家数据保护：部署前后Configs5、自定义提示词4、PlayerExports3133、ONNX10全部原哈希不变；已有TerminalSettings也不变。目录在原部署策略下保留，未上传文件内容，哈希清册仅在本地 `before.json`/`verification.json`。不操作存档、运行模型、启动游戏或修改玩家设置。
+- 安装/Stage/构建三方SHA256：API1.3 `DA45647254D080424D2662122A93E0C8634C3E4E2DACB731F8477A1B3F4A16B5`；API1.4 `D8F38531116186F8B8ECA16E4B847240A89F8A1061CAC1262197C3DEEF56A66A`；Bootstrap `4617C0D8233120B2BC78C463FD8C0B52B1509FF48082AE0731D4C40F0C478E5E`。完整构建/首次失败/成功及核对收据位于 `artifacts/deploy-main-20261014/`，不提交这些产物。
+- 本条明确替代下方相关切片“未部署”状态，保留历史验证边界。NOT-RUN：游戏启动/实机MCM与导入、真实provider、旧档及性能前后对照。版本未递增，不创建发行包，不附带推送。部署脚本不生成Recovery备份或自动回滚；人工回退参照既有 `一键编译覆盖推送/packages/AnimusForge_v1.6.0_偷跑版_1013_1009.zip`（保留配置与玩家数据）；旧项目Stage仅作为历史证据，不自动覆盖游戏。
+
+<a id="push-merge-20261014"></a>
 ## 2026-10-14 MCM/无名人设修复合并推送（PUSH_VERIFIED / LIVE_PENDING）
 
 - 最新用户明确要求推送。工作区 `F:/AnimusForge-main`、`main`；本地功能 `a2db514fb`、`006e6c899` 及各自意图checkpoint与远端4个新增提交正常合并。远端基线 `033a0b9f3`；源码无冲突，仅HANDOFF同位置新增摘要冲突，完整保留双方内容。无rebase、强推、reset或其他作者改动回滚。
