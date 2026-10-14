@@ -98,6 +98,10 @@ internal sealed class WorldBulletinSaveState
 
 	public List<WorldBulletinEvent> Events = new List<WorldBulletinEvent>();
 
+    // Optional durable factual archive, inside the existing chunked state JSON.
+    public List<WorldNewsFact> NewsFacts;
+    public bool NewsArchiveImported;
+
 	// The single bulletin's scope (named World for save compatibility).
 	public WorldBulletinScopeState World = new WorldBulletinScopeState();
 

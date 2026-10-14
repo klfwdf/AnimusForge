@@ -273,6 +273,36 @@ news.State.World.WindowEndHour=120;
 news._port.CallApi=(s,u)=>{requests++;throw new InvalidOperationException("fixture exception");};
 await news.RunWorldBulletinRequestAsync(120,SaveRuntimeGuard.CaptureGeneration(),newsSelection,templateNews,"system","user",null);news.ProcessWorldBulletinMainThreadActions();
 Check(published.Count==4&&published.Last().BulletinAnecdote==""&&requests==4,"thrown request still publishes one factual fallback and closes the window");
+// Production archive integration: event capture, old frozen facts, publication and chunked save.
+var archiveFact = new WorldBulletinEvent {Key="ancient-siege",Kind="settlement_siege",Day=2,Hour=48,Score=90,Sentence="Old Argo siege confirmed.",GameDate="1084 spring",Group="siege:argo",KingdomIds=new(){"A"},Participants=new(){new(){HeroId="eyewitness"}}};
+var historicalRecord = new EventRecordEntry {EventId="weekly_report:world:bulletin:old",Title="Invented dialogue",Summary="Invented story must not become fact.",Materials=new(){
+ new(){MaterialType=WeeklyReportArchivePolicy.ReportedMaterialType,ActionKind="battle",ActionDay=3,Label="1084 spring",SnapshotText="Frozen confirmed battle.",KingdomId="A",SourceStableKeys=new(){"frozen-battle"}},
+ new(){MaterialType=WeeklyReportArchivePolicy.RegionalMaterialType,ActionKind="battle",ActionDay=3,SnapshotText="Unverified regional model prose.",KingdomId="A",SourceStableKeys=new(){"regional-prose"}},
+ new(){MaterialType=WeeklyReportArchivePolicy.ReportedMaterialType,ActionKind="battle",SnapshotText="No confirmed date.",KingdomId="A",SourceStableKeys=new(){"missing-date"}}
+}};
+var archiveOwner = new WorldBulletinStateOwner {State=new(){Events=new(){archiveFact}},_port=new(){Records=()=>new(){historicalRecord},CurrentDay=()=>400,Log=(a,b)=>{}}};
+var observerArchive = new WorldNewsObserver {HeroId="eyewitness",KingdomId="A",LocalKingdomId="A",Day=400};
+var archiveSnapshot = archiveOwner.CaptureNewsRecall(observerArchive,"Argo siege",SaveRuntimeGuard.CaptureGeneration());
+Check(archiveSnapshot.Candidates.Any(x=>x.Fact.Key=="ancient-siege"),"one-year old retained event enters archive with real participant and date");
+Check(archiveOwner.State.NewsFacts.Any(f=>f.Key=="frozen-battle")&&!archiveOwner.State.NewsFacts.Any(f=>f.Key=="regional-prose"||f.Key=="missing-date"),"legacy import accepts frozen facts only and rejects prose or missing date");
+archiveOwner._port.Enabled=()=>true;archiveOwner._port.Render=s=>s;archiveOwner._port.Focus=()=>new();
+archiveOwner._port.CurrentHour=()=>9600;archiveOwner._port.CurrentDate=()=>"1085 spring";
+for(int i=0;i<120;i++)archiveOwner.CaptureWorldBulletinEvent("battle","archive-bulk:"+i,65,"Confirmed campaign fact "+i+" "+new string('记',80),false,"group:"+i,"","A");
+archiveOwner.State.Events.Clear();
+string archiveJson=archiveOwner.ExportJson();
+var archiveStore=new Dictionary<string,object>();
+CampaignSaveChunkHelper.SaveChunkedString(new MemoryStore(archiveStore),"_af_worldBulletin_v1",archiveJson,"WorldBulletin");
+Check((int)archiveStore["_af_worldBulletin_v1__af_chunk_count"]>1&&archiveStore.Values.OfType<string>().All(x=>System.Text.Encoding.UTF8.GetByteCount(x)<=12000),"growing fact archive uses bounded UTF-8 chunks without unsafe inline JSON");
+var restoredArchive=new WorldBulletinStateOwner {_port=new(){Records=()=>new(),CurrentDay=()=>400,Log=(a,b)=>{}}};
+restoredArchive.ImportJson(CampaignSaveChunkHelper.LoadChunkedString(new MemoryStore(archiveStore,true),"_af_worldBulletin_v1","WorldBulletin"));
+Check(restoredArchive.CaptureNewsRecall(observerArchive,"Argo siege",SaveRuntimeGuard.CaptureGeneration()).Candidates.Any(x=>x.Fact.Key=="ancient-siege"),"actual archive export/chunk/load survives recent-event pruning and one year");
+var brokenArchiveStore=new Dictionary<string,object>(archiveStore);brokenArchiveStore.Remove("_af_worldBulletin_v1__af_chunk_1");
+bool archiveReadRejected=false;
+try { CampaignSaveChunkHelper.LoadChunkedString(new MemoryStore(brokenArchiveStore,true),"_af_worldBulletin_v1","WorldBulletin"); }
+catch(CampaignSaveChunkHelper.PersistenceIntegrityException){archiveReadRejected=true;}
+Check(archiveReadRejected,"missing archive chunk cannot be published as an empty or partial history");
+Check(!archiveJson.Contains("Invented story")&&!archiveJson.Contains("Unverified regional"),"article and model summaries never serialized into fact archive");
+Check(news.State.NewsFacts.Any(f=>f.Key==fact.Key&&f.Published&&!f.Sentence.Contains("牙")),"actual publication archives canonical facts, not anecdote");
 // Numeric battle prose is retained through the real request, parse and publication path.
 newsSelection.Minors.Add(new WorldBulletinMinor {Events=new(){fact},Sentence=fact.Sentence});
 foreach(var section in new[]{"TITLE","MAJOR","M1","SHORT"}) {
