@@ -1,7 +1,7 @@
 # 方案交接：NPC 主动接触动机（2026-10-15，DESIGN_ONLY）
 
-- 针对主动接触反复缺钱/缺物资的玩家反馈，已制定事件反应、公开服务、互惠机会、动机族选择及跨渠道去重方案；首版覆盖现有领主接触、同伴与来信，不新增 NPC 生成或治疗/预言结算。
-- [方案与已核实代码地图](docs/npc_proactive_contact_motivation_plan.md)；[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#npc-proactive-motivation-plan-20261015)。下一步按 A 事件与多样化、B 公开服务、C 联合验收实施；本轮只制定方案，产品尚未修改，运行验收未执行。
+- 用户最新要求只让玩家经历与近况参与来意。方案已收窄为履历交流、近期事件反应及必要的选择/去重接线；原职业、公开服务、独立机会系统和六类动机重构已移出范围，原30类动机保留。
+- [当前方案与代码地图](docs/npc_proactive_contact_motivation_plan.md)；[最新范围主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#npc-proactive-history-scope-20261015)。下一步接通现有履历/近况来源、三渠道开场与回执，再做兼容和体验验收；本轮仅方案修订，产品尚未修改。
 
 # 当前交接：快报正文进导演与构图误拒修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
