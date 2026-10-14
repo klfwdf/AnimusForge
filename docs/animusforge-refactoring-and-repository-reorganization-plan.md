@@ -10422,3 +10422,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 原策略host harness编译失败：未接入WorldBulletinPolicyTexts、SynchronizeNewsCollectionMode等现有依赖，未把失败记为通过；完整Select已由上述archive真实源码回放覆盖，未为修旧harness扩写产品。
 - 官方build_single_module.ps1 Debug两次尝试均在1.3被并行人设未完成代码阻断：首次OnWorldBulletinEventCaptured/TryStartPersonaEvolution未定义；后续新MyBehavior.PersonaEvolution.cs缺EnableNpcPersonaEventEvolution和ConfiguredChatApplicationAdapter。1.4/Bootstrap尚未运行；不宣称全量构建通过，不修改并行工作。日志artifacts/bulletin-narrative-20261015/build.log、build-exit.txt。
 - 证据目录artifacts/bulletin-narrative-20261015/：archive-replay/result.log、archive-replay-final/result.log、context-final.log、resources.json。未实机/真实模型成稿质量验收、未Stage/打包/部署/push；下一步在并行工作完成后重跑双实现并观察实际快报。
+
+<a id="bulletin-numeric-off-20261015"></a>
+## 2026-10-15 取消快报成稿战事数字拒绝（SOURCE_VERIFIED / BUILD_BLOCKED）
+
+- 用户明确要求取消“命中战事数字检查”。产品e5e68cdb4，检查点fdc38b4；本条仅替代上一快报记录中的成稿战事数字降级行为。其余写作要求、素材数字投影、请求失败/异常/正文解析失败回退及缺失小消息补齐保持。
+- 源码：src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs:302–314 PublishWorldBulletin删除ValidateGeneratedText调用和拒绝日志；src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs原778–802方法删除；751–776输入数字投影仍有消费者，保留。不新增Prompt/UI内容、API请求、Tick扫描或IO；发布阶段少一次正文正则扫描。CN/EN共同消费者均取消该拦截。
+- 实际生产request→parse→main-thread publish回放227项PASS；tests/modules/AF.Module.Weekly/BulletinArchiveTests/Program.cs:274–291新增TITLE/MAJOR/M1/SHORT数字保留和事实摘要分离，缺正文仍用模板；既有失败API/抛异常回退也通过。结果artifacts/bulletin-numeric-off-20261015/replay/result.log。旧smoke源码去除已废弃拒绝断言，保留输入投影检查；旧host harness既有缺依赖状态未修、未声称运行通过。
+- 官方Debug build_single_module.ps1在1.3编译被并行MyBehavior.PersonaEvolution.cs:122的ConfiguredChatApplicationAdapter缺失符号阻断（363 warnings/1 error）；1.4、Bootstrap未运行。本次不改并行人设/插画功能。日志artifacts/bulletin-numeric-off-20261015/build.log、build-exit.txt。
+- 精确只暂存共享WorldBulletinStateOwner文件的两行删除；并行EventCaptured字段/调用保留在工作区，未纳入本次提交。git CRLF diff check通过。未Stage/打包/部署/push、未真实provider/实机验收。
+- 聚焦回滚：git revert e5e68cdb4；与后续同文件修改冲突时按本条删除范围反向合并，不覆盖并行改动。
