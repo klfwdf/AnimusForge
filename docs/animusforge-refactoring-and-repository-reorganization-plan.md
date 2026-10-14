@@ -1,4 +1,11 @@
-﻿<a id="terminal-ui-scene-complete-20261014"></a>
+﻿<a id="shared-mcm-settings-intent-20261014"></a>
+## 2026-10-14 终端与MCM共享文档配置（IN_PROGRESS）
+
+用户明确要求终端设置到骑砍文档目录，并补充“跟MCM一样公用”。本条针对设置覆写原module-only规则：恢复四owner的MCM标准User/Configs/ModSettings/Global路径，终端继续MCM原对象/字段/serializer，入口两开关也存主owner；不搬日志/缓存/世界书/用户提示词，不新增Terminal业务配置副本，不自动覆盖文档已有主配置或移除模组旧文件。
+
+main/43d44b36b，保留该并行已提交日报修复。计划调整McmSettingsStorage、IllustratorSettingsStorage/FolderName、TerminalSettings兼容壳/新backend入口属性及双语元数据，核对新闻兼容reader实际路径。旧入口JSON只在MCM加载边界且新字段缺失时回读；实际玩家目录不由工具写入，fixture替代MCM filesystem，验证共享保存/重载/其他MOD与预设不串目录，原双Release构建。本轮不部署/push/正式打包。
+
+<a id="terminal-ui-scene-complete-20261014"></a>
 ## 2026-10-14 终端战争排版、字号与场景快捷键（OFFLINE_VERIFIED / LIVE_PENDING）
 
 本条替代terminal-font-scene-intent-20261014、war-stats-layout-20261014的IN_PROGRESS状态。main产品b4653dbe8，checkpoint e14f1d2a3/e9d06aaf3；无新部署/push/打包/版本递增或玩家数据写入，游戏仍02c8095b1 Release。原Microsoft/NuGet未跟踪目录保持。
