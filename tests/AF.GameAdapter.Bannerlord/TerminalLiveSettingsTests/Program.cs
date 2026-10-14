@@ -24,6 +24,12 @@ sealed class Discovery : IGenericServiceProvider
 }
 class Program
 {
+    sealed class UnsafeArgument
+    {
+        public int Calls;
+        public override string ToString() { Calls++; throw new NullReferenceException("offline diagnostic argument"); }
+    }
+    static void DiagnosticMarker() { }
     static int checks;
     static readonly BindingFlags All = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
     static object Get(object o, string p) => o.GetType().GetProperty(p).GetValue(o);
@@ -35,6 +41,7 @@ class Program
         {
             AppDomain.CurrentDomain.AssemblyResolve += (_, e) => {
                 string name = new AssemblyName(e.Name).Name;
+                if (name == "AnimusForge") return Assembly.LoadFrom(args[0]);
                 foreach (string dir in args.Skip(2)) { string path = Path.Combine(dir, name + ".dll"); if (File.Exists(path)) return Assembly.LoadFrom(path); }
                 return null;
             };
@@ -51,6 +58,17 @@ class Program
                 TerminalProviderProbe.Owners.Add(owner.Id, owner);
             }
             var duel = (BaseSettings)TerminalProviderProbe.Owners["AnimusForge_global_settings"];
+#if AF_BASELINE
+            Set(duel, "EnableDeepTrace", true);
+            var unsafeArgument = new UnsafeArgument();
+            var diagnosticPrefix = af.GetType("AnimusForge.DynamicPatcher", true).GetMethod("UniversalPrefix");
+            for (int i = 0; i < 1000; i++) diagnosticPrefix.Invoke(null, new object[] { typeof(Program).GetMethod("DiagnosticMarker", All), new object[] { unsafeArgument } });
+            Set(duel, "EnableDeepTrace", false);
+            Check(unsafeArgument.Calls == 0, "baseline diagnostic prefix must not call custom ToString; calls=" + unsafeArgument.Calls);
+#endif
+#if !AF_BASELINE
+            SupplementalChecks.Run(af, duel, Check, root);
+#endif
             var formatType = typeof(BaseSettings).Assembly.GetType("MCM.Implementation.JsonSettingsFormat", true);
             var loggerType = typeof(BaseSettings).Assembly.GetType("BUTR.DependencyInjection.Logger.DefaultBUTRLogger`1", true).MakeGenericType(formatType);
             object format = Activator.CreateInstance(formatType, Activator.CreateInstance(loggerType));
@@ -73,9 +91,14 @@ class Program
             // Verify every terminal control against its actual persistence owner.
             foreach (var pair in defs)
             {
-                if (Get(pair.Value, "SettingType").ToString() == "Button") continue;
                 string id = pair.Key, prefix = id.StartsWith("Illustrator.") ? "Illustrator." : id.StartsWith("DialogueUi.") ? "DialogueUi." : id.StartsWith("Coup.") ? "Coup." : "";
                 var owner = (BaseSettings)(prefix == "" ? duel : TerminalProviderProbe.Owners.Values.Single(o => o.GetType().Name == (prefix == "Illustrator." ? "IllustratorSettings" : prefix == "DialogueUi." ? "DialogueUiSettings" : "CoupSettings")));
+                if (Get(pair.Value, "SettingType").ToString() == "Button")
+                {
+                    Check(Get(pair.Value, "Invoker") != null, "terminal button invoker " + id);
+                    Check(owner.GetType().GetProperty(id.Substring(prefix.Length)).GetValue(owner) is Action, "actual owner action bound " + id);
+                    continue;
+                }
                 Check(JObject.Parse(Save(owner))[id.Substring(prefix.Length)] != null, "persistent terminal control " + id);
             }
             var popupType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);

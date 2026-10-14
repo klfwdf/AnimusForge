@@ -135,9 +135,14 @@ public static class TownAmbientAiClient
 		return true;
 	}
 
-	public static async Task<TownAmbientAiResult> TestConnectionAsync()
-	{
-		if (!HasCompleteConfiguration())
+	public static Task<TownAmbientAiResult> TestConnectionAsync()
+        => TestConnectionAsync(DuelSettings.GetTownAmbientAiApiUrl(), DuelSettings.GetTownAmbientAiApiKey(), DuelSettings.GetTownAmbientAiModelName());
+
+    // The explicit test uses the UI owner's captured configuration, including unsaved MCM edits.
+    public static async Task<TownAmbientAiResult> TestConnectionAsync(string rawUrl, string apiKey, string model)
+    {
+        rawUrl = (rawUrl ?? "").Trim(); apiKey = (apiKey ?? "").Trim(); model = (model ?? "").Trim();
+        if (string.IsNullOrWhiteSpace(rawUrl) || string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(model))
 		{
 			return new TownAmbientAiResult { Error = LlmSourceTexts.Get("TownAmbientErrorMissingCredentials") };
 		}
@@ -154,7 +159,7 @@ public static class TownAmbientAiClient
 				["content"] = LlmPromptTexts.Get("AF_LLM_PROMPT_TownAmbientTestUser", "Test the ambient AI endpoint.")
 			}
 		};
-		TownAmbientAiResult result = await SendAsync(messages, 96, 0, "town_ambient_ai_test").ConfigureAwait(false);
+		TownAmbientAiResult result = await SendAsync(messages, 96, 0, "town_ambient_ai_test", rawUrl, apiKey, model).ConfigureAwait(false);
 		RecordStandaloneTestUsage(result);
 		result.SessionEstimatedTokens = SessionEstimatedTokens;
 		result.SessionRequests = SessionRequests;
@@ -289,12 +294,12 @@ public static class TownAmbientAiClient
 		}
 	}
 
-	private static async Task<TownAmbientAiResult> SendAsync(object[] messages, int maxOutputTokens, int expectedReplies, string mode)
-	{
-		string rawUrl = DuelSettings.GetTownAmbientAiApiUrl();
-		string apiUrl = DuelSettings.GetEffectiveApiUrl(rawUrl);
-		string apiKey = DuelSettings.GetTownAmbientAiApiKey();
-		string model = DuelSettings.GetTownAmbientAiModelName();
+	private static Task<TownAmbientAiResult> SendAsync(object[] messages, int maxOutputTokens, int expectedReplies, string mode)
+        => SendAsync(messages, maxOutputTokens, expectedReplies, mode, DuelSettings.GetTownAmbientAiApiUrl(), DuelSettings.GetTownAmbientAiApiKey(), DuelSettings.GetTownAmbientAiModelName());
+
+    private static async Task<TownAmbientAiResult> SendAsync(object[] messages, int maxOutputTokens, int expectedReplies, string mode, string rawUrl, string apiKey, string model)
+    {
+        string apiUrl = DuelSettings.GetEffectiveApiUrl(rawUrl);
 		if (string.IsNullOrWhiteSpace(apiUrl) || string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(model))
 		{
 			return new TownAmbientAiResult { Error = LlmSourceTexts.Get("TownAmbientErrorConfigIncomplete") };

@@ -3441,5 +3441,10 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_ENC_UI_CaptivityReleaseFailed" text="未能确认释放成功，请检查当前被俘状态。" />
   <string id="AF_ENC_UI_CaptivityReleased" text="你已获释，恢复自由。" />
   <string id="AF_ENC_UI_CaptivityActionBlocked" text="被俘期间无法执行此项行动。" />
+  <string id="AF_MCM_Api_AmbientTesting" text="[环境 AI] 正在测试当前填写的独立接口；本次测试会消耗 Token。" />
+  <string id="AF_MCM_Api_AmbientSuccess" text="[环境 AI] 连接成功，估算用量：输入 {INPUT} + 输出 {OUTPUT} Token。" />
+  <string id="AF_MCM_Api_AmbientFailureUsage" text="&#xA;&#xA;本次失败测试的估算用量：输入 {INPUT} + 输出 {OUTPUT} Token。" />
+  <string id="AF_MCM_Api_AmbientTestFailed" text="环境 AI 接口测试失败" />
+  <string id="AF_MCM_Api_AmbientTestException" text="环境 AI 接口测试异常" />
 </strings>
 </base>
