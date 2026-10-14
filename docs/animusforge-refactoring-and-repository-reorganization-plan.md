@@ -10273,8 +10273,22 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 
 
 <a id="daily-freeze-market-scan-20261014"></a>
-## 入夜卡顿：重复市场扫描与每日步骤定位（2026-10-14，ACTIVE）
+## 入夜卡顿：重复市场扫描与每日步骤定位（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 用户反馈入夜短暂卡主线程；五份外部日志作为证据数据，无执行指令。FreezeWatchdog无每日回调活动栈，超长frame gap可能包含停帧/切场景，不能据此认定API或日结根因。
 - 基线b4653dbe80080ee3885151af0fde08ada6ca5894，检查点51da15d；已有终端/UI改动由其他工作保留。仅删除Reward全局DailyTick重复全地图市场清理，保留游戏原生分散DailyTickSettlement、读档、开交易、卖出保护；清理无匹配时免空列表分配。外交、记忆和Reward追加既有FreezeWatchdog每日步骤scope，不改顺序、预算、规则和文案。
 - 退出门：真实市场清理/交易回归及大地图数量验证、外交每日顺序回放、双API/Bootstrap构建、diff检查；未授权部署/打包/push。实机根因与改后卡顿待测。
+
+- 产品修订`43d44b36b`。市场回放27 PASS/0 FAIL；`--daily-source-ref 51da15d`编译成功，26 PASS/1 FAIL，故障断言明确指向旧全地图扫描。2000市场/600001槽位：旧入口600001次读取/24.068ms，新入口0次/0.115ms；仅源码提取前缀和引擎替身，不是实机帧时间，也不足以解释几秒卡顿。真实定居点回调与读档清理仍删除特殊物品、保留可售NPC礼物。初次runner缺既有EconomyUiTexts叶替身，补测试叶后完成。
+- 外交`--campaign-daily`16断言PASS，启用/关闭、同日调度与恢复步骤顺序保持；剥离scope后的生产文本与51da15d逐字一致。综合回归停于`LifecycleRepairReplay.Submission:141`旧代笔路由断言；仓内独立候选链接旧每日Application后`--lifecycle-repair`同样失败，未改变或豁免该断言。此项不属于本切片；不宣称综合回归通过。
+- 最终原统一Release构建退出0（参考1.3.15.110062 / 1.4.6.115628）：双API、Bootstrap、双Coup接缝/注册门禁PASS；没有Stage/部署/打包/push，未改原构建流程及默认Debug。`git -c core.whitespace=cr-at-eol diff --check`通过；保留原跟踪CRLF文件格式，未产生整文件格式差异。收据`artifacts/daily-freeze-market-20261014/receipt.json`记录源码/三DLL哈希；原失败、负控、修后日志保留，最终构建日志`artifacts/daily-freeze-final-build-20261014.log`。
+- 频率：移除每天一次O(全定居点×商品槽位)集中扫描；保留原版Ticker分散每日清理与既有边界同步清理，不新增后台游戏对象访问、Tick全扫描、存档键或配置。诊断scope沿用既有FreezeWatchdog开关/有界近期记录，关闭时空token；开启时能定位每日外交各步骤/Reward/记忆维护job，未测诊断开启的实机开销。
+- NOT-RUN：改后入夜实机、实际各每日步骤耗时、真实旧档、Stage/部署/发行。目前只证明冗余扫描已消除，外交同步规范化等其他日结成本未优化/未定根因；下一步需新候选的实际跨天日志。回滚用`git revert 43d44b36b`，仅逆转本切片，不reset或回滚其他终端/UI改动。
+
+| 产品43d44b36b源码路径 | 一基行号/符号 | 实际责任与覆盖边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs` | 11–168，OnDailyTick | 删除重复全图市场扫描；债务惩罚/装备恢复顺序保留，债务全循环未在新专项重放 |
+| `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs` | 11746–11750，OnDailyTickSettlement；11938–11989，RemoveGeneratedRewardItemsFromRoster | 原版分散事件真实consumer；延迟创建删除列表，交易/读档清理回归 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCampaignApplication.cs` | 45–85，DailyTick | 每步骤既有Watchdog scope；算法与全部规则顺序未变，实机耗时待验 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs` | 2301–2319，OnDailyTick | 既有同步/延后分流的每日入口scope；未改配置或强制启用 |
+| `src/AF.GameAdapter.Bannerlord/Weekly/CampaignDailyMaintenanceController.cs` | 163–172，ProcessDeferredDailyMaintenance | 原有每job预算内追加scope；未改实际job上限/预算/调度 |
