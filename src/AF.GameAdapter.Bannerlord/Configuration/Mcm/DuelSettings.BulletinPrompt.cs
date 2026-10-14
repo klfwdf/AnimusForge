@@ -7,6 +7,21 @@ namespace AnimusForge;
 
 public partial class DuelSettings
 {
+    [SettingPropertyBool("{=AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Title}Event-driven NPC persona evolution", Order = 2, RequireRestart = false,
+        HintText = "{=AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint}Default: off. New confirmed bulletin events can change NPC personas. Uses the auxiliary API with merged, rate-limited requests. Turning off discards pending updates but keeps existing changes. Requires bulletin mode; auto-publishing is not required.")]
+    [SettingPropertyGroup(NewsSettingsGroup + "/{=AF_MCM_News_Bulletin}Bulletin", GroupOrder = 1)]
+    public bool EnableNpcPersonaEventEvolution
+    {
+        get => _enableNpcPersonaEventEvolution;
+        set
+        {
+            if (_enableNpcPersonaEventEvolution == value) return;
+            _enableNpcPersonaEventEvolution = value;
+            MyBehavior.NotifyPersonaEvolutionSettingChanged();
+        }
+    }
+    private bool _enableNpcPersonaEventEvolution;
+
     private const string WorldBulletinWritingRequirementsJsonFileName = "WorldBulletinWritingRequirements.json";
     private static readonly string DefaultWorldBulletinWritingRequirements = WorldBulletinPolicy.DefaultWritingRequirements;
     private string _worldBulletinWritingRequirements = LoadWorldBulletinWritingRequirementsFromDiskOrDefault();
@@ -35,6 +50,8 @@ public partial class DuelSettings
         => string.Equals(input, WorldBulletinPolicy.LegacyDefaultWritingRequirements, StringComparison.Ordinal)
             || string.Equals(input, WorldBulletinPolicy.LegacyNarrativeWritingRequirements, StringComparison.Ordinal)
             || string.Equals(input, WorldBulletinPolicy.LegacyCurrentWritingRequirements, StringComparison.Ordinal)
+            || string.Equals(input, WorldBulletinPolicy.LegacyConciseWritingRequirementsCn, StringComparison.Ordinal)
+            || string.Equals(input, WorldBulletinPolicy.LegacyConciseWritingRequirementsEn, StringComparison.Ordinal)
             ? DefaultWorldBulletinWritingRequirements : input;
 
     private void OpenWorldBulletinWritingRequirementsEditor()
