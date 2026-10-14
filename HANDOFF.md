@@ -1,3 +1,10 @@
+# 当前交接：事件驱动人设演变与知情链路（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品fffcfed22：终端“外交与国家→周报与快报”新增人设演变开关，默认关闭；真实易主/死亡事件及直接关联者合并评估，仅改扩展字段，显示一句最新原因。无自主行动/独立目标，保存到原分块profile；关闭保留已形成变化。
+- 专项64、编辑113、实际双DLL终端/MCM526/536、分块与原Release双API/Bootstrap/Coup/注册PASS；无实机/真实provider、Stage、部署或push。
+- 普通攻城事实即时采集；现有上下文在快报+自动出版开启时最早下一轮可注入，受7日/3条或8条筛选限制。自动出版关闭会走既有周报，这是已定位限制，本轮未改；人设变化另等至少1游戏小时合并与限速/API。
+- [主台账、代码范围、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#persona-evolution-20261015)。意图检查点0a8c063，回滚git revert fffcfed22，不逆转已写玩家人设。
+
 # 当前交接：百科肖像去当前定位（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品126a93d25：百科不采集当前处境/位置，不加年份；保留人物资料，CN/EN导演规则精简为肖像创作，仍自主设计环境、神态及自然动作。
