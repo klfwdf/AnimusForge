@@ -21,6 +21,9 @@ internal sealed class WorldBulletinIllustrationPlan
 	public string Title = "";
 	public string DateText = "";
 	public string Facts = "";
+	// Request-only prose; the published record already persists the full body.
+	[Newtonsoft.Json.JsonIgnore]
+	public string ReportBody = "";
 	public List<WorldBulletinParticipant> Participants = new List<WorldBulletinParticipant>();
 }
 

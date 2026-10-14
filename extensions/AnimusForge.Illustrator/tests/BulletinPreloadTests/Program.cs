@@ -83,6 +83,12 @@ internal static class Program
         string selectedKey = BulletinIllustrationPreloader.KeyFor(plan);
         plan.Title = "润色后标题";
         Check(selectedKey == BulletinIllustrationPreloader.KeyFor(plan), "Prose title never invalidates selected art");
+        plan.ReportBody = "published narrative";
+        Check(selectedKey != BulletinIllustrationPreloader.KeyFor(plan), "Published body invalidates old fact-only art");
+        string narrativeKey = BulletinIllustrationPreloader.KeyFor(plan);
+        plan.ReportBody = " published narrative \n";
+        Check(narrativeKey == BulletinIllustrationPreloader.KeyFor(plan), "Reopened body trimming keeps the same job key");
+        plan.ReportBody = "";
         plan.Facts += "政变失败。";
         Check(selectedKey != BulletinIllustrationPreloader.KeyFor(plan), "Changed outcome invalidates key");
         plan.Facts = "甲发动政变，制伏乙。";
@@ -157,14 +163,15 @@ namespace AnimusForge.Illustrator.Context
 {
     internal class WeeklyReportVisualContext { }
     internal static class WeeklyReportContextExtractor {
-        internal static WeeklyReportVisualContext ExtractFromWeeklyReport(string t,string s,string b) => new WeeklyReportVisualContext();
+        internal static WeeklyReportVisualContext ExtractFromWeeklyReport(string t,string s,string b,bool includeFullBody = false) => new WeeklyReportVisualContext();
         internal static WeeklyReportVisualContext ExtractFromPlan(AnimusForge.WorldBulletinIllustrationPlan plan) => new WeeklyReportVisualContext();
     }
 }
 namespace AnimusForge
 {
+    internal static class AnimusForgeModulePaths { internal static string GetModuleDataFilePath(string file) => System.IO.Path.Combine(AppContext.BaseDirectory, "ModuleData", file); }
     internal class WorldBulletinParticipant { internal string HeroId, Role; }
-    internal class WorldBulletinIllustrationPlan { internal string Identity, Facts, Title; internal List<WorldBulletinParticipant> Participants = new(); }
+    internal class WorldBulletinIllustrationPlan { internal string Identity, Facts, Title, ReportBody; internal List<WorldBulletinParticipant> Participants = new(); }
 }
 namespace AnimusForge.Illustrator.Core
 {

@@ -355,7 +355,9 @@ namespace AnimusForge.Illustrator.UI.Patches
                 IllustrationScope ownerScope = null;
                 ownerScope = new IllustrationScope(topScreen, "weekly_report", () => CloseOverlayForScope(ownerScope));
                 _scope = ownerScope;
-                _currentContext = plan == null ? WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitleText, bodyText) : WeeklyReportContextExtractor.ExtractFromPlan(plan);
+                // Rehydrate request-only prose from the published record on reopening/loading.
+                if (plan != null) plan.ReportBody = bodyText ?? "";
+                _currentContext = plan == null ? WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitleText, bodyText, includeFullBody: true) : WeeklyReportContextExtractor.ExtractFromPlan(plan);
                 // Bulletin ids are unique per issue, so the cache key survives reopening from the chronicle.
                 _currentEventKey = plan == null ? BulletinIllustrationPreloader.KeyFor(eventId, title, subtitleText, bodyText) : BulletinIllustrationPreloader.KeyFor(plan);
                 _redrawCount = 0;

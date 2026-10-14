@@ -457,7 +457,7 @@ namespace AnimusForge.Illustrator.Core
         private static readonly System.Text.RegularExpressions.Regex[] RequiredSectionParsers =
             RequiredSectionPatterns.Select((pattern, index) => new System.Text.RegularExpressions.Regex(
                 "(?:【" + pattern + "】|" + System.Text.RegularExpressions.Regex.Escape(RequiredProtocolMarkers[index])
-                + @")([\s\S]*?)(?=【|\[\[AFI_PROTOCOL_|$)",
+                + @")([\s\S]*?)(?=【(?:" + string.Join("|", RequiredSectionPatterns) + @")】|\[\[AFI_PROTOCOL_|$)",
                 System.Text.RegularExpressions.RegexOptions.Compiled)).ToArray();
         private static readonly int[] RequiredSectionMinimum = { 8, 12, 10, 10 };
 

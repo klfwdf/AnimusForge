@@ -46,12 +46,13 @@ namespace AnimusForge.Illustrator.Core
             var identity = new StringBuilder();
             AppendKeyPart(identity, plan.Identity);
             AppendKeyPart(identity, plan.Facts);
+            AppendKeyPart(identity, (plan.ReportBody ?? "").Trim());
             foreach (var p in (plan.Participants ?? new List<global::AnimusForge.WorldBulletinParticipant>()).Where(p => p != null))
             {
                 AppendKeyPart(identity, p.HeroId);
                 AppendKeyPart(identity, p.Role);
             }
-            return "bulletin_selected_v2_16x9:" + DiskImageCacheManager.ComputeHash(identity.ToString());
+            return "bulletin_selected_v3_body_16x9:" + DiskImageCacheManager.ComputeHash(identity.ToString());
         }
 
         private static void AppendKeyPart(StringBuilder output, string value)
@@ -121,7 +122,7 @@ namespace AnimusForge.Illustrator.Core
         internal static void Prepare(string eventId, string title, string subtitle, string body)
         {
             if (!IllustratorRuntime.IsEnabled("weekly_report")) return;
-            var context = WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitle, body);
+            var context = WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitle, body, includeFullBody: true);
             if (context != null) Ensure(KeyFor(eventId, title, subtitle, body), context, published: true);
         }
 

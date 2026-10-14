@@ -2,6 +2,7 @@ param(
     [Parameter(Mandatory=$true)][string]$AssemblyPath,
     [Parameter(Mandatory=$true)][string]$FixtureRoot,
     [ValidateSet('CN','EN')][string]$Language = 'CN',
+    [string]$DirectorBodyPath,
     [string]$GamePath = 'F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord'
 )
 $ErrorActionPreference = 'Stop'
@@ -70,4 +71,15 @@ try {
     Check ($caller.Contains('string directorFacts = profile.BuildDirectorOnlyFacts();')) 'encyclopedia has no campaign-year prefix'
     $extractSource = Get-Content -LiteralPath (Join-Path $repo 'extensions/AnimusForge.Illustrator/src/Context/HeroVisualExtractor.cs') -Raw
     Check ($extractSource.Contains('if (includeCurrentState) profile.CurrentStateDetail = ExtractCurrentState(hero);')) 'location extraction is skipped, not text-filtered'
+    if ($DirectorBodyPath) {
+        [string]$body = [IO.File]::ReadAllText((Resolve-Path $DirectorBodyPath).Path, [Text.Encoding]::UTF8)
+        $complete = $director.GetMethod('HasRequiredSceneDescription', $flags)
+        Check ($complete.Invoke($null, @($body))) 'real director reply with nested headings keeps all four sections'
+        $mode = $raw.Invoke($null, @('Director_1020'))
+        $plan = [Activator]::CreateInstance($planType, [object[]]@($mode,'IDENTITY_FIXTURE','',''))
+        $direction = $director.GetMethod('ResolveDirection', $flags).Invoke($null, [object[]]@($body,$plan,$options))
+        Check (!$direction.UsedLocalFallback) 'real reply survives complete director validation without template replacement'
+        $lastSection = $body.IndexOf('[[AFI_PROTOCOL_SPATIAL]]')
+        Check ($lastSection -gt 0 -and !$complete.Invoke($null, @($body.Substring(0,$lastSection)))) 'genuinely missing spatial section is still rejected'
+    }
 } finally { $resolver.Dispose() }

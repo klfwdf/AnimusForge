@@ -26,6 +26,16 @@ static class Program
         string facts = context.BuildHardFacts();
         Check(facts.Contains("角色：原国王") && facts.Contains("双方无人阵亡") && facts.Contains("已选定事件"), "historical role, outcome and frozen event preserved");
         Check(context.Snapshot.ReportDateLabel == plan.DateText, "plan date overrides current campaign date");
+        plan.ReportBody = "正文独有动作：国王扶着柱子停下。\n【其他消息】正文独有末段。";
+        var narrated = WeeklyReportContextExtractor.ExtractFromPlan(plan);
+        Check(narrated.BuildDirectorOnlyFacts().Contains("正文独有动作") && narrated.BuildDirectorOnlyFacts().Contains("正文独有末段"), "full published prose including minor news reaches director");
+        Check(!narrated.BuildHardFacts().Contains("正文独有") && narrated.BuildHardFacts().Contains("双方无人阵亡"), "writer prose never replaces frozen event facts");
+        string stored = Newtonsoft.Json.JsonConvert.SerializeObject(plan);
+        Check(!stored.Contains("ReportBody") && !stored.Contains("正文独有"), "request prose is not duplicated in saved illustration plan");
+        var restored = Newtonsoft.Json.JsonConvert.DeserializeObject<WorldBulletinIllustrationPlan>(stored);
+        restored.ReportBody = plan.ReportBody;
+        Check(WeeklyReportContextExtractor.ExtractFromPlan(restored).BuildDirectorOnlyFacts().Contains("正文独有末段"), "reopened issue rehydrates prose from its published record");
+        Check(WeeklyReportContextExtractor.ExtractFromWeeklyReport("旧刊", "", plan.ReportBody, includeFullBody: true).BuildDirectorOnlyFacts().Contains("正文独有末段"), "legacy bulletin without a plan receives full body too");
         plan.Participants[1].HeroId = "missing";
         var missing = WeeklyReportContextExtractor.ExtractFromPlan(plan);
         Check(missing.Characters[1].Hero == null && missing.Characters[1].Profile == null, "missing ID never substitutes same-name different hero");
@@ -40,6 +50,7 @@ static class Program
     }
 }
 namespace AnimusForge { internal class WorldBulletinLayout { } }
+namespace AnimusForge { internal static class NobleGatheringTextProjection { internal static string ProjectWeeklyMaterialForPrompt(string type, string key, string raw) => throw new InvalidOperationException("Gathering projection is outside this participant fixture"); } }
 namespace TaleWorlds.Core { }
 namespace TaleWorlds.Library { public static class Debug { public static void Print(string s) { } } }
 namespace TaleWorlds.CampaignSystem
