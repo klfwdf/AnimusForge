@@ -1,3 +1,9 @@
+# 当前交接：百科肖像去当前定位（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品126a93d25：百科不采集当前处境/位置，不加年份；保留人物资料，CN/EN导演规则精简为肖像创作，仍自主设计环境、神态及自然动作。
+- 隔离检查点加本次文件的原双API/Bootstrap/Coup/registration通过，最终中英请求检查88项PASS。共享树曾被并行人设编译错误阻断；无真实生图/部署/push。
+- AF自定义人设原本未直接接入百科导演，仍列缺口。[主台账、源码映射、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#encyclopedia-portrait-20261015)。
+
 # 当前交接：取消快报成稿战事数字降级（2026-10-15，SOURCE_VERIFIED / BUILD_BLOCKED）
 
 - e5e68cdb4：成稿标题、正文、小消息、轶闻不再因战事数字触发整篇回退；原请求失败/异常/解析失败回退保持。

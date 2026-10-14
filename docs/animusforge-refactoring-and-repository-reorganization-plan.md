@@ -1,3 +1,13 @@
+<a id="encyclopedia-portrait-20261015"></a>
+## 2026-10-15 百科肖像去现场定位与导演精简（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户范围：百科偏人物肖像，不由当前所在位置/随军扎营决定场景；导演仍依据人物资料构思环境、神态、姿态与自然瞬间。产品 `126a93d25`，检查点 `c2e1fa6a4`，实际工作区 `F:/AnimusForge-main`、main。未修改快报、全局去重、回退策略、用户配置或游戏安装。
+- 源码映射（产品修订）：`extensions/AnimusForge.Illustrator/src/Context/HeroVisualExtractor.cs:139–183` 的 `Extract(includeCurrentState)` 默认保持其他消费者，本百科入口跳过 `ExtractCurrentState`；`src/UI/Overlays/IllustrationCardPopup.cs:1081–1089`（同扩展根）显式 false 并移除年份前缀。`src/Core/VisualDirectorEngine.cs:40,99,349,862–877` 独立选择百科系统规则，不给肖像追加事件衣物状态扩写；其他模式沿用原规则。以上均为每次生成时的主线程采集/请求组装，不新增Tick IO、扫描、反射或模型请求。
+- CN/EN：`content/modules/AnimusForge.Illustrator/ModuleData/IllustratorPromptTexts{,.en}.json:786,866` 精简构图补充与新增 `EncyclopediaDirectorSystem`；强调人物主体，允许自主环境和自然动作，不规定任务/道具/手部目标。保留身份服饰、单人和原装备政策、玩家重绘优先、七个协议标签。原 `IllustratorText` 文件reader、content-map映射及 `.en.json` 打包选版继续生效。
+- 数据边界：文化/家族背景、原生百科传记、亲属关系、原生特质和专长仍经 `BuildDirectorOnlyFacts` 进入导演。AF自行编辑/生成的人设未在原百科插画链路直接读取；本轮不声称其接线已完成，不改写用户生平原文。
+- 验证：原Release统一构建在共享树两次被并行人设演化缺失符号阻断，日志保留。仓内 `artifacts/encyclopedia-portrait-20261015/checkout` 使用检查点源码加本次五个产品文件，原脚本完成1.3/1.4/Bootstrap、双Coup与registration门禁；三个C#文件与工作树SHA一致。最终CN/EN资源由真实DLL reader加载，两API共88项请求/模式/协议/资料传递与调用点检查通过；断言入口 `extensions/AnimusForge.Illustrator/tests/audits/run_encyclopedia_portrait_audit.ps1`。不是并行人设改动的构建证明。
+- 证据：`artifacts/encyclopedia-portrait-20261015/build-isolated.log` 与 `final-audit-{CN,EN}-{1.3,1.4}.log`。未真实生图、未实机，不保证模型不重复站姿；未Stage、部署、打包、push。回滚仅 `git revert 126a93d25`，保留其他作者修改。
+
 <a id="expanded-persona-editor-20261015"></a>
 ## 2026-10-15 NPC 扩展人设编辑补齐（OFFLINE_VERIFIED / LIVE_PENDING）
 
