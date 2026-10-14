@@ -107,6 +107,7 @@ namespace AnimusForge.Illustrator.Engine
             {
                 await _stageLock.WaitAsync(captureToken).ConfigureAwait(false);
                 stageHeld = true;
+                await PrepareNativeCaptureAsync(captureToken).ConfigureAwait(false);
                 var context = await RunOnGameThreadAsync(() =>
                 {
                     source.EnsureCurrent(captureToken);
