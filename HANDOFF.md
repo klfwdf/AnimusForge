@@ -1,6 +1,7 @@
 # 方案交接：NPC 主动接触动机（2026-10-15，DESIGN_ONLY）
 
 - 用户最新要求只让玩家经历与近况参与来意。方案已收窄为履历交流、近期事件反应及必要的选择/去重接线；原职业、公开服务、独立机会系统和六类动机重构已移出范围，原30类动机保留。
+- 已补采集复用、单份材料预算、请求内去重及优缺点；150–500输入token仅是短材料的单请求粗估，不能当作整次接触总成本。实际按前处理/主回复/后处理及重试usage求和，尚未测量。
 - [当前方案与代码地图](docs/npc_proactive_contact_motivation_plan.md)；[最新范围主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#npc-proactive-history-scope-20261015)。下一步接通现有履历/近况来源、三渠道开场与回执，再做兼容和体验验收；本轮仅方案修订，产品尚未修改。
 
 # 当前交接：快报正文进导演与构图误拒修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
