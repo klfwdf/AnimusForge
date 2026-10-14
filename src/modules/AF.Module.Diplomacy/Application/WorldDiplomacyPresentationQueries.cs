@@ -11,6 +11,9 @@ namespace AnimusForge;
 // Synchronous projections over canonical records. No record or mutable collection escapes to UI.
 internal static class WorldDiplomacyPresentationQueries
 {
+    internal static string ProjectDocumentBody(WorldDiplomacyDocument document) => document.IsPlayerAuthored
+        ? document.Body : DiplomacyReplyTextRules.CleanNpcText(document.Body);
+
     internal static WorldDiplomacyTimelineDocumentsResult Timeline(WorldDiplomacyStorage storage, int maxCount)
     {
         // Preserve take-before-visibility filtering from the former cloned query.
@@ -20,7 +23,7 @@ internal static class WorldDiplomacyPresentationQueries
                 .Where(document => document.IsPlayerAuthored || document.IsReadyForPublication)
                 .Select(document => new WorldDiplomacyTimelineDocument(
                     document.DocumentId, document.AuthorKingdomId, document.AuthorKingdomName,
-                    document.TargetKingdomId, document.TargetKingdomName, document.Title, document.Body,
+                    document.TargetKingdomId, document.TargetKingdomName, document.Title, ProjectDocumentBody(document),
                     document.GameDate, document.Day, document.CreatedUtcTicks, document.IsResponse,
                     document.RequiresResponse, document.ChangedDiplomaticState, document.IsRead,
                     BuildImpactText(document), (document.Actions ?? new List<WorldDiplomacyDocumentAction>())
@@ -100,7 +103,7 @@ internal static class WorldDiplomacyPresentationQueries
             + WorldDiplomacyTextRules.DocumentTypeLabel(document, DiplomacyUiLocalization.Text);
         return new WorldDiplomacyDocumentDetail(document.DocumentId, document.RoundId, generation,
             WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text), subtitle,
-            string.IsNullOrWhiteSpace(document.Body) ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_BodyArchived", "(This older declaration's body has been compressed into an annual summary.)") : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(document.Body),
+            string.IsNullOrWhiteSpace(document.Body) ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_BodyArchived", "(This older declaration's body has been compressed into an annual summary.)") : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(ProjectDocumentBody(document)),
             BuildImpactText(document), canReply, canRetryAnalysis);
     }
 
@@ -133,7 +136,7 @@ internal static class WorldDiplomacyPresentationQueries
                 IndexTitleText: WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(document, DiplomacyUiLocalization.Text),
                 MetaText: date + "  ·  " + typeLabel + "  ·  " + document.AuthorKingdomName + (string.IsNullOrWhiteSpace(targetSummary) ? "" : " → " + targetSummary) + eventMeta,
                 PolicyNameText: "",
-                BodyText: string.IsNullOrWhiteSpace(document.Body) ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_BodyCompressed", "This older declaration's body has been compressed; see the matching annual diplomatic summary.") : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(document.Body),
+                BodyText: string.IsNullOrWhiteSpace(document.Body) ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_BodyCompressed", "This older declaration's body has been compressed; see the matching annual diplomatic summary.") : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(ProjectDocumentBody(document)),
                 BodySectionTitleText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_BodySectionTitle", "Declaration body"),
                 ImpactSectionTitleText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactSectionTitle", "Diplomatic result and impact"),
                 ImpactText: BuildImpactText(document),

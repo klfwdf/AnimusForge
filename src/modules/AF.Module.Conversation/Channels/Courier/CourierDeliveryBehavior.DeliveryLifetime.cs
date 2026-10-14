@@ -58,7 +58,7 @@ public sealed partial class CourierDeliveryBehavior
 			if (session.DeliveryApplied && !session.ReplyPopupShown && !string.IsNullOrWhiteSpace(session.ReplyText))
 			{
 				session.ReplyPopupShown = true;
-				string reply = CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(session.ReplyPostprocessedText ?? session.ReplyText));
+				string reply = CourierVisibleLetterSanitizer.CleanNpcLetter(StripCourierActionTags(session.ReplyPostprocessedText ?? session.ReplyText));
 				string senderName = recipient?.Name?.ToString() ?? session.RecipientName ?? "NPC";
 				string senderHeroId = SafeHeroId(recipient);
 				if (AddCourierLetterToPlayerInventory(session, recipient, senderName, reply, isReply: true))
@@ -67,7 +67,7 @@ public sealed partial class CourierDeliveryBehavior
 				EnqueueMainThreadActionForGeneration(SaveRuntimeGuard.CaptureGeneration(), () =>
 				{
 					ShowCourierReplyNotice(senderHeroId, senderName, session.DiplomacyReplyBody == null ? reply :
-                        CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(DiplomacyConversationBridge.ComposeReply(session.DiplomacyReplyBody, session.DiplomacyReplyReceipts, forUi: true))));
+                        CourierVisibleLetterSanitizer.CleanNpcLetter(StripCourierActionTags(DiplomacyConversationBridge.ComposeReply(session.DiplomacyReplyBody, session.DiplomacyReplyReceipts, forUi: true))));
 				}, "reply_notice");
 			}
 			else if (!session.DeliveryApplied)
@@ -91,7 +91,7 @@ public sealed partial class CourierDeliveryBehavior
 	private static void ShowCourierReplyNotice(string senderHeroId, string senderName, string replyText)
 	{
 		string name = string.IsNullOrWhiteSpace(senderName) ? "NPC" : senderName.Trim();
-		string cleanedReply = CourierVisibleLetterSanitizer.Clean(replyText);
+		string cleanedReply = CourierVisibleLetterSanitizer.CleanNpcLetter(replyText);
 		string body = string.IsNullOrWhiteSpace(cleanedReply) ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_EmptyReply", "(No reply text)") : cleanedReply;
 		if (TryPublishCourierReplyMapNotification(senderHeroId, name, body))
 		{

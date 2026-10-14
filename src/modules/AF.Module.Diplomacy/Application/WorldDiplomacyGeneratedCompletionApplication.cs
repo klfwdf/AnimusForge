@@ -100,7 +100,7 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
                 WorldDiplomacyEnvelopeJsonRules.ReadString(json, "title"),
                 job.IsResponse ? DiplomacyMiscPromptTexts.Get("Document_DefaultReplyTitle", "Diplomatic Reply") : DiplomacyMiscPromptTexts.Get("Document_DefaultKingdomDeclarationTitle", "Kingdom Diplomatic Declaration"));
             title = WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(title), 100);
-            string body = WorldDiplomacyTextRules.NormalizeBody(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "body", "public_document", "document")));
+            string body = WorldDiplomacyTextRules.NormalizeBody(DiplomacyReplyTextRules.CleanNpcText(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "body", "public_document", "document"))));
             if (string.IsNullOrWhiteSpace(body))
             {
                 rejectDraft?.Invoke(job, raw, authorId, targetId, "empty_public_document", json);
