@@ -164,6 +164,7 @@ internal void ProcessDeferredDailyMaintenance()
 			DailyMaintenanceJob job = Jobs.Dequeue();
 			JobKeys.Remove(BuildDailyMaintenanceJobKey(job.Kind, job.DayIndex, job.WeekIndex, job.StartDay, job.EndDay));
 			bool completed;
+			using (FreezeWatchdog.Scope("MyBehavior.DeferredDailyMaintenance.Job." + job.Kind))
 			using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.Job." + job.Kind))
 			{
 				completed = ExecuteDailyMaintenanceJob(job, startTimestamp, budgetMs);

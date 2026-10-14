@@ -21,6 +21,8 @@ public class RewardSystemBehavior
     static void EnsureGeneratedRewardManifestLoaded() { }
     void EnsureGeneratedRewardItemData() { }
     static int GetCampaignDayIndex() => 7;
+    static int EquipmentRestoreCalls;
+    void RestoreDueNpcBattleEquipment(string reason) => EquipmentRestoreCalls++;
     GeneratedRewardItemRecord GetGeneratedRewardItemRecord(string id) => _generatedRewardItemRecords.GetValueOrDefault(id);
     static bool TryPrimeGeneratedInventoryItemForExternal(string id, string name, string template, uint objectId,
         out string normalizedId, out string normalizedTemplate, out uint normalizedObjectId, string source)
@@ -131,6 +133,25 @@ public class RewardSystemBehavior
             Check(roster.Amount(gift) == 3 && roster.Amount(special) == 0, "open deletes gift or keeps special");
             callback(); Instance.OnDailyTickSettlement(settlement); RemoveGeneratedRewardItemsFromMarketRosters("game_load_finished");
             Check(roster.Amount(gift) == 3 && done == 1, "later cleanup deletes gift or duplicates callback"); });
+        Case("daily_entry_does_not_scan_world_but_native_settlement_cleanup_still_runs", () => {
+            const int towns = 2000, slots = 300;
+            var normal = new ItemObject { StringId = "sword" }; var special = Gift(identity: "courier_letter|session|body");
+            var settlements = Enumerable.Range(0, towns).Select(i => new Settlement { StringId = "town_" + i, ItemRoster = new() }).ToArray();
+            foreach (var settlement in settlements)
+                for (int i = 0; i < slots; i++) settlement.ItemRoster.Elements.Add(new(new EquipmentElement(normal, "slot_" + i), 1));
+            var target = settlements[1700]; target.ItemRoster.AddToCounts(new(special, "rusty"), 2);
+            Campaign.Current.Settlements = settlements; ItemRoster.Reads = EquipmentRestoreCalls = 0;
+            var timer = System.Diagnostics.Stopwatch.StartNew(); Instance.RunDailyEntryPrefix(); timer.Stop();
+            Console.WriteLine($"daily_entry towns={towns} slots={towns * slots + 1} reads={ItemRoster.Reads} elapsedMs={timer.Elapsed.TotalMilliseconds:F3}");
+            Check(ItemRoster.Reads == 0, "global daily entry still scans every market");
+            Check(EquipmentRestoreCalls == 1, "equipment restoration lost");
+            Instance.OnDailyTickSettlement(target);
+            Check(ItemRoster.Reads == slots + 1 && target.ItemRoster.Amount(special) == 0, "distributed event failed to clean the selected market");
+            Check(settlements[0].ItemRoster.Elements.Count == slots, "unrelated market mutated");
+            // The once-per-load reconciliation still cleans another market without deleting permitted gifts.
+            var gift = Gift(); settlements[0].ItemRoster.AddToCounts(new(special), 1); settlements[0].ItemRoster.AddToCounts(new(gift), 3);
+            RemoveGeneratedRewardItemsFromMarketRosters("game_load_finished");
+            Check(settlements[0].ItemRoster.Amount(special) == 0 && settlements[0].ItemRoster.Amount(gift) == 3, "load protection changed"); });
         Case("caravan_villager_hide_only_special_and_restore_exact_stack", () => {
             var gift = Gift(); var special = Gift(identity: "courier_letter|session|body"); var roster = new ItemRoster();
             roster.AddToCounts(new(gift, "fine"), 3); roster.AddToCounts(new(special, "rusty"), 2);
@@ -172,8 +193,9 @@ public record struct EquipmentElement(ItemObject Item, string Modifier = null) {
 public record struct ItemRosterElement(EquipmentElement EquipmentElement, int Amount);
 public class ItemRoster
 {
+    public static int Reads;
     public List<ItemRosterElement> Elements = new(); public int Count => Elements.Count;
-    public ItemRosterElement GetElementCopyAtIndex(int i) => Elements[i];
+    public ItemRosterElement GetElementCopyAtIndex(int i) { Reads++; return Elements[i]; }
     public int Amount(ItemObject item) => Elements.Where(x => x.EquipmentElement.Item == item).Sum(x => x.Amount);
     public void AddToCounts(EquipmentElement element, int amount)
     {
@@ -202,3 +224,5 @@ public static class Logger { public static void Log(string category, string mess
 public record InformationMessage(string Text);
 public static class InformationManager { public static List<string> Messages = new(); public static void DisplayMessage(InformationMessage message) => Messages.Add(message.Text); }
 public static class AnimusForgeTextInputSanitizer { public const int MaxCourierLetterChars = 10000; public static string SanitizeMultiline(string text, int max) => text; }
+public static class FreezeWatchdog { public static ScopeToken Scope(string name) => default; public readonly struct ScopeToken : IDisposable { public void Dispose() { } } }
+public static class EconomyUiTexts { public static string SpecialRpItemCannotEnterMarket => "Special RP items cannot enter the market."; }

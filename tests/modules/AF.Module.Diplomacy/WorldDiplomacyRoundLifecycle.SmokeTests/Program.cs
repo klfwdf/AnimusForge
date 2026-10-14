@@ -96,6 +96,12 @@ internal static class Program
         CanonicalProjectionPreservesProse();
         PackagedOralProtocolParity();
         AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
+        if (args.Length == 1 && args[0] == "--campaign-daily")
+        {
+            CampaignApplicationReplay.Run();
+            Console.WriteLine($"Campaign daily application replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--oral-declaration")
         {
             OralDeclarationReplay.Run();

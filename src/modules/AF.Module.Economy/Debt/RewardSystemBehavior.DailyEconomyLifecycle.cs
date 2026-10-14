@@ -10,9 +10,11 @@ public partial class RewardSystemBehavior
 {
 	private void OnDailyTick()
 	{
+		using var dailyScope = FreezeWatchdog.Scope("RewardSystem.DailyTick");
 		try
 		{
-			RemoveGeneratedRewardItemsFromMarketRosters("daily_tick");
+			// Native DailyTickSettlement distributes the same cleanup across the day.
+			// Load and trade-open cleanup remain synchronous at their own boundaries.
 			RestoreDueNpcBattleEquipment("daily_tick");
 			if (_debts == null || _debts.Count <= 0)
 			{

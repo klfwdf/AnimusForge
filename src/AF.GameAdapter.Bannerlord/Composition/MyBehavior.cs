@@ -2300,6 +2300,7 @@ public MyBehavior()
 
 	private void OnDailyTick()
 	{
+		using var dailyScope = FreezeWatchdog.Scope("MyBehavior.DailyTick");
 		try
 		{
 			if (!IsDeferredDailyMaintenanceEnabled())

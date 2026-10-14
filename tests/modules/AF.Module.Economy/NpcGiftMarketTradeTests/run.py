@@ -58,10 +58,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-root", type=Path)
     parser.add_argument("--dotnet")
+    parser.add_argument("--daily-source-ref", help="Replay the daily entry prefix from a reviewed Git revision")
     parser.add_argument("--mutate", choices=["old-guard", "old-cleanup"])
     args = parser.parse_args()
     source = (ROOT / "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs").read_text(encoding="utf-8-sig")
     methods = {signature: extractor.declaration(source, signature) for signature in SIGNATURES}
+    daily_path = "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs"
+    daily_source = (subprocess.check_output(["git", "show", args.daily_source_ref + ":" + daily_path], cwd=ROOT).decode("utf-8-sig")
+                    if args.daily_source_ref else (ROOT / daily_path).read_text(encoding="utf-8-sig"))
+    # Only the real entry prefix before debt processing; debts/equipment restoration are leaf doubles.
+    entry = extractor.declaration(daily_source, "private void OnDailyTick(")
+    entry = entry[:entry.index("if (_debts == null")]
+    methods["daily_entry_prefix"] = entry.replace("OnDailyTick()", "RunDailyEntryPrefix()") + "} catch { throw; } }"
     gift = extractor.declaration(source, "private int GenerateRpAssetToPlayer(")
     assert gift.index("giftRecord.NpcGiftMarketTradeAllowed = true;") < gift.index("QueueNpcRpItemIntroductionForExternal(")
     assert "NpcGiftMarketTradeAllowed |= existing.NpcGiftMarketTradeAllowed" in source
@@ -95,7 +103,7 @@ def main():
     result = subprocess.run([str(dotnet), "run", "--project", str(output / "MarketTests.csproj")],
         cwd=output, env=minimal_test_environment(dotnet, output), capture_output=True,
         text=True, encoding="utf-8", errors="replace", timeout=180)
-    log = "sourceSha256=" + hashlib.sha256(source.encode()).hexdigest() + " mutation=" + str(args.mutate) + "\n" + result.stdout + result.stderr
+    log = "sourceSha256=" + hashlib.sha256(source.encode()).hexdigest() + " dailySource=" + (args.daily_source_ref or "working-tree") + " mutation=" + str(args.mutate) + "\n" + result.stdout + result.stderr
     (output / "run.log").write_text(log, encoding="utf-8")
     print(log)
     return result.returncode
