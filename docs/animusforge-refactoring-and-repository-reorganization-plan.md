@@ -1,4 +1,14 @@
-﻿<a id="shared-mcm-settings-complete-20261014"></a>
+﻿<a id="deploy-all-current-20261014"></a>
+## 2026-10-14 全部当前改动部署（DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户本轮明确授权“带着所有改动部署”。main源码 `c309749a9`，产品已全部提交；从此前安装02c8095b1更新到当前全部运行改动：b4653dbe8战争排版/字体/场景键、43d44b36b每日扫描与Watchdog、fbed672ac共用MCM文档、4b406ed36市场缓存/分帧。本条替代这些切片“未部署”状态，实机HOLD继续保持；不隐式授权push/ZIP或版本递增。
+- 原统一Release双API/Bootstrap/Coup/registration与完整Stage exit0（参考1.3.15.110062/1.4.6.115628）；原deploy_module.ps1 exit0，目标 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，版本仍v1.6.0，更新13受管文件。原脚本和默认Debug未改，旧项目Stage保存在本地证据目录；没有部署备份、Recovery或自动回滚。
+- 最终实际DLL回放520/530 PASS，与安装SHA和build marker完全一致；市场52回放的三源SHA仍相同，复用已有效证据。3520个Stage文件按原保护策略核对、276个清单外文件SHA/大小/mtime保持；Configs5/CustomPrompts4/PlayerExports3133/ONNX10/文档MCM配置35哈希保持；原版3 DLL抽检不变。XML只加载Bootstrap，双实现实际DebuggableAttribute flags2/DisableOptimizations=false。首次PowerShell Core反射审计不支持，改用Windows PowerShell Framework成功，未将失败当通过。
+- 证据 `artifacts/deploy-all-20261014-231816/REPORT.md`、`verification.json`、`build-stage.log`、`deploy.log`；包含部署13路径、双DLL SHA、回放receipt、数据保护前后核验。当前安装路径是此次实际读取核验位置，代码责任坐标沿用下方各切片已验表，不复制全表。
+- NOT-RUN：游戏启动/旧档/重启、场景键/字体缩放、大地图/入夜帧时间及GPU稳定性、真实provider和全Mod组合；不称卡顿/GPU已消失。没有push、正式打包、写玩家配置或运行游戏；Documents已有MCM业务值优先、模组旧业务JSON不自动搬迁覆盖，未来运行用文档配置。
+- 人工回退参考旧正式安装源码02c8095b1，在独立工作区重建选定旧修订后另行部署；git revert不是安装回退，也不自动回迁Documents值。原Microsoft/NuGet未跟踪目录保持，部署前后均无运行游戏/启动器。
+
+<a id="shared-mcm-settings-complete-20261014"></a>
 ## 2026-10-14 终端与 MCM 共用文档配置（OFFLINE_VERIFIED / LIVE_PENDING）
 
 本条明确替代 shared-mcm-settings-intent-20261014 的 IN_PROGRESS。产品 `fbed672ac`，checkpoint `df5e2dd88`；按用户“跟MCM一样公用”恢复四owner原生文档MCM存储，终端仍用原属性/owner/JSON，不新增终端业务配置副本。此次settings例外仅更新仓内AGENTS和text-contracts，不安装全局skill或迁移其余数据。
