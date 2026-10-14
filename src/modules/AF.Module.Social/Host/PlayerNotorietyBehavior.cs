@@ -122,7 +122,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			_activeConversationStates.Clear();
 			ActivateNotorietyConversationOutcomeStorageAfterLoad();
 		}
-		catch (Exception ex)
+		catch (Exception ex) when (!(ex is CampaignSaveChunkHelper.PersistenceIntegrityException))
 		{
 			_state = new PlayerNotorietyState();
 			_activeConversationStates.Clear();

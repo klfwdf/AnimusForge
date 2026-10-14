@@ -1,0 +1,70 @@
+using AnimusForge;
+PromptComposerTexts.Initialize(args[0], args[1]);
+int checks=0;
+void Check(bool b,string label){if(!b)throw new Exception(label);checks++;}
+var fact=PromptComposerTexts.Raw("afef_player_action")+" player gave 1 item";
+var currentLabel=PromptComposerTexts.Raw("history_section_scope_current");
+var historicalLabel=PromptComposerTexts.Raw("history_section_scope_historical");
+ConversationMessage Fact(long seq,string content=null)=>new(){Role="system",Content=content??fact,EventSequence=seq,GameDayIndex=1,GameHour=1};
+var old=Fact(1);var recent=Fact(3);
+var context=new SceneHistoryMessageContext{PlayerName="player",ViewerAgentIndex=1,GameDate="day1",Scene="town"};
+var input=new SceneHistoryMessageAssemblyInput{SystemPrompt="test",Context=context,HistoryLineLimit=2,SceneHistory=new[]{old,recent},PendingCurrentFacts=new[]{recent}};
+List<Dictionary<string,string>> Build()=>SceneHistoryMessageAssemblyOwner.Build(input).Cast<Dictionary<string,string>>().ToList();
+int Current(List<Dictionary<string,string>> m)=>m.Count(x=>x["content"].Contains(currentLabel));
+int Historical(List<Dictionary<string,string>> m)=>m.Count(x=>x["content"].Contains(historicalLabel));
+var result=Build();Check(Current(result)==1 && Historical(result)==1,"same text different events preserve historical scope");
+Check(!old.PromptFactScopeCaptured && !recent.PromptFactScopeCaptured,"assembly never mutates persisted message scope");
+input.PendingCurrentFacts=Array.Empty<ConversationMessage>();result=Build();
+Check(Current(result)==0 && Historical(result)==2,"next turn does not replay current facts");
+input.SceneHistory=new[]{old};input.PendingCurrentFacts=new[]{recent};result=Build();
+Check(Current(result)==1 && Historical(result)==1,"pending fact absent from captured history is retained once");
+var unknown=Fact(0);input.PendingCurrentFacts=new[]{unknown};result=Build();
+Check(Current(result)==1 && Historical(result)==1,"unknown identity cannot upgrade same-content old event");
+var nativeCurrent=Fact(0);nativeCurrent.PromptFactScopeCaptured=nativeCurrent.PromptIsCurrentFact=true;
+input.SceneHistory=new[]{old,nativeCurrent};result=Build();
+Check(Current(result)==1 && Historical(result)==1,"native explicitly current unknown identity not duplicated by pending");
+var otherSession=Fact(3);otherSession.PromptMemorySessionKey="other";
+input.SceneHistory=new[]{otherSession,recent};input.PendingCurrentFacts=new[]{recent};result=Build();
+Check(Current(result)==1 && Historical(result)==1,"sequence reused in another session stays historical");
+var largeHistory=Enumerable.Range(1,1000).Select(i=>Fact(i)).Concat(new[]{new ConversationMessage{Role="user",Content="next topic",EventSequence=1001}}).ToList();
+input.SceneHistory=largeHistory;input.PendingCurrentFacts=Array.Empty<ConversationMessage>();result=Build();
+Check(Historical(result)==2 && result.Count==4,"1000 facts obey separate history limit");
+Check(largeHistory.Count==1001,"request budget leaves original history intact");
+input.HistoryLineLimit=1000;result=Build();Check(Historical(result)==64,"fact count hard maximum");
+input.SceneHistory=Enumerable.Range(1,100).Select(i=>Fact(i,fact+new string('x',1000)));result=Build();
+Check(Historical(result)<=12 && Historical(result)>0,"historical fact character budget");
+var huge=Fact(1001,fact+new string('x',20000));input.SceneHistory=new[]{huge};result=Build();
+Check(Historical(result)==0,"oversized old fact omitted whole instead of truncated");
+input.PendingCurrentFacts=new[]{huge};result=Build();
+Check(Current(result)==1 && result.Any(x=>x["content"].Contains(new string('x',20000))),"current fact remains complete even beyond historical budget");
+input.HistoryLineLimit=1;input.SceneHistory=largeHistory;input.PendingCurrentFacts=Enumerable.Range(2000,12).Select(i=>Fact(i)).ToArray();result=Build();
+Check(Current(result)==12 && Historical(result)==1,"all bounded current batch facts preserved independent of historical quota");
+var lines=Enumerable.Repeat(fact,1000).Concat(new[]{"hello","goodbye"}).ToList();
+var bounded=SceneHistoryProjectionOwner.KeepAfefFactsAndRecentHistoryLines(lines,2);
+Check(bounded.Count==4 && bounded.TakeLast(2).SequenceEqual(new[]{"hello","goodbye"}),"auxiliary rendered history uses same fact budget");
+Check(lines.Count==1002,"auxiliary budget does not rewrite history");
+// Verify the actual application binds NPC knowledge to mode, not auto-publication.
+string ports=File.ReadAllText(Path.Combine(args[0],"src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromptContextCapture.cs"));
+Check(ports.Contains("BulletinEnabled = IsWorldBulletinEnabled,") && ports.Contains("IsWorldBulletinEnabled = IsWorldBulletinEnabled,"),"both NPC knowledge capture ports use bulletin mode");
+Check(!ports.Contains("= IsWorldBulletinPublishingEnabled"),"publication does not control NPC knowledge source");
+foreach (bool mode in new[]{false,true}) foreach (bool publish in new[]{false,true}) {
+    DuelSettings.Settings.UseWorldBulletin=mode;DuelSettings.Settings.AutoGenerateWorldBulletins=publish;
+    Check(NewsMode.IsWorldBulletinEnabled()==mode && NewsMode.IsWorldBulletinPublishingEnabled()==(mode&&publish),"news mode/auto-publication matrix");
+}
+Console.WriteLine("PASS "+checks+" history scope/budget and news source checks "+args[1]);
+
+// Game/text projection leaves are controlled. Production assembly, normalizers,
+// metadata and budget methods above remain linked/extracted without rewriting.
+namespace AnimusForge {
+static class AnimusForgeModulePaths {public static string GetModuleDataFilePath(string name)=>throw new InvalidOperationException("Unexpected disk prompt lookup in history fixture");}
+public struct ConversationSpeechTextOptions {}
+static class ShoutUtils {public static string StripConversationMetadataPrefix(string s)=>s;}
+static class ConversationSpeechTextRules {public static string StripAfefPromptScopeLabel(string s)=>s.Replace(PromptComposerTexts.Raw("history_section_scope_current"),"").Replace(PromptComposerTexts.Raw("history_section_scope_historical"),"");public static bool IsLeakedPromptLineForShout(string s)=>false;public static string NormalizeNativeConversationVisibleTextKey(string s,ConversationSpeechTextOptions o)=>s;}
+static class ConversationRoleClassificationOwner {public static bool IsViewerAssistant(ConversationMessage m,object x,string h,int i,bool useStableIdentity)=>true;}
+static class MemorySystemFactProjection {public static string ProjectNpcFact(string s)=>s;}
+static class MainPromptMessageAssemblyOwner {public static object CreateCourierChatMessage(string role,string content)=>new Dictionary<string,string>{{"role",role},{"content",content}}; public static string BuildConversationSystemPrompt(string s)=>s;}
+static class PromptComposerTexts {
+static Dictionary<string,string> compat,text;
+public static void Initialize(string root,string lang){string dir=Path.Combine(root,"content/modules/AF.Module.Prompt/ModuleData");compat=System.Text.Json.JsonSerializer.Deserialize<Dictionary<string,string>>(File.ReadAllText(Path.Combine(dir,"PromptCompatibility.json")));text=System.Text.Json.JsonSerializer.Deserialize<Dictionary<string,string>>(File.ReadAllText(Path.Combine(dir,"PromptComposerTexts."+lang+".json")));}
+public static string Raw(string k)=>compat[k];public static string Get(string k)=>text[k];public static string Format(string k,params (string,object)[] args)=>Get(k);
+}}

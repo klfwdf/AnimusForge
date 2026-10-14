@@ -3928,7 +3928,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			_voicePersonaPersistence.Load(dataStore, VoiceMapper.SetPreferredExportFolder, json => VoiceMapper.ImportMappingJson(json), json => ShoutUtils.ImportUnnamedPersonaStateJson(json, overwriteExisting: true));
 			SyncTailPersistenceData(dataStore);
 		}
-		catch (Exception ex10)
+		catch (Exception ex10) when (!(ex10 is CampaignSaveChunkHelper.PersistenceIntegrityException))
 		{
 			Logger.Log("DialogueHistory", "[ERROR] SyncData v2 failed: " + ex10.ToString());
 			_shownRecords = new Dictionary<string, HeroShownRecord>();

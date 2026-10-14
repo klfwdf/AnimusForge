@@ -213,6 +213,7 @@
     "_afCoupRebellionBridge_v1",
     "_afCoupSession_v1",
     "_af_companion_proactive_chat_v1",
+    "_af_courier_npc_diplomacy_letters_v1",
     "_af_kingdom_civil_war_v2",
     "_af_kingdom_strategic_profiles_v1",
     "_af_memoryOverviewQueue_v1",
@@ -221,8 +222,8 @@
     "_af_player_notoriety_state_v1",
     "_af_proactive_npc_request_state_v1",
     "_af_worldBulletin_v1",
-    "_af_world_diplomacy_v1",
     "_af_world_diplomacy_quarantine_v1",
+    "_af_world_diplomacy_v1",
     "_eventRecordEntries_v1",
     "_eventSourceMaterials_v1",
     "_eventWorldOpeningSummary_v1",
@@ -462,46 +463,38 @@
       "key": "_afCoupOutcomeBridge_v1",
       "variable": "_outcomesJson",
       "store": "store"
+    },
+    {
+      "key": "_af_courier_npc_diplomacy_letters_v1",
+      "source": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
+      "store": "dataStore",
+      "variable": "npcLetterStorageJson"
     }
   ],
   "knownChunkingAuditGaps": [
     {
-      "status": "OPEN_NOT_FIXED",
+      "status": "FIXED_SOURCE",
       "source": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
       "key": "_af_courier_npc_diplomacy_letters_v1",
-      "risk": "full NPC diplomacy letter storage JSON still written as one string; growth can exceed signed Int16 payload limit"
+      "risk": "full NPC diplomacy letter storage JSON still written as one string; growth can exceed signed Int16 payload limit",
+      "resolution": "Courier JSON uses chunked persistence; generic readers reject incomplete data and verify new byte/hash manifests; writers and affected owners propagate integrity failures."
     },
     {
-      "status": "OPEN_NOT_FIXED",
+      "status": "FIXED_SOURCE",
       "source": "src/AF.Persistence/CampaignSaveChunkHelper.cs",
-      "risk": "SafeSyncData failures are logged but SaveChunkedString ignores success; null chunks append empty text; no digest or total byte validation; corrupt chunks can look like absent legacy state"
+      "risk": "SafeSyncData failures are logged but SaveChunkedString ignores success; null chunks append empty text; no digest or total byte validation; corrupt chunks can look like absent legacy state",
+      "resolution": "Courier JSON uses chunked persistence; generic readers reject incomplete data and verify new byte/hash manifests; writers and affected owners propagate integrity failures."
     }
   ],
-  "knownDirectJsonBindings": [
-    {
-      "source": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
-      "variable": "npcLetterStorageJson",
-      "key": "_af_courier_npc_diplomacy_letters_v1",
-      "status": "OPEN_NOT_FIXED",
-      "reason": "existing full JSON straight SyncData; report separately, not allowed for new code"
-    }
-  ],
-  "chunkGuardCoverage": "registered bindings + conventional Json-named SyncData arguments in selected production roots; source heuristic, not complete C# dataflow or game acceptance",
+  "knownDirectJsonBindings": [],
   "playerExperienceContactFields": {
     "ownerKey": "_af_proactive_npc_request_state_v1",
     "ownerSource": "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
     "stateField": "ExperienceContacts",
-    "fields": [
-      "DiscussedUntil",
-      "SourceFatigueUntil",
-      "Pending"
-    ],
+    "fields": ["DiscussedUntil", "SourceFatigueUntil", "Pending"],
     "sessionField": "Experience",
-    "channelSessionOwners": [
-      "ProactiveNpcRequestSession",
-      "CompanionChatSession",
-      "CourierSession"
-    ],
+    "channelSessionOwners": ["ProactiveNpcRequestSession", "CompanionChatSession", "CourierSession"],
     "policy": "Existing chunked wrappers and legacy keys remain. Optional detached evidence and bounded receipts; expired reservations are not successful discussions. No full biography copy or Tick serialization."
-  }
+  },
+  "chunkGuardCoverage": "registered bindings + conventional Json-named SyncData arguments in selected production roots; source heuristic, not complete C# dataflow or game acceptance"
 }

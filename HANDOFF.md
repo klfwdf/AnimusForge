@@ -1,3 +1,16 @@
+# 当前交接：全部当前改动已统一部署（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户明确带上所有改动；main/f1ca8a4fa加全部当时未提交产品内容已由原流程构建部署到F盘游戏单模块AnimusForge，版本v1.6.0，更新31文件。8728产品输入构建至部署后不变，三DLL及3520 Stage文件核对PASS。
+- 原Debug双API/Bootstrap/Coup/注册、CN/EN完整投影、主动接触/历史预算/分块回放通过；原配置/提示词哈希和ONNX文件状态保持。未启动游戏、打包或push，无自动回滚；实机/旧档/真实token仍待验。
+- [唯一主台账、部署证据与回退边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-all-current-20261015)。本条替代下方已包含改动的“未部署/未Stage”状态，源码责任与实机限制仍见各原记录。证据artifacts/deploy-all-current-20261015/。
+
+# 当前交接：存档完整性、事实轮次预算与快报知识源（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 候选ba03764be：来信分块；普通字符串分块完整性检查和错误传播；按事件识别当前事实并限制旧事实请求预算；快报关闭自动出版后NPC仍读快报事实。原始历史不删除。
+- 分块回归/21键清单、中英各22项历史与开关回放、隔离原Release双API/Bootstrap/Coup/注册通过。共享主目录保留修复与并行施工，未将他人暂存夹带提交；未部署、Stage、打包或push。
+- [主台账、隔离验证边界和回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#audit-save-history-fixes-20261015)。候选受管检出audit-save-history-fixes；证据 artifacts/audit-fixes-20261015/。实机旧档/长对话/共享树整体验收待验。
+
+
 # 当前交接：口头外交保密资料修复（2026-10-15，OFFLINE_VERIFIED / PUSH_PENDING）
 
 - 用户已授权修复并推送；交付基线8a3aa6698，检查点10485352f，产品0c36af2cb，本地同包844630ecf。保密摘要后由程序恢复权威执行资料，AI只拟宣言；既有审查同时检查保密与正文条款一致性，发布前重验并只执行一次。精确旧故障、未发布未执行的有效挂起约定可恢复一次，不新增系统回执。

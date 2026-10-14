@@ -69,8 +69,10 @@ internal static class CivilWarChunkRegression
 
         MemoryDataStore missing = incidentSave.ForLoading();
         missing.Values.Remove(Key + "__af_chunk_1");
-        Check(CampaignSaveChunkHelper.LoadChunkedString(missing, Key) == "",
-            "missing civil war chunk published partial JSON");
+        bool rejected = false;
+        try { CampaignSaveChunkHelper.LoadChunkedString(missing, Key); }
+        catch (CampaignSaveChunkHelper.PersistenceIntegrityException) { rejected = true; }
+        Check(rejected, "missing civil war chunk must propagate integrity failure");
 
         if (args.Length > 1)
         {
@@ -79,7 +81,7 @@ internal static class CivilWarChunkRegression
             foreach (var entry in coupSnapshot) incidentSave.Values[entry.Key] = entry.Value;
             File.WriteAllText(snapshot, JsonSerializer.Serialize(incidentSave.Values), Encoding.UTF8);
         }
-        Console.WriteLine($"PASS civilWarChunkRegression roundTripCases={cases} hostWiring=1 coupKeys=4 " +
+        Console.WriteLine($"PASS civilWarChunkRegression roundTripCases={cases} hostWiring=1 coupKeys=4 courierKeys=1 " +
             "negativeWiring=2 incidentBytes=33365 incidentChunks=3 utf8Limit=12000 legacyReadAndResave=1 staleTail=2 missingChunk=1");
     }
 
@@ -91,6 +93,7 @@ internal static class CivilWarChunkRegression
             ("extensions/AnimusForge.Coup/src/CoupSystem/CoupCaptivityBehavior.cs", "af_coup_detentions_v1"),
             ("extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs", "_afCoupRebellionBridge_v1"),
             ("extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs", "_afCoupOutcomeBridge_v1"),
+            ("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs", "_af_courier_npc_diplomacy_letters_v1"),
         };
         string incident = MakeJson(33365, unicode: true);
         Dictionary<string, object> snapshot = new Dictionary<string, object>(StringComparer.Ordinal);

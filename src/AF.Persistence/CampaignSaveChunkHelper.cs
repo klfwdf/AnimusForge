@@ -4,13 +4,15 @@ using System.Globalization;
 using System.Text;
 using System.Collections;
 using System.Reflection;
+using System.IO;
+using System.Security.Cryptography;
 using TaleWorlds.CampaignSystem;
 
 namespace AnimusForge;
 
 internal static class CampaignSaveChunkHelper
 {
-    // Opt-in protocol. The existing permissive readers/writers below stay unchanged.
+    // Diplomacy retains its opt-in raw-record quarantine protocol below.
     internal enum StrictReadStatus { Absent, Complete, InvalidManifest, MissingChunk, InvalidChunk, ReadFailed }
     internal sealed class StrictStringRead
     {
@@ -156,32 +158,97 @@ internal static class CampaignSaveChunkHelper
 		}
 	}
 
-	public static void SaveChunkedString(IDataStore dataStore, string key, string value, string loggerTag = "SaveChunk")
-	{
-		string text = value ?? "";
-		List<string> list = SplitUtf8Chunks(text, StorageChunkMaxBytes);
-		LogChunkedStringSaveStats(key, text, list.Count, loggerTag);
-		int count = list.Count;
-		SafeSyncData(dataStore, key + StringChunkCountSuffix, ref count, loggerTag);
-		for (int i = 0; i < list.Count; i++)
-		{
-			string text2 = list[i] ?? "";
-			SafeSyncData(dataStore, key + StringChunkKeyPrefix + i, ref text2, loggerTag);
-		}
-		string text3 = (GetUtf8ByteCount(text) <= LegacyInlineStorageMaxBytes) ? text : "";
-		SafeSyncData(dataStore, key, ref text3, loggerTag);
-	}
+    internal sealed class PersistenceIntegrityException : IOException
+    {
+        internal PersistenceIntegrityException(string key, string reason, Exception inner = null)
+            : base("Save integrity failure for " + key + ": " + reason, inner) { }
+    }
+    private const string IntegrityBytesSuffix = "__af_integrity_bytes";
+    private const string IntegrityHashSuffix = "__af_integrity_sha256";
 
-	public static string LoadChunkedString(IDataStore dataStore, string key, string loggerTag = "SaveChunk")
-	{
-		string text = TryLoadChunkedString(dataStore, key, loggerTag);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		string text2 = "";
-		return SafeSyncData(dataStore, key, ref text2, loggerTag) ? (text2 ?? "") : "";
-	}
+    public static void SaveChunkedString(IDataStore dataStore, string key, string value, string loggerTag = "SaveChunk")
+    {
+        try
+        {
+            string text = value ?? "";
+            var chunks = SplitUtf8Chunks(text, StorageChunkMaxBytes);
+            if (chunks.Count > MaxChunkCount) throw new InvalidOperationException("chunk_count_limit");
+            LogChunkedStringSaveStats(key, text, chunks.Count, loggerTag);
+            // Native IDataStore uses Dictionary.Add: write each key once, manifest last.
+            for (int i = 0; i < chunks.Count; i++) WriteRequired(dataStore, key + StringChunkKeyPrefix + i, chunks[i]);
+            WriteRequired(dataStore, key + IntegrityBytesSuffix, Encoding.UTF8.GetByteCount(text));
+            WriteRequired(dataStore, key + IntegrityHashSuffix, ComputeStringHash(text));
+            WriteRequired(dataStore, key, GetUtf8ByteCount(text) <= LegacyInlineStorageMaxBytes ? text : "");
+            WriteRequired(dataStore, key + StringChunkCountSuffix, chunks.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.Log(loggerTag, "[ERROR] chunk write rejected key=" + key + " type=" + ex.GetType().Name);
+            throw new PersistenceIntegrityException(key, "write_failed", ex);
+        }
+    }
+
+    public static string LoadChunkedString(IDataStore dataStore, string key, string loggerTag = "SaveChunk")
+    {
+        try { return ReadChunkedString(dataStore, key); }
+        catch (Exception ex)
+        {
+            Logger.Log(loggerTag, "[ERROR] chunk read rejected key=" + key + " type=" + ex.GetType().Name);
+            throw new PersistenceIntegrityException(key, "read_failed", ex);
+        }
+    }
+
+    private static string ReadChunkedString(IDataStore store, string key)
+    {
+        if (store == null) throw new ArgumentNullException(nameof(store));
+        int count = 0, byteCount = 0;
+        string hash = null;
+        bool hasCount = store.SyncData(key + StringChunkCountSuffix, ref count);
+        bool hasBytes = store.SyncData(key + IntegrityBytesSuffix, ref byteCount);
+        bool hasHash = store.SyncData(key + IntegrityHashSuffix, ref hash);
+        if (hasBytes != hasHash) throw new InvalidDataException("incomplete_integrity_manifest");
+        if (!hasCount)
+        {
+            string orphan = null;
+            if (hasHash || store.SyncData(key + StringChunkKeyPrefix + "0", ref orphan))
+                throw new InvalidDataException("missing_chunk_manifest");
+            string legacy = null;
+            return store.SyncData(key, ref legacy) ? legacy ?? "" : "";
+        }
+        if (count < 0 || count > MaxChunkCount) throw new InvalidDataException("invalid_chunk_count");
+        var result = new StringBuilder();
+        for (int i = 0; i < count; i++)
+        {
+            string chunk = null;
+            if (!store.SyncData(key + StringChunkKeyPrefix + i, ref chunk) || string.IsNullOrEmpty(chunk))
+                throw new InvalidDataException("missing_or_empty_chunk_" + i);
+            result.Append(chunk);
+        }
+        string text = result.ToString();
+        if (hasHash && (byteCount < 0 || Encoding.UTF8.GetByteCount(text) != byteCount
+            || !string.Equals(ComputeStringHash(text), hash, StringComparison.Ordinal)))
+            throw new InvalidDataException("integrity_mismatch");
+        return text;
+    }
+
+    private static string ComputeStringHash(string text)
+    {
+        using (var hash = SHA256.Create())
+        {
+            var buffer = new byte[16384];
+            for (int start = 0; start < text.Length;)
+            {
+                int count = Math.Min(4096, text.Length - start);
+                if (start + count < text.Length && char.IsHighSurrogate(text[start + count - 1])
+                    && char.IsLowSurrogate(text[start + count])) count--;
+                int bytes = Encoding.UTF8.GetBytes(text, start, count, buffer, 0);
+                hash.TransformBlock(buffer, 0, bytes, null, 0);
+                start += count;
+            }
+            hash.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
+            return BitConverter.ToString(hash.Hash).Replace("-", "");
+        }
+    }
 
 	public static Dictionary<string, string> FlattenStringDictionary(Dictionary<string, string> source)
 	{
@@ -438,26 +505,6 @@ internal static class CampaignSaveChunkHelper
 		{
 		}
 		return new Dictionary<string, string>();
-	}
-
-	private static string TryLoadChunkedString(IDataStore dataStore, string key, string loggerTag)
-	{
-		int data = 0;
-		if (!SafeSyncData(dataStore, key + StringChunkCountSuffix, ref data, loggerTag) || data <= 0 || data > MaxChunkCount)
-		{
-			return "";
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		for (int i = 0; i < data; i++)
-		{
-			string text = "";
-			if (!SafeSyncData(dataStore, key + StringChunkKeyPrefix + i, ref text, loggerTag))
-			{
-				return "";
-			}
-			stringBuilder.Append(text ?? "");
-		}
-		return stringBuilder.ToString();
 	}
 
 	private static int GetUtf8ByteCount(string value)

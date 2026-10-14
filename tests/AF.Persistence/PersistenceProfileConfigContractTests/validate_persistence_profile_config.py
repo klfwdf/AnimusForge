@@ -138,8 +138,8 @@ def validate_json_bindings(catalog: dict) -> None:
     # This validates registered bindings; it is not a complete C# dataflow analyzer.
     bindings = catalog["chunkedJsonBindings"]
     expected_keys = {"_af_kingdom_civil_war_v2", "_afCoupSession_v1", "af_coup_detentions_v1",
-                     "_afCoupRebellionBridge_v1", "_afCoupOutcomeBridge_v1"}
-    assert_true({row["key"] for row in bindings} == expected_keys and len(bindings) == 5,
+                     "_afCoupRebellionBridge_v1", "_afCoupOutcomeBridge_v1", "_af_courier_npc_diplomacy_letters_v1"}
+    assert_true({row["key"] for row in bindings} == expected_keys and len(bindings) == 6,
                 "protected JSON binding inventory drifted")
     for row in bindings:
         source = (ROOT / row["source"]).read_text(encoding="utf-8-sig")
@@ -152,8 +152,8 @@ def validate_json_bindings(catalog: dict) -> None:
                     f"JSON load binding is missing/duplicated: {row['key']}")
         pattern = r"SyncData\s*(?:<[^>]+>)?\s*\(\s*" + re.escape(key)
         assert_true(not re.search(pattern, source), f"JSON key still uses raw SyncData: {row['key']}")
-    assert_true(any(gap.get("status") == "OPEN_NOT_FIXED" for gap in catalog["knownChunkingAuditGaps"]),
-                "open audit gaps must not be disguised as universal coverage")
+    assert_true(all(gap.get("status") in {"OPEN_NOT_FIXED", "FIXED_SOURCE"} for gap in catalog["knownChunkingAuditGaps"]),
+                "audit gaps require explicit status; this is not full dataflow coverage")
 
 
 
@@ -191,7 +191,7 @@ def validate_chunk_contract(catalog: dict, *, current: bool = False) -> dict:
     expected_chunked = set(catalog["chunkedStringStorageKeys"])
     expected_flattened = set(catalog["flattenedDictionaryStorageKeys"])
     # Diplomacy opt-in adds one evidence key while retaining its canonical key.
-    assert_true(len(expected_chunked) == 20, "chunked string key catalog must contain 20 keys")
+    assert_true(len(expected_chunked) == 21, "chunked string key catalog must contain 21 keys")
     strict = catalog["optInStrictChunkedStringStorage"]
     strict_keys = {"_af_world_diplomacy_v1", "_af_world_diplomacy_quarantine_v1"}
     assert_true(set(strict["keys"]) == strict_keys and len(strict["keys"]) == 2,

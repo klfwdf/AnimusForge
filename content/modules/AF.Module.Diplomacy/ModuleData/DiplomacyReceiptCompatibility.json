@@ -1,0 +1,282 @@
+{
+  "OralDiplomacy_SubmissionRejected": [
+    "外交约定暂未提交：{0}。",
+    "Diplomatic commitment not submitted: {0}."
+  ],
+  "OralDiplomacy_Uncommitted": [
+    "外交约定暂未提交：世界外交系统未启用。",
+    "Diplomatic commitment not submitted: world diplomacy system is not enabled."
+  ],
+  "OralDiplomacy_InvalidFormat": [
+    "外交约定暂未提交：条款格式无效。",
+    "Diplomatic commitment not submitted: clause format is invalid."
+  ],
+  "OralDiplomacy_Unauthorized": [
+    "外交约定未成立：对方没有代表国家发文的权限。",
+    "Diplomatic commitment not established: the other party does not have authority to represent the kingdom."
+  ],
+  "OralDiplomacy_SubmitFailedPrefix": [
+    "外交约定未提交：",
+    "Diplomatic commitment not submitted: "
+  ],
+  "OralDiplomacy_MultipleProposals": [
+    "有多份相关提案，请先指明要回应哪一份宣言及动作。",
+    "There are multiple related proposals; please specify which one to respond to first."
+  ],
+  "OralDiplomacy_UnavailableProposal": [
+    "原提案目前不可回应，请先确认提案来源及其有效性。",
+    "The original proposal is currently not answerable; please verify the source first."
+  ],
+  "OralDiplomacy_Published": [
+    "正式宣言已发布；双边条约须由对方正式回应后生效。",
+    "Official declaration published; bilateral treaty requires formal response from counterparty."
+  ],
+  "OralDiplomacy_Executed": [
+    "正式宣言已发布，外交行动已生效。",
+    "Official declaration published and diplomatic action executed."
+  ],
+  "OralDiplomacy_DeferredPrefix": [
+    "约定已登记，正式发文暂缓，原因：",
+    "Commitment recorded; official documentation deferred due to: "
+  ],
+  "OralDiplomacy_CancelledPrefix": [
+    "约定已登记，但正式发文因局势变化取消：",
+    "Commitment recorded but official documentation cancelled due to situation change: "
+  ],
+  "OralDiplomacy_NotReady": [
+    "外交约定暂未提交：世界外交系统尚未准备好。",
+    "Diplomatic commitment not submitted: world diplomacy system is not ready."
+  ],
+  "OralDiplomacy_DuplicatePrefix": [
+    "此约定此前已提交正式外交，文书编号：",
+    "This commitment has already been submitted to formal diplomacy, document ID: "
+  ],
+  "OralDiplomacy_ReleaseSubjectUnavailable": [
+    "释放未执行：臣属系统不可用。",
+    "Subject release not executed: subject system is unavailable."
+  ],
+  "OralDiplomacy_ReleaseSubjectInvalidFormat": [
+    "释放未执行：目标或条约凭证格式无效。",
+    "Subject release not executed: invalid target or agreement token format."
+  ],
+  "OralDiplomacy_ReleaseSubjectStateChanged": [
+    "释放未执行：缺少本轮玩家指令，或国王权限、目标、直属条约已经变化。",
+    "Subject release not executed: missing player directive, or ruler authority, target, or direct treaty has changed."
+  ],
+  "OralDiplomacy_CommitmentDisabled": [
+    "AI外交已关闭，原有发文约定不能在当前模式下变更。",
+    "AI diplomacy is disabled; existing commitment arrangements cannot be changed in the current mode."
+  ],
+  "DialogueControl_InvalidFormat": [
+    "约定处置未提交：格式无效。",
+    "Commitment disposition not submitted: invalid format."
+  ],
+  "DialogueControl_AmbiguousSourceReason": [
+    "约定处置未提交：来源或原因不明确。",
+    "Commitment disposition not submitted: source or reason unclear."
+  ],
+  "DialogueControl_AlreadyUpdatedPrefix": [
+    "外交约定此前已更新：",
+    "Diplomatic commitment was previously updated: "
+  ],
+  "DialogueControl_CannotWithdraw": [
+    "原案已生效、关闭或不可撤回，不能撤销已经发生的外交行动。",
+    "The original proposal has taken effect, is closed, or cannot be withdrawn; completed diplomatic actions cannot be undone."
+  ],
+  "DialogueControl_WithdrawIncomplete": [
+    "撤回宣言未完成，原案仍以当前实际状态为准。",
+    "Withdrawal declaration not completed; original proposal remains at its current state."
+  ],
+  "DialogueControl_InvalidStatus": [
+    "约定处置未提交：状态无效。",
+    "Commitment disposition not submitted: invalid status."
+  ],
+  "DialogueControl_HasFormalResult": [
+    "该约定已有正式结果，不能通过私人谈话回滚。",
+    "This commitment already has a formal outcome and cannot be rolled back through private discussion."
+  ],
+  "DialogueControl_UpdatedPrefix": [
+    "外交约定已更新：",
+    "Diplomatic commitment updated: "
+  ],
+  "DialogueControl_WithdrawStandalone": [
+    "撤回未执行：撤回提案必须单独声明，不能混入其他外交行动。",
+    "Withdrawal not executed: proposal withdrawal must be declared separately and cannot be mixed with other diplomatic actions."
+  ],
+  "DialogueControl_WithdrawUnauthorized": [
+    "撤回未执行：原提案已关闭或当前发文者没有权限。",
+    "Withdrawal not executed: original proposal is closed or publisher lacks authority."
+  ],
+  "DialogueControl_WithdrawSuccess": [
+    "原外交提案已通过正式宣言撤回；已生效的外交行动保持其实际结果。",
+    "Original diplomatic proposal withdrawn via formal declaration; effective diplomatic actions retain actual results."
+  ],
+  "Commitment_InvalidTerms": [
+    "外交行动未执行：条款格式无效。",
+    "Diplomatic action not executed: invalid terms format."
+  ],
+  "Commitment_AiDisabled": [
+    "AI外交已关闭，不能将原公文的回应或改约直接执行；请重新明确具体行动和条款。",
+    "AI diplomacy is disabled; cannot directly execute replies or amendments to earlier documents. Clarify specific actions and terms."
+  ],
+  "Commitment_UnsupportedAdditionalTerms": [
+    "外交行动未执行：当前原版外交入口无法完整执行这些附加条款，请先重新谈妥受支持的条件。",
+    "Diplomatic action not executed: native diplomacy cannot fully execute these additional terms. Negotiate supported terms first."
+  ],
+  "Commitment_TributeMissingDetails": [
+    "外交行动未执行：贡金须明确付款国、收款国、金额和期限。",
+    "Diplomatic action not executed: tribute must specify payer, recipient, amount, and duration."
+  ],
+  "Commitment_FormalPipelineRequired": [
+    "外交行动未执行：该行动或条款需要启用AI外交的正式公文流程。",
+    "Diplomatic action not executed: this action or clause requires the formal AI diplomacy document pipeline."
+  ],
+  "OralTag_VassalageUnavailable": [
+    "释放未执行：臣属系统不可用。",
+    "Release not executed: vassalage system is unavailable."
+  ],
+  "OralTag_AiDisabled": [
+    "AI外交已关闭，原有发文约定不能在当前模式下变更。",
+    "AI diplomacy is disabled; existing document agreements cannot be modified in the current mode."
+  ],
+  "SubjectRelease_InvalidFormat": [
+    "释放未执行：目标或条约凭证格式无效。",
+    "Release not executed: target or treaty token format is invalid."
+  ],
+  "SubjectRelease_PreconditionsChanged": [
+    "释放未执行：缺少本轮玩家指令，或国王权限、目标、直属条约已经变化。",
+    "Release not executed: missing player command this round, or ruler authority, target, or direct treaty has changed."
+  ],
+  "SubjectRelease_AuthorityOrTreatyChanged": [
+    "释放未执行：国王权限或原臣属条约已经变化。",
+    "Release not executed: ruler authority or original vassalage treaty has changed."
+  ],
+  "SubjectRelease_UnconfirmedStillExists": [
+    "释放未确认：臣属关系仍然存在。",
+    "Release unconfirmed: vassalage relationship still exists."
+  ],
+  "SubjectRelease_MustBeMainThread": [
+    "释放未执行：必须在游戏主线程处理。",
+    "Release not executed: must be processed on game main thread."
+  ],
+  "SubjectRelease_WorldDiplomacyUnavailable": [
+    "释放未执行：世界外交系统不可用。",
+    "Release not executed: world diplomacy system is unavailable."
+  ],
+  "SubjectRelease_VassalageTerminatedFormat": [
+    "{0}已主动释放{1}，臣属条约终止，该国恢复独立。",
+    "{0} has actively released {1}; the vassalage treaty is terminated and the kingdom restores independence."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_SubmissionRejected": [
+    "外交约定暂未提交：{REASON}。",
+    "Diplomatic commitment not submitted: {REASON}."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_Uncommitted": [
+    "外交约定暂未提交：世界外交系统未启用。",
+    "Diplomatic commitment not submitted: world diplomacy system is not enabled."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_InvalidFormat": [
+    "外交约定暂未提交：条款格式无效。",
+    "Diplomatic commitment not submitted: clause format is invalid."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_Unauthorized": [
+    "外交约定未成立：对方没有代表国家发文的权限。",
+    "Diplomatic commitment not established: the other party does not have authority to represent the kingdom."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_SubmitFailedPrefix": [
+    "外交约定未提交：",
+    "Diplomatic commitment not submitted: "
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_MultipleProposals": [
+    "有多份相关提案，请先指明要回应哪一份宣言及动作。",
+    "There are multiple related proposals; please specify which one to respond to first."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_UnavailableProposal": [
+    "原提案目前不可回应，请先确认提案来源及其有效性。",
+    "The original proposal is currently not answerable; please verify the source first."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_Published": [
+    "正式宣言已发布；双边条约须由对方正式回应后生效。",
+    "Official declaration published; bilateral treaty requires formal response from counterparty."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_Executed": [
+    "正式宣言已发布，外交行动已生效。",
+    "Official declaration published and diplomatic action executed."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_DeferredPrefix": [
+    "约定已登记，正式发文暂缓，原因：",
+    "Commitment recorded; official documentation deferred due to: "
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_CancelledPrefix": [
+    "约定已登记，但正式发文因局势变化取消：",
+    "Commitment recorded but official documentation cancelled due to situation change: "
+  ],
+  "AF_DIP_STATUS_DialogueControl_InvalidFormat": [
+    "约定处置未提交：格式无效。",
+    "Commitment disposition not submitted: invalid format."
+  ],
+  "AF_DIP_STATUS_DialogueControl_AmbiguousSourceReason": [
+    "约定处置未提交：来源或原因不明确。",
+    "Commitment disposition not submitted: source or reason unclear."
+  ],
+  "AF_DIP_STATUS_DialogueControl_AlreadyUpdatedPrefix": [
+    "外交约定此前已更新：",
+    "Diplomatic commitment was previously updated: "
+  ],
+  "AF_DIP_STATUS_DialogueControl_CannotWithdraw": [
+    "原案已生效、关闭或不可撤回，不能撤销已经发生的外交行动。",
+    "The original proposal has taken effect, is closed, or cannot be withdrawn; completed diplomatic actions cannot be undone."
+  ],
+  "AF_DIP_STATUS_DialogueControl_WithdrawIncomplete": [
+    "撤回宣言未完成，原案仍以当前实际状态为准。",
+    "Withdrawal declaration not completed; original proposal remains at its current state."
+  ],
+  "AF_DIP_STATUS_DialogueControl_InvalidStatus": [
+    "约定处置未提交：状态无效。",
+    "Commitment disposition not submitted: invalid status."
+  ],
+  "AF_DIP_STATUS_DialogueControl_HasFormalResult": [
+    "该约定已有正式结果，不能通过私人谈话回滚。",
+    "This commitment already has a formal outcome and cannot be rolled back through private discussion."
+  ],
+  "AF_DIP_STATUS_DialogueControl_UpdatedPrefix": [
+    "外交约定已更新：",
+    "Diplomatic commitment updated: "
+  ],
+  "AF_DIP_STATUS_DialogueControl_WithdrawStandalone": [
+    "撤回未执行：撤回提案必须单独声明，不能混入其他外交行动。",
+    "Withdrawal not executed: proposal withdrawal must be declared separately and cannot be mixed with other diplomatic actions."
+  ],
+  "AF_DIP_STATUS_DialogueControl_WithdrawUnauthorized": [
+    "撤回未执行：原提案已关闭或当前发文者没有权限。",
+    "Withdrawal not executed: original proposal is closed or publisher lacks authority."
+  ],
+  "AF_DIP_STATUS_DialogueControl_WithdrawSuccess": [
+    "原外交提案已通过正式宣言撤回；已生效的外交行动保持其实际结果。",
+    "Original diplomatic proposal withdrawn via formal declaration; effective diplomatic actions retain actual results."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_NotReady": [
+    "外交约定暂未提交：世界外交系统尚未准备好。",
+    "Diplomatic commitment not submitted: world diplomacy system is not ready."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_DuplicatePrefix": [
+    "此约定此前已提交正式外交，文书编号：",
+    "This commitment has already been submitted to formal diplomacy, document ID: "
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_ReleaseSubjectUnavailable": [
+    "释放未执行：臣属系统不可用。",
+    "Subject release not executed: subject system is unavailable."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_ReleaseSubjectInvalidFormat": [
+    "释放未执行：目标或条约凭证格式无效。",
+    "Subject release not executed: invalid target or agreement token format."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_ReleaseSubjectStateChanged": [
+    "释放未执行：缺少本轮玩家指令，或国王权限、目标、直属条约已经变化。",
+    "Subject release not executed: missing player directive, or ruler authority, target, or direct treaty has changed."
+  ],
+  "AF_DIP_STATUS_OralDiplomacy_CommitmentDisabled": [
+    "AI外交已关闭，原有发文约定不能在当前模式下变更。",
+    "AI diplomacy is disabled; existing commitment arrangements cannot be changed in the current mode."
+  ]
+}

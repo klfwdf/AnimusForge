@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using Newtonsoft.Json;
 
 namespace AnimusForge;
@@ -38,6 +37,7 @@ internal static class DiplomacyReplyTextRules
     internal static string CleanNpcText(string text, string speakerName = null)
     {
         if (string.IsNullOrEmpty(text)) return text;
+        string replyPrefix = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0462");
         StringBuilder result = null;
         int keptStart = 0;
         for (int start = 0; start < text.Length;)
@@ -52,7 +52,7 @@ internal static class DiplomacyReplyTextRules
                     && (line[speakerName.Length] == ':' || line[speakerName.Length] == '：'))
                     line = line.Substring(speakerName.Length + 1).TrimStart();
             }
-            if (line.StartsWith("【回信】", StringComparison.Ordinal)) line = line.Substring(4).TrimStart();
+            if (line.StartsWith(replyPrefix, StringComparison.Ordinal)) line = line.Substring(replyPrefix.Length).TrimStart();
             int next = newline < 0 ? text.Length : newline + 1;
             if (line.Length > 0 && ReceiptLine.Value.IsMatch(line))
             {
@@ -71,27 +71,15 @@ internal static class DiplomacyReplyTextRules
     {
         var patterns = new HashSet<string>(StringComparer.Ordinal);
         var assembly = typeof(DiplomacyReplyTextRules).Assembly;
-        foreach (string language in new[] { "cn", "en" })
+        // Recognition-only legacy receipts: both languages remain readable after a pack switch.
+        using (var stream = assembly.GetManifestResourceStream("AnimusForge.Diplomacy.ReceiptCompatibility.json"))
+        using (var reader = new StreamReader(stream ?? throw new InvalidDataException("Missing embedded diplomacy receipt compatibility.")))
         {
-            using (var stream = assembly.GetManifestResourceStream("AnimusForge.Diplomacy.ReceiptTexts." + language + ".json"))
-            using (var reader = new StreamReader(stream ?? throw new InvalidDataException("Missing embedded diplomacy receipt texts.")))
-            {
-                var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-                foreach (string key in Keys)
-                    if (values.TryGetValue(key, out string value)) AddPattern(patterns, key, value);
-            }
-            using (var stream = assembly.GetManifestResourceStream("AnimusForge.Diplomacy.ReceiptUi." + language + ".xml"))
-            {
-                var ui = XDocument.Load(stream ?? throw new InvalidDataException("Missing embedded diplomacy receipt UI."));
-                var keys = new HashSet<string>(Keys, StringComparer.Ordinal);
-                foreach (var node in ui.Descendants("string"))
-                {
-                    string id = (string)node.Attribute("id") ?? "";
-                    const string prefix = "AF_DIP_STATUS_";
-                    if (id.StartsWith(prefix, StringComparison.Ordinal) && keys.Contains(id.Substring(prefix.Length)))
-                        AddPattern(patterns, id, (string)node.Attribute("text"));
-                }
-            }
+            var values = JsonConvert.DeserializeObject<Dictionary<string, string[]>>(reader.ReadToEnd());
+            foreach (string key in Keys)
+                foreach (string id in new[] { key, "AF_DIP_STATUS_" + key })
+                    if (values.TryGetValue(id, out string[] variants))
+                        foreach (string value in variants) AddPattern(patterns, id, value);
         }
         return new Regex("\\A(?:" + string.Join("|", patterns) + ")\\z", RegexOptions.Compiled | RegexOptions.CultureInvariant);
     }

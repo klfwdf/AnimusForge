@@ -19,7 +19,7 @@ internal static class CampaignWorldBulletinPersistenceAdapter
             owner.ImportJson(loaded);
 			resetTransient();
 		}
-		catch (Exception ex)
+		catch (Exception ex) when (!(ex is CampaignSaveChunkHelper.PersistenceIntegrityException))
 		{
 			// Save-path failures keep the in-memory state; only the load path may reset it.
 			if (!dataStore.IsSaving)

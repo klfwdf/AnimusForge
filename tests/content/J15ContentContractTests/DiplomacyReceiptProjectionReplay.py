@@ -86,10 +86,21 @@ internal static string BuildScopedAfefFactLineForPrompt(string text, bool isCurr
 newtonsoft = Path.home() / '.nuget/packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'
 assert newtonsoft.is_file(), 'actual Newtonsoft dependency missing; do not replace the production reader'
 base = ROOT / 'content/modules/AF.Module.Diplomacy/ModuleData'
-embedded = ''
-for lang, filename, xml in [('cn', 'DiplomacyMiscPromptTexts.json', 'Languages/CNs/afdip_misc_strings-zh-CN.xml'), ('en', 'DiplomacyMiscPromptTexts.en.json', 'Languages/afdip_misc_strings.xml')]:
-    embedded += '<EmbeddedResource Include="' + escape(str(base / filename)) + '" LogicalName="AnimusForge.Diplomacy.ReceiptTexts.' + lang + '.json" WithCulture="false" />'
-    embedded += '<EmbeddedResource Include="' + escape(str(base / xml)) + '" LogicalName="AnimusForge.Diplomacy.ReceiptUi.' + lang + '.xml" WithCulture="false" />'
+# The embedded table recognizes only the same historical receipt variants, not full prompts.
+import re
+import xml.etree.ElementTree as ET
+cleaner = (ROOT / 'src/modules/AF.Module.Diplomacy/Presentation/DiplomacyReplyTextRules.cs').read_text(encoding='utf-8-sig')
+keys = re.findall(r'"([A-Za-z_]+)"', cleaner[cleaner.index('private static readonly string[] Keys'):cleaner.index('private static readonly Lazy<Regex>')])
+expected = {}
+for filename, xml in [('DiplomacyMiscPromptTexts.json', 'Languages/CNs/afdip_misc_strings-zh-CN.xml'), ('DiplomacyMiscPromptTexts.en.json', 'Languages/afdip_misc_strings.xml')]:
+    texts = json.loads((base / filename).read_text(encoding='utf-8-sig'))
+    entries = [(key, texts[key]) for key in keys if key in texts]
+    entries += [(node.attrib['id'], node.attrib['text']) for node in ET.parse(base / xml).iter('string') if node.attrib.get('id', '').startswith('AF_DIP_STATUS_') and node.attrib['id'][len('AF_DIP_STATUS_'):] in keys]
+    for key, value in entries:
+        if value not in expected.setdefault(key, []): expected[key].append(value)
+compatibility = base / 'DiplomacyReceiptCompatibility.json'
+assert json.loads(compatibility.read_text(encoding='utf-8-sig')) == expected, 'Receipt matching variants changed or unrelated prompts entered the compatibility resource'
+embedded = '<EmbeddedResource Include="' + escape(str(compatibility)) + '" LogicalName="AnimusForge.Diplomacy.ReceiptCompatibility.json" />'
 for path, name in [('content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json', 'AnimusForge.Prompt.Compatibility.json'), ('content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimeCompatibility.json', 'AnimusForge.Conversation.RuntimeCompatibility.json')]:
     embedded += '<EmbeddedResource Include="' + escape(str(ROOT / path)) + '" LogicalName="' + name + '" />'
 (output / 'Proof.csproj').write_text(

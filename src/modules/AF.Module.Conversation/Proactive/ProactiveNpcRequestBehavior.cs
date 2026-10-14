@@ -145,7 +145,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			_candidateScanOwner.Clear();
 			_policyDiscussionSnapshotCache = null;
 		}
-		catch (Exception ex)
+		catch (Exception ex) when (!(ex is CampaignSaveChunkHelper.PersistenceIntegrityException))
 		{
 			_sessionOwner.Clear();
             _experienceContacts = new PlayerExperienceContactState();
