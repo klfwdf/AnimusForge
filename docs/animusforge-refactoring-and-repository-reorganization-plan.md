@@ -10411,3 +10411,14 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 三份已安装 DLL 与本轮构建 SHA256 一致，见 artifacts/deploy-market-20261015-013154/installed-dll-hashes.json。首次构建日志 build-deploy.log、成功部署日志 deploy-clean-stage.log、源码修订 source-revision.txt 均在同目录。未重新执行不受改动影响的市场 40 项回放；其覆盖范围仍见 [市场实现记录](#market-world-pass-20261015)。
 - 本条替代市场和扩展人设条目的“未部署”安装状态。未启动游戏；入夜/实际最大市场/旧档/Harmony 实机验收仍 NOT-RUN，部署不证明卡顿根因解决。未打包、push 或递增版本。
 - 回退：本次无游戏部署备份；源码只撤销市场产品可用 git revert db3e1ae68，之后须重新双版本构建和显式部署。previous-stage 仅为保留的旧项目输出，不是完整玩家目录备份，不自动恢复。
+<a id="bulletin-narrative-20261015"></a>
+## 2026-10-15 快报故事化与三条大事件（SOURCE_VERIFIED / BUILD_BLOCKED / LIVE_PENDING）
+
+- 授权范围：增强独立虚构和完整插曲要求，CN主报道500～800字/三到五段，EN沿既有词数口径扩至330～500词；大事件素材上限5→3。用户后续明确无关大事件仍拼入同篇，不新增按关联性降为小消息的规则。超出三条沿既有溢出流程；失败降级/解析/重试保持。
+- 本地检查点490d2a2c7；产品c291b109e，95859f373局部移出误纳入的并行人设字段，工作区并行字段保留；本记录提交另恢复该文件原CRLF，不重写历史。回滚整体应按本条涉及文件及最新差异做聚焦反向提交，不能单独revert c291b109e以免碰到并行人设字段。
+- 代码证据：src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:231–233 MaxMajorFacts；398–480 Select原算法保持；805–811精确旧CN/EN默认文本；822–847 BuildSystemPrompt实际消费者与英文fallback。src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.BulletinPrompt.cs:34–40迁移谓词（并行文件增加字段后行号后移）；content/modules/AF.Module.Weekly/ModuleData/WorldBulletinPromptTexts{,.en}.json:24–43系统规则和默认正文；CustomPrompts/WorldBulletinWritingRequirements{,.en}.json:3包默认；WorldBulletinCompatibility.json:55–56精确旧正文；content/content-map.json:838–842默认路径及哈希；McmKnownPromptDefaults.json对应旧/新CN/EN文件哈希。
+- 默认迁移仅精确已知文本/发布哈希，自定义、显式空串和未知内容保留。协议标记/变量/包选择/已有事实与保密边界保持。无新增模型请求、Tick扫描、IO或后台游戏对象访问；生成请求按既有事件窗口运行，资源沿用Lazy缓存，主要开销变化是成稿token增加。
+- 验证：实际生产选材/系统Prompt/JSON读取专项22断言PASS；归档回放213断言PASS；最终CN/EN上下文各102项PASS；资源键/变量配对、默认正文与reader相等、旧默认精确对照490d2a2、CN/EN当前文件哈希、content-map哈希及git CRLF差异检查PASS。tests/modules/AF.Module.Weekly/BulletinArchiveTests/Program.cs:290–320新增三条无关大事件合稿、溢出和旧默认保护覆盖。
+- 原策略host harness编译失败：未接入WorldBulletinPolicyTexts、SynchronizeNewsCollectionMode等现有依赖，未把失败记为通过；完整Select已由上述archive真实源码回放覆盖，未为修旧harness扩写产品。
+- 官方build_single_module.ps1 Debug两次尝试均在1.3被并行人设未完成代码阻断：首次OnWorldBulletinEventCaptured/TryStartPersonaEvolution未定义；后续新MyBehavior.PersonaEvolution.cs缺EnableNpcPersonaEventEvolution和ConfiguredChatApplicationAdapter。1.4/Bootstrap尚未运行；不宣称全量构建通过，不修改并行工作。日志artifacts/bulletin-narrative-20261015/build.log、build-exit.txt。
+- 证据目录artifacts/bulletin-narrative-20261015/：archive-replay/result.log、archive-replay-final/result.log、context-final.log、resources.json。未实机/真实模型成稿质量验收、未Stage/打包/部署/push；下一步在并行工作完成后重跑双实现并观察实际快报。
