@@ -1,4 +1,11 @@
-﻿<a id="deploy-release-fixes-20261014"></a>
+﻿<a id="war-stats-layout-20261014"></a>
+## 2026-10-14 终端战争统计左右列补漏（IN_PROGRESS）
+
+用户反馈右侧明显比左侧长。真实终端prefab当前战况表头与统计行：左侧Fixed 480、中间Fixed 160、右侧Stretch；终端5e1e354ac扩大至1600后新增宽度全部分给右侧，装饰线仍以480/640硬编码。计划仅在content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml改双方等比例Stretch、表头与分隔线保留和滚动行相同的12单位滚动条空间；原绑定/文案/排序/历史档案保持，不新增Tick或VM计算。
+
+main/438e32adc，本次不包含新部署或push；上一轮Release安装保持。先做局部XML/消费者/几何验证，非嵌入资源不无意义重复构建，实机仍待验。
+
+<a id="deploy-release-fixes-20261014"></a>
 ## 2026-10-14 当前修复以Release部署（DEPLOY_VERIFIED / LIVE_PENDING）
 
 用户本轮明确授权“部署”，工作区F:/AnimusForge-main、main/02c8095b150fecec62fafee0bf08371e6c04cb6d，产品69f03579d含此前5e1e354ac/064cbaf6a。本条替代ambient-diagnostic-complete-20261014、terminal-live-complete-20261014的“尚未部署”，以及deploy-main-20261014的旧安装状态；原源码/回放边界继续有效。本轮显式使用Release部署至F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，版本仍v1.6.0；原一键默认Debug未改，不push、打包、递增版本或启动游戏。
