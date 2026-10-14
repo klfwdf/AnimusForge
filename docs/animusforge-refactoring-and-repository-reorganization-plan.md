@@ -1,3 +1,19 @@
+<a id="expanded-persona-editor-20261015"></a>
+## 2026-10-15 NPC 扩展人设编辑补齐（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- F:/AnimusForge-main，main；起点81846cae，意图检查点fc09c9060，产品提交7b113afbe。根因：原编辑只接Description，而百科扩展展示使用Traits/Motivations/Values/Fears/SpeechStyle，缺少编辑入口。新增“编辑扩展人设”五字段子菜单，22种原有特质选择/强度1–3/移除（最多5项），其余字段文本预填与按项保存、空白清空。保持正文、声音与其他字段；回调校验目标/存档代次，取消及重复提交不写入，保存后排队刷新百科。
+- 原profile owner/存档字段/类型身份、生成与三渠道读取保持；本次未修改SyncData或序列化。仅手动UI点击处理当前profile与固定22项特质，无Tick扫描/反射/IO。现有输入控件字符上限、上下文投影的条数/长度限制保持，不把编辑存储原文全量显示作新增承诺。
+- 验证：RootEditorLifecycleTests实际生产控制器+profile owner共111断言PASS（CN/EN，预填/重开读回、四文本字段、特质增删/强度/上限、缺失profile、取消/重复/换NPC/换存档）；游戏UI/实体声明为替身。真实资源10组新键及变量、22组特质/5组字段名、两语言注册与content-map PASS，人工检查中英语义一致。首次回放把说话风格行首空格误当列表trim，修正预期，保原文规则。
+- 原统一Release build-only双API（1.3.15.110062 / 1.4.6.115628）各363 warning/0 error，Bootstrap/probe0/0，双Coup/registration smoke PASS。第一次构建发现原生取消回调Action<List<InquiryElement>>签名不符，已修正生产调用与替身后完整重跑通过。进程EnableDefaultNoneItems=false，原构建脚本未改；候选包含并行已提交Economy切片db3e1ae68，本产品提交未夹带其差异。
+- 证据：artifacts/expanded-persona-editor-test-final.log、expanded-persona-editor-localization.log、expanded-persona-editor-build-final.log、expanded-persona-editor-receipt.json；初次失败日志保留。双DLL/Bootstrap在bin/Release/single_module_artifacts，未Stage、部署、打包或push。
+- NOT-RUN：实际Gauntlet点击/滚动/百科刷新、游戏存档重载、真实LLM消费效果与全Mod矩阵。回滚仅git revert 7b113afbe；不会撤销并行Economy或自动回退已写的玩家字段。
+
+| 源码（7b113afbe） | 一基行范围与符号 | 责任/消费者 |
+| --- | --- | --- |
+| src/AF.GameAdapter.Bannerlord/UI/Editors/PersonaEditorController.cs | 49–55 PersonaEditorPort；153–157 菜单；209–215 路由；351–484 ExpandedFieldLabel/OpenExpandedPersonaMenu/OpenExpandedText/OpenExpandedTraits/OpenExpandedTraitStrength/ExpandedPersonaSaved | 原NPC人设菜单→五字段编辑→目标/代次检查→更新端口→百科刷新；复用DevTextEditorHelper与原生Inquiry |
+| src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaEditorUi.cs | 89–99 CreatePersonaEditor；119–125 UpdateDevPersonaEditorProfile | 主线程读取当前profile，更新后SaveNpcPersonaProfile进入既有PersonaProfileStateOwner.Save |
+| tests/modules/AF.Module.Persona/RootEditorLifecycleTests/ExpandedPersonaEditorReplay.cs | 8–111 Run | 实际控制器/owner回放，中英XML读取；不冒充实机及存档格式验证 |
+
 <a id="deploy-push-repeat-20261014"></a>
 ## 2026-10-14 当前改动再次部署并推送（DEPLOY_SCRIPT_PASS / PUSH_VERIFIED / LIVE_PENDING）
 
