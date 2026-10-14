@@ -1,3 +1,18 @@
+<a id="local-feature-publication-20261015"></a>
+## Player diplomacy and dialogue rewrite delivery scope (2026-10-15)
+
+The publication uses the same production owners as verified source `ad4112034`; no new DLL, save namespace or public API is introduced. [Delivery evidence](../animusforge-refactoring-and-repository-reorganization-plan.md#local-feature-publication-20261015) distinguishes source/DLL replay from live acceptance.
+
+| Source and symbol | Responsibility and verification boundary |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerEvents.cs:39–44,235–270` / RecordActualPlayerNotice, MaintainPlayerEvents | Independent player scheduling and actual-notice deadlines; production owner replays, not live campaign timing |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerLifecycle.cs:132–178,187–227` / CompletePlayerLifecycle, RehomePlayerReplyEvent | Explicit case continuation and semantic routing; real output contract with synthetic model decisions |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Privacy.cs:54–87,89–104` / PrepareDiplomacyPrivacy, DeferDraftForPrivacyCheck | Public-material isolation and audit; no promise of zero leakage from a live provider |
+| `src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeRewrite.cs:52–94` / TryRewriteNativeConversationForExternal | Current-owner native undo, memory receipt validation and playback guards; 36 scoped integration checks |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneRewrite.cs:128–150` / TryRewriteSceneConversationForExternal | Latest completed group undo, generation/epoch guards and confirmed-fact preservation; 20 lifecycle checks |
+| `src/modules/AF.Module.Conversation/Internal/History/ConversationRewriteTurn.cs:61–71` / TryRewrite | Validate all captured writes before removal; no rollback of executed game actions |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Presentation.cs:35–44` / NotificationWorld.ShowNotice | Yellow full-text projection; actual widget rendering remains unverified |
+
 <a id="captivity-free-opening-20261013"></a>
 ### 被俘后领主自由开场：75c7efe60
 

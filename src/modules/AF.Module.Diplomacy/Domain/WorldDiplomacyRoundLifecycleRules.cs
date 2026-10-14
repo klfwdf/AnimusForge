@@ -4764,16 +4764,11 @@ public static class WorldDiplomacyRoundLifecycleRules
     {
         return;
     }
+    // Per-owner capacity; never evict a leased task or another lane's pending work.
+    int laneCount = storage.Jobs.Count(x => x != null && !IsJobOfKind(x, "compress")
+        && string.Equals(x.SchedulingOwner, job.SchedulingOwner, StringComparison.Ordinal));
+    if (!IsJobOfKind(job, "compress") && laneCount >= Math.Max(1, maxPendingJobs)) return;
     storage.Jobs.Add(job);
-    int queueCapacity = maxPendingJobs + (storage.Jobs.Any(x =>
-        IsJobOfKind(x, "compress")) ? 1 : 0);
-    storage.Jobs = storage.Jobs
-        .Where(x => x != null)
-        .OrderByDescending(x => x.Priority)
-        .ThenBy(x => x.CreatedDay)
-        .ThenBy(x => x.JobId, StringComparer.OrdinalIgnoreCase)
-        .Take(queueCapacity)
-        .ToList();
 }
 
     public static void CommitLocalRoundSummary(

@@ -181,4 +181,13 @@
     <Content Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.zh-CN.json" Link="ModuleData/PromptComposerTexts.json" CopyToOutputDirectory="PreserveNewest" />
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json" LogicalName="AnimusForge.Prompt.Compatibility.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerEvents.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerLifecycle.cs" />
+    <Compile Include="../../../../src/AF.Persistence/CampaignSaveChunkHelper.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Privacy.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Rounds/DiplomacyPlayerEventRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Rounds/DiplomacyConditionalExecutionRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyPlayerNegotiationRecords.cs" />
+  </ItemGroup>
 </Project>

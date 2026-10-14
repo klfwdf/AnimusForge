@@ -12,6 +12,7 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
     internal readonly List<string> Calls = new();
     public int CurrentDayValue = 12;
     public virtual int CurrentDay() { Calls.Add("CurrentDay"); return CurrentDayValue; }
+    public virtual double CurrentCampaignHours() => CurrentHour();
     public virtual int CurrentHour()
     {
         Calls.Add("CurrentHour");

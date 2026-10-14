@@ -112,6 +112,17 @@ internal static class WorldDiplomacyDraftRepairApplication
 			authorizedTargetIds,
 			world.NewId("diplomacy_generate_repair"));
 		repair.PresentedLegalActionSignature = orchestration.BuildGenerationLegalActionSignature(repair);
+        repair.PrivacySourceMaterial = source.PrivacySourceMaterial;
+        repair.PrivacyPublicContext = source.PrivacyPublicContext;
+        repair.PrivacyRevision = source.PrivacyRevision;
+        repair.PrivacyKnowledgeRevision = source.PrivacyKnowledgeRevision;
+        repair.CourtKnowledgeRevision = source.CourtKnowledgeRevision;
+        repair.PrivacyRewrites = source.PrivacyRewrites;
+        repair.PrivacyDeclarationSystem = source.PrivacyDeclarationSystem;
+        repair.SilenceSourceDocumentId = source.SilenceSourceDocumentId;
+        repair.RoundConversationRevision = source.RoundConversationRevision;
+        repair.PlayerResponseSourceIds = new List<string>(source.PlayerResponseSourceIds ?? new());
+        repair.PersonalMemoryRulerId = source.PersonalMemoryRulerId;
 		orchestration.EnqueueJob(repair);
 		world.Log("generated declaration repair queued sourceJob=" + source.JobId + " repairJob=" + repair.JobId + " reason=" + reason);
 		return true;

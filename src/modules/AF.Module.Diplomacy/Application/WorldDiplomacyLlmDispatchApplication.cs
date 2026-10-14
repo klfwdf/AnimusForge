@@ -171,8 +171,7 @@ internal static class WorldDiplomacyLlmDispatchApplication
             source.Log,
             scheduler == null ? null : scheduler.CanDispatchDiplomacyJob,
             scheduler == null ? null : scheduler.PrepareSharedRequest,
-            scheduler == null ? null : j => j.Kind == "compress" ? j.Priority : scheduler.IsPlayerSchedulingJobForDispatch(j) ? 95
-                : Math.Min(100, j.Priority + Math.Max(0, selectionDay - j.CreatedDay) * 5));
+            scheduler == null ? null : j => scheduler.LaneDispatchPriority(j, selectionDay));
         if (job == null) return;
 
         int timeout = WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress")
@@ -194,6 +193,7 @@ internal static class WorldDiplomacyLlmDispatchApplication
         source.SetLastCacheAffinityKey(cacheAffinityKey);
         source.LogPromptCacheShape(job);
         source.StartRequest(request, requestMessages);
+        scheduler?.RecordLaneDispatch(job);
     }
 
     internal static bool EnsureCurrentCanonicalPromptContractBeforeSend(
@@ -221,7 +221,7 @@ internal static class WorldDiplomacyLlmDispatchApplication
         storage.DiplomacyCompressionPending = true;
         storage.CompressionRetryAfterHour = 0;
         storage.CompressionRetryAttempts = 0;
-        removeJob?.Invoke(job.JobId);
+        if (string.IsNullOrEmpty(job.SuspendedReason)) removeJob?.Invoke(job.JobId);
         return false;
     }
 
@@ -305,7 +305,7 @@ internal static class WorldDiplomacyLlmDispatchApplication
                 log?.Invoke("queued generation cancelled before request job=" + job.JobId
                     + " author=" + (job.AuthorKingdomId ?? "") + " reason=" + blockReason);
                 abandonGeneration?.Invoke(job, blockReason);
-                removeJob?.Invoke(job.JobId);
+                if (string.IsNullOrEmpty(job.SuspendedReason)) removeJob?.Invoke(job.JobId);
                 return null;
             }
         }
@@ -313,7 +313,7 @@ internal static class WorldDiplomacyLlmDispatchApplication
             && ensureStrategicProfile?.Invoke(job) != true)
         {
             abandonGeneration?.Invoke(job, "missing_kingdom_strategic_profile");
-            removeJob?.Invoke(job.JobId);
+            if (string.IsNullOrEmpty(job.SuspendedReason)) removeJob?.Invoke(job.JobId);
             return null;
         }
         // Refreshing legal actions or repairing a persisted prompt can replace its
@@ -336,7 +336,7 @@ internal static class WorldDiplomacyLlmDispatchApplication
             if (ensureStrategicProfile?.Invoke(job) != true)
             {
                 abandonGeneration?.Invoke(job, "missing_kingdom_strategic_profile");
-                removeJob?.Invoke(job.JobId);
+                if (string.IsNullOrEmpty(job.SuspendedReason)) removeJob?.Invoke(job.JobId);
                 return null;
             }
             // Ordinary queued generations consume the newest committed archive at actual send time.

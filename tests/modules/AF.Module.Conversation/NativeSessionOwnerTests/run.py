@@ -23,6 +23,10 @@ for name in names:
 helpers+='\ninternal static class LegacySpeechTextOracle { internal static bool Detailed; internal static bool PreserveAsterisk; private static bool IsDetailedSceneSpeechPromptEnabled()=>Detailed; private static bool ShouldPreserveSceneAsteriskActions()=>PreserveAsterisk; '+'\n'.join(oracle)+' }'
 (out/'TextDependencies.cs').write_text(helpers,encoding='utf-8')
 paths=[Path(__file__).with_name('Program.cs'),ROOT/'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationSessionOwner.cs',ROOT/'src/modules/AF.Module.Memory/Records/AnimusForgeDialogueHistoryEntry.cs',ROOT/'src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs', ROOT/'src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs', ROOT/'src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs', ROOT/'src/modules/AF.Module.Economy/Host/GiveAssetTagCodec.cs', out/'TextDependencies.cs']
+paths.append(ROOT/'src/modules/AF.Module.Conversation/Internal/History/ConversationRewriteTurn.cs')
+paths.extend([ROOT/'src/modules/AF.Module.Conversation/Internal/ConversationRuntimeTexts.cs',ROOT/'src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs'])
+(out/'RuntimeResourcePath.cs').write_text('namespace AnimusForge; internal static class AnimusForgeModulePaths { internal static string GetModuleDataFilePath(string name) => System.IO.Path.Combine(System.AppContext.BaseDirectory, name); }',encoding='utf-8')
+paths.append(out/'RuntimeResourcePath.cs')
 if a.mutate:
  target=ROOT/'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationSessionOwner.cs'
  rules=ROOT/'src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs'
@@ -38,8 +42,13 @@ if a.mutate:
  target,before,after=mutations[a.mutate];text=target.read_text(encoding='utf-8-sig');assert text.count(before)==1,'Mutation anchor not unique'
  candidate=out/target.name;candidate.write_text(text.replace(before,after,1),encoding='utf-8');paths[paths.index(target)]=candidate
 newtonsoft=dotnet.parent/'sdk/8.0.425/Newtonsoft.Json.dll'
+if not newtonsoft.is_file():
+ candidates=sorted((dotnet.parent/'sdk').glob('8.*/Newtonsoft.Json.dll'))
+ if candidates:newtonsoft=candidates[-1]
 assert newtonsoft.is_file(), 'Missing existing Newtonsoft.Json.dll'
 items='<Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(newtonsoft))+'</HintPath></Reference>'+''.join('<Compile Include="'+escape(str(x))+'" Link="'+x.name+'" />' for x in paths)
+resources=ROOT/'content/modules/AF.Module.Conversation/ModuleData';prompt_res=ROOT/'content/modules/AF.Module.Prompt/ModuleData'
+items+='<EmbeddedResource Include="'+str(resources/'ConversationRuntimeCompatibility.json')+'"><LogicalName>AnimusForge.Conversation.RuntimeCompatibility.json</LogicalName><WithCulture>false</WithCulture></EmbeddedResource><Content Include="'+str(resources/'ConversationRuntimePrompts.json')+'"><Link>ConversationRuntimePrompts.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content><EmbeddedResource Include="'+str(prompt_res/'PromptCompatibility.json')+'"><LogicalName>AnimusForge.Prompt.Compatibility.json</LogicalName><WithCulture>false</WithCulture></EmbeddedResource><Content Include="'+str(prompt_res/'PromptComposerTexts.zh-CN.json')+'"><Link>PromptComposerTexts.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>'
 (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup><ItemGroup>'+items+'</ItemGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Tests.csproj'),'-c','Release'],cwd=out,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)

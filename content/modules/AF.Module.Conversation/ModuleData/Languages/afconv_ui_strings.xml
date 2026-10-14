@@ -31,6 +31,12 @@
     <string id="AF_CONV_UI_TagTest_ExecutionFailed" text="[Tag test] Execution failed: {ERROR}" />
     <string id="AF_CONV_UI_Shout_BattleScene" text="Battle scene" />
     <string id="AF_CONV_UI_Native_Illustration" text="Scene illustration" />
+    <string id="AF_CONV_UI_Rewrite_Button" text="Undo and edit" />
+    <string id="AF_CONV_UI_Rewrite_Unavailable" text="There is no completed round to undo in this conversation." />
+    <string id="AF_CONV_UI_Rewrite_Changed" text="The conversation changed; this round can no longer be undone." />
+    <string id="AF_CONV_UI_Rewrite_Failed" text="The round could not be undone. Its records were kept." />
+    <string id="AF_CONV_UI_Rewrite_Busy" text="Wait for the current round to finish before undoing it." />
+    <string id="AF_CONV_UI_Rewrite_Done" text="Round removed. Edit and resend; completed game actions are kept." />
     <string id="AF_CONV_UI_Courier_NotReady" text="The courier system is not initialized; replies are unavailable." />
     <string id="AF_CONV_UI_Courier_Character" text="this character" />
     <string id="AF_CONV_UI_Courier_NoRecipient" text="No available recipient could be found." />
@@ -498,5 +504,6 @@
     <string id="AF_CONV_UI_Direct_Map_Protected" text="This queue belongs to a protected external order source. No task was changed." />
     <string id="AF_CONV_UI_Direct_Map_SafeExit" text="The old task is waiting for a safe exit. Retry after it finishes; the old queue was preserved." />
     <string id="AF_CONV_UI_Direct_Map_BattleReplace" text="The old task is in battle or siege control. Replacement was refused and the old queue was preserved." />
+    <string id="AF_CONV_UI_Rewrite_Hint" text="Undo this dialogue turn and edit your original line. Completed game actions are retained." />
   </strings>
 </base>

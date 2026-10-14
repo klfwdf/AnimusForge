@@ -1064,6 +1064,7 @@
     <string id="AF_KINGDOM_CW_Outcome_RebelsSecede" text="叛军独立" />
     <string id="AF_KINGDOM_CW_Outcome_RebelsUsurp" text="叛军夺取王位" />
     <string id="AF_DIP_UI_Notice_ThirdPartyReceived" text="【第三方外交消息】{TITLE}。消息已传至本国，可在王国公告中查看全文。" />
+    <string id="AF_DIP_UI_Notice_DeclarationText" text="【外交宣言】{ISSUER}发布《{TITLE}》：{BODY}" />
     <string id="AF_DIP_UI_Notice_PlayerCourtDelivery" text="你的宣言已传播至{RECEIVER}。" />
     <string id="AF_DIP_UI_StandingNoChange" text="无变化" />
     <string id="AF_DIP_UI_StandingUpperBound" text="已达上限100" />

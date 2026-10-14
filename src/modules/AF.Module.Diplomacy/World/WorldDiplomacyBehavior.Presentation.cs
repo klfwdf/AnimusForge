@@ -11,6 +11,12 @@ namespace AnimusForge;
 
 public sealed partial class WorldDiplomacyBehavior
 {
+    private static double CurrentDiplomacyHours()
+    {
+        if (Campaign.Current == null || !Campaign.Current.GameStarted) return 0;
+        try { return Math.Max(0, CampaignTime.Now.ToHours); }
+        catch { return CurrentHour(); }
+    }
     private sealed class NotificationWorld : IWorldDiplomacyNotificationSink
     {
         private readonly WorldDiplomacyBehavior _owner;
@@ -22,6 +28,8 @@ public sealed partial class WorldDiplomacyBehavior
         public string KingdomName(string id) => WorldDiplomacyBehavior.KingdomName(ResolveKingdom(id));
         public string FormatCampaignDate(int day) => WorldDiplomacyBehavior.FormatCampaignDate(day);
         public int CurrentDay => WorldDiplomacyBehavior.CurrentDay();
+        public double CurrentHour => CurrentDiplomacyHours();
+        public void RecordShownTime(WorldDiplomacyDocument document, double hour) => _owner._orchestration.RecordActualPlayerNotice(document, hour);
         public string PlayerKingdomId => Clan.PlayerClan?.Kingdom?.StringId ?? "";
         public void ShowRumor(string text) => InformationManager.DisplayMessage(new InformationMessage(text));
         public void ShowNotice(WorldDiplomacyNotice notice)
@@ -30,10 +38,8 @@ public sealed partial class WorldDiplomacyBehavior
                 MBInformationManager.AddNotice(new WorldDiplomacyMapNotification(notice.DocumentId, notice.Title, notice.Description));
             else
             {
-                var text = new TaleWorlds.Localization.TextObject("{=AF_DIP_UI_Notice_ThirdPartyReceived}Third-party diplomacy: {TITLE}. The news has reached your kingdom; read the full text in the kingdom bulletin.");
-                text.SetTextVariable("TITLE", notice.Title ?? "");
                 InformationManager.DisplayMessage(new InformationMessage(
-                    text.ToString(), Colors.Yellow));
+                    notice.Description ?? "", Colors.Yellow));
             }
         }
         public void Log(string text) => WorldDiplomacyBehavior.Log(text);

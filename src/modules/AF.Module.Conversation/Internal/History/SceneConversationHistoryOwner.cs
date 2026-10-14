@@ -18,7 +18,7 @@ internal sealed class SceneConversationHistoryOwner {
  private readonly object _gate;private readonly Dictionary<int,List<ConversationMessage>> _npcHistory=new();private readonly List<ConversationMessage> _publicHistory=new();
  internal SceneConversationHistoryOwner(object gate){_gate=gate??throw new ArgumentNullException(nameof(gate));}
  internal void Reset(){lock(_gate){_npcHistory.Clear();_publicHistory.Clear();}}
- internal void AppendPublic(ConversationMessage message){lock(_gate){_publicHistory.Add(message);}}
+ internal void AppendPublic(ConversationMessage message){lock(_gate){_publicHistory.Add(message);if(ConversationRewriteTurn.IsCapturing)CaptureRewriteMessage(() => _publicHistory,message);}}
  internal string CaptureIllustrationDialogue()
  {
   lock (_gate)
@@ -41,8 +41,25 @@ internal sealed class SceneConversationHistoryOwner {
    return output.ToString();
   }
  }
- internal void AppendNpc(int index,ConversationMessage message){lock(_gate){if(!_npcHistory.ContainsKey(index))_npcHistory[index]=new List<ConversationMessage>();_npcHistory[index].Add(message);}}
- internal void AppendPair(int index,ConversationMessage pub,ConversationMessage priv){lock(_gate){_publicHistory.Add(pub);if(!_npcHistory.TryGetValue(index,out var list)||list==null)_npcHistory[index]=list=new();list.Add(priv);}}
+ internal void AppendNpc(int index,ConversationMessage message){lock(_gate){if(!_npcHistory.ContainsKey(index))_npcHistory[index]=new List<ConversationMessage>();_npcHistory[index].Add(message);if(ConversationRewriteTurn.IsCapturing)CaptureRewriteNpcMessage(index,message);}}
+ internal void AppendPair(int index,ConversationMessage pub,ConversationMessage priv){lock(_gate){_publicHistory.Add(pub);if(!_npcHistory.TryGetValue(index,out var list)||list==null)_npcHistory[index]=list=new();list.Add(priv);if(ConversationRewriteTurn.IsCapturing){CaptureRewriteMessage(() => _publicHistory,pub);CaptureRewriteNpcMessage(index,priv);}}}
+ private void CaptureRewriteNpcMessage(int index,ConversationMessage message)
+  => CaptureRewriteMessage(() => _npcHistory.TryGetValue(index,out var current)?current:null,message);
+ private static void CaptureRewriteMessage(Func<List<ConversationMessage>> currentList,ConversationMessage message)
+ {
+  if(!ConversationRewriteTurn.IsCapturing||message==null)return;
+  bool player=string.Equals(message.Role,"user",StringComparison.OrdinalIgnoreCase);
+  bool reply=string.Equals(message.Role,"assistant",StringComparison.OrdinalIgnoreCase);
+  if(!player&&!reply)return;
+  ConversationMessage expected=Clone(message);
+  ConversationRewriteTurn.CaptureListWrite(currentList,message,
+   () => message.EventSequence==expected.EventSequence&&message.GameDayIndex==expected.GameDayIndex
+    &&message.GameDate==expected.GameDate&&message.GameHour==expected.GameHour&&message.Scene==expected.Scene
+    &&message.Role==expected.Role&&message.Content==expected.Content&&message.SpeakerName==expected.SpeakerName
+    &&message.SpeakerAgentIndex==expected.SpeakerAgentIndex&&message.SpeakerHeroId==expected.SpeakerHeroId
+    &&message.TargetAgentIndex==expected.TargetAgentIndex&&message.TargetName==expected.TargetName&&message.TargetHeroId==expected.TargetHeroId,
+   isPlayerSpeech:player,isNpcReply:reply);
+ }
  internal void PruneNpcFacts(int index){lock(_gate){SceneHistoryProjectionOwner.RemoveExpiredSingleUseSceneNpcFacts(_npcHistory[index]);}}
  internal void PrunePublicFacts(){lock(_gate){SceneHistoryProjectionOwner.RemoveExpiredSingleUseSceneNpcFacts(_publicHistory);}}
  internal void RollbackPlayerEvent(long sequence){lock(_gate){_publicHistory.RemoveAll(m=>m!=null&&m.EventSequence==sequence&&string.Equals(m.Role,"user",StringComparison.OrdinalIgnoreCase));foreach(var list in _npcHistory.Values)list?.RemoveAll(m=>m!=null&&m.EventSequence==sequence&&string.Equals(m.Role,"user",StringComparison.OrdinalIgnoreCase));}}

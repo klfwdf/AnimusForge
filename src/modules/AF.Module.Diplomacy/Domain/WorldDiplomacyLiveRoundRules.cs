@@ -16,9 +16,10 @@ internal static class WorldDiplomacyLiveRoundRules
     internal static bool Contains(WorldDiplomacyStorage storage, WorldDiplomacyRound round) => round != null
         && WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)
         && (ReferenceEquals(storage?.ActiveRound, round) || storage?.ConcurrentRounds?.Contains(round) == true);
-    internal static bool IsOrdinary(WorldDiplomacyRound round) => round != null && !round.IsPlayerInsertion
+    internal static bool IsOrdinary(WorldDiplomacyRound round) => round != null && (round.SchedulingOwner == "normal"
+        || (string.IsNullOrEmpty(round.SchedulingOwner) && !round.IsPlayerInsertion
         && !string.Equals(round.EventSourceType, "dialogue_commitment", StringComparison.OrdinalIgnoreCase)
-        && !string.Equals(round.EventSourceType, "player_followup", StringComparison.OrdinalIgnoreCase);
+        && !string.Equals(round.EventSourceType, "player_followup", StringComparison.OrdinalIgnoreCase)));
     internal static bool HasInitiator(WorldDiplomacyStorage storage, string id) => Live(storage).Any(r => Contains(storage, r)
         && IsOrdinary(r) && string.Equals(r.InitiatorKingdomId, id, StringComparison.OrdinalIgnoreCase));
 

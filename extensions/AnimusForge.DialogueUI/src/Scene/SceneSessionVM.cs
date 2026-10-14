@@ -39,6 +39,7 @@ public sealed class SceneSessionVM : ViewModel
     [DataSourceProperty] public string InputPlaceholderText => DialogueUiLocalization.Text("AFD_UI_Scene_InputPlaceholder", "Tell the people around you something…");
     [DataSourceProperty] public string InputHintText => DialogueUiLocalization.Text("AFD_UI_Scene_InputHint", "[Enter] send · [Shift+Enter] new line · distribute to the audience");
     [DataSourceProperty] public string HistoryText => DialogueUiLocalization.Text("AFD_UI_Scene_History", "History");
+    [DataSourceProperty] public string RewriteText => DialogueUiLocalization.Text("AF_CONV_UI_Rewrite_Button", "Undo and edit");
     [DataSourceProperty] public string GiftText => DialogueUiLocalization.Text("AFD_UI_Scene_Gift", "Gift");
     [DataSourceProperty] public string GalleryText => DialogueUiLocalization.Text("AFD_UI_Scene_Gallery", "Gallery");
     [DataSourceProperty] public string EncyclopediaText => DialogueUiLocalization.Text("AFD_UI_Scene_Encyclopedia", "Encyclopedia");
@@ -69,6 +70,9 @@ public sealed class SceneSessionVM : ViewModel
     [DataSourceProperty] public MBBindingList<SceneParticipantVM> Participants { get; } = new();
     [DataSourceProperty] public MBBindingList<SceneHistoryLineVM> HistoryLines { get; } = new();
     [DataSourceProperty] public int HistoryScrollVersion { get; private set; }
+    [DataSourceProperty] public int InputFocusVersion { get; private set; }
+    private bool _canRewrite;
+    [DataSourceProperty] public bool CanRewrite => _canRewrite;
     [DataSourceProperty] public bool IsVisible => !_isHidden;
     [DataSourceProperty] public bool IsExpanded => !_isCollapsed;
     [DataSourceProperty] public bool IsCollapsed => _isCollapsed;
@@ -113,6 +117,7 @@ public sealed class SceneSessionVM : ViewModel
             _inputText = text;
             OnPropertyChangedWithValue(text, nameof(InputText));
             if (wasEmpty != IsInputEmpty) OnPropertyChanged(nameof(IsInputEmpty));
+            RefreshRewriteAvailability();
         }
     }
 
@@ -120,6 +125,31 @@ public sealed class SceneSessionVM : ViewModel
     private void Queue(Action action) => _pending = action;
 
     public void ExecuteSubmit() => Queue(Submit);
+    public void ExecuteRewrite() => Queue(Rewrite);
+
+    private void Rewrite()
+    {
+        RefreshRewriteAvailability();
+        if (!CanRewrite) return;
+        if (ShoutBehavior.TryRewriteSceneConversationForExternal(out string playerText, out string status))
+        {
+            InputText = playerText;
+            InputFocusVersion++;
+            OnPropertyChanged(nameof(InputFocusVersion));
+            RefreshHistory(force: true);
+        }
+        SetStatus(status);
+        RefreshRewriteAvailability();
+    }
+
+    internal void RefreshRewriteAvailability()
+    {
+        bool available = !_released && !_isBusy && !Trade.IsOpen && IsInputEmpty && !HasStagedTrade
+            && ShoutBehavior.CanRewriteSceneConversationForExternal;
+        if (_canRewrite == available) return;
+        _canRewrite = available;
+        OnPropertyChanged(nameof(CanRewrite));
+    }
     public void ExecuteToggleHistory() => Queue(() => { _isHistoryOpen = !_isHistoryOpen; OnPropertyChanged(nameof(IsHistoryOpen)); RefreshHistory(force: true); });
     public void ExecuteGift() => Queue(() => OpenTrade("give"));
     public void ExecuteDirectActions()
@@ -146,6 +176,7 @@ public sealed class SceneSessionVM : ViewModel
         OnPropertyChanged(nameof(CanOpenDirectActions));
         OnPropertyChanged(nameof(IsTradeOpen));
         OnPropertyChanged(nameof(IsChromeVisible));
+        RefreshRewriteAvailability();
     }
 
     // Esc: close the give panel first, otherwise leave the session. Collapsing is mouse-only.
@@ -204,12 +235,13 @@ public sealed class SceneSessionVM : ViewModel
             _canInterrupt = canInterrupt;
             OnPropertyChanged(nameof(CanInterrupt));
         }
-        if (_isBusy == busy) return;
+        if (_isBusy == busy) { RefreshRewriteAvailability(); return; }
         _isBusy = busy;
         OnPropertyChanged(nameof(CanOpenDirectActions));
         OnPropertyChanged(nameof(IsBusy));
         OnPropertyChanged(nameof(CanSend));
         OnPropertyChanged(nameof(SendText));
+        RefreshRewriteAvailability();
     }
 
     // 打断: end the running round (NPC replies stop, queued speech retires) so the next line can be sent.

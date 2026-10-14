@@ -158,6 +158,7 @@ internal sealed class SceneConversationSessionPorts
     internal Action<Action> PostMainThread;
     internal Func<int,string,bool,List<string>> CaptureVisibleSceneHistoryLines;
     internal Action<string> PreparePlayerRound;
+    internal Action InvalidateOtherChannelRewrite;
     internal Action ClearPendingHeroFacts;
     internal Action<string> ShowPlayerSpeech;
     internal Action<int> ClearImmediateInteractionTimeouts;

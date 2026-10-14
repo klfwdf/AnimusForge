@@ -92,6 +92,7 @@ internal static class PlayerSemanticReplay
     private static void VerifyGeneratedPlayerEnvelope()
     {
         var owner = new WorldDiplomacyOrchestration(new PlayerEnvelopeHost(), new WorldDiplomacyRuntimeState());
+        owner.CurrentStorage.ConcurrentRounds.Add(new WorldDiplomacyRound { RoundId = "r", State = "active", SchedulingOwner = "player" });
         var job = new WorldDiplomacyJob { Kind = "generate", AuthorKingdomId = "a", RoundId = "r", IsRelayTurn = true };
         // Player target appears last. Earlier actions must inherit the full declaration's policy.
         var actions = new JArray(new[] { "statement", "condemn", "apology", "concession", "declare_war" }
@@ -108,7 +109,7 @@ internal static class PlayerSemanticReplay
             && document.Actions.Count == 5 && document.Actions[0].Intent == "statement",
             "five generated actions retain public semantics and player context through transient records");
         var pureAi = (JObject)json.DeepClone(); pureAi["actions"][4]["target_kingdom_id"] = "b";
-        Test.True(owner.TryGetGeneratedIntentLegalityViolation(job, pureAi, "a", null, out _, out _),
+        Test.True(owner.TryGetGeneratedIntentLegalityViolation(new WorldDiplomacyJob { Kind = "generate", AuthorKingdomId = "a", RoundId = "ordinary", IsRelayTurn = true }, pureAi, "a", null, out _, out _),
             "pure AI envelope retains four-action limit");
         var player = PlayerDocument(); player.Actions = document.Actions;
         var port = new DocumentExecutionReplay.Port();

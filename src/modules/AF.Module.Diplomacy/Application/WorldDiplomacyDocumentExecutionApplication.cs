@@ -30,6 +30,9 @@ internal sealed class WorldDiplomacyDocumentExecutionCommand
     {
         internal readonly bool Exists;
         internal readonly string ActionId;
+        internal readonly string[] DependencyActionIds;
+        internal readonly int ConditionVersion;
+        internal readonly string ExecutionState;
         internal readonly string TargetKingdomId;
         internal readonly string TargetKingdomName;
         internal readonly string Intent;
@@ -56,6 +59,9 @@ internal sealed class WorldDiplomacyDocumentExecutionCommand
         {
             Exists = action != null;
             ActionId = action?.ActionId;
+            DependencyActionIds = action?.DependencyActionIds?.ToArray() ?? Array.Empty<string>();
+            ConditionVersion = Math.Max(1, action?.ConditionVersion ?? 1);
+            ExecutionState = action?.ExecutionState ?? "";
             TargetKingdomId = action?.TargetKingdomId;
             TargetKingdomName = action?.TargetKingdomName;
             Intent = action?.Intent;
@@ -83,6 +89,9 @@ internal sealed class WorldDiplomacyDocumentExecutionCommand
         internal WorldDiplomacyDocumentAction Materialize() => !Exists ? null : new WorldDiplomacyDocumentAction
         {
             ActionId = ActionId,
+            DependencyActionIds = new List<string>(DependencyActionIds),
+            ConditionVersion = ConditionVersion,
+            ExecutionState = ExecutionState,
             TargetKingdomId = TargetKingdomId,
             TargetKingdomName = TargetKingdomName,
             Intent = Intent,
@@ -193,6 +202,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
         WorldDiplomacyDocumentExecutionCommand command, bool legacy,
         List<WorldDiplomacyDocumentActionReceipt> receipts)
     {
+        var conditionalDeferrals = DiplomacyConditionalExecutionRules.DeferredActions(command.MaterializeActions(), port.ResolveDocument);
         string author = port.ResolveKingdomId(command.AuthorKingdomId);
         bool playerDiplomacy = WorldDiplomacyPlayerApplication.InvolvesPlayer(document, port.ResolveRound(command.RoundId), port.IsPlayerAffiliated);
         if (command.ActionCount < 1 || (!playerDiplomacy && command.ActionCount > port.MaxDiplomaticActionsPerDocument) || author == null) return;
@@ -246,6 +256,9 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 return;
             }
             if (publicStatement) { targets.Add(target); continue; }
+            if (conditionalDeferrals.Contains(input.ActionId) && !WorldDiplomacyIntentVocabulary.IsProposalIntent(intent)
+                && input.Exists && target != null && target != author && !port.IsEliminated(target))
+            { targets.Add(target); continue; }
             if (orchestration is WorldDiplomacyOrchestration owner
                 && !owner.ValidateFormalTreatyDeclaration(document, intent, input.Materialize().TreatyTerms,
                     author, target, input.RespondingToOfferDocumentId, input.RespondingToOfferActionId, out string treatyReason))
@@ -420,7 +433,12 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			bool outcomeKnown = true;
 			try
 			{
-                if (!legacy && !noAction && TryGetExecutionStateViolation(orchestration, document,
+                if (conditionalDeferrals.Contains(input.ActionId) && !WorldDiplomacyIntentVocabulary.IsProposalIntent(input.Intent))
+                {
+                    document.MechanicalResult = DiplomacyPromptTexts.Get("PlayerConditionalDeferred", "The dependent exchange has not taken effect. Its prerequisites and safe coordinated execution must be settled before any part is fulfilled; independent agreed matters remain eligible.");
+                    document.ChangedDiplomaticState = false;
+                }
+                else if (!legacy && !noAction && TryGetExecutionStateViolation(orchestration, document,
                     command.IsPlayerAuthored, playerDiplomacy, input.Intent, input.Commitment, author, target, out string executionBlockReason))
 				{
 					document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Analysis_MechanicNotExecutedPrefix", "Diplomatic action not executed: ")
@@ -462,6 +480,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			if (!legacy)
             {
                 WorldDiplomacyDocumentAction resultAction = input.Materialize();
+                if (conditionalDeferrals.Contains(input.ActionId) && !effectAttempted) resultAction.ExecutionState = "deferred_conditions";
                 WorldDiplomacyDocumentApplication.CaptureActionResult(document, resultAction, receipt);
                 // CaptureActionResult copies peace terms from the mutable document.
                 // Detach those terms before the next game-action callback runs.

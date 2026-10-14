@@ -391,7 +391,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
-			receipt?.Fail("scene.group_exception");
+			FailSceneRewriteRound(receipt, conversationEpoch, "scene.group_exception");
 			Logger.Log("ShoutBehavior", "[ERROR] " + ex2.Message);
 			Logger.Obs("ShoutGroup", "error", new Dictionary<string, object>
 			{
@@ -447,7 +447,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			ApplySceneLocalDisambiguatedNames(allNpcData);
 			if (!IsSceneConversationEpochCurrent(conversationEpoch))
 			{
-				receipt?.Fail("scene.stale_context");
+				FailSceneRewriteRound(receipt, conversationEpoch, "scene.stale_context");
 				return;
 			}
 			if (allNpcData == null)
@@ -493,7 +493,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			}
 			if (currentSpeaker == null)
 			{
-				receipt?.Fail("scene.primary_unavailable");
+				FailSceneRewriteRound(receipt, conversationEpoch, "scene.primary_unavailable");
 				List<NpcDataPacket> failedPrimaryParticipants = primaryNpc == null ? new List<NpcDataPacket>() : new List<NpcDataPacket> { primaryNpc };
 				await _dispatcher.RunAsync("scene_primary_first_release", primaryNpc?.Name, primaryTargetAgentIndex, delegate
 				{
@@ -537,14 +537,14 @@ internal sealed partial class SceneConversationSessionRuntime
 				Logger.Log("Logic", "[MemoryPerf] group_turn_start agent=" + currentSpeaker.AgentIndex + " npc=" + (GetSceneNpcHistoryNameForPrompt(currentSpeaker) ?? "") + " hero=" + turnHeroId + " multi=" + multiNpcScene + " candidates=" + ((speakableCandidates ?? new List<NpcDataPacket>()).Count) + " firstTurn=" + firstTurn + " remainingAfterDecrement=" + remainingTurns);
 				if (!IsSceneConversationEpochCurrent(conversationEpoch))
 				{
-					receipt?.Fail("scene.stale_context");
+					FailSceneRewriteRound(receipt, conversationEpoch, "scene.stale_context");
 					return;
 				}
 				NpcDataPacket validatedCurrentSpeaker = await _dispatcher.RunAsync("scene_relay_turn_validate", currentSpeaker.Name, currentSpeaker.AgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, currentSpeaker.AgentIndex), (NpcDataPacket)null);
 				if (!IsCurrentModuleGroup()) return;
 				if (validatedCurrentSpeaker == null)
 				{
-					receipt?.Fail("scene.target_unavailable");
+					FailSceneRewriteRound(receipt, conversationEpoch, "scene.target_unavailable");
 					_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayEndedSpeakerUnavailable", "This relay round ended: the current speaker left or cannot respond."), new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 					break;
 				}
@@ -661,7 +661,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					if (!IsCurrentModuleGroup()) return;
 					if (ctx == null)
 					{
-						receipt?.Fail("scene.prompt_unconfirmed");
+						FailSceneRewriteRound(receipt, conversationEpoch, "scene.prompt_unconfirmed");
 						return;
 					}
 					preprocessSw.Stop();
@@ -847,12 +847,12 @@ internal sealed partial class SceneConversationSessionRuntime
 									if (!IsCurrentModuleGroup()) return;
 									if (hostResult?.Status == InteractionStatus.CancelledAsStale)
 									{
-										receipt?.Fail("scene.stale_context");
+										FailSceneRewriteRound(receipt, conversationEpoch, "scene.stale_context");
 										return;
 									}
 									if (hostResult == null || (hostResult.Status != InteractionStatus.Executed && hostResult.Status != InteractionStatus.Succeeded))
 									{
-										receipt?.Fail("scene.main_reply_failed");
+										FailSceneRewriteRound(receipt, conversationEpoch, "scene.main_reply_failed");
 										Logger.Log("ShoutBehavior", "[SceneRefactor] terminal reply stopped error=" + (hostResult?.ErrorCode ?? "missing_host_result"));
 										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RoundStoppedBeforeActions", "This response round stopped before action processing began."), new Color(1f, 0.3f, 0.3f), conversationEpoch);
 										break;
@@ -866,7 +866,7 @@ internal sealed partial class SceneConversationSessionRuntime
 							Logger.Log("ShoutBehavior", "[SceneRefactor] cutover error=" + ex.Message);
 							if (sceneShoutDetachedSubmitted)
 							{
-								receipt?.Fail("scene.main_reply_failed");
+								FailSceneRewriteRound(receipt, conversationEpoch, "scene.main_reply_failed");
 								_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RoundErrorStoppedActions", "This response round encountered an error; subsequent action processing was stopped."), new Color(1f, 0.3f, 0.3f), conversationEpoch);
 								break;
 							}
@@ -882,12 +882,12 @@ internal sealed partial class SceneConversationSessionRuntime
 					Logger.Log("Logic", "[MemoryPerf] group_turn_api_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));
 					if (!IsSceneConversationEpochCurrent(conversationEpoch))
 					{
-						receipt?.Fail("scene.stale_context");
+						FailSceneRewriteRound(receipt, conversationEpoch, "scene.stale_context");
 						return;
 					}
 					if (!string.IsNullOrWhiteSpace(output) && (output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0718")) || output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0719")) || output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0720")) || output.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0721"))))
 					{
-						receipt?.Fail("scene.main_reply_failed");
+						FailSceneRewriteRound(receipt, conversationEpoch, "scene.main_reply_failed");
 						Logger.Log("ShoutBehavior(Active)", "<<< API error: " + output);
 						_ports.PostMainThread(delegate
 						{
@@ -910,7 +910,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					cleaned = historyFullText;
 					if (!IsSceneConversationEpochCurrent(conversationEpoch))
 					{
-						receipt?.Fail("scene.stale_context");
+						FailSceneRewriteRound(receipt, conversationEpoch, "scene.stale_context");
 						return;
 					}
 				}
@@ -948,12 +948,12 @@ internal sealed partial class SceneConversationSessionRuntime
 						if (!IsCurrentModuleGroup()) return;
 						if (!historyRecorded)
 						{
-							receipt?.Fail("scene.history_unconfirmed");
+							FailSceneRewriteRound(receipt, conversationEpoch, "scene.history_unconfirmed");
 							if (!IsSceneConversationEpochCurrent(conversationEpoch)) return;
 							break;
 						}
 					}
-					else receipt?.Fail("scene.history_unconfirmed");
+					else FailSceneRewriteRound(receipt, conversationEpoch, "scene.history_unconfirmed");
 					bool duelPostprocessSelected = duelRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "duel");
 					bool rewardPostprocessSelected = rewardRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "reward");
 					bool loanPostprocessSelected = loanRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "loan");
@@ -1038,7 +1038,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					if (!IsCurrentModuleGroup()) return;
 					if (!speechQueued)
 					{
-						receipt?.Fail("scene.speech_not_queued");
+						FailSceneRewriteRound(receipt, conversationEpoch, "scene.speech_not_queued");
 						break;
 					}
 					receipt?.AddTurn(currentSpeaker.AgentIndex, currentSpeaker.Name, visibleReplyForReceipt, speechCompletion.Task);
@@ -1047,6 +1047,7 @@ internal sealed partial class SceneConversationSessionRuntime
 						string replyForPostprocess = string.IsNullOrWhiteSpace(historyText) ? cleaned : historyText;
 						string relayConversationContext = relayPostprocessSelected ? BuildSceneRelayTurnContextForPrompt(playerText, primaryNpc, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, AUTO_GROUP_CHAT_MAX_LINES - remainingTurns) : null;
 						Task<ScenePostprocessOutcome> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: relayCandidatesForNextTurn, relayPrimaryTargetAgentIndex: primaryNpc?.AgentIndex ?? (-1), relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, expectedRuntimeGeneration: sceneReplyGeneration, expectedSceneSessionId: sceneReplySessionId, relayConversationContext: relayConversationContext);
+						ObserveSceneRewritePostprocess(conversationEpoch, postprocessTask);
 						receipt?.AddPostprocess(postprocessTask);
 						if (relayPostprocessSelected)
 						{
@@ -1065,7 +1066,7 @@ internal sealed partial class SceneConversationSessionRuntime
 							}
 							else if (postprocessOutcome?.Succeeded != true)
 							{
-								receipt?.Fail("scene.postprocess_unconfirmed");
+								FailSceneRewriteRound(receipt, conversationEpoch, "scene.postprocess_unconfirmed");
 								Logger.Log("ShoutBehavior", "[SceneRelay] postprocess did not complete status=" + postprocessOutcome?.Status);
 										_ports.QueueSceneInfoMessage(ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayInterrupted", "This relay round was interrupted: behavior processing failed or timed out."), new Color(1f, 0.8f, 0.2f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
@@ -1148,7 +1149,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					_sceneMovement.SuppressOrdinarySceneFollowupsForBattleSpeech(speakableCandidates);
 					return true;
 				}, fallback: false);
-				if (!followupSettled) receipt?.Fail("scene.followup_unconfirmed");
+				if (!followupSettled) FailSceneRewriteRound(receipt, conversationEpoch, "scene.followup_unconfirmed");
 			}
 			else
 			{
@@ -1161,12 +1162,12 @@ internal sealed partial class SceneConversationSessionRuntime
 					_ports.PrepareAutoGroupParticipantsForIdleTimeout(finalEngagedParticipants, lastSpeakerOutputText, playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count);
 					return true;
 				}, fallback: false);
-				if (!followupSettled) receipt?.Fail("scene.followup_unconfirmed");
+				if (!followupSettled) FailSceneRewriteRound(receipt, conversationEpoch, "scene.followup_unconfirmed");
 			}
 		}
 		catch (Exception ex)
 		{
-			receipt?.Fail("scene.group_exception");
+			FailSceneRewriteRound(receipt, conversationEpoch, "scene.group_exception");
 			Logger.Log("ShoutBehavior", "[ERROR] HandleGroupResponsePerHeroIndependent: " + ex.Message);
 			if (IsCurrentModuleGroup() && IsSceneConversationEpochCurrent(conversationEpoch))
 			{

@@ -46,10 +46,6 @@ public static class ExecutionSiteResourceCatalog
         {
             string root = AnimusForge.AnimusForgeDataPaths.GetCurrentRoot();
             string path = Path.Combine(AnimusForge.AnimusForgeDataPaths.GetSettingsDirectory(root), "RichExecutions", "mesh_catalog.json");
-            string legacy = AnimusForge.AnimusForgeDataPaths.GetLegacyDocumentsPath(
-                @"Mount and Blade II Bannerlord\Configs\RichExecutions\mesh_catalog.json");
-            if (!File.Exists(path) && !string.IsNullOrWhiteSpace(legacy))
-                AnimusForge.AnimusForgeDataPaths.CopyLegacyFileIfMissing(root, legacy, path);
             return path;
         }
     }

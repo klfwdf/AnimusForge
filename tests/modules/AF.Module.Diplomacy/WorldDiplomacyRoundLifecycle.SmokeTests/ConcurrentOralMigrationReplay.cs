@@ -232,10 +232,10 @@ internal static class ConcurrentOralMigrationReplay
             && a.PlayerResponses.Single(x => x.SourceDocumentId == "later_ask").Status == "pending", "new unseen ask never receives credit from frozen old request");
 
         o.CurrentStorage.RequestBudget.AdvanceDay(12);
-        for (int i = 0; i < 8; i++) Test.True(o.CurrentStorage.RequestBudget.TryAdmit(false), "shared normal/oral quota permits eight actual sends");
-        Test.True(!o.CurrentStorage.RequestBudget.TryAdmit(false), "four player requests reserved");
-        for (int i = 0; i < 4; i++) Test.True(o.CurrentStorage.RequestBudget.TryAdmit(true), "player reserve remains available");
-        Test.True(!o.CurrentStorage.RequestBudget.TryAdmit(true), "total actual sends bounded at twelve");
+        for (int i = 0; i < 12; i++) Test.True(o.CurrentStorage.RequestBudget.TryAdmit(false), "ordinary NPC bank permits twelve actual sends");
+        Test.True(!o.CurrentStorage.RequestBudget.TryAdmit(false), "ordinary bank ends at twelve without player reserve");
+        for (int i = 0; i < 4; i++) Test.True(o.CurrentStorage.RequestBudget.TryAdmit(true), "independent player bank remains available");
+        Test.True(o.CurrentStorage.RequestBudget.TryAdmit(true), "player bank has no daily ceiling");
         o.CurrentStorage.RequestBudget.AdvanceDay(12); Test.True(o.CurrentStorage.RequestBudget.Started == 12, "pause and repeated same day do not refill");
         var restored = JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(o.CurrentStorage));
         var (_, reload) = Fixture(); reload.ReplaceStorage(restored);
@@ -249,7 +249,8 @@ internal static class ConcurrentOralMigrationReplay
         Test.True(!o.RequestLeases.TryRelease(bJob.JobId, 4, bLease.Attempt), "old generation cannot release current attempt");
         Test.True(!o.RequestLeases.TryRelease(bJob.JobId, 5, bLease.Attempt + 1), "wrong attempt cannot release current request");
         bJob.RoundConversationRevision = a.ConversationRevision;
-        var completion = new LlmJobResult { Success = true, RequestAttempt = bJob.RequestAttempt, RoundConversationRevision = a.ConversationRevision };
+        var completion = new LlmJobResult { Success = true, RequestAttempt = bJob.RequestAttempt, RoundConversationRevision = a.ConversationRevision,
+            OwnershipEpoch = bJob.OwnershipEpoch, SchedulingOwner = bJob.SchedulingOwner, PlayerAuthorityRulerId = bJob.PlayerAuthorityRulerId };
         c.ConversationRevision++;
         Test.True(o.AdmitCompletion(bJob, completion), "unrelated event change does not invalidate current event output");
         a.ConversationRevision++;

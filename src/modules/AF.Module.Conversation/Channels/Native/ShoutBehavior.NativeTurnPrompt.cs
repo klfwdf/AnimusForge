@@ -120,7 +120,7 @@ namespace AnimusForge;
             FreezeWatchdog.Mark("NativeConversation.history_join_done", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " chars=" + persistedHeroHistory.Length + " ms=" + Math.Round(nativeHistoryJoinSw.Elapsed.TotalMilliseconds, 2), immediate: true);
             if (!await CaptureOnGameThreadAsync("prompt_rules_capture", CapturePromptRules).ConfigureAwait(false)) return NativeConversationTurnStep.Stop("");
             NativeConversationPendingHistory nativePendingHistory = await _ports.PrepareNativeConversationPendingHistoryAsync(
-                admission, npc, npcName, nativeTargetAgentIndex, promptPlayerText, shouldRecordPlayerInput).ConfigureAwait(false);
+                admission, npc, npcName, nativeTargetAgentIndex, promptPlayerText, shouldRecordPlayerInput, rewriteTurn).ConfigureAwait(false);
             if (nativePendingHistory == null) return NativeConversationTurnStep.Stop("");
             playerName = nativePendingHistory.PlayerName;
             nativePendingPlayerHistoryEventSequence = nativePendingHistory.EventSequence;

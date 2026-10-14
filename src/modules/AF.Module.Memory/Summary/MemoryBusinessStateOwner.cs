@@ -658,6 +658,10 @@ internal bool AppendDailyMemoryLineById(string memoryId, string memoryName, stri
 			dayIndex,
 			dailyMemoryDraft,
 			dailyMemoryLine);
+		if (dailyPublished && ConversationRewriteTurn.IsCapturing && dailyMemoryLine.IsLlmDialogue && !dailyMemoryLine.IsAfef)
+		{
+			CaptureRewriteDailyLine(heroId, dailyMemoryDraft, dailyMemoryLine);
+		}
 		if (dailyPublished && dailyMemoryLine.IsLlmDialogue)
 		{
 			capture.NoteConversation(heroId);
@@ -668,6 +672,23 @@ internal bool AppendDailyMemoryLineById(string memoryId, string memoryName, stri
 		}
 		return dailyPublished;
 	}
+private void CaptureRewriteDailyLine(string memoryId, DailyMemoryDraft draft, DailyMemoryLine line)
+ {
+  DailyMemoryLine expected = line.CopyForSummary();
+  ConversationRewriteTurn.CaptureListWrite(
+   () => Drafts != null && Drafts.TryGetValue(memoryId, out var current) && current != null && current.Contains(draft)
+    ? draft.Lines : null,
+   line,
+   () => !draft.QueuedForSummary && line.IsLlmDialogue && !line.IsAfef
+    && draft.GameDayIndex == expected.GameDayIndex && line.GameDayIndex == expected.GameDayIndex
+    && line.GameDate == expected.GameDate && line.GameHour == expected.GameHour && line.Scene == expected.Scene
+    && line.Speaker == expected.Speaker && line.Text == expected.Text
+    && line.SceneSessionId == expected.SceneSessionId && line.DialogueSessionId == expected.DialogueSessionId
+    && line.TargetAgentIndex == expected.TargetAgentIndex && line.TargetName == expected.TargetName
+    && line.MemorySessionKey == expected.MemorySessionKey && line.MemoryCommitId == expected.MemoryCommitId
+    && line.MemoryCommitPart == expected.MemoryCommitPart && line.MemoryCommitHash == expected.MemoryCommitHash,
+   () => draft.HasLlmDialogue = draft.Lines.Any(x => x != null && x.IsLlmDialogue && !x.IsAfef));
+ }
 internal static int CountDailyMemoryDraftLines(IEnumerable<DailyMemoryDraft> drafts)
 	{
 		try

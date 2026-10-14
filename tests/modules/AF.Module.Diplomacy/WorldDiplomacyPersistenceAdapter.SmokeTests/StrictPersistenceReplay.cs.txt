@@ -1,6 +1,7 @@
 using AnimusForge;using AnimusForge.Refactor.Adapters;using Newtonsoft.Json;using Newtonsoft.Json.Linq;using System.Text;
 namespace TaleWorlds.CampaignSystem {public interface IDataStore {bool IsSaving{get;}bool IsLoading{get;}bool SyncData<T>(string key,ref T data);}}
 namespace AnimusForge {
+internal static class DiplomacyMiscPromptTexts {internal static string Get(string id,string fallback)=>fallback;} // localization leaf only
 internal static class Logger {internal static bool IsModLogicEnabled=>false;internal static void Log(string tag,string message){}}
 public sealed class Budget {public int Count=7;public Budget Snapshot()=>new(){Count=Count};}
 public sealed class WorldDiplomacyStorage {public string Marker="fresh";public List<string> Documents=new();public Dictionary<string,string> TreatyStatuses=new();public Budget RequestBudget=new();}

@@ -67,6 +67,7 @@ internal static class WorldDiplomacyAnalysisApplication
             if (document.IsPlayerAuthored && (document.PlayerAnalysisCommitted || document.ChangedDiplomaticState
                 || document.AnalysisStatus is "success" or "published_action_rejected")) return;
             JObject json = WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(raw);
+            if (document.IsPlayerAuthored) document.AnsweredNpcDocumentIds = WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "answered_npc_document_ids");
             if (document.IsPlayerAuthored && WorldDiplomacyEnvelopeJsonRules.ReadString(json, "failure_reason") == "output_truncated")
             {
                 MarkPlayerAnalysisFailed(document, log);
@@ -116,6 +117,7 @@ internal static class WorldDiplomacyAnalysisApplication
                         (d, i, c, response, t, score) => {
                             parsed.Add(new WorldDiplomacyDocumentAction {
                                 ActionId = "action_" + (parsed.Count + 1), TargetKingdomId = d.TargetKingdomId,
+                                DependencyActionIds = WorldDiplomacyEnvelopeJsonRules.ReadStringList(action, "dependency_action_ids"),
                                 TargetKingdomName = d.TargetKingdomName, Intent = i, Commitment = c, RequiresResponse = response,
                                 PeaceTerms = d.PeaceTerms, TreatyTerms = d.TreatyTerms,
                                 RespondingToOfferDocumentId = d.RespondingToOfferDocumentId, RespondingToOfferActionId = d.RespondingToOfferActionId,

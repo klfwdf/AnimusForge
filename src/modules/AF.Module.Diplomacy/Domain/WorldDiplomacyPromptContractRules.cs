@@ -10,7 +10,7 @@ namespace AnimusForge.Refactor.Domain;
 public static class WorldDiplomacyPromptContractRules
 {
 	internal const int MaxGeneratedDraftRepairAttempts = 1;
-	internal const string CanonicalHistoryCacheAffinityKey = "diplomacy-history:v29";
+	internal const string CanonicalHistoryCacheAffinityKey = "diplomacy-history:v30";
 	internal static readonly string CanonicalHistoryContractMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_000"];
 	internal static readonly string DiplomaticDeclarationWritingContractMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_001"];
 	internal static readonly string DiplomacyModeDispatchContractMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_002"];
@@ -196,14 +196,13 @@ public static class WorldDiplomacyPromptContractRules
 		sb.AppendLine(DiplomaticDeclarationWritingContractMarker);
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_000", "This section applies only in MODE=DECLARE. In MODE=COMPACT, ignore it and strictly follow the fixed MODE=COMPACT contract in the system message and the trailing dynamic parameters."));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_001", "Do not discuss behind-the-scenes scheduling, generation rules, candidate plans, data judgments or technical processes. Internal fields belong only in the JSON structure and must never become document prose."));
-		sb.Append(ContractText(localize, "AF_DIP_Contract_002", "The body should speak on behalf of the kingdom, court or government, with at least "))
+		sb.AppendLine(DiplomacyMiscPromptTexts.GetRequired("Declaration_DefaultStyle"));
+		sb.Append(ContractText(localize, "AF_DIP_Contract_002", "Suggested body length: "))
 			.Append(minimumCharacters.ToString(CultureInfo.InvariantCulture))
-			.Append(ContractText(localize, "AF_DIP_Contract_003", " characters and at most "))
+			.Append(ContractText(localize, "AF_DIP_Contract_003", " to "))
 			.Append(maximumCharacters.ToString(CultureInfo.InvariantCulture))
-			.AppendLine(ContractText(localize, "AF_DIP_Contract_004", " characters, including punctuation."));
-		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_005", "Use a natural style suited to the kingdom's setting, not Classical Chinese. Include a final decision unless further discussion is still needed."));
-		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_006", "The tone may be firm, pragmatic, stern, conciliatory or proud, but even mockery must be a public judgment by one kingdom of another."));
-		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_007", "You need not explain your own culture or circumstances; simply remain consistent with them. Respond only as needed to the current diplomatic situation, make your intentions clear and be concise, without padding."));
+			.AppendLine(ContractText(localize, "AF_DIP_Contract_004", " characters, including punctuation. This is a preference, not a minimum or maximum for publication. Simple replies may be shorter; complete terms and clear meaning take precedence over length. Do not pad or omit terms to fit the range."));
+		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_005", "Include a final decision unless further discussion is still needed."));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_008", "Do not copy internal decision-making assessments into the body. Do not disclose war-progress score leads, peace openness, disadvantage scores, relation points or military strength values. Express natural judgments supported by battle reports and actual outcomes instead. Exact tribute, truce duration and other formal terms are exempt from this restriction."));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_009", "Geographical descriptions must follow the current geographical relationships in the user message. Only kingdoms explicitly marked as sharing a border may call each other neighbors or border states or claim a common frontier. When marked as not bordering, do not describe them as neighbors or invent a border dispute, even if they are close partners, share a culture, once ruled adjacent territory or are in the same negotiations. Do not disclose internal distance tiers or map distances in the body."));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_010", "Do not copy other documents in the global long-term diplomatic history. The document must be entirely original."));
@@ -223,6 +222,7 @@ public static class WorldDiplomacyPromptContractRules
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_016", "Fill actions[].intent only with an action currently available for that target. The system determines internal fields from the target and intent. statement must be used alone."));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_017", "Do not use statement in the first document of a round. It is available only when listed among the current options in a later AI turn. In that case negotiation_move is required and must describe a meaningful negotiation move, not a mechanical diplomatic act. Allowed values: question|clarification|state_position|justify_demand|acknowledge_concern|dispute_claim|counterproposal|conditional_acceptance|partial_concession|request_concession|revise_terms|request_delay|consult_court|set_deadline|final_offer|withdraw_offer|end_negotiation|declare_deadlock. Do not repeat the previous turn verbatim."));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_018", "accept_* means unconditional acceptance of all original terms with immediate effect. Do not choose it when bargaining, approval or changed terms are still required. Wording for establishing versus ending alliances or trade must not contradict the chosen action."));
+		sb.AppendLine(DiplomacyMiscPromptTexts.GetRequired("Declaration_SemanticStance"));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_019", "Prioritize national survival and practical interests, long-term strategy, the war situation and bilateral relations, then national character; only afterward use the target's international reputation as evidence of credibility. National character determines the weight placed on reliability and honoring commitments; long-term strategy determines how to use that judgment. International reputation adjusts trust in foreign commitments, cooperation terms and diplomatic risk only. It must not independently trigger or prevent war or override territorial, security or containment goals. High reputation does not imply peacefulness, likability or an absence of expansion; low reputation is not automatically a cause for war. A powerful expansionist kingdom that honors its commitments may still be a threat requiring containment."));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_020", "This kingdom's international reputation is strategic capital that dissipates over time and requires sustained conduct to maintain, not the supreme goal or a score that must be maximized. National character determines the price it will pay for credibility, while long-term strategy determines the desired tier. Kingdoms that value trade, alliances, commitments or mediation usually prize high reputation; pragmatic, expansionist or endangered kingdoms may deliberately accept losses for survival, territory, security or containment. When given a diplomatic speaking opportunity and the actual situation permits, proactively maintain reputation by honoring commitments, offering executable cooperation, accepting responsibility, mediating effectively or making other substantive declarations. Gains require actual fulfillment, executable concessions, costs borne or real results. Repeated polite statements, empty promises and declarations without progress cannot farm reputation. Assess gains and losses only after drafting the declaration; they must not force the kingdom to change its position or remain silent."));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_021", "The title should concisely summarize the event or decision, normally in no more than 20 characters."));
@@ -328,6 +328,7 @@ public static class WorldDiplomacyPromptContractRules
 	{
 		StringBuilder sb = CreateSystemPromptBuilder(commonContract);
 		sb.AppendLine(DiplomacyAnalysisTaskMarker + ContractText(localize, "AF_DIP_Contract_103", "MODE=ANALYZE in the final message determines the task and output structure."));
+		sb.AppendLine(DiplomacyMiscPromptTexts.GetRequired("Declaration_SemanticStance"));
 		return PromptComposerTexts.ApplyOutputLanguage(sb.ToString().TrimEnd());
 	}
 
@@ -686,16 +687,16 @@ public static List<WorldDiplomacyLlmMessage> CloneLlmMessages(IEnumerable<WorldD
         {
             correctionBuilder.AppendLine(ContractText(localize, "AF_DIP_Contract_087", "The draft exposed internal diplomatic scheduling terminology. Public titles and bodies must not mention terms such as rounds, relays, final action opportunities or program validation. Rewrite them as the present negotiations, exchanges of documents, final positions, formal decisions or diplomatic outcomes as appropriate. Continue filling round_* fields according to the JSON contract, but never put them in title or body."));
         }
-        else if (string.Equals(reason, "private_chat_style_in_public_declaration", StringComparison.OrdinalIgnoreCase))
-        {
-            correctionBuilder.AppendLine(ContractText(localize, "AF_DIP_Contract_088", "The draft turned a diplomatic document into a private conversation between two rulers. Preserve existing facts, terms and diplomatic intentions, but make the issuing kingdom, court or an institution explicitly identified in its profile the speaking subject. Replace personal \"you\" with the other kingdom's name or \"your kingdom\", and remove conversational retorts such as \"let me tell you\", \"you should thank me\" or \"choose for yourself\". The ruler's personality should appear only in the calibration of national judgments, conditions and deterrence."));
-        }
         else if (string.Equals(reason, "realm_ruler_title_conflicts_with_hard_fact", StringComparison.OrdinalIgnoreCase)
             || string.Equals(reason, "southern_empire_government_conflicts_with_hard_fact", StringComparison.OrdinalIgnoreCase)
             || string.Equals(reason, "western_empire_government_conflicts_with_hard_fact", StringComparison.OrdinalIgnoreCase))
         {
             correctionBuilder.AppendLine(ContractText(localize, "AF_DIP_Contract_089", "The draft confused the issuing kingdom's form of government with its ruler's personal title. The following hard facts about the kingdom's identity must be followed exactly:") + (realmGovernmentHardFact?.Invoke() ?? ""));
             correctionBuilder.AppendLine(ContractText(localize, "AF_DIP_Contract_090", "Institutional names describe only the system of government or source of authority and cannot replace a ruler's personal title. The supreme rulers of all three Empires use Emperor or Empress. Do not call any Imperial ruler an elder, senator, consul, king, grand duke or khan. Preserve legal diplomatic content and redraft the entire document."));
+        }
+        else if (string.Equals(reason, "public_document_capacity_exceeded", StringComparison.OrdinalIgnoreCase))
+        {
+            correctionBuilder.AppendLine(DiplomacyMiscPromptTexts.GetRequired("Declaration_CapacityRepair"));
         }
         else if (string.Equals(reason, "json_parse_failed", StringComparison.OrdinalIgnoreCase)
             || string.Equals(reason, "output_truncated", StringComparison.OrdinalIgnoreCase)

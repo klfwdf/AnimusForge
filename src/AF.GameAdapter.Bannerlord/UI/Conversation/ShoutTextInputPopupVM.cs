@@ -13,6 +13,43 @@ public sealed class ShoutTextInputPopupVM : ViewModel
     private readonly Action _onTitleLink;
     private readonly bool _allowIllustration;
     private readonly Action _onIllustration;
+    private readonly bool _allowRewrite;
+    private readonly Action _onRewrite;
+    private bool _canRewrite;
+    private string _rewriteStatusText = "";
+    [DataSourceProperty] public bool IsRewriteVisible => _allowRewrite;
+    [DataSourceProperty] public bool CanRewrite => _canRewrite;
+    [DataSourceProperty] public string RewriteText => ConversationUiLocalization.Text("AF_CONV_UI_Rewrite_Button", "Undo and edit");
+    [DataSourceProperty] public string StatusText => string.IsNullOrWhiteSpace(_rewriteStatusText) ? IllustrationStatusText : _rewriteStatusText;
+    [DataSourceProperty] public int InputFocusVersion { get; private set; }
+    public int RewriteVersion { get; private set; }
+    public void RefreshRewriteAvailability()
+    {
+        bool available = _allowRewrite && IsInputEmpty && ShoutBehavior.CanRewriteSceneConversationForExternal;
+        if (_canRewrite == available) return;
+        _canRewrite = available;
+        OnPropertyChanged(nameof(CanRewrite));
+    }
+    public void ExecuteRewrite()
+    {
+        RefreshRewriteAvailability();
+        if (CanRewrite) _onRewrite?.Invoke();
+    }
+    internal void RewriteLastRound()
+    {
+        RefreshRewriteAvailability();
+        if (!CanRewrite) return;
+        if (ShoutBehavior.TryRewriteSceneConversationForExternal(out string playerText, out string status))
+        {
+            InputText = playerText;
+            InputFocusVersion++;
+            RewriteVersion++;
+            OnPropertyChanged(nameof(InputFocusVersion));
+        }
+        _rewriteStatusText = status ?? "";
+        OnPropertyChanged(nameof(StatusText));
+        RefreshRewriteAvailability();
+    }
     private int _illustrationVersion = -1;
     [DataSourceProperty] public bool HasScrollArtwork { get; }
     [DataSourceProperty] public bool UsePlainScrollBackground => !HasScrollArtwork;
@@ -26,7 +63,13 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 	[DataSourceProperty] public string SendText => ConversationUiLocalization.Text("AF_CONV_UI_Shout_Send", "Send");
 	[DataSourceProperty] public string CloseText => ConversationUiLocalization.Text("AF_CONV_UI_Shout_Close", "Close");
     [DataSourceProperty] public string IllustrationStatusText => ShoutBehavior.SceneIllustrationStatusForExternal;
-    public void ExecuteIllustrate() { if (CanIllustrate) _onIllustration?.Invoke(); }
+    public void ExecuteIllustrate()
+    {
+        if (!CanIllustrate) return;
+        _rewriteStatusText = "";
+        OnPropertyChanged(nameof(StatusText));
+        _onIllustration?.Invoke();
+    }
     public void ExecuteOpenGallery() { if (IsIllustrationVisible) ShoutBehavior.OpenSceneIllustrationGalleryForUi(); }
     public void RefreshIllustration()
     {
@@ -35,6 +78,7 @@ public sealed class ShoutTextInputPopupVM : ViewModel
         _illustrationVersion = version;
         OnPropertyChanged(nameof(IsIllustrationVisible)); OnPropertyChanged(nameof(CanIllustrate));
         OnPropertyChanged(nameof(IllustrationButtonText)); OnPropertyChanged(nameof(IllustrationStatusText));
+        OnPropertyChanged(nameof(StatusText));
     }
 
 	private string _titleText;
@@ -137,6 +181,7 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 				_inputText = text;
 				OnPropertyChangedWithValue(text, "InputText");
                 OnPropertyChanged(nameof(IsInputEmpty));
+                RefreshRewriteAvailability();
 			}
 		}
 	}
@@ -174,13 +219,16 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 	[DataSourceProperty]
 	public bool IsTitlePlainTextVisible => !IsTitleLinkEnabled;
 
-    public ShoutTextInputPopupVM(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel, Action onTitleLink = null, bool allowIllustration = false, Action onIllustration = null)
+    public ShoutTextInputPopupVM(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel, Action onTitleLink = null, bool allowIllustration = false, Action onIllustration = null,
+        bool allowRewrite = false, Action onRewrite = null)
 	{
 		_onSubmit = onSubmit;
 		_onCancel = onCancel;
         _onTitleLink = onTitleLink;
         _allowIllustration = allowIllustration;
         _onIllustration = onIllustration;
+        _allowRewrite = allowRewrite;
+        _onRewrite = onRewrite;
         HasScrollArtwork = DialogueUI.DialogueUiSprites.EnsureShoutScrollLoaded();
 		TitleText = titleText ?? "";
 		SubtitleText = subtitleText ?? "";
