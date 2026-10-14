@@ -1,4 +1,11 @@
-﻿<a id="war-stats-layout-20261014"></a>
+﻿<a id="terminal-font-scene-intent-20261014"></a>
+## 2026-10-14 终端字号与场景快捷键（IN_PROGRESS）
+
+用户接续要求全终端字号提高，并询问场景按键打开；按明确功能请求接通原同一快捷键（默认U），不新建默认按键。计划主prefab静态字号+2与紧凑文字区高度修正、专用排序下拉prefab/映射、终端报告正文+2；保留原用户正文设置与其他popup。新增场景资格仅按键边沿检查当前Campaign/Mission、非结束/对话/交易/加载/过场、MissionScreen/MissionState及禁用状态；原输入焦点/模态/冷却与弹层暂停/关闭保持，无Tick反射扫描。
+
+涉及UI/Terminal的Behavior、终端prefab/专用下拉、Weekly终端reader、原快捷键说明及CN/EN资源。先局部布局/绑定与状态回放，再原双Release构建/Bootstrap/门禁；本轮不自动部署/push，上一轮游戏安装保持。
+
+<a id="war-stats-layout-20261014"></a>
 ## 2026-10-14 终端战争统计左右列补漏（IN_PROGRESS）
 
 用户反馈右侧明显比左侧长。真实终端prefab当前战况表头与统计行：左侧Fixed 480、中间Fixed 160、右侧Stretch；终端5e1e354ac扩大至1600后新增宽度全部分给右侧，装饰线仍以480/640硬编码。计划仅在content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml改双方等比例Stretch、表头与分隔线保留和滚动行相同的12单位滚动条空间；原绑定/文案/排序/历史档案保持，不新增Tick或VM计算。
