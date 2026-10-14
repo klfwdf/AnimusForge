@@ -11745,6 +11745,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private void OnDailyTickSettlement(Settlement settlement)
 	{
+		using var dailyScope = FreezeWatchdog.Scope("RewardSystem.DailyTickSettlement.MarketCleanup");
 		RemoveGeneratedRewardItemsFromSettlementMarket(settlement, "daily_tick_settlement");
 	}
 
@@ -11941,7 +11942,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			return 0;
 		}
 		int removed = 0;
-		List<ItemRosterElement> toRemove = new List<ItemRosterElement>();
+		List<ItemRosterElement> toRemove = null;
 		try
 		{
 			for (int i = 0; i < roster.Count; i++)
@@ -11949,9 +11950,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				ItemRosterElement element = roster.GetElementCopyAtIndex(i);
 				if (element.Amount > 0 && IsGeneratedRewardMarketTransferBlockedItem(element.EquipmentElement.Item))
 				{
-					toRemove.Add(element);
+					(toRemove ??= new List<ItemRosterElement>()).Add(element);
 				}
 			}
+			if (toRemove == null) return 0;
 			foreach (ItemRosterElement element in toRemove)
 			{
 				int amount = Math.Max(0, element.Amount);

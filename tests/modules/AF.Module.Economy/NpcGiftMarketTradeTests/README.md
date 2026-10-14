@@ -11,3 +11,7 @@ Coverage includes old JSON without the new field, explicit permission across tem
 Legacy NPC gifts have no separate provenance field. Migration accepts their deterministic name + template identity or persisted NPC introduction source; unknown/custom identities remain blocked. This cannot reconstruct provenance that the old save never recorded.
 
 Not covered: actual Harmony registration, native money/price settlement, Gauntlet inventory, real game save/load, or live NPC conversations. Those require in-game acceptance in both supported API lines.
+
+The daily entry prefix before debt processing is extracted from the production partial as well. The 2,000-market / 600,001-slot case asserts no global daily scan, then executes the actual settlement and load cleanup to verify special-item removal and permitted gift preservation. Equipment restoration, watchdog and UI text are controlled leaves; this does not replay the debt loop or measure native game frame time. `--daily-source-ref 51da15d` replays the old prefix and must fail that case after 600,001 reads.
+
+Daily diplomacy order can be checked with `dotnet run --project tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests -c Release -- --campaign-daily`; this selects the existing campaign application replay without bypassing any of its assertions.

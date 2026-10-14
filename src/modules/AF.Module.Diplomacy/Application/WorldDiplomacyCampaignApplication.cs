@@ -46,39 +46,40 @@ internal static class WorldDiplomacyCampaignApplication
         where TSource : struct, IWorldDiplomacyCampaignSource
 	{
 		if (orchestration == null) return;
-		orchestration.NormalizeStorage(allowWorldValidation: true);
-		orchestration.ReconcileAllNationalPrestigeVassalRelations();
-		orchestration.RetryDeferredCanonicalHistoryEntries();
-        (orchestration as WorldDiplomacyOrchestration)?.MaintainDialogueAndMemory();
-		orchestration.RetryDiplomaticThreatDomesticPenalties();
-		orchestration.RetryDiplomaticThreatComplianceConsequences();
-		orchestration.RetryDiplomaticThreatHistoryResults();
-		orchestration.RefreshRoundIntervalScheduleIfNeeded();
+		using var dailyScope = FreezeWatchdog.Scope("WorldDiplomacy.DailyTick");
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.NormalizeStorage")) orchestration.NormalizeStorage(allowWorldValidation: true);
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.ReconcileAllNationalPrestigeVassalRelations")) orchestration.ReconcileAllNationalPrestigeVassalRelations();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RetryDeferredCanonicalHistoryEntries")) orchestration.RetryDeferredCanonicalHistoryEntries();
+        using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.MaintainDialogueAndMemory")) (orchestration as WorldDiplomacyOrchestration)?.MaintainDialogueAndMemory();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RetryDiplomaticThreatDomesticPenalties")) orchestration.RetryDiplomaticThreatDomesticPenalties();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RetryDiplomaticThreatComplianceConsequences")) orchestration.RetryDiplomaticThreatComplianceConsequences();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RetryDiplomaticThreatHistoryResults")) orchestration.RetryDiplomaticThreatHistoryResults();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RefreshRoundIntervalScheduleIfNeeded")) orchestration.RefreshRoundIntervalScheduleIfNeeded();
 		source.ClearDailyCaches();
 		source.ResetDailyGenerationBudget();
-		orchestration.RecalculatePendingPropagationIfNeeded();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RecalculatePendingPropagationIfNeeded")) orchestration.RecalculatePendingPropagationIfNeeded();
 		source.LastSchedulerDay = source.CurrentDay;
-		orchestration.EnsureActiveWarLedgers();
-		orchestration.TrimRecentBattleFacts();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.EnsureActiveWarLedgers")) orchestration.EnsureActiveWarLedgers();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.TrimRecentBattleFacts")) orchestration.TrimRecentBattleFacts();
 		if (!source.IsEnabled)
 		{
-			orchestration.AnchorInternationalReputationNaturalChangeDays();
+			using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.AnchorInternationalReputationNaturalChangeDays")) orchestration.AnchorInternationalReputationNaturalChangeDays();
 			if (!source.DisabledStateApplied) orchestration.HandleDisabledState();
 			return;
 		}
 		source.DisabledStateApplied = false;
 		source.RemoveQueuedNativeDiplomacyDecisions();
 		source.NativeQueueSanitized = true;
-		orchestration.ProcessInternationalReputationNaturalChange();
-		orchestration.DecayWarPressure();
-		orchestration.RefreshPolicyDiplomacySignals();
-		orchestration.RetryDeferredDocumentPropagation();
-		orchestration.ProcessPropagationArrivals();
-		orchestration.ProcessRelayArrivals();
-		orchestration.RetryDeferredRoundProgress();
-		orchestration.ProcessRoundLifecycle();
-		orchestration.TryScheduleTokenCompression();
-		orchestration.TrySchedulePolicyTriggeredRound();
-		orchestration.TryScheduleNormalRound();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.ProcessInternationalReputationNaturalChange")) orchestration.ProcessInternationalReputationNaturalChange();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.DecayWarPressure")) orchestration.DecayWarPressure();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RefreshPolicyDiplomacySignals")) orchestration.RefreshPolicyDiplomacySignals();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RetryDeferredDocumentPropagation")) orchestration.RetryDeferredDocumentPropagation();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.ProcessPropagationArrivals")) orchestration.ProcessPropagationArrivals();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.ProcessRelayArrivals")) orchestration.ProcessRelayArrivals();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RetryDeferredRoundProgress")) orchestration.RetryDeferredRoundProgress();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.ProcessRoundLifecycle")) orchestration.ProcessRoundLifecycle();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.TryScheduleTokenCompression")) orchestration.TryScheduleTokenCompression();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.TrySchedulePolicyTriggeredRound")) orchestration.TrySchedulePolicyTriggeredRound();
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.TryScheduleNormalRound")) orchestration.TryScheduleNormalRound();
 	}
 }
