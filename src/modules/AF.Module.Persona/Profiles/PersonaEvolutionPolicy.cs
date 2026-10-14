@@ -9,6 +9,7 @@ namespace AnimusForge;
 internal static class PersonaEvolutionPolicy
 {
     internal const int BatchSize = 4, MaxPending = 64, MaxSeen = 300;
+    internal const double MergeDelayHours = 10.0;
     internal static bool Accepts(string kind) => kind == "settlement_siege" || kind == "settlement_transfer"
         || kind == "fief_grant" || kind == "lord_killed" || kind == "ruler_killed";
 
@@ -24,7 +25,7 @@ internal static class PersonaEvolutionPolicy
         return true;
     }
     internal static PersonaEvolutionFact[] TakeBatch(PersonaEvolutionState state, double hour)
-        => state?.Pending?.Count > 0 && hour >= state.Pending[0].Hour + 1
+        => state?.Pending?.Count > 0 && hour >= state.Pending[0].Hour + MergeDelayHours
             ? state.Pending.Take(BatchSize).ToArray() : Array.Empty<PersonaEvolutionFact>();
     internal static void Complete(PersonaEvolutionState state, PersonaEvolutionFact[] batch)
     {
