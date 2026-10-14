@@ -1,4 +1,11 @@
-﻿<a id="terminal-live-fixes-20261014"></a>
+﻿<a id="pre-capture-retirement-20261014"></a>
+## 2026-10-14 采集前追加自有资源清理（IN_PROGRESS）
+
+- 用户最新明确要求“新一轮开始前再清理一次，原先的不动”。保留原FinishStage/Restore/Provider release清理算法，只在取得共享stage锁后、新分配/导出前追加AF自有残留退场与帧推进。
+- 不清空当前Mission、原版thumbnail资源或仍显示的插画，不GC强制回收，不称等待两个ApplicationTick为GPU fence。取消/异常释放锁，原场景owner仍重验；每次请求执行一次，无闲置Tick IO/扫描。
+- 本地终端/MCM切片5e1e354ac已提交：双API/Bootstrap/Coup/注册通过，真实MCM JSON/临时磁盘重载/自动保存各359项，selector回放17项；原DLL最低增幅JSON失败、原selector空绑定中间态失败。新终端/MCM未部署/push；已知原TerminalSettingsFallbackContract在无关成人自动人设说明漂移处失败，未放宽断言。
+
+<a id="terminal-live-fixes-20261014"></a>
 ## 2026-10-14 终端实机反馈修复与 GPU 调查（IN_PROGRESS）
 
 - 当前main/9668a9fc6；用户已授权扩大终端、即时保存、隐藏快捷键文字保留导航图标，反馈关系最低增幅重启恢复、MCM拉取下拉空白和近期事实缺失。新增GPU问题按调查范围核对1.5.6，不隐式部署/push。
