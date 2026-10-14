@@ -1,4 +1,38 @@
-﻿<a id="pre-capture-retirement-20261014"></a>
+﻿<a id="terminal-live-complete-20261014"></a>
+## 2026-10-14 终端实机反馈与采集前追加清理完成（OFFLINE_VERIFIED / LIVE_PENDING）
+
+本条明确替代下方terminal-live-fixes-20261014及pre-capture-retirement-20261014的IN_PROGRESS状态；此前ea6c51247部署未被本轮源码覆盖。当前工作树main，产品5e1e354ac与064cbaf6a，checkpoint35b58bb18/71ccc244a；原Microsoft、NuGet未跟踪目录保留，无委派、push、部署、打包、版本递增或玩家数据写入。
+
+### 已交付及代码证据
+
+| 职责 | 实际入口/消费者（1-based源码位置） | 覆盖与边界 |
+| --- | --- | --- |
+| 最低关系/凝视持久化 | src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:829–839，原JSON名/owner不变；TerminalSettingsRegistry:238–240 | 原MCM AttributeSettingsPropertyDiscoverer/JsonSettingsFormat会遗漏无属性字段；三项加后端定义，终端CN/EN既有键保持、MCM UI投影仍受原过滤约束 |
+| 自动保存与输入提交 | src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalUiModels.cs:1037–1068、1293、2497–2524、2648–2660；content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml:7–8、307、1050–1065 | 1600x940；无普通保存按钮；非文本完成编辑存盘，文本Enter/FocusLost提交且同值/重复提交不写盘；错误保留HasUnsaved及原关闭重试。不加Tick IO |
+| 提示和入口 | AnimusForgeTerminalBehavior.cs:515–558 | 隐藏周期快捷键文字；地图导航、快捷键执行不变 |
+| MCM模型显示 | src/AF.GameAdapter.Bannerlord/UI/Common/McmDropdownRuntimeRefresh.cs:721–844 | 构建完整selector后替换实际SettingsPropertyVM._selectorVMWrapper，不清空仍被Gauntlet绑定的列表；只AF owner，构造不写配置，真实用户选择保留 |
+| 新采集前清理 | extensions/AnimusForge.Illustrator/src/Engine/ScreenCaptureHelper.cs:1004–1050、1069、1147；SceneReferenceCapture.cs:108–111；MissionScreenshotCapture.cs:49、81、115–119、178 | 取得共享锁后AF残留舞台/孤立视图退场，弱引用重试尚存movie/layer，两后续应用帧才允许新采集。取消/异常走原finally释放锁；三入口接线，不清当前Mission/原版池或仍显示插画 |
+| 原清理与缓存 | ScreenCaptureHelper.FinishStage/RetireStageAsync/CancelActiveStage、SceneReferenceCapture.CancelIsolatedPanorama、MissionScreenshotCapture.Restore、IsolatedPanoramaRenderer.Restore及两个native widget OnClearTextureProvider；IllustrationCardPopup.cs:1780–1866 | 原8函数体、会话缓存消费者比对不变。复用Base64/缓存无需新原生采集，不清磁盘图库/会话参考缓存。两帧不是GPU完成屏障 |
+
+### 验证与保留失败
+
+- 原统一Debug双API/Bootstrap/双Coup/注册门禁PASS：API1.3参考v1.3.15.110062、1.4参考v1.4.6.115628各363警告/0错误，Bootstrap/probe0/0；build-precleanup.log。没有触及原一键流程。
+- tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests真实产品/MCM发现及JSON：1.3共365、1.4共375项PASS。所有非按钮终端控制有保存字段；0/5/20与两个凝视字段存盘重载；数值/文本“编辑→自动provider写实际JSON临时文件→新实例加载”通过；无每键IO/重复写盘；取消与两帧等待门禁通过。1.4额外实际只读SettingsPropertyVM中主模型、生图模型/Size/Quality/Style标签及旧绑定完整。provider文件边界与帧推进是隔离fixture，不是实机UI/GPU证据。
+- 收据：artifacts/tests/terminal-live-settings/run-d11b771e6fc947c3902f1f4522ce4c14及run-ab1aac31c17b4cc38f7f9dfcc03a0e9d；已安装旧DLL在MinimumPositiveNpcRelationGain JSON断言FAIL，run-dba5de109a6f4abd841b38e88d7e673e。
+- selector真实MCM对象/action+绑定事件17项PASS，run-006eb547c96c49ce9fac1a3c336d8726；旧9668a9代码在空列表中间状态FAIL，run-f60507020d43410685a7afddfed31514。未把离线标签完整当作实机截图问题已验。
+- XML尺寸/Commit事件/保存按钮移除/既有CNEN三项键/导航源码不变PASS；原8清理方法与缓存owner比对artifacts/gpu-offscreen-20261014/original-cleanup-and-reuse.json PASS。diff check在原CRLF规则下PASS。
+- 原全量TerminalSettingsFallbackContract仍在未改AF_TERMINAL_UI_EnableAdultHeroPersonaAutoGeneration_Hint漂移失败；本轮相关输入未更改，不改断言或他人资源掩盖它。
+
+### GPU与事实调查结论
+
+- 游戏实际1.4.8、进程32612；13:41:33.989 OffscreenCharacter→13:41:34.014 inventory_character_scene加载→13:41:34.111深度纹理资源不足，相隔122ms。之前15人物/10纹章导出成功不能证明GPU资源释放。watchdog主线程停约14s，private11786MB、managed536MB；原版dump被用户取消，没有故障时显存预算/曲线或符号栈。
+- 1.5.6发布源码fe40e43f9确认；人物控件/采集、native banner、GauntletTextureLoader四文件规范化一致，舞台/全景核心只是文案差异；没有借大段换行diff声称渲染变更。报告artifacts/gpu-offscreen-20261014/REPORT.md、v156-core-comparison.json。当前追加清理降低重叠风险，不证明泄漏根因、不保证GPU故障解决；未改原自动采集规则/功能。
+- 近期事实/近况确有共享请求注入：跨会话354可解析body中63有近期王国简报、87有近期行动；截图名称/问句未在本机请求找到。常驻近7天每相关国3条、详情8/世界5及话题/分数条件，不是原版消息全量导入；围城开始写参与Hero个人行动，没有同一全局快报捕获。不能凭截图判定具体是遗漏或模型忽视。artifacts/terminal-live-fixes-20261014/FACTS_REPORT.md记录实际消费者与边界。
+- PartyBase.ToString空引用来源仍为深度诊断参数格式化在节流前调用游戏对象ToString，异常被捕获计数；不等于2350次崩溃，也不是本次深度纹理错误的已证根因。本轮未改诊断性能机制。
+
+NOT-RUN：新DLL部署/新发行包、实际MCM/终端页面渲染与重启、GPU长跑/显存曲线/故障dump、1.5.6同档同游戏版本同配置A/B、截图那次事实请求。原世界书开局跳过无名重复Key修复已在此前ea6c51247部署；旧1.6.0 ZIP未重打，不能只按版本号判断。回滚仅focused inverse：064cbaf6a（追加清理及相关验证）、5e1e354ac（终端/MCM），不恢复整树或玩家配置。完整工作区报告artifacts/terminal-live-fixes-20261014/REPORT.md。
+
+<a id="pre-capture-retirement-20261014"></a>
 ## 2026-10-14 采集前追加自有资源清理（IN_PROGRESS）
 
 - 用户最新明确要求“新一轮开始前再清理一次，原先的不动”。保留原FinishStage/Restore/Provider release清理算法，只在取得共享stage锁后、新分配/导出前追加AF自有残留退场与帧推进。
