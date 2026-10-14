@@ -1,3 +1,9 @@
+# 当前交接：玩家经历与近况驱动主动接触（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品2968fc462、加载收尾bc8407e07、检查点5b4694e78：新增履历交流/近况反应，接地图、原生/场景开场、同伴与主动来信；旧30类保留，CN/EN各32类。复用现有记录，无新增规划模型请求；跨渠道去重、来源版本复核，材料不写成新AFEF。
+- 57项源码回放、实际1.4 DLL五组主动接触及新类型读档/AFEF检查、原Debug双API/Bootstrap/Coup/注册、分块回放/21键清单通过。共享构建保留并行存档/历史修改，提交仅本任务差异；未实机/旧档/真实token或性能验证，未Stage/部署/打包/push。
+- [方案与实际参数](docs/npc_proactive_contact_motivation_plan.md)；[唯一主台账、代码地图与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#npc-player-experience-implementation-20261015)。证据artifacts/proactive-experience-20261015/；回滚依次git revert bc8407e07 / 2968fc462。下方主动接触DESIGN_ONLY为历史，本条替代其尚未实施状态。
+
 # 当前交接：快报长期事实与NPC RAG（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品e3ea02f49：重大快报事实长期保留，知情过滤后进行本地ONNX召回/重排，48候选→12重排→最多4条，三渠道共享。保留日期/事实与报刊轶闻边界，旧档仅接回可靠残留材料。
