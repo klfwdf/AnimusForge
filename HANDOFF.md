@@ -1,4 +1,10 @@
-﻿# 当前交接：MCM与无名人设修复已推送（2026-10-14，PUSH_VERIFIED / LIVE_PENDING）
+﻿# 当前交接：当前 main 已部署（2026-10-14，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户明确授权部署；源码 `ea6c51247`，原统一 Debug 双 API/Bootstrap/双 Coup 及注册门禁通过，游戏单模块 v1.6.0 更新24个受管文件，未启动游戏。
+- 3519个Stage文件按原覆盖/保留策略核对PASS；现有Configs5、自定义提示词4、PlayerExports3133、ONNX10与原版抽检3文件哈希不变。完整证据、旧Stage保留与人工回退边界见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-main-20261014)。此前性能调查未形成源码修复。
+- 本条替代下方MCM/导入/终端条目的“未部署”状态；实机UI、provider、旧档仍待验，不把部署当玩法验收。不打包、不递增版本、不附带推送部署记录。
+
+# 当前交接：MCM与无名人设修复已推送（2026-10-14，PUSH_VERIFIED / LIVE_PENDING）
 
 - 用户授权推送；合并远端 `033a0b9f3`，仅HANDOFF冲突，双方内容完整保留。功能合并提交 `8fe553f9c` 已推送，远端main完整ref一致；无强推，未上传工具缓存或本地验证产物。
 - 合并后双API/Bootstrap/双Coup与注册冒烟PASS；MCM10、被俘CN/EN各204、交易8、回答区61项PASS。详细证据与限制见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-merge-20261014)。本条替代下方MCM/无名人设“未push”状态；未部署、打包或新增实机验收。
