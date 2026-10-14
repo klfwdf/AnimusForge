@@ -11,6 +11,8 @@ namespace AnimusForge;
 /// </summary>
 internal sealed class PromptRetrievalCapture
 {
+    internal WorldNewsRecallRequest NewsRequest;
+    internal WorldNewsRecallResult NewsResult;
 	/// <summary>Complete mention set for the build: caller-supplied + router-discovered + mention store + latest.</summary>
 	internal MentionedWorldEntities AuxiliaryMentions;
 	internal long LoreRuleVersion;
@@ -33,6 +35,7 @@ internal sealed class PromptLoreSettings
 // Only this half crosses to a worker; PromptRetrievalCapture keeps live entity maps on the game thread.
 internal sealed class PromptKnowledgeWorkInput
 {
+    internal WorldNewsRecallRequest NewsRequest;
 	internal MentionedWorldEntities Mentions;
 	internal PromptRuntimeTargetBinding Target;
 	internal PromptRuleEligibility Eligibility;
@@ -51,6 +54,7 @@ internal sealed class PromptKnowledgeWorkInput
 
 internal sealed class PromptKnowledgeWorkResult
 {
+    internal WorldNewsRecallResult NewsResult;
 	internal LoreCandidateRules LoreCandidates;
 	internal WorldEntityRetrievalService.DetachedEntityMatches EntityMatches;
 	internal List<GuardrailRuleHit> FallbackExtraRuleHits;

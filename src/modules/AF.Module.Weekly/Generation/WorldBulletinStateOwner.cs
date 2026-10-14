@@ -85,6 +85,7 @@ internal bool CaptureWorldBulletinEvent(string kind, string key, int score, stri
 			KingdomIds = (kingdomIds ?? Array.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
 		};
 		events.Add(e);
+        ArchiveNewsFact(e);
 		_port.EventCaptured?.Invoke(e);
 		if (events.Count > WorldBulletinPolicy.MaxEvents)
 		{
@@ -122,6 +123,7 @@ internal static void PruneWorldBulletinWeeklyStability(WorldBulletinSaveState st
             if (existing.Hour <= state.World.CutoffHour || (existing.Sentence == sentence && existing.Detail == detail)) return;
             existing.Sentence = sentence;
             existing.Detail = detail;
+            ArchiveNewsFact(existing);
             return;
         }
         CaptureWorldBulletinEvent(kind, key, 50, sentence, player, key, detail, kingdoms);
@@ -316,6 +318,7 @@ internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinS
 		issue.Materials = selection.MajorFacts.Concat(selection.Minors.SelectMany(m => m.Events))
 			.Select(f => WeeklyReportArchivePolicy.FactMaterial(f, "", WeeklyReportArchivePolicy.ReportedMaterialType)).ToList();
 		issue.ShortSummary = WeeklyReportArchivePolicy.BulletinFactSummary(issue);
+        ArchivePublishedNews(selection);
 		CommitRegionalPublication(regional);
 		var snapshotKeys = new HashSet<string>(selection.WindowFacts.Select(f => f.Key),StringComparer.Ordinal);
 		var previousDeferred = new HashSet<string>(scope.DeferredFactKeys ?? new List<string>(),StringComparer.Ordinal);
@@ -436,6 +439,9 @@ internal void ApplyStability(string kingdomId,int delta,int day,int currentValue
  {
      InFlight=false;LastPruneDay=-1;LatestEventId="";CachedRecords=null;CachedRecordCount=-1;CachedRecordIndex=-1;
      while(MainThreadActions.TryDequeue(out _)){}
+     _newsArchive=null;_newsArchiveState=null;
+     // Import retained legacy facts before the first daily retention prune can discard them.
+     if(State!=null)EnsureNewsArchive();
      var state = State;
      if (state?.PendingNoticeEventIds == null || state.PendingNoticeEventIds.Count == 0) return;
      long generation = SaveRuntimeGuard.CaptureGeneration();
@@ -469,7 +475,7 @@ internal bool TryRecordCoupOutcomeWithParticipantsForBulletin(string coupId, boo
 				new WorldBulletinParticipant { HeroId = formerKingId ?? "", Role = WorldBulletinPolicyTexts.Raw("WBLT_Raw_042") }
 			}, kingdomId, actorKingdomId);
 	}
-internal string ExportJson(){if(State!=null&&CorruptRaw!=null)State.PreservedUnreadableState=CorruptRaw;return State!=null?Newtonsoft.Json.JsonConvert.SerializeObject(State):(CorruptRaw??"");}
+internal string ExportJson(){if(State!=null)EnsureNewsArchive();if(State!=null&&CorruptRaw!=null)State.PreservedUnreadableState=CorruptRaw;return State!=null?Newtonsoft.Json.JsonConvert.SerializeObject(State):(CorruptRaw??"");}
  internal void ImportJson(string loaded){CorruptRaw=null;try{State=string.IsNullOrWhiteSpace(loaded)?null:Newtonsoft.Json.JsonConvert.DeserializeObject<WorldBulletinSaveState>(loaded);}catch(Exception ex){State=null;CorruptRaw=loaded;_port.Log("WorldBulletin","[ERROR] saved state unreadable, preserved raw ("+loaded.Length+" chars) key=_af_worldBulletin_v1: "+ex.Message);}}
 
 

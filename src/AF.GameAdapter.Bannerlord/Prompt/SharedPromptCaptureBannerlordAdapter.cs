@@ -236,6 +236,7 @@ internal static ShoutPromptContext BuildShoutPromptContextForExternalInternal(Ex
 
 		}
 
+        phases.Retrieval.NewsRequest = WorldNewsRecallPromptAdapter.Capture(targetHero, phases.Request.KingdomIdOverride, phases.Request.Input);
 		if (!phases.Request.HasPrefetchedLore)
 
 		{
@@ -290,6 +291,7 @@ internal static ShoutPromptContext BuildShoutPromptContextForExternalInternal(Ex
 
 		{
 
+            NewsRequest = phases.Retrieval.NewsRequest,
 			Mentions = phases.Retrieval.AuxiliaryMentions?.Clone(),
 
 			Target = phases.Request.Target,
@@ -338,6 +340,7 @@ internal static ShoutPromptContext BuildShoutPromptContextForExternalInternal(Ex
 
 		{
 
+        result.NewsResult = WorldNewsRecallPromptAdapter.Retrieve(input.NewsRequest);
 		if (!input.HasPrefetchedLore)
 
 		{
@@ -402,6 +405,7 @@ internal static ShoutPromptContext BuildShoutPromptContextForExternalInternal(Ex
 
 		if (phases?.Retrieval == null || result == null) return;
 
+        phases.Retrieval.NewsResult = result.NewsResult;
 		phases.Retrieval.LoreCandidates = result.LoreCandidates;
 
 		phases.Retrieval.EntityMatches = result.EntityMatches;
@@ -622,6 +626,7 @@ internal static ShoutPromptContext BuildShoutPromptContextForExternalInternal(Ex
 
 			out contextFlags, out extrasSections, out entityCapture, out mentionedEntities);
 
+        extrasSections.WorldNewsRecall = WorldNewsRecallPromptAdapter.Render(phases.Retrieval.NewsResult);
 		shoutPromptContext.MentionedEntities = mentionedEntities.Clone();
 
 		PromptAssembly assembly = PromptAssemblyStage.Assemble(extrasSections, entityCapture, phases.Routing, contextFlags, request.IsQualified, request.SuppressDynamicRuleAndLore, request.PreprocessExcludedRuleIds);

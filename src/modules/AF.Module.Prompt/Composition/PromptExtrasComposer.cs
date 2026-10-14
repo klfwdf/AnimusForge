@@ -31,6 +31,7 @@ internal sealed class PromptExtrasSections
 	internal string ActivePolicyContext;
 	internal string TriggeredRuleInstructions;
 	internal string WeeklyFullReports;
+    internal string WorldNewsRecall;
 	internal string LoreContext;
 	internal string EntityMainPromptBlock;
 	internal string AgendaMainPromptBlock;
@@ -94,6 +95,7 @@ internal static class PromptExtrasComposer
 		Append(sb, sections.HeroArmyRuntimeFact);
 		Append(sb, sections.PlayerArmyRuntimeFact);
 		Append(sb, sections.ResidentRecentActions);
+        Append(sb, sections.WorldNewsRecall);
 		Append(sb, sections.CurrentFamilyStatus);
 		Append(sb, sections.NearbySettlementsDetail);
 		Append(sb, sections.WeeklyShortReports);
