@@ -4,8 +4,8 @@
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.92">
       <Children>
 
-        <!-- Centered terminal window: 1280 x 820 -->
-        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1280" SuggestedHeight="820" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <!-- Centered terminal window: 1600 x 940 -->
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1600" SuggestedHeight="940" HorizontalAlignment="Center" VerticalAlignment="Center">
           <Children>
             <!-- Parchment background and vignette -->
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" />
@@ -304,7 +304,7 @@
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
 
-                                                    <EditableTextWidget Text="@TextValue" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="40" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E8D0FF" MaxLength="500" />
+                                                    <EditableTextWidget Text="@TextValue" Command.TextEntered="ExecuteCommitText" Command.FocusLost="ExecuteCommitText" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="40" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.FontColor="#F5E8D0FF" MaxLength="500" />
 
                                                     <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEditText" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="32" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="5" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                                                       <Children>
@@ -1057,9 +1057,7 @@
                             <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="17" Text="@AF_UI_Terminal_Prefab_020Text" />
                           </Children>
                         </ButtonWidget>
-                        <ButtonWidget IsVisible="@HasUnsavedChanges" DoNotPassEventsToChildren="true" Command.Click="ExecuteSaveSettings" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="116" SuggestedHeight="44" MarginRight="12" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                          <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="17" Text="@AF_UI_Terminal_Prefab_021Text" /></Children>
-                        </ButtonWidget>
+
                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteClose" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="44" Brush="Popup.Done.Button" UpdateChildrenStates="true">
                           <Children>
                             <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="17" Text="@AF_UI_Terminal_Prefab_022Text" />

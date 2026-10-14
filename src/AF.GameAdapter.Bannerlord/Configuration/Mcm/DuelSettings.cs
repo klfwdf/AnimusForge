@@ -826,10 +826,16 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public float SceneConversationTimeoutSecondsPerVisibleCharacter { get; set; } = 1f;
 
+	[SettingPropertyBool("{=AF_TERMINAL_UI_EnablePassiveStareReaction_Title}Enable Automatic Stare Reaction", Order = 12, RequireRestart = false, HintText = "{=AF_TERMINAL_UI_EnablePassiveStareReaction_Hint}When enabled, staring at one NPC for the configured time can start a passive scene exchange. Disabled by default.")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public bool EnablePassiveStareReaction { get; set; } = false;
 
+	[SettingPropertyInteger("{=AF_TERMINAL_UI_PassiveStareTriggerSeconds_Title}Passive Stare Trigger Seconds", 0, 120, "0", Order = 12, RequireRestart = false, HintText = "{=AF_TERMINAL_UI_PassiveStareTriggerSeconds_Hint}How long the player must stare at one NPC before a passive reaction triggers. Set to 0 to disable it. Default: disabled.")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int PassiveStareTriggerSeconds { get; set; } = 0;
 
+	[SettingPropertyInteger("{=AF_TERMINAL_UI_MinimumPositiveNpcRelationGain_Title}Minimum Positive NPC Relation Gain", 0, 20, "0", Order = 12, RequireRestart = false, HintText = "{=AF_TERMINAL_UI_MinimumPositiveNpcRelationGain_Hint}Minimum increase to native and private relations when an NPC has positive emotion. Set to 0 to keep the normal emotion-based increase. Default: 1.")]
+	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public int MinimumPositiveNpcRelationGain { get; set; } = 1;
 
 	[SettingPropertyBool("{=AF_MCM_Shout_DirectAttack}Allow direct player attacks to trigger scene conflict", Order = 13, RequireRestart = false, HintText = "{=AF_MCM_Shout_DirectAttack_Hint}When enabled, direct attacks on NPCs in peaceful scenes can trigger this mod scene conflict. When disabled, direct attacks return fully to native damage handling; dialogue arguments and taunts can still escalate conflict.")]

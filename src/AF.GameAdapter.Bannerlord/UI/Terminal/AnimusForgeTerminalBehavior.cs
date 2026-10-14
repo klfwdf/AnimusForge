@@ -532,19 +532,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 			_lastTerminalHintDay = campaignDayIndex;
 
-			if (AnimusForgeTerminalSettings.IsHotkeyEnabled)
-
-			{
-
-				TextObject hint = new TextObject("{=AF_TERMINAL_UI_DailyHotkeyHint}Press {KEY} to open the AnimusForge terminal.");
-
-				hint.SetTextVariable("KEY", GetConfiguredTerminalKeyLabel());
-
-				InformationManager.DisplayMessage(new InformationMessage(hint.ToString()));
-
-			}
-
-			else if (AnimusForgeTerminalSettings.IsMapIconEnabled)
+			// Hide the periodic hotkey text; retain the hotkey and map navigation entry.
+			if (!AnimusForgeTerminalSettings.IsHotkeyEnabled && AnimusForgeTerminalSettings.IsMapIconEnabled)
 
 			{
 
