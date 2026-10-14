@@ -1,4 +1,11 @@
-﻿<a id="terminal-live-complete-20261014"></a>
+﻿<a id="ambient-test-completion-20261014"></a>
+## 2026-10-14 全项核对：环境API测试按钮补漏（IN_PROGRESS）
+
+- 用户要求核对上文全部完成状态，真实源码确认TestTownAmbientAiConnection仍为空；先前诊断已登记但未实施，不能把之前全部设置回放或API下拉修复当该按钮已接通。本条作为当前补漏checkpoint。
+- 计划恢复同一TownAmbientAiClient.TestConnectionAsync消费者，新增当前页面独立配置字符串快照重载；运行环境AI资格、限额/缓存等原规则保持。不读取/发送真实凭据、不调用用户外部API，验证使用工作区fixture。
+- 当前main/ed5dfb923，先前5e1e354ac/064cbaf6a源码已验证，均尚未部署/push。GPU、近期事实仍为调查与受限实机证据，不能笼统回答全部问题已解决。
+
+<a id="terminal-live-complete-20261014"></a>
 ## 2026-10-14 终端实机反馈与采集前追加清理完成（OFFLINE_VERIFIED / LIVE_PENDING）
 
 本条明确替代下方terminal-live-fixes-20261014及pre-capture-retirement-20261014的IN_PROGRESS状态；此前ea6c51247部署未被本轮源码覆盖。当前工作树main，产品5e1e354ac与064cbaf6a，checkpoint35b58bb18/71ccc244a；原Microsoft、NuGet未跟踪目录保留，无委派、push、部署、打包、版本递增或玩家数据写入。
