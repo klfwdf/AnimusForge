@@ -10361,3 +10361,27 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 | `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.MarketCleanup.cs` | 13–25 epoch/factory；27–43 CleanGeneratedRewardTradeMarkets/Queue/Process | 原生roster与规则predicate适配，TWParallel/owner/保存准入及应用帧dispatcher |
 | `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs` | 1530–1554 OnGameLoadFinished/OnEngineTick；11751–11755 OnDailyTickSettlement；11943–11947 RemoveGeneratedRewardItemsFromRoster | 真实读档/应用帧/每日/交易消费者；此前同步全图清理helper无消费者后删除，定义恢复与其他奖励玩法保持 |
 | 同上，规则失效入口 | 9502 TrySetGeneratedRewardItemCategory；10137 ClearGeneratedRewardRuntimeState；10265 RegisterGeneratedRewardManifestRecordNoLock；11050 ApplyGeneratedRewardItemTemplateState；11474 RestoreLegacyNpcGiftMarketTradePermission | 只增加epoch/reset，不改生成许可、模板、注册、存档字段或原返回语义；可变允许赠品仍请求边界重验 |
+
+
+<a id="market-world-pass-20261015"></a>
+## 市场清理回到每日全图、逐市场分帧（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户批准以原全图方案优化：跨天/读档只申请一轮，每应用帧完整检查一个市场，重复请求合并为后继一轮。检查点81846ca，基线82bd09bc6；本轮不部署/打包/push。
+- 修改现有清理owner/host partial、DailyEconomyLifecycle、RewardSystemBehavior、市场专项及HANDOFF。移除库存版本缓存、全局规则epoch、跨帧商品游标、定居点Daily重复入口；保留全部原禁售/赠品可售/交易和经济生成保护。读档代次/owner/主线程和保存准入保持；后台扫市场在InventoryState暂停，交易开关边界仍同步。
+- 本包出口：持续库存变化仍完整推进、轮次合并/一次一个市场、当前库存解析与新市场下一轮、旧代次/owner/保存/交易状态、许可与数量变化、原交易/保存赠品回放；普通/大库存/大量RP残留离线计时；原1.3/1.4+Bootstrap构建。单市场原子扫描不承诺硬2ms，实机最大库存与入夜根因未验。旧跨帧槽位上限/clean缓存命中断言属于本次明确替换行为，更新为每市场完成/全图进展/实时资格断言，其余旧交易语义保留。
+
+- 产品`db3e1ae68`正式替代4b406ed36的缓存/逐槽位方案。本轮未覆盖游戏；HEAD此前82bd09bc6记录的已部署内容仍为旧候选，不把新本地代码视作实机更新。
+- 每个世界轮次只复制定居点引用一次（首次应用帧），当帧最多完成一座市场；无工作时常量检查。重复日结不重置当前位置，只保留一个后继请求；完成后继请求重新采集世界列表。库存引用在执行时读取，新增定居点下一轮进入。单市场一次收集禁售项后删除，资格在删除前重验；只有原生回调造成额外库存版本变化才追加按equipment/modifier查找最新数量，普通删除不重复查找。重入新增项下一轮/交易边界处理，不循环到空。
+- 原交易/村民商队/生成池保护保留；移除定居点每日重复listener和全部规则epoch接线。保存时暂停，InventoryState时暂停后台轮次以避开原版库存备份/交易操作；交易开关本身仍检查当前市场并引用去重。错误市场记录失败继续下一市场；失败源退出本次等待下一日/读档请求；无全局空转重试。日志每轮汇总markets/slots/removed/failures/workMs/maxMarketMs/slowest，单市场≥8ms另记slow，不含商品正文或玩家内容。
+- 市场专项Release **40 PASS/0 FAIL**：保留原26类交易/许可/序列化投影以及全图测试；批准删除的缓存命中和128槽位/2ms约束改为每市场完成/持续变化完整推进断言。120个市场每帧普通数量变化，120帧全部清完，读取120×514槽位；1000个日结请求只多一轮；2000市场600001槽位日结回调0商品读取，后续覆盖全图。整份生产owner/partial/SaveRuntimeGuard与真实提取OnEngineTick/日结前缀执行；游戏对象/库存/日志为替身，不是实机交易或完整债务/SyncData。
+- 故障注入真实编译：all-markets 36PASS/4FAIL；restart-round 39/1；ignore-generation 39/1；old-cleanup 35/5。最初generation负控未失败，定位为断言仅查旧库存写而未查读，补旧代次0读取断言后正确失败；原日志保留。初次apply_patch不支持同路径delete+add，未执行编辑，改用明确文件重写完成；host保留CRLF，diff-check采用cr-at-eol通过。
+- 离线7次/场景计时（实际owner、.NET8 Release、托管库存替身，构造不计时）：300普通槽位median0.009/max0.011ms；5000普通0.074/1.256ms；50000普通0.553/2.026ms；5000槽位含1000禁售槽位19.711/43.355ms。大量禁售删除仍有原生线性查找成本；初次额外重复查找时约39.981ms中位，去掉常规重复查找后改善，不能当严格隔离基准比例。原生帧、具体玩家最大市场、MOD回调/运行时分配未测，不能宣称普遍无卡顿或硬2ms。
+- 原统一Release构建exit0：1.3.15.110062、1.4.6.115628、Bootstrap及双Coup接缝/注册门禁PASS。证据`artifacts/market-sweep-build-20261015.log`、`artifacts/market-sweep-20261015/{verified.log,receipt.json,fault-*.log}`，收据绑定源码及三DLL哈希。没有Stage/部署/打包/push、版本递增、配置/默认入口/存档键修改。
+- NOT-RUN：实机入夜根因与峰值、真实最大市场/大量RP残留、旧档原生/Harmony验收。回滚`git revert db3e1ae68`仅回到上一缓存/逐槽位实现，其已复现的持续变更重扫问题随之恢复；不reset或动其他提交。
+
+| 产品db3e1ae68源码 | 一基行号/符号 | 实际职责/覆盖边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Economy/Execution/GeneratedRewardMarketCleanupOwner.cs` | 38–49 Reset/BeginWorldScan；52–105 CleanMarket；107–147 Tick | 世界轮次合并/逐市场推进；实时禁售过滤与删除；原生调用耗时无硬上限 |
+| `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.MarketCleanup.cs` | 15–25 CreateMarketCleanup；27–43 Trade/Queue/Process | 原判定/日志叶适配、交易引用去重、主线程/owner/保存/InventoryState准入 |
+| `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs` | 1529–1552 Load/EngineTick；11715–11739 Trade prefix；11931–11935 RemoveGeneratedRewardItemsFromRoster | 真实读档/应用帧/交易消费者；原市场listener及epoch删除，其余奖励机制保持 |
+| `src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs` | 11–23 OnDailyTick | 日结只申请世界轮次，装备恢复和债务原顺序保留 |
