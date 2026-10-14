@@ -1,3 +1,9 @@
+# 当前交接：每日全图检查改为逐市场分帧（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品db3e1ae68：每日/读档申请全图一轮，每应用帧完整检查一座市场，重复请求合并为下一轮；删除规则epoch、库存缓存、逐槽位游标和定居点重复listener。交易去重/原禁售及赠品可售保持，后台在保存/InventoryState暂停。
+- 40项回归和4种有效故障注入、原Release双API/Bootstrap/Coup/注册通过。持续变化120市场120帧完成；5000槽位含1000禁售项的离线中位约19.7ms，单大市场仍可能慢帧，不承诺硬2ms。
+- [主台账、源码坐标、计时边界与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#market-world-pass-20261015)。本条替代此前市场缓存/逐槽位候选；本轮未部署/Stage/打包/push，游戏仍为此前已部署候选。实机入夜/最大市场待验；回滚git revert db3e1ae68。
+
 # 当前交接：全部改动再次部署并推送（2026-10-14，DEPLOY_SCRIPT_PASS / PUSH_VERIFIED / LIVE_PENDING）
 
 - main/44861038d运行内容原Release双API/Bootstrap/Coup/registration/Stage通过，原部署脚本exit0，F盘游戏单模块v1.6.0更新9个受管文件。
