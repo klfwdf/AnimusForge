@@ -1,3 +1,9 @@
+# 当前交接：人设重生与界面格式修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品80b0354d4：兼容模型返回profile内个性/背景对象，CN/EN协议明确字符串；MCM四类API父/子分别本地化；22份语言XML的213条字面换行修正。原10游戏小时演变开关位置、默认值与行为保持。
+- 三份失败回复离线回放、人设476项、实际双DLL MCM/原生文本中英及CN/EN请求、原双API/Bootstrap构建通过。未部署/实机/provider/push，原游戏配置保持。
+- [唯一主台账、代码范围、验证和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#persona-mcm-ui-format-20261015)。证据artifacts/persona-mcm-fix-20261015/；回滚git revert 80b0354d4，保留并行改动。
+
 # 当前交接：给予仅限玩家随身俘虏（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品a1317e2dc：给予候选不再读玩家家族地牢；提交重验当前随身队伍，信使拒绝旧地牢来源。物品原随身库存、NPC向玩家提供俘虏规则保持。

@@ -1,3 +1,24 @@
+
+<a id="persona-mcm-ui-format-20261015"></a>
+## 2026-10-15：人物重生解析与 MCM/界面换行修复（OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 任务：用户要求读取重生失败日志，并追加询问人设演变开关、MCM中英重复分类和界面字面换行。产品提交 `80b0354d4`；意图检查点 `51c4f8c`，工作区 `F:/AnimusForge-main` / `main`。原开关保持终端“外交与国家 → 周报与快报 → 事件驱动的 NPC 人设演变”，默认关闭、相关事件至少10游戏小时后排队；本轮不改频率/功能。
+- 原因：安装日志 `Modules/AnimusForge/Logs/Mod_Logic.txt:127102–127112,127160–127170,127195–127205` 显示 lord_1_17 三次HTTP200后，模型以 `profile:{personality,background}` 返回正文，旧parser仅读字符串或顶层旧字段，误判无正文；原数据与声音保留。127124–127152另有一次网络连接意外关闭，属于独立传输失败，本轮不修改传输/重试。
+- 修复：只兼容profile对象内已知personality/background字符串，合并为原权威Description；顶层新格式与旧格式保持、未知对象/数组仍拒绝。CN/EN生成协议明确profile必须为非空字符串。MCM四类API改为父/子各自本地化，共享AI核心配置父组；原配置属性/字段/保存/preset保持。22份语言XML的213条固定文案将字面反斜杠n改为XML `&#10;`，内容与变量完全保持；没有对动态输入、路径或模型原文做全局解码。
+
+| 代码证据（修订80b0354d4，一基行号） | 所有者与覆盖 |
+| --- | --- |
+| `src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs:111–126`，`PopulateGeneratedData` | 原生/晋升生成应用共用parser；正文及扩展字段保留；不改存档与回写身份检查 |
+| 同文件 `230–260`，`BuildNative/BuildPromoted`；`content/modules/AF.Module.Persona/ModuleData/PersonaPromptTexts{,.en}.json:3–10` | 原资源reader、CN/EN包选择与英文fallback同步；未改玩家自定义要求 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:656–750`及其余三类API属性组 | 42个属性分组路径，各层使用独立key；真实MCM组树及现有可见性过滤验证 |
+| `content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml:175–176,1792`及对应英文资源 | 父/子标题、人物失败弹窗示例；213条变更完整清单见本地newline-changes.json |
+| `tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests/SupplementalChecks.cs:50–108`，`LocalizedNewlineChecks/McmGroupChecks/Run` | 实际DLL、MCM分组、游戏TextObject、两语言界面、CN/EN persona request；渲染/native/真实HTTP不在离线覆盖内 |
+
+- 性能：parser仅响应时增加一次已知对象/少量字段读取；UI修复是固定资源和现有MCM元数据，不新增Tick扫描、IO、锁或请求。换行XML通过原content-map及language_data注册投影；没有修改构建/覆盖脚本。
+- 验证：真实日志三份回复旧解析均失败，新解析全部通过；现有人设生成回放476项通过。原Release统一构建双API+Bootstrap+Coup/registration全部PASS（`build.log`）。实际DLL/UI回放1.3+EN包27213项、1.4+CN包27223项通过，每次都切换中英文界面，包含固定资源及换行扫描；数量主要是文案逐条断言，不代表同等数量游戏场景。XML逐条比对确认213条只改换行，正文/变量/路径保持；CN/EN生成规则key及英文fallback匹配。最终UI资源为非嵌入资产，沿用此次已通过C#构建，通过正式资源选择器在隔离fixture验证。
+- 证据：`artifacts/persona-mcm-fix-20261015/`，`verification.json`绑定29个任务文件与两份已测DLL SHA；`log-replay-before.log`/`log-replay-after.log`、`ui-final-1.3.log`/`ui-final-1.4.log`、`newline-changes.json`。共享build产物被另一任务重建，已从成功测试隔离fixture保留两份确切候选到`verified-dlls/`；不将后续共享输出冒充本轮候选。并行Weekly/Illustrator及Microsoft/NuGet内容未混入提交。
+- NOT-RUN：未部署、正式Stage/双ZIP、push、真实provider重试、实机界面/旧档。已完成源码与离线验收，不声称当前运行游戏已修复。回滚只用 `git revert 80b0354d4`，不回滚检查点以来其他作者提交；资源回滚不改玩家存档。
+
 <a id="persona-evolution-deploy-10h-20261015"></a>
 ## 2026-10-15 人设演变改为10游戏小时并部署（DEPLOY_VERIFIED / LIVE_PENDING）
 
