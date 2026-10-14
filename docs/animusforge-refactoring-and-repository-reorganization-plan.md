@@ -10577,3 +10577,33 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 仓库总code-map检查仍报未涉及的 ModuleFrameworkRuntime.cs source hash过期（code-map.log）；没有修改该旧全仓坐标证据或把它算通过。本条源码地图/提交SHA为本包证据。
 - 未验：真实游戏旧档与长周期运行、NPC最终回复是否自然利用材料、长期高量存档性能。未Stage/部署/打包/push；旧档早已丢失的事实无法恢复。不清理已有Microsoft/、NuGet/或并行主动接触/审计改动。
 - 回滚：git revert e3ea02f49；若后续共享文件已修改则聚焦反向合并。已保存事实新字段旧代码会忽略，源码回滚不等于游戏部署回滚。需要游戏生效另行按既有构建/部署流程执行。
+
+<a id="npc-player-experience-implementation-20261015"></a>
+## 玩家经历与近况驱动NPC主动接触（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户授权“实施”。产品2968fc462b2c3565234fad22707c264f35fec657；检查点5b4694e78。仅实施先前收窄的玩家履历/近期行动来意，不新增职业/服务/独立商机；本条替代npc-proactive-history-scope-20261015及其补充中的尚未实施状态。[方案及实际参数](npc_proactive_contact_motivation_plan.md)。
+- 来意：PlayerHistoryDiscussion/PlayerRecentEvent加入地图候选、同伴及主动来信；旧30类身份/资格保留，两组可用时0.5选择权重，沿用渠道频率与冷却门禁。近期读取10日/最多16条缓存，选未消费事件；履历独立成候选，不要求先结构化或玩家新增填写。近况/履历字符上限400/800，完整段落/句子提取，不增加模型规划调用。
+- 交付边界：现有领主主动接触、原生/场景开场及同伴、来信；不新增访客或游戏效果。履历交流30日NPC冷却，同事件跨NPC疲劳1日；回执按NPC+源键跨渠道去重，数据编辑不会重置已讨论履历冷却。开场复核来源版本与知情；不将材料写成新AFEF行动。原生/来信只去除其他块中完全相同的选中证据，保留普通对话历史。
+
+| 源码（产品2968fc462；一基行号） | 符号与覆盖责任 |
+| --- | --- |
+| src/modules/AF.Module.Social/Proactive/PlayerNotorietyBehavior.Experience.cs:13–95 | CaptureExperience / CanStillDiscussExperience：共享缓存、姓名投影、候选材料、知情与源版本复核；TW知情本身仍由原owner提供。 |
+| src/modules/AF.Module.Social/Proactive/PlayerExperienceContactState.cs:28–102 | CanOffer / Reserve / Complete / Prune：有界回执、暂占、过期、来源疲劳、完整文本预算；由原主动接触分块存档保存。 |
+| src/modules/AF.Module.Social/Proactive/ProactiveNpcRequestBehavior.Experience.cs:14–85；ProactiveCandidateQualification.cs:55–59 | 主线程适配、三渠道回执生命周期、地图新候选；没有额外API调用、Tick IO/反射。 |
+| src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs:109–150、548–552、580–710、928–940、1135–1140 | 原存档新增ExperienceContacts；选择新旧组；会话携带Experience；开场重验及类型归一。未重写旧需求/政治执行。 |
+| src/modules/AF.Module.Conversation/Proactive/CompanionProactiveChatBehavior.cs:505–514、716–728、790–809、1116–1122 | 同伴复用新近况/履历及共享回执，保留其他原动机；通知取消不冒充已讨论。 |
+| src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs:418–428、533–542；SessionCreation.cs:831–840；SessionTransport.cs:228–252 | 来信候选/两组选择、保存快照、送达重验与入库回执；现有来信没有行动后处理，新机制未另建。 |
+| src/modules/AF.Module.Conversation/Channels/Native/NativeAdmissionApplicationAdapter.cs:50–99、166–173、240–256；ShoutBehavior.NativeTurnPresentation.cs:28–56、120–126 | 原生retry携带同一票据；可见流片段/完整回复主线程确认；过期与会话结束释放。 |
+| src/modules/AF.Module.Conversation/Channels/Scene/ScenePassiveInteractionController.cs:105–113；ShoutBehavior.SceneConversationChains.cs:1829–1838 | 场景接回原请求，等待实际语音队列完成结果再回执；生成/排队成功不算呈现。 |
+| src/modules/AF.Module.Social/Proactive/PlayerExperiencePrompt.cs:7–24；src/modules/AF.Module.Prompt/Composition/ScenePromptMessageProjectionComposer.cs:21–26；Native/ShoutBehavior.NativeTurnPrompt.cs:109–111；Courier/CourierDeliveryBehavior.PromptPreparation.cs:149–169、296–299 | 上下文证据边界、完全相同正文去重、材料不写成新AFEF；不删除原始历史。 |
+| content/modules/AF.Module.Social/ModuleData/ProactiveNpcRequestPrompts{,.en}.json:142–151；SocialPromptTexts{,.en}.json末三键 | 两套新意图的当面/来信/同伴正文和背景标题/来信回退；原AIConfigHandler reader与content-map路径继续消费，UI语言/包回复语言规则不变。 |
+
+- 验证：tests/modules/AF.Module.Social/PlayerExperienceTests/Program.cs直接编译生产state/prompt/snapshot partial，57项PASS；游戏对象、知情和姓名投影为替身，不等于实机。覆盖未知/已知、仅履历、未消费较早事件、源删除/编辑、跨渠道去重、旧字段默认、回执重载、容量、完整文本与CN/EN三意图。
+- CurrentDllReplay复用PhaseEight的opening/cooldown/scan/session/qualification五组实际DLL回放，并验新类型大小写归一、session import不降成FoodShortage、检索履历不进入新AFEF；最终1.4 SHA9ca6ba00c0aab991514c7309808393aa7ac630fcf9fe030500151637ebcbd7f7。共享apphost曾使一轮命令误跑源码测试，已设UseAppHost=false，最终dll-replay-final.log明确输出实际候选SHA及五组PASS，不将错误入口算验证。
+- 原build_single_module.ps1 Debug，1.3(v1.3.15.110062)/1.4(v1.4.6.115628)/Bootstrap、双Coup及registration通过；无Stage/Deploy。共享树构建包含并行存档/历史修改；产品提交用独立索引精确排除预存完整性catch及其他任务内容，不宣称隔离源码构建。后续仅四文件EOL还原，已验证规范化正文与已测源码一致。
+- PersistenceChunkReplayTests通过（分块完整性、旧键、UTF8、坏块、写失败等）；validate_persistence_profile_config.py --chunk-contract-only为21字符串键/47字典键/0已知未修直写风险PASS。该清单反映共享树，原完整性修复不是本次实现；本次只登记原key新增ExperienceContacts及渠道可选字段。CN/EN各32类键一致、隔离索引JSON与CRLF差异检查通过。
+- 性能设计：游戏对象只在原主线程边界读取，近期排序/哈希按记录版本与日期缓存；最多16条候选材料，选中后重验；回执按小时扫描/加载维护，未新增Tick磁盘IO、元数据反射、额外意图模型请求。未测自然触发频数、实际帧耗时或远程usage，字符上限不是token保证。
+- 证据：artifacts/proactive-experience-20261015/receipt.json（规范化源码哈希及三DLL哈希）、replay.log、dll-replay-final.log、build-verified.log/build-verified-exit.txt、persistence.log、chunk-contract.log、verified-dlls/。保留baseline/preexisting.patch、task.patch与独立索引提交清单以区分并行改动。
+- 未验：实机/真实旧档、NPC语言质量、自然分布与性能、真实provider整轮token。未部署、Stage、打包或push；源码生效需之后按原流程部署。回滚git revert 2968fc462，冲突按本表范围反向合并；不删除已生成历史或其他作者修改。Microsoft/、NuGet/与其他审计工作保留。
+
+- 加载收尾bc8407e07767fa1773f333c935a513a7741db5d2：ProactiveNpcRequestBehavior.SyncData普通旧JSON解析失败时，随原owner清空ExperienceContacts与运行中标记，避免残留上一份状态。build-load-reset.log/exit为双API/Bootstrap/Coup/注册成功，dll-replay-load-reset.log为最终实际DLL五组回放及新类型/AFEF通过；receipt.json与verified-dlls已更新。回滚先bc8407e07，再2968fc462。
