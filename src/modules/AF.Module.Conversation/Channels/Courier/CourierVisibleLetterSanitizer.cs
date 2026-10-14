@@ -11,6 +11,9 @@ namespace AnimusForge;
 /// </summary>
 internal static class CourierVisibleLetterSanitizer
 {
+	// Only call at an NPC-owned output boundary; Clean also handles player-authored letters.
+	public static string CleanNpcLetter(string text) => Clean(DiplomacyReplyTextRules.CleanNpcText(text));
+
 	public static string Clean(string text)
 	{
 		string value = text ?? "";

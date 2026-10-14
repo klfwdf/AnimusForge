@@ -71,7 +71,7 @@ internal static class WorldDiplomacyPlayerDraftRules
             string body = (string)json["body"];
             if (body.Length > 6000)
                 return WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftTooLong", "The scribe returned a draft exceeding the editor capacity; original text was kept. Please try again."));
-            body = AnimusForgeTextInputSanitizer.SanitizeMultiline(body, 6000).Trim();
+            body = DiplomacyReplyTextRules.CleanNpcText(AnimusForgeTextInputSanitizer.SanitizeMultiline(body, 6000).Trim());
             if (string.IsNullOrWhiteSpace(body))
                 return WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftIncomplete", "The scribe failed to return a complete draft; original text was kept. Please try again."));
             return WorldDiplomacyPlayerDraftResult.Written(body);

@@ -186,7 +186,8 @@ internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessa
 			return false;
 		}
 		string text = (msg.Role ?? "").Trim();
-		string text2 = NormalizeSceneHistoryPromptLineContent(msg.Content);
+		string text2 = NormalizeSceneHistoryPromptLineContent(text.Equals("assistant", StringComparison.OrdinalIgnoreCase)
+            ? DiplomacyReplyTextRules.CleanNpcText(msg.Content, msg.SpeakerName) : msg.Content);
 		if (string.IsNullOrWhiteSpace(text2) || ConversationSpeechTextRules.IsLeakedPromptLineForShout(text2))
 		{
 			return false;

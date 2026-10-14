@@ -30,6 +30,8 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 
 	internal static string LocalizeFactBodyForDisplay(string text, string kind)
 	{
+		if (string.Equals(kind, "npc", StringComparison.OrdinalIgnoreCase))
+			return DiplomacyReplyTextRules.CleanNpcText(text ?? "");
 		return string.Equals(kind, "afef_player", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(kind, "afef_npc", StringComparison.OrdinalIgnoreCase)
 			? DiplomacyDialogueStatusUi.ProjectFactForUi(text ?? "") : text ?? "";

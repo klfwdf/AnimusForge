@@ -19,7 +19,8 @@ internal static bool TryRenderSceneHistoryLine(ConversationMessage msg, HashSet<
 			return false;
 		}
 		string text = (msg.Role ?? "").Trim().ToLowerInvariant();
-		string text2 = SceneHistoryMessageAssemblyOwner.NormalizeSceneHistoryPromptLineContent(msg.Content);
+		string text2 = SceneHistoryMessageAssemblyOwner.NormalizeSceneHistoryPromptLineContent(text == "assistant"
+            ? DiplomacyReplyTextRules.CleanNpcText(msg.Content, msg.SpeakerName) : msg.Content);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			return false;
