@@ -783,7 +783,7 @@
   "Screenshot_FactsTarget": "框选交流对象：{0}；与玩家的实测距离 {1} 米；相对高差 {2} 米。",
   "Screenshot_FactsTargetLook": "目标朝向向量：{0}",
   "Screenshot_FactsNoTarget": "没有指定 NPC 主目标，画面主体与在场关系依据截图，不补造目标或人物。",
-  "Directive_DiversePose": "【百科构图自主推导】：先依据身份、性格与情绪决定人物此刻正在做什么，再推导姿态、手部动作和视线，最后选择镜头与取景。站立、坐姿或轻微动作均可；让行动具有清楚的注意对象，不把双手下垂展示装备作为默认构图，不把复杂动作当成创作要求。需要坐靠时使用清楚且合理的支撑，避免一边跨坐一边踮脚、扭腰或同时撑扶多处。在非具名艺术布景中统一重绘人物与环境；参考近期行动避免重复的展示姿势，站立时同样明确手势和视线所服务的行动。单人独立肖像不添加武器、盾牌、旗帜或坐骑，服饰和身份细节按事实保持。",
+  "Directive_DiversePose": "创作这位人物的百科肖像，以人物气质与识别特征为中心，姿态、取景和背景由你选择。",
   "Directive_ConversationSceneVariation": "【构图自由创作】：先采用当前会话最近两轮对话中已发生或正在进行的动作，再设计镜头景别、机位角度与前景运用；双方可随对话动作改变朝向与互动，不预设面对面站立，不拘泥固定构图模板。",
   "Directive_AspectFormat": "\n【场景插画画幅】使用横向16:9构图，目标分辨率为{0}，保持人物与场景的自然比例，不拉伸方图或竖图。",
   "Ref_PortraitIdentity": "人物【{0}】的身份参考图：锁定容貌、发型肤色与实际装备；人物行动、手势、视线和机位由导演重新构思；依据新场景重建人物体积、衣褶、透视与受光，以统一艺术画风完整重绘。",
@@ -862,5 +862,6 @@
   "Cache_LocalPromptPlaceholder": "（本地已留存历史画卷）",
   "NearbyPropListSeparator": "、",
   "UsedMotifListSeparator": "；",
-  "Direction_TitleMaxCharacters": "18"
+  "Direction_TitleMaxCharacters": "18",
+  "EncyclopediaDirectorSystem": "你是人物肖像导演。根据人物身份、外貌、服饰、文化与人设资料，设计一幅以此人为主体的百科肖像。资料用于说明这是谁，不用于定位当前地点或还原正在发生的事件。围绕人物气质，自主构思适合他的环境和一个自然瞬间，通过神态、姿态或适度动作表现人物；环境与动作属于艺术创作。景别与光照由你决定，不预设场所、道具或任务。\n人物外貌与服饰忠实于资料及同名参考图；参考图不限定姿势、背景与光照。保留单人肖像，不添加武器、盾牌、旗帜或坐骑。\n先输出[[AFI_PROTOCOL_TITLE]]作品名、[[AFI_PROTOCOL_THEME]]一句主题、[[AFI_PROTOCOL_ACTION]]简短姿态或神态摘要。随后输出四段：[[AFI_PROTOCOL_SUBJECT]]人物与取景；[[AFI_PROTOCOL_SCENE]]入镜背景；[[AFI_PROTOCOL_LIGHT]]光线与色彩；[[AFI_PROTOCOL_SPATIAL]]人物与背景的空间关系。四段简洁具体、相互一致，只写确定的画面内容，不输出解释、台词或画面文字。"
 }

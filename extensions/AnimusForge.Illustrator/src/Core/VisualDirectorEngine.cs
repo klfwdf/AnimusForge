@@ -37,6 +37,7 @@ namespace AnimusForge.Illustrator.Core
         }
         internal bool IsConversation => Mode == IllustratorText.Raw("Director_933") || Mode == IllustratorText.Raw("Director_934") || Mode == IllustratorText.Raw("Director_935") || Mode == IllustratorText.Raw("Director_936");
         internal bool IsWeeklyReport => Mode == IllustratorText.Raw("Director_937");
+        internal bool IsEncyclopedia => Mode == IllustratorText.Raw("Director_1020");
         internal bool IsMissionScreenshot => MissionScreenshotRules.IsMode(Mode);
         public string HardFacts { get; }
         public string ArtDirection { get; }
@@ -95,6 +96,7 @@ namespace AnimusForge.Illustrator.Core
     public static class VisualDirectorEngine
     {
         private static readonly TimeSpan DirectorRequestTimeout = TimeSpan.FromSeconds(240);
+        private static readonly string EncyclopediaSystemPrompt = IllustratorText.Get("EncyclopediaDirectorSystem");
         private static readonly string SystemPrompt =
             IllustratorText.Get("Director_940") +
             IllustratorText.Get("Director_941") +
@@ -344,7 +346,7 @@ namespace AnimusForge.Illustrator.Core
             }
             string contract = VisualFidelityRules.GetEssentialContract(isSinglePortrait, isConversation, isWeeklyReport);
             sb.AppendLine().Append(preserveEquipment ? contract : VisualFidelityRules.WithoutEquipmentRules(contract));
-            sb.AppendLine().Append(VisualFidelityRules.ClothingStatePriority);
+            if (!isSinglePortrait) sb.AppendLine().Append(VisualFidelityRules.ClothingStatePriority);
             return sb.ToString().Trim();
         }
 
@@ -857,6 +859,9 @@ namespace AnimusForge.Illustrator.Core
                 };
             }
 
+            string modeSystem = plan.IsEncyclopedia ? EncyclopediaSystemPrompt
+                : plan.IsWeeklyReport ? WeeklyReportSystemPrompt
+                : plan.IsConversation ? ConversationSystemPrompt : SystemPrompt;
             return new JObject
             {
                 ["model"] = options.DirectorModelName,
@@ -864,9 +869,9 @@ namespace AnimusForge.Illustrator.Core
                 {
                     new JObject { ["role"] = "system", ["content"] =
                         PromptComposerTexts.ApplyOutputLanguage((plan?.IsMissionScreenshot == true ? MissionScreenshotRules.DirectorSystem + "\n" + MissionScreenshotRules.Contract(plan.Mode == MissionScreenshotRules.BattleMode)
-                        : options?.PreserveEquipmentFidelity == false ? VisualFidelityRules.WithoutEquipmentRules((plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt)) : (plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt)) +
+                        : options?.PreserveEquipmentFidelity == false ? VisualFidelityRules.WithoutEquipmentRules(modeSystem) : modeSystem) +
                         (string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) ? string.Empty : "\n" + VisualFidelityRules.PlayerRedrawDirectorPriority) +
-                        "\n" + VisualFidelityRules.ClothingStatePriority +
+                        (plan.IsEncyclopedia ? string.Empty : "\n" + VisualFidelityRules.ClothingStatePriority) +
                         IllustratorText.Get("Director_1067") +
                         IllustratorText.Get("Director_1068") +
                         IllustratorText.Get("Director_1069")) },

@@ -136,7 +136,7 @@ namespace AnimusForge.Illustrator.Context
 
     public static class HeroVisualExtractor
     {
-        public static HeroVisualProfile Extract(Hero hero, bool useCivilian = false, Equipment equipmentSnapshot = null, string equipmentSource = null, CharacterAppearanceSnapshot appearance = null)
+        public static HeroVisualProfile Extract(Hero hero, bool useCivilian = false, Equipment equipmentSnapshot = null, string equipmentSource = null, CharacterAppearanceSnapshot appearance = null, bool includeCurrentState = true)
         {
             if (hero == null)
             {
@@ -180,7 +180,7 @@ namespace AnimusForge.Illustrator.Context
             profile.TopSkillsSummary = ExtractTopSkillsSummary(hero);
 
             // 5b. 提取当前处境状态 (俘虏关押/负伤/留驻/随军/已故)
-            profile.CurrentStateDetail = ExtractCurrentState(hero);
+            if (includeCurrentState) profile.CurrentStateDetail = ExtractCurrentState(hero);
 
             // 6. 提取纹章识别色、家族旗帜与阵营服饰布料主色 (优先使用立绘渲染色彩或当前所属王国主色)
             uint liveryColor1 = (appearance != null && appearance.Color1 != 0)

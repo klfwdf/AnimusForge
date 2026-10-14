@@ -1078,7 +1078,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             equipmentCode = equipment.CalculateEquipmentCode().ToString();
 
-            HeroVisualProfile profile = HeroVisualExtractor.Extract(hero, equipmentSnapshot: equipment, equipmentSource: IllustratorText.Get("Facts_EquipmentSourcePortrait"), appearance: appearance);
+            HeroVisualProfile profile = HeroVisualExtractor.Extract(hero, equipmentSnapshot: equipment, equipmentSource: IllustratorText.Get("Facts_EquipmentSourcePortrait"), appearance: appearance, includeCurrentState: false);
 
             string bannerCode = (hero.Clan?.Banner ?? hero.Clan?.Kingdom?.Banner)?.BannerCode;
 
@@ -1086,7 +1086,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             string hardFacts = profile.BuildVisualSummary(includeMount: false);
 
-            string directorFacts = IllustratorText.Format("Facts_CampaignEra", TaleWorlds.CampaignSystem.CampaignTime.Now.GetYear) + profile.BuildDirectorOnlyFacts();
+            string directorFacts = profile.BuildDirectorOnlyFacts();
 
             _generationCount++;
 
