@@ -14,11 +14,13 @@ public static class TerminalProviderProbe
     public static readonly Dictionary<string, object> Owners = new Dictionary<string, object>();
     public static readonly List<string> Saved = new List<string>();
     public static string FailId;
+    public static Action<object> OnSave;
     public static object Get(string id) => Owners.TryGetValue(id, out object value) ? value : null;
     public static void Save(object owner)
     {
         string id = (string)owner.GetType().GetProperty("Id").GetValue(owner);
         if (id == FailId) throw new InvalidOperationException("Controlled save failure");
+        OnSave?.Invoke(owner);
         Saved.Add(id);
     }
 }
@@ -213,7 +215,7 @@ internal static class TerminalSettingsChecks
             Check(!TerminalProviderProbe.Saved.Contains("AnimusForge_Illustrator_v1") && !TerminalProviderProbe.Saved.Contains("AnimusForge_Coup_v1"), "successfully saved owners are not repeatedly saved");
             Console.WriteLine("PASS actual terminal settings: " + checks + " checks; controlled provider persistence routing, live Gauntlet NOT RUN.");
         }
-        finally { instance.SetValue(null, prior); TerminalProviderProbe.Owners.Clear(); TerminalProviderProbe.Saved.Clear(); TerminalProviderProbe.FailId=null; }
+        finally { instance.SetValue(null, prior); TerminalProviderProbe.Owners.Clear(); TerminalProviderProbe.Saved.Clear(); TerminalProviderProbe.FailId=null; TerminalProviderProbe.OnSave=null; }
     }
 
     static object BuildProvider(Type provider)

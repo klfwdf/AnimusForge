@@ -1002,6 +1002,51 @@ namespace AnimusForge.Illustrator.Engine
         /// 且该崩溃发生在原生层、托管 try/catch 接不住。串行代价是参考图多约一秒。
         /// </summary>
         private static readonly SemaphoreSlim _stageLock = new SemaphoreSlim(1, 1);
+        private static WeakReference<OffscreenStagePump> _previousCaptureStage;
+
+        // Called once after acquiring the shared capture slot. Only AF-owned stale
+        // sessions are retired; never clear the live mission or the engine resource pool.
+        internal static Task PrepareNativeCaptureOnMainThread(CancellationToken token)
+        {
+            Core.IllustratorRuntime.AssertMainThread();
+            token.ThrowIfCancellationRequested();
+            CancelActiveStage();
+            // Retry only resources still attached after the original completion cleanup.
+            // A weak reference does not retain a retired UI layer between captures.
+            if (_previousCaptureStage != null && _previousCaptureStage.TryGetTarget(out OffscreenStagePump previous))
+            {
+                if (previous.Movie?.Movie != null && !previous.Movie.Movie.IsReleased)
+                    previous.Layer?.ReleaseMovie(previous.Movie);
+                if (previous.Screen != null && previous.Layer != null)
+                {
+                    foreach (var layer in previous.Screen.Layers)
+                    {
+                        if (!ReferenceEquals(layer, previous.Layer)) continue;
+                        previous.Screen.RemoveLayer(previous.Layer);
+                        break;
+                    }
+                }
+            }
+            _previousCaptureStage = null;
+            token.ThrowIfCancellationRequested();
+            // Existing provider retirement is deferred. Allow subsequent application
+            // frames to process it before the next allocation. This is NOT a GPU fence.
+            return Core.IllustratorRuntime.AfterFramesAsync(2, token);
+        }
+
+        private static async Task PrepareNativeCaptureAsync(CancellationToken token)
+        {
+            Core.GenerationDiagnostics.Current?.RecordStage("native_capture_cleanup_begin");
+            Task retiredFrames = await RunOnGameThreadAsync(() => PrepareNativeCaptureOnMainThread(token), token).ConfigureAwait(false);
+            if (retiredFrames == null) throw new InvalidOperationException("Native capture cleanup was not scheduled.");
+            await retiredFrames.ConfigureAwait(false);
+            token.ThrowIfCancellationRequested();
+            Core.GenerationDiagnostics.Current?.RecordStage("native_capture_cleanup_ready", new Newtonsoft.Json.Linq.JObject
+            {
+                ["deferredFrames"] = 2, ["gpuCompletionVerified"] = false
+            });
+        }
+
 
         /// <summary>
         /// 通用离屏舞台提取：临时挂一个 Gauntlet 层（透明控件位于可渲染区域、IsVisible=true），
@@ -1021,6 +1066,7 @@ namespace AnimusForge.Illustrator.Engine
             Core.GenerationDiagnostics.Current?.RecordStage("portrait_stage_begin", new Newtonsoft.Json.Linq.JObject { ["view"] = widgetId, ["timeoutMs"] = timeoutMs });
             try
             {
+                await PrepareNativeCaptureAsync(cancellationToken).ConfigureAwait(false);
                 var done = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
                 bool started = await RunOnGameThreadAsync(() =>
                 {
@@ -1098,6 +1144,7 @@ namespace AnimusForge.Illustrator.Engine
                         Done = done
                     };
                     _activeStage = pump;
+                    _previousCaptureStage = new WeakReference<OffscreenStagePump>(pump);
                     top.AddLayer(layer);
                     // The runtime advances this stage once per application tick.
                     return true;

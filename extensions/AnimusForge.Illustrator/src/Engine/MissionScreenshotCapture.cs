@@ -46,6 +46,7 @@ namespace AnimusForge.Illustrator.Engine
         private readonly Stopwatch _clock = Stopwatch.StartNew();
         private long _lastCameraMs, _exportStart, _exportFrame;
         private Task<byte[]> _read;
+        private Task _preCaptureCleanup;
         private CancellationTokenSource _shotCancel;
         private string _shotPath;
         private byte[] _first, _second;
@@ -77,6 +78,7 @@ namespace AnimusForge.Illustrator.Engine
             {
                 _ownsStage = ScreenCaptureHelper.TryAcquireMissionScreenshotStage();
                 if (!_ownsStage) throw new InvalidOperationException("A native image capture is in progress. Wait before clicking again.");
+                _preCaptureCleanup = ScreenCaptureHelper.PrepareNativeCaptureOnMainThread(CancellationToken.None);
                 if (mission.GetRequestedTimeSpeed(PauseRequestId, out float _)) throw new InvalidOperationException("The capture pause request is already in use.");
                 _backup = Camera.CreateCamera();
                 _backup.FillParametersFrom(_screen.CombatCamera);
@@ -110,6 +112,12 @@ namespace AnimusForge.Illustrator.Engine
                 if (!ReferenceEquals(Mission.Current, _mission) || !ReferenceEquals(ScreenManager.TopScreen, _screen)
                     || _screen.IsFinalized || _mission.MissionEnded)
                     throw new InvalidOperationException("The scene was left before capture finished. Capture was terminated.");
+                if (_preCaptureCleanup != null)
+                {
+                    if (!_preCaptureCleanup.IsCompleted) return;
+                    _preCaptureCleanup.GetAwaiter().GetResult();
+                    _preCaptureCleanup = null;
+                }
                 if (!ReferenceEquals(_screen.CustomCamera, _captureCamera))
                     throw new InvalidOperationException("Another feature took control of the camera during capture. Capture was terminated.");
                 _overlay.HideOtherUi();
@@ -167,6 +175,7 @@ namespace AnimusForge.Illustrator.Engine
         }
         private void BeginExport()
         {
+            if (_preCaptureCleanup != null) return;
             if (_phase != 0 || _second != null) return;
             _phase = 1;
             _overlay.Capturing();

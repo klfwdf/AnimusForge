@@ -40,7 +40,11 @@ build = subprocess.run([str(dotnet), 'build', str(out / 'Probe.csproj'), '--nolo
 (out / 'build.log').write_text(build.stdout + build.stderr, encoding='utf-8')
 code = build.returncode
 if not code:
-    run = subprocess.run([str(out / 'bin/Debug/net472/Probe.exe'), str(copy), str(module), str(refs), str(deps)], cwd=out, capture_output=True, text=True, encoding='utf-8', errors='replace', env=dict(env, AF_TEST_MODULE_ROOT=str(module), ANIMUSFORGE_DATA_ROOT=str(module)))
+    ui = Path('F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/Bannerlord.MBOptionScreen/bin/Win64_Shipping_Client')
+    command = [str(out / 'bin/Debug/net472/Probe.exe'), str(copy), str(module), str(refs), str(deps)]
+    if a.api == '1.4' and not a.baseline:
+        command.append(str(ui))
+    run = subprocess.run(command, cwd=out, capture_output=True, text=True, encoding='utf-8', errors='replace', env=dict(env, AF_TEST_MODULE_ROOT=str(module), ANIMUSFORGE_DATA_ROOT=str(module)))
     code = run.returncode
     (out / 'run.log').write_text(run.stdout + run.stderr, encoding='utf-8')
     print(run.stdout + run.stderr)
