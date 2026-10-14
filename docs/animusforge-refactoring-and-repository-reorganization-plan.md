@@ -1,6 +1,7 @@
 <a id="release-161-20261015"></a>
-## 1.6.1 拉取合并、统一构建和正式发行（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_PENDING）
+## 1.6.1 拉取合并、统一构建和正式发行（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
+- 推送：2026-10-15普通git push origin main成功，远端由a29b12752前进至发布提交9e4a5bc2799ec77c6088ad4a31b42547735fc90d；git ls-remote核验一致。本条交付状态覆盖已包含功能的旧“未部署/未打包/未推送”记录，实机未验边界不变；本收据文档提交随同推送，最终远端SHA记于artifacts/merge-push-20261015/push-receipt.json。
 - 授权：先拉取合并，再编译、部署、推送、双包及面向玩家公告；用户确认包含所有已完成并验证改动，公告基线1.6.0（2026-10-13，737907825）。用户暂停等其他会话后明确恢复。
 - 合并：bce750a97接远端a29b12752；e1e46ab20合入已验证的原未提交存档/历史修复及发行回执兼容修复；4650a38f0接其他会话7adf7c46f等最终场景接力修复。DuelSettings保留本地分组与远端API说明；Courier同时保留经历复核和回执清理；新场景epoch同时作废编辑轮次与旧接力等待。详细源码范围见[代码地图](architecture/af-framework-code-scope.md#release-161-20261015)，其他功能复用各原台账责任边界。
 - 正式门禁修复：回执识别改嵌入专用DiplomacyReceiptCompatibility.json，70键/140中英文变体，与原匹配项精确守恒；回信前缀读已有兼容键。不再嵌入整份Prompt/UI表，不修改或放宽打包门禁。兼容表一次懒加载，无新增Tick扫描、磁盘IO或模型请求。
