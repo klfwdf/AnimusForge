@@ -1,3 +1,8 @@
+# 方案交接：NPC 主动接触动机（2026-10-15，DESIGN_ONLY）
+
+- 针对主动接触反复缺钱/缺物资的玩家反馈，已制定事件反应、公开服务、互惠机会、动机族选择及跨渠道去重方案；首版覆盖现有领主接触、同伴与来信，不新增 NPC 生成或治疗/预言结算。
+- [方案与已核实代码地图](docs/npc_proactive_contact_motivation_plan.md)；[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#npc-proactive-motivation-plan-20261015)。下一步按 A 事件与多样化、B 公开服务、C 联合验收实施；本轮只制定方案，产品尚未修改，运行验收未执行。
+
 # 当前交接：快报正文进导演与构图误拒修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品519700a5a（换行保持ac085e7da）：快报成稿后才启动生图，全文进入导演叙事区、事实区保持独立；重开复用正文，缓存包含正文。修复段内“【小标题】”被误认为段落结束而触发固定兜底。

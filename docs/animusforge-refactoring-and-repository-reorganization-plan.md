@@ -10529,3 +10529,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 代码地图（产品 a1317e2dc）：src/AF.GameAdapter.Bannerlord/Composition/PartyAssetTransferBannerlordAdapter.cs:692–728 BuildPartyTransferPromptEntriesInternal；1775–1804 TransferPartyPrisonerEntry 来源校验及英雄转移；src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs:1398–1407 MoveCharacterFromPlayerPrisonerSourceToParty。对话/喊话和信使共用候选入口，无新增Tick工作；候选生成减少玩家全领地扫描，提交新增O(1)来源比较。
 - 验证：PartyTransferOwnerTests 原回归和新增随身来源回归全部PASS，提取真实候选builder、俘虏转移与信使来源准入方法；游戏对象、列表投影和原生动作使用替身，信使下游转移为记录替身，不是完整信使旅程。证据 artifacts/carried-prisoners-20261015/run.log、build.log。原 Release 统一脚本构建1.3/1.4/Bootstrap、双Coup及注册PASS，build-dual.log、build-exit-code.txt；diff检查PASS。
 - 尚未验证：实机军团中UI、原生旧档与实际完整信使旅程。未部署、Stage、打包、push。代码回滚 git revert a1317e2dc；游戏仍为此前部署状态，本条不覆盖并行任务安装记录。
+
+<a id="npc-proactive-motivation-plan-20261015"></a>
+## NPC 主动接触动机方案（2026-10-15，DESIGN_ONLY）
+
+- 用户要求针对主动接触反复缺钱/缺物资的反馈制定方案。工作区 F:/AnimusForge-main、main，调查源码基线 07a12dc25a8d3ec0f747057b960e2b93150797f9；未跟踪 Microsoft/、NuGet/ 原样保留。本轮仅文档，不修改产品或玩家资料。
+- [完整方案及修订绑定代码地图](npc_proactive_contact_motivation_plan.md)：已核实地图按需求最高分选择、履历知情/名声参与触发、近期事件进入上下文、同伴已有 PlayerRecentEvent、来信另有加权动机；CN/EN 专用预设各 30 类、键一致。缺少的是事件和职业对地图来意的直接选择，不是笼统“没有记忆”。
+- 计划 A：事件反应、动机族选择与疲劳、三渠道共用证据与跨渠道回执；B：现有人设 owner 的公开服务，商人交易、医师求诊、术士咨询；C：资格/重复/读档/三渠道 messages、性能、双API与实机联合验收。医师/术士首版限接触与咨询，不声称已有治疗或预言执行机制。
+- 关键边界：PlayerActionEntry 缺通用 TargetHeroId，直接感谢/追责需权威关联；动态旧文本不猜译或推断权限；保留30类身份、旧会话/分块和用户内容。新动机须接 NormalizeNeedType/session import，不能读档变成 FoodShortage。动机权重与去重参数是方案建议，不是已测效果。
+- 本轮验证：真实源码/JSON消费者调查、CN/EN类型键比较、文档相对引用与差异检查；纯文档不运行游戏构建。未来测试尚未执行，未真实模型/实机/旧档验证，未Stage/打包/部署/push。
+- 本轮文件仅 docs/npc_proactive_contact_motivation_plan.md、本条及 HANDOFF 方案链接。回滚按本轮文档提交做 focused inverse commit；后续实施每片另建检查点并验证提交，不根据本方案状态声称功能已完成。
