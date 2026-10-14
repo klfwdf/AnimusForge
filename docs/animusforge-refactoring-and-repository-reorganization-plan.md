@@ -1,3 +1,11 @@
+<a id="deploy-push-repeat-20261014"></a>
+## 2026-10-14 当前改动再次部署并推送（DEPLOY_SCRIPT_PASS / PUSH_VERIFIED / LIVE_PENDING）
+
+- 最新用户授权全部部署，随后明确“不用核对了推送”。源码main/44861038d，运行源码与c309749a9一致；原Release双API（1.3.15.110062/1.4.6.115628）、Bootstrap、Coup/registration及Stage门禁exit0，原deploy_module.ps1 exit0，F盘游戏单模块v1.6.0更新9个受管文件。未修改构建脚本或产品源码。
+- git push origin main成功ea6c51247..44861038d（25提交）；随后fetch确认本地/远端同44861038d，无其他远端新提交。本轮记录另作文档提交并推送；此前“未push”切片状态由此替代。
+- 按用户要求停止额外核对：未追加新DLL回放、安装SHA/玩家配置前后核对，不复用旧DLL回放冒充新候选PASS；原部署保护门禁有效。实机/读档/性能/GPU仍NOT-RUN，未启动游戏主程序；已有启动器保持。
+- 证据artifacts/deploy-all-20261014-233901/REPORT.md、build-stage.log、deploy.log、completion.json。旧项目Stage保留在previous-project-stage；无部署备份/Recovery/自动回滚。人工回退须独立工作区重建所选旧修订并另行部署，历史参考02c8095b1；Microsoft/NuGet工具缓存未提交。责任坐标继续沿用下方各产品切片，不扩展代码范围。
+
 ﻿<a id="deploy-all-current-20261014"></a>
 ## 2026-10-14 全部当前改动部署（DEPLOY_VERIFIED / LIVE_PENDING）
 

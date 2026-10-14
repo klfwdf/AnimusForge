@@ -1,3 +1,9 @@
+# 当前交接：全部改动再次部署并推送（2026-10-14，DEPLOY_SCRIPT_PASS / PUSH_VERIFIED / LIVE_PENDING）
+
+- main/44861038d运行内容原Release双API/Bootstrap/Coup/registration/Stage通过，原部署脚本exit0，F盘游戏单模块v1.6.0更新9个受管文件。
+- 25提交已推送，fetch确认无额外远端提交；按用户“不用核对了推送”停止追加回放和安装逐项核对，实机/旧档/性能/GPU仍未验。
+- [唯一主台账与本次证据/回退边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-push-repeat-20261014)。本条接续此前部署结果并替代未push状态；旧项目Stage保留，无部署备份或自动回滚。
+
 ﻿# 当前交接：全部当前改动已部署（2026-10-14，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户授权完整部署，main/c309749a9的全部运行改动已覆盖F盘游戏单模块v1.6.0：终端排版/字号/场景键、日结扫描/Watchdog、共用MCM文档配置、市场缓存及分帧清理；之前API/诊断/采集清理修复保留。
