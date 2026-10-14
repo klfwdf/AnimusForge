@@ -1,4 +1,10 @@
-﻿# 当前交接：环境API测试与诊断空引用补漏（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+﻿# 当前交接：最新修复以Release部署（2026-10-14，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户授权部署，main源码02c8095b1（产品69f03579d及5e1e354ac/064cbaf6a）已通过原Release双API/Bootstrap/Coup/注册/Stage门禁与469/479项回放，并覆盖游戏单模块v1.6.0的12个受管文件。
+- 两安装实现DisableOptimizations=false；3519个Stage文件核对PASS，Configs 5/自定义提示词4/PlayerExports 3133/ONNX 10哈希保持；255个未列入Stage文件元数据及原版3文件抽检保持。原默认Debug未改，无push/打包/版本递增/游戏启动。
+- [唯一主台账、证据、覆盖边界与人工回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-release-fixes-20261014)。本条替代下方修复未部署及旧ea6c51247安装状态；实机性能/GPU/provider/旧档仍待验，没有部署备份或自动回滚。
+
+# 当前交接：环境API测试与诊断空引用补漏（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品69f03579d：补环境测试Action，使用页面点击快照/主线程CN/EN通知；诊断先并发限流，游戏对象仅类型名；关闭取消自有FirstChance监听、增加重入保护。主API、原玩法/资格/预算/构建默认Debug保持。
 - 原双API/Bootstrap/Coup/注册PASS；实际MCM/终端/诊断/虚构环境Gateway回放1.3/1.4各469/479项PASS。旧DLL1000次prefix执行危险ToString，新DLL10000次零调用；未证明所有卡顿或GPU根因。

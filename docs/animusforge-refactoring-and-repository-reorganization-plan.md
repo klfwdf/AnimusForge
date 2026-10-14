@@ -1,4 +1,17 @@
-﻿<a id="ambient-diagnostic-complete-20261014"></a>
+﻿<a id="deploy-release-fixes-20261014"></a>
+## 2026-10-14 当前修复以Release部署（DEPLOY_VERIFIED / LIVE_PENDING）
+
+用户本轮明确授权“部署”，工作区F:/AnimusForge-main、main/02c8095b150fecec62fafee0bf08371e6c04cb6d，产品69f03579d含此前5e1e354ac/064cbaf6a。本条替代ambient-diagnostic-complete-20261014、terminal-live-complete-20261014的“尚未部署”，以及deploy-main-20261014的旧安装状态；原源码/回放边界继续有效。本轮显式使用Release部署至F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，版本仍v1.6.0；原一键默认Debug未改，不push、打包、递增版本或启动游戏。
+
+原scripts/build/build_single_module.ps1:488–560双构建/Bootstrap/Coup/注册/Stage门禁全部PASS，引用1.3.15.110062与1.4.6.115628；两实现各363既有warnings/0 errors。Release候选终端/MCM/环境快照/CNEN通知/诊断/帧准入回放1.3 469、1.4 479 PASS，artifacts/tests/terminal-live-settings/run-b401fe134cee4b6ab9e13ee79b3dd91e、run-446a2d752ef641f09e94becbaee11f80；变更构建配置后未只复用Debug回放。
+
+原scripts/build/deploy_module.ps1:522–571、627–648的Stage/目标/路径/玩家保护校验通过，退出0并更新12个受管文件，未生成部署Recovery备份或自动回滚。随后3519个Stage文件按原覆盖/保留/世界书时间策略核对PASS；现有Configs 5、自定义提示词4、PlayerExports 3133、ONNX 10的哈希保持，255个未列入Stage安装文件元数据保持，原版3个DLL抽检哈希保持；Bootstrap-only XML与两实现marker/API/hash通过。
+
+两候选及安装DLL分别在独立进程只读检查Debuggable flags=2、DisableOptimizations=false，确认此次优化开启。1.3 hash=223F80BBE1E3A97F3D3B9BC8F20DB4979CE43734C5508AE51DD357D0441B4A0B；1.4 hash=04E4B44A05F06721156ED86FD55D6081E1738D0BB31C5677E4F21DEE08A01035。完整证据与命令在artifacts/deploy-release-20261014-68d2c8d3：build-stage.log、deploy.log、source-replay-receipt.json、verification.json、四份flags与REPORT.md。脚本/运行资源未修改，原Microsoft/NuGet未跟踪目录保持。
+
+旧Release项目Stage保留在该证据目录previous-release-stage，不是已验证的当前安装回滚副本；部署前before.json仅哈希/元数据，无安装文件备份。人工回退需聚焦inverse/revert、重新构建校验与经授权部署，不声称自动恢复。未启动实机、未测性能提升/真实provider/旧档或GPU错误消失，实际游戏1.4.8的场景仍待验；近期事实具体截图请求仍未知。
+
+<a id="ambient-diagnostic-complete-20261014"></a>
 ## 2026-10-14 环境测试与深度诊断补漏完成（OFFLINE_VERIFIED / LIVE_PENDING）
 
 本条明确替代deep-trace-safety-20261014、ambient-test-completion-20261014的IN_PROGRESS状态。main产品69f03579d，checkpoint718c44e64/c34fb70f3；此前终端/离屏追加清理5e1e354ac/064cbaf6a继续有效。没有push、部署、打包、版本递增或玩家配置/存档写入；原Microsoft、NuGet未跟踪目录保留。
