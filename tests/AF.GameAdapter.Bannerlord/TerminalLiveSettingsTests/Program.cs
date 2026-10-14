@@ -68,6 +68,7 @@ class Program
 #endif
 #if !AF_BASELINE
             SupplementalChecks.Run(af, duel, Check, root);
+            SceneTerminalChecks.Run(af, Check);
 #endif
             var formatType = typeof(BaseSettings).Assembly.GetType("MCM.Implementation.JsonSettingsFormat", true);
             var loggerType = typeof(BaseSettings).Assembly.GetType("BUTR.DependencyInjection.Logger.DefaultBUTRLogger`1", true).MakeGenericType(formatType);

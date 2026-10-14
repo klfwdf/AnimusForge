@@ -26,6 +26,8 @@ using TaleWorlds.Localization;
 
 using TaleWorlds.MountAndBlade;
 
+using TaleWorlds.MountAndBlade.View.Screens;
+
 using TaleWorlds.ScreenSystem;
 
 
@@ -318,17 +320,17 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 		}
 
-		if (!IsCampaignMapLikeStateActive())
+		_wasTerminalKeyDown = true;
+
+		if (!IsTerminalHotkeyContextActive())
 
 		{
 
-			LogHotkeyBlocked("not_campaign_map", configuredTerminalKey);
+			LogHotkeyBlocked("not_campaign_map_or_scene", configuredTerminalKey);
 
 			return;
 
 		}
-
-		_wasTerminalKeyDown = true;
 
 		float num = GetRealTimeSeconds();
 
@@ -578,6 +580,24 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	}
 
 
+
+    private static bool IsTerminalHotkeyContextActive()
+    {
+        // Called only on a new key press, after the shared input/modal guards.
+        if (Mission.Current == null) return IsCampaignMapLikeStateActive();
+        try
+        {
+            Mission mission = Mission.Current;
+            GameStateManager manager = Game.Current?.GameStateManager;
+            return Campaign.Current != null && !mission.IsMissionEnding
+                && mission.Mode != MissionMode.Conversation && mission.Mode != MissionMode.Barter
+                && mission.Mode != MissionMode.StartUp && mission.Mode != MissionMode.CutScene
+                && Campaign.Current.ConversationManager?.IsConversationInProgress != true
+                && ScreenManager.TopScreen is MissionScreen
+                && manager?.ActiveState is MissionState && !manager.ActiveStateDisabledByUser;
+        }
+        catch { return false; }
+    }
 
 	private static bool IsCampaignMapLikeStateActive()
 

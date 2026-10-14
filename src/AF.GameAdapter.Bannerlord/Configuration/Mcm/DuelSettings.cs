@@ -786,7 +786,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public string ShoutSpecialMenuKey { get; set; } = "Y";
 
-	[SettingPropertyText("{=AF_MCM_Shout_TerminalKey}Terminal key (one uppercase letter)", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Shout_TerminalKey_Hint}Press this key on the campaign map to open the AnimusForge terminal. Default: U.")]
+	[SettingPropertyText("{=AF_MCM_Shout_TerminalKey}Terminal key (one uppercase letter)", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Shout_TerminalKey_Hint}Press this key on the campaign map or in a campaign scene to open the AnimusForge terminal. Unavailable during conversations, text input or other menus. Default: U.")]
 	[SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
 	public string TerminalKey { get; set; } = "U";
 

@@ -463,7 +463,7 @@
   <string id="AF_MCM_Items_Restore_Hint" text="开启后，NPC 因给予、交易或战后缴获失去已装备的装备时，满 3 天会恢复到原槽位；原槽位已有其他装备时不会覆盖。关闭后，NPC 仍可交出装备，但不会登记新的恢复任务，也不会执行已登记的恢复任务。重新开启后，已登记任务会继续处理。默认开启。" />
   <string id="AF_MCM_Shout_Key_Hint" text="场景中按住此键预览并扩大喊话范围，松开后打开说话输入框。默认 T。" />
   <string id="AF_MCM_Shout_SpecialKey_Hint" text="场景中按住此键预览并扩大喊话范围，松开后打开复杂交流菜单。默认 Y。" />
-  <string id="AF_MCM_Shout_TerminalKey_Hint" text="大地图上按此键打开 AnimusForge 终端。默认 U。" />
+  <string id="AF_MCM_Shout_TerminalKey_Hint" text="在大地图或战役场景中按此键打开 AnimusForge 终端。对话、文字输入或其他菜单中不可用。默认 U。" />
   <string id="AF_MCM_Shout_GoldKey_Hint" text="场景挑衅冲突中，NPC 倒地后靠近金币按此键拾取。默认 F。" />
   <string id="AF_MCM_Shout_InitialRange_Hint" text="按下 T/Y 时使用的基础喊话范围。默认 4 米。" />
   <string id="AF_MCM_Shout_MaxRange_Hint" text="按住 T/Y 时可扩大的最大喊话范围。上限 150 米。范围越大，预览标记越多。" />
@@ -1108,7 +1108,7 @@
   <string id="AF_TERMINAL_UI_ShoutSpecialMenuKey_Hint" text="场景中按住此键预览并扩大喊话范围，松开后打开复杂交流菜单。默认 Y。" />
   <string id="AF_TERMINAL_UI_ShoutSpecialMenuKey_Group" text="3. 场景喊话" />
   <string id="AF_TERMINAL_UI_TerminalKey_Title" text="终端按键" />
-  <string id="AF_TERMINAL_UI_TerminalKey_Hint" text="大地图上按此键打开 AnimusForge 终端。默认 U。" />
+  <string id="AF_TERMINAL_UI_TerminalKey_Hint" text="在大地图或战役场景中按此键打开 AnimusForge 终端。对话、文字输入或其他菜单中不可用。默认 U。" />
   <string id="AF_TERMINAL_UI_TerminalKey_Group" text="3. 场景喊话" />
   <string id="AF_TERMINAL_UI_SceneTauntGoldPickupKey_Title" text="倒地金币拾取键" />
   <string id="AF_TERMINAL_UI_SceneTauntGoldPickupKey_Hint" text="场景挑衅冲突中，NPC 倒地后靠近金币按此键拾取。默认 F。" />
