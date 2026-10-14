@@ -20,7 +20,7 @@ internal static class ConcurrentOralMigrationReplay
         internal readonly List<string> Notices = new();
         internal readonly List<string> Facts = new();
         internal bool Dead, Cycle, Partial;
-        internal int Effects, Counter, TradeDuration;
+        internal int Effects, Counter, TradeDuration, TradeExecutions;
         public override int MaxPendingJobs() => 24;
         public override int MaxStoredDocuments() => 2000;
         public override int RoundTargetDurationDays() => 15;
@@ -114,7 +114,7 @@ internal static class ConcurrentOralMigrationReplay
         public int EscalationPrestigeReward => 0;
         public int WarPrestigeReward => 0;
         public void Log(string message) { }
-        public IWorldDiplomacyWarAdmissionPort CaptureWarAdmission(string first, string second) => new ActionSelectionReplay.Admission(false);
+        public IWorldDiplomacyWarAdmissionPort CaptureWarAdmission(string first, string second) => new ActionSelectionReplay.Admission(_h.OralEffectPortsEnabled);
         public IWorldDiplomacyNoActionPort CaptureNoActionPort(string author, string target) => new ActionSelectionReplay.NoActionPort(author, target);
     }
     private sealed class HistoryPort : IWorldDiplomacyHistoryCapturePort
@@ -141,7 +141,7 @@ internal static class ConcurrentOralMigrationReplay
         { if (!_h.OralEffectPortsEnabled) return new(false, "unused"); _h.Effects++; return new(true, "alliance applied"); }
         public WorldDiplomacyOfferActionReceipt ExecuteTrade(string first, string second) => new(false, "unused");
         public WorldDiplomacyOfferActionReceipt ExecuteTrade(string first, string second, int durationDays)
-        { _h.TradeDuration = durationDays; return new(true, "trade applied"); }
+        { _h.TradeExecutions++; _h.TradeDuration = durationDays; return new(true, "trade applied"); }
         public WorldDiplomacyOfferActionReceipt ReadPeace(string first, string second, WorldDiplomacyPeaceTerms terms) => new(false, "unused");
         public bool HasTakenEffect(string intent, string first, string second) => false;
         public void Log(string value) { }

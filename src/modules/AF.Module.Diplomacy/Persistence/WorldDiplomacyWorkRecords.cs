@@ -87,6 +87,9 @@ public sealed class WorldDiplomacyJob
     public string DialogueArrangementId { get; set; } = "";
     [JsonProperty("dialogueArrangementVersion")]
     public int DialogueArrangementVersion { get; set; }
+    // Zero identifies drafts from before fixed oral execution data survived isolation.
+    [JsonProperty("oralDraftingContractVersion")]
+    public int OralDraftingContractVersion { get; set; }
 	// Request-only reading window. Rebuilt on load/send; never persisted as another archive.
 	[JsonIgnore] internal string DeclarationHistoryBlock;
 	// Runtime-only invalidation for the bounded queue view. The persisted property

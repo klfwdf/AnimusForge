@@ -223,7 +223,7 @@ internal static class PlayerIndependentReplay
         Test.True(job.Kind=="generate" && !WorldDiplomacyLlmMessageApplication.BuildLlmMessageArray(job,_=>"").ToString().Contains("PRIVATE_MEMORY"),"actual oral declaration messages exclude private memories");
         CompleteActual(o,job,OralDeclarationReplay.Draft(item,"accept_trade"));
         Test.True(job.Kind=="privacy_audit" && o.CurrentStorage.Documents.Count==0 && h.Effects==0,"successful writing still cannot publish or act before audit");
-        o.PrepareSharedRequest(job);CompleteActual(o,job,"{\"safe\":true}");
+        o.PrepareSharedRequest(job);CompleteActual(o,job,"{\"safe\":true,\"agreement_consistent\":true}");
         var document=o.ResolveDocument(item.DocumentId);
         Test.True(item.Status=="executed" && h.TradeDuration==14 && document?.IsReadyForPublication==true,"audited explicit oral agreement still fulfills at NPC publication without another player acceptance");
         int effects=h.Effects;

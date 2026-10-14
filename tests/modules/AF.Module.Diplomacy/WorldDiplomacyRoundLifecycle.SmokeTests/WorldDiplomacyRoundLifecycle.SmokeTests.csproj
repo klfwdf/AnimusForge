@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" />
@@ -168,6 +169,11 @@
 </ItemGroup><ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRequestHistoryApplication.cs" /></ItemGroup><ItemGroup><EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptCompatibility.json" LogicalName="AnimusForge.Diplomacy.PromptCompatibility.json" /></ItemGroup>
   <ItemGroup>
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyPromptTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyReplyTextRules.cs" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.json" LogicalName="AnimusForge.Diplomacy.ReceiptTexts.cn.json" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.en.json" LogicalName="AnimusForge.Diplomacy.ReceiptTexts.en.json" WithCulture="false" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_misc_strings-zh-CN.xml" LogicalName="AnimusForge.Diplomacy.ReceiptUi.cn.xml" WithCulture="false" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_misc_strings.xml" LogicalName="AnimusForge.Diplomacy.ReceiptUi.en.xml" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyMiscPromptTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyCompatibilityTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyUiLocalization.cs" />

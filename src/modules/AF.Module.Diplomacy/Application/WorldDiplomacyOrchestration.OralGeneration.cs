@@ -14,6 +14,7 @@ namespace AnimusForge;
 internal sealed partial class WorldDiplomacyOrchestration
 {
     private string _oralAgreementExecutionDocumentId = "";
+    private const int CurrentOralDraftingContractVersion = 1;
     // Uses the existing bounded queue, transport, history, lease and publication
     // owners. Game facts are read only at submission/send/commit on the campaign
     // thread; the worker receives immutable prompt strings, never game objects.
@@ -119,7 +120,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         var range = _host.DeclarationCharacterRange();
         job.SystemPrompt = WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt(
             _host.CommonDiplomacyContract(ResolveRound(item.RoundId)), range.minimum, range.maximum, DiplomacyPromptTexts.Get)
-            + DiplomacyPromptTexts.Get("OralGeneration_System", "\n[Oral agreement drafting] The action in this request was confirmed in conversation. Draft only the declaration using the shared writing guidance; do not renegotiate or select an action. actions must contain exactly the fixed action and preserve every field. Agreed bilateral accept_* actions come from the two rulers' oral agreement and do not require an invented original proposal document. The agreed declaration must explicitly announce fulfillment now; propose_* matters without a third kingdom's consent must remain proposals. Conversation material only informs the agreement and tone: do not publish private dialogue, secrets or unverified player claims verbatim. Public reasons require public facts. body must fully disclose the fixed terms without internal IDs, tags, program status, receipts or technical explanations.");
+            + DiplomacyPromptTexts.Get("OralGeneration_System", "\n[Oral agreement drafting] The action in this request was confirmed in conversation. Draft only the declaration using the shared writing guidance; do not renegotiate or select an action. For this writing task return actions=[]; the program binds the confirmed action and terms independently of model output. Agreed bilateral accept_* actions come from the two rulers' oral agreement and do not require an invented original proposal document. The agreed declaration must explicitly announce fulfillment now; propose_* matters without a third kingdom's consent must remain proposals. Conversation material only informs the agreement and tone: do not publish private dialogue, secrets or unverified player claims verbatim. Public reasons require public facts. body must fully disclose the fixed terms without internal IDs, tags, program status, receipts or technical explanations.");
         job.SystemPrompt = PromptComposerTexts.ApplyOutputLanguage(job.SystemPrompt);
         var sb = new StringBuilder(DiplomacyPromptTexts.Get("OralGeneration_UserHeader", "player_diplomacy=true\nDraft a complete public diplomatic declaration from the confirmed agreement below.\n"));
         sb.AppendLine(DiplomacyPromptTexts.Format("OralGeneration_Author", "Publishing kingdom: {ACTOR}; ruler: {RULER}",
@@ -148,7 +149,49 @@ internal sealed partial class WorldDiplomacyOrchestration
         job.MaxTokens = _host.GenerationMaxTokens(); job.LlmMessages?.Clear(); job.SemanticRepairAttempts = 0;
         job.RoundConversationRevision = ResolveRound(item.RoundId).ConversationRevision;
         job.PresentedLegalActionSignature = BuildOralDeclarationSignature(job);
+        if (string.IsNullOrEmpty(job.SuspendedReason)) job.OralDraftingContractVersion = CurrentOralDraftingContractVersion;
         return true;
+    }
+
+    // Added AFTER isolation from the authoritative arrangement, never from the
+    // model's summary. Only agreed public execution fields cross this boundary.
+    private string BuildOralPublicExecutionContext(WorldDiplomacyJob job, bool drafting = true)
+    {
+        var item = OralArrangement(job);
+        if (item == null) return "";
+        return (drafting
+            ? DiplomacyPromptTexts.Get("OralGeneration_PublicExecution", "[Program-bound oral agreement] These public execution fields are authoritative and were not selected by the material filter. Write only the title and body announcing this exact action and all applicable terms. Do not negotiate, infer a different kingdom ID, or add actions. Return actions=[]; the program attaches the agreed action. If returning legacy action fields, they must match these fields exactly. Do not print IDs or technical fields in the declaration.\n")
+            : DiplomacyPromptTexts.Get("OralGeneration_PublicAuditExecution", "[Authoritative agreed public execution fields for consistency audit]\n"))
+            + DiplomacyPromptTexts.Format("OralGeneration_Author", "Publishing kingdom: {ACTOR}; ruler: {RULER}",
+                "ACTOR", _host.PartyNameOrEmpty(item.ActorKingdomId), "RULER", _host.PartyRulerName(item.ActorKingdomId)) + "\n"
+            + DiplomacyPromptTexts.Get("OralGeneration_Target", "Target kingdom: ") + _host.PartyNameOrEmpty(item.TargetKingdomId) + "\n"
+            + OralAction(item, OralIntent(item)).ToString(Formatting.None) + "\n"
+            + DescribeDialogueTerms(item.Terms.ToTerms());
+    }
+
+    // One-time compatibility recovery is part of the existing bounded daily lane.
+    // New-contract failures, explicit deferrals and unknown effects remain held.
+    private void RecoverLegacyOralDrafts()
+    {
+        foreach (var job in Storage.Jobs.Where(x => x != null && IsOralDeclarationJob(x)
+            && x.OralDraftingContractVersion < CurrentOralDraftingContractVersion
+            && x.SuspendedReason == "oral_declaration_changes_agreed_action_or_terms").Take(4).ToList())
+        {
+            var item = OralArrangement(job);
+            if (job.IsRunning || RequestLeases.ContainsJob(job.JobId) || item == null || item.ExplicitlyDeferred
+                || item.Status != "deferred" || item.Reason != job.SuspendedReason
+                || !string.IsNullOrEmpty(item.DocumentId) || !TryValidateOralDeclarationWork(item, out _)) continue;
+            job.OralDraftingContractVersion = CurrentOralDraftingContractVersion;
+            job.SuspendedReason = ""; job.PrivacyPublicContext = ""; job.PrivacyRevision = -1;
+            job.PrivacyDraft = ""; job.PrivacyApproved = false; job.PrivacyRewrites = 0;
+            job.LlmMessages?.Clear(); job.SemanticRepairAttempts = 0; job.TransportRetryAttempts = 0;
+            job.RetryAfterUtcTicks = 0;
+            item.GenerationFailureAttempts = 0; item.GenerationRetryAfterDay = _host.CurrentDay();
+            item.Status = "accepted"; item.Reason = "oral_drafting_contract_recovered";
+            var round = ResolveRound(item.RoundId);
+            if (round?.TechnicalHoldReason == "oral_declaration_changes_agreed_action_or_terms") round.TechnicalHoldReason = "";
+            _host.Log("oral declaration legacy drafting recovered id=" + item.ArrangementId);
+        }
     }
 
     private void DeferOralDeclarationJob(WorldDiplomacyJob job, string reason)
@@ -172,13 +215,17 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (!IsCurrentOralDeclarationJob(job)) { RemoveJob(job.JobId); return; }
         var item = OralArrangement(job);
         string intent = OralIntent(item);
-        if (!TryParseJsonObject(raw, out JObject json) || json["actions"] is not JArray actions
-            || actions.Count != 1 || actions[0] is not JObject action)
+        if (!TryParseJsonObject(raw, out JObject json) || (json["actions"] != null && json["actions"] is not JArray))
         { DeferOralDeclarationJob(job, "oral_declaration_invalid_envelope"); return; }
         var expected = OralAction(item, intent);
-        if (expected.Properties().Any(x => !JToken.DeepEquals(x.Value, action[x.Name]))
-            || action.Properties().Any(x => expected[x.Name] == null && x.Name != "negotiation_move"))
+        var actions = json["actions"] as JArray;
+        // New drafts contain prose only. Legacy exact echoes remain compatible;
+        // explicit conflicting actions are rejected, never used as execution data.
+        if (actions?.Count > 0 && (actions.Count != 1 || actions[0] is not JObject supplied
+            || expected.Properties().Any(x => !JToken.DeepEquals(x.Value, supplied[x.Name]))
+            || supplied.Properties().Any(x => expected[x.Name] == null && x.Name != "negotiation_move")))
         { DeferOralDeclarationJob(job, "oral_declaration_changes_agreed_action_or_terms"); return; }
+        var action = expected;
         string title = ReadString(json, "title"), body = ReadString(json, "body");
         string visible = title + "\n" + body;
         string reason = "oral_declaration_incomplete_or_technical_text";

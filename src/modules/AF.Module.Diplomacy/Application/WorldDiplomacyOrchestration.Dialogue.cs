@@ -256,6 +256,7 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private void MaintainDialogueArrangements()
     {
+        RecoverLegacyOralDrafts();
         foreach (var item in (Storage.DialogueArrangements ?? Enumerable.Empty<WorldDiplomacyDialogueArrangement>())
             .Where(x => x.Status == "accepted" || x.Status == "deferred")) RecoverDialoguePublicationReceipt(item);
         foreach (var item in (Storage.DialogueArrangements ?? new List<WorldDiplomacyDialogueArrangement>())
