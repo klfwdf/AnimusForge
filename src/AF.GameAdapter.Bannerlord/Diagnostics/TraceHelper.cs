@@ -10,7 +10,8 @@ public static class TraceHelper
 		{
 			try
 			{
-				return GlobalSettings<DuelSettings>.Instance != null && GlobalSettings<DuelSettings>.Instance.EnableDeepTrace;
+				var settings = GlobalSettings<DuelSettings>.Instance;
+				return settings != null && settings.EnableDeepTrace;
 			}
 			catch
 			{

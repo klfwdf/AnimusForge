@@ -32,9 +32,11 @@ assert fixture.returncode == 0, fixture.stdout + fixture.stderr
 framework = Path('C:/Users/29310/.nuget/packages/microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2')
 deps = ROOT / '.tmp/build_check/1.4'
 sources = [Path(__file__).with_name('Program.cs'), ROOT / 'tests/modules/AF.Module.Prompt/Composition/TerminalSettingsChecks.cs']
+if not a.baseline:
+    sources.append(Path(__file__).with_name('SupplementalChecks.cs'))
 items = ''.join('<Compile Include="' + escape(str(f)) + '" />' for f in sources)
-items += ''.join('<Reference Include="' + f.stem + '"><HintPath>' + escape(str(f)) + '</HintPath></Reference>' for f in [deps / 'MCMv5.dll', deps / 'Newtonsoft.Json.dll', framework / 'Facades/netstandard.dll'])
-(out / 'Probe.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><LangVersion>latest</LangVersion><PlatformTarget>x64</PlatformTarget><EnableDefaultCompileItems>false</EnableDefaultCompileItems><AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages><FrameworkPathOverride>' + escape(str(framework)) + '</FrameworkPathOverride><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup>' + items + '</ItemGroup></Project>')
+items += ''.join('<Reference Include="' + f.stem + '"><HintPath>' + escape(str(f)) + '</HintPath>' + ('<Private>false</Private>' if f == copy else '') + '</Reference>' for f in [copy, deps / '0Harmony.dll', deps / 'MCMv5.dll', deps / 'Newtonsoft.Json.dll', framework / 'Facades/netstandard.dll'])
+(out / 'Probe.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><LangVersion>latest</LangVersion><PlatformTarget>x64</PlatformTarget><DefineConstants>' + ('AF_BASELINE' if a.baseline else '') + '</DefineConstants><EnableDefaultCompileItems>false</EnableDefaultCompileItems><AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages><FrameworkPathOverride>' + escape(str(framework)) + '</FrameworkPathOverride><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup>' + items + '</ItemGroup></Project>')
 (out / 'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 build = subprocess.run([str(dotnet), 'build', str(out / 'Probe.csproj'), '--nologo', '-p:RestoreConfigFile=' + str(out / 'NuGet.Config'), '-p:UseSharedCompilation=false'], capture_output=True, text=True, encoding='utf-8', errors='replace', env=env)
 (out / 'build.log').write_text(build.stdout + build.stderr, encoding='utf-8')

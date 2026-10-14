@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Concurrent;
+using System.Globalization;
+using System.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -43,7 +46,7 @@ public class DynamicPatcher
 
 	public static bool HasHooked = false;
 
-	private static Dictionary<string, float> _methodLogTimers = new Dictionary<string, float>();
+	private static readonly ConcurrentDictionary<MethodBase, int> _methodLogTimers = new ConcurrentDictionary<MethodBase, int>();
 
 	public static void DoMassiveHook(Harmony harmony)
 	{
@@ -83,94 +86,60 @@ public class DynamicPatcher
 		}
 	}
 
-	public static void UniversalPrefix(MethodBase __originalMethod, object[] __args)
-	{
-		if (!TraceHelper.IsEnabled)
-		{
-			return;
-		}
-		try
-		{
-			if (!_buildInfoLogged)
-			{
-				_buildInfoLogged = true;
-				string text = "";
-				string text2 = "";
-				try
-				{
-					text = typeof(DynamicPatcher).Assembly.Location;
-					text2 = (File.Exists(text) ? File.GetLastWriteTime(text).ToString("yyyy-MM-dd HH:mm:ss") : "");
-				}
-				catch
-				{
-				}
-				Logger.LogTrace("System", "[AnimusForge] BUILD_2026-01-21_x64_v1 Assembly=" + text + " LastWrite=" + text2);
-			}
-			string name = __originalMethod.Name;
-			string[] junkKeywords = JunkKeywords;
-			foreach (string value in junkKeywords)
-			{
-				if (name.Contains(value))
-				{
-					return;
-				}
-			}
-			string text3 = "";
-			if (__args != null && __args.Length != 0)
-			{
-				for (int j = 0; j < __args.Length; j++)
-				{
-					try
-					{
-						if (__args[j] != null)
-						{
-							string text4 = __args[j].ToString();
-							string[] junkKeywords2 = JunkKeywords;
-							foreach (string value2 in junkKeywords2)
-							{
-								if (text4.Contains(value2))
-								{
-									return;
-								}
-							}
-							text3 = text3 + "[" + text4 + "] ";
-						}
-						else
-						{
-							text3 += "[null] ";
-						}
-					}
-					catch
-					{
-						text3 += "[UNSAFE_OBJ] ";
-					}
-				}
-			}
-			string text5 = __originalMethod.DeclaringType?.Name ?? "Unknown";
-			string key = text5 + "." + name;
-			float applicationTime = Time.ApplicationTime;
-			float num = 1f;
-			if (SlowLogMethods.Contains(name))
-			{
-				num = 60f;
-			}
-			if (_methodLogTimers.TryGetValue(key, out var value3) && applicationTime - value3 < num)
-			{
-				return;
-			}
-			_methodLogTimers[key] = applicationTime;
-			if (!(name == ".ctor"))
-			{
-				string text6 = "\ud83d\udd75 [Logic interception] (BUILD_2026-01-21_x64_v1) " + text5 + "." + name + "()";
-				if (!string.IsNullOrEmpty(text3))
-				{
-					text6 = text6 + " | Arguments: " + text3;
-				}
-				Logger.LogTrace("DeepCode", text6);
-			}
-		}
-		catch (Exception)
-		{
-		}
-	}
+    internal static bool TryAdmitDiagnosticLog(MethodBase method, int now)
+    {
+        if (method == null) return false;
+        uint interval = SlowLogMethods.Contains(method.Name) ? 60000u : 1000u;
+        if (_methodLogTimers.TryGetValue(method, out int last))
+            return unchecked((uint)(now - last)) >= interval && _methodLogTimers.TryUpdate(method, now, last);
+        return _methodLogTimers.TryAdd(method, now);
+    }
+
+    internal static string FormatDiagnosticArgument(object value)
+    {
+        if (value == null) return "null";
+        if (value is string text) return text.Length <= 512 ? text : text.Substring(0, 512) + "...";
+        Type type = value.GetType();
+        if (type.IsPrimitive || type.IsEnum || value is decimal || value is Guid || value is DateTime || value is DateTimeOffset || value is TimeSpan)
+            return Convert.ToString(value, CultureInfo.InvariantCulture);
+        // Calling ToString on PartyBase (or any custom game object) can touch
+        // invalid native/game state. Type metadata never dereferences that state.
+        return "<" + (type.FullName ?? type.Name) + ">";
+    }
+
+    public static void UniversalPrefix(MethodBase __originalMethod, object[] __args)
+    {
+        if (!TraceHelper.IsEnabled || __originalMethod == null) return;
+        try
+        {
+            string name = __originalMethod.Name;
+            if (name == ".ctor") return;
+            foreach (string keyword in JunkKeywords) if (name.Contains(keyword)) return;
+            // Suppressed calls do not format arguments, allocate method keys or call
+            // the engine clock. One atomic winner per method and interval across threads.
+            if (!TryAdmitDiagnosticLog(__originalMethod, Environment.TickCount)) return;
+            if (!_buildInfoLogged)
+            {
+                _buildInfoLogged = true;
+                string path = typeof(DynamicPatcher).Assembly.Location;
+                string modified = File.Exists(path) ? File.GetLastWriteTime(path).ToString("yyyy-MM-dd HH:mm:ss") : "";
+                Logger.LogTrace("System", "[AnimusForge] " + BuildId + " Assembly=" + path + " LastWrite=" + modified);
+            }
+            var arguments = new StringBuilder();
+            if (__args != null)
+            {
+                int count = Math.Min(12, __args.Length);
+                for (int i = 0; i < count; i++)
+                {
+                    string text = FormatDiagnosticArgument(__args[i]);
+                    foreach (string keyword in JunkKeywords) if (text.Contains(keyword)) return;
+                    arguments.Append('[').Append(text).Append("] ");
+                }
+                if (count < __args.Length) arguments.Append("[remaining=").Append(__args.Length - count).Append("] ");
+            }
+            string owner = __originalMethod.DeclaringType?.Name ?? "Unknown";
+            Logger.LogTrace("DeepCode", "[Logic interception] (" + BuildId + ") " + owner + "." + name + "()" + (arguments.Length == 0 ? "" : " | Arguments: " + arguments));
+        }
+        catch (Exception) { }
+    }
 }

@@ -6588,6 +6588,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	public DuelSettings()
 	{
 		BindModelListActions();
+		BindTownAmbientConnectionTest();
 		OpenAfdianSupportLink = delegate
 		{
 			OpenAfdianSupportPage();

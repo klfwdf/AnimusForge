@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using TaleWorlds.Library;
 using System.Collections.Generic;
 using MCM.Abstractions.Attributes;
 using MCM.Abstractions.Attributes.v2;
@@ -155,6 +157,43 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		DuelSettings settings = GetSettings();
 		return settings != null && settings.EnableTownAmbientDialogue && settings.EnableTownAmbientEventEcho;
 	}
+
+    private void BindTownAmbientConnectionTest()
+    {
+        TestTownAmbientAiConnection = () =>
+        {
+            LlmRetryPrompt.CaptureMainThreadContext();
+            string endpoint = (TownAmbientAiApiUrl ?? "").Trim();
+            string key = (TownAmbientAiApiKey ?? "").Trim();
+            string model = GetEffectiveTownAmbientAiModelName();
+            InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Api_AmbientTesting", "[Ambient AI] Testing the configured standalone endpoint; this consumes tokens."), Color.FromUint(4294967040u)));
+            Task.Run(async () =>
+            {
+                try
+                {
+                    TownAmbientAiResult result = await TownAmbientAiClient.TestConnectionAsync(endpoint, key, model).ConfigureAwait(false);
+                    Logger.Log("DuelSettings", "ambient_connection_test_completed success=" + (result?.Success == true) + " inputTokens=" + (result?.InputTokens ?? 0) + " outputTokens=" + (result?.OutputTokens ?? 0));
+                    McmDropdownRuntimeRefresh.PostToMainThread(() =>
+                    {
+                        if (result?.Success == true)
+                            InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Api_AmbientSuccess", "[Ambient AI] Connection is working. Estimated usage: {INPUT} input + {OUTPUT} output tokens.", ("INPUT", result.InputTokens), ("OUTPUT", result.OutputTokens)), Color.FromUint(4278255360u)));
+                        else
+                        {
+                            string error = result?.Error ?? Ui("AF_MCM_Api_UnknownError", "Unknown error.");
+                            if (result != null && (result.InputTokens > 0 || result.OutputTokens > 0))
+                                error += UiFormat("AF_MCM_Api_AmbientFailureUsage", "\n\nEstimated usage for this failed test: {INPUT} input + {OUTPUT} output tokens.", ("INPUT", result.InputTokens), ("OUTPUT", result.OutputTokens));
+                            ShowLlmFailurePopup(Ui("AF_MCM_Api_AmbientTestFailed", "Ambient AI connection test failed"), error, result?.ModelReply, result?.RawResponse);
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("DuelSettings", "ambient_connection_test_exception type=" + ex.GetType().Name);
+                    McmDropdownRuntimeRefresh.PostToMainThread(() => ShowLlmFailurePopup(Ui("AF_MCM_Api_AmbientTestException", "Ambient AI connection test error"), ex.Message));
+                }
+            });
+        };
+    }
 
 	public static bool IsTownAmbientAiEnabled()
 	{
