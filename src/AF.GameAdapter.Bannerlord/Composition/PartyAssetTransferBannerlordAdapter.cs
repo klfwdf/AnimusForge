@@ -701,17 +701,13 @@ internal static class PartyAssetTransferBannerlordAdapter
 		{
 			return list;
 		}
-		PartyBase partyBase = Hero.MainHero?.PartyBelongedTo?.Party ?? MobileParty.MainParty?.Party;
+		PartyBase partyBase = Hero.MainHero?.PartyBelongedTo?.Party;
 		PartyBase partyBase2 = wildernessNonHeroSource ?? ResolvePartyTransferCounterpartyInternal(targetHero, targetCharacter, targetAgentIndex);
 		int num = 1;
 		if (isLord && partyBase != null)
 		{
 			AddPartyTransferEntriesFromRoster(list, partyBase.MemberRoster, partyBase, PartyTransferEntrySection.PlayerTroops, ref num);
 			AddPartyTransferEntriesFromRoster(list, partyBase.PrisonRoster, partyBase, PartyTransferEntrySection.PlayerPrisoners, ref num);
-		}
-		if (isLord)
-		{
-			AddPartyTransferDungeonHeroEntries(list, Clan.PlayerClan, PartyTransferEntrySection.PlayerPrisoners, ref num);
 		}
 		if ((isLord || isWildernessNonHero) && partyBase2 != null)
 		{
@@ -1780,6 +1776,12 @@ internal static class PartyAssetTransferBannerlordAdapter
 	internal static int TransferPartyPrisonerEntry(PartyTransferPromptEntry entry, int requestedAmount, PartyBase targetParty, Clan expectedDungeonOwnerClan = null)
 	{
 		if (entry == null || targetParty == null || entry.OwnerParty == null || entry.OwnerParty == targetParty || entry.Character == null)
+		{
+			return 0;
+		}
+		// Revalidate the source even for selections captured before the roster changed.
+		if (entry.Section == PartyTransferEntrySection.PlayerPrisoners
+			&& (entry.SourceSettlement != null || entry.OwnerParty != Hero.MainHero?.PartyBelongedTo?.Party))
 		{
 			return 0;
 		}
