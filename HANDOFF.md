@@ -1,3 +1,9 @@
+# 当前交接：快报正文进导演与构图误拒修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品519700a5a（换行保持ac085e7da）：快报成稿后才启动生图，全文进入导演叙事区、事实区保持独立；重开复用正文，缓存包含正文。修复段内“【小标题】”被误认为段落结束而触发固定兜底。
+- 原双API/Bootstrap/Coup/registration PASS；真实失败原文旧DLL负控复现、修复后CN/EN双DLL回放100项通过；发布229、owner127、preloader61、context15通过。未部署、实机或真实生图。
+- [主台账、源码映射、日志证据与两步回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-director-body-20261015)。本条接续百科肖像调整，不声称AF自定义人设已接入。
+
 # 当前交接：人设重生与界面格式修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品80b0354d4：兼容模型返回profile内个性/背景对象，CN/EN协议明确字符串；MCM四类API父/子分别本地化；22份语言XML的213条字面换行修正。原10游戏小时演变开关位置、默认值与行为保持。
