@@ -6,6 +6,9 @@ internal sealed class LlmJobResult
         public string JobId = "";
         public long RuntimeGeneration;
         public int RequestAttempt;
+        public int OwnershipEpoch;
+        public string SchedulingOwner = "";
+        public string PlayerAuthorityRulerId = "";
         public long RoundConversationRevision;
         public bool Success;
         public string Content = "";

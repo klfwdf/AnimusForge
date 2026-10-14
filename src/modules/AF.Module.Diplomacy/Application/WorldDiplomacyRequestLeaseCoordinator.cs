@@ -9,6 +9,7 @@ namespace AnimusForge;
 internal sealed class WorldDiplomacyRequestLeaseCoordinator
 {
     private readonly Dictionary<string, WorldDiplomacyRequestSnapshot> _leases = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, CancellationTokenSource> _leaseCancellations = new(StringComparer.OrdinalIgnoreCase);
     private readonly int _capacity;
     private CancellationTokenSource _cancellation = new();
     internal WorldDiplomacyRequestLeaseCoordinator(int capacity = 1) => _capacity = Math.Max(1, capacity);
@@ -30,12 +31,15 @@ internal sealed class WorldDiplomacyRequestLeaseCoordinator
         snapshot = null;
         string id = (job?.JobId ?? "").Trim();
         if (id.Length == 0 || generation <= 0 || IsFull || ContainsJob(id)) return false;
-        bool speech = string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase);
+        bool speech = job.Kind is "generate" or "privacy_material" or "privacy_audit" or "player_decision";
         string roundId = string.IsNullOrEmpty(job.RoundId) ? job.ExchangeId : job.RoundId;
         if (speech && ContainsSpeech(roundId)) return false;
+        var leaseCancellation = CancellationTokenSource.CreateLinkedTokenSource(_cancellation.Token);
         snapshot = new WorldDiplomacyRequestSnapshot(id, generation, Math.Max(256, tokens), Math.Max(1, timeout),
-            roundId, speech, ++job.RequestAttempt, job.RoundConversationRevision, player, _cancellation.Token);
+            roundId, speech, ++job.RequestAttempt, job.RoundConversationRevision, player, leaseCancellation.Token,
+            job.OwnershipEpoch, job.SchedulingOwner, job.PlayerAuthorityRulerId);
         _leases.Add(id, snapshot);
+        _leaseCancellations.Add(id, leaseCancellation);
         return true;
     }
     internal bool TryRelease(string id, long generation) => TryRelease(id, generation, 0);
@@ -43,11 +47,20 @@ internal sealed class WorldDiplomacyRequestLeaseCoordinator
     {
         if (!_leases.TryGetValue((id ?? "").Trim(), out var lease) || lease.RuntimeGeneration != generation
             || (attempt > 0 && lease.Attempt != attempt)) return false;
+        if (_leaseCancellations.TryGetValue(lease.JobId, out var cancellation)) { cancellation.Dispose(); _leaseCancellations.Remove(lease.JobId); }
         return _leases.Remove(lease.JobId);
+    }
+    internal void InvalidateRound(string roundId)
+    {
+        foreach (var lease in _leases.Values)
+            if (string.Equals(lease.RoundId, roundId, StringComparison.OrdinalIgnoreCase)
+                && _leaseCancellations.TryGetValue(lease.JobId, out var cancellation)) cancellation.Cancel();
     }
     internal void Reset()
     {
         _cancellation.Cancel();
+        foreach (var cancellation in _leaseCancellations.Values) cancellation.Dispose();
+        _leaseCancellations.Clear();
         _cancellation.Dispose();
         _cancellation = new CancellationTokenSource();
         _leases.Clear();
@@ -58,11 +71,13 @@ internal sealed class WorldDiplomacyRequestSnapshot
 {
     internal WorldDiplomacyRequestSnapshot(string jobId, long runtimeGeneration, int maxTokens, int timeoutMilliseconds,
         string roundId = "", bool isSpeech = false, int attempt = 0, long revision = 0,
-        bool player = false, CancellationToken cancellation = default)
+        bool player = false, CancellationToken cancellation = default, int ownershipEpoch = 0,
+        string schedulingOwner = "", string playerAuthorityRulerId = "")
     {
         JobId = jobId; RuntimeGeneration = runtimeGeneration; MaxTokens = maxTokens; TimeoutMilliseconds = timeoutMilliseconds;
         RoundId = roundId; IsSpeech = isSpeech; Attempt = attempt; ConversationRevision = revision;
         IsPlayerWork = player; Cancellation = cancellation;
+        OwnershipEpoch = ownershipEpoch; SchedulingOwner = schedulingOwner; PlayerAuthorityRulerId = playerAuthorityRulerId;
     }
     internal string JobId { get; }
     internal long RuntimeGeneration { get; }
@@ -74,4 +89,7 @@ internal sealed class WorldDiplomacyRequestSnapshot
     internal long ConversationRevision { get; }
     internal bool IsPlayerWork { get; }
     internal CancellationToken Cancellation { get; }
+    internal int OwnershipEpoch { get; }
+    internal string SchedulingOwner { get; }
+    internal string PlayerAuthorityRulerId { get; }
 }

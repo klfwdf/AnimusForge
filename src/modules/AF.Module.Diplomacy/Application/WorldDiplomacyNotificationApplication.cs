@@ -15,6 +15,8 @@ internal interface IWorldDiplomacyNotificationSink
     string KingdomName(string id);
     string FormatCampaignDate(int day);
     int CurrentDay { get; }
+    double CurrentHour { get; }
+    void RecordShownTime(WorldDiplomacyDocument document, double hour);
     string PlayerKingdomId { get; }
     void ShowRumor(string text);
     void ShowNotice(WorldDiplomacyNotice notice);
@@ -27,13 +29,12 @@ internal sealed class WorldDiplomacyNotificationApplication
     private readonly HashSet<string> _notifiedDocumentIdsThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     private List<WorldDiplomacyDocument> _pendingRumors = new List<WorldDiplomacyDocument>();
     private Queue<WorldDiplomacyDocument> _pendingFormal = new Queue<WorldDiplomacyDocument>();
-    private List<WorldDiplomacyDocument> _pendingFormalIncludingRead = new List<WorldDiplomacyDocument>();
     private int _nextRumorIndex;
     private List<WorldDiplomacyDocument> _knownDocuments;
     private int _knownDocumentCount = -1;
     private bool _viewDirty = true;
     private bool _updatingOwnFlags;
-    private bool? _lastMapNotificationsEnabled;
+    private string _knownPlayerKingdomId;
     private DateTime _nextNotificationPollUtc = DateTime.MinValue;
     internal int RebuildCount { get; private set; }
 
@@ -55,18 +56,19 @@ internal sealed class WorldDiplomacyNotificationApplication
             .Contains(playerKingdomId, StringComparer.OrdinalIgnoreCase);
     }
 
-    private void EnsureView(WorldDiplomacyStorage storage)
+    private void EnsureView(WorldDiplomacyStorage storage, string playerKingdomId)
     {
         List<WorldDiplomacyDocument> documents = storage?.Documents;
         int count = documents?.Count ?? 0;
-        if (!_viewDirty && ReferenceEquals(_knownDocuments, documents) && _knownDocumentCount == count) return;
+        if (!_viewDirty && ReferenceEquals(_knownDocuments, documents) && _knownDocumentCount == count
+            && _knownPlayerKingdomId == playerKingdomId) return;
+        _knownPlayerKingdomId = playerKingdomId;
         _knownDocuments = documents;
         _knownDocumentCount = count;
         _viewDirty = false;
         RebuildCount++;
         _pendingRumors.Clear();
         _pendingFormal.Clear();
-        _pendingFormalIncludingRead.Clear();
         _nextRumorIndex = 0;
         if (documents == null) return;
         foreach (WorldDiplomacyDocument document in documents)
@@ -76,8 +78,7 @@ internal sealed class WorldDiplomacyNotificationApplication
             if (document.IsPlayerAuthored || !document.IsReadyForPublication) continue;
             if (!document.RumorNotified) _pendingRumors.Add(document);
             if (!document.HasReachedPlayerCourt || document.FormalNoticeShown) continue;
-            _pendingFormalIncludingRead.Add(document);
-            if (!document.IsRead && !_notifiedDocumentIdsThisSession.Contains(document.DocumentId ?? ""))
+            if ((!document.IsRead || ConcernsPlayerKingdom(document, playerKingdomId)) && !_notifiedDocumentIdsThisSession.Contains(document.DocumentId ?? ""))
                 _pendingFormal.Enqueue(document);
         }
         // LINQ ordering is stable for equal dates, matching the original polling queries.
@@ -87,7 +88,6 @@ internal sealed class WorldDiplomacyNotificationApplication
     internal void Reset()
     {
         ResetView();
-        _lastMapNotificationsEnabled = null;
         _nextNotificationPollUtc = DateTime.MinValue;
     }
     internal void ResetView()
@@ -99,7 +99,7 @@ internal sealed class WorldDiplomacyNotificationApplication
     {
         if (nowUtc < _nextNotificationPollUtc) return;
         _nextNotificationPollUtc = nowUtc.AddSeconds(1d);
-        EnsureView(storage);
+        EnsureView(storage, sink.PlayerKingdomId);
         for (int i = 0; i < 3 && _nextRumorIndex < _pendingRumors.Count; i++)
         {
             WorldDiplomacyDocument rumor = _pendingRumors[_nextRumorIndex++];
@@ -110,26 +110,6 @@ internal sealed class WorldDiplomacyNotificationApplication
             sink.Log("diplomacy-rumor.consumed document=" + rumor.DocumentId + " day=" + sink.CurrentDay.ToString(CultureInfo.InvariantCulture));
         }
         bool enabled = sink.MapNotificationsEnabled;
-        if (!enabled)
-        {
-            _updatingOwnFlags = true;
-            foreach (WorldDiplomacyDocument document in _pendingFormalIncludingRead)
-            {
-                if (document.FormalNoticeShown) continue;
-                document.FormalNoticeShown = true;
-                document.IsNotified = true;
-            }
-            _updatingOwnFlags = false;
-            _pendingFormalIncludingRead.Clear();
-            _pendingFormal.Clear();
-            if (_lastMapNotificationsEnabled != false)
-            {
-                _notifiedDocumentIdsThisSession.Clear();
-            }
-            _lastMapNotificationsEnabled = false;
-            return;
-        }
-        _lastMapNotificationsEnabled = true;
         if (!sink.CanPublishMapNotification())
         {
             return;
@@ -142,7 +122,10 @@ internal sealed class WorldDiplomacyNotificationApplication
         for (int i = 0; i < budget; i++)
         {
             WorldDiplomacyDocument document = _pendingFormal.Dequeue();
-            bool showOnMap = ConcernsPlayerKingdom(document, playerKingdomId);
+            // A queued document can be reclassified before its turn in this batch.
+            // Player-written declarations never produce an incoming notice.
+            if (document.IsPlayerAuthored) continue;
+            bool showOnMap = enabled && ConcernsPlayerKingdom(document, playerKingdomId);
             try
             {
                 if (showOnMap)
@@ -154,11 +137,17 @@ internal sealed class WorldDiplomacyNotificationApplication
                         continue;
                     }
                 }
+                string title = WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text);
+                string description = showOnMap
+                    ? WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate, DiplomacyUiLocalization.Text)
+                    : DiplomacyUiLocalization.Format("AF_DIP_UI_Notice_DeclarationText",
+                        "[Diplomatic Declaration] {ISSUER} issued \"{TITLE}\": {BODY}",
+                        ("ISSUER", WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.AuthorKingdomName, sink.KingdomName(document.AuthorKingdomId))),
+                        ("TITLE", title), ("BODY", DiplomacyReplyTextRules.CleanNpcText(document.Body ?? "")));
+                sink.ShowNotice(new WorldDiplomacyNotice(document.DocumentId, title, description, showOnMap));
                 _notifiedDocumentIdsThisSession.Add(document.DocumentId);
-                sink.ShowNotice(new WorldDiplomacyNotice(
-                    document.DocumentId,
-                    WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text),
-                    WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate, DiplomacyUiLocalization.Text), showOnMap));
+                if (document.ActualPlayerNoticeHour < 0) document.ActualPlayerNoticeHour = sink.CurrentHour;
+                sink.RecordShownTime(document, document.ActualPlayerNoticeHour);
                 document.IsNotified = true;
                 _updatingOwnFlags = true;
                 document.FormalNoticeShown = true;

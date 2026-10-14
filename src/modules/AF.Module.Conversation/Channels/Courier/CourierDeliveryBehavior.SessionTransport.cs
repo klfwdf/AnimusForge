@@ -232,7 +232,7 @@ public sealed partial class CourierDeliveryBehavior
             return;
         }
         string letter = (session.LetterText ?? "").Trim();
-		string visibleLetter = CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(letter));
+		string visibleLetter = CourierVisibleLetterSanitizer.CleanNpcLetter(StripCourierActionTags(letter));
 		if (!session.DeliveryApplied)
 		{
 			string deliveryFact = BuildInboundDeliveryFactText(session, delivered: true, sender);
@@ -301,7 +301,7 @@ public sealed partial class CourierDeliveryBehavior
 	private static void ShowInboundCourierLetterNotice(string senderHeroId, string senderName, string letterText, string letterKind)
 	{
 		string name = string.IsNullOrWhiteSpace(senderName) ? "NPC" : senderName.Trim();
-		string cleanedLetter = CourierVisibleLetterSanitizer.Clean(letterText);
+		string cleanedLetter = CourierVisibleLetterSanitizer.CleanNpcLetter(letterText);
 		string body = string.IsNullOrWhiteSpace(cleanedLetter) ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_EmptyInbound", "(No letter text)") : cleanedLetter;
 		string title = ConversationUiLocalization.Text("AF_CONV_UI_Courier_InboundTitle", "The courier delivered {KIND}", "KIND", string.IsNullOrWhiteSpace(letterKind) ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_InboundLetter", "a letter") : letterKind.Trim());
 		Action replyAction = string.IsNullOrWhiteSpace(senderHeroId) ? null : (() => OpenCourierReplyFlowForExternal(senderHeroId, name));

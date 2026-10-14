@@ -90,8 +90,10 @@ internal static class LifecycleRepairReplay
         Test.True(!o.CurrentStorage.Jobs.Any(x => x.Kind == "generate"), "unreceived player document does not start reply");
         WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(o.CurrentStorage.KingdomKnowledge, "a", player.DocumentId, 15);
         WorldDiplomacyDocumentFactRules.RecordNobleKnowledge(o.CurrentStorage.NobleKnowledge, "a", player.DocumentId, 15);
-        Test.True(o.CanDispatchDiplomacyJob(new() { Kind = "generate", JobId = "owed", RoundId = independent.RoundId,
-            AuthorKingdomId = "a", SourceDocumentId = player.DocumentId, IsExternalResponseOnly = true }), "delivered independent reply is dispatchable");
+        var owed = new WorldDiplomacyJob { Kind = "generate", JobId = "owed", RoundId = independent.RoundId,
+            AuthorKingdomId = "a", SourceDocumentId = player.DocumentId, IsExternalResponseOnly = true };
+        DiplomacyPlayerEventRules.Bind(independent, owed);
+        Test.True(o.CanDispatchDiplomacyJob(owed), "delivered independent reply with current event ownership is dispatchable");
 
         var blocked = o.EnsureActiveRound("b", "p", false);
         blocked.ResultSettlementPending = true; blocked.RelayRouteKingdomIds.Add("b");

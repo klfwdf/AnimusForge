@@ -150,9 +150,14 @@ internal sealed partial class SceneConversationSessionRuntime
 			{
 				return false;
 			}
-			bool factAccepted = _ports.RecordResponseForAllNearbySafe(audience, speaker.AgentIndex, speaker.Name, historyText, requireMemoryReceipt);
-			bool replyAccepted = _ports.PersistNpcSpeechToNamedHeroes(speaker.AgentIndex, speaker.Name, historyText, audience, requireMemoryReceipt);
-			return factAccepted && replyAccepted;
+			using (ConversationRewriteTurn.CaptureScope(CaptureSceneRewriteTurn(conversationEpoch)))
+			{
+				bool factAccepted = _ports.RecordResponseForAllNearbySafe(audience, speaker.AgentIndex, speaker.Name, historyText, requireMemoryReceipt);
+				bool replyAccepted = _ports.PersistNpcSpeechToNamedHeroes(speaker.AgentIndex, speaker.Name, historyText, audience, requireMemoryReceipt);
+				if (!factAccepted || !replyAccepted)
+					CaptureSceneRewriteTurn(conversationEpoch)?.Invalidate("scene_reply_history_unconfirmed");
+				return factAccepted && replyAccepted;
+			}
 		}, false);
 	}
 
@@ -196,6 +201,7 @@ internal sealed partial class SceneConversationSessionRuntime
 
 	internal int BeginNewPlayerDrivenSceneConversationEpoch()
 	{
+		InvalidateRewriteTurn();
 		_sceneRequestLifetime.Retire();
 		_sceneRequestLifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();
 		int num = Interlocked.Increment(ref _sceneConversationEpoch);

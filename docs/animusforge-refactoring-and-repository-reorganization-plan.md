@@ -1,3 +1,34 @@
+<a id="oral-privacy-authority-20261015"></a>
+## 口头外交保密隔离与执行资料修复（2026-10-15，OFFLINE_VERIFIED / PUSH_PENDING）
+
+- 用户明确授权按方案修复并推送。远端基线 `8a3aa669800d69cf8d79353d9bdcb79da686430b`；检查点 `10485352f`、交付产品 `0c36af2cb57a7c13f50e947e1b1a64baefa38d6c`。隔离分支 `codex/oral-privacy-repair-20261015` 在任务工作区内；同一12文件修复以 `844630ecf` 同步本地主工作区，逐文件Git内容一致，其他43个分叉提交及未提交设计文档不夹带发布。双构建绑定交付树，未重新宣称本地主树全量构建通过。
+- 运行日志确认蒙楚格向南帝国宣战的约定登记成功，保密摘要遗漏固定动作、对象ID及完整字段，三份草稿误填对象后被拒收并挂起。修复后保密过滤仅提供公开素材；请求边界直接从权威约定恢复发布者、对象、动作及完整条款。口头拟文不再注入重新谈判合同，模型输出标题/正文和空actions，由程序绑定实际动作；旧式精确动作回显兼容，明确冲突的动作继续拒绝。
+- 复用现有保密审查同一次请求增加正文与约定一致性检查；safe及agreement_consistent均须为真实布尔值。泄密、改约、遗漏实质条款或缺少审查结论均不发布、不执行，沿原有有界重拟文处理。最终提交仍重验原约定、统治者、来源、回合及动作签名；保持玩家已谈妥协议发布兑现、第三国提案需要正常同意、取消/已发布/未知结果不重放、正文不含系统回执。
+- 旧挂起恢复仅识别旧拟文版本及精确原因oral_declaration_changes_agreed_action_or_terms；须无公文、未执行、非明确延期、现有约定/国王/条款仍合法。每日原维护入口最多检查4项并标记新合同版本，重置该次技术失败；新合同再次失败不自动重置，无无限重试。只新增工作记录可选oralDraftingContractVersion，旧JSON缺省0，存档键/类型/枚举及严格分块owner不变，无新Tick扫描/IO或第二条网络链。
+- 同任务维护CN/EN的OralGeneration_System、PublicExecution、PublicAuditExecution及ConsistencyAudit资源，实际DiplomacyPromptTexts reader与请求消费者接通；原content-map标准文件映射与包选择不变，UI随游戏语言、Prompt随包，没有增加输出语言锁。审查只接收执行资料，不混入拟文任务指令。
+
+### 验证与未覆盖项
+
+- CN/EN口头外交各329项、玩家独立外交各604项PASS：实际isolation→generation→audit→completion dispatcher→发布执行，真实请求lease及异步yield；模拟摘要丢掉全部执行字段后仍恢复准确对象和14日贸易/第三国宣战，三渠道来源、泄密/正文不一致/缺审查结论/显式改动作/取消/换国王/变更条款/版本/结案/重复及旧挂起恢复边界。Provider回复和游戏效果叶为夹具，不能称实机验收。原隔离实现编译反例命中“restores fixed IDs”断言，未用编译失败代替红例。
+- 完整中文回归仍在LifecycleRepairReplay.Submission的“normal shortcut uses archive compose routing before semantic analysis”断言失败；远端基线生产源码在相同接线的测试宿主中复现相同失败，不修改无关快捷入口、不削弱其断言。本包不能声称全量回归通过。测试工程补齐既有C#版本、真实正文清理器及其四份嵌入资源；旧Native回执断言改为已批准的无回执语义，原机械分发断言保留，贸易叶增加计数以检查恰好一次。
+- PersistenceChunkReplay及civilWarChunkRegression PASS；chunk-contract-only PASS（20字符串键、47字典键）。CN/EN JSON结构/变量门禁PASS。原统一Debug双API1.3.15.110062/1.4.6.115628、Bootstrap、双Coup记忆端口各20及注册门禁PASS；两实现各367 warning/0 error，Bootstrap2 warning/0 error，保留既有及NU1900警告，不改构建脚本。最终命令与产物SHA在本地receipt.json及dual-build-final.log，未Stage或部署。
+- 10源码锚点记录提交及working-tree两模式PASS；owner、一基坐标与未覆盖责任集中在[源码地图](architecture/af-framework-code-scope.md#oral-privacy-authority-20261015)。完整本地证据位于artifacts/oral-privacy-authority-20261015，不上传原始玩家对话或provider日志；本次临时编译/变体/内容投影缓存收尾清理，验证日志/摘要保留。
+- NOT-RUN：真实provider文稿与一致性判断、游戏UI/TTS、玩家旧sav读回、安装部署、打包。恢复逻辑在新版本装入游戏后的原每日维护生效，本轮没有直接改玩家存档。推送仅交付此修复及公开验证文档，最终远端SHA另由本地push-receipt.json记录；工作区私有/其他分叉历史不推送。如需回滚，以产品0c36af2cb创建focused inverse并重验，不reset或改写历史。
+
+<a id="local-feature-publication-20261015"></a>
+## Player diplomacy and dialogue rewrite source delivery (2026-10-15)
+
+This delivery applies the reviewed functional delta to remote baseline `dbcc6801f19da42b526b52783c4d38a799799c2e`, preserving the previously published diplomacy receipt isolation, terminal settings, MCM ownership and bounded market maintenance. Existing save/protocol identities, single-module Bootstrap loading and the 1.3/1.4 implementations remain unchanged.
+
+- Player diplomacy: independent event ownership and request accounting; ongoing-case preservation, semantic reply routing, confidentiality isolation/audit, actual-notice response timing, and deferred execution of inseparable cross-action exchanges.
+- Dialogue: one completed native or scene turn can be undone for editing; its speech records are removed precisely, while prior memory and confirmed actions/facts remain. The rewrite icon and native/folio layouts are corrected.
+- Diplomacy presentation: full yellow declaration notices, player-realm notification priority and player-authored exclusions; natural writing preferences, advisory 100–300 defaults, retirement of six unused settings, and technical-capacity rejection instead of clause truncation.
+- Runtime storage: no legacy AppData/Documents import or sticky migration failures; current module storage and inert compatibility helpers remain. Native MCM retains its separately documented shared settings owner.
+
+Validation is bound to production-equivalent source `ad41120348b10d81860de49915f18eadb7d5aa49`: original build-only pipeline for Bannerlord 1.3.15 and 1.4.6 passed with 365 existing warnings and zero errors per implementation; Bootstrap, both coup seam gates and managed registration passed. Earlier verified slices cover CN diplomacy 3647, EN player flow 604, UI lifecycle 184, native/scene rewrite 36/20, policy-style notices 38, terminal settings 70, shared-terminal actual-DLL checks 520/530, market maintenance 52 and MCM selector/action 17. The final receipt-prose change passed 458 checks per CN/EN edition and 16 checks per actual implementation DLL. These are scoped source, actual-DLL and synthetic-boundary checks, not live acceptance.
+
+The unchanged full English diplomacy suite has Chinese-literal oracles; English affected-chain checks are separate. OS privilege prevents the storage symlink creation fixture. Actual game rendering, provider decisions, audio devices, performance and user old saves remain NOT-RUN. This is source publication only: no game installation, version bump, Stage or release ZIP. Local work logs and private history are excluded from the delivered ancestry; source, paired resources, regression tests, persistence catalog and portable design documentation are included.
+
 <a id="bulletin-director-body-20261015"></a>
 ## 2026-10-15 快报成稿进入导演与段内小标题误拒修复（OFFLINE_VERIFIED / LIVE_PENDING）
 

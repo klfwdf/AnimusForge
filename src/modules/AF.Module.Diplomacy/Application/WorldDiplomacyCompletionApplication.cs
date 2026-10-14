@@ -46,6 +46,15 @@ internal static class WorldDiplomacyCompletionApplication
             if (orchestration is WorldDiplomacyOrchestration scheduler && !scheduler.AdmitCompletion(job, result)) continue;
             job.IsRunning = false;
             source.LogUsage(job, result);
+            try
+            {
+                if (orchestration is WorldDiplomacyOrchestration pipeline && pipeline.TryCompleteDiplomacyPipeline(job, result)) continue;
+            }
+            catch (Exception ex)
+            {
+                orchestration.CommitFailedJob(job, "pipeline_completion_failed:" + ex.Message);
+                continue;
+            }
             Complete(job, result.Content, result.Success, result.IsServiceFailure,
                 result.IsOutputTruncated, result.Error, source.Storage,
                 source.CurrentHour, source.FailedServiceCooldownHours, ref source, orchestration);
@@ -106,7 +115,7 @@ internal static class WorldDiplomacyCompletionApplication
                 {
                     orchestration.RejectGeneratedDraftBeforePublication(
                         job, resultContent, job.AuthorKingdomId, job.TargetKingdomId, "output_truncated", null);
-                    effects.RemoveJob(job.JobId);
+                    if (string.IsNullOrEmpty(job.SuspendedReason)) effects.RemoveJob(job.JobId);
                 }
                 catch (Exception ex)
                 {
@@ -154,7 +163,8 @@ internal static class WorldDiplomacyCompletionApplication
                 orchestration.CommitFailedJob(job, "unknown job kind");
                 return;
             }
-            effects.RemoveJob(job.JobId);
+            if (string.Equals((job.Kind ?? "").Trim(), completionKind, StringComparison.OrdinalIgnoreCase)
+                && string.IsNullOrEmpty(job.SuspendedReason)) effects.RemoveJob(job.JobId);
         }
         catch (Exception ex)
         {

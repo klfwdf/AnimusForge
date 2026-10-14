@@ -202,7 +202,10 @@ internal static class MainPromptMessageAssemblyOwner
 		{
 			return false;
 		}
-		string content = (message.Content ?? "").Replace("\r", "").Trim();
+		string content = (message.Role ?? "").Trim().Equals("assistant", StringComparison.OrdinalIgnoreCase)
+            ? DiplomacyReplyTextRules.CleanNpcText(message.Content ?? "", message.SpeakerName)
+            : message.Content ?? "";
+		content = content.Replace("\r", "").Trim();
 		if (string.IsNullOrWhiteSpace(content))
 		{
 			return false;

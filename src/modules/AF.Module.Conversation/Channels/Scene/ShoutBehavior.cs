@@ -1395,6 +1395,8 @@ private Dictionary<int, PendingSceneAutonomyRestoreAfterSpeech> _pendingSceneAut
 	{
 		try
 		{
+            InvalidateNativeRewriteTurn();
+            _sceneConversationRuntime?.InvalidateRewriteTurn();
             NativeAdmissions.EndConversation();
 			lock (_historyLock)
 			{
@@ -4157,8 +4159,8 @@ private bool TryTriggerNativeConversationOpenLordsHallAction(Hero targetHero, Ch
 
 	private Task<string> SubmitNativeConversationTextInternalAsync(NativeConversationAdmission admission, string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, Action<string, Hero, CharacterObject> onMainReplyReady = null, bool npcInitiatedOpening = false)
 	{
-		return NativeConversationTurnCoordinator.RunAsync(new NativeConversationTurnRuntime(CreateNativeConversationTurnPorts(), admission,
-			playerText, onStreamText, onPostprocessStarted, onMainReplyReady, npcInitiatedOpening));
+		return new NativeConversationTurnRuntime(CreateNativeConversationTurnPorts(), admission,
+			playerText, onStreamText, onPostprocessStarted, onMainReplyReady, npcInitiatedOpening, currentDialogTextOverride).RunAsync();
 	}
 
 	internal static void SubmitNativeConversationSceneActionObservation(string replyText, int agentIndex)

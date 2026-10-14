@@ -7,6 +7,7 @@ namespace AnimusForge;
 
 public sealed class WorldDiplomacyDialogueArrangement
 {
+    [JsonProperty("generationFailureAttempts")] public int GenerationFailureAttempts { get; set; }
     // Empty in legacy saves: old public proposals never gain inferred player consent.
     public string ConfirmedPlayerRulerId { get; set; } = "";
     public int GenerationRetryAfterDay { get; set; } = -1;

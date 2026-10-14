@@ -62,6 +62,7 @@ public partial class ShoutBehavior
     // 复用已注册的真实 ConversationEnded 事件，而不是 UI 关闭或可重用的 ActiveToken 推测会话结束。
     internal static void InvalidateNativeConversationAdmissionOnConversationEnd()
     {
+        CurrentInstance?.InvalidateNativeRewriteTurn();
         CurrentInstance?.NativeAdmissions.EndConversation();
     }
 

@@ -11,7 +11,9 @@
     <Compile Include="../../src/Shout/ShoutUiAdapter.cs" />
     <Compile Include="../../src/Shout/ShoutPresentationVM.cs" />
     <Compile Include="../../src/Scene/AFSceneAudienceDocketWidget.cs" />
+    <Compile Include="../../src/Scene/SceneSessionVM.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlayVM.cs" />
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Conversation/ShoutTextInputPopupVM.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs" />
     <Compile Include="../../src/DialogueUiLocalization.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Conversation/ConversationUiLocalization.cs" />

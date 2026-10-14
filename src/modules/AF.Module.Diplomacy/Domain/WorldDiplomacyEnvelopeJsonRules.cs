@@ -273,6 +273,7 @@ public static class WorldDiplomacyEnvelopeJsonRules
         };
         single["primary_target_kingdom_id"] = targetId;
         single["negotiation_move"] = ReadString(action, "negotiation_move");
+        if (action?["requires_response"]?.Type == JTokenType.Boolean) single["requires_response"] = action["requires_response"].DeepClone();
         single["addressed_kingdom_ids"] = string.IsNullOrWhiteSpace(targetId) ? new JArray() : new JArray(targetId);
         single["peace_terms"] = action?["peace_terms"] is JObject terms ? terms.DeepClone() : BuildPeaceTermsJson(null);
         single["responding_to_offer_document_id"] = ReadString(action, "responding_to_offer_document_id");

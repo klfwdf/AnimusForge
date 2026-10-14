@@ -176,12 +176,34 @@ var packet = new NpcDataPacket { AgentIndex = 7 };
 Mission.Current.Agents.Add(new Agent { Mission = Mission.Current, Index = 7 });
 var prefix = typeof(ShoutUiAdapter).GetMethod("DirectInputPrefix", BindingFlags.NonPublic | BindingFlags.Static)!;
 prefix.Invoke(null, new object[] { behavior._j17SceneShoutInputController, new object[] { packet }, null });
-var shoutHost = new ShoutTextInputPopupVM();
+bool rewriteQueued = false;
+var shoutHost = new ShoutTextInputPopupVM("", "", "", "", null, null, allowRewrite: true, onRewrite: () => rewriteQueued = true);
 Check(ShoutUiAdapter.TryWrap(shoutHost, out var shout), "property-backed context creates shout wrapper");
 var shoutVm = (ShoutPresentationVM)shout;
 Check(shoutVm.RefreshAvailability(), "initial context available");
+ShoutBehavior.CanRewriteSceneConversationForExternal = true;
+shoutVm.RefreshAvailability();
+shoutVm.ExecuteToggleHistory();
+int historyReads = ShoutBehavior.AuxiliaryHistoryReads;
+shoutHost.InputText = "protected draft";
+shoutVm.ExecuteRewrite();
+Check(!rewriteQueued, "replacement shout wrapper protects the live host draft");
+shoutHost.InputText = "";
+shoutVm.ExecuteRewrite();
+Check(rewriteQueued && shoutHost.InputText == "", "replacement shout rewrite delegates to the original deferred popup command");
+shoutHost.RewriteLastRound();
+ShoutBehavior.AuxiliaryHistory = new() { "earlier history", "completed gift fact" };
+shoutVm.RefreshAvailability();
+Check(shoutVm.HistoryText.Contains("earlier history") && !shoutVm.HistoryText.Contains("old player line") && ShoutBehavior.AuxiliaryHistoryReads == historyReads + 1,
+    "replacement shout cached history reloads once after successful rewrite");
+for (int i = 0; i < 500; i++) shoutVm.RefreshAvailability();
+Check(ShoutBehavior.AuxiliaryHistoryReads == historyReads + 1, "idle replacement shout availability never rereads history");
+rewriteQueued = false;
+shoutHost.InputText = ""; ShoutBehavior.CanRewriteSceneConversationForExternal = true;
 behavior.AdvanceEpoch();
 Check(!shoutVm.RefreshAvailability(), "new epoch invalidates old target without reflection lookup");
+shoutVm.ExecuteRewrite();
+Check(!rewriteQueued, "replacement shout rejects queued rewrite after target context changes");
 ShoutUiAdapter.Release(shoutHost);
 Check(shoutVm.Host == null && shoutVm.Finalizes == 1, "shout close releases its wrapper");
 
@@ -199,5 +221,6 @@ Check(Resolve(scroll, (string)scroll.Attribute("InnerPanel")) == Id("AFDialogueI
 Check(Resolve(scroll, (string)scroll.Attribute("VerticalScrollbar")) == Id("AFDialogueInputBar"), "scrollbar path resolves");
 Check((string)Id("AFDialogueInputClip").Attribute("ClipContents") == "true" && (string)Id("AFDialogueInputEditor").Attribute("AutoScrollToCaret") == "true", "long input clips and enables caret scrolling");
 AudienceDocketReplay.Run(root, Check);
+RewriteUiReplay.Run(root, Check);
 Console.WriteLine($"PASS: {checks} production-linked UI lifecycle, epoch-reader, audience rolling and XML checks; engine/patch dispatch/drawer are doubles, not visual acceptance.");
 class FakeMovie : IGauntletMovie { }

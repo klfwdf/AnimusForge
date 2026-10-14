@@ -11,9 +11,14 @@ internal sealed partial class WorldDiplomacyOrchestration
     internal bool CanDispatchDiplomacyJob(WorldDiplomacyJob job)
     {
         if (job == null || job.IsRunning || RequestLeases.ContainsJob(job.JobId)
-            || job.RetryAfterUtcTicks > DateTime.UtcNow.Ticks || Storage.ServiceRetryAfterUtcTicks > DateTime.UtcNow.Ticks) return false;
+            || !string.IsNullOrEmpty(job.SuspendedReason)
+            || job.RetryAfterUtcTicks > DateTime.UtcNow.Ticks
+            || (IsPlayerSchedulingJob(job) ? Storage.PlayerServiceRetryAfterUtcTicks : Storage.ServiceRetryAfterUtcTicks) > DateTime.UtcNow.Ticks) return false;
+        var owningRound = ResolveRound(job.RoundId);
+        if (owningRound != null && !DiplomacyPlayerEventRules.Matches(owningRound, job)) return false;
+        if (!string.IsNullOrEmpty(job.SilenceSourceDocumentId) && !IsCurrentSilenceJob(job)) return false;
         if (!CanDispatchPlayerResponse(job) || !Storage.RequestBudget.CanAdmit(IsPlayerSchedulingJob(job))) return false;
-        if (job.Kind == "generate")
+        if (job.Kind == "generate" || IsPlayerPipelineJob(job))
         {
             if (job.IsExternalResponseOnly && !string.IsNullOrWhiteSpace(job.SourceDocumentId)
                 && !DialogueDocumentKnown(job.AuthorKingdomId, job.SourceDocumentId)) return false;
@@ -25,6 +30,7 @@ internal sealed partial class WorldDiplomacyOrchestration
     }
     internal void PrepareSharedRequest(WorldDiplomacyJob job)
     {
+        if (PreparePlayerPipelineRequest(job)) return;
         // Refresh restored jobs and manual retries at the main-thread request boundary.
         if (job.Kind == "analyze" || (job.Kind == "generate" && IsPlayerDiplomacyJob(job))) job.MaxTokens = _host.AnalysisMaxTokens();
         var round = ResolveRound(job.RoundId);
@@ -35,15 +41,19 @@ internal sealed partial class WorldDiplomacyOrchestration
             job.RequestLane = "player";
             job.PersonalMemoryRulerId = _host.PartyRulerId(job.AuthorKingdomId);
             job.RoundConversationRevision = round?.ConversationRevision ?? 0;
+            if (round != null) job.UserPrompt += "\n" + BuildPlayerEventContinuity(round, job.AuthorKingdomId);
+            PrepareDiplomacyPrivacy(job);
             return;
         }
         if (frozenRepair) return;
         PrepareSharedEventRequest(job);
         job.RequestLane = IsPlayerSchedulingJob(job) ? "player" : round?.EventSourceType == "dialogue_commitment" ? "oral" : "normal";
         job.PersonalMemoryRulerId = _host.PartyRulerId(job.AuthorKingdomId);
-        if (job.Kind == "generate" && !string.IsNullOrEmpty(job.PersonalMemoryRulerId))
-            job.UserPrompt += "\n" + DialogueHost?.PersonalMemory(job.PersonalMemoryRulerId,
-                ResolveRound(job.RoundId)?.RoundTopic, _host.PartyNameOrEmpty(job.TargetKingdomId));
+        if (job.Kind == "generate")
+        {
+            if (DiplomacyPlayerEventRules.IsPlayer(round)) job.UserPrompt += "\n" + BuildPlayerEventContinuity(round, job.AuthorKingdomId);
+            PrepareDiplomacyPrivacy(job);
+        }
     }
     internal bool AdmitCompletion(WorldDiplomacyJob job, LlmJobResult result)
     {
@@ -53,11 +63,18 @@ internal sealed partial class WorldDiplomacyOrchestration
         { RemoveJob(job.JobId); return false; }
         if (result.Error == "world_diplomacy_request_budget_deferred") return false;
         var round = ResolveRound(job.RoundId);
-        if (job.Kind == "generate" && (!IsLiveRound(round)
+        if (round != null && (result.OwnershipEpoch != round.OwnershipEpoch || result.SchedulingOwner != round.SchedulingOwner
+            || result.PlayerAuthorityRulerId != round.PlayerAuthorityRulerId || !DiplomacyPlayerEventRules.Matches(round, job)))
+        { return false; }
+        if (!string.IsNullOrEmpty(job.SilenceSourceDocumentId) && !IsCurrentSilenceJob(job))
+        { RemoveJob(job.JobId); return false; }
+        if ((job.Kind == "generate" || IsPlayerPipelineJob(job)) && (!IsLiveRound(round)
             || result.RoundConversationRevision != round.ConversationRevision
+            || job.CourtKnowledgeRevision != DiplomacyPlayerEventRules.KnowledgeRevision(round, job.AuthorKingdomId)
             || (!string.IsNullOrEmpty(job.PersonalMemoryRulerId) && !DialogueRulerIsCurrent(job.AuthorKingdomId, job.PersonalMemoryRulerId))))
         {
             job.LlmMessages?.Clear(); job.SemanticRepairAttempts = 0;
+            if (IsPrivacyPipelineJob(job)) { job.Kind = "generate"; job.PrivacyPublicContext = ""; job.PrivacyRevision = -1; }
             if (IsLiveRound(round)) _diplomacyWorkNeedsReconcile = true;
             else RemoveJob(job.JobId);
             return false;
@@ -68,7 +85,10 @@ internal sealed partial class WorldDiplomacyOrchestration
             return false;
         }
         if (!result.Success && result.IsServiceFailure)
-            Storage.ServiceRetryAfterUtcTicks = DateTime.UtcNow.AddSeconds(60).Ticks;
+        {
+            if (IsPlayerSchedulingJob(job)) Storage.PlayerServiceRetryAfterUtcTicks = DateTime.UtcNow.AddSeconds(60).Ticks;
+            else Storage.ServiceRetryAfterUtcTicks = DateTime.UtcNow.AddSeconds(60).Ticks;
+        }
         return true;
     }
     internal void MaintainDialogueAndMemory()

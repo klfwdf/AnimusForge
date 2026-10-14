@@ -236,18 +236,6 @@ public static class WorldDiplomacyTextRules
 		WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_054", ""),
 		RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
-	private static readonly Regex ConversationalDiplomacyPhraseRegex = new Regex(
-		WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_055", ""),
-		RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
-	private static readonly Regex PrivateFirstPersonRegex = new Regex(
-		WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_056", ""),
-		RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
-	private static readonly Regex DirectSecondPersonRegex = new Regex(
-		WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_057", ""),
-		RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
 	public static bool ContainsWholeNumber(string text, int value)
 	{
 		return Regex.IsMatch(text ?? "", @"(?<!\d)" + Regex.Escape(value.ToString(CultureInfo.InvariantCulture)) + @"(?!\d)", RegexOptions.CultureInvariant);
@@ -302,15 +290,6 @@ public static class WorldDiplomacyTextRules
 			WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_065", ""), WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_066", ""), WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_067", ""), WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_068", ""), WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_069", ""), WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_070", ""), WorldDiplomacyPromptContractRules.ContractText(null, "AF_DIP_Source_071", "")))
 		{
 			reason = "internal_round_term_exposed_in_public_declaration";
-			return true;
-		}
-		int privateFirstPersonCount = PrivateFirstPersonRegex.Matches(visibleText).Count;
-		int directSecondPersonCount = DirectSecondPersonRegex.Matches(visibleText).Count;
-		bool hasConversationalPhrase = ConversationalDiplomacyPhraseRegex.IsMatch(visibleText);
-		if ((hasConversationalPhrase && privateFirstPersonCount >= 2 && directSecondPersonCount >= 2)
-			|| (privateFirstPersonCount >= 4 && directSecondPersonCount >= 4))
-		{
-			reason = "private_chat_style_in_public_declaration";
 			return true;
 		}
 		return false;

@@ -105,7 +105,7 @@ internal static class WorldDiplomacyPromptComposer
 			.OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
 			.ToList();
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_016", "[Current state for this diplomatic document]"));
-	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_017", "Declarations in the long-term archive are published official documents, not live ruler chat. Draft a separate formal document for the current kingdom that can circulate independently. Meaningful negotiations are allowed, but do not repeat historical statements or reiterate positions without substance. Only mechanical diplomatic acts count as round action progress; negotiation statements do not extend the round indefinitely."));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_017", "Declarations in the long-term archive are published diplomatic documents. Respond afresh to the current situation. Meaningful negotiations are allowed, but do not repeat historical statements or reiterate positions without substance. Only mechanical diplomatic acts count as round action progress; negotiation statements do not extend the round indefinitely."));
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_018", "Topic=") + (round.RoundTopic ?? ""));
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_019", "Document delivery and publication order=") + string.Join(">", round.RelayRouteKingdomIds ?? new List<string>()));
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_020", "Publisher of this document=") + author + "=" + world.KingdomName(author) + world.LocalizePrompt("AF_DIP_Prompt_Composer_021", ", authorizing ruler=") + world.RulerName(author));
@@ -652,7 +652,7 @@ internal static class WorldDiplomacyPromptComposer
 		AppendDiplomaticThreatDynamicContext(sb, world, authorId, roundId);
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_167", "[Issuing ruler's personality and voice]"));
 		sb.AppendLine(world.RulerVoiceContext(authorId));
-		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_168", "Draft the national document according to this ruler's actual priorities. Express personality through interests, trust, costs and restraint in action; express the national position in terms of the kingdom, court, nobility and subjects."));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_168", "Express the position according to this ruler’s character, situation and actual priorities, using the institutional facts below and the shared writing guidance."));
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_169", "[Institutional, legitimacy and ceremonial voice of the issuing kingdom]"));
 		sb.AppendLine(world.RealmInstitutionalVoiceContext(authorId));
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_170", "Hard facts about current in-game identities and government take precedence over retrieved background. Background may supplement tone, but must not alter ruler titles or government or invent institutions."));

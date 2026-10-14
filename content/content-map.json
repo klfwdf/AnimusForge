@@ -17639,6 +17639,11 @@
       "owner": "AF.Foundation.Localization",
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/McmKnownPromptDefaults.json",
       "target": "ModuleData/McmKnownPromptDefaults.json"
+    },
+    {
+      "owner": "AnimusForge.DialogueUI",
+      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_icon_rewrite.png",
+      "target": "GUI/SpriteParts/afdui_icon_rewrite.png"
     }
   ]
 }

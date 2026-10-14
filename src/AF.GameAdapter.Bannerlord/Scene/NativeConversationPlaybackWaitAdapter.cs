@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 namespace AnimusForge;
 
@@ -18,6 +19,9 @@ internal sealed class NativeConversationPlaybackWaitAdapter
 
 	private long _nativeConversationTtsPlaybackWaitToken = 0L;
 	private TtsEngine.PlaybackRequest _nativeConversationTtsPlaybackRequest;
+
+    // A single reference read for UI availability; the wait owner still owns completion.
+    internal bool HasPendingPlayback => Volatile.Read(ref _nativeConversationTtsPlaybackWaitTcs)?.Task.IsCompleted == false;
 
 	private const int NativeConversationTtsPlaybackWaitMinTimeoutMs = 30000;
 

@@ -47,8 +47,12 @@ public sealed partial class WorldDiplomacyBehavior
                     request.JobId, detachedRequest, gateway, cancellation).ConfigureAwait(false);
                 result.RequestAttempt = request.Attempt;
                 result.RoundConversationRevision = request.ConversationRevision;
-                if (!cancellation.IsCancellationRequested
-                    && SaveRuntimeGuard.IsCurrentGeneration(request.RuntimeGeneration))
+                result.OwnershipEpoch = request.OwnershipEpoch;
+                result.SchedulingOwner = request.SchedulingOwner;
+                result.PlayerAuthorityRulerId = request.PlayerAuthorityRulerId;
+                // Event cancellation still drains completion to release its transport
+                // slot. A save reset clears all leases and rejects the prior generation.
+                if (SaveRuntimeGuard.IsCurrentGeneration(request.RuntimeGeneration))
                     completedJobs.Enqueue(result);
             });
         }

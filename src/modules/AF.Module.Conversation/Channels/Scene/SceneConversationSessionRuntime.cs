@@ -31,7 +31,11 @@ internal sealed partial class SceneConversationSessionRuntime
 	private readonly ScenePlayerShoutRequestOwner _scenePlayerShoutRequestOwner = new ScenePlayerShoutRequestOwner();
 
 
-    internal int AdvanceConversationEpoch() => Interlocked.Increment(ref _sceneConversationEpoch);
+    internal int AdvanceConversationEpoch()
+    {
+        InvalidateRewriteTurn();
+        return Interlocked.Increment(ref _sceneConversationEpoch);
+    }
     internal int PendingImmediateCount { get { lock (_immediateSceneReactionGateLock) return _pendingImmediateSceneReactionRequests.Count; } }
     internal bool HasActiveImmediateReactions { get { lock (_immediateSceneReactionGateLock) return _immediateSceneReactionActiveRequestIds.Count > 0; } }
     internal void ResetImmediateReactions(bool clearCooldown = true)

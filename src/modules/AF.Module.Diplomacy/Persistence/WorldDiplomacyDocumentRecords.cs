@@ -6,6 +6,9 @@ namespace AnimusForge;
 
 public sealed class WorldDiplomacyDocumentAction
 {
+    [JsonProperty("dependencyActionIds")] public List<string> DependencyActionIds { get; set; } = new();
+    [JsonProperty("conditionVersion")] public int ConditionVersion { get; set; } = 1;
+    [JsonProperty("executionState")] public string ExecutionState { get; set; } = "";
 	[JsonProperty("actionId")] public string ActionId { get; set; } = "";
 	[JsonProperty("targetKingdomId")] public string TargetKingdomId { get; set; } = "";
 	[JsonProperty("targetKingdomName")] public string TargetKingdomName { get; set; } = "";
@@ -27,6 +30,11 @@ public sealed class WorldDiplomacyDocumentAction
 
 public sealed class WorldDiplomacyDocument
 {
+    [JsonProperty("playerLifecycleClassified")] public bool PlayerLifecycleClassified { get; set; }
+    [JsonProperty("playerReplyRoutingRechecked")] public bool PlayerReplyRoutingRechecked { get; set; }
+    [JsonProperty("playerReplyRoutingPending")] public bool PlayerReplyRoutingPending { get; set; }
+    [JsonProperty("actualPlayerNoticeHour")] public double ActualPlayerNoticeHour { get; set; } = -1;
+    [JsonProperty("answeredNpcDocumentIds")] public List<string> AnsweredNpcDocumentIds { get; set; } = new();
 	[JsonProperty("subjectReleaseTokens", NullValueHandling = NullValueHandling.Ignore)]
 	public Dictionary<string, string> SubjectReleaseTokens { get; set; }
 

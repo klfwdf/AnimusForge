@@ -149,6 +149,7 @@ namespace AnimusForge;
                 nativeRequestConversationToken, admission, new NativeConversationCompletionRequest
                 {
                     PlayerText = shouldRecordPlayerInput ? promptPlayerText : null,
+                    RewriteTurn = rewriteTurn,
                     OpeningFact = npcOpeningConsumed ? npcOpeningPersistentFactText : null,
                     TtsAlreadyDispatched = nativeTtsDispatchedBeforePostprocess,
                     PendingPlayerHistorySequence = nativePendingPlayerHistoryEventSequence,

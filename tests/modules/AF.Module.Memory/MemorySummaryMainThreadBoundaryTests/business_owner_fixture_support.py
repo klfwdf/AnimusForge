@@ -20,6 +20,9 @@ def daily_maintenance_replay_members(source, ex):
  return members
 
 def include(root,files,manifest,ex):
+ rewrite='src/modules/AF.Module.Conversation/Internal/History/ConversationRewriteTurn.cs'
+ files['ConversationRewriteTurn.cs']=(root/rewrite).read_text(encoding='utf-8-sig')
+ manifest.append(dict(file=rewrite,sha256=hashlib.sha256(files['ConversationRewriteTurn.cs'].encode()).hexdigest(),current_source=True))
  source=(root/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_text(encoding='utf-8-sig')
  projections=[]
  if not any('class DialogueDay' in v for v in files.values()):
