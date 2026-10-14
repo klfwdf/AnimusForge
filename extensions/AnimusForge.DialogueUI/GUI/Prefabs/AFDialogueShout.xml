@@ -61,28 +61,29 @@
                 <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="650" SuggestedHeight="20" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="275" MarginTop="80" Text="@TitleText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#E2C38AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="698" SuggestedHeight="98" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="263" MarginTop="100" DoNotAcceptEvents="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="12" MarginTop="10" Text="@InputHintText" Brush="ConversationItem.Text" DoNotAcceptEvents="true" IsVisible="@IsInputEmpty" Brush.FontSize="15" Brush.FontColor="#E2C38AAA" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
-                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="AFShoutInputClip" InnerPanel="AFShoutInputClip\AFShoutInputInner" VerticalScrollbar="..\AFShoutInputBar" AutoHideScrollBars="true">
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="48" MarginTop="10" Text="@InputHintText" Brush="ConversationItem.Text" DoNotAcceptEvents="true" IsVisible="@IsInputEmpty" Brush.FontSize="15" Brush.FontColor="#E2C38AAA" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
+                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="AFShoutInputClip" InnerPanel="AFShoutInputClip\AFShoutInputInner" VerticalScrollbar="..\AFShoutInputBar" AutoHideScrollBars="true" MarginRight="48" >
                       <Children>
                         <Widget Id="AFShoutInputClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                           <Children>
                             <Widget Id="AFShoutInputInner" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="98">
                               <Children>
-                                <AFDialogueBodyEditorWidget Id="AFSessionInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="12" MarginRight="12" MarginTop="10" MarginBottom="10" VerticalAlignment="Top" Command.TextEntered="ExecuteSubmit" Brush="ConversationItem.Text" Brush.FontSize="16" Brush.FontColor="#F0DFBEFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="16" RealText="@InputText" AutoFocus="true" SubmitOnEnter="true" UseBlackCaret="false" MaxLength="6000" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" MinHeight="78" AutoScrollToCaret="true" />
+                                <AFDialogueBodyEditorWidget Id="AFSessionInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="12" MarginRight="12" MarginTop="10" MarginBottom="10" VerticalAlignment="Top" Command.TextEntered="ExecuteSubmit" Brush="ConversationItem.Text" Brush.FontSize="16" Brush.FontColor="#F0DFBEFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="16" RealText="@InputText" AutoFocus="true" FocusRequestId="@InputFocusVersion" SubmitOnEnter="true" UseBlackCaret="false" MaxLength="6000" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" MinHeight="78" AutoScrollToCaret="true" />
                               </Children>
                             </Widget>
                           </Children>
                         </Widget>
                       </Children>
                     </ScrollablePanel>
-                    <ScrollbarWidget Id="AFShoutInputBar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFShoutInputHandle" MinValue="0" MaxValue="100">
+                    <ScrollbarWidget Id="AFShoutInputBar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFShoutInputHandle" MinValue="0" MaxValue="100" MarginTop="44" >
                       <Children>
                         <Widget Id="AFShoutInputHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" Sprite="BlankWhiteSquare_9" Color="#E2C38AAA" />
                       </Children>
                     </ScrollbarWidget>
+                    <AnimusForgeConversationRewriteButtonWidget Id="AFDialogueShoutRewrite" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="32" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="6" MarginTop="4" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteRewrite" IsEnabled="@CanRewrite" IsVisible="@IsRewriteVisible" />
                   </Children>
                 </Widget>
-                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1000" SuggestedHeight="20" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="275" MarginTop="201" Text="@IllustrationStatusText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#FFB08AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1000" SuggestedHeight="20" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="275" MarginTop="201" Text="@StatusText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#FFB08AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
                 <ButtonWidget Id="SceneIllustrationButton" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="70" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1219" MarginTop="82" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteIllustrate" IsVisible="@IsIllustrationVisible" IsEnabled="@CanIllustrate">
                   <Children>
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@IllustrationButtonText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="17" Brush.FontColor="#FFF4D6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Brush.TextOutlineAmount="0.8" Brush.TextOutlineColor="#201006FF" />
@@ -119,6 +120,7 @@
                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@SendText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="17" Brush.FontColor="#FFF4D6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Brush.TextOutlineAmount="0.8" Brush.TextOutlineColor="#201006FF" />
               </Children>
             </ButtonWidget>
+
           </Children>
         </Widget>
       </Children>

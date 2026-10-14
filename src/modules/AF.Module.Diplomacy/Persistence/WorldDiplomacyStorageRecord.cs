@@ -6,6 +6,15 @@ namespace AnimusForge;
 
 public sealed class WorldDiplomacyStorage
 {
+    [JsonProperty("playerLifecycleSchemaVersion")] public int PlayerLifecycleSchemaVersion { get; set; }
+    [JsonProperty("playerLifecycleRecoveryRoundIds")] public List<string> PlayerLifecycleRecoveryRoundIds { get; set; } = new();
+    [JsonProperty("playerDiplomacySchemaVersion")] public int PlayerDiplomacySchemaVersion { get; set; }
+    [JsonProperty("nextPlayerAgendaDay")] public int NextPlayerAgendaDay { get; set; }
+    [JsonProperty("playerAgendaCursor")] public int PlayerAgendaCursor { get; set; }
+    [JsonProperty("playerServiceRetryAfterUtcTicks")] public long PlayerServiceRetryAfterUtcTicks { get; set; }
+    [JsonProperty("lastPlayerAgendaEvaluationDay")] public int LastPlayerAgendaEvaluationDay { get; set; } = -1;
+    [JsonProperty("playerAgendaCandidates")] public List<WorldDiplomacyPlayerAgendaCandidate> PlayerAgendaCandidates { get; set; } = new();
+    [JsonProperty("playerDisputeRefusals")] public List<WorldDiplomacyPlayerDisputeRefusal> PlayerDisputeRefusals { get; set; } = new();
 	[JsonProperty("diplomacyNotificationStateSchemaVersion")]
 	public int DiplomacyNotificationStateSchemaVersion { get; set; }
 

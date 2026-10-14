@@ -19,8 +19,9 @@ for signature in ['public static bool SafeSyncData<T>(', 'public static void Sav
  assert ex.declaration(current,signature)==ex.declaration(before,signature),'legacy helper contract changed: '+signature
 code=(HERE/'StrictPersistenceReplay.cs.txt').read_text(encoding='utf8').replace('@@SYNC@@',sync)
 (out/'Program.cs').write_text(code,encoding='utf8')
-dotnet=resolve_dotnet(ROOT);dll=dotnet.parent/'sdk/8.0.425/Newtonsoft.Json.dll'
-if not dll.is_file():raise SystemExit('Pass local SDK with installed Newtonsoft.Json; dependencies are not installed.')
+dotnet=resolve_dotnet(ROOT);sdk_dlls=sorted((dotnet.parent/'sdk').glob('*/Newtonsoft.Json.dll'))
+if not sdk_dlls:raise SystemExit('Existing SDK Newtonsoft.Json is required; dependencies are not installed.')
+dll=sdk_dlls[-1]
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+str(dll)+'</HintPath></Reference></ItemGroup></Project>',encoding='utf8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf8')
 (out/'source-manifest.json').write_text(json.dumps({'scope':__doc__,'sources':{path:hashlib.sha256((ROOT/path).read_bytes()).hexdigest() for path in paths},'syncSource':str(orchpath),'syncMethodSha256':hashlib.sha256(sync.encode()).hexdigest()},indent=2),encoding='utf8')

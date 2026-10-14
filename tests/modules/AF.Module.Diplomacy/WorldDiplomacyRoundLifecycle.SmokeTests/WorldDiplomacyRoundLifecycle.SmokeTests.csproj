@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" />
@@ -168,6 +169,11 @@
 </ItemGroup><ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRequestHistoryApplication.cs" /></ItemGroup><ItemGroup><EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptCompatibility.json" LogicalName="AnimusForge.Diplomacy.PromptCompatibility.json" /></ItemGroup>
   <ItemGroup>
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyPromptTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyReplyTextRules.cs" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.json" LogicalName="AnimusForge.Diplomacy.ReceiptTexts.cn.json" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.en.json" LogicalName="AnimusForge.Diplomacy.ReceiptTexts.en.json" WithCulture="false" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_misc_strings-zh-CN.xml" LogicalName="AnimusForge.Diplomacy.ReceiptUi.cn.xml" WithCulture="false" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_misc_strings.xml" LogicalName="AnimusForge.Diplomacy.ReceiptUi.en.xml" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyMiscPromptTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyCompatibilityTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyUiLocalization.cs" />
@@ -180,5 +186,14 @@
     <Content Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json" Link="ModuleData/DiplomacyMiscCompatibility.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.zh-CN.json" Link="ModuleData/PromptComposerTexts.json" CopyToOutputDirectory="PreserveNewest" />
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json" LogicalName="AnimusForge.Prompt.Compatibility.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerEvents.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerLifecycle.cs" />
+    <Compile Include="../../../../src/AF.Persistence/CampaignSaveChunkHelper.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Privacy.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Rounds/DiplomacyPlayerEventRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Rounds/DiplomacyConditionalExecutionRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyPlayerNegotiationRecords.cs" />
   </ItemGroup>
 </Project>

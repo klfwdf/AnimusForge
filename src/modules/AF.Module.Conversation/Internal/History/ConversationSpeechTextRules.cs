@@ -270,7 +270,7 @@ internal static string StripStageDirectionsForPassiveShout(string text, Conversa
 		return text2.Trim();
 	}
 
-internal static string SanitizeSceneSpeechText(string text, ConversationSpeechTextOptions options)
+internal static string SanitizeSceneSpeechText(string text, ConversationSpeechTextOptions options, bool cleanNpcReceipts = true)
 	{
 		string text2 = LlmVisibleReplyNormalizer.NormalizeComplete(text);
 		text2 = StripLeakedPromptContentForShout(text2);
@@ -282,7 +282,7 @@ internal static string SanitizeSceneSpeechText(string text, ConversationSpeechTe
 		text2 = Regex.Replace(text2, "\\[(?:NO_CONTINUE|END)\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[RELAY\\s*:[^\\]\\r\\n]+\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "[ \\t]{2,}", " ");
-		return text2.Trim(' ', '\t', '\r', '\n', '[', ']', ':');
+		return (cleanNpcReceipts ? DiplomacyReplyTextRules.CleanNpcText(text2) : text2).Trim(' ', '\t', '\r', '\n', '[', ']', ':');
 	}
 
 internal static string PrepareSceneHistorySpeechText(string text)
@@ -296,7 +296,7 @@ internal static string PrepareSceneHistorySpeechText(string text)
 		text2 = StripAutoGroupRelaySignal(text2);
 		text2 = StripAutoGroupStopSignal(text2);
 		text2 = Regex.Replace(text2, "[ \\t]{2,}", " ");
-		return text2.Trim(' ', '\t', '\r', '\n', '[', ']', ':');
+		return DiplomacyReplyTextRules.CleanNpcText(text2).Trim(' ', '\t', '\r', '\n', '[', ']', ':');
 	}
 
 internal static string StripAutoGroupStopSignal(string text)
@@ -369,7 +369,8 @@ internal static string NormalizeNativeConversationFactLineForPrompt(string text,
 
 internal static string NormalizeNativeConversationVisibleTextKey(string text, ConversationSpeechTextOptions options)
 	{
-		return SanitizeSceneSpeechText(ShoutUtils.StripNamePrefixedLineSafely((text ?? "").Replace("\r", "").Trim(), 30), options).Trim();
+		// Identity/deduplication also processes player rows; preserve the original key.
+		return SanitizeSceneSpeechText(ShoutUtils.StripNamePrefixedLineSafely((text ?? "").Replace("\r", "").Trim(), 30), options, cleanNpcReceipts: false).Trim();
 	}
 
 internal static string NormalizeNativeConversationHistoryTextForPostprocess(string text)
@@ -399,6 +400,7 @@ internal static string SanitizeSceneSpeechTextForTts(string text)
 		text2 = StripTtsNarrationLines(text2);
 		text2 = Regex.Replace(text2, "[ \\t]{2,}", " ");
 		text2 = Regex.Replace(text2, "\\n{3,}", "\n\n");
+		text2 = DiplomacyReplyTextRules.CleanNpcText(text2);
 		text2 = text2.Trim(' ', '\t', '\r', '\n', '[', ']', ':', '：', '，', '。', ',', ';', '；');
 		return text2.Trim();
 	}

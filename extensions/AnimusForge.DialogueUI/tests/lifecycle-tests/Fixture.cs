@@ -23,13 +23,13 @@ namespace TaleWorlds.Localization
 namespace TaleWorlds.ScreenSystem { public static class ScreenManager { public static object TopScreen = new(); } }
 namespace AnimusForge.DialogueUI.Scene
 {
-    public partial class SceneSessionVM
+    public partial class ManualSceneSessionVM
     {
         private readonly Action _openDirectActions;
         internal bool _released, _isBusy, Hidden;
         private Action _pending;
         internal FakeTrade Trade = new();
-        internal SceneSessionVM(Action open) { _openDirectActions = open; }
+        internal ManualSceneSessionVM(Action open) { _openDirectActions = open; }
         private void Queue(Action action) => _pending = action;
         internal void Flush() { var action = _pending; _pending = null; action?.Invoke(); }
         internal void SetHidden(bool hidden) => Hidden = hidden;
@@ -39,16 +39,16 @@ namespace AnimusForge.DialogueUI.Scene
     {
         private readonly object _screen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen;
         internal readonly TaleWorlds.MountAndBlade.Mission Mission = TaleWorlds.MountAndBlade.Mission.Current;
-        internal readonly SceneSessionVM _vm;
+        internal readonly ManualSceneSessionVM _vm;
         internal bool _closed, Interactive = true;
-        internal SessionLayer() { _vm = new SceneSessionVM(OpenDirectActions); }
+        internal SessionLayer() { _vm = new ManualSceneSessionVM(OpenDirectActions); }
         private void ApplyInput(bool interactive) => Interactive = interactive;
     }
 }
 namespace TaleWorlds.Library
 {
-    public static class InformationManager { public static bool Inquiry; public static bool IsAnyInquiryActive() => Inquiry; public static void DisplayMessage(InformationMessage message) { } }
-    public class InformationMessage { public InformationMessage(string text) { } }
+    public static class InformationManager { public static bool Inquiry; public static bool IsAnyInquiryActive() => Inquiry; public static List<string> Messages = new(); public static void DisplayMessage(InformationMessage message) { Messages.Add(message.Text); } }
+    public class InformationMessage { public readonly string Text; public InformationMessage(string text) { Text = text; } }
     public interface IViewModel { }
     [AttributeUsage(AttributeTargets.Property)] public class DataSourcePropertyAttribute : Attribute { }
     public class PropertyChangedWithValueEventArgs : EventArgs { public string PropertyName; }
@@ -100,10 +100,13 @@ namespace AnimusForge
         private static readonly DuelSettings Settings = new();
         public static DuelSettings GetSettings() => Settings;
         public bool EnableDevEditHistory { get; set; }
+        public const string ShoutInputUiBackgroundBlack = "black", ShoutInputUiBackgroundWhite = "white", ShoutInputUiBackgroundPink = "pink";
+        public static string NormalizeShoutInputUiBackground(string value) => value;
+        public string GetShoutInputUiBackgroundSelection() => ShoutInputUiBackgroundBlack;
     }
     internal static class LlmRetryPrompt { internal static string ProjectKnownErrorForUi(string value) => value; }
     public class NpcDataPacket { public int AgentIndex; }
-    public class ShoutBehavior
+    public partial class ShoutBehavior
     {
         public static Func<Action, bool> ManualMenu;
         public static bool OpenScenePresentationPlayerDirectActionsForExternal(Action onFinished) => ManualMenu(onFinished);
@@ -119,18 +122,19 @@ namespace AnimusForge
         private void OpenShoutTextInput(NpcDataPacket packet, string title, string subtitle) { }
         private void ShowShoutTradeChatInput() { }
         private static int GetCurrentSceneHistorySessionIdForExternal() => 1;
-        private static List<string> GetAuxiliarySceneDialogueHistoryLinesForExternal(int agent, int limit) => new() { "history" };
+        public static int AuxiliaryHistoryReads;
+        public static List<string> AuxiliaryHistory = new() { "history" };
+        private static List<string> GetAuxiliarySceneDialogueHistoryLinesForExternal(int agent, int limit) { AuxiliaryHistoryReads++; return AuxiliaryHistory.ToList(); }
     }
     internal sealed class SceneShoutInputController { private void OpenShoutTextInput(NpcDataPacket packet, string title, string subtitle) {} }
     internal sealed class SceneTradeController { internal object Target; internal TaleWorlds.MountAndBlade.Agent Agent; internal bool ActionOnly; private void ShowShoutTradeChatInput() {} }
     public class ShoutTextInputPopup { private object _dataSource; private void Close(bool silent) { } }
-    public class ShoutTextInputPopupVM : TaleWorlds.Library.ViewModel { public string SubtitleText => ""; public bool IsIllustrationVisible => false; public bool CanIllustrate => false; public string IllustrationButtonText => ""; public void ExecuteIllustrate() { } public void ExecuteOpenGallery() { } public void ExecuteSubmit() { } public void ExecuteCancel() { } }
     public static class AnimusForgeNativeConversationOverlay { public static void CloseActive() { } }
     public static class LordEncounterBehavior { public static void PreparePlayerRequestedNativeConversationLeave() { } }
 }
 namespace AnimusForge.DialogueUI
 {
-    public static class DialogueUiOptions { public static bool AutoEnterAiMode = true, AutoEnterAiModeHeroOnly = true; }
+    public static class DialogueUiOptions { public static bool AutoEnterAiMode = true, AutoEnterAiModeHeroOnly = true; public static int BodyFontSize => 22; }
     public static class DialogueUiRuntime { public static bool Enabled = true; public static List<string> Logs = new(); public static void Log(string text) => Logs.Add(text); }
     public interface IGauntletMovie { }
     internal static partial class PresentationRouter

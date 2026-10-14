@@ -1,3 +1,34 @@
+<a id="oral-privacy-authority-20261015"></a>
+### 口头外交：保密隔离后的权威执行资料与安全旧任务恢复
+
+源码交付0c36af2cb57a7c13f50e947e1b1a64baefa38d6c，本地主工作区同包844630ecf；12文件Git内容一致。10锚点双模式PASS，本地artifacts/oral-privacy-authority-20261015/code-map.json。详细证据、基线失败及未验责任归[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#oral-privacy-authority-20261015)，不新增公开API。
+
+| 一基坐标 / 符号 | 实际责任与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.OralGeneration.cs:158–170` BuildOralPublicExecutionContext | 从权威约定提供公开执行资料；不读取模型摘要中的动作/对象，不重加私人原话。拟文/审查两用途分开资源，实际consumer为共享Privacy请求边界 |
+| 同文件 `:174–196` RecoverLegacyOralDrafts；`WorldDiplomacyOrchestration.Dialogue.cs:259–267` 原每日维护调用 | 原任务集合、原每日维护入口最多4项；精确旧错误/版本且未发布无公文/非明确延期/当前权限条款合法才能恢复；新合同失败不反复重置，未知执行状态不重放 |
+| 同文件 `:213–240` CommitOralDeclaration | 接受仅正文的空actions；实际动作及条款来自约定。旧精确回显可读，冲突回显拒绝；继续原宣言/效果owner，不创建玩家接受文书或直接绕过发布 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Privacy.cs:77–91` 公开请求组装；`:91–106` DeferDraftForPrivacyCheck；`:151–161` 一致性准入 | 实际隔离→拟文→审查→主线程completion。口头拟文不再重开谈判；保密与agreement_consistent双布尔准入。旧签名/回合/统治者变动继续原拒收流程；AI语义审查真实provider未验 |
+| `src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyWorkRecords.cs:92` OralDraftingContractVersion | 可选JSON字段，旧值默认0；仅请求重建/恢复边界更新，不改存档键、类型/枚举或原严格分块adapter |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/OralPrivacyAuthorityReplay.cs:50–65,122–151` Isolate / RecoverOldHolds | 构造真实丢失字段摘要、检查最终messages、实际lease/异步completion/恰好一次及持久化旧挂起正反例；传输和游戏叶模拟，不代表真实NPC、TTS或旧sav验收 |
+
+CN/EN四个资源键在原DiplomacyPromptTexts成对资产维护，原content-map和包selector消费。构建验证针对交付树；其他私有历史及现有玩法owner不扩展。
+
+<a id="local-feature-publication-20261015"></a>
+## Player diplomacy and dialogue rewrite delivery scope (2026-10-15)
+
+The publication uses the same production owners as verified source `ad4112034`; no new DLL, save namespace or public API is introduced. [Delivery evidence](../animusforge-refactoring-and-repository-reorganization-plan.md#local-feature-publication-20261015) distinguishes source/DLL replay from live acceptance.
+
+| Source and symbol | Responsibility and verification boundary |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerEvents.cs:39–44,235–270` / RecordActualPlayerNotice, MaintainPlayerEvents | Independent player scheduling and actual-notice deadlines; production owner replays, not live campaign timing |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerLifecycle.cs:132–178,187–227` / CompletePlayerLifecycle, RehomePlayerReplyEvent | Explicit case continuation and semantic routing; real output contract with synthetic model decisions |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Privacy.cs:54–87,89–104` / PrepareDiplomacyPrivacy, DeferDraftForPrivacyCheck | Public-material isolation and audit; no promise of zero leakage from a live provider |
+| `src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeRewrite.cs:52–94` / TryRewriteNativeConversationForExternal | Current-owner native undo, memory receipt validation and playback guards; 36 scoped integration checks |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneRewrite.cs:128–150` / TryRewriteSceneConversationForExternal | Latest completed group undo, generation/epoch guards and confirmed-fact preservation; 20 lifecycle checks |
+| `src/modules/AF.Module.Conversation/Internal/History/ConversationRewriteTurn.cs:61–71` / TryRewrite | Validate all captured writes before removal; no rollback of executed game actions |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Presentation.cs:35–44` / NotificationWorld.ShowNotice | Yellow full-text projection; actual widget rendering remains unverified |
+
 <a id="captivity-free-opening-20261013"></a>
 ### 被俘后领主自由开场：75c7efe60
 

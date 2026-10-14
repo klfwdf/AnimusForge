@@ -77,16 +77,17 @@ internal static class OralDeclarationReplay
             new DialogueInteractionOrigin("native", "oral-test", "session", "双方同意贸易十四天。", "我同意开放贸易十四天。"));
         Test.True(owner.CurrentStorage.Documents.Count == 0, "oral consent queues AI writing without publishing template or effect");
         Test.True(owner.CurrentStorage.Jobs.Any(x => x.Kind == "generate" && x.AuthorKingdomId == "a" && x.TargetKingdomId == "p"),
-            "oral declaration uses existing generation queue");
+            "oral declaration uses existing generation queue: " + string.Join(";", owner.CurrentStorage.Jobs.Select(x => x.Kind))
+                + " arrangements=" + string.Join(";", owner.CurrentStorage.DialogueArrangements.Select(x => x.Status + ":" + x.Reason)));
         var item = owner.CurrentStorage.DialogueArrangements.Single(); var job = owner.CurrentStorage.Jobs.Single();
         owner.PrepareSharedRequest(job);
         Test.True(WorldDiplomacyPromptContractRules.HasCurrentCanonicalPromptContract(job)
             && job.UserPrompt.Contains(item.SourcePlayerText) && job.UserPrompt.Contains(item.SourceNpcText)
-            && job.UserPrompt.Contains("PRIVATE_MEMORY") && job.SystemPrompt.Contains(SmokeLocalizationEnvironment.EnglishPackage ? "complete diplomatic" : "完整外交")
+            && job.UserPrompt.Contains("PRIVATE_MEMORY") && job.PrivacyDeclarationSystem.Contains(SmokeLocalizationEnvironment.EnglishPackage ? "complete diplomatic" : "完整外交")
             && job.RoundConversationRevision == owner.ResolveRound(item.RoundId).ConversationRevision,
-            "oral writer reuses canonical normal declaration quality, origin, personal memory and current event revision");
+            "oral isolation retains original writing contract and private input; public material is tested separately");
         string generated = Draft(item, "accept_trade");
-        owner.CommitGeneratedDocument(job, generated);
+        ApprovedGeneration(owner, job, generated);
         var document = owner.ResolveDocument(item.DocumentId);
         Test.True(item.Status == "executed" && host.TradeDuration == 14 && document.IsReadyForPublication,
             "agreed player trade executes exact duration when AI declaration publishes: " + item.Status + ":" + item.Reason);
@@ -96,7 +97,7 @@ internal static class OralDeclarationReplay
         Test.True(document.HasReachedPlayerCourt && document.HistoryResultRecorded && document.PropagationCompleted,
             "declaration and real result reach normal court publication and canonical history");
         string[] beforeDuplicateJobs = owner.CurrentStorage.Jobs.Select(x => x.JobId).OrderBy(x => x, StringComparer.Ordinal).ToArray();
-        owner.CommitGeneratedDocument(job, generated);
+        ApprovedGeneration(owner, job, generated);
         owner.ProcessAnalyzedDocument(document, document.Intent, document.Commitment, false, "firm", 1);
         Test.True(owner.CurrentStorage.Documents.Count == 1 && host.Notices.Count == 0
             && !owner.CurrentStorage.Jobs.Any(x => x.DialogueArrangementId == item.ArrangementId)
@@ -107,7 +108,7 @@ internal static class OralDeclarationReplay
         foreach (bool provenance in new[] { true, false })
         {
             var f = Fixture(provenance ? "b" : "p", provenance);
-            f.o.CommitGeneratedDocument(f.job, Draft(f.item, "propose_trade"));
+            ApprovedGeneration(f.o, f.job, Draft(f.item, "propose_trade"));
             Test.True(f.item.Status == "published" && f.h.TradeDuration == 0
                 && f.o.ResolveRound(f.item.RoundId).PendingOffers.Count == 1,
                 "third country or legacy missing consent remains a normal open proposal");
@@ -127,13 +128,13 @@ internal static class OralDeclarationReplay
             string body = "王庭向两国臣民郑重宣布：经双方国王商议，我们已明确决定依照议定条件办理两国事务，此项决定从宣言发布之日起执行。"
                 + clause
                 + "这项公开决定为两国臣民提供明确依据，边境守军及有关官员须知悉此文并依命办理。";
-            f.o.CommitGeneratedDocument(writing, Draft(agreement, action.Item2, body));
+            ApprovedGeneration(f.o, writing, Draft(agreement, action.Item2, body));
             Test.True(agreement.Status == "executed" && f.h.Effects == 1,
                 "AI-written oral action executes once through the real Application effect owner: " + action.Item1 + ":" + agreement.Reason);
-            f.o.CommitGeneratedDocument(writing, Draft(agreement, action.Item2, body));
+            ApprovedGeneration(f.o, writing, Draft(agreement, action.Item2, body));
             Test.True(f.h.Effects == 1, "duplicate draft cannot repeat effect: " + action.Item1);
         }
-        foreach (string mutation in new[] { "intent", "target", "terms", "multiple", "short", "tag", "json" })
+        foreach (string mutation in new[] { "intent", "target", "terms", "multiple", "empty", "capacity", "tag", "internal_metric", "internal_round", "json" })
         {
             var f = Fixture(); var json = JObject.Parse(Draft(f.item, "accept_trade")); var action = (JObject)json["actions"][0];
             switch (mutation)
@@ -142,10 +143,13 @@ internal static class OralDeclarationReplay
                 case "target": action["target_kingdom_id"] = "c"; break;
                 case "terms": action["peace_terms"]["duration_days"] = 15; break;
                 case "multiple": ((JArray)json["actions"]).Add(action.DeepClone()); break;
-                case "short": json["body"] = "我方决定开放贸易。"; break;
+                case "empty": json["body"] = "   "; break;
+                case "capacity": json["body"] = new string('文', 6001); break;
                 case "tag": json["body"] = json["body"] + "[ACTION:DIPLOMACY:MAKE_TRADE:p]"; break;
+                case "internal_metric": json["body"] = json["body"] + "游戏数值"; break;
+                case "internal_round": json["body"] = json["body"] + "本回合"; break;
             }
-            f.o.CommitGeneratedDocument(f.job, mutation == "json" ? "broken" : json.ToString());
+            ApprovedGeneration(f.o, f.job, mutation == "json" ? "broken" : json.ToString());
             Test.True(f.item.Status == "deferred" && f.h.TradeDuration == 0 && f.o.CurrentStorage.Documents.Count == 0
                 && f.o.CurrentStorage.Jobs.Count == 0 && f.item.GenerationRetryAfterDay == f.h.CurrentDayValue + 1,
                 "invalid AI draft delays without template fallback, action or visible receipt: " + mutation);
@@ -162,34 +166,57 @@ internal static class OralDeclarationReplay
                 case "round": f.o.ResolveRound(f.item.RoundId).State = "closed"; break;
                 case "load": f.o.CurrentStorage.Jobs.Clear(); break;
             }
-            f.o.CommitGeneratedDocument(f.job, draft);
+            ApprovedGeneration(f.o, f.job, draft);
             Test.True(f.o.CurrentStorage.Documents.Count == 0 && f.h.TradeDuration == 0,
                 "late/stale AI completion cannot publish or fulfill: " + mutation);
         }
         var delayed = Fixture(); delayed.o.CommitFailedJob(delayed.job, "service unavailable");
         delayed.o.MaintainDialogueAndMemory();
-        Test.True(delayed.o.CurrentStorage.Jobs.Count == 0, "failed writer does not spin or instantly retry");
+        Test.True(delayed.o.CurrentStorage.Jobs.Count == 1 && delayed.job.SuspendedReason == "service unavailable"
+            && !delayed.job.IsRunning, "failed writer retains technical recovery evidence without spinning or retrying");
         delayed.h.CurrentDayValue++; delayed.o.MaintainDialogueAndMemory();
-        Test.True(delayed.o.CurrentStorage.Jobs.Count == 1, "daily bounded maintenance retries pending writing");
+        Test.True(delayed.o.CurrentStorage.Jobs.Count == 1 && delayed.job.SuspendedReason == "service unavailable", "finite retry exhaustion does not become an unbounded daily writing loop");
         var restored = JsonConvert.DeserializeObject<WorldDiplomacyDialogueArrangement>(JsonConvert.SerializeObject(item));
         var old = JsonConvert.DeserializeObject<WorldDiplomacyDialogueArrangement>("{\"ArrangementId\":\"old\"}");
         Test.True(restored.ConfirmedPlayerRulerId == "ruler_p" && old.ConfirmedPlayerRulerId == ""
             && old.GenerationRetryAfterDay == -1, "optional consent binding roundtrips; old saves cannot infer player agreement");
         var brief = Fixture(); brief.h.OralRange = (20, 80);
         brief.o.PrepareSharedRequest(brief.job);
-        brief.o.CommitGeneratedDocument(brief.job, Draft(brief.item, "accept_trade",
+        ApprovedGeneration(brief.o, brief.job, Draft(brief.item, "accept_trade",
             "我方同意与贵国缔结贸易协定，期限14日，现宣布依约实施。商人按两国规则通行，有关官员须依照双方所议条件办理。"));
-        Test.True(brief.h.TradeDuration == 14, "oral AI declarations honor the existing configured length range without another fixed minimum");
+        Test.True(brief.h.TradeDuration == 14, "oral AI declarations can use the configured preferred length range");
+        RunExpressiveLengthPreferences();
         RunYieldedCompletion();
         RunWithdrawal();
+        OralPrivacyAuthorityReplay.Run();
         NativeDiplomacyFallbackReplay.Run();
+    }
+
+    private static void RunExpressiveLengthPreferences()
+    {
+        string expressive = "你说得很重，我听见了。你先把猜疑收起来，我答应的事不会变。我们已谈妥期限14日的贸易协定，现宣布履行。";
+        Test.True(!WorldDiplomacyTextRules.TryGetImmersionViolation(expressive, out _),
+            "personal pronouns and conversational retorts are valid diplomatic expression");
+        foreach (var sample in new[] {
+            (minimum: 300, maximum: 1000, body: expressive, label: "below preferred minimum"),
+            (minimum: 20, maximum: 40, body: expressive, label: "above preferred maximum"),
+            (minimum: 20, maximum: 40, body: expressive + new string('文', 6000 - expressive.Length), label: "at storage capacity") })
+        {
+            var f = Fixture(); f.h.OralRange = (sample.minimum, sample.maximum);
+            f.o.PrepareSharedRequest(f.job);
+            ApprovedGeneration(f.o, f.job, Draft(f.item, "accept_trade", sample.body));
+            var document = f.o.ResolveDocument(f.item.DocumentId);
+            Test.True(f.item.Status == "executed" && f.h.TradeDuration == 14
+                && document?.IsReadyForPublication == true && document.Body == sample.body,
+                "expressive oral declaration preserves full prose and agreed effect " + sample.label);
+        }
     }
 
     private static void RunWithdrawal()
     {
         foreach (bool acceptedElsewhere in new[] { false, true })
         {
-            var f = Fixture("b"); f.o.CommitGeneratedDocument(f.job, Draft(f.item, "propose_trade"));
+            var f = Fixture("b"); ApprovedGeneration(f.o, f.job, Draft(f.item, "propose_trade"));
             var source = f.o.ResolveDocument(f.item.DocumentId);
             var offer = f.o.ResolveRound(f.item.RoundId).PendingOffers.Single();
             f.o.ControlOralDiplomaticCommitment("ruler_a", "a", "arrangement=" + f.item.ArrangementId + ";state=cancelled;reason=局势变化",
@@ -204,7 +231,7 @@ internal static class OralDeclarationReplay
                 && f.o.CurrentStorage.Jobs.Select(x => x.JobId).OrderBy(x => x, StringComparer.Ordinal).SequenceEqual(beforeWithdrawalJobs), "duplicate withdrawal consent keeps one AI request and does not add any job");
             if (acceptedElsewhere) offer.Status = "accepted";
             string body = "王庭现向两国臣民宣布：我们撤回此前向对方提出的贸易方案，原方案自此不再作为开放提案。此前商议不构成已经生效的贸易协定，双方也没有据此承担新的条约义务。此项决定只涉及尚未被接受的方案，不影响其他已经生效的条约。有关官员须依此宣言处理后续文书，避免再将已撤回的方案视作现行提议。";
-            f.o.CommitGeneratedDocument(writing, Draft(withdrawal, "withdraw_offer", body));
+            ApprovedGeneration(f.o, writing, Draft(withdrawal, "withdraw_offer", body));
             Test.True(acceptedElsewhere ? offer.Status == "accepted" && f.o.CurrentStorage.Documents.Count == 1
                 : offer.Status == "withdrawn" && f.item.Status == "withdrawn" && withdrawal.Status == "executed"
                     && f.o.ResolveDocument(withdrawal.DocumentId).Body == body,
@@ -230,12 +257,22 @@ internal static class OralDeclarationReplay
         public void Log(string message) { }
     }
 
+    // Downstream semantic/authority oracle: confidentiality approval is a modeled leaf.
+    // PlayerIndependentReplay drives the real isolation -> writing -> audit dispatcher.
+    private static void ApprovedGeneration(WorldDiplomacyOrchestration owner, WorldDiplomacyJob job, string raw)
+    {
+        job.Kind = "generate"; job.PrivacyApproved = true;
+        try { owner.CommitGeneratedDocument(job, raw); }
+        finally { job.PrivacyApproved = false; }
+    }
+
     private static void RunYieldedCompletion()
     {
         foreach (string change in new[] { "none", "terms", "cancel", "save" })
         {
             var f = Fixture(); string frozen = Draft(f.item, "accept_trade");
             f.o.PrepareSharedRequest(f.job);
+            f.job.Kind = "generate"; f.job.PrivacyApproved = true; // modeled audit approval for the existing late-result oracle
             var gate = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             // Worker captures only a serialized fixture reply and a gate; the
             // production completion/drain runs back on this calling thread.
@@ -245,7 +282,8 @@ internal static class OralDeclarationReplay
             if (change == "cancel") f.o.CancelUnpublishedCommitmentWork(f.item.ArrangementId, 1, "撤销");
             gate.SetResult(true);
             var result = new LlmJobResult { JobId = f.job.JobId, Content = request.GetAwaiter().GetResult(), Success = true,
-                RuntimeGeneration = change == "save" ? 6 : 7, RoundConversationRevision = f.job.RoundConversationRevision };
+                RuntimeGeneration = change == "save" ? 6 : 7, RoundConversationRevision = f.job.RoundConversationRevision,
+                OwnershipEpoch = f.job.OwnershipEpoch, SchedulingOwner = f.job.SchedulingOwner, PlayerAuthorityRulerId = f.job.PlayerAuthorityRulerId };
             var source = new CompletionSource(f.o, result);
             WorldDiplomacyCompletionApplication.Run(ref source, f.o);
             Test.True(change == "none" ? f.h.TradeDuration == 14 : f.h.TradeDuration == 0 && f.o.CurrentStorage.Documents.Count == 0,

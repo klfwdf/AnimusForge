@@ -10,7 +10,7 @@
               <Children>
                 <Widget Id="AFDialogueInput" WidthSizePolicy="Fixed" SuggestedWidth="345" HeightSizePolicy="Fixed" SuggestedHeight="211" HorizontalAlignment="Right" VerticalAlignment="Bottom" IsVisible="@IsCustomAnswerVisible" DoNotPassEventsToChildren="false">
                   <Children>
-                    <ScrollablePanel Id="AFDialogueInputScroll" MarginLeft="10" MarginRight="35" MarginTop="10" MarginBottom="10" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="AFDialogueInputClip" InnerPanel="AFDialogueInputClip\AFDialogueInputEditor" MouseScrollAxis="Vertical" VerticalScrollbar="..\AFDialogueInputBar" AutoHideScrollBars="true" UpdateScrollbarVisibility="true" AutoAdjustScrollbarHandleSize="true">
+                    <ScrollablePanel Id="AFDialogueInputScroll" MarginLeft="10" MarginRight="48" MarginTop="10" MarginBottom="10" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="AFDialogueInputClip" InnerPanel="AFDialogueInputClip\AFDialogueInputEditor" MouseScrollAxis="Vertical" VerticalScrollbar="..\AFDialogueInputBar" AutoHideScrollBars="true" UpdateScrollbarVisibility="true" AutoAdjustScrollbarHandleSize="true">
                       <Children>
                         <Widget Id="AFDialogueInputClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                           <Children>
@@ -19,13 +19,14 @@
                         </Widget>
                       </Children>
                     </ScrollablePanel>
-                    <ScrollbarWidget Id="AFDialogueInputBar" WidthSizePolicy="Fixed" SuggestedWidth="6" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="10" MarginTop="10" MarginBottom="10" AlignmentAxis="Vertical" Handle="AFDialogueInputHandle" MinValue="0" MaxValue="100" IsVisible="false">
+                    <ScrollbarWidget Id="AFDialogueInputBar" WidthSizePolicy="Fixed" SuggestedWidth="6" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="10" MarginTop="44" MarginBottom="10" AlignmentAxis="Vertical" Handle="AFDialogueInputHandle" MinValue="0" MaxValue="100" IsVisible="false">
                       <Children>
                         <Widget Id="AFDialogueInputHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" MinHeight="18" Sprite="afdui_scroll_handle" />
                       </Children>
                     </ScrollbarWidget>
-                    <TextWidget Id="AFDialogueInputPlaceholder" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="35" MarginTop="10" MarginBottom="10" Text="@InputPlaceholderText" Brush="ConversationItem.Text" Brush.FontSize="22" Brush.FontColor="#6B4A28B8" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" IsVisible="@IsInputEmpty" DoNotAcceptEvents="true" />
-                    <TextWidget Id="AFDialogueInputHint" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="10" MarginRight="15" MarginTop="44" IsVisible="@IsInputEmpty" Text="@InputHintText" Brush="ConversationItem.Text" Brush.FontSize="17" Brush.FontColor="#72563BFF" DoNotAcceptEvents="true" />
+                    <TextWidget Id="AFDialogueInputPlaceholder" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="48" MarginTop="10" MarginBottom="10" Text="@InputPlaceholderText" Brush="ConversationItem.Text" Brush.FontSize="22" Brush.FontColor="#6B4A28B8" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" IsVisible="@IsInputEmpty" DoNotAcceptEvents="true" />
+                    <TextWidget Id="AFDialogueInputHint" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="10" MarginRight="48" MarginTop="44" IsVisible="@IsInputEmpty" Text="@InputHintText" Brush="ConversationItem.Text" Brush.FontSize="17" Brush.FontColor="#72563BFF" DoNotAcceptEvents="true" />
+                    <AnimusForgeConversationRewriteButtonWidget Id="AFDialogueRewrite" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="32" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="6" MarginTop="4" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteRewrite" IsEnabled="@CanRewrite" />
                   </Children>
                 </Widget>
               </Children>
@@ -42,6 +43,7 @@
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@ConversationHistoryText" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
+
                 <ButtonWidget Id="AFDialogueGift" WidthSizePolicy="Fixed" SuggestedWidth="74" HeightSizePolicy="Fixed" SuggestedHeight="32" MarginLeft="6" Command.Click="ShowGiveShowMenu" DoNotPassEventsToChildren="true">
                   <Children>
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@GiveShowText" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />

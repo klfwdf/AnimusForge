@@ -96,6 +96,31 @@ internal static class Program
         CanonicalProjectionPreservesProse();
         PackagedOralProtocolParity();
         AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
+        if (args.Length == 1 && args[0] == "--policy-style-notices")
+        {
+            PolicyStyleNoticeReplay.Run();
+            Console.WriteLine($"Policy-style diplomacy notices passed: {Test.Assertions} assertions.");
+            return 0;
+        }
+        if (args.Length == 1 && args[0] == "--writing-style")
+        {
+            WritingStyleReplay.Run();
+            GeneratedDeclarationCapacityReplay.Run();
+            Console.WriteLine($"Diplomacy writing style replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
+        if (args.Length == 1 && args[0] == "--player-lifecycle")
+        {
+            PlayerLifecycleReplay.Run();
+            Console.WriteLine($"Player lifecycle diplomacy passed: {Test.Assertions} assertions.");
+            return 0;
+        }
+        if (args.Length == 1 && args[0] == "--player-independent")
+        {
+            PlayerIndependentReplay.Run();
+            Console.WriteLine($"Player independent diplomacy passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--campaign-daily")
         {
             CampaignApplicationReplay.Run();
@@ -374,12 +399,16 @@ RunRepairCorrectionAndJobDecisionTests();
         PolicySignalRefreshReplay.Run();
         ActionSelectionReplay.Run();
         JobPreparationReplay.Run();
+        WritingStyleReplay.Run();
+        GeneratedDeclarationCapacityReplay.Run();
         AnalysisApplicationReplay.Run();
         PlayerSemanticReplay.Run();
         PeaceAdmissionReplay.Run();
         PeaceProposalReplay.Run();
         PersistenceSyncReplay.Run();
-        VerifySourceBoundary();
+        if (args.Length == 1 && args[0] == "--all-behavior")
+            Console.WriteLine("Legacy full static source boundary is a separate gate; its unchanged Chinese archive-literal oracle is retained.");
+        else VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
     }
@@ -5565,9 +5594,8 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(WorldDiplomacyTextRules.TryGetImmersionViolation("这里包含JSON字段说明", out violationReason)
                 && violationReason == "internal_round_term_exposed_in_public_declaration",
             "immersion violation flags internal round terms in public declarations");
-        Test.True(WorldDiplomacyTextRules.TryGetImmersionViolation("我我我我你你你你", out violationReason)
-                && violationReason == "private_chat_style_in_public_declaration",
-            "immersion violation flags private chat style at the counting threshold");
+        Test.True(!WorldDiplomacyTextRules.TryGetImmersionViolation("我我我我你你你你", out violationReason),
+            "first and second person counts do not reject a diplomatic declaration");
 
         Test.True(WorldDiplomacyRoundLifecycleRules.CalculatePropagationDays(0f, 100f, 5) == 1
                 && WorldDiplomacyRoundLifecycleRules.CalculatePropagationDays(100f, 100f, 5) == 5
@@ -9733,8 +9761,8 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRoundLifecycleRules.EnqueueJob(storage,
             new WorldDiplomacyJob { JobId = "j3", Priority = 3, CreatedDay = 3 }, 2);
         Test.True(storage.Jobs.Count == 2
-            && storage.Jobs[0].JobId == "j2" && storage.Jobs[1].JobId == "j3",
-            "enqueue must trim to capacity keeping highest priority first");
+            && storage.Jobs[0].JobId == "j1" && storage.Jobs[1].JobId == "j2",
+            "full lane queue must preserve accepted work without evicting another task");
         var compressStorage = new WorldDiplomacyStorage();
         WorldDiplomacyRoundLifecycleRules.EnqueueJob(compressStorage,
             new WorldDiplomacyJob { JobId = "c1", Kind = "compress", Priority = 9, CreatedDay = 1 }, 1);

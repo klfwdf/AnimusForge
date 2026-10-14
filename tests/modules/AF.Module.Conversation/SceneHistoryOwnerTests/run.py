@@ -2,9 +2,9 @@ from pathlib import Path
 import sys,importlib.util,argparse,subprocess,json,hashlib
 R=Path(__file__).resolve().parents[4];H=Path(__file__).parent
 sys.path.insert(0,str(R/'tests'))
-from output_isolation import minimal_test_environment
+from output_isolation import minimal_test_environment,resolve_dotnet
 s=importlib.util.spec_from_file_location('ex',R/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(s);s.loader.exec_module(ex)
-p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path,required=True);args=p.parse_args();out=args.run_root.resolve();out.relative_to(R);out.mkdir(parents=True,exist_ok=True)
+p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path,required=True);p.add_argument('--rewrite-only',action='store_true');args=p.parse_args();out=args.run_root.resolve();out.relative_to(R);out.mkdir(parents=True,exist_ok=True)
 host=(R/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 for item in json.loads((H/'TerminalConsumers.json').read_text(encoding='utf-8')):
     if 'exact' in item:
@@ -32,7 +32,8 @@ import re
 assert len(re.findall(r'\bentry\s*=',append_body))==1,'same entry must be stamped and passed to session owner'
 print('PASS 48 actual terminal history consumers; sole private scene stores; existing native SessionOwner append')
 main=(R/'src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs').read_text(encoding='utf-8-sig');utils=(R/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutUtils.cs').read_text(encoding='utf-8-sig')
-program=(H/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@CREATE@@',ex.declaration(main,'internal static object CreateCourierChatMessage('))
+system_prompt=re.search(r'internal static string BuildConversationSystemPrompt\([^)]*\)\s*=>[^;]+;',main).group()
+program=(H/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@CREATE@@',ex.declaration(main,'internal static object CreateCourierChatMessage(')+system_prompt)
 for placeholder,signature in [('@@METADATA@@','public static string StripConversationMetadataPrefix('),('@@STRIP@@','public static string StripNamePrefixedLineSafely('),('@@SPLIT@@','public static bool TrySplitNamePrefixedLineSafely(')]:program=program.replace(placeholder,ex.declaration(utils,signature))
 presentation=H/'PresentationHarness.cs.txt'
 assert presentation.is_file(),'actual presentation consumer fixture is required'
@@ -47,15 +48,27 @@ paths=['src/modules/AF.Module.Conversation/Internal/History/SceneConversationHis
 paths.append('src/modules/AF.Module.Conversation/Internal/ConversationRuntimeTexts.cs')
 paths.append('src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs')
 paths.append('src/modules/AF.Module.Prompt/Composition/MemorySystemFactProjection.cs')
+paths.append('src/modules/AF.Module.Conversation/Internal/History/ConversationRewriteTurn.cs')
+paths.extend(['src/AF.GameAdapter.Bannerlord/Composition/Gathering/NobleGatheringTextProjection.cs','src/AF.GameAdapter.Bannerlord/Composition/Gathering/NobleGatheringUiText.cs','src/modules/AF.Module.Diplomacy/Presentation/DiplomacyCompatibilityTexts.cs','src/modules/AF.Module.Diplomacy/Presentation/DiplomacyMiscPromptTexts.cs','src/modules/AF.Module.WorldMap/Runtime/WorldMapFactPromptProjection.cs','src/modules/AF.Module.WorldMap/Runtime/WorldMapSourceTexts.cs'])
+(out/'ControlledUnusedLocalization.cs').write_text('namespace TaleWorlds.Localization { public sealed class TextObject { public TextObject(string text) { throw new System.InvalidOperationException("Live UI localization is outside history owner replay"); } public void SetTextVariable(string key,object value) { throw new System.InvalidOperationException("Live UI localization is outside history owner replay"); } } }',encoding='utf-8')
 (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(R/x)+'" />' for x in paths)+'</ItemGroup></Project>',encoding='utf-8')
 (out/'RuntimeResourcePath.cs').write_text('namespace AnimusForge; internal static class AnimusForgeModulePaths { internal static string GetModuleDataFilePath(string name) => System.IO.Path.Combine(System.AppContext.BaseDirectory, name); }',encoding='utf-8')
 resources=R/'content/modules/AF.Module.Conversation/ModuleData'
 prompt_res=R/'content/modules/AF.Module.Prompt/ModuleData'
-items='<ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+str(R/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll')+'</HintPath></Reference><EmbeddedResource Include="'+str(resources/'ConversationRuntimeCompatibility.json')+'"><LogicalName>AnimusForge.Conversation.RuntimeCompatibility.json</LogicalName><WithCulture>false</WithCulture></EmbeddedResource><Content Include="'+str(resources/'ConversationRuntimePrompts.json')+'"><Link>ConversationRuntimePrompts.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content><EmbeddedResource Include="'+str(prompt_res/'PromptCompatibility.json')+'"><LogicalName>AnimusForge.Prompt.Compatibility.json</LogicalName><WithCulture>false</WithCulture></EmbeddedResource><Content Include="'+str(prompt_res/'PromptComposerTexts.zh-CN.json')+'"><Link>PromptComposerTexts.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content></ItemGroup>'
+d=resolve_dotnet(R)
+newtonsoft=d.parent/'sdk/8.0.425/Newtonsoft.Json.dll'
+if not newtonsoft.is_file():
+ candidates=sorted((d.parent/'sdk').glob('8.*/Newtonsoft.Json.dll'))
+ if candidates:newtonsoft=candidates[-1]
+assert newtonsoft.is_file(),'Missing installed SDK Newtonsoft.Json.dll'
+items='<ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+str(newtonsoft)+'</HintPath></Reference><EmbeddedResource Include="'+str(resources/'ConversationRuntimeCompatibility.json')+'"><LogicalName>AnimusForge.Conversation.RuntimeCompatibility.json</LogicalName><WithCulture>false</WithCulture></EmbeddedResource><Content Include="'+str(resources/'ConversationRuntimePrompts.json')+'"><Link>ConversationRuntimePrompts.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content><EmbeddedResource Include="'+str(prompt_res/'PromptCompatibility.json')+'"><LogicalName>AnimusForge.Prompt.Compatibility.json</LogicalName><WithCulture>false</WithCulture></EmbeddedResource><Content Include="'+str(prompt_res/'PromptComposerTexts.zh-CN.json')+'"><Link>PromptComposerTexts.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content></ItemGroup>'
+for relative in ['content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json','content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.json','content/modules/AF.Module.WorldMap/ModuleData/WorldMapCompatibility.json']:
+ items=items.replace('</ItemGroup>','<Content Include="'+str(R/relative)+'"><Link>'+Path(relative).name+'</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content></ItemGroup>')
 (out/'Tests.csproj').write_text((out/'Tests.csproj').read_text(encoding='utf-8').replace('</Project>',items+'</Project>'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
-d=R/'local/dotnet/8.0.425/dotnet.exe'
-try:r=subprocess.run([str(d),'run','--project',str(out/'Tests.csproj'),'-c','Release'],cwd=out,env=minimal_test_environment(d,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
+env=minimal_test_environment(d,out)
+if args.rewrite_only:env['AF_TEST_REWRITE_ONLY']='1'
+try:r=subprocess.run([str(d),'run','--project',str(out/'Tests.csproj'),'-c','Release'],cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
 except subprocess.TimeoutExpired as error:
     output=(error.stdout or b'')+(error.stderr or b'')
     if isinstance(output,bytes):output=output.decode('utf-8',errors='replace')

@@ -39,20 +39,20 @@ internal static class NativeDiplomacyFallbackReplay
         var receipts = new List<string>();
         DiplomacyOralTagApplication.Process(source, ref body, receipts);
         Test.True(body == "same literal {NAME} {0} $1", "receipt collection never rewrites same-text model body");
-        Test.True(receipts.SequenceEqual(new[] { state.Result, state.Result }), "package receipts preserve order and literal placeholders");
+        Test.True(receipts.Count == 0, "diagnostic receipts never become NPC prose receipts");
         string originalBody = body;
         string packageText = DiplomacyOralTagApplication.ComposeReceiptText(body, receipts);
         var projected = new List<string>();
         string uiText = DiplomacyOralTagApplication.ComposeReceiptText(body, receipts, status => { projected.Add(status); return "UI:" + status; });
-        Test.True(packageText == originalBody + "\n" + state.Result + "\n" + state.Result, "history composition preserves complete package receipts");
-        Test.True(uiText == originalBody + "\nUI:" + state.Result + "\nUI:" + state.Result && projected.SequenceEqual(receipts), "only owned receipts reach UI projector; same-text model body remains unchanged");
+        Test.True(packageText == originalBody, "history composition keeps NPC prose without system receipts");
+        Test.True(uiText == originalBody && projected.Count == 0, "system receipts never reach the NPC prose UI projector");
         Test.True(body == originalBody && receipts.All(status => status == state.Result), "presentation never mutates body or receipts");
 
         Test.True(state.Calls.SequenceEqual(new[] { "peace:one", "trade:two" }), "receipt collection executes each action exactly once");
         body = "before [ACTION:DIPLOMACY:MAKE_PEACE:middle] after";
         receipts.Clear(); state.Calls.Clear();
         DiplomacyOralTagApplication.Process(source, ref body, receipts);
-        Test.True(body == "before  after" && receipts.SequenceEqual(new[] { state.Result }), "system shout embedded tag becomes separate receipt without dropping body");
+        Test.True(body == "before  after" && receipts.Count == 0, "system shout embedded tag is executed and hidden without adding prose receipts");
         state.Result = ""; state.Calls.Clear();
 
         string Run(string tag){string text="答应了 [ACTION:DIPLOMACY:"+tag+"]";DiplomacyOralTagApplication.Process(source,ref text);Test.True(!text.Contains("[ACTION:"),"native/formal routing hides internal tag");return text;}

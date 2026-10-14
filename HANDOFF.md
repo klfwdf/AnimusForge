@@ -1,3 +1,17 @@
+# 当前交接：口头外交保密资料修复（2026-10-15，OFFLINE_VERIFIED / PUSH_PENDING）
+
+- 用户已授权修复并推送；交付基线8a3aa6698，检查点10485352f，产品0c36af2cb，本地同包844630ecf。保密摘要后由程序恢复权威执行资料，AI只拟宣言；既有审查同时检查保密与正文条款一致性，发布前重验并只执行一次。精确旧故障、未发布未执行的有效挂起约定可恢复一次，不新增系统回执。
+- CN/EN口头专项各329、玩家链路各604、存档分块及目录门禁、双API/Bootstrap/双Coup/注册门禁PASS；全量中文快捷入口断言在基线和候选同样FAIL，保留未解决项。真实provider/实机/旧sav未验；未安装、打包或改玩家存档。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-privacy-authority-20261015)；[已核源码范围](docs/architecture/af-framework-code-scope.md#oral-privacy-authority-20261015)。本地receipt.json及push-receipt.json位于artifacts/oral-privacy-authority-20261015。仅推送本次隔离交付，其他主线分叉历史与未提交设计文档保持本地。
+
+# Current delivery: player diplomacy and dialogue rewrite (2026-10-15)
+
+Player diplomacy now has independent event/request ownership, explicit continuation and reply routing, confidentiality checks, and notice-based response deadlines. The newest completed native/scene dialogue turn can be undone and edited while confirmed game actions remain recorded. Rewrite controls use the corner icon; diplomacy notices display complete yellow text, declaration length is advisory with new 100–300 defaults, and retired settings/legacy runtime imports are removed.
+
+This source delivery retains the existing terminal/MCM, bounded market maintenance, captivity dialogue and diplomacy receipt isolation fixes. Both Bannerlord implementations, Bootstrap, coup seams and registration passed on the identical production source. Focused CN/EN and lifecycle replays passed; live game, provider, rendering, audio and user saves remain unverified. No deployment or release packages are included.
+
+See [delivery evidence and scope](docs/animusforge-refactoring-and-repository-reorganization-plan.md#local-feature-publication-20261015) and [source map](docs/architecture/af-framework-code-scope.md#local-feature-publication-20261015).
+
 # 当前交接：玩家经历与近况驱动主动接触（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品2968fc462、加载收尾bc8407e07、检查点5b4694e78：新增履历交流/近况反应，接地图、原生/场景开场、同伴与主动来信；旧30类保留，CN/EN各32类。复用现有记录，无新增规划模型请求；跨渠道去重、来源版本复核，材料不写成新AFEF。

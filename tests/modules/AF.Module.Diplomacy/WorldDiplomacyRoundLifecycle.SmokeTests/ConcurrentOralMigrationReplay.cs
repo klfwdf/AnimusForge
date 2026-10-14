@@ -20,7 +20,7 @@ internal static class ConcurrentOralMigrationReplay
         internal readonly List<string> Notices = new();
         internal readonly List<string> Facts = new();
         internal bool Dead, Cycle, Partial;
-        internal int Effects, Counter, TradeDuration;
+        internal int Effects, Counter, TradeDuration, TradeExecutions;
         public override int MaxPendingJobs() => 24;
         public override int MaxStoredDocuments() => 2000;
         public override int RoundTargetDurationDays() => 15;
@@ -114,7 +114,7 @@ internal static class ConcurrentOralMigrationReplay
         public int EscalationPrestigeReward => 0;
         public int WarPrestigeReward => 0;
         public void Log(string message) { }
-        public IWorldDiplomacyWarAdmissionPort CaptureWarAdmission(string first, string second) => new ActionSelectionReplay.Admission(false);
+        public IWorldDiplomacyWarAdmissionPort CaptureWarAdmission(string first, string second) => new ActionSelectionReplay.Admission(_h.OralEffectPortsEnabled);
         public IWorldDiplomacyNoActionPort CaptureNoActionPort(string author, string target) => new ActionSelectionReplay.NoActionPort(author, target);
     }
     private sealed class HistoryPort : IWorldDiplomacyHistoryCapturePort
@@ -141,7 +141,7 @@ internal static class ConcurrentOralMigrationReplay
         { if (!_h.OralEffectPortsEnabled) return new(false, "unused"); _h.Effects++; return new(true, "alliance applied"); }
         public WorldDiplomacyOfferActionReceipt ExecuteTrade(string first, string second) => new(false, "unused");
         public WorldDiplomacyOfferActionReceipt ExecuteTrade(string first, string second, int durationDays)
-        { _h.TradeDuration = durationDays; return new(true, "trade applied"); }
+        { _h.TradeExecutions++; _h.TradeDuration = durationDays; return new(true, "trade applied"); }
         public WorldDiplomacyOfferActionReceipt ReadPeace(string first, string second, WorldDiplomacyPeaceTerms terms) => new(false, "unused");
         public bool HasTakenEffect(string intent, string first, string second) => false;
         public void Log(string value) { }
@@ -232,10 +232,10 @@ internal static class ConcurrentOralMigrationReplay
             && a.PlayerResponses.Single(x => x.SourceDocumentId == "later_ask").Status == "pending", "new unseen ask never receives credit from frozen old request");
 
         o.CurrentStorage.RequestBudget.AdvanceDay(12);
-        for (int i = 0; i < 8; i++) Test.True(o.CurrentStorage.RequestBudget.TryAdmit(false), "shared normal/oral quota permits eight actual sends");
-        Test.True(!o.CurrentStorage.RequestBudget.TryAdmit(false), "four player requests reserved");
-        for (int i = 0; i < 4; i++) Test.True(o.CurrentStorage.RequestBudget.TryAdmit(true), "player reserve remains available");
-        Test.True(!o.CurrentStorage.RequestBudget.TryAdmit(true), "total actual sends bounded at twelve");
+        for (int i = 0; i < 12; i++) Test.True(o.CurrentStorage.RequestBudget.TryAdmit(false), "ordinary NPC bank permits twelve actual sends");
+        Test.True(!o.CurrentStorage.RequestBudget.TryAdmit(false), "ordinary bank ends at twelve without player reserve");
+        for (int i = 0; i < 4; i++) Test.True(o.CurrentStorage.RequestBudget.TryAdmit(true), "independent player bank remains available");
+        Test.True(o.CurrentStorage.RequestBudget.TryAdmit(true), "player bank has no daily ceiling");
         o.CurrentStorage.RequestBudget.AdvanceDay(12); Test.True(o.CurrentStorage.RequestBudget.Started == 12, "pause and repeated same day do not refill");
         var restored = JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(o.CurrentStorage));
         var (_, reload) = Fixture(); reload.ReplaceStorage(restored);
@@ -249,7 +249,8 @@ internal static class ConcurrentOralMigrationReplay
         Test.True(!o.RequestLeases.TryRelease(bJob.JobId, 4, bLease.Attempt), "old generation cannot release current attempt");
         Test.True(!o.RequestLeases.TryRelease(bJob.JobId, 5, bLease.Attempt + 1), "wrong attempt cannot release current request");
         bJob.RoundConversationRevision = a.ConversationRevision;
-        var completion = new LlmJobResult { Success = true, RequestAttempt = bJob.RequestAttempt, RoundConversationRevision = a.ConversationRevision };
+        var completion = new LlmJobResult { Success = true, RequestAttempt = bJob.RequestAttempt, RoundConversationRevision = a.ConversationRevision,
+            OwnershipEpoch = bJob.OwnershipEpoch, SchedulingOwner = bJob.SchedulingOwner, PlayerAuthorityRulerId = bJob.PlayerAuthorityRulerId };
         c.ConversationRevision++;
         Test.True(o.AdmitCompletion(bJob, completion), "unrelated event change does not invalidate current event output");
         a.ConversationRevision++;

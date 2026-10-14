@@ -7,6 +7,28 @@ var owner=new NativeConversationSessionOwner(()=>++next,2);
 int count=0;
 void Check(bool condition,string name) { if(!condition) throw new Exception(name); Console.WriteLine("PASS "+name);count++; }
 AnimusForgeDialogueHistoryEntry Entry(long seq,string text,string kind="player",int day=1) => new AnimusForgeDialogueHistoryEntry { EventSequence=seq,Text=text,Kind=kind,GameDayIndex=day,Speaker="speaker" };
+var rewriteOwner=new NativeConversationSessionOwner(()=>++next,50);
+rewriteOwner.Append("rewrite",Entry(501,"repeat"));rewriteOwner.Append("rewrite",Entry(502,"repeat","npc"));rewriteOwner.MarkDialog("rewrite","previous-native");
+var rewrite=new ConversationRewriteTurn("repeat");
+using(ConversationRewriteTurn.CaptureScope(rewrite)) {
+ rewriteOwner.Append("rewrite",Entry(503,"repeat"));rewriteOwner.Append("rewrite",Entry(504,"repeat","npc"));
+ rewriteOwner.Append("rewrite",Entry(505,"[AFEF NPC行为补充] retained","fact"));rewriteOwner.MarkDialog("rewrite","new-native");
+}
+rewriteOwner.StampPromptSessionForEvent("rewrite",503,"new-prompt-session");
+Check(!rewrite.IsCompleted&&!rewrite.TryRewrite(out _),"rewrite-pending-not-available");rewrite.Complete();
+Check(rewrite.IsCompleted&&rewrite.TryRewrite(out _),"rewrite-current-turn-applied");
+Check(rewriteOwner.GetTail("rewrite",20).Select(x=>x.EventSequence).SequenceEqual(new long[]{501,502,505}),"rewrite-exact-duplicate-records-keeps-prior-cache-and-facts");
+Check(!rewriteOwner.TryMarkDialog("rewrite","previous-native"),"rewrite-restores-prior-native-dedup");
+Check(!rewrite.TryRewrite(out _)&&rewrite.PlayerText=="repeat","rewrite-single-use-and-input-retained");
+var rejected=new ConversationRewriteTurn("player");
+using(ConversationRewriteTurn.CaptureScope(rejected)) {rewriteOwner.Append("changed",Entry(510,"player"));rewriteOwner.Append("changed",Entry(511,"reply","npc"));}
+rejected.Complete();rewriteOwner.SyncDay("changed",1,new[]{Entry(511,"reply","npc")},new[]{Entry(0,"manual-edit","npc")},completeDaySnapshot:false);
+Check(!rejected.TryRewrite(out _)&&rewriteOwner.GetTail("changed",20).Count==2,"rewrite-edited-reply-rejects-all-with-player-preserved");
+var incomplete=new ConversationRewriteTurn("player");using(ConversationRewriteTurn.CaptureScope(incomplete))rewriteOwner.Append("incomplete",Entry(520,"player"));incomplete.Complete();
+Check(!incomplete.IsCompleted&&!incomplete.TryRewrite(out _),"rewrite-failed-player-only-turn-unavailable");
+var cancelled=new ConversationRewriteTurn("player");using(ConversationRewriteTurn.CaptureScope(cancelled)){rewriteOwner.Append("cancelled",Entry(530,"player"));rewriteOwner.Append("cancelled",Entry(531,"reply","npc"));}cancelled.Complete();
+System.Threading.Tasks.Task.Run(()=>cancelled.Invalidate("test-cancel")).GetAwaiter().GetResult();
+Check(!cancelled.TryRewrite(out _)&&rewriteOwner.GetTail("cancelled",20).Count==2,"rewrite-worker-cancellation-does-not-mutate-owner");
 owner.Append("hero",Entry(1,"old"));owner.Append("hero",Entry(2,"fact","fact"));owner.Append("hero",Entry(3,"two"));owner.Append("hero",Entry(4,"three"));
 Check(owner.Snapshot("hero",1).Select(x=>x.Text).SequenceEqual(new[]{"fact","three"}),"facts-outside-normal-budget");
 var snapshot=owner.GetTail("hero",20);snapshot[0].Text="mutated";Check(owner.GetTail("hero",20)[0].Text=="fact","snapshot-detached");

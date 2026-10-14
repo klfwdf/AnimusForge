@@ -1,4 +1,4 @@
-"""Common prompt localization without changing configuration/migration bytes."""
+"""Common prompt localization and style preferences preserve migration identities."""
 from pathlib import Path
 import re
 import json
@@ -27,7 +27,9 @@ for suffix, cn, english in (
     ('PreferenceGuard', 'DefaultWorldDiplomacyPreferenceGuard', 'EnglishWorldDiplomacyPreferenceGuard'),
 ):
     key = 'AF_DIP_Prompt_' + suffix
-    assert zh[key] == raw_defaults[cn] == constant(baseline, cn), key + ': original Chinese bytes preserved outside active package defaults'
+    assert raw_defaults[cn] == constant(baseline, cn), key + ': original Chinese migration bytes preserved'
+    if suffix == 'DefaultPreference':
+        assert zh[key] == raw_defaults[cn], key + ': default strategic preference preserved'
     assert en[key] == constant(helper, english) and not HAN.search(en[key]), key + ': English fallback'
     protocol = r'(?<![A-Za-z0-9_])(?:MODE=[A-Z_]+|statement|v25)(?![A-Za-z0-9_])'
     assert set(re.findall(protocol, zh[key])) == set(re.findall(protocol, en[key])), key
@@ -53,7 +55,14 @@ for filename, package in (('McmPromptDefaults.zh-CN.json', zh), ('McmPromptDefau
         assert defaults[name] == package['AF_DIP_Prompt_' + suffix], (filename, name)
         assert 'private static string ' + name + ' => McmPromptDefaults.Get("' + name + '");' in settings
         assert 'private static string Source' + name + ' => McmPromptDefaults.Raw("' + name + '");' in settings
-assert raw == raw_defaults['DefaultWorldDiplomacyContractCore'] + '\n' + zh['AF_DIP_Prompt_PreferenceSection'] + '\n' + raw_defaults['DefaultWorldDiplomacyPreference'] + '\n' + raw_defaults['DefaultWorldDiplomacyPreferenceGuard']
+assert zh['AF_DIP_Prompt_CommonCore'] != raw_defaults['DefaultWorldDiplomacyContractCore']
+assert zh['AF_DIP_Prompt_PreferenceGuard'] != raw_defaults['DefaultWorldDiplomacyPreferenceGuard']
+assert '自定义文风优先于默认写法' in raw
+assert 'MODE=DECLARE的正文篇幅是建议，COMPACT的压缩预算仍须遵守' in raw
+assert 'Declaration body length is a preference; COMPACT compression budgets remain binding.' in en['AF_DIP_Prompt_CommonCore']
+for package in (zh, en):
+    core = package['AF_DIP_Prompt_CommonCore']
+    assert '不是君主私聊' not in core and 'not private ruler chat' not in core
 
 host_path = 'src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs'
 host = (ROOT / host_path).read_text(encoding='utf-8-sig')
@@ -85,6 +94,10 @@ assert restored_host.count('" " + "统治者"') == 1
 restored_host = restored_host.replace('" " + "统治者"', '" 统治者"')
 assert restored_host.count('using AnimusForge;\n') == 1
 restored_host = restored_host.replace('using AnimusForge;\n', '', 1)
+# The new writing contract invalidates queued prompts without changing host policy.
+assert restored_host.count('private const int DiplomacyPromptContractVersion = 30;') == 1
+restored_host = restored_host.replace('private const int DiplomacyPromptContractVersion = 30;',
+                                      'private const int DiplomacyPromptContractVersion = 29;', 1)
 assert normalize(restored_host) == normalize(host_baseline), 'whole host policy/order/source bytes changed beyond reviewed prompt localization'
 
-print('PASS common diplomacy contract: 4 paired resources, raw settings/public API preserved, single live host binding, custom preference retention; compiled replay NOT RUN')
+print('PASS common diplomacy contract: paired resources, legacy migration identities and default strategic preference preserved, custom style priority and suggested declaration length, single live host binding; compiled replay NOT RUN')

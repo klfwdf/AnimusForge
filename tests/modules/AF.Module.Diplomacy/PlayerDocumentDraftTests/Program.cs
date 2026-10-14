@@ -81,10 +81,15 @@ internal static class Program
         Test.That(messages.Count == 2 && (string)messages[1]["content"] == userHeader + "与瓦兰迪亚议和", "Only current player material");
         string system = (string)messages[0]["content"];
         Test.That(system.Contains(preferenceHeader + "简明冷峻"), "Shared preference verbatim");
-        Test.That(system.Contains(english ? "about 120" : "约120字") && system.Contains(english ? "Expand a title" : "须扩写")
-            && system.Contains(english ? "take precedence" : "篇幅要求优先")
-            && system.IndexOf(english ? "[Length requirements for this draft]" : "【本次篇幅要求】", StringComparison.Ordinal)
-                > system.IndexOf("简明冷峻", StringComparison.Ordinal), "Target and expansion take precedence over brevity preference");
+        Test.That(system.Contains(english ? "about 120" : "约120字")
+            && system.Contains(english ? "Simple replies may be shorter" : "简单答复可以更短")
+            && system.Contains(english ? "player writing instructions and clear meaning take precedence" : "玩家写作要求与清楚表达优先")
+            && !system.Contains(english ? "take precedence over brevity" : "篇幅要求优先"),
+            "Suggested length permits short answers and preserves complete terms and player instructions");
+        Test.That(system.Contains(DiplomacyMiscPromptTexts.GetRequired("Declaration_DefaultStyle"))
+            && system.IndexOf(DiplomacyMiscPromptTexts.GetRequired("Declaration_DefaultStyle"), StringComparison.Ordinal)
+                < system.IndexOf(preferenceHeader, StringComparison.Ordinal),
+            "Shared default style reaches actual scribe system before the player's preference");
         Test.That(messages[0]["content"].ToString().Contains(english ? "40 to 200" : "40—200") && messages[0]["content"].ToString().Contains(english ? "forbidden from adding" : "禁止自行添加"), "Length and authorship guard");
         if (english)
             Test.That(!System.Text.RegularExpressions.Regex.IsMatch(system.Replace("简明冷峻", ""), "[\\u3400-\\u9fff]"), "English package fixed system prose has no Chinese text; captured player preference is opaque");

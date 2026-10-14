@@ -2352,7 +2352,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		string value = PrepareNpcReplyForActionPostprocess(text);
 		if (!LooksLikeApiError(value))
 		{
-			value = CourierVisibleLetterSanitizer.Clean(value);
+			value = CourierVisibleLetterSanitizer.CleanNpcLetter(value);
 		}
 		return value;
 	}
@@ -2365,7 +2365,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		value = StripCourierActionTags(value).Trim();
 		if (!LooksLikeApiError(value))
 		{
-			value = CourierVisibleLetterSanitizer.Clean(value);
+			value = CourierVisibleLetterSanitizer.CleanNpcLetter(value);
 		}
 		if (!string.IsNullOrWhiteSpace(value) && value != ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0427") && value != ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0428") && value != ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0429"))
 		{
@@ -2374,7 +2374,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		string fallback = string.IsNullOrWhiteSpace(session?.InboundFallbackLetter) ? (session?.LetterText ?? "").Trim() : session.InboundFallbackLetter.Trim();
 		if (!string.IsNullOrWhiteSpace(fallback))
 		{
-			fallback = CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(fallback));
+			fallback = CourierVisibleLetterSanitizer.CleanNpcLetter(StripCourierActionTags(fallback));
 			if (!string.IsNullOrWhiteSpace(fallback))
 			{
 				return fallback;

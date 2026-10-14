@@ -54,6 +54,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		ScenePlayerShoutRequest request, Action<Action> runWithObservationScope, SceneGroupReceipt receipt = null)
 	{
 		await WaitForScenePostprocessGateAsync("before_player_shout_pipeline");
+		ConversationRewriteTurn rewriteTurn = null;
 		Task groupTask = await _dispatcher.RunAsync("scene_player_input", "player", request.TargetingContext.PrimaryAgentIndex, () =>
 		{
 			if (!IsScenePlayerShoutRequestCurrent(request))
@@ -62,7 +63,11 @@ internal sealed partial class SceneConversationSessionRuntime
 				return (Task)null;
 			}
 			Task startedGroup = null;
-			Action process = () => startedGroup = ProcessCurrentScenePlayerShout(shoutText, extraFact, forcedPrimaryAgentIndex, request, receipt);
+			Action process = () =>
+			{
+				startedGroup = ProcessCurrentScenePlayerShout(shoutText, extraFact, forcedPrimaryAgentIndex, request, receipt);
+				rewriteTurn = _sceneRewriteTurn;
+			};
 			if (runWithObservationScope == null)
 			{
 				process();
@@ -77,6 +82,8 @@ internal sealed partial class SceneConversationSessionRuntime
 		if (groupTask != null)
 		{
 			await groupTask.ConfigureAwait(false);
+			await _dispatcher.RunAsync("scene_rewrite_complete", "player", request.TargetingContext.PrimaryAgentIndex,
+				() => { CompleteSceneRewriteTurn(rewriteTurn); return true; }, false).ConfigureAwait(false);
 		}
 		else receipt?.Fail("scene.group_not_started");
 	}
@@ -146,6 +153,10 @@ internal sealed partial class SceneConversationSessionRuntime
 			return Task.CompletedTask;
 		}
 		List<NpcDataPacket> framedNpcData = allNpcData.Where((NpcDataPacket npc) => conversationScope.TryGetEntry(npc.AgentIndex, out var entry) && entry.IsFramed).ToList();
+		_ports.InvalidateOtherChannelRewrite?.Invoke();
+		// Module-owned submissions keep their own receipt contract; only a player
+		// UI round supplies text that can be returned to the player's input box.
+		if (receipt == null) BeginSceneRewriteTurn(shoutText, request, conversationEpoch);
 		string sceneTauntExtraFact = SceneTauntBehavior.BuildFrightenedCivilianShoutExtraFactExternal(primaryTarget);
 		if (!string.IsNullOrWhiteSpace(sceneTauntExtraFact))
 		{
@@ -221,13 +232,20 @@ internal sealed partial class SceneConversationSessionRuntime
 				capturedResolvedHeroes[audienceAgent.Index] = audienceCharacter.HeroObject;
 			}
 		}
-		if (!_ports.RecordPlayerMessage(shoutText, capturedNpcData, primaryDataPacket?.AgentIndex ?? (-1), primaryDataPacket?.Name ?? "", capturedAudienceAgentsByIndex, requireMemoryReceipt: receipt != null))
-			receipt?.Fail("scene.history_unconfirmed");
+		using (ConversationRewriteTurn.CaptureScope(_sceneRewriteTurn))
+		{
+			if (!_ports.RecordPlayerMessage(shoutText, capturedNpcData, primaryDataPacket?.AgentIndex ?? (-1), primaryDataPacket?.Name ?? "", capturedAudienceAgentsByIndex, requireMemoryReceipt: receipt != null))
+			{
+				receipt?.Fail("scene.history_unconfirmed");
+				_sceneRewriteTurn?.Invalidate("scene_player_history_unconfirmed");
+			}
+		}
 		_ports.TrackPlayerInteraction(primaryDataPacket, 1, -1f, false, targetingContext);
 
 		_ports.ResumeGame();
 
 		var requestLifetime = _sceneRequestLifetime;
+		ConversationRewriteTurn currentRewriteTurn = _sceneRewriteTurn;
 		async Task RunGroupAsync()
 		{
 			try
@@ -239,6 +257,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			}
 			catch (Exception ex)
 			{
+				currentRewriteTurn?.Invalidate("scene_group_exception");
 				receipt?.Fail("scene.group_exception");
 				Logger.Log("ShoutBehavior", "[ERROR] ProcessShoutConfirmedInternal background failed: " + ex.Message);
 				if (ex is PreprocessFormatException

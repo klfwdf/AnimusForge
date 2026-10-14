@@ -256,6 +256,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		// The existing UI Tick reads only the admission identity stamp, not agents.
 		_dataSource.CanSwitchTalk = !_dataSource.IsCustomAnswerVisible ||
 			(!_isSubmitting && !ShoutBehavior.IsNativeConversationBackendBusyForUi());
+		_dataSource.RefreshRewriteAvailability();
         _dataSource.RefreshDirectActionsVisibility();
         _dataSource.CanOpenDirectActions = DuelSettings.GetSettings()?.EnableDevEditHistory == true && !_isSubmitting && !ShoutBehavior.IsNativeConversationBackendBusyForUi();
 		bool personaEditVisible;

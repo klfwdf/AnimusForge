@@ -38,6 +38,7 @@ public sealed class NativeOverlayVM : ViewModel
             _inputText = text;
             OnPropertyChangedWithValue(text, nameof(InputText));
             if (wasEmpty != string.IsNullOrWhiteSpace(text)) OnPropertyChanged(nameof(IsInputEmpty));
+            OnPropertyChanged(nameof(CanRewrite));
         }
     }
     [DataSourceProperty] public bool IsInputEmpty => string.IsNullOrWhiteSpace(_inputText);
@@ -48,6 +49,8 @@ public sealed class NativeOverlayVM : ViewModel
     [DataSourceProperty] public string InputPlaceholderText => DialogueUiLocalization.Text("AFD_UI_Native_InputPlaceholder", "Type what you want to say…");
     [DataSourceProperty] public string InputHintText => DialogueUiLocalization.Text("AFD_UI_Native_InputHint", "Enter send · Shift+Enter new line");
     [DataSourceProperty] public string ConversationHistoryText => DialogueUiLocalization.Text("AFD_UI_Native_ConversationHistory", "Conversation history");
+    [DataSourceProperty] public string RewriteText => Original.RewriteText;
+    [DataSourceProperty] public bool CanRewrite => IsInteractionEnabled && IsInputEmpty && Original.CanRewrite;
     [DataSourceProperty] public string GiveShowText => DialogueUiLocalization.Text("AFD_UI_Native_GiveShow", "Give / show");
     [DataSourceProperty] public string IllustrationText => DialogueUiLocalization.Text("AFD_UI_Native_Illustration", "Scene illustration");
     [DataSourceProperty] public string LeaveText => DialogueUiLocalization.Text("AFD_UI_Native_Leave", "Leave");
@@ -86,6 +89,12 @@ public sealed class NativeOverlayVM : ViewModel
         Original.InputText = AnimusForgeTextInputSanitizer.SanitizeSingleLine(multiline, AnimusForgeTextInputSanitizer.MaxNativeConversationChars);
         Original.ExecuteSubmit();
     }
+    public void ExecuteRewrite()
+    {
+        if (!CanRewrite) return;
+        CloseMore();
+        Original.ExecuteRewrite();
+    }
     public void ShowIllustration() { if (!_disposed) IllustratorBridge.Invoke(); }
     public void LeaveConversation()
     {
@@ -118,6 +127,7 @@ public sealed class NativeOverlayVM : ViewModel
         OnPropertyChanged(nameof(IsReplyPending));
         OnPropertyChanged(nameof(IsNativeContinueBlocked));
         OnPropertyChanged(nameof(CanSwitchTalk));
+        OnPropertyChanged(nameof(CanRewrite));
         OnPropertyChanged(nameof(CanOpenDirectActions));
         OnPropertyChanged(nameof(CanLeave));
         OnPropertyChanged(nameof(IsIllustrationAvailable));
@@ -132,6 +142,7 @@ public sealed class NativeOverlayVM : ViewModel
         OnPropertyChanged(nameof(IsInteractionEnabled));
         OnPropertyChanged(nameof(CanOpenDirectActions));
         OnPropertyChanged(nameof(CanSwitchTalk));
+        OnPropertyChanged(nameof(CanRewrite));
         NativeUiAdapter.AuxiliaryStateChanged(this);
         if (!Auxiliary.IsOpen && !_disposed) Original.RequestInputFocus();
     }
@@ -144,6 +155,7 @@ public sealed class NativeOverlayVM : ViewModel
             _inputText = Original.InputText ?? string.Empty;
             OnPropertyChangedWithValue(_inputText, nameof(InputText));
             if (wasEmpty != string.IsNullOrWhiteSpace(_inputText)) OnPropertyChanged(nameof(IsInputEmpty));
+            OnPropertyChanged(nameof(CanRewrite));
             return;
         }
         OnPropertyChanged(name);

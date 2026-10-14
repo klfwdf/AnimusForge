@@ -27,17 +27,12 @@ public sealed class ExecutionSitePresetLoadResult
 
 public static class ExecutionSitePresetStore
 {
-    private const string PresetRootRelativePath =
-        @"Mount and Blade II Bannerlord\Configs\RichExecutions\ExecutionSitePresets";
-
     public static string RootDirectory
     {
         get
         {
             string root = AnimusForge.AnimusForgeDataPaths.GetCurrentRoot();
             string directory = Path.Combine(AnimusForge.AnimusForgeDataPaths.GetSettingsDirectory(root), "RichExecutions", "ExecutionSitePresets");
-            AnimusForge.AnimusForgeDataPaths.MigrateLegacyDirectoryOnce(root, directory,
-                AnimusForge.AnimusForgeDataPaths.GetLegacyDocumentsPath(PresetRootRelativePath));
             return directory;
         }
     }

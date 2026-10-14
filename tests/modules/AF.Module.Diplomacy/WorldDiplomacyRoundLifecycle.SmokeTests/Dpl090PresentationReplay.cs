@@ -119,6 +119,8 @@ internal static class Dpl090PresentationReplay
         public string KingdomName(string id) => id;
         public string FormatCampaignDate(int day) => day.ToString();
         public int CurrentDay => 10;
+        public double CurrentHour => 245;
+        public void RecordShownTime(WorldDiplomacyDocument document, double hour) { }
         public string PlayerKingdomId { get; set; } = "player";
         public void ShowRumor(string text) => Rumors.Add(text);
         public void ShowNotice(WorldDiplomacyNotice notice)
@@ -167,14 +169,14 @@ internal static class Dpl090PresentationReplay
         owner.Poll(storage, now.AddSeconds(1), sink);
         Equal("failed", sink.Notices.Last(), "failure removes session reservation for retry");
         var suppressed = Document("suppressed", 7);
-        suppressed.IsRead = true;
+        suppressed.IsRead = true; suppressed.TargetKingdomId = "player";
         storage.Documents.Add(suppressed);
         sink.MapNotificationsEnabled = false;
         owner.Poll(storage, now.AddSeconds(2), sink);
-        Test.True(suppressed.FormalNoticeShown && suppressed.IsNotified, "disabled notifications consume reached published records including read ones");
+        Test.True(suppressed.FormalNoticeShown && suppressed.IsNotified, "disabled right notices actually display text and consume shown records including pre-read player notices");
         sink.MapNotificationsEnabled = true;
         owner.Poll(storage, now.AddSeconds(3), sink);
-        Test.True(!sink.Notices.Contains("suppressed"), "reenabling does not replay suppressed notices");
+        Test.True(sink.Notices.Count(x => x == "suppressed") == 1, "reenabling does not repeat the text notice");
 
         var deferred = Document("deferred", 8);
         deferred.AuthorKingdomId = "player";
@@ -208,13 +210,13 @@ internal static class Dpl090PresentationReplay
         changing.IsReadyForPublication = true;
         changingOwner.Poll(changingStorage, now.AddSeconds(1), changingSink);
         Equal(initialBuilds + 1, changingOwner.RebuildCount, "publication mutation rebuilds notification view");
-        changing.IsRead = true;
+        changing.IsRead = true; changing.TargetKingdomId = "player";
         changingSink.Ready = true;
         changingOwner.Poll(changingStorage, now.AddSeconds(2), changingSink);
-        Test.True(!changing.FormalNoticeShown, "read mutation excludes formal notice before delivery");
+        Test.True(changing.FormalNoticeShown, "pre-read player notice still displays on delivery");
         changingSink.MapNotificationsEnabled = false;
         changingOwner.Poll(changingStorage, now.AddSeconds(3), changingSink);
-        Test.True(changing.FormalNoticeShown, "disabled map notices still consume read formal receipt");
+        Test.True(changing.FormalNoticeShown, "switching mode preserves an already shown receipt");
         int settledBuilds = changingOwner.RebuildCount;
         for (int i = 4; i < 1004; i++) changingOwner.Poll(changingStorage, now.AddSeconds(i), changingSink);
         Equal(settledBuilds, changingOwner.RebuildCount, "idle one-second notification deadlines do not rescan documents");
@@ -283,9 +285,10 @@ internal static class Dpl090PresentationReplay
         targetOwner.Poll(targetStorage, now.AddSeconds(1), targetSink);
         Test.True(explicitWithActions.FormalNoticeShown && targetSink.RoutedNotices.Last().ShowOnMap,
             "explicit document target remains eligible even when the action list has another target");
-        Test.True(!readTarget.FormalNoticeShown && !targetSink.Notices.Contains("read-target"), "read player-target documents remain excluded");
+        Test.True(readTarget.FormalNoticeShown && targetSink.Notices.Contains("read-target")
+            && readTarget.ActualPlayerNoticeHour == 245, "pre-read player-target document is actually notified once");
         targetOwner.ResetView(); targetOwner.Poll(targetStorage, now.AddSeconds(2), targetSink);
-        Equal(4, targetSink.Notices.Count, "all target routes persist once-only notification after view reset");
+        Equal(5, targetSink.Notices.Count, "all target routes including pre-read documents persist once-only notification after view reset");
 
         var noRealmStorage = new WorldDiplomacyStorage();
         var noRealm = Document("no-realm", 1); noRealm.AuthorKingdomId = "";
@@ -300,8 +303,9 @@ internal static class Dpl090PresentationReplay
         disabledStorage.Documents.AddRange(new[] { disabledOwn, disabledForeign });
         var disabledSink = new Sink { MapNotificationsEnabled = false };
         new WorldDiplomacyNotificationApplication().Poll(disabledStorage, now, disabledSink);
-        Test.True(disabledOwn.FormalNoticeShown && disabledForeign.FormalNoticeShown && disabledSink.Notices.Count == 0 && disabledSink.Registrations == 0,
-            "notification switch suppresses both routes without widget access or changing delivery");
+        Test.True(disabledOwn.FormalNoticeShown && disabledForeign.FormalNoticeShown && disabledSink.Notices.Count == 2 && disabledSink.Registrations == 0
+            && disabledSink.RoutedNotices.All(x => !x.ShowOnMap) && disabledForeign.ActualPlayerNoticeHour == 245,
+            "disabled right notices use actual text display without widget registration and record display time");
     }
 
     private sealed class PlayerWorld : IWorldDiplomacyPlayerWorld

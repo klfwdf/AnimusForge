@@ -244,12 +244,14 @@ internal sealed class NativePendingHistoryApplicationAdapter
 	}
     internal Task<NativeConversationPendingHistory> PrepareNativeConversationPendingHistoryAsync(
         NativeConversationAdmission admission, NpcDataPacket npc, string npcName, int agentIndex,
-        string playerText, bool recordPlayerInput)
+        string playerText, bool recordPlayerInput, ConversationRewriteTurn rewriteTurn)
     {
         return RunNativePendingHistoryOnMainThreadAsync<NativeConversationPendingHistory>(() =>
         {
             if (!_admissions.IsNativeConversationAdmissionCurrent(admission, out _))
                 return null;
+            using IDisposable rewriteCapture = ConversationRewriteTurn.CaptureScope(rewriteTurn);
+
             string key = SceneHistoryPromptCaptureAdapter.CaptureNativeConversationHistoryKey(admission.Hero, admission.Character, npcName, agentIndex, npc);
             if (string.IsNullOrWhiteSpace(key))
                 return null;

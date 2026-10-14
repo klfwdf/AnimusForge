@@ -463,7 +463,9 @@ public sealed partial class CourierDeliveryBehavior
 	{
 		try
 		{
-			string body = CourierVisibleLetterSanitizer.Clean(AnimusForgeTextInputSanitizer.SanitizeMultiline(StripCourierActionTags(letterText ?? ""), AnimusForgeTextInputSanitizer.MaxCourierLetterChars));
+			string letterProse = AnimusForgeTextInputSanitizer.SanitizeMultiline(StripCourierActionTags(letterText ?? ""), AnimusForgeTextInputSanitizer.MaxCourierLetterChars);
+			string body = sender == Hero.MainHero && !isReply ? CourierVisibleLetterSanitizer.Clean(letterProse)
+                : CourierVisibleLetterSanitizer.CleanNpcLetter(letterProse);
 			if (string.IsNullOrWhiteSpace(body))
 			{
 				return false;
@@ -740,8 +742,14 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				return false;
 			}
-			letterBody = record.DiplomacyReplyBody == null ? record.LetterBody :
-                CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(DiplomacyConversationBridge.ComposeReply(record.DiplomacyReplyBody, record.DiplomacyReplyReceipts, forUi: forUi)));
+			letterBody = record.DiplomacyReplyBody == null ? record.LetterBody : record.DiplomacyReplyBody;
+            // Project a copy; legacy receipt fields and the original stored body remain intact.
+            // A known player-authored letter must retain even literal system-message quotations.
+            if (record.IsReply || (!string.IsNullOrEmpty(record.SenderHeroId)
+                && !string.Equals(record.SenderHeroId, SafeHeroId(Hero.MainHero), StringComparison.Ordinal)))
+                letterBody = CourierVisibleLetterSanitizer.CleanNpcLetter(StripCourierActionTags(letterBody));
+			else if (record.DiplomacyReplyBody != null)
+                letterBody = CourierVisibleLetterSanitizer.CleanNpcLetter(StripCourierActionTags(letterBody));
 			return true;
 		}
 		catch (Exception ex)

@@ -24,6 +24,8 @@ namespace AnimusForge;
         private readonly Action<string> onPostprocessStarted;
         private readonly Action<string, Hero, CharacterObject> onMainReplyReady;
         private readonly bool npcInitiatedOpening;
+        private readonly string previousDisplayText;
+        private ConversationRewriteTurn rewriteTurn;
         private string playerText;
         private Stopwatch nativeTurnSw;
         private long runtimeGeneration;
@@ -53,7 +55,8 @@ namespace AnimusForge;
 
         internal NativeConversationTurnRuntime(NativeConversationTurnPorts ports, NativeConversationAdmission admission,
             string playerText, Action<string> onStreamText, Action<string> onPostprocessStarted,
-            Action<string, Hero, CharacterObject> onMainReplyReady, bool npcInitiatedOpening)
+            Action<string, Hero, CharacterObject> onMainReplyReady, bool npcInitiatedOpening,
+            string previousDisplayText = null)
         {
             _ports = ports ?? throw new ArgumentNullException(nameof(ports));
             this.admission = admission;
@@ -62,6 +65,18 @@ namespace AnimusForge;
             this.onPostprocessStarted = onPostprocessStarted;
             this.onMainReplyReady = onMainReplyReady;
             this.npcInitiatedOpening = npcInitiatedOpening;
+            this.previousDisplayText = previousDisplayText;
+        }
+
+        internal async Task<string> RunAsync()
+        {
+            try { return await NativeConversationTurnCoordinator.RunAsync(this).ConfigureAwait(false); }
+            finally
+            {
+                // Invalidation is a detached receipt flag. It cannot remove partial effects
+                // and never reads game objects from this worker's failure path.
+                if (rewriteTurn?.IsCompleted != true) rewriteTurn?.Invalidate("native_turn_not_completed");
+            }
         }
 
         // Capture and its validity test are one queue claim. A rejected callback never
@@ -110,7 +125,13 @@ namespace AnimusForge;
             runtimeGeneration = admission.Generation;
             playerText = (playerText ?? "").Replace("\r", "").Trim();
             if (!await _ports.RunNativeConversationMainThreadFuncAsync("admitted_request_start", admission.NpcName,
-                admission.AgentIndex, () => _ports.IsNativeConversationAdmissionCurrent(admission, out _), false).ConfigureAwait(false))
+                admission.AgentIndex, () =>
+                {
+                    if (!_ports.IsNativeConversationAdmissionCurrent(admission, out _)) return false;
+                    if (!npcInitiatedOpening)
+                        rewriteTurn = _ports.BeginRewriteTurn(admission, playerText, previousDisplayText);
+                    return true;
+                }, false).ConfigureAwait(false))
                 return NativeConversationTurnStep.Stop("");
             targetHero = admission.Hero;
             targetCharacter = admission.Character;
@@ -185,6 +206,7 @@ public partial class ShoutBehavior
         ApplyNativeConversationGameActionsOnMainThreadAsync = _nativeGameEffects.ApplyNativeConversationGameActionsOnMainThreadAsync,
         RetireOpeningForAcceptedReply = NativeAdmissions.RetireOpeningForAcceptedReply,
         ConfirmMeetingElapsedBoundary = NativeAdmissions.ConfirmMeetingElapsedBoundary,
+        BeginRewriteTurn = BeginNativeRewriteTurn,
         PromptDispatcher = _conversationGameThreadDispatcher,
         IsPromptOwnerAvailable = static () => MyBehavior.Instance != null,
         CapturePromptRoutingWork = static request =>

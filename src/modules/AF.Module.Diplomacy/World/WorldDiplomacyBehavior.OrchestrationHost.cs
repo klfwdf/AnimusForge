@@ -21,6 +21,7 @@ public sealed partial class WorldDiplomacyBehavior
 
         public int CurrentDay() => WorldDiplomacyBehavior.CurrentDay();
         public int CurrentHour() => WorldDiplomacyBehavior.CurrentHour();
+        public double CurrentCampaignHours() => WorldDiplomacyBehavior.CurrentDiplomacyHours();
         public string NewId(string prefix) => WorldDiplomacyBehavior.NewId(prefix);
         public string FormatCampaignDate(int day) => WorldDiplomacyBehavior.FormatCampaignDate(day);
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);

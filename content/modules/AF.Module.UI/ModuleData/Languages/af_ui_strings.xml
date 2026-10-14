@@ -954,7 +954,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Group" text="1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Title" text="Event And Rebellion API Temperature" />
-  <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint" text="Controls randomness in event weekly reports and kingdom-rebellion naming. 0 is more stable and 2 is more varied. Default: 0.80." />
+  <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint" text="Controls randomness for weekly reports, kingdom naming, diplomatic declarations, scribe drafting, and other tasks using the event/rebellion API. Diplomacy uses the main API temperature when incomplete configuration causes fallback to the main API. 0 is more stable and 2 is more varied. Default: 0.80." />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Group" text="1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiMaxTokens_Title" text="Event And Rebellion API Maximum Tokens" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiMaxTokens_Hint" text="The max_tokens value for event weekly reports, naming kingdoms founded by rebellion, and ruler-policy generation. Default: 12000; endpoints that do not support a high limit may reject the request." />
@@ -1242,8 +1242,8 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Title" text="Edit World Bulletin Writing Requirements" />
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Hint" text="Edits immediate-bulletin writing requirements separately; applies to the next request. Clearing them retains the built-in format and fact constraints." />
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Group" text="Weekly reports / bulletins/Bulletin" />
-  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Title" text="Edit World Diplomacy Prompt" />
-  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint" text="Edits diplomatic judgment and style preferences. Scribe drafting uses the style requirements to expand the existing player text faithfully without adding substantive terms on its own. A blank value adds no preferences; fixed fact boundaries and output rules remain in force." />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Title" text="Diplomatic judgment and writing preferences" />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint" text="Adjust diplomatic interests, action priorities, and writing style. Custom writing preferences take precedence over default phrasing. The scribe uses only writing instructions consistent with player intent, preserving all terms when drafting or rewriting without adding substantive clauses. Blank adds no custom preferences; facts, authority, legal action requirements, and output rules remain in force." />
   <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
   <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Title" text="Enable Companion Proactive Chat" />
   <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Hint" text="Allows companions, family members, and other Heroes in the player main party to proactively request conversations through map notifications." />
@@ -1548,8 +1548,8 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Title" text="Proactive NPC Request Type Fatigue Multiplier" />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Hint" text="During type fatigue, multiplies both need-driven and notoriety-driven probabilities by this value and lowers the need priority among candidates. Default: 0.20." />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Group" text="7. NPC proactive contact" />
-  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Title" text="Restore Default World Diplomacy Prompt" />
-  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Hint" text="Restores the mod default preference text after confirmation. Restores only text preferences; does not reset this page event limits, distribution, length, or protection-period settings." />
+  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Title" text="Restore default diplomatic judgment and writing preferences" />
+  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Hint" text="After confirmation, restore default diplomatic judgment and writing preferences, replacing current custom preferences. Restores preference text only; does not reset event limits, distribution, length, or protection settings." />
   <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
   <string id="AF_TERMINAL_UI_SetsDiagnosticLogMaxSizeMegabytes_Title" text="SETS Diagnostic Log Maximum Size Megabytes" />
   <string id="AF_TERMINAL_UI_SetsDiagnosticLogMaxSizeMegabytes_Hint" text="SETS.log rotates automatically at this limit; the previous file is retained as SETS.previous.log. Default: 16 MB." />
@@ -1587,11 +1587,11 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Title" text="World Diplomacy Court Maximum Delivery Days" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Hint" text="Allocates court delivery times by distance. Controls delivery to the farthest court and the relay pace for one round of a new event; not every kingdom waits this fixed number of days. Default: 7 days; lower values produce more frequent replies." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Group" text="17. AI diplomacy (testing)/3. Distribution" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Title" text="World Diplomacy Declaration Maximum Characters" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="Shared length range for AI-generated diplomatic declarations, responses, and scribe drafts, including punctuation. Default maximum: 500 characters; adjustable from 1 to 1000. Values below the minimum length are treated as the minimum. Does not limit player-written edits." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Title" text="Suggested declaration length upper bound" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="Suggested length for AI declarations, replies, and scribe drafting, not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects scribe generation capacity. If a long draft is truncated, increase this value and the API output limit. Does not limit player editing." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Title" text="World Diplomacy Declaration Minimum Characters" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="Shared length range for AI-generated diplomatic declarations, responses, and scribe drafts, including punctuation. Default minimum: 100 characters; adjustable from 1 to 1000. Does not limit player-written edits." />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Title" text="Suggested declaration length lower bound" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="Suggested length for AI declarations, replies, and scribe drafting, including punctuation. Simple replies may be shorter and complex terms may be longer; complete terms take priority. Default lower bound: 100, adjustable from 1 to 1000. Does not limit player editing." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Title" text="World Diplomacy History Compression Target Thousands" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Hint" text="Combined target for the long-term snapshot and protected facts after each compression batch. Default: 48, about 48k tokens; cap: 60k. Declarations take only relevant material, not the whole snapshot. Actual summaries are also limited by the selected API maximum output tokens." />
@@ -2523,11 +2523,11 @@ Choose how to proceed:" />
   <string id="AF_MCM_Editor_PlayerPolicy_Description" text="This is the shared evaluation prompt for kingdom and local policies." />
   <string id="AF_MCM_Editor_PlayerPolicy_Hint" text="Use it to adjust cost, duration, public-feedback style, and intensity preferences. Explicit amounts, multipliers, ranges, and numeric constraints are passed to effect postprocessing through numericIntent; the JSON contract remains enforced by the mod. Saving blank restores the default." />
   <string id="AF_MCM_Editor_Policy_OpenFailed" text="[Policy system] Failed to open the player policy evaluation prompt editor: " />
-  <string id="AF_MCM_Editor_Diplomacy_Title" text="Edit AI diplomacy preferences" />
-  <string id="AF_MCM_Editor_Diplomacy_Description" text="Adjust interest evaluation, action preferences, and style here." />
-  <string id="AF_MCM_Editor_Diplomacy_Hint" text="Leave blank to add no custom preference. The shared contract, long-term historical fact boundaries, MODE, and task output structure remain enforced by the mod." />
+  <string id="AF_MCM_Editor_Diplomacy_Title" text="Edit diplomatic judgment and writing preferences" />
+  <string id="AF_MCM_Editor_Diplomacy_Description" text="Adjust diplomatic interests, action priorities, and writing style. Custom writing preferences take precedence over default phrasing. The scribe drafts or rewrites according to player intent and preserves all terms." />
+  <string id="AF_MCM_Editor_Diplomacy_Hint" text="Blank adds no custom preferences. Writing preferences cannot change facts, representative authority, legal action requirements, or output rules." />
   <string id="AF_MCM_Editor_Diplomacy_OpenFailed" text="[AI diplomacy] Failed to open the prompt editor: " />
-  <string id="AF_MCM_Editor_Diplomacy_RestoreTitle" text="Restore default AI diplomacy preferences" />
+  <string id="AF_MCM_Editor_Diplomacy_RestoreTitle" text="Restore default diplomatic judgment and writing preferences" />
   <string id="AF_MCM_Editor_Diplomacy_RestoreBody" text="This overwrites the current custom preferences and restores the mod defaults. Continue?" />
   <string id="AF_MCM_Editor_Diplomacy_RestoreOpenFailed" text="[AI diplomacy] Failed to open the restore-default confirmation: " />
   <string id="AF_MCM_Editor_RestoreDefault" text="Restore default" />
@@ -2818,10 +2818,10 @@ Choose how to proceed:" />
   <string id="AF_MCM_Diplomacy_ContinentDays_Hint" text="Schedules when local nobles and civilians learn a declaration by distance. Default: 21 days; does not control automatic opening frequency or replace court delivery time." />
   <string id="AF_MCM_Diplomacy_RoundLength" text="Diplomacy event target duration" />
   <string id="AF_MCM_Diplomacy_RoundLength_Hint" text="Typical event closing time: compact about 15 days, standard about 21, and relaxed about 28. Results may end it early or briefly extend cleanup. Default: standard; affects new events only." />
-  <string id="AF_MCM_Diplomacy_DeclarationMin" text="Minimum AI declaration characters" />
-  <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="Shared character range for AI declarations, diplomatic replies, and clerk drafting; punctuation counts. Default minimum 100, adjustable from 1 to 1000; does not limit player editing." />
-  <string id="AF_MCM_Diplomacy_DeclarationMax" text="Maximum AI declaration characters" />
-  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="Shared character range for AI declarations, diplomatic replies, and clerk drafting; punctuation counts. Default maximum 500, adjustable from 1 to 1000; values below the minimum use the minimum." />
+  <string id="AF_MCM_Diplomacy_DeclarationMin" text="Suggested declaration length lower bound" />
+  <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="Suggested length for AI declarations, replies, and scribe drafting, including punctuation. Simple replies may be shorter and complex terms may be longer; complete terms take priority. Default lower bound: 100, adjustable from 1 to 1000. Does not limit player editing." />
+  <string id="AF_MCM_Diplomacy_DeclarationMax" text="Suggested declaration length upper bound" />
+  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="Suggested length for AI declarations, replies, and scribe drafting, not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects scribe generation capacity. If a long draft is truncated, increase this value and the API output limit. Does not limit player editing." />
   <string id="AF_MCM_Diplomacy_WarCooldown" text="Proactive-war cooldown (days)" />
   <string id="AF_MCM_Diplomacy_WarCooldown_Hint" text="After a kingdom starts a proactive war, wait at least this many days before starting another. Default: 42; does not limit other diplomatic declarations." />
   <string id="AF_MCM_Diplomacy_PeaceProtection" text="Peace protection period (days)" />
@@ -2834,11 +2834,11 @@ Choose how to proceed:" />
   <string id="AF_MCM_Diplomacy_CompressTrigger_Hint" text="Start batched compression when the long-term diplomacy archive reaches this estimated size. Default: 800 (about 800k tokens); controls backlog and frequency, not history carried by each declaration. Total declaration input has a separate 32k estimated-token cap, and each compression batch has a separate 128k input cap." />
   <string id="AF_MCM_Diplomacy_CompressTarget" text="Archive compression target (thousand estimated tokens)" />
   <string id="AF_MCM_Diplomacy_CompressTarget_Hint" text="Target combined size of the long-term snapshot and protected facts after each batch. Default: 48 (about 48k tokens), maximum 60k; declarations use only relevant material. Actual summaries also follow the selected API output-token limit." />
-  <string id="AF_MCM_Diplomacy_Edit" text="Edit AI diplomacy and clerk-drafting preferences" />
-  <string id="AF_MCM_Diplomacy_Edit_Hint" text="Edit diplomacy decision and writing preferences. Clerk drafting expands the player’s existing content faithfully without adding substantive clauses. Blank adds no preference; fixed facts and output rules remain enforced." />
+  <string id="AF_MCM_Diplomacy_Edit" text="Diplomatic judgment and writing preferences" />
+  <string id="AF_MCM_Diplomacy_Edit_Hint" text="Adjust diplomatic interests, action priorities, and writing style. Custom writing preferences take precedence over default phrasing. The scribe uses only writing instructions consistent with player intent, preserving all terms when drafting or rewriting without adding substantive clauses. Blank adds no custom preferences; facts, authority, legal action requirements, and output rules remain in force." />
   <string id="AF_MCM_Diplomacy_Edit_Content" text="Open editor" />
-  <string id="AF_MCM_Diplomacy_Restore" text="Restore default diplomacy and drafting preferences" />
-  <string id="AF_MCM_Diplomacy_Restore_Hint" text="Restores the mod default preference text. Only preference text is restored; event limits, propagation, length, and protection settings on this page are unchanged." />
+  <string id="AF_MCM_Diplomacy_Restore" text="Restore default diplomatic judgment and writing preferences" />
+  <string id="AF_MCM_Diplomacy_Restore_Hint" text="After confirmation, restore default diplomatic judgment and writing preferences, replacing current custom preferences. Restores preference text only; does not reset event limits, distribution, length, or protection settings." />
   <string id="AF_MCM_Diplomacy_Restore_Content" text="Restore default" />
   
   <string id="AF_MCM_Gathering_Enable" text="Enable noble gatherings" />
@@ -2969,7 +2969,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_EventRebellionApi_Dropdown" text="Event and rebellion model name (dropdown)" />
   <string id="AF_MCM_EventRebellionApi_Test" text="Test event and rebellion API connection" />
   <string id="AF_MCM_EventRebellionApi_Thinking_Hint" text="Off by default. Weekly reports and kingdom-rebellion naming require strict formats; enable this only after confirming that the endpoint reliably writes the final answer to content. OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
-  <string id="AF_MCM_EventRebellionApi_Temperature_Hint" text="Controls randomness for event weekly reports and kingdom-rebellion naming. 0 is more stable and 2 is more varied. Default: 0.80." />
+  <string id="AF_MCM_EventRebellionApi_Temperature_Hint" text="Controls randomness for weekly reports, kingdom naming, diplomatic declarations, scribe drafting, and other tasks using the event/rebellion API. Diplomacy uses the main API temperature when incomplete configuration causes fallback to the main API. 0 is more stable and 2 is more varied. Default: 0.80." />
   <string id="AF_MCM_EventRebellionApi_MaxTokens_Hint" text="The max_tokens value for event weekly reports, kingdom-rebellion naming, and ruler policy generation. Default: 12000; endpoints that do not support a high limit may reject the request." />
   <string id="AF_MCM_Tts_Group" text="7. Volcengine TTS (dedicated)" />
   <string id="AF_MCM_Tts_EnableSpeech_Hint" text="Master switch. When disabled, NPCs stop playing TTS audio and fall back to text bubbles." />

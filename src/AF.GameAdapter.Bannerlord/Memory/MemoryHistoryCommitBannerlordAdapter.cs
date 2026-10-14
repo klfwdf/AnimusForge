@@ -638,7 +638,7 @@ internal bool AppendDialogueHistoryById(string memoryId, string npcNameForMemory
 			if (!string.IsNullOrWhiteSpace(playerText))
 			{
 				string text2 = AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.BuildPlayerAddressedInputForName(npcNameForMemory, playerText, null, playerTargetName);
-				dialogueDay.Lines.Add((sceneSessionId >= 0) ? DialogueHistoryLedger.TagSceneSession(text2, sceneSessionId) : text2);
+				AppendRewriteableDialogueLine(normalizedMemoryId, dayIndex, dialogueDay, (sceneSessionId >= 0) ? DialogueHistoryLedger.TagSceneSession(text2, sceneSessionId) : text2, isPlayerSpeech: true);
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
@@ -646,7 +646,7 @@ internal bool AppendDialogueHistoryById(string memoryId, string npcNameForMemory
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
-				dialogueDay.Lines.Add(DialogueHistoryLedger.TagSceneSession(DialogueHistoryLedger.NormalizeNpcLine(text, aiText), sceneSessionId));
+				AppendRewriteableDialogueLine(normalizedMemoryId, dayIndex, dialogueDay, DialogueHistoryLedger.TagSceneSession(DialogueHistoryLedger.NormalizeNpcLine(text, aiText), sceneSessionId), isPlayerSpeech: false);
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
@@ -668,6 +668,22 @@ internal bool AppendDialogueHistoryById(string memoryId, string npcNameForMemory
 			return false;
 		}
 	}
+private void AppendRewriteableDialogueLine(string memoryId, int dayIndex, DialogueDay day, string line, bool isPlayerSpeech)
+ {
+  if (ConversationRewriteTurn.IsCapturing) CaptureRewriteableDialogueLine(memoryId, dayIndex, day, line, isPlayerSpeech);
+  else day.Lines.Add(line);
+ }
+private void CaptureRewriteableDialogueLine(string memoryId, int dayIndex, DialogueDay day, string line, bool isPlayerSpeech)
+ {
+  // Keep an exact in-memory identity even when two rounds contain identical speech.
+  // The persisted text and save protocol are unchanged.
+  string stored = new string(line.ToCharArray());
+  day.Lines.Add(stored);
+  ConversationRewriteTurn.CaptureListWrite(
+   () => _dialogueHistory != null && _dialogueHistory.TryGetValue(memoryId, out var current)
+    ? current?.FirstOrDefault(x => x != null && x.GameDayIndex == dayIndex)?.Lines : null,
+   stored, isPlayerSpeech: isPlayerSpeech, isNpcReply: !isPlayerSpeech);
+ }
 internal void TryEnsureFirstMeetingNpcFactForConversation(Hero hero)
 	{
 		GetFirstMeetingNpcFactTextForPromptIfNeededInternal(hero, persistToHistory: true);

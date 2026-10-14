@@ -19,6 +19,7 @@ namespace AnimusForge.DialogueUI.Shout
         private string _historyText = "";
         private string _statusText = DialogueUiLocalization.Text("AFD_UI_Shout_Hint", "Enter send · Shift+Enter new line · Esc close");
         private int _illustrationVersion = -1;
+        private int _rewriteVersion;
         [DataSourceProperty] public bool IsIllustrationVisible => Host is ShoutTextInputPopupVM vm && vm.IsIllustrationVisible;
         [DataSourceProperty] public bool CanIllustrate => Host is ShoutTextInputPopupVM vm && vm.CanIllustrate;
         [DataSourceProperty] public string SceneHistoryTitleText => DialogueUiLocalization.Text("AFD_UI_Shout_Title", "Visible scene records for the current target");
@@ -26,6 +27,10 @@ namespace AnimusForge.DialogueUI.Shout
         [DataSourceProperty] public string EncyclopediaText => DialogueUiLocalization.Text("AFD_UI_Shout_Encyclopedia", "Encyclopedia");
         [DataSourceProperty] public string CloseText => DialogueUiLocalization.Text("AFD_UI_Shout_Close", "Close");
         [DataSourceProperty] public string SendText => DialogueUiLocalization.Text("AFD_UI_Shout_Send", "Send");
+        [DataSourceProperty] public bool IsRewriteVisible => Host is ShoutTextInputPopupVM vm && vm.IsRewriteVisible;
+        [DataSourceProperty] public bool CanRewrite => _canSubmit && Host is ShoutTextInputPopupVM vm && vm.CanRewrite;
+        [DataSourceProperty] public string RewriteText => DialogueUiLocalization.Text("AF_CONV_UI_Rewrite_Button", "Undo and edit");
+        public void ExecuteRewrite() { if (RefreshAvailability() && CanRewrite && Host is ShoutTextInputPopupVM vm) vm.ExecuteRewrite(); }
         [DataSourceProperty] public string IllustrationButtonText => (Host as ShoutTextInputPopupVM)?.IllustrationButtonText ?? DialogueUiLocalization.Text("AFD_UI_Illustration_Button", "Illustrate");
         public void ExecuteIllustrate() { if (!_released && Host is ShoutTextInputPopupVM vm) vm.ExecuteIllustrate(); }
         public void ExecuteOpenGallery() { if (!_released && Host is ShoutTextInputPopupVM vm) vm.ExecuteOpenGallery(); }
@@ -76,6 +81,17 @@ namespace AnimusForge.DialogueUI.Shout
 
         internal bool RefreshAvailability()
         {
+            if (Host is ShoutTextInputPopupVM host)
+            {
+                host.RefreshRewriteAvailability();
+                bool canRewrite = CanRewrite;
+                if (_lastCanRewrite != canRewrite) { _lastCanRewrite = canRewrite; OnPropertyChanged(nameof(CanRewrite)); }
+                if (_rewriteVersion != host.RewriteVersion)
+                {
+                    _rewriteVersion = host.RewriteVersion;
+                    if (_historyLoaded) { _historyText = ReadVisibleHistory(); OnPropertyChanged(nameof(HistoryText)); }
+                }
+            }
             int illustrationVersion = ShoutBehavior.SceneIllustrationVersionForExternal;
             if (_illustrationVersion != illustrationVersion)
             {
@@ -92,6 +108,8 @@ namespace AnimusForge.DialogueUI.Shout
             }
             return available;
         }
+
+        private bool _lastCanRewrite;
 
         private string ReadVisibleHistory()
         {

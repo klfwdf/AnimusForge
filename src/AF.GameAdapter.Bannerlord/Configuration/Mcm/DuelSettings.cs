@@ -365,7 +365,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public const int DefaultWorldDiplomacyDeclarationMinCharacters = 100;
 
-	public const int DefaultWorldDiplomacyDeclarationMaxCharacters = 500;
+	public const int DefaultWorldDiplomacyDeclarationMaxCharacters = 300;
 
 	public const int WorldDiplomacyThreatComplianceIssuerRelationRewardMin = 0;
 
@@ -1711,7 +1711,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Temperature_Hint}Controls randomness for event weekly reports and kingdom-rebellion naming. 0 is more stable and 2 is more varied. Default: 0.80.")]
+	[SettingPropertyFloatingInteger("{=AF_MCM_MainApi_Temperature}Temperature", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_EventRebellionApi_Temperature_Hint}Controls randomness for weekly reports, kingdom naming, diplomatic declarations, scribe drafting, and other tasks using the event/rebellion API. Diplomacy uses the main API temperature when incomplete configuration causes fallback to the main API. 0 is more stable and 2 is more varied. Default: 0.80.")]
 	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_EventRebellionApi_Group}4. Event and kingdom-rebellion API (weekly reports and naming)", GroupOrder = -270)]
 	public float EventAndRebellionApiTemperature { get; set; } = 0.8f;
 
@@ -2068,29 +2068,13 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private Dropdown<string> _worldDiplomacyRoundLengthDropdown = BuildFixedDisplayDropdown(null, 1,
 		"{=AF_MCM_Option_DiplomacyCompact}Compact (about 15 days)", "{=AF_MCM_Option_DiplomacyStandard}Standard (about 21 days)", "{=AF_MCM_Option_DiplomacyRelaxed}Relaxed (about 28 days)");
 
-	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMin}Minimum AI declaration characters", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMin_Hint}Shared character range for AI declarations, diplomatic replies, and clerk drafting; punctuation counts. Default minimum 100, adjustable from 1 to 1000; does not limit player editing.")]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMin}Suggested declaration length lower bound", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMin_Hint}Suggested length for AI declarations, replies, and scribe drafting, including punctuation. Simple replies may be shorter and complex terms may be longer; complete terms take priority. Default lower bound: 100, adjustable from 1 to 1000. Does not limit player editing.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public int WorldDiplomacyDeclarationMinCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMinCharacters;
 
-	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMax}Maximum AI declaration characters", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMax_Hint}Shared character range for AI declarations, diplomatic replies, and clerk drafting; punctuation counts. Default maximum 500, adjustable from 1 to 1000; values below the minimum use the minimum.")]
+	[SettingPropertyInteger("{=AF_MCM_Diplomacy_DeclarationMax}Suggested declaration length upper bound", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_DeclarationMax_Hint}Suggested length for AI declarations, replies, and scribe drafting, not a text cutoff; complete terms take priority. Default upper bound: 300, adjustable from 1 to 1000; values below the lower bound use that bound. Also affects scribe generation capacity. If a long draft is truncated, increase this value and the API output limit. Does not limit player editing.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public int WorldDiplomacyDeclarationMaxCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMaxCharacters;
-
-	// 仅保留用于兼容旧配置反序列化；自由外交流程不再读取或展示这些设置。
-	[Obsolete("Legacy configuration compatibility only; free-form diplomacy no longer forces wars from pressure thresholds.")]
-	public bool EnableWorldDiplomacyForcedWar { get; set; } = true;
-
-	[Obsolete("Legacy configuration compatibility only; free-form diplomacy no longer uses a forced-war pressure threshold.")]
-	public int WorldDiplomacyWarPressureThreshold { get; set; } = 120;
-
-	[Obsolete("Legacy configuration compatibility only; free-form diplomacy no longer uses a forced-peace pressure threshold.")]
-	public int WorldDiplomacyPeacePressureThreshold { get; set; } = 200;
-
-	[Obsolete("Legacy configuration compatibility only; native diplomacy signals use their fixed semantic weight.")]
-	public int WorldDiplomacyNativeIntentInfluencePercent { get; set; } = 100;
-
-	[Obsolete("Legacy configuration compatibility only; published declarations use their fixed semantic weight.")]
-	public int WorldDiplomacyDocumentInfluencePercent { get; set; } = 100;
 
 	[SettingPropertyInteger("{=AF_MCM_Diplomacy_WarCooldown}Proactive-war cooldown (days)", 7, 120, "0", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_WarCooldown_Hint}After a kingdom starts a proactive war, wait at least this many days before starting another. Default: 42; does not limit other diplomatic declarations.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Protection_Group}17. AI diplomacy (testing)/5. War and proposal protection", GroupOrder = 170)]
@@ -2116,9 +2100,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Archive_Group}17. AI diplomacy (testing)/6. Long-term archive (advanced)", GroupOrder = 170)]
 	public int WorldDiplomacyHistoryCompressionTargetThousands { get; set; } = DefaultWorldDiplomacyHistoryCompressionTargetThousands;
 
-	// 仅保留用于兼容旧 MCM 配置反序列化；新的长期记忆不再按累计 API Tokens 触发。
-	public int WorldDiplomacyCompressionThresholdTenThousands { get; set; } = 50;
-
 	private string _worldDiplomacyPrompt = LoadWorldDiplomacyPromptFromDiskOrDefault();
 
 	public string WorldDiplomacyPrompt
@@ -2127,11 +2108,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		set => _worldDiplomacyPrompt = NormalizeWorldDiplomacyPromptText(value);
 	}
 
-	[SettingPropertyButton("{=AF_MCM_Diplomacy_Edit}Edit AI diplomacy and clerk-drafting preferences", -1, true, "", Content = "{=AF_MCM_Diplomacy_Edit_Content}Open editor", Order = 17, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Edit_Hint}Edit diplomacy decision and writing preferences. Clerk drafting expands the player’s existing content faithfully without adding substantive clauses. Blank adds no preference; fixed facts and output rules remain enforced.")]
+	[SettingPropertyButton("{=AF_MCM_Diplomacy_Edit}Diplomatic judgment and writing preferences", -1, true, "", Content = "{=AF_MCM_Diplomacy_Edit_Content}Open editor", Order = 17, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Edit_Hint}Adjust diplomatic interests, action priorities, and writing style. Custom writing preferences take precedence over default phrasing. The scribe uses only writing instructions consistent with player intent, preserving all terms when drafting or rewriting without adding substantive clauses. Blank adds no custom preferences; facts, authority, legal action requirements, and output rules remain in force.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public Action EditWorldDiplomacyPrompt { get; set; }
 
-	[SettingPropertyButton("{=AF_MCM_Diplomacy_Restore}Restore default diplomacy and drafting preferences", -1, true, "", Content = "{=AF_MCM_Diplomacy_Restore_Content}Restore default", Order = 18, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Restore_Hint}Restores the mod default preference text. Only preference text is restored; event limits, propagation, length, and protection settings on this page are unchanged.")]
+	[SettingPropertyButton("{=AF_MCM_Diplomacy_Restore}Restore default diplomatic judgment and writing preferences", -1, true, "", Content = "{=AF_MCM_Diplomacy_Restore_Content}Restore default", Order = 18, RequireRestart = false, HintText = "{=AF_MCM_Diplomacy_Restore_Hint}After confirmation, restore default diplomatic judgment and writing preferences, replacing current custom preferences. Restores preference text only; does not reset event limits, distribution, length, or protection settings.")]
 	[SettingPropertyGroup("{=AF_MCM_Diplomacy_Declaration_Group}17. AI diplomacy (testing)/4. Declarations and drafting", GroupOrder = 170)]
 	public Action RestoreDefaultWorldDiplomacyPrompt { get; set; }
 
@@ -3229,7 +3210,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	{
 		try
 		{
-			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_Diplomacy_Title", "Edit AI diplomacy preferences"), Ui("AF_MCM_Editor_Diplomacy_Description", "Adjust interest evaluation, action preferences, and style here."), Ui("AF_MCM_Editor_Diplomacy_Hint", "Leave blank to add no custom preference. The shared contract, long-term historical fact boundaries, MODE, and task output structure remain enforced by the mod."), WorldDiplomacyPrompt ?? "", delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor(Ui("AF_MCM_Editor_Diplomacy_Title", "Edit diplomatic judgment and writing preferences"), Ui("AF_MCM_Editor_Diplomacy_Description", "Adjust diplomatic interests, action priorities, and writing style. Custom writing preferences take precedence over default phrasing. The scribe drafts or rewrites according to player intent and preserves all terms."), Ui("AF_MCM_Editor_Diplomacy_Hint", "Blank adds no custom preferences. Writing preferences cannot change facts, representative authority, legal action requirements, or output rules."), WorldDiplomacyPrompt ?? "", delegate(string input)
 			{
 				SaveWorldDiplomacyPromptFromEditor(input);
 			}, null, Ui("AF_MCM_Common_Save", "Save"), Ui("AF_MCM_Common_Back", "Back"));
@@ -3245,7 +3226,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		try
 		{
 			InformationManager.ShowInquiry(new InquiryData(
-				Ui("AF_MCM_Editor_Diplomacy_RestoreTitle", "Restore default AI diplomacy preferences"),
+				Ui("AF_MCM_Editor_Diplomacy_RestoreTitle", "Restore default diplomatic judgment and writing preferences"),
 				Ui("AF_MCM_Editor_Diplomacy_RestoreBody", "This overwrites the current custom preferences and restores the mod defaults. Continue?"),
 				true,
 				true,

@@ -121,6 +121,7 @@ public partial class ShoutBehavior
         },
         CompletePromptCapture = static (phases, hero, character) => MyBehavior.Instance?.CompleteSharedPromptBuild(phases, hero, character, null),
         IsOwnerCurrent = () => ReferenceEquals(CurrentInstance, this),
+        InvalidateOtherChannelRewrite = InvalidateNativeRewriteTurn,
         GetProcessing = () => _isProcessingShout,
         SetProcessing = value => _isProcessingShout = value,
         SceneSessionId = () => Volatile.Read(ref SceneConversationHistoryOwner.SessionId),

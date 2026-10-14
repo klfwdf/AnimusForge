@@ -74,10 +74,11 @@ public sealed class ShoutTextInputPopup
 
     private string _pendingSubmitText;
     private bool _pendingIllustration;
+    private bool _pendingRewrite;
 
 	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
 
-    private ShoutTextInputPopup(ScreenBase screen, string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel, Action onTitleLink, bool enableIllustration)
+    private ShoutTextInputPopup(ScreenBase screen, string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel, Action onTitleLink, bool enableIllustration, bool enableRewrite)
 	{
 		_screen = screen;
 		_onSubmit = onSubmit;
@@ -85,11 +86,11 @@ public sealed class ShoutTextInputPopup
 		_onTitleLink = onTitleLink;
 		_openedUtcTicks = DateTime.UtcNow.Ticks;
         _dataSource = new ShoutTextInputPopupVM(titleText, subtitleText, inputHintText, initialText, HandleSubmitRequested, HandleCancelRequested, onTitleLink != null ? HandleTitleLinkRequested : (Action)null,
-            enableIllustration, () => _pendingIllustration = true);
+            enableIllustration, () => _pendingIllustration = true, enableRewrite, () => _pendingRewrite = true);
 		_layer = new GauntletLayer("ShoutTextInputPopup", 1000, false);
 	}
 
-    public static bool Show(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel, Action onTitleLink = null, bool enableIllustration = false)
+    public static bool Show(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel, Action onTitleLink = null, bool enableIllustration = false, bool enableRewrite = false)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -99,7 +100,7 @@ public sealed class ShoutTextInputPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-            ShoutTextInputPopup popup = new ShoutTextInputPopup(topScreen, titleText, subtitleText, inputHintText, initialText, onSubmit, onCancel, onTitleLink, enableIllustration);
+            ShoutTextInputPopup popup = new ShoutTextInputPopup(topScreen, titleText, subtitleText, inputHintText, initialText, onSubmit, onCancel, onTitleLink, enableIllustration, enableRewrite);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -158,6 +159,12 @@ public sealed class ShoutTextInputPopup
         if (!popup._isClosed)
         {
             popup._dataSource.RefreshIllustration();
+            popup._dataSource.RefreshRewriteAvailability();
+            if (popup._pendingRewrite)
+            {
+                popup._pendingRewrite = false;
+                popup._dataSource.RewriteLastRound();
+            }
             if (popup._pendingIllustration)
             {
                 popup._pendingIllustration = false;

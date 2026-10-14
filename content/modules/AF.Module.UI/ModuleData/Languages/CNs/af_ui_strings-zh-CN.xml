@@ -965,7 +965,7 @@
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Group" text="1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Title" text="温度" />
-  <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint" text="控制事件周报与王国叛乱命名的随机性。0 更稳定，2 更发散。默认 0.80。" />
+  <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint" text="控制使用事件/叛乱API的周报、王国命名、外交宣言与书记官代笔等任务的随机性。外交配置不完整并回退主API时，采用主API温度。0更稳定，2更发散。默认0.80。" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Group" text="1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiMaxTokens_Title" text="最大输出Tokens" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiMaxTokens_Hint" text="事件周报、王国叛乱建国命名与统治者政策生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。" />
@@ -1256,8 +1256,8 @@
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Title" text="快报写作要求" />
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Hint" text="单独编辑即时快报写作要求，下次请求生效；清空后保留内置格式和事实约束。" />
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Group" text="周报／快报//快报" />
-  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Title" text="AI外交与书记官代笔偏好" />
-  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint" text="编辑外交判断与文风偏好；书记官代笔采用文风要求，忠实扩写玩家已有内容，不自行增加实质条款。留空不添加偏好，固定事实边界和输出规则仍然有效。" />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Title" text="外交判断与文风偏好" />
+  <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint" text="调整外交利益判断、行动倾向和文风。自定义文风优先于默认写法；书记官只采用符合玩家原意的写作要求，起草或重写时完整保留条件，不自行增加实质条款。留空不添加自定义偏好；事实、权限、合法动作要求和系统输出规则仍有效。" />
   <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
   <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Title" text="启用队内 Hero 主动聊天" />
   <string id="AF_TERMINAL_UI_EnableCompanionProactiveChat_Hint" text="允许玩家主队中的同伴、家人和其他 Hero 通过地图通知主动请求交谈。" />
@@ -1562,8 +1562,8 @@
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Title" text="疲劳类型概率倍率" />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Hint" text="处于类型疲劳期的请求，其需求驱动和知名度驱动概率乘以该倍率，同时降低该需求在候选中的优先级。默认 0.20。" />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestTypeFatigueMultiplier_Group" text="7. NPC主动接触" />
-  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Title" text="恢复默认外交与代笔偏好" />
-  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Hint" text="确认后恢复模组默认偏好文本。只恢复文案偏好，不重置本页的事件上限、传播、篇幅和保护期设置。" />
+  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Title" text="恢复默认外交判断与文风偏好" />
+  <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Hint" text="确认后恢复默认外交判断与文风偏好，覆盖当前自定义偏好。只恢复偏好文本，不重置事件上限、传播、篇幅或保护期设置。" />
   <string id="AF_TERMINAL_UI_RestoreDefaultWorldDiplomacyPrompt_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
   <string id="AF_TERMINAL_UI_SetsDiagnosticLogMaxSizeMegabytes_Title" text="SETS 日志上限(MB)" />
   <string id="AF_TERMINAL_UI_SetsDiagnosticLogMaxSizeMegabytes_Hint" text="SETS.log 达到上限后自动轮转，上一份保留为 SETS.previous.log。默认 16 MB。" />
@@ -1601,11 +1601,11 @@
   <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Title" text="宣言送达最远王庭（天）" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Hint" text="按距离分配王庭送达时间，本值控制最远王庭的传递时长，也用于新事件一轮接力的传递节奏。不是每个国家都固定等待这么多天。默认7天；数值较低时回复更密集。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyCourtMaxDeliveryDays_Group" text="17. AI外交（测试中）/3. 传播" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Title" text="AI外交宣言最大字数" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最多500字，可在1—1000之间调整；小于最小字数时按最小字数执行，不限制玩家手写编辑。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Title" text="建议篇幅上限" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅，非正文裁切线；完整条款优先。默认上限300字，可调1—1000，低于下限时按下限处理。此值也影响书记官生成容量；长稿截断时可提高本项及API最大输出量。不限制玩家手写编辑。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMaxCharacters_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Title" text="AI外交宣言最小字数" />
-  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最少100字，可在1—1000之间调整；不限制玩家手写编辑。" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Title" text="建议篇幅下限" />
+  <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅，标点计入。简单回答可以更短，复杂条款可以更长，完整条件优先。默认下限100字，可调1—1000；不限制玩家手写编辑。" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyDeclarationMinCharacters_Group" text="17. AI外交（测试中）/4. 宣言与代笔" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Title" text="外交档案压缩后目标（千估算Tokens）" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyHistoryCompressionTargetThousands_Hint" text="每批压缩后，长期快照和受保护事实的合计目标。默认48，即约48k Tokens，上限60k；宣言只取相关材料，不整份携带快照。实际摘要还受所选API最大输出Tokens限制。" />
@@ -2556,11 +2556,11 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Editor_PlayerPolicy_Description" text="这是全国政策和地方政策共用的主评议提示词。" />
   <string id="AF_MCM_Editor_PlayerPolicy_Hint" text="可调整成本、期限、民众反馈文风和强度偏好。明确的金额、倍率、范围和数值约束会通过 numericIntent 传给效果后处理；JSON 契约仍由模组保证。留空保存会恢复默认。" />
   <string id="AF_MCM_Editor_Policy_OpenFailed" text="[政策系统] 打开玩家政策评判提示词编辑器失败：" />
-  <string id="AF_MCM_Editor_Diplomacy_Title" text="编辑 AI 外交偏好" />
-  <string id="AF_MCM_Editor_Diplomacy_Description" text="可在这里调整利益判断、行动取向和文风。" />
-  <string id="AF_MCM_Editor_Diplomacy_Hint" text="留空表示不添加自定义偏好。共同契约、长期历史事实边界、MODE 和任务输出结构仍由模组保证。" />
+  <string id="AF_MCM_Editor_Diplomacy_Title" text="编辑外交判断与文风偏好" />
+  <string id="AF_MCM_Editor_Diplomacy_Description" text="调整外交利益判断、行动倾向和文风。自定义文风优先于默认写法；书记官按玩家原意起草或重写，完整保留条件。" />
+  <string id="AF_MCM_Editor_Diplomacy_Hint" text="留空不添加自定义偏好。写作偏好不能改变事实、代表权限、合法动作要求或系统输出规则。" />
   <string id="AF_MCM_Editor_Diplomacy_OpenFailed" text="[AI 外交] 打开提示词编辑器失败：" />
-  <string id="AF_MCM_Editor_Diplomacy_RestoreTitle" text="恢复默认 AI 外交偏好" />
+  <string id="AF_MCM_Editor_Diplomacy_RestoreTitle" text="恢复默认外交判断与文风偏好" />
   <string id="AF_MCM_Editor_Diplomacy_RestoreBody" text="这会覆盖当前自定义偏好并恢复模组默认内容。是否继续？" />
   <string id="AF_MCM_Editor_Diplomacy_RestoreOpenFailed" text="[AI 外交] 打开恢复默认确认框失败：" />
   <string id="AF_MCM_Editor_RestoreDefault" text="恢复默认" />
@@ -2851,10 +2851,10 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Diplomacy_ContinentDays_Hint" text="按距离安排地方贵族和平民获知外交宣言的时间。默认21天；不控制自动开场频率，也不代替王庭送达时间。" />
   <string id="AF_MCM_Diplomacy_RoundLength" text="单场外交目标时长" />
   <string id="AF_MCM_Diplomacy_RoundLength_Hint" text="决定新事件通常何时收尾：紧凑约15天、标准约21天、从容约28天。可因达成结果提前结束，也可短暂延长完成收尾。默认标准，只影响新事件。" />
-  <string id="AF_MCM_Diplomacy_DeclarationMin" text="AI外交宣言最小字数" />
-  <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最少100字，可在1—1000之间调整；不限制玩家手写编辑。" />
-  <string id="AF_MCM_Diplomacy_DeclarationMax" text="AI外交宣言最大字数" />
-  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最多500字，可在1—1000之间调整；小于最小字数时按最小字数执行，不限制玩家手写编辑。" />
+  <string id="AF_MCM_Diplomacy_DeclarationMin" text="建议篇幅下限" />
+  <string id="AF_MCM_Diplomacy_DeclarationMin_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅，标点计入。简单回答可以更短，复杂条款可以更长，完整条件优先。默认下限100字，可调1—1000；不限制玩家手写编辑。" />
+  <string id="AF_MCM_Diplomacy_DeclarationMax" text="建议篇幅上限" />
+  <string id="AF_MCM_Diplomacy_DeclarationMax_Hint" text="AI外交宣言、回应与书记官代笔共用此建议篇幅，非正文裁切线；完整条款优先。默认上限300字，可调1—1000，低于下限时按下限处理。此值也影响书记官生成容量；长稿截断时可提高本项及API最大输出量。不限制玩家手写编辑。" />
   <string id="AF_MCM_Diplomacy_WarCooldown" text="再次主动开战间隔（天）" />
   <string id="AF_MCM_Diplomacy_WarCooldown_Hint" text="一个国家主动发动战争后，至少等待多少天才能再次主动发动新战争。默认42天；不限制其他外交宣言的发布频率。" />
   <string id="AF_MCM_Diplomacy_PeaceProtection" text="和平保护期（天）" />
@@ -2867,11 +2867,11 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Diplomacy_CompressTrigger_Hint" text="长期外交档案达到该估算长度时开始分批压缩。默认800，即约800k Tokens，控制档案积压与压缩频率；不代表每次宣言携带这么多历史。宣言全部输入另有32k估算Tokens上限，压缩每批另有128k输入上限。" />
   <string id="AF_MCM_Diplomacy_CompressTarget" text="外交档案压缩后目标（千估算Tokens）" />
   <string id="AF_MCM_Diplomacy_CompressTarget_Hint" text="每批压缩后，长期快照和受保护事实的合计目标。默认48，即约48k Tokens，上限60k；宣言只取相关材料，不整份携带快照。实际摘要还受所选API最大输出Tokens限制。" />
-  <string id="AF_MCM_Diplomacy_Edit" text="AI外交与书记官代笔偏好" />
-  <string id="AF_MCM_Diplomacy_Edit_Hint" text="编辑外交判断与文风偏好；书记官代笔采用文风要求，忠实扩写玩家已有内容，不自行增加实质条款。留空不添加偏好，固定事实边界和输出规则仍然有效。" />
+  <string id="AF_MCM_Diplomacy_Edit" text="外交判断与文风偏好" />
+  <string id="AF_MCM_Diplomacy_Edit_Hint" text="调整外交利益判断、行动倾向和文风。自定义文风优先于默认写法；书记官只采用符合玩家原意的写作要求，起草或重写时完整保留条件，不自行增加实质条款。留空不添加自定义偏好；事实、权限、合法动作要求和系统输出规则仍有效。" />
   <string id="AF_MCM_Diplomacy_Edit_Content" text="打开编辑器" />
-  <string id="AF_MCM_Diplomacy_Restore" text="恢复默认外交与代笔偏好" />
-  <string id="AF_MCM_Diplomacy_Restore_Hint" text="确认后恢复模组默认偏好文本。只恢复文案偏好，不重置本页的事件上限、传播、篇幅和保护期设置。" />
+  <string id="AF_MCM_Diplomacy_Restore" text="恢复默认外交判断与文风偏好" />
+  <string id="AF_MCM_Diplomacy_Restore_Hint" text="确认后恢复默认外交判断与文风偏好，覆盖当前自定义偏好。只恢复偏好文本，不重置事件上限、传播、篇幅或保护期设置。" />
   <string id="AF_MCM_Diplomacy_Restore_Content" text="恢复默认" />
   
   <string id="AF_MCM_Gathering_Enable" text="启用宴会功能" />
@@ -3002,7 +3002,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_EventRebellionApi_Dropdown" text="事件/叛乱模型名称（下拉）" />
   <string id="AF_MCM_EventRebellionApi_Test" text="测试事件/叛乱 API 连接" />
   <string id="AF_MCM_EventRebellionApi_Thinking_Hint" text="默认关闭。事件周报与王国叛乱命名是严格格式任务，确认接口会将最终答案稳定写入 content 后再开启。开启后，OpenAI 兼容思考接口写入 thinking.type=enabled 与 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
-  <string id="AF_MCM_EventRebellionApi_Temperature_Hint" text="控制事件周报与王国叛乱命名的随机性。0 更稳定，2 更发散。默认：0.80。" />
+  <string id="AF_MCM_EventRebellionApi_Temperature_Hint" text="控制使用事件/叛乱API的周报、王国命名、外交宣言与书记官代笔等任务的随机性。外交配置不完整并回退主API时，采用主API温度。0更稳定，2更发散。默认0.80。" />
   <string id="AF_MCM_EventRebellionApi_MaxTokens_Hint" text="事件周报、王国叛乱建国命名与统治者政策生成调用的 max_tokens。默认：12000；如果接口不支持过高上限，可能会拒绝请求。" />
   <string id="AF_MCM_Tts_Group" text="7. 火山引擎 TTS（专用）" />
   <string id="AF_MCM_Tts_EnableSpeech_Hint" text="总开关。关闭后，NPC 不再播放 TTS 语音，并回退到纯文本气泡显示。" />

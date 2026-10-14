@@ -328,10 +328,10 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			// Keep role-play action prose in the shared dialogue history for later
 			// postprocessing. The player-facing letter is still sanitized at display.
-			string reply = StripCourierActionTags(processedReplyText);
+			string reply = DiplomacyReplyTextRules.CleanNpcText(StripCourierActionTags(processedReplyText));
 			if (string.IsNullOrWhiteSpace(reply))
 			{
-				reply = StripCourierActionTags(session.ReplyText);
+				reply = DiplomacyReplyTextRules.CleanNpcText(StripCourierActionTags(session.ReplyText));
 			}
 			reply = (reply ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(reply))

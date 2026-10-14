@@ -66,11 +66,30 @@ public sealed class WorldDiplomacyExchange
 
 public sealed class WorldDiplomacyJob
 {
+    [JsonProperty("lifecycleClassificationAttempts")] public int LifecycleClassificationAttempts { get; set; }
+    [JsonProperty("replyRoutingCandidateDocumentIds")] public List<string> ReplyRoutingCandidateDocumentIds { get; set; } = new();
+    [JsonProperty("ownershipEpoch")] public int OwnershipEpoch { get; set; }
+    [JsonProperty("schedulingOwner")] public string SchedulingOwner { get; set; } = "";
+    [JsonProperty("playerAuthorityRulerId")] public string PlayerAuthorityRulerId { get; set; } = "";
+    [JsonProperty("silenceSourceDocumentId")] public string SilenceSourceDocumentId { get; set; } = "";
+    [JsonProperty("suspendedReason")] public string SuspendedReason { get; set; } = "";
+    [JsonProperty("privacySourceMaterial")] public string PrivacySourceMaterial { get; set; } = "";
+    [JsonProperty("privacyPublicContext")] public string PrivacyPublicContext { get; set; } = "";
+    [JsonProperty("privacyRevision")] public int PrivacyRevision { get; set; } = -1;
+    [JsonProperty("privacyKnowledgeRevision")] public int PrivacyKnowledgeRevision { get; set; } = -1;
+    [JsonProperty("courtKnowledgeRevision")] public int CourtKnowledgeRevision { get; set; }
+    [JsonProperty("privacyRewrites")] public int PrivacyRewrites { get; set; }
+    [JsonProperty("privacyDraft")] public string PrivacyDraft { get; set; } = "";
+    [JsonProperty("privacyDeclarationSystem")] public string PrivacyDeclarationSystem { get; set; } = "";
+    [JsonIgnore] internal bool PrivacyApproved;
     // Optional binding for oral writing in the existing generation queue.
     [JsonProperty("dialogueArrangementId")]
     public string DialogueArrangementId { get; set; } = "";
     [JsonProperty("dialogueArrangementVersion")]
     public int DialogueArrangementVersion { get; set; }
+    // Zero identifies drafts from before fixed oral execution data survived isolation.
+    [JsonProperty("oralDraftingContractVersion")]
+    public int OralDraftingContractVersion { get; set; }
 	// Request-only reading window. Rebuilt on load/send; never persisted as another archive.
 	[JsonIgnore] internal string DeclarationHistoryBlock;
 	// Runtime-only invalidation for the bounded queue view. The persisted property
