@@ -40,6 +40,10 @@ internal static class ExpandedPersonaEditorReplay
                 TraitIds = new[] { "cautious", "bold", "merciful", "ruthless", "honorable", "pragmatic" }
             };
             var editor = new PersonaEditorController(port);
+            profiles.Get(a.StringId, false).RecentChangeReason = "Lost the castle.";
+            editor.OpenDevPersonaMenuFromExternal(a);
+            check(MBInformationManager.Selection.Body.Contains((chinese ? "最近变化：" : "Recent change: ") + "Lost the castle."),
+                "editor shows literal latest change reason with UI language");
             void Choose(object id) => MBInformationManager.Selection.Confirm(new() { new(id, "", null) });
             void Open() { editor.OpenDevPersonaMenuFromExternal(a); Choose("edit_expanded"); }
             Open();

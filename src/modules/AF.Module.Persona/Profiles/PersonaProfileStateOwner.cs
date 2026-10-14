@@ -3,6 +3,19 @@ using System.Collections.Generic;
 
 namespace AnimusForge;
 
+// Optional event state is serialized inside the existing chunked profile JSON.
+internal sealed class PersonaEvolutionFact
+{
+    public string Key, Facts, Connection;
+    public double Hour;
+}
+internal sealed class PersonaEvolutionState
+{
+    public List<PersonaEvolutionFact> Pending = new List<PersonaEvolutionFact>();
+    public List<string> Seen = new List<string>();
+    public int Attempts;
+}
+
 internal sealed class NpcPersonaTrait
 {
     public string Id;
@@ -87,6 +100,7 @@ internal sealed class PersonaProfileStateOwner
 		profile.Description = text;
 		profile.VoiceId = text3;
 		profile.SpeechStyle = (profile.SpeechStyle ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		profile.RecentChangeReason = (profile.RecentChangeReason ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		Profiles[stringId] = profile;
 	}
 

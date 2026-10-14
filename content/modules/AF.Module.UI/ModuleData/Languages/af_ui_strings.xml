@@ -3427,5 +3427,8 @@ Choose how to proceed:" />
   <string id="AF_UI_Persona_TraitStrength" text="Strength {LEVEL}" />
   <string id="AF_UI_Persona_TraitLimit" text="Five traits are already set. Remove one before adding another." />
   <string id="AF_UI_Persona_ExpandedUpdated" text="Expanded persona updated." />
+  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Title" text="Event-driven NPC persona evolution" />
+  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="Default: off. New confirmed bulletin events can change NPC personas. Uses the auxiliary API with merged, rate-limited requests. Turning off discards pending updates but keeps existing changes. Requires bulletin mode; auto-publishing is not required." />
+  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Group" text="Weekly reports / bulletins" />
 </strings>
 </base>

@@ -142,6 +142,10 @@ internal static class TerminalSettingsChecks
                     Check(diplomacy.Contains(id) && !ui.Contains(id), "complete weekly settings stay on Diplomacy " + id);
                 Type textObject = Assembly.Load("TaleWorlds.Localization").GetType("TaleWorlds.Localization.TextObject", true);
                 var visible = ((IEnumerable)registry.GetProperty("VisibleDefinitions").GetValue(null)).Cast<object>().ToDictionary(def => (string)Property(def, "Id"));
+                string evolutionId = "EnableNpcPersonaEventEvolution";
+                Check(visible.ContainsKey(evolutionId) && diplomacy.Contains(evolutionId), "persona evolution is visible on terminal diplomacy page");
+                Check((string)Property(visible[evolutionId], "DisplayName") ==
+                    (language == "简体中文" ? "事件驱动的 NPC 人设演变" : "Event-driven NPC persona evolution"), "persona evolution title follows UI language");
                 foreach (string id in new[] { "TownAmbientAiShowUsageNotifications", "ScreenNotifications", "DiagnosticsEnabled", "EnemyInterruptRadiusMeters", "Illustrator.UseExactEndpointUrl", "Illustrator.DirectorApiBaseUrl", "Illustrator.DirectorApiKey", "Illustrator.DirectorModelName", "Illustrator.FetchDirectorModelList" })
                     Check(defs.ContainsKey(id) && !visible.ContainsKey(id), "hidden UI setting still exists for persistence " + id);
                 foreach (string id in new[] { "Illustrator.ApiBaseUrl", "Illustrator.ApiKey", "Illustrator.ModelName", "Illustrator.FetchModelList" })

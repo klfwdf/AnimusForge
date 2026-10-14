@@ -299,6 +299,8 @@ internal static string NormalizePromotedSkillKey(string key)
         AppendPersonaContextLine(sb, "AF_PERSONA_CONTEXT_Fears", "Vulnerabilities and fears: ", profile.Fears, 2, Resolve);
         string speech = NormalizePersonaPromptSourceText(profile.SpeechStyle, 240);
         if (!string.IsNullOrWhiteSpace(speech)) sb.AppendLine(Resolve("AF_PERSONA_CONTEXT_SpeechStyle", "Speech style: ") + speech);
+        if (forUi && !string.IsNullOrWhiteSpace(profile.RecentChangeReason))
+            sb.AppendLine(Resolve("AF_PERSONA_CONTEXT_RecentChange", "Recent change: ") + NormalizePersonaPromptSourceText(profile.RecentChangeReason, 240));
         return sb.ToString().Trim();
     }
 

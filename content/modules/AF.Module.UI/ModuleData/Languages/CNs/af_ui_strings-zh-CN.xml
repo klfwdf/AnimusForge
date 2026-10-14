@@ -3461,5 +3461,8 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Persona_TraitStrength" text="强度 {LEVEL}" />
   <string id="AF_UI_Persona_TraitLimit" text="已有五项特质，请先移除一项再添加。" />
   <string id="AF_UI_Persona_ExpandedUpdated" text="扩展人设已更新。" />
+  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Title" text="事件驱动的 NPC 人设演变" />
+  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="默认关闭。新的已确认快报事件可改变NPC人设，使用辅助API合并、限速评估。关闭后丢弃待处理及在途更新，保留已有人设变化。需要快报模式，不要求开启自动出版。" />
+  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Group" text="周报与快报" />
 </strings>
 </base>

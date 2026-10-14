@@ -369,6 +369,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string SpeechStyle;
 
+		// Latest event-driven evolution explanation; persisted with the existing profile JSON.
+		public string RecentChangeReason;
+		public PersonaEvolutionState Evolution;
+
 		public int SchemaVersion;
 
 		public string VoiceId;
@@ -3901,6 +3905,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				() => LogNonHeroMemoryTrace("stage=sync_load_daily_restored owners=" + CountNonHeroDailyDraftOwners() + " lines=" + CountNonHeroDailyDraftLines() + " storageOwners=" + (_dailyMemoryDraftStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds()));
 			CampaignNpcActionPersistenceAdapter.Load(dataStore, _memoryBusinessState, SanitizeNpcActionEntries);
 			_personaPersistence.Load(dataStore);
+			RestorePersonaEvolutionQueue();
 			RebuildNpcRecentActionStableKeyIndex();
 			dataStore.SyncData("_npcActionGlobalOrderCounter_v1", ref _memoryBusinessState.ActionGlobalOrderCounter);
 			NormalizeNpcActionSequences(_npcMajorActions);
@@ -4224,6 +4229,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			ProcessWeekZeroShortSummaryMainThreadActions();
 			ProcessWeeklyFullReportCompletions();
 			ProcessWorldBulletinMainThreadActions();
+			TryStartPersonaEvolution();
 			ProcessKingdomRebellionApiRepairResume();
 			ProcessKingdomRebellionNamingMainThreadActions();
 			ProcessPendingDevForcedKingdomRebellionResult();
@@ -7891,6 +7897,7 @@ private void ApplyPatiencePostprocessMoodOverrideFromUnnamedResponse(string unna
 		ResetNpcActionRecordContainers();
 		_npcActionGlobalOrderCounter = 0;
 		_personaPersistence.ResetForCurrentSave();
+		ResetPersonaEvolution(false);
 		WeeklyEventDataImportOwner.ResetContainers(ref _weeklyEventRecords.KingdomOpenings, ref _weeklyRecordPersistence.OpeningStorage,
             ref _weeklyEventRecords.WorldOpening, ref _weeklyEventRecords.Records, ref _weeklyRecordPersistence.RecordJsonStorage);
 		_campaignMaterialRecords.ResetMaterials();

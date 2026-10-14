@@ -151,6 +151,9 @@ internal sealed class PersonaEditorController
 			stringBuilder.AppendLine(Localize("AF_UI_Persona_MenuPrompt", "Choose an action:"));
 			stringBuilder.AppendLine(Localize("AF_UI_Persona_PersonalityLabel", "Persona: ") + (flag ? Localize("AF_UI_Persona_Set", "set") : Localize("AF_UI_Persona_Unset", "not set")));
 			stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceCurrent", "Current voice ID:") + (flag3 ? npcVoiceId : Localize("AF_UI_Persona_VoiceUnsetAuto", "not set (assigned automatically by VoiceMapping)")));
+			string recentChange = _port.GetPersonaProfile?.Invoke(npc)?.RecentChangeReason;
+			if (!string.IsNullOrWhiteSpace(recentChange))
+				stringBuilder.AppendLine(Localize("AF_PERSONA_UI_CONTEXT_RecentChange", "Recent change: ") + recentChange);
 			List<InquiryElement> list = new List<InquiryElement>();
 			list.Add(new InquiryElement("set_personality", Localize("AF_UI_Persona_SetPersonality", "Set or edit persona"), null));
 			list.Add(new InquiryElement("edit_expanded", Localize("AF_UI_Persona_EditExpanded", "Edit expanded persona"), null));

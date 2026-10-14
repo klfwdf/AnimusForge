@@ -71,6 +71,21 @@ static class SharedMcmChecks
                 check(File.Exists(OwnerPath(owner)),"shared owner file "+owner.Id);
             }
             var json=JObject.Parse(File.ReadAllText(mainPath)); json["MinimumPositiveNpcRelationGain"]=5;
+            var evolution = duel.GetType().GetProperty("EnableNpcPersonaEventEvolution");
+            check(evolution != null && !(bool)evolution.GetValue(duel), "persona evolution defaults off");
+            evolution.SetValue(duel, true);
+            check((bool)save.Invoke(format,new object[]{duel,OwnerDirectory(duel),duel.Id}), "persona evolution native MCM save");
+            var evolutionReload=(BaseSettings)Activator.CreateInstance(duel.GetType());
+            load.Invoke(format,new object[]{evolutionReload,OwnerDirectory(duel),duel.Id});
+            check((bool)evolution.GetValue(evolutionReload), "persona evolution native MCM JSON roundtrip");
+            evolution.SetValue(duel, false);
+            var profileType = af.GetType("AnimusForge.MyBehavior+NpcPersonaProfile", true);
+            var persona = Activator.CreateInstance(profileType, true);
+            profileType.GetField("SpeechStyle").SetValue(persona, "careful wording");
+            profileType.GetField("RecentChangeReason").SetValue(persona, "A lost castle changed his outlook.");
+            var render = af.GetType("AnimusForge.NpcPersonaTextRules", true).GetMethod("BuildPersonaContext", All, null, new[]{profileType,typeof(bool)},null);
+            check(((string)render.Invoke(null,new[]{persona,(object)true})).Contains("A lost castle changed his outlook."), "actual DLL encyclopedia projection displays change reason");
+            check(!((string)render.Invoke(null,new[]{persona,(object)false})).Contains("A lost castle changed his outlook."), "prompt projection uses latest fields without extra UI explanation tokens");
             json.Remove("TerminalHotkeyEnabled");json.Remove("TerminalMapIconEnabled");
             File.WriteAllText(mainPath,json.ToString());
             string legacy=Path.Combine(module,"Configs","TerminalSettings.json");
