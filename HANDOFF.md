@@ -1,3 +1,9 @@
+# 当前交接：1.6.1 合并发行（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_PENDING）
+
+- 用户授权拉取合并、包含所有已完成并验证改动、编译部署推送打包，公告以1.6.0为基线。发布候选4650a38f0包含远端a29b12752、原未提交存档/历史修复及其他会话最终场景接力修复；原流程双API/Bootstrap构建与CN/EN正式包校验成功，版本1.6.1。
+- 包位于主目录一键编译覆盖推送/packages/AnimusForge_v1.6.1_{CN,EN}_1015_0646.zip；玩家公告为docs/releases/AnimusForge_1.6.1_更新公告_20261015.md及同名txt。部署与保护项核验PASS；推送待本发行提交完成后核对远端；实机、真实provider、旧sav及第三方MOD组合未验。
+- [唯一主台账、交付证据与回退边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-161-20261015)；[合并修复代码范围](docs/architecture/af-framework-code-scope.md#release-161-20261015)。保留旧条目作为当时状态，不重放已合入的原stash。
+
 # 当前交接：场景接力打断与静默超时（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品7adf7c46f：接力期间暂停参与者空闲超时，每轮回复更新字数预算；打断作废旧计时/语音 token 并重新等待。单人/多人超时只静默释放，不再写“玩家长时间没有发言”或生成 NPC 反应。旧存档历史保留。

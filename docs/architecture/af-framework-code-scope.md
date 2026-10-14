@@ -1,3 +1,14 @@
+<a id="release-161-20261015"></a>
+### 1.6.1 合并发行的新增兼容资源与冲突接线
+
+产品合并修订e1e46ab20 / 4650a38f0。详细测试、发行包与未验范围见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#release-161-20261015)。未新增外部API，既有功能沿用对应原交付代码地图。
+
+| 一基坐标 / 符号 | 实际责任与验证边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Presentation/DiplomacyReplyTextRules.cs:37–66` CleanNpcText | 回信包装前缀读现有兼容资源，整行回执过滤规则不变；CN/EN真实源码回放各458项，游戏动作叶为替身 |
+| 同文件`:69–87` BuildReceiptLine；`AnimusForge.csproj:206` EmbeddedResource；`content/content-map.json:6–8` source/target/logicalName | 只嵌入专用回执兼容表，70键140变体与原匹配数据守恒；懒加载一次，无Tick IO；双包实际DLL门禁通过 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneExecutionStages.cs:203–211` BeginNewPlayerDrivenSceneConversationEpoch | 同时InvalidateRewriteTurn、RetireRelayInteractionWaits及旧请求退休，合并保留两侧职责；生命周期与撤回专项通过，实机/TTS未验 |
+
 <a id="oral-privacy-authority-20261015"></a>
 ### 口头外交：保密隔离后的权威执行资料与安全旧任务恢复
 

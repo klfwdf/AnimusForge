@@ -1,3 +1,18 @@
+<a id="release-161-20261015"></a>
+## 1.6.1 拉取合并、统一构建和正式发行（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_PENDING）
+
+- 授权：先拉取合并，再编译、部署、推送、双包及面向玩家公告；用户确认包含所有已完成并验证改动，公告基线1.6.0（2026-10-13，737907825）。用户暂停等其他会话后明确恢复。
+- 合并：bce750a97接远端a29b12752；e1e46ab20合入已验证的原未提交存档/历史修复及发行回执兼容修复；4650a38f0接其他会话7adf7c46f等最终场景接力修复。DuelSettings保留本地分组与远端API说明；Courier同时保留经历复核和回执清理；新场景epoch同时作废编辑轮次与旧接力等待。详细源码范围见[代码地图](architecture/af-framework-code-scope.md#release-161-20261015)，其他功能复用各原台账责任边界。
+- 正式门禁修复：回执识别改嵌入专用DiplomacyReceiptCompatibility.json，70键/140中英文变体，与原匹配项精确守恒；回信前缀读已有兼容键。不再嵌入整份Prompt/UI表，不修改或放宽打包门禁。兼容表一次懒加载，无新增Tick扫描、磁盘IO或模型请求。
+- 版本：原package_mod.ps1 -Build -Configuration Release完成v1.6.0→v1.6.1事务，FileVersion=1.6.1.0，程序集身份版本保持原值。原Release双API（1.3.15/1.4.6参考）、Bootstrap、双Coup接缝及registration smoke通过；完整CN/EN Stage、ZIP内容/投影/完整性校验PASS。两包均3522项且同一单模块；三DLL均与Stage一致，ONNX按原策略不包含。
+- 正式包：一键编译覆盖推送/packages/AnimusForge_v1.6.1_CN_1015_0646.zip，SHA256=a07c1fcabd4adaebfcc244294207117995be76ba57c049c8e92764783dd2df21；EN同时间名，SHA256=445c2cbf067523427c6d9f589c6b5d17d31d98560f2c868dd67b73b2f9ad21d3。旧包保留。公告docs/releases/AnimusForge_1.6.1_更新公告_20261015.md及txt。
+- 相关离线回归：外交正文清理CN/EN各458；口头外交329；历史范围/预算/快报源CN/EN各22；场景生命周期131、speech output54、audience30、撤回20；实际MCM/终端/资源27239断言。存档完整性/旧值/缺块/写失败/原生Add-only回放及21分块键、47flatten清单PASS。断言数不代表实机场景数。已知基线全量中文快捷入口断言失败仍保留，不以这些专项宣称全仓全测通过。
+- 部署准备：隔离检出的新时间戳会误覆盖现有英文PlayerExports，已核对3133映射的源正文与主目录一致，仅恢复隔离源/Stage到主目录原时间戳，让原部署规则保留安装资料；不改部署脚本。3177个设置/提示词/导出及Documents设置文件SHA、ONNX状态和3个原版游戏DLL已采样。第一次部署缺显式DLL参数被脚本在写入前拒绝，补齐三DLL路径后重试。最终原脚本部署exit0，更新90个受管文件；3522项Stage中389受管文件哈希一致、3133项沿原策略保留，3177个受保护文件SHA不变、10个ONNX文件和10个额外文件状态保留、3个原版游戏DLL不变。三份安装DLL与正式两包一致，deployment-verification.json为PASS。
+- 本地证据统一在artifacts/merge-push-20261015/：package-final-161.log、package-verification.json、receipt-final.log、history-final.log、persistence-final.log、chunk-contract-final.log、diplomacy-release.log、scene-release.log、rewrite-release.log、ui-release.log、outgoing-review.json。部署证据为deploy-final.log、predeploy-final.json及完成后deployment-verification.json。出站656对象路径检查无所查凭据模式或禁止推送的本地handoff；未声称全历史无敏感信息。
+- 工作区保全：主目录原未提交内容已完整合入，快照main-before-sync/manifest.json、working.patch、files/、residual-files/及stash.txt保留；Microsoft/、NuGet/未跟踪目录不提交。隔离工作区编译引用链接造成的179项已跟踪引用丢失已按HEAD恢复，关键DLL哈希与之前依赖清单相同，证据reference-restoration.json；现为独立物理副本。旧Stage保留于source-sparse/artifacts/previous-stage-before-receipt-compat。
+- 未验：未启动游戏，真实多人/TTS/模型输出、旧sav长期运行和第三方MOD组合未验。既有存档损坏不会因此自动修复。
+- 回退：合并前main为ccbc7cbbc；功能按各原条目聚焦git revert，不hard reset或重写共享历史。原资料快照与旧1.6.0两包保留；游戏部署无Recovery备份、无自动回滚。需回退安装时人工选择旧包并保留用户资料，不能宣称本轮创建了可自动恢复的部署副本。
+
 <a id="scene-interrupt-timeout-20261015"></a>
 
 ## 场景接力打断与静默超时（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
