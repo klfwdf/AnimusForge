@@ -36,7 +36,7 @@ namespace AnimusForge {
  public static class BannerlordExceptionSentinel { public static void ReportObservedException(string category,Exception error,string context) { } }
  public static class SaveRuntimeGuard { public static long Generation; public static long CaptureGeneration() => Generation; public static bool IsCurrentGeneration(long generation) => generation==Generation; }
  public static class ConversationHelper { public static void AdjustTypewriterDuration(float duration) { } public static void StartTypewriterPlaybackIfWaiting(float duration=0) { } }
- public sealed partial class DuelSettings { public float SceneConversationTimeoutSecondsPerVisibleCharacter=1;public bool TtsSceneUseWinmmAudible = true; public float TtsLipSyncSoundEventVolume; public static DuelSettings GetSettings() => new(); }
+ public sealed partial class DuelSettings { public float SceneConversationTimeoutSecondsPerVisibleCharacter=1;public bool TtsSceneUseWinmmAudible = true; public float TtsLipSyncSoundEventVolume; public static DuelSettings Current = new(); public static DuelSettings GetSettings() => Current; }
  public sealed class TtsEngine {
   public static TtsEngine Instance = new();
   public sealed class PlaybackRequest { public long RequestId; public int AgentIndex; public bool IsCancellationRequested; }
@@ -73,3 +73,21 @@ namespace TaleWorlds.CampaignSystem.Roster {
 }
 namespace TaleWorlds.Core {public struct EquipmentElement {public ItemObject Item;}public struct MBGUID {public uint InternalValue;}}
 namespace TaleWorlds.CampaignSystem.Actions {public static class GiveGoldAction {public static bool ThrowAfterDebit;public static void ApplyBetweenCharacters(TaleWorlds.CampaignSystem.Hero giver,TaleWorlds.CampaignSystem.Hero recipient,int amount,bool disableNotification=false){giver.Gold-=amount;if(ThrowAfterDebit)throw new Exception("synthetic debit then throw");if(recipient!=null)recipient.Gold+=amount;}}}
+
+// Text/persona leaves only; lifecycle and timeout logic above link production sources.
+namespace AnimusForge {
+ internal static class ConversationUiLocalization { internal static string Text(string key,string fallback,params (string Key,object Value)[] args) {fallback=FixtureTextResources.Ui.TryGetValue(key,out var text)?text:fallback;foreach(var arg in args)fallback=fallback.Replace("{"+arg.Key+"}",arg.Value?.ToString()??"");return fallback;} internal static string Text(string key,string fallback,string name,string value)=>Text(key,fallback,(name,(object)value)); }
+ internal static class EconomyUiTexts { internal static string ProjectPartyAssetNameForUi(string text)=>text; }
+ internal static class AdapterPromptCaptureTexts {internal static string PcapCompat(string key)=>key;}
+ internal static class AdapterSceneTexts {internal static string Get(string key,string fallback)=>FixtureTextResources.Scene.TryGetValue(key,out var text)?text:fallback;internal static string Format(string key,string fallback,params (string Key,object Value)[] args)=>ConversationUiLocalization.Text(key,Get(key,fallback),args);}
+ internal static class TtsErrorUiText {internal static string Describe(string text)=>text;}
+}
+namespace AnimusForge.Refactor.Runtime {internal static class NpcPersonaProfilePolicy {internal static string MergeLegacy(string personality,string background)=>personality+"\n"+background;}}
+
+namespace AnimusForge {
+ internal static class FixtureTextResources {
+  private static string Root { get {var d=new System.IO.DirectoryInfo(AppContext.BaseDirectory);while(d!=null&&!System.IO.File.Exists(System.IO.Path.Combine(d.FullName,"AnimusForge.csproj")))d=d.Parent;return d?.FullName??throw new Exception("Repository content missing");}}
+  internal static readonly Dictionary<string,string> Ui=System.Xml.Linq.XDocument.Load(System.IO.Path.Combine(Root,"content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml")).Descendants("string").ToDictionary(e=>(string)e.Attribute("id"),e=>(string)e.Attribute("text"));
+  internal static readonly Dictionary<string,string> Scene=System.Text.Json.JsonSerializer.Deserialize<Dictionary<string,string>>(System.IO.File.ReadAllText(System.IO.Path.Combine(Root,"content/foundation/AF.Foundation.Localization/ModuleData/AdapterSceneTexts.zh-CN.json")));
+ }
+}

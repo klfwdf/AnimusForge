@@ -1033,7 +1033,7 @@ internal sealed partial class SceneConversationSessionRuntime
 						currentSpeaker, allNpcData, speakingHero, npcCharacter, cleaned,
 						sceneReplyGeneration, sceneReplySessionId, conversationEpoch,
 						sceneSummonTargets, sceneGuideTargets, flag11,
-						remainingTurns > 0 ? (-1f) : dynamicTimeoutSeconds,
+						dynamicTimeoutSeconds,
 						Math.Max(1, engagedAgentIndices.Count), playerText, replyIsDirectPlayerResponse, speechCompletion);
 					if (!IsCurrentModuleGroup()) return;
 					if (!speechQueued)
@@ -1177,6 +1177,7 @@ internal sealed partial class SceneConversationSessionRuntime
 						|| !SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
 						|| sceneReplySessionId != _ports.SceneSessionId()
 						|| !IsSceneConversationEpochCurrent(conversationEpoch)) return false;
+					_ports.RetireRelayInteractionWaits();
 					_ports.ReleaseSceneConversationConstraints(failedEngagedParticipants, primaryNpc?.AgentIndex ?? (-1), stopAutoGroupSession: true, clearQueuedSpeech: true, forceFullAutonomyRelease: true);
 					return true;
 				}, fallback: false);
