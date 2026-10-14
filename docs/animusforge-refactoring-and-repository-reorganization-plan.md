@@ -1,4 +1,24 @@
-﻿<a id="shared-mcm-settings-intent-20261014"></a>
+﻿<a id="shared-mcm-settings-complete-20261014"></a>
+## 2026-10-14 终端与 MCM 共用文档配置（OFFLINE_VERIFIED / LIVE_PENDING）
+
+本条明确替代 shared-mcm-settings-intent-20261014 的 IN_PROGRESS。产品 `fbed672ac`，checkpoint `df5e2dd88`；按用户“跟MCM一样公用”恢复四owner原生文档MCM存储，终端仍用原属性/owner/JSON，不新增终端业务配置副本。此次settings例外仅更新仓内AGENTS和text-contracts，不安装全局skill或迁移其余数据。
+
+- 主/DialogueUI/Illustrator在 User `Configs/ModSettings/Global/AnimusForge`，Coup在 `Global/AnimusForge_Coup`；原ID、JSON和preset保持，Documents实际路径由MCM解析。已有文档值优先；模组旧业务JSON留原位、不自动合并搬迁。仅主设置加载且新入口字段缺失时兼容旧模块TerminalSettings的两开关；入口编辑写同一主JSON并至少保留一个入口，native formatter false/provider异常保留失败信号及内存回退。Illustrator编辑器Prompt hooks保留，缓存/其他运行资料仍模组。
+- 原统一Release双API/Bootstrap/Coup/registration exit0，参考1.3.15.110062/1.4.6.115628。独立SHA快照真实MCM formatter/终端回放1.3 **520**、1.4 **530** PASS；filesystem仅映射工作区假Documents、无Game/Campaign/native/HTTP。旧入口atomic helper6 PASS，双语5新key成对/原值保持、diff检查通过。候选含共享工作区并行Economy源码，不当作仅本产品的隔离DLL；并行输出暂缺后改用带匹配marker的独立快照完成回放。
+- 未验：真实Documents/游戏启动/重启及完整Policy存储综合套件。后者独立runner补程序集身份和引用、修新增测试变量名冲突后编译0/0，但启动报Exception.ToString无法打印，未计PASS或猜根因；旧DataPaths全套根路径/runner失败也保留，相关6项专项直接运行隔离DLL通过，不称全套通过。日志/receipt/完整说明 `artifacts/shared-mcm-settings-20261014/REPORT.md`。未Stage、部署、push或打包；本轮工具不写玩家文件，游戏安装仍此前02c8095b1 Release。
+- 频率：只在编辑/Load边界写读设置，热路径用原MCM缓存，不新增Tick IO/反射扫描。回滚focused `git revert fbed672ac`，不reset其他工作，不自动回迁文件；其他作者Economy改动与原Microsoft/NuGet未跟踪目录保留。
+
+| fbed672ac实际源码 | 一基坐标/符号 | 责任与验收边界 |
+| --- | --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/McmSettingsStorage.cs` | EnsureReady22–36，SaveSharedSettings39–57，GetSharedSettingsFilePath59–67，RestoreTerminalEntry69–90 | 不再目录override；共享路径、主owner失败观察、缺失入口读取；真实MCM/假filesystem覆盖，真实OS Documents未验 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.TerminalEntry.cs` / `DuelSettings.TerminalSave.cs` | 两属性8–16 / SaveCurrentSettings11–27 | backend字段同主JSON；入口及保存错误回放，不新增MCM可见界面 |
+| `src/modules/AF.Module.UI/Settings/AnimusForgeTerminalSettings.cs` | 属性14–29，SetEntry31–45，GetSettingsPath47，旧helper51–129 | 原入口兼容壳共享owner、最后入口和保存回退；旧helper仅兼容/专项 |
+| `extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettingsStorage.cs` | DirectoryKey9、EnsureReady13–26 | 仅保留Prompt persistence hooks，恢复原FolderName目录；缓存不搬 |
+| `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsCoverage.cs` | IsVisible79–83 | 两后台字段避免重复入口，原手工控件保留 |
+| `content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml` / `CNs/af_ui_strings-zh-CN.xml` | 3415–3419 / 3449–3453 | 5个双语key接属性metadata；原资源值未变，实际画面未验 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.News.cs`（未改） | User路径56–96 | 实际reader/writer已原生User，恢复统一路径；没有本轮新增legacyNews数值专项 |
+
+<a id="shared-mcm-settings-intent-20261014"></a>
 ## 2026-10-14 终端与MCM共享文档配置（IN_PROGRESS）
 
 用户明确要求终端设置到骑砍文档目录，并补充“跟MCM一样公用”。本条针对设置覆写原module-only规则：恢复四owner的MCM标准User/Configs/ModSettings/Global路径，终端继续MCM原对象/字段/serializer，入口两开关也存主owner；不搬日志/缓存/世界书/用户提示词，不新增Terminal业务配置副本，不自动覆盖文档已有主配置或移除模组旧文件。
