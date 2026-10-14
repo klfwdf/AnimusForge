@@ -10318,3 +10318,28 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 | `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCampaignApplication.cs` | 45–85，DailyTick | 每步骤既有Watchdog scope；算法与全部规则顺序未变，实机耗时待验 |
 | `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs` | 2301–2319，OnDailyTick | 既有同步/延后分流的每日入口scope；未改配置或强制启用 |
 | `src/AF.GameAdapter.Bannerlord/Weekly/CampaignDailyMaintenanceController.cs` | 163–172，ProcessDeferredDailyMaintenance | 原有每job预算内追加scope；未改实际job上限/预算/调度 |
+
+
+<a id="rp-market-incremental-20261014"></a>
+## RP市场保护按需缓存与分帧补漏（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户明确授权实施去重/版本缓存/读档与日常补漏分帧。检查点4444e7e；既有MCM/终端/内容资源dirty由其他工作保留。只维护原RP禁售与NPC赠品可售语义，不改价格、交易动作、存档键、双语文案、一键流程或部署。
+- 新清理owner/host partial负责弱库存缓存、规则epoch、按槽位游标、唯一库存队列及代次/owner保护；市场打开与关闭同步检查当前两个库存并引用去重。读档枚举与日常补漏只入队，应用帧128工作单元/约2ms软预算；原版单次库存删除不可拆分。含可售动态生成物品不直接命中clean缓存，避免属性/资格变化被跳过。
+- 退出门：真实清理owner/交易入口回归、大积压槽位预算、同量库存替换/规则变化/读档/owner/失败重试、旧禁售/赠品保留、原双API/Bootstrap构建及源码差异检查。实机性能/旧档留LIVE_PENDING；不部署/Stage/打包/push。
+
+- 产品提交`4b406ed36`，接续并替代43d44b36b的同步定居点/读档市场清理实现；前一切片跨天全图扫描删除及Watchdog定位继续保留。其他MCM/终端共享设置变更未夹带本产品提交，现有Microsoft/NuGet未跟踪目录保持。
+- 缓存使用`ConditionalWeakTable<ItemRoster, Scan>`和原生`VersionNo`，普通稳定库存命中时不读槽位；许可/manifest注册、模板和类别改动通过Interlocked epoch失效，存档代次Reset退役所有游标/枚举/缓存。可售生成赠品保持重验而不直接命中clean缓存，以覆盖不改变库存版本的可变物品属性。队列同时按库存和定居点去重；同一owner反复换库存仍只有一个待办，执行时解析最新库存，不保留无界历史替换队列。
+- 应用帧只在有工作且主线程/当前owner/战役存在/非保存时推进；读档枚举、空/失效job和商品槽位共享128单元上限与约2ms软期限。大市场圆转排队不阻塞小市场，原生swap-last删除重验移入槽位；源Version/epoch改变重新推进，原生回调追加变更也重验。读档残留清理允许跨帧延迟；交易入口同步清理当前市场，若两个参数是同一个roster只执行一次。
+- 异常隔离：getter/分类/删除失败不stamp clean，不在同帧反复自旋，保留下一每日/交易重试；日志/枚举Dispose失败不strand其他工作。同步交易有`2×初始槽位数+1`不稳定源工作上限，持续重入补货时记录失败、保留invalid stamp和未清数据，不宣称完成或删截业务数据；不是普遍UI硬毫秒限制。
+- `python tests/modules/AF.Module.Economy/NpcGiftMarketTradeTests/run.py --run-root artifacts/rp-market-incremental-20261014/reviewed`：**52 PASS/0 FAIL**，包含原赠品JSON/许可合并、玩家单/批量交易、party售卖、商队/村民暂存、经济池/作坊/RP模板排除、卖出保存投影；新52用例实际编译整份清理owner/host partial、原SaveRuntimeGuard、源码交易/每日入口和真正OnEngineTick消费者。物品/库存/战役/保存状态/TWParallel/日志/恢复定义仍为叶替身，库存替身实现Version和swap-last，不冒充实机、全部原生回调或完整SyncData。
+- 大积压：2000市场/600001槽位跨天入口0读取，读档/每日只排队；120市场×513槽位回放与全过程逐应用帧检查≤128读取，513槽位单市场按128单元上限5次完成。1000次同定居点换库存pending=1；同库存开交易5槽位只读5次，未变化关闭/每日命中cache不重复读；动态可售赠品仍重验。5ms单原子读取测试只推进1槽位后让出，证明软期限检查位置，不证明游戏原生5ms或整帧2ms。
+- 五个故障变体均真实编译且退出1：unbounded-slots **45/7**，ignore-deadline **51/1**，ignore-generation **51/1**，cache-mutable-gifts **51/1**，old-cleanup **47/5**；保留全部原断言。初次fixture缺Runtime using namespace leaf，补测试命名空间后通过，未修改生产命名空间制造通过。源码/运行日志/故障证据集中`artifacts/rp-market-incremental-20261014/`，`receipt.json`绑定三份生产源码/三DLL哈希及产品修订。
+- 最终原`build_single_module.ps1 -Configuration Release`退出0：1.3.15.110062、1.4.6.115628、Bootstrap及双Coup接缝/注册门禁PASS；日志`artifacts/rp-market-incremental-final-build-20261014.log`。`git -c core.whitespace=cr-at-eol diff --check`PASS，保留大host原CRLF格式，无新运行文案/资源/持久键/序列化身份，也未改一键或默认Debug。
+- NOT-RUN：真实入夜/读档性能曲线、各AI/交易Harmony原生效果、实际旧档；无Stage/部署/打包/push。不可据离线PASS承诺消除全部入夜卡顿，外交同步维护等其他来源继续待Watchdog新实机日志定位。回滚本切片用`git revert 4b406ed36`，回到前一市场保护实现，保留其他作者更改和43d44b36b日结定位。
+
+| 产品4b406ed36源码路径 | 一基行号/符号 | 实际owner/consumer与边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Economy/Execution/GeneratedRewardMarketCleanupOwner.cs` | 61–97 Reset/BeginWorldScan/Enqueue/IsClean；99–154 CleanNow/Step；159–218 Tick/AdmitWorldMarket/Retire/CloseWorld | 真实弱缓存/游标/有界队列算法；存档代次/owner/源绑定与失败标记，不是转发壳；单原生操作保持原子 |
+| `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.MarketCleanup.cs` | 13–25 epoch/factory；27–43 CleanGeneratedRewardTradeMarkets/Queue/Process | 原生roster与规则predicate适配，TWParallel/owner/保存准入及应用帧dispatcher |
+| `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs` | 1530–1554 OnGameLoadFinished/OnEngineTick；11751–11755 OnDailyTickSettlement；11943–11947 RemoveGeneratedRewardItemsFromRoster | 真实读档/应用帧/每日/交易消费者；此前同步全图清理helper无消费者后删除，定义恢复与其他奖励玩法保持 |
+| 同上，规则失效入口 | 9502 TrySetGeneratedRewardItemCategory；10137 ClearGeneratedRewardRuntimeState；10265 RegisterGeneratedRewardManifestRecordNoLock；11050 ApplyGeneratedRewardItemTemplateState；11474 RestoreLegacyNpcGiftMarketTradePermission | 只增加epoch/reset，不改生成许可、模板、注册、存档字段或原返回语义；可变允许赠品仍请求边界重验 |

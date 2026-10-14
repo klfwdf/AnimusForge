@@ -1,4 +1,10 @@
-﻿# 当前交接：终端与 MCM 共用文档配置（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+﻿# 当前交接：RP市场保护缓存与分帧补漏（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品4b406ed36：交易库存引用去重/弱版本缓存；含可售动态生成赠品继续资格重验。读档/每日补漏逐槽位分帧，应用帧128工作单元/约2ms软预算，按定居点及库存合并待办；原RP禁售、普通NPC赠品可售及经济池保护保持。
+- 52回归PASS，5种故障注入编译后均按预期FAIL；原Release双API/Bootstrap/Coup/注册PASS。覆盖源/代次/owner/保存/异常及原生swap-last替身；不是实机帧预算。大市场首次交易仍同步，单原生操作不可拆，读档残留跨帧清理。
+- [唯一主台账、代码坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#rp-market-incremental-20261014)。本条接续并替代旧市场同步补漏实现；此前日结Watchdog继续有效。未部署/Stage/打包/push，实机入夜与旧档待验；回滚git revert 4b406ed36，其他并行MCM/终端修复保持。
+
+# 当前交接：终端与 MCM 共用文档配置（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品fbed672ac：四owner恢复MCM原生文档JSON/preset；终端共享原owner，两入口开关也存主JSON。已有文档配置优先，模组旧业务文件保留；缺失入口字段仅Load边界兼容，保存失败回退。其余资料不搬目录。
 - 原Release双API/Bootstrap/Coup/registration及真实MCM/终端520/530回放PASS，旧入口helper6及CN/EN资源PASS。真实Documents/重启未验；旧Policy综合runner编译通过但启动失败，完整套件不计PASS。候选含并行Economy工作，产品提交未夹带其改动。
