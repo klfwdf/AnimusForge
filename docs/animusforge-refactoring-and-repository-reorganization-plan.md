@@ -1,4 +1,26 @@
-﻿<a id="terminal-font-scene-intent-20261014"></a>
+﻿<a id="terminal-ui-scene-complete-20261014"></a>
+## 2026-10-14 终端战争排版、字号与场景快捷键（OFFLINE_VERIFIED / LIVE_PENDING）
+
+本条替代terminal-font-scene-intent-20261014、war-stats-layout-20261014的IN_PROGRESS状态。main产品b4653dbe8，checkpoint e14f1d2a3/e9d06aaf3；无新部署/push/打包/版本递增或玩家数据写入，游戏仍02c8095b1 Release。原Microsoft/NuGet未跟踪目录保持。
+
+| 职责 | 实际源码证据（1-based） | 已覆盖/边界 |
+| --- | --- | --- |
+| 战况左右列 | content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml:602–625、629–716 | 原左Fixed480/右Stretch导致1600窗口行列480/852；现双方Stretch默认ratio1、中间160；表头/色线与行保留同一12滚动条空间，666/160/666；原数据、链接、排序和6条分页保持 |
+| 终端字号/容器 | 同prefab:8及全153处静态FontSize，438动态reader；545–575概览、629行 | 静态+2、两继承20号标签改22号，紧凑文字框扩高度；概览86/行82；窗口1600x1016，500行区容纳6×82，含框延伸1060不超参考1080；不称任意分辨率/缩放已验 |
+| 专用下拉 | content/modules/AF.Module.UI/GUI/Prefabs/AnimusForge.TerminalDropdown.xml:3、52–86；主prefab:278/597/744；content/content-map.json:184–188 | 改选中18→20、项目17→19、按钮高30；基于Native标准模板保留selector/命令/滚动结构，仅终端三消费者，原版/其他MOD不变，完整映射及Stage接线 |
+| 报告正文 | src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.Archive.cs:39、92 | 原item字号基础+2，既有通知/用户存储值不改，只终端reader；无正文/提示词改写 |
+| 场景快捷键 | src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs:321–337、584–600；原弹层AnimusForgeTerminalUiModels.cs:215–245、357–423未改 | 同一原按键/default U；按下边沿后检查Campaign/有效Mission、非结束/对话/交易/加载/过场、MissionScreen/MissionState与现有菜单disable；输入/模态/冷却与focus/disable/关闭保持，无Tick IO/反射扫描；不保证每个终端动作在所有场景有资格 |
+| 双语说明 | DuelSettings.cs:789、TerminalSettingsRegistry.cs:228、TerminalSettingsLocalization.cs:632；AF UI CN/EN原TerminalKey_Hint两键 | 原设置字段/默认/范围/owner保持，MCM/终端fallback与成对资源同步，实际两语言终端消费者回放通过 |
+
+原Release双API/Bootstrap/Coup/注册PASS（artifacts/terminal-ui-scene-20261014/build.log）；引用1.3.15.110062、1.4.6.115628，两实现363既有warnings/0 errors。相关回放最终1.3 **493** / 1.4 **503** PASS，artifacts/tests/terminal-live-settings/run-fca404f4bc1a422cb23aa136eddf9b43、run-9a6587588b5e4b90908f64de5708b552；原MCM/保存/诊断/环境用例继续有效。新SceneTerminalChecks直接调用实际gate/reader/终端说明与真实CLR类型，只在隔离进程Harmony替换属性快照；不初始化native Input/Mission/渲染。18场景/map资格、4reader字号、2语言消费者通过。
+
+局部XML/绑定/线性布局算术PASS（validate-ui.py、ui-verification.json）：旧datasource/command不变，153+2字体、下拉事件/映射、成对说明、比例、概览/行非重叠与6条完整分页。字体放大后初始940窗口高度不足，继续增加高度，不减条数；Python初版content-map默认GBK失败改UTF-8。原StageOnly完整3520文件门禁PASS，受影响四资源/候选DLL哈希一致，旧项目Stage保留previous-release-stage；最终1016高度是非嵌入XML修正，由最终几何/Stage验证覆盖，未重复无关构建。安装DLL/终端prefab读哈希仍上次部署，未覆盖游戏。
+
+UI产品提交b4653dbe8之后，工作区出现其他来源的MyBehavior、CampaignDailyMaintenanceController、WorldDiplomacyCampaignApplication及两RewardSystemBehavior文件改动；保留且未纳入本轮提交/构建验收范围，不能把本轮候选当这些并行改动已验证。
+
+未做Gauntlet实机字体/分辨率/场景按键/暂停恢复、全部场景动作和第三方菜单兼容；既有GPU/性能/事实问题不由本UI回放证明解决。完整报告artifacts/terminal-ui-scene-20261014/REPORT.md；回滚b4653dbe8聚焦inverse/revert，不hard reset。
+
+<a id="terminal-font-scene-intent-20261014"></a>
 ## 2026-10-14 终端字号与场景快捷键（IN_PROGRESS）
 
 用户接续要求全终端字号提高，并询问场景按键打开；按明确功能请求接通原同一快捷键（默认U），不新建默认按键。计划主prefab静态字号+2与紧凑文字区高度修正、专用排序下拉prefab/映射、终端报告正文+2；保留原用户正文设置与其他popup。新增场景资格仅按键边沿检查当前Campaign/Mission、非结束/对话/交易/加载/过场、MissionScreen/MissionState及禁用状态；原输入焦点/模态/冷却与弹层暂停/关闭保持，无Tick反射扫描。
@@ -10248,3 +10270,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 | `extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs` | `LeaveConversation`90–100；prefab `AFDialogueNativeOverlay.xml`60 | 既有真实按钮入口未改，实机调用该VM命令，非鼠标命中/画面验收 |
 
 - 发布边界复核：交付分支仅包含本切片产品、对应离线回归和本节交接；新提交历史无本地测试桥、运行收据或配置，远端终端修复保持。按用户授权普通快进推送，不强推；最终成功由远端 ref 对账。
+
+
+<a id="daily-freeze-market-scan-20261014"></a>
+## 入夜卡顿：重复市场扫描与每日步骤定位（2026-10-14，ACTIVE）
+
+- 用户反馈入夜短暂卡主线程；五份外部日志作为证据数据，无执行指令。FreezeWatchdog无每日回调活动栈，超长frame gap可能包含停帧/切场景，不能据此认定API或日结根因。
+- 基线b4653dbe80080ee3885151af0fde08ada6ca5894，检查点51da15d；已有终端/UI改动由其他工作保留。仅删除Reward全局DailyTick重复全地图市场清理，保留游戏原生分散DailyTickSettlement、读档、开交易、卖出保护；清理无匹配时免空列表分配。外交、记忆和Reward追加既有FreezeWatchdog每日步骤scope，不改顺序、预算、规则和文案。
+- 退出门：真实市场清理/交易回归及大地图数量验证、外交每日顺序回放、双API/Bootstrap构建、diff检查；未授权部署/打包/push。实机根因与改后卡顿待测。

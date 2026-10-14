@@ -1,4 +1,10 @@
-﻿# 当前交接：最新修复以Release部署（2026-10-14，DEPLOY_VERIFIED / LIVE_PENDING）
+﻿# 当前交接：终端战争排版、字号与场景按键（2026-10-14，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品b4653dbe8：战况双方等宽，表头/色线与行对齐；全终端字号+2，专用下拉与reader同步；窗口1600x1016容纳原6条分页。原按键(default U)接通战役场景，保留对话/输入/菜单/结束拦截及原弹层恢复。
+- 原Release双API/Bootstrap/Coup/注册与完整3520文件Stage PASS；相关回放493/503，XML/绑定/几何/双语消费者通过。新场景用例实际gate+CLR类型、仅属性快照替身，不代表实机按键/字体/暂停恢复通过。
+- [唯一主台账、代码坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-ui-scene-complete-20261014)。本轮未部署/push/打包，游戏仍下方02c8095b1 Release；旧项目Stage保留，不触碰玩家配置或原版文件。
+
+# 当前交接：最新修复以Release部署（2026-10-14，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户授权部署，main源码02c8095b1（产品69f03579d及5e1e354ac/064cbaf6a）已通过原Release双API/Bootstrap/Coup/注册/Stage门禁与469/479项回放，并覆盖游戏单模块v1.6.0的12个受管文件。
 - 两安装实现DisableOptimizations=false；3519个Stage文件核对PASS，Configs 5/自定义提示词4/PlayerExports 3133/ONNX 10哈希保持；255个未列入Stage文件元数据及原版3文件抽检保持。原默认Debug未改，无push/打包/版本递增/游戏启动。
