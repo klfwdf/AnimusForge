@@ -199,31 +199,17 @@ internal static class Program
         }
         foreach (string prose in new[] { "双方约120人参战。", "阵亡10人，负伤30人。", "伤亡一百二十人。", "十名将士阵亡。", "参战人数达1,200人。", "兵力约八百。", "八百名士兵进城。", "800人对600人。", "一千对八百。", "几人打几人。", "100人迎战200人。", "三百余骑兵冲锋。", "八百人对六百人的交锋。", "阵亡20、负伤30。", "伤亡百分之十。", "死伤达20%。", "阵亡超过两成。", "统帅率领1200人击败守军。", "守军共一千二百人。" })
         {
-            Check(WorldBulletinPolicy.ContainsBattleNumericRecital(prose), "battle numeral recital rejected: " + prose);
-            var output = new WorldBulletinText { Title = "出城战报", Major = prose, Short = "败军退却。" };
-            var accepted = WorldBulletinPolicy.ValidateGeneratedText(battleSelection, output, out string section);
-            var fallback = accepted ?? WorldBulletinPolicy.BuildTemplate(battleSelection);
-            Check(accepted == null && section == "MAJOR" && fallback.Major.Contains("甲军") && fallback.Major.Contains("乙军") && !fallback.Major.Contains("120") && fallback.Short != output.Short, "rejected prose falls back as a whole without losing factual outcome");
+            Check(WorldBulletinPolicy.ContainsBattleNumericRecital(prose), "battle numeral detected for input projection: " + prose);
         }
         foreach (string prose in new[] { "1084年夏季3日，甲军击败乙军。", "第一场交锋后，守军退回城门。", "两人在门前短暂交锋，败将怒骂退开。", "伤亡惨重，败军退却。", "两军对阵，甲军获胜。", "婚宴来了80人。" })
             Check(!WorldBulletinPolicy.ContainsBattleNumericRecital(prose), "dates, numbering, qualitative losses and narrative encounters remain valid: " + prose);
-        var validBattle = new WorldBulletinText { Title = "第3日战报", Major = "甲军击败乙军的本次参战部队，守将退回城门。", Short = "败军退却。" };
-        Check(ReferenceEquals(WorldBulletinPolicy.ValidateGeneratedText(battleSelection, validBattle, out string validSection), validBattle) && validSection == "", "valid narrative battle output is retained");
         var civilFact = Ev("civil", "noble_gathering", 100, 65, "80人参加宴会。", "civil", false);
         civilFact.Detail = "参战人数在宴席上被讨论：120人。";
         var civilSelection = new WorldBulletinSelection { Major = civilFact, MajorFacts = new() { civilFact } };
-        var civilOutput = new WorldBulletinText { Title = "宴席", Major = "80人参加宴会，谈论伤亡10人。" };
-        Check(ReferenceEquals(WorldBulletinPolicy.ValidateGeneratedText(civilSelection, civilOutput, out _), civilOutput) && WorldBulletinPolicy.BuildUserPrompt("世界", "今日", civilSelection, null).Contains(civilFact.Detail), "non-battle output and detail are unaffected");
+        Check(WorldBulletinPolicy.BuildUserPrompt("世界", "今日", civilSelection, null).Contains(civilFact.Detail), "non-battle input detail is unaffected");
         civilSelection.Minors.Add(new WorldBulletinMinor { Events = new() { battle }, Sentence = battle.Sentence });
-        civilOutput.Minors.Add("双方120人参战。");
-        Check(WorldBulletinPolicy.ValidateGeneratedText(civilSelection, civilOutput, out string minorSection) == null && minorSection == "M1", "battle minor is validated even under a civil headline");
         Check(!WorldBulletinPolicy.BuildUserPrompt("世界", "今日", civilSelection, null).Contains("M1. " + battle.Sentence) && !WorldBulletinPolicy.BuildTemplate(civilSelection).Minors[0].Contains("120"), "battle minor prompt and fallback hide legacy count suffix");
-        battleSelection.Minors.Add(new WorldBulletinMinor { Events = new() { civilFact }, Sentence = civilFact.Sentence });
-        validBattle.Minors.Add("80人参加宴会。");
-        Check(ReferenceEquals(WorldBulletinPolicy.ValidateGeneratedText(battleSelection, validBattle, out _), validBattle), "civil minor counts remain accepted under a battle headline");
-        validBattle.Short = "伤亡两百人。";
-        Check(WorldBulletinPolicy.ValidateGeneratedText(battleSelection, validBattle, out string shortSection) == null && shortSection == "SHORT", "numeric battle digest cannot retell rejected casualty figures");
-        Check(custom.Contains(WorldBulletinPolicy.BattleWritingRequirements) && empty.Contains(WorldBulletinPolicy.BattleWritingRequirements), "custom or empty editable style cannot remove numeric battle guard");
+        Check(custom.Contains(WorldBulletinPolicy.BattleWritingRequirements) && empty.Contains(WorldBulletinPolicy.BattleWritingRequirements), "custom or empty editable style retains battle writing guidance");
 		WorldBulletinText template = WorldBulletinPolicy.BuildTemplate(s);
 		Check(template.Major.Contains("甲被玩家处决") && template.Major.Contains("乙被玩家处决"), "template major keeps all merged facts");
 

@@ -775,31 +775,6 @@ internal static class WorldBulletinPolicy
             .Where(part => !CapturedBattleCountPrefix.IsMatch(part) && !ContainsBattleNumericRecital(part)));
     }
 
-    // A rejected issue falls back as a whole, so its SHORT cannot retell rejected prose.
-    internal static WorldBulletinText ValidateGeneratedText(WorldBulletinSelection selection, WorldBulletinText generated, out string rejectedSection)
-    {
-        rejectedSection = "";
-        if (generated == null || selection == null) return generated;
-        bool majorBattle = IsBattleKind(selection.Major?.Kind) || selection.MajorFacts.Any(f => IsBattleKind(f?.Kind));
-        bool anyBattle = majorBattle || selection.Minors.Any(m => m?.Events?.Any(f => IsBattleKind(f?.Kind)) == true);
-        if (!anyBattle) return generated;
-        if (ContainsBattleNumericRecital(generated.Title)) rejectedSection = "TITLE";
-        else if (majorBattle && ContainsBattleNumericRecital(generated.Major)) rejectedSection = "MAJOR";
-        else if (ContainsBattleNumericRecital(generated.Short)) rejectedSection = "SHORT";
-        else
-        {
-            for (int i = 0; i < selection.Minors.Count && i < (generated.Minors?.Count ?? 0); i++)
-            {
-                if (selection.Minors[i]?.Events?.Any(f => IsBattleKind(f?.Kind)) == true && ContainsBattleNumericRecital(generated.Minors[i]))
-                {
-                    rejectedSection = "M" + (i + 1);
-                    break;
-                }
-            }
-        }
-        return rejectedSection.Length == 0 ? generated : null;
-    }
-
     internal static readonly string BattleWritingRequirements = WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysBattle");
 
     internal static readonly string LegacyDefaultWritingRequirements = WorldBulletinPolicyTexts.Raw("LegacyDefaultWritingRequirements");
