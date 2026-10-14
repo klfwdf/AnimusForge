@@ -1395,48 +1395,14 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		MoveRegularMember(MobileParty.MainParty?.Party, targetParty.Party, character, amount, -1, -1);
 	}
 
-	private static bool IsCourierDungeonPrisonerSource(PartyBase sourceParty, Settlement sourceSettlement)
-	{
-		if (sourceParty == null || sourceSettlement == null || sourceSettlement.OwnerClan != Clan.PlayerClan || !sourceSettlement.IsFortification)
-		{
-			return false;
-		}
-		if (sourceParty == sourceSettlement.Party)
-		{
-			return true;
-		}
-		try
-		{
-			return sourceSettlement.Parties.Any((MobileParty x) => x != null && x.IsGarrison && x.Party == sourceParty);
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
 	private static int MoveCharacterFromPlayerPrisonerSourceToParty(string characterId, int amount, MobileParty targetParty, bool isHero, string sourceSettlementId)
 	{
-		CharacterObject character = ResolveCharacter(characterId);
-		if (character == null || targetParty == null || amount <= 0)
+		// Old drafts may still name a dungeon; never reinterpret them as carried cargo.
+		if (targetParty == null || amount <= 0 || !string.IsNullOrWhiteSpace(sourceSettlementId))
 		{
 			return 0;
 		}
-		PartyBase sourceParty = MobileParty.MainParty?.Party;
-		string settlementId = (sourceSettlementId ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(settlementId))
-		{
-			if (!isHero && !character.IsHero)
-			{
-				return 0;
-			}
-			Settlement sourceSettlement = Settlement.Find(settlementId);
-			sourceParty = character.HeroObject?.PartyBelongedToAsPrisoner;
-			if (!IsCourierDungeonPrisonerSource(sourceParty, sourceSettlement))
-			{
-				return 0;
-			}
-		}
+		PartyBase sourceParty = Hero.MainHero?.PartyBelongedTo?.Party;
 		return MoveCharacterBetweenPrisonRosters(sourceParty, targetParty.Party, characterId, amount, isHero);
 	}
 

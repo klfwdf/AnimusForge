@@ -1,0 +1,26 @@
+// Boundary doubles for eligibility/roster projection; the candidate builder and
+// outgoing prisoner source admission methods are extracted from production.
+internal static Hero ResolvePartyTransferRuleHero(Hero h, CharacterObject c) => h;
+internal static bool IsPartyTransferLordEligible(Hero h, CharacterObject c) => true;
+internal static bool IsPartyTransferNotableRecruitEligible(Hero h) => false;
+internal static bool TryResolveWildernessNonHeroPartyTransferSource(Hero h, CharacterObject c, int i, out PartyBase p) { p=null; return false; }
+internal static PartyBase Counterparty;
+internal static PartyBase ResolvePartyTransferCounterpartyInternal(Hero h, CharacterObject c, int i) => Counterparty;
+internal static void AddPartyTransferEntriesFromRoster(List<PartyTransferPromptEntry> entries, TroopRoster roster, PartyBase owner, PartyTransferEntrySection section, ref int index, CharacterObject reserved=null, int count=0)
+{
+    foreach (var pair in roster.Values)
+        if (pair.Value.Number > 0) entries.Add(new(){OwnerParty=owner, Character=pair.Key, Section=section, Count=pair.Value.Number, PromptIndex=index++});
+}
+internal static int PlayerDungeonReads, NpcDungeonReads;
+internal static void AddPartyTransferDungeonHeroEntries(List<PartyTransferPromptEntry> entries, Clan clan, PartyTransferEntrySection section, ref int index)
+{
+    if (section == PartyTransferEntrySection.PlayerPrisoners) PlayerDungeonReads++; else NpcDungeonReads++;
+    entries.Add(new(){Section=section, SourceSettlement=new(), OwnerParty=new(), Character=new(), Count=1, PromptIndex=index++});
+}
+internal static void AddPartyTransferEntriesFromVolunteers(List<PartyTransferPromptEntry> e, Hero h, ref int i) {}
+internal static PartyBase CourierSource;
+internal static int MoveCharacterBetweenPrisonRosters(PartyBase source, PartyBase target, string id, int amount, bool hero)
+{
+    CourierSource=source;
+    return source == null ? 0 : amount;
+}
