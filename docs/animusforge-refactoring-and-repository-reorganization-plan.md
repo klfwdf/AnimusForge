@@ -1,3 +1,11 @@
+<a id="terminal-navigation-performance-20261015"></a>
+## 终端分类与子菜单点击卡顿优化（2026-10-15，ACTIVE）
+
+- 用户报告每次切换分类/进入子菜单卡顿，随后要求修复。开工main/f3053afdf，跟踪文件干净；Microsoft/、NuGet/未跟踪目录保留。本次仅本地修复/构建验证，先前汇总发行已完成，不自动再次部署、打包或推送。
+- 已定位RefreshItems在分类页先构造所有条目VM/下拉列表再分页、MenuPageSize=1000，整份Items替换触发界面重建；SelectTab重复点击仍重建。现有翻页栏与搜索可见性绑定，非全部分类直接缩小页数会隐藏余下设置。
+- 方案与退出门：轻量行目录先过滤/计数/分页，每页最多32个逻辑条目及至多1个延续分组标题；多页分类/子菜单可翻页；当前页同身份项目复用、列表按原生增删事件更新，避免Gauntlet两API均忽略的ItemChanged。保持搜索、排序、折叠、每项身份、权限、原owner/setter/保存与双语文案；不新增Tick轮询/IO/反射/后台游戏对象读取。
+- 主要文件：src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalUiModels.cs、content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml；增补真实DLL回归，覆盖离页getter/画像零调用、翻页全量可达、分组延续、折叠/搜索/返回、重复选择零重建和列表增删事件；原1.3/1.4/Bootstrap构建与现有MCM/终端CN/EN回归。实机帧耗时与视觉验收另列未验，不以托管计时代替真实帧率。
+
 <a id="yj-interior-ui-20261015"></a>
 ## YJ引导入口与内政固定文案修复（2026-10-15，OFFLINE_VERIFIED / PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
