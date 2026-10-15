@@ -1,5 +1,5 @@
 <a id="yj-interior-ui-20261015"></a>
-## YJ引导入口与内政固定文案修复（2026-10-15，OFFLINE_VERIFIED / PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFY / LIVE_PENDING）
+## YJ引导入口与内政固定文案修复（2026-10-15，OFFLINE_VERIFIED / PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
 - 用户要求YJ预设删除第四条玩家QQ群，第三条改为https://www.shenlanqaq.com/；追加截图报告CN内政页固定标题、表头和翻页按钮英文。只处理这两条UI链路，不改AI接口地址、政治规则、布局尺寸或玩家配置。
 - 基线main/e6a7afae9；其他会话知识库导入、重载及其测试的八份未提交改动保留，不纳入本次提交。未跟踪Microsoft/、NuGet/保持。
@@ -18,6 +18,8 @@
 - 新CN包：`一键编译覆盖推送/packages/AnimusForge_v1.6.1_CN_1015_2130.zip`；3522项，89269248字节；SHA256 `075a654dad884fcf7c821e8ccbeed15f3dc1885f9d7d27999fe2f568f25bd221`。
 - 新EN包：`一键编译覆盖推送/packages/AnimusForge_v1.6.1_EN_1015_2130.zip`；3522项，88351505字节；SHA256 `029cc0188a0d4706fcdea3d6dd0c10d914d36d7a2886e2f6294d76a79d7ee1e2`。
 - 正式ZIP的Bootstrap及两API均与已安装/冻结候选一致；部署after.json与package/receipt.json保存独立收据。待发布历史15提交46个新blob预检无本地专用交接/构建产物/玩家数据及凭据模式命中；最终普通push仍须远端HEAD核对，结果另补。未实机/旧档/真实provider；本次不声称全仓测试或玩家1.3.12通过。
+
+- 推送补记：普通git push origin main已将远端从b2e4e5861快进至afa23ec6a630b545f31e1c8e8b5098e6f763fd9d，独立git ls-remote与本地HEAD一致。最终源历史16提交/48新增blob预检PASS，无本地专用交接或凭据模式命中；本收据文档随同普通push，最后远端SHA见本地artifacts/yj-interior-ui-20261015/push-receipt.json。无force、rebase或历史改写，安装包只保存在本地。
 
 <a id="weekly-director-relaxation-20261015"></a>
 ## 快报导演误判回退放宽（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
@@ -10822,7 +10824,7 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 验证沿用产品双API/Bootstrap/Coup/注册、两实际DLL嵌入检查、51项家族归附及144项CN/EN扩展回放、75对模板与四组请求模板证据；本轮不重跑无变化产品构建。上两条的“未push”由本条替代；未部署/实机/provider/旧档/正式双包边界保持。
 - 证据artifacts/push-postprocess-20261015/preflight.json、push-source.log及最终receipt.json。此后仅补本条及HANDOFF发布收据并正常推送；最终远端收据提交SHA以receipt.json与ls-remote为准。回退产品git revert 068a938aa；测试git revert 141d639e6，已发布历史不改写。
 <a id="knowledge-duplicate-import-20261015"></a>
-## 世界书重复 ID 导入一致性修复（2026-10-15，OFFLINE_VERIFIED / PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFY / LIVE_PENDING）
+## 世界书重复 ID 导入一致性修复（2026-10-15，OFFLINE_VERIFIED / PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
 - 用户反馈卡拉迪亚编年史“洛泰——贾尔马律斯平原 / 比安芙”新档导入在不同机器结果不同，重复导入也报错；实际报错原文待补。基线 main/65017eb32；未跟踪 Microsoft/、NuGet/ 保留，不部署、打包或推送。
 - 已核实两组源文件各共用一个规则 ID，中原组还共享触发词。普通 reader 未排序且按 ID 静默丢弃后续条目；数据库重载已有稳定消歧与重复触发词归属逻辑。当前修复范围为普通 reader 复用已有规则，保留所有正文及原始资源/协议/存档身份；不扩展存档或导入事务设计。
