@@ -1,3 +1,14 @@
+<a id="npc-surrender-engine-tick-20261015"></a>
+### 投降待办引擎更新入口（产品74be66074）
+
+[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#npc-surrender-engine-tick-20261015)保存日志、306项回归、双API构建和冻结候选收据；实机结算待验。
+
+| 一基坐标 / 符号 | 实际责任与边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:3635–3678` OnEngineTick，新增`:3666–3677` | 暂停战役更新的遭遇菜单也消费原NPC投降待办；无待办只查bool，异常由原Logger诊断 |
+| 同文件`:5576–5579` OnCampaignTick投降分支；`:8269` HasPendingNativeConversationNpcSurrender、`:8334` TryForcePendingNativeConversationNpcSurrenderIfReady | 原消费者与引擎入口共用同一待办、scope、手动退出/mission等待、250ms节流及成功清理；未改写这些实现，不扩大执行资格 |
+| `tests/modules/AF.Module.Encounter/ReleaseSurrenderBoundaryTests/Harness.cs.txt:100–148`；`run.py:19` OnEngineTick抽取 | engine-only重现暂停菜单，无Campaign Tick；范围失效、会话关闭、mission、节流、重试、只执行一次和session清理；副作用/其他tick owner为fixture，不证明真实战利品或俘虏页 |
+
 <a id="yj-interior-ui-20261015"></a>
 ### YJ引导与内政固定文案（产品73a115e25；汇总构建8093c9bb3）
 
