@@ -1,5 +1,5 @@
 <a id="retire-hidden-illustrator-api-20261016"></a>
-## 退役隐藏的独立导演API与完整路径开关（2026-10-16，OFFLINE_VERIFIED / LOCAL_MCM_CLEANED / LIVE_PENDING / NOT_DEPLOYED）
+## 退役隐藏的独立导演API与完整路径开关（2026-10-16，OFFLINE_VERIFIED / LOCAL_MCM_CLEANED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 用户确认保留导演构图，只用主API，退役隐藏配置。基线main/8cb2bcccd，跟踪文件干净，未跟踪Microsoft/NuGet保持。已确认旧前端只是隐藏：TryResolveChatConfig优先DirectorApiBaseUrl/DirectorModelName，完整路径值进入请求快照及客户端；因此旧Documents MCM/preset可持续影响不可见请求。没有当前玩家错误响应，不把潜在原因当作已取得远端实机证据。
 - 修改范围：IllustratorSettings移除独立地址/Key/模型/dropdown/抓取及完整路径设置和仅服务该入口的代码；VisualDirectorEngine只捕获主API；IllustrationOptions与生图路由去除完整路径标志，保留标准完整端点自动识别与参考图/Chat/Edits/Gemini/Player2规则。中英说明、相关MCM回放/真实DLL请求测试同任务更新；不删除导演构图、预算/自定义提示词、普通生图设置、玩家Key或整份配置。
@@ -10,6 +10,7 @@
 - 构建：原build_single_module.ps1 Debug 1.3/1.4（引用v1.3.15.110062/v1.4.6.115628）/Bootstrap/双Coup seam/registration最终exit0，build-final.log绑定最终产品，旧警告保持；首轮构建成功后补齐端点错误双语，按最终源码再构建。未Stage/部署/打包/push。请求测试最初缺显式workspace module root且旧断言硬编码CN及exact拒绝；已用既有隔离fixture和新行为修正，失败输出保留。完整旧请求测试最后的无关PresentationContracts因旧OverlayVM构造函数不匹配未通过；新增--requests-only保留并执行全部请求/导演断言，默认仍保留原UI/history断言，不计为全套PASS。
 - 按用户文档MCM清理要求，只修改`Documents/Mount and Blade II Bannerlord/Configs/ModSettings/Global/AnimusForge/AnimusForge_Illustrator_v1.json`，移除实际存在的5字段（DirectorApiBaseUrl、DirectorApiKey、DirectorModelName、DirectorModelDropdown、UseExactEndpointUrl）；其余23项JSON值与原文件逐项相同，未清主API/生图Key/其他owner，没有自己的旧preset需清。完整原文件私密备份仅保存在本地ignored `artifacts/retire-hidden-illustrator-api-20261016/private-mcm-before/`，未输出/提交凭据；清理收据local-mcm-cleanup.json。旧安装程序仍可能重新保存旧字段，永久退役取决于后续安装本次新DLL。
 - [精确源码范围](architecture/af-framework-code-scope.md#retire-hidden-illustrator-api-20261016)；本地receipt.json与verified-candidates/绑定全部源码/成对资源/三DLL marker SHA及测试。回滚源码`git revert 8c7619e22`；文档设置可在关闭游戏后人工恢复私密原文件。无当前玩家HTTP错误详情，未验玩家确切故障/实机MCM/真实出图/旧档；先前已安装及2257双包不包含本次改动。
+- 推送补记（2026-10-16）：用户明确要求拉取合并推送。`git fetch origin`确认本地领先3提交、远端无新增，`git merge --no-edit origin/main`为Already up to date，无冲突或产品修改。3提交/22新增blob发布预检PASS，排除本地专用handoff及artifacts/MCM原文件备份，无凭据模式命中；普通`git push origin main`从8cb2bcccd快进至d729b964c，独立`git ls-remote`等于本地HEAD。本收据文档随后同步普通push，最终SHA见`artifacts/pull-merge-push-20261016/receipt.json`；不force/rebase/改写历史，未跟踪Microsoft/NuGet保留。本行取代上文本次修复“未push”历史，不改变未部署/打包/实机状态；无新产品差异，复用8c7619e22现有构建/专项证据。
 
 <a id="package-push-surrender-streaming-20261015"></a>
 ## 同版本1.6.1双包与源码推送（2026-10-15，PUSH_VERIFIED / PACKAGE_VERIFIED / DEPLOY_VERIFIED / LIVE_PENDING）
