@@ -58,6 +58,7 @@ static class McmPageChecks
                 }
                 vmType.GetMethod("OnFinalize").Invoke(vm, null);
             }
+            McmReopenLifecycleChecks.Run(af, ui, pages, check);
         }
         finally { foreach (var page in pages) TerminalProviderProbe.Owners.Remove(page.Id); }
     }

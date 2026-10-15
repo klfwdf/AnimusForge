@@ -39,6 +39,7 @@ if not a.baseline:
     sources.append(Path(__file__).with_name('SceneTerminalChecks.cs'))
     sources.append(Path(__file__).with_name('SharedMcmChecks.cs'))
     sources.append(Path(__file__).with_name('McmPageChecks.cs'))
+    sources.append(Path(__file__).with_name('McmReopenLifecycleChecks.cs'))
 items = ''.join('<Compile Include="' + escape(str(f)) + '" />' for f in sources)
 items += ''.join('<Reference Include="' + f.stem + '"><HintPath>' + escape(str(f)) + '</HintPath>' + ('<Private>false</Private>' if f == copy else '') + '</Reference>' for f in [copy, deps / '0Harmony.dll', deps / 'MCMv5.dll', deps / 'Newtonsoft.Json.dll', framework / 'Facades/netstandard.dll'])
 (out / 'Probe.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><LangVersion>latest</LangVersion><PlatformTarget>x64</PlatformTarget><DefineConstants>' + ('AF_BASELINE' if a.baseline else '') + '</DefineConstants><EnableDefaultCompileItems>false</EnableDefaultCompileItems><AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages><FrameworkPathOverride>' + escape(str(framework)) + '</FrameworkPathOverride><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup>' + items + '</ItemGroup></Project>')
