@@ -130,8 +130,9 @@ internal static class Program
             Check(Get<bool>(Generate(Options(route == "chat", route == "player2"), References(count: 1)), "Success")
                 && handler.Records.Count == 1 && handler.Records[0].Images == 1, route + " optional second screenshot is not invented");
         }
-        handler.Reset(success); var exact = Options(); Set(exact, "UseExactEndpointUrl", true); Set(exact, "ApiBaseUrl", "http://fixture.invalid/v1/images/generations");
-        Check(!Get<bool>(Generate(exact, refs), "Success") && handler.Records.Count == 0, "text-only exact endpoint rejected before send");
+        handler.Reset(success); var exact = Options(); Set(exact, "ApiBaseUrl", "http://fixture.invalid/v1/images/generations");
+        Check(Get<bool>(Generate(exact, refs), "Success") && handler.Records.Count == 1 && handler.Records[0].Url == "/v1/images/edits"
+            && handler.Records[0].Images == 2, "standard generations URL automatically routes all references through edits");
         handler.Reset(success); var missing = Array.CreateInstance(_reference, 1); missing.SetValue(refs.GetValue(0), 0);
         Check(Get<bool>(Generate(Options(), missing), "Success") && handler.Records.Count == 1 && handler.Records[0].Images == 1, "single screenshot reaches generation unchanged");
         handler.Reset(success);
@@ -148,14 +149,14 @@ internal static class Program
         for (int i = 0; i < models.Length; i++)
         {
             object options = Options(true);
-            Set(options, "IsMissionScreenshot", false); Set(options, "UseExactEndpointUrl", true);
+            Set(options, "IsMissionScreenshot", false);
             Set(options, "ApiBaseUrl", "http://fixture.invalid/v1/chat/completions");
             Set(options, "ModelName", models[i]); Set(options, "ImageSize", sizes[i]);
             Set(options, "OutputFrameRequirement", frames[i]); Set(options, "EnableReferenceImageForGeneration", true);
             handler.Reset(success);
             var result = Generate(options, i == 1 ? References("Character") : null);
             Check(Get<bool>(result, "Success"), models[i] + " compatible chat success");
-            Check(handler.Records.Count == 1 && handler.Records[0].Url == "/v1/chat/completions", "exact chat URL and one attempt");
+            Check(handler.Records.Count == 1 && handler.Records[0].Url == "/v1/chat/completions", "standard complete chat URL recognized without a switch, one attempt");
             var payload = (Dictionary<string, object>)Json.DeserializeObject(handler.Records[0].Text);
             Check(payload.Count == 2 && payload.ContainsKey("model") && payload.ContainsKey("messages") && !payload.ContainsKey("aspect_ratio"), "portable chat body excludes unsupported extensions");
             Check(handler.Records[0].Text.Contains(frames[i]) && Get<string>(result, "ResolvedPrompt").Contains(frames[i]), "fixed frame survives in actual request and resolved prompt");
@@ -176,7 +177,7 @@ internal static class Program
         for (int i = 0; i < sizes.Length; i++)
         {
             object options = Options(); Set(options, "IsMissionScreenshot", false); Set(options, "PreferChatImageProtocol", false);
-            Set(options, "UseExactEndpointUrl", i != 1); Set(options, "ModelName", "gemini-3.1-flash-image");
+            Set(options, "ModelName", "gemini-3.1-flash-image");
             Set(options, "ApiBaseUrl", i == 1 ? "https://generativelanguage.googleapis.com/v1beta" : "http://fixture.invalid" + endpoint);
             Set(options, "ApiKey", "native-fixture-key"); Set(options, "ImageSize", sizes[i]);
             Set(options, "OutputFrameRequirement", "本次尺寸" + sizes[i]); Set(options, "EnableReferenceImageForGeneration", true);
@@ -199,12 +200,15 @@ internal static class Program
             result = Generate(options, refs);
             Check(!Get<bool>(result, "Success") && handler.Records.Count == 1 && Get<string>(result, "ErrorMessage").Contains("HTTP 401"), "native auth failure never retries");
             handler.Reset("{\"promptFeedback\":{\"blockReason\":\"SAFETY\"}}"); result = Generate(options, refs);
-            Check(!Get<bool>(result, "Success") && handler.Records.Count == 1 && Get<string>(result, "ErrorMessage").Contains("过滤"), "native blocked response clear and no retry");
+            Check(!Get<bool>(result, "Success") && handler.Records.Count == 1
+                && (Get<string>(result, "ErrorMessage").Contains("过滤") || Get<string>(result, "ErrorMessage").Contains("content filtering")), "native blocked response clear and no retry");
         }
-        object invalid = Options(); Set(invalid, "IsMissionScreenshot", false); Set(invalid, "UseExactEndpointUrl", true);
+        object invalid = Options(); Set(invalid, "IsMissionScreenshot", false);
         Set(invalid, "ApiBaseUrl", "https://generativelanguage.googleapis.com/v1beta"); handler.Reset(success);
-        Check(!Get<bool>(Generate(invalid, null), "Success") && handler.Records.Count == 0, "exact root rejected before network");
+        Check(Get<bool>(Generate(invalid, null), "Success") && handler.Records.Count == 1
+            && handler.Records[0].Url == "/v1beta/models/gpt-image-2:generateContent", "native root resolves model endpoint without a hidden exact flag");
         Set(invalid, "ApiBaseUrl", "http://fixture.invalid/v1beta/models/gemini:streamGenerateContent");
+        handler.Reset(success);
         Check(!Get<bool>(Generate(invalid, null), "Success") && handler.Records.Count == 0, "streaming native image URL rejected before send");
         Set(invalid, "ApiBaseUrl", "http://fixture.invalid" + endpoint); Set(invalid, "IsCurrentImageEdit", true);
         var editReference = Array.CreateInstance(_reference, 1);
@@ -377,11 +381,15 @@ internal static class Program
                 using (var http = new HttpClient(handler))
                 {
                     field.SetValue(null, http);
-                    try { ImageContracts(handler); ChatSchemaContracts(handler); NativeGeminiContracts(handler); NativeProtocolContracts(); DirectorContracts(handler, http); DialogueContracts(); PresentationContracts(); }
+                    try
+                    {
+                        ImageContracts(handler); ChatSchemaContracts(handler); NativeGeminiContracts(handler); NativeProtocolContracts(); DirectorContracts(handler, http);
+                        if (!args.Contains("--requests-only")) { DialogueContracts(); PresentationContracts(); }
+                    }
                     finally { field.SetValue(null, previous); }
                 }
             }
-            Console.WriteLine("PASS " + _checks + " actual-DLL assertions; Edits/Chat/Player2/director/history; every HTTP in-memory, no external API."); return 0;
+            Console.WriteLine("PASS " + _checks + " actual-DLL assertions; Edits/Chat/Player2/director" + (args.Contains("--requests-only") ? "; requests only" : "/history") + "; every HTTP in-memory, no external API."); return 0;
         }
         catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
     }

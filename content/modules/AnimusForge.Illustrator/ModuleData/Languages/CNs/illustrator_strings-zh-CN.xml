@@ -16,14 +16,8 @@
     <string id="AF_ILL_CUSTOM_DIRECTOR_HINT" text="填写构图、动作、景别与叙事偏好，适用于百科、会晤和周报/快报。留空保持默认规则；只发给视觉导演，不直接追加到生图端。不能覆盖已知人物、装备、场景与事件事实或改变输出格式。导演关闭/未配置时不生效；修改后从下一次生成开始生效，正在生成的任务不变。" />
     <string id="AF_ILL_CUSTOM_STYLE" text="自定义画风提示词 (Style=提示词 时生效)" />
     <string id="AF_ILL_CUSTOM_STYLE_HINT" text="点击打开大文本编辑器，自由编辑画风指令。仅当上方画风预设选“提示词”时生效，作为【画风指令】注入所有生图通道的提示词，对任何模型生效。默认填入古典油画预设内容供参考。" />
-    <string id="AF_ILL_DIRECTOR_BASE_URL" text="导演 API 端点地址 (Base URL)" />
-    <string id="AF_ILL_DIRECTOR_BASE_URL_HINT" text="视觉导演 API 端点地址。留空时自动复用主模块正文对话 API 端点；若需指定独立的 LLM 模型或第三方中转作为提示词扩写导演，请在此填写 Base URL（如 https://api.openai.com/v1）。" />
-    <string id="AF_ILL_DIRECTOR_KEY" text="导演 API 密钥 (API Key)" />
-    <string id="AF_ILL_DIRECTOR_KEY_HINT" text="视觉导演 API 密钥 (Key)。留空时自动复用主模块正文对话 API Key。" />
     <string id="AF_ILL_DIRECTOR_MAX_TOKENS" text="导演最大输出 Tokens" />
     <string id="AF_ILL_DIRECTOR_MAX_TOKENS_HINT" text="实际发送给导演API的 max_tokens，默认25000；这是允许的输出预算，不是目标篇幅，也不是字符数。思考消耗是否计入由接口决定；请按接口支持范围设置。" />
-    <string id="AF_ILL_DIRECTOR_MODEL" text="导演模型名称 (Model)" />
-    <string id="AF_ILL_DIRECTOR_MODEL_HINT" text="视觉导演模型名称（如 gpt-4o、qwen-plus、deepseek-chat 等）。留空时自动复用主模块正文对话模型。" />
     <string id="AF_ILL_DIRECTOR_REFERENCE_TOKENS" text="导演提词参考篇幅（约 Token）" />
     <string id="AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT" text="软性篇幅参考，不是API输出上限。强制缩减开启时优先遵守字符预算；否则完整回复最多30000字符。保留完整四段，不为凑数扩写。" />
     <string id="AF_ILL_DISPLAY" text="AnimusForge - AI 画卷生图系统 (Illustrator)" />
@@ -32,16 +26,12 @@
     <string id="AF_ILL_ENABLED" text="生图开启" />
     <string id="AF_ILL_ENABLED_HINT" text="所有生图链路的总开关。关闭后百科、对话、快报、画廊等入口都不会发起生图请求。" />
     <string id="AF_ILL_FETCH" text="点击拉取" />
-    <string id="AF_ILL_FETCH_DIRECTOR_MODELS" text="拉取导演模型列表" />
-    <string id="AF_ILL_FETCH_DIRECTOR_MODELS_HINT" text="向填写的导演 Base URL 发起查询拉取可用模型列表。若未填写导演 Base URL，则向主模块正文 API 发起拉取。" />
     <string id="AF_ILL_FETCH_IMAGE_MODELS" text="拉取生图模型列表" />
     <string id="AF_ILL_FETCH_IMAGE_MODELS_HINT" text="向配置接口查询模型列表，Google原生用其 /models 与原生鉴权；只读取当前返回页，未列出时可手动填写模型名。优先排列图像与绘画模型。" />
-    <string id="AF_ILL_FULL_URL" text="使用完整调用 URL (不自动拼接后缀)" />
-    <string id="AF_ILL_FULL_URL_HINT" text="开启后，系统将直接使用填写的端点地址发起请求，不自动追加后缀。适合自定义特殊反代或中转路径；Google原生勾选后必须填写完整 :generateContent 地址，实际模型以URL为准。" />
     <string id="AF_ILL_GEAR_FIDELITY" text="按 AF 装备保真" />
     <string id="AF_ILL_GEAR_FIDELITY_HINT" text="默认开启，保留装备款式身份，但允许叙事中已发生的撕裂、污渍、湿透等状态变化。关闭后衣服、盔甲、武器和配饰按自定义导演规则或导演构思设计，不锁定AF装备与立绘衣装；面容、发型、体型、人物身份及事件事实仍保留。只影响新请求，不修改游戏装备。" />
     <string id="AF_ILL_GROUP_BASIC" text="1. 基础设置" />
-    <string id="AF_ILL_GROUP_DIRECTOR_API" text="3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)" />
+    <string id="AF_ILL_GROUP_DIRECTOR_API" text="3. 视觉导演（使用主 API）" />
     <string id="AF_ILL_GROUP_DISPLAY" text="4. 周报与展示场景" />
     <string id="AF_ILL_GROUP_IMAGE_API" text="2. 生图 API 配置 (OpenAI 兼容)" />
     <string id="AF_ILL_GROUP_STORAGE" text="5. 存储与性能" />
@@ -72,8 +62,6 @@
     <string id="AF_ILL_RANDOMNESS_HINT" text="0 沿用旧版，不追加随机提示词。数值越高，越鼓励取景、留白、景深与光影表现的变化；人物外貌、装备、纹章和已确认游戏事实仍须保持一致。这是提示词指导强度，不是模型采样参数。" />
     <string id="AF_ILL_REFERENCE_IMAGE" text="向生图模型附带参考图 (垫图/图生图)" />
     <string id="AF_ILL_REFERENCE_IMAGE_HINT" text="开启后，截取的人物3D立绘参考图将一并发送给生图模型（支持对话多模态及兼容的 ImagesEdits 通道）。关闭则仅把参考图用于提示词导演扩写。" />
-    <string id="AF_ILL_SELECT_DIRECTOR_MODEL" text="选择导演模型 (下拉选单)" />
-    <string id="AF_ILL_SELECT_DIRECTOR_MODEL_HINT" text="点击上方“拉取导演模型列表”后可从下拉菜单点选。若选“*手动输入*”，则使用上方文本框输入的模型名；若选“*默认(复用正文API)*”，则留空复用主模块。" />
     <string id="AF_ILL_SELECT_IMAGE_MODEL" text="选择生图模型 (下拉选单)" />
     <string id="AF_ILL_SELECT_IMAGE_MODEL_HINT" text="点击上方“拉取生图模型列表”后，可从本下拉菜单中直接快速点选可用模型。若选“*手动输入*”，则使用上方文本框中输入的模型名称。" />
     <string id="AF_ILL_STYLE" text="生成风格画风 (Style)" />
@@ -213,7 +201,6 @@
     <string id="AF_ILL_UI_SETTINGS_FETCH_HTTP_ERROR" text="拉取失败 (HTTP {STATUS}): {BODY}" />
     <string id="AF_ILL_UI_SETTINGS_FETCH_NO_MODELS" text="接口返回成功，但未解析到可用模型数据。" />
     <string id="AF_ILL_UI_OPTION_MANUAL_MODEL" text="*手动输入*" />
-    <string id="AF_ILL_UI_OPTION_DEFAULT_DIRECTOR" text="*默认(复用正文API)*" />
     <string id="AF_ILL_UI_OPTION_PLAYER2_MODEL" text="使用 Player2 应用中选择的模型" />
     <string id="AF_ILL_UI_OPTION_SIZE_SQUARE" text="1024x1024 (1:1 方形)" />
     <string id="AF_ILL_UI_OPTION_SIZE_WIDE" text="1280x720 (16:9 宽屏横幅)" />
@@ -361,7 +348,7 @@
     <string id="AF_ILL_ERROR_GEMINI_CONTENT_BLOCK" text="原生谷歌生图包含未支持的内容块；未发送请求。" />
     <string id="AF_ILL_ERROR_GEMINI_EMPTY_CONTENT" text="原生谷歌生图内容为空；未发送请求。" />
     <string id="AF_ILL_ERROR_HTTP_ENDPOINT" text="生图端点必须是完整的 HTTP/HTTPS URL。" />
-    <string id="AF_ILL_ERROR_EDITS_ENDPOINT" text="标准生图编辑端点是 /images/edits（images复数），不是 /image/edits；特殊服务路径请使用完整URL模式。" />
+    <string id="AF_ILL_ERROR_EDITS_ENDPOINT" text="标准生图编辑端点是 /images/edits（images复数），不是 /image/edits；请填写标准 /images/edits 地址。" />
     <string id="AF_ILL_ERROR_REFERENCE_DECODE" text="图片解码或格式转换失败" />
     <string id="AF_ILL_ERROR_REFERENCE_EMPTY" text="图片数据为空" />
     <string id="AF_ILL_ERROR_REFERENCE_DATA_URI" text="data URI 格式错误" />

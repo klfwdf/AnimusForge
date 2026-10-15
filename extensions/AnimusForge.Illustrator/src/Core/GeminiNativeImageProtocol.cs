@@ -29,15 +29,13 @@ namespace AnimusForge.Illustrator.Core
                     && (path.Length == 0 || path == "/v1" || path == "/v1/models"));
         }
 
-        internal static string ResolveEndpoint(string url, string model, bool exactUrl)
+        internal static string ResolveEndpoint(string url, string model)
         {
             var uri = new Uri((url ?? string.Empty).Trim(), UriKind.Absolute);
             string path = uri.AbsolutePath.TrimEnd('/');
             if (path.EndsWith(":streamGenerateContent", StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("Native Gemini image generation requires the non-streaming :generateContent endpoint. No request was sent.");
             if (path.EndsWith(":generateContent", StringComparison.OrdinalIgnoreCase)) return uri.ToString();
-            if (exactUrl)
-                throw new InvalidOperationException("The complete URL option requires /models/MODEL:generateContent. No request was sent.");
             model = (model ?? string.Empty).Trim();
             if (model.StartsWith("models/", StringComparison.Ordinal)) model = model.Substring(7);
             if (model.Length == 0) throw new InvalidOperationException("Native Gemini image generation requires a model name. No request was sent.");

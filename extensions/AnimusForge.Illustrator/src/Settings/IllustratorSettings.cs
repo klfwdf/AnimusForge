@@ -30,11 +30,9 @@ namespace AnimusForge.Illustrator
         public override string FormatType => "json";
 
         private const string ManualModelOption = "{=AF_ILL_UI_OPTION_MANUAL_MODEL}*Manual input*";
-        private const string DefaultDirectorModelOption = "{=AF_ILL_UI_OPTION_DEFAULT_DIRECTOR}*Default (reuse conversation API)*";
         private const string Player2ModelOption = "{=AF_ILL_UI_OPTION_PLAYER2_MODEL}Use the model selected in the Player2 app";
 
         private static bool IsManualModelOption(string value) => value == ManualModelOption || value == IllustratorText.Raw("Residual_IllustratorSettings_5aa017883627");
-        private static bool IsDefaultDirectorModelOption(string value) => value == DefaultDirectorModelOption || value == IllustratorText.Raw("Residual_IllustratorSettings_f6b6caf875a0");
         private static bool IsPlayer2ModelOption(string value) => value == Player2ModelOption || value == IllustratorText.Raw("Residual_IllustratorSettings_ca5c63c47021");
 
         // Normalize only when MCM loads a setting/preset; API model names remain raw values.
@@ -44,7 +42,6 @@ namespace AnimusForge.Illustrator
             var options = new List<string>(value.Count);
             foreach (string option in value)
                 options.Add(IsManualModelOption(option) ? ManualModelOption
-                    : IsDefaultDirectorModelOption(option) ? DefaultDirectorModelOption
                     : IsPlayer2ModelOption(option) ? Player2ModelOption : option);
             return new Dropdown<string>(options, value.SelectedIndex);
         }
@@ -54,17 +51,12 @@ namespace AnimusForge.Illustrator
         private static readonly object _modelLock = new object();
         private static string _cachedModelsFilePath;
 
-        private List<string> _directorModelOptions = new List<string> { ManualModelOption, DefaultDirectorModelOption };
-        private Dropdown<string> _directorModelDropdown;
-        private static readonly object _directorModelLock = new object();
-        private static string _cachedDirectorModelsFilePath;
 
         public IllustratorSettings()
         {
             IllustratorSettingsStorage.EnsureReady();
             FetchModelList = RequestModelListFetch;
             TestImageApi = () => IllustratorApiTest.StartOrCancel(this);
-            FetchDirectorModelList = RequestDirectorModelListFetch;
             BindPromptEditors();
         }
 
@@ -106,10 +98,6 @@ namespace AnimusForge.Illustrator
         [SettingPropertyText("{=AF_ILL_IMAGE_BASE_URL}Image API endpoint (Base URL)", HintText = "{=AF_ILL_IMAGE_BASE_URL_HINT}For compatible APIs, enter the service root or /v1. Google native APIs accept the v1beta root or a complete /models/name:generateContent URL. Player2 is detected automatically at http://127.0.0.1:4315 and chooses its model in the Player2 app. With a reference image, /images/edits is preferred; without one, /images/generations is used. The model must support the selected channel.", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public string ApiBaseUrl { get; set; } = "https://yjapi.shenlanqaq.com/v1";
-
-        [SettingPropertyBool("{=AF_ILL_FULL_URL}Use complete request URL (do not append suffix)", HintText = "{=AF_ILL_FULL_URL_HINT}Uses the entered endpoint directly without appending a suffix. Suitable for custom proxies. Google native mode requires a complete :generateContent URL; the URL determines the model.", Order = 2, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
-        public bool UseExactEndpointUrl { get; set; } = false;
 
         [SettingPropertyText("{=AF_ILL_IMAGE_KEY}Image API key (API Key)", HintText = "{=AF_ILL_IMAGE_KEY_HINT}API key for authentication. Leave blank for endpoints that need no authentication or local proxies.", Order = 3, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
@@ -169,18 +157,6 @@ namespace AnimusForge.Illustrator
             OnPropertyChanged(nameof(ModelName));
         }
 
-        private void DirectorSelectionChanged(object sender, PropertyChangedEventArgs args)
-        {
-            if (!ReferenceEquals(sender, _directorModelDropdown) || args.PropertyName != nameof(Dropdown<string>.SelectedIndex)) return;
-            var dropdown = _directorModelDropdown;
-            if (dropdown == null || dropdown.SelectedIndex < 0 || dropdown.SelectedIndex >= dropdown.Count) return;
-            string selected = dropdown[dropdown.SelectedIndex];
-            if (string.IsNullOrWhiteSpace(selected) || IsManualModelOption(selected)) return;
-            if (IsDefaultDirectorModelOption(selected)) selected = "";
-            if (_directorModelName == selected) return;
-            _directorModelName = selected;
-            OnPropertyChanged(nameof(DirectorModelName));
-        }
 
         private void SyncModelDropdownWithModelName(string modelName)
         {
@@ -420,87 +396,18 @@ namespace AnimusForge.Illustrator
         // preference is intentionally no longer exposed in MCM.
         public bool PreferChatImageProtocol { get; set; } = false;
 
-        private string _directorModelName = "";
-
-        [SettingPropertyText("{=AF_ILL_DIRECTOR_BASE_URL}Director API endpoint (Base URL)", HintText = "{=AF_ILL_DIRECTOR_BASE_URL_HINT}Visual Director API endpoint. Leave blank to reuse the main conversation API; enter a Base URL for an independent model or proxy.", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
-        public string DirectorApiBaseUrl { get; set; } = "";
-
-        [SettingPropertyText("{=AF_ILL_DIRECTOR_KEY}Director API key (API Key)", HintText = "{=AF_ILL_DIRECTOR_KEY_HINT}Visual Director API key. Leave blank to reuse the main conversation API key.", Order = 2, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
-        public string DirectorApiKey { get; set; } = "";
-
-        [SettingPropertyButton("{=AF_ILL_FETCH_DIRECTOR_MODELS}Fetch director models", Content = "{=AF_ILL_FETCH}Fetch", Order = 3, RequireRestart = false, HintText = "{=AF_ILL_FETCH_DIRECTOR_MODELS_HINT}Fetches available models from the director Base URL, or from the main conversation API when blank.")]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
-        public Action FetchDirectorModelList { get; set; }
-
-        [SettingPropertyText("{=AF_ILL_DIRECTOR_MODEL}Director model name (Model)", HintText = "{=AF_ILL_DIRECTOR_MODEL_HINT}Visual Director model name. Leave blank to reuse the main conversation model.", Order = 4, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
-        public string DirectorModelName
-        {
-            get => _directorModelName;
-            set
-            {
-                string trimmed = (value ?? string.Empty).Trim();
-                if (_directorModelName == trimmed) return;
-                _directorModelName = trimmed;
-                SyncDirectorModelDropdownWithModelName(_directorModelName);
-            }
-        }
-
-        [SettingPropertyDropdown("{=AF_ILL_SELECT_DIRECTOR_MODEL}Select director model (dropdown)", Order = 5, RequireRestart = false, HintText = "{=AF_ILL_SELECT_DIRECTOR_MODEL_HINT}After fetching models above, select one here. Manual input uses the text box; the default reuses the main module.")]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
-        public Dropdown<string> DirectorModelDropdown
-        {
-            get { EnsureDirectorModelDropdown(); return _directorModelDropdown; }
-            set
-            {
-                lock (_directorModelLock)
-                {
-                    // Isolate active settings and preset selections.
-                    ReplaceDirectorModelDropdown(NormalizeModelOptions(value));
-                    DirectorSelectionChanged(_directorModelDropdown, new PropertyChangedEventArgs(nameof(Dropdown<string>.SelectedIndex)));
-                }
-            }
-        }
-
-        private void ReplaceDirectorModelDropdown(Dropdown<string> value)
-        {
-            if (_directorModelDropdown != null) _directorModelDropdown.PropertyChanged -= DirectorSelectionChanged;
-            _directorModelDropdown = value;
-            if (_directorModelDropdown != null) _directorModelDropdown.PropertyChanged += DirectorSelectionChanged;
-        }
-
-        private void SyncDirectorModelDropdownWithModelName(string modelName)
-        {
-            lock (_directorModelLock)
-            {
-                EnsureDirectorModelDropdown();
-                if (_directorModelOptions == null || _directorModelOptions.Count == 0 || _directorModelDropdown == null) return;
-                if (string.IsNullOrWhiteSpace(modelName))
-                {
-                    int defaultIdx = _directorModelDropdown.IndexOf(DefaultDirectorModelOption);
-                    _directorModelDropdown.SelectedIndex = defaultIdx >= 0 ? defaultIdx : 0;
-                }
-                else
-                {
-                    int idx = _directorModelDropdown.IndexOf(modelName);
-                    _directorModelDropdown.SelectedIndex = idx >= 0 ? idx : 0;
-                }
-            }
-        }
 
         [SettingPropertyInteger("{=AF_ILL_DIRECTOR_MAX_TOKENS}Director maximum output tokens", 512, 64000, "0 Token", HintText = "{=AF_ILL_DIRECTOR_MAX_TOKENS_HINT}max_tokens sent to the director API, default 25000. This is an output budget, not a target length; configure it within the API limits.", Order = 6, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director (uses main API)", GroupOrder = 3)]
         public int DirectorApiMaxTokens { get; set; } = 25000;
 
         [SettingPropertyInteger("{=AF_ILL_DIRECTOR_REFERENCE_TOKENS}Director prompt reference length (approx. tokens)", 600, 4000, "0 Token", HintText = "{=AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT}A soft length reference, not the API output limit. When forced reduction is enabled, the character budget takes priority; otherwise the complete reply may contain at most 30000 characters. The full four sections are retained without padding.", Order = 9, RequireRestart = false)]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director (uses main API)", GroupOrder = 3)]
         public int DirectorMaxTokens { get; set; } = 2000;
 
         [SettingPropertyButton("{=AF_ILL_CUSTOM_DIRECTOR}Custom director prompt", Content = "{=AF_ILL_OPEN_EDITOR}Open editor", Order = 10, RequireRestart = false,
             HintText = "{=AF_ILL_CUSTOM_DIRECTOR_HINT}Set composition, action, shot, and narrative preferences for encyclopedia, meetings, and bulletins. Blank keeps defaults. Sent only to the Visual Director and cannot override known facts or output format.")]
-        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
+        [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director (uses main API)", GroupOrder = 3)]
         public Action EditCustomDirectorPrompt { get; set; }
 
         // Hidden editor text is persisted by IllustratorPromptSettingsPersistence in the existing MCM JSON.
@@ -977,290 +884,5 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        private void EnsureDirectorModelDropdown()
-        {
-            lock (_directorModelLock)
-            {
-                if (_directorModelDropdown == null)
-                {
-                    TryLoadCachedDirectorModels();
-
-                    if (_directorModelOptions == null || _directorModelOptions.Count == 0)
-                    {
-                        _directorModelOptions = new List<string> { ManualModelOption, DefaultDirectorModelOption };
-                    }
-                    if (!string.IsNullOrWhiteSpace(DirectorModelName) && !_directorModelOptions.Contains(DirectorModelName))
-                    {
-                        _directorModelOptions.Add(DirectorModelName);
-                    }
-                    int idx = string.IsNullOrWhiteSpace(DirectorModelName)
-                        ? _directorModelOptions.IndexOf(DefaultDirectorModelOption)
-                        : _directorModelOptions.IndexOf(DirectorModelName);
-                    ReplaceDirectorModelDropdown(new Dropdown<string>(_directorModelOptions, idx >= 0 ? idx : 0));
-                }
-            }
-        }
-
-        private bool _directorModelFetchInProgress;
-
-        private void RequestDirectorModelListFetch()
-        {
-            if (!IllustratorRuntime.IsMainThread)
-            {
-                IllustratorRuntime.Post(RequestDirectorModelListFetch);
-                return;
-            }
-
-            if (_directorModelFetchInProgress)
-            {
-                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_PENDING", "[Visual Director] Director models are already being fetched. Please wait."), Color.FromUint(4294967040u)));
-                return;
-            }
-
-            string baseUrl = (DirectorApiBaseUrl ?? string.Empty).Trim().TrimEnd('/');
-            string apiKey = (DirectorApiKey ?? string.Empty).Trim();
-
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                if (TryGetHostChatEndpointForFetch(out string hostUrl, out string hostKey))
-                {
-                    baseUrl = hostUrl.TrimEnd('/');
-                    if (string.IsNullOrWhiteSpace(apiKey))
-                    {
-                        apiKey = hostKey;
-                    }
-                    InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_HOST", "[Visual Director] No separate endpoint configured; fetching models from the main module's conversation API..."), Color.FromUint(4294967040u)));
-                }
-                else
-                {
-                    InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ENDPOINT", "[Visual Director] Enter a director API endpoint or configure the main module's conversation API first."), Color.FromUint(4294901760u)));
-                    return;
-                }
-            }
-            else
-            {
-                if (string.IsNullOrWhiteSpace(apiKey) && TryGetHostChatEndpointForFetch(out _, out string hostKey))
-                {
-                    apiKey = hostKey;
-                }
-                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_STARTED", "[Visual Director] Fetching models from the separate director API endpoint..."), Color.FromUint(4294967040u)));
-            }
-
-            _directorModelFetchInProgress = true;
-
-            bool started = IllustratorRuntime.Start(() => FetchDirectorModelListAsync(baseUrl, apiKey), (result, error) =>
-            {
-                _directorModelFetchInProgress = false;
-                if (error != null)
-                {
-                    InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ERROR", "[Visual Director] Could not fetch models: {ERROR}", "ERROR", error.Message), Color.FromUint(4294901760u)));
-                    return;
-                }
-                ApplyFetchedDirectorModels(result);
-            });
-
-            if (!started)
-            {
-                _directorModelFetchInProgress = false;
-                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_BUSY", "[Visual Director] Background tasks are busy. Try again later."), Color.FromUint(4294901760u)));
-            }
-        }
-
-        private static async Task<ModelListFetchResult> FetchDirectorModelListAsync(string baseUrl, string apiKey)
-        {
-            try
-            {
-                string modelsUrl = baseUrl;
-                if (modelsUrl.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
-                    modelsUrl = modelsUrl.Substring(0, modelsUrl.Length - "/chat/completions".Length).TrimEnd('/');
-                if (modelsUrl.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase))
-                    modelsUrl = modelsUrl.Substring(0, modelsUrl.Length - "/images/generations".Length).TrimEnd('/');
-
-                if (!modelsUrl.EndsWith("/models", StringComparison.OrdinalIgnoreCase))
-                {
-                    modelsUrl = modelsUrl.EndsWith("/v1", StringComparison.OrdinalIgnoreCase)
-                        ? modelsUrl + "/models"
-                        : modelsUrl + "/v1/models";
-                }
-
-                using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) })
-                using (var request = new HttpRequestMessage(HttpMethod.Get, modelsUrl))
-                {
-                    if (!string.IsNullOrWhiteSpace(apiKey))
-                    {
-                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-                    }
-
-                    using (var resp = await client.SendAsync(request).ConfigureAwait(false))
-                    {
-                        string json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        if (!resp.IsSuccessStatusCode)
-                        {
-                            return new ModelListFetchResult { HttpStatus = (int)resp.StatusCode, ResponseBody = json };
-                        }
-
-                        JObject parsed = JObject.Parse(json);
-                        JArray data = parsed["data"] as JArray;
-                        if (data == null || data.Count == 0)
-                        {
-                            return new ModelListFetchResult { NoModelData = true };
-                        }
-
-                        var list = new List<string>();
-                        foreach (var item in data)
-                        {
-                            string id = item["id"]?.ToString();
-                            if (!string.IsNullOrWhiteSpace(id))
-                            {
-                                list.Add(id);
-                            }
-                        }
-
-                        list.Sort((a, b) =>
-                        {
-                            bool aIsChat = a.IndexOf("gpt", StringComparison.OrdinalIgnoreCase) >= 0 || a.IndexOf("qwen", StringComparison.OrdinalIgnoreCase) >= 0 || a.IndexOf("deepseek", StringComparison.OrdinalIgnoreCase) >= 0 || a.IndexOf("claude", StringComparison.OrdinalIgnoreCase) >= 0;
-                            bool bIsChat = b.IndexOf("gpt", StringComparison.OrdinalIgnoreCase) >= 0 || b.IndexOf("qwen", StringComparison.OrdinalIgnoreCase) >= 0 || b.IndexOf("deepseek", StringComparison.OrdinalIgnoreCase) >= 0 || b.IndexOf("claude", StringComparison.OrdinalIgnoreCase) >= 0;
-                            if (aIsChat && !bIsChat) return -1;
-                            if (!aIsChat && bIsChat) return 1;
-                            return string.Compare(a, b, StringComparison.OrdinalIgnoreCase);
-                        });
-
-                        SaveCachedDirectorModels(list);
-                        return new ModelListFetchResult { Models = list };
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return new ModelListFetchResult { Error = ex.Message };
-            }
-        }
-
-        private void ApplyFetchedDirectorModels(ModelListFetchResult result)
-        {
-            IllustratorRuntime.AssertMainThread();
-            if (result == null)
-            {
-                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ERROR", "[Visual Director] Could not fetch models: {ERROR}", "ERROR", ModelListErrorText(result)), Color.FromUint(4294901760u)));
-                return;
-            }
-            if (result.HttpStatus != 0 || result.NoModelData || !string.IsNullOrWhiteSpace(result.Error))
-            {
-                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ERROR", "[Visual Director] Could not fetch models: {ERROR}", "ERROR", ModelListErrorText(result)), Color.FromUint(4294901760u)));
-                return;
-            }
-
-            lock (_directorModelLock)
-            {
-                _directorModelOptions = new List<string> { ManualModelOption, DefaultDirectorModelOption };
-                _directorModelOptions.AddRange(result.Models);
-
-                if (!string.IsNullOrWhiteSpace(DirectorModelName) && !_directorModelOptions.Contains(DirectorModelName))
-                    _directorModelOptions.Add(DirectorModelName);
-                int selectedIdx = string.IsNullOrWhiteSpace(DirectorModelName)
-                    ? 1
-                    : _directorModelOptions.IndexOf(DirectorModelName);
-                if (selectedIdx < 0) selectedIdx = 0;
-
-                ReplaceDirectorModelDropdown(new Dropdown<string>(_directorModelOptions, selectedIdx));
-            }
-
-            SaveCurrentSettings(this);
-            RequestMcmRefresh();
-            InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_SUCCESS", "[Visual Director] Fetched {COUNT} available models. The dropdown has been refreshed.", "COUNT", result.Models.Count), Color.FromUint(4278255360u)));
-        }
-
-        private static string GetDirectorCacheFilePath()
-        {
-            if (string.IsNullOrEmpty(_cachedDirectorModelsFilePath))
-                _cachedDirectorModelsFilePath = Path.Combine(IllustratorStoragePaths.EnsureDirectory(
-                    IllustratorStoragePaths.ConfigDirectory), "illustrator_director_models_cache.json");
-            return _cachedDirectorModelsFilePath;
-        }
-
-        private void TryLoadCachedDirectorModels()
-        {
-            try
-            {
-                string path = GetDirectorCacheFilePath();
-                if (File.Exists(path))
-                {
-                    string json = File.ReadAllText(path, Encoding.UTF8);
-                    var cached = JsonConvert.DeserializeObject<List<string>>(json);
-                    if (cached != null && cached.Count > 0)
-                    {
-                        if (_directorModelOptions == null)
-                        {
-                            _directorModelOptions = new List<string> { ManualModelOption, DefaultDirectorModelOption };
-                        }
-                        foreach (var m in cached)
-                        {
-                            if (!string.IsNullOrWhiteSpace(m) && !_directorModelOptions.Contains(m))
-                            {
-                                _directorModelOptions.Add(m);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.Print($"[Illustrator] Failed to load cached director models: {ex.Message}");
-            }
-        }
-
-        private static void SaveCachedDirectorModels(List<string> models)
-        {
-            try
-            {
-                string path = GetDirectorCacheFilePath();
-                string json = JsonConvert.SerializeObject(models, Formatting.Indented);
-                File.WriteAllText(path, json, Encoding.UTF8);
-            }
-            catch (Exception ex)
-            {
-                Debug.Print($"[Illustrator] Failed to save cached director models: {ex.Message}");
-            }
-        }
-
-        private static bool TryGetHostChatEndpointForFetch(out string apiUrl, out string apiKey)
-        {
-            apiUrl = string.Empty;
-            apiKey = string.Empty;
-            try
-            {
-                Type duelSettingsType = HarmonyLib.AccessTools.TypeByName("AnimusForge.DuelSettings");
-                if (duelSettingsType != null)
-                {
-                    System.Reflection.MethodInfo getSettingsMethod = HarmonyLib.AccessTools.Method(duelSettingsType, "GetSettings");
-                    object hostSettings = getSettingsMethod?.Invoke(null, null);
-                    if (hostSettings != null)
-                    {
-                        System.Reflection.PropertyInfo apiKeyProp = HarmonyLib.AccessTools.Property(duelSettingsType, "ApiKey");
-                        System.Reflection.PropertyInfo apiUrlProp = HarmonyLib.AccessTools.Property(duelSettingsType, "ApiUrl");
-                        System.Reflection.MethodInfo getEffectiveUrlMethod = HarmonyLib.AccessTools.Method(duelSettingsType, "GetEffectiveApiUrl", new[] { typeof(string) });
-
-                        apiKey = (apiKeyProp?.GetValue(hostSettings) as string ?? string.Empty).Trim();
-                        string rawUrl = (apiUrlProp?.GetValue(hostSettings) as string ?? string.Empty).Trim();
-                        if (getEffectiveUrlMethod != null)
-                        {
-                            apiUrl = (getEffectiveUrlMethod.Invoke(null, new object[] { rawUrl }) as string ?? rawUrl).Trim();
-                        }
-                        else
-                        {
-                            apiUrl = rawUrl;
-                        }
-                        return !string.IsNullOrWhiteSpace(apiUrl);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.Print($"[Illustrator] TryGetHostChatEndpointForFetch failed: {ex.Message}");
-            }
-            return false;
-        }
     }
 }
-
-

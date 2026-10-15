@@ -84,6 +84,9 @@ class Program
             var formatType = typeof(BaseSettings).Assembly.GetType("MCM.Implementation.JsonSettingsFormat", true);
             var loggerType = typeof(BaseSettings).Assembly.GetType("BUTR.DependencyInjection.Logger.DefaultBUTRLogger`1", true).MakeGenericType(formatType);
             object format = Activator.CreateInstance(formatType, Activator.CreateInstance(loggerType));
+#if !AF_BASELINE
+            IllustratorRetiredApiChecks.Run(af, format, Check);
+#endif
             string Save(BaseSettings o) => (string)formatType.GetMethod("SaveJson").Invoke(format, new object[] { o });
             void Load(BaseSettings o, string json) => formatType.GetMethod("LoadFromJson").Invoke(format, new object[] { o, json });
             string fixture = Path.Combine(root, "Configs", "roundtrip.json"); Directory.CreateDirectory(Path.GetDirectoryName(fixture));

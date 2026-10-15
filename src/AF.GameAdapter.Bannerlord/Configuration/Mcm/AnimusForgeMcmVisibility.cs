@@ -150,7 +150,7 @@ internal static class AnimusForgeMcmVisibility
     {
         if (!IsOwnedId(settingsId)) return true;
         if (settingsId == DialogueUiId || settingsId == CoupId) return false;
-        if (settingsId == IllustratorId) return propertyId != "UseExactEndpointUrl" && HasGroup(rawGroup, IllustratorGroups);
+        if (settingsId == IllustratorId) return HasGroup(rawGroup, IllustratorGroups);
         if (AmbientApiProperties.Contains(propertyId))
             return !string.IsNullOrEmpty(rawGroup) && rawGroup.IndexOf("{=AF_MCM_TownAmbient_AiGroup}", StringComparison.Ordinal) >= 0;
         return !MainNonApiProperties.Contains(propertyId) && HasGroup(rawGroup, MainGroups);
