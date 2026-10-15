@@ -1,3 +1,10 @@
+# 当前交接：1.6.1 汇总发行（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFY / LIVE_PENDING）
+
+- 已包含YJ引导新官网/删除QQ群、内政固定文案本地化、另一会话终端下拉越界修复、世界书重复ID导入修复及快报导演放宽；产品73a115e25、5af24a7e5、8093c9bb3、5d2a6aa2c。本条取代下方已包含范围的未部署/未打包状态，实机待验边界保持。
+- 最终8093c9bb3汇总源码的原双API/Bootstrap及Coup/注册门禁通过；内政两API各223项、终端1.3中文29536/1.4英文29552项、世界书78项通过。部署原脚本exit0写入3147项，独立核对3522项Stage、3182保护文件、10个ONNX状态与3原版DLL通过；安装三DLL等于冻结候选。
+- 原NoBump双包完整投影及独立ZIP校验通过，版本仍v1.6.1、实现FileVersion=1.6.1.0；CN/EN各3522项，两包三DLL与安装一致。包名与SHA详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#yj-interior-ui-20261015)，旧包/旧Stage保持；未上传安装包，push最终结果由下列补记及本地push-receipt.json确认。
+- [源码地图](docs/architecture/af-framework-code-scope.md#yj-interior-ui-20261015)；本地收据artifacts/yj-interior-ui-20261015/{release-binding.json,deploy/after.json,package/receipt.json}。尚未实机、原生Gauntlet外观、玩家实际1.3.12或旧档/provider验收；无自动安装回滚，人工选旧包并保留玩家数据。源码按各产品提交git revert。
+
 # 当前交接：终端 AI 核心点击崩溃已修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 产品/回归 `5af24a7e5`：统一终端下拉读取边界，null/空/无效索引显示未选择，保留 owner 配置；selector 初始索引安全投影。报告玩家实际为1.3.12，加载1.3实现，AF DLL为1.5.4.0。

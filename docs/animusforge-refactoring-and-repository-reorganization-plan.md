@@ -1,5 +1,5 @@
 <a id="yj-interior-ui-20261015"></a>
-## YJ引导入口与内政固定文案修复（2026-10-15，OFFLINE_VERIFIED / RELEASE_VERIFY）
+## YJ引导入口与内政固定文案修复（2026-10-15，OFFLINE_VERIFIED / PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFY / LIVE_PENDING）
 
 - 用户要求YJ预设删除第四条玩家QQ群，第三条改为https://www.shenlanqaq.com/；追加截图报告CN内政页固定标题、表头和翻页按钮英文。只处理这两条UI链路，不改AI接口地址、政治规则、布局尺寸或玩家配置。
 - 基线main/e6a7afae9；其他会话知识库导入、重载及其测试的八份未提交改动保留，不纳入本次提交。未跟踪Microsoft/、NuGet/保持。
@@ -12,6 +12,12 @@
 - 最终候选InteriorLocalizationTests两API各223项PASS：先构造真实prefab再加载语言，验证五作用域并CN→EN→CN；终端另一会话修复在最终候选复验1.3中文29536、1.4英文29552项PASS。世界书原Index/LoreRetriever 78项PASS。旧Onboarding/DatabaseReload独立fixture缺少当前依赖，未作为通过证据；未削弱断言，未宣称全仓测试通过。
 - 本轮部署/双包/push执行结果由下方同任务发行补记取代旧NOT_DEPLOYED状态；实机Gauntlet外观、玩家实际1.3.12、旧档及真实provider仍未验。源码回滚git revert 73a115e25；世界书8093c9bb3、终端5af24a7e5、快报5d2a6aa2c均按各自提交定向逆向。安装不自动回滚，人工选择旧包并保留玩家数据。[精确源码范围](architecture/af-framework-code-scope.md#yj-interior-ui-20261015)。
 
+
+- 汇总发行补记：最新授权已实际执行；原deploy_module.ps1 StageOnly与部署exit0。首次旧Stage因引导资源不一致被预检拦下，未写游戏；旧Stage完整保留后移出，原脚本生成干净Stage，不修改或放宽校验。安装阶段写入3147个受管文件，14个文件内容哈希变化；独立验证3522项Stage匹配，3182个玩家/MCM保护文件SHA、10个ONNX元数据、3个原版DLL及未列出文件均保持。部署不创建Recovery、不自动备份/回滚。
+- package_mod.ps1 -NoBump exit0，完整CN/EN固定资源/真实DLL/Stage投影门禁、ZIP CRC、唯一单模块、Bootstrap-only、两API marker哈希、双语UI与源版本/旧包保全检查通过；旧Stage与8份原有包未改。版本源v1.6.1与实现FileVersion=1.6.1.0保持，AssemblyVersion既有稳定身份未改。无一键流程变更，无上传安装包。
+- 新CN包：`一键编译覆盖推送/packages/AnimusForge_v1.6.1_CN_1015_2130.zip`；3522项，89269248字节；SHA256 `075a654dad884fcf7c821e8ccbeed15f3dc1885f9d7d27999fe2f568f25bd221`。
+- 新EN包：`一键编译覆盖推送/packages/AnimusForge_v1.6.1_EN_1015_2130.zip`；3522项，88351505字节；SHA256 `029cc0188a0d4706fcdea3d6dd0c10d914d36d7a2886e2f6294d76a79d7ee1e2`。
+- 正式ZIP的Bootstrap及两API均与已安装/冻结候选一致；部署after.json与package/receipt.json保存独立收据。待发布历史15提交46个新blob预检无本地专用交接/构建产物/玩家数据及凭据模式命中；最终普通push仍须远端HEAD核对，结果另补。未实机/旧档/真实provider；本次不声称全仓测试或玩家1.3.12通过。
 
 <a id="weekly-director-relaxation-20261015"></a>
 ## 快报导演误判回退放宽（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
@@ -10817,7 +10823,7 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 验证沿用产品双API/Bootstrap/Coup/注册、两实际DLL嵌入检查、51项家族归附及144项CN/EN扩展回放、75对模板与四组请求模板证据；本轮不重跑无变化产品构建。上两条的“未push”由本条替代；未部署/实机/provider/旧档/正式双包边界保持。
 - 证据artifacts/push-postprocess-20261015/preflight.json、push-source.log及最终receipt.json。此后仅补本条及HANDOFF发布收据并正常推送；最终远端收据提交SHA以receipt.json与ls-remote为准。回退产品git revert 068a938aa；测试git revert 141d639e6，已发布历史不改写。
 <a id="knowledge-duplicate-import-20261015"></a>
-## 世界书重复 ID 导入一致性修复（2026-10-15，OFFLINE_VERIFIED / RELEASE_VERIFY）
+## 世界书重复 ID 导入一致性修复（2026-10-15，OFFLINE_VERIFIED / PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFY / LIVE_PENDING）
 
 - 用户反馈卡拉迪亚编年史“洛泰——贾尔马律斯平原 / 比安芙”新档导入在不同机器结果不同，重复导入也报错；实际报错原文待补。基线 main/65017eb32；未跟踪 Microsoft/、NuGet/ 保留，不部署、打包或推送。
 - 已核实两组源文件各共用一个规则 ID，中原组还共享触发词。普通 reader 未排序且按 ID 静默丢弃后续条目；数据库重载已有稳定消歧与重复触发词归属逻辑。当前修复范围为普通 reader 复用已有规则，保留所有正文及原始资源/协议/存档身份；不扩展存档或导入事务设计。
