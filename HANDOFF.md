@@ -1,3 +1,9 @@
+# 当前交接：投降及其他会话改动已统一部署（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户授权带其他会话改动编译部署；完整main/99fde4dba已部署到F盘单模块AnimusForge，包含投降74be66074、流式20字/秒和正文滚动21e0a6a2b、MCM生命周期7e4d0d2a0及此前改动。版本仍v1.6.1，更新10项文件；本条替代下方相关“未部署”状态。
+- 原双API/Bootstrap/Coup/注册构建通过，干净3522项Stage与CN/EN完整投影通过；旧Stage因旧prefab被门禁拦截后已仓内保留，以同一冻结候选重建通过。部署exit0，8785项产品输入不变，安装三DLL等于候选；配置/提示词/世界书及未列出文件、ONNX状态和原版DLL独立核对PASS。没有修改构建脚本或放宽校验。
+- [唯一主台账/证据及回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-surrender-streaming-20261015)链接三个功能的源码范围图。本地收据`artifacts/deploy-surrender-streaming-20261015/receipt.json`、`verified-candidates/`及旧项目Stage。未打包、push或启动游戏，投降结算/逐字滚动/TTS/旧档仍待实机；安装无自动回滚，人工选旧包并保留玩家资料。
+
 # 当前交接：对话投降待办调度修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 产品/回归74be66074：OnEngineTick补上原NPC投降待办消费，解决退出对话后遭遇菜单暂停Campaign Tick而无人执行。保留手动退出、scope/generation保护、mission等待、250ms节流和只执行一次；无待办只查bool，无新增Tick扫描/IO。

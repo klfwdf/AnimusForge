@@ -1,9 +1,14 @@
 <a id="deploy-surrender-streaming-20261015"></a>
-## 包含其他会话改动统一编译部署（2026-10-15，ACTIVE）
+## 包含其他会话改动统一编译部署（2026-10-15，BUILD_VERIFIED / STAGE_VERIFIED / DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户明确授权“带着其他会话改动编译部署”；基线main/7a43fd6d8，跟踪文件干净，保留未跟踪Microsoft/、NuGet/。纳入当前完整源码，包含投降调度74be66074、流式20字/秒及正文滚动21e0a6a2b、MCM关闭生命周期7e4d0d2a0，以及此前已合入改动。版本维持v1.6.1；本次未授权打包或push。
 - 目标固定为`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。开工未发现Bannerlord进程/并行统一构建；使用现有build_single_module.ps1构建1.3/1.4、Bootstrap及项目本地Stage，随后用原deploy_module.ps1部署冻结候选。修改位置为该单模块受Stage管理文件，依原规则保护配置、提示词、更新的PlayerExports、ONNX、原版DLL及未列出文件；无Recovery备份、自动回滚或构建脚本改写。
 - 退出门：完整当前产品输入构建/部署期间不变；复用同源码专项证据并记录source SHA；双API/Bootstrap/Coup/注册、完整Stage与CN/EN投影通过；原部署exit0后独立核对Stage逐项、三DLL候选hash、原玩家数据和ONNX元数据/原版DLL保持。实机投降结算、逐字/滚动/TTS视觉、玩家旧档仍待验。详细本地证据`artifacts/deploy-surrender-streaming-20261015/`；原项目Stage先保留到本地证据目录，不覆盖旧发行包。
+- 已完成：检查点/构建源码99fde4dba；原统一Debug双API（引用v1.3.15.110062/v1.4.6.115628）、Bootstrap、双Coup seam及registration smoke PASS，既有警告保留。初次`build_single_module.ps1 -Stage`的构建部分成功，旧Stage仍含旧AFDialogueConversation.xml，被当前source hash校验拦截（整体exit1，游戏尚未修改）；比对确认旧Stage与开工保留副本一致。将原旧Stage按已核实的仓内绝对路径保存到`previous-stage-original/`，用同一冻结候选经原`deploy_module.ps1 -StageOnlyOutputDir`生成干净Stage（exit0）；没有改源码/脚本、跳过门禁或重复构建来掩盖失败。
+- 干净Stage完整3522项及CN/EN投影各3522项PASS，版本v1.6.1，两实现FileVersion=1.6.1.0。三个专项receipt的源码SHA均与当前一致：投降306项、流式35/70/48/172/172及MCM原有有效证据复用，精确范围和未验项仍以原receipt为准，本次不扩大其fixture/实机结论。8785项产品输入在构建、Stage和部署后逐项SHA保持。
+- 原`deploy_module.ps1`以`verified-candidates/`中三DLL为显式输入覆盖F盘单模块，exit0，更新10项：对话prefab及三个程序各DLL/PDB/marker；未列出安装文件不变。独立`audit.py after`逐项核对3522项Stage按原merge规则落地，安装三DLL等于冻结候选/marker，3133项Stage现有文件按规则保留；另50项配置/提示词/MCM/Recovery/终端保护哈希、10项ONNX大小/时间、3个原版DLL哈希不变，未新建部署Recovery或遗留临时文件。
+- 收据`artifacts/deploy-surrender-streaming-20261015/receipt.json`绑定完整命令输出、before/plan/after、投影、三DLL实际SHA与引用版本；`verified-candidates/`保存当前候选，`previous-project-stage/`与`previous-stage-original/`保存旧项目输出。这些是本地证据/项目输出，不是安装备份或自动恢复。没有打包、push或启动游戏；实机投降俘虏/战利品页、流式/滚动/TTS及玩家旧档仍NOT-RUN。
+- 本条取代投降74be66074、流式21e0a6a2b及MCM7e4d0d2a0原记录中“未部署”状态，其实机/确切玩家版本未验边界保持。源码责任见[投降地图](architecture/af-framework-code-scope.md#npc-surrender-engine-tick-20261015)、[流式地图](architecture/af-framework-code-scope.md#streaming-dialogue-reveal-20261015)、[MCM地图](architecture/af-framework-code-scope.md#mcm-reopen-lag-20261015)。安装回退需人工选择旧包并保留玩家数据，无自动回滚；源码分别用对应产品提交的focused inverse commit，不重置历史或其他作者改动。
 
 <a id="npc-surrender-engine-tick-20261015"></a>
 ## 对话投降待办在暂停遭遇菜单不执行（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
