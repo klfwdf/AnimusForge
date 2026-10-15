@@ -90,8 +90,65 @@ static class SupplementalChecks
             check(names.Count(n => n == name) == 1, "MCM translated API subgroup appears once: " + name);
         check(names.All(n => !n.Contains("/") && !n.Contains("{=")), "MCM group labels contain no raw path or localization marker");
     }
+    private static void CheckDropdownSelectionBoundary(Assembly af, DuelSettings owner, Action<bool, string> check)
+    {
+        var itemType = af.GetType("AnimusForge.AnimusForgeTerminalItemVM", true);
+        int writes = 0, notifications = 0;
+        MCM.Common.Dropdown<string> current = null;
+        var definition = new TerminalSettingDef("OfflineDropdown", "AI", "", "", "",
+            TerminalSettingType.Dropdown, 0, 0, 1, "", s => current?.SelectedValue ?? "",
+            (s, value) => { writes++; current.SelectedIndex = (int)value; }, null, s => current);
+        void Verify(string expected, int selectorIndex, string name)
+        {
+            int? before = current?.SelectedIndex;
+            check((string)definition.Getter(owner) == expected, "dropdown getter " + name);
+            var item = Activator.CreateInstance(itemType, new object[] { definition, (Action)(() => notifications++), null });
+            object selector = itemType.GetProperty("DropdownSelector").GetValue(item);
+            check((string)itemType.GetProperty("DisplayValue").GetValue(item) == expected, "dropdown display " + name);
+            check(current?.SelectedIndex == before && writes == 0 && notifications == 0, "dropdown read preserves owner " + name);
+            check(selector == null ? current == null || current.Count == 0 :
+                (int)selector.GetType().GetProperty("SelectedIndex").GetValue(selector) == selectorIndex, "dropdown selector " + name);
+        }
+        Verify("", -1, "null");
+        current = new MCM.Common.Dropdown<string>(new string[0], 0);
+        Verify("", -1, "empty");
+        current = new MCM.Common.Dropdown<string>(new[] { "first", "second" }, 0);
+        foreach (int index in new[] { -1, -3, 2, int.MinValue, int.MaxValue })
+        {
+            current.SelectedIndex = index;
+            Verify("", -1, "invalid " + index);
+        }
+        current.SelectedIndex = 1;
+        Verify("second", 1, "valid");
+        current.SelectedIndex = -1;
+        var editable = Activator.CreateInstance(itemType, new object[] { definition, (Action)(() => notifications++), null });
+        object editableSelector = itemType.GetProperty("DropdownSelector").GetValue(editable);
+        editableSelector.GetType().GetProperty("SelectedIndex").SetValue(editableSelector, 1);
+        check(current.SelectedIndex == 1 && writes == 1 && notifications == 1, "dropdown user can replace invalid selection");
+        check((string)itemType.GetProperty("DisplayValue").GetValue(editable) == "second", "dropdown user selection display");
+
+        // Exercise the same automatic coverage path named in the crash report.
+        var definitions = new List<TerminalSettingDef>();
+        af.GetType("AnimusForge.TerminalSettingsCoverage", true).GetMethod("AddMissing", All).Invoke(null, new object[] { definitions });
+        var covered = definitions.Single(d => d.Id == "PlayerPolicyApiSourceDropdown");
+        var original = owner.PlayerPolicyApiSourceDropdown;
+        try
+        {
+            owner.PlayerPolicyApiSourceDropdown = new MCM.Common.Dropdown<string>(new string[0], 0);
+            check((string)covered.Getter(owner) == "", "automatic coverage empty dropdown");
+            Activator.CreateInstance(itemType, new object[] { covered, (Action)(() => notifications++), null });
+            check(writes == 1 && notifications == 1, "automatic coverage opening does not save");
+            owner.PlayerPolicyApiSourceDropdown = new MCM.Common.Dropdown<string>(new[] { "first" }, 0);
+            owner.PlayerPolicyApiSourceDropdown.SelectedIndex = 4;
+            check((string)covered.Getter(owner) == "", "automatic coverage invalid dropdown");
+        }
+        finally { owner.PlayerPolicyApiSourceDropdown = original; }
+        Console.WriteLine("Terminal dropdown boundary regression PASS");
+    }
+
     internal static void Run(Assembly af, object owner, Action<bool, string> check, string root)
     {
+        CheckDropdownSelectionBoundary(af, (DuelSettings)owner, check);
         var promptRules = af.GetType("AnimusForge.NpcPersonaTextRules", true);
         var prompts = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(Path.Combine(root, "ModuleData", "PersonaPromptTexts.json")));
         foreach (string kind in new[] { "Native", "Promoted" })

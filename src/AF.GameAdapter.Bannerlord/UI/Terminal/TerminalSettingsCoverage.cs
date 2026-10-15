@@ -151,7 +151,6 @@ internal static class TerminalSettingsCoverage
                 ? (Action<DuelSettings>)(s => (Read(binding, s) as Action)?.Invoke()) : null;
             Func<DuelSettings, Dropdown<string>> dropdown = binding.Kind == TerminalSettingType.Dropdown
                 ? (Func<DuelSettings, Dropdown<string>>)(s => ReadDropdown(binding, s)) : null;
-            if (dropdown != null) get = s => ReadDropdown(binding, s)?.SelectedValue ?? string.Empty;
             definitions.Add(new TerminalSettingDef(binding.Id, category, LocalizeGroup(binding.Group),
                 Localize(binding.Attribute.DisplayName), Localize(binding.Attribute.HintText), binding.Kind,
                 binding.Min, binding.Max, binding.Kind == TerminalSettingType.FloatingInteger ? 0.05f : 1f,
