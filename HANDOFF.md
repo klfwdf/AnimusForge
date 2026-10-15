@@ -1,8 +1,9 @@
-# 当前交接：数据库重载可跳过不匹配动态王国（2026-10-16，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
+# 当前交接：数据库重载可跳过不匹配动态王国（2026-10-16，OFFLINE_VERIFIED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 产品35c6ad013：仅跳过无法匹配的动态王国profile，其他数据库继续；被跳过ID免除candidate规范化/默认重置，保留原profile。支持王国源全跳过，原静态/格式/重复校验不变；确认及完成CN/EN显示数量和最多8对象，无新增Tick工作。
 - 旧源码负控失败，新生产方法37项和原事务子集12项PASS，原双API/Bootstrap/Coup/注册及双语资源消费者检查PASS。完整旧协调器项目fixture仍过时，不能将事务子集当整套通过；实机/玩家包/旧档未验。没有改玩家文件或部署/打包/push；旧安装不含此次改动。
 - [唯一主台账/证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reload-skip-dynamic-kingdoms-20261016)；[精确源码地图](docs/architecture/af-framework-code-scope.md#reload-skip-dynamic-kingdoms-20261016)。本地artifacts/reload-skip-dynamic-kingdoms-20261016/{receipt.json,verified-candidates/}；源码回滚git revert 35c6ad013。
+- 用户随后授权推送：3提交/13新增blob预检PASS，无凭据模式命中；普通push从e1da989fd快进至09e7f915f，独立ls-remote与本地HEAD一致。本收据文档随后同步，最终远端SHA见本地artifacts/push-reload-skip-dynamic-kingdoms-20261016/receipt.json；此条取代上方未push历史，未部署/打包/实机边界保持。
 
 # 当前交接：隐藏的生图API配置已退役（2026-10-16，OFFLINE_VERIFIED / LOCAL_MCM_CLEANED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
