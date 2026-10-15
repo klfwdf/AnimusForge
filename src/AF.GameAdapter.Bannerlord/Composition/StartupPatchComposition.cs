@@ -418,6 +418,7 @@ internal static class StartupPatchComposition
 			{
 				Logger.LogTrace("SubModule", ">>> McmDropdownRuntimeRefresh init failed: " + ex18a.Message);
 			}
+			RotEncyclopediaCompanionCompatibility.EnsurePatched();
 			try
 			{
 				EncyclopediaHeroPersonaPatch.EnsurePatched(harmony);
