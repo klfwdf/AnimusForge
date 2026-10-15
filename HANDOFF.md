@@ -1,3 +1,9 @@
+# 领主转同伴后百科崩溃链路审查（2026-10-15，SOURCE_AUDIT / REMOTE_STACK_PENDING）
+
+- 用户确认事故发生在别的电脑，要求检查链路。已追踪共享招募执行器、族长继任/解散、职业/家族/队伍转换、延迟清理和百科消费者。成功转换通过CompanionOf返回玩家家族，不存在职业天然不同步；未取得远端崩溃堆栈，不能确认直接原因。
+- 确认风险：无合格成年继承人时用族长死亡销毁动作，可移除其他活着的家族成员；前置政治/家族变更后，后续失败没有补偿。仅审查，未修改产品、构建、部署或推送。
+- [唯一主台账与边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#encyclopedia-recruited-lord-audit-20261015)；[源码地图](docs/architecture/af-framework-code-scope.md#encyclopedia-recruited-lord-audit-20261015)。本地证据artifacts/encyclopedia-recruited-lord-20261015/audit.json。
+
 # 当前交接：恢复 MCM 独立终端设置页（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
 - 产品47baa7696，检查点3e5c3d363。原先隐藏的运行设置恢复到“AnimusForge终端设置”独立页，API/支持项在API页；生图API在环境API上方，完整路径两入口隐藏。控件直接绑定原四owner，与终端共享setter/JSON；新页面无业务配置副本。规范要求以后增改选项同步MCM与终端及CN/EN。

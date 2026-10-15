@@ -1,3 +1,15 @@
+<a id="encyclopedia-recruited-lord-audit-20261015"></a>
+## 敌方领主转流浪者同伴后百科崩溃：链路审查（2026-10-15，SOURCE_AUDIT / REMOTE_STACK_PENDING）
+
+- 用户报告招募敌方领主成为流浪者同伴后点击百科崩溃，确认并非本机，要求检查链路。审查基线049cc5ffb；相关三份产品文件与9e4a5bc27发行相同。本机最新运行日志止于13:39，未发现该转换记录；CrashDoctor报告均为7/8月旧事故，不作为本次事故证据。
+- 实际路径：共享ApplyRewardTags识别[A:H_J_P_P_C]（C&L同按C分支）→RecruitmentOwner.TryApplyHeroJoinPlayerPartyCore→记录原家族→原族长继任/解散及统治家族处理→解除俘虏/离开定居点→TryMoveHeroToPlayerClanAsCompanionAndMainParty→原生Clan/Occupation/CompanionOf/入队动作→结果校验/事实→结束会话/空队清理。Courier的DomainCommit也调用同一个ApplyRewardTags，不存在另一个独立信使招募实现。
+- 已排除的简单推断：原生Hero.Clan返回CompanionOf??_clan，因此成功同伴的Clan是玩家家族；原生Clan setter维护旧族/国家英雄列表，CompanionOf setter维护新同伴列表；CharacterObject.Occupation读取HeroObject.Occupation，没有另一份未同步职业字段。本机1.4.8 DLL核查，1.3参考Hero关键访问器亦核查；不代表远端具体补丁/第三方模块实机通过。
+- 已确认源码风险，不等于本次崩溃根因：RecruitmentOwner.cs:108–138在GetHeirApparents为空时执行DestroyClanAction.ApplyByClanLeaderDeath，而不是只移走人物。原生动作清理战争队伍、移除族长外所有存活成员、转移领地并离开国家；原生继承人筛选排除未成年、流浪者、未生成等，所以无继承人不代表无其他存活成员。该分支可能影响儿童等成员，需要玩法决策与真实游戏状态后才能选取安全修复，不能把它静默替换成通用销毁或只吞异常。
+- 另一确认风险：原族长继任/家族销毁/国家变更发生在解除俘虏和最终入队之前，后续false或异常仅返回失败，没有恢复先前副作用；不存在完整事务保证。最终成功检查只覆盖当前同伴/职业/状态/主队伍，未证明世界所有关系完整。不能凭此推断任何一次招募必出坏数据。
+- 百科原版先构造Faction与RefreshValues/Refresh，读取亲属、朋友/敌人、历史、技能、装备与肖像；AF在RefreshValues postfix补人设，try/catch只覆盖自己的postfix，不能兜住原版前面的异常。正常原版人物列表兼容空Clan，不能把一切百科崩溃简单归为Clan=null。
+- 验证范围：真实源码与本机原版DLL反编译交叉核对，见[代码地图](architecture/af-framework-code-scope.md#encyclopedia-recruited-lord-audit-20261015)及artifacts/encyclopedia-recruited-lord-20261015/audit.json、hero/、hero13/、clan/、character/、encyclopedia/、herolist/、destroy13/。既有RecruitmentOwnerReplay仅验证null目标/重复拒绝/无虚假成功，正向游戏变更仍source-parity-only，不能用该专项声称已覆盖招募后百科。
+- 未验/需要材料：远端异常第一层与完整stack、游戏/AF确切版本、目标领主是否族长及其他家族成员、N首页或个人页触发位置、相关存档。没有事故端材料，不标根因确认或修复完成。无产品修改、无构建、无部署/打包/push；无需产品回滚，文档可聚焦撤销本次审查提交。
+
 <a id="mcm-terminal-pages-20261015"></a>
 ## MCM 独立终端设置页与 API 归组（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
