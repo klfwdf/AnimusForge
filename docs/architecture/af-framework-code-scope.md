@@ -7,7 +7,7 @@
 | --- | --- |
 | `extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs:390–449` ResolveDirectorBody；`:408–411` 快报分支 | 只对快报非空正文跳过关键词、复述和四段整篇回退；先保留自由取景严格入口，空白和其他模式沿用原检查 |
 | 同文件`:330–350` ComposeFinalPrompt；`:358–388` ResolveDirection | 实际最终核心事实/保真合同消费者，元数据保持；定向重绘与保真开关沿用原语义，未新增语义判断或请求重试 |
-| `extensions/AnimusForge.Illustrator/tests/WeeklyDirectorTests/WeeklyDirectorChecks.cs:40–89` Accepted / Run；`run.ps1:1–42` runner | 真实候选DLL与CN/EN真实资源的定向回放；仅纯文本路径，不调用既有离线审计，无HTTP/GPU/游戏对象或真实游戏加载 |
+| `extensions/AnimusForge.Illustrator/tests/WeeklyDirectorTests/WeeklyDirectorChecks.cs:40–90` Accepted / Run；`run.ps1:1–36` runner | 真实候选DLL与CN/EN真实资源的定向回放；仅纯文本路径，不调用既有离线审计，无HTTP/GPU/游戏对象或真实游戏加载 |
 
 <a id="rot-encyclopedia-compat-implementation-20261015"></a>
 ### ROT无模板玩家同伴百科兼容（产品d3c94f9a5）
