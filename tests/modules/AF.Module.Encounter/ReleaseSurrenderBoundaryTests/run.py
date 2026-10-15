@@ -16,6 +16,7 @@ parser.add_argument('--source-file', type=Path)
 args = parser.parse_args()
 src = (args.source_file or ROOT/'src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs').read_text(encoding='utf-8-sig')
 signatures = [
+    'internal static void OnEngineTick()',
     'private sealed class MeetingPlayerReleaseRequest',
     'private static MeetingPlayerReleaseRequest CaptureMeetingPlayerReleaseRequest(',
     'private static bool IsMeetingPlayerReleaseRequestCurrent(',

@@ -3663,6 +3663,18 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Logger.Log("MeetingRelease", "Engine tick pending native conversation release failed: " + ex2.Message);
 			}
 		}
+		// Encounter menus can pause Campaign Tick after the conversation closes.
+		if (_pendingNativeConversationNpcSurrender)
+		{
+			try
+			{
+				TryForcePendingNativeConversationNpcSurrenderIfReady();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NpcSurrender", "Engine tick pending native conversation NPC surrender failed: " + ex.Message);
+			}
+		}
 	}
 
 	private static void TryForcePendingEncounterBattleMenuIfReady()
