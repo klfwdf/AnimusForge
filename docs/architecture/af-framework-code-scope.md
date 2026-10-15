@@ -1,3 +1,15 @@
+<a id="rot-encyclopedia-compat-implementation-20261015"></a>
+### ROT无模板玩家同伴百科兼容（产品d3c94f9a5）
+
+[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#rot-encyclopedia-compat-implementation-20261015)保存构建、事故与本地收据；下方未修复诊断为历史。本表仅覆盖本次定向修复，未实机验收。
+
+| 一基坐标 / 符号 | 实际责任与覆盖边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Patches/Safety/RotEncyclopediaCompanionCompatibility.cs:13–44` HarmonyId / TargetTypeName / EnsurePatched | 可选ROT类型与完整Postfix签名发现、一次注册、诊断；无硬DLL引用，补丁只作用于ROT方法，未匹配版本不假报成功 |
+| 同文件`:46–52` Prefix | 玩家家族Wanderer且无Template时保留原版条目，其他输入回原ROT逻辑；无人物/存档写入及扫描 |
+| `src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs:421` Register；`Composition/SubModule.cs:114–117` OnBeforeInitialModuleScreenSetAsRoot | 主界面前注册，兼容接线独立于人设补丁的try块；原双API/Bootstrap与注册门禁通过，实际MOD加载顺序未游戏验收 |
+| `tests/AF.GameAdapter.Bannerlord/RotEncyclopediaCompatibilityTests/Program.cs:18–64` Main；`:107–125` ROT fixture；`run.py:9–27` runner | 真实Harmony补丁链接生产guard，合成游戏对象/实际ROT源码等价回放及缺席进程；不等于实际ROT.dll或旧档实机通过 |
+
 <a id="rot-companion-encyclopedia-confirmed-20261015"></a>
 ### ROT同伴百科空引用的事故范围（914c65f82，只读诊断）
 
