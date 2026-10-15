@@ -21,7 +21,14 @@ sealed class Discovery : IGenericServiceProvider
     public Discovery(IFileSystemProvider files = null) { this.files = files; }
     readonly ISettingsPropertyDiscoverer discoverer = (ISettingsPropertyDiscoverer)Activator.CreateInstance(
         typeof(BaseSettings).Assembly.GetType("MCM.Implementation.AttributeSettingsPropertyDiscoverer", true), true);
-    public T GetService<T>() where T : class => typeof(T) == typeof(IEnumerable<ISettingsPropertyDiscoverer>) ? new[] { discoverer } as T : typeof(T) == typeof(IFileSystemProvider) ? files as T : null;
+    readonly ISettingsPropertyDiscoverer fluent = (ISettingsPropertyDiscoverer)Activator.CreateInstance(
+        typeof(BaseSettings).Assembly.GetType("MCM.Implementation.FluentSettingsPropertyDiscoverer", true), true);
+    internal readonly MCM.Abstractions.Global.IFluentGlobalSettingsContainer Container =
+        (MCM.Abstractions.Global.IFluentGlobalSettingsContainer)Activator.CreateInstance(
+            typeof(BaseSettings).Assembly.GetType("MCM.Implementation.Global.FluentGlobalSettingsContainer", true), true);
+    public T GetService<T>() where T : class => typeof(T) == typeof(IEnumerable<ISettingsPropertyDiscoverer>) ? new[] { discoverer, fluent } as T :
+        typeof(T) == typeof(IEnumerable<MCM.Abstractions.Global.IFluentGlobalSettingsContainer>) ? new[] { Container } as T :
+        typeof(T) == typeof(IFileSystemProvider) ? files as T : null;
     public IGenericServiceProviderScope CreateScope() => null;
     public void Dispose() { }
 }
@@ -160,6 +167,9 @@ class Program
             if (args.Length > 4)
             {
                 var ui = Assembly.LoadFrom(Path.Combine(args[4], "Bannerlord.MBOptionScreen.v1.4.0.dll"));
+#if !AF_BASELINE
+                McmPageChecks.NativeUi(af, ui, Check);
+#endif
                 var hostType = ui.GetType("MCM.UI.GUI.ViewModels.SettingsPropertyVM", true);
                 var refresh = af.GetType("AnimusForge.McmDropdownRuntimeRefresh", true).GetMethod("TryRefreshDropdown", All);
                 foreach (var owner in new[] { duel, (BaseSettings)TerminalProviderProbe.Owners["AnimusForge_Illustrator_v1"] })

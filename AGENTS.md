@@ -36,8 +36,8 @@
 - 内容包仅选择固定 Prompt、事实模板和世界书资源的 CN/EN 版本；不得追加按包语言强制回复的 system 规则，不得因输出包含中文或英文而丢弃标题、正文或阻断请求。UI 仍随游戏界面语言；模型自然语言输出由实际上下文和玩家自定义要求决定。协议、JSON字段、数值、事实和权限约束照常保留；用户自行指定的语言要求不改写。
 - 终端与 MCM 的四个设置 owner 共用 MCM 原生骑砍文档目录 `Configs/ModSettings/Global` 的同一组 JSON/字段与 preset；终端入口开关也存主 owner，不新增终端业务配置副本。文档现有 MCM 值优先，模组旧配置保留且不自动覆盖它；仅新入口字段缺失时在加载边界兼容模组旧入口 JSON。其余 AF 数据仍按用途留在当前已安装模组：`CustomPrompts/` 用户提示词、`Logs/` 日志、`Configs/` 非 MCM 模组配置/索引、`PlayerExports/` 导入导出、`Cache/` 缓存和临时音频、`Recovery/` 恢复资料，沿用 `AnimusForgeDataPaths` 的身份/ancestor reparse 校验。此例外仅恢复 MCM 设置，不读取或迁移旧 AppData/其他 Documents 资料，不删除旧文件，不改其他模组的目录。
 - 设置维护以原 MCM 属性为配置和持久化来源；终端 `TerminalSettingsCoverage` 一次缓存四个 AF owner 的属性与编译委托，补齐未手工注册项。新增设置同步核对终端分类、范围、双语说明、原 setter 与保存 owner；不能只按属性同名判断已接线。
-- MCM 前端只保留 API 设置和“0支持制作组”；通过 `AnimusForgeMcmVisibility` 的 UI 投影隐藏其余入口，保留完整属性、默认值、JSON 字段和 preset，不把隐藏改成功能禁用，也不影响其他模组。
-- 后续新增或调整可改运行选项默认只接入终端并维护 CN/EN 终端文案；本项目语境中用户说“加 MCM 选项”时，按“加入终端设置”执行，不新增 MCM UI 控件。既有 MCM 属性仅作为兼容的配置/持久化来源保留，除非用户明确要求恢复或改动其界面。
+- MCM 恢复运行设置，集中在“AnimusForge终端设置”独立页；API 与“0支持制作组”在 API 页，生图 API 位于环境 API 上方。生图 `UseExactEndpointUrl` 完整路径控件在 MCM 与终端均隐藏，保留配置字段和值。前端投影直接绑定原四个 owner，沿用其 JSON、setter 和 preset 身份，不新增业务配置副本，不影响其他模组。
+- 后续新增或调整可改运行选项，必须同任务同步接入终端和 MCM，并维护 CN/EN 分类、名称、说明、范围、默认值和原保存 owner。用户说“加 MCM 选项”按双入口同步执行；有意隐藏项须明确记录，不得仅添加属性或单边控件就宣称接线完成。
 - 外观、字体、对话历史控件、信件样式、显示通知与插画外观集中在终端“UI”页；既有分类路由值、信件样式索引和原配置对象保持。终端修改扩展设置后按各自 owner 保存，失败保留待重试；不在 Tick 扫描元数据或读写配置。
 - 固定包默认提示词位于 `ModuleData/Defaults/CustomPrompts/`，`CustomPrompts/` 保留用户编辑。按 `McmKnownPromptDefaults.json` 的确切已知默认哈希识别旧发布文件，维护清册时同步两种资产；已编辑、未知和旧用户内容保值。映射迁移需要新建干净 Stage 并保留旧项目输出，不能放行 Stage 中未知文件来解决旧输出冲突。
 - 正式打包必须一次生成 CN 和 EN 两份 ZIP，名称为 `AnimusForge_v1.X.X_CN_MMdd_HHmm.zip` / `AnimusForge_v1.X.X_EN_MMdd_HHmm.zip`，例如 `AnimusForge_v1.5.8_CN_1007_0802.zip`。同一对包共用版本和本机月日/时分；重名时两包同加 `_1`、`_2` 等尾号，保留旧包，禁止自定义 PackageLabel 改名。

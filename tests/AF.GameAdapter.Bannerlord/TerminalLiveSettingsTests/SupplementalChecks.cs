@@ -171,6 +171,7 @@ static class SupplementalChecks
             {
             language.Invoke(null, new object[] { selectedLanguage });
             McmGroupChecks(af, duel, check, selectedLanguage);
+            McmPageChecks.Run(af, check, selectedLanguage);
             LocalizedNewlineChecks(check, root, selectedLanguage);
             notices.Clear(); gatewayCalls = 0;
             var page = new DuelSettings();

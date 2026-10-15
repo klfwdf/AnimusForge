@@ -1272,7 +1272,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 			var definitions = _selectedTab == TerminalCategories.All ? TerminalSettingsRegistry.VisibleDefinitions : TerminalSettingsRegistry.GetByCategory(_selectedTab);
 
-			foreach (var group in definitions.Where(def => query.Length == 0 || SettingMatchesQuery(def, query)).GroupBy(def => def.GroupName))
+			foreach (var group in definitions.Where(def => query.Length == 0 || SettingMatchesQuery(def, query)).GroupBy(def => def.GroupName)
+                .OrderBy(group => TerminalSettingsCoverage.ViewGroupOrder(group.First().Id)))
 
 			{
 

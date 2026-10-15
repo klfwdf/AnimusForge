@@ -15,7 +15,8 @@ public static class TerminalProviderProbe
     public static readonly List<string> Saved = new List<string>();
     public static string FailId;
     public static Action<object> OnSave;
-    public static object Get(string id) => Owners.TryGetValue(id, out object value) ? value : null;
+    public static Func<string, object> Lookup;
+    public static object Get(string id) => Owners.TryGetValue(id, out object value) ? value : Lookup?.Invoke(id);
     public static void Save(object owner)
     {
         string id = (string)owner.GetType().GetProperty("Id").GetValue(owner);
