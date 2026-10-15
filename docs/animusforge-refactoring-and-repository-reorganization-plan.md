@@ -11,6 +11,8 @@
 
 - 推送交付：用户本轮明确授权“推送”；fetch后远端无领先、本地4提交均为本次事故诊断/检查点/修复/验证记录，11个新增blob、7条路径范围及凭据模式检查通过，未跟踪Microsoft/、NuGet/保留。已普通快进origin/main从914c65f82至5a9693c46，git ls-remote独立核对一致，含产品d3c94f9a5；本条及HANDOFF后续收据提交的最终远端SHA保存在artifacts/push-rot-encyclopedia-20261015/receipt.json。本次仅源码推送，未部署或打包。
 
+- 后续打包授权（PACKAGING）：用户要求打包且版本仍1.6.1。基线b2e4e5861，复用已通过双API/Bootstrap与Harmony回放的d3c94f9a5产品（源码blob及三DLL SHA复核一致，FileVersion=1.6.1.0）；保留旧Stage到artifacts/package-rot-161-20261015/previous-stage，通过原StageOnly入口组装后运行原package_mod.ps1 -NoBump，完成CN/EN完整投影和双包门禁。旧包保留；本轮不部署或上传安装包。
+
 <a id="rot-companion-encyclopedia-confirmed-20261015"></a>
 ## 安德雷转同伴后百科无法打开：实际ROT堆栈（2026-10-15，LOG_CONFIRMED / FIX_NOT_IMPLEMENTED）
 
