@@ -37,7 +37,8 @@ my = read_source('src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs')
 ended = ex.declaration(my, 'private void OnMemoryConversationEnded(')
 assert ended.index('InvalidateNativeConversationAdmissionOnConversationEnd();') < ended.index('ConversationHelper.Clear();')
 overlay = read_source('src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs')
-assert overlay.count('ConversationHelper.BeginStreaming(this);') == 2
+begin = 'ConversationHelper.BeginStreaming(this, DuelSettings.GetSettings()?.MainApiStreamingEnabled == true);' if 'bool revealAsReceived' in helper else 'ConversationHelper.BeginStreaming(this);'
+assert overlay.count(begin) == 2
 assert 'ConversationHelper.ClearForOwner(this);' in ex.declaration(overlay, 'private void Close(bool silent)')
 presentation = read_source('src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.Presentation.cs')
 assert 'ConversationHelper.ClearForOwner(this);' in ex.declaration(presentation, 'private void RetireStaleSubmissionPresentation(')
@@ -50,6 +51,8 @@ expected_keys = ['_sceneTauntPendingDeferredLordSceneDiplomacy_v1', '_sceneTaunt
     '_sceneTauntPendingDeferredLordSceneTargetFactionId_v1', '_sceneTauntPendingDeferredLordSceneSettlementId_v1', '_sceneTauntPendingDeferredLordSceneReason_v1']
 assert all(taunt.count('SyncData("' + key + '"') == 1 for key in expected_keys)
 out = new_run_root(ROOT, 'SceneConflictJudgmentDisplayTests', args.run_root)
+if 'StreamingDialogueTextReveal' in helper:
+    (out / 'StreamingDialogueTextReveal.cs').write_text(read_source('src/AF.GameAdapter.Bannerlord/UI/Conversation/StreamingDialogueTextReveal.cs'), encoding='utf-8')
 for name, text in [('Helper.cs', helper), ('Stubs.cs', (HERE / 'Stubs.cs.txt').read_text(encoding='utf-8')),
     ('Program.cs', (HERE / 'Program.cs').read_text(encoding='utf-8')),
     ('Host.cs', 'using System;\nnamespace AnimusForge;\ninternal sealed partial class SceneTauntBehavior {\n' + fixture + '\n}'),

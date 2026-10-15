@@ -78,6 +78,14 @@ public static class ConversationHelper
 
 	private static double _typewriterDurationSeconds = 0.0;
 
+	private static readonly StreamingDialogueTextReveal _streamingReveal = new StreamingDialogueTextReveal();
+	private static bool _streamingRevealEnabled;
+	private static string _streamingFinalDisplayText;
+	private static int _streamingTextRevision;
+
+	internal static bool IsStreamingTextRevealEnabled => _streamingRevealEnabled;
+	internal static int StreamingTextRevision => _streamingTextRevision;
+
 	private static volatile bool _isStreaming = false;
 
 	private static volatile string _lastStreamText = null;
@@ -100,7 +108,7 @@ public static class ConversationHelper
 		{
 			using (EnterPendingLock("IsTypewriterActive"))
 			{
-				return _typewriterActive;
+				return _typewriterActive || _streamingReveal.IsActive;
 			}
 		}
 	}
@@ -252,7 +260,7 @@ public static class ConversationHelper
 
 	public static void BeginStreaming() => BeginStreaming(null);
 
-	internal static void BeginStreaming(object owner)
+	internal static void BeginStreaming(object owner, bool revealAsReceived = false)
 	{
 		_displayOwner = owner;
 		_isStreaming = true;
@@ -262,6 +270,9 @@ public static class ConversationHelper
 		using (EnterPendingLock("BeginStreaming"))
 		{
 			StopTypewriterNoLock(clearText: true);
+			_streamingReveal.Reset();
+			_streamingRevealEnabled = revealAsReceived;
+			_streamingFinalDisplayText = null;
 		}
 		Logger.LogTrace("ConversationHelper", "\ud83d\udd04 BeginStreaming - Streaming started");
 	}
@@ -298,10 +309,29 @@ public static class ConversationHelper
 				return;
 			}
 			StopTypewriterNoLock(clearText: true);
+			_streamingReveal.Reset();
+			_streamingFinalDisplayText = null;
 			_pendingText = value;
 			_hasPending = true;
 		}
 		_lastStreamText = value;
+	}
+
+	internal static void UpdateStreamingDialogText(string plainText, string finalDisplayText = null)
+	{
+		if (!_streamingRevealEnabled)
+		{
+			UpdateDialogText(finalDisplayText ?? plainText);
+			return;
+		}
+		using (EnterPendingLock("UpdateStreamingDialogText"))
+		{
+			StopTypewriterNoLock(clearText: true);
+			_hasPending = false;
+			_streamingReveal.Update(plainText, finalDisplayText != null,
+				Stopwatch.GetTimestamp() * _stopwatchTickSeconds);
+			_streamingFinalDisplayText = finalDisplayText;
+		}
 	}
 
 	public static void StartTypewriterText(string text, float durationSeconds, bool waitForPlayback = false)
@@ -310,6 +340,9 @@ public static class ConversationHelper
 		double duration = NormalizeTypewriterDuration(value, durationSeconds);
 		using (EnterPendingLock("StartTypewriterText"))
 		{
+			// Audio keeps its own playback lifetime. It must not erase a reply
+			// already being revealed from the network, even after it catches up.
+			if (_streamingRevealEnabled) return;
 			_typewriterActive = !string.IsNullOrEmpty(value);
 			_typewriterWaitingForPlayback = _typewriterActive && waitForPlayback;
 			_typewriterFullText = value;
@@ -403,7 +436,21 @@ public static class ConversationHelper
 		string text = null;
 		using (EnterPendingLock("Tick"))
 		{
-			if (!_hasPending)
+			if (_streamingRevealEnabled && _streamingReveal.HasText)
+			{
+				_streamingReveal.TryAdvance(Stopwatch.GetTimestamp() * _stopwatchTickSeconds, out text);
+				if (_streamingReveal.IsComplete && _streamingFinalDisplayText != null)
+				{
+					text = _streamingFinalDisplayText;
+					_streamingFinalDisplayText = null;
+				}
+				if (text != null)
+				{
+					_lastStreamText = text;
+					_streamingTextRevision++;
+				}
+			}
+			else if (!_hasPending)
 			{
 				if (!TryBuildTypewriterTickTextNoLock(out text))
 				{
@@ -434,7 +481,11 @@ public static class ConversationHelper
 		string typewriterText = null;
 		using (EnterPendingLock("OnRefreshPostfix"))
 		{
-			if (_typewriterActive)
+			if (_streamingRevealEnabled && _streamingReveal.HasText)
+			{
+				typewriterText = _lastStreamText ?? _streamingReveal.CurrentText;
+			}
+			else if (_typewriterActive)
 			{
 				typewriterText = _typewriterCurrentText ?? "";
 			}
@@ -665,6 +716,9 @@ public static class ConversationHelper
 		using (EnterPendingLock("Clear"))
 		{
 			StopTypewriterNoLock(clearText: true);
+			_streamingReveal.Reset();
+			_streamingRevealEnabled = false;
+			_streamingFinalDisplayText = null;
 			_pendingText = null;
 			_hasPending = false;
 		}

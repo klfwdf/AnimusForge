@@ -248,7 +248,8 @@ namespace TaleWorlds.GauntletUI.BaseTypes
     public enum SizePolicy { Fixed, CoverChildren, StretchToParent }
     public class Widget
     {
-        public Widget(UIContext context) { }
+        public Widget(UIContext context) { Context = context; }
+        public UIContext Context { get; }
         public string Id { get; set; }
         public Vector2 Position, Size, MeasuredSize;
         public Vector2 GlobalPosition => Position;
@@ -281,10 +282,13 @@ namespace TaleWorlds.GauntletUI.BaseTypes
     public class ButtonWidget : Widget { public ButtonWidget(UIContext context) : base(context) { } }
     public class ScrollablePanel : Widget
     {
+        public ScrollbarWidget VerticalScrollbar;
         public float MouseScrollSpeed = 0.2f;
         public ScrollablePanel(UIContext context) : base(context) { }
+        protected virtual void OnLateUpdate(float dt) { }
         protected override bool OnPreviewMouseScroll() => true;
     }
+    public class ScrollbarWidget { public float MaxValue, ValueFloat; }
 }
 namespace TaleWorlds.Library { public class ViewModel { } public enum InputUsageMask { Invalid=0, MouseButtons=1, All=7 } }
 namespace TaleWorlds.InputSystem { public static class Input { public static (float x, float y) MousePositionPixel; } }
@@ -292,16 +296,17 @@ namespace TaleWorlds.Engine.GauntletUI
 {
     public class FakeMovie { public Widget RootWidget; }
     public class GauntletMovieIdentifier { public FakeMovie Movie; }
-    public class GauntletLayer { public bool IsFocusLayer; public InputRestrictions InputRestrictions = new(); public void LoadMovie(string name, TaleWorlds.Library.ViewModel vm) { } }
+    public class GauntletLayer { public UIContext UIContext = new(); public bool IsFocusLayer; public InputRestrictions InputRestrictions = new(); public void LoadMovie(string name, TaleWorlds.Library.ViewModel vm) { } public void ReleaseMovie(GauntletMovieIdentifier movie) { } }
 }
 namespace HarmonyLib
 {
-    public class Harmony { public Harmony(string id) { } public void Patch(object method, object postfix) { } }
+    public class Harmony { public Harmony(string id) { } public void Patch(object method, object postfix = null, object prefix = null) { } }
     public class HarmonyMethod { public HarmonyMethod(Type type, string name) { } }
-    public static class AccessTools { public static object Method(Type type, string name, Type[] parameters) => null; }
+    public static class AccessTools { public static object Method(Type type, string name, Type[] parameters = null) => null; }
 }
 namespace AnimusForge
 {
+    public static class ConversationHelper { public static bool IsStreamingTextRevealEnabled => false; public static int StreamingTextRevision => 0; }
     public static class AnimusForgeNativeConversationOverlay { public static bool AiMode; public static bool IsAiModeBlockingNativeContinue() => AiMode; }
     public static class ShoutBehavior { public static bool Busy; public static bool IsNativeConversationBackendBusy() => Busy; }
     public static class Logger { public static void LogVerbose(string category, string key, Func<string> message, double seconds) { } public static void Log(string category, string message) { } public static void LogTrace(string category, string message) { } }
