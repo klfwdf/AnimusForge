@@ -1,3 +1,9 @@
+# 当前交接：ROT领主转同伴百科兼容已修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
+
+- 产品d3c94f9a5：仅为ROT百科Postfix补无模板玩家同伴保护，保留原版条目和正常ROT名称逻辑，不改人物/存档/第三方DLL。本条取代下方FIX_NOT_IMPLEMENTED状态。
+- 15项真实Harmony回放、无ROT与启动接线检查、原1.3/1.4/Bootstrap及双Coup seam/注册门禁通过；ROT为源码等价fixture，未实机或旧档验收。尚未部署/Stage/打包/push，安装游戏未加载此次修复。
+- [主台账、收据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#rot-encyclopedia-compat-implementation-20261015)；[精确源码地图](docs/architecture/af-framework-code-scope.md#rot-encyclopedia-compat-implementation-20261015)。本地证据artifacts/rot-encyclopedia-compat-20261015/；产品回滚git revert d3c94f9a5。
+
 # 领主转同伴后百科打不开：ROT冲突已定位（2026-10-15，LOG_CONFIRMED / FIX_NOT_IMPLEMENTED）
 
 - 18:29:51安德雷·达特ROTlord_608已成功转Wanderer/玩家同伴，50人转队、旧空队销毁；18:30:17点击人物及18:30:26地图快捷键均在ROT.HarmonyPatches.CustomCompanions.EncyclopediaListItemPatches.Postfix空引用，阻断人物列表构造。
