@@ -1,3 +1,16 @@
+<a id="mcm-terminal-pages-20261015"></a>
+### MCM 恢复与终端共用设置（产品47baa7696）
+
+详细证据和未验项归[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#mcm-terminal-pages-20261015)。不新增外部API或业务配置来源。
+
+| 一基坐标 / 符号 | 实际责任与验证边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/AnimusForgeMcmPages.cs:22–46` EnsurePatched / RegisterPages；`:48–91` CreatePages | MCM打开前注册API、终端两原生fluent视图；原四owner/default及PropertyRef元数据投影，FormatType=none，SAVE_TRIGGERED回原owner。真实容器重复注册、业务JSON隔离及保存回放通过；未游戏验收 |
+| 同文件`:93–107` Prefix / ApiGroup / ApiOrder；`:109–141` Metadata / DefaultPreset | 页面ID前缀避免跨owner冲突；生图API在环境API前；组开关独立成行；默认值只装入脱离live的preset。真实SettingsVM构造、原生排序/撤销/单项默认通过，旧自定义preset实机未验 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/AnimusForgeMcmVisibility.cs:149–173` IsVisibleProperty / KeepFrontendEntry | 生图完整路径隐藏保值；两页注册成功后替换旧分散入口。未改变后台metadata/原preset文件，其他MOD入口原样 |
+| `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsCoverage.cs:131–137` ViewGroupOrder；`AnimusForgeTerminalUiModels.cs:1275–1276` 实际group排序 | 终端生图组在环境API之前；只在UI重建排序，沿用绑定缓存。两语言与真实元数据回放通过，未游戏滚动/焦点验收 |
+| `content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml:172–173` 及 `CNs/af_ui_strings-zh-CN.xml:172–173`；`StartupPatchComposition.cs:19` | 原语言资源闭包新增两页标题与真实启动接线；复用原content-map和语言注册，双API构建与实际资源reader通过 |
+
 <a id="release-161-20261015"></a>
 ### 1.6.1 合并发行的新增兼容资源与冲突接线
 

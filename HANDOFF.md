@@ -1,3 +1,9 @@
+# 当前交接：恢复 MCM 独立终端设置页（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品47baa7696，检查点3e5c3d363。原先隐藏的运行设置恢复到“AnimusForge终端设置”独立页，API/支持项在API页；生图API在环境API上方，完整路径两入口隐藏。控件直接绑定原四owner，与终端共享setter/JSON；新页面无业务配置副本。规范要求以后增改选项同步MCM与终端及CN/EN。
+- 原Debug双API/Bootstrap/Coup/注册通过；1.4中文英文各29533、1.3中文29517断言通过，含原生MCM托管VM、撤销/默认和容器注册/保存。未实机、真实API或旧自定义preset验收，未部署/打包/push，安装版本仍为原1.6.1。
+- [唯一主台账、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#mcm-terminal-pages-20261015)；[源码范围图](docs/architecture/af-framework-code-scope.md#mcm-terminal-pages-20261015)。回滚git revert 47baa7696，保留原玩家配置和未跟踪目录。
+
 # 当前交接：1.6.1 合并发行（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
 - 用户授权拉取合并、包含所有已完成并验证改动、编译部署推送打包，公告以1.6.0为基线。发布候选4650a38f0包含远端a29b12752、原未提交存档/历史修复及其他会话最终场景接力修复；原流程双API/Bootstrap构建与CN/EN正式包校验成功，版本1.6.1。
