@@ -10741,3 +10741,14 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 原build_single_module.ps1 Debug exit0：1.3/1.4、Bootstrap、双Coup与registration PASS。两份实际DLL分别独立进程读取嵌入资源，与已测源码正文完全一致，实际嵌入正则的CN/EN与相邻人物区块隔离PASS；SHA与完整证据见artifacts/clan-join-postprocess-20261015/receipt.json、embedded-13.json、embedded-14.json、build-dual.log、replay-verified/run.log。首次测试缺Newtonsoft引用、误取历史Rules空数组的问题已在harness修正；Windows PowerShell读取本地辅助脚本的UTF8 BOM问题已修正后双DLL通过，未改产品构建脚本。
 - 运行频率/成本：保持原每次后处理准备时的解析与内嵌资源Lazy读取，仅替换既有正则；不增加Tick IO、全图扫描、模型调用或新配置。CN/EN固定正文与内容映射不新增，两包共享同一兼容实现；没有按包强制回复语言。
 - 未验：真实provider重新输出归附标签、三渠道完整实机执行、旧档重载。未Stage、部署、打包或push；先前部署仍是旧DLL，本条不改变安装状态。回退git revert 068a938aa并按需重新双版本构建；不还原整文件或删除玩家资料。
+
+<a id="postprocess-en-audit-20261015"></a>
+## EN后处理扩展兼容检查（2026-10-15，OFFLINE_CHECKED / LIVE_PENDING）
+
+- 用户追问其余EN后处理检查，接续家族归附中英标题修复068a938aa。调查基线fbca20bf3，意图检查点03e8b17，测试依赖补齐141d639e622cfb03655db6360a1d12c6c1d83515；产品src/content与fbca20bf3一致，Microsoft/、NuGet/保持。EN包选择固定语料，不强制模型回复语言；动作协议共用。
+- 75对RuleBehaviorPrompts/ActionPostprocessPrompts动作模板的固定动作码与花括号变量一致，19处为参数说明翻译。并非逐字相同，也不能仅凭结构核对声称全部语义或实机通过。资源内SCENE_ACT的既有中文协议槽位保留原身份。
+- 原样提取27个生产后处理/债务方法、链接真实DTO与资产/地图codec、场景称谓reader，使用CN/EN真实资源做144项回放PASS。覆盖入仕/离职、个人加入/归附白名单、放行/大厅/任务、投降、外交标签族及臣属runtime凭证归一、议程英文权重、债务英文备注/ID、部队俘虏名称/数量、ALL、接力/情绪、场景数字及英文通用称谓、资产英文动态名及七类地图协议框架。游戏DTO与配置边界是替身；未模拟provider决策或真实执行。
+- 主要源码责任范围：ConversationActionPostprocessOwner.cs:1518–1549接力中英模板、1700–1755债务规则及表渲染、2228–2303议程/债务保留/合并、2377–2458接力与外交、2510–2892放行/加入/部队、3216–3449称谓与其余normalizer、3476–3524目标匹配（文件均在src/modules/AF.Module.Conversation/Internal/Postprocess/）；src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs:134–135、15440–15457规范债务；GiveAssetTagCodec.cs与TransferQuantitySpec.cs为资产协议；WorldMapOrderCoordination.cs:66–110为地图框架识别；src/AF.GameAdapter.Bannerlord/Runtime/AdapterSceneTexts.cs:24–56保留英文称谓别名。完整执行器的权限/目标状态不由这些纯文本检查替代。
+- SinglePassTemplateTests首次被当前历史转换新依赖DiplomacyReplyTextRules缺引用阻断。tests/modules/AF.Module.Prompt/SinglePassTemplateTests/run.py:33–36增加该生产类、ConversationRuntimeTexts及两份嵌入兼容资源，未改断言/替身返回值；1.3/1.4编译条件×CN/EN资源四组PASS，覆盖真实system/user模板、可选块、字面变量、35类Courier模板及既有事实投影。
+- 证据artifacts/postprocess-en-audit-20261015/report.md、receipt.json、run.log、catalog-protocols.json、template-run.log、template-verified/。当前测试未再发现确定EN专属解析故障，不宣称全系统无缺陷。产品未变，复用上轮双版本/Bootstrap证据，不重跑产品构建或Stage。
+- 未验：真实provider判定与标签输出、各玩法三渠道完整实机执行、地图目标存在性/权限Campaign重验、旧sav、正式双包。未部署/打包/push；上轮产品修复仍未覆盖游戏。测试修复回滚git revert 141d639e6，游戏无需回滚。
