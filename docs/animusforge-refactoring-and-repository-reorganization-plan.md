@@ -1,3 +1,11 @@
+<a id="weekly-director-relaxation-20261015"></a>
+## 快报导演误判回退放宽（2026-10-15，ACTIVE）
+
+- 用户“快报放款”按上下文“快报放宽”执行；基线 main/cfe349a4d，跟踪文件干净，未跟踪 Microsoft/、NuGet/保持。只修改快报导演正文接受条件，不改变其他模式、请求错误/截断处理、版本、构建脚本或玩家配置。
+- 实际事故 weekly_report_1015-191450_c72b：HTTP200正常完成，否定句“不画任何背盾或背负长矛”被背盾正则误命中“盾或背负”，整篇替换成本地构图。原日志与原始诊断只留本机。
+- 计划：快报非空正文保留导演构图及元数据，跳过道具关键词、叙事复述和四段/背景格式整篇回退；最终仍注入核心事实和原保真合同，空正文沿用原回退。CN/EN共用逻辑，无新增文本资源、模型调用、Tick工作或全量扫描。
+- 退出条件：真实DLL定向回放确认事故、CN/EN、缺段/叙事/背景、空回复及其他模式边界；原入口双API/Bootstrap构建。未授权本轮部署、打包或push，实机/真实provider保持未验。
+
 <a id="rot-encyclopedia-compat-implementation-20261015"></a>
 ## ROT百科模板空引用兼容修复（2026-10-15，OFFLINE_VERIFIED / PUSH_VERIFIED / PACKAGE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
