@@ -2355,6 +2355,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Developer_Reload_KeepPlayer" text="• 主角外貌、背景、主角专用知识和直接声音 ID" />
   <string id="AF_UI_Developer_Reload_KeepSettings" text="• 动态事件记录、API 配置、LLM 提示词及其他设置" />
   <string id="AF_UI_Developer_Reload_KingdomProfiles" text="• 王国性格与长期战略 {COUNT} 个王国" />
+  <string id="AF_UI_Developer_Reload_SkippedDynamicKingdoms" text="• 跳过 {COUNT} 条无法匹配的动态王国资料，保留存档中这些 ID 的原有资料。部分条目：{PROFILES}" />
   <string id="AF_UI_Developer_Reload_NonPlayerKnowledge" text="• 非主角知识：{COUNT} 条" />
   <string id="AF_UI_Developer_Reload_OpeningKnowledge" text="• 世界开局知识 1 份，以及王国开局知识 {COUNT} 条" />
   <string id="AF_UI_Developer_Reload_VoiceMapping" text="• 声音映射 1 份，以及 NPC 声音 ID {COUNT} 条" />

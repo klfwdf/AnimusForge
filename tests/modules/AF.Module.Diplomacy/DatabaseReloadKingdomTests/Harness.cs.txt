@@ -1,0 +1,108 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json;
+
+class Kingdom { public string StringId; public string Name; }
+static class DiplomacyUiLocalization
+{
+    public static string Text(string key,string fallback)=>fallback;
+    public static string Format(string key,string fallback,params (string,string)[] args)
+    { foreach(var pair in args) fallback=fallback.Replace("{"+pair.Item1+"}",pair.Item2);return fallback; }
+}
+@@TYPES@@
+class Host
+{
+    const int SchemaVersion=1;
+    KingdomStrategicProfileStorage _storage=new();
+    static List<Kingdom> World=new();
+    List<KingdomStrategicProfileRecord> Entries=new();
+    int Invalid;
+    bool LoadFails;
+    static int Checks;
+    static void Check(bool value,string label){if(!value)throw new Exception("FAIL "+label);Checks++;}
+    static string Snapshot(object value)=>JsonConvert.SerializeObject(value);
+    static int Skipped(KingdomDatabaseReloadPlan plan)=>(int)(plan.GetType().GetProperty("SkippedDynamicProfileCount")?.GetValue(plan)??0);
+    static KingdomStrategicProfileRecord Profile(string id,string name,string text="old")=>new(){KingdomId=id,KingdomName=name,
+        NationalPersonality=text,LongTermStrategy="strategy-"+text,DefaultNationalPersonality="default-"+text,DefaultLongTermStrategy="default-strategy-"+text,
+        HasPersonalityOverride=true,HasStrategyOverride=true,IsPlayerOverride=true,RequiresFoundingGeneration=true,
+        GenerationState="pending",GenerationAttemptCount=2,LastGenerationError="retained",CreatedDay=4,UpdatedDay=8};
+    static Host Setup()
+    {
+        World=new(){new(){StringId="empire",Name="Empire"},new(){StringId="new_kingdom",Name="Player Realm"},new(){StringId="sturgia",Name="Sturgia"}};
+        var host=new Host();foreach(var k in World)host._storage.Profiles[k.StringId]=Profile(k.StringId,k.Name);
+        return host;
+    }
+    static void Main()
+    {
+        {
+            var h=Setup();h.Entries=new(){Profile("empire","Empire","imported"),Profile("new_kingdom","Foreign Realm","foreign")};
+            var original=h._storage;string before=Snapshot(original);string retained=Snapshot(original.Profiles["new_kingdom"]);
+            Check(h.TryBuildDatabaseReloadPlan("fixture",out var plan,out var error),"mismatched dynamic record is skipped instead of rejecting database reload");
+            Check(ReferenceEquals(original,h._storage)&&Snapshot(original)==before,"preflight never writes live save");
+            Check(plan.SourceProfilesByTargetId.Count==1&&Skipped(plan)==1,"only matched source imported and skipped count reported");
+            Check(plan.CurrentProfilesResetToDefaultCount==1,"skipped existing kingdom excluded from reset count");
+            h.Entries[0].NationalPersonality="late-source-change";
+            Check(h.TryApplyDatabaseReloadPlan(plan,out var detail),"mixed plan commits");
+            Check(Snapshot(h._storage.Profiles["new_kingdom"])==retained,"skipped kingdom keeps all text, overrides, timestamps and generation state exactly");
+            Check(h._storage.Profiles["empire"].NationalPersonality=="imported","source snapshot detached from later edits");
+            Check(h._storage.Profiles["sturgia"].NationalPersonality=="normalized-default"&&!h._storage.Profiles["sturgia"].IsPlayerOverride,"ordinary absent kingdoms retain original reset behavior");
+            Check(detail.Contains("Skipped 1")&&detail.Contains("new_kingdom (Foreign Realm)"),"completion reports skipped count and identity");
+        }
+        foreach(string id in new[]{"new_kingdom","rebel_kingdom_1","rebellion_42"})
+        {
+            var h=Setup();h.Entries=new(){Profile(id,"Unmatched")};string retained=Snapshot(h._storage.Profiles["new_kingdom"]);
+            Check(h.TryBuildDatabaseReloadPlan("fixture",out var plan,out _),"all dynamic entries may be skipped: "+id);
+            Check(Skipped(plan)==1&&plan.SourceProfilesByTargetId.Count==0,"all skipped plan explicitly counted");
+            Check(h.TryApplyDatabaseReloadPlan(plan,out _),"all skipped kingdom plan allows other database domains to continue");
+            if(id=="new_kingdom")Check(Snapshot(h._storage.Profiles[id])==retained,"all skipped still preserves collided kingdom");
+        }
+        {
+            var h=Setup();h._storage.Profiles.Remove("new_kingdom");h.Entries=new(){Profile("new_kingdom","Other")};
+            Check(h.TryBuildDatabaseReloadPlan("fixture",out var plan,out _)&&h.TryApplyDatabaseReloadPlan(plan,out _),"skip with no preexisting save profile succeeds");
+            Check(!h._storage.Profiles.ContainsKey("new_kingdom"),"skip does not initialize a previously missing profile");
+        }
+        {
+            var h=Setup();h.Entries=new(){Profile("new_kingdom","Player Realm","match")};
+            Check(h.TryBuildDatabaseReloadPlan("fixture",out var plan,out _)&&Skipped(plan)==0,"same ID/name dynamic still imports");
+            Check(h.TryApplyDatabaseReloadPlan(plan,out _)&&h._storage.Profiles["new_kingdom"].NationalPersonality=="match","matched dynamic source applied normally");
+        }
+        foreach(string kind in new[]{"static-missing","duplicate-target","invalid","empty","read-failure"})
+        {
+            var h=Setup();string before=Snapshot(h._storage);
+            h.Entries=kind=="empty"?new():new(){Profile("empire","Empire")};
+            if(kind=="static-missing")h.Entries.Add(Profile("missing_static","Missing"));
+            if(kind=="duplicate-target")h.Entries.Add(Profile("another_id","Empire"));
+            if(kind=="invalid")h.Invalid=1;if(kind=="read-failure")h.LoadFails=true;
+            Check(!h.TryBuildDatabaseReloadPlan("fixture",out _,out _),"original hard validation retained: "+kind);
+            Check(Snapshot(h._storage)==before,"rejected plan cannot alter save: "+kind);
+        }
+        {
+            var h=Setup();h.Entries=new(){Profile("empire","Empire")};h.TryBuildDatabaseReloadPlan("fixture",out var plan,out _);
+            World.RemoveAll(k=>k.StringId=="empire");h._storage.Profiles.Remove("empire");var original=h._storage;string before=Snapshot(original);
+            Check(!h.TryApplyDatabaseReloadPlan(plan,out _),"lost matched target rejects apply");
+            Check(ReferenceEquals(original,h._storage)&&Snapshot(original)==before,"failed apply publishes no partial reset");
+        }
+        {
+            var h=Setup();h.Entries=Enumerable.Range(0,100).Select(i=>Profile("new_kingdom"+i,"Unknown"+i)).ToList();
+            Check(h.TryBuildDatabaseReloadPlan("fixture",out var plan,out _)&&Skipped(plan)==100,"all skipped entries counted");
+            var labels=(List<string>)plan.GetType().GetProperty("SkippedDynamicProfileLabels").GetValue(plan);
+            Check(labels.Count==8,"confirmation/completion identity list bounded to eight");
+        }
+        Console.WriteLine($"PASS {Checks} actual-source kingdom reload planning, skip, preservation and atomic-apply checks; world/reader/localization are fixtures.");
+    }
+    bool TryLoadImportEntries(string root,out List<KingdomStrategicProfileRecord> entries,out int invalid,out string error,bool allowMissing)
+    {entries=Entries;invalid=Invalid;error=LoadFails?"read failed":"";return !LoadFails;}
+    static List<Kingdom> GetCurrentKingdoms()=>World;
+    static string GetKingdomName(Kingdom value)=>value.Name;
+    static string CleanSingleLine(string value,int limit)=>(value??"").Trim();
+    static string CleanProfileText(string value)=>(value??"").Trim();
+    static void NormalizeProfile(KingdomStrategicProfileRecord profile,Kingdom kingdom,bool recoverInterruptedGeneration)
+    {profile.KingdomName=kingdom.Name;profile.UpdatedDay=999;profile.DefaultNationalPersonality="normalized-default";}
+    static KingdomStrategicProfileRecord BuildInitialProfileForDatabaseReloadCandidate(Kingdom kingdom)=>Profile(kingdom.StringId,kingdom.Name,"initial");
+    static int GetCurrentCampaignDay()=>42;
+    static void Log(string message){}
+    @@METHODS@@
+}

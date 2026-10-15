@@ -283,10 +283,21 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			}
 			KingdomImportTargetIndex kingdomImportTargetIndex = BuildImportTargetIndex();
 			Dictionary<string, KingdomStrategicProfileRecord> dictionary = new Dictionary<string, KingdomStrategicProfileRecord>(StringComparer.OrdinalIgnoreCase);
+			HashSet<string> preservedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			List<string> skippedLabels = new List<string>();
+			int skippedCount = 0;
 			foreach (KingdomStrategicProfileRecord entry in entries)
 			{
 				if (!TryResolveImportTarget(entry, kingdomImportTargetIndex, out Kingdom kingdom, out string warning) || kingdom == null)
 				{
+					if (IsDynamicKingdomId(entry.KingdomId))
+					{
+						string skippedId = NormalizeId(entry.KingdomId);
+						preservedIds.Add(skippedId);
+						if (skippedLabels.Count < 8) skippedLabels.Add(skippedId + " (" + (entry.KingdomName ?? "") + ")");
+						skippedCount++;
+						continue;
+					}
 					errorMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_CannotMatchWorld", "A kingdom in the package could not be safely matched to the current world: {REASON}", ("REASON", string.IsNullOrWhiteSpace(warning) ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_UnknownReason", "unknown reason") : warning));
 					return false;
 				}
@@ -298,17 +309,21 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 				}
 				dictionary[text] = CloneForExport(entry);
 			}
-			if (dictionary.Count <= 0)
+			if (dictionary.Count <= 0 && skippedCount == 0)
 			{
 				errorMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_NoReloadableProfiles", "The package contains no kingdom profiles that can be reloaded.");
 				return false;
 			}
 			// Preflight must not initialize missing profiles in the current save.  Count only live campaign kingdoms for the confirmation text.
-			int num = GetCurrentKingdoms().Count((Kingdom x) => x != null && !dictionary.ContainsKey(NormalizeId(x.StringId)));
+			preservedIds.ExceptWith(dictionary.Keys);
+			int num = GetCurrentKingdoms().Count((Kingdom x) => x != null && !dictionary.ContainsKey(NormalizeId(x.StringId)) && !preservedIds.Contains(NormalizeId(x.StringId)));
 			plan = new KingdomDatabaseReloadPlan
 			{
 				SourceProfilesByTargetId = dictionary,
-				CurrentProfilesResetToDefaultCount = num
+				CurrentProfilesResetToDefaultCount = num,
+				PreservedProfileIds = preservedIds,
+				SkippedDynamicProfileCount = skippedCount,
+				SkippedDynamicProfileLabels = skippedLabels
 			};
 			return true;
 		}
@@ -378,22 +393,23 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		detailMessage = "";
 		try
 		{
-			if (plan?.SourceProfilesByTargetId == null || plan.SourceProfilesByTargetId.Count <= 0)
+			if (plan?.SourceProfilesByTargetId == null || (plan.SourceProfilesByTargetId.Count <= 0 && plan.SkippedDynamicProfileCount <= 0))
 			{
 				detailMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ReloadPlanEmpty", "The kingdom reload plan is empty.");
 				return false;
 			}
 			// Never call EnsureCurrentKingdomProfiles here: it writes directly to the live save.  Build and normalize a complete candidate instead.
-			KingdomStrategicProfileStorage kingdomStrategicProfileStorage = BuildDatabaseReloadCandidateStorage();
+			KingdomStrategicProfileStorage kingdomStrategicProfileStorage = BuildDatabaseReloadCandidateStorage(plan.PreservedProfileIds);
 			if (kingdomStrategicProfileStorage?.Profiles == null)
 			{
 				detailMessage = DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ReloadCloneFailed", "The kingdom profile reload copy could not be created.");
 				return false;
 			}
 			int currentCampaignDay = GetCurrentCampaignDay();
-			foreach (KingdomStrategicProfileRecord value in kingdomStrategicProfileStorage.Profiles.Values)
+			foreach (KeyValuePair<string, KingdomStrategicProfileRecord> profile in kingdomStrategicProfileStorage.Profiles)
 			{
-				ResetProfileToDefaultForDatabaseReload(value, currentCampaignDay);
+				if (!plan.PreservedProfileIds.Contains(NormalizeId(profile.Key)))
+					ResetProfileToDefaultForDatabaseReload(profile.Value, currentCampaignDay);
 			}
 			foreach (KeyValuePair<string, KingdomStrategicProfileRecord> sourceProfileByTargetId in plan.SourceProfilesByTargetId)
 			{
@@ -406,6 +422,8 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			}
 			_storage = kingdomStrategicProfileStorage;
 			detailMessage = DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ReloadComplete", "Reloaded {IMPORTED} kingdom profile(s); the other {RESET} current kingdom profile(s) returned to their defaults.", ("IMPORTED", plan.SourceProfilesByTargetId.Count.ToString(CultureInfo.InvariantCulture)), ("RESET", plan.CurrentProfilesResetToDefaultCount.ToString(CultureInfo.InvariantCulture)));
+			if (plan.SkippedDynamicProfileCount > 0)
+				detailMessage += " " + DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_ReloadSkippedDynamic", "Skipped {COUNT} unmatched dynamic kingdom profile(s); existing save profiles for those IDs were preserved. First entries: {PROFILES}", ("COUNT", plan.SkippedDynamicProfileCount.ToString(CultureInfo.InvariantCulture)), ("PROFILES", string.Join(", ", plan.SkippedDynamicProfileLabels)));
 			return true;
 		}
 		catch (Exception ex)
@@ -1540,7 +1558,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 	}
 
 	// Build the complete reload candidate without touching _storage; this cold-path copy is the boundary that keeps cancel/failure non-destructive.
-	private KingdomStrategicProfileStorage BuildDatabaseReloadCandidateStorage()
+	private KingdomStrategicProfileStorage BuildDatabaseReloadCandidateStorage(ISet<string> preservedProfileIds)
 	{
 		KingdomStrategicProfileStorage candidate = CloneStorage(_storage);
 		foreach (Kingdom kingdom in GetCurrentKingdoms())
@@ -1550,6 +1568,8 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			{
 				continue;
 			}
+			// A skipped dynamic ID is not permission to normalize or reset that save's unrelated kingdom.
+			if (preservedProfileIds.Contains(kingdomId)) continue;
 			if (candidate.Profiles.TryGetValue(kingdomId, out KingdomStrategicProfileRecord profile) && profile != null)
 			{
 				// Normalize the cloned record so reset defaults follow the same rules as ordinary campaign initialization.
@@ -2017,6 +2037,12 @@ internal sealed class KingdomDatabaseReloadPlan
 	public Dictionary<string, KingdomStrategicProfileRecord> SourceProfilesByTargetId { get; set; } = new Dictionary<string, KingdomStrategicProfileRecord>(StringComparer.OrdinalIgnoreCase);
 
 	public int CurrentProfilesResetToDefaultCount { get; set; }
+
+	public HashSet<string> PreservedProfileIds { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+	public int SkippedDynamicProfileCount { get; set; }
+
+	public List<string> SkippedDynamicProfileLabels { get; set; } = new List<string>();
 }
 
 internal sealed class KingdomStrategicProfileExportPackage
