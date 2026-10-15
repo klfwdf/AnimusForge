@@ -1,3 +1,10 @@
+<a id="package-push-surrender-streaming-20261015"></a>
+## 同版本1.6.1双包与源码推送（2026-10-15，PUSH_VERIFIED / PACKAGE_ACTIVE / LIVE_PENDING）
+
+- 用户先要求推送、随后要求“同版本号打包”。实际origin/main从f3053afdf普通快进到dc941a70b，`git ls-remote`核对与本地HEAD一致；13提交/38新增blob预检PASS，无本地专用handoff历史、意外日志/二进制/安装包或凭据模式命中。未force/rebase/改写历史，未跟踪Microsoft/、NuGet/保留。
+- 复用上一条已编译部署的完整当前候选（构建99fde4dba，后续仅文档差异），使用原`package_mod.ps1 -NoBump`；版本维持v1.6.1、DLL FileVersion=1.6.1.0，一次生成CN/EN正式ZIP，同一本机分钟和碰撞尾号，保留旧包及Stage，不重新部署或上传安装包。
+- 退出门：源版本/完整Stage/冻结候选/安装三DLL与旧ZIP保持；原完整CN/EN资源和实际DLL门禁、双ZIP投影/布局门禁通过，独立核对CRC、唯一模块、两API+Bootstrap、hash/双语UI/完整文件集合、规范同分钟命名和旧输出保全。证据`artifacts/package-surrender-streaming-20261015/`；最终状态补记和推送收据位于`artifacts/push-surrender-streaming-20261015/`。实机、真实provider/TTS与旧档边界保持，打包不代表实机验收。
+
 <a id="deploy-surrender-streaming-20261015"></a>
 ## 包含其他会话改动统一编译部署（2026-10-15，BUILD_VERIFIED / STAGE_VERIFIED / DEPLOY_VERIFIED / LIVE_PENDING）
 
