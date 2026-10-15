@@ -1,3 +1,9 @@
+# 领主转同伴后百科打不开：ROT冲突已定位（2026-10-15，LOG_CONFIRMED / FIX_NOT_IMPLEMENTED）
+
+- 18:29:51安德雷·达特ROTlord_608已成功转Wanderer/玩家同伴，50人转队、旧空队销毁；18:30:17点击人物及18:30:26地图快捷键均在ROT.HarmonyPatches.CustomCompanions.EncyclopediaListItemPatches.Postfix空引用，阻断人物列表构造。
+- 已核对实际ROT.dll：补丁对玩家家族Wanderer直接val.Template.StringId.Contains("ROTwanderer")，缺Template空值检查；原领主没有生成型流浪者模板。此前无堆栈审查中的家族销毁风险并非本事故的直接报错点。仅定位，未改产品/第三方DLL、构建、部署或push。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#rot-companion-encyclopedia-confirmed-20261015)；[代码地图](docs/architecture/af-framework-code-scope.md#rot-companion-encyclopedia-confirmed-20261015)。事故证据artifacts/encyclopedia-recruited-lord-20261015/confirmed-rot/。
+
 # 当前交接：后处理修复与EN检查已推送（2026-10-15，PUSH_VERIFIED / LIVE_PENDING）
 
 - 用户授权推送；origin/main已普通快进至d7dd9d634，独立远端SHA核对通过。包含家族归附修复068a938aa、测试依赖141d639e6及相关检查文档；本条替代下方对应“未push”状态。

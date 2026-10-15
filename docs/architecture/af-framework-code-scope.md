@@ -1,3 +1,15 @@
+<a id="rot-companion-encyclopedia-confirmed-20261015"></a>
+### ROT同伴百科空引用的事故范围（914c65f82，只读诊断）
+
+[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#rot-companion-encyclopedia-confirmed-20261015)保存日志坐标、DLL SHA与未修复边界。
+
+| 位置 / 符号 | 责任与证据范围 |
+| --- | --- |
+| `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs:4038–4103` TryMoveHeroToPlayerClanAsCompanionAndMainParty | 职业/同伴/队伍转换实际日志成功；不生成虚构流浪者Template |
+| `src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs:151–183` 招募后处理 | 实际旧队清理完成；不把早先家族销毁风险当本次已确认根因 |
+| 安装ROT.dll的`ROT.HarmonyPatches.CustomCompanions.EncyclopediaListItemPatches.Postfix` | 玩家Wanderer筛选后无保护Template.StringId读取，实际异常第一业务帧；第三方DLL未修改，反编译证据在confirmed-rot目录 |
+| 原版`DefaultEncyclopediaHeroPage.InitializeListItems`→`EncyclopediaListVM`→`EncyclopediaData` | 所有人物列表构造会遍历此条目，所以可同时阻断人物链接和快捷键；未做修复后实机验证 |
+
 <a id="encyclopedia-recruited-lord-audit-20261015"></a>
 ### 招募领主转同伴与百科读取审查（基线049cc5ffb，仅审查）
 

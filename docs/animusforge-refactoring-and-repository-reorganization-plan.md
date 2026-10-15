@@ -1,3 +1,13 @@
+<a id="rot-companion-encyclopedia-confirmed-20261015"></a>
+## 安德雷转同伴后百科无法打开：实际ROT堆栈（2026-10-15，LOG_CONFIRMED / FIX_NOT_IMPLEMENTED）
+
+- 用户此次要求读取最新本地日志，截图为安德雷·达特已列入同伴。基线914c65f82。此条补充并取代先前encyclopedia-recruited-lord-audit-20261015的“缺少事故堆栈”状态；原风险审查仍保留其范围，不将家族销毁推定成本次原因。
+- Mod_Logic.txt一基146881–146894：18:29:51记录原家族ROTclan_136，50名非英雄成员转队，ROTlord_608成功成为player_faction同伴、职业Wanderer、party=player_party；旧空队ROTlord_608_party_1已销毁，关会话/遭遇完成。不是只有模型口头同意或未执行标签。
+- 一基146925–146939：18:30:17人物链接触发System.NullReferenceException，第一业务帧ROT.HarmonyPatches.CustomCompanions.EncyclopediaListItemPatches.Postfix，继而DefaultEncyclopediaHeroPage.InitializeListItems→EncyclopediaListVM→EncyclopediaData→HeroVM.ExecuteLink。一基147030–147047的18:30:26地图导航快捷键为同一顶层异常。ExceptionSentinel在native边界抑制，表现可以是百科打不开而进程仍存活；不意味着页面已恢复。
+- 实际ROT-Core/bin/Win64_Shipping_Client/ROT.dll反编译显示筛选val!=null && val.IsWanderer && val.Clan==Hero.MainHero.Clan后，直接val.Template.StringId.Contains("ROTwanderer")。Hero.Template=CharacterObject.OriginalCharacter；原始XML领主不是由流浪者模板克隆生成，职业转换不创建Template。缺少空值检查导致原领主转玩家同伴进入ROT假设而报错。已核对原版EncyclopediaListItem.Name确为public字段，排除“反射字段已变属性”的本机候选解释。ROT_heroes.xml:1212、ROT_lords.xml:13147确认目标原Lord身份。精确事故对象运行时字段未附dump，但实际堆栈与唯一无保护模板读取一致。
+- 核查范围为实际DLL/原版API反编译与事故日志交叉取证，无修改游戏存档、人物模板、职业、第三方DLL或AF产品。仅诊断，无双构建、修复测试、部署或push；不能声称修复完成。修复应保留原领主和ROT正常生成同伴语义，不能伪造ROTwanderer模板或全局跳过百科。
+- [源码范围](architecture/af-framework-code-scope.md#rot-companion-encyclopedia-confirmed-20261015)；证据artifacts/encyclopedia-recruited-lord-20261015/confirmed-rot/receipt.json保存ROT SHA及基线，log-evidence-original-encoding.txt保存原始编码的相关行，ROT.HarmonyPatches.CustomCompanions.EncyclopediaListItemPatches.decompiled.cs保存实际代码。无产品回滚需求，文档变更可聚焦撤销。
+
 <a id="encyclopedia-recruited-lord-audit-20261015"></a>
 ## 敌方领主转流浪者同伴后百科崩溃：链路审查（2026-10-15，SOURCE_AUDIT / REMOTE_STACK_PENDING）
 
