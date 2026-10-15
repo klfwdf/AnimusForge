@@ -10870,3 +10870,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 既有 `McmDropdownRefreshTests/run.py` **17 PASS**：真实MCM selector/action、生产helper及替身property host，无自动写回、各模型独立、用户回调及构造失败保持。`git -c core.whitespace=cr-at-eol diff --check`及暂存检查PASS；工作文件CRLF按仓库现状保留。没有新增运行文案，CN/EN原消费者不变。
 - 绑定收据：`artifacts/mcm-reopen-lag-20261015/receipt.json`，含源码/输入/UI DLL SHA、原构建及测试命令日志路径；`verified-candidates/`为冻结三DLL及build marker，均与已测候选SHA一致。1.3 SHA `C12274244FED2ED05F02BFABB956C8EE9F029FBB7EF086C90AA888E3FCD0381B`；1.4 SHA `7658FCDAAA582460D3E71686EB28E65344DBDCA535104E03F7733BE66AE62A8E`；Bootstrap SHA `9A90FE0C709CE5271424EA09811A1781E7D191B6817600DBA1A33DC5F6EECEC3`。专项收据位于 `artifacts/tests/mcm-dropdown-refresh/run-ceeab60f6585441f8cd1cb91c69ff369/receipt.json`。
 - [源码责任与坐标](architecture/af-framework-code-scope.md#mcm-reopen-lag-20261015)。NOT-RUN：玩家实际1.3.12/确切MCM版本、原生UI、3080实机GPU推理/帧耗时、真实配置/旧档；未Stage、部署、打包或push。仅凭显卡和GPU选项不能认定本事故由CUDA造成。聚焦回滚 `git revert 7e4d0d2a0`；不要覆盖其他会话或删除玩家数据。
+<a id="streaming-dialogue-reveal-20261015"></a>
+## 自由对话流式逐字与正文跟随（2026-10-15，ACTIVE）
+
+- 用户要求开启主 API 流式后，收到内容即逐字显示、长文换行并自动下滚；关闭流式保持原行为。基线 main/88c6bfe61；未跟踪 Microsoft/、NuGet/ 保留。
+- 范围：ConversationHelper 的显示缓存/逐字状态、Native Overlay 两个提交入口、新对话界面正文 ScrollablePanel/prefab；保留完整正文后处理、历史、动作、网络协议及配置身份。流式开启时 TTS 不重置增量显示。
+- 验收：真实显示状态及 helper 的分块/暂停/完成/取消/换 owner/Unicode 回放，正文换行及滚动实际绑定，既有相关生命周期/TTS 回归，原统一双 API/Bootstrap 构建。不部署、不打包、不推送；实机与真实服务另列未验。
+
