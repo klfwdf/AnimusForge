@@ -1,3 +1,15 @@
+<a id="reload-skip-dynamic-kingdoms-20261016"></a>
+### 数据库重载跳过动态王国（产品35c6ad013）
+
+[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#reload-skip-dynamic-kingdoms-20261016)保存49项定向/事务回放、旧fixture失败、双API构建及未验实机边界。
+
+| 一基坐标 / 符号 | 实际责任与边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.cs:268–329` TryBuildDatabaseReloadPlan | 仅无法匹配动态ID跳过；同一索引、O(1)保护集合和最多8项显示列表；原错误/重复校验保留，无预检存档写入 |
+| 同文件`:391–427` TryApplyDatabaseReloadPlan；`:1561–1584` BuildDatabaseReloadCandidateStorage；`:2035–2046` 瞬态KingdomDatabaseReloadPlan | 跳过ID同时免除规范化/重置，保留存档profile，允许全跳过源计划；沿用完整候选验证后一次替换，未改.sav类型/键或协议 |
+| `src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperImportUiController.cs:720–724` 确认说明；`content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml`及CNs同key；`content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml`及CNs同key | 确认/完成两处CN/EN消费显示跳过数和至多8名称ID；未新增设置、菜单或Tick工作 |
+| `tests/modules/AF.Module.Diplomacy/DatabaseReloadKingdomTests/Harness.cs.txt:37–91`；`run.py:15–23` | 原样生产算法/状态声明，37个断言；世界、导入reader和规范化为fixture。事务12断言另在台账本地runner，不宣称完整旧项目或实机通过 |
+
 <a id="retire-hidden-illustrator-api-20261016"></a>
 ### 退役独立导演覆盖和完整路径开关（产品8c7619e22）
 
