@@ -10728,3 +10728,15 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 未验：实机/真实旧档、NPC语言质量、自然分布与性能、真实provider整轮token。未部署、Stage、打包或push；源码生效需之后按原流程部署。回滚git revert 2968fc462，冲突按本表范围反向合并；不删除已生成历史或其他作者修改。Microsoft/、NuGet/与其他审计工作保留。
 
 - 加载收尾bc8407e07767fa1773f333c935a513a7741db5d2：ProactiveNpcRequestBehavior.SyncData普通旧JSON解析失败时，随原owner清空ExperienceContacts与运行中标记，避免残留上一份状态。build-load-reset.log/exit为双API/Bootstrap/Coup/注册成功，dll-replay-load-reset.log为最终实际DLL五组回放及新类型/AFEF通过；receipt.json与verified-dlls已更新。回滚先bc8407e07，再2968fc462。
+
+<a id="clan-join-bilingual-postprocess-20261015"></a>
+## 家族归附后处理中英文王国识别修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户授权“修复并检查”。main，调查基线049cc5ffb82acc6ecee9fa11d5bdca4ff728cf1f，意图检查点222c660，产品068a938aa3bee56acf93cdf603c76bb72c013761。原Microsoft/、NuGet/未跟踪目录保持；本轮不调整玩家总提示词、token预算或默认交互入口。
+- 复现：用户Token_Stats (33).txt两次明确家族效忠后的后处理输入（16:50:23、16:51:38）含[Kingdoms]与new_kingdom1，却均无家族归附标签，只返回情绪。ResolveRetrievedKingdomsForClanJoin只识别【王国】或typed kingdom:ID；英文区块解析失败，BuildRuntimeClanJoinKingdomPostprocessRules因无可用目标返回空。旧模式负控复现英文规则缺失；不是以AI注意力分散作为修复依据。日志仅本机读取，不提交私人原文。
+- 产品只改content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalCompatibility.json:225的Raw_11941497b794：同一稳定key同时识别【王国】/[Kingdoms]，在中英任一后续标题前停止，兼容LF/CRLF及末尾无换行；不误将人物/家族/附近部队ID读成目标王国。Raw_4e35e5270e14、typed-ID、族长/家族/队伍/王国现有资格及标签协议不变。
+- 实际接线（产品068a938aa；一基行号）：AIConfigHandler.cs:6791–6901为个人/家族规则构建，6931–6976为实体王国解析；均位于src/modules/AF.Module.Prompt/Configuration/。PromptRetrievalTexts.cs:11–32经嵌入逻辑名AnimusForge.Prompt.RetrievalCompatibility.json读取共享兼容资源，两包共用。WorldEntityRetrievalService.cs:2050、2269消费WorldEntityPromptTexts{,.en}.json的KingdomsHeader生成清单。ConversationActionPostprocessOwner.cs:503、1034统一向scene/native及courier提供规则，1734–1756渲染标签表，2552–2636按RuntimeAllowedParameterValues归一具体标签；源码位于src/modules/AF.Module.Conversation/Internal/Postprocess/。未更换渠道执行器、动作权限或AFEF事实规则。
+- 验证：tests/modules/AF.Module.Prompt/ClanJoinPostprocessTests/读取真实CN/EN规则和实体资源，原样提取生产规则构建、资格、解析、标签表及normalizer，链接生产DTO；51项PASS（含两次私人日志输入分别配CN/EN、旧模式负控、语言/换行/边界、去重、未知/灭亡/现属王国、非族长、玩家家族/队伍限制、个人入队独立开关与具体标签白名单）。仅游戏对象/配置载入为替身；固定测试标签代替provider，不假称实际游戏归附成功。
+- 原build_single_module.ps1 Debug exit0：1.3/1.4、Bootstrap、双Coup与registration PASS。两份实际DLL分别独立进程读取嵌入资源，与已测源码正文完全一致，实际嵌入正则的CN/EN与相邻人物区块隔离PASS；SHA与完整证据见artifacts/clan-join-postprocess-20261015/receipt.json、embedded-13.json、embedded-14.json、build-dual.log、replay-verified/run.log。首次测试缺Newtonsoft引用、误取历史Rules空数组的问题已在harness修正；Windows PowerShell读取本地辅助脚本的UTF8 BOM问题已修正后双DLL通过，未改产品构建脚本。
+- 运行频率/成本：保持原每次后处理准备时的解析与内嵌资源Lazy读取，仅替换既有正则；不增加Tick IO、全图扫描、模型调用或新配置。CN/EN固定正文与内容映射不新增，两包共享同一兼容实现；没有按包强制回复语言。
+- 未验：真实provider重新输出归附标签、三渠道完整实机执行、旧档重载。未Stage、部署、打包或push；先前部署仍是旧DLL，本条不改变安装状态。回退git revert 068a938aa并按需重新双版本构建；不还原整文件或删除玩家资料。

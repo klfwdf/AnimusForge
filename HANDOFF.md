@@ -1,3 +1,9 @@
+# 当前交接：家族归附中英文识别修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 产品068a938aa：后处理王国解析同时支持【王国】/[Kingdoms]，修复英文实体清单导致家族归附规则未注入；按下一中英标题截断，保留现有资格与动作白名单。
+- 真实CN/EN资源、生产规则构建/标签表/normalizer共51项回放通过（含用户两次失败输入与旧模式负控）；原Debug双API/Bootstrap/Coup/注册、两实际DLL嵌入资源与CN/EN边界检查PASS。未部署/Stage/实机/provider/push，游戏仍需后续授权覆盖。
+- [唯一主台账、源码坐标、证据与回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#clan-join-bilingual-postprocess-20261015)。证据artifacts/clan-join-postprocess-20261015/；回滚git revert 068a938aa。
+
 # 领主转同伴后百科崩溃链路审查（2026-10-15，SOURCE_AUDIT / REMOTE_STACK_PENDING）
 
 - 用户确认事故发生在别的电脑，要求检查链路。已追踪共享招募执行器、族长继任/解散、职业/家族/队伍转换、延迟清理和百科消费者。成功转换通过CompanionOf返回玩家家族，不存在职业天然不同步；未取得远端崩溃堆栈，不能确认直接原因。
