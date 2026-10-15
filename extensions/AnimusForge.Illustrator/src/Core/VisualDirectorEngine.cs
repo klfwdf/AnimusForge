@@ -401,6 +401,14 @@ namespace AnimusForge.Illustrator.Core
                 return output.Trim() + IllustratorText.Get("Director_1001") + plan.HardFacts + "\n" +
                     MissionScreenshotRules.Contract(plan.Mode == MissionScreenshotRules.BattleMode);
             }
+            // A bulletin is an event illustration. Negated props, quoted event facts and
+            // flexible section layouts do not establish an invalid composition. Preserve
+            // usable direction and metadata; the image prompt still carries game facts
+            // and the selected fidelity contract. Empty bodies keep the existing fallback.
+            if (plan?.IsWeeklyReport == true && !string.IsNullOrWhiteSpace(output))
+                return ComposeFinalPrompt(output, hardFacts: plan.HardFacts, isWeeklyReport: true,
+                    playerRedraw: !string.IsNullOrWhiteSpace(plan.PlayerRedrawPrompt),
+                    preserveEquipment: options?.PreserveEquipmentFidelity != false);
             // These keyword checks cannot distinguish an explicitly requested prop
             // from an invented one. Directed redraws use the scoped director policy.
             if (options?.PreserveEquipmentFidelity != false && string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) &&
