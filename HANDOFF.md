@@ -1,3 +1,9 @@
+# 当前交接：后处理修复与EN检查已推送（2026-10-15，PUSH_VERIFIED / LIVE_PENDING）
+
+- 用户授权推送；origin/main已普通快进至d7dd9d634，独立远端SHA核对通过。包含家族归附修复068a938aa、测试依赖141d639e6及相关检查文档；本条替代下方对应“未push”状态。
+- 待发布历史的本地专用handoff排除、12新增blob路径/凭据模式检查通过；私人日志和本地证据未上传。产品仍未部署，实机/provider待验。
+- [主台账与推送收据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#postprocess-push-20261015)。本地证据artifacts/push-postprocess-20261015/；最终收据提交SHA由receipt.json记录。
+
 # 当前交接：EN后处理扩展检查（2026-10-15，OFFLINE_CHECKED / LIVE_PENDING）
 
 - 75对动作模板协议/变量一致，144项CN/EN生产方法/codec回放PASS；请求模板在1.3/1.4编译条件×CN/EN四组通过。已测范围未发现第二处确定EN专属解析故障，家族归附修复068a938aa保持。
