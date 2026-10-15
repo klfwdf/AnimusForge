@@ -1,3 +1,9 @@
+# 当前交接：EN后处理扩展检查（2026-10-15，OFFLINE_CHECKED / LIVE_PENDING）
+
+- 75对动作模板协议/变量一致，144项CN/EN生产方法/codec回放PASS；请求模板在1.3/1.4编译条件×CN/EN四组通过。已测范围未发现第二处确定EN专属解析故障，家族归附修复068a938aa保持。
+- 只补测试runner当前依赖141d639e6，产品逻辑未新增改动。未实机/provider/部署/打包/push；模型英文回复与EN固定语料包是不同概念，动作协议共用。
+- [主台账、验证范围与未验项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#postprocess-en-audit-20261015)。证据artifacts/postprocess-en-audit-20261015/；测试回退git revert 141d639e6。
+
 # 当前交接：家族归附中英文识别修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 产品068a938aa：后处理王国解析同时支持【王国】/[Kingdoms]，修复英文实体清单导致家族归附规则未注入；按下一中英标题截断，保留现有资格与动作白名单。
