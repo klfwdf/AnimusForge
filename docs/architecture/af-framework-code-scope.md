@@ -2141,4 +2141,3 @@ Roslyn `ClassDeclarationSyntax.Members` 直接语法声明（不是 semantic uni
 | `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsCoverage.cs` / `AddMissing` | 140–159 | 删除未校验 SelectedValue 闭包，由定义统一投影；四 owner、一次缓存的反射/委托和原 setter/SaveDirtyOwners 保留。 |
 | `src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalUiModels.cs` / `AnimusForgeTerminalItemVM` dropdown ctor case | 2721–2747 | 初始化 selector 时把无效索引投影为 -1，选项与真实保存索引不改。 |
 | `tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests/SupplementalChecks.cs` / `CheckDropdownSelectionBoundary`、`Run` | 93–151 | 真实定义/VM及AddMissing；空、null、无效/整数极值、正常和重选，无自动写配置。fixture不是实机；1.3.12、原生UI和旧档仍未验。 |
-
