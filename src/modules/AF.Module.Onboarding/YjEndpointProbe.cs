@@ -11,6 +11,7 @@ namespace AnimusForge;
 // Explicit onboarding click only: three endpoints, two header-only samples each, no credentials.
 internal static class YjEndpointProbe
 {
+    internal const string WebsiteUrl = "https://www.shenlanqaq.com/";
     internal const string DefaultUrl = "https://www.shenlanqaq.com/v1";
     internal const string AlternateUrl = "https://yjapi.shenlanqaq.com/v1";
     internal const string AsiaUrl = "https://asia.shenlanqaq.com/v1";

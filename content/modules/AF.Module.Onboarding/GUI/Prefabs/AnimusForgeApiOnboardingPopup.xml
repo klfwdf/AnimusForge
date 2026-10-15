@@ -154,30 +154,6 @@
                               </Children>
                             </ButtonWidget>
 
-                            <!-- 4. Copy the community QQ group number -->
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCopyQqGroup" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginBottom="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                              <Children>
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.4" IsEnabled="false" />
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="16" MarginRight="16">
-                                  <Children>
-                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="150" LayoutImp.LayoutMethod="VerticalTopToBottom">
-                                      <Children>
-                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_014Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
-                                        <RichTextWidget Text="@AF_UI_Onboarding_Prefab_015Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
-                                      </Children>
-                                    </ListPanel>
-                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="130" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                      <Children>
-                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.35" IsEnabled="false" />
-                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.6" IsEnabled="false" />
-                                        <TextWidget Text="@AF_UI_Onboarding_Prefab_016Text" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#E2D4BDFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
-                                      </Children>
-                                    </Widget>
-                                  </Children>
-                                </Widget>
-                              </Children>
-                            </ButtonWidget>
 
                           </Children>
                         </ListPanel>

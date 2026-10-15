@@ -62,13 +62,11 @@
     <string id="AF_ONBOARDING_BACK_RECONFIGURE_HINT" text="返回 AnimusForge 的 API 重新配置菜单。" />
     <string id="AF_ONBOARDING_BACK_WELCOME_HINT" text="返回 AnimusForge 的首次 API 配置菜单。" />
     <string id="AF_ONBOARDING_YJ_ACCOUNT" text="获取 API Key 并购买额度" />
-    <string id="AF_ONBOARDING_YJ_ACCOUNT_HINT" text="依次打开 YJ API Key 管理页和额度购买页。" />
+    <string id="AF_ONBOARDING_YJ_ACCOUNT_HINT" text="打开 YJ 官网获取 API Key 并购买额度。" />
     <string id="AF_ONBOARDING_YJ_MULTI" text="多分组 API Key 输入" />
     <string id="AF_ONBOARDING_YJ_MULTI_HINT" text="主API、前处理API、后处理API、周报与叛乱API分别输入一个 Key，并分别拉取该分组的模型。" />
     <string id="AF_ONBOARDING_YJ_SINGLE" text="单分组 API Key 输入" />
     <string id="AF_ONBOARDING_YJ_SINGLE_HINT" text="只输入一次 Key，自动写入四条 API；随后仍会为四条 API 分别拉取模型并选择。" />
-    <string id="AF_ONBOARDING_YJ_COPY_QQ" text="复制YJ中转站 QQ 群号" />
-    <string id="AF_ONBOARDING_YJ_COPY_QQ_HINT" text="复制 QQ 群号 " />
     <string id="AF_ONBOARDING_TO_CLIPBOARD" text=" 到剪贴板。" />
     <string id="AF_ONBOARDING_YJ_MENU" text="YJ API 中转站" />
     <string id="AF_ONBOARDING_YJ_MENU_FAILED" text="打开 YJ API 中转站菜单失败：" />
@@ -86,11 +84,9 @@
     <string id="AF_ONBOARDING_YJ_LATENCY_BODY" text="正在比较三条 YJ 线路，完成后进入接入方式选择。&#10;不携带 Key，不调用模型生成。" />
     <string id="AF_ONBOARDING_RECONFIGURE_BODY" text="你正在从 AnimusForge 终端重新配置 API。&#10;&#10;本流程只会写入并测试主API、前处理API、后处理API、周报和叛乱API配置；测试通过后会直接返回游戏，不会进入数据库导入或首次使用流程。" />
     <string id="AF_ONBOARDING_QUICK_SETUP_BODY" text="请选择首次使用的 API 配置方式。&#10;&#10;推荐组合会自动写入主API、前处理API、后处理API、周报和叛乱API的 Base URL、模型、思维链和温度；你只需要填写一次 API Key。" />
-    <string id="AF_ONBOARDING_YJ_BODY" text="【开始游玩前必须完成】&#10;点击“获取 API Key 并购买额度”会依次打开 Key 管理页和额度购买页；请创建有效 Key 并充值足够额度。&#10;&#10;缺少有效 API Key 或可用额度时，无法拉取模型、通过连接测试或使用 AI 进行游玩。&#10;单分组 Key 只需输入一次；多分组 Key 需要为四条 API 分别输入。" />
+    <string id="AF_ONBOARDING_YJ_BODY" text="【开始游玩前必须完成】&#10;点击“获取 API Key 并购买额度”会打开 YJ 官网；请创建有效 Key 并充值足够额度。&#10;&#10;缺少有效 API Key 或可用额度时，无法拉取模型、通过连接测试或使用 AI 进行游玩。&#10;单分组 Key 只需输入一次；多分组 Key 需要为四条 API 分别输入。" />
     <string id="AF_ONBOARDING_YJ_RECONFIGURE_SUFFIX" text="&#10;&#10;当前为终端 API 重新配置：四条 API 完成连接测试后会直接返回游戏，不会进入数据库导入。" />
-    <string id="AF_ONBOARDING_YJ_QQ_COPIED" text="YJ 交流 QQ 群号已复制到剪贴板：" />
-    <string id="AF_ONBOARDING_YJ_QQ_COPY_FAILED" text="复制 QQ 群号失败，请手动复制：" />
-    <string id="AF_ONBOARDING_YJ_KEY_PAGE" text="API Key 管理" />
+    <string id="AF_ONBOARDING_YJ_KEY_PAGE" text="YJ 官网" />
     <string id="AF_ONBOARDING_YJ_CREDIT_PAGE" text="额度购买" />
     <string id="AF_ONBOARDING_SYSTEM_YJ_FALLBACK" text="[系统] 默认浏览器无法启动，已使用本机浏览器打开 YJ API " />
     <string id="AF_ONBOARDING_SYSTEM_YJ_OPENING" text="[系统] 正在打开 YJ API " />

@@ -233,9 +233,7 @@
   <string id="AF_UI_Onboarding_ProTitle" text="DeepSeek Pro - Deep reasoning" />
   <string id="AF_UI_Onboarding_YjSingleTitle" text="YJ single-group key setup" />
   <string id="AF_UI_Onboarding_YjSingleHint" text="Enter one YJ API key; it will be applied to all four pipelines:" />
-  <string id="AF_UI_Onboarding_YjOpenManagement" text="Opening the YJ API key management and credit page..." />
-  <string id="AF_UI_Onboarding_QqCopied" text="YJ QQ group number copied: 1097237977" />
-  <string id="AF_UI_Onboarding_QqCopyFailed" text="Could not copy the group number. Add it manually: 1097237977" />
+  <string id="AF_UI_Onboarding_YjOpenManagement" text="Opening the YJ website..." />
   <string id="AF_UI_Onboarding_YjFetchingModels" text="Fetching available YJ models..." />
   <string id="AF_UI_Onboarding_MissingEndpoint" text="Enter the Base URL and API key first." />
   <string id="AF_UI_Onboarding_ModelParseFailed" text="The endpoint returned no parseable model list." />
@@ -660,11 +658,8 @@ Produces a very large log and is intended for developers only." />
     <string id="AF_UI_Onboarding_Prefab_009" text="Open the multi-API panel with the YJ Base URL filled in; enter a different key for each of the four routes." />
     <string id="AF_UI_Onboarding_Prefab_010" text="Open multi-API panel ➔" />
     <string id="AF_UI_Onboarding_Prefab_011" text="3. Get an API key and credits (open website)" />
-    <string id="AF_UI_Onboarding_Prefab_012" text="Open the YJ API key management and credit pages in your browser, then return and enter the key." />
+    <string id="AF_UI_Onboarding_Prefab_012" text="Open https://www.shenlanqaq.com/ to get an API key and credits, then return and enter the key." />
     <string id="AF_UI_Onboarding_Prefab_013" text="Open website ↗" />
-    <string id="AF_UI_Onboarding_Prefab_014" text="4. Copy the YJ player QQ group number" />
-    <string id="AF_UI_Onboarding_Prefab_015" text="Group: 1097237977. The group provides credit promotions, answers, and maintenance notices." />
-    <string id="AF_UI_Onboarding_Prefab_016" text="Copy group number 📋" />
     <string id="AF_UI_Onboarding_Prefab_017" text="1. Main API (character dialogue)" />
     <string id="AF_UI_Onboarding_Prefab_018" text="Model:" />
     <string id="AF_UI_Onboarding_Prefab_019" text="Fetch models" />

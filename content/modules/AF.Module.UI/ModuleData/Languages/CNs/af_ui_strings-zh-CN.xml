@@ -233,9 +233,7 @@
   <string id="AF_UI_Onboarding_ProTitle" text="DeepSeek Pro 深度智谋" />
   <string id="AF_UI_Onboarding_YjSingleTitle" text="YJ 单分组 Key 接入" />
   <string id="AF_UI_Onboarding_YjSingleHint" text="请输入一个 YJ API Key，将自动写入 4 条管线：" />
-  <string id="AF_UI_Onboarding_YjOpenManagement" text="正在打开 YJ API Key 管理页与额度购买页..." />
-  <string id="AF_UI_Onboarding_QqCopied" text="已复制 YJ 交流 QQ 群号：1097237977" />
-  <string id="AF_UI_Onboarding_QqCopyFailed" text="复制群号失败，请手动添加：1097237977" />
+  <string id="AF_UI_Onboarding_YjOpenManagement" text="正在打开 YJ 官网..." />
   <string id="AF_UI_Onboarding_YjFetchingModels" text="正在拉取 YJ 可用模型列表..." />
   <string id="AF_UI_Onboarding_MissingEndpoint" text="请先填写 Base URL 与 API Key" />
   <string id="AF_UI_Onboarding_ModelParseFailed" text="未能从接口解析出模型列表" />
@@ -658,11 +656,8 @@
     <string id="AF_UI_Onboarding_Prefab_009" text="直接进入多 API 配置面板，Base URL 已自动填充为 YJ 专线，支持 4 路分别填入不同 Key。" />
     <string id="AF_UI_Onboarding_Prefab_010" text="进入多 API 面板 ➔" />
     <string id="AF_UI_Onboarding_Prefab_011" text="3. 获取 API Key 并购买额度（打开官网）" />
-    <string id="AF_UI_Onboarding_Prefab_012" text="在浏览器中依次唤起 YJ API 的 Key 管理页面与额度充值页面，完成后返回输入。" />
+    <string id="AF_UI_Onboarding_Prefab_012" text="打开 https://www.shenlanqaq.com/ 获取 API Key 并充值，完成后返回输入。" />
     <string id="AF_UI_Onboarding_Prefab_013" text="打开网页 ↗" />
-    <string id="AF_UI_Onboarding_Prefab_014" text="4. 复制 YJ 玩家交流 QQ 群号" />
-    <string id="AF_UI_Onboarding_Prefab_015" text="群号：1097237977。群内提供额度福利活动、常见问题答疑与维护通知。" />
-    <string id="AF_UI_Onboarding_Prefab_016" text="一键复制群号 📋" />
     <string id="AF_UI_Onboarding_Prefab_017" text="1. 主 API（角色对话正文）" />
     <string id="AF_UI_Onboarding_Prefab_018" text="模型:" />
     <string id="AF_UI_Onboarding_Prefab_019" text="拉取模型" />

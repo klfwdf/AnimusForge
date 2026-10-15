@@ -158,6 +158,23 @@ public sealed class KingdomFactionActionVM : ViewModel
 
 public sealed partial class KingdomFactionPanelVM : ViewModel
 {
+	// Resolve fixed labels when bound, after the UI language is available.
+	[DataSourceProperty] public string InteriorStabilityText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_Stability", "Kingdom stability");
+	[DataSourceProperty] public string InteriorPowerSplitText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_PowerSplit", "Kingdom power distribution");
+	[DataSourceProperty] public string InteriorFactionSectionText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_FactionSection", "Factions and alignments");
+	[DataSourceProperty] public string InteriorFigureGrievanceText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_FigureGrievance", "Faction grievance");
+	[DataSourceProperty] public string InteriorFigurePowerText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_FigurePower", "Faction military power");
+	[DataSourceProperty] public string InteriorFigureRefusalsText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_FigureRefusals", "Refused by the king");
+	[DataSourceProperty] public string InteriorRecentChronicleText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_RecentChronicle", "Recent chronicle");
+	[DataSourceProperty] public string InteriorFormationConditionsText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_FormationConditions", "Formation conditions");
+	[DataSourceProperty] public string InteriorPrevPageText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_PrevPage", "Previous");
+	[DataSourceProperty] public string InteriorNextPageText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_NextPage", "Next");
+	[DataSourceProperty] public string InteriorTableClanText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_TableClan", "Clan");
+	[DataSourceProperty] public string InteriorTableStanceText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_TableStance", "Stance");
+	[DataSourceProperty] public string InteriorTableReasonText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_TableReason", "Main grievance source");
+	[DataSourceProperty] public string InteriorTablePowerText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_TablePower", "Power");
+	[DataSourceProperty] public string InteriorTableRelationText => KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_TableRelation", "With king");
+
 	private const string CrownKey = "crown", MiddleKey = "middle", LedgerKey = "ledger";
 	private const string CrownColor = "#B8963FFF", MiddleColor = "#8F8270FF", LedgerColor = "#6A5A40FF";
 	private CivilWarPanelKingdom _panel = new CivilWarPanelKingdom();

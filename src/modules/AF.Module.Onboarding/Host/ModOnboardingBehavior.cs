@@ -166,12 +166,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
         ShowYjApiSetupMenu();
     }
 
-	private const string YjApiKeysUrl = "https://yjapi.manqiaotechnology.com/keys";
-
-	private const string YjApiPurchaseUrl = "https://pay.ldxp.cn/shop/OF6AKWNI";
-
-	private const string YjApiPlayerQqGroupNumber = "1097237977";
-
 	private const string DeepSeekFlashModelName = "deepseek-v4-flash";
 
 	private const string DeepSeekProModelName = "deepseek-v4-pro";
@@ -1440,13 +1434,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			string yjBackDescription = _apiOnlySetupFlowActive ? OnboardingUiText.T("AF_ONBOARDING_BACK_RECONFIGURE_HINT", "Return to the AnimusForge API reconfiguration menu.") : OnboardingUiText.T("AF_ONBOARDING_BACK_WELCOME_HINT", "Return to the AnimusForge first-use API setup menu.");
 			List<InquiryElement> list = new List<InquiryElement>
 			{
-				new InquiryElement("yj_prepare_account", OnboardingUiText.T("AF_ONBOARDING_YJ_ACCOUNT", "Get an API key and buy credits"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_YJ_ACCOUNT_HINT", "Open the YJ API key management and credit purchase pages.")),
+				new InquiryElement("yj_prepare_account", OnboardingUiText.T("AF_ONBOARDING_YJ_ACCOUNT", "Get an API key and buy credits"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_YJ_ACCOUNT_HINT", "Open the YJ website to get an API key and credits.")),
 				new InquiryElement("yj_multi_group", OnboardingUiText.T("AF_ONBOARDING_YJ_MULTI", "Multiple API key groups"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_YJ_MULTI_HINT", "Enter one key for each API group and fetch models for each group.")),
 				new InquiryElement("yj_single_group", OnboardingUiText.T("AF_ONBOARDING_YJ_SINGLE", "Single API key group"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_YJ_SINGLE_HINT", "Enter one key to fill all four APIs; models are still fetched and selected separately.")),
-				new InquiryElement("yj_back", yjBackLabel, null, isEnabled: true, yjBackDescription),
-				new InquiryElement("yj_copy_qq_group", OnboardingUiText.T("AF_ONBOARDING_YJ_COPY_QQ", "Copy YJ relay QQ group"), null, isEnabled: true, OnboardingUiText.T("AF_ONBOARDING_YJ_COPY_QQ_HINT", "Copy QQ group ") + YjApiPlayerQqGroupNumber + OnboardingUiText.T("AF_ONBOARDING_TO_CLIPBOARD", " to the clipboard."))
+				new InquiryElement("yj_back", yjBackLabel, null, isEnabled: true, yjBackDescription)
 			};
-			string text = OnboardingUiText.T("AF_ONBOARDING_YJ_BODY", "【Required before playing】\nOpen the key management and credit pages from “Get an API key and buy credits”; create a valid key and add enough credits.\n\nWithout a valid key or credits, models cannot be fetched, connection tests cannot pass, and AI gameplay is unavailable.\nA single-group key is entered once; multi-group mode requires one key per API.");
+			string text = OnboardingUiText.T("AF_ONBOARDING_YJ_BODY", "【Required before playing】\nOpen the YJ website from “Get an API key and buy credits”; create a valid key and add enough credits.\n\nWithout a valid key or credits, models cannot be fetched, connection tests cannot pass, and AI gameplay is unavailable.\nA single-group key is entered once; multi-group mode requires one key per API.");
 			if (_apiOnlySetupFlowActive)
 			{
 				text += OnboardingUiText.T("AF_ONBOARDING_YJ_RECONFIGURE_SUFFIX", "\n\nTerminal API reconfiguration is active: after all four APIs pass, the game resumes without database import.");
@@ -1467,11 +1460,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				else if (text2 == "yj_single_group")
 				{
 					BeginYjApiSetup(YjApiSetupMode.SingleGroup);
-				}
-				else if (text2 == "yj_copy_qq_group")
-				{
-					CopyYjApiPlayerQqGroupNumberToClipboard();
-					ShowYjApiSetupMenu();
 				}
 				else
 				{
@@ -1495,23 +1483,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void CopyYjApiPlayerQqGroupNumberToClipboard()
-	{
-		try
-		{
-			TaleWorlds.InputSystem.Input.SetClipboardText(YjApiPlayerQqGroupNumber);
-			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_YJ_QQ_COPIED", "YJ community QQ group copied to clipboard: ") + YjApiPlayerQqGroupNumber, new Color(0.35f, 1f, 0.35f)));
-		}
-		catch
-		{
-			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_YJ_QQ_COPY_FAILED", "Could not copy the QQ group; copy it manually: ") + YjApiPlayerQqGroupNumber, Colors.Yellow));
-		}
-	}
-
 	private static void OpenYjApiPreparationPages()
 	{
-		OpenYjApiExternalPage(YjApiKeysUrl, OnboardingUiText.T("AF_ONBOARDING_YJ_KEY_PAGE", "API key management"));
-		OpenYjApiExternalPage(YjApiPurchaseUrl, OnboardingUiText.T("AF_ONBOARDING_YJ_CREDIT_PAGE", "Credit purchase"));
+		OpenYjApiExternalPage(YjEndpointProbe.WebsiteUrl, OnboardingUiText.T("AF_ONBOARDING_YJ_KEY_PAGE", "YJ website"));
 	}
 
 	private static void OpenYjApiExternalPage(string url, string pageName)
