@@ -1,3 +1,10 @@
+<a id="deploy-surrender-streaming-20261015"></a>
+## 包含其他会话改动统一编译部署（2026-10-15，ACTIVE）
+
+- 用户明确授权“带着其他会话改动编译部署”；基线main/7a43fd6d8，跟踪文件干净，保留未跟踪Microsoft/、NuGet/。纳入当前完整源码，包含投降调度74be66074、流式20字/秒及正文滚动21e0a6a2b、MCM关闭生命周期7e4d0d2a0，以及此前已合入改动。版本维持v1.6.1；本次未授权打包或push。
+- 目标固定为`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。开工未发现Bannerlord进程/并行统一构建；使用现有build_single_module.ps1构建1.3/1.4、Bootstrap及项目本地Stage，随后用原deploy_module.ps1部署冻结候选。修改位置为该单模块受Stage管理文件，依原规则保护配置、提示词、更新的PlayerExports、ONNX、原版DLL及未列出文件；无Recovery备份、自动回滚或构建脚本改写。
+- 退出门：完整当前产品输入构建/部署期间不变；复用同源码专项证据并记录source SHA；双API/Bootstrap/Coup/注册、完整Stage与CN/EN投影通过；原部署exit0后独立核对Stage逐项、三DLL候选hash、原玩家数据和ONNX元数据/原版DLL保持。实机投降结算、逐字/滚动/TTS视觉、玩家旧档仍待验。详细本地证据`artifacts/deploy-surrender-streaming-20261015/`；原项目Stage先保留到本地证据目录，不覆盖旧发行包。
+
 <a id="npc-surrender-engine-tick-20261015"></a>
 ## 对话投降待办在暂停遭遇菜单不执行（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
