@@ -280,52 +280,13 @@ internal sealed class KnowledgeImportExportAdapter
 				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.BehaviorNotInitialized("KnowledgeLibraryBehavior")));
 				return;
 			}
-			string dir = Path.Combine(importDir, "knowledge", "rules");
-			string dir2 = Path.Combine(importDir, "knowledge", "single_rules");
-			string dir3 = Path.Combine(importDir, "knowledge");
-			string text = KnowledgeImportSupport.FindKnowledgeRuleJsonById(dir, id);
-			if (string.IsNullOrEmpty(text))
-			{
-				text = KnowledgeImportSupport.FindKnowledgeRuleJsonById(dir2, id);
-			}
-			if (string.IsNullOrEmpty(text))
-			{
-				text = KnowledgeImportSupport.FindKnowledgeRuleJsonById(dir3, id);
-			}
-			if (string.IsNullOrEmpty(text) || !File.Exists(text))
+			// Select the same normalized rule shown by the package list, including stable split IDs.
+			KnowledgeLibraryBehavior.LoreRule rule = KnowledgeImportSupport.LoadKnowledgeRulesFromImportDir(importDir)
+				.FirstOrDefault(r => string.Equals(r.Id, id, StringComparison.OrdinalIgnoreCase));
+			if (rule == null)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingFile(id)));
 				return;
-			}
-			string value = File.ReadAllText(text, Encoding.UTF8);
-			if (string.IsNullOrWhiteSpace(value))
-			{
-				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.EmptyFile("the file")));
-				return;
-			}
-			KnowledgeLibraryBehavior.LoreRule rule = null;
-			try
-			{
-				rule = JsonConvert.DeserializeObject<KnowledgeLibraryBehavior.LoreRule>(value);
-			}
-			catch
-			{
-				rule = null;
-			}
-			if (rule == null)
-			{
-				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.JsonParseFailed()));
-				return;
-			}
-			string text2 = (rule.Id ?? "").Trim();
-			if (!string.IsNullOrEmpty(text2) && !string.Equals(text2, id, StringComparison.OrdinalIgnoreCase))
-			{
-				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.IdMismatch(text2)));
-				return;
-			}
-			if (string.IsNullOrEmpty(text2))
-			{
-				rule.Id = id;
 			}
 			bool flag = false;
 			try

@@ -69,6 +69,24 @@ internal static class Program
         Check(KnowledgeImportSupport.FindKnowledgeRuleJsonById(rules, "one") == Path.Combine(rules, "one.json"), "direct rule filename resolution");
         Check(KnowledgeImportSupport.FindKnowledgeRuleJsonById(rules, "absent") == null, "missing rule lookup is null");
         Check(KnowledgeImportSupport.TryLoadKnowledgeRulesFromRuleFiles(Path.Combine(dir, "missing")) == null, "missing import folder fails closed");
+
+        // Create the later lexical file first: installation order must not choose the survivor.
+        File.WriteAllText(Path.Combine(rules, "split__z.json"), "{\"Id\":\"split\",\"Keywords\":[\"shared\",\"unique\"],\"Variants\":[{\"Content\":\"second body\"}]}");
+        File.WriteAllText(Path.Combine(rules, "split__a.json"), "{\"Id\":\"split\",\"Keywords\":[\"shared\"],\"Variants\":[{\"Content\":\"first body\"}]}");
+        File.WriteAllText(Path.Combine(rules, "player.json"), "{\"Id\":\"rule_animus_player_persona\",\"Keywords\":[\"player\"]}");
+        var normalized = KnowledgeImportSupport.TryLoadKnowledgeRulesFromRuleFiles(dir).Rules;
+        var split = normalized.Single(x => x.Id == "split__z");
+        Check(normalized.Count == 4 && normalized.Single(x => x.Id == "split").Variants.Single().Content == "first body" && split.Variants.Single().Content == "second body", "duplicate IDs preserve both bodies with stable filename ownership");
+        Check(split.Keywords.SequenceEqual(new[] { "unique" }) && normalized.Single(x => x.Id == "split").Keywords.Single() == "shared", "shared trigger retained on original; unique trigger retained on split");
+        Check(normalized.Any(x => x.Id == "rule_animus_player_persona"), "ordinary imports still include player entries");
+        var kb = new KnowledgeLibraryBehavior();
+        Check(KnowledgeImportValidationOwner.ValidateKnowledgeKeywordsForImport(kb, dir, true, out var error), "first normalized import passes: " + error);
+        kb.Data.Rules = KnowledgeImportSupport.LoadKnowledgeRulesFromImportDir(dir);
+        string previous = kb.ExportRulesJson();
+        Check(KnowledgeImportValidationOwner.ValidateKnowledgeKeywordsForImport(kb, dir, true, out error), "repeat overwrite validation passes: " + error);
+        Check(KnowledgeImportValidationOwner.ValidateKnowledgeKeywordsForImport(kb, dir, false, out error) && kb.ExportRulesJson() == previous, "repeat skip validates without changing retained rules: " + error);
+        Check(Newtonsoft.Json.JsonConvert.SerializeObject(normalized) == Newtonsoft.Json.JsonConvert.SerializeObject(KnowledgeImportSupport.TryLoadKnowledgeRulesFromRuleFiles(dir).Rules), "repeated reads preserve effective IDs and triggers");
+        Check(File.ReadAllText(Path.Combine(rules, "split__z.json")).Contains("\"Id\":\"split\"") && File.ReadAllText(Path.Combine(rules, "split__z.json")).Contains("shared"), "source IDs and triggers stay unmodified on disk");
     }
 
     private static void Tokens()

@@ -490,7 +490,7 @@ internal sealed class DatabaseReloadPreflight
 					error = T("AF_UI_Developer_ReloadKnowledgeFileReadFailed", "Could not read knowledge file \u201c") + fileName + "\u201d: " + readError;
 					return false;
 				}
-				if (!KnowledgeImportValidationOwner.TryAddDatabaseReloadKnowledgeRule(rule, fileName, ruleIds, keywordOwnerOriginalRuleIds, rules, ref disambiguatedRuleIdCount, ref deduplicatedKeywordCount, out error))
+				if (!KnowledgeImportValidationOwner.TryAddImportedKnowledgeRule(rule, fileName, ruleIds, keywordOwnerOriginalRuleIds, rules, ref disambiguatedRuleIdCount, ref deduplicatedKeywordCount, out error))
 				{
 					return false;
 				}
@@ -517,7 +517,7 @@ internal sealed class DatabaseReloadPreflight
 					error = T("AF_UI_Developer_ReloadKnowledgeAggregateEmptyRule", "The knowledge aggregate file contains an empty rule entry.");
 					return false;
 				}
-				if (!KnowledgeImportValidationOwner.TryAddDatabaseReloadKnowledgeRule(rule2, "KnowledgeRules_" + (rules.Count + 1), ruleIds, keywordOwnerOriginalRuleIds, rules, ref disambiguatedRuleIdCount, ref deduplicatedKeywordCount, out error))
+				if (!KnowledgeImportValidationOwner.TryAddImportedKnowledgeRule(rule2, "KnowledgeRules_" + (rules.Count + 1), ruleIds, keywordOwnerOriginalRuleIds, rules, ref disambiguatedRuleIdCount, ref deduplicatedKeywordCount, out error))
 				{
 					return false;
 				}

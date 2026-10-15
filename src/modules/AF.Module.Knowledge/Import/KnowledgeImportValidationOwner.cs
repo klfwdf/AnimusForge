@@ -242,7 +242,7 @@ internal static class KnowledgeImportValidationOwner
 		}
 	}
 
-	internal static bool TryAddDatabaseReloadKnowledgeRule(KnowledgeLibraryBehavior.LoreRule rule, string sourceLabel, HashSet<string> knownRuleIds, Dictionary<string, string> keywordOwnerOriginalRuleIds, List<KnowledgeLibraryBehavior.LoreRule> rules, ref int disambiguatedRuleIdCount, ref int deduplicatedKeywordCount, out string error)
+	internal static bool TryAddImportedKnowledgeRule(KnowledgeLibraryBehavior.LoreRule rule, string sourceLabel, HashSet<string> knownRuleIds, Dictionary<string, string> keywordOwnerOriginalRuleIds, List<KnowledgeLibraryBehavior.LoreRule> rules, ref int disambiguatedRuleIdCount, ref int deduplicatedKeywordCount, out string error, bool skipPlayerPersona = true)
 	{
 		error = "";
 		if (rule == null)
@@ -257,7 +257,7 @@ internal static class KnowledgeImportValidationOwner
 			return false;
 		}
 		// Never turn a second package player-profile entry into ordinary lore by renaming it.
-		if (KnowledgeLibraryBehavior.IsPlayerPersonaRuleId(originalRuleId))
+		if (skipPlayerPersona && KnowledgeLibraryBehavior.IsPlayerPersonaRuleId(originalRuleId))
 		{
 			return true;
 		}
