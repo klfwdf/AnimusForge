@@ -10855,3 +10855,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 原 `scripts/build/build_single_module.ps1` Debug build-only 最终 exit0：引用 1.3 `v1.3.15.110062` / 1.4 `v1.4.6.115628`，两实现、Bootstrap、两 Coup seam 与 registration smoke PASS，保留既有编译警告。前两次本机 net472/Facade 解析失败后，使用仅进程生效的本地离线 targets、明确 net472 引用与 netstandard facade 完成；未改原构建脚本。旧构建产物保存到证据目录；本次构建覆盖共享树的并行改动，不宣称隔离构建。
 - 最终冻结候选的 `TerminalLiveSettingsTests/run.py`：1.3 / zh-CN **29536 PASS**，1.4 / en **29552 PASS**，均含本次 dropdown boundary regression；原测试读取真实 MCM JSON、生产 VM 与保存 owner，但模块/磁盘 provider 是仓内 fixture，无原生渲染/网络。定向 `git diff --check` PASS。完整命令、失败日志、最终构建与 SHA 在 `artifacts/terminal-ai-dropdown-20261015/receipt.json` 及相邻文件，候选固定在 `verified-candidates/`。
 - 代码坐标与责任边界：[当前源码范围图](architecture/af-framework-code-scope.md#terminal-ai-dropdown-crash-20261015)。NOT-RUN：玩家实际 1.3.12 点击、原生 UI、真实配置/旧档及实机性能；报告未记录具体设置 ID，不能断定哪一项配置损坏。另一份 BannerlordCheats 锻造补丁故障未改。未 Stage/部署/正式打包/push；源码回滚 `git revert 5af24a7e5`，不触碰其他作者改动。
+<a id="mcm-reopen-lag-20261015"></a>
+## 主菜单重复打开 MCM 卡顿（2026-10-15，ACTIVE）
+
+- 用户提供累计日志及截图，确认主菜单首次打开设置正常、第二次以后卡；补充 RTX3080、RAG GPU 开启。最新21:23会话没有 ONNX/CUDA 初始化记录，AF总Tick最大577.828ms；仅总桶，不能从日志确定子阶段或声称GPU故障。历史CUDA worker多次正常启动。
+- 已用当前真实MCM托管SettingsVM/SettingsEntryVM复现关闭清理缺口：外层ModOptionsVM关闭仅调用entry.OnFinalize，entry未覆盖转发，内部属性VM订阅没有解除。8次重复AF两页面，追踪373→2984，三次刷新约7–13ms→49–60ms；直接finalize内部SettingsVM时每轮归零，证明生命周期差别。该回放没有原生Gauntlet/GPU，不能量化玩家实际帧率。
+- 范围：AF自有设置控件生命周期与下拉刷新追踪；保留四owner、setter/preset/JSON、CN/EN显示及其他模组。关闭后补偿清理、异步晚构造退出、仅AF dropdown刷新；不改MCM DLL、GPU推理/选项、存档或构建入口，不部署/打包/push。
+- 退出门：真实MCM外层关闭重复回放、订阅/追踪归零、有效选择与取消/保存保持、其他模组隔离/重叠窗口/晚构造、原双API/Bootstrap及相关现有终端测试；记录玩家实机与确切MCM版本未验。开工 f3053afdf / main，仅预存Microsoft、NuGet未跟踪目录。完整调查证据在 artifacts/mcm-reopen-lag-20261015/。
+
