@@ -2192,4 +2192,3 @@ Roslyn `ClassDeclarationSyntax.Members` 直接语法声明（不是 semantic uni
 | `src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs:1038–1064,1098,1130,1256–1282,1316,1349`；`.Interruption.cs:20–38` | NPC主动开场及玩家提交两实际入口，开关捕获、generation守卫、原净化器复用；后处理/动作/历史仍等完整正文 |
 | `extensions/AnimusForge.DialogueUI/src/Native/AFDialogueClickThroughScrollPanel.cs:8–42`；`GUI/Prefabs/AFDialogueConversation.xml:73–95`；`AFDialogueMapConversation.xml:13` | 共享新皮肤正文区域，布局后3帧跟随，原折行/裁剪与手动滚动；答案区不启用。旧皮肤、信使和喊话滚动不在本次范围 |
 | `tests/AF.GameAdapter.Bannerlord/StreamingDialogueRevealTests/` | 实际state/helper/scroll、提取的两Overlay方法及真实sanitizer；35断言与scene/map绑定。VM/layout/日志为替身，非原生渲染/音频验收 |
-
