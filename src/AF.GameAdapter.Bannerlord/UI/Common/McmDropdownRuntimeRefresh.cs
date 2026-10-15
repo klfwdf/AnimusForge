@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 using System.Threading;
 
@@ -32,6 +33,11 @@ public static class McmDropdownRuntimeRefresh
 
 
 	private static readonly List<WeakReference> LiveSettingsPropertyVms = new List<WeakReference>();
+	private static readonly List<WeakReference> LiveDropdownPropertyVms = new List<WeakReference>();
+	private static readonly ConditionalWeakTable<object, object> ClosedModOptionsVms = new ConditionalWeakTable<object, object>();
+	private static readonly object ClosedPanel = new object();
+	private static PropertyInfo _propertyReferenceProperty, _settingsVmProperty, _mainViewProperty, _isDropdownProperty;
+	private static MethodInfo _settingsPropertyFinalize;
 
 
 
@@ -97,6 +103,11 @@ public static class McmDropdownRuntimeRefresh
 			}
 
 			Type modOptionsVmType = AccessTools.TypeByName("MCM.UI.GUI.ViewModels.ModOptionsVM");
+			_propertyReferenceProperty = AccessTools.Property(settingsPropertyVmType, "PropertyReference");
+			_settingsVmProperty = AccessTools.Property(settingsPropertyVmType, "SettingsVM");
+			_isDropdownProperty = AccessTools.Property(settingsPropertyVmType, "IsDropdown");
+			_mainViewProperty = AccessTools.Property(_settingsVmProperty?.PropertyType, "MainView");
+			_settingsPropertyFinalize = AccessTools.Method(settingsPropertyVmType, "OnFinalize");
 
 			Harmony harmony = new Harmony("AnimusForge.mcm.dropdown.refresh");
 
@@ -156,7 +167,7 @@ public static class McmDropdownRuntimeRefresh
 
 			{
 
-				harmony.Patch(modOptionsFinalize, prefix: new HarmonyMethod(typeof(McmDropdownRuntimeRefresh), nameof(ModOptionsVmFinalizePrefix)));
+				harmony.Patch(modOptionsFinalize, postfix: new HarmonyMethod(typeof(McmDropdownRuntimeRefresh), nameof(ModOptionsVmFinalizePostfix)));
 
 			}
 
@@ -327,35 +338,35 @@ public static class McmDropdownRuntimeRefresh
 
 
 
-	public static void SettingsPropertyVmCtorPostfix(object __instance)
+    public static void SettingsPropertyVmCtorPostfix(object __instance)
+    {
+        if (__instance == null || _propertyReferenceProperty == null
+            || !(_propertyReferenceProperty.GetValue(__instance) is PropertyRef reference)
+            || !IsAnimusForgeOwner(reference.Instance?.GetType())) return;
+        object panel = OwningPanel(__instance);
+        bool closed;
+        lock (SyncRoot)
+        {
+            closed = panel != null && ClosedModOptionsVms.TryGetValue(panel, out _);
+            if (!closed)
+            {
+                var tracked = new WeakReference(__instance);
+                LiveSettingsPropertyVms.Add(tracked);
+                if (_isDropdownProperty?.GetValue(__instance) is bool dropdown && dropdown)
+                    LiveDropdownPropertyVms.Add(tracked);
+            }
+        }
+        // MCM constructs rows asynchronously. A closed panel cannot own late rows.
+        if (closed) { _settingsPropertyFinalize?.Invoke(__instance, null); return; }
+        if (_isDropdownProperty?.GetValue(__instance) is bool isDropdown && isDropdown)
+            RequestRefresh();
+    }
 
-	{
-
-		if (__instance == null)
-
-		{
-
-			return;
-
-		}
-
-		lock (SyncRoot)
-
-		{
-
-			LiveSettingsPropertyVms.Add(new WeakReference(__instance));
-
-			PruneDeadEntriesNoLock();
-
-		}
-
-        // Coalesce panel construction into one bounded refresh. The selector's
-        // display strings follow the current locale; persisted values/indices stay intact.
-        RequestRefresh();
-
-	}
-
-
+    private static object OwningPanel(object propertyVm)
+    {
+        object settings = _settingsVmProperty?.GetValue(propertyVm);
+        return settings == null ? null : _mainViewProperty?.GetValue(settings);
+    }
 
 	public static void SettingsPropertyVmFinalizePrefix(object __instance)
 
@@ -372,6 +383,12 @@ public static class McmDropdownRuntimeRefresh
 		lock (SyncRoot)
 
 		{
+            for (int i = LiveDropdownPropertyVms.Count - 1; i >= 0; i--)
+            {
+                object row = LiveDropdownPropertyVms[i].Target;
+                if (row == null || ReferenceEquals(row, __instance)) LiveDropdownPropertyVms.RemoveAt(i);
+            }
+
 
 			for (int i = LiveSettingsPropertyVms.Count - 1; i >= 0; i--)
 
@@ -421,43 +438,43 @@ public static class McmDropdownRuntimeRefresh
 
 
 
-	public static void ModOptionsVmFinalizePrefix(object __instance)
-
-	{
-
-		if (__instance == null)
-
-		{
-
-			return;
-
-		}
-
-		lock (SyncRoot)
-
-		{
-
-			for (int i = LiveModOptionsVms.Count - 1; i >= 0; i--)
-
-			{
-
-				object target = LiveModOptionsVms[i].Target;
-
-				if (target == null || ReferenceEquals(target, __instance))
-
-				{
-
-					LiveModOptionsVms.RemoveAt(i);
-
-				}
-
-			}
-
-		}
-
-	}
-
-
+    public static void ModOptionsVmFinalizePostfix(object __instance)
+    {
+        if (__instance == null) return;
+        var remaining = new List<object>();
+        lock (SyncRoot)
+        {
+            ClosedModOptionsVms.GetValue(__instance, _ => ClosedPanel);
+            for (int i = LiveSettingsPropertyVms.Count - 1; i >= 0; i--)
+            {
+                object row = LiveSettingsPropertyVms[i].Target;
+                if (row == null) LiveSettingsPropertyVms.RemoveAt(i);
+                else if (ReferenceEquals(OwningPanel(row), __instance))
+                {
+                    remaining.Add(row);
+                    LiveSettingsPropertyVms.RemoveAt(i);
+                }
+            }
+            for (int i = LiveDropdownPropertyVms.Count - 1; i >= 0; i--)
+            {
+                object row = LiveDropdownPropertyVms[i].Target;
+                if (row == null || ReferenceEquals(OwningPanel(row), __instance))
+                    LiveDropdownPropertyVms.RemoveAt(i);
+            }
+            for (int i = LiveModOptionsVms.Count - 1; i >= 0; i--)
+            {
+                object panel = LiveModOptionsVms[i].Target;
+                if (panel == null || ReferenceEquals(panel, __instance)) LiveModOptionsVms.RemoveAt(i);
+            }
+        }
+        // Some MCM builds finalize SettingsEntryVM without forwarding to SettingsVM.
+        // Rows already finalized by MCM removed themselves above; clean only AF survivors.
+        foreach (object row in remaining)
+        {
+            try { _settingsPropertyFinalize?.Invoke(row, null); }
+            catch (Exception ex) { Logger.Log("MCM", "[WARN] Failed to finalize an AF settings row: " + ex.GetBaseException()); }
+        }
+    }
 
 	private static void RefreshAllDropdowns()
 
@@ -491,17 +508,17 @@ public static class McmDropdownRuntimeRefresh
 
 			}
 
-			for (int i = LiveSettingsPropertyVms.Count - 1; i >= 0; i--)
+			for (int i = LiveDropdownPropertyVms.Count - 1; i >= 0; i--)
 
 			{
 
-				object target = LiveSettingsPropertyVms[i].Target;
+				object target = LiveDropdownPropertyVms[i].Target;
 
 				if (target == null)
 
 				{
 
-					LiveSettingsPropertyVms.RemoveAt(i);
+					LiveDropdownPropertyVms.RemoveAt(i);
 
 					continue;
 
