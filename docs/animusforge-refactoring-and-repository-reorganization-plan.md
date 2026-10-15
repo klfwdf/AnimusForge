@@ -1,9 +1,13 @@
 <a id="deploy-en-current-20261016"></a>
-## 当前源码EN部署（2026-10-16，ACTIVE / LIVE_PENDING）
+## 当前源码EN部署（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户明确要求部署EN版；基线main/d7919dda6，跟踪文件干净，Microsoft/NuGet保留。目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，维持v1.6.1，包含隐藏导演配置退役和动态王国重载跳过修复。不打包、不push、不改版本或原构建部署入口。
 - 复用原统一双API/Bootstrap构建及干净Stage、完整CN/EN投影门禁；英文投影写入本地独立候选，按原Invoke-ManagedStageDeployment部署。保留CustomPrompts、Configs、终端设置、时间较新PlayerExports及未列管文件，禁止镜像删除；无部署Recovery或自动回滚。验证原候选/安装三DLL、投影逐项、玩家资料保护、ONNX和原版DLL。实机/真实provider/旧档不属于离线部署通过结论。
 - 本地证据artifacts/deploy-en-current-20261016/；完成后更新本条及HANDOFF。安装回退需人工使用旧包并保护玩家数据，不能仅凭旧hash还原文件。
+- 已完成：检查点/构建a21d97089，原build_single_module.ps1 Debug双API（实际引用v1.3.15.110062/v1.4.6.115628）/Bootstrap/双Coup门禁/registration及干净Stage全部exit0。完整CN/EN各3522项投影、源码和三份实际DLL英文门禁PASS；独立EN候选复用原投影器和XML producer，不创建ZIP、不改版本或原脚本。首轮任务runner在写入前因PowerShell 5数组多套一层导致数量检查失败；修正任务脚本后通过，失败日志deploy-attempt1.log保留。
+- 原Invoke-ManagedStageDeployment分两步更新87及3121项。第一步按原时间合并保留3133项，复核发现3121份仍与当前CN默认JSON语义完全相同；按用户EN选择，只对这些未经内容编辑的已知默认世界书选择EN正文，英文候选使用本次选版实际创建时间，再由不变的newer-wins owner部署。切换前逐份重验原安装SHA、CN语义及EN投影SHA，排除用户/历史内容差异；没有直接改安装文件或修改时间合并规则。known-cn-to-en-defaults.json记录确切清单，阶段1收据以phase1-*保留，最终receipt.json取代阶段1完成状态。
+- 最终独立核对PASS：8785项产品输入不变；3522项EN内容按部署规则一致，其中3512项逐SHA等于EN候选、剩余10份保留JSON仅格式差异且语义等于EN默认。安装三DLL等于冻结verified-candidates/；50项设置/自定义内容哈希、10个ONNX文件元数据、3份原版DLL及全部未列管文件保持，无部署Recovery新增或遗留临时文件。版本v1.6.1，包含8c7619e22隐藏配置退役及35c6ad013动态王国重载跳过修复；旧2257安装包保持且不含这两项后续修复。
+- 命令/逐项证据见artifacts/deploy-en-current-20261016/{receipt.json,before.json,plan.json,after.json,projection.json,prepared.json,known-cn-to-en-defaults.json,preserved-edition-classification.json,build-stage.log,projection.log,deploy.log}。本轮只有本地交接提交，未push/打包/启动游戏；实际加载、真实provider/出图、玩家包/存档重载及旧档仍NOT-RUN，原过时协调器整套fixture未通过状态不变。没有安装恢复备份或自动回滚，需人工选旧包并保留玩家资料；源码仍按各功能focused inverse回退。
 
 <a id="reload-skip-dynamic-kingdoms-20261016"></a>
 ## 数据库重载跳过不匹配的动态王国（2026-10-16，OFFLINE_VERIFIED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
