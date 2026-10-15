@@ -718,6 +718,10 @@ internal sealed class DeveloperImportUiController
 		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_OpeningKnowledge","• One world-opening Knowledge entry and {COUNT} kingdom-opening entries", "COUNT", plan.OpeningKnowledge.KingdomSummaries.Count.ToString()));
 		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_DayZero","• Day-zero derived records for the opening Knowledge (after day 7, the current API settings may request short summaries from the LLM)"));
 		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_KingdomProfiles","• Kingdom personality and long-term strategy for {COUNT} kingdoms", "COUNT", (plan.KingdomProfilePlan?.SourceProfilesByTargetId?.Count ?? 0).ToString()));
+		if (plan.KingdomProfilePlan?.SkippedDynamicProfileCount > 0)
+		{
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_SkippedDynamicKingdoms", "• Skip {COUNT} unmatched dynamic kingdom profiles and preserve existing save profiles for those IDs. First entries: {PROFILES}", "COUNT", plan.KingdomProfilePlan.SkippedDynamicProfileCount.ToString(), "PROFILES", string.Join(", ", plan.KingdomProfilePlan.SkippedDynamicProfileLabels)));
+		}
 		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_VoiceMapping","• One voice mapping and {COUNT} NPC voice IDs", "COUNT", plan.NpcVoiceIds.Count.ToString()));
 		if (plan.CurrentKingdomProfilesResetToDefaultCount > 0)
 		{

@@ -432,6 +432,7 @@
     <string id="AF_DIP_UI_KingdomProfile_ReloadCloneFailed" text="无法创建王国资料重载副本。" />
     <string id="AF_DIP_UI_KingdomProfile_ReloadTargetMissing" text="当前世界已变化，找不到王国目标：{TARGET}" />
     <string id="AF_DIP_UI_KingdomProfile_ReloadComplete" text="已重载 {IMPORTED} 个王国；其余 {RESET} 个当前王国恢复默认资料。" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadSkippedDynamic" text="已跳过 {COUNT} 条无法匹配的动态王国资料，保留存档中这些 ID 的原有资料。部分条目：{PROFILES}" />
     <string id="AF_DIP_UI_KingdomProfile_ImportNoSafeMatch" text="导入文件中没有与“{KINGDOM}”安全匹配的国家卡。动态建国 ID 只有在名称一致时才会匹配。" />
     <string id="AF_DIP_UI_KingdomProfile_ImportComplete" text="已导入 {IMPORTED} 条；跳过重复 {DUPLICATES} 条；无效或无法匹配 {UNMATCHED} 条。" />
     <string id="AF_DIP_UI_KingdomProfile_SingleImportTargetOrPathEmpty" text="单国导入目标或路径为空。" />
