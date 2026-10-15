@@ -27,14 +27,17 @@ class Host
     static PartyBase _pendingNativeConversationNpcSurrenderParty;
     static int _pendingNativeConversationNpcSurrenderAgentIndex;
     static string _pendingNativeConversationNpcSurrenderReason;
+    static bool _pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit, _pendingForceNativeEncounterAttack;
+    static object _pendingNativeConversationMeetingRelease;
     static PartyBase EffectParty;
     static PlayerEncounter FinishedEncounter;
-    static int Effects, Checks;
+    static int Effects, Checks, SurrenderAttempts;
+    static bool SurrenderSucceeds;
     static void Check(bool value,string name) { if(!value) throw new Exception("FAIL "+name); Checks++; }
     static PlayerEncounter Reset(bool mission=false)
     {
         ClearPendingNativeConversationNpcSurrender("test"); _releaseOwner.ClearAuthorization();
-        EffectParty=null; FinishedEncounter=null; Effects=0;
+        EffectParty=null; FinishedEncounter=null; Effects=0; SurrenderAttempts=0; SurrenderSucceeds=true;
         PlayerEncounter.Current=new(){Party=new()}; PlayerEncounter.PlayerSurrender=false;
         Campaign.Current=new(); Mission.Current=mission ? new() : null;
         Game.Current=new(); if(mission) Game.Current.GameStateManager.ActiveState=new MissionState();
@@ -94,7 +97,56 @@ class Host
             Time.ApplicationTime=101; TryForcePendingNativeConversationNpcSurrenderIfReady();
             Check(Effects==0,"session reset revokes pending surrender");
         }
-        Console.WriteLine($"PASS {Checks} release callback and surrender scope checks (actual extracted host methods; native effects are fixtures).");
+        // Reproduce the paused encounter menu: only application/engine ticks run.
+        // No Campaign Tick or direct calls to the pending consumer in these cases.
+        {
+            var original=Reset(); var manager=Campaign.Current.ConversationManager;
+            manager.IsConversationInProgress=true;
+            Check(MarkPendingNativeConversationNpcSurrender(null,new CharacterObject(),-1,"paused_nonhero"),"paused nonhero surrender queues");
+            Time.ApplicationTime=101; OnEngineTick();
+            Check(SurrenderAttempts==0 && _pendingNativeConversationNpcSurrender,"engine tick waits for manual conversation exit");
+            manager.IsConversationInProgress=false; manager.IsConversationFlowActive=true; OnEngineTick();
+            Check(SurrenderAttempts==0,"engine tick waits for remaining conversation flow");
+            manager.IsConversationFlowActive=false; OnEngineTick();
+            Check(Effects==1 && ReferenceEquals(EffectParty,original.Party) && !_pendingNativeConversationNpcSurrender,"engine tick alone consumes paused encounter surrender");
+            OnEngineTick(); TryForcePendingNativeConversationNpcSurrenderIfReady();
+            Check(Effects==1 && SurrenderAttempts==1,"engine then campaign consumer cannot duplicate surrender");
+            Check(manager.EndCount==0,"pending consumer preserves manual conversation close");
+        }
+        foreach(string change in new[]{"encounter","party","generation","manager","mission","missing","expiry"})
+        {
+            Reset(); MarkPendingNativeConversationNpcSurrender(new Hero(),null,-1,"engine_stale");
+            Change(change); Time.ApplicationTime=change=="expiry" ? 701 : 101;
+            OnEngineTick();
+            Check(SurrenderAttempts==0 && !_pendingNativeConversationNpcSurrender,"engine tick cancels stale surrender: "+change);
+        }
+        {
+            var original=Reset(true); MarkPendingNativeConversationNpcSurrender(new Hero(),null,-1,"engine_mission");
+            Time.ApplicationTime=101; OnEngineTick();
+            Check(SurrenderAttempts==0 && _pendingNativeConversationNpcSurrender,"engine tick waits for mission state");
+            Mission.Current=null; OnEngineTick();
+            Check(SurrenderAttempts==0 && _pendingNativeConversationNpcSurrender,"engine tick waits through mission teardown");
+            Game.Current.GameStateManager.ActiveState=new(); OnEngineTick();
+            Check(Effects==1 && ReferenceEquals(EffectParty,original.Party),"engine tick executes on map after same encounter mission");
+        }
+        {
+            Reset(); MarkPendingNativeConversationNpcSurrender(new Hero(),null,-1,"engine_throttle");
+            Time.ApplicationTime=100.125f; OnEngineTick();
+            Check(SurrenderAttempts==0,"engine tick preserves initial 250ms delay");
+            SurrenderSucceeds=false; Time.ApplicationTime=100.25f; OnEngineTick();
+            Check(SurrenderAttempts==1 && Effects==0 && _pendingNativeConversationNpcSurrender,"failed surrender stays pending");
+            Time.ApplicationTime=100.375f; OnEngineTick(); TryForcePendingNativeConversationNpcSurrenderIfReady();
+            Check(SurrenderAttempts==1,"engine and campaign share 250ms retry throttle");
+            SurrenderSucceeds=true; Time.ApplicationTime=100.5f; OnEngineTick();
+            Check(Effects==1 && SurrenderAttempts==2 && !_pendingNativeConversationNpcSurrender,"engine retry completes once after throttle");
+        }
+        {
+            Reset(); OnEngineTick(); Check(SurrenderAttempts==0,"idle engine tick does no surrender work");
+            MarkPendingNativeConversationNpcSurrender(new Hero(),null,-1,"engine_reset");
+            ClearPendingNativeConversationNpcSurrender("session_launched"); Time.ApplicationTime=101; OnEngineTick();
+            Check(SurrenderAttempts==0,"engine tick cannot revive session-reset surrender");
+        }
+        Console.WriteLine($"PASS {Checks} release, surrender scope and engine-only tick checks (actual extracted host methods; native effects are fixtures).");
     }
     static void Change(string change)
     {
@@ -111,6 +163,8 @@ class Host
     }
     static bool TryExecuteNpcSurrenderFromFreeConversation(Hero hero,CharacterObject c,int index,string reason,bool closeConversation)
     {
+        SurrenderAttempts++;
+        if(!SurrenderSucceeds) return false;
         if(!TryGetNpcSurrenderEncounterParty(hero,c,out var party,out _)) return false;
         EffectParty=party; Effects++; return true;
     }
@@ -125,6 +179,9 @@ class Host
     { FinishedEncounter=PlayerEncounter.Current; return true; }
     static void ClearMeetingPlayerReleaseAuthorization(string reason) => _releaseOwner.ClearAuthorization();
     static string GetPartyLogName(PartyBase party) => "party";
+    static void TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady() {}
+    static void TryForcePendingNativeEncounterAttackIfReady() {}
+    static void TryForcePendingNativeConversationMeetingReleaseIfReady() {}
     @@METHODS@@
 }
 class Hero { public string StringId="hero"; public object Name="hero"; public CharacterObject CharacterObject; public MobileParty PartyBelongedTo; }
@@ -158,3 +215,5 @@ static class AnimusForgeQuickInfo { public static void Show(string message,Chara
 class Color { public Color(float r,float g,float b) {} }
 class InformationMessage { public InformationMessage(string message,Color color) {} }
 static class InformationManager { public static void DisplayMessage(InformationMessage message) {} }
+static class PlayerCaptivityConversation { public static void Tick() {} }
+static class NativeDialogueBattleContinuation { public static void Tick() {} }
