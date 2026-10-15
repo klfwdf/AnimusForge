@@ -1,10 +1,14 @@
 <a id="weekly-director-relaxation-20261015"></a>
-## 快报导演误判回退放宽（2026-10-15，ACTIVE）
+## 快报导演误判回退放宽（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
-- 用户“快报放款”按上下文“快报放宽”执行；基线 main/cfe349a4d，跟踪文件干净，未跟踪 Microsoft/、NuGet/保持。只修改快报导演正文接受条件，不改变其他模式、请求错误/截断处理、版本、构建脚本或玩家配置。
-- 实际事故 weekly_report_1015-191450_c72b：HTTP200正常完成，否定句“不画任何背盾或背负长矛”被背盾正则误命中“盾或背负”，整篇替换成本地构图。原日志与原始诊断只留本机。
-- 计划：快报非空正文保留导演构图及元数据，跳过道具关键词、叙事复述和四段/背景格式整篇回退；最终仍注入核心事实和原保真合同，空正文沿用原回退。CN/EN共用逻辑，无新增文本资源、模型调用、Tick工作或全量扫描。
-- 退出条件：真实DLL定向回放确认事故、CN/EN、缺段/叙事/背景、空回复及其他模式边界；原入口双API/Bootstrap构建。未授权本轮部署、打包或push，实机/真实provider保持未验。
+- 用户“快报放款”按上下文“快报放宽”实施；基线 main/cfe349a4d，意图检查点77a47ecdc，产品/定向回放5d2a6aa2c。跟踪文件原干净，未跟踪 Microsoft/、NuGet/保持。只调整快报，版本仍1.6.1，不改变其他模式、请求错误/截断处理、构建脚本或玩家配置。
+- 实际事故 weekly_report_1015-191450_c72b：导演HTTP200正常完成，否定句“不画任何背盾或背负长矛”被背盾正则误命中“盾或背负”，造成整篇本地构图。原日志和全文只留本机，不提交玩家诊断。
+- 现有快报非空正文优先保留导演构图、标题、行动摘要与机位；不再因道具关键词、叙事复述、四段字数/背景关键词而整篇回退。ComposeFinalPrompt仍附加核心事实、快报保真合同与衣物状态优先规则；这些为发送给生图的约束，不声称代码已语义核验每个事实。空白/仅元数据仍沿原回退，定向重绘仍不恢复被替代的事实，装备保真开关沿用请求值。
+- CN/EN共用生产分支，未新增固定文案或资源；回放分别加载两套真实Prompt资源及共用兼容表。每次收到导演回复只增加模式/非空判断，快报减少既有正则扫描；无新AI请求、Tick工作、磁盘IO、轮询或全量游戏对象扫描。
+- 原统一构建：pwsh.exe -NoProfile -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug，exit0。1.3(v1.3.15.110062)、1.4(v1.4.6.115628)、Bootstrap、双Coup seam及registration smoke PASS；既有编译警告保留，非零警告构建。
+- 定向真实DLL回放：extensions/AnimusForge.Illustrator/tests/WeeklyDirectorTests/run.ps1，1.3/1.4 × CN/EN四组各29项PASS。含旧正则误杀正控、原事故完整导演回复、双语否定装备、缺段、背景词、事件原句、标题/摘要、空白/仅元数据、百科/会话/普通模式、自由取景严格规则、重绘和装备开关。无HTTP、GPU、游戏对象；复用的仅为依赖resolver，未执行既有Illustrator离线审计脚本。首次回放断言误把元数据算入正文，修正为真实SplitMetadata正文后四组通过，未修改产品以迁就测试。
+- 证据artifacts/weekly-director-relaxation-20261015/{build-dual.log,build-exit.txt,replay-1.3-CN.log,replay-1.3-EN.log,replay-1.4-CN.log,replay-1.4-EN.log,receipt.json}保存源码/三DLL SHA。生产源码保持原CRLF，git -c core.whitespace=cr-at-eol diff --check通过。[源码地图](architecture/af-framework-code-scope.md#weekly-director-relaxation-20261015)。
+- 未验：游戏实际快报显示/真实生图模型遵从、实机耗时。用户已撤回旧部署，当前未部署/打包/push；1015_1851旧双包不包含本次修复。源码可git revert 5d2a6aa2c聚焦回滚，无安装回滚需求，不hard reset。
 
 <a id="rot-encyclopedia-compat-implementation-20261015"></a>
 ## ROT百科模板空引用兼容修复（2026-10-15，OFFLINE_VERIFIED / PUSH_VERIFIED / PACKAGE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）

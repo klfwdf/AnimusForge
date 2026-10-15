@@ -1,3 +1,9 @@
+# 当前交接：快报导演误判放宽（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
+
+- 最新“快报放宽”已在5d2a6aa2c实现：快报非空导演正文保留构图/元数据，跳过关键词及四段格式整篇回退；最终仍附加事件事实和原保真规则，空白与其他模式沿用原行为。版本1.6.1保持。
+- 原双API/Bootstrap、Coup seam和注册门禁通过；真实DLL的1.3/1.4 × CN/EN回放每组29项PASS，包含本次事故正文。无付费调用，无新增Tick工作。实机/模型遵从未验；旧部署请求已撤回，本修复未部署、打包或push，旧1015_1851包不含本改动。
+- [唯一主台账与本地证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#weekly-director-relaxation-20261015)；[源码范围](docs/architecture/af-framework-code-scope.md#weekly-director-relaxation-20261015)。聚焦回滚git revert 5d2a6aa2c。以下交付为历史，按各自范围保留。
+
 # 当前交接：1.6.1百科兼容双包完成（2026-10-15，PACKAGE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 用户要求版本仍1.6.1；复用已验证的d3c94f9a5双API/Bootstrap产物，经原StageOnly、package_mod.ps1 -NoBump生成CN/EN正式包，两包各3522项。模块v1.6.1及DLL FileVersion=1.6.1.0保持；完整投影/语言门禁与独立ZIP/身份/旧输出保全校验通过。
