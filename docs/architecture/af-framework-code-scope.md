@@ -2180,3 +2180,16 @@ Roslyn `ClassDeclarationSyntax.Members` 直接语法声明（不是 semantic uni
 | `tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests/McmPageChecks.cs` / NativeUi；同目录 run.py | 61、42 | 现有真实UI回放期间接新回归；runner保留仅1.4传入本机UI程序集的边界，1.3不冒称同一UI关闭验收。 |
 
 所测1.4托管生命周期归零不能替代玩家1.3.12原生UI或3080帧性能；新增反射解析在启动、行构造/关闭边界，原请求触发刷新仍最多三轮，不新增轮询/IO。未改MCM DLL、推理或设置模式。
+<a id="streaming-dialogue-reveal-20261015"></a>
+### 自由对话流式逐字与正文跟随（产品21e0a6a2b）
+
+[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#streaming-dialogue-reveal-20261015)记录实际证据与未验项。
+
+| 一基坐标 / 符号 | 责任与覆盖边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/UI/Conversation/StreamingDialogueTextReveal.cs:10–85` CharactersPerSecond/Update/TryAdvance | 20文本元素/秒、分块续接/修订、停顿限额与surrogate保持；纯显示，无网络/游戏对象/存档 |
+| `src/AF.GameAdapter.Bannerlord/UI/Conversation/ConversationHelper.cs:263–273,320–350,428–495,716–724` BeginStreaming/UpdateStreamingDialogText/Tick/OnRefreshPostfix/Clear | 每次请求显式启用，现有Tick排空与最终可信格式替换，TTS不抢显示，刷新/owner/VM清理；关闭保留原路径 |
+| `src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs:1038–1064,1098,1130,1256–1282,1316,1349`；`.Interruption.cs:20–38` | NPC主动开场及玩家提交两实际入口，开关捕获、generation守卫、原净化器复用；后处理/动作/历史仍等完整正文 |
+| `extensions/AnimusForge.DialogueUI/src/Native/AFDialogueClickThroughScrollPanel.cs:8–42`；`GUI/Prefabs/AFDialogueConversation.xml:73–95`；`AFDialogueMapConversation.xml:13` | 共享新皮肤正文区域，布局后3帧跟随，原折行/裁剪与手动滚动；答案区不启用。旧皮肤、信使和喊话滚动不在本次范围 |
+| `tests/AF.GameAdapter.Bannerlord/StreamingDialogueRevealTests/` | 实际state/helper/scroll、提取的两Overlay方法及真实sanitizer；35断言与scene/map绑定。VM/layout/日志为替身，非原生渲染/音频验收 |
+
