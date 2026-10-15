@@ -1,3 +1,9 @@
+# 当前交接：1.6.1百科兼容双包完成（2026-10-15，PACKAGE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
+
+- 用户要求版本仍1.6.1；复用已验证的d3c94f9a5双API/Bootstrap产物，经原StageOnly、package_mod.ps1 -NoBump生成CN/EN正式包，两包各3522项。模块v1.6.1及DLL FileVersion=1.6.1.0保持；完整投影/语言门禁与独立ZIP/身份/旧输出保全校验通过。
+- 包位于一键编译覆盖推送/packages/AnimusForge_v1.6.1_CN_1015_1851.zip及_EN_同时间包；含本轮百科兼容修复，旧包与旧Stage保留。尚未部署/实机/旧档验收，本轮没有新增push或上传安装包；此前产品源码推送状态保持。
+- [唯一主台账、包SHA及回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#rot-encyclopedia-compat-implementation-20261015)；[源码地图](docs/architecture/af-framework-code-scope.md#rot-encyclopedia-compat-implementation-20261015)。本地收据artifacts/package-rot-161-20261015/receipt.json。本条替代下方本修复“未Stage/打包”状态。
+
 # 当前交接：ROT领主转同伴百科兼容已修复（2026-10-15，OFFLINE_VERIFIED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 产品d3c94f9a5：仅为ROT百科Postfix补无模板玩家同伴保护，保留原版条目和正常ROT名称逻辑，不改人物/存档/第三方DLL。本条取代下方FIX_NOT_IMPLEMENTED状态。
