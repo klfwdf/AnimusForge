@@ -1,3 +1,10 @@
+<a id="npc-surrender-engine-tick-20261015"></a>
+## 对话投降待办在暂停遭遇菜单不执行（2026-10-15，ACTIVE）
+
+- 用户提供Mod_Logic.txt、Token_Stats.txt并明确要求修复；基线main/0e9081622。日志21:09:28已登记NPC投降待办，21:09:31退出对话仍为Begin；源码仅OnCampaignTick消费投降，OnEngineTick遗漏。原版Campaign.Tick在dt为零且启动期结束后不派发Campaign Tick，遭遇菜单可持续暂停；离开遭遇后清除过期scope是既有安全行为，不移除。
+- 范围：LordEncounterBehavior.OnEngineTick补调用既有投降执行器；扩展ReleaseSurrenderBoundaryTests验证不运行Campaign Tick时的消费、手动退出、mission等待、节流、失效scope及只执行一次。无待办每帧只检查bool，待办沿用250ms执行节流；无新增扫描、反射、IO、锁或后台游戏访问，原CN/EN文案、协议和存档保持。
+- 退出门：新回归在修复前失败、修复后通过；原release/surrender及相关遭遇生命周期回归通过；原build_single_module.ps1仅构建1.3/1.4与Bootstrap并记录实际引用及未验项。保护当前流式对话UI六份修改、未跟踪StreamingDialogueTextReveal/测试及Microsoft/NuGet，不纳入本次提交。不授权部署、Stage、打包或push；实机战利品/俘虏结算另列未验。
+
 <a id="terminal-navigation-performance-20261015"></a>
 ## 终端分类与子菜单点击卡顿优化（2026-10-15，ACTIVE）
 
