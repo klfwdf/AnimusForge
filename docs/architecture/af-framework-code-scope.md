@@ -1,3 +1,26 @@
+<a id="yj-interior-ui-20261015"></a>
+### YJ引导与内政固定文案（产品73a115e25；汇总构建8093c9bb3）
+
+[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#yj-interior-ui-20261015)保存发行状态与详细证据。未覆盖原生Gauntlet渲染和实机。
+
+| 一基坐标 / 符号 | 实际责任与边界 |
+| --- | --- |
+| `src/modules/AF.Module.Onboarding/YjEndpointProbe.cs:14` WebsiteUrl；`src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingVM.cs:953–957` ExecuteOpenYjWeb；`src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs:1486–1489` OpenYjApiPreparationPages | 两实际入口共享新官网；新prefab与旧Inquiry去掉QQ群，不改变API端点/测速 |
+| `src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomInteriorPanel.cs:148–399` 内政prefab生成；`KingdomFactionTab.cs:162–176` 15属性 | 布局固定文案改为真实DataSource绑定；本地化在显示边界解析，沿用CN/EN资源，无Tick IO |
+| `src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.cs:3744–3745`、`:4089`、`:4564`、`:4787–4788` | 四议程作用域余下6属性；政治状态与投票行为不变 |
+| `tests/AF.GameAdapter.Bannerlord/InteriorLocalizationTests/Checks.cs:1–86`；`run.ps1:1–29` | 真实DLL、早建prefab、五作用域、CN/EN/CN共223项；无原生窗口或HTTP |
+
+<a id="knowledge-duplicate-import-20261015"></a>
+### 世界书重复ID导入（产品8093c9bb3）
+
+[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#knowledge-duplicate-import-20261015)记录78项回放、双API构建及未验项。
+
+| 一基坐标 / 符号 | 实际责任与边界 |
+| --- | --- |
+| `src/modules/AF.Module.Knowledge/Import/KnowledgeImportSupport.cs:87–162` TryLoadKnowledgeRulesFromRuleFiles | 普通导入稳定排序后调用既有owner，重复ID正文均保留，玩家人设不被过滤 |
+| `src/modules/AF.Module.Knowledge/Import/KnowledgeImportValidationOwner.cs:245` TryAddImportedKnowledgeRule | 原重载ID/触发词归属规则复用；默认仍跳过玩家人设，普通导入显式保留 |
+| `src/AF.GameAdapter.Bannerlord/ImportExport/KnowledgeImportExportAdapter.cs:453`、`:620`、`:690`；`src/AF.GameAdapter.Bannerlord/UI/Editors/DatabaseReloadController.cs:493`、`:520` | 列表/单项/批量均消费归一结果，重载保持同一owner；无源文件改写、存档或Tick调整 |
+
 <a id="weekly-director-relaxation-20261015"></a>
 ### 快报导演正文接受策略（产品5d2a6aa2c）
 
