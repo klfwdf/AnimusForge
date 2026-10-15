@@ -1,0 +1,134 @@
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using AnimusForge;
+
+// Only game state/config loading are fixtures; marked method bodies and the DTO are production.
+internal enum Occupation { Lord }
+internal sealed class CharacterObject { }
+internal sealed class Hero
+{
+    public static Hero MainHero;
+    public string StringId;
+    public Clan Clan, CompanionOf;
+    public MobileParty PartyBelongedTo;
+    public CharacterObject CharacterObject;
+    public Occupation Occupation;
+}
+internal sealed class Clan
+{
+    public static Clan PlayerClan;
+    public string StringId;
+    public bool IsEliminated;
+    public Hero Leader;
+    public Kingdom Kingdom;
+}
+internal sealed class Kingdom
+{
+    public static List<Kingdom> All = new();
+    public string StringId;
+    public bool IsEliminated;
+}
+internal sealed class Roster { public int FindIndexOfTroop(CharacterObject value) => -1; }
+internal sealed class MobileParty { public static MobileParty MainParty; public Roster MemberRoster = new(); }
+internal static class Logger { public static void Log(string category, string message) { } }
+internal static class PromptRetrievalTexts
+{
+    public static Dictionary<string, string> Values;
+    public static string Raw(string key) => Values[key];
+}
+internal static class AIConfigHandler
+{
+    public static List<PostprocessRuleEntry> Rules;
+    public static Hero Target;
+    public static string ActionPostprocessFallbackMoodTag => "[ACTION:MOOD:NEUTRAL]";
+    private static Hero ResolveConversationTargetHero() => Target;
+    private static Clan ResolveConversationTargetClan() => Target?.Clan;
+    private static List<PostprocessRuleEntry> GetGuardrailRulePostprocessRules(string id) => Rules;
+    @@CONFIG@@
+}
+internal static class Postprocess
+{
+    @@POSTPROCESS@@
+}
+internal static class Program
+{
+    private const string FamilyTemplate = "[A:C_J_K:{targetKingdomId}]";
+    private const string FamilyAction = "[A:C_J_K:new_kingdom1]";
+    private static int checks;
+    private static void Check(bool value, string reason)
+    {
+        checks++;
+        if (!value) throw new Exception(reason);
+    }
+    private static List<PostprocessRuleEntry> Build(string context, bool personal = true) =>
+        AIConfigHandler.BuildRuntimeHeroJoinPartyPostprocessRules(personal, AIConfigHandler.Target, context);
+    private static PostprocessRuleEntry Family(List<PostprocessRuleEntry> rules) => rules.SingleOrDefault(r => r.Tag == FamilyTemplate);
+    private static string Normalize(string tag, List<PostprocessRuleEntry> rules) => Postprocess.NormalizeHeroJoinPartyPostprocessTagsForScene(tag, rules);
+    private static void Main(string[] args)
+    {
+        string root = args[0];
+        string promptData = Path.Combine(root, "content/modules/AF.Module.Prompt/ModuleData");
+        PromptRetrievalTexts.Values = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(Path.Combine(promptData, "PromptRetrievalCompatibility.json")));
+        var playerKingdom = new Kingdom { StringId = "new_kingdom1" };
+        var oldKingdom = new Kingdom { StringId = "empire_n" };
+        Kingdom.All = new() { playerKingdom, oldKingdom, new() { StringId = "empire_s" }, new() { StringId = "gone", IsEliminated = true } };
+        Clan.PlayerClan = new() { StringId = "player_faction", Kingdom = playerKingdom };
+        var clan = new Clan { StringId = "clan_empire_north_2", Kingdom = oldKingdom };
+        var hero = new Hero { StringId = "test_lord", Clan = clan };
+        clan.Leader = hero;
+        AIConfigHandler.Target = hero;
+        MobileParty.MainParty = new();
+        var options = new JsonSerializerOptions { IncludeFields = true };
+        foreach (string suffix in new[] { "", ".en" })
+        {
+            using var catalog = JsonDocument.Parse(File.ReadAllText(Path.Combine(promptData, "RuleBehaviorPrompts" + suffix + ".json")));
+            var service = catalog.RootElement.GetProperty("RulePrompts").EnumerateArray().Single(r => r.GetProperty("Id").GetString() == "kingdom_service");
+            AIConfigHandler.Rules = JsonSerializer.Deserialize<List<PostprocessRuleEntry>>(service.GetProperty("PostprocessRules").GetRawText(), options);
+            var entity = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(Path.Combine(root, "content/modules/AF.Module.Knowledge/ModuleData/WorldEntityPromptTexts" + suffix + ".json")));
+            string context = entity["KingdomsHeader"] + "\n1" + entity["EntryName"] + "Realm" + entity["EntityId"] + "new_kingdom1\n"
+                + entity["VisiblePartiesHeader"] + "\n1. ID: empire_s\n";
+            foreach (string newline in new[] { "\n", "\r\n" })
+            {
+                var rules = Build(context.Replace("\n", newline));
+                Check(Family(rules)?.RuntimeAllowedParameterValues.SetEquals(new[] { "new_kingdom1" }) == true, "CN/EN IDs must stop at the next entity section");
+                Check(Postprocess.BuildPostprocessRuleTextForScene(rules).Contains(FamilyTemplate), "Actual tag-table renderer must offer family action");
+                Check(Normalize(FamilyAction, rules).Contains(FamilyAction), "Concrete allowed kingdom must survive actual normalizer");
+                Check(!Normalize("[A:C_J_K:empire_s]", rules).Contains("C_J_K"), "Adjacent party/hero IDs cannot authorize a kingdom");
+                Check(Normalize("[A:H_J_P_P_C]", rules).Contains("[A:H_J_P_P_C]"), "Personal joining remains available separately");
+            }
+            Check(Family(Build(context, false)) != null, "Suppressing personal join must preserve clan joining");
+            Check(!Normalize("[A:H_J_P_P_C]", Build(context, false)).Contains("H_J"), "Personal-join suppression still enforced");
+            Check(Family(Build(entity["KingdomsHeader"] + "\n1. ID: new_kingdom1")) != null, "Final section without newline");
+            Check(Family(Build("kingdom:new_kingdom1")) != null, "Stable typed-ID compatibility");
+            Check(Family(Build("【王国】\n1. 编号：new_kingdom1\n[Heroes]\n1. ID: empire_s"))?.RuntimeAllowedParameterValues.Count == 1, "Mixed CN/EN section boundary");
+            Check(Family(Build("[Kingdoms]\n1. ID: new_kingdom1\n【人物】\n1. ID: empire_s"))?.RuntimeAllowedParameterValues.Count == 1, "Mixed EN/CN section boundary");
+            string filtered = "[Kingdoms]\n1. ID: new_kingdom1\n2. ID: new_kingdom1\n3. ID: empire_n\n4. ID: gone\n5. ID: unknown";
+            Check(Family(Build(filtered))?.RuntimeAllowedParameterValues.SetEquals(new[] { "new_kingdom1" }) == true, "Deduplication/current realm/eliminated/unknown filters");
+            Check(Family(Build("[Kingdoms]\n1. ID: empire_n\n2. ID: gone\n3. ID: unknown")) == null, "No eligible realm means no family action");
+            Check(Family(Build("[Heroes]\n1. ID: new_kingdom1")) == null && Family(Build(null)) == null, "Missing kingdom section must stay unauthorized");
+            clan.Leader = new Hero();
+            Check(Family(Build(context)) == null, "Nonleader cannot pledge clan");
+            clan.Leader = hero;
+            clan.IsEliminated = true;
+            Check(Family(Build(context)) == null, "Eliminated clan cannot pledge");
+            clan.IsEliminated = false;
+            hero.PartyBelongedTo = MobileParty.MainParty;
+            Check(Family(Build(context)) == null, "Existing player-party restriction preserved");
+            hero.PartyBelongedTo = null;
+            var savedPlayerClan = Clan.PlayerClan;
+            Clan.PlayerClan = clan;
+            Check(Family(Build(context)) == null, "Player clan cannot be recruited");
+            Clan.PlayerClan = savedPlayerClan;
+            foreach (string input in JsonSerializer.Deserialize<string[]>(File.ReadAllText(args[1])))
+                Check(Normalize(FamilyAction, Build(input)).Contains(FamilyAction), "Reported log input must authorize actual realm in CN/EN rules");
+            Console.WriteLine("PASS " + (suffix == "" ? "CN" : "EN") + " real catalog -> production rule builder -> tag text -> concrete-tag normalizer");
+        }
+        string fixedPattern = PromptRetrievalTexts.Values["Raw_11941497b794"];
+        // Exact previous pattern: negative control proves that this fixture catches the reported failure.
+        PromptRetrievalTexts.Values["Raw_11941497b794"] = "【王国】(?<body>[\\s\\S]*?)(?=\\r?\\n【|\\z)";
+        Check(Family(Build("[Kingdoms]\n1. Name: Realm; ID: new_kingdom1")) == null, "Legacy negative control must reproduce omitted family rule");
+        PromptRetrievalTexts.Values["Raw_11941497b794"] = fixedPattern;
+        Console.WriteLine("PASS " + checks + " checks; legacy failure reproduced; game/HTTP/executor=NOT_RUN; game-state fixtures=STUBBED");
+    }
+}
