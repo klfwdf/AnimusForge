@@ -2322,6 +2322,7 @@ Estimated requests: " />
   <string id="AF_UI_Developer_Reload_KeepPlayer" text="• Player appearance, background, player-only Knowledge, and direct voice ID" />
   <string id="AF_UI_Developer_Reload_KeepSettings" text="• Dynamic event records, API configuration, LLM Prompts, and other settings" />
   <string id="AF_UI_Developer_Reload_KingdomProfiles" text="• Kingdom personality and long-term strategy for {COUNT} kingdoms" />
+  <string id="AF_UI_Developer_Reload_SkippedDynamicKingdoms" text="• Skip {COUNT} unmatched dynamic kingdom profiles and preserve existing save profiles for those IDs. First entries: {PROFILES}" />
   <string id="AF_UI_Developer_Reload_NonPlayerKnowledge" text="• Non-player Knowledge: {COUNT} entries" />
   <string id="AF_UI_Developer_Reload_OpeningKnowledge" text="• One world-opening Knowledge entry and {COUNT} kingdom-opening entries" />
   <string id="AF_UI_Developer_Reload_VoiceMapping" text="• One voice mapping and {COUNT} NPC voice IDs" />

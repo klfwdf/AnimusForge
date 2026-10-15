@@ -1,3 +1,16 @@
+<a id="reload-skip-dynamic-kingdoms-20261016"></a>
+## 数据库重载跳过不匹配的动态王国（2026-10-16，OFFLINE_VERIFIED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
+
+- 用户截图报告动态国家ID相同名称不同导致整包重载失败，随后要求可跳过。基线main/e1da989fd，跟踪文件干净；Microsoft/NuGet保留。仅对无法匹配的动态ID（new_kingdom/rebel_kingdom/rebellion_）跳过该包记录，其余资料继续；静态王国不匹配、损坏/重复资料保持拒绝。无实机/具体玩家包证据，不猜改王国名字或ID。
+- 已确认仅continue不足：原应用会重置所有候选王国，故须同时跳过这些ID的候选规范化与默认重置，保留存档原王国资料；允许包中王国条目全部为被跳过动态记录时继续其他数据库域。确认/结果CN/EN显示跳过数量及最多8个名称/ID，未被跳过的缺包王国原重置行为保持。
+- 涉及KingdomStrategicProfileBehavior计划/应用及瞬态plan、DeveloperImportUiController确认UI、成对资源和定向回归；不改.sav键/类型或数据库包、不新增Tick/网络/扫描。一次显式重载沿用现有世界索引/候选克隆，额外O(1) HashSet查询。退出门：真实生产方法回放覆盖跳过/保留/全跳过/失败不落地和原校验，原协调器回归及双API/Bootstrap构建PASS，实机与旧档明确未验。未授权部署/打包/push；本地证据artifacts/reload-skip-dynamic-kingdoms-20261016/。
+- 已完成：意图1155ae91a、产品/专项35c6ad013。无法匹配的动态profile被跳过并记数，相关ID从candidate规范化、默认重置和重置统计中排除；即便王国源条目全为被跳过动态记录，其他数据库域仍可继续。匹配成功的动态/静态记录照常导入，其他缺包王国保留原重置规则；损坏/重复、静态不匹配、重复target和apply时目标消失仍拒绝，不放宽原身份匹配方法。确认和完成CN/EN各新增一条提示，名称/ID保留原文，最多8项。
+- 验证：旧实际源码在“动态不匹配不应阻止整包”负控中明确失败；新实际生产计划/匹配/克隆/应用/record声明原样抽取共37断言PASS，覆盖三种动态prefix、全跳过、已有字段/覆盖/生成状态/时间戳完整保留、缺失profile不初始化、普通缺包重置不变和apply失败不发布。世界索引输入、reader、NormalizeProfile和localizer是fixture，不是实机。CN/EN资源XML/稳定key/变量COUNT+PROFILES及真实消费者检查PASS；原Debug双API1.3/1.4（引用v1.3.15.110062/v1.4.6.115628）、Bootstrap、双Coup seam及registration构建exit0，日志build-dual.log。
+- 原DatabaseReloadLifecycleTests整套项目在进入断言前失败：旧Newtonsoft HintPath失效；纠正隔离引用后仍缺当前Persona字段及UI文本依赖。未改业务或删原断言凑PASS。将原文件事务部分12个断言原样取出，链接原样生产DatabaseReloadController/Port、既有domain stubs和真实CN文本资源，独立transaction runner全部PASS；此证据只覆盖事务，不把整套parser/persona测试算通过。工具初次方法签名/依赖选择失败及所有输出保留。
+- 完整本地receipt.json、before-verified/、after-verified/、transaction/、resources.json及verified-candidates/绑定源码与三DLL marker/SHA；[精确源码地图](architecture/af-framework-code-scope.md#reload-skip-dynamic-kingdoms-20261016)。本任务没有改玩家包/.sav/设置，未Stage、部署、打包或push；真实玩家包/存档重载、原生确认窗口、旧档及整套历史fixture仍NOT-RUN/未通过。源码聚焦回滚`git revert 35c6ad013`；此前安装和2257包均不含本改动。
+
+- 推送补记（2026-10-16）：用户明确要求推送；fetch后本地领先3提交、远端无新增。3提交/13新增blob发布预检PASS，排除本地专用handoff、artifacts、玩家配置备份及二进制，无凭据模式命中。普通push将origin/main从e1da989fd快进至09e7f915f，独立ls-remote等于本地HEAD。本收据文档随后同步普通push，最终SHA见本地artifacts/push-reload-skip-dynamic-kingdoms-20261016/receipt.json；不force/rebase/改写历史，未跟踪Microsoft/NuGet保留。本行取代上文本次修复未push历史，未部署/打包/实机状态保持；无新产品差异，复用35c6ad013验证证据。
+
 <a id="retire-hidden-illustrator-api-20261016"></a>
 ## 退役隐藏的独立导演API与完整路径开关（2026-10-16，OFFLINE_VERIFIED / LOCAL_MCM_CLEANED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
