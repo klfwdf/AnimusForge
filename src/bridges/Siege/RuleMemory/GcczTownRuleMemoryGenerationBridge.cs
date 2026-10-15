@@ -60,7 +60,7 @@ internal static class GcczTownRuleMemoryGenerationBridge
                 var messages = new object[] {
                     new { role = "system", content = systemPrompt },
                     new { role = "user", content = prompt.UserPrompt } };
-                if (AIConfigHandler.TryCallBoundedAuxiliarySimpleDialogueOnceForExternal(messages, 384, 0.45f, out var content, out var error))
+                if (AIConfigHandler.TryCallBoundedAuxiliarySimpleDialogueOnceForExternal(messages, 1536, 0.45f, out var content, out var error))
                 {
                     if (SettlementRuleMemoryNarrativePolicy.TryParseGeneratedResponse(content, out var narrative)) completion.Narrative = narrative;
                     else completion.Error = "invalid_memory_response";

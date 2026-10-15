@@ -108,7 +108,8 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 			return TownPromptComposer.BuildSettlementRuleMemoryContext(
 				update.Record,
 				currentDay,
-				GcczTownPromptResourceProvider.GetCatalog());
+				GcczTownPromptResourceProvider.GetCatalog())
+                + "\n\n" + GcczTownRecentMemoryBridge.Build(settlement, GcczTownPromptResourceProvider.GetCatalog());
 		}
 		catch (Exception ex)
 		{
@@ -146,7 +147,8 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 			return TownPromptComposer.BuildSettlementRuleMemoryContext(
 				update.Record,
 				currentDay,
-				GcczTownPromptResourceProvider.GetCatalog());
+				GcczTownPromptResourceProvider.GetCatalog())
+                + "\n\n" + GcczTownRecentMemoryBridge.Build(settlement, GcczTownPromptResourceProvider.GetCatalog());
 		}
 		catch (Exception ex)
 		{
@@ -182,7 +184,8 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 				update.Record,
 				currentDay,
 				generationPending,
-				GcczTownPromptResourceProvider.GetPresentationCatalog());
+				GcczTownPromptResourceProvider.GetPresentationCatalog())
+                + "\n\n" + GcczTownRecentMemoryBridge.Build(settlement, GcczTownPromptResourceProvider.GetPresentationCatalog());
 		}
 		catch (Exception ex)
 		{

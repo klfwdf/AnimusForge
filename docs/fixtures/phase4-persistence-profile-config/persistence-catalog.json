@@ -240,7 +240,7 @@
     "writer": "CampaignSaveChunkHelper.SaveChunkedStringStrict",
     "reader": "CampaignSaveChunkHelper.LoadChunkedStringStrict",
     "failedDomainPolicy": "no partial or prior-campaign live state; exact primitive namespace evidence in safe UTF8 chunks, digest checked; unsafe raw keys/values remain only in envelope; incomplete read refuses save",
-    "runtimeBoundary": "only world diplomacy opts in; legacy helper interfaces and other domains remain unchanged",
+    "runtimeBoundary": "world diplomacy and currentAdditionalStrictChunkedStringBindings opt in; legacy helper interfaces remain unchanged",
     "currentReplay": "tests/modules/AF.Module.Diplomacy/WorldDiplomacyPersistenceAdapter.SmokeTests/run_strict.py",
     "additiveStateContracts": {
       "player-diplomacy-20261012": {
@@ -261,6 +261,16 @@
       }
     }
   },
+  "currentAdditionalStrictChunkedStringBindings": [
+    {
+      "key": "_gcczTownRecentMemory_v1",
+      "source": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/GcczTownRecentMemoryBridge.cs",
+      "writer": "CampaignSaveChunkHelper.SaveChunkedStringStrict",
+      "reader": "CampaignSaveChunkHelper.LoadChunkedStringStrict",
+      "failedDomainPolicy": "disable recent-memory capture/projection; replay exact safe primitive evidence; incomplete reads or unsafe evidence refuse save",
+      "currentReplay": "tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests/RecentMemoryReplay.cs"
+    }
+  ],
   "flattenedDictionaryStorageKeys": [
     "_afCustomPolicyActiveEffects_v1",
     "_afCustomPolicyRecordHistory_v1",

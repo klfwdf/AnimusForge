@@ -66,12 +66,15 @@ static class HostReplay
         record = GcczTownRuleMemoryRuntimeBridge.GetOrCreateCurrentTownRecord(town);
         Program.Check(record.CurrentRule.Narrative == "Protected manual" && record.CurrentRule.NarrativeIsManual
             && record.RuleStartDay == 130 && record.CurrentRule.Evolution.Facts.Count > 0, "host save/load preserves manual text tenure and facts");
+        string maximumNarrative = new string('忆', 599) + "。";
         for (int tenure = 0; tenure < 3; tenure++)
         {
             Hero before = newClan.Leader;
             var next = new Hero { StringId = "large-" + tenure, Name = "Next", Clan = newClan };
             newClan.Leader = next;
             CampaignEvents.OnClanLeaderChangedEvent.Raise(before, next);
+            Program.Check(GcczTownRuleMemoryRuntimeBridge.TrySetManualNarrative(town, next.StringId, CampaignTime.Day, maximumNarrative),
+                "host accepts 600-character narrative for retained tenure " + tenure);
             for (int i = 0; i < 12; i++) GcczTownRuleMemoryRuntimeBridge.RecordConfirmedEvent(town,
                 "large-" + tenure + "-" + i, new string('镇', 480));
         }
@@ -84,7 +87,8 @@ static class HostReplay
         largeSave.IsSaving = false; largeSave.IsLoading = true;
         GcczTownRuleMemoryRuntimeBridge.SyncData(largeSave);
         record = GcczTownRuleMemoryRuntimeBridge.GetOrCreateCurrentTownRecord(town);
-        Program.Check(record.RulerMemories.Count == 3 && record.RulerMemories.All(r => r.Evolution.Facts.Count == 12), "full multi-tenure chunked data restores without loss");
+        Program.Check(record.RulerMemories.Count == 3 && record.RulerMemories.All(r => r.Evolution.Facts.Count == 12
+            && r.Narrative == maximumNarrative && r.NarrativeIsManual), "full multi-tenure chunked data and 600-character narratives restore without loss");
         GcczTownRuleMemoryRuntimeBridge.RecordConfirmedEvent(new Settlement { IsTown = false, StringId = "village" }, "x", "fact");
         Program.Check(GcczTownRuleMemoryRuntimeBridge.GetOrCreateCurrentTownRecord(new Settlement { IsTown = false }) == null, "village/castle remain outside town memory");
         GcczTownRuleMemoryRuntimeBridge.ClearForNewGame();
@@ -95,7 +99,8 @@ sealed class FixtureDataStore : IDataStore
 {
     public bool IsSaving { get; set; }
     public bool IsLoading { get; set; }
-    public readonly Dictionary<string,object> Values = new();
+    private readonly Dictionary<string,object> _records = new();
+    public Dictionary<string,object> Values => _records;
     public bool SyncData<T>(string key, ref T value)
     { if (IsSaving) Values[key] = value; else if (Values.TryGetValue(key, out var saved)) value = (T)saved; return true; }
 }
@@ -103,7 +108,7 @@ sealed class FixtureDataStore : IDataStore
 namespace AnimusForge
 {
     internal static class MyBehavior
-    { internal static void GetNpcPersonaForExternal(Hero hero, out string persona, out string background) { persona = "kind"; background = ""; } }
+    { internal static string GetNpcPersonaDescriptionForExternal(Hero hero) => "kind"; }
     internal static class GcczTownRuleMemorySpeakerResolver
     {
         internal static Settlement ResolveCurrentTownScene() => null;
@@ -122,19 +127,32 @@ namespace AnimusForge
         { _hasPendingAftermath = false; RecordCompletedTownMemory(town, party, TaleWorlds.CampaignSystem.Actions.SiegeAftermathAction.SiegeAftermath.ShowMercy); }
     }
 }
-namespace TaleWorlds.Core { public class CharacterObject { public Hero HeroObject { get; set; } } }
+namespace TaleWorlds.Core { public enum BattleSideEnum { Attacker, Defender } public class CharacterObject { public Hero HeroObject { get; set; } } }
 namespace TaleWorlds.CampaignSystem
 {
     public interface IDataStore { bool IsSaving { get; } bool IsLoading { get; } bool SyncData<T>(string key, ref T value); }
     public class Hero { public static Hero MainHero; public string StringId, Name; public Clan Clan; public int GetTraitLevel(int trait) => 0; }
     public class Clan { public Hero Leader; public List<Settlement> Settlements = new(); }
     public class CultureObject { public string StringId, Name; }
-    public struct CampaignTime { public static int Day; public static CampaignTime Now => new(); public double ToDays => Day; public double ToSeconds => Day * 86400; }
+    public struct CampaignTime {
+        public static int Day; public static double Fraction; private double _day;
+        public static CampaignTime Now => new CampaignTime { _day = Day + Fraction };
+        public double ToDays => _day; public double ToSeconds => _day * 86400;
+        public int GetYear => 1084 + (int)_day / 84; public int GetSeasonOfYear => (int)_day / 21 % 4; public int GetDayOfSeason => (int)_day % 21;
+    }
+    public class CampaignGameStarter { }
+    public class Campaign { public static Campaign Current = new(); public LogEntries.LogEntryHistory LogEntryHistory = new(); }
     public static class CampaignEvents
     {
         public static readonly OwnerEvent OnSettlementOwnerChangedEvent = new();
         public static readonly LeaderEvent OnClanLeaderChangedEvent = new();
         public static readonly AftermathEvent OnSiegeAftermathAppliedEvent = new();
+        public static readonly Event<CampaignGameStarter> OnSessionLaunchedEvent = new();
+        public static readonly Event DailyTickEvent = new();
+        public static readonly Event<TaleWorlds.Core.BattleSideEnum, MapEvents.RaidEventComponent> RaidCompletedEvent = new();
+        public static readonly Event<TaleWorlds.Core.BattleSideEnum, MapEvents.ForceSuppliesEventComponent> ForceSuppliesCompletedEvent = new();
+        public static readonly Event<TaleWorlds.Core.BattleSideEnum, MapEvents.ForceVolunteersEventComponent> ForceVolunteersCompletedEvent = new();
+        public static readonly Event<Party.MobileParty, Settlement, Hero> SettlementEntered = new();
     }
     public class OwnerEvent
     {
@@ -161,14 +179,15 @@ namespace TaleWorlds.CampaignSystem.Settlements
     {
         public static readonly Dictionary<string,Settlement> All = new();
         public static Settlement Find(string id) => All.TryGetValue(id,out var town) ? town : null;
-        public string StringId, Name; public bool IsTown; public Clan OwnerClan; public CultureObject Culture;
+        public string StringId, Name; public bool IsTown, IsVillage; public Village Village; public Clan OwnerClan; public CultureObject Culture;
     }
+    public class Village { public enum VillageStates { Normal, BeingRaided, Looted } public Settlement Bound, Settlement; public VillageStates VillageState; }
 }
-namespace TaleWorlds.CampaignSystem.Party { public class MobileParty { public Hero LeaderHero; } }
+namespace TaleWorlds.CampaignSystem.Party { public class MobileParty { public Hero LeaderHero; public string StringId; public bool IsCaravan, IsVillager; } }
 namespace TaleWorlds.CampaignSystem.CharacterDevelopment
 { public static class DefaultTraits { public static int Mercy=0,Valor=1,Honor=2,Generosity=3,Calculating=4; } }
 namespace TaleWorlds.CampaignSystem.Actions
 {
-    public static class ChangeOwnerOfSettlementAction { public enum ChangeOwnerOfSettlementDetail { Default } }
+    public static class ChangeOwnerOfSettlementAction { public enum ChangeOwnerOfSettlementDetail { Default, BySiege } }
     public static class SiegeAftermathAction { public enum SiegeAftermath { ShowMercy, Pillage, Devastate } }
 }

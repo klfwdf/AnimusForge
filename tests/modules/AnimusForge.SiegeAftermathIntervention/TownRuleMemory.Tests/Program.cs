@@ -6,7 +6,7 @@ using AnimusForge.SiegeAftermathIntervention;
 static class Program
 {
     private static int _checks;
-    internal static readonly string Narrative = new string('甲', 55);
+    internal static readonly string Narrative = new string('甲', 300);
     internal static void Check(bool value, string name)
     {
         if (!value) throw new Exception("FAIL: " + name);
@@ -24,6 +24,7 @@ static class Program
 
     public static void Main()
     {
+        VerifyNarrativeLengthContract();
         var store = new SettlementRuleMemoryStore();
         var record = Observe(store);
         Check(SettlementRuleMemoryEvolution.ShouldGenerate(record, 100), "empty narrative generates immediately");
@@ -83,11 +84,50 @@ static class Program
         Check(SettlementRuleMemoryEventText.CompletedIntervention("actor", "ShowMercy", 5, 6, 7, 8, 9, 10).Contains("平民死亡7"), "completed counters override nominal mercy impression");
         VerifyAsyncBridge();
         HostReplay.Run();
+        RecentMemoryReplay.Run();
         MeasureBoundedCore();
         Console.WriteLine("RESULT: " + _checks + " checks passed (real core + real bridge, fake auxiliary transport).");
     }
 
     private static string B64(string s) => Convert.ToBase64String(Encoding.UTF8.GetBytes(s));
+    private static string GeneratedResponse(string narrative) => "{\"memory\":\"" + narrative + "\"}";
+    private static void VerifyNarrativeLengthContract()
+    {
+        var store = new SettlementRuleMemoryStore();
+        var record = Observe(store);
+        string tooShort = new string('短', 299);
+        string maximum = new string('镇', 599) + "。";
+        Check(!SettlementRuleMemoryNarrativePolicy.TryParseGeneratedResponse(GeneratedResponse(tooShort), out var parsed)
+            && parsed.Length == 0, "299-character generated response rejected");
+        Check(!store.TryStoreGeneratedNarrative(record, 100, tooShort)
+            && Current(store).CurrentRule.Narrative.Length == 0, "store independently rejects 299-character generated prose");
+        Check(SettlementRuleMemoryNarrativePolicy.TryParseGeneratedResponse(GeneratedResponse(Narrative), out parsed)
+            && parsed == Narrative && store.TryStoreGeneratedNarrative(record, 100, parsed), "300-character lower boundary parses and commits unchanged");
+        Check(SettlementRuleMemoryNarrativePolicy.TryParseGeneratedResponse(GeneratedResponse(maximum), out parsed)
+            && parsed == maximum && store.TryStoreGeneratedNarrative(Current(store), 107, parsed), "600-character upper boundary parses and commits unchanged");
+        var decoded = SettlementRuleMemorySaveCodec.Decode(SettlementRuleMemorySaveCodec.Encode(store.Export()));
+        var restored = new SettlementRuleMemoryStore();
+        Check(decoded.RejectedCount == 0 && restored.Restore(decoded.Records) == 0
+            && Current(restored).CurrentRule.Narrative == maximum, "600-character generated prose survives save encode decode and restore");
+        string completeSentence = new string('忆', 549) + "。";
+        string overLimit = completeSentence + new string('续', 80);
+        Check(SettlementRuleMemoryNarrativePolicy.TryParseGeneratedResponse(GeneratedResponse(overLimit), out parsed)
+            && parsed == completeSentence, "over-600 response trims at a complete sentence inside the new range");
+        Check(SettlementRuleMemoryNarrativePolicy.NormalizeForStorage(new string('界', 601)) == new string('界', 600),
+            "over-600 prose without sentence punctuation stays within storage bound");
+
+        string oldShort = new string('旧', 100);
+        string oldV2 = "v2|" + B64("old town") + "|100|1|" + B64("a") + "|" + B64("a")
+            + "|" + B64("c") + "|" + B64("c") + "|" + B64("kind") + "|100|168|0|0|" + B64(oldShort) + "|0";
+        Check(SettlementRuleMemoryCodec.TryDecode("legacy", oldV2, out var legacy)
+            && restored.Restore(new[] { legacy }) == 0 && Current(restored, "legacy").CurrentRule.Narrative == oldShort
+            && !Current(restored, "legacy").CurrentRule.NarrativeIsManual, "legacy short automatic prose remains readable below new generation minimum");
+        Fact(store, "pending", 108);
+        Check(store.TrySetNarrative("town", "a", 100, "short manual", true, out var manual)
+            && manual.CurrentRule.Narrative == "short manual"
+            && !SettlementRuleMemoryEvolution.ShouldGenerate(manual, 200, true)
+            && !store.TryStoreGeneratedNarrative(manual, 200, maximum), "new generation range preserves short manual text and its protection");
+    }
     private static void MeasureBoundedCore()
     {
         var store = new SettlementRuleMemoryStore();
@@ -128,7 +168,7 @@ static class Program
         Check(commits == 0 && Current(store).CurrentRule.Narrative.Length == 0, "worker cannot mutate store");
         GcczTownRuleMemoryGenerationBridge.OnApplicationTick();
         Check(commits == 1 && Current(store).CurrentRule.Narrative == Narrative, "main tick publishes successful result");
-        Check(AIConfigHandler.LastRequestedTokens == 384, "town generator requests bounded 384-token output");
+        Check(AIConfigHandler.LastRequestedTokens == 1536, "real town generation bridge requests bounded 1536-token output");
         GcczTownRuleMemoryGenerationBridge.Queue(Current(store), 110, true, accept, _ => { });
         Check(AIConfigHandler.Calls == 1, "force request still obeys wall-clock floor");
         ClearRateLimit();
@@ -136,6 +176,10 @@ static class Program
         GcczTownRuleMemoryGenerationBridge.Queue(Current(store), 110, true, accept, _ => { });
         WaitCompleted(); GcczTownRuleMemoryGenerationBridge.OnApplicationTick();
         Check(Current(store).CurrentRule.Narrative == Narrative && commits == 1, "malformed response preserves existing text");
+        ClearRateLimit(); AIConfigHandler.Response = GeneratedResponse(new string('短', 299));
+        GcczTownRuleMemoryGenerationBridge.Queue(Current(store), 110, true, accept, _ => { });
+        WaitCompleted(); GcczTownRuleMemoryGenerationBridge.OnApplicationTick();
+        Check(Current(store).CurrentRule.Narrative == Narrative && commits == 1, "real bridge rejects short response without replacing last good prose");
         ClearRateLimit(); AIConfigHandler.Success = false;
         GcczTownRuleMemoryGenerationBridge.Queue(Current(store), 110, true, accept, _ => { });
         WaitCompleted(); GcczTownRuleMemoryGenerationBridge.OnApplicationTick();
@@ -184,6 +228,9 @@ namespace AnimusForge
         internal static TownPromptTextCatalog GetCatalog() => null;
         internal static TownPromptTextCatalog GetPresentationCatalog() => null;
     }
+    // Output-language customization is outside this value-only memory/transport replay.
+    internal static class PromptComposerTexts
+    { internal static string ApplyOutputLanguage(string prompt) => prompt; }
     internal static class SiegeAftermathUiText
     {
         internal static string Aftermath(string actor, string outcome)
