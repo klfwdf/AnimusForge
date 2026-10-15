@@ -1,7 +1,8 @@
-# 当前交接：恢复 MCM 独立终端设置页（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
+# 当前交接：恢复 MCM 独立终端设置页（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
 - 产品47baa7696，检查点3e5c3d363。原先隐藏的运行设置恢复到“AnimusForge终端设置”独立页，API/支持项在API页；生图API在环境API上方，完整路径两入口隐藏。控件直接绑定原四owner，与终端共享setter/JSON；新页面无业务配置副本。规范要求以后增改选项同步MCM与终端及CN/EN。
-- 原Debug双API/Bootstrap/Coup/注册通过；1.4中文英文各29533、1.3中文29517断言通过，含原生MCM托管VM、撤销/默认和容器注册/保存。用户后续授权部署，原脚本Stage及覆盖exit0更新72项，安装三DLL与已验候选相同；3177保护文件SHA、10个ONNX文件状态及3个原版DLL保持，完整3522项Stage验证PASS。安装版本仍v1.6.1，未实机/真实API/旧自定义preset验收，未打包/push。
+- 原Debug双API/Bootstrap/Coup/注册通过；1.4中文英文各29533、1.3中文29517断言通过，含原生MCM托管VM、撤销/默认和容器注册/保存。用户后续授权部署，原脚本Stage及覆盖exit0更新72项，安装三DLL与已验候选相同；3177保护文件SHA、10个ONNX文件状态及3个原版DLL保持，完整3522项Stage验证PASS。
+- 用户再授权同版本打包并推送：原NoBump打包成功，版本仍v1.6.1，CN/EN各3522项完整投影及独立ZIP校验PASS，三DLL与已部署一致。新包为一键编译覆盖推送/packages/AnimusForge_v1.6.1_{CN,EN}_1015_1332.zip，旧0646包保留。普通push已将远端main前进至cbb27b585，后续本收据文档一并推送，最终SHA见artifacts/package-mcm-161-20261015/push-receipt.json。未实机/真实API/旧自定义preset验收，无重新部署。
 - [唯一主台账、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#mcm-terminal-pages-20261015)；[源码范围图](docs/architecture/af-framework-code-scope.md#mcm-terminal-pages-20261015)。源码回滚git revert 47baa7696；安装无自动回滚，可人工选择原1.6.1包并保留玩家配置。部署回执artifacts/deploy-mcm-20261015/after.json；旧项目Stage和未跟踪目录保留。
 
 # 当前交接：1.6.1 合并发行（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）

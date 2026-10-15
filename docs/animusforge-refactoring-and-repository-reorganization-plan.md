@@ -1,18 +1,22 @@
 <a id="mcm-terminal-pages-20261015"></a>
-## MCM 独立终端设置页与 API 归组（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
+## MCM 独立终端设置页与 API 归组（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
 - 用户要求恢复隐藏的 MCM 设置，集中到“AnimusForge 终端设置”独立页，与终端共用原设置；生图 API 并入 API 页并位于环境 API 上方，隐藏完整请求路径控件。规范改为新增/调整选项同步接入 MCM 与终端。
 - 基线 main/81268f778；仅有未跟踪 Microsoft/、NuGet/，保留。范围为前端页面投影、共享 owner 保存、排序、CN/EN 资源、专项验证及规范；不部署、打包、推送或改玩家配置。
 - 完成条件：两页真实注册、四 owner 引用一致、修改/撤销/保存/默认 preset 与终端互通、隐藏项与顺序正确、中英接线、原双 API/Bootstrap 构建。游戏实际布局与操作单列未验。
 - 后续部署授权：用户明确要求“部署”；以7262be1cc当前源码及既有已验证Debug三DLL部署至F盘游戏单模块AnimusForge，不递增版本、不打包/push。先核对来源/候选SHA、保留旧项目Stage、生成干净Stage，记录3177个保护文件SHA、10个ONNX文件元数据和3个原版DLL SHA；原部署脚本写入前通过完整Stage和目标保护。部署完成后更新本条收据，先前“未部署”为当时状态。
 - 后续发行授权：用户明确要求推送并打包，版本号仍1.6.1。基线aa6bd1bba，fetch后origin/main仍81268f778，本地领先5且无远端新增。按原package_mod.ps1 -NoBump复用已验证/已部署的Debug双API及Bootstrap、完整CN/EN Stage投影；两包校验通过后普通push，不覆盖原1015_0646两包，不触发重新部署或版本递增。完成后以本条新收据替代“未打包/push”旧状态。
+- 双包完成：打包检查点/源码候选cbb27b585，原package_mod.ps1 -ModuleDir bin/Debug/single_module_stage/AnimusForge -Configuration Debug -NoBump退出0。模块v1.6.1、DLL FileVersion=1.6.1.0保持；版本源文件与已部署构建产物SHA不变。完整源码/DLL语言门禁、CN/EN投影、单模块/Bootstrap-only/双API/哈希门禁均通过。独立ZIP CRC/文件集合/两套UI标题/三DLL身份复核PASS，两包各3522项，均无ONNX、日志、缓存或业务Configs。
+- 正式包保留旧0646两包，新包：一键编译覆盖推送/packages/AnimusForge_v1.6.1_CN_1015_1332.zip，88360087字节，SHA256=f8c0e79c0ec742cc42719fe04b723a21e03f6ba31053228b2441e6781f0b1091；EN同名替换_CN_为_EN_，87652676字节，SHA256=07bd186ea1cf9b8b9c9d6e15c096bba855f366f2c90163fc5911c6976523df10。三DLL与上一条已部署候选相同，无重新部署。
+- 推送：本次6提交18路径出站检查通过，无无关merge、本地artifacts/包/未跟踪目录；普通git push origin HEAD:main成功，origin/main由81268f778前进至cbb27b585e69555a2c18fffbbf85a5c28ecd9213，git ls-remote核对一致。本收据文档提交继续普通推送，最终远端SHA记于本地push-receipt.json；不重写历史。
+- 包/推送证据：artifacts/package-mcm-161-20261015/{before.json,package.log,package-verification.json,outgoing-audit.json,push-dry-run.log,push.log,push-receipt.json}。保留旧包供人工回退；实际游戏渲染/输入、旧自定义preset、旧sav和真实provider仍未验，不以打包成功替代实机结论。
 - 部署完成：检查点869ff7c38；原deploy_module.ps1显式传入已验证Debug双API及Bootstrap产物，Stage-only与实际覆盖均exit0，完整3522项Stage通过原门禁，覆盖72项（61项仅换行差异、2项本次CN/EN页面资源、9项DLL/PDB/构建标记）。安装三DLL SHA均与已验候选一致；389项受管文件匹配Stage、3133项沿原保留策略保持。3177个设置/用户资料哈希、10个ONNX文件元数据、3个原版DLL哈希及未列管文件保持。安装位置F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，模块版本仍v1.6.1，不新增发行包。
 - 部署证据：artifacts/deploy-mcm-20261015/{before.json,plan.json,preflight-summary.json,stage.log,deploy.log,after.json,verify.py}；after.json为PASS。旧项目Stage保留previous-stage/，未修改部署脚本、未创建部署Recovery或自动回滚。需要安装回退时可人工选择原一键编译覆盖推送/packages/AnimusForge_v1.6.1_CN_1015_0646.zip并保留玩家资料；原Stage存档不等同于完整安装备份。
 - 交付：意图检查点3e5c3d363，产品47baa7696。MCM恢复运行项至“AnimusForge终端设置”，API/支持项集中“AnimusForge API设置”；生图在环境API之前，完整路径两入口隐藏且字段/值保持。原四个MCM owner的属性/setter/JSON/原preset文件身份保留；两张fluent前端视图FormatType=none，不新增业务JSON。视图使用原PropertyRef，保存回原四owner；恢复默认使用脱离live对象的原owner默认preset快照，合并组开关均显示为独立行。新增/修改选项同步终端与MCM规则已更新AGENTS.md及本仓双语skill。
 - 性能：只在MCM打开时发现/生成视图与原生metadata/preset；终端仍复用一次缓存的四owner委托，组排序只在重建界面运行。未增加Tick IO、反射、扫描或后台游戏对象访问。
 - 验证：原build_single_module.ps1 Debug双API（1.3.15 / 1.4.6参考）、Bootstrap、双Coup seam及registration smoke PASS。真实DLL的TerminalLiveSettingsTests：1.4中文和英文各29533断言、1.3中文29517断言PASS；包含真实原生fluent容器重复注册、两视图无业务JSON、四owner保存重载、全可见控件无遗漏无重复、原setter/范围/类型、CN/EN标题、完整路径隐藏、生图/环境顺序。1.4附加真实SettingsVM构造、UI排序比较器、UndoRedoStack修改/撤销及单项默认恢复；这些是托管UI回放，不代表游戏渲染。
 - 证据：artifacts/mcm-terminal-pages-build.log、mcm-terminal-pages-test-{cn,en,13}.log与mcm-terminal-pages-receipt.json；各测试隔离run路径和candidate SHA见收据。[源码行号、责任与边界](architecture/af-framework-code-scope.md#mcm-terminal-pages-20261015)。早期失败为测试排序方向、缺少测试using和ButterLib日志依赖，均修复后重跑；未放宽产品门禁。
-- 未验：游戏实际布局/滚动/输入、真实API调用、游戏中切入口及旧自定义preset操作未验；旧preset文件未改。后续授权的Stage和部署已完成，替代源码交付时的“未部署”状态；未正式打包、push或改写玩家配置。源码回滚用git revert 47baa7696；安装回退按上方人工旧包流程，不hard reset，未跟踪Microsoft/、NuGet/保持。
+- 未验：游戏实际布局/滚动/输入、真实API调用、游戏中切入口及旧自定义preset操作未验；旧preset文件未改。后续授权的Stage、部署、正式双包和push已完成，替代本条源码交付时的对应“未执行”状态；未改写玩家配置。源码回滚用git revert 47baa7696；安装回退按上方人工旧包流程，不hard reset，未跟踪Microsoft/、NuGet/保持。
 
 <a id="release-161-20261015"></a>
 ## 1.6.1 拉取合并、统一构建和正式发行（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
