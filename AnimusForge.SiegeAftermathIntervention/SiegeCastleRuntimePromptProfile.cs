@@ -43,6 +43,9 @@ public static class SiegeCastleRuntimePromptProfile
 
 
     public static string Build(SiegeCastleRuntimePromptFacts facts, TownPromptTextCatalog textCatalog)
+        => Build(facts, textCatalog, false);
+
+    public static string Build(SiegeCastleRuntimePromptFacts facts, TownPromptTextCatalog textCatalog, bool peacefulEntry)
     {
         TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
         bool isEnglish = text.IsEnglish;
@@ -51,12 +54,15 @@ public static class SiegeCastleRuntimePromptProfile
 
 
 
-        string castleName = Normalize(facts.CastleName, text.GetRuntimeText("DefaultCastleName"));
+        string castleName = Normalize(facts.CastleName, peacefulEntry ? (isEnglish ? "this friendly castle" : "这座友方城堡") : text.GetRuntimeText("DefaultCastleName"));
 
         string playerName = Normalize(facts.PlayerName, text.GetRuntimeText("DefaultPlayerName"));
 
         StringBuilder sb = new StringBuilder();
 
+        if (peacefulEntry)
+            sb.Append(TownPromptTextCatalog.FormatTemplate(text.GetRuntimeText("CastleRuntime_PeacefulIntro"), ("settlement", castleName), ("player", playerName)));
+        else
         sb.Append(text.GetRuntimeText("CastleRuntime_001"))
 
             .Append(castleName)
@@ -143,7 +149,7 @@ public static class SiegeCastleRuntimePromptProfile
 
                 ? text.GetRuntimeText("CastleRuntime_014")
 
-                : text.GetRuntimeText("CastleRuntime_015"));
+                : text.GetRuntimeText(peacefulEntry ? "CastleRuntime_PeacefulPrisoner" : "CastleRuntime_015"));
 
             if (facts.IsLord)
 

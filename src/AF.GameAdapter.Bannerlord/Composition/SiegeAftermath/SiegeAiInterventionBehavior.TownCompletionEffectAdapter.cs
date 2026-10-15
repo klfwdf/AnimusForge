@@ -30,6 +30,7 @@ public partial class SiegeAiInterventionBehavior
 		Clan previousOwner,
 		Dictionary<MobileParty, float> contributions)
 	{
+		if (IsPeacefulGovernanceEntry(settlement)) return;
 		SiegeAftermathAction.ApplyAftermath(attackerParty, settlement, aftermath, previousOwner, contributions);
 	}
 

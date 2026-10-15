@@ -1,3 +1,149 @@
+<a id="town-recent-memory-20261016"></a>
+### 近七日城镇记忆：593186f0
+
+[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#town-recent-memory-20261016)。以下为产品修订593186f0核对位置；真实主机边界以双API构建验证，回放使用原生API替身。
+
+| 一基源码位置／符号 | 责任与消费者 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/TownRecentMemoryStore.cs:9–152`，`TownRecentMemoryStore`及value DTO | 七个日历日、receipt去重、到访聚合、schema验证与九负面动作allowlist；独立于统治记忆。 |
+| `AnimusForge.SiegeAftermathIntervention/TownRecentMemoryText.cs:8–82`，`FormatFact/Build` | CN/EN精确日期句式、实体字面插值、完整/不完整到访窗口；既有TownPrompt catalog资源进入真实消费者。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/GcczTownRecentMemoryBridge.cs:17–191`，`Register/SyncData/OnSessionLaunched/Record/Build` | 既有Siege campaign owner注册事件、严格块保存、首次旧日志导入、实际主体/城村映射；不访问LLM。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownRuleMemoryEvents.cs:14–41`，owner/native aftermath listeners | 真实capturer、排除GCCZ内部mercy；保留原长期记忆入口。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/GcczTownRuleMemoryRuntimeBridge.cs:82–196`，三个Build方法 | 专用城镇/普通本地对话及百科追加近期事实；既有eligibility保持。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs:449`、`:590`、`:8593`、`:8746`、`:8842`、`:14617` | Sync/reset、停止血洗、文化实际提交及首次处置记忆hook；殖民request明确排除。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Economy.cs:278`，`ApplyForeignEconomicAction` | 资源扣除/破坏生效后，用本次payout receipt与动作序号记录；不改离场发放。 |
+| `tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests/RecentMemoryReplay.cs:1–149` | 真实core/adapter与分块helper回放；原生事件/存档为fixture，不证明实机。 |
+
+未替换既有统治叙述、原有三任上限、守卫/信使范围或GCCZ执行器。逐条验证与发布安全范围见唯一台账。
+
+<a id="gccz-village-install-20261016"></a>
+### 村庄统一安装与既有离场发放边界：23c0ff20
+
+[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#gccz-village-install-20261016)。本轮未改运行代码，新增回归并安装累计产品；以下三锚点定位资源采集/退出/发放的实际owner。其他援助/Prompt/画像/随行责任保持下方当前条目。
+
+| 一基源码位置／符号 | 已核实职责 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Economy.cs:169–281`，`private static bool ApplyForeignEconomicAction(VillageDispositionActionSpec spec, int speakerAgentIndex)` | 标签只采集至待结算资金/物品/兵员/俘虏；原场景副作用保留。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Economy.cs:345–393`，`private void OnVillageEconomyTick(float dt)` | 离场MapState资格、金钱防重付、原生人员/物资选择、按实收奴隶扣户。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.cs:235–247`，`internal static void EndForSetsMission(Mission mission, string source)` | 当前mission结束后允许payout；清理场景不清掉待结算账本。 |
+
+本轮`artifacts/gccz-village-install-20261016/code-map.json`绑定候选修订和归一化文件SHA；安装结果另见deployment-receipt，二者都不替代用户实机和旧档验收。
+
+<a id="gccz-village-aid-20261016"></a>
+### 村庄可重复援助与指定交付：a442e916
+
+[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#gccz-village-aid-20261016)。以下锚点只覆盖本轮援助变更；未改字段/文化/敌中经济/SETS仍由原owner负责，不把整份宿主标成重写。下方历史同文件坐标以本次记录为准。游戏未部署。
+
+| 一基源码位置／符号 | 当前责任及边界 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/VillageAidRules.cs:9–48`，`public sealed class FriendlyVillageActionInvocation` | 严格可选援助参数协议，旧tag身份不变。 |
+| `AnimusForge.SiegeAftermathIntervention/VillageAidRules.cs:62–103`，`public static class VillageAidRules` | 最低、精确品名/ID、低价值/随机/坐骑排序，0/1交付余次纯规则。 |
+| `AnimusForge.SiegeAftermathIntervention/VillageGovernanceRules.cs:103–122`，`public static IReadOnlyList<FriendlyVillageActionInvocation> ExtractInvocations(string text)` | 候选白名单保留参数，不用规范化抹掉玩家数量。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Aid.cs:15–179`，`public sealed partial class VillageAftermathBehavior` | 真实确认、重验证、库存转移、协助/关系/记忆和独立发展轮次。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Governance.cs:66–86`，`private static List<PostprocessRuleEntry> BuildFriendlyRules(int index)` | 友方专属简短正文和逐候选最低值说明。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Governance.cs:87–122`，`private static bool TryProcessFriendlyDisposition(int index, ref string text, out bool handled, bool direct)` | 当前mission/身份/直接回复资格，携参调用唯一援助执行器。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Governance.cs:123–139`，`private void SyncGovernance(IDataStore store)` | 原键兼容与新增primitive余次字典，旧档默认。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.cs:266–299`，`internal static string BuildPostprocessContextForExternal(int targetAgentIndex, bool replyIsDirectPlayerResponse)` | 真实目标门、友方专属参数上下文与base-tag白名单正常化。 |
+| `AnimusForge.SiegeAftermathIntervention/GcczVillageCastleTutorial.cs:5–23`，`public static string[] Village(bool english) => english ? new[]` | CN/EN教程：每两笔协助与不同类型发展明确分离。 |
+
+资源沿既有内容映射/嵌入加载，新增VillageAid三键由选包catalog实际消费，UI依旧随界面语言；新state是既有CampaignBehavior中的primitive字典，未增Saveable类型或JSON字符串。`artifacts/gccz-village-aid-20261016/code-map.json`支持现有checker的recorded-revision及working-tree检查；未覆盖实机/provider/原生存档与市场刷新。
+
+<a id="gccz-village-compact-20261016"></a>
+### 村庄精简提示词与城镇画像/随行复用：68ea7875
+
+[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#gccz-village-compact-20261016)。以下当前坐标替代第一版相关符号位置；游戏未部署。
+
+| 一基源码位置／符号 | 当前责任及边界 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/TownOrdinarySpeakerVoiceSession.cs:169–190`，`internal TownOrdinarySpeakerVoiceProfile GetOrCreateProfile` | 城镇原抽取/缓存核心；主prompt和村庄typed入口共用，避免重复归一化/重入锁。 |
+| `AnimusForge.SiegeAftermathIntervention/VillageDispositionDialogueSession.cs:57–152`，`public sealed class VillageDispositionDialogueSession` | 独立town session实例，按场次Begin/End；村庄身份与失效profile保护。 |
+| `AnimusForge.SiegeAftermathIntervention/VillageDispositionPromptProfile.cs:6–78`，`public static class VillageDispositionPromptProfile` | 短场景/角色/画像、共享后处理约束和差异标签说明；普通兵取城镇角色语料。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.SharedEscorts.cs:10–69`，`public partial class SiegeAiInterventionBehavior` | 原城镇Agent构建、场景准入、友军初始化、跟随和仅本场索引清理；不拥有经济/标签。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs:13539–13718`，`internal static int EnsureInterventionBannerBearersForExternal` | 旗手外部/内部检查接受显式村庄owner；本次名册选择、两旗手和原旗帜/坐骑执行复用。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Governance.cs:64–82`，`private static List<PostprocessRuleEntry> BuildFriendlyRules` | 文化阶段只在上下文一次；友方经济动作复用短描述，原资格与执行不变。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageDispositionSceneMissionBehavior.cs:22–207`，`internal sealed class VillageDispositionSceneMissionBehavior : MissionLogic` | 票据绑定的场景owner，持有本次选兵名册并退出释放；原成人过滤与有界召集保持。 |
+| `src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs:6770–6983`，`private int SpawnAgentsNearPlayer` | GCCZ村庄分支调用同一town builder；普通SETS/兵变构造保持原路径。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.cs:479–500`，`private static void ClearMissionState` | 原退出/新游戏/读档清理增加释放本场共享随行索引；先停战再清理。 |
+
+CN/EN/en-US的21组VillageScene资源及TownPromptTextCatalog fallback同修订；原town/castle资源逐值不变。原PromptScope、动作资格、预算/存档/记忆owner不迁移。`artifacts/gccz-village-compact-20261016/code-map.json`可用现有checker的`--map`验证当前提交与working-tree。测试替身不覆盖真实游戏/模型，具体未验项见台账。
+
+<a id="gccz-village-prompts-20261015"></a>
+### 村庄专属Prompt与场景人物画像：e43015e7
+
+[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#gccz-village-prompts-20261015)记录本轮不部署和验收限制；以下坐标在产品修订核实。
+
+| 一基源码位置／符号 | 责任与消费边界 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/VillageDispositionPromptProfile.cs:11–46` | CN/EN三分支scene正文、角色、临时persona、后处理事实组装；兼容bool入口保留，host传实际选包catalog；旧action语法/效果描述不改。 |
+| `AnimusForge.SiegeAftermathIntervention/VillageDispositionDialogueSession.cs:59–150` | village独立cache/generation；Begin小片段副本、GetOrCreate仅普通村民/兵调用城镇工厂，AF已有资料优先；退出清空及旧profile拒用。 |
+| `AnimusForge.SiegeAftermathIntervention/TownOrdinarySpeakerVoiceSession.cs:232–257`，`CreateProfile` | 原纯生成算法仅改internal可见性，同DLL村庄复用；原town缓存、语料和生命周期不改。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.PromptScope.cs:9–27` | 主回复实际owner+Agent+Hero/Character匹配门，拒信使/异地/过期目标，随后选择友方/敌中composer。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.cs:245–280` | 后处理规则/上下文共用说话者门；当前角色/直接回复/原经济资格继续约束标签；只有有治理权同伴附文化确认规则。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.HostileDialogue.cs:26–60`；`VillageAftermathBehavior.Governance.cs:73–85` | 实际场景/人物/预算接线、当前包注入，友方事务仍用原允许清单，不向村民或访客追加文化确认教程。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.cs:171–172,479–484`；`VillageAftermathBehavior.HostileDisposition.cs:41–43` | 两入口用选包catalog初始化session，离场/读档/新游戏沿既有清理链结束。 |
+| `content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.zh-CN.json:240–260` 及 en/en-US 同组；`TownPromptTextCatalog.cs:812–832` | 21对VillageScene资源与英文fallback；以村庄前缀隔离，不改已有town/castle资源。沿既有content-map和EmbeddedResource消费，无新增全局开关。 |
+
+验证入口 `tests/AF.GameAdapter.Bannerlord/VillagePromptTests/`：真实core、真实PromptScope源链接＋native替身；资源检查比较基线原键、实际host/bridge、清理路径和独立catalog。无游戏/LLM实际验收，不宣称保存或三渠道全部运行通过。
+
+<a id="gccz-village-scene-20261015"></a>
+### GCCZ 村庄胜利接续与专用场景：98cf0ff2 / 融合 89e73887
+
+[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#gccz-village-scene-20261015)记录部署、保护证据及实机限制。以下为融合修订核对的一基行号；没有新建地形资源，使用原村庄地形和显式 GCCZ mission owner。
+
+| 源码位置／符号 | 责任与边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.RewardPersistence.cs:84–105`，`HasQueuedVictoryForExternal` / `RequestVictoryMenuAgainForExternal` / `OnEngineTickForExternal` | 重复点击只恢复同村战后票据；沿 application tick 推动原结算状态机，不依赖暂停菜单中的 CampaignTick。无待办只做空值检查。 |
+| `src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs:1656–1663,1767–1778,1951–1957,1989–1996,2113–2150` | 明确入场失败阻止普通场景回落；只放行已展示同村胜利票据+显式处置申请；附加专用 owner；菜单事件不重入原版战后回调，等待战斗/强征原版收尾。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.SetsVictoryMenu.cs:27–89` | 新双语按钮、按当前阵营重新验资格、仅补缺失的原版 VillageEncounter，不覆盖别村遭遇；仍经现有选兵流程。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.NativeDispositionEntry.cs:78–118` | 已获胜时菜单恢复不再创建第二场民兵战斗；此前健康兵员/原版条件保护保持。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageDispositionSceneMissionBehavior.cs:20–203` | 专用运行期入场/演员/召集/退出 owner。启动一次演员快照，后续仅 OnAgentBuild 队列每帧最多8人；未成年场景移除而非杀死/改写角色，成年本村居民恢复正常可受伤状态；召集对话后执行，每0.15秒最多8人，目标来自当前玩家Agent，不编入SETS民众队伍。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.cs:117–143,199–205`；`VillageAftermathBehavior.HostileDialogue.cs` 的成年说话者检查 | 处置上下文、提示词和动作要求当前mission专用标记+匹配村庄；普通漫步不能借用残余会话执行处置。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.SceneOrders.cs:26–30`；`VillageAftermathBehavior.Economy.cs:181,338–343` | 召集移交新 owner；TAB后只在匹配村庄有待结算时推进现有人员/俘虏/物资状态机。 |
+| `src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs:3359–3365,3458–3462,3518–3522,3637–3645` | GCCZ内关闭普通SETS召集与伤害副作用，只保留既有随行兵载体；真正激活成功才安排离场，不将初始化失败算成默认掠夺。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs:2308–2310,16269–16284,16765–16771` | app tick接线；普通挑衅/犯罪回调绕过专用村庄；仅玩家攻击当前成年居民取消原同队免伤，其他场景不扩权。 |
+| `content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/sets_ui_strings.xml` 及 `CNs/sets_ui_strings-zh-CN.xml` | 5对实际消费键：入口、尚未就绪、召集排队、命令已下达、场景初始化失败。 |
+
+验证：VillageNativeEntryTests源链接真实入口和RewardPersistence；VillageSceneTests源链接真实专用owner，原生引擎/相邻服务为替身；verify_wiring检查实际接线，均不等同原生游戏验收。已安装TTS来源 `bd4bcc98b` 合并保留；另一TTS工作树未提交流式功能不纳入。既有城镇记忆 `3d32052b` 保留。回退应针对本切片做inverse，不整目录回退到旧AF。
+
+<a id="town-memory-length-300-600-20261015"></a>
+### 城镇记忆 300–600 字并细化内容：3d32052b
+
+[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#town-memory-length-300-600-20261015)记录本轮验证和回滚，取代下方200–500规格。
+
+| 一基源码位置／符号 | 责任与消费者 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/SettlementRuleMemoryNarrativePolicy.cs:11–12,69–89` | 新生成最低300、保存最多600，沿原解析/裁切/Store消费者；旧短正文与手工语义保持。 |
+| `content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.{zh-CN,en,en-US}.json:103–106`；`AnimusForge.SiegeAftermathIntervention/TownPromptTextCatalog.cs:555–558` | 实际provider/composer与fallback的详细生成提示及300–600 JSON协议；变量、事实来源和语言包责任不变。 |
+| `tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests/Program.cs:93–129,170–181`；`HostReplay.cs:69–91` | 同73项更新299/300/600/601及三任600字分块边界；伪传输不代替provider/游戏。GenerationBridge仍在`:63`沿用1536，非本轮新修改。 |
+
+<a id="town-memory-length-20261015"></a>
+### 城镇记忆 200–500 字：4bc03c73
+
+本表只描述该产品切片；[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#town-memory-length-20261015)记录验证、来源和未验边界。
+
+| 一基源码位置／符号 | 责任与消费者 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/SettlementRuleMemoryNarrativePolicy.cs:11–12,69–89` | 新生成至少 200、保存最多 500；原 parser/Store 消费，旧短正文不因最低生成长度被删除，手工正文沿原编辑语义。 |
+| `src/bridges/Siege/RuleMemory/GcczTownRuleMemoryGenerationBridge.cs:63` | 既有 bounded 辅助请求上限 1536；不改变按需、并发、主线程提交、失败与晚结果规则。 |
+| `content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.{zh-CN,en,en-US}.json:104,106`；`AnimusForge.SiegeAftermathIntervention/TownPromptTextCatalog.cs:556,558` | 实际资源与 fallback 同步 200–500，保留 `memory` JSON、变量及原事实归因；现有 provider/composer 消费，无新语言强制规则。 |
+| `tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests/Program.cs:93–129,170–181`；`HostReplay.cs:69–91`；`verify_auxiliary_budget.ps1:46–56` | 真实核心/桥接长度、低配置额度、旧正文/手工及三任长中文分块回放；fixture 不代替真实 provider、游戏与 native 旧档。 |
+
+<a id="parade-game-integration-20261014"></a>
+### 阅兵融合安装：8b0de975d
+
+以该产品切片核实一基范围；[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#parade-game-integration-20261014)保留验证、安装及未验边界。以下均是同DLL现有host接缝，不新增公开API。
+
+| 源码范围／符号 | 责任与证据边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs:51`；`Composition/Parade/ExpeditionParadeBehavior.cs:34–73,75–127`（同GameAdapter目录） | 注册唯一campaign owner；宣战／和谈／每日清理，独立分块字典保存战争／胜利记录，读档丢弃临时请求。声明、日期及优势规则离线验，事件时序／旧档未实机 |
+| `src/AF.GameAdapter.Bannerlord/Composition/Parade/ExpeditionParadeMenu.cs:12–71`；`ExpeditionParadeMenuPolicy.cs:6–16`；`ExpeditionParadeBehavior.cs:129–252`（同目录） | OnAfterSessionLaunched插入处决之前，手动入口不要求总督；立即入场避免依赖暂停的地图Tick，执行前重验权限和日期。menu排序纯规则已验，原生scene转换未验 |
+| 同目录 `ExpeditionParadeRoster.cs:22–73`、`ExpeditionParadeRules.cs:12–52`、`ExpeditionParadeMissionLogic.cs:38–218` | 健康主队／驻军／已集结军团取样；配额96／批24、步3骑2、每列旗手；只清理自建Agent／马，不调用真实roster转移。规则4942项，不代表Agent动画／碰撞或其他MOD共存 |
+| 同目录 `ExpeditionParadeRoutePlanner.cs:35–205`；Plan/BuildPath/ValidateSlice | 场景门锚点＋navmesh，分批描点、净空／城门平面检测、缓存再验；不通过时拒绝，不瞬移。双API编译，真实场景覆盖待测 |
+| 同目录 `ExpeditionParadeAiBridge.cs:13–65`；`src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs:386–387,533,834,903,922` | 当前现场总督资格投影，唯一后处理标签与短期一次性授权；不允许原始对白直接触发。提示词与标签纯回放通过，真实模型及交谈切换未验 |
+| `src/modules/AF.Module.Conversation/Channels/Native/NativeConversationGameEffectsRuntime.cs:345–388`；`Channels/Scene/SceneSpeechEffectController.cs:388–417`；`Channels/Scene/SceneSystemNpcShoutRuntime.cs:224–253`（同Conversation目录） | 保留原生／场景的完整旧副作用路径，仅追加阅兵执行入口；现场AI受当前总督验证，信使不提供场景行为。TTS／SETS旧测试覆盖部分，非完整会话实机 |
+| `src/modules/AF.Module.Diplomacy/Guards/Patch_Diplomacy_RegisterMakePeaceAction.cs:10–20` | 原Harmony和谈patch前置捕获贡金方向，后置清理；原DiplomacyRecentPeaceBridge继续执行，未改和谈支付或AI外交 |
+| `docs/fixtures/phase4-persistence-profile-config/persistence-catalog.json` 的currentAdditionalFlattenedDictionaryBindings；`tests/AF.Persistence/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py:207–222` | 只扩展当前阅兵键登记与writer/reader接线断言，不重定义历史schema目录；48当前字典键通过，旧坏档不在本次修复范围 |
+
 <a id="captivity-free-opening-20261013"></a>
 ### 被俘后领主自由开场：75c7efe60
 

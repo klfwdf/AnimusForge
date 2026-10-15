@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><LangVersion>latest</LangVersion></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../src/AF.GameAdapter.Bannerlord/Configuration/Mcm/GcczSettings.cs" Link="GcczSettings.cs" />
+    <Compile Include="../../../AnimusForge.SiegeAftermathIntervention/VillageDispositionEconomy.cs" Link="VillageDispositionEconomy.cs" />
+    <Compile Include="../../../AnimusForge.SiegeAftermathIntervention/VillageDispositionActionCatalog.cs" Link="VillageDispositionActionCatalog.cs" />
+    <Compile Include="../../../AnimusForge.SiegeAftermathIntervention/VillageGovernanceRules.cs" Link="VillageGovernanceRules.cs" />
+    <Compile Include="../../../AnimusForge.SiegeAftermathIntervention/VillageAidRules.cs" Link="VillageAidRules.cs" />
+    <Compile Include="../../../AnimusForge.SiegeAftermathIntervention/SetsSettlementEntryProfile.cs" Link="SetsSettlementEntryProfile.cs" />
+    <Compile Include="../../../AnimusForge.SiegeAftermathIntervention/SetsSettlementSceneKind.cs" Link="SetsSettlementSceneKind.cs" />
+    <Compile Include="../../../AnimusForge.SiegeAftermathIntervention/SiegeAftermathCompatibilityTexts.cs" Link="SiegeAftermathCompatibilityTexts.cs" />
+    <Compile Include="../../../AnimusForge.SiegeAftermathIntervention/CompatibilityFlatJson.cs" Link="CompatibilityFlatJson.cs" />
+  </ItemGroup>
+</Project>

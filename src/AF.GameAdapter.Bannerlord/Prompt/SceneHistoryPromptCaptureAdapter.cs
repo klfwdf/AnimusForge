@@ -1113,6 +1113,9 @@ internal static string BuildStrictSceneMessagesSystemPrompt(string systemPrompt,
 		}
 
 		string text2 = string.IsNullOrWhiteSpace(instruction) ? value : (value + "\n" + instruction);
+        var speechSettings = DuelSettings.GetSettings();
+        if (speechSettings?.EnableTtsSpeech == true && speechSettings.TtsUseGptSoVits && !GptSoVitsVoiceRuntime.IsBattleBlocked)
+            text2 += "\n" + ConversationRuntimeTexts.Prompt("local_tts_tone_metadata");
 
 		if (string.IsNullOrWhiteSpace(text))
 

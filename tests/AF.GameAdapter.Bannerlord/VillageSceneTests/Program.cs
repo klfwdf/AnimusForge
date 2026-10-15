@@ -1,0 +1,87 @@
+using AnimusForge;
+using TaleWorlds.Core;
+using TaleWorlds.MountAndBlade;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Party;
+int checks=0;
+void Check(bool ok,string label) { if(!ok) throw new Exception(label); checks++; }
+var village = new Settlement { StringId="village_test" }; Settlement.All[village.StringId]=village;
+var ordinary = new Mission(); Mission.Current=ordinary;
+Check(!VillageDispositionSceneMissionBehavior.Controls(ordinary),"Ordinary village has no disposition marker");
+Check(!VillageAftermathBehavior.TryActivateForSetsVillage(village,ordinary,"ordinary",false),"No activation from ordinary mission");
+var mission=new Mission(); Mission.Current=mission;
+var roster=new TaleWorlds.CampaignSystem.Roster.TroopRoster();
+var scene=new VillageDispositionSceneMissionBehavior(village.StringId,false,roster); mission.Add(scene);
+Agent Actor(int index,string id="adult",float age=30,bool soldier=false) {
+    var a=new Agent { Index=index,Mission=mission,Character=new CharacterObject { StringId=id,Age=age,IsSoldier=soldier } };
+    mission.Agents.Add(a); scene.OnAgentBuild(a,null); return a;
+}
+mission.MainAgent=Actor(0); mission.MainAgent.IsMainAgent=true;
+var youth=Actor(1,"village_woman_teenager_empire",0);
+var child=Actor(2,"custom_resident",12);
+var childTemplate=Actor(3); childTemplate.Character.IsChildTemplate=true;
+var adult=Actor(4); adult.Health=adult.HealthLimit=adult.BaseHealthLimit=100000;
+var wounded=Actor(5); wounded.Health=23;
+var soldier=Actor(6,soldier:true); soldier.Origin.BattleCombatant=PartyBase.MainParty;
+var notable=Actor(7); notable.Character.HeroObject=new Hero { IsNotable=true }; village.Notables.Add(notable.Character.HeroObject);
+for(int i=8;i<26;i++) Actor(i);
+scene.AfterStart();
+Check(scene.WasActivated && VillageDispositionSceneMissionBehavior.Admits(mission,village.StringId),"Explicit village mission activates");
+Check(!VillageDispositionSceneMissionBehavior.Admits(mission,"other"),"Ticket binds exact village");
+Check(youth.Faded && child.Faded && childTemplate.Faded,"Native youth ID, age and child template all despawn");
+Check(!mission.MainAgent.Faded && !soldier.Faded && soldier.Mortality==Agent.MortalityState.Invulnerable,"Player and selected soldiers are not normalized as residents");
+Check(adult.Mortality==Agent.MortalityState.Mortal && adult.Health==100 && adult.HealthLimit==100,"Adult gets normal damageable health");
+Check(wounded.Health==23,"Preparing actors does not heal injured civilians");
+Check(VillageDispositionSceneMissionBehavior.IsResident(notable),"Living resident notable allowed");
+Check(!VillageDispositionSceneMissionBehavior.IsResident(soldier) && !VillageDispositionSceneMissionBehavior.IsResident(youth),"Troops and youth excluded from resident operations");
+Check(!scene.QueueGather(1),"Youth cannot authorize gathering");
+Check(scene.QueueGather(4) && !scene.QueueGather(4),"Gather queues once and deduplicates while pending");
+mission.Mode=MissionMode.Conversation; scene.OnMissionTick(1);
+Check(SiegeAiInterventionBehavior.Moved.Count==0,"No native navigation during conversation");
+mission.Mode=MissionMode.StartUp; scene.OnMissionTick(1);
+Check(SiegeAiInterventionBehavior.Moved.Count==8,"Gather issues at most eight orders per batch");
+scene.OnMissionTick(1); Check(SiegeAiInterventionBehavior.Moved.Count==8,"Frame tick cannot bypass interval");
+VillageAftermathBehavior.GatheringAllowed=false; mission.CurrentTime+=1; scene.OnMissionTick(1);
+Check(SiegeAiInterventionBehavior.Moved.Count==8,"Destructive operation cancels pending gathering");
+VillageAftermathBehavior.GatheringAllowed=true;
+Check(scene.QueueGather(7),"Notable may request new gather after cancellation");
+for(int i=0;i<5;i++) { mission.CurrentTime+=1; scene.OnMissionTick(1); }
+Check(SiegeAiInterventionBehavior.Moved.Skip(8).Count()==21,"All eligible adults, and no troop/youth, receive orders");
+Check(!SiegeAiInterventionBehavior.Moved.Contains(1) && !SiegeAiInterventionBehavior.Moved.Contains(6),"Unsafe actors never enter navigation batch");
+var late=Actor(99,"late_child",0);
+for(int i=0;i<5;i++) { mission.CurrentTime+=1; scene.OnMissionTick(1); }
+Check(late.Faded,"Late actor notification also removes protected template");
+Check(ReferenceEquals(scene.SelectedRoster,roster),"Village passes its own selected roster to shared banners");
+Check(SiegeAiInterventionBehavior.TestEscortGate(mission),"Village admitted to shared escort/banners while town inactive");
+Check(!SiegeAiInterventionBehavior.TestEscortGate(ordinary),"Other mission cannot use shared escort entry");
+SiegeAiInterventionBehavior.PrepareVillageEscortForExternal(soldier);
+Check(SiegeAiInterventionBehavior.AlliedAgentIndexes.Contains(6) && SiegeAiInterventionBehavior.Restored==1 && SiegeAiInterventionBehavior.Unfollowed==1,"Village reuses town friendly state and AI initialization");
+SiegeAiInterventionBehavior.AlliedAgentIndexes.Add(1001);
+SiegeAiInterventionBehavior.ReleaseVillageEscortsForExternal(ordinary);
+Check(SiegeAiInterventionBehavior.AlliedAgentIndexes.Contains(6),"Unrelated mission cannot clear current escorts");
+Check(SiegeAiInterventionBehavior.FollowVillageEscortFormationForExternal(mission) && SiegeAiInterventionBehavior.Followed==1,"Village uses town formation follow order");
+var formation=new Formation();var origin=new TestOrigin();
+var data=SiegeAiInterventionBehavior.BuildInterventionEscortData(soldier.Character,origin,new Team(),new(),new(),formation,12,7);
+Check(ReferenceEquals(data.Troop,soldier.Character) && ReferenceEquals(data.Origin,origin),"Shared spawn keeps selected troop and party origin");
+Check(data.HorsesDisabled && !data.Civilian && data.OwnFormation && !data.OwnClass && data.Count==12 && data.Index==7,"Town/village share battle equipment, infantry formation and batch indices");
+Check(ReferenceEquals(data.AssignedFormation,formation),"Shared factory uses native caller-owned formation");
+mission.EndMission();
+Check(!SiegeAiInterventionBehavior.AlliedAgentIndexes.Contains(6) && SiegeAiInterventionBehavior.AlliedAgentIndexes.Contains(1001) && scene.SelectedRoster==null,"Exit erases only own escorts and roster");
+Check(!SiegeAiInterventionBehavior.TestEscortGate(mission) && !SiegeAiInterventionBehavior.FollowVillageEscortFormationForExternal(mission),"Late shared commands rejected after exit");
+Check(!VillageDispositionSceneMissionBehavior.Controls(mission) && VillageAftermathBehavior.Active==null,"Exit clears scene control and tag activation");
+Check(!scene.QueueGather(4),"No gathering after scene ends");
+Mission.Current=ordinary;
+Check(!VillageDispositionSceneMissionBehavior.Controls(ordinary),"Ordinary scene remains unaffected after exit");
+var failed=new Mission(); Mission.Current=failed; var failedScene=new VillageDispositionSceneMissionBehavior(village.StringId,true); failed.Add(failedScene);
+VillageAftermathBehavior.ActivationAllowed=false; failedScene.AfterStart(); failedScene.OnMissionTick(1);
+Check(!failedScene.WasActivated && failed.IsMissionEnding,"Failed admission closes without disposition activation");
+Mission.Current=ordinary;
+Check(!SiegeAiInterventionBehavior.TestEscortGate(ordinary),"Ordinary scene cannot spawn shared banners");
+SiegeAiInterventionBehavior.TownActive=true;
+Check(SiegeAiInterventionBehavior.TestEscortGate(ordinary),"Town remains admitted to the same helper");
+ordinary.IsMissionEnding=true;
+Check(!SiegeAiInterventionBehavior.TestEscortGate(ordinary),"Ending mission is excluded even with active owner");
+Console.WriteLine($"PASS {checks} production village scene lifecycle checks; native engine and neighboring owners are fakes, not live-game acceptance.");
+
+class TestOrigin : IAgentOriginBase { }

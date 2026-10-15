@@ -127,6 +127,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			base.AfterStart();
 			SiegeAiInterventionBehavior.OnInterventionMissionAfterStart(base.Mission);
+			if (IsActiveInCurrentMission())
+				SettlementEntryTroopSelectionBehavior.CompletePendingVictoryMenuForExternal(_activeSettlementId);
 		}
 
 		public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
@@ -358,6 +360,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<int, CivilianGatherInteraction> ActiveCivilianGatherInteractions = new Dictionary<int, CivilianGatherInteraction>();
 	private static readonly HashSet<int> AlliedAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> BannerBearerAgentIndexes = new HashSet<int>();
+	private static WeakReference<Mission> _bannerBearerOwnerMission;
 	private static readonly HashSet<Hero> PendingInterventionNotableDeaths = new HashSet<Hero>();
 	private static readonly HashSet<int> SceneCivilianAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> VictoryCheerAgentIndexes = new HashSet<int>();
@@ -446,6 +449,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	public override void SyncData(IDataStore dataStore)
 	{
 		GcczTownRuleMemoryRuntimeBridge.SyncData(dataStore);
+		GcczTownRecentMemoryBridge.SyncData(dataStore);
 		SyncTownColonizationState(dataStore);
 		CastleAftermathPrisonerTrustRuntimeBridge.SyncData(dataStore);
 		CastleAftermathSettlementRuntimeBridge.SyncData(dataStore);
@@ -586,6 +590,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_loadedTownColonizationSnapshot = null;
 		_loadedTownColonizationRecoveryReady = false;
 		GcczTownRuleMemoryRuntimeBridge.ClearForNewGame();
+		GcczTownRecentMemoryBridge.Reset();
 		CastleAftermathPrisonerTrustRuntimeBridge.ClearForNewGame();
 		CastleAftermathSettlementRuntimeBridge.ClearForNewGame();
 		CastleAftermathLordRecruitmentRuntimeBridge.ClearForNewGame();
@@ -708,6 +713,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			starter.AddGameMenu(SetsOwnedSettlementIncidentProfile.MenuId, "{=!}{AF_SETS_OWNED_TOWN_INCIDENT_TEXT}", SetsOwnedSettlementIncidentOnInit, GameMenu.MenuOverlayType.None, GameMenu.MenuFlags.None, null);
 			starter.AddGameMenuOption(SetsOwnedSettlementIncidentProfile.MenuId, SetsOwnedSettlementIncidentProfile.EntryOptionId, SetsOwnedSettlementIncidentProfile.EntryOptionText, SetsOwnedSettlementIncidentEntryCondition, SetsOwnedSettlementIncidentEntryConsequence, isLeave: false, 0);
 			starter.AddGameMenuOption(SetsOwnedSettlementIncidentProfile.MenuId, SetsOwnedSettlementIncidentProfile.LeaveOptionId, SetsOwnedSettlementIncidentProfile.LeaveOptionText, SetsOwnedSettlementIncidentLeaveCondition, SetsOwnedSettlementIncidentLeaveConsequence, isLeave: true, 1);
+			RegisterSetsVictoryMenu(starter);
+			RegisterFriendlyGcczEntries(starter);
 			foreach (string menuId in SiegeAftermathMenuProfile.EntryMenuIds)
 			{
 				string optionId = SiegeAftermathMenuProfile.BuildEntryMenuOptionId(menuId);
@@ -808,7 +815,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		EnterIntervention(args);
 	}
 
-	private static void EnterOwnedVillageAftermath(Settlement settlement)
+	private static void EnterOwnedVillageAftermath(Settlement settlement, bool hostileDisposition = false, TroopRoster selectedRoster = null, string entrySource = "sets_village_victory_menu")
 	{
 		try
 		{
@@ -818,7 +825,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageEntryUnavailable, Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
 				return;
 			}
-			if (!VillageAftermathBehavior.QueueIncidentDispositionMission(settlement, "sets_owned_village_incident_menu"))
+			if (!VillageAftermathBehavior.QueueIncidentDispositionMission(settlement, entrySource, hostileDisposition, selectedRoster))
 			{
 				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageStatePrepareFailed, Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
 				return;
@@ -832,8 +839,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Logger.Log("VillageAftermath", "GCCZ village disposition mission returned null; incident menu kept for retry. Settlement=" + (settlement.StringId ?? "N/A"));
 				return;
 			}
+			if (!hostileDisposition && entrySource != "friendly_village_menu")
+			{
 			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.NotableKilledRelationPenalty, "sets_owned_village_enter_notable", onlyIfNotableKilled: true);
 			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.MinorIncidentRelationPenalty, "sets_owned_village_enter_minor", onlyIfNotableKilled: false);
+			}
 			ClearSetsOwnedSettlementIncidentContext("enter_owned_village_aftermath");
 			Logger.Log("VillageAftermath", "Opened GCCZ village disposition mission from SETS incident menu. Settlement=" + (settlement.StringId ?? "N/A"));
 		}
@@ -933,6 +943,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void SiegeInterventionEntryConsequence(MenuCallbackArgs args)
 	{
+        _peacefulEntrySettlementId = "";
 		EnterIntervention(args);
 	}
 
@@ -966,7 +977,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			if (!usesStagedTownPresentation)
 			{
-				InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(ResolveSetsSettlementSceneKind(settlement), isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface) : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(settlement.IsCastle, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(IsPeacefulGovernanceEntry(settlement) ? (GcczLocalizedResourceLoader.UseChineseInterface ? "和平进入领地事务；此次没有攻城或战果结算。" : "Peaceful settlement affairs; no siege or military reward settlement.") : _setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(ResolveSetsSettlementSceneKind(settlement), isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface) : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(settlement.IsCastle, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			}
 			bool selectionOpened = settlement.IsCastle
 				? TryOpenCastleInterventionRosterSelection(location)
@@ -992,7 +1003,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool UsesStagedTownEntryPresentation(Settlement settlement = null)
 	{
 		settlement ??= _activeSettlement ?? ResolveCurrentSettlement();
-		return settlement?.IsTown == true && !_setsOwnedSettlementIncidentContext;
+		return settlement?.IsTown == true && !_setsOwnedSettlementIncidentContext && !IsPeacefulGovernanceEntry(settlement);
 	}
 
 	private static void ShowTownEntrySceneNarration(int arrivedCount, bool usedAutomaticSelection)
@@ -1046,19 +1057,17 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool TryOpenSettlementEntryVictoryMenu(Settlement settlement, TroopRoster selectedRoster, string source, bool transferOwnership = true, bool setsOwnedIncident = false, bool setsTownRiotKilledNotable = false)
+	internal static bool TryOpenSettlementEntryVictoryMenu(Settlement settlement, TroopRoster selectedRoster, string source, bool transferOwnership = true, bool setsOwnedIncident = false, bool setsTownRiotKilledNotable = false, Clan previousOwner = null)
 	{
 		try
 		{
-			bool supportedVillageIncident = setsOwnedIncident
-				&& settlement?.IsVillage == true
-				&& SetsOwnedSettlementIncidentProfile.SupportsSceneKind(SetsSettlementSceneKind.Village);
+			bool supportedVillage = settlement?.IsVillage == true;
 			if (settlement == null
-				|| (!SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle) && !supportedVillageIncident))
+				|| (!SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle) && !supportedVillage))
 			{
 				return false;
 			}
-			if (supportedVillageIncident && !CanOpenOwnedVillageIncidentMenuForExternal(settlement))
+			if (supportedVillage && setsOwnedIncident && !CanOpenOwnedVillageIncidentMenuForExternal(settlement))
 			{
 				return false;
 			}
@@ -1066,13 +1075,15 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			if (supportedVillage && !EnsureVillageVictoryLocationEncounter(settlement)) return false;
 			SetsSettlementSceneKind sceneKind = ResolveSetsSettlementSceneKind(settlement);
 			string bridgeSource = string.IsNullOrWhiteSpace(source) ? "SETS_settlement_victory_menu" : source;
 			ResetAftermathRuntimeGuards("sets_victory_menu_prepare");
 			PrepareSetsSettlementEntryVictoryContext(settlement, bridgeSource);
+			_previousSettlementOwnerClan = previousOwner ?? _previousSettlementOwnerClan;
 			int maxSelected = Math.Max(AutoSummonCount, selectedRoster?.TotalManCount ?? 0);
 			StoreSelectedInterventionRoster(selectedRoster, maxSelected);
-			if (transferOwnership)
+			if (transferOwnership && !settlement.IsVillage)
 			{
 				PrepareSetsCapturedTownRiotContext(settlement, setsTownRiotKilledNotable, bridgeSource);
 				ApplySetsSettlementEntryCaptureIfNeeded(settlement, bridgeSource + "_capture_before_native_menu");
@@ -1084,14 +1095,16 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (setsOwnedIncident)
 			{
 				PrepareSetsOwnedSettlementIncidentContext(settlement, setsTownRiotKilledNotable, bridgeSource);
-				GameMenu.ActivateGameMenu(SetsOwnedSettlementIncidentProfile.MenuId);
-				InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(sceneKind, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface), Color.FromUint(SetsOwnedSettlementIncidentProfile.MessageColor)));
-				Logger.Log("SiegeAiIntervention", "Opened SETS owned/attached settlement incident menu. Settlement=" + (settlement.StringId ?? "N/A") + ", Kind=" + sceneKind + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource + ", killedNotable=" + setsTownRiotKilledNotable);
+			}
+			if (!settlement.IsVillage) PrepareNativeSettlementTakenMenuContextForSets(settlement, bridgeSource);
+			// Coup's committed direct handoff has its own owner and no SETS reward ticket.
+			if (!SettlementEntryTroopSelectionBehavior.HasPendingVictoryMenuForExternal(settlement.StringId))
+			{
+				GameMenu.ActivateGameMenu(setsOwnedIncident ? SetsOwnedSettlementIncidentProfile.MenuId : SiegeAftermathMenuProfile.SettlementTakenMenuId);
 				return true;
 			}
-			PrepareNativeSettlementTakenMenuContextForSets(settlement, bridgeSource);
-			GameMenu.ActivateGameMenu(SiegeAftermathMenuProfile.SettlementTakenMenuId);
-			InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.NativeVictoryMenu(SetsSettlementEntryProfile.GetSettlementNoun(sceneKind, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface)), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			GameMenu.ActivateGameMenu(SetsVictoryMenuProfile.MenuId);
+			InformationManager.DisplayMessage(new InformationMessage(VillageDispositionIntegrationText.VictoryReady, Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			Logger.Log("SiegeAiIntervention", "Opened native settlement-taken menu from SETS victory. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource + ", transferOwnership=" + transferOwnership);
 			return true;
 		}
@@ -1526,7 +1539,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryOpenTroopSelectionRuntimeCompat(MenuContext menuContext, TroopRoster fullRoster, TroopRoster initialSelections, Action<TroopRoster> onDone)
+	private static bool TryOpenTroopSelectionRuntimeCompat(MenuContext menuContext, TroopRoster fullRoster, TroopRoster initialSelections, Action<TroopRoster> onDone, int maxCount = AutoSummonCount)
 	{
 		try
 		{
@@ -1543,7 +1556,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			foreach (MethodInfo method in methods)
 			{
 				ParameterInfo[] parameters = method.GetParameters();
-				object[] arguments = TryBuildOpenTroopSelectionRuntimeArguments(parameters, fullRoster, initialSelections, onDone);
+				object[] arguments = TryBuildOpenTroopSelectionRuntimeArguments(parameters, fullRoster, initialSelections, onDone, maxCount);
 				if (arguments == null)
 				{
 					continue;
@@ -1574,7 +1587,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static object[] TryBuildOpenTroopSelectionRuntimeArguments(ParameterInfo[] parameters, TroopRoster fullRoster, TroopRoster initialSelections, Action<TroopRoster> onDone)
+	private static object[] TryBuildOpenTroopSelectionRuntimeArguments(ParameterInfo[] parameters, TroopRoster fullRoster, TroopRoster initialSelections, Action<TroopRoster> onDone, int maxCount)
 	{
 		if (parameters == null || parameters.Length < 6)
 		{
@@ -1605,7 +1618,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			else if (parameterType == typeof(int))
 			{
-				arguments[i] = intIndex == 0 ? AutoSummonCount : 0;
+				arguments[i] = intIndex == 0 ? maxCount : 0;
 				intIndex++;
 			}
 			else if (parameterType == typeof(bool))
@@ -2296,6 +2309,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	internal static void OnEngineTickForExternal()
 	{
+		SettlementEntryTroopSelectionBehavior.OnEngineTickForExternal();
 		if (!CastleAftermathMissionEntryBridge.IsPending)
 		{
 			return;
@@ -2778,6 +2792,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			string playerName = ResolvePlayerCharacterNameForContext();
+			if (IsPeacefulGovernanceEntry(ResolveCurrentSettlement() ?? _activeSettlement)) return FriendlyEntryContext;
 			string context = SiegeRuntimePromptProfile.BuildPlayerCommanderContext(playerName, alliedSoldier, civilian, textCatalog: GcczTownPromptResourceProvider.GetCatalog());
 			if (_setsOwnedSettlementIncidentContext)
 			{
@@ -2945,7 +2960,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			IReadOnlyCollection<SiegeCastleActionKind> appliedActions = CastleAftermathDispositionSessionBridge.GetAppliedActions(role, agent, resolvedHero);
 			SiegeCastleActionKind terminalAction = CastleAftermathDispositionSessionBridge.GetTerminalAction(role, agent, resolvedHero);
 			CastleAftermathLordPoliticalFacts politicalFacts = CastleAftermathLordRecruitmentRuntimeBridge.GetPoliticalFacts(resolvedHero);
-			return SiegeCastleRuntimePromptProfile.Build(new SiegeCastleRuntimePromptFacts(
+			return (IsPeacefulGovernanceEntry(activeSettlement) ? FriendlyEntryContext + "\n" : "") + SiegeCastleRuntimePromptProfile.Build(new SiegeCastleRuntimePromptFacts(
 				settlementName,
 				ResolvePlayerCharacterNameForContext(),
 				alliedSoldier,
@@ -2971,7 +2986,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				CastleAftermathDispositionSessionBridge.BuildRegularPlanSummary(),
 				CastleAftermathLordDuelRuntimeBridge.IsPlayerMounted(),
 				CastleAftermathLordDuelRuntimeBridge.PlayerCarriesRangedWeapon(),
-				CastleAftermathLordDuelRuntimeBridge.PlayerWieldsRangedWeapon()), textCatalog: GcczTownPromptResourceProvider.GetCatalog());
+				CastleAftermathLordDuelRuntimeBridge.PlayerWieldsRangedWeapon()), textCatalog: GcczTownPromptResourceProvider.GetCatalog(), peacefulEntry: IsPeacefulGovernanceEntry(activeSettlement));
 		}
 		memoryContext = AppendRuntimeContext(
 			memoryContext,
@@ -3016,6 +3031,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			hero ??= character?.HeroObject;
 			string castleName = settlement.Name?.ToString() ?? _activeSettlementName;
 			string playerName = ResolvePlayerCharacterNameForContext();
+            if (IsPeacefulGovernanceEntry(settlement))
+                return BuildPeacefulSpeakerContext(CastleAftermathRuntimeBridge.IsPrisonerAgent(agent), hero?.IsLord == true,
+                    IsRuntimeAlliedSoldierAgent(agent, character, hero), IsCivilianForIntervention(character));
 			if (CastleAftermathRuntimeBridge.IsPrisonerAgent(agent))
 			{
 				bool isLord = CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent) || hero?.IsLord == true || character?.IsHero == true;
@@ -3106,6 +3124,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool ordinaryAlliedSoldier = TownDialogueRoleClassifier.CanExecuteAlliedSoldierOrders(dialogueRole, alliedSoldier);
 			Settlement settlement = ResolveCurrentSettlement();
 			string playerName = ResolvePlayerCharacterNameForContext();
+            if (IsPeacefulGovernanceEntry(settlement))
+                return BuildPeacefulSpeakerContext(settlement.IsCastle && CastleAftermathRuntimeBridge.IsPrisonerAgent(agent),
+                    resolvedHero?.IsLord == true, alliedSoldier, civilian);
 			if (settlement?.IsCastle == true)
 			{
 				bool prisoner = CastleAftermathRuntimeBridge.IsPrisonerAgent(agent);
@@ -3120,7 +3141,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					castleIdentity = AppendRuntimeContext(castleIdentity, SetsOwnedSettlementIncidentProfile.BuildRuntimeContext(SetsSettlementSceneKind.Castle, playerName, settlement.Name?.ToString() ?? _activeSettlementName, alliedSoldier, civilian, isEnglish: GcczTownPromptResourceProvider.UseEnglishPrompt));
 				}
-				return castleIdentity;
+				return IsPeacefulGovernanceEntry(settlement) ? AppendRuntimeContext(castleIdentity, FriendlyEntryContext) : castleIdentity;
 			}
 			string identity = SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(playerName, ordinaryAlliedSoldier, civilian, textCatalog: GcczTownPromptResourceProvider.GetCatalog());
 			identity = AppendRuntimeContext(
@@ -3136,7 +3157,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				string settlementName = string.IsNullOrWhiteSpace(_activeSettlementName) ? ResolveCurrentSettlement()?.Name?.ToString() : _activeSettlementName;
 				identity = AppendRuntimeContext(identity, SetsOwnedSettlementIncidentProfile.BuildRuntimeContext(ResolveSetsSettlementSceneKind(settlement), playerName, settlementName, ordinaryAlliedSoldier, civilian, isEnglish: GcczTownPromptResourceProvider.UseEnglishPrompt));
 			}
-			return identity;
+			return IsPeacefulGovernanceEntry(settlement) ? AppendRuntimeContext(identity, FriendlyEntryContext) : identity;
 		}
 		catch
 		{
@@ -3690,7 +3711,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						replyIsDirectPlayerResponse,
 						playerText);
 				}
-				return SiegeCastlePostprocessContextProfile.Build(new SiegeCastlePostprocessContextFacts(
+				return (IsPeacefulGovernanceEntry(ResolveCurrentSettlement()) ? FriendlyEntryContext + "\n" : "") + SiegeCastlePostprocessContextProfile.Build(new SiegeCastlePostprocessContextFacts(
 					_activeSettlementName,
 					role,
 					replyIsDirectPlayerResponse,
@@ -8569,6 +8590,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(TownMassacreConsequenceDelta.StopMessageColor)));
 				}
 			}
+            GcczTownRecentMemoryBridge.TownAction(ResolveCurrentSettlement(), "stop_massacre");
 			Logger.Log("SiegeAiIntervention", $"Massacre stopped. Source={triggerSource ?? "N/A"}, Survivors={survivorCount}, Killed={ActiveTownOperationLedger.Snapshot().KilledVictimCount}");
 			return true;
 		}
@@ -8721,6 +8743,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_previousSettlementOwnerClan,
 				IsActiveInCurrentMission(),
 				"constructive_culture_change");
+            GcczTownRecentMemoryBridge.TownAction(settlement, "constructive_culture_change");
 			RecordInterventionMemory(
 				textCatalog.ConstructiveCultureChangeMemoryTitle,
 				TownConstructiveCultureChangeTextProfile.BuildMemory(
@@ -8816,6 +8839,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_previousSettlementOwnerClan,
 				IsActiveInCurrentMission(),
 				"culture_change");
+            GcczTownRecentMemoryBridge.TownAction(settlement, "cultural_repopulation");
 			int killedNotables = 0;
 			int spawnedNotables = 0;
 			ReplaceTownNotablesForCulturalRepopulation(settlement, targetCulture, source, out killedNotables, out spawnedNotables);
@@ -10596,7 +10620,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (origin == null || !IsActiveInCurrentMission())
+			if (origin == null || !IsInterventionEscortScene(Mission.Current))
 			{
 				return false;
 			}
@@ -13466,20 +13490,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				IAgentOriginBase origin = new PartyAgentOrigin(party, troop);
 				CommandableOriginRuntimeIds.Add(RuntimeHelpers.GetHashCode(origin));
-				AgentBuildData buildData = new AgentBuildData(troop).TroopOrigin(origin).Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(troop.Race, "_settlement")).Team(team)
-					.InitialPosition(in position)
-					.InitialDirection(spawnDirection.AsVec2.Normalized())
-					.Controller(AgentControllerType.AI)
-					.CivilianEquipment(civilianEquipment: false)
-					.NoHorses(noHorses: true);
-				if (infantryFormation != null)
-				{
-					buildData = buildData.Formation(infantryFormation)
-						.FormationTroopSpawnCount(troops.Count)
-						.FormationTroopSpawnIndex(i)
-						.SpawnsIntoOwnFormation(true)
-						.SpawnsUsingOwnTroopClass(false);
-				}
+				AgentBuildData buildData = BuildInterventionEscortData(troop, origin, team, position, spawnDirection, infantryFormation, troops.Count, i);
 				Agent spawnedAgent = mission.SpawnAgent(buildData, false);
 				if (spawnedAgent != null)
 				{
@@ -13530,14 +13541,22 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	internal static int EnsureInterventionBannerBearersForExternal(Mission mission, string source)
+	internal static int EnsureInterventionBannerBearersForExternal(Mission mission, string source, TroopRoster selectedRoster = null)
 	{
 		try
 		{
 			mission ??= Mission.Current;
+			if (!IsInterventionEscortScene(mission)) return 0;
+			if (_bannerBearerOwnerMission == null || !_bannerBearerOwnerMission.TryGetTarget(out Mission bearerMission)
+				|| !ReferenceEquals(bearerMission, mission))
+			{
+				BannerBearerAgentIndexes.Clear();
+				_bannerBearerOwnerMission = new WeakReference<Mission>(mission);
+			}
 			Agent main = Agent.Main ?? mission?.MainAgent;
-			Team team = ResolveInterventionPlayerCommandTeamForExternal(mission, source);
-			return SpawnInterventionBannerBearers(mission, main, team, PartyBase.MainParty, source);
+			Team team = VillageAftermathBehavior.IsActiveForMission(mission)
+				? mission.PlayerTeam ?? main?.Team : ResolveInterventionPlayerCommandTeamForExternal(mission, source);
+			return SpawnInterventionBannerBearers(mission, main, team, PartyBase.MainParty, source, selectedRoster);
 		}
 		catch (Exception ex)
 		{
@@ -13546,11 +13565,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static int SpawnInterventionBannerBearers(Mission mission, Agent main, Team team, PartyBase party, string source)
+	private static int SpawnInterventionBannerBearers(Mission mission, Agent main, Team team, PartyBase party, string source, TroopRoster selectedRoster = null)
 	{
 		try
 		{
-			if (!SiegeBannerBearerProfile.BannerBearersEnabled || !IsActiveInCurrentMission() || mission == null || main == null || team == null || party?.MemberRoster == null)
+			if (!SiegeBannerBearerProfile.BannerBearersEnabled || !IsInterventionEscortScene(mission) || mission == null || main == null || team == null || party?.MemberRoster == null)
 			{
 				return 0;
 			}
@@ -13570,7 +13589,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			FormationClass bannerFormationClass = GetBannerBearerFormationClass();
 			Formation bannerFormation = team.GetFormation(bannerFormationClass);
 			MarkFormationPlayerCommandable(bannerFormation, main);
-			List<CharacterObject> troops = PickInterventionBannerBearerTroops(missingCount);
+			List<CharacterObject> troops = PickInterventionBannerBearerTroops(missingCount, VillageAftermathBehavior.IsActiveForMission(mission) ? selectedRoster : _selectedInterventionRoster);
 			if (troops.Count == 0)
 			{
 				Logger.Log("SiegeAiIntervention", "Skip GCCZ banner bearers: no available non-hero troop. Source=" + (source ?? "N/A"));
@@ -13632,12 +13651,13 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						continue;
 					}
 					AlliedAgentIndexes.Add(spawnedAgent.Index);
+					if (VillageAftermathBehavior.IsActiveForMission(mission)) PrepareVillageEscortForExternal(spawnedAgent);
 					BannerBearerAgentIndexes.Add(spawnedAgent.Index);
 					RestoreAlliedSoldierFriendlyState(spawnedAgent, 0f, SiegeBannerBearerProfile.BannerBearerRestoreSource, forceFollow: false, clearTarget: true);
 					AssignAgentToPlayerFormation(spawnedAgent, bannerFormationClass, refreshFormationOrders: false);
 					RestoreBannerBearerMountTeam(spawnedAgent, main, mission);
 					TryWieldBannerBearerBanner(spawnedAgent);
-					spawnedAgent.SetWatchState(_massacreStarted || _plunderStarted ? Agent.WatchState.Alarmed : Agent.WatchState.Patrolling);
+					spawnedAgent.SetWatchState(!VillageAftermathBehavior.IsActiveForMission(mission) && (_massacreStarted || _plunderStarted) ? Agent.WatchState.Alarmed : Agent.WatchState.Patrolling);
 					spawned++;
 				}
 				catch (Exception ex)
@@ -13660,7 +13680,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static List<CharacterObject> PickInterventionBannerBearerTroops(int count)
+	private static List<CharacterObject> PickInterventionBannerBearerTroops(int count, TroopRoster selectedRoster)
 	{
 		if (count <= 0)
 		{
@@ -13668,7 +13688,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			CharacterObject selectedTroop = PickBannerBearerTroopFromRoster(_selectedInterventionRoster);
+			CharacterObject selectedTroop = PickBannerBearerTroopFromRoster(selectedRoster);
 			if (selectedTroop != null)
 			{
 				return RepeatBannerBearerTroop(selectedTroop, count);
@@ -14594,6 +14614,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		TownActionPresentationTextCatalog text = GcczTownActionPresentationResourceProvider.GetFactCatalog();
 		TownActionPresentationText action = text.GetAction(key);
 		RecordInterventionMemory(action.MemoryTitle, text.BuildMemory(key, repeat, sharedPoolDescription, targetCultureDescription));
+        if (!repeat && key != TownActionPresentationKeys.CulturalRepopulation)
+            GcczTownRecentMemoryBridge.TownAction(ResolveCurrentSettlement(), key);
 	}
 
 	private static void ShowOutcomeMessageOnce(string key, uint color, string targetCultureDescription = null)
@@ -15013,7 +15035,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	}
 
 	private static void CaptureNativeSiegeContext(Settlement settlement)
-	{
+    {
+        if (IsPeacefulGovernanceEntry(settlement))
+        { _besiegerParty = MobileParty.MainParty; _previousSettlementOwnerClan = settlement.OwnerClan; _partyContributions = null; return; }
 		try
 		{
 			if (_setsSettlementEntryVictoryContext)
@@ -15062,6 +15086,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void TrySetNativePlayerEncounterAftermathForSummary(SiegeAftermathAction.SiegeAftermath aftermath)
 	{
+        if (IsPeacefulGovernanceEntry(_activeSettlement)) return;
 		try
 		{
 			SiegeAftermathCampaignBehavior behavior = Campaign.Current?.GetCampaignBehavior<SiegeAftermathCampaignBehavior>();
@@ -15621,6 +15646,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void ResetAftermathRuntimeGuards(string reason)
 	{
+        _peacefulEntrySettlementId = "";
 		CastleAftermathLoadRecoveryBridge.Reset();
 		try
 		{
@@ -16239,17 +16265,20 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 		private static bool SuppressSceneTauntMissionBehaviorPrefix()
 		{
-			return !SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal();
+			return !SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal()
+				&& !VillageDispositionSceneMissionBehavior.Controls(Mission.Current);
 		}
 
 		private static bool SuppressSceneTauntCrimePrefix()
 		{
-			return !SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal();
+			return !SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal()
+				&& !VillageDispositionSceneMissionBehavior.Controls(Mission.Current);
 		}
 
 		private static bool SuppressCrimeRatingDuringInterventionPrefix()
 		{
-			return !SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal();
+			return !SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal()
+				&& !VillageDispositionSceneMissionBehavior.Controls(Mission.Current);
 		}
 
 		private static bool SuppressCivilianUsableTargetPrefix(AgentNavigator __instance, UsableMachine usableMachine)
@@ -16730,6 +16759,13 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
+				if (VillageDispositionSceneMissionBehavior.Controls(__instance))
+				{
+					if (attacker?.IsMainAgent != true || !VillageDispositionSceneMissionBehavior.IsResident(victim)) return true;
+					VillageDispositionSceneMissionBehavior.PrepareResidentDamage(victim);
+					__result = false;
+					return false;
+				}
 				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal() || attacker == null || victim == null || !attacker.IsMainAgent || !victim.IsHuman)
 				{
 					return true;

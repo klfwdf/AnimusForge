@@ -163,7 +163,7 @@ internal static string BuildNpcInitiatedOpeningUserText(string extraFact, string
 
     internal static string BuildNativeConversationStreamingVisibleText(string text, ConversationSpeechTextOptions options)
     {
-        string visible = LlmVisibleReplyNormalizer.NormalizeStreamingPreview(text);
+        string visible = LocalTtsToneTag.StripStreamingPreview(LlmVisibleReplyNormalizer.NormalizeStreamingPreview(text));
         visible = (visible ?? "").Replace("\r", "").TrimStart();
         if (string.IsNullOrWhiteSpace(visible)) return "...";
         visible = ShoutUtils.StripNamePrefixedLineSafely(visible, 30);

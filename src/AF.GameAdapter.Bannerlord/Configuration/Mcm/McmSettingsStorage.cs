@@ -6,7 +6,7 @@ using MCM.Abstractions.GameFeatures;
 
 namespace AnimusForge;
 
-// Route only AF's three settings IDs. Keep MCM's serializers, fields, indices,
+// Route only AF's owned settings IDs. Keep MCM's serializers, fields, indices,
 // snapshot semantics and the existing Illustrator-specific route unchanged.
 internal static class McmSettingsStorage
 {
@@ -47,8 +47,10 @@ internal static class McmSettingsStorage
 
     private static bool IsOwnedId(string id)
         => string.Equals(id, "AnimusForge_global_settings", StringComparison.Ordinal)
+            || string.Equals(id, SpeechSettings.SettingsId, StringComparison.Ordinal)
             || string.Equals(id, "AnimusForge_DialogueUI_v1", StringComparison.Ordinal)
-            || string.Equals(id, "AnimusForge_Coup_v1", StringComparison.Ordinal);
+            || string.Equals(id, "AnimusForge_Coup_v1", StringComparison.Ordinal)
+            || string.Equals(id, "AnimusForge_GCCZ_v1", StringComparison.Ordinal);
 
     private static void RouteJson(BaseSettings settings, ref GameDirectory directory, string filename)
     {

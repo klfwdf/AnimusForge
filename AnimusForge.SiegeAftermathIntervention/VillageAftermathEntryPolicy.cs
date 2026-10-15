@@ -2,7 +2,7 @@ namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
 /// GCCZ village is a noble-administration scene, not a raid replacement.
-/// Ordinary vassals never gain authority over another noble's village.
+/// Ordinary vassals may visit another friendly village without gaining governance rights.
 /// </summary>
 public static class VillageAftermathEntryPolicy
 {
@@ -32,6 +32,9 @@ public static class VillageAftermathEntryPolicy
         {
             return new VillageAftermathEntryDecision(true, VillageAftermathAuthorityKind.KingdomRuler, "kingdom_ruler_over_vassal_village");
         }
+
+        if (facts.BoundSettlementBelongsToPlayerKingdom)
+            return new VillageAftermathEntryDecision(true, VillageAftermathAuthorityKind.FriendlyVisitor, "friendly_visitor");
 
         return Deny("no_village_administration_authority");
     }

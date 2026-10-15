@@ -36,6 +36,7 @@ for sig in ['internal class Color','internal class InformationMessage','internal
 code='using AnimusForge.Refactor.Modules;using TaleWorlds.Library;\n'+code
 (out/'Program.cs').write_text(code,encoding='utf-8')
 # Keep the actual namespace imports: game substitutes live in their real namespaces.
+(out/'LocalTtsToneTag.cs').write_bytes((ROOT/'src/modules/AF.Module.Llm/Tts/LocalTtsToneTag.cs').read_bytes())
 (out/'SystemRuntime.cs').write_text(runtime,encoding='utf-8')
 (out/'Dispatcher.cs').write_text(dispatcher,encoding='utf-8')
 (out/'Registry.cs').write_bytes((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_bytes())

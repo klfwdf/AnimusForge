@@ -36,7 +36,7 @@ Events only record bounded facts; they do not issue network requests or scan all
   day** since the first pending change. Time alone does not generate more prose.
 - Per-town network attempts are at least **1 wall-clock minute** apart. Failed/rejected attempts
   cool down for a minute after completion. At most **2** requests/completions are outstanding.
-- Town generation uses the existing auxiliary gateway with an additional **384 output-token ceiling** (a lower user limit is retained), thinking disabled, and no thinking-control compatibility retry. Other auxiliary callers retain their existing settings. Character bounds on input are not an exact tokenizer budget.
+- Town generation uses the existing auxiliary gateway with an additional **1536 output-token ceiling** (a lower user limit is retained), thinking disabled, and no thinking-control compatibility retry. Other auxiliary callers retain their existing settings. Character bounds on input are not an exact tokenizer budget.
 - There is no background retry loop. Reopen/refresh the encyclopedia or use an eligible dialogue
   after cooldown to retry. A busy slot leaves pending facts intact for the next demand.
 - At most **12** recent confirmed facts (480 characters each) accompany a tenure; prior prose is
@@ -47,6 +47,14 @@ The last good prose remains visible while pending, during generation, or after f
 prose is never automatically replaced by an event, culture/personality change or elapsed time.
 The existing explicit developer regeneration action releases that manual lock while retaining
 its text until a successful replacement; clearing text also enables future generation.
+New generated prose must contain **300-600 characters** after whitespace normalization; longer
+responses are trimmed to the existing sentence boundary policy within 600 characters. Previously
+saved short prose remains readable and is not padded or forcibly regenerated. Manual text retains
+its existing editing rules, with the storage ceiling raised to 600 characters. CN/EN generation
+prompts ask for more detail about livelihoods, expectations, fear, trust, conduct and differing
+local views, developing confirmed events and their effects first. Without events, the supplied
+personality and reputation support only an overall impression, not invented experiences,
+institutions or scenes; repetition and vague praise or blame are discouraged.
 
 ## Async/lifecycle acceptance
 
@@ -79,6 +87,7 @@ rewrite or delete live player saves to perform source rollback.
 The harness links the production core, generation bridge, runtime bridge, ruler adapter and event
 listeners. It uses a controllable auxiliary transport and value-only Bannerlord fixtures, covering
 revision/cadence behavior, stale/manual acceptance, bounds, v1/v2/v3 migration, event dates,
-registered listener behavior, and host save/load including full Chinese multi-tenure chunks. `verify_auxiliary_budget.ps1` extracts the actual auxiliary methods and validates budget/config behavior against a gateway stub; the existing configured-gateway HTTP replay separately verifies 384 tokens, disabled thinking and exactly one failed request. It is not a live game or real provider test.
+registered listener behavior, and host save/load including full Chinese multi-tenure chunks. `verify_auxiliary_budget.ps1` extracts the actual auxiliary methods and validates the 1536-token ceiling and lower user limits against a gateway stub. The historical configured-gateway HTTP replay separately covers disabled thinking and exactly one failed request with its original 384-token fixture. Neither is a live game or real provider test.
 Use the unchanged unified build script for both API lines plus Bootstrap. Current evidence,
-source coordinates and rollback are in the main ledger's `town-memory-refresh-20261001` entry.
+source coordinates and rollback are in the main ledger's `town-memory-length-300-600-20261015` entry;
+the earlier `town-memory-refresh-20261001` entry retains the original refresh implementation history.

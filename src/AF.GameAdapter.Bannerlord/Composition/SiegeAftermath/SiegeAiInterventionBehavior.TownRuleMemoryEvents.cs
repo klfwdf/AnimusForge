@@ -12,6 +12,7 @@ public partial class SiegeAiInterventionBehavior
 {
     private void RegisterTownRuleMemoryEvents()
     {
+        GcczTownRecentMemoryBridge.Register(this);
         CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, OnTownMemoryOwnerChanged);
         CampaignEvents.OnClanLeaderChangedEvent.AddNonSerializedListener(this, OnTownMemoryClanLeaderChanged);
         CampaignEvents.OnSiegeAftermathAppliedEvent.AddNonSerializedListener(this, OnTownMemoryNativeAftermath);
@@ -19,7 +20,10 @@ public partial class SiegeAiInterventionBehavior
 
     private void OnTownMemoryOwnerChanged(Settlement settlement, bool openToClaim, Hero newOwner,
         Hero oldOwner, Hero capturer, ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail detail)
-        => GcczTownRuleMemoryRuntimeBridge.ObserveOwnerChange(settlement, oldOwner, newOwner);
+    {
+        GcczTownRuleMemoryRuntimeBridge.ObserveOwnerChange(settlement, oldOwner, newOwner);
+        GcczTownRecentMemoryBridge.OwnerChanged(settlement, capturer, detail);
+    }
 
     private void OnTownMemoryClanLeaderChanged(Hero oldLeader, Hero newLeader)
     {
@@ -34,6 +38,7 @@ public partial class SiegeAiInterventionBehavior
     {
         // GCCZ invokes native mercy internally; publish its actual completed outcome below instead.
         if (_hasPendingAftermath && _activeSettlement == settlement) return;
+        GcczTownRecentMemoryBridge.NativeAftermath(attacker, settlement, aftermath);
         GcczTownRuleMemoryRuntimeBridge.RecordConfirmedEvent(settlement,
             "native-aftermath:" + CampaignTime.Now.ToSeconds + ":" + aftermath,
             SiegeAftermathUiText.Aftermath(attacker?.LeaderHero?.Name?.ToString(), aftermath.ToString()));

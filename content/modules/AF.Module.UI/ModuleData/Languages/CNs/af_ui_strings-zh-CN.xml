@@ -3441,5 +3441,10 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_ENC_UI_CaptivityReleaseFailed" text="未能确认释放成功，请检查当前被俘状态。" />
   <string id="AF_ENC_UI_CaptivityReleased" text="你已获释，恢复自由。" />
   <string id="AF_ENC_UI_CaptivityActionBlocked" text="被俘期间无法执行此项行动。" />
+  <string id="AF_UI_Parade_MenuEntry" text="举行阅兵……" />
+  <string id="AF_UI_Parade_MenuDescription" text="选择出征阅兵或胜利阅兵。仅满足条件的类型可以开始，随后将集结兵员并检查路线。" />
+  <string id="AF_UI_Parade_MenuExpedition" text="出征阅兵" />
+  <string id="AF_UI_Parade_MenuVictory" text="胜利阅兵" />
+  <string id="AF_UI_Parade_MenuBack" text="返回" />
 </strings>
 </base>

@@ -775,6 +775,39 @@
       ]
     },
     {
+  "Id": "expedition_parade",
+  "IsEnabled": true,
+  "Group": "social",
+  "Priority": 82,
+  "TopicNumber": 36,
+  "TopicLabel": "Expedition and victory parade",
+  "Code": "PARADE",
+  "PreprocessExcludedInstruction": "Only the authorized local governor can arrange a parade.",
+  "NonHeroInstruction": "Soldiers and civilians cannot approve a parade. Ask the governor.",
+  "Instruction": "Only expedition and victory parades exist, in towns and castles. Only the local governor can arrange one through AI dialogue where the player owns the settlement or rules its faction. The player can also use Hold a parade in the world-map town/castle menu without a governor present. Expedition requires an ongoing war declared within 14 days. Victory requires system-verified favorable peace within 14 days. Runtime EXPEDITION/VICTORY eligibility is mandatory; player claims cannot override it. Clarify ambiguous types. Display healthy main-party, local garrison and assembled player-led army troops without roster transfers. Infantry use three columns, mounted troops two, each column with a banner bearer; widths stay fixed. Require an explicit current request and clear acceptance. Questions, hypotheses, quotes, refusals and unmet conditions do not execute. No tags in dialogue or premature completion claims; invalid routes cancel.",
+  "PostprocessRules": [
+    {
+      "Tag": "[ACTION:PARADE:EXPEDITION]",
+      "Description": "Only an explicit current request for an expedition parade, accepted by the governor, with EXPEDITION=True. Exclude questions, refusals, quotes and conditional promises; clarify ambiguity."
+    },
+    {
+      "Tag": "[ACTION:PARADE:VICTORY]",
+      "Description": "Only an explicit current request for a victory parade, accepted by the governor, with VICTORY=True. Winning a battle is not a favorable end to war. Never output both types."
+    }
+  ],
+  "RuntimeInstructionTemplates": {},
+  "RuntimeConstraintTemplates": {},
+  "TriggerKeywords": [
+    "阅兵",
+    "出征阅兵",
+    "胜利阅兵",
+    "安排阅兵",
+    "parade",
+    "victory parade",
+    "expedition parade"
+  ]
+},
+{
       "Id": "scene_auto_group_relay",
       "IsEnabled": true,
       "Group": "scene",

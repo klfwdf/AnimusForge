@@ -1,0 +1,84 @@
+using AnimusForge;
+using AnimusForge.SiegeAftermathIntervention;
+using TaleWorlds.Core;
+using TaleWorlds.CampaignSystem;
+using V=AnimusForge.VillageAftermathBehavior;
+int checks=0;
+void Check(bool ok,string message) { if(!ok)throw new Exception(message); checks++; }
+string Tag(int kind,string args="")=>"[VILLAGE_ACTION:"+FriendlyVillageActionCatalog.All.Single(a=>a.Gift==kind).Name+args+"]";
+EquipmentElement Item(string id,string name,int kind,int price=1,bool horse=false,string modifier="")=>new(new(){StringId=id,Name=name,IsFood=kind==1,IsTradeGood=kind==2,HorseComponent=kind==3?new(){IsLiveStock=!horse}:null},modifier,price);
+var allowed=FriendlyVillageActionCatalog.All.Where(a=>a.Gift>=0).Select(a=>a.Tag).ToHashSet();
+var raw=Tag(1,"|item=grain|amount=20");
+var normalized=FriendlyVillageActionCatalog.NormalizeInvocations(raw,allowed);
+Check(normalized==Tag(1,"|amount=20|item=grain"),"canonical parameters survive base-tag allowlisting");
+Check(FriendlyVillageActionCatalog.NormalizeInvocations(raw,new HashSet<string>())=="","ineligible base tag blocked");
+foreach(var bad in new[]{"|amount=-1","|amount=1.5","|amount=2147483648","|amount=10|amount=20","|amount=+10","|wat=20","|item=","|item=a=b","|amount=10|ITEM=a|item=b"})
+ Check(FriendlyVillageActionCatalog.ExtractInvocations(Tag(1,bad)).Count==0,"reject malformed "+bad);
+Check(FriendlyVillageActionCatalog.ExtractInvocations(Tag(0,"|item=gold")).Count==0,"money cannot take item argument");
+Check(FriendlyVillageActionCatalog.ExtractInvocations("[VILLAGE_ACTION:屠村|amount=2]").Count==0,"non-aid arguments forbidden");
+Check(FriendlyVillageActionCatalog.ExtractInvocations(raw+raw).Count==1,"identical tag deduplicated");
+Check(FriendlyVillageActionCatalog.RemoveTags("ok"+raw)=="ok","parameter tags never shown in prose");
+Check(FriendlyVillageActionCatalog.Extract(Tag(1)).Single().Gift==1,"legacy catalog API retained");
+var owner=V.Reset(); owner.SeedLegacyCooldown(0);
+void Gift(int kind,string args="") { Check(owner.Open(Tag(kind,args)),"open gift "+kind); InformationManager.Last.Confirm(); }
+Gift(0); Check(owner.Cooperation==0 && owner.Remainder==1,"first delivery remembered");
+var old=InformationManager.Last; old.Confirm(); Check(Hero.MainHero.Gold==999000 && owner.Remainder==1,"double callback cannot charge/reward twice");
+Gift(0);Check(owner.Cooperation==1 && owner.Multiplier==1,"same type immediately gives cooperation but no growth");
+Check(V.Village.Notables[0].Relation==20 && V.Village.Village.Bound.OwnerClan.Leader.Relation==10,"each delivery keeps original relationship awards");
+Gift(0,"|amount=2500");Check(Hero.MainHero.Gold==995500 && owner.Cooperation==1,"larger donation counts once");
+var saved=owner.SaveRemainder();owner.End();owner.NewMission();owner.LoadRemainder(saved);Gift(0);Check(owner.Cooperation==2,"odd delivery survives boundary/serialized dictionary roundtrip");
+Check(!owner.Open(Tag(0,"|amount=999")) && Hero.MainHero.Gold==994500,"below minimum never raised");
+Check(!owner.Open(Tag(0,"|amount=2147483647")),"insufficient gold cannot open payment");
+owner.Open(Tag(0));InformationManager.Last.Cancel();Check(owner.Cooperation==2 && owner.Remainder==0,"cancel gives no rewards");
+for(int i=0;i<12;i++)Gift(0);Check(owner.Cooperation==6,"cooperation capped at six");
+owner.VisitOther();Gift(0);Check(owner.Cooperation==0 && owner.Remainder==1,"per-village remainder and cooperation isolation");
+owner=V.Reset(); var grain=Item("grain","谷物",1,10);var fish=Item("fish","鱼",1,30);
+V.Inventory.AddToCounts(grain,100); V.Inventory.AddToCounts(fish,50);
+Gift(1,"|amount=20|item=谷物");Check(V.Inventory.Count(grain)==80 && V.Village.ItemRoster.Count(grain)==20 && V.Inventory.Count(fish)==50,"exact name, amount and native market transfer");
+Check(V.Facts.Last().Contains("谷物 × 20"),"memory records actual item list");
+Check(!owner.Open(Tag(1,"|amount=81|item=grain")) && V.Inventory.Count(fish)==50,"specified shortage never substitutes other food");
+Check(!owner.Open(Tag(1,"|item=unknown")),"unknown item does not become minimum random donation");
+var ambiguous=Item("other_grain","谷物",1);V.Inventory.AddToCounts(ambiguous,100);
+Check(!owner.Open(Tag(1,"|item=谷物")),"ambiguous localized names fail closed");
+Gift(1,"|item=grain");Check(V.Inventory.Count(grain)==70,"known ID avoids name ambiguity");
+owner=V.Reset(); var cheap=Item("iron","铁",2,20,false,"cheap ");var expensive=new EquipmentElement(cheap.Item,"fine ",200);
+V.Inventory.AddToCounts(cheap,3);V.Inventory.AddToCounts(expensive,10);
+Gift(2);Check(V.Inventory.Count(cheap)==0 && V.Inventory.Count(expensive)==8,"default goods cheapest modified stacks first");
+Check(V.Village.ItemRoster.Count(cheap)==3 && V.Village.ItemRoster.Count(expensive)==2,"market preserves both modifiers");
+owner=V.Reset();var cow=Item("cow","牛",3,100);var horse=Item("horse","马",3,500,true);var pack=Item("pack","驮马",3,50,true);
+V.Inventory.AddToCounts(cow,1);V.Inventory.AddToCounts(horse,10);V.Inventory.AddToCounts(pack,1);
+Gift(3);Check(V.Village.ItemRoster.Count(cow)==1 && V.Village.ItemRoster.Count(pack)==1 && V.Village.ItemRoster.Count(horse)==1,"livestock first then cheaper horses including pack animals");
+Gift(3,"|amount=4|item=horse");Check(V.Village.ItemRoster.Count(horse)==5,"explicit horse selection allowed");
+var stocks=new[]{new VillageAidStock<string>{Item="a",Id="a",Count=3,Price=1,RandomOrder=.9f},new VillageAidStock<string>{Item="b",Id="b",Count=3,Price=999,RandomOrder=.1f}};
+VillageAidRules.Plan(3,3,"",stocks,out var plan);Check(plan[0].Key=="b","random non-horse ordering before price");
+owner=V.Reset();V.Inventory.AddToCounts(grain,20);V.Inventory.AddToCounts(fish,20);owner.Open(Tag(1));var pending=InformationManager.Last;V.Inventory.AddToCounts(grain,-15);pending.Confirm();
+Check(V.Inventory.Count(grain)==5 && V.Inventory.Count(fish)==20 && owner.Remainder==0 && !owner.Disposition,"changed inventory cancels whole frozen plan, no substituted food or success");
+owner=V.Reset();V.Inventory.AddToCounts(grain,20);owner.Open(Tag(1));V.Village.ItemRoster.ThrowNextAfterMutation=true;InformationManager.Last.Confirm();
+Check(V.Inventory.Count(grain)==20 && V.Village.ItemRoster.Count(grain)==0 && owner.Remainder==0 && V.Facts.Count==0,"native mutation exception restores both snapshots and grants nothing");
+owner=V.Reset();owner.Open(Tag(0));var retired=InformationManager.Last;owner.End();owner.Open(Tag(0));var current=InformationManager.Last;retired.Cancel();Check(V.Pending,"retired cancel cannot unlock new UI");retired.Confirm();Check(Hero.MainHero.Gold==1000000,"retired confirm cannot pay");current.Confirm();Check(Hero.MainHero.Gold==999000,"current confirmation still pays once");
+owner.Open(Tag(0));owner.SetFriendly(false);InformationManager.Last.Confirm();Check(Hero.MainHero.Gold==999000 && !V.Pending,"faction invalidated at confirmation");
+owner.SetFriendly(true);owner.SetActive(false);Check(!owner.Open(Tag(0)),"outside active scene blocked");
+owner=V.Reset();owner.Open(Tag(0));owner.VisitOther();InformationManager.Last.Confirm();Check(Hero.MainHero.Gold==1000000,"different village callback blocked");
+owner=V.Reset();InformationManager.ThrowOpen=true;try{owner.Open(Tag(0));}catch{}Check(!V.Pending && owner.Cooperation==0,"UI failure releases inquiry without rewards");
+owner=V.Reset();V.Inventory.AddToCounts(grain,1000);V.Inventory.AddToCounts(cheap,100);V.Inventory.AddToCounts(cow,100);
+Gift(0);V.CurrentDay=1;Gift(1);Check(owner.Multiplier==1.2f && owner.Expiry==22,"two distinct kinds give one +20% bonus expiring 21 days later");
+V.CurrentDay=2;Gift(0);Gift(1);Check(owner.Multiplier==1.2f && owner.BonusCount==1 && owner.Expiry==22,"repeats neither stack nor extend growth");
+V.CurrentDay=3;Gift(2);Gift(3);Check(owner.Multiplier==1.5f && owner.BonusCount==1 && owner.Expiry==22,"four kinds upgrade same round not add +50%");
+V.CurrentDay=6;Gift(0);Gift(1);Check(owner.Multiplier==1.5f && owner.BonusCount==1,"cannot restart development round before seven days");
+V.CurrentDay=7;Gift(0);Gift(1);Check(owner.Multiplier==1.7f && owner.BonusCount==2,"new round after seven days stacks separately");
+V.CurrentDay=22;Check(owner.Multiplier==1.2f && owner.BonusCount==1,"old round expires separately");V.CurrentDay=28;Check(owner.Multiplier==1f && owner.BonusCount==0,"second round expires");
+foreach(bool english in new[]{false,true}) { owner=V.Reset();V.English=english;Gift(0);Check(InformationManager.Last.Text.Contains(english?"denars":"第纳尔"),"actual confirmation language");Check(V.Facts.Single().Contains(english?"delivered":"实际交付"),"actual memory language"); }
+
+owner=V.Reset();V.Inventory.AddToCounts(grain,20);V.Village.ItemRoster.AddToCounts(grain,int.MaxValue);owner.Open(Tag(1));InformationManager.Last.Confirm();
+Check(V.Inventory.Count(grain)==20 && owner.Cooperation==0,"market overflow fails before source debit");
+owner=V.Reset();owner.Open(Tag(0));owner.NewMission();InformationManager.Last.Confirm();Check(Hero.MainHero.Gold==1000000,"same village new mission cannot accept retired confirmation");
+foreach(int kind in new[]{1,2,3}) Check(!owner.Open(Tag(kind,"|amount="+(VillageAidRules.Minimum(kind)-1))),"item minimum cannot be lowered");
+var cn=TownPromptCatalogResources.Get(false);var en=TownPromptCatalogResources.Get(true);
+foreach(var key in new[]{"VillageAid_Dialogue","VillageAid_Postprocess","VillageAid_Confirm"}) {
+ Check(cn.GetRuntimeText(key)!=en.GetRuntimeText(key),"paired prompt resource "+key);
+ Check(TownPromptTextCatalog.CreateEnglishFallback().GetRuntimeText(key)==en.GetRuntimeText(key),"English fallback equals package "+key);
+}
+Check(!cn.GetRuntimeText("VillageAid_Dialogue").Contains("[VILLAGE_ACTION:"),"main aid speech has no tag grammar");
+Check(en.GetRuntimeText("VillageAid_Postprocess").Contains("|amount=20|item=grain"),"postprocess teaches same real parser grammar");
+Check(TownPromptTextCatalog.FormatTemplate(cn.GetRuntimeText("VillageAid_Confirm"),("minimum","10")).Contains("最低10"),"per-action minimum template renders");
+Console.WriteLine($"PASS {checks} aid parser, production callback/transfer/reward checks; native UI/economy/save engine are boundaries, not a live-game test.");

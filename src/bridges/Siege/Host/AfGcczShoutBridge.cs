@@ -1290,7 +1290,7 @@ internal static class AfGcczShoutBridge
 
 
 
-				? VillageAftermathBehavior.BuildRuntimePromptForExternal()
+				? VillageAftermathBehavior.BuildRuntimePromptForExternal(targetHero, targetCharacter, targetAgentIndex)
 
 
 
@@ -1434,7 +1434,7 @@ internal static class AfGcczShoutBridge
 
 
 
-			return VillageAftermathBehavior.BuildPostprocessRulesForExternal(replyIsDirectPlayerResponse);
+			return VillageAftermathBehavior.BuildPostprocessRulesForExternal(targetAgentIndex, replyIsDirectPlayerResponse);
 
 
 
@@ -1510,7 +1510,7 @@ internal static class AfGcczShoutBridge
 
 
 
-			? VillageAftermathBehavior.BuildPostprocessContextForExternal(replyIsDirectPlayerResponse)
+			? VillageAftermathBehavior.BuildPostprocessContextForExternal(targetAgentIndex, replyIsDirectPlayerResponse)
 
 
 

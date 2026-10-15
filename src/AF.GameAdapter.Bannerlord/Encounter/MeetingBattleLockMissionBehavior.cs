@@ -23,6 +23,9 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 {
 	private static MeetingBattleLockMissionBehavior _currentInstance;
 
+	// The started owner is cleared on removal; a global meeting flag alone is not mission identity.
+	internal static Mission ActiveMission => _currentInstance?.Mission;
+
 	private sealed class PendingFatalHitContext
 	{
 		internal DamageTypes DamageType;

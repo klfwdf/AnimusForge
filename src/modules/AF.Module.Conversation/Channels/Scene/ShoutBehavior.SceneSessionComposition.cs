@@ -51,6 +51,7 @@ namespace AnimusForge;
 public partial class ShoutBehavior
 {
     private int _sceneConversationEpoch { get => _sceneConversation.ConversationEpoch; set => _sceneConversation.ConversationEpoch=value; }
+    internal int CurrentPlayerConversationEpoch => _sceneConversationEpoch;
     private bool _isWaitingForScenePostprocessGate { get => _sceneConversation.IsWaitingForPostprocess; set => _sceneConversation.IsWaitingForPostprocess=value; }
     private ScenePlayerShoutRequestOwner _scenePlayerShoutRequestOwner => _sceneConversation.PlayerRequests;
     private AnimusForge.Refactor.Runtime.ConversationRequestLifetime _sceneRequestLifetime { get => _sceneConversation.RequestLifetime; set => _sceneConversation.RequestLifetime=value; }

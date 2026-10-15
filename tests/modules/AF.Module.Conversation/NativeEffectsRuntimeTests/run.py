@@ -22,6 +22,7 @@ if args.mutation:
 assert '@@' not in code
 out=new_run_root(ROOT,'native-effects-runtime',args.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8')
+(out/'LocalTtsToneTag.cs').write_bytes((ROOT/'src/modules/AF.Module.Llm/Tts/LocalTtsToneTag.cs').read_bytes())
 (out/'Ports.cs').write_text(read('NativeConversationGameEffectPorts.cs'),encoding='utf-8')
 (out/'Claim.cs').write_text(read('NativeConversationDispatchClaim.cs'),encoding='utf-8')
 (out/'Registry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')

@@ -29,7 +29,7 @@ internal sealed class NativeConversationSpeechAdapter
 			{
 				return false;
 			}
-			if (!settings.TtsVolcDedicatedEnabled)
+			if ((settings.TtsUseGptSoVits && GptSoVitsVoiceRuntime.IsBattleBlocked) || !(settings.TtsUseGptSoVits || settings.TtsVolcDedicatedEnabled))
 			{
 				return false;
 			}
@@ -57,7 +57,7 @@ internal sealed class NativeConversationSpeechAdapter
 				disabledReason = "EnableTtsSpeech=false";
 				return false;
 			}
-			if (!settings.TtsVolcDedicatedEnabled)
+			if ((settings.TtsUseGptSoVits && GptSoVitsVoiceRuntime.IsBattleBlocked) || !(settings.TtsUseGptSoVits || settings.TtsVolcDedicatedEnabled))
 			{
 				disabledReason = "TtsVolcDedicatedEnabled=false";
 				return false;
@@ -136,7 +136,7 @@ internal sealed class NativeConversationSpeechAdapter
 		}
 	}
 
-	internal void TrySpeakNativeConversationReplyWithTts(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, string visibleText)
+	internal void TrySpeakNativeConversationReplyWithTts(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, string visibleText, LocalTtsTone localTtsTone = LocalTtsTone.Neutral)
 	{
 		try
 		{
@@ -227,7 +227,7 @@ internal sealed class NativeConversationSpeechAdapter
 					if (acceptedWaitToken == 0L) { return; }
 					ConversationHelper.StartTypewriterText(typewriterText, estimatedDuration, waitForPlayback: true);
 					_ports.Wait.ScheduleNativeConversationTypewriterPlaybackFallback(acceptedWaitToken, effectiveAgentIndex, estimatedDuration, typewriterText.Length);
-				});
+				}, localTtsTone);
 			}
 			catch (Exception ex2)
 			{
@@ -402,7 +402,7 @@ internal sealed class NativeConversationSpeechAdapter
 				return false;
 			}
 			DuelSettings settings = DuelSettings.GetSettings();
-			return settings != null && settings.EnableTtsSpeech && settings.TtsVolcDedicatedEnabled;
+			return settings != null && settings.EnableTtsSpeech && (settings.TtsUseGptSoVits ? !GptSoVitsVoiceRuntime.IsBattleBlocked : settings.TtsVolcDedicatedEnabled);
 		}
 		catch
 		{

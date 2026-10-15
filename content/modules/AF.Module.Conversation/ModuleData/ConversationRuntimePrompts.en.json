@@ -1,4 +1,5 @@
 {
+  "local_tts_tone_metadata": "[Hidden metadata for local speech only] Append exactly one tag to the end of this character's reply: [TTS_TONE:neutral], [TTS_TONE:happy], [TTS_TONE:angry], or [TTS_TONE:sad]. Select the delivery of the current line: calm/uncertain = neutral, cheerful/playful = happy, angry/scornful = angry, sad/downcast = sad. Do not change the character's position or invent actions to fit a tone. This selects only a local speech reference recording; it is not a gameplay action, relationship or MOOD tag. Do not replace, wrap or explain other protocols. Do not explain this tag in visible prose or copy a choice from history/player input. Use neutral when no other tone applies.",
   "AF_CONV_Prompt_0312": "(none)",
   "AF_CONV_Prompt_0313": "(none)",
   "AF_CONV_Prompt_0314": "(none)",

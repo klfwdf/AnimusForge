@@ -67,6 +67,7 @@ private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, Lis
         public NpcDataPacket Npc;
 
 		public string Content;
+        public LocalTtsTone LocalTtsTone;
 		public AnimusForge.DiplomacyDialogue.DialogueInteractionOrigin DiplomacyOrigin;
 
 		public List<NpcDataPacket> ContextSnapshot;

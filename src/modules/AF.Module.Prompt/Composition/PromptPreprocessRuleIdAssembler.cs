@@ -45,6 +45,8 @@ internal static class PromptPreprocessRuleIdAssembler
 		AddIf(preprocessRuleIds, preprocessExcludedRuleIds, flags.WorldMapPartyCommand, "worldmap_party_command", "worldmap_party_command");
 		bool nobleGatheringInjected = (triggeredRuleInstructions?.IndexOf(NobleGatheringInjectedBlockMarker, StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		AddIf(preprocessRuleIds, preprocessExcludedRuleIds, nobleGatheringInjected, NobleGatheringRuleId, NobleGatheringRuleId);
+		bool paradeInjected = triggeredRuleInstructions?.IndexOf(PromptRuleBlockText.Header("expedition_parade"), StringComparison.OrdinalIgnoreCase) >= 0;
+		AddIf(preprocessRuleIds, preprocessExcludedRuleIds, paradeInjected, "expedition_parade", "expedition_parade");
 		if (preprocessExcludedRuleIds != null)
 		{
 			preprocessRuleIds.ExceptWith(preprocessExcludedRuleIds);

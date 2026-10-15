@@ -21,6 +21,7 @@ namespace AnimusForge;
     {
         // Request-local phase output, published only after its awaited capture completes.
         private string postprocessReply;
+        private LocalTtsTone localTtsTone;
         private string cleaned;
         private bool nativeTtsDispatchedBeforePostprocess;
         public async Task<NativeConversationTurnStep> ReceiveAndPresentAsync()
@@ -30,7 +31,7 @@ namespace AnimusForge;
                     nativePendingAfefKey, nativePendingPlayerHistoryEventSequence),
                 messages, onStreamText, npcName, nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw).ConfigureAwait(false);
             if (!nativeMainReply.CanContinue) return NativeConversationTurnStep.Stop(nativeMainReply.StopText);
-            postprocessReply = nativeMainReply.PostprocessReply;
+            postprocessReply = LocalTtsToneTag.Extract(nativeMainReply.PostprocessReply, out localTtsTone);
             cleaned = "";
             string nativeMainVisibleForTts = "";
             nativeTtsDispatchedBeforePostprocess = false;
@@ -64,7 +65,7 @@ namespace AnimusForge;
                     nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
                     if (nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
                     {
-                        _ports.TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts);
+                        _ports.TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts, localTtsTone);
                         nativeTtsDispatchedBeforePostprocess = true;
                         _ports.LogTtsReport("NativeConversationTts.EarlyDispatchBeforePostprocess", nativeTargetAgentIndex, $"uiLen={nativeMainVisibleForTts.Length};target={(targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? "unknown")}");
                     }

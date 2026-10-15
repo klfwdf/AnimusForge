@@ -76,12 +76,15 @@ internal sealed class SceneSpeechEnqueueAdapter
 			value.PromptGivenName = npcDataPacket.PromptGivenName;
 			value.PromptDisplayName = npcDataPacket.PromptDisplayName;
 		}
-		SceneSpeechQueueItem queuedItem = new SceneSpeechQueueItem
+		content = LocalTtsToneTag.Extract(content, out var localTtsTone);
+        if (playerDirectedNpcReplyText != null) playerDirectedNpcReplyText = LocalTtsToneTag.Strip(playerDirectedNpcReplyText);
+        SceneSpeechQueueItem queuedItem = new SceneSpeechQueueItem
 		{
 			SourceMission = Mission.Current,
             RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
             Npc = value,
 			Content = content,
+            LocalTtsTone = localTtsTone,
             DiplomacyOrigin = DiplomacyDialogueSourceScope.Capture(content, "scene", SceneConversationHistoryOwner.SessionId.ToString(),
                 playerDirectedActionText, playerDirectedNpcReplyText ?? StripActionTagsForSceneSpeech(content)),
 			ContextSnapshot = value2,

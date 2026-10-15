@@ -78,6 +78,7 @@ internal static class TerminalSettingsCoverage
 
     internal static bool IsVisible(string id)
     {
+        if (id == "EnableTtsSpeech" || id.StartsWith("Tts", StringComparison.Ordinal) || id.StartsWith("TestTts", StringComparison.Ordinal)) return false;
         if (id == "TownAmbientAiShowUsageNotifications" || id == "ScreenNotifications"
             || id == "EnemyInterruptRadiusMeters" || id == "DiagnosticsEnabled"
             || id == "Illustrator.UseExactEndpointUrl") return false;

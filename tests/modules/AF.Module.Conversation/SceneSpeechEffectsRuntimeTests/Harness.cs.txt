@@ -137,9 +137,12 @@ namespace AnimusForge
     internal static class SceneTauntBehavior { internal static bool TryProcessSceneTauntAction(Hero h,CharacterObject c,int i,ref string text,out bool escalated) { escalated=false;return false; } }
     internal static class ShoutUtils { internal static bool TryTriggerDuelAction(NpcDataPacket n,string player,ref string text)=>false; internal static void ExecuteDuel(Agent agent) { } }
     @@EFFECT@@
+    internal static class ExpeditionParadeBehavior { internal static bool TryApplyTagsForExternal(Hero h,ref string text,out List<string> facts,out List<string> notices) { facts=new();notices=new();return false; } }
+    internal static class LlmSourceTexts { internal static string Get(string key)=>key=="Signal_Failed"?"失败":throw new Exception("Unexpected resource key"); }
     internal static class Probe
     {
         internal static int Effects,IssueEffects,Speech,History,PrivateHistory,Facts,Epoch=1;
+        internal static LocalTtsTone LastTone;
         internal static bool TransferPartial; internal static string FailStep;
         internal static List<string> Steps=new();
         internal static void Step(string value) { Steps.Add(value);if(FailStep==value)throw new Exception("synthetic_"+value); }
@@ -151,7 +154,7 @@ namespace AnimusForge
             ResolveHeroFromAgentIndex=i=>new(),
             TryTriggerOpenLordsHallAction=(NpcDataPacket n,Agent a,ref string text)=>false,
             TryConsumeSceneNpcSurrenderTag=(NpcDataPacket n,ref string text,out Hero h,out CharacterObject c,out int i)=>{h=null;c=null;i=-1;return false;},
-            ShowNpcSpeechOutput=(n,a,text,tts,attach,suppress)=>{Speech++;if(FailStep=="speech")throw new Exception("synthetic_speech");return new();},
+            ShowNpcSpeechOutput=(n,a,text,tts,attach,suppress,tone)=>{LastTone=tone;Speech++;if(FailStep=="speech")throw new Exception("synthetic_speech");return new();},
             RecordResponseForAllNearbySafe=(list,i,name,text,receipt)=>{History++;return true;},
             PersistNpcSpeechToNamedHeroes=(i,name,text,list,receipt)=>{PrivateHistory++;return true;},
             RecordSystemFactForNearbySafe=(list,fact)=>Facts++,
@@ -177,6 +180,7 @@ namespace AnimusForge
         {
             int pass=0;void Case(string name,Action test){Reset();test();pass++;Console.WriteLine("PASS "+name);}
             Case("duplicate-publish-effect-history-speech-once",()=>{var owner=Owner();var item=Item();Dispatch(owner,item,true);Require(Effects==1&&Speech==1&&History==1&&PrivateHistory==1&&item.CompletionSource.Task.Result,"effect-history-speech-once");});
+            Case("queued-tone-is-request-local",()=>{var owner=Owner();var a=Item();a.LocalTtsTone=LocalTtsTone.Angry;Dispatch(owner,a);Require(LastTone==LocalTtsTone.Angry,"angry forwarded");var b=Item();Dispatch(owner,b);Require(LastTone==LocalTtsTone.Neutral,"no tone bleed");});
             Case("mission-replacement-before-effects",()=>{var item=Item();Mission.Current=new();Mission.Current.Agents.Add(new Agent { Index=7,Character=new CharacterObject() });Dispatch(Owner(),item);Require(Effects==0&&IssueEffects==0&&!item.CompletionSource.Task.Result,"mission-no-effects");});
             Case("save-generation-before-effects",()=>{var item=Item();SaveRuntimeGuard.Generation=2;Dispatch(Owner(),item);Require(Effects==0&&Speech==0&&!item.CompletionSource.Task.Result,"generation-no-effects");});
             Case("stale-epoch-before-deferred-issue-effects",()=>{var item=Item();item.Content="[ACTION:ISSUE_ACCEPT_SELF]";Epoch=2;Dispatch(Owner(),item);Require(Effects==0&&IssueEffects==0&&!item.CompletionSource.Task.Result,"epoch-before-issue-effect");});

@@ -17,7 +17,7 @@ namespace AnimusForge;
 /// Thin Bannerlord adapter for GCCZ village administration.
 /// Authority, tags, values, wording and culture modes live in the standalone GCCZ core.
 /// </summary>
-public sealed class VillageAftermathBehavior : CampaignBehaviorBase
+public sealed partial class VillageAftermathBehavior : CampaignBehaviorBase
 {
 	private const uint SuccessColor = 0xFFB6F7A8u;
 	private const uint WarningColor = 0xFFFFD27Fu;
@@ -27,6 +27,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 	private static string _activeVillageId = "";
 	private static string _pendingIncidentVillageId = "";
 	private static DateTime _pendingIncidentQueuedUtc = DateTime.MinValue;
+	private static TroopRoster _pendingVillageSelectedRoster;
 	private static VillageAftermathAuthorityKind _activeAuthorityKind;
 	private static bool _cultureInquiryPending;
 	private static readonly HashSet<VillageAftermathActionKind> AppliedActions = new HashSet<VillageAftermathActionKind>();
@@ -36,6 +37,9 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 
 	public override void RegisterEvents()
 	{
+		RegisterVillageEconomyEvents();
+        CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, RegisterVillageGrowthHooks);
+		RegisterNativeDispositionEvents();
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
 		CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, OnNewGameCreated);
 		CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, OnGameLoaded);
@@ -43,6 +47,9 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 
 	public override void SyncData(IDataStore dataStore)
 	{
+		SyncVillageEconomy(dataStore);
+		SyncGovernance(dataStore);
+		SyncNativeDispositionRequest(dataStore);
 		dataStore.SyncData("_gcczVillageGradualCultureTargets_v1", ref _gradualCultureTargetByVillageId);
 		dataStore.SyncData("_gcczVillageGradualCultureFinishDays_v1", ref _gradualCultureFinishDayByVillageId);
 		_gradualCultureTargetByVillageId ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -51,6 +58,9 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
+		ClearVillageEconomyForNewGame();
+        _aidLastDay.Clear(); _aidDeliveryRemainder.Clear(); _aidRoundDay.Clear(); _aidRoundMask.Clear(); _aidBonuses.Clear(); _aidBonusExpires.Clear(); _aidMultiplier.Clear(); _purgeUntil.Clear();
+		ClearNativeDispositionRequest();
 		_pendingIncidentVillageId = "";
 		_pendingIncidentQueuedUtc = DateTime.MinValue;
 		ClearMissionState("new_game");
@@ -60,26 +70,31 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
+		if (!string.IsNullOrWhiteSpace(_dispositionPayoutVillage)) _dispositionAwaitingExit = true;
 		_pendingIncidentVillageId = "";
 		_pendingIncidentQueuedUtc = DateTime.MinValue;
 		ClearMissionState("game_loaded");
 	}
 
-	internal static bool QueueIncidentDispositionMission(Settlement villageSettlement, string source)
+	internal static bool QueueIncidentDispositionMission(Settlement villageSettlement, string source, bool hostileDisposition = false, TroopRoster selectedRoster = null)
 	{
 		if (villageSettlement?.IsVillage != true || villageSettlement.Village == null || string.IsNullOrWhiteSpace(villageSettlement.StringId))
 		{
 			return false;
 		}
 		_pendingIncidentVillageId = villageSettlement.StringId;
+		_pendingHostileDisposition = hostileDisposition;
+		_pendingVillageSelectedRoster = selectedRoster;
 		_pendingIncidentQueuedUtc = DateTime.UtcNow;
 		GcczDiagnosticLog.Log("VillageEntry", "queued incident disposition village=" + _pendingIncidentVillageId
 			+ " source=" + (source ?? "N/A"));
 		return true;
 	}
 
-	internal static bool TryConsumeQueuedIncidentDisposition(Settlement villageSettlement, string source)
+	internal static bool TryConsumeQueuedIncidentDisposition(Settlement villageSettlement, string source, out bool hostileDisposition, out TroopRoster selectedRoster)
 	{
+		hostileDisposition = false;
+		selectedRoster = null;
 		if (villageSettlement?.IsVillage != true
 			|| !string.Equals(_pendingIncidentVillageId, villageSettlement.StringId, StringComparison.OrdinalIgnoreCase))
 		{
@@ -87,6 +102,10 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		}
 		bool expired = _pendingIncidentQueuedUtc == DateTime.MinValue
 			|| (DateTime.UtcNow - _pendingIncidentQueuedUtc).TotalSeconds > 30d;
+		hostileDisposition = !expired && _pendingHostileDisposition;
+		selectedRoster = !expired ? _pendingVillageSelectedRoster : null;
+		_pendingVillageSelectedRoster = null;
+		_pendingHostileDisposition = false;
 		_pendingIncidentVillageId = "";
 		_pendingIncidentQueuedUtc = DateTime.MinValue;
 		GcczDiagnosticLog.Log("VillageEntry", (expired ? "expired" : "consumed")
@@ -95,8 +114,16 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		return !expired;
 	}
 
+	internal static bool HasQueuedDispositionForExternal(string settlementId)
+		=> !string.IsNullOrEmpty(settlementId)
+			&& string.Equals(_pendingIncidentVillageId, settlementId, StringComparison.OrdinalIgnoreCase)
+			&& _pendingIncidentQueuedUtc != DateTime.MinValue
+			&& (DateTime.UtcNow - _pendingIncidentQueuedUtc).TotalSeconds <= 30d;
+
 	internal static void CancelQueuedIncidentDisposition(string source)
 	{
+		_pendingVillageSelectedRoster = null;
+		_pendingHostileDisposition = false;
 		if (!string.IsNullOrWhiteSpace(_pendingIncidentVillageId))
 		{
 			GcczDiagnosticLog.Log("VillageEntry", "cancelled queued incident disposition village=" + _pendingIncidentVillageId
@@ -106,8 +133,10 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		_pendingIncidentQueuedUtc = DateTime.MinValue;
 	}
 
-	internal static bool TryActivateForSetsVillage(Settlement villageSettlement, Mission mission, string source)
+	internal static bool TryActivateForSetsVillage(Settlement villageSettlement, Mission mission, string source, bool hostileDisposition = false)
 	{
+		if (!VillageDispositionSceneMissionBehavior.Admits(mission, villageSettlement?.StringId)) return false;
+		if (hostileDisposition) return TryActivateHostileDisposition(villageSettlement, mission, source);
 		try
 		{
 			if (mission == null || villageSettlement?.IsVillage != true || villageSettlement.Village == null)
@@ -118,7 +147,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 			Clan playerClan = Clan.PlayerClan;
 			Kingdom playerKingdom = playerClan?.Kingdom ?? Hero.MainHero?.Clan?.Kingdom;
 			bool playerIsRuler = playerKingdom != null
-				&& (playerKingdom.RulingClan == playerClan || playerKingdom.Leader == Hero.MainHero);
+				&& playerKingdom.Leader == Hero.MainHero;
 			VillageAftermathEntryDecision decision = VillageAftermathEntryPolicy.Evaluate(
 				new VillageAftermathEntryFacts(
 					isVillage: true,
@@ -137,7 +166,14 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 				return false;
 			}
 
+			if (!PrepareForeignEconomy(villageSettlement)) return false;
+			Departure.Reset(); DestructiveActions.Clear();
+			ClearHostileDialogue();
+			HostileDialogue.Begin(villageSettlement.StringId, GcczTownPromptResourceProvider.UseEnglishPrompt, GcczTownPromptResourceProvider.GetCatalog());
+			_hostileDispositionActive = false;
+			_hostileVillageMercyApplied = false;
 			_activeMission = mission;
+			SettlementEntryTroopSelectionBehavior.CompletePendingVictoryMenuForExternal(villageSettlement.StringId);
 			_activeVillageId = villageSettlement.StringId ?? "";
 			_activeAuthorityKind = decision.AuthorityKind;
 			_cultureInquiryPending = false;
@@ -147,13 +183,15 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 				+ " authority=" + _activeAuthorityKind
 				+ " source=" + (source ?? "N/A"));
 			InformationManager.DisplayMessage(new InformationMessage(
-				SiegeAftermathUiText.VillageActivated,
+				VUi("已进入友方村庄事务。可交涉、援助或下令；未作任何处置直接 TAB 离开会默认掠夺。", "Friendly village affairs started. Negotiate, aid or issue orders. Leaving with TAB before any disposition defaults to plunder."),
 				Color.FromUint(SuccessColor)));
 			return true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("VillageAftermath", "Activate failed: " + ex);
+            if (EconomyOwner?._dispositionPayoutVillage == villageSettlement?.StringId) EconomyOwner._dispositionAwaitingExit = true;
+            ClearMissionState("friendly_activation_failed");
 			return false;
 		}
 	}
@@ -162,6 +200,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 	{
 		return _activeMission != null
 			&& ReferenceEquals(_activeMission, Mission.Current)
+			&& VillageDispositionSceneMissionBehavior.Admits(_activeMission, _activeVillageId)
 			&& !string.IsNullOrWhiteSpace(_activeVillageId);
 	}
 
@@ -172,6 +211,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 
 	internal static void TickForSetsMission(Mission mission)
 	{
+		if (IsActiveForMission(mission)) { TickForeignBanners(mission); TickVillageMassacre(mission); }
 		if (!IsActiveForMission(mission) || !_cultureInquiryPending)
 		{
 			return;
@@ -183,7 +223,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		_cultureInquiryPending = false;
 		try
 		{
-			OpenCultureModeInquiry();
+			OpenGovernanceCultureInquiry();
 		}
 		catch (Exception ex)
 		{
@@ -198,61 +238,44 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (EconomyOwner != null) EconomyOwner._dispositionAwaitingExit = true;
 		ClearMissionState(source);
 	}
 
-	internal static string BuildRuntimePromptForExternal()
+	internal static List<PostprocessRuleEntry> BuildPostprocessRulesForExternal(int targetAgentIndex, bool replyIsDirectPlayerResponse)
 	{
-		Settlement village = ResolveActiveVillage();
-		return IsActive()
-			? VillageAftermathRuntimePromptProfile.BuildPrompt(village?.Name?.ToString(), village?.Village?.Bound?.Name?.ToString(), _activeAuthorityKind, textCatalog: GcczTownPromptResourceProvider.GetCatalog())
-			: string.Empty;
-	}
-
-	internal static List<PostprocessRuleEntry> BuildPostprocessRulesForExternal(bool replyIsDirectPlayerResponse)
-	{
-		if (!IsActive() || !replyIsDirectPlayerResponse)
+		if (!HasCurrentDispositionPromptSpeaker(null, null, targetAgentIndex) || !replyIsDirectPlayerResponse)
 		{
 			return new List<PostprocessRuleEntry>();
 		}
 
-		return new List<PostprocessRuleEntry>
+		if (_hostileDispositionActive)
 		{
-			Rule(VillageAftermathActionTagCatalog.GatherEldersTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly asks to gather villagers, elders or headmen; place adult villagers in civilian formation 3." : SiegeAftermathCompatibilityTexts.Raw("auto_village_71a959836d48"))),
-			Rule(VillageAftermathActionTagCatalog.RestrainTroopsTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly asks to restrain accompanying troops and stop disturbing civilians." : SiegeAftermathCompatibilityTexts.Raw("auto_village_eb81fdbfe883"))),
-			Rule(VillageAftermathActionTagCatalog.PacifyTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to pacify the village and end the pursuit of blame." : SiegeAftermathCompatibilityTexts.Raw("auto_village_d5aaa911e197"))),
-			Rule(VillageAftermathActionTagCatalog.ReliefTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to pay denars for village relief." : SiegeAftermathCompatibilityTexts.Raw("auto_village_587d0579c543"))),
-			Rule(VillageAftermathActionTagCatalog.FineTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to demand a fine from the village." : SiegeAftermathCompatibilityTexts.Raw("auto_village_4e3d1b886b3d"))),
-			Rule(VillageAftermathActionTagCatalog.RequisitionFoodTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to requisition food." : SiegeAftermathCompatibilityTexts.Raw("auto_village_0ba93283dc50"))),
-			Rule(VillageAftermathActionTagCatalog.RequisitionProduceTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to requisition village produce." : SiegeAftermathCompatibilityTexts.Raw("auto_village_da1dad5f51f3"))),
-			Rule(VillageAftermathActionTagCatalog.RequisitionLivestockTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to requisition livestock." : SiegeAftermathCompatibilityTexts.Raw("auto_village_e206eb1f8f8f"))),
-			Rule(VillageAftermathActionTagCatalog.LevyRecruitsTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to levy recruits from the village militia." : SiegeAftermathCompatibilityTexts.Raw("auto_village_ab66b507a1df"))),
-			Rule(VillageAftermathActionTagCatalog.PunishRingleaderTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to punish the village ringleader." : SiegeAftermathCompatibilityTexts.Raw("auto_village_aa047ffa0a27"))),
-			Rule(VillageAftermathActionTagCatalog.ConfiscatePropertyTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to confiscate village property." : SiegeAftermathCompatibilityTexts.Raw("auto_village_72c9eaf28061"))),
-			Rule(VillageAftermathActionTagCatalog.DestroyLivelihoodTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to destroy village production and livelihoods." : SiegeAftermathCompatibilityTexts.Raw("auto_village_c09e3bdbb9f9"))),
-			Rule(VillageAftermathActionTagCatalog.MassacreTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly decides to massacre the village." : SiegeAftermathCompatibilityTexts.Raw("auto_village_8fc1c244b8f7"))),
-			Rule(VillageAftermathActionTagCatalog.CulturalReformTag, (GcczTownPromptResourceProvider.UseEnglishPrompt ? "Emit only when the player explicitly requests a change of village culture; only open the player confirmation UI." : SiegeAftermathCompatibilityTexts.Raw("auto_village_ed6b7dc90a5c"))),
-		};
+			VillageDispositionSpeakerRole role = ResolveHostileSpeakerRole(targetAgentIndex, out _);
+			bool hasSupport = EconomyOwner?.Assistance.CanSpendForSceneTurn(_activeVillageId, InitialVillageAssistance, ForeignPersuasionTurn) == true;
+			return VillageDispositionActionCatalog.All.Where(spec => spec.HasDefinedEffect
+				&& VillageDispositionSpeakerPolicy.CanAuthorize(spec, role, replyIsDirectPlayerResponse)
+				&& (spec.Kind != VillageDispositionActionKind.Mercy || !_hostileVillageMercyApplied)
+				&& (spec.OutcomeLevel <= 0 || hasSupport))
+				.Select(spec => Rule(spec.Tag, VillageDispositionPromptProfile.BuildActionDescription(spec, GcczTownPromptResourceProvider.UseEnglishPrompt))).ToList();
+		}
+
+		return BuildFriendlyRules(targetAgentIndex);
 	}
 
-	internal static string BuildPostprocessContextForExternal(bool replyIsDirectPlayerResponse)
+	internal static string BuildPostprocessContextForExternal(int targetAgentIndex, bool replyIsDirectPlayerResponse)
 	{
-		if (!IsActive())
+		if (!HasCurrentDispositionPromptSpeaker(null, null, targetAgentIndex))
 		{
 			return string.Empty;
 		}
 		Settlement village = ResolveActiveVillage();
-		if (GcczTownPromptResourceProvider.UseEnglishPrompt)
-            return "Current village=" + (village?.Name?.ToString() ?? "Unknown")
-                + "; bound settlement=" + (village?.Village?.Bound?.Name?.ToString() ?? "Unknown")
-                + "; player authority=" + _activeAuthorityKind
-                + "; direct reply to player=" + replyIsDirectPlayerResponse
-                + ". GCCZ village tags must not replace or block ordinary AF or native tags.";
-		return SiegeAftermathCompatibilityTexts.Raw("auto_village_210e9ee4acd2") + (village?.Name?.ToString() ?? SiegeAftermathCompatibilityTexts.Raw("auto_village_d9c32a4c3dda"))
-			+ SiegeAftermathCompatibilityTexts.Raw("auto_village_fbc6f6884123") + (village?.Village?.Bound?.Name?.ToString() ?? SiegeAftermathCompatibilityTexts.Raw("auto_village_d9c32a4c3dda"))
-			+ SiegeAftermathCompatibilityTexts.Raw("auto_village_5764d1d108d0") + _activeAuthorityKind
-			+ SiegeAftermathCompatibilityTexts.Raw("auto_village_9c5a9e0b2b31") + replyIsDirectPlayerResponse
-			+ SiegeAftermathCompatibilityTexts.Raw("auto_village_f2b367a5fec9");
+        var role = ResolveHostileSpeakerRole(targetAgentIndex, out _);
+        bool canGovern = !_hostileDispositionActive && CanGovern(village);
+        string context = VillageDispositionPromptProfile.BuildPostprocessContext(village?.Name?.ToString(), role,
+            replyIsDirectPlayerResponse, _hostileVillageMercyApplied, _hostileDispositionActive, canGovern, GcczTownPromptResourceProvider.GetCatalog());
+        return context + (!_hostileDispositionActive ? "\n" + GcczTownPromptResourceProvider.GetCatalog().GetRuntimeText("VillageAid_Postprocess") : string.Empty)
+            + (canGovern && role == VillageDispositionSpeakerRole.PlayerCompanion ? "\n" + CultureRuleContext() : string.Empty);
 	}
 
 	internal static string NormalizePostprocessTagsForExternal(string raw, List<PostprocessRuleEntry> rules)
@@ -261,19 +284,17 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		{
 			return string.Empty;
 		}
+		if (_hostileDispositionActive)
+		{
+			HashSet<string> foreignAllowed = new HashSet<string>((rules ?? new List<PostprocessRuleEntry>()).Where(rule => rule != null).Select(rule => rule.Tag), StringComparer.OrdinalIgnoreCase);
+			return string.Join("\n", VillageDispositionActionCatalog.Extract(raw)
+				.Where(spec => spec.HasDefinedEffect && foreignAllowed.Contains(spec.Tag)).Select(spec => spec.Tag));
+		}
 		HashSet<string> allowed = (rules ?? new List<PostprocessRuleEntry>())
 			.Select(rule => (rule?.Tag ?? string.Empty).Trim())
 			.Where(tag => !string.IsNullOrWhiteSpace(tag))
 			.ToHashSet(StringComparer.OrdinalIgnoreCase);
-		List<string> tags = new List<string>();
-		foreach (VillageAftermathActionKind kind in VillageAftermathActionTagCatalog.ExtractKinds(raw))
-		{
-			if (VillageAftermathActionTagCatalog.TryGetCanonicalTag(kind, out string tag) && allowed.Contains(tag))
-			{
-				tags.Add(tag);
-			}
-		}
-		return string.Join("\n", tags);
+		return FriendlyVillageActionCatalog.NormalizeInvocations(raw, allowed);
 	}
 
 	internal static bool TryProcessActionTagsForExternal(
@@ -283,46 +304,8 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		bool replyIsDirectPlayerResponse)
 	{
 		actionHandled = false;
-		IReadOnlyList<VillageAftermathActionKind> actions = VillageAftermathActionTagCatalog.ExtractKinds(text);
-		if (actions.Count == 0)
-		{
-			return false;
-		}
-		text = VillageAftermathActionTagCatalog.RemoveTags(text);
-		if (!IsActive() || !replyIsDirectPlayerResponse || !IsValidMissionSpeaker(targetAgentIndex))
-		{
-			GcczDiagnosticLog.Log("VillageAction", "stripped unauthorized tags direct=" + replyIsDirectPlayerResponse
-				+ " targetAgent=" + targetAgentIndex
-				+ " active=" + IsActive());
-			return true;
-		}
-
-		foreach (VillageAftermathActionKind action in actions)
-		{
-			if (action == VillageAftermathActionKind.GatherElders)
-			{
-				actionHandled |= SettlementEntryTroopSelectionBehavior.TryGatherSettlementCiviliansForExternal(
-					targetAgentIndex,
-					SetsSettlementCivilianGatherProfile.AiActionTagSource);
-				continue;
-			}
-			if (action == VillageAftermathActionKind.CulturalReform)
-			{
-				if (!AppliedActions.Contains(action) && !_cultureInquiryPending)
-				{
-					_cultureInquiryPending = true;
-					actionHandled = true;
-					InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageCultureAfterDialogue, Color.FromUint(WarningColor)));
-				}
-				continue;
-			}
-			if (!AppliedActions.Add(action))
-			{
-				continue;
-			}
-			actionHandled |= ApplyAction(action);
-		}
-		return true;
+		if (_hostileDispositionActive) return TryProcessHostileDisposition(targetAgentIndex, ref text, out actionHandled, replyIsDirectPlayerResponse);
+		return TryProcessFriendlyDisposition(targetAgentIndex, ref text, out actionHandled, replyIsDirectPlayerResponse);
 	}
 
 	private static PostprocessRuleEntry Rule(string tag, string description)
@@ -343,293 +326,6 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool ApplyAction(VillageAftermathActionKind action)
-	{
-		try
-		{
-			Settlement village = ResolveActiveVillage();
-			if (village?.Village == null || Hero.MainHero == null)
-			{
-				return false;
-			}
-			VillageAftermathEffectProfile effect = VillageAftermathEffectProfile.Resolve(action);
-			if (effect.GoldDelta < 0 && Hero.MainHero.Gold < -effect.GoldDelta)
-			{
-				AppliedActions.Remove(action);
-				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageInsufficientGold(SiegeAftermathUiText.VillageActionName(action)), Color.FromUint(WarningColor)));
-				return true;
-			}
-			if (effect.GoldDelta < 0)
-			{
-				GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, -effect.GoldDelta, true);
-			}
-			else if (effect.GoldDelta > 0)
-			{
-				GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, effect.GoldDelta, true);
-			}
-
-			float oldHearth = village.Village.Hearth;
-			village.Village.Hearth = effect.ApplyHearth(oldHearth);
-			ApplyOwnerRelation(effect.OwnerRelationDelta);
-
-			int gained = 0;
-			if (action == VillageAftermathActionKind.RequisitionFood)
-			{
-				gained = AddVillageProductionToPlayer(village, item => item.IsFood, 12);
-			}
-			else if (action == VillageAftermathActionKind.RequisitionLivestock)
-			{
-				gained = AddVillageProductionToPlayer(village, item => item.IsAnimal, 6);
-			}
-			else if (action == VillageAftermathActionKind.RequisitionProduce)
-			{
-				gained = AddVillageProductionToPlayer(village, item => !item.IsAnimal, 8);
-			}
-			else if (action == VillageAftermathActionKind.LevyRecruits)
-			{
-				gained = LevyVillageMilitia(village, 10);
-			}
-			else if (action == VillageAftermathActionKind.Massacre)
-			{
-				KillVillageNotables(village, "village_massacre");
-			}
-
-			if (effect.IsDestructive && village.SettlementHitPoints > 0f)
-			{
-				IncreaseSettlementHealthAction.Apply(village, -village.SettlementHitPoints * (action == VillageAftermathActionKind.Massacre ? 0.8f : 0.5f));
-			}
-
-			string extra = gained > 0 ? SiegeAftermathCompatibilityTexts.Raw("auto_village_7b6d341a56a4") + gained + SiegeAftermathCompatibilityTexts.Raw("auto_village_d2f9922e1ecb") : string.Empty;
-			uint color = effect.IsDestructive ? DestructiveColor : SuccessColor;
-			InformationManager.DisplayMessage(new InformationMessage(
-				SiegeAftermathUiText.VillageActionApplied(SiegeAftermathUiText.VillageActionName(action), oldHearth.ToString("0"), village.Village.Hearth.ToString("0"), extra),
-				Color.FromUint(color)));
-			GcczDiagnosticLog.Log("VillageAction", "applied village=" + (village.StringId ?? "N/A")
-				+ " action=" + action
-				+ " goldDelta=" + effect.GoldDelta
-				+ " hearth=" + oldHearth.ToString("0.##") + "->" + village.Village.Hearth.ToString("0.##")
-				+ " relation=" + effect.OwnerRelationDelta
-				+ " gained=" + gained);
-			return true;
-		}
-		catch (Exception ex)
-		{
-			AppliedActions.Remove(action);
-			Logger.Log("VillageAftermath", "Apply action failed. action=" + action + " error=" + ex);
-			return false;
-		}
-	}
-
-	private static int AddVillageProductionToPlayer(Settlement village, Func<ItemObject, bool> predicate, int countPerType)
-	{
-		if (village?.Village?.VillageType?.Productions == null || MobileParty.MainParty?.ItemRoster == null)
-		{
-			return 0;
-		}
-		int total = 0;
-		foreach (var production in village.Village.VillageType.Productions)
-		{
-			ItemObject item = production.Item1;
-			if (item == null || predicate?.Invoke(item) == false)
-			{
-				continue;
-			}
-			int count = Math.Max(1, countPerType);
-			MobileParty.MainParty.ItemRoster.AddToCounts(item, count);
-			total += count;
-		}
-		return total;
-	}
-
-	private static int LevyVillageMilitia(Settlement village, int maximum)
-	{
-		TroopRoster militia = village?.MilitiaPartyComponent?.MobileParty?.MemberRoster;
-		TroopRoster player = MobileParty.MainParty?.MemberRoster;
-		if (militia == null || player == null || maximum <= 0)
-		{
-			return 0;
-		}
-		int moved = 0;
-		foreach (TroopRosterElement element in militia.GetTroopRoster().ToList())
-		{
-			CharacterObject troop = element.Character;
-			if (troop == null || troop.IsHero || element.Number <= 0)
-			{
-				continue;
-			}
-			int count = Math.Min(element.Number, maximum - moved);
-			if (count <= 0)
-			{
-				break;
-			}
-			militia.AddToCounts(troop, -count);
-			player.AddToCounts(troop, count);
-			moved += count;
-		}
-		return moved;
-	}
-
-	private static void ApplyOwnerRelation(int delta)
-	{
-		if (delta == 0 || _activeAuthorityKind != VillageAftermathAuthorityKind.KingdomRuler)
-		{
-			return;
-		}
-		Hero owner = ResolveActiveVillage()?.Village?.Bound?.OwnerClan?.Leader;
-		if (owner != null && owner != Hero.MainHero)
-		{
-			ChangeRelationAction.ApplyPlayerRelation(owner, delta, true, true);
-		}
-	}
-
-	private static void OpenCultureModeInquiry()
-	{
-		if (!IsActive())
-		{
-			return;
-		}
-		List<InquiryElement> choices = new List<InquiryElement>
-		{
-			new InquiryElement(VillageCultureChangeMode.GradualEducation, SiegeAftermathUiText.VillageCultureModeGradual, null, true, SiegeAftermathUiText.VillageCultureModeGradualHint),
-			new InquiryElement(VillageCultureChangeMode.MigrantResettlement, SiegeAftermathUiText.VillageCultureModeMigration, null, true, SiegeAftermathUiText.VillageCultureModeMigrationHint),
-			new InquiryElement(VillageCultureChangeMode.PurgeColonization, SiegeAftermathUiText.VillageCultureModePurge, null, true, SiegeAftermathUiText.VillageCultureModePurgeHint),
-		};
-		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-			SiegeAftermathUiText.VillageCultureInquiryTitle,
-			SiegeAftermathUiText.VillageCultureInquiryDescription,
-			choices,
-			isExitShown: true,
-			1,
-			1,
-			SiegeAftermathUiText.NextButton,
-			SiegeAftermathUiText.CancelButton,
-			selected =>
-			{
-				if (selected?.FirstOrDefault()?.Identifier is VillageCultureChangeMode mode)
-				{
-					OpenCultureTargetInquiry(mode);
-				}
-			},
-			_ => { },
-			"",
-			isSeachAvailable: false), pauseGameActiveState: true);
-	}
-
-	private static void OpenCultureTargetInquiry(VillageCultureChangeMode mode)
-	{
-		Settlement village = ResolveActiveVillage();
-		Dictionary<string, CultureObject> cultures = new Dictionary<string, CultureObject>(StringComparer.OrdinalIgnoreCase);
-		AddCulture(cultures, Hero.MainHero?.Culture);
-		AddCulture(cultures, Clan.PlayerClan?.Culture);
-		AddCulture(cultures, Clan.PlayerClan?.Kingdom?.Culture);
-		AddCulture(cultures, village?.Village?.Bound?.Culture);
-		List<InquiryElement> choices = cultures.Values
-			.Select(culture => new InquiryElement(culture.StringId, culture.Name?.ToString() ?? culture.StringId, null, true, culture.StringId))
-			.ToList();
-		if (choices.Count == 0)
-		{
-			InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.VillageNoTargetCulture, Color.FromUint(WarningColor)));
-			return;
-		}
-		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-			SiegeAftermathUiText.VillageCultureTargetTitle,
-			SiegeAftermathUiText.VillageCultureTargetDescription(SiegeAftermathUiText.VillageCultureModeName(mode)),
-			choices,
-			isExitShown: true,
-			1,
-			1,
-			SiegeAftermathUiText.ConfirmButton,
-			SiegeAftermathUiText.BackButton,
-			selected =>
-			{
-				string cultureId = selected?.FirstOrDefault()?.Identifier as string;
-				CultureObject culture = cultures.TryGetValue(cultureId ?? string.Empty, out CultureObject selectedCulture) ? selectedCulture : null;
-				if (culture != null)
-				{
-					ApplyCultureChange(mode, culture);
-				}
-			},
-			_ => OpenCultureModeInquiry(),
-			"",
-			isSeachAvailable: false), pauseGameActiveState: true);
-	}
-
-	private static void AddCulture(Dictionary<string, CultureObject> cultures, CultureObject culture)
-	{
-		if (culture != null && !string.IsNullOrWhiteSpace(culture.StringId))
-		{
-			cultures[culture.StringId] = culture;
-		}
-	}
-
-	private static void ApplyCultureChange(VillageCultureChangeMode mode, CultureObject targetCulture)
-	{
-		bool mutationStarted = false;
-		try
-		{
-			Settlement village = ResolveActiveVillage();
-			VillageAftermathBehavior behavior = Campaign.Current?.GetCampaignBehavior<VillageAftermathBehavior>();
-			if (village?.Village == null || targetCulture == null || behavior == null)
-			{
-				return;
-			}
-			if (mode == VillageCultureChangeMode.GradualEducation)
-			{
-				int finishDay = CurrentDay + VillageCultureChangeProfile.GradualEducationDays;
-				mutationStarted = true;
-				behavior._gradualCultureTargetByVillageId[village.StringId] = targetCulture.StringId;
-				behavior._gradualCultureFinishDayByVillageId[village.StringId] = finishDay;
-				AppliedActions.Add(VillageAftermathActionKind.CulturalReform);
-				InformationManager.DisplayMessage(new InformationMessage(
-					SiegeAftermathUiText.VillageCultureGradualStarted(targetCulture.Name?.ToString() ?? targetCulture.StringId),
-					Color.FromUint(SuccessColor)));
-				return;
-			}
-
-			float oldHearth = village.Village.Hearth;
-			if (!TryPersistVillageCulture(village, targetCulture, "village_" + mode))
-			{
-				throw new InvalidOperationException("Village culture persistence rejected the mutation before side effects started.");
-			}
-			mutationStarted = true;
-			village.Village.Hearth = VillageCultureChangeProfile.ApplyImmediateHearth(mode, oldHearth);
-			if (mode == VillageCultureChangeMode.PurgeColonization)
-			{
-				KillVillageNotables(village, "village_purge_colonization");
-			}
-			ApplyVillageNotableCulture(
-				village,
-				targetCulture,
-				clearVolunteerTypes: true,
-				spawnReplacementNotables: mode == VillageCultureChangeMode.PurgeColonization);
-			LogVillageCultureApplied(village, targetCulture, mode == VillageCultureChangeMode.PurgeColonization);
-			ApplyOwnerRelation(mode == VillageCultureChangeMode.PurgeColonization
-				? VillageCultureChangeProfile.PurgeColonizationOwnerRelationDelta
-				: VillageCultureChangeProfile.MigrantResettlementOwnerRelationDelta);
-			AppliedActions.Add(VillageAftermathActionKind.CulturalReform);
-			InformationManager.DisplayMessage(new InformationMessage(
-				SiegeAftermathUiText.VillageCultureChanged(
-					SiegeAftermathUiText.VillageCultureModeName(mode),
-					 targetCulture.Name?.ToString() ?? targetCulture.StringId,
-					oldHearth.ToString("0"),
-					village.Village.Hearth.ToString("0")),
-				Color.FromUint(mode == VillageCultureChangeMode.PurgeColonization ? DestructiveColor : WarningColor)));
-		}
-		catch (Exception ex)
-		{
-			if (mutationStarted)
-			{
-				AppliedActions.Add(VillageAftermathActionKind.CulturalReform);
-			}
-			else
-			{
-				AppliedActions.Remove(VillageAftermathActionKind.CulturalReform);
-			}
-			Logger.Log("VillageAftermath", "Apply culture change failed. mode=" + mode + " target=" + (targetCulture?.StringId ?? "N/A") + " error=" + ex);
-			TryDisplayFailureMessage(SiegeAftermathUiText.VillageCultureFailure(mutationStarted));
-		}
-	}
-
 	private static void TryDisplayFailureMessage(string message)
 	{
 		try
@@ -643,15 +339,20 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 
 	private void OnDailyTick()
 	{
+		RefreshAidMultipliers();
 		try
 		{
-			foreach (string villageId in _gradualCultureFinishDayByVillageId
-				.Where(pair => pair.Value <= CurrentDay)
-				.Select(pair => pair.Key)
-				.ToList())
+			foreach (string villageId in _gradualCultureFinishDayByVillageId.Keys.ToList())
 			{
 				Settlement village = Settlement.Find(villageId);
-				string cultureId = _gradualCultureTargetByVillageId.TryGetValue(villageId, out string id) ? id : string.Empty;
+                if (!CanGovern(village))
+                {
+                    _gradualCultureFinishDayByVillageId.Remove(villageId); _gradualCultureTargetByVillageId.Remove(villageId);
+                    InformationManager.DisplayMessage(new InformationMessage(VUi("移民融合已中止：失去村庄治理权。", "Migrant integration cancelled: governance authority lost.") + " " + village?.Name));
+                    continue;
+                }
+                if (_gradualCultureFinishDayByVillageId[villageId] > CurrentDay) continue;
+                string cultureId = _gradualCultureTargetByVillageId.TryGetValue(villageId, out string id) ? id : string.Empty;
 				CultureObject culture = Game.Current?.ObjectManager?.GetObject<CultureObject>(cultureId);
 				if (village?.IsVillage == true && culture != null)
 				{
@@ -667,11 +368,7 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 							+ (village.StringId ?? villageId) + " target=" + (culture.StringId ?? "N/A"));
 						continue;
 					}
-					InformationManager.DisplayMessage(new InformationMessage(
-						SiegeAftermathUiText.VillageCultureGradualCompleted(
-							village.Name?.ToString() ?? villageId,
-							culture.Name?.ToString() ?? culture.StringId),
-						Color.FromUint(SuccessColor)));
+					RecordCultureCompletion(village, culture);
 				}
 				_gradualCultureFinishDayByVillageId.Remove(villageId);
 				_gradualCultureTargetByVillageId.Remove(villageId);
@@ -782,6 +479,15 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 
 	private static void ClearMissionState(string source)
 	{
+		_giftInquiryActive = false; ClearCultureProposal(); StopVillageMassacre(); Departure.Reset(); DestructiveActions.Clear();
+		SiegeAiInterventionBehavior.ReleaseVillageEscortsForExternal(_activeMission);
+		ClearForeignSceneOrders();
+		ClearForeignEconomyScene();
+		ClearHostileDialogue();
+		_hostileDispositionActive = false;
+		_hostileVillageMercyApplied = false;
+		_pendingHostileDisposition = false;
+		_pendingVillageSelectedRoster = null;
 		if (_activeMission != null || !string.IsNullOrWhiteSpace(_activeVillageId))
 		{
 			GcczDiagnosticLog.Log("VillageEntry", "cleared village=" + (_activeVillageId ?? "N/A") + " source=" + (source ?? "N/A"));

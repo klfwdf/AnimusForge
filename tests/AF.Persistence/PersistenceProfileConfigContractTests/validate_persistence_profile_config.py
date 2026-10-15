@@ -202,6 +202,35 @@ def validate_chunk_contract(catalog: dict, *, current: bool = False) -> dict:
                 "diplomacy strict owner/reader/writer contract drifted")
     # 982a5861: +Execution transcript storage and existing GCCZ town-memory key now flattened.
     assert_true(len(expected_flattened) == 47, "flattened dictionary key catalog must contain 47 keys")
+    # Preserve the pinned historical inventory; audit new runtime keys separately.
+    if current:
+        recent = catalog["currentAdditionalStrictChunkedStringBindings"]
+        assert_true(len(recent) == 1 and recent[0]["key"] == "_gcczTownRecentMemory_v1",
+                    "recent town strict storage catalog drifted")
+        row = recent[0]
+        assert_true(row["source"] == "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/GcczTownRecentMemoryBridge.cs",
+                    "recent town persistence owner drifted")
+        source = (ROOT / row["source"]).read_text(encoding="utf-8-sig")
+        assert_true(row["reader"] + "(dataStore, SaveKey)" in source
+                    and row["writer"] + "(dataStore, SaveKey," in source,
+                    "recent town strict writer/reader must both remain wired")
+        assert_true("CampaignSaveChunkHelper.ReplaySafeRawRecords(dataStore, _failedRead.Records, SaveKey)" in source
+                    and "recent_memory_incomplete_read_refuses_save" in source,
+                    "recent town failed namespace must not be silently replaced")
+        strict_keys.add(row["key"])
+        expected_chunked.add(row["key"])
+        additions = catalog["currentAdditionalFlattenedDictionaryBindings"]
+        assert_true(len(additions) == 1 and additions[0]["key"] == "_afExpeditionParade_v1",
+                    "parade dictionary binding catalog drifted")
+        for row in additions:
+            source = (ROOT / row["source"]).read_text(encoding="utf-8-sig")
+            assert_true('private const string SaveKey = "' + row["key"] + '";' in source
+                        and 'dataStore.SyncData(SaveKey, ref storage);' in source,
+                        "parade save key binding is missing")
+            assert_true(row["writer"] + '(storage, SaveKey, "ExpeditionParade")' in source
+                        and row["reader"] + '(storage, "ExpeditionParade")' in source,
+                        "parade dictionary writer/reader must both remain wired")
+            expected_flattened.add(row["key"])
     actual_strict_saves = resolve_storage_call_keys("SaveChunkedStringStrict", 1, current=current)
     actual_strict_loads = resolve_storage_call_keys("LoadChunkedStringStrict", 1, current=current)
     assert_true(actual_strict_saves == strict_keys, "strict save key wiring drifted")

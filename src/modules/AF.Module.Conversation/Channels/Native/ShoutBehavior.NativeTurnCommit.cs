@@ -151,6 +151,7 @@ namespace AnimusForge;
                     PlayerText = shouldRecordPlayerInput ? promptPlayerText : null,
                     OpeningFact = npcOpeningConsumed ? npcOpeningPersistentFactText : null,
                     TtsAlreadyDispatched = nativeTtsDispatchedBeforePostprocess,
+                    LocalTtsTone = localTtsTone,
                     PendingPlayerHistorySequence = nativePendingPlayerHistoryEventSequence,
                     PendingPlayerHistoryKey = nativePendingAfefKey,
                     AcceptedReplySideEffects = BuildNativeAcceptedReplySideEffects()

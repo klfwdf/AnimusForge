@@ -1,3 +1,417 @@
+<a id="town-recent-memory-20261016"></a>
+## 近七日城镇事实记忆（2026-10-16，OFFLINE_VERIFIED / SOURCE_PUBLICATION）
+
+用户授权实现并检查后推送。产品修订 `593186f0`，本地检查点 `67e20516`；原有统治记忆仍为300–600字、最多三任，新增近期事实不占任期槽位、不调用模型、不修改生成参数。此前预览样稿现由实际代码替代。
+
+- **事件与格式**：原版完成劫掠、强迫提供物资、强迫征兵、BySiege实际攻占者、宽恕/掠夺/毁坏；GCCZ镇内真实执行处置与村庄资源/破坏提交后接线。玩家村庄只记录强征赎金、强征粮食、强征物资、强征牲畜、掠夺村庄、抓取奴隶、强行征兵、屠村、纯粹毁坏；未执行、正面/中立和未实现藏匿不写入。殖民请求不等于提交，原生内部宽恕被排除。CN格式严格为`〔XXXX年X季X日〕，XXX对XXX城的XXX村庄执行了XXXX。`与`〔XXXX年X季X日〕，XXX对XXX城执行了XXXX。`，不显示小时。
+- **时间与重复**：当前游戏日及前六个日历日；第八日删除事件和到访桶。事实receipt去重；镇内同一战役时刻重复确认同一处置仅一条，后来同日真实动作可独立。村民/商队以实际进城事件计到访，公开投影只汇总次数，不报来源身份；同队后来再次进城算另一次到访。首次接入的残缺窗口明确“总数未知”，全窗口覆盖后才写完整近七日数量。
+- **范围**：沿用既有普通城镇说话者资格与共享ConversationSiege桥，现场统治者、当地要人、合资格普通市民继续读取；专用GCCZ城镇上下文和城镇百科同步。守卫/其他英雄、村庄/城堡与信使不增加资格。附属村庄事件归所属城，城堡附属村庄排除。长期叙述与近期事实分别显示，近期过期不抹去统治印象。
+- **旧档与保存**：独立`_gcczTownRecentMemory_v1`严格UTF8分块命名空间。首次session只扫描一次原版保留日志，读取真实日期、Looted状态、实际领主；旧玩家攻城日志不能区分原版/GCCZ内部结算，故不猜补；旧GCCZ与历史到访无证据不补造。完整解码验证后才发布状态；坏块/未来schema停用近期功能，原始安全primitive证据原样保存，不完整读取或不安全证据拒绝写档。没有给原有Saveable类型改名，也没有修改长期存档键。
+- **性能**：事件频率捕获，只在每日、读取目标城、保存时淘汰七日外数据；不存在逐帧全世界扫描、网络、后台游戏对象访问。原生日志领主反射字段一次缓存，文字CN/EN包沿用既有一次加载的catalog；界面随UI语言、prompt随内容包。
+- **已验证**：160条TownRuleMemory可执行回放（含原73条）；16条新增来源/渠道/资源契约；77村庄治理、38村庄场景、136GCCZ核心、66村庄接线。实际分块大数据roundtrip、缺块保留、未来schema、旧档空namespace切换、身份/归属、七日边界、重复到访、精确双语句式、字面动态名字均覆盖。`PersistenceChunkReplayTests`与`validate_persistence_profile_config.py --chunk-contract-only`通过（21个chunked keys，48个flattened keys，1项既有direct JSON风险）。原脚本Debug双API（1.3.15/1.4.8）、Bootstrap、双Coup通过；两实现各367条既有警告、Bootstrap2条，零错误。审查后加上镇内重复确认去重并重跑完整必要检查。日志留本地，不上传。
+- **发布与边界**：源工作分支`codex/town-recent-memory-20261016`基于当前已安装AF/GCCZ村庄实现。该分支未推送祖先含本机安装回执，故从已公开安全祖先`ea6c5124`生成干净交付分支`codex/town-memory-seven-days`，移植当前源码/测试/文档，排除新增`artifacts/`。最新远端main核对为`8cb2bccc`，包含另一条工作线新提交，不擅自覆盖/合并它。交付必须验证非排除路径与本轮已构建树的Git blob一致，再普通推送功能分支并核对远端SHA。本地分支保留原历史；回滚使用本轮源码的定向逆补丁。
+- **未验**：没有启动游戏/真实provider、没有真实存档保存载入或实机对话验收，也没有Stage/安装/打包。下一步由用户载入旧档测试城市路人、原版与GCCZ操作、跨七日淘汰；不能把上述fakes/replay标为LIVE。
+
+[代码责任与一基坐标](architecture/af-framework-code-scope.md#town-recent-memory-20261016)。可复现入口为`tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests/TownRuleMemory.Tests.csproj`及同目录`verify_recent_wiring.py`；构建继续使用既有`build_single_module.ps1`，不改脚本与部署流程。
+
+<a id="gccz-village-install-20261016"></a>
+## GCCZ 村庄累计变更统一安装（2026-10-16，DEPLOYED_FILES_VERIFIED / LIVE_PENDING）
+
+用户最新明确授权安装游戏测试，取代此前“先不覆盖游戏”。部署候选源码 `23c0ff20`，产品变更仍为 `a442e916`（含上轮`68ea7875`及`e43015e7`），本轮意图检查点`9b96743d`；只增12条既有离场结算接线断言，无运行算法改写，不触及其他工作树。
+
+- 运行基线：目标唯一为 `H:/Steam/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。安装前14个已知程序/Prompt/UI文件全部匹配10月15日安装回执；游戏Library/Core/CampaignSystem三DLL与固定1.4.8引用SHA一致。当前AF已含先前融合的GPT-SoVITS来源，无新安装版本需要追并；不从另一个工作树未发布改动猜测覆盖。覆盖前和写入前都检查游戏/启动器退出。
+- 离场边界：现有资源类标签只往 `_dispositionGold/Items/Recruits/Prisoners`累积，不调用玩家背包/部队直接发放，也不打开结算界面或开启AwaitingExit；任务结束后且无Mission、实际MapState才推进payout。金钱记实际已付值防重付；兵员/俘虏与实物交给原生选择界面，奴隶户数按实际接收差值。援助仍确认后立刻扣财物/计算奖励；中立命令现场执行。关系、村庄损毁及文化原有执行时点不擅自改变。本轮12条新source contract覆盖该边界，总村庄接线66项，不冒充原生UI回放。
+- 构建/验证：原统一脚本Debug双API（1.3.15.110062 / 1.4.8.119303）、Bootstrap、双Coup与干净Stage通过，0错误，每实现367警告、Bootstrap2警告（含NuGet漏洞源无法联网）。重新跑106援助、43援助资源接线、190画像/Prompt、196原Prompt接线、38场景、34入口、77治理、66村庄接线、19SETS奖励，全部PASS。现有援助source-map工作树校验通过，本轮新增离场三锚点另列。真实游戏/provider/旧档仍未运行。
+- Stage/安装：旧项目Stage具名保留到本地`previous-stage`，用原脚本新建完整3519文件Stage。完整目标4774文件hash作为冻结基线，仅允许12个已审定路径：9份Bootstrap/双实现DLL、PDB、构建标记，3份GCCZ默认Prompt。确认规则受实际CN/EN资源加载。安装包装只调用未改动的原Stage校验、`Invoke-ManagedStageDeployment`，在写入前重验两边完整byte库存，并仅将Stage内既有PlayerExports时间戳对齐已安装值，沿原“同时间安装侧胜出”规则保留3133份导出。没有修改官方构建/覆盖脚本，没有部署Recovery或自动回滚。
+- 结果：前后4774文件，12项精确替换，4762项SHA不变；零缺失、零额外新增、零非计划变化、零错误替换。配置、用户Prompt、TerminalSettings、语音、模型、导出及非清单文件都保留；没有启动游戏、TTS服务、调用provider、写存档、打包或推送。
+- 证据：`artifacts/gccz-village-install-20261016/deployment-receipt.json`、`validation-receipt.json`、`code-map.json`可追溯；完整原始inventory、安装前12份程序/资源保留副本、旧Stage和build/deploy/测试日志留本地不上传。[源码坐标](architecture/af-framework-code-scope.md#gccz-village-install-20261016)覆盖采集→离场→发放；其他功能坐标沿上两轮已验证map。
+- 玩家测试建议：使用单独测试存档，先试友方入口及随行/旗手；同类援助连续两次、指定数量/物品与取消；到村庄市场检查实交物品；再触发强征/自愿索取，确认场景内不增加收益，TAB后从人员/俘虏/物资栏领取。没作处置直接TAB仍默认掠夺。需要特别实测真实AI参数、原生确认布局、儿童/青年过滤、奴隶实际接收、重复退出与读档。敌中藏匿仍未实现，已接受的预算重进刷新彩蛋保留。
+
+<a id="gccz-village-aid-20261016"></a>
+## GCCZ 村庄：重复援助、指定交付与市场库存（2026-10-16，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+用户明确“每两次＋1，可重复同类，无冷却”；发展加成继续要求不同类型，每7天仅一轮，其他21天持续/后续轮叠加规则不变。产品修订 `a442e916`，检查点 `8e5c8a5d`。本条仅取代历史援助冷却/协助值按种类阈值的设计，不取代村庄城镇复用、文化、预算、关系、SETS与入口规则；继续遵守“先不覆盖游戏，后面一起覆盖”。
+
+- 交付：保留四个既有标签名；扩展可选 `|amount=20|item=grain`，旧裸标签按最低金钱1000、食物10、物资5、动物3办理。数字由既有后处理从本轮玩家请求提取，不另建关键词/LLM链。严格整数、未知/重复字段、非法类别参数拒收；最低不足、指定库存不足/物品名歧义不提额、不换货。正常化按base tag资格白名单，参数随同一解析结果进入执行器，正文不显示标签。
+- 物品：按真实party ItemRoster和类型筛选；指定原生ID或唯一物品名时只用该物品，多品质堆栈按价值低优先；未指定粮食/物资低价值优先，非马牲畜随机，马匹/驮畜最后且低价值优先。`IsAnimal`原生不包括可骑乘马，改用HorseComponent分类支持真正坐骑。实际清单先确认，回调再核验，不重新抽取/换货；精确EquipmentElement含品质从背包转入village.ItemRoster，无单独虚拟仓库。原版交易读取同一个库存，可按市场价买回，之后交给原版经济流转，不增加保留期限或强制刷新器；真实游戏买回/刷新待验。
+- 协助：每笔实交只记一次，无论同类或数量；两笔＋1，上限仍6，余下0/1按村持久化到新primitive字典 `_gcczVillageAidDeliveryRemainder_v1`。跨场景保留，新游戏清空，旧档无该键从0起，不追补历史援助；原有协助值和旧援助save键不改。取消、缺货、重复/迟到确认不增加关系、协助、记忆或处置完成。
+- 发展：原7天round/类型bitmask与21天expiry保持，协助发奖与类型阈值解绑。两种20%；四种更新同一round到50%，不是另加50%；重复同类不会叠层或延长期限。7天后新round仍可按原规则累加、各自到期。每笔原有要人＋10、非本人所有者＋5关系继续执行；只在实际成功交付后记录真实金额/品名/数量并标记处置，TAB不会再默认掠夺。
+- 边界：确认票据绑定唯一sequence、economy owner、当前mission/村庄/阵营、主角/部队与双方库存对象，先消费回调再操作原生方法。缺货和市场整数溢出先拒绝；物品转移异常按双方快照尝试恢复，失败记录诊断、不发奖励。原生恢复也异常时不假称恢复成功。资料选择、权限和事实仍由原owner处理，普通场景/城镇/城堡/敌中村庄不获得新援助参数说明。
+- 文案：新增3组VillageAid资源（CN/EN/en-US及EN fallback），消费到友方主prompt、友方后处理上下文、四个候选说明；原21组VillageScene与城镇资源不改。固定参数格式仅后处理，不追加额外LLM请求、不把库存全表塞进prompt。教程中英两版同步解释无冷却/两笔协助/不同类型发展，未改终端/MCM入口。实交记忆固定前缀按内容包、物品动态名称保留。
+- 性能：仅玩家明确办理援助时遍历/排序当次eligible库存；确认时双方各一次快照映射，原生转移沿既有方法。失败恢复才逐项查询。没有Tick扫描、反射、IO或后台游戏对象访问；发展倍率沿原每日/交付/加载刷新缓存。
+- 验证：106真实aid partial＋纯规则源链接测试、43援助接线/资源检查；190提示词、196原资源接线、38场景、34入口、77治理、54村庄接线、136核心、73城镇记忆、19SETS结算全部通过。PersistenceChunkReplay与chunk-contract-only通过（既有1个未修direct JSON风险仍在，不属本次新增primitive字典）。原脚本Debug双1.3/1.4、Bootstrap、两份Coup门禁通过；每实现367警告、Bootstrap2警告，含NuGet漏洞源不可达，非零警告。首次新增测试的English fallback实例未标语言导致断言失败，改用真正CreateEnglishFallback后全过；没有放宽产品中文缺键策略。
+- 证据：`artifacts/gccz-village-aid-20261016/validation-receipt.json`记录输出hash与本地日志hash；`code-map.json`记录本次9个真实源码锚点，与[范围图](architecture/af-framework-code-scope.md#gccz-village-aid-20261016)对齐。全仓历史map无法解析旧修订问题未扩大处理。本轮没有Stage、正式包、push、游戏覆盖或外部工作树镜像；未来部署须重验游戏最新AF/TTS来源并重新Stage。
+- 实机待验：自然对话“给你们2000第纳尔／20袋谷物／8件铁／5头动物”的模型参数、CN/EN真实确认布局（尤其大量品类）、退出/读档后的奇数累计、实际市场买回/刷新、模组动物分类与关系/记忆回调。离线测试native UI/roster/save/provider边界有替身，不能冒充真实旧档和游戏通过。新增remainder只存短ID和整数，无新增会膨胀的JSON字符串。
+
+<a id="gccz-village-compact-20261016"></a>
+## GCCZ 村庄：城镇小翻版复用与提示词精简（2026-10-16，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+最新用户要求直接挪用城镇的一次性人物生成、随行士兵与简洁提示词；仅保留村庄标签及特殊玩法差异。本条取代下方第一版冗长提示词的当前状态，继续遵守“先不覆盖游戏，后面一起覆盖”。工作区 `F:/AF/AF-GCCZ-TOWN-20261007`，检查点 `de461baf`，产品 `68ea7875`，无其他工作树改动。
+
+- 人物：不止调用纯工厂，村庄改为持有独立 `TownOrdinarySpeakerVoiceSession` 实例，直接复用城镇抽取和缓存。村庄薄适配仅保留真实Agent身份、短语境与失效对象校验；AF已有资料优先，非英雄缺省画像由同一工厂生成，同场不重抽、退出/读档/新游戏清空，不新增LLM或存档。重要英雄/要人继续用自身资料。城镇缓存、词库与村庄实例隔离，四个“城里/占领街道”关注点用村庄副本替换。
+- 文案：21组原VillageScene键和英文fallback同步压缩，三分支/单角色按需注入，普通兵直接用城镇 `OrdinarySoldier` 命令/性格说明。共同授权、事实、预算与结算约束在后处理上下文写一次，每个标签只说明自身条件；文化阶段不再在每条候选里重复。正文不输出协议标签；村庄作用域、真正自愿/胁迫、隐藏协助值、文化资格/再次确认不放松。没有拼入完整城镇提示词或城镇动作清单，普通聊天/信使/其他场景仍受原实际Agent与mission门约束。
+- 字符实测（同样空AF来源样本）：敌中村民scene+persona中文1489→479（-67.8%），随行兵1473→603（-59.1%）；英文村民5131→1693（-67.0%）。整套敌中候选规则含标签中文2065→767（-62.9%），英文5512→1433（-74.0%）。这是实际core composer输出的UTF-16字符数，不是token；不含AF基底、历史、host预算、友方事务列表和有资格英雄的动态文化方案，不能当作整次请求降幅。
+- 随行：选兵UI、12人上限与原分批入场载体不变；城镇原AgentBuildData构造抽成同一helper，村庄走同样战斗装备、徒步步兵编队、友军/不受伤状态、关闭竞争跟随AI、原生跟随命令。普通SETS继续原分支；GCCZ不运行SETS友军维护去覆盖自己的编队，也不重新启用SETS冲突、宣战或平民编队。
+- 旗手：查明旧村庄调用城镇旗手函数却被内部town-only激活检查挡住。外层/内层改为“当前mission且城镇或显式村庄owner有效”，不扩大城镇全局激活条件。村庄传实际本次选兵名册，不能取上次城镇名册；共用两旗手、旗帜/坐骑及跟随代码。新共享索引按村庄mission记录，退出/读档清理仅移除本次索引；清理用已记录origin整数，不在原生对象销毁后读Agent。
+- 保留：村庄标签、户数/奖励/关系、援助、协助上限、文化84/42天、记忆和TAB结算仍由村庄owner负责；已接受的资源刷新彩蛋不改，敌中藏匿仍未实现。不借此大改城镇/城堡玩法或MCM。
+- 验证：190画像/场景边界/长度、196资源/真实接线、38真实scene/shared escort源链接+native替身、54村庄接线、34原版入口、77治理、136核心修复、73城镇记忆、19SETS奖励通过。原Debug双1.3/1.4、Bootstrap和双Coup门禁通过，非零警告；首编缺Core引用已修正。源码坐标在[范围图](architecture/af-framework-code-scope.md#gccz-village-compact-20261016)，本任务code-map双模式通过；全仓历史map所指7c5c7cd1在此融合历史不可解析，原样保留、不伪称全仓通过。
+- 性能：画像按需一次生成并缓存；入场沿原定额批次（最多12名随行+2旗手），没有额外生成循环、Tick IO或新LLM；短语境资源仍走既有缓存。新清理只遍历本场随行索引，不清空城镇/城堡其他状态。
+- 证据 `artifacts/gccz-village-compact-20261016/`：`validation-receipt.json`、`prompt-size-comparison.json`、`code-map.json`、`GCCZ村庄精简提示词-v2-阅读版.txt`；本地build/回归日志。未Stage、部署、打包或push，未启动游戏/provider、未写玩家存档；旧Stage不能用作新版本。后续统一安装前必须重验最新游戏AF来源/保留TTS与玩家数据并重新Stage。
+- 待实机：三种身份场景的实际模型遵循、重进人物差异、12名随从和2旗手的实际生成/跟随、屠村停手、文化两轮确认、TAB奖励。离线替身不证明native渲染/寻路或旧档已通过。回退用聚焦inverse `68ea7875`，不回滚此前入口、场景隔离、TTS或城镇记忆修复。
+
+<a id="gccz-village-prompts-20261015"></a>
+## GCCZ 村庄专属提示词第一版与普通人物场景画像（2026-10-15，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+最新用户要求：参考GCCZ城镇写村庄专属提示词，不污染其他场景；普通NPC性格生成参考城镇，退出就清掉。用户明确“先不覆盖游戏，后面一起覆盖”，本条取代任何把上一轮部署授权延伸至本轮的理解；不改变下方上一版已经安装的历史事实。
+
+- 实际工作区 `F:/AF/AF-GCCZ-TOWN-20261007`、分支 `codex/sets-village-gptsovits-test-20261014`；检查点 `1db77a52`、产品 `e43015e7`。没有改其他工作树、资源预算、外交、奖励公式、标签身份或存档键；独立GCCZ工作树未同步，本轮仅本融合工作区交付。
+- 参考城镇场景结构：当前场景事实→当前权限分支→人物与亲见优先级→实际库存/隐藏合作意愿→命令和完成边界→当前宽恕决定→实际角色及本场人物画像。新增21组 `VillageScene_*`，CN/EN/en-US兼容资源和英文fallback同步；沿现有模块资源文件/嵌入与缓存读取，真实host传入已选内容包catalog，不随游戏UI语言改变Prompt。
+- 场景三选一：敌中说明守军阶段已结束但未易主、迫于威胁不是自愿、无文化/未启用藏匿；友方治理不虚构攻城或征服、治理不等于拥护，有资格英雄才得到文化确认上下文；友方来访不冒充地主/国王，不借文化方案绕过权限。普通聊天保留，不要求机械复述功能或固定台词。
+- 村民、要人、普通随行兵、随行英雄、其他/身份未知分别限制代表权。反应以现场事实、AF性格与关系为先；同文化次要，嘴硬也会怕、怕不等于效忠，关心家人不证明家人已受害。正文没有执行标签；后处理仅能使用本轮原有允许动作，询问/建议/旁听/假设不当授权，召集不当征兵，待确认/排队/待结算不伪称完成；不假称事件已写入记忆。
+- 非重要NPC直接复用 `TownOrdinarySpeakerVoiceSession.CreateProfile` 的纯生成算法/性格与节奏片段，不复制第二套抽取算法；村庄持有独立字典，每次Begin带generation，普通村民/普通兵才生成缺失性格。4个村庄关注片段以一次小字典拷贝覆盖“城里/刚占领街道”等城镇措辞，不修改共享catalog或城镇缓存。AF已有性格/背景优先；要人、英雄和其他人物缺资料就保持未知，不随机补人生。离场、新游戏、读档均沿既有ClearMissionState→ClearHostileDialogue→End清空；旧profile对象在重进同村后仍拒用。清的是临时画像，不删已有AF记忆和真实处置事件记录。
+- 排查到只检查全局mission仍可能将场景上下文带给无Agent的信使/不匹配目标：主回复入口改为专用mission有效+真实在场成年说话者+Hero/Character引用相符才调用composer。后处理规则/上下文同样验证当前说话者。沿原共用对话bridge，普通漫步/城镇/城堡无village owner、离场、Agent缺失/失效直接返回空，不另建信使或普通场景特殊链路。
+- 性能：只在对话捕获边界读取现有主线程对象；场景Begin拷贝一份小片段字典；同角色后续访问复用画像；无Tick扫描、额外LLM、存档序列化或场景外常驻人格。城镇生成方法仅private→internal供同DLL复用，城镇算法/调用行为不改。
+- 验证：139项实际核心+真实PromptScope源链接（native owner/解析器替身）、188资源/变量/语言/实际接线检查，明确核实三个资源文件旧town/castle键逐值不变；原村庄接线54、真实scene owner替身24、核心修复136、城镇记忆73通过。原Debug双API 1.3(v1.3.15.110062)/1.4(v1.4.8.119303)、Bootstrap及双Coup门禁通过；不是零警告、实机或真实模型验收。
+- 本轮未Stage、部署、打包、push、启动游戏/语音或调用外部API，未写存档。核对上一安装回执中的14产物SHA全部保持；旧Stage不包含本轮改动，不可直接拿旧Stage当新版本覆盖。后续用户统一安装时必须重验安装来源并重建Stage。
+- 证据 `artifacts/gccz-village-prompts-20261015/`：`validation-receipt.json`、`build-only.log`、`prompt-tests.log`、`contracts.log`及其他回归日志；中文阅读版 `GCCZ村庄场景提示词-v1-阅读版.txt` 按真实资源生成，三分支/角色并列供审阅，不是运行时全部一起塞入。源码位置见[范围图](architecture/af-framework-code-scope.md#gccz-village-prompts-20261015)。回退仅聚焦inverse `e43015e7`，不回滚前版入口/场景修复或TTS/记忆合并。
+- 未验：真实NPC自然度、角色差异、实际主/后处理请求与模型遵循、原生场景切换/异步时序和旧档。离线反例能证明指定边界，不承诺所有模型都遵守文案或所有场景零污染。
+
+<a id="gccz-village-scene-20261015"></a>
+## GCCZ 村庄战后接续、专用场景与 SETS 隔离（2026-10-15，DEPLOYED_FILES_VERIFIED / LIVE_PENDING）
+
+用户报告民兵获胜领取战利品/原版物资后未自动出现入口，重新点击进入灰色胜利菜单；要求改名“亲自进入村庄处置平民”，专用村庄处置场景排除青年/儿童，处置标签只在该场景执行，普通场景其他功能保留。追加截图显示普通 SETS 召集69名平民和崩溃。最新明确授权“修好后覆盖游戏”。本条取代此前村庄入口与场景交付状态，不改变完整村庄计划中仍未实现的藏匿。
+
+### 证据、实现与保护边界
+
+- 工作区 `F:/AF/AF-GCCZ-TOWN-20261007`，分支 `codex/sets-village-gptsovits-test-20261014`。意图检查点 `c67a33ba`；村庄产品 `98cf0ff2`；与真实安装 TTS 基线融合 `89e73887`。同期同工作区已提交城镇记忆300–600字产品 `3d32052b` 完整保留并随本次安装，前述 NOT_DEPLOYED 仅为历史时点；未覆盖其他作者工作树/未提交开发。
+- 真实 `GCCZ_Debug.log` 在21:08胜利后反复 `defenders=0` 开新战斗；`SETS.log` 显示在 `game_menu_opened_force_supplies_village` 里重入胜利菜单。原版强征成功回调先切菜单、后清 ForceSupplies/FinalizeBattle；旧后续依赖 CampaignTick，在暂停菜单不推进。现沿已有 application tick 延后推动奖励/菜单，等原版战斗/强征收尾；重复事务按钮只恢复同村票据，缺 LocationEncounter 时安全补建，不另开空战斗。
+- 旧待展示胜利记录还会挡住自己的后续村庄入场。仅允许“同村已展示胜利 + 当前明确处置申请”的组合通过；其他待办仍拦截；准备失败不再静默回落到普通漫步。入口按钮5对CN/EN新资源与实际消费者同步。
+- 21:46日志证明旧村庄处置沿普通SETS mission激活，21:47:27使用普通召集请求，21:52:03起批量将平民编队；native日志曾对话 `village_woman_teenager_empire`。watchdog写有崩溃，但用户取消dump：无法确定最终native堆栈或证明青年攻击就是崩溃原因。仅修有证据的场景混用和危险召集路径，不宣称实机已无闪退。
+- 新 `VillageDispositionSceneMissionBehavior` 为明确入场后的专用mission owner，复用原村庄地形，非新增地形资产。启动过滤未成年演员，迟到演员由OnAgentBuild队列处理，按既有儿童保护和teenager/child/infant模板排除；仅场景移除，不伤害/改写战役角色。成年本村居民恢复正常可受伤状态，只纠正异常过高血量，不给受伤角色补满。
+- GCCZ村庄禁用普通SETS冲突、民众编队召集、命中保护和普通挑衅/犯罪副作用；原随行兵载体保留。召集标签由新owner执行：对话结束后朝当前玩家Agent的位置下达移动，每0.15秒最多8人，不调用平民SetTeam或Formation。只提示已下达命令，不把尚未走到的居民说成已到场。普通漫步的SETS召集等功能不删除。
+- 处置上下文/提示词/动作必须有当前mission和村庄相符的专用标记；失败初始化退出不触发默认掠夺；TAB后的既有兵员/俘虏/物资结算也用app tick接续，保留“只有未作处置直接离开才默认掠夺”。未加资源冷却，刷新彩蛋保持；未改保存身份或重做经济/外交。
+- 性能：空闲app tick只有空值/状态检查；启动一次演员快照，后续事件队列每帧最多8；召集每次一次快照，分批移动；没有新增Tick磁盘IO/反射/全场扫描。
+
+### 已安装版本融合、验证与部署
+
+- 覆盖前拦住旧安装回执不匹配：实际游戏1.4 SHA `514C3A21191C12FDCCC1C5AC0C6BECD69ECDE2FB47D68790796597D6839ECF6E`。通过实际PDB路径定位 `F:/AF/AF-=-10-TTS`，再用该树 `artifacts/tts-peaceful-meeting-20261015/install/receipt.json` 核对9份程序产物，确认来源 `bd4bcc98b0e748ff704fdd990c7470a1fc9617af`。只fetch/merge该已安装提交：语音下拉、隐藏语气标签、和平会面语音gate；该树尚未提交流式开发未纳入，未改其文件。两处文档冲突保留双方记录，无产品冲突。
+- 最终真实源码回放：入口/战败/重复点击/app tick34、专用场景24、奖励19、GCCZ审查77、接线与双语54、城镇记忆73；TTS设置23、目录/语气/和平gate357。两份实际DLL各212个GCCZ MCM元数据检查、各29个实际MCM语音下拉/JSON/撤销检查通过。原生边界/游戏对象使用替身，不代表实际战役与UI验收。
+- 原 `scripts/build/build_single_module.ps1` 完成 Debug双API 1.3 (`v1.3.15.110062`) / 实际1.4 (`v1.4.8.119303`) + Bootstrap + 双Coup注册门禁 + 干净Stage。先前未融合Stage具名保留。重跑时子PowerShell未继承SDK PATH导致一次SDK未找到，改在子进程内设置已有SDK路径后原脚本通过；未修改官方构建/部署脚本。原警告不作为零警告报告。
+- 按用户授权，确认无游戏/启动器，使用原受保护部署流程。预先只备份将被替换文件至本工作区，不创建游戏目录Recovery。最终4774原文件：计划14项更新、4760项SHA不变，零缺失、零意外变化/新增；3133份原导出、配置、自定义提示词、日志、语音与模型保留。未启动游戏/模型、改存档、push或正式打包。
+- 本地证据 `artifacts/gccz-village-scene-20261015/`：`validation-receipt.json`、`deployment-receipt.json`、`runtime-evidence-excerpt.txt`、`build-merged-stage-retry.log`、`final-*.log`、`deploy.log`；完整before清单及 `install-before/` 留在本地。前两份小回执纳入Git，原始日志/大备份不提交。
+- 安装1.4 DLL SHA `E0CB4367A4B13556C4BB9041FB2E886769C79D6BB3CFAB21E9E826A8BF9FDD62`；1.3/Bootstrap详见回执。代码位置与职责见[范围图](architecture/af-framework-code-scope.md#gccz-village-scene-20261015)。回退仅聚焦inverse村庄产品或人工按备份核验恢复，不自动回滚、不撤销TTS与同期记忆改动。
+
+### 玩家复测 / 未验项
+
+优先从出问题前的存档测试：处理敌/中立村庄事务→真实民兵战斗→领完所有原版奖励→自动出现胜利菜单→“亲自进入村庄处置平民”→选兵进场→确认无青年/儿童→召集成年村民（应显示GCCZ村庄提示，不是SETS民众编队）→处置/TAB→人员、俘虏、物资结算。再测友方入口、普通漫步召集、城镇/城堡SETS奖励。旧坏状态的存档、native回调顺序、模型标签遵循、路径寻路及最终崩溃复现均未实机验证；若再崩溃应保留dump和时间，不能仅凭截图定因。
+
+<a id="town-memory-length-300-600-20261015"></a>
+## 城镇记忆正文 300–600 字并细化内容（2026-10-15，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+用户追加“300-600字吧，要在详细点”，本条取代下方 200–500 字规格。本地产品 `3d32052b9d8f79827c7f615099181a3ec7e0a6f1`，前版保留在 `4bc03c73`，以已有 `937ce3ad` 为本轮开始状态。
+
+- 新生成正文归一后至少 300、最多保存 600 字符，超限仍按原句末策略裁切。CN/EN、兼容 en-US 和实际 fallback 同步更新 system/user/JSON 输出说明，要求具体展开居民生计、日常预期、畏惧、信任与行为，以及群体可能有的不同看法；有确认事件先写事件影响，无事件只写给定人设和名声支持的总体印象，不为详细而虚构经历、制度或场景，避免重复和空泛赞贬。
+- 本轮保持前版 1536 tokens 上限与更低用户额度；按需/7日/两worker、手工与旧短正文保护、三个任期、v3字段和保存键不变，无新网络调用或 Tick 工作。
+- 原 TownRuleMemory.Tests 更新边界后一次运行 73 checks PASS：299 拒收、300/600 接受、601 上限、550 字完整句裁切、三任 600 字中文分块恢复、旧100字读取及手工保护；真实核心/桥接和值型fixture，伪辅助传输。三份 CN/EN 资源仅三个生成相关 key 改变，变量与 `memory` 协议身份保持，详细内容约束检查 PASS。
+- 复用前版隔离 `build-source`，覆盖前把旧6产品文件、3 DLL及3 marker和原证据复制到本轮 `previous-200-500/`，SHA逐一匹配。只覆盖同6个owned文件，其他聊天dirty未纳入，不重解归档。原脚本 Debug 1.3 (`v1.3.15.110062`)/1.4 (`v1.4.6.115628`)、Bootstrap与双Coup门禁一次构建 exit0；两实现各367 warnings/0 errors，Bootstrap两条NU1900/0 errors。三份新DLL与marker hash一致，并另存本轮 `compiled/`，不依赖复用快照的未来输出。
+- 证据 `F:/AF/reports/town-memory-length-300-600-20261015/`：`new-source-manifest.json`、`previous-200-500-backup.json`、`build.log`、`build-result.json`、`build-artifacts.json`、`build-verification-summary.json`、`tests-receipt.json`、`prompt-contracts.json`。同一已提取波罗斯资料由当前对话模型写成495字预览，保存在 `F:/AF/reports/town-memory-preview-20261015/encyclopedia-preview-300-600.txt`；原存档事实列表为空，示例不是新发生事件的实录。
+- 未 Stage、部署、打包、push、外部API调用或存档写回；真实provider长文、游戏百科排版与native旧档实机仍待验。回滚仅聚焦撤销 `3d32052b`，可恢复上轮200–500行为，不回滚其他作者文件。
+
+源码定位见[范围图](architecture/af-framework-code-scope.md#town-memory-length-300-600-20261015)，既有200–500及更早记录仅作历史。
+
+<a id="town-memory-length-20261015"></a>
+## 城镇记忆正文 200–500 字（2026-10-15，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+用户在查看真实存档的波罗斯示例后要求“200-500字吧”。本地产品 `4bc03c739f16f07ab55def0b23fb5cad8a712f29`，检查点 `d4be636f`；本条取代此前城镇生成目标 80–120 字、保存上限 180 字及输出上限 384 tokens，其他刷新和事实语义仍按原实现。
+
+- CN/EN 及兼容 en-US 资源、实际 fallback 和输出 JSON 协议同步为 200–500 字符。新生成正文在空白归一后少于 200 拒收，最多保存 500，超出仍沿原句末裁切策略；现有短自动正文继续读取，手工正文继续受保护，不补字、不全量强制再生成。未改 schema v3、保存键、记录归属或三任保留规则。
+- 城镇请求单次上限由 384 调为 1536 tokens，为较长正文及 JSON 留出空间；更低用户配置仍保留，不能据此保证低额度配置也能生成 200 字。原 7 游戏日/累计按需、每城 1 分钟、全局两 worker、失败保留正文及主线程版本核验不变，无新 Tick 扫描、队列或重试。
+- `TownRuleMemory.Tests` 73 checks PASS：真实核心/Generation/Runtime/Ruler/事件与分块器，受控辅助传输和值型游戏 fixture。新增 199 拒收、200/500 接受、超限裁切、500 字 codec 往返、三任 500 字正文与完整中文事件分块加载、旧短正文保留和手工保护；既有生命周期断言保留。两处旧 fixture 签名漂移按当前人格 getter 与语言 passthrough 接通，不冒充真实语言配置或游戏验收。
+- 原 `verify_auxiliary_budget.ps1` PASS：16000 配置受调用方 1536 上限、保留低配置 128/最低 16、thinking/fallback 关闭，旧非 bounded 调用行为保持。三份资源仅两个长度相关 key 改变，变量集合、资源键及 `memory` 协议字段不变，CN/EN 内容检查 PASS。
+- 原 `scripts/build/build_single_module.ps1` build-only 在隔离快照完成 Debug 1.3 (`v1.3.15.110062`)/1.4 (`v1.4.6.115628`)、Bootstrap 及双 Coup seam/注册门禁，exit 0；两主体各 367 个警告、0 错误，Bootstrap 2 警告、0 错误。快照为 `d4be636f` 完整归档加本任务六个产品文件 overlay，六份来源/快照 SHA256 相等，不混入其他聊天正在修改的村庄/SETS；共享 bin/obj 未用作本次全量构建输出。
+- 本地证据 `F:/AF/reports/town-memory-length-20261015/`：`build-source-manifest.json`、`build-result.json`、`build-artifacts.json`、`build.log`、`tests-receipt.json`、`budget-replay.txt`、`prompt-contracts.json`。首次 Windows tar 中文路径与标准 Python 解包长路径失败保留在报告目录，最终使用逐文件标准扩展路径的干净快照；未修改原构建脚本。
+- 当前对话根据上一轮真实存档资料另写 290 字波罗斯预览，明确标为对话模型生成，见 `F:/AF/reports/town-memory-preview-20261015/encyclopedia-preview-200-500.txt`。本轮未重新发送存档资料或调用外部 API，先前那一次辅助接口 HTTP 403 仍是独立历史结果。未 Stage/部署/打包/push，未修改游戏配置或玩家存档；真实 provider 长文、百科排版和旧档实机待验。
+
+源码定位见[范围图](architecture/af-framework-code-scope.md#town-memory-length-20261015)。回滚仅以新的聚焦 inverse/revert 撤销产品 `4bc03c73`，保护其他聊天改动，不改写历史。
+<a id="tts-peaceful-meeting-20261015"></a>
+## 本地 TTS 只放行和平会面（2026-10-15，ACTIVE / BUILD_ONLY）
+
+- 用户要求“只打开和平会面”，并明确选择“先保留编译结果”：只在本工作树修改、验证和编译，不安装游戏、不重启服务、不改配置/语音包/其他功能，不打包或 push。
+- 基线 `2d701bd7d`，分支 `codex/tts-mcm-catalog-20261014`，开工 clean。当前游戏实际加载 1.4 DLL SHA256 `5681E6607BEDF9F8CABCC1B0B435C9593EB47D05AC05A9CAB5134A8C514E1DCF`，与上一测试版候选一致。20:47:47 会面经原版战斗 mission 创建、20:49:49 场景回复未进入本地合成；20:51:52 私人回复选花火 Angry、20:52:09 完成合成，9880 接口正常。未开启 verbose 或修改实机。
+- 修改边界：TTS 战斗 gate 引用已绑定当前 mission 的会面 owner；仅活动且未升级战斗、未进入正式决斗的和平会面可例外，攻城/出城反击及普通野战仍禁用。沿用 `ObserveMission` 的状态转换取消本地队列/播放，不改云端、显示/语气标签、主对话或游戏战斗状态。
+- 验证门：链接真实 gate/runtime 的和平/战斗/决斗/错误 owner/生命周期反例与取消边沿测试；现有语气/目录/载荷回归；原统一入口双 API + Bootstrap + clean Stage。没有新的玩家文案/资源/配置/协议/存档字段，CN/EN 共享同一 gate。Tick 只做 O(1) 属性/引用读取，不扫描、不做 IO/反射。
+- 本条承接[已安装标签测试版](#tts-tone-trial-20261015)，不改变其历史实机未验说明；本次新代码仅源码/离线验证，和平会面实际朗读待未来获准安装后验收。完成后补修订、代码坐标和产物证据。
+
+<a id="tts-provider-dropdown-installed-20261015"></a>
+## TTS 下拉框合入最新游戏基线并安装（2026-10-15，DEPLOYED_FILES_VERIFIED / LIVE_PENDING）
+
+- **最新授权与完成范围**：用户“编译到游戏，记住别和其他功能打架”明确取代[上一轮仅保留编译结果](#tts-provider-dropdown-20261015)。本轮只交付已经实现的 TTS 来源下拉框，保留本地／火山互斥、custom 文字占位、旧配置身份和音色／百科功能。不新增自动情绪、隐藏翻译、语音输入，不启动游戏或服务，不调用云端、不打正式包或 push。
+- **并发安装保护**：起初现装三 DLL 对应 `194c096d9`；预检期间另一线程部署 GCCZ 19 控件补全与村庄败退重进保护，原候选的基线 hash 检查在任何游戏写入前拒绝。随后只读取对方已安装提交 `0f29059cd1f4d371d2144fbcc63004fe84f7dfb7`，合入本工作树为 `87f79bf1954c9a485010cd0b80c01ff8e8886249`；冲突仅交接／台账，保留两侧记录。未改另一工作树、未取未提交功能，也未回退新安装。
+- **产品保值**：相对该已安装基线，`src`、`content`、项目文件、构建脚本、独立 GCCZ 和扩展的 Git 差异恰为 `SpeechSettings.cs` 与中英 `afllm_ui_strings` 三文件；其它产品源码相同。真实 owner／消费者／一基代码位置沿用[上一条代码表](#tts-provider-dropdown-20261015)，源内容 hash 相同。阅兵、SETS、GCCZ 19 控件与村庄重进保护均保留，未更改原一键构建和覆盖脚本。
+- **重编译与验证**：SDK 8.0.426、固定 1.3.15.110062／实际游戏 1.4.8.119303 引用，原 `build_single_module.ps1 -Stage` 双实现、Bootstrap、双 Coup／注册冒烟、干净 Stage 全部 PASS。新 DLL 分别用真实 MCM 验证 dropdown／整数 JSON／变更缓存／选择撤销与双语资源，各 29 项；GCCZ 实际 DLL 元数据各 212 项（20 个旧入口投影为 19 个独立控件、51 对 UI key）。源码链接 TTS 设置 23、GCCZ 规则 77、村庄 native 入口 24 项 PASS；后两项有 fake native／MCM 边界，不是实机崩溃重现。第一次 `--no-restore` 因新测试目录缺 assets 失败，使用空本地 NuGet 源恢复后通过，无下载／生产改动／断言放宽。
+- **格式差异诊断**：完整文件预检还拦下三份默认 `ModuleData/GcczTownPrompt{,.en,.zh-CN}.json`。逐字节确认新 CRLF 还原为 LF 后严格等于现装，并再次确认解析后的 JSON 相等；是本工作树 `core.autocrlf=true` 的物理换行差异，不是提示词字段或内容变更。任务保护器仅为这三个确切路径固定旧／新 SHA256、精确换行判等及 JSON 判等，没有放行任意资源差异，也未修改正式 Stage 门禁或扩大功能范围。原始差异见 `stage-byte-differences.json`。
+- **安装结果**：目标仅 `H:/STEAM/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。用原 Stage／产物校验和原 `Invoke-ManagedStageDeployment`，完整基线 hash 及游戏／启动器关闭检查后更新 **14** 项：9 个 Bootstrap／双实现 DLL、PDB、构建标记，2 个 TTS UI XML，3 个上述默认资源换行。前后均 **4772** 文件，其余 **4758** hash 不变，零缺失、零新增、零意外变化、零错误替换。3133 份已存在 PlayerExports 只在 Stage 对齐时间戳以遵守现有“安装侧同时间胜出”规则；玩家文件不写回源码。Configs／CustomPrompts／TerminalSettings、音色映射／语音包、ONNX、日志及缓存保持。
+- **修订与产物证据**：`artifacts/tts-provider-dropdown-install-20261015/candidate.json` 将构建源修订、三文件源 hash、新／旧输出 hash 绑定；`deployment-plan.json` 是 14 项替换计划；`receipt.json` 为安装后全量核对。完整原始日志为 `build-stage.log`、`tts-mcm-1.3.log`／`1.4.log`、`gccz-mcm-1.3.log`／`1.4.log`、三组 source-linked 测试和 `install.log`。`baseline-race.txt` 记录第一次并发基线拒绝；旧候选 Stage 在 `previous-stage/`。清单／摘要回执可入本地 Git，原始完整 inventory、测试日志及玩家数据不提交／上传。
+- **恢复边界**：14 个被替换原文件在本工作区该 artifact 的 `install-before/`，逐个旧 hash 核验。未建立游戏 Recovery／自动回滚。若需人工恢复，先关闭游戏、确认当前文件仍为本次新 hash，只恢复计划中的确切文件；不能整目录覆盖或覆盖后来交付。源码采用聚焦 inverse，不 hard reset 或改写历史。
+- **实际验收仍待玩家**：启动游戏，打开独立 `AnimusForge 语音功能-TTS 本地部署/API` 栏，确认顶端为具名下拉而非数字滑条；试选／取消、保存后重开，确认原设置未重置；随后核对 GCCZ 项目、百科音色选择及正常 TTS 场景。managed 回放、双编译和全量 hash 证明安装和所测边界，不替代 Gauntlet 实际布局／完整设置生命周期、native 场景／旧档和第三方 MOD 共存；本轮未重测模型音质、游戏帧率或 API 可用性。
+
+<a id="tts-provider-dropdown-20261015"></a>
+## TTS 语音来源改为具名下拉选择（2026-10-15，BUILT / STAGED / NOT_DEPLOYED）
+
+- **请求与边界**：用原生 MCM 下拉框替换 `0 本地 / 1 火山 / 2 自定义` 数字滑条，显示本地 GPT-SoVITS、火山 TTS API、自定义（暂未开放）。用户最后明确“先保留编译结果”，因此本轮没有覆盖游戏、操作服务或调用付费 API；语气、音色、百科等既有功能保持，未新增自动语气或隐藏翻译。
+- **实际基线**：`F:/AF/AF-=-10-TTS` / `codex/tts-mcm-catalog-20261014` 初始 `962edd590`。现装三 DLL 已更新为 GCCZ 交付，hash 与 `artifacts/gccz-review-game-20261015/source-receipt.json` 一致；本轮 checkpoint `796d09f40` 后，从另一工作区只读取已安装修订 `194c096d97db7db2f8512346bd357fdd24b1c746` 并合并为 `b10f63a917b8dd24e71b9aa315393c8b2ba1e0a3`。保留阅兵和 GCCZ 新实现，不取另一线程未提交的后续 MCM 改动。相对实际安装基线，生产差异严格为下表三个文件，一键构建/部署脚本不变。
+- **实现**：`ProviderMode` 保留 JSON key，改用 MCM 原生 `Dropdown<string>`；真实 MCM converter 仍读写整数 0/1/2。固定选项保存原始本地化 token，不从旧预设覆盖显示名称。订阅所属 dropdown 的 `SelectedIndex` 事件，仅在改变时失效现有 revision 缓存；兼容 MCM 原地编辑和撤销，不加 Tick IO/扫描。原本地/火山互斥、custom 仅文字、旧凭据与一次迁移规则保持。
+- **验证**：source-linked 设置策略 23 PASS；对实际编译的 1.3 与 1.4 DLL 分别加载真实 MCM，旧整数配置加载/整数回写、三项固定名称、revision/越界、`SetSelectedIndexAction.DoAction/UndoAction` 与成对资源各 29 PASS。原统一入口使用 SDK 8.0.426、1.3.15.110062/1.4.8.119303 引用，双 API＋Bootstrap＋双 Coup/注册冒烟＋完整 Stage PASS。新增三项 UI key 与两份语言文件已进入真实 Stage。
+- **证据与失败记录**：`artifacts/tts-provider-dropdown-20261015/` 的 `settings-test.log`、`mcm13-final.log`、`mcm14-final.log`、`build-stage-sdk8.log` 和 `receipt.json`。第一次子 shell 错选系统无 SDK dotnet，改为本命令的 SDK PATH 后通过；真实 MCM 夹具先因 PowerShell 宿主、解析器依赖、脚本 collection callback 包装及反射构造绑定失败，修正夹具后通过，保留早期日志。没有为了夹具失败变更生产逻辑或放宽断言。
+- **产物与未验**：完整 Stage 在 `bin/Debug/single_module_stage/AnimusForge`，双实现与 Bootstrap 在 `bin/Debug/single_module_artifacts`；旧 Stage 保留于该 artifact 的 `previous-stage`。当前游戏三 DLL 仍是已安装 GCCZ 基线 hash；用户选择保留编译结果，本轮未部署。MCM 实机渲染/点击和完整 provider 保存生命周期未运行，不以 managed action/JSON 回放代替。未重测 TTS 音质、原生播放或游戏共存。
+
+| 生产坐标（修订 `b10f63a91`，一基行号） | 责任与消费者 |
+|---|---|
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/SpeechSettings.cs:54–80,188,219–245`，`ProviderMode` / `ProviderSelectionChanged` / `ImportLegacy` / `ApplyToLegacy` | 同一 MCM 下拉元数据→选中索引事件→现有 revision 缓存→原 provider 路由；持久化 key/整数保持 |
+| `content/modules/AF.Module.Llm/ModuleData/Languages/afllm_ui_strings.xml:78–82` | 英文标签、提示和三选项；现有 language registration 与 Stage 映射保持 |
+| `content/modules/AF.Module.Llm/ModuleData/Languages/CNs/afllm_ui_strings-zh-CN.xml:79–83` | 对应中文 UI；真实 dropdown 仍以 token 交给原生 MCM 本地化 |
+
+后续安装：重新核对游戏/启动器退出和现装源码/hash；其他线程可能继续交付 GCCZ，需将本次窄 UI 改动合入新的实际基线后再用原流程部署，禁止用当前候选覆盖未知更新。源码恢复可逆提交 `796d09f40` 中这次 UI/测试变更，不回退合入的阅兵/GCCZ 基线；本轮无需游戏回退。
+
+<a id="gccz-mcm-and-reentry-20261015"></a>
+## GCCZ MCM 补全与村庄败退重进保护（2026-10-15，DEPLOYED_FILES_VERIFIED / LIVE_PENDING）
+
+本条是本轮唯一状态入口。用户先要求只修源码，随后明确追加 **“弄进游戏里”**；本次据此完成部署，取代先前 NO_DEPLOY 状态。两项分别提交，原一键构建/部署脚本未改，其他工作树与独立 GCCZ 核心未动。
+
+### MCM：遗漏的是前端控件，不是底层功能
+
+- 检查点 `d5b03e30`，产品 `06866c54`。原分组 20 个属性映射到独立页 19 个控件（原两个相同城镇教程合并），不再只有 8 项。
+- 中文栏目名严格为 **AnimusForge 攻城处置(GCCZ)**；英文界面为 `AnimusForge Siege Aftermath (GCCZ)`，标题随游戏 UI 语言，ID 仍为 `AnimusForge_GCCZ_v1`。
+- **场景设置 4 项**：NPC 不限回复、回复上限、村庄初始协助值、外领地随行士兵上限。**教程 3 项**：城镇→村庄→城堡。**GCCZ 日志 5 项、SETS 日志 5 项**：写入、详细、大小上限、导出、清空。**贵族俘虏押送 2 项**：导出、清空。共补回 11 项。
+- 所有设置仍由原 DuelSettings 字段保存，既有范围/默认值不变；新增投影也使用每实例草稿、仅 live `SaveTriggered` 写回，取消不遮蔽后续终端修改。三个日志系列直接调用原 owner 的动作，不另造日志、不自动执行导出/清空。原导出到桌面、清空仅当前文件的语义保留；恢复悬停说明及双语分组。
+
+### 新闪退：已有确定证据与不确定边界
+
+- 检查点 `ed5c5bd1`，产品 `19094fe6`。游戏当前实际日志来自 1.4.8.119303、进程 35136，村庄 `village_ES3_3`。`Mod_Logic.txt`：**03:07:24** 首战 `attTroops=1,defTroops=53`；**03:08:15** `missionResultPlayerDefeated=True`；**03:09:33** 二次开战 `attTroops=0,defTroops=53`，仍进入 `empire_village_e_navalraid`。RGL 停于 **03:09:34** 场景队伍/阵型初始化，watchdog 明确 `Crash occurred. Asking for dump.` 和 `User canceled dump and report generation!`。
+- “刷满血”来自用户描述，旧日志未记录第二次 Hero HP/伤兵名册细项。不能据此认定某个修改器的具体实现、宣战本身或某个第三方模组就是最终崩溃函数。**确定缺陷是 GCCZ 按钮直接调用原版 `EncounterAttackConsequence`，没有原版 condition 的健康/双方兵员保护，确实启动了空进攻方场景。** 本轮封堵这个已证实的危险路径，未获得 native dump，也未实机复现完整崩溃。
+- 修复：敌中按钮与点击重验主角未负伤、名册健康人数及 Party 健康人数；中立警告确认前仅对本功能请求复验，未通过不触发新宣战；启动前再验、建战后确认实际进攻方非空，最后调用原版 `EncounterAttackCondition` 且需 `IsEnabled` 才进场。无有效进攻方时不给无守军胜利。战败继续清请求，不排队 GCCZ 胜利入口，不强制治伤、不修玩家名册、不撤销已有战争、不销毁其他战斗。
+- 增加 GCCZ 日志节点：request / confirmation_blocked / start_blocked / battle_prepared / native_attack_blocked / battle_won / battle_not_won，记录 HP、伤势、健康名册和实际双方数量。仅菜单/确认/开战/结算事件记录；无新增 Tick IO、反射、全局扫描或轮询。失败说明 CN/EN 成对。
+
+### 代码责任与验证范围
+
+| 一基源码坐标 | 覆盖责任 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/GcczSettings.cs:17-143`，`DisplayName` / live `SaveTriggered` / 19 属性 | 标题、完整控件、草稿和原 owner 的动作接线；不实现日志 IO 本身 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.NativeDispositionEntry.cs:43-230`，`NativeDispositionEntryCondition` / `NativeDispositionConfirmedPrefix` / `StartNativeDispositionResistance` | 敌中处置入口及 native condition 防绕过；友方治理与普通原版强征保持 |
+| `content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/sets_ui_strings.xml:161-169` 及 `CNs/sets_ui_strings-zh-CN.xml` | 标题、分组、教程提示、无法出战提示；复用现有内容映射与语言注册 |
+| `tests/AF.GameAdapter.Bannerlord/GcczVillageReviewTests/` / `VillageNativeEntryTests/` | 链接真实生产代码；MCM/native 边界替身，不是假装游戏运行 |
+
+- **已通过**：MCM/经济源链接 77 项；两实际 DLL 各 212 项 metadata/可见性/CN-EN 检查（51 对资源键），确认旧分组没有遗漏；旧安装 DLL 在相同检查下因丢失 HintText 失败。村庄入口源链接 24 项，覆盖日志中的败退→HP 恢复→零兵重进、建立战斗后快照为零、中立确认状态变化、原版拒绝、普通胜利/无守军/友方入口；原 SETS 奖励 19 项；受影响源码接线与双语资源 33 项。
+- **构建/Stage**：结果及源文件/双 API/Bootstrap 哈希绑定 `artifacts/gccz-village-reentry-20261015/source-receipt.json`（该历史回执记录的是当时仅源码授权）。首次 MCM Stage 因旧 Stage 与新 XML 不一致按规则拒绝，保留旧 Stage 到项目 artifacts 后重新生成，不放宽门禁、不修改官方脚本。
+- **本次部署**：先复核 12 个源码/测试文件、三份产物及 Stage DLL 与已测回执一致，游戏三份旧 DLL 仍匹配上一轮安装基线，无更新功能被旧包覆盖。确认游戏/启动器关闭后，经原 `deploy_module.ps1` 的 Stage 与 `Invoke-ManagedStageDeployment` 覆盖，仅将本地 Stage 已存在的 PlayerExports 时间戳对齐安装侧以保留玩家版本。共 4772 文件，更新 11（Bootstrap/双实现及符号/标记、两份 UI XML），其余 4761 哈希不变；零缺失、零意外新增或修改。3133 份既有导出、Configs/CustomPrompts、音色映射/语音包、ONNX 与日志均保留。证据 `artifacts/gccz-mcm-reentry-game-20261015/deployment-receipt.json`；替换前 11 文件备份在同目录 `install-before/`，不在游戏创建 Recovery，不自动回滚。游戏中文标题和无法出战提示已核对实际安装 XML。
+- **日志证据**：`artifacts/gccz-village-reentry-20261015/` 内保留相关小日志原件与 Mod_Logic 最后 240 行；未复制 1.57 GB 全量 Mod_Logic，未导出桌面、清空日志或上传。原始日志和完整测试日志不入 Git，摘要/哈希回执可追溯。
+- **未验**：实际 MCM 窗口布局与保存/取消、真实桌面导出、native 场景/存档/第三方联用、完整闪退复测。现在可启动游戏，先检查 MCM 19 项，再测试 neutral→战败→仅恢复 HP 立即重进应阻止、自然恢复/补兵后可正常开战，最后测胜利军事结算→GCCZ 入口与友方治理。若仍闪退，保留完整崩溃报告，不以本次保护替代新堆栈定位。
+- **保留**：同村退出重进刷新资源是用户指定彩蛋；不加冷却。敌中藏匿仍未实装。TTS/GPT-SoVITS、阅兵、原设置/存档身份均无本轮变更。未启动游戏/服务、正式打包或 push。回退只用这两笔产品提交的聚焦 inverse，不重置分支或恢复旧整包。
+
+<a id="gccz-village-governance-20261015"></a>
+## GCCZ 友方治理与和平入口（2026-10-15，PARTIAL_IMPLEMENTATION / OFFLINE_VERIFIED / LIVE_PENDING）
+
+本条取代下方 PLAN_ONLY 为当前状态；用户后来要求按计划开始写，并明确恢复独立 GCCZ MCM 栏目。历史部署状态不因此改变。
+
+- **修订**：融合产品 `9a4b9bdd`（检查点 `560bf0db`），独立规则 `5f219d8`、换行保值 `64fe333`（检查点 `5fb26aa`）。9 个村庄核心文件逐字节一致，独立旧 Program.cs 和 Council/UI dirty 保留。AF 与独立的 Castle/Town 本地化版本已分化，不能整文件镜像；宿主变化只在独立桥说明记录。
+- **实现范围**：23 个友方行为＋认可游说／核对文化方案两个内部回执；治理者、同阵营访客两种入口权限，友方无反抗／藏匿，旧友方政策执行器移除。乡村根菜单“处理村庄事务”；和平城镇“亲自处理城务”、城堡“在城堡处理战俘”，真实所有者或同阵营国家统治者可用，普通封臣不得在他人城镇／城堡使用。和平来源跳过 native 攻城结算，原 SETS 先结算军事奖励链保持。
+- **援助**：动物 3 头且任何动物，金钱 1000、食物 10、非食物非动物贸易物资 5；实付后要人 +10、其他所有者 +5。同村同类 7 日冷却，一轮不同种类两项 +1 协助/+20%、四项再 +1/本轮升 50%。从两项达标起独立持续 21 日，后续轮次加成相加、各自到期；同轮升档不延长到期。协助值上限 6，初始 MCM 0–5，外交变化不重置。
+- **文化／TAB**：方式 UI→文化 UI→同伴自然询问并给内部回执→同英雄下一轮明确确认，才支付 10000。迁殖即时完成、继承屠村、84 日成长/生产乘 0.2；融合 84 日或玩家同文化 42 日，无生产减益。完成才通知并写对应角色记忆，失去治理权中止未完成融合。只有未作处置的正常 TAB 默认掠夺；宽恕/实际援助/已执行处置后只结已有内容，通用销毁/读档/战败不产生默认掠夺。
+- **验证**：独立当前工作区 2655（含用户原 Council 测试）、源码资源接线 25、两个实际 DLL 的 CN/EN 和平/战后城堡提示词各 8 通过；原统一双 API（1.3.15/1.4.8）、Bootstrap、双 Coup 与注册冒烟通过。既有分块持久化回放通过，不代表新增 native save/load 已验。产物／源码／日志哈希绑定 `artifacts/gccz-village-governance-20261015/receipt.json`。无 Stage、正式包、部署、push、真实 provider 或实机。
+
+| 核实源码（一基行号；产品 `9a4b9bdd`） | 实际职责 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/VillageGovernanceRules.cs:9` / `public static class VillageGovernanceRules` | 权限、援助里程碑、文化确认与 TAB 规则 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Governance.cs:82` / `private static bool TryProcessFriendlyDisposition` | 主／后处理真实友方执行；两种内部回执与旧标签隔离 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Governance.cs:116` / `private static bool OpenVillageGift` | 1000／10／5／3 真实交付；7 日逐类冷却、21 日逐轮到期、关系及记忆 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Culture.cs:38` / `private static bool HandleCultureConversation` | 同英雄后续回合确认、支付、文化持久化与完成记忆 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Growth.cs:14` / `private void RegisterVillageGrowthHooks` | 实际 model 一次挂接；招募/精锐、生产、正向户数增量乘法 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Massacre.cs:20` / `private static void StartVillageMassacre` | 入场目标快照和 0.75 秒节流，复用城镇战斗／移动帮助器 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Economy.cs:281` / `private static void ApplyForeignRelations` | 按身份取政治对象，最大负面补差、仁慈翻倍与同人去重 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Economy.cs:337` / `private void OnVillageEconomyTick` | 原版人员／俘虏／物资界面、实付回执及实收奴隶减户；不负责跨次恢复 |
+| `src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs:7647` / `VillageAftermathBehavior.OnPlayerVillageLeaveRequest` | 只有玩家正常离场请求默认掠夺，不在通用销毁／读档发奖励 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.FriendlyEntry.cs:65` / `private static bool FriendlyGcczCondition` | 城镇／城堡和平准入、显式非战斗来源、菜单锚点 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs:33` / `if (IsPeacefulGovernanceEntry` | 和平入口跳过原版新占领结算，保留真实俘虏处置效果 |
+| `AnimusForge.SiegeAftermathIntervention/SiegeCastleRuntimePromptProfile.cs:48` / `TownPromptTextCatalog textCatalog, bool peacefulEntry` | 和平主场景及普通俘虏语料替换旧战后身份，不追加相互矛盾的提示 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/GcczSettings.cs:11` / `public sealed class GcczSettings` | 独立 GCCZ 栏；原 DuelSettings 继续唯一保存 |
+| `src/bridges/Siege/UI/GcczVillageCastleTutorialPresenter.cs:7` / `internal static void Show` | 人读的分页教程；城镇下依序村庄、城堡 |
+
+### 未完成与验收边界
+
+1. **跨访问资源恢复未完成**：仅保证本次访问共用预算；户数公式尚未与原版恢复建立持久关联，退出重进仍可能重算。未自行添加七日资源补货，不能宣称完整防刷。
+2. **敌中藏匿未启用**：7 日藏匿、每日每敌军一次 30%/5% 发现与 1.2/1.8 治疗尚未实现；两标签保持禁用、教程如实说明。友方无藏匿属于设计。
+3. **实机 NOT_RUN**：4 身份/仁慈关系、MCM 显示/保存/取消、12 人含英雄与两旗手、血洗/停止、AI 两步确认、7/21/84 日推进及旧档、原版结算屏和 SETS 不重发。当前源码无阅兵 GameMenu，按运行时锚点排序、无锚点时靠前；不是已经目测位于阅兵上方。
+4. 融合中止当前不退款（用户只确认中止，退款口径未单独确定）；援助物资目前限贸易物资、不含武器护甲。具体实施口径已写计划。
+5. 保留修复证据：不存在的 GetTroopWoundedCount 改读实际 roster；和平城堡原语料错误声称刚攻占，已做来源分支及实际 DLL 反例；整文件镜像遇到独立旧 Castle/Town API 差异，只撤销本轮干净基线文件覆盖，保留原独立实现；测试 harness 补齐与构建相同的 Harmony 依赖。未削弱旧战斗／权限断言。
+
+[完整计划](gccz/plans/gccz-friendly-village-design-20261014.md)；[同步桥说明](gccz/bridge/gccz-village-governance-20261015.md)。后续先补跨次原版恢复，再验证友方全流程，敌中藏匿仍有明确待办。回滚采用针对产品提交的 focused inverse 并同步独立规则，不 hard-reset、改写历史或操作玩家资料。
+
+<a id="gccz-friendly-village-design-20261014"></a>
+## 友方 GCCZ 村庄计划与完整标签（2026-10-14，PLAN_ONLY）
+
+- **用户范围**：仅整理并写入计划，未授权本轮实现；治理／来访两类身份，四种政治关系情形。新增确定：1000 金钱、10 任意食物、5 件物资、各类牲畜均接受；每项要人 +10，每两项奖励协助值及 +20% 招兵生成／精锐度增速，四项提升到 +50%；牲畜份数、组合计数／重置／增益持续时间与协助值奖励点数仍待细化。
+- **最新覆盖**：友方无藏匿、无村民反抗；资源恢复跟原版，协助值不因外交变化重置；纯粹毁坏所有者 -50（仁慈 -100）；对应领主记忆记录实际操作，只有纯粹毁坏额外通知统治者。文化改造仅留标签、权限占位，方式／成本／周期／后果待讨论。
+- **完整规则**：[友方计划](gccz/plans/gccz-friendly-village-design-20261014.md)，23 个玩家行为标签，含正负面收益、四身份关系表、记忆句式、已取代提议与未定细节。独立镜像为 `F:/AF/GCCZ/docs/plans/gccz-friendly-village-design-20261014.md`；两边旧友方桥说明加明确设计替代链接，保留旧运行证据。
+- **现状与边界**：融合基线 `77959dd9`，独立基线 `4b8ca67`；独立原 `tests/AnimusForge.SiegeAftermathIntervention.Tests/Program.cs` dirty 保留。本次只修改 Markdown，不替换旧友方消费者，不改变敌中参数、运行 Prompt、游戏 DLL 或既有安装。旧 UI 交接的未接通后端不作为城镇已实现依据，后续实现须沿实际给予回执接线。
+- **文档检查**：23 标签按 4/4/5/5/3/1/1 分组、两份计划逐字节一致、4 个入口链接、文档限定差异和 whitespace 检查全部 PASS；独立原 Program.cs SHA256 保持不变。不执行游戏编译、测试、Stage、部署、打包或 push。这里的规则确定不等于产品已实现，安装状态仍见下方原部署回执。
+<a id="parade-game-integration-20261014"></a>
+## 阅兵重建并合入现用融合版本（2026-10-14）
+
+**状态：DEPLOYED_FILES_VERIFIED / LIVE_PENDING；停止继续改动，等待玩家测试。** 本条替代原阅兵副本“未部署”状态；不改变既有TTS／SETS／村庄未验项，也不是旧电脑源码恢复。
+
+### 范围、基线与实现
+
+- 用户最新授权：融入游戏中现用AF，不破坏其他功能，然后等待测试。之前指定在NEW-10外独立副本，并把总督手动菜单改为大地图城镇／城堡菜单、位于处决上方。没有授权push、自动运行游戏或改其他MOD。
+- 独立工作区 `F:/AF/AF-PARADE-GAME-20261014`，分支 `codex/parade-game-integration-20261014`，基线 `962edd590`（已装TTS生产 `2d583be6f` 之后只有恢复文档变化），产品切片 `8b0de975d`。从此前 `F:/AF/AF-PARADE-20261014` 的阅兵改动三方合并；原TTS／SETS／村庄源码保留。TTS主工作树保持clean。
+- [功能约束](designs/expedition-parade-reconstruction.md)；[真实owner、消费者和一基代码坐标](architecture/af-framework-code-scope.md#parade-game-integration-20261014)。只有出征／胜利阅兵，14天资格窗；健康兵员从主队、当地驻军、已集结玩家军团只读取样，展示Agent不修改真实roster。3步兵列／2骑兵列、每非空列首为旗手，固定列数。
+- 任务内明确的首版限制：最多96人／每批24人；优势由贡金方向或有开战快照的净领地差决定，多线战争未做逐城归因。路线无有效穿门导航就拒绝，堵塞25秒清理，不瞬移穿墙；不新增群众／撒花／奖励。AI沿现有后处理接入，不新增第二条LLM链；信使不触发现场阅兵。
+- 性能：兵源仅开始时快照，主线程路线分批采样／缓存复用前重验，不在Tick做文件IO；每场有总人数和批次边界。空闲Tick直接退出等待，存档仅边界分块，不保存Agent／待执行请求／许可。
+
+### 验证与原始失败
+
+- 使用原 `scripts/build/build_single_module.ps1`：双实现、Bootstrap、原双Coup managed门禁及干净Stage均PASS。1.3 `v1.3.15.110062`；1.4从游戏1.4.8 DLL匹配的既有引用overlay构建，不使用旧1.4.6引用。命令及日志在 `artifacts/parade-game-integration/build-command.txt`、`build.log`。
+- 阅兵生产规则链接回放4942项；TTS设置19、目录235（fake HTTP，无模型调用）、SETS真实奖励owner＋原生替身19；PersistenceChunkReplay与当前chunk-contract PASS（20字符串／48字典键）。它们不代表真实游戏、真实AI或原生语音测试。
+- 首次目录测试误传已存在的repo根，fixture保护拒绝覆盖；改为任务产物下新fixture通过，原失败日志保留。新增阅兵分块键首次目录校验报extra，随后在currentAdditionalFlattenedDictionaryBindings登记精确owner/reader/writer，保留47个历史字典键目录与全部断言，当前48键通过。
+- 原构建／覆盖脚本不改。临时InvariantCulture仅解决PowerShell日期转换；未跳过时间、hash、标记或Stage门禁。任务安装包装器只改生成Stage的PlayerExports时间戳，使原覆盖规则保留现有导出，不把玩家内容同步到源码。
+
+### 部署、保护与恢复
+
+- 目标仅 `H:/STEAM/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。开始前和写入前检查游戏进程，仅Launcher／Watchdog在运行，无kill或启动动作。TTS服务及其他MOD未触碰。
+- 原 `Invoke-ManagedStageDeployment` 成功更新12项：Bootstrap与1.3/1.4各DLL／PDB／marker共9项，加RuleBehaviorPrompts及中英UI资源3项。版本号／SubModule不改。1.4 DLL由 `347323886d4f927716a8ac2c451b479c45dbb0775abeb6242f060c9d88a34727` 更新为 `dafeedfd0ebc76716bd790adda6cc0b00537092b1f128ccd1285bdcc9493d5d9`。
+- 2026-10-14 23:12:57 +08:00最终检查：安装前后4749文件，零缺失／新增／意外变化；12替换匹配Stage，其余4737字节hash相同。含3份不同于默认Stage的个人导出全部保值；配置、提示词、语音清单／参考音频、ONNX、日志／缓存不覆盖。
+- 完整本机证据：`artifacts/parade-game-integration/{initial-inventory.json,backup-manifest.json,deployment-receipt.json,source-receipt.json,install.log}`；**12个被替换文件备份**位于同目录 `install-before/`，逐项旧hash已核验，不是全MOD复制或存档备份。任务local安装脚本不提交、不自动再次执行。
+- 若需退回：先关游戏，再人工依据backup-manifest确认当前文件仍是本次新hash，仅恢复列出的12项旧文件。源码用focused inverse commit，不hard reset；禁止整目录覆盖或删除玩家新数据。没有自动回滚，没有创建Modules/.AnimusForge.Recovery。
+
+### 玩家待测
+
+先另存测试档，启动游戏；己方城镇／城堡菜单检查处决上方“举行阅兵……”，在宣战14天内试出征。测试步／骑／混编过门、每列旗帜、驻军／军团代表、正常退出与卡住清理；随后检查优势和谈14天内胜利阅兵、保存读取、现场AI代办。自动路线场景覆盖／动态碰撞、菜单实际顺序和入场返回、旧档、TTS及其他模块游戏内共存均NOT-RUN，不能保证无实机缺陷。保持当前安装，等反馈再改。
+
+<a id="gptsovits-blackwell-restoration-20261014"></a>
+## GPT-SoVITS 新电脑恢复与AF重编译（2026-10-14，LOCAL_API_RUNNING_REAL_GATEWAY_VERIFIED_GAME_NOT_RUN）
+
+- 用户追加“GPTSOV的问题你帮我打开顺便编译好”，明确替代上一轮仅装MCM/包、不恢复服务的范围。服务工作区 `F:/AF/GPT-SoVITS-local`，隔离分支 `codex/restore-blackwell-20261014`；不改系统Python/驱动、其他安装、AF生产源码或玩家配置，不训练/付费调用/公网监听/设自启。
+- 实际失败：pyvenv.cfg旧G盘、uv启动器二进制也嵌入旧G解释器，单改cfg仍失败；重新生成启动器保持旧site-packages。旧torch2.8+cu126可检测RTX5070Ti但实际CUDA运算报no kernel image。原包/启动器/config保留后，安装官方整包hash核对的torch/torchaudio2.8+cu128与resampy0.4.3，202包依赖通过；sm120、CUDA张量/FP16卷积、重采样通过。12已有模型文件1,887,853,283字节全hash一致，上游app已跟踪源码不变。
+- 普通官方wheel下载停滞，核验自启下载PID后只停止本任务下载；固定官方URL207个206Range、长度与完整官方SHA256核对后安装。NLTK代理安全保护拒绝在线下载，未关闭保护；官方index/checksum的3份离线资源进入安装内缓存。7参数handler、5启动守卫替身测试通过，实际空GET400、同PID重复启动、停止释放端口/显存、干净重启真实合成通过。首次net8宿主在三条有效WAV后因旧Newtonsoft回执反射依赖失败；仅artifact序列化修复并完整重跑，生产gateway未改。
+- 真实AF源码链接目录/gateway→已安装H盘语音refs→本机V2Pro：男声生气、花火开心和英文均32kHz/mono/PCM16/非静音；热3.13/3.91/2.37秒，干净重启首条21.35秒，其后3.79/5.10秒，30秒请求上限未修改。不代表实际游戏播放/音质、全语种或所有长度都已验。
+- 30次采样整卡显存峰值3554MiB（含桌面），API工作集约4.85GiB、私有提交约9GiB；停止后1461MiB，未测游戏共存/FPS。服务已重新启动并保持127.0.0.1:9880，最终PID/当前状态以 `F:/AF/GPT-SoVITS-local/restoration-20261014.json` 与进程/监听复核为准，不能拿静态记录当未来存活证据。
+- AF原统一入口双API/Bootstrap/双Coup/注册冒烟重新通过，证据 `artifacts/tts-mcm-20261014/build-service-restoration.log`。新编译字节与旧安装不相同，但生产src/content/project从产品 `2d583be6f` 无差异，三个实际安装DLL仍与上一轮交付hash一致；因此本轮只重编译/核对，不重复覆盖游戏或假称新字节已部署。真实gateway夹具在同artifact的 `live-gateway/`，安装对照见 `installed-previous-code-check.json`。
+- 服务证据 `logs/repair-20261014/`、当前汇总JSON和 `output/restored-20261014-green/receipt.json` / `output/restored-20261014-restart/receipt.json`；源码入口 `Environment.ps1`（本地缓存）、`Repair-MovedPython.ps1`（显式迁移修复）、`Start-Api.ps1`（本机owner/加载/重复守卫）、既存root `api_v2.py`（GET参数归一化），保留旧参数修复而未改上游。未push/打包；本次恢复后用户重启游戏，在独立TTS页开启语音＋0本地、清单默认留空。原生播放/口型/存档/质量仍NOT-RUN，自动情绪/隐藏翻译/语音输入未新增。
+
+<a id="tts-mcm-voices-20261014"></a>
+## 独立 TTS MCM 与五男五女多语气包（2026-10-14，DEPLOYED_FILES_VERIFIED_LIVE_NOT_RUN；本地服务恢复排除）
+
+- 用户明确要求独立 MCM 界面、搬出旧火山 TTS 控件、官网/API文档入口、0本地/1火山/2预留自定义滑条、百科交谈前选音、默认男女池和手选自定义音色，授权编入并装入游戏。最新答复“先只装 MCM 和语音包”：不启动或修复 Python/torch/CUDA，不调用真实付费接口，不做自动情绪检测或自动翻译。
+- 施工位于 `F:/AF/AF-=-10-TTS` 的 `codex/tts-mcm-catalog-20261014`，精确采用当前游戏融合源码 `77959dd9cdc24763db6c5d1f36fe25eb72d44913` 为基线，checkpoint `9d555ef00`。原旧语音分支与其他融合工作树不回滚、不写入；保留 SETS/村庄等当前功能及单模块双实现。
+- 新 MCM owner `AnimusForge_TTS_v1` 为完整配置来源，原 DuelSettings 仅有限兼容投影。迁移一次保留旧火山凭据/播放参数；未选任何旧 provider 的状态保持静音。改动后续不在旧页/终端重复呈现 TTS；后台字段/preset保留。 unchanged-read identity/revision 缓存，不在 Tick 扫描属性或重复 IO。
+- 目录准备为 `local/VoicePacks/Game-TTS-5M5F-20261014`：5男+5女默认，花火4项归 custom，排除随机池；88参考文件、不含新模型权重。neutral/happy/angry/sad手动滑条同时选录音与原文，未提供的语气使用同音色基础参考。25旧ID明确别名稳定迁移，不随机重抽；百科可在TTS关闭/未交谈时手动保存，自定义可明确跨性别选择。
+- 产品 `2d583be6fc6a9123f711dde11c0ba4bd41f717b7`：源码链接目录/HTTP测试305、设置策略19、生产TtsEngine本地子集4通过；真实1.3/1.4 DLL的persona JSON/旧JSON与目录分别307通过。首个1.4 DLL测试缺0Harmony失败，补显式只读依赖目录后通过，没有修改行为断言。最终双API各365 warnings/0 errors、Bootstrap/probe0/0、双Coup/注册冒烟通过；源码/实际DLL证据仍不等于MCM或音频实机。
+- **失败与保护**：旧Stage因未知旧CustomPrompts被原门禁拒绝，完整保留到 `artifacts/tts-mcm-20261014/previous-stage/AnimusForge` 后新建。4659安装文件冻结，11受管旧文件和原语音清单备份到该artifact的 `install-before/`。第一轮preflight因玩家运行游戏写入9日志停止；只读进程/日志核实后保留记录。原事务替换2个引导文件后因旧DLL占用无法删除临时文件而失败，不声称自动回滚；相关进程退出后核对临时旧DLL与备份同hash并清理。退出事件又更新Bootstrap日志，第二次preflight再次停止，查验仅该日志后显式复用已验证Stage补齐，原函数/门禁/一键脚本均未修改。
+- **最终安装**：原Stage验证器与原 `Invoke-ManagedStageDeployment` 补齐9项，连同先前2项共11受管文件已匹配计划。语音root清单原子替换，新增 `H:/STEAM/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge/VoicePacks/AF-TTS-5M5F-20261014`（88参考文件＋manifest，共30,940,330字节，约31MB），5男/5女/4custom、25别名；原大花火包/旧音色文件不删除，不加新模型权重。已安装清单再跑生产C#目录/HTTP夹具305 PASS；44段原音频及44段16k派生均hash核对，音质/真实模型仍未验。
+- **最终回执**：4659原文件无缺失；最终preflight之后10预期原文件变化（剩余9受管项＋root清单），早前2个引导项已在冻结状态并全部复核；3516 Stage文件hash匹配，3份不同的现有导出明确保留，3133导出按原Stage mtime优先规则不覆盖。Configs/CustomPrompts/PlayerExports/ONNX/VoiceMapping/旧语音原字节保持；玩家在安装期间更新的10日志完整保留。37个新TTS UI键在安装CN/EN均有且无重复。机器权威证据 `receipt.json` / `voice-install.json` / `deployment-plan.json`，无游戏Recovery或自动回滚。
+- **复现入口**：`GptSoVitsVoiceTests` 的 `--manifest` / 完整DLL两模式、`TtsSettingsTests`、`run_local_producer.py --dotnet <SDK> --run-root <fresh>`；原 `build_single_module.ps1` 采用局部SDK8.0.426和1.3.15/当前1.4.8引用；WindowsPowerShell5原Stage生产/校验与原受管事务。完整参数/日志在 `artifacts/tts-mcm-20261014/` 和 `local/tts-mcm-20261014/`；恢复后的Stage复用脚本逐字导入原函数/常量并重新验证，不修改或替代原生产流程。9坐标对记录修订和working-tree均PASS，仅定位校验。
+- 语料公开可下载不等于角色录音具有N网再分发许可，本轮仅本地测试。真实MCM渲染/百科点击/音质/旧档/1.3实机均NOT-RUN；本地9880服务未恢复，安装成功不等于已经发声。特定朗读语言开关、主API隐藏翻译与自动语气识别仍是后续项，本轮没有修改正文/Prompt/HTTP协议；“预留自定义接口”不等于“手选自定义音色”未实现。
+
+| 生产源码一基坐标 / 符号（统一修订 `2d583be6f`） | 实际消费者与未验边界 |
+|---|---|
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/SpeechSettings.cs:15–260`，`SpeechSettings`；`:241–259`，`Synchronize` | 独立MCM owner→有限旧字段投影；host策略已验，真实MCM生命周期/渲染待测 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:2303,2315,2338`，`GetSettings` | 真实typed/provider/fallback入口，fallback禁止提前迁移，无其他设置扫描 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/AnimusForgeMcmVisibility.cs:148–158`，`IsVisibleProperty`；`McmSettingsStorage.cs:48–52`，`IsOwnedId` | 新页显示、隐藏迁移字段、旧TTS页隐藏及模块内持久化；其他模组/AF API页面不变 |
+| `src/modules/AF.Module.Llm/Tts/GptSoVitsVoiceCatalog.cs:38–39`，`ForMood`；`:165–170`，`ForSelection`；`:181–193`，`ResolveAssignment` | 语气/默认custom/别名/同性别随机的真实owner；源码/安装目录hash已验，音质待测 |
+| `src/AF.GameAdapter.Bannerlord/Scene/GptSoVitsVoiceRuntime.cs:70–74`，`CaptureRequest` | 手动语气→同ID录音/匹配原文→原local gateway，无自动AI情绪调用 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.GptSoVitsVoice.cs:12–31,34–83`，`GetOrAssignGptSoVitsVoice` / `OpenHeroGptSoVitsVoiceForExternal` | 既有profile/chunked owner保存稳定ID，UI手选默认/custom；Campaign旧档/百科点击待验 |
+| `src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs:781,2230`，voiceButton可见性/回调 | Hero百科交谈前入口不依赖TTS provider开关；真实Widget事件/语言刷新保留，原生UI待测 |
+
+恢复：停止游戏/启动器后按 `deployment-plan.json` 与hash逐项审查 `install-before/` 的旧程序/资源及 `VoicePacks/manifest.json`，无自动回滚；源码用聚焦逆提交，不reset融合基线或其他作者。新语音目录不需删除，不覆盖玩家新增日志/配置/导出；不push/正式打包。
+
+<a id="sets-village-gptsovits-test-fusion-20261014"></a>
+## 新电脑 SETS／GCCZ 村庄／GPT-SoVITS 测试融合（2026-10-14，DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_NOT_RUN）
+
+- 用户要求核实 SETS 是否推送，并融合最新 AF、游戏内 GPT-SoVITS，准备一起实测。fetch 的远端 main 为 `ea6c5124`；`87102060` 不被远端包含，远端也无 SetsBattleRewardBatch／SetsVictoryMenu 两个文件；本地完整保留 `4703b58e`／独立 `65c9d6b`。本轮不推送或打包。
+- 融合副本 `F:/AF/AF-GCCZ-TOWN-20261007`，隔离分支 `codex/sets-village-gptsovits-test-20261014`；检查点 `a5861399`，最新 AF 双父整合 `df474250`。安装的三个旧程序 DLL 与 `AF-=-10-TTS` 构建产物 hash 相同，因此移入 `72356c60` 功能源码，未混拼旧 DLL。最新 AF owner／V1+V3／人物 Description schema 保持，GptSoVitsVoiceId 原字段保留。
+- SETS 保留军事奖励先结算、再原版菜单、再 GCCZ；去掉旧村庄直接奖励旁路。村庄仍是资源/援助/奴隶第一批，不包含持续掠夺、屠村/纯毁坏、自动杀戮和七日藏匿。村庄教程/初始协助值与 GPT 选项接入终端自动属性覆盖；新增 UI 注册 CN/EN，原村庄固定 Prompt 不声称全量 EN/实机已验。
+- 当前游戏 `H:/Steam/steamapps/common/Mount & Blade II Bannerlord`，实际 BuildInfo `v1.4.8.119303`；1.3 引用 `v1.3.15.110062`。工作区局部官方 SDK 8.0.426，经微软 metadata SHA512 校验，不安装全局 SDK。原双实现/Bootstrap/双 Coup 门禁通过；14 引用从当前游戏 bin/原版模块组成，只读复制，并加入实际编译的 MCM 5.12.3 依赖。旧 1.4.6 的通过结果仅历史，当前回执以 1.4.8 为准。
+- 独立当前工作区核心测试全过、SETS 生产奖励批次/原生替身 19、GPT 目录/HTTP 156、本地 TtsEngine 4 项（无云端凭据、战斗取消/拒收、不回退云端）通过；不是模型/游戏/真实音频/实档测试。当前 1731 生产源码 hash 冻结并全部复核；证据 `.tmp/fusion-test-20261014/` 与 `artifacts/fusion-test-20261014/`。
+- 保留第一次标签常量编译失败、PowerShell7 JSON时间解析 Stage 失败、当前游戏缺 System 引用/MCM 探针失败、旧 Stage XML 内容不符失败；按真实信号修引用/使用原 WindowsPowerShell5/新建干净 Stage，不改一键脚本或弱化检查。最终 build-game-final.log 的双构建/门禁成功但旧 Stage 失败，实际成功 Stage 为 stage-current-game-verified.log。
+- 部署前记录 4480 安装文件 hash，旧程序和不同的非玩家资源备份只存本地 artifacts；不在游戏内建立 Recovery 或自动回滚。现有导出一律通过 Stage mtime = 目标 mtime 的原优先规则保留，3 份内容不同的旧记录不覆盖；源字节/Stage SHA 门禁保持。ONNX/Configs/CustomPrompts/PlayerExports/Cache/Logs 在部署后逐项核对，部署未完成前不报已安装。
+
+- **最终安装（2026-10-14）**：原脚本 Stage 验证＋原 `Invoke-ManagedStageDeployment` 成功，首次224项、随后仅补33对本地语音UI注册资源2项；检查中发现原 XML closing-tag 缩进导致首次新增键未写入，保留失败并明确修复实际资源，不把英文fallback当双语完成。源/编译输入未变，两个非嵌入UI XML修复仅重建Stage/部署，无须重复游戏构建。最终33键在安装两语言均存在且无重复。
+- **保护与回执**：原4480文件无缺失；ONNX、Configs、CustomPrompts、PlayerExports、Cache、Logs及VoiceMapping无原字节变化。Stage与安装3516项hash一致，3份已有导出作为明确保留例外；3133条现有导出按原mtime规则保留。1731源码冻结全匹配；三个实际安装DLL与最终产物一致。来源产品 `1c99a5b4`，注册修补 `ea9b6dae`，独立镜像 `4b8ca67`；最终机器回执 `artifacts/fusion-test-20261014/receipt.json` 为精确数字/哈希权威。主工程干净，独立原Program/Council/UI dirty保留。未推送/打包/游戏/真实模型/语音/实档。
+
+| 一基源码定位/符号 | 覆盖边界 |
+|---|---|
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs:1056` / `TryOpenSettlementEntryVictoryMenu(` | 当前真实消费者/owner；仅离线检查，实机待测 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.cs:229` / `BuildRuntimePromptForExternal(` | 当前真实消费者/owner；仅离线检查，实机待测 |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.cs:683` / `private void ProcessJob(` | 当前真实消费者/owner；仅离线检查，实机待测 |
+| `src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs:53` / `internal void Save(` | 当前真实消费者/owner；仅离线检查，实机待测 |
+| `src/AF.GameAdapter.Bannerlord/Scene/NativeConversationSpeechAdapter.cs:19` / `IsTtsPlaybackEnabledForShout(` | 当前真实消费者/owner；仅离线检查，实机待测 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.GptSoVits.cs:36` / `InitializeGptSoVitsVoiceActions(` | 当前真实消费者/owner；仅离线检查，实机待测 |
+
+玩家验收：城镇/城堡/村庄 SETS 胜利，先人员/俘虏和战利品，关闭后原版菜单进入对应 GCCZ；敌中村庄测试强征/游说/援助、TAB 人员物资，观察实际库存与关系；终端启用本地语音、设置新 F 盘清单，手动启动 API 后测试语音及百科选音。先备份玩家存档，未完成的血洗/藏匿不列为本版可测。原脚本不提供自动回滚；恢复本地具名旧文件须按部署差异逐项审查。游戏/LLM/真实音频/旧档状态为 NOT_RUN。
+
+<a id="gccz-village-economy-20261009"></a>
+## 敌中村庄资源、隐藏协助值与结算第一批（2026-10-09启动，OFFLINE_VERIFIED_LIVE_NOT_RUN）
+
+- **批准变化**：用户补齐户数钱粮、70%其他物资、牲畜、征兵0.7/自愿0.9、农民奴隶0.8与实收炉户损耗0.5；移征兵到一级，屠村改名，纯毁坏三级−25/−100，自愿入伍/金钱改名；逐村隐藏协助值、MCM初始0–5，成功援助消耗1/要人+10。藏匿7游戏日、每敌军每日一次，进村仍掷概率，停止不另扣关系。完整最新设计和本批边界见[两侧镜像说明](gccz/bridge/sets-reward-before-gccz-20261009.md)。
+- **范围/非目标**：本批接资源/人员/支持/关系/原生结算/随行和记忆；尚未实现掠夺、血洗/士兵屠戮同款控制以及藏匿AI/治疗。不是整个用户大改已完成。仅本地源码与原构建流程，没有部署或推送。
+- **基线保护**：融合b8e064d9、独立a00d7fc；检查点e4a3d642、ef79673。沿现有两分支，不改上游/其他工作树。独立dirty Program、Council/UI等不改、不暂存；只提交本批文件。
+
+| 核实源码/符号（融合；独立Village/下同名镜像） | 实际责任与未覆盖部分 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/VillageDispositionEconomy.cs`，`VillageAssistanceStore` / `VillageDispositionEconomy` / `VillageDispositionPoliticalLedger` | 独立保存值语义、逐喊话认可去重/援助成本、共享资源桶/旧计划拒绝、原版预算数学、最大余数兵源分配与最高负面补差。无TaleWorlds对象；屠村/毁坏仅有数学，非场景执行 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Economy.cs`，`PrepareForeignEconomy` / `ApplyForeignEconomicAction` / `OnVillageEconomyTick` / `SyncVillageEconomy` | 主线程读实际库存/原版模型/当地兵源，构造待结算原生roster，实付金币、实收奴隶炉户损失，短ID/原生保存，调用真实AF玩家事实接口。预算为理论参考而非真实随机Raid重放；SaveSystem/AFEF未实测 |
+| `VillageAftermathBehavior.HostileDisposition.cs` / `.HostileDialogue.cs` / 主partial，`TryProcessHostileDisposition` / `BuildForeignBudgetContext` / `EndForSetsMission` | 权限、支持资格、真实余量、旧标签剥离与离场交接；不同时用同一响应的认可标签抵消援助费用，不公布未接通的五项能力 |
+| `VillageAftermathBehavior.SceneOrders.cs`，`TickForeignBanners` / `QueueForeignQuestioning`；`SiegeAiInterventionBehavior.NativeMovementAdapter.cs`，`TryMoveForeignVillageAgent` | 复用城镇旗手及原版移动函数，最多2个短暂象征盘问订单；0.5秒失败重试、到期返回。弱mission归属清陈旧ActorIndex；不是血洗AI实现 |
+| `SiegeAiInterventionBehavior.SetsVictoryMenu.cs`，`OpenForeignVillageTroopSelection`；主类`TryOpenTroopSelectionRuntimeCompat`；`SettlementEntryTroopSelectionBehavior`的准备/集合/退出泵 | 原版选兵UI及服务端均传上限12；城镇默认上限不变。票据在真正激活才消费；原版人员/俘虏/物资界面关闭后才离开。未实际点击或运行 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneSessionComposition.cs:54`，`CurrentPlayerConversationEpoch` | 仅只读真实owner的已有epoch，供多人同一喊话认可去重；Native单目标对话仍走既有一次权威处理。不增加第二LLM链或保存临时epoch |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.VillageDisposition.cs` / `VillageDispositionTutorial.cs` | GCCZ组初始协助0–5与教程。当前树没有找到既有城镇教程入口，未伪造相对位置已验收；教程如实标记未启用玩法 |
+
+- **源/值规则**：粮食、牲畜、其他物资三类分开；其他物资只取其理论预算70%。户数向下取整、资源范围在入场固定，不逐标签重抽。原版stock预算使用单精度乘法，修复float转double导致多1物品的边界。常见loot是一个预算而非每种物品各领满；贵族兵比例来自真实VolunteerModel对本村要人的基本兵返回值。
+- **失败/重复**：只在当前真实村庄GCCZ内执行；支出前先构造payload，正面需真实村民同意且协助值可支出。负面关系按本轮最高等级补差、仁慈扣值翻倍；通知异常观察实际关系避免重复。实付金币在finally按钱包变化记账，UI push后的展示标记不重开，农民模板短ID保持跨文化修改的接收计数。异常后限频重试，不按每帧刷日志；真实部分失败和其他模组组合仍需验收。
+- **保存/线程/性能**：新增键仅primitive、dictionary、原生Item/TroopRoster与短ID；不保存AgentIndex/临时epoch，不新增自定义SaveDefiner身份。预算/兵源仅入口与冷动作计算；闲置Tick O(1)，象征盘问最多2条。AF只加薄getter、桥和实际游戏副作用，不改变普通AF链。
+- **Removed**：删除三个旧敌中标签名，不留兼容别名；替换“仅宽恕”的运行能力列表与旧泛化说明。无新开关/第二付费请求。旧同阵营政策仍有活跃消费者，保留至其独立重做，不误删。
+- **验证**：当前独立工作区2622断言PASS（本批新增42），覆盖共享池/重复计划、正负共用、资源分类/范围、整数征兵、最终奴隶、负面补差/仁慈、隐藏值保存/MCM初始不覆盖、多人同轮去重/不可同轮退款和float精度。既有实际SETS奖励批次原生替身回归19 PASS。双API/Bootstrap/双Coup通过，实际框架装配测试仍不是Game/Campaign验收。
+- **构建证据**：保持原`scripts/build/build_single_module.ps1` Debug；首次暴露1.3没有Raid倍率API以及外部SettlementHitPoints只读，改为窄编译分支/既有健康Action；第二次暴露整数GetRelation对Math.Round重载歧义，改为直接转换。失败日志保留，最终原双API、Bootstrap、双Coup均通过。source冻结hash与DLL绑定在`artifacts/gccz-village-economy-20261009/receipt.json`；没有改一键脚本或版本身份。
+- **玩家视角（仅源码推演）**：战果结束→村庄按钮→原版12兵选兵（取消保留入口）→场景旗手/村民集合→多轮游说/援助/强征→TAB→人员俘虏/物资→离开。应看不见协助数字；同一物资已领完后不能换正负标签再领；拒收农民不按全部候选扣炉户。需实际Game、UI取消/拒收/读档、LLM资格、NPC盘问/旗手和AFEF回读验收；不能用编译代替这一步。
+- **下一批**：持续掠夺/停止的实际场景状态；城镇同款屠村、纯毁坏及对士兵屠戮反应；藏匿资格7天、真实AI候选/遭遇发现与每日敌军去重、停村限定治疗；MCM教程相对城镇入口的最终实机位置。恢复用本批聚焦revert，不覆盖游戏或清理其他资料。
+
+<a id="gccz-village-dialogue-20261009"></a>
+## 敌对/中立 GCCZ 村庄：人物、身份与独立提示词（2026-10-09，OFFLINE_VERIFIED_LIVE_NOT_RUN）
+
+- **本轮范围**：继续敌中村庄，完成一次性人物快照、真实身份/权限核验、村庄专用主提示词与后处理上下文；不擅定资源/人数、正面奖励或藏匿抽取时机。本条替代下方上一轮中“人物快照尚未接线”的状态，SETS 军事结算及原版民兵入口仍以原条目为依据。
+- **基线与回滚**：融合 87102060、独立 e74a71f；检查点分别 253ff079、5f136ed，沿现有本地分支施工。独立已有 dirty Program.cs / Council / UI 未改、未暂存；上游和游戏目录未写入。恢复用本批聚焦 revert，不 reset 或清理别人的资料。
+
+| 实际源码（融合树一基行号；独立 Village/ 下同名镜像） | 责任、消费者与范围 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/VillageDispositionDialogueSession.cs:11–142`，`Resolve` / `CanAuthorize` / `GetOrCreate` / `BuildSpeakerPrompt` | 独立角色策略与场景缓存。AF 性格/背景优先，无资料时使用村庄代码选取气质；无新增 LLM 请求。当前角色不是缓存人格的一部分，旧场景引用不能复用 |
+| `AnimusForge.SiegeAftermathIntervention/VillageDispositionPromptProfile.cs:6–63`，`BuildScenePrompt` / `BuildRoleContext` / `BuildPostprocessContext` | 村庄专用文案，主回复无动作协议；明确要人的代表范围、普通村民/随从的权限限制、未启用行为不假报效果、宽恕实际状态 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.HostileDialogue.cs:16–92`，`BuildHostileDialoguePrompt` / `ResolveHostileSpeakerRole` | 主线程读实际 Agent、Hero、Notables、所属部队与 AF persona；不根据模型自称授予权限。由既有 SharedPromptCapture → AfGcczShoutBridge 实际消费；只有显式敌中处置激活才工作 |
+| `VillageAftermathBehavior.cs`，`BuildRuntimePromptForExternal` / `BuildPostprocessRulesForExternal` / `BuildPostprocessContextForExternal` / `ClearMissionState`；`VillageAftermathBehavior.HostileDisposition.cs`，`TryProcessHostileDisposition`；`src/bridges/Siege/Host/AfGcczShoutBridge.cs:310–377` | 同一 AF 主链路/后处理接线，出口重新核验角色和直接玩家回复；已宽恕不重复公布。进入/退出/读档清缓存。同阵营活跃逻辑不受新策略替换 |
+
+- **权限与效果分开**：只有实际、存活、非俘虏且属于本村的要人具备“同意藏匿”资格；不等于藏匿功能已完成。18 候选保持，仍只有宽恕有已定义执行效果。军需、奴隶、征兵、援助、屠村等未启用，不先扣关系、发资源或更改 AI。
+- **线程/性能**：复用 `ShoutBehavior.ModuleSceneSubmission.cs:110` 既有 dispatcher 的主线程 capture/complete 与 generation/session/epoch/目标守卫；没有第二 LLM 管线或后台游戏对象读取。首个发言对象按需找 Agent 并读 persona，之后缓存 Agent 并核验存活/所属 mission；角色/权限每次用当前事实检查。不新增 Tick、全世界扫描或存档格式。
+- **Removed**：把原目录内的泛化 `VillageDispositionActionCatalog.BuildScenePrompt` 移入专用人物/提示词 owner，删除旧实现并替换全部调用；不保留双实现。旧同阵营政策仍有真实消费者，故不作为本批死代码删除。
+- **验证**：独立当前工作区 2580 核心断言 PASS（本次新增 39，涵盖真实/未知角色、要人专属授权、旁听禁用、一次捕获、AF 数据优先、无资料回退、角色变化、标签清理、退出/重进）；既有 SETS 实际奖励批次原生 UI/模型替身回放 19 PASS。三份核心镜像 hash 一致，定向冲突/废路径搜索与 diff-check PASS。未修改、弱化旧断言或 dirty Program。
+- **构建**：原 `scripts/build/build_single_module.ps1` Debug 双 API / Bootstrap / 双 Coup 接缝 PASS；实际引用 1.3 v1.3.15.110062、1.4 v1.4.6.115628。两个实现各 350 警告、0 错误。首次缺少 `TaleWorlds.Core` 导入导致 2 个 AgentState 编译错误，日志保留，修复后通过；未改构建脚本/程序集身份。
+- **玩家视角（仅源码推演，非实测）**：先结算 SETS 战果→选择 GCCZ 村庄→分别和要人、普通村民、随从多轮说话，应保持同一人物气质且身份文案不同；普通村民或随从不能代表全村授权藏匿。玩家本轮明确宽恕可被确认一次，再问时上下文应已有决定；接力/旁听不代替命令。TAB 离场后普通 AF 不应含村庄特殊规则，重新进入重新取本次人物快照。需实际游戏/真实模型执行这些步骤后才能算运行验收。
+- **证据/待办**：本地 `artifacts/gccz-village-dialogue-20261009/` 保留 `standalone-final.log`、`sets-regression.log`、`build-first.log`、`build-final.log`、源码/DLL `receipt.json`。未 Stage/部署/推送；实机、LLM 标签质量、原生入口、存档和 AFEF 未验证。后续先确认强征四类资源预算；人员、自愿反抗本国的效果、逐项或整轮政治结算及藏匿频率仍待设计。
+
+<a id="sets-gccz-reward-20261009"></a>
+## SETS 战果先结算，后选 GCCZ；敌中村庄基础接线（2026-10-09，OFFLINE_VERIFIED_LIVE_NOT_RUN）
+
+- **批准流程**：SETS 胜利 → 人员/俘虏与物资界面 → 原版 GameMenu 风格的“进入对应 GCCZ / 离开”选择 → GCCZ 场景。不是合并到 GCCZ 最后才发放；保留原有强征补给数值，不改普通原版或 Coup 已提交事务的结算语义。
+- **基线与保护**：本地 fetch 得到 `origin/main` 4ed61998，另建 `codex/sets-gccz-reward-20261009`，检查点 a88aca73；独立 GCCZ 检查点 9d5d70e。上游 dirty 政策/记忆工作树未写入；独立 dirty Program.cs、Council/UI 没有暂存。旧 `G:/AFMOD/new-` 不存在，实际编译镜像在 `G:/AFMOD/AF-GCCZ-TOWN-20261007`。
+- **战果责任**：独立 `SetsBattleRewardLedger.cs:14` owns casualty deduplication and presentation order；AF `src/AF.GameAdapter.Bannerlord/SettlementEntry/SetsBattleRewardBatch.cs:19–186` 捕获真实敌方预备兵装备/昏迷俘虏，调用原版奖励模型和 Party/Inventory 界面。`SettlementEntryTroopSelectionBehavior.cs` 的 `SettleDefenderReserveDefeat` → `QueueVictoryPostMissionFlow` → `TryPumpPendingSettlementTakenMenu` 为实际消费者；场景内不直接发装备或俘虏，界面关闭后才交接菜单。英雄、自有部队、Coup 守军不由新批次处理。
+- **保存与失败**：`SettlementEntryTroopSelectionBehavior.RewardPersistence.cs:12–88` 保存原生 roster、短 ID、支付量和展示标记；不序列化 AgentIndex、不改旧键、不新增 JSON 或自定义保存类型。暂未进行真实 SaveSystem/旧档验收。支付后通知异常保留已支付回执，UI push 后异常不再开第二次窗口；无战果跳过空界面。
+- **菜单责任**：`SiegeAiInterventionBehavior.SetsVictoryMenu.cs:16–91` 注册原版 GameMenu，类型化 GCCZ 按钮和离开按钮；选兵取消保留战后入口，成功进入真实 GCCZ mission 才消费票据。`SiegeAiInterventionBehavior.cs` 的 `TryOpenSettlementEntryVictoryMenu` 接入菜单；Coup 现有直接 handoff 没有 SETS 票据，保留活跃原版菜单调用，不制造假票据。
+- **敌中村庄接线**：`VillageAftermathBehavior.NativeDispositionEntry.cs` 的 `RegisterNativeDispositionEvents` / `StartNativeDispositionResistance` / `NativeDispositionSuppliesPostfix` 新增“处置村庄”，保留中立村的原版确认与外交行为，启动真实民兵战斗，并在原版补给发放后交接同一选择菜单。Harmony 只对当前 Campaign 的明确请求和获胜回执生效；无请求时普通原版 callback 不被接管。真实 Harmony、民兵战斗及原生 encounter 返回尚未实测。
+- **新村庄 owner**：独立 `VillageDispositionActionCatalog.cs:41–106` 包含 18 候选及批准的负面关系规格。`VillageAftermathBehavior.HostileDisposition.cs:17–80` 重新检查非同阵营、村庄正常状态和本次胜利菜单票据，接入独立自然语言主提示词及后处理。当前仅“宽恕”有确定效果，能执行无正负面决定；其余没有定义资源/人数/概率时机，不注入为可执行能力、不扣关系或假报成功。旧 VILLAGE_ACTION、文化、扣押与结束处置不能在新敌中模式生效；旧同阵营消费者保留供另阶段替换。
+- **Removed**：删除 `PendingVillageVictoryRewardEntry`、`QueueVillageVictoryReward`、`TryPumpPendingVillageVictoryReward` 和 `ApplyVillageVictoryReward` 及孤立进口。村庄原补给数学转接到统一批次，不保留第二条直接发奖路径。每次死亡事件只处理一个 Agent，每次 world pump 只决定下一屏；空闲 O(1)，无新增全局扫描/后台游戏对象读取。
+- **验证**：独立核心 2541 断言 PASS；直接链接实际 `SetsBattleRewardBatch` 的原生 UI/模型边界替身回放 19 断言分别在 1.3/1.4 编译分支 PASS，覆盖死亡/昏迷、重复事件、屏幕关闭顺序、push 前/后异常、支付后通知失败和恢复展示标记。三份核心镜像 SHA 一致，定向死路径/冲突搜索与 diff-check PASS。它们不是实机、真实 roster 保存或 LLM/AFEF 验收。
+- **构建**：原 `scripts/build/build_single_module.ps1` Debug 两实现（1.3 v1.3.15.110062、1.4 v1.4.6.115628）、Bootstrap 和双 Coup 接缝 PASS；首次 1.3 编译暴露 prisoner-model API 缺失及缺少 namespace，保留失败日志，按真实签名差异修复后构建通过。没有改一键脚本、版本/程序集身份，没有 Stage/Deploy/打包/推送。
+- **证据**：本地 `artifacts/sets-gccz-reward-20261009/` 的 `standalone-final.log`、`reward-replay.log`、`reward-replay-1.4.log`、`build-first-failed.log`、`build-final.log`；输出 DLL 在 `bin/Debug/single_module_artifacts/`。用户计划与未完成项见[独立镜像桥说明](gccz/bridge/sets-reward-before-gccz-20261009.md)。正式源码坐标以符号及本次提交为准，行号仅定位辅助。
+- **未完成/风险**：村庄资源预算、负面动作和人员数量、正面奖励、藏匿 1.2×/1.8×及 30%/5% 的真实 AI/治疗接缝、一次性村庄人物快照与完整角色提示词仍待后续；当前并非“敌中村庄全功能完成”。城镇/城堡/村庄真实游戏顺序、失败返回、旧存档与其他模组组合 NOT-RUN。恢复用本次聚焦 revert，不能 reset/删除其他资料或覆盖游戏。
+
+
 ﻿<a id="push-merge-20261014"></a>
 ## 2026-10-14 MCM/无名人设修复合并推送（PUSH_VERIFIED / LIVE_PENDING）
 
@@ -10122,3 +10536,78 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 | `extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs` | `LeaveConversation`90–100；prefab `AFDialogueNativeOverlay.xml`60 | 既有真实按钮入口未改，实机调用该VM命令，非鼠标命中/画面验收 |
 
 - 发布边界复核：交付分支仅包含本切片产品、对应离线回归和本节交接；新提交历史无本地测试桥、运行收据或配置，远端终端修复保持。按用户授权普通快进推送，不强推；最终成功由远端 ref 对账。
+
+
+<a id="gccz-review-game-20261015"></a>
+## GCCZ/SETS 审查、保留已安装阅兵/TTS 并覆盖游戏（2026-10-15）
+
+**当前状态：DEPLOYED_MANAGED_FILES_VERIFIED_LIVE_PENDING。** 用户授权审查、修复并合入游戏 AF；未授权/未执行 push 或正式打包。本条取代 `#gccz-village-governance-20261015` 的未部署状态；敌中藏匿仍未完成。
+
+### 来源与边界
+
+- 本地工作区 `F:/AF/AF-GCCZ-TOWN-20261007`，checkpoint `3edfd0bf`。安装 1.4 DLL 的 SHA256 `DAFEEDFD0EBC76716BD790ADDA6CC0B00537092B1F128CCD1285BDCC9493D5D9` 对应阅兵融合工作区的回执，不能直接覆盖成旧村庄分支。
+- 通过本地 Git fetch/merge 合入 `F:/AF/AF-PARADE-GAME-20261014` 的 `5112763e`，融合提交 `ece939b5`。仅两个历史台账文档冲突，双方保留；TTS MCM、音色、阅兵与三渠道入口原样保留。未写那个工作区，未网络拉取/推送。
+- 产品修复 `16b93932`；可复用核心已镜像独立 GCCZ `b4b0691`。其已有 dirty `Program.cs` SHA256 `3001CA03BF710974E413E89FADBA333A2620B9FD88B0AE592B5CA4024CF37807` 不变，其他 Council/UI 不动。
+- 用户明确把退出重进资源刷新保留为“彩蛋”；不再实施跨访问预算或 10 天恢复限制。不是已修防刷，也不是遗漏；援助 7 天冷却保持。
+
+### 发现与修复／代码地图（源码修订 16b93932）
+
+| 位置（相对本工程根） | 已核实责任与修复 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/VillageDispositionEconomy.cs:124-135`，`DestroyRemainingResources`；`src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Economy.cs:265` | 纯毁坏取得 60% 后销毁剩余 40%，不能同次访问再掠夺；无奖励的毁坏路径也清空。跨访问彩蛋不变。 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/GcczSettings.cs:20-51`，`Set`/`SaveTriggered` | 原来副本/预设 setter 直接写真实 owner 并存盘。改为实例草稿，仅 live MCM SaveTriggered 回写原 DuelSettings；Undo 回到原值撤销覆盖，终端后续修改可见。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Governance.cs:73-83`；`VillageAftermathBehavior.Culture.cs:25-42` | 正文不再接入后处理标签表。文化询问的自然语言与执行协议分开；实际 tags 仍只走原后处理及同一英雄下一轮确认。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.Growth.cs:28,47-50` | 补齐原版独立 `CalculateDailyFoodProductionAmount` 路径，迁殖期食物生产亦为 20%；不替换 model，不增加 Tick 扫描。 |
+| `src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs:7682-7688` | 原版 BasicLeave 会因屠村目标靠近而拒绝 TAB。只给已激活的 GCCZ 村庄放行既有 BasicLeave/MissionFightHandler guard；普通 SETS 未胜战斗仍保留阻拦。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.FriendlyEntry.cs:46-66` | 优先实际 `af_parade_entry`（共享 EntryId），其次旧 inspection，避免把 GCCZ 排在错误的旧阅兵处；村庄仍以 hostile_action 为锚点。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.NativeDispositionEntry.cs`，`StartNativeDispositionResistance` | 失败通知补齐 CN/EN，保留原遭遇继续/离开边界。 |
+
+本轮同时追过：友方四身份/merciful 最大档补差、援助真实扣物与 7/21 天叠加、文化开始/取消/完成的费用与记忆、TAB/读档的 native payout、和平城堡非攻城来源、SETS 先结算再入场。未通过编译/静态检查宣称上述链路已有实机证明。
+
+### 验证与失败证据
+
+- 原统一入口最终双 API（1.3.15.110062 / 1.4.8.119303）、Bootstrap、双 Coup gate 和干净 Stage PASS。项目一键/部署脚本未修改；365 条既有警告/每实现、0 error。
+- 真实源码+MCM 边界替身 24；源码/资源接线 29；独立核心 2658；既有 GCCZ 修复 136；SETS 奖励 19；阅兵 4942；TTS 设置 19；已安装音色目录 305 检查 PASS。未启动语音服务或付费接口。
+- 两个最终 DLL 的城堡 CN/EN 和平/战后实际 renderer 各 8 PASS；持久化 replay 与 chunk contract PASS（12000 字节，20 个 chunk string key / 48 个 flattened dictionary key）。这不是新增 native `.sav` 的读写验收。
+- 隔离旧源码 `9a4b9bdd` 的 MCM 负例失败于 `Editing clone must not mutate/save owner`；毁坏负例失败于 `Destroyed forty percent cannot be looted later`。毁坏负例第一次因引用新方法不能编译，已保留失败并只移除该新 API 的单独测试，重新编译后才得到行为失败。没有把编译失败当作修复证明。
+- 证据：`artifacts/gccz-review-game-20261015/` 的 `source-receipt.json`、`build-stage-final.log`、各专项日志、`deployment-receipt.json`。源码与输出 hash 均有绑定。
+
+### 安装与后续测试
+
+- 启动器最初仍运行，因此停止覆盖并询问；用户关闭后再次核验无游戏/启动器，使用未改的官方 Stage/部署函数。安装前在项目 `artifacts/gccz-review-game-20261015/install-before/` 备份待替换文件，不在游戏目录创建 Recovery，也不自动回滚。
+- 目标 `H:/Steam/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。完整安装前后均 4749 个文件：14 个预期更新，4735 个字节不变，无新增/丢失/意外变化。包括 Configs、CustomPrompts、3133 项已有 PlayerExports、VoicePacks、VoiceMapping、ONNX 保留。安装 DLL 与最终 Stage SHA256 一致。
+- **NOT-RUN**：实机 MCM 保存/取消、真实菜单/场景演员、真实 AI 文化确认、日推进、native 旧档、其他大型 MOD 组合。敌中 7 天藏匿仍关闭；本轮没有把未完功能伪装成已验。
+- 建议另存测试档，按 MCM→友方援助/TAB→文化两步确认→城镇城堡和平入口→SETS/敌中村庄分段测试。需要恢复时使用本轮安装前程序/资源备份，先关闭游戏并人工核对；源码可 focused revert `16b93932`，不硬重置、不覆盖其他作者工作。
+
+<a id="tts-tone-trial-20261015"></a>
+## TTS 专用语气标签测试版（2026-10-15，DEPLOYED_FILES_VERIFIED / LIVE_PENDING）
+
+- 用户要求主 AI 输出隐藏的本地语音标签，花火为一个自定义音色、内部四种语气；明确授权验证后安装游戏并保留其他最新功能。
+- 基线 `25608b2a68e2deea6f4a68f64c7d35cf223c79e9`，工作树干净；游戏 1.4 DLL 仍为上一轮下拉版 `A2291A2DC450F3A453F64E2C1C1D77E2207359E78FC9D9160465BFF396942BA7`。安装前再次全量比对，漂移则停止覆盖并先融合对应源码。
+- 窄协议 `[TTS_TONE:neutral|happy|angry|sad]` 是显示/语音元数据，不是玩法 ACTION。仅本地主对话提示词要求；逐请求携带，正文/历史/后处理输入删除；流式预览隐藏半截标签。不复用 MOOD、不猜文字语气、不加 AI 调用、不改火山情绪参数。
+- 无效/重复/缺失标签回落 neutral；手动试听保留现有语气设置。花火四旧 ID 别名迁移到单一 custom ID，不改存档字段、不进随机池，不删音频或模型。
+- 退出门：生产解析器边界/流式/并发/旧别名与真实载荷回归；相关生命周期回归；双 API+Bootstrap+干净 Stage；受控安装仅预期产物与目录清单、配置/导出/其他语音不变。真实游戏、真实 AI 标签遵循和听感验收单列待测。
+- 不改一键脚本、其他工作树、玩法标签规则或服务环境；不正式打包/push。
+
+### 本包交付与证据（覆盖上面的计划状态）
+
+- 意图检查点 `2ca9d84fd`；产品 `3ffbe7300c02d3f4c6393bc96890df947010404e`。安装前旧程序/UI 全部与上一回执一致，无新增融合漂移；仅此工作树写入，未动其他线程工作树、玩法实现、服务环境或原一键脚本。
+- 已安装到 `H:/STEAM/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。原部署事务更新 12 个托管产物，再原子替换 `VoicePacks/manifest.json`；全量 4772 文件核对，13 项预期变化、4759 项 hash 不变、无新增/删除/意外变化。3133 份个人导出、配置、自定义提示词、ONNX、模型与所有音频保留；源文件检查及游戏关闭门禁执行，未杀游戏/启动器。
+- 花火成为单一 `female-sparkle` custom 音色，neutral/happy/angry/sad 在包内选择；四个旧 Sparkle ID 别名指向它，25 个原别名保持，共29别名。默认仍5男5女、自定义不进随机池；包中88个原始/推理参考文件 hash 校验通过，音频合计30,808,858字节。未重采样、重下载或换模型；模型权重不包含在这次清单变更中。派生清单/本地参考快照：`local/VoicePacks/Unified-TTS-20261015/`；可重放准备脚本：`local/tts-tone-trial-20261015/prepare-pack.py`（新目录保护）。
+- `[TTS_TONE:neutral|happy|angry|sad]` 只属于本地朗读元数据。精确合法值才选语气；重复/错误/缺失回平静，其他命名空间/嵌套玩法载荷不参与选择；不从台词或 ACTION/MOOD 猜测。每轮完成回复/队列独立持有枚举，入队时捕获实际参考录音；没有全局最近语气、额外 AI 请求、Tick IO 或模型切换。旧手动滑条仅控制试听，UI中英说明同步。
+- Native 在动作/后处理之前提取隐藏标签；Scene 入队时提取并移除，主链后处理输入/公共历史另行清理。流式预览保留并隐藏可能的半截前缀，补全后只恢复普通正文。Courier 不要求标签，仅防御性隐藏意外标签；不增加信使朗读。玩法动作解析器、动作白名单、后处理提示词与火山 gateway 内容未改；火山不接受本地 tone 参数，也不会收到隐藏标签正文。
+- 原构建入口 Debug 对1.3（v1.3.15.110062）、1.4（v1.4.8.119303）、Bootstrap、两 Coup seam、干净 Stage 均通过；`artifacts/tts-tone-trial-20261015/build-final.log`。本地及安装后的真实目录/解析器/参考SHA/实际HTTP载荷（HTTP端口为fake）各404断言；真实正文/历史/流式/Courier处理93；全TtsEngine及播放生命周期69；Scene effects12、System speech15（另含11项原Scene）、Native completion10；设置23，两个实际DLL+真实MCM下拉/JSON/撤销各29。
+- 中英新增提示词同key同协议，经实际content-map与英文选版函数核对；安装的CN资源和真实reader目标hash一致。完整CN内容投影3519项通过。**完整EN发布投影未通过**：发现既有Game of Thrones worldbook映射文件缺失/长路径检查以及`ModuleData/RuleBehaviorPrompts.json`既有英文检查问题，不属于本次TTS差异；未修改这些资产或放宽门禁、未正式打包。受影响TTS CN/EN资源单独通过，不能把它当全EN发布验收。
+- 全仓旧代码图校验 `verify_code_map.py --working-tree` 未通过：`ModuleFrameworkRuntime.cs` 内容与旧代码图记录不符。已确认该文件相对本轮基线零差异；不为TTS任务重写其他框架责任表。本包上表坐标按产品修订逐项核实，不能声称全仓代码图门禁通过。
+- 首次额外harness检查暴露旧fixture未覆盖融合后的阅兵/外交/本地化字段；仅补控制边界，不删原断言。正文harness首次误用游戏net472版Newtonsoft导致90秒超时，改用SDK net8副本并捕获异常后通过；真实游戏DLL仍用原依赖。一次安装guard读取日志编码检查失败，尚未写游戏；修正编码后完整prepare/preflight/install/verify通过。失败日志均保留。
+- 回执：`artifacts/tts-tone-trial-20261015/install/receipt.json`；13个替换前原件：同目录`install-before/`；源/产物/原文件hash：`candidate.json`、`installed-before.json`、`deployment-plan.json`。脚本 `local/tts-tone-trial-20261015/install.ps1` 调用未修改的原部署函数；不建游戏Recovery、不自动回滚。源码恢复应以 `3ffbe7300` focused inverse，文件恢复需确认无后续融合更新再使用本次13原件，不能把旧整包覆盖回去。
+- **仍待实机**：真实主AI标签遵循率、中文/英文说话自然度、并发对话/场景出入/旧存档、原生播放及与其他MOD共存；自动测试不承诺这些零冲突。只读检查127.0.0.1:9880/openapi.json被拒绝，当前服务未运行；已询问是否启动，未擅自启动或修改环境、无付费调用。测试通过不代表已实际合成或游戏中出声。
+
+| 责任（产品修订3ffbe7300） | 已核实坐标与消费者 | 边界 |
+| --- | --- | --- |
+| 专用协议/半截预览 | `src/modules/AF.Module.Llm/Tts/LocalTtsToneTag.cs:6-84`，Extract/StripStreamingPreview；Native/Scene及显示边界消费 | 仅4语气，不是玩法权限 |
+| 主提示词 | `src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs:1115-1118`，BuildStrictSceneMessagesSystemPrompt；两份ConversationRuntimePrompts key `local_tts_tone_metadata` | 仅本地语音开启且非屏蔽战场 |
+| Native逐轮捕获/完成 | `src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPresentation.cs:24-68`，ReceiveAndPresentAsync；`ShoutBehavior.NativeTurnCommit.cs:154`、`ShoutBehavior.NativeCompletion.cs:113` | 保留原generation/admission/动作/历史顺序 |
+| Scene逐队列捕获/输出 | `src/AF.GameAdapter.Bannerlord/Scene/SceneSpeechEnqueueAdapter.cs:79-90`；`src/modules/AF.Module.Conversation/Channels/Scene/SceneSpeechEffectController.cs:203,859` | null的外交正文fallback保持；普通和大厅分支均传递 |
+| 文本边界 | `src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs:275,290,385`；`src/modules/AF.Module.Prompt/Composition/ScenePromptMessageProjectionComposer.cs:166` | 不改ACTION regex，Courier单独清理 |
+| 实际语音快照 | `src/modules/AF.Module.Llm/Tts/TtsEngine.cs:255-307`，7参SpeakAsync；`src/AF.GameAdapter.Bannerlord/Scene/GptSoVitsVoiceRuntime.cs:70-74`，CaptureRequest | 保留原6参入口；日志LocalTone只记agent/voice/tone，不记正文 |

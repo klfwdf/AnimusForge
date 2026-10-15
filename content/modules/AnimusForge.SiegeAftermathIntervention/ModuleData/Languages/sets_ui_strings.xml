@@ -2,6 +2,11 @@
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="string">
   <tags><tag language="English" /></tags>
   <strings>
+    <string id="AF_GCCZ_VillageDispositionEntry" text="Personally enter the village to deal with the civilians" />
+    <string id="AF_GCCZ_VillageDispositionNotReady" text="The village encounter or rewards are not finished yet. Close the reward screens and wait for the disposition menu; do not start another attack." />
+    <string id="AF_GCCZ_VillageGatherQueued" text="[GCCZ Village] The villagers have been called. After the conversation, the adults will gather near you; they will not join a SETS formation." />
+    <string id="AF_GCCZ_VillageGatherIssued" text="[GCCZ Village] {COUNT} adult villagers have been directed toward you. Those still walking have not arrived yet." />
+    <string id="AF_GCCZ_VillageSceneFailed" text="The village disposition scene could not initialize. Returning without applying a disposition; you may retry from the menu." />
     <string id="AF_SETS_Noun_Castle" text="castle" />
     <string id="AF_SETS_Noun_Village" text="village" />
     <string id="AF_SETS_Noun_Town" text="town" />
@@ -145,5 +150,27 @@
     <string id="AF_SETS_Coup_HallGuard" text="defender" />
     <string id="AF_SETS_Coup_HallAssault" text="assault squad" />
     <string id="AF_SETS_Coup_HallPointUnreachable" text="No reachable spawn point found in the lord's hall for {SIDE} for 15 consecutive seconds. Deployment has been stopped; victory is not granted, existing casualties retained." />
+    <string id="AF_GCCZ_VILLAGE_Initial" text="GCCZ village initial cooperation" />
+    <string id="AF_GCCZ_VILLAGE_InitialHint" text="Initializes only unrecorded villages. Cooperation is saved per village, gained by persuasion and spent by successful voluntary aid; no numeric gameplay display." />
+    <string id="AF_GCCZ_VILLAGE_Tutorial" text="GCCZ village tutorial" />
+    <string id="AF_GCCZ_VILLAGE_View" text="View tutorial" />
+    <string id="AF_GCCZ_VILLAGE_TutorialHint" text="Foreign village entry, budgets, cooperation, personnel settlement and currently unavailable features." />
+    <string id="AF_GCCZ_TownAffairs" text="Personally attend to town affairs" />
+    <string id="AF_GCCZ_CastlePrisoners" text="Handle prisoners in the castle" />
+    <string id="AF_GCCZ_VillageAffairs" text="Attend to village affairs" />
+    <string id="AF_GCCZ_VillageHostileHint" text="The militia will resist. After victory and military rewards, enter the village or leave." />
+    <string id="AF_GCCZ_TownTutorial" text="GCCZ town tutorial" />
+    <string id="AF_GCCZ_CastleTutorial" text="GCCZ castle tutorial" />
+    <string id="AF_GCCZ_TutorialGroup" text="Tutorials" />
+    <string id="AF_GCCZ_CooperationCap" text="Only new villages use the initial value. Hidden cooperation is saved per village and capped at 6." />
+    <string id="AF_GCCZ_McmTitle" text="AnimusForge Siege Aftermath (GCCZ)" />
+    <string id="AF_GCCZ_McmGeneral" text="Scene settings" />
+    <string id="AF_GCCZ_McmLog" text="GCCZ logs" />
+    <string id="AF_GCCZ_McmSetsLog" text="SETS logs" />
+    <string id="AF_GCCZ_McmEscortLog" text="Noble-prisoner escort logs" />
+    <string id="AF_GCCZ_McmVillageTutorialHint" text="Read about friendly and foreign villages, aid, cooperation, culture changes and departure settlement." />
+    <string id="AF_GCCZ_McmCastleTutorialHint" text="Read about castle entry, prisoner handling, companions and departure settlement." />
+    <string id="AF_GCCZ_NoHealthyAttackers" text="Your party has no combat-ready members. Recover or replenish the party before attacking the village." />
+    <string id="AF_GCCZ_InvalidAttackRoster" text="The battle roster is not ready. No village battle was opened; leave the encounter and try again after your party recovers." />
   </strings>
 </base>

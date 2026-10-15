@@ -121,6 +121,7 @@
     "_gcczRallyOathRecruitmentBuffUntilDayBySettlement_v1",
     "_gcczRepopulationProsperityDebuffUntilDayBySettlement_v1",
     "_gcczRepopulationProsperityLastObservedBySettlement_v1",
+    "_gcczVillageAidDeliveryRemainder_v1",
     "_gcczVillageGradualCultureFinishDays_v1",
     "_gcczVillageGradualCultureTargets_v1",
     "_kingdomStabilityRelationOffsets_v1",
@@ -236,9 +237,19 @@
     "writer": "CampaignSaveChunkHelper.SaveChunkedStringStrict",
     "reader": "CampaignSaveChunkHelper.LoadChunkedStringStrict",
     "failedDomainPolicy": "no partial or prior-campaign live state; exact primitive namespace evidence in safe UTF8 chunks, digest checked; unsafe raw keys/values remain only in envelope; incomplete read refuses save",
-    "runtimeBoundary": "only world diplomacy opts in; legacy helper interfaces and other domains remain unchanged",
+    "runtimeBoundary": "world diplomacy and currentAdditionalStrictChunkedStringBindings opt in; legacy helper interfaces remain unchanged",
     "currentReplay": "tests/modules/AF.Module.Diplomacy/WorldDiplomacyPersistenceAdapter.SmokeTests/run_strict.py"
   },
+  "currentAdditionalStrictChunkedStringBindings": [
+    {
+      "key": "_gcczTownRecentMemory_v1",
+      "source": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/GcczTownRecentMemoryBridge.cs",
+      "writer": "CampaignSaveChunkHelper.SaveChunkedStringStrict",
+      "reader": "CampaignSaveChunkHelper.LoadChunkedStringStrict",
+      "failedDomainPolicy": "disable recent-memory capture/projection; replay exact safe primitive evidence; incomplete reads or unsafe evidence refuse save",
+      "currentReplay": "tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests/RecentMemoryReplay.cs"
+    }
+  ],
   "flattenedDictionaryStorageKeys": [
     "_afCustomPolicyActiveEffects_v1",
     "_afCustomPolicyRecordHistory_v1",
@@ -287,6 +298,16 @@
     "_vdSerializedDeals",
     "_vdShownRequiredAgendaVoteKeys",
     "_weeklyReportAppliedStabilityDeltas_v1"
+  ],
+  "currentAdditionalFlattenedDictionaryBindings": [
+    {
+      "key": "_afExpeditionParade_v1",
+      "source": "src/AF.GameAdapter.Bannerlord/Composition/Parade/ExpeditionParadeBehavior.cs",
+      "owner": "ExpeditionParadeBehavior.SyncData",
+      "writer": "CampaignSaveChunkHelper.FlattenStringDictionary",
+      "reader": "CampaignSaveChunkHelper.RestoreStringDictionary",
+      "scope": "war snapshots and victory windows only; no agents, requests or action permits"
+    }
   ],
   "chunkContract": {
     "storageChunkMaxBytes": 12000,

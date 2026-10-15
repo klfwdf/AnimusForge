@@ -200,7 +200,7 @@ internal void Publish(SceneSpeechQueueItem item)
 
 							{
 
-								_ports.ShowOpenLordsHallResponseAndScheduleEntry(matchedNpc, openLordsHallAgent, allNpcData, content, commitHistory, afterSpeechInfoMessage);
+								_ports.ShowOpenLordsHallResponseAndScheduleEntry(matchedNpc, openLordsHallAgent, allNpcData, content, commitHistory, afterSpeechInfoMessage, item.LocalTtsTone);
 
 								return;
 
@@ -385,6 +385,36 @@ internal void Publish(SceneSpeechQueueItem item)
 									}
 
 								}
+								if (ExpeditionParadeBehavior.TryApplyTagsForExternal(characterObject.HeroObject, ref content, out var paradeFacts, out var paradeNotifications))
+
+								{
+
+									foreach (string generatedFact in paradeFacts ?? new List<string>())
+
+									{
+
+										_ports.RecordSystemFactForNearbySafe(allNpcData, generatedFact);
+
+										MyBehavior.AppendExternalDialogueHistory(characterObject.HeroObject, null, null, generatedFact);
+
+									}
+
+									foreach (string notification in paradeNotifications ?? new List<string>())
+
+									{
+
+										if (!string.IsNullOrWhiteSpace(notification))
+
+										{
+
+											InformationManager.DisplayMessage(new InformationMessage(notification, new Color(0.4f, 1f, 0.4f)));
+
+										}
+
+									}
+
+								}
+
 
 									if (MyBehavior.TryApplyPartyTransferTagsForExternal(characterObject.HeroObject, characterObject, matchedNpc.AgentIndex, ref content, out var generatedFacts, out var notifications))
 
@@ -826,7 +856,7 @@ internal void Publish(SceneSpeechQueueItem item)
 
 								bool suppressInteractionTimeoutArm = interactionParticipantCount > 1 && interactionTimeoutSeconds <= 0f;
 
-								sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm);
+								sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm, item.LocalTtsTone);
 
 								speechPublished = !string.IsNullOrWhiteSpace(historyText);
 

@@ -13,6 +13,11 @@ namespace AnimusForge;
 public partial class SiegeAiInterventionBehavior
 {
     private static readonly SiegeNativeMovementOrders NativeMovementOrders = new SiegeNativeMovementOrders();
+    private static WeakReference<Mission> _nativeMovementOrderMission;
+
+    internal static bool TryMoveForeignVillageAgent(Agent agent, Vec3 target, string source)
+        => VillageAftermathBehavior.IsActiveForMission(Mission.Current)
+            && TrySetInterventionAgentTargetPosition(agent, target, source);
 
     private static bool TrySetInterventionAgentTargetPosition(Agent agent, Vec3 target, string source,
         Agent.AIScriptedFrameFlags flags = Agent.AIScriptedFrameFlags.NeverSlowDown)
@@ -25,6 +30,12 @@ public partial class SiegeAiInterventionBehavior
             {
                 NativeMovementOrders.Forget(agent?.Index ?? -1);
                 return false;
+            }
+            if (_nativeMovementOrderMission == null || !_nativeMovementOrderMission.TryGetTarget(out Mission orderMission)
+                || !ReferenceEquals(orderMission, mission))
+            {
+                NativeMovementOrders.Reset();
+                _nativeMovementOrderMission = new WeakReference<Mission>(mission);
             }
             CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
             AgentNavigator navigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
@@ -47,12 +58,13 @@ public partial class SiegeAiInterventionBehavior
 
     private static bool IsEligibleNativeMovementActor(Agent agent, Mission mission)
     {
-        return IsActiveInCurrentMission() && mission?.Scene != null && !mission.IsMissionEnding
+        return (IsActiveInCurrentMission() || VillageAftermathBehavior.IsActiveForMission(mission))
+            && mission?.Scene != null && !mission.IsMissionEnding
             && agent != null && agent.Mission == mission && !agent.IsMainAgent && agent.IsHuman && agent.IsActive()
             && agent.Controller == AgentControllerType.AI && !agent.IsPaused
             && !ConversationMission.ConversationAgents.Contains(agent)
             && !CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent)
-            && (AlliedAgentIndexes.Contains(agent.Index) || IsEligibleCivilianAgent(agent, includeHeroes: true));
+            && (VillageAftermathBehavior.IsActiveForMission(mission) || AlliedAgentIndexes.Contains(agent.Index) || IsEligibleCivilianAgent(agent, includeHeroes: true));
     }
 
     private static bool TryAssignNativeMovementFrame(Agent agent, Mission mission, AgentNavigator navigator,

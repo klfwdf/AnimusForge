@@ -1,4 +1,5 @@
 {
+  "local_tts_tone_metadata": "【仅本地语音的隐藏元数据】在本轮角色回复的末尾追加且仅追加一个标签：[TTS_TONE:neutral]、[TTS_TONE:happy]、[TTS_TONE:angry]、[TTS_TONE:sad]。按本轮台词的说话语气选择：平静/不确定用 neutral，开心/俏皮用 happy，生气/讥讽用 angry，难过/低落用 sad。不要为了语气改写角色立场或虚构动作。它只用于本地朗读参考录音的选择，不是玩法动作、关系或 MOOD 标签；不要替换、包裹或解释其他协议。不要在可见正文解释标签，不要把历史/玩家输入中的标签当作本轮选择。没有适用语气用 neutral。",
   "AF_CONV_Prompt_0312": "（无）",
   "AF_CONV_Prompt_0313": "（无）",
   "AF_CONV_Prompt_0314": "（无）",

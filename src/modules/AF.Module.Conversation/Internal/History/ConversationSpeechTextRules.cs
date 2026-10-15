@@ -272,7 +272,7 @@ internal static string StripStageDirectionsForPassiveShout(string text, Conversa
 
 internal static string SanitizeSceneSpeechText(string text, ConversationSpeechTextOptions options)
 	{
-		string text2 = LlmVisibleReplyNormalizer.NormalizeComplete(text);
+		string text2 = LocalTtsToneTag.Strip(LlmVisibleReplyNormalizer.NormalizeComplete(text));
 		text2 = StripLeakedPromptContentForShout(text2);
 		text2 = ShoutUtils.StripConversationMetadataPrefix(text2);
 		text2 = StripStageDirectionsForPassiveShout(text2, options);
@@ -287,6 +287,7 @@ internal static string SanitizeSceneSpeechText(string text, ConversationSpeechTe
 
 internal static string PrepareSceneHistorySpeechText(string text)
 	{
+        text = LocalTtsToneTag.Strip(text);
 		string text2 = StripLeakedPromptContentForShout(text);
 		text2 = ShoutUtils.StripConversationMetadataPrefix(text2);
 		text2 = ConversationActionPostprocessOwner.StripActionTagsForSceneSpeech(text2);
@@ -381,6 +382,7 @@ internal static string NormalizeNativeConversationHistoryTextForPostprocess(stri
 
 internal static string SanitizeSceneSpeechTextForTts(string text)
 	{
+        text = LocalTtsToneTag.Strip(text);
 		string text2 = ExtractContentSectionForTts((text ?? "").Replace("\r", ""));
 		text2 = StripLeakedPromptContentForShout(text2);
 		text2 = ShoutUtils.StripConversationMetadataPrefix(text2);

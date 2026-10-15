@@ -69,7 +69,8 @@ internal sealed class PersonaProfileStateOwner
 		profile?.NormalizeDescription();
 		string text = profile?.Description ?? "";
 		string text3 = (profile?.VoiceId ?? "").Trim();
-		if (!retainExplicitClear && string.IsNullOrEmpty(text) && string.IsNullOrEmpty(text3)
+		string localVoice = (profile?.GptSoVitsVoiceId ?? "").Trim();
+		if (!retainExplicitClear && string.IsNullOrEmpty(text) && string.IsNullOrEmpty(text3) && string.IsNullOrEmpty(localVoice)
 			&& (profile?.Traits == null || profile.Traits.Count == 0)
 			&& (profile?.Motivations == null || profile.Motivations.Count == 0)
 			&& (profile?.Values == null || profile.Values.Count == 0)
@@ -86,6 +87,7 @@ internal sealed class PersonaProfileStateOwner
 		stamp(stringId, profile);
 		profile.Description = text;
 		profile.VoiceId = text3;
+		profile.GptSoVitsVoiceId = localVoice;
 		profile.SpeechStyle = (profile.SpeechStyle ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		Profiles[stringId] = profile;
 	}

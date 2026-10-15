@@ -35,7 +35,7 @@ internal sealed class ScenePresentationController
   _activateMovement = activateMovement; _deactivateMovement = deactivateMovement; _onEnd = onEnd;
   _autoExcludeUnframedParticipants = autoExcludeUnframedParticipants;
  }
-	internal SceneSpeechPlaybackInfo ShowNpcSpeechOutput(SceneSpeechOutputPort port, NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false)
+	internal SceneSpeechPlaybackInfo ShowNpcSpeechOutput(SceneSpeechOutputPort port, NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false, LocalTtsTone localTtsTone = LocalTtsTone.Neutral)
 	{
 		SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = new SceneSpeechPlaybackInfo();
 		if (!_canParticipate(liveAgent))
@@ -150,7 +150,7 @@ internal sealed class ScenePresentationController
 						port.EnqueueBubble(num, liveAgent, text, npcDisplayName, sceneSpeechPlaybackInfo.VisualDurationSeconds);
 						port.ScheduleFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
 						});
-					});
+					}, localTtsTone);
 				}
 			}
 			catch

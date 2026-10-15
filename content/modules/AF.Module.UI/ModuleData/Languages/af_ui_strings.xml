@@ -3407,5 +3407,10 @@ Choose how to proceed:" />
   <string id="AF_ENC_UI_CaptivityReleaseFailed" text="Release could not be confirmed. Please check your current captivity status." />
   <string id="AF_ENC_UI_CaptivityReleased" text="You have been released from captivity." />
   <string id="AF_ENC_UI_CaptivityActionBlocked" text="This action is unavailable while you are in captivity." />
+  <string id="AF_UI_Parade_MenuEntry" text="Hold a parade..." />
+  <string id="AF_UI_Parade_MenuDescription" text="Choose an expedition or victory parade. Only eligible types can be started; troop muster and route checks follow." />
+  <string id="AF_UI_Parade_MenuExpedition" text="Expedition parade" />
+  <string id="AF_UI_Parade_MenuVictory" text="Victory parade" />
+  <string id="AF_UI_Parade_MenuBack" text="Back" />
 </strings>
 </base>

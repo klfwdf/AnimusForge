@@ -342,6 +342,48 @@ internal sealed partial class NativeConversationGameEffectsRuntime
 					}
 
 				}
+				if (ExpeditionParadeBehavior.TryApplyTagsForExternal(targetHero, ref content, out var paradeFacts, out var paradeNotifications))
+
+				{
+
+					if (paradeFacts != null)
+
+					{
+
+						foreach (string generatedFact in paradeFacts)
+
+						{
+
+							if (!string.IsNullOrWhiteSpace(generatedFact))
+
+							{
+
+								MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, generatedFact);
+
+							}
+
+						}
+
+						_ports.RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, paradeFacts);
+
+					}
+
+					foreach (string notification in paradeNotifications ?? new List<string>())
+
+					{
+
+						if (!string.IsNullOrWhiteSpace(notification))
+
+						{
+
+							InformationManager.DisplayMessage(new InformationMessage(notification, new Color(0.4f, 1f, 0.4f)));
+
+						}
+
+					}
+
+				}
+
 
 				LogNativeActionStep("noble_gathering_after", targetHero, targetCharacter, content);
 

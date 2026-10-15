@@ -122,7 +122,7 @@ internal sealed class SceneSystemNpcShoutRuntime
 
 			}
 
-			string safeContent = content.Trim();
+			string safeContent = LocalTtsToneTag.Extract(content.Trim(), out var localTtsTone);
 
             Mission sourceMission = Mission.Current;
 
@@ -221,6 +221,36 @@ internal sealed class SceneSystemNpcShoutRuntime
 									}
 
 								}
+								if (ExpeditionParadeBehavior.TryApplyTagsForExternal(characterObject.HeroObject, ref aiResponse, out var paradeFacts, out var paradeNotifications))
+
+								{
+
+									foreach (string generatedFact in paradeFacts ?? new List<string>())
+
+									{
+
+										_ports.RecordSystemFactForNearbySafe(allNpcData, generatedFact);
+
+										MyBehavior.AppendExternalDialogueHistory(characterObject.HeroObject, null, null, generatedFact);
+
+									}
+
+									foreach (string notification in paradeNotifications ?? new List<string>())
+
+									{
+
+										if (!string.IsNullOrWhiteSpace(notification))
+
+										{
+
+											InformationManager.DisplayMessage(new InformationMessage(notification, new Color(0.4f, 1f, 0.4f)));
+
+										}
+
+									}
+
+								}
+
 
 								if (MyBehavior.TryApplyPartyTransferTagsForExternal(characterObject.HeroObject, characterObject, speakerData.AgentIndex, ref aiResponse, out var generatedFacts, out var notifications))
 
@@ -594,7 +624,7 @@ internal sealed class SceneSystemNpcShoutRuntime
 
 					{
 
-						SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(speakerData, agent, SanitizeSceneSpeechText(DiplomacyConversationBridge.ComposeReply(aiResponse, diplomacyReceipts, forUi: true)));
+						SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(speakerData, agent, SanitizeSceneSpeechText(DiplomacyConversationBridge.ComposeReply(aiResponse, diplomacyReceipts, forUi: true)), localTtsTone: localTtsTone);
 
 						if (meetingReleaseTriggered)
 

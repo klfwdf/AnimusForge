@@ -2300,6 +2300,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		if (GlobalSettings<DuelSettings>.Instance != null)
 		{
 			DuelSettings settings = GlobalSettings<DuelSettings>.Instance;
+            SpeechSettings.Synchronize(settings);
 			EnsureAdultHeroPersonaDefaultMigration(settings);
 			EnsureCustomPromptTextSettingsLoaded(settings);
 			EnsureLogCleanupDefaultMigration(settings);
@@ -2311,7 +2312,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 			if (BaseSettingsProvider.Instance?.GetSettings("AnimusForge_global_settings") is DuelSettings result)
 			{
-				EnsureAdultHeroPersonaDefaultMigration(result);
+				SpeechSettings.Synchronize(result);
+                EnsureAdultHeroPersonaDefaultMigration(result);
 				EnsureCustomPromptTextSettingsLoaded(result);
 				EnsureLogCleanupDefaultMigration(result);
 				EnsureDuelRenownDefaultMigration(result);
@@ -2333,7 +2335,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 			_fallbackSettings = new DuelSettings();
 		}
-		EnsureCustomPromptTextSettingsLoaded(_fallbackSettings);
+		SpeechSettings.Synchronize(_fallbackSettings, allowMigration: false);
+        EnsureCustomPromptTextSettingsLoaded(_fallbackSettings);
 		if (!_settingsFallbackWarned)
 		{
 			_settingsFallbackWarned = true;
@@ -6668,11 +6671,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 			ClearNoblePrisonerEscortLogNow();
 		};
+		InitializeGptSoVitsVoiceActions();
 		TestTtsVolcDedicatedVoice = delegate
 		{
 			try
 			{
 				DuelSettings runtimeSettings = GetSettings() ?? this;
+				if (runtimeSettings.TtsUseGptSoVits)
+				{
+					InformationManager.DisplayMessage(new InformationMessage(GptSoVitsUiText.Text("CloudTestBlocked", "Local speech is selected; use the GPT-SoVITS test button.")));
+					return;
+				}
 				if (!ReferenceEquals(runtimeSettings, this))
 				{
 					bool mismatch = !string.Equals((TtsVolcDedicatedApiUrl ?? "").Trim(), (runtimeSettings.TtsVolcDedicatedApiUrl ?? "").Trim(), StringComparison.Ordinal)

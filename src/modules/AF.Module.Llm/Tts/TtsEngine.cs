@@ -90,6 +90,7 @@ internal sealed class TtsEngine : IDisposable
 		public int AgentIndex = -1;
 
 		public string VoiceIdOverride = "";
+		public GptSoVitsSynthesisRequest LocalRequest;
 	}
 
 	private static readonly object _instanceLock = new object();
@@ -111,6 +112,10 @@ internal sealed class TtsEngine : IDisposable
 	private static readonly HttpClient _v3HttpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false })
 	{
 		Timeout = TimeSpan.FromSeconds(30.0)
+	};
+	private static readonly HttpClient _localHttpClient = new HttpClient(new HttpClientHandler { UseProxy = false })
+	{
+		Timeout = TimeSpan.FromSeconds(180)
 	};
 
 	private readonly BlockingCollection<TtsJob> _jobQueue = new BlockingCollection<TtsJob>(32);
@@ -249,7 +254,11 @@ internal sealed class TtsEngine : IDisposable
 	}
 
 	public bool SpeakAsync(string text, int speakerId, float speed, int agentIndex, string voiceIdOverride, Action<PlaybackRequest> onAccepted)
+        => SpeakAsync(text, speakerId, speed, agentIndex, voiceIdOverride, onAccepted, LocalTtsTone.Neutral);
+
+    internal bool SpeakAsync(string text, int speakerId, float speed, int agentIndex, string voiceIdOverride, Action<PlaybackRequest> onAccepted, LocalTtsTone localTtsTone)
 	{
+        text = LocalTtsToneTag.Strip(text);
 		if (!IsReady)
 		{
 			return false;
@@ -267,16 +276,17 @@ internal sealed class TtsEngine : IDisposable
 				{
 					return false;
 				}
-				if (!settings.TtsVolcDedicatedEnabled)
+				if (!settings.TtsUseGptSoVits && !settings.TtsVolcDedicatedEnabled)
 				{
 					return false;
 				}
+				if (settings.TtsUseGptSoVits && GptSoVitsVoiceRuntime.IsBattleBlocked) return false;
 			}
 			if (speed <= 0f)
 			{
 				try
 				{
-					speed = settings?.TtsVolcDedicatedSpeed ?? 1f;
+					speed = settings?.TtsUseGptSoVits == true ? settings.TtsGptSoVitsSpeed : settings?.TtsVolcDedicatedSpeed ?? 1f;
 				}
 				catch
 				{
@@ -291,6 +301,11 @@ internal sealed class TtsEngine : IDisposable
 				AgentIndex = agentIndex,
 				VoiceIdOverride = (voiceIdOverride ?? "").Trim()
 			};
+			if (settings?.TtsUseGptSoVits == true)
+			{
+				item.LocalRequest = GptSoVitsVoiceRuntime.CaptureRequest(item.Text, item.VoiceIdOverride, speed, settings, (int)localTtsTone);
+				Logger.Log("TtsEngine", "[LocalTone] agent=" + agentIndex + ";voice=" + item.VoiceIdOverride + ";tone=" + localTtsTone);
+			}
 			if (!TryEnqueueJob(item, onAccepted))
 			{
 				Logger.Log("TtsEngine", "[WARN] TTS request not queued (cancelled, disabled, or queue full): textChars=" + text.Length);
@@ -307,7 +322,7 @@ internal sealed class TtsEngine : IDisposable
 
 	public void SpeakTestAsync(string text, float speed) => SpeakTestAsync(text, speed, null);
 
-	public bool SpeakTestAsync(string text, float speed, Action<PlaybackRequest, string> onFailure)
+	public bool SpeakTestAsync(string text, float speed, Action<PlaybackRequest, string> onFailure, string voiceId = null)
 	{
 		if (IsReady && !string.IsNullOrWhiteSpace(text))
 		{
@@ -320,6 +335,14 @@ internal sealed class TtsEngine : IDisposable
 				BypassEnabledCheck = true,
 				TestFailure = onFailure
 			};
+			var settings = DuelSettings.GetSettings();
+			if (settings?.TtsUseGptSoVits == true)
+			{
+				if (GptSoVitsVoiceRuntime.IsBattleBlocked) return false;
+				string selected = string.IsNullOrWhiteSpace(voiceId) ? GptSoVitsVoiceRuntime.GetCatalog(settings).ResolveAssignment(null, false).Id : voiceId;
+				item.VoiceIdOverride = selected;
+				item.LocalRequest = GptSoVitsVoiceRuntime.CaptureRequest(item.Text, selected, item.Speed, settings, settings.TtsGptSoVitsMood);
+			}
 			if (TryEnqueueJob(item, null)) { return true; }
 			Logger.Log("TtsEngine", "[WARN] Test voice was not queued (queue full or engine stopped)");
 		}
@@ -474,6 +497,18 @@ internal sealed class TtsEngine : IDisposable
 		finally { previousGeneration.Dispose(); }
 		foreach (TtsJob job in jobs) { DispatchJobCancellation(job); }
 		foreach (TtsJob job in drained) { ReleaseJob(job); }
+		ResetCurrentWaveOut();
+	}
+
+	internal void CancelLocalPlayback()
+	{
+		var jobs = new List<TtsJob>();
+		lock (_requestLock)
+		{
+			foreach (var job in _pendingJobs.Values)
+				if (job.LocalRequest != null && !job.Cancelled && !job.ReleaseRequested) jobs.Add(job);
+		}
+		foreach (var job in jobs) CancelJob(job);
 		ResetCurrentWaveOut();
 	}
 
@@ -658,6 +693,11 @@ internal sealed class TtsEngine : IDisposable
 		{
 			return;
 		}
+		if (job.LocalRequest != null && GptSoVitsVoiceRuntime.IsBattleBlocked)
+		{
+			NotifyPlaybackFailed(job, "Local speech is disabled in real battles.");
+			return;
+		}
 		LogTtsReport("ProcessJob.Start", job.AgentIndex, $"speakerId={job.SpeakerId};speed={job.Speed:F2};voiceOverride={job.VoiceIdOverride};textLen={(job.Text ?? string.Empty).Length}");
 		string text = "";
 		string text2 = "";
@@ -685,7 +725,9 @@ internal sealed class TtsEngine : IDisposable
 			num = settings?.TtsVolcDedicatedSampleRate ?? 24000;
 			num2 = settings?.TtsVolcDedicatedVolume ?? 1f;
 			flag = settings?.TtsSceneUseWinmmAudible ?? true;
-			flag2 = (settings == null || settings.EnableTtsSpeech) && (settings?.TtsVolcDedicatedEnabled ?? false);
+			flag2 = (settings == null || settings.EnableTtsSpeech) && (job.LocalRequest != null
+				? settings?.TtsUseGptSoVits == true
+				: settings?.TtsVolcDedicatedEnabled == true && settings?.TtsUseGptSoVits != true);
 		}
 		catch
 		{
@@ -708,13 +750,17 @@ internal sealed class TtsEngine : IDisposable
 			Logger.Log("TtsEngine", "[WARN] Volcengine mode is disabled; synthesis skipped");
 			return;
 		}
+		string audioEncoding = job.LocalRequest != null ? "wav" : (text6 ?? "wav").Trim().ToLowerInvariant();
+		int protocolVersion = 0;
+		if (job.LocalRequest == null)
+		{
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			NotifyPlaybackFailed(job, "tts_url_missing");
 			Logger.Log("TtsEngine", "[WARN] Volcengine API URL is not configured");
 			return;
 		}
-		int protocolVersion = VolcTtsGateway.GetVersion(text);
+		protocolVersion = VolcTtsGateway.GetVersion(text);
 		if (protocolVersion == 0)
 		{
 			NotifyPlaybackFailed(job, "tts_endpoint_unsupported");
@@ -745,7 +791,6 @@ internal sealed class TtsEngine : IDisposable
 			Logger.Log("TtsEngine", "[WARN] Volcengine voice ID is not configured");
 			return;
 		}
-		string audioEncoding = (text6 ?? "wav").Trim().ToLowerInvariant();
 		if (audioEncoding != "wav" && audioEncoding != "pcm")
 		{
 			NotifyPlaybackFailed(job, "Unsupported TTS audio format. Only wav/pcm is supported.");
@@ -753,6 +798,7 @@ internal sealed class TtsEngine : IDisposable
 			return;
 		}
 		Logger.Log("TtsEngine", $"Online synthesis started: protocol=V{protocolVersion}, textChars={job.Text.Length}, voice={text5}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
+		}
 		LogTtsReport("ProcessJob.SynthesisBegin", job.AgentIndex, $"voice={text5};encoding={audioEncoding};sampleRate={num};audible={flag}");
 		if (job.AgentIndex >= 0 && !ShoutBehavior.CanAgentParticipateInSceneSpeechExternal(job.AgentIndex))
 		{
@@ -760,7 +806,21 @@ internal sealed class TtsEngine : IDisposable
 			NotifyPlaybackFailed(job, "Scene speech target became unavailable before synthesis.");
 			return;
 		}
-		byte[] array = CallVolcApi(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson, job.Request.CancellationToken, out string synthesisError);
+		byte[] array;
+		string synthesisError = "";
+		if (job.LocalRequest != null)
+		{
+			TtsSynthesisResult result = new GptSoVitsTtsGateway(_localHttpClient)
+				.SynthesizeAsync(job.LocalRequest, job.Request.CancellationToken).GetAwaiter().GetResult();
+			if (!result.Success)
+			{
+				NotifyPlaybackFailed(job, "gpt_sovits_" + result.ErrorCode);
+				Logger.Log("TtsEngine", "Local TTS failed; no cloud fallback. Code=" + result.ErrorCode);
+				return;
+			}
+			array = result.AudioBytes;
+		}
+		else array = CallVolcApi(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson, job.Request.CancellationToken, out synthesisError);
 		if (!IsJobCurrent(job)) { return; }
 		if (array == null || array.Length == 0)
 		{

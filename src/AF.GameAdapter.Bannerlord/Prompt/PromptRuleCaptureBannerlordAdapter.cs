@@ -69,6 +69,8 @@ internal static LegacyDetachedRuleSelector CreateNativeConversationDetachedRuleS
         string id=(ruleId ?? "").Trim();
         if (string.IsNullOrWhiteSpace(id)) return "";
         Hero hero=targetHero ?? targetCharacter?.HeroObject;
+        if (string.Equals(id, ExpeditionParadeBehavior.RuleId, StringComparison.OrdinalIgnoreCase))
+            return body + "\n" + ExpeditionParadeBehavior.BuildPostprocessContextForExternal(hero);
         string runtime=null, heroJoin=null;
         if (string.Equals(id,"kingdom_service",StringComparison.OrdinalIgnoreCase))
         {

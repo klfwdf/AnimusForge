@@ -140,6 +140,8 @@ namespace AnimusForge
     internal static class SceneTauntBehavior { internal static bool TryProcessSceneTauntAction(Hero h,CharacterObject c,int i,ref string text,out bool escalated) { escalated=false;return false; } }
     internal static class ShoutUtils { internal static List<Agent> GetNearbyNPCAgents()=>Mission.Current.Agents.ToList(); internal static NpcDataPacket ExtractNpcData(Agent a)=>new(){AgentIndex=a.Index}; internal static bool TryTriggerDuelAction(NpcDataPacket n,string player,ref string text)=>false; internal static void ExecuteDuel(Agent agent) { } }
     @@EFFECT@@
+    internal static class ExpeditionParadeBehavior { internal static bool TryApplyTagsForExternal(Hero h,ref string text,out List<string> facts,out List<string> notices) { facts=new();notices=new();return false; } }
+    internal static class LlmSourceTexts { internal static string Get(string key)=>key=="Signal_Failed"?"失败":throw new Exception("Unexpected resource key"); }
     internal static class Probe
     {
         internal static int Effects,IssueEffects,Speech,History,PrivateHistory,Facts,Epoch=1;
@@ -154,7 +156,7 @@ namespace AnimusForge
             ResolveHeroFromAgentIndex=i=>new(),
             TryTriggerOpenLordsHallAction=(NpcDataPacket n,Agent a,ref string text)=>false,
             TryConsumeSceneNpcSurrenderTag=(NpcDataPacket n,ref string text,out Hero h,out CharacterObject c,out int i)=>{h=null;c=null;i=-1;return false;},
-            ShowNpcSpeechOutput=(n,a,text,tts,attach,suppress)=>{Speech++;if(FailStep=="speech")throw new Exception("synthetic_speech");return new();},
+            ShowNpcSpeechOutput=(n,a,text,tts,attach,suppress,tone)=>{Speech++;if(FailStep=="speech")throw new Exception("synthetic_speech");return new();},
             RecordResponseForAllNearbySafe=(list,i,name,text,receipt)=>{History++;return true;},
             PersistNpcSpeechToNamedHeroes=(i,name,text,list,receipt)=>{PrivateHistory++;return true;},
             RecordSystemFactForNearbySafe=(list,fact)=>Facts++,
@@ -211,7 +213,7 @@ namespace AnimusForge
             Mission.Current=new();var agent=new Agent{Index=7,Character=new CharacterObject{HeroObject=new Hero()}};Mission.Current.Agents.Add(agent);
             var ports=new SceneSpeechEffectPorts
             {
-                ShowNpcSpeechOutput=(n,a,text,tts,attach,suppress)=>{Atom("speech");Probe.Speech++;if(Probe.FailStep=="system_speech")throw new Exception("speech_failed");return new();},
+                ShowNpcSpeechOutput=(n,a,text,tts,attach,suppress,tone)=>{Atom("speech");Probe.Speech++;if(Probe.FailStep=="system_speech")throw new Exception("speech_failed");return new();},
                 RecordResponseForAllNearbySafe=(list,i,name,text,receipt)=>{Atom("history");Probe.History++;return true;},
                 PersistNpcSpeechToNamedHeroes=(i,name,text,list,receipt)=>{Atom("private");Probe.PrivateHistory++;return true;},
                 RecordSystemFactForNearbySafe=(list,fact)=>{Require(fact.StartsWith("AFEF"),"partial actual fact");Atom("fact");Probe.Facts++;},

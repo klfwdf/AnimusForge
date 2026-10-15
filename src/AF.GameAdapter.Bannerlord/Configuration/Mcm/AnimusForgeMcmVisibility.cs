@@ -21,7 +21,7 @@ internal static class AnimusForgeMcmVisibility
     private static readonly string[] MainGroups =
     {
         "{=AF_MCM_Support_Group}", "{=AF_MCM_MainApi_Group}", "{=AF_MCM_AuxApi_Group}",
-        "{=AF_MCM_PostprocessApi_Group}", "{=AF_MCM_EventRebellionApi_Group}", "{=AF_MCM_Tts_Group}"
+        "{=AF_MCM_PostprocessApi_Group}", "{=AF_MCM_EventRebellionApi_Group}"
     };
     private static readonly string[] IllustratorGroups = { "{=AF_ILL_GROUP_IMAGE_API}" };
     private static readonly HashSet<string> AmbientApiProperties = new HashSet<string>(StringComparer.Ordinal)
@@ -148,6 +148,7 @@ internal static class AnimusForgeMcmVisibility
     internal static bool IsVisibleProperty(string settingsId, string propertyId, string rawGroup)
     {
         if (!IsOwnedId(settingsId)) return true;
+        if (settingsId == SpeechSettings.SettingsId) return propertyId != nameof(SpeechSettings.LegacyMigrationCompleted);
         if (settingsId == DialogueUiId || settingsId == CoupId) return false;
         if (settingsId == IllustratorId) return HasGroup(rawGroup, IllustratorGroups);
         if (AmbientApiProperties.Contains(propertyId))
@@ -162,7 +163,7 @@ internal static class AnimusForgeMcmVisibility
         return false;
     }
 
-    private static bool IsOwnedId(string id) => id == MainId || id == IllustratorId || id == DialogueUiId || id == CoupId;
+    private static bool IsOwnedId(string id) => id == MainId || id == IllustratorId || id == DialogueUiId || id == CoupId || id == SpeechSettings.SettingsId;
 
     private static bool KeepFrontendEntry(object __0)
     {

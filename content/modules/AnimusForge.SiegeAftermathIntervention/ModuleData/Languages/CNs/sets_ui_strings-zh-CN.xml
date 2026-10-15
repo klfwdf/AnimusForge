@@ -2,6 +2,11 @@
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="string">
   <tags><tag language="简体中文" /></tags>
   <strings>
+    <string id="AF_GCCZ_VillageDispositionEntry" text="亲自进入村庄处置平民" />
+    <string id="AF_GCCZ_VillageDispositionNotReady" text="村庄遭遇或奖励尚未结算完。请关闭奖励界面，等待处置菜单，不要再次发起进攻。" />
+    <string id="AF_GCCZ_VillageGatherQueued" text="【GCCZ村庄】已传令召集村民。结束对话后，成年村民会向你附近集合，不编入 SETS 队伍。" />
+    <string id="AF_GCCZ_VillageGatherIssued" text="【GCCZ村庄】已向 {COUNT} 名成年村民传达集合指令。仍在路上的村民尚未到齐。" />
+    <string id="AF_GCCZ_VillageSceneFailed" text="村庄处置场景初始化失败，将返回菜单，本次不执行处置；可以从菜单重试。" />
     <string id="AF_SETS_Noun_Castle" text="城堡" />
     <string id="AF_SETS_Noun_Village" text="村庄" />
     <string id="AF_SETS_Noun_Town" text="城镇" />
@@ -145,5 +150,27 @@
     <string id="AF_SETS_Coup_HallGuard" text="护卫" />
     <string id="AF_SETS_Coup_HallAssault" text="突击队" />
     <string id="AF_SETS_Coup_HallPointUnreachable" text="领主大厅连续15秒找不到{SIDE}可达落点，已停止本次部署；未授予胜利，已有伤亡保留。" />
+    <string id="AF_GCCZ_VILLAGE_Initial" text="GCCZ村庄初始协助值" />
+    <string id="AF_GCCZ_VILLAGE_InitialHint" text="仅初始化尚未记录协助值的村庄。每村分别保存；游说增加，成功自愿援助消耗，游戏中不展示数值。" />
+    <string id="AF_GCCZ_VILLAGE_Tutorial" text="GCCZ村庄教程" />
+    <string id="AF_GCCZ_VILLAGE_View" text="查看教程" />
+    <string id="AF_GCCZ_VILLAGE_TutorialHint" text="敌对／中立村庄入口、资源预算、隐藏协助值、人员结算与当前未启用玩法。" />
+    <string id="AF_GCCZ_TownAffairs" text="亲自处理城务" />
+    <string id="AF_GCCZ_CastlePrisoners" text="在城堡处理战俘" />
+    <string id="AF_GCCZ_VillageAffairs" text="处理村庄事务" />
+    <string id="AF_GCCZ_VillageHostileHint" text="民兵将反抗；获胜并处理军事战果后，可以进入村庄或离开。" />
+    <string id="AF_GCCZ_TownTutorial" text="GCCZ城镇教程" />
+    <string id="AF_GCCZ_CastleTutorial" text="GCCZ城堡教程" />
+    <string id="AF_GCCZ_TutorialGroup" text="玩法教程" />
+    <string id="AF_GCCZ_CooperationCap" text="初始值仅影响未记录的村庄；隐藏协助值按村保存，上限为6。" />
+    <string id="AF_GCCZ_McmTitle" text="AnimusForge 攻城处置(GCCZ)" />
+    <string id="AF_GCCZ_McmGeneral" text="场景设置" />
+    <string id="AF_GCCZ_McmLog" text="GCCZ 日志" />
+    <string id="AF_GCCZ_McmSetsLog" text="SETS 日志" />
+    <string id="AF_GCCZ_McmEscortLog" text="贵族俘虏押送日志" />
+    <string id="AF_GCCZ_McmVillageTutorialHint" text="了解友方与敌中村庄的进入方式、援助、协助值、文化改造和离场结算。" />
+    <string id="AF_GCCZ_McmCastleTutorialHint" text="了解城堡进入方式、战俘处理、随行人员和离场结算。" />
+    <string id="AF_GCCZ_NoHealthyAttackers" text="部队中没有可出战人员。请等待恢复或补充兵员后再进攻村庄。" />
+    <string id="AF_GCCZ_InvalidAttackRoster" text="当前战斗兵员尚未就绪，本次未进入村庄战斗。请先离开遭遇，待部队恢复后再试。" />
   </strings>
 </base>

@@ -159,14 +159,31 @@ public sealed class TownOrdinarySpeakerVoiceSession
             }
 
             string scopedSpeakerKey = BuildScopedSpeakerKey(settlementId, speakerKey, facts.Role);
-            if (!_profiles.TryGetValue(scopedSpeakerKey, out TownOrdinarySpeakerVoiceProfile profile))
-            {
-                profile = CreateProfile(scopedSpeakerKey, facts, text);
-                _profiles[scopedSpeakerKey] = profile;
-            }
+            TownOrdinarySpeakerVoiceProfile profile = GetOrCreateProfileLocked(scopedSpeakerKey, facts, text);
 
             return BuildPrompt(profile, scopedSpeakerKey, facts, text);
         }
+    }
+
+    // Shared scene cache; callers still own separate Begin/End lifetimes and catalogs.
+    internal TownOrdinarySpeakerVoiceProfile GetOrCreateProfile(TownOrdinarySpeakerVoiceFacts facts, TownPromptTextCatalog text)
+    {
+        if (facts == null || !IsSupportedRole(facts.Role)) return null;
+        lock (_sync)
+        {
+            string settlementId = NormalizeKey(facts.SettlementId), speakerKey = NormalizeKey(facts.SpeakerKey);
+            if (_settlementId.Length == 0 || speakerKey.Length == 0
+                || !string.Equals(_settlementId, settlementId, StringComparison.OrdinalIgnoreCase)) return null;
+            string key = BuildScopedSpeakerKey(settlementId, speakerKey, facts.Role);
+            return GetOrCreateProfileLocked(key, facts, text);
+        }
+    }
+
+    private TownOrdinarySpeakerVoiceProfile GetOrCreateProfileLocked(string key, TownOrdinarySpeakerVoiceFacts facts, TownPromptTextCatalog text)
+    {
+        if (!_profiles.TryGetValue(key, out var profile))
+            _profiles[key] = profile = CreateProfile(key, facts, text);
+        return profile;
     }
 
     public bool RecordUtterance(
@@ -229,7 +246,8 @@ public sealed class TownOrdinarySpeakerVoiceSession
         }
     }
 
-    private static TownOrdinarySpeakerVoiceProfile CreateProfile(
+    // Shared pure generation; village callers own separate scene caches and localized fragments.
+    internal static TownOrdinarySpeakerVoiceProfile CreateProfile(
         string scopedSpeakerKey,
         TownOrdinarySpeakerVoiceFacts facts,
         TownPromptTextCatalog text)

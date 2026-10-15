@@ -5,4 +5,5 @@ public enum VillageAftermathAuthorityKind
     None = 0,
     DirectOwner = 1,
     KingdomRuler = 2,
+    FriendlyVisitor = 3,
 }

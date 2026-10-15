@@ -87,6 +87,8 @@ internal static class VoiceMapper
 		{
 			return null;
 		}
+		if (DuelSettings.GetSettings()?.TtsUseGptSoVits == true)
+			return MyBehavior.GetNpcVoiceIdForExternal(hero);
 		bool isFemale = hero.IsFemale;
 		float age = hero.Age;
 		string stringId = hero.StringId;
@@ -95,11 +97,15 @@ internal static class VoiceMapper
 
 	public static string ResolveVoiceIdForNonHero(bool isFemale, float age, int agentIndex)
 	{
+		if (DuelSettings.GetSettings()?.TtsUseGptSoVits == true)
+			return GptSoVitsVoiceRuntime.ResolveTransient(isFemale, agentIndex);
 		return ResolveVoiceId(null, isFemale, age, agentIndex);
 	}
 
 	public static string ResolveVoiceIdForNonHeroKey(string nonHeroKey, bool isFemale, float age, int agentIndex)
 	{
+		if (DuelSettings.GetSettings()?.TtsUseGptSoVits == true)
+			return GptSoVitsVoiceRuntime.ResolveTransient(isFemale, agentIndex);
 		string key = (nonHeroKey ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(key))
 		{
@@ -110,6 +116,7 @@ internal static class VoiceMapper
 
 	public static void ClearSceneCache()
 	{
+		GptSoVitsVoiceRuntime.ClearSceneVoices();
 		lock (_cacheLock)
 		{
 			_sceneCache.Clear();
@@ -137,13 +144,13 @@ internal static class VoiceMapper
 	{
 		return (key ?? "").ToLowerInvariant() switch
 		{
-			"male_young" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_MaleYoung", "Young male (<30 years)"), 
-			"male_middle" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_MaleMiddle", "Middle-aged male (30-50 years)"), 
-			"male_old" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_MaleOld", "Elderly male (>50 years)"), 
-			"female_young" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_FemaleYoung", "Young female (<30 years)"), 
-			"female_middle" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_FemaleMiddle", "Middle-aged female (30-50 years)"), 
-			"female_old" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_FemaleOld", "Elderly female (>50 years)"), 
-			_ => key ?? "", 
+			"male_young" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_MaleYoung", "Young male (<30 years)"),
+			"male_middle" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_MaleMiddle", "Middle-aged male (30-50 years)"),
+			"male_old" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_MaleOld", "Elderly male (>50 years)"),
+			"female_young" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_FemaleYoung", "Young female (<30 years)"),
+			"female_middle" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_FemaleMiddle", "Middle-aged female (30-50 years)"),
+			"female_old" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_FemaleOld", "Elderly female (>50 years)"),
+			_ => key ?? "",
 		};
 	}
 

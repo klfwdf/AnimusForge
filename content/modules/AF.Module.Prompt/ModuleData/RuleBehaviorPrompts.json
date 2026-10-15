@@ -972,6 +972,39 @@
                                                 ]
                         },
                         {
+  "Id": "expedition_parade",
+  "IsEnabled": true,
+  "Group": "social",
+  "Priority": 82,
+  "TopicNumber": 36,
+  "TopicLabel": "Expedition and victory parade",
+  "Code": "PARADE",
+  "PreprocessExcludedInstruction": "当前不能安排阅兵，请向有权的本地总督询问。",
+  "NonHeroInstruction": "普通士兵和平民不能批准阅兵，请找总督。",
+  "Instruction": "【阅兵规则】只有出征阅兵和胜利阅兵，城镇、城堡均可。AI代办仅限本地总督在玩家拥有或作为统治者有权管理的定居点安排。玩家也可在大地图的城镇／城堡菜单中点击“举行阅兵”，不要求总督在场。出征限仍在进行的战争开战后14天内；胜利限系统核实我方以优势结束战争后的14天内。运行时EXPEDITION/VICTORY许可是硬约束，玩家宣称获胜不能覆盖。类型不明先问清。只展示主队伍、当地驻军和已集结玩家军团的真实健康士兵，不转移兵员。步兵三列、骑兵两列，每列旗手，全程保持列数。玩家明确要求且你明确同意才安排；询问、假设、引用、否定或条件未满足都不执行。正文不写动作标签，不宣称阅兵已完成，路线检查失败会取消。",
+  "PostprocessRules": [
+    {
+      "Description": "仅玩家本轮明确要求出征阅兵、总督明确同意且EXPEDITION=True时输出。询问、否定、引用、条件性承诺不输出。类型不明确先澄清。",
+      "Tag": "[ACTION:PARADE:EXPEDITION]"
+    },
+    {
+      "Description": "仅玩家本轮明确要求胜利阅兵、总督明确同意且VICTORY=True时输出。单场战斗不等于战争胜利，禁止同时输出出征标签。",
+      "Tag": "[ACTION:PARADE:VICTORY]"
+    }
+  ],
+  "RuntimeInstructionTemplates": {},
+  "RuntimeConstraintTemplates": {},
+  "TriggerKeywords": [
+    "阅兵",
+    "出征阅兵",
+    "胜利阅兵",
+    "安排阅兵",
+    "parade",
+    "victory parade",
+    "expedition parade"
+  ]
+},
+{
                             "Id":  "scene_auto_group_relay",
                             "IsEnabled":  true,
                             "Group":  "scene",

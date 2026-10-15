@@ -585,7 +585,8 @@ internal static class AnimusForgeTagCatalog
 		{
 			return AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryGccz");
 		}
-		if (text.StartsWith("[VILLAGE_ACTION:", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith("[VILLAGE_ACTION:", StringComparison.OrdinalIgnoreCase)
+			|| text.StartsWith("[VILLAGE_DISPOSE:", StringComparison.OrdinalIgnoreCase))
 		{
 			return AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryVillage");
 		}

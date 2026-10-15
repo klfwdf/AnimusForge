@@ -48,6 +48,7 @@ internal static class CampaignComposition
             campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
             campaignGameStarter.AddBehavior(new WorldMapPartyCommandBehavior());
             campaignGameStarter.AddBehavior(new NobleGatheringBehavior());
+            campaignGameStarter.AddBehavior(new ExpeditionParadeBehavior());
             campaignGameStarter.AddBehavior(new VassalageBehavior());
             campaignGameStarter.AddBehavior(new NpcTributeVassalageBehavior());
             campaignGameStarter.AddBehavior(new KingdomAnnexationBehavior());
