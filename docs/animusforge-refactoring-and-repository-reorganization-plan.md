@@ -1,9 +1,13 @@
 <a id="npc-surrender-engine-tick-20261015"></a>
-## 对话投降待办在暂停遭遇菜单不执行（2026-10-15，ACTIVE）
+## 对话投降待办在暂停遭遇菜单不执行（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 用户提供Mod_Logic.txt、Token_Stats.txt并明确要求修复；基线main/0e9081622。日志21:09:28已登记NPC投降待办，21:09:31退出对话仍为Begin；源码仅OnCampaignTick消费投降，OnEngineTick遗漏。原版Campaign.Tick在dt为零且启动期结束后不派发Campaign Tick，遭遇菜单可持续暂停；离开遭遇后清除过期scope是既有安全行为，不移除。
 - 范围：LordEncounterBehavior.OnEngineTick补调用既有投降执行器；扩展ReleaseSurrenderBoundaryTests验证不运行Campaign Tick时的消费、手动退出、mission等待、节流、失效scope及只执行一次。无待办每帧只检查bool，待办沿用250ms执行节流；无新增扫描、反射、IO、锁或后台游戏访问，原CN/EN文案、协议和存档保持。
 - 退出门：新回归在修复前失败、修复后通过；原release/surrender及相关遭遇生命周期回归通过；原build_single_module.ps1仅构建1.3/1.4与Bootstrap并记录实际引用及未验项。保护当前流式对话UI六份修改、未跟踪StreamingDialogueTextReveal/测试及Microsoft/NuGet，不纳入本次提交。不授权部署、Stage、打包或push；实机战利品/俘虏结算另列未验。
+- 已完成：意图检查点d54cc4128，产品及回归74be66074。OnEngineTick补12行，复用原TryForcePendingNativeConversationNpcSurrenderIfReady；OnCampaignTick保留，二者共享待办清理和重试时间戳。原CN/EN投降接受/结算资源已核对，未改文案、标签、权限和存档身份。
+- 验证：新增engine-only回归在旧源码明确失败（exit1，engine tick alone consumes paused encounter surrender），修复后ReleaseSurrenderBoundaryTests共56项PASS；EncounterLifecycleBoundaryTests 183项、NativeDialogueBattleContinuationTests 67项PASS。实际生产声明原样抽取/链接，Campaign/Mission、菜单及副作用入口为fixture；没有真实俘虏/战利品结算或第三方组合实机证据。
+- 原构建命令：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Bannerlord14ReferenceDir F:/AnimusForge-main/.tmp/build_check/1.4 -Configuration Debug`，exit0；1.3引用v1.3.15.110062、1.4引用v1.4.6.115628、Bootstrap与双Coup seam/注册门禁PASS。仅构建，保留既有警告；构建包含其他会话当前dirty流式对话输入，这些修改和后续测试改动未纳入本产品提交。
+- 本地完整命令/日志/SHA及冻结三DLL候选见`artifacts/npc-surrender-engine-tick-20261015/receipt.json`、`verified-candidates/`；候选与原build marker的SHA逐个核对PASS。精确责任坐标见[源码地图](architecture/af-framework-code-scope.md#npc-surrender-engine-tick-20261015)。源码回滚`git revert 74be66074`，不改写历史、不还原其他会话。未Stage、部署、打包、push；实机手动退出后的俘虏/战利品页、玩家确切游戏版本和旧档仍NOT-RUN。
 
 <a id="terminal-navigation-performance-20261015"></a>
 ## 终端分类与子菜单点击卡顿优化（2026-10-15，ACTIVE）

@@ -1,3 +1,9 @@
+# 当前交接：对话投降待办调度修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
+
+- 产品/回归74be66074：OnEngineTick补上原NPC投降待办消费，解决退出对话后遭遇菜单暂停Campaign Tick而无人执行。保留手动退出、scope/generation保护、mission等待、250ms节流和只执行一次；无待办只查bool，无新增Tick扫描/IO。
+- 修复前engine-only回归明确失败；修复后投降56项、遭遇生命周期183项、原生战斗续接67项PASS。原双API/Bootstrap/Coup/注册构建PASS（实际引用1.3.15/1.4.6）；fixture不是实机，俘虏/战利品页和玩家旧档仍待验。未Stage、部署、打包或push，流式对话UI等并行改动保持并排除提交。
+- [唯一主台账/收据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#npc-surrender-engine-tick-20261015)；[精确源码地图](docs/architecture/af-framework-code-scope.md#npc-surrender-engine-tick-20261015)。本地`artifacts/npc-surrender-engine-tick-20261015/{receipt.json,verified-candidates/}`；源码聚焦回滚`git revert 74be66074`。下方历史交付状态仅按各自范围保留。
+
 # 当前交接：主菜单重复打开 MCM 卡顿修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 产品/回归 `7e4d0d2a0`：修复外层关闭未清理AF设置行的订阅累积；只追踪AF四owner，只刷新dropdown；按窗口补清理并退役异步晚到控件，保留原设置/取消及其他模组。
