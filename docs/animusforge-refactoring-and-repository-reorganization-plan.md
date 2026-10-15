@@ -1,3 +1,11 @@
+<a id="retire-hidden-illustrator-api-20261016"></a>
+## 退役隐藏的独立导演API与完整路径开关（2026-10-16，ACTIVE）
+
+- 用户确认保留导演构图，只用主API，退役隐藏配置。基线main/8cb2bcccd，跟踪文件干净，未跟踪Microsoft/NuGet保持。已确认旧前端只是隐藏：TryResolveChatConfig优先DirectorApiBaseUrl/DirectorModelName，完整路径值进入请求快照及客户端；因此旧Documents MCM/preset可持续影响不可见请求。没有当前玩家错误响应，不把潜在原因当作已取得远端实机证据。
+- 修改范围：IllustratorSettings移除独立地址/Key/模型/dropdown/抓取及完整路径设置和仅服务该入口的代码；VisualDirectorEngine只捕获主API；IllustrationOptions与生图路由去除完整路径标志，保留标准完整端点自动识别与参考图/Chat/Edits/Gemini/Player2规则。中英说明、相关MCM回放/真实DLL请求测试同任务更新；不删除导演构图、预算/自定义提示词、普通生图设置、玩家Key或整份配置。
+- Documents MCM原生Global/AnimusForge/AnimusForge_Illustrator_v1.json已只读检查，未输出敏感值：本机独立导演地址/Key/模型为空，完整路径false。后续验证旧JSON载入被忽略、保存不再复活字段及preset；不靠清空全量设置解决。本任务本地实现与双API/Bootstrap验证，不沿用上一轮已完成授权隐式部署/打包/push。无新增Tick/IO/反射/轮询；只在既有主线程请求捕获边界取主API，后台仍使用快照。
+- 退出门：旧坏配置的主API选择回归修复前失败、修复后PASS；实际MCM JSON/字段/双入口及真实DLL记录HTTP的标准端点/带图/原生协议检查通过，原统一双API/Bootstrap构建PASS；明确未验实机/真实provider/付费出图。证据artifacts/retire-hidden-illustrator-api-20261016/，源码按focused inverse commit回退。
+
 <a id="package-push-surrender-streaming-20261015"></a>
 ## 同版本1.6.1双包与源码推送（2026-10-15，PUSH_VERIFIED / PACKAGE_VERIFIED / DEPLOY_VERIFIED / LIVE_PENDING）
 
