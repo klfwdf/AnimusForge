@@ -1,3 +1,9 @@
+<a id="rot-encyclopedia-compat-implementation-20261015"></a>
+## ROT百科模板空引用兼容修复（2026-10-15，IMPLEMENTING）
+
+- 授权：用户询问如何修复兼容，沿已确认事故进行AF内定向修复。基线3eb5ba496；计划新增GameAdapter兼容补丁并在主界面启动接线，保护ROT百科Postfix的无模板玩家流浪者输入，保留原版条目和ROT正常同伴名称逻辑，不写人物/存档/第三方DLL。
+- 退出门：事故形状负控与真实Harmony注册/构造路径回放；有模板ROT同伴/非ROT模板/普通领主等不受影响；未安装ROT不操作；重复注册不叠加；原双API/Bootstrap构建。部署/打包/push与实机另记，无本轮外部写入授权。
+
 <a id="rot-companion-encyclopedia-confirmed-20261015"></a>
 ## 安德雷转同伴后百科无法打开：实际ROT堆栈（2026-10-15，LOG_CONFIRMED / FIX_NOT_IMPLEMENTED）
 
