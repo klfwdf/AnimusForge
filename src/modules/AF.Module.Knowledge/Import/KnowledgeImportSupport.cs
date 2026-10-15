@@ -100,6 +100,9 @@ internal static class KnowledgeImportSupport
 			};
 			List<KnowledgeLibraryBehavior.LoreRule> list = new List<KnowledgeLibraryBehavior.LoreRule>();
 			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, string> keywordOwners = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			int renamedCount = 0;
+			int deduplicatedKeywordCount = 0;
 			foreach (string item in source.Where((string d) => !string.IsNullOrEmpty(d)).Distinct(StringComparer.OrdinalIgnoreCase))
 			{
 				if (!Directory.Exists(item))
@@ -119,6 +122,8 @@ internal static class KnowledgeImportSupport
 				{
 					continue;
 				}
+				// Match database reload ownership regardless of filesystem enumeration/installation order.
+				Array.Sort(array, StringComparer.OrdinalIgnoreCase);
 				string[] array2 = array;
 				foreach (string path in array2)
 				{
@@ -138,11 +143,8 @@ internal static class KnowledgeImportSupport
 						string text = (loreRule?.Id ?? "").Trim();
 						if (!string.IsNullOrEmpty(text))
 						{
-							loreRule.Id = text;
-							if (hashSet.Add(text))
-							{
-								list.Add(loreRule);
-							}
+							KnowledgeImportValidationOwner.TryAddImportedKnowledgeRule(loreRule, a, hashSet, keywordOwners, list,
+								ref renamedCount, ref deduplicatedKeywordCount, out _, skipPlayerPersona: false);
 						}
 					}
 					catch
