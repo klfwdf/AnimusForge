@@ -1,3 +1,10 @@
+# 当前交接：主菜单重复打开 MCM 卡顿修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
+
+- 产品/回归 `7e4d0d2a0`：修复外层关闭未清理AF设置行的订阅累积；只追踪AF四owner，只刷新dropdown；按窗口补清理并退役异步晚到控件，保留原设置/取消及其他模组。
+- 修复前真实MCM托管回放八轮追踪373→2984，刷新约7–13ms→49–60ms；修复后八轮关闭追踪与订阅均归零。原双API/Bootstrap/Coup/registration构建、1.3中文29536/1.4英文29591及17项dropdown专项PASS。仅1.4回放加载本机真实MCM UI；无原生Gauntlet/3080实机，不把托管结果当玩家全部帧峰值归因。
+- 玩家RAG GPU/RTX3080信息已纳入；末次主菜单日志没有CUDA初始化，不能据此认定显卡故障。玩家1.3.12/确切MCM版本、原生UI/帧率仍待复测。本修复未Stage、部署、打包或push，先前1.6.1汇总发行不包含它。
+- [唯一主台账/证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#mcm-reopen-lag-20261015)；[源码地图](docs/architecture/af-framework-code-scope.md#mcm-reopen-lag-20261015)。本地 `artifacts/mcm-reopen-lag-20261015/receipt.json`、`verified-candidates/`；聚焦回滚 `git revert 7e4d0d2a0`。下方历史交付按各自范围保留。
+
 # 当前交接：1.6.1 汇总发行（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
 - 已包含YJ引导新官网/删除QQ群、内政固定文案本地化、另一会话终端下拉越界修复、世界书重复ID导入修复及快报导演放宽；产品73a115e25、5af24a7e5、8093c9bb3、5d2a6aa2c。本条取代下方已包含范围的未部署/未打包状态，实机待验边界保持。

@@ -2164,3 +2164,19 @@ Roslyn `ClassDeclarationSyntax.Members` 直接语法声明（不是 semantic uni
 | `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsCoverage.cs` / `AddMissing` | 140–159 | 删除未校验 SelectedValue 闭包，由定义统一投影；四 owner、一次缓存的反射/委托和原 setter/SaveDirtyOwners 保留。 |
 | `src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalUiModels.cs` / `AnimusForgeTerminalItemVM` dropdown ctor case | 2721–2747 | 初始化 selector 时把无效索引投影为 -1，选项与真实保存索引不改。 |
 | `tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests/SupplementalChecks.cs` / `CheckDropdownSelectionBoundary`、`Run` | 93–151 | 真实定义/VM及AddMissing；空、null、无效/整数极值、正常和重选，无自动写配置。fixture不是实机；1.3.12、原生UI和旧档仍未验。 |
+
+<a id="mcm-reopen-lag-20261015"></a>
+## 主菜单 MCM 重开生命周期与下拉刷新（2026-10-15）
+
+产品/回归 `7e4d0d2a0`；完整状态、依赖SHA、测试与未验项见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#mcm-reopen-lag-20261015)。本表为该修订的一基源码坐标。
+
+| 源码 / 符号 | 行范围 | 实际责任及边界 |
+|---|---|---|
+| `src/AF.GameAdapter.Bannerlord/UI/Common/McmDropdownRuntimeRefresh.cs` / state、EnsurePatched | 35–41、105–111、166–171 | AF行与dropdown分表；启动缓存反射；原外层关闭采用postfix，等待正常行先退役；ClosedModOptionsVms弱键不永久保留窗口。 |
+| 同文件 / SettingsPropertyVmCtorPostfix、OwningPanel | 341–369 | PropertyRef原四owner筛选；只dropdown请求刷新；父窗口已关闭时晚到行立即调用原OnFinalize。取消每属性构造全表prune，不改原配置owner。 |
+| 同文件 / SettingsPropertyVmFinalizePrefix、ModOptionsVmFinalizePostfix | 371–410、441–477 | 原行finalize移除两表；外层结束只补清理属于该窗口的剩余AF行及订阅，保留其他窗口/模组。 |
+| 同文件 / RefreshAllDropdowns | 479–531 | 原Tick合并请求的快照只含活AF dropdown，空闲不扫描；原selector刷新、preset与Undo消费者保持。 |
+| `tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests/McmReopenLifecycleChecks.cs` / Run | 33–117 | 真实本机MCM托管内部VM及外层关闭/取消入口；八次关闭归零、GPU选值保留、独立面板/晚到/外模组隔离。外层父VM为初始化集合的未构造对象；无原生渲染/GPU。 |
+| `tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests/McmPageChecks.cs` / NativeUi；同目录 run.py | 61、42 | 现有真实UI回放期间接新回归；runner保留仅1.4传入本机UI程序集的边界，1.3不冒称同一UI关闭验收。 |
+
+所测1.4托管生命周期归零不能替代玩家1.3.12原生UI或3080帧性能；新增反射解析在启动、行构造/关闭边界，原请求触发刷新仍最多三轮，不新增轮询/IO。未改MCM DLL、推理或设置模式。
