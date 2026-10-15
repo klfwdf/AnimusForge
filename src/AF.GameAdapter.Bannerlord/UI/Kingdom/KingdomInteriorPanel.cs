@@ -145,7 +145,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 		+ Box("1", "56", Hair, "VerticalAlignment='Center' MarginRight='36'")
 		+ Col(StabilityTrack.ToString(), "~",
 			Row("*", "36",
-				T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_Stability", "Kingdom stability"), "~", "*", 16, Mute)
+				T("@InteriorStabilityText", "~", "*", 16, Mute)
 				+ T("@StabilityValue", "~", "*", 30, "#E6D5B4FF", heading: true, extra: "MarginLeft='10'")
 				+ T("@StabilityTierText", "~", "*", 16, "#D2876AFF", extra: "MarginLeft='8'"))
 			+ Layer("*", "6", Box("*", "*", "#352A1FFF") + Box("@StabilityBarWidth", "*", "@StabilityColor"), "MarginTop='8'"), "VerticalAlignment='Center'")
@@ -153,7 +153,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 		+ Box("1", "56", Hair, "VerticalAlignment='Center' MarginRight='36'")
 		+ Col(PowerTrack.ToString(), "~",
 			Row("*", "24",
-				T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_PowerSplit", "Kingdom power distribution"), "*", "*", 16, Mute)
+				T("@InteriorPowerSplitText", "*", "*", 16, Mute)
 				+ T("@PowerStageText", "~", "*", 16, "#C9A37AFF", "Right"))
 			+ Items("PowerSegments", "*", "12", "HorizontalLeftToRight", Box("@Width", "*", "@SegmentColor", "MarginRight='" + PowerGap + "'"), "MarginTop='8'")
 			+ Items("PowerSegments", "*", "24", "HorizontalLeftToRight",
@@ -168,7 +168,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 	private static string Catalog() => Layer("400", "*",
 		Box("*", "*", CatalogBg)
 		+ Col("*", "*",
-			T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_Title", "Interior affairs"), "*", "40", 26, Cream, heading: true, extra: "MarginLeft='22' MarginTop='14'")
+			T("@InteriorTitleText", "*", "40", 26, Cream, heading: true, extra: "MarginLeft='22' MarginTop='14'")
 			+ AgendaSection()
 			+ FactionSection(), "MarginBottom='12'"));
 
@@ -183,16 +183,16 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 	// Agendas of the player's kingdom (KingdomAgendaVM).
 	private static string AgendaSection() => "<Widget DataSource='{Agenda}' " + Size("*", "*") + " MarginTop='10'><Children>"
 		+ Col("*", "*",
-			SectionHead(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaSection", "Kingdom agendas"), "@ItemCountText")
+			SectionHead("@InteriorAgendaSectionText", "@ItemCountText")
 			+ Layer("*", "*",
 				Scroll("InteriorAgenda", Items("AgendaItems", "*", "~", "VerticalBottomToTop", AgendaRow()))
-				+ T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaEmpty", "No agenda in progress"), "*", "60", 17, Mute2, "Center", extra: "IsHidden='@HasItems' VerticalAlignment='Top' MarginTop='12'")))
+				+ T("@InteriorAgendaEmptyText", "*", "60", 17, Mute2, "Center", extra: "IsHidden='@HasItems' VerticalAlignment='Top' MarginTop='12'")))
 		+ "</Children></Widget>";
 
 	// Factions (or the grievance ledger), crown and undecided of the player's kingdom (KingdomFactionPanelVM).
 	private static string FactionSection() => "<Widget DataSource='{CivilWarFactions}' " + Size("*", "*") + " IsVisible='@IsCatalogVisible' MarginTop='16'><Children>"
 		+ Col("*", "*",
-			SectionHead(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_FactionSection", "Factions and alignments"), "@CatalogCountText")
+			SectionHead("@InteriorFactionSectionText", "@CatalogCountText")
 			+ Layer("*", "*",
 				Scroll("InteriorFaction",
 					Items("LeftTabs", "*", "~", "VerticalBottomToTop", FactionRow())
@@ -235,7 +235,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 	// The prompt sits under both dossiers; whichever entry is selected covers it with parchment.
 	private static string Dossier() => Layer("*", "*",
 		Box("*", "*", Paper)
-		+ T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_SelectHint", "Select an entry on the left to view details"), "*", "*", 26, Brown3, "Center", true)
+		+ T("@InteriorSelectHintText", "*", "*", 26, Brown3, "Center", true)
 		+ AgendaDossier()
 		+ FactionDossier(), "ClipContents='true'");
 
@@ -247,7 +247,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 			+ Box("*", "1", PaperLine, "MarginTop='14'")
 			+ Layer("*", "*",
 				Items("Options", "~", "*", "HorizontalLeftToRight", OptionCard(), "HorizontalAlignment='Center'")
-				+ T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_AgendaNoDetail", "No voting details for this agenda yet"), "*", "60", 20, Brown3, "Center", extra: "IsHidden='@HasDetail'"), "MarginTop='18'")
+				+ T("@InteriorAgendaNoDetailText", "*", "60", 20, Brown3, "Center", extra: "IsHidden='@HasDetail'"), "MarginTop='18'")
 			+ Row("*", "26",
 				T("@FooterText", "*", "*", 16, Red, "Center")
 				+ T("@DealText", "~", "*", 16, Brown2), "MarginTop='10'"),
@@ -291,7 +291,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 				Layer("34", "34", Box("*", "*", Brown3) + Image("SponsorVisual", "*", "*"), "IsVisible='@HasSponsor'")
 				+ Layer("20", "20", Image("SponsorBanner", "*", "*"), "IsVisible='@HasSponsorBanner' VerticalAlignment='Center' MarginLeft='10'")
 				+ T("@SponsorName", "~", "*", 17, Brown, extra: "MarginLeft='10'")
-				+ Chip("24", Olive, T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_Leading", "Leading"), "~", "*", 15, Light, extra: "MarginLeft='8' MarginRight='8'"), "IsVisible='@IsLeading' VerticalAlignment='Center' MarginLeft='12'"),
+				+ Chip("24", Olive, T("@InteriorLeadingText", "~", "*", 15, Light, extra: "MarginLeft='8' MarginRight='8'"), "IsVisible='@IsLeading' VerticalAlignment='Center' MarginLeft='12'"),
 				"HorizontalAlignment='Center'")
 			+ T("@Name", "*", "34", 24, Ink, "Center", true, "MarginTop='8'")
 			+ Layer(SupportTrack.ToString(), "30",
@@ -354,13 +354,13 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 		"IsVisible='@IsFactionTab' MarginTop='10'");
 
 	private static string FiguresBand() => Row("*", "104",
-		Figure(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_FigureGrievance", "Faction grievance"), "@FigureGrievance", "/ 100", "@FigureGrievanceNote", true)
-		+ Figure(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_FigurePower", "Faction military power"), "@FigurePower", "@FigurePowerUnit", "", false)
-		+ Figure(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_FigureRefusals", "Refused by the king"), "@FigureRefusals", "@FigureRefusalUnit", "", false)
+		Figure("@InteriorFigureGrievanceText", "@FigureGrievance", "/ 100", "@FigureGrievanceNote", true)
+		+ Figure("@InteriorFigurePowerText", "@FigurePower", "@FigurePowerUnit", "", false)
+		+ Figure("@InteriorFigureRefusalsText", "@FigureRefusals", "@FigureRefusalUnit", "", false)
 		+ Layer("*", "*",
 			Box("*", "*", "#D3C3A1FF")
 			+ Col("*", "~",
-				T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_RecentChronicle", "Recent chronicle"), "*", "22", 15, Brown3)
+				T("@InteriorRecentChronicleText", "*", "22", 15, Brown3)
 				+ T("@FigureSource1", "*", "22", 15, Ink, extra: "MarginTop='4'")
 				+ T("@FigureSource2", "*", "22", 15, Brown), "MarginLeft='16' MarginRight='16' MarginTop='8'")),
 		"IsVisible='@IsFactionTab' MarginTop='10'");
@@ -378,7 +378,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 	// Formation conditions + recent chronicle (ledger entry only).
 	private static string LedgerBand() => Row("*", "80",
 		Col("*", "*",
-			T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_FormationConditions", "Formation conditions"), "*", "28", 19, Ink2, heading: true)
+			T("@InteriorFormationConditionsText", "*", "28", 19, Ink2, heading: true)
 			+ Items("Conditions", "*", "28", "HorizontalLeftToRight",
 				Row("~", "*",
 					Box("9", "9", "@MarkColor", "VerticalAlignment='Center'")
@@ -387,7 +387,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 					+ T("@Value", "~", "*", 16, Red, extra: "IsHidden='@IsMet' MarginLeft='6'"), "MarginRight='28'"), "MarginTop='10'"))
 		+ Box("1", "56", PaperLine, "VerticalAlignment='Center' MarginRight='36'")
 		+ Col("560", "*",
-			T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_RecentChronicle", "Recent chronicle"), "*", "28", 19, Ink2, heading: true)
+			T("@InteriorRecentChronicleText", "*", "28", 19, Ink2, heading: true)
 			+ T("@SourceLine1", "*", "24", 15, Brown, extra: "MarginTop='4'")
 			+ T("@SourceLine2", "*", "24", 15, Brown3)),
 		"IsVisible='@IsLedgerTab' MarginTop='10'");
@@ -398,18 +398,18 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 			T("@TableTitle", "~", "*", 20, Ink, heading: true)
 			+ Layer("*", "*", "")
 			+ Row("~", "*",
-				Pager("ExecutePrevPage", KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_PrevPage", "Previous"), "@HasPrevPage")
+				Pager("ExecutePrevPage", "@InteriorPrevPageText", "@HasPrevPage")
 				+ T("@PageText", "~", "*", 15, Ink2, extra: "MarginLeft='14' MarginRight='14'")
-				+ Pager("ExecuteNextPage", KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_NextPage", "Next"), "@HasNextPage"), "IsVisible='@HasPages'"))
+				+ Pager("ExecuteNextPage", "@InteriorNextPageText", "@HasNextPage"), "IsVisible='@HasPages'"))
 		+ Layer("*", "32",
 			Box("*", "*", "#C9B892FF")
 			+ Row("*", "*",
-				T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_TableClan", "Clan"), "*", "*", 15, "#5E4A32FF")
-				+ T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_TableStance", "Stance"), "170", "*", 15, "#5E4A32FF")
-				+ T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_TableReason", "Main grievance source"), "200", "*", 15, "#5E4A32FF")
+				T("@InteriorTableClanText", "*", "*", 15, "#5E4A32FF")
+				+ T("@InteriorTableStanceText", "170", "*", 15, "#5E4A32FF")
+				+ T("@InteriorTableReasonText", "200", "*", 15, "#5E4A32FF")
 				+ T("@GrievanceTitle", "300", "*", 15, "#5E4A32FF")
-				+ T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_TablePower", "Power"), "90", "*", 15, "#5E4A32FF", "Right")
-				+ T(KingdomFactionUiText.T("AF_KINGDOM_UI_Interior_TableRelation", "With king"), "100", "*", 15, "#5E4A32FF", "Right"), "MarginLeft='12' MarginRight='12'"))
+				+ T("@InteriorTablePowerText", "90", "*", 15, "#5E4A32FF", "Right")
+				+ T("@InteriorTableRelationText", "100", "*", 15, "#5E4A32FF", "Right"), "MarginLeft='12' MarginRight='12'"))
 		+ Items("Rows", "*", "~", "VerticalBottomToTop", TableRow()), "MarginTop='10'");
 
 	private static string TableRow() => Layer("*", "36",

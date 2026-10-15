@@ -480,19 +480,10 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public string AF_UI_Onboarding_Prefab_011Text => Localize("{=AF_UI_Onboarding_Prefab_011}3. Get an API key and credits (open website)");
 
 	[DataSourceProperty]
-	public string AF_UI_Onboarding_Prefab_012Text => Localize("{=AF_UI_Onboarding_Prefab_012}Open the YJ API key management and credit pages in your browser, then return and enter the key.");
+	public string AF_UI_Onboarding_Prefab_012Text => Localize("{=AF_UI_Onboarding_Prefab_012}Open https://www.shenlanqaq.com/ to get an API key and credits, then return and enter the key.");
 
 	[DataSourceProperty]
 	public string AF_UI_Onboarding_Prefab_013Text => Localize("{=AF_UI_Onboarding_Prefab_013}Open website ↗");
-
-	[DataSourceProperty]
-	public string AF_UI_Onboarding_Prefab_014Text => Localize("{=AF_UI_Onboarding_Prefab_014}4. Copy the YJ player QQ group number");
-
-	[DataSourceProperty]
-	public string AF_UI_Onboarding_Prefab_015Text => Localize("{=AF_UI_Onboarding_Prefab_015}Group: 1097237977. The group provides credit promotions, answers, and maintenance notices.");
-
-	[DataSourceProperty]
-	public string AF_UI_Onboarding_Prefab_016Text => Localize("{=AF_UI_Onboarding_Prefab_016}Copy group number 📋");
 
 	[DataSourceProperty]
 	public string AF_UI_Onboarding_Prefab_017Text => Localize("{=AF_UI_Onboarding_Prefab_017}1. Main API (character dialogue)");
@@ -961,22 +952,8 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	public void ExecuteOpenYjWeb()
 	{
-		ExternalBrowserLauncher.TryOpen("https://yjapi.manqiaotechnology.com/keys", out _, out _);
-		ExternalBrowserLauncher.TryOpen("https://pay.ldxp.cn/shop/OF6AKWNI", out _, out _);
-		ShowToast(new TextObject("{=AF_UI_Onboarding_YjOpenManagement}Opening the YJ API key management and credit page...").ToString());
-	}
-
-	public void ExecuteCopyQqGroup()
-	{
-		try
-		{
-			TaleWorlds.InputSystem.Input.SetClipboardText("1097237977");
-			ShowToast(new TextObject("{=AF_UI_Onboarding_QqCopied}YJ QQ group number copied: 1097237977").ToString());
-		}
-		catch
-		{
-			ShowToast(new TextObject("{=AF_UI_Onboarding_QqCopyFailed}Could not copy the group number. Add it manually: 1097237977").ToString());
-		}
+		ExternalBrowserLauncher.TryOpen(YjEndpointProbe.WebsiteUrl, out _, out _);
+		ShowToast(new TextObject("{=AF_UI_Onboarding_YjOpenManagement}Opening the YJ website...").ToString());
 	}
 
 	// ================= Actions: Model Fetching =================

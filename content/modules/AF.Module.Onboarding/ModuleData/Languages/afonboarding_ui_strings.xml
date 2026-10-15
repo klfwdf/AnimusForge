@@ -62,13 +62,11 @@
     <string id="AF_ONBOARDING_BACK_RECONFIGURE_HINT" text="Return to the AnimusForge API reconfiguration menu." />
     <string id="AF_ONBOARDING_BACK_WELCOME_HINT" text="Return to the AnimusForge first-use API setup menu." />
     <string id="AF_ONBOARDING_YJ_ACCOUNT" text="Get an API key and buy credits" />
-    <string id="AF_ONBOARDING_YJ_ACCOUNT_HINT" text="Open the YJ API key management and credit purchase pages." />
+    <string id="AF_ONBOARDING_YJ_ACCOUNT_HINT" text="Open the YJ website to get an API key and credits." />
     <string id="AF_ONBOARDING_YJ_MULTI" text="Multiple API key groups" />
     <string id="AF_ONBOARDING_YJ_MULTI_HINT" text="Enter one key for each API group and fetch models for each group." />
     <string id="AF_ONBOARDING_YJ_SINGLE" text="Single API key group" />
     <string id="AF_ONBOARDING_YJ_SINGLE_HINT" text="Enter one key to fill all four APIs; models are still fetched and selected separately." />
-    <string id="AF_ONBOARDING_YJ_COPY_QQ" text="Copy YJ relay QQ group" />
-    <string id="AF_ONBOARDING_YJ_COPY_QQ_HINT" text="Copy QQ group " />
     <string id="AF_ONBOARDING_TO_CLIPBOARD" text=" to the clipboard." />
     <string id="AF_ONBOARDING_YJ_MENU" text="YJ API relay" />
     <string id="AF_ONBOARDING_YJ_MENU_FAILED" text="Failed to open the YJ API relay menu: " />
@@ -86,11 +84,9 @@
     <string id="AF_ONBOARDING_YJ_LATENCY_BODY" text="Comparing three YJ routes. After the test, choose a connection method.&#10;No key is sent and no model generation is performed." />
     <string id="AF_ONBOARDING_RECONFIGURE_BODY" text="You are reconfiguring APIs from the AnimusForge terminal.&#10;&#10;This flow writes and tests the primary, preprocessing, postprocessing, weekly report, and rebellion APIs, then returns to the game without database import or first-use setup." />
     <string id="AF_ONBOARDING_QUICK_SETUP_BODY" text="Choose an API setup method for first use.&#10;&#10;A recommended preset fills the Base URL, model, reasoning, and temperature for all required APIs; you only need to enter one API key." />
-    <string id="AF_ONBOARDING_YJ_BODY" text="【Required before playing】&#10;Open the key management and credit pages from “Get an API key and buy credits”; create a valid key and add enough credits.&#10;&#10;Without a valid key or credits, models cannot be fetched, connection tests cannot pass, and AI gameplay is unavailable.&#10;A single-group key is entered once; multi-group mode requires one key per API." />
+    <string id="AF_ONBOARDING_YJ_BODY" text="【Required before playing】&#10;Open the YJ website from “Get an API key and buy credits”; create a valid key and add enough credits.&#10;&#10;Without a valid key or credits, models cannot be fetched, connection tests cannot pass, and AI gameplay is unavailable.&#10;A single-group key is entered once; multi-group mode requires one key per API." />
     <string id="AF_ONBOARDING_YJ_RECONFIGURE_SUFFIX" text="&#10;&#10;Terminal API reconfiguration is active: after all four APIs pass, the game resumes without database import." />
-    <string id="AF_ONBOARDING_YJ_QQ_COPIED" text="YJ community QQ group copied to clipboard: " />
-    <string id="AF_ONBOARDING_YJ_QQ_COPY_FAILED" text="Could not copy the QQ group; copy it manually: " />
-    <string id="AF_ONBOARDING_YJ_KEY_PAGE" text="API key management" />
+    <string id="AF_ONBOARDING_YJ_KEY_PAGE" text="YJ website" />
     <string id="AF_ONBOARDING_YJ_CREDIT_PAGE" text="Credit purchase" />
     <string id="AF_ONBOARDING_SYSTEM_YJ_FALLBACK" text="[System] The default browser could not start; opened the YJ API " />
     <string id="AF_ONBOARDING_SYSTEM_YJ_OPENING" text="[System] Opening the YJ API " />
