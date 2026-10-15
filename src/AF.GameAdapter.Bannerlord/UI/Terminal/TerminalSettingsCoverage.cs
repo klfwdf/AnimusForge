@@ -128,6 +128,13 @@ internal static class TerminalSettingsCoverage
         return 100 + binding.GroupOrder * 100 + binding.Attribute.Order;
     }
 
+    internal static int ViewGroupOrder(string id)
+    {
+        if (!BindingById.Value.TryGetValue(id, out Binding binding)) return 0;
+        if (binding.Owner == nameof(IllustratorSettings) && binding.Group.IndexOf("AF_ILL_GROUP_IMAGE_API", StringComparison.Ordinal) >= 0) return 50;
+        return binding.Group.IndexOf("AF_MCM_TownAmbient_AiGroup", StringComparison.Ordinal) >= 0 ? 60 : 0;
+    }
+
     private static string Label(string key, string fallback) => new TextObject("{=" + key + "}" + fallback).ToString();
 
     internal static void AddMissing(List<TerminalSettingDef> definitions)

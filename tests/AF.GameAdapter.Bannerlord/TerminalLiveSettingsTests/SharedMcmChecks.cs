@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -37,7 +38,8 @@ static class SharedMcmChecks
         var providerField = typeof(GenericServiceProvider).GetField("GlobalServiceProvider", All);
         var previous = providerField.GetValue(null);
         var files = new Files(Path.Combine(module, "SharedDocuments", "Mount and Blade II Bannerlord"));
-        providerField.SetValue(null, new Discovery(files));
+        var discovery = new Discovery(files);
+        providerField.SetValue(null, discovery);
         var originalOwner = TerminalProviderProbe.Owners[duel.Id];
         var originalSave = TerminalProviderProbe.OnSave;
         var harmony = new Harmony("af.tests.shared.mcm.userpath");
@@ -122,6 +124,28 @@ static class SharedMcmChecks
             var foreign=files.GetDirectory(files.GetDirectory(files.GetModSettingsDirectory(),"Global"),"OtherMod");
             check((bool)save.Invoke(format,new object[]{restored,foreign,"foreign"}) && File.Exists(files.GetSystemPath(new GameFile(foreign,"foreign.json"))),"foreign directory is not rerouted");
             check(File.ReadAllText(moduleMain)=="{\"MinimumPositiveNpcRelationGain\":99}","module business config is untouched");
+            var previousLookup = TerminalProviderProbe.Lookup;
+            try
+            {
+                TerminalProviderProbe.Lookup = id => discovery.Container.GetSettings(id);
+                var pageType = af.GetType("AnimusForge.AnimusForgeMcmPages", true);
+                var register = pageType.GetMethod("RegisterPages", All);
+                register.Invoke(null, null);
+                var ids = new[] { "AnimusForge_Api_UI_v1", "AnimusForge_Terminal_UI_v1" };
+                check(ids.All(id => discovery.Container.GetSettings(id) != null), "both views register through actual MCM fluent container");
+                check((bool)af.GetType("AnimusForge.AnimusForgeMcmVisibility", true).GetField("RestoredPagesReady", All).GetValue(null), "original entries replaced only after both view registrations succeed");
+                register.Invoke(null, null);
+                check(discovery.Container.SettingsDefinitions.Count() == 2, "reopening registers exactly two fresh views");
+                TerminalProviderProbe.Saved.Clear();
+                foreach (string id in ids)
+                {
+                    var view = discovery.Container.GetSettings(id);
+                    check(discovery.Container.SaveSettings(view), "native MCM container saves view " + id);
+                    check(!File.Exists(OwnerPath(view)), "view never creates duplicate business JSON " + id);
+                }
+                check(new HashSet<string>(TerminalProviderProbe.Saved).SetEquals(TerminalProviderProbe.Owners.Keys), "view saves route to four original disk owners");
+            }
+            finally { TerminalProviderProbe.Lookup = previousLookup; }
         }
         finally
         {

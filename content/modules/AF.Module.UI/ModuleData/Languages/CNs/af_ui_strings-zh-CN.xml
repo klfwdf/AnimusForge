@@ -169,6 +169,8 @@
   <string id="AF_MCM_TownAmbient_Usage" text="显示环境 AI 用量提示" />
   <string id="AF_MCM_TownAmbient_Usage_Hint" text="每次环境 AI 回复完成后显示本次估算输入/输出 Token 和本次启动累计用量；建议保持开启。" />
   <string id="AF_MCM_Main_DisplayName" text="AnimusForge设置" />
+  <string id="AF_MCM_API_PAGE" text="AnimusForge API设置" />
+  <string id="AF_MCM_TERMINAL_PAGE" text="AnimusForge终端设置" />
   <string id="AF_MCM_Support_Group" text="0. 支持" />
   <string id="AF_MCM_Support_Button" text="支持Animusforge制作组" />
   <string id="AF_MCM_Support_Content" text="打开爱发电" />

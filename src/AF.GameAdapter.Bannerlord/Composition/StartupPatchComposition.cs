@@ -16,6 +16,7 @@ internal static class StartupPatchComposition
 			try
 			{
 				AnimusForgeMcmVisibility.EnsurePatched(harmony);
+				AnimusForgeMcmPages.EnsurePatched(harmony);
 			}
 			catch (Exception mcmVisibilityEx)
 			{

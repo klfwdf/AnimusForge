@@ -38,6 +38,7 @@ if not a.baseline:
     sources.append(Path(__file__).with_name('SupplementalChecks.cs'))
     sources.append(Path(__file__).with_name('SceneTerminalChecks.cs'))
     sources.append(Path(__file__).with_name('SharedMcmChecks.cs'))
+    sources.append(Path(__file__).with_name('McmPageChecks.cs'))
 items = ''.join('<Compile Include="' + escape(str(f)) + '" />' for f in sources)
 items += ''.join('<Reference Include="' + f.stem + '"><HintPath>' + escape(str(f)) + '</HintPath>' + ('<Private>false</Private>' if f == copy else '') + '</Reference>' for f in [copy, deps / '0Harmony.dll', deps / 'MCMv5.dll', deps / 'Newtonsoft.Json.dll', framework / 'Facades/netstandard.dll'])
 (out / 'Probe.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><LangVersion>latest</LangVersion><PlatformTarget>x64</PlatformTarget><DefineConstants>' + ('AF_BASELINE' if a.baseline else '') + '</DefineConstants><EnableDefaultCompileItems>false</EnableDefaultCompileItems><AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages><FrameworkPathOverride>' + escape(str(framework)) + '</FrameworkPathOverride><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup>' + items + '</ItemGroup></Project>')
@@ -50,6 +51,7 @@ if not code:
     command = [str(out / 'bin/Debug/net472/Probe.exe'), str(copy), str(module), str(refs), str(deps)]
     if a.api == '1.4' and not a.baseline:
         command.append(str(ui))
+        command.append(str(ui.parents[2] / 'Bannerlord.ButterLib/bin/Win64_Shipping_Client'))
     run = subprocess.run(command, cwd=out, capture_output=True, text=True, encoding='utf-8', errors='replace', env=dict(env, AF_TEST_MODULE_ROOT=str(module), ANIMUSFORGE_DATA_ROOT=str(module)))
     code = run.returncode
     (out / 'run.log').write_text(run.stdout + run.stderr, encoding='utf-8')

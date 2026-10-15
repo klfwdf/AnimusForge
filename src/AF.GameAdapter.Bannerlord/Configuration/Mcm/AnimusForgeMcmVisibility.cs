@@ -14,6 +14,7 @@ namespace AnimusForge;
 // presets and serialization retain the complete property set and original values.
 internal static class AnimusForgeMcmVisibility
 {
+    internal static bool RestoredPagesReady;
     private const string MainId = "AnimusForge_global_settings";
     private const string IllustratorId = "AnimusForge_Illustrator_v1";
     private const string DialogueUiId = "AnimusForge_DialogueUI_v1";
@@ -149,7 +150,7 @@ internal static class AnimusForgeMcmVisibility
     {
         if (!IsOwnedId(settingsId)) return true;
         if (settingsId == DialogueUiId || settingsId == CoupId) return false;
-        if (settingsId == IllustratorId) return HasGroup(rawGroup, IllustratorGroups);
+        if (settingsId == IllustratorId) return propertyId != "UseExactEndpointUrl" && HasGroup(rawGroup, IllustratorGroups);
         if (AmbientApiProperties.Contains(propertyId))
             return !string.IsNullOrEmpty(rawGroup) && rawGroup.IndexOf("{=AF_MCM_TownAmbient_AiGroup}", StringComparison.Ordinal) >= 0;
         return !MainNonApiProperties.Contains(propertyId) && HasGroup(rawGroup, MainGroups);
@@ -168,6 +169,7 @@ internal static class AnimusForgeMcmVisibility
     {
         if (__0 == null || __0.GetType() != _entryType) return true;
         string id = _entryId(__0);
+        if (RestoredPagesReady && IsOwnedId(id)) return false;
         return id != DialogueUiId && id != CoupId;
     }
 }
