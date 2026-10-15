@@ -1,3 +1,10 @@
+<a id="reload-skip-dynamic-kingdoms-20261016"></a>
+## 数据库重载跳过不匹配的动态王国（2026-10-16，ACTIVE）
+
+- 用户截图报告动态国家ID相同名称不同导致整包重载失败，随后要求可跳过。基线main/e1da989fd，跟踪文件干净；Microsoft/NuGet保留。仅对无法匹配的动态ID（new_kingdom/rebel_kingdom/rebellion_）跳过该包记录，其余资料继续；静态王国不匹配、损坏/重复资料保持拒绝。无实机/具体玩家包证据，不猜改王国名字或ID。
+- 已确认仅continue不足：原应用会重置所有候选王国，故须同时跳过这些ID的候选规范化与默认重置，保留存档原王国资料；允许包中王国条目全部为被跳过动态记录时继续其他数据库域。确认/结果CN/EN显示跳过数量及最多8个名称/ID，未被跳过的缺包王国原重置行为保持。
+- 涉及KingdomStrategicProfileBehavior计划/应用及瞬态plan、DeveloperImportUiController确认UI、成对资源和定向回归；不改.sav键/类型或数据库包、不新增Tick/网络/扫描。一次显式重载沿用现有世界索引/候选克隆，额外O(1) HashSet查询。退出门：真实生产方法回放覆盖跳过/保留/全跳过/失败不落地和原校验，原协调器回归及双API/Bootstrap构建PASS，实机与旧档明确未验。未授权部署/打包/push；本地证据artifacts/reload-skip-dynamic-kingdoms-20261016/。
+
 <a id="retire-hidden-illustrator-api-20261016"></a>
 ## 退役隐藏的独立导演API与完整路径开关（2026-10-16，OFFLINE_VERIFIED / LOCAL_MCM_CLEANED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
