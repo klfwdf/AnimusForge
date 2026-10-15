@@ -1,3 +1,9 @@
+# 当前交接：城镇记忆已对齐最新 main（2026-10-16，OFFLINE_VERIFIED / MAIN_PUSH_PENDING / LIVE_PENDING）
+
+- 用户明确要求检查最新 main 后直接推送 main，GCCZ 村庄由后续单独对接。产品 `29cf6313` 仅移入七日近期记录及300–600字统治者记忆；不合入旧功能分支的村庄、Parade、TTS等累计改动。基线e1da989f，随后无冲突合入远端d7919dda，集成提交35b0be9e。
+- 158项核心/宿主回放、16项接线、分块读写/当前持久化契约和辅助预算检查PASS；合并后原1.3/1.4/Bootstrap及双Coup/注册构建PASS。GCCZ村庄仅留AF负面处置收据入口，无执行端接线；无实机、玩家.sav、provider、部署或打包验收。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#town-memory-main-20261016)与[代码范围](docs/architecture/af-framework-code-scope.md#town-memory-main-20261016)。后续村庄接线契约见[城镇记忆桥接说明](docs/gccz/bridge/town-rule-memory-bridge.md#seven-day-recent-memory)。本地证据artifacts/town-memory-main-20261016/，最终远端SHA与推送核对另记receipt.json。此交付范围取代旧分支7085dd76的累计发布方案。
+
 # 当前交接：数据库重载可跳过不匹配动态王国（2026-10-16，OFFLINE_VERIFIED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 产品35c6ad013：仅跳过无法匹配的动态王国profile，其他数据库继续；被跳过ID免除candidate规范化/默认重置，保留原profile。支持王国源全跳过，原静态/格式/重复校验不变；确认及完成CN/EN显示数量和最多8对象，无新增Tick工作。

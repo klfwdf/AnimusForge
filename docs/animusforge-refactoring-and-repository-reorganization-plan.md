@@ -1,3 +1,16 @@
+<a id="town-memory-main-20261016"></a>
+## 城镇记忆直接集成 main（2026-10-16，OFFLINE_VERIFIED / MAIN_PUSH_PENDING / LIVE_PENDING）
+
+- **授权与范围**：用户要求以最新AF源码检查后直接推送main，GCCZ村庄以后对接。新工作树从e1da989f开始，意图d616f230；仅迁入产品29cf6313（21个生产/资源/回归/持久化清册文件）。未合并旧分支7085dd76的累计产品树或本地历史；不引入村庄玩法、Parade、TTS、旧设置路径及旧导演API实现。远端期间新增d7919dda的动态王国重载修复，35b0be9e无冲突合入并重新双版本构建；原main的新设置/对话/外交修复均保留。
+- **功能**：近期事实独立于最多三任统治者记忆，保留当前日及前六个日历日；原版村庄劫掠、强迫物资/征兵、城镇攻占和战后宽恕/掠夺/毁坏按已发生事件入库。GCCZ城镇沿现有生效路径记录标签，重复确认不重复追加，迁殖在文化提交后记录。日期为〔XXXX年X季X日〕，村庄句为“XXX对XXX城的XXX村庄执行了XXXX。”；城镇句为“XXX对XXX城执行了XXXX。”。村民/商队只汇总队数，不公开队伍身份；覆盖不足明确总数未知。
+- **村庄边界**：AF只预留VillageAction(village, actionId, receipt)，接受九种稳定负面ID和非空完成收据；已去除对未合入GCCZ村庄枚举/目录的依赖。本次没有村庄执行端调用，fixture中成功记录不代表已接通实际GCCZ村庄；未来仅在真实执行后、主线程调用，禁止把模型标签/提议/取消当完成。
+- **长期正文与对象**：新自动正文300–600字符，中文/英文资源同步；旧短正文、手工正文及三任上限保持。辅助请求上限1536输出tokens并遵从更低用户限额，禁思考/兼容重试规则保持。近期事实无新增API请求；专用城镇对话、既有合格的本地市民/商人/酒馆人员/本地要人/现任领主和百科接同一事实，普通渠道资格与场景限制保持。
+- **旧档与性能**：独立严格分块键_gcczTownRecentMemory_v1，每块12000 UTF-8字节；损坏/未知版本停用该域并保留证据，证据不完整或不安全则拒绝以空状态覆盖。首次旧档载入仅一次扫描七日原版可证日志，不推测GCCZ旧标签/商队历史；旧玩家战后记录无法区分GCCZ内部宽恕，保守不补写。事件驱动、每日清理及显示时目标城镇裁剪；缓存一次反射，未增加逐帧扫描/后台游戏对象读取/网络。
+- **验证**：实际核心及宿主fixture158项PASS，日期/九负面ID/拒绝正面与缺收据/去重/跨日到期/旧日志/分块损坏保护/CN-EN/300和600边界/旧短及手工正文均覆盖；接线16项PASS；PersistenceChunkReplayTests PASS；current-chunk-contract-only PASS（22 chunked/47 flattened/0 known open direct JSON risks）；实际辅助方法预算回放PASS（高配置限至1536、低128保留、最小16）。这些回放不是实机或provider测试。
+- **构建**：未修改的scripts/build/build_single_module.ps1，Debug、1.3引用现有_deps_auto、1.4引用game-1.4.8-refs，实际依赖/候选SHA在本地receipt.json。初次及35b0be9e合并后构建均exit0；两实现各367警告、0错误，Bootstrap2警告、0错误，双Coup及registration门禁PASS。不从目录名推定所有游戏补丁版已验。
+- **证据与交付边界**：artifacts/town-memory-main-20261016/{town-memory-tests.log,persistence-replay.log,dual-build.log,merged-dual-build.log,receipt.json}均本地ignored；本次不上传日志/DLL/玩家存档/设置。不部署、Stage、打包、调用AF API或改玩家存档；实机对话与玩家旧档仍待验。源码回退以git revert 29cf6313聚焦撤销，保留main其他修复；旧程序不会消费新近期记忆键，回退后新功能记录不能据此声明受保护。
+- **源码坐标**：见[唯一代码范围图](architecture/af-framework-code-scope.md#town-memory-main-20261016)；[桥接说明及待接村庄契约](gccz/bridge/town-rule-memory-bridge.md#seven-day-recent-memory)。推送授权已明确，完成最终范围/远端核对后直接普通push main；最终结果由后续补记及本地receipt.json记录。
+
 <a id="reload-skip-dynamic-kingdoms-20261016"></a>
 ## 数据库重载跳过不匹配的动态王国（2026-10-16，OFFLINE_VERIFIED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 

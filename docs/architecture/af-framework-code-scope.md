@@ -1,3 +1,17 @@
+<a id="town-memory-main-20261016"></a>
+### 七日城镇事实与300–600字统治者记忆（产品29cf6313；main集成35b0be9e）
+
+[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#town-memory-main-20261016)登记最新main、验证证据、推送与未验边界；GCCZ村庄执行端本次未接。
+
+| 一基坐标 / 符号 | 实际责任与边界 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/TownRecentMemoryStore.cs:15–118` Start/Add/Arrival/Restore/IsRecordedVillageAction | 七日值状态、收据去重、到访聚合、原子恢复及九种负面ID；独立于三任统治者上限 |
+| `AnimusForge.SiegeAftermathIntervention/TownRecentMemoryText.cs:53–81` FormatFact/Build；`TownPromptTextCatalog.cs:15,349`；`content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.{zh-CN,en,en-US}.json:345–384` | 日期/城村精确句式、CN/EN、匿名到访总数/缺覆盖，动态名字按字面保留；既有包映射和UI/Prompt语言分离 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/GcczTownRecentMemoryBridge.cs:26–80` Register/SyncData；`:82–151` 原版日志/事件；`:156–161` VillageAction；`:168–193` Record/Build | Campaign事件与严格分块、坏域证据保留；旧日志限已知事实。VillageAction仅同DLL待接入口，非新公开外部API，无GCCZ村庄运行时调用 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs:449,590,8574,8727,8823,14602–14603`；`SiegeAiInterventionBehavior.TownRuleMemoryEvents.cs:15,25,41`；`GcczTownRuleMemoryRuntimeBridge.cs:112,151,188` | 原owner读写/新局重置、城镇处置生效路径、攻占/原版战后事件；专用/普通合格对话及百科投影，不扩大场景/说话人资格 |
+| `AnimusForge.SiegeAftermathIntervention/SettlementRuleMemoryNarrativePolicy.cs:11–12`；`src/bridges/Siege/RuleMemory/GcczTownRuleMemoryGenerationBridge.cs:63` | 自动新正文300–600字符与1536输出token上限；原刷新/异步/人工保护规则保持，不新增近期事实生成请求 |
+| `tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests/RecentMemoryReplay.cs:25–152`；`Program.cs:94–132`；`verify_recent_wiring.py` | 实际核心/宿主源、原生对象fixture与假辅助传输；覆盖值/存档/事件/格式/资格接线，不证明实机.sav/provider效果 |
+
 <a id="reload-skip-dynamic-kingdoms-20261016"></a>
 ### 数据库重载跳过动态王国（产品35c6ad013）
 
