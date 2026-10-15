@@ -1,3 +1,11 @@
+<a id="yj-interior-ui-20261015"></a>
+## YJ引导入口与内政固定文案修复（2026-10-15，ACTIVE）
+
+- 用户要求YJ预设删除第四条玩家QQ群，第三条改为https://www.shenlanqaq.com/；追加截图报告CN内政页固定标题、表头和翻页按钮英文。只处理这两条UI链路，不改AI接口地址、政治规则、布局尺寸或玩家配置。
+- 基线main/e6a7afae9；其他会话知识库导入、重载及其测试的八份未提交改动保留，不纳入本次提交。未跟踪Microsoft/、NuGet/保持。
+- 内政21个中英文文案资源已完整存在；旧布局构建阶段调用TextObject.ToString并将结果固化在Text属性。计划改为真实DataSource属性，在显示时读取语言，不新增Tick工作、扫描、IO或翻译缓存。
+- 退出条件：YJ实际入口与CN/EN说明/XML绑定核查；内政预先构建布局后切换CN/EN的真实DLL回放；原入口双API/Bootstrap验证。未授权部署、打包或push，实机外观另列未验。
+
 <a id="weekly-director-relaxation-20261015"></a>
 ## 快报导演误判回退放宽（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
