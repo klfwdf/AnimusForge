@@ -1,3 +1,9 @@
+# 当前交接：同版本1.6.1双包与推送完成（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
+
+- 包含投降74be66074、流式20字/秒与正文滚动21e0a6a2b、MCM生命周期7e4d0d2a0及此前完整源码，保持v1.6.1。源码已普通推送到origin/main并独立核对；最终收据文档随后同步，最终远端SHA见本地push收据。本条取代下方已包含范围的未打包/未推送状态。
+- 原NoBump双包完整语言/布局/投影门禁及独立ZIP核对PASS；CN/EN各3522项，包内三DLL等于冻结部署候选，版本源、完整Stage和10个旧包保持。包在`一键编译覆盖推送/packages/AnimusForge_v1.6.1_{CN,EN}_1015_2257.zip`，没有上传安装包或再次部署。
+- [唯一主台账/包与推送证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#package-push-surrender-streaming-20261015)；本地`artifacts/package-surrender-streaming-20261015/receipt.json`及`artifacts/push-surrender-streaming-20261015/receipt.json`。未实机/真实provider/TTS/旧档验收；旧包保留，安装回退仍需人工并保护玩家数据。
+
 # 当前交接：投降及其他会话改动已统一部署（2026-10-15，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户授权带其他会话改动编译部署；完整main/99fde4dba已部署到F盘单模块AnimusForge，包含投降74be66074、流式20字/秒和正文滚动21e0a6a2b、MCM生命周期7e4d0d2a0及此前改动。版本仍v1.6.1，更新10项文件；本条替代下方相关“未部署”状态。
