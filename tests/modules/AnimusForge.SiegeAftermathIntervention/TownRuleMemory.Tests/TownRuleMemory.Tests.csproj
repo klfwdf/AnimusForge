@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json" HintPath="$(MSBuildToolsPath)/Newtonsoft.Json.dll" />
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/GcczTownRecentMemoryBridge.cs" Link="ProductionRecentMemoryBridge.cs" />
     <ProjectReference Include="../../../../AnimusForge.SiegeAftermathIntervention/AnimusForge.SiegeAftermathIntervention.csproj" />
     <Compile Include="../../../../src/bridges/Siege/RuleMemory/GcczTownRuleMemoryGenerationBridge.cs" Link="ProductionGenerationBridge.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/GcczTownRuleMemoryRuntimeBridge.cs" Link="ProductionRuntimeBridge.cs" />
