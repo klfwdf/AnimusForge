@@ -1,3 +1,10 @@
+<a id="deploy-en-current-20261016"></a>
+## 当前源码EN部署（2026-10-16，ACTIVE / LIVE_PENDING）
+
+- 用户明确要求部署EN版；基线main/d7919dda6，跟踪文件干净，Microsoft/NuGet保留。目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，维持v1.6.1，包含隐藏导演配置退役和动态王国重载跳过修复。不打包、不push、不改版本或原构建部署入口。
+- 复用原统一双API/Bootstrap构建及干净Stage、完整CN/EN投影门禁；英文投影写入本地独立候选，按原Invoke-ManagedStageDeployment部署。保留CustomPrompts、Configs、终端设置、时间较新PlayerExports及未列管文件，禁止镜像删除；无部署Recovery或自动回滚。验证原候选/安装三DLL、投影逐项、玩家资料保护、ONNX和原版DLL。实机/真实provider/旧档不属于离线部署通过结论。
+- 本地证据artifacts/deploy-en-current-20261016/；完成后更新本条及HANDOFF。安装回退需人工使用旧包并保护玩家数据，不能仅凭旧hash还原文件。
+
 <a id="reload-skip-dynamic-kingdoms-20261016"></a>
 ## 数据库重载跳过不匹配的动态王国（2026-10-16，OFFLINE_VERIFIED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
