@@ -1,3 +1,9 @@
+# 当前交接：隐藏的生图API配置已退役（2026-10-16，OFFLINE_VERIFIED / LOCAL_MCM_CLEANED / LIVE_PENDING / NOT_DEPLOYED）
+
+- 产品8c7619e22：此前仅隐藏控件，旧独立导演URL/Key/模型与exact路由仍生效；现删除设置、专属抓取/缓存和执行分支，导演构图只用主API，保留普通生图/带图/标准端点自动识别。CN/EN及仓内规范同步，无Tick新增工作。
+- 旧DLL负控复现旧值覆盖；新1.3中文29541、1.4英文29596项native MCM/终端检查及两API各117项实际DLL内存HTTP请求回放PASS；原双API/Bootstrap/Coup/注册构建PASS。旧全请求测试的无关展示构造器仍不兼容，只有request-only范围计PASS。实机/provider/出图/旧档未验，未部署/打包/push；此前安装和2257包不含本改动。
+- Documents只清本机Illustrator MCM JSON的5废弃字段，其余23值保留；原文件私密备份在本地ignored private-mcm-before/。旧安装可能重新保存旧字段，永久退役须安装新DLL。[唯一台账/收据及恢复](docs/animusforge-refactoring-and-repository-reorganization-plan.md#retire-hidden-illustrator-api-20261016)；[源码地图](docs/architecture/af-framework-code-scope.md#retire-hidden-illustrator-api-20261016)。本地artifacts/retire-hidden-illustrator-api-20261016/{receipt.json,verified-candidates/}；源码回滚git revert 8c7619e22。
+
 # 当前交接：同版本1.6.1双包与推送完成（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
 - 包含投降74be66074、流式20字/秒与正文滚动21e0a6a2b、MCM生命周期7e4d0d2a0及此前完整源码，保持v1.6.1。源码已普通推送到origin/main并独立核对；最终收据文档随后同步，最终远端SHA见本地push收据。本条取代下方已包含范围的未打包/未推送状态。

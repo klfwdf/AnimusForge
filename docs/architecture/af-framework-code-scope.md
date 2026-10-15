@@ -1,3 +1,15 @@
+<a id="retire-hidden-illustrator-api-20261016"></a>
+### 退役独立导演覆盖和完整路径开关（产品8c7619e22）
+
+[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#retire-hidden-illustrator-api-20261016)保存旧DLL负控、native MCM及记录HTTP证据、Documents定点清理和未验项。未部署，不能视为玩家错误已实机解决。
+
+| 一基坐标 / 符号 | 实际责任与边界 |
+| --- | --- |
+| `extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs:581–587` ResolveChatConfigForSnapshot；`:590` TryGetHostPrimaryChatConfig | 导演只取主API地址/Key/有效模型，未配置不再借生图配置；独立设置读取分支删除，构图网络/提示词/预算保持 |
+| `extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs:133` options构造、`:228` CaptureOptions；`Settings/IllustratorSettings.cs:32` 模型选项、`:100` ApiBaseUrl、`:402` DirectorApiMaxTokens | 请求边界冻结主API，完整路径snapshot字段和独立导演MCM字段不存在；普通生图设置、构图预算/自定义文本与owner身份保留 |
+| `extensions/AnimusForge.Illustrator/src/Core/UniversalOpenAiImageClient.cs:140–173` 选路、`:274` IsChatCompletionProtocol、`:299` ResolveEndpointUrl；`Core/GeminiNativeImageProtocol.cs:32` ResolveEndpoint | 不读取隐藏exact开关，标准完整端点/根自动识别；有图走带图通道，保留失败/参考图及原生非流端点约束，无新增请求或Tick任务 |
+| `tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests/IllustratorRetiredApiChecks.cs:22–78` Run；`extensions/AnimusForge.Illustrator/tests/MissionScreenshotRequestTests/Program.cs:133–215` 自动路径用例 | 实际native MCM序列化/真实resolver/options；主API获取为确定性Harmony边界。实际DLL HTTP全部内存拦截，不证明真实provider/模型视觉或旧UI构造器 |
+
 <a id="npc-surrender-engine-tick-20261015"></a>
 ### 投降待办引擎更新入口（产品74be66074）
 

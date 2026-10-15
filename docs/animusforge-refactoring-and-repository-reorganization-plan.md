@@ -1,10 +1,15 @@
 <a id="retire-hidden-illustrator-api-20261016"></a>
-## 退役隐藏的独立导演API与完整路径开关（2026-10-16，ACTIVE）
+## 退役隐藏的独立导演API与完整路径开关（2026-10-16，OFFLINE_VERIFIED / LOCAL_MCM_CLEANED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 用户确认保留导演构图，只用主API，退役隐藏配置。基线main/8cb2bcccd，跟踪文件干净，未跟踪Microsoft/NuGet保持。已确认旧前端只是隐藏：TryResolveChatConfig优先DirectorApiBaseUrl/DirectorModelName，完整路径值进入请求快照及客户端；因此旧Documents MCM/preset可持续影响不可见请求。没有当前玩家错误响应，不把潜在原因当作已取得远端实机证据。
 - 修改范围：IllustratorSettings移除独立地址/Key/模型/dropdown/抓取及完整路径设置和仅服务该入口的代码；VisualDirectorEngine只捕获主API；IllustrationOptions与生图路由去除完整路径标志，保留标准完整端点自动识别与参考图/Chat/Edits/Gemini/Player2规则。中英说明、相关MCM回放/真实DLL请求测试同任务更新；不删除导演构图、预算/自定义提示词、普通生图设置、玩家Key或整份配置。
 - Documents MCM原生Global/AnimusForge/AnimusForge_Illustrator_v1.json已只读检查，未输出敏感值：本机独立导演地址/Key/模型为空，完整路径false。后续验证旧JSON载入被忽略、保存不再复活字段及preset；不靠清空全量设置解决。本任务本地实现与双API/Bootstrap验证，不沿用上一轮已完成授权隐式部署/打包/push。无新增Tick/IO/反射/轮询；只在既有主线程请求捕获边界取主API，后台仍使用快照。
 - 退出门：旧坏配置的主API选择回归修复前失败、修复后PASS；实际MCM JSON/字段/双入口及真实DLL记录HTTP的标准端点/带图/原生协议检查通过，原统一双API/Bootstrap构建PASS；明确未验实机/真实provider/付费出图。证据artifacts/retire-hidden-illustrator-api-20261016/，源码按focused inverse commit回退。
+- 已完成：意图aa0ad1c69、产品/测试/规范8c7619e22。删除独立导演URL/Key/模型/dropdown/抓取/缓存与完整路径字段、options标志和实际路由分支；没有只设默认false或保留旧字段覆盖。导演地址、Key、模型只来自主API有效配置，无主配置返回未配置，不借生图Key或默认独立模型。保留导演构图、提示词/预算及原标准端点识别；CN/EN删除废弃标签并同步导演分组与端点错误说明。AGENTS及仓内双语skill同步新规则，未改全局副本。
+- 旧冻结DLL实测native MCM JSON载入stale director字段后主API断言失败；新候选原native MCM JSON/磁盘/preset/终端回放1.3中文29541、1.4英文29596项PASS，其中新增检查旧值忽略、属性及options移除、保存与preset不复活、原生图Key保留、缺主API不借其他凭据。两API实际DLL内存HTTP回放各117项PASS，覆盖Images/Edits/Chat/Player2/Gemini、原生根/标准完整URL、全部参考图、导演识图与失败不重试；HTTP使用CN语料fixture，EN MCM/UI另验，未调用真实provider或付费接口。
+- 构建：原build_single_module.ps1 Debug 1.3/1.4（引用v1.3.15.110062/v1.4.6.115628）/Bootstrap/双Coup seam/registration最终exit0，build-final.log绑定最终产品，旧警告保持；首轮构建成功后补齐端点错误双语，按最终源码再构建。未Stage/部署/打包/push。请求测试最初缺显式workspace module root且旧断言硬编码CN及exact拒绝；已用既有隔离fixture和新行为修正，失败输出保留。完整旧请求测试最后的无关PresentationContracts因旧OverlayVM构造函数不匹配未通过；新增--requests-only保留并执行全部请求/导演断言，默认仍保留原UI/history断言，不计为全套PASS。
+- 按用户文档MCM清理要求，只修改`Documents/Mount and Blade II Bannerlord/Configs/ModSettings/Global/AnimusForge/AnimusForge_Illustrator_v1.json`，移除实际存在的5字段（DirectorApiBaseUrl、DirectorApiKey、DirectorModelName、DirectorModelDropdown、UseExactEndpointUrl）；其余23项JSON值与原文件逐项相同，未清主API/生图Key/其他owner，没有自己的旧preset需清。完整原文件私密备份仅保存在本地ignored `artifacts/retire-hidden-illustrator-api-20261016/private-mcm-before/`，未输出/提交凭据；清理收据local-mcm-cleanup.json。旧安装程序仍可能重新保存旧字段，永久退役取决于后续安装本次新DLL。
+- [精确源码范围](architecture/af-framework-code-scope.md#retire-hidden-illustrator-api-20261016)；本地receipt.json与verified-candidates/绑定全部源码/成对资源/三DLL marker SHA及测试。回滚源码`git revert 8c7619e22`；文档设置可在关闭游戏后人工恢复私密原文件。无当前玩家HTTP错误详情，未验玩家确切故障/实机MCM/真实出图/旧档；先前已安装及2257双包不包含本次改动。
 
 <a id="package-push-surrender-streaming-20261015"></a>
 ## 同版本1.6.1双包与源码推送（2026-10-15，PUSH_VERIFIED / PACKAGE_VERIFIED / DEPLOY_VERIFIED / LIVE_PENDING）
