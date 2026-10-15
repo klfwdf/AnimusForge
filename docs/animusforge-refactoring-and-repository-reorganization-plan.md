@@ -1,5 +1,5 @@
 <a id="rot-encyclopedia-compat-implementation-20261015"></a>
-## ROT百科模板空引用兼容修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
+## ROT百科模板空引用兼容修复（2026-10-15，OFFLINE_VERIFIED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 授权与版本：用户要求修复兼容并继续；基线3eb5ba496，意图检查点49998dcdf，产品及专项测试d3c94f9a5。本条取代下方事故诊断的FIX_NOT_IMPLEMENTED状态，原诊断与独立风险审查保留为历史，不代表实机已恢复。
 - 已实施：GameAdapter的RotEncyclopediaCompanionCompatibility在主界面启动时定位ROT的确切Postfix签名，只给该方法加Prefix；玩家家族Wanderer且Template为空时跳过ROT名称美化，原版EncyclopediaListItem继续存在。有模板ROT同伴沿用原名称处理；不写人物、职业、模板、存档或第三方DLL，无ROT时安静退出，注册幂等。签名不匹配/注册失败仅记录英文技术诊断；没有新增玩家文案、设置或外部API。
@@ -7,7 +7,9 @@
 - 专项：python tests/AF.GameAdapter.Bannerlord/RotEncyclopediaCompatibilityTests/run.py，exit 0；15项真实Harmony构造器→ROT Postfix→AF Prefix回放通过，含修复前空引用负控、无模板条目、重复打开、无人物写入、正常ROT名称、普通模板/领主/其他家族/非Hero、幂等及非全局Prefix。另进程ROT缺席和启动接线检查通过。链接完整生产补丁，但ROT方法为实际DLL源码等价fixture、游戏对象为合成；没有直接用实际ROT.dll在游戏中跑验收。
 - 原统一构建：pwsh.exe -NoProfile -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug，exit 0；1.3(v1.3.15.110062)、1.4(v1.4.6.115628)、Bootstrap、双Coup seam与注册smoke通过。两实现各363项既有警告、0错误，不能称零警告。构建时为49998dcdf上的本轮产品工作树，验证后源码未再修改，提交为d3c94f9a5。
 - 产物SHA256：Bootstrap 6863B2D1C598519BC796910392D08BB616A5D722D4481D9F54A34067B6FB202A；1.3 B84EC858465260B25A6DAC7A643697E700356B3680633987481BC94C47EEDC90；1.4 B2CFE60510ADB5E27292602F74712E11E3A52AABE4E0E3491099CE223F810BFB。位于bin/Debug/single_module_artifacts/。本地artifacts/rot-encyclopedia-compat-20261015/receipt.json、replay.log、build-dual.log和build-exit.txt保存详细收据，不发布私人日志。
-- 未验与交付边界：未部署、Stage、打包或push；未实机打开百科、验证旧档恢复或测量真实耗时。设计为读取边界兼容，不需要改档，但旧档实际可用性仍需实机确认。当前安装游戏尚未加载本轮修复，部署后须重启游戏加载。回滚仅git revert d3c94f9a5，不回滚其他会话或改第三方DLL。[精确源码地图](architecture/af-framework-code-scope.md#rot-encyclopedia-compat-implementation-20261015)。
+- 未验与交付边界：未部署、Stage或打包；未实机打开百科、验证旧档恢复或测量真实耗时。设计为读取边界兼容，不需要改档，但旧档实际可用性仍需实机确认。当前安装游戏尚未加载本轮修复，部署后须重启游戏加载。回滚仅git revert d3c94f9a5，不回滚其他会话或改第三方DLL。[精确源码地图](architecture/af-framework-code-scope.md#rot-encyclopedia-compat-implementation-20261015)。
+
+- 推送交付：用户本轮明确授权“推送”；fetch后远端无领先、本地4提交均为本次事故诊断/检查点/修复/验证记录，11个新增blob、7条路径范围及凭据模式检查通过，未跟踪Microsoft/、NuGet/保留。已普通快进origin/main从914c65f82至5a9693c46，git ls-remote独立核对一致，含产品d3c94f9a5；本条及HANDOFF后续收据提交的最终远端SHA保存在artifacts/push-rot-encyclopedia-20261015/receipt.json。本次仅源码推送，未部署或打包。
 
 <a id="rot-companion-encyclopedia-confirmed-20261015"></a>
 ## 安德雷转同伴后百科无法打开：实际ROT堆栈（2026-10-15，LOG_CONFIRMED / FIX_NOT_IMPLEMENTED）
