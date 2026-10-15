@@ -10817,10 +10817,15 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 退出门：真实源文件读取保持全部条目，目录枚举顺序不影响 ID/触发词，首次及再次覆盖/跳过均验证；保留玩家条目的既有普通导入行为；CN/EN 消费路径及两 API/Bootstrap 构建验证。实机及远端玩家确切异常需单独验收。
 
 <a id="terminal-ai-dropdown-crash-20261015"></a>
-## 终端 AI 核心点击崩溃修复（2026-10-15，ACTIVE）
+## 终端 AI 核心点击崩溃修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 请求：玩家 1.3.12 点击终端 AI 核心报错；报告加载 AF 1.5.4.0 的 1.3 实现。直接异常为 `TerminalSettingsCoverage.AddMissing` 生成的 getter 读取 MCM `Dropdown<string>.SelectedValue` 时索引越界。Harmony 报告另为 BannerlordCheats 锻造补丁目标缺失，不归并为此故障。
 - 范围：终端下拉显示读取和 selector 初始化；空列表/无效索引显示未选择，保留原 owner、配置和有效选择。不修改第三方 DLL、存档、构建入口；不部署、打包或 push。
 - 退出门：真实生产定义/VM 的空、null、负数、越界、正常选择与用户重新选择回归；原双 API/Bootstrap 构建；记录 1.3.12 实机未验边界。只在 UI 读取时 O(1) 校验索引，无新 Tick IO/反射/扫描。
 - 开工 HEAD `e6a7afae9`，分支 main；预存知识库导入/重载与测试改动及 Microsoft、NuGet 未跟踪目录保留。回滚按本任务独立提交逆向，不恢复整文件历史。
+- 产品与回归提交 `5af24a7e5`，检查点 `dacf85a0c`。`TerminalSettingDef` 统一为手工注册/自动补齐的 DropdownGetter 做 O(1) 索引校验，null/空/无效索引返回空显示；VM 初始 selector 投影为 -1。原四 owner、setter、选择身份和保存规则保持，非下拉 getter 不变。无新增运行文案/资源/选项/持久化键，不涉及 GCCZ 镜像。
+- 负例：只读复制已安装旧 DLL 到独立仓内模块夹，用新增回归真实运行；在空列表读取 `MCM.Common.Dropdown<T>.SelectedValue` 复现 `ArgumentOutOfRangeException`，exit1。当前源码候选的同一真实定义/VM用例通过，包含 null、空列表、负数/越界/整数极值、有效选择、重选和 AddMissing 自动补齐路径；打开控件不调用 setter/保存。
+- 原 `scripts/build/build_single_module.ps1` Debug build-only 最终 exit0：引用 1.3 `v1.3.15.110062` / 1.4 `v1.4.6.115628`，两实现、Bootstrap、两 Coup seam 与 registration smoke PASS，保留既有编译警告。前两次本机 net472/Facade 解析失败后，使用仅进程生效的本地离线 targets、明确 net472 引用与 netstandard facade 完成；未改原构建脚本。旧构建产物保存到证据目录；本次构建覆盖共享树的并行改动，不宣称隔离构建。
+- 最终冻结候选的 `TerminalLiveSettingsTests/run.py`：1.3 / zh-CN **29536 PASS**，1.4 / en **29552 PASS**，均含本次 dropdown boundary regression；原测试读取真实 MCM JSON、生产 VM 与保存 owner，但模块/磁盘 provider 是仓内 fixture，无原生渲染/网络。定向 `git diff --check` PASS。完整命令、失败日志、最终构建与 SHA 在 `artifacts/terminal-ai-dropdown-20261015/receipt.json` 及相邻文件，候选固定在 `verified-candidates/`。
+- 代码坐标与责任边界：[当前源码范围图](architecture/af-framework-code-scope.md#terminal-ai-dropdown-crash-20261015)。NOT-RUN：玩家实际 1.3.12 点击、原生 UI、真实配置/旧档及实机性能；报告未记录具体设置 ID，不能断定哪一项配置损坏。另一份 BannerlordCheats 锻造补丁故障未改。未 Stage/部署/正式打包/push；源码回滚 `git revert 5af24a7e5`，不触碰其他作者改动。
 

@@ -2606,3 +2606,9 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 
 旧 B/C 已审查，Memory注册/换行、外交XML加载及TTS fallback已修；主线A新增Illustrator30对。最新扫描1,352个UI候选/192文件，不是确认漏译总数。主线A 513/86，外部B 435/26，外部C 404/80；文件边界和新接力链接见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#localization-wave2-20261010)。24对契约、真实1.3/1.4本地化DLL各37,748次解析PASS；本轮未构建/实机/部署/push，待三方收敛统一验证。
 
+# 当前交接：终端 AI 核心点击崩溃已修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
+
+- 产品/回归 `5af24a7e5`：统一终端下拉读取边界，null/空/无效索引显示未选择，保留 owner 配置；selector 初始索引安全投影。报告玩家实际为1.3.12，加载1.3实现，AF DLL为1.5.4.0。
+- 旧已安装DLL的独立仓内副本复现 SelectedValue 越界；修复后的真实定义/VM、1.3中文29536与1.4英文29552回归PASS。原双API/Bootstrap/Coup/registration构建PASS（实际引用1.3.15/1.4.6）。未验证玩家1.3.12原生UI/旧档，未Stage/部署/打包/push；另一份BannerlordCheats锻造补丁缺目标是独立问题，未改第三方DLL。
+- [唯一主台账及证据/回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-ai-dropdown-crash-20261015)；[源码地图](docs/architecture/af-framework-code-scope.md#terminal-ai-dropdown-crash-20261015)。本地收据 `artifacts/terminal-ai-dropdown-20261015/receipt.json`，源码回滚 `git revert 5af24a7e5`。保留所有并行知识库/引导/UI改动。
+
