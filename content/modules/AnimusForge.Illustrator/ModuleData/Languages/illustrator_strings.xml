@@ -16,14 +16,8 @@
     <string id="AF_ILL_CUSTOM_DIRECTOR_HINT" text="Set composition, action, shot, and narrative preferences for encyclopedia, meetings, and bulletins. Blank keeps defaults. Sent only to the Visual Director and cannot override known facts or output format." />
     <string id="AF_ILL_CUSTOM_STYLE" text="Custom style prompt (active when Style=prompt)" />
     <string id="AF_ILL_CUSTOM_STYLE_HINT" text="Open the long-text editor to edit style instructions. Active only when the style preset is “prompt”; injected into every image channel. A classical oil-painting preset is provided as a reference." />
-    <string id="AF_ILL_DIRECTOR_BASE_URL" text="Director API endpoint (Base URL)" />
-    <string id="AF_ILL_DIRECTOR_BASE_URL_HINT" text="Visual Director API endpoint. Leave blank to reuse the main conversation API; enter a Base URL for an independent model or proxy." />
-    <string id="AF_ILL_DIRECTOR_KEY" text="Director API key (API Key)" />
-    <string id="AF_ILL_DIRECTOR_KEY_HINT" text="Visual Director API key. Leave blank to reuse the main conversation API key." />
     <string id="AF_ILL_DIRECTOR_MAX_TOKENS" text="Director maximum output tokens" />
     <string id="AF_ILL_DIRECTOR_MAX_TOKENS_HINT" text="max_tokens sent to the director API, default 25000. This is an output budget, not a target length; configure it within the API limits." />
-    <string id="AF_ILL_DIRECTOR_MODEL" text="Director model name (Model)" />
-    <string id="AF_ILL_DIRECTOR_MODEL_HINT" text="Visual Director model name. Leave blank to reuse the main conversation model." />
     <string id="AF_ILL_DIRECTOR_REFERENCE_TOKENS" text="Director prompt reference length (approx. tokens)" />
     <string id="AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT" text="A soft length reference, not the API output limit. When forced reduction is enabled, the character budget takes priority; otherwise the complete reply may contain at most 30000 characters. The full four sections are retained without padding." />
     <string id="AF_ILL_DISPLAY" text="AnimusForge - AI Illustrator" />
@@ -32,16 +26,12 @@
     <string id="AF_ILL_ENABLED" text="Enable image generation" />
     <string id="AF_ILL_ENABLED_HINT" text="Master switch for all image-generation paths. When disabled, encyclopedia, conversation, bulletin, and gallery entries will not send image requests." />
     <string id="AF_ILL_FETCH" text="Fetch" />
-    <string id="AF_ILL_FETCH_DIRECTOR_MODELS" text="Fetch director models" />
-    <string id="AF_ILL_FETCH_DIRECTOR_MODELS_HINT" text="Fetches available models from the director Base URL, or from the main conversation API when blank." />
     <string id="AF_ILL_FETCH_IMAGE_MODELS" text="Fetch image model list" />
     <string id="AF_ILL_FETCH_IMAGE_MODELS_HINT" text="Queries the configured endpoint for models. Google native mode uses /models and native authentication. Only the current response page is read; enter a model manually if it is not listed. Image and art models are prioritized." />
-    <string id="AF_ILL_FULL_URL" text="Use complete request URL (do not append suffix)" />
-    <string id="AF_ILL_FULL_URL_HINT" text="Uses the entered endpoint directly without appending a suffix. Suitable for custom proxies. Google native mode requires a complete :generateContent URL; the URL determines the model." />
     <string id="AF_ILL_GEAR_FIDELITY" text="Preserve AF equipment" />
     <string id="AF_ILL_GEAR_FIDELITY_HINT" text="Preserves equipment identity while allowing narrative changes such as tears, stains, or wetness. When disabled, clothing, armor, weapons, and accessories follow custom director rules; identity and established facts remain. Affects new requests only and never changes game equipment." />
     <string id="AF_ILL_GROUP_BASIC" text="1. Basic Settings" />
-    <string id="AF_ILL_GROUP_DIRECTOR_API" text="3. Visual Director API (OpenAI-compatible; blank uses main API)" />
+    <string id="AF_ILL_GROUP_DIRECTOR_API" text="3. Visual Director (uses main API)" />
     <string id="AF_ILL_GROUP_DISPLAY" text="4. Bulletins and Display Scenes" />
     <string id="AF_ILL_GROUP_IMAGE_API" text="2. Image API (OpenAI-compatible)" />
     <string id="AF_ILL_GROUP_STORAGE" text="5. Storage and Performance" />
@@ -72,8 +62,6 @@
     <string id="AF_ILL_RANDOMNESS_HINT" text="At 0, no random prompt is added. Higher values encourage variation in framing, negative space, depth of field, and lighting while preserving identity, equipment, heraldry, and established facts. This controls prompt guidance, not model sampling." />
     <string id="AF_ILL_REFERENCE_IMAGE" text="Send reference image to image model" />
     <string id="AF_ILL_REFERENCE_IMAGE_HINT" text="Sends captured 3D character references with the request through supported multimodal and image-edit channels. When disabled, references are used only by the prompt director." />
-    <string id="AF_ILL_SELECT_DIRECTOR_MODEL" text="Select director model (dropdown)" />
-    <string id="AF_ILL_SELECT_DIRECTOR_MODEL_HINT" text="After fetching models above, select one here. Manual input uses the text box; the default reuses the main module." />
     <string id="AF_ILL_SELECT_IMAGE_MODEL" text="Select image model (dropdown)" />
     <string id="AF_ILL_SELECT_IMAGE_MODEL_HINT" text="After fetching models above, select one here. Choosing “*manual input*” uses the model name entered above." />
     <string id="AF_ILL_STYLE" text="Generation style (Style)" />
@@ -213,7 +201,6 @@
     <string id="AF_ILL_UI_SETTINGS_FETCH_HTTP_ERROR" text="Fetch failed (HTTP {STATUS}): {BODY}" />
     <string id="AF_ILL_UI_SETTINGS_FETCH_NO_MODELS" text="The API returned success, but no usable model data could be parsed." />
     <string id="AF_ILL_UI_OPTION_MANUAL_MODEL" text="*Manual input*" />
-    <string id="AF_ILL_UI_OPTION_DEFAULT_DIRECTOR" text="*Default (reuse conversation API)*" />
     <string id="AF_ILL_UI_OPTION_PLAYER2_MODEL" text="Use the model selected in the Player2 app" />
     <string id="AF_ILL_UI_OPTION_SIZE_SQUARE" text="1024x1024 (1:1 square)" />
     <string id="AF_ILL_UI_OPTION_SIZE_WIDE" text="1280x720 (16:9 widescreen)" />
@@ -361,7 +348,7 @@
     <string id="AF_ILL_ERROR_GEMINI_CONTENT_BLOCK" text="The native Gemini image request contains an unsupported content block. No request was sent." />
     <string id="AF_ILL_ERROR_GEMINI_EMPTY_CONTENT" text="The native Gemini image request is empty. No request was sent." />
     <string id="AF_ILL_ERROR_HTTP_ENDPOINT" text="The image endpoint must be a complete HTTP/HTTPS URL." />
-    <string id="AF_ILL_ERROR_EDITS_ENDPOINT" text="The standard image editing endpoint is /images/edits (plural), not /image/edits. Use complete URL mode for special service paths." />
+    <string id="AF_ILL_ERROR_EDITS_ENDPOINT" text="The standard image editing endpoint is /images/edits (plural), not /image/edits. Configure the standard /images/edits endpoint." />
     <string id="AF_ILL_ERROR_REFERENCE_DECODE" text="Image decoding or format conversion failed" />
     <string id="AF_ILL_ERROR_REFERENCE_EMPTY" text="Image data is empty" />
     <string id="AF_ILL_ERROR_REFERENCE_DATA_URI" text="The data URI format is invalid" />

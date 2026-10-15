@@ -341,7 +341,8 @@ namespace AnimusForge.Illustrator.UI
                     return IllustratorUiText.Resolve("AF_ILL_ERROR_HTTP_ENDPOINT", "The image endpoint must be a complete HTTP/HTTPS URL.");
                 case "AFICASE601d9c6011f90ec6":
                 case "The standard image editing endpoint is /images/edits (plural), not /image/edits. Use complete URL mode for special service paths.":
-                    return IllustratorUiText.Resolve("AF_ILL_ERROR_EDITS_ENDPOINT", "The standard image editing endpoint is /images/edits (plural), not /image/edits. Use complete URL mode for special service paths.");
+                case "The standard image editing endpoint is /images/edits (plural), not /image/edits. Configure the standard /images/edits endpoint.":
+                    return IllustratorUiText.Resolve("AF_ILL_ERROR_EDITS_ENDPOINT", "The standard image editing endpoint is /images/edits (plural), not /image/edits. Configure the standard /images/edits endpoint.");
                 case "AFICASEb2e8aa393cfae238":
                 case "Image decoding or format conversion failed":
                     return IllustratorUiText.Resolve("AF_ILL_ERROR_REFERENCE_DECODE", "Image decoding or format conversion failed");

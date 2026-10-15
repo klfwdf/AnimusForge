@@ -74,7 +74,7 @@ static class McmPageChecks
         var visible = TerminalSettingsRegistry.VisibleDefinitions.ToDictionary(p => p.Id);
         check(api.Count + terminal.Count == visible.Count && !api.Keys.Intersect(terminal.Keys).Any(), "every visible terminal setting appears in exactly one MCM page");
         check(api.ContainsKey("Illustrator.ApiBaseUrl") && api.ContainsKey("TownAmbientAiApiUrl"), "image and ambient APIs in same API page");
-        check(!api.ContainsKey("Illustrator.UseExactEndpointUrl") && !terminal.ContainsKey("Illustrator.UseExactEndpointUrl"), "exact URL UI remains hidden");
+        check(!api.ContainsKey("Illustrator.UseExactEndpointUrl") && !terminal.ContainsKey("Illustrator.UseExactEndpointUrl"), "retired exact URL control absent from both MCM pages");
         // MCM UI sorts ascending; backend discovery deliberately sorts descending.
         var ordered = pages[0].GetSettingPropertyGroups().OrderBy(g => g.Order).ToArray();
         int image = Array.FindIndex(ordered, g => SettingsUtils.GetAllSettingPropertyDefinitions(g).Any(p => p.Id == "Illustrator.ApiBaseUrl"));

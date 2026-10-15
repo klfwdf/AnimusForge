@@ -29,7 +29,6 @@ namespace AnimusForge.Illustrator.Core
         public string CustomStylePrompt { get; }
         public string CustomDirectorPrompt { get; }
         public string StyleFingerprint { get; }
-        public bool UseExactEndpointUrl { get; }
         public bool EnableReferenceImageForGeneration { get; }
         public bool PreserveEquipmentFidelity { get; }
         public bool AutoCleanTempFiles { get; }
@@ -156,7 +155,6 @@ namespace AnimusForge.Illustrator.Core
                 (resolvedStyle.ImagePrompt ?? string.Empty) + "\n" +
                 (resolvedStyle.NegativePrompt ?? string.Empty) + "\n" +
                 (resolvedStyle.ApiStyle ?? string.Empty) + (string.IsNullOrEmpty(CustomDirectorPrompt) ? string.Empty : "\n" + CustomDirectorPrompt));
-            UseExactEndpointUrl = settings.UseExactEndpointUrl;
             EnableReferenceImageForGeneration = settings.EnableReferenceImageForGeneration;
             PreserveEquipmentFidelity = settings.PreserveEquipmentFidelity;
             AutoCleanTempFiles = settings.AutoCleanTempFiles;
@@ -235,7 +233,7 @@ namespace AnimusForge.Illustrator.Core
             string directorUrl;
             string directorKey;
             string directorModel;
-            VisualDirectorEngine.ResolveChatConfigForSnapshot(settings, out directorUrl, out directorKey, out directorModel);
+            VisualDirectorEngine.ResolveChatConfigForSnapshot(out directorUrl, out directorKey, out directorModel);
             return new IllustrationOptions(settings, directorUrl, directorKey, directorModel);
         }
 

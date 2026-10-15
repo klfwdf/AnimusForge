@@ -141,12 +141,11 @@ namespace AnimusForge.Illustrator.Core
                 bool player2 = settings.UsePlayer2ImageApi;
                 bool nativeGemini = !player2 && GeminiNativeImageProtocol.IsNativeUrl(baseUrl);
                 bool configuredEditsEndpoint = player2 ? requestedRefImages > 0 : IsImagesEditsEndpointUrl(baseUrl);
-                bool exactEditsEndpoint = settings.UseExactEndpointUrl && configuredEditsEndpoint;
-                bool isChatProtocol = !player2 && !configuredEditsEndpoint && (nativeGemini || IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl)
-                    || (settings.PreferChatImageProtocol && !settings.UseExactEndpointUrl));
+                bool isChatProtocol = !player2 && !configuredEditsEndpoint && (nativeGemini || IsChatCompletionProtocol(model, baseUrl)
+                    || settings.PreferChatImageProtocol);
                 string endpointUrl = player2 ? ResolvePlayer2Endpoint(baseUrl, false) : nativeGemini
-                    ? GeminiNativeImageProtocol.ResolveEndpoint(baseUrl, model, settings.UseExactEndpointUrl)
-                    : ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
+                    ? GeminiNativeImageProtocol.ResolveEndpoint(baseUrl, model)
+                    : ResolveEndpointUrl(baseUrl, isChatProtocol);
                 if (nativeGemini) model = GeminiNativeImageProtocol.EndpointModel(endpointUrl);
                 var composed = imageEdit ? new ComposedImagePrompt() : ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.IsMissionScreenshot ? 0 : settings.Randomness,
                     (player2 || settings.IsMissionScreenshot) ? ImagePromptProfile.Full : ResolvePromptProfile(model, isChatProtocol), playerRedraw, settings.OutputFrameRequirement, settings.IsMissionScreenshot || settings.PreserveEquipmentFidelity, nativeGemini);
@@ -155,24 +154,14 @@ namespace AnimusForge.Illustrator.Core
                     : composed.Text;
                 if (imageEdit && (string.IsNullOrWhiteSpace(prompt) || referenceImages?.Count != 1 || referenceImages[0]?.Kind != IllustrationReferenceKind.GeneratedImage))
                     throw new InvalidOperationException("Redrawing from this image requires a valid current image. No request was sent.");
-                string route = nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : configuredEditsEndpoint || (requestedRefImages > 0 && !settings.UseExactEndpointUrl) ? "ImagesEdits" : "Images";
-                GenerationDiagnostics.Current?.RecordStage("image_route", new JObject { ["protocol"] = route, ["endpoint"] = SensitiveLogText.SafeUrl(route == "ImagesEdits" ? (player2 ? ResolvePlayer2Endpoint(baseUrl, true) : ResolveEditsEndpointUrl(baseUrl)) : endpointUrl), ["requestedRefs"] = requestedRefImages, ["reason"] = settings.UseExactEndpointUrl ? "explicit exact endpoint" : isChatProtocol ? "model or chat preference" : requestedRefImages > 0 ? "references present: edits first; no text-only reference fallback" : configuredEditsEndpoint ? "edit endpoint requires image" : "no references: text-to-image", ["referenceGenerationEnabled"] = settings.EnableReferenceImageForGeneration });
+                string route = nativeGemini ? "GeminiNative" : isChatProtocol ? "Chat" : configuredEditsEndpoint || requestedRefImages > 0 ? "ImagesEdits" : "Images";
+                GenerationDiagnostics.Current?.RecordStage("image_route", new JObject { ["protocol"] = route, ["endpoint"] = SensitiveLogText.SafeUrl(route == "ImagesEdits" ? (player2 ? ResolvePlayer2Endpoint(baseUrl, true) : ResolveEditsEndpointUrl(baseUrl)) : endpointUrl), ["requestedRefs"] = requestedRefImages, ["reason"] = isChatProtocol ? "model or chat preference" : requestedRefImages > 0 ? "references present: edits first; no text-only reference fallback" : configuredEditsEndpoint ? "edit endpoint requires image" : "no references: text-to-image", ["referenceGenerationEnabled"] = settings.EnableReferenceImageForGeneration });
                 if (configuredEditsEndpoint && requestedRefImages == 0)
                 {
                     result.ErrorMessage = "The images/edits endpoint requires a usable reference image. Enable references and capture a character or scene reference before generating. No request was sent.";
                     GenerationDiagnostics.Current?.RecordStage("image_route_rejected", new JObject { ["failureCode"] = "image.edit_reference_missing", ["error"] = result.ErrorMessage });
                     return result;
                 }
-                if (!player2 && settings.UseExactEndpointUrl && !exactEditsEndpoint && !isChatProtocol && requestedRefImages > 0)
-                {
-                    // /images/generations has no image field. Do not report a successful
-                    // text-only generation as if the caller's identity/scene references were
-                    // honored when an exact images/generations URL explicitly selected that endpoint.
-                    result.ErrorMessage = "The exact images/generations endpoint cannot accept reference images. Use /images/edits or enable the conversation multimodal image channel. No request was sent.";
-                    GenerationDiagnostics.Current?.RecordStage("image_route_rejected", new JObject { ["failureCode"] = "image.generations_cannot_carry_references", ["error"] = result.ErrorMessage });
-                    return result;
-                }
-
                 bool success = false;
                 byte[] imageBytes = null;
                 string imageUrl = null;
@@ -181,7 +170,7 @@ namespace AnimusForge.Illustrator.Core
 
                 // 2. Images 协议 + 有参考图 → 先试 /images/edits（multipart 真正携带参考图）。
                 //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
-                if (!isChatProtocol && requestedRefImages > 0 && (player2 || !settings.UseExactEndpointUrl || exactEditsEndpoint))
+                if (!isChatProtocol && requestedRefImages > 0)
                 {
                     var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2, settings.PreserveEquipmentFidelity, imageEdit).ConfigureAwait(false);
                     result.ResolvedPrompt = edit.ResolvedPrompt;
@@ -191,7 +180,7 @@ namespace AnimusForge.Illustrator.Core
                         imageBytes = edit.ImageBytes;
                         imageUrl = edit.ImageUrl;
                     }
-                    else if (settings.UseExactEndpointUrl || !edit.ShouldFallbackToText)
+                    else if (!edit.ShouldFallbackToText)
                     {
                         errorMessage = edit.ErrorMessage;
                         stopAfterEditFailure = true;
@@ -216,11 +205,11 @@ namespace AnimusForge.Illustrator.Core
                     result.ResolvedPrompt = attempt.ResolvedPrompt;
 
                     // 3. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
-                    if (!player2 && !success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl && !settings.IsApiTest && !imageEdit && !settings.IsMissionScreenshot)
+                    if (!player2 && !success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.IsApiTest && !imageEdit && !settings.IsMissionScreenshot)
                     {
                         Log(string.Format("[Illustrator] The image endpoint does not support model {0}; trying the existing /chat/completions multimodal fallback...", model));
                         string chatEffectivePrompt = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness, ImagePromptProfile.Full, playerRedraw, settings.OutputFrameRequirement, settings.PreserveEquipmentFidelity).Text;
-                        string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
+                        string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true);
                         var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint, playerRedraw: playerRedraw, preserveEquipment: settings.PreserveEquipmentFidelity).ConfigureAwait(false);
                         result.ResolvedPrompt = chatRetry.ResolvedPrompt;
                         if (chatRetry.Success)
@@ -282,7 +271,7 @@ namespace AnimusForge.Illustrator.Core
             }
         }
 
-        public static bool IsChatCompletionProtocol(string model, string baseUrl, bool useExactUrl)
+        public static bool IsChatCompletionProtocol(string model, string baseUrl)
         {
             // An explicit standard endpoint wins over model-name heuristics. Parse
             // only the path so query parameters cannot change the request schema.
@@ -290,8 +279,6 @@ namespace AnimusForge.Illustrator.Core
             {
                 string path = endpoint.AbsolutePath.TrimEnd('/');
                 if (path.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase)) return true;
-                if (useExactUrl && (path.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase) ||
-                    path.EndsWith("/images/edits", StringComparison.OrdinalIgnoreCase))) return false;
             }
             if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out _) && !string.IsNullOrWhiteSpace(baseUrl) && baseUrl.IndexOf("/chat/completions", StringComparison.OrdinalIgnoreCase) >= 0)
             {
@@ -309,10 +296,10 @@ namespace AnimusForge.Illustrator.Core
             return false;
         }
 
-        public static string ResolveEndpointUrl(string baseUrl, bool isChatCompletion, bool useExactUrl)
+        public static string ResolveEndpointUrl(string baseUrl, bool isChatCompletion)
         {
             string url = (baseUrl ?? string.Empty).Trim();
-            return useExactUrl ? url : ResolveImageEndpoint(url, isChatCompletion ? "/chat/completions" : "/images/generations");
+            return ResolveImageEndpoint(url, isChatCompletion ? "/chat/completions" : "/images/generations");
         }
 
         private static string ResolveImageEndpoint(string baseUrl, string suffix)
@@ -322,7 +309,7 @@ namespace AnimusForge.Illustrator.Core
                 throw new ArgumentException("The image endpoint must be a complete HTTP/HTTPS URL.");
             string path = uri.AbsolutePath.TrimEnd('/');
             if (path.EndsWith("/image/edits", StringComparison.OrdinalIgnoreCase))
-                throw new ArgumentException("The standard image editing endpoint is /images/edits (plural), not /image/edits. Use complete URL mode for special service paths.");
+                throw new ArgumentException("The standard image editing endpoint is /images/edits (plural), not /image/edits. Configure the standard /images/edits endpoint.");
             bool completeEndpoint = false;
             foreach (string known in new[] { "/images/generations", "/images/edits", "/chat/completions" })
                 if (path.EndsWith(known, StringComparison.OrdinalIgnoreCase))

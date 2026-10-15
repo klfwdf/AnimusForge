@@ -61,7 +61,7 @@ internal static class TerminalSettingsCoverage
         if (owner == nameof(IllustratorSettings))
             return group.IndexOf("AF_ILL_GROUP_IMAGE_API", StringComparison.Ordinal) >= 0 ||
                    group.IndexOf("AF_ILL_GROUP_DIRECTOR_API", StringComparison.Ordinal) >= 0 ||
-                   property == "ApiBaseUrl" || property == "ApiKey" || property == "UseExactEndpointUrl" ||
+                   property == "ApiBaseUrl" || property == "ApiKey" ||
                    property == "ModelName" || property == "ModelDropdown" || property == "FetchModelList" ||
                    property == "TestImageApi" || property == "ImageGenerationTimeoutSeconds"
                 ? TerminalCategories.Ai : TerminalCategories.Ui;
@@ -80,8 +80,8 @@ internal static class TerminalSettingsCoverage
     {
         if (id == "TownAmbientAiShowUsageNotifications" || id == "ScreenNotifications"
             || id == "EnemyInterruptRadiusMeters" || id == "DiagnosticsEnabled"
-            || id == "Illustrator.UseExactEndpointUrl" || id == "TerminalHotkeyEnabled" || id == "TerminalMapIconEnabled") return false;
-        if (id.StartsWith("Illustrator.Director", StringComparison.Ordinal) || id == "Illustrator.FetchDirectorModelList") return false;
+            || id == "TerminalHotkeyEnabled" || id == "TerminalMapIconEnabled") return false;
+        if (id.StartsWith("Illustrator.Director", StringComparison.Ordinal)) return false;
         return true;
     }
 

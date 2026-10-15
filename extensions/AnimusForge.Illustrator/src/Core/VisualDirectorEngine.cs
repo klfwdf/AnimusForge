@@ -578,82 +578,14 @@ namespace AnimusForge.Illustrator.Core
             return text.Length <= maxChars ? text : text.Substring(0, maxChars) + "...";
         }
 
-        internal static bool ResolveChatConfigForSnapshot(IllustratorSettings settings, out string baseUrl, out string apiKey, out string model)
+        internal static bool ResolveChatConfigForSnapshot(out string baseUrl, out string apiKey, out string model)
         {
-            return TryResolveChatConfig(settings, out baseUrl, out apiKey, out model);
-        }
-
-        private static bool TryResolveChatConfig(IllustratorSettings settings, out string baseUrl, out string apiKey, out string model)
-        {
-            baseUrl = string.Empty;
-            apiKey = string.Empty;
-            model = string.Empty;
-
-            // 1. 若玩家在 MCM 中配置了独立的导演 Base URL，优先使用导演配置
-            if (settings != null && !string.IsNullOrWhiteSpace(settings.DirectorApiBaseUrl))
-            {
-                baseUrl = settings.DirectorApiBaseUrl.Trim();
-                apiKey = (settings.DirectorApiKey ?? string.Empty).Trim();
-                model = (settings.DirectorModelName ?? string.Empty).Trim();
-
-                // Key 留空时只在同一服务主机上借用主模块正文 API 的 Key，绝不把它发往第三方地址
-                if (string.IsNullOrWhiteSpace(apiKey) && TryGetHostPrimaryChatConfig(out string hostUrl, out string hostKey, out _))
-                {
-                    if (IsSameServiceHost(baseUrl, hostUrl)) apiKey = hostKey;
-                    else TaleWorlds.Library.Debug.Print("[VisualDirector] Director API key is empty and the custom director host differs from the host chat API; the host key is not forwarded.");
-                }
-                // 若 Model 留空，尝试从主模块正文 API 借用或使用默认轻量模型
-                if (string.IsNullOrWhiteSpace(model))
-                {
-                    if (TryGetHostPrimaryChatConfig(out _, out _, out string hostModel) && !string.IsNullOrWhiteSpace(hostModel))
-                    {
-                        model = hostModel;
-                    }
-                    else
-                    {
-                        model = "gpt-4o-mini";
-                    }
-                }
-                TaleWorlds.Library.Debug.Print(SensitiveLogText.Redact($"[VisualDirector] Using custom visual director API ({SensitiveLogText.SafeUrl(baseUrl)}, model={model}).", apiKey));
-                return true;
-            }
-
-            // 2. 核心默认：导演 Base URL 留空时，全自动复用 AnimusForge 主模块正文对话 API 配置
-            if (TryGetHostPrimaryChatConfig(out baseUrl, out apiKey, out string defaultHostModel))
-            {
-                // 若在 MCM 中指定了独立的导演模型名则使用，否则沿用主模块正文模型
-                if (settings != null && !string.IsNullOrWhiteSpace(settings.DirectorModelName))
-                {
-                    model = settings.DirectorModelName.Trim();
-                }
-                else
-                {
-                    model = defaultHostModel;
-                }
-                TaleWorlds.Library.Debug.Print(SensitiveLogText.Redact($"[VisualDirector] Auto-reused AnimusForge host primary chat API ({SensitiveLogText.SafeUrl(baseUrl)}, model={model}).", apiKey));
-                return true;
-            }
-
-            // 3. 次选备用：若生图使用聚合平台（如硅基流动、OneAPI），尝试复用生图 Key 与轻量文本模型
-            if (settings != null && !string.IsNullOrWhiteSpace(settings.ApiKey) && !string.IsNullOrWhiteSpace(settings.ApiBaseUrl))
-            {
-                baseUrl = settings.ApiBaseUrl.Trim();
-                apiKey = settings.ApiKey.Trim();
-                model = !string.IsNullOrWhiteSpace(settings.DirectorModelName) ? settings.DirectorModelName.Trim() : "gpt-4o-mini";
-                TaleWorlds.Library.Debug.Print(SensitiveLogText.Redact($"[VisualDirector] Fallback-reused image API for director ({SensitiveLogText.SafeUrl(baseUrl)}, model={model}).", apiKey));
-                return true;
-            }
-
+            // Hidden legacy director overrides must never redirect a request away from the main API.
+            if (TryGetHostPrimaryChatConfig(out baseUrl, out apiKey, out model)) return true;
+            baseUrl = apiKey = model = string.Empty;
             return false;
         }
 
-        internal static bool IsSameServiceHost(string first, string second)
-        {
-            return Uri.TryCreate((first ?? string.Empty).Trim(), UriKind.Absolute, out Uri a) &&
-                Uri.TryCreate((second ?? string.Empty).Trim(), UriKind.Absolute, out Uri b) &&
-                string.Equals(a.Scheme, b.Scheme, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(a.Host, b.Host, StringComparison.OrdinalIgnoreCase) && a.Port == b.Port;
-        }
 
         private static bool TryGetHostPrimaryChatConfig(out string apiUrl, out string apiKey, out string modelName)
         {
