@@ -10856,10 +10856,17 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 最终冻结候选的 `TerminalLiveSettingsTests/run.py`：1.3 / zh-CN **29536 PASS**，1.4 / en **29552 PASS**，均含本次 dropdown boundary regression；原测试读取真实 MCM JSON、生产 VM 与保存 owner，但模块/磁盘 provider 是仓内 fixture，无原生渲染/网络。定向 `git diff --check` PASS。完整命令、失败日志、最终构建与 SHA 在 `artifacts/terminal-ai-dropdown-20261015/receipt.json` 及相邻文件，候选固定在 `verified-candidates/`。
 - 代码坐标与责任边界：[当前源码范围图](architecture/af-framework-code-scope.md#terminal-ai-dropdown-crash-20261015)。NOT-RUN：玩家实际 1.3.12 点击、原生 UI、真实配置/旧档及实机性能；报告未记录具体设置 ID，不能断定哪一项配置损坏。另一份 BannerlordCheats 锻造补丁故障未改。未 Stage/部署/正式打包/push；源码回滚 `git revert 5af24a7e5`，不触碰其他作者改动。
 <a id="mcm-reopen-lag-20261015"></a>
-## 主菜单重复打开 MCM 卡顿（2026-10-15，ACTIVE）
+## 主菜单重复打开 MCM 卡顿（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 用户提供累计日志及截图，确认主菜单首次打开设置正常、第二次以后卡；补充 RTX3080、RAG GPU 开启。最新21:23会话没有 ONNX/CUDA 初始化记录，AF总Tick最大577.828ms；仅总桶，不能从日志确定子阶段或声称GPU故障。历史CUDA worker多次正常启动。
 - 已用当前真实MCM托管SettingsVM/SettingsEntryVM复现关闭清理缺口：外层ModOptionsVM关闭仅调用entry.OnFinalize，entry未覆盖转发，内部属性VM订阅没有解除。8次重复AF两页面，追踪373→2984，三次刷新约7–13ms→49–60ms；直接finalize内部SettingsVM时每轮归零，证明生命周期差别。该回放没有原生Gauntlet/GPU，不能量化玩家实际帧率。
 - 范围：AF自有设置控件生命周期与下拉刷新追踪；保留四owner、setter/preset/JSON、CN/EN显示及其他模组。关闭后补偿清理、异步晚构造退出、仅AF dropdown刷新；不改MCM DLL、GPU推理/选项、存档或构建入口，不部署/打包/push。
 - 退出门：真实MCM外层关闭重复回放、订阅/追踪归零、有效选择与取消/保存保持、其他模组隔离/重叠窗口/晚构造、原双API/Bootstrap及相关现有终端测试；记录玩家实机与确切MCM版本未验。开工 f3053afdf / main，仅预存Microsoft、NuGet未跟踪目录。完整调查证据在 artifacts/mcm-reopen-lag-20261015/。
 
+- 产品/回归修订 `7e4d0d2a0`（意图点 `4b33108c7`）：通过原 PropertyRef.Instance 只登记 AF 四 owner 的行；独立 dropdown 追踪表供刷新，去掉每行构造的全表 prune。原 ModOptionsVM.OnFinalize 完成后，只对当前面板仍存活的 AF 行调用原 OnFinalize 解除订阅；正常已清理行不重复调用。缓存反射成员，弱键记录已关闭面板，让异步晚到行立即退役；不清理其他模组或另一个窗口，不改配置/GPU/推理路径。
+- 频率/性能：元数据在 EnsurePatched 一次解析；注册发生于设置行构造，关闭时清理所属窗口，刷新仍由原请求合并为最多三轮 Tick，仅迭代存活 AF dropdown。无请求时不扫描；没有新增 Tick IO、序列化、GPU探测或后台游戏对象读取。修复前基准证明累积，修复后八轮外层关闭的追踪/订阅均回到初值；没有测量修复后原生帧耗时，不能据此宣称已解决玩家全部577.828ms峰值。
+- 原 `scripts/build/build_single_module.ps1` Debug build-only exit0：1.3 `v1.3.15.110062` / 1.4 `v1.4.6.115628`、Bootstrap、两 Coup seam及registration smoke PASS，保留既有warnings。本机wrapper仅给进程设置离线net472/facade/缓存环境，原构建入口与全局环境保持；旧输出保存在 previous-build-artifacts，未Stage/Deploy。
+- 最终生产候选 `TerminalLiveSettingsTests/run.py`：API1.3/zh-CN **29536 PASS**；API1.4/en **29591 PASS**。后者才加载本机真实 `Bannerlord.MBOptionScreen.v1.4.0.dll`，新增回归覆盖八轮真实外层 OnFinalize、订阅归零、GPU选择保值、两窗口、晚到行、其他模组隔离及原 ExecuteCancelInternal 撤销；ModOptionsVM使用未初始化对象加真实集合，内部SettingsVM/EntryVM为真实构造，没有原生Gauntlet渲染。API1.3为生产VM/JSON回归与编译，不冒称玩家1.3.12原生MCM验收。
+- 既有 `McmDropdownRefreshTests/run.py` **17 PASS**：真实MCM selector/action、生产helper及替身property host，无自动写回、各模型独立、用户回调及构造失败保持。`git -c core.whitespace=cr-at-eol diff --check`及暂存检查PASS；工作文件CRLF按仓库现状保留。没有新增运行文案，CN/EN原消费者不变。
+- 绑定收据：`artifacts/mcm-reopen-lag-20261015/receipt.json`，含源码/输入/UI DLL SHA、原构建及测试命令日志路径；`verified-candidates/`为冻结三DLL及build marker，均与已测候选SHA一致。1.3 SHA `C12274244FED2ED05F02BFABB956C8EE9F029FBB7EF086C90AA888E3FCD0381B`；1.4 SHA `7658FCDAAA582460D3E71686EB28E65344DBDCA535104E03F7733BE66AE62A8E`；Bootstrap SHA `9A90FE0C709CE5271424EA09811A1781E7D191B6817600DBA1A33DC5F6EECEC3`。专项收据位于 `artifacts/tests/mcm-dropdown-refresh/run-ceeab60f6585441f8cd1cb91c69ff369/receipt.json`。
+- [源码责任与坐标](architecture/af-framework-code-scope.md#mcm-reopen-lag-20261015)。NOT-RUN：玩家实际1.3.12/确切MCM版本、原生UI、3080实机GPU推理/帧耗时、真实配置/旧档；未Stage、部署、打包或push。仅凭显卡和GPU选项不能认定本事故由CUDA造成。聚焦回滚 `git revert 7e4d0d2a0`；不要覆盖其他会话或删除玩家数据。
