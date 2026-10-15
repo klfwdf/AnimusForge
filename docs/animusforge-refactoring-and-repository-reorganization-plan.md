@@ -10752,3 +10752,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - SinglePassTemplateTests首次被当前历史转换新依赖DiplomacyReplyTextRules缺引用阻断。tests/modules/AF.Module.Prompt/SinglePassTemplateTests/run.py:33–36增加该生产类、ConversationRuntimeTexts及两份嵌入兼容资源，未改断言/替身返回值；1.3/1.4编译条件×CN/EN资源四组PASS，覆盖真实system/user模板、可选块、字面变量、35类Courier模板及既有事实投影。
 - 证据artifacts/postprocess-en-audit-20261015/report.md、receipt.json、run.log、catalog-protocols.json、template-run.log、template-verified/。当前测试未再发现确定EN专属解析故障，不宣称全系统无缺陷。产品未变，复用上轮双版本/Bootstrap证据，不重跑产品构建或Stage。
 - 未验：真实provider判定与标签输出、各玩法三渠道完整实机执行、地图目标存在性/权限Campaign重验、旧sav、正式双包。未部署/打包/push；上轮产品修复仍未覆盖游戏。测试修复回滚git revert 141d639e6，游戏无需回滚。
+
+<a id="postprocess-push-20261015"></a>
+## 后处理修复与EN检查源码推送（2026-10-15，PUSH_VERIFIED / LIVE_PENDING）
+
+- 用户明确授权“推送”。F:/AnimusForge-main，main，origin=https://github.com/klfwdf/AnimusForge.git；fetch后远端049cc5ffb，未分叉，本地7提交普通快进推送至d7dd9d634cb5a0344355333f9163a8e874e519ae，ls-remote独立核对一致。包含产品068a938aa、测试141d639e6及检查/交接记录；并行0cf983b9c仅为既有领主招募源码审查文档，未声称修复其风险。
+- 每个待发布提交树核对排除的本地专用handoff均不存在；12新增blob路径/凭据模式检查PASS。用户Token_Stats原文、artifacts证据、游戏数据、构建产物及Microsoft/、NuGet/未跟踪内容均未上传。正常推送，无强推、重写或自动合并远端未知改动。
+- 验证沿用产品双API/Bootstrap/Coup/注册、两实际DLL嵌入检查、51项家族归附及144项CN/EN扩展回放、75对模板与四组请求模板证据；本轮不重跑无变化产品构建。上两条的“未push”由本条替代；未部署/实机/provider/旧档/正式双包边界保持。
+- 证据artifacts/push-postprocess-20261015/preflight.json、push-source.log及最终receipt.json。此后仅补本条及HANDOFF发布收据并正常推送；最终远端收据提交SHA以receipt.json与ls-remote为准。回退产品git revert 068a938aa；测试git revert 141d639e6，已发布历史不改写。
