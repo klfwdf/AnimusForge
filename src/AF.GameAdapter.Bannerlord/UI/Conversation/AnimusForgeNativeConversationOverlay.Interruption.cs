@@ -17,12 +17,23 @@ public sealed partial class AnimusForgeNativeConversationOverlay
         ValidatePendingSubmissionPresentation();
     }
 
-    private void SetSubmissionDisplayText(int generation, string text)
+    private void SetSubmissionDisplayText(int generation, string text, string streamingText = null)
     {
         if (!IsSubmitGenerationCurrent(generation)) return;
         _displayTextGeneration = generation;
         _submissionDisplayText = LlmRetryPrompt.ProjectKnownErrorForUi(text) ?? string.Empty;
-        ConversationHelper.UpdateDialogText(_submissionDisplayText);
+        if (streamingText != null)
+            ConversationHelper.UpdateStreamingDialogText(EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(streamingText), _submissionDisplayText);
+        else
+            ConversationHelper.UpdateDialogText(_submissionDisplayText);
+    }
+
+    private void SetSubmissionStreamPreview(int generation, string text)
+    {
+        if (!IsSubmitGenerationCurrent(generation)) return;
+        _displayTextGeneration = generation;
+        _submissionDisplayText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(text);
+        ConversationHelper.UpdateStreamingDialogText(_submissionDisplayText);
     }
 
     // Only visible notifications/focus/retry dialogs wait for resume. State completion

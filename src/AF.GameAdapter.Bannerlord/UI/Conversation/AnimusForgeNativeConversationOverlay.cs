@@ -1029,16 +1029,16 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		EncyclopediaEntityLinkFormatter.StreamingDisplaySession streamingLinkDisplaySession = null;
 		Hero streamLinkTargetHero = null;
 		CharacterObject streamLinkTargetCharacter = null;
-		// Capture before the background stream begins, so an action that later changes target cannot redirect NPC links mid-reply.
 		ShoutBehavior.TryGetNativeConversationLinkTargetForExternal(out streamLinkTargetHero, out streamLinkTargetCharacter);
 		_isSubmitting = true;
 		ClearPendingPostprocessNotice();
 		_dataSource.SetBusy(true);
 		_dataSource.InputText = "";
 		SetLayerForButtonsOnly();
-		ConversationHelper.BeginStreaming(this);
+		ConversationHelper.BeginStreaming(this, DuelSettings.GetSettings()?.MainApiStreamingEnabled == true);
 		StartWaitingDotsAnimation(generation);
-		bool suppressVisibleStreamingForTts = ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();
+		bool suppressVisibleStreamingForTts = !ConversationHelper.IsStreamingTextRevealEnabled
+			&& ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();
 		try
 		{
 			string reply = await ShoutBehavior.SubmitNativeConversationForOverlayAsync(presentationScope, "", delegate(string partial)
@@ -1054,12 +1054,14 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 						}
 						receivedVisibleText = true;
 						StopWaitingDotsAnimation(generation);
-						// The snapshot is built once on the UI thread; later fragments probe just their appended tail.
-						if (streamingLinkDisplaySession == null)
+						if (ConversationHelper.IsStreamingTextRevealEnabled)
+							SetSubmissionStreamPreview(generation, partial);
+						else
 						{
-							streamingLinkDisplaySession = EncyclopediaEntityLinkFormatter.CreateStreamingDisplaySession();
+							// Preserve the non-streaming completion/display path.
+							streamingLinkDisplaySession ??= EncyclopediaEntityLinkFormatter.CreateStreamingDisplaySession();
+							SetSubmissionDisplayText(generation, streamingLinkDisplaySession.FormatStreamingText(partial, streamLinkTargetHero, streamLinkTargetCharacter));
 						}
-						SetSubmissionDisplayText(generation, streamingLinkDisplaySession.FormatStreamingText(partial, streamLinkTargetHero, streamLinkTargetCharacter));
 					}
 				});
 			}, originalDialogText, delegate(string npcName)
@@ -1089,11 +1091,11 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					}
 					receivedVisibleText = true;
 					StopWaitingDotsAnimation(generation);
-					// Reuse the streaming snapshot when possible, so the completed main reply does not rescan all campaign entities.
+					// Streaming typing stays plain; install trusted links after its final character.
 					completedDisplayReply = streamingLinkDisplaySession != null
 						? streamingLinkDisplaySession.FormatStreamingText(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter)
 						: ShoutBehavior.FormatNativeConversationDisplayTextForExternal(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter);
-					SetSubmissionDisplayText(generation, completedDisplayReply);
+					SetSubmissionDisplayText(generation, completedDisplayReply, streamingText: mainReplyBeforePostprocess);
 				});
 			}, npcInitiatedOpening: true);
 			string completedReply = reply;
@@ -1125,7 +1127,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					completedDisplayReply = ShoutBehavior.FormatNativeConversationDisplayTextForExternal(completedReply);
 					if (!suppressVisibleStreamingForTts || !ConversationHelper.IsTypewriterActive)
 					{
-						SetSubmissionDisplayText(generation, completedDisplayReply);
+						SetSubmissionDisplayText(generation, completedDisplayReply, streamingText: completedReply);
 					}
 					else
 					{
@@ -1245,16 +1247,16 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		EncyclopediaEntityLinkFormatter.StreamingDisplaySession streamingLinkDisplaySession = null;
 		Hero streamLinkTargetHero = null;
 		CharacterObject streamLinkTargetCharacter = null;
-		// Capture before the background stream begins, so an action that later changes target cannot redirect NPC links mid-reply.
 		ShoutBehavior.TryGetNativeConversationLinkTargetForExternal(out streamLinkTargetHero, out streamLinkTargetCharacter);
 		_isSubmitting = true;
 		ClearPendingPostprocessNotice();
 		_dataSource.SetBusy(true);
 		_dataSource.InputText = "";
 		SetLayerForButtonsOnly();
-		ConversationHelper.BeginStreaming(this);
+		ConversationHelper.BeginStreaming(this, DuelSettings.GetSettings()?.MainApiStreamingEnabled == true);
 		StartWaitingDotsAnimation(generation);
-		bool suppressVisibleStreamingForTts = ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();
+		bool suppressVisibleStreamingForTts = !ConversationHelper.IsStreamingTextRevealEnabled
+			&& ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();
 		try
 		{
 			string reply = await ShoutBehavior.SubmitNativeConversationForOverlayAsync(presentationScope, text, delegate(string partial)
@@ -1270,12 +1272,14 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 						}
 						receivedVisibleText = true;
 						StopWaitingDotsAnimation(generation);
-						// The snapshot is built once on the UI thread; later fragments probe just their appended tail.
-						if (streamingLinkDisplaySession == null)
+						if (ConversationHelper.IsStreamingTextRevealEnabled)
+							SetSubmissionStreamPreview(generation, partial);
+						else
 						{
-							streamingLinkDisplaySession = EncyclopediaEntityLinkFormatter.CreateStreamingDisplaySession();
+							// Preserve the non-streaming completion/display path.
+							streamingLinkDisplaySession ??= EncyclopediaEntityLinkFormatter.CreateStreamingDisplaySession();
+							SetSubmissionDisplayText(generation, streamingLinkDisplaySession.FormatStreamingText(partial, streamLinkTargetHero, streamLinkTargetCharacter));
 						}
-						SetSubmissionDisplayText(generation, streamingLinkDisplaySession.FormatStreamingText(partial, streamLinkTargetHero, streamLinkTargetCharacter));
 					}
 				});
 			}, originalDialogText, delegate(string npcName)
@@ -1305,11 +1309,11 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					}
 					receivedVisibleText = true;
 					StopWaitingDotsAnimation(generation);
-					// Reuse the streaming snapshot when possible, so the completed main reply does not rescan all campaign entities.
+					// Streaming typing stays plain; install trusted links after its final character.
 					completedDisplayReply = streamingLinkDisplaySession != null
 						? streamingLinkDisplaySession.FormatStreamingText(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter)
 						: ShoutBehavior.FormatNativeConversationDisplayTextForExternal(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter);
-					SetSubmissionDisplayText(generation, completedDisplayReply);
+					SetSubmissionDisplayText(generation, completedDisplayReply, streamingText: mainReplyBeforePostprocess);
 				});
 			}, npcInitiatedOpening: false);
 			string completedReply = reply;
@@ -1342,7 +1346,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					completedDisplayReply = ShoutBehavior.FormatNativeConversationDisplayTextForExternal(completedReply);
 					if (!suppressVisibleStreamingForTts || !ConversationHelper.IsTypewriterActive)
 					{
-						SetSubmissionDisplayText(generation, completedDisplayReply);
+						SetSubmissionDisplayText(generation, completedDisplayReply, streamingText: completedReply);
 					}
 					else
 					{

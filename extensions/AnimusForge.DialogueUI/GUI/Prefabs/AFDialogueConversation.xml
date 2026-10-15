@@ -70,7 +70,7 @@
                             HorizontalAlignment="Center" VerticalAlignment="Center"
                             DoNotAcceptEvents="true">
                           <Children>
-                            <AFDialogueClickThroughScrollPanel Id="AFDialogueTextScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            <AFDialogueClickThroughScrollPanel Id="AFDialogueTextScroll" FollowStreamingText="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                                 MarginLeft="14" MarginRight="38" MarginTop="8" MarginBottom="10" ClipRect="AFDialogueTextClip"
                                 InnerPanel="AFDialogueTextClip\AFDialogueTextContent" AutoHideScrollBars="true" VerticalScrollbar="..\AFDialogueTextScrollbar" MouseScrollAxis="Vertical" UpdateScrollbarVisibility="true" AutoAdjustScrollbarHandleSize="true">
                               <Children>

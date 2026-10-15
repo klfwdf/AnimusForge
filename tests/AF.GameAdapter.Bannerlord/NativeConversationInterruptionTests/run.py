@@ -26,6 +26,11 @@ if args.mutation=="skip-layer-reactivation":body=body.replace("_screen.SetLayerC
 (out/"Interruption.cs").write_text(cache,encoding="utf-8")
 (out/"Presentation.cs").write_text(pres.read_text(encoding="utf-8-sig"),encoding="utf-8")
 (out/"ConversationHelper.cs").write_text(helper.read_text(encoding="utf-8-sig"),encoding="utf-8")
+reveal=ROOT/"src/AF.GameAdapter.Bannerlord/UI/Conversation/StreamingDialogueTextReveal.cs"
+(out/"StreamingDialogueTextReveal.cs").write_bytes(reveal.read_bytes())
+formatter=ROOT/"src/AF.GameAdapter.Bannerlord/UI/Common/EncyclopediaEntityLinkFormatter.cs"
+sanitizer=ex.declaration(formatter.read_text(encoding="utf-8-sig"),"internal static string SanitizeUntrustedRichText(")
+(out/"Sanitizer.cs").write_text("namespace AnimusForge { internal static class EncyclopediaEntityLinkFormatter {"+sanitizer+"}}",encoding="utf-8")
 (out/"Fixture.cs").write_text((HERE/"Fixture.cs").read_text(encoding="utf-8-sig"),encoding="utf-8")
 (out/"Test.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><EnableDefaultCompileItems>true</EnableDefaultCompileItems><Nullable>disable</Nullable></PropertyGroup></Project>',encoding="utf-8")
 xml=ROOT/"content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml"
@@ -40,12 +45,13 @@ for width,height in [(1280,720),(1920,1080),(2048,414),(2560,1440),(3440,1440)]:
 # These boundaries are explicitly preserved: no replacement request, background game access,
 # cancellation on focus-loss, or removal of the native pause setting.
 assert s.count("SetSubmissionDisplayText(generation,")==16
+assert s.count("SetSubmissionStreamPreview(generation,")==2
 assert s.count("RunVisibleUiAction(generation, delegate")==2
 assert s.count("RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup(")==4
 assert "ClearInterruptedPresentation();" in ex.declaration(s,"private void Close(bool silent)")
 assert "ClearInterruptedPresentation();" in ex.declaration(s,"private void SetInputVisible(")
 assert "StopGameOnFocusLost =" not in s+cache
-manifest={str(x.relative_to(ROOT)):hashlib.sha256(x.read_bytes()).hexdigest() for x in [main,part,pres,helper,xml]}
+manifest={str(x.relative_to(ROOT)):hashlib.sha256(x.read_bytes()).hexdigest() for x in [main,part,pres,helper,reveal,formatter,xml]}
 (out/"source-manifest.json").write_text(json.dumps({"files":manifest,"mutation":args.mutation,"scope":"production routing/cache/focus/ConversationHelper, synthetic screen/pause/NPC stamps; not native renderer/network/game save"},indent=2),encoding="utf-8")
 result=subprocess.run([resolve_dotnet(ROOT),"run","--project",str(out/"Test.csproj"),"-c","Release"],cwd=ROOT,env=minimal_test_environment(resolve_dotnet(ROOT),out))
 print("Run output:",out)
