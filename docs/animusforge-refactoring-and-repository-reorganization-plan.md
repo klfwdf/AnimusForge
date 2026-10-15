@@ -1,3 +1,10 @@
+<a id="mcm-terminal-pages-20261015"></a>
+## MCM 独立终端设置页与 API 归组（2026-10-15，ACTIVE）
+
+- 用户要求恢复隐藏的 MCM 设置，集中到“AnimusForge 终端设置”独立页，与终端共用原设置；生图 API 并入 API 页并位于环境 API 上方，隐藏完整请求路径控件。规范改为新增/调整选项同步接入 MCM 与终端。
+- 基线 main/81268f778；仅有未跟踪 Microsoft/、NuGet/，保留。范围为前端页面投影、共享 owner 保存、排序、CN/EN 资源、专项验证及规范；不部署、打包、推送或改玩家配置。
+- 完成条件：两页真实注册、四 owner 引用一致、修改/撤销/保存/默认 preset 与终端互通、隐藏项与顺序正确、中英接线、原双 API/Bootstrap 构建。游戏实际布局与操作单列未验。
+
 <a id="release-161-20261015"></a>
 ## 1.6.1 拉取合并、统一构建和正式发行（2026-10-15，PACKAGE_VERIFIED / DEPLOY_VERIFIED / PUSH_VERIFIED / LIVE_PENDING）
 
