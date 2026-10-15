@@ -2130,3 +2130,15 @@ Roslyn `ClassDeclarationSyntax.Members` 直接语法声明（不是 semantic uni
 最终产品dd6f45bf后1337 raw输入绑定新双配置/双API/Bootstrap六构建；完整原runner `final-gates-55eb`：355入口343 PASS、0 FAIL、3 PREEXISTING_FAIL、5 NEEDS_INPUT、3 SUPERSEDED、1 ENV_STATE，exit0。411actualbindings/163boundedinverse及4漂移负控PASS；838地图recorded/working-tree均PASS。唯一详细责任/影响/证据入口为主台账“P1–P8最终源码/离线出口”，收据为 `artifacts/af2-host-terminal-closeout/final-receipt.json`。保存键修复以新DEAA/AACC DLL为准，旧F040不复用该边界验收。
 
 这些是currentactual owner、显式historicaloracle、sourceinverse与realDLL replay分层结果，不是全当前runtime/live验收。3既有失败与5需输入/3替代/1环境状态不被隐藏。整体CourierSchedule/ModuleNativeSubmission/NativeWait、实机/真实旧档/网络/TTS/帧性能NOT_RUN；证书副作用归因UNKNOWN，512/64原receipt淘汰边界与所有保护/禁止路径不变。没有新增永久过渡partial或为了行数继续扩领域玩法。
+<a id="terminal-ai-dropdown-crash-20261015"></a>
+## 终端 AI 核心下拉读取边界（2026-10-15）
+
+源码/回归修订 `5af24a7e5`；完整状态、SHA、命令、未验项和回滚见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#terminal-ai-dropdown-crash-20261015)。一基坐标如下：
+
+| 源码与符号 | 范围 | 覆盖及保留责任 |
+|---|---|---|
+| `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs` / `TerminalSettingDef` ctor、`ReadDropdownValue`、`SelectedDropdownIndex` | 63–84 | 所有有 DropdownGetter 的手工/自动下拉统一检查；null/空/无效索引不索引列表，不改 owner。正常值按原显示本地化消费者投影。 |
+| `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsCoverage.cs` / `AddMissing` | 140–159 | 删除未校验 SelectedValue 闭包，由定义统一投影；四 owner、一次缓存的反射/委托和原 setter/SaveDirtyOwners 保留。 |
+| `src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalUiModels.cs` / `AnimusForgeTerminalItemVM` dropdown ctor case | 2721–2747 | 初始化 selector 时把无效索引投影为 -1，选项与真实保存索引不改。 |
+| `tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests/SupplementalChecks.cs` / `CheckDropdownSelectionBoundary`、`Run` | 93–151 | 真实定义/VM及AddMissing；空、null、无效/整数极值、正常和重选，无自动写配置。fixture不是实机；1.3.12、原生UI和旧档仍未验。 |
+
