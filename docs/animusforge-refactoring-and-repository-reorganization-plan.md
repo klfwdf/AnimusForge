@@ -4,6 +4,7 @@
 - 用户要求恢复隐藏的 MCM 设置，集中到“AnimusForge 终端设置”独立页，与终端共用原设置；生图 API 并入 API 页并位于环境 API 上方，隐藏完整请求路径控件。规范改为新增/调整选项同步接入 MCM 与终端。
 - 基线 main/81268f778；仅有未跟踪 Microsoft/、NuGet/，保留。范围为前端页面投影、共享 owner 保存、排序、CN/EN 资源、专项验证及规范；不部署、打包、推送或改玩家配置。
 - 完成条件：两页真实注册、四 owner 引用一致、修改/撤销/保存/默认 preset 与终端互通、隐藏项与顺序正确、中英接线、原双 API/Bootstrap 构建。游戏实际布局与操作单列未验。
+- 后续部署授权：用户明确要求“部署”；以7262be1cc当前源码及既有已验证Debug三DLL部署至F盘游戏单模块AnimusForge，不递增版本、不打包/push。先核对来源/候选SHA、保留旧项目Stage、生成干净Stage，记录3177个保护文件SHA、10个ONNX文件元数据和3个原版DLL SHA；原部署脚本写入前通过完整Stage和目标保护。部署完成后更新本条收据，先前“未部署”为当时状态。
 - 交付：意图检查点3e5c3d363，产品47baa7696。MCM恢复运行项至“AnimusForge终端设置”，API/支持项集中“AnimusForge API设置”；生图在环境API之前，完整路径两入口隐藏且字段/值保持。原四个MCM owner的属性/setter/JSON/原preset文件身份保留；两张fluent前端视图FormatType=none，不新增业务JSON。视图使用原PropertyRef，保存回原四owner；恢复默认使用脱离live对象的原owner默认preset快照，合并组开关均显示为独立行。新增/修改选项同步终端与MCM规则已更新AGENTS.md及本仓双语skill。
 - 性能：只在MCM打开时发现/生成视图与原生metadata/preset；终端仍复用一次缓存的四owner委托，组排序只在重建界面运行。未增加Tick IO、反射、扫描或后台游戏对象访问。
 - 验证：原build_single_module.ps1 Debug双API（1.3.15 / 1.4.6参考）、Bootstrap、双Coup seam及registration smoke PASS。真实DLL的TerminalLiveSettingsTests：1.4中文和英文各29533断言、1.3中文29517断言PASS；包含真实原生fluent容器重复注册、两视图无业务JSON、四owner保存重载、全可见控件无遗漏无重复、原setter/范围/类型、CN/EN标题、完整路径隐藏、生图/环境顺序。1.4附加真实SettingsVM构造、UI排序比较器、UndoRedoStack修改/撤销及单项默认恢复；这些是托管UI回放，不代表游戏渲染。
