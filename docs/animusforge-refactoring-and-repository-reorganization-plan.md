@@ -1,7 +1,7 @@
 <a id="town-recent-memory-20261016"></a>
 ## 近七日城镇事实记忆（2026-10-16，OFFLINE_VERIFIED / SOURCE_PUBLICATION）
 
-用户授权实现并检查后推送。产品修订 `593186f0`，本地检查点 `67e20516`；原有统治记忆仍为300–600字、最多三任，新增近期事实不占任期槽位、不调用模型、不修改生成参数。此前预览样稿现由实际代码替代。
+用户授权实现并检查后推送。产品修订 `b895715c`，本地检查点 `67e20516`；原有统治记忆仍为300–600字、最多三任，新增近期事实不占任期槽位、不调用模型、不修改生成参数。此前预览样稿现由实际代码替代。
 
 - **事件与格式**：原版完成劫掠、强迫提供物资、强迫征兵、BySiege实际攻占者、宽恕/掠夺/毁坏；GCCZ镇内真实执行处置与村庄资源/破坏提交后接线。玩家村庄只记录强征赎金、强征粮食、强征物资、强征牲畜、掠夺村庄、抓取奴隶、强行征兵、屠村、纯粹毁坏；未执行、正面/中立和未实现藏匿不写入。殖民请求不等于提交，原生内部宽恕被排除。CN格式严格为`〔XXXX年X季X日〕，XXX对XXX城的XXX村庄执行了XXXX。`与`〔XXXX年X季X日〕，XXX对XXX城执行了XXXX。`，不显示小时。
 - **时间与重复**：当前游戏日及前六个日历日；第八日删除事件和到访桶。事实receipt去重；镇内同一战役时刻重复确认同一处置仅一条，后来同日真实动作可独立。村民/商队以实际进城事件计到访，公开投影只汇总次数，不报来源身份；同队后来再次进城算另一次到访。首次接入的残缺窗口明确“总数未知”，全窗口覆盖后才写完整近七日数量。
@@ -13,6 +13,8 @@
 - **未验**：没有启动游戏/真实provider、没有真实存档保存载入或实机对话验收，也没有Stage/安装/打包。下一步由用户载入旧档测试城市路人、原版与GCCZ操作、跨七日淘汰；不能把上述fakes/replay标为LIVE。
 
 [代码责任与一基坐标](architecture/af-framework-code-scope.md#town-recent-memory-20261016)。可复现入口为`tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests/TownRuleMemory.Tests.csproj`及同目录`verify_recent_wiring.py`；构建继续使用既有`build_single_module.ps1`，不改脚本与部署流程。
+
+交付树核验：`b895715c`的所有非排除路径与本地已验证修订`94cd9e04`逐Git blob一致；186个累计源码/测试/文档路径包含当前GCCZ村庄前置基线。本地66个旧提交没有进入新分支历史。交付分支另跑160条回放与16条接线检查全部通过，新增历史没有安装回执、存档、DLL/PDB或日志。远端发布对象为`refs/heads/codex/town-memory-seven-days`。
 
 <a id="gccz-village-install-20261016"></a>
 ## GCCZ 村庄累计变更统一安装（2026-10-16，DEPLOYED_FILES_VERIFIED / LIVE_PENDING）

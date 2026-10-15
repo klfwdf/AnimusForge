@@ -1,7 +1,7 @@
 <a id="town-recent-memory-20261016"></a>
-### 近七日城镇记忆：593186f0
+### 近七日城镇记忆：b895715c
 
-[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#town-recent-memory-20261016)。以下为产品修订593186f0核对位置；真实主机边界以双API构建验证，回放使用原生API替身。
+[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#town-recent-memory-20261016)。以下为产品修订b895715c核对位置；真实主机边界以双API构建验证，回放使用原生API替身。
 
 | 一基源码位置／符号 | 责任与消费者 |
 | --- | --- |
