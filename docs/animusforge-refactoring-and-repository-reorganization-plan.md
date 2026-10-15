@@ -10877,9 +10877,16 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 绑定收据：`artifacts/mcm-reopen-lag-20261015/receipt.json`，含源码/输入/UI DLL SHA、原构建及测试命令日志路径；`verified-candidates/`为冻结三DLL及build marker，均与已测候选SHA一致。1.3 SHA `C12274244FED2ED05F02BFABB956C8EE9F029FBB7EF086C90AA888E3FCD0381B`；1.4 SHA `7658FCDAAA582460D3E71686EB28E65344DBDCA535104E03F7733BE66AE62A8E`；Bootstrap SHA `9A90FE0C709CE5271424EA09811A1781E7D191B6817600DBA1A33DC5F6EECEC3`。专项收据位于 `artifacts/tests/mcm-dropdown-refresh/run-ceeab60f6585441f8cd1cb91c69ff369/receipt.json`。
 - [源码责任与坐标](architecture/af-framework-code-scope.md#mcm-reopen-lag-20261015)。NOT-RUN：玩家实际1.3.12/确切MCM版本、原生UI、3080实机GPU推理/帧耗时、真实配置/旧档；未Stage、部署、打包或push。仅凭显卡和GPU选项不能认定本事故由CUDA造成。聚焦回滚 `git revert 7e4d0d2a0`；不要覆盖其他会话或删除玩家数据。
 <a id="streaming-dialogue-reveal-20261015"></a>
-## 自由对话流式逐字与正文跟随（2026-10-15，ACTIVE）
+## 自由对话流式逐字与正文跟随（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 用户要求开启主 API 流式后，收到内容即逐字显示、长文换行并自动下滚；关闭流式保持原行为。基线 main/88c6bfe61；未跟踪 Microsoft/、NuGet/ 保留。
 - 范围：ConversationHelper 的显示缓存/逐字状态、Native Overlay 两个提交入口、新对话界面正文 ScrollablePanel/prefab；保留完整正文后处理、历史、动作、网络协议及配置身份。流式开启时 TTS 不重置增量显示。
 - 验收：真实显示状态及 helper 的分块/暂停/完成/取消/换 owner/Unicode 回放，正文换行及滚动实际绑定，既有相关生命周期/TTS 回归，原统一双 API/Bootstrap 构建。不部署、不打包、不推送；实机与真实服务另列未验。
+- 用户后续明确每秒20字，并重申必须开启流式、关闭时不动。产品提交 `21e0a6a2b`：仅两个 Native 提交入口捕获 `MainApiStreamingEnabled`；开启后预览为已净化纯文本，现有 ApplicationTick 按20个文本元素/秒释放，正文完成后继续排空，最后一次装入完整可信百科链接。TTS独立播放且不清空正文；关闭时原全文/链接/TTS等待路径保持。
+- 新对话界面的场景与地图共用 `AFDialogueConversation`：正文沿用宽度约束/自动折行/裁剪容器，只有正文滚动面板启用 `FollowStreamingText`；每次显示更新后用3帧布局尾窗跟随底部，停止输出后释放手动滚动，答案区不跟随。旧皮肤未新增滚动容器，场景喊话和信使仍收齐全文呈现。没有新增运行文案、设置副本、存档数据或网络请求。
+- 性能：复用现有Tick/锁和累计正文，不新增Tick IO/反射/游戏对象扫描；每秒约20次前缀更新，每帧最多2个文本元素，网络停顿不积累突发额度。百科链接只在完成边界格式化；滚动LateUpdate只读版本和缓存控件，O(1)。未做游戏帧性能测量。
+- 验证：`StreamingDialogueRevealTests` **35 PASS**（实际state/helper/滚动代码及提取的两UI方法；VM/布局为替身）；`NativeConversationInterruptionTests` **70 PASS**及原prefab五比例绑定；`SceneConflictJudgmentDisplayTests` **48 PASS**；continue-hit两API各 **172 PASS**。修正旧continue fixture缺少的原有Harmony/layer/context成员后才通过，未删断言。新专项初次暴露半个surrogate恢复时可能双字突发，已修；补充高速单字chunk确保不能绕过20字/秒限制。早期断言期望字数错误已修正，失败输出保留artifacts。
+- 原统一入口最终Debug build-only成功：1.3/1.4各363 warning/0 error，Bootstrap和probe各0 warning/0 error，两Coup seam及registration smoke PASS。日志 `artifacts/streaming-dialogue-reveal-20261015/build-final.log`；未Stage/Deploy。构建时另一个会话的LordEncounter/ReleaseSurrender工作正在同工作区进行，后由其提交`74be66074`；保留且未纳入本产品提交，不把本次专项作为该功能验收。
+- 未验：真实provider/网络时序、实际Bannerlord换行/滚动/帧耗时及TTS音频、旧档。旧`NativeWaitAudioBoundaryTests`未进入断言：固定历史提交`1235727e...`中不存在它引用的当前`src/modules/.../ShoutBehavior.cs`路径，日志`audio-1.3.log`保留；本任务不改历史基线。所有回放是离线证据，不宣称实机或全仓通过。
+- 证据与冻结候选：`artifacts/streaming-dialogue-reveal-20261015/receipt.json`及`verified-candidates/`；[准确源码责任/一基坐标](architecture/af-framework-code-scope.md#streaming-dialogue-reveal-20261015)。回滚仅 `git revert 21e0a6a2b`；意图检查点`0e9081622`，不重置或覆盖其他会话。未Stage、部署、打包或push。
 

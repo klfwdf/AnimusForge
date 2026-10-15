@@ -2627,3 +2627,9 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 
 旧 B/C 已审查，Memory注册/换行、外交XML加载及TTS fallback已修；主线A新增Illustrator30对。最新扫描1,352个UI候选/192文件，不是确认漏译总数。主线A 513/86，外部B 435/26，外部C 404/80；文件边界和新接力链接见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#localization-wave2-20261010)。24对契约、真实1.3/1.4本地化DLL各37,748次解析PASS；本轮未构建/实机/部署/push，待三方收敛统一验证。
 
+# 自由对话流式逐字显示（2026-10-15）
+
+- 产品 `21e0a6a2b`：仅开启主API流式时收到正文即按每秒约20字显示，新对话界面长文沿用折行并跟随底部；关闭时保留原全文/TTS/滚动行为。TTS不清空增量正文，最终百科链接在显示排空后安装。
+- 新专项35、暂停恢复70、owner隔离48、两API continue-hit各172通过；原统一Debug双API/Bootstrap/双seam/registration通过。未部署/Stage/打包/push、真实provider或实机；旧音频回放因固定历史源码路径缺失未进入断言，保留失败证据。
+- [主台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#streaming-dialogue-reveal-20261015) / [准确代码范围](docs/architecture/af-framework-code-scope.md#streaming-dialogue-reveal-20261015)。冻结产物与收据在`artifacts/streaming-dialogue-reveal-20261015/`；另一个会话的LordEncounter/ReleaseSurrender改动已由其提交`74be66074`，本任务保留且不代验。
+
