@@ -1,5 +1,5 @@
 <a id="town-recent-memory-20261016"></a>
-## 近七日城镇事实记忆（2026-10-16，OFFLINE_VERIFIED / SOURCE_PUBLICATION）
+## 近七日城镇事实记忆（2026-10-16，OFFLINE_VERIFIED / PUSHED）
 
 用户授权实现并检查后推送。产品修订 `b895715c`，本地检查点 `67e20516`；原有统治记忆仍为300–600字、最多三任，新增近期事实不占任期槽位、不调用模型、不修改生成参数。此前预览样稿现由实际代码替代。
 
@@ -9,12 +9,14 @@
 - **旧档与保存**：独立`_gcczTownRecentMemory_v1`严格UTF8分块命名空间。首次session只扫描一次原版保留日志，读取真实日期、Looted状态、实际领主；旧玩家攻城日志不能区分原版/GCCZ内部结算，故不猜补；旧GCCZ与历史到访无证据不补造。完整解码验证后才发布状态；坏块/未来schema停用近期功能，原始安全primitive证据原样保存，不完整读取或不安全证据拒绝写档。没有给原有Saveable类型改名，也没有修改长期存档键。
 - **性能**：事件频率捕获，只在每日、读取目标城、保存时淘汰七日外数据；不存在逐帧全世界扫描、网络、后台游戏对象访问。原生日志领主反射字段一次缓存，文字CN/EN包沿用既有一次加载的catalog；界面随UI语言、prompt随内容包。
 - **已验证**：160条TownRuleMemory可执行回放（含原73条）；16条新增来源/渠道/资源契约；77村庄治理、38村庄场景、136GCCZ核心、66村庄接线。实际分块大数据roundtrip、缺块保留、未来schema、旧档空namespace切换、身份/归属、七日边界、重复到访、精确双语句式、字面动态名字均覆盖。`PersistenceChunkReplayTests`与`validate_persistence_profile_config.py --chunk-contract-only`通过（21个chunked keys，48个flattened keys，1项既有direct JSON风险）。原脚本Debug双API（1.3.15/1.4.8）、Bootstrap、双Coup通过；两实现各367条既有警告、Bootstrap2条，零错误。审查后加上镇内重复确认去重并重跑完整必要检查。日志留本地，不上传。
-- **发布与边界**：源工作分支`codex/town-recent-memory-20261016`基于当前已安装AF/GCCZ村庄实现。该分支未推送祖先含本机安装回执，故从已公开安全祖先`ea6c5124`生成干净交付分支`codex/town-memory-seven-days`，移植当前源码/测试/文档，排除新增`artifacts/`。最新远端main核对为`8cb2bccc`，包含另一条工作线新提交，不擅自覆盖/合并它。交付必须验证非排除路径与本轮已构建树的Git blob一致，再普通推送功能分支并核对远端SHA。本地分支保留原历史；回滚使用本轮源码的定向逆补丁。
+- **发布与边界**：源工作分支`codex/town-recent-memory-20261016`基于当前已安装AF/GCCZ村庄实现。该分支未推送祖先含本机安装回执，故从已公开安全祖先`ea6c5124`生成干净交付分支`codex/town-memory-seven-days`，移植当前源码/测试/文档，排除新增`artifacts/`。预检远端main为`8cb2bccc`，推送前再次fetch为`e1da989f`，包含另一条工作线新提交，不擅自覆盖/合并它。交付必须验证非排除路径与本轮已构建树的Git blob一致，再普通推送功能分支并核对远端SHA。本地分支保留原历史；回滚使用本轮源码的定向逆补丁。
 - **未验**：没有启动游戏/真实provider、没有真实存档保存载入或实机对话验收，也没有Stage/安装/打包。下一步由用户载入旧档测试城市路人、原版与GCCZ操作、跨七日淘汰；不能把上述fakes/replay标为LIVE。
 
 [代码责任与一基坐标](architecture/af-framework-code-scope.md#town-recent-memory-20261016)。可复现入口为`tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests/TownRuleMemory.Tests.csproj`及同目录`verify_recent_wiring.py`；构建继续使用既有`build_single_module.ps1`，不改脚本与部署流程。
 
 交付树核验：`b895715c`的所有非排除路径与本地已验证修订`94cd9e04`逐Git blob一致；186个累计源码/测试/文档路径包含当前GCCZ村庄前置基线。本地66个旧提交没有进入新分支历史。交付分支另跑160条回放与16条接线检查全部通过，新增历史没有安装回执、存档、DLL/PDB或日志。远端发布对象为`refs/heads/codex/town-memory-seven-days`。
+
+发布结果：2026-10-16普通推送成功；远端`refs/heads/codex/town-memory-seven-days`核验为`66ebb5b96f93d1af2496b82d3501d61d5d6e0fe1`，其产品提交为`b895715c`。Git凭据管理器等待后取消该次命令，使用现有GitHub CLI登录完成；未改全局凭据或信任设置、未强推。后续提交仅更新本文发布状态。
 
 <a id="gccz-village-install-20261016"></a>
 ## GCCZ 村庄累计变更统一安装（2026-10-16，DEPLOYED_FILES_VERIFIED / LIVE_PENDING）

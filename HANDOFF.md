@@ -1,10 +1,10 @@
-# 当前交接：近七日城镇事实记忆（2026-10-16，OFFLINE_VERIFIED / SOURCE_PUBLICATION）
+# 当前交接：近七日城镇事实记忆（2026-10-16，OFFLINE_VERIFIED / PUSHED）
 
 - 本轮用户明确授权编写、检查后推送 GitHub。发布源码 `b895715c`，本地原始产品 `593186f0`、意图检查点 `67e20516`。近期事实与原有300–600字、现任＋前两任共3份统治记忆独立。
 - 原版完成事件、真实GCCZ处置接线；玩家村庄仅九种负面标签。统一季节日期和城镇／附属村庄句式。窗口为今天及前六个游戏日，过期删除；到访只报队伍汇总，记录不足不报完整七日总数。
 - 160条真实core/host回放、16条接线/双语契约、77治理/38场景/136核心及既有66村庄接线通过；持久化专项、原1.3/1.4/Bootstrap/双Coup构建通过（历史警告仍在）。没有真实游戏/provider/旧档载入验收，没有覆盖游戏。
 - 旧档仅回填可确认的原版近期日志；无法区分的旧玩家攻城结算、旧GCCZ标签和到访记录不猜补。损坏/未来版本近期命名空间停用并保留证据，不静默清空。
-- 发布使用干净功能分支，排除本地安装回执、测试存档和构建产物，不改远端main。实际推送以远端ref核验为准。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#town-recent-memory-20261016)；[代码坐标](docs/architecture/af-framework-code-scope.md#town-recent-memory-20261016)。
+- 发布使用干净功能分支，排除本地安装回执、测试存档和构建产物，不改远端main。已普通推送`codex/town-memory-seven-days`，发布提交`66ebb5b9`与远端ref一致；代码为`b895715c`。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#town-recent-memory-20261016)；[代码坐标](docs/architecture/af-framework-code-scope.md#town-recent-memory-20261016)。
 
 # 当前交接：GCCZ 村庄累计改动已安装（2026-10-16，DEPLOYED_FILES_VERIFIED / LIVE_PENDING）
 
