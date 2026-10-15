@@ -30,6 +30,10 @@ for path in ['src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs','src/
  links+='<Compile Include="'+escape(str(R/path))+'" />'
 for path,name in [('PromptCompatibility.json','AnimusForge.Prompt.Compatibility.json'),('PromptRetrievalCompatibility.json','AnimusForge.Prompt.RetrievalCompatibility.json')]:
  links+='<EmbeddedResource Include="'+escape(str(R/'content/modules/AF.Module.Prompt/ModuleData'/path))+'" LogicalName="'+name+'" />'
+for path in ['src/modules/AF.Module.Diplomacy/Presentation/DiplomacyReplyTextRules.cs','src/modules/AF.Module.Conversation/Internal/ConversationRuntimeTexts.cs']:
+ links+='<Compile Include="'+escape(str(R/path))+'" />'
+for path,name in [('content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyReceiptCompatibility.json','AnimusForge.Diplomacy.ReceiptCompatibility.json'),('content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimeCompatibility.json','AnimusForge.Conversation.RuntimeCompatibility.json')]:
+ links+='<EmbeddedResource Include="'+escape(str(R/path))+'" LogicalName="'+name+'" />'
 links+='<Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(R/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll'))+'</HintPath></Reference>'
 (O/'Test.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup><ItemGroup>'+links+'</ItemGroup></Project>',encoding='utf-8')
 (O/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
