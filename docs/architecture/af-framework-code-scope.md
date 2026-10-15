@@ -1,3 +1,17 @@
+<a id="encyclopedia-recruited-lord-audit-20261015"></a>
+### 招募领主转同伴与百科读取审查（基线049cc5ffb，仅审查）
+
+详细结论与未验范围见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#encyclopedia-recruited-lord-audit-20261015)。未修改产品或新增API。
+
+| 一基坐标 / 符号 | 实际责任与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs:16221–16237` ApplyRewardTags招募分支；`src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs:148` | C标签与三渠道共享执行器，成功后才输出成功事实；未验证事故端实际后处理/游戏变更 |
+| `src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs:95–155` TryApplyHeroJoinPlayerPartyCore | 原家族记录、继任/解散先于解除俘虏及入队；无继承人调用死亡家族销毁；错误后未补偿 |
+| `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs:4038–4103` TryMoveHeroToPlayerClanAsCompanionAndMainParty；`:3868–3893` IsHeroPlayerCompanionInMainParty | 清旧Clan、改职业、AddCompanionAction及AddHeroToPartyAction，验证局部成功状态；不证明全世界引用或百科读取安全 |
+| 同文件`:4274–4305` 空队资格；`:4731–4754` ExecutePendingHeroJoinConversationClose | 延迟关会话及只销毁空原队；不处理任意非空残留队，非百科异常兜底 |
+| `src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs:301–321` RefreshValuesPostfix | 仅在原版RefreshValues完成后追加人设，其catch不能截获原版Refresh的前置异常 |
+| `tests/replay/PhaseEightParityReplayTests/RecruitmentOwnerReplay.cs:15–36` Run | null目标/重复拒绝/无虚假事实与无状态owner断言；正向招募→百科不在已验责任内 |
+
 <a id="mcm-terminal-pages-20261015"></a>
 ### MCM 恢复与终端共用设置（产品47baa7696）
 
