@@ -432,6 +432,7 @@
     <string id="AF_DIP_UI_KingdomProfile_ReloadCloneFailed" text="The kingdom profile reload copy could not be created." />
     <string id="AF_DIP_UI_KingdomProfile_ReloadTargetMissing" text="The world changed and the kingdom target could not be found: {TARGET}" />
     <string id="AF_DIP_UI_KingdomProfile_ReloadComplete" text="Reloaded {IMPORTED} kingdom profile(s); the other {RESET} current kingdom profile(s) returned to their defaults." />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadSkippedDynamic" text="Skipped {COUNT} unmatched dynamic kingdom profile(s); existing save profiles for those IDs were preserved. First entries: {PROFILES}" />
     <string id="AF_DIP_UI_KingdomProfile_ImportNoSafeMatch" text="The import contains no safely matching profile for “{KINGDOM}”. Dynamic kingdom IDs match only when the names agree." />
     <string id="AF_DIP_UI_KingdomProfile_ImportComplete" text="Imported {IMPORTED}; skipped duplicates {DUPLICATES}; invalid or unmatched {UNMATCHED}." />
     <string id="AF_DIP_UI_KingdomProfile_SingleImportTargetOrPathEmpty" text="The single-kingdom import target or path is empty." />
