@@ -62,10 +62,25 @@ public sealed class TerminalSettingDef
 		MaxValue = maxValue;
 		StepValue = stepValue;
 		FormatString = formatString ?? "";
-		Getter = getter;
+		// MCM's SelectedValue indexes the list directly, including empty model lists.
+		// Project an invalid selection without changing the owner's persisted value.
+		Getter = settingType == TerminalSettingType.Dropdown && dropdownGetter != null
+			? s => ReadDropdownValue(dropdownGetter(s)) : getter;
 		Setter = setter;
 		Invoker = invoker;
 		DropdownGetter = dropdownGetter;
+	}
+
+	private static string ReadDropdownValue(Dropdown<string> dropdown)
+	{
+		int index = SelectedDropdownIndex(dropdown);
+		return index < 0 ? string.Empty : dropdown[index] ?? string.Empty;
+	}
+
+	internal static int SelectedDropdownIndex(Dropdown<string> dropdown)
+	{
+		int index = dropdown?.SelectedIndex ?? -1;
+		return dropdown != null && index >= 0 && index < dropdown.Count ? index : -1;
 	}
 }
 

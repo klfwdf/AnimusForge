@@ -2742,7 +2742,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 
 					}
 
-					_dropdownSelector = new SelectorVM<SelectorItemVM>(options, dropdown.SelectedIndex, OnDropdownItemChanged);
+					_dropdownSelector = new SelectorVM<SelectorItemVM>(options, TerminalSettingDef.SelectedDropdownIndex(dropdown), OnDropdownItemChanged);
 
 				}
 
