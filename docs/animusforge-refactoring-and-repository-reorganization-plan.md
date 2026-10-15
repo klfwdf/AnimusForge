@@ -1,10 +1,17 @@
 <a id="yj-interior-ui-20261015"></a>
-## YJ引导入口与内政固定文案修复（2026-10-15，ACTIVE）
+## YJ引导入口与内政固定文案修复（2026-10-15，OFFLINE_VERIFIED / RELEASE_VERIFY）
 
 - 用户要求YJ预设删除第四条玩家QQ群，第三条改为https://www.shenlanqaq.com/；追加截图报告CN内政页固定标题、表头和翻页按钮英文。只处理这两条UI链路，不改AI接口地址、政治规则、布局尺寸或玩家配置。
 - 基线main/e6a7afae9；其他会话知识库导入、重载及其测试的八份未提交改动保留，不纳入本次提交。未跟踪Microsoft/、NuGet/保持。
 - 内政21个中英文文案资源已完整存在；旧布局构建阶段调用TextObject.ToString并将结果固化在Text属性。计划改为真实DataSource属性，在显示时读取语言，不新增Tick工作、扫描、IO或翻译缓存。
 - 退出条件：YJ实际入口与CN/EN说明/XML绑定核查；内政预先构建布局后切换CN/EN的真实DLL回放；原入口双API/Bootstrap验证。未授权部署、打包或push，实机外观另列未验。
+- 后续授权取代上面的开工边界：用户明确要求带其他会话已完成改动编译、部署、推送、打包，版本仍1.6.1；世界书八份改动已核验并单独提交8093c9bb3，不再处于未提交排除状态。YJ/内政产品提交73a115e25；本次汇总构建源码8093c9bb3。
+- YJ新UI和旧Inquiry入口均移除QQ群，官网统一https://www.shenlanqaq.com/且只开一次；三个API Base URL及测速行为不变。CN/EN说明及prefab同步，相关XML可解析、键唯一、旧地址/群入口已清除。
+- 内政21种固定文案原有CN/EN资源完整，问题为早期布局把英文fallback固化进XML。改为五个真实DataSource作用域的属性绑定，显示时按UI语言读取；无新增Tick、IO、反射或语言缓存，政治逻辑/布局尺寸保持。
+- 最终汇总原统一构建exit0：1.3(v1.3.15.110062)、1.4(v1.4.6.115628)、Bootstrap、Coup seam与registration smoke通过，既有warning保留。最终冻结候选artifacts/yj-interior-ui-20261015/release-candidates；Bootstrap SHA256=06DEC85E4D99319887F1823A1632CFDFF5CC7E15FD5E202FF8FFCB967C56D866；1.3=438891A6303973898738174A5E24AED7562EB9FF31B207A07A6723AC8CCDFB9B；1.4=988343B5AAACF7CE1AB55478A7AF646256C20F9F56CAFBDA8F278D105ADC31CB。各marker匹配真实DLL。
+- 最终候选InteriorLocalizationTests两API各223项PASS：先构造真实prefab再加载语言，验证五作用域并CN→EN→CN；终端另一会话修复在最终候选复验1.3中文29536、1.4英文29552项PASS。世界书原Index/LoreRetriever 78项PASS。旧Onboarding/DatabaseReload独立fixture缺少当前依赖，未作为通过证据；未削弱断言，未宣称全仓测试通过。
+- 本轮部署/双包/push执行结果由下方同任务发行补记取代旧NOT_DEPLOYED状态；实机Gauntlet外观、玩家实际1.3.12、旧档及真实provider仍未验。源码回滚git revert 73a115e25；世界书8093c9bb3、终端5af24a7e5、快报5d2a6aa2c均按各自提交定向逆向。安装不自动回滚，人工选择旧包并保留玩家数据。[精确源码范围](architecture/af-framework-code-scope.md#yj-interior-ui-20261015)。
+
 
 <a id="weekly-director-relaxation-20261015"></a>
 ## 快报导演误判回退放宽（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
@@ -10810,11 +10817,15 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 验证沿用产品双API/Bootstrap/Coup/注册、两实际DLL嵌入检查、51项家族归附及144项CN/EN扩展回放、75对模板与四组请求模板证据；本轮不重跑无变化产品构建。上两条的“未push”由本条替代；未部署/实机/provider/旧档/正式双包边界保持。
 - 证据artifacts/push-postprocess-20261015/preflight.json、push-source.log及最终receipt.json。此后仅补本条及HANDOFF发布收据并正常推送；最终远端收据提交SHA以receipt.json与ls-remote为准。回退产品git revert 068a938aa；测试git revert 141d639e6，已发布历史不改写。
 <a id="knowledge-duplicate-import-20261015"></a>
-## 世界书重复 ID 导入一致性修复（2026-10-15，ACTIVE）
+## 世界书重复 ID 导入一致性修复（2026-10-15，OFFLINE_VERIFIED / RELEASE_VERIFY）
 
 - 用户反馈卡拉迪亚编年史“洛泰——贾尔马律斯平原 / 比安芙”新档导入在不同机器结果不同，重复导入也报错；实际报错原文待补。基线 main/65017eb32；未跟踪 Microsoft/、NuGet/ 保留，不部署、打包或推送。
 - 已核实两组源文件各共用一个规则 ID，中原组还共享触发词。普通 reader 未排序且按 ID 静默丢弃后续条目；数据库重载已有稳定消歧与重复触发词归属逻辑。当前修复范围为普通 reader 复用已有规则，保留所有正文及原始资源/协议/存档身份；不扩展存档或导入事务设计。
 - 退出门：真实源文件读取保持全部条目，目录枚举顺序不影响 ID/触发词，首次及再次覆盖/跳过均验证；保留玩家条目的既有普通导入行为；CN/EN 消费路径及两 API/Bootstrap 构建验证。实机及远端玩家确切异常需单独验收。
+- 后续产品与测试提交8093c9bb3；普通reader按文件名稳定排序，复用数据库重载既有ID消歧/共享触发词归属owner，保留重复ID正文及玩家人设条目；单规则导入也消费相同归一结果，数据库重载两入口同步改名。CN/EN均走同一reader，无资源或存档身份变更；仅导入时处理，无新增Tick工作。
+- 原Index runner在链接真实KnowledgePromptTexts后78项PASS，覆盖真实重复文件、正文保全、稳定ID/触发词、重复导入覆盖/跳过、源文件不改写。最终8093c9bb3汇总的原1.3/1.4/Bootstrap及Coup/注册门禁PASS。证据artifacts/yj-interior-ui-20261015/knowledge-index-final.log及release-build.log；旧DatabaseReload fixture依赖缺口保留，不宣称该套通过。
+- 用户后续明确授权本次一并部署、打包与推送，取代此条开工时的禁止边界；实际结果见[yj汇总发行条目](#yj-interior-ui-20261015)。实机及玩家具体异常未验；回滚git revert 8093c9bb3，不恢复其他作者文件。[源码范围](architecture/af-framework-code-scope.md#knowledge-duplicate-import-20261015)。
+
 
 <a id="terminal-ai-dropdown-crash-20261015"></a>
 ## 终端 AI 核心点击崩溃修复（2026-10-15，OFFLINE_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
@@ -10828,4 +10839,3 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 原 `scripts/build/build_single_module.ps1` Debug build-only 最终 exit0：引用 1.3 `v1.3.15.110062` / 1.4 `v1.4.6.115628`，两实现、Bootstrap、两 Coup seam 与 registration smoke PASS，保留既有编译警告。前两次本机 net472/Facade 解析失败后，使用仅进程生效的本地离线 targets、明确 net472 引用与 netstandard facade 完成；未改原构建脚本。旧构建产物保存到证据目录；本次构建覆盖共享树的并行改动，不宣称隔离构建。
 - 最终冻结候选的 `TerminalLiveSettingsTests/run.py`：1.3 / zh-CN **29536 PASS**，1.4 / en **29552 PASS**，均含本次 dropdown boundary regression；原测试读取真实 MCM JSON、生产 VM 与保存 owner，但模块/磁盘 provider 是仓内 fixture，无原生渲染/网络。定向 `git diff --check` PASS。完整命令、失败日志、最终构建与 SHA 在 `artifacts/terminal-ai-dropdown-20261015/receipt.json` 及相邻文件，候选固定在 `verified-candidates/`。
 - 代码坐标与责任边界：[当前源码范围图](architecture/af-framework-code-scope.md#terminal-ai-dropdown-crash-20261015)。NOT-RUN：玩家实际 1.3.12 点击、原生 UI、真实配置/旧档及实机性能；报告未记录具体设置 ID，不能断定哪一项配置损坏。另一份 BannerlordCheats 锻造补丁故障未改。未 Stage/部署/正式打包/push；源码回滚 `git revert 5af24a7e5`，不触碰其他作者改动。
-
