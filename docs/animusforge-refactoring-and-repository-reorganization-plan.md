@@ -1,5 +1,5 @@
 <a id="town-memory-main-20261016"></a>
-## 城镇记忆直接集成 main（2026-10-16，OFFLINE_VERIFIED / MAIN_PUSH_PENDING / LIVE_PENDING）
+## 城镇记忆直接集成 main（2026-10-16，OFFLINE_VERIFIED / MAIN_PUSH_VERIFIED / LIVE_PENDING）
 
 - **授权与范围**：用户要求以最新AF源码检查后直接推送main，GCCZ村庄以后对接。新工作树从e1da989f开始，意图d616f230；仅迁入产品29cf6313（21个生产/资源/回归/持久化清册文件）。未合并旧分支7085dd76的累计产品树或本地历史；不引入村庄玩法、Parade、TTS、旧设置路径及旧导演API实现。远端期间新增d7919dda的动态王国重载修复，35b0be9e无冲突合入并重新双版本构建；原main的新设置/对话/外交修复均保留。
 - **功能**：近期事实独立于最多三任统治者记忆，保留当前日及前六个日历日；原版村庄劫掠、强迫物资/征兵、城镇攻占和战后宽恕/掠夺/毁坏按已发生事件入库。GCCZ城镇沿现有生效路径记录标签，重复确认不重复追加，迁殖在文化提交后记录。日期为〔XXXX年X季X日〕，村庄句为“XXX对XXX城的XXX村庄执行了XXXX。”；城镇句为“XXX对XXX城执行了XXXX。”。村民/商队只汇总队数，不公开队伍身份；覆盖不足明确总数未知。
@@ -9,7 +9,7 @@
 - **验证**：实际核心及宿主fixture158项PASS，日期/九负面ID/拒绝正面与缺收据/去重/跨日到期/旧日志/分块损坏保护/CN-EN/300和600边界/旧短及手工正文均覆盖；接线16项PASS；PersistenceChunkReplayTests PASS；current-chunk-contract-only PASS（22 chunked/47 flattened/0 known open direct JSON risks）；实际辅助方法预算回放PASS（高配置限至1536、低128保留、最小16）。这些回放不是实机或provider测试。
 - **构建**：未修改的scripts/build/build_single_module.ps1，Debug、1.3引用现有_deps_auto、1.4引用game-1.4.8-refs，实际依赖/候选SHA在本地receipt.json。初次及35b0be9e合并后构建均exit0；两实现各367警告、0错误，Bootstrap2警告、0错误，双Coup及registration门禁PASS。不从目录名推定所有游戏补丁版已验。
 - **证据与交付边界**：artifacts/town-memory-main-20261016/{town-memory-tests.log,persistence-replay.log,dual-build.log,merged-dual-build.log,receipt.json}均本地ignored；本次不上传日志/DLL/玩家存档/设置。不部署、Stage、打包、调用AF API或改玩家存档；实机对话与玩家旧档仍待验。源码回退以git revert 29cf6313聚焦撤销，保留main其他修复；旧程序不会消费新近期记忆键，回退后新功能记录不能据此声明受保护。
-- **源码坐标**：见[唯一代码范围图](architecture/af-framework-code-scope.md#town-memory-main-20261016)；[桥接说明及待接村庄契约](gccz/bridge/town-rule-memory-bridge.md#seven-day-recent-memory)。推送授权已明确，完成最终范围/远端核对后直接普通push main；最终结果由后续补记及本地receipt.json记录。
+- **源码坐标**：见[唯一代码范围图](architecture/af-framework-code-scope.md#town-memory-main-20261016)；[桥接说明及待接村庄契约](gccz/bridge/town-rule-memory-bridge.md#seven-day-recent-memory)。25文件发布范围/凭据模式/本地工件排除/空白检查PASS；再次fetch确认main为d7919dda，普通push已快进至982f914ed4b11bb2806280abc37505fad57663ea，独立ls-remote等于本地HEAD。本收据文档随后同样普通推送，最终SHA与核对见本地receipt.json；未force、未改写main历史。
 
 <a id="reload-skip-dynamic-kingdoms-20261016"></a>
 ## 数据库重载跳过不匹配的动态王国（2026-10-16，OFFLINE_VERIFIED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
