@@ -1,3 +1,9 @@
+# 当前交接：当前源码EN部署完成（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户要求部署EN；a21d97089双API/Bootstrap/原门禁构建并安装到F盘单模块AnimusForge，版本v1.6.1。包含隐藏导演配置退役8c7619e22和动态王国重载跳过35c6ad013；此条取代下方相应未部署历史，未创建新ZIP或push。
+- 完整CN/EN各3522项投影、源码/实际三DLL英文门禁及安装核对PASS；更新87+3121项。只将语义与当前CN出厂默认完全一致的3121世界书切至EN，保留用户内容；最终3512项SHA等于EN候选，10份保留JSON语义等于EN。50设置/自定义哈希、ONNX/原版DLL及未列管文件保持。实机/真实provider/出图/玩家包重载/旧档未验。
+- [唯一主台账与证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-en-current-20261016)；本地artifacts/deploy-en-current-20261016/receipt.json及verified-candidates/。无部署备份/自动回滚，安装回退需人工选择旧包并保护玩家资料；旧2257包不含上述两项修复。
+
 # 当前交接：数据库重载可跳过不匹配动态王国（2026-10-16，OFFLINE_VERIFIED / PUSH_VERIFIED / LIVE_PENDING / NOT_DEPLOYED）
 
 - 产品35c6ad013：仅跳过无法匹配的动态王国profile，其他数据库继续；被跳过ID免除candidate规范化/默认重置，保留原profile。支持王国源全跳过，原静态/格式/重复校验不变；确认及完成CN/EN显示数量和最多8对象，无新增Tick工作。
