@@ -1,3 +1,9 @@
+<a id="deploy-cn-tightened-persona-20261016"></a>
+## 收紧版手动重生CN部署（2026-10-16，ACTIVE）
+
+- 用户要求部署CN，基线main/642f07c85，产品d04530acd；目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，保持v1.6.1。复用刚通过573项/双语各100项及原双API/Bootstrap/双Coup/registration候选，重新核对源与三DLL哈希；不修改原构建部署流程。
+- 原Stage producer重建干净CN，保留旧Stage。未变资源复用上次完整CN/EN各3522项投影证据，本次变化的PersonaPromptTexts沿原资源选择/JSON协议与真实CN/EN请求专项验收；部署前后完整Stage/目标核对，保护设置、CustomPrompts、原版DLL、ONNX及未列管文件。无新ZIP或push；实机/provider/玩家旧档未验。
+
 <a id="persona-experience-tightening-20261016"></a>
 ## 手动重生经历与压缩记忆收紧（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
