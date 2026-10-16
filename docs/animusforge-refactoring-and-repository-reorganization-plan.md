@@ -1,3 +1,11 @@
+<a id="persona-regeneration-experiences-20261016"></a>
+## 手动重生个性接入最近经历（2026-10-16，ACTIVE）
+
+- 用户要求手动重生个性背景接入最近经历。基线main/f2cb21bf9，跟踪文件干净，Microsoft/与NuGet/未跟踪目录保留。
+- 修改范围：普通英雄手动重生的输入捕获与Prompt，读取同人物现有近期行动、最新压缩记忆及最近对话/AFEF历史，CN/EN同步；自动首次生成、存档格式、世界书选择、提供商配置和原构建入口保持。
+- 读取仅在手动请求的既有主线程dispatcher内执行，捕获为脱离对象的文本并限量；保留原owner/generation/lease/用户编辑防覆盖检查，不新增Tick扫描或磁盘持久化。
+- 完成门：真实手动入口接入、无记忆仍可生成/无跨人物串用/对话声明与确认事实区分/有限长度/用户编辑和晚结果保护回放，中英文资源接线及双API/Bootstrap构建。实机/provider/玩家旧档未验；本轮未授权部署、打包或push。
+
 <a id="deploy-en-current-20261016"></a>
 ## 当前源码EN部署（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
 
