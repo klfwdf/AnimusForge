@@ -6,6 +6,19 @@
 - 读取仅在手动请求的既有主线程dispatcher内执行，捕获为脱离对象的文本并限量；保留原owner/generation/lease/用户编辑防覆盖检查，不新增Tick扫描或磁盘持久化。
 - 完成门：真实手动入口接入、无记忆仍可生成/无跨人物串用/对话声明与确认事实区分/有限长度/用户编辑和晚结果保护回放，中英文资源接线及双API/Bootstrap构建。实机/provider/玩家旧档未验；本轮未授权部署、打包或push。
 
+<a id="history-speech-refactor-20261016"></a>
+## 历史角色与后处理事实局部重构交付（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN）
+
+- 目标与范围：修复后处理丢弃带当下/过往scope的AFEF，以及动态玩家名的英文历史被当成assistant/同轮旧输入重复拼入。用户明确要求局部重构，不叠加特殊拦截；保持既有持久化字段、角色/会话身份、三渠道入口、标签规则及执行器。
+- 源码：`9b4f4873e`移植共享AFEF修复；`01dcdcd5d`把日记角色/旁听识别从UncompressedMemoryMessageAssemblyOwner实际迁到ConversationRoleClassificationOwner，并统一Native去重的中英精确存储前缀解析。已有MemoryCommitPart优先，旧记录接收真实capture的观察者玩家显示名；主线程只在请求/显式编辑捕获一次，后台只收脱离游戏对象的标量。未知NPC/叙述不猜成玩家，不修改存储文本。`0b77448ff`让现有共享模板回归接受隔离SDK选择，不改一键构建。
+- 真实接线与责任坐标见[当前代码地图](architecture/af-framework-code-scope.md#history-speech-refactor-20261016)。未迁移的时间地点、预算、事实合并和Memory权威提交仍由原owner负责；解析是有限请求历史频率，无新增Tick IO/反射/全量扫描。前缀扫描按固定少量片段比较，先检查精确speaker，避免每个候选拼接新header。
+- 先红后绿：未修改生产算法时，真实EN存储producer+实际capture重现动态玩家名错分；修后CN/EN各84项检查通过，包含真实存储producer、实际记忆capture/日记编辑、结构角色优先、跨包旧中英记录、同事件Native重叠、不同收件人/会话、当前重复输入、旁听、元数据和限额。受控叶子为游戏身份/场景；此角色fixture的AFEF合并分支明确不覆盖并以throw防止误用。
+- 最终交付树重验：后处理历史CN/EN各43项通过；历史scope/预算CN/EN各22项通过；SinglePassTemplateTests在两API符号×CN/EN四组合通过，各含35个Courier模板。单测TargetFramework=net10.0仅为本机测试宿主，不改变产品net472或游戏API。
+- 最终交付源码经未修改的统一构建脚本函数构建1.3/1.4及Bootstrap，实际引用v1.3.15.110062/v1.4.6.115628；实现各363警告/0错误，Bootstrap0警告/0错误。两份DLL/PDB/marker-only候选经原Coup门禁，registration smoke及各20项memory port断言通过；探针10个真实Compile项、无旧obj混入。构建/probe输出全部隔离在仓内新目录，不Stage/部署/打包。
+- 失败与未验：额外NativeMemoryContinuityReplayTests被既有夹具遗漏MemoryFailureDisplay/本地化reader等依赖挡住，不计通过；试验性接线未纳入交付，不为夹具削弱产品或断言。全局code-map门禁仍报未改ModuleFrameworkRuntime.cs旧hash陈旧；本次精确地图另列，不宣称全仓全绿。首次probe恢复因只读fallback路径不含net472包报NU1100，使用已验证存在的只读缓存与全新输出后通过，未改产品或下载依赖。
+- 本轮没有新游戏进程、HTTP、付费模型、正式部署/设置/存档写入。既有AFEF修复曾狭义实机确认事实进入后处理且该例不重复发币；不能替代本重构后的实机验收，也不声称解决模型误解的唯一原因。全标签、所有情绪的权威状态/唯一AFEF条数、旧档仍待验，原生退出不在范围。
+- Git交付：基于当次fetch的远端main `f2cb21bf9c0c07870bc15629eda5e3022f7ce5f6`建立干净交付分支，仅移植上述源码/持久回归与本节公开记录，保留远端其他作者变更，不引入本地平台/私人交接祖先。推送采用普通快进并独立核对远端ref，不force、不重写原本地历史。回退为针对具名产品提交的focused inverse；部署/实机另行授权。
+
 <a id="deploy-en-current-20261016"></a>
 ## 当前源码EN部署（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
 

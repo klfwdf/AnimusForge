@@ -1193,6 +1193,10 @@ public static class AIConfigHandler
 	private static bool TryParseActionPostprocessAfefHeaderLine(string line, out string prefix)
 	{
 		string text = (line ?? "").Trim();
+		if (text.EndsWith("】", StringComparison.Ordinal) || text.EndsWith("]", StringComparison.Ordinal))
+		{
+			text = ConversationSpeechTextRules.StripAfefPromptScopeLabel(ShoutUtils.StripConversationMetadataPrefix(text));
+		}
 		if (text.Equals(PromptRetrievalTexts.Raw("Raw_4c4fc91b8269"), StringComparison.Ordinal) || text.Equals(PromptRetrievalTexts.Raw("Raw_6d7b96ecf184"), StringComparison.Ordinal))
 		{
 			prefix = PromptRetrievalTexts.Raw("Raw_6d7b96ecf184");
@@ -1241,6 +1245,11 @@ public static class AIConfigHandler
 		if (string.IsNullOrWhiteSpace(text) || text.IndexOf("<latest_reply>", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("REQUEST_BODY:", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return "";
+		}
+		if (roleText == "system")
+		{
+			string factText = NormalizeActionPostprocessHistoryLine(text);
+			return factText.StartsWith("[AFEF", StringComparison.Ordinal) ? factText : "";
 		}
 		if (roleText == "user")
 		{
@@ -1365,6 +1374,7 @@ public static class AIConfigHandler
 		text = ShoutUtils.StripConversationMetadataPrefix(text);
 		text = Regex.Replace(text, "^\\[AF_SCENE_SESSION:\\d+\\]\\s*", "", RegexOptions.CultureInvariant);
 		text = Regex.Replace(text, "^\\[[^\\]\\r\\n]*[｜|][^\\]\\r\\n]*\\]\\s*", "", RegexOptions.CultureInvariant);
+		text = ConversationSpeechTextRules.StripAfefPromptScopeLabel(text);
 		text = NormalizeActionPostprocessAfefHistoryLine(text);
 		text = Regex.Replace(text, PromptRetrievalTexts.Raw("Raw_52712046bf7a"), PromptRetrievalTexts.Raw("Raw_d55de525e50a"), RegexOptions.CultureInvariant);
 		text = Regex.Replace(text, "\\s+", " ", RegexOptions.CultureInvariant).Trim();
@@ -1425,6 +1435,11 @@ public static class AIConfigHandler
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return "";
+		}
+		// Executed facts are not duplicate dialogue, even when the latest reply quotes them.
+		if (text.StartsWith("[AFEF", StringComparison.Ordinal))
+		{
+			return "afef|" + text;
 		}
 		int num = text.IndexOfAny(new char[2] { ':', '：' });
 		if (num >= 0 && num + 1 < text.Length)

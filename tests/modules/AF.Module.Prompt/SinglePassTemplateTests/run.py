@@ -3,9 +3,12 @@ import subprocess,sys,shutil,json,argparse
 from xml.sax.saxutils import escape
 R=Path(__file__).resolve().parents[4]
 sys.path.insert(0,str(R/'tests'))
-from output_isolation import new_run_root
-parser=argparse.ArgumentParser(); parser.add_argument('--run-root',type=Path); options=parser.parse_args()
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
+parser=argparse.ArgumentParser(); parser.add_argument('--run-root',type=Path); parser.add_argument('--dotnet'); parser.add_argument('--target-framework',default='net8.0'); options=parser.parse_args()
 O=new_run_root(R,'prompt-singlepass',options.run_root)
+dotnet=resolve_dotnet(R,options.dotnet);env=minimal_test_environment(dotnet,O)
+major=options.target_framework.removeprefix('net').split('.')[0]
+newtonsoft=sorted((dotnet.parent/'sdk').glob(major+'.*/Newtonsoft.Json.dll'))[-1]
 sys.path.insert(0,str(R/'tools/localization'))
 from inventory_untranslated import LEX
 source=(R/'src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs').read_text('utf-8-sig');mask=LEX.sub(lambda m:' '*len(m.group()),source)
@@ -34,13 +37,13 @@ for path in ['src/modules/AF.Module.Diplomacy/Presentation/DiplomacyReplyTextRul
  links+='<Compile Include="'+escape(str(R/path))+'" />'
 for path,name in [('content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyReceiptCompatibility.json','AnimusForge.Diplomacy.ReceiptCompatibility.json'),('content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimeCompatibility.json','AnimusForge.Conversation.RuntimeCompatibility.json')]:
  links+='<EmbeddedResource Include="'+escape(str(R/path))+'" LogicalName="'+name+'" />'
-links+='<Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(R/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll'))+'</HintPath></Reference>'
-(O/'Test.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup><ItemGroup>'+links+'</ItemGroup></Project>',encoding='utf-8')
+links+='<Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(newtonsoft))+'</HintPath></Reference>'
+(O/'Test.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>'+escape(options.target_framework)+'</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup><ItemGroup>'+links+'</ItemGroup></Project>',encoding='utf-8')
 (O/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
-dotnet=R/'local/dotnet/8.0.425/dotnet.exe'
+
 for api in ['1.3','1.4']:
  args=[str(dotnet),'build',str(O/'Test.csproj'),'--nologo','-v:q','-p:DefineConstants='+('BANNERLORD_1_4_OR_GREATER' if api=='1.4' else 'BANNERLORD_1_3')]
- b=subprocess.run(args,capture_output=True,text=True,encoding='utf-8',errors='replace');(O/('build-'+api+'.log')).write_text(b.stdout+b.stderr,encoding='utf-8');print('BUILD',api,b.returncode);assert b.returncode==0,b.stdout+b.stderr
+ b=subprocess.run(args,cwd=O,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace');(O/('build-'+api+'.log')).write_text(b.stdout+b.stderr,encoding='utf-8');print('BUILD',api,b.returncode);assert b.returncode==0,b.stdout+b.stderr
  for lang in ['zh-CN','en']:
   pack=O/lang;pack.mkdir(exist_ok=True)
   for name in ['PromptComposerTexts','PromptRetrievalTexts']:
@@ -48,4 +51,4 @@ for api in ['1.3','1.4']:
    filename=name+('.'+suffix if suffix else '')+'.json'
    shutil.copyfile(R/'content/modules/AF.Module.Prompt/ModuleData'/filename,pack/(name+'.json'))
   shutil.copyfile(R/'content/modules/AF.Module.WorldMap/ModuleData/WorldMapCompatibility.json',pack/'WorldMapCompatibility.json')
-  run=subprocess.run([str(dotnet),str(O/'bin/Debug/net8.0/Test.dll'),str(pack),lang],capture_output=True,text=True,encoding='utf-8',errors='replace');(O/(api+'-'+lang+'.log')).write_text(run.stdout+run.stderr,encoding='utf-8');print(run.stdout+run.stderr);assert run.returncode==0
+  run=subprocess.run([str(dotnet),str(O/('bin/Debug/'+options.target_framework+'/Test.dll')),str(pack),lang],cwd=O,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace');(O/(api+'-'+lang+'.log')).write_text(run.stdout+run.stderr,encoding='utf-8');print(run.stdout+run.stderr);assert run.returncode==0
