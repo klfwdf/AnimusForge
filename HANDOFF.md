@@ -1,3 +1,9 @@
+# 当前交接：当前源码已部署EN（2026-10-17，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户要求部署EN；检查点2dfd06d34，产品9cdffaf44及此前双语解析c1a1298cb、收紧人设d04530acd已部署至F盘单模块AnimusForge，保持v1.6.1。包括打断释放等待并保留气泡已显示文本/正常寿命；此条取代下方相应功能未部署与10/16 CN为当前安装的状态。
+- 复用并逐SHA核对原双API/Bootstrap/Coup/registration候选；干净Stage与原CN/EN完整选版各3522项PASS。仅3121份匹配已知CN默认的世界书选择EN，由原部署owner更新3203项；安装全量哈希、54受保护配置/自定义文件、ONNX、原版DLL及未列管文件保持。严格EN发行词法仍因旧历史兼容词/CN分支FAIL，原错误已留存，未改门禁或称正式发行全绿。
+- [唯一主台账/部署证据与人工回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-en-scene-interrupt-20261017)；[打断修复核实源码地图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-presentation-interrupt-code)。artifacts/deploy-en-scene-interrupt-20261017/receipt.json及verified-candidates/；未实机/provider/音频/渲染/存档验收，未打包/push。无部署备份或自动回滚，人工回退需保留玩家数据。
+
 # 当前交接：场景打断释放等待并保留气泡（2026-10-17，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
 - 产品9cdffaf44修复打断后旧epoch等待标记残留；立即释放旧UI等待，保留已开始动作的真实gate，晚回调不能污染新等待。打断停止生成/接力/播放/继续打字，保留气泡已显示内容与正常寿命；其他清理默认行为保持。无新Tick工作、设置、Prompt、协议或存档变更。
