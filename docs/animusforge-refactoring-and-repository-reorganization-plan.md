@@ -1,10 +1,21 @@
 <a id="persona-regeneration-experiences-20261016"></a>
-## 手动重生个性接入最近经历（2026-10-16，ACTIVE）
+## 手动重生个性接入最近经历（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
-- 用户要求手动重生个性背景接入最近经历。基线main/f2cb21bf9，跟踪文件干净，Microsoft/与NuGet/未跟踪目录保留。
-- 修改范围：普通英雄手动重生的输入捕获与Prompt，读取同人物现有近期行动、最新压缩记忆及最近对话/AFEF历史，CN/EN同步；自动首次生成、存档格式、世界书选择、提供商配置和原构建入口保持。
-- 读取仅在手动请求的既有主线程dispatcher内执行，捕获为脱离对象的文本并限量；保留原owner/generation/lease/用户编辑防覆盖检查，不新增Tick扫描或磁盘持久化。
-- 完成门：真实手动入口接入、无记忆仍可生成/无跨人物串用/对话声明与确认事实区分/有限长度/用户编辑和晚结果保护回放，中英文资源接线及双API/Bootstrap构建。实机/provider/玩家旧档未验；本轮未授权部署、打包或push。
+- 用户要求手动重生个性背景接入最近经历。检查点7f10ee07a；按后续要求先拉取合并历史角色/AFEF修复，集成基线main/7f6e5085d。产品ce86d561f；Microsoft/与NuGet/未跟踪目录保留。
+- 普通英雄手动重生现在读取同人物的最近16条近期行动（沿用原10日窗口及原事实投影）、最新一块已有压缩记忆、最近24条对话/AFEF历史。仍参考原人物事实/百科、世界书、旧个性和自定义要求；自动首次生成不读取新经历块，没有新增设置或存档字段。
+- 捕获只在手动请求的原主线程dispatcher内执行，按目标ID读取同一记忆owner，传入异步流程的只有文本。沿用原owner/generation/lease/用户编辑防覆盖和VoiceId保护；显式捕获异常按原失败路径报告。读取不消费或重写原记忆，不新增Tick扫描、反射或磁盘IO；原读取器只处理该人物的历史/压缩块列表，近期行动容器原上限96。
+- 请求预算：行动最多16条并节选最新4000字符，压缩摘要最多2000字符；对话最多24条、每条正文800字符，序列化项累计6000字符（外层JSON和来源字段另计）。保留日期/speaker/kind，排除其他MemoryId。中英固定规则明确台词不是已完成事实、本人/他人/听闻有别、旧压缩记忆不能写成正在发生，不把经历正文当指令，不锁输出语言。
+- 验证：完整重生/提拔/预约/生命周期/Prompt回放518项PASS；专项CN/EN各45项PASS，实际选版JSON经原reader到最终gateway请求。覆盖空经历、自动不读、其他人物排除、最新16行动/24历史、长度预算、保留原记忆、异常不请求/不保存、角色与AFEF来源；引擎、记忆存储/原行动渲染和provider叶端口为fixture，不等同实机或旧档。
+- 原统一build_single_module.ps1 Debug（仅build，无Stage/Deploy）1.3/1.4、Bootstrap、双Coup及registration均exit0，引用v1.3.15.110062/v1.4.6.115628；两实现各363警告、0错误。第一次遗漏必填BannerlordRoot在入口停止，修正调用参数后通过，未改脚本。三DLL冻结在本地verified-candidates/，哈希和build marker见receipt.json。
+- 资源：原Get-AnimusForgeEnglishAsset选择PersonaPromptTexts.en.json，原Assert-AnimusForgeEnglishJsonContract及content-map目标ModuleData/PersonaPromptTexts.json核对PASS。生产源SHA与三套最终回放manifest一致。旧PersonaLocalizationContractTests在未改UI的严格键清单失败：原fixture缺少既有AF_PERSONA_UI_CONTEXT_RecentChange预期，UI文件与基线相同，未为门禁改产品或移除断言；不称整套旧本地化通过。
+- 证据：artifacts/persona-regeneration-experiences-20261016/{receipt.json,resource-contract.json,legacy-fixture.json,dual-build.log,dual-build-with-root.log,final-replay/,final-locale-cn/,final-locale-en/,verified-candidates/}。实际游戏/真实provider输出/玩家旧档未验，未完整Stage、打包、部署或push；游戏现有安装不含本次功能。源码回退为git revert ce86d561f，保留合入的远端修复及其他作者记录。
+
+| 产品ce86d561f源码坐标 / 符号 | 已接通责任与边界 |
+| --- | --- |
+| src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs:13–16,25–54；CaptureRecentPersonaExperiences / NpcPersonaGenerationWork | 注入当前owner捕获委托，按同人物读取原行动/压缩/对话owner，输出脱离对象的来源文本；未改变存档或自动演变 |
+| src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs:20–24,68–74,142–145；CaptureNpcPersonaGeneration / GenerateNpcPersonaAsync | 只有overwriteExisting捕获并传入BuildNative；原调度及回写校验保留，日志仅目标ID和长度 |
+| src/modules/AF.Module.Persona/Generation/PersonaRegenerationExperienceContext.cs:10–57；Build / Clip；NpcPersonaTextRules.cs:230–249；BuildNative | 有限来源节选、历史身份筛选及CN/EN最终messages组装；输出为模型参考资料，实际模型遵循未验 |
+| content/modules/AF.Module.Persona/ModuleData/PersonaPromptTexts.json:65–66与PersonaPromptTexts.en.json:65–66 | 原reader、content-map、英文选版规则消费两项固定资源；保留动态原文与用户语言要求 |
 
 <a id="history-speech-refactor-20261016"></a>
 ## 历史角色与后处理事实局部重构交付（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN）
