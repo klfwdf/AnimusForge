@@ -1,3 +1,9 @@
+# 当前交接：5组CN/EN解析缺口已修复（2026-10-17，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
+
+- 产品c1a1298cb：英文议和支付/割让方向、政策bottom N、外交议题分类、帝国身份校验及辅助历史旁听前缀完成双语修复。保留中文旧值/协议与原门禁，无新Tick/LLM/存档迁移；258兼容值保持，新增13项共享英语输入模式。
+- 旧源码CN/EN各78项失败31，修后各78项全部PASS；原后处理各43项PASS，原1.3/1.4/Bootstrap及双Coup/registration最终构建PASS。完整旧fixture、实机/provider/旧档未验，不称全链路实机通过；未Stage/部署/打包/push，安装仍为下方10/16 CN收紧版。
+- [唯一主台账、源码坐标、边界与回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bilingual-parser-fixes-20261017)。本地artifacts/bilingual-parser-fixes-20261017/receipt.json与verified-candidates/；源码聚焦git revert c1a1298cb。本条只取代5组审计缺口的未修复状态，其他历史保留。
+
 # 当前交接：收紧版手动重生已部署CN（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户要求部署CN；检查点7114adceb对应产品d04530acd已安装至F盘单模块AnimusForge，版本v1.6.1。当前安装已使用最近10日/最多8条重要行动/800字符压缩摘要/最多8条历史且普通发言最多4条；本条取代下方收紧功能未部署状态。
