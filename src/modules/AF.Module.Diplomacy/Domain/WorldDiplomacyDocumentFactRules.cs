@@ -325,7 +325,53 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
         string toPattern = BuildPeaceKingdomReferencePattern(toName, toIsAuthor, toIsTarget);
         string body = text ?? "";
         return Regex.IsMatch(body, fromPattern + @"[^。；\n]{0,40}(?:" + actionPattern + @")[^。；\n]{0,40}" + toPattern, RegexOptions.CultureInvariant)
-            || Regex.IsMatch(body, fromPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfix") + toPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfixSuffix") + actionPattern + ")", RegexOptions.CultureInvariant);
+            || Regex.IsMatch(body, fromPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfix") + toPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfixSuffix") + actionPattern + ")", RegexOptions.CultureInvariant)
+            || ContainsEnglishDirectedPeaceTerm(body, fromName, fromIsAuthor, fromIsTarget,
+                toName, toIsAuthor, toIsTarget, actionPattern);
+    }
+
+    // Preserve the legacy Chinese grammar. English direction needs an explicit
+    // grammatical payer/recipient, not just both names somewhere around "paid".
+    private static bool ContainsEnglishDirectedPeaceTerm(string text,
+        string fromName, bool fromIsAuthor, bool fromIsTarget,
+        string toName, bool toIsAuthor, bool toIsTarget, string actionPattern)
+    {
+        string action;
+        string passive;
+        bool payment = actionPattern == DiplomacyCompatibilityTexts.Get("Regex_PayKeywords");
+        if (payment)
+        {
+            action = DiplomacyCompatibilityTexts.Get("Regex_EnglishPayKeywords");
+            passive = DiplomacyCompatibilityTexts.Get("Regex_EnglishPaidKeywords");
+        }
+        else if (actionPattern == DiplomacyCompatibilityTexts.Get("Regex_CedeKeywords"))
+        {
+            action = DiplomacyCompatibilityTexts.Get("Regex_EnglishCedeKeywords");
+            passive = DiplomacyCompatibilityTexts.Get("Regex_EnglishCededKeywords");
+        }
+        else return false;
+        string from = BuildEnglishPeaceKingdomReferencePattern(fromName, fromIsAuthor, fromIsTarget);
+        string to = BuildEnglishPeaceKingdomReferencePattern(toName, toIsAuthor, toIsTarget);
+        const string modal = @"\s+(?:(?:will|shall|must|would|agrees?\s+to)\s+)?(?:";
+        // Stop at the first direction preposition and at sentence boundaries.
+        // Otherwise "A pays C ... to B" or "A receives money paid by B" can reverse roles.
+        const string details = @"(?:(?!\b(?:to|from|by|not|never)\b)[^.;!?\r\n。；]){0,120}";
+        const string passiveModal = @"\s+(?:(?:will|shall|must|would)\s+be|is|are|was|were)\s+(?:";
+        var options = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
+        return Regex.IsMatch(text, from + modal + action + @")" + details + @"\bto\s+" + to, options)
+            || (payment && (Regex.IsMatch(text, from + modal + action + @")\s+" + to + @"\s+\d", options)
+                || Regex.IsMatch(text, to + passiveModal + passive + ")" + details + @"\bby\s+" + from, options)))
+            // A ceded asset is the passive subject; it must not become the recipient.
+            || Regex.IsMatch(text, passiveModal + passive + ")" + details + @"\bby\s+" + from + @"\s+to\s+" + to, options)
+            || Regex.IsMatch(text, passiveModal + passive + ")" + details + @"\bto\s+" + to + @"\s+by\s+" + from, options);
+    }
+
+    private static string BuildEnglishPeaceKingdomReferencePattern(string name, bool isAuthor, bool isTarget)
+    {
+        string aliases = isAuthor ? DiplomacyCompatibilityTexts.Get("Regex_EnglishAuthorKingdomKeywords")
+            : isTarget ? DiplomacyCompatibilityTexts.Get("Regex_EnglishTargetKingdomKeywords") : "";
+        return @"(?<![\p{L}\p{N}_])(?:" + Regex.Escape(name)
+            + (aliases.Length == 0 ? "" : "|" + aliases) + @")(?![\p{L}\p{N}_])";
     }
 
     public static void RecordDiplomaticStandingChange(WorldDiplomacyDocument document,

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace AnimusForge.PolicyTargets;
 
@@ -1537,6 +1538,7 @@ internal static class PolicyTargetPlanRouter
 		if (count > 0)
 		{
 			branch.Cardinality = ContainsAny(query, PolicyCompatibilityTexts.Get("Targets_Compat_60be66d61586"), PolicyCompatibilityTexts.Get("Targets_Compat_8b5f2a61b797"), PolicyCompatibilityTexts.Get("Targets_Compat_477e3eac4043"), PolicyCompatibilityTexts.Get("Targets_Compat_788d5efc1161"), PolicyCompatibilityTexts.Get("Targets_Compat_09e09a1a634e"), PolicyCompatibilityTexts.Get("Targets_Compat_ef2e2e8ee22a"))
+                || Regex.IsMatch(query, @"bottom(?=[0-9])", RegexOptions.CultureInvariant)
 				? PolicyTargetPlanCardinality.BottomN
 				: PolicyTargetPlanCardinality.TopN;
 			branch.Limit = count;
