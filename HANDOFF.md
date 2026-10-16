@@ -1,3 +1,9 @@
+# 当前交接：近期城镇记忆精简（2026-10-16，部署暂缓）
+
+- 产品757e50f3基于最新main/03ca1694无冲突移入；仅输出实际事件和“已记录X次村民队伍到访和Y次商队到访。”，空记录只留计数。CN/EN同步，七日存储与原事件句式保持。
+- 160项回放、16项接线及原双API/Bootstrap/双Coup/registration/干净Stage通过；NuGet漏洞源离线警告不代表漏洞审计通过。main普通推送与远端ref核对收据保存在本地artifacts/town-memory-concise-20261016/receipt.json。
+- [唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#town-memory-concise-20261016)及[精确代码范围](docs/architecture/af-framework-code-scope.md#town-memory-concise-20261016)。用户最新决定先完成源码和推送、暂不部署；已安装实验版本保持。
+
 # 当前交接：历史角色与后处理事实修复（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN）
 
 - 已局部重构历史角色与中英存储前缀归一化，记忆装配、日记编辑、Native去重共用真实owner；同时交付scoped AFEF后处理修复。保持存档/三渠道接口/标签执行规则不变。
