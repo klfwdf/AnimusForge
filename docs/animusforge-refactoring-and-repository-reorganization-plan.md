@@ -1,3 +1,10 @@
+<a id="scene-presentation-interrupt-20261017"></a>
+## 场景喊话打断卡住与气泡保留（2026-10-17，ACTIVE / NOT_DEPLOYED / NOT_PUSHED）
+
+- 用户要求修复场景喊话打断卡住，并明确打断不能清空气泡。基线4c634e51d；现场03:41:16进入scene_relay后处理等待，03:41:21确认点击并记录round interrupted，随后wait_done但会话仍忙。artifacts/scene-interrupt-investigation-20261017直接编译原gate，完成/取消/超时均复现旧epoch导致等待标记残留；安装1.4 DLL SHA与10/16 CN部署收据相符，涉及入口/等待/UI源码与部署修订相同。
+- 本包只改Scene等待生命周期和打断到音频/打字机的真实接线：打断释放旧等待展示owner，保留已开始动作的真实gate；旧完成回调不能清除新等待或恢复旧busy。气泡只停止继续打字，保留已显示文字及原正常淡出，其他场景清理默认行为保持。无设置、Prompt、存档/协议变化，不新增Tick IO、扫描或LLM请求。
+- 退出条件：当前源码回归覆盖打断即时释放、完成/取消/超时、新等待与旧晚回调；现有场景生命周期/音频测试覆盖保留气泡模式及默认清理；原双API/Bootstrap/Coup/registration构建通过。只做离线验证，实机/provider未验；无本轮部署、打包、推送授权。保留Microsoft/NuGet与其他作者改动。完成后补产品修订、源码坐标、候选与聚焦回退。
+
 <a id="bilingual-parser-fixes-20261017"></a>
 ## CN/EN解析缺口修复（2026-10-17，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
