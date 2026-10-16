@@ -1,3 +1,9 @@
+# 当前交接：手动重生已接入最近经历（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
+
+- 产品ce86d561f基于已合并的main/7f6e5085d：手动重生加入同人物最近16条行动、最新压缩记忆和最近24条对话/AFEF；世界书/事实/自定义要求沿用原链路，自动首次生成不读新增经历块。按次主线程捕获并限量，不改记忆/存档，不新增Tick工作。
+- 完整回放518项、专项CN/EN各45项、原资源选择/JSON协议/content-map及原双API/Bootstrap/Coup/registration通过。旧全量Persona本地化fixture因既有RecentChange UI键清单陈旧失败，未算通过；实际游戏、真实provider及玩家旧档未验，未部署、打包或push。
+- [唯一主台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#persona-regeneration-experiences-20261016)。本地artifacts/persona-regeneration-experiences-20261016/receipt.json与冻结三DLL可追溯；源码聚焦git revert ce86d561f。下方部署交接为历史，不包含此次改动。
+
 # 当前交接：历史角色与后处理事实修复（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN）
 
 - 已局部重构历史角色与中英存储前缀归一化，记忆装配、日记编辑、Native去重共用真实owner；同时交付scoped AFEF后处理修复。保持存档/三渠道接口/标签执行规则不变。
