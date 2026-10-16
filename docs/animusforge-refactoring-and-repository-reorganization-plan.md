@@ -1,9 +1,24 @@
 <a id="bilingual-parser-fixes-20261017"></a>
-## CN/EN解析缺口修复（2026-10-17，ACTIVE / NOT_DEPLOYED / NOT_PUSHED）
+## CN/EN解析缺口修复（2026-10-17，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
-- 用户在全量只读审计后要求修复；基线main/117cf630b。本包只处理已复现的5组：英文议和方向误拒绝、政策bottom N反转、外交议题单语分类、帝国身份英文漏检、辅助历史旁听前缀识别。保留中文兼容、协议/存档/API身份及原权限门禁，不改用户内容、设置、构建/部署脚本或其他作者文件。
-- 计划改动：WorldDiplomacyDocumentFactRules / GenerationValidationRules / IntentVocabulary、DiplomacyMiscCompatibility.json、PolicyTargetPlanRouter、AIConfigHandler，并新增具名跨模块双语回归；仅确有共享owner需要时调整ConversationRoleClassificationOwner。退出门：旧源码反例、修后中英正负例与真实reader、相关原协议/历史回归、原统一1.3/1.4/Bootstrap构建及源码保全。正式完整三渠道旧fixture失败、实机/provider/玩家旧档另列，不能用专项PASS替代。
-- 性能：只在既有请求/历史装配/目标选择边界执行；兼容表沿用一次Lazy读取，英语静态模式按需缓存，动态姓名转义；不增加Tick工作、IO/反射扫描、LLM请求或存档迁移。不部署、打包、fetch或push；Microsoft/NuGet未跟踪目录保持。审计旧证据artifacts/parser-bilingual-audit-20261017只读保留，新证据写入artifacts/bilingual-parser-fixes-20261017/。
+- 用户在全量只读审计后要求修复；基线117cf630b，意图f4573c661，产品c1a1298cb。本包修复已复现5组：英文议和方向误拒绝、政策bottom N反转、外交议题单语分类、帝国身份英文漏检、辅助历史旁听识别；不修改协议/存档/API身份、用户内容、MCM设置或构建/部署脚本。Microsoft/NuGet保持。
+- 议和保留原中文两种句式，增加英语支付/割让主动句、支付双宾语和有明确by/to角色的被动句；姓名转义，首个方向介词与句界限约束，保留金额/天数/地名及反向拒绝。被割让资产不作为收款/接收方。13项英语输入词表放同一兼容JSON，两包共用；原258值全部逐项保留，没有追加强制输出语言。
+- 政策仅补全归一化后bottom+数字的BottomN分支，不改目标权限/计数/排序owner；英语外交分类有词边界并保持原中文优先级和战争fallback；帝国称谓/元老院补英语对应匹配并保留合法北帝国/其他王国及其他人物称谓负例。辅助历史在跳过session前先识别裸旁听标记，CN/EN共用ConversationRoleClassificationOwner现有解析器，不改变保存历史/AFEF原值。
+- 新具名回归tests/replay/BilingualParserRegressionTests：同一旧源码117cf630b在CN/EN各78项中各失败31项；产品源码各78项全部通过。覆盖错向/缺金额/缺天数/缺地名、否定/跨句/第三方、主动/被动割让、topic词边界、称谓/北帝国合法负例、top/bottom、裸/带session/大小写旁听。真实方法span与reader执行；仅模块路径和政策分支两字段为fixture，未做完整目标召回/模型/游戏效果验收。首轮新增正则转义错误已修复且失败日志保留。
+- 原后处理历史CN/EN各43项PASS；最终源码与两套回放输入逐SHA保持。风险复用此前共享primitive524项的10个实际源输入和75对原JSON门禁/selector输入（全部哈希未变）；原13新增词条在两包reader均执行。源码词法仍为90命中/3文件（含非生产工具），未新增中文源码字面量；既有EN发行词法问题不因此豁免或称已修复。
+- 原统一build_single_module.ps1仅build：最终1.3/1.4、Bootstrap、双Coup/registration门禁PASS，引用v1.3.15.110062/v1.4.6.115628；两实现各363警告、0错误。初轮构建后对割让被动主语作定向复核并重建最终候选；以final-dual-build.log及候选SHA为准。无新Tick工作、额外LLM或游戏对象扫描；原Lazy表保留，topic英语Regex仅该路径按需初始化一次，动态角色正则按请求有界匹配。
+
+| 产品源码定位（c1a1298cb，一基行号） | Owner/实际消费者 | 已验/未验 |
+| --- | --- | --- |
+| src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyDocumentFactRules.cs:318-375，ContainsDirectedPeaceTerm / ContainsEnglishDirectedPeaceTerm / BuildEnglishPeaceKingdomReferencePattern | GenerationValidationRules.TryGetPublicPeaceTermsDisclosureViolation → Orchestration.cs:1442与OralGeneration.cs:242 | 中英方向/金额/时长/地名回放；未知自然语言句式/实机未验 |
+| src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyGenerationValidationRules.cs:181-223，TryGetRealmIdentityViolation | Orchestration.cs:1448,1500及OralGeneration.cs:241 | 合法/违规中英对照；真实模型未验 |
+| src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyIntentVocabulary.cs:9-17,302-311，EnglishTopicPatterns / InferTopicCategory | RoundPlanApplication.cs:49、StorageMigration.cs:171 | 四类/边界/fallback；不改保存结构 |
+| PolicySystem/Targets/PolicyTargetPlanRouter.cs:1529-1546，ApplyCardinalityFromText | 同owner TryBuildBranch:1308 | top/bottom/count；完整目标/效果执行未验 |
+| src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs:3316-3332，IsAuxiliarySceneShoutObserverLine | BuildAuxiliaryGuardrailHistoryBlock / ExtractLatestAuxiliaryNpcUtterance / IsAuxiliaryDialogueHistoryRecordStart | 共用Role owner裸/带session双语及负例；三渠道实机未验 |
+| content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json:205-217 | 原DiplomacyCompatibilityTexts.Get → 原content-map兼容资源目标，两包相同 | 原258值保持、13英语输入模式实读；未新Stage/打包 |
+
+- 证据artifacts/bilingual-parser-fixes-20261017/{receipt.json,final-baseline/,final-v2/,postprocess-history/,resource-conservation.json,unchanged-inputs.json,runtime-literals.json,dual-build.log,final-dual-build.log,verified-candidates/}；旧审计artifacts/parser-bilingual-audit-20261017保持。本条取代该审计5组“未修复”状态，不取代其中其他未验/旧fixture失败；未改旧hash/断言造PASS。
+- 未Stage/正式完整双包投影/打包/部署/push，当前游戏安装仍为2026-10-16 CN收紧版，尚不含本修复；实机/provider/玩家旧档及完整旧三渠道测试未验，不能称全仓/所有句式/全部玩法通过。源码聚焦回退git revert c1a1298cb；不自动变更安装。
 
 <a id="deploy-cn-tightened-persona-20261016"></a>
 ## 收紧版手动重生CN部署（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
