@@ -1,6 +1,6 @@
  static void ExperienceCases()
  {
-  foreach(var scenario in new[]{"manual","manual_many_actions","automatic","empty","other_target","capture_failure"})
+  foreach(var scenario in new[]{"manual","manual_many_actions","manual_filter","manual_old_summary","manual_future_summary","automatic","empty","other_target","capture_failure"})
   {
    Probe.OffThread=0;AnimusForge.SaveRuntimeGuard.Generation=1;AnimusForge.KnowledgeLibraryBehavior.Reset();
    var hero=new Hero("hero");var owner=new AnimusForge.MyBehavior();
@@ -9,15 +9,24 @@
    string id=scenario=="other_target"?"different_hero":"hero";
    if(scenario!="empty")
    {
-    owner._memoryBusinessState.RecentActions[id]=new(){"CONFIRMED_RECENT_ACTION"};
+    owner._memoryBusinessState.RecentActions[id]=new(){new(){Text="CONFIRMED_RECENT_ACTION",Day=100,ActionKind="settlement_owner_changed_loss"}};
     owner._memoryHistoryCommit.Summaries[id]="LATEST_MEMORY_原文";
     owner._memoryHistoryCommit.History[id]=new(){new(){MemoryId=id,GameDate="date-100",GameDayIndex=100,Speaker="player",Kind="player",Text="I promise to pay later"},new(){MemoryId=id,GameDate="date-100",GameDayIndex=100,Speaker="NPC",Kind="afef_npc",Text="CONFIRMED_NPC_TRANSFER"}};
    }
    if(scenario=="manual_many_actions")
    {
     owner._memoryBusinessState.RecentActions[id].Clear();
-    for(int i=0;i<20;i++)owner._memoryBusinessState.RecentActions[id].Add("CONFIRMED_RECENT_ACTION_"+i+";");
+    for(int i=0;i<20;i++)owner._memoryBusinessState.RecentActions[id].Add(new(){Text="CONFIRMED_RECENT_ACTION_"+i+";",Day=100,ActionKind="map_event"});
    }
+   if(scenario=="manual_filter")
+   {
+    owner._memoryBusinessState.RecentActions[id].Add(new(){Text="OUTDATED_ACTION",Day=90,IsMajor=true});
+    owner._memoryBusinessState.RecentActions[id].Add(new(){Text="FUTURE_ACTION",Day=101,IsMajor=true});
+    owner._memoryBusinessState.RecentActions[id].Add(new(){Text="ROUTINE_ACTION",Day=100,ActionKind="daily_behavior",IsMajor=true});
+    owner._memoryBusinessState.RecentActions[id].Add(new(){Text="IMPORTANT_EXTENSION",Day=100,ActionKind="extension_fact",IsMajor=true});
+   }
+   if(scenario=="manual_old_summary")owner._memoryHistoryCommit.SummaryDays[id]=85;
+   if(scenario=="manual_future_summary")owner._memoryHistoryCommit.SummaryDays[id]=101;
    // Use the real host/application failure path, rather than quietly dropping requested memory.
    if(scenario=="capture_failure")owner._memoryBusinessState.RecentActions["hero"]=null;
    var task=Task.Run(()=>owner.Generate(hero,scenario!="automatic"));
@@ -26,13 +35,15 @@
    if(owner.Calls>0)
    {
     Check(owner.SentUser.Contains("CONFIRMED_RECENT_ACTION")==has,scenario+" target actions in actual gateway request");
-    Check(owner.SentUser.Contains("LATEST_MEMORY_原文")==has,scenario+" target compressed memory in actual request");
+    bool hasSummary=has&&scenario!="manual_old_summary"&&scenario!="manual_future_summary";
+    Check(owner.SentUser.Contains("LATEST_MEMORY_原文")==hasSummary,scenario+" compressed memory recency applied to actual request");
     Check(owner.SentUser.Contains("I promise to pay later")==has&&owner.SentUser.Contains("CONFIRMED_NPC_TRANSFER")==has,scenario+" recent dialogue and AFEF captured");
     if(has)
     {
      var texts=Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(AnimusForge.AnimusForgeModulePaths.GetModuleDataFilePath("PersonaPromptTexts.json")));
      Check(owner.SentUser.Contains("afef_npc")&&owner.SentUser.Contains("date-100")&&owner.SentSystem.Contains((string)texts["AF_PERSONA_PROMPT_RegenerationExperienceRules"])&&owner.SentUser.Contains((string)texts["AF_PERSONA_PROMPT_RecentExperiencesHeading"]),"selected edition's actual resources and fact provenance reach gateway");
-     if(scenario=="manual_many_actions")Check(!owner.SentUser.Contains("CONFIRMED_RECENT_ACTION_3;")&&owner.SentUser.Contains("CONFIRMED_RECENT_ACTION_4;")&&owner.SentUser.Contains("CONFIRMED_RECENT_ACTION_19;"),"actual host captures newest 16 actions");
+     if(scenario=="manual_many_actions")Check(!owner.SentUser.Contains("CONFIRMED_RECENT_ACTION_11;")&&owner.SentUser.Contains("CONFIRMED_RECENT_ACTION_12;")&&owner.SentUser.Contains("CONFIRMED_RECENT_ACTION_19;"),"actual host captures newest 8 significant actions");
+     if(scenario=="manual_filter")Check(!owner.SentUser.Contains("OUTDATED_ACTION")&&!owner.SentUser.Contains("FUTURE_ACTION")&&!owner.SentUser.Contains("ROUTINE_ACTION")&&owner.SentUser.Contains("IMPORTANT_EXTENSION"),"actual host excludes old/future/routine actions and preserves marked extension events");
     }
     owner.Release("P|B",true,false);
    }
@@ -44,23 +55,40 @@
    if(has)Check(owner._memoryHistoryCommit.History[id].Count==2&&owner._memoryHistoryCommit.Summaries[id]=="LATEST_MEMORY_原文","regeneration does not consume or rewrite stored experiences");
   }
   var lines=new List<AnimusForge.AnimusForgeDialogueHistoryEntry>();
-  for(int i=0;i<80;i++)lines.Add(new(){MemoryId="hero",GameDate="date",GameDayIndex=i,Speaker="NPC",Kind=i%2==0?"npc":"afef_npc",Text="entry-"+i});
+  for(int i=0;i<80;i++)lines.Add(new(){MemoryId="hero",GameDate="date",GameDayIndex=100,Speaker="NPC",Kind=i%2==0?"npc":"afef_npc",Text="entry-"+i});
   lines.Add(new(){MemoryId="other",Text="CROSS_TARGET_SENTINEL"});
-  string context=AnimusForge.PersonaRegenerationExperienceContext.Build("hero","actions", "old-date", "summary",lines);
+  string context=AnimusForge.PersonaRegenerationExperienceContext.Build("hero",100,"actions", "date-98", "summary",98,lines);
   var json=Newtonsoft.Json.Linq.JObject.Parse(context);
   var turns=(Newtonsoft.Json.Linq.JArray)json["recent_dialogue"];
-  Check(turns.Count==24&&(string)turns[0]["text"]=="entry-56"&&(string)turns[23]["text"]=="entry-79","newest 24 entries retained in chronological order");
+  Check(turns.Count==8&&(string)turns[0]["text"]=="entry-65"&&(string)turns[7]["text"]=="entry-79","newest 8 confirmed entries retained in chronological order");
   Check(!context.Contains("CROSS_TARGET_SENTINEL"),"wrong memory owner excluded");
-  Check(AnimusForge.PersonaRegenerationExperienceContext.Build("hero","","","",null)=="","no experience produces no context");
+  Check(AnimusForge.PersonaRegenerationExperienceContext.Build("hero",100,"","","",-1,null)=="","no experience produces no context");
   var large=new List<AnimusForge.AnimusForgeDialogueHistoryEntry>();
-  for(int i=0;i<100;i++)large.Add(new(){MemoryId="hero",Text=new string('x',5000)+i});
-  context=AnimusForge.PersonaRegenerationExperienceContext.Build("hero",new string('a',5000)+"LATEST",new string('d',200),new string('中',5000),large);
+  for(int i=0;i<100;i++)large.Add(new(){MemoryId="hero",Kind="npc",GameDayIndex=100,Text=new string('x',5000)+i});
+  context=AnimusForge.PersonaRegenerationExperienceContext.Build("hero",100,new string('a',5000)+"LATEST",new string('d',200),new string('中',5000),98,large);
   json=Newtonsoft.Json.Linq.JObject.Parse(context);
-  Check(((string)json["recent_actions"]).Length<=4000&&((string)json["recent_actions"]).EndsWith("LATEST"),"bounded action excerpts keep latest tail");
-  Check(((string)json["latest_compressed_memory"]["text"]).Length<=2000,"compressed memory excerpt bounded");
+  Check(((string)json["recent_actions"]).Length<=2000&&((string)json["recent_actions"]).EndsWith("LATEST"),"bounded action excerpts keep latest tail");
+  Check(((string)json["latest_compressed_memory"]["text"]).Length<=800,"compressed memory excerpt bounded");
   turns=(Newtonsoft.Json.Linq.JArray)json["recent_dialogue"];
   int budget=0;foreach(var item in turns)budget+=item.ToString(Newtonsoft.Json.Formatting.None).Length;
-  Check(budget<=6000&&turns.Count>0,"history serialized character budget bounded");
+  Check(budget<=2400&&turns.Count>0,"history serialized character budget bounded");
   var normal=AnimusForge.NpcPersonaTextRules.BuildNative("facts","old",false,"",context);
   Check(!normal.User.Contains("recent_actions"),"ordinary generation cannot inject regeneration context");
+  foreach(int day in new[]{90,101,-1})
+   Check(AnimusForge.PersonaRegenerationExperienceContext.Build("hero",100,"","date","STALE_SUMMARY",day,null)=="","compressed memory excluded outside 10-day window: "+day);
+  foreach(int day in new[]{91,100})
+   Check(AnimusForge.PersonaRegenerationExperienceContext.Build("hero",100,"","date","RECENT_SUMMARY",day,null).Contains("RECENT_SUMMARY"),"compressed memory accepted at window boundary: "+day);
+  Check(AnimusForge.PersonaRegenerationExperienceContext.IsRecent(0,0)&&!AnimusForge.PersonaRegenerationExperienceContext.IsRecent(0,-1),"campaign day zero valid, unavailable date invalid");
+  foreach(string kind in new[]{"daily_behavior","army_create","army_join","army_leave","army_gather","army_disperse","siege_join","siege_leave","siege_start_attack","siege_start_defend","siege_end_attack","siege_end_defend"})
+   Check(!AnimusForge.PersonaRegenerationExperienceContext.IsSignificantAction(kind,true),"routine kind cannot dominate even with old major flag: "+kind);
+  foreach(string kind in new[]{"map_event","map_event_aftermath","siege_complete","prisoner_taken_prisoner","prisoner_released_prisoner","birth","marriage","hero_killed","clan_member_killed","settlement_owner_changed_loss","settlement_owner_changed_gain"})
+   Check(AnimusForge.PersonaRegenerationExperienceContext.IsSignificantAction(kind,false),"significant event retained: "+kind);
+  var speech=new List<AnimusForge.AnimusForgeDialogueHistoryEntry>();
+  for(int i=0;i<24;i++)speech.Add(new(){MemoryId="hero",Kind="player",GameDayIndex=100,Text="CHAT_"+i});
+  speech.Add(new(){MemoryId="hero",Kind="afef_npc",GameDayIndex=90,Text="OLD_FACT"});
+  speech.Add(new(){MemoryId="hero",Kind="afef_npc",GameDayIndex=101,Text="FUTURE_FACT"});
+  speech.Add(new(){MemoryId="hero",Kind="scene",GameDayIndex=100,Text="SCENE_AMBIENCE"});
+  context=AnimusForge.PersonaRegenerationExperienceContext.Build("hero",100,"","","",-1,speech);
+  turns=(Newtonsoft.Json.Linq.JArray)Newtonsoft.Json.Linq.JObject.Parse(context)["recent_dialogue"];
+  Check(turns.Count==4&&(string)turns[0]["text"]=="CHAT_20"&&(string)turns[3]["text"]=="CHAT_23","at most four ordinary utterances; expired/future/ambient lines excluded");
  }
