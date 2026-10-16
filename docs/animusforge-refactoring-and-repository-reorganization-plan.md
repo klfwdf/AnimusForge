@@ -1,9 +1,22 @@
 <a id="scene-presentation-interrupt-20261017"></a>
-## 场景喊话打断卡住与气泡保留（2026-10-17，ACTIVE / NOT_DEPLOYED / NOT_PUSHED）
+## 场景喊话打断卡住与气泡保留（2026-10-17，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
 - 用户要求修复场景喊话打断卡住，并明确打断不能清空气泡。基线4c634e51d；现场03:41:16进入scene_relay后处理等待，03:41:21确认点击并记录round interrupted，随后wait_done但会话仍忙。artifacts/scene-interrupt-investigation-20261017直接编译原gate，完成/取消/超时均复现旧epoch导致等待标记残留；安装1.4 DLL SHA与10/16 CN部署收据相符，涉及入口/等待/UI源码与部署修订相同。
 - 本包只改Scene等待生命周期和打断到音频/打字机的真实接线：打断释放旧等待展示owner，保留已开始动作的真实gate；旧完成回调不能清除新等待或恢复旧busy。气泡只停止继续打字，保留已显示文字及原正常淡出，其他场景清理默认行为保持。无设置、Prompt、存档/协议变化，不新增Tick IO、扫描或LLM请求。
-- 退出条件：当前源码回归覆盖打断即时释放、完成/取消/超时、新等待与旧晚回调；现有场景生命周期/音频测试覆盖保留气泡模式及默认清理；原双API/Bootstrap/Coup/registration构建通过。只做离线验证，实机/provider未验；无本轮部署、打包、推送授权。保留Microsoft/NuGet与其他作者改动。完成后补产品修订、源码坐标、候选与聚焦回退。
+- 意图fb9aa86eb，产品9cdffaf44。新epoch显式RetireScenePostprocessWait，推进wait owner并清除旧UI等待元数据，不修改pending动作计数/真实gate；finally按wait owner释放自身状态，恢复processing还须原generation/session/epoch及processing sequence有效。下一条请求仍经原gate等待已开始动作完成；旧等待完成不能释放新owner或恢复旧busy。
+- 仅会话面板打断端口传preserveVisibleBubbles=true，贯通原SceneConversationSessionPorts、SceneAudio与FloatingText消费者。停止TTS/继续打字，已显示文本不清空、不补出尚未显示文字、不改正常Lifetime/MaxLifetime、不强制0.35秒淡出。其他清理路径默认false维持旧加速淡出；没有更改主回复、后处理、历史/AFEF或三渠道资格/协议。
+- 实际runtime/gate/epoch/lifetime回归27项PASS，完整场景展示/交易/音频141项、原ShowNpcSpeechOutput54项、旁听30项、可见输出sink68项PASS。气泡专项通过生产StopTypingForState方法span执行CN/EN已显示文本、停止打字及正常寿命，布局/VM为fixture；实际controller到bubble的bool参数与真实宿主绑定均核对。6处流式发布guard跨渠道active/cancelled/late投影PASS，真实取消传输14项PASS（确定性网络，无provider）。首轮老fixture缺既有本地化/经历展示叶端口导致编译失败，补齐fixture后通过，失败日志保留，未为测试增加生产fallback。
+- 原build_single_module.ps1仅build：1.3/1.4、Bootstrap、双Coup seam及registration全部exit0，引用v1.3.15.110062/v1.4.6.115628，两实现各363警告、0错误。三个DLL/marker/PDB已按SHA冻结在artifacts/scene-interrupt-fix-20261017/verified-candidates；receipt.json绑定8个产品源文件、产品修订、候选、测试及安装哈希。现有安装三DLL逐SHA保持10/16 CN版本，未Stage/部署/打包/push；版本未递增。
+- 新工作仅在点击/换轮/等待完成时执行，复用同一gate锁，不新增Tick IO/全场景扫描/反射/轮询/LLM。无UI/Prompt固定文案变更，沿用双语“已打断”资源；CN/EN使用同代码及实际气泡方法专项。实机渲染、音频、游戏动作、真实provider与玩家存档未验，离线通过不替代实机。全仓verify_code_map.py --working-tree因既有ModuleFrameworkRuntime.cs陈旧记录失败；该文件相对本包基线无变更，本包核实坐标见下表，不称全仓地图已绿。
+- 证据artifacts/scene-interrupt-fix-20261017/{receipt.json,dual-build.log,lifecycle-final/,presentation-final/,speech-sink-final/,stream-cancel/,transport-cancel/,verified-candidates/}；原始事故摘录artifacts/scene-interrupt-investigation-20261017/log-evidence.txt。源码聚焦回退git revert 9cdffaf44，不撤销其他作者内容或安装；Microsoft/NuGet保持。
+
+<a id="scene-presentation-interrupt-code"></a>
+| 已核实源码坐标（9cdffaf44，一基行号） | Owner/真实消费者与覆盖边界 |
+| --- | --- |
+| src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocessGate.cs:130–141 RetireScenePostprocessWait；:259–277 WaitForScenePostprocessGateAsync finally | 旧UI wait owner即时释放；真实动作gate保留；过期上下文只清自身、不恢复旧busy，不影响新等待owner |
+| src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneExecutionStages.cs:203–226 BeginNewPlayerDrivenSceneConversationEpoch；ShoutBehavior.cs:924–927；ShoutBehavior.SceneSessionComposition.cs:225 | 实际打断入口ScenePresentationBannerlordAdapter.cs:219–232仍调用同一端口；停止旧请求/接力/队列，面板端口选择保留可见气泡 |
+| src/modules/AF.Module.Conversation/Channels/Scene/SceneConversationSessionPorts.cs:138–139；ShoutBehavior.SceneAudio.cs:46、82；src/AF.GameAdapter.Bannerlord/Scene/SceneAudioLipSyncController.cs:1127–1145、1768–1770 | 内部bool经唯一音频owner反转为fadeSoon，默认清理保持原行为；无公开API/存档身份变化 |
+| src/AF.GameAdapter.Bannerlord/UI/Conversation/FloatingTextMissionView.cs:82–130 StopTypingForAll/StopTypingForState（本包未改） | 真实消费者保留CurrentDisplayedText/VM.Text、停止未来打字；false不加速淡出。生产方法span已测；Gauntlet层/实机帧循环未测 |
 
 <a id="bilingual-parser-fixes-20261017"></a>
 ## CN/EN解析缺口修复（2026-10-17，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）

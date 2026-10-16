@@ -1,3 +1,9 @@
+# 当前交接：场景打断释放等待并保留气泡（2026-10-17，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
+
+- 产品9cdffaf44修复打断后旧epoch等待标记残留；立即释放旧UI等待，保留已开始动作的真实gate，晚回调不能污染新等待。打断停止生成/接力/播放/继续打字，保留气泡已显示内容与正常寿命；其他清理默认行为保持。无新Tick工作、设置、Prompt、协议或存档变更。
+- 27项生命周期、141+54+30项展示/音频/旁听、68项输出sink、6处发布guard及14项传输取消通过；生产气泡方法CN/EN专项通过。原双API/Bootstrap/双Coup/registration构建PASS，三候选已冻结。实机/provider/存档未验；未Stage/部署/打包/push，安装三DLL仍为10/16 CN版。
+- [唯一主台账与完整证据/回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-presentation-interrupt-20261017)；[本包核实源码地图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-presentation-interrupt-code)。artifacts/scene-interrupt-fix-20261017/receipt.json及verified-candidates/；源码聚焦git revert 9cdffaf44。全仓历史代码图陈旧项另见台账，不影响本包具名证据；此前双语解析修复仍保留。
+
 # 当前交接：5组CN/EN解析缺口已修复（2026-10-17，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
 - 产品c1a1298cb：英文议和支付/割让方向、政策bottom N、外交议题分类、帝国身份校验及辅助历史旁听前缀完成双语修复。保留中文旧值/协议与原门禁，无新Tick/LLM/存档迁移；258兼容值保持，新增13项共享英语输入模式。
