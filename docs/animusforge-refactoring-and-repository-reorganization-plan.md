@@ -1,3 +1,9 @@
+<a id="deploy-cn-persona-20261016"></a>
+## 当前源码CN部署（2026-10-16，ACTIVE）
+
+- 用户明确要求部署CN；基线main/55d3fa2f4，跟踪文件干净，Microsoft/NuGet未跟踪目录保留。目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，保持v1.6.1，包含ce86d561f手动重生记忆及已合并的历史角色/AFEF修复。不打包、不push、不改版本或原构建/部署脚本。
+- 复用刚通过原双API/Bootstrap/Coup/registration且生产输入未再修改的候选，通过原Stage入口重建CN；使用原CN/EN投影验证与原Invoke-ManagedStageDeployment。只对安装语义完全等于已发布EN默认的世界书选择CN，用户内容与CustomPrompts/Configs/终端/ONNX/未列管文件按原保护规则保留。完成门为候选哈希/完整投影/安装逐项与玩家资料保护核对；实机/真实provider/旧档不计离线部署验收。
+
 <a id="persona-regeneration-experiences-20261016"></a>
 ## 手动重生个性接入最近经历（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
