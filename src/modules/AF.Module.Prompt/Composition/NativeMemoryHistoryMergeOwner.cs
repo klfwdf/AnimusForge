@@ -109,12 +109,7 @@ internal static class NativeMemoryHistoryMergeOwner
             bool player = ConversationRoleClassificationOwner.IsLikelyPlayerHistorySpeaker(speaker)
                 || string.Equals(speaker, (playerName ?? "").Trim(), StringComparison.Ordinal);
             if (!player) return false;
-            // Only remove the storage wrapper whose exact speaker/recipient are in the captured identity.
-            string addressed = speaker + PromptComposerTexts.Raw("History_SpeechAddressedInfix") + target + PromptComposerTexts.Raw("History_SpeechAddressedSuffix");
-            if (target.Length > 0 && content.StartsWith(addressed + ":", StringComparison.Ordinal))
-                content = content.Substring(addressed.Length + 1).Trim();
-            else if (target.Length > 0 && content.StartsWith(addressed + "：", StringComparison.Ordinal))
-                content = content.Substring(addressed.Length + 1).Trim();
+            ConversationRoleClassificationOwner.TryStripAddressedSpeech(content, speaker, target, out content);
             speaker = "player";
         }
         else if (role == "assistant")

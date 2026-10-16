@@ -10,7 +10,7 @@ internal static class AnimusForgeModulePaths {
 internal static class DuelSettings {internal const int DailyConversationHistoryLineLimitMin=10,DailyConversationHistoryLineLimitMax=500;internal static int Limit=10;internal static Action OnReadLimit;internal static int GetDailyConversationHistoryLineLimitForExternal(){OnReadLimit?.Invoke();return Limit;} }
 internal static class Logger {internal static List<string> Lines=new();internal static void Log(string c,string s)=>Lines.Add(s);}
 public class FixtureState {
- internal static int Day=5;internal static string Scene="当前街道";internal static bool SceneFails;
+ internal static string PlayerName="帝国young adult";internal static int Day=5;internal static string Scene="当前街道";internal static bool SceneFails;
  internal List<DailyMemoryDraft> Drafts=new();internal HashSet<int> Compressed=new();internal int SceneSession=2,NativeSession=3;internal string Key="active";internal bool Eligible=true;
  internal static string NormalizeMemoryHeroId(string id)=>(id??"").Trim();internal bool IsMemoryEntityEligibleForCompressedMemory(string id)=>Eligible;
  internal List<DailyMemoryDraft> LoadDailyMemoryDraftsById(string id)=>Drafts;
@@ -31,7 +31,7 @@ internal sealed class FixtureMemoryReadPort {
  internal string BuildCurrentMemorySessionKey(int scene,int native)=>source.Key;
 }
 internal static class MemoryEntityIdentityBannerlordAdapter {
- internal static FixtureState Current;
+ internal static FixtureState Current;internal static Hero FindHeroById(string id)=>new(){Name="NPC",StringId=id};
  internal static bool IsMemoryEntityEligibleForCompressedMemory(string id)=>Current.Eligible;
  internal static int GetCurrentGameDayIndexSafe()=>FixtureState.Day;
  internal static bool IsNonSceneNativeConversationActiveForMemory()=>true;
@@ -54,13 +54,19 @@ public partial class MyBehavior : FixtureState {
  internal static bool IsMemoryRecoveryHexDigest(string s)=>s!=null&&s.Length==64&&s.All(c=>"0123456789ABCDEF".Contains(c));
  internal static bool IsValidMemoryCommitMarker(string a,string b,string c)=>IsMemoryRecoveryHexDigest(a)&&IsMemoryRecoveryHexDigest(c)&&new[]{"user","assistant","fact"}.Contains(b);
 }
+internal static class SceneHistoryMessageAssemblyOwner {internal static bool TryNormalizeAfefFactLineForPrompt(string s,out string fact){fact="";throw new NotSupportedException("AFEF merge excluded from this user-role fixture");}}
+internal static class SceneHistoryProjectionOwner {internal static List<ConversationMessage> CapturePromptMessages(IEnumerable<ConversationMessage> messages)=>throw new NotSupportedException("pending AFEF merge excluded from this user-role fixture");}
 internal static class Program {
  static int count;static void C(bool ok,string why){count++;if(!ok)throw new Exception(why);}
  static DailyMemoryLine L(string speaker,string text,int day=5,bool fact=false,string key="")=>new(){Speaker=speaker,Text=text,GameDayIndex=day,GameDate="day"+day,GameHour=35,Scene="未知场景",IsAfef=fact,MemorySessionKey=key};
  static string Message(ConversationMessage m)=>string.Join("|",m.GameDayIndex,m.GameDate,m.GameHour,m.Scene,m.Role,m.Content,m.SpeakerName,m.SpeakerAgentIndex,m.TargetAgentIndex,m.TargetName,m.PlayerDistanceMeters);
  static void Same(List<DailyMemoryDraft> drafts,HashSet<int> compressed=null,bool include=false,string id="hero") {
  var old=new LegacyUncompressed{Drafts=drafts,Compressed=compressed??new()};var current=new MyBehavior{Drafts=drafts,Compressed=compressed??new()};
- C(old.Build(id:id,include:include).Select(Message).SequenceEqual(current.Build(id:id,include:include).Select(Message)),"same input old/full owner equality");
+ var legacyMessages=old.Build(id:id,include:include);
+ foreach(var m in legacyMessages) {if(m.Scene=="未知场景")m.Scene=PromptComposerTexts.Get("residual_unknown_scene");if(m.SpeakerName=="记录")m.SpeakerName=PromptComposerTexts.Get("residual_record");if(m.SpeakerName=="某NPC")m.SpeakerName=PromptComposerTexts.Get("residual_other_npc");}
+ var expected=legacyMessages.Select(Message).ToList();var actual=current.Build(id:id,include:include).Select(Message).ToList();
+ if(!expected.SequenceEqual(actual))Console.WriteLine("EXPECTED\n"+string.Join("\n",expected)+"\nACTUAL\n"+string.Join("\n",actual));
+ C(expected.SequenceEqual(actual),"same input old/full owner equality");
  }
  static async Task Main(string[] args){
  C(args.Length==2,"real selected package path and language supplied");
@@ -70,7 +76,7 @@ internal static class Program {
  C(DialogueHistoryLedger.NormalizeAfefFact("confirmed") == "[AFEF玩家行为补充] confirmed","raw AFEF prefix writes invariant original fact");
  C(DialogueHistoryLedger.NormalizeNpcLine("Ada", "[场景喊话] Ada：original") == "[场景喊话] Ada：original","legacy scene shout identity preserved by real resource consumer");
 
- C(UncompressedMemoryMessageAssemblyOwner.TryParseDailyMemorySceneShoutLine("[Scene shout] Alice: Hold position!",out var englishSpeaker,out var englishContent)
+ C(ConversationRoleClassificationOwner.TryParseDailyMemorySceneShoutLine("[Scene shout] Alice: Hold position!",out var englishSpeaker,out var englishContent)
    && englishSpeaker=="Alice" && englishContent=="Hold position!","English scene shout preserves speaker and content");
  foreach(string scene in new[]{"unknown scene","world map or unknown scene","somewhere"})
   C(UncompressedMemoryMessageAssemblyOwner.IsUnknownMemorySceneLabel(scene),"English unknown scene alias");
@@ -79,9 +85,38 @@ internal static class Program {
   C(UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(L(label,"I agree"),"NPC",7,5,"street").Role=="user","English player metadata retains user role");
  }
  foreach(string body in new[]{"Player: Hello","You：Hello","PLAYER said to NPC: Hello","The player shouted to NPC: Hello"})
-  C(UncompressedMemoryMessageAssemblyOwner.IsDailyMemoryLinePlayerSpeech(L("",body),"NPC"),"anchored English player header recognized");
+  C(ConversationRoleClassificationOwner.IsDailyMemoryLinePlayerSpeech(L("",body),"NPC"),"anchored English player header recognized");
  foreach(string body in new[]{"Alice said to NPC: hello","I heard Alice said to NPC yesterday.","The player army arrived.","Younger: hello"})
-  C(!UncompressedMemoryMessageAssemblyOwner.IsDailyMemoryLinePlayerSpeech(L("Alice",body),"NPC"),"NPC or narrative mention is not player speech");
+  C(!ConversationRoleClassificationOwner.IsDailyMemoryLinePlayerSpeech(L("Alice",body),"NPC"),"NPC or narrative mention is not player speech");
+ var dynamicInput=L(FixtureState.PlayerName,AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.BuildPlayerAddressedInputForName("NPC","Give one denar."));
+ var dynamicOwner=new MyBehavior{Drafts=new(){new(){GameDayIndex=5,HasLlmDialogue=true,Lines=new(){dynamicInput}}}};
+ C(dynamicOwner.Build()[0].Role=="user","actual capture plus selected-package storage producer retains dynamic player user role");
+ C(MyBehavior.BuildNativeConversationHistoryEntriesForDailyMemoryEdit(new(){Name="NPC"},new[]{dynamicInput})[0].Kind=="player","actual daily editor shares captured player identity");
+ var originalText=dynamicInput.Text;
+ foreach(string stored in new[]{FixtureState.PlayerName+" says to NPC: Give one denar.",FixtureState.PlayerName+"对NPC说：Give one denar."}) {
+  var row=L(FixtureState.PlayerName,stored);row.GameHour=8;row.Scene="street";row.MemorySessionKey="session";row.TargetName="NPC";
+  var history=new MyBehavior{Drafts=new(){new(){GameDayIndex=5,HasLlmDialogue=true,Lines=new(){row}}}}.Build();
+  C(history[0].Role=="user"&&history[0].Content==stored,"both stored editions preserve identity and original content in either package");
+  var native=new ConversationMessage{Role="user",SpeakerName=FixtureState.PlayerName,Content="Give one denar.",TargetName="NPC",GameDayIndex=5,GameDate="day5",GameHour=8,Scene="street",PromptMemorySessionKey="session",EventSequence=17};
+  C(NativeMemoryHistoryMergeOwner.Merge(history,new[]{native},0,FixtureState.PlayerName).Count==1,"shared exact bilingual wrapper normalizes same-event Native overlap");
+  native.TargetName="Other";C(NativeMemoryHistoryMergeOwner.Merge(history,new[]{native},0,FixtureState.PlayerName).Count==2,"different recipient is never deduplicated");
+  native.TargetName="NPC";native.PromptMemorySessionKey="other";C(NativeMemoryHistoryMergeOwner.Merge(history,new[]{native},0,FixtureState.PlayerName).Count==2,"different session is never deduplicated");
+  native.PromptMemorySessionKey="session";C(NativeMemoryHistoryMergeOwner.Merge(history,new[]{native},17,FixtureState.PlayerName).Count==2,"current repeated input is retained");
+ }
+ C(dynamicInput.Text==originalText,"projection never mutates stored text");
+ var typedPlayer=L("old anonymous name","NPC: quoted player content");typedPlayer.MemoryCommitPart="user";
+ C(UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(typedPlayer,"NPC",7,5,"street").Role=="user","existing typed user part outranks names and quoted NPC header");
+ var typedNpc=L("Player","reply");typedNpc.MemoryCommitPart="assistant";
+ C(UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(typedNpc,"NPC",7,5,"street").Role=="assistant","existing typed assistant part outranks player-like display name");
+ typedPlayer.IsAfef=true;C(UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(typedPlayer,"NPC",7,5,"street").Role=="system","authoritative AFEF flag outranks speech metadata");
+ var heard=L(FixtureState.PlayerName,"[Scene shout] Alice: Wait!");
+ var heardResult=UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(heard,"NPC",7,5,"street",FixtureState.PlayerName);
+ C(heardResult.Role=="assistant"&&heardResult.SpeakerName=="Alice","overheard record is not relabeled by legacy captured player name");
+ foreach(string input in new[]{"Alice says to NPC: hello","I heard Player says to NPC: hello","Alice says to 玩家: hello","Younger: hello"})
+  C(!ConversationRoleClassificationOwner.IsDailyMemoryLinePlayerSpeech(L("Alice",input),"NPC",FixtureState.PlayerName),"unknown NPC or quoted/narrative mention never becomes a player header");
+ foreach(string input in new[]{"Alice says to NPC: hello",FixtureState.PlayerName+" says to Other: hello","quote "+FixtureState.PlayerName+" says to NPC: hello"})
+  C(!ConversationRoleClassificationOwner.TryStripAddressedSpeech(input,FixtureState.PlayerName,"NPC",out var untouched)&&untouched==input,"normalizer preserves foreign/mismatched/nonleading wrappers");
+ var colonName="A:B";C(ConversationRoleClassificationOwner.TryStripAddressedSpeech(colonName+" says to NPC: keep: body：unchanged",colonName,"NPC",out var colonBody)&&colonBody=="keep: body：unchanged","name and body colons do not truncate exact header matching");
  var rows=new List<DailyMemoryLine>{L("玩家","玩家说"),L("NPC","回复"),L("路人","旁听"),L("","[场景喊话] 其他人：听到的话"),L("","[场景喊话]"),L("","玩家对NPC喊：你好"),L("","NPC:名称前缀"),L("ignored","事实",fact:true),L("玩家","suppressed",key:" ACTIVE "),L("玩家","旧日同key",day:3,key:"active")};
  Same(new(){new(){GameDayIndex=5,HasLlmDialogue=true,Lines=rows},new(){GameDayIndex=3,HasLlmDialogue=true,Lines=new(){rows[^1]}}});
  var p=new MyBehavior{Drafts=new(){new(){GameDayIndex=5,HasLlmDialogue=true,Lines=rows}}};var messages=p.Build();
@@ -113,7 +148,7 @@ internal static class Program {
  C(editEntries.Count==3&&editEntries.Select(x=>x.Kind).SequenceEqual(new[]{"player","npc","fact"}),"actual Daily edit consumer uses real message owner role/AFEF");
  C(editEntries.All(x=>x.Scene==FixtureState.Scene&&x.GameHour==23),"actual Daily edit consumer current scene fallback and hour cap");
  FixtureState.SceneFails=true;editEntries=MyBehavior.BuildNativeConversationHistoryEntriesForDailyMemoryEdit(null,editRows);FixtureState.SceneFails=false;
- C(editEntries.Count==3&&editEntries.All(x=>x.Scene=="未知场景"),"actual Daily edit consumer failed live scene remains unknown");
+ C(editEntries.Count==3&&editEntries.All(x=>x.Scene==PromptComposerTexts.Get("residual_unknown_scene")),"actual Daily edit consumer failed live scene remains unknown");
  Console.WriteLine("PASS uncompressed prompt package="+args[1]+" same-input checks="+count+" live=NOT_RUN");
  }
 }}
