@@ -1,10 +1,11 @@
 <a id="town-memory-concise-20261016"></a>
 ## 近期城镇记忆仅列事件与到访计数（2026-10-16）
 
-- 用户要求移除截图下方的说明、空记录、覆盖不全提示，仅保留“已记录0次村民队伍到访和0次商队到访。”；非空时继续按已确认日期/城村/动作句式显示真实事件，再附累计已记录次数。删除输出标题及边界套话，完整/部分覆盖使用同一句“已记录”模板，不改七日留存、去重、存档和坏数据停用处理。
+- 用户要求移除截图下方的说明、空记录、覆盖不全提示，仅保留“已记录0次村民队伍到访和0次商队到访。”；非空时继续按已确认日期/城村/动作句式显示真实事件，再附累计已记录次数。后续用户指出近期区块消失，ce4b7688恢复原CN/EN标题，取代757e50f3一并删标题的行为；仍不输出边界及空记录套话。完整/部分覆盖使用同一句“已记录”模板，不改七日留存、去重、存档和坏数据停用处理。
 - 源码757e50f3：TownRecentMemoryText.Build及英文fallback、三份CN/EN资源、现有回放预期；真实百科/普通/专用城镇对话共用该formatter，无新增Tick、IO或模型调用。拉取并快进至远端03ca1694后移入五文件产品补丁，无冲突；未引入本地实验分支祖先或GCCZ村庄执行端。
 - 160项真实核心/宿主fixture回放、16项实际接线检查通过；完整/部分覆盖输出、空记录唯一计数行、中英文及原事件格式均覆盖。未修改的统一脚本完成1.3/1.4/Bootstrap、双Coup/registration及干净Stage，exit0；NuGet漏洞源不可达产生NU1900警告，未计漏洞审计通过。本地证据artifacts/town-memory-concise-20261016/{town-memory-tests.log,wiring.log,build-stage.log,receipt.json}。本次main交付采用普通快进推送并独立核对远端ref，最终推送SHA以receipt.json为准。
 - 用户随后明确“先完成源码和推送，暂不部署”。本次不更换游戏文件，实验版本原样保留；无实机、旧档或provider验收，不创建发行包。[精确责任范围](architecture/af-framework-code-scope.md#town-memory-concise-20261016)。聚焦源码回退为git revert 757e50f3。
+- 标题纠正ce4b7688复用原CN/EN资源，只改Build及三个现有断言；160项回放、16项接线、原1.3/1.4/Bootstrap及双Coup/registration重新通过，证据artifacts/town-memory-heading-20261016/。本轮不重新Stage、不部署/打包，先前Stage不代表此修正候选；聚焦标题回退git revert ce4b7688。普通main推送及独立远端核对SHA保存在该目录receipt.json。本地实验源码对应392abf8c，尚未安装。
 
 <a id="history-speech-refactor-20261016"></a>
 ## 历史角色与后处理事实局部重构交付（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN）

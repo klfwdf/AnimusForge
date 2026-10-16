@@ -1,11 +1,11 @@
 <a id="town-memory-concise-20261016"></a>
-### 近期城镇记忆简洁输出（产品757e50f3）
+### 近期城镇记忆简洁输出（产品757e50f3，标题纠正ce4b7688）
 
 [唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#town-memory-concise-20261016)记录验证及暂不部署决定；本节取代下方旧表的覆盖不足提示描述。
 
 | 一基坐标 / 符号 | 实际责任与边界 |
 | --- | --- |
-| `AnimusForge.SiegeAftermathIntervention/TownRecentMemoryText.cs:28–29,69–78` EnglishDefaults/Build | 只投影已存在事件与匿名已记录到访数；空事实无标题、边界或空记录套话。原FormatFact/Unavailable与存储行为保持 |
+| `AnimusForge.SiegeAftermathIntervention/TownRecentMemoryText.cs:28–29,69–78` EnglishDefaults/Build | 保留CN/EN近期标题，其下只投影已存在事件与匿名已记录到访数；空事实仍有标题和计数，无边界或空记录套话。原FormatFact/Unavailable与存储行为保持 |
 | `content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.{zh-CN,en,en-US}.json:353–354` arrivals/partial | 同步简洁CN/EN模板；保持资源键和变量，原嵌入/包/百科语言消费者不变 |
 | `tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests/RecentMemoryReplay.cs:52–56,85` | 真实formatter/宿主fixture验证空/非空、完整/部分覆盖及英文本；不代表实机/旧档验收 |
 
