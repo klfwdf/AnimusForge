@@ -1,3 +1,9 @@
+# 当前交接：收紧版手动重生已部署CN（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户要求部署CN；检查点7114adceb对应产品d04530acd已安装至F盘单模块AnimusForge，版本v1.6.1。当前安装已使用最近10日/最多8条重要行动/800字符压缩摘要/最多8条历史且普通发言最多4条；本条取代下方收紧功能未部署状态。
+- 复用并重验573项、CN/EN各100项和原双API/Bootstrap/Coup候选；原Stage/部署owner更新10项，3522项安装核对PASS。50设置/自定义哈希、ONNX、原版DLL及未列管文件保护通过。首次任务清单编码错误在写入前修复，失败记录保留，原脚本保持。
+- [唯一主台账、证据与回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn-tightened-persona-20261016)。本地artifacts/deploy-cn-tightened-persona-20261016/receipt.json；未实机/provider/玩家旧档验收，未打包或push，无安装备份或自动回滚；人工回退需保留玩家资料。EN发行词法与旧UI清单问题仍按此前记录，不称全仓通过。
+
 # 当前交接：重生经历与压缩记忆已收紧（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
 - 产品d04530acd：仅手动重生，统一最近10日；重要行动最多8条，最新压缩记忆800字符且过期省略；历史最多8条、普通发言最多4条，优先AFEF。保留旧个性连续性，CN/EN规则明确普通琐事不足以改变长期人设。只筛选请求，不改存档原文或全局压缩，无新增Tick工作。

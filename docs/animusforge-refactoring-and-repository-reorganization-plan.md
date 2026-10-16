@@ -1,8 +1,12 @@
 <a id="deploy-cn-tightened-persona-20261016"></a>
-## 收紧版手动重生CN部署（2026-10-16，ACTIVE）
+## 收紧版手动重生CN部署（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
 
-- 用户要求部署CN，基线main/642f07c85，产品d04530acd；目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，保持v1.6.1。复用刚通过573项/双语各100项及原双API/Bootstrap/双Coup/registration候选，重新核对源与三DLL哈希；不修改原构建部署流程。
-- 原Stage producer重建干净CN，保留旧Stage。未变资源复用上次完整CN/EN各3522项投影证据，本次变化的PersonaPromptTexts沿原资源选择/JSON协议与真实CN/EN请求专项验收；部署前后完整Stage/目标核对，保护设置、CustomPrompts、原版DLL、ONNX及未列管文件。无新ZIP或push；实机/provider/玩家旧档未验。
+- 用户明确要求部署CN，检查点7114adceb，产品d04530acd，目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge；版本保持v1.6.1。本条取代下方收紧功能未部署状态，实际游戏安装已包含十日范围/8条重要行动/800字符压缩记忆/最多8条历史且普通发言最多4条。
+- 复用刚通过完整573项、CN/EN各100项、原双API/Bootstrap/双Coup/registration构建的候选；相关源与三DLL逐SHA重验，引用v1.3.15.110062/v1.4.6.115628。原deploy_module.ps1 -StageOnlyOutputDir重建干净CN，旧Stage保存在本地previous-stage；不修改原构建/覆盖脚本。
+- 日常验证按风险复用前次完整CN/EN各3522项投影证据：两次产品输入仅批准的3个C#和CN/EN Persona资源共5项变化，Stage路径集合相同，10个变化目标严格限于实现/调试/构建元数据、PersonaPromptTexts和仅格式变化的SubModule.xml，XML语义/版本相同。当前Persona资源等于CN源码，其英文选版/JSON协议和真实CN/EN请求已在本次功能验收；未变资产逐SHA匹配前次CN投影。已登记EN源码词法失败/旧Persona UI清单失败未在本部署重跑或修复，不称EN发行/全仓通过。
+- 第一次任务runner在原owner执行前，PowerShell 5按默认编码读取Python UTF-8无BOM清单导致ConvertFrom-Json错误。仅将本地任务runner的三个JSON读取改为显式UTF8，失败日志attempt1-deploy.log/exit保留；再次完整plan核对安装SHA/mtime均未变，之后重试成功。不是游戏目录写入失败，无回滚动作或恢复声明。
+- 原Invoke-ManagedStageDeployment exit0，更新10个受管文件。安装审计PASS：3522项按部署规则核对，3133项保留且与当前CN候选无差异，安装三DLL等于冻结候选；8789项产品输入、50项设置/自定义哈希、10个ONNX文件元数据、3份原版DLL及全部未列管文件保持。原世界书、设置、自定义要求与存档原文未改写，无新部署Recovery/遗留临时文件。
+- 证据artifacts/deploy-cn-tightened-persona-20261016/{receipt.json,before.json,prepared.json,projection.json,plan.json,after.json,stage.log,attempt1-deploy.log,deploy.log,verified-candidates/,previous-stage/}。未打包/push/启动游戏；实际加载、真实provider、玩家旧档及重生输出语义未验。无安装备份或自动回滚；人工回退可参考前次deploy-cn-persona-20261016证据与候选，并保护玩家资料。源码聚焦git revert d04530acd只撤销收紧，不自动改安装。
 
 <a id="persona-experience-tightening-20261016"></a>
 ## 手动重生经历与压缩记忆收紧（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
