@@ -63,8 +63,11 @@ Chinese facts use these exact templates, without clock times:
 - `〔XXXX年X季X日〕，XXX对XXX城的XXX村庄执行了XXXX。`
 - `〔XXXX年X季X日〕，XXX对XXX城执行了XXXX。`
 
-Arrivals contain villager-party and caravan counts only. The first partial tracking window is
-explicitly incomplete; zero observed arrivals is not presented as a known seven-day total.
+Arrivals contain villager-party and caravan counts only. Both complete and partial tracking
+windows use the concise recorded-count sentence: `已记录X次村民队伍到访和Y次商队到访。`
+The English template is `Recorded X villager-party arrivals and Y caravan arrivals.`
+Actual facts precede this sentence; with no facts, it is the only line. No section heading,
+empty-record notice or coverage disclaimer is emitted. Counts still mean recorded visits.
 Legacy import runs once at session launch and uses only dated, attributable native logs.
 Historical player aftermaths are omitted when native mercy cannot be distinguished from the
 GCCZ internal callback. Missing GCCZ and arrival history is never reconstructed by inference.
