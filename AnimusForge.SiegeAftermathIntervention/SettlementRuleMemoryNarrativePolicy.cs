@@ -8,8 +8,8 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SettlementRuleMemoryNarrativePolicy
 {
-    public const int MinimumGeneratedLength = 40;
-    public const int MaximumStoredLength = 180;
+    public const int MinimumGeneratedLength = 300;
+    public const int MaximumStoredLength = 600;
 
     public static bool TryParseGeneratedResponse(string response, out string narrative)
     {

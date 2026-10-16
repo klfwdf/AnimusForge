@@ -446,6 +446,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	public override void SyncData(IDataStore dataStore)
 	{
 		GcczTownRuleMemoryRuntimeBridge.SyncData(dataStore);
+		GcczTownRecentMemoryBridge.SyncData(dataStore);
 		SyncTownColonizationState(dataStore);
 		CastleAftermathPrisonerTrustRuntimeBridge.SyncData(dataStore);
 		CastleAftermathSettlementRuntimeBridge.SyncData(dataStore);
@@ -586,6 +587,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_loadedTownColonizationSnapshot = null;
 		_loadedTownColonizationRecoveryReady = false;
 		GcczTownRuleMemoryRuntimeBridge.ClearForNewGame();
+		GcczTownRecentMemoryBridge.Reset();
 		CastleAftermathPrisonerTrustRuntimeBridge.ClearForNewGame();
 		CastleAftermathSettlementRuntimeBridge.ClearForNewGame();
 		CastleAftermathLordRecruitmentRuntimeBridge.ClearForNewGame();
@@ -8569,6 +8571,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(TownMassacreConsequenceDelta.StopMessageColor)));
 				}
 			}
+            GcczTownRecentMemoryBridge.TownAction(ResolveCurrentSettlement(), "stop_massacre");
 			Logger.Log("SiegeAiIntervention", $"Massacre stopped. Source={triggerSource ?? "N/A"}, Survivors={survivorCount}, Killed={ActiveTownOperationLedger.Snapshot().KilledVictimCount}");
 			return true;
 		}
@@ -8721,6 +8724,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_previousSettlementOwnerClan,
 				IsActiveInCurrentMission(),
 				"constructive_culture_change");
+            GcczTownRecentMemoryBridge.TownAction(settlement, "constructive_culture_change");
 			RecordInterventionMemory(
 				textCatalog.ConstructiveCultureChangeMemoryTitle,
 				TownConstructiveCultureChangeTextProfile.BuildMemory(
@@ -8816,6 +8820,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_previousSettlementOwnerClan,
 				IsActiveInCurrentMission(),
 				"culture_change");
+            GcczTownRecentMemoryBridge.TownAction(settlement, "cultural_repopulation");
 			int killedNotables = 0;
 			int spawnedNotables = 0;
 			ReplaceTownNotablesForCulturalRepopulation(settlement, targetCulture, source, out killedNotables, out spawnedNotables);
@@ -14594,6 +14599,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		TownActionPresentationTextCatalog text = GcczTownActionPresentationResourceProvider.GetFactCatalog();
 		TownActionPresentationText action = text.GetAction(key);
 		RecordInterventionMemory(action.MemoryTitle, text.BuildMemory(key, repeat, sharedPoolDescription, targetCultureDescription));
+        if (!repeat && key != TownActionPresentationKeys.CulturalRepopulation)
+            GcczTownRecentMemoryBridge.TownAction(ResolveCurrentSettlement(), key);
 	}
 
 	private static void ShowOutcomeMessageOnce(string key, uint color, string targetCultureDescription = null)
