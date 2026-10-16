@@ -25,8 +25,8 @@ public static class TownRecentMemoryText
         ["date"] = "〔{year}, {season}, day {day}〕",
         ["town"] = "{date}, {actor} carried out {action} at {town}.",
         ["village"] = "{date}, {actor} carried out {action} at {village}, a village bound to {town}.",
-        ["arrivals"] = "In the last seven days, {villagers} villager parties and {caravans} caravans arrived.",
-        ["partial"] = "Arrival records cover only part of the last seven days: {villagers} villager-party arrivals and {caravans} caravan arrivals recorded; full-window totals are unknown.",
+        ["arrivals"] = "Recorded {villagers} villager-party arrivals and {caravans} caravan arrivals.",
+        ["partial"] = "Recorded {villagers} villager-party arrivals and {caravans} caravan arrivals.",
         ["season.0"] = "spring", ["season.1"] = "summer", ["season.2"] = "autumn", ["season.3"] = "winter",
         ["native.raid"] = "raiding", ["native.capture"] = "capture", ["native.ShowMercy"] = "mercy",
         ["native.Pillage"] = "pillaging", ["native.Devastate"] = "devastation",
@@ -68,9 +68,8 @@ public static class TownRecentMemoryText
 
     public static string Build(TownRecentMemoryTown town, bool complete, TownPromptTextCatalog catalog)
     {
-        var text = new StringBuilder().AppendLine(Get(catalog, "header")).AppendLine(Get(catalog, "boundary"));
+        var text = new StringBuilder();
         foreach (var fact in town.Facts.OrderBy(f => f.Day)) text.AppendLine(FormatFact(fact, catalog));
-        if (town.Facts.Count == 0) text.AppendLine(Get(catalog, "empty"));
         text.Append(Fill(Get(catalog, complete ? "arrivals" : "partial"), new Dictionary<string, string> {
             ["villagers"] = town.Arrivals.Sum(b => (long)b.Villagers).ToString(CultureInfo.InvariantCulture),
             ["caravans"] = town.Arrivals.Sum(b => (long)b.Caravans).ToString(CultureInfo.InvariantCulture)
