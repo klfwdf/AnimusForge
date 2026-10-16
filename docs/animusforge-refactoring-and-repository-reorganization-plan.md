@@ -1,9 +1,19 @@
 <a id="persona-experience-tightening-20261016"></a>
-## 手动重生经历与压缩记忆收紧（2026-10-16，ACTIVE）
+## 手动重生经历与压缩记忆收紧（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
-- 用户在CN部署后要求收紧重生输入，并明确包含压缩记忆。基线main/a5032663a，跟踪文件干净，Microsoft/NuGet保留。只修改手动重生来源筛选、日期/篇幅预算、双语规则和必要回放；不修改存档原文或全局记忆压缩机制，不新增LLM预处理/运行设置/Tick扫描。
-- 计划：统一最近10日；最多8条重要行动，排除已知日常动向；最新压缩记忆只取窗口内一条、800字符；最多8条历史且普通发言至多4条，优先AFEF。Prompt明确只把重大经历、关系/承诺/持续冲突的实质变化用于长期人设，原个性保持连续。
-- 完成门：过期/未来记录、重要/日常行动、旧压缩块、来源身份、片段预算、自动首次生成不受影响及原生命周期回放，CN/EN实际请求、原双API/Bootstrap构建。玩家旧档、真实模型与实机不计离线通过。部署/打包/push均需另行授权，本轮修改不隐式覆盖刚安装的CN。
+- 用户在CN部署后要求收紧重生输入，明确包含压缩记忆。基线a5032663a，意图755bc5bac，产品d04530acd。Microsoft/NuGet保持；此次不修改全局存档/记忆压缩机制、自动首次生成、原调度/回写保护或玩家自定义要求，不新增设置、LLM预处理或Tick工作。
+- 统一窗口为当前日及前9个游戏日，负未知日期与未来记录排除，游戏日0合法。行动最多8条，用原稳定ActionKind/IsMajor筛选重要经历；日常动向、普通军团/围城进退排除；战斗、被俘释放、婚育、亲属死亡和领地变化保留，其他显式IsMajor记录可进入。原Sanitize与事实投影继续复用，仅手动捕获时处理该人物原上限96条容器。
+- 最新一块压缩记忆只在窗口内进入，正文最多800字符，保留日期和day；过期时省略，不倒查更旧摘要。存档原文不截断、不删除或重压缩。普通历史从原最近24条中选择最多8条，AFEF优先，普通player/npc发言最多4条，排除其他owner、过期、未来及场景背景行；以原位置排序，不调换原时间线。
+- 请求来源预算为行动2000字符、压缩摘要800字符、历史序列化项累计2400字符/单条正文400字符（外层JSON/来源字段另计）。CN/EN规则同步要求保留旧核心性格连续性，只有重大经历/实质关系变化/重要承诺/持续冲突可调整长期人设，寒暄/饮食/行军/短暂情绪不构成依据；摘要不独立证明其内声明。程序只进行稳定类型/日期/来源/预算筛选，承诺与关系变化的重要性仍由模型语义判断，未声称本地已提取或保证模型遵守。
+- 完整回放573项、CN/EN专项各100项PASS；实际host/application/dispatcher/context/Prompt reader/parser执行，记忆存储与原清理渲染、引擎/provider叶端口为fixture。覆盖真实请求的过期/未来压缩块排除、日0/窗口边界、重大/日常行动、扩展IsMajor、AFEF优先/普通发言上限、原存储不变及既有异步/编辑/自动首生保护。首轮旧断言仍访问索引23越界，按批准的新8条窗口修正为索引7后重跑通过，保留失败输出，不削弱最新记录断言。
+- 原统一双API/Bootstrap、双Coup和registration构建exit0，引用v1.3.15.110062/v1.4.6.115628，两实现各363警告、0错误。原英文资源选择器/JSON字段变量协议核对PASS；三套最终回放源SHA一致，三DLL按build marker核对并冻结。旧全量Persona本地化fixture缺RecentChange键预期及已登记EN源码词法门禁失败均未在本次修复/重跑，不称全仓或EN发行全绿。
+- 证据artifacts/persona-experience-tightening-20261016/{receipt.json,resource-contract.json,final-replay.log,final-locale-cn.log,final-locale-en.log,dual-build.log,final-replay-summary-cases/,final-locale-cn/,final-locale-en/,verified-candidates/}。未实机/provider/玩家旧档验收，未Stage/部署/打包/push；当前游戏安装仍是上轮CN的宽窗口实现。源码回退git revert d04530acd，不撤销已有部署和其他作者提交。
+
+| 产品d04530acd源码坐标 / 符号 | 已接通责任与边界 |
+| --- | --- |
+| src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs:39–57；CaptureRecentPersonaExperiences | 捕获一次当前日，按同人物过滤重要行动，把压缩块真实日期和最多24条来源历史交给投影；不写记忆容器 |
+| src/modules/AF.Module.Persona/Generation/PersonaRegenerationExperienceContext.cs:11–33；WindowDays/IsRecent/IsSignificantAction；:35–90 Build/Clip | 十日窗口、稳定类型、8条上限、AFEF优先/普通4条及来源节选预算，压缩块过期省略；仅请求文本，无游戏读写 |
+| src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs:242–245；BuildNative；content/modules/AF.Module.Persona/ModuleData/PersonaPromptTexts{.en,}.json:65 | 原资源键、原reader及最终重生system继续接通，使用长期影响/摘要非权威事实约束；动态原文和自定义语言要求保持 |
 
 <a id="deploy-cn-persona-20261016"></a>
 ## 当前源码CN部署（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）

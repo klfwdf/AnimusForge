@@ -1,3 +1,9 @@
+# 当前交接：重生经历与压缩记忆已收紧（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
+
+- 产品d04530acd：仅手动重生，统一最近10日；重要行动最多8条，最新压缩记忆800字符且过期省略；历史最多8条、普通发言最多4条，优先AFEF。保留旧个性连续性，CN/EN规则明确普通琐事不足以改变长期人设。只筛选请求，不改存档原文或全局压缩，无新增Tick工作。
+- 完整回放573项、CN/EN各100项、原资源选择/JSON协议及双API/Bootstrap/双Coup/registration通过。引擎/存储/原渲染/provider叶端口为fixture，实机/真实provider/玩家旧档未验；旧UI键清单与已登记EN词法门禁未修复/重跑。
+- [唯一主台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#persona-experience-tightening-20261016)；本地artifacts/persona-experience-tightening-20261016/receipt.json与冻结三DLL。本次未Stage/部署/打包/push；游戏安装仍为下方上轮CN宽窗口版。源码聚焦git revert d04530acd。
+
 # 当前交接：当前源码CN部署完成（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户要求部署CN；f9eed4b01检查点的当前源码已安装到F盘单模块AnimusForge，版本v1.6.1。包括ce86d561f手动重生最近经历及已合并的城镇记忆/历史角色/AFEF修复；此条取代下方相关未部署状态。
