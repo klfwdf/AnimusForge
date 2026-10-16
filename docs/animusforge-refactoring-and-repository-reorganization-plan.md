@@ -1,3 +1,10 @@
+<a id="deploy-en-scene-interrupt-20261017"></a>
+## 场景打断修复与当前源码EN部署（2026-10-17，ACTIVE / LIVE_PENDING）
+
+- 用户明确要求部署EN。基线561122d84，产品9cdffaf44及此前c1a1298cb双语解析、d04530acd收紧人设全部保留；复用刚通过双API/Bootstrap/Coup/registration的冻结候选，先逐SHA验证源输入和三DLL。保持v1.6.1，不修改一键脚本、版本、协议或玩家自定义语言要求，不打包/push。
+- 目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge。构造干净canonical Stage并保留旧Stage，再用原CN/EN选版器完整验证资源、双语UI/JSON变量协议；由原Invoke-ManagedStageDeployment执行目标写入。只把与已知CN默认JSON语义相同的内置世界书切为EN，用户/历史差异仍按原newer-wins保护；保护文档MCM、模组配置/CustomPrompts、ONNX、原版DLL及未列管文件。
+- 完成门：部署前plan和Stage/路径/玩家数据保护通过，部署后完整文件哈希与候选/EN投影一致；实机/provider/存档另记未验。严格EN发行词法检查与资源选版/部署验收分别如实记录，不删除兼容原文或改变门禁制造发行通过。无部署Recovery/自动回滚；失败停止并报告现场，保留证据。
+
 <a id="scene-presentation-interrupt-20261017"></a>
 ## 场景喊话打断卡住与气泡保留（2026-10-17，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
