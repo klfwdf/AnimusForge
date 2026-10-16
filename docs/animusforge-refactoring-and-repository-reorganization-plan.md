@@ -1,11 +1,12 @@
 <a id="merge-push-current-20261017"></a>
-## 拉取合并并推送当前工作（2026-10-17，MERGED_VERIFIED / PUSH_PENDING）
+## 拉取合并并推送当前工作（2026-10-17，PUSH_VERIFIED / LIVE_NOT_RUN）
 
 - 用户明确要求拉取、合并、推送；本地main起点d7c89c323，fetch后远端origin/main为1fdeae588，共同基线03ca16942，本地19/远端4个独有提交。远端为城镇近期记忆精简并保留标题的具名改动；本地为手动重生经历、收紧、双语解析和场景打断修复及其公开交接。不重写历史、不强推，保留Microsoft/NuGet与私有ignored证据。
 - 合并前建立本地检查点，普通merge保留双方文档与产品。当前预计产品路径无重叠、HANDOFF/主台账顶部记录需并存；合并后跑受影响城镇记忆、场景打断、双语解析回归及原双API/Bootstrap/Coup/registration。核对待推历史不含本地专用handoff/玩家资料/二进制和凭据模式，再普通推送并独立ls-remote核验。仅同步源码，不将远端新增改动隐式部署/打包；安装仍为此前EN候选。
 - 意图bb21a1186，合并e35bbe52f（第二父1fdeae588），检查点分支codex/backup-before-sync-20261017-041315保留d7c89c323。仅HANDOFF/主台账顶部追加冲突，按实际冲突块保留双方内容；其余9个远端文件原样合入，未改产品语义。当前新增请求的EN导入/接力/UI动画尚未实施，不混作本次已验证源码。
 - 合并后城镇记忆160项、实际接线16项、场景生命周期27项、展示/音频/旁听141+54+30项、CN/EN解析各78项PASS；原双API/Bootstrap、双Coup/registration构建exit0，引用v1.3.15.110062/v1.4.6.115628。城镇首轮dotnet run执行旧默认输出只显示60项，保留初次记录，改为build后直接执行隔离DLL确认160项；不以旧缓存作验收。
 - 21个待推提交/66个新增文本blob的具名排除路径与常见凭据模式检查PASS（有界检查，非穷尽安全审计），每个提交树均不含本地专用handoff；Microsoft/NuGet保留未提交。测试产生的独立零字节NuGet迁移标记已验证并保留于任务artifacts，不删除用户资料。安装三DLL仍逐SHA匹配此前EN部署，实机/provider未验；不部署/Stage/打包。本地证据artifacts/merge-push-current-20261017/{preflight.json,town-memory-final/run.log,town-wiring.log,scene-lifecycle/,scene-presentation/,bilingual-parser/,dual-build.log}。推送完成以随后独立远端ref与本地HEAD比较为准，普通推送，不强推。
+- 推送前补交56476b9ca公开验证记录，最终预检22提交/68文本blob PASS；普通push将origin/main从1fdeae588快进至56476b9ca，独立ls-remote完整SHA一致。随后只同步本段/交接完成状态，最终HEAD与远端核验留在同目录push-receipt.json。新报告EN导入/人设/接力/UI动画属于后续工作，不在本次已发布验收范围；安装未改变。
 
 <a id="deploy-en-scene-interrupt-20261017"></a>
 ## 场景打断修复与当前源码EN部署（2026-10-17，DEPLOY_VERIFIED / LIVE_PENDING）
