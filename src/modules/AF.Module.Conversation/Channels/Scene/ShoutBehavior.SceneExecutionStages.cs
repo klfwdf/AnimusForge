@@ -200,13 +200,14 @@ internal sealed partial class SceneConversationSessionRuntime
 		}, false);
 	}
 
-	internal int BeginNewPlayerDrivenSceneConversationEpoch()
+	internal int BeginNewPlayerDrivenSceneConversationEpoch(bool preserveVisibleBubbles = false)
 	{
 		InvalidateRewriteTurn();
 		_ports.RetireRelayInteractionWaits();
 		_sceneRequestLifetime.Retire();
 		_sceneRequestLifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();
 		int num = Interlocked.Increment(ref _sceneConversationEpoch);
+		RetireScenePostprocessWait();
         ResetImmediateReactions(clearCooldown: false);
 		RetireModuleSceneGroup("scene.stale_context");
 		_ports.DeactivateMultiSceneMovementSuppression();
@@ -215,7 +216,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		_ports.ClearQueuedSceneSpeech();
 		try
 		{
-			_ports.StopAllLipSyncPlaybackAndCleanup();
+			_ports.StopAllLipSyncPlaybackAndCleanup(preserveVisibleBubbles);
 		}
 		catch
 		{

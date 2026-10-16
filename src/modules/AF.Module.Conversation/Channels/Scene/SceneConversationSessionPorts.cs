@@ -135,7 +135,7 @@ internal sealed class SceneConversationSessionPorts
     internal SetPendingHeroHistoryExtraFactAfterSceneReplyCapability SetPendingHeroHistoryExtraFactAfterSceneReply;
     internal delegate Task<string> StartPrecomputedPersistedHistoryContextTaskCapability(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, string reason);
     internal StartPrecomputedPersistedHistoryContextTaskCapability StartPrecomputedPersistedHistoryContextTask;
-    internal delegate void StopAllLipSyncPlaybackAndCleanupCapability();
+    internal delegate void StopAllLipSyncPlaybackAndCleanupCapability(bool preserveVisibleBubbles);
     internal StopAllLipSyncPlaybackAndCleanupCapability StopAllLipSyncPlaybackAndCleanup;
     internal delegate void TrackPlayerInteractionCapability(NpcDataPacket primaryTarget, int participantCount = 1, float timeoutSeconds = -1f, bool returnSceneSummonOnTimeout = false, ShoutTargetingContext shoutTargetingContext = null);
     internal TrackPlayerInteractionCapability TrackPlayerInteraction;

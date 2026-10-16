@@ -16,6 +16,8 @@ internal sealed class Agent {internal static Agent Main=new();internal int Index
 internal sealed class Mission { internal static Mission Current;internal List<Agent> Agents=new(){new()}; }
 internal static class SaveRuntimeGuard { internal static long Generation=1; internal static bool IsCurrentGeneration(long value)=>value==Generation;internal static long CaptureGeneration()=>Generation; }
 internal static class Logger { internal static void Log(string area,string text) {} }
+internal static class ConversationUiLocalization { internal static string Text(string key,string fallback)=>fallback; }
+internal static class PlayerExperiencePrompt { internal static string Evidence(string text)=>text??""; }
 internal sealed class SceneConversationSessionPorts
 {
     internal bool Processing;
@@ -34,6 +36,14 @@ internal sealed class SceneConversationSessionPorts
     internal bool RecordResponseForAllNearbySafe(List<NpcDataPacket> all,int index,string name,string text){ExecutionProbe.Game();ExecutionProbe.History++;return true;}
     internal bool PersistNpcSpeechToNamedHeroes(int index,string name,string text,List<NpcDataPacket> all){ExecutionProbe.Game();ExecutionProbe.Memory++;return true;}
     internal void EnqueueSpeechLine(NpcDataPacket npc,string text,List<NpcDataPacket> all,bool skipHistory,bool suppressStare,Func<bool> canStillPublish){ExecutionProbe.Game();ExecutionProbe.Speech++;}
+    internal void EnqueueSpeechLineWithOptions(NpcDataPacket npc,string content,List<NpcDataPacket> allNpcData,bool commitHistory,bool suppressStare,bool allowPlayerDirectedActions,int requiredConversationEpoch,List<SceneSummonPromptTarget> sceneSummonTargets=null,List<SceneGuidePromptTarget> sceneGuideTargets=null,string afterSpeechInfoMessage=null,TaskCompletionSource<bool> completionSource=null,float interactionTimeoutSeconds=-1f,int interactionParticipantCount=1,Func<bool> canStillPublish=null,string playerDirectedActionText=null,string playerDirectedNpcReplyText=null){ExecutionProbe.Game();ExecutionProbe.Speech++;completionSource?.TrySetResult(true);}
+    internal bool PreserveVisibleBubbles;
+    internal void RetireRelayInteractionWaits(){}
+    internal void DeactivateMultiSceneMovementSuppression(){}
+    internal void ClearPendingSceneConversationAttentionRelease(){}
+    internal void ResetStaringBehavior(){}
+    internal void ClearQueuedSceneSpeech(){}
+    internal void StopAllLipSyncPlaybackAndCleanup(bool preserveVisibleBubbles){PreserveVisibleBubbles=preserveVisibleBubbles;}
 }
 internal static class ShoutBehavior
 {
@@ -71,6 +81,9 @@ internal static class ExecutionProbe
 }
 internal sealed partial class SceneConversationSessionRuntime
 {
+    // Rewrite/module effects are outside this runtime/gate fixture.
+    private void InvalidateRewriteTurn(){}
+    private void RetireModuleSceneGroup(string reason){}
     private static bool IsSceneContinuationCurrent => !(SynchronizationContext.Current is SceneMainThreadSynchronizationContext context) || !context.IsRetired;
     private static bool CanAgentParticipateInSceneSpeech(Agent agent)=>agent!=null&&agent.Active;
     private static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int index,Hero hero,CharacterObject character,out string error){error=null;return Mission.Current.Agents.Any(x=>x.Active&&x.Index==index&&ReferenceEquals(x.Character,character));}
@@ -100,6 +113,8 @@ internal sealed partial class SceneConversationSessionRuntime
     internal void GateBusy(bool value){_ports.Processing=value;}
     internal bool GateBusy()=>_ports.Processing;
     internal void ResumeForGate(){_ports.Processing=false;_ports.Sequence++;}
+    internal void InterruptForGate(){BeginNewPlayerDrivenSceneConversationEpoch(preserveVisibleBubbles:true);ResumeForGate();}
+    internal bool PreservesBubblesForGate()=>_ports.PreserveVisibleBubbles;
     internal void PumpGate(){while(_ports.Queue.TryDequeue(out var action))action();}
     internal static bool CanPublishImmediateSceneReaction(Func<bool> test)=>test==null||test();
     internal ImmediateSceneReactionRequest Add(long id,int agent,Action<bool> completion=null,Action noSpeech=null)
@@ -148,6 +163,27 @@ internal static class Program
         Case("actual-gate-ui-resume-cannot-restore-stale-busy",()=>{var r=New();r.GateBusy(true);var pending=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(pending.Task);var wait=r.WaitForScenePostprocessGateAsync("resume");r.ResumeForGate();pending.SetResult(true);FinishGate(r,wait);Require(!r.GateBusy()&&!r.IsWaitingForPostprocess,"ui-resume-new-sequence-kept");});
         Case("actual-gate-old-postprocess-completion-cannot-clear-new-gate",()=>{var r=New();var old=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(old.Task);r.ForceClearScenePostprocessGate("mission-end");var next=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(next.Task);old.SetResult(true);Thread.Sleep(20);Require(!r.GetScenePostprocessGateTask().IsCompleted,"new-gate-survives-old-completion");next.SetResult(true);FinishGate(r,r.GetScenePostprocessGateTask());Require(r.GetScenePostprocessGateTask().IsCompleted,"new-gate-settled");});
         Case("actual-gate-reset-releases-without-old-queue-presentation",()=>{var r=New();r.GateBusy(true);var pending=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(pending.Task);var wait=r.WaitForScenePostprocessGateAsync("mission");r.AdvanceConversationEpoch();r.ForceClearScenePostprocessGate("mission-end");int before=InformationManager.Count;FinishGate(r,wait);Require(InformationManager.Count==before&&!r.IsWaitingForPostprocess&&r.GetScenePostprocessGateTask().IsCompleted,"reset-no-stale-wait-message");});
+        foreach(string outcome in new[]{"complete","cancel","timeout"})
+        Case("actual-interrupt-releases-ui-before-postprocess-"+outcome,()=>{
+            var r=New();r.GateBusy(true);var pending=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(pending.Task);
+            Task gate=r.GetScenePostprocessGateTask();var wait=r.WaitForScenePostprocessGateAsync("scene_relay");var oldToken=r.RequestLifetime.Token;
+            r.InterruptForGate();Require(!r.IsWaitingForPostprocess&&!r.GateBusy(),"interrupt-immediate-ui-release");
+            Require(oldToken.IsCancellationRequested&&!r.RequestLifetime.Token.IsCancellationRequested&&r.PreservesBubblesForGate(),"interrupt-cancels-old-request-and-preserves-bubbles");
+            Require(!gate.IsCompleted&&ReferenceEquals(gate,r.GetScenePostprocessGateTask()),"started-actions-gate-preserved");
+            if(outcome=="complete")pending.SetResult(true);else if(outcome=="cancel")pending.SetCanceled();
+            FinishGate(r,wait);Require(!r.IsWaitingForPostprocess&&!r.GateBusy(),"late-settlement-cannot-resurrect-busy");pending.TrySetResult(true);FinishGate(r,gate);
+        });
+        Case("actual-interrupt-old-waiter-cannot-clear-new-wait",()=>{
+            var r=New();r.GateBusy(true);var pending=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(pending.Task);
+            var old=r.WaitForScenePostprocessGateAsync("old");r.InterruptForGate();r.GateBusy(true);var next=r.WaitForScenePostprocessGateAsync("next");
+            Require(r.IsWaitingForPostprocess&&!r.GateBusy(),"next-wait-owns-busy");pending.SetResult(true);FinishGate(r,Task.WhenAll(old,next));
+            Require(!r.IsWaitingForPostprocess&&r.GateBusy(),"only-new-waiter-restores-busy");
+        });
+        Case("actual-expired-epoch-waiter-cleans-only-own-ui",()=>{
+            var r=New();r.GateBusy(true);var pending=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(pending.Task);
+            var wait=r.WaitForScenePostprocessGateAsync("epoch-retired");r.AdvanceConversationEpoch();pending.SetResult(true);FinishGate(r,wait);
+            Require(!r.IsWaitingForPostprocess&&!r.GateBusy(),"expired-owner-releases-without-busy-restore");
+        });
         Console.WriteLine("SceneImmediateLifecycle PASS="+n+" FAIL=0");return 0;
     }catch(Exception ex){Console.Error.WriteLine(ex);return 1;}}
 }

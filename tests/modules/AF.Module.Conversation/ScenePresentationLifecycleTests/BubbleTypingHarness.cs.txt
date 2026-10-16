@@ -1,0 +1,34 @@
+using System;
+namespace AnimusForge;
+
+// Execute the production single-bubble stop method. Width/layout and VM are leaves;
+// this fixture does not load a Gauntlet layer or emulate the UI frame loop.
+internal sealed class BubbleTypingProbe
+{
+    private sealed class TextVm { internal string Text; }
+    private sealed class FloatingTextItemState
+    {
+        internal string FullTargetText, CurrentDisplayedText;
+        internal float TypingTimer, Lifetime, MaxLifetime;
+        internal bool IsFading;
+        internal TextVm VM;
+    }
+    private void UpdateBubbleWidth(FloatingTextItemState state) { }
+    @@PRODUCTION_STOP_TYPING@@
+
+    internal static void Run(Action<bool,string> require)
+    {
+        foreach (string visible in new[] { "已经显示的文字", "Already visible text" })
+        {
+            var state = new FloatingTextItemState { FullTargetText=visible+" ...", CurrentDisplayedText=visible,
+                TypingTimer=.4f, Lifetime=2f, MaxLifetime=20f, VM=new TextVm {Text=visible} };
+            var probe = new BubbleTypingProbe();
+            probe.StopTypingForState(state, fadeSoon:false);
+            require(state.CurrentDisplayedText==visible&&state.VM.Text==visible, "interrupt keeps CN/EN visible bubble text");
+            require(state.FullTargetText==visible&&state.TypingTimer==0f, "interrupt stops further typing");
+            require(!state.IsFading&&state.Lifetime==2f&&state.MaxLifetime==20f, "interrupt keeps normal bubble lifetime");
+            probe.StopTypingForState(state, fadeSoon:true);
+            require(state.IsFading&&state.Lifetime>19f, "default cleanup still requests accelerated fade");
+        }
+    }
+}

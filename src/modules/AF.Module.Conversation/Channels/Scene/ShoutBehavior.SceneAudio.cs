@@ -43,7 +43,7 @@ private long CaptureSpeechInteractionToken(int agentIndex) => _j17SceneInteracti
   HasPlaybackStarted = index => { lock (_ttsBubbleSyncLock) return _ttsPlaybackStartedAgents.Contains(index); },
   MarkPlaybackStarted = index => { lock (_ttsBubbleSyncLock) _ttsPlaybackStartedAgents.Add(index); },
   ClearAgentPending = ClearSceneAudioPendingForAgent, ClearAgentInteraction = index => { _pendingInteractionTimeoutArms.Remove(index); _activeInteractionSessions.Remove(index); },
-  PauseTyping = paused => _floatingTextView?.SetTypingPaused(paused), StopTyping = () => _floatingTextView?.StopTypingForAll(fadeSoon: true),
+  PauseTyping = paused => _floatingTextView?.SetTypingPaused(paused), StopTyping = fadeSoon => _floatingTextView?.StopTypingForAll(fadeSoon),
   ClearPending = ClearPendingTtsBubbleSyncQueues, SpeechBusy = IsSpeechPipelineBusy, ClearSpeechQueue = ClearQueuedSceneSpeech,
   FailureOutput = ResolveSceneAudioFailureOutput, UnmarkPlaybackStarted = index => { lock (_ttsBubbleSyncLock) _ttsPlaybackStartedAgents.Remove(index); },
   ConvertDialogueFeed = ConvertPendingSceneDialogueFeedToTimedFlush, EstimateTypingDuration = EstimateBubbleTypingDurationSeconds,
@@ -79,7 +79,7 @@ private void ClearSceneAudioPendingForAgent(int index) => _j17SceneSpeechOutputQ
 	private bool HasLipSyncOrSceneSpeechWork() => SceneAudio.HasLipSyncOrSceneSpeechWork();
 	private void HandleCriticalUiTransitionForLipSyncSafety(string reason = "UI_TRANSITION") => SceneAudio.HandleCriticalUiTransitionForLipSyncSafety(reason);
 	private static void SafeStopAndReleaseSoundEvent(SoundEvent se) => SceneAudioLipSyncController.SafeStopAndReleaseSoundEvent(se);
-	private void StopAllLipSyncPlaybackAndCleanup() => SceneAudio.StopAllLipSyncPlaybackAndCleanup();
+	private void StopAllLipSyncPlaybackAndCleanup(bool preserveVisibleBubbles = false) => SceneAudio.StopAllLipSyncPlaybackAndCleanup(preserveVisibleBubbles);
 	private void TickLipSyncAnimations(float dt) => SceneAudio.TickLipSyncAnimations(dt);
 	internal HashSet<int> GetSpeakingAgentIndicesSnapshot() => SceneAudio.GetSpeakingAgentIndicesSnapshot();
 	private void CleanupPreviousLipSyncPlaybackForReplacement(string reason) => SceneAudio.CleanupPreviousLipSyncPlaybackForReplacement(reason);

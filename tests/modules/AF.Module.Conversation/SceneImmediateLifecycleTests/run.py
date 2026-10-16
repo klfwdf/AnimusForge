@@ -22,8 +22,10 @@ header=ex.declaration(unified,'internal static SceneActionPostprocessWorkItem Pr
 members.append(header+'{ return new SceneActionPostprocessWorkItem("system", "detached prompt", replyText); }')
 gate=(base/'ShoutBehavior.ScenePostprocessGate.cs').read_text(encoding='utf-8-sig')
 members += [m.group(0) for m in re.finditer(r'^\s*private (?:readonly )?[^\n;{}]+_[a-zA-Z]\w*[^\n;{}]*;',gate,re.M)]
-for sig in ['internal void RegisterScenePostprocessGateTask(','internal Task GetScenePostprocessGateTask(','internal void ForceClearScenePostprocessGate(','internal async Task WaitForScenePostprocessGateAsync(']:
+for sig in ['internal void RegisterScenePostprocessGateTask(','internal Task GetScenePostprocessGateTask(','internal void RetireScenePostprocessWait(','internal void ForceClearScenePostprocessGate(','internal async Task WaitForScenePostprocessGateAsync(']:
     members.append(ex.declaration(gate,sig))
+execution=(base/'ShoutBehavior.SceneExecutionStages.cs').read_text(encoding='utf-8-sig')
+members.append(ex.declaration(execution,'internal int BeginNewPlayerDrivenSceneConversationEpoch('))
 source=runtime+'\nnamespace AnimusForge { internal sealed partial class SceneConversationSessionRuntime {\n'+'\n'.join(members)+'\n}}'
 # File-scoped namespace applies to the entire generated file; combine as another partial without another namespace.
 source='using System.Linq;using System.Threading.Tasks;using System.Text.RegularExpressions;using static AnimusForge.ShoutBehavior;\n'+runtime+'\ninternal sealed partial class SceneConversationSessionRuntime {\n'+'\n'.join(members)+'\n}'
