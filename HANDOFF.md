@@ -1,3 +1,9 @@
+# 当前交接：当前源码CN部署完成（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户要求部署CN；f9eed4b01检查点的当前源码已安装到F盘单模块AnimusForge，版本v1.6.1。包括ce86d561f手动重生最近经历及已合并的城镇记忆/历史角色/AFEF修复；此条取代下方相关未部署状态。
+- 复用并重验原双API/Bootstrap/双Coup候选；干净Stage及完整CN/EN资源投影各3522项通过。原owner更新3204项，含3121份已知EN默认世界书选为CN；最终3522项SHA全部等于CN候选。50设置/自定义文件、ONNX、原版DLL及未列管文件保护通过。
+- [唯一主台账、证据与回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn-persona-20261016)。本地artifacts/deploy-cn-persona-20261016/receipt.json及冻结三DLL。EN源码词法门禁另有已记录失败，不称EN发行通过；未打包/push/实机/provider/旧档验收，无部署备份或自动回滚，人工回退需保护玩家资料。
+
 # 当前交接：手动重生已接入最近经历（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
 
 - 产品ce86d561f基于已合并的main/7f6e5085d：手动重生加入同人物最近16条行动、最新压缩记忆和最近24条对话/AFEF；世界书/事实/自定义要求沿用原链路，自动首次生成不读新增经历块。按次主线程捕获并限量，不改记忆/存档，不新增Tick工作。

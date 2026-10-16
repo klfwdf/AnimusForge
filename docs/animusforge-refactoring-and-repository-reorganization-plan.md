@@ -1,8 +1,12 @@
 <a id="deploy-cn-persona-20261016"></a>
-## 当前源码CN部署（2026-10-16，ACTIVE）
+## 当前源码CN部署（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
 
-- 用户明确要求部署CN；基线main/55d3fa2f4，跟踪文件干净，Microsoft/NuGet未跟踪目录保留。目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，保持v1.6.1，包含ce86d561f手动重生记忆及已合并的历史角色/AFEF修复。不打包、不push、不改版本或原构建/部署脚本。
-- 复用刚通过原双API/Bootstrap/Coup/registration且生产输入未再修改的候选，通过原Stage入口重建CN；使用原CN/EN投影验证与原Invoke-ManagedStageDeployment。只对安装语义完全等于已发布EN默认的世界书选择CN，用户内容与CustomPrompts/Configs/终端/ONNX/未列管文件按原保护规则保留。完成门为候选哈希/完整投影/安装逐项与玩家资料保护核对；实机/真实provider/旧档不计离线部署验收。
+- 用户明确要求部署CN；检查点f9eed4b01，产品ce86d561f及基线55d3fa2f4。部署目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，保持v1.6.1；包括手动重生最近经历、城镇近期记忆、历史角色/AFEF修复和原已部署修复。本条取代下方相应功能未部署状态，不表示实机已验。
+- 复用刚通过原双API/Bootstrap/双Coup/registration的候选（v1.3.15.110062/v1.4.6.115628）；生产代码与验证后无新增变更，三DLL及相关源码逐SHA重验。原deploy_module.ps1 -StageOnlyOutputDir生成干净CN Stage；旧Stage移入任务内previous-stage保留。没有修改原构建/部署/打包脚本。
+- 原CN/EN包资源投影各3522项通过，双语资源引用/JSON变量协议及原Stage/产物身份校验通过。附加EN源码词法门禁失败并保留projection.log：ConversationRoleClassificationOwner.cs中已知中英历史前缀/语法和TownRecentMemoryText.cs中CN分支城后缀共11命中；本轮只交付CN，不称EN发行门禁通过。EN DLL词法门禁未执行，不能以资源投影替代；未为门禁删除兼容识别或改产品。
+- 从独立CN投影候选部署；安装3121份世界书逐一确认JSON语义等于当前已发布EN默认、安装SHA/mtime未变、CN候选SHA正确，按用户CN选择赋候选实际创建时间，再交原newer-wins owner处理。12份已有CN默认保留，未发现未知世界书改写；未写安装文件绕过部署owner，未改变原时间合并/设置保护规则。
+- 原Invoke-ManagedStageDeployment exit0，更新3204项。原审计与独立完整manifest核对均PASS：最终3522项SHA全部等于CN候选，安装三DLL等于冻结候选，新增个性经历Prompt资源确为CN；8789项产品输入保持，50项设置/自定义哈希、10个ONNX文件元数据、3份原版DLL及全部未列管文件保持，无新增部署Recovery或遗留临时文件。
+- 证据artifacts/deploy-cn-persona-20261016/{receipt.json,before.json,prepared.json,projection.json,opposite-projection.json,known-en-to-cn-defaults.json,plan.json,after.json,stage.log,projection.log,projection-cn.log,deploy.log,verified-candidates/}。本轮没有新ZIP、push或启动游戏；实际加载/真实provider/玩家存档重载未验，旧全量Persona本地化fixture缺RecentChange UI预期的未通过状态保持。无部署备份或自动回滚；安装回退需人工选旧包并保留玩家资料，源码回退ce86d561f仅撤销此次重生功能，不能自动撤销已部署文件。
 
 <a id="persona-regeneration-experiences-20261016"></a>
 ## 手动重生个性接入最近经历（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
