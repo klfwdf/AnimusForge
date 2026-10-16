@@ -50,8 +50,10 @@ static class RecentMemoryReplay
         Check(store.Arrival("town", "private_party:1", false, 107.1) && !store.Arrival("town", "private_party:1", false, 107.1), "arrival callback deduplicated");
         store.Arrival("town", "private_party:2", false, 107.2); store.Arrival("town", "private_caravan:1", true, 107.2);
         string text = TownRecentMemoryText.Build(store.Read("town", 107.2), true, cn);
-        Check(text.Contains("2队村民和1队商队") && !text.Contains("private_"), "arrival output is aggregate only and allows genuine repeat visits");
-        Check(TownRecentMemoryText.Build(store.Read("town", 107.2), false, cn).Contains("完整七日总数未知"), "unknown coverage not replaced with zero total");
+        Check(text == "【城镇近期情况：近七日】" + Environment.NewLine + "已记录2次村民队伍到访和1次商队到访。", "arrival output preserves the recent-section heading without boilerplate");
+        Check(TownRecentMemoryText.Build(store.Read("town", 107.2), false, cn) == text, "partial coverage uses the same concise recorded counts");
+        Check(TownRecentMemoryText.Build(store.Read("empty-town", 107.2), false, cn) == "【城镇近期情况：近七日】" + Environment.NewLine + "已记录0次村民队伍到访和0次商队到访。", "empty town retains the recent heading and recorded zero counts");
+        Check(TownRecentMemoryText.Build(store.Read("town", 107.2), false, en) == "[Town events in the last seven days]" + Environment.NewLine + "Recorded 2 villager-party arrivals and 1 caravan arrivals.", "English preserves the heading and concise recorded-count meaning");
         var copy = JsonConvert.DeserializeObject<TownRecentMemorySnapshot>(JsonConvert.SerializeObject(store.State));
         Check(new TownRecentMemoryStore().Restore(copy), "primitive state round-trips with arrival dedup receipts");
         copy.Version = 2;
@@ -80,7 +82,7 @@ static class RecentMemoryReplay
         CampaignEvents.OnSessionLaunchedEvent.Raise(new());
         string text = GcczTownRecentMemoryBridge.Build(town, cn);
         Check(text.Contains("领主甲对测试城的村甲村庄执行了劫掠") && text.Contains("领主甲对测试城执行了毁坏"), "legacy logs retain actual actor and bound town");
-        Check(!text.Contains("玩家对") && text.Contains("总数未知"), "ambiguous historical player aftermath and missing visitor history are not invented");
+        Check(!text.Contains("玩家对") && text.EndsWith("已记录0次村民队伍到访和0次商队到访。"), "ambiguous historical player aftermath and missing visitor history are not invented");
         CampaignEvents.OnSessionLaunchedEvent.Raise(new());
         Check(text == GcczTownRecentMemoryBridge.Build(town, cn), "legacy migration runs once");
         GcczTownRecentMemoryBridge.Reset(); Campaign.Current.LogEntryHistory.GameActionLogs.Clear();
