@@ -65,7 +65,7 @@ if a.experience_language:
 code=code.replace('@@PROMPT_DIR@@',str(prompt_dir).replace('\\','/'))
 if not a.original:
  code=code.replace('internal static string BuildPromotedHeroSkillSummary(TaleWorlds.CampaignSystem.Hero hero)=>',
-  'internal static string GetMemoryHeroId(TaleWorlds.CampaignSystem.Hero hero)=>hero.StringId;internal static string GetNpcActionHeroKey(TaleWorlds.CampaignSystem.Hero hero)=>hero.StringId;internal static string RenderNpcActionEntriesForPrompt(TaleWorlds.CampaignSystem.Hero hero,List<string> entries){Probe.Read();return string.Join("\\n",entries);}internal static string BuildPromotedHeroSkillSummary(TaleWorlds.CampaignSystem.Hero hero)=>',1)
+  'internal static string GetMemoryHeroId(TaleWorlds.CampaignSystem.Hero hero)=>hero.StringId;internal static string GetNpcActionHeroKey(TaleWorlds.CampaignSystem.Hero hero)=>hero.StringId;internal static string RenderNpcActionEntriesForPrompt(TaleWorlds.CampaignSystem.Hero hero,List<AnimusForge.NpcActionEntry> entries){Probe.Read();return string.Join("\\n",entries.ConvertAll(x=>x.Text));}internal static string BuildPromotedHeroSkillSummary(TaleWorlds.CampaignSystem.Hero hero)=>',1)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 files=[out/'Program.cs',ROOT/'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',ROOT/'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs']
 if not a.original:
@@ -98,6 +98,7 @@ if not a.original:
  (out/'Policy.cs').write_text(policy,encoding='utf-8');files.append(out/'Policy.cs')
  files += [ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs',ROOT/'src/modules/AF.Module.Llm/Protocol/JsonResponseTextCodec.cs',ROOT/'src/AF.GameAdapter.Bannerlord/UI/Errors/PersonaFailureUiText.cs',HERE/'LocalizationBoundary.cs.txt', ROOT/'src/modules/AF.Module.Persona/Generation/PersonaPromptTexts.cs']
  files += [ROOT/'src/modules/AF.Module.Persona/Generation/PersonaRegenerationExperienceContext.cs',ROOT/'src/modules/AF.Module.Memory/Records/AnimusForgeDialogueHistoryEntry.cs']
+ files += [ROOT/'src/modules/AF.Module.Memory/Records/NpcActionEntry.cs']
 # Bind exact whole application classes, scalar game/network fixtures, and generated mutation bytes.
 import json,hashlib
 physical=['src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs','src/AF.GameAdapter.Bannerlord/Prompt/PromotedPersonaGenerationApplicationAdapter.cs','src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromotedPersonaGeneration.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs']

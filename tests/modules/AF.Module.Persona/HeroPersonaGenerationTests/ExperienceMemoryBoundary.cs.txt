@@ -2,14 +2,15 @@
 // persona application, dispatcher, bounded context builder and prompt composer run unchanged.
 namespace AnimusForge {
  internal sealed class ExperienceMemoryState {
-  internal readonly Dictionary<string,List<string>> RecentActions=new();
+  internal readonly Dictionary<string,List<NpcActionEntry>> RecentActions=new();
  }
  internal sealed class ExperienceHistorySource {
   internal readonly Dictionary<string,List<AnimusForgeDialogueHistoryEntry>> History=new();
   internal readonly Dictionary<string,string> Summaries=new();
+  internal readonly Dictionary<string,int> SummaryDays=new();
   internal int Reads;
   internal bool TryGetLatestCompressedMemoryInternal(Hero hero,out string key,out string date,out string text,out int day){
-   Probe.Read();Reads++;key="";date="date-90";day=90;return Summaries.TryGetValue(hero.StringId,out text);
+   Probe.Read();Reads++;key="";day=SummaryDays.TryGetValue(hero.StringId,out var savedDay)?savedDay:98;date="date-"+day;return Summaries.TryGetValue(hero.StringId,out text);
   }
   internal List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesById(string id,int limit){
    Probe.Read();Reads++;
@@ -18,7 +19,7 @@ namespace AnimusForge {
   }
  }
  internal static class NpcActionLedger {
-  internal static List<string> SanitizeNpcActionEntries(List<string> entries,bool recent,int day){Probe.Read();return entries;}
+  internal static List<NpcActionEntry> SanitizeNpcActionEntries(List<NpcActionEntry> entries,bool recent,int day){Probe.Read();return entries;}
  }
  public partial class MyBehavior {
   internal readonly ExperienceMemoryState _memoryBusinessState=new();
