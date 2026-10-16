@@ -1,3 +1,10 @@
+<a id="bilingual-parser-fixes-20261017"></a>
+## CN/EN解析缺口修复（2026-10-17，ACTIVE / NOT_DEPLOYED / NOT_PUSHED）
+
+- 用户在全量只读审计后要求修复；基线main/117cf630b。本包只处理已复现的5组：英文议和方向误拒绝、政策bottom N反转、外交议题单语分类、帝国身份英文漏检、辅助历史旁听前缀识别。保留中文兼容、协议/存档/API身份及原权限门禁，不改用户内容、设置、构建/部署脚本或其他作者文件。
+- 计划改动：WorldDiplomacyDocumentFactRules / GenerationValidationRules / IntentVocabulary、DiplomacyMiscCompatibility.json、PolicyTargetPlanRouter、AIConfigHandler，并新增具名跨模块双语回归；仅确有共享owner需要时调整ConversationRoleClassificationOwner。退出门：旧源码反例、修后中英正负例与真实reader、相关原协议/历史回归、原统一1.3/1.4/Bootstrap构建及源码保全。正式完整三渠道旧fixture失败、实机/provider/玩家旧档另列，不能用专项PASS替代。
+- 性能：只在既有请求/历史装配/目标选择边界执行；兼容表沿用一次Lazy读取，英语静态模式按需缓存，动态姓名转义；不增加Tick工作、IO/反射扫描、LLM请求或存档迁移。不部署、打包、fetch或push；Microsoft/NuGet未跟踪目录保持。审计旧证据artifacts/parser-bilingual-audit-20261017只读保留，新证据写入artifacts/bilingual-parser-fixes-20261017/。
+
 <a id="deploy-cn-tightened-persona-20261016"></a>
 ## 收紧版手动重生CN部署（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
 
