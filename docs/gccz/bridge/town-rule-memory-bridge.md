@@ -36,7 +36,7 @@ Events only record bounded facts; they do not issue network requests or scan all
   day** since the first pending change. Time alone does not generate more prose.
 - Per-town network attempts are at least **1 wall-clock minute** apart. Failed/rejected attempts
   cool down for a minute after completion. At most **2** requests/completions are outstanding.
-- Town generation uses the existing auxiliary gateway with an additional **384 output-token ceiling** (a lower user limit is retained), thinking disabled, and no thinking-control compatibility retry. Other auxiliary callers retain their existing settings. Character bounds on input are not an exact tokenizer budget.
+- Town generation uses the existing auxiliary gateway with an additional **1536 output-token ceiling** (a lower user limit is retained), thinking disabled, and no thinking-control compatibility retry. Other auxiliary callers retain their existing settings. Character bounds on input are not an exact tokenizer budget.
 - There is no background retry loop. Reopen/refresh the encyclopedia or use an eligible dialogue
   after cooldown to retry. A busy slot leaves pending facts intact for the next demand.
 - At most **12** recent confirmed facts (480 characters each) accompany a tenure; prior prose is
@@ -47,6 +47,57 @@ The last good prose remains visible while pending, during generation, or after f
 prose is never automatically replaced by an event, culture/personality change or elapsed time.
 The existing explicit developer regeneration action releases that manual lock while retaining
 its text until a successful replacement; clearing text also enables future generation.
+
+New automatic prose is **300–600 characters**. Short legacy or manual prose remains readable;
+manual text keeps its automatic-refresh protection. CN/EN generation templates ask for grounded
+local detail and differing views without inventing events to fill the length.
+
+## Seven-day recent memory
+
+`TownRecentMemoryStore` separately retains the current calendar day and six preceding days.
+It records dated native raids/forced supplies/forced recruitment, siege captures and applied
+native aftermaths, plus the existing GCCZ town disposition paths. It does not consume one of
+the three ruler-tenure slots, request an LLM or expand ordinary dialogue speaker eligibility.
+Chinese facts use these exact templates, without clock times:
+
+- `〔XXXX年X季X日〕，XXX对XXX城的XXX村庄执行了XXXX。`
+- `〔XXXX年X季X日〕，XXX对XXX城执行了XXXX。`
+
+Arrivals contain villager-party and caravan counts only. The first partial tracking window is
+explicitly incomplete; zero observed arrivals is not presented as a known seven-day total.
+Legacy import runs once at session launch and uses only dated, attributable native logs.
+Historical player aftermaths are omitted when native mercy cannot be distinguished from the
+GCCZ internal callback. Missing GCCZ and arrival history is never reconstructed by inference.
+
+The new `_gcczTownRecentMemory_v1` namespace uses the existing strict 12000-byte UTF-8 chunks.
+Malformed/future data disables this domain and preserves its original evidence; incomplete or
+unsafe evidence refuses save instead of silently replacing it with an empty history.
+
+### Deferred GCCZ village integration
+
+This change **does not connect the GCCZ village execution implementation**. AF has an internal,
+same-DLL receipt seam `GcczTownRecentMemoryBridge.VillageAction(Settlement village, string actionId,
+string receipt)`. A later integration may call it on the campaign thread only after a real player
+disposition completes. It must supply a nonempty, durable completion receipt (same completion,
+same receipt across callbacks/reloads; a genuinely new action gets a new receipt).
+A request, model action tag, proposed order, failed action or cancellation is not completion.
+The bridge resolves the village's bound town and current player; castle-bound villages are excluded.
+
+| Stable AF action ID | Chinese disposition label |
+| --- | --- |
+| `ForcedRansom` | 强征赎金 |
+| `ForcedFood` | 强征粮食 |
+| `ForcedGoods` | 强征物资 |
+| `ForcedLivestock` | 强征牲畜 |
+| `Plunder` | 掠夺村庄 |
+| `Enslave` | 抓取奴隶 |
+| `ForcedRecruitment` | 强行征兵 |
+| `MassacreAndSeize` | 屠村 |
+| `Destroy` | 纯粹毁坏 |
+
+All other IDs, positive dispositions and missing receipts are rejected. AF owns these exact
+IDs and paired CN/EN labels independently of the future village enum. Unit fixtures exercising
+the seam are not evidence that a production GCCZ village callback has been connected.
 
 ## Async/lifecycle acceptance
 
@@ -79,6 +130,7 @@ rewrite or delete live player saves to perform source rollback.
 The harness links the production core, generation bridge, runtime bridge, ruler adapter and event
 listeners. It uses a controllable auxiliary transport and value-only Bannerlord fixtures, covering
 revision/cadence behavior, stale/manual acceptance, bounds, v1/v2/v3 migration, event dates,
-registered listener behavior, and host save/load including full Chinese multi-tenure chunks. `verify_auxiliary_budget.ps1` extracts the actual auxiliary methods and validates budget/config behavior against a gateway stub; the existing configured-gateway HTTP replay separately verifies 384 tokens, disabled thinking and exactly one failed request. It is not a live game or real provider test.
+registered listener behavior, and host save/load including full Chinese multi-tenure chunks. `verify_auxiliary_budget.ps1` extracts the actual auxiliary methods and validates the 1536-token ceiling and lower user limits against a gateway stub; the historical configured-gateway HTTP replay separately verifies its original 384-token fixture, disabled thinking and exactly one failed request. It is not a live game or real provider test.
 Use the unchanged unified build script for both API lines plus Bootstrap. Current evidence,
-source coordinates and rollback are in the main ledger's `town-memory-refresh-20261001` entry.
+source coordinates and rollback are in the main ledger's `town-memory-main-20261016` entry.
+The earlier `town-memory-refresh-20261001` entry retains the original refresh implementation history.

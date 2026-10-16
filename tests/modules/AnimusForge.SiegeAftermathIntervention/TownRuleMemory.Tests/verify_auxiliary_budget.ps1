@@ -43,17 +43,17 @@ $suffix = @'
     {
         object[] messages = { "fixture" };
         DuelSettings.Configured = 16000;
-        if (!TryCallBoundedAuxiliarySimpleDialogueOnceForExternal(messages, 384, 0.45f, out _, out _)
-            || SentTokens != 384 || SentThinking || SentFallback) throw new Exception("bounded budget overridden");
+        if (!TryCallBoundedAuxiliarySimpleDialogueOnceForExternal(messages, 1536, 0.45f, out _, out _)
+            || SentTokens != 1536 || SentThinking || SentFallback) throw new Exception("bounded budget overridden");
         DuelSettings.Configured = 128;
-        TryCallBoundedAuxiliarySimpleDialogueOnceForExternal(messages, 384, 0.45f, out _, out _);
+        TryCallBoundedAuxiliarySimpleDialogueOnceForExternal(messages, 1536, 0.45f, out _, out _);
         if (SentTokens != 128) throw new Exception("lower user limit ignored");
         TryCallBoundedAuxiliarySimpleDialogueOnceForExternal(messages, 0, 0.45f, out _, out _);
         if (SentTokens != 16) throw new Exception("minimum budget invalid");
         DuelSettings.Configured = 16000;
         TryCallAuxiliarySimpleDialogueOnceForExternal(messages, 384, 0.45f, out _, out _);
         if (SentTokens != 16000 || !SentFallback) throw new Exception("legacy caller behavior changed");
-        return "PASS: actual auxiliary methods clamp 16000->384, preserve lower 128 and floor 16, disable thinking/fallback only for bounded call; legacy 16000/fallback retained.";
+        return "PASS: actual auxiliary methods clamp 16000->1536, preserve lower 128 and floor 16, disable thinking/fallback only for bounded call; legacy 16000/fallback retained.";
     }
 }
 internal class DuelSettings {
