@@ -196,7 +196,9 @@ public static class WorldDiplomacyGenerationValidationRules
     {
         string escapedName = Regex.Escape(rulerName);
         string invalidPersonalTitlePattern = "(?:" + escapedName + DiplomacyCompatibilityTexts.Get("Regex_NobleTitleList") + "|" + DiplomacyCompatibilityTexts.Get("Regex_NobleTitleList") + DiplomacyCompatibilityTexts.Get("Regex_HonorificSuffix") + escapedName + "|" + escapedName + DiplomacyCompatibilityTexts.Get("Regex_SelfTitlePrefix") + DiplomacyCompatibilityTexts.Get("Regex_NobleTitleList") + ")";
-        if (Regex.IsMatch(visibleText, invalidPersonalTitlePattern, RegexOptions.CultureInvariant))
+        string englishPersonalTitlePattern = DiplomacyCompatibilityTexts.Get("Regex_EnglishPersonalTitle").Replace("{ruler}", escapedName);
+        if (Regex.IsMatch(visibleText, invalidPersonalTitlePattern, RegexOptions.CultureInvariant)
+            || Regex.IsMatch(visibleText, englishPersonalTitlePattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
         {
             reason = "realm_ruler_title_conflicts_with_hard_fact";
             return true;
@@ -204,13 +206,15 @@ public static class WorldDiplomacyGenerationValidationRules
     }
 
     if (string.Equals(kingdomId, "empire_s", StringComparison.OrdinalIgnoreCase)
-        && Regex.IsMatch(visibleText, DiplomacyCompatibilityTexts.Get("Regex_SouthSenate"), RegexOptions.CultureInvariant))
+        && (Regex.IsMatch(visibleText, DiplomacyCompatibilityTexts.Get("Regex_SouthSenate"), RegexOptions.CultureInvariant)
+            || Regex.IsMatch(visibleText, DiplomacyCompatibilityTexts.Get("Regex_EnglishSouthSenate"), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)))
     {
         reason = "southern_empire_government_conflicts_with_hard_fact";
         return true;
     }
     if (string.Equals(kingdomId, "empire_w", StringComparison.OrdinalIgnoreCase)
-        && Regex.IsMatch(visibleText, DiplomacyCompatibilityTexts.Get("Regex_WestSenate"), RegexOptions.CultureInvariant))
+        && (Regex.IsMatch(visibleText, DiplomacyCompatibilityTexts.Get("Regex_WestSenate"), RegexOptions.CultureInvariant)
+            || Regex.IsMatch(visibleText, DiplomacyCompatibilityTexts.Get("Regex_EnglishWestSenate"), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)))
     {
         reason = "western_empire_government_conflicts_with_hard_fact";
         return true;

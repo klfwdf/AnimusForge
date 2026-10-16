@@ -1,0 +1,87 @@
+using AnimusForge;
+using AnimusForge.PolicyTargets;
+using AnimusForge.Refactor.Domain;
+using Newtonsoft.Json.Linq;
+
+namespace AnimusForge {internal static class AnimusForgeModulePaths {
+    internal static string Directory;
+    internal static string GetModuleDataFilePath(string name)=>System.IO.Path.Combine(Directory,name);
+}}
+internal static class Program
+{
+    static int checks, failures;
+    static void Equal<T>(string name,T expected,T actual) {
+        checks++; if(!EqualityComparer<T>.Default.Equals(expected,actual)) {
+            failures++;Console.WriteLine($"FAIL {name}: expected={expected}; actual={actual}");
+        }
+    }
+    static (string,string) Identity(string id)=>id=="kA"?("kA","Vlandia"):id=="kB"?("kB","Battania"):(null,null);
+    static string PeaceViolation(string body,bool cession=false) {
+        var terms=cession?new JObject{["cession_settlement_id"]="town_1",["cession_from_kingdom_id"]="kA",["cession_to_kingdom_id"]="kB"}
+            :new JObject{["daily_tribute"]=100,["duration_days"]=30,["tribute_payer_kingdom_id"]="kA",["tribute_receiver_kingdom_id"]="kB"};
+        bool invalid=WorldDiplomacyGenerationValidationRules.TryGetPublicPeaceTermsDisclosureViolation(
+            "propose_peace",body,new JObject{["peace_terms"]=terms},"kA","kB",Identity,_=>"Pravend",out string reason);
+        return invalid?reason:"";
+    }
+    static void PeaceCases() {
+        foreach(string body in new[]{"Vlandia支付100给Battania，持续30天。","Vlandia pays 100 denars to Battania for 30 days.",
+            "VLANDIA SHALL PAY 100 DENARS TO BATTANIA FOR 30 DAYS.","We will pay 100 denars to you for 30 days.",
+            "Battania will be paid 100 denars by Vlandia for 30 days.","Vlandia pays Battania 100 denars for 30 days."})
+            Equal("correct tribute "+body,"",PeaceViolation(body));
+        foreach(string body in new[]{"Battania支付100给Vlandia，持续30天。","Battania pays 100 denars to Vlandia for 30 days.",
+            "Vlandia will not pay 100 denars to Battania for 30 days.","Vlandia receives 100 denars paid by Battania for 30 days.",
+            "Vlandia met envoys. Battania pays 100 to Vlandia for 30 days.",
+            "Vlandia pays 100 to Sturgia and might lend to Battania for 30 days.","Vlandia and Battania discuss 100 denars and 30 days."})
+            Equal("wrong tribute direction "+body,"peace_terms_not_visible:tribute_direction",PeaceViolation(body));
+        Equal("tribute amount still required","peace_terms_not_visible:tribute",PeaceViolation("Vlandia pays 99 denars to Battania for 30 days."));
+        Equal("tribute duration still required","peace_terms_not_visible:duration",PeaceViolation("Vlandia pays 100 denars to Battania for 29 days."));
+        foreach(string body in new[]{"Vlandia割让Pravend给Battania。","Vlandia cedes Pravend to Battania.",
+            "Vlandia shall transfer Pravend to Battania.","Vlandia hands over Pravend to Battania.",
+            "Pravend will be ceded by Vlandia to Battania.","Pravend will be ceded to Battania by Vlandia."})
+            Equal("correct cession "+body,"",PeaceViolation(body,true));
+        Equal("cession reverse","peace_terms_not_visible:cession_direction",PeaceViolation("Battania cedes Pravend to Vlandia.",true));
+        Equal("cession name required","peace_terms_not_visible:cession",PeaceViolation("Vlandia cedes another town to Battania.",true));
+        Equal("cession negative","peace_terms_not_visible:cession_direction",PeaceViolation("Vlandia will not cede Pravend to Battania.",true));
+        Equal("ceded realm is not recipient","peace_terms_not_visible:cession_direction",PeaceViolation("Battania was ceded by Vlandia, including Pravend.",true));
+    }
+    static void TopicCases() {
+        foreach(var row in new[]{("议和条款","peace_terms"),("Peace terms","peace_terms"),("A CEASEFIRE","peace_terms"),
+            ("贸易协定","trade_order"),("Trade agreement","trade_order"),("Caravan tariffs","trade_order"),
+            ("同盟义务","alliance_duties"),("Alliance duties","alliance_duties"),("盟约","alliance_duties"),
+            ("战争升级","war_escalation"),("An ultimatum","war_escalation"),("Border invasion","war_escalation"),
+            ("Other business","regional_security"),("The warbler sings","regional_security"),("Unrelated commerceplace","regional_security")})
+            Equal("topic "+row.Item1,row.Item2,WorldDiplomacyIntentVocabulary.InferTopicCategory(row.Item1,false));
+        Equal("war fallback","war_conduct",WorldDiplomacyIntentVocabulary.InferTopicCategory("Other business",true));
+        Equal("null fallback","regional_security",WorldDiplomacyIntentVocabulary.InferTopicCategory(null,false));
+    }
+    static void RealmCases() {
+        foreach(var row in new[]{("empire_s","南帝国的元老院已经决定"),("empire_s","The Senate of the Southern Empire has decided."),
+            ("empire_s","The Southern Empire's Senate has decided."),("empire_s","Our senate has decided."),
+            ("empire_w","西帝国的元老院已经决定"),("empire_w","The Western Empire's Senate has decided."),
+            ("empire_n","Lucon国王万岁"),("empire_n","Long live King Lucon!"),("empire_n","Lucon is a king."),
+            ("empire_n","KING LUCON has spoken.")})
+            Equal("realm reject "+row.Item2,true,WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation(row.Item1,"Lucon",row.Item2,out _));
+        foreach(var row in new[]{("empire_n","The Northern Empire's senate has decided."),("empire_s","The Northern Empire's senate has decided."),
+            ("empire_n","Emperor Lucon has spoken."),("empire_n","Lucon met King Derthert."),("empire_n","King Luconshire has spoken."),
+            ("vlandia","King Lucon has spoken."),("empire_n","We march north.")})
+            Equal("realm allow "+row.Item2,false,WorldDiplomacyGenerationValidationRules.TryGetRealmIdentityViolation(row.Item1,"Lucon",row.Item2,out _));
+    }
+    static void PolicyCases() {
+        foreach(var row in new[]{("后三座城镇","BottomN:3"),("bottom 3 towns","BottomN:3"),("BOTTOM 12 CASTLES","BottomN:12"),
+            ("top 3 towns","TopN:3"),("前三座城镇","TopN:3"),("Bottombridge top 3 towns","TopN:3")})
+            Equal("policy "+row.Item1,row.Item2,PolicyTargetPlanRouter.Replay(row.Item1,PolicyTargetPlanCardinality.BottomN));
+        Equal("no count retains atom","BottomN:1",PolicyTargetPlanRouter.Replay("bottom ranked towns",PolicyTargetPlanCardinality.BottomN));
+        Equal("Chinese all unchanged","All:0",PolicyTargetPlanRouter.Replay("全部城镇",PolicyTargetPlanCardinality.BottomN));
+    }
+    static void ObserverCases() {
+        foreach(string prefix in new[]{"[场景喊话]","[Scene shout]","[SCENE SHOUT]"})foreach(string session in new[]{"","[AF_SCENE_SESSION:1] "}) {
+            Equal("observer "+session+prefix,true,AIConfigHandler.Replay(session+prefix+" Guard: Wait."));
+        }
+        foreach(string text in new[]{"Guard: Wait.","Guard: I heard [Scene shout] earlier.","\"[Scene shout] Guard: Wait.\"","",null})
+            Equal("not observer "+text,false,AIConfigHandler.Replay(text));
+    }
+    static int Main(string[] args) {
+        AnimusForgeModulePaths.Directory=args[0];PeaceCases();TopicCases();RealmCases();PolicyCases();ObserverCases();
+        Console.WriteLine($"{checks} checks, {failures} failures; game/provider NOT RUN");return failures==0?0:1;
+    }
+}

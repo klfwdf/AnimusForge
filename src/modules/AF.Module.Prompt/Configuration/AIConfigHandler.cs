@@ -3320,12 +3320,15 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+        // Read a bare marker before the generic session-prefix skipper can consume it.
+        // Both editions share the same memory-role parser and retain old CN records.
+        if (ConversationRoleClassificationOwner.TryParseDailyMemorySceneShoutLine(text, out _, out _)) return true;
 		int startIndex = GetAuxiliaryHistorySpeakerSearchStart(text);
 		if (startIndex > 0 && startIndex < text.Length)
 		{
 			text = text.Substring(startIndex).TrimStart();
 		}
-		return text.StartsWith(PromptRetrievalTexts.Raw("Raw_a9bcee692b61"), StringComparison.Ordinal);
+		return ConversationRoleClassificationOwner.TryParseDailyMemorySceneShoutLine(text, out _, out _);
 	}
 
 	private static void TrimAuxiliaryLatestDialogueLines(List<string> lines, string latestNpcText, string latestPlayerText)
