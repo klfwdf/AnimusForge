@@ -1,7 +1,8 @@
-# 当前交接：远端城镇记忆与本地修复已合并验证（2026-10-17，PUSH_PENDING）
+# 当前交接：远端城镇记忆与本地修复已合并推送（2026-10-17，PUSH_VERIFIED / LIVE_NOT_RUN）
 
 - 合并e35bbe52f保留远端1fdeae588的精简城镇记忆/标题，以及本地重生经历、双语解析、场景打断修复；仅两份顶部交接记录冲突，双方完整保留。城镇160+接线16、场景27+141+54+30、CN/EN解析各78及原双API/Bootstrap/Coup/registration通过。发布最终SHA以本地收据和独立远端ref核对为准。
 - [唯一主台账、边界与回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merge-push-current-20261017)。安装仍为此前9cdffaf44 EN候选，远端新改动未部署；新报告的EN导入失败、群体接力和手札动画另待处理。未打包或实机/provider验收；本地检查点codex/backup-before-sync-20261017-041315，聚焦撤销合并用新inverse/revert保留共享历史。
+- 普通推送56476b9ca后独立核对远端main一致，完成状态文档随后同步，最终SHA以artifacts/merge-push-current-20261017/push-receipt.json核对。没有上传本地专用handoff、玩家资料、日志或构建产物。
 
 # 当前交接：当前源码已部署EN（2026-10-17，DEPLOY_VERIFIED / LIVE_PENDING）
 
