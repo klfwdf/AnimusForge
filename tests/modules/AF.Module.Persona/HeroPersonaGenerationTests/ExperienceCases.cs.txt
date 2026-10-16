@@ -1,0 +1,66 @@
+ static void ExperienceCases()
+ {
+  foreach(var scenario in new[]{"manual","manual_many_actions","automatic","empty","other_target","capture_failure"})
+  {
+   Probe.OffThread=0;AnimusForge.SaveRuntimeGuard.Generation=1;AnimusForge.KnowledgeLibraryBehavior.Reset();
+   var hero=new Hero("hero");var owner=new AnimusForge.MyBehavior();
+   AnimusForge.MyBehavior.Instance=owner;AnimusForge.MyBehavior.RegisteredHero=hero;
+   if(scenario!="automatic")owner.Seed("oldP","oldB");
+   string id=scenario=="other_target"?"different_hero":"hero";
+   if(scenario!="empty")
+   {
+    owner._memoryBusinessState.RecentActions[id]=new(){"CONFIRMED_RECENT_ACTION"};
+    owner._memoryHistoryCommit.Summaries[id]="LATEST_MEMORY_原文";
+    owner._memoryHistoryCommit.History[id]=new(){new(){MemoryId=id,GameDate="date-100",GameDayIndex=100,Speaker="player",Kind="player",Text="I promise to pay later"},new(){MemoryId=id,GameDate="date-100",GameDayIndex=100,Speaker="NPC",Kind="afef_npc",Text="CONFIRMED_NPC_TRANSFER"}};
+   }
+   if(scenario=="manual_many_actions")
+   {
+    owner._memoryBusinessState.RecentActions[id].Clear();
+    for(int i=0;i<20;i++)owner._memoryBusinessState.RecentActions[id].Add("CONFIRMED_RECENT_ACTION_"+i+";");
+   }
+   // Use the real host/application failure path, rather than quietly dropping requested memory.
+   if(scenario=="capture_failure")owner._memoryBusinessState.RecentActions["hero"]=null;
+   var task=Task.Run(()=>owner.Generate(hero,scenario!="automatic"));
+   Pump(owner,()=>owner.Calls>0||task.IsCompleted);
+   bool has=scenario.StartsWith("manual");
+   if(owner.Calls>0)
+   {
+    Check(owner.SentUser.Contains("CONFIRMED_RECENT_ACTION")==has,scenario+" target actions in actual gateway request");
+    Check(owner.SentUser.Contains("LATEST_MEMORY_原文")==has,scenario+" target compressed memory in actual request");
+    Check(owner.SentUser.Contains("I promise to pay later")==has&&owner.SentUser.Contains("CONFIRMED_NPC_TRANSFER")==has,scenario+" recent dialogue and AFEF captured");
+    if(has)
+    {
+     var texts=Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(AnimusForge.AnimusForgeModulePaths.GetModuleDataFilePath("PersonaPromptTexts.json")));
+     Check(owner.SentUser.Contains("afef_npc")&&owner.SentUser.Contains("date-100")&&owner.SentSystem.Contains((string)texts["AF_PERSONA_PROMPT_RegenerationExperienceRules"])&&owner.SentUser.Contains((string)texts["AF_PERSONA_PROMPT_RecentExperiencesHeading"]),"selected edition's actual resources and fact provenance reach gateway");
+     if(scenario=="manual_many_actions")Check(!owner.SentUser.Contains("CONFIRMED_RECENT_ACTION_3;")&&owner.SentUser.Contains("CONFIRMED_RECENT_ACTION_4;")&&owner.SentUser.Contains("CONFIRMED_RECENT_ACTION_19;"),"actual host captures newest 16 actions");
+    }
+    owner.Release("P|B",true,false);
+   }
+   Pump(owner,()=>task.IsCompleted);string failure=task.GetAwaiter().GetResult();
+   Check(Probe.OffThread==0,scenario+" memories captured on owner thread");
+   Check(scenario!="automatic"||owner._memoryHistoryCommit.Reads==0,"automatic generation does not read memory");
+   if(scenario=="capture_failure")Check(owner.Calls==0&&owner.Saves==0&&!string.IsNullOrWhiteSpace(failure),"capture failure aborts without HTTP/save");
+   else Check(owner.Saves==1&&string.IsNullOrEmpty(failure),scenario+" generation still saves normally");
+   if(has)Check(owner._memoryHistoryCommit.History[id].Count==2&&owner._memoryHistoryCommit.Summaries[id]=="LATEST_MEMORY_原文","regeneration does not consume or rewrite stored experiences");
+  }
+  var lines=new List<AnimusForge.AnimusForgeDialogueHistoryEntry>();
+  for(int i=0;i<80;i++)lines.Add(new(){MemoryId="hero",GameDate="date",GameDayIndex=i,Speaker="NPC",Kind=i%2==0?"npc":"afef_npc",Text="entry-"+i});
+  lines.Add(new(){MemoryId="other",Text="CROSS_TARGET_SENTINEL"});
+  string context=AnimusForge.PersonaRegenerationExperienceContext.Build("hero","actions", "old-date", "summary",lines);
+  var json=Newtonsoft.Json.Linq.JObject.Parse(context);
+  var turns=(Newtonsoft.Json.Linq.JArray)json["recent_dialogue"];
+  Check(turns.Count==24&&(string)turns[0]["text"]=="entry-56"&&(string)turns[23]["text"]=="entry-79","newest 24 entries retained in chronological order");
+  Check(!context.Contains("CROSS_TARGET_SENTINEL"),"wrong memory owner excluded");
+  Check(AnimusForge.PersonaRegenerationExperienceContext.Build("hero","","","",null)=="","no experience produces no context");
+  var large=new List<AnimusForge.AnimusForgeDialogueHistoryEntry>();
+  for(int i=0;i<100;i++)large.Add(new(){MemoryId="hero",Text=new string('x',5000)+i});
+  context=AnimusForge.PersonaRegenerationExperienceContext.Build("hero",new string('a',5000)+"LATEST",new string('d',200),new string('中',5000),large);
+  json=Newtonsoft.Json.Linq.JObject.Parse(context);
+  Check(((string)json["recent_actions"]).Length<=4000&&((string)json["recent_actions"]).EndsWith("LATEST"),"bounded action excerpts keep latest tail");
+  Check(((string)json["latest_compressed_memory"]["text"]).Length<=2000,"compressed memory excerpt bounded");
+  turns=(Newtonsoft.Json.Linq.JArray)json["recent_dialogue"];
+  int budget=0;foreach(var item in turns)budget+=item.ToString(Newtonsoft.Json.Formatting.None).Length;
+  Check(budget<=6000&&turns.Count>0,"history serialized character budget bounded");
+  var normal=AnimusForge.NpcPersonaTextRules.BuildNative("facts","old",false,"",context);
+  Check(!normal.User.Contains("recent_actions"),"ordinary generation cannot inject regeneration context");
+ }

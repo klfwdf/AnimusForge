@@ -10,7 +10,7 @@ from output_isolation import current_source_path
 import os
 import argparse,importlib.util,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--dotnet', default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));p.add_argument('--target-framework',default='net8.0');p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['worker_capture','worker_commit','ignore_edit','stale_lease','release_new','drop_voice','false_queued_success','promoted_worker_commit']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--dotnet', default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));p.add_argument('--target-framework',default='net8.0');p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['worker_capture','worker_commit','ignore_edit','stale_lease','release_new','drop_voice','false_queued_success','promoted_worker_commit']);p.add_argument("--experience-language",choices=["zh-CN","en"]);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 spec=importlib.util.spec_from_file_location('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 s=subprocess.check_output(['git','show','10defeb4:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -28,6 +28,10 @@ code=code.replace('@@PROMOTED_HELPERS@@', '' if a.original else (HERE/'PromotedH
 code=code.replace('@@RESERVATION_TESTS@@','' if a.original else (HERE/'Reservations.cs.txt').read_text(encoding='utf-8'))
 code=code.replace('@@TEXT_RULE_CASES@@','' if a.original else (HERE/'TextRules.cs.txt').read_text(encoding='utf-8')).replace('@@RUN_TEXT_RULES@@','' if a.original else 'TextRuleCases();')
 code=code.replace('@@LORE_TESTS@@','' if a.original else (HERE/'LoreTests.cs.txt').read_text(encoding='utf-8')).replace('@@RUN_LORE@@','' if a.original else 'LoreCases();')
+if not a.original:
+ code=code.replace('LoreCases();', 'LoreCases();ExperienceCases();', 1)
+ code=code.replace(' static void LoreCases()', (HERE/'ExperienceCases.cs.txt').read_text(encoding='utf-8')+'\n static void LoreCases()', 1)
+ code+=(HERE/'ExperienceMemoryBoundary.cs.txt').read_text(encoding='utf-8')
 out=util.new_run_root(ROOT,'HeroPersonaGenerationTests',a.run_root)
 if not a.original:
  # Keep the original behavioral oracle; seed the current sole profiles owner and real applications.
@@ -50,7 +54,18 @@ if not a.original:
  glue='private void StampNpcPersonaProfile(string id,NpcPersonaProfile p){Probe.Read();Saves++;}'
  code=code.replace('@@CURRENT_GLUE@@',glue) if '@@CURRENT_GLUE@@' in code else code.replace('internal void Tick()=>dispatcher.Tick();',glue+' internal void Tick()=>dispatcher.Tick();')
  code+='namespace TaleWorlds.CampaignSystem.Settlements {} namespace AnimusForge {internal static class MemoryEntityIdentityBannerlordAdapter {internal static TaleWorlds.CampaignSystem.Hero FindHeroById(string id)=>MyBehavior.FindHeroById(id);} internal static class CampaignCharacterRecordCaptureAdapter {internal static string BuildPromotedHeroSkillSummary(TaleWorlds.CampaignSystem.Hero hero)=>MyBehavior.Instance.BuildPromotedHeroSkillSummary(hero);internal static bool TryApplyPromotedHeroSkillJson(TaleWorlds.CampaignSystem.Hero hero,string json)=>MyBehavior.Instance.TryApplyPromotedHeroSkillJson(hero,json);}} namespace AnimusForge.Refactor.Adapters {internal static class ConfiguredChatApplicationAdapter {internal static Task<MyBehavior.ApiCallResult> CallAuxiliaryGatewayDetailed(string sys,string user,string source,int n,bool forceThinkingDisabled)=>MyBehavior.Instance.CallAuxiliaryGatewayDetailed(sys,user,source,n,forceThinkingDisabled);} internal static class PersonaGenerationFactCaptureAdapter {internal static string BuildHeroFactsForPersonaGeneration(TaleWorlds.CampaignSystem.Hero h)=>MyBehavior.BuildHeroFactsForPersonaGeneration(h);internal static string BuildPromotedNonHeroCompanionFactsForPersonaGeneration(TaleWorlds.CampaignSystem.Hero h,string n,string f,string t,string id,string c,string s,string j,string e)=>MyBehavior.BuildPromotedNonHeroCompanionFactsForPersonaGeneration(h,n,f,t,id,c,s,j,e);}}'
-code=code.replace('@@PROMPT_DIR@@',str(ROOT/'content/modules/AF.Module.Persona/ModuleData').replace('\\','/'))
+prompt_dir=ROOT/'content/modules/AF.Module.Persona/ModuleData'
+if a.experience_language:
+ assert not a.original and not a.mutate, "locale replay requires current unmutated sources"
+ original_main=ex.declaration(code,'static int Main(')
+ code=code.replace(original_main, 'static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{ExperienceCases();Console.WriteLine($"Persona experience locale: {checks} checks, {failures} failures");return failures==0?0:1;}catch(Exception e){Console.WriteLine(e);return 1;}}',1)
+ prompt_dir=out/'locale-module-data';prompt_dir.mkdir()
+ source=ROOT/'content/modules/AF.Module.Persona/ModuleData'/('PersonaPromptTexts.en.json' if a.experience_language=='en' else 'PersonaPromptTexts.json')
+ (prompt_dir/'PersonaPromptTexts.json').write_bytes(source.read_bytes())
+code=code.replace('@@PROMPT_DIR@@',str(prompt_dir).replace('\\','/'))
+if not a.original:
+ code=code.replace('internal static string BuildPromotedHeroSkillSummary(TaleWorlds.CampaignSystem.Hero hero)=>',
+  'internal static string GetMemoryHeroId(TaleWorlds.CampaignSystem.Hero hero)=>hero.StringId;internal static string GetNpcActionHeroKey(TaleWorlds.CampaignSystem.Hero hero)=>hero.StringId;internal static string RenderNpcActionEntriesForPrompt(TaleWorlds.CampaignSystem.Hero hero,List<string> entries){Probe.Read();return string.Join("\\n",entries);}internal static string BuildPromotedHeroSkillSummary(TaleWorlds.CampaignSystem.Hero hero)=>',1)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 files=[out/'Program.cs',ROOT/'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',ROOT/'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs']
 if not a.original:
@@ -82,11 +97,13 @@ if not a.original:
 if not a.original:
  (out/'Policy.cs').write_text(policy,encoding='utf-8');files.append(out/'Policy.cs')
  files += [ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs',ROOT/'src/modules/AF.Module.Llm/Protocol/JsonResponseTextCodec.cs',ROOT/'src/AF.GameAdapter.Bannerlord/UI/Errors/PersonaFailureUiText.cs',HERE/'LocalizationBoundary.cs.txt', ROOT/'src/modules/AF.Module.Persona/Generation/PersonaPromptTexts.cs']
+ files += [ROOT/'src/modules/AF.Module.Persona/Generation/PersonaRegenerationExperienceContext.cs',ROOT/'src/modules/AF.Module.Memory/Records/AnimusForgeDialogueHistoryEntry.cs']
 # Bind exact whole application classes, scalar game/network fixtures, and generated mutation bytes.
 import json,hashlib
 physical=['src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs','src/AF.GameAdapter.Bannerlord/Prompt/PromotedPersonaGenerationApplicationAdapter.cs','src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromotedPersonaGeneration.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs']
 physical += [str(path.relative_to(ROOT)).replace('\\','/') for path in HERE.iterdir() if path.name=='run.py' or path.suffix=='.txt']
 physical.append('src/AF.GameAdapter.Bannerlord/UI/Errors/PersonaFailureUiText.cs')
+physical += ["src/modules/AF.Module.Persona/Generation/PersonaRegenerationExperienceContext.cs", "src/modules/AF.Module.Memory/Records/AnimusForgeDialogueHistoryEntry.cs", "content/modules/AF.Module.Persona/ModuleData/PersonaPromptTexts.json", "content/modules/AF.Module.Persona/ModuleData/PersonaPromptTexts.en.json"]
 (out/'source-manifest.json').write_text(json.dumps({'mutation':a.mutate,'actualCurrent':{path:hashlib.sha256((ROOT/path).read_bytes()).hexdigest() for path in physical},'compiled':{str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in files},'scope':'whole two Persona applications + soleProfile/Reservation/realDispatcher; only game/provider/skills boundaries controlled; sibling Kingdom naming excluded'},indent=2),encoding='utf-8')
 project=util.project(out,'HeroPersonaProof',files,executable=True)
 project.write_text(project.read_text(encoding='utf-8').replace('net8.0',a.target_framework),encoding='utf-8')

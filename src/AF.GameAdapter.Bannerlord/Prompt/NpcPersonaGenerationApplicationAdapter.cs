@@ -17,9 +17,11 @@ internal sealed class NpcPersonaGenerationApplicationAdapter
     private readonly Func<bool> _ownerCurrent;
     private readonly Func<string,Hero> _findHero;
     private readonly Action<string,NpcPersonaProfile> _stampProfile;
+    private readonly Func<Hero,string> _captureRecentExperiences;
     internal NpcPersonaGenerationApplicationAdapter(PersonaProfileStateOwner profiles,NpcPersonaGenerationOwner reservations,
-        Func<long,Func<bool>,Task<bool>> dispatch,Func<bool> ownerCurrent,Func<string,Hero> findHero,Action<string,NpcPersonaProfile> stampProfile)
-    { _profiles=profiles; _reservations=reservations; _dispatch=dispatch; _ownerCurrent=ownerCurrent; _findHero=findHero; _stampProfile=stampProfile; }
+        Func<long,Func<bool>,Task<bool>> dispatch,Func<bool> ownerCurrent,Func<string,Hero> findHero,Action<string,NpcPersonaProfile> stampProfile,
+        Func<Hero,string> captureRecentExperiences)
+    { _profiles=profiles; _reservations=reservations; _dispatch=dispatch; _ownerCurrent=ownerCurrent; _findHero=findHero; _stampProfile=stampProfile; _captureRecentExperiences=captureRecentExperiences; }
 internal bool NeedsNpcPersonaGeneration(Hero hero)
 	{
 		if (hero == null || string.IsNullOrWhiteSpace(hero.StringId))
@@ -63,6 +65,13 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
 				OriginalSpeechStyle = existingProfile?.SpeechStyle ?? "",
 				Facts = PersonaGenerationFactCaptureAdapter.BuildHeroFactsForPersonaGeneration(hero), Requirements = DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements
             };
+            // Manual regeneration reads the same target's memories once, on the existing game-thread dispatcher.
+            // Let capture failures reach the caller; do not silently regenerate without requested memories.
+            if (overwriteExisting)
+            {
+                work.RecentExperiences = _captureRecentExperiences(hero) ?? "";
+                Logger.Log("NpcPersona", "regeneration_experience_capture hero=" + id + " chars=" + work.RecentExperiences.Length);
+            }
             try
             {
                 if (KnowledgeLibraryBehavior.Instance != null)
@@ -131,7 +140,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
                 try { loreSource = KnowledgeLibraryBehavior.Instance?.BuildPersonaLoreSource(hero, loreRule, work.LoreRuleVersion) ?? ""; }
                 catch (Exception error) { Logger.Log("NpcPersona", "[WARN] Lore source skipped: " + error.Message); }
                 NpcPersonaPrompt prompt = NpcPersonaTextRules.BuildNative(work.Facts + (string.IsNullOrWhiteSpace(loreSource) ? "" : "\n" + loreSource),
-                    work.OriginalDescription, overwriteExisting, work.Requirements);
+                    work.OriginalDescription, overwriteExisting, work.Requirements, work.RecentExperiences);
                 // Capture provider settings on the game thread before the gateway's first await.
                 work.Response = ConfiguredChatApplicationAdapter.CallAuxiliaryGatewayDetailed(prompt.System, prompt.User, "NpcPersona", 0, forceThinkingDisabled: false);
                 return true;

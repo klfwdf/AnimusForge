@@ -1,0 +1,28 @@
+// Only memory storage/shared rendering are controlled here; the actual host capture,
+// persona application, dispatcher, bounded context builder and prompt composer run unchanged.
+namespace AnimusForge {
+ internal sealed class ExperienceMemoryState {
+  internal readonly Dictionary<string,List<string>> RecentActions=new();
+ }
+ internal sealed class ExperienceHistorySource {
+  internal readonly Dictionary<string,List<AnimusForgeDialogueHistoryEntry>> History=new();
+  internal readonly Dictionary<string,string> Summaries=new();
+  internal int Reads;
+  internal bool TryGetLatestCompressedMemoryInternal(Hero hero,out string key,out string date,out string text,out int day){
+   Probe.Read();Reads++;key="";date="date-90";day=90;return Summaries.TryGetValue(hero.StringId,out text);
+  }
+  internal List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesById(string id,int limit){
+   Probe.Read();Reads++;
+   if(!History.TryGetValue(id,out var entries))return new();
+   return entries.GetRange(Math.Max(0,entries.Count-limit),Math.Min(limit,entries.Count));
+  }
+ }
+ internal static class NpcActionLedger {
+  internal static List<string> SanitizeNpcActionEntries(List<string> entries,bool recent,int day){Probe.Read();return entries;}
+ }
+ public partial class MyBehavior {
+  internal readonly ExperienceMemoryState _memoryBusinessState=new();
+  internal readonly ExperienceHistorySource _memoryHistoryCommit=new();
+  private static int GetCurrentGameDayIndexSafe(){Probe.Read();return 100;}
+ }
+}
