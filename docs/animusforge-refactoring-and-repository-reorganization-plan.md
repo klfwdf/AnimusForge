@@ -1,9 +1,14 @@
 <a id="deploy-en-scene-interrupt-20261017"></a>
-## 场景打断修复与当前源码EN部署（2026-10-17，ACTIVE / LIVE_PENDING）
+## 场景打断修复与当前源码EN部署（2026-10-17，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户明确要求部署EN。基线561122d84，产品9cdffaf44及此前c1a1298cb双语解析、d04530acd收紧人设全部保留；复用刚通过双API/Bootstrap/Coup/registration的冻结候选，先逐SHA验证源输入和三DLL。保持v1.6.1，不修改一键脚本、版本、协议或玩家自定义语言要求，不打包/push。
 - 目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge。构造干净canonical Stage并保留旧Stage，再用原CN/EN选版器完整验证资源、双语UI/JSON变量协议；由原Invoke-ManagedStageDeployment执行目标写入。只把与已知CN默认JSON语义相同的内置世界书切为EN，用户/历史差异仍按原newer-wins保护；保护文档MCM、模组配置/CustomPrompts、ONNX、原版DLL及未列管文件。
 - 完成门：部署前plan和Stage/路径/玩家数据保护通过，部署后完整文件哈希与候选/EN投影一致；实机/provider/存档另记未验。严格EN发行词法检查与资源选版/部署验收分别如实记录，不删除兼容原文或改变门禁制造发行通过。无部署Recovery/自动回滚；失败停止并报告现场，保留证据。
+- 检查点2dfd06d34。三项功能收据的源SHA、三冻结DLL/marker及8789个产品输入重验，源码/资源与已验候选一致，未重复构建。旧canonical Stage移入任务内previous-stage保留，原deploy_module.ps1以冻结候选StageOnly重新生成干净3522项；原Get-AnimusForgePackageProjection的CN/EN各3522项资源、JSON变量协议、世界书映射及双语UI注册通过。无原构建/部署/打包脚本修改。
+- 首次部署前识别3121份安装JSON与当前CN默认语义完全相同，按用户EN选择把任务内EN候选设为本次真实选版时间，由未修改的newer-wins owner覆盖；另12份世界书已匹配EN，未知/用户编辑差异为0。未直接改安装世界书或放宽时间合并规则。原Invoke-ManagedStageDeployment成功更新3203项，after完整3522项按保护策略核对PASS；其中12项按原配置/用户文件规则保留，10项与发行默认不同且保留原值。原中文目录/文件身份不重命名，正文按EN选版。
+- 部署后54项配置/CustomPrompts/文档MCM等受保护哈希、10项ONNX元数据、3份原版DLL及未列管安装文件均保持，三安装DLL逐SHA匹配9cdffaf44候选。未创建Modules/.AnimusForge.Recovery或遗留部署临时文件；v1.6.1保持。此条取代场景打断与c1a1298cb解析修复的未部署状态及10/16 CN为当前安装的历史状态，不表示实机已验。
+- 独立严格发行词法检查仍FAIL：源11处为ConversationRoleClassificationOwner.cs的旧中英历史解析别名/语法和TownRecentMemoryText.cs显式zh-CN分支城后缀；Bootstrap DLL PASS，两实现DLL首个命中均为兼容解析词“对”。原错误、元数据偏移和语义定位见release-lexical-diagnostics.json、lexical-classification.json；未删兼容值/关闭原门禁或声明正式EN打包全绿。原选版/本地部署验收与该保守发行检查分别记录。
+- 证据artifacts/deploy-en-scene-interrupt-20261017/{receipt.json,before.json,plan.json,after.json,projection.json,opposite-projection.json,prepared.json,known-cn-to-en-defaults.json,stage.log,projection.log,deploy.log,verified-candidates/}，真实源码责任见下方[打断修复源码地图](#scene-presentation-interrupt-code)。未启动游戏、真实provider、音频/渲染、模型语言遵从或存档加载验收；未打包/push。无部署备份或自动回滚，人工回退需选先前验证包并保留玩家数据；源码聚焦git revert 9cdffaf44不会自动改变安装。
 
 <a id="scene-presentation-interrupt-20261017"></a>
 ## 场景喊话打断卡住与气泡保留（2026-10-17，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED）
