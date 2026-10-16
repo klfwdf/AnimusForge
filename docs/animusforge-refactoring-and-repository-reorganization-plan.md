@@ -1,3 +1,9 @@
+<a id="merge-push-current-20261017"></a>
+## 拉取合并并推送当前工作（2026-10-17，ACTIVE / NOT_PUSHED）
+
+- 用户明确要求拉取、合并、推送；本地main起点d7c89c323，fetch后远端origin/main为1fdeae588，共同基线03ca16942，本地19/远端4个独有提交。远端为城镇近期记忆精简并保留标题的具名改动；本地为手动重生经历、收紧、双语解析和场景打断修复及其公开交接。不重写历史、不强推，保留Microsoft/NuGet与私有ignored证据。
+- 合并前建立本地检查点，普通merge保留双方文档与产品。当前预计产品路径无重叠、HANDOFF/主台账顶部记录需并存；合并后跑受影响城镇记忆、场景打断、双语解析回归及原双API/Bootstrap/Coup/registration。核对待推历史不含本地专用handoff/玩家资料/二进制和凭据模式，再普通推送并独立ls-remote核验。仅同步源码，不将远端新增改动隐式部署/打包；安装仍为此前EN候选。
+
 <a id="deploy-en-scene-interrupt-20261017"></a>
 ## 场景打断修复与当前源码EN部署（2026-10-17，DEPLOY_VERIFIED / LIVE_PENDING）
 
