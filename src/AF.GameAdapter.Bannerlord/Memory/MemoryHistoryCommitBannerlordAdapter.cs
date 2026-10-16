@@ -935,6 +935,7 @@ internal List<ConversationMessage> BuildUncompressedMemoryRoleMessagesById(strin
 			: "";
         var snapshot = new UncompressedMemoryPromptSnapshot {
             CurrentDay = currentDay, CurrentMemorySessionKey = currentMemorySessionKey,
+            PlayerName = AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.BuildPlayerPublicDisplayNameForPrompt(MemoryEntityIdentityBannerlordAdapter.FindHeroById(normalizedMemoryId)),
             TargetAgentIndex = targetAgentIndex, MemoryName = string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim(),
             HistoryLineMinimum = DuelSettings.DailyConversationHistoryLineLimitMin,
             HistoryLineMaximum = DuelSettings.DailyConversationHistoryLineLimitMax
@@ -1332,6 +1333,7 @@ internal static List<AnimusForgeDialogueHistoryEntry> BuildNativeConversationHis
 		{
 			npcName = "NPC";
 		}
+        string playerName = AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.BuildPlayerPublicDisplayNameForPrompt(npc);
 		foreach (DailyMemoryLine line in lines ?? Enumerable.Empty<DailyMemoryLine>())
 		{
             int currentDay = 0;
@@ -1347,7 +1349,7 @@ internal static List<AnimusForgeDialogueHistoryEntry> BuildNativeConversationHis
                 catch { }
             }
             ConversationMessage message = UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(
-                line, npcName, line?.TargetAgentIndex ?? -1, currentDay, currentScene);
+                line, npcName, line?.TargetAgentIndex ?? -1, currentDay, currentScene, playerName);
 			if (message == null || string.IsNullOrWhiteSpace(message.Content))
 			{
 				continue;
