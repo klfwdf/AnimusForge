@@ -1,3 +1,19 @@
+## 手动重生的最近经历（2026-10-16）
+
+当前回放执行生产 `MyBehavior.PersonaGeneration.CaptureRecentPersonaExperiences`、完整生成适配器、dispatcher、`PersonaRegenerationExperienceContext`、真实Prompt reader/composer及JSON parser。引擎、provider、记忆存储读取与原行动渲染/清理边界使用确定性替身；不能替代真实存档或模型验收。
+
+- 手动重生读取目标人物最近16条近期行动（生产沿用10日窗口）、最新一块压缩记忆与最近24条对话/AFEF。保留日期、speaker/kind和原文；按来源限制请求节选，不改写存档数据。空记忆仍可重生，其他人物资料不进入，自动首次生成不读取这部分输入。
+- 最新压缩记忆可能较旧，固定提示词要求尊重日期、区分台词与已确认事实、本人经历与他人行动。旧个性、世界书及用户生成要求仍走原接线；不新增输出语言锁定。
+- 全回放518项；专项CN/EN各45项。专项使用各版本实际JSON作为稳定运行文件，执行同一生产reader与最终请求组装。实际引擎、真实provider和玩家旧档未验。
+
+```powershell
+python -X utf8 -B tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/run.py
+python -X utf8 -B tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/run.py --experience-language zh-CN
+python -X utf8 -B tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/run.py --experience-language en
+```
+
+下方为原回放历史，实际当前覆盖以本节及本次运行输出为准。
+
 # Hero 人设生成生命周期回归
 
 ## 2026-10-03 当前生成优化回归（替代下方旧 Prompt 保留结论）
