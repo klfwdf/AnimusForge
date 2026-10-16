@@ -50,10 +50,10 @@ static class RecentMemoryReplay
         Check(store.Arrival("town", "private_party:1", false, 107.1) && !store.Arrival("town", "private_party:1", false, 107.1), "arrival callback deduplicated");
         store.Arrival("town", "private_party:2", false, 107.2); store.Arrival("town", "private_caravan:1", true, 107.2);
         string text = TownRecentMemoryText.Build(store.Read("town", 107.2), true, cn);
-        Check(text == "已记录2次村民队伍到访和1次商队到访。", "arrival output contains only aggregate recorded counts without boilerplate");
+        Check(text == "【城镇近期情况：近七日】" + Environment.NewLine + "已记录2次村民队伍到访和1次商队到访。", "arrival output preserves the recent-section heading without boilerplate");
         Check(TownRecentMemoryText.Build(store.Read("town", 107.2), false, cn) == text, "partial coverage uses the same concise recorded counts");
-        Check(TownRecentMemoryText.Build(store.Read("empty-town", 107.2), false, cn) == "已记录0次村民队伍到访和0次商队到访。", "empty town shows only recorded zero counts");
-        Check(TownRecentMemoryText.Build(store.Read("town", 107.2), false, en) == "Recorded 2 villager-party arrivals and 1 caravan arrivals.", "English has the same concise recorded-count meaning");
+        Check(TownRecentMemoryText.Build(store.Read("empty-town", 107.2), false, cn) == "【城镇近期情况：近七日】" + Environment.NewLine + "已记录0次村民队伍到访和0次商队到访。", "empty town retains the recent heading and recorded zero counts");
+        Check(TownRecentMemoryText.Build(store.Read("town", 107.2), false, en) == "[Town events in the last seven days]" + Environment.NewLine + "Recorded 2 villager-party arrivals and 1 caravan arrivals.", "English preserves the heading and concise recorded-count meaning");
         var copy = JsonConvert.DeserializeObject<TownRecentMemorySnapshot>(JsonConvert.SerializeObject(store.State));
         Check(new TownRecentMemoryStore().Restore(copy), "primitive state round-trips with arrival dedup receipts");
         copy.Version = 2;
