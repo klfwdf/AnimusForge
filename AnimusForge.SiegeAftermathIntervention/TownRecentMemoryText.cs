@@ -68,7 +68,7 @@ public static class TownRecentMemoryText
 
     public static string Build(TownRecentMemoryTown town, bool complete, TownPromptTextCatalog catalog)
     {
-        var text = new StringBuilder();
+        var text = new StringBuilder().AppendLine(Get(catalog, "header"));
         foreach (var fact in town.Facts.OrderBy(f => f.Day)) text.AppendLine(FormatFact(fact, catalog));
         text.Append(Fill(Get(catalog, complete ? "arrivals" : "partial"), new Dictionary<string, string> {
             ["villagers"] = town.Arrivals.Sum(b => (long)b.Villagers).ToString(CultureInfo.InvariantCulture),
