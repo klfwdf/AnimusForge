@@ -1,3 +1,9 @@
+# 当前交接：历史角色与后处理事实修复（2026-10-16，OFFLINE_VERIFIED / LIVE_NOT_RUN）
+
+- 已局部重构历史角色与中英存储前缀归一化，记忆装配、日记编辑、Native去重共用真实owner；同时交付scoped AFEF后处理修复。保持存档/三渠道接口/标签执行规则不变。
+- 最终交付树CN/EN角色各84、后处理各43、scope预算各22及共享模板四组合通过；双API/Bootstrap编译和双Coup门禁通过。扩展旧夹具/全局旧图谱仍有明确未通过项，不称全仓全绿；本重构未新实机、未部署/打包。
+- [唯一主台账与代码地图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#history-speech-refactor-20261016)。本轮main交付只含具名修复/必要测试与公开记录，不引入local-only历史；后续全标签与修后真实NPC另验，不扩原生退出研究。下方旧部署状态仅为历史，不表示本修复已部署。
+
 # 当前交接：当前源码EN部署完成（2026-10-16，DEPLOY_VERIFIED / LIVE_PENDING）
 
 - 用户要求部署EN；a21d97089双API/Bootstrap/原门禁构建并安装到F盘单模块AnimusForge，版本v1.6.1。包含隐藏导演配置退役8c7619e22和动态王国重载跳过35c6ad013；此条取代下方相应未部署历史，未创建新ZIP或push。

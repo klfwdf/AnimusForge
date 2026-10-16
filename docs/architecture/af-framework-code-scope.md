@@ -1,3 +1,16 @@
+<a id="history-speech-refactor-20261016"></a>
+### 历史角色与中英输入归一化（源码01dcdcd5d；事实修复9b4f4873e）
+
+本节接续下方历史地图中相同符号的旧职责/坐标；详细验证与边界见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#history-speech-refactor-20261016)。未涉及的旧owner仍运行，不表示全框架已重构或实机通过。
+
+| 一基坐标 / 符号 | 当前责任、真实消费者与未覆盖 |
+| --- | --- |
+| `src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs:56–98` `ProjectDailyMemorySpeech`；`:100–184` NPC/player/overheard与精确wrapper parser | 从未压缩装配owner迁入真实角色/身份算法，优先既有MemoryCommitPart，再用捕获身份/受限旧格式；AFEF与旁听身份保留。`:133–153` TryStripAddressedSpeech也被Native去重使用；不翻译用户文本，不读游戏对象 |
+| `src/modules/AF.Module.Prompt/Composition/UncompressedMemoryMessageAssemblyOwner.cs:14–29,71–81` Assemble/BuildUncompressedMemoryConversationMessage | 保留会话抑制、事实/近期条数、日期地点投影，角色委托上述唯一owner；已移除旧角色判断与旁听parser，不留第二套实现。五参数旧调用由新增optional detached playerName兼容 |
+| `src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs:909–974,1328–1375` BuildUncompressedMemoryRoleMessagesById/BuildNativeConversationHistoryEntriesForDailyMemoryEdit | 主线程各捕获一次观察者玩家显示名；记忆请求与日记编辑两个真实消费者传入脱离游戏对象的值，原generation/snapshot语义不变 |
+| `src/modules/AF.Module.Prompt/Composition/NativeMemoryHistoryMergeOwner.cs:94–134` TryIdentity | 调用共享精确中英wrapper parser替代原仅中文去前缀；原session/day/hour/scene/recipient身份、多重计数、当前重复输入与AFEF合并算法保留 |
+| `src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs:1193–1212,1241–1273,1371–1382,1432–1451` scoped AFEF解析、system准入、归一化与key | 保留当下/过往事实，事实不与同正文台词去重；仍走三渠道原共享后处理模板，不改领域执行/权限/存档 |
+
 <a id="town-memory-main-20261016"></a>
 ### 七日城镇事实与300–600字统治者记忆（产品29cf6313；main集成35b0be9e）
 
