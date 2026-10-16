@@ -171,7 +171,7 @@ Require(!panel.IsPresentationSessionLive() && panel.GetParticipants().Count==0 &
 int version=ScenePresentationController._presentationVersion; panel.EndPresentationSession("repeat"); Require(ScenePresentationController._presentationVersion==version && deactivated==1,"repeat end idempotent");
 Mission.Current=mission; first.Active=true;
 int session=1,epoch=1,finished=0,failed=0,cancelled=0,timeoutArms=0;
-SceneAudioFailureOutput failureOutput=new(); Queue<Action> dispatched=new(); HashSet<int> started=new();
+SceneAudioFailureOutput failureOutput=new(); Queue<Action> dispatched=new(); HashSet<int> started=new();List<bool> typingFadeRequests=new();
 var port = new SceneAudioLipSyncPort {
  SceneSessionId=()=>session, ConversationEpoch=()=>epoch, Dispatch=a=>dispatched.Enqueue(a),
  Finished=i=>finished++, Cancelled=r=>cancelled++, CompleteNativeWait=(r,e)=>false,
@@ -180,7 +180,7 @@ var port = new SceneAudioLipSyncPort {
  FailureOutput=i=>failureOutput, UnmarkPlaybackStarted=i=>started.Remove(i), ConvertDialogueFeed=(i,d)=>{}, FlushFailedSpeechEffects=(i,d)=>{}, ShowBubble=(a,t,d)=>failed++, ScheduleInteractionTimeout=(i,t,d)=>timeoutArms++, EstimateTypingDuration=t=>1,
  AudioDuration=(i,d)=>{}, DispatchBubble=(i,f)=>true, ClearOrphanDuration=i=>{}, ScheduleBubbleFallback=r=>{},
  HasPlaybackStarted=i=>started.Contains(i), MarkPlaybackStarted=i=>started.Add(i), ClearAgentPending=i=>{}, ClearAgentInteraction=i=>{},
- PauseTyping=p=>{}, StopTyping=()=>{}, ClearPending=()=>{}, SpeechBusy=()=>false, ClearSpeechQueue=()=>{}, ClearMeetingControl=()=>{}, SuppressMeetingControl=()=>false, Report=(s,i,e)=>{}
+ PauseTyping=p=>{}, StopTyping=fadeSoon=>typingFadeRequests.Add(fadeSoon), ClearPending=()=>{}, SpeechBusy=()=>false, ClearSpeechQueue=()=>{}, ClearMeetingControl=()=>{}, SuppressMeetingControl=()=>false, Report=(s,i,e)=>{}
 };
 var audio = new SceneAudioLipSyncController(port); audio.SubscribeTtsPlaybackEvents();
 void Drain() { while(dispatched.Count>0) dispatched.Dequeue()(); }
@@ -206,6 +206,10 @@ TtsEngine.Instance.Cancel(active);Require(cancelled==0,"unsubscribe releases all
 audio.CleanupSceneLipSyncAfterPlaybackFinished(1);int deferred=audio._deferredCleanupQueue.Count;audio.CleanupSceneLipSyncAfterPlaybackFinished(1);Require(audio._deferredCleanupQueue.Count==deferred,"duplicate resource finish queues once");
 Require(first.AgentVisuals.Ends==1,"native detach once");
 audio.StopAllLipSyncPlaybackAndCleanup();Require(audio._agentSoundEvents.Count==0 && audio._deferredCleanupQueue.Count==0,"stop all clears held resources");
+Require(typingFadeRequests.Last(),"default cleanup retains its existing accelerated bubble fade");
+audio._speakingAgentIndices.Add(1);
+audio.StopAllLipSyncPlaybackAndCleanup(preserveVisibleBubbles:true);
+Require(!typingFadeRequests.Last()&&!audio.HasSpeakingAgents,"interrupt stops playback and typing without forcing visible bubbles to fade");
 // Full production interaction owner; movement, speech dispatch and Agent engine leaves are synthetic.
 Mission interactionMission=new();Mission.Current=interactionMission;
 Agent.Main=new Agent{Index=0,Mission=interactionMission};

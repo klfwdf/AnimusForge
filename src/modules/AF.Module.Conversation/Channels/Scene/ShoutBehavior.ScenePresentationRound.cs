@@ -26,6 +26,7 @@ private void RunTrackedSceneShout(string shoutText, string extraFact, int? force
 	public static bool CanInterruptScenePresentationForExternal => ScenePresentationBannerlordAdapter.CanInterruptScenePresentationForExternal;
 
 	// 打断: retire the running round like a new player line does. Postprocess actions already started keep
-	// running (their gate still holds the next request until they settle).
+	// running (their gate still holds the next request until they settle). Visible bubbles keep their
+	// displayed text and normal lifetime; only further typing/playback stops.
 public static bool InterruptScenePresentationForExternal() => ScenePresentationBannerlordAdapter.InterruptScenePresentationForExternal();
 }

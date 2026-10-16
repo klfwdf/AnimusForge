@@ -1,5 +1,5 @@
 from pathlib import Path
-import argparse,sys,json,hashlib,subprocess,xml.etree.ElementTree as ET
+import argparse,sys,json,hashlib,subprocess,importlib.util,xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
@@ -20,7 +20,19 @@ for name in ['Stubs.cs','SceneSpeechOutputOracle.cs','SceneSpeechOutputContract.
   text=text.replace('public sealed class InformationMessage { public InformationMessage(string text, Color color=default) { } }','public sealed class InformationMessage { public readonly string Text; public InformationMessage(string text, Color color=default) { Text=text; } }')
   text=text.replace('public static int Messages; public static void DisplayMessage(InformationMessage message) { Messages++; }','public static int Messages; public static readonly List<string> Captured=new(); public static void DisplayMessage(InformationMessage message) { Messages++; Captured.Add(message.Text); }')
  (out/name).write_text(text,encoding='utf8');manifest['fixture:'+name]=hashlib.sha256(text.encode()).hexdigest()
-(out/'Program.cs').write_bytes(((old if args.lifecycle else HERE)/'Program.cs').read_bytes())
+program=((old if args.lifecycle else HERE)/'Program.cs').read_text(encoding='utf-8-sig')
+if args.lifecycle:
+ assert program.count('int assertions = 0;')==1
+ program=program.replace('int assertions = 0;','int assertions = 0;\nBubbleTypingProbe.Run(Require);',1)
+(out/'Program.cs').write_text(program,encoding='utf-8')
+spec=importlib.util.spec_from_file_location('extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
+extractor=importlib.util.module_from_spec(spec);spec.loader.exec_module(extractor)
+bubble_path=ROOT/'src/AF.GameAdapter.Bannerlord/UI/Conversation/FloatingTextMissionView.cs'
+bubble_source=bubble_path.read_text(encoding='utf-8-sig')
+bubble_method=extractor.declaration(bubble_source,'private void StopTypingForState(')
+template=(old/'BubbleTypingHarness.cs.txt').read_text(encoding='utf-8-sig')
+(out/'BubbleTypingProbe.cs').write_text(template.replace('@@PRODUCTION_STOP_TYPING@@',bubble_method),encoding='utf-8')
+manifest[bubble_path.relative_to(ROOT).as_posix()]=hashlib.sha256(bubble_path.read_bytes()).hexdigest()
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><NoWarn>CS0649</NoWarn></PropertyGroup></Project>',encoding='utf8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf8')
 (out/'sources.json').write_text(json.dumps({'baseline':args.baseline,'sources':manifest},indent=2),encoding='utf8')
@@ -29,6 +41,8 @@ if not args.baseline:
  assert 'PublishFeedImmediately = (index, name, text, info) => _j17SceneSpeechOutputQueueController.PublishNpcSpeechToMessageFeedImmediately(index, name, text, info),' in binding
  composition=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
  assert 'CaptureConversationEpoch = () => _sceneConversationEpoch,' in composition
+ assert 'BeginNewPlayerDrivenSceneConversationEpoch = () => BeginNewPlayerDrivenSceneConversationEpoch(preserveVisibleBubbles: true),' in composition
+ assert 'StopTyping = fadeSoon => _floatingTextView?.StopTypingForAll(fadeSoon),' in binding
 dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
 cmd=[str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release']
 if args.baseline:cmd+=['--','--baseline']

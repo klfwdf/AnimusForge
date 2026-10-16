@@ -1124,7 +1124,7 @@ internal sealed class SceneAudioLipSyncController
 		Logger.Log("LipSync", $"[SoundEvent] SafeStopAndRelease end, soundId={soundId}");
 	}
 
-	internal void StopAllLipSyncPlaybackAndCleanup()
+	internal void StopAllLipSyncPlaybackAndCleanup(bool preserveVisibleBubbles = false)
 	{
 		try
 		{
@@ -1137,7 +1137,7 @@ internal sealed class SceneAudioLipSyncController
 		try
 		{
 			_ports.PauseTyping(false);
-			_ports.StopTyping();
+			_ports.StopTyping(!preserveVisibleBubbles);
 		}
 		catch
 		{
@@ -1766,7 +1766,8 @@ internal sealed class SceneAudioLipSyncPort
  internal SceneLipSyncAgentCheck CanLipSync;
  internal SceneLipSyncIndexCheck CanLipSyncIndex;
  internal Action<bool> PauseTyping;
- internal Action StopTyping, ClearPending, ClearSpeechQueue, ClearMeetingControl;
+	internal Action<bool> StopTyping;
+	internal Action ClearPending, ClearSpeechQueue, ClearMeetingControl;
 }
 
 internal sealed class SceneAudioFailureOutput

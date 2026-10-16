@@ -923,7 +923,7 @@ _j17ScenePassiveInteractionController = new ScenePassiveInteractionController(ne
 
 _j17ScenePresentationBannerlordAdapter = new ScenePresentationBannerlordAdapter(new ScenePresentationBannerlordAdapterPorts
 {
-    BeginNewPlayerDrivenSceneConversationEpoch = () => BeginNewPlayerDrivenSceneConversationEpoch(),
+    BeginNewPlayerDrivenSceneConversationEpoch = () => BeginNewPlayerDrivenSceneConversationEpoch(preserveVisibleBubbles: true),
     Get_isProcessingShout = () => _isProcessingShout,
     Set_isProcessingShout = value => _isProcessingShout = value,
     Get_activeShoutTargetingContext = () => _activeShoutTargetingContext,

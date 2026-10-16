@@ -127,6 +127,18 @@ internal sealed partial class SceneConversationSessionRuntime
 		return Task.CompletedTask;
 	}
 
+	// Retire only the old round's UI wait. Already-started actions still own their gate.
+	internal void RetireScenePostprocessWait()
+	{
+		lock (_scenePostprocessGateLock)
+		{
+			Interlocked.Increment(ref _scenePostprocessWaitOwnerSequence);
+			_isWaitingForScenePostprocessGate = false;
+			_scenePostprocessWaitGate = null;
+			_scenePostprocessWaitBorrowedProcessingFlag = false;
+		}
+	}
+
 	internal void ForceClearScenePostprocessGate(string reason, Task expectedGate = null)
 	{
 		TaskCompletionSource<bool> taskCompletionSource = null;
@@ -248,9 +260,11 @@ internal sealed partial class SceneConversationSessionRuntime
 		{
 			lock (_scenePostprocessGateLock)
 			{
-				if (IsCurrentWaitOwner())
+				// An expired context must release its own wait, but may never restore
+				// its old busy flag or clear a newer waiter's state.
+				if (waitOwner == Interlocked.Read(ref _scenePostprocessWaitOwnerSequence))
 				{
-					if (restoreProcessingFlag && processingSequence == _ports.ProcessingSequence())
+					if (IsWaitContextCurrent() && restoreProcessingFlag && processingSequence == _ports.ProcessingSequence())
 					{
 						IsProcessingShout = true;
 					}
