@@ -4308,8 +4308,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				_customPromptTextStoreNextRefreshTimestamp = now + CustomPromptTextStoreRefreshIntervalTicks;
 				string directory = GetCustomPromptTextStoreDirectory();
 				string packagedDirectory = GetPackagedCustomPromptTextStoreDirectory();
-				long fingerprint = unchecked(ComputeCustomPromptTextStoreFingerprint(directory) * 31L
-					+ ComputeCustomPromptTextStoreFingerprint(packagedDirectory));
+				long fingerprint = unchecked(ComputeCustomPromptTextStoreFingerprint(directory, useUserOverrides: true) * 31L
+					+ ComputeCustomPromptTextStoreFingerprint(packagedDirectory, useUserOverrides: false));
 				if (_customPromptTextStoreFolderHydrated && _customPromptTextStoreFolderFingerprint == fingerprint && _customPromptTextStoreCached != null)
 				{
 					store = cloneResult ? CloneCustomPromptTextStore(_customPromptTextStoreCached) : _customPromptTextStoreCached;
@@ -4970,7 +4970,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		File.WriteAllText(path, json, CustomPromptWriteEncoding);
 	}
 
-	private static long ComputeCustomPromptTextStoreFingerprint(string directory)
+	private static long ComputeCustomPromptTextStoreFingerprint(string directory, bool useUserOverrides)
 	{
 		try
 		{
@@ -4997,7 +4997,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					string path = IsPolicyPromptFileName(fileNames[i])
 						? GetPolicyPromptTextFilePath(directory, fileNames[i])
 						: GetCustomPromptTextFilePath(directory, fileNames[i]);
-					if (string.Equals(Path.GetFullPath(directory), GetCustomPromptTextStoreDirectory(), StringComparison.OrdinalIgnoreCase))
+					// The caller already resolved and validated both directories for this refresh.
+					if (useUserOverrides)
 						path = GetCustomPromptUserReadPath(path);
 					if (!File.Exists(path))
 					{
