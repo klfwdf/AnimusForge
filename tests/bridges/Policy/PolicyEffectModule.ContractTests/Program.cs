@@ -128,6 +128,12 @@ internal static partial class Program
 				Console.WriteLine("PASS modulePromptStorageAssertions=" + _assertionCount);
 				return 0;
 			}
+			if (args.Any(value => value == "--module-prompt-refresh-only"))
+			{
+				TestModulePromptStorageContracts(refreshOnly: true);
+				Console.WriteLine("PASS modulePromptRefreshAssertions=" + _assertionCount);
+				return 0;
+			}
 			if (args.Any(value => value == "--policy-production-retrieval-only"))
 			{
 				TestProductionPolicyRetrievalContracts();

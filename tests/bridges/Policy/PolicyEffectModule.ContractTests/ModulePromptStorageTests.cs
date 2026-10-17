@@ -13,7 +13,7 @@ namespace PolicyEffectModule.ContractTests;
 
 internal static partial class Program
 {
-    private static void TestModulePromptStorageContracts()
+    private static void TestModulePromptStorageContracts(bool refreshOnly = false)
     {
         string root = Environment.GetEnvironmentVariable("AF_PROMPT_TEST_ROOT");
         string repository = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
@@ -79,6 +79,27 @@ internal static partial class Program
             Check((string)InvokeStatic(settings, "LoadPlayerCustomPromptRuleFromDiskOrDefault", Array.Empty<object>(), 0) == "EXTERNAL_EDIT_LONGER",
                 "ordinary cold reload preserves persisted module content");
 
+            // The caller has already validated these directories. A fingerprint
+            // scan must not reopen the module manifest once per prompt file.
+            MethodInfo fingerprint = settings.GetMethod("ComputeCustomPromptTextStoreFingerprint", All);
+            Func<string, bool, long> scan = (directory, userOverrides) => (long)fingerprint.Invoke(null,
+                fingerprint.GetParameters().Length == 1
+                    ? new object[] { directory }
+                    : new object[] { directory, userOverrides });
+            string packaged = Path.Combine(moduleRoot, "ModuleData", "Defaults", "CustomPrompts");
+            Directory.CreateDirectory(packaged);
+            File.WriteAllText(Path.Combine(packaged, "PlayerCustomPromptRule.json"), "{\"Version\":1,\"Text\":\"PACKAGED 中文 English\"}");
+            long userFingerprint = scan(prompts, true);
+            long packagedFingerprint = scan(packaged, false);
+            Check(userFingerprint != 0L && packagedFingerprint != 0L, "prompt fingerprints initialized");
+            using (new FileStream(Path.Combine(moduleRoot, "SubModule.xml"), FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                Check(scan(prompts, true) == userFingerprint, "user fingerprint reuses validated directory without manifest IO");
+                Check(scan(packaged, false) == packagedFingerprint, "packaged fingerprint reuses validated directory without manifest IO");
+            }
+            File.AppendAllText(Path.Combine(packaged, "PlayerCustomPromptRule.json"), " ");
+            Check(scan(packaged, false) != packagedFingerprint, "packaged fingerprint still detects external edits");
+
             foreach (byte[] invalid in new[] { Encoding.UTF8.GetBytes("{broken"), new byte[] { 0xff, 0xfe, 0x80 },
                 Encoding.Unicode.GetPreamble().Concat(Encoding.Unicode.GetBytes("{\"Version\":1,\"Text\":\"NOT_UTF8\"}")).ToArray(), new byte[300000] })
             {
@@ -96,6 +117,35 @@ internal static partial class Program
                     && File.ReadAllText(ordinary).Contains("READONLY"), "read-only ordinary save fails without changing original");
             }
             finally { File.SetAttributes(ordinary, FileAttributes.Normal); }
+
+            byte[] originalPrompt = File.ReadAllBytes(ordinary);
+            string importedPrompt = Path.Combine(prompts, "LegacyImported", "PlayerCustomPromptRule.json");
+            JObject promptMap = JObject.Parse(File.ReadAllText(Path.Combine(repository, "content", "content-map.json")));
+            string promptSource = Path.Combine(repository, (string)promptMap["entries"].OfType<JObject>().Single(row =>
+                (string)row["target"] == "ModuleData/Defaults/CustomPrompts/PlayerCustomPromptRule.json")["source"]);
+            try
+            {
+                foreach (string asset in new[] { promptSource, Path.Combine(Path.GetDirectoryName(promptSource), "PlayerCustomPromptRule.en.json") })
+                {
+                    if (File.Exists(importedPrompt)) File.Delete(importedPrompt);
+                    File.Copy(asset, ordinary, true);
+                    Check((bool)InvokeStatic(settings, "IsKnownPackagedCustomPromptFile", new object[] { ordinary }, 1),
+                        "CN/EN exact default hashes remain recognized");
+                    long cleanUser = scan(prompts, true);
+                    long unprojected = scan(prompts, false);
+                    Directory.CreateDirectory(Path.GetDirectoryName(importedPrompt));
+                    File.WriteAllText(importedPrompt, "{\"Version\":1,\"Text\":\"Imported 中文 English\"}");
+                    Check(scan(prompts, true) != cleanUser, "user fingerprint detects retained imported override");
+                    Check(scan(prompts, false) == unprojected, "package fingerprint does not apply user override projection");
+                }
+            }
+            finally
+            {
+                File.WriteAllBytes(ordinary, originalPrompt);
+                if (File.Exists(importedPrompt)) File.Delete(importedPrompt);
+            }
+
+            if (refreshOnly) return;
 
             Check(PolicyEffectPromptService.EnsureStorageFiles(out string error), "initialize policy prompts: " + error);
             var module = PolicyEffectModuleCatalog.Modules.First(value => value.Descriptor?.PromptVisible == true);
