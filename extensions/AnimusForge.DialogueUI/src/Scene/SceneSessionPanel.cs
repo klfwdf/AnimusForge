@@ -82,6 +82,8 @@ internal sealed class SessionLayer
     private readonly SceneSessionVM _vm;
     private readonly SceneStyler _styler = new SceneStyler();
     private Widget _root;
+    private Widget _folioBodyLayer, _folioSheet, _folioTab;
+    private readonly FolioSlideTransition _folioSlide = new FolioSlideTransition();
     private int _version = int.MinValue;
     private int _frames;
     private bool? _interactive;
@@ -131,6 +133,13 @@ internal sealed class SessionLayer
             try { session._layer.Input.RegisterHotKeyCategory(HotKeyManager.GetCategory("GenericPanelGameKeyCategory")); } catch { }
             screen.AddLayer(session._layer);
             session._root = movie.RootWidget;
+            if (style == ShoutPanelStyle.SideFolio)
+            {
+                session._folioBodyLayer = session._root.FindChild("AFFolioBodyLayer", true);
+                session._folioSheet = session._root.FindChild("AFFolioSheet", true);
+                session._folioTab = session._root.FindChild("AFFolioTab", true);
+                session.UpdateFolioSlide(0f, false, true);
+            }
             session._styler.Attach(movie.RootWidget);
             return session;
         }
@@ -168,6 +177,7 @@ internal sealed class SessionLayer
         // Something (e.g. the scene layer) took focus back without opening a window: take it again,
         // otherwise typed letters also reach the mission hotkeys. One reference compare per frame.
         else if (interactive && !ReferenceEquals(ScreenManager.FocusedLayer, _layer)) ScreenManager.TrySetFocus(_layer);
+        UpdateFolioSlide(dt, foreign);
         if (interactive && (_layer.Input.IsHotKeyReleased("Exit") || _layer.Input.IsKeyReleased(InputKey.Escape)))
         {
             if (!_vm.CloseTradeIfOpen()) ShoutBehavior.EndScenePresentationForExternal("leave_esc");
@@ -184,6 +194,18 @@ internal sealed class SessionLayer
     }
 
     internal bool IsInteractive => !_closed && _interactive == true;
+
+    private void UpdateFolioSlide(float dt, bool hidden, bool force = false)
+    {
+        if (_folioSheet == null || _folioBodyLayer == null || _folioTab == null) return;
+        if (!_folioSlide.Advance(_vm.IsExpanded, dt, hidden) && !force) return;
+        float eased = _folioSlide.Eased;
+        _folioSheet.MarginRight = 8f - 600f * (1f - eased);
+        _folioTab.MarginRight = -100f * eased;
+        _folioBodyLayer.IsVisible = _folioSlide.Progress > 0f;
+        _folioBodyLayer.DoNotPassEventsToChildren = !_vm.IsExpanded || hidden;
+        _folioTab.IsVisible = _folioSlide.Progress < 1f;
+    }
 
     // Another active focus window on our screen (not ours, not the scene layer). A dozen layers at most;
     // the result is refreshed every few frames so the per-frame cost is one bool read.
@@ -250,5 +272,6 @@ internal sealed class SessionLayer
         try { _screen.RemoveLayer(_layer); } catch (Exception ex) { DialogueUiRuntime.Log("Scene session layer removal: " + ex.Message); }
         _vm.OnFinalize();
         _root = null;
+        _folioBodyLayer = _folioSheet = _folioTab = null;
     }
 }

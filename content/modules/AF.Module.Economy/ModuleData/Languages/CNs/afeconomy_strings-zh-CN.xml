@@ -413,5 +413,27 @@
     <string id="AF_ECO_UI_PartyAsset_UnknownSettlement" text="未知定居点" />
     <string id="AF_ECO_UI_PartyAsset_Workshop" text="工坊" />
     <string id="AF_ECO_UI_PartyAsset_Caravan" text="商队" />
+      <string id="AF_ECO_FACT_S442" text="你已经代表{VALUE0}将 {VALUE1} 第纳尔交给 {VALUE2}。并进入了{VALUE3}的库存" />
+    <string id="AF_ECO_FACT_S443" text="你已经将 {VALUE0} 第纳尔交给 {VALUE1}。并进入了{VALUE2}的库存" />
+    <string id="AF_ECO_FACT_S444" text="你从 {VALUE0} 代表的{VALUE1}收到了 {VALUE2} 第纳尔。" />
+    <string id="AF_ECO_FACT_S445" text="你从 {VALUE0} 收到了 {VALUE1} 第纳尔。" />
+    <string id="AF_ECO_FACT_S446" text="你原计划交付 {VALUE0} 第纳尔，但余额变化后实际只交付了 {VALUE1} 第纳尔。" />
+    <string id="AF_ECO_FACT_S447" text="{VALUE0} 原计划交付 {VALUE1} 第纳尔，但实际只交付了 {VALUE2} 第纳尔。" />
+    <string id="AF_ECO_FACT_S448" text="你试图代表{VALUE0}交付 {VALUE1} 第纳尔，但当前{VALUE2}现钱不足，本轮未实际支付。" />
+    <string id="AF_ECO_FACT_S449" text="你试图交付 {VALUE0} 第纳尔，但当前余额不足，本轮未实际支付。" />
+    <string id="AF_ECO_FACT_S450" text="{VALUE0} 试图交付 {VALUE1} 第纳尔，但当前余额不足，本轮未实际支付。" />
+    <string id="AF_ECO_FACT_S516" text="你已经将 {VALUE0} 第纳尔交给玩家，并从你所在部队的资金中扣除。" />
+    <string id="AF_ECO_FACT_S517" text="你原计划交付 {VALUE0} 第纳尔，但部队资金变化后实际只交付了 {VALUE1} 第纳尔。" />
+    <string id="AF_ECO_FACT_S518" text="你试图交付 {VALUE0} 第纳尔，但你所在部队当前资金不足，本轮未实际支付。" />
+    <string id="AF_ECO_FACT_S519" text="{VALUE0} 试图交付 {VALUE1} 第纳尔，但部队当前资金不足，本轮未实际支付。" />
+    <string id="AF_ECO_FACT_S528" text="你已经将 {VALUE0} 第纳尔交给玩家。并进入了玩家的的库存" />
+    <string id="AF_ECO_FACT_S529" text="你原计划交付 {VALUE0} 第纳尔，但商铺资金变化后实际只交付了 {VALUE1} 第纳尔。" />
+    <string id="AF_ECO_FACT_S530" text="你试图交付 {VALUE0} 第纳尔，但当前商铺现钱不足，本轮未实际支付。" />
+    <string id="AF_ECO_FACT_S531" text="{VALUE0} 试图交付 {VALUE1} 第纳尔，但当前商铺现钱不足，本轮未实际支付。" />
+    <string id="AF_ECO_FACT_S724" text="你因累计向玩家实际交付的价值达到阈值，对玩家的个人信任提升了 {VALUE0}{VALUE1}。" />
+    <string id="AF_ECO_FACT_S725" text="{VALUE0} 因累计向你实际交付的价值达到阈值，对你的个人信任提升了 {VALUE1}{VALUE2}。" />
+    <string id="AF_ECO_FACT_S726" text="你因累计向玩家实际交付的价值达到阈值，对玩家的市场信任提升了 {VALUE0}{VALUE1}。" />
+    <string id="AF_ECO_FACT_S727" text="{VALUE0} 代表的{VALUE1}因累计向你实际交付的价值达到阈值，对你的市场信任提升了 {VALUE2}{VALUE3}。" />
+    <string id="AF_ECO_FACT_GoldBatch" text="金币转移汇总：尝试项{VALUE0}，成功项{VALUE1}，失败或不足项{VALUE2}，实际转移{VALUE3}第纳尔，实际价值{VALUE4}第纳尔。" />
   </strings>
 </base>

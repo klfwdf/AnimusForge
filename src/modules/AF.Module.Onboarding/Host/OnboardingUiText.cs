@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using TaleWorlds.Localization;
 
 namespace AnimusForge;
@@ -26,6 +27,22 @@ internal static class OnboardingUiText
         if (string.Equals(name, AdapterPromptCaptureTexts.PcapCompat("Compat_BuiltinWorldbook_GameOfThrones"), StringComparison.Ordinal))
             return T("AF_ONBOARDING_BUILTIN_BOOK_GAMEOFTHRONES", "Game of Thrones Chronicles");
         return name;
+    }
+
+    internal static string ImportPathDisplayName(string path)
+    {
+        try
+        {
+            string full = Path.GetFullPath(path ?? "").TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            string root = Path.GetFullPath(PlayerExportsStore.GetPlayerExportsRootPath()).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (!string.Equals(Path.GetDirectoryName(full), root, StringComparison.OrdinalIgnoreCase)) return path;
+            string name = Path.GetFileName(full);
+            string display = ImportFolderDisplayName("Module directory", name);
+            return display == name ? path : display;
+        }
+        catch (ArgumentException) { return path; }
+        catch (IOException) { return path; }
+        catch (UnauthorizedAccessException) { return path; }
     }
 
     internal static string F(string id, string englishFallback, params string[] variables)

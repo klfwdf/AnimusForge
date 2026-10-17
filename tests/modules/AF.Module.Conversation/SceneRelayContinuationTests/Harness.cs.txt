@@ -4,6 +4,8 @@ using AnimusForge.SiegeAftermathIntervention;
 using AnimusForge;
 
 namespace AnimusForge {
+    internal static class DiplomacyReplyTextRules { internal static string CleanNpcText(string text, string name = null) => text; }
+    internal static class EconomyActionFactProjection { internal static string ProjectForPrompt(string text) => text; }
     internal static class MainPromptMessageAssemblyOwner { @@MAIN_MESSAGE@@ @@MAIN_COMPOSITE@@ @@MAIN_PREFIX@@ @@MAIN_SYSTEM@@ }
     // Unrelated gathering/world-map projections are identity leaves in this relay fixture.
     internal static class NobleGatheringTextProjection { internal static string ProjectFactBodyForPrompt(string text) => text; }
@@ -56,6 +58,7 @@ static class AfGcczShoutBridge {
     }
 }
 static class F {
+    public static bool MultiFramed;
     public static List<NpcDataPacket> People;
     public static List<int> Speakers = new(), Claims = new();
     public static List<int[]> CandidateSets = new();
@@ -72,7 +75,7 @@ static class F {
     public static string StaleAt, UnavailableAt, Mode;
     public static int Step;
     public static void Reset(int count = 2, bool town = false, string mode = "alternate") {
-        People = Enumerable.Range(0, count).Select(i => new NpcDataPacket { AgentIndex = 17 + i * 10, Name = "npc" + i }).ToList();
+        MultiFramed=false; OriginInput="What do you think?"; People = Enumerable.Range(0, count).Select(i => new NpcDataPacket { AgentIndex = 17 + i * 10, Name = "npc" + i }).ToList();
         Speakers.Clear(); Claims.Clear(); CandidateSets.Clear(); Messages.Clear(); Logs.Clear(); MainRequests.Clear(); PostRuntimes.Clear(); DirectFlags.Clear(); SceneHistory.Clear();
         SceneHistory.Add(new ConversationMessage { Role = "user", Content = OriginInput, SpeakerName = "Player", TargetAgentIndex = 17, EventSequence = 1 });
         Settings = new(); Verbose = false; PreflightRecords = PreflightMax = SettingsReads = 0; PreflightMode = PreflightBody = null;
@@ -97,6 +100,7 @@ class Relay {
     const string AutoGroupRelayNegativeSoundEvent = "negative", AutoGroupRelayPositiveSoundEvent = "positive";
     const string AutoGroupRelayRuleId = "relay", AutoGroupRelayTagTemplate = "[RELAY:接力编号]";
     Dispatcher _dispatcher = new(); Ports _ports = new();
+    void FailSceneRewriteRound(Receipt receipt, int epoch, string reason) { receipt?.Fail(reason); }
     bool IsCurrentModuleGroup() => F.Current;
     bool IsSceneConversationEpochCurrent(int epoch) => F.Current;
     NpcDataPacket ResolveLiveSceneRelayTarget(object scope, Dictionary<int, NpcDataPacket> audience, Dictionary<int, Hero> heroes, int epoch, int id) => audience.GetValueOrDefault(id);
@@ -104,6 +108,8 @@ class Relay {
     Task WaitForScenePostprocessGateAsync(string name) { if (F.StaleAt == "scene_relay_gate") F.Current = false; return Task.CompletedTask; }
     string BuildAutoGroupRelayThinkingInfoMessage(NpcDataPacket npc) => "thinking:" + npc.AgentIndex;
     static string BuildSceneRelayNpcListLineForPostprocess(NpcDataPacket npc, bool primary, bool speaker) => npc.Name + ":" + npc.AgentIndex;
+    @@GROUP_DETECTION@@
+    @@UNANSWERED_TARGET@@
     @@NORMALIZER@@
     @@PROMPT@@
     @@RULES@@
@@ -130,6 +136,10 @@ class Relay {
     }
     public async Task Run() {
         var speakableCandidates = F.People;
+        var framedNpcData = F.MultiFramed ? F.People : F.People.Take(1).ToList();
+        string playerText = F.OriginInput;
+        @@GROUP_CALL@@
+        var groupAnsweredAgentIndices = new HashSet<int>();
         var primaryNpc = F.People[0];
         var currentSpeaker = primaryNpc;
         var audienceByAgentIndex = F.People.ToDictionary(n => n.AgentIndex);
@@ -147,7 +157,7 @@ class Relay {
             F.DirectFlags.Add(replyIsDirectPlayerResponse);
             if (!F.EmptyHistory) roundNpcSpeakerIndices.Add(currentSpeaker.AgentIndex);
             bool suppressBattleSpeechFollowups = F.Suppressed, endRequested = F.End;
-            bool relayPostprocessSelected = false, relayRequested = false;
+            bool relayPostprocessSelected = false, relayRequested = false, relaySelfStopConfirmed = false;
             int relayTargetAgentIndex = -1, resolvedRelayTargetAgentIndex = -1;
             string cleaned = F.Reply(currentSpeaker.AgentIndex);
             F.SceneHistory.Add(new ConversationMessage { Role = "assistant", Content = cleaned, SpeakerAgentIndex = currentSpeaker.AgentIndex, SpeakerName = currentSpeaker.Name, TargetAgentIndex = primaryNpc.AgentIndex, EventSequence = F.SceneHistory.Count + 1 });
@@ -157,6 +167,7 @@ class Relay {
             if (relayPostprocessSelected) F.PostRuntimes.Add(BuildProductionRelayRuntime(firstTurn, remainingTurns, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, relayCandidatesForNextTurn));
             Task<ScenePostprocessOutcome> postprocessTask = F.Postprocess(currentSpeaker.AgentIndex, relayCandidatesForNextTurn);
             @@SELECTION@@
+            @@GROUP_FALLBACK@@
             @@TAIL@@
         }
     }
@@ -168,7 +179,15 @@ class Program {
     static string Field(object value, string name) => (string)value.GetType().GetProperty(name).GetValue(value);
     static int Stops => F.Messages.Count(m => !m.StartsWith("thinking:"));
     static async Task Main() {
-        F.Reset(); await Play();
+        F.Reset(); F.MultiFramed=true; F.Mode="self"; await Play();
+        Check(F.Speakers.SequenceEqual(new[]{17,27}), "real multi-frame intent overrides self-stop only until audience answered");
+        F.Reset(); F.MultiFramed=false;
+
+        F.Reset(); F.OriginInput="Hark, my brethren, and lend me your ears! We shall herald a new age, and forge a realm anew. Wilt ye stand with me?"; F.Mode="self"; await Play();
+        Check(F.Speakers.SequenceEqual(new[]{17,27}), "reported English plural address reaches unanswered speaker");
+        F.Reset(); F.MultiFramed=true; F.Mode="failed"; await Play();
+        Check(F.Speakers.Count==1, "multi-frame fallback cannot override failed postprocess");
+        F.Reset(); F.MultiFramed=false; await Play();
         Check(F.Speakers.SequenceEqual(new[] {17,27,17,27,17,27,17,27}), "two people can alternate eight utterances");
         Check(F.CandidateSets[1].Contains(17), "A remains eligible after A to B");
         Check(Stops == 1 && F.Messages.Last().Contains("speaking turn limit"), "one limit stop notification");

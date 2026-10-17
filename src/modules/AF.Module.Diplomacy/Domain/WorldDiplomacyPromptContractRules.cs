@@ -19,6 +19,29 @@ public static class WorldDiplomacyPromptContractRules
 	internal static readonly string DiplomacyAnalysisTaskMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_005"];
 	internal static readonly string RoundPlanTaskMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_006"];
 
+    private static readonly string[] EnglishHeadings = {
+        "[AI diplomacy shared long-term memory mode]", "[Diplomatic document writing contract]",
+        "[AI diplomacy fixed task MODE dispatch]", "[MODE=DECLARE fixed task contract]",
+        "[MODE=COMPACT fixed task contract]", "[Diplomacy analysis task]", "[Diplomacy round planning task]"
+    };
+
+    internal static string MarkerForPrompt(string source, Func<string, string, string> localize)
+    {
+        if (localize == null) return source;
+        for (int index = 0; index < EnglishHeadings.Length; index++)
+            if (source == CompatibilityContractText.Values["AF_DIP_Compatibility_" + index.ToString("000", CultureInfo.InvariantCulture)])
+                return localize("AF_DIP_Heading_" + index.ToString("000", CultureInfo.InvariantCulture), EnglishHeadings[index]);
+        return source;
+    }
+
+    private static int MarkerIndex(string text, string marker, bool last = false)
+    {
+        int raw = last ? text.LastIndexOf(marker, StringComparison.Ordinal) : text.IndexOf(marker, StringComparison.Ordinal);
+        string english = MarkerForPrompt(marker, (key, fallback) => fallback);
+        int projected = last ? text.LastIndexOf(english, StringComparison.Ordinal) : text.IndexOf(english, StringComparison.Ordinal);
+        return raw < 0 ? projected : projected < 0 ? raw : last ? Math.Max(raw, projected) : Math.Min(raw, projected);
+    }
+
     internal static string ContractText(Func<string, string, string> localize, string id, string englishFallback)
         => localize == null ? CompatibilityContractText.Values[id] : localize(id, englishFallback);
 
@@ -123,16 +146,16 @@ public static class WorldDiplomacyPromptContractRules
 			: job.UserPrompt ?? "";
 		string systemPrompt = job.SystemPrompt ?? "";
 		return string.Equals((job.CacheAffinityKey ?? "").Trim(), CanonicalHistoryCacheAffinityKey, StringComparison.Ordinal)
-			&& systemPrompt.IndexOf(DiplomaticDeclarationWritingContractMarker, StringComparison.Ordinal) >= 0
-			&& systemPrompt.IndexOf(DiplomacyModeDispatchContractMarker, StringComparison.Ordinal) >= 0
-			&& systemPrompt.IndexOf(DiplomaticDeclarationModeContractMarker, StringComparison.Ordinal) >= 0
-			&& systemPrompt.IndexOf(CanonicalHistoryCompressionModeContractMarker, StringComparison.Ordinal) >= 0
-			&& systemPrompt.IndexOf(CanonicalHistoryContractMarker, StringComparison.Ordinal) >= 0
+			&& MarkerIndex(systemPrompt, DiplomaticDeclarationWritingContractMarker) >= 0
+			&& MarkerIndex(systemPrompt, DiplomacyModeDispatchContractMarker) >= 0
+			&& MarkerIndex(systemPrompt, DiplomaticDeclarationModeContractMarker) >= 0
+			&& MarkerIndex(systemPrompt, CanonicalHistoryCompressionModeContractMarker) >= 0
+			&& MarkerIndex(systemPrompt, CanonicalHistoryContractMarker) >= 0
 			&& modePrompt.IndexOf(expectedMode, StringComparison.Ordinal) >= 0
-			&& modePrompt.IndexOf(DiplomaticDeclarationWritingContractMarker, StringComparison.Ordinal) < 0
-			&& modePrompt.IndexOf(DiplomacyModeDispatchContractMarker, StringComparison.Ordinal) < 0
-			&& modePrompt.IndexOf(DiplomaticDeclarationModeContractMarker, StringComparison.Ordinal) < 0
-			&& modePrompt.IndexOf(CanonicalHistoryCompressionModeContractMarker, StringComparison.Ordinal) < 0;
+			&& MarkerIndex(modePrompt, DiplomaticDeclarationWritingContractMarker) < 0
+			&& MarkerIndex(modePrompt, DiplomacyModeDispatchContractMarker) < 0
+			&& MarkerIndex(modePrompt, DiplomaticDeclarationModeContractMarker) < 0
+			&& MarkerIndex(modePrompt, CanonicalHistoryCompressionModeContractMarker) < 0;
 	}
 
 	public static bool TryExtractCommonContractFromJob(WorldDiplomacyJob job, out string contract)
@@ -171,7 +194,7 @@ public static class WorldDiplomacyPromptContractRules
 	{
 		contract = "";
 		if (string.IsNullOrEmpty(systemPrompt) || string.IsNullOrEmpty(marker)) return false;
-		int markerIndex = systemPrompt.LastIndexOf(marker, StringComparison.Ordinal);
+		int markerIndex = MarkerIndex(systemPrompt, marker, true);
 		if (markerIndex < 0) return false;
 		contract = systemPrompt.Substring(0, markerIndex).TrimEnd('\r', '\n');
 		return true;
@@ -193,7 +216,7 @@ public static class WorldDiplomacyPromptContractRules
 	public static void AppendDiplomaticDeclarationWritingContract(StringBuilder sb, int minimumCharacters, int maximumCharacters, Func<string, string, string> localize)
 	{
 		if (sb == null) return;
-		sb.AppendLine(DiplomaticDeclarationWritingContractMarker);
+		sb.AppendLine(MarkerForPrompt(DiplomaticDeclarationWritingContractMarker, localize));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_000", "This section applies only in MODE=DECLARE. In MODE=COMPACT, ignore it and strictly follow the fixed MODE=COMPACT contract in the system message and the trailing dynamic parameters."));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_001", "Do not discuss behind-the-scenes scheduling, generation rules, candidate plans, data judgments or technical processes. Internal fields belong only in the JSON structure and must never become document prose."));
 		sb.AppendLine(DiplomacyMiscPromptTexts.GetRequired("Declaration_DefaultStyle"));
@@ -254,15 +277,15 @@ public static class WorldDiplomacyPromptContractRules
 	{
 		StringBuilder sb = CreateSystemPromptBuilder(commonContract);
 		AppendDiplomaticDeclarationWritingContract(sb, minimumCharacters, maximumCharacters, localize);
-		sb.AppendLine(DiplomacyModeDispatchContractMarker);
+		sb.AppendLine(MarkerForPrompt(DiplomacyModeDispatchContractMarker, localize));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_031", "MODE at the end of the final user message is the sole task selector. Execute only the matching fixed task contract and ignore every other MODE contract. Do not mix their actions, fields or JSON structures. The trailing user message supplies only the current dynamic facts, parameters and MODE; it does not override this dispatch rule."));
-		sb.AppendLine(DiplomaticDeclarationModeContractMarker);
+		sb.AppendLine(MarkerForPrompt(DiplomaticDeclarationModeContractMarker, localize));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_032", "Execute this contract only in MODE=DECLARE; ignore this section entirely in MODE=COMPACT."));
 		sb.AppendLine(BuildDiplomaticDeclarationModeContract(localize));
-		sb.AppendLine(CanonicalHistoryCompressionModeContractMarker);
+		sb.AppendLine(MarkerForPrompt(CanonicalHistoryCompressionModeContractMarker, localize));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_033", "Execute this contract only in MODE=COMPACT; ignore this section entirely in MODE=DECLARE."));
 		sb.AppendLine(BuildCanonicalHistoryCompressionModeContract(localize));
-		sb.AppendLine(CanonicalHistoryContractMarker);
+		sb.AppendLine(MarkerForPrompt(CanonicalHistoryContractMarker, localize));
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_034", "The next system message contains historical facts. In MODE=DECLARE it provides only this event and a recent relevant history window, not the complete archive. In MODE=COMPACT it provides the continuous global history prefix to compress. MODE in the final user message determines the sole task and output structure. Current dynamic state takes precedence over conflicting history."));
 		return PromptComposerTexts.ApplyOutputLanguage(sb.ToString().TrimEnd());
 	}
@@ -327,7 +350,7 @@ public static class WorldDiplomacyPromptContractRules
 	public static string BuildAnalysisSystemPrompt(string commonContract, Func<string, string, string> localize)
 	{
 		StringBuilder sb = CreateSystemPromptBuilder(commonContract);
-		sb.AppendLine(DiplomacyAnalysisTaskMarker + ContractText(localize, "AF_DIP_Contract_103", "MODE=ANALYZE in the final message determines the task and output structure."));
+		sb.AppendLine(MarkerForPrompt(DiplomacyAnalysisTaskMarker, localize) + ContractText(localize, "AF_DIP_Contract_103", "MODE=ANALYZE in the final message determines the task and output structure."));
 		sb.AppendLine(DiplomacyMiscPromptTexts.GetRequired("Declaration_SemanticStance"));
 		return PromptComposerTexts.ApplyOutputLanguage(sb.ToString().TrimEnd());
 	}

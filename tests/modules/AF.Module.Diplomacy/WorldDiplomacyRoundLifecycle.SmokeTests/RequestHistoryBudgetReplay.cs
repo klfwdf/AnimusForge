@@ -45,6 +45,7 @@ internal static class RequestHistoryBudgetReplay
         Test.True(!context.Contains("UNRELATED_WORLD_RULES") && !context.Contains("UNRELATED_SUMMARY") && !context.Contains("OLD_RAW_DECLARATION"), "reading window excludes unrelated and stale raw history");
         Test.True(storage.CanonicalHistory.Snapshot.Content.Length == 800000 && storage.Documents.Count == 4104
             && storage.CanonicalHistory.Snapshot.CoveredThroughSequence == 6205, "selection leaves archive and compression coverage intact");
+        LocalizedHistoryProjection();
         var messages = WorldDiplomacyLlmMessageApplication.BuildLlmMessageArray(job, _ => throw new Exception("full history renderer called"));
         Test.True(messages.Count == 3 && messages[1]?["content"]?.ToString() == context && messages.ToString().Length < 5000, "800k archive produces a small real declaration request");
         Test.True(!JsonConvert.SerializeObject(job).Contains("RELEVANT_OLD_SUMMARY"), "reading window is runtime-only and not another persisted history copy");
@@ -82,6 +83,46 @@ internal static class RequestHistoryBudgetReplay
         CompressionBatches();
         LegacyRequest();
         DeliveredVisibility();
+    }
+
+    private static void LocalizedHistoryProjection()
+    {
+        string Text(string key, string fallback) => key switch
+        {
+            "History_ContextMarker" => "[Relevant Diplomatic History for this Event]",
+            "History_DocPrefix" => "[Document ",
+            "History_ExcerptPrefix" => "[Excerpt] ",
+            "History_ExecutedPrefix" => "[Executed by game] ",
+            "History_RelatedOldRoundPrefix" => "[Related prior round ",
+            "History_ProtectedFactPrefix" => "[Protected historical fact; kind=",
+            _ => fallback
+        };
+        var storage = new WorldDiplomacyStorage();
+        WorldDiplomacyDocument document = Doc("projection", "a", "b", "current", 100, "中文正文");
+        document.GameDate = "中文日期";
+        document.Title = "中文标题";
+        document.ChangedDiplomaticState = true;
+        document.MechanicalResult = "中文执行结果";
+        storage.Documents.Add(document);
+        storage.RoundSummaries.Add(new() { RoundId = "old", CreatedDay = 3, KingdomIds = new() { "a", "b" }, Summary = "中文旧摘要" });
+        storage.CanonicalHistory.Snapshot.ProtectedFacts.Add(new()
+        {
+            Kind = "note",
+            SourceId = "projection",
+            AuthorKingdomId = "a",
+            TargetKingdomIds = new() { "b" },
+            Text = "中文受保护事实"
+        });
+        var job = new WorldDiplomacyJob { Kind = "generate", AuthorKingdomId = "a", TargetKingdomId = "b",
+            RoundId = "current", SourceDocumentId = "projection" };
+        string context = WorldDiplomacyRequestHistoryApplication.Build(storage, job, 100, 16000, null, Text);
+        Test.True(context.StartsWith("[Relevant Diplomatic History for this Event]", StringComparison.Ordinal)
+            && context.Contains("[Document projection;") && context.Contains("[Excerpt] 中文正文")
+            && context.Contains("[Executed by game] 中文执行结果") && context.Contains("中文标题"),
+            "English history markers project without changing dynamic Chinese document fields");
+        Test.True(context.Contains("[Related prior round old] 中文旧摘要")
+            && context.Contains("[Protected historical fact; kind=note; source=projection] 中文受保护事实"),
+            "English history markers cover summaries and protected facts while keeping their source text");
     }
 
     private static void DeliveredVisibility()

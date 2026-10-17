@@ -1,0 +1,4220 @@
+{
+  "CharacterObject_1795": [
+    [
+      "图卢勒",
+      "Tulur"
+    ]
+  ],
+  "CharacterObject_1796": [
+    [
+      "苏忒因",
+      "Sutein"
+    ]
+  ],
+  "CharacterObject_1797": [
+    [
+      "法提德",
+      "Fatid"
+    ]
+  ],
+  "CharacterObject_1798": [
+    [
+      "墨那克吕斯",
+      "Menaklys"
+    ]
+  ],
+  "CharacterObject_1799": [
+    [
+      "俄利刻耳",
+      "Oliker"
+    ]
+  ],
+  "CharacterObject_1800": [
+    [
+      "雅科里俄斯",
+      "Yakoryos"
+    ]
+  ],
+  "CharacterObject_1801": [
+    [
+      "安农",
+      "Annon"
+    ]
+  ],
+  "CharacterObject_1802": [
+    [
+      "维米",
+      "Vimi"
+    ]
+  ],
+  "CharacterObject_1803": [
+    [
+      "阿斯戈姆",
+      "Asgom"
+    ]
+  ],
+  "CharacterObject_1804": [
+    [
+      "奥普",
+      "Op"
+    ]
+  ],
+  "CharacterObject_1805": [
+    [
+      "博尔图",
+      "Bortu"
+    ]
+  ],
+  "CharacterObject_1806": [
+    [
+      "托古德",
+      "Togud"
+    ]
+  ],
+  "CharacterObject_1807": [
+    [
+      "雷格博尔",
+      "Regbor"
+    ]
+  ],
+  "CharacterObject_1808": [
+    [
+      "于博尔",
+      "Yubor"
+    ]
+  ],
+  "CharacterObject_1809": [
+    [
+      "安德加尔",
+      "Andgar"
+    ]
+  ],
+  "CharacterObject_1810": [
+    [
+      "暗影之子的萨马尔",
+      "Davobad_of_the_Forest_Brothers"
+    ],
+    [
+      "绿林兄弟会的达沃巴德",
+      "Davobad_of_the_Forest_Brothers"
+    ]
+  ],
+  "CharacterObject_1811": [
+    [
+      "暗影之子的塔格",
+      "Tag_of_the_Shadow_Sons"
+    ]
+  ],
+  "CharacterObject_1812": [
+    [
+      "暗影之子的赛斯",
+      "Severar_of_the_Forest_Brothers"
+    ],
+    [
+      "绿林兄弟会的塞韦拉尔",
+      "Severar_of_the_Forest_Brothers"
+    ]
+  ],
+  "CharacterObject_1813": [
+    [
+      "暗影之子的杜瓦因",
+      "Duwain_of_the_Shadow_Sons"
+    ]
+  ],
+  "CharacterObject_1814": [
+    [
+      "狼皮部落的阿尔莱奇",
+      "Alreach_of_the_Wolfskins"
+    ]
+  ],
+  "CharacterObject_1815": [
+    [
+      "狼皮部落的乌雷恩",
+      "Urein_of_the_Wolfskins"
+    ]
+  ],
+  "CharacterObject_1816": [
+    [
+      "狼皮部落的考尔",
+      "Kael_of_the_Wolfskins"
+    ]
+  ],
+  "CharacterObject_1817": [
+    [
+      "狼皮部落的费克里德",
+      "Fekrid_of_the_Wolfskins"
+    ]
+  ],
+  "CharacterObject_1818": [
+    [
+      "绿林兄弟会的赫尔莫",
+      "Helmo_of_the_Forest_Brothers"
+    ]
+  ],
+  "CharacterObject_1819": [
+    [
+      "绿林兄弟会的热纳尔夫",
+      "Genalf_of_the_Forest_Brothers"
+    ]
+  ],
+  "CharacterObject_1820": [
+    [
+      "绿林兄弟会的西卡尔",
+      "Sikar_of_the_Forest_Brothers"
+    ]
+  ],
+  "CharacterObject_1821": [
+    [
+      "绿林兄弟会的阿莱昂",
+      "Aleon_of_the_Forest_Brothers"
+    ]
+  ],
+  "CharacterObject_1822": [
+    [
+      "秘密之手的欧托斯",
+      "Otos_of_the_Hidden_Hand"
+    ]
+  ],
+  "CharacterObject_1823": [
+    [
+      "秘密之手的耶密农",
+      "Yeminon_of_the_Hidden_Hand"
+    ]
+  ],
+  "CharacterObject_1824": [
+    [
+      "秘密之手的阿提隆",
+      "Atilon_of_the_Hidden_Hand"
+    ]
+  ],
+  "CharacterObject_1825": [
+    [
+      "秘密之手的得尔提索斯",
+      "Deltisos_of_the_Hidden_Hand"
+    ]
+  ],
+  "CharacterObject_1826": [
+    [
+      "湖鼠帮的加文",
+      "Gavin_of_the_Lake_Rats"
+    ]
+  ],
+  "CharacterObject_1827": [
+    [
+      "湖鼠帮的奥斯帕克",
+      "Ospak_of_the_Lake_Rats"
+    ]
+  ],
+  "CharacterObject_1828": [
+    [
+      "湖鼠帮的雅吕尔",
+      "Yarlyr_of_the_Lake_Rats"
+    ]
+  ],
+  "CharacterObject_1829": [
+    [
+      "湖鼠帮的茹特尔",
+      "Ruter_of_the_Lake_Rats"
+    ]
+  ],
+  "CharacterObject_1831": [
+    [
+      "火焰余烬的拉卡利翁",
+      "Lakalios_of_the_Embers"
+    ]
+  ],
+  "CharacterObject_1832": [
+    [
+      "火焰余烬的若瓦里翁",
+      "Rovalios_of_the_Embers"
+    ]
+  ],
+  "CharacterObject_1833": [
+    [
+      "火焰余烬的欧歌耳",
+      "Oger_of_the_Embers"
+    ]
+  ],
+  "CharacterObject_1834": [
+    [
+      "森民的雅吕尔",
+      "Yarlyr_of_the_Forest_People"
+    ],
+    [
+      "贾瓦勒的哈塞德",
+      "Yarlyr_of_the_Forest_People"
+    ]
+  ],
+  "CharacterObject_1835": [
+    [
+      "贾瓦勒的哈立德",
+      "Khalid_of_the_Jawwal"
+    ]
+  ],
+  "CharacterObject_1836": [
+    [
+      "贾瓦勒的胡拉森",
+      "Hurasen_of_the_Jawwal"
+    ]
+  ],
+  "CharacterObject_1837": [
+    [
+      "森民的阿格迪尔",
+      "Agdir_of_the_Forest_People"
+    ],
+    [
+      "贾瓦勒的贾伊姆",
+      "Agdir_of_the_Forest_People"
+    ]
+  ],
+  "CharacterObject_1838": [
+    [
+      "喀拉库吉特的牙那古",
+      "Yanagu_of_the_Karakhuzaits"
+    ]
+  ],
+  "CharacterObject_1839": [
+    [
+      "喀拉库吉特的兀禄维",
+      "Uluwi_of_the_Karakhuzaits"
+    ]
+  ],
+  "CharacterObject_1840": [
+    [
+      "喀拉库吉特的伊勒德力木",
+      "Ilderim_of_the_Karakhuzaits"
+    ]
+  ],
+  "CharacterObject_1841": [
+    [
+      "喀拉库吉特的步出勒",
+      "Burchule_of_the_Karakhuzaits"
+    ]
+  ],
+  "CharacterObject_1842": [
+    [
+      "森民的恰维尔",
+      "Chavel_of_the_Forest_People"
+    ]
+  ],
+  "CharacterObject_1843": [
+    [
+      "森民的萨卢尔克",
+      "Salurk_of_the_Forest_People"
+    ]
+  ],
+  "CharacterObject_1844": [
+    [
+      "森民的古特拉格",
+      "Gutlag_of_the_Forest_People"
+    ]
+  ],
+  "CharacterObject_1845": [
+    [
+      "森民的乌吉尔",
+      "Ugir_of_the_Forest_People"
+    ]
+  ],
+  "CharacterObject_1846": [
+    [
+      "自由民的达利得斯",
+      "Dalides_of_the_Eleftheroi"
+    ]
+  ],
+  "CharacterObject_1847": [
+    [
+      "自由民的革洛忒翁",
+      "Geloteon_of_the_Eleftheroi"
+    ]
+  ],
+  "CharacterObject_1848": [
+    [
+      "自由民的萨卡尼翁",
+      "Sakanion_of_the_Eleftheroi"
+    ]
+  ],
+  "CharacterObject_1849": [
+    [
+      "自由民的萨卢修斯",
+      "Salusius_of_the_Eleftheroi"
+    ]
+  ],
+  "CharacterObject_1851": [
+    [
+      "“屠夫”卡利玻斯",
+      "Kalipos_the_Butcher"
+    ]
+  ],
+  "CharacterObject_1853": [
+    [
+      "“求知客”旺瓦亚格",
+      "Wangwayag_the_Knowing"
+    ]
+  ],
+  "CharacterObject_1856": [
+    [
+      "“急救士”达叙斯",
+      "Dasyus_the_Healer"
+    ]
+  ],
+  "CharacterObject_1857": [
+    [
+      "“修车匠”泰乌达",
+      "Theuda_the_Wainwright"
+    ]
+  ],
+  "CharacterObject_1864": [
+    [
+      "“勇者”斯唐纳夫",
+      "Stannaf_the_Brave"
+    ]
+  ],
+  "CharacterObject_1865": [
+    [
+      "“学者”坤达尔",
+      "Kundar_the_Scholar"
+    ]
+  ],
+  "CharacterObject_1868": [
+    [
+      "“学者”阿雷尼科斯",
+      "Arenicos_the_Scholar"
+    ]
+  ],
+  "CharacterObject_1870": [
+    [
+      "“无父者”阿舒尔",
+      "Ashur_the_Fatherless"
+    ]
+  ],
+  "CharacterObject_1874": [
+    [
+      "“小聒噪”罗塔尔",
+      "Rotar_the_Chatterbox"
+    ]
+  ],
+  "CharacterObject_1881": [
+    [
+      "“剑士”扎什瓦勒",
+      "Zashwal_the_Swordsman"
+    ]
+  ],
+  "CharacterObject_1882": [
+    [
+      "“乞丐”阿速甘",
+      "Asugan_the_Beggar"
+    ]
+  ],
+  "CharacterObject_1884": [
+    [
+      "“搬运工”奥托",
+      "Otto_the_Porter"
+    ]
+  ],
+  "CharacterObject_1": [
+    [
+      "胡尔",
+      "Hur"
+    ]
+  ],
+  "dead_lord_2_1": [
+    [
+      "“年长的”奥列克",
+      "Olek the Old"
+    ]
+  ],
+  "dead_lord_2_2": [
+    [
+      "瓦尔拉",
+      "Varra"
+    ]
+  ],
+  "dead_lord_3_1": [
+    [
+      "尼姆尔",
+      "Nimr"
+    ]
+  ],
+  "dead_lord_6_1": [
+    [
+      "兀儿浑",
+      "Urkhun"
+    ]
+  ],
+  "dead_lord_6_2": [
+    [
+      "岁仑",
+      "Solun"
+    ]
+  ],
+  "dead_lord_6_3": [
+    [
+      "库由格",
+      "Kuyug"
+    ]
+  ],
+  "dead_lord_6_4": [
+    [
+      "温都勒",
+      "Undul"
+    ]
+  ],
+  "dead_lord_7_1": [
+    [
+      "“饿人”沃尔比约恩",
+      "Volbjorn the Hungry"
+    ]
+  ],
+  "dead_lord_7_2": [
+    [
+      "伊丽卡",
+      "Ilrika"
+    ]
+  ],
+  "lord_1_10": [
+    [
+      "墨尔刻娅",
+      "Melkea"
+    ]
+  ],
+  "lord_1_111": [
+    [
+      "卡西农",
+      "Casinon"
+    ],
+    [
+      "安德鲁·伊斯蒙",
+      "Andrew_Estermont"
+    ]
+  ],
+  "lord_1_11": [
+    [
+      "克洛托耳",
+      "Crotor"
+    ],
+    [
+      "史坦尼斯·拜拉席恩",
+      "Stannis_Baratheon"
+    ]
+  ],
+  "lord_1_12": [
+    [
+      "吕西卡",
+      "Lysica"
+    ],
+    [
+      "梅丽珊卓",
+      "Melisandre"
+    ]
+  ],
+  "lord_1_14": [
+    [
+      "拉盖娅",
+      "Rhagaea"
+    ],
+    [
+      "丹妮莉丝·坦格利安",
+      "Daenerys_Targaryen"
+    ]
+  ],
+  "lord_1_155": [
+    [
+      "芝诺",
+      "Zeno"
+    ]
+  ],
+  "lord_1_15": [
+    [
+      "法戎",
+      "Pharon"
+    ]
+  ],
+  "lord_1_16": [
+    [
+      "马耳提拉",
+      "Martira"
+    ]
+  ],
+  "lord_1_177": [
+    [
+      "霍诺拉图斯",
+      "Honoratus"
+    ]
+  ],
+  "lord_1_17": [
+    [
+      "俄洛斯",
+      "Oros"
+    ],
+    [
+      "卢斯·波顿",
+      "Roose_Bolton"
+    ]
+  ],
+  "lord_1_18": [
+    [
+      "雅忒娅",
+      "Jathea"
+    ]
+  ],
+  "lord_1_1_10": [
+    [
+      "洛达",
+      "Rhoda"
+    ],
+    [
+      "萝丝琳·佛雷",
+      "Roslin_Frey"
+    ]
+  ],
+  "lord_1_1_11": [
+    [
+      "阿马利娅娜",
+      "Amaliana"
+    ],
+    [
+      "瓦德·河文",
+      "Walder_Rivers"
+    ]
+  ],
+  "lord_1_1_12": [
+    [
+      "厄庇斐里娅",
+      "Epipheria"
+    ]
+  ],
+  "lord_1_1_13": [
+    [
+      "阿格娜忒亚",
+      "Agnathea"
+    ],
+    [
+      "卢卡斯·科布瑞",
+      "Lucas_Corbray"
+    ]
+  ],
+  "lord_1_1_14": [
+    [
+      "提莉安娜",
+      "Tyliana"
+    ]
+  ],
+  "lord_1_1_15": [
+    [
+      "查士丁娜",
+      "Justina"
+    ]
+  ],
+  "lord_1_1_16": [
+    [
+      "列奥提娅",
+      "Leontia"
+    ],
+    [
+      "尤斯塔斯·杭特",
+      "Eustace_Hunter"
+    ]
+  ],
+  "lord_1_1_17": [
+    [
+      "瓦里亚西斯",
+      "Variasis"
+    ]
+  ],
+  "lord_1_1_1": [
+    [
+      "苏萨达",
+      "Susada"
+    ]
+  ],
+  "lord_1_1_2": [
+    [
+      "得坎提娅",
+      "Decantia"
+    ]
+  ],
+  "lord_1_1_3": [
+    [
+      "维涅兰达",
+      "Veneranda"
+    ]
+  ],
+  "lord_1_1_4": [
+    [
+      "法拉里萨",
+      "Phalarisa"
+    ]
+  ],
+  "lord_1_1_5": [
+    [
+      "普雷西娅娜",
+      "Presciana"
+    ]
+  ],
+  "lord_1_1_6": [
+    [
+      "阿得里刻娅",
+      "Adrichea"
+    ]
+  ],
+  "lord_1_1_7": [
+    [
+      "许拉西娅娜",
+      "Hylasiana"
+    ]
+  ],
+  "lord_1_1_8": [
+    [
+      "阿波吕忒娅",
+      "Apolytea"
+    ],
+    [
+      "史提夫伦·佛雷",
+      "Stevron_Frey"
+    ]
+  ],
+  "lord_1_1_9": [
+    [
+      "厄奥狄西娅",
+      "Eodisia"
+    ],
+    [
+      "艾蒙·佛雷",
+      "Emmon_Frey"
+    ]
+  ],
+  "lord_1_1": [
+    [
+      "卢孔",
+      "Lucon"
+    ],
+    [
+      "约恩·罗伊斯",
+      "Yohn_Royce"
+    ]
+  ],
+  "lord_1_20": [
+    [
+      "恩库里翁",
+      "Encurion"
+    ]
+  ],
+  "lord_1_21": [
+    [
+      "阿斯居戎",
+      "Ascyron"
+    ]
+  ],
+  "lord_1_22": [
+    [
+      "安德洛斯",
+      "Andros"
+    ],
+    [
+      "诺勃特·凡斯",
+      "Norbert_Vance"
+    ]
+  ],
+  "lord_1_23": [
+    [
+      "雅斯提翁",
+      "Jastion"
+    ]
+  ],
+  "lord_1_24": [
+    [
+      "塔得俄斯",
+      "Tadeos"
+    ],
+    [
+      "维拉斯·提利尔",
+      "Willas_Tyrell"
+    ]
+  ],
+  "lord_1_25": [
+    [
+      "厄洛倪克斯",
+      "Eronyx"
+    ]
+  ],
+  "lord_1_26": [
+    [
+      "墨里托耳",
+      "Meritor"
+    ],
+    [
+      "亚赛尔·佛罗伦",
+      "Axell_Florent"
+    ]
+  ],
+  "lord_1_27_1": [
+    [
+      "维里娜",
+      "Verina"
+    ]
+  ],
+  "lord_1_27_2": [
+    [
+      "欧特洛庇俄斯",
+      "Eutropios"
+    ]
+  ],
+  "lord_1_27_3": [
+    [
+      "瓦西利娅",
+      "Vasilia"
+    ]
+  ],
+  "lord_1_27": [
+    [
+      "帕堤耳",
+      "Patyr"
+    ],
+    [
+      "“壮汉”贝尔瓦斯",
+      "Strong_Belwas"
+    ],
+    [
+      "贝尔瓦斯",
+      "Strong_Belwas"
+    ]
+  ],
+  "lord_1_28": [
+    [
+      "特弥翁",
+      "Temion"
+    ]
+  ],
+  "lord_1_29": [
+    [
+      "萨尼翁",
+      "Sanion"
+    ],
+    [
+      "拉姆斯·雪诺",
+      "Ramsay_Snow"
+    ]
+  ],
+  "lord_1_2": [
+    [
+      "泽洛西卡",
+      "Zerosica"
+    ]
+  ],
+  "lord_1_30_1": [
+    [
+      "查士丁娜",
+      "Justina"
+    ]
+  ],
+  "lord_1_30": [
+    [
+      "图里亚多斯",
+      "Turiados"
+    ]
+  ],
+  "lord_1_31": [
+    [
+      "佐安娜",
+      "Zoana"
+    ]
+  ],
+  "lord_1_32": [
+    [
+      "索拉",
+      "Sora"
+    ]
+  ],
+  "lord_1_33": [
+    [
+      "哈利娅",
+      "Chalia"
+    ]
+  ],
+  "lord_1_34": [
+    [
+      "那得娅",
+      "Nadea"
+    ],
+    [
+      "梅歌·提利尔",
+      "Megga_Tyrell"
+    ]
+  ],
+  "lord_1_35": [
+    [
+      "阿门农",
+      "Amenon"
+    ]
+  ],
+  "lord_1_36": [
+    [
+      "淮娅",
+      "Phaea"
+    ],
+    [
+      "希琳·拜拉席恩",
+      "Shireen_Baratheon"
+    ]
+  ],
+  "lord_1_37": [
+    [
+      "伊拉",
+      "Ira"
+    ]
+  ],
+  "lord_1_39": [
+    [
+      "得巴娜",
+      "Debana"
+    ]
+  ],
+  "lord_1_3": [
+    [
+      "曼忒俄斯",
+      "Manteos"
+    ],
+    [
+      "艾德慕·徒利",
+      "Edmure_Tully"
+    ]
+  ],
+  "lord_1_40_1": [
+    [
+      "卡忒拉",
+      "Catella"
+    ]
+  ],
+  "lord_1_40": [
+    [
+      "堤诺普斯",
+      "Tynops"
+    ]
+  ],
+  "lord_1_411": [
+    [
+      "亚里翁",
+      "Arion"
+    ],
+    [
+      "罗拔·罗伊斯",
+      "Robar_Royce"
+    ]
+  ],
+  "lord_1_41": [
+    [
+      "阿科耳",
+      "Arcor"
+    ]
+  ],
+  "lord_1_42": [
+    [
+      "柏利托耳",
+      "Belithor"
+    ]
+  ],
+  "lord_1_43": [
+    [
+      "喀宋",
+      "Chason"
+    ],
+    [
+      "黑瓦德·佛雷",
+      "Black_Walder_Frey"
+    ]
+  ],
+  "lord_1_44": [
+    [
+      "涅摩斯",
+      "Nemos"
+    ],
+    [
+      "洛拉斯·提利尔",
+      "Loras_Tyrell"
+    ]
+  ],
+  "lord_1_45_1": [
+    [
+      "阿格娜拉",
+      "Agnala"
+    ]
+  ],
+  "lord_1_45_2": [
+    [
+      "福斯托耳",
+      "Phostor"
+    ]
+  ],
+  "lord_1_45_3": [
+    [
+      "涅雷达",
+      "Nereida"
+    ]
+  ],
+  "lord_1_45": [
+    [
+      "得斯波里翁",
+      "Desporion"
+    ]
+  ],
+  "lord_1_46_1": [
+    [
+      "塞俄耳具斯",
+      "Seorgys"
+    ]
+  ],
+  "lord_1_46": [
+    [
+      "弥罗斯",
+      "Milos"
+    ]
+  ],
+  "lord_1_47_1": [
+    [
+      "弥娜",
+      "Mina"
+    ],
+    [
+      "弥桑黛",
+      "Missandei"
+    ]
+  ],
+  "lord_1_47": [
+    [
+      "乌尔玻斯",
+      "Ulbos"
+    ],
+    [
+      "灰虫子",
+      "Grey_Worm"
+    ]
+  ],
+  "lord_1_48_1": [
+    [
+      "阿林匹娅",
+      "Alympia"
+    ]
+  ],
+  "lord_1_48": [
+    [
+      "约戎",
+      "Joron"
+    ]
+  ],
+  "lord_1_49_1": [
+    [
+      "崔斯坦尼娅",
+      "Tristania"
+    ]
+  ],
+  "lord_1_49": [
+    [
+      "俄布戎",
+      "Obron"
+    ]
+  ],
+  "lord_1_4": [
+    [
+      "斐诺里娅",
+      "Phenoria"
+    ]
+  ],
+  "lord_1_50": [
+    [
+      "居福耳",
+      "Gyphor"
+    ],
+    [
+      "布林登·徒利",
+      "Brynden_Tully"
+    ]
+  ],
+  "lord_1_51": [
+    [
+      "尼卡索耳",
+      "Nicasor"
+    ]
+  ],
+  "lord_1_52_1": [
+    [
+      "弥那耳维娜",
+      "Minarvina"
+    ]
+  ],
+  "lord_1_52": [
+    [
+      "萨拉提斯",
+      "Saratis"
+    ]
+  ],
+  "lord_1_53": [
+    [
+      "阿喀俄斯",
+      "Achios"
+    ]
+  ],
+  "lord_1_54_1": [
+    [
+      "君士塔莉娅",
+      "Constalia"
+    ]
+  ],
+  "lord_1_54": [
+    [
+      "西喀尼斯",
+      "Sichanis"
+    ]
+  ],
+  "lord_1_55_1": [
+    [
+      "墨革提娅",
+      "Megethia"
+    ]
+  ],
+  "lord_1_55": [
+    [
+      "塞兰冬",
+      "Serandon"
+    ]
+  ],
+  "lord_1_56_1": [
+    [
+      "革耳马娜",
+      "Germana"
+    ]
+  ],
+  "lord_1_56": [
+    [
+      "塞拉诺耳",
+      "Seranor"
+    ],
+    [
+      "霍斯特·布莱伍德",
+      "Hoster_Blackwood"
+    ]
+  ],
+  "lord_1_57_1": [
+    [
+      "索法利娅",
+      "Sophalia"
+    ]
+  ],
+  "lord_1_57": [
+    [
+      "阿尔忒诺斯",
+      "Altenos"
+    ]
+  ],
+  "lord_1_58": [
+    [
+      "塔叙诺耳",
+      "Tasynor"
+    ],
+    [
+      "杰森·梅利斯特",
+      "Jason_Mallister"
+    ]
+  ],
+  "lord_1_5": [
+    [
+      "彭同",
+      "Penton"
+    ],
+    [
+      "瓦德·佛雷",
+      "Walder_Frey"
+    ]
+  ],
+  "lord_1_62_1": [
+    [
+      "阿律塔",
+      "Arytha"
+    ]
+  ],
+  "lord_1_62": [
+    [
+      "塞亚戎",
+      "Sejaron"
+    ]
+  ],
+  "lord_1_63_1": [
+    [
+      "瓦拉里娅",
+      "Valaria"
+    ]
+  ],
+  "lord_1_63": [
+    [
+      "巴拉诺耳",
+      "Baranor"
+    ]
+  ],
+  "lord_1_64": [
+    [
+      "弥隆",
+      "Miron"
+    ],
+    [
+      "林恩·科布瑞",
+      "Lyn_Corbray"
+    ]
+  ],
+  "lord_1_66": [
+    [
+      "兰塔诺耳",
+      "Lantanor"
+    ]
+  ],
+  "lord_1_67": [
+    [
+      "俄吕波斯",
+      "Olypos"
+    ]
+  ],
+  "lord_1_68_1": [
+    [
+      "西尔维娜",
+      "Silvina"
+    ]
+  ],
+  "lord_1_68": [
+    [
+      "塔洛斯",
+      "Tharos"
+    ]
+  ],
+  "lord_1_69_1": [
+    [
+      "阿雷莉安娜",
+      "Areliana"
+    ]
+  ],
+  "lord_1_69": [
+    [
+      "尼丰",
+      "Niphon"
+    ]
+  ],
+  "lord_1_6": [
+    [
+      "法冬",
+      "Phadon"
+    ]
+  ],
+  "lord_1_70": [
+    [
+      "帕那勒娅",
+      "Panalea"
+    ]
+  ],
+  "lord_1_71": [
+    [
+      "维彭",
+      "Vipon"
+    ]
+  ],
+  "lord_1_72_1": [
+    [
+      "维维安娜",
+      "Viviana"
+    ]
+  ],
+  "lord_1_72": [
+    [
+      "阿巴吕托斯",
+      "Abalytos"
+    ]
+  ],
+  "lord_1_73_1": [
+    [
+      "波庇利娅",
+      "Popilia"
+    ]
+  ],
+  "lord_1_73": [
+    [
+      "俄瓦戈斯",
+      "Ovagos"
+    ]
+  ],
+  "lord_1_74_1": [
+    [
+      "泽娜",
+      "Zena"
+    ]
+  ],
+  "lord_1_74": [
+    [
+      "扎喀尼斯",
+      "Zachanis"
+    ]
+  ],
+  "lord_1_75": [
+    [
+      "忒斐罗斯",
+      "Thephilos"
+    ],
+    [
+      "加兰·提利尔",
+      "Garlan_Tyrell"
+    ]
+  ],
+  "lord_1_7": [
+    [
+      "加里俄斯",
+      "Garios"
+    ],
+    [
+      "梅斯·提利尔",
+      "Mace_Tyrell"
+    ]
+  ],
+  "lord_1_8": [
+    [
+      "文得利娅",
+      "Vendelia"
+    ],
+    [
+      "玛格丽·提利尔",
+      "Margaery_Tyrell"
+    ]
+  ],
+  "lord_1_9": [
+    [
+      "阿庇斯",
+      "Apys"
+    ],
+    [
+      "蓝礼·拜拉席恩",
+      "Renly_Baratheon"
+    ]
+  ],
+  "lord_2_111": [
+    [
+      "罗日沃尔",
+      "Rozhivol"
+    ]
+  ],
+  "lord_2_11": [
+    [
+      "伊德伦",
+      "Idrun"
+    ]
+  ],
+  "lord_2_121": [
+    [
+      "奥斯温",
+      "Osven"
+    ],
+    [
+      "何索·哈尔洛",
+      "Hotho_Harlaw"
+    ]
+  ],
+  "lord_2_12": [
+    [
+      "斯瓦娜",
+      "Svana"
+    ]
+  ],
+  "lord_2_13_1": [
+    [
+      "利利扎",
+      "Lilizha"
+    ]
+  ],
+  "lord_2_13_2": [
+    [
+      "安德鲁塔",
+      "Andruta"
+    ]
+  ],
+  "lord_2_13": [
+    [
+      "维达尔",
+      "Vidar"
+    ],
+    [
+      "攸伦·葛雷乔伊",
+      "Euron_Greyjoy"
+    ]
+  ],
+  "lord_2_14_1": [
+    [
+      "瓦尔卡娃",
+      "Valkava"
+    ]
+  ],
+  "lord_2_14_2": [
+    [
+      "扎韦列娜",
+      "Zaverena"
+    ],
+    [
+      "阿莉里亚·戴恩",
+      "Allyria_Dayne"
+    ]
+  ],
+  "lord_2_14": [
+    [
+      "伊斯凡",
+      "Isvan"
+    ]
+  ],
+  "lord_2_15_1": [
+    [
+      "亚恰娜",
+      "Yachana"
+    ]
+  ],
+  "lord_2_15_2": [
+    [
+      "米兰卡",
+      "Milanka"
+    ]
+  ],
+  "lord_2_15_4": [
+    [
+      "博万",
+      "Bovan"
+    ]
+  ],
+  "lord_2_15": [
+    [
+      "拉塔戈斯特",
+      "Ratagost"
+    ],
+    [
+      "耶哥蕊特",
+      "Ygritte"
+    ]
+  ],
+  "lord_2_16_1": [
+    [
+      "佳斯卡",
+      "Tyaska"
+    ]
+  ],
+  "lord_2_16": [
+    [
+      "约里格",
+      "Yorig"
+    ],
+    [
+      "艾德瑞克·戴恩",
+      "Edric_Dayne"
+    ]
+  ],
+  "lord_2_17_1": [
+    [
+      "德拉恰",
+      "Dracha"
+    ]
+  ],
+  "lord_2_17": [
+    [
+      "维杜尔",
+      "Vyldur"
+    ],
+    [
+      "斯迪·马格拿",
+      "Styr"
+    ]
+  ],
+  "lord_2_18_1": [
+    [
+      "佐里卡",
+      "Zorika"
+    ],
+    [
+      "亚丽·卡史塔克",
+      "Alys_Karstark"
+    ]
+  ],
+  "lord_2_18": [
+    [
+      "法芬",
+      "Fafen"
+    ],
+    [
+      "瑞卡德·卡史塔克",
+      "Rickard_Karstark"
+    ]
+  ],
+  "lord_2_19_1": [
+    [
+      "维托米拉",
+      "Vitomira"
+    ]
+  ],
+  "lord_2_19": [
+    [
+      "瓦舍尔基",
+      "Vashorki"
+    ],
+    [
+      "托蒙德",
+      "Tormund"
+    ]
+  ],
+  "lord_2_1": [
+    [
+      "朗瓦德",
+      "Raganvad"
+    ],
+    [
+      "巴隆·葛雷乔伊",
+      "Balon_Greyjoy"
+    ]
+  ],
+  "lord_2_20_1": [
+    [
+      "基莎",
+      "Kisha"
+    ]
+  ],
+  "lord_2_20": [
+    [
+      "托维尔",
+      "Tovir"
+    ]
+  ],
+  "lord_2_21_1": [
+    [
+      "伊兹登卡",
+      "Izdenka"
+    ]
+  ],
+  "lord_2_21": [
+    [
+      "斯维多恩",
+      "Svedorn"
+    ],
+    [
+      "杰洛·戴恩",
+      "Gerold_Dayne"
+    ]
+  ],
+  "lord_2_22_1": [
+    [
+      "热涅娃",
+      "Zheneva"
+    ]
+  ],
+  "lord_2_22": [
+    [
+      "拉绍涅克",
+      "Lashonek"
+    ],
+    [
+      "骸骨之王",
+      "Lord_of_Bones"
+    ]
+  ],
+  "lord_2_23_1": [
+    [
+      "兹拉特卡",
+      "Zlatka"
+    ]
+  ],
+  "lord_2_23": [
+    [
+      "加尔登",
+      "Galden"
+    ],
+    [
+      "哈罗德·卡史塔克",
+      "Harald_Karstark"
+    ]
+  ],
+  "lord_2_24_1": [
+    [
+      "佐里娜",
+      "Zorina"
+    ]
+  ],
+  "lord_2_24": [
+    [
+      "阿尔瓦尔",
+      "Alvar"
+    ]
+  ],
+  "lord_2_2": [
+    [
+      "阿丝塔",
+      "Asta"
+    ],
+    [
+      "亚拉妮丝·哈尔洛",
+      "Alannys_Harlaw"
+    ]
+  ],
+  "lord_2_3": [
+    [
+      "奥列克",
+      "Olek"
+    ],
+    [
+      "曼斯·雷德",
+      "Mance_Rayder"
+    ]
+  ],
+  "lord_2_4_1": [
+    [
+      "阿波拉涅娅",
+      "Apolanea"
+    ],
+    [
+      "瓦迩",
+      "Val"
+    ]
+  ],
+  "lord_2_4": [
+    [
+      "西加",
+      "Siga"
+    ]
+  ],
+  "lord_2_5": [
+    [
+      "戈敦",
+      "Godun"
+    ],
+    [
+      "罗德利克·哈尔洛",
+      "Rodrik_Harlaw"
+    ]
+  ],
+  "lord_2_6": [
+    [
+      "埃尔塔",
+      "Erta"
+    ]
+  ],
+  "lord_2_7_1": [
+    [
+      "密米尔",
+      "Mimir"
+    ],
+    [
+      "亚拉·葛雷乔伊",
+      "Yara_Greyjoy"
+    ]
+  ],
+  "lord_2_7": [
+    [
+      "西米尔",
+      "Simir"
+    ],
+    [
+      "维克塔利昂·葛雷乔伊",
+      "Victarion_Greyjoy"
+    ]
+  ],
+  "lord_2_8": [
+    [
+      "乌里克",
+      "Urik"
+    ],
+    [
+      "哭泣者",
+      "The_Weeper"
+    ]
+  ],
+  "lord_2_9": [
+    [
+      "列克",
+      "Lek"
+    ]
+  ],
+  "lord_3_10": [
+    [
+      "安妮扎",
+      "Anidha"
+    ],
+    [
+      "奥芭娅·沙德",
+      "Obara_Sand"
+    ]
+  ],
+  "lord_3_11": [
+    [
+      "阿尔瓦",
+      "Arwa"
+    ]
+  ],
+  "lord_3_12": [
+    [
+      "玛南",
+      "Manan"
+    ]
+  ],
+  "lord_3_13_1": [
+    [
+      "西拉",
+      "Sira"
+    ],
+    [
+      "娜梅莉亚·沙德",
+      "Nymeria_Sand"
+    ]
+  ],
+  "lord_3_13": [
+    [
+      "努卡尔",
+      "Nuqar"
+    ],
+    [
+      "奥柏伦·马泰尔",
+      "Oberyn_Martell"
+    ]
+  ],
+  "lord_3_14_1": [
+    [
+      "萨赛莎",
+      "Sasaitha"
+    ]
+  ],
+  "lord_3_14": [
+    [
+      "萨姆扎",
+      "Thamza"
+    ]
+  ],
+  "lord_3_15_1": [
+    [
+      "希姆拉",
+      "Shimra"
+    ]
+  ],
+  "lord_3_15": [
+    [
+      "古齐德",
+      "Ghuzid"
+    ]
+  ],
+  "lord_3_16_1": [
+    [
+      "法丽娜",
+      "Farina"
+    ]
+  ],
+  "lord_3_16": [
+    [
+      "苏鲁克",
+      "Suruq"
+    ]
+  ],
+  "lord_3_17_1": [
+    [
+      "谢玛",
+      "Shaima"
+    ]
+  ],
+  "lord_3_17": [
+    [
+      "伊亚拉斯",
+      "Iyalas"
+    ],
+    [
+      "安德斯·伊伦伍德",
+      "Anders_Yronwood"
+    ]
+  ],
+  "lord_3_18_1": [
+    [
+      "法扎娜",
+      "Farzana"
+    ]
+  ],
+  "lord_3_18_2": [
+    [
+      "哈菲莎",
+      "Hafisa"
+    ]
+  ],
+  "lord_3_18_3": [
+    [
+      "祖艾德",
+      "Zuad"
+    ]
+  ],
+  "lord_3_18": [
+    [
+      "塔拉斯",
+      "Talas"
+    ]
+  ],
+  "lord_3_19_1": [
+    [
+      "萨勒玛",
+      "Salma"
+    ]
+  ],
+  "lord_3_19_2": [
+    [
+      "祖莱卡",
+      "Zulaika"
+    ]
+  ],
+  "lord_3_19_3": [
+    [
+      "苏哈娜",
+      "Sulhana"
+    ]
+  ],
+  "lord_3_19": [
+    [
+      "奥赞",
+      "Awdhan"
+    ],
+    [
+      "达苟士·曼伍笛",
+      "Dagos_Manwoody"
+    ]
+  ],
+  "lord_3_1": [
+    [
+      "温吉德",
+      "Unqid"
+    ],
+    [
+      "道朗·马泰尔",
+      "Doran_Martell"
+    ]
+  ],
+  "lord_3_20_1": [
+    [
+      "朱蒂拉",
+      "Judira"
+    ]
+  ],
+  "lord_3_20": [
+    [
+      "喀里斯",
+      "Karith"
+    ]
+  ],
+  "lord_3_21_1": [
+    [
+      "阿希莎",
+      "Ashisa"
+    ]
+  ],
+  "lord_3_21": [
+    [
+      "乌海",
+      "Ukhai"
+    ]
+  ],
+  "lord_3_22_1": [
+    [
+      "亚米娜",
+      "Yamina"
+    ]
+  ],
+  "lord_3_22_2": [
+    [
+      "苏娜",
+      "Suna"
+    ]
+  ],
+  "lord_3_22": [
+    [
+      "哈珊",
+      "Hashan"
+    ]
+  ],
+  "lord_3_23_1": [
+    [
+      "苏凯娜",
+      "Sukayna"
+    ]
+  ],
+  "lord_3_23": [
+    [
+      "卡欣",
+      "Qahin"
+    ]
+  ],
+  "lord_3_2": [
+    [
+      "金达",
+      "Jinda"
+    ],
+    [
+      "特蕾妮·沙德",
+      "Tyene_Sand"
+    ]
+  ],
+  "lord_3_3_1": [
+    [
+      "塔里克",
+      "Tariq"
+    ]
+  ],
+  "lord_3_3": [
+    [
+      "阿德拉姆",
+      "Adram"
+    ]
+  ],
+  "lord_3_4": [
+    [
+      "马拉",
+      "Maraa"
+    ]
+  ],
+  "lord_3_51": [
+    [
+      "哈坎",
+      "Haqan"
+    ]
+  ],
+  "lord_3_5": [
+    [
+      "泰伊斯",
+      "Tais"
+    ],
+    [
+      "伊利里欧·摩帕提斯",
+      "Illyrio_Mopatis"
+    ]
+  ],
+  "lord_3_6": [
+    [
+      "鲁玛",
+      "Ruma"
+    ]
+  ],
+  "lord_3_7": [
+    [
+      "济尤勒",
+      "Dhiyul"
+    ],
+    [
+      "阿利欧·何塔",
+      "Areo_Hotah"
+    ]
+  ],
+  "lord_3_8": [
+    [
+      "阿达斯",
+      "Addas"
+    ]
+  ],
+  "lord_3_9": [
+    [
+      "乌赛伊尔",
+      "Usair"
+    ]
+  ],
+  "lord_4_10": [
+    [
+      "厄吕斯",
+      "Elys"
+    ],
+    [
+      "弥赛菈·拜拉席恩",
+      "Myrcella_Baratheon"
+    ]
+  ],
+  "lord_4_11": [
+    [
+      "莉耶娜",
+      "Liena"
+    ],
+    [
+      "狄肯·塔利",
+      "Dickon_Tarly"
+    ]
+  ],
+  "lord_4_121": [
+    [
+      "拉桑",
+      "Lasand"
+    ],
+    [
+      "罗宾·艾林",
+      "Robin_Arryn"
+    ]
+  ],
+  "lord_4_12": [
+    [
+      "茜尔文",
+      "Silvind"
+    ]
+  ],
+  "lord_4_13": [
+    [
+      "罗蒙德",
+      "Romund"
+    ],
+    [
+      "凯冯·兰尼斯特",
+      "Kevan_Lannister"
+    ]
+  ],
+  "lord_4_141": [
+    [
+      "阿莫孔",
+      "Amorcon"
+    ],
+    [
+      "威廉·兰尼斯特",
+      "Willem_Lannister"
+    ]
+  ],
+  "lord_4_14": [
+    [
+      "莫尔孔",
+      "Morcon"
+    ],
+    [
+      "蓝赛尔·兰尼斯特",
+      "Lancel_Lannister"
+    ]
+  ],
+  "lord_4_15": [
+    [
+      "埃尔杜兰",
+      "Erdurand"
+    ],
+    [
+      "史戴佛·兰尼斯特",
+      "Stafford_Lannister"
+    ]
+  ],
+  "lord_4_16_1": [
+    [
+      "米特拉",
+      "Mitela"
+    ],
+    [
+      "简妮·佛索威",
+      "Janna_Fossoway"
+    ]
+  ],
+  "lord_4_16": [
+    [
+      "因加泰尔",
+      "Ingalther"
+    ],
+    [
+      "贝勒·海塔尔",
+      "Baelor_Hightower"
+    ]
+  ],
+  "lord_4_17": [
+    [
+      "埃尔蓓",
+      "Elbet"
+    ]
+  ],
+  "lord_4_181": [
+    [
+      "阿尔塔蒙德",
+      "Arthamund"
+    ],
+    [
+      "冈梭尔·海塔尔",
+      "Gunthor_Hightower"
+    ]
+  ],
+  "lord_4_18": [
+    [
+      "阿马尔甘",
+      "Amalgun"
+    ],
+    [
+      "加尔斯·海塔尔",
+      "Garth_Hightower"
+    ]
+  ],
+  "lord_4_19": [
+    [
+      "阿瑟拉",
+      "Asela"
+    ]
+  ],
+  "lord_4_1": [
+    [
+      "德泰尔",
+      "Derthert"
+    ],
+    [
+      "泰温·兰尼斯特",
+      "Tywin_Lannister"
+    ]
+  ],
+  "lord_4_20_1": [
+    [
+      "因格特鲁德",
+      "Ingeltrud"
+    ]
+  ],
+  "lord_4_20": [
+    [
+      "瓦尔蒙德",
+      "Varmund"
+    ]
+  ],
+  "lord_4_21": [
+    [
+      "奥斯皮尔",
+      "Ospir"
+    ],
+    [
+      "格雷果·克里冈",
+      "Gregor_Clegane"
+    ]
+  ],
+  "lord_4_22_1": [
+    [
+      "阿尔维特",
+      "Alwith"
+    ]
+  ],
+  "lord_4_22": [
+    [
+      "塞尔维克",
+      "Servic"
+    ],
+    [
+      "里奥·莱佛德",
+      "Leo_Lefford"
+    ]
+  ],
+  "lord_4_23_1": [
+    [
+      "里谢尔达",
+      "Richelda"
+    ]
+  ],
+  "lord_4_23_2": [
+    [
+      "安丝特鲁达",
+      "Anstruda"
+    ]
+  ],
+  "lord_4_23_3": [
+    [
+      "埃莱迪兰",
+      "Eleduran"
+    ]
+  ],
+  "lord_4_23": [
+    [
+      "贝尔吉尔",
+      "Belgir"
+    ],
+    [
+      "特伦斯·肯宁",
+      "Terrence_Kenning"
+    ]
+  ],
+  "lord_4_24_1": [
+    [
+      "阿达特鲁德",
+      "Adaltrud"
+    ]
+  ],
+  "lord_4_24_2": [
+    [
+      "古东赫尔达",
+      "Gudonhelda"
+    ]
+  ],
+  "lord_4_24_3": [
+    [
+      "因贡德",
+      "Ingunde"
+    ]
+  ],
+  "lord_4_24": [
+    [
+      "赫卡尔",
+      "Hecard"
+    ],
+    [
+      "哈瑞斯·史威佛",
+      "Harys_Swyft"
+    ]
+  ],
+  "lord_4_25_1": [
+    [
+      "贝特莉安娜",
+      "Bertliana"
+    ],
+    [
+      "波利佛",
+      "Polliver"
+    ]
+  ],
+  "lord_4_25": [
+    [
+      "卢康",
+      "Lucand"
+    ],
+    [
+      "亚摩利·洛奇",
+      "Amory_Lorch"
+    ]
+  ],
+  "lord_4_26_1": [
+    [
+      "赖因加达",
+      "Reingarda"
+    ]
+  ],
+  "lord_4_26": [
+    [
+      "佩里克",
+      "Peric"
+    ],
+    [
+      "史蒂芬·史威佛",
+      "Steffon_Swyft"
+    ]
+  ],
+  "lord_4_27_1": [
+    [
+      "利特加蒂斯",
+      "Lietgardis"
+    ],
+    [
+      "盖儿·克雷赫",
+      "Gail_Crakehall"
+    ]
+  ],
+  "lord_4_27": [
+    [
+      "瓦尔坦",
+      "Vartin"
+    ],
+    [
+      "罗兰·克雷赫",
+      "Roland_Crakehall"
+    ]
+  ],
+  "lord_4_28_1": [
+    [
+      "阿达琳迪斯",
+      "Adalindis"
+    ]
+  ],
+  "lord_4_28_2": [
+    [
+      "莫里亚娜",
+      "Mauriana"
+    ]
+  ],
+  "lord_4_28": [
+    [
+      "埃卡朗",
+      "Ecarand"
+    ]
+  ],
+  "lord_4_2": [
+    [
+      "菲利诺拉",
+      "Philenora"
+    ],
+    [
+      "瑟曦·兰尼斯特",
+      "Cersei_Lannister"
+    ]
+  ],
+  "lord_4_3_1": [
+    [
+      "梅根赫尔达",
+      "Megenhelda"
+    ],
+    [
+      "塔拉·塔利",
+      "Talla_Tarly"
+    ]
+  ],
+  "lord_4_3": [
+    [
+      "阿尔德里克",
+      "Aldric"
+    ]
+  ],
+  "lord_4_4": [
+    [
+      "埃蒂尔德",
+      "Elthild"
+    ]
+  ],
+  "lord_4_5": [
+    [
+      "恩泰里",
+      "Unthery"
+    ]
+  ],
+  "lord_4_6_1": [
+    [
+      "奥多芙蕾德",
+      "Odofled"
+    ]
+  ],
+  "lord_4_6": [
+    [
+      "卡拉蒂尔德",
+      "Calatild"
+    ],
+    [
+      "莱莎·艾林",
+      "Lysa_Arryn"
+    ]
+  ],
+  "lord_4_7": [
+    [
+      "阿拉里",
+      "Alary"
+    ],
+    [
+      "托曼·拜拉席恩",
+      "Tommen_Baratheon"
+    ]
+  ],
+  "lord_4_8": [
+    [
+      "费恩哈尔",
+      "Furnhard"
+    ]
+  ],
+  "lord_4_9": [
+    [
+      "托蒙德",
+      "Thomund"
+    ],
+    [
+      "瓦狄斯·伊根",
+      "Vardis_Egen"
+    ]
+  ],
+  "lord_5_10": [
+    [
+      "科林",
+      "Corein"
+    ]
+  ],
+  "lord_5_11": [
+    [
+      "阿琳妮丝",
+      "Alynneth"
+    ]
+  ],
+  "lord_5_12": [
+    [
+      "维苏茵",
+      "Wythuin"
+    ]
+  ],
+  "lord_5_131": [
+    [
+      "拉奇",
+      "Rath"
+    ]
+  ],
+  "lord_5_13": [
+    [
+      "明瑟",
+      "Muinser"
+    ]
+  ],
+  "lord_5_14_1": [
+    [
+      "埃比尔",
+      "Eabyr"
+    ],
+    [
+      "玛龙·曼德勒",
+      "Marlon_Manderly"
+    ]
+  ],
+  "lord_5_14": [
+    [
+      "卢伊汉",
+      "Luichan"
+    ],
+    [
+      "威曼·曼德勒",
+      "Wyman_Manderly"
+    ]
+  ],
+  "lord_5_15_1": [
+    [
+      "弗洛赖德",
+      "Floraidh"
+    ]
+  ],
+  "lord_5_15_2": [
+    [
+      "贝特林",
+      "Beitrin"
+    ]
+  ],
+  "lord_5_15": [
+    [
+      "普林多尔",
+      "Pryndor"
+    ],
+    [
+      "盖伯特·葛洛佛",
+      "Galbart_Glover"
+    ]
+  ],
+  "lord_5_16_1": [
+    [
+      "莉亚欣",
+      "Liasin"
+    ]
+  ],
+  "lord_5_16": [
+    [
+      "埃隆",
+      "Aeron"
+    ],
+    [
+      "大琼恩安柏",
+      "Greatjon_Umber"
+    ]
+  ],
+  "lord_5_17_1": [
+    [
+      "布丽甘",
+      "Brighan"
+    ],
+    [
+      "派普",
+      "Pyp"
+    ]
+  ],
+  "lord_5_17": [
+    [
+      "阿拉德维尔",
+      "Aradwyr"
+    ],
+    [
+      "琼恩·雪诺",
+      "Jon_Snow"
+    ]
+  ],
+  "lord_5_18_1": [
+    [
+      "肖娜格",
+      "Seonag"
+    ]
+  ],
+  "lord_5_18": [
+    [
+      "布兰诺克",
+      "Branoc"
+    ],
+    [
+      "罗贝特·葛洛佛",
+      "Robett_Glover"
+    ]
+  ],
+  "lord_5_19": [
+    [
+      "费纳甘",
+      "Fenagan"
+    ],
+    [
+      "威里斯·曼德勒",
+      "Wylis_Manderly"
+    ]
+  ],
+  "lord_5_1": [
+    [
+      "卡拉多格",
+      "Caladog"
+    ],
+    [
+      "罗柏·史塔克",
+      "Robb_Stark"
+    ]
+  ],
+  "lord_5_20": [
+    [
+      "夏拉穆斯",
+      "Siaramus"
+    ],
+    [
+      "小琼恩·安柏",
+      "Smalljon_Umber"
+    ]
+  ],
+  "lord_5_21_1": [
+    [
+      "贝阿塔格",
+      "Beathag"
+    ],
+    [
+      "葛兰",
+      "Grenn"
+    ]
+  ],
+  "lord_5_21_2": [
+    [
+      "蒂尔谢",
+      "Taorse"
+    ]
+  ],
+  "lord_5_21": [
+    [
+      "卡费德",
+      "Carfyd"
+    ],
+    [
+      "艾迪森·托勒特",
+      "Eddison_Tollett"
+    ]
+  ],
+  "lord_5_22": [
+    [
+      "费亚拉德",
+      "Fiarad"
+    ],
+    [
+      "文德尔·曼德勒",
+      "Wendel_Manderly"
+    ]
+  ],
+  "lord_5_3_1": [
+    [
+      "拉瑙恩",
+      "Ranaon"
+    ]
+  ],
+  "lord_5_3_2": [
+    [
+      "拉道古尔",
+      "Ladogual"
+    ]
+  ],
+  "lord_5_3": [
+    [
+      "埃尔贡",
+      "Ergeon"
+    ],
+    [
+      "杰奥·莫尔蒙",
+      "Jeor_Mormont"
+    ]
+  ],
+  "lord_5_4": [
+    [
+      "妮温",
+      "Nywin"
+    ]
+  ],
+  "lord_5_5_1": [
+    [
+      "埃莉德",
+      "Eilidh"
+    ]
+  ],
+  "lord_5_5": [
+    [
+      "梅利迪尔",
+      "Melidir"
+    ],
+    [
+      "霍兰·黎德",
+      "Howland_Reed"
+    ]
+  ],
+  "lord_5_6": [
+    [
+      "阿尔凯娅",
+      "Alcaea"
+    ]
+  ],
+  "lord_5_7": [
+    [
+      "门格斯",
+      "Mengus"
+    ],
+    [
+      "布兰·史塔克",
+      "Bran_Stark"
+    ]
+  ],
+  "lord_5_8": [
+    [
+      "塞因",
+      "Sein"
+    ]
+  ],
+  "lord_5_91": [
+    [
+      "特甘",
+      "Tegan"
+    ],
+    [
+      "玖健·黎德",
+      "Jojen_Reed"
+    ]
+  ],
+  "lord_5_9": [
+    [
+      "库尔哈恩",
+      "Culharn"
+    ],
+    [
+      "梅拉·黎德",
+      "Meera_Reed"
+    ]
+  ],
+  "lord_6_101": [
+    [
+      "博剌特",
+      "Bolat"
+    ]
+  ],
+  "lord_6_10": [
+    [
+      "阿丽真",
+      "Alijin"
+    ]
+  ],
+  "lord_6_11": [
+    [
+      "雅那",
+      "Yana"
+    ]
+  ],
+  "lord_6_12": [
+    [
+      "阿巴该",
+      "Abagai"
+    ]
+  ],
+  "lord_6_13": [
+    [
+      "孛儿图",
+      "Bortu"
+    ]
+  ],
+  "lord_6_15_1": [
+    [
+      "豁力真",
+      "Khorijin"
+    ]
+  ],
+  "lord_6_15_2": [
+    [
+      "辞成",
+      "Sechen"
+    ]
+  ],
+  "lord_6_15": [
+    [
+      "斡剌古儿",
+      "Oragur"
+    ]
+  ],
+  "lord_6_16_1": [
+    [
+      "察木步亦",
+      "Chambui"
+    ]
+  ],
+  "lord_6_16_2": [
+    [
+      "兀那根",
+      "Unagen"
+    ]
+  ],
+  "lord_6_16": [
+    [
+      "呼鲁那格",
+      "Hurunag"
+    ]
+  ],
+  "lord_6_17_1": [
+    [
+      "额儿格捏",
+      "Ergene"
+    ]
+  ],
+  "lord_6_17": [
+    [
+      "阿克鲁木",
+      "Akrum"
+    ]
+  ],
+  "lord_6_18_1": [
+    [
+      "惕伦",
+      "Tilun"
+    ]
+  ],
+  "lord_6_18_2": [
+    [
+      "察衮",
+      "Chagun"
+    ]
+  ],
+  "lord_6_18": [
+    [
+      "亦剌塔儿",
+      "Ilatar"
+    ]
+  ],
+  "lord_6_19_1": [
+    [
+      "锁合台",
+      "Sokhatai"
+    ]
+  ],
+  "lord_6_19_2": [
+    [
+      "廓儿帖",
+      "Korte"
+    ]
+  ],
+  "lord_6_19": [
+    [
+      "合努占",
+      "Kanujan"
+    ]
+  ],
+  "lord_6_1": [
+    [
+      "蒙楚格",
+      "Monchug"
+    ]
+  ],
+  "lord_6_20_1": [
+    [
+      "吉固",
+      "Jigur"
+    ]
+  ],
+  "lord_6_20": [
+    [
+      "达思鲁儿",
+      "Taslur"
+    ]
+  ],
+  "lord_6_21_1": [
+    [
+      "额撒彻",
+      "Esachei"
+    ]
+  ],
+  "lord_6_21": [
+    [
+      "乌勒曼",
+      "Ulman"
+    ]
+  ],
+  "lord_6_22_1": [
+    [
+      "额色楞",
+      "Eselen"
+    ]
+  ],
+  "lord_6_22": [
+    [
+      "阿察库",
+      "Achaku"
+    ]
+  ],
+  "lord_6_23": [
+    [
+      "斤帖格",
+      "Kinteg"
+    ]
+  ],
+  "lord_6_24": [
+    [
+      "墨恢儿",
+      "Mehir"
+    ]
+  ],
+  "lord_6_2": [
+    [
+      "阿那特",
+      "Anat"
+    ]
+  ],
+  "lord_6_3": [
+    [
+      "拔该",
+      "Bagai"
+    ]
+  ],
+  "lord_6_4": [
+    [
+      "墨速宜",
+      "Mesui"
+    ],
+    [
+      "达里奥·纳哈里斯",
+      "Daario_Naharis"
+    ]
+  ],
+  "lord_6_51": [
+    [
+      "喀答",
+      "Khada"
+    ]
+  ],
+  "lord_6_5": [
+    [
+      "突剌格",
+      "Tulag"
+    ]
+  ],
+  "lord_6_6": [
+    [
+      "速兰",
+      "Suran"
+    ]
+  ],
+  "lord_6_7": [
+    [
+      "察罕",
+      "Chaghan"
+    ]
+  ],
+  "lord_6_81": [
+    [
+      "纳延泰",
+      "Nayantai"
+    ]
+  ],
+  "lord_6_8": [
+    [
+      "额速儿",
+      "Esur"
+    ]
+  ],
+  "lord_6_9": [
+    [
+      "帖蒙",
+      "Temun"
+    ]
+  ],
+  "lord_7_13_1": [
+    [
+      "贡亚德里",
+      "Gunjadrid"
+    ]
+  ],
+  "lord_7_13_2": [
+    [
+      "伊芬亚",
+      "Yfinja"
+    ]
+  ],
+  "lord_7_13_4": [
+    [
+      "瓦尔米阿",
+      "Valmua"
+    ]
+  ],
+  "lord_7_13": [
+    [
+      "奥尔维",
+      "Orvi"
+    ]
+  ],
+  "lord_7_14_1": [
+    [
+      "于叙夫",
+      "Gulsyf"
+    ]
+  ],
+  "lord_7_14_2": [
+    [
+      "阿尔里卡",
+      "Alrika"
+    ]
+  ],
+  "lord_7_14": [
+    [
+      "格恩莱于提",
+      "Gornlautir"
+    ]
+  ],
+  "lord_7_15_1": [
+    [
+      "托夫沙",
+      "Tovsja"
+    ]
+  ],
+  "lord_7_15_2": [
+    [
+      "于德林娅",
+      "Gudrinja"
+    ]
+  ],
+  "lord_7_15_4": [
+    [
+      "奥托盖",
+      "Orthogar"
+    ]
+  ],
+  "lord_7_15_5": [
+    [
+      "莉莲",
+      "Liljan"
+    ]
+  ],
+  "lord_7_15": [
+    [
+      "温约特",
+      "Unjort"
+    ]
+  ],
+  "lord_7_16_1": [
+    [
+      "阿尔莎",
+      "Alsa"
+    ]
+  ],
+  "lord_7_16": [
+    [
+      "凯于塔斯",
+      "Kautas"
+    ]
+  ],
+  "lord_7_17_1": [
+    [
+      "斯卡恰",
+      "Skathja"
+    ]
+  ],
+  "lord_7_17": [
+    [
+      "赫尔盖",
+      "Horgar"
+    ]
+  ],
+  "lord_7_18_1": [
+    [
+      "维塔叙拉",
+      "Vitharsura"
+    ]
+  ],
+  "lord_7_18": [
+    [
+      "加夫尼尔",
+      "Gafnir"
+    ]
+  ],
+  "lord_7_19": [
+    [
+      "弥林",
+      "Murin"
+    ]
+  ],
+  "lord_7_1_1": [
+    [
+      "姆亚尔里克",
+      "Mjalrik"
+    ]
+  ],
+  "lord_7_1_2": [
+    [
+      "西敦里克",
+      "Sidunric"
+    ]
+  ],
+  "lord_7_1_3": [
+    [
+      "提尔西夫",
+      "Thyrsif"
+    ]
+  ],
+  "lord_7_1": [
+    [
+      "哈尔达尔",
+      "Haldarr"
+    ]
+  ],
+  "lord_7_20_1": [
+    [
+      "瓦娜",
+      "Hvana"
+    ]
+  ],
+  "lord_7_20": [
+    [
+      "托韦里克",
+      "Toverik"
+    ]
+  ],
+  "lord_7_21_1": [
+    [
+      "比约拉布隆姆",
+      "Bjolablum"
+    ]
+  ],
+  "lord_7_21": [
+    [
+      "斯沃尼",
+      "Svorni"
+    ]
+  ],
+  "lord_7_22_1": [
+    [
+      "赫拉尔萨",
+      "Hralsa"
+    ]
+  ],
+  "lord_7_22": [
+    [
+      "比约伊尔",
+      "Bjorgir"
+    ]
+  ],
+  "lord_7_23_1": [
+    [
+      "厄尔维林亚",
+      "Ulvirinja"
+    ]
+  ],
+  "lord_7_23_2": [
+    [
+      "奥尔薇拉",
+      "Olvira"
+    ]
+  ],
+  "lord_7_23": [
+    [
+      "卡尔莱克",
+      "Karlek"
+    ]
+  ],
+  "lord_7_24_1": [
+    [
+      "维斯特伦",
+      "Vystrun"
+    ]
+  ],
+  "lord_7_24": [
+    [
+      "伊格瓦尔",
+      "Yngvar"
+    ]
+  ],
+  "lord_7_25_1": [
+    [
+      "德里瓦娜",
+      "Drivana"
+    ]
+  ],
+  "lord_7_25": [
+    [
+      "达格维",
+      "Dagvi"
+    ]
+  ],
+  "lord_7_26": [
+    [
+      "奥特法",
+      "Otfar"
+    ]
+  ],
+  "lord_7_27": [
+    [
+      "安勒",
+      "Anle"
+    ]
+  ],
+  "lord_7_28": [
+    [
+      "特里文",
+      "Triven"
+    ]
+  ],
+  "lord_7_2": [
+    [
+      "雅明娅",
+      "Jarminja"
+    ]
+  ],
+  "lord_7_3_1": [
+    [
+      "盖于特加",
+      "Gautgar"
+    ]
+  ],
+  "lord_7_3_2": [
+    [
+      "伊里德伦",
+      "Iridrun"
+    ]
+  ],
+  "lord_7_3_3": [
+    [
+      "海姆希尔",
+      "Heimkir"
+    ]
+  ],
+  "lord_7_3": [
+    [
+      "圭卡",
+      "Grykka"
+    ]
+  ],
+  "lord_7_4_1": [
+    [
+      "迪法",
+      "Dyfa"
+    ]
+  ],
+  "lord_7_4": [
+    [
+      "阿格林娅",
+      "Agrynja"
+    ]
+  ],
+  "lord_7_5_1": [
+    [
+      "谢翁",
+      "Kjarvon"
+    ]
+  ],
+  "lord_7_5_2": [
+    [
+      "埃尔菲亚",
+      "Aelfeyja"
+    ]
+  ],
+  "lord_7_5_3": [
+    [
+      "恩亚斯尼",
+      "Njasnir"
+    ]
+  ],
+  "lord_7_5": [
+    [
+      "阿丝葛莎",
+      "Asgotha"
+    ]
+  ],
+  "lord_7_6": [
+    [
+      "维蒂尔",
+      "Vulthir"
+    ]
+  ],
+  "lord_A9_c": [
+    [
+      "济拉",
+      "Dhila"
+    ]
+  ],
+  "lord_A9_l": [
+    [
+      "阿卡尔",
+      "Aqar"
+    ]
+  ],
+  "lord_A9_s": [
+    [
+      "锡卡",
+      "Thiqa"
+    ]
+  ],
+  "lord_A9_u": [
+    [
+      "卡班",
+      "Qaban"
+    ]
+  ],
+  "lord_B8_c": [
+    [
+      "古兰",
+      "Guaran"
+    ],
+    [
+      "莱安娜·莫尔蒙",
+      "Lyanna_Mormont"
+    ]
+  ],
+  "lord_B8_l": [
+    [
+      "毛蕾阿斯",
+      "Maireas"
+    ],
+    [
+      "梅姬·莫尔蒙",
+      "Maege_Mormont"
+    ]
+  ],
+  "lord_B8_s": [
+    [
+      "罗达拉克",
+      "Rodarac"
+    ]
+  ],
+  "lord_K8_u": [
+    [
+      "孛容察儿",
+      "Boronchar"
+    ]
+  ],
+  "lord_K9_c1": [
+    [
+      "阿勒涂",
+      "Altu"
+    ]
+  ],
+  "lord_K9_c2": [
+    [
+      "墨剌",
+      "Mela"
+    ]
+  ],
+  "lord_K9_l": [
+    [
+      "古速坎",
+      "Gusukan"
+    ]
+  ],
+  "lord_K9_s": [
+    [
+      "辞温",
+      "Sevin"
+    ]
+  ],
+  "lord_NE7_u": [
+    [
+      "涅斯堤斯",
+      "Nesthys"
+    ],
+    [
+      "派崔克·梅利斯特",
+      "Patrek_Mallister"
+    ]
+  ],
+  "lord_NE8_c1": [
+    [
+      "忒阿维索斯",
+      "Theavisos"
+    ],
+    [
+      "布林登·布莱伍德",
+      "Brynden_Blackwood"
+    ]
+  ],
+  "lord_NE8_l": [
+    [
+      "马利齐俄斯",
+      "Maritzios"
+    ],
+    [
+      "泰陀斯·布莱伍德",
+      "Tytos_Blackwood"
+    ]
+  ],
+  "lord_NE8_s": [
+    [
+      "普拉敦提娅",
+      "Pradentia"
+    ]
+  ],
+  "lord_NE9_d": [
+    [
+      "瓦弥那",
+      "Vamina"
+    ]
+  ],
+  "lord_NE9_l": [
+    [
+      "波法利奥斯",
+      "Porphalios"
+    ]
+  ],
+  "lord_NE9_s": [
+    [
+      "埃索斯",
+      "Aesos"
+    ]
+  ],
+  "lord_S8_u": [
+    [
+      "加卢克",
+      "Galyk"
+    ]
+  ],
+  "lord_S9_c": [
+    [
+      "福里姆",
+      "Forim"
+    ]
+  ],
+  "lord_S9_l": [
+    [
+      "罗兰",
+      "Rolan"
+    ],
+    [
+      "巴利斯坦·赛尔弥",
+      "Barristan_Selmy"
+    ]
+  ],
+  "lord_S9_m": [
+    [
+      "达希拉",
+      "Dakhila"
+    ]
+  ],
+  "lord_S9_u": [
+    [
+      "恰斯季米尔",
+      "Chastimir"
+    ]
+  ],
+  "lord_SE8_c": [
+    [
+      "伊塔里娅",
+      "Itaria"
+    ]
+  ],
+  "lord_SE9_c1": [
+    [
+      "帕加里俄斯",
+      "Pagarios"
+    ]
+  ],
+  "lord_SE9_c2": [
+    [
+      "狄亚丝卡",
+      "Diasca"
+    ]
+  ],
+  "lord_SE9_l": [
+    [
+      "萨特洛斯",
+      "Satros"
+    ]
+  ],
+  "lord_SE9_s": [
+    [
+      "伊翁娜",
+      "Jonna"
+    ]
+  ],
+  "lord_V11_c1": [
+    [
+      "埃朗达拉",
+      "Elendara"
+    ],
+    [
+      "黛丝梅拉·雷德温",
+      "Desmera_Redwyne"
+    ]
+  ],
+  "lord_V11_c2": [
+    [
+      "达甘尼克",
+      "Dagunic"
+    ],
+    [
+      "霍柏·雷德温",
+      "Hobber_Redwyne"
+    ]
+  ],
+  "lord_V11_l": [
+    [
+      "伯里康",
+      "Berican"
+    ],
+    [
+      "派克斯特·雷德温",
+      "Paxter_Redwyne"
+    ]
+  ],
+  "lord_V11_u": [
+    [
+      "沃勒里克",
+      "Voleric"
+    ],
+    [
+      "霍拉斯·雷德温",
+      "Horas_Redwyne"
+    ]
+  ],
+  "lord_V9_u": [
+    [
+      "于兰迪夫",
+      "Urundulf"
+    ]
+  ],
+  "lord_WE8_c": [
+    [
+      "伊克拉提娅",
+      "Icratia"
+    ]
+  ],
+  "lord_WE8_u": [
+    [
+      "瓦密洛斯",
+      "Varmyros"
+    ]
+  ],
+  "lord_WE9_l": [
+    [
+      "温坎提俄斯",
+      "Vincantios"
+    ],
+    [
+      "戴佛斯·席渥斯",
+      "Davos_Seaworth"
+    ]
+  ],
+  "lord_WE9_u2": [
+    [
+      "托耳瓦西斯",
+      "Torvasis"
+    ]
+  ],
+  "lord_WE9_u": [
+    [
+      "欧蕾萨",
+      "Euresa"
+    ],
+    [
+      "玛瑞亚·席渥斯",
+      "Marya_Seaworth"
+    ]
+  ],
+  "anguille": [
+    [
+      "托贝尔·德·拉奎尔",
+      "Taubert_de_l_Anguille"
+    ]
+  ],
+  "aquitaine": [
+    [
+      "阿尔芒·德·阿奎坦",
+      "Armand_d_Aquitaine"
+    ]
+  ],
+  "artois": [
+    [
+      "希尔弗鲁瓦·德·阿图瓦",
+      "Chilfroy_d_Artois"
+    ]
+  ],
+  "athel_loren": [
+    [
+      "奥莱恩",
+      "Orion"
+    ]
+  ],
+  "averland": [
+    [
+      "马里乌斯·莱特多夫",
+      "Marius_Leitdorf"
+    ]
+  ],
+  "bad_axes": [
+    [
+      "碎骨·钢颚",
+      "Bonechewer_Ironjaw"
+    ]
+  ],
+  "bastonne": [
+    [
+      "波希蒙德·屠兽者",
+      "Bohemond_Beastslayer"
+    ]
+  ],
+  "black_pit": [
+    [
+      "多足先知",
+      "Manylegs_Prophet"
+    ]
+  ],
+  "black_sunz": [
+    [
+      "黑日·戈拉克",
+      "Gorlak_Blacksun"
+    ]
+  ],
+  "blooddragons": [
+    [
+      "瓦拉奇_哈肯",
+      "Walach_Harkon"
+    ]
+  ],
+  "bloody_spearz": [
+    [
+      "格纳什拉克",
+      "Gnashrak"
+    ]
+  ],
+  "bordeleaux": [
+    [
+      "阿尔贝里克·德·波尔德罗",
+      "Alberic_de_Bordeleaux"
+    ]
+  ],
+  "brasskeep": [
+    [
+      "黄铜堡的厌恶者",
+      "Abomination_of_Brass_Keep"
+    ]
+  ],
+  "brionne": [
+    [
+      "西奥多里克·德·布里翁",
+      "Theodoric_de_Brionne"
+    ]
+  ],
+  "carcassonne": [
+    [
+      "于埃巴尔德·德·卡尔卡松",
+      "Huebald_de_Carcassonne"
+    ]
+  ],
+  "couronne": [
+    [
+      "劳恩·列奥康沃尔",
+      "Louen_Leoncoeur"
+    ]
+  ],
+  "crooked_eye": [
+    [
+      "独眼·弯牙",
+      "One_Eye_Crooked_Tooth"
+    ]
+  ],
+  "deff_grindaz": [
+    [
+      "碎脊·钢拳",
+      "Spinebreaker_Ironfist"
+    ]
+  ],
+  "gisoreux": [
+    [
+      "哈根·德·吉索鲁",
+      "Hagen_de_Gisoreux"
+    ]
+  ],
+  "hochland": [
+    [
+      "阿尔德布兰德·卢登霍夫",
+      "Aldebrand_Ludenhof"
+    ]
+  ],
+  "iron_tribe": [
+    [
+      "铁颚·钢腹",
+      "Ironjaw_Steelbelly"
+    ]
+  ],
+  "karak_angazhar": [
+    [
+      "布拉加里克",
+      "Bragarik"
+    ]
+  ],
+  "karak_azgaraz": [
+    [
+      "图林加_碎兽者",
+      "Thuringar_Beastbreaker"
+    ]
+  ],
+  "karak_eksfilaz": [
+    [
+      "斯卡夫_红胡子",
+      "Skarf_Redbeard"
+    ]
+  ],
+  "karak_gantuk": [
+    [
+      "斯卡格_锤拳",
+      "Skagg_Hammerfist"
+    ]
+  ],
+  "karak_hirn": [
+    [
+      "奥里克_拉努夫森",
+      "Alrik_Ranulfsson"
+    ]
+  ],
+  "karak_izor": [
+    [
+      "卡兹兰_凛眉",
+      "Kazran_Grimbrow"
+    ]
+  ],
+  "karak_kadrin": [
+    [
+      "乌格里姆_铁拳",
+      "Ungrim_Ironfist"
+    ]
+  ],
+  "karak_kaferkammaz": [
+    [
+      "杜拉克_花岗眉",
+      "Durak_Granitebrow"
+    ]
+  ],
+  "karak_norn": [
+    [
+      "布罗克_铁镐",
+      "Brokk_Ironpick"
+    ]
+  ],
+  "karak_zhufbar": [
+    [
+      "莫格里姆_铁炉",
+      "Morgrim_Ironforge"
+    ]
+  ],
+  "karak_ziflin": [
+    [
+      "罗雷克_花岗手",
+      "Rorek_Granitehand"
+    ]
+  ],
+  "laurelorn": [
+    [
+      "玛丽希斯",
+      "Marrisith"
+    ]
+  ],
+  "lord_bretonnia_1": [
+    [
+      "劳恩",
+      "Louen_Leoncoeur"
+    ]
+  ],
+  "lord_chaos_1": [
+    [
+      "艾查恩",
+      "Archaon_the_Everchosen"
+    ]
+  ],
+  "lord_dwarfs_1": [
+    [
+      "索尔葛林",
+      "Thorgrim_Grudgebearer"
+    ]
+  ],
+  "lord_empire_1": [
+    [
+      "卡尔弗兰兹",
+      "Karl_Franz"
+    ]
+  ],
+  "lord_greenskins_1": [
+    [
+      "格里姆格",
+      "Grimgor_Ironhide"
+    ]
+  ],
+  "lord_vampire_1": [
+    [
+      "曼弗雷德",
+      "Mannfred_von_Carstein"
+    ]
+  ],
+  "lord_wood_elves_1": [
+    [
+      "奥莱恩",
+      "Orion"
+    ]
+  ],
+  "lyonesse": [
+    [
+      "阿达尔哈德·德·里昂尼斯",
+      "Adalhard_de_Lyonesse"
+    ]
+  ],
+  "massif_choppas": [
+    [
+      "大劈·裂颅",
+      "Big_Choppa_Skullcleaver"
+    ]
+  ],
+  "middenland": [
+    [
+      "鲍里斯·托德布林格",
+      "Boris_Todbringer"
+    ]
+  ],
+  "montfort": [
+    [
+      "弗尔卡德·德·蒙福特",
+      "Folcard_de_Montfort"
+    ]
+  ],
+  "moot": [
+    [
+      "希斯姆·斯图特哈特",
+      "Hisme_Stoutheart"
+    ]
+  ],
+  "mousillon": [
+    [
+      "马洛博德",
+      "Mallobaude"
+    ]
+  ],
+  "neck_snappers": [
+    [
+      "莫格鲁姆·断颈者",
+      "Morglum_Necksnapper"
+    ]
+  ],
+  "necrarchs": [
+    [
+      "沃索兰",
+      "Wsoran"
+    ]
+  ],
+  "nordland": [
+    [
+      "西奥多里克·高瑟",
+      "Theoderic_Gausser"
+    ]
+  ],
+  "ostermark": [
+    [
+      "沃尔夫拉姆·赫特维格",
+      "Wolfram_Hertwig"
+    ]
+  ],
+  "ostland": [
+    [
+      "瓦尔米尔·冯·劳科夫",
+      "Valmir_von_Raukov"
+    ]
+  ],
+  "parravon": [
+    [
+      "卡西翁·德·帕拉翁",
+      "Cassyon_de_Parravon"
+    ]
+  ],
+  "quenelles": [
+    [
+      "坦克雷德二世·德·奎内勒斯",
+      "Tancred_II_de_Quenelles"
+    ]
+  ],
+  "reavaz": [
+    [
+      "断牙·格里布",
+      "Broken_Fang_Grib"
+    ]
+  ],
+  "red_eye": [
+    [
+      "疤眼·黑帽",
+      "Scareye_Blackhat"
+    ]
+  ],
+  "reikland": [
+    [
+      "卡尔·弗兰兹",
+      "Karl_Franz"
+    ]
+  ],
+  "skull_smasherz": [
+    [
+      "乌格洛克·裂牙",
+      "Uglok_Cleavetooth"
+    ]
+  ],
+  "stirland": [
+    [
+      "阿尔贝里希·豪普特-安德森",
+      "Alberich_Haupt_Anderssen"
+    ]
+  ],
+  "sylvania": [
+    [
+      "曼弗雷德",
+      "Mannfred_von_Carstein"
+    ]
+  ],
+  "talabecland": [
+    [
+      "赫尔穆特·费尔巴赫",
+      "Helmut_Feuerbach"
+    ]
+  ],
+  "wasteland": [
+    [
+      "卢伊特波尔德·范·雷默斯韦克",
+      "Luitpold_van_Reimerswaal"
+    ]
+  ],
+  "wissenland": [
+    [
+      "艾曼纽尔·冯·李布维茨",
+      "Emmanuelle_von_Liebwitz"
+    ]
+  ],
+  "ROTlord_10": [
+    [
+      "奥塞尔·亚威克",
+      "Othell_Yarwyck"
+    ]
+  ],
+  "ROTlord_116": [
+    [
+      "卡特·派克",
+      "Cotter_Pyke"
+    ]
+  ],
+  "ROTlord_180": [
+    [
+      "杰诺斯·布雷肯",
+      "Jonos_Bracken"
+    ]
+  ],
+  "ROTlord_181": [
+    [
+      "亨德利·布雷肯",
+      "Hendry_Bracken"
+    ]
+  ],
+  "ROTlord_1": [
+    [
+      "乔佛里·拜拉席恩",
+      "Joffrey_Baratheon"
+    ]
+  ],
+  "ROTlord_25": [
+    [
+      "狗头哈犸",
+      "Harma_Dogshead"
+    ]
+  ],
+  "ROTlord_262": [
+    [
+      "瓦伦·毕斯柏里",
+      "Warryn_Beesbury"
+    ]
+  ],
+  "ROTlord_278": [
+    [
+      "亚历斯·奥克赫特",
+      "Arys_Oakheart"
+    ]
+  ],
+  "ROTlord_29": [
+    [
+      "六形人瓦拉米尔",
+      "Varamyr_Sixskins"
+    ]
+  ],
+  "ROTlord_2": [
+    [
+      "马林·特兰",
+      "Meryn_Trant"
+    ]
+  ],
+  "ROTlord_301": [
+    [
+      "瓦蕾娜·托兰",
+      "Valena_Toland"
+    ]
+  ],
+  "ROTlord_30": [
+    [
+      "矛妇崔西",
+      "Trixie"
+    ]
+  ],
+  "ROTlord_369": [
+    [
+      "伊耿·坦格利安",
+      "Aegon_Targaryen"
+    ]
+  ],
+  "ROTlord_372": [
+    [
+      "亚莲恩·马泰尔",
+      "Arianne_Martell"
+    ]
+  ],
+  "ROTlord_373": [
+    [
+      "琼恩·克林顿",
+      "Jon_Connington"
+    ]
+  ],
+  "ROTlord_3": [
+    [
+      "大麻雀",
+      "High_Sparrow"
+    ]
+  ],
+  "ROTlord_505": [
+    [
+      "赛丽丝·佛罗伦",
+      "Selyse_Florent"
+    ]
+  ],
+  "ROTlord_506": [
+    [
+      "劳勃·拜拉席恩",
+      "Robert_Baratheon"
+    ]
+  ],
+  "ROTlord_512": [
+    [
+      "艾德·史塔克",
+      "Eddard_Stark"
+    ]
+  ],
+  "ROTlord_513": [
+    [
+      "凯特琳·史塔克",
+      "Catelyn_Stark"
+    ]
+  ],
+  "ROTlord_514": [
+    [
+      "瑞肯·史塔克",
+      "Rickon_Stark"
+    ]
+  ],
+  "ROTlord_568": [
+    [
+      "艾里沙·索恩",
+      "Alliser_Thorne"
+    ]
+  ],
+  "ROTlord_571": [
+    [
+      "阿勒肯·佛罗伦",
+      "Alekorn_Florent"
+    ]
+  ],
+  "ROTlord_595": [
+    [
+      "安雅·韦伍德",
+      "Anya_Waynwood"
+    ]
+  ],
+  "ROTlord_5": [
+    [
+      "乔拉·莫尔蒙",
+      "Jorah_Mormont"
+    ]
+  ],
+  "ROTlord_8": [
+    [
+      "断掌科林",
+      "Qhorin_Halfhand"
+    ]
+  ],
+  "ROTlord_9": [
+    [
+      "波文·马尔锡",
+      "Bowen_Marsh"
+    ]
+  ],
+  "ROTuniqueleader_spc_brotherhood_0": [
+    [
+      "贝里·唐德利恩",
+      "Beric_Dondarrion"
+    ]
+  ],
+  "ROTwanderer10": [
+    [
+      "贾昆·赫加尔",
+      "Jaqen_Hghar"
+    ]
+  ],
+  "ROTwanderer11": [
+    [
+      "米亚·石东",
+      "Mya_Stone"
+    ]
+  ],
+  "ROTwanderer12": [
+    [
+      "科本",
+      "Qyburn"
+    ]
+  ],
+  "ROTwanderer13": [
+    [
+      "西利欧·佛瑞尔",
+      "Syrio_Forel"
+    ]
+  ],
+  "ROTwanderer14": [
+    [
+      "霍多",
+      "Hodor"
+    ]
+  ],
+  "ROTwanderer15": [
+    [
+      "血盟卫拉戈",
+      "Rakharo"
+    ]
+  ],
+  "ROTwanderer16": [
+    [
+      "札罗·赞旺·达梭斯",
+      "Xaro_Xhoan_Daxos"
+    ]
+  ],
+  "ROTwanderer17": [
+    [
+      "金瓦拉",
+      "Kinvara"
+    ]
+  ],
+  "ROTwanderer18": [
+    [
+      "欧莎",
+      "Osha"
+    ]
+  ],
+  "ROTwanderer19": [
+    [
+      "多夫之子夏嘎",
+      "Shagga"
+    ]
+  ],
+  "ROTwanderer1": [
+    [
+      "詹姆·兰尼斯特",
+      "Jaime_Lannister"
+    ]
+  ],
+  "ROTwanderer20": [
+    [
+      "席恩·葛雷乔伊",
+      "Theon_Greyjoy"
+    ]
+  ],
+  "ROTwanderer22": [
+    [
+      "西茨达拉·佐·洛拉克",
+      "Hizdahr_zo_Loraq"
+    ]
+  ],
+  "ROTwanderer24": [
+    [
+      "克礼森学士",
+      "Maester_Cressen"
+    ]
+  ],
+  "ROTwanderer25": [
+    [
+      "铁手杰斯林",
+      "Jacelyn_Bywater"
+    ],
+    [
+      "杰斯林",
+      "Jacelyn"
+    ]
+  ],
+  "ROTwanderer26": [
+    [
+      "昆廷·马泰尔",
+      "Quentyn_Martell"
+    ]
+  ],
+  "ROTwanderer27": [
+    [
+      "培提尔·贝里席",
+      "Petyr_Baelish"
+    ]
+  ],
+  "ROTwanderer28": [
+    [
+      "尤伦",
+      "Yoren"
+    ]
+  ],
+  "ROTwanderer29": [
+    [
+      "狄克·克莱勃",
+      "Dick_Crabb"
+    ]
+  ],
+  "ROTwanderer2": [
+    [
+      "瓦里斯",
+      "Varys"
+    ]
+  ],
+  "ROTwanderer33": [
+    [
+      "旺旺",
+      "Wun_Wun"
+    ]
+  ],
+  "ROTwanderer38": [
+    [
+      "班扬·史塔克",
+      "Benjen_Stark"
+    ]
+  ],
+  "ROTwanderer3": [
+    [
+      "桑铎·克里冈",
+      "Sandor_Clegane"
+    ]
+  ],
+  "ROTwanderer45": [
+    [
+      "泰丽莎",
+      "Talisa"
+    ]
+  ],
+  "ROTwanderer4": [
+    [
+      "黑水的波隆爵士",
+      "Bronn"
+    ]
+  ],
+  "ROTwanderer50": [
+    [
+      "乔里·凯索",
+      "Jory_Cassel"
+    ]
+  ],
+  "ROTwanderer5": [
+    [
+      "山姆威尔·塔利",
+      "Samwell_Tarly"
+    ]
+  ],
+  "ROTwanderer6": [
+    [
+      "波德瑞克·派恩",
+      "Podrick_Payne"
+    ]
+  ],
+  "ROTwanderer7": [
+    [
+      "詹德利",
+      "Gendry"
+    ]
+  ],
+  "ROTwanderer8": [
+    [
+      "提利昂·兰尼斯特",
+      "Tyrion_Lannister"
+    ]
+  ],
+  "ROTwanderer9": [
+    [
+      "塔斯的布蕾妮",
+      "Brienne_of_Tarth"
+    ]
+  ],
+  "arnolf": [
+    [
+      "阿尔夫·卡史塔克",
+      "Arnolf_Karstark"
+    ]
+  ],
+  "beric": [
+    [
+      "贝里·唐德利恩",
+      "Beric_Dondarrion"
+    ]
+  ],
+  "cletus": [
+    [
+      "克莱图斯·伊伦伍德",
+      "Cletus_Yronwood"
+    ]
+  ],
+  "damion_lannister": [
+    [
+      "达米昂·兰尼斯特",
+      "Damion_Lannister"
+    ]
+  ],
+  "harlawcast": [
+    [
+      "霍根·派克",
+      "Horgan_Pyke"
+    ]
+  ],
+  "hother": [
+    [
+      "霍瑟·安柏",
+      "Hother_Umber"
+    ]
+  ],
+  "lord_3_13_2": [
+    [
+      "崔斯丹·马泰尔",
+      "Trystane_Martell"
+    ]
+  ],
+  "lord_5_13_1": [
+    [
+      "珊莎·史塔克",
+      "Sansa_Stark"
+    ]
+  ],
+  "lord_5_1_1": [
+    [
+      "艾莉亚·史塔克",
+      "Arya_Stark"
+    ]
+  ],
+  "lucion_lannister": [
+    [
+      "卢西昂·兰尼斯特",
+      "Lucion_Lannister"
+    ]
+  ],
+  "mag": [
+    [
+      "玛格",
+      "Mag_the_Mighty"
+    ]
+  ],
+  "manfrey": [
+    [
+      "曼佛里·马泰尔",
+      "Manfrey_Martell"
+    ]
+  ],
+  "merrett": [
+    [
+      "梅里·佛雷",
+      "Merrett_Frey"
+    ]
+  ],
+  "nestor_royce": [
+    [
+      "奈斯特·罗伊斯",
+      "Nestor_Royce"
+    ]
+  ],
+  "rodrik_cassel": [
+    [
+      "罗德利克·凯索",
+      "Rodrik_Cassel"
+    ]
+  ],
+  "septon": [
+    [
+      "派席尔学士",
+      "Grand_Maester_Pycelle"
+    ]
+  ]
+}

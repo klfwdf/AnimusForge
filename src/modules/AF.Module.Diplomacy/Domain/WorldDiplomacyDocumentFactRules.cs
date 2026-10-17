@@ -186,15 +186,35 @@ public static WorldDiplomacyPeaceTerms ResolveOfferedPeaceTerms(
 		}
 		return source.PeaceTerms;
 	}
-public static string FormatRoundFactForPrompt(WorldDiplomacyRoundFact fact)
+public static string FormatRoundFactForPrompt(WorldDiplomacyRoundFact fact, Func<string, string, string> localize = null)
 	{
 		if (fact == null || string.IsNullOrWhiteSpace(fact.Text)) return "";
 		string text = fact.Text.Trim();
+	string executedPrefix = DiplomacyCompatibilityTexts.Get("Fact_ExecutedPrefix");
+	if (text.StartsWith(executedPrefix, StringComparison.Ordinal))
+		return PromptFactText("History_FactExecutedPrefix", "[Executed by game] ", localize) + text.Substring(executedPrefix.Length);
+	string declarationPrefix = DiplomacyCompatibilityTexts.Get("Fact_DeclarationRecordPrefix");
+	if (text.StartsWith(declarationPrefix, StringComparison.Ordinal))
+		return PromptFactText("History_FactDeclarationPrefix", "[Declaration record; not an executed outcome] ", localize) + text.Substring(declarationPrefix.Length);
+	string legacyExecutedPrefix = DiplomacyCompatibilityTexts.Get("History_LegacyExecutedPrefix");
+	if (text.StartsWith(legacyExecutedPrefix, StringComparison.Ordinal))
+		return PromptFactText("History_FactExecutedPrefix", "[Executed by game] ", localize) + text.Substring(legacyExecutedPrefix.Length);
+	string legacyDeclarationPrefix = DiplomacyCompatibilityTexts.Get("History_LegacyDeclarationRecordPrefix");
+	if (text.StartsWith(legacyDeclarationPrefix, StringComparison.Ordinal))
+		return PromptFactText("History_FactDeclarationPrefix", "[Declaration record; not an executed outcome] ", localize) + text.Substring(legacyDeclarationPrefix.Length);
+	string legacySummaryPrefix = DiplomacyCompatibilityTexts.Get("History_LegacySummaryPrefix");
+	if (text.StartsWith(legacySummaryPrefix, StringComparison.Ordinal))
+		return PromptFactText("History_FactLegacySummaryPrefix", "Legacy diplomatic summary; it records the declaration narrative as saved and does not establish that any diplomatic mechanic was executed: ", localize) + text.Substring(legacySummaryPrefix.Length);
+	string legacySummaryBracketPrefix = DiplomacyCompatibilityTexts.Get("History_LegacySummaryBracketPrefix");
+	if (text.StartsWith(legacySummaryBracketPrefix, StringComparison.Ordinal))
+		return PromptFactText("History_FactLegacySummaryBracketPrefix", "[Legacy declaration summary; not evidence of game execution] ", localize) + text.Substring(legacySummaryBracketPrefix.Length);
 		if (text.StartsWith("[", StringComparison.Ordinal)) return text;
 		return string.Equals(fact.Kind, "confirmed_result", StringComparison.OrdinalIgnoreCase)
-			? DiplomacyCompatibilityTexts.Get("Fact_ExecutedPrefix") + text
-			: DiplomacyCompatibilityTexts.Get("Fact_DeclarationRecordPrefix") + text;
+		? PromptFactText("History_FactExecutedPrefix", "[Executed by game] ", localize) + text
+		: PromptFactText("History_FactDeclarationPrefix", "[Declaration record; not an executed outcome] ", localize) + text;
 	}
+private static string PromptFactText(string key, string fallback, Func<string, string, string> localize)
+	=> localize?.Invoke(key, fallback) ?? DiplomacyMiscPromptTexts.Get(key, fallback);
 public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 	{
 		string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(document?.Intent);

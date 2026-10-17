@@ -219,6 +219,8 @@ internal static class MemorySystemFactProjection
     internal static string ProjectBody(string body)
     {
         if (string.IsNullOrEmpty(body)) return body;
+        string economy = EconomyActionFactProjection.ProjectForPrompt(body);
+        if (economy != body) return economy;
         string gathering = NobleGatheringTextProjection.ProjectFactBodyForPrompt(body);
         if (gathering != body) return gathering;
         string courier = ProjectCourierBody(body);

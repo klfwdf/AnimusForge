@@ -8,12 +8,13 @@ namespace AnimusForge {
   internal readonly Dictionary<string,List<AnimusForgeDialogueHistoryEntry>> History=new();
   internal readonly Dictionary<string,string> Summaries=new();
   internal readonly Dictionary<string,int> SummaryDays=new();
-  internal int Reads;
+  internal int Reads, HistoryReads;
+  internal bool ThrowOnSummaryRead;
   internal bool TryGetLatestCompressedMemoryInternal(Hero hero,out string key,out string date,out string text,out int day){
-   Probe.Read();Reads++;key="";day=SummaryDays.TryGetValue(hero.StringId,out var savedDay)?savedDay:98;date="date-"+day;return Summaries.TryGetValue(hero.StringId,out text);
+   Probe.Read();Reads++;if(ThrowOnSummaryRead)throw new InvalidOperationException("summary read failed");key="";day=SummaryDays.TryGetValue(hero.StringId,out var savedDay)?savedDay:98;date="date-"+day;return Summaries.TryGetValue(hero.StringId,out text);
   }
   internal List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesById(string id,int limit){
-   Probe.Read();Reads++;
+   Probe.Read();Reads++;HistoryReads++;
    if(!History.TryGetValue(id,out var entries))return new();
    return entries.GetRange(Math.Max(0,entries.Count-limit),Math.Min(limit,entries.Count));
   }

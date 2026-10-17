@@ -176,6 +176,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyMiscPromptTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyCompatibilityTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyUiLocalization.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyDateProjection.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyDialogueStatusUi.cs" />
     <Reference Include="TaleWorlds.Localization"><HintPath>F:/SteamLibrary/steamapps/common/Mount &amp; Blade II Bannerlord/bin/Win64_Shipping_Client/TaleWorlds.Localization.dll</HintPath></Reference>
     <Reference Include="TaleWorlds.Library"><HintPath>F:/SteamLibrary/steamapps/common/Mount &amp; Blade II Bannerlord/bin/Win64_Shipping_Client/TaleWorlds.Library.dll</HintPath></Reference>

@@ -70,15 +70,18 @@ internal static class WorldDiplomacyRequestHistoryApplication
 
     internal static string Build(WorldDiplomacyStorage storage, WorldDiplomacyJob job, int currentDay,
 
-        long tokenBudget = 16000L, Func<string, int> estimateTokens = null)
+        long tokenBudget = 16000L, Func<string, int> estimateTokens = null,
+        Func<string, string, string> localize = null)
 
     {
 
-        var text = new StringBuilder(ContextMarker);
+        string Text(string key, string fallback) => localize?.Invoke(key, fallback)
+            ?? DiplomacyMiscPromptTexts.Get(key, fallback);
+        var text = new StringBuilder(Text("History_ContextMarker", "[Relevant Diplomatic History for this Event]"));
 
         text.AppendLine();
 
-            text.AppendLine(DiplomacyMiscPromptTexts.Get("History_ContextIntroduction", "The following is a limited window into this event and recent materials, not a complete archive. Absence does not mean it did not happen; excerpts must not be used to infer unlisted terms. Current status and precise original terms are governed by current dynamic materials. Declarations/proposals do not equal execution; only [Executed by game] is a confirmed outcome."));
+        text.AppendLine(Text("History_ContextIntroduction", "The following is a limited window into this event and recent materials, not a complete archive. Absence does not mean it did not happen; excerpts must not be used to infer unlisted terms. Current status and precise original terms are governed by current dynamic materials. Declarations/proposals do not equal execution; only [Executed by game] is a confirmed outcome."));
 
         long Count(string value) => Math.Max(0, estimateTokens?.Invoke(value) ?? value.Length);
 
@@ -148,13 +151,13 @@ internal static class WorldDiplomacyRequestHistoryApplication
 
                 || !selected.Add(doc.DocumentId ?? "")) return;
 
-            string line = DiplomacyCompatibilityTexts.Get("History_DocPrefix") + Clip(doc.DocumentId, 96) + "; " + Clip(doc.GameDate, 80)
+            string line = Text("History_DocPrefix", "[Document ") + Clip(doc.DocumentId, 96) + "; " + Clip(doc.GameDate, 80)
 
                 + "; " + Clip(doc.AuthorKingdomId, 96) + "→" + Clip(doc.TargetKingdomId, 96)
 
-                + "] " + Clip(doc.Title, 160) + "\n" + DiplomacyCompatibilityTexts.Get("History_ExcerptPrefix").TrimStart() + Clip(doc.Body, 1200);
+                + "] " + Clip(doc.Title, 160) + "\n" + Text("History_ExcerptPrefix", "[Excerpt] ") + Clip(doc.Body, 1200);
 
-            if (doc.ChangedDiplomaticState) line += "\n" + DiplomacyCompatibilityTexts.Get("History_ExecutedPrefix").TrimStart() + Clip(doc.MechanicalResult, 600);
+            if (doc.ChangedDiplomaticState) line += "\n" + Text("History_ExecutedPrefix", "[Executed by game] ") + Clip(doc.MechanicalResult, 600);
 
             if (AddSection(line)) documentCount++;
 
@@ -216,7 +219,7 @@ internal static class WorldDiplomacyRequestHistoryApplication
 
         foreach (var summary in summaries)
 
-            AddSection(DiplomacyCompatibilityTexts.Get("History_RelatedOldRoundPrefix") + Clip(summary.RoundId, 96) + "] " + Clip(summary.Summary, 1400));
+            AddSection(Text("History_RelatedOldRoundPrefix", "[Related prior round ") + Clip(summary.RoundId, 96) + "] " + Clip(summary.Summary, 1400));
 
         var facts = storage.CanonicalHistory?.Snapshot?.ProtectedFacts;
 
@@ -232,7 +235,7 @@ internal static class WorldDiplomacyRequestHistoryApplication
 
                 .OrderByDescending(f => f.Sequence).Take(8))
 
-                AddSection(DiplomacyCompatibilityTexts.Get("History_ProtectedFactPrefix") + Clip(fact.Kind, 64) + "; source="
+                AddSection(Text("History_ProtectedFactPrefix", "[Protected historical fact; kind=") + Clip(fact.Kind, 64) + "; source="
 
                     + Clip(fact.SourceId, 96) + "] " + Clip(fact.Text, 600));
 

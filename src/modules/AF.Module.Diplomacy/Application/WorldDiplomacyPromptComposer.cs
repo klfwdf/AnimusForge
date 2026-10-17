@@ -33,7 +33,7 @@ internal static class WorldDiplomacyPromptComposer
 	internal static string BuildRoundPlanSystemPrompt(IWorldDiplomacyPromptWorld world, WorldDiplomacyRound round)
 	{
 		StringBuilder sb = WorldDiplomacyPromptContractRules.CreateSystemPromptBuilder(world.GetCommonDiplomacyContract(round));
-	sb.AppendLine(WorldDiplomacyPromptContractRules.RoundPlanTaskMarker + world.LocalizePrompt("AF_DIP_Prompt_Composer_002", "MODE=ROUND_PLAN in the final message determines the task and output structure."));
+	sb.AppendLine(WorldDiplomacyPromptContractRules.MarkerForPrompt(WorldDiplomacyPromptContractRules.RoundPlanTaskMarker, world.LocalizePrompt) + world.LocalizePrompt("AF_DIP_Prompt_Composer_002", "MODE=ROUND_PLAN in the final message determines the task and output structure."));
 		return PromptComposerTexts.ApplyOutputLanguage(sb.ToString().TrimEnd());
 	}
 

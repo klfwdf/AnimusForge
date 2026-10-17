@@ -1,5 +1,18 @@
+# 当前交接：当前工作树源码推送（2026-10-17）
+
+- 用户明确授权推送。纳入当前已一起构建部署的双语、场景接力与手札动画、人设压缩记忆、世界书名称及导入失败重试/跳过修复；此前“无视”中文旧历史的决定保持，不新增该链路修改。
+- 最新验证、未验范围和回退方式见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-runtime-fixes-20261017)。不纳入本地日志、产物、缓存或专用 handoff；最终推送状态以 Git 远端核对结果为准。
+
+# 当前交接：当前工作树 EN 部署完成（2026-10-17，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户授权部署EN；以main/5420ce063工作树中的其他会话改动一并构建和部署，版本保持v1.6.1。Release 1.3、1.4和Bootstrap构建以及双Coup seam/registration门禁通过；EN与反向投影各3523项通过，未打包或push。
+- 原部署owner成功更新21项。部署后3762项：20项替换、1项新增；计划SHA 21/21匹配，原有3761项无缺失，未计划新增/变化为0。3395项受保护文件的SHA和时间戳均保持；模块Id/Name为AnimusForge，SubModule.xml仅加载AnimusForge.Bootstrap.dll。候选与安装的三DLL及SubModule.xml逐SHA相同。
+- [唯一主台账与本地证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-en-updated-20261017)；本地证据`artifacts/deploy-en-updated-20261017/{receipt.json,after.json,before.json,plan.json,projection.json,opposite-projection.json,prepared.json,deploy.log}`。未启动游戏、未测真实provider，严格EN发行词法门禁未重跑；无部署备份/自动回滚，人工回退需使用先前验证包并保留玩家资料。
+- 同随请求审阅轻量模型JSON报告：报告没有附模型原始响应，提示词测试也未覆盖真实人设运行时或结构化输出参数，因此“末尾中文指令压过JSON”尚无证据；没有修改这条产品链路。审阅结论与源码位置记在主台账对应小节。
+
 # 当前交接：远端城镇记忆与本地修复已合并推送（2026-10-17，PUSH_VERIFIED / LIVE_NOT_RUN）
 
+- 当前工作树另有外交请求历史包语言投影改动：英文固定标记按 EN 资源输出，旧摘要中已知固定前缀投影为英文，动态中文标题/正文/摘要保留。相关源码、资源、39项历史回放及未覆盖范围见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-request-history-localization-20261017)。未做产品构建、Stage、部署、打包或push；完整外交总回放停在独立的 `LifecycleRepairReplay.Submission` 断言。
 - 合并e35bbe52f保留远端1fdeae588的精简城镇记忆/标题，以及本地重生经历、双语解析、场景打断修复；仅两份顶部交接记录冲突，双方完整保留。城镇160+接线16、场景27+141+54+30、CN/EN解析各78及原双API/Bootstrap/Coup/registration通过。发布最终SHA以本地收据和独立远端ref核对为准。
 - [唯一主台账、边界与回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merge-push-current-20261017)。安装仍为此前9cdffaf44 EN候选，远端新改动未部署；新报告的EN导入失败、群体接力和手札动画另待处理。未打包或实机/provider验收；本地检查点codex/backup-before-sync-20261017-041315，聚焦撤销合并用新inverse/revert保留共享历史。
 - 普通推送56476b9ca后独立核对远端main一致，完成状态文档随后同步，最终SHA以artifacts/merge-push-current-20261017/push-receipt.json核对。没有上传本地专用handoff、玩家资料、日志或构建产物。
@@ -2735,4 +2748,8 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 - 产品 `21e0a6a2b`：仅开启主API流式时收到正文即按每秒约20字显示，新对话界面长文沿用折行并跟随底部；关闭时保留原全文/TTS/滚动行为。TTS不清空增量正文，最终百科链接在显示排空后安装。
 - 新专项35、暂停恢复70、owner隔离48、两API continue-hit各172通过；原统一Debug双API/Bootstrap/双seam/registration通过。未部署/Stage/打包/push、真实provider或实机；旧音频回放因固定历史源码路径缺失未进入断言，保留失败证据。
 - [主台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#streaming-dialogue-reveal-20261015) / [准确代码范围](docs/architecture/af-framework-code-scope.md#streaming-dialogue-reveal-20261015)。冻结产物与收据在`artifacts/streaming-dialogue-reveal-20261015/`；另一个会话的LordEncounter/ReleaseSurrender改动已由其提交`74be66074`，本任务保留且不代验。
+
+
+## 2026-10-17 重新构建部署 EN 完成
+用户要求的 Debug 双 API / Bootstrap 重新编译、干净 Stage、EN 3523 项投影与部署后 3523 项 SHA 全部通过。详见主台账 #deploy-en-rebuild-20261017-0808 和 artifacts/en-deploy-install.log。未启动游戏、未打包或 push；旧 Stage 删除被自动审批拒绝，仍保留。
 

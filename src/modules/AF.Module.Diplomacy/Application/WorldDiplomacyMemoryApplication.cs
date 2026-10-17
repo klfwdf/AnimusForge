@@ -91,8 +91,8 @@ internal static class WorldDiplomacyMemoryApplication
 			.Where(x => x != null && (x.SourceDocumentIds ?? new List<string>()).Any(knownIds.Contains))
 			.OrderByDescending(x => x.CreatedDay).Take(1))
 		{
-			List<string> visibleFacts = (summary.Facts ?? new List<WorldDiplomacyRoundFact>()).Where(x => x != null && (x.SourceDocumentIds ?? new List<string>()).Any(knownIds.Contains)).Select(WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt).Where(x => !string.IsNullOrWhiteSpace(x)).Take(6).ToList();
-			sb.AppendLine(DiplomacyPromptTexts.Get("MemoryPrompt_005", "- [Past diplomatic events] ") + WorldDiplomacyTextRules.Limit(visibleFacts.Count > 0 ? string.Join("、", visibleFacts) : summary.Summary, 650));
+			List<string> visibleFacts = (summary.Facts ?? new List<WorldDiplomacyRoundFact>()).Where(x => x != null && (x.SourceDocumentIds ?? new List<string>()).Any(knownIds.Contains)).Select(x => WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt(x, DiplomacyMiscPromptTexts.Get)).Where(x => !string.IsNullOrWhiteSpace(x)).Take(6).ToList();
+			sb.AppendLine(DiplomacyPromptTexts.Get("MemoryPrompt_005", "- [Past diplomatic events] ") + WorldDiplomacyTextRules.Limit(visibleFacts.Count > 0 ? string.Join(DiplomacyPromptTexts.Get("MemoryPrompt_FactSeparator", "; "), visibleFacts) : summary.Summary, 650));
 		}
 		return sb.ToString().TrimEnd();
 	}
