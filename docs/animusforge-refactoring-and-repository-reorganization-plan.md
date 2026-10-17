@@ -1,9 +1,17 @@
 <a id="tts-stream-request-20261017"></a>
-## 新服务流式请求参数补齐（2026-10-17，INTENT）
+## 新服务流式请求参数补齐（2026-10-17，PROVIDER / EN_DEPLOY / PUSH VERIFIED，LIVE_GAME_NOT_RUN）
 
 - 用户报告开启流式后服务后台仍显示非流。已核对现行 `69cc86d30`：仅选择客户端 `StreamAsync`，JSON 缺少 `stream`，此前客户端分段成功不能证明上游请求为流式。本节修正该交付缺口，不改火山。
 - 范围：新服务请求发送显式 `stream=true/false`、CN/EN 开关说明与真实请求体断言；以真实服务单次返回验证兼容性。沿用本会话部署与推送授权，保留原配置/Key、EN 包、统一构建/部署流程与本地缓存；不打包或改版本。
 - 完成门：开启/关闭实际 HTTP JSON 断言、真实服务请求观察与音频分段、双 API/Bootstrap、EN 安装哈希与远端 SHA；后台页面分类、上游增量合成和实机口型未观察时继续列未验。
+- 产品 `ca460c130`，意图 `052037cac`；本节取代下方仅客户端分段版本的上游请求状态。`src/modules/AF.Module.Llm/Tts/OpenAiCompatibleTtsGateway.cs:24–44` 保持同一发送 owner，由 `onPcm != null` 写入 JSON `stream`；开关开启走 `StreamAsync` 明确 true，关闭走 `SynthesizeAsync` 明确 false。没有 DTO/公开 API/配置字段变更，也没有重试或跨服务回退。`src/modules/AF.Module.Llm/Tts/TtsEngine.Streaming.cs:28` 新增一次请求边界的无凭据诊断 `Streaming.Request`，无 Tick IO/扫描。火山三网关及播放分支与 `69cc86d30` 无差异。
+- `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.Tts.cs:27–29` 与两份 AF UI XML 同步说明 `stream=true/false` 和上游能力边界；终端/MCM 原 owner 与 API/TTS API 位置保持。原生 CN/EN reader/配置投影 59 项通过，不以资源文件存在替代接线。
+- 验证：新增实际 HTTP 请求体断言在旧 DLL 上明确失败（`before-fix.log`），修复后实际 DLL 流式 22 项、整句 33 项通过；真实 Windows 连续 PCM 缓冲与取消通过；生命周期 70、接线 8 通过。原统一 Debug 1.3/1.4/Bootstrap、双 Coup/registration 通过。首次重建曾被失败回放进程占用 DLL，两回放并发编译亦争用原 obj；释放占用/串行运行后成功，未降低断言或修改构建脚本，真实服务仅发送一次。
+- 真实服务：发送链路观察到 `requestedStream=true`，返回 `audio/wav` / chunked；首 PCM 39.461s，接收结束 47.936s，8 段、48kHz、13.72s 非静音音频，结束前已交付。此单次证明请求标志和音频解析/分段兼容，不证明后台 UI 如何分类、上游边生成边合成或性能优于此前样本；此次首段更晚不能被隐藏。
+- EN 部署：原 Stage/EN 投影/部署函数成功，更新 11 项，3523/3523 期望哈希通过，其中 3133 清单项按原保留规则校验；三 DLL 与候选一致，四份 UI 资源匹配，12 个原保护文件哈希/大小/时间戳不变，模块仍仅加载 Bootstrap。安装仍为 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，配置/Key 未修改；旧完整 Stage 在本机任务目录保留。1.4 SHA256 `F89DF40E7D9148C733466C229051C33F53559DE8192A7CC9B59468F8858517BB`。
+- 按用户追加“随后部署”“然后推送”执行，部署验后普通推送至 origin/main，独立 `ls-remote` 核实 `ca460c130`；本状态记录随后同步，最终 SHA 见本机收据。保留未跟踪 Microsoft/、NuGet/，未上传本机产物/密钥/专用交接，无版本递增或打包。
+- 证据：`artifacts/tts-stream-request-20261017/` 下 `before-fix.log`、`build2.log`、`stream-replay2.log`、`streamed-live.json`、`buffered-replay.log`、`settings.log`、`lifetime.log`、`wiring.log`、`stage.log`、`deploy-en.log`、`deployment-after.json`、`receipt.json`。测试观察器仅记录标志/响应类型/时间，不记录认证或请求正文。
+- 未验：后台页面的日志分类、服务内部增量合成、实机 NPC/地图口型与声音连续性；此前 NativeWait 历史 oracle 缺失的边界保持，不称全仓/实机通过。聚焦回滚 `git revert ca460c130` 后原入口重建并按授权部署，不覆盖玩家配置；安装无自动恢复。
 
 <a id="tts-streaming-20261017"></a>
 ## 新服务 TTS 分段流式播放与口型（2026-10-17，SOURCE / PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
