@@ -1,3 +1,11 @@
+<a id="prompt-fingerprint-directory-reuse-20261018"></a>
+## 提示词定时指纹检查重复目录解析修复（2026-10-18，ACTIVE）
+
+- 用户授权修复已定位的循环重复解析；基线 main/ac21e12f1，跟踪文件干净，Microsoft/、NuGet/保持未跟踪。范围仅本地源码、回归、原统一构建与记录；不部署、打包、push或改版本，不宣称解决玩家全部场景卡顿/终端消失。
+- 根因：GetSettings连到最多每秒一次的提示词指纹检查，两目录各11文件；循环内重新调用GetCustomPromptTextStoreDirectory，每次执行模块身份XML与ancestor校验。调用方已经取得并验证两个目录，重复判断没有新增业务信息。
+- 修改范围：DuelSettings.cs由调用方传入用户/默认目录类型，指纹循环复用，不移除目录入口校验；ModulePromptStorageTests.cs增加独占锁manifest期间指纹保持的真实DLL回归；HANDOFF更新摘要。无文案/设置/资源/持久化身份变化，CN/EN优先级、已知默认哈希识别和1秒热更新保持。
+- 完成门：新增回归旧DLL失败、修后通过；原提示词存储/默认资源/路径保护回归；原1.3/1.4/Bootstrap构建及Coup/registration。玩家现场耗时、实机及旧档另列未验。
+
 <a id="tts-stream-request-20261017"></a>
 ## 新服务流式请求参数补齐（2026-10-17，PROVIDER / EN_DEPLOY / PUSH VERIFIED，LIVE_GAME_NOT_RUN）
 
