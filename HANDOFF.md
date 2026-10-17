@@ -1,3 +1,10 @@
+# 当前交接：提示词指纹循环重复目录解析已修复（2026-10-18，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 产品c607598c5：复用每轮已验证的用户/包默认提示词目录，移除两组11文件循环中的22次额外目录身份XML/ancestor检查；保留每轮入口校验、1秒热更新、用户覆盖及CN/EN已知默认识别。没有新增设置、文案或全局路径缓存。
+- 旧真实DLL新增manifest锁回归失败；修复后1.3/1.4各65、原提示词IO25、默认资源静态41通过；原统一双API/Bootstrap、双Coup/registration构建PASS。原完整政策存储suite的文档初始化断言在旧DLL/旧测试源码同样失败，未算通过。
+- [唯一主台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#prompt-fingerprint-directory-reuse-20261018)；本机artifacts/prompt-fingerprint-directory-reuse-20261018/receipt.json及verified-candidates。聚焦回滚git revert c607598c5。
+- 未部署/打包/push/改版本；不替代下方TTS已安装状态。玩家实际帧耗时、实机与旧档未验，终端图标消失尚未修复，不能据此宣称玩家全部卡顿解决。
+
 # 当前交接：TTS 上游 stream 参数已补齐、部署 EN 并推送（2026-10-17，PROVIDER / EN_DEPLOY / PUSH VERIFIED，LIVE_GAME_NOT_RUN）
 
 - 产品 `ca460c130` 修正上一版仅本地分段、没有向上游发送 stream 的缺口。开启明确发送 `stream=true`，关闭明确 false；更新 CN/EN 实际开关说明。火山、配置身份和 API/TTS API 设置位置保持。

@@ -1,10 +1,17 @@
 <a id="prompt-fingerprint-directory-reuse-20261018"></a>
-## 提示词定时指纹检查重复目录解析修复（2026-10-18，ACTIVE）
+## 提示词定时指纹检查重复目录解析修复（2026-10-18，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
 - 用户授权修复已定位的循环重复解析；基线 main/ac21e12f1，跟踪文件干净，Microsoft/、NuGet/保持未跟踪。范围仅本地源码、回归、原统一构建与记录；不部署、打包、push或改版本，不宣称解决玩家全部场景卡顿/终端消失。
 - 根因：GetSettings连到最多每秒一次的提示词指纹检查，两目录各11文件；循环内重新调用GetCustomPromptTextStoreDirectory，每次执行模块身份XML与ancestor校验。调用方已经取得并验证两个目录，重复判断没有新增业务信息。
 - 修改范围：DuelSettings.cs由调用方传入用户/默认目录类型，指纹循环复用，不移除目录入口校验；ModulePromptStorageTests.cs增加独占锁manifest期间指纹保持的真实DLL回归；HANDOFF更新摘要。无文案/设置/资源/持久化身份变化，CN/EN优先级、已知默认哈希识别和1秒热更新保持。
 - 完成门：新增回归旧DLL失败、修后通过；原提示词存储/默认资源/路径保护回归；原1.3/1.4/Bootstrap构建及Coup/registration。玩家现场耗时、实机及旧档另列未验。
+
+
+- 完成：意图88adc8b32，产品c607598c5。`src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:4308–4312`在每轮取得/验证用户与默认目录后传入明确的useUserOverrides；`4973–5010`指纹owner只用既有目录及文件元数据，去掉循环内22次GetCustomPromptTextStoreDirectory/模块XML解析，保留入口两次目录身份/ancestor验证、1秒节流、原缓存指纹组合与锁。旧默认精确hash与LegacyImported分层入口不变，无全局路径缓存或安全校验豁免。
+- 回归：`ModulePromptStorageTests.cs:16–148`沿用原普通提示词存储检查，增加独占锁manifest时两目录指纹稳定、包文件编辑可检测、CN/EN已知默认与保留导入投影；`Program.cs:131–136`增加具名--module-prompt-refresh-only入口，原完整suite保持。旧真实1.4 DLL在新增manifest断言失败（before5/run.log），最终真实1.3/1.4各65 PASS（final13、final14）；原普通提示词IO 25 PASS、包默认静态合同41 PASS、diff检查通过。原完整提示词/政策存储suite仍在policy initialization creates all missing documents失败，已用基线旧DLL与原ModulePromptStorageTests源码在baseline-policy复现同一断言；没有豁免原完整入口或将其计为通过。
+- 原统一Debug构建exit0：1.3(v1.3.15)、1.4(v1.4.6)、Bootstrap、双Coup seam/registration均PASS。命令为`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Bannerlord14ReferenceDir F:/AnimusForge-main/.tmp/build_check/1.4 -Configuration Debug`，没有Stage/Deploy参数，既有warning保留。辅助测试曾缺依赖/启动模块fixture，修复隔离runner后运行；并行辅助编译曾OOM，原构建不受影响，串行重试25项通过。
+- 本机证据：`artifacts/prompt-fingerprint-directory-reuse-20261018/receipt.json`、build.log、before5/run.log、final13/run.log、final14/run.log、prompt-save-retry/、baseline-policy/；verified-candidates冻结三DLL/marker，候选与两次实际DLL回放SHA一致。没有新增运行文案或设置，因此CN/EN资源字节不变；动态双语用户文本与两套默认精确哈希由回归覆盖。
+- 未验：玩家实际场景帧耗时、原生UI/热更新实机、旧档与第三方组合；未修终端图标消失，不宣称玩家全部卡顿已解决。未部署、打包、push或改版本，原已安装TTS版本保持。聚焦回滚`git revert c607598c5`，重新按原入口构建；本任务没有安装写入，无部署回滚需求。
 
 <a id="tts-stream-request-20261017"></a>
 ## 新服务流式请求参数补齐（2026-10-17，PROVIDER / EN_DEPLOY / PUSH VERIFIED，LIVE_GAME_NOT_RUN）
