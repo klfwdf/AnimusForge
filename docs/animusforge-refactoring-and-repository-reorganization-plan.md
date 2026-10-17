@@ -1,8 +1,33 @@
 <a id="tts-streaming-20261017"></a>
-## TTS 分段流式播放与口型（2026-10-17，INTENT）
+## 新服务 TTS 分段流式播放与口型（2026-10-17，SOURCE / PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
 
 - 用户要求实现流式播放和口型；延续本会话已明确的 EN 部署授权。基线 `17766b11d`，保留未跟踪 Microsoft/、NuGet/。
-- 完成门：OpenAI WAV / 火山 V3 PCM 实际流解析、首段在 EOF 前送播放、单 request 的开始/终态/取消、原口型与普通对话/场景入口、双入口 CN/EN 设置、真实网关/生命周期回放、1.3/1.4/Bootstrap 构建、EN 部署哈希。服务端合成首包时间不由客户端保证。
+- 产品提交 `64e50ebbc`，意图检查点 `6cc0430`。最新边界：用户明确“火山的不动”“新服务就参考火山”；火山 V1/V3 网关与旧播放分支保持基线，新服务复用原 WAV/口型事件消费者。用户另要求把 AI 核心中的 TTS 组统一放到 TTS API，已同步调整真实 MCM API/终端投影；位置变化不改原配置 owner、字段、preset 或火山合成行为。
+- 完成门：仅 OpenAI WAV 实际流解析、首段在 EOF 前送播放、单 request 的开始/终态/取消、原口型与普通对话/场景入口、双入口 CN/EN 设置、真实网关/生命周期回放、1.3/1.4/Bootstrap 构建、EN 部署哈希。服务端合成首包时间不由客户端保证。
+
+- 实现：新服务开关 `TtsStreamingPlaybackEnabled` 默认 true，关闭沿用整句 WAV；仅 `OpenAi` 分支能调用新流式 owner。单请求网络生产/播放消费并行，首段 0.5 秒、之后 2 秒；总音频 32 MiB、分段队列上限 2048 项，沿用原串行语音 worker、request/generation/目标检查。固定音频设备使用稳定的 pinned PCM/native header 和完成事件，不重复打开设备或追加旧 300ms 等待。场景/地图每段交付原 WAV + Rhubarb 消费者，同一句仅开始/完成一次，后续分段不重置字幕。工作发生在语音请求与分段边界，无新增 Tick IO、扫描或反射。
+- 真实服务单次验证：模型 gpt-sovits-v4、音色 zh_default；首 PCM 13.985s，接收完成 17.381s，提前 3.396s，8 段、48kHz、13.04s 非静音音频。证明下载完成前分段交付，不证明上游增量合成或降低服务端首包。Key 只从用户明确引用的会话在进程内读取，没有写入源码/日志/安装设置。
+- 已验：原统一 Debug 1.3（v1.3.15）/1.4（v1.4.6）/Bootstrap、双 Coup seam/registration 成功；实际 1.4 DLL 流解析 20 项及实际 Windows winmm 连续缓冲/取消通过；原 OpenAI 网关 32 项、火山原回放及 V3 46 项通过；生命周期 70、场景生命周期 135 + 原输出 54 + 设置 30、接线 8 通过；原生 MCM/终端实际 JSON、CN/EN 标题、全组只在 API/TTS API 出现，1.4 CN 与 1.3 EN 各 57 项通过。完整 Stage 成功，旧 Stage 完整保留。
+- EN 部署：沿用原 `Invoke-ManagedStageDeployment`，更新 13 项；3523/3523 期望哈希通过（其中 3133 个清单项按原用户内容/导出保留规则校验）。部署后 1.3/1.4/Bootstrap 三 DLL 与最终候选一致，四份双语 UI 资源一致，12 个既有保护文件 SHA/大小/时间戳不变，模块 XML 仍只加载 Bootstrap。收据 `english-deployment.json`、`deployment-before.json`、`deployment-after.json`；安装目录 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。没有修改文档 MCM 值或自动填写 Key。
+- 未验：未启动游戏，NPC 实际声音/嘴型同步、地图 tableau 分段交接和主观断句效果仍须实机；上游长期稳定性未验。`NativeWaitAudioBoundaryTests` 两 API 因历史原子 oracle 修订 `1235727e...` 在当前仓库不可读而未运行，没有改低哈希门槛；前次宽套件的无关失败仍见下方原接入记录，不称全仓通过。
+- 本地证据：`artifacts/tts-streaming-20261017/` 下 `build-new-only.log`、`stream-replay1.log`、`streamed-live.json`、`buffered-replay.log`、`fire-regression.log`、`lifetime-new-only.log`、`scene-new-only3.log`、`settings-new-only.log`、`settings-13-en.log`、`wiring-new-only.log`、`stage.log`。1.4 候选 SHA256 `87B925DC9C238CDE6A7223ECC5A9EC47B0D214159B6074D81E03F60C28965F49`；依赖/marker 由 replay runner 校验。
+
+<a id="tts-streaming-code-20261017"></a>
+### 代码范围（修订 64e50ebbc，一基行号）
+
+| 源码 | 符号 / 行号 | 责任与未覆盖 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Llm/Tts/OpenAiCompatibleTtsGateway.cs` | `StreamAsync/SendAsync` 24–80 | 新服务一次请求、受限解析、总超时/取消释放；原 buffer 路径保留。 |
+| `src/modules/AF.Module.Llm/Tts/TtsPcmStream.cs` | `TtsPcmSegmenter` 16–57；`TtsWaveStream` 59–124 | WAV/PCM16、声道转换、已知/未知长度、首段及后续分段；无游戏对象。 |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.Streaming.cs` | `ProcessStreamingJob` 21–121；`NativeSegmentOutput` 125–184 | 有界生产消费、原事件口型载体、单终态、native 缓冲生命周期；未验证实机 FMOD/tableau 时序。 |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.cs` | `PlaybackRequest` 53–76；`ProcessJob` 755 | 仅新服务进入流式分支，火山原分支不变。 |
+| `src/AF.GameAdapter.Bannerlord/Scene/SceneAudioLipSyncController.cs` | `SubscribeTtsPlaybackEvents` 141–184 | 每段原口型处理、整句字幕时长仅交付一次；游戏/渲染为替身。 |
+| `src/AF.GameAdapter.Bannerlord/Scene/NativeConversationSpeechAdapter.cs` | 地图消费者 477–485 | 保留原 tableau 音频，避免以单个分段缩短整句显示。 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.Tts.cs` | `TtsStreamingPlaybackEnabled` 27–29 | 原配置字段；双语名称和明确仅新服务生效的提示。 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/AnimusForgeMcmVisibility.cs` / `AnimusForgeMcmPages.cs` | 34–37、155；`ApiGroup` 99–105 | TTS 全组回到 API 页；原 PropertyRef 和保存 owner 不变。 |
+| `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsCoverage.cs` | `ViewGroup` 101–102 | 终端同组 TTS API 名称，仍按一次元数据缓存与原 setter。 |
+
+- 聚焦回滚：`git revert 64e50ebbc` 后用原统一入口重新构建，按明确授权重新部署；已保留的 `artifacts/tts-streaming-20261017/previous-stage-AnimusForge` 是上次完整 Stage。安装流程无 Recovery/备份/自动回滚，回退不得覆盖玩家 Configs/CustomPrompts 或文档 MCM JSON。无版本递增、正式双包或 push。
 
 <a id="openai-tts-20261017"></a>
 ## OpenAI 兼容 TTS 接入（2026-10-17，SOURCE / PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）

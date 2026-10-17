@@ -1,4 +1,11 @@
-# 当前交接：OpenAI 兼容 TTS 已接入并部署 EN（2026-10-17，PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
+# 当前交接：新服务 TTS 流式播放与口型链路已部署 EN（2026-10-17，PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
+
+- 产品 `64e50ebbc`：仅 OpenAI 兼容新服务增加 WAV 分段读取/播放，首段 0.5s、之后 2s，复用火山已有场景 WAV/Rhubarb 与地图音频消费者，整句单 request/开始/终态，字幕不随分段重置。用户明确火山本身不改，原 V1/V3 网关与旧播放分支保持；TTS 全组按新要求移到 MCM API 页的 TTS API，原配置字段与 owner 不变。
+- 双 API/Bootstrap/Coup/registration、实际 DLL 流解析 20、实际 winmm 连续缓冲与取消、原新服务 32/火山 V3 46、生命周期 70、场景 135+54+30、配置投影与 JSON 两组合各 57、接线 8 通过。实际服务单次首 PCM 13.985s、接收完 17.381s，提前约 3.396s 交付；不承诺降低服务器首包。
+- EN 部署原流程更新 13 项，3523 项验证通过，三 DLL/双语资源匹配，12 个已有保护文件未变；无打包、push、版本递增或启动游戏。实机 NPC/地图连续嘴型与声音、主观断句仍未验；NativeWait 历史 oracle 修订不可读，专项未运行。
+- [唯一主台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-streaming-20261017)；[核实代码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-streaming-code-20261017)。本机证据 `artifacts/tts-streaming-20261017/receipt.json`；聚焦回滚 `git revert 64e50ebbc` 后原入口重建/按授权部署，旧完整 Stage 保留，安装无自动回滚。下方整句新服务接入记录保留为历史，流式状态由本条替代。
+
+# 历史交接：OpenAI 兼容 TTS 已接入并部署 EN（2026-10-17，PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
 
 - 产品提交 `35430bd23`：增加与火山并列的 OpenAI 兼容 WAV TTS、独立设置、CN/EN 终端/MCM 接线，复用原队列/取消/播放/口型链路。默认模型 `gpt-sovits-v4`、统一音色 `zh_default`；保留火山与玩家配置，Key 未写入产品或已安装设置。
 - 原双 API / Bootstrap 构建、最终新网关 32 项、生命周期 68 项、静态接线 8 项、原生 MCM / 终端 1.3 CN 与 1.4 EN 各 40 项通过。实际 C# 网关和播放器 parser 返回非静音 WAV；旧宽套件的两处无关失败保留并明确记录，不称全仓通过。
