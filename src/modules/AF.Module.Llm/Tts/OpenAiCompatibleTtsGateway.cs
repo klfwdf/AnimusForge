@@ -41,7 +41,7 @@ public sealed class OpenAiCompatibleTtsGateway
         try
         {
             var payload = new JObject { ["model"] = request.Model.Trim(), ["input"] = request.Text,
-                ["voice"] = request.Voice.Trim(), ["response_format"] = "wav", ["speed"] = request.Speed };
+                ["voice"] = request.Voice.Trim(), ["response_format"] = "wav", ["speed"] = request.Speed, ["stream"] = onPcm != null };
             using var message = new HttpRequestMessage(HttpMethod.Post, uri);
             message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credential.Trim());
             message.Content = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");

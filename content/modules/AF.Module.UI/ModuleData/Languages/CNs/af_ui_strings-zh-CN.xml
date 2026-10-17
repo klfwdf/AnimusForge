@@ -3482,7 +3482,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_OpenAiTesting" text="[TTS] 正在测试选中的 OpenAI 兼容语音服务；真实合成可能产生费用。" />
   <string id="AF_MCM_Tts_TestNotQueued" text="[TTS] 测试语音未入队：队列已满或引擎已停止，请稍后重试。" />
   <string id="AF_MCM_Tts_Streaming" text="流式播放并同步口型" />
-  <string id="AF_MCM_Tts_Streaming_Hint" text="默认开启。OpenAI 兼容服务在收到音频分段后开始播放，沿用现有口型链路；关闭后等待整句音频。不会缩短服务端合成等待时间，仅对 OpenAI 兼容服务生效。" />
+  <string id="AF_MCM_Tts_Streaming_Hint" text="默认开启。向 OpenAI 兼容服务发送 stream=true，收到 WAV 音频分段后开始播放并驱动口型；关闭时发送 stream=false，等待整句音频。上游是否支持流式及首段等待时间取决于服务，仅对 OpenAI 兼容服务生效。" />
   <string id="AF_TERMINAL_GROUP_TTS_API" text="TTS API" />
 </strings>
 </base>

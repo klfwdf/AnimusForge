@@ -28,6 +28,8 @@ static class TtsProviderChecks
                 language.Invoke(null, new object[] { selected });
                 check(TerminalSettingsRegistry.GetById("TtsProviderDropdown").DisplayName == (selected == "English" ? "TTS service" : "TTS 服务"), "Actual native TTS service label " + selected);
                 check(TerminalSettingsRegistry.GetById("TtsOpenAiVoice").DisplayName == (selected == "English" ? "Speech voice" : "语音音色"), "Actual native TTS voice label " + selected);
+                string streamHint = TerminalSettingsRegistry.GetById("TtsStreamingPlaybackEnabled").HintText;
+                check(streamHint.Contains("stream=true") && streamHint.Contains("stream=false"), "Actual native streaming hint describes upstream on/off flags " + selected);
             }
             language.Invoke(null, new object[] { "English" });
             for (int i = 0; i < ids.Length; i++)

@@ -34,7 +34,8 @@ internal static class StreamingCases
         foreach (bool unknown in new[] { false, true })
         {
             using var stream = new GatedStream(Wave(pcm, unknown), 30044);
-            using var client = new HttpClient(new Handler(stream)) { Timeout = Timeout.InfiniteTimeSpan };
+            var handler = new Handler(stream);
+            using var client = new HttpClient(handler) { Timeout = Timeout.InfiniteTimeSpan };
             var first = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var result = new List<byte>(); int segments = 0;
             Task send = Invoke(client, (bytes, rate, samples) => {
@@ -42,6 +43,7 @@ internal static class StreamingCases
                 if (segments++ == 0) { Check(stream.Position < stream.Length, "first PCM before response completion"); first.TrySetResult(true); }
                 result.AddRange(bytes);
             }, CancellationToken.None);
+            Check(handler.StreamRequested == true, "Streaming TTS explicitly requests stream=true in actual HTTP JSON");
             Check(await Task.WhenAny(first.Task, Task.Delay(3000)) == first.Task && !send.IsCompleted, "first segment is delivered while later audio is blocked");
             stream.Release.TrySetResult(true); await send;
             Check(Success(send) && result.SequenceEqual(pcm) && segments == 3, "known/unknown WAV chunks reconstruct exact PCM without repeats");
@@ -107,9 +109,14 @@ internal static class StreamingCases
     private sealed class Handler : HttpMessageHandler
     {
         private readonly Stream stream;
+        internal bool? StreamRequested;
         internal Handler(Stream stream) => this.stream = stream;
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancel)
-            => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StreamContent(stream) });
+        {
+            using var body = System.Text.Json.JsonDocument.Parse(request.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+            StreamRequested = body.RootElement.TryGetProperty("stream", out var flag) ? flag.GetBoolean() : (bool?)null;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StreamContent(stream) });
+        }
     }
     private sealed class GatedStream : MemoryStream
     {

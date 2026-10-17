@@ -37,6 +37,7 @@ internal static class OpenAiCases
         {
             var result = await Send(client, Request());
             Assert(result.Ok && result.Audio.SequenceEqual(Wave()), "Binary WAV success");
+            using (var body = JsonDocument.Parse(handler.Body)) Assert(body.RootElement.GetProperty("stream").ValueKind == JsonValueKind.False, "Buffered TTS explicitly requests stream=false");
             Assert(handler.Calls == 1 && handler.Url == "https://fixture.invalid/v1/audio/speech", "One exact endpoint attempt");
             Assert(handler.Authorization == "Bearer fixture-openai-secret", "Standard bearer authentication");
             using var payload = JsonDocument.Parse(handler.Body);

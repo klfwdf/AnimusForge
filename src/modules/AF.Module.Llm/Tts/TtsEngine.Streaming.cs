@@ -24,6 +24,7 @@ internal sealed partial class TtsEngine
         // The transport enforces 32 MiB total; even 8 kHz / 2s segments fit below this item cap.
         using var segments = new BlockingCollection<AudioSegment>(2048);
         ProviderSnapshot config = job.Settings;
+        LogTtsReport("Streaming.Request", job.AgentIndex, "provider=OpenAI-compatible;stream=true;response_format=wav");
         Task<TtsSynthesisResult> producer = Task.Run(async () =>
         {
             try
