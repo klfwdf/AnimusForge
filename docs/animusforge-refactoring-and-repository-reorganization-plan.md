@@ -1,3 +1,14 @@
+<a id="policy-rereview-publication-20261018"></a>
+## 政策重评替换最小职责重构发布（2026-10-18，OFFLINE_VERIFIED）
+
+- 在最新上游 main 基础上仅合入已验证的政策重评职责重构与既有契约测试；不引入本地调试平台、实机记录、其他历史分支或私有验证目录。用户要求发布版本回到 v1.6.2，SubModule/AssemblyFileVersion 与上游的 v1.6.2 / 1.6.2.0 保持一致；AssemblyVersion 1.5.4.0 与存档类型身份不变。
+- 真实决策 owner：`PolicySystem/Core/CustomPolicyBehavior.Management.cs` 3517–3548 两种记录事实适配；3550–3578 CanReconcile/Decide；3580–3609 TryReadCurrent；3611–3662 Finalize；3702–3720 Reconcile。地方/附庸/国家统一资格与明确前驱校验，发布和读档复用同一决策。只认 SupersedesRecordId 并核验自身/scope/root，不按正文来源、时间或同 root 活动政策集合推断目标，旧算法不作为备用。
+- 原提交标记在停止之前保存，已提交但停止失败仍可重试；旧 B 可补齐 B→A，不影响 C。通知后重新读取当前 storage key 并核验双方身份，不写回过时快照，损坏状态不冒充空记录。原停止副作用、存档字段、公开 API 与加载顺序保持，仅在原发布/加载事件运行，无新增 Tick IO/轮询/全世界扫描。不处理无关 NPC 或自动恢复已受损存档。
+- 测试沿用 `tests/bridges/Policy/PolicyEffectModule.ContractTests/Program.cs`：15975–16078 Recovery；16080–16112 Decisions；16130–16185 RetryAndRevalidation；16200–16208 RoundTrip；16219–16272 Fixture。两 API 最终候选各 854 项重评、2668 项生命周期恢复断言通过，覆盖永久/有限、零/一次/多次重评、重复协调、提交后未停止、失败重试、旧标记、不同正文来源、空/缺失/自指/跨 root/scope 及状态漂移。
+- 本轮上游合并后的生产/测试源码与上述已验重构一致；双实现各 363 warnings / 0 errors，Bootstrap 0/0，双 Coup seam/managed registration 和完整 Stage/CN/EN 3523 项投影、实际 DLL 双语门禁与 ZIP CRC 通过。引用 BuildInfo 为 v1.3.15.110062 / v1.4.6.115628。测试初始宿主缺少支持依赖和显式合成模块根，加载诊断定位后只补齐隔离夹具，原生产/测试源码及断言不改，最终 PASS。
+- 以上构建/包验证对应当时 1.6.3.0 FileVersion 的相同业务源码；按用户后续要求仅恢复版本元数据到上游 1.6.2.0，未重建、未重新生成或重命名旧 ZIP，也未修改已交付桌面归档。不能把旧归档标成 1.6.2 或声称当前元数据重新构建过。
+- 未跑全仓、新一轮全量语义审计、实机、真实 provider 或真实玩家 .sav 恢复；内存 IDataStore 回放不冒充原生存档/游戏世界验收。已误废止并保存的数据不自动复活。聚焦撤销本次政策与测试差异可回到上游算法，不改写历史；部署、重新打包和存档修复须另行授权。
+
 <a id="tts-stream-request-20261017"></a>
 ## 新服务流式请求参数补齐（2026-10-17，PROVIDER / EN_DEPLOY / PUSH VERIFIED，LIVE_GAME_NOT_RUN）
 

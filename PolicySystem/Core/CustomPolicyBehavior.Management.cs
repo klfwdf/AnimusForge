@@ -3495,6 +3495,119 @@ public sealed partial class CustomPolicyBehavior
 		}
 	}
 
+	private enum PolicyReReviewReplacementAction
+	{
+		None,
+		StopPredecessor,
+		Invalid
+	}
+
+	private sealed class PolicyReReviewReplacementFacts
+	{
+		internal string StorageKey;
+		internal string RecordId;
+		internal string ScopeKind;
+		internal string RootRecordId;
+		internal string SourceRecordId;
+		internal string SupersedesRecordId;
+		internal bool PublicationCommitted;
+		internal bool CanStop;
+	}
+
+	private static PolicyReReviewReplacementFacts DescribePolicyReReviewReplacement(LocalPolicyRecordSaveData record)
+		=> record == null ? null : new PolicyReReviewReplacementFacts
+		{
+			StorageKey = record.RecordId,
+			RecordId = record.RecordId,
+			ScopeKind = record.ScopeKind,
+			RootRecordId = record.ReReviewRootRecordId,
+			SourceRecordId = record.ReReviewSourceRecordId,
+			SupersedesRecordId = record.SupersedesRecordId,
+			PublicationCommitted = record.ReReviewReplacementCommitted
+				|| (string.Equals(record.ScopeKind, PolicyScopeLocal, StringComparison.OrdinalIgnoreCase)
+					&& string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase))
+				|| (string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase)
+					&& (record.ExternalCommitState ?? string.Empty).StartsWith("externalCommitted", StringComparison.OrdinalIgnoreCase)),
+			CanStop = string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
+		};
+
+	private static PolicyReReviewReplacementFacts DescribePolicyReReviewReplacement(DynamicPolicySaveData record)
+		=> record == null ? null : new PolicyReReviewReplacementFacts
+		{
+			StorageKey = record.PolicyObjectId,
+			RecordId = record.RecordId,
+			ScopeKind = PolicyScopeKingdom,
+			RootRecordId = record.ReReviewRootRecordId,
+			SourceRecordId = record.ReReviewSourceRecordId,
+			SupersedesRecordId = record.SupersedesRecordId,
+			PublicationCommitted = record.ReReviewReplacementCommitted
+				|| (string.Equals(record.Status, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
+					&& string.Equals(record.CommitState, PolicyCommitStateActive, StringComparison.OrdinalIgnoreCase)),
+			CanStop = string.Equals(record.Status, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(record.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase)
+		};
+
+	private static bool CanReconcilePolicyReReviewReplacement(PolicyReReviewReplacementFacts replacement)
+		=> replacement != null && replacement.PublicationCommitted
+			&& !string.IsNullOrWhiteSpace(replacement.RecordId)
+			&& !string.IsNullOrWhiteSpace(replacement.SourceRecordId)
+			&& !string.IsNullOrWhiteSpace(replacement.RootRecordId);
+
+	private static PolicyReReviewReplacementAction DecidePolicyReReviewReplacement(
+		PolicyReReviewReplacementFacts replacement,
+		PolicyReReviewReplacementFacts predecessor)
+	{
+		if (!CanReconcilePolicyReReviewReplacement(replacement)
+			|| string.IsNullOrWhiteSpace(replacement.SupersedesRecordId))
+		{
+			return PolicyReReviewReplacementAction.None;
+		}
+		if (string.Equals(replacement.RecordId, replacement.SupersedesRecordId, StringComparison.OrdinalIgnoreCase))
+		{
+			return PolicyReReviewReplacementAction.Invalid;
+		}
+		// Missing history is not permission to select another active record from the lineage.
+		if (predecessor == null) return PolicyReReviewReplacementAction.None;
+		if (!string.Equals(predecessor.RecordId, replacement.SupersedesRecordId, StringComparison.OrdinalIgnoreCase)
+			|| !string.Equals(predecessor.ScopeKind, replacement.ScopeKind, StringComparison.OrdinalIgnoreCase)
+			|| !string.Equals(FirstNonEmpty(predecessor.RootRecordId, predecessor.RecordId), replacement.RootRecordId, StringComparison.OrdinalIgnoreCase))
+		{
+			return PolicyReReviewReplacementAction.Invalid;
+		}
+		return predecessor.CanStop ? PolicyReReviewReplacementAction.StopPredecessor : PolicyReReviewReplacementAction.None;
+	}
+
+	private bool TryReadCurrentPolicyReReviewReplacement(
+		PolicyReReviewReplacementFacts identity,
+		out PolicyReReviewReplacementFacts current)
+	{
+		current = null;
+		if (identity == null) return true;
+		if (string.IsNullOrWhiteSpace(identity.StorageKey)) return false;
+		try
+		{
+			if (string.Equals(identity.ScopeKind, PolicyScopeKingdom, StringComparison.OrdinalIgnoreCase))
+			{
+				if (_quarantinedDynamicPolicyIds.Contains(identity.StorageKey)) return false;
+				if (!_dynamicPolicyRegistry.TryGetValue(identity.StorageKey, out string rawDynamic)) return true;
+				current = DescribePolicyReReviewReplacement(JsonConvert.DeserializeObject<DynamicPolicySaveData>(rawDynamic));
+			}
+			else
+			{
+				if (!_localPolicyRecords.TryGetValue(identity.StorageKey, out string rawLocal)) return true;
+				current = DescribePolicyReReviewReplacement(NormalizeLocalPolicyRecord(JsonConvert.DeserializeObject<LocalPolicyRecordSaveData>(rawLocal)));
+			}
+			return current != null
+				&& string.Equals(current.StorageKey, identity.StorageKey, StringComparison.OrdinalIgnoreCase)
+				&& string.Equals(current.RecordId, identity.RecordId, StringComparison.OrdinalIgnoreCase)
+				&& string.Equals(current.ScopeKind, identity.ScopeKind, StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private bool FinalizePolicyReReviewReplacement(string newRecordId)
 	{
 		string id = (newRecordId ?? string.Empty).Trim();
@@ -3502,68 +3615,50 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return false;
 		}
-		LocalPolicyRecordSaveData local = LoadLocalPolicyRecords()
+		List<LocalPolicyRecordSaveData> localRecords = LoadLocalPolicyRecords();
+		LocalPolicyRecordSaveData local = localRecords
 			.FirstOrDefault(record => string.Equals(record.RecordId ?? string.Empty, id, StringComparison.OrdinalIgnoreCase));
+		List<DynamicPolicySaveData> dynamicRecords = local == null ? LoadDynamicPolicies() : null;
+		DynamicPolicySaveData dynamic = dynamicRecords?.FirstOrDefault(record => string.Equals(record.RecordId, id, StringComparison.OrdinalIgnoreCase));
+		PolicyReReviewReplacementFacts replacement = local != null
+			? DescribePolicyReReviewReplacement(local) : DescribePolicyReReviewReplacement(dynamic);
+		if (replacement == null) return false;
+		PolicyReReviewReplacementFacts predecessor = local != null
+			? DescribePolicyReReviewReplacement(localRecords.FirstOrDefault(record => string.Equals(record.RecordId, replacement.SupersedesRecordId, StringComparison.OrdinalIgnoreCase)))
+			: DescribePolicyReReviewReplacement(dynamicRecords.FirstOrDefault(record => string.Equals(record.RecordId, replacement.SupersedesRecordId, StringComparison.OrdinalIgnoreCase)));
+		if (DecidePolicyReReviewReplacement(replacement, predecessor) == PolicyReReviewReplacementAction.Invalid) return false;
+		if (!CanReconcilePolicyReReviewReplacement(replacement)) return true;
+
 		if (local != null)
 		{
-			if (string.IsNullOrWhiteSpace(local.ReReviewSourceRecordId)
-				|| string.IsNullOrWhiteSpace(local.ReReviewRootRecordId))
-			{
-				return true;
-			}
 			local.ReReviewReplacementCommitted = true;
 			_localPolicyRecords[local.RecordId] = JsonConvert.SerializeObject(local);
-			NpcRulerPolicyBehavior.MarkPlayerPolicyReReviewCommittedForExternal(local.RecordId);
-			bool success = true;
-			foreach (LocalPolicyRecordSaveData predecessor in LoadLocalPolicyRecords()
-				.Where(record => record != null
-					&& !string.Equals(record.RecordId, local.RecordId, StringComparison.OrdinalIgnoreCase)
-					&& string.Equals(record.ScopeKind, local.ScopeKind, StringComparison.OrdinalIgnoreCase)
-					&& string.Equals(FirstNonEmpty(record.ReReviewRootRecordId, record.RecordId), local.ReReviewRootRecordId, StringComparison.OrdinalIgnoreCase)
-					&& string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase))
-				.ToList())
-			{
-				if (!TryStopLocalPolicyRecord(predecessor.RecordId, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_116"), out string stopError))
-				{
-					success = false;
-					PolicySystemLog.Failure("ReReview", "local-predecessor-stop-failed", stopError,
-						"newRecordId=" + local.RecordId + " predecessor=" + predecessor.RecordId);
-				}
-			}
-			return success;
 		}
+		else
+		{
+			dynamic.ReReviewReplacementCommitted = true;
+			StoreDynamicPolicy(dynamic);
+		}
+		NpcRulerPolicyBehavior.MarkPlayerPolicyReReviewCommittedForExternal(id);
 
-		DynamicPolicySaveData dynamic = LoadDynamicPolicies()
-			.FirstOrDefault(record => string.Equals(record.RecordId ?? string.Empty, id, StringComparison.OrdinalIgnoreCase));
-		if (dynamic == null)
+		// Cross-owner publication may invalidate the snapshot; never write it back after stopping.
+		if (!TryReadCurrentPolicyReReviewReplacement(replacement, out replacement)
+			|| !TryReadCurrentPolicyReReviewReplacement(predecessor, out predecessor)
+			|| replacement == null) return false;
+		PolicyReReviewReplacementAction action = DecidePolicyReReviewReplacement(replacement, predecessor);
+		if (action == PolicyReReviewReplacementAction.Invalid) return false;
+		if (action == PolicyReReviewReplacementAction.None) return true;
+		bool kingdom = string.Equals(replacement.ScopeKind, PolicyScopeKingdom, StringComparison.OrdinalIgnoreCase);
+		string stopError;
+		bool success = kingdom
+			? TryStopDynamicPolicyRecordForReReview(predecessor.RecordId, out stopError)
+			: TryStopLocalPolicyRecord(predecessor.RecordId, PolicyCompatibilityTexts.Get("Legacy_MapPolicyEndReasonToDisplay_116"), out stopError);
+		if (!success)
 		{
-			return false;
+			PolicySystemLog.Failure("ReReview", kingdom ? "kingdom-predecessor-stop-failed" : "local-predecessor-stop-failed", stopError,
+				"newRecordId=" + id + " predecessor=" + predecessor.RecordId);
 		}
-		if (string.IsNullOrWhiteSpace(dynamic.ReReviewSourceRecordId)
-			|| string.IsNullOrWhiteSpace(dynamic.ReReviewRootRecordId))
-		{
-			return true;
-		}
-		dynamic.ReReviewReplacementCommitted = true;
-		StoreDynamicPolicy(dynamic);
-		NpcRulerPolicyBehavior.MarkPlayerPolicyReReviewCommittedForExternal(dynamic.RecordId);
-		bool dynamicSuccess = true;
-		foreach (DynamicPolicySaveData predecessor in LoadDynamicPolicies()
-			.Where(record => record != null
-				&& !string.Equals(record.RecordId, dynamic.RecordId, StringComparison.OrdinalIgnoreCase)
-				&& string.Equals(FirstNonEmpty(record.ReReviewRootRecordId, record.RecordId), dynamic.ReReviewRootRecordId, StringComparison.OrdinalIgnoreCase)
-				&& (string.Equals(record.Status, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
-					|| string.Equals(record.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase)))
-			.ToList())
-		{
-			if (!TryStopDynamicPolicyRecordForReReview(predecessor.RecordId, out string stopError))
-			{
-				dynamicSuccess = false;
-				PolicySystemLog.Failure("ReReview", "kingdom-predecessor-stop-failed", stopError,
-					"newRecordId=" + dynamic.RecordId + " predecessor=" + predecessor.RecordId);
-			}
-		}
-		return dynamicSuccess;
+		return success;
 	}
 
 	private bool TryStopDynamicPolicyRecordForReReview(string recordId, out string error)
@@ -3607,22 +3702,10 @@ public sealed partial class CustomPolicyBehavior
 	private void ReconcilePolicyReReviewReplacementsAfterLoad()
 	{
 		List<string> committedRecordIds = LoadLocalPolicyRecords()
-			.Where(record => record != null
-				&& !string.IsNullOrWhiteSpace(record.ReReviewSourceRecordId)
-				&& (record.ReReviewReplacementCommitted
-					|| (string.Equals(record.ScopeKind, PolicyScopeLocal, StringComparison.OrdinalIgnoreCase)
-						&& string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase))
-					|| (string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase)
-						&& (record.ExternalCommitState ?? string.Empty).StartsWith("externalCommitted", StringComparison.OrdinalIgnoreCase))))
+			.Select(record => DescribePolicyReReviewReplacement(record))
+			.Concat(LoadDynamicPolicies().Select(record => DescribePolicyReReviewReplacement(record)))
+			.Where(CanReconcilePolicyReReviewReplacement)
 			.Select(record => record.RecordId)
-			.Concat(LoadDynamicPolicies()
-				.Where(record => record != null
-					&& !string.IsNullOrWhiteSpace(record.ReReviewSourceRecordId)
-					&& (record.ReReviewReplacementCommitted
-						|| (string.Equals(record.Status, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
-							&& string.Equals(record.CommitState, PolicyCommitStateActive, StringComparison.OrdinalIgnoreCase))))
-				.Select(record => record.RecordId))
-			.Where(recordId => !string.IsNullOrWhiteSpace(recordId))
 			.Distinct(StringComparer.OrdinalIgnoreCase)
 			.ToList();
 		foreach (string recordId in committedRecordIds)
@@ -3630,7 +3713,7 @@ public sealed partial class CustomPolicyBehavior
 			if (!FinalizePolicyReReviewReplacement(recordId))
 			{
 				PolicySystemLog.Failure("ReReview", "reload-reconciliation-incomplete",
-					"The replacementCommitted marker was retained; reconciliation will be retried on a later load.",
+					"Replacement reconciliation did not complete; existing records were retained for a later load.",
 					"recordId=" + recordId);
 			}
 		}
