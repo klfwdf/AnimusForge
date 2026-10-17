@@ -1,4 +1,11 @@
-# 当前交接：新服务 TTS 流式播放与口型链路已部署 EN（2026-10-17，PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
+# 当前交接：TTS 上游 stream 参数已补齐、部署 EN 并推送（2026-10-17，PROVIDER / EN_DEPLOY / PUSH VERIFIED，LIVE_GAME_NOT_RUN）
+
+- 产品 `ca460c130` 修正上一版仅本地分段、没有向上游发送 stream 的缺口。开启明确发送 `stream=true`，关闭明确 false；更新 CN/EN 实际开关说明。火山、配置身份和 API/TTS API 设置位置保持。
+- 新增请求体断言在旧 DLL 上失败、修复后流式 22/整句 33 通过；真实发送链路确认 true，返回 WAV 的 8 段可正常解析，实际 winmm 连续缓冲/取消通过。双 API/Bootstrap/Coup/registration、生命周期 70、接线 8、原生双语配置/说明 59 通过。首 PCM 39.461s、结束 47.936s；不据此承诺服务器增量合成或更低首包。
+- 原 EN 部署更新 11 项，3523 项期望哈希与三 DLL/双语 UI 匹配，12 个既有保护文件未变；已按“部署后推送”普通推送并独立核实远端 `ca460c130`，状态记录随后同步，最终 SHA 见本机收据。未改版本/打包/启动游戏；后台 UI 分类、上游合成内部状态、实机嘴型仍未验。
+- [唯一主台账、代码证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-stream-request-20261017)；本机 `artifacts/tts-stream-request-20261017/receipt.json`。聚焦撤销 `ca460c130` 后原入口重建/按授权部署，玩家配置和 Key 保留；下方原客户端流式状态仅作为历史。
+
+# 历史交接：新服务 TTS 流式播放与口型链路已部署 EN（2026-10-17，PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
 
 - 产品 `64e50ebbc`：仅 OpenAI 兼容新服务增加 WAV 分段读取/播放，首段 0.5s、之后 2s，复用火山已有场景 WAV/Rhubarb 与地图音频消费者，整句单 request/开始/终态，字幕不随分段重置。用户明确火山本身不改，原 V1/V3 网关与旧播放分支保持；TTS 全组按新要求移到 MCM API 页的 TTS API，原配置字段与 owner 不变。
 - 双 API/Bootstrap/Coup/registration、实际 DLL 流解析 20、实际 winmm 连续缓冲与取消、原新服务 32/火山 V3 46、生命周期 70、场景 135+54+30、配置投影与 JSON 两组合各 57、接线 8 通过。实际服务单次首 PCM 13.985s、接收完 17.381s，提前约 3.396s 交付；不承诺降低服务器首包。
