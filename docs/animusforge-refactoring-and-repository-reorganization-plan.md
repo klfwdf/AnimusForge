@@ -9,6 +9,7 @@
 - 真实服务单次验证：模型 gpt-sovits-v4、音色 zh_default；首 PCM 13.985s，接收完成 17.381s，提前 3.396s，8 段、48kHz、13.04s 非静音音频。证明下载完成前分段交付，不证明上游增量合成或降低服务端首包。Key 只从用户明确引用的会话在进程内读取，没有写入源码/日志/安装设置。
 - 已验：原统一 Debug 1.3（v1.3.15）/1.4（v1.4.6）/Bootstrap、双 Coup seam/registration 成功；实际 1.4 DLL 流解析 20 项及实际 Windows winmm 连续缓冲/取消通过；原 OpenAI 网关 32 项、火山原回放及 V3 46 项通过；生命周期 70、场景生命周期 135 + 原输出 54 + 设置 30、接线 8 通过；原生 MCM/终端实际 JSON、CN/EN 标题、全组只在 API/TTS API 出现，1.4 CN 与 1.3 EN 各 57 项通过。完整 Stage 成功，旧 Stage 完整保留。
 - EN 部署：沿用原 `Invoke-ManagedStageDeployment`，更新 13 项；3523/3523 期望哈希通过（其中 3133 个清单项按原用户内容/导出保留规则校验）。部署后 1.3/1.4/Bootstrap 三 DLL 与最终候选一致，四份双语 UI 资源一致，12 个既有保护文件 SHA/大小/时间戳不变，模块 XML 仍只加载 Bootstrap。收据 `english-deployment.json`、`deployment-before.json`、`deployment-after.json`；安装目录 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。没有修改文档 MCM 值或自动填写 Key。
+- 后续用户明确授权“推送”：核实 `F:/AnimusForge-main` / main，fetch 后远端无新增，普通推送 9 个提交（含此前 1.6.2 发布改动）成功，远端从 `ee316b8e6` 到 `ac0a6bbc3`，独立 `git ls-remote` 一致。提交历史检查未发现新增凭据字面量、专用本地交接、二进制或私密产物；Microsoft/、NuGet/ 保持未跟踪。仅推送及状态文档，没有再次修改运行代码、构建、部署或发布 ZIP；既有验证/未验边界保持。状态记录随后同步，最终远端 SHA 见本机 `artifacts/tts-streaming-20261017/push-receipt.json`。
 - 未验：未启动游戏，NPC 实际声音/嘴型同步、地图 tableau 分段交接和主观断句效果仍须实机；上游长期稳定性未验。`NativeWaitAudioBoundaryTests` 两 API 因历史原子 oracle 修订 `1235727e...` 在当前仓库不可读而未运行，没有改低哈希门槛；前次宽套件的无关失败仍见下方原接入记录，不称全仓通过。
 - 本地证据：`artifacts/tts-streaming-20261017/` 下 `build-new-only.log`、`stream-replay1.log`、`streamed-live.json`、`buffered-replay.log`、`fire-regression.log`、`lifetime-new-only.log`、`scene-new-only3.log`、`settings-new-only.log`、`settings-13-en.log`、`wiring-new-only.log`、`stage.log`。1.4 候选 SHA256 `87B925DC9C238CDE6A7223ECC5A9EC47B0D214159B6074D81E03F60C28965F49`；依赖/marker 由 replay runner 校验。
 
@@ -27,7 +28,7 @@
 | `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/AnimusForgeMcmVisibility.cs` / `AnimusForgeMcmPages.cs` | 34–37、155；`ApiGroup` 99–105 | TTS 全组回到 API 页；原 PropertyRef 和保存 owner 不变。 |
 | `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsCoverage.cs` | `ViewGroup` 101–102 | 终端同组 TTS API 名称，仍按一次元数据缓存与原 setter。 |
 
-- 聚焦回滚：`git revert 64e50ebbc` 后用原统一入口重新构建，按明确授权重新部署；已保留的 `artifacts/tts-streaming-20261017/previous-stage-AnimusForge` 是上次完整 Stage。安装流程无 Recovery/备份/自动回滚，回退不得覆盖玩家 Configs/CustomPrompts 或文档 MCM JSON。无版本递增、正式双包或 push。
+- 聚焦回滚：`git revert 64e50ebbc` 后用原统一入口重新构建，按明确授权重新部署；已保留的 `artifacts/tts-streaming-20261017/previous-stage-AnimusForge` 是上次完整 Stage。安装流程无 Recovery/备份/自动回滚，回退不得覆盖玩家 Configs/CustomPrompts 或文档 MCM JSON。本次 TTS 实施无版本递增或正式双包；后续明确授权的 push 已完成，见上条。
 
 <a id="openai-tts-20261017"></a>
 ## OpenAI 兼容 TTS 接入（2026-10-17，SOURCE / PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
