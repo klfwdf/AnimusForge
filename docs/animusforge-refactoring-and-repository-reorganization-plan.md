@@ -1,10 +1,27 @@
 <a id="civilian-flee-repair-20261018"></a>
-## 城镇与 GCCZ 平民逃跑回归修复（2026-10-18，ACTIVE）
+## 城镇与 GCCZ 平民逃跑回归修复（2026-10-18，OFFLINE_VERIFIED / LIVE_GAME_NOT_RUN）
 
-- 用户授权：对照旧 AF 源码修复所有城镇的平民逃跑，保留其他势力卫兵反击，并在检查后推送。基线 origin/main `f5235be2`；独立工作树 `AF-FIX-CIVILIAN-FLEE-20261018`，不混入本机 GCCZ/政策/TTS 等未发布实验。
-- 历史依据：`0c961a6b` 原城镇平民直接撤离/原生 Flee；`9bf0f66a` 自有城镇接管绕开旧投降；`918f3832` GCCZ 最近导航网格/附近候选点。`ee796fec` 删除候选点后，运行日志命中无导航目标的反复拒绝。旧投降本身早于重构，问题包括攻击准备与后续接管的控制冲突，不能归因于仅移动文件的提交。
-- 最小范围：Taunt 被动受击移动与 SETS 接管、SETS 城镇冲突平民惊恐、GCCZ 局部逃跑目标修正和有节流的失败重选；不改守卫/领主敌对规则、犯罪/关系结算、存档键、版本、TTS、政策或打包部署入口。
-- 验收门：原函数隔离回归先复现旧失败；有效/无效导航与重试预算；自有/他有城市与守卫/同伴/处决隔离；现有 Taunt 与 GCCZ 套件；原入口 1.3/1.4/Bootstrap 构建及接缝门禁；推送前仅本任务差异。实机、真实存档、部署均 NOT_RUN，不以离线测试声称全部玩家零风险。
+- 用户授权对照旧源码修复并推送，保留其他势力卫兵反击；基线 origin/main `f5235be2`，意图检查点 `58e5434b`，独立工作树 `AF-FIX-CIVILIAN-FLEE-20261018`。不混入本机 GCCZ、政策、TTS 等未发布实验；版本仍 v1.6.2，不部署、不打包。
+- 历史与运行证据：`0c961a6b` 原平民最近导航网格/16 点直接撤离与原生 Flee；`9bf0f66a` 自有城镇由 SETS 接管绕开旧投降；`c4bfe83f` 为重构前对照。举手逻辑本身早于重构，`2f833b28` 仅搬文件且该文件内容不变，不能把所有回归归给它。10/16 运行日志显示 SETS 事件后仍重复 `owned_settlement_passive_maintain`；攻击释放准备提前登记对象，后续维护重新设队并把速度归零，覆盖 SETS 逃跑。其他势力城镇 SETS 冲突只报警，显式持续平民撤离原来仅 coup 分支启动。
+- GCCZ：`918f3832` 的最近导航网格/附近候选点在 `ee796fec` 的移动适配中被精确 `GetNavMesh` 拒绝替代。10/17 日志已经进入 witness Fleeing，却每约 3.5s 重复 `No native navmesh target; ... Source=local_player_attack_witness_flee:long_flee`；坏目标持续缓存。此次仅对该 source 恢复投影/最多 14 个候选点，保留当前 native navigator，不恢复旧瞬移/未校验裸坐标 fallback。失败清掉该平民的目标/订单缓存，保留 3.5s 退避及原生逃跑目标，避免每帧重试或清掉正在执行的 fallback。
+- Taunt：保留受伤前敌对/伤害准备，普通平民不再进入举手定格；维护先让出 SETS 所属对象，非 SETS 平民复用现有直接撤离和 Flee。维护预算改为每批 1Hz，受伤标记不再绕过预算；原非 SETS 卫兵/领主处置分支继续用原 hold 方法。SETS：只把已有 coup 平民撤离接到已开启的普通城镇冲突，1Hz 扫描、每人至少 4s 重寻路；保留守卫/领主/战斗队伍/玩家队伍排除、对话/交易暂停、胜利停止与原 coup 条件，不扩张普通村庄/城堡触发。
+- 保持：卫兵敌对选择、领主升级、处决/决斗/战场场景资格、忠诚/犯罪/关系结算、存档/设置/API 身份不改。18 个相关生产方法（含重载）与 `f5235be2` 内容逐一一致；这只证明这些方法未改，不冒充完整 Mission 调用序或实机行为验证。新日志仅内部英文诊断，无玩家文案或 CN/EN 资源变化。
+
+### 已核实代码范围（相对本条修复源码）
+
+| 生产文件 | 一基行号 / 符号 | 本次责任与边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs` | 3251–3355 `EnsureOwnedSettlementPassiveAttackHostility`；3807–3911 维护/刷新/`TryFleeOwnedSettlementPassiveVictim` | 只改被动受击平民移动与 SETS 交接；非 SETS authority 仍走原 hold |
+| `src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs` | 3455–3459 Tick gate；4952–5002 `MaintainConflictCivilianPanic` | 开启的城镇冲突接入既有居民撤离；守卫战斗 owner 不改 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.NativeMovementAdapter.cs` | 58–117 赋帧/`TryResolveLocalFleeWorldPosition` | 仅 local witness long_flee 恢复最近网格/附近点；跟随/集合/守卫移动保持精确校验 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs` | 6679–6759 `KeepLocalConflictCivilianFleeing` | 失败目标淘汰与 3.5s 退避，不改伤害、战后状态或集结规则 |
+
+- 回归：`tests/modules/AF.Module.Taunt/CivilianFleeRegressionTests/Run.ps1` 从待验源码抽取实际方法（仅适配私有命名），引擎叶节点用 fake。相同 26 项断言在 `f5235be2` 上失败 15 项、最终修复 26/26；失败数不是 15 个独立根因。覆盖被动逃跑/原生 fallback、SETS 先让出队伍、受伤节流、authority 保持、GCCZ 有效/无效/附近目标及冷却、普通城镇/coup/村庄/胜利边界。夹具扩展时发现私有名称替换误改内部 authority 调用导致回放递归，仅修夹具并保留失败日志，未把该问题归因生产代码。
+- 既有 `SceneTauntContextContractTests`：处决隔离 24、场景资格 22、惩罚账本 16、生命周期 14，共 76/76；`GcczRepairSyncTests` 136/136。18 个未改方法的核验存 `preserved-methods.json`。完整实机、真实存档、Native NavMesh 和 Mission 回调顺序 NOT_RUN；不是全仓全绿或所有玩家零风险承诺。
+- 最终原入口 `scripts/build/build_single_module.ps1` Debug：1.3（v1.3.15.110062）与 1.4（v1.4.8.119303）各 367 warnings / 0 errors，Bootstrap 2 warnings / 0 errors；Bootstrap 两条 NU1900 是 NuGet 漏洞数据源不可访问，没有绕过门禁。双 Coup seam 与 managed registration 通过。1.3 DLL SHA256 `D3050F3AA83C27E1578AFFCBAE4ECFAE0A7DC9D36248AE76D9F4AD79262C503C`；1.4 `35A9C39C83D55427B20E2CFFE20011E06446411BB49713C9C546026129864157`；Bootstrap `B50DC866183C4A7A2540E0AD623389896233AA444CA95A13F0E59EA4F3B9C940`。没有修改构建脚本或安装目录。
+- 本机证据 `artifacts/civilian-flee-20261018/`：`before.log`、`after.log`、`build-final.log`、`taunt-context-final.log`、`gccz-repair-final.log`、`preserved-methods.json`、`receipt.json`；旧源码和运行溯源保留于之前工作树 `AF-TOWN-MEMORY-MAIN-20261016/artifacts/scene-flee-review-20261017/`，不提交日志/安装产物/私有资料。发布只含本任务源码、回归、主台账与 HANDOFF；最终推送 SHA 以独立远端核对和本机收据为准。
+- 下一验收：按实际发布流程安装后，在自有/附属/其他势力城镇分别攻击平民，确认受害者与旁观者逃离、他有城镇卫兵仍反击；GCCZ 现场核对逃跑实际位移及无导航点 fallback，再核对对话、处决、决斗/原版战场不受影响。回退用聚焦 inverse/revert 撤销本修复提交后原入口重建；不 reset、强推或覆盖玩家数据。
+
 <a id="policy-rereview-publication-20261018"></a>
 ## 政策重评替换最小职责重构发布（2026-10-18，OFFLINE_VERIFIED）
 

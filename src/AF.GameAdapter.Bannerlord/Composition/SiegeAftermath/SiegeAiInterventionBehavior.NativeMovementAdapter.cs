@@ -63,10 +63,15 @@ public partial class SiegeAiInterventionBehavior
             Logger.Log("GcczMovement", "Native navigator unavailable. Agent=" + agent.Index + ", Source=" + source);
             return false;
         }
+        bool localFlee = string.Equals(source, SiegeLocalCivilianReactionProfile.WitnessFleeSource + ":long_flee", StringComparison.Ordinal);
         WorldPosition position = new WorldPosition(mission.Scene, target);
-        if (position.GetNavMesh() == UIntPtr.Zero)
+        bool hasNavmesh = localFlee
+            ? TryResolveLocalFleeWorldPosition(mission, agent.Position, target, out position)
+            : position.GetNavMesh() != UIntPtr.Zero;
+        if (!hasNavmesh)
         {
-            navigator.ClearTarget();
+            // A failed local-flee probe must not cancel an already-running native escape.
+            if (!localFlee) navigator.ClearTarget();
             Logger.Log("GcczMovement", "No native navmesh target; movement deferred. Agent=" + agent.Index + ", Source=" + source);
             return false;
         }
@@ -76,6 +81,38 @@ public partial class SiegeAiInterventionBehavior
         navigator.SetTargetFrame(position, rotation, SiegeAgentWallRescueProfile.NativeTargetFrameArrivalRadius,
             SiegeAgentWallRescueProfile.NativeTargetFrameStopDistance, flags, false);
         SetAgentLookTowardPoint(agent, resolvedTarget);
+        return true;
+    }
+
+    // Restore the pre-ee796fec nearest-navmesh/nearby-candidate behavior only for
+    // local civilian escape; guard, follow, gather and duel movement keep their contract.
+    private static bool TryResolveLocalFleeWorldPosition(Mission mission, Vec3 origin, Vec3 target, out WorldPosition position)
+    {
+        Vec3 grounded = ProjectCivilianRoutPointToGround(mission, target);
+        position = new WorldPosition(mission.Scene, grounded);
+        if (position.GetNearestNavMesh() != UIntPtr.Zero) return true;
+
+        WorldPosition best = WorldPosition.Invalid;
+        float bestScore = float.MinValue;
+        Vec2 desired = grounded.AsVec2 - origin.AsVec2;
+        if (desired.LengthSquared > 0.04f) desired.Normalize();
+        for (int i = 0; i < SiegeAgentWallRescueProfile.NativeTargetFrameSampleCount; i++)
+        {
+            Vec3 candidate = mission.GetRandomPositionAroundPoint(grounded,
+                SiegeAgentWallRescueProfile.NativeTargetFrameSampleMinRadius,
+                SiegeAgentWallRescueProfile.NativeTargetFrameSampleMaxRadius, i % 2 == 0);
+            WorldPosition world = new WorldPosition(mission.Scene, candidate);
+            if (world.GetNearestNavMesh() == UIntPtr.Zero) continue;
+            Vec2 direction = world.AsVec2 - origin.AsVec2;
+            if (direction.LengthSquared < 0.25f) continue;
+            direction.Normalize();
+            float alignment = Vec2.DotProduct(direction, desired);
+            if (alignment < 0f) continue;
+            float score = -world.AsVec2.DistanceSquared(grounded.AsVec2) + alignment;
+            if (score > bestScore) { best = world; bestScore = score; }
+        }
+        if (bestScore == float.MinValue) return false;
+        position = best;
         return true;
     }
 }
