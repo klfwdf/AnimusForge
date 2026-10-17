@@ -1,3 +1,13 @@
+<a id="merge-prompt-main-20261018"></a>
+## 提示词性能修复与最新远端合并推送（2026-10-18，VERIFIED / LIVE_NOT_RUN）
+
+- 用户明确授权“拉取合并推送”。工作区F:/AnimusForge-main/main；开工dd52b76d9，相对远端7ac6e6849本地3/远端4提交。备份分支codex/backup-before-prompt-sync-20261018保留合并前HEAD；普通merge提交9d2b0a9bf，不改写共享历史。
+- 冲突仅HANDOFF和主台账顶部记录，双方内容完整串接保留；测试Program.cs自动合并，同时保留提示词刷新、政策重评/生命周期入口。逐文件确认本地DuelSettings/ModulePromptStorageTests等于c607598c5，远端PolicySystem、场景GCCZ/SETS/Taunt生产代码等于7ac6e6849。未改算法、配置、版本或构建/部署脚本。
+- 合并树原统一Debug双API1.3.15/1.4.6、Bootstrap、双Coup seam/registration构建exit0；最终实际DLL两API各提示词刷新65、政策重评恢复854、生命周期恢复2668 PASS。平民逃跑原Run.ps1在pwsh下26 PASS（engine fake）；劫掠关系批处理原生产源码/模拟原生调用27 PASS。Windows PowerShell旧Add-Type编译器首次不支持夹具语法，改用pwsh通过；政策大套件首次宿主两路径加载同名DLL造成类型不相容，统一typed/reflection使用exe旁同一候选后通过，未改生产或断言。原宽提示词/政策文档初始化的既有失败仍按上一节保留，不称全仓通过。
+- 原统一构建命令与上一节相同，仅输出至本地；合并后3DLL/marker冻结在artifacts/merge-prompt-main-20261018/verified-candidates，逐SHA匹配实际DLL回放。详细build.log、flee-pwsh.log、plunder.log、final13/、final14/、preflight.json、receipt.json位于该本机目录。
+- 推送范围仅本次本地3提交、合并与此状态记录；远端4提交保留。待推送历史预检文件仅主台账/HANDOFF、DuelSettings及两个测试文件，未发现指定凭据模式或私密本地产物；Microsoft/、NuGet/保持未跟踪，不纳入推送。普通push与独立ls-remote最终SHA以本机push-receipt.json核实。
+- 未实机、未验玩家旧档/provider/场景帧耗时，未部署/打包/改版本。撤销整次集成可对9d2b0a9bf使用有主线选择的focused inverse；仅撤提示词产品用git revert c607598c5，保留其他作者修复。备份分支用于比较，不hard reset或强推。
+
 <a id="prompt-fingerprint-directory-reuse-20261018"></a>
 ## 提示词定时指纹检查重复目录解析修复（2026-10-18，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
