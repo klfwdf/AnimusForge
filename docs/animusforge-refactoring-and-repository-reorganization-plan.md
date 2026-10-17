@@ -1,3 +1,36 @@
+<a id="openai-tts-20261017"></a>
+## OpenAI 兼容 TTS 接入（2026-10-17，SOURCE / PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
+
+- 产品提交 `35430bd23219567a316241f69634c80a4e999c1b`；意图检查点 `236620a35`，原基线 `60f3a8b213`。本节取代文末同日 INTENT 的状态；用户后续明确要求“做完部署”，已授权目标 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，保持实际安装的 EN 内容包。没有打包、push、版本递增或改默认交互入口。
+- 设置：终端 AI / MCM 的语音合成项选择 OpenAI-compatible，独立 API URL/Key、模型、统一音色、语速和 10–120 秒总超时。默认 URL `https://www.shenlanqaq.com/v1/audio/speech`、模型 `gpt-sovits-v4`、音色 `zh_default`、语速 1、超时 60；旧 JSON 默认仍走原火山，原开关、配置、NPC 音色保持。新服务不发送旧火山 NPC 音色；Key 没有写入源码、台账、报告或已安装设置。
+- 网络每条语音一次 attempt；Bearer 认证、二进制 PCM16 WAV、32 MiB 响应上限；拒绝 MP3/JSON/截断格式和全静音。调用方取消继续传播，owner 总超时覆盖发送及读取；不自动重试或跨服务回退。队列沿用容量 32 的串行 worker；在入队时捕获服务配置，网络结束复用原 request/generation/Agent 检查、winmm、场景 WAV 和口型事件。新增工作只发生在接单/合成边界，元数据继续一次缓存，无新增 Tick IO/扫描/反射。
+
+<a id="openai-tts-code-20261017"></a>
+### 代码证据（修订 35430bd23，行号为一基）
+
+| 源码 | 符号 / 行号 | 覆盖与边界 |
+| --- | --- | --- |
+| `src/AF.Contracts/Internal/OpenAiTtsContracts.cs` | `OpenAiTtsSynthesisRequest`，1–14 | 独立无凭据请求；不扩展公开子 MOD API，不伪造火山资源 ID。 |
+| `src/modules/AF.Module.Llm/Tts/OpenAiCompatibleTtsGateway.cs` | `SynthesizeAsync` 21–66；`ValidateWave` 71–111 | 实际认证、一次发送、受限读取、释放、WAV/静音校验；不拥有游戏对象或播放。 |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.Provider.cs` | `ProviderSnapshot` 15–39；`CallOpenAiApi` 41–48 | private owner 配置快照、独立禁重定向 client；凭据仅瞬态内存。 |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.cs` | `SpeakAsync` 252–310；`SpeakTestAsync` 313–331；`ProcessJob` 658–790 | 接单快照、所选服务分流，后续原音频/生命周期保持；未重写播放或口型算法。 |
+| `src/AF.GameAdapter.Bannerlord/Scene/NativeConversationSpeechAdapter.cs` | `IsTtsPlaybackEnabledForShout` 19–42；`IsTtsPlaybackEnabledForNativeConversation` 44–90；405 | 实际普通对话/喊话入口按所选服务启用，不再要求新服务打开火山开关。 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.Tts.cs` | `TtsProviderDropdown` / `IsSelectedTtsEnabled` 11–25；新设置 27–49；测试按钮 51–65 | 原 owner / preset / JSON；终端通过现有 `TerminalSettingsCoverage.AddMissing` 编译委托，MCM 经原两页投影。 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs` | `TestTtsVolcDedicatedVoice` 6659 附近 | 保留既有按钮身份，按选中服务测试；其他火山测试逻辑保持。 |
+| `content/modules/AF.Module.UI/ModuleData/Languages/{af_ui_strings.xml,CNs/af_ui_strings-zh-CN.xml}`、`content/modules/AF.Module.Llm/ModuleData/Languages/{afllm_ui_strings.xml,CNs/afllm_ui_strings-zh-CN.xml}` | TTS 分类、设置和错误稳定 key | 原 content-map 与 language_data 注册继续消费；55 个受影响 key 成对验证。 |
+
+### 实际验证与限制
+
+- `artifacts/openai-tts-20261017/receipt.json` 为本机详细收据；`build-final.log`：原 `build_single_module.ps1` 验证 1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628`、Bootstrap，双 Coup seam/registration 通过；实现各 363 个既有警告、0 错误。
+- `lifetime-final.log`：完整生产引擎/两个消费端的受控网络/游戏叶子回放 68 PASS；`wiring.log` 静态接线 8 PASS。`replay-final.log` 对最终 DLL 的实际新网关/配置检查 32 PASS，含错误、非 WAV、静音/反相混音、输入/大小上限、发送/读取取消和总超时、释放、旧配置及快照。未修改火山的原 V1 与 V3 46 项也已通过（`replay3.log`）。
+- `settings-tts-cn` / `settings-tts-en`：实际 1.3 CN 与 1.4 EN 内容投影、原生 MCM JSON、原终端 setter、两页投影、旧值保留及中英 native TextObject 消费各 40 PASS。`content.json` 检查 39 组注册资源中的本链 55 个 CN/EN key、变量和英文正文。
+- 真实 API 共提交两次且无自动重试：Python WAV 探测 13.52 秒返回 4.72 秒/48 kHz/mono/PCM16 非静音音频；实际 C# 网关加原播放器 WAV parser 9.38 秒返回 1.36 秒非静音音频，保存 `production-gateway.wav`。后者对应先前候选 SHA256 `270B273E85CAA144F8609EEB4670C3D645FEBF4ABA81A79C46D10E75A6F75781`；随后仅调整共享 UI 标签，网关实现保持，最终 DLL 离线 32 项重新通过。未进行主观音质/发音、英文合成、多音色、持续可靠性、费用或真实游戏播放/口型验收。
+- 宽范围设置旧测试在与本次无关的 `SupplementalChecks.BuildNative/BuildPromoted` 参数数量陈旧处失败；为本链增加显式 `--tts-only` 入口，不删除原断言或声称完整设置套件通过。全局终端 fallback 合同另在未改动的 `EnableAdultHeroPersonaAutoGeneration` hint 失败；已核实源码与资源该项均与基线相同，本次不扩大修复。两失败保留原始日志。
+- 部署使用原脚本。第一次在重置旧 Stage 前因旧资源与新源码不符而停止，未写游戏；将旧 Stage 完整保留到 `artifacts/openai-tts-20261017/previous-stage-AnimusForge`，另建干净 Stage，不放松门禁、不更新不存在的内容锁。后续 EN 候选/目标校验见本节部署结果。
+- **部署结果**：原 `deploy_module.ps1 -StageOnlyOutputDir <项目固定Stage>` 通过；随后调用原 `Get-AnimusForgePackageProjection -Language EN` 与 `Invoke-ManagedStageDeployment`，完整 EN 候选 3523 项通过，安装更新 18 项、按原规则保留列管项 3133 项，逐项期望哈希 3523/3523 通过。`deployment-after.json` 另外确认 1.3/1.4/Bootstrap 哈希与最终构建一致、模块 Id / Bootstrap 唯一声明正确、四份 UI 资源与 Stage 一致、12 个既有受保护文件的哈希或大小/时间戳未变。没有启动游戏、写入真实 API Key、创建部署 Recovery、自动回滚、打包或 push。
+- 最终产物 SHA256：1.3 `B17882DFDED7B4111043A7F062A1350D5F7A463A8C3B6039B43F94AAB675C86E`；1.4 `F7C096585AD80B64574F34C3C397397A45C07D1796DFF9D01671B2EAC06643FD`；Bootstrap `D8E97BF6EEB3FACE4318C734E8FF6CD92B250030F4716D69943531A391075A74`。命令/结果为 `stage.log`、`deploy-en.ps1`、`deploy-en.log`、`english-deployment.json`、`deployment-before.json` / `deployment-after.json`；候选在 `artifacts/openai-tts-20261017/english-candidate/AnimusForge`。已安装设置保留，因此首次使用新服务仍需玩家选择 OpenAI-compatible 并填写独立 Key。
+- 源码回滚：聚焦 `git revert 35430bd23` 后按原入口重建并显式部署；不 hard reset。安装回退需人工选择已验证旧产物并保护玩家资料；部署无 Recovery 备份或自动回滚。预先存在的 `Microsoft/`、`NuGet/` 保持未跟踪。
+
 <a id="package-cumulative-20261017"></a>
 ## 正式双包与累计玩家公告（2026-10-17，PACKAGE_VERIFIED / LIVE_NOT_RUN）
 
@@ -11168,7 +11201,9 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 用户明确要求重新编译部署 EN。统一 Debug 构建重新编译 Bannerlord 1.3 / 1.4 与 Bootstrap，双 Coup seam / registration 通过，干净 Stage 成功。EN 投影 3523 项通过，原 Invoke-ManagedStageDeployment 更新 3523 项，部署后逐项 SHA256 3523/3523 一致。未改版本，未打包、push 或启动游戏；实机新档导入与父亲背景问题尚未验证，不能以构建通过代替。
 
 证据：artifacts/en-deploy-build.log、artifacts/en-deploy-install.log；EN 候选 artifacts/en-deploy-20261017_080809/AnimusForge；操作脚本 artifacts/run-en-deploy.ps1 直接调用仓库已有投影与部署函数。目标 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge；ONNX 由未列管文件保留策略保护。旧 Stage 已移至 bin/Debug/single_module_stage/AnimusForge_preserved_20261017_080331，用户后续要求删除，但递归删除被自动审批拒绝，未执行；其中第三方运行库经锁校验用于构建依赖，AF 三份 DLL 均重新编译。部署无 Recovery 或自动回滚；人工回退需使用已验证旧包并保留玩家资料。
-# OpenAI-compatible TTS integration — 2026-10-17 (INTENT)
+# OpenAI-compatible TTS integration — 2026-10-17 (INTENT; superseded)
+
+Current verified delivery and later deployment authorization: [OpenAI-compatible TTS](#openai-tts-20261017).
 
 - Scope: add a second TTS provider for the requested shenlanqaq GPT-SoVITS endpoint, retaining Volcengine configuration and shared playback/lifecycle. No deployment, packaging or push.
 - Gates: real audio format probe; production gateway and consumer replay; CN/EN MCM and terminal wiring; unified 1.3/1.4/Bootstrap build. In-game acceptance remains separately identified.
