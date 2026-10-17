@@ -24,7 +24,7 @@ public partial class DuelSettings
     internal bool IsSelectedTtsEnabled => EnableTtsSpeech &&
         (UsesOpenAiTts || ((TtsProviderDropdown?.SelectedIndex ?? 0) == 0 && TtsVolcDedicatedEnabled));
 
-    [SettingPropertyBool("{=AF_MCM_Tts_Streaming}Stream audio playback with lip-sync", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Tts_Streaming_Hint}Default: on. OpenAI-compatible WAV starts playing as audio segments arrive, using the existing lip-sync channel. Turning off buffers the whole utterance. Server synthesis latency is unchanged. Applies only to the OpenAI-compatible service.")]
+    [SettingPropertyBool("{=AF_MCM_Tts_Streaming}Stream audio playback with lip-sync", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Tts_Streaming_Hint}Default: on. Sends stream=true to the OpenAI-compatible service and plays incoming WAV segments with lip-sync. Turning off sends stream=false and waits for the complete utterance. Upstream streaming support and first-audio latency depend on the service. Applies only to the OpenAI-compatible service.")]
     [SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
     public bool TtsStreamingPlaybackEnabled { get; set; } = true;
 
