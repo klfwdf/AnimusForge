@@ -8,6 +8,8 @@ internal static class TtsErrorUiText
     {
         switch (reason)
         {
+            case "tts_stream_playback_failed": return LlmUiTexts.Text("AF_LLM_UI_TtsError_StreamPlayback", "Streaming playback failed. Already played audio is not replayed; check the TtsEngine log.");
+            case "tts_audio_pcm_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_PcmInvalid", "The audio stream ended with an incomplete PCM sample.");
             case "tts_openai_configuration_incomplete": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiConfiguration", "Enter the speech API key, model and voice.");
             case "tts_openai_endpoint_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiEndpoint", "Enter a valid full HTTP/HTTPS speech endpoint.");
             case "tts_openai_text_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiText", "Speech text must contain 1–4096 characters.");

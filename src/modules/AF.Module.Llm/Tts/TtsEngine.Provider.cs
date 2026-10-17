@@ -14,13 +14,14 @@ internal sealed partial class TtsEngine
     // Private owner state captured before enqueue, never serialized or logged.
     private sealed class ProviderSnapshot
     {
-        internal readonly bool OpenAi, Enabled, SceneWinmm;
+        internal readonly bool OpenAi, Enabled, SceneWinmm, Streaming;
         internal readonly string Url, Credential, AppId, ResourceId, Voice, Encoding, Extra, Model;
         internal readonly int SampleRate, TimeoutSeconds;
         internal readonly float Speed, Volume;
         internal ProviderSnapshot(DuelSettings settings)
         {
             OpenAi = settings?.UsesOpenAiTts ?? false;
+            Streaming = settings?.TtsStreamingPlaybackEnabled ?? true;
             Enabled = settings?.IsSelectedTtsEnabled ?? false;
             Url = OpenAi ? settings.TtsOpenAiApiUrl : settings?.TtsVolcDedicatedApiUrl;
             Credential = OpenAi ? settings.TtsOpenAiApiKey : settings?.TtsVolcDedicatedApiKey;

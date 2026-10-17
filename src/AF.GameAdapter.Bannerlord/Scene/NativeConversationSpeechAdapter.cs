@@ -474,7 +474,7 @@ internal sealed class NativeConversationSpeechAdapter
 						return;
 					}
 					currentMission.OnConversationPlay("", "", "", "", wavPath);
-					ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
+					ConversationHelper.StartTypewriterPlaybackIfWaiting(request.StreamingPlayback ? request.StreamingDurationSeconds : durationSecs);
 					ScheduleNativeMapConversationTtsFileCleanup(wavPath, xmlPath, durationSecs);
 					Logger.Log("NativeConversation", "[TTS] queued map conversation tableau playback. wav=" + System.IO.Path.GetFileName(wavPath) + ", duration=" + durationSecs.ToString("F2"));
 				}
@@ -482,7 +482,7 @@ internal sealed class NativeConversationSpeechAdapter
 				{
 					if (!instance._ports.Audio().IsTtsPlaybackRequestCurrent(request)) { return; }
 					Logger.Log("NativeConversation", "[TTS] map conversation tableau playback failed: " + ex.Message);
-					ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
+					ConversationHelper.StartTypewriterPlaybackIfWaiting(request.StreamingPlayback ? request.StreamingDurationSeconds : durationSecs);
 				}
 			});
 			return true;

@@ -37,7 +37,7 @@ namespace AnimusForge {
  public sealed class DuelSettings { public bool TtsSceneUseWinmmAudible = true; public float TtsLipSyncSoundEventVolume; public bool EnableTtsSpeech=true, TtsVolcDedicatedEnabled=true; public static DuelSettings GetSettings() => new(); }
  public sealed class TtsEngine {
   public static TtsEngine Instance = new(); public bool IsReady=true; public void Initialize() { IsReady=true; }
-  public sealed class PlaybackRequest { public long RequestId; public int AgentIndex; public bool IsCancellationRequested; }
+  public sealed class PlaybackRequest { public bool StreamingPlayback; public int AudioChunkCount; public float StreamingDurationSeconds; public long RequestId; public int AgentIndex; public bool IsCancellationRequested; }
   public event Action<PlaybackRequest,string,string,float> OnRequestAudioFileReady;
   public event Action<PlaybackRequest> OnRequestPlaybackStarted, OnRequestPlaybackFinished, OnRequestPlaybackCancelled;
   public event Action<PlaybackRequest,string> OnRequestPlaybackFailed;

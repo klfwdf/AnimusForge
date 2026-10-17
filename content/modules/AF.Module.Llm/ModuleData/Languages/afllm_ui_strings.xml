@@ -45,5 +45,7 @@
   <string id="AF_LLM_UI_TtsError_OpenAiTimeout" text="Speech synthesis exceeded the configured timeout; no automatic retry." />
   <string id="AF_LLM_UI_TtsError_OpenAiAudio" text="The service did not return a supported PCM16 WAV (mono/stereo, 8000–48000 Hz). Compressed audio is not played." />
   <string id="AF_LLM_UI_TtsError_SilentAudio" text="The synthesized audio is completely silent; falling back to text." />
+  <string id="AF_LLM_UI_TtsError_StreamPlayback" text="Streaming playback failed. Already played audio is not replayed; check the TtsEngine log." />
+  <string id="AF_LLM_UI_TtsError_PcmInvalid" text="The audio stream ended with an incomplete PCM sample." />
 </strings>
 </base>

@@ -57,6 +57,10 @@ internal sealed partial class TtsEngine : IDisposable
 		public long RequestId { get; }
 		public int AgentIndex { get; }
 		public CancellationToken CancellationToken { get; }
+		internal bool StreamingPlayback;
+        internal float StreamingDurationSeconds;
+        internal int AudioChunkCount;
+
 		public bool IsCancellationRequested => CancellationToken.IsCancellationRequested || _generationToken.IsCancellationRequested;
 
 		internal PlaybackRequest(long requestId, int agentIndex, CancellationToken cancellationToken, CancellationToken generationToken)
@@ -748,6 +752,7 @@ internal sealed partial class TtsEngine : IDisposable
 			NotifyPlaybackFailed(job, "Scene speech target became unavailable before synthesis.");
 			return;
 		}
+		if (snapshot.Streaming && openAi) { ProcessStreamingJob(job); return; }
 		string synthesisError;
 		byte[] array = openAi
 			? CallOpenAiApi(snapshot, job.Text, speed, job.Request.CancellationToken, out synthesisError)

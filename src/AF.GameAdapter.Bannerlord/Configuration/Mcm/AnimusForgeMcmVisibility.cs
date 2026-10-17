@@ -33,9 +33,7 @@ internal static class AnimusForgeMcmVisibility
     };
     private static readonly HashSet<string> MainNonApiProperties = new HashSet<string>(StringComparer.Ordinal)
     {
-        "ActionPostprocessHistoryEntryLimit", "EnableTtsSpeech", "TtsVolcDedicatedEnabled",
-        "TtsSceneUseWinmmAudible", "TtsLipSyncSoundEventVolume", "TtsProviderDropdown",
-        "TtsOpenAiSpeed", "TtsOpenAiTimeoutSeconds"
+        "ActionPostprocessHistoryEntryLimit"
     };
     private static Func<BaseSettings, IEnumerable<SettingsPropertyGroupDefinition>> _originalGroups;
     private static MethodInfo _groupsMethod;

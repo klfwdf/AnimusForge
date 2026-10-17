@@ -15,6 +15,8 @@ namespace AnimusForge.Refactor.Contracts {
 }
 namespace AnimusForge.Refactor.Adapters {
  public sealed class OpenAiCompatibleTtsGateway {
+  public static Func<OpenAiTtsSynthesisRequest,string,Action<byte[],int,long?>,CancellationToken,TtsSynthesisResult> StreamSend=(r,k,p,c)=>Send(r,k,c);
+  public Task<TtsSynthesisResult> StreamAsync(OpenAiTtsSynthesisRequest r,string k,Action<byte[],int,long?> publish,CancellationToken c)=>Task.FromResult(StreamSend(r,k,publish,c));
   public static Func<OpenAiTtsSynthesisRequest,string,CancellationToken,TtsSynthesisResult> Send=(_,_,_)=>new(){Success=false,ErrorCode="tts_http_429"};
   public OpenAiCompatibleTtsGateway(System.Net.Http.HttpClient c){}
   public Task<TtsSynthesisResult> SynthesizeAsync(OpenAiTtsSynthesisRequest r,string key,CancellationToken c)=>Task.FromResult(Send(r,key,c));
@@ -35,7 +37,7 @@ namespace AnimusForge {
  static class Color {public static object FromUint(uint n)=>null;}
  sealed class DuelSettings {
   @@OPENAI_TEST_BUTTON@@
-  public bool UsesOpenAiTts;
+  public bool UsesOpenAiTts; public bool TtsStreamingPlaybackEnabled;
   public bool IsSelectedTtsEnabled=>EnableTtsSpeech&&(UsesOpenAiTts||TtsVolcDedicatedEnabled);
   public string TtsOpenAiApiUrl="https://openai-fixture.invalid/v1/audio/speech",TtsOpenAiApiKey="openai-fixture-key",TtsOpenAiModel="gpt-sovits-v4",TtsOpenAiVoice="zh_default";
   public float TtsOpenAiSpeed=1f;public int TtsOpenAiTimeoutSeconds=60;
@@ -134,6 +136,22 @@ static class Program {
   Check("same-agent legal FIFO preserves both real worker jobs and ordered Scene preparation",()=>{using var e=Active();var c=new TtsConsumerSubject();var main=new ConcurrentQueue<Action>();var accepted=new List<long>();var prepared=new List<long>();var finished=new List<long>();e.OnRequestAudioFileReady+=(r,w,x,d)=>main.Enqueue(()=>{Assert(c.IsCurrent(r)&&c.Prepare(r),"audio owner dropped");});e.OnRequestPlaybackStarted+=r=>main.Enqueue(()=>Assert(c.Active(r),"start owner dropped"));e.OnRequestPlaybackFinished+=r=>main.Enqueue(()=>{Assert(c.Active(r),"finish owner dropped");finished.Add(r.RequestId);c.Retire(r);});for(int i=0;i<2;i++)Speak(e,r=>{accepted.Add(r.RequestId);c.Track(r,()=>prepared.Add(r.RequestId));},"FIFO",7);Eventually(()=>Jobs(e).Count==0,"workers not drained");while(main.TryDequeue(out var action))action();Assert(prepared.SequenceEqual(accepted)&&finished.SequenceEqual(accepted)&&c.Owners==0,"FIFO dropped/reordered/leaked");});
   Check("same-agent queued owner survives cancel of active old request",()=>{using var e=Manual();var c=new TtsConsumerSubject();TtsEngine.PlaybackRequest a=null,b=null;int oldPrepared=0,newPrepared=0;Speak(e,r=>{a=r;c.Track(r,()=>oldPrepared++);},agent:7);Speak(e,r=>{b=r;c.Track(r,()=>newPrepared++);},agent:7);c.Prepare(a);Call(e,"CancelJob",Job(e,a));Assert(c.Active(a,true)&&!c.Active(b),"active changed on mere acceptance");c.Retire(a);Assert(c.IsCurrent(b)&&c.Prepare(b)&&newPrepared==1&&oldPrepared==1,"new queued request lost");c.Retire(b);Assert(c.Owners==0,"owner leak");});
   ConsumerTests.Run(Check);
+  Check("streamed audio starts before synthesis EOF with one request and one terminal",()=>{
+   var settings=new DuelSettings(){UsesOpenAiTts=true,TtsVolcDedicatedEnabled=false,TtsStreamingPlaybackEnabled=true,TtsSceneUseWinmmAudible=false};DuelSettings.Read=()=>settings;
+   using var eof=new ManualResetEventSlim(false);int started=0,finished=0,pieces=0;
+   OpenAiCompatibleTtsGateway.StreamSend=(r,k,p,c)=>{p(new byte[]{1,0,2,0},8000,6);eof.Wait(c);p(new byte[]{3,0,4,0},8000,6);p(new byte[]{5,0,6,0},8000,6);return new(){Success=true};};
+   using var e=Active();e.OnRequestAudioFileReady+=(r,w,x,d)=>{Assert(r.StreamingPlayback&&File.Exists(w)&&File.Exists(x),"missing real WAV/lip carrier");Interlocked.Increment(ref pieces);};
+   e.OnRequestPlaybackStarted+=_=>Interlocked.Increment(ref started);e.OnRequestPlaybackFinished+=_=>Interlocked.Increment(ref finished);
+   Assert(Speak(e),"stream enqueue rejected");Eventually(()=>started==1,"first audio blocked on response EOF");Assert(finished==0&&!eof.IsSet,"finished before producer completion");eof.Set();
+   Eventually(()=>finished==1&&Jobs(e).Count==0,"stream not retired");Assert(started==1&&pieces==3,"duplicate starts or lost audio segments");
+  });
+  Check("cancel partial stream aborts producer without late audio or finished",()=>{
+   var settings=new DuelSettings(){UsesOpenAiTts=true,TtsStreamingPlaybackEnabled=true,TtsSceneUseWinmmAudible=false};DuelSettings.Read=()=>settings;
+   int started=0,finished=0,cancelled=0;using var producerExited=new ManualResetEventSlim(false);
+   OpenAiCompatibleTtsGateway.StreamSend=(r,k,p,c)=>{try{p(new byte[]{1,0},8000,null);c.WaitHandle.WaitOne();c.ThrowIfCancellationRequested();return new();}finally{producerExited.Set();}};
+   using var e=Active();e.OnRequestPlaybackStarted+=_=>Interlocked.Increment(ref started);e.OnRequestPlaybackFinished+=_=>Interlocked.Increment(ref finished);e.OnRequestPlaybackCancelled+=_=>Interlocked.Increment(ref cancelled);
+   Speak(e);Eventually(()=>started==1,"stream not started");e.StopPlayback();Eventually(()=>producerExited.IsSet&&Jobs(e).Count==0,"producer retained after stop");Assert(cancelled==1&&finished==0,"wrong terminal event");
+  });
   Check("OpenAI native/scene enqueue ignores Volcengine switch and old voice override",()=>{
    var settings=new DuelSettings(){UsesOpenAiTts=true,TtsVolcDedicatedEnabled=false};DuelSettings.Read=()=>settings;
    int sent=0,failed=0;

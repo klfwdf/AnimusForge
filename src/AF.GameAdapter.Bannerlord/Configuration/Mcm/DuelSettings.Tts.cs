@@ -24,6 +24,10 @@ public partial class DuelSettings
     internal bool IsSelectedTtsEnabled => EnableTtsSpeech &&
         (UsesOpenAiTts || ((TtsProviderDropdown?.SelectedIndex ?? 0) == 0 && TtsVolcDedicatedEnabled));
 
+    [SettingPropertyBool("{=AF_MCM_Tts_Streaming}Stream audio playback with lip-sync", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Tts_Streaming_Hint}Default: on. OpenAI-compatible WAV starts playing as audio segments arrive, using the existing lip-sync channel. Turning off buffers the whole utterance. Server synthesis latency is unchanged. Applies only to the OpenAI-compatible service.")]
+    [SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
+    public bool TtsStreamingPlaybackEnabled { get; set; } = true;
+
     [SettingPropertyText("{=AF_MCM_Tts_OpenAiUrl}OpenAI-compatible speech API URL", -1, true, "", Order = 20, RequireRestart = false, HintText = "{=AF_MCM_Tts_OpenAiUrl_Hint}Full speech endpoint, for example https://www.shenlanqaq.com/v1/audio/speech. Requests PCM16 WAV; the server must support it.")]
     [SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
     public string TtsOpenAiApiUrl { get; set; } = "https://www.shenlanqaq.com/v1/audio/speech";

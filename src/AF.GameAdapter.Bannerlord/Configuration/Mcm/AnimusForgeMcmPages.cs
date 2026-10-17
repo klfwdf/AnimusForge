@@ -100,6 +100,7 @@ internal static class AnimusForgeMcmPages
     {
         if (owner == "AnimusForge_Illustrator_v1") return "{=AF_TERMINAL_GROUP_IMAGE_API}Image generation API";
         if (Ambient(property)) return "{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface";
+        if (property.GroupName.IndexOf("{=AF_MCM_Tts_Group}", StringComparison.Ordinal) >= 0) return "{=AF_TERMINAL_GROUP_TTS_API}TTS API";
         return property.GroupName;
     }
 

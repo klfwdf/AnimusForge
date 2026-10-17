@@ -18,7 +18,13 @@ public sealed class OpenAiCompatibleTtsGateway
     private readonly HttpClient _client;
     public OpenAiCompatibleTtsGateway(HttpClient client) => _client = client ?? throw new ArgumentNullException(nameof(client));
 
-    public async Task<TtsSynthesisResult> SynthesizeAsync(OpenAiTtsSynthesisRequest request, string credential, CancellationToken cancellationToken)
+    public Task<TtsSynthesisResult> SynthesizeAsync(OpenAiTtsSynthesisRequest request, string credential, CancellationToken cancellationToken)
+        => SendAsync(request, credential, null, cancellationToken);
+
+    public Task<TtsSynthesisResult> StreamAsync(OpenAiTtsSynthesisRequest request, string credential, Action<byte[], int, long?> onPcm, CancellationToken cancellationToken)
+        => SendAsync(request, credential, onPcm ?? throw new ArgumentNullException(nameof(onPcm)), cancellationToken);
+
+    private async Task<TtsSynthesisResult> SendAsync(OpenAiTtsSynthesisRequest request, string credential, Action<byte[], int, long?> onPcm, CancellationToken cancellationToken)
     {
         if (request == null || string.IsNullOrWhiteSpace(credential) || string.IsNullOrWhiteSpace(request.Model) || string.IsNullOrWhiteSpace(request.Voice))
             return Failed("tts_openai_configuration_incomplete");
@@ -44,6 +50,13 @@ public sealed class OpenAiCompatibleTtsGateway
             if (!response.IsSuccessStatusCode) return Failed("tts_http_" + status, status);
             if (response.Content.Headers.ContentLength > MaxAudioBytes) return Failed("tts_response_too_large", status);
             using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            using var abortRead = timeout.Token.Register(() => { try { stream.Dispose(); } catch (ObjectDisposedException) { } });
+            if (onPcm != null)
+            {
+                await TtsWaveStream.ReadAsync(stream, onPcm, timeout.Token).ConfigureAwait(false);
+                timeout.Token.ThrowIfCancellationRequested();
+                return new TtsSynthesisResult(true, null, status, "");
+            }
             using var buffer = new MemoryStream();
             byte[] chunk = new byte[8192];
             int count;
@@ -57,9 +70,10 @@ public sealed class OpenAiCompatibleTtsGateway
             string error = ValidateWave(audio);
             return error == null ? new TtsSynthesisResult(true, audio, status, "") : Failed(error, status);
         }
-        catch (OperationCanceledException)
+        catch (TtsStreamException exception) { return Failed(exception.Code); }
+        catch (Exception) when (timeout.IsCancellationRequested)
         {
-            if (cancellationToken.IsCancellationRequested) throw;
+            if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
             return Failed("tts_openai_timeout");
         }
         catch (Exception exception) { return Failed("tts_gateway_" + exception.GetType().Name); }

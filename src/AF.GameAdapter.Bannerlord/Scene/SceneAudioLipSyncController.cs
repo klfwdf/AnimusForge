@@ -140,15 +140,17 @@ internal sealed class SceneAudioLipSyncController
 				_retired=false;
 				_ttsOnAudioFileReadyHandler = delegate(TtsEngine.PlaybackRequest request, string wavPath, string xmlPath, float durationSecs)
 				{
+                    bool continuation = request?.StreamingPlayback == true && Interlocked.Increment(ref request.AudioChunkCount) > 1;
+                    float displayDuration = request?.StreamingPlayback == true ? request.StreamingDurationSeconds : durationSecs;
 					_ports.Dispatch(delegate
 					{
 						if (!IsTtsPlaybackRequestCurrent(request)) { QueueDeferredCleanup(null, wavPath, xmlPath, "stale_tts_audio", request?.AgentIndex ?? -1); return; }
 						int agentIndex = request.AgentIndex;
 						if (!PrepareTtsPlaybackRequest(request) || !IsActiveTtsPlaybackRequest(request)) { return; }
 						bool nativeConversationWait = _ports.IsNativeWait(request);
-						if (nativeConversationWait)
+						if (nativeConversationWait && !continuation)
 						{
-							ConversationHelper.AdjustTypewriterDuration(durationSecs);
+							ConversationHelper.AdjustTypewriterDuration(displayDuration);
 						}
 						if (agentIndex < 0)
 						{
@@ -159,23 +161,23 @@ internal sealed class SceneAudioLipSyncController
 							}
 							if (!mapTableauQueued && nativeConversationWait)
 							{
-								ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
+								if (!continuation) ConversationHelper.StartTypewriterPlaybackIfWaiting(displayDuration);
 							}
 							Report("AudioDurationReady.NativeNoAgent", agentIndex, $"duration={durationSecs:F2};wav={System.IO.Path.GetFileName(wavPath)};xml={System.IO.Path.GetFileName(xmlPath)};mapTableauQueued={mapTableauQueued}");
 							return;
 						}
-						if (nativeConversationWait)
+						if (nativeConversationWait && !continuation)
 						{
-							ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
+							if (!continuation) ConversationHelper.StartTypewriterPlaybackIfWaiting(displayDuration);
 						}
 						if (agentIndex >= 0)
 						{
 							Logger.Log("LipSync", $"[OnAudioFileReady] agentIndex={agentIndex}, wav={wavPath}, xml={xmlPath}, dur={durationSecs:F2}s");
-							_ports.AudioDuration(agentIndex, durationSecs);
+							if (!continuation) _ports.AudioDuration(agentIndex, displayDuration);
 							Report("AudioFileReady", agentIndex, $"duration={durationSecs:F2};wav={System.IO.Path.GetFileName(wavPath)};xml={System.IO.Path.GetFileName(xmlPath)}");
 							bool flag = false;
 							flag = _ports.HasPlaybackStarted(agentIndex);
-							if (flag)
+							if (flag && !continuation)
 							{
 								RunTtsMainThreadEventStep(delegate
 								{

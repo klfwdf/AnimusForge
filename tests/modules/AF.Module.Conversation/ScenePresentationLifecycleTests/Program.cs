@@ -210,6 +210,13 @@ Require(typingFadeRequests.Last(),"default cleanup retains its existing accelera
 audio._speakingAgentIndices.Add(1);
 audio.StopAllLipSyncPlaybackAndCleanup(preserveVisibleBubbles:true);
 Require(!typingFadeRequests.Last()&&!audio.HasSpeakingAgents,"interrupt stops playback and typing without forcing visible bubbles to fade");
+audio.SubscribeTtsPlaybackEvents();
+int streamDurations=0;float streamDuration=0;port.AudioDuration=(i,d)=>{streamDurations++;streamDuration=d;};
+var streamRequest=new TtsEngine.PlaybackRequest{RequestId=987,AgentIndex=1,StreamingPlayback=true,StreamingDurationSeconds=9};
+audio.TrackTtsPlaybackRequest(streamRequest);TtsEngine.Instance.Ready(streamRequest);Drain();TtsEngine.Instance.Ready(streamRequest);Drain();TtsEngine.Instance.Ready(streamRequest);Drain();
+Require(streamDurations==1&&streamDuration==9&&streamRequest.AudioChunkCount==3,"stream segments preserve whole utterance duration without restarting subtitle for every chunk");
+Require(audio.IsActiveTtsPlaybackRequest(streamRequest),"same streaming request remains owned across segments");
+audio.ResetRequestOwnership();audio.UnsubscribeTtsPlaybackEvents();port.AudioDuration=(i,d)=>{};
 // Full production interaction owner; movement, speech dispatch and Agent engine leaves are synthetic.
 Mission interactionMission=new();Mission.Current=interactionMission;
 Agent.Main=new Agent{Index=0,Mission=interactionMission};
