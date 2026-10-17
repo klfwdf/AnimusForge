@@ -1,3 +1,10 @@
+# 当前交接：OpenAI 兼容 TTS 已接入并部署 EN（2026-10-17，PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
+
+- 产品提交 `35430bd23`：增加与火山并列的 OpenAI 兼容 WAV TTS、独立设置、CN/EN 终端/MCM 接线，复用原队列/取消/播放/口型链路。默认模型 `gpt-sovits-v4`、统一音色 `zh_default`；保留火山与玩家配置，Key 未写入产品或已安装设置。
+- 原双 API / Bootstrap 构建、最终新网关 32 项、生命周期 68 项、静态接线 8 项、原生 MCM / 终端 1.3 CN 与 1.4 EN 各 40 项通过。实际 C# 网关和播放器 parser 返回非静音 WAV；旧宽套件的两处无关失败保留并明确记录，不称全仓通过。
+- 用户追加授权部署：当前游戏 `Modules/AnimusForge` 保持 EN，原部署函数更新 18 项，3523/3523 期望哈希校验通过；三份 DLL 和双语 UI 资源一致，12 个既有保护文件未变。旧 Stage 完整保留；无版本递增、打包、push 或启动游戏。实机声音/口型、主观音质和上游持续稳定性仍未验。
+- [唯一主台账、详细测试/部署证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#openai-tts-20261017)；[核实代码地图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#openai-tts-code-20261017)。本机收据 `artifacts/openai-tts-20261017/receipt.json`；源码聚焦 `git revert 35430bd23` 后重建/显式部署，安装无 Recovery 或自动回滚。
+
 # 当前交接：v1.6.2正式双包与累计玩家公告（2026-10-17，PACKAGE_VERIFIED / LIVE_NOT_RUN）
 
 - 用户授权打包并以上期公告为基线整理累计更新。原脚本递增至v1.6.2，重新构建1.3/1.4/Bootstrap、双Coup/registration、源码/DLL语言门禁与完整双包校验通过。两包各3523项，时间戳1017_0855；位于`一键编译覆盖推送/packages/`，旧包保留。
