@@ -2211,6 +2211,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		using var plunderRelations = BeginTownPlunderRelationBatch();
 		if (TroopInspectionBehavior.IsPreparedExternalInspectionRuntime)
 		{
 			TroopInspectionBehavior.CleanupRuntime("castle_gccz_mission_ended_before_aftermath");
@@ -6691,6 +6692,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			float now = mission.CurrentTime;
 			bool hasTarget = CivilianHideTargets.TryGetValue(civilian.Index, out Vec3 fleeTarget);
 			bool hasLastOrder = LastCivilianHideOrderTimes.TryGetValue(civilian.Index, out float lastOrder);
+			// Failed target eviction must not turn the missing-target path into a per-frame probe.
+			if (!force && !hasTarget && hasLastOrder && now - lastOrder < SiegeLocalCivilianReactionProfile.LocalFleeRefreshSeconds) return;
 			bool reachedTarget = hasTarget && SiegeLocalCivilianReactionProfile.IsLocalFleeTargetReached(civilian.Position.DistanceSquared(fleeTarget));
 			bool refresh = SiegeLocalCivilianReactionProfile.ShouldRefreshLocalFleeOrder(
 				force,
@@ -6717,6 +6720,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				if (!TrySetInterventionAgentTargetPosition(civilian, fleeTarget, SiegeLocalCivilianReactionProfile.WitnessFleeSource + ":long_flee", Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.NeverSlowDown))
 				{
+					CivilianHideTargets.Remove(civilian.Index);
+					NativeMovementOrders.Forget(civilian.Index);
 					ActivateNativeLocalFleeBehavior(civilian, SiegeLocalCivilianReactionProfile.NativeFleeBridgeSource);
 				}
 				return;
@@ -8311,7 +8316,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				TownSettlementEffectPlan.FromPlunderDelta(delta));
 			Logger.Log(
 				"SiegeAiIntervention",
-				$"Applied incremental plunder consequences. Settlement={settlement.StringId ?? "N/A"}, DeltaBasisPoints={delta.DeltaBasisPoints}, CumulativeBasisPoints={delta.CumulativeBasisPoints}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{applied.BoundVillageTrustAdjusted}, NotableRelation={delta.NotableRelationDelta}x{applied.NotableRelationsAdjusted}, NotableTrust={delta.NotableTrustDelta}x{applied.NotableTrustAdjusted}");
+				$"Applied incremental plunder consequences. Settlement={settlement.StringId ?? "N/A"}, DeltaBasisPoints={delta.DeltaBasisPoints}, CumulativeBasisPoints={delta.CumulativeBasisPoints}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{applied.BoundVillageTrustAdjusted}, NotableRelation={delta.NotableRelationDelta}x{applied.NotableRelationsAdjusted}, QueuedNotableRelation={delta.NotableRelationDelta}x{applied.NotableRelationsQueued}, NotableTrust={delta.NotableTrustDelta}x{applied.NotableTrustAdjusted}");
 		}
 		catch (Exception ex)
 		{
@@ -14876,6 +14881,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				ApplyPendingPositiveNotableRelationsForFinalAftermath(settlement, aftermath);
 				ApplyPendingPositiveNotableTrustForFinalAftermath(settlement, aftermath);
 			}
+			FlushTownPlunderRelations();
 			CommitPendingInterventionNotableDeaths(SiegeNotableSceneDeathProfile.SettlementResolutionKillReason);
 			if (!castleAftermath && aftermath != SiegeAftermathAction.SiegeAftermath.Pillage)
 			{
