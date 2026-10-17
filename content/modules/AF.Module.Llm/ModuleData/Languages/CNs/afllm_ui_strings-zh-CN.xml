@@ -45,5 +45,7 @@
   <string id="AF_LLM_UI_TtsError_OpenAiTimeout" text="语音合成超过配置的时限，不自动重试。" />
   <string id="AF_LLM_UI_TtsError_OpenAiAudio" text="服务未返回支持的 PCM16 WAV（单/双声道，8000～48000 Hz）；不会播放压缩音频。" />
   <string id="AF_LLM_UI_TtsError_SilentAudio" text="合成音频完全静音，回退文字。" />
+  <string id="AF_LLM_UI_TtsError_StreamPlayback" text="流式播放失败，已播放的音频不会重播，请查看 TtsEngine 日志。" />
+  <string id="AF_LLM_UI_TtsError_PcmInvalid" text="音频流结束时存在不完整的 PCM 采样。" />
 </strings>
 </base>

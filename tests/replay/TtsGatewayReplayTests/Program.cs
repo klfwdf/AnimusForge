@@ -34,6 +34,11 @@ AppDomain.CurrentDomain.AssemblyResolve += (_, arguments) =>
 };
 
 Assembly animusForge = Assembly.LoadFrom(implementationPath);
+if (Environment.GetEnvironmentVariable("AF_TTS_STREAM_ONLY") == "1")
+{
+    await StreamingCases.Run(animusForge);
+    return;
+}
 if (Environment.GetEnvironmentVariable("AF_TTS_OPENAI_ONLY") == "1")
 {
     await OpenAiCases.Run(animusForge);

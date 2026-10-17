@@ -12,9 +12,9 @@ static class TtsProviderChecks
     internal static void Run(BaseSettings owner, string path, Func<BaseSettings, bool> save, Action<BaseSettings> load, Action<bool, string> check)
     {
         var settings = (DuelSettings)owner;
-        string[] ids = { "TtsProviderDropdown", "TtsOpenAiApiUrl", "TtsOpenAiApiKey", "TtsOpenAiModel", "TtsOpenAiVoice", "TtsOpenAiSpeed", "TtsOpenAiTimeoutSeconds" };
-        object[] values = { 1, "https://tts-fixture.invalid/v1/audio/speech", "fixture-key", "fixture-model", "zh_default", 1.25f, 75 };
-        object[] original = { settings.TtsProviderDropdown.SelectedIndex, settings.TtsOpenAiApiUrl, settings.TtsOpenAiApiKey, settings.TtsOpenAiModel, settings.TtsOpenAiVoice, settings.TtsOpenAiSpeed, settings.TtsOpenAiTimeoutSeconds };
+        string[] ids = { "TtsProviderDropdown", "TtsOpenAiApiUrl", "TtsOpenAiApiKey", "TtsOpenAiModel", "TtsOpenAiVoice", "TtsOpenAiSpeed", "TtsOpenAiTimeoutSeconds", "TtsStreamingPlaybackEnabled" };
+        object[] values = { 1, "https://tts-fixture.invalid/v1/audio/speech", "fixture-key", "fixture-model", "zh_default", 1.25f, 75, false };
+        object[] original = { settings.TtsProviderDropdown.SelectedIndex, settings.TtsOpenAiApiUrl, settings.TtsOpenAiApiKey, settings.TtsOpenAiModel, settings.TtsOpenAiVoice, settings.TtsOpenAiSpeed, settings.TtsOpenAiTimeoutSeconds, settings.TtsStreamingPlaybackEnabled };
         string oldVoice = settings.TtsVolcDedicatedSpeaker;
         settings.TtsVolcDedicatedSpeaker = "preserved-volc-voice";
         try
@@ -40,17 +40,25 @@ static class TtsProviderChecks
             var restored = new DuelSettings(); load(restored);
             check(restored.TtsProviderDropdown.SelectedIndex == 1 && restored.TtsOpenAiApiUrl == (string)values[1] && restored.TtsOpenAiApiKey == "fixture-key" && restored.TtsOpenAiModel == "fixture-model", "TTS provider/address/key/model JSON roundtrip");
             check(restored.TtsOpenAiVoice == "zh_default" && Math.Abs(restored.TtsOpenAiSpeed - 1.25f) < 0.001f && restored.TtsOpenAiTimeoutSeconds == 75, "TTS voice/speed/deadline JSON roundtrip");
+            check(!restored.TtsStreamingPlaybackEnabled, "TTS streaming playback switch JSON roundtrip");
             check(restored.TtsVolcDedicatedSpeaker == "preserved-volc-voice", "TTS switch preserves old voice");
             var json = JObject.Parse(File.ReadAllText(path));
             foreach (string id in ids) json.Remove(id);
             File.WriteAllText(path, json.ToString());
             var legacy = new DuelSettings(); load(legacy);
             check(legacy.TtsProviderDropdown.SelectedIndex == 0 && legacy.TtsOpenAiApiKey == "" && legacy.TtsVolcDedicatedSpeaker == "preserved-volc-voice", "Old JSON retains Volcengine and does not invent credentials");
+            check(legacy.TtsStreamingPlaybackEnabled, "Missing streaming field defaults to enabled");
             var pages = (MCM.Abstractions.Base.Global.FluentGlobalSettings[])typeof(DuelSettings).Assembly.GetType("AnimusForge.AnimusForgeMcmPages", true)
                 .GetMethod("CreatePages", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
                 .Invoke(null, new object[] { TerminalProviderProbe.Owners.Values.Cast<BaseSettings>().ToArray() });
             var projected = pages.SelectMany(p => p.GetAllSettingPropertyDefinitions()).ToArray();
             foreach (string id in ids) check(projected.Count(p => p.Id == id) == 1, "TTS MCM projection exists exactly once: " + id);
+            string[] allTts = ids.Concat(new[] { "EnableTtsSpeech", "TtsVolcDedicatedEnabled", "TtsSceneUseWinmmAudible", "TtsLipSyncSoundEventVolume", "TestTtsVolcDedicatedVoice" }).ToArray();
+            foreach (string id in allTts)
+            {
+                var apiItem = pages[0].GetAllSettingPropertyDefinitions().Single(p => p.Id == id);
+                check(apiItem.GroupName.Contains("AF_TERMINAL_GROUP_TTS_API") && !pages[1].GetAllSettingPropertyDefinitions().Any(p => p.Id == id), "TTS appears only in API / TTS API: " + id);
+            }
             var provider = TerminalSettingsRegistry.GetById("TtsProviderDropdown");
             check(provider.DropdownGetter(settings).Count == 2, "TTS provider dropdown has two services");
         }

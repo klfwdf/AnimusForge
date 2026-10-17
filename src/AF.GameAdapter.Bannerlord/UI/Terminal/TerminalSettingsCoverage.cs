@@ -98,6 +98,8 @@ internal static class TerminalSettingsCoverage
         BindingById.Value.TryGetValue(id, out Binding binding);
         if (binding != null)
         {
+            if (binding.Group.IndexOf("AF_MCM_Tts_Group", StringComparison.Ordinal) >= 0)
+                return Label("AF_TERMINAL_GROUP_TTS_API", "TTS API");
             if (binding.Group.IndexOf("AF_MCM_Diplomacy_", StringComparison.Ordinal) >= 0)
                 return binding.Property.StartsWith("Edit", StringComparison.Ordinal)
                     ? Label("AF_TERMINAL_GROUP_DIPLOMACY_PROMPTS", "AI diplomacy prompts")
