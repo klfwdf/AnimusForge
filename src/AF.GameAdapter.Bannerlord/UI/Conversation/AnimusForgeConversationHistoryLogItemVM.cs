@@ -34,7 +34,7 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 			return DiplomacyReplyTextRules.CleanNpcText(text ?? "");
 		return string.Equals(kind, "afef_player", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(kind, "afef_npc", StringComparison.OrdinalIgnoreCase)
-			? DiplomacyDialogueStatusUi.ProjectFactForUi(text ?? "") : text ?? "";
+			? EconomyActionFactProjection.ProjectForUi(DiplomacyDialogueStatusUi.ProjectFactForUi(text ?? "")) : text ?? "";
 	}
 
 	private string _chatItemTime;

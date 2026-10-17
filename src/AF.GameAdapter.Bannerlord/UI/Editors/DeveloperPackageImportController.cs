@@ -115,7 +115,7 @@ internal sealed class DeveloperPackageImportController
 					{
 						_debtFiles.ApplyPreparedDebt(rs,existDebt,debtNew,true);
 					}
-				InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? DeveloperUiText.F("AF_UI_Developer_Partial_import_completed","Partial import completed (skipped {COUNT} invalid compressed-memory files): {PATH}", "COUNT", invalidMemoryFiles.ToString(), "PATH", importDir) : DeveloperUiText.F("AF_UI_Developer_Import_completed_path","Import completed: {PATH}", "PATH", importDir)));
+				InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? DeveloperUiText.F("AF_UI_Developer_Partial_import_completed","Partial import completed (skipped {COUNT} invalid compressed-memory files): {PATH}", "COUNT", invalidMemoryFiles.ToString(), "PATH", OnboardingUiText.ImportPathDisplayName(importDir)) : DeveloperUiText.F("AF_UI_Developer_Import_completed_path","Import completed: {PATH}", "PATH", OnboardingUiText.ImportPathDisplayName(importDir))));
 				}
 			};
 			Action onSkipDuplicates = delegate
@@ -139,7 +139,7 @@ internal sealed class DeveloperPackageImportController
 					{
 						_debtFiles.ApplyPreparedDebt(rs,existDebt,debtNew,false);
 					}
-					InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? DeveloperUiText.F("AF_UI_Developer_Partial_import_completed_duplicates","Partial import completed (skipped {COUNT} invalid compressed-memory files; duplicates were skipped): {PATH}", "COUNT", invalidMemoryFiles.ToString(), "PATH", importDir) : DeveloperUiText.F("AF_UI_Developer_Import_completed_duplicates_path","Import completed (duplicates skipped): {PATH}", "PATH", importDir)));
+					InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? DeveloperUiText.F("AF_UI_Developer_Partial_import_completed_duplicates","Partial import completed (skipped {COUNT} invalid compressed-memory files; duplicates were skipped): {PATH}", "COUNT", invalidMemoryFiles.ToString(), "PATH", OnboardingUiText.ImportPathDisplayName(importDir)) : DeveloperUiText.F("AF_UI_Developer_Import_completed_duplicates_path","Import completed (duplicates skipped): {PATH}", "PATH", OnboardingUiText.ImportPathDisplayName(importDir))));
 				}
 			};
 			if (flag)
@@ -273,7 +273,7 @@ if (!_port.ImportKnowledgeFromDir(importDir, overwriteExisting: overwrite, out v
 				},
 				Completed = overwrite =>
 				{
-InformationManager.DisplayMessage(new InformationMessage((overwrite ? DeveloperUiText.T("AF_UI_Developer_Import_completed","Import completed: ") : DeveloperUiText.T("AF_UI_Developer_Import_completed_duplicates_skipped","Import completed (duplicates skipped): ")) + importDir));
+InformationManager.DisplayMessage(new InformationMessage((overwrite ? DeveloperUiText.T("AF_UI_Developer_Import_completed","Import completed: ") : DeveloperUiText.T("AF_UI_Developer_Import_completed_duplicates_skipped","Import completed (duplicates skipped): ")) + OnboardingUiText.ImportPathDisplayName(importDir)));
 				}
 			};
 			Action action = () => _execution.Execute(plan, true, importGeneration);

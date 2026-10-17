@@ -387,22 +387,25 @@ public static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument docum
 			return "";
 		}
 		string target = document.Actions?.Count > 1
-			? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_117", "") + string.Join("、", document.Actions.Where(x => x != null)
+			? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_117", "") + string.Join(PromptPunctuation(localize, "AF_DIP_Source_ActionListSeparator", "、", ", "), document.Actions.Where(x => x != null)
 				.Select(x => WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(x.TargetKingdomName, x.TargetKingdomId) + "=" + WorldDiplomacyIntentVocabulary.IntentLabel(x.Intent, localize)))
 			: (string.IsNullOrWhiteSpace(document.TargetKingdomName) ? "" : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_123", "") + document.TargetKingdomName);
 		string result = string.IsNullOrWhiteSpace(document.MechanicalResult) ? "" : WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_124", "") + document.MechanicalResult;
 		string date = string.IsNullOrWhiteSpace(document.GameDate) ? formatDayFallback(document.Day) : document.GameDate;
 		return date
-			+ "，"
+			+ PromptPunctuation(localize, "AF_DIP_Source_DateSeparator", "，", ", ")
 			+ document.AuthorKingdomName
 			+ target
 			+ WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_125", "")
 			+ document.Title
-			+ "》（"
+			+ PromptPunctuation(localize, "AF_DIP_Source_TitleClose", "》", "\"")
+			+ PromptPunctuation(localize, "AF_DIP_Source_ActionOpen", "（", " (")
 			+ (document.Actions?.Count > 1 ? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_Source_126", "") : WorldDiplomacyIntentVocabulary.IntentLabel(document.Intent, localize))
-			+ "）"
+			+ PromptPunctuation(localize, "AF_DIP_Source_ActionClose", "）", ")")
 			+ result;
 	}
+	private static string PromptPunctuation(Func<string, string, string> localize, string key, string chinese, string english)
+		=> localize == null ? chinese : localize(key, english);
 
 	public static string BuildDetailedDocumentMemoryLine(WorldDiplomacyDocument document,
 		Func<int, string> formatDayFallback, Func<string, string, string> localize = null)
@@ -449,7 +452,8 @@ public static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument docum
 	}
 
 	public static string BuildNotificationDescription(WorldDiplomacyDocument document,
-		Func<int, string> formatDayFallback, Func<string, string, string> localize = null)
+		Func<int, string> formatDayFallback, Func<string, string, string> localize = null,
+		Func<string, string> projectDateForUi = null)
 	{
 		if (document == null)
 		{
@@ -462,7 +466,9 @@ public static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument docum
 				.Distinct(StringComparer.CurrentCulture))
 			: document.TargetKingdomName;
 		string target = string.IsNullOrWhiteSpace(targetNames) ? "" : " · " + targetNames;
-		return WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDayFallback(document.Day))
+		string date = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDayFallback(document.Day));
+		if (projectDateForUi != null) date = projectDateForUi(date);
+		return date
 			+ " · "
 			+ DocumentTypeLabel(document, localize)
 			+ " · "

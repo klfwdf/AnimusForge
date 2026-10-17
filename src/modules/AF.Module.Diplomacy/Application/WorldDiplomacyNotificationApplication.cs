@@ -139,7 +139,8 @@ internal sealed class WorldDiplomacyNotificationApplication
                 }
                 string title = WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text);
                 string description = showOnMap
-                    ? WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate, DiplomacyUiLocalization.Text)
+                    ? WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate,
+                        DiplomacyUiLocalization.Text, DiplomacyDateProjection.ForUi)
                     : DiplomacyUiLocalization.Format("AF_DIP_UI_Notice_DeclarationText",
                         "[Diplomatic Declaration] {ISSUER} issued \"{TITLE}\": {BODY}",
                         ("ISSUER", WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.AuthorKingdomName, sink.KingdomName(document.AuthorKingdomId))),

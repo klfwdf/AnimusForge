@@ -151,6 +151,12 @@ internal static class Program
             Console.WriteLine($"Player subject release passed: {Test.Assertions} assertions.");
             return 0;
         }
+        if (args.Length == 1 && args[0] == "--request-history-budget")
+        {
+            RequestHistoryBudgetReplay.Run();
+            Console.WriteLine($"Diplomacy request history replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--lifecycle-repair")
         {
             LifecycleRepairReplay.Run();
@@ -6125,6 +6131,24 @@ RunRepairCorrectionAndJobDecisionTests();
             new WorldDiplomacyRoundFact { Kind = "confirmed_result", Text = "war declared" })
                 .StartsWith("[游戏已执行]", StringComparison.Ordinal),
             "confirmed results render with the executed marker");
+        Func<string, string, string> englishFactText = (key, fallback) => key switch
+        {
+            "History_FactExecutedPrefix" => "[Executed by game] ",
+            "History_FactDeclarationPrefix" => "[Declaration record; not an executed outcome] ",
+            "History_FactLegacySummaryPrefix" => "Legacy diplomatic summary; it records the declaration narrative as saved and does not establish that any diplomatic mechanic was executed: ",
+            "History_FactLegacySummaryBracketPrefix" => "[Legacy declaration summary; not evidence of game execution] ",
+            _ => fallback
+        };
+        string legacySummaryPrefix = DiplomacyCompatibilityTexts.Get("History_LegacySummaryPrefix");
+        string legacySummaryBracketPrefix = DiplomacyCompatibilityTexts.Get("History_LegacySummaryBracketPrefix");
+        Test.True(WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt(
+            new WorldDiplomacyRoundFact { Kind = "note", Text = legacySummaryPrefix + "保留这段中文旧摘要" }, englishFactText)
+                == "Legacy diplomatic summary; it records the declaration narrative as saved and does not establish that any diplomatic mechanic was executed: 保留这段中文旧摘要",
+            "legacy summary marker projects to English while preserving its dynamic Chinese text");
+        Test.True(WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt(
+            new WorldDiplomacyRoundFact { Kind = "note", Text = legacySummaryBracketPrefix + "保留这段中文事实" }, englishFactText)
+                == "[Legacy declaration summary; not evidence of game execution] 保留这段中文事实",
+            "legacy bracket marker projects to English while preserving its dynamic Chinese text");
         Test.True(WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt(
             new WorldDiplomacyRoundFact { Kind = "note", Text = "  [existing] tag  " })
                 == "[existing] tag",
@@ -16042,11 +16066,13 @@ RunRepairCorrectionAndJobDecisionTests();
 
         Test.True(textRulesSource.Contains("public static string BuildNotificationDescription(", StringComparison.Ordinal)
             && textRulesSource.Contains("Func<int, string> formatDayFallback", StringComparison.Ordinal)
+            && textRulesSource.Contains("Func<string, string> projectDateForUi", StringComparison.Ordinal)
             && textRulesSource.Contains("public static string BuildDocumentEventMeta(", StringComparison.Ordinal)
             && textRulesSource.Contains("Func<string, WorldDiplomacyRound> resolveRound", StringComparison.Ordinal)
             && textRulesSource.Contains("Func<string, WorldDiplomacyDocument> resolveDocument", StringComparison.Ordinal),
             "notification and event-meta text composition must live in the text rules behind day/resolver ports");
-        Test.True(notificationApplicationSource.Contains("WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate, DiplomacyUiLocalization.Text)", StringComparison.Ordinal)
+        Test.True(notificationApplicationSource.Contains("WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate,", StringComparison.Ordinal)
+            && notificationApplicationSource.Contains("DiplomacyUiLocalization.Text, DiplomacyDateProjection.ForUi)", StringComparison.Ordinal)
             && presentationQueriesSource.Contains("WorldDiplomacyTextRules.BuildDocumentEventMeta(document, resolveRound, resolveDocument)", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildNotificationDescription(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private string BuildDocumentEventMeta(", StringComparison.Ordinal),

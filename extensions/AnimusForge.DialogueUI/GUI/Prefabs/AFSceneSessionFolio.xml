@@ -3,11 +3,11 @@
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false" IsVisible="@IsVisible">
       <Children>
         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="false" IsVisible="@IsExpanded" />
-        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" IsVisible="@IsExpanded">
+        <Widget Id="AFFolioBodyLayer" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true">
           <Children>
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" IsVisible="@IsChromeVisible">
               <Children>
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="577" SuggestedHeight="1060" HorizontalAlignment="Right" VerticalAlignment="Top" DoNotAcceptEvents="true" MarginRight="8" MarginTop="10">
+                <Widget Id="AFFolioSheet" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="577" SuggestedHeight="1060" HorizontalAlignment="Right" VerticalAlignment="Top" DoNotAcceptEvents="true" MarginRight="8" MarginTop="10">
                   <Children>
                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="577" SuggestedHeight="1060" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Sprite="afdui_3tier_console_chassis_clean" DoNotAcceptEvents="true" />
                     <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="34" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="25" MarginTop="16" Text="@SessionTitleText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="18" Brush.FontColor="#EBD4A8FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
@@ -477,7 +477,7 @@
             </Widget>
           </Children>
         </Widget>
-        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="90" SuggestedHeight="180" HorizontalAlignment="Right" VerticalAlignment="Center" DoNotAcceptEvents="true" IsVisible="@IsCollapsed">
+        <Widget Id="AFFolioTab" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="90" SuggestedHeight="180" HorizontalAlignment="Right" VerticalAlignment="Center" DoNotAcceptEvents="true">
           <Children>
             <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="90" SuggestedHeight="180" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" DoNotAcceptEvents="true">
               <Children>

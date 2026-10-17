@@ -1,9 +1,40 @@
+<a id="push-runtime-fixes-20261017"></a>
+## 当前源码推送（2026-10-17）
+
+- 用户明确授权推送当前工作树修复。fetch 后远端未新增提交；待发布历史仅含范围检查点，未含排除的本地专用 handoff。源码、配对资源与相关回放一起提交，Microsoft/、NuGet/、artifacts/、日志、玩家数据与构建输出不发布。
+- 复用本轮统一 Debug 双 API / Bootstrap 构建、双 Coup seam / registration、干净 Stage 及 EN 部署 3523/3523 SHA 校验证据，详见本账 #deploy-en-rebuild-20261017-0808。两个导入专项测试此前因测试替身依赖缺失未进入业务验收；不记作通过。未启动游戏、未验真实 provider、未重新正式打包；用户已要求忽略旧历史中文来源，未为此新增修改。
+- 最终提交及远端一致性在推送后以 Git 核对；回退使用本次修复提交的聚焦 git revert，保留共享历史。源码回退不自动还原已部署文件。
+
+<a id="deploy-en-updated-20261017"></a>
+## 当前工作树 EN 部署完成（2026-10-17，DEPLOY_VERIFIED / LIVE_PENDING）
+
+- 用户授权部署EN；基于main/5420ce063的当前工作树包含其他会话未提交改动，保持版本v1.6.1。Release 1.3、1.4、Bootstrap构建及双Coup seam/registration门禁通过；CN/EN完整投影各3523项，Stage为完整干净候选。部署使用未修改的原部署owner `Invoke-ManagedStageDeployment`，报告成功更新21项；未正式打包或push。
+- 部署目标 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。前后全量清单核对：3761项既有文件无丢失，安装后3762项；20个既有文件被替换、1个新建 `ModuleData/NpcBuiltinNameAliases.json`，21/21计划SHA等于部署后SHA，非计划变化/新增均为0。3395项受保护文件的内容SHA与时间戳均未变化。模块身份为AnimusForge/v1.6.1，唯一SubModule程序集仍为 `AnimusForge.Bootstrap.dll`；Bootstrap、1.3、1.4 DLL及 `SubModule.xml` 均与EN候选逐SHA一致。
+- EN部署候选的资源投影已验；严格EN发行词法门禁未在本轮重跑，不能据部署通过宣称正式包门禁全绿。游戏启动、实际游戏行为、真实provider和存档未验。无部署备份/自动回滚；人工回退需选择先前验证包并保留玩家数据。
+- 证据在 `artifacts/deploy-en-updated-20261017/`：`before.json`、`plan.json`、`projection.json`、`opposite-projection.json`、`prepared.json`、`deploy.log`、`after.json`、`receipt.json` 与原Stage保留目录。当前源码按各自代码提交回退；源码回退不会自动还原已部署文件。
+
+<a id="lightweight-persona-json-report-20261017"></a>
+## 轻量模型人设 JSON 报告审阅（2026-10-17，REVIEWED / NO_CODE_CHANGE）
+
+- 附件只包含调用命令、任务日志引用和报告作者的解释，没有附 `task-463.log`、`task-471.log`、`task-484.log` 中模型的原始响应。因此不能核实模型究竟返回了什么，也不能支持“末尾中文语言指令覆盖JSON协议”的因果断言。几次测试还改变了system/user角色、提示词内容、字段示例和温度，没有用同一个生产请求逐项控制变量；也没有测试当前游戏里真实模型/endpoint/provider的完整人设请求。
+- 当前CN/EN固定人设system资源均明确要求只输出六字段严格JSON；手动重生的记忆规则也声明记忆文本不得覆盖JSON约束。`NpcPersonaTextRules.BuildNative`将玩家自定义要求附加在system文本后（`src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs:233`），因此弱模型可能受自定义要求影响，但“生成简体中文”本身只指定语言，不等于要求输出散文。`PromptComposerTexts.ApplyOutputLanguage`当前为空操作（`src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs:27`），不会追加中文指令。
+- 此人设gateway调用没有启用 `response_format`/JSON schema，最终只能依靠system Prompt和解析器。解析器能从带围栏/外围文本中找已知JSON对象；纯散文没有 `profile`/`description`/旧字段时会失败，`NpcPersonaGenerationApplicationAdapter`不会保存失败结果并保留旧人设（`src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs:61`、`src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs:154`、`:187`）。这与“模型返回了文本但格式不符合协议”相符；附件没有数据足以判断是模型能力、实际custom prompt、provider参数或其他因素。
+- 未调用玩家API、未读取/输出密钥、未改Prompt或API行为，也未改变解析器。后续验证需先取得脱敏后的确切原始响应和同一生产request payload；如果要提高弱模型遵从率，应按provider/model是否支持结构化输出来决定是否发 `response_format`，不能只依据该附件把中文句子前移或改写后就宣称解决。
+
 <a id="en-runtime-import-relay-persona-folio-20261017"></a>
 ## EN运行链路修复（2026-10-17，INTENT / IN_PROGRESS / NOT_DEPLOYED / NOT_PUSHED）
 
 - 基线cf5f91ede；用户连续要求修复EN世界书中文名称/导入失败、多人框选喊话接力、右侧手札收展动画、手动重生仅接压缩记忆、场景历史地点头与手动标签执行事实中文。现场证据artifacts/en-import-relay-persona-folio-20261017/，玩家自定义人设要求末尾“生成简体中文”已由用户确认，保持原文件。
 - 退出门：生产消费者接通CN/EN、现场输入及取消/单目标/错误目标/动态原文回归、导入完整内置资源校验、双API/Bootstrap/扩展构建。保存键/协议/目录身份、动作规则与既有8轮接力预算保持；无新Tick IO/全量扫描/LLM。动画仅活动期间推进缓存Widget数值。压缩记忆按原10日窗口及800字符限额，不读近期行动或原始对话，不改存储。
 - 操作范围为本工作区源码与本地证据；本批未授权部署、推送或正式打包。先intent检查点，验证后分片提交；聚焦inverse回退，不撤其他作者内容。记录头与动作事实在明确的显示/请求边界投影，未知动态原文保持。RAG现有字符预算保持，优先修内置英文资源而非擅改单位或截断用户文本。
+
+<a id="diplomacy-request-history-localization-20261017"></a>
+## 外交请求历史固定标记按包语言投影（2026-10-17，OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED）
+
+- EN 包的外交历史窗口与记忆事实使用包内 `DiplomacyMiscPromptTexts.json` 英文资源；已知旧存档“旧版摘要”两种固定前缀先匹配旧兼容原值，再投影为英文标记。摘要、文书标题/正文和事实正文仍保留原文，不改存档、不猜译动态内容。
+- 源码坐标：`WorldDiplomacyRequestHistoryApplication.Build` 的历史标签资源化；`WorldDiplomacyMemoryApplication` 的事实前缀/分隔符资源化；`WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt` 的旧前缀投影；`WorldDiplomacyTextRules` 的紧凑文书记忆标点；资源键位于两套 `DiplomacyMiscPromptTexts` / `DiplomacyPromptTexts`。
+- `dotnet run --project tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/WorldDiplomacyRoundLifecycle.SmokeTests.csproj -- --request-history-budget` 通过，39项断言覆盖历史窗口、旧标记EN投影、中文动态正文保留与预算；两套外交Prompt JSON解析及键集合一致，相关 `git diff --check` 通过。完整总回放在更早的 `LifecycleRepairReplay.Submission` 处失败（“normal shortcut uses archive compose routing before semantic analysis”），未进入本次历史回放；不计作本片通过，也未扩大修复范围。
+- 只完成离线源码/资源验证；未做双API产品构建、完整CN/EN Stage、部署、打包、推送或实机/provider验收。聚焦回退点为本节所列外交源码、资源和回放测试差异，保留工作树其他作者改动。
 
 <a id="merge-push-current-20261017"></a>
 ## 拉取合并并推送当前工作（2026-10-17，PUSH_VERIFIED / LIVE_NOT_RUN）
@@ -11116,3 +11147,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 未验：真实provider/网络时序、实际Bannerlord换行/滚动/帧耗时及TTS音频、旧档。旧`NativeWaitAudioBoundaryTests`未进入断言：固定历史提交`1235727e...`中不存在它引用的当前`src/modules/.../ShoutBehavior.cs`路径，日志`audio-1.3.log`保留；本任务不改历史基线。所有回放是离线证据，不宣称实机或全仓通过。
 - 证据与冻结候选：`artifacts/streaming-dialogue-reveal-20261015/receipt.json`及`verified-candidates/`；[准确源码责任/一基坐标](architecture/af-framework-code-scope.md#streaming-dialogue-reveal-20261015)。回滚仅 `git revert 21e0a6a2b`；意图检查点`0e9081622`，不重置或覆盖其他会话。未Stage、部署、打包或push。
 
+
+<a id="deploy-en-rebuild-20261017-0808"></a>
+## 2026-10-17 EN 重新构建与部署
+
+用户明确要求重新编译部署 EN。统一 Debug 构建重新编译 Bannerlord 1.3 / 1.4 与 Bootstrap，双 Coup seam / registration 通过，干净 Stage 成功。EN 投影 3523 项通过，原 Invoke-ManagedStageDeployment 更新 3523 项，部署后逐项 SHA256 3523/3523 一致。未改版本，未打包、push 或启动游戏；实机新档导入与父亲背景问题尚未验证，不能以构建通过代替。
+
+证据：artifacts/en-deploy-build.log、artifacts/en-deploy-install.log；EN 候选 artifacts/en-deploy-20261017_080809/AnimusForge；操作脚本 artifacts/run-en-deploy.ps1 直接调用仓库已有投影与部署函数。目标 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge；ONNX 由未列管文件保留策略保护。旧 Stage 已移至 bin/Debug/single_module_stage/AnimusForge_preserved_20261017_080331，用户后续要求删除，但递归删除被自动审批拒绝，未执行；其中第三方运行库经锁校验用于构建依赖，AF 三份 DLL 均重新编译。部署无 Recovery 或自动回滚；人工回退需使用已验证旧包并保留玩家资料。

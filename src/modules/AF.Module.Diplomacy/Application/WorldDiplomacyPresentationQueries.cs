@@ -98,8 +98,10 @@ internal static class WorldDiplomacyPresentationQueries
     internal static WorldDiplomacyDocumentDetail Detail(WorldDiplomacyDocument document, long generation,
         bool canReply, Func<int, string> formatDate, bool canRetryAnalysis = false)
     {
+        string date = DiplomacyDateProjection.ForUi(
+            WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day)));
         string subtitle = document.AuthorKingdomName + " · " + document.AuthorRulerName + " · "
-            + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day)) + " · "
+            + date + " · "
             + WorldDiplomacyTextRules.DocumentTypeLabel(document, DiplomacyUiLocalization.Text);
         return new WorldDiplomacyDocumentDetail(document.DocumentId, document.RoundId, generation,
             WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text), subtitle,
@@ -121,7 +123,7 @@ internal static class WorldDiplomacyPresentationQueries
             }
             string kingdomId = document.AuthorKingdomId;
             string kingdomName = document.AuthorKingdomName;
-            string date = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day));
+            string date = DiplomacyDateProjection.ForUi(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day)));
             string typeLabel = WorldDiplomacyTextRules.DocumentTypeLabel(document, DiplomacyUiLocalization.Text);
             string eventMeta = WorldDiplomacyTextRules.BuildDocumentEventMeta(document, resolveRound, resolveDocument);
             string targetSummary = document.Actions?.Count > 1
@@ -173,7 +175,7 @@ internal static class WorldDiplomacyPresentationQueries
                 EventId: "diplomacy_summary:" + summary.BatchId,
                 KindLabel: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_HistoryCompactionKind", "Diplomatic history compaction"),
                 HeaderRightText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_LongTermMemory", "Long-term diplomatic memory"),
-                DateText: formatDate(summary.CreatedDay),
+                DateText: DiplomacyDateProjection.ForUi(formatDate(summary.CreatedDay)),
                 TitleText: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_HistoryCompactionTitle", "Diplomatic history compaction record"),
                 MetaText: DiplomacyUiLocalization.Format("AF_DIP_UI_WorldDiplomacy_CompactionMeta", "Compacted after {TOKENS} accumulated tokens", ("TOKENS", summary.TokenCount.ToString("N0", CultureInfo.InvariantCulture))),
                 BodyText: summary.Summary,

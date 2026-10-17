@@ -288,6 +288,10 @@
     <string id="AF_ONBOARDING_IMPORT_PICKER_FAILED" text="Failed to open import selection: " />
     <string id="AF_ONBOARDING_IMPORT_KINGDOM_FAILED" text="Import failed: kingdom strategy and personality import could not run. Reason: " />
     <string id="AF_ONBOARDING_IMPORT_FAILED" text="Import failed: " />
+    <string id="AF_ONBOARDING_IMPORT_RETRY_TITLE" text="Worldbook import did not complete" />
+    <string id="AF_ONBOARDING_IMPORT_RETRY_BODY" text="The worldbook was not fully imported. Check Mod_Logic.txt for the failed import stage, then retry or skip the database import." />
+    <string id="AF_ONBOARDING_IMPORT_RETRY" text="Choose another folder / retry" />
+    <string id="AF_ONBOARDING_IMPORT_SKIP_AFTER_FAILURE" text="Skip database import" />
     <string id="AF_ONBOARDING_UNKNOWN_VERSION" text="Unknown version" />
     <string id="AF_ONBOARDING_LATENCY_SUFFIX" text=" ms." />
     <string id="AF_COMMON_PERIOD" text="." />

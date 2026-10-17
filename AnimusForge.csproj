@@ -159,6 +159,7 @@
       <LogicalName>AnimusForge.Conversation.RuntimeCompatibility.json</LogicalName>
       <WithCulture>false</WithCulture>
     </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Onboarding\ModuleData\NpcBuiltinNameAliases.json" LogicalName="AnimusForge.Defaults.NpcBuiltinNameAliases.json" />
     <EmbeddedResource Include="content\modules\AF.Module.Economy\ModuleData\EconomySourceTexts.json">
       <LogicalName>AnimusForge.Defaults.EconomySourceTexts.json</LogicalName>
       <WithCulture>false</WithCulture>

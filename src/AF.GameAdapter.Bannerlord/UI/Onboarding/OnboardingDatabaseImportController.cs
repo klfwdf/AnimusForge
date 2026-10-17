@@ -197,13 +197,19 @@ internal sealed class OnboardingDatabaseImportController
                 }
                 var step = new OnboardingImportStep(current, result =>
                 {
+                    Logger.Log("OnboardingImport", "step=" + index + " result=" + result);
                     if (result == OnboardingImportResult.PendingConfirmation) return;
                     if (result == OnboardingImportResult.Completed) advance(index + 1);
                     else reject(result);
                 });
+                Logger.Log("OnboardingImport", "step=" + index + " begin");
                 imports[index](step);
             }
-            catch { reject(OnboardingImportResult.Failed); }
+            catch (Exception ex)
+            {
+                Logger.Log("OnboardingImport", "step=" + index + " exception=" + ex.Message);
+                reject(OnboardingImportResult.Failed);
+            }
         };
         advance(0);
     }

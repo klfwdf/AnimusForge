@@ -39,21 +39,9 @@ public partial class MyBehavior
     private string CaptureRecentPersonaExperiences(Hero hero)
     {
         // Called only for a manual request, inside the owner dispatcher. All lookups are target-keyed.
-        string id = CampaignCharacterRecordCaptureAdapter.GetMemoryHeroId(hero);
         int currentDay = GetCurrentGameDayIndexSafe();
-        string actions = "";
-        string actionId = CampaignCharacterRecordCaptureAdapter.GetNpcActionHeroKey(hero);
-        if (_memoryBusinessState.RecentActions.TryGetValue(actionId, out var entries))
-        {
-            var recent = NpcActionLedger.SanitizeNpcActionEntries(entries, true, currentDay)
-                .Where(entry => PersonaRegenerationExperienceContext.IsRecent(entry.Day, currentDay)
-                    && PersonaRegenerationExperienceContext.IsSignificantAction(entry.ActionKind, entry.IsMajor)).ToList();
-            var tail = recent.Skip(Math.Max(0, recent.Count - PersonaRegenerationExperienceContext.ActionLimit)).ToList();
-            actions = CampaignCharacterRecordCaptureAdapter.RenderNpcActionEntriesForPrompt(hero, tail);
-        }
         _memoryHistoryCommit.TryGetLatestCompressedMemoryInternal(hero, out _, out string date, out string summary, out int memoryDay);
-        var history = _memoryHistoryCommit.GetDialogueHistoryEntriesById(id, PersonaRegenerationExperienceContext.HistoryReadLimit);
-        return PersonaRegenerationExperienceContext.Build(id, currentDay, actions, date, summary, memoryDay, history);
+        return PersonaRegenerationExperienceContext.Build(currentDay, date, summary, memoryDay);
     }
 
     private Task EnsureNpcPersonaGeneratedAsync(Hero hero, bool ignoreRetryCooldown = false)

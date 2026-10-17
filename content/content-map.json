@@ -17651,6 +17651,13 @@
       "owner": "AnimusForge.DialogueUI",
       "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_icon_rewrite.png",
       "target": "GUI/SpriteParts/afdui_icon_rewrite.png"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/ModuleData/NpcBuiltinNameAliases.json",
+      "target": "ModuleData/NpcBuiltinNameAliases.json",
+      "logicalName": "AnimusForge.Defaults.NpcBuiltinNameAliases.json",
+      "localizationRole": "compatibility"
     }
   ]
 }

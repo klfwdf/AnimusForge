@@ -31,7 +31,7 @@ internal static class WorldDiplomacyPlayerDraftApplication
             if (result?.IsOutputTruncated == true)
                 return WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftTruncated", "The draft was truncated by the output limit; original text was kept. Please raise the API output limit."));
             if (result?.Success != true)
-                return WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftFailed", "The scribe could not draft the document; original text was kept. Try again."));
+                return WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftFailed", "The scribe could not draft the document; the original text was kept. Try again."));
             return WorldDiplomacyPlayerDraftRules.Parse(result.Content);
         };
         return true;

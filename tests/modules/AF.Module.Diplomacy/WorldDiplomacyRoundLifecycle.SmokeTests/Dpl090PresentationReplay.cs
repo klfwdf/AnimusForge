@@ -19,10 +19,41 @@ internal static class Dpl090PresentationReplay
         Test.True(EqualityComparer<T>.Default.Equals(expected, actual), message + $": expected={expected}, actual={actual}");
     internal static void Run()
     {
+        DateProjection();
         Queries();
         Notifications();
         Commands();
         Boundaries();
+    }
+
+    private static void DateProjection()
+    {
+        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("English"), "English UI resources remain selectable");
+        Equal("Year 2, spring 3", DiplomacyDateProjection.ForUi("2年春季3天"),
+            "known persisted campaign date projects to English UI");
+        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("简体中文"), "Chinese UI resources remain selectable");
+        Equal("2年 春季 3日", DiplomacyDateProjection.ForUi("2年春季3天"),
+            "known persisted campaign date projects to Chinese UI");
+        const string unknown = "玩家自定义日期：原样保留";
+        Equal(unknown, DiplomacyDateProjection.ForUi(unknown), "unknown dynamic date remains unchanged");
+
+        var document = Document("date-notice", 3);
+        document.GameDate = "2年春季3天";
+        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("English"), "English UI resources remain selectable for notice");
+        string englishNotice = WorldDiplomacyTextRules.BuildNotificationDescription(document, day => "day" + day,
+            DiplomacyUiLocalization.Text, DiplomacyDateProjection.ForUi);
+        Test.True(englishNotice.StartsWith("Year 2, spring 3", StringComparison.Ordinal),
+            "map notification projects persisted date for English UI");
+        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("简体中文"), "Chinese UI resources remain selectable for notice");
+        string chineseNotice = WorldDiplomacyTextRules.BuildNotificationDescription(document, day => "day" + day,
+            DiplomacyUiLocalization.Text, DiplomacyDateProjection.ForUi);
+        Test.True(chineseNotice.StartsWith("2年 春季 3日", StringComparison.Ordinal),
+            "map notification projects persisted date for Chinese UI");
+        document.GameDate = unknown;
+        Test.True(WorldDiplomacyTextRules.BuildNotificationDescription(document, day => "day" + day,
+            DiplomacyUiLocalization.Text, DiplomacyDateProjection.ForUi).StartsWith(unknown, StringComparison.Ordinal),
+            "map notification preserves unknown dynamic date");
+        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("English"), "smoke UI language restored");
     }
 
     private static WorldDiplomacyDocument Document(string id, int day) => new()
@@ -58,6 +89,17 @@ internal static class Dpl090PresentationReplay
         Test.True(!full[1].IsRead, "timeline read marker is a snapshot");
         var detail = WorldDiplomacyPresentationQueries.Detail(second, 42, true, day => "日期" + day);
         Equal((SmokeLocalizationEnvironment.EnglishUi ? "作者国 · 统治者 · 日期2 · Diplomatic announcement" : "作者国 · 统治者 · 日期2 · 外交公告"), detail.Subtitle, "detail subtitle and localized type preserved");
+        second.GameDate = "2年春季3天";
+        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("English"), "English UI resources remain selectable for detail");
+        Test.True(WorldDiplomacyPresentationQueries.Detail(second, 42, true, day => "day" + day).Subtitle
+            .Contains("Year 2, spring 3", StringComparison.Ordinal), "detail subtitle projects persisted date for English UI");
+        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("简体中文"), "Chinese UI resources remain selectable for detail");
+        Test.True(WorldDiplomacyPresentationQueries.Detail(second, 42, true, day => "day" + day).Subtitle
+            .Contains("2年 春季 3日", StringComparison.Ordinal), "detail subtitle projects persisted date for Chinese UI");
+        second.GameDate = "玩家自定义日期：原样保留";
+        Test.True(WorldDiplomacyPresentationQueries.Detail(second, 42, true, day => "day" + day).Subtitle
+            .Contains("玩家自定义日期：原样保留", StringComparison.Ordinal), "detail subtitle preserves unknown dynamic date");
+        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("English"), "smoke UI language restored after detail projection");
         Equal(42L, detail.Generation, "detail carries lifecycle value only");
         Test.True(detail.CanReply && !second.IsRead, "query does not mark read");
         Test.True(WorldDiplomacyTimelineApplication.MarkRead(storage, second.DocumentId) && second.IsRead, "read command marks canonical record");

@@ -3,6 +3,7 @@ from pathlib import Path
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 import xml.etree.ElementTree as ET
 
@@ -21,6 +22,7 @@ sources = {(HERE / node.attrib['Include']).resolve()
 # Explicit top-level membership excludes stale bin/obj generated C# and the separate
 # persistence attribute substitutes; the fixture uses the real Newtonsoft serializer.
 sources.update(path.resolve() for path in HERE.glob('*.cs') if path.name != 'PersistenceRecordStubs.cs')
+sources.add((HERE / 'SmokeLocalizationEnvironment.cs').resolve())
 notification = ROOT / 'src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs'
 if args.baseline:
     previous = subprocess.check_output(['git', 'show', 'HEAD:' + notification.relative_to(ROOT).as_posix()], cwd=ROOT)
@@ -32,6 +34,7 @@ project = ET.Element('Project', Sdk='Microsoft.NET.Sdk')
 properties = ET.SubElement(project, 'PropertyGroup')
 for name, value in {'OutputType': 'Exe', 'TargetFramework': 'net6.0',
                     'ImplicitUsings': 'enable', 'Nullable': 'enable',
+                    'LangVersion': 'latest',
                     'EnableDefaultCompileItems': 'false', 'StartupObject': 'NoticeReplay',
                     'WarningLevel': '0'}.items():
     ET.SubElement(properties, name).text = value
@@ -39,10 +42,27 @@ items = ET.SubElement(project, 'ItemGroup')
 for path in sorted(sources):
     ET.SubElement(items, 'Compile', Include=str(path))
 ET.SubElement(items, 'Compile', Include='NoticeReplay.cs')
+for name in ('TaleWorlds.Localization', 'TaleWorlds.Library'):
+    reference = ET.SubElement(items, 'Reference', Include=name)
+    ET.SubElement(reference, 'HintPath').text = str(
+        Path('F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/bin/Win64_Shipping_Client') / (name + '.dll'))
 ET.SubElement(items, 'PackageReference', Include='Newtonsoft.Json', Version='13.0.3')
+for item_name in ('Content', 'EmbeddedResource'):
+    for source in original.findall('./ItemGroup/' + item_name):
+        include = source.attrib.get('Include')
+        if not include:
+            continue
+        attributes = {name: value for name, value in source.attrib.items() if name != 'Include'}
+        attributes['Include'] = str((HERE / include).resolve())
+        target = ET.SubElement(items, item_name, attributes)
+        for metadata in source:
+            copied = ET.SubElement(target, metadata.tag, metadata.attrib)
+            copied.text = metadata.text
 ET.ElementTree(project).write(out / 'NotificationReplay.csproj', encoding='utf-8', xml_declaration=True)
-(out / 'NoticeReplay.cs').write_text('''internal static class NoticeReplay {
+(out / 'NoticeReplay.cs').write_text('''using AnimusForge;
+internal static class NoticeReplay {
  static int Main() {
+  SmokeLocalizationEnvironment.Initialize();
   Dpl090PresentationReplay.Run();
   System.Console.WriteLine("PASS production notification/presentation replay: " + Test.Assertions + " assertions; live widget NOT-RUN");
   return 0;
@@ -56,7 +76,10 @@ commands = [('build.log', ['dotnet', 'build', str(out / 'NotificationReplay.cspr
                           '-p:RestoreConfigFile=' + str(out / 'NuGet.Config')]),
             ('run.log', ['dotnet', str(out / 'bin/Debug/net6.0/NotificationReplay.dll')])]
 for log_name, command in commands:
-    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace')
+    environment = os.environ.copy()
+    environment['AF_SMOKE_UI_MODULE'] = str(ROOT / 'content/modules/AF.Module.Diplomacy')
+    environment['AF_SMOKE_UI_LANGUAGE'] = 'English'
+    result = subprocess.run(command, cwd=ROOT, env=environment, capture_output=True, text=True, encoding='utf-8', errors='replace')
     text = result.stdout + result.stderr
     (out / log_name).write_text(text, encoding='utf-8')
     print(text, end='')

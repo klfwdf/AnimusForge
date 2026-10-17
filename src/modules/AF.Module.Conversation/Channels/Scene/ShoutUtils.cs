@@ -1107,9 +1107,9 @@ public static class ShoutUtils
 			{
 				return mapLandDescriptionWithoutMission;
 			}
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0758");
+			return ConversationRuntimeTexts.Prompt("AF_CONV_Location_0758");
 		}
-		string text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0759");
+		string text = ConversationRuntimeTexts.Prompt("AF_CONV_Location_0759");
 		string text2 = "";
 		bool flag = false;
 		bool flag2 = false;
@@ -1185,7 +1185,7 @@ public static class ShoutUtils
 		}
 		if (flag3)
 		{
-			string text6 = string.IsNullOrEmpty(text2) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0770") : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0771") + text2 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0772"));
+			string text6 = string.IsNullOrEmpty(text2) ? ConversationRuntimeTexts.Prompt("AF_CONV_Location_0770") : (ConversationRuntimeTexts.Prompt("AF_CONV_Location_0771") + text2 + ConversationRuntimeTexts.Prompt("AF_CONV_Location_0772"));
 			if (!string.IsNullOrEmpty(text3))
 			{
 				return text6 + " | " + text3;
@@ -1210,7 +1210,7 @@ public static class ShoutUtils
 			text = BuildCurrentMapLandTerrainSceneSpotLabel();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0773");
+				text = ConversationRuntimeTexts.Prompt("AF_CONV_Location_0773");
 			}
 		}
 		else
@@ -1229,13 +1229,13 @@ public static class ShoutUtils
 				switch (text6)
 				{
 				case "lordshall":
-					text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0774");
+					text = ConversationRuntimeTexts.Prompt("AF_CONV_Location_0774");
 					break;
 				case "tavern":
-					text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0775");
+					text = ConversationRuntimeTexts.Prompt("AF_CONV_Location_0775");
 					break;
 				case "arena":
-					text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0776");
+					text = ConversationRuntimeTexts.Prompt("AF_CONV_Location_0776");
 					break;
 				default:
 					if (!(text6 == "dungeon"))
@@ -1243,37 +1243,37 @@ public static class ShoutUtils
 						switch (text6)
 						{
 						case "alley":
-							text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0777");
+							text = ConversationRuntimeTexts.Prompt("AF_CONV_Location_0777");
 							break;
 						case "port":
-							text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0778");
+							text = ConversationRuntimeTexts.Prompt("AF_CONV_Location_0778");
 							break;
 						default:
 							if (!(text6 == "village_center"))
 							{
-								text = ((!string.IsNullOrEmpty(text2)) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0779") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0780"));
+								text = ((!string.IsNullOrEmpty(text2)) ? ConversationRuntimeTexts.Prompt("AF_CONV_Location_0779") : ConversationRuntimeTexts.Prompt("AF_CONV_Location_0780"));
 								break;
 							}
 							goto case "center";
 						case "center":
-							text = ((!string.IsNullOrEmpty(text2)) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0781") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0782"));
+							text = ((!string.IsNullOrEmpty(text2)) ? ConversationRuntimeTexts.Prompt("AF_CONV_Location_0781") : ConversationRuntimeTexts.Prompt("AF_CONV_Location_0782"));
 							break;
 						}
 						break;
 					}
 					goto case "prison";
 				case "prison":
-					text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0783");
+					text = ConversationRuntimeTexts.Prompt("AF_CONV_Location_0783");
 					break;
 				}
 			}
 			else
 			{
 				string text7 = mission.SceneName?.ToLower() ?? "";
-				text = ((!text7.Contains("lordshall") && !text7.Contains("lord_hall") && !text7.Contains("lordhall") && !text7.Contains("lord") && !text7.Contains("keep")) ? (text7.Contains("tavern") ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0784") : (text7.Contains("arena") ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0785") : ((text7.Contains("prison") || text7.Contains("dungeon")) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0786") : (string.IsNullOrEmpty(text2) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0787") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0788"))))) : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0789"));
+				text = ((!text7.Contains("lordshall") && !text7.Contains("lord_hall") && !text7.Contains("lordhall") && !text7.Contains("lord") && !text7.Contains("keep")) ? (text7.Contains("tavern") ? ConversationRuntimeTexts.Prompt("AF_CONV_Location_0784") : (text7.Contains("arena") ? ConversationRuntimeTexts.Prompt("AF_CONV_Location_0785") : ((text7.Contains("prison") || text7.Contains("dungeon")) ? ConversationRuntimeTexts.Prompt("AF_CONV_Location_0786") : (string.IsNullOrEmpty(text2) ? ConversationRuntimeTexts.Prompt("AF_CONV_Location_0787") : ConversationRuntimeTexts.Prompt("AF_CONV_Location_0788"))))) : ConversationRuntimeTexts.Prompt("AF_CONV_Location_0789"));
 			}
 		}
-		string text8 = (string.IsNullOrEmpty(text2) ? text : (flag ? (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0790") + text2 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0791") + text) : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0792") + text2 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0793") + text)));
+		string text8 = string.IsNullOrEmpty(text2) ? text : ConversationRuntimeTexts.FormatPrompt(flag ? "AF_CONV_Location_Near" : "AF_CONV_Location_In", ("SETTLEMENT", text2), ("SPOT", text));
 		if (!string.IsNullOrEmpty(text3))
 		{
 			return text8 + " | " + text3;
@@ -1298,11 +1298,11 @@ public static class ShoutUtils
 			string terrainLabel = BuildCurrentMapLandTerrainSceneSpotLabel();
 			if (string.IsNullOrWhiteSpace(terrainLabel))
 			{
-				terrainLabel = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0794");
+				terrainLabel = ConversationRuntimeTexts.Prompt("AF_CONV_Location_0794");
 			}
 			Settlement settlement = MapSeaContextGuard.FindNearestSettlementForPrompt(party);
 			string settlementName = MapSeaContextGuard.FormatSettlementNameWithTypeForPrompt(settlement);
-			description = string.IsNullOrWhiteSpace(settlementName) ? terrainLabel : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0795") + settlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0796") + terrainLabel);
+			description = string.IsNullOrWhiteSpace(settlementName) ? terrainLabel : ConversationRuntimeTexts.FormatPrompt("AF_CONV_Location_Near", ("SETTLEMENT", settlementName), ("SPOT", terrainLabel));
 			return !string.IsNullOrWhiteSpace(description);
 		}
 		catch
@@ -1336,7 +1336,7 @@ public static class ShoutUtils
 			}
 			Settlement settlement = MapSeaContextGuard.FindNearestSettlementForPrompt(party) ?? FindNearestSettlementForCurrentScene();
 			string settlementName = MapSeaContextGuard.FormatSettlementNameWithTypeForPrompt(settlement);
-			description = string.IsNullOrWhiteSpace(settlementName) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0797") : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0798") + settlementName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0799"));
+			description = string.IsNullOrWhiteSpace(settlementName) ? ConversationRuntimeTexts.Prompt("AF_CONV_Location_0797") : (ConversationRuntimeTexts.Prompt("AF_CONV_Location_0798") + settlementName + ConversationRuntimeTexts.Prompt("AF_CONV_Location_0799"));
 			return true;
 		}
 		catch

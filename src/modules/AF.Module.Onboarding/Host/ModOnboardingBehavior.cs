@@ -3791,15 +3791,47 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
             return result;
         }, directory => my?.CaptureOnboardingImports(directory), HasLoadedVoiceMapping,
         () => { if (current()) CompleteOnboardingAndOpenPlayerPersonaSetup(onReturn, importedDatabase: true); },
-        () => { if (current()) OpenImportFolderPicker(onReturn); });
+        () => { if (current()) ShowImportFailureRecovery(onReturn); });
 
         }
         catch (Exception ex)
         {
 			InformationManager.DisplayMessage(new InformationMessage(OnboardingUiText.T("AF_ONBOARDING_IMPORT_FAILED", "Import failed: ") + ex.Message));
-			OpenImportFolderPicker(onReturn);
+			ShowImportFailureRecovery(onReturn);
         }
     }
+
+	private void ShowImportFailureRecovery(Action onReturn)
+	{
+		try
+		{
+			_welcomeInProgress = true;
+			_activeOnboardingStage = OnboardingUiStage.Import;
+			InformationManager.ShowInquiry(new InquiryData(
+				OnboardingUiText.T("AF_ONBOARDING_IMPORT_RETRY_TITLE", "Worldbook import did not complete"),
+				OnboardingUiText.T("AF_ONBOARDING_IMPORT_RETRY_BODY", "The worldbook was not fully imported. Check Mod_Logic.txt for the failed import stage, then retry or skip the database import."),
+				isAffirmativeOptionShown: true,
+				isNegativeOptionShown: true,
+				OnboardingUiText.T("AF_ONBOARDING_IMPORT_RETRY", "Choose another folder / retry"),
+				OnboardingUiText.T("AF_ONBOARDING_IMPORT_SKIP_AFTER_FAILURE", "Skip database import"),
+				delegate
+				{
+					_welcomeInProgress = false;
+					OpenImportFolderPicker(onReturn);
+				},
+				delegate
+				{
+					_welcomeInProgress = false;
+					ShowSkipImportConfirmation(onReturn);
+				}),
+				pauseGameActiveState: true);
+		}
+		catch
+		{
+			_welcomeInProgress = false;
+			onReturn?.Invoke();
+		}
+	}
 
 	private static bool InvokePrivateImport(MyBehavior my, string methodName, string folderName)
 	{

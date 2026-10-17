@@ -83,6 +83,10 @@ def main():
         "DIRECT_REPLY_FLAG": next(line for line in method.splitlines() if "bool replyIsDirectPlayerResponse = firstTurn;" in line),
         "RUNTIME_APPEND": declaration(owner, "internal static string AppendPostprocessContextBlockForScene("),
         "POST_CONTEXT_BLOCK": declaration(owner[owner.rfind("if (relayRuleInjected)", 0, owner.index("runtimeContext, BuildSceneRelayTargetListForPostprocess(relayCandidates")):], "if (relayRuleInjected)"),
+        "GROUP_DETECTION": declaration(scene, "private static bool IsExplicitSceneGroupAddress("),
+        "UNANSWERED_TARGET": declaration(scene, "private static bool TrySelectUnansweredSceneGroupRelayTarget("),
+        "GROUP_CALL": next(line for line in method.splitlines() if "bool explicitGroupAddress =" in line),
+        "GROUP_FALLBACK": method[method.index('if (!string.IsNullOrWhiteSpace(cleaned))', selection_begin):tail_begin],
         "CONSTANT": re.search(r"internal const int AUTO_GROUP_CHAT_MAX_LINES = \d+;", source("src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs", args.source_ref)).group(),
     }
     output = new_run_root(ROOT, "scene-relay-continuation", args.run_root)
@@ -115,6 +119,8 @@ def main():
         "src/modules/AF.Module.Conversation/Internal/History/SceneHistoryProjectionOwner.cs")
     for index, path in enumerate(assembly_paths):
         (output / ("ProductionAssembly" + str(index) + ".cs")).write_text(source(path, args.source_ref), encoding="utf-8")
+    memory_line = declaration(source("src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs", args.source_ref), "internal sealed class DailyMemoryLine")
+    (output / "DailyMemoryLine.cs").write_text("namespace AnimusForge {" + memory_line + "}", encoding="utf-8")
     linked = "".join('<Compile Include="' + str(ROOT / path).replace("\\", "/") + '" />' for path in (
         "AnimusForge.SiegeAftermathIntervention/SiegeNpcResponseEventBudget.cs",
         "AnimusForge.SiegeAftermathIntervention/SiegeNpcResponseLimitProfile.cs"))

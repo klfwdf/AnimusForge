@@ -288,6 +288,10 @@
     <string id="AF_ONBOARDING_IMPORT_PICKER_FAILED" text="打开导入选择失败：" />
     <string id="AF_ONBOARDING_IMPORT_KINGDOM_FAILED" text="导入失败：无法执行国家战略与性格导入。原因：" />
     <string id="AF_ONBOARDING_IMPORT_FAILED" text="导入失败：" />
+    <string id="AF_ONBOARDING_IMPORT_RETRY_TITLE" text="世界书导入未完成" />
+    <string id="AF_ONBOARDING_IMPORT_RETRY_BODY" text="世界书没有完整导入。请查看 Mod_Logic.txt 中记录的失败阶段，然后重试或跳过数据库导入。" />
+    <string id="AF_ONBOARDING_IMPORT_RETRY" text="选择其他文件夹并重试" />
+    <string id="AF_ONBOARDING_IMPORT_SKIP_AFTER_FAILURE" text="跳过数据库导入" />
     <string id="AF_ONBOARDING_UNKNOWN_VERSION" text="未知版本" />
     <string id="AF_ONBOARDING_LATENCY_SUFFIX" text=" ms。" />
     <string id="AF_COMMON_PERIOD" text="。" />

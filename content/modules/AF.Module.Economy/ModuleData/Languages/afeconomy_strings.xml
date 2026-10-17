@@ -413,5 +413,27 @@
     <string id="AF_ECO_UI_PartyAsset_UnknownSettlement" text="unknown settlement" />
     <string id="AF_ECO_UI_PartyAsset_Workshop" text="workshop" />
     <string id="AF_ECO_UI_PartyAsset_Caravan" text="caravan" />
+      <string id="AF_ECO_FACT_S442" text="You handed {VALUE1} denars to {VALUE2} on behalf of {VALUE0}; the money entered {VALUE3}'s inventory." />
+    <string id="AF_ECO_FACT_S443" text="You handed {VALUE0} denars to {VALUE1}; the money entered {VALUE2}'s inventory." />
+    <string id="AF_ECO_FACT_S444" text="You received {VALUE2} denars from {VALUE0}, representing {VALUE1}." />
+    <string id="AF_ECO_FACT_S445" text="You received {VALUE1} denars from {VALUE0}." />
+    <string id="AF_ECO_FACT_S446" text="You planned to hand over {VALUE0} denars, but only {VALUE1} were paid after your balance changed." />
+    <string id="AF_ECO_FACT_S447" text="{VALUE0} planned to hand over {VALUE1} denars, but only {VALUE2} were paid." />
+    <string id="AF_ECO_FACT_S448" text="You attempted to pay {VALUE1} denars on behalf of {VALUE0}, but {VALUE2} lacked cash; no payment occurred this round." />
+    <string id="AF_ECO_FACT_S449" text="You attempted to pay {VALUE0} denars, but your balance was insufficient; no payment occurred this round." />
+    <string id="AF_ECO_FACT_S450" text="{VALUE0} attempted to pay {VALUE1} denars, but the balance was insufficient; no payment occurred this round." />
+    <string id="AF_ECO_FACT_S516" text="You handed {VALUE0} denars to the player; the money was deducted from your party's funds." />
+    <string id="AF_ECO_FACT_S517" text="You planned to pay {VALUE0} denars, but only {VALUE1} were paid after your party's funds changed." />
+    <string id="AF_ECO_FACT_S518" text="You attempted to pay {VALUE0} denars, but your party lacked funds; no payment occurred this round." />
+    <string id="AF_ECO_FACT_S519" text="{VALUE0} attempted to pay {VALUE1} denars, but the party lacked funds; no payment occurred this round." />
+    <string id="AF_ECO_FACT_S528" text="You handed {VALUE0} denars to the player; the money entered the player's inventory." />
+    <string id="AF_ECO_FACT_S529" text="You planned to pay {VALUE0} denars, but only {VALUE1} were paid after the shop's funds changed." />
+    <string id="AF_ECO_FACT_S530" text="You attempted to pay {VALUE0} denars, but the shop lacked cash; no payment occurred this round." />
+    <string id="AF_ECO_FACT_S531" text="{VALUE0} attempted to pay {VALUE1} denars, but the shop lacked cash; no payment occurred this round." />
+    <string id="AF_ECO_FACT_S724" text="Your personal trust in the player increased by {VALUE0}{VALUE1} because the value you actually delivered reached the cumulative threshold." />
+    <string id="AF_ECO_FACT_S725" text="{VALUE0}'s personal trust in you increased by {VALUE1}{VALUE2} because the value actually delivered to you reached the cumulative threshold." />
+    <string id="AF_ECO_FACT_S726" text="Your market trust in the player increased by {VALUE0}{VALUE1} because the value you actually delivered reached the cumulative threshold." />
+    <string id="AF_ECO_FACT_S727" text="Market trust in you from {VALUE1}, represented by {VALUE0}, increased by {VALUE2}{VALUE3} because the value actually delivered to you reached the cumulative threshold." />
+    <string id="AF_ECO_FACT_GoldBatch" text="Gold transfer summary: {VALUE0} attempted, {VALUE1} succeeded, {VALUE2} failed or insufficient; {VALUE3} denars actually transferred, worth {VALUE4} denars." />
   </strings>
 </base>
