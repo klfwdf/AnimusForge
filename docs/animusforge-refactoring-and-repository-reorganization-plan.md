@@ -1,9 +1,15 @@
 <a id="package-cumulative-20261017"></a>
-## 正式双包与累计玩家公告（2026-10-17，IN_PROGRESS）
+## 正式双包与累计玩家公告（2026-10-17，PACKAGE_VERIFIED / LIVE_NOT_RUN）
 
 - 用户授权打包并以上期公告为基线整理累计更新。基线公告提交9e4a5bc27（2026-10-15 v1.6.1），当前源码ee316b8e6，main仅有Microsoft/、NuGet/本地缓存未跟踪。沿用正式入口默认patch递增至v1.6.2，双包同版本同分钟，不部署游戏或自动上传公告。
 - 正式源码发行检查在版本事务前发现两处中文硬编码：ConversationRoleClassificationOwner的旧历史匹配词、TownRecentMemoryText的中文城名后缀。仅接入既有嵌入兼容表与CN/EN城镇资源，保留匹配和显示语义，不处理用户已要求忽略的旧存档中文正文。修改范围为两消费者、对应兼容表及三份城镇语料；新增公告md/txt与版本事务文件。
 - 完成门：原历史角色CN/EN回归、城镇记忆回归、原正式源码/DLL门禁、统一双API/Bootstrap构建、完整CN/EN投影、双ZIP布局/哈希/版本/无ONNX验证；记录真实命令和未验项。回退仅本任务提交inverse；旧包不覆盖、不删除，游戏安装不写入。GCCZ可复用改动保留本仓，本次未获工作区外精确写入授权，不隐式改G盘镜像。
+
+- 产品修复提交f007b9b7f：`ConversationRoleClassificationOwner.cs:111–112,143–149`的历史匹配词按原顺序加载已有嵌入兼容reader，`TownRecentMemoryText.cs:26,63–64`从三份城镇语料读取后缀；仅请求边界固定词表/字典访问，缓存复用，无新增Tick IO或全量扫描。版本由原事务从v1.6.1递增为v1.6.2，FileVersion=1.6.2.0，未改程序集身份和构建/打包脚本。
+- `verify_uncompressed.py --dotnet "C:/Program Files/dotnet/dotnet.exe" --target-framework net10.0`：CN/EN各84项通过；城镇真实core/bridge回放160项通过。最初误选通用历史入口缺DailyMemoryLine、城镇输出参数冲突和本地运行脚本路径错误的尝试不计通过；改用仓库既有专项入口/隔离输出后通过，没有为此改产品算法或削弱测试。
+- 正式命令：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/package_mod.ps1 -ModuleDir F:/AnimusForge-main/bin/Debug/single_module_stage/AnimusForge -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug -Build -ExcludeOnnx`，exit0。统一1.3(v1.3.15.110062)/1.4(v1.4.6.115628)/Bootstrap、双Coup seam/registration、干净Stage、正式源码/DLL语言门禁、两包完整投影及ZIP哈希通过。每包3523项，唯一AnimusForge根、Bootstrap-only、双实现、相同DLL与版本、无ONNX/日志/缓存验证通过；本轮没有重做全部存量世界书的逐条人工语义审校，不能把词法/结构校验解释为模型输出保证。
+- 产物位于`一键编译覆盖推送/packages/`：`AnimusForge_v1.6.2_CN_1017_0855.zip`，88,458,950字节，SHA256 `14e1bb539846964d14f30f20890d6031d0a26874a5836b6115ce6ffea8a34286`；`AnimusForge_v1.6.2_EN_1017_0855.zip`，87,751,322字节，SHA256 `4df5eb8d943586e91cb305d15873f66d8570b713d43ea0ff229cb1fddaca0ea8`。两包同版本/同时间戳，旧包保留。累计公告`docs/releases/AnimusForge_1.6.2_累计更新公告_20261017.md`与同名TXT仅涵盖上期之后的实际行为，不含父亲生死或弱模型JSON问题的修复宣称。
+- 证据：`artifacts/package-162/{package.log,verify_packages.py,receipt.json}`、`artifacts/package-162-history.log`、`artifacts/package-162/history-final/`、`artifacts/package-162-town-final2/run.log`。旧Stage保留于`artifacts/package-162/previous-stage`。源码资源回退可聚焦revert f007b9b7f；版本及公告按本次release提交revert。游戏安装仍为v1.6.1，未部署、未启动游戏、未测真实provider/旧档，未推送或上传发行包/公告。外部GCCZ镜像未写入。正式ZIP校验耗时主要来自原Get-RequiredZipEntry逐项扫描归档目录及多轮复核，本任务未修改一键流程。
 
 <a id="push-runtime-fixes-20261017"></a>
 ## 当前源码推送（2026-10-17）

@@ -1,3 +1,9 @@
+# 当前交接：v1.6.2正式双包与累计玩家公告（2026-10-17，PACKAGE_VERIFIED / LIVE_NOT_RUN）
+
+- 用户授权打包并以上期公告为基线整理累计更新。原脚本递增至v1.6.2，重新构建1.3/1.4/Bootstrap、双Coup/registration、源码/DLL语言门禁与完整双包校验通过。两包各3523项，时间戳1017_0855；位于`一键编译覆盖推送/packages/`，旧包保留。
+- 公告为`docs/releases/AnimusForge_1.6.2_累计更新公告_20261017.md`及同名TXT，以上期2026-10-15 v1.6.1公告为基线。必要的资源接线修复f007b9b7f经历史CN/EN各84项、城镇160项回归通过。[主台账、SHA与回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#package-cumulative-20261017)；完整证据在本地`artifacts/package-162/`。
+- 未部署、未启动游戏、未验真实provider/旧档、未推送或上传包/公告；安装仍v1.6.1。G盘镜像未写入，不改用户旧历史和自定义语言要求。本地Microsoft/、NuGet/缓存保留未提交。
+
 # 当前交接：当前工作树源码推送（2026-10-17）
 
 - 用户明确授权推送。纳入当前已一起构建部署的双语、场景接力与手札动画、人设压缩记忆、世界书名称及导入失败重试/跳过修复；此前“无视”中文旧历史的决定保持，不新增该链路修改。
