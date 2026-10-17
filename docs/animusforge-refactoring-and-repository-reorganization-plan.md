@@ -1,3 +1,9 @@
+<a id="tts-streaming-20261017"></a>
+## TTS 分段流式播放与口型（2026-10-17，INTENT）
+
+- 用户要求实现流式播放和口型；延续本会话已明确的 EN 部署授权。基线 `17766b11d`，保留未跟踪 Microsoft/、NuGet/。
+- 完成门：OpenAI WAV / 火山 V3 PCM 实际流解析、首段在 EOF 前送播放、单 request 的开始/终态/取消、原口型与普通对话/场景入口、双入口 CN/EN 设置、真实网关/生命周期回放、1.3/1.4/Bootstrap 构建、EN 部署哈希。服务端合成首包时间不由客户端保证。
+
 <a id="openai-tts-20261017"></a>
 ## OpenAI 兼容 TTS 接入（2026-10-17，SOURCE / PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
 
