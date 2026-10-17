@@ -8,6 +8,14 @@ internal static class TtsErrorUiText
     {
         switch (reason)
         {
+            case "tts_openai_configuration_incomplete": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiConfiguration", "Enter the speech API key, model and voice.");
+            case "tts_openai_endpoint_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiEndpoint", "Enter a valid full HTTP/HTTPS speech endpoint.");
+            case "tts_openai_text_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiText", "Speech text must contain 1–4096 characters.");
+            case "tts_openai_speed_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiSpeed", "Speech speed must be 0.25–4.0.");
+            case "tts_openai_timeout_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiTimeoutInvalid", "Speech timeout must be 10–120 seconds.");
+            case "tts_openai_timeout": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiTimeout", "Speech synthesis exceeded the configured timeout; no automatic retry.");
+            case "tts_openai_audio_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiAudio", "The service did not return a supported PCM16 WAV (mono/stereo, 8000–48000 Hz). Compressed audio is not played.");
+            case "tts_audio_silent": return LlmUiTexts.Text("AF_LLM_UI_TtsError_SilentAudio", "The synthesized audio is completely silent; falling back to text.");
             case "tts_endpoint_unsupported": return LlmUiTexts.Text("AF_LLM_UI_TtsError_EndpointUnsupported", "Invalid API URL or unsupported protocol; V3 requires /api/v3/tts/unidirectional and Agent Plan requires /api/v3/plan/tts/unidirectional (HTTP, not SSE/WS).");
             case "tts_configuration_incomplete": return LlmUiTexts.Text("AF_LLM_UI_TtsError_ConfigurationIncomplete", "Check the credential, resource ID, and voice; V1 also requires an App ID.");
             case "tts_extra_parameters_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_ExtraParametersInvalid", "Extra parameters must be valid JSON; V3 requires a JSON object.");

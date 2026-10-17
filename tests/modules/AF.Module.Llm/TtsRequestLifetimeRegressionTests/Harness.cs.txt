@@ -14,6 +14,11 @@ namespace AnimusForge.Refactor.Contracts {
  public sealed class TtsSynthesisResult { public bool Success;public string ErrorCode;public byte[] AudioBytes;public string LogId;public TtsSynthesisResult(){}public TtsSynthesisResult(bool s,byte[] a,int? c,string e){Success=s;AudioBytes=a;ErrorCode=e;} }
 }
 namespace AnimusForge.Refactor.Adapters {
+ public sealed class OpenAiCompatibleTtsGateway {
+  public static Func<OpenAiTtsSynthesisRequest,string,CancellationToken,TtsSynthesisResult> Send=(_,_,_)=>new(){Success=false,ErrorCode="tts_http_429"};
+  public OpenAiCompatibleTtsGateway(System.Net.Http.HttpClient c){}
+  public Task<TtsSynthesisResult> SynthesizeAsync(OpenAiTtsSynthesisRequest r,string key,CancellationToken c)=>Task.FromResult(Send(r,key,c));
+ }
  public sealed class VolcV3TtsGateway : ITtsGateway {public VolcV3TtsGateway(System.Net.Http.HttpClient c){} public Task<TtsSynthesisResult> SynthesizeAsync(TtsSynthesisRequest r,string t,CancellationToken c)=>Task.FromResult(LegacyVolcTtsGateway.Send(r,c));}
  public sealed class LegacyVolcTtsGateway : ITtsGateway {
   public static Func<TtsSynthesisRequest,CancellationToken,TtsSynthesisResult> Send = (_,_)=>new(){Success=true,AudioBytes=new byte[16]};
@@ -29,6 +34,11 @@ namespace AnimusForge {
  static class InformationManager {public static readonly int MainThreadId=Thread.CurrentThread.ManagedThreadId;public static List<string> Messages=new();public static void DisplayMessage(InformationMessage m){if(Thread.CurrentThread.ManagedThreadId!=MainThreadId)throw new Exception("UI called from worker");Messages.Add(m.Text);}}
  static class Color {public static object FromUint(uint n)=>null;}
  sealed class DuelSettings {
+  @@OPENAI_TEST_BUTTON@@
+  public bool UsesOpenAiTts;
+  public bool IsSelectedTtsEnabled=>EnableTtsSpeech&&(UsesOpenAiTts||TtsVolcDedicatedEnabled);
+  public string TtsOpenAiApiUrl="https://openai-fixture.invalid/v1/audio/speech",TtsOpenAiApiKey="openai-fixture-key",TtsOpenAiModel="gpt-sovits-v4",TtsOpenAiVoice="zh_default";
+  public float TtsOpenAiSpeed=1f;public int TtsOpenAiTimeoutSeconds=60;
   public Action TestTtsVolcDedicatedVoice;
   @@UI_HELPERS@@
   public DuelSettings(){@@TTS_TEST_BUTTON@@}
@@ -124,6 +134,31 @@ static class Program {
   Check("same-agent legal FIFO preserves both real worker jobs and ordered Scene preparation",()=>{using var e=Active();var c=new TtsConsumerSubject();var main=new ConcurrentQueue<Action>();var accepted=new List<long>();var prepared=new List<long>();var finished=new List<long>();e.OnRequestAudioFileReady+=(r,w,x,d)=>main.Enqueue(()=>{Assert(c.IsCurrent(r)&&c.Prepare(r),"audio owner dropped");});e.OnRequestPlaybackStarted+=r=>main.Enqueue(()=>Assert(c.Active(r),"start owner dropped"));e.OnRequestPlaybackFinished+=r=>main.Enqueue(()=>{Assert(c.Active(r),"finish owner dropped");finished.Add(r.RequestId);c.Retire(r);});for(int i=0;i<2;i++)Speak(e,r=>{accepted.Add(r.RequestId);c.Track(r,()=>prepared.Add(r.RequestId));},"FIFO",7);Eventually(()=>Jobs(e).Count==0,"workers not drained");while(main.TryDequeue(out var action))action();Assert(prepared.SequenceEqual(accepted)&&finished.SequenceEqual(accepted)&&c.Owners==0,"FIFO dropped/reordered/leaked");});
   Check("same-agent queued owner survives cancel of active old request",()=>{using var e=Manual();var c=new TtsConsumerSubject();TtsEngine.PlaybackRequest a=null,b=null;int oldPrepared=0,newPrepared=0;Speak(e,r=>{a=r;c.Track(r,()=>oldPrepared++);},agent:7);Speak(e,r=>{b=r;c.Track(r,()=>newPrepared++);},agent:7);c.Prepare(a);Call(e,"CancelJob",Job(e,a));Assert(c.Active(a,true)&&!c.Active(b),"active changed on mere acceptance");c.Retire(a);Assert(c.IsCurrent(b)&&c.Prepare(b)&&newPrepared==1&&oldPrepared==1,"new queued request lost");c.Retire(b);Assert(c.Owners==0,"owner leak");});
   ConsumerTests.Run(Check);
+  Check("OpenAI native/scene enqueue ignores Volcengine switch and old voice override",()=>{
+   var settings=new DuelSettings(){UsesOpenAiTts=true,TtsVolcDedicatedEnabled=false};DuelSettings.Read=()=>settings;
+   int sent=0,failed=0;
+   OpenAiCompatibleTtsGateway.Send=(r,key,c)=>{Assert(r.Voice=="zh_default","forwarded Volcengine voice");Assert(key=="openai-fixture-key"&&c.CanBeCanceled,"wrong credential/cancel");Interlocked.Increment(ref sent);return new(){Success=false,ErrorCode="tts_http_429"};};
+   using var e=Active();e.OnRequestPlaybackFailed+=(_,_)=>Interlocked.Increment(ref failed);
+   Assert(e.SpeakAsync("hello",-1,-1,-1,"BV001_streaming"),"native enqueue rejected");
+   Assert(e.SpeakAsync("hello",-1,-1,7,"BV002_streaming"),"scene enqueue rejected");
+   Eventually(()=>failed==2&&Jobs(e).Count==0,"requests not retired");Assert(sent==2,"missing/duplicate attempts");
+  });
+  Check("OpenAI captures endpoint/key/model before publication",()=>{
+   var settings=new DuelSettings(){UsesOpenAiTts=true,TtsVolcDedicatedEnabled=false};DuelSettings.Read=()=>settings;
+   using var e=Manual();TtsEngine.PlaybackRequest request=null;Assert(Speak(e,r=>request=r),"enqueue rejected");
+   settings.TtsOpenAiApiUrl="https://changed.invalid";settings.TtsOpenAiApiKey="changed";settings.TtsOpenAiModel="changed";
+   int sent=0;OpenAiCompatibleTtsGateway.Send=(r,key,c)=>{Assert(r.Endpoint=="https://openai-fixture.invalid/v1/audio/speech"&&r.Model=="gpt-sovits-v4"&&key=="openai-fixture-key","mixed queued configuration");sent++;return new(){Success=false,ErrorCode="tts_http_429"};};
+   Call(e,"ProcessJob",Job(e,request));Assert(sent==1,"gateway not reached exactly once");
+  });
+  Check("OpenAI queued job cannot switch silently to Volcengine",()=>{
+   var settings=new DuelSettings(){UsesOpenAiTts=true,TtsVolcDedicatedEnabled=true};DuelSettings.Read=()=>settings;
+   using var e=Manual();TtsEngine.PlaybackRequest request=null;Speak(e,r=>request=r);settings.UsesOpenAiTts=false;
+   int sent=0,failed=0;OpenAiCompatibleTtsGateway.Send=(r,k,c)=>{sent++;return new();};e.OnRequestPlaybackFailed+=(_,_)=>failed++;
+   Call(e,"ProcessJob",Job(e,request));Assert(sent==0&&failed==1,"switched provider or published nothing");
+  });
+  Check("OpenAI selected test button queues with Volcengine disabled",()=>{
+   using var e=Manual();WithTestButton(e,s=>{s.UsesOpenAiTts=true;s.TtsVolcDedicatedEnabled=false;s.TestTtsVolcDedicatedVoice();Assert(Jobs(e).Count==1,"test requires Volcengine");});
+  });
   Console.WriteLine($"RESULT {Passed} PASS / {Failed} FAIL");return Failed==0?0:1;
  }
 }

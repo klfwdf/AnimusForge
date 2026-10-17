@@ -997,49 +997,49 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_MemoryOverviewTargetChars_Group" text="5. Compressed memory" />
   <string id="AF_TERMINAL_UI_EnableTtsSpeech_Title" text="Enable TTS Speech" />
   <string id="AF_TERMINAL_UI_EnableTtsSpeech_Hint" text="Master switch. When disabled, NPC TTS playback stops and falls back to text-only speech bubbles." />
-  <string id="AF_TERMINAL_UI_EnableTtsSpeech_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_EnableTtsSpeech_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedEnabled_Title" text="TTS Volc Dedicated Enabled" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedEnabled_Hint" text="Selects V1 or V3 HTTP unidirectional synthesis (including Agent Plan) by API URL. Both collect all audio before playback; existing settings are not migrated automatically." />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedEnabled_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedEnabled_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiUrl_Title" text="TTS Volc Dedicated API URL" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiUrl_Hint" text="V1: https://openspeech.bytedance.com/api/v1/tts; V3: https://openspeech.bytedance.com/api/v3/tts/unidirectional; Agent Plan: https://openspeech.bytedance.com/api/v3/plan/tts/unidirectional (HTTP, not SSE/WS)." />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiUrl_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiUrl_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Title" text="Volcengine dedicated token / API key" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Hint" text="V1 uses your legacy token; its HTTP header is Authorization: Bearer; followed by the token. V3 uses the corresponding speech-service API key (X-Api-Key). Agent Plan requires its dedicated API key; do not reuse the old token." />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAppKey_Title" text="TTS Volc Dedicated App Key" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAppKey_Hint" text="V1 requires app.appid. V3 API-key authentication does not use it, so it may be blank. Switching protocols does not clear the old value." />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAppKey_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAppKey_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedResourceId_Title" text="TTS Volc Dedicated Resource ID" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedResourceId_Hint" text="Written to the X-Api-Resource-Id request header. The resource and voice must be enabled and authorized; synthesis voices from model 2.0 use V3. Accepted values include seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0." />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedResourceId_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedResourceId_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Title" text="Volcengine dedicated voice ID" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Hint" text="Maps to voice_type in V1 and speaker in V3. It must match the resource ID and account authorization; the old voice is not replaced automatically." />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Title" text="Volcengine dedicated extra parameters (JSON object)" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Hint" text="Written to request.extra_param in V1 or req_params.additions in V3, both as JSON strings. Use parameters supported by the selected endpoint." />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Title" text="TTS Volc Dedicated Audio Format" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Hint" text="Supports wav or pcm only. V1 requests the selected format unchanged. V3 always receives PCM and wraps it as selected here, retaining the current player." />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSampleRate_Title" text="TTS Volc Dedicated Sample Rate" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSampleRate_Hint" text="Recommended values: 8000 / 16000 / 24000 Hz. V3 also supports 22050 Hz; arbitrary integer sample rates are not accepted by V3." />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSampleRate_Group" text="7. Volcengine TTS (dedicated)" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedVolume_Title" text="TTS Volc Dedicated Volume" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSampleRate_Group" text="7. Speech synthesis" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedVolume_Title" text="Main voice volume (winmm)" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedVolume_Hint" text="Used only by the main playback chain for ordinary dialogue/test speech (agentIndex&lt;0). For the scene-shout lip-sync chain, adjust Lip-sync chain volume." />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedVolume_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedVolume_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeed_Title" text="TTS Volc Dedicated Speed" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeed_Hint" text="V1 supports 0.1–2.0 times normal; V3 supports 0.5–2.0 (1.0 is normal). A value that is too low after switching to V3 produces an error and is not changed automatically." />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeed_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeed_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsSceneUseWinmmAudible_Title" text="TTS Scene Use Winmm Audible" />
   <string id="AF_TERMINAL_UI_TtsSceneUseWinmmAudible_Hint" text="When enabled, scene NPC audio uses winmm, while the lip-sync chain drives mouth movements silently. When disabled, scene NPC audio uses the lip-sync chain and can be adjusted with Lip-sync chain volume." />
-  <string id="AF_TERMINAL_UI_TtsSceneUseWinmmAudible_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TtsSceneUseWinmmAudible_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Title" text="TTS Lip Sync Sound Event Volume" />
   <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Hint" text="SoundEvent volume for Rhubarb lip-sync. Controls audible scene volume only when Scene audio through winmm (prevent echo) is disabled." />
-  <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Group" text="7. Volcengine TTS (dedicated)" />
-  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Title" text="Test TTS Volc Dedicated Voice" />
+  <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Group" text="7. Speech synthesis" />
+  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Title" text="Test selected TTS service" />
   <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Hint" text="Tests the fixed phrase “At your service, traveler!” using the current API URL and credential. Real synthesis may incur charges." />
-  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_EnableDeepTrace_Title" text="Enable Deep Trace" />
   <string id="AF_TERMINAL_UI_EnableDeepTrace_Hint" text="⚠️ Advanced debugging feature! When enabled, intercepts all UI clicks, state transitions, and low-level code stacks (Trace). Produces a very large log and is intended for developers investigating issues only. Ordinary players should not enable it." />
   <string id="AF_TERMINAL_UI_EnableDeepTrace_Group" text="4. Developer options" />
@@ -2969,7 +2969,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_EventRebellionApi_Thinking_Hint" text="Off by default. Weekly reports and kingdom-rebellion naming require strict formats; enable this only after confirming that the endpoint reliably writes the final answer to content. OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
   <string id="AF_MCM_EventRebellionApi_Temperature_Hint" text="Controls randomness for weekly reports, kingdom naming, diplomatic declarations, scribe drafting, and other tasks using the event/rebellion API. Diplomacy uses the main API temperature when incomplete configuration causes fallback to the main API. 0 is more stable and 2 is more varied. Default: 0.80." />
   <string id="AF_MCM_EventRebellionApi_MaxTokens_Hint" text="The max_tokens value for event weekly reports, kingdom-rebellion naming, and ruler policy generation. Default: 12000; endpoints that do not support a high limit may reject the request." />
-  <string id="AF_MCM_Tts_Group" text="7. Volcengine TTS (dedicated)" />
+  <string id="AF_MCM_Tts_Group" text="7. Speech synthesis" />
   <string id="AF_MCM_Tts_EnableSpeech_Hint" text="Master switch. When disabled, NPCs stop playing TTS audio and fall back to text bubbles." />
   <string id="AF_MCM_Tts_VolcEnabled" text="Enable Volcengine dedicated mode" />
   <string id="AF_MCM_Tts_VolcEnabled_Hint" text="Selects V1 or V3 HTTP unidirectional synthesis (including Agent Plan) by API URL. Both collect all audio before playback; existing settings are not migrated automatically." />
@@ -3429,5 +3429,23 @@ Choose how to proceed:" />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Title" text="Event-driven NPC persona evolution" />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="Default: off. New confirmed bulletin events can change NPC personas. Uses the auxiliary API with merged, rate-limited requests. Turning off discards pending updates but keeps existing changes. Requires bulletin mode; auto-publishing is not required." />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Group" text="Weekly reports / bulletins" />
+  <string id="AF_MCM_Tts_ProviderVolc" text="Volcengine" />
+  <string id="AF_MCM_Tts_ProviderOpenAi" text="OpenAI-compatible" />
+  <string id="AF_MCM_Tts_Provider" text="TTS service" />
+  <string id="AF_MCM_Tts_Provider_Hint" text="Choose one service. Existing configurations default to Volcengine. Switching keeps both services&#x27; settings; no automatic fallback." />
+  <string id="AF_MCM_Tts_OpenAiUrl" text="OpenAI-compatible speech API URL" />
+  <string id="AF_MCM_Tts_OpenAiUrl_Hint" text="Full speech endpoint, for example https://www.shenlanqaq.com/v1/audio/speech. Requests PCM16 WAV; the server must support it." />
+  <string id="AF_MCM_Tts_OpenAiKey" text="OpenAI-compatible speech API key" />
+  <string id="AF_MCM_Tts_OpenAiKey_Hint" text="Independent speech credential sent as Authorization: Bearer. Does not reuse the chat or Volcengine key." />
+  <string id="AF_MCM_Tts_OpenAiModel" text="Speech model" />
+  <string id="AF_MCM_Tts_OpenAiModel_Hint" text="Model accepted by this speech endpoint. Default: gpt-sovits-v4." />
+  <string id="AF_MCM_Tts_OpenAiVoice" text="Speech voice" />
+  <string id="AF_MCM_Tts_OpenAiVoice_Hint" text="Default: zh_default. This service uses one configured voice for all NPCs. Existing NPC/Volcengine voice mappings are retained but not sent to this service." />
+  <string id="AF_MCM_Tts_OpenAiSpeed" text="OpenAI-compatible speech speed" />
+  <string id="AF_MCM_Tts_OpenAiSpeed_Hint" text="Requested speed ratio, 0.25–4.0; default 1.0. Actual support depends on the upstream model." />
+  <string id="AF_MCM_Tts_OpenAiTimeout" text="OpenAI-compatible speech timeout (seconds)" />
+  <string id="AF_MCM_Tts_OpenAiTimeout_Hint" text="Total request/read deadline for this service. Default: 60 seconds. No automatic retry; failure falls back to text." />
+  <string id="AF_MCM_Tts_OpenAiTesting" text="[TTS] Testing the selected OpenAI-compatible speech service; synthesis may incur charges." />
+  <string id="AF_MCM_Tts_TestNotQueued" text="[TTS] Test voice was not queued: the queue is full or the engine has stopped. Try again later." />
 </strings>
 </base>

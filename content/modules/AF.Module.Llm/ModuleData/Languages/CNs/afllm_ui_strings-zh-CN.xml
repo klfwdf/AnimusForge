@@ -37,5 +37,13 @@
   <string id="AF_LLM_UI_TtsError_EmptyAudio" text="TTS 合成返回空音频。" />
   <string id="AF_LLM_UI_TtsError_AudioParseFailed" text="TTS 音频解析失败。" />
   <string id="AF_LLM_UI_TtsError_TargetBeforePlayback" text="播放前场景发言目标已不可用。" />
+  <string id="AF_LLM_UI_TtsError_OpenAiConfiguration" text="请填写语音 API Key、模型和音色。" />
+  <string id="AF_LLM_UI_TtsError_OpenAiEndpoint" text="请填写有效的 HTTP/HTTPS 完整语音端点。" />
+  <string id="AF_LLM_UI_TtsError_OpenAiText" text="语音文本必须为 1～4096 个字符。" />
+  <string id="AF_LLM_UI_TtsError_OpenAiSpeed" text="语速必须为 0.25～4.0。" />
+  <string id="AF_LLM_UI_TtsError_OpenAiTimeoutInvalid" text="语音超时必须为 10～120 秒。" />
+  <string id="AF_LLM_UI_TtsError_OpenAiTimeout" text="语音合成超过配置的时限，不自动重试。" />
+  <string id="AF_LLM_UI_TtsError_OpenAiAudio" text="服务未返回支持的 PCM16 WAV（单/双声道，8000～48000 Hz）；不会播放压缩音频。" />
+  <string id="AF_LLM_UI_TtsError_SilentAudio" text="合成音频完全静音，回退文字。" />
 </strings>
 </base>

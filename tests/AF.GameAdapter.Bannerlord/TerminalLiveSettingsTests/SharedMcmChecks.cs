@@ -33,7 +33,7 @@ static class SharedMcmChecks
         public bool WriteData(GameFile file, byte[] data) { if (FailWrites) return false; if (data == null) File.Delete(GetSystemPath(file)); else { Directory.CreateDirectory(GetSystemPath(file.Owner)); File.WriteAllBytes(GetSystemPath(file), data); } return true; }
         public byte[] ReadData(GameFile file) => File.Exists(GetSystemPath(file)) ? File.ReadAllBytes(GetSystemPath(file)) : null;
     }
-    internal static void Run(Assembly af, BaseSettings duel, string module, Action<bool,string> check)
+    internal static void Run(Assembly af, BaseSettings duel, string module, Action<bool,string> check, bool ttsOnly = false)
     {
         var providerField = typeof(GenericServiceProvider).GetField("GlobalServiceProvider", All);
         var previous = providerField.GetValue(null);
@@ -72,6 +72,9 @@ static class SharedMcmChecks
                 load.Invoke(format,new object[]{again,OwnerDirectory(owner),owner.Id});
                 check(File.Exists(OwnerPath(owner)),"shared owner file "+owner.Id);
             }
+            TtsProviderChecks.Run(duel, mainPath, o => (bool)save.Invoke(format,new object[]{o,OwnerDirectory(o),o.Id}),
+                o => load.Invoke(format,new object[]{o,OwnerDirectory(o),o.Id}), check);
+            if (ttsOnly) return;
             var json=JObject.Parse(File.ReadAllText(mainPath)); json["MinimumPositiveNpcRelationGain"]=5;
             var evolution = duel.GetType().GetProperty("EnableNpcPersonaEventEvolution");
             check(evolution != null && !(bool)evolution.GetValue(duel), "persona evolution defaults off");

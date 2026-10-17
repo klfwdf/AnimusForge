@@ -37,5 +37,13 @@
   <string id="AF_LLM_UI_TtsError_EmptyAudio" text="TTS synthesis returned empty audio." />
   <string id="AF_LLM_UI_TtsError_AudioParseFailed" text="TTS audio parse failed." />
   <string id="AF_LLM_UI_TtsError_TargetBeforePlayback" text="Scene speech target became unavailable before playback." />
+  <string id="AF_LLM_UI_TtsError_OpenAiConfiguration" text="Enter the speech API key, model and voice." />
+  <string id="AF_LLM_UI_TtsError_OpenAiEndpoint" text="Enter a valid full HTTP/HTTPS speech endpoint." />
+  <string id="AF_LLM_UI_TtsError_OpenAiText" text="Speech text must contain 1–4096 characters." />
+  <string id="AF_LLM_UI_TtsError_OpenAiSpeed" text="Speech speed must be 0.25–4.0." />
+  <string id="AF_LLM_UI_TtsError_OpenAiTimeoutInvalid" text="Speech timeout must be 10–120 seconds." />
+  <string id="AF_LLM_UI_TtsError_OpenAiTimeout" text="Speech synthesis exceeded the configured timeout; no automatic retry." />
+  <string id="AF_LLM_UI_TtsError_OpenAiAudio" text="The service did not return a supported PCM16 WAV (mono/stereo, 8000–48000 Hz). Compressed audio is not played." />
+  <string id="AF_LLM_UI_TtsError_SilentAudio" text="The synthesized audio is completely silent; falling back to text." />
 </strings>
 </base>

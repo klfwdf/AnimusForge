@@ -29,7 +29,7 @@ internal sealed class NativeConversationSpeechAdapter
 			{
 				return false;
 			}
-			if (!settings.TtsVolcDedicatedEnabled)
+			if (!settings.IsSelectedTtsEnabled)
 			{
 				return false;
 			}
@@ -57,9 +57,9 @@ internal sealed class NativeConversationSpeechAdapter
 				disabledReason = "EnableTtsSpeech=false";
 				return false;
 			}
-			if (!settings.TtsVolcDedicatedEnabled)
+			if (!settings.IsSelectedTtsEnabled)
 			{
-				disabledReason = "TtsVolcDedicatedEnabled=false";
+				disabledReason = "selected_tts_disabled";
 				return false;
 			}
 			TtsEngine tts = TtsEngine.Instance;
@@ -402,7 +402,7 @@ internal sealed class NativeConversationSpeechAdapter
 				return false;
 			}
 			DuelSettings settings = DuelSettings.GetSettings();
-			return settings != null && settings.EnableTtsSpeech && settings.TtsVolcDedicatedEnabled;
+			return settings != null && settings.EnableTtsSpeech && settings.IsSelectedTtsEnabled;
 		}
 		catch
 		{
