@@ -348,6 +348,7 @@
     "empty": "暂无可确认的事件记录。",
     "unavailable": "城镇近期记录暂不可用，不得推断事件或到访总数。",
     "date": "〔{year}年{season}季{day}日〕",
+    "town_name_suffix": "城",
     "town": "{date}，{actor}对{town}执行了{action}。",
     "village": "{date}，{actor}对{town}的{village}村庄执行了{action}。",
     "arrivals": "已记录{villagers}次村民队伍到访和{caravans}次商队到访。",

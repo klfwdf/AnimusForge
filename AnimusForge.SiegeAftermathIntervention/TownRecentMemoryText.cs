@@ -23,6 +23,7 @@ public static class TownRecentMemoryText
         ["empty"] = "No confirmed event records are available.",
         ["unavailable"] = "Recent town records are unavailable; do not infer events or arrival totals.",
         ["date"] = "〔{year}, {season}, day {day}〕",
+        ["town_name_suffix"] = "",
         ["town"] = "{date}, {actor} carried out {action} at {town}.",
         ["village"] = "{date}, {actor} carried out {action} at {village}, a village bound to {town}.",
         ["arrivals"] = "Recorded {villagers} villager-party arrivals and {caravans} caravan arrivals.",
@@ -59,7 +60,8 @@ public static class TownRecentMemoryText
         };
         string date = Fill(Get(catalog, "date"), values);
         string townName = fact.TownName;
-        if (catalog?.Language == "zh-CN" && !townName.EndsWith("城", StringComparison.Ordinal)) townName += "城";
+        string townSuffix = Get(catalog, "town_name_suffix");
+        if (townSuffix.Length > 0 && !townName.EndsWith(townSuffix, StringComparison.Ordinal)) townName += townSuffix;
         return Fill(Get(catalog, fact.VillageName.Length == 0 ? "town" : "village"), new Dictionary<string, string> {
             ["date"] = date, ["actor"] = fact.ActorName, ["town"] = townName,
             ["village"] = fact.VillageName, ["action"] = Get(catalog, fact.Action)

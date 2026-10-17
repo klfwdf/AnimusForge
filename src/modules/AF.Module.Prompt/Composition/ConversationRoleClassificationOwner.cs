@@ -108,8 +108,8 @@ internal static bool IsLikelyPlayerHistorySpeaker(string speaker)
             || text.StartsWith(name + "：", StringComparison.Ordinal);
     }
 
-    private static readonly string[] PlayerHeaders = { "Player", "The player", "You", "玩家", "主角", "你", "MainHero" };
-    private static readonly string[] AddressInfixes = { "对", "向", " says to ", " said to ", " shouted to ", " to " };
+    private static readonly string[] PlayerHeaders = PromptComposerTexts.Raw("History_PlayerHeaders").Split(',');
+    private static readonly string[] AddressInfixes = PromptComposerTexts.Raw("History_AddressInfixes").Split('|');
 
     internal static bool IsDailyMemoryLinePlayerSpeech(DailyMemoryLine line, string npcName, string playerName = "")
     {
@@ -140,9 +140,11 @@ internal static bool IsLikelyPlayerHistorySpeaker(string speaker)
             int targetStart = speaker.Length + infix.Length;
             int suffixStart = targetStart + target.Length;
             if (!MatchesAt(text, speaker.Length, infix) || !MatchesAt(text, targetStart, target)) continue;
-            if (infix == "对" || infix == "向")
+            if (infix == PromptComposerTexts.Raw("History_SpeechAddressedInfix")
+                || infix == PromptComposerTexts.Raw("History_SpeechDirectedInfix"))
             {
-                if (suffixStart >= text.Length || (text[suffixStart] != '说' && text[suffixStart] != '喊')) continue;
+                if (suffixStart >= text.Length || (text[suffixStart] != PromptComposerTexts.Raw("History_SpeechAddressedSuffix")[0]
+                    && text[suffixStart] != PromptComposerTexts.Raw("History_SpeechShoutedSuffix")[0])) continue;
                 suffixStart++;
             }
             if (suffixStart >= text.Length || (text[suffixStart] != ':' && text[suffixStart] != '：')) continue;

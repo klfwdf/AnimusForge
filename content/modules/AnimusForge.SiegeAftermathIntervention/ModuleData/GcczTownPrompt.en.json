@@ -348,6 +348,7 @@
     "empty": "No confirmed event records are available.",
     "unavailable": "Recent town records are unavailable; do not infer events or arrival totals.",
     "date": "〔{year}, {season}, day {day}〕",
+    "town_name_suffix": "",
     "town": "{date}, {actor} carried out {action} at {town}.",
     "village": "{date}, {actor} carried out {action} at {village}, a village bound to {town}.",
     "arrivals": "Recorded {villagers} villager-party arrivals and {caravans} caravan arrivals.",
