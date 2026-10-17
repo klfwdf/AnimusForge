@@ -29,6 +29,7 @@ def main():
  button=ex.declaration(settings,'TestTtsVolcDedicatedVoice = delegate')+';'
  helpers='\n'.join(ex.declaration(settings,x) for x in ['private static string Ui(', 'private static string UiFormat('])
  program=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@TTS_TEST_BUTTON@@',button).replace('@@UI_HELPERS@@',helpers)
+ program=program.replace('@@OPENAI_TEST_BUTTON@@',ex.declaration((ROOT/'src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.Tts.cs').read_text(encoding='utf-8-sig'),'private void TestOpenAiTtsVoice('))
  assert '@@' not in program
  (out/'Program.cs').write_text(program,encoding='utf-8')
 
@@ -62,6 +63,7 @@ def main():
  links=[refdir/'Facades/netstandard.dll',ROOT/'_deps_auto/Newtonsoft.Json.dll',ROOT/'.tmp/build_check/1.3/TaleWorlds.Localization.dll',ROOT/'.tmp/build_check/1.3/TaleWorlds.Library.dll']
  refs='<Reference Include="System.Net.Http" />'+''.join('<Reference Include="'+x.stem+'"><HintPath>'+escape(str(x))+'</HintPath></Reference>' for x in links)
  sources=[ROOT/x for x in ['src/AF.Persistence/AnimusForgeDataPaths.cs','src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs','src/modules/AF.Module.Llm/Tts/VolcTtsGateway.cs','src/modules/AF.Module.Llm/Tts/LlmUiTexts.cs','src/AF.GameAdapter.Bannerlord/UI/Errors/TtsTestFeedback.cs','src/AF.GameAdapter.Bannerlord/UI/Errors/TtsErrorUiText.cs','src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettingsUiLocalization.cs']]
+ sources += [ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.Provider.cs',ROOT/'src/AF.Contracts/Internal/OpenAiTtsContracts.cs']
  includes=''.join('<Compile Include="'+escape(str(x))+'" />' for x in sources)
  frozen_inputs.update({x:hashlib.sha256(x.read_bytes()).hexdigest() for x in sources+links+[settings_path]})
  (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><PlatformTarget>x64</PlatformTarget><LangVersion>10</LangVersion><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages><FrameworkPathOverride>'+escape(str(refdir))+'</FrameworkPathOverride></PropertyGroup><ItemGroup>'+refs+includes+'<EmbeddedResource Include="'+escape(str(ROOT/'content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json'))+'" LogicalName="AnimusForge.Llm.RuntimeSources.json" WithCulture="false" /></ItemGroup></Project>',encoding='utf-8')

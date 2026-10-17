@@ -1008,50 +1008,50 @@
   <string id="AF_TERMINAL_UI_MemoryOverviewTargetChars_Group" text="5. 压缩记忆" />
   <string id="AF_TERMINAL_UI_EnableTtsSpeech_Title" text="启用TTS语音" />
   <string id="AF_TERMINAL_UI_EnableTtsSpeech_Hint" text="总开关。关闭后，NPC 不再播放 TTS 语音，并回退到纯文本气泡显示。" />
-  <string id="AF_TERMINAL_UI_EnableTtsSpeech_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_EnableTtsSpeech_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedEnabled_Title" text="启用火山专用模式" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedEnabled_Hint" text="按 API 地址选择 V1 或 V3 HTTP 单向流式接口（含 Agent Plan）；均收齐音频后播放，旧配置不自动迁移。" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedEnabled_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedEnabled_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiUrl_Title" text="火山专用 API 地址" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiUrl_Hint" text="V1: https://openspeech.bytedance.com/api/v1/tts；V3: https://openspeech.bytedance.com/api/v3/tts/unidirectional；Agent Plan: https://openspeech.bytedance.com/api/v3/plan/tts/unidirectional（非 SSE/WS）。" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiUrl_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiUrl_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Title" text="火山专用 Token / API Key" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Hint" text="V1 填旧 Token（Bearer;token）；V3 填对应语音服务 API Key（X-Api-Key）；Agent Plan 填套餐专属 API Key，不可直接复用旧 Token。" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedApiKey_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAppKey_Title" text="火山专用 AppID" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAppKey_Hint" text="V1 必填 app.appid；V3 API Key 模式不使用，可留空；切换协议不会清除旧值。" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAppKey_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAppKey_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedResourceId_Title" text="火山专用 Resource ID" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedResourceId_Hint" text="写入请求头 X-Api-Resource-Id。
 须匹配已开通资源与音色；2.0 合成音色使用 V3。可填：seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedResourceId_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedResourceId_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Title" text="火山专用音色 ID" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Hint" text="V1 对应 voice_type，V3 对应 speaker；必须与 Resource ID 和账号授权匹配，旧音色不自动替换。" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeaker_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Title" text="火山专用附加参数(JSON对象)" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Hint" text="V1 写入 request.extra_param，V3 写入 req_params.additions，均为 JSON 字符串。使用对应接口支持的参数。" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAdditionsJson_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Title" text="火山专用音频格式" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Hint" text="仅支持 wav 或 pcm；V1 原样请求，V3 固定收 PCM 后按本项封装，保持现有播放器。" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedAudioFormat_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSampleRate_Title" text="火山专用采样率" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSampleRate_Hint" text="建议 8000 / 16000 / 24000；V3 也支持 22050。V3 不接受任意整数采样率。" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSampleRate_Group" text="7. 火山引擎 TTS（专用）" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedVolume_Title" text="主语音音量(winmm)" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSampleRate_Group" text="7. 语音合成" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedVolume_Title" text="主语音音量（winmm）" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedVolume_Hint" text="仅用于普通对话/测试语音（agentIndex&lt;0）的主播放链路。场景喊话口型链路请调“口型链路音量”。" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedVolume_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedVolume_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeed_Title" text="火山专用语速" />
   <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeed_Hint" text="V1 0.1–2.0 倍；V3 0.5–2.0 倍（1.0 为原速）。切换到 V3 时过低值会提示错误，不自动改写。" />
-  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeed_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TtsVolcDedicatedSpeed_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsSceneUseWinmmAudible_Title" text="场景发声走winmm(防回声)" />
   <string id="AF_TERMINAL_UI_TtsSceneUseWinmmAudible_Hint" text="开启：场景NPC由winmm发声，口型链路仅驱动嘴型并静音。关闭：场景NPC改由口型链路发声，可调“口型链路音量”。" />
-  <string id="AF_TERMINAL_UI_TtsSceneUseWinmmAudible_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TtsSceneUseWinmmAudible_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Title" text="口型链路音量" />
   <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Hint" text="用于 Rhubarb 口型驱动的 SoundEvent 音量。仅当“场景发声走winmm(防回声)”关闭时作为场景可听音量。" />
-  <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Group" text="7. 火山引擎 TTS（专用）" />
-  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Title" text="测试语音" />
+  <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Group" text="7. 语音合成" />
+  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Title" text="测试选中的 TTS 服务" />
   <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Hint" text="按当前 API 地址和凭据测试固定文本「为您服务，旅行者！」；真实合成可能计费。" />
-  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_EnableDeepTrace_Title" text="【开发者】开启全代码截获" />
   <string id="AF_TERMINAL_UI_EnableDeepTrace_Hint" text="⚠\ufe0f 极其硬核的调试功能！
 开启后将截获所有 UI 点击、状态切换和底层代码堆栈(Trace)。
@@ -3002,7 +3002,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_EventRebellionApi_Thinking_Hint" text="默认关闭。事件周报与王国叛乱命名是严格格式任务，确认接口会将最终答案稳定写入 content 后再开启。开启后，OpenAI 兼容思考接口写入 thinking.type=enabled 与 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
   <string id="AF_MCM_EventRebellionApi_Temperature_Hint" text="控制使用事件/叛乱API的周报、王国命名、外交宣言与书记官代笔等任务的随机性。外交配置不完整并回退主API时，采用主API温度。0更稳定，2更发散。默认0.80。" />
   <string id="AF_MCM_EventRebellionApi_MaxTokens_Hint" text="事件周报、王国叛乱建国命名与统治者政策生成调用的 max_tokens。默认：12000；如果接口不支持过高上限，可能会拒绝请求。" />
-  <string id="AF_MCM_Tts_Group" text="7. 火山引擎 TTS（专用）" />
+  <string id="AF_MCM_Tts_Group" text="7. 语音合成" />
   <string id="AF_MCM_Tts_EnableSpeech_Hint" text="总开关。关闭后，NPC 不再播放 TTS 语音，并回退到纯文本气泡显示。" />
   <string id="AF_MCM_Tts_VolcEnabled" text="启用火山专用模式" />
   <string id="AF_MCM_Tts_VolcEnabled_Hint" text="按 API 地址选择 V1 或 V3 HTTP 单向流式接口（含 Agent Plan）；均收齐音频后播放，旧配置不自动迁移。" />
@@ -3463,5 +3463,23 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Title" text="事件驱动的 NPC 人设演变" />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="默认关闭。新的已确认快报事件可改变NPC人设，使用辅助API合并、限速评估。关闭后丢弃待处理及在途更新，保留已有人设变化。需要快报模式，不要求开启自动出版。" />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Group" text="周报与快报" />
+  <string id="AF_MCM_Tts_ProviderVolc" text="火山引擎" />
+  <string id="AF_MCM_Tts_ProviderOpenAi" text="OpenAI 兼容" />
+  <string id="AF_MCM_Tts_Provider" text="TTS 服务" />
+  <string id="AF_MCM_Tts_Provider_Hint" text="选择一种服务。旧配置默认沿用火山引擎；切换时保留两边设置，不自动切换到其他服务重试。" />
+  <string id="AF_MCM_Tts_OpenAiUrl" text="OpenAI 兼容语音 API 地址" />
+  <string id="AF_MCM_Tts_OpenAiUrl_Hint" text="填写完整语音端点，例如 https://www.shenlanqaq.com/v1/audio/speech。请求 PCM16 WAV，服务端必须支持此格式。" />
+  <string id="AF_MCM_Tts_OpenAiKey" text="OpenAI 兼容语音 API Key" />
+  <string id="AF_MCM_Tts_OpenAiKey_Hint" text="独立语音凭据，通过 Authorization: Bearer 发送。不复用聊天或火山引擎密钥。" />
+  <string id="AF_MCM_Tts_OpenAiModel" text="语音模型" />
+  <string id="AF_MCM_Tts_OpenAiModel_Hint" text="该语音端点接受的模型名称，默认 gpt-sovits-v4。" />
+  <string id="AF_MCM_Tts_OpenAiVoice" text="语音音色" />
+  <string id="AF_MCM_Tts_OpenAiVoice_Hint" text="默认 zh_default。此服务所有 NPC 共用这里配置的音色；已有 NPC/火山音色映射保留，但不会发送给此服务。" />
+  <string id="AF_MCM_Tts_OpenAiSpeed" text="OpenAI 兼容语速" />
+  <string id="AF_MCM_Tts_OpenAiSpeed_Hint" text="请求语速倍率，范围 0.25～4.0，默认 1.0。实际支持情况取决于上游模型。" />
+  <string id="AF_MCM_Tts_OpenAiTimeout" text="OpenAI 兼容语音超时（秒）" />
+  <string id="AF_MCM_Tts_OpenAiTimeout_Hint" text="此服务请求和读取共用的总时限，默认 60 秒。不自动重试，失败回退文字。" />
+  <string id="AF_MCM_Tts_OpenAiTesting" text="[TTS] 正在测试选中的 OpenAI 兼容语音服务；真实合成可能产生费用。" />
+  <string id="AF_MCM_Tts_TestNotQueued" text="[TTS] 测试语音未入队：队列已满或引擎已停止，请稍后重试。" />
 </strings>
 </base>

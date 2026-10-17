@@ -68,6 +68,11 @@ class Program
                 TerminalProviderProbe.Owners.Add(owner.Id, owner);
             }
             var duel = (BaseSettings)TerminalProviderProbe.Owners["AnimusForge_global_settings"];
+#if AF_TTS_ONLY
+            SharedMcmChecks.Run(af, duel, root, Check, true);
+            Console.WriteLine("PASS focused TTS native MCM/terminal checks=" + checks);
+            return 0;
+#endif
 #if AF_BASELINE
             Set(duel, "EnableDeepTrace", true);
             var unsafeArgument = new UnsafeArgument();

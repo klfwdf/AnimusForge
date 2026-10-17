@@ -34,6 +34,11 @@ AppDomain.CurrentDomain.AssemblyResolve += (_, arguments) =>
 };
 
 Assembly animusForge = Assembly.LoadFrom(implementationPath);
+if (Environment.GetEnvironmentVariable("AF_TTS_OPENAI_ONLY") == "1")
+{
+    await OpenAiCases.Run(animusForge);
+    return;
+}
 Type requestType = animusForge.GetType("AnimusForge.Refactor.Contracts.TtsSynthesisRequest", true);
 Type gatewayType = animusForge.GetType("AnimusForge.Refactor.Adapters.LegacyVolcTtsGateway", true);
 
@@ -119,6 +124,7 @@ using (ReplayServer malformed = ReplayServer.Start("AQID", 0))
 Console.WriteLine("PASS ttsGatewayReplay success=1 headers=1 credentialBoundary=1 providerError=1 invalidAudio=1 cancellation=1 malformedExtra=1");
 
 await V3Cases.Run(animusForge);
+await OpenAiCases.Run(animusForge);
 
 internal sealed class ReplayServer : IDisposable
 {

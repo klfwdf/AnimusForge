@@ -1720,63 +1720,63 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	public int EventAndRebellionApiMaxTokens { get; set; } = DefaultEventAndRebellionApiMaxTokens;
 
 	[SettingPropertyBool("{=AF_MCM_Tts_EnableSpeech}Enable TTS speech", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Tts_EnableSpeech_Hint}Master switch. When disabled, NPCs stop playing TTS audio and fall back to text bubbles.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public bool EnableTtsSpeech { get; set; } = true;
 
 	[SettingPropertyBool("{=AF_MCM_Tts_VolcEnabled}Enable Volcengine dedicated mode", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Tts_VolcEnabled_Hint}Selects V1 or V3 HTTP unidirectional synthesis (including Agent Plan) by API URL. Both collect all audio before playback; existing settings are not migrated automatically.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public bool TtsVolcDedicatedEnabled { get; set; } = false;
 
 	[SettingPropertyText("{=AF_MCM_Tts_Url}Volcengine dedicated API address", -1, true, "", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Tts_Url_Hint}V1: https://openspeech.bytedance.com/api/v1/tts; V3: https://openspeech.bytedance.com/api/v3/tts/unidirectional; Agent Plan: https://openspeech.bytedance.com/api/v3/plan/tts/unidirectional (HTTP, not SSE/WS).")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public string TtsVolcDedicatedApiUrl { get; set; } = "https://openspeech.bytedance.com/api/v1/tts";
 
 	[SettingPropertyText("{=AF_MCM_Tts_Token}Volcengine dedicated token / API key", -1, true, "", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Tts_Token_Hint}V1 uses your legacy token; its HTTP header is Authorization: Bearer; followed by the token. V3 uses the corresponding speech-service API key (X-Api-Key). Agent Plan requires its dedicated API key; do not reuse the old token.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public string TtsVolcDedicatedApiKey { get; set; } = "";
 
 	[SettingPropertyText("{=AF_MCM_Tts_AppId}Volcengine dedicated App ID", -1, true, "", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Tts_AppId_Hint}V1 requires app.appid. V3 API-key authentication does not use it, so it may be blank. Switching protocols does not clear the old value.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public string TtsVolcDedicatedAppKey { get; set; } = "";
 
 	[SettingPropertyText("{=AF_MCM_Tts_ResourceId}Volcengine dedicated resource ID", -1, true, "", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Tts_ResourceId_Hint}Written to the X-Api-Resource-Id request header. The resource and voice must be enabled and authorized; synthesis voices from model 2.0 use V3. Accepted values include seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public string TtsVolcDedicatedResourceId { get; set; } = "";
 
 	[SettingPropertyText("{=AF_MCM_Tts_VoiceType}Volcengine dedicated voice ID", -1, true, "", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Tts_VoiceType_Hint}Maps to voice_type in V1 and speaker in V3. It must match the resource ID and account authorization; the old voice is not replaced automatically.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public string TtsVolcDedicatedSpeaker { get; set; } = "";
 
 	[SettingPropertyText("{=AF_MCM_Tts_ExtraParam}Volcengine dedicated extra parameters (JSON object)", -1, true, "", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Tts_ExtraParam_Hint}Written to request.extra_param in V1 or req_params.additions in V3, both as JSON strings. Use parameters supported by the selected endpoint.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public string TtsVolcDedicatedAdditionsJson { get; set; } = "{}";
 
 	[SettingPropertyText("{=AF_MCM_Tts_AudioFormat}Volcengine dedicated audio format", -1, true, "", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Tts_AudioFormat_Hint}Supports wav or pcm only. V1 requests the selected format unchanged. V3 always receives PCM and wraps it as selected here, retaining the current player.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public string TtsVolcDedicatedAudioFormat { get; set; } = "wav";
 
 	[SettingPropertyInteger("{=AF_MCM_Tts_SampleRate}Volcengine dedicated sample rate", 8000, 24000, "0", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Tts_SampleRate_Hint}Recommended values: 8000 / 16000 / 24000 Hz. V3 also supports 22050 Hz; arbitrary integer sample rates are not accepted by V3.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public int TtsVolcDedicatedSampleRate { get; set; } = 24000;
 
 	[SettingPropertyFloatingInteger("{=AF_MCM_Tts_MainVolume}Main voice volume (winmm)", 0f, 1f, "0.00", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Tts_MainVolume_Hint}Used only by the main playback path for normal conversation/test speech (agentIndex<0). Adjust Lip-sync channel volume for scene shouts.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public float TtsVolcDedicatedVolume { get; set; } = 1f;
 
 	[SettingPropertyBool("{=AF_MCM_Tts_SceneWinmm}Use winmm for scene speech (echo prevention)", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Tts_SceneWinmm_Hint}On: scene NPCs speak through winmm while the lip-sync channel only drives mouth movement and stays muted. Off: scene NPCs speak through the lip-sync channel; adjust Lip-sync channel volume.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public bool TtsSceneUseWinmmAudible { get; set; } = true;
 
 	[SettingPropertyFloatingInteger("{=AF_MCM_Tts_Speed}Volcengine dedicated speech speed", 0.1f, 2f, "0.00", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Tts_Speed_Hint}V1 supports 0.1–2.0 times normal; V3 supports 0.5–2.0 (1.0 is normal). A value that is too low after switching to V3 produces an error and is not changed automatically.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public float TtsVolcDedicatedSpeed { get; set; } = 1f;
 
 	[SettingPropertyFloatingInteger("{=AF_MCM_Tts_LipSyncVolume}Lip-sync channel volume", 0f, 1f, "0.00", Order = 13, RequireRestart = false, HintText = "{=AF_MCM_Tts_LipSyncVolume_Hint}SoundEvent volume for Rhubarb lip-sync. Used as the audible scene volume only when Use winmm for scene speech is off.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public float TtsLipSyncSoundEventVolume { get; set; } = 0f;
 
 	[SettingPropertyButton("{=AF_MCM_Tts_Test}Test voice", -1, true, "", Content = "{=AF_MCM_Tts_TestContent}Play test", Order = 14, RequireRestart = false, HintText = "{=AF_MCM_Tts_Test_Hint}Tests the fixed phrase “At your service, traveler!” using the current API URL and credential. Real synthesis may incur charges.")]
-	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Volcengine TTS (dedicated)")]
+	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public Action TestTtsVolcDedicatedVoice { get; set; }
 
 	[SettingPropertyInteger("{=AF_MCM_Marriage_MaxAge}Maximum marriage candidate age", 18, 80, "0", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Marriage_MaxAge_Hint}Filters the family marriage candidate list. Default: 55.")]
@@ -6661,6 +6661,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			try
 			{
 				DuelSettings runtimeSettings = GetSettings() ?? this;
+				if (runtimeSettings.UsesOpenAiTts) { runtimeSettings.TestOpenAiTtsVoice(); return; }
 				if (!ReferenceEquals(runtimeSettings, this))
 				{
 					bool mismatch = !string.Equals((TtsVolcDedicatedApiUrl ?? "").Trim(), (runtimeSettings.TtsVolcDedicatedApiUrl ?? "").Trim(), StringComparison.Ordinal)

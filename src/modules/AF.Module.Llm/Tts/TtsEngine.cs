@@ -13,7 +13,7 @@ using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge;
 
-internal sealed class TtsEngine : IDisposable
+internal sealed partial class TtsEngine : IDisposable
 {
 	internal struct WAVEFORMATEX
 	{
@@ -90,6 +90,7 @@ internal sealed class TtsEngine : IDisposable
 		public int AgentIndex = -1;
 
 		public string VoiceIdOverride = "";
+		public ProviderSnapshot Settings;
 	}
 
 	private static readonly object _instanceLock = new object();
@@ -267,7 +268,7 @@ internal sealed class TtsEngine : IDisposable
 				{
 					return false;
 				}
-				if (!settings.TtsVolcDedicatedEnabled)
+				if (!settings.IsSelectedTtsEnabled)
 				{
 					return false;
 				}
@@ -276,7 +277,7 @@ internal sealed class TtsEngine : IDisposable
 			{
 				try
 				{
-					speed = settings?.TtsVolcDedicatedSpeed ?? 1f;
+					speed = settings?.UsesOpenAiTts == true ? settings.TtsOpenAiSpeed : settings?.TtsVolcDedicatedSpeed ?? 1f;
 				}
 				catch
 				{
@@ -289,7 +290,8 @@ internal sealed class TtsEngine : IDisposable
 				SpeakerId = speakerId,
 				Speed = speed,
 				AgentIndex = agentIndex,
-				VoiceIdOverride = (voiceIdOverride ?? "").Trim()
+				VoiceIdOverride = (voiceIdOverride ?? "").Trim(),
+				Settings = new ProviderSnapshot(settings)
 			};
 			if (!TryEnqueueJob(item, onAccepted))
 			{
@@ -318,7 +320,8 @@ internal sealed class TtsEngine : IDisposable
 				Speed = ((speed > 0f) ? speed : 1f),
 				AgentIndex = -1,
 				BypassEnabledCheck = true,
-				TestFailure = onFailure
+				TestFailure = onFailure,
+				Settings = new ProviderSnapshot(DuelSettings.GetSettings())
 			};
 			if (TryEnqueueJob(item, null)) { return true; }
 			Logger.Log("TtsEngine", "[WARN] Test voice was not queued (queue full or engine stopped)");
@@ -659,37 +662,22 @@ internal sealed class TtsEngine : IDisposable
 			return;
 		}
 		LogTtsReport("ProcessJob.Start", job.AgentIndex, $"speakerId={job.SpeakerId};speed={job.Speed:F2};voiceOverride={job.VoiceIdOverride};textLen={(job.Text ?? string.Empty).Length}");
-		string text = "";
-		string text2 = "";
-		string text3 = "";
-		string text4 = "";
-		string text5 = "";
-		string text6 = "wav";
-		string extraParamJson = "{}";
-		int num = 24000;
+		ProviderSnapshot snapshot = job.Settings;
+		bool openAi = snapshot.OpenAi;
+		string text = snapshot.Url;
+		string text2 = snapshot.Credential;
+		string text3 = snapshot.AppId;
+		string text4 = snapshot.ResourceId;
+		string text5 = snapshot.Voice;
+		string text6 = snapshot.Encoding;
+		string extraParamJson = snapshot.Extra;
+		int num = snapshot.SampleRate;
 		float speed = job.Speed;
 		float loudnessRatio = 1f;
-		float num2 = 1f;
-		bool flag = true;
-		bool flag2 = false;
-		try
-		{
-			DuelSettings settings = DuelSettings.GetSettings();
-			text = settings?.TtsVolcDedicatedApiUrl ?? "";
-			text2 = settings?.TtsVolcDedicatedApiKey ?? "";
-			text3 = settings?.TtsVolcDedicatedAppKey ?? "";
-			text4 = settings?.TtsVolcDedicatedResourceId ?? "";
-			text5 = settings?.TtsVolcDedicatedSpeaker ?? "";
-			text6 = settings?.TtsVolcDedicatedAudioFormat ?? "wav";
-			extraParamJson = settings?.TtsVolcDedicatedAdditionsJson ?? "{}";
-			num = settings?.TtsVolcDedicatedSampleRate ?? 24000;
-			num2 = settings?.TtsVolcDedicatedVolume ?? 1f;
-			flag = settings?.TtsSceneUseWinmmAudible ?? true;
-			flag2 = (settings == null || settings.EnableTtsSpeech) && (settings?.TtsVolcDedicatedEnabled ?? false);
-		}
-		catch
-		{
-		}
+		float num2 = snapshot.Volume;
+		bool flag = snapshot.SceneWinmm;
+		DuelSettings currentSettings = DuelSettings.GetSettings();
+		bool flag2 = snapshot.Enabled && currentSettings?.IsSelectedTtsEnabled == true && currentSettings.UsesOpenAiTts == openAi;
 		if (num2 < 0f)
 		{
 			num2 = 0f;
@@ -698,23 +686,23 @@ internal sealed class TtsEngine : IDisposable
 		{
 			num2 = 1f;
 		}
-		if (!string.IsNullOrWhiteSpace(job.VoiceIdOverride))
+		if (!openAi && !string.IsNullOrWhiteSpace(job.VoiceIdOverride))
 		{
 			text5 = job.VoiceIdOverride;
 		}
 		if (!flag2 && !job.BypassEnabledCheck)
 		{
 			NotifyPlaybackFailed(job, "TTS disabled during playback; fallback to text bubble.");
-			Logger.Log("TtsEngine", "[WARN] Volcengine mode is disabled; synthesis skipped");
+			Logger.Log("TtsEngine", "[WARN] Selected TTS service is disabled; synthesis skipped");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			NotifyPlaybackFailed(job, "tts_url_missing");
-			Logger.Log("TtsEngine", "[WARN] Volcengine API URL is not configured");
+			Logger.Log("TtsEngine", "[WARN] TTS API URL is not configured");
 			return;
 		}
-		int protocolVersion = VolcTtsGateway.GetVersion(text);
+		int protocolVersion = openAi ? -1 : VolcTtsGateway.GetVersion(text);
 		if (protocolVersion == 0)
 		{
 			NotifyPlaybackFailed(job, "tts_endpoint_unsupported");
@@ -723,7 +711,7 @@ internal sealed class TtsEngine : IDisposable
 		}
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			NotifyPlaybackFailed(job, "tts_credential_missing");
+			NotifyPlaybackFailed(job, openAi ? "tts_openai_configuration_incomplete" : "tts_credential_missing");
 			Logger.Log("TtsEngine", "[WARN] Volcengine credential is not configured; V1 requires a token and V3 requires a service API key");
 			return;
 		}
@@ -733,7 +721,7 @@ internal sealed class TtsEngine : IDisposable
 			Logger.Log("TtsEngine", "[WARN] Volcengine V1 AppID is not configured");
 			return;
 		}
-		if (string.IsNullOrWhiteSpace(text4))
+		if (!openAi && string.IsNullOrWhiteSpace(text4))
 		{
 			NotifyPlaybackFailed(job, "tts_resource_id_missing");
 			Logger.Log("TtsEngine", "[WARN] Volcengine resource ID is not configured (X-Api-Resource-Id)");
@@ -752,7 +740,7 @@ internal sealed class TtsEngine : IDisposable
 			Logger.Log("TtsEngine", "[ERROR] The player supports wav/pcm only; set the Volcengine audio format to wav or pcm");
 			return;
 		}
-		Logger.Log("TtsEngine", $"Online synthesis started: protocol=V{protocolVersion}, textChars={job.Text.Length}, voice={text5}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
+		Logger.Log("TtsEngine", $"Online synthesis started: provider={(openAi ? "OpenAI-compatible" : "Volcengine")}, protocol=V{protocolVersion}, textChars={job.Text.Length}, voice={text5}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
 		LogTtsReport("ProcessJob.SynthesisBegin", job.AgentIndex, $"voice={text5};encoding={audioEncoding};sampleRate={num};audible={flag}");
 		if (job.AgentIndex >= 0 && !ShoutBehavior.CanAgentParticipateInSceneSpeechExternal(job.AgentIndex))
 		{
@@ -760,12 +748,15 @@ internal sealed class TtsEngine : IDisposable
 			NotifyPlaybackFailed(job, "Scene speech target became unavailable before synthesis.");
 			return;
 		}
-		byte[] array = CallVolcApi(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson, job.Request.CancellationToken, out string synthesisError);
+		string synthesisError;
+		byte[] array = openAi
+			? CallOpenAiApi(snapshot, job.Text, speed, job.Request.CancellationToken, out synthesisError)
+			: CallVolcApi(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson, job.Request.CancellationToken, out synthesisError);
 		if (!IsJobCurrent(job)) { return; }
 		if (array == null || array.Length == 0)
 		{
 			NotifyPlaybackFailed(job, string.IsNullOrEmpty(synthesisError) ? "TTS synthesis returned empty audio." : synthesisError);
-			Logger.Log("TtsEngine", "[WARN] Volcengine API returned no playable audio");
+			Logger.Log("TtsEngine", "[WARN] TTS API returned no playable audio");
 		}
 		else
 		{
