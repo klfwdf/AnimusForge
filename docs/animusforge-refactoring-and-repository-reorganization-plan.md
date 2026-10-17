@@ -1,3 +1,10 @@
+<a id="tts-stream-request-20261017"></a>
+## 新服务流式请求参数补齐（2026-10-17，INTENT）
+
+- 用户报告开启流式后服务后台仍显示非流。已核对现行 `69cc86d30`：仅选择客户端 `StreamAsync`，JSON 缺少 `stream`，此前客户端分段成功不能证明上游请求为流式。本节修正该交付缺口，不改火山。
+- 范围：新服务请求发送显式 `stream=true/false`、CN/EN 开关说明与真实请求体断言；以真实服务单次返回验证兼容性。沿用本会话部署与推送授权，保留原配置/Key、EN 包、统一构建/部署流程与本地缓存；不打包或改版本。
+- 完成门：开启/关闭实际 HTTP JSON 断言、真实服务请求观察与音频分段、双 API/Bootstrap、EN 安装哈希与远端 SHA；后台页面分类、上游增量合成和实机口型未观察时继续列未验。
+
 <a id="tts-streaming-20261017"></a>
 ## 新服务 TTS 分段流式播放与口型（2026-10-17，SOURCE / PROVIDER / EN_DEPLOY VERIFIED，LIVE_GAME_NOT_RUN）
 
