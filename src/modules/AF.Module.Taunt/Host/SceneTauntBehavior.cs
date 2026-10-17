@@ -2157,7 +2157,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private const float OwnedSettlementPassiveAttackReactionCooldownSeconds = 4f;
 
-	private const float OwnedSettlementPassiveHandsUpPoseRefreshInterval = 0.35f;
+	private const float OwnedSettlementPassiveFleeRefreshInterval = 1f;
 
 	private const float OwnedSettlementPassiveHandsUpPoseStartProgress = 0.35f;
 
@@ -2352,9 +2352,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private readonly Dictionary<int, float> _ownedSettlementPassiveReactionTimes = new Dictionary<int, float>();
 
-	private readonly HashSet<int> _ownedSettlementPassiveHandsUpPoseAppliedAgentIndices = new HashSet<int>();
+	private float _ownedSettlementPassiveFleeRefreshTimer;
 
-	private float _ownedSettlementPassiveHandsUpPoseRefreshTimer;
+	private readonly HashSet<int> _ownedSettlementPassiveHandsUpPoseAppliedAgentIndices = new HashSet<int>();
 
 	private bool _ownedSettlementPassiveHandsUpActionMissingLogged;
 
@@ -3326,7 +3326,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			_ownedSettlementPassivePlayerTeam.SetIsEnemyOf(_ownedSettlementPassiveEnemyTeam, isEnemyOf: true);
 			_ownedSettlementPassiveEnemyTeam.SetIsEnemyOf(_ownedSettlementPassivePlayerTeam, isEnemyOf: true);
-			TryApplyOwnedSettlementPassiveHandsUpPose(targetAgent);
+			// Keep legacy authority handling outside SETS; ordinary residents must remain mobile.
+			if (IsAuthorityPhysicalAttackTargetForExternal(targetAgent)) TryApplyOwnedSettlementPassiveHandsUpPose(targetAgent);
 			try
 			{
 				if (targetAgent.IsAIControlled)
@@ -3380,7 +3381,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				TryTriggerOwnedSettlementPassiveAttackReaction(targetAgent, knockedDown: false);
 				TryRecordPlayerSceneConflictRecentAction(targetAgent, Agent.Main, "damage", reason);
 			}
-			TryHoldOwnedSettlementPassiveVictimInHandsUpPose(targetAgent);
+			TryFleeOwnedSettlementPassiveVictim(targetAgent);
 			return true;
 		}
 		catch (Exception ex)
@@ -3816,7 +3817,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				ClearOwnedSettlementPassiveAttackState("peace_scene_conflict_disabled");
 				return;
 			}
-			if (_ownedSettlementPassiveVictimAgentIndices.Count == 0)
+			if (_ownedSettlementPassiveVictimAgentIndices.Count == 0 || !ShouldRefreshOwnedSettlementPassiveFlee(dt))
 			{
 				return;
 			}
@@ -3838,11 +3839,14 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					list.Add(item);
 					continue;
 				}
-				EnsureOwnedSettlementPassiveAttackHostility(agent, "owned_settlement_passive_maintain");
-				if (ShouldRefreshOwnedSettlementPassiveHandsUpPose(dt) || _ownedSettlementPassiveDamagedAgentIndices.Contains(item))
+				// Attack-release preparation can precede SETS' hit callback. Do not overwrite
+				// the neutral team or escape order after the civilian has been handed off.
+				if (SettlementEntryTroopSelectionBehavior.ShouldHandlePhysicalAttackForExternal(Mission.Current, Agent.Main, agent, IsAgentUsingRealWeapon(Agent.Main)))
 				{
-					TryHoldOwnedSettlementPassiveVictimInHandsUpPose(agent);
+					continue;
 				}
+				EnsureOwnedSettlementPassiveAttackHostility(agent, "owned_settlement_passive_maintain");
+				TryFleeOwnedSettlementPassiveVictim(agent);
 			}
 			if (list == null)
 			{
@@ -3860,15 +3864,50 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
-	private bool ShouldRefreshOwnedSettlementPassiveHandsUpPose(float dt)
+	private bool ShouldRefreshOwnedSettlementPassiveFlee(float dt)
 	{
-		_ownedSettlementPassiveHandsUpPoseRefreshTimer -= dt;
-		if (_ownedSettlementPassiveHandsUpPoseRefreshTimer > 0f)
+		_ownedSettlementPassiveFleeRefreshTimer -= dt;
+		if (_ownedSettlementPassiveFleeRefreshTimer > 0f)
 		{
 			return false;
 		}
-		_ownedSettlementPassiveHandsUpPoseRefreshTimer = OwnedSettlementPassiveHandsUpPoseRefreshInterval;
+		_ownedSettlementPassiveFleeRefreshTimer = OwnedSettlementPassiveFleeRefreshInterval;
 		return true;
+	}
+
+	private void TryFleeOwnedSettlementPassiveVictim(Agent agent)
+	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(Mission.Current, agent)) return;
+		try
+		{
+			if (!IsValidOwnedSettlementPassiveAttackTarget(agent)) return;
+			if (SettlementEntryTroopSelectionBehavior.ShouldHandlePhysicalAttackForExternal(Mission.Current, Agent.Main, agent, IsAgentUsingRealWeapon(Agent.Main))) return;
+			// Do not change the pre-existing non-SETS authority fallback.
+			if (IsAuthorityPhysicalAttackTargetForExternal(agent))
+			{
+				TryHoldOwnedSettlementPassiveVictimInHandsUpPose(agent);
+				return;
+			}
+			// Passive means no retaliation, not immobility. Reuse the original escape
+			// sampler and native Flee fallback instead of pinning a zero-speed pose.
+			if (agent.CurrentlyUsedGameObject != null)
+				agent.StopUsingGameObject(false, Agent.StopUsingGameObjectFlags.DoNotWieldWeaponAfterStoppingUsingGameObject);
+			agent.SetLookAgent(null);
+			agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+			agent.SetCrouchMode(false);
+			agent.InvalidateTargetAgent();
+			agent.SetWatchState(Agent.WatchState.Alarmed);
+			if (TryForceUnarmedBystanderDirectRetreat(agent)) return;
+			AlarmedBehaviorGroup group = EnsureAlarmedBehaviorGroup(agent);
+			if (group == null) return;
+			group.DisableCalmDown = true;
+			FleeBehavior flee = group.GetBehavior<FleeBehavior>() ?? group.AddBehavior<FleeBehavior>();
+			if (group.ScriptedBehavior != flee) group.SetScriptedBehavior<FleeBehavior>();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Fleeing owned settlement passive victim failed: " + ex.Message);
+		}
 	}
 
 	private void TryHoldOwnedSettlementPassiveVictimInHandsUpPose(Agent agent)

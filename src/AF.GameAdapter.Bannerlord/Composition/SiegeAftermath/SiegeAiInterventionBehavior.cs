@@ -6691,6 +6691,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			float now = mission.CurrentTime;
 			bool hasTarget = CivilianHideTargets.TryGetValue(civilian.Index, out Vec3 fleeTarget);
 			bool hasLastOrder = LastCivilianHideOrderTimes.TryGetValue(civilian.Index, out float lastOrder);
+			// Failed target eviction must not turn the missing-target path into a per-frame probe.
+			if (!force && !hasTarget && hasLastOrder && now - lastOrder < SiegeLocalCivilianReactionProfile.LocalFleeRefreshSeconds) return;
 			bool reachedTarget = hasTarget && SiegeLocalCivilianReactionProfile.IsLocalFleeTargetReached(civilian.Position.DistanceSquared(fleeTarget));
 			bool refresh = SiegeLocalCivilianReactionProfile.ShouldRefreshLocalFleeOrder(
 				force,
@@ -6717,6 +6719,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				if (!TrySetInterventionAgentTargetPosition(civilian, fleeTarget, SiegeLocalCivilianReactionProfile.WitnessFleeSource + ":long_flee", Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.NeverSlowDown))
 				{
+					CivilianHideTargets.Remove(civilian.Index);
+					NativeMovementOrders.Forget(civilian.Index);
 					ActivateNativeLocalFleeBehavior(civilian, SiegeLocalCivilianReactionProfile.NativeFleeBridgeSource);
 				}
 				return;

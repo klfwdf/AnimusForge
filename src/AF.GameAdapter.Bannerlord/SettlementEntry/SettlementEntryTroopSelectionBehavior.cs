@@ -2884,8 +2884,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private float _nextDefenderReserveWaveTime;
 		private float _lastDefenderReserveProgressTime;
 		private float _nextOwnedSettlementPanicTickTime;
-		private float _nextArmedCoupCivilianPanicTime;
-		private readonly Dictionary<int, float> _armedCoupCivilianRetreatTimes = new Dictionary<int, float>();
+		private float _nextConflictCivilianPanicTime;
+		private readonly Dictionary<int, float> _conflictCivilianRetreatTimes = new Dictionary<int, float>();
 		private float _victoryReachedTime = -1f;
 		private int _lastDefenderReserveLiveEnemyCount = -1;
 		private bool _defenderReserveStuckNudged;
@@ -3452,10 +3452,10 @@ if (_spawnedAllies
 			{
 				StartConflict("armed_coup_start", null);
 			}
-			if (_armedCoup && _conflictActive && !_victoryReached && base.Mission != null && base.Mission.CurrentTime >= _nextArmedCoupCivilianPanicTime)
+			if ((_armedCoup || (_defenderConflictEnabled && _sceneKind == SetsSettlementSceneKind.Town)) && _conflictActive && !_victoryReached && base.Mission != null && base.Mission.CurrentTime >= _nextConflictCivilianPanicTime)
 			{
-				_nextArmedCoupCivilianPanicTime = base.Mission.CurrentTime + 1f;
-				MaintainArmedCoupCivilianPanic();
+				_nextConflictCivilianPanicTime = base.Mission.CurrentTime + 1f;
+				MaintainConflictCivilianPanic();
 			}
 			// The coup owner ends its own mission; a host force-end would read as retreat.
 			if (_defenderConflictEnabled && _victoryReached && !_armedCoup)
@@ -3604,7 +3604,7 @@ if (_spawnedAllies
 			_enemyAgentsByIndex.Remove(affectedAgent.Index);
 			_enemyInitialTargetReleaseTimes.Remove(affectedAgent.Index);
 			_ownedSettlementFleeingCivilianAgentIndexes.Remove(affectedAgent.Index);
-			_armedCoupCivilianRetreatTimes.Remove(affectedAgent.Index);
+			_conflictCivilianRetreatTimes.Remove(affectedAgent.Index);
 			_gatheredSettlementCivilianAgentIndexes.Remove(affectedAgent.Index);
 			_ownedSettlementMassacreTargetAgentIndexes.Remove(affectedAgent.Index);
 			if (_ownedSettlementMassacreRequestAgentIndex == affectedAgent.Index)
@@ -4946,10 +4946,10 @@ if (_spawnedAlliedCount > 0)
 			return character != null && !character.IsHero && !character.IsSoldier && !IsGuardOrSoldier(character);
 		}
 
-		// Armed coup only, 1Hz: the coup suppresses native fight/alarm callbacks, so residents would
-		// otherwise idle in the middle of the battle. Reuses the owned-incident retreat (away from the
+		// SETS town conflicts and armed coups, 1Hz: the host owns combat, so residents can
+		// otherwise idle after only being marked Alarmed. Reuses the owned-incident retreat (away from the
 		// player, native flee fallback); each civilian is re-routed at most every 4s to bound navmesh sampling.
-		private void MaintainArmedCoupCivilianPanic()
+		private void MaintainConflictCivilianPanic()
 		{
 			try
 			{
@@ -4977,12 +4977,12 @@ if (_spawnedAlliedCount > 0)
 					{
 						continue;
 					}
-					bool first = !_armedCoupCivilianRetreatTimes.TryGetValue(agent.Index, out float nextRetreat);
+					bool first = !_conflictCivilianRetreatTimes.TryGetValue(agent.Index, out float nextRetreat);
 					if (!first && now < nextRetreat)
 					{
 						continue;
 					}
-					_armedCoupCivilianRetreatTimes[agent.Index] = now + 4f;
+					_conflictCivilianRetreatTimes[agent.Index] = now + 4f;
 					if (first && agent.CurrentlyUsedGameObject != null)
 					{
 						agent.StopUsingGameObject(false, Agent.StopUsingGameObjectFlags.DoNotWieldWeaponAfterStoppingUsingGameObject);
@@ -4992,12 +4992,12 @@ if (_spawnedAlliedCount > 0)
 				}
 				if (routed > 0)
 				{
-					SettlementEntryTroopSelectionLog.LogVerbose("Routed armed coup civilians away from the fight. settlement=" + _settlementId + ", routed=" + routed + ", tracked=" + _armedCoupCivilianRetreatTimes.Count);
+					SettlementEntryTroopSelectionLog.LogVerbose("Routed conflict civilians away from the fight. settlement=" + _settlementId + ", routed=" + routed + ", tracked=" + _conflictCivilianRetreatTimes.Count);
 				}
 			}
 			catch (Exception ex)
 			{
-				SettlementEntryTroopSelectionLog.Log("MaintainArmedCoupCivilianPanic failed. settlement=" + _settlementId + ", error=" + ex.Message);
+				SettlementEntryTroopSelectionLog.Log("MaintainConflictCivilianPanic failed. settlement=" + _settlementId + ", error=" + ex.Message);
 			}
 		}
 
