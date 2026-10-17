@@ -18,6 +18,8 @@ public partial class SiegeAiInterventionBehavior
 
 		public int NotableRelationsAdjusted { get; set; }
 
+		public int NotableRelationsQueued { get; set; }
+
 		public int NotableTrustAdjusted { get; set; }
 	}
 
@@ -43,7 +45,9 @@ public partial class SiegeAiInterventionBehavior
 			settlement,
 			plan.NotableRelationDelta,
 			plan.NotableRelationScope,
-			plan.NotableRelationReason);
+			plan.NotableRelationReason,
+			out int queuedRelations);
+		result.NotableRelationsQueued = queuedRelations;
 		result.NotableTrustAdjusted = ApplyNotableTrust(
 			settlement,
 			plan.NotableTrustDelta,
@@ -86,6 +90,7 @@ public partial class SiegeAiInterventionBehavior
 			+ " settlementTrust=" + plan.SettlementPublicTrustDelta
 			+ " villageTrust=" + plan.BoundVillagePublicTrustDelta + "x" + result.BoundVillageTrustAdjusted
 			+ " notableRelation=" + plan.NotableRelationDelta + "x" + result.NotableRelationsAdjusted
+			+ " queuedNotableRelation=" + plan.NotableRelationDelta + "x" + result.NotableRelationsQueued
 			+ " notableRelationScope=" + plan.NotableRelationScope
 			+ " notableTrust=" + plan.NotableTrustDelta + "x" + result.NotableTrustAdjusted
 			+ " notableTrustScope=" + plan.NotableTrustScope
@@ -149,8 +154,10 @@ public partial class SiegeAiInterventionBehavior
 		Settlement settlement,
 		int delta,
 		TownNotableEffectScope scope,
-		string reason)
+		string reason,
+		out int queued)
 	{
+		queued = 0;
 		int adjusted = 0;
 		try
 		{
@@ -170,6 +177,11 @@ public partial class SiegeAiInterventionBehavior
 
 				try
 				{
+					if (TryQueueTownPlunderRelation(settlement, notable, delta, reason))
+					{
+						queued++;
+						continue;
+					}
 					ChangeRelationAction.ApplyPlayerRelation(notable, delta, true, true);
 					adjusted++;
 				}
@@ -188,6 +200,7 @@ public partial class SiegeAiInterventionBehavior
 
 	private static void ApplyOwnerRelationDelta(Hero owner, int delta)
 	{
+		FlushTownPlunderRelations();
 		ChangeRelationAction.ApplyPlayerRelation(owner, delta, true, true);
 	}
 

@@ -2211,6 +2211,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		using var plunderRelations = BeginTownPlunderRelationBatch();
 		if (TroopInspectionBehavior.IsPreparedExternalInspectionRuntime)
 		{
 			TroopInspectionBehavior.CleanupRuntime("castle_gccz_mission_ended_before_aftermath");
@@ -8315,7 +8316,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				TownSettlementEffectPlan.FromPlunderDelta(delta));
 			Logger.Log(
 				"SiegeAiIntervention",
-				$"Applied incremental plunder consequences. Settlement={settlement.StringId ?? "N/A"}, DeltaBasisPoints={delta.DeltaBasisPoints}, CumulativeBasisPoints={delta.CumulativeBasisPoints}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{applied.BoundVillageTrustAdjusted}, NotableRelation={delta.NotableRelationDelta}x{applied.NotableRelationsAdjusted}, NotableTrust={delta.NotableTrustDelta}x{applied.NotableTrustAdjusted}");
+				$"Applied incremental plunder consequences. Settlement={settlement.StringId ?? "N/A"}, DeltaBasisPoints={delta.DeltaBasisPoints}, CumulativeBasisPoints={delta.CumulativeBasisPoints}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{applied.BoundVillageTrustAdjusted}, NotableRelation={delta.NotableRelationDelta}x{applied.NotableRelationsAdjusted}, QueuedNotableRelation={delta.NotableRelationDelta}x{applied.NotableRelationsQueued}, NotableTrust={delta.NotableTrustDelta}x{applied.NotableTrustAdjusted}");
 		}
 		catch (Exception ex)
 		{
@@ -14880,6 +14881,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				ApplyPendingPositiveNotableRelationsForFinalAftermath(settlement, aftermath);
 				ApplyPendingPositiveNotableTrustForFinalAftermath(settlement, aftermath);
 			}
+			FlushTownPlunderRelations();
 			CommitPendingInterventionNotableDeaths(SiegeNotableSceneDeathProfile.SettlementResolutionKillReason);
 			if (!castleAftermath && aftermath != SiegeAftermathAction.SiegeAftermath.Pillage)
 			{
