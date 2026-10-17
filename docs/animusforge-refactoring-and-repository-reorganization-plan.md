@@ -11168,3 +11168,9 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 用户明确要求重新编译部署 EN。统一 Debug 构建重新编译 Bannerlord 1.3 / 1.4 与 Bootstrap，双 Coup seam / registration 通过，干净 Stage 成功。EN 投影 3523 项通过，原 Invoke-ManagedStageDeployment 更新 3523 项，部署后逐项 SHA256 3523/3523 一致。未改版本，未打包、push 或启动游戏；实机新档导入与父亲背景问题尚未验证，不能以构建通过代替。
 
 证据：artifacts/en-deploy-build.log、artifacts/en-deploy-install.log；EN 候选 artifacts/en-deploy-20261017_080809/AnimusForge；操作脚本 artifacts/run-en-deploy.ps1 直接调用仓库已有投影与部署函数。目标 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge；ONNX 由未列管文件保留策略保护。旧 Stage 已移至 bin/Debug/single_module_stage/AnimusForge_preserved_20261017_080331，用户后续要求删除，但递归删除被自动审批拒绝，未执行；其中第三方运行库经锁校验用于构建依赖，AF 三份 DLL 均重新编译。部署无 Recovery 或自动回滚；人工回退需使用已验证旧包并保留玩家资料。
+# OpenAI-compatible TTS integration — 2026-10-17 (INTENT)
+
+- Scope: add a second TTS provider for the requested shenlanqaq GPT-SoVITS endpoint, retaining Volcengine configuration and shared playback/lifecycle. No deployment, packaging or push.
+- Gates: real audio format probe; production gateway and consumer replay; CN/EN MCM and terminal wiring; unified 1.3/1.4/Bootstrap build. In-game acceptance remains separately identified.
+- Baseline: `60f3a8b213d702a8325a0515e1a2e1b6298591d9`; pre-existing untracked `Microsoft/` and `NuGet/` are excluded.
+
