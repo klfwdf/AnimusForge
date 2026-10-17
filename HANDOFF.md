@@ -1,3 +1,10 @@
+# 当前交接：提示词性能修复与最新远端已合并验证（2026-10-18，VERIFIED / LIVE_NOT_RUN）
+
+- 按用户“拉取合并推送”授权，将远端7ac6e6849的4提交与本地3提交合并为9d2b0a9bf。仅两份交接文档冲突，双方保留；源码和测试入口自动合并，双方生产源码逐文件确认保持。
+- 原双API/Bootstrap/Coup/registration通过；两API实际DLL各提示词65、政策重评854、生命周期2668，平民逃跑26、劫掠关系27通过。未实机/玩家旧档/provider，既有宽提示词套件失败仍保留；未部署、打包、改版本。
+- [唯一主台账、证据与回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merge-prompt-main-20261018)。普通推送及独立远端最终SHA见artifacts/merge-prompt-main-20261018/push-receipt.json；备份分支codex/backup-before-prompt-sync-20261018。Microsoft/、NuGet/与本机产物不纳入推送。
+- 此条取代本地提示词修复的“未推送”状态；不改变下方历史部署/实机边界。
+
 # 当前交接：提示词指纹循环重复目录解析已修复（2026-10-18，OFFLINE_VERIFIED / NOT_DEPLOYED）
 
 - 产品c607598c5：复用每轮已验证的用户/包默认提示词目录，移除两组11文件循环中的22次额外目录身份XML/ancestor检查；保留每轮入口校验、1秒热更新、用户覆盖及CN/EN已知默认识别。没有新增设置、文案或全局路径缓存。
