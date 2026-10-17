@@ -1,3 +1,11 @@
+# 当前交付：政策重评替换职责重构，发布版本保持 v1.6.2（2026-10-18）
+
+- 地方、附庸、国家重评共用提交资格和明确前驱决策，发布与读档恢复走同一路径；只停止 SupersedesRecordId 指向且通过身份/scope/root 核验的前驱，不扫描同谱系后继。
+- 两 API 各 854 项重评与 2668 项生命周期恢复断言通过；双实现/Bootstrap、Coup 注册、完整 Stage 和双语包门禁通过。版本按用户要求保持 v1.6.2 / FileVersion 1.6.2.0；版本回调后未重新构建或打包，不将此前 v1.6.3 归档冒称 v1.6.2。
+- [范围、源码与验证边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#policy-rereview-publication-20261018)。没有真实玩家存档恢复或本轮实机验收；已保存的误废止政策不自动恢复。
+
+下方为此前各批次历史，其部署/推送记录不代表本轮新增行为。
+
 # 当前交接：TTS 上游 stream 参数已补齐、部署 EN 并推送（2026-10-17，PROVIDER / EN_DEPLOY / PUSH VERIFIED，LIVE_GAME_NOT_RUN）
 
 - 产品 `ca460c130` 修正上一版仅本地分段、没有向上游发送 stream 的缺口。开启明确发送 `stream=true`，关闭明确 false；更新 CN/EN 实际开关说明。火山、配置身份和 API/TTS API 设置位置保持。
