@@ -13,6 +13,41 @@
 - 本机证据：`artifacts/prompt-fingerprint-directory-reuse-20261018/receipt.json`、build.log、before5/run.log、final13/run.log、final14/run.log、prompt-save-retry/、baseline-policy/；verified-candidates冻结三DLL/marker，候选与两次实际DLL回放SHA一致。没有新增运行文案或设置，因此CN/EN资源字节不变；动态双语用户文本与两套默认精确哈希由回归覆盖。
 - 未验：玩家实际场景帧耗时、原生UI/热更新实机、旧档与第三方组合；未修终端图标消失，不宣称玩家全部卡顿已解决。未部署、打包、push或改版本，原已安装TTS版本保持。聚焦回滚`git revert c607598c5`，重新按原入口构建；本任务没有安装写入，无部署回滚需求。
 
+<a id="civilian-flee-repair-20261018"></a>
+## 城镇与 GCCZ 平民逃跑回归修复（2026-10-18，OFFLINE_VERIFIED / LIVE_GAME_NOT_RUN）
+
+- 用户授权对照旧源码修复并推送，保留其他势力卫兵反击；基线 origin/main `f5235be2`，意图检查点 `58e5434b`，独立工作树 `AF-FIX-CIVILIAN-FLEE-20261018`。不混入本机 GCCZ、政策、TTS 等未发布实验；版本仍 v1.6.2，不部署、不打包。
+- 历史与运行证据：`0c961a6b` 原平民最近导航网格/16 点直接撤离与原生 Flee；`9bf0f66a` 自有城镇由 SETS 接管绕开旧投降；`c4bfe83f` 为重构前对照。举手逻辑本身早于重构，`2f833b28` 仅搬文件且该文件内容不变，不能把所有回归归给它。10/16 运行日志显示 SETS 事件后仍重复 `owned_settlement_passive_maintain`；攻击释放准备提前登记对象，后续维护重新设队并把速度归零，覆盖 SETS 逃跑。其他势力城镇 SETS 冲突只报警，显式持续平民撤离原来仅 coup 分支启动。
+- GCCZ：`918f3832` 的最近导航网格/附近候选点在 `ee796fec` 的移动适配中被精确 `GetNavMesh` 拒绝替代。10/17 日志已经进入 witness Fleeing，却每约 3.5s 重复 `No native navmesh target; ... Source=local_player_attack_witness_flee:long_flee`；坏目标持续缓存。此次仅对该 source 恢复投影/最多 14 个候选点，保留当前 native navigator，不恢复旧瞬移/未校验裸坐标 fallback。失败清掉该平民的目标/订单缓存，保留 3.5s 退避及原生逃跑目标，避免每帧重试或清掉正在执行的 fallback。
+- Taunt：保留受伤前敌对/伤害准备，普通平民不再进入举手定格；维护先让出 SETS 所属对象，非 SETS 平民复用现有直接撤离和 Flee。维护预算改为每批 1Hz，受伤标记不再绕过预算；原非 SETS 卫兵/领主处置分支继续用原 hold 方法。SETS：只把已有 coup 平民撤离接到已开启的普通城镇冲突，1Hz 扫描、每人至少 4s 重寻路；保留守卫/领主/战斗队伍/玩家队伍排除、对话/交易暂停、胜利停止与原 coup 条件，不扩张普通村庄/城堡触发。
+- 保持：卫兵敌对选择、领主升级、处决/决斗/战场场景资格、忠诚/犯罪/关系结算、存档/设置/API 身份不改。18 个相关生产方法（含重载）与 `f5235be2` 内容逐一一致；这只证明这些方法未改，不冒充完整 Mission 调用序或实机行为验证。新日志仅内部英文诊断，无玩家文案或 CN/EN 资源变化。
+
+### 已核实代码范围（相对本条修复源码）
+
+| 生产文件 | 一基行号 / 符号 | 本次责任与边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs` | 3251–3355 `EnsureOwnedSettlementPassiveAttackHostility`；3807–3911 维护/刷新/`TryFleeOwnedSettlementPassiveVictim` | 只改被动受击平民移动与 SETS 交接；非 SETS authority 仍走原 hold |
+| `src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs` | 3455–3459 Tick gate；4952–5002 `MaintainConflictCivilianPanic` | 开启的城镇冲突接入既有居民撤离；守卫战斗 owner 不改 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.NativeMovementAdapter.cs` | 58–117 赋帧/`TryResolveLocalFleeWorldPosition` | 仅 local witness long_flee 恢复最近网格/附近点；跟随/集合/守卫移动保持精确校验 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs` | 6679–6759 `KeepLocalConflictCivilianFleeing` | 失败目标淘汰与 3.5s 退避，不改伤害、战后状态或集结规则 |
+
+- 回归：`tests/modules/AF.Module.Taunt/CivilianFleeRegressionTests/Run.ps1` 从待验源码抽取实际方法（仅适配私有命名），引擎叶节点用 fake。相同 26 项断言在 `f5235be2` 上失败 15 项、最终修复 26/26；失败数不是 15 个独立根因。覆盖被动逃跑/原生 fallback、SETS 先让出队伍、受伤节流、authority 保持、GCCZ 有效/无效/附近目标及冷却、普通城镇/coup/村庄/胜利边界。夹具扩展时发现私有名称替换误改内部 authority 调用导致回放递归，仅修夹具并保留失败日志，未把该问题归因生产代码。
+- 既有 `SceneTauntContextContractTests`：处决隔离 24、场景资格 22、惩罚账本 16、生命周期 14，共 76/76；`GcczRepairSyncTests` 136/136。18 个未改方法的核验存 `preserved-methods.json`。完整实机、真实存档、Native NavMesh 和 Mission 回调顺序 NOT_RUN；不是全仓全绿或所有玩家零风险承诺。
+- 最终原入口 `scripts/build/build_single_module.ps1` Debug：1.3（v1.3.15.110062）与 1.4（v1.4.8.119303）各 367 warnings / 0 errors，Bootstrap 2 warnings / 0 errors；Bootstrap 两条 NU1900 是 NuGet 漏洞数据源不可访问，没有绕过门禁。双 Coup seam 与 managed registration 通过。1.3 DLL SHA256 `D3050F3AA83C27E1578AFFCBAE4ECFAE0A7DC9D36248AE76D9F4AD79262C503C`；1.4 `35A9C39C83D55427B20E2CFFE20011E06446411BB49713C9C546026129864157`；Bootstrap `B50DC866183C4A7A2540E0AD623389896233AA444CA95A13F0E59EA4F3B9C940`。没有修改构建脚本或安装目录。
+- 本机证据 `artifacts/civilian-flee-20261018/`：`before.log`、`after.log`、`build-final.log`、`taunt-context-final.log`、`gccz-repair-final.log`、`preserved-methods.json`、`receipt.json`；旧源码和运行溯源保留于之前工作树 `AF-TOWN-MEMORY-MAIN-20261016/artifacts/scene-flee-review-20261017/`，不提交日志/安装产物/私有资料。发布只含本任务源码、回归、主台账与 HANDOFF；最终推送 SHA 以独立远端核对和本机收据为准。
+- 下一验收：按实际发布流程安装后，在自有/附属/其他势力城镇分别攻击平民，确认受害者与旁观者逃离、他有城镇卫兵仍反击；GCCZ 现场核对逃跑实际位移及无导航点 fallback，再核对对话、处决、决斗/原版战场不受影响。回退用聚焦 inverse/revert 撤销本修复提交后原入口重建；不 reset、强推或覆盖玩家数据。
+
+<a id="policy-rereview-publication-20261018"></a>
+## 政策重评替换最小职责重构发布（2026-10-18，OFFLINE_VERIFIED）
+
+- 在最新上游 main 基础上仅合入已验证的政策重评职责重构与既有契约测试；不引入本地调试平台、实机记录、其他历史分支或私有验证目录。用户要求发布版本回到 v1.6.2，SubModule/AssemblyFileVersion 与上游的 v1.6.2 / 1.6.2.0 保持一致；AssemblyVersion 1.5.4.0 与存档类型身份不变。
+- 真实决策 owner：`PolicySystem/Core/CustomPolicyBehavior.Management.cs` 3517–3548 两种记录事实适配；3550–3578 CanReconcile/Decide；3580–3609 TryReadCurrent；3611–3662 Finalize；3702–3720 Reconcile。地方/附庸/国家统一资格与明确前驱校验，发布和读档复用同一决策。只认 SupersedesRecordId 并核验自身/scope/root，不按正文来源、时间或同 root 活动政策集合推断目标，旧算法不作为备用。
+- 原提交标记在停止之前保存，已提交但停止失败仍可重试；旧 B 可补齐 B→A，不影响 C。通知后重新读取当前 storage key 并核验双方身份，不写回过时快照，损坏状态不冒充空记录。原停止副作用、存档字段、公开 API 与加载顺序保持，仅在原发布/加载事件运行，无新增 Tick IO/轮询/全世界扫描。不处理无关 NPC 或自动恢复已受损存档。
+- 测试沿用 `tests/bridges/Policy/PolicyEffectModule.ContractTests/Program.cs`：15975–16078 Recovery；16080–16112 Decisions；16130–16185 RetryAndRevalidation；16200–16208 RoundTrip；16219–16272 Fixture。两 API 最终候选各 854 项重评、2668 项生命周期恢复断言通过，覆盖永久/有限、零/一次/多次重评、重复协调、提交后未停止、失败重试、旧标记、不同正文来源、空/缺失/自指/跨 root/scope 及状态漂移。
+- 本轮上游合并后的生产/测试源码与上述已验重构一致；双实现各 363 warnings / 0 errors，Bootstrap 0/0，双 Coup seam/managed registration 和完整 Stage/CN/EN 3523 项投影、实际 DLL 双语门禁与 ZIP CRC 通过。引用 BuildInfo 为 v1.3.15.110062 / v1.4.6.115628。测试初始宿主缺少支持依赖和显式合成模块根，加载诊断定位后只补齐隔离夹具，原生产/测试源码及断言不改，最终 PASS。
+- 以上构建/包验证对应当时 1.6.3.0 FileVersion 的相同业务源码；按用户后续要求仅恢复版本元数据到上游 1.6.2.0，未重建、未重新生成或重命名旧 ZIP，也未修改已交付桌面归档。不能把旧归档标成 1.6.2 或声称当前元数据重新构建过。
+- 未跑全仓、新一轮全量语义审计、实机、真实 provider 或真实玩家 .sav 恢复；内存 IDataStore 回放不冒充原生存档/游戏世界验收。已误废止并保存的数据不自动复活。聚焦撤销本次政策与测试差异可回到上游算法，不改写历史；部署、重新打包和存档修复须另行授权。
+
 <a id="tts-stream-request-20261017"></a>
 ## 新服务流式请求参数补齐（2026-10-17，PROVIDER / EN_DEPLOY / PUSH VERIFIED，LIVE_GAME_NOT_RUN）
 

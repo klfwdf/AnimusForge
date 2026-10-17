@@ -5,6 +5,22 @@
 - [唯一主台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#prompt-fingerprint-directory-reuse-20261018)；本机artifacts/prompt-fingerprint-directory-reuse-20261018/receipt.json及verified-candidates。聚焦回滚git revert c607598c5。
 - 未部署/打包/push/改版本；不替代下方TTS已安装状态。玩家实际帧耗时、实机与旧档未验，终端图标消失尚未修复，不能据此宣称玩家全部卡顿解决。
 
+# 当前交付：城镇与 GCCZ 平民逃跑最小修复（2026-10-18，OFFLINE_VERIFIED / LIVE_GAME_NOT_RUN）
+
+- 对照旧 AF 源码与本机日志修复两类问题：Taunt 旧举手/归零维护覆盖 SETS 逃跑；GCCZ 移动重构删去最近网格/附近候选点后，持续复用坏逃跑点。普通城镇 SETS 冲突也接回已有平民撤离，不再仅在 coup 时运行。
+- 只改 4 个生产文件；保持受伤准备、卫兵/领主原有分支、犯罪/关系/存档规则以及非逃跑移动。18 个相关方法/重载内容不变。专项 26/26、既有 Taunt 76/76、GCCZ 136/136；原双 API/Bootstrap/双 Coup/registration 通过，保留警告记录。
+- [唯一主台账、已核实源码范围、历史依据及回退](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilian-flee-repair-20261018)。实机/真实存档未验；未部署、未打包，版本保持 v1.6.2，不能把离线回放当作全部玩家零风险保证。按本轮授权仅推送本修复，最终远端 SHA 见 Git 与本机 `artifacts/civilian-flee-20261018/receipt.json`。
+
+以下为此前交付历史；其中部署、推送或未验状态不自动延伸到本轮。
+
+# 当前交付：政策重评替换职责重构，发布版本保持 v1.6.2（2026-10-18）
+
+- 地方、附庸、国家重评共用提交资格和明确前驱决策，发布与读档恢复走同一路径；只停止 SupersedesRecordId 指向且通过身份/scope/root 核验的前驱，不扫描同谱系后继。
+- 两 API 各 854 项重评与 2668 项生命周期恢复断言通过；双实现/Bootstrap、Coup 注册、完整 Stage 和双语包门禁通过。版本按用户要求保持 v1.6.2 / FileVersion 1.6.2.0；版本回调后未重新构建或打包，不将此前 v1.6.3 归档冒称 v1.6.2。
+- [范围、源码与验证边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#policy-rereview-publication-20261018)。没有真实玩家存档恢复或本轮实机验收；已保存的误废止政策不自动恢复。
+
+下方为此前各批次历史，其部署/推送记录不代表本轮新增行为。
+
 # 当前交接：TTS 上游 stream 参数已补齐、部署 EN 并推送（2026-10-17，PROVIDER / EN_DEPLOY / PUSH VERIFIED，LIVE_GAME_NOT_RUN）
 
 - 产品 `ca460c130` 修正上一版仅本地分段、没有向上游发送 stream 的缺口。开启明确发送 `stream=true`，关闭明确 false；更新 CN/EN 实际开关说明。火山、配置身份和 API/TTS API 设置位置保持。

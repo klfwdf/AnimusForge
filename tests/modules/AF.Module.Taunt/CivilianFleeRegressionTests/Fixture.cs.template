@@ -1,0 +1,188 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+// Engine-facing leaves are fakes. Injected production logic is unchanged (private method names are adapted);
+// this is a branch/ownership replay, not a native pathfinding or live-game test.
+public static class Checks {
+ public static readonly List<string> Results=new List<string>(); public static int Failures;
+ public static void That(bool value,string name){ Results.Add((value?"PASS ":"FAIL ")+name);if(!value)Failures++; }
+}
+public struct Vec2 {
+ public float x,y; public float LengthSquared=>x*x+y*y; public float RotationInRadians=>0;
+ public void Normalize(){float l=(float)Math.Sqrt(LengthSquared);if(l>0){x/=l;y/=l;}}
+ public float DistanceSquared(Vec2 v)=>(x-v.x)*(x-v.x)+(y-v.y)*(y-v.y);
+ public static float DotProduct(Vec2 a,Vec2 b)=>a.x*b.x+a.y*b.y;
+ public static Vec2 operator -(Vec2 a,Vec2 b)=>new Vec2{x=a.x-b.x,y=a.y-b.y};
+}
+public struct Vec3 {
+ public float x,y,z; public Vec2 AsVec2=>new Vec2{x=x,y=y};
+ public float DistanceSquared(Vec3 v)=>AsVec2.DistanceSquared(v.AsVec2)+(z-v.z)*(z-v.z);
+}
+public enum MissionMode{StartUp,Conversation,Barter}
+public enum SetsSettlementSceneKind{Town,Castle,Village}
+public class Scene{public bool AllInvalid,NearestDirect;public int Samples;}
+public class Mission {
+ public static Mission Current;public Agent MainAgent;public Scene Scene=new Scene();public float CurrentTime;
+ public MissionMode Mode;public List<Agent> Agents=new List<Agent>();
+ public Vec3 GetRandomPositionAroundPoint(Vec3 p,float a,float b,bool c){Scene.Samples++;return new Vec3{x=40};}
+}
+public class CharacterObject{public bool Guard,Lord;}
+public class Agent {
+ public static Agent Main; public enum WatchState{Alarmed}
+ [Flags]public enum AIScriptedFrameFlags{NoAttack=1,NeverSlowDown=2}
+ public enum StopUsingGameObjectFlags{DoNotWieldWeaponAfterStoppingUsingGameObject}
+ public int Index;public bool IsHuman=true,Active=true,PlayerSide,Valid=true,Scripted=true;
+ public float Speed=-1;public Vec3 Position,LookDirection;public object Team,CurrentlyUsedGameObject;
+ public CharacterObject Character=new CharacterObject();public WatchState Watch;public int Retreats;
+ public bool IsActive()=>Active;
+ public void SetLookAgent(Agent a){} public void SetMaximumSpeedLimit(float v,bool isMultiplier){Speed=v;}
+ public void SetCrouchMode(bool v){}public void InvalidateTargetAgent(){}public void ClearTargetFrame(){}
+ public void SetWatchState(WatchState w){Watch=w;}public void SetLookToPointOfInterest(Vec3 v){}
+ public void DisableScriptedMovement(){Scripted=false;}
+ public void StopUsingGameObject(bool x,StopUsingGameObjectFlags f){CurrentlyUsedGameObject=null;}
+}
+public struct WorldPosition {
+ Scene scene;Vec3 point;public static WorldPosition Invalid=>default(WorldPosition);
+ public WorldPosition(Scene s,Vec3 p){scene=s;point=p;}
+ public Vec2 AsVec2=>point.AsVec2;
+ public UIntPtr GetNavMesh()=>scene.AllInvalid||point.x==36?UIntPtr.Zero:new UIntPtr(1);
+ public UIntPtr GetNearestNavMesh()=>scene.AllInvalid?UIntPtr.Zero:((point.x!=36||scene.NearestDirect)?new UIntPtr(1):UIntPtr.Zero);
+ public Vec3 GetNavMeshVec3()=>point;
+}
+public class AgentNavigator {
+ public int Clears,Assignments;public bool HasTarget=true;
+ public void ClearTarget(){Clears++;HasTarget=false;}
+ public void SetTargetFrame(WorldPosition p,float r,float a,float b,Agent.AIScriptedFrameFlags f,bool v){Assignments++;HasTarget=true;}
+}
+public class FleeBehavior{}
+public class AlarmedBehaviorGroup {
+ public bool DisableCalmDown;public object ScriptedBehavior;
+ public T GetBehavior<T>()where T:class=>ScriptedBehavior as T;
+ public T AddBehavior<T>()where T:new()=>new T();
+ public void SetScriptedBehavior<T>()where T:new(){ScriptedBehavior=new T();}
+}
+public static class SceneTauntBehavior{public static bool IsPeaceSceneConflictEnabled()=>true;}
+public static class ExecutionSceneConflictBridge{public static bool Blocked;public static bool BlocksConflict(Mission m,Agent a)=>Blocked;}
+public static class SettlementEntryTroopSelectionBehavior{public static bool Owns;public static bool ShouldHandlePhysicalAttackForExternal(Mission m,Agent a,Agent b,bool w)=>Owns;}
+public static class Logger{public static void Log(string a,string b){if(b.IndexOf("failed:",StringComparison.OrdinalIgnoreCase)>=0)throw new Exception("Unexpected swallowed production exception: "+b);}}
+public static class SettlementEntryTroopSelectionLog{public static void Log(string s){throw new Exception(s);}public static void LogVerbose(string s){}}
+public static class SiegeAgentWallRescueProfile {
+ public const float NativeTargetFrameArrivalRadius=1,NativeTargetFrameStopDistance=1,NativeTargetFrameSampleMinRadius=1,NativeTargetFrameSampleMaxRadius=5;
+ public const int NativeTargetFrameSampleCount=14;
+}
+public static class SiegeLocalCivilianReactionProfile {
+ public const float LocalFleeRefreshSeconds=3.5f,LocalFleeArrivalRadius=5;
+ public const string WitnessFleeSource="local_player_attack_witness_flee",NativeFleeBridgeSource="local_player_attack_native_flee";
+ /*REFRESH*/
+ /*REACHED*/
+}
+public class TauntFixture {
+ /*REFRESH_CONST*/
+ float _ownedSettlementPassiveFleeRefreshTimer; int hostilityCalls;
+ HashSet<int> _ownedSettlementPassiveVictimAgentIndices=new HashSet<int>();
+ HashSet<int> _ownedSettlementPassiveDamagedAgentIndices=new HashSet<int>();
+ Dictionary<int,float> _ownedSettlementPassiveReactionTimes=new Dictionary<int,float>();
+ bool IsOwnedSettlementPassiveAttackActive()=>_ownedSettlementPassiveVictimAgentIndices.Count>0;
+ void ClearOwnedSettlementPassiveAttackState(string s){_ownedSettlementPassiveVictimAgentIndices.Clear();}
+ void EnsureOwnedSettlementPassiveAttackHostility(Agent a,string s){hostilityCalls++;a.Team=new object();}
+ /*MAINTAIN*/
+ /*TAUNT_REFRESH*/
+ int moves;AlarmedBehaviorGroup group=new AlarmedBehaviorGroup();bool direct=true;
+ bool IsValidOwnedSettlementPassiveAttackTarget(Agent a)=>a!=null&&a.IsActive()&&a.Valid&&!a.PlayerSide;
+ static bool IsAgentUsingRealWeapon(Agent a)=>true; static bool IsAuthorityPhysicalAttackTargetForExternal(Agent a)=>a.Character.Guard||a.Character.Lord; /*HOLD*/
+ bool TryForceUnarmedBystanderDirectRetreat(Agent a){moves++;return direct;}
+ AlarmedBehaviorGroup EnsureAlarmedBehaviorGroup(Agent a)=>group;
+ void TryDisableOwnedSettlementPassiveScriptedBehavior(Agent a){}
+ void TryApplyOwnedSettlementPassiveHandsUpPose(Agent a){}
+ /*REACT*/
+ public static void Run(){
+  Agent.Main=new Agent();Mission.Current=new Mission();ExecutionSceneConflictBridge.Blocked=false;SettlementEntryTroopSelectionBehavior.Owns=false;
+  var host=new TauntFixture();var a=new Agent{CurrentlyUsedGameObject=new object()};
+  host.React(a);Checks.That(a.Speed==-1&&host.moves==1,"owned fallback escapes instead of zero-speed surrender");
+  Checks.That(a.CurrentlyUsedGameObject==null,"owned fallback releases usable prop before retreat");
+  host.direct=false;host.React(a);Checks.That(host.group.ScriptedBehavior is FleeBehavior&&host.group.DisableCalmDown,"owned fallback activates native flee when direct retreat unavailable");
+  SettlementEntryTroopSelectionBehavior.Owns=true;host.moves=0;a.Speed=7;host.React(a);
+  Checks.That(host.moves==0&&a.Speed==7,"SETS handoff leaves current speed and order untouched");
+  SettlementEntryTroopSelectionBehavior.Owns=false;ExecutionSceneConflictBridge.Blocked=true;host.React(a);
+  Checks.That(a.Speed==7,"execution-owned civilian is not touched");ExecutionSceneConflictBridge.Blocked=false;
+  // The caller's maintenance loop must yield too, before mutating the target's team.
+  host=new TauntFixture();a=new Agent{Index=1,Team=new object()};object originalTeam=a.Team;
+  Mission.Current.Agents.Add(a);host._ownedSettlementPassiveVictimAgentIndices.Add(1);
+  host._ownedSettlementPassiveDamagedAgentIndices.Add(1);SettlementEntryTroopSelectionBehavior.Owns=true;
+  host.TryMaintainOwnedSettlementPassiveAttackVictims(0.01f);
+  Checks.That(host.hostilityCalls==0&&ReferenceEquals(a.Team,originalTeam),"passive maintenance yields team ownership to SETS before mutation");
+  SettlementEntryTroopSelectionBehavior.Owns=false;host._ownedSettlementPassiveFleeRefreshTimer=0;
+  host.TryMaintainOwnedSettlementPassiveAttackVictims(0.01f);int before=host.moves;
+  host.TryMaintainOwnedSettlementPassiveAttackVictims(0.1f);
+  Checks.That(host.moves==before&&before==1,"damaged passive victim cannot bypass per-tick refresh budget");
+  foreach(var x in new[]{new Agent{Active=false},new Agent{PlayerSide=true}}){
+   x.Speed=7;host.React(x);Checks.That(x.Speed==7,"inactive/player boundary preserved");
+  }
+  foreach(var x in new[]{new Agent{Character=new CharacterObject{Guard=true}},new Agent{Character=new CharacterObject{Lord=true}}}){
+   x.Speed=7;before=host.moves;host.React(x);Checks.That(x.Speed==0&&!x.Scripted&&host.moves==before,"non-SETS authority retains original hold rather than civilian escape");
+  }
+ }
+}
+public class GcczFixture {
+ static Dictionary<int,Vec3>CivilianHideTargets=new Dictionary<int,Vec3>();
+ static Dictionary<int,float>LastCivilianHideOrderTimes=new Dictionary<int,float>();
+ static HashSet<int>CivilianHideSettledAgentIndexes=new HashSet<int>();
+ static class NativeMovementOrders{public static void Forget(int i){}}
+ static AgentNavigator nav;static Mission current;static int resolutions,fallbacks;
+ static Vec3 ResolveLocalConflictCivilianFleeTarget(Agent a,Mission m,Agent b){resolutions++;return new Vec3{x=36};}
+ static bool TrySetInterventionAgentTargetPosition(Agent a,Vec3 p,string s,Agent.AIScriptedFrameFlags f)=>TryAssignNativeMovementFrame(a,current,nav,p,f,s);
+ static void ActivateNativeLocalFleeBehavior(Agent a,string s){fallbacks++;nav.HasTarget=true;}
+ static void ClearAgentLookTarget(Agent a){}static void ApplyOneTimeFrightenedCivilianAction(Agent a,bool allowGathered){}
+ static void SetAgentLookTowardPoint(Agent a,Vec3 v){}static Vec3 ProjectCivilianRoutPointToGround(Mission m,Vec3 p)=>p;
+ /*KEEP*/
+ /*ASSIGN*/
+ /*RESOLVE*/
+ static void Reset(){CivilianHideTargets.Clear();LastCivilianHideOrderTimes.Clear();CivilianHideSettledAgentIndexes.Clear();current=new Mission();nav=new AgentNavigator();resolutions=fallbacks=0;}
+ public static void Run(){
+  var a=new Agent{Index=1};var main=new Agent();string flee=SiegeLocalCivilianReactionProfile.WitnessFleeSource+":long_flee";
+  Reset();current.Scene.NearestDirect=true;bool ok=TryAssignNativeMovementFrame(a,current,nav,new Vec3{x=36},Agent.AIScriptedFrameFlags.NoAttack,flee);
+  Checks.That(ok&&nav.Assignments==1&&current.Scene.Samples==0,"GCCZ nearest navmesh restores original valid-target projection");
+  Reset();ok=TryAssignNativeMovementFrame(a,current,nav,new Vec3{x=36},Agent.AIScriptedFrameFlags.NoAttack,flee);
+  Checks.That(ok&&nav.Assignments==1&&current.Scene.Samples<=14,"GCCZ nearby navigation candidate is used with bounded samples");
+  Reset();current.Scene.AllInvalid=true;KeepLocalConflictCivilianFleeing(a,current,main,true);
+  Checks.That(!CivilianHideTargets.ContainsKey(1)&&fallbacks==1,"GCCZ failed target is evicted and native fallback requested");
+  int probes=current.Scene.Samples;current.CurrentTime=1;KeepLocalConflictCivilianFleeing(a,current,main,false);
+  Checks.That(resolutions==1&&current.Scene.Samples==probes&&fallbacks==1,"GCCZ failed-target retry is throttled, not every tick");
+  current.CurrentTime=3.5f;KeepLocalConflictCivilianFleeing(a,current,main,false);
+  Checks.That(resolutions==2&&fallbacks==2,"GCCZ retry reselects target after cooldown");
+  Checks.That(nav.Clears==0&&nav.HasTarget,"GCCZ failed probes preserve existing native fallback target");
+  Reset();ok=TryAssignNativeMovementFrame(a,current,nav,new Vec3{x=36},Agent.AIScriptedFrameFlags.NoAttack,"gather");
+  Checks.That(!ok&&nav.Clears==1&&current.Scene.Samples==0,"non-flee movement rejection remains unchanged");
+  Reset();ok=TryAssignNativeMovementFrame(a,current,nav,new Vec3{x=48},Agent.AIScriptedFrameFlags.NoAttack,"follow");
+  Checks.That(ok&&nav.Assignments==1&&nav.Clears==0,"valid non-flee movement remains unchanged");
+ }
+}
+public class SetsFixture {
+ Mission Mission;bool _armedCoup,_defenderConflictEnabled=true,_conflictActive=true,_victoryReached;
+ SetsSettlementSceneKind _sceneKind=SetsSettlementSceneKind.Town;
+ float _nextConflictCivilianPanicTime;Dictionary<int,float>_conflictCivilianRetreatTimes=new Dictionary<int,float>();
+ HashSet<int>_enemyAgentIndexes=new HashSet<int>();object _playerTeam=new object(),_enemyTeam=new object();string _settlementId="fixture";
+ bool IsPlayerSideAgent(Agent a)=>a.PlayerSide;
+ bool IsGuardOrSoldier(CharacterObject c)=>c.Guard;bool IsLordCombatant(CharacterObject c)=>c.Lord;
+ void ForceOwnedSettlementCivilianFlee(Agent a,Mission m,Agent b,bool force){a.Retreats++;}
+ /*PANIC*/
+ public void Tick(){ /*TICK*/ }
+ public static void Run(){
+  var f=new SetsFixture{Mission=new Mission()};Agent.Main=new Agent{Index=0};f.Mission.MainAgent=Agent.Main;
+  var civilian=new Agent{Index=1,CurrentlyUsedGameObject=new object()};
+  var guard=new Agent{Index=2,Character=new CharacterObject{Guard=true}};
+  var lord=new Agent{Index=3,Character=new CharacterObject{Lord=true}};
+  var player=new Agent{Index=4,PlayerSide=true};var enemy=new Agent{Index=5};
+  f._enemyAgentIndexes.Add(5);f.Mission.Agents.AddRange(new[]{civilian,guard,lord,player,enemy});
+  f.Tick();Checks.That(civilian.Retreats==1,"ordinary foreign town SETS conflict routes civilian escape");
+  Checks.That(guard.Retreats==0&&lord.Retreats==0&&player.Retreats==0&&enemy.Retreats==0,"SETS panic does not redirect guards/lords/player side/combatants");
+  int initialRetreats=civilian.Retreats;f.Mission.CurrentTime=1;f.Tick();Checks.That(civilian.Retreats==initialRetreats,"SETS per-civilian retreat retains four-second budget");
+  f.Mission.CurrentTime=4;f.Tick();Checks.That(civilian.Retreats==initialRetreats+1,"SETS conflict continues bounded retreat");
+  int beforeStop=civilian.Retreats;f._victoryReached=true;f.Mission.CurrentTime=8;f.Tick();Checks.That(civilian.Retreats==beforeStop,"SETS victory stops conflict panic");
+  f._victoryReached=false;f._sceneKind=SetsSettlementSceneKind.Village;f.Tick();Checks.That(civilian.Retreats==beforeStop,"ordinary village routing is not widened");
+  f._armedCoup=true;f.Tick();Checks.That(civilian.Retreats==beforeStop+1,"existing armed coup panic remains active");
+ }
+}
+public static class ReplayEntry {
+ public static string[] Run(){TauntFixture.Run();GcczFixture.Run();SetsFixture.Run();return Checks.Results.ToArray();}
+}

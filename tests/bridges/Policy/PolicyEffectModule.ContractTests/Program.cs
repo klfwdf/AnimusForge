@@ -440,12 +440,19 @@ internal static partial class Program
 			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--policy-lifecycle-recovery-only", StringComparison.OrdinalIgnoreCase)))
 			{
+				TestPolicyReReviewReplacementRecovery();
 				TestActivePolicyEffectRecoverySyncDataContracts();
 				TestPolicyApprovalResultSequenceContracts();
 				TestPlayerPolicyCompletionIsolationContracts();
 				TestNpcPolicyPresentationOutboxContracts();
 				Console.WriteLine("PASS policyLifecycleRecoveryAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
+			if (args.Any(value => value == "--policy-rereview-recovery-only"))
+			{
+				TestPolicyReReviewReplacementRecovery();
+				Console.WriteLine("PASS policyReReviewRecoveryAssertions=" + _assertionCount);
 				return 0;
 			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--player-policy-maintenance-only", StringComparison.OrdinalIgnoreCase)))
@@ -556,6 +563,7 @@ internal static partial class Program
 			TestDailyRetryWindowPreservesActiveInstance();
 			TestDailyCompensationPendingResume();
 			TestPendingCompensationSurvivesTrimAndScheduler();
+			TestPolicyReReviewReplacementRecovery();
 			TestActivePolicyEffectRecoverySyncDataContracts();
 			TestPolicyApprovalResultSequenceContracts();
 			TestPlayerPolicyCompletionIsolationContracts();
@@ -15968,6 +15976,305 @@ internal static partial class Program
 				&& Convert.ToInt32(Property(effect.GetType(), effect, "RemainingDays"), CultureInfo.InvariantCulture) == 0,
 				"NPC v" + version + " fixed-field effects must become inert ended history rows.");
 		}
+	}
+
+	private static void TestPolicyReReviewReplacementRecovery()
+	{
+		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
+		foreach (string scope in new[] { "local", "kingdom", "vassal" })
+		foreach (bool permanent in new[] { true, false })
+		foreach (int replacements in new[] { 0, 1, 2, 4 })
+		{
+			object owner = CreateReReviewRecoveryFixture(scope, permanent, replacements);
+			owner = RoundTripReReviewRecovery(behavior, owner);
+			CheckReReviewSurvivor(behavior, owner, scope, replacements, 1, 6);
+			for (int pass = 0; pass < 2; pass++)
+			{
+				InvokeInstance(behavior, owner, "ReconcilePolicyReReviewReplacementsAfterLoad", Array.Empty<object>(), 0);
+				CheckReReviewSurvivor(behavior, owner, scope, replacements, 1, 6);
+			}
+			owner = RoundTripReReviewRecovery(behavior, owner);
+			InvokeInstance(behavior, owner, "ReconcilePolicyReReviewReplacementsAfterLoad", Array.Empty<object>(), 0);
+			CheckReReviewSurvivor(behavior, owner, scope, replacements, 1, 6);
+		}
+
+		foreach (string scope in new[] { "local", "kingdom", "vassal" })
+		{
+			foreach (bool marker in new[] { false, true })
+			{
+				object owner = CreateReReviewRecoveryFixture(scope, true, 1, predecessorActive: true);
+				ChangeReReviewRecord(behavior, owner, scope, "rereview-1", record => record["ReReviewReplacementCommitted"] = marker);
+				owner = RoundTripReReviewRecovery(behavior, owner);
+				InvokeInstance(behavior, owner, "ReconcilePolicyReReviewReplacementsAfterLoad", Array.Empty<object>(), 0);
+				CheckReReviewSurvivor(behavior, owner, scope, 1, 1, 6);
+				Check((string)ReadReReviewRecord(behavior, owner, scope, "rereview-0")["Status"] == "abolished",
+					"A committed replacement must finish stopping its exact predecessor, including legacy false markers: " + scope);
+			}
+
+			foreach (string predecessorId in new[] { "", null, "missing", "rereview-1", "foreign-root", "foreign-scope" })
+			{
+				object owner = CreateReReviewRecoveryFixture(scope, true, 1, predecessorActive: true);
+				ChangeReReviewRecord(behavior, owner, scope, "rereview-1", record =>
+				{
+					if (predecessorId == null) record.Remove("SupersedesRecordId");
+					else record["SupersedesRecordId"] = predecessorId;
+				});
+				if (predecessorId?.StartsWith("foreign", StringComparison.Ordinal) == true)
+				{
+					string foreignScope = predecessorId == "foreign-scope" ? (scope == "local" ? "vassal" : "local") : scope;
+					IDictionary records = ReReviewRecordStore(behavior, owner, foreignScope);
+					JObject foreign = ReadReReviewRecord(behavior, owner, scope, "rereview-0");
+					foreign["RecordId"] = predecessorId;
+					foreign["ReReviewRootRecordId"] = predecessorId == "foreign-root" ? "another-root" : "rereview-0";
+					foreign["ScopeKind"] = foreignScope;
+					foreign["Version"] = foreignScope == "kingdom" ? 4 : 6;
+					if (foreignScope == "kingdom") foreign["PolicyObjectId"] = "af_policy:" + predecessorId;
+					records[foreignScope == "kingdom" ? "af_policy:" + predecessorId : predecessorId] = foreign.ToString(Formatting.None);
+				}
+				InvokeInstance(behavior, owner, "FinalizePolicyReReviewReplacement", new object[] { "rereview-1" }, 1);
+				Check((string)ReadReReviewRecord(behavior, owner, scope, "rereview-0")["Status"] == "active"
+					&& (string)ReadReReviewRecord(behavior, owner, scope, "rereview-1")["Status"] == "active",
+					"An empty, absent, self or mismatched predecessor must never trigger a lineage-wide stop: " + scope + "/" + predecessorId);
+			}
+
+			object historical = CreateReReviewRecoveryFixture(scope, true, 2, predecessorActive: true);
+			ChangeReReviewRecord(behavior, historical, scope, "rereview-2", record => record["ReReviewSourceRecordId"] = "rereview-0");
+			InvokeInstance(behavior, historical, "FinalizePolicyReReviewReplacement", new object[] { "rereview-2" }, 1);
+			CheckReReviewSurvivor(behavior, historical, scope, 2, 1, 6);
+			Check((string)ReadReReviewRecord(behavior, historical, scope, "rereview-1")["Status"] == "abolished",
+				"Template provenance must not replace the explicit superseded-record identity: " + scope);
+
+			object pending = CreateReReviewRecoveryFixture(scope, true, 1, predecessorActive: true);
+			ChangeReReviewRecord(behavior, pending, scope, "rereview-1", record =>
+			{
+				record.Remove("ReReviewReplacementCommitted");
+				if (scope == "vassal") record["ExternalCommitState"] = "externalCommitPending";
+				else record["Status"] = "pending";
+				if (scope == "kingdom") record["CommitState"] = "commitPending";
+			});
+			InvokeInstance(behavior, pending, "FinalizePolicyReReviewReplacement", new object[] { "rereview-1" }, 1);
+			InvokeInstance(behavior, pending, "ReconcilePolicyReReviewReplacementsAfterLoad", Array.Empty<object>(), 0);
+			Check((string)ReadReReviewRecord(behavior, pending, scope, "rereview-0")["Status"] == "active"
+				&& ReadReReviewRecord(behavior, pending, scope, "rereview-1").Value<bool?>("ReReviewReplacementCommitted") != true,
+				"An uncommitted publication must neither stop its predecessor nor acquire a committed marker: " + scope);
+
+			object damaged = CreateReReviewRecoveryFixture(scope, true, 2);
+			ChangeReReviewRecord(behavior, damaged, scope, "rereview-2", record =>
+			{
+				record["Status"] = "abolished";
+				record["EffectStatus"] = "abolished";
+				record["RemainingDays"] = 0;
+			});
+			((IDictionary)behavior.GetField("_activePolicyEffects", All).GetValue(damaged)).Clear();
+			damaged = RoundTripReReviewRecovery(behavior, damaged);
+			InvokeInstance(behavior, damaged, "ReconcilePolicyReReviewReplacementsAfterLoad", Array.Empty<object>(), 0);
+			Check((string)ReadReReviewRecord(behavior, damaged, scope, "rereview-2")["Status"] == "abolished"
+				&& ((IDictionary)behavior.GetField("_activePolicyEffects", All).GetValue(damaged)).Count == 0,
+				"Prevention must not silently resurrect an already damaged saved policy or reconstruct deleted effects: " + scope);
+		}
+		object expiryVote = CreateReReviewRecoveryFixture("kingdom", false, 1, predecessorActive: true);
+		string expiryVotePending = (string)behavior.GetField("DynamicPolicyStatusExpiryVotePending", All).GetRawConstantValue();
+		ChangeReReviewRecord(behavior, expiryVote, "kingdom", "rereview-0", record => record["Status"] = expiryVotePending);
+		InvokeInstance(behavior, expiryVote, "FinalizePolicyReReviewReplacement", new object[] { "rereview-1" }, 1);
+		CheckReReviewSurvivor(behavior, expiryVote, "kingdom", 1, 1, 6);
+		Check((string)ReadReReviewRecord(behavior, expiryVote, "kingdom", "rereview-0")["Status"] == "abolished",
+			"An exact kingdom predecessor awaiting an expiry vote must still use the existing abolition adapter.");
+		TestPolicyReReviewReplacementDecisions();
+		TestPolicyReReviewReplacementRetryAndRevalidation();
+	}
+
+	private static void TestPolicyReReviewReplacementDecisions()
+	{
+		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
+		Type factsType = behavior.GetNestedType("PolicyReReviewReplacementFacts", All);
+		Check(factsType != null, "Replacement decisions must have one non-persisted facts contract.");
+		object Facts(string id, string root, string supersedes, bool committed = true, bool canStop = true, string scope = "local")
+		{
+			object facts = Activator.CreateInstance(factsType, nonPublic: true);
+			foreach (KeyValuePair<string, object> item in new Dictionary<string, object>
+			{
+				["RecordId"] = id, ["ScopeKind"] = scope, ["RootRecordId"] = root, ["SourceRecordId"] = "template",
+				["SupersedesRecordId"] = supersedes, ["PublicationCommitted"] = committed, ["CanStop"] = canStop
+			}) SetField(factsType, facts, item.Key, item.Value);
+			return facts;
+		}
+		string Decide(object current, object previous)
+			=> InvokeStatic(behavior, "DecidePolicyReReviewReplacement", new[] { current, previous }, 2).ToString();
+		object previous = Facts("A", "", "");
+		Check(Decide(Facts("B", "A", "A"), previous) == "StopPredecessor", "A valid exact predecessor must be stoppable.");
+		Check(Decide(Facts("B", "a", "a"), previous) == "StopPredecessor", "Existing case-insensitive identity semantics must remain.");
+		Check(Decide(null, previous) == "None" && Decide(Facts("B", "A", "A", committed: false), previous) == "None",
+			"Absent or uncommitted replacements must not act.");
+		Check(Decide(Facts("B", "", "A"), previous) == "None" && Decide(Facts("B", "A", ""), previous) == "None",
+			"Missing lineage or an intentionally absent predecessor must not be guessed.");
+		Check(Decide(Facts("B", "A", "A"), null) == "None"
+			&& Decide(Facts("B", "A", "A"), Facts("A", "", "", canStop: false)) == "None",
+			"Missing or already ended predecessors are no-ops.");
+		Check(Decide(Facts("B", "A", "B"), null) == "Invalid"
+			&& Decide(Facts("B", "A", "A"), Facts("C", "A", "")) == "Invalid"
+			&& Decide(Facts("B", "A", "A"), Facts("A", "other", "")) == "Invalid"
+			&& Decide(Facts("B", "A", "A"), Facts("A", "", "", scope: "vassal")) == "Invalid",
+			"Self, wrong-record, cross-root and cross-scope relationships must be rejected by the same decision owner.");
+	}
+
+	private static int _reReviewInjectedStopFailures;
+	private static int _reReviewStopCalls;
+	private static Action _reReviewAfterCommit;
+
+	private static bool FailReReviewPredecessorStopOnce(ref bool __result, ref string error)
+	{
+		_reReviewStopCalls++;
+		if (_reReviewInjectedStopFailures == 0) return true;
+		_reReviewInjectedStopFailures--;
+		error = "Injected predecessor stop failure";
+		__result = false;
+		return false;
+	}
+
+	private static void ChangeReReviewRecordAfterCommit() => _reReviewAfterCommit?.Invoke();
+
+	private static void TestPolicyReReviewReplacementRetryAndRevalidation()
+	{
+		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
+		Type harmonyType = Type.GetType("HarmonyLib.Harmony, 0Harmony", throwOnError: true);
+		Type harmonyMethodType = Type.GetType("HarmonyLib.HarmonyMethod, 0Harmony", throwOnError: true);
+		MethodInfo patch = harmonyType.GetMethods(All).Single(method => method.Name == "Patch" && method.GetParameters().Length == 5);
+		foreach (string scope in new[] { "local", "kingdom", "vassal" })
+		{
+			object harmony = Activator.CreateInstance(harmonyType, "AnimusForge.PolicyReReviewRecovery." + scope);
+			try
+			{
+				MethodInfo stop = behavior.GetMethod(scope == "kingdom" ? "TryStopDynamicPolicyRecordForReReview" : "TryStopLocalPolicyRecord", All);
+				object prefix = Activator.CreateInstance(harmonyMethodType, typeof(Program).GetMethod(nameof(FailReReviewPredecessorStopOnce), All));
+				patch.Invoke(harmony, new[] { (object)stop, prefix, null, null, null });
+				_reReviewInjectedStopFailures = 1;
+				_reReviewStopCalls = 0;
+				object owner = CreateReReviewRecoveryFixture(scope, true, 1, predecessorActive: true);
+				ChangeReReviewRecord(behavior, owner, scope, "rereview-1", record => record.Remove("ReReviewReplacementCommitted"));
+				Check(!(bool)InvokeInstance(behavior, owner, "FinalizePolicyReReviewReplacement", new object[] { "rereview-1" }, 1)
+					&& ReadReReviewRecord(behavior, owner, scope, "rereview-1").Value<bool>("ReReviewReplacementCommitted")
+					&& (string)ReadReReviewRecord(behavior, owner, scope, "rereview-0")["Status"] == "active",
+					"A stop failure must retain the publication marker and predecessor for recovery: " + scope);
+				owner = RoundTripReReviewRecovery(behavior, owner);
+				for (int pass = 0; pass < 2; pass++) InvokeInstance(behavior, owner, "ReconcilePolicyReReviewReplacementsAfterLoad", Array.Empty<object>(), 0);
+				CheckReReviewSurvivor(behavior, owner, scope, 1, 1, 6);
+				Check(_reReviewStopCalls == 2, "Only the failed attempt and one successful retry may invoke the stopping adapter: " + scope);
+
+				MethodInfo mark = SutType("AnimusForge.NpcRulerPolicyBehavior").GetMethod("MarkPlayerPolicyReReviewCommittedForExternal", All);
+				object postfix = Activator.CreateInstance(harmonyMethodType, typeof(Program).GetMethod(nameof(ChangeReReviewRecordAfterCommit), All));
+				patch.Invoke(harmony, new[] { (object)mark, null, postfix, null, null });
+				object changed = CreateReReviewRecoveryFixture(scope, true, 1, predecessorActive: true);
+				_reReviewAfterCommit = () => ChangeReReviewRecord(behavior, changed, scope, "rereview-1", record => record["SupersedesRecordId"] = "changed-after-commit");
+				InvokeInstance(behavior, changed, "FinalizePolicyReReviewReplacement", new object[] { "rereview-1" }, 1);
+				Check((string)ReadReReviewRecord(behavior, changed, scope, "rereview-0")["Status"] == "active"
+					&& (string)ReadReReviewRecord(behavior, changed, scope, "rereview-1")["SupersedesRecordId"] == "changed-after-commit"
+					&& _reReviewStopCalls == 2,
+					"A cross-owner change must be revalidated without stopping the stale target or overwriting the new snapshot: " + scope);
+				foreach (string corruptedId in new[] { "rereview-0", "rereview-1" })
+				{
+					object corrupt = CreateReReviewRecoveryFixture(scope, true, 1, predecessorActive: true);
+					IDictionary store = ReReviewRecordStore(behavior, corrupt, scope);
+					string key = scope == "kingdom" ? "af_policy:" + corruptedId : corruptedId;
+					_reReviewAfterCommit = () => store[key] = "{corrupt-after-commit";
+					Check(!(bool)InvokeInstance(behavior, corrupt, "FinalizePolicyReReviewReplacement", new object[] { "rereview-1" }, 1)
+						&& (string)store[key] == "{corrupt-after-commit" && _reReviewStopCalls == 2,
+						"A corrupt revalidation read must retain raw evidence and fail, not masquerade as an absent predecessor: " + scope);
+				}
+			}
+			finally
+			{
+				_reReviewAfterCommit = null;
+				_reReviewInjectedStopFailures = 0;
+				harmonyType.GetMethod("UnpatchAll", All).Invoke(harmony, new object[] { "AnimusForge.PolicyReReviewRecovery." + scope });
+			}
+		}
+	}
+
+	private static IDictionary ReReviewRecordStore(Type behavior, object owner, string scope)
+		=> (IDictionary)behavior.GetField(scope == "kingdom" ? "_dynamicPolicyRegistry" : "_localPolicyRecords", All).GetValue(owner);
+
+	private static JObject ReadReReviewRecord(Type behavior, object owner, string scope, string id)
+		=> JObject.Parse((string)ReReviewRecordStore(behavior, owner, scope)[scope == "kingdom" ? "af_policy:" + id : id]);
+
+	private static void ChangeReReviewRecord(Type behavior, object owner, string scope, string id, Action<JObject> change)
+	{
+		JObject record = ReadReReviewRecord(behavior, owner, scope, id);
+		change(record);
+		ReReviewRecordStore(behavior, owner, scope)[scope == "kingdom" ? "af_policy:" + id : id] = record.ToString(Formatting.None);
+	}
+
+	private static object RoundTripReReviewRecovery(Type behavior, object owner)
+	{
+		Type storeType = RequireType("TaleWorlds.CampaignSystem.IDataStore, TaleWorlds.CampaignSystem");
+		Dictionary<string, string> saved = new Dictionary<string, string>(StringComparer.Ordinal);
+		InvokeInstance(behavior, owner, "SyncData", new[] { new ContractDataStoreProxy(storeType, saved, isSaving: true).GetTransparentProxy() }, 1);
+		object loaded = Activator.CreateInstance(behavior);
+		InvokeInstance(behavior, loaded, "SyncData", new[] { new ContractDataStoreProxy(storeType, saved, isSaving: false).GetTransparentProxy() }, 1);
+		return loaded;
+	}
+
+	private static void CheckReReviewSurvivor(Type behavior, object owner, string scope, int replacements, int bundles, int contributions)
+	{
+		IDictionary active = (IDictionary)behavior.GetField("_activePolicyEffects", All).GetValue(owner);
+		object index = behavior.GetField("_policyEffectRuntimeIndex", All).GetValue(owner);
+		Check(active.Count == bundles && (int)Property(index.GetType(), index, "ContributionCount") == contributions
+			&& (string)ReadReReviewRecord(behavior, owner, scope, "rereview-" + replacements)["Status"] == "active",
+			"Save/load and repeated reconciliation must retain the newest policy and its six contributions: " + scope + "/" + replacements);
+	}
+
+	private static object CreateReReviewRecoveryFixture(string scope, bool permanent, int replacements, bool predecessorActive = false)
+	{
+		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
+		object owner = Activator.CreateInstance(behavior);
+		IDictionary active = (IDictionary)behavior.GetField("_activePolicyEffects", All).GetValue(owner);
+		IDictionary records = ReReviewRecordStore(behavior, owner, scope);
+		for (int i = 0; i <= replacements; i++)
+		{
+			string id = "rereview-" + i;
+			bool running = i == replacements || (predecessorActive && i == replacements - 1);
+			string effectId = "rereview-effect-" + i;
+			JArray modules = new JArray();
+			foreach (string module in new[] { "prosperityPerDay", "foodPerDay", "loyaltyPerDay", "securityPerDay", "constructionPerDay", "hearthPerDay" })
+			{
+				modules.Add(new JObject
+				{
+					["effectPlanVersion"] = 1, ["mechanismId"] = module, ["mechanismKind"] = "Independent", ["mechanismRole"] = "Subject",
+					["instanceId"] = id + ":" + module, ["policyId"] = id, ["moduleId"] = module, ["sourceModuleId"] = module,
+					["payloadSchemaVersion"] = 1, ["payload"] = new JObject { ["moduleId"] = module, ["schemaVersion"] = 1, ["value"] = 5.0 },
+					["targetSet"] = new JObject { ["selectorHandles"] = new JArray("S"), ["kingdomIds"] = new JArray("k1"), ["townIds"] = new JArray("town-a"), ["settlementIds"] = new JArray("town-a"), ["villageIds"] = new JArray("village-a"), ["parentSettlementIds"] = new JArray("town-a") },
+					["lifecycleState"] = "Active", ["stateSchemaVersion"] = 1, ["startDay"] = 26264, ["endDay"] = permanent ? 0 : 1026264, ["sourceScope"] = scope
+				});
+			}
+			if (running) active[effectId] = new JObject
+			{
+				["Version"] = 8, ["EffectId"] = effectId, ["RecordId"] = id, ["ScopeKind"] = scope, ["LocalTargetScope"] = "source", ["TargetHandle"] = "S",
+				["ModuleEffects"] = modules.DeepClone(), ["ExecutionReceipts"] = new JArray(), ["TargetFiefIds"] = new JArray("town-a"), ["TargetSettlementIds"] = new JArray("town-a"),
+				["SubmittedDay"] = 26264, ["TargetKingdomId"] = "k1", ["IssuerKingdomId"] = "k1", ["PolicyName"] = id,
+				["TotalDurationDays"] = permanent ? 0 : 1000000, ["RemainingDays"] = permanent ? 0 : 1000000, ["IsPermanentEffect"] = permanent,
+				["MaintenanceChargeEnabled"] = false, ["MaintenanceFunded"] = true, ["LastAppliedDay"] = 26264, ["LastEffectProcessedDay"] = 26264, ["Ended"] = false
+			}.ToString(Formatting.None);
+			JObject record = new JObject
+			{
+				["Version"] = scope == "kingdom" ? 4 : 6, ["RecordId"] = id, ["ScopeKind"] = scope, ["PolicyName"] = id,
+				["ReReviewRootRecordId"] = i == 0 ? "" : "rereview-0", ["ReReviewSourceRecordId"] = i == 0 ? "" : "rereview-" + (i - 1),
+				["SupersedesRecordId"] = i == 0 ? "" : "rereview-" + (i - 1), ["ReReviewReplacementCommitted"] = i > 0,
+				["Status"] = running ? "active" : "abolished", ["EffectStatus"] = running ? "active" : "abolished", ["ActiveEffectId"] = running ? effectId : "",
+				["SubmittedDay"] = 26264, ["CreatedUtcTicks"] = i + 1, ["OriginalDurationDays"] = permanent ? 0 : 1000000,
+				["RemainingDays"] = permanent || !running ? 0 : 1000000, ["IsPermanentEffect"] = permanent,
+				["OriginalTargetFiefIds"] = new JArray("town-a"), ["TargetFiefIds"] = new JArray("town-a"), ["ExternalCommitState"] = "externalCommitted",
+				["Effects"] = running ? new JArray(new JObject { ["TargetScope"] = "source", ["TargetHandle"] = "S", ["ActiveEffectId"] = effectId, ["RemainingDays"] = permanent ? 0 : 1000000, ["IsPermanentEffect"] = permanent, ["ModuleEffects"] = modules.DeepClone(), ["ExecutionReceipts"] = new JArray() }) : new JArray()
+			};
+			if (scope == "kingdom")
+			{
+				record["PolicyObjectId"] = "af_policy:" + id;
+				record["Source"] = "player";
+				record["RequiresEffectBundle"] = running;
+				record["CommitState"] = running ? "active" : "ended";
+			}
+			records[scope == "kingdom" ? "af_policy:" + id : id] = record.ToString(Formatting.None);
+		}
+		InvokeInstance(behavior, owner, "RebuildActivePolicyEffectRuntimeIndex", Array.Empty<object>(), 0);
+		return owner;
 	}
 
 	private static void TestPolicyReReviewContracts()
