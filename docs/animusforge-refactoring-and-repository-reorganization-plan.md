@@ -11352,3 +11352,14 @@ Current verified delivery and later deployment authorization: [OpenAI-compatible
 - 原统一构建 exit0：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Bannerlord14ReferenceDir F:/AnimusForge-main/.tmp/build_check/1.4 -Configuration Debug`；1.3 v1.3.15.110062、1.4 v1.4.6.115628、Bootstrap、双 Coup seam/registration 通过，既有 warning 保留。CRLF 感知 diff 检查通过。
 - 本机完整证据 `artifacts/visible-party-army-context-20261018/{receipt.json,resource-wiring.json,build.log,before/,final/,verified-candidates/}`；三 DLL 与原 build marker SHA 匹配并冻结。每次原有请求捕获中每军团汇总一次，未新增全局扫描、Tick IO、常驻缓存或后台游戏读取。实机、现场人数、provider 与玩家旧档 NOT-RUN；未 Stage、部署、打包、push、改版本。聚焦回滚 `git revert 36f718d2f` 后按原入口重建，前轮投降修复保留。
 
+
+
+<a id="tts-four-providers-release-20261018"></a>
+## TTS four-provider language and publication — 2026-10-18 (ACTIVE)
+
+- Authorization: install provider-specific settings and speech output language for all four providers, publish TTS to main and lightweight runtime source to AF-YY. User explicitly excludes local GCCZ village investigation/repair; its worktrees are not modified.
+- Baseline: origin/main 67252564e62bdd3bbe1f83906ac52be70c8e5bd7. Import reviewed TTS product changes from e2cee698d, the RealPackage safety fix from 3c0394eba, 9e15c806d and f363a07c0 without their local-only handoff history or generated NuGet files.
+- Behavior: preserve provider indices/config owner; shared speech-only language selection, same-language keep, different-language translation through existing postprocessing. Visible dialogue/history/actions remain unchanged. Local mood and primary-speaker rules remain local. Automatic cloud playback retains its existing streaming path.
+- Exit gates: actual MCM/terminal visibility and persisted owner, translation isolation/failure/cancel tests, original dual API/Bootstrap build, protected-file deployment verification, ordinary Git publication with remote SHA verification. No model/voice recordings/credentials/private test artifacts are published. Live game, real cloud provider and accent quality remain separate acceptance.
+- Performance: capture once per turn on the game thread; reuse existing postprocessing and queues, no new Tick scans or extra translation model.
+- Pending: implementation/verification, then authorized deployment and push. No version bump or release ZIP requested.

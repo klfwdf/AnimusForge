@@ -1,3 +1,8 @@
+# Current TTS handoff: four-provider language and publication (2026-10-18, ACTIVE)
+
+- Current task imports TTS onto latest main, shares speech language across all four providers, deploys safely and publishes main plus AF-YY. Local GCCZ village work is explicitly out of scope and untouched.
+- [Scope, evidence and remaining gates](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-four-providers-release-20261018). Installation/push are not complete; live game remains unverified. Previous entries below retain their historical status.
+
 # 当前交接：投降与军团上下文两轮修复已推送（2026-10-18，PUSH_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
 - 按用户“推送”授权，main 的六个待推送提交已普通推送至 origin/main，首次远端独立核对为 `1105780188cbaf85bc0cd9fcf1ba360e9f06df77`；包含产品 `6e0bbd8f6`、`36f718d2f` 及其检查点/验证记录。本条状态随后同步推送，最终 SHA 见本机收据。
