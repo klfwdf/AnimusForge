@@ -70,6 +70,10 @@ class Program
             var duel = (BaseSettings)TerminalProviderProbe.Owners["AnimusForge_global_settings"];
 #if AF_TTS_ONLY
             SharedMcmChecks.Run(af, duel, root, Check, true);
+            TtsVisibilityChecks.Run(af, Check);
+#if AF_TTS_VISIBILITY_UI
+            TtsVisibilityChecks.NativeUi(af, Assembly.LoadFrom(Path.Combine(args[4], "Bannerlord.MBOptionScreen.v1.4.0.dll")), Check);
+#endif
             Console.WriteLine("PASS focused TTS native MCM/terminal checks=" + checks);
             return 0;
 #endif

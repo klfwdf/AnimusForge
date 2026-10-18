@@ -12,7 +12,7 @@ public partial class DuelSettings
     private static Dropdown<string> BuildTtsProviderDropdown(int index) => new Dropdown<string>(new[]
     { "{=AF_MCM_Tts_ProviderVolc}Volcengine", "{=AF_MCM_Tts_ProviderOpenAi}OpenAI-compatible", "{=AF_MCM_Tts_ProviderAf}AF-GPTSOVITS", "{=AF_MCM_Tts_ProviderManual}GPT-SoVITS (manual API)" }, Math.Max(0, Math.Min(3, index)));
 
-    [SettingPropertyDropdown("{=AF_MCM_Tts_Provider}TTS service", Order = -1, RequireRestart = false, HintText = "{=AF_MCM_Tts_Provider_Hint}Choose one service. Existing configurations default to Volcengine. AF-GPTSOVITS detects compatible L/U packages in the mod folder (L first). Manual API uses your running local service. Switching preserves all settings; failures remain text-only.")]
+    [SettingPropertyDropdown("{=AF_MCM_Tts_Provider}TTS service", Order = -1, RequireRestart = false, HintText = "{=AF_MCM_Tts_Provider_Hint}Only the selected service parameters and common playback controls are shown. Switching preserves other service settings. AF-GPTSOVITS automatically detects L/U packages in the mod folder (L first); manual API requires a running service. Failures remain text-only.")]
     [SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
     public Dropdown<string> TtsProviderDropdown
     {

@@ -71,7 +71,8 @@ static class McmPageChecks
         check(pages[1].DisplayName == (language == "English" ? "AnimusForge terminal settings" : "AnimusForge终端设置"), "localized independent terminal page");
         var api = pages[0].GetAllSettingPropertyDefinitions().ToDictionary(p => p.Id);
         var terminal = pages[1].GetAllSettingPropertyDefinitions().ToDictionary(p => p.Id);
-        var visible = TerminalSettingsRegistry.VisibleDefinitions.ToDictionary(p => p.Id);
+        var staticVisibility = af.GetType("AnimusForge.TerminalSettingsCoverage", true).GetMethod("IsVisible", All);
+        var visible = TerminalSettingsRegistry.AllDefinitions.Where(p => (bool)staticVisibility.Invoke(null, new object[] { p.Id })).ToDictionary(p => p.Id);
         check(api.Count + terminal.Count == visible.Count && !api.Keys.Intersect(terminal.Keys).Any(), "every visible terminal setting appears in exactly one MCM page");
         check(api.ContainsKey("Illustrator.ApiBaseUrl") && api.ContainsKey("TownAmbientAiApiUrl"), "image and ambient APIs in same API page");
         check(!api.ContainsKey("Illustrator.UseExactEndpointUrl") && !terminal.ContainsKey("Illustrator.UseExactEndpointUrl"), "retired exact URL control absent from both MCM pages");

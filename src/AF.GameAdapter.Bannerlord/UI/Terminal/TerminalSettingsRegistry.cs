@@ -129,13 +129,19 @@ public static class TerminalSettingsRegistry
 		}
 	}
 
-	public static IReadOnlyList<TerminalSettingDef> VisibleDefinitions => AllDefinitions.Where(def => TerminalSettingsCoverage.IsVisible(def.Id)).ToList();
+	private static List<TerminalSettingDef> VisibleNow(IEnumerable<TerminalSettingDef> definitions)
+    {
+        int provider = TtsSettingsVisibility.Provider(DuelSettings.GetSettings());
+        return definitions.Where(def => TerminalSettingsCoverage.IsVisible(def.Id) && TtsSettingsVisibility.IsVisible(def.Id, provider)).ToList();
+    }
+
+	public static IReadOnlyList<TerminalSettingDef> VisibleDefinitions => VisibleNow(AllDefinitions);
 
 	public static List<TerminalSettingDef> GetByCategory(string category)
 	{
 		EnsureInitialized();
 		if (string.IsNullOrEmpty(category) || category == TerminalCategories.All) return VisibleDefinitions.ToList();
-		return _byCategory.TryGetValue(category, out var list) ? list.Where(def => TerminalSettingsCoverage.IsVisible(def.Id)).ToList() : new List<TerminalSettingDef>();
+		return _byCategory.TryGetValue(category, out var list) ? VisibleNow(list) : new List<TerminalSettingDef>();
 	}
 
 	public static TerminalSettingDef GetById(string id)

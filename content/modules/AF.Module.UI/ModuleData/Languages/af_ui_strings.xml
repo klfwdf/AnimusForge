@@ -3432,7 +3432,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_Tts_ProviderVolc" text="Volcengine" />
   <string id="AF_MCM_Tts_ProviderOpenAi" text="OpenAI-compatible" />
   <string id="AF_MCM_Tts_Provider" text="TTS service" />
-  <string id="AF_MCM_Tts_Provider_Hint" text="Choose one service. Existing configurations default to Volcengine. Switching keeps both services&#x27; settings; no automatic fallback." />
+  <string id="AF_MCM_Tts_Provider_Hint" text="Only the selected service parameters and common playback controls are shown. Switching preserves other service settings. AF-GPTSOVITS automatically detects L/U packages in the mod folder (L first); manual API requires a running service. Failures remain text-only." />
   <string id="AF_MCM_Tts_OpenAiUrl" text="OpenAI-compatible speech API URL" />
   <string id="AF_MCM_Tts_OpenAiUrl_Hint" text="Full speech endpoint, for example https://www.shenlanqaq.com/v1/audio/speech. Requests PCM16 WAV; the server must support it." />
   <string id="AF_MCM_Tts_OpenAiKey" text="OpenAI-compatible speech API key" />

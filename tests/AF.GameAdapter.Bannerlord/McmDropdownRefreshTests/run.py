@@ -4,9 +4,9 @@ from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
-parser=argparse.ArgumentParser();parser.add_argument('--baseline');parser.add_argument('--mcm-ui',type=Path);args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--baseline');parser.add_argument('--mcm-ui',type=Path);parser.add_argument('--framework',type=Path);args=parser.parse_args()
 out=new_run_root(ROOT,'mcm-dropdown-refresh',None);dotnet=resolve_dotnet(ROOT)
-ref=Path('C:/Users/29310/.nuget/packages/microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2')
+ref=args.framework or Path('C:/Users/29310/.nuget/packages/microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2')
 deps=[ROOT/'.tmp/build_check/1.4/TaleWorlds.Library.dll',ROOT/'.tmp/build_check/1.4/TaleWorlds.Localization.dll']+[ROOT/'.tmp/build_check/1.4/MCMv5.dll',ROOT/'.tmp/build_check/1.4/0Harmony.dll',ref/'Facades/netstandard.dll']
 ui=(args.mcm_ui or Path('F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/Bannerlord.MBOptionScreen/bin/Win64_Shipping_Client/Bannerlord.MBOptionScreen.v1.4.0.dll')).resolve();# UI is loaded at runtime; avoid unrelated game metadata at compile time.
 items=''.join('<Reference Include="'+x.stem+'"><HintPath>'+escape(str(x))+'</HintPath></Reference>' for x in deps if x.exists())

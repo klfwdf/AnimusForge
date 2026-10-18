@@ -1035,6 +1035,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 
 	private bool _saveErrorShown;
+    private int _visibleTtsProvider = -1;
 
 	public void MarkTextModified()
 	{
@@ -1058,6 +1059,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_SaveError}Settings could not be saved. Check the log.").ToString(), Colors.Red));
 		}
 		DuelSettings settings = DuelSettings.GetSettings();
+        if (_visibleTtsProvider != TtsSettingsVisibility.Provider(settings)) { RefreshItems(); return; }
 		if (settings != null && Items != null)
 			foreach (var item in Items) item.UpdateFromSettings(settings);
 	}
@@ -1121,6 +1123,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	{
 
 		DuelSettings currentSettings = DuelSettings.GetSettings();
+        if (_visibleTtsProvider != TtsSettingsVisibility.Provider(currentSettings)) { RefreshItems(); return; }
 
 		if (currentSettings != null && Items != null)
 
@@ -1225,6 +1228,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	private void RefreshItems()
 
 	{
+        _visibleTtsProvider = TtsSettingsVisibility.Provider(DuelSettings.GetSettings());
 
 		CancelListeningKey();
 

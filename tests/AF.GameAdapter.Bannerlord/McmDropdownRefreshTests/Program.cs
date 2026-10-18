@@ -16,6 +16,8 @@ namespace AnimusForge {
   public Dropdown<string> EventAndRebellionModelDropdown{get;set;}=new Dropdown<string>(new[]{"manual","event-chosen"},1);
   public Dropdown<string> TownAmbientAiModelDropdown{get;set;}=new Dropdown<string>(new[]{"manual","ambient-chosen"},1);
  }
+ // TTS visibility has a separate actual-DLL/native-MCM suite; this replay tests model-list refresh only.
+ internal static class TtsMcmVisibility {internal static void EnsurePatched(HarmonyLib.Harmony h){} internal static void Register(object vm,PropertyRef r){} internal static void Unregister(object vm){} }
  internal static class McmPromptDefaults {internal static string Raw(string key)=>"manual";}
  internal static class Logger {public static void Log(string area,string text){} }
 }

@@ -3466,7 +3466,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_ProviderVolc" text="火山引擎" />
   <string id="AF_MCM_Tts_ProviderOpenAi" text="OpenAI 兼容" />
   <string id="AF_MCM_Tts_Provider" text="TTS 服务" />
-  <string id="AF_MCM_Tts_Provider_Hint" text="选择一种服务。旧配置默认沿用火山引擎；切换时保留两边设置，不自动切换到其他服务重试。" />
+  <string id="AF_MCM_Tts_Provider_Hint" text="仅显示所选服务的参数及通用播放设置；切换不会清空其他服务的配置。AF-GPTSOVITS 自动识别 MOD 目录中的 L/U 包（优先 L）；手动 API 需要已运行的服务。失败时只显示文字。" />
   <string id="AF_MCM_Tts_OpenAiUrl" text="OpenAI 兼容语音 API 地址" />
   <string id="AF_MCM_Tts_OpenAiUrl_Hint" text="填写完整语音端点，例如 https://www.shenlanqaq.com/v1/audio/speech。请求 PCM16 WAV，服务端必须支持此格式。" />
   <string id="AF_MCM_Tts_OpenAiKey" text="OpenAI 兼容语音 API Key" />

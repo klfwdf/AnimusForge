@@ -110,6 +110,7 @@ public static class McmDropdownRuntimeRefresh
 			_settingsPropertyFinalize = AccessTools.Method(settingsPropertyVmType, "OnFinalize");
 
 			Harmony harmony = new Harmony("AnimusForge.mcm.dropdown.refresh");
+            TtsMcmVisibility.EnsurePatched(harmony);
 
 			Type indexActionType = AccessTools.TypeByName("MCM.UI.Actions.SetSelectedIndexAction");
 
@@ -358,6 +359,7 @@ public static class McmDropdownRuntimeRefresh
         }
         // MCM constructs rows asynchronously. A closed panel cannot own late rows.
         if (closed) { _settingsPropertyFinalize?.Invoke(__instance, null); return; }
+        TtsMcmVisibility.Register(__instance, reference);
         if (_isDropdownProperty?.GetValue(__instance) is bool isDropdown && isDropdown)
             RequestRefresh();
     }
@@ -371,6 +373,7 @@ public static class McmDropdownRuntimeRefresh
 	public static void SettingsPropertyVmFinalizePrefix(object __instance)
 
 	{
+        if (__instance != null) TtsMcmVisibility.Unregister(__instance);
 
 		if (__instance == null)
 
