@@ -1,3 +1,10 @@
+<a id="sets-damage-registration-20261018"></a>
+## 普通城镇攻击无伤害：SETS 启动补丁注册复核（2026-10-18，VERIFY）
+
+- 用户反馈普通城镇挥砍 NPC 不掉血，终端开关已开启。本机 AF 原 MCM 配置 EnablePeaceSceneConflict=true；最新安装 1.4 DLL SHA256 `46D54C29D5E1A301ED0D74CDB30ED4A6F49DAA54106CF603A198E44ECAAC148C`，Bootstrap 确认 20:54 加载。PDB 对应本机 GCCZ 工作树，该 Taunt 文件尚不包含 `4e2ff37d` 的逃跑修复，不能把现象归因于该修复。
+- 本任务源码基线更新到 origin/main `18f1fa20`，保留上游已发布的 TTS/GCCZ 改动及本机其他脏工作树。只排查/修复启动注册链；不改伤害倍率、敌对/犯罪规则、终端配置、存档、处决隔离或其他作者代码。本轮没有新增部署、打包或发布授权。
+- 证据与验收：SETS 日志仅完成前五个 entry/end-guard，未见后续可用物件/伤害/alley 注册；中间 Coup hall 使用未指定重载的 OpenIndoorMission。用真实游戏 DLL/Harmony 复现 RegisterHarmonyPatches 中断、修复后逐项核对核心伤害与两个 hall 补丁实际安装；检验故障隔离与非场景/关闭/玩家同伴保护、原逃跑/上下文回归、原 1.3/1.4/Bootstrap 构建。原生游戏砍人和全部模组组合 NOT_RUN，不能以仅编译替代真实 Harmony 注册验证。
+
 <a id="push-surrender-army-context-20261018"></a>
 ## 投降与军团上下文修复推送（2026-10-18，PUSH_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
