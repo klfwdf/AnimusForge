@@ -118,3 +118,12 @@ The translation sidecar is AF-only presentation metadata; this server receives p
 服务器只接收 AF 已分离的台词和语言代码，不解析游戏标签，不额外调用翻译模型。不可只替换 `server.py`：包内 `runtime.json` 的 `files.server.py` SHA256 必须同步，新构建脚本会自动生成。老包自动模式不受影响。U 包将来也须实现相同能力声明与参数契约；本轮未测试 U。
 
 Validation: `python tools/af-gptsovits-l/test_language.py <fresh-workspace-fixture>` executes the actual handler with controlled model/audio leaves. It covers legacy auto, all four forced codes, unsupported input, reference-language preservation, authentication and serialization. Real-model tests are in AF's `GptSoVitsRuntimeTests --real`; neither test is permission to alter the installed game.
+
+## 本轮验证 / Verification (2026-10-18)
+
+- MCM/terminal guide: original dual 1.3/1.4 + Bootstrap build passed; actual settings/inquiry/localization fixtures: 853 (1.4 CN), 579 (1.3 EN). Native in-game rendering is still untested and the candidate was not deployed.
+- Source handler: 39 checks; package boundaries/example: 16; generated example accepted by the production voice-catalog fixture (554 checks); relocated 5M/5F catalog (604 checks).
+- Local add-on: ZIP64/Deflate, 5,292,142,349 bytes (~4.929 GiB), extracted indexed payload 7,833,160,621 bytes (~7.295 GiB), 25,357 indexed payload files. Every archived payload SHA-256 and ZIP CRC was checked during fresh-directory extraction. The index itself is an additional file. SHA-256: `85e5059da4da5a1771e5d48d99df7e138b6c0b0682c1acba5b2a4c749ac6dcbf`.
+- Fresh relocated bundle: source-linked production AF manager/gateway/catalog launched the real portable Python/model, generated 5 nonempty WAV files in Chinese/English/Japanese/Cantonese, and rejected unauthenticated health access (403). The test added module identity only in its disposable verification directory, NOT in the ZIP or game. It shut down its owned process afterward. This is real synthesis, not game playback; recordings were not subjectively re-rated in this task.
+- 本机本轮冷启动约 87 秒，首条合成约 13.4 秒；不是“开关打开立即零延迟出声”。后续此组短句约 4.4–10.7 秒，不能推算所有硬件和长句。此次未重新测量显存，不把 2 GiB 目标标记为已经广泛验证；8GB 显卡与游戏同时运行仍需实测。
+- No game installation, public model/voice upload, LFS use, paid billing change or unrelated gameplay edit occurred. The ZIP remains a local evaluation artifact, not a redistribution-cleared release. Current evidence and remaining acceptance are in the main ledger.
