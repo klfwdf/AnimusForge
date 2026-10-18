@@ -1,3 +1,10 @@
+# Current TTS handoff: guide compiled; source-only L branch; local ZIP verified (2026-10-18)
+
+- Latest user decision: GitHub L branch **`AF-GPTSOVITS=L` contains adapted source/docs only**; no weights/runtime/recordings/LFS upload. Main guide product `fb01ecbcb`, L tooling product `f4add4485`; remote publication receipt records final refs.
+- MCM and terminal share an on-demand eight-chapter CN/EN guide. Dual API/Bootstrap and actual settings/localization checks passed. **KEEP BUILD ONLY: no game install**; future updates must preserve unrelated features, not reuse a whole-module refresh.
+- Local L ZIP is complete (4.929 GiB compressed / 7.295 GiB indexed payload), five male + five female + Sparkle Custom. Full archive integrity and relocated real synthesis in four languages passed; owned test service stopped. ZIP has no main AF DLL/SubModule.xml/gameplay files. Recordings remain local evaluation / redistribution not cleared.
+- [Scope, source map, evidence, exact archive hash and remaining acceptance](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-guide-package-20261018). Local evidence: `artifacts/tts-guide-package-20261018/`. This supersedes the earlier model-upload quota decision below; historical entries are not new installation authorization.
+
 # Current TTS handoff: shared language pushed, compiled output retained (2026-10-18)
 
 - `c287b8fb4` shares speech-only language across all four providers; prior managed L/U, voice/tone and provider-specific UI imports are verified. Ordinary main push was independently verified at `2417bea51`; this status record follows. Local GCCZ village work is excluded and untouched.
