@@ -32,6 +32,25 @@ static class TtsProviderChecks
                 check(TerminalSettingsRegistry.GetById("TtsGptSoVitsOutputLanguage").DisplayName == (selected == "English" ? "Speech output language" : "语音输出语言"), "Speech language localized through actual terminal consumer");
                 string languageHint = TerminalSettingsRegistry.GetById("TtsGptSoVitsOutputLanguage").HintText;
                 check(languageHint.Contains(selected == "English" ? "All four TTS services" : "四种 TTS 服务共用"), "shared language hint through actual consumer " + selected);
+                var guideDefinition = TerminalSettingsRegistry.GetById("OpenTtsUserGuide");
+                check(guideDefinition != null && guideDefinition.Invoker != null && guideDefinition.DisplayName == (selected == "English" ? "TTS user guide" : "语音使用说明"), "Guide native/terminal localized action " + selected);
+                var guide = typeof(DuelSettings).Assembly.GetType("AnimusForge.TtsUserGuide", true);
+                var flags = System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
+                check(settings.OpenTtsUserGuide.Method.DeclaringType == guide, "Native action binds production guide");
+                var savedAction = settings.OpenTtsUserGuide;
+                bool invoked = false;
+                try { settings.OpenTtsUserGuide = () => invoked = true; guideDefinition.Invoker(settings); }
+                finally { settings.OpenTtsUserGuide = savedAction; }
+                check(invoked, "Terminal invokes original owner action, no duplicate guide state");
+                check(guide.GetMethod("CreateContents", flags).Invoke(null, null) != null, "Real native chapter menu constructed " + selected);
+                for (int chapter = 0; chapter < 8; chapter++)
+                {
+                    string title = (string)guide.GetMethod("Title", flags).Invoke(null, new object[] { chapter });
+                    string body = (string)guide.GetMethod("Body", flags).Invoke(null, new object[] { chapter });
+                    check(!title.Contains("{=") && !body.Contains("{=") && body.Length > 100 && body.Length < 1500, "Guide title/body resolve, bounded chapter " + chapter + ":" + selected);
+                    check(body.Contains(selected == "English" ? new[] { "Modules/AnimusForge", "Volcengine", "Custom", "8 MiB", "profiles", "postprocess", "NOT a hard", "SHA-256" }[chapter] : new[] { "安装", "火山", "百科", "单声道", "profiles", "后处理", "硬上限", "哈希" }[chapter]) || (selected != "English" && chapter == 0 && body.Contains("模组")), "Guide chapter meaning/localization " + chapter + ":" + selected);
+                    check(guide.GetMethod("CreatePage", flags).Invoke(null, new object[] { chapter }) != null, "Real native inquiry page constructed " + chapter);
+                }
                 string streamHint = TerminalSettingsRegistry.GetById("TtsStreamingPlaybackEnabled").HintText;
                 check(streamHint.Contains("stream=true") && streamHint.Contains("stream=false"), "Actual native streaming hint describes upstream on/off flags " + selected);
             }
@@ -80,7 +99,7 @@ static class TtsProviderChecks
                 .Invoke(null, new object[] { TerminalProviderProbe.Owners.Values.Cast<BaseSettings>().ToArray() });
             var projected = pages.SelectMany(p => p.GetAllSettingPropertyDefinitions()).ToArray();
             foreach (string id in ids) check(projected.Count(p => p.Id == id) == 1, "TTS MCM projection exists exactly once: " + id);
-            string[] localIds = { "TtsGptSoVitsOutputLanguage", "TtsGptSoVitsApiUrl", "TtsGptSoVitsManifestPath", "TtsGptSoVitsSpeed", "TtsGptSoVitsMood", "TestTtsGptSoVitsVoice", "RefreshTtsGptSoVitsRuntime" };
+            string[] localIds = { "OpenTtsUserGuide", "TtsGptSoVitsOutputLanguage", "TtsGptSoVitsApiUrl", "TtsGptSoVitsManifestPath", "TtsGptSoVitsSpeed", "TtsGptSoVitsMood", "TestTtsGptSoVitsVoice", "RefreshTtsGptSoVitsRuntime" };
             foreach (string id in localIds)
             {
                 check(TerminalSettingsRegistry.GetById(id) != null, "Local control has actual terminal consumer: " + id);

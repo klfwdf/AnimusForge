@@ -8,6 +8,11 @@ namespace AnimusForge;
 
 public partial class DuelSettings
 {
+    [SettingPropertyButton("{=AF_GPT_UI_Guide}TTS user guide", -1, true, "", Content = "{=AF_GPT_UI_GuideRead}Read guide", Order = -2, RequireRestart = false,
+        HintText = "{=AF_GPT_UI_GuideHint}Installation, services, voice packs, encyclopedia selection, language, tone and troubleshooting. Reading does not start a service or change settings.")]
+    [SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
+    public Action OpenTtsUserGuide { get; set; } = TtsUserGuide.Open;
+
     private Dropdown<string> _ttsProviderDropdown = BuildTtsProviderDropdown(0);
     private static Dropdown<string> BuildTtsProviderDropdown(int index) => new Dropdown<string>(new[]
     { "{=AF_MCM_Tts_ProviderVolc}Volcengine", "{=AF_MCM_Tts_ProviderOpenAi}OpenAI-compatible", "{=AF_MCM_Tts_ProviderAf}AF-GPTSOVITS", "{=AF_MCM_Tts_ProviderManual}GPT-SoVITS (manual API)" }, Math.Max(0, Math.Min(3, index)));
