@@ -1,7 +1,9 @@
-# Current TTS handoff: four-provider language and publication (2026-10-18, OFFLINE_VERIFIED / INSTALL_WAITING / PUSH_PENDING)
+# Current TTS handoff: shared language pushed, compiled output retained (2026-10-18)
 
-- TTS imports on latest main are verified; `c287b8fb4` shares speech-only language across all four providers, with event-driven selected-provider UI and original config ownership. Local GCCZ village work is explicitly out of scope and untouched.
-- [Scope, evidence and remaining gates](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-four-providers-release-20261018). Installation stopped before writes because the launcher reopened; validated build is retained. Publication is pending; live game/cloud/LLM translation remain unverified. Previous entries below retain their historical status.
+- `c287b8fb4` shares speech-only language across all four providers; prior managed L/U, voice/tone and provider-specific UI imports are verified. Ordinary main push was independently verified at `2417bea51`; this status record follows. Local GCCZ village work is excluded and untouched.
+- User explicitly chose KEEP BUILD ONLY after the launcher reopened. Nothing was installed. Future deployment must be TTS-scoped; the earlier full-default Stage plan must not be blindly reused to overwrite unrelated functionality.
+- Model branch requested name is exactly `AF-GPTSOVITS=L` (supersedes AF-YY). Full payload is 7.285 GiB; user asked to inspect usage, so no model/LFS upload or billing change has occurred. Account-wide LFS usage is unavailable with the current credential.
+- [Scope, actual source map, evidence and pending decisions](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-four-providers-release-20261018). Local receipt: `artifacts/tts-shared-language-20261018/receipt.json`. Live game/cloud/LLM translation and redistribution clearance remain unverified. Previous entries below retain their historical status.
 
 # 当前交接：投降与军团上下文两轮修复已推送（2026-10-18，PUSH_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
