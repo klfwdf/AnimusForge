@@ -38,7 +38,7 @@ class Host
     {
         ClearPendingNativeConversationNpcSurrender("test"); _releaseOwner.ClearAuthorization();
         EffectParty=null; FinishedEncounter=null; Effects=0; SurrenderAttempts=0; SurrenderSucceeds=true;
-        PlayerEncounter.Current=new(){Party=new()}; PlayerEncounter.PlayerSurrender=false;
+        PlayerEncounter.Current=new(){Party=new()}; PlayerEncounter.PlayerSurrender=false; PlayerEncounter.LeaveEncounter=false;
         Campaign.Current=new(); Mission.Current=mission ? new() : null;
         Game.Current=new(); if(mission) Game.Current.GameStateManager.ActiveState=new MissionState();
         SaveRuntimeGuard.Generation=1; Time.ApplicationTime=100;
@@ -98,6 +98,63 @@ class Host
             Check(Effects==0,"session reset revokes pending surrender");
         }
         // Reproduce the paused encounter menu: only application/engine ticks run.
+        // Native farewell sets LeaveEncounter before EndConversation. The native
+        // map teardown may Update/Finish before the next application tick.
+        {
+            var original=Reset(); var manager=Campaign.Current.ConversationManager;
+            manager.IsConversationInProgress=true;
+            MarkPendingNativeConversationNpcSurrender(new Hero(),null,-1,"native_farewell");
+            manager.OnEnd=()=> { if(PlayerEncounter.LeaveEncounter) PlayerEncounter.Current=null; };
+            PlayerEncounter.LeaveEncounter=true;
+            manager.EndConversation();
+            Check(ReferenceEquals(PlayerEncounter.Current,original) && !PlayerEncounter.LeaveEncounter,
+                "native farewell cannot finish accepted surrender before engine tick");
+            Check(SurrenderAttempts==0,"conversation-end hook waits for native teardown before settlement");
+            Time.ApplicationTime=101; OnEngineTick(); OnEngineTick();
+            Check(Effects==1 && ReferenceEquals(EffectParty,original.Party),"native farewell settles original encounter exactly once");
+        }
+        foreach(string change in new[]{"encounter","party","generation","manager","mission","missing"})
+        {
+            Reset(); var manager=Campaign.Current.ConversationManager;
+            MarkPendingNativeConversationNpcSurrender(new Hero(),null,-1,"stale_end");
+            Change(change); PlayerEncounter.LeaveEncounter=true; manager.EndConversation();
+            Check(PlayerEncounter.LeaveEncounter && Effects==0,"stale conversation end preserves native leave: "+change);
+        }
+        {
+            Reset(); var manager=Campaign.Current.ConversationManager;
+            MarkPendingNativeConversationNpcSurrender(null,null,-1,"cancelled");
+            ClearPendingNativeConversationNpcSurrender("session_launched");
+            PlayerEncounter.LeaveEncounter=true; manager.EndConversation();
+            Check(PlayerEncounter.LeaveEncounter && manager.EndSubscribers==0,"cancelled surrender removes end hook and preserves native leave");
+        }
+        {
+            Reset(); var oldManager=Campaign.Current.ConversationManager;
+            MarkPendingNativeConversationNpcSurrender(null,null,-1,"old_manager");
+            Campaign.Current.ConversationManager=new();
+            MarkPendingNativeConversationNpcSurrender(null,null,-1,"replacement");
+            PlayerEncounter.LeaveEncounter=true; oldManager.EndConversation();
+            Check(PlayerEncounter.LeaveEncounter && oldManager.EndSubscribers==0,"replacement pending surrender detaches old manager");
+            Campaign.Current.ConversationManager.EndConversation();
+            Check(!PlayerEncounter.LeaveEncounter,"replacement manager owns current surrender end hook");
+        }
+        {
+            Reset(); var manager=Campaign.Current.ConversationManager;
+            MarkPendingNativeConversationNpcSurrender(null,null,-1,"repeated");
+            MarkPendingNativeConversationNpcSurrender(null,null,-1,"repeated");
+            Check(manager.EndSubscribers==1,"repeated surrender tags register one end hook");
+        }
+        {
+            Reset(); var manager=Campaign.Current.ConversationManager;
+            MarkPendingNativeConversationNpcSurrender(null,null,-1,"player_surrender");
+            PlayerEncounter.PlayerSurrender=true; PlayerEncounter.LeaveEncounter=true;
+            manager.EndConversation();
+            Check(PlayerEncounter.LeaveEncounter && Effects==0,"NPC surrender end hook cannot override player surrender");
+        }
+        {
+            Reset(); var manager=Campaign.Current.ConversationManager;
+            PlayerEncounter.LeaveEncounter=true; manager.EndConversation();
+            Check(PlayerEncounter.LeaveEncounter && manager.EndSubscribers==0,"ordinary farewell remains native without pending surrender");
+        }
         // No Campaign Tick or direct calls to the pending consumer in these cases.
         {
             var original=Reset(); var manager=Campaign.Current.ConversationManager;
@@ -193,6 +250,8 @@ class PlayerEncounter
     public static PlayerEncounter Current;
     public static PartyBase EncounteredParty => Current?.Party;
     public static bool PlayerSurrender;
+    public static bool LeaveEncounter;
+    public bool IsPlayerWaiting;
     public PartyBase Party;
     public static void Start() => Current=new();
     public void SetupFields(PartyBase main,PartyBase target) => Party=target;
@@ -205,7 +264,19 @@ static class PlayerEncounterCompat
 class Mission { public static Mission Current; public int EndCount; public void EndMission() => EndCount++; }
 static class SaveRuntimeGuard { public static long Generation=1; public static long CaptureGeneration()=>Generation; public static bool IsCurrentGeneration(long value)=>value==Generation; }
 class Campaign { public static Campaign Current=new(); public ConversationManager ConversationManager=new(); }
-class ConversationManager { public bool IsConversationInProgress,IsConversationFlowActive; public Action OnEnd; public int EndCount; public void EndConversation() { EndCount++; IsConversationInProgress=false; OnEnd?.Invoke(); } }
+class ConversationManager
+{
+    public bool IsConversationInProgress,IsConversationFlowActive;
+    public Action OnEnd;
+    public event Action ConversationEndOneShot;
+    public int EndCount;
+    public int EndSubscribers => ConversationEndOneShot?.GetInvocationList().Length ?? 0;
+    public void EndConversation()
+    {
+        EndCount++; ConversationEndOneShot?.Invoke(); ConversationEndOneShot=null;
+        IsConversationInProgress=false; IsConversationFlowActive=false; OnEnd?.Invoke();
+    }
+}
 class Game { public static Game Current=new(); public StateManager GameStateManager=new(); }
 class StateManager { public object ActiveState=new(); }
 class MissionState {}

@@ -8231,7 +8231,15 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			_pendingNativeConversationNpcSurrender = true;
 			_npcSurrenderScope.Mark(PlayerEncounter.Current, encounterParty, SaveRuntimeGuard.CaptureGeneration());
 			_npcSurrenderSourceMission = Mission.Current;
+			if (_npcSurrenderManager != null)
+			{
+				_npcSurrenderManager.ConversationEndOneShot -= OnPendingNativeConversationNpcSurrenderEnded;
+			}
 			_npcSurrenderManager = Campaign.Current?.ConversationManager;
+			if (_npcSurrenderManager != null)
+			{
+				_npcSurrenderManager.ConversationEndOneShot += OnPendingNativeConversationNpcSurrenderEnded;
+			}
 			try
 			{
 				_pendingNativeConversationNpcSurrenderAtTime = Time.ApplicationTime;
@@ -8302,8 +8310,31 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static void OnPendingNativeConversationNpcSurrenderEnded()
+	{
+		if (!HasPendingNativeConversationNpcSurrender()) return;
+		try
+		{
+			if (PlayerEncounter.PlayerSurrender) return;
+			// Vanilla farewell sets LeaveEncounter before EndConversation. Native
+			// teardown can Update/Finish before our next tick, losing the surrender.
+			// Keep only this captured encounter; settlement still waits for teardown.
+			PlayerEncounter.LeaveEncounter = false;
+			PlayerEncounter.Current.IsPlayerWaiting = false;
+			Logger.Log("NpcSurrender", "Conversation ended; retained current encounter for pending NPC surrender settlement.");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Retaining pending NPC surrender encounter at conversation end failed: " + ex.Message);
+		}
+	}
+
 	private static void ClearPendingNativeConversationNpcSurrender(string reason)
 	{
+		if (_npcSurrenderManager != null)
+		{
+			_npcSurrenderManager.ConversationEndOneShot -= OnPendingNativeConversationNpcSurrenderEnded;
+		}
 		_npcSurrenderScope.Clear();
 		_npcSurrenderSourceMission = null;
 		_npcSurrenderManager = null;

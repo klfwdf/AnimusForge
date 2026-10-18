@@ -28,6 +28,9 @@ signatures = [
     'private static void TryForcePendingNativeConversationNpcSurrenderIfReady(',
     'private static bool TryGetNpcSurrenderEncounterParty(',
 ]
+end_hook = 'private static void OnPendingNativeConversationNpcSurrenderEnded('
+if end_hook in src:
+    signatures.append(end_hook)
 template = Path(__file__).with_name('Harness.cs.txt').read_text(encoding='utf-8')
 out = new_run_root(ROOT, 'release-surrender-boundary', args.run_root)
 (out/'Program.cs').write_text(template.replace('@@METHODS@@', '\n'.join(extractor.declaration(src,s) for s in signatures)), encoding='utf-8')
