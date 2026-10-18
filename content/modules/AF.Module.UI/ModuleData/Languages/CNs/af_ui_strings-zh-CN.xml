@@ -198,7 +198,7 @@
   <string id="AF_MCM_MainApi_Reasoning_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
   <string id="AF_MCM_MainApi_Temperature_Hint" text="控制正文生成随机性。0 更稳定，2 更发散。默认 0.80。" />
   <string id="AF_MCM_MainApi_MaxTokens_Hint" text="主API正文生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。" />
-  <string id="AF_MCM_MainApi_Streaming_Hint" text="开启后，主 API 正文使用 SSE 流式传输；支持分片显示的界面可逐步显示文字，其他渠道仍在收完后显示。后处理只接收完整正文。关闭后等待完整回复。仅影响正文，不影响前处理、后处理和周报 API。默认关闭；下次正文请求生效。 " />
+  <string id="AF_MCM_MainApi_Streaming_Hint" text="此项或所选语音服务开启时，主 API 正文使用 SSE 流式传输。支持的界面逐步显示文字；本地语音在完整回复通过校验后分句朗读。前处理、后处理和周报 API 不变。此开关保存值默认关闭；下次正文请求生效。" />
   <string id="AF_MCM_Duel_Group" text="2. 决斗规则" />
   <string id="AF_MCM_Shout_Group" text="3. 场景喊话" />
   <string id="AF_MCM_Items_Group" text="10. 物品与交易" />
@@ -3484,5 +3484,15 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_Streaming" text="流式播放并同步口型" />
   <string id="AF_MCM_Tts_Streaming_Hint" text="默认开启。向 OpenAI 兼容服务发送 stream=true，收到 WAV 音频分段后开始播放并驱动口型；关闭时发送 stream=false，等待整句音频。上游是否支持流式及首段等待时间取决于服务，仅对 OpenAI 兼容服务生效。" />
   <string id="AF_TERMINAL_GROUP_TTS_API" text="TTS API" />
-</strings>
+    <string id="AF_UI_Onboarding_QqCopied" text="已复制 YJ 交流 QQ 群号：1097237977" />
+    <string id="AF_UI_Onboarding_QqCopyFailed" text="复制群号失败，请手动添加：1097237977" />
+    <string id="AF_UI_Onboarding_Prefab_014" text="4. 复制 YJ 玩家交流 QQ 群号" />
+    <string id="AF_UI_Onboarding_Prefab_015" text="群号：1097237977。群内提供额度福利活动、常见问题答疑与维护通知。" />
+    <string id="AF_UI_Onboarding_Prefab_016" text="一键复制群号 📋" />
+    <string id="AF_UI_Parade_MenuEntry" text="举行阅兵……" />
+    <string id="AF_UI_Parade_MenuDescription" text="选择出征阅兵或胜利阅兵。仅满足条件的类型可以开始，随后将集结兵员并检查路线。" />
+    <string id="AF_UI_Parade_MenuExpedition" text="出征阅兵" />
+    <string id="AF_UI_Parade_MenuVictory" text="胜利阅兵" />
+    <string id="AF_UI_Parade_MenuBack" text="返回" />
+  </strings>
 </base>

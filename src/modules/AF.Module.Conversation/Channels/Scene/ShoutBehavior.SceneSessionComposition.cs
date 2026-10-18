@@ -221,7 +221,7 @@ private Task<bool> QueueSceneMainReplyOnMainThreadAsync(
 		List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets,
 		bool hasPostprocess, float interactionTimeoutSeconds, int participantCount,
 		string playerText, bool replyIsDirectPlayerResponse,
-		TaskCompletionSource<bool> speechCompletion = null) => _sceneConversation.QueueSceneMainReplyOnMainThreadAsync(speaker, audience, expectedHero, expectedCharacter, replyText, generation, sceneSessionId, conversationEpoch, sceneSummonTargets, sceneGuideTargets, hasPostprocess, interactionTimeoutSeconds, participantCount, playerText, replyIsDirectPlayerResponse, speechCompletion);
+		TaskCompletionSource<bool> speechCompletion = null, Task<LocalTtsTone> pendingLocalTone = null) => _sceneConversation.QueueSceneMainReplyOnMainThreadAsync(speaker, audience, expectedHero, expectedCharacter, replyText, generation, sceneSessionId, conversationEpoch, sceneSummonTargets, sceneGuideTargets, hasPostprocess, interactionTimeoutSeconds, participantCount, playerText, replyIsDirectPlayerResponse, speechCompletion, pendingLocalTone);
 private int BeginNewPlayerDrivenSceneConversationEpoch(bool preserveVisibleBubbles = false) => _sceneConversation.BeginNewPlayerDrivenSceneConversationEpoch(preserveVisibleBubbles);
 private bool IsSceneConversationEpochCurrent(int epoch) => _sceneConversation.IsSceneConversationEpochCurrent(epoch);
 private bool TryPrepareCompactTownOrdinaryReactionRequest(

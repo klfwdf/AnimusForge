@@ -44,6 +44,16 @@ static class TtsProviderChecks
             check(restored.TtsOpenAiVoice == "zh_default" && Math.Abs(restored.TtsOpenAiSpeed - 1.25f) < 0.001f && restored.TtsOpenAiTimeoutSeconds == 75, "TTS voice/speed/deadline JSON roundtrip");
             check(!restored.TtsStreamingPlaybackEnabled, "TTS streaming playback switch JSON roundtrip");
             check(restored.TtsVolcDedicatedSpeaker == "preserved-volc-voice", "TTS switch preserves old voice");
+            foreach (int mode in new[] { 2, 3 })
+            {
+                TerminalSettingsRegistry.GetById("TtsProviderDropdown").Setter(settings, mode);
+                settings.TtsGptSoVitsApiUrl = "http://127.0.0.1:9881/tts";
+                check(save(settings), "Local mode native MCM save " + mode);
+                var local = new DuelSettings(); load(local);
+                check(local.TtsProviderDropdown.SelectedIndex == mode && local.TtsGptSoVitsApiUrl == settings.TtsGptSoVitsApiUrl,
+                    "Local provider JSON roundtrip " + mode);
+                check(local.TtsOpenAiApiKey == "fixture-key" && local.TtsVolcDedicatedSpeaker == "preserved-volc-voice", "Local selection preserves cloud credentials and voice");
+            }
             var json = JObject.Parse(File.ReadAllText(path));
             foreach (string id in ids) json.Remove(id);
             File.WriteAllText(path, json.ToString());
@@ -55,14 +65,20 @@ static class TtsProviderChecks
                 .Invoke(null, new object[] { TerminalProviderProbe.Owners.Values.Cast<BaseSettings>().ToArray() });
             var projected = pages.SelectMany(p => p.GetAllSettingPropertyDefinitions()).ToArray();
             foreach (string id in ids) check(projected.Count(p => p.Id == id) == 1, "TTS MCM projection exists exactly once: " + id);
-            string[] allTts = ids.Concat(new[] { "EnableTtsSpeech", "TtsVolcDedicatedEnabled", "TtsSceneUseWinmmAudible", "TtsLipSyncSoundEventVolume", "TestTtsVolcDedicatedVoice" }).ToArray();
+            string[] localIds = { "TtsGptSoVitsApiUrl", "TtsGptSoVitsManifestPath", "TtsGptSoVitsSpeed", "TtsGptSoVitsMood", "TestTtsGptSoVitsVoice", "RefreshTtsGptSoVitsRuntime" };
+            foreach (string id in localIds)
+            {
+                check(TerminalSettingsRegistry.GetById(id) != null, "Local control has actual terminal consumer: " + id);
+                check(projected.Count(p => p.Id == id) == 1, "Local control has one MCM projection: " + id);
+            }
+            string[] allTts = ids.Concat(localIds).Concat(new[] { "EnableTtsSpeech", "TtsVolcDedicatedEnabled", "TtsSceneUseWinmmAudible", "TtsLipSyncSoundEventVolume", "TestTtsVolcDedicatedVoice" }).ToArray();
             foreach (string id in allTts)
             {
                 var apiItem = pages[0].GetAllSettingPropertyDefinitions().Single(p => p.Id == id);
                 check(apiItem.GroupName.Contains("AF_TERMINAL_GROUP_TTS_API") && !pages[1].GetAllSettingPropertyDefinitions().Any(p => p.Id == id), "TTS appears only in API / TTS API: " + id);
             }
             var provider = TerminalSettingsRegistry.GetById("TtsProviderDropdown");
-            check(provider.DropdownGetter(settings).Count == 2, "TTS provider dropdown has two services");
+            check(provider.DropdownGetter(settings).Count == 4, "TTS dropdown preserves cloud entries and adds automatic/manual local");
         }
         finally
         {

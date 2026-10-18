@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><LangVersion>latest</LangVersion><AssemblyVersion>1.5.4.0</AssemblyVersion></PropertyGroup><ItemGroup>
+<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+<Compile Include="../../../../src/modules/AF.Module.Llm/Tts/LocalTtsToneTag.cs" Link="LocalTtsToneTag.cs" />
+<Compile Remove="FixtureHost/**/*.cs" />
+<Compile Include="../../../../src/AF.Persistence/AnimusForgeDataPaths.cs" Link="AnimusForgeDataPaths.cs" />
+<Compile Include="../../../../src/modules/AF.Module.Llm/Tts/GptSoVitsRuntimePackage.cs" Link="GptSoVitsRuntimePackage.cs" />
+<Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Scene/GptSoVitsManagedRuntime.cs" Link="GptSoVitsManagedRuntime.cs" />
+<Compile Include="../../../../src/modules/AF.Module.Llm/Tts/GptSoVitsVoiceCatalog.cs" Link="GptSoVitsVoiceCatalog.cs" />
+<Compile Include="../../../../src/modules/AF.Module.Llm/Tts/GptSoVitsTtsGateway.cs" Link="GptSoVitsTtsGateway.cs" />
+<Compile Include="../../../../src/AF.Contracts/Internal/TtsContracts.cs" Link="TtsContracts.cs" />
+<Compile Include="../../../../src/AF.Contracts/Internal/InteractionContracts.cs" Link="InteractionContracts.cs" />
+<Compile Include="../../../../src/AF.Contracts/Internal/LlmContracts.cs" Link="LlmContracts.cs" />
+</ItemGroup></Project>

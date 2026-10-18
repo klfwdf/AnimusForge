@@ -1035,7 +1035,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		_dataSource.SetBusy(true);
 		_dataSource.InputText = "";
 		SetLayerForButtonsOnly();
-		ConversationHelper.BeginStreaming(this, DuelSettings.GetSettings()?.MainApiStreamingEnabled == true);
+		ConversationHelper.BeginStreaming(this, TtsSpeechPolicy.UseMainStreaming(DuelSettings.GetSettings()));
 		StartWaitingDotsAnimation(generation);
 		bool suppressVisibleStreamingForTts = !ConversationHelper.IsStreamingTextRevealEnabled
 			&& ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();
@@ -1253,7 +1253,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		_dataSource.SetBusy(true);
 		_dataSource.InputText = "";
 		SetLayerForButtonsOnly();
-		ConversationHelper.BeginStreaming(this, DuelSettings.GetSettings()?.MainApiStreamingEnabled == true);
+		ConversationHelper.BeginStreaming(this, TtsSpeechPolicy.UseMainStreaming(DuelSettings.GetSettings()));
 		StartWaitingDotsAnimation(generation);
 		bool suppressVisibleStreamingForTts = !ConversationHelper.IsStreamingTextRevealEnabled
 			&& ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();

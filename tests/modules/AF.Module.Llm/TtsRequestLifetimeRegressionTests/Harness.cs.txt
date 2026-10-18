@@ -29,6 +29,22 @@ namespace AnimusForge.Refactor.Adapters {
  }
 }
 namespace AnimusForge {
+ static class GptSoVitsUiText { public static string Text(string key,string fallback)=>fallback; }
+ // Local provider dependencies are deterministic seams here; real catalog/HTTP behavior is tested separately.
+ sealed class GptSoVitsSynthesisRequest { public string Text; public int Mood; public GptSoVitsSynthesisRequest WithTone(LocalTtsTone t)=>new(){Text=Text,Mood=(int)t}; public GptSoVitsSynthesisRequest WithText(string text)=>new(){Text=text,Mood=Mood}; }
+ sealed class GptFixtureVoice { public string Id="fixture-local"; }
+ sealed class GptFixtureCatalog { public GptFixtureVoice ResolveAssignment(string id,bool female)=>new(); }
+ static class GptSoVitsVoiceRuntime {
+  public static bool IsBattleBlocked;
+  public static GptSoVitsSynthesisRequest CaptureRequest(string text,string voice,float speed,DuelSettings settings,int mood=0)=>new(){Text=text,Mood=mood};
+  public static GptFixtureCatalog GetCatalog(DuelSettings settings)=>new();
+ }
+ sealed class GptSoVitsTtsGateway {
+  public static Func<GptSoVitsSynthesisRequest,CancellationToken,TtsSynthesisResult> Send=(_,_)=>new(){Success=true,AudioBytes=new byte[16]};
+  public GptSoVitsTtsGateway(System.Net.Http.HttpClient client){}
+  public Task<TtsSynthesisResult> SynthesizeAsync(GptSoVitsSynthesisRequest request,CancellationToken token)=>Task.FromResult(Send(request,token));
+ }
+
  static class Logger { public static void Log(string a,string b){} }
  static class BannerlordExceptionSentinel { public static ConcurrentQueue<Exception> Errors=new(); public static void ReportObservedException(string a,Exception b,string c=null){Errors.Enqueue(b);} }
  static class ShoutBehavior { public static bool CanAgentParticipateInSceneSpeechExternal(int i)=>true;public static bool ShouldUseMapConversationTableauPlaybackForNativeTtsExternal()=>true; }
@@ -37,17 +53,22 @@ namespace AnimusForge {
  static class Color {public static object FromUint(uint n)=>null;}
  sealed class DuelSettings {
   @@OPENAI_TEST_BUTTON@@
+  public sealed class Selection {public int SelectedIndex;}
+  public Selection TtsProviderDropdown=>new(){SelectedIndex=TtsUseGptSoVits?2:UsesOpenAiTts?1:0};
+  public Action TestTtsGptSoVitsVoice=()=>{};
   public bool UsesOpenAiTts; public bool TtsStreamingPlaybackEnabled;
-  public bool IsSelectedTtsEnabled=>EnableTtsSpeech&&(UsesOpenAiTts||TtsVolcDedicatedEnabled);
+  public bool IsSelectedTtsEnabled=>EnableTtsSpeech&&(UsesOpenAiTts||TtsUseGptSoVits||TtsVolcDedicatedEnabled);
   public string TtsOpenAiApiUrl="https://openai-fixture.invalid/v1/audio/speech",TtsOpenAiApiKey="openai-fixture-key",TtsOpenAiModel="gpt-sovits-v4",TtsOpenAiVoice="zh_default";
   public float TtsOpenAiSpeed=1f;public int TtsOpenAiTimeoutSeconds=60;
+ public float TtsGptSoVitsSpeed=1; public int TtsGptSoVitsMood;
   public Action TestTtsVolcDedicatedVoice;
   @@UI_HELPERS@@
   public DuelSettings(){@@TTS_TEST_BUTTON@@}
-  public bool EnableTtsSpeech=true,TtsVolcDedicatedEnabled=true,TtsSceneUseWinmmAudible=false;
+  public bool EnableTtsSpeech=true,TtsVolcDedicatedEnabled=true,TtsUseGptSoVits=false,TtsSceneUseWinmmAudible=false;
   public string TtsVolcDedicatedApiUrl="https://fixture.invalid",TtsVolcDedicatedApiKey="fixture",TtsVolcDedicatedAppKey="fixture",TtsVolcDedicatedResourceId="fixture",TtsVolcDedicatedSpeaker="fixture",TtsVolcDedicatedAudioFormat="pcm",TtsVolcDedicatedAdditionsJson="{}";
   public int TtsVolcDedicatedSampleRate=24000;
   public float TtsVolcDedicatedVolume=0,TtsLipSyncSoundEventVolume=0,TtsVolcDedicatedSpeed=1;
+  public bool MainApiStreamingEnabled;
   public static Func<DuelSettings> Read=()=>new(); public static DuelSettings GetSettings()=>Read();
  }
 }
@@ -64,11 +85,75 @@ static class Program {
  static IDictionary Jobs(TtsEngine e)=>(IDictionary)Get(e,"_pendingJobs");
  static object Job(TtsEngine e,TtsEngine.PlaybackRequest r)=>Jobs(e)[r.RequestId];
  static bool Speak(TtsEngine e,Action<TtsEngine.PlaybackRequest> cb=null,string text="hello",int agent=-1)=>e.SpeakAsync(text,-1,-1,agent,null,cb);
- static void Check(string name,Action test){try{DrainTestFeedback();InformationManager.Messages.Clear();DuelSettings.Read=()=>new();LegacyVolcTtsGateway.Send=(_,_)=>new(){Success=true,AudioBytes=new byte[16]};while(BannerlordExceptionSentinel.Errors.TryDequeue(out _)){};test();Passed++;Console.WriteLine("PASS "+name);}catch(Exception e){Failed++;Console.WriteLine("FAIL "+name+": "+e);}}
+ static void Check(string name,Action test){try{DrainTestFeedback();InformationManager.Messages.Clear();DuelSettings.Read=()=>new();GptSoVitsVoiceRuntime.IsBattleBlocked=false;LegacyVolcTtsGateway.Send=(_,_)=>new(){Success=true,AudioBytes=new byte[16]};while(BannerlordExceptionSentinel.Errors.TryDequeue(out _)){};test();Passed++;Console.WriteLine("PASS "+name);}catch(Exception e){Failed++;Console.WriteLine("FAIL "+name+": "+e);}}
  static void DrainTestFeedback(){for(int i=0;i<64;i++)TtsTestFeedback.OnApplicationTick();}
  static void WithTestButton(TtsEngine e,Action<DuelSettings> test){var slot=typeof(TtsEngine).GetField("_instance",F);object prior=slot.GetValue(null);slot.SetValue(null,e);try{var settings=new DuelSettings(){TtsVolcDedicatedApiUrl="https://fixture.invalid/api/v3/tts/unidirectional",TtsVolcDedicatedAppKey=""};DuelSettings.Read=()=>settings;test(settings);}finally{slot.SetValue(null,prior);}}
  static int Main(){
   typeof(TtsEngine).GetField("_tempAudioDir",F).SetValue(null,Path.Combine(Environment.CurrentDirectory,"audio-fixtures"));Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory,"audio-fixtures"));
+  Check("speech policy: force SSE and local-only tone matrix without preference writes",()=>{
+   foreach(bool enabled in new[]{false,true}) foreach(bool local in new[]{false,true}) foreach(bool cloud in new[]{false,true}) foreach(bool manual in new[]{false,true}) {
+    var cfg=new DuelSettings {EnableTtsSpeech=enabled,TtsUseGptSoVits=local,TtsVolcDedicatedEnabled=cloud,MainApiStreamingEnabled=manual};
+    Assert(TtsSpeechPolicy.UseMainStreaming(cfg)==(manual || (enabled&&(local||cloud))),"effective SSE");
+    Assert(cfg.MainApiStreamingEnabled==manual,"preference overwritten");
+    foreach(bool battle in new[]{false,true}) Assert(TtsSpeechPolicy.IncludeLocalTone(enabled,local,battle)==(enabled&&local&&!battle),"tone eligibility");
+   }
+  });
+  Check("sentence chunker: CN EN JP punctuation, long text, surrogate and lossless order",()=>{
+   foreach(string input in new[]{"你好。今天我们得认真谈谈这件事，不要再逃避了！你答应过我的，还记得吗？", "Do not mistake my patience for forgiveness. We have a very long journey ahead!", "今度こそ話を最後まで聞いてください。勝手に先に行かないで！",new string('a',239)+"😀"+new string('b',600),new string('a',239)+"e\u0301"+new string('b',300),"The price is 3.14 and example.com is only a name. A second sentence follows.","sentence long enough to end now.  "}) {
+    var parts=TtsSentenceChunker.Split(input); Assert(parts.Length>0&&parts.Length<=32,"bounded split");Assert(string.Concat(parts)==input,"text reordered or lost");
+    Assert(parts.All(x=>!string.IsNullOrWhiteSpace(x)&&x.Length<=256),"invalid segment size");
+    Assert(parts.All(x=>!char.IsHighSurrogate(x[x.Length-1])&&!char.IsLowSurrogate(x[0])),"split surrogate");
+   }
+   Assert(TtsSentenceChunker.Split(new string('x',4097)).Length==0,"oversize truncated instead of rejected");
+  });
+  Check("sentence playback: one identity, ordered local synthesis, one terminal",()=>{
+   DuelSettings.Read=()=>new(){TtsUseGptSoVits=true};using var e=Active();var sent=new List<string>();var segments=new List<string>();var ids=new List<long>();int finished=0;
+   GptSoVitsTtsGateway.Send=(r,c)=>{sent.Add(r.Text);return new(){Success=true,AudioBytes=new byte[16]};};
+   e.OnRequestSpeechSegmentReady+=(r,s)=>{segments.Add(s.Text);ids.Add(r.RequestId);Assert(s.Index==segments.Count-1&&s.Count==2,"segment snapshot");};
+   e.OnRequestPlaybackFinished+=r=>Interlocked.Increment(ref finished);
+   Assert(Speak(e,text:"This is the first sentence. This is the second sentence."),"accepted");
+   Eventually(()=>Jobs(e).Count==0,"drain");Assert(sent.Count==2&&sent.SequenceEqual(segments)&&ids.Distinct().Count()==1&&finished==1,"duplicate or reordered playback");
+  });
+  Check("sentence playback: cancellation after first audio never submits next sentence",()=>{
+   DuelSettings.Read=()=>new(){TtsUseGptSoVits=true};using var e=Active();int sent=0,finished=0,cancelled=0;
+   GptSoVitsTtsGateway.Send=(r,c)=>{Interlocked.Increment(ref sent);return new(){Success=true,AudioBytes=new byte[16]};};
+   e.OnRequestSpeechSegmentReady+=(r,s)=>e.StopPlayback();e.OnRequestPlaybackFinished+=r=>finished++;e.OnRequestPlaybackCancelled+=r=>cancelled++;
+   Speak(e,text:"This is the first sentence. This is the second sentence.");Eventually(()=>Jobs(e).Count==0,"drain");Assert(sent==1&&finished==0&&cancelled==1,"cancel replayed remainder");
+  });
+  Check("sentence playback: middle failure does not retry or publish completion",()=>{
+   DuelSettings.Read=()=>new(){TtsUseGptSoVits=true};using var e=Active();int sent=0,finished=0,failed=0;
+   GptSoVitsTtsGateway.Send=(r,c)=>++sent==2?new(){Success=false,ErrorCode="fixture_failure"}:new(){Success=true,AudioBytes=new byte[16]};
+   e.OnRequestPlaybackFinished+=r=>finished++;e.OnRequestPlaybackFailed+=(r,m)=>failed++;
+   Speak(e,text:"This is the first sentence. This is the second sentence. This is the third sentence.");Eventually(()=>Jobs(e).Count==0,"drain");Assert(sent==2&&finished==0&&failed==1,"failure replay or false completion");
+  });
+  Check("sentence playback: long local reply keeps captured tone in every sentence",()=>{
+   using var e=Active();var cfg=new DuelSettings{TtsUseGptSoVits=true,TtsGptSoVitsMood=3};DuelSettings.Read=()=>cfg;
+   var moods=new List<int>();var texts=new List<string>();GptSoVitsTtsGateway.Send=(r,c)=>{moods.Add(r.Mood);texts.Add(r.Text);return new(){Success=true,AudioBytes=new byte[16]};};
+   Assert(e.SpeakAsync(new string('x',600),-1,1,-1,"fixture",null,LocalTtsTone.Happy),"long accepted");cfg.TtsGptSoVitsMood=2;
+   Eventually(()=>Jobs(e).Count==0,"drain");Assert(moods.Count==3&&moods.All(x=>x==1)&&string.Concat(texts)==new string('x',600),"local request tone/text drift");
+  });
+  Check("postprocess tone: normalized mood only, missing and ambiguous stay neutral",()=>{
+   Assert(LocalTtsToneTag.FromPostprocessMood("[ACTION:MOOD:JOY]")==LocalTtsTone.Happy,"joy");
+   Assert(LocalTtsToneTag.FromPostprocessMood("[ACTION:MOOD:DELIGHTED]")==LocalTtsTone.Happy,"delighted");
+   Assert(LocalTtsToneTag.FromPostprocessMood("[ACTION:MOOD:ANNOYED]")==LocalTtsTone.Angry,"annoyed");
+   foreach(string raw in new[]{"[ACTION:MOOD:BORED]","[ACTION:MOOD:NEUTRAL]","[TTS_TONE:angry]","[MOOD:ANNOYED]","[ACTION:MOOD:JOY][ACTION:MOOD:ANNOYED]",""})
+    Assert(LocalTtsToneTag.FromPostprocessMood(raw)==LocalTtsTone.Neutral,"unknown or ambiguous tone");
+  });
+  Check("postprocess tone: awaited result and bounded fallback never change after timeout",()=>{
+   var t=new TaskCompletionSource<LocalTtsTone>();var a=LocalTtsToneTag.AwaitPostprocessAsync(t.Task,CancellationToken.None,10);
+   Assert(a.GetAwaiter().GetResult()==LocalTtsTone.Neutral,"timeout");t.SetResult(LocalTtsTone.Angry);
+   Assert(a.Result==LocalTtsTone.Neutral,"late tone changed accepted result");
+   Assert(LocalTtsToneTag.AwaitPostprocessAsync(Task.FromResult(LocalTtsTone.Happy),CancellationToken.None).Result==LocalTtsTone.Happy,"completed result");
+   using var c=new CancellationTokenSource();var pending=LocalTtsToneTag.AwaitPostprocessAsync(new TaskCompletionSource<LocalTtsTone>().Task,c.Token);c.Cancel();
+   try{pending.GetAwaiter().GetResult();throw new Exception("cancel lost");}catch(OperationCanceledException){}
+  });
+  Check("postprocess tone: one queued local reply receives its own pending mood",()=>{
+   var cfg=new DuelSettings{TtsUseGptSoVits=true};DuelSettings.Read=()=>cfg;
+   using var e=Manual();var promise=new TaskCompletionSource<LocalTtsTone>();TtsEngine.PlaybackRequest req=null;
+   Assert(e.SpeakAsync("a complete reply",-1,1,-1,"fixture",r=>req=r,LocalTtsTone.Neutral,promise.Task),"enqueue");
+   int sent=0;GptSoVitsTtsGateway.Send=(r,c)=>{Assert(r.Mood==2,"wrong mood");sent++;return new(){Success=false,ErrorCode="done"};};
+   promise.SetResult(LocalTtsToneTag.FromPostprocessMood("[ACTION:MOOD:ANNOYED]"));Call(e,"ProcessJob",Job(e,req));Assert(sent==1,"missing or repeated synthesis");
+  });
   foreach(string scenario in new[]{"v3-no-app","master-disabled","provider-disabled","url-empty","url-unsupported","v1-no-app"})
   Check("settings test button: "+scenario,()=>{using var e=Manual();var slot=typeof(TtsEngine).GetField("_instance",F);object prior=slot.GetValue(null);slot.SetValue(null,e);try{var settings=new DuelSettings(){TtsVolcDedicatedApiUrl="https://fixture.invalid/api/v3/tts/unidirectional",TtsVolcDedicatedAppKey=""};if(scenario=="master-disabled")settings.EnableTtsSpeech=false;if(scenario=="provider-disabled")settings.TtsVolcDedicatedEnabled=false;if(scenario=="url-empty")settings.TtsVolcDedicatedApiUrl="";if(scenario=="url-unsupported")settings.TtsVolcDedicatedApiUrl+="/sse";if(scenario=="v1-no-app")settings.TtsVolcDedicatedApiUrl="https://fixture.invalid";DuelSettings.Read=()=>settings;InformationManager.Messages.Clear();settings.TestTtsVolcDedicatedVoice();Assert(Jobs(e).Count==(scenario=="v3-no-app"?1:0),"incorrect enqueue");Assert(InformationManager.Messages.Count==1,"missing or duplicated feedback");}finally{slot.SetValue(null,prior);}});
   Check("Agent Plan settings test accepts empty AppID",()=>{
@@ -135,6 +220,11 @@ static class Program {
   Check("Stop in first typed subscriber suppresses later typed subscribers",()=>{using var e=Manual();TtsEngine.PlaybackRequest r=null;Speak(e,x=>r=x);int notified=0;e.OnRequestPlaybackFinished+=_=>e.StopPlayback();e.OnRequestPlaybackFinished+=_=>notified++;Call(e,"NotifyPlaybackFinished",Job(e,r));Assert(notified==0,"late typed subscriber invoked");});
   Check("same-agent legal FIFO preserves both real worker jobs and ordered Scene preparation",()=>{using var e=Active();var c=new TtsConsumerSubject();var main=new ConcurrentQueue<Action>();var accepted=new List<long>();var prepared=new List<long>();var finished=new List<long>();e.OnRequestAudioFileReady+=(r,w,x,d)=>main.Enqueue(()=>{Assert(c.IsCurrent(r)&&c.Prepare(r),"audio owner dropped");});e.OnRequestPlaybackStarted+=r=>main.Enqueue(()=>Assert(c.Active(r),"start owner dropped"));e.OnRequestPlaybackFinished+=r=>main.Enqueue(()=>{Assert(c.Active(r),"finish owner dropped");finished.Add(r.RequestId);c.Retire(r);});for(int i=0;i<2;i++)Speak(e,r=>{accepted.Add(r.RequestId);c.Track(r,()=>prepared.Add(r.RequestId));},"FIFO",7);Eventually(()=>Jobs(e).Count==0,"workers not drained");while(main.TryDequeue(out var action))action();Assert(prepared.SequenceEqual(accepted)&&finished.SequenceEqual(accepted)&&c.Owners==0,"FIFO dropped/reordered/leaked");});
   Check("same-agent queued owner survives cancel of active old request",()=>{using var e=Manual();var c=new TtsConsumerSubject();TtsEngine.PlaybackRequest a=null,b=null;int oldPrepared=0,newPrepared=0;Speak(e,r=>{a=r;c.Track(r,()=>oldPrepared++);},agent:7);Speak(e,r=>{b=r;c.Track(r,()=>newPrepared++);},agent:7);c.Prepare(a);Call(e,"CancelJob",Job(e,a));Assert(c.Active(a,true)&&!c.Active(b),"active changed on mere acceptance");c.Retire(a);Assert(c.IsCurrent(b)&&c.Prepare(b)&&newPrepared==1&&oldPrepared==1,"new queued request lost");c.Retire(b);Assert(c.Owners==0,"owner leak");});
+  Check("local provider does not require cloud switch or credentials",()=>{using var e=Manual();DuelSettings.Read=()=>new(){TtsUseGptSoVits=true,TtsVolcDedicatedEnabled=false,TtsVolcDedicatedApiKey="",TtsVolcDedicatedAppKey="",TtsVolcDedicatedResourceId=""};TtsEngine.PlaybackRequest r=null;Assert(e.SpeakAsync("hello",-1,-1,-1,"fixture-local",x=>r=x),"local request rejected");object job=Job(e,r);Assert(job.GetType().GetField("LocalRequest",F|BindingFlags.Public).GetValue(job)!=null,"local snapshot missing");});
+  Check("local tone is per job and never guessed from text or manual setting",()=>{using var e=Manual();var settings=new DuelSettings{TtsUseGptSoVits=true,TtsGptSoVitsMood=3};DuelSettings.Read=()=>settings;TtsEngine.PlaybackRequest a=null,b=null;Assert(e.SpeakAsync("first [TTS_TONE:happy]",-1,-1,-1,"fixture-local",r=>a=r,LocalTtsTone.Angry),"first");settings.TtsGptSoVitsMood=1;Assert(e.SpeakAsync("angry [MOOD:ANGRY]",-1,-1,-1,"fixture-local",r=>b=r),"second");var x=(GptSoVitsSynthesisRequest)Job(e,a).GetType().GetField("LocalRequest",F|BindingFlags.Public).GetValue(Job(e,a));var y=(GptSoVitsSynthesisRequest)Job(e,b).GetType().GetField("LocalRequest",F|BindingFlags.Public).GetValue(Job(e,b));Assert(x.Mood==2&&x.Text=="first"&&y.Mood==0,"tone bleed / untyped inference / tag leak");});
+  Check("battle cancels local jobs without cancelling cloud jobs",()=>{using var e=Manual();TtsEngine.PlaybackRequest cloud=null,local=null;Speak(e,x=>cloud=x);DuelSettings.Read=()=>new(){TtsUseGptSoVits=true,TtsVolcDedicatedEnabled=false};Assert(e.SpeakAsync("hello",-1,-1,-1,"fixture-local",x=>local=x),"local request rejected");e.CancelLocalPlayback();Assert(local.IsCancellationRequested&&!cloud.IsCancellationRequested,"provider cancellation leaked");});
+  Check("battle rejects local acceptance but preserves cloud acceptance",()=>{using var e=Manual();GptSoVitsVoiceRuntime.IsBattleBlocked=true;DuelSettings.Read=()=>new(){TtsUseGptSoVits=true};Assert(!e.SpeakAsync("hello",-1,-1,-1,"fixture-local",null),"battle admitted local speech");DuelSettings.Read=()=>new();Assert(Speak(e),"battle gate changed cloud behavior");});
+  Check("local failure never invokes cloud transport",()=>{using var e=Manual();DuelSettings.Read=()=>new(){TtsUseGptSoVits=true,TtsVolcDedicatedEnabled=false};int local=0,cloud=0;GptSoVitsTtsGateway.Send=(_,_)=>{local++;return new(){Success=false,ErrorCode="fixture-failure"};};LegacyVolcTtsGateway.Send=(_,_)=>{cloud++;return new(){Success=true,AudioBytes=new byte[16]};};TtsEngine.PlaybackRequest r=null;Assert(e.SpeakAsync("hello",-1,-1,-1,"fixture-local",x=>r=x),"local not accepted");Call(e,"ProcessJob",Job(e,r));Assert(local==1&&cloud==0,"silent fallback to cloud");});
   ConsumerTests.Run(Check);
   Check("streamed audio starts before synthesis EOF with one request and one terminal",()=>{
    var settings=new DuelSettings(){UsesOpenAiTts=true,TtsVolcDedicatedEnabled=false,TtsStreamingPlaybackEnabled=true,TtsSceneUseWinmmAudible=false};DuelSettings.Read=()=>settings;

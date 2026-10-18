@@ -56,6 +56,7 @@ internal sealed partial class TtsEngine : IDisposable
 		private readonly CancellationToken _generationToken;
 		public long RequestId { get; }
 		public int AgentIndex { get; }
+        internal int SegmentCount { get; set; } = 1;
 		public CancellationToken CancellationToken { get; }
 		internal bool StreamingPlayback;
         internal float StreamingDurationSeconds;
@@ -86,6 +87,8 @@ internal sealed partial class TtsEngine : IDisposable
 		public bool CancellationDisposed;
 
 		public string Text;
+        public string[] Segments;
+        public int SegmentIndex;
 
 		public int SpeakerId;
 
@@ -95,6 +98,8 @@ internal sealed partial class TtsEngine : IDisposable
 
 		public string VoiceIdOverride = "";
 		public ProviderSnapshot Settings;
+		public GptSoVitsSynthesisRequest LocalRequest;
+        public Task<LocalTtsTone> PendingLocalTone;
 	}
 
 	private static readonly object _instanceLock = new object();
@@ -116,6 +121,10 @@ internal sealed partial class TtsEngine : IDisposable
 	private static readonly HttpClient _v3HttpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false })
 	{
 		Timeout = TimeSpan.FromSeconds(30.0)
+	};
+	private static readonly HttpClient _localHttpClient = new HttpClient(new HttpClientHandler { UseProxy = false })
+	{
+		Timeout = TimeSpan.FromSeconds(180)
 	};
 
 	private readonly BlockingCollection<TtsJob> _jobQueue = new BlockingCollection<TtsJob>(32);
@@ -178,6 +187,7 @@ internal sealed partial class TtsEngine : IDisposable
 	public event Action<int, string> OnPlaybackFailed;
 
 	// Existing events remain source-compatible; in-project consumers use the request-scoped events.
+    internal event Action<PlaybackRequest, TtsSpeechSegment> OnRequestSpeechSegmentReady;
 	public event Action<PlaybackRequest> OnRequestPlaybackStarted;
 	public event Action<PlaybackRequest> OnRequestPlaybackFinished;
 	public event Action<PlaybackRequest, string, string, float> OnRequestAudioFileReady;
@@ -254,7 +264,11 @@ internal sealed partial class TtsEngine : IDisposable
 	}
 
 	public bool SpeakAsync(string text, int speakerId, float speed, int agentIndex, string voiceIdOverride, Action<PlaybackRequest> onAccepted)
+        => SpeakAsync(text, speakerId, speed, agentIndex, voiceIdOverride, onAccepted, LocalTtsTone.Neutral);
+
+    internal bool SpeakAsync(string text, int speakerId, float speed, int agentIndex, string voiceIdOverride, Action<PlaybackRequest> onAccepted, LocalTtsTone localTtsTone, Task<LocalTtsTone> pendingLocalTone = null)
 	{
+        text = LocalTtsToneTag.Strip(text);
 		if (!IsReady)
 		{
 			return false;
@@ -276,20 +290,24 @@ internal sealed partial class TtsEngine : IDisposable
 				{
 					return false;
 				}
+				if (settings.TtsUseGptSoVits && GptSoVitsVoiceRuntime.IsBattleBlocked) return false;
 			}
 			if (speed <= 0f)
 			{
 				try
 				{
-					speed = settings?.UsesOpenAiTts == true ? settings.TtsOpenAiSpeed : settings?.TtsVolcDedicatedSpeed ?? 1f;
+					speed = settings?.TtsUseGptSoVits == true ? settings.TtsGptSoVitsSpeed : settings?.UsesOpenAiTts == true ? settings.TtsOpenAiSpeed : settings?.TtsVolcDedicatedSpeed ?? 1f;
 				}
 				catch
 				{
 					speed = 1f;
 				}
 			}
+            string[] segments = settings?.TtsUseGptSoVits == true ? TtsSentenceChunker.Split(text.Trim()) : new[] { text.Trim() };
+            if (segments.Length == 0) return false;
 			TtsJob item = new TtsJob
 			{
+                Segments = segments,
 				Text = text.Trim(),
 				SpeakerId = speakerId,
 				Speed = speed,
@@ -297,6 +315,12 @@ internal sealed partial class TtsEngine : IDisposable
 				VoiceIdOverride = (voiceIdOverride ?? "").Trim(),
 				Settings = new ProviderSnapshot(settings)
 			};
+			if (settings?.TtsUseGptSoVits == true)
+			{
+				item.LocalRequest = GptSoVitsVoiceRuntime.CaptureRequest(segments[0], item.VoiceIdOverride, speed, settings, pendingLocalTone != null ? -1 : (int)localTtsTone);
+                item.PendingLocalTone = pendingLocalTone;
+				Logger.Log("TtsEngine", "[LocalTone] agent=" + agentIndex + ";voice=" + item.VoiceIdOverride + ";tone=" + localTtsTone);
+			}
 			if (!TryEnqueueJob(item, onAccepted))
 			{
 				Logger.Log("TtsEngine", "[WARN] TTS request not queued (cancelled, disabled, or queue full): textChars=" + text.Length);
@@ -313,7 +337,7 @@ internal sealed partial class TtsEngine : IDisposable
 
 	public void SpeakTestAsync(string text, float speed) => SpeakTestAsync(text, speed, null);
 
-	public bool SpeakTestAsync(string text, float speed, Action<PlaybackRequest, string> onFailure)
+	public bool SpeakTestAsync(string text, float speed, Action<PlaybackRequest, string> onFailure, string voiceId = null)
 	{
 		if (IsReady && !string.IsNullOrWhiteSpace(text))
 		{
@@ -327,6 +351,14 @@ internal sealed partial class TtsEngine : IDisposable
 				TestFailure = onFailure,
 				Settings = new ProviderSnapshot(DuelSettings.GetSettings())
 			};
+			var settings = DuelSettings.GetSettings();
+			if (settings?.TtsUseGptSoVits == true)
+			{
+				if (GptSoVitsVoiceRuntime.IsBattleBlocked) return false;
+				string selected = string.IsNullOrWhiteSpace(voiceId) ? GptSoVitsVoiceRuntime.GetCatalog(settings).ResolveAssignment(null, false).Id : voiceId;
+				item.VoiceIdOverride = selected;
+				item.LocalRequest = GptSoVitsVoiceRuntime.CaptureRequest(item.Text, selected, item.Speed, settings, settings.TtsGptSoVitsMood);
+			}
 			if (TryEnqueueJob(item, null)) { return true; }
 			Logger.Log("TtsEngine", "[WARN] Test voice was not queued (queue full or engine stopped)");
 		}
@@ -344,6 +376,7 @@ internal sealed partial class TtsEngine : IDisposable
 			CancellationToken generationToken = _playbackGeneration.Token;
 			job.Cancellation = CancellationTokenSource.CreateLinkedTokenSource(generationToken);
 			job.Request = new PlaybackRequest(Interlocked.Increment(ref _nextRequestId), job.AgentIndex, job.Cancellation.Token, generationToken);
+            job.Request.SegmentCount = job.Segments?.Length ?? 1;
 			job.HoldsQueueSlot = true;
 			_reservedQueueSlots++;
 			_pendingJobs.Add(job.Request.RequestId, job);
@@ -481,6 +514,18 @@ internal sealed partial class TtsEngine : IDisposable
 		finally { previousGeneration.Dispose(); }
 		foreach (TtsJob job in jobs) { DispatchJobCancellation(job); }
 		foreach (TtsJob job in drained) { ReleaseJob(job); }
+		ResetCurrentWaveOut();
+	}
+
+	internal void CancelLocalPlayback()
+	{
+		var jobs = new List<TtsJob>();
+		lock (_requestLock)
+		{
+			foreach (var job in _pendingJobs.Values)
+				if (job.LocalRequest != null && !job.Cancelled && !job.ReleaseRequested) jobs.Add(job);
+		}
+		foreach (var job in jobs) CancelJob(job);
 		ResetCurrentWaveOut();
 	}
 
@@ -655,17 +700,41 @@ internal sealed partial class TtsEngine : IDisposable
 
 	private void NotifyPlaybackFinished(TtsJob job)
 	{
+        // One utterance owns one wait/token. Intermediate sentences cannot complete it.
+        if (job.Segments != null && job.SegmentIndex < job.Segments.Length - 1) return;
 		PublishJobEvent(job, () => InvokePlaybackSubscribers(OnRequestPlaybackFinished, handler => handler(job.Request), job.Request), () => InvokePlaybackSubscribers(OnPlaybackFinished, handler => handler(job.AgentIndex), job.Request), terminal: true);
 	}
 
 
-	private void ProcessJob(TtsJob job)
-	{
-		if (!IsJobCurrent(job) || string.IsNullOrWhiteSpace(job.Text))
+    private void ProcessJob(TtsJob job)
+    {
+        if (job.LocalRequest != null && job.PendingLocalTone != null)
+        {
+            LocalTtsTone tone = LocalTtsToneTag.AwaitPostprocessAsync(job.PendingLocalTone, job.Request.CancellationToken).GetAwaiter().GetResult();
+            job.LocalRequest = job.LocalRequest.WithTone(tone);
+        }
+        if (job.Segments == null) { ProcessSentence(job, job.Text, job.LocalRequest); return; }
+        for (int i = 0; i < job.Segments.Length; i++)
+        {
+            if (!IsJobCurrent(job) || job.TerminalPublished) return;
+            job.SegmentIndex = i;
+            var request = i == 0 ? job.LocalRequest : job.LocalRequest?.WithText(job.Segments[i]);
+            ProcessSentence(job, job.Segments[i], request);
+        }
+    }
+
+    private void ProcessSentence(TtsJob job, string sentenceText, GptSoVitsSynthesisRequest localRequest)
+    {
+		if (!IsJobCurrent(job) || string.IsNullOrWhiteSpace(sentenceText))
 		{
 			return;
 		}
-		LogTtsReport("ProcessJob.Start", job.AgentIndex, $"speakerId={job.SpeakerId};speed={job.Speed:F2};voiceOverride={job.VoiceIdOverride};textLen={(job.Text ?? string.Empty).Length}");
+		if (localRequest != null && GptSoVitsVoiceRuntime.IsBattleBlocked)
+		{
+			NotifyPlaybackFailed(job, "Local speech is disabled in real battles.");
+			return;
+		}
+		LogTtsReport("ProcessJob.Start", job.AgentIndex, $"speakerId={job.SpeakerId};speed={job.Speed:F2};voiceOverride={job.VoiceIdOverride};textLen={(sentenceText ?? string.Empty).Length}");
 		ProviderSnapshot snapshot = job.Settings;
 		bool openAi = snapshot.OpenAi;
 		string text = snapshot.Url;
@@ -681,7 +750,7 @@ internal sealed partial class TtsEngine : IDisposable
 		float num2 = snapshot.Volume;
 		bool flag = snapshot.SceneWinmm;
 		DuelSettings currentSettings = DuelSettings.GetSettings();
-		bool flag2 = snapshot.Enabled && currentSettings?.IsSelectedTtsEnabled == true && currentSettings.UsesOpenAiTts == openAi;
+		bool flag2 = snapshot.Enabled && currentSettings?.IsSelectedTtsEnabled == true && currentSettings.TtsProviderDropdown.SelectedIndex == snapshot.ProviderMode;
 		if (num2 < 0f)
 		{
 			num2 = 0f;
@@ -700,13 +769,17 @@ internal sealed partial class TtsEngine : IDisposable
 			Logger.Log("TtsEngine", "[WARN] Selected TTS service is disabled; synthesis skipped");
 			return;
 		}
+		string audioEncoding = localRequest != null ? "wav" : (text6 ?? "wav").Trim().ToLowerInvariant();
+		int protocolVersion = 0;
+		if (localRequest == null)
+		{
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			NotifyPlaybackFailed(job, "tts_url_missing");
 			Logger.Log("TtsEngine", "[WARN] TTS API URL is not configured");
 			return;
 		}
-		int protocolVersion = openAi ? -1 : VolcTtsGateway.GetVersion(text);
+		protocolVersion = openAi ? -1 : VolcTtsGateway.GetVersion(text);
 		if (protocolVersion == 0)
 		{
 			NotifyPlaybackFailed(job, "tts_endpoint_unsupported");
@@ -737,7 +810,6 @@ internal sealed partial class TtsEngine : IDisposable
 			Logger.Log("TtsEngine", "[WARN] Volcengine voice ID is not configured");
 			return;
 		}
-		string audioEncoding = (text6 ?? "wav").Trim().ToLowerInvariant();
 		if (audioEncoding != "wav" && audioEncoding != "pcm")
 		{
 			NotifyPlaybackFailed(job, "Unsupported TTS audio format. Only wav/pcm is supported.");
@@ -745,6 +817,7 @@ internal sealed partial class TtsEngine : IDisposable
 			return;
 		}
 		Logger.Log("TtsEngine", $"Online synthesis started: provider={(openAi ? "OpenAI-compatible" : "Volcengine")}, protocol=V{protocolVersion}, textChars={job.Text.Length}, voice={text5}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
+		}
 		LogTtsReport("ProcessJob.SynthesisBegin", job.AgentIndex, $"voice={text5};encoding={audioEncoding};sampleRate={num};audible={flag}");
 		if (job.AgentIndex >= 0 && !ShoutBehavior.CanAgentParticipateInSceneSpeechExternal(job.AgentIndex))
 		{
@@ -753,10 +826,22 @@ internal sealed partial class TtsEngine : IDisposable
 			return;
 		}
 		if (snapshot.Streaming && openAi) { ProcessStreamingJob(job); return; }
-		string synthesisError;
-		byte[] array = openAi
-			? CallOpenAiApi(snapshot, job.Text, speed, job.Request.CancellationToken, out synthesisError)
-			: CallVolcApi(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson, job.Request.CancellationToken, out synthesisError);
+		byte[] array;
+		string synthesisError = "";
+		if (localRequest != null)
+		{
+			TtsSynthesisResult result = new GptSoVitsTtsGateway(_localHttpClient)
+				.SynthesizeAsync(localRequest, job.Request.CancellationToken).GetAwaiter().GetResult();
+			if (!result.Success)
+			{
+				NotifyPlaybackFailed(job, "gpt_sovits_" + result.ErrorCode);
+				Logger.Log("TtsEngine", "Local TTS failed; no cloud fallback. Code=" + result.ErrorCode);
+				return;
+			}
+			array = result.AudioBytes;
+		}
+		else if (openAi) array = CallOpenAiApi(snapshot, sentenceText, speed, job.Request.CancellationToken, out synthesisError);
+		else array = CallVolcApi(text, text2, text3, text4, text5, sentenceText, audioEncoding, num, speed, loudnessRatio, extraParamJson, job.Request.CancellationToken, out synthesisError);
 		if (!IsJobCurrent(job)) { return; }
 		if (array == null || array.Length == 0)
 		{
@@ -797,7 +882,13 @@ internal sealed partial class TtsEngine : IDisposable
 					NotifyPlaybackFailed(job, "Scene speech target became unavailable before playback.");
 					return;
 				}
-				float num3 = (float)pcmData.Length / ((float)sampleRate * 2f);
+                float num3 = (float)pcmData.Length / ((float)sampleRate * 2f);
+                if (job.Request.SegmentCount > 1)
+                {
+                    var segment = new TtsSpeechSegment(sentenceText, job.SegmentIndex, job.Request.SegmentCount, num3);
+                    if (!PublishJobEvent(job, () => InvokePlaybackSubscribers(OnRequestSpeechSegmentReady,
+                        handler => handler(job.Request, segment), job.Request), null)) return;
+                }
 				bool flag3 = job.AgentIndex >= 0;
 				bool nativeMapConversationTableauPlayback = !flag3 && (this.OnAudioFileReady != null || this.OnRequestAudioFileReady != null) && ShoutBehavior.ShouldUseMapConversationTableauPlaybackForNativeTtsExternal();
 				bool flag4 = flag3 ? flag : !nativeMapConversationTableauPlayback;

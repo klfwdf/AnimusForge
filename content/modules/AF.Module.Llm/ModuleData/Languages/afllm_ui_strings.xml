@@ -47,5 +47,106 @@
   <string id="AF_LLM_UI_TtsError_SilentAudio" text="The synthesized audio is completely silent; falling back to text." />
   <string id="AF_LLM_UI_TtsError_StreamPlayback" text="Streaming playback failed. Already played audio is not replayed; check the TtsEngine log." />
   <string id="AF_LLM_UI_TtsError_PcmInvalid" text="The audio stream ended with an incomplete PCM sample." />
-</strings>
+    <string id="AF_GPT_UI_Group" text="7. Voice output/2. GPT-SoVITS" />
+    <string id="AF_GPT_UI_UseLocal" text="Use GPT-SoVITS (otherwise Volcengine)" />
+    <string id="AF_GPT_UI_UseLocalHint" text="Uses your already-running local service. Failure falls back to text, never to paid cloud speech." />
+    <string id="AF_GPT_UI_ApiUrl" text="Local GPT-SoVITS API URL" />
+    <string id="AF_GPT_UI_ApiUrlHint" text="For GPT-SoVITS (manual API), for example http://127.0.0.1:9880/tts. AF-GPTSOVITS manages the installed service automatically." />
+    <string id="AF_GPT_UI_Manifest" text="Voice manifest.json path" />
+    <string id="AF_GPT_UI_ManifestHint" text="AF-GPTSOVITS reads the module VoicePacks directory. Manual API may use an explicit manifest. Assign voices in the encyclopedia before chatting; Custom voices are not random defaults." />
+    <string id="AF_GPT_UI_Speed" text="Local speech speed" />
+    <string id="AF_GPT_UI_Test" text="Test local speech" />
+    <string id="AF_GPT_UI_PlayTest" text="Play test" />
+    <string id="AF_GPT_UI_TestHint" text="Enable speech and select AF-GPTSOVITS or manual API first. The managed service must be ready; real battles disable local synthesis." />
+    <string id="AF_GPT_UI_EnableFirst" text="Enable TTS and select GPT-SoVITS first." />
+    <string id="AF_GPT_UI_BattleBlocked" text="Local speech is disabled in real battles." />
+    <string id="AF_GPT_UI_TestPhrase" text="At your service, traveler!" />
+    <string id="AF_GPT_UI_Queued" text="Local audition submitted; failures will show a reason." />
+    <string id="AF_GPT_UI_NotQueued" text="Local speech was not queued: engine unavailable, queue full, or battle active." />
+    <string id="AF_GPT_UI_TestFailed" text="Local speech test was not submitted: " />
+    <string id="AF_GPT_UI_CloudTestBlocked" text="Local speech is selected; use the GPT-SoVITS test button." />
+    <string id="AF_GPT_UI_ChooseVoice" text="Choose voice" />
+    <string id="AF_GPT_UI_VoiceUnassigned" text="Unassigned; choose now or get a default gender-matched voice on first speech" />
+    <string id="AF_GPT_UI_VoiceMissing" text="Saved voice missing; choose another voice" />
+    <string id="AF_GPT_UI_RandomVoice" text="Pick and save a random voice of the same gender" />
+    <string id="AF_GPT_UI_CloudVoiceUnchanged" text="Existing Volcengine voice is unchanged" />
+    <string id="AF_GPT_UI_VoiceOnly" text="Changes voice only, not text language or persona" />
+    <string id="AF_GPT_UI_ChooseVoiceTitle" text="Choose voice · " />
+    <string id="AF_GPT_UI_CurrentVoice" text="Current: " />
+    <string id="AF_GPT_UI_VoiceSelectionHint" text="&#10;Default voices match gender. Custom voices require manual selection and never enter random pools. You can select before your first conversation; saved with this campaign." />
+    <string id="AF_GPT_UI_Save" text="Save" />
+    <string id="AF_GPT_UI_Cancel" text="Cancel" />
+    <string id="AF_GPT_UI_VoiceSaved" text="Voice saved: " />
+    <string id="AF_GPT_UI_VoiceNotSaved" text="Voice was not saved: " />
+    <string id="AF_GPT_UI_VoicePickerFailed" text="Cannot open voice selection: " />
+    <string id="AF_GPT_UI_VictoryReady" text="Battle rewards have been handled. Enter GCCZ to continue, or leave." />
+    <string id="AF_TTS_UI_General" text="1. Provider and playback" />
+    <string id="AF_TTS_UI_Local" text="2. Local GPT-SoVITS" />
+    <string id="AF_TTS_UI_Cloud" text="3. Volcengine TTS API" />
+    <string id="AF_TTS_UI_Custom" text="4. Custom provider (reserved)" />
+    <string id="AF_TTS_UI_Enable" text="Enable speech" />
+    <string id="AF_TTS_UI_Provider" text="Speech provider" />
+    <string id="AF_TTS_UI_ProviderHint" text="Choose local GPT-SoVITS or Volcengine TTS API. Custom is reserved and outputs text only. Switching preserves credentials; local failures never fall back to paid cloud speech." />
+    <string id="AF_TTS_UI_ProviderLocal" text="Local GPT-SoVITS" />
+    <string id="AF_TTS_UI_ProviderCloud" text="Volcengine TTS API" />
+    <string id="AF_TTS_UI_ProviderCustom" text="Custom (coming later)" />
+    <string id="AF_TTS_UI_Volume" text="Main voice volume" />
+    <string id="AF_TTS_UI_SceneWinmm" text="Scene playback through winmm (no echo)" />
+    <string id="AF_TTS_UI_LipVolume" text="Lip-sync channel volume" />
+    <string id="AF_TTS_UI_LocalUrl" text="Local GPT-SoVITS API URL" />
+    <string id="AF_TTS_UI_Manifest" text="Voice manifest path (blank: installed pack)" />
+    <string id="AF_TTS_UI_ManifestHint" text="Five male and five female default voices. Custom voices are manual-only and can be assigned in the encyclopedia before any conversation." />
+    <string id="AF_TTS_UI_LocalSpeed" text="Local speech speed" />
+    <string id="AF_TTS_UI_Mood" text="Audition tone: 0 Calm / 1 Happy / 2 Angry / 3 Sad" />
+    <string id="AF_TTS_UI_MoodHint" text="Audition only. Dialogue tone comes from this turn’s postprocess mood; missing or late results use Calm, not tags in the main reply." />
+    <string id="AF_TTS_UI_CloudUrl" text="Volcengine TTS API URL" />
+    <string id="AF_TTS_UI_CloudUrlHint" text="Supports existing V1, V3 HTTP unidirectional and Agent Plan gateways. See official documentation below. SSE/WS is not implemented." />
+    <string id="AF_TTS_UI_Key" text="Volcengine token / API key" />
+    <string id="AF_TTS_UI_KeyHint" text="V1 uses the legacy token; V3 uses the speech-service API key. Agent Plan requires its dedicated key. Switching does not erase credentials." />
+    <string id="AF_TTS_UI_AppId" text="Volcengine App ID (V1)" />
+    <string id="AF_TTS_UI_Resource" text="Volcengine resource ID" />
+    <string id="AF_TTS_UI_Speaker" text="Volcengine voice ID" />
+    <string id="AF_TTS_UI_Additions" text="Additional parameters (JSON)" />
+    <string id="AF_TTS_UI_Format" text="Audio format (wav / pcm)" />
+    <string id="AF_TTS_UI_Rate" text="Sample rate" />
+    <string id="AF_TTS_UI_CloudSpeed" text="Cloud speech speed" />
+    <string id="AF_TTS_UI_TestLocal" text="Test local speech (save first)" />
+    <string id="AF_TTS_UI_Test" text="Test" />
+    <string id="AF_TTS_UI_TestCloud" text="Test Volcengine speech (may incur charges)" />
+    <string id="AF_TTS_UI_OpenConsole" text="Official Volcengine speech console" />
+    <string id="AF_TTS_UI_Open" text="Open" />
+    <string id="AF_TTS_UI_OpenDocs" text="Official TTS API documentation" />
+    <string id="AF_TTS_UI_CustomInfo" text="Custom provider: not implemented yet" />
+    <string id="AF_TTS_UI_Title" text="AnimusForge Speech TTS Local deployment / API" />
+    <string id="AF_TTS_UI_CustomNotice" text="Custom provider is reserved; no request is sent. Custom local voices can already be assigned manually in the encyclopedia." />
+    <string id="AF_TTS_UI_SaveFirst" text="Save the TTS settings before testing." />
+    <string id="AF_GPT_UI_CustomCategory" text="[Custom / manual only] " />
+    <string id="AF_GPT_UI_FemaleCategory" text="[Female / default] " />
+    <string id="AF_GPT_UI_MaleCategory" text="[Male / default] " />
+    <string id="AF_GPT_UI_CategoryInvalid" text="Voice category must match the declared gender or be custom." />
+    <string id="AF_GPT_UI_MoodsInvalid" text="Voice tones must be valid neutral, happy, angry or sad reference entries (at most four)." />
+    <string id="AF_GPT_UI_AliasInvalid" text="Voice migration must point directly to an existing voice and must not replace an existing ID." />
+    <string id="AF_GPT_UI_MoodProvenanceInvalid" text="Tone reference provenance does not match the original recording." />
+    <string id="AF_GPT_UI_MoodReferenceInvalid" text="Tone recording or its matching transcript is invalid." />
+    <string id="AF_GPT_UI_MoodPathInvalid" text="Tone recordings must stay inside the voice pack." />
+    <string id="AF_TTS_UI_EnableHint" text="Master switch. Local/cloud speech forces main-response SSE without changing your streaming preference. The accepted complete reply is read in sentences with matching text. Only enabled local GPT-SoVITS receives dedicated tone metadata; cloud/custom/off do not request it. Disabling speech restores text-only output." />
+    <string id="AF_TTS_Runtime_Auto" text="Use installed AF-GPTSOVITS-L automatically" />
+    <string id="AF_TTS_Runtime_AutoHint" text="Starts the compatible L package only when local speech is enabled. A custom API address or explicit voice manifest remains manual. Without an installed package, the existing manual connection remains available. Disable this option to manage the service yourself." />
+    <string id="AF_TTS_Runtime_Refresh" text="Refresh local runtime status" />
+    <string id="AF_TTS_Runtime_RefreshButton" text="Refresh" />
+    <string id="AF_TTS_Runtime_RefreshHint" text="Check installed L/U packages, preferring a verified L. Retries preparation when AF-GPTSOVITS is enabled. With speech off, checks metadata without loading models." />
+    <string id="AF_GPT_UI_RuntimeNotReady" text="The local voice runtime is preparing or unavailable. This reply remains text-only; check the local runtime status." />
+    <string id="AF_GPT_UI_RuntimeStatus" text="[Local TTS] " />
+    <string id="AF_GPT_UI_RuntimeManual" text="Manual connection" />
+    <string id="AF_GPT_UI_RuntimeInstalled" text="Installed; not started" />
+    <string id="AF_GPT_UI_RuntimePreparing" text="Preparing" />
+    <string id="AF_GPT_UI_RuntimeReady" text="Ready" />
+    <string id="AF_GPT_UI_RuntimeFailed" text="Unavailable; check the runtime logs" />
+    <string id="AF_GPT_UI_RuntimeChecking" text="Checking" />
+    <string id="AF_GPT_UI_RuntimeStopping" text="Stopping the owned local runtime" />
+    <string id="AF_MCM_Tts_ProviderAf" text="AF-GPTSOVITS" />
+    <string id="AF_MCM_Tts_ProviderManual" text="GPT-SoVITS (manual API)" />
+    <string id="AF_MCM_Tts_Provider_Hint" text="AF-GPTSOVITS detects compatible L/U packages in the mod folder (L first). Manual API uses your running local service. Switching preserves all settings; failures remain text-only." />
+    <string id="AF_GPT_UI_RuntimeMissing" text="No compatible runtime package found" />
+  </strings>
 </base>

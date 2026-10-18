@@ -32,7 +32,7 @@ internal sealed class NativeConversationPlaybackWaitAdapter
 		if (request == null || request.IsCancellationRequested) { return 0L; }
 		int agentIndex = request.AgentIndex;
 		TaskCompletionSource<bool> oldTcs = null;
-		int timeoutMs = ResolveNativeConversationTtsPlaybackWaitTimeoutMs(estimatedDurationSeconds, textLength);
+		int timeoutMs = ResolveNativeConversationTtsPlaybackWaitTimeoutMs(estimatedDurationSeconds + Math.Max(0, request.SegmentCount - 1) * 8f, textLength);
 		TaskCompletionSource<bool> newTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 		long token = 0L;
 		lock (_nativeConversationTtsPlaybackWaitLock)
@@ -86,6 +86,7 @@ internal sealed class NativeConversationPlaybackWaitAdapter
 			}
 			request = _nativeConversationTtsPlaybackRequest;
 		}
+        if (request.SegmentCount > 1) return; // Failure/terminal paths release the original full reply; no early whole-text timer.
 		int delayMs = ResolveNativeConversationTypewriterFallbackDelayMs(estimatedDurationSeconds, textLength);
 		Task.Run(async delegate
 		{

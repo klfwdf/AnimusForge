@@ -57,7 +57,7 @@ internal sealed class NativeConversationTurnPorts
         string historyKey, long eventSequence, string reason);
     internal RollbackNativeConversationPendingPlayerHistoryAsyncCapability RollbackNativeConversationPendingPlayerHistoryAsync;
 
-    internal delegate void TrySpeakNativeConversationReplyWithTtsCapability(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, string visibleText);
+    internal delegate void TrySpeakNativeConversationReplyWithTtsCapability(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, string visibleText, LocalTtsTone localTtsTone = LocalTtsTone.Neutral);
     internal TrySpeakNativeConversationReplyWithTtsCapability TrySpeakNativeConversationReplyWithTts;
 
     internal Func<string, string, int, Func<bool>, bool, Task<bool>> DispatchValidation;

@@ -20,6 +20,15 @@ internal static class TtsTestFeedback
         });
     }
 
+    internal static void ReportRuntimeStatus(string state, string reason)
+    {
+        if (Pending.Count >= 16) return;
+        Pending.Enqueue(() => InformationManager.DisplayMessage(new InformationMessage(
+            GptSoVitsUiText.Text("RuntimeStatus", "[Local TTS] ") +
+            GptSoVitsUiText.Text("Runtime" + state, state) +
+            (string.IsNullOrWhiteSpace(reason) ? "" : " (" + reason + ")"))));
+    }
+
     internal static void OnApplicationTick()
     {
         if (!Pending.TryDequeue(out Action show)) { return; }

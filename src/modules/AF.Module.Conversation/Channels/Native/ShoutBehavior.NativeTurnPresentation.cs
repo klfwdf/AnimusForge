@@ -21,6 +21,7 @@ namespace AnimusForge;
     {
         // Request-local phase output, published only after its awaited capture completes.
         private string postprocessReply;
+        private LocalTtsTone localTtsTone;
         private string cleaned;
         private bool nativeTtsDispatchedBeforePostprocess;
         public async Task<NativeConversationTurnStep> ReceiveAndPresentAsync()
@@ -46,7 +47,8 @@ namespace AnimusForge;
             }
             finally { if (experienceAck != null) await experienceAck.ConfigureAwait(false); }
             if (!nativeMainReply.CanContinue) return NativeConversationTurnStep.Stop(nativeMainReply.StopText);
-            postprocessReply = nativeMainReply.PostprocessReply;
+            postprocessReply = LocalTtsToneTag.Strip(nativeMainReply.PostprocessReply);
+            localTtsTone = LocalTtsTone.Neutral;
             cleaned = "";
             string nativeMainVisibleForTts = "";
             nativeTtsDispatchedBeforePostprocess = false;
@@ -78,9 +80,9 @@ namespace AnimusForge;
                     // Only record the intent here; the order is armed after the reply is accepted.
                     cleaned = StripStageDirectionsForPassiveShout(postprocessReply);
                     nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
-                    if (nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
+                    if (DuelSettings.GetSettings()?.TtsUseGptSoVits != true && nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
                     {
-                        _ports.TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts);
+                        _ports.TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts, localTtsTone);
                         nativeTtsDispatchedBeforePostprocess = true;
                         _ports.LogTtsReport("NativeConversationTts.EarlyDispatchBeforePostprocess", nativeTargetAgentIndex, $"uiLen={nativeMainVisibleForTts.Length};target={(targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? "unknown")}");
                     }

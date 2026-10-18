@@ -37,7 +37,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		internal bool Succeeded => Status == ScenePostprocessStatus.Completed || Status == ScenePostprocessStatus.NoAction;
 	}
 
-	internal Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, bool siegeInterventionRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, long expectedRuntimeGeneration = 0L, int expectedSceneSessionId = -1, string relayConversationContext = null)
+	internal Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, bool siegeInterventionRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, long expectedRuntimeGeneration = 0L, int expectedSceneSessionId = -1, string relayConversationContext = null, TaskCompletionSource<LocalTtsTone> localToneCompletion = null)
 	{
 		if (currentSpeaker == null || string.IsNullOrWhiteSpace(replyText))
 		{
@@ -313,6 +313,7 @@ internal sealed partial class SceneConversationSessionRuntime
 							return false;
 						}
 						string text = CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error);
+                        localToneCompletion?.TrySetResult(succeeded ? LocalTtsToneTag.FromPostprocessMood(text) : LocalTtsTone.Neutral);
 						// Strip now; submit only after the before_dispatch target check below.
 						string sceneActionDirective = ExtractSceneActionDirective(ref text, runtimeTargetAgentIndex);
 						postprocessWatch.Stop();
@@ -430,7 +431,8 @@ internal sealed partial class SceneConversationSessionRuntime
 			{
 				Interlocked.Exchange(ref requestRetired, 1);
 				Complete(ScenePostprocessStatus.Failed);
-				deadlineCancellation.Cancel();
+				localToneCompletion?.TrySetResult(LocalTtsTone.Neutral);
+                deadlineCancellation.Cancel();
 				await deadlineTask.ConfigureAwait(false);
 				deadlineCancellation.Dispose();
 				networkCancellation.Dispose();

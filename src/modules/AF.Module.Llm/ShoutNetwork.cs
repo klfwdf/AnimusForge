@@ -665,14 +665,14 @@ public static class ShoutNetwork
 	// Capture the transport choice once per request; retries/fallbacks keep their selected core.
 	public static Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken), float? overrideTemperature = null)
 	{
-		return DuelSettings.GetSettings()?.MainApiStreamingEnabled == true
+		return TtsSpeechPolicy.UseMainStreaming(DuelSettings.GetSettings())
 			? CollectPrimaryStreamReplyAsync(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature)
 			: CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 	}
 
 	public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken), bool promptRetryOnError = true)
 	{
-		if (DuelSettings.GetSettings()?.MainApiStreamingEnabled == true)
+		if (TtsSpeechPolicy.UseMainStreaming(DuelSettings.GetSettings()))
 		{
 			await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, true, null, false, null, requireCompleteReply: true);
 			return;

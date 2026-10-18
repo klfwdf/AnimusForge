@@ -198,7 +198,7 @@
   <string id="AF_MCM_MainApi_Reasoning_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
   <string id="AF_MCM_MainApi_Temperature_Hint" text="Controls response-generation randomness. 0 is more stable and 2 is more varied. Default: 0.80." />
   <string id="AF_MCM_MainApi_MaxTokens_Hint" text="The max_tokens value for main API response generation. Default: 12000; endpoints that do not support a high limit may reject the request." />
-  <string id="AF_MCM_MainApi_Streaming_Hint" text="When enabled, main API responses use SSE streaming. Interfaces that support chunks can display text progressively; other channels display it after completion. Postprocessing receives the complete response. This affects only the main response, not preprocessing, postprocessing, or weekly-report APIs. Off by default; applies to the next response request." />
+  <string id="AF_MCM_MainApi_Streaming_Hint" text="Main responses use SSE when this option or the selected speech service is enabled. Supported interfaces reveal text progressively; local speech reads accepted complete replies sentence by sentence. Preprocessing, postprocessing and weekly reports are unchanged. The saved switch defaults to off; changes apply to the next request." />
   <string id="AF_MCM_Duel_Group" text="2. Duel rules" />
   <string id="AF_MCM_Shout_Group" text="3. Scene shout" />
   <string id="AF_MCM_Items_Group" text="10. Items and trade" />
@@ -3450,5 +3450,15 @@ Choose how to proceed:" />
   <string id="AF_MCM_Tts_Streaming" text="Stream audio playback with lip-sync" />
   <string id="AF_MCM_Tts_Streaming_Hint" text="Default: on. Sends stream=true to the OpenAI-compatible service and plays incoming WAV segments with lip-sync. Turning off sends stream=false and waits for the complete utterance. Upstream streaming support and first-audio latency depend on the service. Applies only to the OpenAI-compatible service." />
   <string id="AF_TERMINAL_GROUP_TTS_API" text="TTS API" />
-</strings>
+    <string id="AF_UI_Onboarding_QqCopied" text="YJ QQ group number copied: 1097237977" />
+    <string id="AF_UI_Onboarding_QqCopyFailed" text="Could not copy the group number. Add it manually: 1097237977" />
+    <string id="AF_UI_Onboarding_Prefab_014" text="4. Copy the YJ player QQ group number" />
+    <string id="AF_UI_Onboarding_Prefab_015" text="Group: 1097237977. The group provides credit promotions, answers, and maintenance notices." />
+    <string id="AF_UI_Onboarding_Prefab_016" text="Copy group number 📋" />
+    <string id="AF_UI_Parade_MenuEntry" text="Hold a parade..." />
+    <string id="AF_UI_Parade_MenuDescription" text="Choose an expedition or victory parade. Only eligible types can be started; troop muster and route checks follow." />
+    <string id="AF_UI_Parade_MenuExpedition" text="Expedition parade" />
+    <string id="AF_UI_Parade_MenuVictory" text="Victory parade" />
+    <string id="AF_UI_Parade_MenuBack" text="Back" />
+  </strings>
 </base>

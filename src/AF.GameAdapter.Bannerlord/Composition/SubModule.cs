@@ -91,6 +91,7 @@ public class SubModule : MBSubModuleBase
 public override void OnMissionBehaviorInitialize(Mission mission)
 		{
 			base.OnMissionBehaviorInitialize(mission);
+            mission.AddMissionBehavior(new GptSoVitsBattleSpeechGuard());
 			VengeanceRuntimeBridge.TryInjectMission(mission);
 			SceneActionsIntegrationBoundary.VerifyMissionInitialization(mission);
 		}
@@ -103,6 +104,7 @@ public override void OnMissionBehaviorInitialize(Mission mission)
 
 	protected override void OnSubModuleUnloaded()
 	{
+        GptSoVitsManagedRuntime.Shutdown();
 		IntegratedModuleHost.Shutdown();
 		AfCampaignRuntimeLifecycle.Stop();
 		ModuleFrameworkRuntime.Shutdown();

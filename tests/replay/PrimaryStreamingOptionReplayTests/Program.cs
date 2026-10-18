@@ -24,6 +24,12 @@ Check(pushNonStream != null && pushStream != null, "Debug-only synthetic seams r
 Type settingsType = implementation.GetType("AnimusForge.DuelSettings", true);
 object settings = settingsType.GetMethod("GetSettings").Invoke(null, null);
 PropertyInfo option = settingsType.GetProperty("MainApiStreamingEnabled");
+PropertyInfo speech = settingsType.GetProperty("EnableTtsSpeech");
+PropertyInfo provider = settingsType.GetProperty("TtsProviderDropdown");
+void SelectProvider(int index) { object dropdown=provider.GetValue(settings); dropdown.GetType().GetProperty("SelectedIndex").SetValue(dropdown,index); }
+PropertyInfo cloudSpeech = settingsType.GetProperty("TtsVolcDedicatedEnabled");
+speech.SetValue(settings, false); // Existing manual-option cases keep their original speech-off baseline.
+
 Check(option != null && !(bool)option.GetValue(settings), "option must exist and default off");
 Check(option.GetCustomAttributesData().Any(attribute => attribute.AttributeType.Name == "SettingPropertyBoolAttribute"), "MCM bool attribute missing");
 settingsType.GetProperty("ApiUrl").SetValue(settings, "https://fixture.invalid/v1");
@@ -92,6 +98,40 @@ async Task Case(string name, Func<Task> test)
     nonCount = streamCount = 0;
     await test(); cases++; Console.WriteLine("PASS " + name);
 }
+await Case("speech: managed/manual/OpenAI/Volc force SSE, disabled restores manual preference", async () => {
+    option.SetValue(settings, false);
+    foreach (int mode in new[] { 2, 3, 1, 0 }) {
+        speech.SetValue(settings, true); SelectProvider(mode); cloudSpeech.SetValue(settings, true);
+        nonCount = streamCount = 0;
+        Check(await SendAsync() == "whole reply" && streamCount == 1 && nonCount == 0, "speech did not force SSE");
+        Check(!(bool)option.GetValue(settings), "speech overwrote manual preference");
+        int completed=0, chunks=0;
+        await StreamAsync(_=>chunks++, _=>completed++, _=>throw new Exception("speech stream failure"));
+        Check(chunks>0&&completed==1&&streamCount==2,"callback entry did not force streaming");
+    }
+    SelectProvider(0); cloudSpeech.SetValue(settings, false);
+    nonCount = streamCount = 0;
+    Check(await SendAsync() == "whole reply" && nonCount == 1 && streamCount == 0, "disabled Volc service forced SSE");
+    speech.SetValue(settings, false); SelectProvider(2);
+    nonCount = streamCount = 0;
+    Check(await SendAsync() == "whole reply" && nonCount == 1 && streamCount == 0, "disabled speech did not restore preference");
+});
+await Case("speech: typewriter holds current sentence and reveals no half surrogate", () => {
+    const BindingFlags flags=BindingFlags.Static|BindingFlags.NonPublic;
+    Type helper=implementation.GetType("AnimusForge.ConversationHelper",true);
+    MethodInfo start=helper.GetMethod("StartTypewriterText");
+    MethodInfo reveal=helper.GetMethod("TryBuildTypewriterTickTextNoLock",flags);
+    MethodInfo stop=helper.GetMethod("StopTypewriterNoLock",flags);
+    start.Invoke(null,new object[]{"Sentence one.",1f,false,true});
+    helper.GetField("_typewriterStartTicks",flags).SetValue(null,System.Diagnostics.Stopwatch.GetTimestamp()-System.Diagnostics.Stopwatch.Frequency*3);
+    object[] visible={null};reveal.Invoke(null,visible);
+    Check((string)visible[0]=="Sentence one."&&(bool)helper.GetProperty("IsTypewriterActive").GetValue(null),"sentence released whole reply before terminal");
+    start.Invoke(null,new object[]{"😀x",1f,false,false});visible=new object[]{null};reveal.Invoke(null,visible);
+    Check(visible[0]==null||!((string)visible[0]).EndsWith("\ud83d"),"revealed lone high surrogate");
+    stop.Invoke(null,new object[]{true});
+    Check(!(bool)helper.GetProperty("IsTypewriterActive").GetValue(null),"typewriter reset failed");
+    return Task.CompletedTask;
+});
 await Case("off: ordinary reply uses JSON only", async () => {
     option.SetValue(settings, false);
     Check(await SendAsync() == "whole reply" && nonCount == 1 && streamCount == 0, "off routing failed");
@@ -133,6 +173,15 @@ await Case("on: partial preview failure does not invoke completion", async () =>
     int completed = 0, errors = 0;
     await StreamAsync(_ => {}, _ => completed++, _ => errors++);
     Check(completed == 0 && errors == 1 && streamCount == 1 && nonCount == 0, "partial preview triggered downstream completion");
+});
+await Case("speech: Native adapter never accepts incomplete preview for TTS/actions", async () => {
+    streamResponse = (_, _) => Task.FromResult(SseReply(done: false));
+    Type adapter=implementation.GetType("AnimusForge.Refactor.Adapters.NativeConversationLlmApplicationAdapter",true);
+    MethodInfo generate=adapter.GetMethod("CallNativeConversationApiAsync",BindingFlags.Static|BindingFlags.NonPublic);
+    object options=Activator.CreateInstance(generate.GetParameters()[2].ParameterType);
+    int previews=0;
+    string result=await (Task<string>)generate.Invoke(null,new object[]{Messages(),new Action<string>(_=>previews++),options,CancellationToken.None});
+    Check(result.StartsWith("（API请求失败:")&&streamCount==1&&nonCount==0,"Native promoted partial preview to accepted reply");
 });
 await Case("on: cancellation after chunk never completes", async () => {
     streamResponse = (_, _) => Task.FromResult(SseReply());

@@ -3,6 +3,7 @@ from pathlib import Path
 import argparse
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 
@@ -12,6 +13,7 @@ from output_isolation import minimal_test_environment, new_run_root, resolve_dot
 
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--candidate', type=Path, required=True)
+p.add_argument('--module-data', type=Path, required=True, help='Static ModuleData from the matching candidate Stage; copied to an isolated fixture')
 p.add_argument('--suite', choices=('PrimaryStreamingOptionReplayTests', 'PrimaryLlmGatewayReplayTests'), default='PrimaryStreamingOptionReplayTests')
 p.add_argument('--game-root', type=Path, required=True)
 p.add_argument('--reference-dir', type=Path, required=True)
@@ -21,13 +23,19 @@ p.add_argument('--ui-module', type=Path, required=True)
 p.add_argument('--private-runtime', type=Path, required=True)
 p.add_argument('--run-root', type=Path)
 a = p.parse_args()
-for path in (a.candidate, a.game_root, a.reference_dir, a.harmony_module, a.mcm_module, a.ui_module, a.private_runtime):
+for path in (a.candidate, a.game_root, a.reference_dir, a.harmony_module, a.mcm_module, a.ui_module, a.private_runtime, a.module_data):
     if not path.is_absolute() or not path.exists():
         p.error('Input must be an existing absolute path: ' + str(path))
 output = new_run_root(ROOT, 'primary-streaming-option', a.run_root)
 dotnet = resolve_dotnet(ROOT)
 env = minimal_test_environment(dotnet, output)
 env['AF_REPLAY_REPO_ROOT'] = str(ROOT)
+# Real settings/readers need a valid isolated module owner, never the installed game's data.
+module = output / 'module-fixture' / 'AnimusForge'
+shutil.copytree(a.module_data, module / 'ModuleData')
+(module / 'SubModule.xml').write_text('<Module><Id value="AnimusForge" /></Module>', encoding='utf-8')
+env['ANIMUSFORGE_DATA_ROOT'] = str(module)
+
 project = ROOT / 'tests/replay' / a.suite / (a.suite + '.csproj')
 props = {
     'GameRoot': a.game_root,

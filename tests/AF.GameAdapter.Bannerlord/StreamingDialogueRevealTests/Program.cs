@@ -85,6 +85,11 @@ overlay.Preview(1, "old stream"); ConversationHelper.ClearForOwner(new object())
 Check(ConversationHelper.IsStreaming, "unrelated owner cannot cancel active stream");
 var replacement = new FakeVm { DialogText = "new NPC" }; ConversationHelper.SetCurrentVM(replacement); ConversationHelper.Tick();
 Check(replacement.DialogText == "new NPC" && !ConversationHelper.IsStreamingTextRevealEnabled, "VM replacement clears reveal and opt-in");
+DuelSettings.Value.EnableTtsSpeech=true;DuelSettings.Value.TtsUseGptSoVits=true;
+ConversationHelper.BeginStreaming(owner,true);ConversationHelper.UpdateStreamingDialogText("complete network text");
+ConversationHelper.StartTypewriterText("spoken sentence",2,true,holdUntilReplaced:true);
+Check(ConversationHelper.IsTypewriterWaitingForPlayback && !ConversationHelper.IsStreamingTextRevealEnabled,"local audio takes over completed network reveal");
+Check(ConversationHelper.StartTypewriterPlaybackIfWaiting(),"local audio starts sentence reveal");
 ConversationHelper.Clear();
 Console.WriteLine($"PASS {checks} reveal/helper/overlay/scroll checks + prefab and both submission bindings");
 

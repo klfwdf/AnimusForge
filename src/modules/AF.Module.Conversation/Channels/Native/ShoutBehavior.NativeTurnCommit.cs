@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -98,6 +98,9 @@ namespace AnimusForge;
                 if (!await CaptureOnGameThreadAsync("postprocess_complete", () =>
                 {
                     postprocessed = CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error);
+                    var speechSettings = DuelSettings.GetSettings();
+                    localTtsTone = succeeded && speechSettings?.EnableTtsSpeech == true && speechSettings.TtsUseGptSoVits
+                        && !GptSoVitsVoiceRuntime.IsBattleBlocked ? LocalTtsToneTag.FromPostprocessMood(postprocessed) : LocalTtsTone.Neutral;
                     // Strip before any detached tag catalog sees an unknown family; submit only
                     // after stale/target/discard checks (AcceptedReplySideEffects below).
                     nativeSceneActionDirective = ExtractSceneActionDirective(ref postprocessed, nativeTargetAgentIndex);
@@ -152,6 +155,7 @@ namespace AnimusForge;
                     RewriteTurn = rewriteTurn,
                     OpeningFact = npcOpeningConsumed ? npcOpeningPersistentFactText : null,
                     TtsAlreadyDispatched = nativeTtsDispatchedBeforePostprocess,
+                    LocalTtsTone = localTtsTone,
                     PendingPlayerHistorySequence = nativePendingPlayerHistoryEventSequence,
                     PendingPlayerHistoryKey = nativePendingAfefKey,
                     AcceptedReplySideEffects = BuildNativeAcceptedReplySideEffects()

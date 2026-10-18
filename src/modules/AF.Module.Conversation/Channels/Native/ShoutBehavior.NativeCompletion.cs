@@ -111,7 +111,7 @@ internal sealed partial class NativeConversationGameEffectsRuntime
                     scope.AgentIndex, scope.Npc);
         }
         if (!suppressHistoryWrite && !scope.Request.TtsAlreadyDispatched && IsNativeConversationCompletionContextCurrent(scope))
-            _ports.TrySpeakNativeConversationReplyWithTts(hero, character, scope.Npc, scope.AgentIndex, visible);
+            _ports.TrySpeakNativeConversationReplyWithTts(hero, character, scope.Npc, scope.AgentIndex, visible, scope.Request.LocalTtsTone);
 
         QueueNativeConversationCompletionExit(scope, result);
         string finalVisible = string.IsNullOrWhiteSpace(visible) ? SanitizeSceneSpeechText(cleaned).Trim() : visible.Trim();
@@ -165,6 +165,7 @@ internal sealed class NativeConversationCompletionRequest
         internal ConversationRewriteTurn RewriteTurn;
         internal string OpeningFact;
         internal bool TtsAlreadyDispatched;
+        internal LocalTtsTone LocalTtsTone;
         internal long PendingPlayerHistorySequence;
         internal string PendingPlayerHistoryKey;
         // Game-thread side effects that must only follow an accepted (not stale, not

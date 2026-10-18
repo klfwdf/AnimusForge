@@ -1,4 +1,4 @@
-﻿using SceneSpeechPlaybackInfo = AnimusForge.ShoutBehavior.SceneSpeechPlaybackInfo;
+using SceneSpeechPlaybackInfo = AnimusForge.ShoutBehavior.SceneSpeechPlaybackInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +35,7 @@ internal sealed class ScenePresentationController
   _activateMovement = activateMovement; _deactivateMovement = deactivateMovement; _onEnd = onEnd;
   _autoExcludeUnframedParticipants = autoExcludeUnframedParticipants;
  }
-	internal SceneSpeechPlaybackInfo ShowNpcSpeechOutput(SceneSpeechOutputPort port, NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false)
+	internal SceneSpeechPlaybackInfo ShowNpcSpeechOutput(SceneSpeechOutputPort port, NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false, LocalTtsTone localTtsTone = LocalTtsTone.Neutral, Task<LocalTtsTone> pendingLocalTone = null)
 	{
 		SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = new SceneSpeechPlaybackInfo();
 		if (!_canParticipate(liveAgent))
@@ -81,7 +81,8 @@ internal sealed class ScenePresentationController
 		}
 		bool flag = false;
 		TtsEngine.PlaybackRequest acceptedRequest = null;
-		bool flag2 = allowTts && port.IsTtsEnabled();
+		bool flag2 = allowTts && port.IsTtsEnabled() &&
+            (port.IsLocalProvider?.Invoke() != true || port.PrimaryTtsAllowed?.Invoke(liveAgent) == true);
 		sceneSpeechPlaybackInfo.TtsEnabled = flag2;
 		string text3 = "scene_lipsync_not_requested";
 		bool flag3 = flag2 && attachTtsToSceneAgent && num >= 0 && _canParticipate(liveAgent) && port.CanLipSync(liveAgent, out text3);
@@ -143,14 +144,25 @@ internal sealed class ScenePresentationController
 						sceneSpeechPlaybackInfo.VisualDurationSeconds = Math.Max(0.75f, port.EstimateTypingDuration(text));
 						port.ClearPendingBubble(num, true);
 						port.ClearPendingFeed(num);
-						if (interactionToken != 0L)
+						if (interactionToken != 0L && request.SegmentCount <= 1)
 						{
 							port.EnqueueCompletionToken(num, interactionToken);
 						}
 						port.EnqueueBubble(num, liveAgent, text, npcDisplayName, sceneSpeechPlaybackInfo.VisualDurationSeconds);
 						port.ScheduleFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
-						});
-					});
+                        }, segment =>
+                        {
+                            if (num2 < 0) return;
+                            string sentence = port.SanitizeUiText(segment.Text);
+                            port.ClearPendingBubble(num, true);
+                            port.ClearPendingFeed(num);
+                            sceneSpeechPlaybackInfo.VisualDurationSeconds = segment.DurationSeconds;
+                            if (interactionToken != 0L && segment.Index == segment.Count - 1)
+                                port.EnqueueCompletionToken(num, interactionToken);
+                            port.EnqueueBubble(num, liveAgent, sentence, npcDisplayName, segment.DurationSeconds);
+                            port.ScheduleFeed(num, npcDisplayName, sentence, sceneSpeechPlaybackInfo);
+                        });
+					}, localTtsTone, pendingLocalTone);
 				}
 			}
 			catch
@@ -820,5 +832,7 @@ internal sealed class SceneSpeechOutputPort
  internal Action<int,string,string,SceneSpeechPlaybackInfo> ScheduleFeed;
  internal Action<int,string,string,SceneSpeechPlaybackInfo> PublishFeedImmediately;
  internal Func<Agent,string,float,bool> ShowBubble;
+ internal Func<bool> IsLocalProvider;
+ internal Func<Agent,bool> PrimaryTtsAllowed;
  internal Action<int,long,float> ArmInteractionTimeout;
 }

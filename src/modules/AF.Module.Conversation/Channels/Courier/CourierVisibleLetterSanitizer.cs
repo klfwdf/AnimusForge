@@ -16,6 +16,7 @@ internal static class CourierVisibleLetterSanitizer
 
 	public static string Clean(string text)
 	{
+        text = LocalTtsToneTag.Strip(text);
 		string value = text ?? "";
 		if (value.Length == 0)
 		{

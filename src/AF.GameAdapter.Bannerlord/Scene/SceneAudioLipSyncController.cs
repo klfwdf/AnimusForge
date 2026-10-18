@@ -29,7 +29,7 @@ internal sealed class SceneAudioLipSyncController
  }
  internal bool IsSubscribed { get { lock (_ttsEventSubLock) return ReferenceEquals(_ttsEventSubscribedOwner, this); } }
  internal void ResetRequestOwnership() { lock (_requestLock) { _ttsPlaybackOwners.Clear(); _activeTtsPlaybackRequests.Clear(); } }
-	internal void TrackTtsPlaybackRequest(TtsEngine.PlaybackRequest request, Action prepareSceneOutput = null)
+	internal void TrackTtsPlaybackRequest(TtsEngine.PlaybackRequest request, Action prepareSceneOutput = null, Action<TtsSpeechSegment> prepareSpeechSegment = null)
 	{
 		if (request == null || request.IsCancellationRequested) { return; }
 		lock (_requestLock)
@@ -41,6 +41,8 @@ internal sealed class SceneAudioLipSyncController
 				SceneSessionId = _ports.SceneSessionId(),
 				ConversationEpoch = _ports.ConversationEpoch(),
 				Mission = Mission.Current,
+                PrepareSpeechSegment = prepareSpeechSegment,
+                RestoreSceneOutput = prepareSceneOutput,
 				PrepareSceneOutput = prepareSceneOutput
 			};
 		}
@@ -78,6 +80,23 @@ internal sealed class SceneAudioLipSyncController
 		prepare?.Invoke();
 		return IsTtsPlaybackRequestCurrent(request);
 	}
+
+    internal bool PrepareTtsSpeechSegment(TtsEngine.PlaybackRequest request, TtsSpeechSegment segment)
+    {
+        if (segment == null || !PrepareTtsPlaybackRequest(request) || !IsActiveTtsPlaybackRequest(request)) return false;
+        Action<TtsSpeechSegment> prepare;
+        lock (_requestLock) { prepare = _ttsPlaybackOwners[request.RequestId].PrepareSpeechSegment; }
+        prepare?.Invoke(segment);
+        return IsTtsPlaybackRequestCurrent(request);
+    }
+
+    internal void RestoreTtsSceneOutput(TtsEngine.PlaybackRequest request)
+    {
+        if (request == null || request.SegmentCount <= 1 || !IsTtsPlaybackRequestCurrent(request)) return;
+        Action restore;
+        lock (_requestLock) { restore = _ttsPlaybackOwners[request.RequestId].RestoreSceneOutput; }
+        restore?.Invoke();
+    }
 
 	internal bool IsActiveTtsPlaybackRequest(TtsEngine.PlaybackRequest request, bool allowCancelled = false)
 	{
@@ -138,6 +157,13 @@ internal sealed class SceneAudioLipSyncController
 				}
 				UnsubscribeTtsPlaybackEventsInternal(instance, clearOwnerIfMatch: false);
 				_retired=false;
+                _ttsOnSpeechSegmentReadyHandler = (request, segment) => _ports.Dispatch(() =>
+                {
+                    if (!PrepareTtsSpeechSegment(request, segment)) return;
+                    if (_ports.IsNativeWait(request))
+                        ConversationHelper.StartTypewriterText(EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(segment.Text),
+                            segment.DurationSeconds, waitForPlayback: true, holdUntilReplaced: true);
+                });
 				_ttsOnAudioFileReadyHandler = delegate(TtsEngine.PlaybackRequest request, string wavPath, string xmlPath, float durationSecs)
 				{
                     bool continuation = request?.StreamingPlayback == true && Interlocked.Increment(ref request.AudioChunkCount) > 1;
@@ -440,6 +466,7 @@ internal sealed class SceneAudioLipSyncController
 						{
 						if (!IsTtsPlaybackRequestCurrent(request)) { return; }
 						int agentIndex = request.AgentIndex;
+                        RestoreTtsSceneOutput(request);
 						HandleTtsPlaybackFailed(request, errorMessage);
 
 						}
@@ -448,6 +475,7 @@ internal sealed class SceneAudioLipSyncController
 					});
 				};
 				_ttsOnPlaybackCancelledHandler = _ports.Cancelled;
+                instance.OnRequestSpeechSegmentReady += _ttsOnSpeechSegmentReadyHandler;
 				instance.OnRequestPlaybackCancelled += _ttsOnPlaybackCancelledHandler;
 				instance.OnRequestAudioFileReady += _ttsOnAudioFileReadyHandler;
 				instance.OnRequestPlaybackStarted += _ttsOnPlaybackStartedHandler;
@@ -472,6 +500,7 @@ internal sealed class SceneAudioLipSyncController
 		}
 		try
 		{
+            if (_ttsOnSpeechSegmentReadyHandler != null) tts.OnRequestSpeechSegmentReady -= _ttsOnSpeechSegmentReadyHandler;
 			if (_ttsOnPlaybackCancelledHandler != null) { tts.OnRequestPlaybackCancelled -= _ttsOnPlaybackCancelledHandler; }
 			if (_ttsOnAudioFileReadyHandler != null)
 			{
@@ -1307,6 +1336,8 @@ internal sealed class SceneAudioLipSyncController
 		public int ConversationEpoch;
 		public Mission Mission;
 		public Action PrepareSceneOutput;
+        public Action RestoreSceneOutput;
+        public Action<TtsSpeechSegment> PrepareSpeechSegment;
 		public bool Prepared;
 	}
 
@@ -1601,6 +1632,7 @@ internal sealed class SceneAudioLipSyncController
 
 	internal readonly HashSet<int> _agentLipSyncDetachedForSafety = new HashSet<int>();
 
+    internal Action<TtsEngine.PlaybackRequest, TtsSpeechSegment> _ttsOnSpeechSegmentReadyHandler;
 	internal Action<TtsEngine.PlaybackRequest, string, string, float> _ttsOnAudioFileReadyHandler;
 
 	internal Action<TtsEngine.PlaybackRequest> _ttsOnPlaybackStartedHandler;

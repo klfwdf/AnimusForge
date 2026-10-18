@@ -165,6 +165,7 @@ internal static string BuildNpcInitiatedOpeningUserText(string extraFact, string
 
     internal static string BuildNativeConversationStreamingVisibleText(string text, ConversationSpeechTextOptions options)
     {
+        text = LocalTtsToneTag.StripStreamingPreview(text);
         string visible = LlmVisibleReplyNormalizer.NormalizeStreamingPreview(text);
         visible = (visible ?? "").Replace("\r", "").TrimStart();
         if (string.IsNullOrWhiteSpace(visible)) return "...";

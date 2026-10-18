@@ -23,6 +23,9 @@ sealed class TtsConsumerSubject {
  public void Retire(TtsEngine.PlaybackRequest r)=>_audio.RetireTtsPlaybackRequest(r);
  public int Owners=>_audio._ttsPlaybackOwners.Count;
  public bool IsCurrent(TtsEngine.PlaybackRequest r,bool cancelled=false)=>_audio.IsTtsPlaybackRequestCurrent(r,cancelled);
+ public void TrackSegments(TtsEngine.PlaybackRequest r,Action<TtsSpeechSegment> prepare,Action fallback)=>_audio.TrackTtsPlaybackRequest(r,fallback,prepare);
+ public bool Segment(TtsEngine.PlaybackRequest r,TtsSpeechSegment segment)=>_audio.PrepareTtsSpeechSegment(r,segment);
+ public void Restore(TtsEngine.PlaybackRequest r)=>_audio.RestoreTtsSceneOutput(r);
  public void NextSession()=>_sceneHistorySessionId++;
  public void NextEpoch()=>_sceneConversationEpoch++;
  public static long Register(TtsEngine.PlaybackRequest r)=>_wait.RegisterNativeConversationTtsPlaybackWait(r,1,5);
@@ -38,6 +41,13 @@ static class ConsumerTests {
  static TtsEngine Engine(){var e=new TtsEngine();typeof(TtsEngine).GetField("_initialized",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(e,true);return e;}
  static void Assert(bool b){if(!b)throw new Exception("consumer assertion");}
  public static void Run(Action<string,Action> check){
+  check("consumer: sentence presentation uses immutable segment and rejects stale mission",()=>{
+   using var e=Engine();var c=new TtsConsumerSubject();var r=Request(e,7);r.SegmentCount=2;var lines=new List<string>();int fallback=0;
+   c.TrackSegments(r,s=>lines.Add(s.Text),()=>fallback++);
+   Assert(c.Segment(r,new TtsSpeechSegment("first",0,2,1))&&c.Segment(r,new TtsSpeechSegment("second",1,2,2)));
+   Assert(lines.SequenceEqual(new[]{"first","second"})&&fallback==1);c.Restore(r);Assert(fallback==2);
+   c.NextEpoch();Assert(!c.Segment(r,new TtsSpeechSegment("late",1,2,3)));c.Restore(r);Assert(lines.Count==2&&fallback==2);
+  });
   check("consumer: old negative-agent failure cannot consume replacement wait",()=>{TtsConsumerSubject.Reset();using var e=Engine();var a=Request(e);var b=Request(e);TtsConsumerSubject.Register(a);TtsConsumerSubject.Register(b);var wait=TtsConsumerSubject.Wait;Assert(!TtsConsumerSubject.Complete(a)&&!wait.IsCompleted);Assert(TtsConsumerSubject.Complete(b)&&wait.IsCompleted);});
   check("consumer: same Scene agent late finish does not consume new wait",()=>{TtsConsumerSubject.Reset();using var e=Engine();var a=Request(e,7);var b=Request(e,7);TtsConsumerSubject.Register(a);TtsConsumerSubject.Register(b);Assert(!TtsConsumerSubject.Complete(a)&&TtsConsumerSubject.Matches(b));});
   check("consumer: cancelled request cannot register new wait",()=>{TtsConsumerSubject.Reset();using var e=Engine();var a=Request(e);e.StopPlayback();Assert(TtsConsumerSubject.Register(a)==0&&TtsConsumerSubject.Wait==null);});

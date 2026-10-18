@@ -212,7 +212,7 @@ internal sealed class SceneSpeechFollowupController
 		LordEncounterBehavior.TryExecuteMeetingPlayerRelease(value.TargetHero, value.EncounterParty, "meeting_release_player_after_speech");
 	}
 
-	internal void ShowOpenLordsHallResponseAndScheduleEntry(NpcDataPacket npc, Agent agent, List<NpcDataPacket> allNpcData, string content, bool commitHistory, string afterSpeechInfoMessage)
+	internal void ShowOpenLordsHallResponseAndScheduleEntry(NpcDataPacket npc, Agent agent, List<NpcDataPacket> allNpcData, string content, bool commitHistory, string afterSpeechInfoMessage, LocalTtsTone localTtsTone = LocalTtsTone.Neutral, Task<LocalTtsTone> pendingLocalTone = null)
 	{
 		int agentIndex = npc?.AgentIndex ?? agent?.Index ?? -1;
 		string visibleContent = StripActionTagsForSceneSpeech(content);
@@ -221,7 +221,7 @@ internal sealed class SceneSpeechFollowupController
 		SceneSpeechPlaybackInfo playbackInfo = null;
 		if (npc != null && CanAgentParticipateInSceneSpeech(agent) && !string.IsNullOrWhiteSpace(historyText))
 		{
-			playbackInfo = ShowNpcSpeechOutput(npc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm: true);
+			playbackInfo = ShowNpcSpeechOutput(npc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm: true, localTtsTone: localTtsTone, pendingLocalTone: pendingLocalTone);
 			if (commitHistory && !string.IsNullOrWhiteSpace(fullHistoryText))
 			{
 				RecordResponseForAllNearbySafe(allNpcData, npc.AgentIndex, npc.Name, fullHistoryText);
@@ -607,7 +607,7 @@ internal sealed class SceneSpeechFollowupController
 		}
 	}
 
-    private SceneSpeechPlaybackInfo ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false) => _ports.ShowNpcSpeechOutput_L2959(npc, liveAgent, content, allowTts, attachTtsToSceneAgent, suppressInteractionTimeoutArm);
+    private SceneSpeechPlaybackInfo ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false, LocalTtsTone localTtsTone = LocalTtsTone.Neutral, Task<LocalTtsTone> pendingLocalTone = null) => _ports.ShowNpcSpeechOutput_L2959(npc, liveAgent, content, allowTts, attachTtsToSceneAgent, suppressInteractionTimeoutArm, localTtsTone, pendingLocalTone);
     private void RecordNegotiatedNonHeroBribe(string targetKey, int goldAmount) => _ports.RecordNegotiatedNonHeroBribe_L15018(targetKey, goldAmount);
     private bool RecordResponseForAllNearbySafe(List<NpcDataPacket> nearbyData, int speakerAgentIndex, string speakerName, string response, bool requireMemoryReceipt = false) => _ports.RecordResponseForAllNearbySafe_L17560(nearbyData, speakerAgentIndex, speakerName, response, requireMemoryReceipt);
     private void RemoveSceneMovementSuppressionAgents(IEnumerable<int> participantAgentIndices) => _ports.RemoveSceneMovementSuppressionAgents_L18679(participantAgentIndices);
@@ -622,7 +622,7 @@ internal sealed class SceneSpeechFollowupController
 
 internal sealed class SceneSpeechFollowupControllerPorts
 {
-    internal delegate SceneSpeechPlaybackInfo ShowNpcSpeechOutput_L2959Callback(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts, bool attachTtsToSceneAgent, bool suppressInteractionTimeoutArm);
+    internal delegate SceneSpeechPlaybackInfo ShowNpcSpeechOutput_L2959Callback(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts, bool attachTtsToSceneAgent, bool suppressInteractionTimeoutArm, LocalTtsTone localTtsTone, Task<LocalTtsTone> pendingLocalTone);
     internal ShowNpcSpeechOutput_L2959Callback ShowNpcSpeechOutput_L2959;
     internal delegate void RecordNegotiatedNonHeroBribe_L15018Callback(string targetKey, int goldAmount);
     internal RecordNegotiatedNonHeroBribe_L15018Callback RecordNegotiatedNonHeroBribe_L15018;

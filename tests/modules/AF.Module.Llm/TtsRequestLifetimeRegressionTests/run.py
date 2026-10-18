@@ -43,7 +43,7 @@ def main():
   needle='&& owner.ConversationEpoch == _ports.ConversationEpoch()'
   assert consumer.count(needle)==1
   consumer=consumer.replace(needle,'')
- signatures=['internal SceneAudioLipSyncController(','internal void TrackTtsPlaybackRequest(','internal bool IsTtsPlaybackRequestCurrent(','internal bool PrepareTtsPlaybackRequest(','internal bool IsActiveTtsPlaybackRequest(','internal void RetireTtsPlaybackRequest(','internal sealed class TtsPlaybackOwner']
+ signatures=['internal SceneAudioLipSyncController(','internal void TrackTtsPlaybackRequest(','internal bool IsTtsPlaybackRequestCurrent(','internal bool PrepareTtsPlaybackRequest(','internal bool PrepareTtsSpeechSegment(', 'internal void RestoreTtsSceneOutput(', 'internal bool IsActiveTtsPlaybackRequest(','internal void RetireTtsPlaybackRequest(','internal sealed class TtsPlaybackOwner']
  extracted='\n'.join(ex.declaration(consumer,x) for x in signatures)
  fields=re.findall(r'internal readonly Dictionary<(?:long, TtsPlaybackOwner|int, long)>[^;]+;',consumer)
  assert len(fields)==2,fields
@@ -64,6 +64,7 @@ def main():
  refs='<Reference Include="System.Net.Http" />'+''.join('<Reference Include="'+x.stem+'"><HintPath>'+escape(str(x))+'</HintPath></Reference>' for x in links)
  sources=[ROOT/x for x in ['src/AF.Persistence/AnimusForgeDataPaths.cs','src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs','src/modules/AF.Module.Llm/Tts/VolcTtsGateway.cs','src/modules/AF.Module.Llm/Tts/LlmUiTexts.cs','src/AF.GameAdapter.Bannerlord/UI/Errors/TtsTestFeedback.cs','src/AF.GameAdapter.Bannerlord/UI/Errors/TtsErrorUiText.cs','src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettingsUiLocalization.cs']]
  sources += [ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.Provider.cs',ROOT/'src/AF.Contracts/Internal/OpenAiTtsContracts.cs',ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.Streaming.cs',ROOT/'src/modules/AF.Module.Llm/Tts/TtsPcmStream.cs']
+ sources += [ROOT/('src/modules/AF.Module.Llm/Tts/'+name+'.cs') for name in ['TtsSpeechSegment','TtsSpeechPolicy','LocalTtsToneTag']]
  includes=''.join('<Compile Include="'+escape(str(x))+'" />' for x in sources)
  frozen_inputs.update({x:hashlib.sha256(x.read_bytes()).hexdigest() for x in sources+links+[settings_path]})
  (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><PlatformTarget>x64</PlatformTarget><LangVersion>10</LangVersion><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages><FrameworkPathOverride>'+escape(str(refdir))+'</FrameworkPathOverride></PropertyGroup><ItemGroup>'+refs+includes+'<EmbeddedResource Include="'+escape(str(ROOT/'content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json'))+'" LogicalName="AnimusForge.Llm.RuntimeSources.json" WithCulture="false" /></ItemGroup></Project>',encoding='utf-8')

@@ -2505,6 +2505,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private static string StripCourierActionTags(string text)
 	{
+        text = LocalTtsToneTag.Strip(text);
 		string value = text ?? "";
 		value = Regex.Replace(value, "\\[ACTION:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[AD:[^\\]]+\\]", "", RegexOptions.IgnoreCase);

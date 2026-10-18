@@ -15,12 +15,14 @@ internal sealed partial class TtsEngine
     private sealed class ProviderSnapshot
     {
         internal readonly bool OpenAi, Enabled, SceneWinmm, Streaming;
+        internal readonly int ProviderMode;
         internal readonly string Url, Credential, AppId, ResourceId, Voice, Encoding, Extra, Model;
         internal readonly int SampleRate, TimeoutSeconds;
         internal readonly float Speed, Volume;
         internal ProviderSnapshot(DuelSettings settings)
         {
             OpenAi = settings?.UsesOpenAiTts ?? false;
+            ProviderMode = settings?.TtsProviderDropdown?.SelectedIndex ?? 0;
             Streaming = settings?.TtsStreamingPlaybackEnabled ?? true;
             Enabled = settings?.IsSelectedTtsEnabled ?? false;
             Url = OpenAi ? settings.TtsOpenAiApiUrl : settings?.TtsVolcDedicatedApiUrl;

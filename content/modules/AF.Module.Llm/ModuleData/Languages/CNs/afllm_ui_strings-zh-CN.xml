@@ -47,5 +47,106 @@
   <string id="AF_LLM_UI_TtsError_SilentAudio" text="合成音频完全静音，回退文字。" />
   <string id="AF_LLM_UI_TtsError_StreamPlayback" text="流式播放失败，已播放的音频不会重播，请查看 TtsEngine 日志。" />
   <string id="AF_LLM_UI_TtsError_PcmInvalid" text="音频流结束时存在不完整的 PCM 采样。" />
-</strings>
+    <string id="AF_GPT_UI_Group" text="7. 语音输出/2. GPT-SoVITS" />
+    <string id="AF_GPT_UI_UseLocal" text="使用 GPT-SoVITS（关闭则使用火山）" />
+    <string id="AF_GPT_UI_UseLocalHint" text="连接已启动的本机服务；失败只回退文字，不自动改用付费云端语音。" />
+    <string id="AF_GPT_UI_ApiUrl" text="本机 GPT-SoVITS API 地址" />
+    <string id="AF_GPT_UI_ApiUrlHint" text="只用于 GPT-SoVITS（手动 API），例如 http://127.0.0.1:9880/tts。选择 AF-GPTSOVITS 时自动管理包内服务。" />
+    <string id="AF_GPT_UI_Manifest" text="音色清单 manifest.json 路径" />
+    <string id="AF_GPT_UI_ManifestHint" text="AF-GPTSOVITS 固定读取模组 VoicePacks 目录；手动 API 可填写清单路径。百科可提前设定人物声音，自定义声音不进入随机池。" />
+    <string id="AF_GPT_UI_Speed" text="本地语音语速" />
+    <string id="AF_GPT_UI_Test" text="测试本地语音" />
+    <string id="AF_GPT_UI_PlayTest" text="播放测试" />
+    <string id="AF_GPT_UI_TestHint" text="先开启语音并选择 AF-GPTSOVITS 或手动 API。自动服务须准备完成；真正战斗中不合成。" />
+    <string id="AF_GPT_UI_EnableFirst" text="请先启用 TTS 并选择 GPT-SoVITS 语音来源。" />
+    <string id="AF_GPT_UI_BattleBlocked" text="真实战斗期间不播放本地语音。" />
+    <string id="AF_GPT_UI_TestPhrase" text="为您服务，旅行者！" />
+    <string id="AF_GPT_UI_Queued" text="已提交本地试听；若失败将显示原因。" />
+    <string id="AF_GPT_UI_NotQueued" text="本地语音未入队：引擎未就绪、队列已满或正在战斗。" />
+    <string id="AF_GPT_UI_TestFailed" text="本地语音测试未提交：" />
+    <string id="AF_GPT_UI_CloudTestBlocked" text="当前选择本地语音，请使用 GPT-SoVITS 栏的测试按钮。" />
+    <string id="AF_GPT_UI_ChooseVoice" text="选择声音" />
+    <string id="AF_GPT_UI_VoiceUnassigned" text="尚未指定；现在即可选择，也可首次发声抽取同性别默认音色" />
+    <string id="AF_GPT_UI_VoiceMissing" text="已固定音色缺失，请重新选择" />
+    <string id="AF_GPT_UI_RandomVoice" text="随机抽取同性别声音并固定" />
+    <string id="AF_GPT_UI_CloudVoiceUnchanged" text="原有火山音色不受影响" />
+    <string id="AF_GPT_UI_VoiceOnly" text="仅改变声音，不改变正文语言或角色资料" />
+    <string id="AF_GPT_UI_ChooseVoiceTitle" text="选择声音 · " />
+    <string id="AF_GPT_UI_CurrentVoice" text="当前：" />
+    <string id="AF_GPT_UI_VoiceSelectionHint" text="&#10;默认音色按性别匹配；自定义音色只供手动选择，不进入随机池。可在第一次交谈前设置，随当前战役保存。" />
+    <string id="AF_GPT_UI_Save" text="保存" />
+    <string id="AF_GPT_UI_Cancel" text="取消" />
+    <string id="AF_GPT_UI_VoiceSaved" text="声音已固定：" />
+    <string id="AF_GPT_UI_VoiceNotSaved" text="声音未保存：" />
+    <string id="AF_GPT_UI_VoicePickerFailed" text="无法打开声音选择：" />
+    <string id="AF_GPT_UI_VictoryReady" text="战果已处理；可进入 GCCZ 继续处置，或直接离开。" />
+    <string id="AF_TTS_UI_Title" text="AnimusForge 语音功能-TTS 本地部署/API" />
+    <string id="AF_TTS_UI_General" text="1. 语音选择与播放" />
+    <string id="AF_TTS_UI_Local" text="2. 本地部署 GPT-SoVITS" />
+    <string id="AF_TTS_UI_Cloud" text="3. 火山 TTS API" />
+    <string id="AF_TTS_UI_Custom" text="4. 自定义接口（预留）" />
+    <string id="AF_TTS_UI_Enable" text="开启语音功能" />
+    <string id="AF_TTS_UI_Provider" text="语音功能选择" />
+    <string id="AF_TTS_UI_ProviderHint" text="选择本地 GPT-SoVITS 或火山 TTS API。自定义接口暂未开放，仅输出文字。切换保留凭据；本地失败不会调用付费云语音。" />
+    <string id="AF_TTS_UI_ProviderLocal" text="本地 GPT-SoVITS" />
+    <string id="AF_TTS_UI_ProviderCloud" text="火山 TTS API" />
+    <string id="AF_TTS_UI_ProviderCustom" text="自定义（暂未开放）" />
+    <string id="AF_TTS_UI_Volume" text="主语音音量" />
+    <string id="AF_TTS_UI_SceneWinmm" text="场景语音使用 winmm（防回声）" />
+    <string id="AF_TTS_UI_LipVolume" text="口型通道音量" />
+    <string id="AF_TTS_UI_LocalUrl" text="本地 GPT-SoVITS API 地址" />
+    <string id="AF_TTS_UI_Manifest" text="音色清单路径（留空：游戏内语音包）" />
+    <string id="AF_TTS_UI_ManifestHint" text="默认随机池五男五女；自定义音色只供手动选择。可在第一次交谈前到角色百科指定。留空读取游戏 VoicePacks/manifest.json。" />
+    <string id="AF_TTS_UI_LocalSpeed" text="本地语速" />
+    <string id="AF_TTS_UI_Mood" text="试听语气：0 平静 / 1 开心 / 2 生气 / 3 低落" />
+    <string id="AF_TTS_UI_MoodHint" text="仅用于试听。对话语气来自本轮后处理情绪；缺失或超时用平静，不根据正文中的标签选语气。" />
+    <string id="AF_TTS_UI_CloudUrl" text="火山 TTS API 地址" />
+    <string id="AF_TTS_UI_CloudUrlHint" text="保留原 V1、V3 HTTP 单向语音合成和 Agent Plan；地址与鉴权要求请查看下面的官方文档。未实现 SSE/WS。" />
+    <string id="AF_TTS_UI_Key" text="火山 Token / API Key" />
+    <string id="AF_TTS_UI_KeyHint" text="V1 使用原 Token；V3 使用语音服务 API Key；Agent Plan 使用专用 Key。不自动转换或清空旧凭据。" />
+    <string id="AF_TTS_UI_AppId" text="火山 App ID（V1）" />
+    <string id="AF_TTS_UI_Resource" text="火山资源 ID" />
+    <string id="AF_TTS_UI_Speaker" text="火山音色 ID" />
+    <string id="AF_TTS_UI_Additions" text="附加参数（JSON）" />
+    <string id="AF_TTS_UI_Format" text="音频格式（wav / pcm）" />
+    <string id="AF_TTS_UI_Rate" text="采样率" />
+    <string id="AF_TTS_UI_CloudSpeed" text="云语音语速" />
+    <string id="AF_TTS_UI_TestLocal" text="测试本地语音（先保存设置）" />
+    <string id="AF_TTS_UI_TestCloud" text="测试火山语音（可能收费）" />
+    <string id="AF_TTS_UI_Test" text="测试" />
+    <string id="AF_TTS_UI_OpenConsole" text="打开火山语音官网控制台" />
+    <string id="AF_TTS_UI_OpenDocs" text="打开火山官方 TTS API 文档" />
+    <string id="AF_TTS_UI_Open" text="打开" />
+    <string id="AF_TTS_UI_CustomInfo" text="自定义接口：后续实现" />
+    <string id="AF_TTS_UI_CustomNotice" text="自定义 TTS 接口后续实现，当前不发请求。自定义本地音色已可在百科手动指定。" />
+    <string id="AF_TTS_UI_SaveFirst" text="请先保存本页 TTS 设置，再进行试听。" />
+    <string id="AF_GPT_UI_CustomCategory" text="[自定义／仅手动] " />
+    <string id="AF_GPT_UI_FemaleCategory" text="[女声／默认] " />
+    <string id="AF_GPT_UI_MaleCategory" text="[男声／默认] " />
+    <string id="AF_GPT_UI_CategoryInvalid" text="音色分类必须与声明性别一致，或为自定义音色。" />
+    <string id="AF_GPT_UI_MoodsInvalid" text="语气配置只允许平静、开心、生气、低落的有效参考项，最多四种。" />
+    <string id="AF_GPT_UI_AliasInvalid" text="音色迁移必须直接指向已存在音色，且不能覆盖现有 ID。" />
+    <string id="AF_GPT_UI_MoodProvenanceInvalid" text="语气参考录音的来源校验与原录音不匹配。" />
+    <string id="AF_GPT_UI_MoodReferenceInvalid" text="语气录音或其配套原文无效。" />
+    <string id="AF_GPT_UI_MoodPathInvalid" text="语气录音不能指向语音包之外。" />
+    <string id="AF_TTS_UI_EnableHint" text="语音总开关。启用本地/火山语音时强制主回复 SSE，不改写原流式偏好；收到并校验完整回复后分句朗读、配合文字显示。只有启用本地 GPT-SoVITS 才要求专用语气标签，火山/自定义/关闭语音均不要求。关闭语音恢复纯文字。" />
+    <string id="AF_TTS_Runtime_Auto" text="自动使用已安装的 AF-GPTSOVITS-L" />
+    <string id="AF_TTS_Runtime_AutoHint" text="仅在本地语音开启时启动兼容的 L 包。自定义 API 地址或明确指定的音色清单保持手动连接；未安装运行包时仍可使用原手动连接。关闭此项可自行管理服务。" />
+    <string id="AF_TTS_Runtime_Refresh" text="刷新本地语音运行包状态" />
+    <string id="AF_TTS_Runtime_RefreshButton" text="刷新" />
+    <string id="AF_TTS_Runtime_RefreshHint" text="检查模组里的 L/U 包，优先使用校验通过的 L；开启 AF-GPTSOVITS 时重新准备服务。关闭语音时只检查，不加载模型。" />
+    <string id="AF_GPT_UI_RuntimeNotReady" text="本地语音正在准备或不可用，本句仅显示文字；可刷新本地服务状态。" />
+    <string id="AF_GPT_UI_RuntimeStatus" text="[本地语音] " />
+    <string id="AF_GPT_UI_RuntimeManual" text="手动连接" />
+    <string id="AF_GPT_UI_RuntimeInstalled" text="已安装，未启动" />
+    <string id="AF_GPT_UI_RuntimePreparing" text="准备中" />
+    <string id="AF_GPT_UI_RuntimeReady" text="可用" />
+    <string id="AF_GPT_UI_RuntimeFailed" text="不可用，请检查运行日志" />
+    <string id="AF_GPT_UI_RuntimeChecking" text="检查中" />
+    <string id="AF_GPT_UI_RuntimeStopping" text="正在关闭本工具启动的本地语音服务" />
+    <string id="AF_MCM_Tts_ProviderAf" text="AF-GPTSOVITS" />
+    <string id="AF_MCM_Tts_ProviderManual" text="GPT-SoVITS（手动 API）" />
+    <string id="AF_MCM_Tts_Provider_Hint" text="AF-GPTSOVITS 自动识别模组目录内兼容的 L/U 包，优先 L。手动 API 使用自己启动的本地服务。切换保留各服务配置，失败只显示文字，不自动切换服务。" />
+    <string id="AF_GPT_UI_RuntimeMissing" text="未找到兼容运行包" />
+  </strings>
 </base>

@@ -1,0 +1,59 @@
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using TaleWorlds.MountAndBlade;
+using TaleWorlds.CampaignSystem;
+using AnimusForge;
+using SceneSpeechPlaybackInfo = AnimusForge.ShoutBehavior.SceneSpeechPlaybackInfo;
+
+int checks=0;
+void Check(bool ok,string why){if(!ok)throw new Exception(why);checks++;Console.WriteLine("PASS "+why);}
+foreach(bool local in new[]{true,false})foreach(bool primary in new[]{true,false}){
+ var trace=new List<string>();var agent=new Agent{Index=7};TtsEngine.Instance=new();
+ var port=new SceneSpeechOutputPort{
+  SanitizeUiText=t=>t,SanitizeTtsText=t=>t,BuildPatienceBadge=(n,a)=>"",NpcDisplayName=n=>"NPC",
+  IsHostile=a=>false,IsTtsEnabled=()=>true,IsLocalProvider=()=>local,PrimaryTtsAllowed=a=>primary&&ReferenceEquals(a,agent),
+  CanLipSync=(Agent a,out string reason)=>{reason="fixture";return true;},ResolveHero=i=>null,ExternalHeroVoice=h=>"voice",
+  EstimateTypingDuration=t=>1,Audio=()=>new(),RemoveHostileInteraction=i=>{},ClearPendingFeed=i=>{},CaptureInteractionToken=i=>9,
+  Report=(s,i,d)=>{},ClearPendingBubble=(i,c)=>{},EnqueueCompletionToken=(i,t)=>{},EnqueueBubble=(i,a,t,n,d)=>{},
+  ScheduleFeed=(i,n,t,info)=>trace.Add("scheduled"),PublishFeedImmediately=(i,n,t,info)=>trace.Add("feed:"+t),
+  ShowBubble=(a,t,d)=>{trace.Add("bubble:"+t);return true;},ArmInteractionTimeout=(i,t,d)=>trace.Add("timeout")};
+ var subject=new ScenePresentationController();
+ var result=subject.ShowNpcSpeechOutput(port,new NpcDataPacket{AgentIndex=7},agent,"unchanged reply");
+ bool expected=!local||primary;
+ Check(result.TtsAccepted==expected&&TtsEngine.Instance.Calls==(expected?1:0),$"actual enqueue local={local} primary={primary}");
+ if(!expected)Check(trace.Contains("bubble:unchanged reply")&&trace.Contains("feed:unchanged reply")&&trace.Contains("timeout"),"nonprimary text/feed/timeout preserved");
+ TtsEngine.Instance=new();port.PrimaryTtsAllowed=null;
+ result=subject.ShowNpcSpeechOutput(port,new NpcDataPacket(),agent,"no owner");
+ Check(TtsEngine.Instance.Calls==(local?0:1),"absent local owner fails closed; cloud unchanged");
+ TtsEngine.Instance=new();result=subject.ShowNpcSpeechOutput(port,new NpcDataPacket(),agent,"disabled",allowTts:false);
+ Check(TtsEngine.Instance.Calls==0&&!result.TtsAccepted,"explicit disabled speech remains disabled");
+}
+Console.WriteLine($"PASS {checks} exact speech-output consumer assertions; controlled audio/game leaves, not native game.");
+
+namespace TaleWorlds.MountAndBlade { internal sealed class Agent{internal int Index;} }
+namespace TaleWorlds.CampaignSystem { internal sealed class Hero{} }
+namespace AnimusForge {
+ internal enum LocalTtsTone{Neutral,Happy,Angry,Sad}
+ internal sealed class TtsSpeechSegment{internal string Text;internal int Index,Count;internal float DurationSeconds;}
+ internal sealed class NpcDataPacket{internal int AgentIndex;internal bool IsHero,IsFemale;internal float Age;}
+ internal static class Logger{internal static void Log(string owner,string message){}}
+ internal static class VoiceMapper{internal static string ResolveVoiceId(Hero h)=>"hero";internal static string ResolveVoiceIdForNonHero(bool f,float a,int i)=>"unnamed";}
+ internal static class MeetingBattleLockMissionBehavior{internal static void ReapplyMeetingLockForAgentIfNeeded(Agent a,bool recaptureAnchor,bool preserveFacing){}}
+ internal static class ShoutBehavior{internal sealed class SceneSpeechPlaybackInfo{internal bool TtsEnabled,TtsAccepted,WaitForPlaybackFinished;internal float VisualDurationSeconds;}}
+ internal sealed class TtsEngine{
+  internal static TtsEngine Instance=new();internal int Calls;
+  internal sealed class PlaybackRequest{internal int SegmentCount=1;}
+  internal bool SpeakAsync(string text,int speaker,float volume,int agent,string voice,Action<PlaybackRequest> accepted,LocalTtsTone tone, Task<LocalTtsTone> pending = null){Calls++;accepted(new());return true;}
+ }
+ internal sealed class SceneAudioLipSyncController{
+  internal void TrackTtsPlaybackRequest(TtsEngine.PlaybackRequest r,Action prepare,Action<TtsSpeechSegment> segment){}
+  internal void RetireTtsPlaybackRequest(TtsEngine.PlaybackRequest r){}
+ }
+ internal delegate bool SceneLipSyncAgentCheck(Agent agent,out string reason);
+ internal sealed class ScenePresentationController{
+  private readonly Func<Agent,bool> _canParticipate=a=>a!=null;
+  @@METHOD@@
+ }
+ @@PORT@@
+}

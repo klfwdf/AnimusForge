@@ -168,7 +168,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets,
 		bool hasPostprocess, float interactionTimeoutSeconds, int participantCount,
 		string playerText, bool replyIsDirectPlayerResponse,
-		TaskCompletionSource<bool> speechCompletion = null)
+		TaskCompletionSource<bool> speechCompletion = null, Task<LocalTtsTone> pendingLocalTone = null)
 	{
 		if (speaker == null || string.IsNullOrWhiteSpace(replyText)) return Task.FromResult(false);
 		bool CanStillPublish()
@@ -195,7 +195,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				interactionTimeoutSeconds, Math.Max(1, participantCount),
 				canStillPublish: CanStillPublish,
 				playerDirectedActionText: replyIsDirectPlayerResponse ? playerText : string.Empty,
-				playerDirectedNpcReplyText: replyIsDirectPlayerResponse ? replyText : string.Empty);
+				playerDirectedNpcReplyText: replyIsDirectPlayerResponse ? replyText : string.Empty, pendingLocalTone: pendingLocalTone);
 			return true;
 		}, false);
 	}

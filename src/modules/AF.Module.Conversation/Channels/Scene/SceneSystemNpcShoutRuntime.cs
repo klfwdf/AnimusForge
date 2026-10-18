@@ -122,7 +122,8 @@ internal sealed class SceneSystemNpcShoutRuntime
 
 			}
 
-			string safeContent = content.Trim();
+			string safeContent = LocalTtsToneTag.Strip(content.Trim());
+            var localTtsTone = LocalTtsTone.Neutral;
 
             Mission sourceMission = Mission.Current;
 
@@ -221,7 +222,6 @@ internal sealed class SceneSystemNpcShoutRuntime
 									}
 
 								}
-
 								if (MyBehavior.TryApplyPartyTransferTagsForExternal(characterObject.HeroObject, characterObject, speakerData.AgentIndex, ref aiResponse, out var generatedFacts, out var notifications))
 
 								{
@@ -594,7 +594,7 @@ internal sealed class SceneSystemNpcShoutRuntime
 
 					{
 
-						SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(speakerData, agent, SanitizeSceneSpeechText(DiplomacyConversationBridge.ComposeReply(aiResponse, diplomacyReceipts, forUi: true)));
+						SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(speakerData, agent, SanitizeSceneSpeechText(DiplomacyConversationBridge.ComposeReply(aiResponse, diplomacyReceipts, forUi: true)), localTtsTone: localTtsTone);
 
 						if (meetingReleaseTriggered)
 

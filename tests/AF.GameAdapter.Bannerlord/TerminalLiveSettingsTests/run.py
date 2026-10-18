@@ -7,6 +7,9 @@ sys.path.insert(0, str(ROOT / 'tests'))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 
 p = argparse.ArgumentParser()
+p.add_argument('--framework',type=Path)
+p.add_argument('--mcm-ui',type=Path)
+p.add_argument('--butterlib',type=Path)
 p.add_argument('--api', choices=['1.3', '1.4'], required=True)
 p.add_argument('--candidate', type=Path, required=True)
 p.add_argument('--baseline', action='store_true')
@@ -33,7 +36,7 @@ shutil.copyfile(candidate, copy)
 fixture = subprocess.run(['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(ROOT / 'tests/modules/AF.Module.Prompt/Composition/actual_module_fixture.ps1'), '-ProjectRoot', str(ROOT), '-ModuleRoot', str(module), '-Language', a.content_language], capture_output=True, text=True, encoding='utf-8', errors='replace', env=env)
 (out / 'fixture.log').write_text(fixture.stdout + fixture.stderr, encoding='utf-8')
 assert fixture.returncode == 0, fixture.stdout + fixture.stderr
-framework = Path('C:/Users/29310/.nuget/packages/microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2')
+framework = a.framework or Path('C:/Users/29310/.nuget/packages/microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2')
 deps = ROOT / '.tmp/build_check/1.4'
 sources = [Path(__file__).with_name('Program.cs'), ROOT / 'tests/modules/AF.Module.Prompt/Composition/TerminalSettingsChecks.cs']
 if not a.baseline:
@@ -52,11 +55,11 @@ build = subprocess.run([str(dotnet), 'build', str(out / 'Probe.csproj'), '--nolo
 (out / 'build.log').write_text(build.stdout + build.stderr, encoding='utf-8')
 code = build.returncode
 if not code:
-    ui = Path('F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/Bannerlord.MBOptionScreen/bin/Win64_Shipping_Client')
+    ui = a.mcm_ui or Path('F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/Bannerlord.MBOptionScreen/bin/Win64_Shipping_Client')
     command = [str(out / 'bin/Debug/net472/Probe.exe'), str(copy), str(module), str(refs), str(deps)]
     if a.api == '1.4' and not a.baseline:
         command.append(str(ui))
-        command.append(str(ui.parents[2] / 'Bannerlord.ButterLib/bin/Win64_Shipping_Client'))
+        command.append(str(a.butterlib or ui.parents[2] / 'Bannerlord.ButterLib/bin/Win64_Shipping_Client'))
     run = subprocess.run(command, cwd=out, capture_output=True, text=True, encoding='utf-8', errors='replace', env=dict(env, AF_TEST_MODULE_ROOT=str(module), ANIMUSFORGE_DATA_ROOT=str(module)))
     code = run.returncode
     (out / 'run.log').write_text(run.stdout + run.stderr, encoding='utf-8')

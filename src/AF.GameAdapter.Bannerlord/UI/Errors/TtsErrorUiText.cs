@@ -18,6 +18,12 @@ internal static class TtsErrorUiText
             case "tts_openai_timeout": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiTimeout", "Speech synthesis exceeded the configured timeout; no automatic retry.");
             case "tts_openai_audio_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_OpenAiAudio", "The service did not return a supported PCM16 WAV (mono/stereo, 8000–48000 Hz). Compressed audio is not played.");
             case "tts_audio_silent": return LlmUiTexts.Text("AF_LLM_UI_TtsError_SilentAudio", "The synthesized audio is completely silent; falling back to text.");
+            case "gpt_sovits_catalog_category_invalid": return LlmUiTexts.Text("AF_GPT_UI_CategoryInvalid", "Voice category must match the declared gender or be custom.");
+            case "gpt_sovits_catalog_moods_invalid": return LlmUiTexts.Text("AF_GPT_UI_MoodsInvalid", "Voice tones must be valid neutral, happy, angry or sad reference entries (at most four).");
+            case "gpt_sovits_catalog_alias_invalid": return LlmUiTexts.Text("AF_GPT_UI_AliasInvalid", "Voice migration must point directly to an existing voice and must not replace an existing ID.");
+            case "gpt_sovits_catalog_mood_provenance_invalid": return LlmUiTexts.Text("AF_GPT_UI_MoodProvenanceInvalid", "Tone reference provenance does not match the original recording.");
+            case "gpt_sovits_catalog_mood_reference_invalid": return LlmUiTexts.Text("AF_GPT_UI_MoodReferenceInvalid", "Tone recording or its matching transcript is invalid.");
+            case "gpt_sovits_catalog_mood_path_invalid": return LlmUiTexts.Text("AF_GPT_UI_MoodPathInvalid", "Tone recordings must stay inside the voice pack.");
             case "tts_endpoint_unsupported": return LlmUiTexts.Text("AF_LLM_UI_TtsError_EndpointUnsupported", "Invalid API URL or unsupported protocol; V3 requires /api/v3/tts/unidirectional and Agent Plan requires /api/v3/plan/tts/unidirectional (HTTP, not SSE/WS).");
             case "tts_configuration_incomplete": return LlmUiTexts.Text("AF_LLM_UI_TtsError_ConfigurationIncomplete", "Check the credential, resource ID, and voice; V1 also requires an App ID.");
             case "tts_extra_parameters_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_ExtraParametersInvalid", "Extra parameters must be valid JSON; V3 requires a JSON object.");
@@ -44,6 +50,8 @@ internal static class TtsErrorUiText
             case "TTS audio parse failed.": return LlmUiTexts.Text("AF_LLM_UI_TtsError_AudioParseFailed", "TTS audio parse failed.");
             case "Scene speech target became unavailable before playback.": return LlmUiTexts.Text("AF_LLM_UI_TtsError_TargetBeforePlayback", "Scene speech target became unavailable before playback.");
         }
+        if (reason != null && reason.StartsWith("gpt_sovits_", StringComparison.Ordinal))
+            return DuelSettingsUiLocalization.Format("AF_GPT_UI_LocalFailure", "Local synthesis failed ({CODE}); check the local API and voice manifest. No cloud fallback.", ("CODE", reason.Substring(11)));
         // Unknown old or user-supplied messages keep their literal content.
         if (reason != null && reason.StartsWith("tts_", StringComparison.Ordinal))
             return DuelSettingsUiLocalization.Format("AF_LLM_UI_TtsError_Unknown", "Synthesis failed ({CODE}); check the TtsEngine log. No automatic retry.", ("CODE", reason));

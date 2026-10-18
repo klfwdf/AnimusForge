@@ -67,6 +67,7 @@ public static class ConversationHelper
 	private static bool _typewriterActive = false;
 
 	private static bool _typewriterWaitingForPlayback = false;
+    private static bool _typewriterHoldUntilReplaced;
 
 	private static string _typewriterFullText = "";
 
@@ -334,7 +335,13 @@ public static class ConversationHelper
 		}
 	}
 
-	public static void StartTypewriterText(string text, float durationSeconds, bool waitForPlayback = false)
+	internal static bool UsesLocalSpeechTextTiming()
+    {
+        var settings = DuelSettings.GetSettings();
+        return settings?.EnableTtsSpeech == true && settings.TtsUseGptSoVits && !GptSoVitsVoiceRuntime.IsBattleBlocked;
+    }
+
+    public static void StartTypewriterText(string text, float durationSeconds, bool waitForPlayback = false, bool holdUntilReplaced = false)
 	{
 		string value = text ?? "";
 		double duration = NormalizeTypewriterDuration(value, durationSeconds);
@@ -342,7 +349,11 @@ public static class ConversationHelper
 		{
 			// Audio keeps its own playback lifetime. It must not erase a reply
 			// already being revealed from the network, even after it catches up.
-			if (_streamingRevealEnabled) return;
+			if (_streamingRevealEnabled && !UsesLocalSpeechTextTiming()) return;
+            _streamingRevealEnabled = false;
+            _streamingReveal.Reset();
+            _streamingFinalDisplayText = null;
+            _typewriterHoldUntilReplaced = holdUntilReplaced;
 			_typewriterActive = !string.IsNullOrEmpty(value);
 			_typewriterWaitingForPlayback = _typewriterActive && waitForPlayback;
 			_typewriterFullText = value;
@@ -514,6 +525,7 @@ public static class ConversationHelper
 
 	private static void StopTypewriterNoLock(bool clearText)
 	{
+        _typewriterHoldUntilReplaced = false;
 		_typewriterActive = false;
 		_typewriterWaitingForPlayback = false;
 		_typewriterVisibleLength = 0;
@@ -566,13 +578,14 @@ public static class ConversationHelper
 		{
 			visibleLength = fullText.Length;
 		}
+        if (visibleLength > 0 && visibleLength < fullText.Length && char.IsHighSurrogate(fullText[visibleLength - 1]) && char.IsLowSurrogate(fullText[visibleLength])) visibleLength--;
 		if (visibleLength == _typewriterVisibleLength)
 		{
 			return false;
 		}
 		_typewriterVisibleLength = visibleLength;
 		_typewriterCurrentText = fullText.Substring(0, visibleLength);
-		if (visibleLength >= fullText.Length)
+		if (visibleLength >= fullText.Length && !_typewriterHoldUntilReplaced)
 		{
 			_typewriterActive = false;
 		}

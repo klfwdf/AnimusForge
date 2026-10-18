@@ -16,7 +16,7 @@ internal sealed class NativeConversationGameEffectPorts
     internal RecordGeneratedNpcAfefFactsForNativeConversationCapability RecordGeneratedNpcAfefFactsForNativeConversation;
     internal delegate bool TryQueueNativeSceneMechanismActionAfterConversationExitCapability(NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, ref string content);
     internal TryQueueNativeSceneMechanismActionAfterConversationExitCapability TryQueueNativeSceneMechanismActionAfterConversationExit;
-    internal delegate void TrySpeakNativeConversationReplyWithTtsCapability(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, string visibleText);
+    internal delegate void TrySpeakNativeConversationReplyWithTtsCapability(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, string visibleText, LocalTtsTone localTtsTone = LocalTtsTone.Neutral);
     internal TrySpeakNativeConversationReplyWithTtsCapability TrySpeakNativeConversationReplyWithTts;
     internal delegate bool IsNativeConversationAdmissionCurrentCapability(NativeConversationAdmission admission, out string reason);
     internal IsNativeConversationAdmissionCurrentCapability IsNativeConversationAdmissionCurrent;

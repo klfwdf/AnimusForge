@@ -61,6 +61,7 @@ public static class EncyclopediaHeroPersonaPatch
 	private const string CourierButtonId = "AnimusForgeHeroCourierButton";
 
 	private const string RerollButtonId = "AnimusForgeHeroPersonaRerollButton";
+	private const string VoiceButtonId = "AnimusForgeHeroGptSoVitsVoiceButton";
 
 	private static readonly string PlayerNotorietyMarker = AdapterPromptCaptureTexts.PcapCompat("Marker_PlayerNotoriety");
 
@@ -775,6 +776,9 @@ public static class EncyclopediaHeroPersonaPatch
 		ButtonWidget button = GetEditButton(root);
 
 		bool stateWriteSucceeded = true;
+		ButtonWidget voiceButton = (root as Widget)?.FindChild(VoiceButtonId, includeAllChildren: true) as ButtonWidget;
+		if (voiceButton != null)
+			stateWriteSucceeded &= SetWidgetVisibleIfChanged(voiceButton, hero != null && hero != Hero.MainHero);
 
 		if (button != null)
 
@@ -1806,6 +1810,7 @@ public static class EncyclopediaHeroPersonaPatch
 		EnsureCourierButton(root);
 
 		EnsureRerollButton(root);
+		EnsureVoiceButton(root);
 
 	}
 
@@ -2204,6 +2209,43 @@ public static class EncyclopediaHeroPersonaPatch
 		return widget?.FindChild("RightSideScrollablePanel", includeAllChildren: true);
 
 	}
+
+	private static void EnsureVoiceButton(object root)
+	{
+		Widget parent = GetEditButtonParent(root);
+		if (parent == null || (root as Widget)?.FindChild(VoiceButtonId, includeAllChildren: true) != null) return;
+		var button = new ButtonWidget(parent.Context)
+		{
+			Id = VoiceButtonId, WidthSizePolicy = SizePolicy.Fixed, HeightSizePolicy = SizePolicy.Fixed,
+			SuggestedWidth = 180f, SuggestedHeight = 38f,
+			HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Top,
+			MarginTop = ReferenceEquals(parent, GetRightSideContentList(root)) ? 8f : 146f,
+			MarginRight = 44f, MarginBottom = 8f,
+			Brush = parent.Context.GetBrush("Popup.Done.Button.NineGrid") ?? parent.Context.GetBrush("ButtonBrush2"),
+			IsEnabled = true, DoNotAcceptEvents = false, DoNotPassEventsToChildren = true, IsVisible = false
+		};
+		button.ClickEventHandlers.Add(delegate
+		{
+			Hero hero = ResolveHero(GetDataSource(root));
+			if (hero != null && hero != Hero.MainHero) MyBehavior.OpenHeroGptSoVitsVoiceForExternal(hero);
+		});
+		var text = new TextWidget(parent.Context)
+		{
+			WidthSizePolicy = SizePolicy.StretchToParent, HeightSizePolicy = SizePolicy.StretchToParent,
+			Text = GptSoVitsUiText.Text("ChooseVoice", "Choose voice"), DoNotAcceptEvents = true,
+			Brush = parent.Context.GetBrush("Popup.Button.Text") ?? parent.Context.GetBrush("Encyclopedia.SubPage.Info.Text")
+		};
+		if (text.Brush != null)
+		{
+			text.Brush.FontSize = 18;
+			text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center;
+			text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center;
+		}
+		button.AddChild(text);
+		if (ReferenceEquals(parent, GetRightSideContentList(root))) parent.AddChildAtIndex(button, 0);
+		else parent.AddChild(button);
+	}
+
 
 }
 

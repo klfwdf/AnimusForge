@@ -87,12 +87,10 @@ internal static class NativeConversationLlmApplicationAdapter
 			FreezeWatchdog.Mark("NativeConversation.api_stream_done", "completedLen=" + completed.Length + " streamedLen=" + streamed.Length + " elapsedMs=" + Math.Round(nativeApiWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			return completed;
 		}
-		string fallback = streamed.ToString().Trim();
-		if (!string.IsNullOrWhiteSpace(fallback))
-		{
-			FreezeWatchdog.Mark("NativeConversation.api_stream_fallback", "streamedLen=" + fallback.Length + " elapsedMs=" + Math.Round(nativeApiWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			return fallback;
-		}
+        // Preview text is not an accepted reply. Incomplete SSE must not enter TTS,
+        // history or action postprocessing merely because it contains a partial sentence.
+        if (streamed.Length > 0)
+            FreezeWatchdog.Mark("NativeConversation.api_stream_partial_rejected", "streamedLen=" + streamed.Length, immediate: true);
 		FreezeWatchdog.Mark("NativeConversation.api_stream_error", "errorLen=" + ((error ?? "").Length) + " elapsedMs=" + Math.Round(nativeApiWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 		return error ?? "";
 	}

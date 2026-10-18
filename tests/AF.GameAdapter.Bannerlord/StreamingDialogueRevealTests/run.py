@@ -46,7 +46,7 @@ assert body.attrib['Text'] == '@DialogText'
 assert 'FollowStreamingText' not in xml.find('.//*[@Id="AFDialogueAnswerScroll"]').attrib
 main_path = ROOT / 'src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs'
 main = main_path.read_text(encoding='utf-8-sig')
-assert main.count('ConversationHelper.BeginStreaming(this, DuelSettings.GetSettings()?.MainApiStreamingEnabled == true);') == 2
+assert main.count('ConversationHelper.BeginStreaming(this, TtsSpeechPolicy.UseMainStreaming(DuelSettings.GetSettings()));') == 2
 assert main.count('SetSubmissionStreamPreview(generation, partial);') == 2
 assert main.count('streamingText: mainReplyBeforePostprocess') == 2
 assert main.count('streamingText: completedReply') == 2

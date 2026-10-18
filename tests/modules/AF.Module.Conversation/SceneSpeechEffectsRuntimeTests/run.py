@@ -32,6 +32,7 @@ for name in ['SceneSpeechQueueOwner.cs','SceneSpeechExecutionRuntime.cs']:
         old='if (Interlocked.Exchange(ref claimed, 1) != 0) return;';assert runtime.count(old)==1;runtime=runtime.replace(old,'if (false) return;',1)
         old='if (!_queue.TryClaimDispatch(generation, retire))';assert runtime.count(old)==1;runtime=runtime.replace(old,'if (false)',1)
     (out/name).write_text(runtime,encoding='utf-8')
+(out/'LocalTtsToneTag.cs').write_bytes((ROOT/'src/modules/AF.Module.Llm/Tts/LocalTtsToneTag.cs').read_bytes())
 (out/'Ports.cs').write_text((src/'SceneSpeechEffectPorts.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Completion.cs').write_text(completion,encoding='utf-8')
 # Actual provenance value/scope sources; no fixture-shaped private API substitutes.

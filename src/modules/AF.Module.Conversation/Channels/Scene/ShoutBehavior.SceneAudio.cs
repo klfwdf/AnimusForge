@@ -17,6 +17,8 @@ public partial class ShoutBehavior
   SanitizeUiText = SanitizeSceneSpeechText, SanitizeTtsText = SanitizeSceneSpeechTextForTts,
   BuildPatienceBadge = BuildPatienceBadgeForNpc, NpcDisplayName = GetSceneNpcHistoryNameForPrompt,
   IsHostile = IsAgentHostileToMainAgent, IsTtsEnabled = IsTtsPlaybackEnabledForShout, CanLipSync = CanAgentUseSceneLipSync,
+  IsLocalProvider = () => DuelSettings.GetSettings()?.TtsUseGptSoVits == true,
+  PrimaryTtsAllowed = agent => GptSoVitsVoiceRuntime.IsPrimarySceneSpeaker(Mission.Current, agent, agent?.Index ?? -1, _sceneConversationEpoch),
   ResolveHero = ResolveHeroFromAgentIndex, ExternalHeroVoice = MyBehavior.GetNpcVoiceIdForExternal,
   EstimateTypingDuration = EstimateBubbleTypingDurationSeconds, Audio = () => SceneAudio,
   RemoveHostileInteraction = RemoveHostileSpeechInteraction, CaptureInteractionToken = CaptureSpeechInteractionToken,

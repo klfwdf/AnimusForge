@@ -2,6 +2,8 @@ using System;
 
 namespace AnimusForge
 {
+    internal sealed class DuelSettings { internal static readonly DuelSettings Value=new(); internal bool EnableTtsSpeech,TtsUseGptSoVits; internal static DuelSettings GetSettings()=>Value; }
+    internal static class GptSoVitsVoiceRuntime { internal static bool IsBattleBlocked; }
     internal static class Logger { internal static void LogTrace(string category, string text) { } }
     internal static class FreezeWatchdog { internal static void Mark(string name, string detail) { } }
     internal static class LlmRetryPrompt { internal static string ProjectKnownErrorForUi(string text) => text; }

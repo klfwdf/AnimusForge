@@ -200,7 +200,7 @@ internal void Publish(SceneSpeechQueueItem item)
 
 							{
 
-								_ports.ShowOpenLordsHallResponseAndScheduleEntry(matchedNpc, openLordsHallAgent, allNpcData, content, commitHistory, afterSpeechInfoMessage);
+								_ports.ShowOpenLordsHallResponseAndScheduleEntry(matchedNpc, openLordsHallAgent, allNpcData, content, commitHistory, afterSpeechInfoMessage, item.LocalTtsTone, item.PendingLocalTone);
 
 								return;
 
@@ -385,7 +385,6 @@ internal void Publish(SceneSpeechQueueItem item)
 									}
 
 								}
-
 									if (MyBehavior.TryApplyPartyTransferTagsForExternal(characterObject.HeroObject, characterObject, matchedNpc.AgentIndex, ref content, out var generatedFacts, out var notifications))
 
 									{
@@ -826,7 +825,7 @@ internal void Publish(SceneSpeechQueueItem item)
 
 								bool suppressInteractionTimeoutArm = interactionParticipantCount > 1 && interactionTimeoutSeconds <= 0f;
 
-								sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm);
+								sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm, item.LocalTtsTone, item.PendingLocalTone);
 
 								speechPublished = !string.IsNullOrWhiteSpace(historyText);
 

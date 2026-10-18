@@ -934,7 +934,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				string visibleReplyForReceipt = SanitizeSceneSpeechText(cleaned);
 				if (!string.IsNullOrWhiteSpace(cleaned))
 				{
-					lastSpeakerOutputText = cleaned;
+					lastSpeakerOutputText = LocalTtsToneTag.Strip(cleaned);
 					string historyText = PrepareSceneHistorySpeechText(string.IsNullOrWhiteSpace(historyFullText) ? cleaned : historyFullText);
 					if (!string.IsNullOrWhiteSpace(historyText))
 					{
@@ -1030,12 +1030,16 @@ internal sealed partial class SceneConversationSessionRuntime
 				Logger.Log("ShoutBehavior", "[RuleInjectionDebug] stage=scene_queue npc=" + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " battleSpeechClaimed=" + battleSpeechClaimedReply + " duelInjected=" + duelRuleInjected + " rewardInjected=" + rewardRuleInjected + " loanInjected=" + loanRuleInjected + " persistentAdpDebtSelected=" + persistentAdpDebtPostprocessSelected + " kingdomServiceInjected=" + kingdomServiceRuleInjected + " kingdomVassalageInjected=" + kingdomVassalageRuleInjected + " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected + " lordsHallInjected=" + lordsHallRuleInjected + " meetingReleaseInjected=" + meetingReleaseRuleInjected + " vanillaIssueInjected=" + vanillaIssueRuleInjected + " heroJoinPartyInjected=" + heroJoinPartyRuleInjected + " sceneMechanismInjected=" + sceneMechanismRuleInjected + " partyTransferInjected=" + partyTransferRuleInjected + " voteDealInjected=" + voteDealRuleInjected + " customPolicyAgendaSelected=" + customPolicyAgendaPostprocessSelected + " diplomacyInjected=" + diplomacyRuleInjected + " independentClanPeaceResident=" + independentClanPeaceResident + " worldMapInjected=" + worldMapPartyCommandRuleInjected + " nobleGatheringSelected=" + nobleGatheringPostprocessSelected + " marriageSelected=" + marriagePostprocessSelected + " proposeAgendaSelected=" + proposeAgendaPostprocessSelected + " siegeInterventionSelected=" + siegeInterventionPostprocessSelected + " npcSurrenderSelected=" + npcSurrenderPostprocessSelected + " royalSelected=" + royalPostprocessSelected + " relaySelected=" + relayPostprocessSelected + " replyIsDirectPlayerResponse=" + replyIsDirectPlayerResponse + " preprocessHits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " queueDeferred=" + flag11 + " replyLen=" + cleaned.Length);
 					float dynamicTimeoutSeconds = ResolveDynamicSceneConversationTimeoutSeconds(playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count, Math.Max(1, speakableCandidates.Count));
 					var speechCompletion = receipt == null ? null : new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-					bool speechQueued = await QueueSceneMainReplyOnMainThreadAsync(
+					var localToneCompletion = flag11 && currentSpeaker.AgentIndex == primaryNpc?.AgentIndex
+                        && await _dispatcher.RunAsync("scene_local_tone_gate", currentSpeaker.Name, currentSpeaker.AgentIndex,
+                            () => DuelSettings.GetSettings()?.EnableTtsSpeech == true && DuelSettings.GetSettings().TtsUseGptSoVits && !GptSoVitsVoiceRuntime.IsBattleBlocked, false)
+                        ? new TaskCompletionSource<LocalTtsTone>(TaskCreationOptions.RunContinuationsAsynchronously) : null;
+                    bool speechQueued = await QueueSceneMainReplyOnMainThreadAsync(
 						currentSpeaker, allNpcData, speakingHero, npcCharacter, cleaned,
 						sceneReplyGeneration, sceneReplySessionId, conversationEpoch,
 						sceneSummonTargets, sceneGuideTargets, flag11,
 						dynamicTimeoutSeconds,
-						Math.Max(1, engagedAgentIndices.Count), playerText, replyIsDirectPlayerResponse, speechCompletion);
+						Math.Max(1, engagedAgentIndices.Count), playerText, replyIsDirectPlayerResponse, speechCompletion, localToneCompletion?.Task);
 					if (!IsCurrentModuleGroup()) return;
 					if (!speechQueued)
 					{
@@ -1045,9 +1049,9 @@ internal sealed partial class SceneConversationSessionRuntime
 					receipt?.AddTurn(currentSpeaker.AgentIndex, currentSpeaker.Name, visibleReplyForReceipt, speechCompletion.Task);
 					if (flag11)
 					{
-						string replyForPostprocess = string.IsNullOrWhiteSpace(historyText) ? cleaned : historyText;
+						string replyForPostprocess = LocalTtsToneTag.Strip(string.IsNullOrWhiteSpace(historyText) ? cleaned : historyText);
 						string relayConversationContext = relayPostprocessSelected ? BuildSceneRelayTurnContextForPrompt(playerText, primaryNpc, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, AUTO_GROUP_CHAT_MAX_LINES - remainingTurns) : null;
-						Task<ScenePostprocessOutcome> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: relayCandidatesForNextTurn, relayPrimaryTargetAgentIndex: primaryNpc?.AgentIndex ?? (-1), relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, expectedRuntimeGeneration: sceneReplyGeneration, expectedSceneSessionId: sceneReplySessionId, relayConversationContext: relayConversationContext);
+						Task<ScenePostprocessOutcome> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: relayCandidatesForNextTurn, relayPrimaryTargetAgentIndex: primaryNpc?.AgentIndex ?? (-1), relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, expectedRuntimeGeneration: sceneReplyGeneration, expectedSceneSessionId: sceneReplySessionId, relayConversationContext: relayConversationContext, localToneCompletion: localToneCompletion);
 						ObserveSceneRewritePostprocess(conversationEpoch, postprocessTask);
 						receipt?.AddPostprocess(postprocessTask);
 						if (relayPostprocessSelected)

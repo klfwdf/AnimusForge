@@ -746,7 +746,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public int MainApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
-	[SettingPropertyBool("{=AF_MCM_MainApi_Streaming}Enable streaming", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Streaming_Hint}When enabled, main API responses use SSE streaming. Interfaces that support chunks can display text progressively; other channels display it after completion. Postprocessing receives the complete response. This affects only the main response, not preprocessing, postprocessing, or weekly-report APIs. Off by default; applies to the next response request.")]
+	[SettingPropertyBool("{=AF_MCM_MainApi_Streaming}Enable streaming", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_MainApi_Streaming_Hint}Main responses use SSE when this option or the selected speech service is enabled. Supported interfaces reveal text progressively; local speech reads accepted complete replies sentence by sentence. Preprocessing, postprocessing and weekly reports are unchanged. The saved switch defaults to off; changes apply to the next request.")]
 	[SettingPropertyGroup("{=AF_MCM_AiCore_Group}1. AI core configuration/{=AF_MCM_MainApi_Group}1. Main API (response generation)", GroupOrder = -300)]
 	public bool MainApiStreamingEnabled { get; set; } = false;
 
@@ -2292,6 +2292,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			EnsureLogCleanupDefaultMigration(settings);
 			EnsureDuelRenownDefaultMigration(settings);
 			EnsureWorldDiplomacyCompressionDefaultsMigration(settings);
+            GptSoVitsManagedRuntime.Observe(settings);
 			return settings;
 		}
 		try
@@ -2303,6 +2304,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				EnsureLogCleanupDefaultMigration(result);
 				EnsureDuelRenownDefaultMigration(result);
 				EnsureWorldDiplomacyCompressionDefaultsMigration(result);
+                GptSoVitsManagedRuntime.Observe(result);
 				return result;
 			}
 		}
@@ -6569,6 +6571,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public DuelSettings()
 	{
+        InitializeGptSoVitsVoiceActions();
 		BindModelListActions();
 		BindTownAmbientConnectionTest();
 		OpenAfdianSupportLink = delegate
@@ -6662,6 +6665,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			try
 			{
 				DuelSettings runtimeSettings = GetSettings() ?? this;
+				if (runtimeSettings.TtsUseGptSoVits) { runtimeSettings.TestTtsGptSoVitsVoice(); return; }
 				if (runtimeSettings.UsesOpenAiTts) { runtimeSettings.TestOpenAiTtsVoice(); return; }
 				if (!ReferenceEquals(runtimeSettings, this))
 				{
