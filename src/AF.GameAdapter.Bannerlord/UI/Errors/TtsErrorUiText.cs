@@ -8,7 +8,7 @@ internal static class TtsErrorUiText
     {
         switch (reason)
         {
-            case "tts_local_language_invalid": return LlmUiTexts.Text("AF_GPT_UI_LanguageInvalid", "Unsupported local speech language. Enter Chinese, Cantonese, English, Japanese, or leave blank for auto.");
+            case "tts_local_language_invalid": return LlmUiTexts.Text("AF_GPT_UI_LanguageInvalid", "Unsupported speech language. Enter Chinese, Cantonese, English, Japanese, or leave blank for auto.");
             case "tts_local_translation_missing": return LlmUiTexts.Text("AF_GPT_UI_TranslationMissing", "The requested speech language was not confirmed by postprocess, or the setting changed. This reply remains text-only.");
             case "tts_stream_playback_failed": return LlmUiTexts.Text("AF_LLM_UI_TtsError_StreamPlayback", "Streaming playback failed. Already played audio is not replayed; check the TtsEngine log.");
             case "tts_audio_pcm_invalid": return LlmUiTexts.Text("AF_LLM_UI_TtsError_PcmInvalid", "The audio stream ended with an incomplete PCM sample.");

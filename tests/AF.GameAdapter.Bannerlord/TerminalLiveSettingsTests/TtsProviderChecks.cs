@@ -30,6 +30,8 @@ static class TtsProviderChecks
                 check(TerminalSettingsRegistry.GetById("TtsProviderDropdown").DisplayName == (selected == "English" ? "TTS service" : "TTS 服务"), "Actual native TTS service label " + selected);
                 check(TerminalSettingsRegistry.GetById("TtsOpenAiVoice").DisplayName == (selected == "English" ? "Speech voice" : "语音音色"), "Actual native TTS voice label " + selected);
                 check(TerminalSettingsRegistry.GetById("TtsGptSoVitsOutputLanguage").DisplayName == (selected == "English" ? "Speech output language" : "语音输出语言"), "Speech language localized through actual terminal consumer");
+                string languageHint = TerminalSettingsRegistry.GetById("TtsGptSoVitsOutputLanguage").HintText;
+                check(languageHint.Contains(selected == "English" ? "All four TTS services" : "四种 TTS 服务共用"), "shared language hint through actual consumer " + selected);
                 string streamHint = TerminalSettingsRegistry.GetById("TtsStreamingPlaybackEnabled").HintText;
                 check(streamHint.Contains("stream=true") && streamHint.Contains("stream=false"), "Actual native streaming hint describes upstream on/off flags " + selected);
             }
@@ -56,8 +58,10 @@ static class TtsProviderChecks
                     "Local provider JSON roundtrip " + mode);
                 check(local.TtsOpenAiApiKey == "fixture-key" && local.TtsVolcDedicatedSpeaker == "preserved-volc-voice", "Local selection preserves cloud credentials and voice");
             }
+            foreach (int speechProvider in new[] { 0, 1, 2, 3 })
             foreach (string speechLanguage in new[] { "中文", "粤语", "英语", "日语", "Japanese", "" })
             {
+                TerminalSettingsRegistry.GetById("TtsProviderDropdown").Setter(settings, speechProvider);
                 TerminalSettingsRegistry.GetById("TtsGptSoVitsOutputLanguage").Setter(settings, speechLanguage);
                 check(save(settings), "Language saves via original owner " + speechLanguage);
                 var languageRoundtrip = new DuelSettings(); load(languageRoundtrip);

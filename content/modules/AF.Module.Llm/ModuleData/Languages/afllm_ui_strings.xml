@@ -149,8 +149,8 @@
     <string id="AF_MCM_Tts_Provider_Hint" text="AF-GPTSOVITS detects compatible L/U packages in the mod folder (L first). Manual API uses your running local service. Switching preserves all settings; failures remain text-only." />
     <string id="AF_GPT_UI_RuntimeMissing" text="No compatible runtime package found" />
     <string id="AF_GPT_UI_OutputLanguage" text="Speech output language" />
-    <string id="AF_GPT_UI_OutputLanguageHint" text="Local GPT-SoVITS only. Enter Chinese, Cantonese, English or Japanese (Chinese names also work). Blank/auto follows the reply. Matching speech is kept unchanged; otherwise postprocess translates it privately. Subtitles stay original. Invalid or missing translation stays text-only." />
-    <string id="AF_GPT_UI_LanguageInvalid" text="Unsupported local speech language. Enter Chinese, Cantonese, English, Japanese, or leave blank for auto." />
+    <string id="AF_GPT_UI_OutputLanguageHint" text="All four TTS services. Enter Chinese, Cantonese, English or Japanese (Chinese names also work). Blank/auto follows the reply. Matching speech stays unchanged; otherwise postprocess translates it privately before synthesis. Subtitles stay original. Invalid or missing translation stays text-only. The selected remote model and voice must support the language." />
+    <string id="AF_GPT_UI_LanguageInvalid" text="Unsupported speech language. Enter Chinese, Cantonese, English, Japanese, or leave blank for auto." />
     <string id="AF_GPT_UI_TranslationMissing" text="The requested speech language was not confirmed by postprocess, or the setting changed. This reply remains text-only." />
     <string id="AF_GPT_UI_LanguageTestZh" text="旅人，你好。我们先把事情说清楚，再决定下一步怎么做。" />
     <string id="AF_GPT_UI_LanguageTestYue" text="你好呀，我哋先讲清楚件事，再决定下一步点做。" />

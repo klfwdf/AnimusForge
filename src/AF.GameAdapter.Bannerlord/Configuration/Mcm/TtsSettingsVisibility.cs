@@ -32,7 +32,6 @@ internal static class TtsSettingsVisibility
             case nameof(DuelSettings.RefreshTtsGptSoVitsRuntime): return 4;
             case nameof(DuelSettings.TtsGptSoVitsApiUrl):
             case nameof(DuelSettings.TtsGptSoVitsManifestPath): return 8;
-            case nameof(DuelSettings.TtsGptSoVitsOutputLanguage):
             case nameof(DuelSettings.TtsGptSoVitsSpeed):
             case nameof(DuelSettings.TtsGptSoVitsMood):
             case nameof(DuelSettings.TestTtsGptSoVitsVoice): return 12;

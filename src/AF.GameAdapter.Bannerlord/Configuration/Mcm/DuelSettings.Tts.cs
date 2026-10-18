@@ -61,7 +61,7 @@ public partial class DuelSettings
             InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Tts_EnableSpeech", "Enable TTS speech"), Color.FromUint(4294901760u)));
             return;
         }
-        bool queued = engine.SpeakTestAsync(Ui("AF_MCM_Tts_TestPhrase", "At your service, traveler!"), TtsOpenAiSpeed, TtsTestFeedback.ReportFailure);
+        bool queued = engine.SpeakTestAsync(GptSoVitsUiText.TestPhrase(TtsGptSoVitsOutputLanguage), TtsOpenAiSpeed, TtsTestFeedback.ReportFailure);
         InformationManager.DisplayMessage(new InformationMessage(queued
             ? Ui("AF_MCM_Tts_OpenAiTesting", "[TTS] Testing the selected OpenAI-compatible speech service; synthesis may incur charges.")
             : Ui("AF_MCM_Tts_TestNotQueued", "[TTS] Test voice was not queued: the queue is full or the engine has stopped. Try again later."),

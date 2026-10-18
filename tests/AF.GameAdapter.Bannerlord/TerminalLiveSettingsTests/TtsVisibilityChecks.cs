@@ -18,7 +18,7 @@ static class TtsVisibilityChecks
     static void Set(object o, string p, object v) => o.GetType().GetProperty(p, All).SetValue(o, v);
     static bool Expected(string id, int mode)
     {
-        if (id == "TtsVolcDedicatedVolume") return true;
+        if (id == "TtsVolcDedicatedVolume" || id == "TtsGptSoVitsOutputLanguage") return true;
         if (id.StartsWith("TtsVolcDedicated")) return mode == 0;
         if (id.StartsWith("TtsOpenAi") || id == "TtsStreamingPlaybackEnabled") return mode == 1;
         if (id == "TestTtsVolcDedicatedVoice") return mode < 2;

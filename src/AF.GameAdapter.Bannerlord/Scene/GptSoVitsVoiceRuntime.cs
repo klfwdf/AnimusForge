@@ -94,17 +94,21 @@ internal static class GptSoVitsVoiceRuntime
     internal static void ClearSceneVoices() { lock (Sync) { SceneVoices.Clear(); ClearPrimaryLocked(); } }
 
     // Capture on the game thread; immutable value only crosses the postprocess/queue boundary.
-    internal static GptSoVitsLanguage CaptureSpeechLanguage()
+    internal static GptSoVitsLanguage CaptureSpeechLanguage(bool isPrimarySpeaker = true)
     {
         var settings = DuelSettings.GetSettings();
-        return settings?.EnableTtsSpeech == true && settings.TtsUseGptSoVits && !IsBattleBlocked
-            ? GptSoVitsLanguage.Parse(settings.TtsGptSoVitsOutputLanguage) : null;
+        if (settings?.IsSelectedTtsEnabled != true
+            || (settings.TtsUseGptSoVits && (!isPrimarySpeaker || IsBattleBlocked))) return null;
+        var language = GptSoVitsLanguage.Parse(settings.TtsGptSoVitsOutputLanguage);
+        // Automatic cloud speech must not wait for local tone metadata. Local primary-only
+        // policy stays local; cloud group participants may request their own translation.
+        return settings.TtsUseGptSoVits || language.IsForced ? language : null;
     }
 
     internal static GptSoVitsSynthesisRequest CaptureRequest(string text, string voiceId, float speed, DuelSettings settings, int mood = 0)
     {
         if (!GptSoVitsLanguage.Parse(settings.TtsGptSoVitsOutputLanguage).IsSupported)
-            throw new InvalidOperationException(GptSoVitsUiText.Text("LanguageInvalid", "Unsupported local speech language. Enter Chinese, Cantonese, English, Japanese, or leave blank for auto."));
+            throw new InvalidOperationException(GptSoVitsUiText.Text("LanguageInvalid", "Unsupported speech language. Enter Chinese, Cantonese, English, Japanese, or leave blank for auto."));
         if (string.IsNullOrWhiteSpace(voiceId)) throw new InvalidDataException("voice_assignment_missing_text_only");
         GptSoVitsManagedRuntime.Observe(settings);
         if (!GptSoVitsManagedRuntime.TryCapture(settings.TtsGptSoVitsApiUrl, out string endpoint, out string instance))

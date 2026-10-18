@@ -1050,7 +1050,7 @@
   <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Hint" text="用于 Rhubarb 口型驱动的 SoundEvent 音量。仅当“场景发声走winmm(防回声)”关闭时作为场景可听音量。" />
   <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Title" text="测试选中的 TTS 服务" />
-  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Hint" text="按当前 API 地址和凭据测试固定文本「为您服务，旅行者！」；真实合成可能计费。" />
+  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Hint" text="按所选语音语言播放固定例句，使用当前服务地址与凭据，不额外请求聊天翻译。远端音色须支持该语言；真实合成可能计费。" />
   <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Group" text="7. 语音合成" />
   <string id="AF_TERMINAL_UI_EnableDeepTrace_Title" text="【开发者】开启全代码截获" />
   <string id="AF_TERMINAL_UI_EnableDeepTrace_Hint" text="⚠\ufe0f 极其硬核的调试功能！
@@ -3033,7 +3033,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_LipSyncVolume_Hint" text="用于 Rhubarb 口型驱动的 SoundEvent 音量。仅当场景发声走 winmm 关闭时作为场景可听音量。" />
   <string id="AF_MCM_Tts_Test" text="测试语音" />
   <string id="AF_MCM_Tts_TestContent" text="播放测试" />
-  <string id="AF_MCM_Tts_Test_Hint" text="按当前 API 地址和凭据测试固定文本「为您服务，旅行者！」；真实合成可能计费。" />
+  <string id="AF_MCM_Tts_Test_Hint" text="按所选语音语言播放固定例句，使用当前服务地址与凭据，不额外请求聊天翻译。远端音色须支持该语言；真实合成可能计费。" />
   <string id="AF_MCM_Marriage_Group" text="8. 婚姻规则" />
   <string id="AF_MCM_Marriage_MaxAge" text="可婚配最大年龄" />
   <string id="AF_MCM_Marriage_MaxAge_Hint" text="用于家族可婚配名单过滤。默认：55。" />

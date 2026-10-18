@@ -1038,7 +1038,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Hint" text="SoundEvent volume for Rhubarb lip-sync. Controls audible scene volume only when Scene audio through winmm (prevent echo) is disabled." />
   <string id="AF_TERMINAL_UI_TtsLipSyncSoundEventVolume_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Title" text="Test selected TTS service" />
-  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Hint" text="Tests the fixed phrase “At your service, traveler!” using the current API URL and credential. Real synthesis may incur charges." />
+  <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Hint" text="Tests a fixed phrase in the selected speech language using the current API URL and credential; no chat translation request is made. The remote voice must support that language. Real synthesis may incur charges." />
   <string id="AF_TERMINAL_UI_TestTtsVolcDedicatedVoice_Group" text="7. Speech synthesis" />
   <string id="AF_TERMINAL_UI_EnableDeepTrace_Title" text="Enable Deep Trace" />
   <string id="AF_TERMINAL_UI_EnableDeepTrace_Hint" text="⚠️ Advanced debugging feature! When enabled, intercepts all UI clicks, state transitions, and low-level code stacks (Trace). Produces a very large log and is intended for developers investigating issues only. Ordinary players should not enable it." />
@@ -2999,7 +2999,7 @@ Choose how to proceed:" />
   <string id="AF_MCM_Tts_LipSyncVolume_Hint" text="SoundEvent volume for Rhubarb lip-sync. Used as the audible scene volume only when Use winmm for scene speech is off." />
   <string id="AF_MCM_Tts_Test" text="Test voice" />
   <string id="AF_MCM_Tts_TestContent" text="Play test" />
-  <string id="AF_MCM_Tts_Test_Hint" text="Tests the fixed phrase “At your service, traveler!” using the current API URL and credential. Real synthesis may incur charges." />
+  <string id="AF_MCM_Tts_Test_Hint" text="Tests a fixed phrase in the selected speech language using the current API URL and credential; no chat translation request is made. The remote voice must support that language. Real synthesis may incur charges." />
   <string id="AF_MCM_Marriage_Group" text="8. Marriage rules" />
   <string id="AF_MCM_Marriage_MaxAge" text="Maximum marriage candidate age" />
   <string id="AF_MCM_Marriage_MaxAge_Hint" text="Filters the family marriage candidate list. Default: 55." />

@@ -13,8 +13,8 @@ public partial class DuelSettings
 
     private const string GptVoiceGroup = "{=AF_MCM_Tts_Group}7. Speech synthesis";
 
-    [SettingPropertyText("{=AF_GPT_UI_OutputLanguage}Speech output language", -1, true, "", Order = 29, RequireRestart = false,
-        HintText = "{=AF_GPT_UI_OutputLanguageHint}Local GPT-SoVITS only. Enter Chinese, Cantonese, English or Japanese (Chinese names also work). Blank/auto follows the reply. Matching speech is kept unchanged; otherwise postprocess translates it privately. Subtitles stay original. Invalid or missing translation stays text-only.")]
+    [SettingPropertyText("{=AF_GPT_UI_OutputLanguage}Speech output language", -1, true, "", Order = 1, RequireRestart = false,
+        HintText = "{=AF_GPT_UI_OutputLanguageHint}All four TTS services. Enter Chinese, Cantonese, English or Japanese (Chinese names also work). Blank/auto follows the reply. Matching speech stays unchanged; otherwise postprocess translates it privately before synthesis. Subtitles stay original. Invalid or missing translation stays text-only. The selected remote model and voice must support the language.")]
     [SettingPropertyGroup(GptVoiceGroup)]
     public string TtsGptSoVitsOutputLanguage { get; set; } = "";
 

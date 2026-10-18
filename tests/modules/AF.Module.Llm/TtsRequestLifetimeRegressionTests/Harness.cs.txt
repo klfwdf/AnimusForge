@@ -29,7 +29,7 @@ namespace AnimusForge.Refactor.Adapters {
  }
 }
 namespace AnimusForge {
- static class GptSoVitsUiText { public static string Text(string key,string fallback)=>fallback; }
+ static class GptSoVitsUiText { public static string Text(string key,string fallback)=>fallback; public static string TestPhrase(string language)=>"At your service, traveler!"; }
  // Local provider dependencies are deterministic seams here; real catalog/HTTP behavior is tested separately.
  sealed class GptSoVitsSynthesisRequest { public string Text; public int Mood; public GptSoVitsLanguage Language = GptSoVitsLanguage.Auto; public GptSoVitsSynthesisRequest WithTone(LocalTtsTone t)=>new(){Text=Text,Mood=(int)t,Language=Language}; public GptSoVitsSynthesisRequest WithText(string text)=>new(){Text=text,Mood=Mood,Language=Language}; }
  sealed class GptFixtureVoice { public string Id="fixture-local"; }
@@ -289,6 +289,55 @@ static class Program {
   Check("OpenAI selected test button queues with Volcengine disabled",()=>{
    using var e=Manual();WithTestButton(e,s=>{s.UsesOpenAiTts=true;s.TtsVolcDedicatedEnabled=false;s.TestTtsVolcDedicatedVoice();Assert(Jobs(e).Count==1,"test requires Volcengine");});
   });
+
+  foreach (int provider in new[] {0, 1}) foreach (bool streaming in (provider == 1 ? new[] {false, true} : new[] {false})) {
+   int mode=provider; bool stream=streaming;
+   Check("shared speech language: cloud translated/keep/missing/invalid " + mode + ":" + stream,()=>{
+    foreach(string selection in new[]{"translate","keep","missing","invalid"}) {
+     var cfg=new DuelSettings{UsesOpenAiTts=mode==1,TtsStreamingPlaybackEnabled=stream,TtsGptSoVitsOutputLanguage=selection=="invalid"?"not-a-language":"日语"};DuelSettings.Read=()=>cfg;
+     using var e=Manual();int sent=0,failed=0;string spoken=null;TtsEngine.PlaybackRequest req=null;
+     Action<string> capture=t=>{sent++;spoken=t;};
+     OpenAiCompatibleTtsGateway.Send=(r,k,c)=>{capture(r.Text);return new(){Success=false,ErrorCode="fixture_end"};};
+     OpenAiCompatibleTtsGateway.StreamSend=(r,k,p,c)=>{capture(r.Text);return new(){Success=false,ErrorCode="fixture_end"};};
+     LegacyVolcTtsGateway.Send=(r,c)=>{capture(r.Text);return new(){Success=false,ErrorCode="fixture_end"};};
+     var speech=selection=="missing"?LocalTtsSpeech.Neutral:new LocalTtsSpeech(LocalTtsTone.Angry,GptSoVitsLanguage.Parse("日语"),"これは翻訳です。",selection=="translate");
+     e.OnRequestPlaybackFailed+=(r,m)=>failed++;
+     Assert(e.SpeakAsync("original visible text",-1,1,-1,"old-voice",r=>req=r,speech),"queue rejected");
+     Call(e,"ProcessJob",Job(e,req));
+     bool valid=selection=="translate"||selection=="keep";
+     Assert(sent==(valid?1:0),"missing/invalid language reached provider or valid speech skipped");
+     if(valid) Assert(spoken==(selection=="translate"?"これは翻訳です。":"original visible text"),"wrong text sent to cloud");
+     Assert((string)Job(e,req).GetType().GetField("Text").GetValue(Job(e,req))=="original visible text","visible source overwritten");
+     Assert(failed==1,"terminal duplicated or missing");
+    }
+   });
+   Check("shared speech language: cloud awaits metadata and captures language " + mode + ":" + stream,()=>{
+    var cfg=new DuelSettings{UsesOpenAiTts=mode==1,TtsStreamingPlaybackEnabled=stream,TtsGptSoVitsOutputLanguage="日语"};DuelSettings.Read=()=>cfg;
+    using var e=Manual();var pending=new TaskCompletionSource<LocalTtsSpeech>();TtsEngine.PlaybackRequest req=null;int sent=0;
+    Action<string> capture=t=>{Assert(t=="こんにちは。","not translated");Interlocked.Increment(ref sent);};
+    OpenAiCompatibleTtsGateway.Send=(r,k,c)=>{capture(r.Text);return new(){Success=false,ErrorCode="fixture_end"};};
+    OpenAiCompatibleTtsGateway.StreamSend=(r,k,p,c)=>{capture(r.Text);return new(){Success=false,ErrorCode="fixture_end"};};
+    LegacyVolcTtsGateway.Send=(r,c)=>{capture(r.Text);return new(){Success=false,ErrorCode="fixture_end"};};
+    Assert(e.SpeakAsync("你好。",-1,1,-1,null,r=>req=r,LocalTtsSpeech.Neutral,pending.Task),"queue");
+    cfg.TtsGptSoVitsOutputLanguage="英语";
+    var process=Task.Run(()=>Call(e,"ProcessJob",Job(e,req)));
+    Assert(!process.Wait(80)&&sent==0,"cloud began before postprocess");
+    pending.SetResult(new LocalTtsSpeech(LocalTtsTone.Sad,GptSoVitsLanguage.Parse("日语"),"こんにちは。",true));
+    Assert(process.Wait(3000)&&sent==1,"translation never consumed");
+   });
+  }
+  Check("shared speech language: auto cloud does not wait for mood",()=>{
+   DuelSettings.Read=()=>new(){UsesOpenAiTts=true};using var e=Manual();var pending=new TaskCompletionSource<LocalTtsSpeech>();TtsEngine.PlaybackRequest req=null;int sent=0;
+   OpenAiCompatibleTtsGateway.Send=(r,k,c)=>{Assert(r.Text=="unchanged","auto changed text");sent++;return new(){Success=false,ErrorCode="fixture_end"};};
+   Assert(e.SpeakAsync("unchanged",-1,1,-1,null,r=>req=r,LocalTtsSpeech.Neutral,pending.Task),"queue");Call(e,"ProcessJob",Job(e,req));Assert(sent==1&&!pending.Task.IsCompleted,"auto waits for local mood");
+  });
+  Check("shared speech language: cancelling pending cloud translation prevents send",()=>{
+   DuelSettings.Read=()=>new(){UsesOpenAiTts=true,TtsGptSoVitsOutputLanguage="英语"};using var e=Active();var pending=new TaskCompletionSource<LocalTtsSpeech>();int sent=0;
+   OpenAiCompatibleTtsGateway.Send=(r,k,c)=>{sent++;return new(){Success=false,ErrorCode="fixture_end"};};
+   Assert(e.SpeakAsync("original",-1,1,-1,null,null,LocalTtsSpeech.Neutral,pending.Task),"queue");Thread.Sleep(50);e.StopPlayback();
+   pending.TrySetResult(new LocalTtsSpeech(LocalTtsTone.Angry,GptSoVitsLanguage.Parse("英语"),"translated",true));Eventually(()=>Jobs(e).Count==0,"cancel not retired");Assert(sent==0,"late translation played");
+  });
+
   Console.WriteLine($"RESULT {Passed} PASS / {Failed} FAIL");return Failed==0?0:1;
  }
 }

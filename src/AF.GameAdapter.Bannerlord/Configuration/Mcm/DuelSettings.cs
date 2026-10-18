@@ -1775,7 +1775,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public float TtsLipSyncSoundEventVolume { get; set; } = 0f;
 
-	[SettingPropertyButton("{=AF_MCM_Tts_Test}Test voice", -1, true, "", Content = "{=AF_MCM_Tts_TestContent}Play test", Order = 14, RequireRestart = false, HintText = "{=AF_MCM_Tts_Test_Hint}Tests the fixed phrase “At your service, traveler!” using the current API URL and credential. Real synthesis may incur charges.")]
+	[SettingPropertyButton("{=AF_MCM_Tts_Test}Test voice", -1, true, "", Content = "{=AF_MCM_Tts_TestContent}Play test", Order = 14, RequireRestart = false, HintText = "{=AF_MCM_Tts_Test_Hint}Tests a fixed phrase in the selected speech language using the current API URL and credential; no chat translation request is made. The remote voice must support that language. Real synthesis may incur charges.")]
 	[SettingPropertyGroup("{=AF_MCM_Tts_Group}7. Speech synthesis")]
 	public Action TestTtsVolcDedicatedVoice { get; set; }
 
@@ -6710,7 +6710,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				}
 				else
 				{
-					if (instance.SpeakTestAsync(Ui("AF_MCM_Tts_TestPhrase", "At your service, traveler!"), runtimeSettings.TtsVolcDedicatedSpeed, TtsTestFeedback.ReportFailure))
+					if (instance.SpeakTestAsync(GptSoVitsUiText.TestPhrase(runtimeSettings.TtsGptSoVitsOutputLanguage), runtimeSettings.TtsVolcDedicatedSpeed, TtsTestFeedback.ReportFailure))
 					{
 						InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Tts_TestingVersion", "[TTS] Testing Volcengine V{VERSION}... (scene channel={CHANNEL}, main voice volume={VOLUME}, speed={SPEED}, lip-sync volume={LIP_VOLUME})", ("VERSION", VolcTtsGateway.GetVersion(runtimeSettings.TtsVolcDedicatedApiUrl)), ("CHANNEL", runtimeSettings.TtsSceneUseWinmmAudible ? "winmm" : Ui("AF_MCM_Tts_LipSyncChannel", "lip-sync")), ("VOLUME", runtimeSettings.TtsVolcDedicatedVolume.ToString("F2", CultureInfo.InvariantCulture)), ("SPEED", runtimeSettings.TtsVolcDedicatedSpeed.ToString("F2", CultureInfo.InvariantCulture)), ("LIP_VOLUME", runtimeSettings.TtsLipSyncSoundEventVolume.ToString("F2", CultureInfo.InvariantCulture))), Color.FromUint(4294967040u)));
 					}

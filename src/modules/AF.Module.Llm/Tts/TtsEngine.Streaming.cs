@@ -18,7 +18,7 @@ internal sealed partial class TtsEngine
         internal long? Samples;
     }
 
-    private void ProcessStreamingJob(TtsJob job)
+    private void ProcessStreamingJob(TtsJob job, string speechText)
     {
         using var cancel = CancellationTokenSource.CreateLinkedTokenSource(job.Request.CancellationToken);
         // The transport enforces 32 MiB total; even 8 kHz / 2s segments fit below this item cap.
@@ -35,7 +35,7 @@ internal sealed partial class TtsEngine
                     segments.Add(new AudioSegment { Pcm = pcm, Rate = rate, Samples = samples }, cancel.Token);
                 }
                 return await new OpenAiCompatibleTtsGateway(_openAiHttpClient).StreamAsync(
-                    new OpenAiTtsSynthesisRequest(config.Url, config.Model, config.Voice, job.Text, job.Speed, config.TimeoutSeconds), config.Credential, Publish, cancel.Token).ConfigureAwait(false);
+                    new OpenAiTtsSynthesisRequest(config.Url, config.Model, config.Voice, speechText, job.Speed, config.TimeoutSeconds), config.Credential, Publish, cancel.Token).ConfigureAwait(false);
             }
             finally { segments.CompleteAdding(); }
         }, cancel.Token);
@@ -44,7 +44,7 @@ internal sealed partial class TtsEngine
         try
         {
             job.Request.StreamingPlayback = true;
-            job.Request.StreamingDurationSeconds = Math.Max(1f, job.Text.Length * 0.15f);
+            job.Request.StreamingDurationSeconds = Math.Max(1f, speechText.Length * 0.15f);
             foreach (AudioSegment segment in segments.GetConsumingEnumerable(job.Request.CancellationToken))
             {
                 if (!IsJobCurrent(job)) return;

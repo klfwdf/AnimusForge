@@ -20,7 +20,7 @@ The categorized pack tests additionally cover default-only random pools, explici
 
 `TtsRequestLifetimeRegressionTests/run.py` runs the complete engine/consumer lifetime suite, including the latest OpenAI streaming owner, local sentence jobs, postprocess-tone deadlines, cancellation and provider isolation. `run_local_producer.py` is only the smaller local-producer subset, not a replacement.
 
-The current integration and evidence are recorded in the [main ledger](../../../../docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-final-integration-20261017). Main-reply `TTS_TONE` tokens are defensive stripping/legacy compatibility only; live local tone comes from the existing validated postprocess mood, via typed per-reply metadata. No extra AI request or main-prompt instruction is added. `LocalTtsTonePresentationTests` checks real text consumers; `GptSoVitsRuntimeTests` separately verifies managed L/U process ownership.
+The current integration and evidence are recorded in the [main ledger](../../../../docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-four-providers-release-20261018). Main-reply `TTS_TONE` tokens are defensive stripping/legacy compatibility only; live local tone comes from the existing validated postprocess mood, via typed per-reply metadata. No extra AI request or main-prompt instruction is added. `LocalTtsTonePresentationTests` checks real text consumers; `GptSoVitsRuntimeTests` separately verifies managed L/U process ownership.
 
 Not covered by this catalog suite: real Campaign `.sav` loading, encyclopedia rendering/clicks, the live Python API, speech quality or battle FPS. Runtime fixture and real-bundle synthesis results must be reported separately from live-game acceptance.
 
@@ -34,3 +34,10 @@ late owner attachment, cross-mission removal and ordinary town/map cleanup. The 
 only the existing started-instance Mission reference, which is cleared by its existing removal lifecycle.
 This suite does not prove real-game owner callback order, playback timing or hearing the resulting audio;
 the separate complete TtsEngine lifetime suite covers real local-job cancellation without cancelling cloud jobs.
+
+
+## Shared speech output language
+
+All four providers share the original `TtsGptSoVitsOutputLanguage` setting identity (no duplicate JSON owner). The runtime fixture exercises the real capture method: local primary-only/battle policy remains local; forced-language cloud group turns can request metadata, while automatic cloud playback never waits for local tone. The complete lifetime suite covers Volcengine, OpenAI whole/streamed audio, pending translation, keep/missing/invalid metadata, captured settings and cancellation. It checks the actual text passed at each gateway leaf; cloud protocol/body tests remain separate. Fixed-language audition uses a prewritten phrase and makes no translation LLM call.
+
+Translation is authorized only by the existing postprocessor and isolated from visible text/history/action parsing. Text-only system messages or battle paths without that postprocessor cannot invent translated speech and remain text-only when a forced language is set. The remote model/voice must support the requested language; this option does not add multilingual capability to a monolingual provider. No live provider/accent acceptance is implied.

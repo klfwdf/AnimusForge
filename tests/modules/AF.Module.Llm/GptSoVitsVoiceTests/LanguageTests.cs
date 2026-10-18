@@ -6,6 +6,22 @@ static class LanguageTests
 {
     internal static async Task Run(GptSoVitsVoice voice, byte[] wave, Action<bool,string> check)
     {
+        var previous = DuelSettings.Current;
+        try
+        {
+            foreach (bool local in new[] { false, true })
+            foreach (bool enabled in new[] { false, true })
+            foreach (bool primary in new[] { false, true })
+            foreach (string selection in new[] { "", "日语", "invalid" })
+            {
+                DuelSettings.Current = new DuelSettings { TtsUseGptSoVits = local, EnableTtsSpeech = enabled, TtsGptSoVitsOutputLanguage = selection };
+                var captured = GptSoVitsVoiceRuntime.CaptureSpeechLanguage(primary);
+                bool expected = enabled && (!local || primary) && (local || selection == "日语");
+                check((captured != null) == expected, "actual language capture: local/enable/primary/auto/forced matrix");
+                if (captured != null) check(captured.Code == GptSoVitsLanguage.Parse(selection).Code, "capture keeps requested language identity");
+            }
+        }
+        finally { DuelSettings.Current = previous; }
         foreach (var group in new[] { new[]{"zh","all_zh","中文","普通话","Chinese","zh-CN"}, new[]{"yue","all_yue","粤语","广东话","Cantonese","zh-HK"}, new[]{"ja","all_ja","日语","日本語","Japanese","ja-JP"}, new[]{"en","en","英语","英文","English","en-US"} })
         {
             foreach (string alias in group.Skip(2)) check(GptSoVitsLanguage.Parse(" "+alias+" ").EngineCode == group[1], "alias maps to forced engine code "+alias);

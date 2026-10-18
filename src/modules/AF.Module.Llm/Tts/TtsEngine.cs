@@ -315,13 +315,15 @@ internal sealed partial class TtsEngine : IDisposable
 				Speed = speed,
 				AgentIndex = agentIndex,
 				VoiceIdOverride = (voiceIdOverride ?? "").Trim(),
-				Settings = new ProviderSnapshot(settings)
+				Settings = new ProviderSnapshot(settings),
+                PendingLocalSpeech = pendingLocalSpeech,
+                LocalSpeech = localSpeech ?? LocalTtsSpeech.Neutral
 			};
 			if (settings?.TtsUseGptSoVits == true)
 			{
 				item.LocalRequest = GptSoVitsVoiceRuntime.CaptureRequest(segments[0], item.VoiceIdOverride, speed, settings, pendingLocalSpeech != null ? -1 : (int)(localSpeech?.Tone ?? LocalTtsTone.Neutral));
-                item.PendingLocalSpeech = pendingLocalSpeech;
-                item.LocalSpeech = localSpeech ?? LocalTtsSpeech.Neutral;
+
+
 				Logger.Log("TtsEngine", "[LocalTone] agent=" + agentIndex + ";voice=" + item.VoiceIdOverride + ";tone=" + (localSpeech?.Tone ?? LocalTtsTone.Neutral) + ";language=" + item.LocalRequest.Language.Code);
 			}
 			if (!TryEnqueueJob(item, onAccepted))
@@ -711,22 +713,28 @@ internal sealed partial class TtsEngine : IDisposable
 
     private void ProcessJob(TtsJob job)
     {
-        if (job.LocalRequest != null && !job.BypassEnabledCheck)
+        var language = job.LocalRequest?.Language ?? job.Settings.SpeechLanguage;
+        if (!language.IsSupported)
+        { NotifyPlaybackFailed(job, "tts_local_language_invalid"); return; }
+        if (!job.BypassEnabledCheck && (job.LocalRequest != null || language.IsForced))
         {
             var speech = job.PendingLocalSpeech == null ? job.LocalSpeech ?? LocalTtsSpeech.Neutral
                 : LocalTtsSpeech.AwaitAsync(job.PendingLocalSpeech, job.Request.CancellationToken,
-                    job.LocalRequest.Language.IsForced ? 30000 : 8000).GetAwaiter().GetResult();
-            if (!speech.TrySelectText(job.LocalRequest.Language, job.Text, out string spoken))
+                    language.IsForced ? 30000 : 8000).GetAwaiter().GetResult();
+            if (!speech.TrySelectText(language, job.Text, out string spoken))
             { NotifyPlaybackFailed(job, "tts_local_translation_missing"); return; }
-            if (speech.Translated && job.LocalRequest.Language.IsForced)
+            if (speech.Translated && language.IsForced)
             {
-                job.Segments = TtsSentenceChunker.Split(spoken);
+                // Local engines synthesize sentences; cloud transport retains one utterance
+                // (and its existing WAV streaming policy). Never replace the visible source.
+                job.Segments = job.LocalRequest != null ? TtsSentenceChunker.Split(spoken) : new[] { spoken };
                 if (job.Segments.Length == 0)
                 { NotifyPlaybackFailed(job, "tts_local_translation_missing"); return; }
                 job.KeepOriginalSubtitle = true;
                 job.Request.SegmentCount = job.Segments.Length;
             }
-            job.LocalRequest = job.LocalRequest.WithTone(speech.Tone).WithText(job.Segments[0]);
+            if (job.LocalRequest != null)
+                job.LocalRequest = job.LocalRequest.WithTone(speech.Tone).WithText(job.Segments[0]);
         }
         if (job.Segments == null) { ProcessSentence(job, job.Text, job.LocalRequest); return; }
         for (int i = 0; i < job.Segments.Length; i++)
@@ -840,7 +848,7 @@ internal sealed partial class TtsEngine : IDisposable
 			NotifyPlaybackFailed(job, "Scene speech target became unavailable before synthesis.");
 			return;
 		}
-		if (snapshot.Streaming && openAi) { ProcessStreamingJob(job); return; }
+		if (snapshot.Streaming && openAi) { ProcessStreamingJob(job, sentenceText); return; }
 		byte[] array;
 		string synthesisError = "";
 		if (localRequest != null)

@@ -71,6 +71,7 @@ namespace AnimusForge
     internal sealed class DuelSettings
     {
         internal bool UsesManagedGptSoVits, EnableTtsSpeech = true, TtsUseGptSoVits = true;
+        internal bool IsSelectedTtsEnabled => EnableTtsSpeech;
         internal string TtsGptSoVitsOutputLanguage = "";
         internal static DuelSettings Current;
         internal static DuelSettings GetSettings()=>Current;
