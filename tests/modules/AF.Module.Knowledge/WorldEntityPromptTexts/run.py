@@ -17,6 +17,7 @@ extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
 parser.add_argument("--run-root", type=Path)
+parser.add_argument("--line-source-file", type=Path, help="Use a historical visible-party line formatter as a behavioral negative control")
 args = parser.parse_args()
 out = new_run_root(ROOT, "knowledge-world-entity-prompts", args.run_root)
 dotnet = resolve_dotnet(ROOT)
@@ -37,6 +38,7 @@ markers = (
     "internal sealed class VisiblePartyCandidate",
     "private static string StripEntityIdsFromMainPromptBlock(",
     "private static string BuildVisiblePartyPromptLine(",
+    "private static string BuildVisiblePartyArmyInfo(",
     "private static string BuildVisiblePartyRelationPromptSegment(",
     "private static string FormatPostprocessEntityId(",
     "private static string FormatRelationBand(",
@@ -55,7 +57,11 @@ markers = (
     "private static string FormatInt(",
     "private static string FormatScore(",
 )
-methods = "\n".join(extract.declaration(source, marker) for marker in markers)
+line_source = args.line_source_file.read_text(encoding="utf-8-sig") if args.line_source_file else source
+methods = "\n".join(extract.declaration(line_source if marker == "private static string BuildVisiblePartyPromptLine(" else source, marker) for marker in markers)
+capture = extract.declaration(source, "private static List<VisiblePartyCandidate> BuildVisiblePartyCandidates(")
+assert "Dictionary<Army, string> armyInfoCache = new Dictionary<Army, string>()" in capture
+assert "ArmyInfo = BuildVisiblePartyArmyInfo(party, armyInfoCache)" in capture
 (out / "Production.cs").write_text("using System;using System.Collections.Generic;using System.Globalization;using System.Text.RegularExpressions;using System.Linq;namespace AnimusForge {internal static partial class WorldEntityRetrievalService {" + methods + "}}", encoding="utf-8")
 (out / "KnowledgeSourceTexts.cs").write_bytes((ROOT / "src/modules/AF.Module.Knowledge/Host/KnowledgeSourceTexts.cs").read_bytes())
 (out / "WorldEntityPromptTexts.cs").write_bytes((ROOT / "src/modules/AF.Module.Knowledge/Entities/WorldEntityPromptTexts.cs").read_bytes())

@@ -149,6 +149,8 @@ public static class WorldEntityRetrievalService
 
 		public string ShipInfo;
 
+		public string ArmyInfo;
+
 		public string Direction;
 
 		public float Distance;
@@ -2177,7 +2179,8 @@ public static class WorldEntityRetrievalService
 		}
 		string shipSegment = string.IsNullOrWhiteSpace(party.ShipInfo) ? "" : (WorldEntityPromptTexts.Get("Ship", "; Ships: ") + party.ShipInfo.Trim());
 		string relationSegment = BuildVisiblePartyRelationPromptSegment(party);
-		return index + WorldEntityPromptTexts.Get("EntryName", ". Name: ") + party.Name + WorldEntityPromptTexts.Get("Count", "; Count: ") + party.Count + shipSegment + WorldEntityPromptTexts.Get("PartyId", "; Party ID: ") + party.Id + WorldEntityPromptTexts.Get("Affiliation", "; Affiliation: ") + party.Affiliation + relationSegment + WorldEntityPromptTexts.Get("Direction", "; Direction: ") + party.Direction + WorldEntityPromptTexts.Get("Distance", "; Distance: ") + FormatDistance(party.Distance);
+		string countLabel = string.IsNullOrWhiteSpace(party.ArmyInfo) ? WorldEntityPromptTexts.Get("Count", "; Count: ") : WorldEntityPromptTexts.Get("OwnPartyCount", "; This party's member count: ");
+		return index + WorldEntityPromptTexts.Get("EntryName", ". Name: ") + party.Name + countLabel + party.Count + party.ArmyInfo + shipSegment + WorldEntityPromptTexts.Get("PartyId", "; Party ID: ") + party.Id + WorldEntityPromptTexts.Get("Affiliation", "; Affiliation: ") + party.Affiliation + relationSegment + WorldEntityPromptTexts.Get("Direction", "; Direction: ") + party.Direction + WorldEntityPromptTexts.Get("Distance", "; Distance: ") + FormatDistance(party.Distance);
 	}
 
 	private static string BuildVisiblePartyRelationPromptSegment(VisiblePartyCandidate party)
@@ -3311,6 +3314,7 @@ public static class WorldEntityRetrievalService
 	private static List<VisiblePartyCandidate> BuildVisiblePartyCandidates(Hero contextHero)
 	{
 		Dictionary<string, VisiblePartyCandidate> selected = new Dictionary<string, VisiblePartyCandidate>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<Army, string> armyInfoCache = new Dictionary<Army, string>();
 		try
 		{
 			Hero playerHero = Hero.MainHero;
@@ -3345,6 +3349,7 @@ public static class WorldEntityRetrievalService
 						Id = id,
 						Name = SafePromptName(party.Name, id),
 						Count = GetPartyMemberCount(party),
+						ArmyInfo = BuildVisiblePartyArmyInfo(party, armyInfoCache),
 						Affiliation = FormatPartyAffiliation(party),
 						RelationToContextHero = FormatVisiblePartyRelationToHero(party, contextHero),
 						RelationToPlayer = FormatVisiblePartyRelationToHero(party, playerHero),
@@ -3370,6 +3375,35 @@ public static class WorldEntityRetrievalService
 			}
 		}
 		return selected.Values.OrderBy((VisiblePartyCandidate x) => x.Distance).ThenBy((VisiblePartyCandidate x) => x.Name, StringComparer.OrdinalIgnoreCase).Take(MaxVisiblePartyCandidates).ToList();
+	}
+
+	private static string BuildVisiblePartyArmyInfo(MobileParty party, Dictionary<Army, string> armyInfoCache)
+	{
+		try
+		{
+			Army army = party?.Army;
+			MobileParty leader = army?.LeaderParty;
+			if (leader == null) return "";
+			if (!armyInfoCache.TryGetValue(army, out string summary))
+			{
+				// Army.TotalManCount includes only the leader and attached parties in
+				// both APIs. Match that population instead of counting parties en route.
+				string unknown = WorldEntityPromptTexts.Get("Unknown", "unknown");
+				summary = WorldEntityPromptTexts.Get("ArmyName", "; Army: ") + SafePromptName(army.Name, unknown)
+					+ WorldEntityPromptTexts.Get("ArmyCommander", "; Army commander: ") + SafePromptName((leader.LeaderHero ?? army.ArmyOwner)?.Name, unknown)
+					+ WorldEntityPromptTexts.Get("ArmyGatheredPartyCount", "; Currently assembled party count: ") + Math.Max(0, army.LeaderPartyAndAttachedPartiesCount)
+					+ WorldEntityPromptTexts.Get("ArmyGatheredMemberCount", "; Army's currently assembled total member count: ") + Math.Max(0, army.TotalManCount);
+				armyInfoCache.Add(army, summary);
+			}
+			return summary + (party == leader || party.AttachedTo == leader
+				? WorldEntityPromptTexts.Get("ArmyPartyAssembled", "; This party is assembled with the army")
+				: WorldEntityPromptTexts.Get("ArmyPartyNotAssembled", "; This party has not assembled with the army; the army's total is not this party's force present here"));
+		}
+		catch
+		{
+			// An unavailable army must not discard the visible party's own facts.
+			return "";
+		}
 	}
 
 	private static void AddObserverParty(List<MobileParty> observers, MobileParty party)

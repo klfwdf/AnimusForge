@@ -10,7 +10,17 @@ internal static class AnimusForgeModulePaths {
     internal static string Root;
     internal static string GetModuleDataFilePath(string name) => Path.Combine(Root, name);
 }
-internal sealed class Hero { public float Age; public bool IsFemale; public string Occupation; public Clan Clan; public Kingdom RulerKingdom; public bool IsKingdomLeader, IsLord, IsWanderer, IsNotable; }
+internal sealed class Hero { public TextObject Name; public float Age; public bool IsFemale; public string Occupation; public Clan Clan; public Kingdom RulerKingdom; public bool IsKingdomLeader, IsLord, IsWanderer, IsNotable; }
+internal sealed class MobileParty { public Army Army; public MobileParty AttachedTo; public Hero LeaderHero; }
+internal sealed class Army {
+    public TextObject Name;
+    public MobileParty LeaderParty;
+    public Hero ArmyOwner;
+    public int GatheredCount=3, Members=1250, CountReads, MemberReads;
+    public bool ThrowOnRead;
+    public int LeaderPartyAndAttachedPartiesCount { get { CountReads++; return GatheredCount; } }
+    public int TotalManCount { get { MemberReads++; if(ThrowOnRead) throw new Exception("unavailable native army"); return Members; } }
+}
 internal sealed class TextObject {
     internal string Value;
     public override string ToString() => Value;
@@ -82,6 +92,36 @@ internal static partial class WorldEntityRetrievalService {
         string expectedParty = english ? "2. Name: RAW_{NAME}; Count: 15; Ships: 2 ships; Party ID: party:unit_007; Affiliation: Clan A; Relation to NPC: ally; Relation to player: neutral; Direction: east; Distance: 2.5" : "2. 名称：RAW_{NAME}；数量：15；舰船：2 ships；部队ID：party:unit_007；从属：Clan A；与NPC关系：ally；与玩家关系：neutral；方位：东；距离：2.5";
         Equal(partyLine, expectedParty, "complete visible party facts and execution ID preserved");
         Equal(StripEntityIdsFromMainPromptBlock(partyLine), expectedParty.Replace(english ? "; Party ID: party:unit_007" : "；部队ID：party:unit_007", ""), "main prompt removes only party ID");
+        var leader = new MobileParty { LeaderHero = new Hero { Name = new TextObject { Value = "RAW_Commander" } } };
+        var army = new Army { Name = new TextObject { Value = "RAW_Army_{NAME}" }, LeaderParty = leader };
+        leader.Army = army;
+        var member = new MobileParty { Army = army, AttachedTo = leader };
+        var enRoute = new MobileParty { Army = army };
+        var cache = new Dictionary<Army,string>();
+        Equal(BuildVisiblePartyArmyInfo(null, cache), "", "missing party has no invented army");
+        Equal(BuildVisiblePartyArmyInfo(new MobileParty(), cache), "", "independent party has no invented army");
+        Equal(BuildVisiblePartyArmyInfo(new MobileParty { Army = new Army() }, cache), "", "missing army leader retains independent facts");
+        string armySummary = resources["ArmyName"] + "RAW_Army_{NAME}" + resources["ArmyCommander"] + "RAW_Commander"
+            + resources["ArmyGatheredPartyCount"] + "3" + resources["ArmyGatheredMemberCount"] + "1250";
+        string memberInfo = BuildVisiblePartyArmyInfo(member, cache);
+        Equal(memberInfo, armySummary + resources["ArmyPartyAssembled"], "attached member receives real assembled army total");
+        Equal(BuildVisiblePartyArmyInfo(leader, cache), memberInfo, "commander and attached party share one army total");
+        Equal(BuildVisiblePartyArmyInfo(enRoute, cache), armySummary + resources["ArmyPartyNotAssembled"], "unassembled membership is not force present here");
+        Equal(army.MemberReads + ":" + army.CountReads, "1:1", "army summary is captured once per request");
+        party.ArmyInfo=memberInfo; party.Count=220;
+        string armyPartyLine = BuildVisiblePartyPromptLine(2, party);
+        string expectedArmyParty = expectedParty.Replace(resources["Count"] + "15", resources["OwnPartyCount"] + "220" + memberInfo);
+        Equal(armyPartyLine, expectedArmyParty, "visible army member separates own 220 from assembled 1250");
+        Equal(StripEntityIdsFromMainPromptBlock(armyPartyLine), expectedArmyParty.Replace(resources["PartyId"] + party.Id, ""), "main chain retains army context while hiding only party ID");
+        army.Members=1400;
+        var nextCache = new Dictionary<Army,string>();
+        Equal(BuildVisiblePartyArmyInfo(member, nextCache), (armySummary + resources["ArmyPartyAssembled"]).Replace("1250", "1400"), "next request refreshes army strength");
+        Equal(army.MemberReads + ":" + army.CountReads, "2:2", "no global army cache");
+        member.AttachedTo=null;
+        Equal(BuildVisiblePartyArmyInfo(member, nextCache), (armySummary + resources["ArmyPartyNotAssembled"]).Replace("1250", "1400"), "assembly status remains specific to the observed party");
+        var brokenArmy = new Army { LeaderParty=leader, ThrowOnRead=true };
+        Equal(BuildVisiblePartyArmyInfo(new MobileParty { Army=brokenArmy }, new Dictionary<Army,string>()), "", "native army read failure does not discard party facts");
+        Equal(cache.Count.ToString(), "1", "one detached summary per army");
         Equal(FormatPostprocessEntityId("party:unit_007"), "unit_007", "postprocess retains usable party ID");
         Equal(FormatPostprocessEntityId("hero:lord_1"), "lord_1", "postprocess retains usable hero ID");
         string heroLine = english ? "1. Caladog (ID: hero:lord_1; Match score: 1.00; Mention: Caladog)" : "1. Caladog（编号：hero:lord_1；匹配分：1.00；提及：Caladog）";
