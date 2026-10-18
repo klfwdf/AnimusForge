@@ -70,6 +70,7 @@ static class Program
         string hash = Convert.ToHexString(SHA256.HashData(wav));
         var a = Profile("male-a", "male", hash); var b = Profile("male-b", "male", hash); var f = Profile("female-a", "female", hash);
         var catalog = GptSoVitsVoiceCatalog.Load(Manifest(root, a, b, f));
+        await LanguageTests.Run(catalog.Get("male-a"), wav, Check);
         for (int i = 0; i < 64; i++)
         {
             Check(!catalog.ResolveAssignment(null, false).IsFemale, "male random stays male");

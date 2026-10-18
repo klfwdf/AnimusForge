@@ -16,6 +16,7 @@ static class TtsProviderChecks
         object[] values = { 1, "https://tts-fixture.invalid/v1/audio/speech", "fixture-key", "fixture-model", "zh_default", 1.25f, 75, false };
         object[] original = { settings.TtsProviderDropdown.SelectedIndex, settings.TtsOpenAiApiUrl, settings.TtsOpenAiApiKey, settings.TtsOpenAiModel, settings.TtsOpenAiVoice, settings.TtsOpenAiSpeed, settings.TtsOpenAiTimeoutSeconds, settings.TtsStreamingPlaybackEnabled };
         string oldVoice = settings.TtsVolcDedicatedSpeaker;
+        string oldLanguage = settings.TtsGptSoVitsOutputLanguage;
         settings.TtsVolcDedicatedSpeaker = "preserved-volc-voice";
         try
         {
@@ -28,6 +29,7 @@ static class TtsProviderChecks
                 language.Invoke(null, new object[] { selected });
                 check(TerminalSettingsRegistry.GetById("TtsProviderDropdown").DisplayName == (selected == "English" ? "TTS service" : "TTS 服务"), "Actual native TTS service label " + selected);
                 check(TerminalSettingsRegistry.GetById("TtsOpenAiVoice").DisplayName == (selected == "English" ? "Speech voice" : "语音音色"), "Actual native TTS voice label " + selected);
+                check(TerminalSettingsRegistry.GetById("TtsGptSoVitsOutputLanguage").DisplayName == (selected == "English" ? "Speech output language" : "语音输出语言"), "Speech language localized through actual terminal consumer");
                 string streamHint = TerminalSettingsRegistry.GetById("TtsStreamingPlaybackEnabled").HintText;
                 check(streamHint.Contains("stream=true") && streamHint.Contains("stream=false"), "Actual native streaming hint describes upstream on/off flags " + selected);
             }
@@ -54,18 +56,27 @@ static class TtsProviderChecks
                     "Local provider JSON roundtrip " + mode);
                 check(local.TtsOpenAiApiKey == "fixture-key" && local.TtsVolcDedicatedSpeaker == "preserved-volc-voice", "Local selection preserves cloud credentials and voice");
             }
+            foreach (string speechLanguage in new[] { "中文", "粤语", "英语", "日语", "Japanese", "" })
+            {
+                TerminalSettingsRegistry.GetById("TtsGptSoVitsOutputLanguage").Setter(settings, speechLanguage);
+                check(save(settings), "Language saves via original owner " + speechLanguage);
+                var languageRoundtrip = new DuelSettings(); load(languageRoundtrip);
+                check(languageRoundtrip.TtsGptSoVitsOutputLanguage == speechLanguage, "Language native JSON roundtrip " + speechLanguage);
+            }
             var json = JObject.Parse(File.ReadAllText(path));
+            json.Remove("TtsGptSoVitsOutputLanguage");
             foreach (string id in ids) json.Remove(id);
             File.WriteAllText(path, json.ToString());
             var legacy = new DuelSettings(); load(legacy);
             check(legacy.TtsProviderDropdown.SelectedIndex == 0 && legacy.TtsOpenAiApiKey == "" && legacy.TtsVolcDedicatedSpeaker == "preserved-volc-voice", "Old JSON retains Volcengine and does not invent credentials");
+            check(legacy.TtsGptSoVitsOutputLanguage == "", "Old JSON remains automatic, never implicitly changes language");
             check(legacy.TtsStreamingPlaybackEnabled, "Missing streaming field defaults to enabled");
             var pages = (MCM.Abstractions.Base.Global.FluentGlobalSettings[])typeof(DuelSettings).Assembly.GetType("AnimusForge.AnimusForgeMcmPages", true)
                 .GetMethod("CreatePages", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
                 .Invoke(null, new object[] { TerminalProviderProbe.Owners.Values.Cast<BaseSettings>().ToArray() });
             var projected = pages.SelectMany(p => p.GetAllSettingPropertyDefinitions()).ToArray();
             foreach (string id in ids) check(projected.Count(p => p.Id == id) == 1, "TTS MCM projection exists exactly once: " + id);
-            string[] localIds = { "TtsGptSoVitsApiUrl", "TtsGptSoVitsManifestPath", "TtsGptSoVitsSpeed", "TtsGptSoVitsMood", "TestTtsGptSoVitsVoice", "RefreshTtsGptSoVitsRuntime" };
+            string[] localIds = { "TtsGptSoVitsOutputLanguage", "TtsGptSoVitsApiUrl", "TtsGptSoVitsManifestPath", "TtsGptSoVitsSpeed", "TtsGptSoVitsMood", "TestTtsGptSoVitsVoice", "RefreshTtsGptSoVitsRuntime" };
             foreach (string id in localIds)
             {
                 check(TerminalSettingsRegistry.GetById(id) != null, "Local control has actual terminal consumer: " + id);
@@ -84,6 +95,7 @@ static class TtsProviderChecks
         {
             for (int i = 0; i < ids.Length; i++) TerminalSettingsRegistry.GetById(ids[i]).Setter(settings, original[i]);
             settings.TtsVolcDedicatedSpeaker = oldVoice;
+            settings.TtsGptSoVitsOutputLanguage = oldLanguage;
             check(save(settings), "TTS fixture restores original settings");
         }
     }

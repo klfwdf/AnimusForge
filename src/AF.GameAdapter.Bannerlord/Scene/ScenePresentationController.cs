@@ -35,7 +35,7 @@ internal sealed class ScenePresentationController
   _activateMovement = activateMovement; _deactivateMovement = deactivateMovement; _onEnd = onEnd;
   _autoExcludeUnframedParticipants = autoExcludeUnframedParticipants;
  }
-	internal SceneSpeechPlaybackInfo ShowNpcSpeechOutput(SceneSpeechOutputPort port, NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false, LocalTtsTone localTtsTone = LocalTtsTone.Neutral, Task<LocalTtsTone> pendingLocalTone = null)
+	internal SceneSpeechPlaybackInfo ShowNpcSpeechOutput(SceneSpeechOutputPort port, NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false, LocalTtsSpeech localSpeech = null, Task<LocalTtsSpeech> pendingLocalSpeech = null)
 	{
 		SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = new SceneSpeechPlaybackInfo();
 		if (!_canParticipate(liveAgent))
@@ -153,7 +153,7 @@ internal sealed class ScenePresentationController
                         }, segment =>
                         {
                             if (num2 < 0) return;
-                            string sentence = port.SanitizeUiText(segment.Text);
+                            string sentence = segment.PreserveOriginalText ? text : port.SanitizeUiText(segment.Text);
                             port.ClearPendingBubble(num, true);
                             port.ClearPendingFeed(num);
                             sceneSpeechPlaybackInfo.VisualDurationSeconds = segment.DurationSeconds;
@@ -162,7 +162,7 @@ internal sealed class ScenePresentationController
                             port.EnqueueBubble(num, liveAgent, sentence, npcDisplayName, segment.DurationSeconds);
                             port.ScheduleFeed(num, npcDisplayName, sentence, sceneSpeechPlaybackInfo);
                         });
-					}, localTtsTone, pendingLocalTone);
+					}, localSpeech, pendingLocalSpeech);
 				}
 			}
 			catch

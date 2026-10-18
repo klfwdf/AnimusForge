@@ -9,7 +9,9 @@
   <ItemGroup>
     <Compile Include="../../../../src/AF.Persistence/AnimusForgeDataPaths.cs" Link="AnimusForgeDataPaths.cs" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <Compile Include="../../../../src/modules/AF.Module.Llm/Tts/LocalTtsToneTag.cs" Link="LocalTtsToneTag.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Llm/Tts/GptSoVitsLanguage.cs" />
+<Compile Include="../../../../src/modules/AF.Module.Llm/Tts/LocalTtsSpeech.cs" />
+<Compile Include="../../../../src/modules/AF.Module.Llm/Tts/LocalTtsToneTag.cs" Link="LocalTtsToneTag.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Scene/GptSoVitsVoiceRuntime.cs" Link="GptSoVitsVoiceRuntime.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Scene/GptSoVitsBattleSpeechGuard.cs" Link="GptSoVitsBattleSpeechGuard.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Tts/GptSoVitsVoiceCatalog.cs" Link="GptSoVitsVoiceCatalog.cs" />

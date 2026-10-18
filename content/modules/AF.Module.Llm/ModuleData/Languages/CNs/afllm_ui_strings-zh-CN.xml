@@ -148,5 +148,14 @@
     <string id="AF_MCM_Tts_ProviderManual" text="GPT-SoVITS（手动 API）" />
     <string id="AF_MCM_Tts_Provider_Hint" text="AF-GPTSOVITS 自动识别模组目录内兼容的 L/U 包，优先 L。手动 API 使用自己启动的本地服务。切换保留各服务配置，失败只显示文字，不自动切换服务。" />
     <string id="AF_GPT_UI_RuntimeMissing" text="未找到兼容运行包" />
+    <string id="AF_GPT_UI_OutputLanguage" text="语音输出语言" />
+    <string id="AF_GPT_UI_OutputLanguageHint" text="仅本地 GPT-SoVITS。填写中文、粤语、英语、日语（也支持英文名称）。留空/auto 跟随正文；语言相同原文朗读，不同则由后处理生成隐藏译文，字幕不变。语言无效或译文缺失时仅显示文字。" />
+    <string id="AF_GPT_UI_LanguageInvalid" text="不支持该本地语音语言。请填写中文、粤语、英语、日语，或留空自动识别。" />
+    <string id="AF_GPT_UI_TranslationMissing" text="后处理未确认目标语言的朗读稿，或语言设置已改变。本轮保留文字，不按错误语言朗读。" />
+    <string id="AF_GPT_UI_LanguageTestZh" text="旅人，你好。我们先把事情说清楚，再决定下一步怎么做。" />
+    <string id="AF_GPT_UI_LanguageTestYue" text="你好呀，我哋先讲清楚件事，再决定下一步点做。" />
+    <string id="AF_GPT_UI_LanguageTestEn" text="Hello, traveler. Let us discuss this carefully before deciding what to do next." />
+    <string id="AF_GPT_UI_LanguageTestJa" text="旅人さん、こんにちは。まずは落ち着いて話してから、次にどうするか決めましょう。" />
+    <string id="AF_GPT_UI_LanguageRuntimeOld" text="请更新 AF-GPTSOVITS 模型包后使用指定语音语言。当前旧包只支持自动语言识别。" />
   </strings>
 </base>

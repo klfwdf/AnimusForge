@@ -84,7 +84,7 @@ namespace AnimusForge;
                 SceneActionPostprocessWorkItem workItem = null;
                 if (!await CaptureOnGameThreadAsync("postprocess_prepare", () =>
                 {
-                    workItem = PrepareSceneUnifiedActionPostprocess(targetHero, targetCharacter, nativeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, postprocessReply, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, nativeDuelStakeOptions, null, nativeSceneMechanismPostprocessRules, nativeSceneSummonTargets, nativeSceneGuideTargets, postprocessEntityContext, siegeInterventionRuleInjected: siegeInterventionPostprocessSelected, replyIsDirectPlayerResponse: shouldRecordPlayerInput, preprocessRuleHits: postprocessPreprocessHits, chainName: nativePostprocessChainName, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, detachedMainPromptSections: nativeDetachedMainPromptSections, offerSceneActionDirective: true);
+                    workItem = PrepareSceneUnifiedActionPostprocess(targetHero, targetCharacter, nativeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, postprocessReply, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, nativeDuelStakeOptions, null, nativeSceneMechanismPostprocessRules, nativeSceneSummonTargets, nativeSceneGuideTargets, postprocessEntityContext, siegeInterventionRuleInjected: siegeInterventionPostprocessSelected, replyIsDirectPlayerResponse: shouldRecordPlayerInput, preprocessRuleHits: postprocessPreprocessHits, chainName: nativePostprocessChainName, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, detachedMainPromptSections: nativeDetachedMainPromptSections, offerSceneActionDirective: true, speechLanguage: GptSoVitsVoiceRuntime.CaptureSpeechLanguage());
                 }).ConfigureAwait(false)) return NativeConversationTurnStep.Stop("");
                 // Only detached prompt strings cross the network boundary. Do not put the
                 // synchronous provider call on the game thread or normalize on the worker.
@@ -99,8 +99,8 @@ namespace AnimusForge;
                 {
                     postprocessed = CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error);
                     var speechSettings = DuelSettings.GetSettings();
-                    localTtsTone = succeeded && speechSettings?.EnableTtsSpeech == true && speechSettings.TtsUseGptSoVits
-                        && !GptSoVitsVoiceRuntime.IsBattleBlocked ? LocalTtsToneTag.FromPostprocessMood(postprocessed) : LocalTtsTone.Neutral;
+                    localSpeech = succeeded && speechSettings?.EnableTtsSpeech == true && speechSettings.TtsUseGptSoVits
+                        && !GptSoVitsVoiceRuntime.IsBattleBlocked ? workItem.SpeechResult : LocalTtsSpeech.Neutral;
                     // Strip before any detached tag catalog sees an unknown family; submit only
                     // after stale/target/discard checks (AcceptedReplySideEffects below).
                     nativeSceneActionDirective = ExtractSceneActionDirective(ref postprocessed, nativeTargetAgentIndex);
@@ -155,7 +155,7 @@ namespace AnimusForge;
                     RewriteTurn = rewriteTurn,
                     OpeningFact = npcOpeningConsumed ? npcOpeningPersistentFactText : null,
                     TtsAlreadyDispatched = nativeTtsDispatchedBeforePostprocess,
-                    LocalTtsTone = localTtsTone,
+                    LocalSpeech = localSpeech,
                     PendingPlayerHistorySequence = nativePendingPlayerHistoryEventSequence,
                     PendingPlayerHistoryKey = nativePendingAfefKey,
                     AcceptedReplySideEffects = BuildNativeAcceptedReplySideEffects()

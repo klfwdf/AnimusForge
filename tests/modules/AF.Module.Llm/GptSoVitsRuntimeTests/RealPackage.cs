@@ -28,6 +28,7 @@ internal static class RealPackage
             GptSoVitsManagedRuntime.Observe(settings);
             while(GptSoVitsManagedRuntime.State!="Ready" && GptSoVitsManagedRuntime.State!="Failed" && clock.Elapsed.TotalSeconds<160)await Task.Delay(250);
             if(!GptSoVitsManagedRuntime.TryCapture(settings.TtsGptSoVitsApiUrl,out string endpoint,out string instance)||GptSoVitsManagedRuntime.State!="Ready")throw new Exception("real runtime not ready: "+GptSoVitsManagedRuntime.State+":"+GptSoVitsManagedRuntime.Reason);
+            if (!GptSoVitsManagedRuntime.SupportsLanguageSelection) throw new InvalidOperationException("real_package_language_selection_missing");
             report["ready_seconds"]=clock.Elapsed.TotalSeconds;
             Console.WriteLine("Real portable L process ready in "+clock.Elapsed.TotalSeconds.ToString("F2")+"s");
             var catalog=GptSoVitsVoiceCatalog.LoadDirectory(Path.Combine(root,"VoicePacks"),out var notices);
@@ -36,16 +37,16 @@ internal static class RealPackage
             report["female_count"]=catalog.ForGender(true).Count;
             using var client=new HttpClient { Timeout=TimeSpan.FromSeconds(180) };
             var gateway=new GptSoVitsTtsGateway(client);
-            var cases=new[]{("male-clear",2,"你答应过要听我说完，怎么现在又装作什么都不知道呢？"),("female-sparkle",1,"别这么紧张嘛，我只是想看看，你究竟会不会认真听我说话。"),("female-sparkle",0,"You promised to listen, so please tell me what really happened."),("male-clear",0,"こんにちは。最後まで話を聞いてください。")};
+            var cases=new[]{("male-clear",2,"你答应过要听我说完，怎么现在又装作什么都不知道呢？","中文"),("female-sparkle",1,"别这么紧张嘛，我只是想看看，你究竟会不会认真听我说话。","中文"),("female-sparkle",0,"You promised to listen, so please tell me what really happened.","英语"),("male-clear",0,"こんにちは。最後まで話を聞いてください。","日语"),("female-sparkle",0,"你好呀，我哋先讲清楚件事，再决定下一步点做。","粤语")};
             int i=0;
             foreach(var row in cases)
             {
                 var voice=catalog.Get(row.Item1).ForMood(row.Item2);clock.Restart();
-                var request=new GptSoVitsSynthesisRequest(endpoint,row.Item3,voice,1f,instance);
+                var request=new GptSoVitsSynthesisRequest(endpoint,row.Item3,voice,1f,instance,GptSoVitsLanguage.Parse(row.Item4));
                 var result=await gateway.SynthesizeAsync(request,CancellationToken.None);
                 if(!result.Success)throw new Exception("real synthesis failed: "+result.ErrorCode);
                 string filename=Path.Combine(output,(++i).ToString("D2")+"-portable.wav");File.WriteAllBytes(filename,result.AudioBytes);
-                ((JArray)report["audio"]).Add(new JObject{["voice"]=row.Item1,["tone"]=row.Item2,["reference_sha256"]=voice.ReferenceHash,["text"]=row.Item3,["seconds"]=clock.Elapsed.TotalSeconds,["bytes"]=result.AudioBytes.Length,["sha256"]=Convert.ToHexString(SHA256.HashData(result.AudioBytes))});
+                ((JArray)report["audio"]).Add(new JObject{["voice"]=row.Item1,["tone"]=row.Item2,["text_lang"]=request.Language.EngineCode,["reference_sha256"]=voice.ReferenceHash,["text"]=row.Item3,["seconds"]=clock.Elapsed.TotalSeconds,["bytes"]=result.AudioBytes.Length,["sha256"]=Convert.ToHexString(SHA256.HashData(result.AudioBytes))});
                 Console.WriteLine("PASS portable real voice "+row.Item1+" tone="+row.Item2+" bytes="+result.AudioBytes.Length+" seconds="+clock.Elapsed.TotalSeconds.ToString("F2"));
             }
             using(var bad=new HttpRequestMessage(HttpMethod.Get,endpoint.Replace("/tts","/af/health")))

@@ -36,9 +36,9 @@ internal sealed class SceneSpeechEffectPorts
     internal ScheduleSceneAutonomyRestoreAfterSpeechCapability ScheduleSceneAutonomyRestoreAfterSpeech;
     internal delegate void ScheduleWorldMapMissionExitAfterSpeechCapability(int agentIndex, SceneSpeechPlaybackInfo playbackInfo);
     internal ScheduleWorldMapMissionExitAfterSpeechCapability ScheduleWorldMapMissionExitAfterSpeech;
-    internal delegate SceneSpeechPlaybackInfo ShowNpcSpeechOutputCapability(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false, LocalTtsTone localTtsTone = LocalTtsTone.Neutral, Task<LocalTtsTone> pendingLocalTone = null);
+    internal delegate SceneSpeechPlaybackInfo ShowNpcSpeechOutputCapability(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false, LocalTtsSpeech localSpeech = null, Task<LocalTtsSpeech> pendingLocalSpeech = null);
     internal ShowNpcSpeechOutputCapability ShowNpcSpeechOutput;
-    internal delegate void ShowOpenLordsHallResponseAndScheduleEntryCapability(NpcDataPacket npc, Agent agent, List<NpcDataPacket> allNpcData, string content, bool commitHistory, string afterSpeechInfoMessage, LocalTtsTone localTtsTone = LocalTtsTone.Neutral, Task<LocalTtsTone> pendingLocalTone = null);
+    internal delegate void ShowOpenLordsHallResponseAndScheduleEntryCapability(NpcDataPacket npc, Agent agent, List<NpcDataPacket> allNpcData, string content, bool commitHistory, string afterSpeechInfoMessage, LocalTtsSpeech localSpeech = null, Task<LocalTtsSpeech> pendingLocalSpeech = null);
     internal ShowOpenLordsHallResponseAndScheduleEntryCapability ShowOpenLordsHallResponseAndScheduleEntry;
     internal delegate bool TryConsumeSceneNpcSurrenderTagCapability(NpcDataPacket speaker, ref string content, out Hero targetHero, out CharacterObject targetCharacter, out int targetAgentIndex);
     internal TryConsumeSceneNpcSurrenderTagCapability TryConsumeSceneNpcSurrenderTag;

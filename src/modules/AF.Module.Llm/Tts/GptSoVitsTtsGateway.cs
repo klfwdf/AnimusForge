@@ -16,12 +16,13 @@ internal sealed class GptSoVitsSynthesisRequest
     internal GptSoVitsVoice Voice { get; }
     internal float Speed { get; }
     internal string ManagedInstance { get; }
+    internal GptSoVitsLanguage Language { get; }
 
-    internal GptSoVitsSynthesisRequest WithTone(LocalTtsTone tone) => new GptSoVitsSynthesisRequest(Endpoint.AbsoluteUri, Text, Voice.ForMood((int)tone), Speed, ManagedInstance);
+    internal GptSoVitsSynthesisRequest WithTone(LocalTtsTone tone) => new GptSoVitsSynthesisRequest(Endpoint.AbsoluteUri, Text, Voice.ForMood((int)tone), Speed, ManagedInstance, Language);
 
-    internal GptSoVitsSynthesisRequest WithText(string text) => new GptSoVitsSynthesisRequest(Endpoint.AbsoluteUri, text, Voice, Speed, ManagedInstance);
+    internal GptSoVitsSynthesisRequest WithText(string text) => new GptSoVitsSynthesisRequest(Endpoint.AbsoluteUri, text, Voice, Speed, ManagedInstance, Language);
 
-    internal GptSoVitsSynthesisRequest(string endpoint, string text, GptSoVitsVoice voice, float speed, string managedInstance = null)
+    internal GptSoVitsSynthesisRequest(string endpoint, string text, GptSoVitsVoice voice, float speed, string managedInstance = null, GptSoVitsLanguage language = null)
     {
         if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) || !uri.IsLoopback || uri.Scheme != "http" ||
             !string.IsNullOrEmpty(uri.UserInfo) || !string.IsNullOrEmpty(uri.Fragment))
@@ -29,6 +30,8 @@ internal sealed class GptSoVitsSynthesisRequest
         if (string.IsNullOrWhiteSpace(text) || text.Length > 500)
             throw new ArgumentException("local_speech_text_empty_or_over_500_characters");
         if (voice == null) throw new ArgumentNullException(nameof(voice));
+        Language = language ?? GptSoVitsLanguage.Auto;
+        if (!Language.IsSupported) throw new ArgumentException("tts_local_language_invalid");
         Endpoint = uri; Text = text; Voice = voice; ManagedInstance = managedInstance;
         Speed = float.IsNaN(speed) || float.IsInfinity(speed) ? 1f : Math.Max(0.5f, Math.Min(2f, speed));
     }
@@ -49,7 +52,7 @@ internal sealed class GptSoVitsTtsGateway
             input.Voice.VerifyReference();
             var payload = new JObject
             {
-                ["text"] = input.Text, ["text_lang"] = "auto",
+                ["text"] = input.Text, ["text_lang"] = input.Language.EngineCode,
                 ["ref_audio_path"] = input.Voice.ReferencePath,
                 ["prompt_lang"] = input.Voice.PromptLanguage, ["prompt_text"] = input.Voice.PromptText,
                 ["media_type"] = "wav", ["streaming_mode"] = false, ["batch_size"] = 1,

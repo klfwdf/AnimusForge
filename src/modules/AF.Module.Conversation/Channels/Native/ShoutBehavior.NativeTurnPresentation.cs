@@ -21,7 +21,7 @@ namespace AnimusForge;
     {
         // Request-local phase output, published only after its awaited capture completes.
         private string postprocessReply;
-        private LocalTtsTone localTtsTone;
+        private LocalTtsSpeech localSpeech;
         private string cleaned;
         private bool nativeTtsDispatchedBeforePostprocess;
         public async Task<NativeConversationTurnStep> ReceiveAndPresentAsync()
@@ -48,7 +48,7 @@ namespace AnimusForge;
             finally { if (experienceAck != null) await experienceAck.ConfigureAwait(false); }
             if (!nativeMainReply.CanContinue) return NativeConversationTurnStep.Stop(nativeMainReply.StopText);
             postprocessReply = LocalTtsToneTag.Strip(nativeMainReply.PostprocessReply);
-            localTtsTone = LocalTtsTone.Neutral;
+            localSpeech = LocalTtsSpeech.Neutral;
             cleaned = "";
             string nativeMainVisibleForTts = "";
             nativeTtsDispatchedBeforePostprocess = false;
@@ -82,7 +82,7 @@ namespace AnimusForge;
                     nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
                     if (DuelSettings.GetSettings()?.TtsUseGptSoVits != true && nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
                     {
-                        _ports.TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts, localTtsTone);
+                        _ports.TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts, localSpeech);
                         nativeTtsDispatchedBeforePostprocess = true;
                         _ports.LogTtsReport("NativeConversationTts.EarlyDispatchBeforePostprocess", nativeTargetAgentIndex, $"uiLen={nativeMainVisibleForTts.Length};target={(targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? "unknown")}");
                     }

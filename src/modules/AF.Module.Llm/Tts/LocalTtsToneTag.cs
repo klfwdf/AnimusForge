@@ -44,7 +44,7 @@ internal static class LocalTtsToneTag
     }
 
     private const string Stem = "[TTS_TONE";
-    internal static string Strip(string text) => Extract(text, out _);
+    internal static string Strip(string text) => Extract(LocalTtsSpeechTag.Strip(text), out _);
 
     internal static string Extract(string text, out LocalTtsTone tone)
     {
@@ -111,7 +111,7 @@ internal static class LocalTtsToneTag
     // possible trailing prefix until it is disambiguated; other namespaces survive.
     internal static string StripStreamingPreview(string accumulated)
     {
-        string clean = Strip(accumulated);
+        string clean = Strip(LocalTtsSpeechTag.StripPreview(accumulated));
         int last = clean.LastIndexOf('[');
         if (last >= 0 && Stem.StartsWith(clean.Substring(last), StringComparison.OrdinalIgnoreCase))
             return clean.Substring(0, last);

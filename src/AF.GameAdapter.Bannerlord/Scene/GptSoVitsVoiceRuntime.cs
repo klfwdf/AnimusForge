@@ -93,12 +93,24 @@ internal static class GptSoVitsVoiceRuntime
 
     internal static void ClearSceneVoices() { lock (Sync) { SceneVoices.Clear(); ClearPrimaryLocked(); } }
 
+    // Capture on the game thread; immutable value only crosses the postprocess/queue boundary.
+    internal static GptSoVitsLanguage CaptureSpeechLanguage()
+    {
+        var settings = DuelSettings.GetSettings();
+        return settings?.EnableTtsSpeech == true && settings.TtsUseGptSoVits && !IsBattleBlocked
+            ? GptSoVitsLanguage.Parse(settings.TtsGptSoVitsOutputLanguage) : null;
+    }
+
     internal static GptSoVitsSynthesisRequest CaptureRequest(string text, string voiceId, float speed, DuelSettings settings, int mood = 0)
     {
+        if (!GptSoVitsLanguage.Parse(settings.TtsGptSoVitsOutputLanguage).IsSupported)
+            throw new InvalidOperationException(GptSoVitsUiText.Text("LanguageInvalid", "Unsupported local speech language. Enter Chinese, Cantonese, English, Japanese, or leave blank for auto."));
         if (string.IsNullOrWhiteSpace(voiceId)) throw new InvalidDataException("voice_assignment_missing_text_only");
         GptSoVitsManagedRuntime.Observe(settings);
         if (!GptSoVitsManagedRuntime.TryCapture(settings.TtsGptSoVitsApiUrl, out string endpoint, out string instance))
             throw new InvalidOperationException(GptSoVitsUiText.Text("RuntimeNotReady", "The local voice runtime is preparing or unavailable. This reply remains text-only; check the local runtime status."));
-        return new GptSoVitsSynthesisRequest(endpoint, LocalTtsToneTag.Strip(text), GetCatalog(settings).Get(voiceId).ForMood(mood), speed, instance);
+        if (instance != null && GptSoVitsLanguage.Parse(settings.TtsGptSoVitsOutputLanguage).IsForced && !GptSoVitsManagedRuntime.SupportsLanguageSelection)
+            throw new InvalidOperationException(GptSoVitsUiText.Text("LanguageRuntimeOld", "Update the AF-GPTSOVITS package to use forced speech languages. This package supports automatic language only."));
+        return new GptSoVitsSynthesisRequest(endpoint, LocalTtsToneTag.Strip(text), GetCatalog(settings).Get(voiceId).ForMood(mood), speed, instance, GptSoVitsLanguage.Parse(settings.TtsGptSoVitsOutputLanguage));
     }
 }

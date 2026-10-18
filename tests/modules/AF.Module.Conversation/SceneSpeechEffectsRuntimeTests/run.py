@@ -33,6 +33,8 @@ for name in ['SceneSpeechQueueOwner.cs','SceneSpeechExecutionRuntime.cs']:
         old='if (!_queue.TryClaimDispatch(generation, retire))';assert runtime.count(old)==1;runtime=runtime.replace(old,'if (false)',1)
     (out/name).write_text(runtime,encoding='utf-8')
 (out/'LocalTtsToneTag.cs').write_bytes((ROOT/'src/modules/AF.Module.Llm/Tts/LocalTtsToneTag.cs').read_bytes())
+for name in ['GptSoVitsLanguage','LocalTtsSpeech']:
+ (out/(name+'.cs')).write_bytes((ROOT/('src/modules/AF.Module.Llm/Tts/'+name+'.cs')).read_bytes())
 (out/'Ports.cs').write_text((src/'SceneSpeechEffectPorts.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Completion.cs').write_text(completion,encoding='utf-8')
 # Actual provenance value/scope sources; no fixture-shaped private API substitutes.
@@ -54,5 +56,8 @@ bridge += '\n' + compose
 (out/'DiplomacyBridge.cs').write_text('using TaleWorlds.CampaignSystem;\nnamespace AnimusForge { internal static class DiplomacyConversationBridge { '+bridge+' } }',encoding='utf-8')
 (out/'current-bridge-source.json').write_text(__import__('json').dumps({'path':bridge_path.relative_to(ROOT).as_posix(),'rawSha256':__import__('hashlib').sha256(bridge_path.read_bytes()).hexdigest(),'methodSha256':__import__('hashlib').sha256(bridge.encode()).hexdigest(),'scope':'actual AF edge; diplomacy module leaf synthetic, no diplomacy game effects claim'},indent=2),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
+from xml.sax.saxutils import escape
+proj=out/'Proof.csproj'
+proj.write_text(proj.read_text().replace('</Project>','<ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(resolve_dotnet(ROOT).parent/'sdk/8.0.426/Newtonsoft.Json.dll'))+'</HintPath></Reference></ItemGroup></Project>'))
 dotnet=resolve_dotnet(ROOT);r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
 log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

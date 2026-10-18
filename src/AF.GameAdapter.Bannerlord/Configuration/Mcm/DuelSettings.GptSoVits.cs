@@ -13,6 +13,11 @@ public partial class DuelSettings
 
     private const string GptVoiceGroup = "{=AF_MCM_Tts_Group}7. Speech synthesis";
 
+    [SettingPropertyText("{=AF_GPT_UI_OutputLanguage}Speech output language", -1, true, "", Order = 29, RequireRestart = false,
+        HintText = "{=AF_GPT_UI_OutputLanguageHint}Local GPT-SoVITS only. Enter Chinese, Cantonese, English or Japanese (Chinese names also work). Blank/auto follows the reply. Matching speech is kept unchanged; otherwise postprocess translates it privately. Subtitles stay original. Invalid or missing translation stays text-only.")]
+    [SettingPropertyGroup(GptVoiceGroup)]
+    public string TtsGptSoVitsOutputLanguage { get; set; } = "";
+
     // Existing cloud indices 0/1 are unchanged; local providers are additive.
     internal bool TtsUseGptSoVits => (TtsProviderDropdown?.SelectedIndex ?? 0) >= 2;
     internal bool UsesManagedGptSoVits => TtsProviderDropdown?.SelectedIndex == 2;
@@ -57,7 +62,7 @@ public partial class DuelSettings
                 var voice = GptSoVitsVoiceRuntime.GetCatalog(settings).ResolveAssignment(null, false);
                 var engine = TtsEngine.Instance;
                 engine.Initialize();
-                bool accepted = engine.SpeakTestAsync(GptSoVitsUiText.Text("TestPhrase", "At your service, traveler!"),
+                bool accepted = engine.SpeakTestAsync(GptSoVitsUiText.TestPhrase(settings.TtsGptSoVitsOutputLanguage),
                     settings.TtsGptSoVitsSpeed, TtsTestFeedback.ReportFailure, voice.Id);
                 InformationManager.DisplayMessage(new InformationMessage(accepted
                     ? GptSoVitsUiText.Text("Queued", "Local speech queued; the service must be running. Failure falls back to text.")

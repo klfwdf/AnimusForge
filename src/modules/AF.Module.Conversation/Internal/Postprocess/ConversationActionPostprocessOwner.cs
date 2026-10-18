@@ -72,6 +72,9 @@ internal sealed class SceneActionPostprocessWorkItem
 		public string ImmediateResult { get; }
 		public Func<string, string> Normalize { get; }
 		public bool RequiresNetwork => Normalize != null;
+        internal GptSoVitsLanguage SpeechLanguage { get; }
+        internal string SpeechSource { get; }
+        internal LocalTtsSpeech SpeechResult { get; set; } = LocalTtsSpeech.Neutral;
 		internal PostprocessNetworkRequest NetworkRequest { get; }
 
 		public bool TryBeginCompletion()
@@ -85,9 +88,16 @@ internal sealed class SceneActionPostprocessWorkItem
 			ImmediateResult = immediateResult;
 		}
 
-		public SceneActionPostprocessWorkItem(string systemPrompt, string userPrompt, string replyText, Func<string, string> normalize)
+		public SceneActionPostprocessWorkItem(string systemPrompt, string userPrompt, string replyText, Func<string, string> normalize, GptSoVitsLanguage speechLanguage = null)
 		{
-			SystemPrompt = systemPrompt;
+            SpeechLanguage = speechLanguage;
+            if (speechLanguage?.IsForced == true)
+            {
+                SpeechSource = ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts(replyText);
+                systemPrompt += "\n" + ConversationRuntimeTexts.FormatPrompt("AF_CONV_TtsSpeechLanguageRule", ("LANGUAGE", speechLanguage.Code));
+                userPrompt += "\n" + ConversationRuntimeTexts.FormatPrompt("AF_CONV_TtsSpeechLanguageSource", ("SPEECH_JSON", Newtonsoft.Json.JsonConvert.SerializeObject(SpeechSource)));
+            }
+            SystemPrompt = systemPrompt;
 			NetworkRequest = new PostprocessNetworkRequest(systemPrompt, userPrompt);
 			UserPrompt = userPrompt;
 			ReplyText = replyText;
@@ -134,6 +144,7 @@ internal sealed class ConversationCourierPostprocessWorkItem
 
 		internal string CompleteOnMainThread(string content)
 		{
+            content = LocalTtsSpeechTag.Strip(content);
 			ConversationActionPostprocessOwner.RequireMainThread();
 			Func<string, string> complete = Interlocked.Exchange(ref _completeOnMainThread, null);
 			if (complete == null)
@@ -368,10 +379,16 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] failed: " + error);
 			return (workItem.ReplyText + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
-		return workItem.Normalize(content);
+        string actionContent = LocalTtsSpeechTag.Extract(content, workItem.SpeechLanguage, workItem.SpeechSource,
+            out string speechText, out bool translated);
+        // Strip BEFORE normalizing or executing any action; translation is never an authority.
+        string normalized = workItem.Normalize(actionContent);
+        if (translated) speechText = ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts(speechText);
+        workItem.SpeechResult = new LocalTtsSpeech(LocalTtsToneTag.FromPostprocessMood(normalized), workItem.SpeechLanguage, speechText, translated);
+        return normalized;
 	}
 
-	internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<PostprocessSummonTarget> sceneSummonTargets, List<PostprocessGuideTarget> sceneGuideTargets, string entityPostprocessContext = null, bool siegeInterventionRuleInjected = false, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, string chainName = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, DetachedPromptSections detachedMainPromptSections = null, bool offerSceneActionDirective = false, string relayConversationContext = null)
+	internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<PostprocessSummonTarget> sceneSummonTargets, List<PostprocessGuideTarget> sceneGuideTargets, string entityPostprocessContext = null, bool siegeInterventionRuleInjected = false, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, string chainName = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, DetachedPromptSections detachedMainPromptSections = null, bool offerSceneActionDirective = false, string relayConversationContext = null, GptSoVitsLanguage speechLanguage = null)
 	{
 		RequireMainThread();
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
@@ -922,7 +939,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 			string text22 = (text + "\n" + text21).Trim();
 			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] RAW=\n" + content + "\nFINAL=\n" + text22 + "\n");
 			return text22;
-		});
+		}, speechLanguage);
 	}
 internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, out ConversationCourierPostprocessWorkItem workItem, out string immediateResult, bool voteDealRuleInjected = false, bool diplomacyRuleInjected = false, bool worldMapPartyCommandRuleInjected = false, List<string> preprocessRuleHits = null, string entityPostprocessContext = null, int targetAgentIndex = -1, bool latestReplyHasPlayerInput = true, bool forceLooseWeeklyMemoryMaterialSession = false, bool kingdomVassalageRuleInjected = false, bool kingdomAnnexationRuleInjected = false, string chainName = null)
 	{

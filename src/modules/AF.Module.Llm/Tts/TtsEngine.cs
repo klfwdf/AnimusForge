@@ -99,7 +99,9 @@ internal sealed partial class TtsEngine : IDisposable
 		public string VoiceIdOverride = "";
 		public ProviderSnapshot Settings;
 		public GptSoVitsSynthesisRequest LocalRequest;
-        public Task<LocalTtsTone> PendingLocalTone;
+        public Task<LocalTtsSpeech> PendingLocalSpeech;
+        public LocalTtsSpeech LocalSpeech;
+        public bool KeepOriginalSubtitle;
 	}
 
 	private static readonly object _instanceLock = new object();
@@ -264,9 +266,9 @@ internal sealed partial class TtsEngine : IDisposable
 	}
 
 	public bool SpeakAsync(string text, int speakerId, float speed, int agentIndex, string voiceIdOverride, Action<PlaybackRequest> onAccepted)
-        => SpeakAsync(text, speakerId, speed, agentIndex, voiceIdOverride, onAccepted, LocalTtsTone.Neutral);
+        => SpeakAsync(text, speakerId, speed, agentIndex, voiceIdOverride, onAccepted, LocalTtsSpeech.Neutral);
 
-    internal bool SpeakAsync(string text, int speakerId, float speed, int agentIndex, string voiceIdOverride, Action<PlaybackRequest> onAccepted, LocalTtsTone localTtsTone, Task<LocalTtsTone> pendingLocalTone = null)
+    internal bool SpeakAsync(string text, int speakerId, float speed, int agentIndex, string voiceIdOverride, Action<PlaybackRequest> onAccepted, LocalTtsSpeech localSpeech, Task<LocalTtsSpeech> pendingLocalSpeech = null)
 	{
         text = LocalTtsToneTag.Strip(text);
 		if (!IsReady)
@@ -317,9 +319,10 @@ internal sealed partial class TtsEngine : IDisposable
 			};
 			if (settings?.TtsUseGptSoVits == true)
 			{
-				item.LocalRequest = GptSoVitsVoiceRuntime.CaptureRequest(segments[0], item.VoiceIdOverride, speed, settings, pendingLocalTone != null ? -1 : (int)localTtsTone);
-                item.PendingLocalTone = pendingLocalTone;
-				Logger.Log("TtsEngine", "[LocalTone] agent=" + agentIndex + ";voice=" + item.VoiceIdOverride + ";tone=" + localTtsTone);
+				item.LocalRequest = GptSoVitsVoiceRuntime.CaptureRequest(segments[0], item.VoiceIdOverride, speed, settings, pendingLocalSpeech != null ? -1 : (int)(localSpeech?.Tone ?? LocalTtsTone.Neutral));
+                item.PendingLocalSpeech = pendingLocalSpeech;
+                item.LocalSpeech = localSpeech ?? LocalTtsSpeech.Neutral;
+				Logger.Log("TtsEngine", "[LocalTone] agent=" + agentIndex + ";voice=" + item.VoiceIdOverride + ";tone=" + (localSpeech?.Tone ?? LocalTtsTone.Neutral) + ";language=" + item.LocalRequest.Language.Code);
 			}
 			if (!TryEnqueueJob(item, onAccepted))
 			{
@@ -708,10 +711,22 @@ internal sealed partial class TtsEngine : IDisposable
 
     private void ProcessJob(TtsJob job)
     {
-        if (job.LocalRequest != null && job.PendingLocalTone != null)
+        if (job.LocalRequest != null && !job.BypassEnabledCheck)
         {
-            LocalTtsTone tone = LocalTtsToneTag.AwaitPostprocessAsync(job.PendingLocalTone, job.Request.CancellationToken).GetAwaiter().GetResult();
-            job.LocalRequest = job.LocalRequest.WithTone(tone);
+            var speech = job.PendingLocalSpeech == null ? job.LocalSpeech ?? LocalTtsSpeech.Neutral
+                : LocalTtsSpeech.AwaitAsync(job.PendingLocalSpeech, job.Request.CancellationToken,
+                    job.LocalRequest.Language.IsForced ? 30000 : 8000).GetAwaiter().GetResult();
+            if (!speech.TrySelectText(job.LocalRequest.Language, job.Text, out string spoken))
+            { NotifyPlaybackFailed(job, "tts_local_translation_missing"); return; }
+            if (speech.Translated && job.LocalRequest.Language.IsForced)
+            {
+                job.Segments = TtsSentenceChunker.Split(spoken);
+                if (job.Segments.Length == 0)
+                { NotifyPlaybackFailed(job, "tts_local_translation_missing"); return; }
+                job.KeepOriginalSubtitle = true;
+                job.Request.SegmentCount = job.Segments.Length;
+            }
+            job.LocalRequest = job.LocalRequest.WithTone(speech.Tone).WithText(job.Segments[0]);
         }
         if (job.Segments == null) { ProcessSentence(job, job.Text, job.LocalRequest); return; }
         for (int i = 0; i < job.Segments.Length; i++)
@@ -885,7 +900,7 @@ internal sealed partial class TtsEngine : IDisposable
                 float num3 = (float)pcmData.Length / ((float)sampleRate * 2f);
                 if (job.Request.SegmentCount > 1)
                 {
-                    var segment = new TtsSpeechSegment(sentenceText, job.SegmentIndex, job.Request.SegmentCount, num3);
+                    var segment = new TtsSpeechSegment(job.KeepOriginalSubtitle ? job.Text : sentenceText, job.SegmentIndex, job.Request.SegmentCount, num3, job.KeepOriginalSubtitle);
                     if (!PublishJobEvent(job, () => InvokePlaybackSubscribers(OnRequestSpeechSegmentReady,
                         handler => handler(job.Request, segment), job.Request), null)) return;
                 }

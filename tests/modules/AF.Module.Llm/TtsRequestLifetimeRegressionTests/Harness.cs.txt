@@ -31,12 +31,12 @@ namespace AnimusForge.Refactor.Adapters {
 namespace AnimusForge {
  static class GptSoVitsUiText { public static string Text(string key,string fallback)=>fallback; }
  // Local provider dependencies are deterministic seams here; real catalog/HTTP behavior is tested separately.
- sealed class GptSoVitsSynthesisRequest { public string Text; public int Mood; public GptSoVitsSynthesisRequest WithTone(LocalTtsTone t)=>new(){Text=Text,Mood=(int)t}; public GptSoVitsSynthesisRequest WithText(string text)=>new(){Text=text,Mood=Mood}; }
+ sealed class GptSoVitsSynthesisRequest { public string Text; public int Mood; public GptSoVitsLanguage Language = GptSoVitsLanguage.Auto; public GptSoVitsSynthesisRequest WithTone(LocalTtsTone t)=>new(){Text=Text,Mood=(int)t,Language=Language}; public GptSoVitsSynthesisRequest WithText(string text)=>new(){Text=text,Mood=Mood,Language=Language}; }
  sealed class GptFixtureVoice { public string Id="fixture-local"; }
  sealed class GptFixtureCatalog { public GptFixtureVoice ResolveAssignment(string id,bool female)=>new(); }
  static class GptSoVitsVoiceRuntime {
   public static bool IsBattleBlocked;
-  public static GptSoVitsSynthesisRequest CaptureRequest(string text,string voice,float speed,DuelSettings settings,int mood=0)=>new(){Text=text,Mood=mood};
+  public static GptSoVitsSynthesisRequest CaptureRequest(string text,string voice,float speed,DuelSettings settings,int mood=0)=>new(){Text=text,Mood=mood,Language=GptSoVitsLanguage.Parse(settings.TtsGptSoVitsOutputLanguage)};
   public static GptFixtureCatalog GetCatalog(DuelSettings settings)=>new();
  }
  sealed class GptSoVitsTtsGateway {
@@ -60,7 +60,7 @@ namespace AnimusForge {
   public bool IsSelectedTtsEnabled=>EnableTtsSpeech&&(UsesOpenAiTts||TtsUseGptSoVits||TtsVolcDedicatedEnabled);
   public string TtsOpenAiApiUrl="https://openai-fixture.invalid/v1/audio/speech",TtsOpenAiApiKey="openai-fixture-key",TtsOpenAiModel="gpt-sovits-v4",TtsOpenAiVoice="zh_default";
   public float TtsOpenAiSpeed=1f;public int TtsOpenAiTimeoutSeconds=60;
- public float TtsGptSoVitsSpeed=1; public int TtsGptSoVitsMood;
+ public float TtsGptSoVitsSpeed=1; public string TtsGptSoVitsOutputLanguage=""; public int TtsGptSoVitsMood;
   public Action TestTtsVolcDedicatedVoice;
   @@UI_HELPERS@@
   public DuelSettings(){@@TTS_TEST_BUTTON@@}
@@ -129,7 +129,7 @@ static class Program {
   Check("sentence playback: long local reply keeps captured tone in every sentence",()=>{
    using var e=Active();var cfg=new DuelSettings{TtsUseGptSoVits=true,TtsGptSoVitsMood=3};DuelSettings.Read=()=>cfg;
    var moods=new List<int>();var texts=new List<string>();GptSoVitsTtsGateway.Send=(r,c)=>{moods.Add(r.Mood);texts.Add(r.Text);return new(){Success=true,AudioBytes=new byte[16]};};
-   Assert(e.SpeakAsync(new string('x',600),-1,1,-1,"fixture",null,LocalTtsTone.Happy),"long accepted");cfg.TtsGptSoVitsMood=2;
+   Assert(e.SpeakAsync(new string('x',600),-1,1,-1,"fixture",null,new LocalTtsSpeech(LocalTtsTone.Happy)),"long accepted");cfg.TtsGptSoVitsMood=2;
    Eventually(()=>Jobs(e).Count==0,"drain");Assert(moods.Count==3&&moods.All(x=>x==1)&&string.Concat(texts)==new string('x',600),"local request tone/text drift");
   });
   Check("postprocess tone: normalized mood only, missing and ambiguous stay neutral",()=>{
@@ -149,10 +149,32 @@ static class Program {
   });
   Check("postprocess tone: one queued local reply receives its own pending mood",()=>{
    var cfg=new DuelSettings{TtsUseGptSoVits=true};DuelSettings.Read=()=>cfg;
-   using var e=Manual();var promise=new TaskCompletionSource<LocalTtsTone>();TtsEngine.PlaybackRequest req=null;
-   Assert(e.SpeakAsync("a complete reply",-1,1,-1,"fixture",r=>req=r,LocalTtsTone.Neutral,promise.Task),"enqueue");
+   using var e=Manual();var promise=new TaskCompletionSource<LocalTtsSpeech>();TtsEngine.PlaybackRequest req=null;
+   Assert(e.SpeakAsync("a complete reply",-1,1,-1,"fixture",r=>req=r,LocalTtsSpeech.Neutral,promise.Task),"enqueue");
    int sent=0;GptSoVitsTtsGateway.Send=(r,c)=>{Assert(r.Mood==2,"wrong mood");sent++;return new(){Success=false,ErrorCode="done"};};
-   promise.SetResult(LocalTtsToneTag.FromPostprocessMood("[ACTION:MOOD:ANNOYED]"));Call(e,"ProcessJob",Job(e,req));Assert(sent==1,"missing or repeated synthesis");
+   promise.SetResult(new LocalTtsSpeech(LocalTtsToneTag.FromPostprocessMood("[ACTION:MOOD:ANNOYED]")));Call(e,"ProcessJob",Job(e,req));Assert(sent==1,"missing or repeated synthesis");
+  });
+  Check("speech language: translated audio retains original subtitles and forced code",()=>{
+   var cfg=new DuelSettings{TtsUseGptSoVits=true,TtsGptSoVitsOutputLanguage="英语"};DuelSettings.Read=()=>cfg;
+   using var e=Active();var texts=new List<string>();var subtitles=new List<string>();int finished=0;
+   GptSoVitsTtsGateway.Send=(r,c)=>{Assert(r.Language.EngineCode=="en"&&r.Mood==2,"language/tone drift");texts.Add(r.Text);return new(){Success=true,AudioBytes=new byte[16]};};
+   e.OnRequestSpeechSegmentReady+=(r,s)=>subtitles.Add(s.Text);e.OnRequestPlaybackFinished+=r=>finished++;
+   string spoken="This is a translated first sentence. This is a translated second sentence.";
+   var speech=new LocalTtsSpeech(LocalTtsTone.Angry,GptSoVitsLanguage.Parse("英语"),spoken,true);
+   Assert(e.SpeakAsync("原始中文正文。",-1,1,-1,"fixture",null,speech),"enqueue");Eventually(()=>Jobs(e).Count==0,"drain");
+   Assert(string.Concat(texts)==spoken&&subtitles.Count==2&&subtitles.All(x=>x=="原始中文正文。")&&finished==1,"translation leaked into subtitles or repeated terminal");
+  });
+  Check("speech language: same-language keep does not rewrite original",()=>{
+   DuelSettings.Read=()=>new(){TtsUseGptSoVits=true,TtsGptSoVitsOutputLanguage="中文"};using var e=Active();string sent=null;
+   GptSoVitsTtsGateway.Send=(r,c)=>{Assert(r.Language.EngineCode=="all_zh","auto remained");sent=r.Text;return new(){Success=true,AudioBytes=new byte[16]};};
+   Assert(e.SpeakAsync("原文不改。",-1,1,-1,"fixture",null,new LocalTtsSpeech(LocalTtsTone.Neutral,GptSoVitsLanguage.Parse("中文"),"ignored model rewrite",false)),"enqueue");
+   Eventually(()=>Jobs(e).Count==0,"drain");Assert(sent=="原文不改。","keep rewrote source");
+  });
+  foreach(bool mismatched in new[]{false,true}) Check("speech language: missing/mismatched result is text-only "+mismatched,()=>{
+   DuelSettings.Read=()=>new(){TtsUseGptSoVits=true,TtsGptSoVitsOutputLanguage="日语"};using var e=Active();int sent=0,failed=0;
+   GptSoVitsTtsGateway.Send=(r,c)=>{sent++;return new(){Success=true,AudioBytes=new byte[16]};};e.OnRequestPlaybackFailed+=(r,m)=>{Assert(m=="tts_local_translation_missing","wrong failure");failed++;};
+   var speech=mismatched?new LocalTtsSpeech(LocalTtsTone.Happy,GptSoVitsLanguage.Parse("英语"),"English",true):LocalTtsSpeech.Neutral;
+   Assert(e.SpeakAsync("中文不硬读日语。",-1,1,-1,"fixture",null,speech),"enqueue");Eventually(()=>Jobs(e).Count==0,"drain");Assert(sent==0&&failed==1,"incorrect language was synthesized");
   });
   foreach(string scenario in new[]{"v3-no-app","master-disabled","provider-disabled","url-empty","url-unsupported","v1-no-app"})
   Check("settings test button: "+scenario,()=>{using var e=Manual();var slot=typeof(TtsEngine).GetField("_instance",F);object prior=slot.GetValue(null);slot.SetValue(null,e);try{var settings=new DuelSettings(){TtsVolcDedicatedApiUrl="https://fixture.invalid/api/v3/tts/unidirectional",TtsVolcDedicatedAppKey=""};if(scenario=="master-disabled")settings.EnableTtsSpeech=false;if(scenario=="provider-disabled")settings.TtsVolcDedicatedEnabled=false;if(scenario=="url-empty")settings.TtsVolcDedicatedApiUrl="";if(scenario=="url-unsupported")settings.TtsVolcDedicatedApiUrl+="/sse";if(scenario=="v1-no-app")settings.TtsVolcDedicatedApiUrl="https://fixture.invalid";DuelSettings.Read=()=>settings;InformationManager.Messages.Clear();settings.TestTtsVolcDedicatedVoice();Assert(Jobs(e).Count==(scenario=="v3-no-app"?1:0),"incorrect enqueue");Assert(InformationManager.Messages.Count==1,"missing or duplicated feedback");}finally{slot.SetValue(null,prior);}});
@@ -221,7 +243,7 @@ static class Program {
   Check("same-agent legal FIFO preserves both real worker jobs and ordered Scene preparation",()=>{using var e=Active();var c=new TtsConsumerSubject();var main=new ConcurrentQueue<Action>();var accepted=new List<long>();var prepared=new List<long>();var finished=new List<long>();e.OnRequestAudioFileReady+=(r,w,x,d)=>main.Enqueue(()=>{Assert(c.IsCurrent(r)&&c.Prepare(r),"audio owner dropped");});e.OnRequestPlaybackStarted+=r=>main.Enqueue(()=>Assert(c.Active(r),"start owner dropped"));e.OnRequestPlaybackFinished+=r=>main.Enqueue(()=>{Assert(c.Active(r),"finish owner dropped");finished.Add(r.RequestId);c.Retire(r);});for(int i=0;i<2;i++)Speak(e,r=>{accepted.Add(r.RequestId);c.Track(r,()=>prepared.Add(r.RequestId));},"FIFO",7);Eventually(()=>Jobs(e).Count==0,"workers not drained");while(main.TryDequeue(out var action))action();Assert(prepared.SequenceEqual(accepted)&&finished.SequenceEqual(accepted)&&c.Owners==0,"FIFO dropped/reordered/leaked");});
   Check("same-agent queued owner survives cancel of active old request",()=>{using var e=Manual();var c=new TtsConsumerSubject();TtsEngine.PlaybackRequest a=null,b=null;int oldPrepared=0,newPrepared=0;Speak(e,r=>{a=r;c.Track(r,()=>oldPrepared++);},agent:7);Speak(e,r=>{b=r;c.Track(r,()=>newPrepared++);},agent:7);c.Prepare(a);Call(e,"CancelJob",Job(e,a));Assert(c.Active(a,true)&&!c.Active(b),"active changed on mere acceptance");c.Retire(a);Assert(c.IsCurrent(b)&&c.Prepare(b)&&newPrepared==1&&oldPrepared==1,"new queued request lost");c.Retire(b);Assert(c.Owners==0,"owner leak");});
   Check("local provider does not require cloud switch or credentials",()=>{using var e=Manual();DuelSettings.Read=()=>new(){TtsUseGptSoVits=true,TtsVolcDedicatedEnabled=false,TtsVolcDedicatedApiKey="",TtsVolcDedicatedAppKey="",TtsVolcDedicatedResourceId=""};TtsEngine.PlaybackRequest r=null;Assert(e.SpeakAsync("hello",-1,-1,-1,"fixture-local",x=>r=x),"local request rejected");object job=Job(e,r);Assert(job.GetType().GetField("LocalRequest",F|BindingFlags.Public).GetValue(job)!=null,"local snapshot missing");});
-  Check("local tone is per job and never guessed from text or manual setting",()=>{using var e=Manual();var settings=new DuelSettings{TtsUseGptSoVits=true,TtsGptSoVitsMood=3};DuelSettings.Read=()=>settings;TtsEngine.PlaybackRequest a=null,b=null;Assert(e.SpeakAsync("first [TTS_TONE:happy]",-1,-1,-1,"fixture-local",r=>a=r,LocalTtsTone.Angry),"first");settings.TtsGptSoVitsMood=1;Assert(e.SpeakAsync("angry [MOOD:ANGRY]",-1,-1,-1,"fixture-local",r=>b=r),"second");var x=(GptSoVitsSynthesisRequest)Job(e,a).GetType().GetField("LocalRequest",F|BindingFlags.Public).GetValue(Job(e,a));var y=(GptSoVitsSynthesisRequest)Job(e,b).GetType().GetField("LocalRequest",F|BindingFlags.Public).GetValue(Job(e,b));Assert(x.Mood==2&&x.Text=="first"&&y.Mood==0,"tone bleed / untyped inference / tag leak");});
+  Check("local tone is per job and never guessed from text or manual setting",()=>{using var e=Manual();var settings=new DuelSettings{TtsUseGptSoVits=true,TtsGptSoVitsMood=3};DuelSettings.Read=()=>settings;TtsEngine.PlaybackRequest a=null,b=null;Assert(e.SpeakAsync("first [TTS_TONE:happy]",-1,-1,-1,"fixture-local",r=>a=r,new LocalTtsSpeech(LocalTtsTone.Angry)),"first");settings.TtsGptSoVitsMood=1;Assert(e.SpeakAsync("angry [MOOD:ANGRY]",-1,-1,-1,"fixture-local",r=>b=r),"second");var x=(GptSoVitsSynthesisRequest)Job(e,a).GetType().GetField("LocalRequest",F|BindingFlags.Public).GetValue(Job(e,a));var y=(GptSoVitsSynthesisRequest)Job(e,b).GetType().GetField("LocalRequest",F|BindingFlags.Public).GetValue(Job(e,b));Assert(x.Mood==2&&x.Text=="first"&&y.Mood==0,"tone bleed / untyped inference / tag leak");});
   Check("battle cancels local jobs without cancelling cloud jobs",()=>{using var e=Manual();TtsEngine.PlaybackRequest cloud=null,local=null;Speak(e,x=>cloud=x);DuelSettings.Read=()=>new(){TtsUseGptSoVits=true,TtsVolcDedicatedEnabled=false};Assert(e.SpeakAsync("hello",-1,-1,-1,"fixture-local",x=>local=x),"local request rejected");e.CancelLocalPlayback();Assert(local.IsCancellationRequested&&!cloud.IsCancellationRequested,"provider cancellation leaked");});
   Check("battle rejects local acceptance but preserves cloud acceptance",()=>{using var e=Manual();GptSoVitsVoiceRuntime.IsBattleBlocked=true;DuelSettings.Read=()=>new(){TtsUseGptSoVits=true};Assert(!e.SpeakAsync("hello",-1,-1,-1,"fixture-local",null),"battle admitted local speech");DuelSettings.Read=()=>new();Assert(Speak(e),"battle gate changed cloud behavior");});
   Check("local failure never invokes cloud transport",()=>{using var e=Manual();DuelSettings.Read=()=>new(){TtsUseGptSoVits=true,TtsVolcDedicatedEnabled=false};int local=0,cloud=0;GptSoVitsTtsGateway.Send=(_,_)=>{local++;return new(){Success=false,ErrorCode="fixture-failure"};};LegacyVolcTtsGateway.Send=(_,_)=>{cloud++;return new(){Success=true,AudioBytes=new byte[16]};};TtsEngine.PlaybackRequest r=null;Assert(e.SpeakAsync("hello",-1,-1,-1,"fixture-local",x=>r=x),"local not accepted");Call(e,"ProcessJob",Job(e,r));Assert(local==1&&cloud==0,"silent fallback to cloud");});

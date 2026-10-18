@@ -34,8 +34,9 @@ Console.WriteLine($"PASS {checks} exact speech-output consumer assertions; contr
 namespace TaleWorlds.MountAndBlade { internal sealed class Agent{internal int Index;} }
 namespace TaleWorlds.CampaignSystem { internal sealed class Hero{} }
 namespace AnimusForge {
+ internal sealed class LocalTtsSpeech {}
  internal enum LocalTtsTone{Neutral,Happy,Angry,Sad}
- internal sealed class TtsSpeechSegment{internal string Text;internal int Index,Count;internal float DurationSeconds;}
+ internal sealed class TtsSpeechSegment{internal string Text;internal bool PreserveOriginalText;internal int Index,Count;internal float DurationSeconds;}
  internal sealed class NpcDataPacket{internal int AgentIndex;internal bool IsHero,IsFemale;internal float Age;}
  internal static class Logger{internal static void Log(string owner,string message){}}
  internal static class VoiceMapper{internal static string ResolveVoiceId(Hero h)=>"hero";internal static string ResolveVoiceIdForNonHero(bool f,float a,int i)=>"unnamed";}
@@ -44,7 +45,7 @@ namespace AnimusForge {
  internal sealed class TtsEngine{
   internal static TtsEngine Instance=new();internal int Calls;
   internal sealed class PlaybackRequest{internal int SegmentCount=1;}
-  internal bool SpeakAsync(string text,int speaker,float volume,int agent,string voice,Action<PlaybackRequest> accepted,LocalTtsTone tone, Task<LocalTtsTone> pending = null){Calls++;accepted(new());return true;}
+  internal bool SpeakAsync(string text,int speaker,float volume,int agent,string voice,Action<PlaybackRequest> accepted,LocalTtsSpeech tone, Task<LocalTtsSpeech> pending = null){Calls++;accepted(new());return true;}
  }
  internal sealed class SceneAudioLipSyncController{
   internal void TrackTtsPlaybackRequest(TtsEngine.PlaybackRequest r,Action prepare,Action<TtsSpeechSegment> segment){}

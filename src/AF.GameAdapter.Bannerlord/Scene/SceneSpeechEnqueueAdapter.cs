@@ -53,7 +53,7 @@ internal sealed class SceneSpeechEnqueueAdapter
     private readonly SceneSpeechEnqueueAdapterPorts _ports;
     internal SceneSpeechEnqueueAdapter(SceneSpeechEnqueueAdapterPorts ports) { _ports = ports ?? throw new ArgumentNullException(nameof(ports)); }
 
-	internal void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1, Func<bool> canStillPublish = null, string playerDirectedActionText = null, string playerDirectedNpcReplyText = null, Task<LocalTtsTone> pendingLocalTone = null)
+	internal void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1, Func<bool> canStillPublish = null, string playerDirectedActionText = null, string playerDirectedNpcReplyText = null, Task<LocalTtsSpeech> pendingLocalSpeech = null)
 	{
 		if (npc == null || string.IsNullOrWhiteSpace(content))
 		{
@@ -77,7 +77,7 @@ internal sealed class SceneSpeechEnqueueAdapter
 			value.PromptDisplayName = npcDataPacket.PromptDisplayName;
 		}
 		content = LocalTtsToneTag.Strip(content);
-        var localTtsTone = LocalTtsTone.Neutral;
+        var localSpeech = LocalTtsSpeech.Neutral;
         if (playerDirectedNpcReplyText != null) playerDirectedNpcReplyText = LocalTtsToneTag.Strip(playerDirectedNpcReplyText);
         SceneSpeechQueueItem queuedItem = new SceneSpeechQueueItem
 		{
@@ -85,8 +85,8 @@ internal sealed class SceneSpeechEnqueueAdapter
             RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
             Npc = value,
 			Content = content,
-            LocalTtsTone = localTtsTone,
-            PendingLocalTone = pendingLocalTone,
+            LocalSpeech = localSpeech,
+            PendingLocalSpeech = pendingLocalSpeech,
             DiplomacyOrigin = DiplomacyDialogueSourceScope.Capture(content, "scene", SceneConversationHistoryOwner.SessionId.ToString(),
                 playerDirectedActionText, playerDirectedNpcReplyText ?? StripActionTagsForSceneSpeech(content)),
 			ContextSnapshot = value2,

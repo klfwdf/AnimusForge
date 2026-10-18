@@ -136,7 +136,7 @@ internal sealed class NativeConversationSpeechAdapter
 		}
 	}
 
-	internal void TrySpeakNativeConversationReplyWithTts(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, string visibleText, LocalTtsTone localTtsTone = LocalTtsTone.Neutral)
+	internal void TrySpeakNativeConversationReplyWithTts(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, string visibleText, LocalTtsSpeech localSpeech = null)
 	{
 		try
 		{
@@ -227,7 +227,7 @@ internal sealed class NativeConversationSpeechAdapter
 					if (acceptedWaitToken == 0L) { return; }
 					ConversationHelper.StartTypewriterText(typewriterText, estimatedDuration, waitForPlayback: true);
 					_ports.Wait.ScheduleNativeConversationTypewriterPlaybackFallback(acceptedWaitToken, effectiveAgentIndex, estimatedDuration, typewriterText.Length);
-				}, localTtsTone);
+				}, localSpeech);
 			}
 			catch (Exception ex2)
 			{

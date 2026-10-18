@@ -11,7 +11,7 @@ spec=importlib.util.spec_from_file_location('extract',ROOT/'tests/modules/AF.Mod
 out=new_run_root(ROOT,'tts-tone-presentation',a.run_root)
 def read(p):return (ROOT/p).read_text(encoding='utf-8-sig')
 def method(p,sig):return ex.declaration(read(p),sig)
-for rel in ['src/modules/AF.Module.Llm/Tts/LocalTtsToneTag.cs','src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierVisibleLetterSanitizer.cs']:(out/Path(rel).name).write_text(read(rel),encoding='utf-8')
+for rel in ['src/modules/AF.Module.Llm/Tts/GptSoVitsLanguage.cs','src/modules/AF.Module.Llm/Tts/LocalTtsSpeech.cs','src/modules/AF.Module.Llm/Tts/LocalTtsToneTag.cs','src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierVisibleLetterSanitizer.cs']:(out/Path(rel).name).write_text(read(rel),encoding='utf-8')
 stream=method('src/modules/AF.Module.Prompt/Composition/ScenePromptMessageProjectionComposer.cs','internal static string BuildNativeConversationStreamingVisibleText(')
 prepare=method('src/modules/AF.Module.Prompt/Composition/ScenePromptMessageProjectionComposer.cs','internal static string PrepareSceneMainReplySpeechText(')
 action=method('src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs','internal static string StripActionTagsForSceneSpeech(')
@@ -46,17 +46,22 @@ class Program {
  }
  var foreign="[ACTION:MOOD:HAPPY][MOOD:ANGRY][AD:3][GUI:4][RELAY:2][END]";
  Check(LocalTtsToneTag.Extract(foreign,out var t)==foreign&&t==LocalTtsTone.Neutral,"foreign gameplay tags do not drive speech tone");
+ var hidden=LocalTtsSpeechTag.Open+"{not a visible reply [ACTION:DUEL]}"+LocalTtsSpeechTag.Close;
+ Check(ConversationSpeechTextRules.PrepareSceneHistorySpeechText("原文。"+hidden)=="原文。","speech sidecar excluded from history");
+ Check(ConversationSpeechTextRules.SanitizeSceneSpeechText("原文。"+hidden,options)=="原文。","speech sidecar excluded from UI");
+ Check(CourierVisibleLetterSanitizer.Clean("信件"+hidden)=="信件","courier strips unsolicited speech sidecar");
+ for(int i=0;i<=hidden.Length;i++)Check(ScenePromptMessageProjectionComposer.BuildNativeConversationStreamingVisibleText("原文。"+hidden[..i],options)=="原文。","no speech sidecar flashes in main SSE");
  Console.WriteLine($"PASS {count} real text-boundary assertions; game/name leaves substituted.");
  }
 }''',encoding='utf-8')
 # Actual runtime injection and typed propagation edges; guards against accidentally moving into action/Volc ownership.
 source_checks={
- 'native-postprocess':('src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnCommit.cs',['LocalTtsToneTag.FromPostprocessMood(postprocessed)']),
- 'native-main-not-authority':('src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPresentation.cs',['LocalTtsToneTag.Strip(nativeMainReply.PostprocessReply)','localTtsTone = LocalTtsTone.Neutral']),
- 'scene-main-not-authority':('src/AF.GameAdapter.Bannerlord/Scene/SceneSpeechEnqueueAdapter.cs',['content = LocalTtsToneTag.Strip(content)','PendingLocalTone = pendingLocalTone']),
- 'scene-postprocess':('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs',['LocalTtsToneTag.FromPostprocessMood(text)','localToneCompletion?.TrySetResult(LocalTtsTone.Neutral)']),
- 'native-completion':('src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeCompletion.cs',['visible, scope.Request.LocalTtsTone)']),
- 'scene-completion':('src/modules/AF.Module.Conversation/Channels/Scene/SceneSpeechEffectController.cs',['suppressInteractionTimeoutArm, item.LocalTtsTone, item.PendingLocalTone)'])}
+ 'native-postprocess':('src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnCommit.cs',['workItem.SpeechResult']),
+ 'native-main-not-authority':('src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPresentation.cs',['LocalTtsToneTag.Strip(nativeMainReply.PostprocessReply)','localSpeech = LocalTtsSpeech.Neutral']),
+ 'scene-main-not-authority':('src/AF.GameAdapter.Bannerlord/Scene/SceneSpeechEnqueueAdapter.cs',['content = LocalTtsToneTag.Strip(content)','PendingLocalSpeech = pendingLocalSpeech']),
+ 'scene-postprocess':('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs',['workItem.SpeechResult','localSpeechCompletion?.TrySetResult(LocalTtsSpeech.Neutral)']),
+ 'native-completion':('src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeCompletion.cs',['visible, scope.Request.LocalSpeech)']),
+ 'scene-completion':('src/modules/AF.Module.Conversation/Channels/Scene/SceneSpeechEffectController.cs',['suppressInteractionTimeoutArm, item.LocalSpeech, item.PendingLocalSpeech)'])}
 for key,(file,needles) in source_checks.items():assert all(x in read(file) for x in needles),key
 for name in ['LegacyVolcTtsGateway','VolcV3TtsGateway','OpenAiCompatibleTtsGateway']:
  assert 'LocalTtsTone' not in read('src/modules/AF.Module.Llm/Tts/'+name+'.cs')

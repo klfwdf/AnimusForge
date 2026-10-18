@@ -200,7 +200,7 @@ internal void Publish(SceneSpeechQueueItem item)
 
 							{
 
-								_ports.ShowOpenLordsHallResponseAndScheduleEntry(matchedNpc, openLordsHallAgent, allNpcData, content, commitHistory, afterSpeechInfoMessage, item.LocalTtsTone, item.PendingLocalTone);
+								_ports.ShowOpenLordsHallResponseAndScheduleEntry(matchedNpc, openLordsHallAgent, allNpcData, content, commitHistory, afterSpeechInfoMessage, item.LocalSpeech, item.PendingLocalSpeech);
 
 								return;
 
@@ -825,7 +825,7 @@ internal void Publish(SceneSpeechQueueItem item)
 
 								bool suppressInteractionTimeoutArm = interactionParticipantCount > 1 && interactionTimeoutSeconds <= 0f;
 
-								sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm, item.LocalTtsTone, item.PendingLocalTone);
+								sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm, item.LocalSpeech, item.PendingLocalSpeech);
 
 								speechPublished = !string.IsNullOrWhiteSpace(historyText);
 

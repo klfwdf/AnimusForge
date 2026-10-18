@@ -94,12 +94,12 @@ namespace AnimusForge
                 IsPresentationCurrent=revision=> { Game();return ContextCurrent; },
                 PostMainThread=action=> { Queue.Enqueue(action);if(duplicate)Queue.Enqueue(action); },
                 RollbackPendingPlayerHistory=(admission,key,sequence,reason)=> { Game();Trace.Add("rollback");Rollbacks++; },
-                TrySpeakNativeConversationReplyWithTts=(hero,character,npc,index,text,tone)=> { Require(tone==LocalTtsTone.Angry,"captured tone preserved through completion");Game();Trace.Add("tts");Tts++; },
+                TrySpeakNativeConversationReplyWithTts=(hero,character,npc,index,text,tone)=> { Require(tone?.Tone==LocalTtsTone.Angry,"captured tone preserved through completion");Game();Trace.Add("tts");Tts++; },
             },registry);
         }
         static Task<NativeConversationGameActionResult> Dispatch(NativeConversationGameEffectsRuntime runtime, NativeConversationAdmission admission, bool worker=true, bool withCompletion=true)
         {
-            var request=new NativeConversationCompletionRequest { LocalTtsTone=LocalTtsTone.Angry, PlayerText="player", PendingPlayerHistoryKey="pending", PendingPlayerHistorySequence=9, AcceptedReplySideEffects=()=>{Game();Trace.Add("accepted");Accepted++;} };
+            var request=new NativeConversationCompletionRequest { LocalSpeech=new LocalTtsSpeech(LocalTtsTone.Angry), PlayerText="player", PendingPlayerHistoryKey="pending", PendingPlayerHistorySequence=9, AcceptedReplySideEffects=()=>{Game();Trace.Add("accepted");Accepted++;} };
             Task<NativeConversationGameActionResult> Start()=>runtime.ApplyNativeConversationGameActionsOnMainThreadAsync(admission.Hero,admission.Character,new NpcDataPacket(),new(),null,null,"reply","npc",7,"player",admission.ConversationManager,3,admission,withCompletion?request:null);
             return worker?Task.Run(Start):Start();
         }

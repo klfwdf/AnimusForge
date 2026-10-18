@@ -123,7 +123,7 @@ internal sealed class SceneSystemNpcShoutRuntime
 			}
 
 			string safeContent = LocalTtsToneTag.Strip(content.Trim());
-            var localTtsTone = LocalTtsTone.Neutral;
+            var localSpeech = LocalTtsSpeech.Neutral;
 
             Mission sourceMission = Mission.Current;
 
@@ -594,7 +594,7 @@ internal sealed class SceneSystemNpcShoutRuntime
 
 					{
 
-						SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(speakerData, agent, SanitizeSceneSpeechText(DiplomacyConversationBridge.ComposeReply(aiResponse, diplomacyReceipts, forUi: true)), localTtsTone: localTtsTone);
+						SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(speakerData, agent, SanitizeSceneSpeechText(DiplomacyConversationBridge.ComposeReply(aiResponse, diplomacyReceipts, forUi: true)), localSpeech: localSpeech);
 
 						if (meetingReleaseTriggered)
 

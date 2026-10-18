@@ -985,7 +985,7 @@ _j17SceneSpeechEnqueueAdapter = new SceneSpeechEnqueueAdapter(new SceneSpeechEnq
 
 _j17SceneSpeechFollowupController = new SceneSpeechFollowupController(new SceneSpeechFollowupControllerPorts
 {
-    ShowNpcSpeechOutput_L2959 = (NpcDataPacket npc, Agent liveAgent, string content, bool allowTts, bool attachTtsToSceneAgent, bool suppressInteractionTimeoutArm, LocalTtsTone localTtsTone, Task<LocalTtsTone> pendingLocalTone) => ShowNpcSpeechOutput(npc, liveAgent, content, allowTts, attachTtsToSceneAgent, suppressInteractionTimeoutArm, localTtsTone, pendingLocalTone),
+    ShowNpcSpeechOutput_L2959 = (NpcDataPacket npc, Agent liveAgent, string content, bool allowTts, bool attachTtsToSceneAgent, bool suppressInteractionTimeoutArm, LocalTtsSpeech localSpeech, Task<LocalTtsSpeech> pendingLocalSpeech) => ShowNpcSpeechOutput(npc, liveAgent, content, allowTts, attachTtsToSceneAgent, suppressInteractionTimeoutArm, localSpeech, pendingLocalSpeech),
     RecordNegotiatedNonHeroBribe_L15018 = (string targetKey, int goldAmount) => RecordNegotiatedNonHeroBribe(targetKey, goldAmount),
     RecordResponseForAllNearbySafe_L17560 = (List<NpcDataPacket> nearbyData, int speakerAgentIndex, string speakerName, string response, bool requireMemoryReceipt) => RecordResponseForAllNearbySafe(nearbyData, speakerAgentIndex, speakerName, response, requireMemoryReceipt),
     RemoveSceneMovementSuppressionAgents_L18679 = (IEnumerable<int> participantAgentIndices) => _j17SceneAttentionController.RemoveSceneMovementSuppressionAgents(participantAgentIndices),
@@ -1582,9 +1582,9 @@ private void ScheduleNpcSpeechToMessageFeed(int agentIndex, string npcDisplayNam
 	// the lower-left feed while its world bubble is already visible.
 internal void PublishBattleSpeechMessageFeed(NpcDataPacket npc, Agent liveAgent, string content) => _j17SceneSpeechOutputQueueController.PublishBattleSpeechMessageFeed(npc, liveAgent, content);
 
-	private SceneSpeechPlaybackInfo ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false, LocalTtsTone localTtsTone = LocalTtsTone.Neutral, Task<LocalTtsTone> pendingLocalTone = null)
-		=> Presentation.ShowNpcSpeechOutput(SceneSpeechOutput, npc, liveAgent, content, allowTts, attachTtsToSceneAgent, suppressInteractionTimeoutArm, localTtsTone, pendingLocalTone);
-	private void TrySpeakNativeConversationReplyWithTts(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, string visibleText, LocalTtsTone localTtsTone = LocalTtsTone.Neutral) => _j17NativeConversationSpeechAdapter.TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, targetAgentIndex, visibleText, localTtsTone);
+	private SceneSpeechPlaybackInfo ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false, LocalTtsSpeech localSpeech = null, Task<LocalTtsSpeech> pendingLocalSpeech = null)
+		=> Presentation.ShowNpcSpeechOutput(SceneSpeechOutput, npc, liveAgent, content, allowTts, attachTtsToSceneAgent, suppressInteractionTimeoutArm, localSpeech, pendingLocalSpeech);
+	private void TrySpeakNativeConversationReplyWithTts(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex, string visibleText, LocalTtsSpeech localSpeech = null) => _j17NativeConversationSpeechAdapter.TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, targetAgentIndex, visibleText, localSpeech);
 
 public static bool CanAgentParticipateInSceneSpeechExternal(int agentIndex) => SceneShoutInputController.CanAgentParticipateInSceneSpeechExternal(agentIndex);
 
@@ -5544,7 +5544,7 @@ private void ScheduleMeetingReleaseAfterSpeech(int agentIndex, Hero targetHero, 
 
 private void FlushMeetingReleaseAfterSpeech(int agentIndex) => _j17SceneSpeechFollowupController.FlushMeetingReleaseAfterSpeech(agentIndex);
 
-private void ShowOpenLordsHallResponseAndScheduleEntry(NpcDataPacket npc, Agent agent, List<NpcDataPacket> allNpcData, string content, bool commitHistory, string afterSpeechInfoMessage, LocalTtsTone localTtsTone = LocalTtsTone.Neutral, Task<LocalTtsTone> pendingLocalTone = null) => _j17SceneSpeechFollowupController.ShowOpenLordsHallResponseAndScheduleEntry(npc, agent, allNpcData, content, commitHistory, afterSpeechInfoMessage, localTtsTone, pendingLocalTone);
+private void ShowOpenLordsHallResponseAndScheduleEntry(NpcDataPacket npc, Agent agent, List<NpcDataPacket> allNpcData, string content, bool commitHistory, string afterSpeechInfoMessage, LocalTtsSpeech localSpeech = null, Task<LocalTtsSpeech> pendingLocalSpeech = null) => _j17SceneSpeechFollowupController.ShowOpenLordsHallResponseAndScheduleEntry(npc, agent, allNpcData, content, commitHistory, afterSpeechInfoMessage, localSpeech, pendingLocalSpeech);
 
 private void ScheduleLordsHallMissionEntryAfterSpeech(int agentIndex, SceneSpeechPlaybackInfo playbackInfo, string reason, bool waitForConversationEnd = false) => _j17SceneSpeechFollowupController.ScheduleLordsHallMissionEntryAfterSpeech(agentIndex, playbackInfo, reason, waitForConversationEnd);
 

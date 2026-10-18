@@ -11,8 +11,9 @@ internal sealed class TtsSpeechSegment
     internal int Index { get; }
     internal int Count { get; }
     internal float DurationSeconds { get; }
-    internal TtsSpeechSegment(string text, int index, int count, float durationSeconds)
-    { Text = text; Index = index; Count = count; DurationSeconds = durationSeconds; }
+    internal bool PreserveOriginalText { get; }
+    internal TtsSpeechSegment(string text, int index, int count, float durationSeconds, bool preserveOriginalText = false)
+    { Text = text; Index = index; Count = count; DurationSeconds = durationSeconds; PreserveOriginalText = preserveOriginalText; }
 }
 
 internal static class TtsSentenceChunker

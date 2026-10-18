@@ -164,12 +164,14 @@ internal static class GptSoVitsManagedRuntime
                     {
                         startup.Token.ThrowIfCancellationRequested();
                         if (process.HasExited) throw new InvalidOperationException("runtime_exited_" + process.ExitCode);
-                        if (await CheckHealthAsync(endpoint, instance, package.Id, package.Engine, startup.Token).ConfigureAwait(false))
+                        int health = await CheckHealthAsync(endpoint, instance, package.Id, package.Engine, startup.Token).ConfigureAwait(false);
+                        if (health != 0)
                         {
                             lock (Sync)
                             {
                                 if (generation != _generation) throw new OperationCanceledException();
                                 if (process.HasExited) throw new InvalidOperationException("runtime_exited_" + process.ExitCode);
+                                _supportsLanguageSelection = health == 2;
                                 _endpoint = endpoint + "/tts"; _instance = instance; _state = "Ready"; _reason = package.Id;
                             }
                             TtsTestFeedback.ReportRuntimeStatus("Ready", package.Id);
@@ -185,7 +187,7 @@ internal static class GptSoVitsManagedRuntime
         catch { StopOwned(); throw; }
     }
 
-    private static async Task<bool> CheckHealthAsync(string endpoint, string instance, string packageId, string engine, CancellationToken cancellation)
+    private static async Task<int> CheckHealthAsync(string endpoint, string instance, string packageId, string engine, CancellationToken cancellation)
     {
         try
         {
@@ -194,13 +196,13 @@ internal static class GptSoVitsManagedRuntime
                 request.Headers.Add("X-AF-Instance", instance);
                 using (var response = await Client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellation).ConfigureAwait(false))
                 {
-                    if (!response.IsSuccessStatusCode || response.Content.Headers.ContentLength > 16384) return false;
+                    if (!response.IsSuccessStatusCode || response.Content.Headers.ContentLength > 16384) return 0;
                     using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     using (var output = new MemoryStream())
                     {
                         var buffer = new byte[2048]; int read;
                         while ((read = await stream.ReadAsync(buffer, 0, buffer.Length, cancellation).ConfigureAwait(false)) > 0)
-                        { if (output.Length + read > 16384) return false; output.Write(buffer, 0, read); }
+                        { if (output.Length + read > 16384) return 0; output.Write(buffer, 0, read); }
                         var value = JObject.Parse(System.Text.Encoding.UTF8.GetString(output.ToArray()));
                         bool identified = (string)value["instance"] == instance && (int?)value["af_runtime_api"] == 1 &&
                             (string)value["package_id"] == packageId &&
@@ -209,15 +211,19 @@ internal static class GptSoVitsManagedRuntime
                             (int?)value["capabilities"]?["batch_size"] == 1;
                         if (identified && (string)value["state"] == "failed")
                             throw new InvalidOperationException("runtime_model_load_failed");
-                        return identified && (string)value["state"] == "ready";
+                        return identified && (string)value["state"] == "ready"
+                            ? ((bool?)value["capabilities"]?["text_language_selection"] == true ? 2 : 1) : 0;
                     }
                 }
             }
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { throw; }
         catch (InvalidOperationException) { throw; }
-        catch { return false; }
+        catch { return 0; }
     }
+
+    private static bool _supportsLanguageSelection;
+    internal static bool SupportsLanguageSelection { get { lock (Sync) return _state == "Ready" && _supportsLanguageSelection; } }
 
     internal static bool TryCapture(string configured, out string endpoint, out string instance)
     {

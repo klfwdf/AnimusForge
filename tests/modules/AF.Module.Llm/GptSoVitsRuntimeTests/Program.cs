@@ -38,12 +38,15 @@ async Task Wait(string state){var timer=Stopwatch.StartNew();while(GptSoVitsMana
 var settings=new DuelSettings {EnableTtsSpeech=false,TtsUseGptSoVits=true};
 GptSoVitsManagedRuntime.Observe(settings);await Wait("Installed");Check(!Process.GetProcessesByName("RuntimeFixture").Any(),"disabled discovery does not launch");
 settings.EnableTtsSpeech=true;GptSoVitsManagedRuntime.Observe(settings);await Wait("Ready");Check(GptSoVitsManagedRuntime.TryCapture(settings.TtsGptSoVitsApiUrl,out string endpoint,out string token)&&token?.Length==32,"owned endpoint and instance capture");
+Check(!GptSoVitsManagedRuntime.SupportsLanguageSelection,"old runtime remains ready but does not claim forced language");
 int ownedPid=Process.GetProcessesByName("RuntimeFixture").Single().Id;
 for(int i=0;i<100;i++)GptSoVitsManagedRuntime.Observe(settings);
 Check(Process.GetProcessesByName("RuntimeFixture").Single().Id==ownedPid,"unchanged observation reuses one worker");
 using(var client=new HttpClient()){Check((int)(await client.GetAsync(endpoint.Replace("/tts","/af/health"))).StatusCode==403,"health refuses unrelated instance");}
 int cancellations=TtsEngine.Instance.Cancellations;
+File.WriteAllText(Path.Combine(package,"language-selection"),"fixture capability");
 await GptSoVitsManagedRuntime.RefreshAsync();await Wait("Ready");
+Check(GptSoVitsManagedRuntime.SupportsLanguageSelection,"new runtime language capability negotiated");
 Check(TtsEngine.Instance.Cancellations>cancellations&&Process.GetProcessesByName("RuntimeFixture").Single().Id!=ownedPid,"refresh retires accepted local speech and replaces only owned worker");
 settings.UsesManagedGptSoVits=false;settings.TtsGptSoVitsApiUrl="http://127.0.0.1:9881/tts";GptSoVitsManagedRuntime.Observe(settings);await Wait("Manual");Check(!Process.GetProcessesByName("RuntimeFixture").Any(),"custom address stops only owned worker");Check(GptSoVitsManagedRuntime.TryCapture(settings.TtsGptSoVitsApiUrl,out endpoint,out token)&&endpoint==settings.TtsGptSoVitsApiUrl&&token==null,"manual endpoint retained without managed header");
 settings.TtsGptSoVitsApiUrl="http://127.0.0.1:9880/tts";settings.TtsGptSoVitsManifestPath="custom-manifest.json";GptSoVitsManagedRuntime.Observe(settings);await Wait("Manual");Check(!Process.GetProcessesByName("RuntimeFixture").Any(),"explicit external manifest keeps manual connection");

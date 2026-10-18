@@ -1,6 +1,7 @@
 namespace AnimusForge;
 internal static class GptSoVitsManagedRuntime
 {
+    internal static bool SupportsLanguageSelection => true;
     internal static void Observe(DuelSettings settings) { }
     internal static bool TryCapture(string configured, out string endpoint, out string instance)
     { endpoint = configured; instance = null; return true; }
