@@ -1,3 +1,14 @@
+<a id="sets-damage-publication-20261018"></a>
+## 普通城镇伤害修复：远端与旧源码复核后推送（2026-10-18，PUSH_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+- 用户追加授权核对远端、对照重构前旧源码、确认无相关回归后推送。重新 fetch 后 origin/main 为 `18f1fa20`，仍含未指定重载的 hall 注册，尚未包含本地产品 `0d64e243`。工作树干净，未改其他工作树、玩家配置或已安装整合版。
+- 对照 2026-08-29 `c4bfe83f45236d7c96205d4b35d89257fa3fe179` 的根目录 `SettlementEntryTroopSelectionBehavior.cs`：旧 `RegisterHarmonyPatches` 直接注册 entry/leave/usable/damage/alley；`4df26683` 后来的 hall 补丁插在后三者之前，存在真实已复现的重载歧义。当前 `PatchSetsEntryDamage`、`AllowSetsEntryPlayerDamagePrefix`、`ShouldHandlePhysicalAttackForExternal` 两重载、`IsSetsEntryMissionActive`、村庄徒手让出、直接撤离及 usable/alley 注册与旧版本逐方法一致。本次恢复旧有入口，不新增全场景伤害规则。
+- 对旧版其余差异逐项核对：`ShouldHandlePhysicalAttack`、`MarkEnemyAgent`、`ForceOwnedSettlementCivilianFlee`、触发者资格增加的是既有处决隔离；`MarkCurrentSceneGuardsEnemy` 保留政变移除 Agent 前的列表快照与专用守卫避让，普通非政变场景由 `_armedCoup` gate 直接放行；城墙哨兵逻辑也仅限 armed coup。这些后来功能全部保留，没有为恢复旧行为整文件回退。处决桥仅在注册了相应 Mission owner 的场景或确切受刑者上阻断，不把所有普通城镇挡掉。
+- 相对最新远端，生产差异仍只有 SETS `RegisterHarmonyPatches:241–263` 的 7 行新增/4 行删除；剔除此方法后整文件逐字相同，Taunt、GCCZ、设置、资源、存档、版本和构建脚本没有本轮差异。伤害、同伴保护、战场/处决适用边界不变，无新增热路径工作。
+- 推送前再次运行：真实候选/Harmony 注册 1.3/1.4 各16/16，hall 故障注入各14/14；逃跑26/26，Taunt处决/场景/惩罚/生命周期76/76，GCCZ136/136。三DLL SHA与上一条实际双API/Bootstrap构建收据完全一致，生产和测试源码未变，复用该构建证据；没有为了仅发布重复编译或改断言。
+- 普通推送 `HEAD:main` 成功：`18f1fa20` → `0d64e243ee46ab5a748286b20f9eef9fff42d3e7`；独立 `ls-remote` 一致。本条状态文档随后同步，最终远端 SHA 由本机 `artifacts/sets-damage-publication-20261018/push-receipt.json` 核实。待推送历史只含2个本轮提交/5个允许文件，差异检查与凭据模式检查通过，不上传安装DLL、日志、配置或其他本地产物；不强推、不改写远端历史。
+- 旧源码逐方法比较/差异、再次回归和发布收据在本机 `artifacts/sets-damage-publication-20261018/`。本条取代下条 NOT_PUSHED 状态，不改变实机、旧档、其他MOD组合仍未验及未部署/未打包的边界；部署后须完整重启游戏。回滚仅 `git revert 0d64e243` 后原入口重建，保留之前逃跑修复及其他作者提交。
+
 <a id="sets-damage-registration-20261018"></a>
 ## 普通城镇攻击无伤害：SETS 启动补丁注册修复（2026-10-18，OFFLINE_VERIFIED / NOT_PUSHED / NOT_DEPLOYED）
 

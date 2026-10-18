@@ -1,4 +1,10 @@
-# 当前交付：普通城镇伤害补丁注册中断已修复（2026-10-18，OFFLINE_VERIFIED / NOT_PUSHED / NOT_DEPLOYED）
+# 当前交付：普通城镇伤害修复已核对旧源码并推送 main（2026-10-18，PUSH_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+- 远端 `18f1fa20` 确认仍有 hall 重载歧义中断注册的问题；按用户本轮授权，已将产品 `0d64e243` 普通推送到 main，并独立核实远端 SHA。该状态记录随后同步，最终 SHA 见本机发布收据。
+- 对照重构前 `c4bfe83f`：真实伤害入口和同伴保护未改，只恢复原有补丁注册；保留后续处决隔离、政变守卫处理和上轮逃跑修复，不整文件回退。真实双API注册/故障隔离、逃跑26、Taunt76、GCCZ136再次通过，三DLL哈希对应上一轮已验构建。
+- [唯一主台账：旧源码差异、推送与验证边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#sets-damage-publication-20261018)。仅源码/测试/文档发布，没有覆盖本机整合版或打包；实机、旧档及其他MOD组合仍未验，部署后完整重启再验扣血/逃跑/卫兵反应。
+
+# 前轮本地交付：普通城镇伤害补丁注册中断已修复（2026-10-18，OFFLINE_VERIFIED / NOT_PUSHED / NOT_DEPLOYED）
 
 - 终端和平场景冲突配置确为 true；实际安装 DLL 在 SETS 启动注册中因 OpenIndoorMission 重载不明确抛异常，后续伤害补丁没有安装。用实际游戏引用/Harmony 重现，非单纯猜测或只看编译。
 - 只改 SETS 一个注册方法：指定 sceneLevels 重载、将既有基础补丁注册放到大厅专用补丁之前。整个文件其余内容与主线基线一致，不改伤害数值、敌对/犯罪规则、设置和存档。两 API 实际注册各 16/16，hall 故障隔离各 14/14；既有逃跑 26、Taunt 76、GCCZ 136 及原双 API/Bootstrap/Coup 门禁通过。
