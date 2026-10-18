@@ -11315,3 +11315,12 @@ Current verified delivery and later deployment authorization: [OpenAI-compatible
 - Gates: real audio format probe; production gateway and consumer replay; CN/EN MCM and terminal wiring; unified 1.3/1.4/Bootstrap build. In-game acceptance remains separately identified.
 - Baseline: `60f3a8b213d702a8325a0515e1a2e1b6298591d9`; pre-existing untracked `Microsoft/` and `NuGet/` are excluded.
 
+<a id="npc-surrender-native-farewell-20261018"></a>
+
+## NPC 投降手动告辞后遭遇被提前结束（2026-10-18，ACTIVE）
+
+- 基线 main / 169bd1f53；既有未跟踪 Microsoft/、NuGet/ 保留。用户 Token 日志 11:50:14 已输出 NPC_SURRENDER，截图证明已排队；对应执行日志未提供，本机安装日志止于 11:34，不冒称已复现用户现场。
+- 原版 1.3/1.4 的 conversation_lord_leave_on_consequence 设置 LeaveEncounter，PlayerEncounter.UpdateInternal 优先 Finish；当前 pending owner 要求原 encounter 存活，故原版告辞可在下一 Tick 前丢弃已接受投降。现有 56 项 fixture 没有模拟原版离开标志与结束回调顺序。
+- 范围：LordEncounterBehavior 的 pending surrender 对话结束钩子、原边界测试与 README、此台账和 HANDOFF。只为当前 scope 的已接受投降清除原版离开标志，仍等手动退出和 mission/map teardown；不复活消失遭遇、不更改 Prompt/标签/文案/存档/设置、不部署或推送。
+- 完成门：旧源码新增原版告辞回归失败，修后专项及相邻生命周期通过，原统一入口双 API/Bootstrap 构建通过；记录源码坐标、候选和回退。实机俘虏/战利品、确切用户退出路径与旧档另列未验。
+
