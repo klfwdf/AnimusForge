@@ -1,4 +1,11 @@
-# 当前交接：提示词性能修复与最新远端已合并验证（2026-10-18，VERIFIED / LIVE_NOT_RUN）
+# 当前交接：NPC 投降手动告辞结算衔接修复（2026-10-18，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+- 产品 `6e0bbd8f6`：修复原版告辞先设 LeaveEncounter、teardown 提前 Finish 丢弃 pending 投降的遗漏；仅当前有效投降的结束回调保留遭遇，原 Tick 等待退出后结算。失效 scope、玩家投降与普通告辞不接管，取消/替换拆除旧钩子。
+- 旧源码新增回归失败；修后投降 71、生命周期 183、原版战斗对话 67 PASS；原双 API/Bootstrap/双 Coup seam/registration 构建通过。无新增 Tick 扫描/IO、文案、设置或存档变化。
+- [唯一主台账、核实源码范围与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#npc-surrender-native-farewell-20261018)；本机 `artifacts/npc-surrender-native-farewell-20261018/receipt.json` 和 `verified-candidates/`。聚焦回滚 `git revert 6e0bbd8f6`。
+- 用户 Token 日志确认标签与截图排队提示，但缺 11:50 执行日志，不能认定此次现场原因已证实。实机俘虏/战利品及旧档未验；未部署、打包、push、改版本。以下为历史状态，不延伸本轮授权。
+
+# 历史交接：提示词性能修复与最新远端已合并验证（2026-10-18，VERIFIED / LIVE_NOT_RUN）
 
 - 按用户“拉取合并推送”授权，将远端7ac6e6849的4提交与本地3提交合并为9d2b0a9bf。仅两份交接文档冲突，双方保留；源码和测试入口自动合并，双方生产源码逐文件确认保持。
 - 原双API/Bootstrap/Coup/registration通过；两API实际DLL各提示词65、政策重评854、生命周期2668，平民逃跑26、劫掠关系27通过。未实机/玩家旧档/provider，既有宽提示词套件失败仍保留；未部署、打包、改版本。

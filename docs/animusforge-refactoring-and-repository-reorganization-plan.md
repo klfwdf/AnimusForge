@@ -11317,10 +11317,15 @@ Current verified delivery and later deployment authorization: [OpenAI-compatible
 
 <a id="npc-surrender-native-farewell-20261018"></a>
 
-## NPC 投降手动告辞后遭遇被提前结束（2026-10-18，ACTIVE）
+## NPC 投降手动告辞后遭遇被提前结束（2026-10-18，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
 - 基线 main / 169bd1f53；既有未跟踪 Microsoft/、NuGet/ 保留。用户 Token 日志 11:50:14 已输出 NPC_SURRENDER，截图证明已排队；对应执行日志未提供，本机安装日志止于 11:34，不冒称已复现用户现场。
 - 原版 1.3/1.4 的 conversation_lord_leave_on_consequence 设置 LeaveEncounter，PlayerEncounter.UpdateInternal 优先 Finish；当前 pending owner 要求原 encounter 存活，故原版告辞可在下一 Tick 前丢弃已接受投降。现有 56 项 fixture 没有模拟原版离开标志与结束回调顺序。
 - 范围：LordEncounterBehavior 的 pending surrender 对话结束钩子、原边界测试与 README、此台账和 HANDOFF。只为当前 scope 的已接受投降清除原版离开标志，仍等手动退出和 mission/map teardown；不复活消失遭遇、不更改 Prompt/标签/文案/存档/设置、不部署或推送。
 - 完成门：旧源码新增原版告辞回归失败，修后专项及相邻生命周期通过，原统一入口双 API/Bootstrap 构建通过；记录源码坐标、候选和回退。实机俘虏/战利品、确切用户退出路径与旧档另列未验。
+- 完成：意图 `0d15016a8`，产品 `6e0bbd8f6`。`src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:8219–8275`（MarkPendingNativeConversationNpcSurrender）向捕获的 manager 注册唯一 ConversationEndOneShot，替换任务时拆旧钩子；`:8313–8330`（OnPendingNativeConversationNpcSurrenderEnded）仅当前 encounter/party/save generation/manager/mission scope 且非玩家投降时清除 LeaveEncounter，保留原任务等待退出完成；`:8332–8352`（ClearPendingNativeConversationNpcSurrender）取消/成功/会话清理时拆钩。未修改真正创建战斗、俘虏转移、战利品授予或三渠道标签语义。
+- `tests/modules/AF.Module.Encounter/ReleaseSurrenderBoundaryTests/Harness.cs.txt:97–159` 覆盖原版先设离开标志、结束回调、teardown 在下一引擎 Tick 前 Finish 的时序，及过期 scope、取消、manager 替换、重复标签、玩家投降、普通告辞；真实生产声明原样抽取，native 副作用仍为 fixture。旧源码新增回归 exit1（before/run.log），修后最终 71 PASS；相邻 EncounterLifecycleBoundaryTests 183、NativeDialogueBattleContinuationTests 67 PASS。未以 fixture 代替实机俘虏/战利品验收。
+- 原统一构建 exit0：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Bannerlord14ReferenceDir F:/AnimusForge-main/.tmp/build_check/1.4 -Configuration Debug`。1.3 引用 v1.3.15.110062、1.4 引用 v1.4.6.115628、Bootstrap、双 Coup seam/registration 全通过，既有 warning 保留；无 Stage/Deploy。既有 CRLF 文件按 `git -c core.whitespace=cr-at-eol diff --check` 检查通过，未为换行重写整文件。
+- 本机 `artifacts/npc-surrender-native-farewell-20261018/{receipt.json,build.log,before/,final/,lifecycle/,native-combat.log,verified-candidates/}` 保存失败、通过、源码 SHA 和与 build marker 逐 SHA 一致的三 DLL。新增操作每次对话结束一次，无 Tick IO/扫描，原 250ms pending 重试保持。无固定文案/资源变化，CN/EN 消费者未改。
+- 实机、玩家旧档、此次确切退出方式及 11:50 执行日志未验；本机安装日志只有更早会话，不据此断言本次现场原因已证实。未部署、打包、push 或改版本。回滚产品用 `git revert 6e0bbd8f6` 后原入口重建，保留其他作者改动；此任务仅本地提交，不承接历史发布授权。
 
