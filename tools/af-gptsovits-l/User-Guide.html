@@ -1,0 +1,57 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>AF-GPTSOVITS-L / TTS 使用说明</title><style>body{max-width:1000px;margin:32px auto;padding:0 24px;font:17px/1.7 system-ui;background:#f6f5f1;color:#252b31}section{background:white;padding:24px;margin:22px 0;border-radius:12px}p{white-space:pre-wrap}code,pre{background:#eeeff1;padding:10px;overflow:auto}h1{line-height:1.3}</style><h1>AF-GPTSOVITS-L · TTS 使用说明 / User guide</h1><p>附加运行包，不包含 AF 主程序更新。Local evaluation add-on, not an AF main-mod update.</p>
+<section><h2>1. 安装与启动</h2><p>将附加包放进 Modules/AnimusForge：AF-GPTSOVITS-L/runtime.json 与 VoicePacks 应直接位于 AF 模组内，不要套成 AnimusForge/AnimusForge。必须使用已接入托管语音的 AF；复制目录不能升级旧 AF。
+选择 AF-GPTSOVITS 并开启语音，AF 会后台校验和启动；L、U 同时可用时优先 L。等待就绪再播放测试；准备期间的旧对白不会补读。关闭语音只释放 AF 自己启动的服务。</p><h3>1. Install and start</h3><p lang="en">Install this optional add-on inside Modules/AnimusForge: AF-GPTSOVITS-L/runtime.json and VoicePacks must be directly below the AF module. Do not create AnimusForge/AnimusForge. It requires an AF build with managed TTS support; copying a folder cannot upgrade an older AF.
+Select AF-GPTSOVITS and enable speech. AF verifies the package and starts it in the background; a valid L is preferred over U. Wait until ready, then play a test. Cold-start dialogue is not replayed later. Closing speech releases only the service started by AF.</p></section>
+<section><h2>2. 选择语音服务</h2><p>AF-GPTSOVITS：自动识别本地包，无需填写地址或另装 Python。
+GPT-SoVITS（手动 API）：自行启动服务，再填写地址和可选清单。参考音频必须能被服务端读取；远端服务器不能读取你电脑的盘符路径。
+火山：设置专用凭据、音色，并开启火山专用服务。
+OpenAI 兼容：填写语音端点、独立密钥、模型和音色；流式能力取决于服务端，云端可能计费。切换服务保留原参数；失败不会擅自切换付费服务。</p><h3>2. Choose a service</h3><p lang="en">AF-GPTSOVITS: automatic local package, no URL or separate Python setup.
+GPT-SoVITS (manual API): start your own service, then set its URL and optional manifest path. The reference WAV must be accessible to that server; a remote server cannot read your local drive path.
+Volcengine: configure its own credentials and voice, and enable the dedicated service.
+OpenAI-compatible: configure the speech endpoint, its own key, model and voice. Streaming depends on the server. Cloud usage may be charged. Switching providers preserves settings; failures do not silently switch to paid services.</p></section>
+<section><h2>3. 音色目录与角色绑定</h2><p>本地音色放在 VoicePacks/Male/&lt;包名&gt;/、Female/&lt;包名&gt;/ 或 Custom/&lt;包名&gt;/，每包需要 manifest.json；只识别分类下一级包目录。Male/Female 进入同性别随机默认池；Custom 即使有性别，也只供手选。
+可在角色百科的声音按钮中预先选择，不必先聊天。有名角色选中后随存档固定；普通士兵/平民不作为永久实名绑定。自定义声音允许玩家主动跨性别选择。ID 要稳定，删改 ID 后可能需要重选；云端音色映射另算。</p><h3>3. Voice folders and characters</h3><p lang="en">Local voices live in VoicePacks/Male/&lt;pack&gt;/, Female/&lt;pack&gt;/ or Custom/&lt;pack&gt;/. Each pack needs manifest.json. Only one package-directory level is discovered. Male/Female feed the same-gender random defaults; Custom is manual-only, even if a gender is recorded.
+Use the hero encyclopedia voice button before or after talking. Named characters keep their saved voice; ordinary soldiers/civilians are not permanent named bindings. Custom voices can be selected deliberately across genders. Stable IDs survive folder renames; changing/removing an ID can require reselection. Cloud voice mapping is separate.</p></section>
+<section><h2>4. 自定义参考音频要求</h2><p>只用有权使用及分发的录音。建议同一说话人、干净单声道 PCM16 WAV、约 3–10 秒、无音乐与叠音；16 kHz 可作为参考输入。每个参考文件必须非空且不超过 8 MiB。
+文字必须与录音逐字对应；prompt_lang 是录音本身的语言（L 版 zh/en/ja/yue），不是目标朗读语言。各语气应录同一个人；修改音频后同步更新 SHA-256。参考型语音包不需要额外权重，直接塞 .pth/.ckpt 不会自动加载角色模型。</p><h3>4. Custom recording requirements</h3><p lang="en">Use recordings you are allowed to use and redistribute. Recommended: one speaker, clean mono PCM16 WAV, about 3-10 seconds, clear speech, no music or overlapping voices; 16 kHz is a suitable reference input. Each reference must be nonempty and at most 8 MiB.
+The transcript must match the recording verbatim; prompt_lang describes that recording (zh/en/ja/yue for L), not the desired output. Record each tone with the same speaker. After editing audio, update its SHA-256. A reference-only voice pack needs no model weights. Dropping arbitrary .pth/.ckpt files here does not load a new character model.</p></section>
+<section><h2>5. 自定义清单要求</h2><p>manifest.json 内为 profiles 数组。每条必须含：唯一 id（1–128 字符，无首尾空格）、label、speaker_metadata.gender（male/female）、category（male/female/custom）、包内相对 reference_file、64 位 reference_sha256、prompt_lang、准确的 prompt_text（1–1000 字符）。分类必须匹配目录，Custom 用 custom。
+可选 emotion_variants：neutral/happy/angry/sad，各含路径、哈希、语言、文本；缺少语气时复用基础参考。建议英文名＋永久短码如 AF-C100，不能重用已有 ID。单清单不超过 2 MiB；发现上限为 128 份清单、8 MiB 元数据、512 音色。</p><h3>5. Custom manifest requirements</h3><p lang="en">manifest.json contains profiles. Each profile requires: unique id (1-128 characters, no outer spaces), label, speaker_metadata.gender (male/female), category (male/female/custom), reference_file (relative, inside this package), reference_sha256 (64-digit SHA-256), prompt_lang and accurate prompt_text (1-1000 characters). category must match its folder; use custom in Custom.
+Optional emotion_variants keys: neutral/happy/angry/sad; each supplies reference_file, reference_sha256, prompt_lang, prompt_text. Missing tones reuse the base reference. English labels + permanent codes such as AF-C100 are recommended. Avoid duplicate IDs. Per manifest: at most 2 MiB; discovery: 128 manifests / 8 MiB metadata / 512 voices.</p></section>
+<section><h2>6. 朗读语言与语气</h2><p>四种服务共用“语音输出语言”：留空/auto 跟随正文；中文、粤语、英语、日语及对应英文名可指定语言。现有后处理判断：相同保留原朗读句，不同才私下翻译；字幕、历史不改。译文缺失或无效则仅显示文字；远端模型和音色也必须支持该语言。
+本地语气取自已接受的后处理 MOOD：JOY/DELIGHTED→happy，ANNOYED→angry，其余中性；sad 可手工试听。同一 ID 包含各语气，缺少时回落基础参考。有对应参考更易控制，但不保证演绎质量；本地语气元数据不发给云端。</p><h3>6. Language and emotional tone</h3><p lang="en">Speech output language is shared by all four providers: blank/auto follows the reply; Chinese, Cantonese, English or Japanese (including Chinese names) requests that language. Existing postprocessing keeps matching text or privately translates it; subtitles and history stay unchanged. Missing/invalid translation stays text-only. The remote model/voice must support the chosen language.
+Local tone comes from accepted postprocess MOOD: JOY/DELIGHTED -&gt; happy, ANNOYED -&gt; angry, otherwise neutral. Sad is available for audition. One voice ID contains all tones; missing variants fall back to its base. Tone references improve control but cannot guarantee acting quality. Local tone metadata is not sent to cloud providers.</p></section>
+<section><h2>7. 播放范围与显存</h2><p>L/U 和手动本地 GPT-SoVITS 只合成场景主对话对象；旁人仍显示文字，私人对话保持会话目标。和平会面允许，真正战斗禁用本地合成。本地是完整回复校验通过后分句排队，不是未校验主回复逐字即时朗读。
+L 版目标约 2 GiB 显存，不是 GPU 硬上限，也不是所有 8G 显卡与游戏同开都安全。游戏设置、后台程序、驱动、首次峰值、长句都会影响结果。硬盘体积、运行内存、显存是不同指标。紧张时关闭本地语音，或自行选择已配置的远端服务。</p><h3>7. Playback and VRAM budget</h3><p lang="en">L/U and manual local GPT-SoVITS synthesize only the primary scene interlocutor. Bystanders retain text; private dialogue keeps its target. Peaceful meetings are allowed; real battles block local synthesis. Local speech uses accepted complete replies, then queues sentences; it is not character-by-character live reading of unchecked LLM text.
+L targets roughly 2 GiB VRAM; this is NOT a hard GPU cap or proof that every 8 GiB card can run it beside the game. Game settings, other apps, drivers, first-use peaks and long lines matter. Disk size, system RAM and VRAM are different. If memory is tight, disable local speech or choose a configured remote service yourself.</p></section>
+<section><h2>8. 刷新、排错与安全更新</h2><p>托管音色添加后点击“刷新本地语音运行包状态”，或重启游戏重新载入清单。手动 API 显式清单改动后请重启 AF。再去百科选择音色并试听。
+无声时依次检查语音开关、服务选择、就绪状态、音色 ID、语言后处理、战斗/主对象限制。缺文件、哈希错误、重复 ID、不支持语言会安全停声。日志在 Logs/TTS，缓存在 Cache/TTS；勿公开密钥、token 或私人对白。
+只装可信来源包。L 附加包不能替换 AF DLL、SubModule.xml 或其他玩法文件；现有角色录音仅本地评估，不代表可公开再分发。</p><h3>8. Refresh, errors and safe updates</h3><p lang="en">After adding a managed voice pack, click Refresh local runtime status; reopening the game also reloads the catalog. For manual API with an explicit manifest, restart AF after editing it. Then select the voice in the encyclopedia and audition it.
+No sound: check the speech switch, selected service, runtime ready state, voice ID, language/postprocess result and local battle/primary-target restrictions. Missing files, wrong SHA-256, duplicate IDs and unsupported languages fail safely. Inspect Logs/TTS; cache is under Cache/TTS. Do not publish keys/tokens/private dialogue.
+Install only trusted packages. L add-ons must not replace AF DLLs, SubModule.xml or other gameplay files. Existing character recordings are local evaluation assets, not automatically cleared for public redistribution.</p></section>
+<section><h2>自定义模板 / Custom template</h2><p>另存为 VoicePacks/Custom/AF-C100/manifest.json，放入自己的 WAV，替换 ID、文字、语言和真实哈希。不制作 angry 参考时删去整个 emotion_variants。模板故意使用无效哈希，不会冒充可运行音色。Save as manifest.json inside your custom pack; supply recordings and real hashes. Remove emotion_variants if unused. This is not a playable voice.</p><pre>{
+  &quot;schema_version&quot;: 1,
+  &quot;profiles&quot;: [
+    {
+      &quot;id&quot;: &quot;custom-myvoice-AF-C100&quot;,
+      &quot;label&quot;: &quot;My Voice&quot;,
+      &quot;style_target&quot;: &quot;AF-C100&quot;,
+      &quot;category&quot;: &quot;custom&quot;,
+      &quot;speaker_metadata&quot;: {
+        &quot;gender&quot;: &quot;female&quot;
+      },
+      &quot;reference_file&quot;: &quot;reference.wav&quot;,
+      &quot;reference_sha256&quot;: &quot;REPLACE_WITH_ACTUAL_64_HEX_SHA256&quot;,
+      &quot;prompt_lang&quot;: &quot;zh&quot;,
+      &quot;prompt_text&quot;: &quot;替换为录音中的准确文本。&quot;,
+      &quot;emotion_variants&quot;: {
+        &quot;angry&quot;: {
+          &quot;reference_file&quot;: &quot;tones/angry.wav&quot;,
+          &quot;reference_sha256&quot;: &quot;REPLACE_WITH_ACTUAL_64_HEX_SHA256&quot;,
+          &quot;prompt_lang&quot;: &quot;zh&quot;,
+          &quot;prompt_text&quot;: &quot;替换为生气录音中的准确文本。&quot;
+        }
+      }
+    }
+  ]
+}</pre><p>SHA-256 (PowerShell):</p><pre>Get-FileHash -Algorithm SHA256 -LiteralPath ".\reference.wav"</pre></section></html>
