@@ -11329,3 +11329,12 @@ Current verified delivery and later deployment authorization: [OpenAI-compatible
 - 本机 `artifacts/npc-surrender-native-farewell-20261018/{receipt.json,build.log,before/,final/,lifecycle/,native-combat.log,verified-candidates/}` 保存失败、通过、源码 SHA 和与 build marker 逐 SHA 一致的三 DLL。新增操作每次对话结束一次，无 Tick IO/扫描，原 250ms pending 重试保持。无固定文案/资源变化，CN/EN 消费者未改。
 - 实机、玩家旧档、此次确切退出方式及 11:50 执行日志未验；本机安装日志只有更早会话，不据此断言本次现场原因已证实。未部署、打包、push 或改版本。回滚产品用 `git revert 6e0bbd8f6` 后原入口重建，保留其他作者改动；此任务仅本地提交，不承接历史发布授权。
 
+<a id="visible-party-army-context-20261018"></a>
+
+## 野外附近部队上下文区分本队与军团人数（2026-10-18，ACTIVE）
+
+- 基线 main/be1e6e37d；Microsoft/、NuGet/ 未跟踪内容保留。用户截图中附近卡拉多格被描述为仅两百人，反馈其实际属于军团。当前聊天 Hero 的军团事实已有独立消费者，但附近可见部队 DTO 只有 MemberRoster.TotalManCount 和单队标签，缺军团信息，模型无法区分本队与整军团。
+- 修改范围：WorldEntityRetrievalService 的可见部队捕获/共用主链及后处理行、WorldEntityPromptTexts CN/EN 两资源、原资源/格式回归与当前记录。保持目标 party ID、关系、方向、距离、可见性和转移清单身份，不把军团人数替换为可转移本队士兵数。
+- 原版 1.3/1.4 Army.TotalManCount 均为军团长队伍加 AttachedParties 的人数，非全部待集结成员；使用对应已集结部队数，明确当前候选队伍是否已随军团集结。每次既有请求捕获内按 Army 缓存汇总，不新增 Tick/全世界遍历或常驻过期缓存。
+- 完成门：旧行投影回归失败；中英真实 reader、生产捕获与格式、主链隐藏 ID/后处理保留 ID、缓存与未集结情况验证，原双 API/Bootstrap 构建通过。现场军团确切人数、实机/provider/玩家旧档另列未验；不部署、打包、push 或改版本。
+
