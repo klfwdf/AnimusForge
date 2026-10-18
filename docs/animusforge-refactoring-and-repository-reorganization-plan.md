@@ -1,3 +1,11 @@
+<a id="push-surrender-army-context-20261018"></a>
+## 投降与军团上下文修复推送（2026-10-18，PUSH_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+- 用户明确授权“推送”。实际工作树 F:/AnimusForge-main/main，开工 HEAD `110578018`，跟踪文件干净；origin 为既有 klfwdf/AnimusForge，fetch 成功后远端领先0/本地领先6。待推送历史仅两轮产品 `6e0bbd8f6`、`36f718d2f` 及各自检查点/验证记录，11个文件；未跟踪 Microsoft/、NuGet/、附件日志与 artifacts 保留本地。
+- `git push origin main` exit0，169bd1f53..110578018；独立 `git ls-remote origin refs/heads/main` 与本地 HEAD 均为 `1105780188cbaf85bc0cd9fcf1ba360e9f06df77`。本次状态文档随后普通提交/推送；最终 SHA 和远端再次核对见本机 `artifacts/visible-party-army-context-20261018/push-receipt.json`，不 force 或改写历史。
+- 复用同源码两轮证据：[投降71/生命周期183/原版战斗对话67及双API构建](#npc-surrender-native-farewell-20261018)、[中英各352、内容选版合同及最终双API/Bootstrap/Coup/registration构建](#visible-party-army-context-20261018)。本次仅 Git 与状态文档，没有产品变化或新增构建。完整待推送 diff 检查通过。
+- 此条取代两轮未推送状态，不改变未部署、未打包、版本保持及实机/provider/现场确切人数/玩家旧档未验边界。源码回滚分别 `git revert 36f718d2f`、`git revert 6e0bbd8f6`，按需原入口重建；保留其他修复，不 hard reset。
+
 <a id="merge-prompt-main-20261018"></a>
 ## 提示词性能修复与最新远端合并推送（2026-10-18，VERIFIED / LIVE_NOT_RUN）
 

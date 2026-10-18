@@ -1,4 +1,10 @@
-# 当前交接：野外附近军团上下文人数修复（2026-10-18，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+# 当前交接：投降与军团上下文两轮修复已推送（2026-10-18，PUSH_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+- 按用户“推送”授权，main 的六个待推送提交已普通推送至 origin/main，首次远端独立核对为 `1105780188cbaf85bc0cd9fcf1ba360e9f06df77`；包含产品 `6e0bbd8f6`、`36f718d2f` 及其检查点/验证记录。本条状态随后同步推送，最终 SHA 见本机收据。
+- [主台账、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-surrender-army-context-20261018)；本机 `artifacts/visible-party-army-context-20261018/push-receipt.json`。两轮原离线证据仍有效，未部署、未打包、未改版本；实机/provider/玩家旧档未验。Microsoft/、NuGet/、附件日志和构建产物未纳入推送。
+- 本条取代下方两轮“未 push”状态，其余验收与授权边界保持。
+
+# 前轮交接：野外附近军团上下文人数修复（2026-10-18，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
 - 产品 `36f718d2f`：附近可见部队共用上下文补齐所属军团、统帅、已集结部队数/总人数，保留独立本队人数与原 party ID；区分尚未集结成员，避免用军团总数表示其在场兵力。已有聊天 Hero 军团事实与转移清单保持。
 - 中英真实资源/生产方法回放各352项 PASS，旧行格式负对照失败；原双 API/Bootstrap/双 Coup seam/registration 构建与原内容映射/EN选版合同通过。每请求内每军团汇总一次，不新增 Tick/全世界扫描或跨请求缓存。
