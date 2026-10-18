@@ -1,3 +1,11 @@
+# 当前交付：普通城镇伤害补丁注册中断已修复（2026-10-18，OFFLINE_VERIFIED / NOT_PUSHED / NOT_DEPLOYED）
+
+- 终端和平场景冲突配置确为 true；实际安装 DLL 在 SETS 启动注册中因 OpenIndoorMission 重载不明确抛异常，后续伤害补丁没有安装。用实际游戏引用/Harmony 重现，非单纯猜测或只看编译。
+- 只改 SETS 一个注册方法：指定 sceneLevels 重载、将既有基础补丁注册放到大厅专用补丁之前。整个文件其余内容与主线基线一致，不改伤害数值、敌对/犯罪规则、设置和存档。两 API 实际注册各 16/16，hall 故障隔离各 14/14；既有逃跑 26、Taunt 76、GCCZ 136 及原双 API/Bootstrap/Coup 门禁通过。
+- [唯一主台账、源码范围与复现证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#sets-damage-registration-20261018)。当前只完成本地源码/构建验证；没有新推送、覆盖游戏或打包。实机扣血与其他 MOD 组合仍未验，部署后需完整重启再测。
+
+以下保留此前交付历史；其中推送/部署记录不代表本轮执行。
+
 # Current TTS handoff: guide compiled; source-only L branch; local ZIP verified (2026-10-18)
 
 - Latest user decision: GitHub L branch **`AF-GPTSOVITS=L` contains adapted source/docs only**; no weights/runtime/recordings/LFS upload. Main guide product `fb01ecbcb`, L tooling product `f4add4485`; remote publication receipt records final refs.

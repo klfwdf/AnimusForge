@@ -249,14 +249,17 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		PatchEncounterEntry(harmony, typeof(VillageEncounter), nameof(VillageEncounter.CreateAndOpenMissionController), nameof(VillageCreateAndOpenMissionControllerPrefix), "village-center");
 		PatchEndMissionGuard(harmony, typeof(BasicLeaveMissionLogic), nameof(BasicLeaveMissionLogic.OnEndMissionRequest), "basic-leave");
 		PatchEndMissionGuard(harmony, typeof(MissionFightHandler), nameof(MissionFightHandler.OnEndMissionRequest), "mission-fight");
-        harmony.Patch(AccessTools.Method(typeof(SandBoxHelpers.MissionHelper), nameof(SandBoxHelpers.MissionHelper.SpawnPlayer),
-                new[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(string) }),
-            prefix: new HarmonyMethod(typeof(SettlementEntryTroopSelectionBehavior), nameof(CoupHallPlayerSpawnPrefix)));
-        harmony.Patch(AccessTools.Method(typeof(SandBoxMissions), nameof(SandBoxMissions.OpenIndoorMission)),
-            prefix: new HarmonyMethod(typeof(SettlementEntryTroopSelectionBehavior), nameof(CoupHallSceneLayerPrefix)));
+		// Install ordinary settlement hooks before the specialized coup hall hooks.
+		// A hall-only API mismatch must not disable entry damage or native alley compatibility.
 		PatchSetsUsableProtection(harmony);
 		PatchSetsEntryDamage(harmony);
 		PatchNativeAlleyCompatibility(harmony);
+        harmony.Patch(AccessTools.Method(typeof(SandBoxHelpers.MissionHelper), nameof(SandBoxHelpers.MissionHelper.SpawnPlayer),
+                new[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(string) }),
+            prefix: new HarmonyMethod(typeof(SettlementEntryTroopSelectionBehavior), nameof(CoupHallPlayerSpawnPrefix)));
+        harmony.Patch(AccessTools.Method(typeof(SandBoxMissions), nameof(SandBoxMissions.OpenIndoorMission),
+                new[] { typeof(string), typeof(Location), typeof(CharacterObject), typeof(string) }),
+            prefix: new HarmonyMethod(typeof(SettlementEntryTroopSelectionBehavior), nameof(CoupHallSceneLayerPrefix)));
 	}
 
 	public override void RegisterEvents()

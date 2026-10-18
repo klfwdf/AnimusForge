@@ -1,9 +1,15 @@
 <a id="sets-damage-registration-20261018"></a>
-## 普通城镇攻击无伤害：SETS 启动补丁注册复核（2026-10-18，VERIFY）
+## 普通城镇攻击无伤害：SETS 启动补丁注册修复（2026-10-18，OFFLINE_VERIFIED / NOT_PUSHED / NOT_DEPLOYED）
 
-- 用户反馈普通城镇挥砍 NPC 不掉血，终端开关已开启。本机 AF 原 MCM 配置 EnablePeaceSceneConflict=true；最新安装 1.4 DLL SHA256 `46D54C29D5E1A301ED0D74CDB30ED4A6F49DAA54106CF603A198E44ECAAC148C`，Bootstrap 确认 20:54 加载。PDB 对应本机 GCCZ 工作树，该 Taunt 文件尚不包含 `4e2ff37d` 的逃跑修复，不能把现象归因于该修复。
-- 本任务源码基线更新到 origin/main `18f1fa20`，保留上游已发布的 TTS/GCCZ 改动及本机其他脏工作树。只排查/修复启动注册链；不改伤害倍率、敌对/犯罪规则、终端配置、存档、处决隔离或其他作者代码。本轮没有新增部署、打包或发布授权。
-- 证据与验收：SETS 日志仅完成前五个 entry/end-guard，未见后续可用物件/伤害/alley 注册；中间 Coup hall 使用未指定重载的 OpenIndoorMission。用真实游戏 DLL/Harmony 复现 RegisterHarmonyPatches 中断、修复后逐项核对核心伤害与两个 hall 补丁实际安装；检验故障隔离与非场景/关闭/玩家同伴保护、原逃跑/上下文回归、原 1.3/1.4/Bootstrap 构建。原生游戏砍人和全部模组组合 NOT_RUN，不能以仅编译替代真实 Harmony 注册验证。
+- 用户反馈普通城镇挥砍 NPC 不掉血，终端开关已开启。本机 AF 原 MCM 配置 EnablePeaceSceneConflict=true；安装 1.4 DLL SHA256 `46D54C29D5E1A301ED0D74CDB30ED4A6F49DAA54106CF603A198E44ECAAC148C`，Bootstrap 确认 20:54 加载。PDB 对应 `AF-GCCZ-TOWN-20261007`，Taunt/SETS 源码哈希逐一相符；其中 Taunt 尚不包含 `4e2ff37d` 的逃跑修复，因此不能把该安装的现象归因于那次修改。
+- 修复基线 origin/main `18f1fa20`，意图检查点 `223f719d`，工作树 `AF-FIX-CIVILIAN-FLEE-20261018`。保留上游已发布 TTS/GCCZ 与其他本机脏工作树，不改玩家配置或安装。本轮只完成本地修复/验证，没有新增部署、打包、推送授权。
+- 根因已由实际 DLL/Harmony 复现，不再只是源码推测：`RegisterHarmonyPatches` 对 `SandBoxMissions.OpenIndoorMission` 只按名称取方法，而游戏存在两个重载，实际抛 `System.Reflection.AmbiguousMatchException`；后续 `PatchSetsEntryDamage`、usable 和 alley 兼容均未执行。普通城镇伤害补丁未装上，终端 true 无法弥补注册缺失。安装日志也仅有前三个 entry、两个 leave guard；源码引入点可定位到 `4df26683` 的 hall 注册，非上轮逃跑修改。
+- 最小生产差异：仅 `src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs:241–263` 的 `RegisterHarmonyPatches`，7 行新增/4 行删除。显式选择 `(string, Location, CharacterObject, string)` 的 sceneLevels 重载；将三个既有普通场景注册调用前置于 hall 专用补丁，使 hall 失配不再连带取消基础伤害/物件/alley 注册。没有新增 Tick、扫描、设置、日志或玩家文案。
+- 真实伤害 owner 仍为同文件 `PatchSetsEntryDamage:1270–1288` → `AllowSetsEntryPlayerDamagePrefix:1426–1472`；不改其场景资格、开关、玩家同伴保护、伤害返回值或 SETS 命中后接管。对照 `18f1fa20`，剔除唯一注册方法后整个文件内容完全相同，确认其他算法/伤害倍率/卫兵敌对/犯罪结算/存档没有被顺手修改。
+- 新回归 `tests/AF.GameAdapter.Bannerlord/SetsDamageRegistrationTests/{Program.cs,SetsDamageRegistrationTests.csproj}` 在独立 net472 进程中加载实际 AF、版本匹配游戏引用和实际 Harmony，调用生产 `RegisterHarmonyPatches` 并查真实 patch 列表；只重定向日志到工作树，不启动 Game/Campaign/Mission，不调用真实场景攻击。修前 1.3 主线候选与 1.4 安装 DLL 均在同一重载选择抛错，各 16 项中失败 8；修后两 API 各 16/16，伤害、物件、alley、两类 hall 和 leave hooks 都安装到预期目标。另注入 hall SpawnPlayer 目标不存在的异常，两 API 各 14/14，核心伤害等补丁仍已安装；该模拟异常预期传播到原启动隔离边界，不伪装 hall 成功。
+- 既有逃跑专项 26/26、Taunt 场景/处决/惩罚/生命周期 76/76、GCCZ 136/136。原 `scripts/build/build_single_module.ps1` Debug 1.3（v1.3.15.110062）/1.4（v1.4.8.119303）各 365 warnings、0 errors；Bootstrap 0/0，双 Coup seam 与 registration gate 通过。此前 Coup registration gate 只测其模块注册，不覆盖本次主体 SETS hall 调用；此次补上专用实际注册测试，不将之前的 PASS 当作此链路通过。
+- 本机证据 `artifacts/sets-damage-registration-20261018/`：修前 DLL 快照、`before-1.3.log`/`before-1.4.log`、`after-*.log`、`fault-*.log`、`probe-build.log`、`build.log`、`flee-replay.log`、`taunt-context.log`、`gccz-repair.log` 与绑定三 DLL SHA 的 `receipt.json`。日志/安装 DLL/配置不提交；版本保持 v1.6.2，无 Stage、ZIP、推送或部署。
+- 未验：游戏内实际扣血、卫兵响应、真实存档及其他 MOD 同时打补丁的组合；需获准部署后完整重启游戏（注册发生于启动），在开关开/关的普通城镇检查扣血、卫兵和逃跑，再检验同伴保护/处决/战场未变。源码回退用聚焦 inverse/revert 撤销本条修复，保留前述逃跑修复与其他作者提交，不 reset 或强推。
 
 <a id="push-surrender-army-context-20261018"></a>
 ## 投降与军团上下文修复推送（2026-10-18，PUSH_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
