@@ -1,7 +1,7 @@
-# Current TTS handoff: four-provider language and publication (2026-10-18, ACTIVE)
+# Current TTS handoff: four-provider language and publication (2026-10-18, OFFLINE_VERIFIED / INSTALL_WAITING / PUSH_PENDING)
 
-- Current task imports TTS onto latest main, shares speech language across all four providers, deploys safely and publishes main plus AF-YY. Local GCCZ village work is explicitly out of scope and untouched.
-- [Scope, evidence and remaining gates](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-four-providers-release-20261018). Installation/push are not complete; live game remains unverified. Previous entries below retain their historical status.
+- TTS imports on latest main are verified; `c287b8fb4` shares speech-only language across all four providers, with event-driven selected-provider UI and original config ownership. Local GCCZ village work is explicitly out of scope and untouched.
+- [Scope, evidence and remaining gates](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-four-providers-release-20261018). Installation stopped before writes because the launcher reopened; validated build is retained. Publication is pending; live game/cloud/LLM translation remain unverified. Previous entries below retain their historical status.
 
 # 当前交接：投降与军团上下文两轮修复已推送（2026-10-18，PUSH_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
