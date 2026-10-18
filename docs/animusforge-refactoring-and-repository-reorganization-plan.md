@@ -11331,10 +11331,16 @@ Current verified delivery and later deployment authorization: [OpenAI-compatible
 
 <a id="visible-party-army-context-20261018"></a>
 
-## 野外附近部队上下文区分本队与军团人数（2026-10-18，ACTIVE）
+## 野外附近部队上下文区分本队与军团人数（2026-10-18，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
 - 基线 main/be1e6e37d；Microsoft/、NuGet/ 未跟踪内容保留。用户截图中附近卡拉多格被描述为仅两百人，反馈其实际属于军团。当前聊天 Hero 的军团事实已有独立消费者，但附近可见部队 DTO 只有 MemberRoster.TotalManCount 和单队标签，缺军团信息，模型无法区分本队与整军团。
 - 修改范围：WorldEntityRetrievalService 的可见部队捕获/共用主链及后处理行、WorldEntityPromptTexts CN/EN 两资源、原资源/格式回归与当前记录。保持目标 party ID、关系、方向、距离、可见性和转移清单身份，不把军团人数替换为可转移本队士兵数。
 - 原版 1.3/1.4 Army.TotalManCount 均为军团长队伍加 AttachedParties 的人数，非全部待集结成员；使用对应已集结部队数，明确当前候选队伍是否已随军团集结。每次既有请求捕获内按 Army 缓存汇总，不新增 Tick/全世界遍历或常驻过期缓存。
 - 完成门：旧行投影回归失败；中英真实 reader、生产捕获与格式、主链隐藏 ID/后处理保留 ID、缓存与未集结情况验证，原双 API/Bootstrap 构建通过。现场军团确切人数、实机/provider/玩家旧档另列未验；不部署、打包、push 或改版本。
+- 完成：意图 `ece3d7478`，产品 `36f718d2f`。`src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs:138–158` 的 VisiblePartyCandidate 新增脱离游戏对象的 ArmyInfo 字符串；`:2174–2184` 的 BuildVisiblePartyPromptLine 对军团成员标明本队人数并保留军团汇总；`:3314–3378` 的 BuildVisiblePartyCandidates 复用既有可见性扫描，在单次捕获内按 Army 缓存；`:3380–3407` 的 BuildVisiblePartyArmyInfo 读取军团长、LeaderPartyAndAttachedPartiesCount、TotalManCount 与当前候选 AttachedTo。独立队伍格式保持，读军团失败保留单队事实。
+- 接线：同一 visibleParties 在 `:641–642` 传给 BuildMainPromptBlock / BuildPostprocessPromptBlock；主链 `:1694` 与后处理 `:2064` 共用行方法，主链继续只剥执行 ID。实际捕获入口 `src/AF.GameAdapter.Bannerlord/Composition/PromptContextCaptureBannerlordAdapter.cs:199`；信使 `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs:181` 沿用 BuildShoutPromptContextForExternal。原本聊天 Hero 军团事实 reader/消费者保留，本修复补齐附近第三方部队事实，不改军团成员会面目标、ATT/ATP 清单或权限。
+- 双语：`content/modules/AF.Module.Knowledge/ModuleData/WorldEntityPromptTexts.json` / `.en.json` 新增 7 个配对键，真实 WorldEntityPromptTexts reader 回放每包 352 项 PASS。动态名字原值、协议和字段保持，未新增回复语言强制规则。原 Get-AnimusForgeContentLayout 精确命中 ModuleData/WorldEntityPromptTexts.json，Get-AnimusForgeEnglishAsset 选择对应 EN，Assert-AnimusForgeEnglishJsonContract PASS（本机 resource-wiring.json）；资源非嵌入，无需新增语言注册。
+- 负对照仅将旧真实 BuildVisiblePartyPromptLine 原样替入当前回放，其余捕获/reader/资源保持，在“visible army member separates own 220 from assembled 1250”行为断言 exit1；最终 CN/EN 各352 PASS。220/1250 为 fixture，非截图现场值。回放覆盖附属/统帅、未集结、独立队伍、无 leader、异常、每请求缓存/下一请求刷新、本队/军团人数、主链 ID 剥除及后处理 ID 身份；原生对象为 fixture，生产方法原样抽取。未验证真实 provider 如何利用上下文。
+- 原统一构建 exit0：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Bannerlord14ReferenceDir F:/AnimusForge-main/.tmp/build_check/1.4 -Configuration Debug`；1.3 v1.3.15.110062、1.4 v1.4.6.115628、Bootstrap、双 Coup seam/registration 通过，既有 warning 保留。CRLF 感知 diff 检查通过。
+- 本机完整证据 `artifacts/visible-party-army-context-20261018/{receipt.json,resource-wiring.json,build.log,before/,final/,verified-candidates/}`；三 DLL 与原 build marker SHA 匹配并冻结。每次原有请求捕获中每军团汇总一次，未新增全局扫描、Tick IO、常驻缓存或后台游戏读取。实机、现场人数、provider 与玩家旧档 NOT-RUN；未 Stage、部署、打包、push、改版本。聚焦回滚 `git revert 36f718d2f` 后按原入口重建，前轮投降修复保留。
 

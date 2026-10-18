@@ -1,4 +1,11 @@
-# 当前交接：NPC 投降手动告辞结算衔接修复（2026-10-18，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+# 当前交接：野外附近军团上下文人数修复（2026-10-18，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+- 产品 `36f718d2f`：附近可见部队共用上下文补齐所属军团、统帅、已集结部队数/总人数，保留独立本队人数与原 party ID；区分尚未集结成员，避免用军团总数表示其在场兵力。已有聊天 Hero 军团事实与转移清单保持。
+- 中英真实资源/生产方法回放各352项 PASS，旧行格式负对照失败；原双 API/Bootstrap/双 Coup seam/registration 构建与原内容映射/EN选版合同通过。每请求内每军团汇总一次，不新增 Tick/全世界扫描或跨请求缓存。
+- [唯一主台账、核实源码范围与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#visible-party-army-context-20261018)；本机 `artifacts/visible-party-army-context-20261018/receipt.json`。聚焦回滚 `git revert 36f718d2f`，前轮投降修复保留。
+- 截图现场确切人数、实机/provider 与旧档未验；无 Stage、部署、打包、push 或版本变更。下面记录为前轮交付，不延伸本轮授权。
+
+# 前轮交接：NPC 投降手动告辞结算衔接修复（2026-10-18，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
 - 产品 `6e0bbd8f6`：修复原版告辞先设 LeaveEncounter、teardown 提前 Finish 丢弃 pending 投降的遗漏；仅当前有效投降的结束回调保留遭遇，原 Tick 等待退出后结算。失效 scope、玩家投降与普通告辞不接管，取消/替换拆除旧钩子。
 - 旧源码新增回归失败；修后投降 71、生命周期 183、原版战斗对话 67 PASS；原双 API/Bootstrap/双 Coup seam/registration 构建通过。无新增 Tick 扫描/IO、文案、设置或存档变化。
