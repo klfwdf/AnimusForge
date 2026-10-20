@@ -1,3 +1,12 @@
+# 当前 TTS 交付：L 教程、SKILL 与本机安全安装（2026-10-20，SOURCE_VERIFIED / GAME_DEPLOYED / LIVE_PENDING）
+
+- 公开产品 `530e8813f`：选择 `AF-GPTSOVITS-L / U（自动）` 后，下方出现 8 个中英教程入口；同一原 owner 同步接 MCM/终端，服务索引、语言语气链路与自动识别未改。
+- [中文教程](docs/tts/AF-GPTSOVITS-L.zh-CN.md)、[English](docs/tts/AF-GPTSOVITS-L.en.md)、[自定义清单](docs/tts/manifest.example.json)和项目级 `af-gptsovits-guides` Skill 齐备。后续 U 必须单独写下载/硬件/兼容教程，不套用 L 显存结论。
+- 公共与本机融合候选分别双版本构建及实际 MCM/终端验证。本机以最新已装 GCCZ 为底，只更新 11 项程序/TTS UI 文件，其余 30,223 项字节/元数据不变；私有融合历史不推 main，不能用公开主线 DLL 替换该本机版本。
+- [唯一台账与未验范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-l-tutorial-20261020)；[源码责任/坐标](docs/architecture/af-framework-code-scope.md#tts-l-tutorial-20261020)。最终远端 SHA 见本机发布回执。未启动游戏/模型；原生渲染、真实旧档、8GB 同开压测待验。网盘文件未经独立下载校验，未宣称远端 ZIP 哈希或录音再分发授权。
+
+以下是历史交付记录，不覆盖上方本轮范围与状态。
+
 # 当前交付：普通城镇伤害修复已核对旧源码并推送 main（2026-10-18，PUSH_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
 
 - 远端 `18f1fa20` 确认仍有 hall 重载歧义中断注册的问题；按用户本轮授权，已将产品 `0d64e243` 普通推送到 main，并独立核实远端 SHA。该状态记录随后同步，最终 SHA 见本机发布收据。

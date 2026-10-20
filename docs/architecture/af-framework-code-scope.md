@@ -2265,3 +2265,19 @@ Roslyn `ClassDeclarationSyntax.Members` 直接语法声明（不是 semantic uni
 | `src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs:1038–1064,1098,1130,1256–1282,1316,1349`；`.Interruption.cs:20–38` | NPC主动开场及玩家提交两实际入口，开关捕获、generation守卫、原净化器复用；后处理/动作/历史仍等完整正文 |
 | `extensions/AnimusForge.DialogueUI/src/Native/AFDialogueClickThroughScrollPanel.cs:8–42`；`GUI/Prefabs/AFDialogueConversation.xml:73–95`；`AFDialogueMapConversation.xml:13` | 共享新皮肤正文区域，布局后3帧跟随，原折行/裁剪与手动滚动；答案区不启用。旧皮肤、信使和喊话滚动不在本次范围 |
 | `tests/AF.GameAdapter.Bannerlord/StreamingDialogueRevealTests/` | 实际state/helper/scroll、提取的两Overlay方法及真实sanitizer；35断言与scene/map绑定。VM/layout/日志为替身，非原生渲染/音频验收 |
+
+<a id="tts-l-tutorial-20261020"></a>
+## L tutorial UI, localization and guide workflow (2026-10-20)
+
+Product/source `530e8813f`; [single ledger](../animusforge-refactoring-and-repository-reorganization-plan.md#tts-l-tutorial-20261020). One-based coordinates verified at this revision; only the following UI/help ownership changed, not synthesis or gameplay.
+
+| Source / symbol | Lines | Responsibility and evidence boundary |
+| --- | --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.Tts.cs` / `OpenTtsUserGuide`, `BuildTtsProviderDropdown`, `TtsProviderDropdown` | 11–25 | Existing guide/selector ordering and local display label only; four provider indices and persistence owner retained. |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.TtsLiteGuide.cs` / eight `TtsLiteGuide*` actions | 9–47 | Native MCM buttons below selector, same DuelSettings owner; existing terminal discovery binds each action. |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/TtsSettingsVisibility.cs` / `Mask` | 32–40 | Tutorial visible only for managed provider index 2; does not change provider dispatch, persistence or scan lifecycle. |
+| `src/AF.GameAdapter.Bannerlord/Scene/GptSoVitsLiteGuide.cs` / `ChapterCount`, `Title`, `Body`, `CreatePage`, `OpenChapter` | 9–43 | Eight localized read-only Inquiry pages; on click only, no IO/download/model invocation. |
+| `content/modules/AF.Module.Llm/ModuleData/Languages/afllm_ui_strings.xml` and `CNs/afllm_ui_strings-zh-CN.xml` / `AF_GPT_UI_LiteGuide*` | 182–198 | Paired CN/EN title/body/hint resources consumed by real help; quoted download and measured-vs-target limits. |
+| `tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests/TtsLiteGuideChecks.cs` / `Run` | 11–48 | Actual DLL/MCM metadata, native Inquiry data, original-owner terminal callback, four-provider visibility, bilingual contents and no settings mutation. No native rendering/audio acceptance. |
+
+Player docs live under `docs/tts/`; `.agents/skills/af-gptsovits-guides/` maintains stable release workflow and separate future U guide requirements. Synthesis/runtime/voice identity and all unrelated gameplay are outside this product delta.

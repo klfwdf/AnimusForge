@@ -29,7 +29,7 @@ metadata:
 - `src/modules/AF.Module.Llm/Tts/GptSoVitsVoiceCatalog.cs`：扫描深度、字段、文件大小/数量、路径/哈希、默认/自定义池；[可编辑示例](../../../docs/tts/manifest.example.json)的占位哈希必须替换。
 - `GptSoVitsRuntimePackage.cs`、`src/AF.GameAdapter.Bannerlord/Scene/GptSoVitsManagedRuntime.cs` 和目标包源码：自动识别、L/U 优先级、兼容和生命周期。不要因写教程改变 provider 索引或保存身份。
 - `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.TtsLiteGuide.cs`、`TtsSettingsVisibility.cs`、`src/AF.GameAdapter.Bannerlord/Scene/GptSoVitsLiteGuide.cs` 与中英 `afllm_ui_strings`：保持同一 owner 的 MCM/终端入口、真实显隐与本地化。未来 U 接入独立 U 章节，不把 L 章节改名伪装。
-- 教程点击只展示说明；选择服务时不下载、不启动额外进程、不写配置。新入口按现有回调刷新，不能新增 Tick 扫盘。
+- 教程点击只展示说明，不下载、不启动模型、不写配置；教程显隐不得给原有服务切换增加额外副作用。实际启停与保存仍沿用服务 owner。新入口按现有回调刷新，不能新增 Tick 扫盘。
 
 ## 验证和交付
 
