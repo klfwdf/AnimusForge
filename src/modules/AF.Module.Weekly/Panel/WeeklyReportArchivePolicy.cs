@@ -22,6 +22,31 @@ internal static class WeeklyReportArchivePolicy
 		}
 		return text.ToString();
 	}
+    internal static string ProjectTitleForDisplay(string id, string title)
+    {
+        string value = title ?? "";
+        if (id == "weekly_report:world:0:" && value == PromptComposerTexts.Raw("weekly_memory_compat_871fa8d0ce6a"))
+            return Localize("AF_UI_Weekly_OpeningWorldTitle", "Day 0 world opening summary");
+        if ((id ?? "").StartsWith("weekly_report:kingdom:0:", StringComparison.Ordinal))
+        {
+            string suffix = PromptComposerTexts.Raw("weekly_memory_compat_21d709ad6255");
+            if (value.EndsWith(suffix, StringComparison.Ordinal))
+                return Localize("AF_UI_Weekly_OpeningKingdomTitle", "{KINGDOM} Day 0 opening summary", ("KINGDOM", value.Substring(0, value.Length - suffix.Length)));
+        }
+        return value;
+    }
+
+    internal static string ProjectBulletinHeadingsForDisplay(string body)
+    {
+        string text = body ?? "";
+        // Only complete structural heading lines are projected; quoted prose is untouched.
+        string major = WorldBulletinPolicyTexts.Raw("BodyMajorHeader"), minor = WorldBulletinPolicyTexts.Raw("BodyMinorHeader");
+        return System.Text.RegularExpressions.Regex.Replace(text, @"(?m)^(" + System.Text.RegularExpressions.Regex.Escape(major)
+            + "|" + System.Text.RegularExpressions.Regex.Escape(minor) + @"|\[Major event\]|\[Minor news\])(?=\s|$)",
+            match => match.Value == major || match.Value == "[Major event]"
+                ? Localize("AF_UI_Weekly_MajorHeading", "[Major event]") : Localize("AF_UI_Weekly_MinorHeading", "[Minor news]"));
+    }
+
     internal const string RegionalMaterialType = "bulletin_regional_news";
     internal const string RecentMaterialType = "bulletin_residual_fact";
     internal const string ReportedMaterialType = "bulletin_reported_fact";
@@ -35,7 +60,7 @@ internal static class WeeklyReportArchivePolicy
 
     internal static EventMaterialReference FactMaterial(WorldBulletinEvent fact, string nation, string type = RecentMaterialType)
         => new EventMaterialReference {
-            MaterialType=type, KingdomId=nation, SnapshotText=fact.Sentence + (string.IsNullOrWhiteSpace(fact.Detail) ? "" : "\n" + Localize("AF_UI_Weekly_Browser_AdditionalFact", "Additional fact") + ": " + fact.Detail), Label=fact.GameDate,
+            MaterialType=type, KingdomId=nation, SnapshotText=WorldBulletinCampaignMaterialPolicy.ProjectRecordedBattle(fact.Sentence, fact.Kind) + (string.IsNullOrWhiteSpace(fact.Detail) ? "" : "\n" + Localize("AF_UI_Weekly_Browser_AdditionalFact", "Additional fact") + ": " + WorldBulletinCampaignMaterialPolicy.ProjectRecordedBattle(fact.Detail, fact.Kind)), Label=fact.GameDate,
             ActionDay=fact.Day, ActionKind=fact.Kind, SourceStableKeys=new List<string> { fact.Key }
         };
     internal static EventMaterialReference RegionalMaterial(EventRecordEntry entry) => new EventMaterialReference {
@@ -225,7 +250,7 @@ internal static class WeeklyReportArchivePolicy
     private static EventMaterialReference ArchiveMaterial(EventRecordEntry source, EventMaterialReference material, int index, bool legacy)
         => new EventMaterialReference {
             MaterialType=material.MaterialType, KingdomId=material.KingdomId,
-            SnapshotText=material.SnapshotText, ActionDay=material.ActionDay ?? source.CreatedDay, ActionKind=material.ActionKind,
+            SnapshotText=WorldBulletinCampaignMaterialPolicy.ProjectRecordedBattle(material.SnapshotText, material.ActionKind), ActionDay=material.ActionDay ?? source.CreatedDay, ActionKind=material.ActionKind,
             Label=legacy ? (material.ActionDay == null || material.ActionDay == source.CreatedDay ? source.CreatedDate : "") : material.Label,
             SourceStableKeys=material.SourceStableKeys?.Any(k => !string.IsNullOrWhiteSpace(k)) == true
                 ? material.SourceStableKeys.Where(k => !string.IsNullOrWhiteSpace(k)).ToList()
@@ -234,7 +259,7 @@ internal static class WeeklyReportArchivePolicy
 
     internal static EventRecordEntry CloneForArchive(EventRecordEntry e) => new EventRecordEntry {
         EventId=e.EventId, EventKind=e.EventKind, ScopeKingdomId=e.ScopeKingdomId, WeekIndex=e.WeekIndex,
-        Title=e.Title, Summary=e.Summary, ShortSummary=e.ShortSummary, BulletinAnecdote=e.BulletinAnecdote, TagText=e.TagText, PromptText=e.PromptText,
+        Title=ProjectTitleForDisplay(e.EventId,e.Title), Summary=e.Summary, ShortSummary=e.ShortSummary, BulletinAnecdote=e.BulletinAnecdote, TagText=e.TagText, PromptText=e.PromptText,
         CreatedDay=e.CreatedDay, CreatedDate=e.CreatedDate, BulletinKingdomIds=NormalizeKingdomIds(e.BulletinKingdomIds),
         Materials=new List<EventMaterialReference>(e.Materials ?? new List<EventMaterialReference>())
     };

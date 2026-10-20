@@ -24,7 +24,7 @@
   ],
   "SceneActionPostprocessRules": [
     {
-      "Tag": "[ACTION:SCENE_ACT:动作程序]",
+      "Tag": "[ACTION:SCENE_ACT:action_program]",
       "Description": "This tag performs factual detection of physical scene actions and does not require NPC consent. It only judges visible physical actions performed or being performed by the conversational NPC in <latest_reply> this turn, determining which animation to play for the NPC in-game. Output at most one such tag per turn. The action sequence must only use action keys from the catalog below. Single action format: [ACTION:SCENE_ACT:kneel]; sequential actions use '>', simultaneous actions use '+', maximum 4 actions total, e.g. [ACTION:SCENE_ACT:laugh>point]. When no action is playable, output [ACTION:SCENE_ACT:NONE]. Physical actions require clear bodily descriptions in the current turn's reply as evidence. Lowering head, looking up, closing eyes, sighing, wry smile, looking somewhere, freezing, crouching, or bending over do not automatically qualify as catalog actions. Only explicit kneeling is kneel; only explicit clapping is applaud. Denials, refusals, unoccurred actions, plans, hypotheticals, attempts, narrow misses, recollections, quoting others, commanding others to act, or merely saying 'forward / follow me / I agree' do not count as actions performed by this NPC. fear, rage, disappointed, laugh, unsure are emotional expressions and may only be selected when clear evidence exists from context, physical reactions, or tone; at most one emotion per output. Actual weapon attacks or slashes outside the catalog cannot be mapped to catalog actions. Action catalog:\n{scene_action_catalog}"
     }
   ],

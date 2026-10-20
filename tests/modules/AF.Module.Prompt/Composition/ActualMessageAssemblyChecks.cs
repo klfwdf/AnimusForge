@@ -132,8 +132,8 @@ internal static class ActualMessageAssemblyChecks
                 Check(Field(reply[i + 2], "role") == roles[i], "Courier role " + i);
                 Check(Field(reply[i + 2], "content") == Field(inbound[i + 2], "content"), "Courier direction history " + i);
             }
-            Check(Field(reply[5], "content").Contains("[AFEF玩家行为补充]"), "Courier player AFEF preserved");
-            Check(Field(reply[6], "content").Contains("[AFEF NPC行为补充]"), "Courier NPC AFEF preserved");
+            Check(Field(reply[5], "content").Contains(Text("afef_player_action")), "Courier player AFEF actor preserved");
+            Check(Field(reply[6], "content").Contains(Text("afef_npc_action")), "Courier NPC AFEF actor preserved");
             Check(Field(reply[7], "content").Contains("current letter") && Field(reply[7], "content").Contains("delivery fact"), "Courier current input/fact last");
             Check(Field(reply[7], "content").StartsWith(Text("main_courier_003")), "reply current input package heading");
             Check(Field(inbound[7], "content").StartsWith(Text("main_courier_011")), "inbound current intent package heading");
@@ -191,7 +191,7 @@ internal static class ActualMessageAssemblyChecks
                     object[] input = { history[i], 7, null, null, distance };
                     Check((bool)convert.Invoke(null, input), "real Native/Scene accepts history " + i);
                     Check(Field(input[2], "role") == roles[i], "real Native/Scene role " + distance + "/" + i);
-                    if (i >= 3) Check(Field(input[2], "content").Contains(i == 3 ? "[AFEF玩家行为补充]" : "[AFEF NPC行为补充]"), "real Native/Scene AFEF " + distance + "/" + i);
+                    if (i >= 3) Check(Field(input[2], "content").Contains(Text(i == 3 ? "afef_player_action" : "afef_npc_action")), "real Native/Scene AFEF " + distance + "/" + i);
                 }
             }
             }

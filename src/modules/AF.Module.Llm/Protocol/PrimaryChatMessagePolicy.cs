@@ -10,6 +10,37 @@ internal static class PrimaryChatMessagePolicy
 {
 	private const string EmptyResponseRetryMarker = "[AF_EMPTY_RESPONSE_RETRY]";
 
+    // Request-frequency detached projection of fixed protocol text only. No output-language rule.
+    internal static void ApplyFixedTextProjection(JObject payload)
+    {
+        if (!(payload?["messages"] is JArray messages)) return;
+        bool english = string.Equals(LlmPromptTexts.Get("AF_LLM_PROMPT_ContentLanguage", "zh-CN"), "en", StringComparison.Ordinal);
+        foreach (JObject message in messages.OfType<JObject>())
+        {
+            if (message["content"]?.Type == JTokenType.String)
+                message["content"] = ProjectFixedTransportText(message["content"].Value<string>(), english);
+            else if (message["content"] is JArray blocks)
+                foreach (JObject block in blocks.OfType<JObject>())
+                    if (block["type"]?.Value<string>() == "text" && block["text"]?.Type == JTokenType.String)
+                        block["text"] = ProjectFixedTransportText(block["text"].Value<string>(), english);
+        }
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex LegacyFactMarker = new System.Text.RegularExpressions.Regex(
+        LlmSourceTexts.Get("LegacyAfefMarkerPattern"),
+        System.Text.RegularExpressions.RegexOptions.Compiled);
+    private static readonly System.Text.RegularExpressions.Regex LegacyRuleHeader = new System.Text.RegularExpressions.Regex(
+        LlmSourceTexts.Get("LegacyRuleHeaderPattern"), System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    internal static string ProjectFixedTransportText(string text, bool english)
+    {
+        if (string.IsNullOrEmpty(text)) return text;
+        string projected = text.IndexOf("AFEF", StringComparison.Ordinal) < 0 ? text : LegacyFactMarker.Replace(text, match => match.Groups["actor"].Value == LlmSourceTexts.Get("LegacyAfefPlayerActor")
+            ? "[AFEF PLAYER_ACTION]" : match.Groups["actor"].Value == "NPC" ? "[AFEF NPC_ACTION]" : "[AFEF NPC_ACTION] / [AFEF PLAYER_ACTION]");
+        return english && projected.IndexOf(LlmSourceTexts.Get("LegacyRuleHeaderPrefix"), StringComparison.Ordinal) >= 0 ? LegacyRuleHeader.Replace(projected, match => "[Additional rule:" + match.Groups[1].Value + "]") : projected;
+    }
+
+
 	private static string EmptyResponseRetryInstruction => EmptyResponseRetryMarker + " " + LlmPromptTexts.Get("AF_LLM_PROMPT_EmptyResponseRetry", "The previous model response was blank. Follow the existing role, format, and length requirements strictly and output this turn's NPC reply directly. Do not output only whitespace, a line break, or no content.");
 
 	internal static bool HasEmptyResponseRetryMarker(List<object> messages)

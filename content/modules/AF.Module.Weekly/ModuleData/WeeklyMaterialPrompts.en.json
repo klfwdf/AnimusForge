@@ -321,5 +321,15 @@
   "AF_WEEKLY_Fact_Exec_Charge": ", on the charge of {CHARGE}",
   "AF_WEEKLY_Fact_Exec_BulletinByKiller": "{WHO}{VENUE} was {METHOD} at the hands of {KILLER}{CHARGE}.",
   "AF_WEEKLY_Fact_Exec_BulletinNoKiller": "{WHO}{VENUE} was {METHOD}{CHARGE}.",
-  "AF_WEEKLY_Prompt_WordSeparator": " "
+  "AF_WEEKLY_Prompt_WordSeparator": " ",
+  "AF_WEEKLY_Fact_FieldLocation": "the open field",
+  "AF_WEEKLY_Fact_Casualties": "{dead} killed, {wounded} wounded",
+  "AF_WEEKLY_Fact_PartyKind_NonLord": "non-lord party",
+  "AF_WEEKLY_Fact_PartyKind_Villager": "villager party",
+  "AF_WEEKLY_Fact_PartyKind_Caravan": "caravan",
+  "AF_WEEKLY_Fact_PartyKind_Patrol": "patrol",
+  "AF_WEEKLY_Fact_PartyKind_Militia": "militia",
+  "AF_WEEKLY_Fact_PartyKind_Garrison": "garrison",
+  "AF_WEEKLY_Fact_PartyKind_Bandit": "bandits",
+  "AF_WEEKLY_Fact_PartyKind_Custom": "custom party"
 }

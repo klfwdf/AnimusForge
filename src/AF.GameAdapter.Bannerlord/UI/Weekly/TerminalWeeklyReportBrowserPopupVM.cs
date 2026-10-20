@@ -829,14 +829,14 @@ public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 
 	public TerminalWeeklyReportEntryItemVM(MyBehavior.WeeklyReportBrowserEntryData entry)
 	{
-		TitleText = (entry?.Title ?? "").Trim();
+		TitleText = WeeklyReportArchivePolicy.ProjectTitleForDisplay(entry?.EventId, entry?.Title).Trim();
 		WeekText = string.IsNullOrWhiteSpace(entry?.KindLabelText) ? WeeklyReportArchivePolicy.PeriodLabel(entry?.EventId, entry?.WeekIndex ?? 0) : entry.KindLabelText.Trim();
 		DateText = WeeklyReportArchivePolicy.ProjectDateForDisplay(entry?.CreatedDate);
-		PlainBodyText = FormatDisplayBodyText(entry?.BodyText);
+		PlainBodyText = FormatDisplayBodyText(WeeklyReportArchivePolicy.ProjectBulletinHeadingsForDisplay(entry?.BodyText));
 		BodyText = PlainBodyText;
 		EntryKind = entry?.ArchiveKind ?? WeeklyReportArchivePolicy.EntryKind(entry?.EventId);
 		OpenTargetId = entry?.OpenTargetId ?? (entry?.EventId ?? "").Trim();
-		PreviewText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(WorldBulletinPolicy.Truncate((entry?.BodyText ?? "").Replace('\r',' ').Replace('\n',' '), 120));
+		PreviewText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(WorldBulletinPolicy.Truncate(WeeklyReportArchivePolicy.ProjectBulletinHeadingsForDisplay(entry?.BodyText).Replace('\r',' ').Replace('\n',' '), 120));
 		TagText = BuildDisplayTagText(entry?.TagText, out int tagKind);
 		HasTagText = !string.IsNullOrWhiteSpace(TagText);
 		ShowPositiveTag = HasTagText && tagKind > 0;

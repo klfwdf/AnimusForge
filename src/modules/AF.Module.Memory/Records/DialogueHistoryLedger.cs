@@ -18,6 +18,23 @@ internal static class DialogueHistoryLedger
 	internal static readonly string AfefNpcPrefix = MemoryTextResources.Raw("MEM_Raw_006");
 	internal static readonly string SceneShoutPrefix = MemoryTextResources.Raw("MEM_Raw_036");
 
+    // A fixed six-entry protocol table, initialized once. Natural-language bodies are opaque.
+    private static readonly (string Prefix, bool Npc)[] FactPrefixes = {
+        (AfefPlayerPrefix, false), (AfefNpcPrefix, true),
+        ("[AFEF PLAYER_ACTION]", false), ("[AFEF NPC_ACTION]", true),
+        (MemoryTextResources.Raw("AF_MEM_Compat_PlayerFactBracket"), false),
+        (MemoryTextResources.Raw("AF_MEM_Compat_NpcFactBracket"), true)
+    };
+    internal static bool TryReadAfefPrefix(string text, out bool npc, out int prefixLength)
+    {
+        if (!string.IsNullOrEmpty(text))
+            foreach (var marker in FactPrefixes)
+                if (text.StartsWith(marker.Prefix, StringComparison.Ordinal))
+                { npc = marker.Npc; prefixLength = marker.Prefix.Length; return true; }
+        npc = false; prefixLength = 0; return false;
+    }
+
+
 	internal static string TagSceneSession(string line, int sceneSessionId)
 	{
 		string text = (line ?? "").Trim();
@@ -55,10 +72,9 @@ internal static class DialogueHistoryLedger
 	internal static string NormalizeAfefFact(string extraFact)
 	{
 		string text = (extraFact ?? "").Trim();
-		if (text.StartsWith(AfefPlayerPrefix, StringComparison.Ordinal) || text.StartsWith(AfefNpcPrefix, StringComparison.Ordinal))
-		{
-			return text;
-		}
+        // Keep the original on-disk identity while accepting all known transport aliases.
+        if (TryReadAfefPrefix(text, out bool npc, out int length))
+            return (npc ? AfefNpcPrefix : AfefPlayerPrefix) + text.Substring(length);
 		return AfefPlayerPrefix + " " + text;
 	}
 
@@ -73,11 +89,11 @@ internal static class DialogueHistoryLedger
 	{
 		string text = (line ?? "").Trim();
 		TryStripSceneSessionMarker(text, out text, out _);
-		if (!text.StartsWith(AfefNpcPrefix, StringComparison.Ordinal))
+		if (!TryReadAfefPrefix(text, out bool npc, out int prefixLength) || !npc)
 		{
 			return false;
 		}
-		string body = text.Substring(AfefNpcPrefix.Length).Trim();
+		string body = text.Substring(prefixLength).Trim();
 		if (string.IsNullOrWhiteSpace(body))
 		{
 			return false;

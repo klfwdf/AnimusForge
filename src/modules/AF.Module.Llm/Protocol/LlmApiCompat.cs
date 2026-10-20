@@ -134,6 +134,7 @@ public static class LlmApiCompat
 			return "{}";
 		}
 		JObject prepared = (JObject)openAiStylePayload.DeepClone();
+        PrimaryChatMessagePolicy.ApplyFixedTextProjection(prepared);
         ApplyConversationCacheHints(apiUrl, prepared);
 		JObject payload = IsAnthropicCompatibleUrl(apiUrl) ? ConvertOpenAiChatPayloadToAnthropic(prepared) : prepared;
 		return payload.ToString(Formatting.None);
@@ -146,6 +147,7 @@ public static class LlmApiCompat
 			return new JObject();
 		}
         JObject prepared = (JObject)openAiStylePayload.DeepClone();
+        PrimaryChatMessagePolicy.ApplyFixedTextProjection(prepared);
         ApplyConversationCacheHints(apiUrl, prepared);
 		return IsAnthropicCompatibleUrl(apiUrl) ? ConvertOpenAiChatPayloadToAnthropic(prepared) : prepared;
 	}

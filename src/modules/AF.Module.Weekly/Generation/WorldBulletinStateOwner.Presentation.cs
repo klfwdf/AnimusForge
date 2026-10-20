@@ -136,18 +136,20 @@ internal static void SplitWorldBulletinBody(string summary, out string major, ou
 	{
 		minors = new List<string>();
 		string text = (summary ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
-		int minorAt = text.IndexOf(WorldBulletinMinorHeader, StringComparison.Ordinal);
+		string minorHeader = text.IndexOf(WorldBulletinMinorHeader, StringComparison.Ordinal) >= 0 ? WorldBulletinMinorHeader : "[Minor news]";
+		int minorAt = text.IndexOf(minorHeader, StringComparison.Ordinal);
 		string majorPart = minorAt >= 0 ? text.Substring(0, minorAt) : text;
-		if (majorPart.StartsWith(WorldBulletinMajorHeader, StringComparison.Ordinal))
+		string majorHeader = majorPart.StartsWith(WorldBulletinMajorHeader, StringComparison.Ordinal) ? WorldBulletinMajorHeader : "[Major event]";
+		if (majorPart.StartsWith(majorHeader, StringComparison.Ordinal))
 		{
-			majorPart = majorPart.Substring(WorldBulletinMajorHeader.Length);
+			majorPart = majorPart.Substring(majorHeader.Length);
 		}
 		major = majorPart.Trim();
 		if (minorAt < 0)
 		{
 			return;
 		}
-		foreach (string rawLine in text.Substring(minorAt + WorldBulletinMinorHeader.Length).Split('\n'))
+		foreach (string rawLine in text.Substring(minorAt + minorHeader.Length).Split('\n'))
 		{
 			string line = rawLine.Trim().TrimStart('·', '•', '-', ' ').Trim();
 			if (line.Length > 0)

@@ -73,12 +73,7 @@ internal static string RenderInteractionMemoryFact(string factsText)
         {
             return string.Empty;
         }
-        if (!rendered.StartsWith(MemoryTextResources.Raw("MEM_Raw_018"), StringComparison.Ordinal)
-            && !rendered.StartsWith(MemoryTextResources.Raw("MEM_Raw_006"), StringComparison.Ordinal))
-        {
-            rendered = MemoryTextResources.Raw("MEM_Raw_075") + rendered;
-        }
-        return rendered;
+        return DialogueHistoryLedger.NormalizeAfefFact(rendered);
     }
 internal static string RenderInteractionMemoryAssistant(string npcName, string assistantText)
     {

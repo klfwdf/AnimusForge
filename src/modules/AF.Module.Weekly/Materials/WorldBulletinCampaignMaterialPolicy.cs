@@ -4,6 +4,28 @@ namespace AnimusForge;
 // Event-time detached facts only. Bannerlord handles, participant capture and writes remain adapters.
 internal static class WorldBulletinCampaignMaterialPolicy
 {
+    private static readonly System.Text.RegularExpressions.Regex BattleLoss = new System.Text.RegularExpressions.Regex(
+        WeeklyMaterialTexts.Raw("BattleLossPattern"), System.Text.RegularExpressions.RegexOptions.Compiled);
+    private static readonly System.Text.RegularExpressions.Regex BattlePartyKind = new System.Text.RegularExpressions.Regex(
+        WeeklyMaterialTexts.Raw("BattlePartyKindPattern"), System.Text.RegularExpressions.RegexOptions.Compiled);
+    private static readonly string[] BattlePartyKinds = { "NonLord", "Villager", "Caravan", "Patrol", "Militia", "Garrison", "Bandit", "Custom" };
+    private static string BattlePartyKindId(string value)
+    {
+        foreach (string id in BattlePartyKinds) if (WeeklyMaterialTexts.Raw("BattlePartyKind_" + id) == value) return id;
+        return "NonLord";
+    }
+    internal static string BattleLocation(string value) => value == WeeklyMaterialTexts.Raw("BattleFieldLocation") ? WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_FieldLocation") : value;
+    internal static string BattleActor(string value) => BattlePartyKind.Replace(value ?? "", match => " (" + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_PartyKind_" + BattlePartyKindId(match.Groups["kind"].Value)) + ")");
+    internal static string BattleCasualties(string value) => BattleLoss.Replace(value ?? "", match => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_Casualties", ("dead", match.Groups["dead"].Value), ("wounded", match.Groups["wounded"].Value)));
+    // Only captured battle facts reach this boundary, not arbitrary generated or player prose.
+    internal static string ProjectRecordedBattle(string value, string kind)
+    {
+        if (kind != "battle" && kind != "siege_battle" && kind != "sally_out_battle") return value;
+        string text = BattleCasualties(BattleActor(value));
+        string prefix = WeeklyMaterialTexts.Raw("BattleEnglishFieldPrefix");
+        return text.StartsWith(prefix + ":", StringComparison.Ordinal)
+            ? "Battle at " + BattleLocation(WeeklyMaterialTexts.Raw("BattleFieldLocation")) + text.Substring(prefix.Length) : text;
+    }
     internal static int EventPriority(string kind) => kind switch {
         "war_declared"=>70, "peace_made"=>60, "fief_grant"=>20, "settlement_transfer"=>30,
         "kingdom_destroyed"=>100, "kingdom_rebellion"=>70, "kingdom_created"=>75, "raid"=>25, "civil_war"=>80,
@@ -42,9 +64,9 @@ internal static class WorldBulletinCampaignMaterialPolicy
     // Only large field battles swing stability, by one point; the rest is carried by war weariness.
     internal static int BattleStability(int troops,int threshold)=>troops>threshold?1:0;
     internal static string BattleSentence(string location,bool sallyOut,bool siege,string winner,string winnerFaction,string loser,string loserFaction,int troops)
-        => WeeklyMaterialTexts.Fact(sallyOut?"AF_WEEKLY_Fact_BattleSentenceSally":siege?"AF_WEEKLY_Fact_BattleSentenceSiege":"AF_WEEKLY_Fact_BattleSentenceField", ("location", location), ("winner", winner), ("winnerFaction", winnerFaction), ("loser", loser), ("loserFaction", loserFaction));
+        => WeeklyMaterialTexts.Fact(sallyOut?"AF_WEEKLY_Fact_BattleSentenceSally":siege?"AF_WEEKLY_Fact_BattleSentenceSiege":"AF_WEEKLY_Fact_BattleSentenceField", ("location", BattleLocation(location)), ("winner", BattleActor(winner)), ("winnerFaction", winnerFaction), ("loser", BattleActor(loser)), ("loserFaction", loserFaction));
     internal static string BattleDetail(int winnerTroops,string winnerLoss,int loserTroops,string loserLoss,bool sallyOut,bool winnerLord,string winnerTitle,bool loserLord,string loserTitle)
-        => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_BattleDetailBase", ("winnerTroops", winnerTroops.ToString()), ("winnerLoss", winnerLoss), ("loserTroops", loserTroops.ToString()), ("loserLoss", loserLoss))
+        => WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_BattleDetailBase", ("winnerTroops", winnerTroops.ToString()), ("winnerLoss", BattleCasualties(winnerLoss)), ("loserTroops", loserTroops.ToString()), ("loserLoss", BattleCasualties(loserLoss)))
             +(winnerLord?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_BattleDetailWinnerLord", ("winnerTitle", winnerTitle)):"")+(loserLord?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_BattleDetailLoserLord", ("loserTitle", loserTitle)):"")+(sallyOut?WeeklyMaterialTexts.Prompt("AF_WEEKLY_Fact_BattleDetailSallyNote"):"");
     internal static string CapturedWho(bool ruler,string kingdom,string name,string affiliation)=>ruler?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CapturedWhoRuler", ("kingdom", kingdom), ("name", name)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CapturedWhoOther", ("name", name), ("affiliation", affiliation));
     internal static string CapturedSentence(string who,bool hasCaptor,string captor)=>hasCaptor?WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CapturedSentenceBy", ("who", who), ("captor", captor)):WeeklyMaterialTexts.Fact("AF_WEEKLY_Fact_CapturedSentenceEnemy", ("who", who));

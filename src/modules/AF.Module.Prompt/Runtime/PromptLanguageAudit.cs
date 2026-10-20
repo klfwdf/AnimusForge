@@ -13,7 +13,7 @@ internal static class PromptLanguageAudit
 {
     private static readonly Regex Han = new Regex(@"[\p{IsCJKUnifiedIdeographsExtensionA}\p{IsCJKUnifiedIdeographs}\p{IsCJKCompatibilityIdeographs}]", RegexOptions.Compiled);
     private static readonly Regex StableProtocol = new Regex(
-        @"(?:\[AFEF[^\]]*\]|\u3010AFEF[^\u3011]*\u3011|\[(?:ACTION|A|AD|ADP|ASS|GUI|ATT|ATP|RELAY|FOL|STP|END):[^\]]*\]|\[\[(?:AFI_PROTOCOL_[A-Z_]+)\]\])",
+        @"(?:\[AFEF (?:NPC_ACTION|PLAYER_ACTION)\]|\[(?:ACTION|A|AD|ADP|ASS|GUI|ATT|ATP|RELAY|FOL|STP|END):[^\]]*\]|\[\[(?:AFI_PROTOCOL_[A-Z_]+)\]\])",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     internal static PromptLanguageAuditResult Inspect(IEnumerable<object> messages)

@@ -289,7 +289,7 @@ internal static LegacyDetachedRuleSelector CreateNativeConversationDetachedRuleS
 			if (ShouldIncludeGuardrailSemanticContextLine(text3))
 			{
 				string text5 = NormalizeGuardrailSemanticContextLine(text3);
-				if (text5.StartsWith(AdapterPromptCaptureTexts.PcapCompat("Compat_AfefPlayer"), StringComparison.Ordinal) || text5.StartsWith(AdapterPromptCaptureTexts.PcapCompat("Compat_AfefNpc"), StringComparison.Ordinal))
+				if (DialogueHistoryLedger.TryReadAfefPrefix(text5, out _, out _))
 				{
 					list.Add(text5);
 				}
@@ -738,7 +738,7 @@ internal static string BuildRecentNpcFactContext(Func<Hero,List<DialogueDay>> lo
 				foreach (string line in item.Lines)
 				{
 					string text = (line ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text) && text.StartsWith(AdapterPromptCaptureTexts.PcapCompat("Compat_AfefNpc"), StringComparison.Ordinal))
+					if (!string.IsNullOrWhiteSpace(text) && DialogueHistoryLedger.TryReadAfefPrefix(text, out bool npcFact, out _) && npcFact)
 					{
 						list2.Add(text);
 					}

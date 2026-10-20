@@ -122,5 +122,7 @@
   "MEM_Raw_120": "日结压缩总结失败",
   "MEM_Raw_121": "压缩记忆总结异常",
   "MEM_Raw_122": "任务可能已有部分写入，本轮已停止；请查看日志后再重试。\n\n",
-  "MEM_Raw_123": "无"
+  "MEM_Raw_123": "无",
+  "AF_MEM_Compat_PlayerFactBracket": "【AFEF玩家行为补充】",
+  "AF_MEM_Compat_NpcFactBracket": "【AFEF NPC行为补充】"
 }

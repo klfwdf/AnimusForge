@@ -1227,14 +1227,7 @@ internal static void AppendPlayerExtraFactLine(StringBuilder sb, string extraFac
 		string text = (extraFact ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			if (text.StartsWith(MemoryTextResources.Raw("MEM_Raw_018"), StringComparison.Ordinal) || text.StartsWith(MemoryTextResources.Raw("MEM_Raw_006"), StringComparison.Ordinal))
-			{
-				sb.AppendLine(text);
-			}
-			else
-			{
-				sb.AppendLine(MemoryTextResources.Raw("MEM_Raw_075") + text);
-			}
+            sb.AppendLine(DialogueHistoryLedger.NormalizeAfefFact(text));
 		}
 	}
 

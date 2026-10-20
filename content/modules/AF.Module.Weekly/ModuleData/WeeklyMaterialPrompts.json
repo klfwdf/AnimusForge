@@ -321,5 +321,15 @@
   "AF_WEEKLY_Fact_Exec_Charge": "，罪名为{CHARGE}",
   "AF_WEEKLY_Fact_Exec_BulletinByKiller": "{WHO}{VENUE}被{KILLER}{METHOD}{CHARGE}。",
   "AF_WEEKLY_Fact_Exec_BulletinNoKiller": "{WHO}{VENUE}被{METHOD}{CHARGE}。",
-  "AF_WEEKLY_Prompt_WordSeparator": ""
+  "AF_WEEKLY_Prompt_WordSeparator": "",
+  "AF_WEEKLY_Fact_FieldLocation": "野外",
+  "AF_WEEKLY_Fact_Casualties": "阵亡{dead}、负伤{wounded}",
+  "AF_WEEKLY_Fact_PartyKind_NonLord": "非领主部队",
+  "AF_WEEKLY_Fact_PartyKind_Villager": "村民队",
+  "AF_WEEKLY_Fact_PartyKind_Caravan": "商队",
+  "AF_WEEKLY_Fact_PartyKind_Patrol": "巡逻队",
+  "AF_WEEKLY_Fact_PartyKind_Militia": "民兵队",
+  "AF_WEEKLY_Fact_PartyKind_Garrison": "驻军",
+  "AF_WEEKLY_Fact_PartyKind_Bandit": "匪帮",
+  "AF_WEEKLY_Fact_PartyKind_Custom": "自定义部队"
 }

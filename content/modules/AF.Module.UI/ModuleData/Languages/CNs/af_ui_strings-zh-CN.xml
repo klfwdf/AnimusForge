@@ -3447,5 +3447,9 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
     <string id="AF_UI_Parade_MenuExpedition" text="出征阅兵" />
     <string id="AF_UI_Parade_MenuVictory" text="胜利阅兵" />
     <string id="AF_UI_Parade_MenuBack" text="返回" />
-  </strings>
+    <string id="AF_UI_Weekly_OpeningWorldTitle" text="第0天世界开局概要" />
+  <string id="AF_UI_Weekly_OpeningKingdomTitle" text="{KINGDOM}第0天开局概要" />
+  <string id="AF_UI_Weekly_MajorHeading" text="【大事件】" />
+  <string id="AF_UI_Weekly_MinorHeading" text="【小消息】" />
+</strings>
 </base>

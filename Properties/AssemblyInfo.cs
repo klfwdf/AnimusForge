@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 [assembly: AssemblyVersion("1.5.4.0")]
-[assembly: AssemblyFileVersion("1.6.2.0")]
+[assembly: AssemblyFileVersion("1.6.3.0")]
 [assembly: AssemblyInformationalVersion("1.5.4")]
 [assembly: InternalsVisibleTo("PolicyEffectModule.ContractTests")]
 

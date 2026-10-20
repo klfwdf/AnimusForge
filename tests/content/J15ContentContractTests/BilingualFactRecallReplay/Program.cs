@@ -44,7 +44,7 @@ internal static class Program
                 translated[kindIndex] = PromptComposerTexts.Get("memory_courier_value_588");
             string expected = PromptComposerTexts.Get(key.StartsWith("memory_courier_npc_", StringComparison.Ordinal) ? "afef_npc_action" : "afef_player_action") + " " + string.Format(PromptComposerTexts.Get(key), translated.Cast<object>().ToArray());
             Check(MemorySystemFactProjection.ProjectNpcFact(raw) == expected, "actual terminal template projection: " + key);
-            Check(english ? expected != raw : expected == raw, "fixed package language: " + key);
+            Check(english ? expected != raw : expected.EndsWith(" " + rawBody, StringComparison.Ordinal), "fixed package language and canonical marker: " + key);
             Check(MemorySystemFactProjection.ProjectNpcFact(expected) == expected, "idempotent terminal projection");
             foreach (string metadata in new[] { "[2026-10-12 hour 8 | Town {NAME} $1 | AFEF] ", "[冬季8日 8时｜Town {NAME} $1｜AFEF] " })
             foreach (string scope in new[] { "", MemoryTextResources.Raw("MEM_Raw_032"), MemoryTextResources.Raw("MEM_Raw_033"), PromptComposerTexts.Raw("history_section_scope_historical") })
@@ -136,7 +136,7 @@ internal static class Program
         {
             string projected = MemorySystemFactProjection.ProjectNpcFact(npcPrefix + " " + source);
             Check(!english || !System.Text.RegularExpressions.Regex.IsMatch(projected, @"[\u3400-\u9fff]"), "known social fact has no fixed Han: " + projected);
-            Check(english || projected == npcPrefix + " " + source, "CN social fact unchanged");
+            Check(english || projected == PromptComposerTexts.Get("afef_npc_action") + " " + source, "CN social fact body unchanged with ASCII marker");
             Check(MemorySystemFactProjection.ProjectNpcFact(projected) == projected, "social fact projection idempotent");
         }
         foreach (string key in new[] { "S164", "S166" })

@@ -147,9 +147,9 @@ internal static class TerminalSettingsChecks
                 Check(visible.ContainsKey(evolutionId) && diplomacy.Contains(evolutionId), "persona evolution is visible on terminal diplomacy page");
                 Check((string)Property(visible[evolutionId], "DisplayName") ==
                     (language == "简体中文" ? "事件驱动的 NPC 人设演变" : "Event-driven NPC persona evolution"), "persona evolution title follows UI language");
-                foreach (string id in new[] { "TownAmbientAiShowUsageNotifications", "ScreenNotifications", "DiagnosticsEnabled", "EnemyInterruptRadiusMeters" })
+                foreach (string id in new[] { "ScreenNotifications", "DiagnosticsEnabled", "EnemyInterruptRadiusMeters" })
                     Check(defs.ContainsKey(id) && !visible.ContainsKey(id), "hidden UI setting still exists for persistence " + id);
-                foreach (string id in new[] { "Illustrator.UseExactEndpointUrl", "Illustrator.DirectorApiBaseUrl", "Illustrator.DirectorApiKey", "Illustrator.DirectorModelName", "Illustrator.DirectorModelDropdown", "Illustrator.FetchDirectorModelList" })
+                foreach (string id in new[] { "TownAmbientAiShowUsageNotifications", "Illustrator.UseExactEndpointUrl", "Illustrator.DirectorApiBaseUrl", "Illustrator.DirectorApiKey", "Illustrator.DirectorModelName", "Illustrator.DirectorModelDropdown", "Illustrator.FetchDirectorModelList" })
                     Check(!defs.ContainsKey(id) && !visible.ContainsKey(id), "retired API setting absent from metadata and frontend " + id);
                 foreach (string id in new[] { "Illustrator.ApiBaseUrl", "Illustrator.ApiKey", "Illustrator.ModelName", "Illustrator.FetchModelList" })
                 {

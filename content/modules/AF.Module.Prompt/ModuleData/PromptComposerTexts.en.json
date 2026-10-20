@@ -1,5 +1,9 @@
 {
   "conversation_reply_language": "",
+  "opening_world_title": "Day 0 world opening summary",
+  "opening_world_label": "World opening summary",
+  "opening_kingdom_title": "{KINGDOM} Day 0 opening summary",
+  "opening_kingdom_label": "{KINGDOM} opening summary",
   "persona_system_npc_prefix": "You are ",
   "persona_system_npc_of": " of ",
   "persona_system_npc_clan_role": ", you are the ",

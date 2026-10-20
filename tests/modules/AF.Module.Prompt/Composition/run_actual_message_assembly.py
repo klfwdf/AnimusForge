@@ -21,6 +21,7 @@ p.add_argument('--references', type=Path, help='The actual reference directory r
 p.add_argument('--dependency-dir', type=Path, action='append', default=[], help='Real mod dependency directory; does not override the candidate game references')
 p.add_argument('--framework-references', type=Path, required=True, help='Installed .NET Framework 4.7.2 reference assemblies')
 p.add_argument('--run-root', type=Path)
+p.add_argument('--recorded-request', type=Path, help='Optional private keyless logged JSON payload for final-wire replay')
 a = p.parse_args()
 candidate = a.candidate.resolve(strict=True)
 candidate.relative_to(ROOT)
@@ -90,7 +91,7 @@ if build.returncode == 0:
         fixture = subprocess.run(["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(Path(__file__).with_name("actual_module_fixture.ps1")), "-ProjectRoot", str(ROOT), "-ModuleRoot", str(module), "-Language", language], cwd=out, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
         (out / f"fixture-{language}.log").write_text(fixture.stdout + fixture.stderr, encoding="utf-8")
         assert fixture.returncode == 0, fixture.stdout + fixture.stderr
-        run = subprocess.run([str(out / 'bin/Release/net472/Checks.exe'), str(replay_candidate), digest] + [str(path) for path in directories], cwd=out, env=dict(env, AF_TEST_MODULE_ROOT=str(module), AF_TEST_REFERENCES='|'.join(map(str, game_directories)), ANIMUSFORGE_DATA_ROOT=str(module)), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60)
+        run = subprocess.run([str(out / 'bin/Release/net472/Checks.exe'), str(replay_candidate), digest] + [str(path) for path in directories], cwd=out, env=dict(env, AF_TEST_MODULE_ROOT=str(module), AF_TEST_REFERENCES='|'.join(map(str, game_directories)), ANIMUSFORGE_DATA_ROOT=str(module), AF_TEST_RECORDED_REQUEST=str(a.recorded_request.resolve()) if a.recorded_request else ''), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60)
         (out / f'run-{language}.log').write_text(run.stdout + run.stderr, encoding='utf-8')
         runs.append({'language': language, 'exitCode': run.returncode, 'module': str(module)})
         if run.returncode: break

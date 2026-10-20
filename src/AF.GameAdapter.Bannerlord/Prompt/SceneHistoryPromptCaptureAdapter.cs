@@ -286,7 +286,7 @@ internal void AppendTargetedSceneNpcFact(string factText, int targetAgentIndex, 
 
 			string text = factText.Replace("\r", " ").Replace("\n", " ").Trim();
 
-			if (!text.StartsWith(AdapterPromptCaptureTexts.PcapCompat("SceneHistoryCompat_9e414fd8779f"), StringComparison.Ordinal) && !text.StartsWith(AdapterPromptCaptureTexts.PcapCompat("SceneHistoryCompat_a7b145848d3e"), StringComparison.Ordinal))
+			if (!DialogueHistoryLedger.TryReadAfefPrefix(text, out _, out _))
 
 			{
 

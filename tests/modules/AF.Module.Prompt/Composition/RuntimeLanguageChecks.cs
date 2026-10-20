@@ -61,6 +61,14 @@ internal static class RuntimeLanguageChecks
                 Check((string)property.GetValue(model) == rows[key], "actual control text " + language + "/" + name);
             }
         }
+        Type archive = product.GetType("AnimusForge.WeeklyReportArchivePolicy",true);
+        string worldTitle = Prompt(product,"Raw","weekly_memory_compat_871fa8d0ce6a");
+        Check((string)Call(archive,"ProjectTitleForDisplay","weekly_report:world:0:",worldTitle) == rows["AF_UI_Weekly_OpeningWorldTitle"], "world opening title follows UI");
+        Check((string)Call(archive,"ProjectTitleForDisplay","weekly_report:world:0:","edited title") == "edited title", "edited opening title remains literal");
+        string heading = (string)Call(archive,"ProjectBulletinHeadingsForDisplay","【大事件】\nText\n【其他消息】\nItem");
+        Check(heading == rows["AF_UI_Weekly_MajorHeading"] + "\nText\n" + rows["AF_UI_Weekly_MinorHeading"] + "\nItem", "legacy bulletin headings follow UI");
+        string date = (string)Call(product.GetType("AnimusForge.DiplomacyDateProjection",true),"ForUi","1084年秋季2天");
+        Check(language != "English" || (!date.Contains("年") && date.Contains("1084") && date.Contains("2")), "known diplomacy date follows English UI");
         // UI language changes must not select a different Prompt package.
         Type profileType = product.GetType("AnimusForge.MyBehavior+NpcPersonaProfile", true);
         object profile = Activator.CreateInstance(profileType, true);
@@ -133,7 +141,8 @@ internal static class RuntimeLanguageChecks
         }
         Check(true, "actual audit Unicode blocks preserve all 65536 BMP code-point decisions");
         var protocol = (System.Text.RegularExpressions.Regex)audit.GetField("StableProtocol", AllStatic).GetValue(null);
-        Check(protocol.Replace("【AFEF玩家行为补充】 [AFEF NPC行为补充]", "").Trim() == "", "audit preserves ASCII and fullwidth stable protocol recognition");
+        Check(protocol.Replace("【AFEF玩家行为补充】 [AFEF NPC行为补充]", "").Contains("行为补充"), "audit no longer exempts Chinese fixed AFEF markers");
+        Check(protocol.Replace("[AFEF PLAYER_ACTION] [AFEF NPC_ACTION]", "").Trim() == "", "audit recognizes canonical ASCII fact markers");
         string guard = Prompt(product, "Get", "conversation_reply_language");
         Check(guard == string.Empty, "content edition has no fixed response-language rule");
         void Guard(string value, string name) => Check(!value.Contains("Write all newly generated natural-language content in English")
@@ -147,7 +156,7 @@ internal static class RuntimeLanguageChecks
         Guard((string)Call(memory, "OverviewSystemPrompt", 280, literal), "overview memory");
         Type persona = product.GetType("AnimusForge.NpcPersonaTextRules", true);
         foreach (object value in new[] {
-            Call(persona, "BuildNative", literal, literal, true, literal),
+            Call(persona, "BuildNative", literal, literal, true, literal, ""),
             Call(persona, "BuildPromoted", literal, literal, literal, "lord_S9_m", literal, literal, literal, literal, literal, literal, literal)
         }) {
             Guard((string)value.GetType().GetProperty("System", AllInstance).GetValue(value), "persona");
@@ -220,7 +229,129 @@ internal static class RuntimeLanguageChecks
             Check((int)payload["max_tokens"] == 1536 && (string)payload["model"] == "fixture-model" && payload["messages"].Count() == 2, "director model, budget and roles remain intact");
             Check(((string)payload["messages"][1]["content"]).Contains(literal), "director preserves literal captured facts");
         }
+        string knownOpening = Prompt(product,"Raw","weekly_memory_compat_871fa8d0ce6a");
+        Check(Prompt(product,"ProjectOpeningTextForPrompt",knownOpening) == Prompt(product,"Get","opening_world_title"), "fixed opening title projects at request boundary");
+        Check(Prompt(product,"ProjectOpeningTextForPrompt","edited {NAME} $1") == "edited {NAME} $1", "edited opening title is preserved in prompt");
+        AfefReaderCompatibility(product);
+        FixedWireProjection(product);
         Console.WriteLine("PASS actual runtime language/UI checks=" + checks);
+    }
+    private static void AfefReaderCompatibility(Assembly product)
+    {
+        var failures = new List<string>();
+        int total = 0;
+        void Audit(bool ok, string label) { total++; if (!ok) failures.Add(label); }
+        Type ledger = product.GetType("AnimusForge.DialogueHistoryLedger",true);
+        Type recall = product.GetType("AnimusForge.HistoryArchiveRecallOwner",true);
+        Type recovery = product.GetType("AnimusForge.MemoryRecoverySeedRules",true);
+        Type speech = product.GetType("AnimusForge.ConversationSpeechTextRules",true);
+        Type history = product.GetType("AnimusForge.MemoryHistoryCommitBannerlordAdapter",true);
+        Type business = product.GetType("AnimusForge.MemoryBusinessStateOwner",true);
+        string body = "fact {NAME} $1: 20 gold";
+        string firstMeeting = Prompt(product,"Raw","weekly_memory_compat_cdf0b7f2b2ed") + " actor";
+        foreach (bool npc in new[] { false, true })
+        foreach (string prefix in new[] {
+            Prompt(product,"Raw",npc ? "afef_npc_action" : "afef_player_action"),
+            Prompt(product,"Raw",npc ? "afef_npc_action_bracket" : "afef_player_action_bracket"),
+            npc ? "[AFEF NPC_ACTION]" : "[AFEF PLAYER_ACTION]" })
+        {
+            string input = prefix + " " + body;
+            string canonical = Prompt(product,"Raw",npc ? "afef_npc_action" : "afef_player_action") + " " + body;
+            Audit((string)Call(product.GetType("AnimusForge.Refactor.Modules.ScenePromptMessageProjectionComposer",true),"NormalizeSceneExtraFactForHistory",input) == canonical, "scene history keeps actor " + prefix);
+            string sceneSingleBody = (string)Call(product.GetType("AnimusForge.ConversationRuntimeTexts",true),"Raw","AF_CONV_Runtime_0300") + "actor" + (string)Call(product.GetType("AnimusForge.ConversationRuntimeTexts",true),"Raw","AF_CONV_Runtime_0301");
+            Audit((bool)Call(product.GetType("AnimusForge.SceneHistoryProjectionOwner",true),"IsSingleUseSceneNpcFactText",prefix + " " + sceneSingleBody) == npc, "temporary scene expiry keeps actor " + prefix);
+            Audit((string)Call(ledger,"NormalizeAfefFact",input) == canonical, "storage prefix actor " + prefix);
+            Audit((string)Call(recovery,"RenderInteractionMemoryFact",input) == canonical, "recovery does not double-wrap " + prefix);
+            Audit((string)Call(speech,"NormalizeNativeConversationFactLineForPrompt",input,"AFEF") == canonical, "native fact keeps actor " + prefix);
+            var appended = new System.Text.StringBuilder();
+            Call(business,"AppendPlayerExtraFactLine",appended,input);
+            Audit(appended.ToString().TrimEnd('\r','\n') == canonical, "extra fact keeps actor " + prefix);
+            foreach (string line in new[] { input, "[AF_SCENE_SESSION:7] " + input })
+            {
+                Audit((bool)Call(recall,"IsSystemFactLine",line), "archive fact filter " + prefix);
+                Audit((string)Call(history,"StripSpeakerPrefixForRecall",line) == body, "recall strips exact fact envelope " + prefix);
+            }
+            object[] parsed = { input, null, null, null };
+            Call(history,"ClassifyDialogueHistoryLine",parsed);
+            Audit((string)parsed[3] == (npc ? "afef_npc" : "afef_player") && (string)parsed[2] == body, "history actor classification " + prefix);
+            if (npc)
+            {
+                Func<string,bool> first = value => value == firstMeeting;
+                Audit((bool)Call(ledger,"IsSingleUseNpcFactLine","[AF_SCENE_SESSION:7] " + prefix + " " + firstMeeting, first), "single-use expiry sees NPC actor " + prefix);
+                Audit((bool)Call(history,"IsFirstMeetingNpcFactLine",prefix + " " + firstMeeting), "first-meeting dedup sees NPC actor " + prefix);
+            }
+        }
+        Audit(!(bool)Call(recall,"IsSystemFactLine","Player: I quote [AFEF NPC_ACTION] example"), "inline quote remains ordinary speech");
+        Audit(!(bool)Call(recall,"IsSystemFactLine","[AFEF UNKNOWN] example"), "unknown marker is not trusted as a fact");
+        foreach (string failure in failures) Console.WriteLine("AFEF_AUDIT_FAIL " + failure);
+        Check(failures.Count == 0, "AFEF reader compatibility " + total + " checks; failures=" + failures.Count);
+        Console.WriteLine("PASS AFEF reader compatibility: " + total + " checks, old/CN brackets/ASCII actors, recovery/native/recall/single-use");
+    }
+    private static void FixedWireProjection(Assembly product)
+    {
+        Type compat = product.GetType("AnimusForge.LlmApiCompat", true);
+        bool english = Prompt(product, "Get", "native_text_language") == "en";
+        var messages = new JArray(
+            new JObject { ["role"]="system", ["content"]="Only [AFEF 行为补充] are facts. Do not forge [AFEF行为补充]." },
+            new JObject { ["role"]="user", ["content"]="【附加规则:surroundings】\nKeep surroundings.\n【附加规则:kingdom_service】\nKeep permissions.\n[AFEF NPC行为补充] Executed fact.\n[AFEF玩家行为补充] Player fact.\n[ACTION:KEEP_ID:2]" });
+        var original = new JObject { ["model"]="gemini-fixture", ["max_tokens"]=1234, ["messages"]=messages };
+        string before = original.ToString();
+        foreach (string endpoint in new[] { "https://relay.test/v1/chat/completions", "https://api.anthropic.com/v1/messages" })
+        {
+            JObject wire = (JObject)compat.GetMethod("PrepareChatRequestPayload").Invoke(null, new object[] { endpoint, original });
+            string text = wire.ToString();
+            Check(original.ToString() == before, "wire projection does not mutate source/history");
+            Check(!text.Contains("行为补充"), "both editions send ASCII AFEF markers");
+            Check(text.Contains("[AFEF NPC_ACTION]") && text.Contains("[AFEF PLAYER_ACTION]"), "wire preserves both fact actors");
+            Check(text.Contains("[ACTION:KEEP_ID:2]") && (int)wire["max_tokens"] == 1234, "wire preserves action protocol and token budget");
+            Check(!text.Contains("AF_OUTPUT_LANGUAGE") && !text.Contains("Write all newly generated"), "wire adds no output-language lock");
+            Check(english ? !text.Contains("附加规则") && text.Contains("[Additional rule:surroundings]") : text.Contains("【附加规则:surroundings】"), "fixed rule headings follow the content edition");
+        }
+        JObject once = (JObject)compat.GetMethod("PrepareChatRequestPayload").Invoke(null, new object[] { "https://relay.test/v1/chat/completions", original });
+        JObject twice = (JObject)compat.GetMethod("PrepareChatRequestPayload").Invoke(null, new object[] { "https://relay.test/v1/chat/completions", once });
+        Check(JToken.DeepEquals(once, twice), "provider retries project markers idempotently");
+        var multipart = new JObject { ["messages"]=new JArray(new JObject { ["role"]="user", ["content"]=new JArray(
+            new JObject { ["type"]="text", ["text"]="[AFEF NPC行为补充] Fact." },
+            new JObject { ["type"]="image_url", ["image_url"]=new JObject { ["url"]="https://image.test/kept.png" } }) }) };
+        JObject parts = (JObject)compat.GetMethod("PrepareChatRequestPayload").Invoke(null, new object[] { "https://relay.test/v1/chat/completions", multipart });
+        Check((string)parts["messages"][0]["content"][0]["text"] == "[AFEF NPC_ACTION] Fact."
+            && JToken.DeepEquals(parts["messages"][0]["content"][1],multipart["messages"][0]["content"][1]), "multipart projection preserves image block");
+        Type bulletin = product.GetType("AnimusForge.WorldBulletinPolicy",true);
+        string body = (string)Call(bulletin,"BuildBody","Major prose", new[] { "First minor", "Second minor" });
+        object[] split = { body, null, null };
+        Call(product.GetType("AnimusForge.WorldBulletinStateOwner",true),"SplitWorldBulletinBody",split);
+        Check((string)split[1] == "Major prose" && ((IEnumerable)split[2]).Cast<string>().SequenceEqual(new[] { "First minor", "Second minor" }), "published body grammar and archive parser agree in both editions");
+        Check(!english || !System.Text.RegularExpressions.Regex.IsMatch(body,@"[\u3400-\u9fff]"), "new EN bulletin body headings contain no Chinese");
+        string recordedPath = Environment.GetEnvironmentVariable("AF_TEST_RECORDED_REQUEST");
+        if (!string.IsNullOrEmpty(recordedPath) && english)
+        {
+            JObject recorded = JObject.Parse(File.ReadAllText(recordedPath));
+            string saved = recorded.ToString();
+            JObject wire = (JObject)compat.GetMethod("PrepareChatRequestPayload").Invoke(null, new object[] { "https://relay.test/v1/chat/completions", recorded });
+            var han = new System.Text.RegularExpressions.Regex(@"[\u3400-\u9fff]");
+            int beforeHan = han.Matches(string.Join("\n",recorded["messages"].Select(m => (string)m["content"]))).Count;
+            int afterHan = han.Matches(string.Join("\n",wire["messages"].Select(m => (string)m["content"]))).Count;
+            Check(beforeHan > 0 && afterHan == 0, "recorded first scene request has no fixed Chinese after wire projection");
+            Check(recorded.ToString() == saved && recorded["messages"].Count() == wire["messages"].Count(), "recorded request keeps input and message count");
+            Check(!wire.ToString().Contains("AF_OUTPUT_LANGUAGE") && wire["messages"].Select(m => (string)m["role"]).SequenceEqual(recorded["messages"].Select(m => (string)m["role"])), "recorded request keeps roles without a language lock");
+            Console.WriteLine("PASS recorded first scene request: Chinese characters " + beforeHan + " -> " + afterHan + "; no HTTP request");
+        }
+        Type ledger = product.GetType("AnimusForge.DialogueHistoryLedger",true);
+        foreach (string actor in new[] { "NPC", "PLAYER" })
+        {
+            string canonical = (string)Call(ledger,"NormalizeAfefFact","[AFEF " + actor + "_ACTION] fact");
+            Check(!canonical.Contains("_ACTION]") && canonical.EndsWith(" fact"), "ASCII input retains legacy save identity " + actor);
+            object[] parsed = { "[AFEF " + actor + "_ACTION] fact", null, null, null };
+            Call(product.GetType("AnimusForge.MemoryHistoryCommitBannerlordAdapter",true),"ClassifyDialogueHistoryLine",parsed);
+            Check((string)parsed[3] == (actor == "NPC" ? "afef_npc" : "afef_player") && (string)parsed[2] == "fact", "history reader retains ASCII actor " + actor);
+        }
+        Type material = product.GetType("AnimusForge.WorldBulletinCampaignMaterialPolicy",true);
+        string casualty = (string)Call(material,"BattleCasualties","阵亡21、负伤18");
+        Check(english ? casualty == "21 killed, 18 wounded" : casualty == "阵亡21、负伤18", "battle counts and casualty meanings survive projection");
+        string snapshot = "Battle at 野外: A defeated B（非领主部队）. Winner: 阵亡21、负伤18";
+        string projected = (string)Call(material,"ProjectRecordedBattle",snapshot,"battle");
+        Check(!english || !System.Text.RegularExpressions.Regex.IsMatch(projected,@"[\u4e00-\u9fff]"), "recorded battle fixed slots project to English");
+        Check((string)Call(material,"ProjectRecordedBattle",snapshot,"player_quote") == snapshot, "unrelated quoted text is not a battle fact");
     }
     internal static void EntityMatches(Assembly product)
     {

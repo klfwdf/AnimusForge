@@ -325,14 +325,8 @@ internal static string StripSpeakerPrefixForRecall(string line)
 		{
 			return "";
 		}
-		if (text.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_6d7b96ecf184"), StringComparison.Ordinal))
-		{
-			return text.Substring(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_6d7b96ecf184").Length).Trim();
-		}
-		if (text.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_c231f39bb72c"), StringComparison.Ordinal))
-		{
-			return text.Substring(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_c231f39bb72c").Length).Trim();
-		}
+        if (DialogueHistoryLedger.TryReadAfefPrefix(text, out _, out int prefixLength))
+            return text.Substring(prefixLength).Trim();
 		if (AnimusForge.Refactor.Adapters.MemoryRecallInputCaptureAdapter.TryStripPlayerSpeechPrefix(text, out var stripped))
 		{
 			return stripped;
@@ -450,6 +444,8 @@ internal List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesById(str
 internal static void ClassifyDialogueHistoryLine(string line, out string speaker, out string text, out string kind)
 	{
 		string value = (line ?? "").Trim();
+        if (DialogueHistoryLedger.TryReadAfefPrefix(value, out _, out _))
+            value = DialogueHistoryLedger.NormalizeAfefFact(value);
 		speaker = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_9fad24e2c377");
 		text = value;
 		kind = "system";
@@ -528,10 +524,8 @@ internal static bool IsFirstMeetingNpcFactLine(string line)
 			return false;
 		}
 		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
-		if (text.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_c231f39bb72c"), StringComparison.Ordinal))
-		{
-			text = text.Substring(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_c231f39bb72c").Length).Trim();
-		}
+        if (DialogueHistoryLedger.TryReadAfefPrefix(text, out bool npc, out int prefixLength) && npc)
+            text = text.Substring(prefixLength).Trim();
 		return IsFirstMeetingNpcFactBody(text);
 	}
 

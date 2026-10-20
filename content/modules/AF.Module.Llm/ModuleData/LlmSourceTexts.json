@@ -257,5 +257,9 @@
   "CacheLegacyRulesWideColon": "【附加规则：",
   "CacheLegacyRulesExplanation": "【说明】你不必提到附加规则内的内容",
   "CacheLegacyYearMarker": "年",
-  "CacheLegacyDayMarker": "日"
+  "CacheLegacyDayMarker": "日",
+  "LegacyAfefMarkerPattern": "(?:\\[AFEF\\s*(?<actor>NPC|玩家)?\\s*行为补充\\]|【AFEF\\s*(?<actor>NPC|玩家)?\\s*行为补充】)",
+  "LegacyAfefPlayerActor": "玩家",
+  "LegacyRuleHeaderPattern": "(?m)^【附加规则:([A-Za-z0-9_.-]+)】",
+  "LegacyRuleHeaderPrefix": "【附加规则:"
 }

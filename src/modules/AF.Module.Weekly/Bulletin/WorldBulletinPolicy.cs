@@ -869,11 +869,11 @@ internal static class WorldBulletinPolicy
 	public static string BuildBody(string major, IEnumerable<string> minors)
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.Append(WorldBulletinPolicyTexts.Raw("BodyMajorHeader")).Append("\n").Append((major ?? "").Trim());
+		sb.Append(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_BodyMajorHeader")).Append("\n").Append((major ?? "").Trim());
 		List<string> list = (minors ?? Enumerable.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 		if (list.Count > 0)
 		{
-			sb.Append("\n\n").Append(WorldBulletinPolicyTexts.Raw("BodyMinorHeader"));
+			sb.Append("\n\n").Append(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_BodyMinorHeader"));
 			foreach (string minor in list)
 			{
 				sb.Append("\n· ").Append(minor.Trim());

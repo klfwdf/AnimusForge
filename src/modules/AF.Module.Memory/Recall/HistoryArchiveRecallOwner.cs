@@ -471,7 +471,7 @@ internal static bool IsSystemFactLine(string line)
 	{
 		string text = (line ?? "").TrimStart();
 		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
-		return text.StartsWith(MemoryTextResources.Raw("MEM_Raw_018"), StringComparison.Ordinal) || text.StartsWith(MemoryTextResources.Raw("MEM_Raw_006"), StringComparison.Ordinal);
+		return DialogueHistoryLedger.TryReadAfefPrefix(text, out _, out _);
 	}
 
 internal static int ClampHistoryReturnCap(int value)

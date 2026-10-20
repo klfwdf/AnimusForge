@@ -63,6 +63,7 @@
   "AF_LLM_PROMPT_Execution_MemoryHeading": "\n【相关过往记忆】\n",
   "AF_LLM_PROMPT_Execution_RecentHeading": "\n【近期对话（陈述并非事实）】\n",
   "AF_LLM_PROMPT_Execution_MajorHeading": "\n【重大经历】\n",
+  "AF_LLM_PROMPT_ContentLanguage": "zh-CN",
   "AF_LLM_PROMPT_Execution_Language": "",
   "AF_LLM_PROMPT_ExecutionDefinition_REX_Method_Beheading": "斩首",
   "AF_LLM_PROMPT_ExecutionDefinition_REX_Method_Beheading_Hint": "对贵族而言较合乎身份；迅速、醒目而致命。",

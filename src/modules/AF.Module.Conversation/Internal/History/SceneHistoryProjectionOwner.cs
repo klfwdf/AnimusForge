@@ -236,11 +236,11 @@ internal static string BuildSceneHistoryMergeKey(ConversationMessage msg, Conver
 internal static bool IsSingleUseSceneNpcFactText(string text)
 	{
 		string text2 = (text ?? "").Trim();
-		if (!text2.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0298"), StringComparison.Ordinal))
+		if (!DialogueHistoryLedger.TryReadAfefPrefix(text2, out bool npc, out int prefixLength) || !npc)
 		{
 			return false;
 		}
-		string text3 = text2.Substring(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0299").Length).Trim();
+		string text3 = text2.Substring(prefixLength).Trim();
 		if (string.IsNullOrWhiteSpace(text3))
 		{
 			return false;

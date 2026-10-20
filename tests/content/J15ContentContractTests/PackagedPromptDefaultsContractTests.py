@@ -47,7 +47,7 @@ check('File.Write' not in defaults and 'ChangeLanguage' not in defaults and 'Get
       'no implicit migration/write/language detection')
 source_defaults=json.loads((ROOT/'content/foundation/AF.Foundation.Localization/ModuleData/McmPromptSourceCompatibility.json').read_text(encoding='utf-8'))
 active_cn=json.loads((ROOT/'content/foundation/AF.Foundation.Localization/ModuleData/McmPromptDefaults.zh-CN.json').read_text(encoding='utf-8'))
-check(active_cn['DefaultPlayerCustomPromptRule']==source_defaults['DefaultPlayerCustomPromptRule']
+check(active_cn['DefaultPlayerCustomPromptRule']==source_defaults['DefaultPlayerCustomPromptRule'].replace('[AFEF 行为补充]', '[AFEF NPC_ACTION] / [AFEF PLAYER_ACTION]').replace('[AFEF行为补充]', '[AFEF NPC_ACTION] / [AFEF PLAYER_ACTION]')
       and 'SourceDefaultPlayerCustomPromptRule' in settings
       and 'McmPromptDefaults.Get("DefaultPlayerCustomPromptRule")' in settings,
       'distinct player-rule source default preserved and connected to content package')

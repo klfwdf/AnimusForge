@@ -524,7 +524,9 @@ internal static bool TryExtractReplyFormatInstruction(ref string prompt, out str
 	internal static bool ContainsAfefFactMarkerForActionPostprocess(string line)
 	{
 		string text = ConversationSpeechTextRules.StripAfefPromptScopeLabel((line ?? "").Trim());
-		return text.IndexOf(PromptComposerTexts.Raw("afef_player_action"), StringComparison.Ordinal) >= 0
+		return text.IndexOf("[AFEF PLAYER_ACTION]", StringComparison.Ordinal) >= 0
+            || text.IndexOf("[AFEF NPC_ACTION]", StringComparison.Ordinal) >= 0
+            || text.IndexOf(PromptComposerTexts.Raw("afef_player_action"), StringComparison.Ordinal) >= 0
 			|| text.IndexOf(PromptComposerTexts.Raw("afef_npc_action"), StringComparison.Ordinal) >= 0
 			|| text.IndexOf(PromptComposerTexts.Raw("afef_player_action_bracket"), StringComparison.Ordinal) >= 0
 			|| text.IndexOf(PromptComposerTexts.Raw("afef_npc_action_bracket"), StringComparison.Ordinal) >= 0;
@@ -645,11 +647,9 @@ internal static string BuildSceneSingleNpcTaskSystemBlock(string npcName, bool h
 		{
 			return "";
 		}
-		if (!PromptComposerTexts.StartsWith(text, "afef_player_action")
-			&& !PromptComposerTexts.StartsWith(text, "afef_npc_action"))
-		{
-			text = PromptComposerTexts.Raw("scene_compat_060") + text;
-		}
+        if (DialogueHistoryLedger.TryReadAfefPrefix(text, out _, out _))
+            return DialogueHistoryLedger.NormalizeAfefFact(text);
+        text = PromptComposerTexts.Raw("scene_compat_060") + text;
 		return text;
 	}
 
@@ -660,7 +660,7 @@ internal static string StripAfefPrefixForPromptSection(string text)
 		{
 			return "";
 		}
-		string[] prefixes = new string[4] { PromptComposerTexts.Raw("afef_npc_action"), PromptComposerTexts.Raw("afef_player_action"), PromptComposerTexts.Raw("afef_npc_action_bracket"), PromptComposerTexts.Raw("afef_player_action_bracket") };
+		string[] prefixes = new string[6] { "[AFEF NPC_ACTION]", "[AFEF PLAYER_ACTION]", PromptComposerTexts.Raw("afef_npc_action"), PromptComposerTexts.Raw("afef_player_action"), PromptComposerTexts.Raw("afef_npc_action_bracket"), PromptComposerTexts.Raw("afef_player_action_bracket") };
 		foreach (string prefix in prefixes)
 		{
 			if (value.StartsWith(prefix, StringComparison.Ordinal))

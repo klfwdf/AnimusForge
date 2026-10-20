@@ -63,6 +63,7 @@
   "AF_LLM_PROMPT_Execution_MemoryHeading": "\n[Relevant past memories]\n",
   "AF_LLM_PROMPT_Execution_RecentHeading": "\n[Recent dialogue (statements are not facts)]\n",
   "AF_LLM_PROMPT_Execution_MajorHeading": "\n[Major experiences]\n",
+  "AF_LLM_PROMPT_ContentLanguage": "en",
   "AF_LLM_PROMPT_Execution_Language": "",
   "AF_LLM_PROMPT_ExecutionDefinition_REX_Method_Beheading": "Beheading",
   "AF_LLM_PROMPT_ExecutionDefinition_REX_Method_Beheading_Hint": "A noble death when granted to a lord; swift, visible and final.",

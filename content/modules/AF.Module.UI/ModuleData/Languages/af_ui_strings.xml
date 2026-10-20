@@ -3413,5 +3413,9 @@ Choose how to proceed:" />
     <string id="AF_UI_Parade_MenuExpedition" text="Expedition parade" />
     <string id="AF_UI_Parade_MenuVictory" text="Victory parade" />
     <string id="AF_UI_Parade_MenuBack" text="Back" />
-  </strings>
+    <string id="AF_UI_Weekly_OpeningWorldTitle" text="Day 0 world opening summary" />
+  <string id="AF_UI_Weekly_OpeningKingdomTitle" text="{KINGDOM} Day 0 opening summary" />
+  <string id="AF_UI_Weekly_MajorHeading" text="[Major event]" />
+  <string id="AF_UI_Weekly_MinorHeading" text="[Minor news]" />
+</strings>
 </base>

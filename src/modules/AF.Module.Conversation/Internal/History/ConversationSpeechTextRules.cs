@@ -356,10 +356,8 @@ internal static string NormalizeNativeConversationFactLineForPrompt(string text,
 		{
 			return "";
 		}
-		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0289"), StringComparison.Ordinal) || text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0290"), StringComparison.Ordinal))
-		{
-			return text;
-		}
+        if (DialogueHistoryLedger.TryReadAfefPrefix(text, out _, out _))
+            return DialogueHistoryLedger.NormalizeAfefFact(text);
 		string speakerText = (speaker ?? "").Trim();
 		if (speakerText.IndexOf("NPC", StringComparison.OrdinalIgnoreCase) >= 0)
 		{

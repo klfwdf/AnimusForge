@@ -54,7 +54,7 @@ internal static class WeeklyPromptCaptureAdapter
 
 		string text = string.Equals((eventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? AdapterPromptCaptureTexts.PcapText("weekly_world_zero_short") : (MemoryEntityIdentityBannerlordAdapter.ResolveKingdomDisplay(kingdomId) + AdapterPromptCaptureTexts.PcapText("weekly_zero_short"));
 
-		return PromptComposerTexts.ApplyOutputLanguage(AdapterPromptCaptureTexts.PcapText("weekly_zero_system") + text + AdapterPromptCaptureTexts.PcapText("weekly_title_reference") + ((title ?? "").Trim()));
+		return PromptComposerTexts.ApplyOutputLanguage(AdapterPromptCaptureTexts.PcapText("weekly_zero_system") + text + AdapterPromptCaptureTexts.PcapText("weekly_title_reference") + PromptComposerTexts.ProjectOpeningTextForPrompt((title ?? "").Trim()));
 
 	}
 

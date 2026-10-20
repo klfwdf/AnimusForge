@@ -25,7 +25,10 @@ internal static partial class WeeklyPromptMaterialOwner
 		}
 		foreach (EventMaterialReference material in group.PromptMaterials)
 		{
-			if (material == null || !PolicyWeeklyFactPromptProjection.IsPolicyKind(material.MaterialType)) continue;
+			if (material == null) continue;
+            if (material.MaterialType == "world_opening_summary" || material.MaterialType == "kingdom_opening_summary")
+                material.Label = PromptComposerTexts.ProjectOpeningTextForPrompt(material.Label);
+            if (!PolicyWeeklyFactPromptProjection.IsPolicyKind(material.MaterialType)) continue;
 			material.Label = PolicyWeeklyFactPromptProjection.Label(material.MaterialType, material.Label);
 			material.SnapshotText = PolicyWeeklyFactPromptProjection.Snapshot(material.MaterialType, material.SnapshotText);
 		}
