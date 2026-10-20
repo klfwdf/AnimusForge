@@ -2,6 +2,8 @@
 
 ## AF skill coordination
 
+- For AF-GPTSOVITS L/U package tutorials, release instructions or custom-voice guide work, read `.agents/skills/af-gptsovits-guides/SKILL.md`; U requires its own tutorial and measurements, not a renamed L guide.
+
 - For every new or changed AF runtime text/content, the first implementation step must be reading `.agents/skills/af-bilingual-localization/SKILL.md`; do not modify the affected product path before reading it. Complete CN/EN resources plus actual consumers within the same task; routine development covers the affected chain rather than reopening a whole-repository migration.
 - For verified AF development/maintenance, read the single repository copy at `.claude/skills/animusforge-maintainer/SKILL.md`; select its workflow for the actual task, not a permanent whole-project refactor agenda.
 - The selected maintenance source is `D:/下载/af-skill/af-skill` (version 0.2.0). This repository reads its reviewed local copy, not that external path at runtime. Merge shared-file updates deliberately; preserve the local framework coordination adaptation and other authors' changes. Do not install or overwrite other copies implicitly.

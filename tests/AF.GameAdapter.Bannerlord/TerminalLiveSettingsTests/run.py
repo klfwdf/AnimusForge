@@ -46,6 +46,7 @@ if not a.baseline:
     sources.append(Path(__file__).with_name('SceneTerminalChecks.cs'))
     sources.append(Path(__file__).with_name('SharedMcmChecks.cs'))
     sources.append(Path(__file__).with_name('TtsProviderChecks.cs'))
+    sources.append(Path(__file__).with_name('TtsLiteGuideChecks.cs'))
     sources.append(Path(__file__).with_name('TtsVisibilityChecks.cs'))
     sources.append(Path(__file__).with_name('McmPageChecks.cs'))
     sources.append(Path(__file__).with_name('McmReopenLifecycleChecks.cs'))

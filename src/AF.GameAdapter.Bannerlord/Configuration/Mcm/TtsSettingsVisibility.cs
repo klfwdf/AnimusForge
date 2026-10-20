@@ -29,6 +29,14 @@ internal static class TtsSettingsVisibility
             case nameof(DuelSettings.TtsOpenAiSpeed):
             case nameof(DuelSettings.TtsOpenAiTimeoutSeconds): return 2;
             case nameof(DuelSettings.TestTtsVolcDedicatedVoice): return 3;
+            case nameof(DuelSettings.TtsLiteGuideDownload):
+            case nameof(DuelSettings.TtsLiteGuideInstall):
+            case nameof(DuelSettings.TtsLiteGuideUse):
+            case nameof(DuelSettings.TtsLiteGuideHardware):
+            case nameof(DuelSettings.TtsLiteGuideRecordings):
+            case nameof(DuelSettings.TtsLiteGuideManifest):
+            case nameof(DuelSettings.TtsLiteGuideLanguage):
+            case nameof(DuelSettings.TtsLiteGuideTroubleshoot):
             case nameof(DuelSettings.RefreshTtsGptSoVitsRuntime): return 4;
             case nameof(DuelSettings.TtsGptSoVitsApiUrl):
             case nameof(DuelSettings.TtsGptSoVitsManifestPath): return 8;

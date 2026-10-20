@@ -51,6 +51,7 @@ static class TtsProviderChecks
                     check(body.Contains(selected == "English" ? new[] { "Modules/AnimusForge", "Volcengine", "Custom", "8 MiB", "profiles", "postprocess", "NOT a hard", "SHA-256" }[chapter] : new[] { "安装", "火山", "百科", "单声道", "profiles", "后处理", "硬上限", "哈希" }[chapter]) || (selected != "English" && chapter == 0 && body.Contains("模组")), "Guide chapter meaning/localization " + chapter + ":" + selected);
                     check(guide.GetMethod("CreatePage", flags).Invoke(null, new object[] { chapter }) != null, "Real native inquiry page constructed " + chapter);
                 }
+                TtsLiteGuideChecks.Run(settings, selected, check);
                 string streamHint = TerminalSettingsRegistry.GetById("TtsStreamingPlaybackEnabled").HintText;
                 check(streamHint.Contains("stream=true") && streamHint.Contains("stream=false"), "Actual native streaming hint describes upstream on/off flags " + selected);
             }
