@@ -156,5 +156,13 @@
   "AF_REC_Bulletin_RoleVassalRuler": "臣属国君主，未证实亲临现场",
   "AF_REC_Bulletin_NoExtraEffects": "以已记录事实为准，不推断额外效果。",
   "AF_REC_Bulletin_ListSeparator": "、",
-  "AF_REC_Bulletin_RoleLoserCommander": "败方统帅"
+  "AF_REC_Bulletin_RoleLoserCommander": "败方统帅",
+  "OwnerChange_Default": "常规变更",
+  "OwnerChange_BySiege": "围城攻占",
+  "OwnerChange_ByBarter": "交易购买",
+  "OwnerChange_ByLeaveFaction": "脱离阵营",
+  "OwnerChange_ByKingDecision": "国王裁决",
+  "OwnerChange_ByGift": "赠予",
+  "OwnerChange_ByRebellion": "叛乱",
+  "OwnerChange_ByClanDestruction": "家族灭亡"
 }

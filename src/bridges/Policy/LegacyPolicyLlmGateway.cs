@@ -72,7 +72,7 @@ public sealed class LegacyPolicyLlmGateway : ILlmGateway
                         source,
                         request.Trace.RuntimeGeneration,
                         cancellationToken: cancellationToken,
-                        enablePolicyCompatibility: false).ConfigureAwait(false);
+                        enablePolicyCompatibility: true).ConfigureAwait(false);
                 }
             }
             else
@@ -179,7 +179,11 @@ public sealed class LegacyPolicyLlmGateway : ILlmGateway
     internal static PromptPackage BuildPromptPackage(string systemPrompt, int maxTokens, string model = "policy")
     {
         return new PromptPackage(
-            new[] { new PromptMessage("system", systemPrompt ?? string.Empty) },
+            new[]
+            {
+                new PromptMessage("system", systemPrompt ?? string.Empty),
+                new PromptMessage("user", PolicyMiscTexts.Get("Npc_StringRouteRequest", "Generate this ruler policy according to the rules above. Output JSON only."))
+            },
             Math.Max(1, maxTokens),
             string.IsNullOrWhiteSpace(model) ? "policy" : model);
     }

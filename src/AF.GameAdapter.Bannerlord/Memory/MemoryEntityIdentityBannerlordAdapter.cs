@@ -95,7 +95,7 @@ internal sealed class MemoryEntityIdentityBannerlordAdapter
 
 	internal static string GetSettlementDisplayNameForPrompt(Settlement settlement)
 	{
-		string name = (settlement?.Name?.ToString() ?? "").Trim();
+		string name = NativePromptLiteralProjection.Render(settlement?.Name).Trim();
 		if (name.Length == 0) return AdapterSceneTexts.Get("Identity_Settlement_Fallback", "an unspecified settlement");
 		string suffix = AdapterSceneTexts.Get("Identity_Settlement_Suffix", "");
 		return settlement.IsTown && !name.EndsWith(suffix, StringComparison.Ordinal) ? name + suffix : name;

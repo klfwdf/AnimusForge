@@ -73,6 +73,7 @@ internal static ConversationMessage BuildUncompressedMemoryConversationMessage(D
 		if (line == null || string.IsNullOrWhiteSpace(line.Text)) return null;
 		ConversationMessage message = ConversationRoleClassificationOwner.ProjectDailyMemorySpeech(line, memoryName, targetAgentIndex, playerName);
 		message.PromptMemorySessionKey = line.MemorySessionKey ?? "";
+        message.PromptSourceId = string.IsNullOrEmpty(line.MemoryCommitId) ? "" : line.MemoryCommitId + "|" + line.MemoryCommitPart;
 		message.GameDayIndex = line.GameDayIndex;
 		message.GameDate = line.GameDate ?? "";
 		message.GameHour = Math.Max(0, Math.Min(23, line.GameHour));

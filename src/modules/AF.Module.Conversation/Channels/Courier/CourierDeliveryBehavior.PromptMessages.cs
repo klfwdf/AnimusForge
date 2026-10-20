@@ -47,13 +47,15 @@ public sealed partial class CourierDeliveryBehavior
 			playerName = Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0530");
 		}
 		string deliveryFact = string.IsNullOrWhiteSpace(deliveryFactForPrompt) ? (session?.DeliveryFactText ?? "") : deliveryFactForPrompt;
+        persistentMemoryRoleMessages = ConversationContextWindow.Select(persistentMemoryRoleMessages, session?.LetterText, ConversationContextSettingsCapture.Capture());
 		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(recipient, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), session.LetterText, deliveryFact);
 		string recentFacts = MyBehavior.BuildRecentNpcFactContextForExternal(recipient, 6);
 		string senderIdentity = MyBehavior.BuildPlayerCourierSenderIdentityForExternal(recipient);
 		string senderRelationship = MyBehavior.BuildNpcPlayerKinshipPromptLineForExternal(recipient);
 		string currentLocationLine = BuildCourierCurrentLocationLine(recipient);
 		string currentDateFact = MyBehavior.BuildCurrentDateFactForExternal();
-		return MainPromptMessageAssemblyOwner.BuildCourierReplyMessages(npcName, playerName, session.LetterText, extras, deliveryFact, history, persistentMemoryRoleMessages, npcRoleContext, preprocessExcludedRuleBlock, recentFacts, senderIdentity, senderRelationship, currentLocationLine, currentDateFact, MyBehavior.AppendPlayerCustomPromptRuleToSystemPromptForExternal(string.Empty));
+        var messages = MainPromptMessageAssemblyOwner.BuildCourierReplyMessages(npcName, playerName, session.LetterText, extras, deliveryFact, history, persistentMemoryRoleMessages, npcRoleContext, preprocessExcludedRuleBlock, recentFacts, senderIdentity, senderRelationship, currentLocationLine, currentDateFact, MyBehavior.AppendPlayerCustomPromptRuleToSystemPromptForExternal(string.Empty));
+        return ConversationContextSettingsCapture.PrepareOptionalHistory(messages, DuelSettings.GetSettings()?.GetMainApiMaxTokens() ?? 12000);
 	}
 
 	private static List<object> BuildInboundNpcLetterMessages(Hero sender, CourierSession session, string seed, string extras, string factForPrompt = null, string prebuiltHistory = null, IEnumerable<ConversationMessage> persistentMemoryRoleMessages = null, string npcRoleContext = null, string preprocessExcludedRuleBlock = null)
@@ -65,6 +67,7 @@ public sealed partial class CourierDeliveryBehavior
 			playerName = Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0531");
 		}
 		string fact = string.IsNullOrWhiteSpace(factForPrompt) ? (session?.DeliveryFactText ?? "") : factForPrompt;
+        persistentMemoryRoleMessages = ConversationContextWindow.Select(persistentMemoryRoleMessages, seed, ConversationContextSettingsCapture.Capture());
 		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(sender, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), null, fact);
 		string recentFacts = MyBehavior.BuildRecentNpcFactContextForExternal(sender, 6);
 		string playerIdentity = MyBehavior.BuildPlayerCourierRecipientIdentityForExternal(sender);
@@ -73,7 +76,8 @@ public sealed partial class CourierDeliveryBehavior
 		string currentDateFact = MyBehavior.BuildCurrentDateFactForExternal();
 		int targetChars = ClampInt(DuelSettings.GetSettings()?.NpcInitiatedLetterTargetChars ?? 220, 80, 1000);
 		string letterKind = GetInboundLetterKindDisplayText(session);
-		return MainPromptMessageAssemblyOwner.BuildInboundNpcLetterMessages(npcName, playerName, seed, extras, fact, history, persistentMemoryRoleMessages, npcRoleContext, preprocessExcludedRuleBlock, recentFacts, playerIdentity, playerRelationship, currentLocationLine, currentDateFact, targetChars, letterKind, MyBehavior.AppendPlayerCustomPromptRuleToSystemPromptForExternal(string.Empty));
+        var messages = MainPromptMessageAssemblyOwner.BuildInboundNpcLetterMessages(npcName, playerName, seed, extras, fact, history, persistentMemoryRoleMessages, npcRoleContext, preprocessExcludedRuleBlock, recentFacts, playerIdentity, playerRelationship, currentLocationLine, currentDateFact, targetChars, letterKind, MyBehavior.AppendPlayerCustomPromptRuleToSystemPromptForExternal(string.Empty));
+        return ConversationContextSettingsCapture.PrepareOptionalHistory(messages, DuelSettings.GetSettings()?.GetMainApiMaxTokens() ?? 12000);
 	}
 
 	private static string BuildCourierCurrentLocationLine(Hero recipient)

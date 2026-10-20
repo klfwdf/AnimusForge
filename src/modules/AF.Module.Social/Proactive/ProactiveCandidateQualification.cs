@@ -21,6 +21,30 @@ namespace AnimusForge;
 
 public sealed partial class ProactiveNpcRequestBehavior
 {
+	private static float GetProactiveContactRange(MobileParty mainParty)
+	{
+		return Math.Max(1f, mainParty.SeeingRange * 2f);
+	}
+
+	private static List<MobileParty> CaptureNearbyRequestParties(MobileParty mainParty)
+	{
+		float radius = GetProactiveContactRange(mainParty);
+		float radiusSquared = radius * radius;
+		var parties = new List<MobileParty>();
+		// The native locator excludes its exact radius. Query a small margin, then retain
+		// the inclusive contact boundary without enumerating the global lord-party list.
+		var search = MobileParty.StartFindingLocatablesAroundPosition(mainParty.Position.ToVec2(), radius + 0.01f);
+		for (MobileParty party = MobileParty.FindNextLocatable(ref search); party != null; party = MobileParty.FindNextLocatable(ref search))
+		{
+			if (party != mainParty && party.IsActive && party.IsVisible && party.IsLordParty
+				&& party.Position.DistanceSquared(mainParty.Position) <= radiusSquared)
+			{
+				parties.Add(party);
+			}
+		}
+		return parties;
+	}
+
 	private ProactiveCandidate FindBestRequestCandidate(DuelSettings settings, out CandidateScanStats stats, IEnumerable<MobileParty> sourceParties = null, Dictionary<string, TerritorialSettlementSnapshot> territorialSettlementSnapshots = null)
 	{
 		stats = new CandidateScanStats();
@@ -30,28 +54,17 @@ public sealed partial class ProactiveNpcRequestBehavior
 			stats.MainPartyMissing = true;
 			return null;
 		}
-		float distanceMultiplier = Clamp(settings.ProactiveNpcRequestDistanceMultiplier, 0.5f, 5f);
-		float maxDistance = Math.Max(1f, mainParty.SeeingRange * distanceMultiplier);
 		ProactiveCandidate bestCandidate = null;
-		foreach (MobileParty party in sourceParties ?? MobileParty.AllLordParties ?? Enumerable.Empty<MobileParty>())
+		foreach (MobileParty party in sourceParties ?? CaptureNearbyRequestParties(mainParty))
 		{
 			stats.TotalLordParties++;
 			if (!TryBuildBaseCandidate(party, mainParty, settings, out ProactiveCandidate candidate, out string skipReason))
 			{
-				stats.AddSkip(skipReason);
+				if (skipReason == "out_of_range") stats.OutOfRange++;
+				else stats.AddSkip(skipReason);
 				continue;
 			}
 			stats.BaseEligible++;
-			if (candidate.Distance < 0f)
-			{
-				stats.AddSkip("distance_invalid");
-				continue;
-			}
-			if (candidate.Distance > maxDistance)
-			{
-				stats.OutOfRange++;
-				continue;
-			}
 			stats.InRange++;
             ProactiveCandidate experienceCandidate = BuildExperienceCandidate(candidate, settings);
             var currentScan = _candidateScanOwner.Current;
@@ -691,6 +704,13 @@ public sealed partial class ProactiveNpcRequestBehavior
 				skipReason = "not_active_visible_lord_party";
 				return false;
 			}
+			float maxDistance = GetProactiveContactRange(mainParty);
+			// Recheck after the incremental snapshot: either party may have moved.
+			if (!(party.Position.DistanceSquared(mainParty.Position) <= maxDistance * maxDistance))
+			{
+				skipReason = "out_of_range";
+				return false;
+			}
 			Hero hero = party.LeaderHero;
 			if (hero == null || hero == Hero.MainHero || !hero.IsLord || hero.IsPrisoner || hero.IsDead || hero.Clan == null)
 			{
@@ -731,6 +751,17 @@ public sealed partial class ProactiveNpcRequestBehavior
 				skipReason = "war_non_diplomacy";
 				return false;
 			}
+			float distance = GetDistanceToMainParty(party, mainParty);
+			if (distance < 0f)
+			{
+				skipReason = "distance_invalid";
+				return false;
+			}
+			if (!(distance <= maxDistance))
+			{
+				skipReason = "out_of_range";
+				return false;
+			}
 			int foodDays = SafeFoodDays(party);
 			int partyGold = SafePartyTradeGold(party);
 			int totalWage = SafeTotalWage(party);
@@ -757,7 +788,6 @@ public sealed partial class ProactiveNpcRequestBehavior
 			int playerClanTier = SafePlayerClanTier();
 			bool targetHeroIsKingdomLeader = IsKingdomLeader(hero, targetKingdom);
 			bool targetClanCanOfferKingdomService = CanClanRepresentKingdom(hero.Clan, targetKingdom);
-			float distance = GetDistanceToMainParty(party, mainParty);
 			candidate = new ProactiveCandidate
 			{
 				Party = party,

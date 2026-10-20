@@ -1090,7 +1090,7 @@ internal static string BuildStrictSceneMessagesSystemPrompt(string systemPrompt,
 
 		string text = (systemPrompt ?? "").Trim();
 
-		string value = AdapterPromptCaptureTexts.PcapFormat("closeout_messages", "", ("CURRENT", AdapterPromptCaptureTexts.PcapCompat("Closeout_CurrentFact")), ("PAST", AdapterPromptCaptureTexts.PcapCompat("Closeout_PastFact")));
+		string value = AdapterPromptCaptureTexts.PcapFormat("closeout_messages", "", ("CURRENT", PromptComposerTexts.Get("history_section_scope_current")), ("PAST", PromptComposerTexts.Get("history_section_scope_historical")));
 
 		bool disableBuiltInReplyFormatPrompt = DuelSettings.IsBuiltInSceneReplyFormatPromptDisabled();
 
@@ -1225,6 +1225,7 @@ internal SceneHistoryMessageAssemblyInput CaptureStrictSceneMessageInputForNpc(i
             InjectedHistory = SceneHistoryProjectionOwner.CapturePromptMessages(injectedHistoryMessages), PersistentHistory = SceneHistoryProjectionOwner.CapturePromptMessages(persistentHistoryMessages),
 
             CurrentInputMessage = current, HistoryLineLimit = limit,
+            WindowOptions = ConversationContextSettingsCapture.Capture(),
 
             Context = CaptureSceneHistoryMessageContext(npcAgentIndex, useSceneDistanceSpeechLabels)
 

@@ -156,5 +156,13 @@
   "AF_REC_Bulletin_RoleVassalRuler": "ruler of the vassal kingdom, not confirmed to have been present",
   "AF_REC_Bulletin_NoExtraEffects": "Rely on the recorded facts; do not infer additional effects.",
   "AF_REC_Bulletin_ListSeparator": ", ",
-  "AF_REC_Bulletin_RoleLoserCommander": "losing commander"
+  "AF_REC_Bulletin_RoleLoserCommander": "losing commander",
+  "OwnerChange_Default": "ordinary ownership change",
+  "OwnerChange_BySiege": "siege conquest",
+  "OwnerChange_ByBarter": "barter or purchase",
+  "OwnerChange_ByLeaveFaction": "leaving a faction",
+  "OwnerChange_ByKingDecision": "royal decision",
+  "OwnerChange_ByGift": "gift",
+  "OwnerChange_ByRebellion": "rebellion",
+  "OwnerChange_ByClanDestruction": "clan destruction"
 }

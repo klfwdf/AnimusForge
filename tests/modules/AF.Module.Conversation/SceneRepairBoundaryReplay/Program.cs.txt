@@ -1,0 +1,54 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Text.Json;using AnimusForge;using AnimusForge.SceneActions.Core;using TaleWorlds.Localization;
+static class Program {
+static int checks;static void C(bool v,string s){checks++;if(!v)throw new Exception(s);}
+static void Main(string[] args){
+ // Critical startup order: framework metadata and both fallback catalogs before package load.
+ C(SceneActionFrameworkV4.LogicalActions.Count==27,"V4 contract before package");
+ C(SceneActionFrameworkV3.LogicalActions.Count==24,"V3 contract before package");
+ C(!string.IsNullOrEmpty(BattleSpeechText.PlayerNameReplacement(true)),"speech fallback before package");
+ C((typeof(SceneActionFrameworkV4).Assembly.GetType("AnimusForge.SceneActions.Core.SceneActionCatalogText+PackageCache").Attributes & System.Reflection.TypeAttributes.BeforeFieldInit)==0,"package catalog cannot initialize before guarded access");
+ C((typeof(BattleSpeechText).GetNestedType("Package",System.Reflection.BindingFlags.NonPublic).Attributes & System.Reflection.TypeAttributes.BeforeFieldInit)==0,"speech package cannot initialize before guarded access");
+ SceneActionPromptPackage.Load(args[0]);bool cn=args[2]=="cn";
+ AnimusForgeModulePaths.SceneFile=args[0];
+ PromptComposerTexts.Values=JsonSerializer.Deserialize<Dictionary<string,string>>(File.ReadAllText(Path.Combine(Path.GetDirectoryName(args[0]),"prompt-"+args[2]+".json")));
+ AIConfigHandler.SceneActionPostprocessRules=new(){new(){Tag=NpcReplyDirectiveTagV1.RuleTemplateTag,Description="{scene_action_catalog}"}};
+ var sceneRules=SceneActionDirectiveController.BuildSceneActionDirectiveRules(new[]{"applaud"});
+ C(sceneRules.Count==1&&sceneRules[0].Description.Contains("applaud"),"actual scene postprocess rule and catalog injected");
+ C(cn||!System.Text.RegularExpressions.Regex.IsMatch(sceneRules[0].Tag+sceneRules[0].Description,@"[\u3400-\u9fff]"),"English actual scene rule envelope contains no Han");
+ string catalog=NpcReplyDirectiveTagV1.BuildCatalogText(new[]{"applaud","wave"},cn);
+ C(catalog.Contains("applaud"),"package cache survives early metadata access");
+ C(!string.IsNullOrEmpty(BattleSpeechText.PlayerNameReplacement(cn)),"speech package cache survives early fallback");
+ var parser=new CommandParser(BuiltInContent.CreateV4(new RuntimeIdentity("1.4.6","replay",2)));
+ var parsed=parser.ParseNpcReplyText("*Smiles boisterously and raises his broad hands, clapping them together with three loud, resounding thuds that echo across the street.* There, my lord!","Leutros");
+ C(parsed.Status!=ParseStatus.Invalid,"recorded S67 reply parses");
+ Console.WriteLine("S67 parser status="+parsed.Status+" fallback="+parsed.AiFallbackRequested+" classifier="+parsed.ClassifierText);
+ SocialPromptTexts.Values=JsonSerializer.Deserialize<Dictionary<string,string>>(File.ReadAllText(args[1]));
+ AIConfigHandler.IntimacyPostprocessRules=new(){new(){Tag=SexualConceptionBehavior.IntimacyActionTag,Description="original"}};
+ var rules=SexualConceptionBehavior.BuildRuntimePostprocessRules(new Hero(),"native");
+ C(rules.Count==1&&rules[0].Tag==SexualConceptionBehavior.IntimacyDecisionTemplate,"legacy config upgrades only offered request rule");
+ C(rules[0].Description.Contains(SocialPromptTexts.Get("IntimacyDecisionContract")),"paired decision consumer");
+ foreach(string a in new[]{"NO","UNCERTAIN"})foreach(string b in new[]{"YES","NO","UNCERTAIN"})C(SexualConceptionBehavior.NormalizePostprocessTags("[ACTION:INTIMACY_INTERNAL:occurred="+a+";npc_denial="+b+"]",rules)=="","unconfirmed occurrence rejected");
+ foreach(string denial in new[]{"YES","UNCERTAIN"})C(SexualConceptionBehavior.NormalizePostprocessTags("[ACTION:INTIMACY_INTERNAL:occurred=YES;npc_denial="+denial+"]",rules)=="","denial overrides asserted completion");
+ string yes="[ACTION:INTIMACY_INTERNAL:occurred=YES;npc_denial=NO]";
+ C(SexualConceptionBehavior.NormalizePostprocessTags(yes,rules)==SexualConceptionBehavior.IntimacyActionTag,"only qualified accepted event becomes executable legacy action");
+ C(SexualConceptionBehavior.NormalizePostprocessTags(SexualConceptionBehavior.IntimacyActionTag,rules)=="","old bare provider action cannot bypass decision");
+ C(SexualConceptionBehavior.NormalizePostprocessTags(yes+yes,rules)=="","duplicate classifications rejected");
+ C(SexualConceptionBehavior.NormalizePostprocessTags(yes,new List<PostprocessRuleEntry>())=="","missing eligibility rejected");
+ C(SexualConceptionBehavior.BuildRuntimePostprocessRules(new Hero(),"courier").Count==0,"courier remains excluded");
+ C(SexualConceptionBehavior.BuildRuntimePostprocessRules(new Hero{Adult=false},"native").Count==0,"adult eligibility retained");
+ var owner=new SetsOwner();var agent=new Agent{Mission=owner.Mission,Formation=new Formation{Team=owner._playerTeam}};var machine=new UsableMachine();
+ bool threw=false;try{owner._playerTeam.DetachmentManager.NativeMove(machine);}catch(KeyNotFoundException){threw=true;}C(threw,"native registry missing reproduces KeyNotFound");
+ owner.EnsureCivilianUsableDetachmentRegistered(agent,machine);owner._playerTeam.DetachmentManager.NativeMove(machine);
+ C(owner._playerTeam.DetachmentManager.Registers==1,"register before native dictionary index");owner.EnsureCivilianUsableDetachmentRegistered(agent,machine);C(owner._playerTeam.DetachmentManager.Registers==1,"registered entry not reset");
+ foreach(string kind in new[]{"foreign","battle","alley","guard","lord","other","inactive","not-own","no-gather","foreign-team"}){
+ var o=new SetsOwner();var a=new Agent{Mission=o.Mission,Formation=new Formation{Team=o._playerTeam}};IDetachment d=new UsableMachine();
+ if(kind=="foreign")a.Mission=new object();if(kind=="battle")o._conflictActive=true;if(kind=="alley")o.Alley=true;if(kind=="guard")((CharacterObject)a.Character).Guard=true;if(kind=="lord")((CharacterObject)a.Character).Lord=true;if(kind=="other")d=new OtherDetachment();if(kind=="inactive")a.Active=false;if(kind=="not-own")o._isOwnSettlement=false;if(kind=="no-gather")o._settlementCivilianGatherRuntimeGeneration=0;if(kind=="foreign-team")a.Formation.Team=new Team();
+ o.EnsureCivilianUsableDetachmentRegistered(a,d);C(o._playerTeam.DetachmentManager.Registers==0,"registry unaffected: "+kind);}
+ PromptComposerTexts.Language=cn?"zh-CN":"en";
+ var native=new TextObject("{=vanilla}The town is prosperous.");C(NativePromptLiteralProjection.Render(native)==(cn?"原生UI中文":"The town is prosperous."),"package language independent of simulated Chinese UI");
+ C(native.Value=="{=vanilla}The town is prosperous.","original TextObject unchanged");
+ C(NativePromptLiteralProjection.Render(new TextObject("用户名字"))=="原生UI中文","unkeyed user names keep renderer");
+ C(NativePromptLiteralProjection.Render(new TextObject("{=vanilla}Name {PLAYER}"))=="原生UI中文","parameterized native text keeps variables");
+ Console.WriteLine("PASS scene repair "+args[2]+": "+checks+" checks; actual Core sources and exact owner methods; native leaves simulated");
+}
+}

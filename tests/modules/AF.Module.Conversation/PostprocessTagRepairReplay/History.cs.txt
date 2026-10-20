@@ -1,0 +1,31 @@
+internal sealed class ConversationMessage {
+ public string SpeakerHeroId; public float PlayerDistanceMeters; public string Role,Content,SpeakerName,TargetName,Scene,GameDate,PromptMemorySessionKey;
+ public int GameDayIndex,GameHour,SpeakerAgentIndex,TargetAgentIndex;public long EventSequence;
+ public bool PromptFactScopeCaptured,PromptIsCurrentFact;
+}
+internal sealed class DailyMemoryLine { public string Speaker,Text,MemoryCommitPart,TargetName;public bool IsAfef;public int TargetAgentIndex; }
+internal static class PromptComposerTexts {
+ public static System.Collections.Generic.Dictionary<string,string> Values;
+ public static string Raw(string k)=>Values[k]; public static string Get(string k)=>Values.TryGetValue(k,out var v)?v:k;
+}
+internal static class UncompressedMemoryMessageAssemblyOwner { public static bool IsUnknownMemorySceneLabel(string s)=>string.IsNullOrWhiteSpace(s); }
+internal static class SceneHistoryMessageAssemblyOwner { public static bool TryNormalizeAfefFactLineForPrompt(string t,out string f){f=t;return t?.StartsWith("[AFEF")??false;} }
+internal static class SceneHistoryProjectionOwner { public static System.Collections.Generic.List<ConversationMessage> CapturePromptMessages(System.Collections.Generic.IEnumerable<ConversationMessage> m)=>m.ToList(); }
+static class HistoryChecks {
+ static ConversationMessage M(string text,long seq=0,string session="session",int hour=8)=>new(){Role="user",Content=text,SpeakerName="Player",TargetName="Manteos",Scene="town",GameDayIndex=1,GameHour=hour,GameDate="day1",PromptMemorySessionKey=session,EventSequence=seq};
+ public static void Run(){
+ PromptComposerTexts.Values=System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.Dictionary<string,string>>(System.IO.File.ReadAllText(System.IO.Path.Combine(System.AppContext.BaseDirectory,"PromptCompatibility.json")));
+ string speech="Leave the Empire for Sturgia.";
+ var persistent=new[]{M("Player says to Manteos: Empireyoung adult says to Manteos: "+speech),M("Other topic.",hour:9)};
+ var native=new[]{M(speech,1),M("Merge your party.",2,hour:9)};
+ var result=NativeMemoryHistoryMergeOwner.Merge(persistent,native,2,"Empireyoung adult");
+ if(result.Count!=3||result[0].Content!=speech||result.Last().EventSequence!=2)throw new Exception("nested stored player header and current input identity");
+ result=NativeMemoryHistoryMergeOwner.Merge(new[]{M(speech),M(speech)},new[]{M(speech)},0,"Empireyoung adult");
+ if(result.Count!=2)throw new Exception("intentional repeated occurrence retained");
+ result=NativeMemoryHistoryMergeOwner.Merge(new[]{M(speech)},new[]{M(speech,session:"another")},0,"Empireyoung adult");
+ if(result.Count!=2)throw new Exception("different sessions cannot deduplicate");
+ result=NativeMemoryHistoryMergeOwner.Merge(new[]{M("I quote Empireyoung adult says to Manteos: "+speech)},new[]{M(speech)},0,"Empireyoung adult");
+ if(result.Count!=2)throw new Exception("narrative quote retained");
+ Console.WriteLine("PASS Native history: nested wrapper overlap, current-last, repeat counts, session boundary, narrative quote");
+ }
+}

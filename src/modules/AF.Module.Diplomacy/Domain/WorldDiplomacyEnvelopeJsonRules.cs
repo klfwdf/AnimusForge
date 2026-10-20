@@ -94,6 +94,63 @@ public static class WorldDiplomacyEnvelopeJsonRules
         return token is JArray array ? WorldDiplomacyRoundLifecycleRules.NormalizeTrimmedIdListPreserveOrder(array.Values<string>()) : new List<string>();
     }
 
+    private static readonly string[] TargetAliasPaths =
+    {
+        "target_country_id", "target_id", "target_country", "target_nation", "target_kingdom", "target",
+        "target_kingdom_ids", "target_nations", "target_countries", "targets"
+    };
+    private static readonly string[] IntentAliasPaths = { "action_type", "declaration_type", "action", "author_intent" };
+    private static readonly string[] BodyPaths =
+        { "body", "public_document", "document", "content", "statement", "content.statement", "content.text", "text" };
+    private static readonly string[] TitlePaths = { "title", "content.title", "header", "subject" };
+
+    public static string ReadTargetKingdomId(JObject json, params string[] additionalPaths)
+    {
+        // Split envelopes write this canonical field; inherited aliases cannot override it, even when empty.
+        if (json?["primary_target_kingdom_id"] != null) return ReadTargetValue(json["primary_target_kingdom_id"]);
+        if (json?["target_kingdom_id"] != null) return ReadTargetValue(json["target_kingdom_id"]);
+        foreach (string path in TargetAliasPaths.Concat(additionalPaths ?? Array.Empty<string>()))
+        {
+            JToken token = json?.SelectToken(path);
+            if (token == null || token.Type == JTokenType.Null) continue;
+            return ReadTargetValue(token);
+        }
+        return "";
+    }
+
+    private static string ReadTargetValue(JToken token)
+    {
+        if (token is JArray array)
+            token = array.Count == 1 ? array[0] : null;
+        return token?.Type == JTokenType.String ? token.Value<string>().Trim() : "";
+    }
+
+    public static string ReadIntent(JObject json, params string[] additionalPaths)
+    {
+        if (json?["author_intent"] is JObject author && author["intent"] != null)
+            return ReadTextPaths(author, new[] { "intent" });
+        if (json?["intent"] != null) return ReadTextPaths(json, new[] { "intent" });
+        return ReadTextPaths(json, IntentAliasPaths, additionalPaths);
+    }
+
+    public static string ReadBody(JObject json, params string[] additionalPaths)
+        => ReadTextPaths(json, BodyPaths, additionalPaths);
+
+    public static string ReadTitle(JObject json, params string[] additionalPaths)
+        => ReadTextPaths(json, TitlePaths, additionalPaths);
+
+    private static string ReadTextPaths(JObject json, string[] paths, string[] additionalPaths = null)
+    {
+        foreach (string path in paths)
+        {
+            JToken token = json?.SelectToken(path);
+            if (token?.Type != JTokenType.String) continue;
+            string text = token.Value<string>().Trim();
+            if (text.Length > 0) return text;
+        }
+        return additionalPaths?.Length > 0 ? ReadTextPaths(json, additionalPaths) : "";
+    }
+
     public static float ReadFloat(JObject json, string path)
     {
         try
@@ -180,56 +237,133 @@ public static class WorldDiplomacyEnvelopeJsonRules
     public static void NormalizeGeneratedDiplomaticEnvelopeShape(WorldDiplomacyJob job, JObject json)
     {
         if (json == null) return;
+        if (json["actions"] == null && json["declarations"] is JArray declarationsArray)
+        {
+            json["actions"] = declarationsArray;
+        }
+
         if (json["actions"] == null)
         {
-            string legacyIntent = ReadString(json, "author_intent.intent", "intent", "author_intent");
-            string legacyTargetId = ReadString(json, "primary_target_kingdom_id", "target_kingdom_id", "target");
-            if (string.IsNullOrWhiteSpace(legacyTargetId)) legacyTargetId = job?.TargetKingdomId ?? "";
-            JObject legacyAction = new JObject
+            List<string> targetList = ReadStringList(json, "target_nations", "target_countries", "target_kingdom_ids", "targets");
+            if (targetList.Count > 0)
             {
-                ["target_kingdom_id"] = legacyTargetId,
-                ["intent"] = legacyIntent,
-                ["peace_terms"] = json["peace_terms"] is JObject legacyTerms
-                    ? legacyTerms.DeepClone()
-                    : BuildPeaceTermsJson(null)
-            };
-            string legacyOfferSource = ReadString(json, "responding_to_offer_document_id");
-            string legacyThreatSource = ReadString(json, "responding_to_threat_document_id");
-            if (!string.IsNullOrWhiteSpace(legacyOfferSource)) legacyAction["responding_to_offer_document_id"] = legacyOfferSource;
-            if (!string.IsNullOrWhiteSpace(legacyThreatSource)) legacyAction["responding_to_threat_document_id"] = legacyThreatSource;
-            json["actions"] = new JArray(legacyAction);
+                JArray newActions = new JArray();
+                foreach (string tid in targetList)
+                {
+                    newActions.Add(new JObject
+                    {
+                        ["target_kingdom_id"] = tid,
+                        ["intent"] = WorldDiplomacyIntentVocabulary.NormalizeIntent(ReadIntent(json)),
+                        ["peace_terms"] = json["peace_terms"] is JObject lt ? lt.DeepClone() : BuildPeaceTermsJson(null)
+                    });
+                }
+                json["actions"] = newActions;
+            }
+            else
+            {
+                string legacyTargetId = ReadTargetKingdomId(json);
+                if (string.IsNullOrWhiteSpace(legacyTargetId)) legacyTargetId = job?.TargetKingdomId ?? "";
+                string legacyIntent = WorldDiplomacyIntentVocabulary.NormalizeIntent(ReadIntent(json));
+                JObject legacyAction = new JObject
+                {
+                    ["target_kingdom_id"] = legacyTargetId,
+                    ["intent"] = legacyIntent,
+                    ["peace_terms"] = json["peace_terms"] is JObject legacyTerms
+                        ? legacyTerms.DeepClone()
+                        : BuildPeaceTermsJson(null)
+                };
+                string legacyOfferSource = ReadString(json, "responding_to_offer_document_id");
+                string legacyThreatSource = ReadString(json, "responding_to_threat_document_id");
+                if (!string.IsNullOrWhiteSpace(legacyOfferSource)) legacyAction["responding_to_offer_document_id"] = legacyOfferSource;
+                if (!string.IsNullOrWhiteSpace(legacyThreatSource)) legacyAction["responding_to_threat_document_id"] = legacyThreatSource;
+                json["actions"] = new JArray(legacyAction);
+            }
         }
         if (json["actions"] is JArray actions)
         {
             foreach (JObject action in actions.OfType<JObject>())
             {
+                string actTargetId = ReadTargetKingdomId(action);
+                if (!string.IsNullOrWhiteSpace(actTargetId))
+                {
+                    action["target_kingdom_id"] = actTargetId;
+                }
+                action["intent"] = WorldDiplomacyIntentVocabulary.NormalizeIntent(ReadIntent(action));
+
                 if (action["peace_terms"] is not JObject) action["peace_terms"] = BuildPeaceTermsJson(null);
             }
             MirrorFirstGeneratedActionEnvelope(json, actions);
             json["addressed_kingdom_ids"] = new JArray(WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(actions.OfType<JObject>()
-                .Select(x => ReadString(x, "target_kingdom_id", "target"))));
+                .Select(x => ReadTargetKingdomId(x))));
         }
+
+        string rootTitle = ReadTitle(json);
+        if (string.IsNullOrWhiteSpace(rootTitle) && json["actions"] is JArray actArr && actArr.Count > 0 && actArr[0] is JObject firstAct)
+        {
+            rootTitle = ReadTitle(firstAct);
+        }
+        if (!string.IsNullOrWhiteSpace(rootTitle))
+        {
+            json["title"] = rootTitle;
+        }
+
+        string rootBody = ReadBody(json);
+        if (string.IsNullOrWhiteSpace(rootBody) && json["actions"] is JArray actArr2 && actArr2.Count > 0 && actArr2[0] is JObject firstAct2)
+        {
+            rootBody = ReadBody(firstAct2);
+        }
+        if (!string.IsNullOrWhiteSpace(rootBody))
+        {
+            json["body"] = rootBody;
+        }
+
         if (json["mentioned_kingdom_ids"] is not JArray)
         {
             json["mentioned_kingdom_ids"] = new JArray();
         }
 
-        if (json["round_plan"] is not JObject roundPlan)
+        if (json["round_plan"] is JArray arrayPlan)
         {
-            roundPlan = new JObject();
-            json["round_plan"] = roundPlan;
+            json["round_plan"] = new JObject
+            {
+                ["selected_kingdom_ids"] = arrayPlan
+            };
         }
+        else if (json["round_plan"] is not JObject)
+        {
+            json["round_plan"] = new JObject();
+        }
+
+        JObject roundPlan = (JObject)json["round_plan"];
         bool autonomousOpening = WorldDiplomacyRoundLifecycleRules.IsAutonomousOpeningJob(job);
         if (roundPlan["selected_kingdom_ids"] is not JArray)
         {
             roundPlan["selected_kingdom_ids"] = autonomousOpening && json["actions"] is JArray generatedActions
                 ? new JArray(WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(generatedActions.OfType<JObject>()
-                    .Select(x => ReadString(x, "target_kingdom_id", "target"))))
+                    .Select(x => ReadTargetKingdomId(x))))
                 : new JArray();
         }
+        else if (autonomousOpening && roundPlan["selected_kingdom_ids"] is JArray selectedArray)
+        {
+            HashSet<string> currentSelected = new HashSet<string>(
+                selectedArray.Select(t => t?.ToString()?.Trim()).Where(s => !string.IsNullOrEmpty(s)),
+                StringComparer.OrdinalIgnoreCase);
+            if (json["actions"] is JArray genActions)
+            {
+                foreach (JObject act in genActions.OfType<JObject>())
+                {
+                    string tid = ReadTargetKingdomId(act);
+                    if (!string.IsNullOrWhiteSpace(tid) && currentSelected.Add(tid))
+                    {
+                        selectedArray.Add(tid);
+                    }
+                }
+            }
+        }
+
         if (roundPlan["topic"] == null || roundPlan["topic"].Type == JTokenType.Null)
         {
-            roundPlan["topic"] = autonomousOpening ? WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(ReadString(json, "title"), DiplomacyMiscPromptTexts.Get("Round_DefaultTopicNegotiation", "Diplomatic Negotiation")) : "";
+            roundPlan["topic"] = autonomousOpening ? WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(ReadTitle(json), DiplomacyMiscPromptTexts.Get("Round_DefaultTopicNegotiation", "Diplomatic Negotiation")) : "";
         }
         if (json["peace_terms"] is not JObject)
         {
@@ -246,11 +380,11 @@ public static class WorldDiplomacyEnvelopeJsonRules
     public static void MirrorFirstGeneratedActionEnvelope(JObject json, JArray actions)
     {
         if (json == null || actions == null || actions.Count == 0 || actions[0] is not JObject first) return;
-        string intent = ReadString(first, "intent", "author_intent.intent");
-        string targetId = ReadString(first, "target_kingdom_id", "target");
+        string intent = ReadIntent(first);
+        string targetId = ReadTargetKingdomId(first);
         json["author_intent"] = new JObject
         {
-            ["intent"] = intent,
+            ["intent"] = WorldDiplomacyIntentVocabulary.NormalizeIntent(intent),
             ["commitment"] = ReadString(first, "commitment")
         };
         json["primary_target_kingdom_id"] = targetId;
@@ -259,20 +393,26 @@ public static class WorldDiplomacyEnvelopeJsonRules
         json["responding_to_offer_action_id"] = ReadString(first, "responding_to_offer_action_id");
         json["responding_to_threat_document_id"] = ReadString(first, "responding_to_threat_document_id");
         json["responding_to_threat_action_id"] = ReadString(first, "responding_to_threat_action_id");
+        string move = ReadString(first, "negotiation_move");
+        if (string.IsNullOrWhiteSpace(move)) move = ReadString(json, "negotiation_move");
+        json["negotiation_move"] = move;
     }
 
     public static JObject BuildGeneratedSingleActionEnvelope(JObject source, JObject action)
     {
         JObject single = source == null ? new JObject() : (JObject)source.DeepClone();
         single.Remove("actions");
-        string targetId = ReadString(action, "target_kingdom_id", "target");
+        string targetId = ReadTargetKingdomId(action);
+        string intent = ReadIntent(action);
         single["author_intent"] = new JObject
         {
-            ["intent"] = ReadString(action, "intent", "author_intent.intent"),
+            ["intent"] = WorldDiplomacyIntentVocabulary.NormalizeIntent(intent),
             ["commitment"] = ReadString(action, "commitment")
         };
         single["primary_target_kingdom_id"] = targetId;
-        single["negotiation_move"] = ReadString(action, "negotiation_move");
+        string move = ReadString(action, "negotiation_move");
+        if (string.IsNullOrWhiteSpace(move)) move = ReadString(source, "negotiation_move");
+        single["negotiation_move"] = move;
         if (action?["requires_response"]?.Type == JTokenType.Boolean) single["requires_response"] = action["requires_response"].DeepClone();
         single["addressed_kingdom_ids"] = string.IsNullOrWhiteSpace(targetId) ? new JArray() : new JArray(targetId);
         single["peace_terms"] = action?["peace_terms"] is JObject terms ? terms.DeepClone() : BuildPeaceTermsJson(null);

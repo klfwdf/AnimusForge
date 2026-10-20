@@ -1,0 +1,37 @@
+using System;using System.Collections.Generic;
+namespace TaleWorlds.Localization {internal sealed class TextObject {public string Value;public TextObject(string s){Value=s;}public override string ToString()=>"原生UI中文";}}
+namespace AnimusForge {
+internal static class PromptComposerTexts {public static string Language;public static Dictionary<string,string> Values;public static string Get(string k)=>k=="native_text_language"?Language:Values[k];}
+internal static class SocialPromptTexts {public static Dictionary<string,string> Values;public static string Get(string k)=>Values[k];}
+internal static class AnimusForgeModulePaths {public static string SceneFile;public static string GetModuleDataFilePath(string s)=>SceneFile;}
+internal class Hero {public bool Adult=true;}
+internal sealed class PostprocessRuleEntry {public string Tag,Description;}
+internal static class AIConfigHandler {public static List<PostprocessRuleEntry> IntimacyPostprocessRules;public static List<PostprocessRuleEntry> SceneActionPostprocessRules;}
+static partial class SexualConceptionBehavior {
+ public const string IntimacyActionTag="[ACTION:INTIMACY_INTERNAL]";
+ internal const string IntimacyDecisionTemplate="[ACTION:INTIMACY_INTERNAL:occurred=YES|NO|UNCERTAIN;npc_denial=YES|NO|UNCERTAIN]";
+ static bool IsCourierChain(string s)=>s=="courier";
+ static bool TryResolveAdultOppositeSexPair(Hero h,out Hero a,out Hero b){a=h;b=null;return h?.Adult??false;}
+}
+internal enum SetsSettlementSceneKind{Town,Village,Castle}
+internal interface IDetachment{}
+internal sealed class UsableMachine:IDetachment{}
+internal sealed class OtherDetachment:IDetachment{}
+internal sealed class DetachmentManager {
+ public Dictionary<IDetachment,int> Entries=new();public int Registers;
+ public bool ContainsDetachment(IDetachment d)=>Entries.ContainsKey(d);
+ public void MakeDetachment(IDetachment d){Entries.Add(d,0);Registers++;}
+ public void NativeMove(IDetachment d){Entries[d]++;}
+}
+internal sealed class Team {public int TeamIndex=1;public DetachmentManager DetachmentManager=new();}
+internal sealed class Formation {public Team Team;}
+internal sealed class CharacterObject {public bool Guard,Lord;}
+internal sealed class Agent {public object Mission;public bool IsHuman=true,Active=true,IsMainAgent;public Formation Formation;public object Character=new CharacterObject();public int Index=13;public bool IsActive()=>Active;}
+internal static class SettlementEntryTroopSelectionLog {public static int Logs;public static void Log(string s){Logs++;}}
+partial class SetsOwner {
+ internal bool _isOwnSettlement=true,_armedCoup,_conflictActive,_ownedSettlementIncidentTriggered,Alley;
+ internal SetsSettlementSceneKind _sceneKind=SetsSettlementSceneKind.Town;
+ internal object Mission=new();internal Team _playerTeam=new();internal int _settlementCivilianGatherRuntimeGeneration=1;
+ bool IsNativeAlleyFightActive()=>Alley;bool IsGuardOrSoldier(CharacterObject c)=>c?.Guard??false;bool IsLordCombatant(CharacterObject c)=>c?.Lord??false;
+}
+}

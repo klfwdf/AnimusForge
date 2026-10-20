@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><NuGetAudit>false</NuGetAudit></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs" Link="ConversationMessage.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/ConversationContextWindow.cs" Link="ConversationContextWindow.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/ConversationRequestBudget.cs" Link="ConversationRequestBudget.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/ConversationPromptCacheStore.cs" Link="ConversationPromptCacheStore.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Memory/Recall/IntradayConversationMemory.cs" Link="IntradayConversationMemory.cs" />
+  </ItemGroup>
+</Project>

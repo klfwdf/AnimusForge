@@ -48,6 +48,8 @@ internal static class TerminalSettingsCoverage
 
     internal static string CategoryFor(string owner, string property, string fallback, string group = "")
     {
+        if (property.StartsWith("ConversationPromptCache", StringComparison.Ordinal)) return TerminalCategories.Ai;
+        if (property.StartsWith("ConversationContext", StringComparison.Ordinal)) return TerminalCategories.Ai;
         if (property.IndexOf("WeeklyReport", StringComparison.Ordinal) >= 0 || property.IndexOf("WorldBulletin", StringComparison.Ordinal) >= 0)
             return TerminalCategories.Diplomacy;
         if (property == "EditCustomDirectorPrompt" || property == "Illustrator.EditCustomDirectorPrompt") return TerminalCategories.Prompt;

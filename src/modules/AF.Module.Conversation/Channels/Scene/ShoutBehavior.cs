@@ -3125,6 +3125,7 @@ private void OpenNativeConversationGiveShowMenu(NpcDataPacket targetNpc, Hero ta
 
 	public static void ClearNativeConversationSessionHistoryForExternal(Hero targetHero, CharacterObject targetCharacter = null, string npcName = null, int dayIndex = -1)
 	{
+        ConversationPromptCache.Clear();
         NativePendingHistoryApplicationAdapter.ClearNativeConversationSessionHistoryForExternal(_nativeSessionOwner, targetHero, targetCharacter, npcName, dayIndex);
     }
 
@@ -3149,6 +3150,7 @@ public static void SyncNativeConversationSessionHistoryForDailyMemoryEditExterna
 		IEnumerable<AnimusForgeDialogueHistoryEntry> currentEntries,
 		string reason, bool completeDaySnapshot)
 	{
+        ConversationPromptCache.Clear();
         NativePendingHistoryApplicationAdapter.SyncNativeConversationSessionHistoryForDailyMemoryEditExternal(_nativeSessionOwner, targetHero, targetCharacter, npcName, dayIndex, previousEntries, currentEntries, reason, completeDaySnapshot);
     }
 

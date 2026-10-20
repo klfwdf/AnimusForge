@@ -42,7 +42,7 @@ internal static class Program
             int kindIndex = key == "memory_courier_npc_destroyed" ? 2 : key == "memory_courier_npc_missing" ? 1 : -1;
             if (kindIndex >= 0 && translated[kindIndex] == PromptComposerTexts.Raw("memory_courier_raw_588"))
                 translated[kindIndex] = PromptComposerTexts.Get("memory_courier_value_588");
-            string expected = prefix + " " + string.Format(PromptComposerTexts.Get(key), translated.Cast<object>().ToArray());
+            string expected = PromptComposerTexts.Get(key.StartsWith("memory_courier_npc_", StringComparison.Ordinal) ? "afef_npc_action" : "afef_player_action") + " " + string.Format(PromptComposerTexts.Get(key), translated.Cast<object>().ToArray());
             Check(MemorySystemFactProjection.ProjectNpcFact(raw) == expected, "actual terminal template projection: " + key);
             Check(english ? expected != raw : expected == raw, "fixed package language: " + key);
             Check(MemorySystemFactProjection.ProjectNpcFact(expected) == expected, "idempotent terminal projection");
@@ -51,17 +51,18 @@ internal static class Program
             {
                 string recorded = scope + metadata + raw;
                 string projected = MemorySystemFactProjection.ProjectRecordedFactForPrompt(recorded);
-                Check(projected == scope + metadata + expected, "metadata and scope retained literally");
+                string promptScope = scope == "" ? "" : PromptComposerTexts.Get(scope == MemoryTextResources.Raw("MEM_Raw_033") ? "history_section_scope_current" : "history_section_scope_historical");
+                Check(projected == promptScope + metadata + expected, "metadata and scope retained literally");
                 Check(MemorySystemFactProjection.ProjectRecordedFactForPrompt(projected) == projected, "idempotent recorded fact");
                 string past = MemoryRecallContextOwner.FormatPastAfefLineForPrompt(recorded);
-                string expectedPast = scope == MemoryTextResources.Raw("MEM_Raw_032") || scope == MemoryTextResources.Raw("MEM_Raw_033")
-                    ? projected : MemoryTextResources.Raw("MEM_Raw_032") + projected;
+                string expectedPast = scope != ""
+                    ? projected : PromptComposerTexts.Get("history_section_scope_historical") + projected;
                 Check(past == expectedPast, "actual compressed recall consumer projects saved facts");
                 Check(recorded == scope + metadata + raw, "saved input immutable");
             }
             string bracketPrefix = key.StartsWith("memory_courier_npc_", StringComparison.Ordinal)
                 ? PromptComposerTexts.Raw("afef_npc_action_bracket") : PromptComposerTexts.Raw("afef_player_action_bracket");
-            Check(MemorySystemFactProjection.ProjectNpcFact(bracketPrefix + " " + rawBody) == bracketPrefix + " " + expected.Substring(prefix.Length + 1), "legacy bracket envelope retained");
+            Check(MemorySystemFactProjection.ProjectNpcFact(bracketPrefix + " " + rawBody) == expected, "legacy bracket envelope projected with stable actor");
         }
 
         string delivered = playerPrefix + " Player通过信使转移了 12 第纳尔。";
@@ -98,9 +99,70 @@ internal static class Program
         Check(MemorySystemFactProjection.ProjectRecordedFactForPrompt(mixedLines)
             == translatedDelivery + "\r\n[old date | scene {0} | AFEF] " + translatedDelivery + "\nunknown\r\n", "mixed newline records retained");
         foreach (string raw in new[] { "user " + delivered, "[metadata] " + delivered, "[one | separator] " + delivered,
-            "[date | scene | AFEF] " + playerPrefix + " unknown text {0} $1", "[date | scene | AFEF] " + delivered + " trailing user text",
+            "[date | scene | AFEF] " + delivered + " trailing user text",
             "[date | scene | AFEF] " + delivered + " [date | scene | AFEF] " + delivered })
-            Check(MemorySystemFactProjection.ProjectRecordedFactForPrompt(raw) == raw, "unknown or ambiguous prose unchanged");
+            Check(MemorySystemFactProjection.ProjectRecordedFactForPrompt(raw).Replace(PromptComposerTexts.Get("afef_player_action"), playerPrefix) == raw, "unknown or ambiguous prose retained");
+        foreach (string body in new[] { "玩家与Nadea发生了亲密关系。", "玩家与Nadea发生了亲密关系。系统已确认玩家怀孕，父亲是Nadea。", "玩家与Nadea发生了亲密关系。系统已确认Nadea怀孕，父亲是玩家。", "Apolytea建立了1道大地图命令。" })
+        {
+            string result = MemorySystemFactProjection.ProjectNpcFact(playerPrefix + " " + body);
+            Check(!english || !System.Text.RegularExpressions.Regex.IsMatch(result, @"[\u3400-\u9fff]"), "fixed EN fact including marker has no Han: " + result);
+        }
+        Check(MemorySystemFactProjection.ProjectNpcFact(playerPrefix + " unknown 原文").EndsWith("unknown 原文"), "unknown dynamic evidence preserved");
+        foreach (bool current in new[] { false, true })
+        foreach (string prefix in new[] { playerPrefix, npcPrefix, "[AFEF PLAYER_ACTION]", "[AFEF NPC_ACTION]" })
+        {
+            string fact = prefix + " " + (prefix.Contains("NPC") ? "Apolytea建立了1道大地图命令。" : "玩家与Nadea发生了亲密关系。");
+            string projected = SceneHistoryMessageAssemblyOwner.BuildScopedAfefFactLineForPrompt(fact, current);
+            Check(projected.StartsWith(PromptComposerTexts.Get(current ? "history_section_scope_current" : "history_section_scope_historical")), "actual scope consumer preserves currentness");
+            Check(!english || !System.Text.RegularExpressions.Regex.IsMatch(projected, @"[\u3400-\u9fff]"), "actual final scene fact envelope has no fixed Chinese");
+            Check(SceneHistoryMessageAssemblyOwner.TryNormalizeAfefFactLineForPrompt(projected, out _), "both editions still classify projected facts");
+            Check(SceneHistoryMessageAssemblyOwner.BuildScopedAfefFactLineForPrompt(projected, current) == projected, "actual scene consumer idempotent");
+        }
+        string ruleInput = PromptRuleBlockText.Header("reward") + "\nRule body\n" + PromptRuleBlockText.Header("marriage") + "\nRule body";
+        string projectedRules = PromptRuleBlockText.ProjectHeadersForPrompt(ruleInput);
+        Check(!english || !System.Text.RegularExpressions.Regex.IsMatch(projectedRules, @"[\u3400-\u9fff]"), "runtime rule headers use package language");
+        Check(PromptRuleBlockText.Has(ruleInput, "reward") && PromptRuleBlockText.Count(ruleInput) == 2, "internal rule qualification still uses canonical identity");
+        Check(PromptRuleBlockText.ProjectHeadersForPrompt(projectedRules) == projectedRules, "rule presentation idempotent");
+        Check(PromptRuleBlockText.ProjectHeadersForPrompt("I quote " + ruleInput.Split('\n')[0]) == "I quote " + ruleInput.Split('\n')[0], "inline quoted rule header remains dynamic text");
+        foreach (string source in new[] {
+            "你已经同意 Clan A的Hero A 与 Clan B的Hero B 正式成婚。无明确彩礼记录。",
+            "你已经与 Clan A的Hero A 正式成婚。由Clan A向Clan B支付彩礼 1,234 第纳尔。",
+            "你们已经解除 Clan A的Hero A 与 Clan B的Hero B 的婚姻关系。 双方已议定返还彩礼 1,234 第纳尔。",
+            "你与 Clan A的Hero A 的婚姻已经解除。",
+            "你已经与 Clan A的Hero B 私奔并成婚。",
+            "你已经与玩家私奔并成婚。",
+            "你已经向玩家支付了彩礼 1,234 第纳尔。",
+            "Hero A 原为Citizen，在 Town A 同意追随玩家，成为玩家同伴并加入玩家队伍。" })
+        {
+            string projected = MemorySystemFactProjection.ProjectNpcFact(npcPrefix + " " + source);
+            Check(!english || !System.Text.RegularExpressions.Regex.IsMatch(projected, @"[\u3400-\u9fff]"), "known social fact has no fixed Han: " + projected);
+            Check(english || projected == npcPrefix + " " + source, "CN social fact unchanged");
+            Check(MemorySystemFactProjection.ProjectNpcFact(projected) == projected, "social fact projection idempotent");
+        }
+        foreach (string key in new[] { "S164", "S166" })
+        foreach (string[] namesInFact in new[] {
+            new[] { "Clan A", "Alice", "Alice of the Clan A clan" },
+            new[] { "家族甲", "爱丽丝", "爱丽丝 of the 家族甲 clan" },
+            new[] { "我的家族", "Alice", null },
+            new[] { "Clan A", "英雄的名字", null },
+            new[] { "我的家族", "英雄的名字", null },
+            new[] { "Clan {0} $1", "Hero {NAME} $1", "Hero {NAME} $1 of the Clan {0} $1 clan" } })
+        {
+            string source = string.Format(SocialSourceTexts.Get(key), namesInFact[0], namesInFact[1]);
+            string expectedBody = english && namesInFact[2] != null
+                ? (key == "S164" ? "You eloped and married " : "The player eloped and married ") + namesInFact[2] + "."
+                : source;
+            Check(SocialFactPromptProjection.ProjectForPrompt(source) == expectedBody, "elopement retains exact clan/person identities: " + key + " " + source);
+            foreach (string prefix in new[] { playerPrefix, npcPrefix })
+            {
+                string expected = PromptComposerTexts.Get(prefix == playerPrefix ? "afef_player_action" : "afef_npc_action") + " " + expectedBody;
+                string projected = MemorySystemFactProjection.ProjectNpcFact(prefix + " " + source);
+                Check(projected == expected, "actual fact consumer retains elopement identities");
+                Check(MemorySystemFactProjection.ProjectNpcFact(projected) == projected, "ambiguous and projected elopement facts are idempotent");
+                Check(MemorySystemFactProjection.ProjectRecordedFactForPrompt("[old date | scene | AFEF] " + prefix + " " + source)
+                    == "[old date | scene | AFEF] " + expected, "recorded elopement keeps metadata and exact identities");
+            }
+        }
         Console.WriteLine("PASS fact recall " + args[1] + ": " + checks + " assertions; production projector/readers and exact recall/overview/daily renderer methods; save text unchanged");
     }
 }

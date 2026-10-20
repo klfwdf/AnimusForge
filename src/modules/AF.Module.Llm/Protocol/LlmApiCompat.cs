@@ -133,7 +133,9 @@ public static class LlmApiCompat
 		{
 			return "{}";
 		}
-		JObject payload = IsAnthropicCompatibleUrl(apiUrl) ? ConvertOpenAiChatPayloadToAnthropic(openAiStylePayload) : (JObject)openAiStylePayload.DeepClone();
+		JObject prepared = (JObject)openAiStylePayload.DeepClone();
+        ApplyConversationCacheHints(apiUrl, prepared);
+		JObject payload = IsAnthropicCompatibleUrl(apiUrl) ? ConvertOpenAiChatPayloadToAnthropic(prepared) : prepared;
 		return payload.ToString(Formatting.None);
 	}
 
@@ -143,8 +145,53 @@ public static class LlmApiCompat
 		{
 			return new JObject();
 		}
-		return IsAnthropicCompatibleUrl(apiUrl) ? ConvertOpenAiChatPayloadToAnthropic(openAiStylePayload) : (JObject)openAiStylePayload.DeepClone();
+        JObject prepared = (JObject)openAiStylePayload.DeepClone();
+        ApplyConversationCacheHints(apiUrl, prepared);
+		return IsAnthropicCompatibleUrl(apiUrl) ? ConvertOpenAiChatPayloadToAnthropic(prepared) : prepared;
 	}
+
+    private static void ApplyConversationCacheHints(string apiUrl, JObject payload)
+    {
+        if (!(payload["messages"] is JArray messages) || messages.Count == 0
+            || messages[0]?["content"]?.Type != JTokenType.String) return;
+        string system = messages[0]["content"].Value<string>();
+        int marker = system.IndexOf("[AF_PROMPT_CACHE_V1]\n", StringComparison.Ordinal);
+        if (marker < 0) return; // Only explicitly prepared conversation requests participate.
+        string model = payload["model"]?.ToString() ?? "";
+        bool anthropic = IsAnthropicCompatibleUrl(apiUrl);
+        bool gemini = model.IndexOf("gemini", StringComparison.OrdinalIgnoreCase) >= 0
+            || model.IndexOf("argon", StringComparison.OrdinalIgnoreCase) >= 0;
+        if (gemini)
+        {
+            var alternating = new JArray();
+            foreach (JObject message in messages)
+            {
+                string role = message["role"]?.ToString();
+                JObject last = alternating.Count == 0 ? null : alternating[alternating.Count - 1] as JObject;
+                if ((role == "user" || role == "assistant") && last?["role"]?.ToString() == role
+                    && last["content"]?.Type == JTokenType.String && message["content"]?.Type == JTokenType.String)
+                    last["content"] = last["content"].Value<string>() + "\n\n" + message["content"].Value<string>();
+                else alternating.Add(message.DeepClone());
+            }
+            messages = alternating;
+            payload["messages"] = messages;
+        }
+        if (anthropic || model.IndexOf("claude", StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            var parts = new JArray();
+            if (marker > 0) parts.Add(new JObject { ["type"] = "text", ["text"] = system.Substring(0, marker),
+                ["cache_control"] = new JObject { ["type"] = "ephemeral" } });
+            parts.Add(new JObject { ["type"] = "text", ["text"] = system.Substring(marker),
+                ["cache_control"] = new JObject { ["type"] = "ephemeral" } });
+            messages[0]["content"] = parts;
+            // At most three explicit breakpoints, including the growing transcript.
+            messages[messages.Count - 1]["cache_control"] = new JObject { ["type"] = "ephemeral" };
+        }
+        if (!anthropic && payload["stream"]?.Type == JTokenType.Boolean && payload["stream"].Value<bool>()
+            && payload["stream_options"] == null)
+            payload["stream_options"] = new JObject { ["include_usage"] = true };
+        // Gemini uses its implicit provider cache; no Anthropic-only fields are injected.
+    }
 
 	public static void ApplyAuthenticationHeaders(HttpRequestMessage request, string apiUrl, string apiKey)
 	{
@@ -485,7 +532,8 @@ public static class LlmApiCompat
 		{
 			result["top_p"] = ClampDouble(payload["top_p"].Value<double>(), 0.0, 1.0);
 		}
-		List<string> systemBlocks = new List<string>();
+		JArray systemBlocks = new JArray();
+        bool hasSystemCacheControl = false;
 		JArray messages = new JArray();
 		if (payload["messages"] is JArray sourceMessages)
 		{
@@ -498,12 +546,37 @@ public static class LlmApiCompat
 					string systemText = ExtractContentTokenText(content).Trim();
 					if (!string.IsNullOrWhiteSpace(systemText))
 					{
-						systemBlocks.Add(systemText);
+                        if (content is JArray parts && (message?["cache_control"] != null
+                            || System.Linq.Enumerable.Any(parts, part => part?["cache_control"] != null)))
+                        {
+                            foreach (JToken part in parts)
+                            {
+                                string value = part?["text"]?.ToString();
+                                if (string.IsNullOrEmpty(value)) continue;
+                                var block = new JObject { ["type"] = "text", ["text"] = value };
+                                JToken control = part?["cache_control"] ?? message?["cache_control"];
+                                if (control != null) { block["cache_control"] = control.DeepClone(); hasSystemCacheControl = true; }
+                                systemBlocks.Add(block);
+                            }
+                        }
+                        else
+                        {
+                            var block = new JObject { ["type"] = "text", ["text"] = systemText };
+                            if (message?["cache_control"] != null)
+                            { block["cache_control"] = message["cache_control"].DeepClone(); hasSystemCacheControl = true; }
+                            systemBlocks.Add(block);
+                        }
 					}
 					continue;
 				}
 				string anthropicRole = role == "assistant" ? "assistant" : "user";
 				AddAnthropicMessage(messages, anthropicRole, ExtractContentTokenText(content));
+                if (message?["cache_control"] != null && messages.Count > 0)
+                {
+                    JObject last = (JObject)messages[messages.Count - 1];
+                    last["content"] = new JArray(new JObject { ["type"] = "text", ["text"] = ExtractContentTokenText(last["content"]),
+                        ["cache_control"] = message["cache_control"].DeepClone() });
+                }
 			}
 		}
 		if (messages.Count == 0)
@@ -512,7 +585,8 @@ public static class LlmApiCompat
 		}
 		if (systemBlocks.Count > 0)
 		{
-			result["system"] = string.Join("\n\n", systemBlocks);
+			result["system"] = hasSystemCacheControl ? (JToken)systemBlocks
+                : new JValue(string.Join("\n\n", System.Linq.Enumerable.Select(systemBlocks, block => block["text"].ToString())));
 		}
 		result["messages"] = messages;
 		ApplyAnthropicThinking(payload, result);
@@ -571,8 +645,13 @@ public static class LlmApiCompat
 			JObject last = messages[messages.Count - 1] as JObject;
 			if (string.Equals(last?["role"]?.ToString(), normalizedRole, StringComparison.OrdinalIgnoreCase))
 			{
-				string previous = last["content"]?.ToString() ?? "";
-				last["content"] = string.IsNullOrWhiteSpace(previous) ? text : previous + "\n\n" + text;
+                if (last["content"] is JArray parts)
+                    parts.Add(new JObject { ["type"] = "text", ["text"] = "\n\n" + text });
+                else
+                {
+				    string previous = last["content"]?.ToString() ?? "";
+				    last["content"] = string.IsNullOrWhiteSpace(previous) ? text : previous + "\n\n" + text;
+                }
 				return;
 			}
 		}

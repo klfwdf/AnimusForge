@@ -252,5 +252,13 @@
   "ExecutionSpeech_Marker_LastStatement": "[最后陈述]",
   "ExecutionSpeech_Phase_Opening": "开场",
   "ExecutionSpeech_Phase_Execution": "行刑中",
-  "ExecutionSpeech_Phase_Aftermath": "结束后"
+  "ExecutionSpeech_Phase_Aftermath": "结束后",
+  "TtsLanguageAliases_Auto": "自动|自動|跟随正文",
+  "TtsLanguageAliases_Chinese": "中文|汉语|漢語|普通话|普通話|国语|國語",
+  "TtsLanguageAliases_Cantonese": "粤语|粵語|广东话|廣東話",
+  "TtsLanguageAliases_English": "英语|英語|英文",
+  "TtsLanguageAliases_Japanese": "日语|日語|日文|日本語",
+  "TtsLanguageTestZh": "旅人，你好。我们先把事情说清楚，再决定下一步怎么做。",
+  "TtsLanguageTestYue": "你好呀，我哋先讲清楚件事，再决定下一步点做。",
+  "TtsLanguageTestJa": "旅人さん、こんにちは。まずは落ち着いて話してから、次にどうするか決めましょう。"
 }

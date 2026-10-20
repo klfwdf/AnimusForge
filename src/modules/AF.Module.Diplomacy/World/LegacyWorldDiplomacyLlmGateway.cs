@@ -17,8 +17,26 @@ namespace AnimusForge.Refactor.Adapters;
 public sealed class LegacyWorldDiplomacyLlmGateway : ILlmGateway
 {
     private readonly Func<bool> _admitRequest;
+    private readonly Func<CancellationToken, Task<WorldDiplomacyApiCallResult>> _preparedCall;
     public LegacyWorldDiplomacyLlmGateway() : this(null) { }
     public LegacyWorldDiplomacyLlmGateway(Func<bool> admitRequest) { _admitRequest = admitRequest; }
+    // Constructed on the game thread; workers and retries never read MCM owners.
+    internal LegacyWorldDiplomacyLlmGateway(LlmGenerateRequest request, Func<bool> admitRequest)
+        : this(admitRequest)
+    {
+        string error;
+        try
+        {
+            if (WorldDiplomacyLlmClient.TryPrepareCallWithRetries(JArray.FromObject(ToJsonMessages(request.Prompt)),
+                Math.Max(16, request.Prompt.MaxTokens),
+                request.Provider.TimeoutMilliseconds > 0 ? request.Provider.TimeoutMilliseconds : 300000,
+                "refactor_world_diplomacy", request.Trace.RuntimeGeneration, out var call, out error, admitRequest))
+            { _preparedCall = call; return; }
+        }
+        catch (Exception ex) { error = "world_diplomacy_preparation_" + ex.GetType().Name; }
+        string preparationError = error;
+        _preparedCall = token => Task.FromResult(new WorldDiplomacyApiCallResult { ErrorMessage = preparationError });
+    }
     public async Task<LlmGenerateResult> GenerateAsync(
         LlmGenerateRequest request,
         CancellationToken cancellationToken)
@@ -28,11 +46,12 @@ public sealed class LegacyWorldDiplomacyLlmGateway : ILlmGateway
             throw new ArgumentNullException(nameof(request));
         }
         cancellationToken.ThrowIfCancellationRequested();
-        JArray messages = JArray.FromObject(ToJsonMessages(request.Prompt));
         try
         {
-            WorldDiplomacyApiCallResult result = await WorldDiplomacyLlmClient.CallMessagesWithRetriesAsync(
-                messages,
+            WorldDiplomacyApiCallResult result = _preparedCall != null
+                ? await _preparedCall(cancellationToken).ConfigureAwait(false)
+                : await WorldDiplomacyLlmClient.CallMessagesWithRetriesAsync(
+                JArray.FromObject(ToJsonMessages(request.Prompt)),
                 Math.Max(16, request.Prompt.MaxTokens),
                 request.Provider.TimeoutMilliseconds > 0 ? request.Provider.TimeoutMilliseconds : 300000,
                 "refactor_world_diplomacy",

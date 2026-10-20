@@ -101,11 +101,11 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
             string targetId = resolvedTargetId;
             WorldDiplomacyDocument sourceDocument = resolveDocument?.Invoke(job.SourceDocumentId);
             string title = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
-                WorldDiplomacyEnvelopeJsonRules.ReadString(json, "title"),
+                WorldDiplomacyEnvelopeJsonRules.ReadTitle(json),
                 job.IsResponse ? DiplomacyMiscPromptTexts.Get("Document_DefaultReplyTitle", "Diplomatic Reply") : DiplomacyMiscPromptTexts.Get("Document_DefaultKingdomDeclarationTitle", "Kingdom Diplomatic Declaration"));
             title = WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(title), 100);
             string body = DiplomacyReplyTextRules.CleanNpcText(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(
-                WorldDiplomacyEnvelopeJsonRules.ReadString(json, "body", "public_document", "document")));
+                WorldDiplomacyEnvelopeJsonRules.ReadBody(json)));
             // Reject before the storage normalizer can truncate already validated terms.
             // The preferred writing range is soft; the document capacity is not.
             if (body.Length > 6000)
@@ -134,7 +134,7 @@ internal static class WorldDiplomacyGeneratedCompletionApplication
                 document.Day = job.CreatedDay;
                 document.GameDate = formatCampaignDate?.Invoke(job.CreatedDay);
             }
-            document.HiddenIntent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "author_intent.intent", "intent", "author_intent"));
+            document.HiddenIntent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadIntent(json));
             document.HiddenCommitment = WorldDiplomacyIntentVocabulary.NormalizeCommitment(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "author_intent.commitment", "commitment"));
             document.PeaceTerms = targetId == null ? null : parsePeaceTerms?.Invoke(json, authorId, targetId);
             document.SourceDocumentId = job.SourceDocumentId ?? "";

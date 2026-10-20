@@ -546,8 +546,6 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_MCM_Proactive_GlobalCooldown_Hint" text="After any proactive contact starts, no new contact starts during this many hours. Default: 24." />
   <string id="AF_MCM_Proactive_HeroCooldown" text="Same-NPC cooldown (days)" />
   <string id="AF_MCM_Proactive_HeroCooldown_Hint" text="After an NPC contacts the player, it cannot return with the same need during this many days. Default: 14." />
-  <string id="AF_MCM_Proactive_Distance" text="Candidate distance multiplier" />
-  <string id="AF_MCM_Proactive_Distance_Hint" text="Maximum candidate distance equals player sight range multiplied by this value. Default: 1.0." />
   <string id="AF_MCM_Proactive_Food" text="Food threshold (days)" />
   <string id="AF_MCM_Proactive_Food_Hint" text="A food need can trigger when an NPC party has at most this many food days or is already starving. Default: 2 days." />
   <string id="AF_MCM_Proactive_Money" text="Cash shortage threshold" />
@@ -1464,9 +1462,6 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Title" text="Proactive NPC Request Clan Gold Threshold" />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Hint" text="Clan financial-pressure contact can trigger when the NPC clan treasury is below this value. 0 ignores the treasury. Normal-play default: 15000." />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Group" text="7. NPC proactive contact" />
-  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Title" text="Proactive NPC Request Distance Multiplier" />
-  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Hint" text="Maximum distance between a candidate NPC and the player is the player vision range multiplied by this value. Normal-play default: 1.0." />
-  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Group" text="7. NPC proactive contact" />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Title" text="Proactive NPC Request Fief Garrison Threshold" />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Hint" text="Fief-governance-anxiety contact can trigger when the garrison in an NPC clan fief is at or below this value. 0 ignores garrisons. Normal-play default: 80." />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Group" text="7. NPC proactive contact" />

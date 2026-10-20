@@ -246,12 +246,20 @@ internal sealed partial class WorldDiplomacyOrchestration
             Storage.PlayerDisputeRefusals?.RemoveAll(x => x.UntilDay <= day);
             foreach (var rows in _refusalsByKingdom.Values) rows.RemoveAll(x => x.UntilDay <= day);
         }
-        // Bounded round slices on game-hour changes, no archive scanning between them.
+        // Select a bounded snapshot before any work can close/remove a round.
+        // Only game-hour changes allocate this at-most-eight-reference slice.
         int count = (Storage.ConcurrentRounds?.Count ?? 0) + 1;
-        for (int i = 0; i < Math.Min(8, count); i++)
+        int sliceSize = Math.Min(8, count);
+        var rounds = new WorldDiplomacyRound[sliceSize];
+        _playerRoundCursor = _playerRoundCursor < 0 ? 0 : _playerRoundCursor % count;
+        for (int i = 0; i < sliceSize; i++)
         {
-            int index = _playerRoundCursor++ % count;
-            var round = index == 0 ? Storage.ActiveRound : Storage.ConcurrentRounds[index - 1];
+            int index = _playerRoundCursor;
+            _playerRoundCursor = index == count - 1 ? 0 : index + 1;
+            rounds[i] = index == 0 ? Storage.ActiveRound : Storage.ConcurrentRounds[index - 1];
+        }
+        foreach (var round in rounds)
+        {
             if (!IsLiveRound(round) || !DiplomacyPlayerEventRules.IsPlayer(round)) continue;
             SchedulePlayerResponseWork(round);
             SchedulePlayerCourtWork(round);

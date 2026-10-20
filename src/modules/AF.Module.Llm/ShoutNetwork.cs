@@ -379,6 +379,7 @@ public static class ShoutNetwork
 	private static JObject BuildPrimaryChatPayload(List<object> messages, DuelSettings settings, string apiUrl, string modelName, int actualMaxTokens, bool stream, out string thinkingMode, bool forceDisableThinking = false)
 	{
 		messages = PrimaryChatMessagePolicy.EnsureFinalUserTurn(messages, out _);
+        messages = ConversationContextSettingsCapture.PrepareOptionalHistory(messages, Math.Max(16, actualMaxTokens));
 		JObject jObject = new JObject
 		{
 			["model"] = modelName ?? "",
@@ -423,11 +424,9 @@ public static class ShoutNetwork
 			{
 				if (PrimaryChatMessagePolicy.TryReadMessage(message, out var role, out var content))
 				{
-					list.Add(new
-					{
-						role = role,
-						content = ApplyPlayerDynamicNameToMainText(content)
-					});
+                    var metadata = message as ConversationPromptMessage;
+                    list.Add(new ConversationPromptMessage(role, ApplyPlayerDynamicNameToMainText(content),
+                        metadata?.HistoryGroup ?? 0, metadata?.Revision ?? ""));
 				}
 				else
 				{
@@ -465,7 +464,7 @@ public static class ShoutNetwork
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
 			int actualMaxTokens = ResolvePrimaryMaxTokens(settings);
 			JObject payload = BuildPrimaryChatPayload(normalizedMessages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: false, out var thinkingMode);
-			string requestBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload);
+			string requestBody = ConversationContextSettingsCapture.PreparePrimaryJson(effectiveApiUrl, payload);
 			string pending = "[PRIMARY REQUEST PENDING]\nmode=" + (mode ?? "") + "\nmaxTokens=" + Math.Max(16, maxTokens) + "\nactualMaxTokens=" + actualMaxTokens + "\nthinkingMode=" + (thinkingMode ?? "");
 			Logger.RecordTokenStats(inputTokens, 0, normalizedMessages, pending, mode, requestBody);
 		}
@@ -769,7 +768,7 @@ public static class ShoutNetwork
 			{
 				payload["temperature"] = DuelSettings.ClampApiTemperature(overrideTemperature.Value);
 			}
-			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload);
+			string jsonBody = ConversationContextSettingsCapture.PreparePrimaryJson(effectiveApiUrl, payload);
 			string requestBodyForTokenStats = jsonBody;
             {
                 FreezeWatchdog.Mark("PrimaryChat.non_stream.send_begin", "model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
@@ -792,7 +791,7 @@ public static class ShoutNetwork
 						payload2["temperature"] = DuelSettings.ClampApiTemperature(overrideTemperature.Value);
 					}
 					DuelSettings.RemoveThinkingControls(payload2);
-					string jsonBody2 = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload2);
+					string jsonBody2 = ConversationContextSettingsCapture.PreparePrimaryJson(effectiveApiUrl, payload2);
 					requestBodyForTokenStats = jsonBody2;
                     FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_send_begin", "model=" + effectiveModelName, immediate: true);
                     response = await LlmNonStreamingTransport.SendAsync(
@@ -1002,7 +1001,7 @@ public static class ShoutNetwork
 			int actualMaxTokens = overrideMaxTokens.HasValue ? Math.Max(16, DuelSettings.ClampApiMaxTokens(overrideMaxTokens.Value, configuredMaxTokens)) : configuredMaxTokens;
 			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var thinkingMode, forceDisableThinking);
 			if (overrideTemperature.HasValue) payload["temperature"] = DuelSettings.ClampApiTemperature(overrideTemperature.Value);
-			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload);
+			string jsonBody = ConversationContextSettingsCapture.PreparePrimaryJson(effectiveApiUrl, payload);
 			requestBodyForTokenStats = jsonBody;
 			if (recordTokenStats) Logger.RecordTokenStats(
 				inputTokens,
@@ -1095,7 +1094,7 @@ public static class ShoutNetwork
                             JObject retryPayload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var _);
                             if (overrideTemperature.HasValue) retryPayload["temperature"] = DuelSettings.ClampApiTemperature(overrideTemperature.Value);
                             DuelSettings.RemoveThinkingControls(retryPayload);
-                            jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, retryPayload);
+                            jsonBody = ConversationContextSettingsCapture.PreparePrimaryJson(effectiveApiUrl, retryPayload);
                             requestBodyForTokenStats = jsonBody;
                             thinkingMode += "_retry_plain";
                             continue;

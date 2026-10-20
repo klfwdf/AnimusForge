@@ -440,11 +440,11 @@ internal static string FormatPastAfefLineForPrompt(string text)
 			return "";
 		}
 		value = MemorySystemFactProjection.ProjectRecordedFactForPrompt(value);
-		if (value.StartsWith(MemoryTextResources.Raw("MEM_Raw_032"), StringComparison.Ordinal) || value.StartsWith(MemoryTextResources.Raw("MEM_Raw_033"), StringComparison.Ordinal))
+		if (value.StartsWith(PromptComposerTexts.Get("history_section_scope_historical"), StringComparison.Ordinal) || value.StartsWith(PromptComposerTexts.Get("history_section_scope_current"), StringComparison.Ordinal))
 		{
 			return value;
 		}
-		return MemoryTextResources.Raw("MEM_Raw_032") + value;
+		return PromptComposerTexts.Get("history_section_scope_historical") + value;
 	}
 
 internal static bool TryParseMemoryPreprocessIds(string content, IEnumerable<int> allowedIds, int finalCount, out List<int> selectedIds, out string error)

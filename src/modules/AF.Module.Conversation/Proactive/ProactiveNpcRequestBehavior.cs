@@ -479,7 +479,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			Logger.Log("ProactiveNpcRequest", "scan skipped: main party unavailable when creating incremental scan.");
 			return;
 		}
-		List<MobileParty> parties = (MobileParty.AllLordParties ?? Enumerable.Empty<MobileParty>()).Where(party => party != null).ToList();
+		List<MobileParty> parties = CaptureNearbyRequestParties(mainParty);
 		ProactiveCandidateScanState scan = _candidateScanOwner.Start(settings, parties, DateTime.UtcNow.Ticks);
 		if (scan != null)
 		{

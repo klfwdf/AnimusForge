@@ -357,14 +357,14 @@ public static class WorldDiplomacyGenerationValidationRules
                 reason = "diplomatic_action_entry_invalid";
                 return true;
             }
-            string targetId = WorldDiplomacyEnvelopeJsonRules.ReadString(action, "target_kingdom_id", "target");
+            string targetId = WorldDiplomacyEnvelopeJsonRules.ReadTargetKingdomId(action);
             if (string.IsNullOrWhiteSpace(targetId) || (!playerDiplomacy && !targetIds.Add(targetId)))
             {
                 reason = "diplomatic_action_target_missing_or_duplicate";
                 return true;
             }
             targetIds.Add(targetId);
-            string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadString(action, "intent", "author_intent.intent"));
+            string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadIntent(action));
             if (intent == "statement") statementCount++;
             if (intent == "warning" || intent == "ultimatum") outgoingThreatCount++;
             JObject single = WorldDiplomacyEnvelopeJsonRules.BuildGeneratedSingleActionEnvelope(json, action);
@@ -469,12 +469,12 @@ public static class WorldDiplomacyGenerationValidationRules
                 || json["requires_response"] == null
                 || json["tone"] == null
                 || json["confidence"] == null
-                || string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "body", "public_document", "document")))
+                || string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadBody(json)))
             {
                 reason = "semantic_envelope_incomplete";
                 return true;
             }
-            string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "author_intent.intent", "intent", "author_intent"));
+            string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadIntent(json));
             string commitment = WorldDiplomacyIntentVocabulary.DefaultCommitmentForIntent(intent);
             if (json["author_intent"] is JObject generatedIntentEnvelope)
             {
@@ -487,10 +487,10 @@ public static class WorldDiplomacyGenerationValidationRules
                 reason = "unsupported_intent_or_commitment";
                 return true;
             }
-            string title = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "title");
-            string body = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "body", "public_document", "document");
+            string title = WorldDiplomacyEnvelopeJsonRules.ReadTitle(json);
+            string body = WorldDiplomacyEnvelopeJsonRules.ReadBody(json);
             string visibleText = title + "\n" + body;
-            string targetId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "primary_target_kingdom_id", "target_kingdom_id", "target");
+            string targetId = WorldDiplomacyEnvelopeJsonRules.ReadTargetKingdomId(json);
             if (!string.IsNullOrWhiteSpace(targetId))
             {
                 generatedTargetId = resolveKingdomId?.Invoke(targetId);

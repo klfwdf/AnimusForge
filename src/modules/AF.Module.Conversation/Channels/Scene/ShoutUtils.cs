@@ -1367,17 +1367,17 @@ public static class ShoutUtils
 			{
 				return "";
 			}
-			string value = (settlement.Name?.ToString() ?? "").Trim();
+			string value = (NativePromptLiteralProjection.Render(settlement.Name) ?? "").Trim();
 			Clan ownerClan = settlement.OwnerClan;
 			Hero hero = ownerClan?.Leader;
-			string value2 = (hero?.Name?.ToString() ?? "").Trim();
-			string value3 = (ownerClan?.Name?.ToString() ?? "").Trim();
+			string value2 = (NativePromptLiteralProjection.Render(hero?.Name) ?? "").Trim();
+			string value3 = (NativePromptLiteralProjection.Render(ownerClan?.Name) ?? "").Trim();
 			string text = "";
 			string text2 = "";
 			try
 			{
 				IFaction mapFaction = settlement.MapFaction;
-				text = (mapFaction?.Name?.ToString() ?? "").Trim();
+				text = (NativePromptLiteralProjection.Render(mapFaction?.Name) ?? "").Trim();
 				string text3 = "";
 				try
 				{
@@ -1391,7 +1391,7 @@ public static class ShoutUtils
 				{
 					text3 = "";
 				}
-				text2 = ((mapFaction == null || !mapFaction.IsKingdomFaction || hero == null || mapFaction.Leader != hero) ? GameTexts.FindText("str_faction_official", text3)?.ToString() : GameTexts.FindText("str_faction_ruler", text3)?.ToString());
+				text2 = ((mapFaction == null || !mapFaction.IsKingdomFaction || hero == null || mapFaction.Leader != hero) ? NativePromptLiteralProjection.Render(GameTexts.FindText("str_faction_official", text3)) : NativePromptLiteralProjection.Render(GameTexts.FindText("str_faction_ruler", text3)));
 				text2 = (text2 ?? "").Replace("\r", "").Replace("\n", " ").Trim();
 			}
 			catch
@@ -1405,11 +1405,11 @@ public static class ShoutUtils
 				string variation = settlement.SettlementComponent?.GetProsperityLevel().ToString() ?? "0";
 				if (settlement.IsTown)
 				{
-					text4 = GameTexts.FindText("str_town_long_prosperity_1", variation)?.ToString();
+					text4 = NativePromptLiteralProjection.Render(GameTexts.FindText("str_town_long_prosperity_1", variation));
 				}
 				else if (settlement.IsVillage)
 				{
-					text4 = GameTexts.FindText("str_village_long_prosperity", variation)?.ToString();
+					text4 = NativePromptLiteralProjection.Render(GameTexts.FindText("str_village_long_prosperity", variation));
 				}
 			}
 			catch
@@ -1429,7 +1429,7 @@ public static class ShoutUtils
 						float loyalty = town.Loyalty;
 						SettlementComponent.ProsperityLevel prosperityLevel = settlementComponent.GetProsperityLevel();
 						string id = ((loyalty < 25f) ? ((prosperityLevel <= SettlementComponent.ProsperityLevel.Low) ? "str_settlement_morale_rebellious_adversity" : ((prosperityLevel > SettlementComponent.ProsperityLevel.Mid) ? "str_settlement_morale_rebellious_prosperity" : "str_settlement_morale_rebellious_average")) : ((loyalty < 65f) ? ((prosperityLevel > SettlementComponent.ProsperityLevel.Mid) ? "str_settlement_morale_medium_prosperity" : "str_settlement_morale_medium_average") : ((prosperityLevel <= SettlementComponent.ProsperityLevel.Low) ? "str_settlement_morale_high_adversity" : ((prosperityLevel > SettlementComponent.ProsperityLevel.Mid) ? "str_settlement_morale_high_prosperity" : "str_settlement_morale_high_average"))));
-						text5 = GameTexts.FindText(id)?.ToString();
+						text5 = NativePromptLiteralProjection.Render(GameTexts.FindText(id));
 					}
 				}
 			}
@@ -1446,30 +1446,30 @@ public static class ShoutUtils
 					if (ownerClan == Clan.PlayerClan)
 					{
 						stringBuilder.Append(value);
-						stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0800"));
+						stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0800"));
 					}
 					else
 					{
 						stringBuilder.Append(value);
 						if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(value2))
 						{
-							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0801"));
+							stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0801"));
 							stringBuilder.Append(text);
-							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0802"));
+							stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0802"));
 							stringBuilder.Append(text2);
 							stringBuilder.Append("，");
 							stringBuilder.Append(value2);
-							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0803"));
+							stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0803"));
 						}
 						else if (!string.IsNullOrWhiteSpace(value2))
 						{
-							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0804"));
+							stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0804"));
 							stringBuilder.Append(value2);
-							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0805"));
+							stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0805"));
 						}
 						else
 						{
-							stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0806"));
+							stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0806"));
 						}
 					}
 				}
@@ -1478,19 +1478,19 @@ public static class ShoutUtils
 					stringBuilder.Append(value);
 					if (!string.IsNullOrWhiteSpace(value2))
 					{
-						stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0807"));
+						stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0807"));
 						stringBuilder.Append(value2);
-						stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0808"));
+						stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0808"));
 					}
 					else
 					{
-						stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0809"));
+						stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0809"));
 					}
 				}
 			}
 			if (!string.IsNullOrWhiteSpace(value3))
 			{
-				stringBuilder.Append(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0810"));
+				stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0810"));
 				stringBuilder.Append(value3);
 				stringBuilder.Append("。 ");
 			}
@@ -1773,7 +1773,7 @@ public static class ShoutUtils
 				{
 					continue;
 				}
-				string value = (item.Name?.ToString() ?? "").Trim();
+				string value = (NativePromptLiteralProjection.Render(item.Name) ?? "").Trim();
 				if (string.IsNullOrEmpty(value))
 				{
 					continue;
@@ -1817,16 +1817,16 @@ public static class ShoutUtils
 				}
 			}
 			List<string> list = new List<string>();
-			AppendDirLine(list, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0822"), st, num, perspectiveHero);
-			AppendDirLine(list, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0823"), st2, num2, perspectiveHero);
-			AppendDirLine(list, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0824"), st3, num3, perspectiveHero);
-			AppendDirLine(list, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0825"), st4, num4, perspectiveHero);
+			AppendDirLine(list, ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0822"), st, num, perspectiveHero);
+			AppendDirLine(list, ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0823"), st2, num2, perspectiveHero);
+			AppendDirLine(list, ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0824"), st3, num3, perspectiveHero);
+			AppendDirLine(list, ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0825"), st4, num4, perspectiveHero);
 			if (list.Count == 0)
 			{
 				return "";
 			}
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0826"));
+			stringBuilder.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0826"));
 			foreach (string item2 in list)
 			{
 				stringBuilder.AppendLine(item2);
@@ -1864,37 +1864,37 @@ public static class ShoutUtils
 			{
 				return "";
 			}
-			string text = (settlement.Name?.ToString() ?? "").Trim();
+			string text = (NativePromptLiteralProjection.Render(settlement.Name) ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				return "";
 			}
-			string text5 = (settlement.Culture?.Name?.ToString() ?? "").Trim();
+			string text5 = (NativePromptLiteralProjection.Render(settlement.Culture?.Name) ?? "").Trim();
 			Hero hero = settlement.OwnerClan?.Leader;
-			string text2 = (hero?.Name?.ToString() ?? "").Trim();
-			string text3 = (settlement.OwnerClan?.Name?.ToString() ?? "").Trim();
-			string text4 = (settlement.MapFaction?.Name?.ToString() ?? "").Trim();
+			string text2 = (NativePromptLiteralProjection.Render(hero?.Name) ?? "").Trim();
+			string text3 = (NativePromptLiteralProjection.Render(settlement.OwnerClan?.Name) ?? "").Trim();
+			string text4 = (NativePromptLiteralProjection.Render(settlement.MapFaction?.Name) ?? "").Trim();
 			string factionRelationSummary = BuildFactionRelationSummary(settlement.MapFaction, perspectiveHero);
 			List<string> list = new List<string>();
 			if (!string.IsNullOrWhiteSpace(text5))
 			{
-				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0827") + text5 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0828"));
+				list.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0827") + text5 + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0828"));
 			}
 			if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
 			{
-				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0829") + text2 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0830") + text3 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0831"));
+				list.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0829") + text2 + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0830") + text3 + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0831"));
 			}
 			else if (!string.IsNullOrWhiteSpace(text2))
 			{
-				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0832") + text2);
+				list.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0832") + text2);
 			}
 			else if (!string.IsNullOrWhiteSpace(text3))
 			{
-				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0833") + text3 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0834"));
+				list.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0833") + text3 + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0834"));
 			}
 			if (!string.IsNullOrWhiteSpace(text4))
 			{
-				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0835") + text4);
+				list.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0835") + text4);
 			}
 			if (!string.IsNullOrWhiteSpace(factionRelationSummary))
 			{
@@ -1902,7 +1902,7 @@ public static class ShoutUtils
 			}
 			if ((settlement.IsTown || settlement.IsCastle) && hero != null && !IsHeroInSettlementForPrompt(hero, settlement))
 			{
-				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0836"));
+				list.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0836"));
 			}
 			return list.Count <= 0 ? "" : ("；" + string.Join("，", list));
 		}
@@ -1950,7 +1950,7 @@ public static class ShoutUtils
 
 	private static string GetSettlementTypeText(Settlement settlement)
 	{
-		return settlement.IsTown ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0837") : (settlement.IsCastle ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0838") : (settlement.IsVillage ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0839") : ((!settlement.IsFortification) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0840") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0841"))));
+		return settlement.IsTown ? ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0837") : (settlement.IsCastle ? ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0838") : (settlement.IsVillage ? ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0839") : ((!settlement.IsFortification) ? ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0840") : ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0841"))));
 	}
 
 	private static string BuildFactionRelationSummary(IFaction faction, Hero perspectiveHero)
@@ -1960,7 +1960,7 @@ public static class ShoutUtils
 			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0842");
+				text = ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0842");
 			}
 			string playerRelation = GetFactionRelationLabel(faction, Hero.MainHero?.Clan?.Kingdom ?? Hero.MainHero?.MapFaction ?? Clan.PlayerClan?.Kingdom ?? Clan.PlayerClan?.MapFaction);
 			string npcRelation = GetFactionRelationLabel(faction, perspectiveHero?.Clan?.Kingdom ?? perspectiveHero?.MapFaction);
@@ -1979,9 +1979,9 @@ public static class ShoutUtils
 			string text2 = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(text2))
 			{
-				text2 = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0843");
+				text2 = ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0843");
 			}
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0844") + text2 + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0845");
+			return ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0844") + text2 + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0845");
 		}
 	}
 
@@ -1990,32 +1990,32 @@ public static class ShoutUtils
 		switch ((relation ?? "").Trim())
 		{
 		case var conversationMatch846 when conversationMatch846 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0846"):
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0847") + targetName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0848");
+			return ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0847") + targetName + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0848");
 		case var conversationMatch849 when conversationMatch849 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0849"):
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0850") + targetName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0851");
+			return ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0850") + targetName + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0851");
 		default:
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0852") + targetName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0853");
+			return ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0852") + targetName + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0853");
 		}
 	}
 
 	private static string BuildSharedRelationPhrase(string relation, string playerName)
 	{
-		string text = string.IsNullOrWhiteSpace(playerName) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0854") : playerName;
+		string text = string.IsNullOrWhiteSpace(playerName) ? ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0854") : playerName;
 		switch ((relation ?? "").Trim())
 		{
 		case var conversationMatch855 when conversationMatch855 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0855"):
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0856") + text + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0857");
+			return ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0856") + text + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0857");
 		case var conversationMatch858 when conversationMatch858 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0858"):
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0859") + text + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0860");
+			return ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0859") + text + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0860");
 		default:
-			return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0861") + text + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0862");
+			return ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0861") + text + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0862");
 		}
 	}
 
 	private static string BuildSplitRelationPhrase(string npcRelation, string playerRelation, string playerName)
 	{
-		string text = string.IsNullOrWhiteSpace(playerName) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0863") : playerName;
-		return BuildSingleRelationPhrase(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0864"), npcRelation) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0865") + BuildSingleRelationPhrase(text, playerRelation);
+		string text = string.IsNullOrWhiteSpace(playerName) ? ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0863") : playerName;
+		return BuildSingleRelationPhrase(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0864"), npcRelation) + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0865") + BuildSingleRelationPhrase(text, playerRelation);
 	}
 
 	private static string GetFactionRelationLabel(IFaction faction, IFaction referenceFaction)
@@ -2067,7 +2067,7 @@ public static class ShoutUtils
 				float num = MathF.Sqrt(distanceSquared);
 				if (num > 0.001f)
 				{
-					text2 = string.Format(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0872"), num);
+					text2 = string.Format(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0872"), num);
 				}
 			}
 		}
@@ -2086,34 +2086,34 @@ public static class ShoutUtils
 			{
 				return "";
 			}
-			string text = (settlement.Name?.ToString() ?? "").Trim();
+			string text = (NativePromptLiteralProjection.Render(settlement.Name) ?? "").Trim();
 			if (string.IsNullOrEmpty(text))
 			{
 				return "";
 			}
 			string item = GetSettlementTypeText(settlement);
-			string cultureName = (settlement.Culture?.Name?.ToString() ?? "").Trim();
-			string text2 = (settlement.MapFaction?.Name?.ToString() ?? "").Trim();
-			string text3 = (settlement.OwnerClan?.Leader?.Name?.ToString() ?? "").Trim();
-			string text4 = (settlement.OwnerClan?.Name?.ToString() ?? "").Trim();
+			string cultureName = (NativePromptLiteralProjection.Render(settlement.Culture?.Name) ?? "").Trim();
+			string text2 = (NativePromptLiteralProjection.Render(settlement.MapFaction?.Name) ?? "").Trim();
+			string text3 = (NativePromptLiteralProjection.Render(settlement.OwnerClan?.Leader?.Name) ?? "").Trim();
+			string text4 = (NativePromptLiteralProjection.Render(settlement.OwnerClan?.Name) ?? "").Trim();
 			string factionRelationSummary = BuildFactionRelationSummary(settlement.MapFaction, perspectiveHero);
 			List<string> list = new List<string>();
 			list.Add(item);
 			if (!string.IsNullOrEmpty(cultureName))
 			{
-				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0873") + cultureName);
+				list.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0873") + cultureName);
 			}
 			if (!string.IsNullOrEmpty(text3))
 			{
-				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0874") + text3);
+				list.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0874") + text3);
 			}
 			if (!string.IsNullOrEmpty(text4))
 			{
-				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0875") + text4);
+				list.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0875") + text4);
 			}
 			if (!string.IsNullOrEmpty(text2))
 			{
-				list.Add(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0876") + text2);
+				list.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0876") + text2);
 			}
 			if (!string.IsNullOrEmpty(factionRelationSummary))
 			{

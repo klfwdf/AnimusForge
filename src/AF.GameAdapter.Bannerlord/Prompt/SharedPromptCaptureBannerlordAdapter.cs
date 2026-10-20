@@ -1080,6 +1080,8 @@ internal static Func<string> CaptureHistoryContextWorkById(Func<HistoryWorkCaptu
 
         if (!SaveRuntimeGuard.IsCurrentGeneration(generation)) return null;
 
+        Func<string> intraday = captured == null ? null : IntradayConversationMemoryRuntime.Capture(
+            id, memoryName, drafts, snapshot, currentInput, secondaryInput, targetAgentIndex);
         captured?.Invoke(snapshot);
 
         return () =>
@@ -1091,6 +1093,8 @@ internal static Func<string> CaptureHistoryContextWorkById(Func<HistoryWorkCaptu
             string context = owner.BuildContext(id, memoryName, 0, currentInput, secondaryInput,
 
                 includeCurrentActiveSceneSession, snapshot);
+            string intradayContext = intraday?.Invoke() ?? "";
+            if (!string.IsNullOrWhiteSpace(intradayContext)) context = (context + "\n\n" + intradayContext).Trim();
             if (!snapshot.IsCurrent() || LlmNonStreamingTransport.CurrentOwnerCancellation.IsCancellationRequested) return "";
             snapshot.Context = context;
             return context;

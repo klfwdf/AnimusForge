@@ -1,6 +1,7 @@
 using System;
 
 using System.Text;
+using System.Text.RegularExpressions;
 
 
 
@@ -30,7 +31,14 @@ internal static class PromptRuleBlockText
 
 
 
-	internal static string Header(string ruleId) => HeaderPrefix + (ruleId ?? "").Trim() + HeaderSuffix;
+	internal static string ProjectHeadersForPrompt(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return text;
+        return Regex.Replace(text, @"(?m)^" + Regex.Escape(HeaderPrefix) + @"([A-Za-z0-9_.-]+)" + Regex.Escape(HeaderSuffix),
+            match => PromptComposerTexts.Get("RuleBlockHeaderPrefix") + match.Groups[1].Value + PromptComposerTexts.Get("RuleBlockHeaderSuffix"));
+    }
+
+    internal static string Header(string ruleId) => HeaderPrefix + (ruleId ?? "").Trim() + HeaderSuffix;
 
 
 

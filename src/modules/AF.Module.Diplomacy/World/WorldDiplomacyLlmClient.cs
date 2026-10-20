@@ -62,7 +62,7 @@ internal static class WorldDiplomacyLlmClient
 	// the worker receives no settings, dropdowns or game objects.
 	internal static bool TryPrepareSingleCall(JArray messages, int maxTokens, int timeoutMilliseconds,
 		string source, long generation, out Func<CancellationToken, Task<WorldDiplomacyApiCallResult>> call,
-		out string error)
+		out string error, Func<bool> admitRequest = null)
 	{
 		call = null;
 		DuelSettings settings = DuelSettings.GetSettings();
@@ -78,14 +78,14 @@ internal static class WorldDiplomacyLlmClient
 			DuelSettings.ReasoningEffortHigh, out string thinking);
 		string requestBody = LlmApiCompat.PrepareChatRequestJson(url, body);
 		call = token => CallPreparedOnceAsync(url, key, model, route, frozenMessages, body,
-			requestBody, thinking, Math.Max(1000, timeoutMilliseconds), source, generation, token);
+			requestBody, thinking, Math.Max(1000, timeoutMilliseconds), source, generation, token, admitRequest);
 		error = "";
 		return true;
 	}
 
 	private static async Task<WorldDiplomacyApiCallResult> CallPreparedOnceAsync(string url, string key,
 		string model, string route, JArray messages, JObject body, string requestBody, string thinking,
-		int timeout, string source, long generation, CancellationToken token)
+		int timeout, string source, long generation, CancellationToken token, Func<bool> admitRequest)
 	{
 		WorldDiplomacyApiCallResult result = new WorldDiplomacyApiCallResult { ResolvedRoute = route, AttemptsUsed = 1 };
 		try
@@ -93,7 +93,7 @@ internal static class WorldDiplomacyLlmClient
 			token.ThrowIfCancellationRequested();
 			if (!AcceptWorldDiplomacyStage(generation, source + "_prepared", result)) return result;
 			return await SendPreparedAsync(url, key, model, route, messages, body, requestBody, thinking,
-				timeout, source, generation, result, token, null).ConfigureAwait(false);
+				timeout, source, generation, result, token, admitRequest).ConfigureAwait(false);
 		}
 		catch (OperationCanceledException) { throw; }
 		catch (Exception ex)
@@ -103,6 +103,17 @@ internal static class WorldDiplomacyLlmClient
 			result.ErrorMessage = "prepared request failed";
 			return result;
 		}
+	}
+
+	internal static bool TryPrepareCallWithRetries(JArray messages, int maxTokens, int timeoutMilliseconds,
+		string source, long generation, out Func<CancellationToken, Task<WorldDiplomacyApiCallResult>> call,
+		out string error, Func<bool> admitRequest = null, int maxAttempts = DefaultMaxAttempts)
+	{
+		call = null;
+		if (!TryPrepareSingleCall(messages, maxTokens, timeoutMilliseconds, source, generation,
+			out var attempt, out error, admitRequest)) return false;
+		call = token => CallWithRetriesAsync(attempt, generation, maxAttempts, token);
+		return true;
 	}
 
 	public static async Task<WorldDiplomacyApiCallResult> CallMessagesWithRetriesAsync(
@@ -122,6 +133,16 @@ internal static class WorldDiplomacyLlmClient
 			return finalResult;
 		}
 
+		return await CallWithRetriesAsync(token => CallOnceAsync(stableMessages,
+			Math.Max(1, maxTokens), Math.Max(1000, hardTimeoutMilliseconds), source, runtimeGeneration,
+			token, admitRequest), runtimeGeneration, maxAttempts, cancellationToken).ConfigureAwait(false);
+	}
+
+	private static async Task<WorldDiplomacyApiCallResult> CallWithRetriesAsync(
+		Func<CancellationToken, Task<WorldDiplomacyApiCallResult>> runAttempt,
+		long runtimeGeneration, int maxAttempts, CancellationToken cancellationToken)
+	{
+		WorldDiplomacyApiCallResult finalResult = new WorldDiplomacyApiCallResult();
 		int attempts = Math.Max(1, maxAttempts);
 		for (int attempt = 1; attempt <= attempts; attempt++)
 		{
@@ -133,13 +154,7 @@ internal static class WorldDiplomacyLlmClient
 				return finalResult;
 			}
 
-			WorldDiplomacyApiCallResult result = await CallOnceAsync(
-				stableMessages,
-				Math.Max(1, maxTokens),
-				Math.Max(1000, hardTimeoutMilliseconds),
-				source,
-				runtimeGeneration,
-				cancellationToken, admitRequest);
+			WorldDiplomacyApiCallResult result = await runAttempt(cancellationToken).ConfigureAwait(false);
 			result.AttemptsUsed = attempt;
 			finalResult = result;
 			if (result.Success || result.BudgetDeferred || result.IsOutputTruncated || result.IsAuthFailure || result.IsQuotaLimit

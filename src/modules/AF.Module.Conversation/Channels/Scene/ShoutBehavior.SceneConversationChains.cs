@@ -81,6 +81,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		public Action<bool> OnCompleted;
 
 		public List<object> Messages;
+        internal ConversationPromptCache.Request PromptCache;
 
 		public int MaxTokens;
 
@@ -177,7 +178,8 @@ internal sealed partial class SceneConversationSessionRuntime
 			List<object> messages = _ports.BuildStrictSceneMessagesForNpc(speakerNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupFallback, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, local.ToString().Trim(), currentAfefFactBlock, trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), persistentHistoryMessages: persistentMemoryRoleMessages);
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_prompt_ready agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length));
 			Stopwatch apiSw = Stopwatch.StartNew();
-			string text = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
+            using var promptCache = ConversationPromptCache.Begin(messages, "scene", promptGeneration, promptSession, "agent:" + speakerNpc.AgentIndex + "|" + speakerNpc.UnnamedKey + "|" + speakerNpc.TroopId);
+            string text = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(promptCache.Messages, 5000, promptRetryOnError: true);
 			if (!IsSceneRequestSourceCurrent(promptGeneration, promptSession, promptEpoch) || (isCurrent != null && !isCurrent())) return "";
 			text = LlmVisibleReplyNormalizer.NormalizeComplete(text);
 			apiSw.Stop();
@@ -189,6 +191,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			string text2 = StripNpcNamePrefixSafely((text ?? "").Replace("\r", "").Trim(), 30);
 			text2 = StripLeakedPromptContentForShout(text2);
 			text2 = StripActionTagsForSceneSpeech(text2);
+			promptCache.Accept(text2.Trim(), IsSceneRequestSourceCurrent(promptGeneration, promptSession, promptEpoch) && (isCurrent == null || isCurrent()));
 			return text2.Trim();
 		}
 		catch (Exception ex)
@@ -337,7 +340,8 @@ internal sealed partial class SceneConversationSessionRuntime
 				List<ConversationMessage> persistentMemoryRoleMessages = memorySnapshot?.UncompressedMessages;
 				List<object> messages = _ports.BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.Passive, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), "", trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : (ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0693") + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 				Stopwatch swApi = Stopwatch.StartNew();
-				string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
+                using var promptCache = ConversationPromptCache.Begin(messages, "scene", promptGeneration, promptSession, "agent:" + data.AgentIndex + "|" + data.UnnamedKey + "|" + data.TroopId);
+                string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(promptCache.Messages, 5000, promptRetryOnError: true);
                 if (!IsSceneRequestSourceCurrent(promptGeneration, promptSession, promptEpoch)) return "";
 				output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
 				swApi.Stop();
@@ -360,6 +364,7 @@ internal sealed partial class SceneConversationSessionRuntime
 					return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0698");
 				}
 
+				promptCache.Accept(output, IsSceneRequestSourceCurrent(promptGeneration, promptSession, promptEpoch));
 				return output;
 			}
 		}
@@ -796,6 +801,9 @@ internal sealed partial class SceneConversationSessionRuntime
 					string relayTurnContext = multiNpcScene ? BuildSceneRelayTurnContextForPrompt(playerText, primaryNpc, currentSpeaker, previousSpeaker, previousSpeakerReply, roundNpcSpeakerIndices, AUTO_GROUP_CHAT_MAX_LINES - remainingTurns) : null;
 					string relayTurnUserSection = multiNpcScene ? BuildSceneGroupTurnUserSectionForPrompt(firstTurn, relayTurnContext, currentSpeaker, engagedParticipants) : null;
 					List<object> messages = _ports.BuildStrictSceneMessagesForNpc(currentSpeaker.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupTurn, privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, "", "", "", "", "", knowledgeExtrasSection, systemRuleBlock), suffixUserSections: new[] { relayTurnUserSection }, persistentHistoryMessages: persistentMemoryRoleMessages);
+                    using var promptCache = ConversationPromptCache.Begin(messages, "scene", sceneReplyGeneration,
+                        sceneReplySessionId, "agent:" + currentSpeaker.AgentIndex + "|" + currentSpeaker.UnnamedKey + "|" + currentSpeaker.TroopId);
+                    messages = promptCache.Messages;
 					promptSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_prompt_ready agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length) + " sceneHistoryChars=" + ((scenePublicHistorySection ?? "").Length) + " dynamicChars=" + ((sceneDynamicUserBlock ?? "").Length) + " ruleChars=" + ((systemRuleBlock ?? "").Length) + " promptBuildMs=" + Math.Round(promptSw.Elapsed.TotalMilliseconds, 2));
 					Stopwatch apiSw = Stopwatch.StartNew();
@@ -895,6 +903,7 @@ internal sealed partial class SceneConversationSessionRuntime
 						});
 						break;
 					}
+                    promptCache.Accept(output, IsCurrentModuleGroup() && IsSceneConversationEpochCurrent(conversationEpoch));
 					historyFullText = StripNpcNamePrefixSafely((output ?? "").Replace("\r", "").Trim(), 30);
 					historyFullText = StripLeakedPromptContentForShout(historyFullText);
 					cleaned = historyFullText;
@@ -1266,7 +1275,13 @@ internal sealed partial class SceneConversationSessionRuntime
 			if (_immediateSceneReactionActiveRequestIds.TryGetValue(request.TargetAgentIndex, out var activeRequestId) && activeRequestId == request.RequestId)
 			{
 				request.ConversationEpoch = ConversationEpoch;
-				_pendingImmediateSceneReactionRequests[request.RequestId] = request;
+				if (request.PromptCache == null)
+                {
+                    request.PromptCache = ConversationPromptCache.Begin(request.Messages, "scene_auxiliary", request.RuntimeGeneration,
+                        request.SceneHistorySessionId, "agent:" + request.TargetAgentIndex + "|" + request.TargetNpc?.UnnamedKey + "|" + request.TargetNpc?.TroopId);
+                    request.Messages = request.PromptCache.Messages;
+                }
+                    _pendingImmediateSceneReactionRequests[request.RequestId] = request;
 				return true;
 			}
 		}
@@ -1684,6 +1699,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			else
 			{
 				generated = await TryPublishImmediateSceneReactionAsync(request, response);
+                if (generated && IsImmediateSceneReactionRuntimeCurrent(request)) request.PromptCache?.Accept(response);
 			}
 		}
 		catch (Exception ex)
@@ -1974,7 +1990,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		string extraFactUserBlock = BuildCurrentAfefFactPromptBlock(extraFactLine);
 		List<ConversationMessage> persistentMemoryRoleMessages = memorySnapshot?.UncompressedMessages;
 		List<object> messages = _ports.BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.CompactArrival, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), extraFactUserBlock, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
-            return new SceneCompactReactionInput(messages, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()));
+            return new SceneCompactReactionInput(messages, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()), generation, session, "agent:" + targetNpc.AgentIndex + "|" + targetNpc.UnnamedKey + "|" + targetNpc.TroopId);
         }, (SceneCompactReactionInput)null).ConfigureAwait(false);
     }
 

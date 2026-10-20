@@ -33,6 +33,7 @@ internal static class SceneHistoryProjectionOwner
             result.Add(new ConversationMessage
             {
                 EventSequence = message.EventSequence, PromptMemorySessionKey = message.PromptMemorySessionKey,
+                PromptSourceId = message.PromptSourceId, PromptContextRevision = message.PromptContextRevision, PromptIsRecall = message.PromptIsRecall,
                 PromptFactScopeCaptured = message.PromptFactScopeCaptured, PromptIsCurrentFact = message.PromptIsCurrentFact, GameDayIndex = message.GameDayIndex,
                 GameDate = message.GameDate, GameHour = message.GameHour, Scene = message.Scene,
                 Role = message.Role, Content = message.Content, SpeakerName = message.SpeakerName,

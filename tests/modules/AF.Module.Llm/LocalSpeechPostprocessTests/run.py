@@ -17,6 +17,8 @@ complete=ex.declaration(source,'internal static string CompleteSceneUnifiedActio
 (out/'Boundary.cs').write_text('using System;using System.Threading; namespace AnimusForge;\n'+network+'\n'+work+'\ninternal static class ConversationActionPostprocessOwner { internal static void RequireMainThread(){}\n'+complete+'\n}',encoding='utf-8')
 for name in ['GptSoVitsLanguage','LocalTtsSpeech','LocalTtsToneTag']:
  (out/(name+'.cs')).write_bytes((ROOT/('src/modules/AF.Module.Llm/Tts/'+name+'.cs')).read_bytes())
+(out/'LlmSourceTexts.cs').write_bytes((ROOT/'src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs').read_bytes())
+(out/'LlmSourceTexts.json').write_bytes((ROOT/'content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json').read_bytes())
 (out/'ConversationRuntimeTexts.cs').write_bytes((ROOT/'src/modules/AF.Module.Conversation/Internal/ConversationRuntimeTexts.cs').read_bytes())
 (out/'ConversationRuntimePrompts.json').write_bytes((ROOT/('content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimePrompts'+('.en.json' if a.language=='EN' else '.json'))).read_bytes())
 (out/'Program.cs').write_text(r'''using System;using AnimusForge;
@@ -55,8 +57,7 @@ namespace AnimusForge {
  static class Logger {internal static void Log(string owner,string text){}}
 }
 ''',encoding='utf-8')
-from xml.sax.saxutils import escape
-(out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><LangVersion>latest</LangVersion></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(resolve_dotnet(ROOT).parent/'sdk/8.0.426/Newtonsoft.Json.dll'))+'</HintPath></Reference></ItemGroup></Project>')
+(out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><LangVersion>latest</LangVersion></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>$(MSBuildToolsPath)/Newtonsoft.Json.dll</HintPath></Reference><EmbeddedResource Include="LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" /></ItemGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 dotnet=resolve_dotnet(ROOT);r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'--',str(out)],cwd=ROOT,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
 (out/'run.log').write_text(r.stdout+r.stderr,encoding='utf-8');print(r.stdout+r.stderr);raise SystemExit(r.returncode)

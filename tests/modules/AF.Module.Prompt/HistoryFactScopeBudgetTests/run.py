@@ -29,7 +29,8 @@ mode_source = (ROOT / 'src/modules/AF.Module.Weekly/Generation/WorldBulletinStat
     extract.declaration(mode_source, 'internal static bool IsWorldBulletinPublishingEnabled(') +
     '} internal class DuelSettings {internal static DuelSettings Settings=new();internal bool UseWorldBulletin,AutoGenerateWorldBulletins;internal static DuelSettings GetSettings()=>Settings;}', encoding='utf-8')
 
-paths = ['src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs',
+paths = ['src/modules/AF.Module.Prompt/Composition/ConversationContextWindow.cs',
+         'src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs',
          'src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs',
          'src/modules/AF.Module.Conversation/Internal/ConversationRuntimeTexts.cs',
          'src/modules/AF.Module.Diplomacy/Presentation/DiplomacyReplyTextRules.cs']

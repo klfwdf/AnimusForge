@@ -324,7 +324,7 @@ internal void OnWorldBulletinSettlementOwnerChanged(Settlement settlement, bool 
 			Kingdom oldKingdom = oldOwner?.Clan?.Kingdom;
 			string newId = GetKingdomId(newKingdom);
 			string oldId = GetKingdomId(oldKingdom);
-			string name = GetSettlementDisplayName(settlement);
+			string name = GetSettlementDisplayNameForPrompt(settlement);
 			bool involvesPlayer = IsWorldBulletinPlayerHero(newOwner) || IsWorldBulletinPlayerHero(oldOwner) || IsWorldBulletinPlayerHero(capturerHero);
 			string key = "settlement:" + GetSettlementId(settlement) + ":" + GetHeroId(newOwner) + ":" + GetCurrentGameDayIndexSafe();
 			string oldName = GetKingdomDisplayName(oldKingdom, GetClanDisplayName(oldOwner?.Clan) + AdapterRecordTexts.Prompt("AF_REC_Bulletin_ClanSuffix"));
@@ -342,7 +342,7 @@ internal void OnWorldBulletinSettlementOwnerChanged(Settlement settlement, bool 
 				}
 				return;
 			}
-			string label = CampaignCharacterRecordCaptureAdapter.GetSettlementOwnerChangeDetailLabel(detail);
+			string label = AdapterRecordTexts.Prompt("OwnerChange_" + detail.ToString());
 			if (WorldBulletinCampaignMaterialPolicy.SameKingdom(newId, oldId))
 			{
 				string grant = WorldBulletinCampaignMaterialPolicy.GrantSentence(name, GetHeroDisplayName(newOwner), label);

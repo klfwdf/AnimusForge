@@ -109,10 +109,11 @@ internal static class SceneActionDirectiveController
         bool useChinese = SceneActionPromptPackage.UseChinese;
         string catalog = NpcReplyDirectiveTagV1.BuildCatalogText(offeredKeys, useChinese);
 		return (AIConfigHandler.SceneActionPostprocessRules ?? new List<PostprocessRuleEntry>())
-			.Where(rule => string.Equals((rule?.Tag ?? "").Trim(), NpcReplyDirectiveTagV1.RuleTemplateTag, StringComparison.Ordinal))
+			.Where(rule => string.Equals((rule?.Tag ?? "").Trim(), NpcReplyDirectiveTagV1.RuleTemplateTag, StringComparison.Ordinal)
+                || string.Equals((rule?.Tag ?? "").Trim(), "[ACTION:SCENE_ACT:action_sequence]", StringComparison.Ordinal))
 			.Select(rule => new PostprocessRuleEntry
 			{
-				Tag = rule.Tag,
+				Tag = PromptComposerTexts.Get("scene_action_rule_template"),
 				Description = (rule.Description ?? "").Replace(NpcReplyDirectiveTagV1.CatalogPlaceholder, catalog)
 			})
 			.Take(1)

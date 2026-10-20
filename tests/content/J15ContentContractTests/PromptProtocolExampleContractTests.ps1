@@ -57,5 +57,28 @@ Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $e
 $marker = [regex]::Unescape('[AFEF NPC\u884c\u4e3a\u8865\u5145]')
 Tiny ('{"Text":"' + $marker + ' example"}') '{"Text":"[AFEF NPC-action fact] example"}'
 Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $en } 'AFEF identity is never translated' 'Prompt variable/protocol changed:'
+$composerCn = Join-Path $ProjectRoot 'content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.zh-CN.json'
+$composerEn = Join-Path $ProjectRoot 'content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.en.json'
+Assert-AnimusForgeEnglishJsonContract -OriginalPath $composerCn -EnglishPath $composerEn
+Check $true 'Actual composer templates preserve known CN/EN fact identities.'
+$sceneSpecimen = [regex]::Unescape('[ACTION:SCENE_ACT:\u52a8\u4f5c\u7a0b\u5e8f]')
+Tiny ('{"Text":"' + $sceneSpecimen + '"}') '{"Text":"[ACTION:SCENE_ACT:action_sequence]"}'
+Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $en } 'Composer specimen is not allowed at an unrelated path' 'Prompt variable/protocol changed:'
+$composerValue = Get-Content -LiteralPath $composerEn -Raw -Encoding UTF8 | ConvertFrom-Json
+$composerValue.scene_action_rule_template = '[ACTION:SCENE_ACT:wrong_sequence]'
+Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath $composerCn -EnglishPath $composerEn -EnglishValue $composerValue } 'Composer action parameter specimen remains exact' 'Prompt variable/protocol changed:'
+Tiny ('{"Text":"' + $marker + ' {0}"}') '{"Text":"[AFEF NPC_ACTION] {0}"}'
+Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $en
+Check $true 'Known NPC fact marker projects to its exact runtime English identity.'
+Tiny ('{"Text":"' + $marker + ' {0}"}') '{"Text":"[AFEF PLAYER_ACTION] {0}"}'
+Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $en } 'NPC facts cannot become player facts' 'Prompt variable/protocol changed:'
+Tiny ('{"Text":"' + $marker + ' {0}"}') '{"Text":"{0}"}'
+Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $en } 'Fact marker cannot disappear' 'Prompt variable/protocol changed:'
+$playerMarker = [regex]::Unescape('[AFEF\u73a9\u5bb6\u884c\u4e3a\u8865\u5145]')
+Tiny ('{"Text":"' + $playerMarker + ' {0}"}') '{"Text":"[AFEF PLAYER_ACTION] {0}"}'
+Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $en
+Check $true 'Known player fact marker projects to its exact runtime English identity.'
+Tiny ('{"Text":"' + $playerMarker + ' {0}"}') '{"Text":"[AFEF NPC_ACTION] {0}"}'
+Reject { Assert-AnimusForgeEnglishJsonContract -OriginalPath $cn -EnglishPath $en } 'Player facts cannot become NPC facts' 'Prompt variable/protocol changed:'
 Check ($beforeHash -ceq ((Get-FileHash -LiteralPath $source).Hash + (Get-FileHash -LiteralPath $englishSource).Hash)) 'Production sources unchanged by contract replay'
 Write-Output "PASS protocol examples: $checks checks; exact specimen/path exemptions and strict variable/identity/action/AFEF negative controls."

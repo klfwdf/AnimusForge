@@ -1,0 +1,32 @@
+static int checks;
+static void Check(bool v,string m){checks++;if(!v)throw new Exception(m);}
+static void Main(){
+ string joy="[ACTION:MOOD:JOY]", commit="[ACTION:DIPLOMACY:COMMIT:action=Trade;move=NewMatter;target=sturgia]";
+ string raw=joy+"\n[RELAY:11]";
+ string relay=NormalizeAutoGroupRelayPostprocessTagsForScene(raw,new(){new(){AgentIndex=11}},82);
+ Check(MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(raw),relay)=="[RELAY:11]\n"+joy,"relay preserves raw mood");
+ Check(MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(joy))==joy,"mood without action");
+ Check(NormalizeMoodPostprocessTag("[ACTION:MOOD:UNLISTED]")==AIConfigHandler.ActionPostprocessFallbackMoodTag,"unknown mood rejected");
+ Check(NormalizeMoodPostprocessTag(joy+"\n[ACTION:MOOD:NEUTRAL]")=="[ACTION:MOOD:NEUTRAL]","last valid mood wins");
+ AIConfigHandler.Rules=new(){new(){Tag="[ACTION:DIPLOMACY:COMMIT:action=Peace;move=NewMatter;target=kingdom ID]"},new(){Tag="[ACTION:DIPLOMACY:COMMITMENT:arrangement=agreement ID;state=deferred;reason=explicit reason]"},new(){Tag="[ACTION:DIPLOMACY:DECLARE_WAR:id1:id2]"},new(){Tag="[ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:days]"}};
+ var h=new Hero();
+ DiplomacyConversationBridge.Snapshot=new(true,false,false,true,false,true,false,false,false,false);
+ var rules=BuildRuntimeDiplomacyPostprocessRulesForScene(h,null);
+ Check(rules.Count==3,"ordinary player can discuss NPC commitments but not bilateral native trade");
+ Check(NormalizeDiplomacyPostprocessTagsForScene(commit,rules)==commit,"Trade COMMIT retained");
+ DuelSettings.Value.EnableWorldDiplomacy=false;
+ Check(!BuildRuntimeDiplomacyPostprocessRulesForScene(h,null).Any(r=>r.Tag.Contains("COMMIT")),"disabled diplomacy blocks commitments");
+ DuelSettings.Value.EnableWorldDiplomacy=true;
+ DiplomacyConversationBridge.Snapshot=new(true,false,false,true,false,false,true,false,true,true);
+ Check(BuildRuntimeDiplomacyPostprocessRulesForScene(h,null).Count==0,"non-ruler cannot promise sovereign actions");
+ DiplomacyConversationBridge.Snapshot=new(true,false,false,true,false,true,true,false,true,true);
+ Check(BuildRuntimeDiplomacyPostprocessRulesForScene(h,null).Count==4,"foreign player ruler retains full permissions");
+ foreach(string forbidden in new[]{commit,"[ACTION:THIS_TAG_DOES_NOT_EXIST:123]","[ACTION:MARRIAGE_FORMAL:a:b]","[ACTION:SCENE_ACT:kneel]","[AD:20:2:P:unrelated]","[ADP:foreign-debt]"})
+  Check(!NormalizeDuelPostprocessTagsForScene(forbidden,null).Contains(forbidden),"duel cannot smuggle "+forbidden);
+ foreach(string allowed in new[]{"[ACTION:DUEL]","[ACTION:DUEL_LINE_WIN:Victory]","[ACTION:DUEL_LINE_LOSE:Defeat]","[ACTION:DUEL_STAKE_NPC_GOLD:20]"})
+  Check(NormalizeDuelPostprocessTagsForScene(allowed,null).Contains(allowed),"duel family retained "+allowed);
+ string stakes=NormalizeDuelPostprocessTagsForScene("[ACTION:DUEL]\n[ACTION:DUEL_STAKE_PLAYER_ITEM:1:9]\n[AD:20:2:P:wager]",new(){new(){ItemId="sword",Count=3}});
+ Check(stakes.Contains("[ACTION:DUEL_STAKE_PLAYER_ITEM:sword:3]")&&!stakes.Contains("[AD:"),"wager mapping/clamp and pending debt retained");
+ Console.WriteLine("PASS postprocess repair: "+checks+" assertions; exact source methods, detached game/config leaves");
+ HistoryChecks.Run();
+}

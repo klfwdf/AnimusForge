@@ -39,7 +39,8 @@ public sealed partial class WorldDiplomacyBehavior
             var budget = _owner._storage.RequestBudget;
             bool player = request.IsPlayerWork;
             CancellationToken cancellation = request.Cancellation;
-            ILlmGateway gateway = new LegacyWorldDiplomacyLlmGateway(() => !cancellation.IsCancellationRequested && budget.TryAdmit(player));
+            ILlmGateway gateway = new LegacyWorldDiplomacyLlmGateway(detachedRequest,
+                () => !cancellation.IsCancellationRequested && budget.TryAdmit(player));
             var completedJobs = _owner._completedJobs;
             _ = Task.Run(async delegate
             {

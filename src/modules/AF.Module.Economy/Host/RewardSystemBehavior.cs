@@ -13609,6 +13609,46 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string GetItemQuantityUnitForPrompt(ItemObject item)
+	{
+		if (item == null)
+		{
+			return EconomyPromptTexts.Get("S331");
+		}
+		ItemCategory itemCategory = item.ItemCategory;
+		if (itemCategory == DefaultItemCategories.Beer || itemCategory == DefaultItemCategories.Wine)
+		{
+			return EconomyPromptTexts.Get("S332");
+		}
+		if (item.IsFood)
+		{
+			return EconomyPromptTexts.Get("S333");
+		}
+		switch (item.Type)
+		{
+		case ItemObject.ItemTypeEnum.Arrows:
+		case ItemObject.ItemTypeEnum.Bolts:
+		case ItemObject.ItemTypeEnum.Thrown:
+		case ItemObject.ItemTypeEnum.SlingStones:
+		case ItemObject.ItemTypeEnum.Bullets:
+			return EconomyPromptTexts.Get("S334");
+		case ItemObject.ItemTypeEnum.Polearm:
+			return EconomyPromptTexts.Get("S335");
+		case ItemObject.ItemTypeEnum.OneHandedWeapon:
+			return EconomyPromptTexts.Get("S336");
+		case ItemObject.ItemTypeEnum.TwoHandedWeapon:
+			return EconomyPromptTexts.Get("S337");
+		case ItemObject.ItemTypeEnum.HeadArmor:
+		case ItemObject.ItemTypeEnum.BodyArmor:
+		case ItemObject.ItemTypeEnum.LegArmor:
+		case ItemObject.ItemTypeEnum.HandArmor:
+		case ItemObject.ItemTypeEnum.Cape:
+			return EconomyPromptTexts.Get("S338");
+		default:
+			return EconomyPromptTexts.Get("S331");
+		}
+	}
+
 	private static string FormatItemAmount(int amount, ItemObject item, string itemName)
 	{
 		return $"{amount}{GetItemQuantityUnit(item)}{itemName}";
@@ -14678,7 +14718,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			AppendItemTypeField(stringBuilder, item2.EquipmentElement.Item);
 			stringBuilder.Append(" | ")
 				.Append(item2.Count)
-				.Append(GetItemQuantityUnit(item2.EquipmentElement.Item));
+				.Append(GetItemQuantityUnitForPrompt(item2.EquipmentElement.Item));
 			if (includeGuidePrice && TryGetSettlementBuyPrice(settlement, item2.EquipmentElement, out var price))
 			{
 				stringBuilder.Append(" | guidePrice=").Append(Math.Max(1, price));
@@ -14983,7 +15023,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				.Append(EconomyPromptTexts.ProjectSource(GetItemPromptTypeLabel(item.Item)))
 				.Append("|")
 				.Append(num3)
-				.Append(GetItemQuantityUnit(item.Item))
+				.Append(GetItemQuantityUnitForPrompt(item.Item))
 				.Append("|inventoryUnitValue=")
 				.Append(visibleEquipmentActualUnitValue)
 				.Append("|lineValue=")
@@ -15037,7 +15077,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			AppendItemTypeField(stringBuilder, item.Item);
 			stringBuilder.Append(" | ")
 				.Append(Math.Max(1, item.Count))
-				.Append(GetItemQuantityUnit(item.Item))
+				.Append(GetItemQuantityUnitForPrompt(item.Item))
 				.Append(" | guidePrice=")
 				.Append(Math.Max(1, value.UnitPrice))
 				.AppendLine();
@@ -15155,7 +15195,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				.Append(EconomyPromptTexts.ProjectSource(GetItemPromptTypeLabel(item.Item)))
 				.Append(" | ")
 				.Append(Math.Max(1, item.Count))
-				.Append(GetItemQuantityUnit(item.Item));
+				.Append(GetItemQuantityUnitForPrompt(item.Item));
 			if (!string.IsNullOrWhiteSpace(item.PromptStringId) && !string.Equals(item.PromptStringId, item.StringId, StringComparison.OrdinalIgnoreCase))
 			{
 				stringBuilder.Append(" | token=").Append(item.PromptStringId);
@@ -15200,7 +15240,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					AppendItemTypeField(stringBuilder, marketItem.Item);
 					stringBuilder.Append(" | ")
 						.Append(marketItem.Count)
-						.Append(GetItemQuantityUnit(marketItem.Item));
+						.Append(GetItemQuantityUnitForPrompt(marketItem.Item));
 					if (!string.IsNullOrWhiteSpace(marketItem.PromptStringId))
 					{
 						stringBuilder.Append(" | token=").Append(marketItem.PromptStringId);
@@ -15232,7 +15272,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				AppendItemTypeField(stringBuilder, item.Item);
 				stringBuilder.Append(" | ")
 					.Append(item.Count)
-					.Append(GetItemQuantityUnit(item.Item));
+					.Append(GetItemQuantityUnitForPrompt(item.Item));
 				if (includeGuidePrice)
 				{
 					string key = item.StringId ?? "";
@@ -15262,7 +15302,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				AppendItemTypeField(stringBuilder, item2.Item);
 				stringBuilder.Append(" | ")
 					.Append(item2.Count)
-					.Append(GetItemQuantityUnit(item2.Item));
+					.Append(GetItemQuantityUnitForPrompt(item2.Item));
 				if (includeGuidePrice)
 				{
 					string key2 = item2.StringId ?? "";
@@ -15387,7 +15427,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					.Append(System.Math.Max(1, option.GuidePrice))
 					.Append(" | ")
 					.Append(System.Math.Max(1, option.Count))
-					.Append(GetItemQuantityUnit(option.Item))
+					.Append(GetItemQuantityUnitForPrompt(option.Item))
 					.AppendLine();
 			}
 		}
@@ -15404,7 +15444,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					.Append(System.Math.Max(1, option2.GuidePrice))
 					.Append(" | ")
 					.Append(System.Math.Max(1, option2.Count))
-					.Append(GetItemQuantityUnit(option2.Item))
+					.Append(GetItemQuantityUnitForPrompt(option2.Item))
 					.AppendLine();
 			}
 		}

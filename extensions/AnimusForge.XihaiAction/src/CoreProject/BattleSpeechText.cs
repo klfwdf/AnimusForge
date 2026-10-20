@@ -15,7 +15,11 @@ namespace AnimusForge.SceneActions.Core
 
         private static class Chinese { internal static readonly Catalog Value = Load("zh-CN"); }
         private static class English { internal static readonly Catalog Value = Load("en"); }
-        private static class Package { internal static readonly Catalog Value = Build(SceneActionPromptPackage.ReadSection("AF_SCENE_SPEECH_")); }
+        private static class Package
+        {
+            static Package() { }
+            internal static readonly Catalog Value = Build(SceneActionPromptPackage.ReadSection("AF_SCENE_SPEECH_"));
+        }
         private static Catalog For(bool useChinese) => SceneActionPromptPackage.IsLoaded && useChinese == SceneActionPromptPackage.UseChinese
             ? Package.Value : useChinese ? Chinese.Value : English.Value;
         internal static string Text(string key, bool useChinese) => For(useChinese).Strings[key];

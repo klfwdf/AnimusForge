@@ -1,0 +1,36 @@
+using System;
+using System.Threading.Tasks;
+using AnimusForge.DiplomacyHotfix;
+
+internal static class Program
+{
+    private static int Main(string[] args)
+    {
+        Test.That(Environment.CurrentManagedThreadId == Test.UiThread, "UI thread initialized before worker");
+        if (args.Length == 0 || args[0] != "negative")
+        {
+            string status = HotfixInstaller.Install(typeof(Program).Assembly, Console.WriteLine);
+            Test.That(status.EndsWith("requests=applied"), "request group is installed");
+        }
+        try
+        {
+            PreparedDiplomacyGatewayReplay.Run();
+            Console.WriteLine("PASS actual old AF client/gateway/protocol/transport with Harmony hotfix: " + Test.Count + " assertions; dispatcher and MCM leaves substituted");
+            return 0;
+        }
+        catch(Exception ex) { Console.Error.WriteLine(ex); return 1; }
+    }
+}
+
+namespace AnimusForge
+{
+    internal sealed class WorldDiplomacyRequestSnapshot { internal Func<Task> Work; }
+    internal static partial class WorldDiplomacyBehavior
+    {
+        internal struct LlmDispatchSource
+        {
+            public void StartRequest(WorldDiplomacyRequestSnapshot request, Newtonsoft.Json.Linq.JArray messages)
+            { _ = Task.Run(request.Work); }
+        }
+    }
+}

@@ -37,7 +37,13 @@ namespace AnimusForge.SceneActions.Core
         // while the immutable V3/V4 action contract initializes its legacy fields.
         private static class ChineseCache { internal static readonly Catalog Value = Load("zh-CN"); }
         private static class EnglishCache { internal static readonly Catalog Value = Load("en"); }
-        private static class PackageCache { internal static readonly Catalog Value = Build(SceneActionPromptPackage.ReadSection("AF_SCENE_CATALOG_")); }
+        private static class PackageCache
+        {
+            // The embedded contract is inspected before the package is loaded.
+            // An explicit constructor prevents beforefieldinit from poisoning this cache early.
+            static PackageCache() { }
+            internal static readonly Catalog Value = Build(SceneActionPromptPackage.ReadSection("AF_SCENE_CATALOG_"));
+        }
 
         private static Catalog For(bool useChinese) => SceneActionPromptPackage.IsLoaded && useChinese == SceneActionPromptPackage.UseChinese
             ? PackageCache.Value : useChinese ? ChineseCache.Value : EnglishCache.Value;

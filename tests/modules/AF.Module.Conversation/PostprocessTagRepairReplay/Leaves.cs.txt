@@ -1,0 +1,21 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+namespace AnimusForge;
+class Hero {} class CharacterObject {}
+class NpcDataPacket { public int AgentIndex; }
+class PostprocessRuleEntry { public string Tag,Description,SingleFramedNpcDescription; public HashSet<string> RuntimeAllowedParameterValues; }
+static class AIConfigHandler { public static string ActionPostprocessFallbackMoodTag = "[ACTION:MOOD:NEUTRAL]"; public static List<PostprocessRuleEntry> ActionPostprocessMoodRules = new(){new(){Tag="[ACTION:MOOD:JOY]"},new(){Tag="[ACTION:MOOD:NEUTRAL]"}}; public static List<PostprocessRuleEntry> Rules = new(); public static List<PostprocessRuleEntry> GetGuardrailRulePostprocessRules(string id)=>Rules; }
+static class ConversationRuntimeTexts { public static string Prompt(string key)=>key; public static string Raw(string key)=>key; }
+static class KingdomAnnexationBehavior { public static List<PostprocessRuleEntry> BuildRuntimeAnnexationPostprocessRulesForExternal(Hero h,CharacterObject c)=>new(); }
+static class DiplomacyConversationBridge {
+ public static DiplomacyConversationEligibilitySnapshot Snapshot;
+ public static bool CanUseFullDiplomacyActionPostprocessForExternal(Hero h,CharacterObject c)=>DiplomacyConversationEligibilityApplication.CanUseFull(Snapshot);
+ public static bool CanUseNpcSovereignDeclareWarPostprocessForExternal(Hero h,CharacterObject c)=>DiplomacyConversationEligibilityApplication.CanUseNpcDeclareWar(Snapshot);
+ public static bool CanUseIndependentClanPeaceForExternal(Hero h,CharacterObject c)=>false;
+ public static bool IsIndependentClanPeacePostprocessTag(string t)=>DiplomacyConversationEligibilityApplication.IsIndependentClanPeaceTag(t);
+}
+class RewardSystemBehavior { public class DuelStakeOption { public string ItemId,Name; public int Count; } }
+static class DuelBehavior { public static void ClearPendingDuelDebtTag(Hero h){} public static void CachePendingDuelDebtTag(Hero h,int amount,int days,string note){} }
+class DuelSettings { public bool EnableWorldDiplomacy=true; public static DuelSettings Value=new(); public static DuelSettings GetSettings()=>Value; }

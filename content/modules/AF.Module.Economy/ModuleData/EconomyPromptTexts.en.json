@@ -269,5 +269,13 @@
   "Fact_S725": "{0}'s personal trust in you increased by {1}{2} because the value actually delivered to you reached the cumulative threshold.",
   "Fact_S726": "Your market trust in the player increased by {0}{1} because the value you actually delivered reached the cumulative threshold.",
   "Fact_S727": "Market trust in you from {1}, represented by {0}, increased by {2}{3} because the value actually delivered to you reached the cumulative threshold.",
-  "Fact_GoldBatch": "Gold transfer summary: {0} attempted, {1} succeeded, {2} failed or insufficient; {3} denars actually transferred, worth {4} denars."
+  "Fact_GoldBatch": "Gold transfer summary: {0} attempted, {1} succeeded, {2} failed or insufficient; {3} denars actually transferred, worth {4} denars.",
+  "S331": " units",
+  "S332": " barrels",
+  "S333": " jin",
+  "S334": " bags",
+  "S335": " polearms",
+  "S336": " one-handed weapons",
+  "S337": " two-handed weapons",
+  "S338": " pieces"
 }

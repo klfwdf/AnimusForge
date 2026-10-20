@@ -94,6 +94,10 @@ internal static string FormatScenePlayerDirectSpeechLabel(string playerName, flo
 internal static bool TryNormalizeAfefFactLineForPrompt(string text, out string factLine)
 	{
 		string value = ConversationSpeechTextRules.StripAfefPromptScopeLabel((text ?? "").Replace("\r", " ").Replace("\n", " ").Trim());
+        if (value.StartsWith("[AFEF NPC_ACTION]", StringComparison.Ordinal))
+            value = PromptComposerTexts.Raw("afef_npc_action") + value.Substring("[AFEF NPC_ACTION]".Length);
+        else if (value.StartsWith("[AFEF PLAYER_ACTION]", StringComparison.Ordinal))
+            value = PromptComposerTexts.Raw("afef_player_action") + value.Substring("[AFEF PLAYER_ACTION]".Length);
 		if (value.StartsWith(PromptComposerTexts.Raw("afef_player_action"), StringComparison.Ordinal) || value.StartsWith(PromptComposerTexts.Raw("afef_npc_action"), StringComparison.Ordinal) || value.StartsWith(PromptComposerTexts.Raw("afef_player_action_bracket"), StringComparison.Ordinal) || value.StartsWith(PromptComposerTexts.Raw("afef_npc_action_bracket"), StringComparison.Ordinal))
 		{
 			factLine = NormalizeAfefFactLineForPrompt(value);
@@ -106,6 +110,10 @@ internal static bool TryNormalizeAfefFactLineForPrompt(string text, out string f
 internal static string NormalizeAfefFactLineForPrompt(string text, string fallbackPrefix = null)
 	{
 		string value = ConversationSpeechTextRules.StripAfefPromptScopeLabel((text ?? "").Replace("\r", " ").Replace("\n", " ").Trim());
+        if (value.StartsWith("[AFEF NPC_ACTION]", StringComparison.Ordinal))
+            value = PromptComposerTexts.Raw("afef_npc_action") + value.Substring("[AFEF NPC_ACTION]".Length);
+        else if (value.StartsWith("[AFEF PLAYER_ACTION]", StringComparison.Ordinal))
+            value = PromptComposerTexts.Raw("afef_player_action") + value.Substring("[AFEF PLAYER_ACTION]".Length);
 		if (string.IsNullOrWhiteSpace(value))
 		{
 			return "";
@@ -135,7 +143,7 @@ internal static string BuildScopedAfefFactLineForPrompt(string text, bool isCurr
 		{
 			return "";
 		}
-		return (isCurrent ? PromptComposerTexts.Raw("history_section_scope_current") : PromptComposerTexts.Raw("history_section_scope_historical")) + factLine;
+		return (isCurrent ? PromptComposerTexts.Get("history_section_scope_current") : PromptComposerTexts.Get("history_section_scope_historical")) + factLine;
 	}
 
 // Currentness is event identity, never equality of the fact's prose.
@@ -298,6 +306,9 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
     internal static List<object> Build(SceneHistoryMessageAssemblyInput input)
     {
         var messages = new List<object> { MainPromptMessageAssemblyOwner.CreateCourierChatMessage("system", MainPromptMessageAssemblyOwner.BuildConversationSystemPrompt(input.SystemPrompt)) };
+        string revision = input.PersistentHistory?.Select(x => x?.PromptContextRevision).FirstOrDefault(x => !string.IsNullOrEmpty(x)) ?? "";
+        if (revision.Length > 0 && messages[0] is ConversationPromptMessage first)
+            messages[0] = new ConversationPromptMessage(first.role, first.content, revision: revision);
         AppendSections(messages, input.PrefixUserSections);
         var pending = (input.PendingCurrentFacts ?? Enumerable.Empty<ConversationMessage>())
             .Where(x => x != null && IsAfefConversationMessage(x)).Select(BuildCurrentFactIdentity);
@@ -344,9 +355,23 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
             fact.PromptFactScopeCaptured = fact.PromptIsCurrentFact = true;
             history.Add(fact);
         }
-        history = KeepAfefFactsAndRecentConversationMessages(history, input.HistoryLineLimit);
+        var recalled = history.Where(x => x.PromptIsRecall).ToList();
+        history = KeepAfefFactsAndRecentConversationMessages(history.Where(x => !x.PromptIsRecall).ToList(), input.HistoryLineLimit);
+        history.InsertRange(0, recalled);
+        string query = input.CurrentInputMessage?.Content ?? history.LastOrDefault(x => x.Role == "user" && !x.PromptIsRecall)?.Content ?? "";
+        history = ConversationContextWindow.Select(history, query, input.WindowOptions);
+        int group = 0;
+        int lastGroup = ConversationContextWindow.Group(history).Count;
         foreach (var entry in history)
-            if (TryConvertSceneMessageToStrictChatMessage(entry, input.Context, out var message, keys)) messages.Add(message);
+        {
+            if (entry.Role != "system" && (group == 0 || entry.Role == "user")) group++;
+            if (TryConvertSceneMessageToStrictChatMessage(entry, input.Context, out var message, keys))
+            {
+                if (message is ConversationPromptMessage speech && entry.Role != "system" && group < lastGroup)
+                    message = new ConversationPromptMessage(speech.role, speech.content, group);
+                messages.Add(message);
+            }
+        }
         AppendSections(messages, input.SuffixUserSections);
         if (input.CurrentInputMessage != null && TryConvertSceneMessageToStrictChatMessage(input.CurrentInputMessage, input.Context, out var current))
             messages.Add(current);
@@ -377,5 +402,6 @@ internal sealed class SceneHistoryMessageAssemblyInput
     internal IEnumerable<ConversationMessage> PersistentHistory, SceneHistory, InjectedHistory, PendingCurrentFacts;
     internal ConversationMessage CurrentInputMessage;
     internal int HistoryLineLimit;
+    internal ConversationContextOptions WindowOptions;
     internal SceneHistoryMessageContext Context;
 }

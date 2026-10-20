@@ -388,12 +388,6 @@
       "after": "\"Days before the same NPC can approach the player again with the same type of need after proactive contact. Normal-play default: 14 days.\""
     },
     {
-      "setting": "ProactiveNpcRequestDistanceMultiplier",
-      "part": "Hint",
-      "before": "\"Configure Proactive NPC Request Distance Multiplier.\"",
-      "after": "\"Maximum distance between a candidate NPC and the player is the player vision range multiplied by this value. Normal-play default: 1.0.\""
-    },
-    {
       "setting": "ProactiveNpcRequestFoodDaysThreshold",
       "part": "Hint",
       "before": "\"Configure Proactive NPC Request Food Days Threshold.\"",

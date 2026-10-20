@@ -816,5 +816,16 @@
   "campaign_kill_clan_tail_1110": "其在{1}由{2}以{3}公开处决。",
   "campaign_kill_clan_tail_1111": "其在{1}由{2}以{3}公开处决，罪名为{4}。",
   "memory_fact_captivity_released": "本次交谈的领主已同意并实际释放玩家；玩家的本次囚禁已结束。",
-  "memory_fact_captivity_opening": "看押领主主动与仍被拘押的玩家开始交谈。"
+  "memory_fact_captivity_opening": "看押领主主动与仍被拘押的玩家开始交谈。",
+  "afef_npc_action": "[AFEF NPC行为补充]",
+  "afef_player_action": "[AFEF玩家行为补充]",
+  "history_section_scope_current": "【当下行为】",
+  "history_section_scope_historical": "【过往行为】",
+  "RuleBlockHeaderPrefix": "【附加规则:",
+  "RuleBlockHeaderSuffix": "】",
+  "memory_fact_intimacy": "玩家与{0}发生了亲密关系。",
+  "memory_fact_intimacy_player_pregnant": "玩家与{0}发生了亲密关系。系统已确认玩家怀孕，父亲是{1}。",
+  "memory_fact_intimacy_npc_pregnant": "玩家与{0}发生了亲密关系。系统已确认{1}怀孕，父亲是玩家。",
+  "native_text_language": "zh-CN",
+  "scene_action_rule_template": "[ACTION:SCENE_ACT:动作程序]"
 }

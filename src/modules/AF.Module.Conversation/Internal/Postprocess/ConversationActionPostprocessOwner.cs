@@ -927,8 +927,8 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 					+ " RAW_TAG=" + NpcReplyDirectiveTagV1.ContainsTag(content) + " FINAL_TAG=" + (string.IsNullOrWhiteSpace(sceneActionTags) ? "(none)" : sceneActionTags));
 			}
 			string text21 = siegeInterventionExclusive
-				? MergeNormalizedPostprocessBlocksForScene(siegeInterventionTags, nobleExecutionOrderTags)
-				: MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, royalTags, vassalageTags, text13, text14, captivityReleaseTags, text15, text16, text17, nobleExecutionOrderTags, text18, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags, sceneActionTags, executionTags);
+				? MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(content), siegeInterventionTags, nobleExecutionOrderTags)
+				: MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(content), text10, text11, text12, royalTags, vassalageTags, text13, text14, captivityReleaseTags, text15, text16, text17, nobleExecutionOrderTags, text18, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags, sceneActionTags, executionTags);
 			if (captivitySession) text21 = PlayerCaptivityConversation.FilterRestrictedTags(text21);
 			text21 = AfGcczShoutBridge.ValidateTownPostprocessDecision(text21);
 			if (string.IsNullOrWhiteSpace(text21))
@@ -1409,8 +1409,8 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 			string siegeInterventionTags = siegeInterventionRuleInjected ? TeamModuleServices.Siege.NormalizePostprocessTags(siegeInterventionRuleInjected, content, siegeInterventionRules) : "";
 			string intimacyTags = SexualConceptionBehavior.NormalizePostprocessTags(content, intimacyRules);
 			string merged = siegeInterventionExclusive
-				? MergeNormalizedPostprocessBlocksForScene(siegeInterventionTags, nobleExecutionOrderTags)
-				: MergeNormalizedPostprocessBlocksForScene(duelTags, rewardTags, kingdomTags, royalTags, vassalageTags, lordsHallTags, meetingReleaseTags, captivityReleaseTags, vanillaIssueTags, heroJoinTags, sceneMechanismTags, nobleExecutionOrderTags, partyTransferTags, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, npcSurrenderTags, siegeInterventionTags, intimacyTags);
+				? MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(content), siegeInterventionTags, nobleExecutionOrderTags)
+				: MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(content), duelTags, rewardTags, kingdomTags, royalTags, vassalageTags, lordsHallTags, meetingReleaseTags, captivityReleaseTags, vanillaIssueTags, heroJoinTags, sceneMechanismTags, nobleExecutionOrderTags, partyTransferTags, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, npcSurrenderTags, siegeInterventionTags, intimacyTags);
 			if (captivitySession) merged = PlayerCaptivityConversation.FilterRestrictedTags(merged);
 			merged = AfGcczShoutBridge.ValidateTownPostprocessDecision(merged);
 			if (string.IsNullOrWhiteSpace(merged))
@@ -1818,6 +1818,7 @@ internal static List<PostprocessRuleEntry> BuildRuntimeDiplomacyPostprocessRules
 		bool allowRoyalDiplomacy = DiplomacyConversationBridge.CanUseFullDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
 		bool allowNpcDeclareWar = DiplomacyConversationBridge.CanUseNpcSovereignDeclareWarPostprocessForExternal(targetHero, targetCharacter);
 		bool allowIndependentClanPeace = DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
+		bool allowNpcCommitment = allowNpcDeclareWar && (DuelSettings.GetSettings()?.EnableWorldDiplomacy ?? false);
 		List<PostprocessRuleEntry> diplomacyRules = (AIConfigHandler.GetGuardrailRulePostprocessRules("diplomacy") ?? new List<PostprocessRuleEntry>())
 			.Where((PostprocessRuleEntry rule) =>
 			{
@@ -1826,6 +1827,9 @@ internal static List<PostprocessRuleEntry> BuildRuntimeDiplomacyPostprocessRules
 				{
 					return false;
 				}
+                if (tag.StartsWith("[ACTION:DIPLOMACY:COMMIT:", StringComparison.OrdinalIgnoreCase)
+                    || tag.StartsWith("[ACTION:DIPLOMACY:COMMITMENT:", StringComparison.OrdinalIgnoreCase))
+                    return allowNpcCommitment;
 				if (tag.StartsWith("[ACTION:DIPLOMACY:DECLARE_WAR:", StringComparison.OrdinalIgnoreCase))
 				{
 					return allowRoyalDiplomacy || allowNpcDeclareWar;
@@ -2279,6 +2283,16 @@ internal static string KeepOnlyPersistentAdpDebtTags(string tags)
 		return string.Join("\n", result);
 	}
 
+internal static string NormalizeMoodPostprocessTag(string raw)
+    {
+        var allowed = new HashSet<string>((AIConfigHandler.ActionPostprocessMoodRules ?? new List<PostprocessRuleEntry>())
+            .Select(rule => (rule?.Tag ?? "").Trim()), StringComparer.OrdinalIgnoreCase);
+        string selected = null;
+        foreach (Match match in Regex.Matches(raw ?? "", @"\[ACTION:MOOD:[^\]\r\n]+\]", RegexOptions.IgnoreCase))
+            if (allowed.Contains(match.Value)) selected = match.Value;
+        return selected ?? AIConfigHandler.ActionPostprocessFallbackMoodTag;
+    }
+
 internal static string MergeNormalizedPostprocessBlocksForScene(params string[] blocks)
 	{
 		List<string> list = new List<string>();
@@ -2491,6 +2505,8 @@ internal static string NormalizeDuelPostprocessTagsForScene(string raw, List<Rew
 				text = text2;
 				continue;
 			}
+            if (!Regex.IsMatch(text2, @"^\[(?:ACTION:DUEL(?:\]|_(?:LINE_(?:WIN|LOSE)|STAKE(?:_(?:NPC|PLAYER))?_(?:GOLD|ITEM)):)|AD:|ADP:)", RegexOptions.IgnoreCase))
+                continue;
 			if (hashSet.Add(text2))
 			{
 				list.Add(text2);
@@ -2514,8 +2530,9 @@ internal static string NormalizeDuelPostprocessTagsForScene(string raw, List<Rew
 			catch
 			{
 			}
-			list = list.Where((string x) => !((x ?? "").Trim().StartsWith("[AD:", StringComparison.OrdinalIgnoreCase) || (x ?? "").Trim().StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))).ToList();
 		}
+        // Standalone debt belongs to the economy normalizer; duel only caches its wager above.
+        list = list.Where((string x) => !((x ?? "").Trim().StartsWith("[AD:", StringComparison.OrdinalIgnoreCase) || (x ?? "").Trim().StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))).ToList();
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;

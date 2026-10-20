@@ -17658,6 +17658,66 @@
       "target": "ModuleData/NpcBuiltinNameAliases.json",
       "logicalName": "AnimusForge.Defaults.NpcBuiltinNameAliases.json",
       "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/CustomPrompts/DailyMemoryCompressionWritingRequirements.json",
+      "target": "CustomPrompts/DailyMemoryCompressionWritingRequirements.json",
+      "sha256": "F98FDE4FBC3B46AF28360F1878323BA4EC7933C10C2958694BAFC2A16483CDA8"
+    },
+    {
+      "owner": "AF.Module.Kingdom",
+      "source": "content/modules/AF.Module.Kingdom/CustomPrompts/KingdomRebellionSystemPrompt.json",
+      "target": "CustomPrompts/KingdomRebellionSystemPrompt.json",
+      "sha256": "3F09ABD7AEB0BCB6A79A381D5E108754F8C851030939C13E3D5183A15AA628A3"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/CustomPrompts/MajorActionCompressionWritingRequirements.json",
+      "target": "CustomPrompts/MajorActionCompressionWritingRequirements.json",
+      "sha256": "76FE731751575BDC20DA2E6D305F673E12E07F60884C85143E848D2B3C9770BB"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/CustomPrompts/MemoryOverviewCompressionWritingRequirements.json",
+      "target": "CustomPrompts/MemoryOverviewCompressionWritingRequirements.json",
+      "sha256": "001E824BBE950960C46AAA8106BA4E77DE891111F602818A30CE9BAE5C92427C"
+    },
+    {
+      "owner": "AF.Module.Persona",
+      "source": "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json",
+      "target": "CustomPrompts/NpcPersonaGenerationRequirements.json",
+      "sha256": "044F9952B9A26CA7FDEE5ACF37AC142C5B87786D58AD552A0A1FC7727EA363CD"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/CustomPrompts/PlayerCustomPromptRule.json",
+      "target": "CustomPrompts/PlayerCustomPromptRule.json",
+      "sha256": "A1634CE335855F66C209196B2581A2A85FE26A24392F69318F7AA71FDEC38752"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
+      "target": "CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
+      "sha256": "A3E55780284E374399A5BDC341F04E0DA4B7F8BE3F7AD95DD59DFACFF2FA86C8"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
+      "target": "CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
+      "sha256": "892650F9D81342FA3FC9600682663472A40AC6A42BD0EE056D2CEC699D2F235B"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/CustomPrompts/WeeklyReportWritingRequirements.json",
+      "target": "CustomPrompts/WeeklyReportWritingRequirements.json",
+      "sha256": "8655B07FE203288E3F579A2CB6043EAF711BE263559185272DE224FF10C210DB"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/CustomPrompts/WorldDiplomacyPrompt.json",
+      "target": "CustomPrompts/WorldDiplomacyPrompt.json",
+      "sha256": "A447D0691F322388EDF27B9075DCA624414015964BE367D8A379BA78E3EC168A"
     }
   ]
 }

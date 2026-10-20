@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace AnimusForge;
 
@@ -16,18 +17,30 @@ internal sealed class GptSoVitsLanguage
     private static readonly GptSoVitsLanguage Cantonese = new GptSoVitsLanguage("yue", "all_yue");
     private static readonly GptSoVitsLanguage English = new GptSoVitsLanguage("en", "en");
     private static readonly GptSoVitsLanguage Japanese = new GptSoVitsLanguage("ja", "all_ja");
+    private static readonly Lazy<Dictionary<string, GptSoVitsLanguage>> LegacyAliases =
+        new Lazy<Dictionary<string, GptSoVitsLanguage>>(() =>
+        {
+            var aliases = new Dictionary<string, GptSoVitsLanguage>(StringComparer.Ordinal);
+            foreach (var entry in new[] {
+                ("TtsLanguageAliases_Auto", Auto), ("TtsLanguageAliases_Chinese", Chinese),
+                ("TtsLanguageAliases_Cantonese", Cantonese), ("TtsLanguageAliases_English", English),
+                ("TtsLanguageAliases_Japanese", Japanese) })
+                foreach (string alias in LlmSourceTexts.Get(entry.Item1).Split('|'))
+                    aliases.Add(alias, entry.Item2);
+            return aliases;
+        });
     internal static GptSoVitsLanguage Parse(string value)
     {
         if ((value?.Length ?? 0) > 64) return Invalid;
-        switch ((value ?? "").Trim().ToLowerInvariant().Replace('_', '-'))
+        string normalized = (value ?? "").Trim().ToLowerInvariant().Replace('_', '-');
+        switch (normalized)
         {
-            case "": case "auto": case "自动": case "自動": case "跟随正文": return Auto;
-            case "中文": case "汉语": case "漢語": case "普通话": case "普通話": case "国语": case "國語":
+            case "": case "auto": return Auto;
             case "chinese": case "mandarin": case "zh": case "zh-cn": case "zh-tw": case "zh-hans": case "zh-hant": case "all-zh": return Chinese;
-            case "粤语": case "粵語": case "广东话": case "廣東話": case "cantonese": case "yue": case "zh-hk": case "all-yue": return Cantonese;
-            case "英语": case "英語": case "英文": case "english": case "en": case "en-us": case "en-gb": return English;
-            case "日语": case "日語": case "日文": case "日本語": case "japanese": case "ja": case "ja-jp": case "all-ja": return Japanese;
-            default: return Invalid; // Never silently fall back to auto for an explicit unsupported choice.
+            case "cantonese": case "yue": case "zh-hk": case "all-yue": return Cantonese;
+            case "english": case "en": case "en-us": case "en-gb": return English;
+            case "japanese": case "ja": case "ja-jp": case "all-ja": return Japanese;
+            default: return LegacyAliases.Value.TryGetValue(normalized, out var language) ? language : Invalid;
         }
     }
 }

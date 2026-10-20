@@ -57,6 +57,7 @@ internal sealed partial class SceneConversationSessionRuntime
     private void SettleImmediateSceneReaction(ImmediateSceneReactionRequest request, bool generated, bool allowNoSpeech)
     {
         if (request == null || Interlocked.CompareExchange(ref request.CompletionClaimed, 1, 0) != 0) return;
+        request.PromptCache?.Dispose();
         FinishImmediateSceneReactionGeneration(request.TargetAgentIndex, request.RequestId);
         if (!generated && allowNoSpeech) InvokeImmediateSceneReactionNoSpeechFallback(request.OnNoSpeech);
         try { request.OnCompleted?.Invoke(generated); }

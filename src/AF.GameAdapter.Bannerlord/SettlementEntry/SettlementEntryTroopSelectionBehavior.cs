@@ -1494,12 +1494,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool SetsUsableMissionObjectMoveToUsePrefix(Agent userAgent)
+	private static bool SetsUsableMissionObjectMoveToUsePrefix(Agent userAgent, IDetachment detachment)
 	{
 		try
 		{
 			if (!IsSetsUsableProtectionAgent(userAgent))
 			{
+				Mission.Current?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>()
+					?.EnsureCivilianUsableDetachmentRegistered(userAgent, detachment);
 				return true;
 			}
 			LogSetsUsableProtectionSuppression(userAgent, "OnAIMoveToUse");
@@ -3086,6 +3088,25 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				&& agent.IsActive()
 				&& _gatheredSettlementCivilianAgentIndexes.Contains(agent.Index);
 		}
+
+        internal void EnsureCivilianUsableDetachmentRegistered(Agent agent, IDetachment detachment)
+        {
+            // Ordinary settlement civilians may retain a formation after SETS changes teams.
+            // Native OnAIMoveToUse indexes that formation's registry even for daily navigation.
+            if (!_isOwnSettlement || _armedCoup || _conflictActive || _ownedSettlementIncidentTriggered
+                || (_sceneKind != SetsSettlementSceneKind.Town && _sceneKind != SetsSettlementSceneKind.Village)
+                || IsNativeAlleyFightActive() || !(detachment is UsableMachine)
+                || agent == null || agent.Mission != Mission || !agent.IsHuman || !agent.IsActive()
+                || agent.IsMainAgent || IsGuardOrSoldier(agent.Character as CharacterObject)
+                || IsLordCombatant(agent.Character as CharacterObject)) return;
+            DetachmentManager manager = agent.Formation?.Team?.DetachmentManager;
+            if (_settlementCivilianGatherRuntimeGeneration <= 0 || agent.Formation?.Team != _playerTeam
+                || manager == null || manager.ContainsDetachment(detachment)) return;
+            // UsableMachine.OnRemoved removes itself from every registered team on mission cleanup.
+            manager.MakeDetachment(detachment);
+            SettlementEntryTroopSelectionLog.Log("Registered civilian daily usable after SETS team transition. agent="
+                + agent.Index + ", team=" + agent.Formation.Team.TeamIndex + ", usable=" + detachment.GetType().Name);
+        }
 
 		private void UpdatePendingSettlementCivilianGather()
 		{

@@ -31,6 +31,9 @@ internal static class MemorySystemFactProjection
     }
     private static readonly Template[] Templates =
     {
+        new Template("memory_fact_intimacy_player_pregnant", PromptComposerTexts.Raw("Template_intimacy_player_pregnant").Split('|')),
+        new Template("memory_fact_intimacy_npc_pregnant", PromptComposerTexts.Raw("Template_intimacy_npc_pregnant").Split('|')),
+        new Template("memory_fact_intimacy", PromptComposerTexts.Raw("Template_intimacy").Split('|')),
         new Template("memory_fact_captivity_released", PromptComposerTexts.Raw("Template_captivity_released")),
         new Template("memory_fact_captivity_opening", PromptComposerTexts.Raw("Template_captivity_opening")),
         new Template("memory_fact_first_known", PromptComposerTexts.Raw("Template_first_known").Split('|')),
@@ -135,13 +138,14 @@ internal static class MemorySystemFactProjection
     private static readonly Lazy<string[]> FactPrefixes = new Lazy<string[]>(() => new[]
     {
         PromptComposerTexts.Raw("afef_npc_action"), PromptComposerTexts.Raw("afef_player_action"),
-        PromptComposerTexts.Raw("afef_npc_action_bracket"), PromptComposerTexts.Raw("afef_player_action_bracket")
+        PromptComposerTexts.Raw("afef_npc_action_bracket"), PromptComposerTexts.Raw("afef_player_action_bracket"),
+        "[AFEF NPC_ACTION]", "[AFEF PLAYER_ACTION]"
     });
     private static readonly Lazy<string[]> FactScopes = new Lazy<string[]>(() => new[]
     {
         PromptComposerTexts.Raw("main_history_raw_019"),
         PromptComposerTexts.Raw("history_section_scope_current"),
-        PromptComposerTexts.Raw("history_section_scope_historical")
+        PromptComposerTexts.Raw("history_section_scope_historical"), "[Current action]", "[Past action]"
     });
 
     // Compressed records retain their original scope and captured date/scene/speaker.
@@ -165,9 +169,16 @@ internal static class MemorySystemFactProjection
         int scopeLength = 0;
         foreach (string scope in FactScopes.Value)
             if (text.StartsWith(scope, StringComparison.Ordinal)) { scopeLength = scope.Length; break; }
+        string scopePrefix = scopeLength == 0 ? "" : text.Substring(0, scopeLength);
+        if (scopePrefix == PromptComposerTexts.Raw("history_section_scope_current") || scopePrefix == "[Current action]")
+            scopePrefix = PromptComposerTexts.Get("history_section_scope_current");
+        else if (scopeLength > 0)
+            scopePrefix = PromptComposerTexts.Get("history_section_scope_historical");
         string value = scopeLength == 0 ? text : text.Substring(scopeLength);
         string projected = ProjectNpcFact(value);
-        if (projected != value) return text.Substring(0, scopeLength) + projected;
+        if (projected != value) return scopePrefix + projected;
+        foreach (string prefix in FactPrefixes.Value)
+            if (value.StartsWith(prefix, StringComparison.Ordinal)) return scopePrefix + projected;
         if (!value.StartsWith("[", StringComparison.Ordinal)) return text;
 
         int endMetadata = -1;
@@ -188,7 +199,7 @@ internal static class MemorySystemFactProjection
         int factStart = endMetadata + 2;
         string fact = value.Substring(factStart);
         projected = ProjectNpcFact(fact);
-        return projected == fact ? text : text.Substring(0, scopeLength + factStart) + projected;
+        return scopePrefix + value.Substring(0, factStart) + projected;
     }
 
     internal static string ProjectNpcFact(string fact)
@@ -213,12 +224,17 @@ internal static class MemorySystemFactProjection
         if (prefix == null) return fact;
         string body = fact.Substring(prefix.Length).TrimStart();
         string projected = ProjectBody(body);
-        return projected == body ? fact : prefix + " " + projected;
+        string key = prefix == PromptComposerTexts.Raw("afef_player_action")
+            || prefix == PromptComposerTexts.Raw("afef_player_action_bracket") || prefix == "[AFEF PLAYER_ACTION]"
+            ? "afef_player_action" : "afef_npc_action";
+        return PromptComposerTexts.Get(key) + " " + projected;
     }
 
     internal static string ProjectBody(string body)
     {
         if (string.IsNullOrEmpty(body)) return body;
+        string social = SocialFactPromptProjection.ProjectForPrompt(body);
+        if (social != body) return social;
         string economy = EconomyActionFactProjection.ProjectForPrompt(body);
         if (economy != body) return economy;
         string gathering = NobleGatheringTextProjection.ProjectFactBodyForPrompt(body);

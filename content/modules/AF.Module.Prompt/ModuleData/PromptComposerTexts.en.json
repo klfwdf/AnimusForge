@@ -203,7 +203,7 @@
   "scene_live_004": "- Name: unknown | Gender: unknown | Identity: unknown identity",
   "scene_live_010": " | Distance from you: unknown",
   "scene_live_014": "【Non-hero NPC naming】The name shown in the nearby-person list is the non-hero NPC's personal name. Scene dialogue history may combine identity and name, such as \"Imperial townswoman Lia\"; both refer to the same person.",
-  "scene_live_017": "[Current facts]\n[AFEF NPC行为补充] ",
+  "scene_live_017": "[Current facts]\n[AFEF NPC_ACTION] ",
   "scene_live_018": "【Action request for this turn】\n",
   "scene_live_019": "【NPC-initiated conversation】\n",
   "scene_live_020": "\n\nThe role=user content above contains action and fact instructions, not words spoken by the player.",
@@ -816,5 +816,16 @@
   "campaign_kill_clan_tail_1110": "The deceased was publicly executed by {3} at {1} at the hands of {2}.",
   "campaign_kill_clan_tail_1111": "The deceased was publicly executed by {3} at {1} at the hands of {2}, on the charge of {4}.",
   "memory_fact_captivity_released": "The speaking lord agreed to and actually released the player; this captivity has ended.",
-  "memory_fact_captivity_opening": "The captor initiated a conversation with the captive player."
+  "memory_fact_captivity_opening": "The captor initiated a conversation with the captive player.",
+  "afef_npc_action": "[AFEF NPC_ACTION]",
+  "afef_player_action": "[AFEF PLAYER_ACTION]",
+  "history_section_scope_current": "[Current action]",
+  "history_section_scope_historical": "[Past action]",
+  "RuleBlockHeaderPrefix": "[Additional rule:",
+  "RuleBlockHeaderSuffix": "]",
+  "memory_fact_intimacy": "The player and {0} had an intimate encounter.",
+  "memory_fact_intimacy_player_pregnant": "The player and {0} had an intimate encounter. The system confirmed that the player is pregnant; the father is {1}.",
+  "memory_fact_intimacy_npc_pregnant": "The player and {0} had an intimate encounter. The system confirmed that {1} is pregnant; the father is the player.",
+  "native_text_language": "en",
+  "scene_action_rule_template": "[ACTION:SCENE_ACT:action_sequence]"
 }

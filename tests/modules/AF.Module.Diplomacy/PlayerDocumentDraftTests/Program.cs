@@ -58,8 +58,15 @@ internal static class Program
         return (handler, new WorldDiplomacyComposePopupVM("宣言", "", "", submit, null));
     }
 
-    private static void Main()
+    private static void Main(string[] args)
     {
+        Test.That(Environment.CurrentManagedThreadId == Test.UiThread, "UI thread captured before workers start");
+        if (args.Length == 1 && args[0] == "--prepared-gateway-negative")
+        {
+            PreparedDiplomacyGatewayReplay.Run(legacyWorkerNegativeControl: true);
+            return;
+        }
+        PreparedDiplomacyGatewayReplay.Run();
         Rules();
         SnapshotAndRewrite();
         LengthBudgetAndFill();

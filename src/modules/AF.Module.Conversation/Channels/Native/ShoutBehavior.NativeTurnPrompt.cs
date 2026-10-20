@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using AnimusForge.SceneActions.Core;
@@ -208,6 +209,9 @@ namespace AnimusForge;
             persistentMemoryRoleMessages = NativeMemoryHistoryMergeOwner.Merge(
                 persistentMemoryRoleMessages, nativeHistoryMessages, nativePendingPlayerHistoryEventSequence, playerName,
                 pendingNativeCurrentAfefFacts);
+            string intradayRevision = nativeMemorySnapshot?.UncompressedMessages?
+                .Select(x => x.PromptContextRevision).FirstOrDefault(x => !string.IsNullOrEmpty(x)) ?? "";
+            foreach (var message in persistentMemoryRoleMessages) message.PromptContextRevision = intradayRevision;
             nativeHistoryDisplayName = GetSceneNpcHistoryNameForPrompt(npc);
             string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(nativeHistoryDisplayName, false, minTokens, maxTokens, playerName);
             string nativeSceneActionInstruction = SceneActionsRuntimeHost.BuildNativeConversationActionInstruction();

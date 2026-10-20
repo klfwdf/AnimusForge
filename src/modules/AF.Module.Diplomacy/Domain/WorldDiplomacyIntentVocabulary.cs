@@ -26,17 +26,18 @@ public static class WorldDiplomacyIntentVocabulary
         string token = NormalizeToken(value);
         return token switch
         {
-            "make_peace" or "peace" or "peace_proposal" => "propose_peace",
-            "form_alliance" or "alliance" or "alliance_proposal" => "propose_alliance",
-            "make_trade" or "trade" or "trade_proposal" => "propose_trade",
+            "make_peace" or "peace" or "peace_proposal" or "peace_statement" => "propose_peace",
+            "form_alliance" or "alliance" or "alliance_proposal" or "alliance_treaty" => "propose_alliance",
+            "make_trade" or "trade" or "trade_proposal" or "trade_agreement" => "propose_trade",
             "terminate_alliance" => "break_alliance",
             "end_trade" or "terminate_trade" => "cancel_trade",
-            "war" or "declarewar" => "declare_war",
+            "war" or "declarewar" or "war_declaration" or "declaration_of_war" => "declare_war",
             "complyultimatum" or "comply_with_ultimatum" => "comply_ultimatum",
-            "threat" => "warning",
+            "threat" or "border_warning" => "warning",
             "denounce" => "condemn",
             "accept" => "accept",
             "reject" => "reject",
+            "declare" or "declaration" or "foreign_policy_statement" or "policy_statement" or "declare_policy" or "announcement" => "statement",
             _ => token
         };
     }

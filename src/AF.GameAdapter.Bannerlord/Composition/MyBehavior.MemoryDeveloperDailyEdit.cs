@@ -125,7 +125,7 @@ public partial class MyBehavior
     {
         if (npc == null || !IsMemorySourceEditorCurrent(generation)) return false;
         return MemoryDeveloperEditOwner.EditDialogueHistoryLine(LoadDialogueHistory(npc), day, lineIndex, input,
-            records => SaveDialogueHistory(npc, records));
+            records => { SaveDialogueHistory(npc, records); ConversationPromptCache.Clear(); });
     }
 
     internal bool DeleteDevDailyMemoryDraftData(Hero npc, int day, long generation)

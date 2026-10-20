@@ -152,9 +152,14 @@ function Assert-AnimusForgeEnglishJsonContract {
 
 function ConvertTo-AnimusForgeProtocolContractToken {
     param([string]$Token, [string]$JsonPath, [string]$OriginalPath)
+    if ($Token -ceq '[AFEF PLAYER_ACTION]') { return '[AFEF player action supplement]' }
+    if ($Token -ceq '[AFEF NPC_ACTION]') { return '[AFEF NPC action supplement]' }
     if ([string]::Equals($Token, ([regex]::Unescape('[RELAY:\u63a5\u529b\u7f16\u53f7]')), [StringComparison]::Ordinal)) { return '[RELAY:relay number]' }
     if ($Token -in @(([regex]::Unescape('[AFEF\u73a9\u5bb6\u884c\u4e3a\u8865\u5145]')), ([regex]::Unescape('\u3010AFEF\u73a9\u5bb6\u884c\u4e3a\u8865\u5145\u3011')))) { return '[AFEF player action supplement]' }
     if ($Token -in @(([regex]::Unescape('[AFEF NPC\u884c\u4e3a\u8865\u5145]')), ([regex]::Unescape('\u3010AFEF NPC\u884c\u4e3a\u8865\u5145\u3011')))) { return '[AFEF NPC action supplement]' }
+    if ([IO.Path]::GetFileName($OriginalPath) -cin @('PromptComposerTexts.json', 'PromptComposerTexts.zh-CN.json') -and
+        $JsonPath -ceq '$.scene_action_rule_template' -and
+        $Token -ceq [regex]::Unescape('[ACTION:SCENE_ACT:\u52a8\u4f5c\u7a0b\u5e8f]')) { return '[ACTION:SCENE_ACT:action_sequence]' }
     if ([IO.Path]::GetFileName($OriginalPath) -cne 'RuleBehaviorPrompts.json') { return $Token }
     if ($null -eq $script:AnimusForgeReviewedProtocolExamples) {
         # Only exact documented parameter specimens at reviewed paths may translate.
@@ -192,7 +197,7 @@ function ConvertTo-AnimusForgeProtocolContractToken {
 function Get-AnimusForgeAfefFactMarkerPattern {
     # These exact fact envelopes are consumed by the history/AFEF classifiers.
     # Do not exempt arbitrary bracketed Chinese prose or an entire prompt value.
-    return '\[AFEF(?: NPC|\u73a9\u5bb6| )?\u884c\u4e3a\u8865\u5145\]|\u3010AFEF(?: NPC|\u73a9\u5bb6| )?\u884c\u4e3a\u8865\u5145\u3011'
+    return '\[AFEF (?:NPC_ACTION|PLAYER_ACTION)\]|\[AFEF(?: NPC|\u73a9\u5bb6| )?\u884c\u4e3a\u8865\u5145\]|\u3010AFEF(?: NPC|\u73a9\u5bb6| )?\u884c\u4e3a\u8865\u5145\u3011'
 }
 
 function Test-AnimusForgeChineseJsonProse {
@@ -319,13 +324,33 @@ function Get-AnimusForgePackageProjection {
             try { [BitConverter]::ToString($sha.ComputeHash($bytes)).Replace('-', '') }
             finally { $sha.Dispose() }
         } else { (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash }
-        $projection.Add([pscustomobject]@{ Target = $relative; SourcePath = $source; Bytes = $bytes; Hash = $hash })
+        $outputRelative = $relative
+        if ($Language -eq 'EN' -and $relative.StartsWith('PlayerExports/')) {
+            $exportRoot = (Get-AnimusForgeContentFullPath -Path (Join-Path $ProjectRoot 'content/modules/AF.Module.Onboarding/PlayerExports')).TrimEnd('\', '/') + [IO.Path]::DirectorySeparatorChar
+            $englishPath = [IO.Path]::GetFullPath($source)
+            if (-not $englishPath.StartsWith($exportRoot, [StringComparison]::OrdinalIgnoreCase)) {
+                throw "English worldbook has no source path mapping: $relative"
+            }
+            $outputRelative = 'PlayerExports/' + $englishPath.Substring($exportRoot.Length).Replace('\', '/')
+            Assert-AnimusForgeRelativeContentPath -Path $outputRelative -Label 'English worldbook output'
+            if (Test-AnimusForgeChineseText -Text $outputRelative) { throw "English worldbook output path remains Chinese: $outputRelative" }
+        }
+        $projection.Add([pscustomobject]@{ Target = $outputRelative; SourcePath = $source; Bytes = $bytes; Hash = $hash })
     }
     if ($failures.Count -gt 0) {
         throw "EN package content is incomplete ($($failures.Count) files). First failures:`n$(@($failures | Select-Object -First 12) -join "`n")"
     }
     $targets = @{}
-    foreach ($item in $projection) { $targets[$item.Target] = $true }
+    $uniqueProjection = [Collections.Generic.List[object]]::new()
+    foreach ($item in $projection) {
+        if ($targets.ContainsKey($item.Target)) {
+            if ($targets[$item.Target].Hash -cne $item.Hash) { throw "Conflicting projected output: $($item.Target)" }
+            continue
+        }
+        $targets[$item.Target] = $item
+        $uniqueProjection.Add($item)
+    }
+    $projection = $uniqueProjection
     foreach ($item in $projection | Where-Object { $_.Target -match '\.xml$' }) {
         try {
             $xmlText = if ($null -ne $item.Bytes) { [Text.Encoding]::UTF8.GetString($item.Bytes) } else { [IO.File]::ReadAllText($item.SourcePath, [Text.Encoding]::UTF8) }

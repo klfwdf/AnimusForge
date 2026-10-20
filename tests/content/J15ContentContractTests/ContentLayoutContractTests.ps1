@@ -111,10 +111,25 @@ Assert-Contract (-not $deploy.Contains('Merge-InstalledCustomPromptsIntoStaging'
 $promptEntries = @($realMap.entries | Where-Object { $_.target.StartsWith('ModuleData/Defaults/CustomPrompts/') })
 $policyEntries = @($promptEntries | Where-Object { $_.target.StartsWith('ModuleData/Defaults/CustomPrompts/Policy/') })
 Assert-Contract ($promptEntries.Count -eq 31 -and $policyEntries.Count -eq 22) 'mapped immutable prompt default counts'
-Assert-Contract (@($realMap.entries | Where-Object { $_.target.StartsWith('CustomPrompts/') }).Count -eq 0) 'user overrides must not be packaged as defaults'
+$seedEntries = @($realMap.entries | Where-Object { $_.target.StartsWith('CustomPrompts/') })
+$historicalEditableFiles = @(
+    'PlayerCustomPromptRule.json', 'KingdomRebellionSystemPrompt.json', 'WeeklyReportWritingRequirements.json',
+    'NpcPersonaGenerationRequirements.json', 'DailyMemoryCompressionWritingRequirements.json',
+    'MemoryOverviewCompressionWritingRequirements.json', 'MajorActionCompressionWritingRequirements.json',
+    'Policy/CustomPolicyEvaluatorPrompt.json', 'Policy/NpcRulerPolicyPrompt.json', 'WorldDiplomacyPrompt.json'
+)
+Assert-Contract ($seedEntries.Count -eq 10) 'exactly ten historical editable prompts must ship'
+foreach ($relative in $historicalEditableFiles) {
+    Assert-Contract (@($seedEntries | Where-Object target -eq ('CustomPrompts/' + $relative)).Count -eq 1) "historical editable prompt missing: $relative"
+}
+foreach ($seed in $seedEntries) {
+    $default = @($promptEntries | Where-Object target -eq ('ModuleData/Defaults/' + $seed.target))
+    Assert-Contract ($default.Count -eq 1 -and $default[0].source -ceq $seed.source) 'editable seeds must use reviewed defaults'
+    Assert-Contract ((Get-FileHash -LiteralPath (Join-Path $realDestination $seed.target)).Hash -eq (Get-FileHash -LiteralPath (Join-Path $realDestination $default[0].target)).Hash) 'editable seed projection must match its default'
+}
 foreach ($entry in $promptEntries) {
     $source = Join-Path $ProjectRoot ([string]$entry.source)
     $target = Join-Path $realDestination ([string]$entry.target)
     Assert-Contract ((Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash -eq (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash) 'prompt default drift'
 }
-Write-Output 'customPromptProjection defaults=31 policy=22 userOverrideTargets=0 installedMerge=ABSENT PASS'
+Write-Output 'customPromptProjection defaults=31 policy=22 editableSeedTargets=10 installedMerge=ABSENT PASS'

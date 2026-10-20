@@ -109,7 +109,15 @@ internal static class NativeMemoryHistoryMergeOwner
             bool player = ConversationRoleClassificationOwner.IsLikelyPlayerHistorySpeaker(speaker)
                 || string.Equals(speaker, (playerName ?? "").Trim(), StringComparison.Ordinal);
             if (!player) return false;
-            ConversationRoleClassificationOwner.TryStripAddressedSpeech(content, speaker, target, out content);
+            // Old persisted lines can contain a storage wrapper inside the captured wrapper.
+            // Strip at most those two exact known-speaker/recipient headers, never narrative mentions.
+            for (int layer = 0; layer < 2; layer++)
+            {
+                if (ConversationRoleClassificationOwner.TryStripAddressedSpeech(content, speaker, target, out var speech)
+                    || ConversationRoleClassificationOwner.TryStripAddressedSpeech(content, (playerName ?? "").Trim(), target, out speech))
+                    content = speech;
+                else break;
+            }
             speaker = "player";
         }
         else if (role == "assistant")

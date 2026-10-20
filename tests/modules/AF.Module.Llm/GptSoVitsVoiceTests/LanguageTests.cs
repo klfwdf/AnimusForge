@@ -22,7 +22,7 @@ static class LanguageTests
             }
         }
         finally { DuelSettings.Current = previous; }
-        foreach (var group in new[] { new[]{"zh","all_zh","中文","普通话","Chinese","zh-CN"}, new[]{"yue","all_yue","粤语","广东话","Cantonese","zh-HK"}, new[]{"ja","all_ja","日语","日本語","Japanese","ja-JP"}, new[]{"en","en","英语","英文","English","en-US"} })
+        foreach (var group in new[] { new[]{"zh","all_zh","中文","汉语","漢語","普通话","普通話","国语","國語","Chinese","zh-CN"}, new[]{"yue","all_yue","粤语","粵語","广东话","廣東話","Cantonese","zh-HK"}, new[]{"ja","all_ja","日语","日語","日文","日本語","Japanese","ja-JP"}, new[]{"en","en","英语","英語","英文","English","en-US"} })
         {
             foreach (string alias in group.Skip(2)) check(GptSoVitsLanguage.Parse(" "+alias+" ").EngineCode == group[1], "alias maps to forced engine code "+alias);
             var language = GptSoVitsLanguage.Parse(group[0]);
@@ -36,7 +36,7 @@ static class LanguageTests
             }));
             check((await new GptSoVitsTtsGateway(http).SynthesizeAsync(request,CancellationToken.None)).Success, "actual gateway request accepted");
         }
-        foreach (string input in new[]{null,"","auto","自动"}) check(GptSoVitsLanguage.Parse(input)==GptSoVitsLanguage.Auto,"blank retains legacy auto");
+        foreach (string input in new[]{null,"","auto","自动","自動","跟随正文"}) check(GptSoVitsLanguage.Parse(input)==GptSoVitsLanguage.Auto,"blank retains legacy auto");
         foreach (string input in new[]{"韩语","French","zh;ja","[ACTION:END]",new string('a',65)}) check(!GptSoVitsLanguage.Parse(input).IsSupported,"unknown does not silently auto-detect");
         var ja=GptSoVitsLanguage.Parse("日语"); var zh=GptSoVitsLanguage.Parse("中文");
         string body="你好，旅人！", translated="こんにちは、旅人さん！";

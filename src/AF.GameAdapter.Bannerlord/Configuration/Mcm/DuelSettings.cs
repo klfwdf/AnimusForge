@@ -1248,10 +1248,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestHeroCooldownDays { get; set; } = 14;
 
-	[SettingPropertyFloatingInteger("{=AF_MCM_Proactive_Distance}Candidate distance multiplier", 0.5f, 5f, "0.0", Order = 7, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Distance_Hint}Maximum candidate distance equals player sight range multiplied by this value. Default: 1.0.")]
-	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
-	public float ProactiveNpcRequestDistanceMultiplier { get; set; } = 1.0f;
-
 	[SettingPropertyInteger("{=AF_MCM_Proactive_Food}Food threshold (days)", 0, 15, "0", Order = 8, RequireRestart = false, HintText = "{=AF_MCM_Proactive_Food_Hint}A food need can trigger when an NPC party has at most this many food days or is already starving. Default: 2 days.")]
 	[SettingPropertyGroup("{=AF_MCM_Proactive_Group}7. Proactive NPC contact")]
 	public int ProactiveNpcRequestFoodDaysThreshold { get; set; } = 2;

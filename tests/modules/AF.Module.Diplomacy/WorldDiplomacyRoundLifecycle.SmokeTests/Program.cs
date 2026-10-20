@@ -93,6 +93,22 @@ internal static class Program
     private static int Main(string[] args)
     {
         SmokeLocalizationEnvironment.Initialize();
+        if (args.Length == 1 && args[0] == "--maintenance-safety")
+        {
+            MaintenanceSafetyReplay.Run();
+            Console.WriteLine($"Diplomacy maintenance safety passed: {Test.Assertions} assertions.");
+            return 0;
+        }
+        if (args.Length == 1 && args[0] == "--envelope-alias-review")
+        {
+            EnvelopeAliasReviewReplay.Run();
+            RunEnvelopeJsonDecisionTests();
+            RunSingleActionLegalityDecisionTests();
+            RunGeneratedEnvelopeApplicationDecisionTests();
+            RunGeneratedDocumentCommitDecisionTests();
+            Console.WriteLine($"Envelope alias review passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         CanonicalProjectionPreservesProse();
         PackagedOralProtocolParity();
         AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
@@ -249,6 +265,7 @@ internal static class Program
             Console.WriteLine($"R1 generation task replay passed: {Test.Assertions} assertions.");
             return 0;
         }
+        MaintenanceSafetyReplay.Run();
         OrdinaryAdmissionReplay.Run(); ReviewFixReplay.Run(); LifecycleRepairReplay.Run();
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
@@ -5100,7 +5117,7 @@ RunRepairCorrectionAndJobDecisionTests();
             })
         };
         WorldDiplomacyEnvelopeJsonRules.MirrorFirstGeneratedActionEnvelope(mirrored, (JArray)mirrored["actions"]);
-        Test.True((string)mirrored["author_intent"]["intent"] == "war_declaration"
+        Test.True((string)mirrored["author_intent"]["intent"] == "declare_war"
                 && (string)mirrored["author_intent"]["commitment"] == "binding"
                 && (string)mirrored["primary_target_kingdom_id"] == "k3"
                 && (string)mirrored["responding_to_threat_document_id"] == "threat-7",
@@ -11558,6 +11575,13 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(!Legality(Job(), ValidJson("propose_trade"), out string t0, out string r0)
                   && t0 == "kB" && r0 == "",
             "a fully legal single action must pass the chain and bind its resolved target");
+        Test.True(Legality(Job(), ValidJson(""), out _, out string missingIntent)
+                  && missingIntent == "unsupported_intent_or_commitment",
+            "a missing action intent must be rejected rather than defaulted to a statement");
+        Test.True(Legality(Job(), ValidJson("statement", "kB", "\"negotiation_move\":\"\""), out _, out string missingMove,
+                  nonRootRelayNoActionAllowed: (_, _, _) => true)
+                  && missingMove == "statement_missing_negotiation_move",
+            "an authorized statement still requires an explicit negotiation move");
         Test.True(Legality(Job(), ValidJson("propose_trade", "kB", "\"mentioned_kingdom_ids\":null"), out _, out string r1)
                   && r1 == "semantic_envelope_incomplete",
             "a null required envelope field must be rejected as incomplete");

@@ -1919,8 +1919,13 @@ internal sealed class SceneMovementController
 		{
 			try
 			{
-				string text2 = await SceneCompactReactionRuntime.GenerateAsync(await _ports.CaptureCompactSceneReactionInputAsync(sceneNpcDataFromLocationCharacter, hero, sceneSummonArrivalContextSnapshot, extraFactLine, singleReplyUserContent, IsCurrent).ConfigureAwait(false)).ConfigureAwait(false);
-				if (generation == Volatile.Read(ref _generation)) request.PreGeneratedArrivalSpeech = text2;
+				using var input = await _ports.CaptureCompactSceneReactionInputAsync(sceneNpcDataFromLocationCharacter, hero, sceneSummonArrivalContextSnapshot, extraFactLine, singleReplyUserContent, IsCurrent).ConfigureAwait(false);
+                string text2 = await SceneCompactReactionRuntime.GenerateAsync(input).ConfigureAwait(false);
+                if (generation == Volatile.Read(ref _generation))
+                {
+                    input?.Accept(text2);
+                    request.PreGeneratedArrivalSpeech = text2;
+                }
 			}
 			catch (Exception ex)
 			{

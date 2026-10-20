@@ -120,5 +120,21 @@
   "AF_SOCIAL_UI_ProactiveNeed_31": "A specific request",
   "experience_recent": "[Known player recent action — context for the NPC-initiated conversation; not a new action]",
   "experience_history": "[Known player history — context for the NPC-initiated conversation; not a new action]",
-  "experience_letter_fallback": "I would like to hear your thoughts about this account:"
+  "experience_letter_fallback": "I would like to hear your thoughts about this account:",
+  "IntimacyDecisionContract": "Before selecting the intimacy action, classify both fields from the two current statements: occurred=YES only for an explicit completed current event with the required internal ejaculation; NO for a request, future plan, recollection, refusal preventing the event, or an unconsummated attempt; UNCERTAIN when evidence is incomplete or conflicting. npc_denial=YES when the NPC denies occurrence or rejects/interrupts the narrated event, even if the player asserts completion; NO only when the reply contains no such contradiction, otherwise UNCERTAIN. Output exactly one qualified decision using the tag template, including negative or uncertain decisions. The engine applies the action only for occurred=YES;npc_denial=NO. Never output the unqualified intimacy tag. Player narration alone cannot override a current NPC denial. A refusal of a future proposal does not negate an independently established earlier completed event in the current turn. Example: Player claims completion; NPC says \"Stop. That did not happen.\" -> occurred=NO;npc_denial=YES. A hypothetical or a claim about an earlier day -> occurred=NO;npc_denial=NO. No uncertainty may be converted into an accomplished fact.",
+  "Fact_S113": "No explicit bride-price record",
+  "Fact_S115": "The {0} clan paid the {1} clan a bride price of {2:N0} denars",
+  "Fact_S162": "You agreed to the formal marriage of {0} and {1}. {2}.",
+  "Fact_S163": "You formally married {0}. {1}.",
+  "Fact_S164": "You eloped and married {1} of the {0} clan.",
+  "Fact_S165": "You eloped and married the player.",
+  "Fact_S166": "The player eloped and married {1} of the {0} clan.",
+  "Fact_S167": " A refund of {0:N0} denars of bride price was agreed.",
+  "Fact_S168": "The marriage between {0} and {1} was dissolved. {2}",
+  "Fact_S169": "Your marriage to {0} was dissolved. {1}",
+  "Fact_S170": "Your clan's marriage arrangement with {0} was dissolved. {1}",
+  "Fact_S185": "You paid the player a bride price of {0:N0} denars.",
+  "Fact_S187": "You received a bride price of {1:N0} denars from {0}.",
+  "Fact_S440": "{0}, formerly {1}, agreed at {2} to follow the player, became a companion and joined the player's party.",
+  "Fact_S441": "{0}, formerly {1}, agreed at {2} to follow the player, became a member of the player's clan and joined the player's party."
 }

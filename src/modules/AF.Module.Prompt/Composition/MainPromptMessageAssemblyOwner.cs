@@ -57,7 +57,7 @@ internal static class MainPromptMessageAssemblyOwner
 		string contextText = context.ToString().Trim();
 		if (!string.IsNullOrWhiteSpace(contextText))
 		{
-			messages.Add(CreateCourierChatMessage("user", contextText));
+			messages.Add(CreateCourierChatMessage("user", PromptRuleBlockText.ProjectHeadersForPrompt(contextText)));
 		}
 		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
 		StringBuilder current = new StringBuilder();
@@ -67,7 +67,7 @@ internal static class MainPromptMessageAssemblyOwner
 		{
 			current.AppendLine();
 			current.AppendLine(PromptComposerTexts.Get("main_courier_004"));
-			current.AppendLine(PromptComposerTexts.Raw("history_section_scope_current") + deliveryFact.Trim());
+			current.AppendLine(PromptComposerTexts.Get("history_section_scope_current") + MemorySystemFactProjection.ProjectNpcFact(deliveryFact.Trim()));
 		}
 		current.AppendLine();
 		current.AppendLine(PromptComposerTexts.Get("main_courier_006") + npcName + PromptComposerTexts.Get("main_courier_007"));
@@ -123,7 +123,7 @@ internal static class MainPromptMessageAssemblyOwner
 		string contextText = context.ToString().Trim();
 		if (!string.IsNullOrWhiteSpace(contextText))
 		{
-			messages.Add(CreateCourierChatMessage("user", contextText));
+			messages.Add(CreateCourierChatMessage("user", PromptRuleBlockText.ProjectHeadersForPrompt(contextText)));
 		}
 		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
 		StringBuilder current = new StringBuilder();
@@ -133,7 +133,7 @@ internal static class MainPromptMessageAssemblyOwner
 		{
 			current.AppendLine();
 			current.AppendLine(PromptComposerTexts.Get("main_courier_012"));
-			current.AppendLine(PromptComposerTexts.Raw("history_section_scope_current") + fact.Trim());
+			current.AppendLine(PromptComposerTexts.Get("history_section_scope_current") + MemorySystemFactProjection.ProjectNpcFact(fact.Trim()));
 		}
 		current.AppendLine();
 		current.AppendLine(PromptComposerTexts.Get("main_courier_014") + npcName + PromptComposerTexts.Get("main_courier_015") + playerName + PromptComposerTexts.Get("main_courier_016") + letterKind + PromptComposerTexts.Get("main_courier_017"));
@@ -143,11 +143,7 @@ internal static class MainPromptMessageAssemblyOwner
 
 	internal static object CreateCourierChatMessage(string role, string content)
 	{
-		return new
-		{
-			role = role ?? "",
-			content = content ?? ""
-		};
+        return new ConversationPromptMessage(role ?? "", content ?? "");
 	}
 
 	internal static void AppendCourierRawUserSection(StringBuilder builder, string content)
@@ -186,10 +182,18 @@ internal static class MainPromptMessageAssemblyOwner
 		{
 			return;
 		}
-		foreach (ConversationMessage message in historyMessages.Where((ConversationMessage x) => x != null && !string.IsNullOrWhiteSpace(x.Content)))
+        var history = historyMessages.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Content)).ToList();
+        int totalGroups = 0;
+        foreach (var speech in history)
+            if (speech.Role != "system" && (totalGroups == 0 || speech.Role == "user")) totalGroups++;
+        int group = 0;
+		foreach (ConversationMessage message in history)
 		{
+            if (message.Role != "system" && (group == 0 || message.Role == "user")) group++;
 			if (TryConvertCourierMemoryMessageToChatMessage(message, npcName, playerName, out var chatMessage))
 			{
+                if (message.Role != "system" && group < totalGroups && chatMessage is ConversationPromptMessage speech)
+                    chatMessage = new ConversationPromptMessage(speech.role, speech.content, group);
 				messages.Add(chatMessage);
 			}
 		}
@@ -220,7 +224,7 @@ internal static class MainPromptMessageAssemblyOwner
 		}
 		if (role.Equals("system", StringComparison.OrdinalIgnoreCase))
 		{
-			chatMessage = CreateCourierChatMessage("user", metadata + PromptComposerTexts.Raw("main_history_raw_019") + MemorySystemFactProjection.ProjectNpcFact(StripCourierPromptScopeLabel(content)));
+			chatMessage = CreateCourierChatMessage("user", metadata + PromptComposerTexts.Get("history_section_scope_historical") + MemorySystemFactProjection.ProjectNpcFact(StripCourierPromptScopeLabel(content)));
 			return true;
 		}
 		if (role.Equals("assistant", StringComparison.OrdinalIgnoreCase))
@@ -319,7 +323,7 @@ internal static class MainPromptMessageAssemblyOwner
 			string text = (section ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text))
 			{
-				messages.Add(CreateCourierChatMessage("user", text));
+				messages.Add(CreateCourierChatMessage("user", PromptRuleBlockText.ProjectHeadersForPrompt(text)));
 			}
 		}
 	}

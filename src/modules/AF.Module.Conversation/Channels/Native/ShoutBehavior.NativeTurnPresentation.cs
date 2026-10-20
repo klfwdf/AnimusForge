@@ -37,16 +37,20 @@ namespace AnimusForge;
                         () => { if (!SaveRuntimeGuard.IsCurrentGeneration(admission.Generation) || !_ports.IsNativeConversationAdmissionCurrent(admission, out _)) return false;
                             ProactiveNpcRequestBehavior.FinishExperienceOpening(admission.ExperienceTicket, true); return true; }, false);
             };
+            using var promptCache = ConversationPromptCache.Begin(messages, "native", admission.Generation,
+                admission.ConversationToken, nativeTargetLog + "#" + nativeTargetAgentIndex
+                    + "@scene:" + GetCurrentSceneHistorySessionIdForExternal());
             NativeConversationMainReplyResult nativeMainReply;
             try
             {
                 nativeMainReply = await NativeConversationMainReplyStage.RunAsync(
                     new NativeConversationMainReplyRuntime(_ports, admission, nativeTargetLog,
                         nativePendingAfefKey, nativePendingPlayerHistoryEventSequence),
-                    messages, showStream, npcName, nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw).ConfigureAwait(false);
+                    promptCache.Messages, showStream, npcName, nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw).ConfigureAwait(false);
             }
             finally { if (experienceAck != null) await experienceAck.ConfigureAwait(false); }
             if (!nativeMainReply.CanContinue) return NativeConversationTurnStep.Stop(nativeMainReply.StopText);
+            promptCache.Accept(nativeMainReply.PostprocessReply, !admission.Lifetime.Token.IsCancellationRequested);
             postprocessReply = LocalTtsToneTag.Strip(nativeMainReply.PostprocessReply);
             localSpeech = LocalTtsSpeech.Neutral;
             cleaned = "";

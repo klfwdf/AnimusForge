@@ -49,6 +49,12 @@ $entries = @(
     @{ owner='Fixture'; source="content/modules/AF.Module.Onboarding/PlayerExports/$han/knowledge/rules/original.json"; target="PlayerExports/$han/knowledge/rules/original.json" },
     @{ owner='Fixture'; source='content/SharedRaw.json'; target='ModuleData/SharedRaw.json'; logicalName='SharedRaw.json'; localizationRole='compatibility' }
 )
+$entries += @(
+    @{ owner='Fixture'; source='content/Prompt.json'; target='ModuleData/Defaults/CustomPrompts/Example.json' },
+    @{ owner='Fixture'; source='content/Prompt.json'; target='CustomPrompts/Example.json' },
+    @{ owner='Fixture'; source='content/Prompt.json'; target='ModuleData/Defaults/CustomPrompts/Policy/Example.json' },
+    @{ owner='Fixture'; source='content/Prompt.json'; target='CustomPrompts/Policy/Example.json' }
+)
 FixtureText (Join-Path $root 'content/Prompt.json') ('{"Text":"' + $han + '"}')
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt"}'
 FixtureText (Join-Path $root 'content/SharedRaw.json') ('{"OriginalMarker":"' + $han + '"}')
@@ -88,10 +94,18 @@ $snapshots = @{}
 foreach ($file in Get-ChildItem -LiteralPath $root -Recurse -File) { $snapshots[$file.FullName] = (Get-FileHash -LiteralPath $file.FullName).Hash }
 $cn = @(Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language CN -PackageVersion v1.5.6)
 $en = @(Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6)
-$mappedProjection = @($en | Where-Object Target -eq $entries[7].target)[0]
-$mappedBody = [Text.Encoding]::UTF8.GetString($mappedProjection.Bytes) | ConvertFrom-Json
+foreach ($plan in @(@{Language='CN'; Rows=$cn}, @{Language='EN'; Rows=$en})) {
+    foreach ($relative in @('Example.json', 'Policy/Example.json')) {
+        $seed = @($plan.Rows | Where-Object Target -eq ('CustomPrompts/' + $relative))[0]
+        $fixed = @($plan.Rows | Where-Object Target -eq ('ModuleData/Defaults/CustomPrompts/' + $relative))[0]
+        Check ($null -ne $seed -and $seed.Hash -ceq $fixed.Hash) "$($plan.Language) editable prompt must match package defaults: $relative"
+        if ($plan.Language -eq 'EN') { Check ($seed.SourcePath.EndsWith('Prompt.en.json')) 'EN editable prompts use English resources.' }
+    }
+}
+$mappedProjection = @($en | Where-Object Target -eq 'PlayerExports/Translated Book/knowledge/rules/renamed.json')[0]
+$mappedBody = Get-Content -LiteralPath $mappedProjection.SourcePath -Raw -Encoding UTF8 | ConvertFrom-Json
 Check ($mappedProjection.SourcePath -eq $mappedEnglishPath) 'Explicit identity map selects translated rules from nonstandard worldbooks.'
-Check ($mappedBody.Id -ceq $mappedOriginalId -and $mappedBody.Content.StartsWith('English')) 'Projected English prose retains the original stable rule identity.'
+Check ($mappedBody.Id -ceq 'rule_english' -and $mappedBody.Content.StartsWith('English')) 'Projected English prose retains the English rule identity.'
 Check ((Get-Content -LiteralPath $mappedEnglishPath -Raw | ConvertFrom-Json).Id -ceq 'rule_english') 'Projection does not rewrite the English source identity.'
 FixtureText $mappedEnglishPath ($mappedEnglish.Replace('rule_english', 'rule_wrong'))
 Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'Stale explicit identities must be rejected.' 'Worldbook rule identity mapping is stale:'
@@ -111,7 +125,8 @@ foreach ($target in @('ModuleData/Languages/CNs/zh.xml', 'ModuleData/Languages/C
     Check (@($en | Where-Object Target -eq $target)[0].Hash -eq @($cn | Where-Object Target -eq $target)[0].Hash) "Both editions retain identical UI bytes: $target"
 }
 Check (@($en | Where-Object { $_.Target -match '\.en(?:-US)?\.json$' }).Count -eq 0) 'Parallel English filenames must not leak into the package.'
-Check (@($en | Where-Object { $_.Target -eq $entries[5].target }).Count -eq 1) 'Worldbook original filename and directory must remain intact.'
+Check (@($en | Where-Object { $_.Target -match '^PlayerExports/' -and (Test-AnimusForgeChineseText -Text $_.Target) }).Count -eq 0) 'EN worldbook directories and filenames must be English.'
+Check (@($cn | Where-Object Target -eq $entries[5].target).Count -eq 1) 'CN worldbook paths remain intact.'
 Check (@($en | Where-Object { $_.Target -eq 'ModuleData/Prompt.json' })[0].SourcePath.EndsWith('Prompt.en.json')) 'English body must replace the original JSON filename.'
 foreach ($api in @('1.3', '1.4')) {
     $target = "bin/Win64_Shipping_Client/versions/$api/AnimusForge.dll"

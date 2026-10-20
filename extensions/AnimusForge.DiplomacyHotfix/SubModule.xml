@@ -1,0 +1,23 @@
+<Module>
+  <Name value="AnimusForge.DiplomacyHotfix" />
+  <Id value="AnimusForge.DiplomacyHotfix" />
+  <Version value="v0.1.0" />
+  <SingleplayerModule value="true" />
+  <MultiplayerModule value="false" />
+  <DependedModules>
+    <DependedModule Id="Native" />
+    <DependedModule Id="Bannerlord.Harmony" />
+    <DependedModule Id="AnimusForge" />
+  </DependedModules>
+  <SubModules>
+    <SubModule>
+      <Name value="AnimusForge.DiplomacyHotfix" />
+      <DLLName value="AnimusForge.DiplomacyHotfix.dll" />
+      <SubModuleClassType value="AnimusForge.DiplomacyHotfix.SubModule" />
+      <Tags>
+        <Tag key="DedicatedServerType" value="none" />
+        <Tag key="IsNoRenderModeElement" value="false" />
+      </Tags>
+    </SubModule>
+  </SubModules>
+</Module>

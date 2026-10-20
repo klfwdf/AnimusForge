@@ -117,6 +117,7 @@ public override void OnMissionBehaviorInitialize(Mission mission)
 	{
 		base.OnBeforeInitialModuleScreenSetAsRoot();
 		StartupPatchComposition.Register();
+        new Harmony("com.animusforge.integrated.promptcache").UnpatchAll("com.animusforge.promptcache");
 		IntegratedModuleHost.InstallDialoguePresentation();
 	}
 

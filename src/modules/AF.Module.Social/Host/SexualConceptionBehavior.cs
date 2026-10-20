@@ -15,6 +15,7 @@ namespace AnimusForge;
 public static class SexualConceptionBehavior
 {
 	public const string IntimacyActionTag = "[ACTION:INTIMACY_INTERNAL]";
+	internal const string IntimacyDecisionTemplate = "[ACTION:INTIMACY_INTERNAL:occurred=YES|NO|UNCERTAIN;npc_denial=YES|NO|UNCERTAIN]";
 
 	private const float DefaultPregnancyChance = 0.5f;
 
@@ -81,14 +82,25 @@ public static class SexualConceptionBehavior
 			return new List<PostprocessRuleEntry>();
 		}
 		return (AIConfigHandler.IntimacyPostprocessRules ?? new List<PostprocessRuleEntry>())
-			.Where((PostprocessRuleEntry rule) => string.Equals((rule?.Tag ?? "").Trim(), IntimacyActionTag, StringComparison.OrdinalIgnoreCase))
+			.Where((PostprocessRuleEntry rule) => string.Equals((rule?.Tag ?? "").Trim(), IntimacyActionTag, StringComparison.OrdinalIgnoreCase)
+                || string.Equals((rule?.Tag ?? "").Trim(), IntimacyDecisionTemplate, StringComparison.OrdinalIgnoreCase))
+            .Select(rule => new PostprocessRuleEntry {
+                Tag = IntimacyDecisionTemplate,
+                Description = (rule.Description ?? "") + "\n" + SocialPromptTexts.Get("IntimacyDecisionContract")
+            })
 			.ToList();
 	}
 
 	public static string NormalizePostprocessTags(string raw, IEnumerable<PostprocessRuleEntry> rules)
 	{
-		bool allowed = (rules ?? Enumerable.Empty<PostprocessRuleEntry>()).Any((PostprocessRuleEntry rule) => string.Equals((rule?.Tag ?? "").Trim(), IntimacyActionTag, StringComparison.OrdinalIgnoreCase));
-		return allowed && IntimacyTagRegex.IsMatch(raw ?? "") ? IntimacyActionTag : "";
+		bool allowed = (rules ?? Enumerable.Empty<PostprocessRuleEntry>()).Any(rule =>
+            string.Equals((rule?.Tag ?? "").Trim(), IntimacyDecisionTemplate, StringComparison.OrdinalIgnoreCase));
+        if (!allowed) return "";
+        var decisions = Regex.Matches(raw ?? "", @"\[ACTION:INTIMACY_INTERNAL:occurred=(YES|NO|UNCERTAIN);npc_denial=(YES|NO|UNCERTAIN)\]", RegexOptions.IgnoreCase);
+        // Missing, ambiguous or contradictory classifications never become a pregnancy/fact event.
+        if (decisions.Count != 1) return "";
+        return string.Equals(decisions[0].Groups[1].Value, "YES", StringComparison.OrdinalIgnoreCase)
+            && string.Equals(decisions[0].Groups[2].Value, "NO", StringComparison.OrdinalIgnoreCase) ? IntimacyActionTag : "";
 	}
 
 	public static bool TryApplyIntimacyTags(Hero targetHero, ref string responseText, string chainName)

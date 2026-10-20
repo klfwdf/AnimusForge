@@ -7,15 +7,23 @@ using System.Threading.Tasks;
 namespace AnimusForge;
 
 // Only detached role messages and speech-rule options cross into model execution.
-internal sealed class SceneCompactReactionInput
+internal sealed class SceneCompactReactionInput : IDisposable
 {
     internal readonly IReadOnlyList<object> Messages;
     internal readonly ConversationSpeechTextOptions SpeechOptions;
-    internal SceneCompactReactionInput(IEnumerable<object> messages, ConversationSpeechTextOptions speechOptions)
+    internal readonly long Generation;
+    internal readonly int SessionId;
+    internal readonly string Actor;
+    internal ConversationPromptCache.Request Cache;
+    internal SceneCompactReactionInput(IEnumerable<object> messages, ConversationSpeechTextOptions speechOptions,
+        long generation = 0, int sessionId = 0, string actor = null)
     {
         Messages = (messages ?? Enumerable.Empty<object>()).ToArray();
         SpeechOptions = speechOptions;
+        Generation = generation; SessionId = sessionId; Actor = actor;
     }
+    internal void Accept(string reply) => Cache?.Accept(reply);
+    public void Dispose() => Cache?.Dispose();
 }
 
 internal static class SceneCompactReactionRuntime
@@ -28,7 +36,8 @@ internal static class SceneCompactReactionRuntime
 
     private static string Generate(SceneCompactReactionInput input)
     {
-        if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(new List<object>(input.Messages), 80, 0.35f, out var text2, out var error))
+        input.Cache = ConversationPromptCache.Begin(new List<object>(input.Messages), "scene_auxiliary", input.Generation, input.SessionId, input.Actor);
+        if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(input.Cache.Messages, 80, 0.35f, out var text2, out var error))
         {
             Logger.Log("ShoutBehavior", "[CompactSceneReaction] auxiliary_simple_dialogue failed: " + error);
             return "";

@@ -544,8 +544,6 @@
   <string id="AF_MCM_Proactive_GlobalCooldown_Hint" text="任意一次主动接触启动后，多少小时内不再启动下一次。正常游玩默认 24 小时。" />
   <string id="AF_MCM_Proactive_HeroCooldown" text="同 NPC 冷却(天)" />
   <string id="AF_MCM_Proactive_HeroCooldown_Hint" text="同一 NPC 主动接触玩家后，多少天内不会再次以同类需求来找玩家。正常游玩默认 14 天。" />
-  <string id="AF_MCM_Proactive_Distance" text="候选距离倍率" />
-  <string id="AF_MCM_Proactive_Distance_Hint" text="候选 NPC 与玩家的最大距离为玩家视野范围乘以该倍率。正常游玩默认 1.0。" />
   <string id="AF_MCM_Proactive_Food" text="缺粮阈值(天)" />
   <string id="AF_MCM_Proactive_Food_Hint" text="NPC 队伍剩余粮食天数小于等于该值，或已经饥饿时，可以触发缺粮主动接触。正常游玩默认 2 天。" />
   <string id="AF_MCM_Proactive_Money" text="缺钱现金阈值" />
@@ -1478,9 +1476,6 @@
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Title" text="家族金库阈值" />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Hint" text="NPC 家族金库低于该值时，可以触发家族财政紧张主动接触；0 表示不看金库。正常游玩默认 15000。" />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestClanGoldThreshold_Group" text="7. NPC主动接触" />
-  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Title" text="候选距离倍率" />
-  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Hint" text="候选 NPC 与玩家的最大距离为玩家视野范围乘以该倍率。正常游玩默认 1.0。" />
-  <string id="AF_TERMINAL_UI_ProactiveNpcRequestDistanceMultiplier_Group" text="7. NPC主动接触" />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Title" text="封地驻军阈值" />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Hint" text="NPC 家族封地驻军低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看驻军。正常游玩默认 80。" />
   <string id="AF_TERMINAL_UI_ProactiveNpcRequestFiefGarrisonThreshold_Group" text="7. NPC主动接触" />

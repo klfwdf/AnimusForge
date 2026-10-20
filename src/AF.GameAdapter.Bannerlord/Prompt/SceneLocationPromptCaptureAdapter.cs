@@ -519,10 +519,10 @@ internal static string BuildSettlementFlavorLineForPrompt(Hero perspectiveHero)
 			{
 				return "";
 			}
-			string settlementName = (settlement.Name?.ToString() ?? "").Trim();
-			string rulerName = (settlement.OwnerClan?.Leader?.Name?.ToString() ?? "").Trim();
-			string clanName = (settlement.OwnerClan?.Name?.ToString() ?? "").Trim();
-			string factionName = (settlement.MapFaction?.Name?.ToString() ?? "").Trim();
+			string settlementName = (NativePromptLiteralProjection.Render(settlement.Name) ?? "").Trim();
+			string rulerName = (NativePromptLiteralProjection.Render(settlement.OwnerClan?.Leader?.Name) ?? "").Trim();
+			string clanName = (NativePromptLiteralProjection.Render(settlement.OwnerClan?.Name) ?? "").Trim();
+			string factionName = (NativePromptLiteralProjection.Render(settlement.MapFaction?.Name) ?? "").Trim();
 			string officialTitle = "";
 			try
 			{
@@ -532,7 +532,7 @@ internal static string BuildSettlementFlavorLineForPrompt(Hero perspectiveHero)
 				{
 					cultureId += "_f";
 				}
-				officialTitle = ((mapFaction == null || !mapFaction.IsKingdomFaction || settlement.OwnerClan?.Leader == null || mapFaction.Leader != settlement.OwnerClan.Leader) ? GameTexts.FindText("str_faction_official", cultureId)?.ToString() : GameTexts.FindText("str_faction_ruler", cultureId)?.ToString());
+				officialTitle = ((mapFaction == null || !mapFaction.IsKingdomFaction || settlement.OwnerClan?.Leader == null || mapFaction.Leader != settlement.OwnerClan.Leader) ? NativePromptLiteralProjection.Render(GameTexts.FindText("str_faction_official", cultureId)) : NativePromptLiteralProjection.Render(GameTexts.FindText("str_faction_ruler", cultureId)));
 				officialTitle = (officialTitle ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 			}
 			catch
@@ -542,16 +542,16 @@ internal static string BuildSettlementFlavorLineForPrompt(Hero perspectiveHero)
 			List<string> removablePrefixes = new List<string>();
 			if (!string.IsNullOrWhiteSpace(settlementName) && !string.IsNullOrWhiteSpace(factionName) && !string.IsNullOrWhiteSpace(officialTitle) && !string.IsNullOrWhiteSpace(rulerName))
 			{
-				removablePrefixes.Add(settlementName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_059") + factionName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_060") + officialTitle + "，" + rulerName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_061"));
+				removablePrefixes.Add(settlementName + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0801") + factionName + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0802") + officialTitle + "，" + rulerName + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0803"));
 			}
 			if (!string.IsNullOrWhiteSpace(settlementName) && !string.IsNullOrWhiteSpace(rulerName))
 			{
-				removablePrefixes.Add(settlementName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_062") + rulerName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_063"));
-				removablePrefixes.Add(settlementName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_062") + rulerName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_065"));
+				removablePrefixes.Add(settlementName + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0804") + rulerName + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0805"));
+				removablePrefixes.Add(settlementName + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0804") + rulerName + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0808"));
 			}
 			if (!string.IsNullOrWhiteSpace(settlementName) && settlement.OwnerClan == Clan.PlayerClan)
 			{
-				removablePrefixes.Add(settlementName + AdapterPromptCaptureTexts.PcapCompat("LocationRaw_066"));
+				removablePrefixes.Add(settlementName + ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0800"));
 			}
 			foreach (string prefix in removablePrefixes)
 			{
@@ -563,7 +563,7 @@ internal static string BuildSettlementFlavorLineForPrompt(Hero perspectiveHero)
 			}
 			if (!string.IsNullOrWhiteSpace(clanName))
 			{
-				string familyPrefix = AdapterPromptCaptureTexts.PcapCompat("LocationRaw_067") + clanName + "。";
+				string familyPrefix = ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0810") + clanName + "。";
 				if (nativeInfo.StartsWith(familyPrefix, StringComparison.Ordinal))
 				{
 					nativeInfo = nativeInfo.Substring(familyPrefix.Length).Trim();
