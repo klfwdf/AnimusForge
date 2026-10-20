@@ -137,7 +137,7 @@ public sealed partial class WorldDiplomacyBehavior
         string IWorldDiplomacyPromptWorld.RealmInstitutionalVoiceContext(string kingdomId) => _owner.BuildRealmInstitutionalVoiceContext(Resolve(kingdomId) ?? ResolveAny(kingdomId));
         string IWorldDiplomacyPromptWorld.AuthorRulerFamilyContext(string kingdomId) => WorldDiplomacyBehavior.BuildAuthorRulerFamilyContext(Resolve(kingdomId) ?? ResolveAny(kingdomId));
         string IWorldDiplomacyPromptWorld.BilateralRulerFamilyContext(string authorId, string targetId) => WorldDiplomacyBehavior.BuildBilateralRulerFamilyContext(Resolve(authorId), Resolve(targetId));
-        string IWorldDiplomacyPromptWorld.RecentNativeSignalContext(string authorId, string targetId) => WorldDiplomacyDocumentFactRules.BuildRecentNativeSignalContext(_owner._storage?.NativeSignals, authorId, targetId);
+        string IWorldDiplomacyPromptWorld.RecentNativeSignalContext(string authorId, string targetId) => WorldDiplomacyDocumentFactRules.BuildRecentNativeSignalContext(_owner._storage?.NativeSignals, authorId, targetId, DiplomacyPromptTexts.Get);
         string IWorldDiplomacyPromptWorld.RecentBilateralBattleContext(string authorId, string targetId) => WorldDiplomacyTextRules.BuildRecentBilateralBattleContext(
             _owner._storage?.RecentBattles, authorId, targetId, WorldDiplomacyBehavior.CurrentDay(),
             WorldDiplomacyBehavior.RecentBattleRetentionDays,

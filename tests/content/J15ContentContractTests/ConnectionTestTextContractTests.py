@@ -14,7 +14,7 @@ def check(ok, message):
     global checks
     checks+=1
     if not ok:raise AssertionError(message)
-for member,stage in {'TestTownAmbientAiConnection':'Ambient','TestConnection':'Main','TestAuxiliaryConnection':'Preprocess','TestActionPostprocessConnection':'Postprocess','TestEventAndRebellionConnection':'Event'}.items():
+for member,stage in {'TestConnection':'Main','TestAuxiliaryConnection':'Preprocess','TestActionPostprocessConnection':'Postprocess','TestEventAndRebellionConnection':'Event'}.items():
     start=source.index('\t\t'+member+' = delegate\n')
     stop=re.search(r'\n\t\t\w+ = delegate\n',source[start+1:])
     body=source[start:start+1+stop.start()] if stop else source[start:]
@@ -37,8 +37,8 @@ check('if (string.IsNullOrWhiteSpace(reply) && LlmApiCompat.IsReasoningOnlyToken
       'retry eligibility unchanged')
 for name in ('af_runtime_strings.xml','CNs/af_runtime_strings-zh-CN.xml'):
     values={n.get('id'):n.get('text') for n in ET.parse(ROOT/'content/foundation/AF.Foundation.Localization/ModuleData/Languages'/name).getroot().iter('string')}
-    check(sum(key.startswith('AF_RUNTIME_ApiTest_') for key in values)==20,name+' has all API-test snapshot keys')
-    for stage in ('Main','Preprocess','Postprocess','Event','Ambient'):
+    check(sum(key.startswith('AF_RUNTIME_ApiTest_') for key in values)==19,name+' has all API-test snapshot keys')
+    for stage in ('Main','Preprocess','Postprocess','Event'):
         check('AF_RUNTIME_ApiTest_Stage_'+stage in values,name+' stage '+stage)
     check(values['AF_RUNTIME_ApiTest_PostprocessPrompt'].count('[ACTION:MOOD:NEUTRAL]')==1,
           name+' keeps the exact action tag')

@@ -540,5 +540,13 @@
   "PlayerDraft_LengthHeader": "【本次建议篇幅】",
   "Declaration_DefaultStyle": "为当前统治者或其代表机构撰写面向对方的公开外交文书。使用自然易读、带有时代感的语言，让措辞体现人物性格、双方关系和本次交涉的具体处境。直接回应对方，清楚表达立场与条件。情绪、称呼、人称和修辞随人物及场合自然选择，不必反复使用国家名与公文套语。篇幅以说清事情为度，避免空泛铺陈，也不刻意追求金句。这是默认写法；玩家的自定义文风优先，事实、权限和输出协议仍须遵守。代笔时以玩家原文与写作要求为准。",
   "Declaration_SemanticStance": "根据实际立场、诉求、承诺与上下文判断tone和外交动作，不按个别人称、礼貌词或讽刺词判断。讽刺、直率或骄傲不自动等于hostile、谴责或宣战；客气、赞美或愿意交谈不自动等于接受条款。真实威胁和明确敌意仍应如实识别。",
-  "Declaration_CapacityRepair": "正文超过6000字符的存储容量。保留全部外交动作、金额、期限、方向及其他条件，压缩重复措辞并重新输出完整JSON，使正文不超过6000字符。不要截断正文或删去条款；建议篇幅仍只是偏好。"
+  "Declaration_CapacityRepair": "正文超过6000字符的存储容量。保留全部外交动作、金额、期限、方向及其他条件，压缩重复措辞并重新输出完整JSON，使正文不超过6000字符。不要截断正文或删去条款；建议篇幅仍只是偏好。",
+  "Threat_StageDenunciation": "谴责",
+  "Threat_StageUltimatum": "最后通牒",
+  "Threat_StageDiplomaticDenunciation": "外交谴责",
+  "Threat_StageWarUltimatum": "战争最后通牒",
+  "Threat_ActionDeclareWar": "宣战",
+  "Threat_ActionEscalateUltimatum": "升级为最后通牒",
+  "Vassalage_WarsSyncedFormat": "共同战事：{0}项已同步，{1}项待局势安全后生效。",
+  "Vassalage_OtherDiplomacySafeFormat": "其他外交变更：{0}项待局势安全后生效。"
 }

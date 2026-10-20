@@ -10,15 +10,8 @@ internal static class LlmSourceTexts
 {
     private const string ResourceName = "AnimusForge.Llm.RuntimeSources.json";
     private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(Load, true);
-    private static readonly Lazy<Dictionary<string, char[]>> CharacterArrays = new Lazy<Dictionary<string, char[]>>(
-        () => new Dictionary<string, char[]>(StringComparer.Ordinal)
-        {
-            ["TownAmbientTrailingPunctuation"] = Get("TownAmbientTrailingPunctuation").ToCharArray()
-        }, true);
-
     internal static string Get(string id) => Values.Value[id];
 
-    internal static char[] GetCharacterArray(string id) => CharacterArrays.Value[id];
 
     internal static string Format(string id, params (string Name, string Value)[] variables)
     {

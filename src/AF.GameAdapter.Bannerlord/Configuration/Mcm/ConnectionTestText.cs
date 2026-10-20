@@ -33,7 +33,6 @@ internal sealed class ConnectionTestText
             "Preprocess" => "Preprocessing API",
             "Postprocess" => "Postprocessing API",
             "Event" => "Event/rebellion API",
-            "Ambient" => "Ambient AI API",
             _ => throw new ArgumentOutOfRangeException(nameof(stage))
         };
         Stage = Text("Stage_" + stage, label);

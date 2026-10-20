@@ -8280,7 +8280,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (!_npcSurrenderScope.IsCurrent(PlayerEncounter.Current, TryGetMeetingReleaseEncounterParty(), SaveRuntimeGuard.CaptureGeneration())
+		// The meeting-release resolver may already have fallen back to null or a
+		// different party while native dialogue tears down. The captured surrender
+		// party is the authoritative target for this one-shot action.
+		if (!_npcSurrenderScope.IsCurrent(PlayerEncounter.Current, _pendingNativeConversationNpcSurrenderParty, SaveRuntimeGuard.CaptureGeneration())
+			|| IsPendingNpcSurrenderEncounterPartyReplaced()
 			|| !ReferenceEquals(_npcSurrenderManager, Campaign.Current?.ConversationManager)
 			|| (Mission.Current != null && !ReferenceEquals(_npcSurrenderSourceMission, Mission.Current)))
 		{
@@ -8308,6 +8312,23 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			return false;
 		}
 		return true;
+	}
+
+	private static bool IsPendingNpcSurrenderEncounterPartyReplaced()
+	{
+		if (_pendingNativeConversationNpcSurrenderParty == null) return true;
+		try
+		{
+			PartyBase observed = PlayerEncounterCompat.GetEncounteredPartySafe();
+			// During native dialogue/mission teardown the getter can temporarily
+			// return null. Keep the captured one-shot scope in that transition; a
+			// readable different party is a real stale-encounter signal.
+			return observed != null && !ReferenceEquals(observed, _pendingNativeConversationNpcSurrenderParty);
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static void OnPendingNativeConversationNpcSurrenderEnded()
@@ -8454,7 +8475,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			encounterParty = PlayerEncounterCompat.GetEncounteredPartySafe();
+			encounterParty = _pendingNativeConversationNpcSurrender && _pendingNativeConversationNpcSurrenderParty != null
+				? _pendingNativeConversationNpcSurrenderParty
+				: PlayerEncounterCompat.GetEncounteredPartySafe();
 			if (encounterParty == null)
 			{
 				try

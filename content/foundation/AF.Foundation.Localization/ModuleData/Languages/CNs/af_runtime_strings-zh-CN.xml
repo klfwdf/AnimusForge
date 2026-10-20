@@ -6,7 +6,6 @@
     <string id="AF_RUNTIME_ApiTest_Stage_Preprocess" text="前处理API" />
     <string id="AF_RUNTIME_ApiTest_Stage_Postprocess" text="后处理API" />
     <string id="AF_RUNTIME_ApiTest_Stage_Event" text="事件/叛乱API" />
-    <string id="AF_RUNTIME_ApiTest_Stage_Ambient" text="环境AI接口" />
     <string id="AF_RUNTIME_ApiTest_Started" text="：已请求连接测试。" />
     <string id="AF_RUNTIME_ApiTest_Success" text="：连接测试成功，回复：" />
     <string id="AF_RUNTIME_ApiTest_Exception" text="：连接测试异常：" />

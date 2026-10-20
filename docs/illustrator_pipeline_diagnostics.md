@@ -79,14 +79,14 @@ Scope接受 → worker_started → 场景/人物参考 → prompt_sources
 安装模块下：
 
 ```text
-<游戏>/Modules/AnimusForge/Logs/image save/Diagnostics/<请求ID>/trace.json
-<游戏>/Modules/AnimusForge/Logs/image save/Diagnostics/<请求ID>/steps.log
+<游戏>/Modules/AnimusForge/image save/Diagnostics/<请求ID>/trace.json
+<游戏>/Modules/AnimusForge/image save/Diagnostics/<请求ID>/steps.log
 ```
 
-缓存根不可写时使用既有 LocalAppData 回退。AF 通常还在下面保存小型步骤摘要：
+成图、画廊与请求诊断共用 AF 根下的 `image save`，与 `logs` 同级；不再写入 `logs/image save`。缓存根不可写时明确失败，不回退 LocalAppData。小型步骤摘要仍由 AF 日志保存：
 
 ```text
-%LOCALAPPDATA%/AnimusForge/Logs/Mod_Logic.txt
+<游戏>/Modules/AnimusForge/logs/Mod_Logic.txt
 ```
 
 后台细节查看 trace/steps；关闭后台 scope 之后的 `main_thread_delivery`、UI发布与迟到丢弃摘要，在 `Mod_Logic.txt` 按同一 `id=` 检索。保持 AF 日志开关开启，重现后及时复制该ID的文件与对应摘要。

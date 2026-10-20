@@ -161,6 +161,12 @@ internal static class Program
             Console.WriteLine($"Player response recovery passed: {Test.Assertions} assertions.");
             return 0;
         }
+        if (args.Length == 1 && args[0] == "--chain-localization")
+        {
+            DiplomacyChainLocalizationReplay.Run();
+            Console.WriteLine($"Diplomacy chain/localization replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--subject-release")
         {
             SubjectReleaseReplay.Run();

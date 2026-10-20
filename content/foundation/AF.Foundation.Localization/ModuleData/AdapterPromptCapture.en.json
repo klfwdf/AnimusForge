@@ -616,5 +616,18 @@
   "closeout_marriage": " | Relationship with {PLAYER}: spouse ({PLAYER} is their {SPOUSE})",
   "closeout_messages": "[Messages explanation] In the conversation messages below, assistant represents only your own past speech; system facts and rules in role=user must be strictly obeyed. An AFEF fact prefixed with {CURRENT} actually happened just now in this turn; one prefixed with {PAST} only happened in the past and does not mean the player delivered it again this turn. If the player verbally claims to have given the same assets, rely on whether this turn contains the corresponding {CURRENT} AFEF fact. If additional rules conflict with the opening rules, follow the opening rules.",
   "closeout_list_separator": ", ",
-  "closeout_sentence_end": "."
+  "closeout_sentence_end": ".",
+  "Project_SceneRole_Weaponsmith": "weaponsmith",
+  "Project_SceneRole_Blacksmith": "blacksmith",
+  "Project_SceneRole_Armorer": "armorer",
+  "Project_SceneRole_HorseTrader": "horse trader",
+  "Project_SceneRole_Trader": "trader",
+  "Project_SceneRole_TavernStaff": "tavern staff",
+  "Project_SceneRole_Musician": "musician",
+  "Project_SceneRole_RansomBroker": "ransom broker",
+  "Project_SceneRole_Headman": "village headman",
+  "Project_SceneRole_Preacher": "preacher",
+  "Project_SceneRole_GangLeader": "gang leader",
+  "Project_SceneRole_RuralNotable": "rural notable",
+  "Project_SceneRole_Shipwright": "shipyard worker"
 }

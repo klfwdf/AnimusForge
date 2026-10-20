@@ -25,12 +25,6 @@ internal static class AnimusForgeMcmVisibility
         "{=AF_MCM_PostprocessApi_Group}", "{=AF_MCM_EventRebellionApi_Group}", "{=AF_MCM_Tts_Group}"
     };
     private static readonly string[] IllustratorGroups = { "{=AF_ILL_GROUP_IMAGE_API}" };
-    private static readonly HashSet<string> AmbientApiProperties = new HashSet<string>(StringComparer.Ordinal)
-    {
-        "EnableTownAmbientAi",
-        "TownAmbientAiApiUrl", "TownAmbientAiApiKey", "TownAmbientAiModelName", "FetchTownAmbientAiModelList",
-        "TownAmbientAiModelDropdown", "TestTownAmbientAiConnection", "TownAmbientAiMaxOutputTokens"
-    };
     private static readonly HashSet<string> MainNonApiProperties = new HashSet<string>(StringComparer.Ordinal)
     {
         "ActionPostprocessHistoryEntryLimit"
@@ -150,8 +144,6 @@ internal static class AnimusForgeMcmVisibility
         if (!IsOwnedId(settingsId)) return true;
         if (settingsId == DialogueUiId || settingsId == CoupId) return false;
         if (settingsId == IllustratorId) return HasGroup(rawGroup, IllustratorGroups);
-        if (AmbientApiProperties.Contains(propertyId))
-            return !string.IsNullOrEmpty(rawGroup) && rawGroup.IndexOf("{=AF_MCM_TownAmbient_AiGroup}", StringComparison.Ordinal) >= 0;
         return !MainNonApiProperties.Contains(propertyId) && HasGroup(rawGroup, MainGroups);
     }
 

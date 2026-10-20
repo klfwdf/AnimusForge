@@ -1185,5 +1185,12 @@
     <string id="AF_DIP_UI_OralGeneration_DelayedFact" text="此前答应的外交宣言尚未发布，待重新拟文；约定条款没有改变。" />
     <string id="AF_DIP_UI_OralGeneration_WithdrawalFact" text="我已明确同意撤回此前的公开外交提案，待正式撤回宣言发布；原案尚未因此失效。" />
     <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceNotExecutedDetail" text="和平提案未执行：{REASON}" />
+    <string id="AF_DIP_UI_AllianceInfinite" text="无限期" />
+    <string id="AF_DIP_UI_Presentation_DocumentPageExpired" text="该公文页面已失效，请重新打开。" />
+    <string id="AF_DIP_UI_Presentation_CannotReparse" text="该公文当前不能重新解析。" />
+    <string id="AF_DIP_UI_Presentation_ReparsedResubmitted" text="已重新提交原文解析；不会再次发布宣言。" />
+    <string id="AF_DIP_UI_Presentation_ReparsingPending" text="宣言已公开；正在重新解析原文，尚未执行外交动作。" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarSyncPrefix" text="宗主国战争状态已同步：" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarConfirmedPrefix" text="宗主国战争状态已确认：" />
   </strings>
 </base>

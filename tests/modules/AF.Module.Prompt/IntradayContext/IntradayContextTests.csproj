@@ -1,7 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><NuGetAudit>false</NuGetAudit></PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptCacheCore/*.cs" Link="PromptCacheCore/%(Filename)%(Extension)" />
+
     <Compile Include="Program.cs" />
+    <Compile Include="..\ConversationCache\CoreFixture.cs" Link="CoreFixture.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Llm\Protocol\PrimaryChatMessagePolicy.cs" Link="PrimaryChatMessagePolicy.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Llm\Protocol\LlmSourceTexts.cs" Link="LlmSourceTexts.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Llm\Application\LlmPromptTexts.cs" Link="LlmPromptTexts.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Prompt\Runtime\PromptComposerTexts.cs" Link="PromptComposerTexts.cs" />
+    <EmbeddedResource Include="..\..\..\..\content\modules\AF.Module.Llm\ModuleData\LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" />
+    <None Include="..\..\..\..\content\modules\AF.Module.Llm\ModuleData\LlmPromptTexts.json" Link="LlmPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Conversation\Internal\ConversationRuntimeTexts.cs" Link="ConversationRuntimeTexts.cs" />
+    <None Include="..\..\..\..\content\modules\AF.Module.Conversation\ModuleData\ConversationRuntimePrompts.json" Link="ConversationRuntimePrompts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Reference Include="Newtonsoft.Json"><HintPath>$(MSBuildToolsPath)/Newtonsoft.Json.dll</HintPath></Reference>
     <Compile Include="../../../../src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs" Link="ConversationMessage.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/ConversationContextWindow.cs" Link="ConversationContextWindow.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/ConversationRequestBudget.cs" Link="ConversationRequestBudget.cs" />

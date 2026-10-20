@@ -6,7 +6,7 @@ namespace AnimusForge.Illustrator.Engine
     internal static class IllustratorStoragePaths
     {
         private static readonly string ModuleRoot = ResolveModuleRoot();
-        internal static string ImageDirectory => Path.Combine(ModuleRoot, "logs", "image save");
+        internal static string ImageDirectory => Path.Combine(ModuleRoot, "image save");
         internal static string TempDirectory => Path.Combine(ModuleRoot, "Cache", "Illustrator", "Temp");
         internal static string ConfigDirectory => Path.Combine(ModuleRoot, "Configs", "Illustrator");
         internal static string ApiTestDirectory => Path.Combine(ModuleRoot, "Cache", "Illustrator", "ApiTest");

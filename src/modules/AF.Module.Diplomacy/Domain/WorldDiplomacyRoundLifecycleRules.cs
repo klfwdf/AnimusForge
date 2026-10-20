@@ -1638,14 +1638,14 @@ public static class WorldDiplomacyRoundLifecycleRules
             : warningDelta;
     }
 
-    public static string DescribeThreatStage(string stage)
+    public static string DescribeThreatStage(string stage, Func<string, string, string> localize = null)
     {
-        return stage == "warning" ? DiplomacyCompatibilityTexts.Get("Threat_StageDenunciation") : DiplomacyCompatibilityTexts.Get("Threat_StageUltimatum");
+        return stage == "warning" ? (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageDenunciation", "denunciation") : (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageUltimatum", "ultimatum");
     }
 
-    public static string DescribeThreatStageDiplomaticLabel(string stage)
+    public static string DescribeThreatStageDiplomaticLabel(string stage, Func<string, string, string> localize = null)
     {
-        return stage == "warning" ? DiplomacyCompatibilityTexts.Get("Threat_StageDiplomaticDenunciation") : DiplomacyCompatibilityTexts.Get("Threat_StageUltimatum");
+        return stage == "warning" ? (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageDiplomaticDenunciation", "diplomatic denunciation") : (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageUltimatum", "ultimatum");
     }
 
     public static bool IsThreatBetweenParties(
@@ -1879,14 +1879,14 @@ public static class WorldDiplomacyRoundLifecycleRules
         return string.Equals(stage, "ultimatum", StringComparison.OrdinalIgnoreCase) ? "ultimatum" : "warning";
     }
 
-    public static string DescribeThreatStageFormal(string stage)
+    public static string DescribeThreatStageFormal(string stage, Func<string, string, string> localize = null)
     {
-        return string.Equals(stage, "ultimatum", StringComparison.OrdinalIgnoreCase) ? DiplomacyCompatibilityTexts.Get("Threat_StageWarUltimatum") : DiplomacyCompatibilityTexts.Get("Threat_StageDenunciation");
+        return string.Equals(stage, "ultimatum", StringComparison.OrdinalIgnoreCase) ? (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageWarUltimatum", "war ultimatum") : (localize ?? DiplomacyMiscPromptTexts.Get)("Threat_StageDenunciation", "denunciation");
     }
 
     public static string DescribeThreatExpectedFollowThrough(string stage)
     {
-        return stage == "ultimatum" ? DiplomacyCompatibilityTexts.Get("Threat_ActionDeclareWar") : DiplomacyCompatibilityTexts.Get("Threat_ActionEscalateUltimatum");
+        return stage == "ultimatum" ? DiplomacyMiscPromptTexts.Get("Threat_ActionDeclareWar", "declare war") : DiplomacyMiscPromptTexts.Get("Threat_ActionEscalateUltimatum", "escalate to an ultimatum");
     }
 
     public static string ResolveThreatCommitmentLevel(string stage)

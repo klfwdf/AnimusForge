@@ -50,6 +50,5 @@
   "Mcm_ChannelMain": "主API",
   "Mcm_ChannelPreprocess": "前处理API",
   "Mcm_ChannelPostprocess": "后处理API",
-  "Mcm_ChannelEventRebellion": "事件/叛乱API",
-  "Mcm_ChannelAmbient": "环境 AI"
+  "Mcm_ChannelEventRebellion": "事件/叛乱API"
 }

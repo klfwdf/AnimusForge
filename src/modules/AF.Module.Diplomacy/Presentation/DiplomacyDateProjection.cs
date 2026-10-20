@@ -31,4 +31,17 @@ internal static class DiplomacyDateProjection
                     ("SEASON", DiplomacyUiLocalization.Text(season.UiKey, season.Name.ToLowerInvariant())));
         return raw;
     }
+
+    internal static string ForPrompt(string raw, Func<string, string, string> localize)
+    {
+        if (localize == null || string.IsNullOrWhiteSpace(raw)) return raw;
+        Match match = Calendar.Value.Match(raw.Trim());
+        if (!match.Success) return raw;
+        foreach (var season in Seasons)
+            if (match.Groups["season"].Value == DiplomacyCompatibilityTexts.Get("KingdomProfile_Season" + season.Name))
+                return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                    localize("PromptCampaignDate", "Year {0}, {1} {2}"), match.Groups["year"].Value,
+                    localize("KingdomProfile_Season" + season.Name, season.Name.ToLowerInvariant()), match.Groups["day"].Value);
+        return raw;
+    }
 }

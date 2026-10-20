@@ -23,6 +23,7 @@ signatures = [
     'internal static bool TryExecuteMeetingPlayerRelease(Hero target, PartyBase expectedEncounterParty, string reason)',
     'private static bool MarkPendingNativeConversationNpcSurrender(',
     'private static bool HasPendingNativeConversationNpcSurrender(',
+    'private static bool IsPendingNpcSurrenderEncounterPartyReplaced(',
     'private static void ClearPendingNativeConversationNpcSurrender(',
     'private static bool IsNativeConversationStillActive(',
     'private static void TryForcePendingNativeConversationNpcSurrenderIfReady(',

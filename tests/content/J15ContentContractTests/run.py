@@ -79,6 +79,7 @@ J15B_EXPECTED: dict[str, dict[str, str]] = {}
 
 def add_j15b_group(owner: str, source_root: str, targets: list[str]) -> None:
     for target in targets:
+        if target == "ModuleData/TownAmbientDialogue.json": continue  # Feature retired after external preset backup.
         if target in J15B_EXPECTED:
             raise AssertionError(f"duplicate test target: {target}")
         J15B_EXPECTED[target] = {
@@ -574,18 +575,6 @@ COURIER_THEME_EXPECTED = {
 # SettlementBalancePopup is loaded by SettlementBalancePopup; the DialogueUI item
 # is referenced by AFDialogueConversation's ItemTemplate (Pen sizing/scrollbars).
 COMMITTED_CONTENT_ADDITIONS = {
-    "ModuleData/Languages/afconv_ambient_strings.xml": {
-        "owner": "AF.Module.Conversation",
-        "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ambient_strings.xml",
-        "sha256": "CB342D78D50BA8AB340DAA2B9CAA4D318B6D2263D6D6A012DE1C6016D63F06F0",
-        "revision": "8b07db9d2",
-    },
-    "ModuleData/Languages/CNs/afconv_ambient_strings-zh-CN.xml": {
-        "owner": "AF.Module.Conversation",
-        "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ambient_strings-zh-CN.xml",
-        "sha256": "D4FBA49FF40629A3F0704D3D29DE286DF21797B3596A2F8038758056436A8F5C",
-        "revision": "8b07db9d2",
-    },
     # Localization resources and the mission photo prefab were already mapped
     # before this contract entry was added; pin their reviewed source bytes
     # without changing the runtime projection.
@@ -778,7 +767,6 @@ EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, *
 # baseline at the integration parent and the reviewed SHA-256 of the checked-out bytes now.
 J15B_REVIEWED_EDIT_PARENT = "99ca85ae"
 J15B_REVIEWED_EDITS = {
-    "ModuleData/TownAmbientDialogue.json": "98053B7D88089486FA4E300EF8CD0451F36785DFA503AB4943FFC4CC5D7AD52F",
     "ModuleData/ActionPostprocessPrompts.json": "509EE9248F938042CCF7338AE4ED2401631224DA8DCB95D7ED26C7553D8F0C38",
     "ModuleData/RuleBehaviorPrompts.json": "3396D30D95CCB808A8C798023467FC1EB2AEF9DFAA984EAAEA2C661EBC679CCF",
     "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml": "59DF887251BC46F09ED5CB4DB8116F2D3AACBD404624A76A45B4CCD364F6026C",
@@ -1327,9 +1315,8 @@ def verify_formats_and_references() -> None:
         check(prefab.count('Brush="AFCourierLetter.Band.Button"') == 2, f"courier band buttons: {prefab_name}")
         check("Popup.Done.Button" not in prefab and "Popup.Cancel.Button" not in prefab, f"native popup buttons remain: {prefab_name}")
 
-    generator = (ROOT / "_DeveloperPatch" / "generate_town_ambient_dialogue.ps1").read_text(encoding="utf-8-sig")
-    check(J15B_EXPECTED["ModuleData/TownAmbientDialogue.json"]["source"].replace("/", "\\") in generator,
-          "TownAmbient generator must write the unique source")
+    check(not any(e["target"] == "ModuleData/TownAmbientDialogue.json" for e in json.loads((ROOT / "content/content-map.json").read_text(encoding="utf-8-sig"))["entries"]), "retired ambient text has no active content mapping")
+    check(not (ROOT / "_DeveloperPatch/generate_town_ambient_dialogue.ps1").exists(), "retired ambient generator cannot recreate presets")
 
 
 def verify_inventory_and_overlay() -> None:

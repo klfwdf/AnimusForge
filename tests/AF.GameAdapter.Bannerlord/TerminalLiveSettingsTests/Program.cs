@@ -58,6 +58,8 @@ class Program
             var af = Assembly.LoadFrom(args[0]);
             string root = (string)af.GetType("AnimusForge.AnimusForgeModulePaths").GetMethod("GetCurrentModuleRoot").Invoke(null, null);
             Check(root == args[1], "all paths resolve within workspace fixture");
+            Assembly.Load("TaleWorlds.Localization").GetType("TaleWorlds.Localization.LocalizedTextManager", true)
+                .GetMethod("LoadLocalizationXmls").Invoke(null, new object[] { new[] { root } });
             typeof(GenericServiceProvider).GetField("GlobalServiceProvider", All).SetValue(null, new Discovery());
             var providerType = typeof(BaseSettingsProvider);
             providerType.GetField("<Instance>k__BackingField", All).SetValue(null,

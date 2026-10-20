@@ -135,7 +135,8 @@ internal static class PlayerSemanticReplay
                 (_, _) => throw new Exception("text must survive"), (_, _, _, _, _, _) => effects++, _ => { }),
             _ => { }, (_, _) => { }, _ => "", (_, _) => { }, _ => { }, _ => { });
         Test.True(effects == 0 && d.AnalysisStatus == "analysis_failed" && d.Body == "原文"
-            && d.MechanicalResult.Contains("截断") && d.MechanicalResult.Contains("输出上限"),
+            && d.MechanicalResult.Contains(SmokeLocalizationEnvironment.EnglishPackage ? "truncated" : "截断")
+            && d.MechanicalResult.Contains(SmokeLocalizationEnvironment.EnglishPackage ? "output limit" : "输出上限"),
             "truncated transport preserves text, explains cause, and never pretends to execute");
     }
     private static void VerifyCompoundAnalysis()

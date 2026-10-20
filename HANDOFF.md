@@ -1,3 +1,16 @@
+# 当前交付：环境 AI 退役与 EN 部署（2026-10-20，离线通过 / EN 已部署 / 实机未验）
+
+- 产品 `5689b6937` 删除环境独立 API、自动闲聊与内置预设，预设和恢复副本已备份到仓库外并逐项核验；MCM/终端、两套资源与内容映射同步清理，旧环境配置不能重新启用。保留玩家主动喊话及动作反应。
+- 原统一 Release 双 API、Bootstrap、双 Coup、新建 Stage、完整 CN/EN 投影 3530/3521 项通过；最终实际 DLL 检查 1031/975 项通过。EN v1.6.2 已按原部署 owner 安装并核验，玩家设置和其他安装文件保持；无版本递增、ZIP、游戏启动或自动回滚。
+- 此条替代下方本轮外交、生图、城堡修复中的“未部署/暂停”状态，实机/provider/旧档限制仍保留。[唯一主台账及源码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#retire-environment-ai-en-delivery-20261020)。源码推送采用远端基线的干净提交，本机 `artifacts/retire-environment-ai-20261020/receipt.json` 记录独立核验的远端 SHA、部署与外部备份；不上传本地测试现场/私有历史。源码回滚用 focused inverse，历史交接不构成后续部署授权。
+
+# 当前外交核查与修复（2026-10-20，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+- 已修复显示名解析成功后仍被ID范围校验拒绝，以及本次复现的EN固定文本、旧回执跨包、附庸战争回显/通知前缀缺口。玩家statement不依赖requires_response=true；技术暂停仍可阻止发送，尚无用户实机日志确认原因。
+- 产品e48aefefd、通知补修fee281b90，检查点830b13a；四种包/UI组合各51项、CN综合4437和双实现/Bootstrap构建通过。正式包、部署、push、实机和真实provider未执行；PackageD的旧19个Prompt键归类误报保留。
+- 详细职责/修订/代码坐标与未验范围见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-chain-localization-20261020)及[代码范围图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-chain-localization-20261020-code-map)。本机执行收据位于artifacts/diplomacy-chain-localization-audit-20261020/receipt.json。
+- focused inverse仅针对上述产品提交，不回滚其他作者工作；以下交付历史保留，不构成本轮新的部署或push授权。
+
 # 当前交付：EN 编译部署与源码交付（2026-10-20，OFFLINE_VERIFIED / EN_DEPLOYED）
 
 - 合入远端最新 `82e2b7e98` 的三项 TTS 教程更新，保留本地对话、AFEF、缓存、外交及 GCCZ 接线；修复 TTS 中文兼容别名/指定语种试听句的源码门禁，以及发布检查器对已知英文 AFEF 标记和场景动作示例的误报。产品提交 `e2e3645b5`、校验提交 `04f96c91d`。
@@ -3018,3 +3031,10 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 按用户“不能明确报错啊”，产品 `4b1d0953d` 已将字符/token预算改为自动整理目标：较早完整历史组优先退让，有界缓存重建；必要规则、事实和当前输入本身超目标时完整继续，保留输出额度，只记后台诊断。显示名投影保留历史来源；本地预算异常和中英文错误文案已删除，五个原设置身份不变。实际接口失败仍沿原流程。
 
 双API+Bootstrap通过；同日300轮专项20项、缓存中英各61项、协议13组、实际DLL各82项通过。未实机/真实provider/费用/原生UI/旧档验收，无部署/打包/push。此条替代上一条的“最终输入硬阻断”描述，其余日内记忆/存档/缓存边界保留。详见[唯一主台账与代码地图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#conversation-budget-continuation-20261020)及 `artifacts/conversation-budget-continuation-20261020/receipt.json`。
+
+
+## 城堡处置退出生命周期修复（2026-10-20，离线通过，未部署）
+
+- 产品 `4aebda4fc`：普通/领主俘虏场景处置先检查任务结束、清理和 owner 状态；退出时保留战役结算，停止读取/修改 Agent，正常场景淡出行为保留。
+- 旧源码回归失败，修后18场景、独立工作区双API/Bootstrap/双接缝及注册通过。原报告准确崩溃、实机和旧档未验；EN安装/推送继续暂停。
+- [唯一主台账、代码范围及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#castle-exit-scene-retirement-20261020)；证据 `artifacts/castle-exit-fix-20261020/receipt.json`，源码回滚 `git revert 4aebda4fc`。

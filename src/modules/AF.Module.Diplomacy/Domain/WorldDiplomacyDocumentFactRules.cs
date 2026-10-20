@@ -483,7 +483,8 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 		if (knowledge.DocumentIds.Count > MaxKnownDocumentsPerLocation * 2) knowledge.DocumentIds.RemoveRange(0, knowledge.DocumentIds.Count - MaxKnownDocumentsPerLocation * 2);
 		knowledge.LastUpdatedDay = day;
 	}
-	public static string BuildRecentNativeSignalContext(IEnumerable<NativeDiplomacySignal> signals, string sourceId, string targetId)
+    public static string BuildRecentNativeSignalContext(IEnumerable<NativeDiplomacySignal> signals, string sourceId, string targetId,
+        Func<string, string, string> localize = null)
 	{
 		return string.Join("\n", (signals ?? Enumerable.Empty<NativeDiplomacySignal>())
 			.Where(x => x != null
@@ -491,7 +492,10 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 				&& string.Equals(x.TargetKingdomId, targetId, StringComparison.OrdinalIgnoreCase))
 			.OrderByDescending(x => x.Day)
 			.Take(4)
-			.Select(x => DiplomacyCompatibilityTexts.Get("History_DayPrefix") + x.Day.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("History_DaySuffix") + x.Reason));
+            .Select(x => localize == null
+                ? DiplomacyCompatibilityTexts.Get("History_DayPrefix") + x.Day.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("History_DaySuffix") + x.Reason
+                : string.Format(CultureInfo.InvariantCulture, localize("NativeSignal_DayReason", "- Day {0}: {1}"),
+                    x.Day, DiplomacyLegacyPromptProjection.NativeReason(x.Reason, localize))));
 	}
 	public static string BuildRelevantCompletedRoundContext(IEnumerable<WorldDiplomacyRoundSummary> summaries,
 		string activeRoundId, string sourceId, string targetId)

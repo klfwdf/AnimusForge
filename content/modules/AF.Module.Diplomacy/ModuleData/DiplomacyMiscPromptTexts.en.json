@@ -540,5 +540,13 @@
   "PlayerDraft_LengthHeader": "[Suggested length for this draft]",
   "Declaration_DefaultStyle": "Write a public diplomatic document addressed to the other party on behalf of the current ruler or their representative institution. Use natural, readable language with a sense of the period, reflecting the speaker’s personality, the relationship and the concrete situation. Respond directly and state positions and terms clearly. Let emotion, address, pronouns and rhetoric follow the character and occasion naturally, without repeatedly naming the kingdom or relying on official formulas. Write enough to make the matter clear; avoid empty elaboration or forced memorable lines. This is the default style: player writing preferences take precedence, while facts, authority and output protocol still apply. When acting as a scribe, follow the player’s original text and writing instructions.",
   "Declaration_SemanticStance": "Judge tone and diplomatic actions from the actual position, demands, commitments and context, not isolated pronouns, polite words or sarcasm. Sarcasm, directness or pride do not automatically mean hostile, condemnation or war; courtesy, praise or willingness to talk do not automatically mean acceptance of terms. Still recognize genuine threats and explicit hostility accurately.",
-  "Declaration_CapacityRepair": "The body exceeds the storage capacity of 6000 characters. Preserve every diplomatic action, amount, duration, direction and other term. Compress repetitive wording and return complete JSON with a body of at most 6000 characters. Do not truncate the body or omit terms; suggested length remains a preference."
+  "Declaration_CapacityRepair": "The body exceeds the storage capacity of 6000 characters. Preserve every diplomatic action, amount, duration, direction and other term. Compress repetitive wording and return complete JSON with a body of at most 6000 characters. Do not truncate the body or omit terms; suggested length remains a preference.",
+  "Threat_StageDenunciation": "denunciation",
+  "Threat_StageUltimatum": "ultimatum",
+  "Threat_StageDiplomaticDenunciation": "diplomatic denunciation",
+  "Threat_StageWarUltimatum": "war ultimatum",
+  "Threat_ActionDeclareWar": "declare war",
+  "Threat_ActionEscalateUltimatum": "escalate to an ultimatum",
+  "Vassalage_WarsSyncedFormat": "Shared wars: {0} synchronized, {1} pending until safe.",
+  "Vassalage_OtherDiplomacySafeFormat": "Other diplomatic changes: {0} pending until safe."
 }

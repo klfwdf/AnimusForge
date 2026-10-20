@@ -86,19 +86,19 @@ internal sealed class ScenePresentationBannerlordAdapter
 			ShoutBehavior instance = CurrentInstance;
 			if (instance == null)
 			{
-				Logger.LogImmediate("TownAmbient", "bubble_failed reason=current_instance_null");
+				Logger.LogImmediate("ScenePresentation", "bubble_failed reason=current_instance_null");
 				return false;
 			}
 			FloatingTextMissionView floatingTextView = instance._j17ScenePresentationBannerlordAdapter._floatingTextView;
 			if (floatingTextView == null || !floatingTextView.IsBubbleReady())
 			{
-				Logger.LogImmediate("TownAmbient", "bubble_failed reason=floating_text_not_ready view=" + (floatingTextView != null));
+				Logger.LogImmediate("ScenePresentation", "bubble_failed reason=floating_text_not_ready view=" + (floatingTextView != null));
 				return false;
 			}
 			bool shown = instance._j17ScenePresentationBannerlordAdapter.TryShowNpcBubble(liveAgent, content, typingDurationSeconds);
 			if (!shown)
 			{
-				Logger.LogImmediate("TownAmbient", "bubble_failed reason=agent_guard agent=" + (liveAgent?.Index.ToString() ?? "null"));
+				Logger.LogImmediate("ScenePresentation", "bubble_failed reason=agent_guard agent=" + (liveAgent?.Index.ToString() ?? "null"));
 			}
 			return shown;
 		}

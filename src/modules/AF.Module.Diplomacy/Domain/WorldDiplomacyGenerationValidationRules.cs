@@ -358,12 +358,11 @@ public static class WorldDiplomacyGenerationValidationRules
                 return true;
             }
             string targetId = WorldDiplomacyEnvelopeJsonRules.ReadTargetKingdomId(action);
-            if (string.IsNullOrWhiteSpace(targetId) || (!playerDiplomacy && !targetIds.Add(targetId)))
+            if (string.IsNullOrWhiteSpace(targetId))
             {
                 reason = "diplomatic_action_target_missing_or_duplicate";
                 return true;
             }
-            targetIds.Add(targetId);
             string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadIntent(action));
             if (intent == "statement") statementCount++;
             if (intent == "warning" || intent == "ultimatum") outgoingThreatCount++;
@@ -379,6 +378,13 @@ public static class WorldDiplomacyGenerationValidationRules
                 return true;
             }
             string actionTargetKingdomId = actionResult.TargetKingdomId;
+            if (!targetIds.Add(actionTargetKingdomId) && !playerDiplomacy)
+            {
+                reason = "diplomatic_action_target_missing_or_duplicate";
+                return true;
+            }
+            if (single["round_plan"] is JObject normalizedPlan) json["round_plan"] = normalizedPlan.DeepClone();
+            if (single["mentioned_kingdom_ids"] is JArray normalizedMentions) json["mentioned_kingdom_ids"] = normalizedMentions.DeepClone();
             WorldDiplomacyEnvelopeJsonRules.CopyDerivedGeneratedActionEnvelope(single, action);
             if (index == 0) generatedTargetKingdomId = actionTargetKingdomId;
         }
@@ -504,6 +510,7 @@ public static class WorldDiplomacyGenerationValidationRules
             {
                 generatedTargetId = fallbackTargetId;
             }
+            if (generatedTargetId != null) json["primary_target_kingdom_id"] = generatedTargetId;
             if (string.Equals(generatedTargetId, authorId, StringComparison.OrdinalIgnoreCase)
                 || (generatedTargetId != null && kingdomEliminated(generatedTargetId))
                 || (!playerDiplomacy && generatedTargetId != null && !kingdomHasAuthority(generatedTargetId)))
@@ -543,8 +550,11 @@ public static class WorldDiplomacyGenerationValidationRules
             }
             List<string> addressedIds = WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "addressed_kingdom_ids", "addressed");
             List<string> mentionedIds = WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "mentioned_kingdom_ids", "mentioned");
-            foreach (string id in addressedIds.Concat(mentionedIds))
+            foreach (List<string> ids in new[] { addressedIds, mentionedIds })
             {
+              for (int index = 0; index < ids.Count; index++)
+              {
+                string id = ids[index];
                 string listedId = resolveKingdomId?.Invoke(id);
                 if (string.IsNullOrWhiteSpace(id) || listedId == null || string.Equals(listedId, authorId, StringComparison.OrdinalIgnoreCase) || kingdomEliminated(listedId)
                     || (!playerDiplomacy && !kingdomHasAuthority(listedId)))
@@ -552,7 +562,11 @@ public static class WorldDiplomacyGenerationValidationRules
                     reason = "referenced_kingdom_not_eligible";
                     return true;
                 }
+                ids[index] = listedId;
+              }
             }
+            json["addressed_kingdom_ids"] = new JArray(addressedIds);
+            json["mentioned_kingdom_ids"] = new JArray(mentionedIds);
             if (!playerDiplomacy && WorldDiplomacyRoundLifecycleRules.IsAutonomousOpeningJob(job))
             {
                 HashSet<string> allowed = new HashSet<string>(job.CandidateKingdomIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
@@ -571,14 +585,15 @@ public static class WorldDiplomacyGenerationValidationRules
                     return true;
                 }
                 List<string> plannedIds = WorldDiplomacyEnvelopeJsonRules.ReadStringList(json, "round_plan.selected_kingdom_ids");
-                if (plannedIds.Any(id => !allowed.Contains(id)
-                    || resolveKingdomId?.Invoke(id) is not string plannedId
+                plannedIds = plannedIds.Select(id => resolveKingdomId?.Invoke(id)).ToList();
+                if (plannedIds.Any(plannedId => plannedId == null || !allowed.Contains(plannedId)
                     || kingdomEliminated(plannedId)
                     || !kingdomHasAuthority(plannedId)))
                 {
                     reason = "autonomous_round_plan_has_invalid_participant";
                     return true;
                 }
+                roundPlan["selected_kingdom_ids"] = new JArray(plannedIds);
                 HashSet<string> plannedSet = new HashSet<string>(plannedIds, StringComparer.OrdinalIgnoreCase);
                 List<string> directIds = WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(addressedIds
                     .Concat(generatedTargetId == null ? Enumerable.Empty<string>() : new[] { generatedTargetId }));
@@ -920,6 +935,8 @@ public static class WorldDiplomacyGenerationValidationRules
             {
                 return false;
             }
+            addressed = addressed.Select(resolveKingdomId).ToList();
+            mentioned = mentioned.Select(resolveKingdomId).ToList();
             if (!playerDiplomacy && relayTurn && addressed.Any(x => resultSettlementRelay
                 ? !string.Equals(x, targetId, StringComparison.OrdinalIgnoreCase)
                     && !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(envelopeRound, x)

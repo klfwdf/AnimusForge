@@ -86,13 +86,13 @@ public sealed partial class WorldDiplomacyBehavior
         public string RetryAnalysis(string id, long generation)
         {
             if (!_owner.IsLiveCampaign) return _owner.UnavailableReason;
-            if (generation != _owner._runtimeGeneration) return DiplomacyMiscPromptTexts.Get("Presentation_DocumentPageExpired", "This document page has expired; please reopen it.");
+            if (generation != _owner._runtimeGeneration) return DiplomacyUiLocalization.Text("AF_DIP_UI_Presentation_DocumentPageExpired", "This document page has expired; please reopen it.");
             var document = _owner.ResolveDocument(id);
-            if (!WorldDiplomacyPlayerApplication.CanRetryAnalysis(document, Player)) return DiplomacyMiscPromptTexts.Get("Presentation_CannotReparse", "This document cannot be reparsed currently.");
+            if (!WorldDiplomacyPlayerApplication.CanRetryAnalysis(document, Player)) return DiplomacyUiLocalization.Text("AF_DIP_UI_Presentation_CannotReparse", "This document cannot be reparsed currently.");
             document.AnalysisStatus = "pending_analysis";
             document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Presentation_ReparsingPending", "Declaration published; reparsing original text, diplomatic action not yet executed.");
             _owner._orchestration.EnqueueAnalysisJob(document, 100);
-            return DiplomacyMiscPromptTexts.Get("Presentation_ReparsedResubmitted", "Original text resubmitted for parsing; declaration will not be published again.");
+            return DiplomacyUiLocalization.Text("AF_DIP_UI_Presentation_ReparsedResubmitted", "Original text resubmitted for parsing; declaration will not be published again.");
         }
         public bool CanOpenReply(string documentId, string roundId, long generation)
         {

@@ -42,8 +42,7 @@ internal static class TerminalSettingsCoverage
         "CourierLetterThemeDropdown", "BubbleFontSize",
         "ShoutInputUiBackgroundDropdown", "EnableDevEditHistory", "ShoutKey",
         "ShoutSpecialMenuKey", "TerminalKey",
-        "EnableWorldDiplomacyMapNotifications", "ScreenNotifications",
-        "TownAmbientAiShowUsageNotifications"
+        "EnableWorldDiplomacyMapNotifications", "ScreenNotifications"
     };
 
     internal static string CategoryFor(string owner, string property, string fallback, string group = "")
@@ -71,16 +70,14 @@ internal static class TerminalSettingsCoverage
             property.StartsWith("PolicyVote", StringComparison.Ordinal) || property == "EditSettlementBalance" ||
             property == "DisableProsperityFoodConsumption") return TerminalCategories.Diplomacy;
         if (property == "SetsOtherSettlementFollowerLimit") return TerminalCategories.Duel;
-        if (group.IndexOf("AF_MCM_TownAmbient_AiGroup", StringComparison.Ordinal) >= 0) return TerminalCategories.Ai;
         if (group.IndexOf("SAX_MCM_Group", StringComparison.Ordinal) >= 0 ||
-            group.IndexOf("AF_MCM_TownAmbient_Group", StringComparison.Ordinal) >= 0 ||
             property == "AutoExcludeUnframedShoutParticipants") return TerminalCategories.Scene;
         return fallback;
     }
 
     internal static bool IsVisible(string id)
     {
-        if (id == "TownAmbientAiShowUsageNotifications" || id == "ScreenNotifications"
+        if (id == "ScreenNotifications"
             || id == "EnemyInterruptRadiusMeters" || id == "DiagnosticsEnabled"
             || id == "TerminalHotkeyEnabled" || id == "TerminalMapIconEnabled") return false;
         if (id.StartsWith("Illustrator.Director", StringComparison.Ordinal)) return false;
@@ -136,7 +133,7 @@ internal static class TerminalSettingsCoverage
     {
         if (!BindingById.Value.TryGetValue(id, out Binding binding)) return 0;
         if (binding.Owner == nameof(IllustratorSettings) && binding.Group.IndexOf("AF_ILL_GROUP_IMAGE_API", StringComparison.Ordinal) >= 0) return 50;
-        return binding.Group.IndexOf("AF_MCM_TownAmbient_AiGroup", StringComparison.Ordinal) >= 0 ? 60 : 0;
+        return 0;
     }
 
     private static string Label(string key, string fallback) => new TextObject("{=" + key + "}" + fallback).ToString();

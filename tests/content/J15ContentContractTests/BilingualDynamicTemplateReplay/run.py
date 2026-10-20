@@ -22,7 +22,6 @@ parser.add_argument('--run-root', type=Path)
 parser.add_argument('--reference-13', type=Path, default=ROOT / '_deps_auto')
 parser.add_argument('--reference-14', type=Path, default=ROOT / '.tmp/build_check/1.4')
 parser.add_argument('--before-root', type=Path, default=ROOT / 'artifacts/localization-audit-repair-20261012/before')
-parser.add_argument('--native-probe-only', action='store_true')
 args = parser.parse_args()
 out = new_run_root(ROOT, 'bilingual-dynamic-template', args.run_root)
 framework = Path.home() / '.nuget/packages/microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2'
@@ -50,9 +49,7 @@ def extract(relative, signature, before=False):
     raise AssertionError(signature)
 
 annex = 'src/modules/AF.Module.Diplomacy/Annexation/KingdomAnnexationBehavior.cs'
-ambient = 'src/modules/AF.Module.Conversation/Ambient/Host/TownAmbientDialogueBehavior.cs'
 config = 'src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs'
-clock = 'src/modules/AF.Module.Conversation/Ambient/Host/TownAmbientTime.cs'
 bodies = ['using System;using System.Collections.Generic;using System.Text.RegularExpressions;using TaleWorlds.Localization;namespace AnimusForge {']
 for before, prefix in ((False, 'Current'), (True, 'Before')):
     bodies.append('internal static class ' + prefix + 'Annexation {')
@@ -68,21 +65,6 @@ private static void LogEvent(string name, Dictionary<string,object> values) { Fi
 private static string DescribeHero(Hero value) => value?.StringId ?? "";
 private static string DescribeKingdom(Kingdom value) => value?.StringId ?? "";
 }''')
-    ambient_methods = [extract(ambient, sig, before) for sig in ('private static string Render(', 'private static string ExtractSpokenText(',
-        'private static string LocalizePlayerTitle(', 'private static string LocalizePlayerStatus(', 'private static Town GetContextTown(')]
-    if not before:
-        ambient_methods.append(extract(ambient, 'private static string LocalizeAmbientTemplate('))
-    bodies.append('internal static class ' + prefix + 'Ambient {' + '\n'.join(ambient_methods))
-    bodies.append('internal static string Call(string text,NpcDataPacket npc,Settlement settlement,string scene,TownAmbientPlayerContext context=null)=>Render(text,npc,settlement,scene,context);')
-    if not before:
-        bodies.append('internal static string Localize(string text)=>LocalizeAmbientTemplate(text);')
-    bodies.append('}')
-    if before:
-        leaf = 'spokenText = new TextObject(spokenText).ToString();'
-        assert ambient_methods[0].count(leaf) == 1
-        controlled = [ambient_methods[0].replace(leaf, 'spokenText = ReplayNativeRawTemplate.Capture(spokenText);')] + ambient_methods[1:]
-        bodies.append('internal static class BeforeAmbientRawBoundary {' + '\n'.join(controlled))
-        bodies.append('internal static string Call(string text,NpcDataPacket npc,Settlement settlement,string scene,TownAmbientPlayerContext context=null)=>Render(text,npc,settlement,scene,context); }')
     bodies.append('internal static class ' + prefix + 'Runtime {')
     bodies.append(extract(config, 'private static string ApplyRuntimeTemplate(', before))
     pattern = (args.before_root if before else ROOT) / config
@@ -90,13 +72,7 @@ private static string DescribeKingdom(Kingdom value) => value?.StringId ?? "";
                       if 'private static readonly Regex RpItemIntroductionTemplateVariableRegex =' in line)
     bodies.append(regex_line)
     bodies.append('internal static string Call(string text,Dictionary<string,string> tokens)=>ApplyRuntimeTemplate(text,tokens); }')
-bodies.append(extract(ambient, 'internal sealed class TownAmbientPlayerContext'))
-bodies.append(extract(clock, 'internal enum TownAmbientTimeBand'))
-bodies.append('internal static class TownAmbientTime {')
-for sig in ('public static TownAmbientTimeBand GetBand(', 'public static string GetLocalizedDisplayName(',
-            'public static string GetLocalizedGreeting(', 'private static int NormalizeHour('):
-    bodies.append(extract(clock, sig))
-bodies.append('}}')
+bodies.append('}')
 (out / 'ActualMethods.cs').write_text('\n'.join(bodies), encoding='utf-8')
 shutil.copyfile(Path(__file__).with_name('Program.cs'), out / 'Program.cs')
 
@@ -105,6 +81,7 @@ links = [
     'src/modules/AF.Module.Diplomacy/Presentation/DiplomacyMiscPromptTexts.cs',
     'src/modules/AF.Module.Conversation/Internal/ConversationRuntimeTexts.cs',
     'src/modules/AF.Module.Conversation/Channels/Scene/NpcDataPacket.cs',
+    'src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs',
 ]
 embedded = [
     ('content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json', 'AnimusForge.Prompt.Compatibility.json'),
@@ -118,14 +95,10 @@ for lang, suffix in (('cn', 'zh-CN'), ('en', 'en')):
         ('content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.' + suffix + '.json', 'PromptComposerTexts.json'),
         ('content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts' + ('.en' if lang == 'en' else '') + '.json', 'DiplomacyMiscPromptTexts.json'),
         ('content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimePrompts' + ('.en' if lang == 'en' else '') + '.json', 'ConversationRuntimePrompts.json'),
-        ('content/modules/AF.Module.Conversation/ModuleData/TownAmbientDialogue.' + suffix + '.json', 'TownAmbientDialogue.json'),
         ('content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts' + ('.en' if lang == 'en' else '') + '.json', 'RuleBehaviorPrompts.json'),
     ]:
         resources.append(relative)
         shutil.copyfile(ROOT / relative, package / name)
-for relative in ('content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ambient_strings.xml',
-                 'content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ambient_strings-zh-CN.xml'):
-    resources.append(relative)
 inputs.update((ROOT / p).resolve() for p in links + resources + [p for p, _ in embedded])
 inputs.update(Path(__file__).parent.glob('*.*'))
 
@@ -162,8 +135,6 @@ for api, data in references.items():
     assert build.returncode == 0, build.stdout + build.stderr
     for lang in ('cn', 'en'):
         command = [str(build_root / 'bin/Release/net472/Replay.exe'), str(out / lang), str(ROOT), lang, api]
-        if args.native_probe_only:
-            command.append('native-only')
         run = subprocess.run(command, cwd=build_root, env=env, capture_output=True, text=True, encoding='utf-8', timeout=60)
         (build_root / (lang + '.log')).write_text(run.stdout + run.stderr, encoding='utf-8')
         print(run.stdout + run.stderr)
@@ -171,7 +142,6 @@ for api, data in references.items():
         summary.append(json.loads((build_root / (lang + '-result.json')).read_text('utf-8-sig')))
 after_hash = hashes()
 assert before_hash == after_hash, 'Source/resource/reference inputs changed during replay'
-(out / 'inputs.json').write_text(json.dumps({'references': references, 'before': before_hash, 'after': after_hash, 'inputsUnchanged': True, 'extractions': extractions,
-    'controlledBeforeAmbientLeaf': {'original': 'spokenText = new TextObject(spokenText).ToString();', 'replacement': 'spokenText = ReplayNativeRawTemplate.Capture(spokenText);', 'purpose': 'Isolate old sequential formatter from preexisting native variable deletion. Unmodified before Render is also replayed.'}}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-(out / 'summary.json').write_text(json.dumps({'passed': True, 'nativeProbeOnly': args.native_probe_only, 'runs': summary, 'assertions': sum(x['assertions'] for x in summary), 'negativeControls': sum(len(x['negativeControls']) for x in summary), 'uncovered': ['real Campaign eligibility/settlement capture', 'rule retrieval and dispatch', 'live game', 'whole repository builds', 'all English sentence semantics']}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+(out / 'inputs.json').write_text(json.dumps({'references': references, 'before': before_hash, 'after': after_hash, 'inputsUnchanged': True, 'extractions': extractions}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+(out / 'summary.json').write_text(json.dumps({'passed': True, 'runs': summary, 'assertions': sum(x['assertions'] for x in summary), 'negativeControls': sum(len(x['negativeControls']) for x in summary), 'uncovered': ['real Campaign eligibility/settlement capture', 'rule retrieval and dispatch', 'live game', 'whole repository builds', 'all English sentence semantics']}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 print('OUTPUT', out)

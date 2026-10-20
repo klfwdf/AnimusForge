@@ -1,0 +1,68 @@
+using System;using System.Linq;using System.Collections.Generic;using AnimusForge.Refactor.Modules;
+namespace Probe {
+static class Events {public static List<string> Items=new();public static int Fades,EndingFades,FormationWrites,Reads;public static bool ForbidReads;public static void Add(string x)=>Items.Add(x);public static void Reset(){Items.Clear();Fades=EndingFades=FormationWrites=Reads=0;ForbidReads=false;}}
+class CharacterObject{public bool IsHero;public Hero HeroObject;}
+struct TroopRosterElement{public CharacterObject Character;public int Number,WoundedNumber,Xp;}
+class TroopRoster{public List<TroopRosterElement> Items=new();public int TotalManCount=>Items.Sum(x=>x.Number);public static TroopRoster CreateDummyTroopRoster()=>new();public List<TroopRosterElement> GetTroopRoster()=>Items;public int FindIndexOfTroop(CharacterObject c)=>Items.FindIndex(x=>x.Character==c);public TroopRosterElement GetElementCopyAtIndex(int i)=>Items[i];public void AddToCounts(CharacterObject c,int n,bool b=false,int w=0,int xp=0,bool d=true,int e=-1){int i=FindIndexOfTroop(c);if(i<0)Items.Add(new(){Character=c,Number=n,WoundedNumber=w,Xp=xp});else{var x=Items[i];x.Number+=n;x.WoundedNumber+=w;x.Xp+=xp;Items[i]=x;}}}
+class Hero{public string StringId="lord";}
+class Agent{CharacterObject _character;public Mission Mission;public CharacterObject Character{get{Events.Reads++;if(Events.ForbidReads)throw new Exception("scene agent read during retired mission");return _character;}set=>_character=value;}public object Formation{set{Events.FormationWrites++;}}public void FadeOut(bool hideInstantly,bool hideMount){Events.Fades++;if(Mission.Current.IsMissionEnding)Events.EndingFades++;}}
+class Mission{public static Mission Current;public bool MissionEnded,Over;public bool IsMissionEnding=>MissionEnded&&!Over;public CastleAftermathPrisonerCommandMissionBehavior Command;public T GetMissionBehavior<T>() where T:class=>Command as T;}
+class MapEvent{}class MobileParty{public string StringId;}class PartyBase{public static PartyBase MainParty=new();public TroopRoster PrisonRoster;}
+class TroopInspectionRuntime{public MobileParty HoldingDummyParty;}
+static class Logger{public static void Log(string c,string s){if(s.StartsWith("Resolved regular prisoner"))Events.Add("scene_resolved");}}
+partial class TroopInspectionBehavior{
+static TroopInspectionSessionOwner<TroopInspectionRuntime,object,Mission> _sessionOwner=new();static TroopInspectionRuntime _runtime{get=>_sessionOwner.Runtime;set=>_sessionOwner.Runtime=value;}static MapEvent _mapEvent;static MobileParty _dummyParty;static string _dummyPartyStringId;
+public static bool RuntimePresent=>_runtime!=null;public static void Prepare(){_runtime=new(){HoldingDummyParty=new()};_sessionOwner.ActiveMission=Mission.Current;_mapEvent=new();_dummyParty=new();_dummyPartyStringId="inspection";}
+static void Log(string s)=>Events.Add(s.StartsWith("cleanup begin")?"inspection_cleanup_begin":s);
+static MapEvent ResolveInspectionMapEvent()=>_mapEvent;
+static void RestoreAndDestroyHoldingDummyParty(MobileParty x,string s)=>Events.Add("holding_cleanup");static void CleanupOrphanHoldingDummyParties(MobileParty x,string s){}static void RestoreMainPartyRolesFromSnapshot(TroopInspectionRuntime x,string s)=>Events.Add("roles_restore");static void CleanupOrphanSelectionPoolDummyParties(string s){}
+static void CleanupMapEventAndPlayerEncounter(MapEvent x,string s)=>Events.Add("map_event_cleanup");static void DestroyInspectionDummyParty(MobileParty x,string id,string s){}static void CleanupOrphanInspectionDummyParties(MobileParty x,string s){}static void RestoreExternalCampaignEncounter(TroopInspectionRuntime x,string s)=>Events.Add("encounter_restore");static void RestoreMainHeroAfterInspection(string s){}
+}
+partial class CastleAftermathRuntimeBridge{
+static TroopRoster _selectedPrisonerRoster;public static int SelectedRegularPrisonerCount=>_selectedPrisonerRoster?.TotalManCount??0;static int CountTroop(TroopRoster r,CharacterObject c)=>r.Items.Where(x=>x.Character==c).Sum(x=>x.Number);public static void Seed(TroopRoster r)=>_selectedPrisonerRoster=r;public static void UnregisterPrisonerAgent(Agent a){}
+}
+class BehaviorBase{public Mission Mission;}
+partial class CastleAftermathPrisonerCommandMissionBehavior:BehaviorBase{
+bool _cleaned;HashSet<Agent> _slaughterTargets=new();public void MarkCleaned()=>_cleaned=true;
+Dictionary<Agent,bool> _agents=new();HashSet<Agent> _civilianActionSetApplied=new();public int Remaining=>_agents.Count;public void Seed(CharacterObject c,int count){for(int i=0;i<count;i++)_agents.Add(new(){Character=c,Mission=Mission},c.IsHero);}
+}
+class CastleAftermathActionApplyResult{public bool Succeeded;public int AffectedCount;public static CastleAftermathActionApplyResult Failed(string s,int n)=>new();public static CastleAftermathActionApplyResult Completed(int a,int n,string s)=>new(){Succeeded=true,AffectedCount=a};public CastleAftermathActionApplyResult(){}public CastleAftermathActionApplyResult(bool s,int a,int n,string r){Succeeded=s;AffectedCount=a;}}
+static class SiegeCastlePrisonerDispositionProfile{public const string RosterUnavailableReason="unavailable",RemovedForReasonPrefix="removed:",NoMatchingRegularPrisonersReason="none",ExceptionReasonPrefix="exception:";public static int ResolveTransferredWounded(int total,int wounded,int n)=>Math.Min(wounded,n);public static int ResolveTransferredXp(int total,int xp,int n)=>0;}
+partial class CastleAftermathActionRuntimeBridge{}
+static class Program{
+static TroopRoster R(CharacterObject c,int n){var r=new TroopRoster();r.AddToCounts(c,n);return r;}
+static void Check(bool x,string s){if(!x)throw new Exception(s);}
+static void Main(){
+int cases=0;
+foreach(string mode in new[]{"active","ending","over","no_owner","other_mission","cleaned"}){
+ Events.Reset();var c=new CharacterObject();var owner=new Mission();var command=new CastleAftermathPrisonerCommandMissionBehavior{Mission=owner};owner.Command=command;command.Seed(c,200);Mission.Current=owner;
+ owner.MissionEnded=mode=="ending"||mode=="over";owner.Over=mode=="over";
+ if(mode=="no_owner")command.Mission=null;
+ if(mode=="other_mission")Mission.Current=new();
+ if(mode=="cleaned")command.MarkCleaned();
+ PartyBase.MainParty.PrisonRoster=R(c,200);CastleAftermathRuntimeBridge.Seed(R(c,200));TroopInspectionBehavior.Prepare();
+ bool active=mode=="active";
+ if(!active){TroopInspectionBehavior.CleanupRuntime("castle_gccz_mission_ended_before_aftermath");Check(!TroopInspectionBehavior.RuntimePresent,"actual inspection cleanup retained runtime");Events.ForbidReads=true;}
+ var result=CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(R(c,197),"castle_repair_castle_forced_exit");
+ Check(result.Succeeded&&result.AffectedCount==197&&PartyBase.MainParty.PrisonRoster.TotalManCount==3,"campaign settlement changed: "+mode);
+ Check(Events.Fades==(active?197:0)&&Events.FormationWrites==(active?197:0),"late scene mutation: "+mode);
+ Check(command.Remaining==(active?3:200),"registry owner changed: "+mode);
+ Check(active||Events.Reads==0,"late Agent property read: "+mode);
+ if(active){command.ResolveRegularPrisoners(R(c,197),"duplicate");Check(Events.Fades==200&&command.Remaining==0,"remaining regular selection count");command.ResolveRegularPrisoners(R(c,197),"exhausted");Check(Events.Fades==200,"exhausted roster changed scene twice");}
+ Console.WriteLine("PASS regular "+mode+" campaign=200->3 sceneOps="+(active?197:0));cases++;
+}
+foreach(bool fade in new[]{true,false})foreach(string mode in new[]{"active","ending","over","no_owner","other_mission","cleaned"}){
+ Events.Reset();var hero=new Hero();var c=new CharacterObject{IsHero=true,HeroObject=hero};var owner=new Mission();var command=new CastleAftermathPrisonerCommandMissionBehavior{Mission=owner};owner.Command=command;command.Seed(c,1);Mission.Current=owner;
+ owner.MissionEnded=mode=="ending"||mode=="over";owner.Over=mode=="over";
+ if(mode=="no_owner")command.Mission=null;
+ if(mode=="other_mission")Mission.Current=new();
+ if(mode=="cleaned")command.MarkCleaned();
+ bool active=mode=="active";Events.ForbidReads=!active;
+ int result=fade?command.ResolveLordPrisoner(hero,"release"):command.DetachExecutedLordPrisoner(hero,"execution");
+ Check(result==(active?1:0)&&Events.FormationWrites==(active?1:0)&&Events.Fades==(active&&fade?1:0),"lord scene result: "+mode);
+ Check(active||Events.Reads==0,"retired lord Agent read: "+mode);
+ Console.WriteLine("PASS lord "+mode+" fade="+fade);cases++;
+}
+Console.WriteLine("PASS castle exit lifecycle cases="+cases+"; actual production methods, native APIs stubbed; live crash NOT_RUN");
+}
+}}

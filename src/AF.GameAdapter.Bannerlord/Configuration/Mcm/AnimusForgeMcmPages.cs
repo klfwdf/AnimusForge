@@ -93,19 +93,15 @@ internal static class AnimusForgeMcmPages
     private static string Prefix(string id) => id == "AnimusForge_DialogueUI_v1" ? "DialogueUi." :
         id == "AnimusForge_Illustrator_v1" ? "Illustrator." : id == "AnimusForge_Coup_v1" ? "Coup." : "";
 
-    private static bool Ambient(ISettingsPropertyDefinition property) =>
-        property.GroupName.IndexOf("{=AF_MCM_TownAmbient_AiGroup}", StringComparison.Ordinal) >= 0;
-
     private static string ApiGroup(string owner, ISettingsPropertyDefinition property)
     {
         if (owner == "AnimusForge_Illustrator_v1") return "{=AF_TERMINAL_GROUP_IMAGE_API}Image generation API";
-        if (Ambient(property)) return "{=AF_MCM_TownAmbient_AiGroup}Ambient AI interface";
         if (property.GroupName.IndexOf("{=AF_MCM_Tts_Group}", StringComparison.Ordinal) >= 0) return "{=AF_TERMINAL_GROUP_TTS_API}TTS API";
         return property.GroupName;
     }
 
     private static int ApiOrder(string owner, ISettingsPropertyDefinition property) =>
-        owner == "AnimusForge_Illustrator_v1" ? 50 : Ambient(property) ? 60 : property.GroupOrder;
+        owner == "AnimusForge_Illustrator_v1" ? 50 : property.GroupOrder;
 
     private sealed class Metadata : IPropertyDefinitionBase, IPropertyDefinitionWithId, IPropertyGroupDefinition, IPropertyDefinitionGroupToggle
     {

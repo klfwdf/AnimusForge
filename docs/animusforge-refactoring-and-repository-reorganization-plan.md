@@ -1,3 +1,34 @@
+<a id="diplomacy-chain-localization-20261020"></a>
+## 外交链路、王国解析及双语边界（2026-10-20，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+用户要求检查“只发声明不回应/无法识别王国”并检查外交双语完整性，按本仓库发现错误继续修的规则处理已复现缺口。实际工作区 F:/AnimusForge-main/main；初查db026726c，期间其他作者的民用角色/气泡修复提交至6b30db66b，与本任务外交源码无交叉。意图检查点830b13a，产品e48aefefd，原换行保全ed3c2504a，附庸通知补修fee281b90；原有工作区dirty及未跟踪资料保留，未部署、Stage、打包、push或启动游戏。本条仅替代本次涉及的外交解析/文本边界结论，不撤销其他交付记录。
+
+- 已用修复前生产规则复现：显示名已解析为ID，但addressed/mentioned/round_plan仍以原字符串比较接力路线或候选集，合法生成被拒绝。现在解析并保留稳定ID贯穿资格、范围、重复目标、动作和计划校验；未知、自指、越界、不同别名的重复目标仍拒绝，不从正文猜测国家，不新增跨语种旧名/重名映射。
+- 玩家statement即使requires_response=false，真实编排仍会登记义务并生成可发送任务；普通AI由回合接力继续，NPC直达玩家王庭是另一条会检查requires_response的路径。截图的一概判断不成立。技术暂停确会阻止发送，本轮未改变原暂停/重试规则；没有用户现场日志，不认定其为当前存档无回应的根因。
+- EN固定中文缺口已在请求/显示边界修复：原版动机已知片段、威胁阶段、战斗日期/野外乱码占位；跨包旧解析失败/口头外交回执；重新解析UI消息；附庸战争同步数量模板及通知前缀。兼容资源/存档身份保值，未知动态原因、名字、玩家输入及旧文本不猜译，原存储对象不修改。
+- 正式资源接线核对：Prompt863、Misc550、UI1185+88键成对，变量一致；740处字面reader键完整，44个外交MCM键两种UI均存在；语言注册、content-map、原嵌入兼容表和撰写弹窗Text绑定通过。EN Misc保留的5个含汉字键属于AFEF协议身份。三对原包选版/JSON契约通过；外交子UI检查806键/637fallback通过，既有13个措辞/标点drift按原门禁记录，未扩宽白名单。
+- 验证：新增--chain-localization在CN/EN包×English/简体中文UI各51项通过；CN综合行为4437；两包别名98、每日调度16、玩家语义234各通过。修正测试恢复UI时强制English和EN截断解释仍断言中文的问题。原recovery总入口的未绑定owner/epoch旧fixture失败保留，新专项通过真实Bind证明不是产品可用性判定故障。
+- 官方build-only Debug最终通过1.3(v1.3.15.110062)/1.4(v1.4.6.115628)、Bootstrap及双Coup seam/registration。首次默认private runtime目录缺失，之后显式使用仓库内既有EN投影依赖目录通过，未改构建/覆盖脚本。实际DLL哈希和全部源文件哈希见本机receipt.json。
+- PackageD总入口仍误将19个已迁入KingdomCivilWarPromptTexts成对JSON的RebellionNaming提示词键查UI XML；已逐键核对两份真实JSON及Prompt消费者，保留失败日志，外交子门禁PASS不冒充总门禁全绿。
+
+<a id="diplomacy-chain-localization-20261020-code-map"></a>
+代码范围（绑定e48aefefd/fee281b90，ed3c2504a仅保全换行）：
+
+| 路径/一基范围 | 符号与真实消费者 | 覆盖与边界 |
+| --- | --- | --- |
+| src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyGenerationValidationRules.cs:330-640,930-946；WorldDiplomacyEnvelopeJsonRules.cs:426-439 | TryGetGeneratedIntentLegalityViolation/单动作校验/CopyDerived → 编排生成及语义应用 | ID解析后检查资格/候选/路线/重复，保持结构和权限校验 |
+| src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyDocumentFactRules.cs:486-500；Presentation/DiplomacyLegacyPromptProjection.cs:1-63；World/WorldDiplomacyBehavior.PromptContext.cs:140-145 | BuildRecentNativeSignalContext/NativeReason → 实际PromptWorld及Composer | 最多4条原版信号；已知片段投影，动态解释保值 |
+| src/modules/AF.Module.Diplomacy/Presentation/DiplomacyDateProjection.cs:35-47；Domain/WorldDiplomacyTextRules.cs:496-510 | ForPrompt/FormatBattleFactForPrompt → 双边战斗上下文 | 已知历法/野外占位投影，未知日期/地点及保存对象不改 |
+| src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs:1641-1649,1882-1890；Application/WorldDiplomacyPromptComposer.cs:580-613 | DescribeThreatStage等 → 固定Prompt/结算/历史 | 包语料成对标签，非行为状态或协议改名 |
+| src/modules/AF.Module.Diplomacy/Presentation/DiplomacyReplyTextRules.cs:38-58；DiplomacyDialogueStatusUi.cs:41-83；Application/WorldDiplomacyAnalysisApplication.cs:548-582 | 嵌入变体/Project/ProjectMechanicalResultForDisplay → 通知及详情 | 已知CN/EN回执按UI投影，未知原文保持；不扩大NPC清理键表 |
+| src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Presentation.cs:86-96；Vassalage/VassalageBehavior.cs:4049-4060,4158-4169,4849-4861 | RetryAnalysis/战争同步状态与通知 → UI和事实回显 | UI随游戏，事实随包；数量和待安全生效语义保持 |
+| content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json/.en.json；DiplomacyMiscPromptTexts.json/.en.json；DiplomacyReceiptCompatibility.json；Languages两份afdip_ui_strings XML | 原reader/嵌入LogicalName/原包选择器 | 复用原映射，无新配置owner/发行矩阵；动态用户资产不改 |
+| tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/DiplomacyChainLocalizationReplay.cs:1-91 | --chain-localization → 真实规则/编排/资源/TextObject | 51项四组合；游戏/真实provider/真实旧sav另验 |
+
+性能：仅公文生成/应用、请求组装及UI显示时执行；沿用有限参与者/最多4条原版信号/战斗窗口。资源及回执变体惰性加载缓存、历法Regex一次创建，无新增Tick IO/扫描/轮询或后台游戏对象读取。未验：真实Campaign王国和游戏视觉、真实provider、实际旧sav、完整发行Stage/双ZIP/部署/push；不能据离线门禁宣称全历史文本零中文或实机回应已通过。
+
+完整本机证据：artifacts/diplomacy-chain-localization-audit-20261020/review.md、receipt.json、before-fix.log、chain-*、after-*、resource-results.json、package-contract.log、unified-build.log及原失败日志。回滚对e48aefefd及fee281b90做focused inverse，ed3c2504a仅换行保全；不要hard reset、整文件覆盖其他作者修改或自动部署。
+
 <a id="build-deploy-push-20261020"></a>
 ## EN 编译部署与源码交付（2026-10-20，OFFLINE_VERIFIED / EN_DEPLOYED）
 
@@ -11870,3 +11901,33 @@ Current verified delivery and later deployment authorization: [OpenAI-compatible
 - Evidence is local and ignored: `artifacts/tts-l-tutorial-20261020/` contains builds, native tests, content checks, `validation-receipt.json`, `deployment-receipt.json`, `final-verification.json` and separately retained public/game candidates. Publication is an ordinary fast-forward main push with a separately checked remote ref; final remote identity is recorded in the local release receipt. No model/recording/binary/archive/LFS upload, packaging or version bump.
 - Accuracy boundary: the user-supplied Baidu URL and `5qkj` code are included exactly, but the remote archive could not be independently downloaded/verified; no local archive SHA is attributed to it. L targets about 2GiB VRAM, not a cap; the cited 1546MiB peak is 17 syntheses on RTX 5070 Ti 16GB sampled at 100ms, not an 8GB+game validation. 8GB guidance is conditional and not a compatibility guarantee. Recording redistribution rights are not inferred from open-source code.
 - NOT_RUN: native game rendering/click overlay, real-save loading, new audio audition and broad 8GB-game coexistence. No game/model was started. Next player checks: select local mode and open the eight chapters; verify existing GCCZ/SETS settings and own voice selection. Product rollback is a focused inverse of `530e8813f` on the relevant source, not a whole-module downgrade or automatic recovery.
+
+
+<a id="castle-exit-scene-retirement-20261020"></a>
+## 城堡处置退出时停止场景 Agent 操作（2026-10-20，OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED）
+
+- 用户在读取崩溃诊断、完成源码调查后要求修复。基线 `a0126e440`，意图 `a9de1ad`，产品 `4aebda4fc`。保留原 HANDOFF/台账、运行测试桥及并行 Illustrator dirty；原 EN 安装与推送任务继续暂停。
+- 已确认路径：`FinalizeInterventionMissionEnd` 先清理外部检阅运行状态，再 `FinalizePendingAftermath` / `FinalizePendingCastleRegularDisposition`；战役名单移除后仍调用场景俘虏处置方法。当前本地原版参考在该回调后仍会执行 Agent 和资源清理。报告的准确原始日志、崩溃 DLL 和 1.4.8 原生异常未复现，不将此修补等同于已证明报告根因或零崩溃。
+- 代码证据（产品 `4aebda4fc`）：`src/bridges/Siege/Host/CastleAftermathRuntimeBridge.cs:1385–1430` 的 `ResolveRegularPrisoners`、`:1442–1480` 的 `ResolveLordPrisonerAgents` 在访问 Agent 属性、登记和编队前核对 `_cleaned`、所属 Mission、`MissionEnded` 与当前 Mission 引用。任务结束/行为已清理/任务丢失或切换时，由原生退出清理接管场景对象。普通俘虏名单、收益、信任及城堡效果原消费者不变；正常任务中的淡出和处决脱离保留。`MissionEnded` 同时覆盖 Over 状态，避免仅使用在 Over 返回 false 的 `IsMissionEnding`。
+- 回归 `tests/modules/AnimusForge.SiegeAftermathIntervention/CastleExitLifecycleTests/run.py:1–72` 原样抽取真实清理、战役移除、场景普通/领主处置方法；`Program.cs.txt:1–68` 提供引擎/战役边界替身。旧代码编译成功后在 `late Agent property read: ending` 失败；修后 18 个普通/领主释放与处决场景通过，覆盖 active/ending/over/no-owner/other-mission/cleaned，退出病例仍结算 197 人（200→3）且 Agent 读取、编队写入和 FadeOut 为 0。记录不是实机 Agent/MapEvent 验收。
+- 原统一入口在独立工作区 `.tmp/castle-exit-fix-build-20261020` 验证 Debug 1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628`、Bootstrap、双 Coup seam/registration PASS；隔离并行未提交插画修改，未执行 Stage/Deploy。主工作区与构建工作区的目标源码 Git blob 相同；三 DLL 与 build marker SHA 逐项一致。完整日志、失败/通过回放和候选在 `artifacts/castle-exit-fix-20261020/{before,after,build.log,receipt.json,verified-candidates}`。
+- 运行频率为既有显式俘虏处置/退出结算回调，每次进入方法仅增加 O(1) 生命周期判断，并在退出状态省去既有集合扫描/分配；没有新增 Tick IO、反射、锁、轮询或缓存。无新增玩家文案、Prompt、设置、存档键或协议；CN/EN 共用该逻辑，无资源改动。只修改 AF 宿主桥，未修改独立 GCCZ 规则库或外仓副本。
+- 未验：实际 1.4.8 崩溃现场、原生退出时序、旧档、真实城堡收益/Agent 清理；无实机、部署、打包或 push。源码回滚使用 focused inverse `git revert 4aebda4fc` 后原入口重建，不影响其他作者改动；未创建部署恢复或声称已恢复。
+
+
+<a id="retire-environment-ai-en-delivery-20261020"></a>
+## 环境 AI 退役与 EN 编译部署交付（2026-10-20，OFFLINE_VERIFIED / EN_DEPLOYED / LIVE_NOT_RUN）
+
+- 用户明确要求关闭并删除环境 AI，仓库外备份本地预设后删除仓库内预设，并编译部署 EN 后推送。本条替代本轮外交、生图及城堡退出修复记录中的“未部署/暂停部署”状态；那些记录的实机、旧档与真实 provider 限制保留。未请求 ZIP 或版本递增，沿用 v1.6.2。
+- 产品 `5689b6937` 删除独立环境 API/模型/连接测试、自动环境闲聊/时间/人口行为、生成器、三份中英文预设与两份环境 XML；同步移除终端、MCM、模型缓存、内容映射、语言注册及两套专用 Prompt/固定文本。玩家主动喊话与 GCCZ 动作反应链路保留。旧环境 JSON/preset 字段由原 MCM 格式器忽略，不能恢复执行入口；不删除用户 MCM 文件、不更改存档键或其他 owner。政变保护只移除已退役人口行为的注册目标，其余双版本保护门禁继续通过。
+- 外部备份 15 个文件及 31 个修改前恢复副本逐项 SHA-256 验证；仓库本轮 `before/` 文件已外移。精确外部位置与检查点保存在本机 `artifacts/retire-environment-ai-20261020/backup-receipt.json` / `recovery-before-externalized.json`，备份不上传。源码检查点 `2dbcc8227`；删除不改写 Git 历史。
+- EN 门禁发现缓存 core 的中文诊断及旧识别标记：诊断改英文，11 个兼容标记原值存入既有 `LlmSourceTexts` 嵌入资源，由缓存 reader 读取。保持匹配/历史原值及 CN/EN 正文选择，不增加语言锁。源码/真实 DLL EN 门禁通过。运行成本仅既有请求构建中的缓存字典读取；自动环境 Tick/HTTP 已移除，无新增 Tick IO、全量扫描、反射、轮询或后台游戏对象读取。
+- 验证：统一 Release 1.3 `v1.3.15.110062` / 1.4 `v1.4.6.115628`、Bootstrap、双 Coup seam/registration 和新建干净 Stage PASS；完整 CN/EN 投影 3530/3521 项 PASS。最终候选实际 MCM JSON/终端检查 1.4 EN 1031、1.3 CN 975，模型 preset 60、MCM 下拉 14、连接测试资源契约 31、双版本双包模板回放 7576（8 个旧逻辑负控）、缓存 CN/EN 各 50 项通过。测试夹具加载模块 XML 后完成双语 UI 断言；`cb7c84c39` / `1e5aa5396` 净改动仅夹具初始化与维护说明。首次构建的旧 Coup 目标、测试接口参数/JSON 格式器/资源加载失败及修复结果保留本机日志。
+- 最终提交后重建纠正 Stage 的换行字节漂移；不放宽原部署门禁。EN 经原 `Invoke-ManagedStageDeployment` 部署到当前游戏统一 `Modules/AnimusForge`，核验 3521 个管理文件，9 个保护哈希与 10 个非管理安装文件元数据保持；无新增部署 Recovery、备份、manifest、完成标记或自动回滚。完整结果见本机 `deployment-result.json` / `deployment-final-check.json`。实机未启动。
+- 全量旧 J15 套件仍因其历史世界书基线期待的 6 个开发辅助文件已不在映射而失败；本轮修改前后的世界书映射完全相同，未改断言放行。当前相关内容/真实 DLL/完整投影均独立验证；不宣称全仓套件全部通过。未验：实机自动闲聊停用/外交交互/图库、新 provider HTTP、生图真实请求端点、原生渲染、旧档；不将离线检查等同实机验收。
+- 源码交付从远端基线生成单个干净提交，排除 artifacts、私有交接历史和未跟踪网页/Live2D 等内容，不 force push。本机 `receipt.json` 记录最终本地/交付/远端 SHA、候选与安装哈希；推送成功以后以独立 ls-remote 复核。回滚仅对 `5689b6937` 或公开交付差异做 focused inverse 后重新构建，经明确授权再部署；不 hard reset、不自动恢复游戏目录。
+
+<a id="retire-environment-ai-en-delivery-20261020-code-map"></a>
+### 本轮源码责任与范围
+
+代码修订 `5689b6937` / `1e5aa5396`：`ShoutBehavior.cs:2651–2699` 的 `OnMissionStarted` 保留普通喊话并撤销自动环境注册；`DuelSettings.cs:483–505`、`:5166–5250` 保留四模型渠道及原缓存；`AnimusForgeMcmPages.cs:93–104` 的 ApiGroup/ApiOrder 与 `TerminalSettingsCoverage.cs:48–159` 负责原 owner 的两前端投影；`CoupGuards.cs:121–145` 保留现有保护挂钩并移除退役目标；`PromptReassembler.cs:451–464`、`:736–829` 使用兼容资源原值；`SupplementalChecks.cs:194–210` 验实际类型/属性退役及原 MCM JSON，`TerminalLiveSettingsTests/Program.cs:58–64` 初始化真实模块 XML。完整路径、哈希、已覆盖/未覆盖范围见本机 `verified-code-map.json`，删除文件清单见 `removal-inventory.json`。本条不重复既有外交/生图/城堡源地图。

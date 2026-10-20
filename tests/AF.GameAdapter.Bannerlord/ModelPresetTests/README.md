@@ -8,7 +8,7 @@ python tests/AF.GameAdapter.Bannerlord/ModelPresetTests/run.py --mcm .tmp/build_
 python tests/AF.GameAdapter.Bannerlord/ModelPresetTests/run.py --baseline d3fde95d4
 ```
 
-使用当前 DuelSettings / TownAmbientSettings 的原始模型属性、缓存和解析方法，以及 McmDropdownRuntimeRefresh 的真实前缀；不修改这些方法实现。路径和日志为隔离替身，属性读写顺序重现 MCM BaseSettingsJsonConverter。调用引用快照中的真实 DropdownJsonConverter，并在 .NET Framework 4.7.2 中给真实 SetSelectedIndexAction 构造器安装 Harmony 前缀，执行 DoAction / UndoAction。
+使用当前 DuelSettings 的原始模型属性、缓存和解析方法，以及 McmDropdownRuntimeRefresh 的真实前缀；不修改这些方法实现。路径和日志为隔离替身，属性读写顺序重现 MCM BaseSettingsJsonConverter。调用引用快照中的真实 DropdownJsonConverter，并在 .NET Framework 4.7.2 中给真实 SetSelectedIndexAction 构造器安装 Harmony 前缀，执行 DoAction / UndoAction。
 
 前置条件：原统一构建已经准备引用快照、Coup.RuntimeProbe 的 project.assets.json 及 net472 引用程序集包；引用文件只读，不下载或修改游戏配置。输出全部位于新建的 `artifacts/tests/model-presets/run-*`。net8 不适用于本机游戏 Harmony 的动态 IL 实现。
 

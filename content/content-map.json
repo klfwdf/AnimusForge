@@ -619,21 +619,6 @@
       "target": "ModuleData/SceneActions/settings.v4.json"
     },
     {
-      "owner": "AF.Module.Conversation",
-      "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ambient_strings.xml",
-      "target": "ModuleData/Languages/afconv_ambient_strings.xml"
-    },
-    {
-      "owner": "AF.Module.Conversation",
-      "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ambient_strings-zh-CN.xml",
-      "target": "ModuleData/Languages/CNs/afconv_ambient_strings-zh-CN.xml"
-    },
-    {
-      "owner": "AF.Module.Conversation",
-      "source": "content/modules/AF.Module.Conversation/ModuleData/TownAmbientDialogue.json",
-      "target": "ModuleData/TownAmbientDialogue.json"
-    },
-    {
       "owner": "AnimusForge.XihaiAction",
       "source": "content/modules/AnimusForge.XihaiAction/ModuleData/action_sets.xml",
       "target": "ModuleData/action_sets.xml"

@@ -16,7 +16,6 @@ spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.C
 def read(path):
     return subprocess.check_output(['git','show',args.baseline+':'+path],cwd=ROOT).decode('utf-8-sig') if args.baseline else (ROOT/path).read_text(encoding='utf-8-sig')
 src=read('src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs')
-town=read('src/AF.GameAdapter.Bannerlord/Configuration/Mcm/TownAmbientSettings.cs')
 ui=read('src/AF.GameAdapter.Bannerlord/UI/Common/McmDropdownRuntimeRefresh.cs')
 parts=[]
 def block(s,a,b): parts.append(s[s.index(a):s.index(b)])
@@ -24,22 +23,22 @@ block(src,'private sealed class ModelDropdownCacheSnapshot','private Dropdown<st
 block(src,'private bool _modelDropdownCacheHydrated','private const string AfdianSupportUrl')
 block(src,'private void EnsureModelDropdownCacheHydrated()','public static string NormalizeShoutInputUiBackground(')
 block(src,'private static List<string> BuildModelOptionList(','private static string BuildModelListApiUrl(')
-for name in ['Main','Auxiliary','ActionPostprocess','EventAndRebellion','TownAmbientAi']:
-    s=town if name=='TownAmbientAi' else src
+for name in ['Main','Auxiliary','ActionPostprocess','EventAndRebellion']:
+    s=src
     prop='ModelName' if name=='Main' else name+'ModelName'
     # Include the entire existing attributed property, excluding adjacent buttons.
     a=s.rfind('[SettingPropertyText',0,s.index('public string '+prop+' ' if args.baseline else 'public string '+prop+'\n'))
     b=s.index('[SettingPropertyButton',a);parts.append(s[a:b])
     a=s.rfind('[SettingPropertyDropdown',0,s.index('public Dropdown<string> '+name+'ModelDropdown'))
     b=s.index('[SettingPropertyButton',a);parts.append(s[a:b])
-    selected='GetTownAmbientAiSelectedModelOption' if name=='TownAmbientAi' else 'Get'+name+'SelectedModelOption'
+    selected='Get'+name+'SelectedModelOption'
     parts.append(ex.declaration(s,'public string '+selected+'('))
     effective='GetEffective'+name+'ModelName'
     parts.append(ex.declaration(s,'public string '+effective+'('))
 assert 'BindModelListActions();' in ex.declaration(src, 'public DuelSettings()'), 'real settings constructor must bind fetch actions'
 parts.append(ex.declaration(src, 'private void BindModelListActions('))
 parts.append('public DuelSettings() { BindModelListActions(); } public string LastUrl, LastKey, LastApply; private void StartFetchModelList(string channel, string url, string key, Action<List<string>> apply) { LastUrl=url; LastKey=key; LastApply=apply.Method.Name; }')
-for name in ['Main','Auxiliary','ActionPostprocess','EventAndRebellion','TownAmbientAi']:
+for name in ['Main','Auxiliary','ActionPostprocess','EventAndRebellion']:
     stem='' if name=='Main' else name
     parts.append(f'public string {stem}ApiUrl {{get;set;}} public string {stem}ApiKey {{get;set;}} public Action Fetch{name}ModelList {{get;set;}} private void Apply{name}ModelList(List<string> models) {{}}')
 code='\n'.join(parts)

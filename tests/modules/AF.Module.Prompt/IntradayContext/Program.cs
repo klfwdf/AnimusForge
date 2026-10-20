@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace AnimusForge;
-internal static class PromptComposerTexts
-{
-    internal static string FormatTemplate(string template, params (string Key, object Value)[] variables)
-    { foreach (var item in variables) template = template.Replace("{" + item.Key + "}", item.Value?.ToString()); return template; }
-}
 internal static class Program
 {
     private static int checks;

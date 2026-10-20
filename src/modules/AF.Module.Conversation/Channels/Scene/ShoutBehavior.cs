@@ -2655,7 +2655,7 @@ private static void CaptureNativeIllustrationHistoryBoundary()
 		{
 			return;
 		}
-		Logger.LogImmediate("TownAmbient", "shout_mission_started scene=" + (currentMission.SceneName ?? "") + " agents=" + (currentMission.Agents?.Count ?? 0));
+		Logger.LogImmediate("ShoutBehavior", "shout_mission_started scene=" + (currentMission.SceneName ?? "") + " agents=" + (currentMission.Agents?.Count ?? 0));
 		lock (_historyLock)
 		{
 			SceneHistoryOwner.Reset();
@@ -2694,24 +2694,6 @@ private static void CaptureNativeIllustrationHistoryBoundary()
 		AIConfigHandler.TryStartBackgroundSemanticWarmup("mission_start", semanticWarmupSeeds);
 		currentMission.AddMissionBehavior(new ShoutMissionBehavior(this));
 		currentMission.AddMissionBehavior(new FloatingTextMissionView());
-		currentMission.AddMissionBehavior(new TownAmbientDialogueMissionBehavior());
-		Logger.LogImmediate("TownAmbient", "mission_behaviors_attached scene=" + (currentMission.SceneName ?? ""));
-		try
-		{
-			Settlement ambientSettlement = Settlement.CurrentSettlement;
-			Location ambientLocation = CampaignMission.Current?.Location;
-			if (DuelSettings.GetTownAmbientDialogueDensity() > 0
-				&& ambientSettlement?.IsTown == true
-				&& ambientLocation != null
-				&& currentMission.GetMissionBehavior<InterventionNativeTownCivilianPopulationMissionBehavior>() == null)
-			{
-				currentMission.AddMissionBehavior(new InterventionNativeTownCivilianPopulationMissionBehavior(ambientSettlement.StringId, regularTownMultiplierMode: true));
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("TownAmbient", "regular town population behavior was not attached: " + ex.Message);
-		}
 		SubscribeTtsPlaybackEvents();
 		try
 		{

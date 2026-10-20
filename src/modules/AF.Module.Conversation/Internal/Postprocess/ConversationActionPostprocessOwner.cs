@@ -2212,7 +2212,10 @@ internal static string GetSceneNpcListIdentityForPrompt(NpcDataPacket npc)
 		{
 			return GetSceneNpcIdentityNameForPrompt(npc);
 		}
-		string text = (npc?.RoleDesc ?? "").Trim();
+		// RoleDesc is kept in the stable compatibility language for matching and
+		// parsing. Project it only at this visible/prompt boundary so an EN package
+		// cannot leak the CN compatibility value (for example "流浪者").
+		string text = AdapterPromptCaptureTexts.PcapProjectKnown((npc?.RoleDesc ?? "").Trim());
 		return string.IsNullOrWhiteSpace(text) ? GetSceneNpcIdentityNameForPrompt(npc) : text;
 	}
 

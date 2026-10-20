@@ -579,7 +579,7 @@ internal static class WorldDiplomacyPromptComposer
 		else if (outbound != null)
 		{
 			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_138", "This kingdom already has a pending ")
-				+ WorldDiplomacyRoundLifecycleRules.DescribeThreatStageFormal(outbound.Stage)
+                + WorldDiplomacyRoundLifecycleRules.DescribeThreatStageFormal(outbound.Stage, world.LocalizePrompt)
 				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_139", ": target=") + outbound.TargetKingdomId + "=" + world.KingdomName(outbound.TargetKingdomId)
 				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_140", ", source=") + outbound.StageDocumentId + world.LocalizePrompt("AF_DIP_Prompt_Composer_141", ". The target kingdom has not yet published its one-time decision; do not repeat or escalate this threat before it does."));
 		}
@@ -590,7 +590,7 @@ internal static class WorldDiplomacyPromptComposer
 			WorldDiplomacyDocument source = world.ResolveDocument(incoming.StageDocumentId);
 			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_142", "Unresolved threat received by this kingdom:")
 				+ WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(
-					WorldDiplomacyRoundLifecycleRules.NormalizeThreatEventStage(incoming.Stage))
+                    WorldDiplomacyRoundLifecycleRules.NormalizeThreatEventStage(incoming.Stage), world.LocalizePrompt)
 				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_143", ": issuing kingdom=") + incoming.IssuerKingdomId + "=" + world.KingdomName(incoming.IssuerKingdomId)
 				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_144", "; source=") + incoming.StageDocumentId
 				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_145", "; title=") + WorldDiplomacyTextRules.Limit(source?.Title, 80)
@@ -609,7 +609,7 @@ internal static class WorldDiplomacyPromptComposer
 		{
 			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_150", "Confirmed: ") + world.KingdomName(notice.TargetKingdomId) + world.LocalizePrompt("AF_DIP_Prompt_Composer_151", " has explicitly complied with this kingdom's previous ")
 				+ WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(
-					WorldDiplomacyRoundLifecycleRules.NormalizeThreatEventStage(notice.Stage))
+                    WorldDiplomacyRoundLifecycleRules.NormalizeThreatEventStage(notice.Stage), world.LocalizePrompt)
 				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_152", ". Subsequent declarations need not declare war or escalate that threat further, and no national prestige will be deducted for it.")
 				+ (WorldDiplomacyRoundLifecycleRules.IsThreatCancellationStatusCancelled(notice.PolicyConditionCancellationStatus)
 					? world.LocalizePrompt("AF_DIP_Prompt_Composer_153", "The attached policy '") + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(notice.PolicyConditionPolicyName, notice.PolicyConditionPolicyId) + world.LocalizePrompt("AF_DIP_Prompt_Composer_154", "' has been canceled.")

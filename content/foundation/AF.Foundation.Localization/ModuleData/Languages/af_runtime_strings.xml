@@ -6,7 +6,6 @@
     <string id="AF_RUNTIME_ApiTest_Stage_Preprocess" text="Preprocessing API" />
     <string id="AF_RUNTIME_ApiTest_Stage_Postprocess" text="Postprocessing API" />
     <string id="AF_RUNTIME_ApiTest_Stage_Event" text="Event/rebellion API" />
-    <string id="AF_RUNTIME_ApiTest_Stage_Ambient" text="Ambient AI API" />
     <string id="AF_RUNTIME_ApiTest_Started" text=": connection test requested." />
     <string id="AF_RUNTIME_ApiTest_Success" text=": connection test succeeded. Reply: " />
     <string id="AF_RUNTIME_ApiTest_Exception" text=": connection test error: " />

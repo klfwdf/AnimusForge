@@ -19,7 +19,7 @@ static class Program
 {
     static int checks,failures;
     static void Check(bool ok,string label) { checks++; if(!ok)failures++; Console.WriteLine((ok?"PASS ":"FAIL ")+label); }
-    static readonly string[] Names={"Main","Auxiliary","ActionPostprocess","EventAndRebellion","TownAmbientAi"};
+    static readonly string[] Names={"Main","Auxiliary","ActionPostprocess","EventAndRebellion"};
     static PropertyInfo Text(string n)=>typeof(DuelSettings).GetProperty(n=="Main"?"ModelName":n+"ModelName");
     static PropertyInfo Drop(string n)=>typeof(DuelSettings).GetProperty(n+"ModelDropdown");
     static Dropdown<string> D(DuelSettings s,string n)=>(Dropdown<string>)Drop(n).GetValue(s);
@@ -45,7 +45,7 @@ static class Program
     }
     static void Cache(bool reversed)
     {
-        var j=new JObject();foreach(var n in Names){var key=n=="TownAmbientAi"?"TownAmbientAi":n;j[key+"Options"]=new JArray(reversed?new[]{"other","chosen-"+n,"old-"+n}:new[]{"old-"+n,"other","chosen-"+n});j[key+"Selected"]="old-"+n;}
+        var j=new JObject();foreach(var n in Names){var key=n;j[key+"Options"]=new JArray(reversed?new[]{"other","chosen-"+n,"old-"+n}:new[]{"old-"+n,"other","chosen-"+n});j[key+"Selected"]="old-"+n;}
         Directory.CreateDirectory(AnimusForgeDataPaths.GetCacheDirectory(AnimusForgeDataPaths.GetCurrentRoot()));
         File.WriteAllText(Path.Combine(AnimusForgeDataPaths.GetCacheDirectory(AnimusForgeDataPaths.GetCurrentRoot()),"ModelDropdownCache.json"),j.ToString());
     }

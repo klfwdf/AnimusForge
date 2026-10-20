@@ -426,6 +426,7 @@ public static class WorldDiplomacyEnvelopeJsonRules
     public static void CopyDerivedGeneratedActionEnvelope(JObject single, JObject action)
     {
         if (single == null || action == null) return;
+        action["target_kingdom_id"] = ReadTargetKingdomId(single);
         action["intent"] = ReadString(single, "author_intent.intent", "intent");
         action["commitment"] = ReadString(single, "author_intent.commitment", "commitment");
         action["negotiation_move"] = ReadString(single, "negotiation_move");

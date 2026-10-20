@@ -5,7 +5,10 @@
     <StartupObject Condition="'$(ProtocolRegression)' == 'true'">Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptCacheCore/*.cs" Link="PromptCacheCore/%(Filename)%(Extension)" />
+
     <Compile Include="Program.cs" />
+    <Compile Include="CoreFixture.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/ConversationRequestBudget.cs" Link="ConversationRequestBudget.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/ConversationContextWindow.cs" Link="ConversationContextWindow.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs" Link="ConversationMessage.cs" />

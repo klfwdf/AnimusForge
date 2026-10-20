@@ -23,7 +23,6 @@ MODULE_FILES = {
         "src/modules/AF.Module.Llm/ShoutNetwork.cs",
         "src/modules/AF.Module.Llm/Tts/VoiceMapper.cs",
         "src/modules/AF.Module.Llm/Tts/TtsEngine.cs",
-        "src/modules/AF.Module.Llm/Ambient/TownAmbientAiClient.cs",
         "src/modules/AF.Module.Llm/Transport/LegacyShoutNetworkGateway.cs",
         "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
         "src/modules/AF.Module.Llm/ModelCatalog/LegacyModelCatalogGateway.cs",

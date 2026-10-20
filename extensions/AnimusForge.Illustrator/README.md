@@ -110,7 +110,9 @@ MCM → **5. 存储与性能**：
 
 设置无需重启，在下一次提取/采集生效，不修改进行中的请求。全景六个方向顺序采集，共享总预算；总预算先到仍停止。显式传入立绘timeoutMs的调用保留自身预算。这些设置不是AI接口超时，调大不能修复原生保存未执行，也不触发付费重试。
 
-每次既有 `logs/image save/Diagnostics/<请求>/trace.json` / `steps.log` 增加：
+OpenAI 兼容生图自动选协议时，模型名包含 `gemini` 即使用 `/chat/completions`，不区分大小写，也不要求包含 `image`；例如 `gemini-nano-banana-2.1`。显式 Edits、Gemini 原生地址及 Player2 沿各自协议。
+
+每次既有 `image save/Diagnostics/<请求>/trace.json` / `steps.log` 增加（`image save` 位于当前 AF 模组根，与 `logs` 同级）：
 - `native_export_environment`：当前临时目录、路径长度/非ASCII标记、API构建线、引擎/Tableau程序集MVID；路径可能含用户目录，分享日志前注意隐私。
 - `portrait_capture_state`：请求前后Paint回调、观测可用性/错误、渲染目标代次变化、保存目录、文件检查次数/异常、PNG及双扩展名文件状态。
 - `panorama_capture_budget`、`panorama_file_wait_result`、`panorama_export_state`：实际冻结预算、逐方向文件状态/读取失败原因、保存之后的回调累计量。

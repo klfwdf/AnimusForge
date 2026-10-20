@@ -363,7 +363,12 @@ internal static class PersonaGenerationFactCaptureAdapter
 		}
 		try
 		{
-			stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_35") + WorldEntityRetrievalService.FormatHeroRelatives(hero, int.MaxValue));
+			// Keep this bounded: persona generation is an on-demand capture, but the
+			// prompt must not turn a large clan into an unbounded request. The life
+			// state suffix is game-thread truth and the authority sentence prevents
+			// older encyclopedia/background prose from reviving a deceased relative.
+			stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_35") + WorldEntityRetrievalService.FormatHeroRelatives(hero, 24));
+			stringBuilder.AppendLine(WorldEntityPromptTexts.Get("FamilyStatusAuthority", "The current life or death status above takes precedence over older background or dialogue. A deceased person may only be described as part of the past; do not treat them as active or invent a cause or time of death."));
 		}
 		catch
 		{

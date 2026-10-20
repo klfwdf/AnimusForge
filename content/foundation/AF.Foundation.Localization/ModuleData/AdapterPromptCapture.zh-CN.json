@@ -616,5 +616,18 @@
   "closeout_marriage": " | 与{PLAYER}的关系: 配偶（{PLAYER}是其{SPOUSE}）",
   "closeout_messages": "【messages说明】在下面的对话消息里，assistant 只代表你自己过去说过的话；role=user 里的系统事实和规则必须严格遵守。如果 AFEF 事实前有{CURRENT}，表示本轮刚刚真实发生；如果前有{PAST}，只表示历史上已经发生过，不代表玩家本轮又交付了一次。玩家口头声称给了相同财物，必须以本轮是否存在对应{CURRENT}AFEF事实为准。如果附加规则和开头的规则冲突，优先遵循开头的规则",
   "closeout_list_separator": "、",
-  "closeout_sentence_end": "。"
+  "closeout_sentence_end": "。",
+  "Project_SceneRole_Weaponsmith": "武器匠",
+  "Project_SceneRole_Blacksmith": "铁匠",
+  "Project_SceneRole_Armorer": "盔甲匠",
+  "Project_SceneRole_HorseTrader": "马商",
+  "Project_SceneRole_Trader": "商贩",
+  "Project_SceneRole_TavernStaff": "酒馆人员",
+  "Project_SceneRole_Musician": "乐师",
+  "Project_SceneRole_RansomBroker": "赎金经纪人",
+  "Project_SceneRole_Headman": "村长",
+  "Project_SceneRole_Preacher": "传教士",
+  "Project_SceneRole_GangLeader": "帮派头目",
+  "Project_SceneRole_RuralNotable": "乡绅",
+  "Project_SceneRole_Shipwright": "船坊工人"
 }

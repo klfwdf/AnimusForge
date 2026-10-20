@@ -278,5 +278,25 @@
   "AF_DIP_STATUS_OralDiplomacy_CommitmentDisabled": [
     "AI外交已关闭，原有发文约定不能在当前模式下变更。",
     "AI diplomacy is disabled; existing commitment arrangements cannot be changed in the current mode."
+  ],
+  "Analysis_TruncatedResult": [
+    "宣言已公开；模型输出因长度上限被截断，外交动作尚未执行。请提高对应API的输出上限后选择“重新解析”。",
+    "Declaration published; model output truncated due to token limit, diplomatic action not executed. Increase the API output limit and choose Reparse."
+  ],
+  "Analysis_AcceptAndAmendResult": [
+    "宣言已公开；解析同时给出接受原案和修改条款，外交动作未执行。可重新解析原文；修改条件应作为新提案。",
+    "Declaration published; analysis returned both acceptance and amendment, diplomatic action not executed. Original text can be reparsed; amended terms should be submitted as a new proposal."
+  ],
+  "Analysis_TreatyRolesResult": [
+    "宣言已公开；解析未能辨明条约双方角色，提案未执行。可重新解析原文。",
+    "Declaration published; analysis failed to distinguish party roles, proposal not executed. Original text can be reparsed."
+  ],
+  "Analysis_FailedResult": [
+    "宣言已公开；分析失败，外交动作未执行。可选择“重新解析”再次处理原文。",
+    "Declaration published; analysis failed, diplomatic action not executed. Choose Reparse to process the original text again."
+  ],
+  "Presentation_ReparsingPending": [
+    "宣言已公开；正在重新解析原文，尚未执行外交动作。",
+    "Declaration published; reparsing original text, diplomatic action not yet executed."
   ]
 }

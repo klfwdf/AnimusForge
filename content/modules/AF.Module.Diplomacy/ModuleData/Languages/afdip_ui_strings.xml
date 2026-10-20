@@ -1185,5 +1185,12 @@
     <string id="AF_DIP_UI_OralGeneration_DelayedFact" text="The diplomatic declaration previously promised has not yet been published and awaits redrafting; the agreed terms have not changed." />
     <string id="AF_DIP_UI_OralGeneration_WithdrawalFact" text="I have explicitly agreed to withdraw the earlier public diplomatic proposal, pending publication of the formal withdrawal declaration; the original proposal has not become invalid as a result yet." />
     <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceNotExecutedDetail" text="Peace proposal not executed: {REASON}" />
+    <string id="AF_DIP_UI_AllianceInfinite" text="Indefinite" />
+    <string id="AF_DIP_UI_Presentation_DocumentPageExpired" text="This document page has expired; please reopen it." />
+    <string id="AF_DIP_UI_Presentation_CannotReparse" text="This document cannot be reparsed currently." />
+    <string id="AF_DIP_UI_Presentation_ReparsedResubmitted" text="Original text resubmitted for parsing; declaration will not be published again." />
+    <string id="AF_DIP_UI_Presentation_ReparsingPending" text="Declaration published; reparsing original text, diplomatic action not yet executed." />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarSyncPrefix" text="Suzerain war status synchronized:" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarConfirmedPrefix" text="Suzerain war status confirmed:" />
   </strings>
 </base>

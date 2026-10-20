@@ -50,12 +50,7 @@ static class McmPageChecks
                     check(Equals(relation.PropertyReference.Value, new DuelSettings().MinimumPositiveNpcRelationGain), "native reset reads original default");
                     stack.GetType().GetMethod("UndoAll").Invoke(stack, null);
                 }
-                if (props.ContainsKey("Illustrator.ApiBaseUrl"))
-                {
-                    var image = page.GetSettingPropertyGroups().Single(g => SettingsUtils.GetAllSettingPropertyDefinitions(g).Any(p => p.Id == "Illustrator.ApiBaseUrl"));
-                    var ambient = page.GetSettingPropertyGroups().Single(g => SettingsUtils.GetAllSettingPropertyDefinitions(g).Any(p => p.Id == "TownAmbientAiApiUrl"));
-                    check((int)compare.Invoke(comparer, new[] { Group(image), Group(ambient) }) < 0, "real MCM UI comparer puts image above ambient");
-                }
+                check(props.Keys.All(id => !id.Contains("TownAmbient")), "actual MCM UI has no retired ambient controls");
                 vmType.GetMethod("OnFinalize").Invoke(vm, null);
             }
             McmReopenLifecycleChecks.Run(af, ui, pages, check);
@@ -74,16 +69,15 @@ static class McmPageChecks
         var staticVisibility = af.GetType("AnimusForge.TerminalSettingsCoverage", true).GetMethod("IsVisible", All);
         var visible = TerminalSettingsRegistry.AllDefinitions.Where(p => (bool)staticVisibility.Invoke(null, new object[] { p.Id })).ToDictionary(p => p.Id);
         check(api.Count + terminal.Count == visible.Count && !api.Keys.Intersect(terminal.Keys).Any(), "every visible terminal setting appears in exactly one MCM page");
-        check(api.ContainsKey("Illustrator.ApiBaseUrl") && api.ContainsKey("TownAmbientAiApiUrl"), "image and ambient APIs in same API page");
+        check(api.ContainsKey("Illustrator.ApiBaseUrl") && !api.Keys.Concat(terminal.Keys).Any(id => id.Contains("TownAmbient")), "image API retained and ambient controls absent from both pages");
         check(!api.ContainsKey("Illustrator.UseExactEndpointUrl") && !terminal.ContainsKey("Illustrator.UseExactEndpointUrl"), "retired exact URL control absent from both MCM pages");
         // MCM UI sorts ascending; backend discovery deliberately sorts descending.
         var ordered = pages[0].GetSettingPropertyGroups().OrderBy(g => g.Order).ToArray();
         int image = Array.FindIndex(ordered, g => SettingsUtils.GetAllSettingPropertyDefinitions(g).Any(p => p.Id == "Illustrator.ApiBaseUrl"));
-        int ambient = Array.FindIndex(ordered, g => SettingsUtils.GetAllSettingPropertyDefinitions(g).Any(p => p.Id == "TownAmbientAiApiUrl"));
-        check(image >= 0 && ambient > image, "native MCM group order puts image above ambient");
+        check(image >= 0, "native MCM retains image API group");
         var coverage = af.GetType("AnimusForge.TerminalSettingsCoverage", true);
         int Order(string id) => (int)coverage.GetMethod("ViewGroupOrder", All).Invoke(null, new object[] { id });
-        check(Order("Illustrator.ApiBaseUrl") < Order("TownAmbientAiApiUrl"), "terminal image group above ambient");
+        check(Order("Illustrator.ApiBaseUrl") == 50, "terminal image API group keeps its order");
         foreach (var owner in owners)
         {
             string prefix = owner.Id == "AnimusForge_global_settings" ? "" : owner.Id == "AnimusForge_Illustrator_v1" ? "Illustrator." :

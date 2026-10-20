@@ -547,27 +547,32 @@ internal static class WorldDiplomacyAnalysisApplication
 	// the stored text itself is never rewritten.
 	internal static bool TryProjectMechanicalResultForDisplay(string mechanicalResult, out string display)
 	{
-		if (string.Equals(mechanicalResult, PlayerAnalysisTruncatedResult, StringComparison.Ordinal))
+        if (string.Equals(mechanicalResult, PlayerAnalysisTruncatedResult, StringComparison.Ordinal) || DiplomacyReplyTextRules.MatchesExact("Analysis_TruncatedResult", mechanicalResult))
 		{
 			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailedTruncated", "The declaration has been published; the model output was cut off by the length limit, so no diplomatic action has been executed yet. Raise the output limit of the corresponding API and then choose Re-analyze.");
 			return true;
 		}
-		if (string.Equals(mechanicalResult, PlayerAnalysisAcceptAndAmendResult, StringComparison.Ordinal))
+        if (string.Equals(mechanicalResult, PlayerAnalysisAcceptAndAmendResult, StringComparison.Ordinal) || DiplomacyReplyTextRules.MatchesExact("Analysis_AcceptAndAmendResult", mechanicalResult))
 		{
 			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailedAcceptAndAmend", "The declaration has been published; the analysis returned both acceptance of the original proposal and amended terms, so no diplomatic action was executed. You can re-analyze the original text; the amended terms should be submitted as a new proposal.");
 			return true;
 		}
-		if (string.Equals(mechanicalResult, PlayerAnalysisTreatyRolesResult, StringComparison.Ordinal))
+        if (string.Equals(mechanicalResult, PlayerAnalysisTreatyRolesResult, StringComparison.Ordinal) || DiplomacyReplyTextRules.MatchesExact("Analysis_TreatyRolesResult", mechanicalResult))
 		{
 			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailedTreatyRoles", "The declaration has been published; the analysis could not tell the two parties' roles in the treaty apart, so the proposal was not executed. You can re-analyze the original text.");
 			return true;
 		}
-		if (string.Equals(mechanicalResult, PlayerAnalysisFailedResult, StringComparison.Ordinal))
+        if (string.Equals(mechanicalResult, PlayerAnalysisFailedResult, StringComparison.Ordinal) || DiplomacyReplyTextRules.MatchesExact("Analysis_FailedResult", mechanicalResult))
 		{
 			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailed", "The declaration has been published; the analysis failed and no diplomatic action was executed. You can choose Re-analyze to process the original text again.");
 			return true;
 		}
-		display = null;
+        if (DiplomacyReplyTextRules.MatchesExact("Presentation_ReparsingPending", mechanicalResult))
+        {
+            display = DiplomacyUiLocalization.Text("AF_DIP_UI_Presentation_ReparsingPending", "Declaration published; reparsing original text, diplomatic action not yet executed.");
+            return true;
+        }
+        display = null;
 		return false;
 	}
 

@@ -1,5 +1,9 @@
 # Illustrator 持久维护规则
 
+## Gemini 生图自动协议（2026-10-20 用户要求）
+
+- OpenAI兼容生图自动选协议时，模型名不区分大小写包含gemini即走chat/completions，不再要求同时含image；包括gemini-nano-banana-2.1等别名。不增加探测请求或自动付费重试，沿用显式Edits、Gemini原生地址和Player2的独立协议分支。
+
 ## 场景喊话 / 战斗玩家自由取景（2026-10-08 用户最新授权）
 
 - 本条覆盖下方自动双平视机位与强制两图规则。玩家进入独立自由相机，冻结同一现场并隐藏旧 UI，仅显示 Enter 截取提示；WASD 移动、Q/E 升降、鼠标旋转、Shift 加速、滚轮缩放。不启动原版摄影滤镜或人物隐藏功能。
@@ -39,7 +43,7 @@
 
 ## 模组内存储与显式 API 测试（2026-10-06 用户授权）
 
-- 生图自行写入的成图/诊断保持logs/image save，临时导出使用Cache/Illustrator/Temp，MCM生图设置/预设与模型列表缓存使用Configs/Illustrator；全部由当前模组根解析，不回退Windows Temp、AppData、Documents或进程目录。
+- 2026-10-20用户要求将生图目录移出logs：生图自行写入的成图/诊断使用当前AF模组根下的image save，与logs同级；此条取代此前logs/image save位置。临时导出使用Cache/Illustrator/Temp，MCM生图设置/预设与模型列表缓存使用Configs/Illustrator；全部由当前模组根解析，不回退Windows Temp、AppData、Documents或进程目录。
 - 用户随后明确“不迁移”：不读取、复制或迁移Documents/AppData/Temp旧生图配置和缓存。模块无配置时使用默认并由玩家填写API；旧文件保留。不得输出API密钥到日志/公告/包。MCM路径适配只命中生图设置，不能全局改其他模组保存位置；失败不得静默回写C盘。
 - 自动清理默认true，已有显式配置保留；清理范围沿用当前请求临时文件，不清画廊/历史或全局Temp。不得为改路径改变原生渲染/颜色/资源清理顺序。
 - MCM测试按钮仅玩家显式点击发起请求，标明可能计费，复用真实生图客户端并禁止该测试的自动通道重试；以当前UI配置生成脱离游戏状态的请求快照，支持取消/超时和有界worker。测试图只覆盖模组ApiTest/last-result.png，不写游戏记忆/画廊，不自动调用付费服务验收。

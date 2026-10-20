@@ -13,28 +13,12 @@ using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
 using HarmonyLib;
 using MCM.Abstractions;
+using MCM.Abstractions.Base;
 
 // Separate-process managed tests. No Game/Campaign/native UI or live HTTP.
 static class SupplementalChecks
 {
     const BindingFlags All = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
-    static LlmProviderSnapshot captured;
-    static bool credentialMatches;
-    static int gatewayCalls;
-    static readonly List<string> notices = new List<string>();
-    static void RecordNotice(object message)
-    {
-        notices.Add((string)message.GetType().GetProperty("Information").GetValue(message));
-    }
-    static bool GatewayPrefix(LegacyConfiguredChatGateway __instance, LlmGenerateRequest request, ref Task<LlmGenerateResult> __result)
-    {
-        captured = request.Provider;
-        var resolver = (Func<LlmProviderSnapshot, string>)typeof(LegacyConfiguredChatGateway).GetField("_credentialResolver", All).GetValue(__instance);
-        credentialMatches = resolver(captured) == "offline-page-key";
-        Interlocked.Increment(ref gatewayCalls);
-        __result = Task.FromResult(new LlmGenerateResult(LlmResultStatus.Succeeded, "OK", 4, 2, ""));
-        return false;
-    }
     sealed class UnsafeObject
     {
         public int Calls;
@@ -153,7 +137,7 @@ static class SupplementalChecks
         var prompts = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(Path.Combine(root, "ModuleData", "PersonaPromptTexts.json")));
         foreach (string kind in new[] { "Native", "Promoted" })
         {
-            object[] input = kind == "Native" ? new object[] { "facts", "old", true, "" }
+            object[] input = kind == "Native" ? new object[] { "facts", "old", true, "", "" }
                 : new object[] { "name", "full", "troop", "id", "culture", "scene", "joined", "history", "equipment", "facts", "" };
             object request = promptRules.GetMethod("Build" + kind, All).Invoke(null, input);
             string system = (string)request.GetType().GetProperty("System", All).GetValue(request);
@@ -208,54 +192,19 @@ static class SupplementalChecks
         }
         finally { sentinel.GetField("_handlingFirstChance", All).SetValue(null, false); update.Invoke(null, new object[] { false }); }
 
-        var harmony = new Harmony("af.tests.ambient.snapshot");
-        var gateway = typeof(LegacyConfiguredChatGateway).GetMethod("GenerateAsync");
-        var localization = Assembly.Load("TaleWorlds.Localization");
-        localization.GetType("TaleWorlds.Localization.LocalizedTextManager", true).GetMethod("LoadLocalizationXmls").Invoke(null, new object[] { new[] { root } });
-        var language = localization.GetType("TaleWorlds.Localization.MBTextManager", true).GetMethod("ChangeLanguage");
-        var information = Assembly.Load("TaleWorlds.Library").GetType("TaleWorlds.Library.InformationManager", true);
-        var noticeEvent = information.GetEvent("DisplayMessageInternal");
-        var noticeArg = Expression.Parameter(noticeEvent.EventHandlerType.GetMethod("Invoke").GetParameters()[0].ParameterType);
-        var observer = Expression.Lambda(noticeEvent.EventHandlerType,
-            Expression.Call(typeof(SupplementalChecks).GetMethod("RecordNotice", All), Expression.Convert(noticeArg, typeof(object))), noticeArg).Compile();
-        noticeEvent.AddEventHandler(null, observer);
-        try
-        {
-            harmony.Patch(gateway, prefix: new HarmonyMethod(typeof(SupplementalChecks).GetMethod("GatewayPrefix", All)));
-            var incomplete = TownAmbientAiClient.TestConnectionAsync("", "", "").GetAwaiter().GetResult();
-            check(!incomplete.Success && gatewayCalls == 0, "incomplete ambient config sends no request");
-            foreach (string selectedLanguage in new[] { "English", "简体中文" })
-            {
-            language.Invoke(null, new object[] { selectedLanguage });
-            McmGroupChecks(af, duel, check, selectedLanguage);
-            McmPageChecks.Run(af, check, selectedLanguage);
-            LocalizedNewlineChecks(check, root, selectedLanguage);
-            notices.Clear(); gatewayCalls = 0;
-            var page = new DuelSettings();
-            page.TownAmbientAiApiUrl = "https://offline.invalid/v1/chat/completions";
-            page.TownAmbientAiApiKey = "offline-page-key";
-            page.TownAmbientAiModelName = "offline-page-model";
-            duel.TownAmbientAiApiUrl = "https://global.invalid/v1/chat/completions";
-            duel.TownAmbientAiApiKey = "offline-global-key";
-            duel.TownAmbientAiModelName = "offline-global-model";
-            string main = duel.ModelName;
-            check(page.TestTownAmbientAiConnection != null, "environment connection action bound on actual UI owner");
-            page.TestTownAmbientAiConnection();
-            page.TownAmbientAiApiUrl = "https://later.invalid/v1/chat/completions";
-            page.TownAmbientAiApiKey = "offline-later-key";
-            page.TownAmbientAiModelName = "offline-later-model";
-            var refresh = af.GetType("AnimusForge.McmDropdownRuntimeRefresh", true);
-            var count = refresh.GetField("MainThreadActionCount", All);
-            check(SpinWait.SpinUntil(() => (int)count.GetValue(null) > 0, 10000), "ambient completion marshalled to main thread queue");
-            check(gatewayCalls == 1 && captured.Endpoint == "https://offline.invalid/v1/chat/completions" && captured.Model == "offline-page-model" && credentialMatches,
-                "ambient test captures page config before worker without global/main fallback");
-            refresh.GetMethod("DrainMainThreadActions", All).Invoke(null, null);
-            check((int)count.GetValue(null) == 0 && duel.ModelName == main, "completion drains and main model unchanged");
-            check(notices.Count == 2 && notices[0].Contains(selectedLanguage == "English" ? "Testing the configured" : "正在测试")
-                && notices[1].Contains(selectedLanguage == "English" ? "Connection is working" : "连接成功")
-                && !notices[1].Contains("{INPUT}") && !notices[1].Contains("{OUTPUT}"), "actual ambient test notices projected " + selectedLanguage);
-            }
-        }
-        finally { harmony.Unpatch(gateway, HarmonyPatchType.Prefix, harmony.Id); noticeEvent.RemoveEventHandler(null, observer); language.Invoke(null, new object[] { "English" }); }
+        check(af.GetType("AnimusForge.TownAmbientAiClient", false) == null
+            && af.GetType("AnimusForge.TownAmbientDialogueMissionBehavior", false) == null,
+            "retired ambient API client and automatic scene behavior absent from actual DLL");
+        foreach (string name in new[] { "EnableTownAmbientAi", "EnableTownAmbientDialogue", "TownAmbientAiApiUrl", "TownAmbientAiModelDropdown", "TestTownAmbientAiConnection" })
+            check(typeof(DuelSettings).GetProperty(name) == null, "retired setting absent: " + name);
+        var formatType = typeof(BaseSettings).Assembly.GetType("MCM.Implementation.JsonSettingsFormat", true);
+        var loggerType = typeof(BaseSettings).Assembly.GetType("BUTR.DependencyInjection.Logger.DefaultBUTRLogger`1", true).MakeGenericType(formatType);
+        object ambientFormat = Activator.CreateInstance(formatType, Activator.CreateInstance(loggerType));
+        var legacy = new DuelSettings();
+        formatType.GetMethod("LoadFromJson").Invoke(ambientFormat, new object[] { legacy,
+            "{\"EnableTownAmbientAi\":true,\"EnableTownAmbientDialogue\":true,\"TownAmbientAiApiUrl\":\"https://offline.invalid\"}" });
+        string saved = (string)formatType.GetMethod("SaveJson").Invoke(ambientFormat, new object[] { legacy });
+        check(!saved.Contains("TownAmbientAi") && !saved.Contains("EnableTownAmbientDialogue"),
+            "obsolete JSON fields are ignored and cannot re-enable retired ambient execution");
     }
 }

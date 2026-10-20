@@ -79,6 +79,22 @@ internal static class PlayerResponseRecoveryReplay
     { JobId = "old-saved-followup-job", Kind = "generate", RoundId = r.RoundId, AuthorKingdomId = "a", TargetKingdomId = "p",
       IsExternalResponseOnly = true, IsRelayTurn = true, SourceDocumentId = d.DocumentId, PlayerResponseSourceIds = new() { d.DocumentId } };
 
+    internal static void VerifyStatementResponse()
+    {
+        var f = Fixture(); f.r.PlayerResponses.Clear(); f.d.RequiresResponse = false;
+        Invoke(f.o, "RegisterPlayerResponseWork", f.d, true);
+        var job = f.o.CurrentStorage.Jobs.Single(j => j.Kind == "generate");
+        Test.True(f.r.PlayerResponses.Count == 1 && f.o.CanDispatchDiplomacyJob(job),
+            "player statement without requires_response still schedules eligible response");
+        job.SuspendedReason = "test-provider-failure";
+        Test.True(!f.o.CanDispatchDiplomacyJob(job), "technical suspension prevents dispatch");
+        var old = Fixture(); old.h.Unavailable.Add("p"); var unbound = Job(old.r, old.d);
+        old.o.CurrentStorage.Jobs.Add(unbound);
+        Test.True(!old.o.CanDispatchDiplomacyJob(unbound) && old.r.PlayerResponses[0].Status == "pending", "unbound fixture stops before availability reconciliation");
+        DiplomacyPlayerEventRules.Bind(old.r, unbound);
+        Test.True(!old.o.CanDispatchDiplomacyJob(unbound) && old.r.PlayerResponses[0].Status == "unavailable", "owner/epoch binding reaches unavailable reconciliation");
+    }
+
     internal static void Run()
     {
         var (h, o, r, d) = Fixture(true); h.Unavailable.Add("p"); var old = Job(r,d); o.CurrentStorage.Jobs.Add(old);

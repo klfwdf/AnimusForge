@@ -7,8 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AnimusForge;
 
-// Both channels use this typed request boundary. Courier/auxiliary calls do not
-// participate and there is no global network-response interception.
+// Typed main/auxiliary boundaries; no global response interception or FIFO attribution.
 internal static class ConversationPromptCache
 {
     private static readonly ConversationPromptCacheStore Store = new ConversationPromptCacheStore();
@@ -69,18 +68,21 @@ internal static class ConversationPromptCache
             string provider = auxiliary
                 ? settings.AuxiliaryApiUrl + "\n" + settings.GetEffectiveAuxiliaryModelName()
                 : settings.ApiUrl + "\n" + settings.GetEffectiveMainModelName();
-            // All actors share the stable public prefix, never their private transcript.
-            // Public scene history still comes from the authoritative visibility owner.
-            string key = channel + "\n" + sessionId.ToString(CultureInfo.InvariantCulture) + "\n" + provider + "\n" + actor;
+            // Reuse the submodule's single-scene transcript across successive speakers.
+            // Native and auxiliary conversations retain their own actor-scoped sessions.
+            bool sceneTranscript = channel == "scene";
+            string key = channel + "\n" + sessionId.ToString(CultureInfo.InvariantCulture) + "\n" + provider
+                + (sceneTranscript ? "" : "\n" + actor);
             lease = Store.Begin(generation, key, actor, original, globalRule, text,
                 options.Enabled ? Math.Min(options.InputChars, Math.Max(20000, Math.Min(1000000, settings.ConversationPromptCacheMaxChars)))
                     : Math.Max(20000, Math.Min(1000000, settings.ConversationPromptCacheMaxChars)),
                 Math.Max(1, Math.Min(60, settings.ConversationPromptCacheTtlMinutes)), DateTime.UtcNow,
-                options.Enabled ? options.ContextTokens : int.MaxValue, options.Enabled ? outputTokens : 0);
+                options.Enabled ? options.ContextTokens : int.MaxValue, options.Enabled ? outputTokens : 0, sceneTranscript);
             var built = new List<object>(lease.Messages.Count);
             foreach (var message in lease.Messages) built.Add(new { role = message.Role, content = message.Content });
             Logger.Log("PromptCache", "channel=" + channel + " session=" + sessionId + " actor=" + actor
-                + " mode=" + lease.Reason + " warm=" + lease.Warm + " chars=" + lease.Chars + " messages=" + built.Count);
+                + " mode=" + lease.Reason + " warm=" + lease.Warm + " chars=" + lease.Chars + " messages=" + built.Count
+                + " prefix_append=" + lease.PrefixAppend + " shared_chars=" + lease.SharedChars + " core=submodule");
             return new Request(built, lease, generation);
         }
         catch (Exception ex)

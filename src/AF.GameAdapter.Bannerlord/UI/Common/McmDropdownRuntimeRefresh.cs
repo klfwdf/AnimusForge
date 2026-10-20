@@ -242,7 +242,6 @@ public static class McmDropdownRuntimeRefresh
 
 			case nameof(DuelSettings.EventAndRebellionModelDropdown):
 
-			case nameof(DuelSettings.TownAmbientAiModelDropdown):
 
 				break;
 

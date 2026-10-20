@@ -288,8 +288,8 @@ namespace AnimusForge.Illustrator.Core
             if (!string.IsNullOrWhiteSpace(model))
             {
                 string m = model.ToLowerInvariant();
-                // 常见以对话多模态形式输出图像的模型 (如 Gemini Native Image 系列)
-                if (m.Contains("gemini") && m.Contains("image")) return true;
+                // Gemini aliases may omit "image" (for example gemini-nano-banana-2.1).
+                if (m.Contains("gemini")) return true;
                 if (m.Contains("chat") && m.Contains("image")) return true;
             }
 

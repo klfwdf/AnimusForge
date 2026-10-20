@@ -53,7 +53,7 @@ internal static class Dpl090PresentationReplay
         Test.True(WorldDiplomacyTextRules.BuildNotificationDescription(document, day => "day" + day,
             DiplomacyUiLocalization.Text, DiplomacyDateProjection.ForUi).StartsWith(unknown, StringComparison.Ordinal),
             "map notification preserves unknown dynamic date");
-        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("English"), "smoke UI language restored");
+        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage(SmokeLocalizationEnvironment.EnglishUi ? "English" : "简体中文"), "smoke UI language restored");
     }
 
     private static WorldDiplomacyDocument Document(string id, int day) => new()
@@ -99,7 +99,7 @@ internal static class Dpl090PresentationReplay
         second.GameDate = "玩家自定义日期：原样保留";
         Test.True(WorldDiplomacyPresentationQueries.Detail(second, 42, true, day => "day" + day).Subtitle
             .Contains("玩家自定义日期：原样保留", StringComparison.Ordinal), "detail subtitle preserves unknown dynamic date");
-        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage("English"), "smoke UI language restored after detail projection");
+        Test.True(TaleWorlds.Localization.MBTextManager.ChangeLanguage(SmokeLocalizationEnvironment.EnglishUi ? "English" : "简体中文"), "smoke UI language restored after detail projection");
         Equal(42L, detail.Generation, "detail carries lifecycle value only");
         Test.True(detail.CanReply && !second.IsRead, "query does not mark read");
         Test.True(WorldDiplomacyTimelineApplication.MarkRead(storage, second.DocumentId) && second.IsRead, "read command marks canonical record");

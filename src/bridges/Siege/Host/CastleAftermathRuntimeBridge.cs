@@ -1388,6 +1388,13 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		{
 			return;
 		}
+		// Campaign settlement can run inside native mission teardown. Leave the
+		// remaining scene agents to that teardown, before reading their properties.
+		Mission mission = base.Mission;
+		if (_cleaned || mission == null || mission.MissionEnded || !ReferenceEquals(Mission.Current, mission))
+		{
+			return;
+		}
 
 		Dictionary<CharacterObject, int> remainingByCharacter = resolvedRoster.GetTroopRoster()
 			.Where(element => element.Character != null && !element.Character.IsHero && element.Number > 0)
@@ -1435,6 +1442,11 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	private int ResolveLordPrisonerAgents(Hero hero, string source, bool fadeOut)
 	{
 		if (hero == null)
+		{
+			return 0;
+		}
+		Mission mission = base.Mission;
+		if (_cleaned || mission == null || mission.MissionEnded || !ReferenceEquals(Mission.Current, mission))
 		{
 			return 0;
 		}

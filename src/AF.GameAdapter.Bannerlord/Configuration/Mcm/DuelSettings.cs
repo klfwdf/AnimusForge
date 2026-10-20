@@ -498,9 +498,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 		public string EventAndRebellionSelected { get; set; } = "";
 
-		public List<string> TownAmbientAiOptions { get; set; } = new List<string>();
 
-		public string TownAmbientAiSelected { get; set; } = "";
 
 		public string SavedAtUtc { get; set; } = "";
 	}
@@ -527,7 +525,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private List<string> _eventAndRebellionApiModelOptions = new List<string>();
 
-	private List<string> _townAmbientAiModelOptions = new List<string>();
 
 	private Dropdown<string> _mainApiModelDropdown = Dropdown<string>.Empty;
 
@@ -537,7 +534,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private Dropdown<string> _eventAndRebellionApiModelDropdown = Dropdown<string>.Empty;
 
-	private Dropdown<string> _townAmbientAiModelDropdown = Dropdown<string>.Empty;
 
 	private Dropdown<string> _shoutInputUiBackgroundDropdown = BuildShoutInputUiBackgroundDropdown(ShoutInputUiBackgroundBlack);
 
@@ -5178,7 +5174,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			MergeCachedDropdownState(_auxiliaryApiModelOptions, _auxiliaryApiModelDropdown, modelDropdownCacheSnapshot.AuxiliaryOptions, modelDropdownCacheSnapshot.AuxiliarySelected, AuxiliaryModelName, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out _auxiliaryApiModelDropdown);
 			MergeCachedDropdownState(_actionPostprocessApiModelOptions, _actionPostprocessApiModelDropdown, modelDropdownCacheSnapshot.ActionPostprocessOptions, modelDropdownCacheSnapshot.ActionPostprocessSelected, ActionPostprocessModelName, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out _actionPostprocessApiModelDropdown);
 			MergeCachedDropdownState(_eventAndRebellionApiModelOptions, _eventAndRebellionApiModelDropdown, modelDropdownCacheSnapshot.EventAndRebellionOptions, modelDropdownCacheSnapshot.EventAndRebellionSelected, EventAndRebellionModelName, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out _eventAndRebellionApiModelDropdown);
-			MergeCachedDropdownState(_townAmbientAiModelOptions, _townAmbientAiModelDropdown, modelDropdownCacheSnapshot.TownAmbientAiOptions, modelDropdownCacheSnapshot.TownAmbientAiSelected, TownAmbientAiModelName, "", preserveBlankSelection: false, out _townAmbientAiModelOptions, out _townAmbientAiModelDropdown);
 			_modelDropdownCacheHydrated = true;
 			_modelDropdownCacheLastWriteUtcTicks = num;
 		}
@@ -5211,8 +5206,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				ActionPostprocessSelected = ResolveSelectedOptionForSnapshot(ReadSelectedModelOption(_actionPostprocessApiModelDropdown), ActionPostprocessModelName, "", preserveBlankSelection: false),
 				EventAndRebellionOptions = CopyNormalizedModelOptions(_eventAndRebellionApiModelOptions),
 				EventAndRebellionSelected = ResolveSelectedOptionForSnapshot(ReadSelectedModelOption(_eventAndRebellionApiModelDropdown), EventAndRebellionModelName, "", preserveBlankSelection: false),
-				TownAmbientAiOptions = CopyNormalizedModelOptions(_townAmbientAiModelOptions),
-				TownAmbientAiSelected = ResolveSelectedOptionForSnapshot(ReadSelectedModelOption(_townAmbientAiModelDropdown), TownAmbientAiModelName, "", preserveBlankSelection: false),
 				SavedAtUtc = DateTime.UtcNow.ToString("o")
 			};
 			string contents = JsonConvert.SerializeObject(modelDropdownCacheSnapshot, Formatting.Indented);
@@ -6058,7 +6051,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private string _auxiliaryApiModelName = "gpt-4o-mini";
 	private string _actionPostprocessApiModelName = "";
 	private string _eventAndRebellionApiModelName = "";
-	private string _townAmbientAiModelName = "gpt-4o-mini";
 
 	private static string BuildModelListApiUrl(string rawApiUrl)
 	{
@@ -6347,8 +6339,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			return Ui("AF_MCM_Api_ChannelPostprocess", "postprocessing API");
 		if (string.Equals(channelName, McmPromptDefaults.Raw("Mcm_ChannelEventRebellion"), StringComparison.Ordinal))
 			return Ui("AF_MCM_Api_ChannelEventRebellion", "event/rebellion API");
-		if (string.Equals(channelName, McmPromptDefaults.Raw("Mcm_ChannelAmbient"), StringComparison.Ordinal))
-			return Ui("AF_MCM_Api_ChannelAmbient", "ambient AI");
 		return channelName;
 	}
 
@@ -6359,7 +6349,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		FetchAuxiliaryModelList = () => StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelPreprocess"), AuxiliaryApiUrl, AuxiliaryApiKey, ApplyAuxiliaryModelList);
 		FetchActionPostprocessModelList = () => StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelPostprocess"), ActionPostprocessApiUrl, ActionPostprocessApiKey, ApplyActionPostprocessModelList);
 		FetchEventAndRebellionModelList = () => StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelEventRebellion"), EventAndRebellionApiUrl, EventAndRebellionApiKey, ApplyEventAndRebellionModelList);
-		FetchTownAmbientAiModelList = () => StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelAmbient"), TownAmbientAiApiUrl, TownAmbientAiApiKey, ApplyTownAmbientAiModelList);
 	}
 
 	private void StartFetchModelList(string channelName, string rawApiUrl, string apiKey, Action<List<string>> applyModels)
@@ -6428,10 +6417,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				else if (string.Equals(text, McmPromptDefaults.Raw("Mcm_ChannelEventRebellion"), StringComparison.Ordinal))
 				{
 					text6 = GetEventAndRebellionSelectedModelOption();
-				}
-				else if (string.Equals(text, McmPromptDefaults.Raw("Mcm_ChannelAmbient"), StringComparison.Ordinal))
-				{
-					text6 = GetTownAmbientAiSelectedModelOption();
 				}
 				if (IsManualModelOption(text6))
 				{
@@ -6569,7 +6554,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	{
         InitializeGptSoVitsVoiceActions();
 		BindModelListActions();
-		BindTownAmbientConnectionTest();
 		OpenAfdianSupportLink = delegate
 		{
 			OpenAfdianSupportPage();

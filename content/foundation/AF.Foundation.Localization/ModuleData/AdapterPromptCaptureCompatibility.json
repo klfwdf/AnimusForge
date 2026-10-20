@@ -354,5 +354,18 @@
   "Compat_BuiltinWorldbook_Calradia": "卡拉迪亚编年史",
   "Compat_BuiltinWorldbook_CalradiaLite": "低配版卡拉迪亚编年史（如果你的CPU（比如12400f性能较差，请选择这个。）",
   "Compat_BuiltinWorldbook_Warhammer": "战锤旧世界编年史",
-  "Compat_BuiltinWorldbook_GameOfThrones": "权游国度编年史-大帝版"
+  "Compat_BuiltinWorldbook_GameOfThrones": "权游国度编年史-大帝版",
+  "Project_SceneRole_Weaponsmith": "武器匠",
+  "Project_SceneRole_Blacksmith": "铁匠",
+  "Project_SceneRole_Armorer": "盔甲匠",
+  "Project_SceneRole_HorseTrader": "马商",
+  "Project_SceneRole_Trader": "商贩",
+  "Project_SceneRole_TavernStaff": "酒馆人员",
+  "Project_SceneRole_Musician": "乐师",
+  "Project_SceneRole_RansomBroker": "赎金经纪人",
+  "Project_SceneRole_Headman": "村长",
+  "Project_SceneRole_Preacher": "传教士",
+  "Project_SceneRole_GangLeader": "帮派头目",
+  "Project_SceneRole_RuralNotable": "乡绅",
+  "Project_SceneRole_Shipwright": "船坊工人"
 }
