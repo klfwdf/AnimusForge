@@ -11931,3 +11931,14 @@ Current verified delivery and later deployment authorization: [OpenAI-compatible
 ### 本轮源码责任与范围
 
 代码修订 `5689b6937` / `1e5aa5396`：`ShoutBehavior.cs:2651–2699` 的 `OnMissionStarted` 保留普通喊话并撤销自动环境注册；`DuelSettings.cs:483–505`、`:5166–5250` 保留四模型渠道及原缓存；`AnimusForgeMcmPages.cs:93–104` 的 ApiGroup/ApiOrder 与 `TerminalSettingsCoverage.cs:48–159` 负责原 owner 的两前端投影；`CoupGuards.cs:121–145` 保留现有保护挂钩并移除退役目标；`PromptReassembler.cs:451–464`、`:736–829` 使用兼容资源原值；`SupplementalChecks.cs:194–210` 验实际类型/属性退役及原 MCM JSON，`TerminalLiveSettingsTests/Program.cs:58–64` 初始化真实模块 XML。完整路径、哈希、已覆盖/未覆盖范围见本机 `verified-code-map.json`，删除文件清单见 `removal-inventory.json`。本条不重复既有外交/生图/城堡源地图。
+
+<a id="gptsovits-u-source-publication-20261021"></a>
+## AF-GPTSOVITS-U source publication / U 源码分支发布（2026-10-21）
+
+Status: ACTIVE. User explicitly requested a new `AF-GPTSOVITS-U` branch with necessary adaptations, changed source and documentation, without the multi-GB model ZIP.
+
+- Public baseline: `main` at `d2d05f0c63bd20d3cb7fa79fc5886d8b5769c9b9`. Publish only clean new commits; do not import local fusion history, backup bundles or private evidence.
+- Scope: actual U/V5 Dev wrapper/build/packaging/measurement source, minimal AF engine identity and bilingual guide integration, focused regression tests, and existing public L/V2Pro adaptation source as explicitly labelled legacy/low-VRAM reference.
+- Boundaries: retain current AF behavior, module identity/read-only validation, L-first selection, main-interlocutor/combat rules, existing language/MOOD pipeline and other feature owners. No model/recording upload, no remote main changes, no installed-game writes, no new GPU benchmark claim.
+- Exit gates: verify the existing local U ZIP independently; validate published source, AF runtime compatibility tests and dual implementation builds/guide checks; audit commit/file allowlists and absence of private/binary payloads; push only the requested new branch and verify its remote revision.
+- 中文：U 当前为 V5 Dev，不是 V2Pro。V2Pro/L 的 BERT 裁剪、按需上 GPU 等低显存改造须按实际源码独立说明，不能写成 U 已采用；本次不重新训练、不换模型、不覆盖游戏。完成证据会在本条追加。

@@ -1,3 +1,8 @@
+# AF-GPTSOVITS-U 源码分支 / Source publication (2026-10-21, ACTIVE)
+
+- 本分支从公开 main `d2d05f0c` 开始，仅接入 U/V5 运行源码、必要 AF 识别/教程、测试和既有公开 V2Pro/L 参考源码；不导入私人融合 Git 历史。
+- This branch publishes source/documentation only; it does not contain portable runtimes, weights, recordings, logs or game-save data. No game deployment or change to remote main is authorized by this publication.
+- 详见[本次唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gptsovits-u-source-publication-20261021)。下方为公开基线历史，不构成本次部署指令。
 # 当前交付：环境 AI 退役与 EN 部署（2026-10-20，离线通过 / EN 已部署 / 实机未验）
 
 - 产品 `5689b6937` 删除环境独立 API、自动闲聊与内置预设，预设和恢复副本已备份到仓库外并逐项核验；MCM/终端、两套资源与内容映射同步清理，旧环境配置不能重新启用。保留玩家主动喊话及动作反应。
