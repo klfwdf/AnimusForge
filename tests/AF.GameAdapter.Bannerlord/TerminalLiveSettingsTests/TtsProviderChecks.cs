@@ -52,6 +52,7 @@ static class TtsProviderChecks
                     check(guide.GetMethod("CreatePage", flags).Invoke(null, new object[] { chapter }) != null, "Real native inquiry page constructed " + chapter);
                 }
                 TtsLiteGuideChecks.Run(settings, selected, check);
+                TtsUltraGuideChecks.Run(settings, selected, check);
                 string streamHint = TerminalSettingsRegistry.GetById("TtsStreamingPlaybackEnabled").HintText;
                 check(streamHint.Contains("stream=true") && streamHint.Contains("stream=false"), "Actual native streaming hint describes upstream on/off flags " + selected);
             }

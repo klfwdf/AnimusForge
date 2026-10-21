@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    {
+      "id": "custom-myvoice-AF-C100",
+      "label": "My Voice",
+      "style_target": "AF-C100",
+      "category": "custom",
+      "speaker_metadata": {
+        "gender": "female"
+      },
+      "reference_file": "reference.wav",
+      "reference_sha256": "REPLACE_WITH_ACTUAL_64_HEX_SHA256",
+      "prompt_lang": "zh",
+      "prompt_text": "替换为录音中的准确文本。",
+      "emotion_variants": {
+        "angry": {
+          "reference_file": "tones/angry.wav",
+          "reference_sha256": "REPLACE_WITH_ACTUAL_64_HEX_SHA256",
+          "prompt_lang": "zh",
+          "prompt_text": "替换为生气录音中的准确文本。"
+        }
+      }
+    }
+  ]
+}

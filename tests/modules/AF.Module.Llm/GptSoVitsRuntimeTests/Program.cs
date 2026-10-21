@@ -28,6 +28,20 @@ string upper=Path.Combine(root,"AF-GPTSOVITS-U");Directory.CreateDirectory(upper
 foreach(string source in Directory.GetFiles(package))File.Copy(source,Path.Combine(upper,Path.GetFileName(source)),true);
 var u=Good();u["package_id"]="AF-GPTSOVITS-U";u["edition"]="U";
 File.WriteAllText(Path.Combine(upper,"runtime.json"),u.ToString());
+// V5 is a specifically supported U family, never a relabeled L or arbitrary engine.
+foreach(string bad in new[]{"gpt-sovits-v5", "gpt-sovits-unknown", ""}) {
+    var d=Good();d["engine"]=bad;Save(d);
+    Check(GptSoVitsRuntimePackage.Discover(root,new Version(1,5,4),true).Edition=="U","unsupported L engine falls back to legacy U: "+bad);
+}
+var badL=Good();badL["engine"]="not-an-engine";Save(badL);
+foreach(string bad in new[]{"gpt-sovits-v6", "gpt-sovits-v5dev", ""}) {
+    u["engine"]=bad;File.WriteAllText(Path.Combine(upper,"runtime.json"),u.ToString());
+    Check(GptSoVitsRuntimePackage.Discover(root,new Version(1,5,4),true).State==GptSoVitsPackageState.Incompatible,"unknown U engine rejected: "+bad);
+}
+u["engine"]="gpt-sovits-v5";File.WriteAllText(Path.Combine(upper,"runtime.json"),u.ToString());
+var v5=GptSoVitsRuntimePackage.Discover(root,new Version(1,5,4),true);
+Check(v5.Edition=="U" && v5.Engine=="gpt-sovits-v5" && v5.State==GptSoVitsPackageState.Installed,"verified V5 U engine supported");
+Save(Good());
 Check(GptSoVitsRuntimePackage.Discover(root,new Version(1,5,4),true).Edition=="L","both valid prefer L");
 var invalid=Good();invalid["af_runtime_api"]=99;Save(invalid);
 Check(GptSoVitsRuntimePackage.Discover(root,new Version(1,5,4),true).Edition=="U","incompatible L falls back to verified U");

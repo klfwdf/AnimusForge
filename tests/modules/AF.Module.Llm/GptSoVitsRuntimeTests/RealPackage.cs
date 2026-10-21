@@ -21,7 +21,7 @@ internal static class RealPackage
                 throw new InvalidDataException("Not an AnimusForge module root.");
         AnimusForgeModulePaths.Root=root;
         var settings=new DuelSettings {EnableTtsSpeech=true,TtsUseGptSoVits=true};
-        var report=new JObject { ["scope"]="source-linked production manager/gateway/catalog with real portable L process; not native game playback",["audio"]=new JArray() };
+        var report=new JObject { ["scope"]="source-linked production manager/gateway/catalog with real portable L/U process; not native game playback",["audio"]=new JArray() };
         var clock=Stopwatch.StartNew();
         try
         {
@@ -30,7 +30,8 @@ internal static class RealPackage
             if(!GptSoVitsManagedRuntime.TryCapture(settings.TtsGptSoVitsApiUrl,out string endpoint,out string instance)||GptSoVitsManagedRuntime.State!="Ready")throw new Exception("real runtime not ready: "+GptSoVitsManagedRuntime.State+":"+GptSoVitsManagedRuntime.Reason);
             if (!GptSoVitsManagedRuntime.SupportsLanguageSelection) throw new InvalidOperationException("real_package_language_selection_missing");
             report["ready_seconds"]=clock.Elapsed.TotalSeconds;
-            Console.WriteLine("Real portable L process ready in "+clock.Elapsed.TotalSeconds.ToString("F2")+"s");
+            report["package_id"]=GptSoVitsManagedRuntime.Reason;
+            Console.WriteLine("Real portable L/U process ready in "+clock.Elapsed.TotalSeconds.ToString("F2")+"s");
             var catalog=GptSoVitsVoiceCatalog.LoadDirectory(Path.Combine(root,"VoicePacks"),out var notices);
             report["catalog_diagnostics"]=new JArray(notices);
             report["male_count"]=catalog.ForGender(false).Count;

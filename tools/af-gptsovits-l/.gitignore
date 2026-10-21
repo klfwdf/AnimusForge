@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.zip
+*.7z
+*.pth
+*.ckpt
+*.safetensors
+*.wav
+*.exe
+*.dll
