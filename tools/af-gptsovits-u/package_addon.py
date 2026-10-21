@@ -46,6 +46,21 @@ def reference(entry, manifest_root):
     if info.format != 'WAV' or info.channels != 1 or not 3 <= info.duration <= 10: raise ValueError('U_mono_WAV_3_to_10_seconds_required')
     return result, p
 
+def runtime_entries(module, runtime):
+    entries = {}
+    for p in sorted(runtime.rglob('*')):
+        if p.is_dir(): continue
+        rel = p.relative_to(module).as_posix()
+        child(module, rel)
+        # Repackaged inputs may contain old guides and an old archive index.
+        # Documentation is generated only from the current source revision.
+        if runtime/'Documentation' in p.parents: continue
+        if '__pycache__' in p.parts or p.suffix == '.pyc': continue
+        if '.git' in p.parts or p.name.lower() in ('.env','credentials.json'): raise ValueError('unexpected_private_file')
+        entries['AnimusForge/'+rel] = p
+    return entries
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--module', type=Path, required=True, help='Trusted existing lab module (read-only)')
@@ -66,14 +81,7 @@ def main():
     for name in ('server.py','ultra_engine.py','check_runtime.py'):
         if (runtime/name).read_text(encoding='utf-8-sig') != (Path(__file__).parent/name).read_text(encoding='utf-8-sig'): raise ValueError('runtime_source_mismatch:'+name)
     subprocess.run([str(runtime/'runtime/python.exe'), '-B', str(runtime/'check_runtime.py'), '--bundle', str(runtime)], check=True)
-    entries = {}
-    for p in sorted(runtime.rglob('*')):
-        if p.is_dir(): continue
-        rel = p.relative_to(module).as_posix()
-        child(module, rel)
-        if '__pycache__' in p.parts or p.suffix == '.pyc': continue
-        if '.git' in p.parts or p.name.lower() in ('.env','credentials.json'): raise ValueError('unexpected_private_file')
-        entries['AnimusForge/'+rel] = p
+    entries = runtime_entries(module, runtime)
     voices = child(module, 'VoicePacks')
     profiles = []; aliases = {}; counts = {'male':0,'female':0,'custom':0}; ids = set()
     for category in ('Male','Female','Custom'):
@@ -121,6 +129,9 @@ def main():
       'U uses V5 Dev / 32 steps / native 48kHz. It requires 6GiB free VRAM at startup; no 8GB concurrent gaming guarantee.\n'
       'LOCAL EVALUATION ONLY. Recording/weight redistribution is not cleared. Do not upload this ZIP to GitHub or Nexus before a separate license review.\n'
       '仅本地评估，角色录音/权重分发授权未核实；许可审核前勿上传 GitHub、N 网。\n').encode('utf-8-sig')
+    index_name = docs+'archive-files.json'
+    if index_name in entries or len({name.casefold() for name in entries}) != len(entries):
+        raise ValueError('duplicate_archive_entry')
     output.parent.mkdir(parents=True, exist_ok=True)
     checks = {}; total = 0
     with zipfile.ZipFile(output, 'x', zipfile.ZIP_DEFLATED, compresslevel=3, allowZip64=True) as archive:
@@ -134,7 +145,7 @@ def main():
             checks[name] = {'sha256':digest.hexdigest(),'bytes':size}; total += size
             if i % 3000 == 0: print('Archived',i,'files;',round(total/1024**3,3),'GiB',flush=True)
         index = {'purpose':'local_evaluation_addon_no_AF_DLL','voice_counts':counts,'files':checks}
-        archive.writestr(docs+'archive-files.json',dump(index))
+        archive.writestr(index_name,dump(index))
     print('ZIP written; verifying every extracted byte and ZIP CRC...',flush=True)
     extract.mkdir(parents=True)
     with zipfile.ZipFile(output) as archive:

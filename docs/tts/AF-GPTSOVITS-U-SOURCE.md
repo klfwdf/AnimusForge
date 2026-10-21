@@ -25,6 +25,12 @@ This branch starts from public AF main at `d2d05f0c`. Its new commits contain so
 
 These are inference subclasses, service wrappers and resource-layout adaptations, not retraining, quantization or modification of original weights. Original installations remain read-only. U uses a different model family; its name, full BERT or step count does not guarantee better subjective quality for every character.
 
+## 固定上游 / Pinned upstream
+
+- [GPT-SoVITS source a3035089](https://github.com/RVC-Boss/GPT-SoVITS/tree/a3035089c65ca63eb7777a4b0dafd198ebe36cda)
+- [Official model repository, pinned revision](https://huggingface.co/lj1995/GPT-SoVITS/tree/8f8857563c040d542de108a2c18b0425abd6c9c5)
+- 原 17 项受保护运行文件（含模型和推理入口）在 0.1.1 中保持同一 SHA-256；仅新增 13 项依赖/检查文件和更新清单版本。 / All 17 original protected files retain their hashes; 13 dependency/probe files are added and the package version is updated.
+
 ## 必要源码 / Required source map
 
 - `tools/af-gptsovits-u/download_models.py`：固定官方模型修订、大小与 SHA-256；不把权重放进 Git。 / Pinned official model revision, sizes and SHA-256; weights stay outside Git.
@@ -51,8 +57,9 @@ Primary-speaker filtering, peaceful-meeting/combat rules, encyclopedia voice ass
 
 - 0.1.0 自带参考音频为 16kHz，未覆盖上游 `match_librosa=True` 的延迟 `resampy` 依赖。0.1.1 补齐固定 PyPI `resampy 0.4.3` 及许可证，所有新增运行文件纳入清单 SHA-256。 / 0.1.0's 16kHz references missed a lazy resampy import; 0.1.1 ships the pinned dependency/license and protects its files with SHA-256.
 - `runtime_dependencies.py` 固定 wheel 下载地址、版本与哈希；仅用于新输出副本。`check_runtime.py` 从实际固定上游源码抽取原重采样函数，覆盖 16/22.05/24/32/44.1/48kHz → 16kHz；不加载权重或申请 CUDA。打包前执行相同检查。 / Pinned-wheel copying targets a fresh build only; the packaging gate exercises the actual upstream CPU resampler at six input rates without loading weights/CUDA.
+- 重打包时仅从本轮源码生成 Documentation，忽略输入中旧教程/旧索引；新增重复条目门禁与 3 组回归，防止 ZIP 出现同名校验索引。 / Repackaging regenerates Documentation from source, excludes old indices, and rejects duplicate names; three regressions protect the boundary.
 - 原始上游 `TTS.py` 与固定提交 `a3035089c65ca63eb7777a4b0dafd198ebe36cda` 一致；不需要遗漏在本仓库之外的私有推理补丁。V2Pro/L 来源仍为公开分支 `e455d07e`，本次额外只在其构建器显式导入 `resampy` 防止同样的漏打包；不重建或覆盖已有 L。 / Upstream source matches the pinned revision; no undisclosed private TTS.py patch is required. The only new change to the imported public L toolset is explicitly tracing resampy during build; existing L installations stay untouched.
-- 验证：AF 1.3/1.4 + Bootstrap 原入口构建及双 Coup 门禁通过；48 项运行包/进程夹具断言通过；6 组真实 HTTP handler 测试通过（假音频引擎，隔离的 test-only httpx2）；双语真实 DLL/MCM/终端检查每种语言为 1.4: 1240、1.3: 903。17 个 Python 源码解析、14 对 UI key 和本地文档链接通过。 / These are production-source, isolated process/handler and actual-DLL configuration tests, not native game playback.
+- 验证：AF 1.3/1.4 + Bootstrap 原入口构建及双 Coup 门禁通过；48 项运行包/进程夹具断言通过；6 组真实 HTTP handler 测试通过（假音频引擎，隔离的 test-only httpx2）；双语真实 DLL/MCM/终端检查每种语言为 1.4: 1240、1.3: 903。18 个 Python 源码解析、14 对 UI key 和本地文档链接通过。 / These are production-source, isolated process/handler and actual-DLL configuration tests, not native game playback.
 - 旧 U ZIP 的完整性复核已通过，但它缺少上述依赖；使用新 `AF-GPTSOVITS-U_0.1.1-local-evaluation.zip`，不要继续分发旧 0.1.0。最终大小和 SHA 见下面的归档记录。 / The old archive passed integrity checks but lacked the dependency. Use the corrected 0.1.1 archive, not the old 0.1.0; its final receipt follows below.
 - 本次不运行 GPU 模型或游戏。此前 RTX 5070 Ti、无游戏并行的九例实测峰值为 2303.5 MiB 专用显存、5176.8 MiB 进程 RSS；不是本次新压测，不能作为 8GB 显卡游戏同开保证。 / Earlier nine-case measurements are retained evidence, not a new benchmark or 8GB gaming guarantee.
 
